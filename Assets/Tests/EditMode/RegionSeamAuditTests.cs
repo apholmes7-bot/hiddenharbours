@@ -351,7 +351,10 @@ namespace HiddenHarbours.Tests.EditMode
             // sprite, a collider, a YSortSprite and a StowageRack each) and the camper's shore power lead (sprites
             // and transforms only): no nested prefab and no travel component. The two wholesalers' staff fixtures
             // (N1a) nest the toilet, the washstand and the kitchen microwave in their shells: the microwave adds
-            // a CookingStationFixture and its art, no travel component.
+            // a CookingStationFixture and its art, no travel component. The community hall's kitchen and washroom
+            // (N1b) nest the fridge (a KitchenStoreFixture, its art and a cabinet collider), the kitchen sink (a
+            // WashStationPoint, its art and a collider) and the cook stove (a CookingStationFixture and its art)
+            // beside the toilet and the washstand: no travel component.
             Assert.That(seen.Select(g => paths[g].Replace('\\', '/')).OrderBy(p => p, StringComparer.Ordinal), Is.EqualTo(new[] {
                 "Assets/_Project/Prefabs/Bridges/CampBrookBridge.prefab",
                 "Assets/_Project/Prefabs/Bridges/CampPondCulvert.prefab",
@@ -362,7 +365,10 @@ namespace HiddenHarbours.Tests.EditMode
                 "Assets/_Project/Prefabs/Buildings/NineMileCreek/NmcFishingGearWholesaler.prefab",
                 "Assets/_Project/Prefabs/Decor/NavBuoy.prefab",
                 "Assets/_Project/Prefabs/GasStation/dispenser_sDock.prefab",
+                "Assets/_Project/Prefabs/Props/Kitchen/Fridge.prefab",
+                "Assets/_Project/Prefabs/Props/Kitchen/KitchenSink.prefab",
                 "Assets/_Project/Prefabs/Props/Kitchen/Microwave.prefab",
+                "Assets/_Project/Prefabs/Props/Kitchen/Stove.prefab",
                 "Assets/_Project/Prefabs/Props/Storage/CamperShoreLead.prefab",
                 "Assets/_Project/Prefabs/Props/Storage/GinnyGearLocker.prefab",
                 "Assets/_Project/Prefabs/Props/Storage/GinnyRodRack.prefab",

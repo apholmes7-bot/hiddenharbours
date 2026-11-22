@@ -198,8 +198,7 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(id, Does.Match(@"^fixture\.nmc\.[a-z]+(_[a-z]+)*\.(toilet|bathroom_sink|microwave)$"), id);
             Assert.That(ids, Does.Contain("fixture.nmc.boat_gear_wholesaler.toilet"));
             Assert.That(ids, Does.Contain("fixture.nmc.fishing_gear_wholesaler.bathroom_sink"));
-            foreach (var s in NmcBuildingShells.All.Except(Wholesalers))
-                Assert.That(s.Fixtures, Is.Empty, $"{s.Name} stands no fixtures in this slice");
+            Assert.That(NmcBuildingShells.FishPlant.Fixtures, Is.Empty, "the fish plant stands no fixtures in this slice");
         }
 
         [Test]
@@ -279,9 +278,9 @@ namespace HiddenHarbours.Tests.EditMode
         /// at a foot south of the fixture's) covers the fixture's floor footprint on screen. A full-height inner
         /// wall did (its top rose past the whole room behind it), and the staff corner read as outdoors.</summary>
         [Test]
-        public void NoQuadDrawnInFrontOfAFixtureCoversIt([ValueSource(nameof(WholesalerNames))] string name)
+        public void NoQuadDrawnInFrontOfAFixtureCoversIt([ValueSource(nameof(FittedNames))] string name)
         {
-            var s = Wholesalers.Single(x => x.Name == name);
+            var s = Fitted.Single(x => x.Name == name);
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(s.PrefabPath);
             Vector2 origin = prefab.transform.position;
             Transform props = prefab.transform.Find(BuildingInteriorStander.PropsChildName);
@@ -295,14 +294,14 @@ namespace HiddenHarbours.Tests.EditMode
                     Vector2 c = (Vector2)t.position - origin;
                     return (t.name, rect: new Rect(c - size * 0.5f, size), sortY: c.y + t.GetComponent<YSortSprite>().SortPivotYOffset);
                 }).ToList();
-            Assert.That(quads.Any(q => q.name == "NorthWallFace"), Is.True, $"{name} draws no back-wall face");
+            // the wholesalers back onto the outer north wall, drawn as a face; the hall's pieces back onto its
+            // inner partitions, which draw themselves
+            if (Wholesalers.Contains(s))
+                Assert.That(quads.Any(q => q.name == "NorthWallFace"), Is.True, $"{name} draws no back-wall face");
             foreach (NmcBuildingShells.Fixture f in s.Fixtures)
             {
-                var art = AssetDatabase.LoadAssetAtPath<GameObject>(f.Prefab).GetComponent<ApplianceArt>();
-                Vector2 foot = ApplianceSheets.For(art.Kind).Foot;
-                int wall = ApplianceFacing.PickWallOffset(f.At, s.WidthMetres, s.LengthMetres, foot);
-                Vector2 size = wall == 0 ? foot : new Vector2(foot.y, foot.x);
-                Vector2 a = fp.ModelToWorld(f.At - size * 0.5f), b = fp.ModelToWorld(f.At + size * 0.5f);
+                Rect model = NmcBuildingShells.FixtureFootprint(s, f);
+                Vector2 a = fp.ModelToWorld(model.min), b = fp.ModelToWorld(model.max);
                 Rect onScreen = Rect.MinMaxRect(Mathf.Min(a.x, b.x), Mathf.Min(a.y, b.y), Mathf.Max(a.x, b.x), Mathf.Max(a.y, b.y));
                 float fixtureSortY = fp.ModelToWorld(f.At).y;
                 foreach (var q in quads.Where(q => q.sortY < fixtureSortY))
@@ -312,17 +311,19 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void ThePlayerFromTheStreet_AndTheKeeperFromTheCounter_ReachEveryFixture([ValueSource(nameof(WholesalerNames))] string name)
+        public void ThePlayerFromTheStreet_AndTheKeeperFromTheCounter_ReachEveryFixture([ValueSource(nameof(FittedNames))] string name)
         {
-            var s = Wholesalers.Single(x => x.Name == name);
+            var s = Fitted.Single(x => x.Name == name);
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(s.PrefabPath);
             Vector2 origin = prefab.transform.position;
             InteriorFootprint fp = NmcBuildingShells.FootprintAt(s, Vector2.zero);
             Vector2 outward = (fp.DoorWorld - fp.Centre).normalized;
-            var keeper = NmcWholesalerKeepers.All.Single(k => k.Shell.Name == name);
+            // the hall has no keeper: only the player walks in
+            var keeper = NmcWholesalerKeepers.All.SingleOrDefault(k => k.Shell.Name == name);
 
             var walls = new List<Vector2[]>();
             var circles = new List<(Vector2 c, float r)>();
+            int boxes = 0;
             foreach (Collider2D c in prefab.GetComponentsInChildren<Collider2D>(true))
             {
                 if (c.isTrigger) continue;
@@ -330,9 +331,18 @@ namespace HiddenHarbours.Tests.EditMode
                 if (c is PolygonCollider2D p)
                     for (int i = 0; i < p.pathCount; i++) walls.Add(p.GetPath(i).Select(v => v + at).ToArray());
                 else if (c is CircleCollider2D cc) circles.Add((at, cc.radius));
+                else if (c is BoxCollider2D bc)
+                {
+                    // the fridge's and the kitchen sink's cabinet (unturned, unscaled under the shell)
+                    Vector2 h = bc.size * 0.5f;
+                    walls.Add(new[] { at + new Vector2(-h.x, -h.y), at + new Vector2(h.x, -h.y), at + new Vector2(h.x, h.y), at + new Vector2(-h.x, h.y) });
+                    boxes++;
+                }
                 else Assert.Fail($"{name}: an unexpected {c.GetType().Name} on {c.name}");
             }
             Assert.That(circles.Count, Is.GreaterThanOrEqualTo(2), $"{name}: the toilet and the basin each carry a collider");
+            if (s == NmcBuildingShells.CommunityHall)
+                Assert.That(boxes, Is.EqualTo(2), $"{name}: the fridge and the kitchen sink each carry a cabinet collider");
 
             Rect floor = Rect.MinMaxRect(fp.Corners().Min(v => v.x), fp.Corners().Min(v => v.y), fp.Corners().Max(v => v.x), fp.Corners().Max(v => v.y));
             Rect area = Rect.MinMaxRect(floor.xMin - 2f, floor.yMin - 2f, floor.xMax + 2f, floor.yMax + 2f);
@@ -342,26 +352,176 @@ namespace HiddenHarbours.Tests.EditMode
 
             var interactables = s.Fixtures.Select(f =>
             {
-                MonoBehaviour point = InteriorFixturePlacement.IdComponentOf(prefab.transform.Find(BuildingInteriorStander.PropsChildName + "/" + f.Name).gameObject);
-                return (f, (HiddenHarbours.Core.IInteractable)point);
+                MonoBehaviour point = f.HasId
+                    ? InteriorFixturePlacement.IdComponentOf(prefab.transform.Find(BuildingInteriorStander.PropsChildName + "/" + f.Name).gameObject)
+                    : null;
+                // the fridge has no verb yet: held to the reach a standing player has at a kitchen counter
+                float reach = point != null ? ((HiddenHarbours.Core.IInteractable)point).ReachMeters : UnboundReachMetres;
+                return (f, reach);
             }).ToList();
 
-            foreach ((string who, Vector2 from) in new[]
-                     {
-                         ("the player from the street", fp.DoorWorld + outward * 1.5f),
-                         ($"the keeper ({keeper.KeeperRoot}) from the counter", fp.ModelToWorld(keeper.StandModel)),
-                     })
+            var starts = new List<(string who, Vector2 from)> { ("the player from the street", fp.DoorWorld + outward * 1.5f) };
+            if (keeper != null) starts.Add(($"the keeper ({keeper.KeeperRoot}) from the counter", fp.ModelToWorld(keeper.StandModel)));
+            foreach ((string who, Vector2 from) in starts)
             {
                 Assert.That(Free(from), Is.True, $"{name}: {who} starts inside a collider at {from}");
                 List<Vector2> reached = Flood(area, from, Free);
-                foreach (var (f, point) in interactables)
+                foreach (var (f, reach) in interactables)
                 {
+                    Assert.That(reach, Is.GreaterThan(0f), $"{name}/{f.Name} has no reach");
                     Vector2 at = (Vector2)prefab.transform.Find(BuildingInteriorStander.PropsChildName + "/" + f.Name).position - origin;
                     float best = reached.Min(q => Vector2.Distance(q + new Vector2(0f, FootBelowMetres), at));
-                    Assert.That(best, Is.LessThanOrEqualTo(point.ReachMeters),
-                                $"{name}: {who} gets no nearer than {best:0.00} m to {f.Name} (reach {point.ReachMeters} m)");
+                    Assert.That(best, Is.LessThanOrEqualTo(reach),
+                                $"{name}: {who} gets no nearer than {best:0.00} m to {f.Name} (reach {reach} m)");
                 }
             }
+        }
+
+        /// <summary>The reach a fixture with no verb is held to: the kitchen sink's (its prefab's 1.2 m).</summary>
+        const float UnboundReachMetres = 1.2f;
+
+        // ---- the community hall's kitchen and washroom (kitchens and bathrooms plan, N1b) -------------------
+
+        static readonly NmcBuildingShells.Shell[] Fitted =
+            { NmcBuildingShells.BoatGearWholesaler, NmcBuildingShells.FishingGearWholesaler, NmcBuildingShells.CommunityHall };
+
+        static IEnumerable<string> FittedNames() => Fitted.Select(s => s.Name);
+
+        static NmcBuildingShells.Shell Hall => NmcBuildingShells.CommunityHall;
+
+        [Test]
+        public void TheHallStandsAKitchenAndAWashroom_WithIdsOfItsOwn()
+        {
+            Assert.That(Hall.BuildingKey, Is.EqualTo("community_hall"));
+            Assert.That(Hall.Fixtures.Select(f => f.Slot), Is.EquivalentTo(new[]
+                { NmcBuildingShells.FridgeSlot, NmcBuildingShells.KitchenSinkSlot, "stove", "bathroom_sink", "toilet" }));
+            Assert.That(Hall.Fixtures.Select(f => f.Name).Distinct().Count(), Is.EqualTo(Hall.Fixtures.Length), "one name per slot");
+            var ids = Hall.Fixtures.Where(f => f.HasId).Select(f => NmcBuildingShells.FixtureId(Hall, f)).ToList();
+            Assert.That(ids, Is.EquivalentTo(new[]
+            {
+                "fixture.nmc.community_hall.kitchen_sink", "fixture.nmc.community_hall.stove",
+                "fixture.nmc.community_hall.bathroom_sink", "fixture.nmc.community_hall.toilet",
+            }));
+            // the fridge alone carries no interact id: nothing opens it yet
+            Assert.That(Hall.Fixtures.Single(f => !f.HasId).Slot, Is.EqualTo(NmcBuildingShells.FridgeSlot));
+        }
+
+        [Test]
+        public void TheHallsPrefabCarriesEachFixtureBound_FacingTheWayItsWallSays()
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(Hall.PrefabPath);
+            Transform props = prefab.transform.Find(BuildingInteriorStander.PropsChildName);
+            InteriorFootprint fp = NmcBuildingShells.FootprintAt(Hall, Vector2.zero);
+            foreach (NmcBuildingShells.Fixture f in Hall.Fixtures)
+            {
+                Transform t = props.Find(f.Name);
+                Assert.That(t, Is.Not.Null, $"the hall has no {f.Name}");
+                Assert.That(PrefabUtility.GetCorrespondingObjectFromSource(t.gameObject),
+                            Is.EqualTo(AssetDatabase.LoadAssetAtPath<GameObject>(f.Prefab)), $"{f.Name} is not {f.Prefab}");
+                Assert.That(Vector2.Distance((Vector2)t.position - (Vector2)prefab.transform.position, fp.ModelToWorld(f.At)), Is.LessThan(1e-3f),
+                            $"{f.Name} stands off its model point {f.At}");
+                var art = t.GetComponent<ApplianceArt>();
+                Assert.That(art, Is.Not.Null, $"{f.Name} has no art");
+                using (var so = new SerializedObject(art))
+                    Assert.That(so.FindProperty("_wallOffset").intValue, Is.EqualTo(f.Wall), $"{f.Name}'s art is not told its wall");
+                string id = NmcBuildingShells.FixtureId(Hall, f);
+                switch (f.Slot)
+                {
+                    case NmcBuildingShells.FridgeSlot:
+                        var store = t.GetComponent<KitchenStoreFixture>();
+                        Assert.That(store, Is.Not.Null, f.Name);
+                        Assert.That(store.Def, Is.Not.Null, "the fridge names no store Def");
+                        break;
+                    case NmcBuildingShells.KitchenSinkSlot:
+                    case "bathroom_sink":
+                        var wash = t.GetComponent<WashStationPoint>();
+                        Assert.That(wash, Is.Not.Null, f.Name);
+                        Assert.That(wash.Id, Is.EqualTo(id));
+                        Assert.That(wash.StationId, Is.EqualTo("washstation.sink"));
+                        break;
+                    case "toilet":
+                        var seat = t.GetComponent<SitPoint>();
+                        Assert.That(seat, Is.Not.Null, f.Name);
+                        Assert.That(seat.Id, Is.EqualTo(id));
+                        Assert.That(seat.StationId, Is.EqualTo(RoomFixturePlan.DefId(RoomFixturePlan.Kind.Toilet)));
+                        break;
+                    default:
+                        var cook = t.GetComponent<HiddenHarbours.Player.CookingStationFixture>();
+                        Assert.That(cook, Is.Not.Null, f.Name);
+                        Assert.That(cook.Id, Is.EqualTo(id));
+                        Assert.That(cook.Def, Is.Not.Null, $"{f.Name} has no station def");
+                        Assert.That(cook.Def.Id, Is.EqualTo(RoomFixturePlan.DefId(RoomFixturePlan.Kind.Stove)));
+                        break;
+                }
+            }
+        }
+
+        /// <summary>Every hall fixture backs onto its room's NORTH wall (owner 11-22: north walls where possible):
+        /// the inner partition on its north side, which at the hall's facing is the model's -x. Its sheet cell is
+        /// the north-wall cell, its footprint touches that partition's face, stands inside the room and clear of
+        /// every solid block and every other fixture.</summary>
+        [Test]
+        public void EachHallFixtureBacksOntoItsRoomsNorthWall_ClearOfEveryBlockAndEachOther()
+        {
+            Assert.That(Hall.Facing, Is.EqualTo(2), "the wall turns below assume model -x is north");
+            Assert.That(ApplianceFacing.CellFor(Hall.Facing, NmcBuildingShells.MinusXWall), Is.EqualTo(0), "-x is not the north cell");
+            float hw = Hall.WidthMetres * 0.5f - BuildingInteriorStander.WallThicknessMetres;
+            float hl = Hall.LengthMetres * 0.5f - BuildingInteriorStander.WallThicknessMetres;
+            var solids = NmcBuildingShells.Layout(Hall).Where(b => b.Solid).ToList();
+            var rects = Hall.Fixtures.Select(f => (f, r: NmcBuildingShells.FixtureFootprint(Hall, f))).ToList();
+            foreach (var (f, r) in rects)
+            {
+                Assert.That(f.Wall, Is.EqualTo(NmcBuildingShells.MinusXWall), $"{f.Name} does not back onto a north wall");
+                Assert.That(solids.Any(b => Mathf.Abs(b.Model.xMax - r.xMin) < 0.01f && b.Model.yMin <= r.yMin && b.Model.yMax >= r.yMax),
+                            Is.True, $"{f.Name}'s back {r} stands against no partition face");
+                Assert.That(r.xMin >= -hw - 1e-3f && r.xMax <= hw + 1e-3f && r.yMin >= -hl - 1e-3f && r.yMax <= hl + 1e-3f, Is.True,
+                            $"{f.Name}'s footprint {r} runs into the outer wall");
+                foreach (var b in solids)
+                    Assert.That(b.Model.Overlaps(r), Is.False, $"{f.Name}'s footprint {r} runs into {b.Name}");
+                foreach (var (g, q) in rects.Where(x => !x.f.Equals(f)))
+                    Assert.That(q.Overlaps(r), Is.False, $"{f.Name} {r} overlaps {g.Name} {q}");
+            }
+        }
+
+        /// <summary>The fridge's door swings 102 degrees on its right (as you face it): 0.75 m clear in front
+        /// and 0.2 m on the hinge side (ApplianceSheets.Fridge), with no fixture, solid block or doorway in either.</summary>
+        [Test]
+        public void TheHallFridgesDoorSwingIsClear()
+        {
+            NmcBuildingShells.Fixture fridge = Hall.Fixtures.Single(f => f.Slot == NmcBuildingShells.FridgeSlot);
+            Rect r = NmcBuildingShells.FixtureFootprint(Hall, fridge);
+            // backed onto -x (north) and facing +x (south): its right, as you face it, is +y (east)
+            var front = Rect.MinMaxRect(r.xMax, r.yMin, r.xMax + FridgeFrontClearMetres, r.yMax);
+            var hinge = Rect.MinMaxRect(r.xMin, r.yMax, r.xMax, r.yMax + FridgeHingeClearMetres);
+            var doorways = NmcBuildingShells.Layout(Hall).Where(b => b.Name.StartsWith("BackWall")).ToList();
+            foreach (var (what, clear) in new[] { ("in front", front), ("on the hinge side", hinge) })
+            {
+                foreach (var b in NmcBuildingShells.Layout(Hall).Where(b => b.Solid))
+                    Assert.That(b.Model.Overlaps(clear), Is.False, $"the fridge's swing {what} {clear} runs into {b.Name}");
+                foreach (var f in Hall.Fixtures.Where(f => !f.Equals(fridge)))
+                    Assert.That(NmcBuildingShells.FixtureFootprint(Hall, f).Overlaps(clear), Is.False, $"the fridge's swing {what} hits {f.Name}");
+                // the back-room wall's doorway gaps: the swing stays east of that wall's face
+                Assert.That(clear.yMin, Is.GreaterThanOrEqualTo(doorways.Max(b => b.Model.yMax) - 1e-3f), $"the swing {what} reaches the doorway wall");
+            }
+        }
+
+        const float FridgeFrontClearMetres = 0.75f;
+        const float FridgeHingeClearMetres = 0.2f;
+
+        [Test]
+        public void TheHallsCookStoveIsSolidThroughTheInnerWalls_AndTheKitchenAndWashroomOpenOffTheHall()
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(Hall.PrefabPath);
+            InteriorFootprint fp = NmcBuildingShells.FootprintAt(Hall, Vector2.zero);
+            var inner = prefab.transform.Find("InnerWalls").GetComponents<PolygonCollider2D>();
+            Assert.That(inner.Length, Is.EqualTo(NmcBuildingShells.InnerWallPaths(Hall, fp).Count), "the inner walls are not the layout's");
+            NmcBuildingShells.Fixture stove = Hall.Fixtures.Single(f => f.Slot == "stove");
+            Assert.That(stove.SolidFootprint, Is.True);
+            Vector2 stoveAt = fp.ModelToWorld(stove.At);
+            Assert.That(inner.Any(c => Inside(c, stoveAt)), Is.True, "nothing stops the player walking through the cook stove");
+            // a point in each doorway of the back-room wall is open, as is the gym's
+            foreach (float x in new[] { -5f, 2.6f, 6f })
+                Assert.That(inner.Any(c => Inside(c, fp.ModelToWorld(new Vector2(x, 0f)))), Is.False, $"the back-room doorway at model x {x} is walled");
         }
 
         /// <summary>Every free cell 4-connected to <paramref name="from"/> on a <see cref="CellMetres"/> grid.</summary>
@@ -451,7 +611,7 @@ namespace HiddenHarbours.Tests.EditMode
         /// it: the shell's own walls are drawn, and the fixtures are not, because the furniture root loads switched
         /// off (the room switches it on while the player is inside), as the scene loads them.</summary>
         [Test]
-        public void TheLiveSolidsReadEachWholesalerWithItsNestedFixtures_WhichLoadSwitchedOff([ValueSource(nameof(WholesalerNames))] string name)
+        public void TheLiveSolidsReadEachWholesalerWithItsNestedFixtures_WhichLoadSwitchedOff([ValueSource(nameof(FittedNames))] string name)
         {
             NmcBuildingShells.Shell s = Shells.Single(x => x.Name == name);
             var prefab = SceneYaml.Parse(File.ReadAllText(Path.Combine(ProjectRoot, s.PrefabPath)).Replace("\r", ""));
