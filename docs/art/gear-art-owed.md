@@ -58,7 +58,8 @@ Still owed after pass 2: any owned id the KIT page Def does not list falls back 
 
 ## Pass 3: the headlamp (2026-11-22)
 
-`gear.headlamp` is recorded as owned from the first morning (StartingGear) and is never sold. It gets
+`gear.headlamp` is owned from the first morning by derivation (`GameConfig.CarriedFromStartGearIds`,
+never written to the save) and is never sold. It gets
 an unlisted, sellerless entry (`Catalog/Gear/Headlamp`, "Headlamp"), a row under CARRIED on the KIT
 page, and `GearIcon_headlamp` from the PASS 3 block of the same bake: the elastic strap loop with a
 strap over the crown, a slide buckle, the red housing and its lens lit, three-quarter on. Its ramps are

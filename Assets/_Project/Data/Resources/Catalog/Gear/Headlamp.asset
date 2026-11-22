@@ -15,8 +15,7 @@ MonoBehaviour:
   Id: gear.headlamp
   DisplayName: Headlamp
   Flavor: 'A lamp on an elastic strap, kept in his pocket and pulled on when the light
-    goes. His from the first morning, never bought: no shop sells one. StartingGear records
-    gear.headlamp as owned on every load.'
+    goes. His from the first morning, never bought: no shop sells one.'
   Price: 0
   Catalog:
     Listed: 0

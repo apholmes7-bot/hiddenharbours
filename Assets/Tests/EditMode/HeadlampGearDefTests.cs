@@ -32,7 +32,11 @@ namespace HiddenHarbours.Tests.EditMode
         {
             GearOffer offer = Offer();
             Assert.AreEqual(OfferPath, AssetDatabase.GetAssetPath(offer), "one entity per file, beside the other gear");
-            Assert.AreEqual("gear.headlamp", offer.Id, "the id StartingGear records as owned");
+            Assert.AreEqual("gear.headlamp", offer.Id, "the id the player owns from the start");
+            var config = AssetDatabase.LoadAssetAtPath<GameConfig>("Assets/_Project/Data/Config/GameConfig.asset");
+            Assert.IsNotNull(config, "the shipped GameConfig");
+            Assert.IsTrue(GameConfig.CarriesFromStart(config, offer.Id),
+                "the shipped GameConfig carries the headlamp from the start (CarriedFromStartGearIds)");
             Assert.AreEqual("Headlamp", offer.DisplayName);
             Assert.IsFalse(string.IsNullOrWhiteSpace(offer.Flavor), "a short description");
         }
