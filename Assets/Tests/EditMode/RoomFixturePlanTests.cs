@@ -8,6 +8,8 @@ using HiddenHarbours.Art;
 using HiddenHarbours.Art.Editor;
 using Kind = HiddenHarbours.App.Editor.RoomFixturePlan.Kind;
 using Row = HiddenHarbours.App.Editor.RoomFixturePlan.Row;
+using Wall = HiddenHarbours.App.Editor.RoomFixturePlan.Wall;
+using Compass = HiddenHarbours.App.Editor.RoomFixturePlan.Compass;
 
 namespace HiddenHarbours.Tests.EditMode
 {
@@ -225,6 +227,168 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(44, RoomFixturePlan.Rows.Count);
             Assert.AreEqual(8, RoomFixturePlan.Rows.Select(r => r.BuildingKey).Distinct().Count());
             Assert.AreEqual(7, RoomFixturePlan.Closets.Length);
+        }
+
+        // ---- the pinned row set (the per-building split is behaviour-neutral) -----------------------
+
+        /// <summary>Every row as the single-file table produced it, in order: id, room, plan key, level,
+        /// planned point and the plan wall it backs. A change to any building's rows must change this.</summary>
+        static readonly (string id, string room, string plan, int level, float x, float y, Wall wall)[] Pinned =
+        {
+            ("fixture.st_peters.ginny_cottage.prep_counter", "sageCottage", "ginnyCottage", 0, 2.7f, 1.425f, Wall.Left),
+            ("fixture.st_peters.ginny_cottage.stove", "sageCottage", "ginnyCottage", 0, 2.7f, 2.425f, Wall.Left),
+            ("fixture.st_peters.ginny_cottage.microwave", "sageCottage", "ginnyCottage", 0, 2.7f, 3.275f, Wall.Left),
+            ("fixture.st_peters.ginny_cottage.shower", "sageCottage", "ginnyCottage", 0, -2.575f, -2.85f, Wall.Right),
+            ("fixture.st_peters.ginny_cottage.toilet", "sageCottage", "ginnyCottage", 0, -2.775f, -1.475f, Wall.Right),
+            ("fixture.st_peters.ginny_cottage.bathroom_sink", "sageCottage", "ginnyCottage", 0, -1.925f, -3.5f, Wall.Back),
+            ("fixture.st_peters.sage_cottage.prep_counter", "sageCottage", null, 0, 2.7f, 1.425f, Wall.Left),
+            ("fixture.st_peters.sage_cottage.stove", "sageCottage", null, 0, 2.7f, 2.425f, Wall.Left),
+            ("fixture.st_peters.sage_cottage.microwave", "sageCottage", null, 0, 2.7f, 3.275f, Wall.Left),
+            ("fixture.st_peters.sage_cottage.toilet", "sageCottage", null, 0, -2.65f, -3.375f, Wall.Back),
+            ("fixture.st_peters.sage_cottage.bathroom_sink", "sageCottage", null, 0, -1.85f, -3.475f, Wall.Back),
+            ("fixture.st_peters.sage_cottage.shower", "sageCottage", null, 0, -2.55f, -2.425f, Wall.Right),
+            ("fixture.st_peters.red_saltbox.prep_counter", "redSaltbox", null, 0, 2.88f, 1.74f, Wall.Left),
+            ("fixture.st_peters.red_saltbox.stove", "redSaltbox", null, 0, 2.88f, 2.74f, Wall.Left),
+            ("fixture.st_peters.red_saltbox.microwave", "redSaltbox", null, 0, 2.88f, 3.59f, Wall.Left),
+            ("fixture.st_peters.red_saltbox.toilet", "redSaltbox", null, 0, -2.83f, 3.69f, Wall.Front),
+            ("fixture.st_peters.red_saltbox.bathroom_sink", "redSaltbox", null, 0, -2.03f, 3.79f, Wall.Front),
+            ("fixture.st_peters.red_saltbox.shower", "redSaltbox", null, 0, -2.73f, 2.74f, Wall.Right),
+            ("fixture.st_peters.white_farmhouse.prep_counter", "whiteFarmhouse", null, 0, 3.24f, 2.37f, Wall.Left),
+            ("fixture.st_peters.white_farmhouse.stove", "whiteFarmhouse", null, 0, 3.24f, 3.37f, Wall.Left),
+            ("fixture.st_peters.white_farmhouse.microwave", "whiteFarmhouse", null, 0, 3.24f, 4.22f, Wall.Left),
+            ("fixture.st_peters.white_farmhouse.bath", "whiteFarmhouse", null, 0, -2.64f, -4.27f, Wall.Back),
+            ("fixture.st_peters.white_farmhouse.toilet", "whiteFarmhouse", null, 0, -3.19f, -3.42f, Wall.Right),
+            ("fixture.st_peters.white_farmhouse.bathroom_sink", "whiteFarmhouse", null, 0, -3.24f, -2.82f, Wall.Right),
+            ("fixture.st_peters.harbour_gable.prep_counter", "harbourGable", "harbourGable", 0, 2.76f, 1.53f, Wall.Left),
+            ("fixture.st_peters.harbour_gable.stove", "harbourGable", "harbourGable", 0, 2.76f, 2.53f, Wall.Left),
+            ("fixture.st_peters.harbour_gable.microwave", "harbourGable", "harbourGable", 0, 2.76f, 3.38f, Wall.Left),
+            ("fixture.st_peters.harbour_gable.toilet", "harbourGableUpper", "harbourGable", 1, -2.71f, -3.48f, Wall.Back),
+            ("fixture.st_peters.harbour_gable.bathroom_sink", "harbourGableUpper", "harbourGable", 1, -1.91f, -3.58f, Wall.Back),
+            ("fixture.st_peters.harbour_gable.shower", "harbourGableUpper", "harbourGable", 1, -2.61f, -2.53f, Wall.Right),
+            ("fixture.st_peters.cream_saltbox.prep_counter", "creamSaltbox", "creamSaltbox", 0, 2.82f, 1.635f, Wall.Left),
+            ("fixture.st_peters.cream_saltbox.stove", "creamSaltbox", "creamSaltbox", 0, 2.82f, 2.635f, Wall.Left),
+            ("fixture.st_peters.cream_saltbox.microwave", "creamSaltbox", "creamSaltbox", 0, 2.82f, 3.485f, Wall.Left),
+            ("fixture.st_peters.cream_saltbox.toilet", "creamSaltboxUpper", "creamSaltbox", 1, -2.77f, -3.585f, Wall.Back),
+            ("fixture.st_peters.cream_saltbox.bathroom_sink", "creamSaltboxUpper", "creamSaltbox", 1, -1.97f, -3.685f, Wall.Back),
+            ("fixture.st_peters.cream_saltbox.shower", "creamSaltboxUpper", "creamSaltbox", 1, -2.67f, -2.635f, Wall.Right),
+            ("fixture.st_peters.white_gable.prep_counter", "whiteGable", "whiteGable", 0, 2.82f, 1.635f, Wall.Left),
+            ("fixture.st_peters.white_gable.stove", "whiteGable", "whiteGable", 0, 2.82f, 2.635f, Wall.Left),
+            ("fixture.st_peters.white_gable.microwave", "whiteGable", "whiteGable", 0, 2.82f, 3.485f, Wall.Left),
+            ("fixture.st_peters.white_gable.toilet", "whiteGableUpper", "whiteGable", 1, -2.77f, -3.585f, Wall.Back),
+            ("fixture.st_peters.white_gable.bathroom_sink", "whiteGableUpper", "whiteGable", 1, -1.97f, -3.685f, Wall.Back),
+            ("fixture.st_peters.white_gable.shower", "whiteGableUpper", "whiteGable", 1, -2.67f, -2.635f, Wall.Right),
+            ("fixture.st_peters.school.prep_counter", "school", null, 0, 2.58f, 1.215f, Wall.Left),
+            ("fixture.st_peters.school.microwave", "school", null, 0, 2.58f, 2.215f, Wall.Left),
+        };
+
+        /// <summary>Each building's scene root and GameObject name, as the single-file table had them.</summary>
+        static readonly Dictionary<string, (string root, string building)> PinnedBuildings = new Dictionary<string, (string, string)>
+        {
+            { "ginny_cottage", (StPetersGinnyPlot.RootName, StPetersGinnyPlot.CottageKey) },
+            { "sage_cottage", (StPetersVillage.RootName, "sageCottage") },
+            { "red_saltbox", (StPetersVillage.RootName, "redSaltbox") },
+            { "white_farmhouse", (StPetersVillage.RootName, "whiteFarmhouse") },
+            { "harbour_gable", (StPetersVillage.RootName, "harbourGable") },
+            { "cream_saltbox", (StPetersVillage.RootName, "creamSaltbox") },
+            { "white_gable", (StPetersVillage.RootName, "whiteGable") },
+            { "school", (StPetersVillage.RootName, "school") },
+        };
+
+        [Test]
+        public void TheRowSetIsPinned_IdsOrderRoomsLevelsAndPoints()
+        {
+            var rows = RoomFixturePlan.Rows;
+            Assert.AreEqual(Pinned.Length, rows.Count, "row count");
+            CollectionAssert.AreEqual(Pinned.Select(p => p.id).ToArray(), rows.Select(r => r.Id).ToArray(), "ids in order");
+            for (int i = 0; i < Pinned.Length; i++)
+            {
+                var p = Pinned[i];
+                Row r = rows[i];
+                Assert.AreEqual(p.room, r.RoomKey, $"{p.id} room");
+                Assert.AreEqual(p.plan, r.PlanKey, $"{p.id} plan key");
+                Assert.AreEqual(p.level, r.Level, $"{p.id} level");
+                Assert.AreEqual(p.x, r.At.x, 1e-4f, $"{p.id} x");
+                Assert.AreEqual(p.y, r.At.y, 1e-4f, $"{p.id} y");
+                Assert.AreEqual(p.wall, r.Wall, $"{p.id} wall");
+                Assert.IsTrue(PinnedBuildings.TryGetValue(r.BuildingKey, out var b), $"{p.id}: unknown building");
+                Assert.AreEqual(b.root, r.BuildingRoot, $"{p.id} building root");
+                Assert.AreEqual(b.building, r.Building, $"{p.id} building");
+            }
+        }
+
+        [Test]
+        public void OnlyGinnysBathroomIsMarkedPlaced()
+        {
+            CollectionAssert.AreEquivalent(new[]
+            {
+                "fixture.st_peters.ginny_cottage.shower",
+                "fixture.st_peters.ginny_cottage.toilet",
+                "fixture.st_peters.ginny_cottage.bathroom_sink",
+            }, RoomFixturePlan.Rows.Where(r => r.Placed).Select(r => r.Id));
+        }
+
+        // ---- the backing wall and the north-first rule -------------------------------------------
+
+        [Test]
+        public void EachRowsWallIsTheNearestWallOfItsRoom()
+        {
+            foreach (Row row in RoomFixturePlan.Rows)
+            {
+                (float w, float l) = Declared[row.RoomKey];
+                float hw = w * 0.5f, hl = l * 0.5f;
+                Rect r = RectOf(row.At, RoomFixturePlan.Footprint(row.Kind));
+                var gaps = new Dictionary<Wall, float>
+                {
+                    { Wall.Left, hw - r.xMax }, { Wall.Right, r.xMin + hw },
+                    { Wall.Front, hl - r.yMax }, { Wall.Back, r.yMin + hl },
+                };
+                Wall nearest = gaps.OrderBy(g => g.Value).First().Key;
+                Assert.AreEqual(nearest, row.Wall, $"{row.Id} at {row.At} is nearest its {nearest} wall");
+            }
+        }
+
+        [Test]
+        public void ThePlanWallsTurnToCompassFromTheDoor()
+        {
+            Assert.AreEqual(Compass.West, RoomFixturePlan.CompassOf(Compass.West, Wall.Front));
+            Assert.AreEqual(Compass.North, RoomFixturePlan.CompassOf(Compass.West, Wall.Left));
+            Assert.AreEqual(Compass.East, RoomFixturePlan.CompassOf(Compass.West, Wall.Back));
+            Assert.AreEqual(Compass.South, RoomFixturePlan.CompassOf(Compass.West, Wall.Right));
+            Assert.AreEqual(Compass.North, RoomFixturePlan.CompassOf(Compass.South, Wall.Back));
+            Assert.AreEqual(Compass.NorthEast, RoomFixturePlan.CompassOf(Compass.SouthWest, Wall.Back));
+            Assert.AreEqual(Compass.SouthEast, RoomFixturePlan.CompassOf(Compass.SouthWest, Wall.Right));
+        }
+
+        [Test]
+        public void GinnysPlacedBathroom_ToiletAndShowerSouth_BasinEast()
+        {
+            // The survey of the standing bathroom read these walls off the scene.
+            Row Of(string slot) => RoomFixturePlan.Rows.Single(r => r.Id == "fixture.st_peters.ginny_cottage." + slot);
+            Assert.AreEqual(Compass.South, Of("toilet").Backing);
+            Assert.AreEqual(Compass.South, Of("shower").Backing);
+            Assert.AreEqual(Compass.East, Of("bathroom_sink").Backing);
+        }
+
+        [Test]
+        public void NoRowBacksOntoASouthWall_UnlessItIsAListedException()
+        {
+            var offenders = RoomFixturePlan.Rows
+                .Where(r => RoomFixturePlan.IsSouthWall(r.Backing) && !RoomFixturePlan.SouthWallExceptions.Contains(r.Id))
+                .Select(r => $"{r.Id} backs onto the {r.Backing} wall")
+                .ToList();
+            Assert.IsEmpty(offenders, "kitchens and bathrooms go on north walls:\n" + string.Join("\n", offenders));
+        }
+
+        [Test]
+        public void EverySouthWallExceptionIsAPlannedSouthBackedRow()
+        {
+            foreach (string id in RoomFixturePlan.SouthWallExceptions)
+            {
+                Row[] hits = RoomFixturePlan.Rows.Where(r => r.Id == id).ToArray();
+                Assert.AreEqual(1, hits.Length, $"exception '{id}' names no row");
+                Assert.IsTrue(RoomFixturePlan.IsSouthWall(hits[0].Backing),
+                              $"exception '{id}' backs onto {hits[0].Backing} now; take it off the list");
+            }
         }
     }
 }

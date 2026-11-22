@@ -28,6 +28,12 @@ MonoBehaviour:
   HeldMeshMountBone: tool_R
   CarriedPitchDeg: 65
   CarriedYawDeg: 35
+  CarryInNearerHand: 1
+  CarriedOffHandMountBone: tool_L
+  CarriedHandSwapDepthMetres: 0.05
+  CarriedSideBone: shoulder_R
+  CarriedOffSideBone: shoulder_L
+  CarriedOffHandFacingAwayMin: -0.1
   StowOnBack: 1
   StowWhileSwimming: 1
   StowMountBone: back

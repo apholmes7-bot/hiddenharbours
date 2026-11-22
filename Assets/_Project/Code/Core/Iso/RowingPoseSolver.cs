@@ -15,6 +15,8 @@ namespace HiddenHarbours.Core
     /// pose: <c>pelvis.p = [0, -0.02, seatZ + 0.10]</c>).</item>
     /// <item><b>Lie back</b> about the spine's own x axis by the layback, which the caller has already
     /// scaled by the rig's drive (peak at the finish).</item>
+    /// <item><b>Look.</b> At a tiller, the shoulders and then the head turn about the vertical toward
+    /// the way the bow is swinging (<see cref="Targets.TurnDegrees"/>; 0 at the oars).</item>
     /// <item><b>Brace.</b> Each leg is a two-bone solve, hip to ankle, onto its foot brace (lifted by the
     /// clip's own ankle height), knee forward and up; the foot keeps the clip's orientation.</item>
     /// <item><b>Reach.</b> If a grip is beyond the arm from where the shoulders now are, he leans
@@ -121,6 +123,12 @@ namespace HiddenHarbours.Core
             public float RestHandAlongThigh;
             /// <summary>The free palm's height above the thigh bone, metres.</summary>
             public float RestHandAboveThighMeters;
+            /// <summary>The shoulders' turn about the vertical this frame, degrees, in the figure's frame
+            /// (positive turns his front from +y toward -x, his left). 0 for a rower.</summary>
+            public float TurnDegrees;
+            /// <summary>The head's own turn about the vertical on top of the shoulders', degrees, same
+            /// sign. Needs the skin's <see cref="NeckId"/> bone; ignored without it.</summary>
+            public float HeadTurnDegrees;
         }
 
         /// <summary>What one solve did, for tests and the inspector.</summary>
@@ -148,7 +156,7 @@ namespace HiddenHarbours.Core
         private readonly Matrix4x4[] _scratch;
         private readonly int[] _parent;
         private readonly bool[] _subtree;
-        private readonly int _pelvis, _spine;
+        private readonly int _pelvis, _spine, _neck;
         private readonly int _hipL, _kneeL, _footL, _hipR, _kneeR, _footR;
         private readonly int _shoulderL, _elbowL, _palmL, _shoulderR, _elbowR, _palmR;
 
@@ -158,6 +166,9 @@ namespace HiddenHarbours.Core
         public const string HipRId = "hip_R", KneeRId = "knee_R", FootRId = "foot_R";
         public const string ShoulderLId = "shoulder_L", ElbowLId = "elbow_L", PalmLId = "carry_L";
         public const string ShoulderRId = "shoulder_R", ElbowRId = "elbow_R", PalmRId = "carry_R";
+        /// <summary>The bone the head turns about (it and everything under it). Optional: a skin
+        /// without it keeps its head square on its shoulders.</summary>
+        public const string NeckId = "neck";
 
         /// <summary>True when the skin carries every bone the solve needs.</summary>
         public bool IsUsable { get; }
@@ -174,6 +185,10 @@ namespace HiddenHarbours.Core
         public int PelvisBone => _pelvis;
         public int FootLeft => _footL;
         public int FootRight => _footR;
+        /// <summary>The neck bone's index, or -1 when the skin has none.</summary>
+        public int NeckBone => _neck;
+        /// <summary>The spine bone's index.</summary>
+        public int SpineBone => _spine;
 
         /// <summary>The torso the arms are kept out of, or null.</summary>
         public RowingBodyVolume Body => _body;
@@ -189,7 +204,7 @@ namespace HiddenHarbours.Core
             _scratch = new Matrix4x4[n];
             for (int b = 0; b < n; b++) _parent[b] = bones[b].Parent;
 
-            _pelvis = Find(bones, PelvisId); _spine = Find(bones, SpineId);
+            _pelvis = Find(bones, PelvisId); _spine = Find(bones, SpineId); _neck = Find(bones, NeckId);
             _hipL = Find(bones, HipLId); _kneeL = Find(bones, KneeLId); _footL = Find(bones, FootLId);
             _hipR = Find(bones, HipRId); _kneeR = Find(bones, KneeRId); _footR = Find(bones, FootRId);
             _shoulderL = Find(bones, ShoulderLId); _elbowL = Find(bones, ElbowLId); _palmL = Find(bones, PalmLId);
@@ -239,6 +254,10 @@ namespace HiddenHarbours.Core
             float w = Mathf.Clamp01(onHull.RestWeight);
             t.RestLeanDegrees = w * (Mathf.Clamp(onHull.RestBreath, -1f, 1f) * onHull.RestBreathDegrees - onHull.RestSlumpDegrees);
             t.ThighRest = w > 0f;
+            // A turn toward starboard is clockwise seen from above, in the hull's frame and in his
+            // alike (the two differ only by a turn about the same vertical), so it maps by sign alone.
+            t.TurnDegrees = -onHull.TurnStarboardDegrees;
+            t.HeadTurnDegrees = -onHull.HeadTurnStarboardDegrees;
 
             bool starOnRight = star.x >= port.x;
             Vector3 portEnd = inv * (onHull.PortHandleEnd - figureLocal);
@@ -276,6 +295,14 @@ namespace HiddenHarbours.Core
             float back = t.LaybackDegrees + t.RestLeanDegrees;
             if (back != 0f)
                 Rotate(world, _spine, Pos(world, _spine), Quaternion.AngleAxis(back, AxisX(world, _spine)));
+
+            // 2b. Look into the turn: the shoulders turn a little about the vertical and the head turns
+            // further on top of them. Before the reach and the hold, so the hands are solved from where
+            // the shoulders now are.
+            if (t.TurnDegrees != 0f)
+                Rotate(world, _spine, Pos(world, _spine), Quaternion.AngleAxis(t.TurnDegrees, Vector3.forward));
+            if (_neck >= 0 && t.HeadTurnDegrees != 0f)
+                Rotate(world, _neck, Pos(world, _neck), Quaternion.AngleAxis(t.HeadTurnDegrees, Vector3.forward));
 
             // 3. Brace.
             Leg(world, _hipL, _kneeL, _footL, t.BraceLeft + new Vector3(0f, 0f, ankleL), footRotL, -1f);

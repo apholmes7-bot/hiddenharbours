@@ -16,3 +16,18 @@ MonoBehaviour:
   DisplayName: camper's freezer
   CapacityUnits: 40
   DeedHomeId: home.ginny_lot_camper
+  SheetStem: Appliance_chestFreezerLarge
+  ContentsOpeningMetres:
+    serializedVersion: 2
+    x: -0.82
+    y: 0.437
+    width: 1.64
+    height: 0.4435
+  FullFromFraction: 0.6
+  FishDrawScale: 1
+  FishLaySlotOverHeldLength: 1.5
+  FishHeightOfLength: 0.3
+  FishRowPitchMetres: 0.13
+  FishSideOnLays: 2
+  FishGapMetres: -0.02
+  LidFrameSeconds: 0.08

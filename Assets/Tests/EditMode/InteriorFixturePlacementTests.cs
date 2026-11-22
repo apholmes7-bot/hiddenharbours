@@ -150,6 +150,28 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void EachBuildingsDoorCompassIsTheScenes()
+        {
+            // The compass a plan row's backing wall is read in comes from its building's stated door way;
+            // hold that to the serialized BuildingInterior (facing and door wall), turned onto the ground.
+            SceneYaml scene = Scene(RoomFixturePlan.Scene);
+            float step = 360f / RoomFixturePlan.CompassPoints;
+            foreach (var b in RoomFixturePlan.Rows.Select(r => (r.BuildingKey, r.BuildingRoot, r.Building, r.Door)).Distinct())
+            {
+                Doc go = scene.ChildNamed(scene.TransformOf(scene.RootNamed(b.BuildingRoot)), b.Building);
+                Doc bi = scene.ComponentsOf(go).Single(d => d.IsScript("HiddenHarbours.World.BuildingInterior"));
+                float doorSign = bi.Field("_doorOnPlusY") == "1" ? 1f : -1f;
+                var footprint = new InteriorFootprint(Vector2.zero, 1f, 1f,
+                    ParseInt(bi.Field("_facing")), ParseInt(bi.Field("_facings")), 1f, doorSign);
+                Vector2 ground = footprint.ModelToWorld(new Vector2(0f, doorSign));
+                float bearing = Mathf.Atan2(ground.x, ground.y) * Mathf.Rad2Deg;
+                int points = RoomFixturePlan.CompassPoints;
+                var scenes = (RoomFixturePlan.Compass)(((Mathf.RoundToInt(bearing / step) % points) + points) % points);
+                Assert.AreEqual(scenes, b.Door, $"{b.BuildingKey}: the scene's door faces {scenes} (bearing {bearing:0.#})");
+            }
+        }
+
+        [Test]
         public void GinnysBathroomPiecesStandAtLeastNinetyCentimetresApart()
         {
             var rows = InteriorFixturePlacement.PlacedRows().ToList();

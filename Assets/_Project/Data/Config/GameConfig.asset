@@ -364,7 +364,7 @@ MonoBehaviour:
   UnderWaterWeedClarity: 0.85
   HullKeylineFlood: 0
   PlayerFigureIdReserve: 2
-  HullMeshReflections: 0
+  HullMeshReflections: 1
   HullReflectionResolutionDivisor: 1
   HullReflectionMaxHulls: 64
   HullReflectionMaxPackets: 1024
