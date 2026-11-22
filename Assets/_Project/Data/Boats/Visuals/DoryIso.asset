@@ -348,6 +348,12 @@ MonoBehaviour:
     RockLevelling: 1
     RockLevelReachMeters: 1.45
     BladeFloorMeters: 0.2
+  OarStow:
+    Enabled: 1
+    SweepDegrees: -95
+    DipDegrees: 0
+    PortLockLocalMeters: {x: -0.38, y: -0.33, z: 0.363}
+    CameraLiftMeters: 0.15
   MotorLower: []
   MotorUpper: []
   MotorColumnCount: 9

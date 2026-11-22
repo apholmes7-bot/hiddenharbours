@@ -1866,6 +1866,13 @@ namespace HiddenHarbours.Core
                  "ground takes a print is the Zones list. Read through GroundPrintSettings.Current.")]
         public GroundPrintSettings GroundPrints = GroundPrintSettings.Default;
 
+        [Header("Dug holes (the shovel's hole on the flats)")]
+        [Tooltip("Owner ask 2026-11-22: every dig, the player's or a working villager's, leaves a dark hole " +
+                 "that stays for the rest of that game day or until the tide covers it, whichever is first. " +
+                 "The villagers' holes follow from their day; the player's are remembered for the session " +
+                 "only. Read through DugHoleSettings.Current.")]
+        public DugHoleSettings DugHoles = DugHoleSettings.Default;
+
         [Header("Effort (too tired / too hungry)")]
         [Tooltip("Owner ask 2026-11-15: 'when a player is too tired to do an action they will say im too " +
                  "tired or im too hungry or both'. Which work may be refused (shipped: heavy work only), the " +
@@ -4289,6 +4296,24 @@ namespace HiddenHarbours.Core
         [Tooltip("Seconds a tossed clod lives: its flight off the blade, then lying where it landed until it fades.")]
         [Min(0f)] public float DigTossChunkSeconds;
 
+        [Tooltip("How big a tossed clod is (× the first toss's clod size). The owner asked for a bigger toss " +
+                 "(2026-11-22): a real shovelful of separate clods.")]
+        [Range(0.5f, 4f)] public float DigTossScale;
+
+        [Tooltip("How far the toss is thrown across the ground (× the first toss's throw speed).")]
+        [Range(0.5f, 4f)] public float DigTossReachScale;
+
+        [Tooltip("How high the toss arcs (× the first toss's up-throw, which barely left the blade).")]
+        [Range(0.5f, 6f)] public float DigTossUpScale;
+
+        [Tooltip("How far apart the clods of one toss fly, square to the throw (× the first toss's spread), so " +
+                 "they read as several clods in the air and land as a small spoil pile, not one lump.")]
+        [Range(0f, 4f)] public float DigTossSpreadScale;
+
+        [Tooltip("Seconds over which the clods of one toss leave the blade, the farthest-thrown first, so they " +
+                 "stream off it one after another and fly as separate clods (0 = all at once, as one lump).")]
+        [Range(0f, 0.4f)] public float DigTossReleaseSeconds;
+
         [Tooltip("When the dig faces within this many degrees of straight away from the camera (north, his back " +
                  "to the viewer), the mesh body turns to this many degrees off north instead, toward the side he " +
                  "already leans to (his right when dead on), so the shovel and the toss show past his body. 0 = off.")]
@@ -4358,9 +4383,14 @@ namespace HiddenHarbours.Core
             SaleCountUpSeconds = 0.7f,
             SandChunkCount = 7,
             SandChunkSeconds = 0.45f,
-            DigTossChunkCount = 5,
+            DigTossChunkCount = 8,
             DigTossDelaySeconds = 0.6f,
-            DigTossChunkSeconds = 0.9f,
+            DigTossChunkSeconds = 3.5f,
+            DigTossScale = 1.3f,
+            DigTossReachScale = 1.8f,
+            DigTossUpScale = 3.4f,
+            DigTossSpreadScale = 3f,
+            DigTossReleaseSeconds = 0.3f,
             DigAwayTurnDegrees = 25f,
             CastRingCount = 3,
             CastRingSeconds = 0.6f,

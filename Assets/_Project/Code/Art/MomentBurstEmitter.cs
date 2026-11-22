@@ -266,7 +266,7 @@ namespace HiddenHarbours.Art
                     SpawnChunks(e.At, j.SandChunkCount, j.SandChunkSeconds);
                     break;
                 case JuiceMoment.DigToss:     // the lift: off the blade tip, to the side he throws
-                    SpawnToss(e, j.DigTossChunkCount, j.DigTossChunkSeconds);
+                    SpawnToss(e, j);
                     break;
                 case JuiceMoment.CastEntry:
                     SpawnRings(e.At, j.CastRingCount, j.CastRingSeconds);
@@ -311,33 +311,59 @@ namespace HiddenHarbours.Art
             }
         }
 
-        /// <summary>The lift and toss: a few wet clods leave the blade tip together, low and heavy, along the
+        /// <summary>The lift and toss: a shovelful of wet clods leaves the blade tip together and arcs along the
         /// throw the cue carries (<see cref="JuiceMomentCue.Dir"/>) and from the tip's height
         /// (<see cref="JuiceMomentCue.Lift"/>). A cue not read off a blade (the sprite body) throws from
-        /// <see cref="MomentBurstConfig.TossLiftHeight"/> to one side picked per dig, as before.</summary>
-        private void SpawnToss(in JuiceMomentCue e, int count, float seconds)
+        /// <see cref="MomentBurstConfig.TossLiftHeight"/> to one side picked per dig, as before.
+        /// <para><b>A shovelful</b> (owner ask 2026-11-22, "make the toss bigger"): <c>GameConfig.Juice</c> scales
+        /// the clods' size (<c>DigTossScale</c>), the throw (<c>DigTossReachScale</c>), the arc
+        /// (<c>DigTossUpScale</c>) and the spread (<c>DigTossSpreadScale</c>); the clods are strung out
+        /// evenly along the throw rather than at random and stream off the blade over
+        /// <c>DigTossReleaseSeconds</c>, so several separate clods are in the air and they land as a small
+        /// spoil pile. A 0 scale (a block that never named it) reads as 1.</para></summary>
+        private void SpawnToss(in JuiceMomentCue e, in JuiceSettings j)
         {
+            int count = j.DigTossChunkCount;
+            float seconds = j.DigTossChunkSeconds;
             if (seconds <= 0f || count <= 0) return;
+            float size = OrOne(j.DigTossScale);
+            float speed = _config.TossSpeed * OrOne(j.DigTossReachScale);
+            float up = _config.TossUp * OrOne(j.DigTossUpScale);
+            float spreadScale = Mathf.Max(0f, j.DigTossSpreadScale);
+            float spread = _config.TossSpeed * _config.TossSpread * spreadScale;
+            // The spread also strings the clods out along the throw, capped so the far clod still flies at
+            // half the near one's speed: a strewn spoil pile beside the hole, not a line across the flat.
+            float speedSpread = Mathf.Min(MaxTossSpeedSpread, _config.TossSpeedSpread * spreadScale);
             Vector2 dir = e.FromBlade ? e.Dir : Vector2.zero;
             if (dir.sqrMagnitude < 0.5f)
                 dir = new Vector2(AmbientParticleMath.Hash01(++_spawnSalt) < 0.5f ? -1f : 1f, 0f);
             float lift = e.FromBlade ? e.Lift : _config.TossLiftHeight;
             var across = new Vector2(-dir.y, dir.x);   // the clump's spread, square to the throw
+            float release = Mathf.Max(0f, j.DigTossReleaseSeconds);
             for (int k = 0; k < count; k++)
             {
                 float h1 = AmbientParticleMath.Hash01(++_spawnSalt);
                 float h2 = AmbientParticleMath.Hash01(++_spawnSalt);
                 float h3 = AmbientParticleMath.Hash01(++_spawnSalt);
-                Vector2 g = dir * (_config.TossSpeed * (1f - _config.TossSpeedSpread * h1))
-                          + across * (_config.TossSpeed * _config.TossSpread * (h2 - 0.5f));
+                float along = (k + 0.2f + 0.6f * h1) / count;   // strung out evenly along the throw
+                // The farthest-thrown clod leaves first and the rest stream off the blade after it (unborn
+                // until then: a negative age), so they fly as separate clods instead of one lump.
+                float delay = count > 1 ? release * k / (count - 1) : 0f;
+                Vector2 g = dir * (speed * (1f - speedSpread * along))
+                          + across * (spread * (h2 - 0.5f));
                 var ground = new Vector2(g.x, g.y * _config.ChunkGroundYScale);
-                int i = Spawn(Kind.Chunk, e.At, ground, 0f, seconds * (0.85f + 0.15f * h3),
-                              _config.ChunkSize * _config.TossSizeScale * (0.8f + 0.4f * h3), h1);
+                int i = Spawn(Kind.Chunk, e.At, ground, -delay, seconds * (0.85f + 0.15f * h3),
+                              _config.ChunkSize * _config.TossSizeScale * size * (0.8f + 0.4f * h3), h1);
                 _pool[i].Height = lift;
-                _pool[i].VelUp = _config.TossUp * (0.7f + 0.3f * h3);
+                _pool[i].VelUp = up * (0.7f + 0.3f * h3);
                 _pool[i].Tone = MomentBurstMath.DirtTone(h2);
             }
         }
+
+        private static float OrOne(float scale) => scale > 0f ? scale : 1f;
+
+        /// <summary>The most a toss's clods may differ in throw speed along the throw (a fraction of the fastest).</summary>
+        private const float MaxTossSpeedSpread = 0.6f;
 
         private void SpawnRings(Vector2 at, int count, float seconds)
         {

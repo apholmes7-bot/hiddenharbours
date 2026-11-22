@@ -102,10 +102,12 @@ namespace HiddenHarbours.World
         private void OnEnable()
         {
             VillagerRoutine.DaySource = this;
+            DugHoleSources.Register(this);
         }
 
         private void OnDisable()
         {
+            DugHoleSources.Unregister(this);
             ClearGatherings();
             UnsubscribeTalk();
             if (ReferenceEquals(VillagerRoutine.DaySource, this)) VillagerRoutine.DaySource = null;

@@ -33,9 +33,11 @@ namespace HiddenHarbours.Boats
     /// POWER</b> (§7.7). The dory is the first hull to carry oars and an outboard at once — a mesh
     /// fitting is posed by rotation rather than indexed by facing, so it can share a hull with the
     /// oars where the sprite sheets' sorting bands cannot — and a boat with a running prop stows her
-    /// oars rather than trailing them beside it. That is the existing SHIPPED state, wired to the
-    /// engine (see <see cref="ColumnForOar"/>), not a fourth pose; cut the motor and the rowing
-    /// machine takes over again, unchanged, from where it left off.</para>
+    /// oars rather than trailing them beside it. The state is the existing SHIPPED one, wired to the
+    /// engine (see <see cref="ColumnForOar"/>); where a shipped oar is DRAWN under power is the hull's
+    /// <see cref="OarStowConfig"/> (owner 2026-11-22: stowed fore and aft in the boat, out of the
+    /// tholes; see <see cref="Placement"/>). Cut the motor and the rowing machine takes over again,
+    /// unchanged, from where it left off.</para>
     ///
     /// <para>Visual-only, allocation-free per frame, and it never writes to the sim (rule 5): it READS
     /// the per-oar state <see cref="BoatController"/> already computed.</para>
@@ -161,6 +163,56 @@ namespace HiddenHarbours.Boats
             _bothIdleSeconds = 0f;
         }
 
+        // Where the oars lie under power (owner 2026-11-22), and each oar's own oarlock (its fitting's
+        // pivot) the stowed placement is measured from. Set through ConfigureStow; unset = shipped in
+        // the tholes under power, as before.
+        private OarStowConfig _stow;
+        private Vector3 _portPivot, _starPivot;
+        private bool _hasStow;
+        // This frame's shift of each whole oar fitting: zero unless stowed.
+        private Vector3 _portShift, _starShift;
+
+        /// <summary>True while both oars are drawn STOWED: out of the tholes, lying fore and aft in the
+        /// boat because her outboard is driving her.</summary>
+        public bool OarsStowed { get; private set; }
+
+        /// <summary>
+        /// Wire where the oars lie under power from the skinner: the hull's <see cref="OarStowConfig"/>
+        /// and each oar fitting's pivot (<c>PivotLocalMeters</c>, the oarlock it turns about), so the
+        /// stowed placement can be written as a shift of the whole fitting. A disabled config leaves the
+        /// oars shipped in their tholes under power.
+        /// </summary>
+        public void ConfigureStow(in OarStowConfig stow, Vector3 portPivot, Vector3 starboardPivot)
+        {
+            _stow = stow;
+            _portPivot = portPivot;
+            _starPivot = starboardPivot;
+            _hasStow = stow.Enabled;
+        }
+
+        /// <summary>
+        /// <b>How one oar is drawn: its pose and the shift of its whole fitting.</b> Rowed (no motor
+        /// running) the answer is exactly what it always was: <see cref="PoseFor"/> and no shift, so the
+        /// rowed dory is untouched. Under power with a stow configured, the oar is STOWED: the stow's
+        /// pose, and the shift that carries its oarlock from the tholes (<paramref name="pivot"/>) to
+        /// where the stow lays it, plus <see cref="OarStowConfig.CameraLiftMeters"/> along
+        /// <paramref name="towardCamera"/> (the unit view axis in the fitting's frame; zero where there
+        /// is no camera to face), which moves only its depth. Under power without one, shipped in the
+        /// tholes as before. Pure, so the rule is provable without a scene.
+        /// </summary>
+        public static DoryOarMeshPose.Pose Placement(bool motorRunning, bool hasStow, in OarStowConfig stow,
+                                                     int side, Vector3 pivot, int column, float phase,
+                                                     out Vector3 fitmentOffset, Vector3 towardCamera = default)
+        {
+            if (motorRunning && hasStow)
+            {
+                fitmentOffset = stow.LockLocalMeters(side) - pivot + towardCamera * stow.CameraLiftMeters;
+                return stow.Pose;
+            }
+            fitmentOffset = Vector3.zero;
+            return PoseFor(column, phase);
+        }
+
         // The rowing station: where the oarlocks are (the fittings' pivots, hull rig metres) and the
         // hull's station data. Set through ConfigureStation; unset = no station, the rower plays his clip.
         private bool _hasStation;
@@ -196,8 +248,10 @@ namespace HiddenHarbours.Boats
         {
             targets = default;
             if (!_hasStation || !IsWired || !isActiveAndEnabled) return false;
-            targets = StationTargets(_portLock, _starLock, in _station, DrawnPortPose, PortStroking,
-                                     DrawnStarboardPose, StarboardStroking);
+            // A stowed oar's lock point is where the stow laid it, not the tholes: the handle ends the
+            // station reports are then where the handles are drawn. The hands take the DRAWN oars.
+            targets = StationTargets(_portLock + _portShift, _starLock + _starShift, in _station,
+                                     DrawnPortPose, PortStroking, DrawnStarboardPose, StarboardStroking);
             targets.LaybackDegrees *= _laybackScale;
             targets.RestWeight = _restWeight;
             targets.RestBreath = _restBreath;
@@ -371,19 +425,40 @@ namespace HiddenHarbours.Boats
                                         StarboardStroking, starStyled, StarboardOarState, out float leading);
             _strokePhase = _stroking ? StrokePhaseOf(leading) : 0f;
 
+            // UNDER POWER THE OARS ARE STOWED (owner 2026-11-22): out of the tholes and laid fore and
+            // aft in the boat. Under power both columns are already the shipped one (never stroking,
+            // never splashing), so only where they are drawn changes; rowed, no shift, as before.
+            OarsStowed = underPower && _hasStow;
+            if (OarsStowed)
+            {
+                PortPose = Placement(true, true, in _stow, PortSide, _portPivot, portColumn, portStyled,
+                                     out _portShift, TowardCamera(_port));
+                StarboardPose = Placement(true, true, in _stow, StarboardSide, _starPivot, starColumn, starStyled,
+                                          out _starShift, TowardCamera(_star));
+            }
+            else
+            {
+                _portShift = Vector3.zero;
+                _starShift = Vector3.zero;
+            }
+
             // DRAWN against the hull's roll: each blade holds its height over the water (the station's
             // RockLevelling), and is held off the sea (BladeFloorMeters).
             // The stroke's own poses above stay as they were, so the splash, the body's phase and the
-            // timing read exactly what they read before; the hands take the drawn oars.
+            // timing read exactly what they read before; the hands take the drawn oars. A stowed oar
+            // lies in the boat and is drawn as the stow laid it, not levelled.
             float roll = DrawnRollDegrees();
-            DrawnPortPose = _hasStation ? DoryOarMeshPose.Levelled(PortSide, PortPose, _portLock, roll,
-                                              _station.RockLevelReachMeters, _station.RockLevelling, _waterlineZ,
-                                              _station.BladeFloorMeters) : PortPose;
-            DrawnStarboardPose = _hasStation ? DoryOarMeshPose.Levelled(StarboardSide, StarboardPose, _starLock, roll,
-                                                   _station.RockLevelReachMeters, _station.RockLevelling, _waterlineZ,
-                                                   _station.BladeFloorMeters) : StarboardPose;
+            bool level = _hasStation && !OarsStowed;
+            DrawnPortPose = level ? DoryOarMeshPose.Levelled(PortSide, PortPose, _portLock, roll,
+                                        _station.RockLevelReachMeters, _station.RockLevelling, _waterlineZ,
+                                        _station.BladeFloorMeters) : PortPose;
+            DrawnStarboardPose = level ? DoryOarMeshPose.Levelled(StarboardSide, StarboardPose, _starLock, roll,
+                                             _station.RockLevelReachMeters, _station.RockLevelling, _waterlineZ,
+                                             _station.BladeFloorMeters) : StarboardPose;
             _port.LocalRotation = DoryOarMeshPose.Rotation(PortSide, DrawnPortPose);
             _star.LocalRotation = DoryOarMeshPose.Rotation(StarboardSide, DrawnStarboardPose);
+            _port.FitmentOffsetMeters = _portShift;
+            _star.FitmentOffsetMeters = _starShift;
         }
 
         /// <summary>The port oar as DRAWN: <see cref="PortPose"/> turned in its oarlock against the
@@ -404,6 +479,15 @@ namespace HiddenHarbours.Boats
             if (!_driverLooked) { _driver = GetComponent<MeshHullDriver>(); _driverLooked = true; }
             return _driver != null && _driver.isActiveAndEnabled ? _driver.AppliedRollDegrees : 0f;
         }
+
+        /// <summary>
+        /// The unit vector toward the camera in the frame a fitting's shift is written in (its own
+        /// transform's: the hull's posed mesh frame, heading, rock and heave included), or zero for a
+        /// renderer that is not a scene object. The scene camera looks along world +Z, so world −Z is
+        /// toward it; a shift along this moves the fitting's depth and nothing on screen.
+        /// </summary>
+        static Vector3 TowardCamera(IHullPropRenderer fitting) =>
+            fitting is Component c && c != null ? c.transform.InverseTransformDirection(Vector3.back) : Vector3.zero;
 
         /// <summary>The rig's side factor: port is −1 on the beam axis, starboard +1.</summary>
         public const int PortSide = -1;

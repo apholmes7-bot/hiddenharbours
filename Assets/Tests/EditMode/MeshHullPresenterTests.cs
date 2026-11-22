@@ -625,6 +625,84 @@ namespace HiddenHarbours.Tests.EditMode
                 "the punt's outboard where the PUNT's rig put it, over a metre astern of her transom.");
         }
 
+        // ---- the oars under power: stowed, not shipped (owner 2026-11-22) ----------------------
+
+        static readonly System.Reflection.MethodInfo OarLayerLateUpdate =
+            typeof(DoryOarMeshLayer).GetMethod("LateUpdate",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+
+        GameObject SkinOaredDory(FakeService service, PropulsionType propulsion, out BoatVisualDef visual)
+        {
+            HullMeshPresentation.Service = service;
+            visual = MakeMeshVisual(MakeUsableDef());
+            visual.MotorMesh = MakeUsableProp();
+            visual.OarPortMesh = MakeUsableProp();
+            visual.OarStarMesh = MakeUsableProp();
+
+            var hull = ScriptableObject.CreateInstance<BoatHullDef>();
+            _spawned.Add(hull);
+            hull.Id = propulsion == PropulsionType.Engine ? "boat.test_dory_outboard" : "boat.test_dory";
+            hull.Visual = visual;
+            hull.Propulsion = propulsion;
+
+            var root = MakeRoot();
+            var boat = root.AddComponent<BoatController>();
+            BoatHullSkinner.ApplyHull(root, baseRenderer: null, hull: hull, boat: boat);
+            return root;
+        }
+
+        /// <summary>The owner's words, on the renderer: "the oars will stay stowed lying lengthwise
+        /// against the hull". Under power each oar fitting is turned to the stow's pose AND carried
+        /// out of its tholes to where the stow lays it, the starboard one mirrored.</summary>
+        [Test]
+        public void Skinner_UnderPower_TheOarsAreDrawnStowed_OutOfTheTholes()
+        {
+            var service = new FakeService();
+            var root = SkinOaredDory(service, PropulsionType.Engine, out BoatVisualDef visual);
+            var oars = root.GetComponent<DoryOarMeshLayer>();
+            OarLayerLateUpdate.Invoke(oars, null);
+
+            Assert.IsTrue(oars.OarsStowed, "an engine hull's oars are stowed while her motor runs.");
+            OarStowConfig stow = visual.OarStow;
+            FakePropRenderer port = service.Props[BoatHullSkinner.PortOarChildName];
+            FakePropRenderer star = service.Props[BoatHullSkinner.StarOarChildName];
+            Vector3 pivot = visual.OarPortMesh.PivotLocalMeters;
+
+            Assert.That((port.FitmentOffsetMeters - (stow.LockLocalMeters(-1) - pivot)).magnitude, Is.LessThan(1e-5f),
+                "the port oar is carried from its tholes to the stowed lock point.");
+            Assert.That((star.FitmentOffsetMeters - (stow.LockLocalMeters(+1) - visual.OarStarMesh.PivotLocalMeters)).magnitude,
+                        Is.LessThan(1e-5f), "…and the starboard one to the mirrored point.");
+            Assert.That(Quaternion.Angle(port.LocalRotation, DoryOarMeshPose.Rotation(DoryOarMeshLayer.PortSide, stow.Pose)),
+                        Is.LessThan(0.01f), "the port oar lies at the stow's pose, not the shipped one.");
+            Assert.That(Quaternion.Angle(star.LocalRotation, DoryOarMeshPose.Rotation(DoryOarMeshLayer.StarboardSide, stow.Pose)),
+                        Is.LessThan(0.01f), "…and so does the starboard one.");
+            Assert.IsFalse(oars.PortStroking || oars.StarboardStroking,
+                "a stowed oar never strokes, so it never splashes.");
+            Assert.IsFalse(oars.IsRowed, "under power her water draws the motor's wake, not the rowed one.");
+        }
+
+        /// <summary>The rowed dory is owner-approved and must not move: no shift on either fitting and
+        /// the rowing machine's own pose, never the stow's.</summary>
+        [Test]
+        public void Skinner_ARowedHull_KeepsHerOarsInTheTholes_WithNoShift()
+        {
+            var service = new FakeService();
+            var root = SkinOaredDory(service, PropulsionType.Oars, out BoatVisualDef visual);
+            var oars = root.GetComponent<DoryOarMeshLayer>();
+            OarLayerLateUpdate.Invoke(oars, null);
+
+            Assert.IsFalse(oars.OarsStowed, "a rowed hull's oars are never stowed.");
+            Assert.IsTrue(oars.IsRowed, "…and she is still rowed.");
+            FakePropRenderer port = service.Props[BoatHullSkinner.PortOarChildName];
+            FakePropRenderer star = service.Props[BoatHullSkinner.StarOarChildName];
+            Assert.AreEqual(Vector3.zero, port.FitmentOffsetMeters, "the port oar stays in its tholes.");
+            Assert.AreEqual(Vector3.zero, star.FitmentOffsetMeters, "the starboard oar stays in its tholes.");
+            Assert.That(Quaternion.Angle(port.LocalRotation, DoryOarMeshPose.Rotation(DoryOarMeshLayer.PortSide, oars.PortPose)),
+                        Is.LessThan(0.01f), "the port oar is posed by the rowing machine.");
+            Assert.AreNotEqual(visual.OarStow.SweepDegrees, oars.PortPose.SweepDegrees,
+                "…which never draws the stow's pose.");
+        }
+
         // ---- the wave-motion channel ----------------------------------------------------------
 
         [Test]
