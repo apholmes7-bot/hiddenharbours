@@ -63,6 +63,51 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsNull(prefab.GetComponent<KitchenStoreFixture>());
         }
 
+        [TestCase(FridgePrefab)]
+        [TestCase(SinkPrefab)]
+        public void BothPrefabsAreSolid_AFootprintBoxWiredToTheArt(string path)
+        {
+            GameObject prefab = Load(path);
+            var art = prefab.GetComponent<ApplianceArt>();
+            var box = prefab.GetComponent<BoxCollider2D>();
+            Assert.IsNotNull(box, "he cannot walk through it");
+            Assert.IsFalse(box.isTrigger);
+            Assert.AreSame(box, art.Footprint, "the art fits the box to the wall it stands on");
+            Rect r = ApplianceFacing.FootprintBox(ApplianceSheets.For(art.Kind), 0);
+            Assert.AreEqual(r.size.x, box.size.x, 1e-3f); Assert.AreEqual(r.size.y, box.size.y, 1e-3f);
+        }
+
+        [TestCase(ApplianceKind.Fridge)]
+        [TestCase(ApplianceKind.KitchenSink)]
+        public void TheFootprintBoxTurnsWithTheWall_AndLeavesTheFrontOpen(ApplianceKind kind)
+        {
+            ApplianceLayout l = ApplianceSheets.For(kind);
+            Rect n = ApplianceFacing.FootprintBox(l, 0), e = ApplianceFacing.FootprintBox(l, 2);
+            Assert.AreEqual(l.Foot.x, n.width, 1e-4f, "on a north/south wall it is as wide as the piece");
+            Assert.AreEqual(l.Foot.y, e.width, 1e-4f, "a quarter turn puts its depth across");
+            const float reach = 1.2f;   // the shipped WashStationPoint reach
+            foreach (int cell in ApplianceFacing.WallOffsets)
+            {
+                Rect r = ApplianceFacing.FootprintBox(l, cell);
+                Vector2 stand = ApplianceFacing.ModelToWorldOffset(cell, ApplianceFacing.EntryProp(l, 0.25f));
+                Assert.IsFalse(r.Contains(stand), $"cell {cell}: the stand spot in front is outside the box");
+                Assert.Less(stand.magnitude, reach, $"cell {cell}: and within reach of the piece");
+            }
+        }
+
+        [Test]
+        public void TheKitchenSinkSaysSink_NeverBasin()
+        {
+            var so = new SerializedObject(Load(SinkPrefab).GetComponent<WashStationPoint>());
+            foreach (string field in new[] { "_washLabel", "_beginLine", "_doneLine" })
+            {
+                string s = so.FindProperty(field).stringValue;
+                Assert.IsFalse(string.IsNullOrEmpty(s), field);
+                StringAssert.DoesNotContain("basin", s.ToLowerInvariant(), field);
+            }
+            StringAssert.Contains("sink", so.FindProperty("_washLabel").stringValue);
+        }
+
         [Test]
         public void ADoorIsOnlyAskedOpen_NeverStored()
         {

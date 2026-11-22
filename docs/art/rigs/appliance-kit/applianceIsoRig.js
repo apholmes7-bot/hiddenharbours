@@ -622,7 +622,15 @@
     box(out, -w/2, w/2, -d/2, d/2, ht-t, ht, 'body', 0.05);
     box(out, -w/2+0.02, w/2-0.02, -d/2+0.02, d/2-0.02, ht, ht+0.03, 'body', 0.4);       // the shoulder
     box(out, -w/2+t, w/2-t, -d/2, d/2-t, pl, R.doorZ0, 'body', 0);                      // compressor base
+    decalY(out, -d/2, -1, -w/2+0.035, w/2-0.035, pl+0.008, R.doorZ0-0.008, 'tin', 0.15, null, true, 0.04);     // the chrome kick plate
+    decalY(out, -d/2, -1, -w/2+0.035, w/2-0.035, pl+0.008, pl+0.018, 'dark', 0.1, null, true, 0.045);           // its shadowed foot
     for(let k=0;k<4;k++) decalY(out, -d/2, -1, -w/2+0.07, w/2-0.07, pl+0.025+k*0.03, pl+0.04+k*0.03, 'iron', -0.6, null, true, 0.05); // foot grille
+    // side shading: each flank darkens toward the back and catches a lit strip at its front edge
+    for(const [xv,nx] of [[-w/2,-1],[w/2,1]]){
+      decalX(out, xv, nx, 0.0, d/2-0.01, pl+0.01, ht-0.01, 'body', -0.22, null, true, 0.03);
+      decalX(out, xv, nx, d/4, d/2-0.01, pl+0.01, ht-0.01, 'body', -0.38, null, true, 0.035);
+      decalX(out, xv, nx, -d/2+0.005, -d/2+0.025, pl+0.01, ht-0.01, 'body', 0.35, null, true, 0.035); }
+    decalTop(out, -w/2+0.02, w/2-0.02, -d/2+0.02, -d/2+0.06, ht+0.03, 'body', 0.6, 0.06);                       // the lit front of the shoulder
     for(let k=0;k<8;k++) decalY(out, d/2, 1, -w/2+0.1, w/2-0.1, 0.3+k*0.14, 0.32+k*0.14, 'iron', -0.7, null, true, 0.05);      // coil on the back
     for(const x of [-w/2+0.12, w/2-0.12]) decalY(out, d/2, 1, x-0.012, x+0.012, 0.28, 1.36, 'iron', -0.3, null, true, 0.06);
     // the liner: white on the inside faces, the floor of the cold space, lifted by the lamp when open
@@ -666,11 +674,23 @@
     const dz0=R.doorZ0, dz1=ht-0.012, dy0=-d/2-R.doorT, dy1=-d/2, door=[];
     box(door, -w/2, w/2, dy0, dy1, dz0, dz1, 'body', 0.05);
     box(door, -w/2+0.015, w/2-0.015, dy0-0.008, dy0, dz1-0.02, dz1, 'tin', 0.5);         // chrome rim along the top
-    decalY(door, dy0, -1, -0.07, 0.07, dz1-0.17, dz1-0.13, 'tin', 0.9, null, true, 0.07); // the badge
-    decalY(door, dy0, -1, -0.05, 0.05, dz1-0.16, dz1-0.14, 'fabric', 0.3, null, true, 0.08);
-    const hx=-w/2+0.06, hz0=0.96, hz1=1.3;                                                 // the lever handle
-    for(const z of [hz0, hz1-0.05]) box(door, hx-0.014, hx+0.014, dy0-0.05, dy0, z, z+0.05, 'tin', 0.4);
-    box(door, hx-0.016, hx+0.016, dy0-0.065, dy0-0.04, hz0, hz1, 'tin', 0.7);
+    // the freezer split: a dark seam across the door at the icebox, the top a short freezer door
+    const zs=ht-0.38;
+    decalY(door, dy0, -1, -w/2+0.008, w/2-0.008, zs-0.012, zs+0.006, 'dark', 0.05, null, true, 0.075);
+    decalY(door, dy0, -1, -w/2+0.008, w/2-0.008, zs+0.006, zs+0.016, 'body', 0.55, null, true, 0.075);
+    // the door's own shading: its free edge falls into shadow, its hinge edge catches the light
+    decalY(door, dy0, -1, -w/2+0.004, -w/2+0.03, dz0+0.01, dz1-0.03, 'body', -0.3, null, true, 0.07);
+    decalY(door, dy0, -1, w/2-0.025, w/2-0.004, dz0+0.01, dz1-0.03, 'body', 0.3, null, true, 0.07);
+    decalY(door, dy0, -1, -0.09, 0.09, dz1-0.19, dz1-0.11, 'tin', 0.9, null, true, 0.07); // the badge, chrome
+    decalY(door, dy0, -1, -0.07, 0.07, dz1-0.175, dz1-0.125, 'fabric', 0.15, null, true, 0.08); // red enamel
+    decalY(door, dy0, -1, -0.045, 0.045, dz1-0.155, dz1-0.145, 'tin', 1.0, null, true, 0.09);   // its script
+    const hx=-w/2+0.065, hz0=0.78, hz1=1.14;                                               // the lever handle
+    for(const z of [hz0, hz1-0.05]) box(door, hx-0.016, hx+0.016, dy0-0.05, dy0, z, z+0.05, 'tin', 0.3);
+    box(door, hx-0.02, hx+0.02, dy0-0.07, dy0-0.04, hz0, hz1, 'tin', 0.75);
+    decalY(door, dy0, -1, hx+0.02, hx+0.04, hz0-0.02, hz1, 'dark', 0.25, null, true, 0.072);   // its shadow on the door
+    for(const z of [zs+0.05, zs+0.17]) box(door, hx-0.016, hx+0.016, dy0-0.05, dy0, z, z+0.04, 'tin', 0.3); // the freezer's
+    box(door, hx-0.02, hx+0.02, dy0-0.07, dy0-0.04, zs+0.05, zs+0.21, 'tin', 0.75);
+    decalY(door, dy0, -1, hx+0.02, hx+0.04, zs+0.03, zs+0.21, 'dark', 0.25, null, true, 0.072);
     // the door's inside: the gasket, the liner, three racks with bottles and eggs
     decalY(door, dy1, 1, -w/2+0.015, w/2-0.015, dz0+0.015, dz1-0.015, 'dark', 0.2, null, true, 0.04);
     decalY(door, dy1, 1, -w/2+0.04, w/2-0.04, dz0+0.04, dz1-0.04, 'trim', 0.3+lit, null, true, 0.05);

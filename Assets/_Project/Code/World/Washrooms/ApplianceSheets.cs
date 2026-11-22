@@ -143,7 +143,12 @@ namespace HiddenHarbours.World
         public static readonly ApplianceLayout PrepCounter = new ApplianceLayout(ApplianceKind.PrepCounter, "prepCounter", rows: 1, foot: new Vector2(0.9f, 0.6f));
         public static readonly ApplianceLayout Microwave = new ApplianceLayout(ApplianceKind.Microwave, "microwave", rows: 1, foot: new Vector2(0.5f, 0.44f));
 
-        /// <summary>The upright fridge: shut, then its door ajar, half open and wide open (the inside shows).</summary>
+        /// <summary>The upright fridge: shut, then its door ajar, half open and wide open (the inside shows).
+        /// <para><b>Clearance when placing it:</b> the door hangs on the fridge's right (as you face it) and
+        /// swings 102°, so wide open it stands about 0.75 m out in front and about 0.2 m past the hinge side.
+        /// Leave 0.2 m clear on the hinge side (nothing taller than its 0.2 m kick plate) and 0.75 m clear in
+        /// front, or the open door draws through the neighbour. The left side may stand hard against a unit.
+        /// Nothing enforces this; the footprint collider covers the cabinet only.</para></summary>
         public static readonly ApplianceLayout Fridge = new ApplianceLayout(
             ApplianceKind.Fridge, "fridge", rows: 4, foot: new Vector2(0.7f, 0.68f), doorFirst: 1);
 

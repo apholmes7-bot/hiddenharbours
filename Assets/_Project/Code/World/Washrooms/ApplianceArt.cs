@@ -41,6 +41,10 @@ namespace HiddenHarbours.World
         [Tooltip("The piece's near layer, drawn in front of the figure while he is in it. Hidden otherwise.")]
         [SerializeField] private SpriteRenderer _near;
 
+        [Tooltip("Optional solid box fitted to the piece's footprint at its facing once it knows which wall it " +
+                 "stands on, so he walks round it and reaches it from the front. Empty: no fitting.")]
+        [SerializeField] private BoxCollider2D _footprint;
+
         private static readonly Dictionary<string, Sprite[]> Sheets = new Dictionary<string, Sprite[]>();
 
         private ApplianceLayout _layout;
@@ -114,6 +118,7 @@ namespace HiddenHarbours.World
         private void Start()
         {
             ResolveCell();
+            FitFootprint();
             Show(_layout.Idle, -1);
             SortIdle();
             // A piece with nothing to animate is done: stop the per-frame dispatch entirely (rule 7).
@@ -152,6 +157,19 @@ namespace HiddenHarbours.World
         {
             _doorOpen = open;
             if (_layout.HasDoor) enabled = true;
+        }
+
+        /// <summary>The solid footprint box, if the piece has one.</summary>
+        public BoxCollider2D Footprint => _footprint;
+
+        /// <summary>Fit the footprint box to the footprint at the resolved facing (Start does it once).</summary>
+        public void FitFootprint()
+        {
+            if (_footprint == null) return;
+            Rect r = ApplianceFacing.FootprintBox(_layout, _cell);
+            Vector3 s = _footprint.transform.lossyScale;
+            _footprint.offset = new Vector2(r.center.x / Mathf.Max(1e-4f, s.x), r.center.y / Mathf.Max(1e-4f, s.y));
+            _footprint.size = new Vector2(r.width / Mathf.Max(1e-4f, s.x), r.height / Mathf.Max(1e-4f, s.y));
         }
 
         // ---- facing ----------------------------------------------------------------------------------------
