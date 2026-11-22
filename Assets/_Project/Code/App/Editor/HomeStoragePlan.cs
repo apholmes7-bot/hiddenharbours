@@ -96,10 +96,10 @@ namespace HiddenHarbours.App.Editor
             // ---- Ginny's: his room upstairs, open with no deed (lodging) -------------------------------
             new Row("storage.stpeters.ginny_rod_rack", "stowage.ginny_rod_rack", Kind.RodRack,
                     "ginny_cottage", StPetersGinnyPlot.CottageKey, StPetersInteriors.GinnyCottagePlanKey, 1,
-                    true, new Vector2(-2.60f, -0.55f)),
+                    true, new Vector2(-2.10f, -0.40f)),   // against the bedroom partition, south of the locker
             new Row("storage.stpeters.ginny_gear_locker", "stowage.ginny_gear_locker", Kind.GearLocker,
                     "ginny_cottage", StPetersGinnyPlot.CottageKey, StPetersInteriors.GinnyCottagePlanKey, 1,
-                    true, new Vector2(-1.50f, -0.40f)),
+                    true, new Vector2(-0.60f, -0.40f)),   // the same partition, 1.5 m north, its top clear of his doorway lane
 
             // ---- the camper: opens with its deed --------------------------------------------------------
             new Row("storage.stpeters.camper_rod_rack", "stowage.camper_rod_rack", Kind.RodRack,

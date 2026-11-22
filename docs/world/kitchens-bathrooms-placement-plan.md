@@ -220,6 +220,8 @@ they get their own PRs after R2 and R3, not inside a placement PR.
 
 **Ginny pass 4: the upper storey stands its own outer walls.** The storey above is drawn UpperLevelY (2.51 world units) up the screen, so the ground floor's north wall ran across the upper floor and walled off the south half, where both beds are. The builder now stands a lifted copy of the outer walls in `WallsUpper` and hands the ground floor's `Walls` to the interior, which switches them off while he is upstairs (`BuildingInterior._groundWalls`). The three empty two-storey homes (harbour gable, cream saltbox, white gable) are stood by the village refresh, not this builder, and still have the old walls: the same crossing will matter there once R4 gives them a stair.
 
+**Ginny pass 4: the upper room sheet sorts under him at the north wall.** The sheet is ranked by its floor's far edge raised by the occupant's own pivot-over-feet (`InteriorLevelLayout.UpperRoomSortingOrder(footprint, rise)`, set by the interior when he goes up). Ranked by the bare edge, it tied with him in the north-wall corridor and he vanished on the landing. The cost: anything growing in that strip just north of the house draws over the upstairs far wall. So the seven authored plants the bigger cottage now covered were moved just outside it, and the three in the strip behind it moved 0.4 m north. Their ids are unchanged.
+
 **Why it is not built in this PR.** It would generalise #1273's `WashStationPlacement`, which is not
 merged. Building it now on main means a second copy of the same ~250 lines of scene-text patching, which
 #1273 would then have to be reworked onto. No row could use it yet anyway: none of its prefabs (kitchen,

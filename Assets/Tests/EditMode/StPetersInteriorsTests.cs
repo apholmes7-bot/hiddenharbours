@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -282,7 +283,9 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (var room in InteriorKit.RoomSet)
             {
                 var seen = new List<Vector2>();
-                foreach (var f in StPetersInteriors.FurnishingsFor(room.Key))
+                // A room furnished by its plan (Ginny's) reads its ground table through the plan; every
+                // other room falls through to the classic table.
+                foreach (var f in StPetersInteriors.GroundFurnishingsFor(room.Key, room.Key))
                 {
                     foreach (Vector2 other in seen)
                         Assert.Greater(Vector2.Distance(f.RoomMetres, other), 0.3f,
@@ -293,7 +296,9 @@ namespace HiddenHarbours.Tests.EditMode
                 if (d3EmptyRooms.Contains(room.Key))
                     Assert.That(seen.Count, Is.Zero, $"D3: '{room.Key}' stays empty until V2");
                 else
-                    Assert.GreaterOrEqual(seen.Count, 4,
+                    // A room fitted out by the fixture plan (Ginny's kitchen and washroom) counts those
+                    // stations as well: a stove, a fridge and a basin are what make it lived in.
+                    Assert.GreaterOrEqual(seen.Count + RoomFixturePlan.Rows.Count(r => r.PlanKey == room.Key && r.Level == 0), 4,
                                       $"'{room.Key}' is baked but barely furnished — a room the player " +
                                       "can walk into should look lived in, not like a rehearsal space");
             }

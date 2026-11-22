@@ -326,6 +326,35 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void Upstairs_the_sheet_ranks_under_him_even_with_his_pivot_against_the_far_wall()
+        {
+            const float FeetBelowPivot = 0.7f, FeetRadius = 0.35f;   // the player body's shape, as a probe
+            var interior = StandTwoStorey(out _, out _, out _, out var upper, out _, out _);
+            var occupant = new GameObject("occupant (pivot above his feet)");
+            _spawned.Add(occupant);
+            var feet = occupant.AddComponent<CircleCollider2D>();
+            feet.radius = FeetRadius;
+            feet.offset = new Vector2(0f, -FeetBelowPivot);
+            interior.SetOccupant(occupant.transform);
+            occupant.transform.position = interior.transform.position;
+            Tick(interior);
+            Assert.IsTrue(interior.IsInside, "precondition: the occupant is in the room");
+
+            Assert.IsTrue(interior.TryGoToLevel(1));
+            Vector2[] corners = interior.FootprintFor(1).Corners();
+            float far = corners[0].y;
+            foreach (Vector2 c in corners) far = Mathf.Max(far, c.y);
+            // His feet against the far wall (a landing or corridor along the north wall): the walls stop
+            // the footing, the sort reads the pivot, which is then past the floor's far edge.
+            int his = InteriorLevelLayout.SortingOrderFor(far - FeetRadius + FeetBelowPivot);
+            Assert.Less(upper.sortingOrder, his,
+                        "the room sheet must draw under him wherever his feet can stand on that floor; " +
+                        "ranked by the bare far edge it tied with him and he vanished on the landing");
+            Assert.LessOrEqual(upper.sortingOrder, InteriorLevelLayout.UpperRoomSortingOrder(interior.FootprintFor(1)),
+                               "and never above the bare-edge rank the builder bakes");
+        }
+
+        [Test]
         public void Walking_back_in_after_a_visit_upstairs_opens_on_the_ground_floor()
         {
             var interior = StandTwoStorey(out _, out var ground, out _, out var upper, out _, out _);

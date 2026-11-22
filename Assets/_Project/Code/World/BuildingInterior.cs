@@ -1006,7 +1006,18 @@ namespace HiddenHarbours.World
                 if (_b._props != null && _b._props.gameObject.activeSelf != ground)
                     _b._props.gameObject.SetActive(ground);
 
-                if (_b._upperRoom != null) _b._upperRoom.enabled = upper;
+                if (_b._upperRoom != null)
+                {
+                    _b._upperRoom.enabled = upper;
+                    // A standing body is sorted by its pivot, which rides above the footing the walls
+                    // stop. Against the far wall that pivot is past the floor's far edge, so the sheet
+                    // ranked by the bare edge tied with him and hid him on a north-wall landing. Re-rank
+                    // by the edge raised by the occupant's own pivot-over-footing, read off his body.
+                    if (upper && _b.ResolveOccupant() is Transform who)
+                        _b._upperRoom.sortingOrder = InteriorLevelLayout.UpperRoomSortingOrder(
+                            _b.FootprintFor(InteriorLevelLayout.UpperLevel),
+                            who.position.y - _b.FootingOf(who).y);
+                }
                 if (_b._upperProps != null && _b._upperProps.gameObject.activeSelf != upper)
                     _b._upperProps.gameObject.SetActive(upper);
                 if (_b._upperWalls != null && _b._upperWalls.gameObject.activeSelf != upper)

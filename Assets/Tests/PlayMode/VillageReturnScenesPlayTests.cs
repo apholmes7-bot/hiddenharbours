@@ -51,6 +51,8 @@ namespace HiddenHarbours.Tests.PlayMode
         [Serializable] public sealed class Buildings { public Building[] buildings; }
 
         [Serializable] public sealed class Building { public string key; public string rig; }
+        [Serializable] public sealed class OwnShell { public string build; public string rig; }
+        const string OwnShellContractsDir = "_Project/Art/Sprites/Buildings";
 
         /// <summary>The fields of the interiors contract these tests read: the registration, and each
         /// room's floor centre and door anchor per facing, in cropped-cell px from the cell's top-left.</summary>
@@ -146,6 +148,16 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             Dictionary<string, string> rigOf = ReadContract<Buildings>(BuildingsContractPath).buildings
                 .ToDictionary(e => e.key, e => e.rig);
+            // A building with a shell bake of its own (Ginny's cottage) carries its own one-building
+            // contract beside its sheet, rather than a row in the village's.
+            foreach (string own in Directory.GetFiles(Path.Combine(Application.dataPath, OwnShellContractsDir),
+                                                      "Village_*.json", SearchOption.AllDirectories))
+            {
+                if (Path.GetFileName(Path.GetDirectoryName(own)) == "Village") continue;   // the village's own kit
+                var shell = JsonUtility.FromJson<OwnShell>(File.ReadAllText(own));
+                if (shell != null && !string.IsNullOrEmpty(shell.build) && !rigOf.ContainsKey(shell.build))
+                    rigOf.Add(shell.build, shell.rig);
+            }
             yield return Load(sceneName);
 
             var failures = new List<string>();
@@ -235,6 +247,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
             var failures = new List<string>();
             int rooms = 0;
+            var counted = new List<string>();
             foreach (BuildingInterior interior in Object.FindObjectsByType<BuildingInterior>(
                          FindObjectsInactive.Include))
             {
@@ -244,6 +257,7 @@ namespace HiddenHarbours.Tests.PlayMode
                     continue;   // a shop: its own kit, whose registration did not move
                 rooms++;
                 string who = interior.gameObject.name;
+                counted.Add($"{who} ({room.sprite.name})");
 
                 // ⭐ The cell: the shell's facing plus the offset the bake MEASURED — one number, carried
                 // in the contract, the same one the stander turns every room by.
@@ -297,7 +311,8 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsEmpty(failures, "a placed room is not drawn where its walls stand:\n  " +
                                      string.Join("\n  ", failures));
             Assert.AreEqual(expectedRooms, rooms,
-                            $"St Peters places {rooms} village room(s); this test was written against {expectedRooms}");
+                            $"St Peters places {rooms} village room(s); this test was written against {expectedRooms}: " +
+                            string.Join(", ", counted));
         }
 
         /// <summary>The doorway the room is DRAWN with — its bake's own door anchor for the cell it shows,

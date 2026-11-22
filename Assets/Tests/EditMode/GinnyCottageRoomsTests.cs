@@ -328,8 +328,10 @@ namespace HiddenHarbours.Tests.EditMode
             float along = StPetersInteriors.GinnyStairY1 - StPetersInteriors.GinnyStairY0;
             float across = StPetersInteriors.GinnyStairX1 - StPetersInteriors.GinnyStairX0;
             Assert.Greater(along, 2f * across, "the run does not lie along the wall: it juts into the room");
+            // He walks THROUGH a doorway across the partition, so the run must leave the doorway its
+            // whole width and his body room past its north jamb: one collider radius beyond it.
             foreach (var (from, to) in BackPartitionGaps())
-                Assert.Greater(StPetersInteriors.GinnyStairX0, to + 2f * Radius / K - 1e-3f,
+                Assert.Greater(StPetersInteriors.GinnyStairX0, to + Radius / K - 1e-3f,
                                $"the run stands in the walk to the doorway {from}..{to}");
             Assert.IsTrue(Plan.GroundWalls.Any(w => Mathf.Approximately(w.X0, StPetersInteriors.GinnyStairX0) &&
                                                     Mathf.Approximately(w.Y1, StPetersInteriors.GinnyStairY1)),

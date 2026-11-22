@@ -212,7 +212,13 @@ namespace HiddenHarbours.Tests.EditMode
                 foreach (var f in FurnitureFor(any))
                     Assert.IsFalse(Overlap(closet.Area, RectOf(f.RoomMetres, FurnitureSize(contract, f))),
                                    $"{closet.BuildingKey}'s closet {closet.Area} overlaps the {f.PropKey} at {f.RoomMetres}");
-                Assert.LessOrEqual(closet.Area.xMax, -(halfDoor + 0.5f), $"{closet.BuildingKey}'s closet reaches the doorway lane");
+                if (closet.DoorInFront)
+                    // Entered from the room in front of it (Ginny's): the closet stands across the BACK of
+                    // the house, so the front door's lane is clear if the closet keeps out of the front half.
+                    Assert.LessOrEqual(closet.Area.yMax, Eps,
+                                       $"{closet.BuildingKey}'s closet reaches into the front half, where the doorway lane runs");
+                else
+                    Assert.LessOrEqual(closet.Area.xMax, -(halfDoor + 0.5f), $"{closet.BuildingKey}'s closet reaches the doorway lane");
                 Assert.GreaterOrEqual(closet.DoorTo - closet.DoorFrom, 0.8f - Eps, $"{closet.BuildingKey}'s closet door is too narrow");
                 if (closet.DoorInFront)
                     Assert.IsTrue(closet.DoorFrom >= closet.Area.xMin && closet.DoorTo <= closet.Area.xMax,
