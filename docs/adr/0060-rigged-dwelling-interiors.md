@@ -264,7 +264,7 @@ excluded).
 
 | # | PR | Owner | Size | Needs | Editor |
 |---|---|---|---|---|---|
-| 1 | **Core contracts.** `DwellingMeshDef`, `IDwellingMeshPresentationService` and locator, the fixture-anchor struct, EditMode tests. No behaviour change. | lead-architect | S | the hull-sort Core rule merged | no |
+| 1 | **Core contracts.** `DwellingMeshDef`, `IDwellingMeshPresentationService` and locator, the fixture-anchor struct, EditMode tests. No behaviour change. **In review** (`feat/dwelling-mesh-core-contracts`): `Core/Dwellings/` adds `DwellingMeshDef`, `DwellingLevel`, `DwellingThreshold`, `DwellingFixtureAnchor`, `DwellingMeshRules`, `IDwellingMeshPresentationService` and `DwellingMeshPresentation`; tests `DwellingMeshContractTests`. | lead-architect | S | the hull-sort Core rule merged (it is) | no |
 | 2 | **The dwelling bake.** Shared room extraction factored out of `RigMeshAssetBaker`; `DwellingMeshAssetBaker`; `DwellingRigFleet` gains mesh-baked and room keys; refusals with sabotage tests; the Clipper baked to `dwelling.camper_clipper`; tris, ramps and facet ids in the PR body. | art-pipeline, tools-editor | M (plus the asset) | 1, the camper room rig merged | **yes** |
 | 3 | **Presentation.** `IsoFacetDwellingPresentationService` (still pose, casters, no foam or reflection), lazy facet block when occupied, a plate at several bearings. | art-pipeline | S to M | 2 | **yes** (plate) |
 | 4 | **The interior seam.** `BuildingInterior` reveal interface (sprite path byte-identical), polygon `InteriorFootprint`, `DwellingCutaway`, the occupant sort rule; tests that every existing house is unchanged. | world-content, lead-architect review | M | 1 | no |

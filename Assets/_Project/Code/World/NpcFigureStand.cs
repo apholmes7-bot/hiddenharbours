@@ -24,10 +24,34 @@ namespace HiddenHarbours.World
     /// and her sprite draws exactly as before.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class NpcFigureStand : MonoBehaviour, ICharacterFigureAshoreStand
+    public sealed class NpcFigureStand : MonoBehaviour, ICharacterFigureWorkStand
     {
         private IsoCharacterSprite _character;
         private string _key;
+        private VillagerRoutine _routine;
+        private bool _routineLooked;
+
+        /// <inheritdoc/>
+        /// <remarks>At work while she stands at a place of today's beach outing whose activity names a work
+        /// clip (<see cref="BeachActivityDef.WorkState"/>), with its tool (<see cref="BeachActivityDef.HeldProp"/>).
+        /// Read off her routine's pose for the hour every frame; allocation-free.</remarks>
+        public bool TryGetFigureWork(out string stateKey, out HeldPropMeshDef heldProp)
+        {
+            stateKey = null;
+            heldProp = null;
+            if (!_routineLooked)
+            {
+                _routineLooked = true;
+                TryGetComponent(out _routine);
+            }
+            BeachLifeDirector beach = BeachLifeDirector.Instance;
+            if (_routine == null || beach == null || !beach.TryWorkAt(_routine, out BeachActivityDef activity)
+                || string.IsNullOrEmpty(activity.WorkState))
+                return false;
+            stateKey = activity.WorkState;
+            heldProp = activity.HeldProp;
+            return true;
+        }
 
         /// <inheritdoc/>
         public IsoCharacterSprite FigureCharacter => _character;
