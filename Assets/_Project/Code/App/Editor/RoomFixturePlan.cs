@@ -261,6 +261,7 @@ namespace HiddenHarbours.App.Editor
         // they drift. The sage room is shared by Ginny's cottage and the village sage cottage.
 
         public const float SageW = 6.60f, SageL = 8.05f;
+        public const float GinnyW = 7.20f, GinnyL = 9.10f;
         public const float RedW = 6.96f, RedL = 8.68f;
         public const float FarmW = 7.68f, FarmL = 9.94f;
         public const float HarbourW = 6.72f, HarbourL = 8.26f;

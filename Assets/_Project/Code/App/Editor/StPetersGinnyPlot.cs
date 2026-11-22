@@ -415,7 +415,10 @@ namespace HiddenHarbours.App.Editor
                     // the same build (see CottageKey), so a plan hung off 'sageCottage' would have put the
                     // player's bed — and a save point — inside a stranger's house on the green as well.
                     // Ginny's is the one with a lodger in it.
-                    bool enterable = StPetersInteriors.Stand(go, shell, CottageKey, facing, occupant,
+                    // Her ROOM is her own (7.2 x 9.1 m, the ginnyCottage bake), larger than the sage
+                    // cottage's; the room is found by that key, while the building keeps its name.
+                    bool enterable = StPetersInteriors.Stand(go, shell, StPetersInteriors.GinnyCottagePlanKey,
+                                                             facing, occupant,
                                                              StPetersInteriors.GinnyCottagePlanKey);
                     if (!enterable)
                         Debug.LogWarning(

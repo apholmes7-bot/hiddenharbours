@@ -214,7 +214,10 @@ namespace HiddenHarbours.Tests.RigBaking
         {
             foreach (InteriorKit.Build room in InteriorKit.RoomSet)
             {
-                VillageBuildingKit.Build? shell = VillageBuildingKit.FindBuild(InteriorKit.ExteriorKeyFor(room.Key));
+                // Ginny's room stands inside her own shell, baked outside the village kit.
+                VillageBuildingKit.Build? shell = room.Key == GinnyCottageShellBake.Key
+                    ? GinnyCottageShellBake.Build()
+                    : VillageBuildingKit.FindBuild(InteriorKit.ExteriorKeyFor(room.Key));
                 Assert.IsNotNull(shell, $"{room.Key} stands inside a village shell of the same key");
 
                 string own = VillageBuildingBakeMenu.BaseOptionsLiteralFor(

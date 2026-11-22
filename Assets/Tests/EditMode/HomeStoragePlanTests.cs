@@ -270,16 +270,15 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void GinnysPiecesStandInHisRoom_ClearOfTheWalls()
         {
-            // The player's room upstairs, read off the plan's own partitions: from the landing partition's
-            // room face to the left wall, from the bedroom partition's front face to the front wall.
+            // The player's room upstairs, read off the plan's own partitions: from the south wall to the
+            // corridor partition's room face, from the bedroom partition's front face to the front wall.
             StPetersInteriors.UpperLevelPlan plan = StPetersInteriors.UpperLevelFor(StPetersInteriors.GinnyCottagePlanKey);
             float wall = StPetersInteriors.WallThicknessMetres;
-            float hw = RoomFixturePlan.SageW * 0.5f, hl = RoomFixturePlan.SageL * 0.5f;
-            float landing = plan.Partitions.Max(p => p.X1 < 0f ? p.X1 : float.MinValue);
-            // The bedroom partition is the one run straddling the room's middle (the stairwell's rail is
-            // all on the north side).
-            float between = plan.Partitions.Where(p => p.X0 < 0f && p.X1 > 0f).Max(p => p.Y1);
-            var room = Rect.MinMaxRect(landing, between, hw - wall, hl - wall);
+            float hw = RoomFixturePlan.GinnyW * 0.5f, hl = RoomFixturePlan.GinnyL * 0.5f;
+            float corridorFace = StPetersInteriors.GinnyCorridorX0 - wall;
+            // The bedroom partition is the widest run: it crosses the bedrooms from the south wall.
+            float between = plan.Partitions.OrderByDescending(p => p.X1 - p.X0).First().Y1;
+            var room = Rect.MinMaxRect(-hw + wall, between, corridorFace, hl - wall);
 
             foreach (Row row in Placed())
             {
@@ -297,15 +296,15 @@ namespace HiddenHarbours.Tests.EditMode
         public void GinnysPiecesClearTheFurniture_HisDoor_TheDoorwayLane_AndEachOther()
         {
             StPetersInteriors.UpperLevelPlan plan = StPetersInteriors.UpperLevelFor(StPetersInteriors.GinnyCottagePlanKey);
-            float halfDoor = StPetersInteriors.DoorwayWidthMetres * 0.5f, hl = RoomFixturePlan.SageL * 0.5f;
+            float halfDoor = StPetersInteriors.DoorwayWidthMetres * 0.5f, hl = RoomFixturePlan.GinnyL * 0.5f;
             InteriorKit.Contract contract = InteriorKit.Load();
             List<Row> placed = Placed().ToList();
 
-            // His door is the gap in the landing partition between its front and middle runs; the floor in
-            // front of it, a door's width into the room, is kept clear so he can walk in.
-            var landing = plan.Partitions.Where(p => p.X1 < 0f).OrderBy(p => p.Y0).ToList();
-            float doorFrom = landing[1].Y1, doorTo = landing[2].Y0;
-            var doorLane = Rect.MinMaxRect(landing[0].X1, doorFrom, landing[0].X1 + StPetersInteriors.DoorwayWidthMetres, doorTo);
+            // His door is the gap in the corridor partition off the stair head; the floor inside it, a
+            // door's width into the room, is kept clear so he can walk in.
+            float face = StPetersInteriors.GinnyCorridorX0 - StPetersInteriors.WallThicknessMetres;
+            var doorLane = Rect.MinMaxRect(face - StPetersInteriors.DoorwayWidthMetres, StPetersInteriors.GinnyPlayerDoorY0,
+                                           face, StPetersInteriors.GinnyPlayerDoorY1);
 
             foreach (Row row in placed)
             {

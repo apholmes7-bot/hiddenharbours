@@ -155,10 +155,10 @@ namespace HiddenHarbours.App.Editor
             var sites = new List<Site>
             {
                 new Site(StPetersScene, WashStationPlacement.WashStandPrefab, "WashStand", WashStationPlacement.GinnyWashstandId,
-                         new Vector2(0.45f, 3.55f),
-                         "the player's room upstairs at Ginny's: against the front wall, between the landing door " +
-                         "and the head of his bed, clear of the doorway lane and the wardrobe",
-                         StPetersGinnyPlot.RootName, StPetersGinnyPlot.CottageKey, level: 1),
+                         new Vector2(0.25f, 3.90f),
+                         "the player's room upstairs at Ginny's: against the front wall, between the foot of his bed " +
+                         "and the wardrobe, clear of his door off the corridor (plan frame, door at +y)",
+                         StPetersGinnyPlot.RootName, StPetersGinnyPlot.CottageKey, level: 1, planFrame: true),
                 new Site(NineMileCreekScene, WashStationPlacement.WharfShowerPrefab, "WharfShower", WashStationPlacement.NmcWharfShowerId,
                          new Vector2(90.2f, 108.2f),
                          "the wharf's land side, on the open ground between the harbourmaster's office and the " +

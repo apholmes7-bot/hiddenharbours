@@ -337,28 +337,24 @@ namespace HiddenHarbours.App.Editor
         /// <b>The storey above, per site.</b> Returns an empty plan for everything not listed, which is
         /// every building on the island but one.
         ///
-        /// <para><b>The cottage's numbers, so the geometry below can be read.</b> <c>sageCottage</c> is
-        /// 6.6 × 8.05 m, so the model frame runs x ±3.3 and y ±4.025, and the 0.3 m walls leave a floor
-        /// of x ∈ [−3.0, 3.0], y ∈ [−3.725, 3.725]. <c>+y</c> runs toward the front door, which is the
-        /// gap in that end wall, centred on x = 0; the hearth is at the <c>−y</c> end. Left and right
-        /// below are as you come in at the door, which puts the right-hand side at <c>−x</c>.</para>
+        /// <para><b>The cottage's numbers, so the geometry below can be read.</b> <c>ginnyCottage</c> is
+        /// 7.2 × 9.1 m, so the model frame runs x ±3.6 and y ±4.55, and the 0.3 m walls leave a floor
+        /// of x ∈ [−3.3, 3.3], y ∈ [−4.25, 4.25]. <c>+y</c> runs toward the front door, which is the
+        /// gap in that end wall, centred on x = 0. <c>+x</c> is north.</para>
         ///
-        /// <para><b>The plan, in words.</b> A landing runs up the right-hand side, wide enough to walk
-        /// two abreast past the stair head. A north–south partition closes it off from the two bedrooms,
-        /// with a door into each; an east–west partition divides those two from one another. The result
-        /// is that <b>neither bedroom is a corridor to the other</b> — you reach both from the landing,
-        /// and Ginny does not walk through the room she is lending you. That cost 1.8 m of floor and is
-        /// the single thing about this layout worth defending.</para>
+        /// <para><b>The plan, in words (owner 2026-11-22: the beds on the south wall, the corridor on
+        /// the north).</b> The stair climbs along the north wall from the front door to the back
+        /// partition and comes up into a corridor along the north side. A north–south partition closes
+        /// the corridor off from the two bedrooms, with a door into each; an east–west partition divides
+        /// those two from one another. <b>Neither bedroom is a corridor to the other</b>: you reach both
+        /// from the landing at the stair head, and Ginny does not walk through the room she is lending
+        /// you. Both beds have their heads on the south wall.</para>
         ///
-        /// <para><b>Where the stairwell goes (owner 2026-11-22: "against the wall so its not interrupting
-        /// the flow of the house").</b> The run stands against the living room's back
-        /// partition (x 1.2..3.3, y 0..1.1), rising north to the left wall where the middle window used to
-        /// be, so the run takes the strip of floor behind the settee that nobody walks through. Upstairs
-        /// that strip is the back of the player's bedroom, clear of the bed, railed on its open sides. The
-        /// interact point is at (1.70, 0.55) on BOTH storeys, just inside the foot of the run, which is what
-        /// makes the level swap need no teleport: you press from the open floor at the foot and arrive at
-        /// the same plan point; the landing pushes him clear of the hole and the rod rack. Ginny's ground floor has its own furniture (<see cref="UpperLevelPlan.GroundFurnishings"/>),
-        /// so the village's pilot cottage, the same build, keeps its own one-room layout.</para>
+        /// <para><b>The stairs.</b> The foot's interact point is at (2.70, 3.85) by the front door, the
+        /// head's at (3.25, −0.20) where the flight arrives. Each half lands him at the other
+        /// (<see cref="LinkStairLandings"/>); the interior then pushes him clear of anything solid.
+        /// Ginny's ground floor has its own furniture (<see cref="UpperLevelPlan.GroundFurnishings"/>),
+        /// so the village's pilot cottage keeps its own one-room layout.</para>
         ///
         /// <para><b>Its own picture upstairs.</b> The storey above draws a painted sheet of its own
         /// (<see cref="UpperLevelPlan.UpperSheetPath"/>): the bedrooms' partitions, the stairwell railing
@@ -377,20 +373,21 @@ namespace HiddenHarbours.App.Editor
                 upperSheetPath: GinnyUpperSheetPath,
 
                 // ---- the GROUND floor: three rooms, no bed (owner 2026-11-22) -----------------------
-                // The entry/living room is the front (+y) half: the painted settee, armchair and rug in the
-                // north (+x) corner by the door, the table and its two chairs on the south side, and the
-                // stair run against the back partition, rising north beside the kitchen doorway. A north-south partition (y -0.3..0)
-                // closes off the back half; an east-west one splits that into the kitchen (north) and the
-                // washroom (south). Each has its own doorway off the living room.
+                // The entry/living room is the front (+y) half: the painted settee against the south wall by
+                // the door, the table and its two chairs on the south side, and the stair run along the
+                // north wall, its foot by the front door and its head at the back partition, so it takes
+                // the strip of floor along the outside wall and leaves the room whole. A north-south
+                // partition (y 0..0.3) closes off the back half; an east-west one splits that into the
+                // kitchen (north) and the washroom (south). Each has its own doorway off the living room.
                 groundFurnishings: new[]
                 {
-                    new Furnishing("table", new Vector2(-1.75f, 1.60f), 4,
+                    new Furnishing("table", new Vector2(-1.60f, 1.75f), 4,
                                    "the living room's table, on the south side clear of the doorway lane, " +
                                    "with a wide walk to the washroom door between it and the partition"),
-                    new Furnishing("chair", new Vector2(-1.00f, 2.20f), 4,
+                    new Furnishing("chair", new Vector2(-1.00f, 2.45f), 4,
                                    "pulled out on the door side of the table"),
-                    new Furnishing("chair", new Vector2(-2.50f, 2.20f), 4,
-                                   "its pair, clear of the washroom doorway"),
+                    new Furnishing("chair", new Vector2(-2.20f, 2.45f), 4,
+                                   "its pair, clear of the settee"),
                 },
                 groundWalls: GinnyGroundWalls,
 
@@ -398,102 +395,100 @@ namespace HiddenHarbours.App.Editor
                 groundAdditions: new[]
                 {
                     new Furnishing("seaChest", new Vector2(GinnyStairAtX, GinnyStairAtY), 4,
-                                   "the stair's interact point, at the foot of the painted stair run against " +
-                                   "the living room's back partition. The sea chest prop is a STAND-IN the builder " +
+                                   "the stair's interact point, at the foot of the painted flight along the " +
+                                   "north wall, by the front door. The sea chest prop is a STAND-IN the builder " +
                                    "places for it; the placed room hides its picture (the stair is painted " +
-                                   "in the room sheet) and the run's own wall rect is the collider",
+                                   "in the room sheet) and the run's own wall rect is the collider. Coming " +
+                                   "down, he arrives here: his feet on the open floor south of the foot",
                                    InteriorFixture.StairUp),
                 },
 
                 // ---- the storey above ---------------------------------------------------------------
                 furnishings: new[]
                 {
-                    new Furnishing("seaChest", new Vector2(GinnyStairAtX, GinnyStairAtY), 4,
-                                   "the head of the same stairs — the SAME model coordinate as the foot, " +
-                                   "which is precisely why coming up needs no teleport",
+                    new Furnishing("seaChest", new Vector2(GinnyStairHeadX, GinnyStairHeadY), 4,
+                                   "the head of the same stairs, at the top of the flight where it comes up " +
+                                   "into the corridor. Going up, he arrives here (the climb carries him " +
+                                   "along the flight from the foot): his feet on the landing, clear of the " +
+                                   "stairwell",
                                    InteriorFixture.StairDown),
 
-                    new Furnishing("bed", new Vector2(2.10f, 2.30f), 4,
-                                   "THE PLAYER'S BED, in the front room: along the left wall, the far " +
-                                   "corner from the landing door, which is where a bed goes in a room " +
-                                   "this size — and is the arrangement the ground floor already uses. " +
-                                   "Head at the FRONT wall (+y), which is the kit bed's own head end at " +
-                                   "this offset — so the headboard is against the outside wall and the " +
-                                   "foot of the bed points at the landing door",
-                                   InteriorFixture.PlayerBed, PillowSide.PlusY),
+                    new Furnishing("bed", new Vector2(-2.27f, 2.50f), 2,
+                                   "THE PLAYER'S BED, in the front room, its head against the SOUTH wall " +
+                                   "(owner 2026-11-22: the beds on the south wall, the corridor on the " +
+                                   "north). Turned a quarter so the kit bed's head end is the south wall; " +
+                                   "he gets in from either side",
+                                   InteriorFixture.PlayerBed, PillowSide.MinusX),
 
-                    new Furnishing("dresser", new Vector2(-0.35f, 0.60f), 6,
+                    new Furnishing("dresser", new Vector2(1.45f, 2.40f), 2,
                                    "the wardrobe, STANDING IN as a dresser (the kit has no wardrobe " +
-                                   "yet). Turned a quarter so its back is to the landing partition — " +
-                                   "against the one wall in the player's room that is not the outside " +
-                                   "of the house, and across the room from the bed so both are " +
-                                   "reachable without threading between them",
+                                   "yet). Its back to the corridor partition, across the room from the bed",
                                    InteriorFixture.Wardrobe),
 
-                    new Furnishing("bed", new Vector2(2.10f, -2.30f), 4,
-                                   "GINNY'S BED, in the back room over the hearth — the warm end of the " +
-                                   "house, which is the host's, and the same left-wall line as the " +
-                                   "player's so the two rooms read as one plan. Head to +y like the " +
-                                   "player's: the two beds are the same bed, laid the same way",
-                                   InteriorFixture.OwnerBed, PillowSide.PlusY),
+                    new Furnishing("bed", new Vector2(-2.27f, -2.60f), 2,
+                                   "GINNY'S BED, in the back room, laid the same way as the player's: head " +
+                                   "against the south wall, so the two rooms read as one plan",
+                                   InteriorFixture.OwnerBed, PillowSide.MinusX),
                 },
 
                 // ---- the walls that exist only up here -----------------------------------------------
-                // The building's OWN four walls are NOT here: they are the same walls on both storeys
-                // and BuildWalls already stood them. Only the partitions and the doorway plug ride the
-                // level. Each rect deliberately runs INTO the outer wall band it meets (y ±4.025, x 3.3)
+                // The building's OWN four walls are NOT listed here: BuildUpperWalls stands a lifted copy
+                // of them for this storey, and the ground floor's walls go off up here. Only the
+                // partitions are authored. Each rect deliberately runs INTO the outer wall band it meets (y ±4.55, x ±3.6)
                 // so there is no hairline gap at the join — the quads are separate colliders, so an
                 // overlap is safe, whereas a shared edge is what leaks a player through a corner.
                 partitions: new[]
                 {
-                    new WallRect(-1.20f, -0.90f, 3.10f, 4.025f,
-                                 "the landing partition, front run — from the front wall to the " +
-                                 "player's door"),
-                    new WallRect(-1.20f, -0.90f, -1.40f, 1.90f,
-                                 "the landing partition, middle run — between the two bedroom doors, " +
-                                 "and what the east-west partition tees into"),
-                    new WallRect(-1.20f, -0.90f, -4.025f, -2.60f,
-                                 "the landing partition, back run — from Ginny's door to the back wall"),
-                    new WallRect(-1.20f, 3.30f, -0.70f, -0.40f,
-                                 "the partition BETWEEN the two bedrooms, running from the landing " +
-                                 "to the left wall. Solid: each room is entered from the landing, so " +
-                                 "neither is a way through to the other"),
-                    new WallRect(GinnyStairX0, GinnyStairX1, GinnyStairwellY0, GinnyStairY1,
-                                 "the stairwell: the hole the stair comes up through, along the back of " +
-                                 "the player's room, railed on its open sides. It stops short of the stair " +
-                                 "run's back edge so his rod rack and gear locker keep the wall strip " +
-                                 "along the bedroom partition"),
+                    new WallRect(1.70f, 2.00f, 0.30f, 4.55f,
+                                 "the corridor partition, front run — the player's room's wall along the " +
+                                 "stairwell, from the front wall to his door"),
+                    new WallRect(1.70f, 2.00f, -1.10f, -0.70f,
+                                 "the corridor partition between the two bedroom doors, which the " +
+                                 "partition between the bedrooms tees into"),
+                    new WallRect(1.70f, 2.00f, -4.55f, -2.10f,
+                                 "the corridor partition, back run — from Ginny's door to the back wall"),
+                    new WallRect(-3.60f, 1.70f, -1.00f, -0.70f,
+                                 "the partition BETWEEN the two bedrooms, from the corridor to the south " +
+                                 "wall. Solid: each room is entered from the corridor, so neither is a " +
+                                 "way through to the other"),
+                    new WallRect(GinnyStairX0, GinnyStairX1, GinnyStairY0, GinnyStairY1,
+                                 "the stairwell: the hole the flight comes up through, along the north " +
+                                 "wall. Its open end is the corridor, where the flight arrives"),
                 }),
 
             _ => default,
         };
 
-        // Ginny's stair run, in the plan frame: against the living room's back partition, from the kitchen
-        // doorway north to the left wall; the interact point sits at its foot, the same on both storeys.
-        public const float GinnyStairX0 = 1.20f, GinnyStairX1 = 3.30f, GinnyStairY0 = 0.00f, GinnyStairY1 = 1.10f;
-        public const float GinnyStairAtX = 1.70f, GinnyStairAtY = 0.55f;
-        // The hole upstairs is the run less its back 0.25 m: the floor above overhangs the run's back edge.
-        public const float GinnyStairwellY0 = 0.25f;
+        // Ginny's stair run, in the plan frame: along the north (+x) wall, its foot by the front door (+y)
+        // and its head at the back partition, where it comes up into the corridor. The foot's interact
+        // point stands just inside the foot; the head's at the top of the flight. Each is where he arrives
+        // when he takes the stairs from the other (InteriorStair's landing).
+        public const float GinnyStairX0 = 2.25f, GinnyStairX1 = 3.30f, GinnyStairY0 = 0.30f, GinnyStairY1 = 4.20f;
+        public const float GinnyStairAtX = 2.70f, GinnyStairAtY = 3.85f;
+        public const float GinnyStairHeadX = 3.25f, GinnyStairHeadY = -0.20f;
+
+        // Ginny's corridor upstairs and its two bedroom doorways (plan frame).
+        public const float GinnyCorridorX0 = 2.00f;
+        public const float GinnyPlayerDoorY0 = -0.70f, GinnyPlayerDoorY1 = 0.30f;
+        public const float GinnyOwnerDoorY0 = -2.10f, GinnyOwnerDoorY1 = -1.10f;
 
         /// <summary>Ginny's ground-floor walls (plan frame; each rect runs into the wall band it meets).</summary>
         static WallRect[] GinnyGroundWalls => new[]
         {
-            new WallRect(0.65f, 3.30f, -0.30f, 0.00f,
-                         "the living room's back partition, north run: from the left wall to the kitchen door " +
-                         "(x -0.55..0.65)"),
-            new WallRect(-1.55f, -0.55f, -0.30f, 0.00f,
+            new WallRect(1.25f, 3.60f, 0.00f, 0.30f,
+                         "the living room's back partition, north run: from the north wall to the kitchen door " +
+                         "(x -0.1..1.25, wider than he is)"),
+            new WallRect(-0.95f, -0.10f, 0.00f, 0.30f,
                          "the living room's back partition between the kitchen and washroom doors"),
-            new WallRect(-3.30f, -2.75f, -0.30f, 0.00f,
-                         "the living room's back partition, south stub: right wall to the washroom door " +
-                         "(x -2.75..-1.55)"),
-            new WallRect(-1.25f, -0.95f, -4.025f, -0.30f,
+            new WallRect(-3.60f, -2.45f, 0.00f, 0.30f,
+                         "the living room's back partition, south stub: south wall to the washroom door " +
+                         "(x -2.45..-0.95, wider than he is)"),
+            new WallRect(-0.60f, -0.30f, -4.55f, 0.00f,
                          "the partition between the kitchen (north) and the washroom (south)"),
             new WallRect(GinnyStairX0, GinnyStairX1, GinnyStairY0, GinnyStairY1,
-                         "the stair run against the back partition (painted in the room sheet)"),
-            new WallRect(2.35f, 3.30f, 1.394f, 3.394f,
-                         "the painted settee against the left wall, towards the door"),
-            new WallRect(0.85f, 2.00f, 2.344f, 3.044f,
-                         "the painted armchair on the rug"),
+                         "the stair run along the north wall (painted in the room sheet)"),
+            new WallRect(-3.60f, -2.45f, 3.05f, 4.55f,
+                         "the painted settee against the south wall, by the front door"),
         };
 
         static UpperLevelPlan EmptyUpperRoom(string key) => new UpperLevelPlan(key,
@@ -870,17 +865,25 @@ namespace HiddenHarbours.App.Editor
             }
 
             // --- a painted upstairs paints the stair on both sheets: the stand-in prop keeps its
-            //     interact and loses its picture.
+            //     interact and loses its picture, and its footprint too (the run's own wall rect is the
+            //     solid part; the head stands in the corridor, which its box would block).
             if (!string.IsNullOrEmpty(plan.UpperSheetPath))
                 foreach (Transform root in new[] { groundProps, upperPropsGo.transform })
                     foreach (InteriorStair stair in root.GetComponentsInChildren<InteriorStair>(true))
+                    {
                         if (stair.TryGetComponent(out SpriteRenderer sr)) sr.enabled = false;
+                        if (stair.TryGetComponent(out PolygonCollider2D box)) box.enabled = false;
+                    }
+
+            // --- each half lands him at the other: up at the head, down at the foot. A plan whose two
+            //     halves share one point is unchanged (the landing is straight above or below the press).
+            LinkStairLandings(groundProps, upperPropsGo.transform);
 
             // ⚠ AFTER both furniture roots exist and BEFORE anything else looks at the interior:
             //   ConfigureUpperLevel applies the swap immediately, which is what leaves the upstairs
             //   switched OFF in the editor instead of drawn straight over the ground floor.
             interior.ConfigureUpperLevel(upperRenderer, upperPropsGo.transform, upperWallsGo.transform,
-                                         upperY);
+                                         upperY, groundWalls: buildingGo.transform.Find(WallsChildName));
 
             Debug.Log(
                 $"[StPetersInteriors] upper level '{planKey}': {placed} piece(s) of furniture, " +
@@ -903,6 +906,20 @@ namespace HiddenHarbours.App.Editor
         /// <summary>The name of the ground floor's own walls, under its furniture root.</summary>
         public const string GroundWallsChildName = "WallsGround";
 
+        /// <summary>Point the foot of the stairs (ground) at the head (upstairs) and back, so a climb ends
+        /// where the other half stands. Pairs the first up-half with the first down-half.</summary>
+        public static void LinkStairLandings(Transform groundProps, Transform upperProps)
+        {
+            InteriorStair up = null, down = null;
+            foreach (InteriorStair s in groundProps.GetComponentsInChildren<InteriorStair>(true))
+                if (s.FromLevel == 0 && s.ToLevel == 1) { up = s; break; }
+            foreach (InteriorStair s in upperProps.GetComponentsInChildren<InteriorStair>(true))
+                if (s.FromLevel == 1 && s.ToLevel == 0) { down = s; break; }
+            if (up == null || down == null) return;
+            up.SetLanding(down.transform);
+            down.SetLanding(up.transform);
+        }
+
         /// <summary>One <see cref="PolygonCollider2D"/> per rect on <paramref name="root"/>, whose position is
         /// the building's (it hangs at local zero under the building or under a furniture root at local
         /// zero).</summary>
@@ -922,6 +939,16 @@ namespace HiddenHarbours.App.Editor
             Vector2 origin = root.parent != null ? (Vector2)root.parent.position : Vector2.zero;
 
             BuildRects(root, footprint, plan.Partitions);
+
+            // The storey's OWN outer walls, lifted with it. The ground floor's walls are drawn at the
+            // ground's height, so its north wall crosses this floor UpperLevelY up the screen; they are
+            // handed to the interior as ground walls and go off up here (ConfigureUpperLevel).
+            foreach (Vector2[] quad in footprint.WallQuads(WallThicknessMetres, DoorwayWidthMetres))
+            {
+                var wall = root.gameObject.AddComponent<PolygonCollider2D>();
+                wall.pathCount = 1;
+                wall.SetPath(0, BuildingInteriorStander.ToLocal(quad, origin));
+            }
 
             // The doorway, closed. Derived from the same arithmetic that cut the gap, so the two can
             // never disagree about where the door is.

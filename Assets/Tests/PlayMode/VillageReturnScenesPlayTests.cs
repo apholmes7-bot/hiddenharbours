@@ -267,7 +267,24 @@ namespace HiddenHarbours.Tests.PlayMode
                 // The storey above, where there is one, is drawn from a room sheet too, and has to turn
                 // with the storey below it.
                 var upper = upperField.GetValue(interior) as SpriteRenderer;
-                if (upper != null && upper.sprite != null)
+                if (upper != null && upper.sprite != null &&
+                    !upper.sprite.texture.name.StartsWith(RoomSheetPrefix, StringComparison.Ordinal))
+                {
+                    // A PAINTED storey (UpperLevelPlan.UpperSheetPath): the room below's own cell, repainted.
+                    // It has no contract entry of its own, so it must be that cell exactly — same pixels,
+                    // same pivot — and then the room below's door anchor is where it draws its doorway.
+                    Sprite below = room.sprite, painted = upper.sprite;
+                    if (painted.rect.size != below.rect.size ||
+                        (painted.pivot - below.pivot).sqrMagnitude > 0.25f ||
+                        !Mathf.Approximately(painted.pixelsPerUnit, below.pixelsPerUnit))
+                        failures.Add($"{who}: the painted storey above '{painted.name}' " +
+                                     $"({painted.rect.size}, pivot {painted.pivot}) is not drawn on the grid of " +
+                                     $"the room below '{below.name}' ({below.rect.size}, pivot {below.pivot})");
+                    else
+                        CheckDoorway(contract, room.sprite, upper.transform.position, interior.FootprintFor(1),
+                                     halfDoorway, who + " (painted upstairs)", failures);
+                }
+                else if (upper != null && upper.sprite != null)
                 {
                     if (CellOf(upper.sprite) != roomCell)
                         failures.Add($"{who}: the storey above is cell {CellOf(upper.sprite)}, the room " +
@@ -288,11 +305,17 @@ namespace HiddenHarbours.Tests.PlayMode
         /// <see cref="InteriorFootprint.DoorWorld"/> give or take half a doorway. A room shown half a turn
         /// out draws its doorway a whole room's length from the gap, on the back wall.</summary>
         static void CheckDoorway(Interiors contract, SpriteRenderer room, InteriorFootprint walls,
+                                 float halfDoorway, string who, List<string> failures) =>
+            CheckDoorway(contract, room.sprite, room.transform.position, walls, halfDoorway, who, failures);
+
+        /// <summary>The same check for a sheet drawn at <paramref name="drawnAt"/> on <paramref name="sheet"/>'s
+        /// own grid: a painted storey is checked with the room below's anchor at its own lift.</summary>
+        static void CheckDoorway(Interiors contract, Sprite sheet, Vector3 drawnAt, InteriorFootprint walls,
                                  float halfDoorway, string who, List<string> failures)
         {
-            string key = room.sprite.texture.name.Substring(RoomSheetPrefix.Length);
+            string key = sheet.texture.name.Substring(RoomSheetPrefix.Length);
             Room entry = contract.rooms?.FirstOrDefault(r => r.key == key);
-            int cell = CellOf(room.sprite);
+            int cell = CellOf(sheet);
             if (entry == null || entry.doorX == null || entry.doorY == null ||
                 cell < 0 || cell >= entry.doorX.Length || cell >= entry.doorY.Length)
             {
@@ -302,11 +325,11 @@ namespace HiddenHarbours.Tests.PlayMode
 
             var drawnOffset = new Vector2(entry.doorX[cell] - entry.pivotX,
                                           entry.pivotY - entry.doorY[cell]) / contract.ppu;
-            Vector2 drawn = (Vector2)room.transform.position + drawnOffset;
+            Vector2 drawn = (Vector2)drawnAt + drawnOffset;
             Vector2 gap = walls.DoorWorld;
             float apart = Vector2.Distance(drawn, gap);
             if (apart > halfDoorway)
-                failures.Add($"{who}: '{room.sprite.name}' draws its doorway at {drawn:F2}, but the walls " +
+                failures.Add($"{who}: '{sheet.name}' draws its doorway at {drawn:F2}, but the walls " +
                              $"leave their gap at {gap:F2} — {apart:F2} units apart");
         }
 

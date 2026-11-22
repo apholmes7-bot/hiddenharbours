@@ -17,15 +17,27 @@ namespace HiddenHarbours.Tests.EditMode
     /// washroom pieces are laid on a grid in the plan frame (+x north, +y toward the front door) and the
     /// player's collider is walked over it from the front door: an ellipse, because his round collider sits
     /// on the foreshortened ground (0.35 m across, 0.35 / depth scale along the room). The press reaches from
-    /// his transform, 0.7 m up the screen from his feet, which is what every reach below measures from.
+    /// his transform, 0.7 m up the screen from his collider, which is what every reach below measures from.
+    /// "Feet" below is the collider's centre; his drawn feet stand 0.31 m below the transform.
     /// </summary>
     public class GinnyCottageRoomsTests
     {
         const float Step = 0.05f;
-        const float Radius = 0.35f, FeetBelowTransform = 0.7f;
+        const float Radius = 0.35f, FeetBelowTransform = 0.7f, DrawnFeetBelowTransform = 0.31f;
+        const float WallThickness = 0.3f;
         static float K => HiddenHarbours.Core.IsoGround.GroundDepthScale;
-        static float HalfW => RoomFixturePlan.SageW * 0.5f;
-        static float HalfL => RoomFixturePlan.SageL * 0.5f;
+        static float HalfW => RoomFixturePlan.GinnyW * 0.5f;
+        static float HalfL => RoomFixturePlan.GinnyL * 0.5f;
+        // The floor inside the outer walls: what his collider must stay within.
+        static float InnerW => HalfW - WallThickness;
+        static float InnerL => HalfL - WallThickness;
+        /// <summary>Plan x from his collider up to his transform (where a stair lands the transform).</summary>
+        static float Lift => FeetBelowTransform / K;
+        /// <summary>Plan x from his collider up to his drawn feet.</summary>
+        static float DrawnLift => (FeetBelowTransform - DrawnFeetBelowTransform) / K;
+
+        static Vector2 StairFoot => new Vector2(StPetersInteriors.GinnyStairAtX, StPetersInteriors.GinnyStairAtY);
+        static Vector2 StairHead => new Vector2(StPetersInteriors.GinnyStairHeadX, StPetersInteriors.GinnyStairHeadY);
 
         static StPetersInteriors.UpperLevelPlan Plan =>
             StPetersInteriors.UpperLevelFor(StPetersInteriors.GinnyCottagePlanKey);
@@ -79,7 +91,7 @@ namespace HiddenHarbours.Tests.EditMode
         static bool Free(Vector2 feet, List<Rect> obs)
         {
             float rx = Radius / K, ry = Radius;
-            if (feet.x - rx < -HalfW || feet.x + rx > HalfW || feet.y - ry < -HalfL || feet.y + ry > HalfL) return false;
+            if (feet.x - rx < -InnerW || feet.x + rx > InnerW || feet.y - ry < -InnerL || feet.y + ry > InnerL) return false;
             foreach (Rect r in obs)
             {
                 float cx = Mathf.Clamp(feet.x, r.xMin, r.xMax), cy = Mathf.Clamp(feet.y, r.yMin, r.yMax);
@@ -110,7 +122,7 @@ namespace HiddenHarbours.Tests.EditMode
             return seen;
         }
 
-        static Vector2 FrontDoorFeet => new Vector2(0f, HalfL - 0.45f);
+        static Vector2 FrontDoorFeet => new Vector2(0f, InnerL - Radius - 0.05f);
 
         /// <summary>The press distance from a stance (feet) to a point: from his transform, over the ground.</summary>
         static float Reach(Vector2 feet, Vector2 target)
@@ -276,32 +288,20 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void TheStairsWorkBothWays_AndStandAgainstTheBackPartition()
+        public void TheStairsWorkBothWays_FootToHeadAndBack()
         {
             InteriorKit.Contract contract = Contract();
-            Vector2 stair = new Vector2(StPetersInteriors.GinnyStairAtX, StPetersInteriors.GinnyStairAtY);
-            var closet = RoomFixturePlan.Closets.Single(c => c.BuildingKey == "ginny_cottage");
-            Assert.LessOrEqual(StPetersInteriors.GinnyStairY0, closet.Area.yMax + 0.3f + 1e-3f,
-                               "the run stands against the living room's back partition");
-            Assert.GreaterOrEqual(StPetersInteriors.GinnyStairX1, HalfW, "the run rises to the north wall");
-
             var groundObs = GroundObstacles(contract);
             var upperObs = UpperObstacles(contract);
             var ground = Flood(new[] { FrontDoorFeet }, groundObs);
-            var up = ground.Select(At).Where(p => Reach(p, stair) <= StPetersInteriors.StairReachMetres).ToList();
+            var up = ground.Select(At).Where(p => Reach(p, StairFoot) <= StPetersInteriors.StairReachMetres).ToList();
             Assert.IsNotEmpty(up, "nowhere on the ground floor reaches the foot of the stairs");
 
-            // He arrives where he pressed and the landing pushes him to the nearest open floor
-            // (BuildingInterior.ResolveLanding, minimum separation); from there the whole storey above (both
-            // beds, the wardrobe) is his. Within 1.5 m: never thrown across the room.
-            var arrivals = new List<Vector2>();
-            foreach (Vector2 p in up)
-            {
-                Vector2? landing = NearestFree(p, upperObs, 1.5f);
-                Assert.IsTrue(landing.HasValue, $"pressing the stairs from {p} lands in a wall upstairs");
-                arrivals.Add(landing.Value);
-            }
-            var upstairs = Flood(arrivals, upperObs);
+            // Going up lands his transform on the head of the stairs (the foot's landing); his collider is then
+            // Lift below it, and BuildingInterior.ResolveLanding pushes him clear of anything solid.
+            Vector2? arrival = NearestFree(StairHead - new Vector2(Lift, 0f), upperObs, 1.5f);
+            Assert.IsTrue(arrival.HasValue, "going up lands him in a wall upstairs");
+            var upstairs = Flood(new[] { arrival.Value }, upperObs);
             foreach (var f in Plan.Furnishings.Where(f => f.Fixture == StPetersInteriors.InteriorFixture.PlayerBed ||
                                                           f.Fixture == StPetersInteriors.InteriorFixture.OwnerBed ||
                                                           f.Fixture == StPetersInteriors.InteriorFixture.Wardrobe))
@@ -311,13 +311,176 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.IsTrue(upstairs.Select(At).Any(p => Reach(p, f.RoomMetres) <= r), $"upstairs, the {f.PropKey} at {f.RoomMetres} is out of reach");
             }
 
-            var down = upstairs.Select(At).Where(p => Reach(p, stair) <= StPetersInteriors.StairReachMetres).ToList();
+            var down = upstairs.Select(At).Where(p => Reach(p, StairHead) <= StPetersInteriors.StairReachMetres).ToList();
             Assert.IsNotEmpty(down, "nowhere upstairs reaches the head of the stairs");
-            foreach (Vector2 p in down)
+
+            // Coming down lands his transform on the foot.
+            Vector2? back = NearestFree(StairFoot - new Vector2(Lift, 0f), groundObs, 1.5f);
+            Assert.IsTrue(back.HasValue && ground.Contains(Cell(back.Value)),
+                          "coming down lands him off the ground floor's walkable floor");
+        }
+
+        [Test]
+        public void TheStairsStandAgainstAnOutsideWall_ClearOfTheDoorways()
+        {
+            Assert.GreaterOrEqual(StPetersInteriors.GinnyStairX1, InnerW - 1e-3f,
+                                  "the run does not stand against the north wall's inside face");
+            float along = StPetersInteriors.GinnyStairY1 - StPetersInteriors.GinnyStairY0;
+            float across = StPetersInteriors.GinnyStairX1 - StPetersInteriors.GinnyStairX0;
+            Assert.Greater(along, 2f * across, "the run does not lie along the wall: it juts into the room");
+            foreach (var (from, to) in BackPartitionGaps())
+                Assert.Greater(StPetersInteriors.GinnyStairX0, to + 2f * Radius / K - 1e-3f,
+                               $"the run stands in the walk to the doorway {from}..{to}");
+            Assert.IsTrue(Plan.GroundWalls.Any(w => Mathf.Approximately(w.X0, StPetersInteriors.GinnyStairX0) &&
+                                                    Mathf.Approximately(w.Y1, StPetersInteriors.GinnyStairY1)),
+                          "the run has no collider on the ground floor");
+        }
+
+        [Test]
+        public void HeCanStandInTheWashroom_ClearOfThePartitionPaint()
+        {
+            InteriorKit.Contract contract = Contract();
+            var walk = Flood(new[] { FrontDoorFeet }, GroundObstacles(contract)).Select(At).ToList();
+            var clear = walk.Where(p => p.y < 0f && Where(p) == RoomOf.Washroom)
+                            .Where(p =>
+                            {
+                                Vector2 drawn = p + new Vector2(DrawnLift, 0f);
+                                return Plan.GroundWalls.All(w => Mathf.Min(Mathf.Min(drawn.x - w.X0, w.X1 - drawn.x),
+                                                                           Mathf.Min(drawn.y - w.Y0, w.Y1 - drawn.y)) <= 0.1f);
+                            }).ToList();
+            Assert.IsNotEmpty(clear, "nowhere in the washroom do his drawn feet stand clear of the walls");
+            float depth = clear.Max(p => p.x) - clear.Min(p => p.x);
+            Assert.GreaterOrEqual(depth, 1.0f, $"the washroom gives him only {depth:0.00} m to stand in, south to north");
+        }
+
+        [Test]
+        public void TheStairHeadIsClearFloor_AndBothBedroomsOpenOffIt_EachByItsOwnDoor()
+        {
+            InteriorKit.Contract contract = Contract();
+            var upperObs = UpperObstacles(contract);
+            Vector2 arrival = StairHead - new Vector2(Lift, 0f);
+            Assert.IsTrue(Free(arrival, upperObs), $"he arrives at the stair head ({arrival}) in a wall or the stairwell");
+
+            var landing = Flood(new[] { arrival }, upperObs).Select(At).ToList();
+            float corridorMid = (StPetersInteriors.GinnyCorridorX0 + InnerW) * 0.5f;
+            Vector2 corridor = landing.Where(p => Mathf.Abs(p.x - corridorMid) < 0.15f)
+                                      .OrderBy(p => (p - arrival).sqrMagnitude).FirstOrDefault();
+            Assert.AreNotEqual(Vector2.zero, corridor, "the stair head does not open onto the corridor");
+
+            bool InPlayerRoom(Vector2 p) => p.x < StPetersInteriors.GinnyCorridorX0 - 0.3f && p.y > StPetersInteriors.GinnyPlayerDoorY0;
+            bool InOwnerRoom(Vector2 p) => p.x < StPetersInteriors.GinnyCorridorX0 - 0.3f && p.y < StPetersInteriors.GinnyOwnerDoorY1;
+            var open = Flood(new[] { corridor }, upperObs).Select(At).ToList();
+            Assert.IsTrue(open.Any(InPlayerRoom), "his room cannot be walked into from the stair head");
+            Assert.IsTrue(open.Any(InOwnerRoom), "Ginny's room cannot be walked into from the stair head");
+
+            float px0 = StPetersInteriors.GinnyCorridorX0 - 0.3f, px1 = StPetersInteriors.GinnyCorridorX0;
+            var playerShut = new List<Rect>(upperObs)
+                { Rect.MinMaxRect(px0, StPetersInteriors.GinnyPlayerDoorY0, px1, StPetersInteriors.GinnyPlayerDoorY1) };
+            var a = Flood(new[] { corridor }, playerShut).Select(At).ToList();
+            Assert.IsFalse(a.Any(InPlayerRoom), "with his door shut his room is still walked into: it is a way through");
+            Assert.IsTrue(a.Any(InOwnerRoom), "Ginny's room is entered only through his");
+
+            var ownerShut = new List<Rect>(upperObs)
+                { Rect.MinMaxRect(px0, StPetersInteriors.GinnyOwnerDoorY0, px1, StPetersInteriors.GinnyOwnerDoorY1) };
+            var b = Flood(new[] { corridor }, ownerShut).Select(At).ToList();
+            Assert.IsFalse(b.Any(InOwnerRoom), "with Ginny's door shut her room is still walked into: it is a way through");
+            Assert.IsTrue(b.Any(InPlayerRoom), "his room is entered only through Ginny's");
+        }
+
+        /// <summary>
+        /// The real building, as the builder stands it, walked upstairs over its LIVE colliders: from the
+        /// stair head both bedrooms are reached, and no cell he reaches is outside the upper floor. The
+        /// storey above is drawn UpperLevelY up the screen, so the ground floor's north wall crosses the
+        /// upper floor; this is what catches it walling the two south bedrooms off, and an upper storey
+        /// with no outer walls of its own letting him walk out into the air.
+        /// </summary>
+        [Test]
+        public void UpstairsTheLiveWallsLetHimIntoBothBedrooms_AndNotOutOfTheHouse()
+        {
+            Contract();
+            var go = new GameObject("ginny cottage (test)");
+            try
             {
-                Vector2? landing = NearestFree(p, groundObs, 1.5f);
-                Assert.IsTrue(landing.HasValue && ground.Contains(Cell(landing.Value)),
-                              $"coming down from {p} lands off the ground floor's walkable floor");
+                go.transform.position = new Vector3(84f, 28f, 0f);
+                var shell = go.AddComponent<SpriteRenderer>();
+                int exterior = -1;
+                for (int f = 0; f < 8 && exterior < 0; f++)
+                    if (InteriorCatalog.InteriorFacingFor(f) == 2) exterior = f;
+                if (exterior < 0) Assert.Ignore("no exterior facing gives the scene's interior facing 2");
+
+                var occupant = new GameObject("occupant").transform;
+                occupant.SetParent(go.transform, worldPositionStays: false);
+                StandResult stood = BuildingInteriorStander.Stand(go, StPetersInteriors.GinnyCottagePlanKey,
+                    InteriorFamily.VillageBuilding, exterior, null, StPetersInteriors.GinnyCottagePlanKey, shell);
+                if (!stood.Enterable) Assert.Ignore("Ginny's room is not baked in this checkout");
+
+                var interior = go.GetComponent<HiddenHarbours.World.BuildingInterior>();
+                interior.SetOccupant(occupant);
+                occupant.position = interior.transform.position;
+                typeof(HiddenHarbours.World.BuildingInterior)
+                    .GetMethod("Update", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                    .Invoke(interior, null);
+                Assert.IsTrue(interior.IsInside, "precondition: he is inside");
+                Assert.IsTrue(interior.TryGoToLevel(1), "precondition: he can be sent upstairs");
+
+                var upper = interior.FootprintFor(1);
+                var solids = go.GetComponentsInChildren<PolygonCollider2D>(false)
+                    .Where(c => c.enabled && !c.isTrigger)
+                    .SelectMany(c => Enumerable.Range(0, c.pathCount).Select(k => c.GetPath(k)
+                        .Select(v => (Vector2)c.transform.TransformPoint(v + c.offset)).ToArray()))
+                    .Where(poly => poly.Length >= 3)
+                    .ToList();
+                bool Open(Vector2 plan)
+                {
+                    Vector2 w = upper.ModelToWorld(-plan);
+                    foreach (Vector2[] poly in solids)
+                    {
+                        bool inside = false;
+                        for (int i = 0, j = poly.Length - 1; i < poly.Length; j = i++)
+                        {
+                            Vector2 a = poly[i], b = poly[j];
+                            if ((a.y > w.y) != (b.y > w.y) && w.x < (b.x - a.x) * (w.y - a.y) / (b.y - a.y) + a.x)
+                                inside = !inside;
+                            Vector2 ab = b - a;
+                            float t = Mathf.Clamp01(Vector2.Dot(w - a, ab) / Mathf.Max(ab.sqrMagnitude, 1e-9f));
+                            if ((a + ab * t - w).sqrMagnitude < Radius * Radius - 1e-6f) return false;
+                        }
+                        if (inside) return false;
+                    }
+                    return true;
+                }
+
+                const float S = 0.1f;
+                float bx = HalfW + 1.0f, by = HalfL + 1.0f;
+                var start = new Vector2(Mathf.Round((StairHead.x - Lift) / S) * S, Mathf.Round(StairHead.y / S) * S);
+                Assert.IsTrue(Open(start), $"the stair head ({start}) stands in a live collider upstairs");
+                var seen = new HashSet<(int, int)> { (Mathf.RoundToInt(start.x / S), Mathf.RoundToInt(start.y / S)) };
+                var stack = new Stack<(int, int)>(seen);
+                while (stack.Count > 0)
+                {
+                    var (x, y) = stack.Pop();
+                    foreach (var n in new[] { (x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1) })
+                    {
+                        Vector2 p = new Vector2(n.Item1 * S, n.Item2 * S);
+                        if (Mathf.Abs(p.x) > bx || Mathf.Abs(p.y) > by || seen.Contains(n) || !Open(p)) continue;
+                        seen.Add(n); stack.Push(n);
+                    }
+                }
+                var reached = seen.Select(c => new Vector2(c.Item1 * S, c.Item2 * S)).ToList();
+                Vector2 outside = reached.FirstOrDefault(p => Mathf.Abs(p.x) > InnerW + 0.01f || Mathf.Abs(p.y) > InnerL + 0.01f);
+                Assert.IsFalse(reached.Any(p => Mathf.Abs(p.x) > InnerW + 0.01f || Mathf.Abs(p.y) > InnerL + 0.01f),
+                               $"upstairs he walks out of the house (reached plan {outside}): the storey has no outer wall there");
+                float split = StPetersInteriors.GinnyCorridorX0 - 0.3f;
+                Assert.IsTrue(reached.Any(p => p.x < split && p.y > StPetersInteriors.GinnyPlayerDoorY0),
+                              "his bedroom cannot be walked into from the stair head over the live colliders");
+                Assert.IsTrue(reached.Any(p => p.x < split && p.y < StPetersInteriors.GinnyOwnerDoorY1),
+                              "Ginny's bedroom cannot be walked into from the stair head over the live colliders");
+                Assert.IsTrue(reached.Any(p => p.x < -InnerW + 1.0f),
+                              "the south half upstairs, where both beds stand, is walled off");
+            }
+            finally
+            {
+                Object.DestroyImmediate(go);
             }
         }
 

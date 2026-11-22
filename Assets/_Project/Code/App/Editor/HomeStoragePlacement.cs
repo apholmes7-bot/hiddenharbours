@@ -91,8 +91,9 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>
         /// Every storage site: the positioned rows, then the lead. A row is in the UpperLevelFor frame, the one
-        /// <see cref="StPetersInteriors.Furnish"/> stands the bed and the dresser in (no half turn), which is why
-        /// its site is NOT a plan-frame site.
+        /// the bed and the dresser are planned in: front door at <c>+y</c>. That IS the plan frame, so its site is a
+        /// plan-frame site and takes the same half turn into a footprint whose door is in the <c>-y</c> wall as a
+        /// fixture row does (stood without it, a rack lands mirrored through the room's centre, in his doorway).
         /// </summary>
         public static List<InteriorFixturePlacement.Site> Sites()
         {
@@ -101,7 +102,7 @@ namespace HiddenHarbours.App.Editor
                 sites.Add(new InteriorFixturePlacement.Site(HomeStoragePlan.Scene, PrefabFor(row), NameOf(row),
                     row.StorageId, row.At,
                     $"{row.BuildingKey}, level {row.Level}: the plan's {row.Kind} ({row.DefId}), remembered as {row.StorageId}",
-                    StPetersGinnyPlot.RootName, row.RoomKey, row.Level, planFrame: false));
+                    StPetersGinnyPlot.RootName, row.RoomKey, row.Level, planFrame: true));
             if (TryShoreLeadPath(out List<Vector2> path))
                 sites.Add(new InteriorFixturePlacement.Site(HomeStoragePlan.Scene, ShoreLeadPrefab, ShoreLeadName, null,
                     path[path.Count - 1],

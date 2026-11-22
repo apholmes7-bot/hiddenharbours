@@ -296,6 +296,36 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void Handed_over_ground_walls_stand_outside_and_downstairs_and_go_off_upstairs()
+        {
+            var interior = StandTwoStorey(out _, out _, out _, out var upper, out var upperProps,
+                                          out var upperWalls);
+            var walls = new GameObject("Walls");
+            walls.transform.SetParent(interior.transform, worldPositionStays: false);
+            var keptOn = new GameObject("Walls (not handed over)");
+            keptOn.transform.SetParent(interior.transform, worldPositionStays: false);
+            interior.ConfigureUpperLevel(upper, upperProps.transform, upperWalls.transform,
+                                         interior.UpperLevelY, groundWalls: walls.transform);
+
+            Assert.IsTrue(walls.activeSelf, "outside, the house's walls are what you walk around");
+            var occupant = WalkInside(interior);
+            Assert.IsTrue(walls.activeSelf, "and downstairs they are the room's walls");
+
+            Assert.IsTrue(interior.TryGoToLevel(1));
+            Assert.IsFalse(walls.activeSelf,
+                           "upstairs the ground floor's north wall would cross the upper floor: it goes off");
+            Assert.IsTrue(upperWalls.activeSelf, "and the storey's own walls stand instead");
+            Assert.IsTrue(keptOn.activeSelf, "walls nobody handed over are left alone");
+
+            Assert.IsTrue(interior.TryGoToLevel(0));
+            Assert.IsTrue(walls.activeSelf, "back down, back on");
+
+            interior.TryGoToLevel(1);
+            WalkOutside(interior, occupant);
+            Assert.IsTrue(walls.activeSelf, "and on again the moment he is outside");
+        }
+
+        [Test]
         public void Walking_back_in_after_a_visit_upstairs_opens_on_the_ground_floor()
         {
             var interior = StandTwoStorey(out _, out var ground, out _, out var upper, out _, out _);
@@ -811,7 +841,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void Both_halves_of_the_stairwell_stand_on_the_same_point_which_is_why_nothing_teleports()
+        public void The_foot_and_the_head_of_the_stairwell_stand_at_the_two_ends_of_one_flight()
         {
             var plan = StPetersInteriors.UpperLevelFor(StPetersInteriors.GinnyCottagePlanKey);
 
@@ -821,24 +851,45 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (var f in plan.Furnishings)
                 if (f.Fixture == StPetersInteriors.InteriorFixture.StairDown) head = f.RoomMetres;
 
-            Assert.AreEqual(foot.x, head.x, 1e-4f,
-                            "the foot and the head of one stairwell are the same place on the plan");
-            Assert.AreEqual(foot.y, head.y, 1e-4f,
-                            "and that is precisely what lets the level swap move nobody");
+            float mid = 0.5f * (StPetersInteriors.GinnyStairY0 + StPetersInteriors.GinnyStairY1);
+            Assert.IsFalse(float.IsInfinity(foot.x) || float.IsInfinity(head.x), "both halves are placed");
+            Assert.Less((foot.y - mid) * (head.y - mid), 0f,
+                        "the foot and the head are at opposite ends of the flight: the climb carries him along it");
+            foreach (Vector2 p in new[] { foot, head })
+                Assert.That(p.x, Is.InRange(StPetersInteriors.GinnyStairX0, StPetersInteriors.GinnyStairX1 + 1e-4f),
+                            $"the stair point {p} is not beside the run");
+        }
+
+        [Test]
+        public void Linking_the_stair_landings_points_each_half_at_the_other()
+        {
+            var groundProps = new GameObject("Furniture"); _spawned.Add(groundProps);
+            var upperProps = new GameObject("FurnitureUpper"); _spawned.Add(upperProps);
+            var foot = new GameObject("foot"); foot.transform.SetParent(groundProps.transform, false);
+            var head = new GameObject("head"); head.transform.SetParent(upperProps.transform, false);
+            var up = foot.AddComponent<InteriorStair>();
+            up.Configure(null, "test.stair_up", fromLevel: 0, toLevel: 1, reachMeters: 1.2f, arrivalText: "");
+            var down = head.AddComponent<InteriorStair>();
+            down.Configure(null, "test.stair_down", fromLevel: 1, toLevel: 0, reachMeters: 1.2f, arrivalText: "");
+
+            StPetersInteriors.LinkStairLandings(groundProps.transform, upperProps.transform);
+
+            Assert.AreSame(head.transform, up.Landing, "going up lands him at the head of the stairs");
+            Assert.AreSame(foot.transform, down.Landing, "coming down lands him at the foot");
         }
 
         [Test]
         public void Every_piece_of_upstairs_furniture_stands_inside_the_walls()
         {
             var plan = StPetersInteriors.UpperLevelFor(StPetersInteriors.GinnyCottagePlanKey);
-            float hw = CottageWidth * 0.5f - StPetersInteriors.WallThicknessMetres;
-            float hl = CottageLength * 0.5f - StPetersInteriors.WallThicknessMetres;
+            float hw = RoomFixturePlan.GinnyW * 0.5f - StPetersInteriors.WallThicknessMetres;
+            float hl = RoomFixturePlan.GinnyL * 0.5f - StPetersInteriors.WallThicknessMetres;
 
             foreach (var f in plan.Furnishings)
             {
                 Assert.LessOrEqual(Mathf.Abs(f.RoomMetres.x), hw,
                     $"'{f.PropKey}' at {f.RoomMetres} is through the side wall of a " +
-                    $"{CottageWidth}x{CottageLength} m cottage");
+                    $"{RoomFixturePlan.GinnyW}x{RoomFixturePlan.GinnyL} m cottage");
                 Assert.LessOrEqual(Mathf.Abs(f.RoomMetres.y), hl,
                     $"'{f.PropKey}' at {f.RoomMetres} is through the end wall");
             }
@@ -954,6 +1005,57 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(-1.68f, 0.5f * (minX + maxX), 1e-3f,
                             "the shops' doors are measured and off centre; a plug that assumed the " +
                             "middle would seal a wall and leave the door open");
+        }
+
+        [Test]
+        public void The_threshold_counts_him_in_when_his_feet_or_his_pivot_are_in_the_room()
+        {
+            var interior = StandTwoStorey(out _, out _, out _, out _, out _, out _);
+            InteriorFootprint fp = interior.FootprintFor(0);
+            const float pivotAboveFeet = 0.7f;
+            float inset = StPetersInteriors.WallThicknessMetres;
+
+            // The first point straight up the screen from the middle of the room whose pivot reads as
+            // outside: a fisher whose transform is there has his feet well inside, against the far wall.
+            Vector2 centre = interior.transform.position;
+            float y = 0f;
+            while (fp.Contains(centre + new Vector2(0f, y), inset) && y < 50f) y += 0.01f;
+            Vector2 pivot = centre + new Vector2(0f, y + 0.05f);
+            Assert.IsTrue(fp.Contains(pivot - new Vector2(0f, pivotAboveFeet), inset),
+                          "precondition: the feet of a pivot just past the edge are on the floor");
+
+            var bare = new GameObject("pivot only");
+            _spawned.Add(bare);
+            bare.transform.position = pivot;
+            interior.SetOccupant(bare.transform);
+            Tick(interior);
+            Assert.IsFalse(interior.IsInside, "an occupant with no body is still read at its transform");
+
+            var fisher = new GameObject("fisher");
+            _spawned.Add(fisher);
+            fisher.transform.position = pivot;
+            var trigger = fisher.AddComponent<BoxCollider2D>();
+            trigger.isTrigger = true;
+            trigger.offset = new Vector2(0f, 5f);
+            var feet = fisher.AddComponent<CircleCollider2D>();
+            feet.radius = 0.35f;
+            feet.offset = new Vector2(0f, -pivotAboveFeet);
+            interior.SetOccupant(fisher.transform);
+
+            Assert.That(Vector2.Distance(interior.FootingOf(fisher.transform), pivot - new Vector2(0f, pivotAboveFeet)),
+                        Is.LessThan(1e-4f), "the footing is the solid circle's centre; the trigger is not a body");
+            Tick(interior);
+            Assert.IsTrue(interior.IsInside,
+                          "his feet are on the floor against the north wall, so the house stays open around him");
+
+            // Held at a seat against the south wall, the pose puts his pivot on the seat and his feet a step
+            // beyond the wall: the pivot is in the room, so the room stays open.
+            float down = 0f;
+            while (fp.Contains(centre - new Vector2(0f, down), inset) && down < 50f) down += 0.01f;
+            fisher.transform.position = centre - new Vector2(0f, down - 0.05f);
+            Assert.IsFalse(fp.Contains(interior.FootingOf(fisher.transform), inset), "precondition: his feet are past the south wall");
+            Tick(interior);
+            Assert.IsTrue(interior.IsInside, "a pivot inside the room is still inside, as it always was");
         }
     }
 }
