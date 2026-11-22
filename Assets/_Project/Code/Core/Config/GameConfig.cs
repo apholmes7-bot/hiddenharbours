@@ -60,6 +60,13 @@ namespace HiddenHarbours.Core
                  "none (rowstyle.casual: nobody else rows like a racer).")]
         public RowingStyleDef NpcRowingStyle;
 
+        [Header("Helm sit and stand (the mesh figure takes and leaves a helm)")]
+        [Tooltip("How long the player's figure takes to sit down at a tiller seat, a seated helm or the oars, " +
+                 "or to step up and take a standing wheel, and to leave again; and how the move splits " +
+                 "between going to the spot and settling into the pose. Visual only: the helm goes live on " +
+                 "the press. 0 seconds (or Enabled off) is the old one-frame snap.")]
+        public HelmTransitionSettings HelmSitStand = HelmTransitionSettings.Default;
+
         [Header("Cleanliness (the third need)")]
         [Tooltip("Dirt (owner ask 2026-11-15): rises slowly with game time and faster with dirty work, the " +
                  "gym and the sea; washing at a station clears it, each station only to its own ceiling (sea " +
