@@ -205,6 +205,10 @@ Material:
     - _StormFoamLaneStrength: 0.75
     - _StormFoamLaneStretch: 6
     - _SunGlitterStrength: 0.25
+    - _SunGlitterForm: 1
+    - _SunGlitterSpark: 10
+    - _LowSunHueHold: 0.4
+    - _LowSunWakeHold: 0.6
     - _SunSideStrength: 1.7
     - _SurfAgeStrength: 1
     - _SurfBandDither: 0.7
@@ -318,6 +322,12 @@ Material:
     - _ShallowColor: {r: 0.16, g: 0.5, b: 0.72, a: 0.95}
     - _SpecColor: {r: 0.9, g: 0.95, b: 1, a: 1}
     - _SunGlitterColor: {r: 1, g: 0.82, b: 0.54999995, a: 1}
+    - _SunGlitterCell: {r: 0.5, g: 0.25, b: 0.35, a: 1.2}
+    - _SunGlitterDash: {r: 0.09, g: 0.016, b: 3, a: 0.06}
+    - _LowSunWindow: {r: -0.2, g: 0.35, b: 0.5, a: 0.4}
+    - _LowSunSheen: {r: 0.3, g: 0.5, b: 3, a: 0.8}
+    - _LowSunSkyNear: {r: 1, g: 0.72, b: 0.42, a: 1}
+    - _LowSunSkyFar: {r: 0.62, g: 0.4, b: 0.5, a: 1}
     - _SurfBarrelColor: {r: 0.16, g: 0.26, b: 0.34, a: 1}
     - _SurfColor: {r: 1, g: 1, b: 1, a: 1}
     - _SurfLipColor: {r: 1, g: 1, b: 1, a: 1}

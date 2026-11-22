@@ -678,7 +678,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             StringAssert.Contains(sq("float hwLowGain = lerp(max(_HHHullWaveLowLight.x, 0.0), max(_HHHullWaveLowLight.w, 0.0), hullWaveVFrac);"), src);
             StringAssert.Contains(sq("hullWaveLowLight = hwShade * hullWaveShore * hwLowGain * hwDim;"), src);
             int grade = src.IndexOf(sq("col.rgb = PaletteGrade(col.rgb, dayNightLuma);"), System.StringComparison.Ordinal);
-            int post = src.IndexOf(sq("col.rgb *= 1.0 + hullWaveLowLight;"), System.StringComparison.Ordinal);
+            int post = src.IndexOf(sq("col.rgb *= 1.0 + hullWaveLowLight * lowSunDilute;"), System.StringComparison.Ordinal);
             Assert.Greater(grade, 0);
             Assert.Greater(post, grade, "the low-light share must be laid after the grade");
             StringAssert.Contains("float4 _HHHullWaveLowLight;", raw);

@@ -1037,6 +1037,31 @@ share is composited after the palette grade, overlay-compensated — see §11.6)
    moon/stars/boat beam) so the dusk tint's downstream multiply can't mute its authored warm gold — at midday
    the tint is ~1 so the compensation is a natural no-op, and the gate is ~0 there anyway (midday water is
    effectively unchanged). Inherits the sea-state fade + sharpness smear like all sky content.
+   **Form (11-22).** `_SunGlitterForm` chooses how the path is drawn: 0 = the noise lanes above (the shader
+   default), 1 = **sparkles** (shipped in `Water.mat`). Seen from above, the noise lanes drew metre-wide
+   loops and worms on open water. The sparkle form is a world-fixed grid of cells (`_SunGlitterCell`: cell
+   size, share of cells lit, lives per second); each lit cell holds one short level dash (`_SunGlitterDash`:
+   half length, half thickness) that is born short, flares and dies in three steps. A lane through the viewer
+   along the sun's bearing (`_SunGlitterDash.z` half width) and the sunward side raise the **count** of
+   glints, never their brightness; `_SunGlitterDash.w` is the thin scatter outside the lane and
+   `_SunGlitterSpark` a gain on this form only. Pure in (position, time).
+5. **The LOW SUN sea (11-22).** The day/night overlay multiplies the frame by the tint, and a multiply can
+   only darken: under a red-gold tint the sea was the noon sea made dark and brown, with no light on it,
+   while white foam took the tint whole and stood far above it. Three dials on the water material answer
+   that, inside one window over the sun's elevation (`_LowSunWindow`: below-horizon end, high-sun fade start
+   and end; the weight is exactly 0 at high sun, at night and with no cycle, so noon cannot move):
+   - **`_LowSunSheen`** (strength, wave relief, reach in view half-heights, lane lift): the glowing sky the
+     sea mirrors, added with the sky mirror (under the foam, so foam ages back to this sea), `_LowSunSkyNear`
+     toward the sun and `_LowSunSkyFar` away from it, brighter on faces tipped to the sun. It is divided by
+     the tint so it reads on screen as authored, and it fades with the tint's own saturation
+     (`_LowSunWindow.w` = the saturation for a full sheen), so an overcast evening has none.
+   - **`_LowSunHueHold`**: how far the finished sea keeps its own hue under the coloured light (0 = takes the
+     tint whole, 1 = takes only its brightness). Brightness is never changed by it.
+   - The hull waves' low-light shade (sized on the dark sea) is scaled by how far the sheen lifted the sea,
+     so a wake keeps the swing it had.
+   Every shader default is the passthrough; the look ships in `Water.mat`. Twins: `WaterLowSun`
+   (`Weight`, `Colourful`, `Sheen`, `HullWaveDilute`, `HueHoldFactor`, `SparkleLitShare`, `SparkleLength`),
+   tested in `Assets/Tests/EditMode/Art/WaterLowSunTests.cs`.
 
 **Invariants (all hold):** everything **inherits the §11 sea-state fade** (reuses `ReflectionStrength()` /
 `ReflectionSharpness()` — strong on CALM, gone in chop/storm); the moon + stars additionally **gate by night**
