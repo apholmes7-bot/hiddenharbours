@@ -29,6 +29,15 @@ namespace HiddenHarbours.Core
     [CreateAssetMenu(menuName = "Hidden Harbours/Washroom", fileName = "Washroom")]
     public sealed class WashroomDef : ScriptableObject
     {
+        /// <summary>The shipped door frame time, for a booth with no Def wired (tests, a stray prefab).</summary>
+        public const float DefaultDoorFrameSeconds = 0.12f;
+
+        /// <summary>The shipped open-door beat, for a booth with no Def wired.</summary>
+        public const float DefaultDoorHoldOpenSeconds = 0.4f;
+
+        /// <summary>The shipped reach from the front of the door, for a booth with no Def wired.</summary>
+        public const float DefaultDoorReachMeters = 0.7f;
+
         [Tooltip("Stable id, append-only (washroom.snake_case, e.g. washroom.outhouse).")]
         public string Id = "washroom.example";
 
@@ -47,6 +56,16 @@ namespace HiddenHarbours.Core
         [Tooltip("The door opens and closes (owner: outhouses 'with openable doors'). Uses the seamless-" +
                  "interiors door (press moves the leaf).")]
         public bool DoorOpens = true;
+
+        [Tooltip("Real seconds each door frame shows as the door swings (shut, ajar, open). Presentation only.")]
+        [Min(0.01f)] public float DoorFrameSeconds = DefaultDoorFrameSeconds;
+
+        [Tooltip("Real seconds the door stands wide open while he steps in or out, before it swings shut.")]
+        [Min(0f)] public float DoorHoldOpenSeconds = DefaultDoorHoldOpenSeconds;
+
+        [Tooltip("How close (m) to the front of the door he must stand to be offered the seat. Offered only on the " +
+                 "door side: from beside or behind the booth he is further than this.")]
+        [Min(0f)] public float DoorReachMeters = DefaultDoorReachMeters;
 
         [Tooltip("The prefab the placement lane stands in the world. Empty until it is authored.")]
         public GameObject Prefab;
