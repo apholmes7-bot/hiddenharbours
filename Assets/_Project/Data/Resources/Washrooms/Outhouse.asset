@@ -19,4 +19,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 03d0f3526f954d519174f814829819cd, type: 2}
   HasDoor: 1
   DoorOpens: 1
+  DoorFrameSeconds: 0.12
+  DoorHoldOpenSeconds: 0.4
   Prefab: {fileID: 6634893107903659565, guid: 7433b796670d49898dae30c4601a1fc4, type: 3}
