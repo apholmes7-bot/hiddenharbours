@@ -77,6 +77,9 @@ namespace HiddenHarbours.Art
         /// <summary>The name of the ashore figure's GameObject, under the character's own sprite.</summary>
         public const string AshoreFigureObjectName = "MeshCastFigureAshore";
 
+        /// <summary>The name of the held tool's GameObject while she works with one.</summary>
+        public const string HeldPropObjectName = "MeshCastHeldTool";
+
         /// <summary>Which gate shut, for tests, plates and anyone looking at a figure that came back as a
         /// sprite. <see cref="None"/> while the mesh draws.</summary>
         public enum Refusal
@@ -146,6 +149,10 @@ namespace HiddenHarbours.Art
         private string _ashoreStateKey;
         private double _ashoreStateStartSeconds;
         private bool _ashoreRefused;
+
+        // At work (ADR 0053 §10): the tool of this frame's work, and the driver that holds it in her hand.
+        private HeldPropMeshDef _workProp;
+        private FigureHeldPropMesh _heldProp;
 
         private Refusal _refusal = Refusal.NotPosedYet;
         private string _refusalKey;
@@ -327,6 +334,13 @@ namespace HiddenHarbours.Art
         /// sprite, the stand and anything that holds them have run this frame), and directly by tests.</remarks>
         public void PoseFigure(ICharacterFigureStand stand, bool aboard)
         {
+            _workProp = null;
+            PoseStand(stand, aboard);
+            SettleHeldProp();
+        }
+
+        private void PoseStand(ICharacterFigureStand stand, bool aboard)
+        {
             DrawsInsteadOfSprite = false;
             Rowing = false;
 
@@ -492,10 +506,13 @@ namespace HiddenHarbours.Art
             float progress = 0f;
             bool driven = stand is ICharacterFigureAshoreClipStand clipStand &&
                           clipStand.TryGetFigureClip(out move, out progress);
-            string stateKey;
+            string stateKey = null;
             bool fellBack = false;
             CharacterStance stance = character.Stance;
             CharacterGait gait = character.Gait;
+            // At work with a tool (ADR 0053 §10): the work clip, looping on game time, and the tool as its
+            // mesh in her hand. Work she cannot draw as a mesh is not refused: she stands as she would.
+            bool working = !driven && TryWork(stand, skin, config, out stateKey);
             if (driven)
             {
                 stateKey = CharacterClipStateMap.StateKeyFor(move);
@@ -508,8 +525,9 @@ namespace HiddenHarbours.Art
                     return;
                 }
             }
-            else if (!CharacterSkinStateMap.Resolve(skin, stance, gait, out stateKey, out fellBack) ||
-                     (character.RequireExactFigureState && fellBack))
+            else if (!working &&
+                     (!CharacterSkinStateMap.Resolve(skin, stance, gait, out stateKey, out fellBack) ||
+                      (character.RequireExactFigureState && fellBack)))
             {
                 _refusalStance = stance;
                 _refusalGait = gait;
@@ -604,6 +622,56 @@ namespace HiddenHarbours.Art
             DrawsInsteadOfSprite = true;
             _refusal = Refusal.None;
         }
+
+        /// <summary>
+        /// The work her stand says she is at this frame (<see cref="ICharacterFigureWorkStand"/>), when her
+        /// skin can draw it: a well-formed clip in <see cref="CharacterSkinDef.MeshStates"/>, and, for work
+        /// done with a tool, the hand-tool switch on and a prop her figure can hold on the right hand's tool
+        /// socket (the hand the rig aims every tool from). Otherwise false, and she stands as she would have.
+        /// </summary>
+        private bool TryWork(ICharacterFigureAshoreStand stand, CharacterSkinDef skin, GameConfig config,
+                             out string stateKey)
+        {
+            stateKey = null;
+            if (!(stand is ICharacterFigureWorkStand work)
+                || !work.TryGetFigureWork(out string key, out HeldPropMeshDef prop)
+                || string.IsNullOrEmpty(key) || !skin.DrawsAsMesh(key)
+                || !skin.TryGetClip(key, out CharacterSkinDef.SkinClip clip) || !clip.KeysWellFormed(skin.BoneCount))
+                return false;
+            if (prop != null)
+            {
+                if (config == null || !config.MeshHandToolInHand) return false;
+                if (!HeldProp().CanHold(prop, skin, HeldPropSockets.RightHandTool)) return false;
+            }
+            _workProp = prop;
+            stateKey = key;
+            return true;
+        }
+
+        /// <summary>
+        /// The tool of the work drawn this frame, on her ashore figure's hand, aimed by the work clip; hidden
+        /// on every other frame (no work, a tool-less work, a gate shut, aboard). Runs after the pose, so the
+        /// socket is read off the frame drawn.
+        /// </summary>
+        private void SettleHeldProp()
+        {
+            if (_heldProp == null && _workProp == null) return;
+            // The driver is made again here when her figure was rebuilt this frame after the work was read
+            // (a new ashore figure disposes the old one's driver), so the tool shows on the frame she starts.
+            HeldProp();
+            if (_workProp == null ||!DrawsInsteadOfSprite || _ashoreFigure == null || !_ashoreFigure.Visible)
+            {
+                if (_heldProp.Drawing) _heldProp.Hide();
+                return;
+            }
+            GameConfig config = GameServices.Config;
+            float width = config != null ? config.HeldPropLineWidthPx : GameConfig.DefaultHeldPropLineWidthPx;
+            _heldProp.TryDraw(config != null && config.MeshHandToolInHand, _workProp, HeldPropSockets.RightHandTool,
+                              _ashoreFigure, width);
+        }
+
+        private FigureHeldPropMesh HeldProp() =>
+            _heldProp ??= new FigureHeldPropMesh(transform, HeldPropObjectName, IsoCharacterFigureRenderer.HeldReachHandTool);
 
         /// <summary>
         /// Stand the figure down, give the sprite back, and remember why. Hides rather than destroys: a
@@ -843,6 +911,12 @@ namespace HiddenHarbours.Art
 
         private void ReleaseAshoreFigure()
         {
+            // Her tool goes with her figure, before the figure it may hang under is destroyed.
+            if (_heldProp != null)
+            {
+                _heldProp.Dispose();
+                _heldProp = null;
+            }
             if (_ashoreFigure != null)
             {
                 // The id goes back NOW, not at the end of the frame when the deferred destroy lands.
