@@ -50,6 +50,7 @@
     pine:   ['#6b4e2b','#7e5d34','#8f6d40','#a5824f','#bb9a63','#d0b47e'],
     oak:    ['#553d23','#6b4e30','#7f603b','#957749','#ab8d5f','#c1a578'],
     walnut: ['#2f2018','#412c20','#54402e','#68533e','#7d6851','#947f66'],
+    barnboard: ['#3b3934','#4b4841','#5e5a51','#736e63','#8a8478','#a29c8e'],   // boards left out to silver
   };
   const WORKTOPS = {
     slate:     ['#3a3d43','#494d54','#5b6067','#70757c','#868b91','#9ca1a6'],
@@ -574,6 +575,7 @@
     microwave:   { label:'Microwave',       cat:'kitchen', foot:[0.5,0.44],                                   def:{paint:'white',wood:'oak',worktop:'slate'}, build:pMicrowave },
     chestFreezer:{ label:'Chest freezer',   cat:'kitchen', foot:[1.3,0.76], splitAt:[0.0,-0.325,0.0],          def:{paint:'white'}, build:pChestFreezer },
     chestFreezerLarge:{ label:'Chest freezer, large', cat:'kitchen', foot:[1.75,0.8], splitAt:[0.0,-0.345,0.0], def:{paint:'white'}, build:pChestFreezer },
+    outhouse:    { label:'Outhouse',        cat:'outdoor', foot:[1.1,1.2], seat:[0.0,0.04,0.45], heading:270, def:{wood:'barnboard',paint:'red'}, build:pOuthouse },
   };
 
   function resolve(name, opts){ opts=opts||{}; const P=PROPS[name]||PROPS.bath;
@@ -581,6 +583,7 @@
     return { name, wood:g('wood','pine'), paint: opts.paint!==undefined?opts.paint:(P.def.paint||null),
       fabric:g('fabric','white'), fabric2:g('fabric2','cream'), worktop:g('worktop','slate'),
       variant: opts.variant!=null?opts.variant:0, lid: Math.max(0, Math.min(1, +opts.lid||0)), heap: (opts.heap|0),
+      leaf: Math.max(0, Math.min(1, +opts.leaf||0)),
       fill: Math.max(0, Math.min(1, +opts.fill||0)), pour: !!opts.pour, froth: (opts.froth|0),
       flush: (opts.flush|0), run: (opts.run|0), split: opts.split||null,
       door: Math.max(0, Math.min(3, opts.door|0)),
@@ -599,6 +602,100 @@
       glass:{ramp: night?GLASSN:GLASSD}, glassdark:{ramp: GLASSN}, lcd:{ramp:['#1f3a2a','#2f5a3c','#4f8a5c','#7fbf86']},
       fire:{ramp:FIRE}, water:{ramp:clean(WATER)}, suds:{ramp:clean(SUDS)}, stream:{ramp:clean(STREAM)},
       dark:{ramp:DARK}, soap:{ramp:clean(SOAP)}, frost:{ramp:warm(FROST)}, frostfish:{ramp:warm(FROSTFISH)} }; }
+
+  // OUTHOUSE. A small board-and-batten privy that stands OUTDOORS: silvered plank walls with corner boards
+  // and a skirt, a lean-to roof of tarred felt falling to the back, and a faded red ledged-and-braced door with
+  // a crescent cut in it, hung on two iron straps on its LEFT jamb, that swings OUT (leaf:0..1, shut to wide
+  // open). The walls are real thin boxes with a shaded inner skin, so the open door shows a dim inside: the
+  // floor boards, the bench with its hole and its lid up against the back wall, a roll on a nail. FRONT (-Y)
+  // is the door; the back (+Y) is the low eave. seat is the front edge of the bench, so split:'near' keeps the
+  // front wall, the door and the front of the roof and drops the bench behind a figure sat on it. The size is
+  // the PROPS entry's foot; every wall, the door and the bench follow it.
+  const OUTHOUSE = { wall:0.05, zFront:2.2, zBack:1.95, roofT:0.06, eaves:0.12, overFront:0.2, overBack:0.12,
+                     doorW:0.6, doorH:1.85, doorT:0.035, leafOpenDeg:105, benchD:0.5, benchZ:0.45, skirt:0.12 };
+  function crescent(out, y, ny, mx, mz, r, mat, b){ // a crescent moon cut, horns to the right, as convex strips
+    const e=r*0.6, a0=50*DEG, a1=310*DEG, hx=mx+Math.cos(a0)*r, hz=mz+Math.sin(a0)*r;
+    const ri=Math.hypot(hx-(mx+e), hz-mz), i0=Math.atan2(hz-mz, hx-(mx+e)), i1=2*Math.PI-i0, n=8, yy=y+0.004*ny;
+    for(let k=0;k<n;k++){ const t0=k/n, t1=(k+1)/n;
+      const o=(t)=>{ const a=a0+(a1-a0)*t; return [mx+Math.cos(a)*r, mz+Math.sin(a)*r]; };
+      const q=(t)=>{ const a=i0+(i1-i0)*t; return [mx+e+Math.cos(a)*ri, mz+Math.sin(a)*ri]; };
+      const A=o(t0), B=o(t1), C=q(t1), D=q(t0);
+      out.push(F([[A[0],yy,A[1]],[B[0],yy,B[1]],[C[0],yy,C[1]],[D[0],yy,D[1]]], mat, b||0, 0.07, null, null, true)); } }
+  function pOuthouse(out, s){
+    const P=PROPS[s.name], w=P.foot[0], d=P.foot[1], O=OUTHOUSE, t=O.wall;
+    const zt=(y)=> O.zFront + (O.zBack-O.zFront)*((y + d/2)/d);
+    const boards=plankTex(0.16);
+    // a wall panel from (x0,y0) to (x1,y1), its outer side on the right of that travel; bottoms and tops per end
+    const panel=(x0,y0,x1,y1, z0a,z1a, z0b,z1b, mat,b,tex)=>{ const L=Math.hypot(x1-x0,y1-y0);
+      out.push(F([[x0,y0,z0a],[x1,y1,z0b],[x1,y1,z1b],[x0,y0,z1a]], mat, b||0, 0, [[0,z0a],[L,z0b],[L,z1b],[0,z1a]], tex||null)); };
+    const dx0=-O.doorW/2, dx1=O.doorW/2, dh=O.doorH, yf=-d/2, yb=d/2, xr=w/2, xl=-w/2;
+    const yfi=yf+t, ybi=yb-t, xri=xr-t, xli=xl+t;
+    // the outer skin: the front either side of the door and over it, then round the sides and back
+    panel(xl,yf, dx0,yf, 0,zt(yf), 0,zt(yf), 'wood', 0, boards);
+    panel(dx1,yf, xr,yf, 0,zt(yf), 0,zt(yf), 'wood', 0, boards);
+    panel(dx0,yf, dx1,yf, dh,zt(yf), dh,zt(yf), 'wood', 0, boards);
+    panel(xr,yf, xr,yb, 0,zt(yf), 0,zt(yb), 'wood', 0, boards);
+    panel(xr,yb, xl,yb, 0,zt(yb), 0,zt(yb), 'wood', 0, boards);
+    panel(xl,yb, xl,yf, 0,zt(yb), 0,zt(yf), 'wood', 0, boards);
+    // the inner skin, in shade: the inside of a privy is dim
+    const ib=-0.9;
+    panel(xri,yfi, dx1,yfi, 0,zt(yfi), 0,zt(yfi), 'wood', ib, boards);
+    panel(dx1,yfi, dx0,yfi, dh,zt(yfi), dh,zt(yfi), 'wood', ib, boards);
+    panel(dx0,yfi, xli,yfi, 0,zt(yfi), 0,zt(yfi), 'wood', ib, boards);
+    panel(xri,ybi, xri,yfi, 0,zt(ybi), 0,zt(yfi), 'wood', ib, boards);
+    panel(xli,ybi, xri,ybi, 0,zt(ybi), 0,zt(ybi), 'wood', ib, boards);
+    panel(xli,yfi, xli,ybi, 0,zt(yfi), 0,zt(ybi), 'wood', ib, boards);
+    // the door opening's reveals, the lintel's underside and a worn sill
+    panel(dx0,yf, dx0,yfi, 0,dh, 0,dh, 'wood', -0.3);
+    panel(dx1,yfi, dx1,yf, 0,dh, 0,dh, 'wood', -0.3);
+    out.push(F([[dx0,yf,dh],[dx0,yfi,dh],[dx1,yfi,dh],[dx1,yf,dh]], 'wood', -0.8, 0));
+    box(out, dx0, dx1, yf-0.025, yfi, 0, 0.04, 'wood', 0.25);
+    // corner boards and the skirt board round the foot
+    for(const [cx2,cy2] of [[xl,yf],[xr,yf],[xr,yb],[xl,yb]]) box(out, cx2-0.035, cx2+0.035, cy2-0.035, cy2+0.035, 0, zt(cy2)-0.01, 'wood', 0.3);
+    const sk=O.skirt, sp=0.015;
+    box(out, xl, dx0, yf-sp, yf, 0, sk, 'wood', -0.25); box(out, dx1, xr, yf-sp, yf, 0, sk, 'wood', -0.25);
+    box(out, xr, xr+sp, yf, yb, 0, sk, 'wood', -0.25); box(out, xl, xr, yb, yb+sp, 0, sk, 'wood', -0.25);
+    box(out, xl-sp, xl, yf, yb, 0, sk, 'wood', -0.25);
+    // a slot vent high in each side wall, under the eave
+    decalX(out, xr, 1, -0.2, 0.2, zt(0)-0.22, zt(0)-0.16, 'dark', 0.2, null, true, 0.05);
+    decalX(out, xl, -1, -0.2, 0.2, zt(0)-0.22, zt(0)-0.16, 'dark', 0.2, null, true, 0.05);
+    // the roof: the boarded underside, the felt with its laps, the fascia round its edge
+    const rf=yf-O.overFront, rb=yb+O.overBack, rl=xl-O.eaves, rr=xr+O.eaves, zr=(y)=>zt(y)+O.roofT;
+    const felt=(u,v)=>{ const f=((v%0.26)+0.26)%0.26; if(f<0.028) return -1.6; return hash2(Math.floor(u*9)|0, Math.floor(v/0.26)|0)<0.12?-0.7:0; };
+    out.push(F([[rl,rf,zt(rf)],[rl,rb,zt(rb)],[rr,rb,zt(rb)],[rr,rf,zt(rf)]], 'wood', -0.9, 0));
+    out.push(F([[rl,rf,zr(rf)],[rr,rf,zr(rf)],[rr,rb,zr(rb)],[rl,rb,zr(rb)]], 'iron', 0.6, 0, [[rl,rf],[rr,rf],[rr,rb],[rl,rb]], felt));
+    panel(rl,rf, rr,rf, zt(rf)-0.03,zr(rf), zt(rf)-0.03,zr(rf), 'wood', 0.15);
+    panel(rr,rb, rl,rb, zt(rb)-0.03,zr(rb), zt(rb)-0.03,zr(rb), 'wood', 0.15);
+    panel(rr,rf, rr,rb, zt(rf)-0.03,zr(rf), zt(rb)-0.03,zr(rb), 'wood', 0.15);
+    panel(rl,rb, rl,rf, zt(rb)-0.03,zr(rb), zt(rf)-0.03,zr(rf), 'wood', 0.15);
+    // inside: the floor boards, the bench box with its hole, the lid up against the back wall, a roll on a nail
+    slab(out, [[xli,yfi],[xri,yfi],[xri,ybi],[xli,ybi]], 0.03, 'wood', -0.9, plankTex(0.14));
+    const by0=ybi-O.benchD, bz=O.benchZ;
+    box(out, xli, xri, by0, ybi, 0.03, bz, 'wood', -0.5, plankTex(0.12), true);
+    slab(out, [[xli,by0],[xri,by0],[xri,ybi],[xli,ybi]], bz, 'wood', -0.25, plankTex(0.2));
+    out.push(F(ring(0, by0+O.benchD*0.5, 0.13, 0.1, 12).map(p=>[p[0],p[1],bz]), 'dark', 0, 0.03, null, null, true));
+    out.push(F([[-0.17,ybi-0.02,bz+0.01],[0.17,ybi-0.02,bz+0.01],[0.17,ybi-0.005,bz+0.38],[-0.17,ybi-0.005,bz+0.38]], 'wood', -0.1, 0.03));
+    box(out, xri-0.015, xri, by0-0.06, by0-0.05, 0.86, 0.88, 'iron', 0.2);
+    prism(out, xri-0.06, by0-0.055, 0.045, 0.74, 0.84, 10, 'trim', -0.2);
+    // the iron pintles stay on the jamb; the leaf swings on them
+    for(const hz of [0.32, 1.5]) box(out, dx0-0.035, dx0, yf-0.02, yf, hz-0.01, hz+0.045, 'iron', 0.2);
+    box(out, dx1+0.015, dx1+0.075, yf-0.03, yf, 1.0, 1.04, 'wood', 0.45);              // the turn button
+    // the leaf, built shut, then swung about the hinge line (x = dx0, y = yf), opening outward
+    const th=s.leaf*O.leafOpenDeg*DEG, ct=Math.cos(th), st=Math.sin(th);
+    const rot=(p)=>{ const rx=p[0]-dx0, ry=p[1]-yf; return [dx0 + rx*ct + ry*st, yf - rx*st + ry*ct, p[2]]; };
+    const leaf=[], lx0=dx0+0.01, lx1=dx1-0.01, lz0=0.045, lz1=dh-0.02, ly0=yf-0.012, ly1=ly0+O.doorT;
+    box(leaf, lx0, lx1, ly0, ly1, lz0, lz1, 'body', 0, plankTex(0.15));
+    for(const [z0,z1] of [[0.26,0.36],[1.5,1.6]]) box(leaf, lx0+0.03, lx1-0.03, ly0-0.02, ly0, z0, z1, 'body', 0.35);
+    leaf.push(F([[lx0+0.05,ly0-0.021,0.36],[lx0+0.17,ly0-0.021,0.36],[lx1-0.05,ly0-0.021,1.5],[lx1-0.17,ly0-0.021,1.5]], 'body', 0.3, 0.06));
+    for(const hz of [0.29, 1.53]) box(leaf, lx0-0.02, lx0+0.24, ly0-0.033, ly0-0.02, hz, hz+0.035, 'iron', 0.35);
+    box(leaf, lx1-0.09, lx1-0.07, ly0-0.045, ly0-0.025, 0.92, 1.1, 'iron', 0.5);           // the pull
+    box(leaf, lx1-0.09, lx1-0.07, ly0-0.025, ly0, 0.92, 0.94, 'iron', 0.2);
+    box(leaf, lx1-0.09, lx1-0.07, ly0-0.025, ly0, 1.08, 1.1, 'iron', 0.2);
+    box(leaf, lx1-0.11, lx1-0.04, ly1, ly1+0.02, 1.0, 1.03, 'iron', 0.3);                // the hook inside
+    crescent(leaf, ly0, -1, (lx0+lx1)/2, 1.66, 0.1, 'dark', 0);
+    crescent(leaf, ly1, 1, (lx0+lx1)/2, 1.66, 0.1, 'trim', 0.6);                        // daylight through it
+    for(const f of leaf){ f.v=f.v.map(rot); out.push(f); }
+  }
 
   // ================= THE KITCHEN STORE AND THE KITCHEN SINK =================
   // Two more pieces, appended to PROPS below (never an edit of the table above).

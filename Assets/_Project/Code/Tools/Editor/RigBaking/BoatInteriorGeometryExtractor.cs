@@ -264,11 +264,10 @@ globalThis.__HHI = (function(){
             // DIAMETER is the smallest shift guaranteed to clear her own geometry whatever the
             // heading. Her own db is KEPT on top of it, so ordering WITHIN the room is preserved
             // rather than flattened to one plane.
-            double shift = HullDiameter(hull);
+            double shift = RigRoomExtraction.BoundingDiameter(hull.Faces);
 
             var rampByName = new Dictionary<string, string[]>(StringComparer.Ordinal);
-            var matIndexByRamp = new Dictionary<string, int>(StringComparer.Ordinal);
-            var matIndexByName = new Dictionary<string, int>(StringComparer.Ordinal);
+            var table = new RigRoomExtraction.MaterialTable();
             int[] hist = new int[9];
             int lips = 0;
 
@@ -323,30 +322,15 @@ globalThis.__HHI = (function(){
                                 uvs[k] = new Vector2(float.Parse(vt[4], inv), float.Parse(vt[5], inv));
                         }
 
-                        if (!matIndexByName.TryGetValue(mat, out int matIndex))
+                        if (!table.TryGetIndex(mat, out int matIndex))
                         {
                             if (!rampByName.TryGetValue(mat, out string[] ramp))
                                 throw new InvalidOperationException(
                                     $"{hullKey}: face material '{mat}' is not in the rig's own MATS " +
                                     "table. paint() would silently fall back to 'liner'; a bake must not.");
-                            // Dedupe by RAMP CONTENT, not by name. Measured: cab=wains,
-                            // daylight=glass, flame=screen and iron=panel are byte-identical on every
-                            // hull, so four name pairs collapse to four slots with no colour lost —
-                            // which is a fifth of the interior's budget recovered for nothing.
-                            string key = string.Join(",", ramp);
-                            if (!matIndexByRamp.TryGetValue(key, out matIndex))
-                            {
-                                matIndex = g.Materials.Count;
-                                matIndexByRamp[key] = matIndex;
-                                g.Materials.Add(new RigMaterial
-                                {
-                                    Name = mat,
-                                    RampHex = ramp,
-                                    Ramp = ramp.Select(ParseHex).ToArray(),
-                                    Off = 0,
-                                });
-                            }
-                            matIndexByName[mat] = matIndex;
+                            // Dedupe by RAMP CONTENT, not by name (RigRoomExtraction.MaterialTable):
+                            // a fifth of the interior's budget recovered for nothing.
+                            matIndex = table.IndexFor(mat, ramp);
                         }
 
                         int level = LevelIdFor(hull, lvl, hullKey);
@@ -368,6 +352,7 @@ globalThis.__HHI = (function(){
                 }
             }
 
+            g.Materials = table.Materials;
             g.Report = BuildReport(g, hull, hullKey, hist, lips, shift);
             return g;
         }
@@ -390,33 +375,6 @@ globalThis.__HHI = (function(){
                 "The two rigs disagree about what rooms this boat has. Do NOT map it to the nearest " +
                 "name — take it upstream, because the level id is what the cutaway gate compares " +
                 "against and a wrong one opens the wrong room.");
-        }
-
-        /// <summary>Bounding-sphere diameter of the hull's own faces, rig metres.</summary>
-        static double HullDiameter(RigMeshData hull)
-        {
-            double minX = double.MaxValue, minY = double.MaxValue, minZ = double.MaxValue;
-            double maxX = double.MinValue, maxY = double.MinValue, maxZ = double.MinValue;
-            foreach (RigFace f in hull.Faces)
-                foreach (Vector3d v in f.V)
-                {
-                    if (v.X < minX) minX = v.X; if (v.X > maxX) maxX = v.X;
-                    if (v.Y < minY) minY = v.Y; if (v.Y > maxY) maxY = v.Y;
-                    if (v.Z < minZ) minZ = v.Z; if (v.Z > maxZ) maxZ = v.Z;
-                }
-            if (minX > maxX) return 0;
-            double dx = maxX - minX, dy = maxY - minY, dz = maxZ - minZ;
-            return Math.Sqrt(dx * dx + dy * dy + dz * dz);
-        }
-
-        static Color32 ParseHex(string hex)
-        {
-            if (string.IsNullOrEmpty(hex) || hex[0] != '#' || hex.Length < 7)
-                throw new FormatException($"interior ramp colour '{hex}' is not #rrggbb.");
-            return new Color32(
-                Convert.ToByte(hex.Substring(1, 2), 16),
-                Convert.ToByte(hex.Substring(3, 2), 16),
-                Convert.ToByte(hex.Substring(5, 2), 16), 255);
         }
 
         static string BuildReport(InteriorGeometry g, RigMeshData hull, string hullKey,
