@@ -4282,10 +4282,23 @@ namespace HiddenHarbours.Core
         [Tooltip("Seconds a tossed clod lives: its flight off the blade, then lying where it landed until it fades.")]
         [Min(0f)] public float DigTossChunkSeconds;
 
-        [Tooltip("How big the toss is: multiplies a tossed clod's size and how far across the ground it is " +
-                 "thrown (not how high: wet dirt stays low and heavy). 1 = the first toss; the owner asked " +
-                 "for it bigger (2026-11-22).")]
-        [Range(0.5f, 3f)] public float DigTossScale;
+        [Tooltip("How big a tossed clod is (× the first toss's clod size). The owner asked for a bigger toss " +
+                 "(2026-11-22): a real shovelful of separate clods.")]
+        [Range(0.5f, 4f)] public float DigTossScale;
+
+        [Tooltip("How far the toss is thrown across the ground (× the first toss's throw speed).")]
+        [Range(0.5f, 4f)] public float DigTossReachScale;
+
+        [Tooltip("How high the toss arcs (× the first toss's up-throw, which barely left the blade).")]
+        [Range(0.5f, 6f)] public float DigTossUpScale;
+
+        [Tooltip("How far apart the clods of one toss fly, square to the throw (× the first toss's spread), so " +
+                 "they read as several clods in the air and land as a small spoil pile, not one lump.")]
+        [Range(0f, 4f)] public float DigTossSpreadScale;
+
+        [Tooltip("Seconds over which the clods of one toss leave the blade, the farthest-thrown first, so they " +
+                 "stream off it one after another and fly as separate clods (0 = all at once, as one lump).")]
+        [Range(0f, 0.4f)] public float DigTossReleaseSeconds;
 
         [Tooltip("When the dig faces within this many degrees of straight away from the camera (north, his back " +
                  "to the viewer), the mesh body turns to this many degrees off north instead, toward the side he " +
@@ -4358,8 +4371,12 @@ namespace HiddenHarbours.Core
             SandChunkSeconds = 0.45f,
             DigTossChunkCount = 8,
             DigTossDelaySeconds = 0.6f,
-            DigTossChunkSeconds = 0.9f,
-            DigTossScale = 1.8f,
+            DigTossChunkSeconds = 3.5f,
+            DigTossScale = 1.3f,
+            DigTossReachScale = 1.8f,
+            DigTossUpScale = 3.4f,
+            DigTossSpreadScale = 3f,
+            DigTossReleaseSeconds = 0.3f,
             DigAwayTurnDegrees = 25f,
             CastRingCount = 3,
             CastRingSeconds = 0.6f,

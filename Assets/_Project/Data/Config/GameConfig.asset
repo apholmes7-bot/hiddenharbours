@@ -734,8 +734,12 @@ MonoBehaviour:
     SandChunkSeconds: 0.45
     DigTossChunkCount: 8
     DigTossDelaySeconds: 0.6
-    DigTossChunkSeconds: 0.9
-    DigTossScale: 1.8
+    DigTossChunkSeconds: 3.5
+    DigTossScale: 1.3
+    DigTossReachScale: 1.8
+    DigTossUpScale: 3.4
+    DigTossSpreadScale: 3
+    DigTossReleaseSeconds: 0.3
     DigAwayTurnDegrees: 25
     CastRingCount: 3
     CastRingSeconds: 0.6
@@ -1077,11 +1081,11 @@ MonoBehaviour:
       Surface: 4
   DugHoles:
     Enabled: 1
-    WidthMetres: 0.42
+    WidthMetres: 0.63
     DepthOverWidth: 0.8
     InnerColor: {r: 0.07, g: 0.05, b: 0.035, a: 0.95}
     RimColor: {r: 0.22, g: 0.17, b: 0.11, a: 0.8}
-    TexturePixels: 16
+    TexturePixels: 20
     SortingOrder: -8
     TideCheckGameMinutes: 5
     RefreshRealSeconds: 0.5

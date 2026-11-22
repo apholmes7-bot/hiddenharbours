@@ -16,7 +16,8 @@ namespace HiddenHarbours.Core
         public bool Enabled;
 
         [Header("Look")]
-        [Tooltip("Width of a hole across the ground, metres (a clam shovel's bite is about 0.3 to 0.5 m).")]
+        [Tooltip("Width of a hole across the ground, metres: a clam shovel's bite with the churned lip round it, " +
+                 "drawn a little large so it reads at a glance at the game lens.")]
         [Min(0.05f)] public float WidthMetres;
 
         [Tooltip("Depth of a hole across the ground as a share of its width, before the 3/4 view squashes it.")]
@@ -79,11 +80,11 @@ namespace HiddenHarbours.Core
         public static DugHoleSettings Default => new DugHoleSettings
         {
             Enabled = true,
-            WidthMetres = 0.42f,
+            WidthMetres = 0.63f,
             DepthOverWidth = 0.8f,
             InnerColor = new Color(0.07f, 0.05f, 0.035f, 0.95f),
             RimColor = new Color(0.22f, 0.17f, 0.11f, 0.8f),
-            TexturePixels = 16,
+            TexturePixels = 20,
             SortingOrder = -8,
             TideCheckGameMinutes = 5f,
             RefreshRealSeconds = 0.5f,

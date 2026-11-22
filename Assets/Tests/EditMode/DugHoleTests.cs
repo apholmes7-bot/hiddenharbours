@@ -355,34 +355,54 @@ namespace HiddenHarbours.Tests.EditMode
         // ---- the bigger toss -------------------------------------------------------------------------
 
         [Test]
-        public void The_toss_is_bigger_and_thrown_further_than_it_was()
+        public void The_toss_is_a_shovelful_thrown_twice_as_far_that_lies_a_while()
         {
             JuiceSettings bigger = JuiceSettings.Default;
-            Assert.Greater(bigger.DigTossScale, 1.5f, "the owner asked for a clearly bigger toss");
-            Assert.Greater(bigger.DigTossChunkCount, 5, "and more of the shovel's load in it");
+            Assert.GreaterOrEqual(bigger.DigTossChunkCount, 6, "a shovelful: several clods");
 
+            // The first toss, as it shipped before the owner's ask: five clods, all scales 1, under a second.
             JuiceSettings before = bigger;
-            before.DigTossScale = 1f;
-            before.DigTossChunkCount = bigger.DigTossChunkCount;
+            before.DigTossChunkCount = 5;
+            before.DigTossChunkSeconds = 0.9f;
+            before.DigTossScale = before.DigTossReachScale = before.DigTossUpScale = before.DigTossSpreadScale = 1f;
+            before.DigTossReleaseSeconds = 0f;
 
-            (float size, float reach) Toss(JuiceSettings j)
+            // Mid-flight of the new toss, every clod off the blade: the last leaves at the release.
+            float airAt = bigger.DigTossReleaseSeconds + 0.12f;
+            (float size, float reach, float air, float gap, int lying) Toss(JuiceSettings j)
             {
                 var go = new GameObject("MomentBurstEmitter (test)");
                 _spawned.Add(go);
                 var em = go.AddComponent<MomentBurstEmitter>();
                 em.OverrideSettings(j);
                 em.OnMoment(new JuiceMomentCue(JuiceMoment.DigToss, Vector2.zero, 0.1f, 0.3f, Vector2.right));
-                em.Tick(0.001f);
-                float size = em.GetComponentsInChildren<SpriteRenderer>().Where(sr => sr.enabled).Average(sr => sr.bounds.size.x);
-                for (int i = 0; i < 40; i++) em.Tick(0.01f);
-                float reach = em.GetComponentsInChildren<SpriteRenderer>().Where(sr => sr.enabled).Average(sr => sr.transform.position.x);
-                return (size, reach);
+                SpriteRenderer[] Live() => em.GetComponentsInChildren<SpriteRenderer>().Where(sr => sr.enabled).ToArray();
+                float t = 0f;
+                for (; t < airAt; t += 0.01f) em.Tick(0.01f);
+                SpriteRenderer[] up = Live();
+                float size = up.Average(sr => sr.bounds.size.x);
+                Vector3[] p = up.Select(sr => sr.transform.position).ToArray();
+                float air = (new Vector2(p.Max(v => v.x) - p.Min(v => v.x), p.Max(v => v.y) - p.Min(v => v.y))).magnitude;
+                // How far each clod is from its nearest neighbour, on average: apart, or one lump.
+                float gap = p.Average(v => p.Where(w => w != v).Select(w => Vector2.Distance(v, w)).DefaultIfEmpty(0f).Min());
+                float reachAt = j.DigTossReleaseSeconds + 0.7f;   // every clod down, the first toss not yet faded
+                for (; t < reachAt; t += 0.01f) em.Tick(0.01f);
+                float reach = Live().Average(sr => sr.transform.position.x);
+                for (; t < 2.0f; t += 0.01f) em.Tick(0.01f);
+                return (size, reach, air, gap, Live().Length);
             }
 
-            (float size0, float reach0) = Toss(before);
-            (float size1, float reach1) = Toss(bigger);
-            Assert.AreEqual(bigger.DigTossScale, size1 / size0, 0.05f, "clods scaled by DigTossScale");
-            Assert.Greater(reach1, reach0 * 1.4f, "thrown further across the ground");
+            var b = Toss(before);
+            var a = Toss(bigger);
+            Assert.GreaterOrEqual(a.size / b.size, 1.15f, "bigger clods (each clod's size varies, so not exactly DigTossScale)");
+            Assert.GreaterOrEqual(bigger.DigTossChunkCount * a.size * a.size, 2f * before.DigTossChunkCount * b.size * b.size,
+                                  "a real shovelful: over twice the dirt");
+            Assert.GreaterOrEqual(a.reach, b.reach * 1.8f, "thrown about twice as far across the ground");
+            Assert.Greater(a.air, b.air * 2f, "the clods fly apart, not as one lump");
+            Assert.Greater(a.air, a.size * 3f, "the shovelful strung out in the air over several clods' length");
+            Assert.Greater(a.gap, a.size * 0.6f, "each clod mostly clear of its neighbour: separate clods");
+            Assert.AreEqual(0, b.lying, "the first toss was gone in under a second");
+            Assert.AreEqual(bigger.DigTossChunkCount, a.lying, "the spoil pile still lies there two seconds on");
         }
     }
 }
