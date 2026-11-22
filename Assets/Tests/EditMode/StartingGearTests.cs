@@ -84,7 +84,7 @@ namespace HiddenHarbours.Tests.EditMode
                 try
                 {
                     var sg = go.AddComponent<StartingGear>();
-                    sg.Configure(new[] { PlayerGear.ShovelId, PlayerGear.BucketId }, new string[0], "flag.granted");
+                    sg.Configure(new[] { PlayerGear.ShovelId, PlayerGear.BucketId }, "flag.granted");
 
                     Assert.AreEqual(2, sg.GrantOnce(), "first call grants the kit");
                     Assert.IsTrue(fake.GetFlag("flag.granted"), "the grant flag is set so it won't re-run");
@@ -95,38 +95,25 @@ namespace HiddenHarbours.Tests.EditMode
             finally { GameServices.Reset(); }
         }
 
-        // ---- the headlamp: carried from the start, recorded as owned --------------------------
+        // ---- the headlamp: his from the start, owned without a save write ---------------------
 
         [Test]
-        public void ANewGame_RecordsTheHeadlampAsOwned_WithTheStartingKit()
+        public void ANewGame_OwnsTheHeadlamp_WithoutItBeingWrittenToTheSave()
         {
-            var save = NewSave();
-            var fake = new FlagSaveService(save);
             GameServices.Reset();
-            GameServices.Save = fake;
-            var go = new UnityEngine.GameObject("StartingGear");
             try
             {
-                var sg = go.AddComponent<StartingGear>();   // the shipped defaults, as on the player
-                Assert.IsFalse(PlayerGear.HasHeadlamp(save), "nothing granted yet");
-
-                Assert.AreEqual(3, sg.GrantOnce(), "shovel, bucket and the headlamp from his pocket");
-                Assert.IsTrue(PlayerGear.HasHeadlamp(save), "the headlamp is owned");
+                var save = NewSave();
+                Assert.IsTrue(PlayerGear.HasHeadlamp(save), "in his pocket from the start");
                 Assert.IsTrue(PlayerGear.Owns(save, PlayerGear.HeadlampId));
-                Assert.IsTrue(PlayerGear.CanDig(save) && PlayerGear.HasBucket(save), "the kit still lands");
-
-                Assert.AreEqual(0, sg.GrantOnce(), "a second load adds nothing");
-                Assert.AreEqual(1, save.OwnedGear.FindAll(id => id == PlayerGear.HeadlampId).Count, "recorded once");
+                CollectionAssert.DoesNotContain(save.OwnedGear, PlayerGear.HeadlampId, "derived, never written");
+                Assert.IsFalse(PlayerGear.HasHeadlamp((SaveData)null), "no save holds nothing");
             }
-            finally
-            {
-                UnityEngine.Object.DestroyImmediate(go);
-                GameServices.Reset();
-            }
+            finally { GameServices.Reset(); }
         }
 
         [Test]
-        public void AGameBegunBeforeTheHeadlampWasRecorded_GainsItOnLoad_AndIsSaved()
+        public void AContinuedOldSave_OwnsTheHeadlamp_WithNoGrantNoWriteAndAnUnchangedSnapshot()
         {
             // The once-flag was set long ago with only the shovel and bucket.
             var save = NewSave();
@@ -135,20 +122,16 @@ namespace HiddenHarbours.Tests.EditMode
             fake.SetFlag("st_peters_starting_gear_granted", true);
             GameServices.Reset();
             GameServices.Save = fake;
+            string before = SaveSerialization.ToJson(save);
             var go = new UnityEngine.GameObject("StartingGear");
             try
             {
-                var sg = go.AddComponent<StartingGear>();
+                var sg = go.AddComponent<StartingGear>();   // the shipped defaults, as on the player
 
-                Assert.AreEqual(1, sg.GrantOnce(), "only the headlamp is new");
-                Assert.IsTrue(PlayerGear.HasHeadlamp(save));
-                Assert.AreEqual(1, fake.Saves, "the new record is written to disk");
-                CollectionAssert.AreEqual(
-                    new[] { PlayerGear.ShovelId, PlayerGear.BucketId, PlayerGear.RodId, PlayerGear.HeadlampId },
-                    save.OwnedGear, "nothing stripped, nothing doubled");
-
-                Assert.AreEqual(0, sg.GrantOnce(), "and the next load is quiet");
-                Assert.AreEqual(1, fake.Saves, "no further writes");
+                Assert.AreEqual(0, sg.GrantOnce(), "nothing is granted on continue");
+                Assert.AreEqual(0, fake.Saves, "and nothing is written");
+                Assert.AreEqual(before, SaveSerialization.ToJson(save), "the snapshot is untouched");
+                Assert.IsTrue(PlayerGear.HasHeadlamp(), "yet the headlamp is his");
             }
             finally
             {
@@ -158,29 +141,58 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void TheOwnedHeadlamp_SurvivesASaveRoundTrip_InTheCurrentFormat()
+        public void TheHeadlampStaysOwnedAcrossASaveRoundTrip_InTheCurrentFormat()
         {
-            var save = NewSave();
-            StartingGear.Grant(save, new[] { PlayerGear.ShovelId, PlayerGear.BucketId, PlayerGear.HeadlampId });
+            GameServices.Reset();
+            try
+            {
+                var save = NewSave();
+                StartingGear.Grant(save, new[] { PlayerGear.ShovelId, PlayerGear.BucketId });
+                string json = SaveSerialization.ToJson(save);
+                SaveData reloaded = SaveSerialization.FromJson(json);
 
-            SaveData reloaded = SaveSerialization.FromJson(SaveSerialization.ToJson(save));
-
-            Assert.IsNotNull(reloaded);
-            Assert.AreEqual(SaveMigration.CurrentVersion, reloaded.SchemaVersion, "no new save version");
-            Assert.IsTrue(PlayerGear.HasHeadlamp(reloaded), "the headlamp is still owned after a reload");
-            CollectionAssert.AreEqual(save.OwnedGear, reloaded.OwnedGear);
+                Assert.IsNotNull(reloaded);
+                Assert.AreEqual(SaveMigration.CurrentVersion, reloaded.SchemaVersion, "no new save version");
+                Assert.AreEqual(json, SaveSerialization.ToJson(reloaded), "no new field, nothing added");
+                Assert.IsTrue(PlayerGear.HasHeadlamp(reloaded), "still his after a reload");
+            }
+            finally { GameServices.Reset(); }
         }
 
         [Test]
-        public void TheKitPage_ListsTheOwnedHeadlamp()
+        public void WhatIsCarriedFromTheStart_IsConfigData()
+        {
+            var config = UnityEngine.ScriptableObject.CreateInstance<GameConfig>();
+            try
+            {
+                CollectionAssert.AreEqual(GameConfig.DefaultCarriedFromStartGearIds, config.CarriedFromStartGearIds);
+                CollectionAssert.Contains(GameConfig.DefaultCarriedFromStartGearIds, PlayerGear.HeadlampId);
+
+                GameServices.Reset();
+                GameServices.Config = config;
+                config.CarriedFromStartGearIds = new string[0];
+                Assert.IsFalse(PlayerGear.HasHeadlamp(NewSave()), "an emptied list carries nothing");
+                config.CarriedFromStartGearIds = null;
+                Assert.IsFalse(PlayerGear.HasHeadlamp(NewSave()), "a null list carries nothing");
+            }
+            finally
+            {
+                GameServices.Reset();
+                UnityEngine.Object.DestroyImmediate(config);
+            }
+        }
+
+        [Test]
+        public void TheKitPage_ListsTheHeadlamp_FromTheCarriedList()
         {
             var save = NewSave();
-            StartingGear.Grant(save, new[] { PlayerGear.ShovelId, PlayerGear.BucketId, PlayerGear.HeadlampId });
+            StartingGear.Grant(save, new[] { PlayerGear.ShovelId, PlayerGear.BucketId });
             SaveData reloaded = SaveSerialization.FromJson(SaveSerialization.ToJson(save));
 
             var held = new List<HiddenHarbours.World.NotebookGearHolding>();
-            HiddenHarbours.World.SaveGearSource.Collect(reloaded, null, held);
-            Assert.IsTrue(held.Exists(h => h.Id == PlayerGear.HeadlampId), "the save source reads the headlamp");
+            HiddenHarbours.World.SaveGearSource.Collect(reloaded, null, GameConfig.CarriedFromStart(null), held);
+            Assert.IsTrue(held.Exists(h => h.Id == PlayerGear.HeadlampId), "the save source lists the headlamp");
+            Assert.AreEqual(1, held.FindAll(h => h.Id == PlayerGear.HeadlampId).Count, "once");
 
             HiddenHarbours.World.NotebookGearPageDef page = HiddenHarbours.World.NotebookContentSource.GearPage();
             Assert.IsNotNull(page, "the shipped KIT page Def loads");

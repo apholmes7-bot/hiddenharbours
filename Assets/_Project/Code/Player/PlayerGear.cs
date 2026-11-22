@@ -27,17 +27,21 @@ namespace HiddenHarbours.Player
         /// (sounder/radar/gps/compass), the watch is CARRIED on the player and reads on any boat / ashore.</summary>
         public const string WatchId  = "gear.watch";
         /// <summary>The headlamp: carried in his pocket from the very start and worn from there (owner
-        /// ruling 2026-11-16). Recorded in the owned-gear wallet like the shovel, so the Notebook's KIT
-        /// page and any ownership check see it (<see cref="StartingGear"/> grants it).</summary>
+        /// rulings 2026-11-16 and 2026-11-22, "From the start"). Owned by derivation from
+        /// <see cref="GameConfig.CarriedFromStartGearIds"/>, never written to the save, so a continued
+        /// old save holds it without a write.</summary>
         public const string HeadlampId = "gear.headlamp";
 
-        /// <summary>True iff the player owns the gear with this stable id (reads the live save's owned-gear
-        /// list). Null save / null-or-empty id → false.</summary>
+        /// <summary>True iff the player owns the gear with this stable id: the live save's owned-gear list,
+        /// or gear carried from the start of every game (<see cref="GameConfig.CarriedFromStartGearIds"/>).
+        /// Null save / null-or-empty id → false.</summary>
         public static bool Owns(string gearId) => Owns(GameServices.Save?.Current, gearId);
 
         /// <summary>Testable overload over an explicit save blob.</summary>
         public static bool Owns(SaveData save, string gearId)
-            => save?.OwnedGear != null && !string.IsNullOrEmpty(gearId) && save.OwnedGear.Contains(gearId);
+            => save != null && !string.IsNullOrEmpty(gearId)
+               && ((save.OwnedGear != null && save.OwnedGear.Contains(gearId))
+                   || GameConfig.CarriesFromStart(GameServices.Config, gearId));
 
         /// <summary>Can the player dig clams? Requires the shovel.</summary>
         public static bool CanDig(SaveData save) => Owns(save, ShovelId);
