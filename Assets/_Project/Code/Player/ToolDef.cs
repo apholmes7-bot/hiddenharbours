@@ -76,8 +76,8 @@ namespace HiddenHarbours.Player
 
         [Tooltip("ADR 0053: while the figure is a MESH and its clip aims this tool on the frame drawn, draw " +
                  "the held mesh (HeldMeshVariant) on the figure's hand socket instead of the tool's sprite. " +
-                 "Off keeps the sprite everywhere. The sprite stays the fallback whenever the mesh cannot " +
-                 "draw (no mesh figure, no aim on the clip, no usable mesh).")]
+                 "Off keeps the sprite everywhere. While a mesh figure draws him the tool's old sprite never " +
+                 "shows (HeldRodMesh.SpriteMayDraw); it is drawn only while his body is a sprite.")]
         public bool DrawHeldMeshOnFigure;
 
         [Tooltip("ADR 0053 D1: on a mesh-figure clip that aims NO tool (idle, walk, run, a moving angler's " +
@@ -104,6 +104,37 @@ namespace HiddenHarbours.Player
         [Tooltip("The carried aim's yaw (the rig's tool yaw, degrees, + toward his right): out from his side so " +
                  "the blank clears his leg and shoulder.")]
         [Range(-180f, 180f)] public float CarriedYawDeg = 35f;
+
+        [Tooltip("On a clip that aims no tool, carry the held mesh in whichever hand is nearer the camera " +
+                 "(HeldMeshMountBone or CarriedOffHandMountBone), so the hand holding it is the one you can " +
+                 "see. Off keeps it in HeldMeshMountBone at every heading, where facing away from that hand " +
+                 "hides the hand and leaves the tool standing behind him. A clip that aims the tool always " +
+                 "grips at HeldMeshMountBone: the rig aims a tool from that hand.")]
+        public bool CarryInNearerHand;
+
+        [Tooltip("The other hand's tool mount for the carried placement (CarryInNearerHand). In this hand the " +
+                 "carried yaw is mirrored, so the tool still angles out from the side it is held on.")]
+        public string CarriedOffHandMountBone = HeldPropSockets.LeftHandTool;
+
+        [Tooltip("How much nearer the camera, metres, the other side must be before the carried tool changes " +
+                 "hands (CarryInNearerHand), so it never flickers between two hands at about the same depth.")]
+        [Min(0f)] public float CarriedHandSwapDepthMetres = 0.05f;
+
+        [Tooltip("The bone whose depth stands for the mount hand's SIDE of him when choosing the nearer hand " +
+                 "(CarryInNearerHand): the shoulder, which does not swing. The hands swing through each other " +
+                 "on the walk, so their own depth would pass the tool from hand to hand every step. Empty uses " +
+                 "HeldMeshMountBone itself.")]
+        public string CarriedSideBone = "";
+
+        [Tooltip("The other side's bone for the same choice (CarriedSideBone). Empty uses CarriedOffHandMountBone.")]
+        public string CarriedOffSideBone = "";
+
+        [Tooltip("The other hand takes the carried tool only while he faces at least this far away from the " +
+                 "camera: his facing's share along the camera's depth, -1 straight at the camera, 0 side-on, " +
+                 "1 straight away. Facing the camera both hands show, and the mount hand's tool angles out " +
+                 "clear of him; the other hand's would cross his body. -1 lets the nearer hand take it at " +
+                 "every heading.")]
+        [Range(-1f, 1f)] public float CarriedOffHandFacingAwayMin = -1f;
 
         [Header("Stowed on his back (mesh figure)")]
         [Tooltip("When he carries this tool but is not using it, draw its held mesh slung on the figure's " +
