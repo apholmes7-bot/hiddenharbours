@@ -446,6 +446,29 @@ namespace HiddenHarbours.Tests.EditMode
             return true;
         }
 
+        /// <summary>The scene's solids, as the live scene tests read them, read each wholesaler with its nested
+        /// fixtures (the toilet and the basin are prefabs nested in the shell's furniture root) rather than refusing
+        /// it: the shell's own walls are drawn, and the fixtures are not, because the furniture root loads switched
+        /// off (the room switches it on while the player is inside), as the scene loads them.</summary>
+        [Test]
+        public void TheLiveSolidsReadEachWholesalerWithItsNestedFixtures_WhichLoadSwitchedOff([ValueSource(nameof(WholesalerNames))] string name)
+        {
+            NmcBuildingShells.Shell s = Shells.Single(x => x.Name == name);
+            var prefab = SceneYaml.Parse(File.ReadAllText(Path.Combine(ProjectRoot, s.PrefabPath)).Replace("\r", ""));
+            Doc furniture = prefab.Docs.Single(d => d.ClassId == 1 && !d.Stripped && d.Field("m_Name") == BuildingInteriorStander.PropsChildName);
+            Assert.That(furniture.Field("m_IsActive"), Is.EqualTo("0"), $"{name}'s furniture root loads switched off");
+            Assert.That(prefab.Docs.Count(d => d.ClassId == 1001 && !d.Stripped), Is.EqualTo(s.Fixtures.Length),
+                $"{name} nests one prefab per fixture");
+
+            var outlines = NineMileCreekLiveGround.SolidOutlines(out var polygons);
+            Assert.That(outlines.Any(o => o.who.StartsWith(name + "/", System.StringComparison.Ordinal)) ||
+                        polygons.Any(p => p.who.StartsWith(name + "/", System.StringComparison.Ordinal)), Is.True,
+                $"{name}'s own walls are among the live solids");
+            foreach (NmcBuildingShells.Fixture f in s.Fixtures)
+                Assert.That(outlines.Where(o => o.who.StartsWith(name + "/" + f.Name + "/", System.StringComparison.Ordinal)), Is.Empty,
+                    $"{name}/{f.Name} stands under the switched-off furniture root, so it is not solid at load");
+        }
+
         static List<string> Lineage(Doc tr)
         {
             var names = new List<string>();
