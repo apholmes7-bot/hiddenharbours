@@ -375,6 +375,8 @@ MonoBehaviour:
   WalkerHeadlampLensForwardMetres: 0.01
   WalkerHeadlampLensUpMetres: 0.1
   WalkerHeadlampStrapBackMetres: 0.18
+  CarriedFromStartGearIds:
+  - gear.headlamp
   PixelGridSnap: 1
   CharacterBlink: 1
   CharacterHeadLook: 1
