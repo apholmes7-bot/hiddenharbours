@@ -107,6 +107,9 @@ namespace HiddenHarbours.Art
         private InteractOfferChanged _offer;
         private InteractAffordanceState _state = InteractAffordanceState.Disarmed;
         private SpriteRenderer _target;
+
+        // Scratch for the renderer lookup, owned here so a resolve allocates nothing (rule 7).
+        private readonly System.Collections.Generic.List<SpriteRenderer> _candidates = new();
         private float _armedAt;
         private bool _drawn;
 
@@ -239,8 +242,15 @@ namespace HiddenHarbours.Art
         {
             if (!Interactables.TryGetTransform(id, out Transform where) || where == null) return null;
 
-            var sprite = where.GetComponentInChildren<SpriteRenderer>();
-            if (sprite == null || sprite.sprite == null)
+            // Only a renderer that is DRAWN, and never the player's own object: the belt pail is registered
+            // on him, and his body sprite stays enabled under the mesh figure (held off with
+            // forceRenderingOff), so the first child renderer there is the old sprite sheet. See
+            // InteractAffordanceTargets for the whole rule.
+            Transform player = GameServices.PlayerTransform;
+            if (InteractAffordanceTargets.IsOnPlayer(where, player)) return null;
+
+            SpriteRenderer sprite = InteractAffordanceTargets.Resolve(where, player, _candidates);
+            if (sprite == null)
             {
                 WarnOnce(id, where);
                 return null;
@@ -260,7 +270,7 @@ namespace HiddenHarbours.Art
             if (string.Equals(_warnedFor, id, System.StringComparison.Ordinal)) return;
             _warnedFor = id;
             Debug.LogWarning(
-                $"[InteractAffordance] '{id}' ({where.name}) has no SpriteRenderer, so there is nothing " +
+                $"[InteractAffordance] '{id}' ({where.name}) has no drawn SpriteRenderer, so there is nothing " +
                 "for the affordance to draw on. Mesh-drawn candidates are a known gap in this lane — the " +
                 "popup still names it; it just does not light.");
         }
@@ -297,7 +307,9 @@ namespace HiddenHarbours.Art
         /// </summary>
         private void SyncPose()
         {
-            if (_target == null || _target.sprite == null) { Hide(); return; }
+            // A target that stops drawing while armed (the mesh figure takes over, a fixture hides its
+            // sprite) drops the overlays at once; Apply re-resolves on the next frame.
+            if (!InteractAffordanceTargets.IsDrawn(_target)) { Hide(); return; }
 
             Transform t = _target.transform;
             Sprite sprite = _target.sprite;
