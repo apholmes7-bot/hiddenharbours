@@ -478,10 +478,15 @@
   // front, a thermostat dial, a green pilot lamp, a drain plug and a vent grille on the side.
   // heap:0..2 is the frozen-catch rung under any fish the game lays on top: 0 bare frost, 1 a frost
   // crust and a few frozen fish down at the bottom, 2 the chest packed nearly to the rim. The size is
-  // the PROPS entry's foot (a longer freezer is one more entry), and the well, the bed heights and the
-  // split plane all follow it. Exposes its well through freezerWell(name, heap) for the parity tests.
+  // the PROPS entry's foot (a longer freezer is one more entry: chestFreezerLarge is the camper's, 1.75 m
+  // long), and the well, the bed heights and the split plane all follow it. Exposes its well through freezerWell(name, heap) for the parity tests.
+  // The enamel (the 'body' faces) is drawn FLAT, one ramp step per face with no ordered dither, so the
+  // white chest reads as clean enamel and not as a grey speckle. The lid's underside is a white plastic
+  // liner in shade with a moulded inner panel and a grey gasket all round, so the lid swung up reads as a
+  // lid and not as a second frosted window. fishPitch is the well length one frozen fish takes in the
+  // baked bed (never fewer than three across), so a longer chest packs more fish, not bigger ones.
   const FREEZER = { ht:0.86, plinth:0.06, wall:0.055, floorZ:0.16, lidT:0.07, lidOpenDeg:104,
-                    bedZ:[0.16, 0.48, 0.70] };
+                    bedZ:[0.16, 0.48, 0.70], fishPitch:0.38, linerB:-0.55, panelB:-0.2, panelInset:0.13 };
   function freezerWell(name, heap){ const P=PROPS[name]; if(!P) return null; const w=P.foot[0], d=P.foot[1];
     const h=Math.max(0, Math.min(2, heap|0));
     return { x0:-w/2+FREEZER.wall, x1:w/2-FREEZER.wall, y0:-d/2+FREEZER.wall, y1:d/2-FREEZER.wall,
@@ -527,14 +532,16 @@
     if(h>=1){ const bed=rrect(0,0,w/2-wt-0.012,d/2-wt-0.012,0.02,3);
       slab(out, bed, F0.bedZ[1], 'frost', 0.1, frostTex(13), 0.004);
       const rnd=mulberry32(321+h*17); const L=(well.x1-well.x0);
-      const n = h===1 ? 3 : 0;
-      for(let i=0;i<n;i++) frozenFish(out, well.x0+L*(0.22+0.28*i), well.y0+0.12+0.18*rnd(), L*0.34, (rnd()-0.5)*0.5, F0.bedZ[1], 'frostfish'); }
+      // one fish per FREEZER.fishPitch of well, never fewer than three (Ginny's chest: three)
+      const cols=Math.max(3, Math.round(L/F0.fishPitch));
+      const n = h===1 ? cols : 0;
+      for(let i=0;i<n;i++) frozenFish(out, well.x0+L*(0.22+0.56*i/(n-1)), well.y0+0.12+0.18*rnd(), L*1.02/n, (rnd()-0.5)*0.5, F0.bedZ[1], 'frostfish'); }
     if(h>=2){ // packed: three layers of frozen fish rising to the bed, the top layer frosted over
-      const rnd=mulberry32(777), L=well.x1-well.x0, D=well.y1-well.y0;
+      const rnd=mulberry32(777), L=well.x1-well.x0, D=well.y1-well.y0, cols=Math.max(3, Math.round(L/F0.fishPitch));
       for(let layer=0; layer<3; layer++){ const z=F0.bedZ[1]+layer*((F0.bedZ[2]-F0.bedZ[1]-0.05)/3);
-        for(let r=0;r<3;r++) for(let c=0;c<3;c++){
-          const fx=well.x0+L*(0.18+0.32*c)+(rnd()-0.5)*0.05, fy=well.y0+D*(0.2+0.3*r)+(rnd()-0.5)*0.03;
-          frozenFish(out, fx, fy, L*0.3, (rnd()-0.5)*0.4+(layer%2?Math.PI:0), z, 'frostfish'); } }
+        for(let r=0;r<3;r++) for(let c=0;c<cols;c++){
+          const fx=well.x0+L*(0.18+0.64*c/(cols-1))+(rnd()-0.5)*0.05, fy=well.y0+D*(0.2+0.3*r)+(rnd()-0.5)*0.03;
+          frozenFish(out, fx, fy, L*0.9/cols, (rnd()-0.5)*0.4+(layer%2?Math.PI:0), z, 'frostfish'); } }
       slab(out, rrect(0,0,w/2-wt-0.015,d/2-wt-0.015,0.02,3), F0.bedZ[2]-0.012, 'frost', 0.2, frostTex(21), 0.03); }
     // the lid: built closed, then swung about the hinge line (y = d/2, z = ht)
     const th=Math.max(0, Math.min(1, +s.lid||0))*F0.lidOpenDeg*DEG, ct=Math.cos(th), st=Math.sin(th);
@@ -544,10 +551,16 @@
     box(lid, -w/2+0.05, w/2-0.05, -d/2+0.04, d/2-0.04, z1, z1+0.012, 'body', 0.15);        // raised panel
     box(lid, -0.14, 0.14, -d/2-0.035, -d/2-0.012, z0+0.01, z0+0.05, 'tin', 0.5);          // latch handle
     box(lid, -0.1, 0.1, -d/2-0.04, -d/2-0.03, z0+0.015, z0+0.045, 'dark', 0.2);
-    lid.push(F([[-w/2+wt,d/2-wt,z0-0.002],[w/2-wt,d/2-wt,z0-0.002],[w/2-wt,-d/2+wt,z0-0.002],[-w/2+wt,-d/2+wt,z0-0.002]], 'frost', 0.4, 0, [[0,0],[1,0],[1,1],[0,1]], frostTex(31)));   // liner (underside)
+    lid.push(F([[-w/2+wt,d/2-wt,z0-0.002],[w/2-wt,d/2-wt,z0-0.002],[w/2-wt,-d/2+wt,z0-0.002],[-w/2+wt,-d/2+wt,z0-0.002]], 'body', F0.linerB, 0));   // liner (underside), in shade
+    const pi=F0.panelInset;   // the liner's moulded inner panel
+    lid.push(F([[-w/2+pi,d/2-pi,z0-0.008],[w/2-pi,d/2-pi,z0-0.008],[w/2-pi,-d/2+pi,z0-0.008],[-w/2+pi,-d/2+pi,z0-0.008]], 'body', F0.panelB, 0));
+    // the gasket all round the liner: back, front, left, right
     lid.push(F([[-w/2+0.02,d/2-0.02,z0-0.004],[w/2-0.02,d/2-0.02,z0-0.004],[w/2-wt,d/2-wt,z0-0.004],[-w/2+wt,d/2-wt,z0-0.004]], 'dark', 0.2, 0));
     lid.push(F([[-w/2+0.02,-d/2+wt,z0-0.004],[w/2-0.02,-d/2+wt,z0-0.004],[w/2-0.02,-d/2+0.02,z0-0.004],[-w/2+0.02,-d/2+0.02,z0-0.004]], 'dark', 0.2, 0));
+    lid.push(F([[-w/2+0.02,d/2-0.02,z0-0.004],[-w/2+wt,d/2-wt,z0-0.004],[-w/2+wt,-d/2+wt,z0-0.004],[-w/2+0.02,-d/2+0.02,z0-0.004]], 'dark', 0.2, 0));
+    lid.push(F([[w/2-wt,d/2-wt,z0-0.004],[w/2-0.02,d/2-0.02,z0-0.004],[w/2-0.02,-d/2+0.02,z0-0.004],[w/2-wt,-d/2+wt,z0-0.004]], 'dark', 0.2, 0));
     for(const f of lid){ f.v=f.v.map(rot); out.push(f); }
+    for(const f of out) if(f.mat==='body') f.flat=true;   // clean enamel, see FREEZER
   }
 
   const PROPS = {
@@ -560,6 +573,7 @@
     prepCounter: { label:'Prep counter',    cat:'kitchen', foot:[0.9,0.6],                                    def:{paint:'cream',wood:'pine',worktop:'butcher',fabric:'red',fabric2:'cream'}, build:pPrepCounter },
     microwave:   { label:'Microwave',       cat:'kitchen', foot:[0.5,0.44],                                   def:{paint:'white',wood:'oak',worktop:'slate'}, build:pMicrowave },
     chestFreezer:{ label:'Chest freezer',   cat:'kitchen', foot:[1.3,0.76], splitAt:[0.0,-0.325,0.0],          def:{paint:'white'}, build:pChestFreezer },
+    chestFreezerLarge:{ label:'Chest freezer, large', cat:'kitchen', foot:[1.75,0.8], splitAt:[0.0,-0.345,0.0], def:{paint:'white'}, build:pChestFreezer },
   };
 
   function resolve(name, opts){ opts=opts||{}; const P=PROPS[name]||PROPS.bath;
