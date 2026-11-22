@@ -266,7 +266,8 @@ namespace HiddenHarbours.Art
                     SpawnChunks(e.At, j.SandChunkCount, j.SandChunkSeconds);
                     break;
                 case JuiceMoment.DigToss:     // the lift: off the blade tip, to the side he throws
-                    SpawnToss(e, j.DigTossChunkCount, j.DigTossChunkSeconds);
+                    SpawnToss(e, j.DigTossChunkCount, j.DigTossChunkSeconds,
+                              j.DigTossScale > 0f ? j.DigTossScale : 1f);   // 0 = a block that never named it
                     break;
                 case JuiceMoment.CastEntry:
                     SpawnRings(e.At, j.CastRingCount, j.CastRingSeconds);
@@ -314,9 +315,13 @@ namespace HiddenHarbours.Art
         /// <summary>The lift and toss: a few wet clods leave the blade tip together, low and heavy, along the
         /// throw the cue carries (<see cref="JuiceMomentCue.Dir"/>) and from the tip's height
         /// (<see cref="JuiceMomentCue.Lift"/>). A cue not read off a blade (the sprite body) throws from
-        /// <see cref="MomentBurstConfig.TossLiftHeight"/> to one side picked per dig, as before.</summary>
-        private void SpawnToss(in JuiceMomentCue e, int count, float seconds)
+        /// <see cref="MomentBurstConfig.TossLiftHeight"/> to one side picked per dig, as before.
+        /// <paramref name="scale"/> (<c>GameConfig.Juice.DigTossScale</c>) makes the clods bigger and throws
+        /// them further along the throw; the up-throw and the sideways scatter are left alone, so the toss stays
+        /// low, heavy and in one clump.</summary>
+        private void SpawnToss(in JuiceMomentCue e, int count, float seconds, float scale)
         {
+            float speed = _config.TossSpeed * scale;
             if (seconds <= 0f || count <= 0) return;
             Vector2 dir = e.FromBlade ? e.Dir : Vector2.zero;
             if (dir.sqrMagnitude < 0.5f)
@@ -328,11 +333,11 @@ namespace HiddenHarbours.Art
                 float h1 = AmbientParticleMath.Hash01(++_spawnSalt);
                 float h2 = AmbientParticleMath.Hash01(++_spawnSalt);
                 float h3 = AmbientParticleMath.Hash01(++_spawnSalt);
-                Vector2 g = dir * (_config.TossSpeed * (1f - _config.TossSpeedSpread * h1))
-                          + across * (_config.TossSpeed * _config.TossSpread * (h2 - 0.5f));
+                Vector2 g = dir * (speed * (1f - _config.TossSpeedSpread * h1))
+                          + across * (_config.TossSpeed * _config.TossSpread * (h2 - 0.5f));   // the scatter stays tight
                 var ground = new Vector2(g.x, g.y * _config.ChunkGroundYScale);
                 int i = Spawn(Kind.Chunk, e.At, ground, 0f, seconds * (0.85f + 0.15f * h3),
-                              _config.ChunkSize * _config.TossSizeScale * (0.8f + 0.4f * h3), h1);
+                              _config.ChunkSize * _config.TossSizeScale * scale * (0.8f + 0.4f * h3), h1);
                 _pool[i].Height = lift;
                 _pool[i].VelUp = _config.TossUp * (0.7f + 0.3f * h3);
                 _pool[i].Tone = MomentBurstMath.DirtTone(h2);

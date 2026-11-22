@@ -1852,6 +1852,13 @@ namespace HiddenHarbours.Core
                  "ground takes a print is the Zones list. Read through GroundPrintSettings.Current.")]
         public GroundPrintSettings GroundPrints = GroundPrintSettings.Default;
 
+        [Header("Dug holes (the shovel's hole on the flats)")]
+        [Tooltip("Owner ask 2026-11-22: every dig, the player's or a working villager's, leaves a dark hole " +
+                 "that stays for the rest of that game day or until the tide covers it, whichever is first. " +
+                 "The villagers' holes follow from their day; the player's are remembered for the session " +
+                 "only. Read through DugHoleSettings.Current.")]
+        public DugHoleSettings DugHoles = DugHoleSettings.Default;
+
         [Header("Effort (too tired / too hungry)")]
         [Tooltip("Owner ask 2026-11-15: 'when a player is too tired to do an action they will say im too " +
                  "tired or im too hungry or both'. Which work may be refused (shipped: heavy work only), the " +
@@ -4275,6 +4282,11 @@ namespace HiddenHarbours.Core
         [Tooltip("Seconds a tossed clod lives: its flight off the blade, then lying where it landed until it fades.")]
         [Min(0f)] public float DigTossChunkSeconds;
 
+        [Tooltip("How big the toss is: multiplies a tossed clod's size and how far across the ground it is " +
+                 "thrown (not how high: wet dirt stays low and heavy). 1 = the first toss; the owner asked " +
+                 "for it bigger (2026-11-22).")]
+        [Range(0.5f, 3f)] public float DigTossScale;
+
         [Tooltip("When the dig faces within this many degrees of straight away from the camera (north, his back " +
                  "to the viewer), the mesh body turns to this many degrees off north instead, toward the side he " +
                  "already leans to (his right when dead on), so the shovel and the toss show past his body. 0 = off.")]
@@ -4344,9 +4356,10 @@ namespace HiddenHarbours.Core
             SaleCountUpSeconds = 0.7f,
             SandChunkCount = 7,
             SandChunkSeconds = 0.45f,
-            DigTossChunkCount = 5,
+            DigTossChunkCount = 8,
             DigTossDelaySeconds = 0.6f,
             DigTossChunkSeconds = 0.9f,
+            DigTossScale = 1.8f,
             DigAwayTurnDegrees = 25f,
             CastRingCount = 3,
             CastRingSeconds = 0.6f,
