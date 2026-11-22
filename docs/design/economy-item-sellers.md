@@ -160,6 +160,7 @@ the reason recorded in the guard.
 | Item | State |
 |---|---|
 | `watch.harbour_digital` | exempt: starting item; needs shop: a watch seller for a replacement |
+| `gear.headlamp` | exempt: starting item, never bought (owner ruling 2026-11-22), exempted by the guard reading `GameConfig.CarriedFromStartGearIds`; its unlisted `Catalog/Gear/Headlamp` entry names no seller and exists only to give the KIT page its name and icon |
 | `tackle.*` (cod jig, feathers, soft bait, spinner, spoon) | exempt: the rod's tackle box gives the player every lure, so there is no per-lure ownership to sell yet; needs that seam, then the NMC fishing gear wholesaler |
 | `longline.groundfish_tub` | exempt: tub stock is counted but has no offer type; needs a tub offer, then the NMC fishing gear wholesaler |
 | `golf_club.*` (4) | exempt: lent at the course; needs shop: a pro shop |

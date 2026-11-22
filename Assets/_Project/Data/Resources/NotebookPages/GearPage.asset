@@ -82,5 +82,7 @@ MonoBehaviour:
     Entries:
     - Id: watch.harbour_digital
       Name: Harbour Digital Watch
+    - Id: gear.headlamp
+      Name: Headlamp
   OtherHeading: Other gear
   ListUnowned: 0
