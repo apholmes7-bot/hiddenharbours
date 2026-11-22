@@ -85,7 +85,9 @@ namespace HiddenHarbours.World
             _wallOffset = wallOffset;
             _resolved = false;
             ResolveCell();
+            FitFootprint();
             Show(_timeline != null ? _timeline.Row : 0, -1);
+            if (!_layered) SortIdle();   // the front line turns with the footprint
         }
 
         /// <summary>Wire the piece (the baker's prefab step, and tests).</summary>
@@ -117,13 +119,22 @@ namespace HiddenHarbours.World
 
         private void Start()
         {
-            ResolveCell();
-            FitFootprint();
-            Show(_layout.Idle, -1);
-            SortIdle();
+            Settle();
             // A piece with nothing to animate is done: stop the per-frame dispatch entirely (rule 7).
             // A door piece wakes again when it is asked open (SetDoorOpen).
             if (!_layout.Fills && !_layout.Runs && !_layout.Flushes && !(_layout.HasDoor && _doorOpen)) enabled = false;
+        }
+
+        /// <summary>Work out the wall, fit the footprint box and sort the idle piece, as <c>Start</c> does (tests and
+        /// tools call it on a piece that has not started).</summary>
+        public void Settle()
+        {
+            if (_timeline == null) Init();
+            ResolveCell();
+            EnsureStop();
+            FitFootprint();
+            Show(_layout.Idle, -1);
+            SortIdle();
         }
 
         private void OnWashChanged(PlayerWashChanged e) => _soaped = WashSoapSignal.IsSoaped(e);
@@ -167,8 +178,9 @@ namespace HiddenHarbours.World
         {
             if (_footprint == null) return;
             Rect r = ApplianceFacing.FootprintBox(_layout, _cell);
+            Vector2 c = StopCentre(r, WashVisualsSettings.Current.FixtureStopDropMetres);
             Vector3 s = _footprint.transform.lossyScale;
-            _footprint.offset = new Vector2(r.center.x / Mathf.Max(1e-4f, s.x), r.center.y / Mathf.Max(1e-4f, s.y));
+            _footprint.offset = new Vector2(c.x / Mathf.Max(1e-4f, s.x), c.y / Mathf.Max(1e-4f, s.y));
             _footprint.size = new Vector2(r.width / Mathf.Max(1e-4f, s.x), r.height / Mathf.Max(1e-4f, s.y));
         }
 
@@ -249,8 +261,9 @@ namespace HiddenHarbours.World
 
         private void SortIdle() => SortFor(null);
 
-        /// <summary>Sort the piece by its own pivot, or (while he is in it) just behind and just in front of the
-        /// figure stood at <paramref name="seatY"/>, using the same Y → order mapping every decor sprite uses.</summary>
+        /// <summary>Sort the idle piece at its front floor line (<see cref="FrontLineY"/>), or (while he is in it)
+        /// just behind and just in front of the figure stood at <paramref name="seatY"/>, using the same Y → order
+        /// mapping every decor sprite uses.</summary>
         private void SortFor(float? seatY)
         {
             _layered = seatY.HasValue;
@@ -262,10 +275,56 @@ namespace HiddenHarbours.World
             }
             else
             {
-                int own = OrderFor(transform.position.y);
+                int own = OrderFor(FrontLineY);
                 if (_far != null) _far.sortingOrder = own;
                 if (_near != null) _near.sortingOrder = own + 1;
             }
+            // While he is in it (seated, bathing, climbing out) the pose holds him where the stop stands in his
+            // foot frame; stand it down until he is out.
+            if (_footprint != null) _footprint.enabled = !_layered;
+        }
+
+        // ---- the front line and the stop -------------------------------------------------------------------
+        //
+        // A walker is sorted by his drawn feet (his transform), but the solid circle that stops him sits BELOW
+        // them (the player's foot circle: FixtureStopDropMetres down). A stop drawn on the art itself therefore
+        // let his drawn feet walk that far into the piece: walking north into a toilet he stopped 0.13 to 0.16 m
+        // north of its pivot, past its front, and a piece sorted at its pivot hid him. So the idle piece sorts at
+        // its front floor line (the south edge of its footprint), and its solid stop is its footprint drawn in
+        // his foot circle's frame (the same box, dropped by FixtureStopDropMetres): his drawn feet meet the art's
+        // edge from every side, a foot radius out, never inside it.
+
+        private static readonly List<Collider2D> SolidScratch = new List<Collider2D>();
+
+        /// <summary>The idle piece's sort line (world Y): its front floor line, the south edge of its footprint
+        /// at its facing.</summary>
+        public float FrontLineY => transform.position.y + ApplianceFacing.FootprintBox(_layout, _cell).yMin;
+
+        /// <summary>The footprint box's offset from the pivot as the stop (pure): the footprint's centre dropped
+        /// by <paramref name="dropMetres"/>, so a walker whose foot circle sits that far below his drawn feet
+        /// meets it with his drawn feet on the art's edge.</summary>
+        public static Vector2 StopCentre(Rect footprint, float dropMetres)
+            => new Vector2(footprint.center.x, footprint.center.y - Mathf.Max(0f, dropMetres));
+
+        /// <summary>Make the footprint box the piece's one solid stop. A piece he steps into
+        /// (<see cref="FixturePose.Stand"/>: the showers) keeps whatever it was built with. Any other piece built
+        /// solid (a hand-placed circle, the shipped washroom prefabs) has those colliders stood down and gets the
+        /// fitted box instead, so every piece stops him the same way. A piece built with nothing solid stays
+        /// walk-through.</summary>
+        private void EnsureStop()
+        {
+            if (_layout.Pose == FixturePose.Stand) return;
+            bool solid = _footprint != null;
+            GetComponentsInChildren(false, SolidScratch);
+            for (int i = 0; i < SolidScratch.Count; i++)
+            {
+                Collider2D c = SolidScratch[i];
+                if (c == null || c == _footprint || c.isTrigger || !c.enabled) continue;
+                c.enabled = false;
+                solid = true;
+            }
+            SolidScratch.Clear();
+            if (solid && _footprint == null) _footprint = gameObject.AddComponent<BoxCollider2D>();
         }
 
         /// <summary>The decor band's Y → sorting order (lower on screen draws in front).</summary>
