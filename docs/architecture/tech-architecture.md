@@ -454,6 +454,27 @@ gear at her rail one over her group) at `EffectSorting.OrderOver(effect, carrier
 `EffectSortingTests` pins the table and guards the low floor (`DecorFloor` to `DecorFloor + 100`) against
 new literals.
 
+### Parked dwellings are facet meshes (ADR 0060, accepted 2026-11-19)
+
+A home that does not move (the camper, the lot shed, later the houses) is the third door onto the facet
+renderer, beside hulls and vehicles. The Core contracts live in `Core/Dwellings/`, all additive:
+
+- `DwellingMeshDef` (id `dwelling.snake_case`, one per variant): the render payload (mesh, shell and
+  interior ramps under the hull's two slot caps, light, dither, cell, measured azimuth) plus the room:
+  `DwellingLevel[]` (rig level id, face tag, lid tag, enclosed, `BuildingInterior` storey, floor outline in
+  rig metres), one `DwellingThreshold`, and `DwellingFixtureAnchor[]` (anchor id, verb, optional Def id,
+  level, position, reach point, optional footprint). The rig says what a fixture is; the site plan says
+  which instance it is and owns its save key.
+- `DwellingMeshRules`: pure lookups, `CutFor(levels, levelId)` in the renderer's own `HullMeshDef.Cut`
+  (unknown, open or tag-0 levels cut nothing), and `FirstRoomProblem`, the check the def's `IsUsable` and
+  the bake's refusals share.
+- `IDwellingMeshPresentationService` (`Install`, `AttachPart`, `DetachPart`, `Remove`) and its locator
+  `DwellingMeshPresentation.Service`: still pose, no foam, no reflection. The caller sets the heading once
+  from the site's ground bearing and sorts the dwelling once at `HullSorting.OrderAt` of its ground pivot;
+  the cut is `as IHullCutaway`, driven only by `BuildingInterior`'s inside state.
+
+Nothing here is saved. Tests: `DwellingMeshContractTests`.
+
 ## 5. Boat & entity architecture (composition)
 
 **Character clothing interchange (CW-01, 2026-09-13).** Core now defines the version-1
