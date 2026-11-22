@@ -1,0 +1,991 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &682277033855625100
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3411263934157213211}
+  - component: {fileID: 4661756391904169568}
+  m_Layer: 0
+  m_Name: freezer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3411263934157213211
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 682277033855625100}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.634, y: 0.9963207, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8720725665688632920}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4661756391904169568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 682277033855625100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c122663988b4976850320cccf2b954a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Player::HiddenHarbours.Player.CamperFreezer
+  _def: {fileID: 11400000, guid: 007e701b608242ed95ee03d13bfa3d0d, type: 2}
+  _reachMeters: 1.2
+  _contexts: 1
+--- !u!1 &774428791870515113
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6854966254084496192}
+  - component: {fileID: 6424231898846379005}
+  m_Layer: 0
+  m_Name: head_toilet
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6854966254084496192
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 774428791870515113}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.69, y: -1.0284601, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8720725665688632920}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6424231898846379005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 774428791870515113}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 408ef66368a24966b406ac44ab5a15f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.SitPoint
+  _id: fixture.camper_clipper.head_toilet
+  _stationId: washstation.toilet
+  _reachMeters: 1.1
+  _walkAwaySlackMeters: 0.5
+  _sitLabel: Sit down
+  _sitLine: He sits a moment.
+  _offerOffset: {x: 0, y: 0}
+--- !u!1 &1072663446441735291
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6959254195673021669}
+  m_Layer: 0
+  m_Name: door
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6959254195673021669
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1072663446441735291}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.968, y: 0.051423006, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8720725665688632920}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1291059462241555336
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 958047055763681703}
+  - component: {fileID: 7194493453077146252}
+  m_Layer: 0
+  m_Name: galley_sink
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &958047055763681703
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1291059462241555336}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.663, y: -0.27639866, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8720725665688632920}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7194493453077146252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1291059462241555336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ab98fd1993948f7a67f10bed3f87255, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.WashStationPoint
+  _id: fixture.camper_clipper.galley_sink
+  _stationId: washstation.sink
+  _reachMeters: 1.2
+  _walkAwaySlackMeters: 0.6
+  _washLabel: Wash up at the basin
+  _beginLine: He splashes his face and scrubs his hands.
+  _doneLine: As clean as a basin gets him.
+--- !u!1 &1849030334922137735
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8720725665688632920}
+  m_Layer: 0
+  m_Name: Fixtures
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8720725665688632920
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1849030334922137735}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 6959254195673021669}
+  - {fileID: 7926904642909685623}
+  - {fileID: 958047055763681703}
+  - {fileID: 6951001751555219659}
+  - {fileID: 6851115487742141640}
+  - {fileID: 148074743704530530}
+  - {fileID: 8164920363551756659}
+  - {fileID: 3411263934157213211}
+  - {fileID: 3556105745754665680}
+  - {fileID: 6220871254997294406}
+  - {fileID: 4675142113470720573}
+  - {fileID: 7219792281874863176}
+  - {fileID: 6854966254084496192}
+  - {fileID: 2073666054283383676}
+  m_Father: {fileID: 7054558542517429578}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2171269215772690869
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8811427933537933214}
+  - component: {fileID: 6333676967879037965}
+  m_Layer: 0
+  m_Name: Walls
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8811427933537933214
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2171269215772690869}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7054558542517429578}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!68 &6333676967879037965
+EdgeCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2171269215772690869}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_EdgeRadius: 0.05
+  m_Points:
+  - {x: 0.932, y: 0.3149657}
+  - {x: 0.932, y: 0.34324855}
+  - {x: 0.932, y: 0.5123017}
+  - {x: 0.932, y: 0.6781409}
+  - {x: 0.932, y: 0.84076613}
+  - {x: 0.932, y: 0.9982491}
+  - {x: 0.932, y: 1.1505897}
+  - {x: 0.932, y: 1.2965025}
+  - {x: 0.932, y: 1.4347019}
+  - {x: 0.932, y: 1.5651877}
+  - {x: 0.922, y: 1.6866746}
+  - {x: 0.884, y: 1.7991624}
+  - {x: 0.821, y: 1.9013656}
+  - {x: 0.738, y: 1.9926414}
+  - {x: 0.64, y: 2.07299}
+  - {x: 0.53, y: 2.142411}
+  - {x: 0.414, y: 2.1989763}
+  - {x: 0.298, y: 2.2433286}
+  - {x: 0.188, y: 2.275468}
+  - {x: 0.09, y: 2.2947516}
+  - {x: -0.09, y: 2.2947516}
+  - {x: -0.188, y: 2.275468}
+  - {x: -0.298, y: 2.2433286}
+  - {x: -0.414, y: 2.1989763}
+  - {x: -0.53, y: 2.142411}
+  - {x: -0.64, y: 2.07299}
+  - {x: -0.738, y: 1.9926414}
+  - {x: -0.821, y: 1.9013656}
+  - {x: -0.884, y: 1.7991624}
+  - {x: -0.922, y: 1.6866746}
+  - {x: -0.932, y: 1.5651877}
+  - {x: -0.932, y: 1.4347019}
+  - {x: -0.932, y: 1.2965025}
+  - {x: -0.932, y: 1.1505897}
+  - {x: -0.932, y: 0.9982491}
+  - {x: -0.932, y: 0.84076613}
+  - {x: -0.932, y: 0.6781409}
+  - {x: -0.932, y: 0.5123017}
+  - {x: -0.932, y: 0.34324855}
+  - {x: -0.932, y: 0.17226708}
+  - {x: -0.932, y: 0}
+  - {x: -0.932, y: -0.17226708}
+  - {x: -0.932, y: -0.34324855}
+  - {x: -0.932, y: -0.5123017}
+  - {x: -0.932, y: -0.6781409}
+  - {x: -0.932, y: -0.84076613}
+  - {x: -0.932, y: -0.9982491}
+  - {x: -0.932, y: -1.1505897}
+  - {x: -0.932, y: -1.2965025}
+  - {x: -0.932, y: -1.4347019}
+  - {x: -0.932, y: -1.5651877}
+  - {x: -0.932, y: -1.6866746}
+  - {x: -0.925, y: -1.7991624}
+  - {x: -0.883, y: -1.9013656}
+  - {x: -0.81, y: -1.9926414}
+  - {x: -0.712, y: -2.07299}
+  - {x: -0.597, y: -2.142411}
+  - {x: -0.469, y: -2.1989763}
+  - {x: -0.339, y: -2.2433286}
+  - {x: -0.213, y: -2.275468}
+  - {x: -0.101, y: -2.2947516}
+  - {x: 0.101, y: -2.2947516}
+  - {x: 0.213, y: -2.275468}
+  - {x: 0.339, y: -2.2433286}
+  - {x: 0.469, y: -2.1989763}
+  - {x: 0.597, y: -2.142411}
+  - {x: 0.712, y: -2.07299}
+  - {x: 0.81, y: -1.9926414}
+  - {x: 0.883, y: -1.9013656}
+  - {x: 0.925, y: -1.7991624}
+  - {x: 0.932, y: -1.6866746}
+  - {x: 0.932, y: -1.5651877}
+  - {x: 0.932, y: -1.4347019}
+  - {x: 0.932, y: -1.2965025}
+  - {x: 0.932, y: -1.1505897}
+  - {x: 0.932, y: -0.9982491}
+  - {x: 0.932, y: -0.84076613}
+  - {x: 0.932, y: -0.6781409}
+  - {x: 0.932, y: -0.5123017}
+  - {x: 0.932, y: -0.34324855}
+  - {x: 0.932, y: -0.21212035}
+  m_AdjacentStartPoint: {x: 0, y: 0}
+  m_AdjacentEndPoint: {x: 0, y: 0}
+  m_UseAdjacentStartPoint: 0
+  m_UseAdjacentEndPoint: 0
+--- !u!1 &2397903396543686633
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6951001751555219659}
+  - component: {fileID: 4885446404895162145}
+  m_Layer: 0
+  m_Name: stove
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6951001751555219659
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2397903396543686633}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.663, y: 0.06427876, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8720725665688632920}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4885446404895162145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2397903396543686633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85b9b27cfe504bf4a6776bff3e7bb516, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Player::HiddenHarbours.Player.CookingStationFixture
+  _def: {fileID: 11400000, guid: 93c06c91af12437c931b3f9b695281be, type: 2}
+  _id: fixture.camper_clipper.stove
+  _requiresFacing: 0
+--- !u!1 &2498293929690125909
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7926904642909685623}
+  - component: {fileID: 5664018984961886137}
+  m_Layer: 0
+  m_Name: bunk
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7926904642909685623
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2498293929690125909}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -1.5876853, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8720725665688632920}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5664018984961886137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2498293929690125909}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12ee0a982cb85bcd4eaa83c4ca520454, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.InteriorBed
+  _id: fixture.camper_clipper.bunk
+  _isPlayerBed: 1
+  _ownerName: 
+  _placeName: your bunk in the camper
+  _reachMeters: 1.4
+  _interior: {fileID: 2813897731607178445}
+  _pillowSide: 0
+  _pillowReachMetres: 0
+--- !u!1 &2864572064162111239
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6220871254997294406}
+  - component: {fileID: 5542648851687773374}
+  m_Layer: 0
+  m_Name: rod_rack
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6220871254997294406
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2864572064162111239}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.48, y: 0.9513256, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8720725665688632920}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5542648851687773374
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2864572064162111239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e436b3c9f01e4b399b301e11e86ba95c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Player::HiddenHarbours.Player.StowageRack
+  _def: {fileID: 11400000, guid: 5ff4b7139b374b9f892e232452322a38, type: 2}
+  _holder: {fileID: 0}
+  _reachMeters: 1.2
+  _contexts: 3
+  _id: 
+--- !u!1 &3136756105246606797
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6851115487742141640}
+  - component: {fileID: 6262198144674219636}
+  m_Layer: 0
+  m_Name: prep
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6851115487742141640
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3136756105246606797}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.663, y: 0.35353318, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8720725665688632920}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6262198144674219636
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3136756105246606797}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85b9b27cfe504bf4a6776bff3e7bb516, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Player::HiddenHarbours.Player.CookingStationFixture
+  _def: {fileID: 11400000, guid: efcabecbb3c246e79b53624f08a07698, type: 2}
+  _id: fixture.camper_clipper.prep
+  _requiresFacing: 0
+--- !u!1 &3409239748418746061
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2073666054283383676}
+  - component: {fileID: 850055968673848460}
+  m_Layer: 0
+  m_Name: head_shower
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2073666054283383676
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3409239748418746061}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.761, y: -0.829196, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8720725665688632920}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &850055968673848460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3409239748418746061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ab98fd1993948f7a67f10bed3f87255, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.WashStationPoint
+  _id: fixture.camper_clipper.head_shower
+  _stationId: washstation.shower
+  _reachMeters: 1.2
+  _walkAwaySlackMeters: 0.6
+  _washLabel: Wash up at the basin
+  _beginLine: He splashes his face and scrubs his hands.
+  _doneLine: As clean as a basin gets him.
+--- !u!1 &4706599478830189727
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7219792281874863176}
+  - component: {fileID: 4702247608795710282}
+  m_Layer: 0
+  m_Name: head_basin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7219792281874863176
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4706599478830189727}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.76, y: -0.66849905, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8720725665688632920}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4702247608795710282
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4706599478830189727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ab98fd1993948f7a67f10bed3f87255, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.WashStationPoint
+  _id: fixture.camper_clipper.head_basin
+  _stationId: washstation.sink
+  _reachMeters: 1.2
+  _walkAwaySlackMeters: 0.6
+  _washLabel: Wash up at the basin
+  _beginLine: He splashes his face and scrubs his hands.
+  _doneLine: As clean as a basin gets him.
+--- !u!1 &5289548579560560617
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 148074743704530530}
+  - component: {fileID: 7590633948819707328}
+  m_Layer: 0
+  m_Name: fridge
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &148074743704530530
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5289548579560560617}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.4, y: 0.65564334, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8720725665688632920}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7590633948819707328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5289548579560560617}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a02995a74fec4f4982b0d5c52be24eba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.KitchenStoreFixture
+  _def: {fileID: 11400000, guid: e29bd2e79e5b4be9b76f71bdb62bc22f, type: 2}
+--- !u!1 &6808729430808290995
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4675142113470720573}
+  - component: {fileID: 5050273342838078550}
+  m_Layer: 0
+  m_Name: settee
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4675142113470720573
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6808729430808290995}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.7676659, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8720725665688632920}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5050273342838078550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6808729430808290995}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 408ef66368a24966b406ac44ab5a15f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.SitPoint
+  _id: fixture.camper_clipper.settee
+  _stationId: 
+  _reachMeters: 1.1
+  _walkAwaySlackMeters: 0.5
+  _sitLabel: Sit down
+  _sitLine: He sits a moment.
+  _offerOffset: {x: 0, y: 0}
+--- !u!1 &6838880913631371812
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3556105745754665680}
+  - component: {fileID: 3869671784642884140}
+  m_Layer: 0
+  m_Name: gear_locker
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3556105745754665680
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6838880913631371812}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.37, y: 0.46280706, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8720725665688632920}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3869671784642884140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6838880913631371812}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e436b3c9f01e4b399b301e11e86ba95c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Player::HiddenHarbours.Player.StowageRack
+  _def: {fileID: 11400000, guid: ac0e99739d5f422680534eb272819078, type: 2}
+  _holder: {fileID: 0}
+  _reachMeters: 1.2
+  _contexts: 3
+  _id: 
+--- !u!1 &7267899423835794813
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7054558542517429578}
+  - component: {fileID: 2813897731607178445}
+  - component: {fileID: 5842423978395566714}
+  - component: {fileID: 2592546545646308526}
+  m_Layer: 0
+  m_Name: CamperClipperDwelling
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7054558542517429578
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7267899423835794813}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 8811427933537933214}
+  - {fileID: 8720725665688632920}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2813897731607178445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7267899423835794813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6da83cde81fa407ebce1a31687d6c87a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.BuildingInterior
+  _shell: {fileID: 0}
+  _room: {fileID: 0}
+  _props: {fileID: 0}
+  _upperRoom: {fileID: 0}
+  _upperProps: {fileID: 0}
+  _upperWalls: {fileID: 0}
+  _upperLevelY: 0
+  _occupant: {fileID: 0}
+  _widthMetres: 1.864
+  _lengthMetres: 7.14
+  _facing: 0
+  _facings: 360
+  _groundDepthScale: 0.6427876
+  _wallThicknessMetres: 0.05
+  _hysteresisMetres: 0.15
+  _doorwayWidthMetres: 0.82000005
+  _doorOnPlusY: 0
+  _doorAcrossMetres: 0
+  _dwellingMesh: {fileID: 11400000, guid: 0c432550f6c31b345b1506eb85f33859, type: 2}
+--- !u!114 &5842423978395566714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7267899423835794813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98c64979c0c1408b943d82463d8a5bc1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.DwellingCutaway
+--- !u!114 &2592546545646308526
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7267899423835794813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8ccbde4c8b9491a9d38cdf661610436, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.DwellingSite
+  _siteKey: 
+  _groundBearingDegrees: 0
+  _walls: {fileID: 6333676967879037965}
+  _anchors:
+  - AnchorId: door
+    Point: {fileID: 6959254195673021669}
+  - AnchorId: bunk
+    Point: {fileID: 7926904642909685623}
+  - AnchorId: galley_sink
+    Point: {fileID: 958047055763681703}
+  - AnchorId: stove
+    Point: {fileID: 6951001751555219659}
+  - AnchorId: prep
+    Point: {fileID: 6851115487742141640}
+  - AnchorId: fridge
+    Point: {fileID: 148074743704530530}
+  - AnchorId: pantry
+    Point: {fileID: 8164920363551756659}
+  - AnchorId: freezer
+    Point: {fileID: 3411263934157213211}
+  - AnchorId: gear_locker
+    Point: {fileID: 3556105745754665680}
+  - AnchorId: rod_rack
+    Point: {fileID: 6220871254997294406}
+  - AnchorId: settee
+    Point: {fileID: 4675142113470720573}
+  - AnchorId: head_basin
+    Point: {fileID: 7219792281874863176}
+  - AnchorId: head_toilet
+    Point: {fileID: 6854966254084496192}
+  - AnchorId: head_shower
+    Point: {fileID: 2073666054283383676}
+--- !u!1 &8763523310815395690
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8164920363551756659}
+  - component: {fileID: 3143135471912860153}
+  m_Layer: 0
+  m_Name: pantry
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8164920363551756659
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8763523310815395690}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.4, y: 1.247008, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8720725665688632920}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3143135471912860153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8763523310815395690}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a02995a74fec4f4982b0d5c52be24eba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.KitchenStoreFixture
+  _def: {fileID: 11400000, guid: a3bb6d678edc4285a16dfd28e517af83, type: 2}
