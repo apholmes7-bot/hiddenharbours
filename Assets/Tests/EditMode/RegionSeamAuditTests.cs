@@ -351,7 +351,10 @@ namespace HiddenHarbours.Tests.EditMode
             // sprite, a collider, a YSortSprite and a StowageRack each) and the camper's shore power lead (sprites
             // and transforms only): no nested prefab and no travel component. The two wholesalers' staff fixtures
             // (N1a) nest the toilet, the washstand and the kitchen microwave in their shells: the microwave adds
-            // a CookingStationFixture and its art, no travel component. Ginny's kitchen run adds the prep counter,
+            // a CookingStationFixture and its art, no travel component. The community hall's kitchen and washroom
+            // (N1b) nest the fridge (a KitchenStoreFixture, its art and a cabinet collider), the kitchen sink (a
+            // WashStationPoint, its art and a collider) and the cook stove (a CookingStationFixture and its art)
+            // beside the toilet and the washstand: no travel component. Ginny's kitchen run adds the prep counter,
             // the stove and the microwave: sprites and a CookingStationFixture each, no collider, no travel component;
             // its kitchen sink (a WashStationPoint) and fridge (a KitchenStoreFixture) add art and a footprint collider.
             Assert.That(seen.Select(g => paths[g].Replace('\\', '/')).OrderBy(p => p, StringComparer.Ordinal), Is.EqualTo(new[] {
