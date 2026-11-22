@@ -16,7 +16,8 @@ namespace HiddenHarbours.Fishing
     /// bite, of a species it would roll</b>, which is the owner's honesty invariant extended from the
     /// glass to the water.</para>
     ///
-    /// <para><b>Pose = f(clock, seed)</b> (rule 5). Positions come from <see cref="ShoalMath"/> and events
+    /// <para><b>Pose = f(flow, seed)</b> (rule 5; the flow is the hour except while it is held, see
+    /// <see cref="PoseSeconds"/>). Positions come from <see cref="ShoalMath"/> and events
     /// from <see cref="ShoalEventMath"/>, both closed-form in <c>(worldSeed, schoolKey, t)</c>. Nothing
     /// integrates and nothing accumulates, so a save/load or a region stream-in lands the same fish in the
     /// same place mid-stroke — and two players on one seed watch the same herring jump.</para>
@@ -194,9 +195,8 @@ namespace HiddenHarbours.Fishing
             VisibleSchools = 0;
 
             int used = 0;
-            if (TryGather(out double now, out DepthDropSettings depth, out int worldSeed,
-                          out FishSchoolSettings schools))
-                used = Paint(now, in depth, worldSeed, in schools);
+            if (TryGather(out DepthDropSettings depth, out int worldSeed, out FishSchoolSettings schools))
+                used = Paint(PoseSeconds(GameServices.Clock), in depth, worldSeed, in schools);
 
             // Everything the paint did not claim goes dark. Never destroyed — the pool is the budget.
             for (int i = used; i < _pool.Count; i++)
@@ -207,10 +207,8 @@ namespace HiddenHarbours.Fishing
 
         /// <summary>Read the world and the schools in view. False = draw nothing at all (no model, no
         /// camera, no library, or an empty sea).</summary>
-        private bool TryGather(out double now, out DepthDropSettings depth, out int worldSeed,
-                               out FishSchoolSettings schools)
+        private bool TryGather(out DepthDropSettings depth, out int worldSeed, out FishSchoolSettings schools)
         {
-            now = 0.0;
             depth = default;
             worldSeed = 0;
             schools = FishSchoolMath.Sanitized(FishSchoolSettings.Default);
@@ -224,16 +222,29 @@ namespace HiddenHarbours.Fishing
             if (_camera == null) _camera = Camera.main;
             if (_camera == null) return false;
 
-            now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
+            // WHICH schools are there is the hour's question (the model's windows are on TotalSeconds);
+            // how their fish are posed is the flow's (PoseSeconds).
+            double hour = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
             IEnvironmentService env = GameServices.Environment;
             worldSeed = env != null ? env.WorldSeed : 0;
             depth = GameServices.Config != null ? GameServices.Config.DepthDrop : DepthDropSettings.Default;
             if (GameServices.Config != null)
                 schools = FishSchoolMath.Sanitized(GameServices.Config.FishSchools);
 
-            VisibleSchools = view.SchoolsInView(ViewRect(_camera), now, _schools);
+            VisibleSchools = view.SchoolsInView(ViewRect(_camera), hour, _schools);
             return VisibleSchools > 0;
         }
+
+        /// <summary>
+        /// THE TIME THE FISH SWIM ON: the world's flow (<see cref="IGameClock.FlowSeconds"/>), not the
+        /// hour. A held hour (<see cref="IGameClock.IsHeld"/>: the opening at sea, a held-light shot)
+        /// stops <see cref="IGameClock.TotalSeconds"/> while the world keeps flowing; posed on the hour,
+        /// every fish in view stood frozen mid-stroke for the whole hold. The flow equals the hour except
+        /// across held spans and again after any seek, so ordinary play poses the same fish in the same
+        /// place as before, and the pose stays a closed form of <c>(worldSeed, schoolKey, flow)</c>
+        /// (rule 5). The splash log stamps on this same reading so a scatter and the fish agree.
+        /// </summary>
+        public static double PoseSeconds(IGameClock clock) => clock != null ? clock.FlowSeconds : 0.0;
 
         /// <summary>The camera's footprint in world metres — what "in view" means for the query.</summary>
         private static Rect ViewRect(Camera cam)

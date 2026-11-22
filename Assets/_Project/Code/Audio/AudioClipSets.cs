@@ -65,6 +65,7 @@ namespace HiddenHarbours.Audio
             {
                 merged.Id = publicSet.Id;
                 merged.SongGapSeconds = publicSet.SongGapSeconds;
+                merged.OarStrokes = publicSet.OarStrokes;
                 merged.Songs = SongsOf(publicSet);
                 CopyNonNullSlots(publicSet, merged);
             }

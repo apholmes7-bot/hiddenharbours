@@ -44,7 +44,8 @@ namespace HiddenHarbours.Audio
         [Tooltip("Sparse gull calls over true silence — the coast's voice, layered onto the bed.")]
         public AudioClip Gulls;
 
-        [Tooltip("Oar-stroke / water bed, aboard the hand-rowed dory. Its gain is ridden by the crossfade.")]
+        [Tooltip("Oar stroke, aboard a rowed boat. Not looped any more: the catch and the release drip are " +
+                 "CUT from it (OarStrokes below says where) and played on the frame the blades go in and come out.")]
         public AudioClip HullRow;
 
         [Tooltip("Looping outboard-engine bed. PITCHED at runtime by speed over ground, so the source " +
@@ -138,5 +139,13 @@ namespace HiddenHarbours.Audio
         [Tooltip("Seconds of silence between one song's end and the next song's start. The public set's " +
                  "value is the one played, with or without the private pack.")]
         [Min(0f)] public float SongGapSeconds = 4f;
+
+        // ---- AudioDirector: the oars on the stroke (tunables, not a slot) ---------------------
+
+        [Header("Director — oar strokes (played on the stroke, cut from HullRow)")]
+        [Tooltip("How the oars are heard: levels, per-stroke variation, earshot and where the two sounds " +
+                 "are cut from the oar-stroke clip. The public set's values are the ones played, with or " +
+                 "without the private pack.")]
+        public OarStrokeAudioTuning OarStrokes = new OarStrokeAudioTuning();
     }
 }
