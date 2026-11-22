@@ -246,6 +246,24 @@ namespace HiddenHarbours.World
         public DwellingMeshDef DwellingMesh => _dwellingMesh;
 
         /// <summary>
+        /// <b>Turn the footprint without touching anything else</b> (ADR 0060 section 6): a mesh dwelling's
+        /// site carries a ground bearing, and its prefab is the same at every site, so the site writes the
+        /// facing here once, at enable. A sprite house never calls it: its facing is the bake cell its sheet
+        /// shows, written by <see cref="Configure"/>. Facings below 1 are read as 1, as in Configure.
+        /// </summary>
+        public void SetFacing(int facing, int facings)
+        {
+            _facing = facing;
+            _facings = Mathf.Max(1, facings);
+        }
+
+        /// <summary>The facing the footprint is turned to, out of <see cref="Facings"/>.</summary>
+        public int Facing => _facing;
+
+        /// <summary>How many facings make a full turn for this building's footprint.</summary>
+        public int Facings => _facings;
+
+        /// <summary>
         /// <b>Make this building a mesh dwelling</b> (ADR 0060 section 3): its inside test becomes the floor
         /// outline of <paramref name="def"/>'s levels and its threshold the def's door. Called by the dwelling
         /// prefab builder after <see cref="Configure"/>; a sprite house never calls it and keeps its
