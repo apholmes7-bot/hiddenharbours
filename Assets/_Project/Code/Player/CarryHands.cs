@@ -57,7 +57,7 @@ namespace HiddenHarbours.Player
     // (101), which says whether it is drawing its own rod: a carried prop posed before either would be
     // a frame behind the hand it is in.
     [DefaultExecutionOrder(102)]
-    public sealed class CarryHands : MonoBehaviour, IHandsCarrier, ICatchHands
+    public sealed class CarryHands : MonoBehaviour, IHandsCarrier, ICatchHands, IDigBladeReader
     {
         [Header("Wiring (auto-resolved off this object if empty)")]
         [Tooltip("The player's own renderer — the SORTING DATUM the carried sprite rides. Null = the " +
@@ -586,6 +586,17 @@ namespace HiddenHarbours.Player
         /// <summary>The hand-tool mesh driver (every tool but the fight's rod), once made. For tests and
         /// plates.</summary>
         public HeldRodMesh ToolMesh => _toolMesh;
+
+        /// <summary>The dig's blade as drawn on the last frame (<see cref="HeldRodMesh.TryTipOverGround"/>),
+        /// and where he stands. False while the shovel is not a mesh aimed by the clip (the sprite body,
+        /// carried, slung).</summary>
+        public bool TryReadDigBlade(out Vector2 ground, out float lift, out Vector2 feet)
+        {
+            feet = transform.position;
+            ground = Vector2.zero;
+            lift = 0f;
+            return _toolMesh != null && _toolMesh.TryTipOverGround(out ground, out lift);
+        }
 
         /// <summary>
         /// A carried tool that is not the fight's rod (the fight presenter draws that one), as its held mesh

@@ -1,0 +1,962 @@
+fileFormatVersion: 2
+guid: b68bca109a75d7441b8444d1efb8552b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3639074489687924799
+    second: Appliance_fridge_0
+  - first:
+      213: -4086529107223501342
+    second: Appliance_fridge_1
+  - first:
+      213: -8826046473599511621
+    second: Appliance_fridge_2
+  - first:
+      213: 6136054451932325184
+    second: Appliance_fridge_3
+  - first:
+      213: 8455332396884190514
+    second: Appliance_fridge_4
+  - first:
+      213: -1123497906156441896
+    second: Appliance_fridge_5
+  - first:
+      213: 5520884012754911436
+    second: Appliance_fridge_6
+  - first:
+      213: 6927900320760689524
+    second: Appliance_fridge_7
+  - first:
+      213: -8128260977609600250
+    second: Appliance_fridge_8
+  - first:
+      213: 4426371492046405690
+    second: Appliance_fridge_9
+  - first:
+      213: 2632843675111298326
+    second: Appliance_fridge_10
+  - first:
+      213: -4983648472454268467
+    second: Appliance_fridge_11
+  - first:
+      213: 6814853679814842564
+    second: Appliance_fridge_12
+  - first:
+      213: 294271192422622302
+    second: Appliance_fridge_13
+  - first:
+      213: 4992014473986139722
+    second: Appliance_fridge_14
+  - first:
+      213: -7912881926204377893
+    second: Appliance_fridge_15
+  - first:
+      213: 2241106315924828221
+    second: Appliance_fridge_16
+  - first:
+      213: -2866497551058320489
+    second: Appliance_fridge_17
+  - first:
+      213: 3589277498782460714
+    second: Appliance_fridge_18
+  - first:
+      213: -7085424547957790252
+    second: Appliance_fridge_19
+  - first:
+      213: -1943190924051915580
+    second: Appliance_fridge_20
+  - first:
+      213: 1452929609899951984
+    second: Appliance_fridge_21
+  - first:
+      213: 1905811820804226414
+    second: Appliance_fridge_22
+  - first:
+      213: -1451874315225528546
+    second: Appliance_fridge_23
+  - first:
+      213: 7643953642016850751
+    second: Appliance_fridge_24
+  - first:
+      213: -1012868904731737214
+    second: Appliance_fridge_25
+  - first:
+      213: 4018545328108909200
+    second: Appliance_fridge_26
+  - first:
+      213: 568142264728327103
+    second: Appliance_fridge_27
+  - first:
+      213: -6978552150705726909
+    second: Appliance_fridge_28
+  - first:
+      213: 2787889067196005057
+    second: Appliance_fridge_29
+  - first:
+      213: -5298036124425657484
+    second: Appliance_fridge_30
+  - first:
+      213: 2466155134231080551
+    second: Appliance_fridge_31
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Appliance_fridge_s0_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 258
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4b7bfb4a824a33b45a4f51cb7ad265cc
+      internalID: 714977730
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s0_d1
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 258
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4d236f5e258c46740a89050eb1e4f5da
+      internalID: -1615342531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s0_d2
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 258
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 12b2d801a93b08a4485eabe6d2bf3789
+      internalID: 227035310
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s0_d3
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 258
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2d5fd98aa724e3a4fbcfb8b5d711c7df
+      internalID: 348933022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s0_d4
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 258
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c9dc281e6cd18e34ea647927660ab19e
+      internalID: -534967430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s0_d5
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 258
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d41843c8c8bef14469cd38f1ff3822fe
+      internalID: 1405431348
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s0_d6
+      rect:
+        serializedVersion: 2
+        x: 468
+        y: 258
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0072572cafd54b947b3fa4dc0ee364ca
+      internalID: -1587634399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s0_d7
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 258
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a89f726487c3e094390025e7707c906e
+      internalID: 306624170
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s1_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 172
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0873ae9c1de857d44b310e4ef4d02afa
+      internalID: -936973350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s1_d1
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 172
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 49d6e02160553ef4a8a7cb9aebb517e3
+      internalID: -326141586
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s1_d2
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 172
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8bbe79bbf5771d0409d6090517f4e080
+      internalID: -1118566594
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s1_d3
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 172
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 48d114bb011bbf244be0ae7ceab2fc33
+      internalID: -514753330
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s1_d4
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 172
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc0e7c12d99efd24199c477e8fb35455
+      internalID: -880665132
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s1_d5
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 172
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1880cd7bab610c24692491b98f80c381
+      internalID: -307177535
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s1_d6
+      rect:
+        serializedVersion: 2
+        x: 468
+        y: 172
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: df1a44376c913254d962f68b2959e7ea
+      internalID: 1298893860
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s1_d7
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 172
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f2b693094af144741b28b4805d75ded4
+      internalID: -1030734729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s2_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 86
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d54b7f1919aa1fd488edb7f19fee041f
+      internalID: 1681631993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s2_d1
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 86
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6018ffddbcdc22e479f59b6493425805
+      internalID: 1709961703
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s2_d2
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 86
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f1c99df4f86c87a4abebb16632f2a4dd
+      internalID: 780448125
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s2_d3
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 86
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 74d6aaebb28ae4a4b8105de4dd043bd7
+      internalID: 185709026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s2_d4
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 86
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 56621bb419ce6034fbd37a175b07b0cc
+      internalID: 2088252086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s2_d5
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 86
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7165fa46d08e4a446a92de823d460058
+      internalID: 771149307
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s2_d6
+      rect:
+        serializedVersion: 2
+        x: 468
+        y: 86
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 726590765b1b2de4c85bb00b966c2d57
+      internalID: -1197710117
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s2_d7
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 86
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8915d9c008f6c24b94f9c6aa67d4241
+      internalID: 946272615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s3_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed56b602684cc7c4c9f58676f52b3147
+      internalID: 809285107
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s3_d1
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 0
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ae48ee698af84ca43b35b9f4f89d0c6c
+      internalID: -1296121166
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s3_d2
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 0
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6ac4cd9b13a99604397478f4e4fd3c83
+      internalID: -484466290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s3_d3
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 0
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aa8643875a06d524caf658b373cec21e
+      internalID: -1758937412
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s3_d4
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 0
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ff33fe4f0e70eec4594f8b953076799e
+      internalID: 982475001
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s3_d5
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 0
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b60136e7bbb1c9943adda95d6cc2e008
+      internalID: -1124742147
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s3_d6
+      rect:
+        serializedVersion: 2
+        x: 468
+        y: 0
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cedf407949ef7ec4f949d22c1154eab2
+      internalID: 1674220410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_fridge_s3_d7
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 0
+        width: 78
+        height: 86
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24418604}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d6b8f8c0e5b235b468a8c50d174d8b7f
+      internalID: -641277832
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 9bbc60691e8b93946accfab67e814a20
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Appliance_fridge_s0_d0: 714977730
+      Appliance_fridge_s0_d1: -1615342531
+      Appliance_fridge_s0_d2: 227035310
+      Appliance_fridge_s0_d3: 348933022
+      Appliance_fridge_s0_d4: -534967430
+      Appliance_fridge_s0_d5: 1405431348
+      Appliance_fridge_s0_d6: -1587634399
+      Appliance_fridge_s0_d7: 306624170
+      Appliance_fridge_s1_d0: -936973350
+      Appliance_fridge_s1_d1: -326141586
+      Appliance_fridge_s1_d2: -1118566594
+      Appliance_fridge_s1_d3: -514753330
+      Appliance_fridge_s1_d4: -880665132
+      Appliance_fridge_s1_d5: -307177535
+      Appliance_fridge_s1_d6: 1298893860
+      Appliance_fridge_s1_d7: -1030734729
+      Appliance_fridge_s2_d0: 1681631993
+      Appliance_fridge_s2_d1: 1709961703
+      Appliance_fridge_s2_d2: 780448125
+      Appliance_fridge_s2_d3: 185709026
+      Appliance_fridge_s2_d4: 2088252086
+      Appliance_fridge_s2_d5: 771149307
+      Appliance_fridge_s2_d6: -1197710117
+      Appliance_fridge_s2_d7: 946272615
+      Appliance_fridge_s3_d0: 809285107
+      Appliance_fridge_s3_d1: -1296121166
+      Appliance_fridge_s3_d2: -484466290
+      Appliance_fridge_s3_d3: -1758937412
+      Appliance_fridge_s3_d4: 982475001
+      Appliance_fridge_s3_d5: -1124742147
+      Appliance_fridge_s3_d6: 1674220410
+      Appliance_fridge_s3_d7: -641277832
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
