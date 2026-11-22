@@ -39,9 +39,9 @@ namespace HiddenHarbours.App.Editor
     /// upper storey's, which <see cref="BuildingInterior"/> switches on only while the player is on that
     /// level.</para>
     ///
-    /// <para><b>The pilot (R1).</b> Only Ginny's cottage gets a bathroom in this slice: the toilet, the
-    /// basin and the shower of its <see cref="RoomFixturePlan"/> rows, on the ground floor. The closet
-    /// partition around them, the kitchen and every other building are R2 onward.</para>
+    /// <para><b>The pilot building.</b> Only Ginny's cottage has placed rows so far: its kitchen (prep
+    /// counter, stove, microwave, kitchen sink and fridge) and its bathroom (toilet, basin, shower), all on the ground floor. The
+    /// closet partition around the bathroom and every other building are later slices.</para>
     ///
     /// <para><b>The player's storage</b> (owner 2026-11-17) rides the same step: <see cref="HomeStoragePlacement"/>
     /// adds Ginny's rod rack and gear locker (their interact id is the row's <c>storage.*</c> save key) and the
@@ -64,7 +64,7 @@ namespace HiddenHarbours.App.Editor
 
         public const string KitchenFolder = "Assets/_Project/Prefabs/Props/Kitchen";
 
-        /// <summary>The one building R1 places fixtures in.</summary>
+        /// <summary>The one building with placed rows (its kitchen and bathroom).</summary>
         public const string PilotBuildingKey = "ginny_cottage";
 
         /// <summary>The named step for a scene.</summary>
@@ -83,6 +83,8 @@ namespace HiddenHarbours.App.Editor
             RoomFixturePlan.Kind.Shower => ShowerPrefab,
             RoomFixturePlan.Kind.Bath => BathPrefab,
             RoomFixturePlan.Kind.Toilet => ToiletPrefab,
+            RoomFixturePlan.Kind.Fridge => KitchenFolder + "/Fridge.prefab",
+            RoomFixturePlan.Kind.KitchenSink => KitchenFolder + "/KitchenSink.prefab",
             _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, null),
         };
 
@@ -122,9 +124,11 @@ namespace HiddenHarbours.App.Editor
             public bool IsInterior => !string.IsNullOrEmpty(BuildingRoot);
         }
 
-        /// <summary>A planned row as a site.</summary>
+        /// <summary>A planned row as a site. A kind whose prefab carries no interact id (the fridge) stands with
+        /// none, as a picture with its footprint.</summary>
         public static Site SiteOf(RoomFixturePlan.Row row) =>
-            new Site(RoomFixturePlan.Scene, PrefabFor(row.Kind), NameOf(RoomFixturePlan.Slot(row.Kind)), row.Id, row.At,
+            new Site(RoomFixturePlan.Scene, PrefabFor(row.Kind), NameOf(RoomFixturePlan.Slot(row.Kind)),
+                     RoomFixturePlan.HasInteractId(row.Kind) ? row.Id : null, row.At,
                      $"{row.BuildingKey}, room '{row.RoomKey}', level {row.Level}: the plan's {RoomFixturePlan.Slot(row.Kind)}",
                      row.BuildingRoot, row.Building, row.Level, planFrame: true);
 
@@ -139,7 +143,7 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>The rows this step places: every <see cref="RoomFixturePlan"/> row marked
         /// <see cref="RoomFixturePlan.Row.Placed"/> in its building's own plan file (today the pilot
-        /// building's bathroom), so a later slice places a building by editing only that building's file.</summary>
+        /// building's kitchen and bathroom), so a later slice places a building by editing only that building's file.</summary>
         public static IEnumerable<RoomFixturePlan.Row> PlacedRows() =>
             RoomFixturePlan.Rows.Where(r => r.Placed);
 
@@ -272,8 +276,9 @@ namespace HiddenHarbours.App.Editor
         /// <summary>The St Peters open-air root (the camper's shore lead).</summary>
         public const string StPetersOpenAirRootName = "StPetersOpenAirFixtures";
 
-        /// <summary>The allocator key of a site: its interact id, or its name when it has none.</summary>
-        static string KeyOf(Site site) => site.InteractId ?? site.Name;
+        /// <summary>The allocator key of a site: its interact id, or when it has none its name (an interior site's
+        /// prefixed with its building, so two buildings' fridges never share a key).</summary>
+        static string KeyOf(Site site) => site.InteractId ?? (site.IsInterior ? site.Building + "/" + site.Name : site.Name);
 
         /// <summary>Plan the scene's sites (every <see cref="Sites"/> row for <paramref name="scenePath"/>), one
         /// patch per root touched. Re-planning the patched text gives patches with no operations.</summary>

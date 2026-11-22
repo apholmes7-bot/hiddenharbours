@@ -44,6 +44,8 @@ namespace HiddenHarbours.App.Editor
             Shower = 4,
             Bath = 5,
             Toilet = 6,
+            Fridge = 7,
+            KitchenSink = 8,
         }
 
         /// <summary>A ground compass way, in 45 degree steps clockwise from north (world <c>+y</c>).</summary>
@@ -92,6 +94,8 @@ namespace HiddenHarbours.App.Editor
             Kind.Shower => "shower",
             Kind.Bath => "bath",
             Kind.Toilet => "toilet",
+            Kind.Fridge => "fridge",
+            Kind.KitchenSink => "kitchen_sink",
             _ => "unknown",
         };
 
@@ -106,12 +110,15 @@ namespace HiddenHarbours.App.Editor
             Kind.Shower => "washstation.shower",
             Kind.Bath => "washstation.bath",
             Kind.Toilet => "washstation.toilet",
+            Kind.Fridge => "kitchen_storage.fridge",
+            Kind.KitchenSink => "washstation.sink",
             _ => "",
         };
 
         /// <summary>Planning footprint in metres, as placed: <c>x</c> across the room, <c>y</c> along it.
         /// A counter run hugs the left side wall, so its depth runs across; the closet pieces are given
-        /// as they stand in the template below.</summary>
+        /// as they stand in the template below. The fridge and the kitchen sink are the appliance rig's own feet,
+        /// given as they stand against a FRONT (door) wall: x across their face, y their depth out from it.</summary>
         public static Vector2 Footprint(Kind kind) => kind switch
         {
             Kind.PrepCounter => new Vector2(0.60f, 0.90f),
@@ -121,6 +128,8 @@ namespace HiddenHarbours.App.Editor
             Kind.Shower => new Vector2(0.85f, 0.85f),
             Kind.Bath => new Vector2(1.60f, 0.75f),
             Kind.Toilet => new Vector2(0.45f, 0.70f),
+            Kind.Fridge => new Vector2(0.70f, 0.68f),
+            Kind.KitchenSink => new Vector2(1.00f, 0.60f),
             _ => Vector2.zero,
         };
 
@@ -281,8 +290,7 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         public static readonly IReadOnlyCollection<string> SouthWallExceptions = new HashSet<string>
         {
-            "fixture.st_peters.ginny_cottage.toilet",          // placed; to be moved north
-            "fixture.st_peters.ginny_cottage.shower",          // placed; to be moved north
+            "fixture.st_peters.ginny_cottage.bathroom_sink",   // placed; the closet's east wall holds only the shower and toilet
             "fixture.st_peters.red_saltbox.shower",            // planned, not placed; re-plan north before placing
             "fixture.st_peters.white_farmhouse.toilet",        // planned, not placed (SE wall); re-plan before placing
             "fixture.st_peters.white_farmhouse.bathroom_sink", // planned, not placed (SE wall); re-plan before placing
@@ -291,6 +299,10 @@ namespace HiddenHarbours.App.Editor
         /// <summary>Whether a kind belongs in a bathroom closet.</summary>
         public static bool IsBathroom(Kind kind) =>
             kind == Kind.BathroomSink || kind == Kind.Shower || kind == Kind.Bath || kind == Kind.Toilet;
+
+        /// <summary>Whether a kind's prefab carries an interact id. The fridge does not yet: its
+        /// <c>KitchenStoreFixture</c> names its Def and has no verb, so it stands as a picture with a footprint.</summary>
+        public static bool HasInteractId(Kind kind) => kind != Kind.Fridge;
     }
 }
 #endif
