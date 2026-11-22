@@ -132,6 +132,110 @@ namespace HiddenHarbours.Tools.RigBaking
         /// </summary>
         public static readonly IReadOnlyDictionary<string, string> NotBaked =
             new Dictionary<string, string>(StringComparer.Ordinal);
+
+        // =============================================================================================
+        //  MESH-BAKED DWELLINGS (ADR 0060)
+        // =============================================================================================
+
+        /// <summary>Repo-relative path to the camper's room rig (Clipper only).</summary>
+        public const string CamperRoomRigPath = "docs/art/rigs/camper-iso-kit/camperInteriorRig.js";
+
+        /// <summary>Where committed <see cref="HiddenHarbours.Core.DwellingMeshDef"/> assets live.</summary>
+        public const string MeshFolder = "Assets/_Project/Data/Dwellings/Meshes";
+
+        /// <summary>
+        /// One dwelling the mesh bake writes: which shell and room rigs (by <see cref="RigCatalog"/>
+        /// key), which sidecars it reads, and where its <see cref="HiddenHarbours.Core.DwellingMeshDef"/>
+        /// goes. Keyed by the same <see cref="Dwelling.Key"/> as the sheet table, so one dwelling has one
+        /// name in both.
+        /// </summary>
+        public readonly struct MeshDwelling
+        {
+            /// <summary>The <see cref="Dwelling.Key"/> this bakes ('clipper').</summary>
+            public readonly string Key;
+            /// <summary>The shell's <see cref="RigCatalog"/> key ('camper').</summary>
+            public readonly string ShellRigKey;
+            /// <summary>The room's <see cref="RigCatalog"/> key ('camperInterior'), or empty when one rig
+            /// draws shell and room (the shed).</summary>
+            public readonly string RoomRigKey;
+            /// <summary>Repo-relative path to the room rig.</summary>
+            public readonly string RoomScriptPath;
+            /// <summary>The global the room rig installs.</summary>
+            public readonly string RoomGlobalName;
+            /// <summary>Repo-relative path to the room sidecar: walkable levels, threshold, fixtures and
+            /// the shell stamp.</summary>
+            public readonly string RoomSidecarPath;
+            /// <summary>The variant both rigs are asked for, as their own JS options literal.</summary>
+            public readonly string ViewOptions;
+            /// <summary>The def's stable id, <c>dwelling.&lt;key&gt;</c>. Append-only.</summary>
+            public readonly string MeshId;
+            /// <summary>Where the def is written.</summary>
+            public readonly string MeshAssetPath;
+            /// <summary>
+            /// Why this dwelling's procedural surface detail is not carried, or empty when every textured
+            /// face uses a generator the facet shader already has. A textured face the shader cannot
+            /// carry is a REFUSAL unless this says why, so detail is never dropped in silence.
+            /// </summary>
+            public readonly string DeferredSurfaceDetail;
+
+            public MeshDwelling(string key, string shellRigKey, string roomRigKey, string roomScriptPath,
+                                string roomGlobalName, string roomSidecarPath, string viewOptions,
+                                string meshId, string meshAssetPath, string deferredSurfaceDetail)
+            {
+                Key = key; ShellRigKey = shellRigKey; RoomRigKey = roomRigKey;
+                RoomScriptPath = roomScriptPath; RoomGlobalName = roomGlobalName;
+                RoomSidecarPath = roomSidecarPath; ViewOptions = viewOptions;
+                MeshId = meshId; MeshAssetPath = meshAssetPath;
+                DeferredSurfaceDetail = deferredSurfaceDetail;
+            }
+        }
+
+        /// <summary>
+        /// ⭐ <b>Dwellings with a committed mesh bake (ADR 0060 option B).</b> A dwelling may be both
+        /// sheet-baked and mesh-baked while it migrates: what the world DRAWS is a separate switch
+        /// (ADR 0060 section 8), not this table. Being here means the asset exists and a fresh bake of the
+        /// rigs reproduces it.
+        ///
+        /// <para><b>The Clipper.</b> Shell <c>camper</c> plus room <c>camperInterior</c>. The Bantam has no
+        /// room rig, so it stays sheet-only.</para>
+        /// </summary>
+        public static readonly IReadOnlyList<MeshDwelling> MeshBaked = new[]
+        {
+            new MeshDwelling(
+                "clipper",
+                shellRigKey: "camper",
+                roomRigKey: "camperInterior",
+                roomScriptPath: CamperRoomRigPath,
+                roomGlobalName: "CamperInterior",
+                roomSidecarPath: "docs/art/rigs/camper-iso-kit/camperInteriorRig.clipper.interior.json",
+                viewOptions: "{variant:'clipper'}",
+                meshId: "dwelling.camper_clipper",
+                meshAssetPath: MeshFolder + "/CamperClipperDwellingMesh.asset",
+                deferredSurfaceDetail:
+                    "The camper's generators are not the facet shader's three. The shell's skin panels, " +
+                    "grain, stripes and tyre tread and the room floor's 0.18 m planks are pure functions " +
+                    "of (u, v) like the boat generators, but none of them matches plank, board or quilt, " +
+                    "and ADR 0060 allows no shader change. The faces bake flat-shaded and the bake log " +
+                    "counts them; carrying them is an ADR question, not a bake fix."),
+        };
+
+        /// <summary>The mesh entry for <paramref name="key"/>, or false.</summary>
+        public static bool TryGetMeshBaked(string key, out MeshDwelling dwelling)
+        {
+            foreach (MeshDwelling d in MeshBaked)
+                if (string.Equals(d.Key, key, StringComparison.Ordinal)) { dwelling = d; return true; }
+            dwelling = default;
+            return false;
+        }
+
+        /// <summary>The sheet-table entry for <paramref name="key"/>, or false.</summary>
+        public static bool TryGetDwelling(string key, out Dwelling dwelling)
+        {
+            foreach (Dwelling d in Dwellings)
+                if (string.Equals(d.Key, key, StringComparison.Ordinal)) { dwelling = d; return true; }
+            dwelling = default;
+            return false;
+        }
     }
 }
 #endif

@@ -526,5 +526,53 @@ Object.assign(PIECES, {
   },
 });
 
+/* ---- PASS 3 (2026-11-22): the headlamp ------------------------------------------------------------
+   He has it from the first morning (gear.headlamp, never sold). Same turntable, units and trim. Its
+   colours are the worn lamp's own (Code/Art/Headlamp.cs: StrapColour, BuckleColour, HousingColour,
+   HousingTopColour, LensLitColour), each stretched to a five-step ramp about that colour, and handed
+   ONLY to this piece, so every icon above re-bakes byte for byte. The lens is a flat ramp: lit glass. */
+const R3 = {
+  strap:   ['#2e2822', '#3f3730', '#544a40', '#6a5e52', '#827466'],
+  buckle:  ['#4e4a42', '#6c665c', '#8c8476', '#a8a092', '#c2bbae'],
+  housing: ['#5e2219', '#843327', '#aa4a3a', '#c66852', '#d8876e'],
+  lensLit: flat('#fff6dc'),
+};
+const MATS3 = Object.assign({}, MATS2); for (const k in R3) MATS3[k] = { ramp: R3[k] };
+function render3(faces, dir, sc) {
+  const W = 112, H = 112, k = sc || 1, F = k === 1 ? faces : faces.map(f => Object.assign({}, f, { v: f.v.map(p => [p[0] * k, p[1] * k, p[2] * k]) }));
+  return { W, H, rgba: K.paint(F, { W, H, cx: 56, cy: 64, MATS: MATS3, dir: dir || 0 }) };
+}
+// a disc facing the camera (-y): a short tube whose axis runs along -y from y0, centred at (x, z)
+function FaceDisc(x, y0, z, depth, r, seg, mat, b) {
+  return K.tube(0, 0, 0, depth * U, r * U, r * U, seg, mat,
+    { caps: 'top', b: b || 0, capB: b || 0, db: 0.02, xf: (p) => [x * U + p[0], y0 * U - p[2], z * U + p[1]] });
+}
+
+Object.assign(PIECES, {
+  // the headlamp: an elastic strap loop with a top strap over the crown, a grey slide buckle at the
+  // side, and the red lamp housing at the front with its lens lit
+  headlamp() {
+    const F = [], rx = 11, sq = 0.78, z0 = 5, z1 = 8.5;
+    F.push(...Tube([0, 0], z0, z1, rx, rx, 20, 'strap', { sq, biasOf: (i) => (i % 2 ? -0.35 : 0.2) }));   // the band, elastic ribs
+    for (let i = 0; i < 6; i++) {                                                                        // the top strap, front to back over the crown
+      const a0 = i / 6 * Math.PI, a1 = (i + 1) / 6 * Math.PI;
+      const p = (a) => [0, -Math.cos(a) * rx * sq, z1 - 0.5 + Math.sin(a) * 9];
+      F.push(...Bar(p(a0), p(a1), [1.4, 0.6], 'strap', 0, i % 2 ? -0.2 : 0.1));
+    }
+    F.push(...Box([rx + 0.4, 0, (z0 + z1) / 2], [0.9, 2.2, 2.4], 'buckle', 0, 0.3, 0.05));               // the slide buckle
+    F.push(...Box([rx + 1.0, 0, (z0 + z1) / 2], [0.3, 1.2, 1.0], 'strap', 0, -0.4, 0.08));               // the strap through it
+    const hy = -rx * sq - 1.6, hz = (z0 + z1) / 2 + 0.5;
+    F.push(...Box([0, -rx * sq + 0.2, hz], [3.8, 0.8, 3.4], 'buckle', 0, -0.2, 0.02));                   // the mount plate on the band
+    F.push(...Box([0, hy, hz], [4.6, 1.8, 3.6], 'housing', 0, 0.2, 0.04));                                // the lamp housing
+    for (const s of [-1, 1]) F.push(...Box([s * 4.9, hy + 0.6, hz], [0.5, 0.9, 0.9], 'buckle', 0, 0.2, 0.05));   // the tilt hinge knobs
+    F.push(...Box([2.6, hy, hz + 3.9], [1.0, 0.8, 0.35], 'buckle', 0, 0.4, 0.06));                        // the switch on top
+    F.push(...FaceDisc(-0.6, hy - 1.7, hz, 0.4, 3.0, 14, 'buckle', 0.2));                                 // the lens bezel
+    F.push(...FaceDisc(-0.6, hy - 2.0, hz, 0.4, 2.2, 14, 'lensLit', 0));                                  // the lit lens
+    const turn = K.rotZ(HEADLAMP_TURN);                                                                   // three-quarter on, so the top strap reads as an arch
+    return render3(F.map(f => Object.assign({}, f, { v: f.v.map(turn) })), 0, 1.35);
+  },
+});
+
+const HEADLAMP_TURN = 0.4;                                  // radians about z: the lamp toward the viewer's right
 const only = process.argv.slice(2);
 for (const leaf of Object.keys(PIECES)) if (!only.length || only.includes(leaf)) console.log(save(leaf, PIECES[leaf]()));

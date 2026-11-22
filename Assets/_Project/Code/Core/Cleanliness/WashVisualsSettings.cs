@@ -78,6 +78,12 @@ namespace HiddenHarbours.Core
         [Tooltip("Real seconds a kitchen fixture's door (the fridge) takes to swing wide open, or shut again.")]
         [Min(0f)] public float DoorSeconds;
 
+        [Tooltip("How far (m) south of a fixture's art its solid footprint stop is drawn: how far below his drawn " +
+                 "feet the player's solid foot circle sits (0.7). He is sorted by his drawn feet, so with the stop " +
+                 "dropped by this much his feet meet the piece's edge instead of walking into it and vanishing " +
+                 "behind it. Less than his foot drop and he can stand inside the art.")]
+        [Min(0f)] public float FixtureStopDropMetres;
+
         /// <summary>The shipped starting numbers (guesses for the owner to tune by feel).</summary>
         public static WashVisualsSettings Default => new WashVisualsSettings
         {
@@ -101,6 +107,7 @@ namespace HiddenHarbours.Core
             BubbleColor = new Color(0.93f, 0.97f, 1f, 0.9f),
             BubbleOrdersAboveFigure = 2,
             DoorSeconds = 0.36f,
+            FixtureStopDropMetres = 0.7f,
         };
 
         /// <summary>The live numbers: the config's, or <see cref="Default"/> with no config wired.</summary>

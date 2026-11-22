@@ -43,6 +43,10 @@ namespace HiddenHarbours.World
         [Tooltip("The short line shown when he sits.")]
         [SerializeField] private string _sitLine = WorldStrings.SitBegin;
 
+        [Tooltip("Where the seat is offered from, as a world-axis offset (m) from this object. Zero = its own " +
+                 "position. A booth sets it to the front of its door, so it is offered only on that side.")]
+        [SerializeField] private Vector2 _offerOffset;
+
         /// <summary>The placed seat the player is on now, or null.</summary>
         public static SitPoint Active { get; private set; }
 
@@ -70,7 +74,17 @@ namespace HiddenHarbours.World
         public string StationId => _stationId;
 
         /// <inheritdoc/>
-        public Vector2 WorldPosition => transform.position;
+        public Vector2 WorldPosition => (Vector2)transform.position + _offerOffset;
+
+        /// <summary>The offer point's offset from this object (zero for a seat offered from where it stands).</summary>
+        public Vector2 OfferOffset => _offerOffset;
+
+        /// <summary>Offer the seat from a point off this object, within <paramref name="reachMeters"/> of it (a booth's door).</summary>
+        public void OfferFrom(Vector2 offset, float reachMeters)
+        {
+            _offerOffset = offset;
+            _reachMeters = Mathf.Max(0f, reachMeters);
+        }
 
         /// <inheritdoc/>
         public float ReachMeters => _reachMeters;
