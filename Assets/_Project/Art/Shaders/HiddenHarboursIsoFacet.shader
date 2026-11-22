@@ -610,15 +610,6 @@ Shader "HiddenHarbours/IsoFacet"
                 bool hhUnder = _HHFigureWater.x > 0.5 && i.figureUp < _HHFigureWater.y;
                 if (hhUnder && (reflection || _HHFigureWaterLook.y < 0.5)) discard;
 #endif
-                if (reflection && i.reflectionHeight < 0)
-                {
-                    FragOut blocker;
-                    blocker.facet = 0;
-                    blocker.dark = 0;
-                    blocker.key = float4(0, 0, 0, HH_MESH_BLOCKER);
-                    blocker.depth = i.reflectionDepth;
-                    return blocker;
-                }
                 // The hull-cell pixel this fragment lands on, derived from WORLD position: the
                 // rig's screen grid is just world metres times PPU with y down and the pivot as
                 // origin. Locked to the hull, immune to render-target conventions.
@@ -626,6 +617,20 @@ Shader "HiddenHarbours/IsoFacet"
                     (i.wpos.x - _HullOrigin.x) * _PixelsPerMetre + _PivotPx.x,
                     _PivotPx.y - (i.wpos.y - _HullOrigin.y) * _PixelsPerMetre);
                 int2 cell = int2(floor(cellF));
+                // THE RAGGED ENDS (HullReflection.hlsl): while on, every reflection fragment, a
+                // blocker included, carries its hull cell in the key colour for the resolve to
+                // measure its row's end by. Off: the keyline colour (and black on a blocker), as before.
+                bool hhEnds = reflection && _HHMeshReflectEnds.w > 0.5;
+                float3 hhBlockerKey = hhEnds ? HHMeshReflectCellKey(cell) : float3(0, 0, 0);
+                if (reflection && i.reflectionHeight < 0)
+                {
+                    FragOut blocker;
+                    blocker.facet = 0;
+                    blocker.dark = 0;
+                    blocker.key = float4(hhBlockerKey, HH_MESH_BLOCKER);
+                    blocker.depth = i.reflectionDepth;
+                    return blocker;
+                }
                 float bay = _Bayer[cell.x & 3][cell.y & 3];
                 // THE REFLECTION THINS WITH DEPTH below the line, on her own cell grid: in horizontal
                 // streaks along each pixel row (or her ordered dither with streaks off), a crisp pixel
@@ -638,7 +643,7 @@ Shader "HiddenHarbours/IsoFacet"
                     FragOut thinned;
                     thinned.facet = 0;
                     thinned.dark = 0;
-                    thinned.key = float4(0, 0, 0, HH_MESH_BLOCKER);
+                    thinned.key = float4(hhBlockerKey, HH_MESH_BLOCKER);
                     thinned.depth = i.reflectionDepth;
                     return thinned;
                 }
@@ -744,7 +749,7 @@ Shader "HiddenHarbours/IsoFacet"
                 o.facet = float4(_RampTex.Load(int3(idx, m, 0)).rgb, hullId);
                 o.dark  = float4(_DarkRampTex.Load(int3(idx, m, 0)).rgb, 1.0);
 #endif
-                o.key   = float4(_KeyColor.rgb, 1.0);
+                o.key   = float4(hhEnds ? HHMeshReflectCellKey(cell) : _KeyColor.rgb, 1.0);
 #ifndef HH_FIGURE
                 // Only the ordinary facet draw receives the band; reflected packets keep their original art.
                 if (!reflection && _HHHullCausticSettings.z > 0.5)
