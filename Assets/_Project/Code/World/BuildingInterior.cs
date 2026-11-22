@@ -162,6 +162,14 @@ namespace HiddenHarbours.World
                  "off-centre door blocks the doorway and opens a wall.")]
         [SerializeField] private float _doorAcrossMetres;
 
+        [Header("Mesh dwelling (OPTIONAL — every sprite house leaves this empty)")]
+        [Tooltip("A parked dwelling drawn as a facet mesh (ADR 0060). When set, each storey's inside test " +
+                 "is its level's floor OUTLINE from this def instead of the rectangle above, and the " +
+                 "threshold is the def's door. The reveal is the DwellingCutaway beside this component. " +
+                 "Written by the dwelling prefab builder; empty on every sprite house, which keeps its " +
+                 "rectangle and its sprite swap exactly as before.")]
+        [SerializeField] private DwellingMeshDef _dwellingMesh;
+
         /// <summary>Whether the occupant is currently inside. Read-only to everyone else — the only way
         /// in is through the door.</summary>
         public bool IsInside { get; private set; }
@@ -212,11 +220,54 @@ namespace HiddenHarbours.World
         /// footprint, one threshold, one definition of being in this building, now with the storeys drawn
         /// where they actually are.</para>
         /// </summary>
-        public InteriorFootprint FootprintFor(int level) =>
-            new InteriorFootprint((Vector2)transform.position + LevelOffset(level),
-                                  _widthMetres, _lengthMetres,
-                                  _facing, _facings, _groundDepthScale,
-                                  _doorOnPlusY ? 1f : -1f, _doorAcrossMetres);
+        public InteriorFootprint FootprintFor(int level)
+        {
+            // A mesh dwelling's floor is its level's outline, read off its def and never retyped (ADR 0060).
+            // Allocation-free: the outline array is held by the footprint, not copied.
+            if (_dwellingMesh != null && DwellingInteriorRules.TryFloor(_dwellingMesh, level, out Vector2[] floor))
+                return new InteriorFootprint((Vector2)transform.position + LevelOffset(level), floor,
+                                             DwellingInteriorRules.DoorModel(_dwellingMesh),
+                                             _facing, _facings, _groundDepthScale);
+
+            return new InteriorFootprint((Vector2)transform.position + LevelOffset(level),
+                                         _widthMetres, _lengthMetres,
+                                         _facing, _facings, _groundDepthScale,
+                                         _doorOnPlusY ? 1f : -1f, _doorAcrossMetres);
+        }
+
+        /// <summary>The mesh dwelling this building is, or null for a sprite house (every house today).</summary>
+        public DwellingMeshDef DwellingMesh => _dwellingMesh;
+
+        /// <summary>
+        /// <b>Make this building a mesh dwelling</b> (ADR 0060 section 3): its inside test becomes the floor
+        /// outline of <paramref name="def"/>'s levels and its threshold the def's door. Called by the dwelling
+        /// prefab builder after <see cref="Configure"/>; a sprite house never calls it and keeps its
+        /// rectangle. Null makes it a rectangle again.
+        ///
+        /// <para>Refuses (returns false, logs the reason, keeps the rectangle) a def whose room data cannot
+        /// be entered (<see cref="DwellingMeshRules.FirstRoomProblem"/>): no level, a floor that does not
+        /// close, no door. A house entered through a wall is worse than a house that stays a rectangle.</para>
+        ///
+        /// <para>Storeys above the ground floor still come from <see cref="ConfigureUpperLevel"/>; the first
+        /// two-storey mesh house (ADR 0060 PR 9+) is where mesh levels on storey 1 get their climb.</para>
+        /// </summary>
+        public bool ConfigureDwelling(DwellingMeshDef def)
+        {
+            if (def != null)
+            {
+                string problem = DwellingMeshRules.FirstRoomProblem(def.Levels, def.Threshold, def.Anchors);
+                if (problem != null)
+                {
+                    Debug.LogError($"[BuildingInterior] '{name}' refused dwelling '{def.Id}': {problem}. " +
+                                   "The inside test stays the rectangle.", this);
+                    return false;
+                }
+            }
+
+            _dwellingMesh = def;
+            Apply(IsInside);
+            return true;
+        }
 
         /// <summary>How far up the screen this building's storey above draws, in world units. Zero for
         /// the great majority of buildings, which have no storey above.</summary>
@@ -364,6 +415,10 @@ namespace HiddenHarbours.World
         /// a room with no occupant wired resolves one from Core instead (<see cref="ResolveOccupant"/>),
         /// which is how every region scene works.</summary>
         public void SetOccupant(Transform occupant) => _occupant = occupant;
+
+        /// <summary>Who this building is watching right now (<see cref="ResolveOccupant"/>), for a reveal
+        /// that needs to name him: the mesh reveal hands him to the occupant sort rule.</summary>
+        public Transform Occupant => ResolveOccupant();
 
         /// <summary>
         /// Who this room is watching, RIGHT NOW — the builder's own reference while it is alive, and
@@ -857,19 +912,46 @@ namespace HiddenHarbours.World
         /// </summary>
         void Apply(bool inside)
         {
-            bool ground = inside && Level == 0;
-            bool upper = inside && Level == 1;
+            // The sprite swap: the picture every existing house has, unchanged (ADR 0060 section 3).
+            if (_spriteSwap == null) _spriteSwap = new SpriteSwapReveal(this);
+            _spriteSwap.Reveal(inside, Level);
 
-            if (_shell != null) _shell.enabled = !inside;
-            if (_room != null) _room.enabled = ground;
-            if (_props != null && _props.gameObject.activeSelf != ground)
-                _props.gameObject.SetActive(ground);
+            // The mesh reveal, when this building is a mesh dwelling. A component lookup on a transition, not
+            // a poll; TryGetComponent does not allocate when nothing is there, which is every sprite house.
+            if (TryGetComponent(out IInteriorReveal meshReveal)) meshReveal.Reveal(inside, Level);
+        }
 
-            if (_upperRoom != null) _upperRoom.enabled = upper;
-            if (_upperProps != null && _upperProps.gameObject.activeSelf != upper)
-                _upperProps.gameObject.SetActive(upper);
-            if (_upperWalls != null && _upperWalls.gameObject.activeSelf != upper)
-                _upperWalls.gameObject.SetActive(upper);
+        SpriteSwapReveal _spriteSwap;
+
+        /// <summary>
+        /// <b>The sprite implementation of <see cref="IInteriorReveal"/></b>: the shell off, and the room
+        /// sprite and furniture of the storey he is on switched on. Its body is the swap this class has
+        /// always done, moved here unchanged so the threshold is one interface with two implementations,
+        /// while the serialized references stay on <see cref="BuildingInterior"/> and no scene has to be
+        /// re-saved. With every reference null (a mesh dwelling) it does nothing.
+        /// </summary>
+        sealed class SpriteSwapReveal : IInteriorReveal
+        {
+            readonly BuildingInterior _b;
+
+            public SpriteSwapReveal(BuildingInterior building) => _b = building;
+
+            public void Reveal(bool inside, int storey)
+            {
+                bool ground = inside && storey == 0;
+                bool upper = inside && storey == 1;
+
+                if (_b._shell != null) _b._shell.enabled = !inside;
+                if (_b._room != null) _b._room.enabled = ground;
+                if (_b._props != null && _b._props.gameObject.activeSelf != ground)
+                    _b._props.gameObject.SetActive(ground);
+
+                if (_b._upperRoom != null) _b._upperRoom.enabled = upper;
+                if (_b._upperProps != null && _b._upperProps.gameObject.activeSelf != upper)
+                    _b._upperProps.gameObject.SetActive(upper);
+                if (_b._upperWalls != null && _b._upperWalls.gameObject.activeSelf != upper)
+                    _b._upperWalls.gameObject.SetActive(upper);
+            }
         }
 
 #if UNITY_EDITOR

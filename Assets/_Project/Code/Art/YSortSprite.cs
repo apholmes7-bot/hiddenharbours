@@ -1,5 +1,5 @@
 using UnityEngine;
-using HiddenHarbours.Core;   // SortingBands — the one place the sorting-order axis is partitioned
+using HiddenHarbours.Core;   // SortingBands — the one place the sorting-order axis is partitioned; OccupantSorting
 
 namespace HiddenHarbours.Art
 {
@@ -153,6 +153,14 @@ namespace HiddenHarbours.Art
         private void Apply()
         {
             if (_sr == null) return;
+            // Standing inside a parked dwelling, he draws one rung in front of it rather than at his own Y
+            // (ADR 0060 section 5): the dwelling's order is an INPUT to this, his one writer.
+            if (OccupantSorting.TryOrderFor(transform, out int insideOrder))
+            {
+                _sr.sortingOrder = insideOrder;
+                return;
+            }
+
             float y = transform.position.y + _pivotYOffset;
             _sr.sortingOrder = OrderFor(y, _baseOrder, _orderPerUnit, _minOrder, _maxOrder);
         }
