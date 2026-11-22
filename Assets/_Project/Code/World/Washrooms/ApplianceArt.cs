@@ -41,6 +41,10 @@ namespace HiddenHarbours.World
         [Tooltip("The piece's near layer, drawn in front of the figure while he is in it. Hidden otherwise.")]
         [SerializeField] private SpriteRenderer _near;
 
+        [Tooltip("Optional solid box fitted to the piece's footprint at its facing once it knows which wall it " +
+                 "stands on, so he walks round it and reaches it from the front. Empty: no fitting.")]
+        [SerializeField] private BoxCollider2D _footprint;
+
         private static readonly Dictionary<string, Sprite[]> Sheets = new Dictionary<string, Sprite[]>();
 
         private ApplianceLayout _layout;
@@ -52,6 +56,7 @@ namespace HiddenHarbours.World
         private bool _resolved;
         private bool _posed;
         private bool _soaped;
+        private bool _doorOpen;
         private int _shownRow = -1, _shownNear = -2;
         private bool _layered;
 
@@ -113,10 +118,12 @@ namespace HiddenHarbours.World
         private void Start()
         {
             ResolveCell();
+            FitFootprint();
             Show(_layout.Idle, -1);
             SortIdle();
             // A piece with nothing to animate is done: stop the per-frame dispatch entirely (rule 7).
-            if (!_layout.Fills && !_layout.Runs && !_layout.Flushes) enabled = false;
+            // A door piece wakes again when it is asked open (SetDoorOpen).
+            if (!_layout.Fills && !_layout.Runs && !_layout.Flushes && !(_layout.HasDoor && _doorOpen)) enabled = false;
         }
 
         private void OnWashChanged(PlayerWashChanged e) => _soaped = WashSoapSignal.IsSoaped(e);
@@ -128,6 +135,7 @@ namespace HiddenHarbours.World
 
             bool active = _layout.Flushes
                 ? _seat != null && _seat.IsSeatedHere
+                : _layout.HasDoor ? _doorOpen
                 : _wash != null && _wash.IsWashingHere;
             bool froth = active && WashVisualsSettings.Froths(_soaped, s);
 
@@ -135,6 +143,33 @@ namespace HiddenHarbours.World
 
             if (_timeline.PoseOn != _posed) Publish(_timeline.PoseOn);
             Show(_timeline.Row, _timeline.NearRow);
+
+            // A shut door has nothing more to draw: sleep until it is asked open again.
+            if (_layout.HasDoor && !_doorOpen && _timeline.Current == WashFixtureTimeline.Phase.Idle) enabled = false;
+        }
+
+        /// <summary>Whether the piece's door (the fridge's) is being held open.</summary>
+        public bool DoorOpen => _doorOpen;
+
+        /// <summary>Ask the piece's door open or shut; it swings over <see cref="WashVisualsSettings.DoorSeconds"/>.
+        /// A no-op on a piece with no door. Presentation only: nothing is stored or saved by opening it.</summary>
+        public void SetDoorOpen(bool open)
+        {
+            _doorOpen = open;
+            if (_layout.HasDoor) enabled = true;
+        }
+
+        /// <summary>The solid footprint box, if the piece has one.</summary>
+        public BoxCollider2D Footprint => _footprint;
+
+        /// <summary>Fit the footprint box to the footprint at the resolved facing (Start does it once).</summary>
+        public void FitFootprint()
+        {
+            if (_footprint == null) return;
+            Rect r = ApplianceFacing.FootprintBox(_layout, _cell);
+            Vector3 s = _footprint.transform.lossyScale;
+            _footprint.offset = new Vector2(r.center.x / Mathf.Max(1e-4f, s.x), r.center.y / Mathf.Max(1e-4f, s.y));
+            _footprint.size = new Vector2(r.width / Mathf.Max(1e-4f, s.x), r.height / Mathf.Max(1e-4f, s.y));
         }
 
         // ---- facing ----------------------------------------------------------------------------------------

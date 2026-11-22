@@ -186,7 +186,16 @@ namespace HiddenHarbours.Tests.EditMode
                 int expected = EffectSorting.OrderAt(SortedEffect.DigDirt, hole.y);
                 Assert.AreEqual(RockAt(hole.y), expected, "a thing standing at the hole");
                 int sorted = go.GetComponentsInChildren<SortingGroup>(true).Count(g => g.sortingOrder == expected);
-                Assert.AreEqual(j.SandChunkCount + j.DigTossChunkCount, sorted, "every clod, the toss included, sorted at the hole");
+                Assert.AreEqual(j.SandChunkCount, sorted, "every impact clod sorted at the hole");
+
+                // The toss sorts at the ground under the blade tip, where it leaves from, not at the hole: the
+                // blade is out at his side by then. Its drawn height does not move it in the sort.
+                var underBlade = new Vector2(3.5f, -41.9f);
+                em.OnMoment(new JuiceMomentCue(JuiceMoment.DigToss, underBlade, 0.1f, 0.45f, Vector2.right));
+                int tossOrder = EffectSorting.OrderAt(SortedEffect.DigDirt, underBlade.y);
+                Assert.AreNotEqual(expected, tossOrder, "the fixture's blade point is a different row from the hole");
+                int tossed = go.GetComponentsInChildren<SortingGroup>(true).Count(g => g.sortingOrder == tossOrder);
+                Assert.AreEqual(j.DigTossChunkCount, tossed, "every tossed clod sorted under the blade");
             }
             finally { Object.DestroyImmediate(go); }
         }

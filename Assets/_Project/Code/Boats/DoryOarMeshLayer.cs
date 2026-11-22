@@ -41,7 +41,7 @@ namespace HiddenHarbours.Boats
     /// the per-oar state <see cref="BoatController"/> already computed.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public class DoryOarMeshLayer : MonoBehaviour, IOarStroke, IRowingStation
+    public class DoryOarMeshLayer : MonoBehaviour, IOarStroke, IRowingStation, IRowedHull
     {
         // The stroke's TEMPO (frames per second, effort curve, the phase lock) moved to the boat's own
         // stroke clock (BoatController, advanced on the physics step) so the hull's surge and these
@@ -276,6 +276,10 @@ namespace HiddenHarbours.Boats
         /// whole of "cut the engine, ship the oars back out".</para>
         /// </summary>
         public bool MotorIsRunning => _motor != null && _motor.isActiveAndEnabled && _motor.IsWired;
+
+        /// <summary>Rowed while her oars are wired and her outboard is not running: the water draws her
+        /// waves as the owner's approved soft arcs; under motor, as the clean V (owner 11-21).</summary>
+        public bool IsRowed => isActiveAndEnabled && IsWired && !MotorIsRunning;
 
         private void LateUpdate()
         {

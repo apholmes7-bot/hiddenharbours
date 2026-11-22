@@ -13,18 +13,21 @@ namespace HiddenHarbours.World
     /// <item>A <b>basin</b> fills, froths and drains the same way, with no pose.</item>
     /// <item>A <b>shower</b> runs (the stream frames loop) while the wash runs, with the figure stood under it.</item>
     /// <item>A <b>water closet</b> holds the seat while he sits and flushes once when he gets up.</item>
-    /// <item>The kitchen pieces never leave their idle row.</item>
+    /// <item>A <b>fridge</b> swings its door open while it is asked open and shuts it again after.</item>
+    /// <item>The other kitchen pieces never leave their idle row.</item>
     /// </list>
     ///
     /// <para>Presentation only, in real seconds: nothing here touches the wash, the seat or the save.</para>
     /// </summary>
     public sealed class WashFixtureTimeline
     {
-        public enum Phase { Idle, Filling, Full, Holding, Draining, Running, Seated, Flushing }
+        public enum Phase { Idle, Filling, Full, Holding, Draining, Running, Seated, Flushing, Opening, Open, Closing }
 
         private readonly ApplianceLayout _layout;
         private readonly int[] _fill;
         private readonly int[] _drain;
+        private readonly int[] _doorOpen;
+        private readonly int[] _doorClose;
 
         private Phase _phase;
         private float _phaseSeconds;
@@ -36,6 +39,8 @@ namespace HiddenHarbours.World
             _layout = layout;
             _fill = layout.FillFrames();
             _drain = layout.DrainFrames();
+            _doorOpen = layout.DoorOpenFrames();
+            _doorClose = layout.DoorCloseFrames();
             Row = layout.Idle;
             NearRow = -1;
         }
@@ -74,8 +79,15 @@ namespace HiddenHarbours.World
             if (_layout.Fills) StepFill(rose, fell);
             else if (_layout.Runs) StepRun(rose, fell);
             else if (_layout.Flushes) StepSeat(rose, fell);
+            else if (_layout.HasDoor) StepDoor(rose, fell);
 
             Resolve(froth, s);
+        }
+
+        private void StepDoor(bool rose, bool fell)
+        {
+            if (rose && _phase != Phase.Open && _phase != Phase.Opening) Enter(Phase.Opening);
+            if (fell && (_phase == Phase.Open || _phase == Phase.Opening)) Enter(Phase.Closing);
         }
 
         private void Enter(Phase phase) { _phase = phase; _phaseSeconds = 0f; }
@@ -109,6 +121,8 @@ namespace HiddenHarbours.World
             if (_phase == Phase.Holding && _phaseSeconds >= s.ClimbSeconds) Enter(Phase.Draining);
             if (_phase == Phase.Draining && _phaseSeconds >= s.DrainSeconds) Enter(Phase.Idle);
             if (_phase == Phase.Flushing && _phaseSeconds >= s.FlushSeconds) Enter(Phase.Idle);
+            if (_phase == Phase.Opening && _phaseSeconds >= s.DoorSeconds) Enter(Phase.Open);
+            if (_phase == Phase.Closing && _phaseSeconds >= s.DoorSeconds) Enter(Phase.Idle);
 
             int frothFrame = LoopFrame(s.FrothFramesPerSecond);
             NearRow = -1;
@@ -146,6 +160,15 @@ namespace HiddenHarbours.World
                 case Phase.Flushing:
                     Row = _layout.FlushFirst + Mathf.Min(ApplianceLayout.LoopFrames - 1,
                         Mathf.FloorToInt(Progress(s.FlushSeconds) * ApplianceLayout.LoopFrames));
+                    break;
+                case Phase.Opening:
+                    Row = Pick(_doorOpen, Progress(s.DoorSeconds), lastAtEnd: true);
+                    break;
+                case Phase.Open:
+                    Row = _layout.DoorFirst + ApplianceLayout.LoopFrames - 1;
+                    break;
+                case Phase.Closing:
+                    Row = Pick(_doorClose, Progress(s.DoorSeconds), lastAtEnd: true);
                     break;
                 default:
                     Row = _layout.Idle;
