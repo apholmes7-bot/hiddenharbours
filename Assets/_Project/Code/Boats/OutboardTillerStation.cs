@@ -49,7 +49,7 @@ namespace HiddenHarbours.Boats
             if (!_configured || _motor == null || !_motor.IsWired) return false;
             Quaternion engine = OutboardMotorMeshPose.Rotation(_motor.SteerDegrees, _motor.TiltDegrees);
             float throttle = _boat != null && _boat.isActiveAndEnabled ? _boat.Throttle : 0f;
-            targets = Targets(in _config, _pivot, _mount, engine, throttle);
+            targets = Targets(in _config, _pivot, _mount, engine, throttle, _motor.SteerDegrees, _motor.MaxSteerDegrees);
             return true;
         }
 
@@ -61,9 +61,13 @@ namespace HiddenHarbours.Boats
         /// <para>The tiller is held by the hand on its side at rest, all the way across; the other "grip" is placed a
         /// metre to his other side and marked let go, so <see cref="RowingPoseSolver.ToFigure"/> gives
         /// the steering hand the tiller and rests the free one on his thigh.</para>
+        ///
+        /// <para><paramref name="steerDegrees"/> over <paramref name="maxSteerDegrees"/> (the engine's
+        /// drawn steer and its authority) turns him into the turn; left at 0 he sits square.</para>
         /// </summary>
         public static RowingTargets Targets(in TillerStationConfig config, Vector3 enginePivot, Vector3 engineMount,
-                                            Quaternion engineRotation, float throttle)
+                                            Quaternion engineRotation, float throttle,
+                                            float steerDegrees = 0f, float maxSteerDegrees = 0f)
         {
             Vector3 grip = TillerStationMath.Grip(config.TillerGripAtRestLocalMeters, enginePivot, engineRotation, engineMount);
             float bearing = config.FacingDeckBearingDegrees * Mathf.Deg2Rad;
@@ -97,6 +101,8 @@ namespace HiddenHarbours.Boats
                 RestBreathSeconds = config.BreathSeconds,
                 RestHandAlongThigh = config.RestHandAlongThigh,
                 RestHandAboveThighMeters = config.RestHandAboveThighMeters,
+                TurnStarboardDegrees = TillerStationMath.Look(config.LookIntoTurnDegrees, steerDegrees, maxSteerDegrees),
+                HeadTurnStarboardDegrees = TillerStationMath.Look(config.HeadLookIntoTurnDegrees, steerDegrees, maxSteerDegrees),
             };
         }
 
