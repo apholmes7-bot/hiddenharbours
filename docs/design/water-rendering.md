@@ -1054,13 +1054,14 @@ share is composited after the palette grade, overlay-compensated — see §11.6)
      sea mirrors, added with the sky mirror (under the foam, so foam ages back to this sea), `_LowSunSkyNear`
      toward the sun and `_LowSunSkyFar` away from it, brighter on faces tipped to the sun. It is divided by
      the tint so it reads on screen as authored, and it fades with the tint's own saturation
-     (`_LowSunWindow.w` = the saturation for a full sheen), so an overcast evening has none.
+     (`_LowSunWindow.w` = the saturation for a full sheen), so an overcast evening has none, and with the
+     tint's brightness (its strongest channel), so a storm's dark dusk and the blue hour get little. Rain removes it.
    - **`_LowSunHueHold`**: how far the finished sea keeps its own hue under the coloured light (0 = takes the
      tint whole, 1 = takes only its brightness). Brightness is never changed by it.
-   - The hull waves' low-light shade (sized on the dark sea) is scaled by how far the sheen lifted the sea,
-     so a wake keeps the swing it had.
+   - The hull waves' low-light shade (sized on the dark sea) is scaled by how far the sheen lifted the sea.
+     **`_LowSunWakeHold`** sets how: 0 keeps a wake's swing in levels, 1 keeps it as a share of the lit sea.
    Every shader default is the passthrough; the look ships in `Water.mat`. Twins: `WaterLowSun`
-   (`Weight`, `Colourful`, `Sheen`, `HullWaveDilute`, `HueHoldFactor`, `SparkleLitShare`, `SparkleLength`),
+   (`Weight`, `Colourful`, `Bright`, `Clear`, `Sheen`, `HullWaveDilute`, `HueHoldFactor`, `SparkleLitShare`, `SparkleLength`),
    tested in `Assets/Tests/EditMode/Art/WaterLowSunTests.cs`.
 
 **Invariants (all hold):** everything **inherits the §11 sea-state fade** (reuses `ReflectionStrength()` /

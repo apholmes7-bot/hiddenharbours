@@ -82,6 +82,32 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
+        public void Bright_IsTheLightsStrongestChannel_SoADarkDuskGlowsLittle()
+        {
+            Assert.AreEqual(0.858f, WaterLowSun.Bright(Sunset), 1e-6f);
+            Assert.AreEqual(0f, WaterLowSun.Bright(new Color(0f, 0f, 0f)));
+            Assert.AreEqual(1f, WaterLowSun.Bright(new Color(1.4f, 1f, 1f)), "a weight, never a gain");
+            // A storm's dusk (dark, nearly grey) and the blue hour (dark, coloured) against a clear sunset.
+            Color storm = new Color(0.17f, 0.16f, 0.18f);
+            float sunset = WaterLowSun.Colourful(Sunset, FullSat) * WaterLowSun.Bright(Sunset);
+            Assert.Less(WaterLowSun.Colourful(storm, FullSat) * WaterLowSun.Bright(storm), sunset * 0.1f);
+            Assert.Less(WaterLowSun.Colourful(Night, FullSat) * WaterLowSun.Bright(Night), sunset * 0.4f);
+        }
+
+        [Test]
+        public void Shader_SheenAmount_IsWeightTimesColourTimesBrightness()
+        {
+            string src = File.ReadAllText(WaterShaderPath);
+            StringAssert.Contains("float amount = max(_LowSunSheen.x, 0.0) * weight * LowSunColourful() * LowSunBright()", src);
+            StringAssert.Contains("* (1.0 - saturate(_RainIntensity));", src);
+            Assert.AreEqual(1f, WaterLowSun.Clear(0f));
+            Assert.AreEqual(0.25f, WaterLowSun.Clear(0.75f), 1e-6f);
+            Assert.AreEqual(0f, WaterLowSun.Clear(1f), "no glowing sky at full rain");
+            Assert.AreEqual(0f, WaterLowSun.Clear(3f));
+            StringAssert.Contains("return saturate(max(_DayNightTint.r, max(_DayNightTint.g, _DayNightTint.b)));", src);
+        }
+
+        [Test]
         public void Sheen_IsExactlyNothing_AtWeightZero_AtStrengthZero_AndUnderAGreyTint()
         {
             Assert.AreEqual(Vector3.zero, WaterLowSun.Sheen(Near, Far, 0.3f, 0.5f, 0.8f, 0.5f, 1f, 0f, 0f, 1f, Noon));
@@ -269,7 +295,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(WaterReflection.SunGlitterFallEnd, end, 1e-6f);
             // The sun at noon in the shipped day sits far above the window: noon cannot move.
             Assert.AreEqual(0f, WaterLowSun.Weight(0.957f, Noon, below, start, end));
-            Assert.AreEqual(1, Regex.Matches(mat, @"(?m)^    - _LowSunSheen: \{r: 0\.3, g: 0\.5, b: 3, a: 0\.8\}$").Count);
+            Assert.AreEqual(1, Regex.Matches(mat, @"(?m)^    - _LowSunSheen: \{r: 0\.35, g: 0\.5, b: 3, a: 0\.8\}$").Count);
             Assert.AreEqual(1, Regex.Matches(mat, @"(?m)^    - _LowSunHueHold: 0\.4$").Count);
             Assert.AreEqual(1, Regex.Matches(mat, @"(?m)^    - _SunGlitterForm: 1$").Count);
         }

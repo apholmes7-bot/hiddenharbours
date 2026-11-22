@@ -325,7 +325,7 @@ Material:
     - _SunGlitterCell: {r: 0.5, g: 0.25, b: 0.35, a: 1.2}
     - _SunGlitterDash: {r: 0.09, g: 0.016, b: 3, a: 0.06}
     - _LowSunWindow: {r: -0.2, g: 0.35, b: 0.5, a: 0.4}
-    - _LowSunSheen: {r: 0.3, g: 0.5, b: 3, a: 0.8}
+    - _LowSunSheen: {r: 0.35, g: 0.5, b: 3, a: 0.8}
     - _LowSunSkyNear: {r: 1, g: 0.72, b: 0.42, a: 1}
     - _LowSunSkyFar: {r: 0.62, g: 0.4, b: 0.5, a: 1}
     - _SurfBarrelColor: {r: 0.16, g: 0.26, b: 0.34, a: 1}

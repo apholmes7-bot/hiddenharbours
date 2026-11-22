@@ -4943,6 +4943,13 @@ Shader "HiddenHarbours/Water"
                 return saturate(sat / max(_LowSunWindow.w, 1e-3));
             }
 
+            // How bright the light is (twin: WaterLowSun.Bright): its strongest channel. A sky glows no more
+            // than the light it gives, so a storm's dark dusk and the blue hour get little sheen and none at black.
+            float LowSunBright()
+            {
+                return saturate(max(_DayNightTint.r, max(_DayNightTint.g, _DayNightTint.b)));
+            }
+
             // The glowing sky the sea mirrors at low sun, as an ADD made before the foam and the grade and
             // divided by the tint here, so that on screen it is the authored colour (twin: WaterLowSun.Sheen*).
             //   pp        : pixel-snapped world position
@@ -4950,7 +4957,9 @@ Shader "HiddenHarbours/Water"
             //   weight    : LowSunWeight()
             float3 LowSunSheen(float2 pp, float faceSigned, float weight)
             {
-                float amount = max(_LowSunSheen.x, 0.0) * weight * LowSunColourful();
+                // No glowing sky in rain: the sheen is gone at full rain (twin: WaterLowSun.Clear).
+                float amount = max(_LowSunSheen.x, 0.0) * weight * LowSunColourful() * LowSunBright()
+                             * (1.0 - saturate(_RainIntensity));
                 if (amount <= 0.0005)
                     return float3(0, 0, 0);
                 float2 sunXY = dot(_SunDir.xy, _SunDir.xy) > 1e-6 ? _SunDir.xy : _LightDir.xy;

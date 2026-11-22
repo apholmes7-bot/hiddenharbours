@@ -58,6 +58,21 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
+        /// Twin of <c>LowSunBright</c>: the light's strongest channel, 0..1. A sky glows no more than the light
+        /// it gives: a storm's dark dusk and the blue hour get little sheen, black gets none.
+        /// </summary>
+        public static float Bright(Color tint)
+        {
+            return Mathf.Clamp01(Mathf.Max(tint.r, Mathf.Max(tint.g, tint.b)));
+        }
+
+        /// <summary>Twin of the sheen's rain term: no glowing sky in rain, none at all at full rain.</summary>
+        public static float Clear(float rainIntensity)
+        {
+            return 1f - Mathf.Clamp01(rainIntensity);
+        }
+
+        /// <summary>
         /// Twin of the sheen's place between the far colour (0) and the near colour (1): half way at the
         /// viewer, full near at <paramref name="reach"/> metres toward the sun, full far the same distance away.
         /// </summary>
@@ -68,14 +83,15 @@ namespace HiddenHarbours.Art
 
         /// <summary>
         /// Twin of <c>LowSunSheen</c>: the colour ADDED to the sea before the foam and the grade. It is divided
-        /// by the tint, so once the overlay has multiplied the frame it is the authored colour on screen.
+        /// by the tint, so once the overlay has multiplied the frame it is the authored colour on screen,
+        /// scaled by <paramref name="glow"/> = <see cref="Colourful"/> x <see cref="Bright"/> x <see cref="Clear"/>.
         /// </summary>
         /// <param name="faceSigned">The sea's facing, -1..1 (+1 = tipped to the sun).</param>
         /// <param name="lane">0..1, how far inside the sun's lane this point is.</param>
         public static Vector3 Sheen(Color near, Color far, float strength, float relief, float laneLift,
-            float toward, float lane, float faceSigned, float weight, float colourful, Color tint)
+            float toward, float lane, float faceSigned, float weight, float glow, Color tint)
         {
-            float amount = Mathf.Max(strength, 0f) * weight * colourful;
+            float amount = Mathf.Max(strength, 0f) * weight * glow;
             if (amount <= 0.0005f) return Vector3.zero;
             toward = Mathf.Clamp01(toward);
             Vector3 sky = Vector3.Lerp(new Vector3(far.r, far.g, far.b), new Vector3(near.r, near.g, near.b), toward);
