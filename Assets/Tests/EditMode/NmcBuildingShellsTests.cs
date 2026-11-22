@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using HiddenHarbours.App.Editor;
+using HiddenHarbours.Art;
 using HiddenHarbours.World;
 using NUnit.Framework;
 using UnityEditor;
@@ -271,6 +272,42 @@ namespace HiddenHarbours.Tests.EditMode
                     foreach (NmcBuildingShells.Block b in NmcBuildingShells.Layout(s).Where(b => b.Solid))
                         Assert.That(b.Model.Overlaps(r), Is.False, $"{s.Name}/{f.Name}'s footprint {r} runs into {b.Name}");
                 }
+            }
+        }
+
+        /// <summary>The fixtures read as inside the room: no greybox quad that draws in front of a fixture (sorted
+        /// at a foot south of the fixture's) covers the fixture's floor footprint on screen. A full-height inner
+        /// wall did (its top rose past the whole room behind it), and the staff corner read as outdoors.</summary>
+        [Test]
+        public void NoQuadDrawnInFrontOfAFixtureCoversIt([ValueSource(nameof(WholesalerNames))] string name)
+        {
+            var s = Wholesalers.Single(x => x.Name == name);
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(s.PrefabPath);
+            Vector2 origin = prefab.transform.position;
+            Transform props = prefab.transform.Find(BuildingInteriorStander.PropsChildName);
+            InteriorFootprint fp = NmcBuildingShells.FootprintAt(s, Vector2.zero);
+            var quads = props.Cast<Transform>()
+                .Where(t => !PrefabUtility.IsAnyPrefabInstanceRoot(t.gameObject) && t.GetComponent<YSortSprite>() != null)
+                .Select(t =>
+                {
+                    var sr = t.GetComponent<SpriteRenderer>();
+                    Vector2 size = Vector2.Scale(sr.sprite.bounds.size, t.lossyScale);
+                    Vector2 c = (Vector2)t.position - origin;
+                    return (t.name, rect: new Rect(c - size * 0.5f, size), sortY: c.y + t.GetComponent<YSortSprite>().SortPivotYOffset);
+                }).ToList();
+            Assert.That(quads.Any(q => q.name == "NorthWallFace"), Is.True, $"{name} draws no back-wall face");
+            foreach (NmcBuildingShells.Fixture f in s.Fixtures)
+            {
+                var art = AssetDatabase.LoadAssetAtPath<GameObject>(f.Prefab).GetComponent<ApplianceArt>();
+                Vector2 foot = ApplianceSheets.For(art.Kind).Foot;
+                int wall = ApplianceFacing.PickWallOffset(f.At, s.WidthMetres, s.LengthMetres, foot);
+                Vector2 size = wall == 0 ? foot : new Vector2(foot.y, foot.x);
+                Vector2 a = fp.ModelToWorld(f.At - size * 0.5f), b = fp.ModelToWorld(f.At + size * 0.5f);
+                Rect onScreen = Rect.MinMaxRect(Mathf.Min(a.x, b.x), Mathf.Min(a.y, b.y), Mathf.Max(a.x, b.x), Mathf.Max(a.y, b.y));
+                float fixtureSortY = fp.ModelToWorld(f.At).y;
+                foreach (var q in quads.Where(q => q.sortY < fixtureSortY))
+                    Assert.That(q.rect.Overlaps(onScreen), Is.False,
+                                $"{name}/{q.name} draws in front of {f.Name} and covers its footprint {onScreen} with {q.rect}");
             }
         }
 

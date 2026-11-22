@@ -67,6 +67,16 @@ namespace HiddenHarbours.App.Editor
         /// <summary>How far the doorstep mark runs out from the doorway, metres.</summary>
         const float DoorStepMetres = 1f;
 
+        /// <summary>The height an inner wall with a room behind it is drawn at, metres: the dollhouse cut. Drawn
+        /// at full height it covers the whole room north of it on screen (a 3 m wall rises further up the
+        /// screen than a 3 m deep room runs), so the room and anything in it read as standing outside. The
+        /// wall still blocks walking at any drawn height; its collider is the block's footprint.</summary>
+        const float CutWallMetres = 0.9f;
+
+        /// <summary>The height the inside face of the back (north) wall is drawn at, metres: the backdrop a
+        /// piece backed onto that wall stands in front of, where the greybox floor otherwise ends at the meadow.</summary>
+        const float BackWallFaceMetres = 2.4f;
+
         // ---- the data a shell is built from --------------------------------------------------------
 
         /// <summary>A tinted rectangle of floor, in the room's model frame (metres; +y is the plan's north at facing 0).</summary>
@@ -366,11 +376,15 @@ namespace HiddenHarbours.App.Editor
             },
             Blocks = new[]
             {
-                // the stock room's wall, with its doorway (the room convention's width) behind the counter
-                new Block("BackWallWest", -6f, -0.1f, 1.05f, 1.35f, 3f, Partition, true),
-                new Block("BackWallEast", 1.3f, 6f, 1.05f, 1.35f, 3f, Partition, true),
+                // the back wall's inside face, behind the stock room and the washroom (the outer wall's own
+                // collider blocks walking, so this only draws)
+                new Block("NorthWallFace", -6f, 6f, 4.2f, 4.5f, BackWallFaceMetres, StorefrontBlue, false),
+                // the stock room's wall, with its doorway (the room convention's width) behind the counter;
+                // the inner walls drawn cut down so the rooms behind them read
+                new Block("BackWallWest", -6f, -0.1f, 1.05f, 1.35f, CutWallMetres, Partition, true),
+                new Block("BackWallEast", 1.3f, 6f, 1.05f, 1.35f, CutWallMetres, Partition, true),
                 // the washroom opens off the stock room
-                new Block("WashroomWall", 3.45f, 3.75f, 1.35f, 2.8f, 3f, Partition, true),
+                new Block("WashroomWall", 3.45f, 3.75f, 1.35f, 2.8f, CutWallMetres, Partition, true),
                 // the shop: the trade counter, the electronics case on the back wall, shelf markers
                 new Block("TradeCounter", 1.8f, 4.4f, -0.9f, -0.4f, 1.05f, Wood, true),
                 new Block("ElectronicsCase", -4.2f, -1.0f, 0.45f, 0.95f, 1.2f, GlassCase, true),
@@ -427,14 +441,17 @@ namespace HiddenHarbours.App.Editor
             },
             Blocks = new[]
             {
-                // the back wall, with the warehouse doorway behind the counter, in line with the front door
-                new Block("BackWallWest", -9f, 1.3f, -0.65f, -0.35f, 3.5f, Partition, true),
-                new Block("BackWallEast", 2.7f, 9f, -0.65f, -0.35f, 3.5f, Partition, true),
+                // the outer back wall's inside face, behind the warehouse and the washroom (draws only)
+                new Block("NorthWallFace", -9f, 9f, 6.7f, 7f, BackWallFaceMetres, WarehouseTan, false),
+                // the back wall, with the warehouse doorway behind the counter, in line with the front door;
+                // the inner walls drawn cut down so the rooms behind them read
+                new Block("BackWallWest", -9f, 1.3f, -0.65f, -0.35f, CutWallMetres, Partition, true),
+                new Block("BackWallEast", 2.7f, 9f, -0.65f, -0.35f, CutWallMetres, Partition, true),
                 // the staff room opens off the warehouse, the washroom off the staff room
-                new Block("StaffWallSouth", 4.35f, 4.65f, -0.35f, 0.6f, 3f, Partition, true),
-                new Block("StaffWallNorth", 4.35f, 4.65f, 2.0f, 7f, 3f, Partition, true),
-                new Block("WashroomWallWest", 4.65f, 6.5f, 3.35f, 3.65f, 3f, Partition, true),
-                new Block("WashroomWallEast", 7.9f, 9f, 3.35f, 3.65f, 3f, Partition, true),
+                new Block("StaffWallSouth", 4.35f, 4.65f, -0.35f, 0.6f, CutWallMetres, Partition, true),
+                new Block("StaffWallNorth", 4.35f, 4.65f, 2.0f, 7f, CutWallMetres, Partition, true),
+                new Block("WashroomWallWest", 4.65f, 6.5f, 3.35f, 3.65f, CutWallMetres, Partition, true),
+                new Block("WashroomWallEast", 7.9f, 9f, 3.35f, 3.65f, CutWallMetres, Partition, true),
                 // the trade floor: the counter east of the way in (the seller stands behind it), shelf markers
                 new Block("TradeCounter", 3.0f, 7.5f, -3.0f, -2.4f, 1.05f, Wood, true),
                 new Block("WallShelfEast", 8.2f, 8.7f, -6.4f, -1.0f, 2.2f, Wood, true),
@@ -451,8 +468,9 @@ namespace HiddenHarbours.App.Editor
             BuildingKey = "fishing_gear_wholesaler",
             Fixtures = new[]
             {
-                // the staff microwave on the staff room's east wall
-                new Fixture(RoomFixturePlan.Kind.Microwave, 8.48f, 1.1f),
+                // the staff microwave on the staff room's east wall, north of where the trade floor's tall east
+                // shelf rises up the screen
+                new Fixture(RoomFixturePlan.Kind.Microwave, 8.48f, 2.4f),
                 // the washroom: the basin on the north wall, the toilet in the north-east corner
                 new Fixture(RoomFixturePlan.Kind.BathroomSink, 5.4f, 6.48f),
                 new Fixture(RoomFixturePlan.Kind.Toilet, 8.35f, 6.35f),
@@ -534,6 +552,7 @@ namespace HiddenHarbours.App.Editor
                         Object.DestroyImmediate(t.gameObject);
                         changed = true;
                     }
+                changed |= SyncBlocks(props, fp, s);
                 changed |= SyncInnerWalls(root, fp, s);
                 changed |= StandFixtures(props, fp, s);
                 if (changed) PrefabUtility.SaveAsPrefabAsset(root, s.PrefabPath);
@@ -548,6 +567,41 @@ namespace HiddenHarbours.App.Editor
             foreach (Transform c in props)
                 if (c.name == name && !PrefabUtility.IsAnyPrefabInstanceRoot(c.gameObject)) return c;
             return null;
+        }
+
+        /// <summary>Each layout block's quad drawn where and as tall as the layout says: a block with no quad gains
+        /// one, a quad whose rectangle or sort foot differs is moved and resized in place (its file ids kept).
+        /// True when anything changed.</summary>
+        static bool SyncBlocks(Transform props, in InteriorFootprint fp, Shell s)
+        {
+            float h = IsoGround.HeightScale;
+            bool changed = false;
+            Sprite square = null;
+            foreach (Block b in Layout(s))
+            {
+                Rect world = ModelRect(fp, b.Model, b.HeightMetres * h);
+                Transform have = MarkerNamed(props, b.Name);
+                if (have == null)
+                {
+                    square ??= AssetDatabase.LoadAllAssetsAtPath(SquareSprite).OfType<Sprite>().FirstOrDefault()
+                               ?? throw new Refusal($"no sprite in {SquareSprite}; the greybox kit is missing.");
+                    var go = new GameObject(b.Name);
+                    go.transform.SetParent(props, false);
+                    Quad(go, square, b.Tint, world, sortAtFoot: true);
+                    changed = true;
+                    continue;
+                }
+                SpriteRenderer sr = have.GetComponent<SpriteRenderer>() ?? throw new Refusal($"{s.Name}/{b.Name} draws nothing.");
+                Vector2 size = sr.sprite.bounds.size;
+                var at = new Vector3(world.center.x, world.center.y, 0f);
+                var scale = new Vector3(world.width / size.x, world.height / size.y, 1f);
+                if ((have.localPosition - at).sqrMagnitude > PathToleranceMetres * PathToleranceMetres) { have.localPosition = at; changed = true; }
+                if ((have.localScale - scale).sqrMagnitude > PathToleranceMetres * PathToleranceMetres) { have.localScale = scale; changed = true; }
+                var sort = have.GetComponent<YSortSprite>() ?? throw new Refusal($"{s.Name}/{b.Name} has no Y-sort.");
+                float pivot = -world.height * 0.5f;
+                if (Mathf.Abs(sort.SortPivotYOffset - pivot) > PathToleranceMetres) { sort.SortPivotYOffset = pivot; changed = true; }
+            }
+            return changed;
         }
 
         /// <summary>The inner walls' colliders made exactly the layout's solid blocks: a path no block draws any
