@@ -19,7 +19,8 @@ namespace HiddenHarbours.App.Editor
     /// <b>THE ROOM-FIXTURE PLACEMENT STEP</b> (kitchens and bathrooms placement plan, section 3): the one
     /// named text patch that stands every placed room fixture (a basin, a shower, a bath, a toilet, a stove)
     /// in its region scene, and the builder hook that re-stands them on a rebuild. The later placement
-    /// slices (R2 to R5, N1 and N2) add rows here; none of them writes its own planner.
+    /// slices (R2 to R5, N1 and N2) mark rows placed in their building's <see cref="RoomFixturePlan"/> file;
+    /// none of them writes its own planner.
     ///
     /// <para><b>What it grew from.</b> #1273's <see cref="WashStationPlacement"/> placed the first two wash
     /// stations by this same method. Its two sites are rows here now, with the same names and ids, so a
@@ -136,9 +137,11 @@ namespace HiddenHarbours.App.Editor
         public static Vector2 ModelPoint(InteriorFootprint footprint, Site site) =>
             site.PlanFrame && footprint.DoorSign < 0f ? -site.At : site.At;
 
-        /// <summary>The rows this slice places: the pilot building's bathroom.</summary>
+        /// <summary>The rows this step places: every <see cref="RoomFixturePlan"/> row marked
+        /// <see cref="RoomFixturePlan.Row.Placed"/> in its building's own plan file (today the pilot
+        /// building's bathroom), so a later slice places a building by editing only that building's file.</summary>
         public static IEnumerable<RoomFixturePlan.Row> PlacedRows() =>
-            RoomFixturePlan.Rows.Where(r => r.BuildingKey == PilotBuildingKey && RoomFixturePlan.IsBathroom(r.Kind));
+            RoomFixturePlan.Rows.Where(r => r.Placed);
 
         /// <summary>Every placed fixture, in plan order: #1273's two wash stations, then the placed rows.</summary>
         public static readonly Site[] Sites = BuildSites();
