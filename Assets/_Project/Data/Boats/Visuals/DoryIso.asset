@@ -373,6 +373,8 @@ MonoBehaviour:
     BodyClearanceMeters: 0.02
     BodyClearLeanMaxDegrees: 12
     BodyClearTwistMaxDegrees: 20
+    LookIntoTurnDegrees: 6
+    HeadLookIntoTurnDegrees: 16
   HelmBarMesh: {fileID: 0}
   MotorRockRollDegrees: 3.4
   MotorRockPitchDegrees: 1.9

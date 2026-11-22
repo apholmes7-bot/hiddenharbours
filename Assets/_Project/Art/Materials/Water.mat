@@ -147,6 +147,8 @@ Material:
     - _NightSoftness: 0.3
     - _NightStart: 0.35
     - _NoiseScale: 0.35
+    - _ObjectReflectFadeChop: 0.75
+    - _ObjectReflectLowLight: 4
     - _ObjectReflectSink: 0.35
     - _ObjectReflectStrength: 0.5
     - _ObjectReflectWarp: 0.35

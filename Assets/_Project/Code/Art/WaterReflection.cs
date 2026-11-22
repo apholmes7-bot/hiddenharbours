@@ -70,6 +70,32 @@ namespace HiddenHarbours.Art
             return Mathf.Clamp01(1f - agitation);
         }
 
+        /// <summary>
+        /// Twin of the shader's OBJECT reflection strength (a boat, the figure aboard, the wharf): the sky
+        /// mirror's curve (<see cref="ReflectionStrength"/>) with two object-only dials, both 0 = inherit.
+        /// <paramref name="objectFadeChop"/> (<c>_ObjectReflectFadeChop</c>) is used only when it is LONGER
+        /// than the sky mirror's fade: a boat's reflection breaks up on a gentle sea, it does not vanish.
+        /// <paramref name="lowLightLift"/> (<c>_ObjectReflectLowLight</c>) lifts the weight by
+        /// <c>1 + lift * darkness</c>, darkness = 1 - the day/night tint's Rec.601 luma (0 when the cycle
+        /// is off/unset), because the frame is multiplied by that tint after the water draws. Before the
+        /// depth sink; the shader clamps the final weight to 1.
+        /// </summary>
+        public static float ObjectReflectionWeight(
+            float chop, float roughness, float fadeChop, float windFade, float master,
+            float objectStrength, float objectFadeChop, float lowLightLift, Color dayNightTint)
+        {
+            float lift = 1f + Mathf.Max(lowLightLift, 0f) * TintDarkness(dayNightTint);
+            return ReflectionStrength(chop, roughness, Mathf.Max(fadeChop, objectFadeChop), windFade, master)
+                 * Mathf.Clamp01(objectStrength) * lift;
+        }
+
+        /// <summary>1 - the tint's Rec.601 luma, clamped; 0 when the day/night cycle is off (tint sum ~ 0).</summary>
+        public static float TintDarkness(Color tint)
+        {
+            if (tint.r + tint.g + tint.b <= 1e-3f) return 0f;
+            return Mathf.Clamp01(1f - (0.299f * tint.r + 0.587f * tint.g + 0.114f * tint.b));
+        }
+
         // ===== SKY-CONTENT REFLECTIONS (clouds + moon glitter path + stars + the sun glitter path) =======
         // The sea is the ONLY place the sky appears in this ¾ top-down game, so the reflection also mirrors
         // SKY CONTENT, not just the flat sky colour: drifting clouds (day + night), the moon with a vertical
