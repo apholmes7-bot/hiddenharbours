@@ -209,6 +209,29 @@ namespace HiddenHarbours.Tests.RigBaking
             }
         }
 
+        // =============================================================================================
+        //  THE MESH-BAKED TABLE (ADR 0060 option B)
+        // =============================================================================================
+
+        [Test]
+        public void EveryMeshBakedDwelling_HasAShellEntryAndItsFilesOnDisk()
+        {
+            Assert.That(DwellingRigFleet.MeshBaked, Is.Not.Empty);
+            var ids = new HashSet<string>(System.StringComparer.Ordinal);
+            foreach (DwellingRigFleet.MeshDwelling m in DwellingRigFleet.MeshBaked)
+            {
+                Assert.IsTrue(DwellingRigFleet.TryGetDwelling(m.Key, out _),
+                    $"mesh-baked '{m.Key}' has no row in Dwellings, so it has no shell rig or sidecar.");
+                FileAssert.Exists(Path.Combine(RepoRoot, m.RoomScriptPath));
+                FileAssert.Exists(Path.Combine(RepoRoot, m.RoomSidecarPath));
+                Assert.That(m.MeshId, Does.StartWith("dwelling."), m.Key);
+                Assert.IsTrue(ids.Add(m.MeshId), $"two mesh-baked dwellings share the id {m.MeshId}");
+                Assert.That(m.MeshAssetPath, Does.StartWith(DwellingRigFleet.MeshFolder + "/"), m.Key);
+                FileAssert.Exists(Path.Combine(RepoRoot, m.MeshAssetPath),
+                    $"'{m.Key}' is mesh-baked but its asset is not committed: run Bake ALL dwelling meshes.");
+            }
+        }
+
         /// <summary>Minimal top-level string read — the same shape the Dually's probe uses, and
         /// deliberately not a JSON dependency for four fields.</summary>
         static string ReadJsonString(string json, string key)
