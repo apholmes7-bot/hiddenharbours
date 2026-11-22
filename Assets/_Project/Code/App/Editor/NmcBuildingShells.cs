@@ -67,6 +67,16 @@ namespace HiddenHarbours.App.Editor
         /// <summary>How far the doorstep mark runs out from the doorway, metres.</summary>
         const float DoorStepMetres = 1f;
 
+        /// <summary>The height an inner wall with a room behind it is drawn at, metres: the dollhouse cut. Drawn
+        /// at full height it covers the whole room north of it on screen (a 3 m wall rises further up the
+        /// screen than a 3 m deep room runs), so the room and anything in it read as standing outside. The
+        /// wall still blocks walking at any drawn height; its collider is the block's footprint.</summary>
+        const float CutWallMetres = 0.9f;
+
+        /// <summary>The height the inside face of the back (north) wall is drawn at, metres: the backdrop a
+        /// piece backed onto that wall stands in front of, where the greybox floor otherwise ends at the meadow.</summary>
+        const float BackWallFaceMetres = 2.4f;
+
         // ---- the data a shell is built from --------------------------------------------------------
 
         /// <summary>A tinted rectangle of floor, in the room's model frame (metres; +y is the plan's north at facing 0).</summary>
@@ -106,10 +116,37 @@ namespace HiddenHarbours.App.Editor
             { DefId = defId; From = new Vector2(x0, y0); HeightMetres = height; Solid = solid; }
         }
 
+        /// <summary>A working room fixture: one of the shared fixture prefabs (the kitchens and bathrooms plan's
+        /// kinds, <see cref="InteriorFixturePlacement.PrefabFor"/>), stood with its foot at a model-frame point.
+        /// The foot sits the wall's thickness plus half the piece's depth off the wall it backs onto, the rule
+        /// Ginny's bathroom rows follow, so the piece's own art picks that wall (<see cref="ApplianceFacing"/>).</summary>
+        public readonly struct Fixture
+        {
+            public readonly RoomFixturePlan.Kind Kind; public readonly Vector2 At;
+            public Fixture(RoomFixturePlan.Kind kind, float x, float y) { Kind = kind; At = new Vector2(x, y); }
+            public string Slot => RoomFixturePlan.Slot(Kind);
+            public string Name => InteriorFixturePlacement.NameOf(Slot);
+            public string Prefab => InteriorFixturePlacement.PrefabFor(Kind);
+        }
+
+        /// <summary>The region part of a fixture's interact id (the wharf shower's <c>fixture.nmc.wharf.shower</c>).</summary>
+        public const string FixtureRegion = "nmc";
+
+        /// <summary>A fixture's interact id: <c>fixture.nmc.&lt;building&gt;.&lt;slot&gt;</c>, stable and unique per building.</summary>
+        public static string FixtureId(Shell s, Fixture f) => $"fixture.{FixtureRegion}.{s.BuildingKey}.{f.Slot}";
+
+        /// <summary>The greybox marker blocks the wholesalers' fixtures replaced; a prefab built before them is
+        /// brought up to date by removing these (<see cref="SyncFixtures"/>).</summary>
+        public static readonly string[] RetiredMarkers = { "Toilet", "Sink", "StaffMicrowave" };
+
         /// <summary>One building: what it is, where it stands, its footprint and door, and its greybox layout.</summary>
         public sealed class Shell
         {
             public string Name, Step, Why;
+            /// <summary>The building's snake_case key, the middle of its fixtures' ids; empty when it has none.</summary>
+            public string BuildingKey = "";
+            /// <summary>The working fixtures stood in the room (prefab instances under the furniture root).</summary>
+            public Fixture[] Fixtures = Array.Empty<Fixture>();
             public Vector2 Centre;
             public float WidthMetres, LengthMetres, EavesMetres;
             /// <summary>The room's facing of <see cref="Facings"/>: 0 puts the model's +y north; 2 turns it east.</summary>
@@ -147,7 +184,6 @@ namespace HiddenHarbours.App.Editor
         static readonly Color StorefrontBlue = new Color(0.60f, 0.67f, 0.74f);
         static readonly Color WarehouseTan = new Color(0.70f, 0.66f, 0.56f);
         static readonly Color GlassCase = new Color(0.62f, 0.78f, 0.82f);
-        static readonly Color Porcelain = new Color(0.92f, 0.92f, 0.90f);
         static readonly Color PotGreen = new Color(0.36f, 0.52f, 0.38f);
         static readonly Color RopeYellow = new Color(0.82f, 0.72f, 0.40f);
 
@@ -340,11 +376,15 @@ namespace HiddenHarbours.App.Editor
             },
             Blocks = new[]
             {
-                // the stock room's wall, with its doorway (the room convention's width) behind the counter
-                new Block("BackWallWest", -6f, -0.1f, 1.05f, 1.35f, 3f, Partition, true),
-                new Block("BackWallEast", 1.3f, 6f, 1.05f, 1.35f, 3f, Partition, true),
+                // the back wall's inside face, behind the stock room and the washroom (the outer wall's own
+                // collider blocks walking, so this only draws)
+                new Block("NorthWallFace", -6f, 6f, 4.2f, 4.5f, BackWallFaceMetres, StorefrontBlue, false),
+                // the stock room's wall, with its doorway (the room convention's width) behind the counter;
+                // the inner walls drawn cut down so the rooms behind them read
+                new Block("BackWallWest", -6f, -0.1f, 1.05f, 1.35f, CutWallMetres, Partition, true),
+                new Block("BackWallEast", 1.3f, 6f, 1.05f, 1.35f, CutWallMetres, Partition, true),
                 // the washroom opens off the stock room
-                new Block("WashroomWall", 3.45f, 3.75f, 1.35f, 2.8f, 3f, Partition, true),
+                new Block("WashroomWall", 3.45f, 3.75f, 1.35f, 2.8f, CutWallMetres, Partition, true),
                 // the shop: the trade counter, the electronics case on the back wall, shelf markers
                 new Block("TradeCounter", 1.8f, 4.4f, -0.9f, -0.4f, 1.05f, Wood, true),
                 new Block("ElectronicsCase", -4.2f, -1.0f, 0.45f, 0.95f, 1.2f, GlassCase, true),
@@ -353,10 +393,15 @@ namespace HiddenHarbours.App.Editor
                 // the stock room: shelving, a pallet, the staff microwave
                 new Block("StockShelving", -5.7f, -1.0f, 3.6f, 4.2f, 2.2f, Wood, true),
                 new Block("StockPallet", -5.0f, -3.6f, 1.8f, 3.0f, 1.0f, Wood, true),
-                new Block("StaffMicrowave", 1.6f, 3.2f, 3.7f, 4.2f, 0.95f, Steel, true),
-                // the washroom's fixtures (markers)
-                new Block("Toilet", 4.8f, 5.5f, 3.3f, 4.1f, 0.45f, Porcelain, false),
-                new Block("Sink", 4.0f, 4.6f, 3.7f, 4.2f, 0.85f, Porcelain, false),
+            },
+            BuildingKey = "boat_gear_wholesaler",
+            Fixtures = new[]
+            {
+                // the staff microwave on the stock room's north wall, clear of the shelving
+                new Fixture(RoomFixturePlan.Kind.Microwave, 2.4f, 3.98f),
+                // the washroom, in the north-east corner: the basin on the north wall by its way in, the toilet in the corner
+                new Fixture(RoomFixturePlan.Kind.BathroomSink, 4.35f, 3.98f),
+                new Fixture(RoomFixturePlan.Kind.Toilet, 5.35f, 3.85f),
             },
         };
 
@@ -396,14 +441,17 @@ namespace HiddenHarbours.App.Editor
             },
             Blocks = new[]
             {
-                // the back wall, with the warehouse doorway behind the counter, in line with the front door
-                new Block("BackWallWest", -9f, 1.3f, -0.65f, -0.35f, 3.5f, Partition, true),
-                new Block("BackWallEast", 2.7f, 9f, -0.65f, -0.35f, 3.5f, Partition, true),
+                // the outer back wall's inside face, behind the warehouse and the washroom (draws only)
+                new Block("NorthWallFace", -9f, 9f, 6.7f, 7f, BackWallFaceMetres, WarehouseTan, false),
+                // the back wall, with the warehouse doorway behind the counter, in line with the front door;
+                // the inner walls drawn cut down so the rooms behind them read
+                new Block("BackWallWest", -9f, 1.3f, -0.65f, -0.35f, CutWallMetres, Partition, true),
+                new Block("BackWallEast", 2.7f, 9f, -0.65f, -0.35f, CutWallMetres, Partition, true),
                 // the staff room opens off the warehouse, the washroom off the staff room
-                new Block("StaffWallSouth", 4.35f, 4.65f, -0.35f, 0.6f, 3f, Partition, true),
-                new Block("StaffWallNorth", 4.35f, 4.65f, 2.0f, 7f, 3f, Partition, true),
-                new Block("WashroomWallWest", 4.65f, 6.5f, 3.35f, 3.65f, 3f, Partition, true),
-                new Block("WashroomWallEast", 7.9f, 9f, 3.35f, 3.65f, 3f, Partition, true),
+                new Block("StaffWallSouth", 4.35f, 4.65f, -0.35f, 0.6f, CutWallMetres, Partition, true),
+                new Block("StaffWallNorth", 4.35f, 4.65f, 2.0f, 7f, CutWallMetres, Partition, true),
+                new Block("WashroomWallWest", 4.65f, 6.5f, 3.35f, 3.65f, CutWallMetres, Partition, true),
+                new Block("WashroomWallEast", 7.9f, 9f, 3.35f, 3.65f, CutWallMetres, Partition, true),
                 // the trade floor: the counter east of the way in (the seller stands behind it), shelf markers
                 new Block("TradeCounter", 3.0f, 7.5f, -3.0f, -2.4f, 1.05f, Wood, true),
                 new Block("WallShelfEast", 8.2f, 8.7f, -6.4f, -1.0f, 2.2f, Wood, true),
@@ -416,10 +464,16 @@ namespace HiddenHarbours.App.Editor
                 new Block("PalletRackWest", -8.6f, -7.4f, 0.4f, 6.6f, 3.2f, Steel, true),
                 new Block("PalletRackNorth", -6.5f, 3.8f, 5.6f, 6.6f, 3.2f, Steel, true),
                 new Block("FloorPallets", -4f, 0f, 1.5f, 3.5f, 1.4f, Wood, true),
-                // the staff fixtures (markers)
-                new Block("StaffMicrowave", 8.3f, 8.8f, 0.4f, 1.8f, 0.95f, Steel, true),
-                new Block("Toilet", 7.9f, 8.6f, 5.8f, 6.6f, 0.45f, Porcelain, false),
-                new Block("Sink", 5.0f, 5.8f, 6.2f, 6.7f, 0.85f, Porcelain, false),
+            },
+            BuildingKey = "fishing_gear_wholesaler",
+            Fixtures = new[]
+            {
+                // the staff microwave on the staff room's east wall, north of where the trade floor's tall east
+                // shelf rises up the screen
+                new Fixture(RoomFixturePlan.Kind.Microwave, 8.48f, 2.4f),
+                // the washroom: the basin on the north wall, the toilet in the north-east corner
+                new Fixture(RoomFixturePlan.Kind.BathroomSink, 5.4f, 6.48f),
+                new Fixture(RoomFixturePlan.Kind.Toilet, 8.35f, 6.35f),
             },
         };
 
@@ -471,10 +525,153 @@ namespace HiddenHarbours.App.Editor
             Sprite square = AssetDatabase.LoadAllAssetsAtPath(SquareSprite).OfType<Sprite>().FirstOrDefault()
                             ?? throw new Refusal($"no sprite in {SquareSprite}; the greybox kit is missing.");
             // Only the missing ones: a rebuilt prefab gets fresh random file ids, which orphans every override
-            // the region scene holds against the old ones. Delete a prefab first to rebuild it on purpose.
+            // the region scene holds against the old ones. Delete a prefab first to rebuild it on purpose. A
+            // standing prefab is brought up to date in place instead (its fixtures, its retired markers and its
+            // inner walls), which keeps every file id the scene refers to.
             foreach (Shell s in All)
                 if (AssetDatabase.LoadAssetAtPath<GameObject>(s.PrefabPath) == null) BuildPrefab(s, square);
+                else if (SyncFixtures(s)) Debug.Log($"[NmcBuildingShells] Brought {s.PrefabPath} up to date: {s.Fixtures.Length} fixtures.");
             AssetDatabase.SaveAssets();
+        }
+
+        /// <summary>Bring a standing prefab up to date without rebuilding it: remove the greybox markers its
+        /// fixtures replaced, keep its inner walls exactly the layout's solid blocks, and stand its fixtures.
+        /// Saves only when something changed, so a second run writes nothing.</summary>
+        public static bool SyncFixtures(Shell s)
+        {
+            GameObject root = PrefabUtility.LoadPrefabContents(s.PrefabPath);
+            try
+            {
+                InteriorFootprint fp = FootprintAt(s, Vector2.zero);
+                Transform props = root.transform.Find(BuildingInteriorStander.PropsChildName)
+                                  ?? throw new Refusal($"{s.PrefabPath} has no {BuildingInteriorStander.PropsChildName}.");
+                bool changed = false;
+                foreach (string name in RetiredMarkers)
+                    for (Transform t = MarkerNamed(props, name); t != null; t = MarkerNamed(props, name))
+                    {
+                        Object.DestroyImmediate(t.gameObject);
+                        changed = true;
+                    }
+                changed |= SyncBlocks(props, fp, s);
+                changed |= SyncInnerWalls(root, fp, s);
+                changed |= StandFixtures(props, fp, s);
+                if (changed) PrefabUtility.SaveAsPrefabAsset(root, s.PrefabPath);
+                return changed;
+            }
+            finally { PrefabUtility.UnloadPrefabContents(root); }
+        }
+
+        /// <summary>A plain child (not a prefab instance) of the furniture root by name, or null.</summary>
+        static Transform MarkerNamed(Transform props, string name)
+        {
+            foreach (Transform c in props)
+                if (c.name == name && !PrefabUtility.IsAnyPrefabInstanceRoot(c.gameObject)) return c;
+            return null;
+        }
+
+        /// <summary>Each layout block's quad drawn where and as tall as the layout says: a block with no quad gains
+        /// one, a quad whose rectangle or sort foot differs is moved and resized in place (its file ids kept).
+        /// True when anything changed.</summary>
+        static bool SyncBlocks(Transform props, in InteriorFootprint fp, Shell s)
+        {
+            float h = IsoGround.HeightScale;
+            bool changed = false;
+            Sprite square = null;
+            foreach (Block b in Layout(s))
+            {
+                Rect world = ModelRect(fp, b.Model, b.HeightMetres * h);
+                Transform have = MarkerNamed(props, b.Name);
+                if (have == null)
+                {
+                    square ??= AssetDatabase.LoadAllAssetsAtPath(SquareSprite).OfType<Sprite>().FirstOrDefault()
+                               ?? throw new Refusal($"no sprite in {SquareSprite}; the greybox kit is missing.");
+                    var go = new GameObject(b.Name);
+                    go.transform.SetParent(props, false);
+                    Quad(go, square, b.Tint, world, sortAtFoot: true);
+                    changed = true;
+                    continue;
+                }
+                SpriteRenderer sr = have.GetComponent<SpriteRenderer>() ?? throw new Refusal($"{s.Name}/{b.Name} draws nothing.");
+                Vector2 size = sr.sprite.bounds.size;
+                var at = new Vector3(world.center.x, world.center.y, 0f);
+                var scale = new Vector3(world.width / size.x, world.height / size.y, 1f);
+                if ((have.localPosition - at).sqrMagnitude > PathToleranceMetres * PathToleranceMetres) { have.localPosition = at; changed = true; }
+                if ((have.localScale - scale).sqrMagnitude > PathToleranceMetres * PathToleranceMetres) { have.localScale = scale; changed = true; }
+                var sort = have.GetComponent<YSortSprite>() ?? throw new Refusal($"{s.Name}/{b.Name} has no Y-sort.");
+                float pivot = -world.height * 0.5f;
+                if (Mathf.Abs(sort.SortPivotYOffset - pivot) > PathToleranceMetres) { sort.SortPivotYOffset = pivot; changed = true; }
+            }
+            return changed;
+        }
+
+        /// <summary>The inner walls' colliders made exactly the layout's solid blocks: a path no block draws any
+        /// more is removed, a block with no path gains one. True when anything changed.</summary>
+        static bool SyncInnerWalls(GameObject root, in InteriorFootprint fp, Shell s)
+        {
+            Transform inner = root.transform.Find("InnerWalls") ?? throw new Refusal($"{s.PrefabPath} has no InnerWalls.");
+            InteriorFootprint footprint = fp;
+            var wanted = Layout(s).Where(b => b.Solid)
+                .Select(b => footprint.Quad(b.Model.xMin, b.Model.xMax, b.Model.yMin, b.Model.yMax)).ToList();
+            bool changed = false;
+            foreach (PolygonCollider2D c in inner.GetComponents<PolygonCollider2D>())
+            {
+                int match = c.pathCount == 1 ? wanted.FindIndex(w => SamePath(w, c.GetPath(0))) : -1;
+                if (match >= 0) { wanted.RemoveAt(match); continue; }
+                Object.DestroyImmediate(c);
+                changed = true;
+            }
+            foreach (Vector2[] path in wanted)
+            {
+                var c = inner.gameObject.AddComponent<PolygonCollider2D>();
+                c.pathCount = 1;
+                c.SetPath(0, path);
+                changed = true;
+            }
+            return changed;
+        }
+
+        /// <summary>The tolerance two collider paths' points are the same within, metres (a float's round trip
+        /// through the prefab's text).</summary>
+        const float PathToleranceMetres = 1e-4f;
+
+        static bool SamePath(Vector2[] a, Vector2[] b) =>
+            a.Length == b.Length && a.Zip(b, (p, q) => (p - q).sqrMagnitude).All(d => d <= PathToleranceMetres * PathToleranceMetres);
+
+        /// <summary>Stand the shell's fixtures under the furniture root: each the shared prefab, named for its
+        /// slot, at its model point, carrying its own interact id. An instance already standing is moved and
+        /// re-id'd rather than replaced. True when anything changed.</summary>
+        static bool StandFixtures(Transform props, in InteriorFootprint fp, Shell s)
+        {
+            bool changed = false;
+            foreach (Fixture f in s.Fixtures)
+            {
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(f.Prefab) ?? throw new Refusal($"{s.Name}: no prefab at {f.Prefab}.");
+                Transform have = props.Find(f.Name);
+                GameObject go = have != null && PrefabUtility.IsAnyPrefabInstanceRoot(have.gameObject) &&
+                                PrefabUtility.GetCorrespondingObjectFromSource(have.gameObject) == prefab ? have.gameObject : null;
+                if (go == null)
+                {
+                    if (have != null) Object.DestroyImmediate(have.gameObject);
+                    go = (GameObject)PrefabUtility.InstantiatePrefab(prefab, props);
+                    go.name = f.Name;
+                    changed = true;
+                }
+                Vector2 w = fp.ModelToWorld(f.At) - (Vector2)props.localPosition;
+                var at = new Vector3(w.x, w.y, 0f);
+                if (go.transform.localPosition != at) { go.transform.localPosition = at; changed = true; }
+                MonoBehaviour point = InteriorFixturePlacement.IdComponentOf(go)
+                                      ?? throw new Refusal($"{f.Prefab}'s root carries no single interact id.");
+                using var so = new SerializedObject(point);
+                SerializedProperty id = so.FindProperty("_id");
+                string want = FixtureId(s, f);
+                if (id.stringValue != want)
+                {
+                    id.stringValue = want;
+                    so.ApplyModifiedPropertiesWithoutUndo();
+                    changed = true;
+                }
+            }
+            return changed;
         }
 
         static void BuildPrefab(Shell s, Sprite square)
@@ -509,6 +706,7 @@ namespace HiddenHarbours.App.Editor
                 Block[] layout = Layout(s);
                 foreach (Block b in layout)
                     Quad(Child(props, b.Name), square, b.Tint, ModelRect(fp, b.Model, b.HeightMetres * h), sortAtFoot: true);
+                StandFixtures(props.transform, fp, s);
 
                 // the walls: the shared recipe, then the partitions and solid fittings (always on: a wall is a wall
                 // from both sides, and from outside they are unreachable behind the shell's own walls).
@@ -543,7 +741,8 @@ namespace HiddenHarbours.App.Editor
                                    BuildingInteriorStander.DoorwayWidthMetres, s.DoorOnPlusY, s.DoorAcrossMetres);
                 PrefabUtility.SaveAsPrefabAsset(root, s.PrefabPath);
                 Debug.Log($"[NmcBuildingShells] Built {s.PrefabPath}: {s.WidthMetres} x {s.LengthMetres} m, door at " +
-                          $"{s.Centre + door}, {s.Zones.Length} zones, {s.Blocks.Length} blocks, {s.Outside.Length} set pieces outside.");
+                          $"{s.Centre + door}, {s.Zones.Length} zones, {s.Blocks.Length} blocks, {s.Fixtures.Length} fixtures, " +
+                          $"{s.Outside.Length} set pieces outside.");
             }
             finally { Object.DestroyImmediate(root); }
         }
@@ -638,7 +837,8 @@ namespace HiddenHarbours.App.Editor
                 Match guid = Regex.Match(File.ReadAllText(file + ".meta"), @"(?m)^guid: ([0-9a-f]{32})\s*$");
                 if (!guid.Success) throw new Refusal($"{path}.meta has no guid.");
                 SceneYaml prefab = SceneYaml.Parse(File.ReadAllText(file).Replace("\r\n", "\n"));
-                Doc rootTr = prefab.Docs.Single(d => d.ClassId == 4 && d.FieldRef("m_Father") == 0);
+                // not a nested fixture's stripped transform, which names no father either
+                Doc rootTr = prefab.Docs.Single(d => d.ClassId == 4 && !d.Stripped && d.FieldRef("m_Father") == 0);
                 Doc go = prefab.Require(rootTr.FieldRef("m_GameObject"), path + "'s root");
                 Doc interior = prefab.ComponentsOf(go).SingleOrDefault(d => d.IsScript("HiddenHarbours.World.BuildingInterior"))
                                ?? throw new Refusal($"{path}'s root carries no BuildingInterior.");

@@ -60,6 +60,13 @@ namespace HiddenHarbours.Core
                  "none (rowstyle.casual: nobody else rows like a racer).")]
         public RowingStyleDef NpcRowingStyle;
 
+        [Header("Helm sit and stand (the mesh figure takes and leaves a helm)")]
+        [Tooltip("How long the player's figure takes to sit down at a tiller seat, a seated helm or the oars, " +
+                 "or to step up and take a standing wheel, and to leave again; and how the move splits " +
+                 "between going to the spot and settling into the pose. Visual only: the helm goes live on " +
+                 "the press. 0 seconds (or Enabled off) is the old one-frame snap.")]
+        public HelmTransitionSettings HelmSitStand = HelmTransitionSettings.Default;
+
         [Header("Cleanliness (the third need)")]
         [Tooltip("Dirt (owner ask 2026-11-15): rises slowly with game time and faster with dirty work, the " +
                  "gym and the sea; washing at a station clears it, each station only to its own ceiling (sea " +
@@ -1001,8 +1008,16 @@ namespace HiddenHarbours.Core
         public const int DefaultHullReflectionMaxPackets = 1024;
         public const int DefaultHullReflectionMaxTriangles = 1000000;
 
-        [Header("Hull mesh reflection (experimental, requires GPU plates)")]
-        public bool HullMeshReflections = false;
+        /// <summary>The boat-reflection path's ship default: <b>ON</b> (2026-11-21). The mesh path is the
+        /// only one that can draw: the older overlay path records its reflection BEFORE the same frame's
+        /// hull keyline resolve, and the render graph rebinds <c>_HHHullScreenTex</c> to black at the end of
+        /// every graph, so that path always reads an empty picture and draws nothing.</summary>
+        public const bool DefaultHullMeshReflections = true;
+
+        [Header("Boat reflections in the water (hull, fittings and the figure aboard)")]
+        [Tooltip("Draw each boat's reflection from her own posed meshes (hull, door leaf, fittings and the " +
+                 "figure aboard). Off = no boat reflection at all: the older overlay path cannot draw.")]
+        public bool HullMeshReflections = DefaultHullMeshReflections;
         [Range(1, 2)] public int HullReflectionResolutionDivisor = 1;
         [Min(1)] public int HullReflectionMaxHulls = DefaultHullReflectionMaxHulls;
         [Min(1)] public int HullReflectionMaxPackets = DefaultHullReflectionMaxPackets;
@@ -4250,15 +4265,20 @@ namespace HiddenHarbours.Core
         [Tooltip("Seconds a sand chunk lives.")]
         [Min(0f)] public float SandChunkSeconds;
 
-        [Tooltip("Smaller clods tossed off the blade at the dig's lift-and-toss phase (0 = no toss).")]
+        [Tooltip("Wet clods thrown off the blade tip at the dig's lift-and-toss phase (0 = no toss).")]
         [Min(0)] public int DigTossChunkCount;
 
-        [Tooltip("Seconds after the blade enters the ground (the impact) that the toss leaves the blade: the " +
-                 "dig clip's in-ground and lever phases.")]
+        [Tooltip("Seconds after the blade enters the ground (the impact) that the toss leaves the blade tip: " +
+                 "the dig clip's in-ground and lever phases and the lift, up to where the blade is out at his side.")]
         [Min(0f)] public float DigTossDelaySeconds;
 
-        [Tooltip("Seconds a tossed clod lives.")]
+        [Tooltip("Seconds a tossed clod lives: its flight off the blade, then lying where it landed until it fades.")]
         [Min(0f)] public float DigTossChunkSeconds;
+
+        [Tooltip("When the dig faces within this many degrees of straight away from the camera (north, his back " +
+                 "to the viewer), the mesh body turns to this many degrees off north instead, toward the side he " +
+                 "already leans to (his right when dead on), so the shovel and the toss show past his body. 0 = off.")]
+        [Range(0f, 45f)] public float DigAwayTurnDegrees;
 
         [Tooltip("Rings spread from the point the cast line touches down.")]
         [Min(0)] public int CastRingCount;
@@ -4324,9 +4344,10 @@ namespace HiddenHarbours.Core
             SaleCountUpSeconds = 0.7f,
             SandChunkCount = 7,
             SandChunkSeconds = 0.45f,
-            DigTossChunkCount = 4,
-            DigTossDelaySeconds = 0.4f,
-            DigTossChunkSeconds = 0.45f,
+            DigTossChunkCount = 5,
+            DigTossDelaySeconds = 0.6f,
+            DigTossChunkSeconds = 0.9f,
+            DigAwayTurnDegrees = 25f,
             CastRingCount = 3,
             CastRingSeconds = 0.6f,
             MomentTickHz = 30f,

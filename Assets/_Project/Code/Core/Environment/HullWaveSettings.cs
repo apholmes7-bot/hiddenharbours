@@ -83,7 +83,8 @@ namespace HiddenHarbours.Core
         [Range(0f, 0.9f)] public float SmallHullSpacingScatter;
         [Tooltip("While hull waves are on and she makes way, the share of her churned trail foam a short hull " +
                  "lays, in place of TrailFoamShare (a rowed hull's trail is a thin lace, not a mat). Only hulls " +
-                 "no longer than SmallHullLengthMetres. Below 0 = she uses TrailFoamShare.")]
+                 "no longer than SmallHullLengthMetres. Below 0 = she uses TrailFoamShare. A motored hull's trail " +
+                 "is then scaled again by MotorVTrailFoamScale, and may sit below a rowed dory's.")]
         [Range(-1f, 1f)] public float SmallHullTrailFoamShare;
         [Tooltip("How far, metres, each of a short hull's rings is laid off her track point, either way on both " +
                  "axes, from a fixed number of its birth time: the rings of one stroke stop sharing a centre, so they " +
@@ -228,6 +229,42 @@ namespace HiddenHarbours.Core
                  "this × its wavelength, so a short wave crawls instead of flashing.")]
         [Range(0f, 4f)] public float MaxCrestHertz;
 
+        [Header("Motor V wake (owner 11-21: \"make motored boats a v wake\")")]
+        [Tooltip("How much of each ring a hull under motor or sail lays is drawn as the arms of her V instead of " +
+                 "a whole ring (1 = arms only: the inside of the V and the water astern of each ring stay calm; 0 = " +
+                 "whole rings, as before). Each ring draws a straight piece of the arm it touches, and the pieces " +
+                 "blend into one smooth line (owner 11-21 second look: \"smooth the v wake arms\"). A rowed hull " +
+                 "(the dory under oars) is never touched: her rings stay as they are.")]
+        [Range(0f, 1f)] public float MotorVShare;
+        [Tooltip("How far each ring's piece of the arm reaches along the arm, as degrees seen from the ring's " +
+                 "centre (the piece grows as tan(this) x the ring's radius, on top of MotorVArmBlendWavelengths). " +
+                 "Wider = longer pieces, smoother arms far astern.")]
+        [Range(5f, 60f)] public float MotorVArmHalfWidthDegrees;
+        [Tooltip("The shortest a ring's piece of the arm reaches either way along the arm, in wavelengths. Over " +
+                 "about 1.3 times the rings' spacing the pieces overlap into one continuous line (no beads, no " +
+                 "half circles beside the hull); a piece never reaches forward past the point that laid it.")]
+        [Range(0.5f, 8f)] public float MotorVArmBlendWavelengths;
+        [Tooltip("The shortest a ring's piece of the arm reaches either way, in the stretches of arm each ring " +
+                 "stands for (its spacing). Rings laid far apart (a hull on few sources) still overlap into one " +
+                 "line at about 1.5; 0 leaves only MotorVArmBlendWavelengths.")]
+        [Range(0f, 4f)] public float MotorVArmOverlapSpans;
+        [Tooltip("A hull under motor or sail: the stern's waves as a share of her crest height (the bow keeps " +
+                 "BowShare). Under BowShare keeps the wave off her bow the main, calm line of her V and the water " +
+                 "astern weaker (owner 11-21: \"the stern wake looks stronger then the wake off the hull\").")]
+        [Range(0f, 2f)] public float MotorVSternShare;
+        [Tooltip("A hull under motor or sail: the bow's part of SourcesPerHull, in place of BowSourceShare, so her " +
+                 "bow arm is laid as closely as her stern's.")]
+        [Range(0f, 1f)] public float MotorVBowSourceShare;
+        [Tooltip("A hull under motor or sail: her trail foam as a share of what TrailFoamShare (or " +
+                 "SmallHullTrailFoamShare) lays. The same foam, less of it, so her bow's V reads over her stern " +
+                 "(owner 11-21: halve it). A rowed hull's trail is never touched.")]
+        [Range(0f, 1f)] public float MotorVTrailFoamScale;
+        [Tooltip("A hull under motor or sail: the low-light lift on her V's waves, in place of LowLightGain " +
+                 "(owner 11-22: at sunset the V's waves read as hard light and dark stripes). Blended by how " +
+                 "much of the wave at a spot is her V, so a rowed hull's rings keep LowLightGain exactly. Noon " +
+                 "is untouched either way.")]
+        [Range(0f, 6f)] public float MotorVLowLightGain;
+
         public static HullWaveSettings Default => new HullWaveSettings
         {
             Enabled = true,
@@ -300,6 +337,15 @@ namespace HiddenHarbours.Core
             RideScale = 1f,
 
             RippleLifetimeSeconds = 2.5f,
+
+            MotorVShare = 1f,
+            MotorVArmHalfWidthDegrees = 25f,
+            MotorVArmBlendWavelengths = 2.5f,
+            MotorVArmOverlapSpans = 1.5f,
+            MotorVSternShare = 0.45f,
+            MotorVBowSourceShare = 0.5f,
+            MotorVTrailFoamScale = 0.5f,
+            MotorVLowLightGain = 0.5f,
         };
     }
 }

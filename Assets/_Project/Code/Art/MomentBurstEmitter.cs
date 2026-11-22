@@ -51,15 +51,21 @@ namespace HiddenHarbours.Art
         [Tooltip("Fraction of a clod's life fading OUT at its end, after it has landed (it pops in solid).")]
         [Range(0f, 1f)] public float ChunkFadeOut;
 
-        [Header("Dig toss — off the blade at the lift")]
-        [Tooltip("Sideways throw speed (m/s) of a clod tossed off the blade (one side per dig).")]
+        [Header("Dig toss — off the blade tip at the lift")]
+        [Tooltip("Throw speed (m/s) across the ground of a clod tossed off the blade, along the way he throws.")]
         [Min(0f)] public float TossSpeed;
-        [Tooltip("UP throw (m/s) of a tossed clod.")]
+        [Tooltip("How much slower than TossSpeed the slowest clod of a toss goes (0 = all the same), so the " +
+                 "clump strings out a little along the throw instead of landing in one spot.")]
+        [Range(0f, 1f)] public float TossSpeedSpread;
+        [Tooltip("Sideways spread of a toss, square to the throw (× TossSpeed, total), so it lands as a clump, not a line.")]
+        [Range(0f, 1f)] public float TossSpread;
+        [Tooltip("UP throw (m/s) of a tossed clod. Low: wet dirt is heavy and leaves the blade nearly flat.")]
         [Min(0f)] public float TossUp;
-        [Tooltip("Height (m) above the hole the blade is at when the toss leaves it.")]
+        [Tooltip("Height (m) the toss leaves from when no blade could be read (the sprite body). With the mesh " +
+                 "body the toss leaves from the blade tip's own height.")]
         [Min(0f)] public float TossLiftHeight;
-        [Tooltip("Tossed clod size (× ChunkSize).")]
-        [Range(0.1f, 1f)] public float TossSizeScale;
+        [Tooltip("Tossed clod size (× ChunkSize). Above 1: the toss is the shovel's load, bigger lumps than the impact's spatter.")]
+        [Range(0.1f, 2f)] public float TossSizeScale;
 
         [Header("Dig dirt — legibility guard (EditMode-tested)")]
         [Tooltip("The dry flat the clam beds sit on, as it renders at midday (measured from the game).")]
@@ -107,10 +113,12 @@ namespace HiddenHarbours.Art
             DirtLight      = new Color(0.45f, 0.36f, 0.26f, 1f),
             ChunkMaxAlpha  = 1f,
             ChunkFadeOut   = 0.3f,
-            TossSpeed      = 2.0f,
-            TossUp         = 1.4f,
+            TossSpeed      = 1.4f,
+            TossSpeedSpread = 0.35f,
+            TossSpread     = 0.4f,
+            TossUp         = 0.7f,
             TossLiftHeight = 0.25f,
-            TossSizeScale  = 0.75f,
+            TossSizeScale  = 1.35f,
             FlatReferenceColor = new Color(0.61f, 0.51f, 0.41f, 1f),
             DirtMinContrast = 1.5f,
             RingSize       = 0.6f,
@@ -127,8 +135,9 @@ namespace HiddenHarbours.Art
 
     /// <summary>
     /// <b>The three moments' particles</b> (juice charter §4.1, §4.3): the landing splash sized by the
-    /// fish's weight, the wet dirt when the shovel's blade enters the ground (and a smaller toss off the
-    /// blade at the lift), the rings on the cast line's entry. ONE
+    /// fish's weight, the wet dirt where the shovel's blade enters the ground (<see cref="JuiceMoment.DigImpact"/>)
+    /// and the clump thrown off the blade tip at the lift (<see cref="JuiceMoment.DigToss"/>), the rings on
+    /// the cast line's entry. ONE
     /// self-installing pooled host, ONE subscription (<see cref="JuiceMomentCue"/>), no prefab assets
     /// and no new art — three sprites built once at <c>Awake</c> (a dot, a clod, a ring),
     /// a fixed pool of <see cref="SpriteRenderer"/>s, each under its own <see cref="SortingGroup"/>, and a tick at
@@ -255,10 +264,9 @@ namespace HiddenHarbours.Art
                     break;
                 case JuiceMoment.DigImpact:   // the blade in the ground, not the press (DigStrike)
                     SpawnChunks(e.At, j.SandChunkCount, j.SandChunkSeconds);
-                    SpawnToss(e.At, j.DigTossChunkCount, j.DigTossDelaySeconds, j.DigTossChunkSeconds);
                     break;
-                case JuiceMoment.DigStrike:   // a new press restarts the clip: an earlier dig's toss never leaves the blade
-                    DropUnbornDirt();
+                case JuiceMoment.DigToss:     // the lift: off the blade tip, to the side he throws
+                    SpawnToss(e, j.DigTossChunkCount, j.DigTossChunkSeconds);
                     break;
                 case JuiceMoment.CastEntry:
                     SpawnRings(e.At, j.CastRingCount, j.CastRingSeconds);
@@ -303,37 +311,31 @@ namespace HiddenHarbours.Art
             }
         }
 
-        /// <summary>The lift and toss: a few smaller clods leave the raised blade to ONE side, born
-        /// <paramref name="delay"/> seconds after the impact (unborn until then, like a staggered ring).</summary>
-        private void SpawnToss(Vector2 at, int count, float delay, float seconds)
+        /// <summary>The lift and toss: a few wet clods leave the blade tip together, low and heavy, along the
+        /// throw the cue carries (<see cref="JuiceMomentCue.Dir"/>) and from the tip's height
+        /// (<see cref="JuiceMomentCue.Lift"/>). A cue not read off a blade (the sprite body) throws from
+        /// <see cref="MomentBurstConfig.TossLiftHeight"/> to one side picked per dig, as before.</summary>
+        private void SpawnToss(in JuiceMomentCue e, int count, float seconds)
         {
             if (seconds <= 0f || count <= 0) return;
-            float side = AmbientParticleMath.Hash01(++_spawnSalt) < 0.5f ? -1f : 1f;
+            Vector2 dir = e.FromBlade ? e.Dir : Vector2.zero;
+            if (dir.sqrMagnitude < 0.5f)
+                dir = new Vector2(AmbientParticleMath.Hash01(++_spawnSalt) < 0.5f ? -1f : 1f, 0f);
+            float lift = e.FromBlade ? e.Lift : _config.TossLiftHeight;
+            var across = new Vector2(-dir.y, dir.x);   // the clump's spread, square to the throw
             for (int k = 0; k < count; k++)
             {
                 float h1 = AmbientParticleMath.Hash01(++_spawnSalt);
                 float h2 = AmbientParticleMath.Hash01(++_spawnSalt);
                 float h3 = AmbientParticleMath.Hash01(++_spawnSalt);
-                var ground = new Vector2(side * _config.TossSpeed * (0.6f + 0.4f * h1),
-                                         (h2 - 0.5f) * _config.TossSpeed * _config.ChunkGroundYScale);
-                int i = Spawn(Kind.Chunk, at, ground, -Mathf.Max(0f, delay), seconds * (0.85f + 0.15f * h3),
+                Vector2 g = dir * (_config.TossSpeed * (1f - _config.TossSpeedSpread * h1))
+                          + across * (_config.TossSpeed * _config.TossSpread * (h2 - 0.5f));
+                var ground = new Vector2(g.x, g.y * _config.ChunkGroundYScale);
+                int i = Spawn(Kind.Chunk, e.At, ground, 0f, seconds * (0.85f + 0.15f * h3),
                               _config.ChunkSize * _config.TossSizeScale * (0.8f + 0.4f * h3), h1);
-                _pool[i].Height = _config.TossLiftHeight;
+                _pool[i].Height = lift;
                 _pool[i].VelUp = _config.TossUp * (0.7f + 0.3f * h3);
                 _pool[i].Tone = MomentBurstMath.DirtTone(h2);
-            }
-        }
-
-        /// <summary>Kill the dirt not yet born (a toss still on the blade). Born clods finish their arc.</summary>
-        private void DropUnbornDirt()
-        {
-            if (_pool == null) return;
-            for (int i = 0; i < _pool.Length; i++)
-            {
-                if (!_pool[i].Alive || _pool[i].Kind != Kind.Chunk || _pool[i].Age >= 0f) continue;
-                _pool[i].Alive = false;
-                _alive--;
-                if (_renderers[i].gameObject.activeSelf) _renderers[i].gameObject.SetActive(false);
             }
         }
 

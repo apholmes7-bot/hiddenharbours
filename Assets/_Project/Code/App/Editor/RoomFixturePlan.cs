@@ -6,22 +6,33 @@ namespace HiddenHarbours.App.Editor
 {
     /// <summary>
     /// <b>WHERE THE KITCHENS AND BATHROOMS GO</b> in the St Peters house-kit interiors, as data the
-    /// placement lanes will consume (docs/world/kitchens-bathrooms-placement-plan.md).
+    /// placement slices will consume (docs/world/kitchens-bathrooms-placement-plan.md).
     ///
     /// <para>This file places nothing. It is the table a later named patch step reads (one row = one
     /// station instance), and it is held to the room by <c>RoomFixturePlanTests</c>: every station inside
     /// its room's floor, out of the doorway lane, clear of the shipped furniture and of every other
     /// station, and every bathroom station inside its own closet.</para>
     ///
+    /// <para><b>One file per building.</b> This file holds the shared vocabulary (kinds, the row and
+    /// closet shapes, the kitchen and closet templates, the room sizes) and the fixed building order.
+    /// Each building's rows, closet and door compass live in its own <c>RoomFixturePlan.&lt;Building&gt;.cs</c>
+    /// partial, so a change to one building's rows touches only that building's file.</para>
+    ///
     /// <para><b>Frame.</b> The ROOM's model metres, the frame every row of
     /// <see cref="StPetersInteriors.FurnishingsFor"/> uses: origin the floor centre, <c>+y</c> toward the
     /// front door, <c>+x</c> to the LEFT as you come in. Level 0 is the ground floor, 1 the storey above.</para>
+    ///
+    /// <para><b>Compass.</b> Each building states which compass way its front door wall faces in the
+    /// scene (<see cref="Compass"/>), and each row states which wall of the plan frame it backs onto
+    /// (<see cref="Wall"/>); the row's <see cref="Row.Backing"/> is the compass wall it stands against.
+    /// The tests hold the door compass to the scene's serialized BuildingInterior and the wall to the
+    /// row's geometry, and fail any south-backed row not on <see cref="SouthWallExceptions"/>.</para>
     ///
     /// <para><b>Footprints here are planning sizes</b>, not art: the kitchen prefabs have no sprite yet
     /// and no bathroom prefab exists. When the prefabs carry real colliders, the placement step's test
     /// should read those instead and these sizes retire.</para>
     /// </summary>
-    public static class RoomFixturePlan
+    public static partial class RoomFixturePlan
     {
         /// <summary>What a station is. Append-only.</summary>
         public enum Kind
@@ -34,6 +45,42 @@ namespace HiddenHarbours.App.Editor
             Bath = 5,
             Toilet = 6,
         }
+
+        /// <summary>A ground compass way, in 45 degree steps clockwise from north (world <c>+y</c>).</summary>
+        public enum Compass
+        {
+            North = 0,
+            NorthEast = 1,
+            East = 2,
+            SouthEast = 3,
+            South = 4,
+            SouthWest = 5,
+            West = 6,
+            NorthWest = 7,
+        }
+
+        /// <summary>The number of <see cref="Compass"/> ways.</summary>
+        public const int CompassPoints = 8;
+
+        /// <summary>A wall of the plan frame, as compass steps clockwise from the front (door) wall:
+        /// the left wall (<c>+x</c>) is a quarter turn clockwise of the door's way, the back wall half a
+        /// turn, the right wall (<c>-x</c>) three quarters.</summary>
+        public enum Wall
+        {
+            Front = 0,
+            Left = 2,
+            Back = 4,
+            Right = 6,
+        }
+
+        /// <summary>The compass way of a plan wall in a building whose front door wall faces <paramref name="door"/>.</summary>
+        public static Compass CompassOf(Compass door, Wall wall) =>
+            (Compass)(((int)door + (int)wall) % CompassPoints);
+
+        /// <summary>Whether a wall faces into the southern half (S, SE or SW): the near side of the
+        /// cutaway, where a fixture stands with its back to the camera.</summary>
+        public static bool IsSouthWall(Compass c) =>
+            c == Compass.SouthEast || c == Compass.South || c == Compass.SouthWest;
 
         /// <summary>The id slot (the last part of the fixture id) for a kind.</summary>
         public static string Slot(Kind kind) => kind switch
@@ -89,15 +136,29 @@ namespace HiddenHarbours.App.Editor
             public readonly Kind Kind;
             public readonly Vector2 At;
 
+            /// <summary>The compass way the building's front door wall faces.</summary>
+            public readonly Compass Door;
+
+            /// <summary>The plan-frame wall this station backs onto.</summary>
+            public readonly Wall Wall;
+
+            /// <summary>True once the placement step stands this row in the scene
+            /// (<see cref="InteriorFixturePlacement.PlacedRows"/>).</summary>
+            public readonly bool Placed;
+
             public Row(string buildingKey, string buildingRoot, string building, string roomKey, string planKey,
-                       int level, Kind kind, Vector2 at)
+                       int level, Kind kind, Vector2 at, Compass door, Wall wall, bool placed = false)
             {
                 BuildingKey = buildingKey; BuildingRoot = buildingRoot; Building = building;
                 RoomKey = roomKey; PlanKey = planKey; Level = level; Kind = kind; At = at;
+                Door = door; Wall = wall; Placed = placed;
             }
 
             /// <summary><c>fixture.st_peters.&lt;building&gt;.&lt;slot&gt;</c>, the washstand's pattern.</summary>
             public string Id => $"fixture.{Region}.{BuildingKey}.{Slot(Kind)}";
+
+            /// <summary>The compass wall this station stands against.</summary>
+            public Compass Backing => CompassOf(Door, Wall);
         }
 
         /// <summary>A bathroom closet: the rectangle its two new partitions enclose (model metres), and
@@ -127,30 +188,32 @@ namespace HiddenHarbours.App.Editor
         const float CounterInset = 0.60f;   // counter centre from the side wall's outer face
 
         static IEnumerable<Row> Kitchen(string key, string root, string building, string room, string plan,
-                                        float w, float l, bool stove = true, bool prep = true)
+                                        Compass door, float w, float l, bool stove = true, bool prep = true)
         {
             float hw = w * 0.5f, hl = l * 0.5f, x = hw - CounterInset;
-            if (prep) yield return new Row(key, root, building, room, plan, 0, Kind.PrepCounter, new Vector2(x, hl - 2.60f));
+            if (prep) yield return new Row(key, root, building, room, plan, 0, Kind.PrepCounter, new Vector2(x, hl - 2.60f), door, Wall.Left);
             if (stove)
             {
-                yield return new Row(key, root, building, room, plan, 0, Kind.Stove, new Vector2(x, hl - 1.60f));
-                yield return new Row(key, root, building, room, plan, 0, Kind.Microwave, new Vector2(x, hl - 0.75f));
+                yield return new Row(key, root, building, room, plan, 0, Kind.Stove, new Vector2(x, hl - 1.60f), door, Wall.Left);
+                yield return new Row(key, root, building, room, plan, 0, Kind.Microwave, new Vector2(x, hl - 0.75f), door, Wall.Left);
             }
             else
-                yield return new Row(key, root, building, room, plan, 0, Kind.Microwave, new Vector2(x, hl - 1.60f));
+                yield return new Row(key, root, building, room, plan, 0, Kind.Microwave, new Vector2(x, hl - 1.60f), door, Wall.Left);
         }
 
         const float ClosetWidth = 1.90f, ClosetDepth = 2.20f;
 
         /// <summary>The standard closet: toilet against the back wall in the corner, basin beside it,
-        /// shower in front of the toilet. <paramref name="front"/> mirrors it to the front-right corner.</summary>
+        /// shower in front of the toilet against the right wall. <paramref name="front"/> mirrors it to the
+        /// front-right corner, where the toilet and basin back onto the front wall.</summary>
         static IEnumerable<Row> Bathroom(string key, string root, string building, string room, string plan,
-                                         int level, float w, float l, bool front = false)
+                                         int level, Compass door, float w, float l, bool front = false)
         {
             float hw = w * 0.5f, hl = l * 0.5f, s = front ? -1f : 1f;
-            yield return new Row(key, root, building, room, plan, level, Kind.Toilet, new Vector2(-hw + 0.65f, -s * (hl - 0.65f)));
-            yield return new Row(key, root, building, room, plan, level, Kind.BathroomSink, new Vector2(-hw + 1.45f, -s * (hl - 0.55f)));
-            yield return new Row(key, root, building, room, plan, level, Kind.Shower, new Vector2(-hw + 0.75f, -s * (hl - 1.60f)));
+            Wall end = front ? Wall.Front : Wall.Back;
+            yield return new Row(key, root, building, room, plan, level, Kind.Toilet, new Vector2(-hw + 0.65f, -s * (hl - 0.65f)), door, end);
+            yield return new Row(key, root, building, room, plan, level, Kind.BathroomSink, new Vector2(-hw + 1.45f, -s * (hl - 0.55f)), door, end);
+            yield return new Row(key, root, building, room, plan, level, Kind.Shower, new Vector2(-hw + 0.75f, -s * (hl - 1.60f)), door, Wall.Right);
         }
 
         static Closet StandardCloset(string key, int level, float w, float l, bool front = false)
@@ -163,44 +226,10 @@ namespace HiddenHarbours.App.Editor
             return new Closet(key, level, area, d0, d0 + 0.80f);
         }
 
-        // The farmhouse is a family house: a bath along the back wall instead of a shower, so its closet is
-        // wider and deeper (2.3 x 2.6 m) and the toilet and basin stand along the right wall.
-        const float FarmClosetWidth = 2.30f, FarmClosetDepth = 2.60f;
-
-        static IEnumerable<Row> FarmBathroom(float w, float l)
-        {
-            float hw = w * 0.5f, hl = l * 0.5f;
-            yield return Farm(Kind.Bath, new Vector2(-hw + 1.20f, -hl + 0.70f));
-            yield return Farm(Kind.Toilet, new Vector2(-hw + 0.65f, -hl + 1.55f));
-            yield return Farm(Kind.BathroomSink, new Vector2(-hw + 0.60f, -hl + 2.15f));
-        }
-
-        // Ginny's cottage, the R1 pilot (re-planned after its first editor look): a longer, shallower
-        // closet in the back-right corner, 2.05 m across by 2.9 m along, its front end stopping 0.1 m short
-        // of the dresser. Re-planned a second time from the scene's colliders (no editor): the toilet at the
-        // front end of the right wall, the shower behind it, the basin on the back wall. Standing just inside
-        // the closet door the player reaches each piece with that piece the nearest (the toilet's seat reach
-        // is 1.4 m on its prefab for this). Each piece is 0.9 m or more from the next.
-        const float GinnyClosetFront = -1.10f, GinnyClosetInner = -1.25f;
-
-        static IEnumerable<Row> GinnyBathroom(string root)
-        {
-            yield return Ginny(root, Kind.Shower, new Vector2(-2.575f, -2.85f));
-            yield return Ginny(root, Kind.Toilet, new Vector2(-2.775f, -1.475f));
-            yield return Ginny(root, Kind.BathroomSink, new Vector2(-1.925f, -3.50f));
-        }
-
-        static Row Ginny(string root, Kind k, Vector2 at) =>
-            new Row("ginny_cottage", root, StPetersGinnyPlot.CottageKey, "sageCottage",
-                    StPetersInteriors.GinnyCottagePlanKey, 0, k, at);
-
-        static Row Farm(Kind k, Vector2 at) =>
-            new Row("white_farmhouse", StPetersVillage.RootName, "whiteFarmhouse", "whiteFarmhouse", null, 0, k, at);
-
-        // ---- the rows -----------------------------------------------------------------------------
+        // ---- the room sizes -----------------------------------------------------------------------
         // Room sizes are the baked rooms' own (Interiors.json footprint metres, = the BuildingInterior's
         // serialized _widthMetres/_lengthMetres). The test re-derives them from InteriorKit and fails if
-        // they drift.
+        // they drift. The sage room is shared by Ginny's cottage and the village sage cottage.
 
         public const float SageW = 6.60f, SageL = 8.05f;
         public const float RedW = 6.96f, RedL = 8.68f;
@@ -210,6 +239,10 @@ namespace HiddenHarbours.App.Editor
         public const float WhiteGableW = 6.84f, WhiteGableL = 8.47f;
         public const float SchoolW = 6.36f, SchoolL = 7.63f;
 
+        // ---- the rows -----------------------------------------------------------------------------
+        // The building order is fixed: it is the row order, and so the order the placement step writes.
+        // A building's rows themselves are in its own file.
+
         static readonly Row[] _rows = Build();
 
         /// <summary>Every planned station in the St Peters house-kit interiors.</summary>
@@ -218,51 +251,41 @@ namespace HiddenHarbours.App.Editor
         static Row[] Build()
         {
             var r = new List<Row>();
-            string ginny = StPetersGinnyPlot.RootName, village = StPetersVillage.RootName;
-
-            r.AddRange(Kitchen("ginny_cottage", ginny, StPetersGinnyPlot.CottageKey, "sageCottage",
-                               StPetersInteriors.GinnyCottagePlanKey, SageW, SageL));
-            r.AddRange(GinnyBathroom(ginny));
-
-            r.AddRange(Kitchen("sage_cottage", village, "sageCottage", "sageCottage", null, SageW, SageL));
-            r.AddRange(Bathroom("sage_cottage", village, "sageCottage", "sageCottage", null, 0, SageW, SageL));
-
-            r.AddRange(Kitchen("red_saltbox", village, "redSaltbox", "redSaltbox", null, RedW, RedL));
-            r.AddRange(Bathroom("red_saltbox", village, "redSaltbox", "redSaltbox", null, 0, RedW, RedL, front: true));
-
-            r.AddRange(Kitchen("white_farmhouse", village, "whiteFarmhouse", "whiteFarmhouse", null, FarmW, FarmL));
-            r.AddRange(FarmBathroom(FarmW, FarmL));
-
-            r.AddRange(Kitchen("harbour_gable", village, "harbourGable", "harbourGable", "harbourGable", HarbourW, HarbourL));
-            r.AddRange(Bathroom("harbour_gable", village, "harbourGable", "harbourGableUpper", "harbourGable", 1, HarbourW, HarbourL));
-
-            r.AddRange(Kitchen("cream_saltbox", village, "creamSaltbox", "creamSaltbox", "creamSaltbox", CreamW, CreamL));
-            r.AddRange(Bathroom("cream_saltbox", village, "creamSaltbox", "creamSaltboxUpper", "creamSaltbox", 1, CreamW, CreamL));
-
-            r.AddRange(Kitchen("white_gable", village, "whiteGable", "whiteGable", "whiteGable", WhiteGableW, WhiteGableL));
-            r.AddRange(Bathroom("white_gable", village, "whiteGable", "whiteGableUpper", "whiteGable", 1, WhiteGableW, WhiteGableL));
-
-            // The school: a staff kitchenette (prep and a microwave, no stove: the hearth heats the room,
-            // it is not a cooker) and no indoor bathroom. The one-room school gets an outhouse outside,
-            // placed by the outhouse lane, not by this table.
-            r.AddRange(Kitchen("school", village, "school", "school", null, SchoolW, SchoolL, stove: false));
+            r.AddRange(GinnyCottageRows());
+            r.AddRange(SageCottageRows());
+            r.AddRange(RedSaltboxRows());
+            r.AddRange(WhiteFarmhouseRows());
+            r.AddRange(HarbourGableRows());
+            r.AddRange(CreamSaltboxRows());
+            r.AddRange(WhiteGableRows());
+            r.AddRange(SchoolRows());
             return r.ToArray();
         }
 
         /// <summary>Every planned bathroom closet (the partitions a layout change must stand).</summary>
         public static readonly Closet[] Closets =
         {
-            new Closet("ginny_cottage", 0,
-                       Rect.MinMaxRect(-SageW * 0.5f, -SageL * 0.5f, GinnyClosetInner, GinnyClosetFront),
-                       -2.40f, -1.60f),
-            StandardCloset("sage_cottage", 0, SageW, SageL),
-            StandardCloset("red_saltbox", 0, RedW, RedL, front: true),
-            new Closet("white_farmhouse", 0,
-                       new Rect(-FarmW * 0.5f, -FarmL * 0.5f, FarmClosetWidth, FarmClosetDepth),
-                       -FarmL * 0.5f + 1.40f, -FarmL * 0.5f + 2.20f),
-            StandardCloset("harbour_gable", 1, HarbourW, HarbourL),
-            StandardCloset("cream_saltbox", 1, CreamW, CreamL),
-            StandardCloset("white_gable", 1, WhiteGableW, WhiteGableL),
+            GinnyCottageCloset(),
+            SageCottageCloset(),
+            RedSaltboxCloset(),
+            WhiteFarmhouseCloset(),
+            HarbourGableCloset(),
+            CreamSaltboxCloset(),
+            WhiteGableCloset(),
+        };
+
+        /// <summary>
+        /// Rows allowed to back onto a south wall (<see cref="IsSouthWall"/>) for now, by id. The rule is
+        /// north first (owner 2026-11-17): kitchens and bathrooms go on north walls. Every id here is a
+        /// row that still has to be re-planned; remove it when it is.
+        /// </summary>
+        public static readonly IReadOnlyCollection<string> SouthWallExceptions = new HashSet<string>
+        {
+            "fixture.st_peters.ginny_cottage.toilet",          // placed; to be moved north
+            "fixture.st_peters.ginny_cottage.shower",          // placed; to be moved north
+            "fixture.st_peters.red_saltbox.shower",            // planned, not placed; re-plan north before placing
+            "fixture.st_peters.white_farmhouse.toilet",        // planned, not placed (SE wall); re-plan before placing
+            "fixture.st_peters.white_farmhouse.bathroom_sink", // planned, not placed (SE wall); re-plan before placing
         };
 
         /// <summary>Whether a kind belongs in a bathroom closet.</summary>

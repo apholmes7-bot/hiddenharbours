@@ -39,6 +39,22 @@ namespace HiddenHarbours.Player
     {
         public const string DigStateKey = "dig";
 
+        /// <summary>
+        /// The dig's drawn heading (compass degrees, 0 = North = straight away from the camera, clockwise)
+        /// with the away turn applied: a heading within <paramref name="turnDegrees"/> of North becomes
+        /// exactly <paramref name="turnDegrees"/> off it, on the side it already leans to (East, his right,
+        /// when dead on), so his body no longer hides the shovel and the toss. Any other heading, or a turn
+        /// of 0, is returned as given (normalised to [0, 360)).
+        /// </summary>
+        public static float DigHeadingAwayTurn(float headingDegrees, float turnDegrees)
+        {
+            float h = Mathf.Repeat(headingDegrees, 360f);
+            if (turnDegrees <= 0f) return h;
+            float off = Mathf.DeltaAngle(0f, h);   // signed, (-180, 180]
+            if (Mathf.Abs(off) >= turnDegrees) return h;
+            return off < 0f ? 360f - turnDegrees : turnDegrees;
+        }
+
         /// <summary>The existing sprite pose's baked skin clip. No independent phase mapping.</summary>
         public static string StateKeyFor(FishingPose pose) => pose switch
         {

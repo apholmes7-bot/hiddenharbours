@@ -50,7 +50,7 @@ namespace HiddenHarbours.Boats
     // (BoatWaveMotion −120 → DirectionalBoatSprite −110 → this −100). See BoatWaveMotion for why. This pins
     // the ORDER only — the oars' pose math is untouched.
     [DefaultExecutionOrder(-100)]
-    public class DoryOarLayer : MonoBehaviour
+    public class DoryOarLayer : MonoBehaviour, HiddenHarbours.Core.IRowedHull
     {
         [Header("Sheets (heading×column; the builder wires these — index = heading·columns + col)")]
         [Tooltip("Port-side oar sheet: 80 ordered slices, index = heading×10 + col (cols 0-7 stroke, 8 resting, 9 trailing).")]
@@ -126,6 +126,10 @@ namespace HiddenHarbours.Boats
             _headingCount > 0 && _columnsPerHeading > 0 &&
             _portFrames != null && _portFrames.Length == _headingCount * _columnsPerHeading &&
             _starFrames != null && _starFrames.Length == _headingCount * _columnsPerHeading;
+
+        /// <summary>Rowed while these oars are wired (the sprite dory has no engine): the water draws her
+        /// waves as the owner's approved soft arcs, not the motored V (owner 11-21).</summary>
+        public bool IsRowed => isActiveAndEnabled && IsWired;
 
         /// <summary>The column the PORT oar drew last tick (diagnostics / tests).</summary>
         public int PortColumn { get; private set; } = DoryOarMath.RestingColumn;

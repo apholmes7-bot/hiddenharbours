@@ -1,11 +1,34 @@
-# Hull mesh reflections — R3, default off
+# Hull mesh reflections — R3, default on (2026-11-21)
 
 This serves P1, the sea has moods. A top-down hull picture flipped about one screen row
 reflects both rig height and ground depth. It shows the deck and hangs cabin windows below
 it. R3 instead draws the boat's existing posed geometry from its reflected physical view.
-The owner authorized implementation on 2026-10-01; activation and appearance remain held
-for matched GPU plates. `GameConfig.HullMeshReflections` defaults to false. No shipped
-configuration enables it. The normal view and the legacy reflection remain the default.
+The owner authorized implementation on 2026-10-01. From 2026-11-21 it is the shipped
+default: `GameConfig.HullMeshReflections` is `true` in code
+(`GameConfig.DefaultHullMeshReflections`) and in `GameConfig.asset`.
+
+**Why it is the default.** The legacy overlay path never drew in the game. It records its
+reflection (`HH Object Reflections`, overlay pass `HHHullReflect`) and the displaced water
+BEFORE `HH Hull Keyline Resolve`, the only pass that publishes `_HHHullScreenTex`. The
+render graph's `ClearGlobalBindings` rebinds every registered global to the 4x4 black
+texture after each graph runs, so the legacy pass always samples black. Measured at Rice
+Point (dusk 20.5, sea 0.1, 1920x1080): legacy reflect target 0 covered pixels, the same
+frame's hull picture 55273 pixels, `_HHHullScreenTex` after the graph `UnityBlack 4x4`;
+with the hull picture bound by hand before the render, the legacy target covers 55273
+pixels, so only the order fails. The mesh path covered 29973 pixels in the same frame.
+`HullReflection_OverlayPathRecordsBeforeTheHullPictureItSamples` pins that order.
+Turning the switch off leaves no boat reflection at all.
+
+**Showing at dusk (2026-11-21, the owner's look).** The water shader's object-reflection
+block inherits the sky mirror's sea-state curve, and the frame is multiplied by the
+day/night tint after the water draws, so the first pass read only max 12/255 at dusk on a
+gentle sea. Two water material dials, both 0 = the first pass exactly:
+`_ObjectReflectFadeChop` (the object's own chop fade, used only when longer than
+`_ReflectionFadeChop`; shipped 0.75 so a blow at sea 0.75 still clears it) and
+`_ObjectReflectLowLight` (weight × (1 + lift × darkness), darkness = 1 − the tint's luma;
+shipped 4, darkness 0.012 at noon and 0.38 at dusk 20.5). The final weight is clamped to 1.
+Twin: `WaterReflection.ObjectReflectionWeight`. Measured at dusk 20.5, sea 0.32: max
+12 → 29 (close) and 13 → 32 (game camera); noon glass within 5%.
 
 ## Geometry and visibility
 

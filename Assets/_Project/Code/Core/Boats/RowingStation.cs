@@ -81,6 +81,15 @@ namespace HiddenHarbours.Core
 
         /// <summary>With the oars let go: the palm's height above the thigh bone, metres.</summary>
         public float RestHandAboveThighMeters;
+
+        /// <summary>How far his shoulders turn CLOCKWISE seen from above this frame, degrees: toward
+        /// starboard for a figure facing forward (negative = toward port). A skipper looking into the
+        /// turn; 0 for a rower.</summary>
+        public float TurnStarboardDegrees;
+
+        /// <summary>How far his head turns toward starboard on top of his shoulders, degrees (negative
+        /// = toward port). 0 for a rower.</summary>
+        public float HeadTurnStarboardDegrees;
     }
 
     /// <summary>

@@ -13,7 +13,8 @@ namespace HiddenHarbours.Core
     /// steering hand holds the tiller grip (exactly one grip is valid); the other hand rests on his
     /// thigh (<see cref="RowingTargets.RestWeight"/> is 1, so <see cref="RowingPoseSolver"/> puts the
     /// free palm there). His lean is the rest's slump: a relaxed sit at idle and a lean into the way
-    /// as the throttle comes up.</para>
+    /// as the throttle comes up. As the engine swings he looks into the turn, shoulders a little and
+    /// head more (<see cref="RowingTargets.TurnStarboardDegrees"/>).</para>
     /// </summary>
     public interface ITillerStation
     {
@@ -42,6 +43,16 @@ namespace HiddenHarbours.Core
         {
             if (float.IsNaN(throttle)) throttle = 0f;
             return idleDegrees - sitUpPerThrottleDegrees * Mathf.Clamp01(Mathf.Abs(throttle));
+        }
+
+        /// <summary>How far he looks toward starboard this frame, degrees (negative = toward port):
+        /// <paramref name="fullDegrees"/> times the engine's steer as a share of its authority. The
+        /// rigs' <b>+steer</b> swings the prop to starboard and so the bow to starboard: he looks the
+        /// way she is turning. A zero or missing authority reads dead ahead.</summary>
+        public static float Look(float fullDegrees, float steerDegrees, float maxSteerDegrees)
+        {
+            if (float.IsNaN(steerDegrees) || !(maxSteerDegrees > 0f)) return 0f;
+            return fullDegrees * Mathf.Clamp(steerDegrees / maxSteerDegrees, -1f, 1f);
         }
     }
 }

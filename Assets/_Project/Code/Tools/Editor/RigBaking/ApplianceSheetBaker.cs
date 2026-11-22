@@ -42,13 +42,15 @@ namespace HiddenHarbours.Tools.RigBaking
             (ApplianceKind.CookStove, "Assets/_Project/Prefabs/Props/Kitchen/Stove.prefab"),
             (ApplianceKind.PrepCounter, "Assets/_Project/Prefabs/Props/Kitchen/PrepCounter.prefab"),
             (ApplianceKind.Microwave, "Assets/_Project/Prefabs/Props/Kitchen/Microwave.prefab"),
+            (ApplianceKind.Fridge, "Assets/_Project/Prefabs/Props/Kitchen/Fridge.prefab"),
+            (ApplianceKind.KitchenSink, "Assets/_Project/Prefabs/Props/Kitchen/KitchenSink.prefab"),
         };
 
         /// <summary>The rig options that draw one row of a sheet.</summary>
         public static string OptsFor(in ApplianceLayout l, int row)
         {
             var parts = new List<string>();
-            float fill = 0f; bool pour = false, near = false; int froth = 0, run = 0, flush = 0;
+            float fill = 0f; bool pour = false, near = false; int froth = 0, run = 0, flush = 0, door = 0;
 
             if (row == l.FillLow) fill = 0.33f;
             if (row == l.FillMid) fill = l.FillLow >= 0 ? 0.66f : 0.5f;
@@ -61,12 +63,14 @@ namespace HiddenHarbours.Tools.RigBaking
             if (InLoop(row, l.RunFirst)) run = row - l.RunFirst + 1;
             if (InLoop(row, l.NearRunFirst)) { run = row - l.NearRunFirst + 1; near = true; }
             if (InLoop(row, l.FlushFirst)) flush = row - l.FlushFirst + 1;
+            if (InLoop(row, l.DoorFirst)) door = row - l.DoorFirst + 1;
 
             if (fill > 0f) parts.Add("fill:" + fill.ToString("0.##", CultureInfo.InvariantCulture));
             if (pour) parts.Add("pour:true");
             if (froth > 0) parts.Add("froth:" + froth);
             if (run > 0) parts.Add("run:" + run);
             if (flush > 0) parts.Add("flush:" + flush);
+            if (door > 0) parts.Add("door:" + door);
             if (near) parts.Add("split:'near'");
             return "{" + string.Join(",", parts) + "}";
         }

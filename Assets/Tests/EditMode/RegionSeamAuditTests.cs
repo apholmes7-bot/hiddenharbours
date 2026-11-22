@@ -349,7 +349,9 @@ namespace HiddenHarbours.Tests.EditMode
             // washstand again): greybox sprites, a collider on the toilet, and a WashStationPoint or a SitPoint,
             // no travel component. The player's storage (owner 11-17) adds Ginny's rod rack and gear locker (a
             // sprite, a collider, a YSortSprite and a StowageRack each) and the camper's shore power lead (sprites
-            // and transforms only): no nested prefab and no travel component.
+            // and transforms only): no nested prefab and no travel component. The two wholesalers' staff fixtures
+            // (N1a) nest the toilet, the washstand and the kitchen microwave in their shells: the microwave adds
+            // a CookingStationFixture and its art, no travel component.
             Assert.That(seen.Select(g => paths[g].Replace('\\', '/')).OrderBy(p => p, StringComparer.Ordinal), Is.EqualTo(new[] {
                 "Assets/_Project/Prefabs/Bridges/CampBrookBridge.prefab",
                 "Assets/_Project/Prefabs/Bridges/CampPondCulvert.prefab",
@@ -360,6 +362,7 @@ namespace HiddenHarbours.Tests.EditMode
                 "Assets/_Project/Prefabs/Buildings/NineMileCreek/NmcFishingGearWholesaler.prefab",
                 "Assets/_Project/Prefabs/Decor/NavBuoy.prefab",
                 "Assets/_Project/Prefabs/GasStation/dispenser_sDock.prefab",
+                "Assets/_Project/Prefabs/Props/Kitchen/Microwave.prefab",
                 "Assets/_Project/Prefabs/Props/Storage/CamperShoreLead.prefab",
                 "Assets/_Project/Prefabs/Props/Storage/GinnyGearLocker.prefab",
                 "Assets/_Project/Prefabs/Props/Storage/GinnyRodRack.prefab",

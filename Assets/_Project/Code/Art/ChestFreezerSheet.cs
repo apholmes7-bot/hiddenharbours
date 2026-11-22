@@ -30,8 +30,12 @@ namespace HiddenHarbours.Art
         public const string RigName = "chestFreezer";
         public const string Stem = "Appliance_" + RigName;
 
+        /// <summary>The camper's bigger chest (owner 2026-11-17: "bigger freezer"): its rig piece and its stem.</summary>
+        public const string LargeRigName = "chestFreezerLarge";
+        public const string LargeStem = "Appliance_" + LargeRigName;
+
         /// <summary>Every freezer sheet the baker makes: (rig piece, sheet stem).</summary>
-        public static readonly (string RigName, string Stem)[] Pieces = { (RigName, Stem) };
+        public static readonly (string RigName, string Stem)[] Pieces = { (RigName, Stem), (LargeRigName, LargeStem) };
 
         /// <summary>The <c>Resources</c> folder the appliance sheets live in (Art/Resources/Appliances).</summary>
         public const string ResourcesFolder = "Appliances";
@@ -62,11 +66,13 @@ namespace HiddenHarbours.Art
             _ => OpenEmpty,
         };
 
-        /// <summary>The rig options that draw one row (the baker's contract).</summary>
+        /// <summary>The rig options that draw one row (the baker's contract). The first lid frame is the lid
+        /// just lifted (its top still reads, a slit of frost under its front edge); the second is the lid
+        /// half up, its liner showing.</summary>
         public static string OptsFor(int row) => row switch
         {
-            LidLow => "{lid:0.33}",
-            LidHigh => "{lid:0.67}",
+            LidLow => "{lid:0.18}",
+            LidHigh => "{lid:0.55}",
             OpenEmpty => "{lid:1}",
             OpenSome => "{lid:1,heap:1}",
             OpenFull => "{lid:1,heap:2}",
