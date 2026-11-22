@@ -202,6 +202,11 @@ namespace HiddenHarbours.Boats
                  "as authored.")]
         public RowingStationConfig Rowing = RowingStationConfig.Default;
 
+        [Tooltip("THE OARS STOWED (owner ruling 2026-11-22): where a hull whose oars are mesh fittings lays " +
+                 "them while her outboard drives her: out of the tholes, fore and aft on the thwarts, blades " +
+                 "forward. Rowed, nothing here is read. Enabled off = shipped in the tholes under power, as before.")]
+        public OarStowConfig OarStow = OarStowConfig.Default;
+
         [Header("Outboard motor (OPTIONAL — the hull's engine, drawn)")]
         [Tooltip("Motor LOWER sheet (leg + plate + skeg + prop), element [heading·MotorColumnCount + col]. " +
                  "Col 0 = full port, the middle col = dead ahead, the last = full starboard. When COMPLETE " +
