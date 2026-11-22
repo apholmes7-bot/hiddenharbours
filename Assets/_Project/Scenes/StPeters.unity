@@ -3508,7 +3508,7 @@ GameObject:
   - component: {fileID: 67967149}
   - component: {fileID: 67967148}
   m_Layer: 0
-  m_Name: Sea chest (-2.7,-3.8)
+  m_Name: Sea chest (-2.8,-3.7)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3523,7 +3523,7 @@ Transform:
   m_GameObject: {fileID: 67967146}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.85, y: 1.735527, z: 0}
+  m_LocalPosition: {x: -3.7, y: 1.767666, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12868,8 +12868,8 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -4.2, y: 4.632379}
-      - {x: -4.2, y: 3.957452}
+    - - {x: -3.15, y: 4.632379}
+      - {x: -3.15, y: 3.957452}
       - {x: -0.3, y: 3.957452}
       - {x: -0.3, y: 4.632379}
   m_UseDelaunayMesh: 1
@@ -67097,7 +67097,7 @@ GameObject:
   - component: {fileID: 1250860797}
   - component: {fileID: 1250860796}
   m_Layer: 0
-  m_Name: Dresser (-1.5,-2.4)
+  m_Name: Dresser (0.8,-4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -67112,7 +67112,7 @@ Transform:
   m_GameObject: {fileID: 1250860794}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.4, y: 3.443222, z: 0}
+  m_LocalPosition: {x: -3.98, y: 2.029089, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -67178,10 +67178,10 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 0.5, y: 0.16069603}
-      - {x: -0.5, y: 0.16069603}
-      - {x: -0.5, y: -0.16069603}
-      - {x: 0.5, y: -0.16069603}
+    - - {x: 0.25, y: 0.3213938}
+      - {x: -0.25, y: 0.3213938}
+      - {x: -0.25, y: -0.3213938}
+      - {x: 0.25, y: -0.3213938}
   m_UseDelaunayMesh: 1
 --- !u!114 &1250860798
 MonoBehaviour:
@@ -67250,7 +67250,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1081
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -478091606, guid: 08c45967aa03b464e8b8af1909c08e00, type: 3}
+  m_Sprite: {fileID: -1443993427, guid: 08c45967aa03b464e8b8af1909c08e00, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -102754,8 +102754,8 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -4.2, y: 2.121199}
-      - {x: -4.2, y: 1.446272}
+    - - {x: -3.15, y: 2.121199}
+      - {x: -3.15, y: 1.446272}
       - {x: -0.3, y: 1.446272}
       - {x: -0.3, y: 2.121199}
   m_UseDelaunayMesh: 1

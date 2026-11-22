@@ -350,8 +350,9 @@ namespace HiddenHarbours.App.Editor
         /// from the landing at the stair head, and Ginny does not walk through the room she is lending
         /// you. Both beds have their heads on the south wall.</para>
         ///
-        /// <para><b>The stairs.</b> The foot's interact point is at (2.70, 3.85) by the front door, the
-        /// head's at (3.25, −0.20) where the flight arrives. Each half lands him at the other
+        /// <para><b>The stairs.</b> The foot's interact point is at (2.75, 3.70), on the clear landing
+        /// between the foot of the flight and the front wall, the head's at (3.25, −0.20) where the flight
+        /// arrives. Each half lands him at the other
         /// (<see cref="LinkStairLandings"/>); the interior then pushes him clear of anything solid.
         /// Ginny's ground floor has its own furniture (<see cref="UpperLevelPlan.GroundFurnishings"/>),
         /// so the village's pilot cottage keeps its own one-room layout.</para>
@@ -395,8 +396,8 @@ namespace HiddenHarbours.App.Editor
                 groundAdditions: new[]
                 {
                     new Furnishing("seaChest", new Vector2(GinnyStairAtX, GinnyStairAtY), 4,
-                                   "the stair's interact point, at the foot of the painted flight along the " +
-                                   "north wall, by the front door. The sea chest prop is a STAND-IN the builder " +
+                                   "the stair's interact point, on the clear landing at the foot of the painted " +
+                                   "flight along the north wall, by the front door. The sea chest prop is a STAND-IN the builder " +
                                    "places for it; the placed room hides its picture (the stair is painted " +
                                    "in the room sheet) and the run's own wall rect is the collider. Coming " +
                                    "down, he arrives here: his feet on the open floor south of the foot",
@@ -420,9 +421,12 @@ namespace HiddenHarbours.App.Editor
                                    "he gets in from either side",
                                    InteriorFixture.PlayerBed, PillowSide.MinusX),
 
-                    new Furnishing("dresser", new Vector2(1.45f, 2.40f), 2,
+                    new Furnishing("dresser", new Vector2(-0.75f, 3.98f), 4,
                                    "the wardrobe, STANDING IN as a dresser (the kit has no wardrobe " +
-                                   "yet). Its back to the corridor partition, across the room from the bed",
+                                   "yet). Its back to the front wall, between the foot of his bed and the " +
+                                   "washstand (whose site is (0.25, 3.90)). Well away from the stairwell, so its " +
+                                   "top no longer draws over the stair rail as it did standing against the " +
+                                   "corridor partition beside the well",
                                    InteriorFixture.Wardrobe),
 
                     new Furnishing("bed", new Vector2(-2.27f, -2.60f), 2,
@@ -459,12 +463,15 @@ namespace HiddenHarbours.App.Editor
             _ => default,
         };
 
-        // Ginny's stair run, in the plan frame: along the north (+x) wall, its foot by the front door (+y)
-        // and its head at the back partition, where it comes up into the corridor. The foot's interact
-        // point stands just inside the foot; the head's at the top of the flight. Each is where he arrives
-        // when he takes the stairs from the other (InteriorStair's landing).
-        public const float GinnyStairX0 = 2.25f, GinnyStairX1 = 3.30f, GinnyStairY0 = 0.30f, GinnyStairY1 = 4.20f;
-        public const float GinnyStairAtX = 2.70f, GinnyStairAtY = 3.85f;
+        // Ginny's stair run, in the plan frame: along the north (+x) wall, its foot toward the front door (+y)
+        // and its head at the back partition, where it comes up into the corridor. The run stops short of the
+        // front wall so the foot has a LANDING of clear floor in front of it, y GinnyStairY1..the wall's inside
+        // face (owner 2026-11-22: "theres no floor space in front of the stairs"): 1.10 m deep, more than his
+        // body is wide, and as wide as the flight. Eleven treads climb the storey, a steep cottage stair. The
+        // foot's interact point stands on that landing; the head's at the top of the flight. Each is where he
+        // arrives when he takes the stairs from the other (InteriorStair's landing).
+        public const float GinnyStairX0 = 2.25f, GinnyStairX1 = 3.30f, GinnyStairY0 = 0.30f, GinnyStairY1 = 3.15f;
+        public const float GinnyStairAtX = 2.75f, GinnyStairAtY = 3.70f;
         public const float GinnyStairHeadX = 3.25f, GinnyStairHeadY = -0.20f;
 
         // Ginny's corridor upstairs and its two bedroom doorways (plan frame).

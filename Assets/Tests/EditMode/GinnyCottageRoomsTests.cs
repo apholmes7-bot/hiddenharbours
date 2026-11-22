@@ -85,7 +85,31 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (var f in Plan.Furnishings)
                 if (f.Fixture != StPetersInteriors.InteriorFixture.StairDown)
                     obs.Add(RectOf(f.RoomMetres, FurnitureSize(contract, f)));
+            obs.Add(WashstandRect);
             return obs;
+        }
+
+        /// <summary>The washstand's round collider (radius in world units) laid on the plan: wider in plan x
+        /// by the depth scale. It is placed by <see cref="InteriorFixturePlacement"/>, not listed with the
+        /// room's furnishings, so it is added here by its site.</summary>
+        const float WashstandColliderRadius = 0.3f;
+        static Rect WashstandRect
+        {
+            get
+            {
+                var site = InteriorFixturePlacement.Sites.Single(s => s.InteractId == WashStationPlacement.GinnyWashstandId);
+                return RectOf(site.At, new Vector2(2f * WashstandColliderRadius / K, 2f * WashstandColliderRadius));
+            }
+        }
+
+        [Test]
+        public void UpstairsNoFurnitureStandsOnTheWashstand()
+        {
+            InteriorKit.Contract contract = Contract();
+            Rect wash = WashstandRect;
+            foreach (var f in Plan.Furnishings.Where(f => f.Fixture != StPetersInteriors.InteriorFixture.StairDown))
+                Assert.IsFalse(RectOf(f.RoomMetres, FurnitureSize(contract, f)).Overlaps(wash),
+                               $"the {f.PropKey} at {f.RoomMetres} stands on the washstand at {wash.center}");
         }
 
         static bool Free(Vector2 feet, List<Rect> obs)
@@ -336,6 +360,57 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsTrue(Plan.GroundWalls.Any(w => Mathf.Approximately(w.X0, StPetersInteriors.GinnyStairX0) &&
                                                     Mathf.Approximately(w.Y1, StPetersInteriors.GinnyStairY1)),
                           "the run has no collider on the ground floor");
+        }
+
+        /// <summary>
+        /// Owner 2026-11-22: "theres no floor space in front of the stairs". The run used to reach the front
+        /// wall, so its foot met plaster. Between the foot and the wall there must be a landing he can stand
+        /// on and turn: as wide as the flight, at least one body (two collider radii) deep, nothing on it,
+        /// walked onto from the front door, and the stair offered from it.
+        /// </summary>
+        [Test]
+        public void TheFootOfTheStairsHasClearFloorInFrontOfIt_ALandingHeCanStandOn()
+        {
+            InteriorKit.Contract contract = Contract();
+            float depth = InnerL - StPetersInteriors.GinnyStairY1;
+            Assert.GreaterOrEqual(depth, 2f * Radius - 1e-3f,
+                                  $"between the foot of the run and the front wall there is only {depth:0.00} m of floor");
+
+            Rect landing = Rect.MinMaxRect(StPetersInteriors.GinnyStairX0, StPetersInteriors.GinnyStairY1,
+                                           StPetersInteriors.GinnyStairX1, InnerL);
+            var obs = GroundObstacles(contract);
+            foreach (Rect r in obs)
+                Assert.IsFalse(r.xMin < landing.xMax - 1e-3f && landing.xMin < r.xMax - 1e-3f &&
+                               r.yMin < landing.yMax - 1e-3f && landing.yMin < r.yMax - 1e-3f,
+                               $"something solid stands on the landing in front of the stair foot: {r}");
+
+            // A stance on the landing, his body square to the foot: as far north as the wall lets his collider go.
+            var stance = new Vector2(Mathf.Min(0.5f * (landing.xMin + landing.xMax), InnerW - Radius / K),
+                                     StPetersInteriors.GinnyStairY1 + Radius + Step);
+            Assert.IsTrue(Free(stance, obs), $"he cannot stand on the landing at {stance}");
+            var walk = Flood(new[] { FrontDoorFeet }, obs);
+            Assert.IsTrue(walk.Contains(Cell(stance)), "the landing cannot be walked onto from the front door");
+            Assert.LessOrEqual(Reach(stance, StairFoot), StPetersInteriors.StairReachMetres,
+                               "standing on the landing, the stairs are not offered");
+            Assert.IsTrue(landing.Contains(StairFoot), "the stair's interact point is not on the landing");
+        }
+
+        /// <summary>
+        /// Upstairs, a tall piece standing in front of the stairwell draws its top over it (the wardrobe did,
+        /// pass 4). Nothing upstairs but the stair head may stand beside the stairwell's span of the room.
+        /// </summary>
+        [Test]
+        public void UpstairsNothingTallStandsInFrontOfTheStairwell()
+        {
+            InteriorKit.Contract contract = Contract();
+            foreach (var f in Plan.Furnishings.Where(f => f.Fixture != StPetersInteriors.InteriorFixture.StairDown))
+            {
+                Rect r = RectOf(f.RoomMetres, FurnitureSize(contract, f));
+                bool besideTheWell = r.yMin < StPetersInteriors.GinnyStairY1 - 1e-3f && StPetersInteriors.GinnyStairY0 < r.yMax - 1e-3f
+                                     && r.xMax > StPetersInteriors.GinnyCorridorX0 - 1.0f;
+                Assert.IsFalse(besideTheWell && f.PropKey == "dresser",
+                               $"the {f.PropKey} at {f.RoomMetres} stands against the stairwell's partition and draws over the well");
+            }
         }
 
         [Test]
