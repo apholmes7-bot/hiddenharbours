@@ -730,9 +730,10 @@ MonoBehaviour:
     SaleCountUpSeconds: 0.7
     SandChunkCount: 7
     SandChunkSeconds: 0.45
-    DigTossChunkCount: 4
-    DigTossDelaySeconds: 0.4
-    DigTossChunkSeconds: 0.45
+    DigTossChunkCount: 5
+    DigTossDelaySeconds: 0.6
+    DigTossChunkSeconds: 0.9
+    DigAwayTurnDegrees: 25
     CastRingCount: 3
     CastRingSeconds: 0.6
     MomentTickHz: 30

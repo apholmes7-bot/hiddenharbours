@@ -4232,15 +4232,20 @@ namespace HiddenHarbours.Core
         [Tooltip("Seconds a sand chunk lives.")]
         [Min(0f)] public float SandChunkSeconds;
 
-        [Tooltip("Smaller clods tossed off the blade at the dig's lift-and-toss phase (0 = no toss).")]
+        [Tooltip("Wet clods thrown off the blade tip at the dig's lift-and-toss phase (0 = no toss).")]
         [Min(0)] public int DigTossChunkCount;
 
-        [Tooltip("Seconds after the blade enters the ground (the impact) that the toss leaves the blade: the " +
-                 "dig clip's in-ground and lever phases.")]
+        [Tooltip("Seconds after the blade enters the ground (the impact) that the toss leaves the blade tip: " +
+                 "the dig clip's in-ground and lever phases and the lift, up to where the blade is out at his side.")]
         [Min(0f)] public float DigTossDelaySeconds;
 
-        [Tooltip("Seconds a tossed clod lives.")]
+        [Tooltip("Seconds a tossed clod lives: its flight off the blade, then lying where it landed until it fades.")]
         [Min(0f)] public float DigTossChunkSeconds;
+
+        [Tooltip("When the dig faces within this many degrees of straight away from the camera (north, his back " +
+                 "to the viewer), the mesh body turns to this many degrees off north instead, toward the side he " +
+                 "already leans to (his right when dead on), so the shovel and the toss show past his body. 0 = off.")]
+        [Range(0f, 45f)] public float DigAwayTurnDegrees;
 
         [Tooltip("Rings spread from the point the cast line touches down.")]
         [Min(0)] public int CastRingCount;
@@ -4306,9 +4311,10 @@ namespace HiddenHarbours.Core
             SaleCountUpSeconds = 0.7f,
             SandChunkCount = 7,
             SandChunkSeconds = 0.45f,
-            DigTossChunkCount = 4,
-            DigTossDelaySeconds = 0.4f,
-            DigTossChunkSeconds = 0.45f,
+            DigTossChunkCount = 5,
+            DigTossDelaySeconds = 0.6f,
+            DigTossChunkSeconds = 0.9f,
+            DigAwayTurnDegrees = 25f,
             CastRingCount = 3,
             CastRingSeconds = 0.6f,
             MomentTickHz = 30f,

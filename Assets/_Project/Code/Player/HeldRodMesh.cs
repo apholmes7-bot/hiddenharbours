@@ -121,6 +121,30 @@ namespace HiddenHarbours.Player
         public Vector2 TipWorld => _renderer != null ? (Vector2)_renderer.TipWorld : Vector2.zero;
 
         /// <summary>
+        /// Where the tool's tip is over the ground on the frame last drawn, while the clip AIMS it (the dig's
+        /// stab, lever and lift; not carried, not slung): <paramref name="ground"/> is the world point of the
+        /// figure's ground plane straight under the tip (its facet frame is +z up, the feet at z = 0), and
+        /// <paramref name="lift"/> how far above that point the tip draws. False when nothing is drawn, the
+        /// tool is carried or stowed, or the renderer is not under a figure. Allocation-free.
+        /// </summary>
+        public bool TryTipOverGround(out Vector2 ground, out float lift)
+        {
+            ground = Vector2.zero;
+            lift = 0f;
+            if (!Drawing || Carried || Stowed || _renderer == null) return false;
+            Transform t = _renderer.transform;
+            Transform facet = t.parent;
+            if (facet == null || facet == _home) return false;
+            Vector3 tipFacet = t.localPosition + t.localRotation * _renderer.TipLocal;
+            Vector3 tipWorld = facet.TransformPoint(tipFacet);
+            Vector3 groundWorld = facet.TransformPoint(new Vector3(tipFacet.x, tipFacet.y, 0f));
+            // The point straight under the tip in the picture: the tip's own x, the ground's y.
+            ground = new Vector2(tipWorld.x, groundWorld.y);
+            lift = Mathf.Max(0f, tipWorld.y - groundWorld.y);
+            return true;
+        }
+
+        /// <summary>
         /// Draw the rod on <paramref name="figure"/> this frame if everything it needs is there; otherwise
         /// hide it and say why. <paramref name="switchOn"/> is <see cref="GameConfig.MeshRodInHand"/>.
         /// </summary>
