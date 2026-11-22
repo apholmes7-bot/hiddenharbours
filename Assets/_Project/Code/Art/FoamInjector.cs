@@ -428,9 +428,10 @@ namespace HiddenHarbours.Art
             // While the water draws her real waves, her trail foam thins and its fan is not laid, so
             // the waves behind her show (HullWaveSettings: TrailFoamShare, RetireFoamFan).
             // A short hull (a rowed dory) lays a thinner share still (HullWaveSettings.SmallHullTrailFoamShare).
+            // A hull under motor or sail lays MotorVTrailFoamScale of that, so her bow's V reads over her stern.
             HullWaveSettings hullWaves = GameServices.HullWaves;
             float strength = Mathf.Max(HullWaveMath.TrailFoamStrength(
-                _strength, _way != VesselWay.Moored, HullLengthMetres, in hullWaves), 0f);
+                _strength, _way != VesselWay.Moored, HullLengthMetres, !IsRowed(), in hullWaves), 0f);
             _fanNow = HullWaveMath.FoamFanFraction(_spreadKelvinFraction, in hullWaves);
 
             // The trail is shed from the end that TRAILS: the bow, when she makes way astern (the owner,

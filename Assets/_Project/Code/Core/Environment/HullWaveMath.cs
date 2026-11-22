@@ -448,6 +448,20 @@ namespace HiddenHarbours.Core
         }
 
         /// <summary>
+        /// <see cref="TrailFoamStrength(float, bool, float, in HullWaveSettings)"/> for a hull that is
+        /// <paramref name="motored"/> (under motor or sail, not oars): while she lays a V (MotorVShare above 0)
+        /// her trail is that times <c>MotorVTrailFoamScale</c>, the same foam, less of it, so her bow's V reads
+        /// over her stern (owner ruling 11-21: halve it). A rowed hull's trail is exactly the older law.
+        /// </summary>
+        public static float TrailFoamStrength(float strength, bool makingWay, float lengthMetres, bool motored,
+                                              in HullWaveSettings s)
+        {
+            float laid = TrailFoamStrength(strength, makingWay, lengthMetres, in s);
+            if (!s.Enabled || !makingWay || !motored || s.MotorVShare <= 0f) return laid;
+            return laid * Mathf.Clamp01(s.MotorVTrailFoamScale);
+        }
+
+        /// <summary>
         /// Her churned trail band's half-width, metres, while hull waves are on and she makes way:
         /// <paramref name="radius"/> held to <c>TrailFoamMaxHalfWidthMetres</c> (0 = no limit). Moored,
         /// or hull waves off: unchanged.

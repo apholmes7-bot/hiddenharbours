@@ -842,6 +842,7 @@ MonoBehaviour:
     MotorVArmOverlapSpans: 1.5
     MotorVSternShare: 0.45
     MotorVBowSourceShare: 0.5
+    MotorVTrailFoamScale: 0.5
   FoamSheet:
     Shore: 1
     ShoreLineSharpness: 2.5

@@ -83,7 +83,8 @@ namespace HiddenHarbours.Core
         [Range(0f, 0.9f)] public float SmallHullSpacingScatter;
         [Tooltip("While hull waves are on and she makes way, the share of her churned trail foam a short hull " +
                  "lays, in place of TrailFoamShare (a rowed hull's trail is a thin lace, not a mat). Only hulls " +
-                 "no longer than SmallHullLengthMetres. Below 0 = she uses TrailFoamShare.")]
+                 "no longer than SmallHullLengthMetres. Below 0 = she uses TrailFoamShare. A motored hull's trail " +
+                 "is then scaled again by MotorVTrailFoamScale, and may sit below a rowed dory's.")]
         [Range(-1f, 1f)] public float SmallHullTrailFoamShare;
         [Tooltip("How far, metres, each of a short hull's rings is laid off her track point, either way on both " +
                  "axes, from a fixed number of its birth time: the rings of one stroke stop sharing a centre, so they " +
@@ -254,6 +255,10 @@ namespace HiddenHarbours.Core
         [Tooltip("A hull under motor or sail: the bow's part of SourcesPerHull, in place of BowSourceShare, so her " +
                  "bow arm is laid as closely as her stern's.")]
         [Range(0f, 1f)] public float MotorVBowSourceShare;
+        [Tooltip("A hull under motor or sail: her trail foam as a share of what TrailFoamShare (or " +
+                 "SmallHullTrailFoamShare) lays. The same foam, less of it, so her bow's V reads over her stern " +
+                 "(owner 11-21: halve it). A rowed hull's trail is never touched.")]
+        [Range(0f, 1f)] public float MotorVTrailFoamScale;
 
         public static HullWaveSettings Default => new HullWaveSettings
         {
@@ -334,6 +339,7 @@ namespace HiddenHarbours.Core
             MotorVArmOverlapSpans = 1.5f,
             MotorVSternShare = 0.45f,
             MotorVBowSourceShare = 0.5f,
+            MotorVTrailFoamScale = 0.5f,
         };
     }
 }

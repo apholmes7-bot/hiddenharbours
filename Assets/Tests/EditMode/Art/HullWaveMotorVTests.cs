@@ -637,6 +637,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(S.MotorVArmOverlapSpans, YamlFloat(yaml, "MotorVArmOverlapSpans"), 0f);
             Assert.AreEqual(S.MotorVSternShare, YamlFloat(yaml, "MotorVSternShare"), 0f);
             Assert.AreEqual(S.MotorVBowSourceShare, YamlFloat(yaml, "MotorVBowSourceShare"), 0f);
+            Assert.AreEqual(S.MotorVTrailFoamScale, YamlFloat(yaml, "MotorVTrailFoamScale"), 0f);
         }
 
         static float YamlFloat(string yaml, string key)
