@@ -1433,6 +1433,15 @@ namespace HiddenHarbours.Core
         public static int HullReflectionMaxTriangles =>
             Config != null ? UnityEngine.Mathf.Max(1, Config.HullReflectionMaxTriangles)
                 : GameConfig.DefaultHullReflectionMaxTriangles;
+        public static float HullReflectionFadeStartMeters =>
+            Config != null ? UnityEngine.Mathf.Max(0f, Config.HullReflectionFadeStartMeters)
+                : GameConfig.DefaultHullReflectionFadeStartMeters;
+        public static float HullReflectionFadeMeters =>
+            Config != null ? UnityEngine.Mathf.Max(0f, Config.HullReflectionFadeMeters)
+                : GameConfig.DefaultHullReflectionFadeMeters;
+        public static float HullReflectionStreakPixels =>
+            Config != null ? UnityEngine.Mathf.Max(0f, Config.HullReflectionStreakPixels)
+                : GameConfig.DefaultHullReflectionStreakPixels;
 
         /// <summary>Do rig 9 figures blink (character PR 2a)? Same contract as
         /// <see cref="HullKeylineFlood"/>, including the <c>Config != null</c> discipline. Falls back

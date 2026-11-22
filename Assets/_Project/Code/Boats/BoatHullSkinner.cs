@@ -547,7 +547,7 @@ namespace HiddenHarbours.Boats
             // The rowing station: the rower's hands are put on these oars' handles, his hips on the
             // thwart and his feet on the boards (the hull's own Rowing data).
             layer.ConfigureStation(visual.OarPortMesh.PivotLocalMeters, visual.OarStarMesh.PivotLocalMeters,
-                                   in visual.Rowing);
+                                   in visual.Rowing, visual.ResolveDesignWaterlineMeters());
             // Where the oars lie under power (owner 2026-11-22): stowed fore and aft in the boat.
             layer.ConfigureStow(in visual.OarStow, visual.OarPortMesh.PivotLocalMeters,
                                 visual.OarStarMesh.PivotLocalMeters);

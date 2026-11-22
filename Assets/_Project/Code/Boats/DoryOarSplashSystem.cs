@@ -499,6 +499,42 @@ namespace HiddenHarbours.Boats
         private readonly WaveRing[] _waveRings = new WaveRing[MaxWaveRingsPerFrame];
         private int _waveRingCount;
 
+        /// <summary>
+        /// A blade meeting the water this frame: a CATCH (it went in) or a RELEASE (it came out), on a
+        /// rowing oar only, with where, how hard and that oar's running count. The emitter publishes each
+        /// one as the Core <see cref="HiddenHarbours.Core.OarBladeWater"/>, so the stroke's sound lands on
+        /// the frame the splash does.
+        /// </summary>
+        public struct BladeWater
+        {
+            public int Oar;
+            public bool Catch;
+            public Vector2 At;
+            public float Strength01;
+            public int Index;
+        }
+
+        /// <summary>At most a catch and a release per oar per frame.</summary>
+        public const int MaxBladeWaterPerFrame = 4;
+        private readonly BladeWater[] _bladeWater = new BladeWater[MaxBladeWaterPerFrame];
+        private int _bladeWaterCount;
+
+        /// <summary>How many blades met the water on this frame's step (0..<see cref="MaxBladeWaterPerFrame"/>).</summary>
+        public int BladeWaterCount => _bladeWaterCount;
+
+        /// <summary>One of this frame's blade-water moments (0..<see cref="BladeWaterCount"/>-1), in the
+        /// order they happened (port first within a frame).</summary>
+        public BladeWater GetBladeWater(int i) => _bladeWater[Mathf.Clamp(i, 0, MaxBladeWaterPerFrame - 1)];
+
+        private void NoteBladeWater(int oar, bool isCatch, Vector2 at, float strength, int index)
+        {
+            if (_bladeWaterCount >= MaxBladeWaterPerFrame) return;
+            _bladeWater[_bladeWaterCount++] = new BladeWater
+            {
+                Oar = oar, Catch = isCatch, At = at, Strength01 = Mathf.Clamp01(strength), Index = index,
+            };
+        }
+
         /// <summary>True while the oars lay their foam into the sheet: no drawn puffs, puddles or rings.</summary>
         public bool JoinsSheet => _joined;
 
@@ -552,6 +588,7 @@ namespace HiddenHarbours.Boats
         /// <summary>Forget what the blades were doing (a re-skin, a hull swap). Live motes are left to fade.</summary>
         public void ResetTracking()
         {
+            _bladeWaterCount = 0;
             for (int i = 0; i < 2; i++)
             {
                 _primed[i] = false; _wasImmersed[i] = false; _foamCarry[i] = 0f;
@@ -582,6 +619,7 @@ namespace HiddenHarbours.Boats
             _hasSheet[Port] = false;
             _hasSheet[Starboard] = false;
             _waveRingCount = 0;
+            _bladeWaterCount = 0;
             int fired = 0;
             if (StepOar(Port, in port, boatSpeed, dt, in cfg)) fired++;
             if (StepOar(Starboard, in starboard, boatSpeed, dt, in cfg)) fired++;
@@ -633,6 +671,7 @@ namespace HiddenHarbours.Boats
                 if (exited)
                 {
                     _releases[oar]++;
+                    NoteBladeWater(oar, false, hadWater ? lastWater : f.BladeWorld, strength, _releases[oar]);
                     // The puddle the blade leaves, laid where it last worked the water.
                     if (_joined && hadWater)
                     {
@@ -658,6 +697,7 @@ namespace HiddenHarbours.Boats
             if (entered)
             {
                 _catches[oar]++;
+                NoteBladeWater(oar, true, f.BladeWorld, strength, _catches[oar]);
                 ThrowDroplets(in f, DoryOarSplashMath.CatchDrops(strength, in cfg), strength, in cfg);
                 if (!_joined)
                 {
