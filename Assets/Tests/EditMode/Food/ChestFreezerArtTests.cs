@@ -18,6 +18,8 @@ namespace HiddenHarbours.Tests.EditMode
     {
         private const string PrefabPath = "Assets/_Project/Prefabs/Props/Kitchen/GinnyFreezer.prefab";
         private const string DefPath = "Assets/_Project/Data/Stowage/GinnyCatchFreezer.asset";
+        private const string CamperPrefabPath = "Assets/_Project/Prefabs/Props/Kitchen/CamperFreezer.prefab";
+        private const string CamperDefPath = "Assets/_Project/Data/Stowage/CamperCatchFreezer.asset";
 
         private static readonly MethodInfo s_presenterAwake =
             typeof(FreezerContentsPresenter).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -172,6 +174,39 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreSame(ChestFreezerSheet.SpriteAt(def.SheetStem, ChestFreezerSheet.Closed, ChestFreezerSheet.FrontCell),
                            far.GetComponent<SpriteRenderer>().sprite, "it stands shut");
             Assert.IsFalse(near.GetComponent<SpriteRenderer>().enabled, "the near layer hides while it is shut");
+        }
+
+        [Test]
+        public void TheCampersFreezer_IsData_TheBiggerChest_AndItsPrefabWiresItsArt()
+        {
+            var def = AssetDatabase.LoadAssetAtPath<FreezerDef>(CamperDefPath);
+            var ginny = AssetDatabase.LoadAssetAtPath<FreezerDef>(DefPath);
+            Assert.IsNotNull(def, CamperDefPath);
+            Assert.AreEqual("freezer.camper_freezer", def.Id);
+            Assert.AreEqual(40, def.CapacityUnits, "the camper's freezer still holds 40");
+            Assert.AreEqual("home.ginny_lot_camper", def.DeedHomeId, "it still opens with the camper's deed");
+            Assert.AreEqual(ChestFreezerSheet.LargeStem, def.SheetStem);
+            Assert.Greater(def.ContentsOpeningMetres.width, ginny.ContentsOpeningMetres.width, "its mouth is wider than Ginny's");
+
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(CamperPrefabPath);
+            Assert.IsNotNull(prefab, CamperPrefabPath);
+            var freezer = prefab.GetComponent<CamperFreezer>();
+            Assert.IsNotNull(freezer);
+            Assert.AreSame(def, freezer.Def);
+            Assert.IsNull(prefab.GetComponent<GinnyFreezer>(), "one freezer component, the camper's");
+            var art = prefab.GetComponent<ChestFreezerArt>();
+            Assert.IsNotNull(art);
+            Assert.AreSame(def, art.Def);
+            Assert.AreEqual(ChestFreezerSheet.FrontCell, art.Cell);
+            Assert.IsNotNull(prefab.GetComponent<FreezerContentsPresenter>());
+            Transform far = prefab.transform.Find("Art"), near = prefab.transform.Find("ArtNear");
+            Assert.IsNotNull(far); Assert.IsNotNull(near);
+            Sprite shut = ChestFreezerSheet.SpriteAt(def.SheetStem, ChestFreezerSheet.Closed, ChestFreezerSheet.FrontCell);
+            Assert.AreSame(shut, far.GetComponent<SpriteRenderer>().sprite, "it stands shut");
+            Assert.IsFalse(near.GetComponent<SpriteRenderer>().enabled, "the near layer hides while it is shut");
+            Sprite ginnyShut = ChestFreezerSheet.SpriteAt(ginny.SheetStem, ChestFreezerSheet.Closed, ChestFreezerSheet.FrontCell);
+            Assert.Greater(shut.rect.width, ginnyShut.rect.width, "and it is drawn bigger than Ginny's");
+            Assert.AreEqual(ginnyShut.pixelsPerUnit, shut.pixelsPerUnit, 1e-4f, "at the same scale");
         }
 
         [Test]

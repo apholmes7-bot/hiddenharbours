@@ -628,6 +628,13 @@ Shader "HiddenHarbours/Water"
         _ObjectReflectStrength ("Object reflection strength (0 = off / today)", Range(0,1)) = 0.0
         _ObjectReflectWarp     ("Object reflection wave warp (m per unit slope)", Float) = 0.35
         _ObjectReflectSink     ("Object reflection sink with depth (0 = no fade)", Range(0,1)) = 0.35
+        // A boat's reflection outlasts the sky mirror on a gentle sea (it breaks up, it does not vanish):
+        // its own chop fade, used only when LONGER than _ReflectionFadeChop (0 = inherit, today).
+        // And it holds its read in low light: the frame is multiplied by the day/night tint after this
+        // shader, so a dusk reflection is lifted by (1 + this x darkness), darkness = 1 - tint luma
+        // (0 at full day, so noon is unchanged; 0 = no lift, today). Twin: WaterReflection.ObjectReflectionWeight.
+        _ObjectReflectFadeChop ("Object reflection chop fade (0 = inherit the sky mirror's)", Range(0,1)) = 0.0
+        _ObjectReflectLowLight ("Object reflection low-light lift (0 = none)", Range(0,6)) = 0.0
 
         [Header(Sky CONTENT reflection (clouds   moon glitter   stars   day night driven))]
         // This is a three-quarter top-down game: the player never sees the sky directly, so the WATER's reflection is the
@@ -1813,6 +1820,8 @@ Shader "HiddenHarbours/Water"
                 float  _ObjectReflectStrength;
                 float  _ObjectReflectWarp;
                 float  _ObjectReflectSink;
+                float  _ObjectReflectFadeChop;
+                float  _ObjectReflectLowLight;
                 // Sky-content reflection (clouds + moon glitter + stars; col.rgb-only dressing, day/night-driven).
                 float  _SkyReflectionStrength;
                 float  _CloudStrength;
@@ -4251,7 +4260,17 @@ Shader "HiddenHarbours/Water"
                 post = 0.0;
                 if (_ObjectReflectStrength <= 0.001) return;
 
-                float strength = ReflectionStrength() * saturate(_ObjectReflectStrength);
+                // The sky mirror's curve, with the object's own (longer) chop fade and the low-light lift.
+                // At both dials 0 this is exactly ReflectionStrength() * saturate(_ObjectReflectStrength).
+                float objFade = max(max(_ReflectionFadeChop, _ObjectReflectFadeChop), 1e-3);
+                float objChop = 1.0 - smoothstep(0.0, objFade, max(_Chop, 0.0));
+                float objWind = 1.0 - saturate(_Roughness) * saturate(_ReflectionWindFade);
+                float tintSum = _DayNightTint.r + _DayNightTint.g + _DayNightTint.b;
+                float darkness = tintSum <= 1e-3 ? 0.0   // cycle off / unset -> day, no lift
+                               : saturate(1.0 - dot(_DayNightTint.rgb, float3(0.299, 0.587, 0.114)));
+                float lift = 1.0 + max(_ObjectReflectLowLight, 0.0) * darkness;
+                float strength = saturate(_ReflectionStrength) * objChop * objWind
+                               * saturate(_ObjectReflectStrength) * lift;
                 if (strength <= 0.001) return;
 
                 // WHERE on the water this fragment reads its reflection from: displaced by the wave slope,
@@ -4289,7 +4308,7 @@ Shader "HiddenHarbours/Water"
                 float  cov      = saturate(refl.a);
                 float3 ordinary = min(refl.rgb, cov.xxx);
                 float3 lit      = max(refl.rgb - cov.xxx, 0.0);
-                float  weight   = strength * sink;
+                float  weight   = saturate(strength * sink);
 
                 pre  = float4(ordinary * weight, cov * weight);
                 post = lit * weight;

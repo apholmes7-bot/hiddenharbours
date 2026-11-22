@@ -12,7 +12,8 @@ namespace HiddenHarbours.Boats
     ///
     /// <para>The figure is solved onto these points each frame by the rowing station's own solver
     /// (Core's <c>RowingPoseSolver</c>): hips on the bench, feet on the boards, the hand nearer the
-    /// tiller on its grip and the other hand on his thigh. Move the seat or the braces if a hand runs
+    /// tiller on its grip and the other hand on his thigh; his shoulders and head turn into the turn
+    /// as the engine swings. Move the seat or the braces if a hand runs
     /// out of reach; the arm is never stretched to make up the difference.</para>
     /// </summary>
     [Serializable]
@@ -85,6 +86,14 @@ namespace HiddenHarbours.Boats
 
         [Tooltip("The most he may turn his shoulders to keep his arms out of his body, degrees either way.")]
         [Range(0f, 45f)] public float BodyClearTwistMaxDegrees;
+
+        [Tooltip("How far his shoulders turn into the turn with the tiller hard over, degrees (scaled by " +
+                 "the engine's steer as a share of its authority). He looks the way the bow swings. " +
+                 "0 = he sits square whatever the tiller does.")]
+        [Range(0f, 30f)] public float LookIntoTurnDegrees;
+
+        [Tooltip("How far his head turns further than his shoulders with the tiller hard over, degrees.")]
+        [Range(0f, 45f)] public float HeadLookIntoTurnDegrees;
 
         /// <summary>Off: no hull sits at a tiller until her visual says so.</summary>
         public static TillerStationConfig Default => new TillerStationConfig
