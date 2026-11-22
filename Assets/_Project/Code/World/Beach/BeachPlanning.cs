@@ -103,6 +103,15 @@ namespace HiddenHarbours.World
         public const float GatherLeaveMarginHours = 1f;
 
         /// <summary>
+        /// True when <paramref name="pose"/> stands at one of <paramref name="outing"/>'s places on the
+        /// beach: a block of the outing (one block per stop) and not walking to it. The walk out, the walk
+        /// back and every authored block answer false. Pure.
+        /// </summary>
+        public static bool IsAtPlace(in BeachOuting outing, in RoutinePose pose) =>
+            outing.Activity != null && !pose.Walking && outing.StopCount > 0 &&
+            pose.BlockIndex >= outing.FirstStop && pose.BlockIndex < outing.FirstStop + outing.StopCount;
+
+        /// <summary>
         /// The seed of the things about a gathering that are the same for everybody: whether it is on
         /// today, and how far down the sand.
         /// </summary>
