@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>Rule 4 fences the runtime graph, including GUID-form assembly references.</summary>
-    public class ModuleBoundaryTests
+    public partial class ModuleBoundaryTests
     {
         private const string CodeRoot = "Assets/_Project/Code";
         private const string Prefix = "HiddenHarbours.";
