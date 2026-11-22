@@ -35,6 +35,9 @@ namespace HiddenHarbours.Core
         /// <summary>The shipped open-door beat, for a booth with no Def wired.</summary>
         public const float DefaultDoorHoldOpenSeconds = 0.4f;
 
+        /// <summary>The shipped reach from the front of the door, for a booth with no Def wired.</summary>
+        public const float DefaultDoorReachMeters = 0.7f;
+
         [Tooltip("Stable id, append-only (washroom.snake_case, e.g. washroom.outhouse).")]
         public string Id = "washroom.example";
 
@@ -59,6 +62,10 @@ namespace HiddenHarbours.Core
 
         [Tooltip("Real seconds the door stands wide open while he steps in or out, before it swings shut.")]
         [Min(0f)] public float DoorHoldOpenSeconds = DefaultDoorHoldOpenSeconds;
+
+        [Tooltip("How close (m) to the front of the door he must stand to be offered the seat. Offered only on the " +
+                 "door side: from beside or behind the booth he is further than this.")]
+        [Min(0f)] public float DoorReachMeters = DefaultDoorReachMeters;
 
         [Tooltip("The prefab the placement lane stands in the world. Empty until it is authored.")]
         public GameObject Prefab;

@@ -72,6 +72,11 @@ namespace HiddenHarbours.App.Editor
                 walls.pathCount = 1;
                 walls.SetPath(0, OuthouseSheet.FootprintOutline(OuthouseSheet.FrontCell));
                 booth.sortingOrder = ApplianceArt.OrderFor(0f);
+                // Offered from the front of the door only (the runtime re-applies this as the facing turns).
+                root.GetComponent<SitPoint>().OfferFrom(
+                    ApplianceFacing.ModelToWorldOffset(OuthouseSheet.FrontCell,
+                                                       OuthouseArt.EntryProp(WashVisualsSettings.Current.EntryStandOffMetres)),
+                    def.DoorReachMeters);
 
                 PrefabUtility.SaveAsPrefabAsset(root, PrefabPath, out bool ok);
                 if (!ok) throw new InvalidOperationException($"Saving {PrefabPath} failed.");

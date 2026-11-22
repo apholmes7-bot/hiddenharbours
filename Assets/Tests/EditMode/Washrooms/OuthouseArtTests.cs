@@ -153,8 +153,31 @@ namespace HiddenHarbours.Tests.EditMode.Washrooms
             Vector2[] want = OuthouseSheet.FootprintOutline(OuthouseSheet.FrontCell), got = walls.GetPath(0);
             Assert.AreEqual(want.Length, got.Length);
             for (int i = 0; i < want.Length; i++) Assert.Less((want[i] - got[i]).magnitude, 1e-4f, $"corner {i}");
-            float front = want.Min(p => p.y);
-            Assert.Less(Mathf.Abs(front), seat.ReachMeters, "he can reach the seat from in front of the door");
+            Assert.Less((seat.OfferOffset - art.EntryOffset()).magnitude, 1e-4f, "the seat is offered from the front of the door");
+            Assert.AreEqual(def.DoorReachMeters, seat.ReachMeters, 1e-5f, "within the Def's door reach");
+        }
+
+        [Test]
+        public void TheSeatIsOfferedOnlyAtTheDoorSide_AtEveryFacing_AndSittingNeverCountsAsWalkingOff()
+        {
+            OuthouseArt art = Booth(out SitPoint seat);
+            Vector2 pivot = art.transform.position;
+            const float clear = 0.3f;   // a step outside the walls
+            float hx = OuthouseSheet.Foot.x * 0.5f + clear, hy = OuthouseSheet.Foot.y * 0.5f + clear;
+            for (int cell = 0; cell < OuthouseSheet.Facings; cell++)
+            {
+                art.SetCell(cell);
+                Vector2 At(float x, float y) => pivot + ApplianceFacing.ModelToWorldOffset(cell, new Vector3(x, y, 0f));
+                bool Offered(Vector2 p) => (seat.WorldPosition - p).magnitude <= seat.ReachMeters;
+                Assert.IsTrue(Offered(pivot + art.EntryOffset()), $"cell {cell}: in front of the door");
+                Assert.IsTrue(Offered(At(0f, -hy)), $"cell {cell}: just off the door");
+                Assert.IsFalse(Offered(At(-hx, 0f)), $"cell {cell}: beside the booth (hinge side)");
+                Assert.IsFalse(Offered(At(hx, 0f)), $"cell {cell}: beside the booth (latch side)");
+                Assert.IsFalse(Offered(At(0f, hy)), $"cell {cell}: behind the booth");
+                Assert.IsFalse(Offered(At(-hx, hy)) || Offered(At(hx, hy)), $"cell {cell}: the back corners");
+                Assert.Less((seat.WorldPosition - art.SeatWorld()).magnitude, seat.ReachMeters + seat.WalkAwaySlackMeters,
+                            $"cell {cell}: sat on the bench he is not taken as having walked off");
+            }
         }
 
         [Test]
@@ -188,9 +211,11 @@ namespace HiddenHarbours.Tests.EditMode.Washrooms
             Assert.AreEqual(2, _poses.Count, "he is put back outside");
             Assert.IsFalse(_poses[1].On);
             Assert.IsTrue(walls.enabled, "the walls are back");
-            Assert.AreEqual(ApplianceArt.OrderFor(art.transform.position.y), art.Art.sortingOrder, "sorted by its own foot once he is out");
+            Assert.Less(art.Art.sortingOrder, figure, "stepping out, the booth drops behind where he sat (no boots under it)");
+            Assert.Less(art.Art.sortingOrder, ApplianceArt.OrderFor(_poses[1].EntryWorld.y), "and behind him at the door");
             Drive(art, false, hold + per * 3f);
             Assert.AreSame(OuthouseSheet.SpriteAt(OuthouseSheet.Closed, art.Cell), art.Art.sprite, "then it falls shut");
+            Assert.AreEqual(ApplianceArt.OrderFor(art.transform.position.y), art.Art.sortingOrder, "sorted by its own foot once the door is shut");
         }
 
         [Test]

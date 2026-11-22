@@ -21,4 +21,5 @@ MonoBehaviour:
   DoorOpens: 1
   DoorFrameSeconds: 0.12
   DoorHoldOpenSeconds: 0.4
+  DoorReachMeters: 0.7
   Prefab: {fileID: 6634893107903659565, guid: 7433b796670d49898dae30c4601a1fc4, type: 3}

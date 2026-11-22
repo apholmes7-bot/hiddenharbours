@@ -12,8 +12,9 @@ namespace HiddenHarbours.World
     ///
     /// <para><b>Hidden inside.</b> While he is in the booth the whole booth draws one step in front of him, so the
     /// booth covers him from the moment he steps in until he is put back outside: the open doorway shows the
-    /// bench, never a figure cut by the lintel. Otherwise the booth sorts by its own pivot like any standing
-    /// piece.</para>
+    /// bench, never a figure cut by the lintel. As he is put back outside it drops behind where he sat until the
+    /// door has shut, so his boots never show under it on the frame he steps out. Otherwise the booth sorts by
+    /// its own pivot like any standing piece.</para>
     ///
     /// <para><b>Walls.</b> The root's polygon collider is the footprint at the drawn facing (refitted when the
     /// facing is set). It is switched off while he is inside, so the walls never shove the seated figure, and
@@ -44,6 +45,7 @@ namespace HiddenHarbours.World
         private readonly OuthouseDoorTimeline _timeline = new OuthouseDoorTimeline();
         private SitPoint _seat;
         private bool _posed;
+        private bool _stepping;
         private int _shownRow = -1;
         private int _shownSort = int.MinValue;
 
@@ -67,6 +69,7 @@ namespace HiddenHarbours.World
         {
             _cell = ((cell % OuthouseSheet.Facings) + OuthouseSheet.Facings) % OuthouseSheet.Facings;
             FitWalls();
+            OfferAtDoor();
             _shownRow = -1; _shownSort = int.MinValue;
             Show();
         }
@@ -82,8 +85,23 @@ namespace HiddenHarbours.World
         private void Start()
         {
             FitWalls();
+            OfferAtDoor();
             Show();
         }
+
+        /// <summary>The seat is offered from the front of the door (where he is put back out), within the Def's
+        /// door reach, so only from the door side.</summary>
+        public void OfferAtDoor()
+        {
+            if (_seat == null) _seat = GetComponent<SitPoint>();
+            if (_seat == null) return;
+            float reach = _def != null ? _def.DoorReachMeters : WashroomDef.DefaultDoorReachMeters;
+            _seat.OfferFrom(EntryOffset(), reach);
+        }
+
+        /// <summary>The front of the door as a world offset from the pivot, at the drawn facing.</summary>
+        public Vector2 EntryOffset()
+            => ApplianceFacing.ModelToWorldOffset(_cell, EntryProp(WashVisualsSettings.Current.EntryStandOffMetres));
 
         private void OnDisable()
         {
@@ -107,9 +125,9 @@ namespace HiddenHarbours.World
 
         private void Publish(bool on)
         {
+            _stepping = !on && _posed;
             _posed = on;
-            Vector2 entry = (Vector2)transform.position
-                          + ApplianceFacing.ModelToWorldOffset(_cell, EntryProp(WashVisualsSettings.Current.EntryStandOffMetres));
+            Vector2 entry = (Vector2)transform.position + EntryOffset();
             float heading = ApplianceFacing.BearingDegrees(_cell, OuthouseSheet.SeatFacing);
             string id = _seat != null ? _seat.Id : name;
             if (_walls != null) _walls.enabled = !on;
@@ -138,14 +156,18 @@ namespace HiddenHarbours.World
             Sort();
         }
 
-        /// <summary>Own pivot while he is outside; in front of him while he is inside.</summary>
+        /// <summary>In front of him while he is inside; behind where he sat while he steps out and the door is
+        /// still open (so a figure still sorted at the seat for a frame never shows its boots under the booth);
+        /// its own pivot otherwise.</summary>
         private void Sort()
         {
-            int key = _posed ? 1 : 0;
+            if (!_posed && _stepping && _timeline.Row == OuthouseSheet.Closed) _stepping = false;
+            int key = _posed ? 1 : _stepping ? 2 : 0;
             if (key == _shownSort || _art == null) return;
             _shownSort = key;
-            _art.sortingOrder = _posed ? ApplianceArt.OrderFor(SeatWorld().y) + OrdersOverFigure
-                                       : ApplianceArt.OrderFor(transform.position.y);
+            _art.sortingOrder = key == 1 ? ApplianceArt.OrderFor(SeatWorld().y) + OrdersOverFigure
+                              : key == 2 ? ApplianceArt.OrderFor(SeatWorld().y) - OrdersOverFigure
+                                         : ApplianceArt.OrderFor(transform.position.y);
         }
 
         private void FitWalls()
