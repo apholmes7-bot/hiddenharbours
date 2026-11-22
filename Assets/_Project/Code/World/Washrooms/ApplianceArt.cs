@@ -52,6 +52,7 @@ namespace HiddenHarbours.World
         private bool _resolved;
         private bool _posed;
         private bool _soaped;
+        private bool _doorOpen;
         private int _shownRow = -1, _shownNear = -2;
         private bool _layered;
 
@@ -116,7 +117,8 @@ namespace HiddenHarbours.World
             Show(_layout.Idle, -1);
             SortIdle();
             // A piece with nothing to animate is done: stop the per-frame dispatch entirely (rule 7).
-            if (!_layout.Fills && !_layout.Runs && !_layout.Flushes) enabled = false;
+            // A door piece wakes again when it is asked open (SetDoorOpen).
+            if (!_layout.Fills && !_layout.Runs && !_layout.Flushes && !(_layout.HasDoor && _doorOpen)) enabled = false;
         }
 
         private void OnWashChanged(PlayerWashChanged e) => _soaped = WashSoapSignal.IsSoaped(e);
@@ -128,6 +130,7 @@ namespace HiddenHarbours.World
 
             bool active = _layout.Flushes
                 ? _seat != null && _seat.IsSeatedHere
+                : _layout.HasDoor ? _doorOpen
                 : _wash != null && _wash.IsWashingHere;
             bool froth = active && WashVisualsSettings.Froths(_soaped, s);
 
@@ -135,6 +138,20 @@ namespace HiddenHarbours.World
 
             if (_timeline.PoseOn != _posed) Publish(_timeline.PoseOn);
             Show(_timeline.Row, _timeline.NearRow);
+
+            // A shut door has nothing more to draw: sleep until it is asked open again.
+            if (_layout.HasDoor && !_doorOpen && _timeline.Current == WashFixtureTimeline.Phase.Idle) enabled = false;
+        }
+
+        /// <summary>Whether the piece's door (the fridge's) is being held open.</summary>
+        public bool DoorOpen => _doorOpen;
+
+        /// <summary>Ask the piece's door open or shut; it swings over <see cref="WashVisualsSettings.DoorSeconds"/>.
+        /// A no-op on a piece with no door. Presentation only: nothing is stored or saved by opening it.</summary>
+        public void SetDoorOpen(bool open)
+        {
+            _doorOpen = open;
+            if (_layout.HasDoor) enabled = true;
         }
 
         // ---- facing ----------------------------------------------------------------------------------------

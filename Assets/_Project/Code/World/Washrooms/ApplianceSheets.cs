@@ -14,6 +14,8 @@ namespace HiddenHarbours.World
         CookStove = 5,
         PrepCounter = 6,
         Microwave = 7,
+        Fridge = 8,
+        KitchenSink = 9,
     }
 
     /// <summary>
@@ -41,6 +43,8 @@ namespace HiddenHarbours.World
         public readonly int FrothFirst, NearFull, NearFrothFirst;
         public readonly int RunFirst, NearRunFirst;
         public readonly int FlushFirst;
+        /// <summary>The first of a door's frames (ajar, half open, wide open), or -1 for a piece with no door.</summary>
+        public readonly int DoorFirst;
 
         public readonly FixturePose Pose;
         public readonly Vector3 Seat;
@@ -54,8 +58,10 @@ namespace HiddenHarbours.World
                                int fillLow = -1, int fillMid = -1, int full = -1, int pourLow = -1, int pourMid = -1,
                                int frothFirst = -1, int nearFull = -1, int nearFrothFirst = -1,
                                int runFirst = -1, int nearRunFirst = -1, int flushFirst = -1,
-                               FixturePose pose = FixturePose.None, Vector3 seat = default, Vector2 seatFacing = default)
+                               FixturePose pose = FixturePose.None, Vector3 seat = default, Vector2 seatFacing = default,
+                               int doorFirst = -1)
         {
+            DoorFirst = doorFirst;
             Kind = kind; RigName = rigName; Stem = ApplianceSheets.StemPrefix + rigName; Rows = rows; Foot = foot;
             Idle = 0;
             FillLow = fillLow; FillMid = fillMid; Full = full; PourLow = pourLow; PourMid = pourMid;
@@ -68,6 +74,15 @@ namespace HiddenHarbours.World
         public bool Froths => FrothFirst >= 0;
         public bool Runs => RunFirst >= 0;
         public bool Flushes => FlushFirst >= 0;
+        public bool HasDoor => DoorFirst >= 0;
+
+        /// <summary>The rows a door plays through as it opens, shut to wide open (empty with no door).</summary>
+        public int[] DoorOpenFrames()
+            => HasDoor ? new[] { DoorFirst, DoorFirst + 1, DoorFirst + 2 } : new int[0];
+
+        /// <summary>The rows a door plays through as it shuts, wide open to shut (empty with no door).</summary>
+        public int[] DoorCloseFrames()
+            => HasDoor ? new[] { DoorFirst + 1, DoorFirst, Idle } : new int[0];
         public bool HasNear => NearFull >= 0 || NearRunFirst >= 0;
         public bool HasSeat => Pose != FixturePose.None || Runs;
 
@@ -128,8 +143,16 @@ namespace HiddenHarbours.World
         public static readonly ApplianceLayout PrepCounter = new ApplianceLayout(ApplianceKind.PrepCounter, "prepCounter", rows: 1, foot: new Vector2(0.9f, 0.6f));
         public static readonly ApplianceLayout Microwave = new ApplianceLayout(ApplianceKind.Microwave, "microwave", rows: 1, foot: new Vector2(0.5f, 0.44f));
 
+        /// <summary>The upright fridge: shut, then its door ajar, half open and wide open (the inside shows).</summary>
+        public static readonly ApplianceLayout Fridge = new ApplianceLayout(
+            ApplianceKind.Fridge, "fridge", rows: 4, foot: new Vector2(0.7f, 0.68f), doorFirst: 1);
+
+        /// <summary>The kitchen sink: fills, froths and drains as the washstand basin does (hand washing).</summary>
+        public static readonly ApplianceLayout KitchenSink = new ApplianceLayout(
+            ApplianceKind.KitchenSink, "kitchenSink", rows: 7, foot: new Vector2(1.0f, 0.6f), fillMid: 1, full: 2, pourMid: 3, frothFirst: 4);
+
         public static readonly ApplianceLayout[] All =
-            { Bath, Toilet, Basin, Shower, WharfShower, CookStove, PrepCounter, Microwave };
+            { Bath, Toilet, Basin, Shower, WharfShower, CookStove, PrepCounter, Microwave, Fridge, KitchenSink };
 
         public static ApplianceLayout For(ApplianceKind kind) => All[(int)kind];
     }
