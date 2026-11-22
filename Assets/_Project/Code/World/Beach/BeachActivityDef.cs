@@ -217,6 +217,15 @@ namespace HiddenHarbours.World
                  "from those whose speakers are all there.")]
         public BeachTalk[] Talk = Array.Empty<BeachTalk>();
 
+        [Header("At work, at their place (ADR 0053 §10)")]
+        [Tooltip("The looping clip people play while they stand at their place, as the skin's own state key " +
+                 "(dig). Empty = they stand as they would. A state the skin cannot draw as a mesh is ignored.")]
+        public string WorkState = "";
+
+        [Tooltip("The tool the work is done with, as its held mesh: the same asset the player's tool draws, " +
+                 "aimed by the work clip's own tool track. None = bare hands.")]
+        public HeldPropMeshDef HeldProp;
+
         [Header("Not ready")]
         [Tooltip("Why this activity is authored but does not run yet (a missing animation or prop). " +
                  "Empty = it runs. The data stays so the day it can run is a one-field change.")]
