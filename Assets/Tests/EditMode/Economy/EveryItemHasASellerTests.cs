@@ -58,6 +58,8 @@ namespace HiddenHarbours.Tests.Economy
         {
             // ---- Starting kit -----------------------------------------------------------------------
             ["watch.harbour_digital"] = "starting item: worn from the first morning (StartsOwned); needs shop: a watch seller for a replacement",
+            // Gear carried from the start of every game (the headlamp) is exempt by reading the shipped
+            // GameConfig.CarriedFromStartGearIds, not by a line here: see CarriedFromStart().
 
             // ---- No ownership or purchase seam yet (an offer type is code, not data) ------------------
             ["tackle.*"] = "not owned piece by piece yet: the rod's tackle box hands every lure; needs an owned-tackle seam, then shop: the NMC fishing gear wholesaler",
@@ -172,9 +174,37 @@ namespace HiddenHarbours.Tests.Economy
 
         // =========================================================================================
 
+        [Test]
+        public void EveryCarriedFromStartId_NamesARealItem()
+        {
+            var ids = new HashSet<string>(Items().Select(i => i.Id).Where(i => !string.IsNullOrEmpty(i)), StringComparer.Ordinal);
+            foreach (string id in CarriedFromStart())
+                Assert.IsTrue(ids.Contains(id), "GameConfig carries " + id + " from the start, but no item Def has that id");
+        }
+
+        // =========================================================================================
+
+        const string GameConfigPath = "Assets/_Project/Data/Config/GameConfig.asset";
+        static HashSet<string> _carriedFromStart;
+
+        /// <summary>The shipped config's carried-from-the-start gear (owner ruling 2026-11-22: owned from
+        /// the first morning, never bought), so no shop is owed for them.</summary>
+        static HashSet<string> CarriedFromStart()
+        {
+            if (_carriedFromStart != null) return _carriedFromStart;
+            var config = AssetDatabase.LoadAssetAtPath<HiddenHarbours.Core.GameConfig>(GameConfigPath);
+            Assert.IsNotNull(config, "the shipped GameConfig is not at " + GameConfigPath);
+            _carriedFromStart = new HashSet<string>(
+                HiddenHarbours.Core.GameConfig.CarriedFromStart(config).Where(i => !string.IsNullOrEmpty(i)),
+                StringComparer.Ordinal);
+            return _carriedFromStart;
+        }
+
         static string ExemptionFor(string id)
         {
             if (Exempt.TryGetValue(id, out string why)) return why;
+            if (CarriedFromStart().Contains(id))
+                return "starting item: carried from the start of every game (GameConfig.CarriedFromStartGearIds), never bought";
             foreach (KeyValuePair<string, string> e in Exempt)
                 if (e.Key.EndsWith("*", StringComparison.Ordinal)
                     && id.StartsWith(e.Key.Substring(0, e.Key.Length - 1), StringComparison.Ordinal))
