@@ -142,6 +142,183 @@ namespace HiddenHarbours.Core
             return e;
         }
 
+        /// <summary>
+        /// The dials a hull under motor or sail lays her V with: <paramref name="s"/> with no hull counted
+        /// short (<c>SmallHullLengthMetres</c> = 0), so a motored punt lays the clean, evenly spaced rings a
+        /// long hull does (no scatter, no broken arcs, no small-hull crest floor): the V window draws her
+        /// (owner 11-21: "make motored boats a v wake"). Her trail foam is not read from these.
+        /// </summary>
+        public static HullWaveSettings ForMotor(in HullWaveSettings s)
+        {
+            HullWaveSettings e = s;
+            e.SmallHullLengthMetres = 0f;
+            return e;
+        }
+
+        /// <summary>The packed direction's grid: each axis in [-1, 1] is rounded to one of this many steps.
+        /// Mirrored as <c>HH_HULL_WAVE_TRAVEL_STEPS</c> in the water shader.</summary>
+        public const float TravelSteps = 2048f;
+
+        /// <summary>Half the packed axis's range in steps ((steps - 1) / 2): an axis of -1 packs as 0 and +1
+        /// as steps - 1. Mirrored as <c>HH_HULL_WAVE_TRAVEL_HALF</c> in the water shader.</summary>
+        public const float TravelHalfRange = 1023.5f;
+
+        /// <summary>
+        /// A direction packed into one whole number for the shader: <c>qx·steps + qy + 1</c>, each q the
+        /// axis rounded onto <see cref="TravelSteps"/>; at most 2²², exact in a float. 0 for no direction
+        /// (a whole ring). Unpacked, each axis is within 1/2047 of the unit vector's.
+        /// </summary>
+        public static float PackTravel(Vector2 travel)
+        {
+            float m = travel.magnitude;
+            if (m < 1e-6f) return 0f;
+            Vector2 u = travel / m;
+            float qx = Mathf.Round(Mathf.Clamp(u.x + 1f, 0f, 2f) * TravelHalfRange);
+            float qy = Mathf.Round(Mathf.Clamp(u.y + 1f, 0f, 2f) * TravelHalfRange);
+            return qx * TravelSteps + qy + 1f;
+        }
+
+        /// <summary>The inverse of <see cref="PackTravel"/> (the shader's decode); zero for 0.</summary>
+        public static Vector2 UnpackTravel(float packed)
+        {
+            if (packed < 0.5f) return Vector2.zero;
+            float p = packed - 1f;
+            float qx = Mathf.Floor(p / TravelSteps);
+            return new Vector2(qx, p - qx * TravelSteps) / TravelHalfRange - Vector2.one;
+        }
+
+        // ---- THE ARMS OF A MOTORED HULL'S V (owner 11-21: "make motored boats a v wake"; second look: "smooth
+        // the v wake arms ... a half circle, then space then a half circle repeating") ----------------------
+        // A ring laid by a hull going u at V spreads at V·sin α, so it touches the arm of her V on each side at
+        // the point R·n (R its radius, n = u·sin α ± p·cos α, p her port): every ring's touching point lies on
+        // the SAME straight line through the point that laid the chain. So each V ring is drawn as a straight
+        // piece of that line (its crests across n, phase locked to its front), a compact window along the line
+        // (t = −u·cos α ± p·sin α), and the pieces of neighbouring rings overlap and sum into one continuous arm
+        // whatever the rings' spacing: no stacked arcs (the beads) and no half circles (each young ring's arc).
+
+        /// <summary>The integral of the arm window <c>(1 − x²)²</c> over x in [−1, 1]: each ring's piece stands for
+        /// <c>16/15 · L</c> metres of arm, and its height is scaled by its <see cref="HullWaveSource.ArmSpan"/>
+        /// over that, so the summed arm is her crest height whatever the spacing.</summary>
+        public const float VArmWindowArea = 16f / 15f;
+
+        /// <summary>What the shader's <c>_HHHullWaveV</c> carries and the samples read: (sin α, cos α,
+        /// tan MotorVArmHalfWidthDegrees, MotorVArmBlendWavelengths).</summary>
+        public static Vector4 VArmFrame(in HullWaveSettings s)
+        {
+            float a = Mathf.Clamp(s.KelvinHalfAngleDegrees, 0.5f, 89f) * Mathf.Deg2Rad;
+            float half = Mathf.Clamp(s.MotorVArmHalfWidthDegrees, 0f, 80f) * Mathf.Deg2Rad;
+            return new Vector4(Mathf.Sin(a), Mathf.Cos(a), Mathf.Tan(half), Mathf.Max(s.MotorVArmBlendWavelengths, 0.05f));
+        }
+
+        /// <summary>What the shader's <c>_HHHullWaveV2</c> carries: (MotorVShare, 1 / (2π · PacketWavelengths),
+        /// MotorVArmOverlapSpans, 0). A V ring's band width is worked out from its wavenumber with the second, so its 1/width slot
+        /// carries its <see cref="HullWaveSource.ArmSpan"/>.</summary>
+        public static Vector4 VArmMix(in HullWaveSettings s)
+        {
+            return new Vector4(Mathf.Clamp01(s.MotorVShare), 1f / (2f * Mathf.PI * Mathf.Max(s.PacketWavelengths, 0.05f)),
+                               Mathf.Max(s.MotorVArmOverlapSpans, 0f), 0f);
+        }
+
+        /// <summary>1 / a V ring's band width, from its wavenumber and <see cref="VArmMix"/>: 1 /
+        /// <see cref="PacketWidth"/> for the dials it was laid with.</summary>
+        public static float VArmInvWidth(float wavenumber, Vector4 mix) => wavenumber * mix.y;
+
+        /// <summary>How far a V ring's piece reaches either way along the arm, metres:
+        /// <c>R · tan(half width) + blend · λ</c>, and never under <c>overlap · span</c>, so pieces laid far apart
+        /// (a bow chain on few sources: the half circles' beat) still overlap into one line.</summary>
+        public static float VArmHalfLength(float front, float wavenumber, float span, Vector4 frame, Vector4 mix)
+        {
+            float wavelength = wavenumber > 0f ? 2f * Mathf.PI / wavenumber : 0f;
+            float grown = Mathf.Max(front, 0f) * frame.z + frame.w * wavelength;
+            return Mathf.Max(Mathf.Max(grown, mix.z * Mathf.Max(span, 0f)), 1e-3f);
+        }
+
+        /// <summary>
+        /// The metres of arm one V ring stands for: its spacing along the track, projected on the arm (cos α),
+        /// over the share of her crest it was laid with (<see cref="SourceAmplitude"/>), so the overlapping
+        /// pieces sum to her crest height. 0 for no spacing or no height.
+        /// </summary>
+        public static float VArmSpan(float spacingMetres, float wavelength, float gain, in HullWaveSettings s)
+        {
+            if (spacingMetres <= 0f || wavelength <= 0f) return 0f;
+            float share = Mathf.Min(1f, Mathf.Max(gain, 0f) * spacingMetres / wavelength);
+            if (share <= 0f) return 0f;
+            float cos = Mathf.Cos(Mathf.Clamp(s.KelvinHalfAngleDegrees, 0.5f, 89f) * Mathf.Deg2Rad);
+            return spacingMetres * cos / share;
+        }
+
+        /// <summary>
+        /// The window along the arm, (1 − x²)², x = along / L, with its derivative in <paramref name="along"/>.
+        /// Forward (along &lt; 0, toward the point that laid the chain) it reaches no further than that point
+        /// (R · cot α), so nothing draws ahead of her bow and the arm opens out of her.
+        /// </summary>
+        public static float VArmWindow(float along, float front, float halfLength, Vector4 frame, out float dWindow)
+        {
+            float lead = Mathf.Min(halfLength, Mathf.Max(front, 0f) * frame.y / Mathf.Max(frame.x, 1e-4f));
+            float len = Mathf.Max(along < 0f ? lead : halfLength, 1e-4f);
+            float x = along / len;
+            float q = 1f - x * x;
+            if (q <= 0f) { dWindow = 0f; return 0f; }
+            dWindow = -4f * q * x / len;
+            return q * q;
+        }
+
+        /// <summary>
+        /// One V ring's height at <paramref name="d"/> from where it was laid, and its slope: the straight piece
+        /// of the arm on <paramref name="d"/>'s side of her <paramref name="travel"/>. The water shader's
+        /// <c>HullWaveArmSource</c> is its twin (HullWaveMotorVTests reads it).
+        /// </summary>
+        public static float ArmHeight(Vector2 d, Vector2 travel, float amplitude, float front, float wavenumber,
+                                      float phase, float span, float invSpread, Vector4 frame, Vector4 mix,
+                                      out Vector2 slope)
+        {
+            slope = Vector2.zero;
+            if (amplitude == 0f || span <= 0f || wavenumber <= 0f) return 0f;
+            Vector2 p = new Vector2(-travel.y, travel.x);
+            float side = Vector2.Dot(d, p) >= 0f ? 1f : -1f;
+            Vector2 n = travel * frame.x + p * (side * frame.y);
+            Vector2 t = -travel * frame.y + p * (side * frame.x);
+            float across = Vector2.Dot(d, n);
+            float along = Vector2.Dot(d, t);
+            float halfLength = VArmHalfLength(front, wavenumber, span, frame, mix);
+            float w = VArmWindow(along, front, halfLength, frame, out float dw);
+            if (w <= 0f) return 0f;
+            float norm = span / (VArmWindowArea * halfLength);
+            float invWidth = VArmInvWidth(wavenumber, mix);
+            float r = Mathf.Max(across, 0f);
+            float h = SourceHeight(r, amplitude, front, wavenumber, phase, invWidth, invSpread);
+            float dh = across > 0f ? SourceSlope(r, amplitude, front, wavenumber, phase, invWidth, invSpread) : 0f;
+            slope = (n * (dh * w) + t * (h * dw)) * norm;
+            return h * w * norm;
+        }
+
+        /// <summary>The radius past which a V ring draws nothing: its band's reach across the arm and its piece's
+        /// reach along it, <c>√((front + PacketReach · width)² + L²)</c>. The pack culls with it; the shader's
+        /// test is the same.</summary>
+        public static float VArmReach(float front, float wavenumber, float span, Vector4 frame, Vector4 mix)
+        {
+            float invWidth = VArmInvWidth(wavenumber, mix);
+            float across = front + (invWidth > 0f ? PacketReach / invWidth : 0f);
+            float along = VArmHalfLength(front, wavenumber, span, frame, mix);
+            return Mathf.Sqrt(across * across + along * along);
+        }
+
+        /// <summary>A V ring's crest phase: locked to its front (<c>k · front</c>, wrapped), so the crest of every
+        /// ring sits on the arm line and the pieces add up in step into one line that keeps station with her.</summary>
+        public static float VArmPhase(float wavenumber, float front)
+        {
+            double p = (double)wavenumber * System.Math.Max(front, 0f);
+            p %= 2.0 * System.Math.PI;
+            return (float)p;
+        }
+
+        /// <summary>True when a hull going <paramref name="travel"/> lays the rings of a V (MotorVShare above 0 and
+        /// some way on); a rowed hull is handed zero travel.</summary>
+        public static bool LaysV(Vector2 travel, in HullWaveSettings s)
+        {
+            return s.MotorVShare > 0f && travel.sqrMagnitude > 1e-12f;
+        }
+
         /// <summary>True for a hull no longer than <c>SmallHullLengthMetres</c> (and longer than nothing).</summary>
         public static bool IsSmallHull(float lengthMetres, in HullWaveSettings s)
         {
@@ -271,6 +448,20 @@ namespace HiddenHarbours.Core
         }
 
         /// <summary>
+        /// <see cref="TrailFoamStrength(float, bool, float, in HullWaveSettings)"/> for a hull that is
+        /// <paramref name="motored"/> (under motor or sail, not oars): while she lays a V (MotorVShare above 0)
+        /// her trail is that times <c>MotorVTrailFoamScale</c>, the same foam, less of it, so her bow's V reads
+        /// over her stern (owner ruling 11-21: halve it). A rowed hull's trail is exactly the older law.
+        /// </summary>
+        public static float TrailFoamStrength(float strength, bool makingWay, float lengthMetres, bool motored,
+                                              in HullWaveSettings s)
+        {
+            float laid = TrailFoamStrength(strength, makingWay, lengthMetres, in s);
+            if (!s.Enabled || !makingWay || !motored || s.MotorVShare <= 0f) return laid;
+            return laid * Mathf.Clamp01(s.MotorVTrailFoamScale);
+        }
+
+        /// <summary>
         /// Her churned trail band's half-width, metres, while hull waves are on and she makes way:
         /// <paramref name="radius"/> held to <c>TrailFoamMaxHalfWidthMetres</c> (0 = no limit). Moored,
         /// or hull waves off: unchanged.
@@ -307,6 +498,22 @@ namespace HiddenHarbours.Core
             float span = Mathf.Max(s.LowLightStartLuminance - s.LowLightFullLuminance, 1e-3f);
             float dim = Mathf.Clamp01((s.LowLightStartLuminance - sunLuminance) / span);
             return 1f + Mathf.Max(s.LowLightGain, 0f) * dim;
+        }
+
+        /// <summary>
+        /// The low-light lift where <paramref name="vShare"/> (0..1) of the wave is a motored hull's V:
+        /// <c>1 + lerp(LowLightGain, MotorVLowLightGain, vShare) · dim</c> (owner 11-22: the V's waves read
+        /// as hard stripes at sunset). <paramref name="vShare"/> 0, a rowed hull's rings, is exactly
+        /// <see cref="LowLightGain(float, bool, in HullWaveSettings)"/>. Twin of the shader's <c>hwLowGain</c>.
+        /// </summary>
+        public static float LowLightGain(float sunLuminance, bool cycleOn, float vShare, in HullWaveSettings s)
+        {
+            if (!cycleOn) return 1f;
+            float span = Mathf.Max(s.LowLightStartLuminance - s.LowLightFullLuminance, 1e-3f);
+            float dim = Mathf.Clamp01((s.LowLightStartLuminance - sunLuminance) / span);
+            float ring = Mathf.Max(s.LowLightGain, 0f);
+            float gain = ring + (Mathf.Max(s.MotorVLowLightGain, 0f) - ring) * Mathf.Clamp01(vShare);
+            return 1f + gain * dim;
         }
 
         /// <summary>The shade the water draws: <see cref="SoftShade"/>, with a trough held to

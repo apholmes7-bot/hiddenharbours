@@ -559,7 +559,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [Test]
         public void TheSourceLoop_RunsAsALoop_AndBreaksAtTheLiveCount()
         {
-            string body = Body(WaterSource(), "void HullWaveSample(float2 worldXY, out float height, out float2 slope)");
+            // The loop lives in HullWaveSampleV (HullWaveSample wraps it, dropping the V share).
+            string body = Body(WaterSource(), "void HullWaveSampleV(float2 worldXY, out float height, out float2 slope, out float vFrac)");
             StringAssert.Contains("[loop]\n                for (int i = 0; i < HH_HULL_WAVE_MAX; i++)", body,
                 "a runtime-bounded loop must be [loop] with a compile-time bound");
             StringAssert.Contains("if (i >= count) break;", body);
@@ -673,7 +674,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
             string raw = WaterSource(), src = sq(raw);
             StringAssert.Contains(sq("float hwTintLum = dot(_DayNightTint.rgb, float3(0.299, 0.587, 0.114));"), src);
             StringAssert.Contains(sq("? saturate((_HHHullWaveLowLight.y - hwTintLum) / max(_HHHullWaveLowLight.y - _HHHullWaveLowLight.z, 1e-3))"), src);
-            StringAssert.Contains(sq("hullWaveLowLight = hwShade * hullWaveShore * max(_HHHullWaveLowLight.x, 0.0) * hwDim;"), src);
+            // (the gain is .x for rowed rings; a motored V blends to .w, HullWaveMotorVTests pins that)
+            StringAssert.Contains(sq("float hwLowGain = lerp(max(_HHHullWaveLowLight.x, 0.0), max(_HHHullWaveLowLight.w, 0.0), hullWaveVFrac);"), src);
+            StringAssert.Contains(sq("hullWaveLowLight = hwShade * hullWaveShore * hwLowGain * hwDim;"), src);
             int grade = src.IndexOf(sq("col.rgb = PaletteGrade(col.rgb, dayNightLuma);"), System.StringComparison.Ordinal);
             int post = src.IndexOf(sq("col.rgb *= 1.0 + hullWaveLowLight;"), System.StringComparison.Ordinal);
             Assert.Greater(grade, 0);
