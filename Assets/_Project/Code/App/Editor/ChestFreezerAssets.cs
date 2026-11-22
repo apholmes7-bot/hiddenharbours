@@ -12,8 +12,10 @@ namespace HiddenHarbours.App.Editor
     /// <summary>
     /// <b>The chest freezer's art, baked and dressed</b> (owner 2026-11-17: detailed appliances with
     /// animations): bakes and slices the freezer sheets (<see cref="ChestFreezerBaker"/>), then builds the
-    /// Ginny's freezer prefab: a <see cref="GinnyFreezer"/> with its Def, a <see cref="ChestFreezerArt"/> with a
-    /// far and a near renderer, and the <see cref="FreezerContentsPresenter"/> that lays the fish inside.
+    /// freezer prefabs: Ginny's (a <see cref="GinnyFreezer"/>) and the camper's bigger chest (a
+    /// <see cref="CamperFreezer"/>, not yet placed: the camper lane stands it on the lot), each with its Def, a
+    /// <see cref="ChestFreezerArt"/> with a far and a near renderer, and the <see cref="FreezerContentsPresenter"/>
+    /// that lays the fish inside.
     ///
     /// <para>Headless: <c>-executeMethod HiddenHarbours.App.Editor.ChestFreezerAssets.BakeAndBuild</c>.</para>
     /// </summary>
@@ -23,17 +25,30 @@ namespace HiddenHarbours.App.Editor
         public const string PrefabPath = "Assets/_Project/Prefabs/Props/Kitchen/GinnyFreezer.prefab";
         public const string GinnyDefPath = "Assets/_Project/Data/Stowage/GinnyCatchFreezer.asset";
 
+        /// <summary>The camper's bigger chest (unplaced: the camper lane stands it on the lot).</summary>
+        public const string CamperPrefabPath = "Assets/_Project/Prefabs/Props/Kitchen/CamperFreezer.prefab";
+        public const string CamperDefPath = "Assets/_Project/Data/Stowage/CamperCatchFreezer.asset";
+
         /// <summary>The Sprite-Lit material every appliance renderer uses.</summary>
         const string SpriteLitMaterialGuid = "a97c105638bdf8b4a8650670310a4cd3";
 
-        /// <summary>Build (or rebuild) the prefab from the sheets already baked.</summary>
+        /// <summary>Build (or rebuild) both freezer prefabs from the sheets already baked.</summary>
         public static void BuildPrefab()
         {
-            var def = AssetDatabase.LoadAssetAtPath<FreezerDef>(GinnyDefPath);
-            if (def == null) throw new InvalidOperationException($"No FreezerDef at {GinnyDefPath}.");
+            BuildOne<GinnyFreezer>(GinnyDefPath, PrefabPath, "GinnyFreezer");
+            BuildOne<CamperFreezer>(CamperDefPath, CamperPrefabPath, "CamperFreezer");
+            AssetDatabase.SaveAssets();
+        }
+
+        /// <summary>One chest: the freezer component <typeparamref name="T"/> with its Def, the art with a far
+        /// and a near renderer, and the contents presenter.</summary>
+        static void BuildOne<T>(string defPath, string prefabPath, string name) where T : MonoBehaviour
+        {
+            var def = AssetDatabase.LoadAssetAtPath<FreezerDef>(defPath);
+            if (def == null) throw new InvalidOperationException($"No FreezerDef at {defPath}.");
             var material = AssetDatabase.LoadAssetAtPath<Material>(AssetDatabase.GUIDToAssetPath(SpriteLitMaterialGuid));
 
-            var root = new GameObject("GinnyFreezer");
+            var root = new GameObject(name);
             try
             {
                 SpriteRenderer far = NewRenderer(root.transform, "Art", material);
@@ -43,7 +58,7 @@ namespace HiddenHarbours.App.Editor
                 near.sprite = ChestFreezerSheet.SpriteAt(def.SheetStem, ChestFreezerSheet.NearOpen, ChestFreezerSheet.FrontCell);
                 if (far.sprite == null) throw new InvalidOperationException($"The {def.SheetStem} sheet is not sliced.");
 
-                var freezer = root.AddComponent<GinnyFreezer>();
+                var freezer = root.AddComponent<T>();
                 var so = new SerializedObject(freezer);
                 so.FindProperty("_def").objectReferenceValue = def;
                 so.ApplyModifiedPropertiesWithoutUndo();
@@ -58,11 +73,10 @@ namespace HiddenHarbours.App.Editor
 
                 if (root.GetComponent<FreezerContentsPresenter>() == null) root.AddComponent<FreezerContentsPresenter>();
 
-                PrefabUtility.SaveAsPrefabAsset(root, PrefabPath, out bool ok);
-                if (!ok) throw new InvalidOperationException($"Saving {PrefabPath} failed.");
+                PrefabUtility.SaveAsPrefabAsset(root, prefabPath, out bool ok);
+                if (!ok) throw new InvalidOperationException($"Saving {prefabPath} failed.");
             }
             finally { UnityEngine.Object.DestroyImmediate(root); }
-            AssetDatabase.SaveAssets();
         }
 
         static SpriteRenderer NewRenderer(Transform parent, string name, Material material)
