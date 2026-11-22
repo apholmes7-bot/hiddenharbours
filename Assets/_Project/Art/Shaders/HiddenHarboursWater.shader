@@ -1555,7 +1555,8 @@ Shader "HiddenHarbours/Water"
             //   _HHHullWaveLook    : x = shade ceiling (share of the water's colour), y = breakup share,
             //                        z = 1 / breakup metres, w = wobble metres
             //   _HHHullWaveLowLight: x = the extra shade at full low light, y = the sun's luminance at which
-            //                        it starts, z = the luminance at which it is full (HullWaveMath.LowLightGain)
+            //                        it starts, z = the luminance at which it is full (HullWaveMath.LowLightGain),
+            //                        w = x for a motored hull's V waves (MotorVLowLightGain)
             //   _HHHullWaveArcs    : x = how much of a ring packed with a NEGATIVE 1/width (a short hull's) is torn
             //                        away into arcs, y = whole arcs round the ring (HullWaveBridge.ArcsVector)
             //   _HHHullWaveV       : the V arms a ring packed with a travel draws: x = sin alpha, y = cos alpha,
@@ -2983,10 +2984,14 @@ Shader "HiddenHarbours/Water"
 
             // Every live source summed at a point: height (m) and slope (dh/dx, dh/dy). Exactly 0 while
             // OFF or with no sources, before any slot is read.
-            void HullWaveSample(float2 worldXY, out float height, out float2 slope)
+            // vFrac: the share (0..1) of the wave here, by height, that motored hulls' V arms lay (0 where
+            // only rowed rings reach; HullWaveMath.LowLightGain's vShare).
+            void HullWaveSampleV(float2 worldXY, out float height, out float2 slope, out float vFrac)
             {
                 height = 0.0;
                 slope = 0.0;
+                vFrac = 0.0;
+                float hwMagV = 0.0, hwMagAll = 0.0;
                 if (_HHHullWaveParams.w < 0.5 || _HHHullWaveParams.x < 0.5) return;
                 int count = (int)_HHHullWaveParams.x;
                 float invSpread = _HHHullWaveParams.z;
@@ -3021,6 +3026,8 @@ Shader "HiddenHarbours/Water"
                         HullWaveArmSource(d, a, b, invWidth, armL, invSpread, hv, gv);
                         height += hv * vShare;
                         slope += gv * vShare;
+                        hwMagV += abs(hv);
+                        hwMagAll += abs(hv);
                         if (vShare < 1.0)
                         {
                             HullWaveSourceHeight(r, a.z, a.w, b.x, b.y, invWidth, invSpread, h, dhdr);
@@ -3033,9 +3040,17 @@ Shader "HiddenHarbours/Water"
                     float arc = HullWaveArcGain(d, a.xy, b.z);
                     height += h * arc;
                     slope += d * (dhdr * arc / max(r, 1e-4));
+                    hwMagAll += abs(h * arc);
                 }
                 height *= hwGain;
                 slope *= hwGain;
+                vFrac = hwMagAll > 0.0 ? hwMagV / hwMagAll : 0.0;
+            }
+
+            void HullWaveSample(float2 worldXY, out float height, out float2 slope)
+            {
+                float vFrac;
+                HullWaveSampleV(worldXY, height, slope, vFrac);
             }
 
 
@@ -6605,7 +6620,8 @@ Shader "HiddenHarbours/Water"
                 {
                     float hullWaveH;
                     float2 hullWaveSlope;
-                    HullWaveSample(Pixelize(worldXY), hullWaveH, hullWaveSlope);
+                    float hullWaveVFrac;
+                    HullWaveSampleV(Pixelize(worldXY), hullWaveH, hullWaveSlope, hullWaveVFrac);
                     float hullWaveShore = ShoreFade01(depth, _ShoreFadeBand);
                     if (hullWaveShore > 0.0 && (hullWaveH != 0.0 || hullWaveSlope.x != 0.0 || hullWaveSlope.y != 0.0))
                     {
@@ -6632,7 +6648,11 @@ Shader "HiddenHarbours/Water"
                             ? saturate((_HHHullWaveLowLight.y - hwTintLum)
                                        / max(_HHHullWaveLowLight.y - _HHHullWaveLowLight.z, 1e-3))
                             : 0.0;
-                        hullWaveLowLight = hwShade * hullWaveShore * max(_HHHullWaveLowLight.x, 0.0) * hwDim;
+                        // A motored hull's V takes its own lift (owner 11-22: hard stripes at sunset), blended
+                        // by the V's share of the wave here; rowed rings alone (vFrac 0) keep .x exactly.
+                        float hwLowGain = lerp(max(_HHHullWaveLowLight.x, 0.0), max(_HHHullWaveLowLight.w, 0.0),
+                                               hullWaveVFrac);
+                        hullWaveLowLight = hwShade * hullWaveShore * hwLowGain * hwDim;
                         // A crest breaks where it is TALL or where it is STEEP (the young crests at her
                         // quarters at speed), so the first crests of each arm carry foam and the foam and
                         // the waves are one thing. Twin: HullWaveMath.CrestFoam01.

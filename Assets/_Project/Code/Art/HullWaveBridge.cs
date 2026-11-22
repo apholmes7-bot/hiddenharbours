@@ -122,7 +122,8 @@ namespace HiddenHarbours.Art
             Shader.SetGlobalVector(IdLook, new Vector4(Mathf.Max(s.ShadeCeiling, 0f), Mathf.Clamp01(s.BreakupShare),
                 1f / Mathf.Max(s.BreakupMetres, 0.05f), Mathf.Max(s.WobbleMetres, 0f)));
             Shader.SetGlobalVector(IdLowLight, new Vector4(Mathf.Max(s.LowLightGain, 0f),
-                Mathf.Clamp01(s.LowLightStartLuminance), Mathf.Clamp01(s.LowLightFullLuminance), 0f));
+                Mathf.Clamp01(s.LowLightStartLuminance), Mathf.Clamp01(s.LowLightFullLuminance),
+                Mathf.Max(s.MotorVLowLightGain, 0f)));
             Shader.SetGlobalVector(IdArcs, ArcsVector(in s));
             Shader.SetGlobalVector(IdV, armFrame);
             Shader.SetGlobalVector(IdV2, armMix);

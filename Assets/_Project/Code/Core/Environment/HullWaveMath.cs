@@ -500,6 +500,22 @@ namespace HiddenHarbours.Core
             return 1f + Mathf.Max(s.LowLightGain, 0f) * dim;
         }
 
+        /// <summary>
+        /// The low-light lift where <paramref name="vShare"/> (0..1) of the wave is a motored hull's V:
+        /// <c>1 + lerp(LowLightGain, MotorVLowLightGain, vShare) · dim</c> (owner 11-22: the V's waves read
+        /// as hard stripes at sunset). <paramref name="vShare"/> 0, a rowed hull's rings, is exactly
+        /// <see cref="LowLightGain(float, bool, in HullWaveSettings)"/>. Twin of the shader's <c>hwLowGain</c>.
+        /// </summary>
+        public static float LowLightGain(float sunLuminance, bool cycleOn, float vShare, in HullWaveSettings s)
+        {
+            if (!cycleOn) return 1f;
+            float span = Mathf.Max(s.LowLightStartLuminance - s.LowLightFullLuminance, 1e-3f);
+            float dim = Mathf.Clamp01((s.LowLightStartLuminance - sunLuminance) / span);
+            float ring = Mathf.Max(s.LowLightGain, 0f);
+            float gain = ring + (Mathf.Max(s.MotorVLowLightGain, 0f) - ring) * Mathf.Clamp01(vShare);
+            return 1f + gain * dim;
+        }
+
         /// <summary>The shade the water draws: <see cref="SoftShade"/>, with a trough held to
         /// TroughCeilingShare of it. Twin of the shader's hull-wave shading.</summary>
         public static float WaveShade(float raw, in HullWaveSettings s)

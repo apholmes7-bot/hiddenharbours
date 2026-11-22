@@ -259,6 +259,11 @@ namespace HiddenHarbours.Core
                  "SmallHullTrailFoamShare) lays. The same foam, less of it, so her bow's V reads over her stern " +
                  "(owner 11-21: halve it). A rowed hull's trail is never touched.")]
         [Range(0f, 1f)] public float MotorVTrailFoamScale;
+        [Tooltip("A hull under motor or sail: the low-light lift on her V's waves, in place of LowLightGain " +
+                 "(owner 11-22: at sunset the V's waves read as hard light and dark stripes). Blended by how " +
+                 "much of the wave at a spot is her V, so a rowed hull's rings keep LowLightGain exactly. Noon " +
+                 "is untouched either way.")]
+        [Range(0f, 6f)] public float MotorVLowLightGain;
 
         public static HullWaveSettings Default => new HullWaveSettings
         {
@@ -340,6 +345,7 @@ namespace HiddenHarbours.Core
             MotorVSternShare = 0.45f,
             MotorVBowSourceShare = 0.5f,
             MotorVTrailFoamScale = 0.5f,
+            MotorVLowLightGain = 0.5f,
         };
     }
 }

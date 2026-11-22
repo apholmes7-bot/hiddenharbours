@@ -638,6 +638,34 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(S.MotorVSternShare, YamlFloat(yaml, "MotorVSternShare"), 0f);
             Assert.AreEqual(S.MotorVBowSourceShare, YamlFloat(yaml, "MotorVBowSourceShare"), 0f);
             Assert.AreEqual(S.MotorVTrailFoamScale, YamlFloat(yaml, "MotorVTrailFoamScale"), 0f);
+            Assert.AreEqual(S.MotorVLowLightGain, YamlFloat(yaml, "MotorVLowLightGain"), 0f);
+        }
+
+        // Owner, 2026-11-22: at sunset the V's waves read as hard light and dark stripes. A motored hull's V
+        // takes its own, smaller low-light lift; a rowed hull's rings keep theirs exactly (their dusk look is
+        // approved), and noon is untouched for both.
+        [Test]
+        public void AtDusk_HerVTakesItsOwnSmallerLift_RowedRingsAndNoonAreUntouched()
+        {
+            HullWaveSettings s = S;
+            const float noon = 0.91f, dusk = 0.48f;
+            Assert.Less(s.MotorVLowLightGain, s.LowLightGain, "the V's lift is the smaller");
+            Assert.AreEqual(HullWaveMath.LowLightGain(dusk, true, in s), HullWaveMath.LowLightGain(dusk, true, 0f, in s),
+                "rowed rings only: bit for bit the old lift");
+            Assert.AreEqual(1f + s.MotorVLowLightGain, HullWaveMath.LowLightGain(dusk, true, 1f, in s), 1e-6f, "all V: her own lift");
+            Assert.AreEqual(1f + 0.5f * (s.LowLightGain + s.MotorVLowLightGain), HullWaveMath.LowLightGain(dusk, true, 0.5f, in s), 1e-5f,
+                "a mix blends");
+            Assert.AreEqual(1f, HullWaveMath.LowLightGain(noon, true, 1f, in s), 0f, "noon: untouched");
+            Assert.AreEqual(1f, HullWaveMath.LowLightGain(dusk, false, 1f, in s), 0f, "no day/night cycle: untouched");
+
+            // The shader's twin: the V's share of the wave is summed by height in the loop, rowed rings add
+            // only to the whole, and the lift is lerped between the two gains by it.
+            string src = Regex.Replace(File.ReadAllText(Path.Combine(Application.dataPath, "..", ShaderPath)), @"\s+", "");
+            StringAssert.Contains("hwMagV+=abs(hv);", src);
+            StringAssert.Contains("hwMagAll+=abs(h*arc);", src);
+            StringAssert.Contains("vFrac=hwMagAll>0.0?hwMagV/hwMagAll:0.0;", src);
+            StringAssert.Contains("HullWaveSampleV(Pixelize(worldXY),hullWaveH,hullWaveSlope,hullWaveVFrac);", src);
+            StringAssert.Contains("floathwLowGain=lerp(max(_HHHullWaveLowLight.x,0.0),max(_HHHullWaveLowLight.w,0.0),hullWaveVFrac);", src);
         }
 
         static float YamlFloat(string yaml, string key)
