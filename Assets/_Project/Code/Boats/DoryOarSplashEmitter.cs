@@ -157,6 +157,26 @@ namespace HiddenHarbours.Boats
             int owner = HullWaves.OwnerOf(_boat != null ? (Object)_boat.gameObject : gameObject);
             FoamSheetSettings sheet = GameServices.FoamSheet;
             SendWaveRings(_system, in sheet, owner);
+            PublishBladeWater(_system, owner);
+        }
+
+        /// <summary>
+        /// Each blade that went in or came out this frame is published as the Core
+        /// <see cref="OarBladeWater"/> (the stroke's sound keys off it, so it lands on the splash's own
+        /// frame). <paramref name="hullId"/> is the same for both oars of one boat. Returns how many were
+        /// sent. Allocation-free (struct messages). Public for tests.
+        /// </summary>
+        public static int PublishBladeWater(DoryOarSplashSystem system, int hullId)
+        {
+            if (system == null) return 0;
+            int n = system.BladeWaterCount;
+            for (int i = 0; i < n; i++)
+            {
+                DoryOarSplashSystem.BladeWater b = system.GetBladeWater(i);
+                EventBus.Publish(new OarBladeWater(b.Catch ? OarStrokePart.Catch : OarStrokePart.Release,
+                                                   b.At, b.Strength01, hullId, b.Oar, b.Index));
+            }
+            return n;
         }
 
         /// <summary>

@@ -27,7 +27,7 @@ the owner's **private sound pack** installed lays a second set over this one (se
 
 | Bus | Director field | Notes |
 |---|---|---|
-| Ambience | `_ambienceVolume` | calm bed, moderate/rough sea layers, gulls, aboard boat bed (oar/water **or** outboard engine), wind tell, distant foghorn |
+| Ambience | `_ambienceVolume` | calm bed, moderate/rough sea layers, gulls, the oars on the stroke (one-shots), the aboard outboard bed (engine boats), wind tell, distant foghorn |
 | SFX | `_sfxVolume` | one-shot cues (sting, warmth) |
 | Music | `_musicVolume` | the clip set's **songs**, one after another (`MusicCycle`, below); the public set ships none, so the bus is silent without the private sound pack |
 
@@ -54,10 +54,20 @@ wind poll and reset each time you board, so the gate is **per-trip**. (Charter g
 earned, not constant"; bible §8.3 "the home exhale".) A **sale** (`CatchSold`) still warms
 unconditionally — see the flag below.
 
-### Aboard boat bed — Dory oars vs Punt engine
-The aboard boat bed is **propulsion-aware**: a hand-rowed hull plays the oar-stroke/water bed (`_hullRow`),
-an engine boat plays the looping outboard bed (`_outboardEngine`), and the two **crossfade** on a swap
-(`AudioDirectorLogic.BoatLayerCrossfadePerSec`). The engine is **speed-reactive** — its volume and pitch
+### The oars on the stroke, and the engine bed
+A rowed boat has **no looping bed**. Its oars are heard **on the stroke**: the oar splash publishes the Core
+`OarBladeWater` on the frame a ROWING blade goes in (catch) or comes out (release), the same frame the splash
+and the drawn blade show it, and the director (`OarStrokePlayer` / `OarStrokeVoicing`) plays one catch sound
+a stroke per boat (the second oar of the same stroke is merged, `MinGapSeconds`) and a light release drip,
+for the player's boat and any rower within `EarshotMetres`. Nothing plays while nobody rows (drifting, under
+motor, oars shipped). Each stroke gets a small pitch and level variation from a hash of the boat's stroke
+count (no global randomness). The two sounds are **cut** from the `_hullRow` clip at boot (the catch from
+0 s, the drips from 1.0 s, both tunable); while that slot is empty the clip is the procedural placeholder
+`ProceduralAudio.HullRow`, so the voice is the old bed's. Tunables: the `OarStrokes` block on
+`AudioClipSet.asset`. (The old bed looped every 2.6 s on a clock of its own, out of step with the oars.)
+
+An engine boat plays the looping outboard bed (`_outboardEngine`), faded in on boarding
+(`AudioDirectorLogic.BoatLayerCrossfadePerSec`). The engine is **speed-reactive**: its volume and pitch
 ride the active boat's speed over ground, read through the Core `IActiveBoatService` seam (ADR 0007), so it
 idles when moored and revs underway.
 
@@ -76,7 +86,7 @@ idles when moored and revs underway.
 | `_moderateSeaBed` | `Ambient/moderate_sea_bed.ogg` | yes | Ambience | fades in on continuous `EnvironmentSample.SeaState01` from 0.18 to 0.55, fades out by 0.82 | **real** — LICENSES.md row 21 |
 | `_roughSeaBed` | `Ambient/rough_sea_bed.ogg` | yes | Ambience | fades in on continuous `SeaState01` from 0.52 to 0.92, taking over the moderate texture | **real** — LICENSES.md row 22 |
 | `_gulls`      | `Ambient/gulls.ogg`         | yes | Ambience | sparse gull calls over the bed | **real** — LICENSES.md row 2 |
-| `_hullRow`    | — | yes | Ambience | oar-stroke / water bed — **aboard a rowed hull (the dory)**; crossfades with the engine bed on a swap | `ProceduralAudio.HullRow` — **slot held**: no CC0 rowing recording found, owner shopping list in LICENSES.md |
+| `_hullRow`    | — | cut | Ambience | oar stroke: the catch and release one-shots are **cut** from it and played on the stroke (`OarBladeWater`), any rower in earshot | `ProceduralAudio.HullRow` — **slot held**: no CC0 rowing recording found, owner shopping list in LICENSES.md |
 | `_outboardEngine` | `Ambient/outboard_engine.wav` | yes | Ambience | looping outboard-engine bed — **aboard an engine boat (the punt and up)**; pitch + volume rise with speed over ground | **real** — LICENSES.md row 3 |
 | `_windTell`   | `Ambient/wind_tell.wav`     | yes | Ambience | **the SACRED rising-wind tell** — loudness driven by wind strength, audible *before* trouble (P1) | **real** — LICENSES.md row 4 |
 | `_foghorn`   | `SFX/foghorn.wav` | no | Ambience | one distant horn on each 90-second **game-clock** boundary while `EnvironmentSample.Visibility < 0.35` (0 = thick fog); no wall-time or RNG | **real** — LICENSES.md row 23 |
