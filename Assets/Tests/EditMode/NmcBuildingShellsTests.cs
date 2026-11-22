@@ -168,6 +168,212 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(colliders.Any(c => Inside(c, beside)), Is.True, "the wall beside the doorway is open");
         }
 
+        // ---- the wholesalers' working fixtures (kitchens and bathrooms plan, N1a) ---------------------------
+
+        static readonly NmcBuildingShells.Shell[] Wholesalers =
+            { NmcBuildingShells.BoatGearWholesaler, NmcBuildingShells.FishingGearWholesaler };
+
+        /// <summary>The player as the game builds him (PersistentCoreBuilder): a foot circle of radius 0.35 m,
+        /// 0.7 m below the transform that interaction measures reach from.</summary>
+        const float FootRadiusMetres = 0.35f;
+        const float FootBelowMetres = 0.7f;
+
+        /// <summary>The walk grid's cell, metres: fine against the 1.4 m doorways and the gaps in the partitions.</summary>
+        const float CellMetres = 0.05f;
+
+        [Test]
+        public void EachWholesalerStandsAToiletABasinAndAMicrowave_WithIdsOfItsOwn()
+        {
+            var ids = new List<string>();
+            foreach (var s in Wholesalers)
+            {
+                Assert.That(s.Fixtures.Select(f => f.Kind), Is.EquivalentTo(new[]
+                    { RoomFixturePlan.Kind.Toilet, RoomFixturePlan.Kind.BathroomSink, RoomFixturePlan.Kind.Microwave }), s.Name);
+                ids.AddRange(s.Fixtures.Select(f => NmcBuildingShells.FixtureId(s, f)));
+            }
+            Assert.That(ids.Count, Is.EqualTo(6));
+            Assert.That(ids.Distinct().Count(), Is.EqualTo(ids.Count), string.Join(", ", ids));
+            foreach (string id in ids)
+                Assert.That(id, Does.Match(@"^fixture\.nmc\.[a-z]+(_[a-z]+)*\.(toilet|bathroom_sink|microwave)$"), id);
+            Assert.That(ids, Does.Contain("fixture.nmc.boat_gear_wholesaler.toilet"));
+            Assert.That(ids, Does.Contain("fixture.nmc.fishing_gear_wholesaler.bathroom_sink"));
+            foreach (var s in NmcBuildingShells.All.Except(Wholesalers))
+                Assert.That(s.Fixtures, Is.Empty, $"{s.Name} stands no fixtures in this slice");
+        }
+
+        [Test]
+        public void ThePrefabsCarryTheFixturesBoundAndInPlace_AndNoMarkerIsLeft([ValueSource(nameof(WholesalerNames))] string name)
+        {
+            var s = Wholesalers.Single(x => x.Name == name);
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(s.PrefabPath);
+            Transform props = prefab.transform.Find(BuildingInteriorStander.PropsChildName);
+            InteriorFootprint fp = NmcBuildingShells.FootprintAt(s, Vector2.zero);
+            foreach (string marker in NmcBuildingShells.RetiredMarkers)
+                Assert.That(props.Cast<Transform>().Any(t => t.name == marker && !PrefabUtility.IsAnyPrefabInstanceRoot(t.gameObject)),
+                            Is.False, $"{name} still carries the greybox marker {marker}");
+            foreach (NmcBuildingShells.Fixture f in s.Fixtures)
+            {
+                string id = NmcBuildingShells.FixtureId(s, f);
+                Transform t = props.Find(f.Name);
+                Assert.That(t, Is.Not.Null, $"{name} has no {f.Name}");
+                Assert.That(PrefabUtility.GetCorrespondingObjectFromSource(t.gameObject),
+                            Is.EqualTo(AssetDatabase.LoadAssetAtPath<GameObject>(f.Prefab)), $"{name}/{f.Name} is not {f.Prefab}");
+                Vector2 want = fp.ModelToWorld(f.At);
+                Assert.That(Vector2.Distance((Vector2)t.position - (Vector2)prefab.transform.position, want), Is.LessThan(1e-3f),
+                            $"{name}/{f.Name} stands off its model point {f.At}");
+                Assert.That(t.GetComponent<ApplianceArt>(), Is.Not.Null, $"{name}/{f.Name} has no art");
+                switch (f.Kind)
+                {
+                    case RoomFixturePlan.Kind.Toilet:
+                        var seat = t.GetComponent<SitPoint>();
+                        Assert.That(seat, Is.Not.Null, f.Name);
+                        Assert.That(seat.Id, Is.EqualTo(id));
+                        Assert.That(seat.StationId, Is.EqualTo(RoomFixturePlan.DefId(f.Kind)));
+                        break;
+                    case RoomFixturePlan.Kind.BathroomSink:
+                        var wash = t.GetComponent<WashStationPoint>();
+                        Assert.That(wash, Is.Not.Null, f.Name);
+                        Assert.That(wash.Id, Is.EqualTo(id));
+                        Assert.That(wash.StationId, Is.EqualTo(RoomFixturePlan.DefId(f.Kind)));
+                        break;
+                    default:
+                        var cook = t.GetComponent<HiddenHarbours.Player.CookingStationFixture>();
+                        Assert.That(cook, Is.Not.Null, f.Name);
+                        Assert.That(cook.Id, Is.EqualTo(id));
+                        Assert.That(cook.Def, Is.Not.Null, $"{name}/{f.Name} has no station def");
+                        Assert.That(cook.Def.Id, Is.EqualTo(RoomFixturePlan.DefId(f.Kind)));
+                        break;
+                }
+            }
+        }
+
+        static IEnumerable<string> WholesalerNames() => Wholesalers.Select(s => s.Name);
+
+        [Test]
+        public void EachFixtureBacksOntoTheNorthOrEastWall_AndStandsClearOfEverySolidBlock()
+        {
+            foreach (var s in Wholesalers)
+            {
+                Assert.That(s.Facing, Is.EqualTo(0), $"{s.Name}: the wall turns below assume +y is north");
+                float hw = s.WidthMetres * 0.5f - BuildingInteriorStander.WallThicknessMetres;
+                float hl = s.LengthMetres * 0.5f - BuildingInteriorStander.WallThicknessMetres;
+                foreach (NmcBuildingShells.Fixture f in s.Fixtures)
+                {
+                    var art = AssetDatabase.LoadAssetAtPath<GameObject>(f.Prefab).GetComponent<ApplianceArt>();
+                    Vector2 foot = ApplianceSheets.For(art.Kind).Foot;
+                    int wall = ApplianceFacing.PickWallOffset(f.At, s.WidthMetres, s.LengthMetres, foot);
+                    Assert.That(wall, Is.EqualTo(0).Or.EqualTo(2), $"{s.Name}/{f.Name} backs onto wall turn {wall}; only north (0) or east (2)");
+                    // its footprint, square on to that wall, inside the room and clear of every solid block
+                    Vector2 size = wall == 0 ? foot : new Vector2(foot.y, foot.x);
+                    Rect r = new Rect(f.At - size * 0.5f, size);
+                    Assert.That(r.xMin >= -hw - 1e-3f && r.xMax <= hw + 1e-3f && r.yMin >= -hl - 1e-3f && r.yMax <= hl + 1e-3f, Is.True,
+                                $"{s.Name}/{f.Name}'s footprint {r} runs into the outer wall");
+                    foreach (NmcBuildingShells.Block b in NmcBuildingShells.Layout(s).Where(b => b.Solid))
+                        Assert.That(b.Model.Overlaps(r), Is.False, $"{s.Name}/{f.Name}'s footprint {r} runs into {b.Name}");
+                }
+            }
+        }
+
+        [Test]
+        public void ThePlayerFromTheStreet_AndTheKeeperFromTheCounter_ReachEveryFixture([ValueSource(nameof(WholesalerNames))] string name)
+        {
+            var s = Wholesalers.Single(x => x.Name == name);
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(s.PrefabPath);
+            Vector2 origin = prefab.transform.position;
+            InteriorFootprint fp = NmcBuildingShells.FootprintAt(s, Vector2.zero);
+            Vector2 outward = (fp.DoorWorld - fp.Centre).normalized;
+            var keeper = NmcWholesalerKeepers.All.Single(k => k.Shell.Name == name);
+
+            var walls = new List<Vector2[]>();
+            var circles = new List<(Vector2 c, float r)>();
+            foreach (Collider2D c in prefab.GetComponentsInChildren<Collider2D>(true))
+            {
+                if (c.isTrigger) continue;
+                Vector2 at = (Vector2)c.transform.position - origin + c.offset;
+                if (c is PolygonCollider2D p)
+                    for (int i = 0; i < p.pathCount; i++) walls.Add(p.GetPath(i).Select(v => v + at).ToArray());
+                else if (c is CircleCollider2D cc) circles.Add((at, cc.radius));
+                else Assert.Fail($"{name}: an unexpected {c.GetType().Name} on {c.name}");
+            }
+            Assert.That(circles.Count, Is.GreaterThanOrEqualTo(2), $"{name}: the toilet and the basin each carry a collider");
+
+            Rect floor = Rect.MinMaxRect(fp.Corners().Min(v => v.x), fp.Corners().Min(v => v.y), fp.Corners().Max(v => v.x), fp.Corners().Max(v => v.y));
+            Rect area = Rect.MinMaxRect(floor.xMin - 2f, floor.yMin - 2f, floor.xMax + 2f, floor.yMax + 2f);
+            bool Free(Vector2 q) =>
+                !walls.Any(w => InsidePath(w, q) || DistanceToPath(w, q) < FootRadiusMetres) &&
+                !circles.Any(k => Vector2.Distance(k.c, q) < k.r + FootRadiusMetres);
+
+            var interactables = s.Fixtures.Select(f =>
+            {
+                MonoBehaviour point = InteriorFixturePlacement.IdComponentOf(prefab.transform.Find(BuildingInteriorStander.PropsChildName + "/" + f.Name).gameObject);
+                return (f, (HiddenHarbours.Core.IInteractable)point);
+            }).ToList();
+
+            foreach ((string who, Vector2 from) in new[]
+                     {
+                         ("the player from the street", fp.DoorWorld + outward * 1.5f),
+                         ($"the keeper ({keeper.KeeperRoot}) from the counter", fp.ModelToWorld(keeper.StandModel)),
+                     })
+            {
+                Assert.That(Free(from), Is.True, $"{name}: {who} starts inside a collider at {from}");
+                List<Vector2> reached = Flood(area, from, Free);
+                foreach (var (f, point) in interactables)
+                {
+                    Vector2 at = (Vector2)prefab.transform.Find(BuildingInteriorStander.PropsChildName + "/" + f.Name).position - origin;
+                    float best = reached.Min(q => Vector2.Distance(q + new Vector2(0f, FootBelowMetres), at));
+                    Assert.That(best, Is.LessThanOrEqualTo(point.ReachMeters),
+                                $"{name}: {who} gets no nearer than {best:0.00} m to {f.Name} (reach {point.ReachMeters} m)");
+                }
+            }
+        }
+
+        /// <summary>Every free cell 4-connected to <paramref name="from"/> on a <see cref="CellMetres"/> grid.</summary>
+        static List<Vector2> Flood(Rect area, Vector2 from, System.Func<Vector2, bool> free)
+        {
+            int nx = Mathf.CeilToInt(area.width / CellMetres), ny = Mathf.CeilToInt(area.height / CellMetres);
+            Vector2 Cell(int x, int y) => new Vector2(area.xMin + x * CellMetres, area.yMin + y * CellMetres);
+            var seen = new bool[nx + 1, ny + 1];
+            var open = new Queue<(int x, int y)>();
+            var reached = new List<Vector2>();
+            int sx = Mathf.RoundToInt((from.x - area.xMin) / CellMetres), sy = Mathf.RoundToInt((from.y - area.yMin) / CellMetres);
+            seen[sx, sy] = true; open.Enqueue((sx, sy));
+            while (open.Count > 0)
+            {
+                var (x, y) = open.Dequeue();
+                reached.Add(Cell(x, y));
+                foreach (var (dx, dy) in new[] { (1, 0), (-1, 0), (0, 1), (0, -1) })
+                {
+                    int ax = x + dx, ay = y + dy;
+                    if (ax < 0 || ay < 0 || ax > nx || ay > ny || seen[ax, ay]) continue;
+                    seen[ax, ay] = true;
+                    if (free(Cell(ax, ay))) open.Enqueue((ax, ay));
+                }
+            }
+            return reached;
+        }
+
+        static bool InsidePath(Vector2[] path, Vector2 p)
+        {
+            bool inside = false;
+            for (int a = 0, b = path.Length - 1; a < path.Length; b = a++)
+                if ((path[a].y > p.y) != (path[b].y > p.y) &&
+                    p.x < (path[b].x - path[a].x) * (p.y - path[a].y) / (path[b].y - path[a].y) + path[a].x)
+                    inside = !inside;
+            return inside;
+        }
+
+        static float DistanceToPath(Vector2[] path, Vector2 p)
+        {
+            float best = float.MaxValue;
+            for (int a = 0, b = path.Length - 1; a < path.Length; b = a++)
+            {
+                Vector2 e = path[a] - path[b];
+                float t = e.sqrMagnitude > 0f ? Mathf.Clamp01(Vector2.Dot(p - path[b], e) / e.sqrMagnitude) : 0f;
+                best = Mathf.Min(best, Vector2.Distance(p, path[b] + e * t));
+            }
+            return best;
+        }
+
         /// <summary>Is a point (in the prefab root's frame) inside one of the collider's paths? Read off the paths
         /// rather than asked of the physics world, which a prefab asset is not in.</summary>
         static bool Inside(PolygonCollider2D c, Vector2 p)
