@@ -3741,10 +3741,12 @@ the promotion into the field is P2, gated on an ADR 0018 amendment.
 
 ## 26. Object reflections — a filtered renderer list into an RT, wave-warped (ADR 0027 #8)
 
-**R3 mesh path (2026-10-01, default off):** [Hull mesh reflections](hull-reflection-mesh.md)
+**R3 mesh path (2026-10-01; shipped default ON from 2026-11-21):** [Hull mesh reflections](hull-reflection-mesh.md)
 adds a bounded physical-height reflected draw of current hull/leaf/fitting/figure meshes,
-with retained submerged colourless depth occlusion. The legacy path below remains shipped
-until the owner rules from Phase C's matched GPU plates. Water look assets and lookup are unchanged.
+with retained submerged colourless depth occlusion. The legacy hull overlay below never drew
+in the game: it records before the hull keyline resolve that publishes `_HHHullScreenTex`,
+and the render graph rebinds that global to black after each graph (measured and pinned, see
+the linked page). Water look assets and lookup are unchanged.
 
 
 Boats, wharf structures and bankside trees **reflect in the water**. This is the project's first render

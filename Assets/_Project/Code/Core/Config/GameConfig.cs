@@ -1008,8 +1008,16 @@ namespace HiddenHarbours.Core
         public const int DefaultHullReflectionMaxPackets = 1024;
         public const int DefaultHullReflectionMaxTriangles = 1000000;
 
-        [Header("Hull mesh reflection (experimental, requires GPU plates)")]
-        public bool HullMeshReflections = false;
+        /// <summary>The boat-reflection path's ship default: <b>ON</b> (2026-11-21). The mesh path is the
+        /// only one that can draw: the older overlay path records its reflection BEFORE the same frame's
+        /// hull keyline resolve, and the render graph rebinds <c>_HHHullScreenTex</c> to black at the end of
+        /// every graph, so that path always reads an empty picture and draws nothing.</summary>
+        public const bool DefaultHullMeshReflections = true;
+
+        [Header("Boat reflections in the water (hull, fittings and the figure aboard)")]
+        [Tooltip("Draw each boat's reflection from her own posed meshes (hull, door leaf, fittings and the " +
+                 "figure aboard). Off = no boat reflection at all: the older overlay path cannot draw.")]
+        public bool HullMeshReflections = DefaultHullMeshReflections;
         [Range(1, 2)] public int HullReflectionResolutionDivisor = 1;
         [Min(1)] public int HullReflectionMaxHulls = DefaultHullReflectionMaxHulls;
         [Min(1)] public int HullReflectionMaxPackets = DefaultHullReflectionMaxPackets;

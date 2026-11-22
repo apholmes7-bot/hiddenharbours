@@ -267,7 +267,12 @@ namespace HiddenHarbours.Player
 
         /// <summary>Is the fight drawing its own rod in his hands this frame, sprite or mesh? While it is,
         /// the carried rod tool is not drawn (<c>CarryHands</c>), so he holds one rod and not two.</summary>
-        public bool DrawsRod => DrawsMeshRod || (_rodSr != null && _rodSr.enabled);
+        public bool DrawsRod => DrawsMeshRod || MeshFigureOwnsRod || (_rodSr != null && _rodSr.enabled);
+
+        /// <summary>True on a frame a mesh figure draws him and the rod he carries has a held mesh for it
+        /// (<see cref="HeldRodMesh.SpriteMayDraw"/>): the mesh is then the rod's only look, so neither the
+        /// fight's sprite rod nor the carried rod's sprite is drawn, even on a frame the mesh refuses.</summary>
+        public bool MeshFigureOwnsRod { get; private set; }
 
         /// <summary>True on a frame the rod is drawn as its facet mesh in the mesh figure's hand
         /// (ADR 0053, <see cref="HeldRodMesh"/>); the sprite rod is off on exactly those frames.</summary>
@@ -516,7 +521,8 @@ namespace HiddenHarbours.Player
                 // THE CARRIED ROD (ADR 0053 D1): out of a fishing state the rod he carries is drawn as
                 // its mesh at the rig's held pose on his hand, when the mesh body draws him and the rod's
                 // Def asks for it. DrawsRod then holds the carried sprite out of the picture (CarryHands),
-                // so he carries one rod, not two. Any refusal hands the rod back to the carried sprite.
+                // so he carries one rod, not two. A refusal hands the rod back to the carried sprite only
+                // while his body is a sprite (MeshFigureOwnsRod): a mesh figure never shows the old sprite.
                 DrawsMeshRod = TryDrawMeshRod();
                 if (!DrawsMeshRod) _meshRod?.Hide();
                 return;
@@ -536,13 +542,25 @@ namespace HiddenHarbours.Player
             // THE MESH ROD (ADR 0053): while the mesh body plays the performance, the rod is its baked
             // facet mesh in his hand, aimed by the clip's own tool track, and the sprite rod is off. Any
             // refusal leaves the sprite rod exactly as RenderRod drew it.
-            DrawsMeshRod = (show & RodElements.Rod) != 0 && TryDrawMeshRod();
-            if (!DrawsMeshRod) _meshRod?.Hide();   // a beat with no rod must not leave the last pose up
+            // A beat that draws no fight rod (the snap, no bite) still has the rod he carries in his hand:
+            // on a mesh figure that is the mesh too, never the carried sprite (CarryHands reads DrawsRod).
+            MeshFigureOwnsRod = false;
+            DrawsMeshRod = TryDrawMeshRod();
+            if (!DrawsMeshRod) _meshRod?.Hide();   // a refusal must not leave the last pose up
             if (DrawsMeshRod)
             {
                 _rodSr.enabled = false;
-                _rodGrip = _meshRod.GripWorld;
-                rodDrawn = true;
+                if ((show & RodElements.Rod) != 0)
+                {
+                    _rodGrip = _meshRod.GripWorld;
+                    rodDrawn = true;
+                }
+            }
+            else if (MeshFigureOwnsRod)
+            {
+                // A mesh figure never shows the old sprite rod: on a frame the mesh refuses, the line still
+                // leaves from where the sprite's tip would be, and no rod is drawn.
+                _rodSr.enabled = false;
             }
             Vector2 tip = RodPresenterMath.LineAnchor(DrawsMeshRod, DrawsMeshRod ? _meshRod.TipWorld : spriteTip, spriteTip);
             Vector2 unloadedTip = tip;   // the rod's own tip, before the fight's load bends it over
@@ -640,6 +658,7 @@ namespace HiddenHarbours.Player
         {
             GameConfig config = GameServices.Config;
             bool on = config != null && config.MeshRodInHand;
+            MeshFigureOwnsRod = false;
             if (!on && _meshRod == null) return false;
             if (_hands == null) TryGetComponent(out _hands);
             if (_meshPresenter == null) TryGetComponent(out _meshPresenter);
@@ -660,7 +679,10 @@ namespace HiddenHarbours.Player
                     : HeldRodMesh.Use.Free;
             }
             float width = config != null ? config.HeldPropLineWidthPx : GameConfig.DefaultHeldPropLineWidthPx;
-            return _meshRod.TryDraw(on, rod, LiveFigure(), width, use, Time.deltaTime);
+            IsoCharacterFigureRenderer figure = LiveFigure();
+            ToolDef carried = rod != null ? rod : _hands != null ? _hands.HeldFightRod : null;
+            MeshFigureOwnsRod = !HeldRodMesh.SpriteMayDraw(on, carried, figure != null);
+            return _meshRod.TryDraw(on, rod, figure, width, use, Time.deltaTime);
         }
 
         /// <summary>The figure drawing him this frame, or null while he is a sprite.</summary>
@@ -1322,6 +1344,7 @@ namespace HiddenHarbours.Player
             {
                 _meshRod?.Hide();
                 DrawsMeshRod = false;
+                MeshFigureOwnsRod = false;
             }
             if (_bobberSr != null) _bobberSr.enabled = false;
             if (_fishSr != null) _fishSr.enabled = false;

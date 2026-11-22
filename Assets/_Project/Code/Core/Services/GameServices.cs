@@ -1418,7 +1418,10 @@ namespace HiddenHarbours.Core
                 ? UnityEngine.Mathf.Clamp(Config.PlayerFigureIdReserve, 0, GameConfig.MaxPlayerFigureIdReserve)
                 : GameConfig.DefaultPlayerFigureIdReserve;
 
-        public static bool HullMeshReflections => Config != null && Config.HullMeshReflections;
+        /// <summary>Boat reflections drawn from the hull's own meshes. Falls back to the SHIPPED default
+        /// (<see cref="GameConfig.DefaultHullMeshReflections"/>, on) with no config wired.</summary>
+        public static bool HullMeshReflections =>
+            Config != null ? Config.HullMeshReflections : GameConfig.DefaultHullMeshReflections;
         public static int HullReflectionResolutionDivisor =>
             Config != null && Config.HullReflectionResolutionDivisor == 2 ? 2 : 1;
         public static int HullReflectionMaxHulls =>
