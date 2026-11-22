@@ -272,7 +272,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.Less(S.SmallHullTrailFoamShare, S.TrailFoamShare, "a rowed hull's trail is a lace, not a mat");
             Assert.AreEqual(0.8f * S.SmallHullTrailFoamShare, HullWaveMath.TrailFoamStrength(0.8f, true, DoryLength, S), 1e-6f);
             Assert.AreEqual(0.8f * S.SmallHullTrailFoamShare,
-                HullWaveMath.TrailFoamStrength(0.8f, true, DoryLength, false, S), 0f, "rowed: the motored scale never reaches her");
+                HullWaveMath.TrailFoamStrength(0.8f, true, DoryLength, false, S), 1e-6f, "rowed: the motored scale never reaches her");
+            Assert.AreEqual(HullWaveMath.TrailFoamStrength(0.8f, true, DoryLength, S),
+                HullWaveMath.TrailFoamStrength(0.8f, true, DoryLength, false, S), "rowed: bit for bit the older law");
             Assert.AreEqual(0.8f, HullWaveMath.TrailFoamStrength(0.8f, false, DoryLength, S), 0f, "moored: unchanged");
             HullWaveSettings old = S;
             old.SmallHullTrailFoamShare = -1f;
