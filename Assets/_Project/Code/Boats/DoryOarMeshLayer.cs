@@ -155,6 +155,7 @@ namespace HiddenHarbours.Boats
             _star = star;
             _boat = boat;
             _motor = motor;
+            _driverLooked = false;
             _portPhase = 0f;
             _starPhase = 0f;
             _bothIdleSeconds = 0f;
@@ -164,15 +165,20 @@ namespace HiddenHarbours.Boats
         // hull's station data. Set through ConfigureStation; unset = no station, the rower plays his clip.
         private bool _hasStation;
         private Vector3 _portLock, _starLock;
+        private float _waterlineZ;
         private RowingStationConfig _station;
 
         /// <summary>
         /// Wire the rowing station from the skinner: the two oarlocks (the fittings'
         /// <c>PivotLocalMeters</c>, the point each oar turns about) and the hull's
         /// <see cref="RowingStationConfig"/>. A disabled config leaves no station.
+        /// <paramref name="designWaterlineMeters"/> is the hull's design waterline in the same rig
+        /// metres, the height the drawn blades are held clear of.
         /// </summary>
-        public void ConfigureStation(Vector3 portOarlock, Vector3 starboardOarlock, in RowingStationConfig station)
+        public void ConfigureStation(Vector3 portOarlock, Vector3 starboardOarlock, in RowingStationConfig station,
+                                     float designWaterlineMeters = 0f)
         {
+            _waterlineZ = designWaterlineMeters;
             _portLock = portOarlock;
             _starLock = starboardOarlock;
             _station = station;
@@ -190,8 +196,8 @@ namespace HiddenHarbours.Boats
         {
             targets = default;
             if (!_hasStation || !IsWired || !isActiveAndEnabled) return false;
-            targets = StationTargets(_portLock, _starLock, in _station, PortPose, PortStroking,
-                                     StarboardPose, StarboardStroking);
+            targets = StationTargets(_portLock, _starLock, in _station, DrawnPortPose, PortStroking,
+                                     DrawnStarboardPose, StarboardStroking);
             targets.LaybackDegrees *= _laybackScale;
             targets.RestWeight = _restWeight;
             targets.RestBreath = _restBreath;
@@ -365,8 +371,38 @@ namespace HiddenHarbours.Boats
                                         StarboardStroking, starStyled, StarboardOarState, out float leading);
             _strokePhase = _stroking ? StrokePhaseOf(leading) : 0f;
 
-            _port.LocalRotation = DoryOarMeshPose.Rotation(PortSide, PortPose);
-            _star.LocalRotation = DoryOarMeshPose.Rotation(StarboardSide, StarboardPose);
+            // DRAWN against the hull's roll: each blade holds its height over the water (the station's
+            // RockLevelling), and is held off the sea (BladeFloorMeters).
+            // The stroke's own poses above stay as they were, so the splash, the body's phase and the
+            // timing read exactly what they read before; the hands take the drawn oars.
+            float roll = DrawnRollDegrees();
+            DrawnPortPose = _hasStation ? DoryOarMeshPose.Levelled(PortSide, PortPose, _portLock, roll,
+                                              _station.RockLevelReachMeters, _station.RockLevelling, _waterlineZ,
+                                              _station.BladeFloorMeters) : PortPose;
+            DrawnStarboardPose = _hasStation ? DoryOarMeshPose.Levelled(StarboardSide, StarboardPose, _starLock, roll,
+                                                   _station.RockLevelReachMeters, _station.RockLevelling, _waterlineZ,
+                                                   _station.BladeFloorMeters) : StarboardPose;
+            _port.LocalRotation = DoryOarMeshPose.Rotation(PortSide, DrawnPortPose);
+            _star.LocalRotation = DoryOarMeshPose.Rotation(StarboardSide, DrawnStarboardPose);
+        }
+
+        /// <summary>The port oar as DRAWN: <see cref="PortPose"/> turned in its oarlock against the
+        /// hull's roll (<see cref="DoryOarMeshPose.Levelled"/>). The hands follow this one.</summary>
+        public DoryOarMeshPose.Pose DrawnPortPose { get; private set; } = DoryOarMeshPose.Resting;
+
+        /// <summary>The starboard oar as drawn.</summary>
+        public DoryOarMeshPose.Pose DrawnStarboardPose { get; private set; } = DoryOarMeshPose.Resting;
+
+        private MeshHullDriver _driver;
+        private bool _driverLooked;
+
+        // The roll the hull's mesh is drawn at this frame, the rotation the oars inherit. The driver
+        // runs its pose in its own LateUpdate; a frame's order between the two at most lags this by
+        // one frame of a slow rock.
+        private float DrawnRollDegrees()
+        {
+            if (!_driverLooked) { _driver = GetComponent<MeshHullDriver>(); _driverLooked = true; }
+            return _driver != null && _driver.isActiveAndEnabled ? _driver.AppliedRollDegrees : 0f;
         }
 
         /// <summary>The rig's side factor: port is −1 on the beam axis, starboard +1.</summary>

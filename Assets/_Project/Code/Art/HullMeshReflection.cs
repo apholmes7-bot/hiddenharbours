@@ -15,6 +15,51 @@ namespace HiddenHarbours.Art
         internal static readonly int SizeId = Shader.PropertyToID("_HHMeshReflectSize");
         internal static readonly int DepthRangeId = Shader.PropertyToID("_HHMeshReflectDepthRange");
         internal static readonly int LitId = Shader.PropertyToID("_HHMeshReflectLit");
+        internal static readonly int FadeId = Shader.PropertyToID("_HHMeshReflectFade");
+
+        /// <summary>
+        /// The reflection's fade below the waterline, packed for <c>_HHMeshReflectFade</c>: (start
+        /// metres, 1 / length metres, streak length in the hull's pixels). A length of 0 or less packs
+        /// zero, which the shader reads as no fade at all, the look before the sunset rowing clip of
+        /// 11-22. A streak length under one pixel packs 0: the ordered dither.
+        /// </summary>
+        internal static Vector4 PackFade(float startMeters, float lengthMeters, float streakPixels = 0f)
+            => lengthMeters > 0f
+                ? new Vector4(Mathf.Max(0f, startMeters), 1f / lengthMeters, streakPixels >= 1f ? streakPixels : 0f, 0f)
+                : Vector4.zero;
+
+        /// <summary>Interleaved gradient noise on whole cells, the shader's
+        /// <c>HHMeshReflectCellNoise</c>.</summary>
+        internal static float CellNoise(float x, float y)
+        {
+            float a = 0.06711056f * x + 0.00583715f * y;
+            float b = 52.9829189f * (a - Mathf.Floor(a));
+            return b - Mathf.Floor(b);
+        }
+
+        /// <summary>The threshold a reflection fragment's kept share is measured against: with
+        /// streaks on, one value per run of <c>fade.z</c> pixels along its row (each row's runs offset
+        /// by their own amount); otherwise the ordered-dither value it was given. Twin of
+        /// <c>HHMeshReflectFadeThreshold</c>.</summary>
+        internal static float FadeThreshold(int cellX, int cellY, Vector4 fade, float bayerThreshold)
+        {
+            float len = fade.z;
+            if (len < 1f) return bayerThreshold;
+            float run = Mathf.Floor((cellX + CellNoise(0f, cellY) * len) / len);
+            return CellNoise(run, cellY);
+        }
+
+        /// <summary>How much of the reflection is kept at a source <paramref name="heightMeters"/>
+        /// above the waterline (the mirrored point is as far below it): 1 down to the start, 0 at the
+        /// start plus the length. Twin of <c>HHMeshReflectFadeKeep</c> in HullReflection.hlsl.</summary>
+        internal static float FadeKeep(float heightMeters, Vector4 fade)
+            => 1f - Mathf.Clamp01((heightMeters - fade.x) * fade.y);
+
+        /// <summary>Whether the reflection pass turns this fragment into a blocker: the fade is on and
+        /// the kept share is at or under the fragment's ordered-dither threshold. Twin of the facet
+        /// shader's reflection branch.</summary>
+        internal static bool FadeBlocks(float heightMeters, Vector4 fade, float bayerThreshold)
+            => fade.y > 0f && FadeKeep(heightMeters, fade) <= bayerThreshold;
         static readonly List<IsoFacetHullRenderer> s_Hulls = new List<IsoFacetHullRenderer>();
         static readonly List<IsoCharacterFigureRenderer> s_Figures = new List<IsoCharacterFigureRenderer>();
         internal static int Count => s_Hulls.Count;
@@ -303,10 +348,13 @@ namespace HiddenHarbours.Art
             // of the normal camera's near/far planes. Ordering is common to every packet.
             float span = Mathf.Max(high - low, Mathf.Epsilon);
             output.DepthRange = new Vector4(low, 1 / span, 0, 0);
+            Vector4 fade = PackFade(GameServices.HullReflectionFadeStartMeters, GameServices.HullReflectionFadeMeters,
+                                    GameServices.HullReflectionStreakPixels);
             for (int i = 0; i < output.Count; i++)
             {
                 output.Packets[i].Properties.SetVector(SizeId, new Vector4(width, height, 0, 0));
                 output.Packets[i].Properties.SetVector(DepthRangeId, output.DepthRange);
+                output.Packets[i].Properties.SetVector(FadeId, fade);
             }
         }
 

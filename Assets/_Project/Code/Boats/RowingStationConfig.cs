@@ -110,6 +110,23 @@ namespace HiddenHarbours.Boats
                  "own half-thickness).")]
         [Min(0f)] public float RestHandAboveThighMeters;
 
+        [Header("Holding the blades over the water")]
+        [Tooltip("How much the oars are turned in their oarlocks against the hull's roll so each blade keeps " +
+                 "its height over the water (1 = fully, as a rower does with his hands; 0 = the blades roll with " +
+                 "the hull, the look before 11-22, when the low side's blade went under the sea). The hands follow " +
+                 "the drawn oars. The splash still reads the stroke's own dip.")]
+        [Range(0f, 1f)] public float RockLevelling;
+
+        [Tooltip("How far out along the oar, from the oarlock, the point held at its height is, metres. 1.45 is " +
+                 "the blade tip of the dory's oar (doryIsoRig.js O_LOUT).")]
+        [Min(0f)] public float RockLevelReachMeters;
+
+        [Tooltip("The lowest a blade point is drawn, metres over the design waterline (negative = under it), " +
+                 "while RockLevelling is on. The stroke buries the blade to its throat through the drive and the sea " +
+                 "stands over the design waterline a blade's length out, so the blade was drawn under the sea and " +
+                 "only a dark loom showed; held here it rides the surface. The splash still reads the stroke's dip.")]
+        public float BladeFloorMeters;
+
         public static RowingStationConfig Default => new RowingStationConfig
         {
             Enabled = true,
@@ -133,6 +150,9 @@ namespace HiddenHarbours.Boats
             RestBreathSeconds = 4f,
             RestHandAlongThigh = 0.86f,
             RestHandAboveThighMeters = 0.07f,
+            RockLevelling = 1f,
+            RockLevelReachMeters = 1.45f,
+            BladeFloorMeters = 0.2f,
         };
     }
 }

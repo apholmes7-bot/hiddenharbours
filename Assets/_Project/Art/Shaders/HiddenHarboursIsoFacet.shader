@@ -627,6 +627,21 @@ Shader "HiddenHarbours/IsoFacet"
                     _PivotPx.y - (i.wpos.y - _HullOrigin.y) * _PixelsPerMetre);
                 int2 cell = int2(floor(cellF));
                 float bay = _Bayer[cell.x & 3][cell.y & 3];
+                // THE REFLECTION THINS WITH DEPTH below the line, on her own cell grid: in horizontal
+                // streaks along each pixel row (or her ordered dither with streaks off), a crisp pixel
+                // pattern, never a blur. A thinned fragment is a BLOCKER, not a hole, so the mirrored
+                // geometry behind it cannot show through. Fade off (y = 0): never taken, every
+                // fragment as before.
+                if (reflection && _HHMeshReflectFade.y > 0.0 &&
+                    HHMeshReflectFadeKeep(i.reflectionHeight) <= HHMeshReflectFadeThreshold(cell, bay))
+                {
+                    FragOut thinned;
+                    thinned.facet = 0;
+                    thinned.dark = 0;
+                    thinned.key = float4(0, 0, 0, HH_MESH_BLOCKER);
+                    thinned.depth = i.reflectionDepth;
+                    return thinned;
+                }
 
                 int m    = (int)round(i.mat);
 #ifdef HH_FIGURE

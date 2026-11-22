@@ -1007,6 +1007,9 @@ namespace HiddenHarbours.Core
         public const int DefaultHullReflectionMaxHulls = 64;
         public const int DefaultHullReflectionMaxPackets = 1024;
         public const int DefaultHullReflectionMaxTriangles = 1000000;
+        public const float DefaultHullReflectionFadeStartMeters = 0.1f;
+        public const float DefaultHullReflectionFadeMeters = 0.6f;
+        public const float DefaultHullReflectionStreakPixels = 6f;
 
         /// <summary>The boat-reflection path's ship default: <b>ON</b> (2026-11-21). The mesh path is the
         /// only one that can draw: the older overlay path records its reflection BEFORE the same frame's
@@ -1022,6 +1025,17 @@ namespace HiddenHarbours.Core
         [Min(1)] public int HullReflectionMaxHulls = DefaultHullReflectionMaxHulls;
         [Min(1)] public int HullReflectionMaxPackets = DefaultHullReflectionMaxPackets;
         [Min(1)] public int HullReflectionMaxTriangles = DefaultHullReflectionMaxTriangles;
+        [Tooltip("How far below the waterline a boat's reflection runs whole before it starts to thin, metres " +
+                 "(its source's height above the line). The thinning is the hull's own pixel dither, so the " +
+                 "reflection stays crisp and fades with distance from the hull instead of sitting as one block.")]
+        [Min(0f)] public float HullReflectionFadeStartMeters = DefaultHullReflectionFadeStartMeters;
+        [Tooltip("Over how many metres below that the reflection thins to nothing. 0 = no fade (the look " +
+                 "before the sunset rowing clip of 11-22: the whole mirrored hull at one strength).")]
+        [Min(0f)] public float HullReflectionFadeMeters = DefaultHullReflectionFadeMeters;
+        [Tooltip("How long the streaks a boat's reflection thins in are, in the hull's own pixels: each pixel " +
+                 "row breaks into runs that go together, the way a reflection breaks on moving water. Under 1 = " +
+                 "the hull's 4x4 ordered dither instead.")]
+        [Min(0f)] public float HullReflectionStreakPixels = DefaultHullReflectionStreakPixels;
 
         /// <summary>The cabin-glow passthrough's ship default — <b>OFF</b>, which is the owner's ruling
         /// of 2026-09-03: a glow is confined to its space, and an interior's reaches the outside only

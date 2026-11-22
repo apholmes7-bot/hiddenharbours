@@ -547,7 +547,7 @@ namespace HiddenHarbours.Boats
             // The rowing station: the rower's hands are put on these oars' handles, his hips on the
             // thwart and his feet on the boards (the hull's own Rowing data).
             layer.ConfigureStation(visual.OarPortMesh.PivotLocalMeters, visual.OarStarMesh.PivotLocalMeters,
-                                   in visual.Rowing);
+                                   in visual.Rowing, visual.ResolveDesignWaterlineMeters());
 
             // The oar splash (owner ruling 2026-11-13) rides the same wiring: it reads the poses this
             // layer draws and the hull driver's projection, so it exists exactly when rowed mesh oars
