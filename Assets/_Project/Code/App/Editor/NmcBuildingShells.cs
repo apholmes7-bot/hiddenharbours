@@ -256,7 +256,8 @@ namespace HiddenHarbours.App.Editor
         /// its door swing kept clear. The staff wash has its basin by the way in from the staff room and the
         /// toilet in the far (west) corner. The brief's own staff door in the south wall (u -33) needs a second
         /// doorway the room recipe does not have yet, so for now the rooms are reached through the office: a
-        /// doorway in the office wall north of the counter, then one in each room's east wall. No stall
+        /// doorway in the office wall north of the counter (that wall now drawn cut down too, so the doorway
+        /// shows), then one in each room's east wall. No stall
         /// partition and no staff lockers yet: no art exists for either.</para>
         /// </summary>
         public static readonly Shell FishPlant = new Shell
@@ -299,9 +300,9 @@ namespace HiddenHarbours.App.Editor
             Blocks = new[]
             {
                 // the public area's edges: the office wall (its counter faces the reception; the doorway north
-                // of the counter leads to the staff rooms), the delivery-edge rail over the grading floor, and the
-                // rail that closes the returns wash.
-                new Block("OfficeWall", 15.85f, 16.15f, -14f, -9.6f, 3f, Partition, true),
+                // of the counter leads to the staff rooms, and the wall is drawn cut down so that doorway shows),
+                // the delivery-edge rail over the grading floor, and the rail that closes the returns wash.
+                new Block("OfficeWall", 15.85f, 16.15f, -14f, -10f, CutWallMetres, Partition, true),
                 // the staff rooms' walls, drawn cut down so the rooms read as inside: the row's north wall (the
                 // staff rooms' backs, and the line the working floor stops at), the staff wash's west wall, and
                 // the staff room's and the office's west walls, each with its doorway (the room convention's
