@@ -1446,6 +1446,13 @@ namespace HiddenHarbours.Core
                  "saved, so tuning these moves the whole sea at once with no save surgery.")]
         public FishSchoolSettings FishSchools = FishSchoolSettings.Default;
 
+        [Header("Bar clam show (the squirt that gives a buried clam away)")]
+        [Tooltip("Owner ask 2026-11-22: a clam's holes are small and sit in the sand; its squirt is the " +
+                 "main giveaway. How often and how long a clam squirts, how tall the jet is drawn, and how " +
+                 "it squirts when the player walks up. Cosmetic only, never saved. Read through " +
+                 "ClamShowSettings.Current.")]
+        public ClamShowSettings ClamShow = ClamShowSettings.Default;
+
         [Header("Freshness & rot (M1 §7.3 — the clock on every catch)")]
         [Tooltip("How fast each storage mode rots a landed catch, and how far gone a catch can be " +
                  "before no buyer will take it. The per-species base rate lives on each " +
