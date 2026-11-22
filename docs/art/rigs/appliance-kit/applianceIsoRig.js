@@ -583,6 +583,7 @@
       variant: opts.variant!=null?opts.variant:0, lid: Math.max(0, Math.min(1, +opts.lid||0)), heap: (opts.heap|0),
       fill: Math.max(0, Math.min(1, +opts.fill||0)), pour: !!opts.pour, froth: (opts.froth|0),
       flush: (opts.flush|0), run: (opts.run|0), split: opts.split||null,
+      door: Math.max(0, Math.min(3, opts.door|0)),
       weather: opts.weather!=null?opts.weather:0.15, night:!!opts.night }; }
 
   function makeMats(s){ const wx=s.weather, night=s.night;
@@ -598,6 +599,180 @@
       glass:{ramp: night?GLASSN:GLASSD}, glassdark:{ramp: GLASSN}, lcd:{ramp:['#1f3a2a','#2f5a3c','#4f8a5c','#7fbf86']},
       fire:{ramp:FIRE}, water:{ramp:clean(WATER)}, suds:{ramp:clean(SUDS)}, stream:{ramp:clean(STREAM)},
       dark:{ramp:DARK}, soap:{ramp:clean(SOAP)}, frost:{ramp:warm(FROST)}, frostfish:{ramp:warm(FROSTFISH)} }; }
+
+  // ================= THE KITCHEN STORE AND THE KITCHEN SINK =================
+  // Two more pieces, appended to PROPS below (never an edit of the table above).
+  //   door:0..3   the fridge door, shut (0), ajar, half open, wide open (3): FRIDGE.doorDeg[door]
+
+  // UPRIGHT FRIDGE. A white enamel cabinet with a rounded shoulder on a dark plinth, a chrome lever handle and a badge
+  // on the door, a grille at the foot and the condenser coil on the back. The door hangs on the right-hand
+  // edge and swings out (door:1..3) to show the cold inside: a white liner, the icebox at the top with its
+  // frosted flap, two wire shelves with a milk bottle, a jar, a butter dish, a covered bowl and a wrapped
+  // parcel of fish, the glass crisper at the bottom with apples in it, and the door's own racks of bottles.
+  // The lamp inside lifts the liner while the door is open.
+  const FRIDGE = { ht:1.62, plinth:0.07, wall:0.035, doorT:0.06, doorZ0:0.2, doorDeg:[0, 24, 58, 102] };
+  function pFridge(out, s){
+    const P=PROPS[s.name], w=P.foot[0], d=P.foot[1], R=FRIDGE, ht=R.ht, t=R.wall, pl=R.plinth;
+    const open=(s.door|0)>0, lit=open?0.35:0;
+    // plinth and the cabinet: two sides, the back, the top with its rounded shoulder, the compressor base
+    box(out, -w/2+0.03, w/2-0.03, -d/2+0.05, d/2-0.03, 0, pl, 'iron', -0.5, null, true);
+    box(out, -w/2, -w/2+t, -d/2, d/2, pl, ht, 'body', 0);
+    box(out, w/2-t, w/2, -d/2, d/2, pl, ht, 'body', 0);
+    box(out, -w/2+t, w/2-t, d/2-t, d/2, pl, ht, 'body', 0);
+    box(out, -w/2, w/2, -d/2, d/2, ht-t, ht, 'body', 0.05);
+    box(out, -w/2+0.02, w/2-0.02, -d/2+0.02, d/2-0.02, ht, ht+0.03, 'body', 0.4);       // the shoulder
+    box(out, -w/2+t, w/2-t, -d/2, d/2-t, pl, R.doorZ0, 'body', 0);                      // compressor base
+    decalY(out, -d/2, -1, -w/2+0.035, w/2-0.035, pl+0.008, R.doorZ0-0.008, 'tin', 0.15, null, true, 0.04);     // the chrome kick plate
+    decalY(out, -d/2, -1, -w/2+0.035, w/2-0.035, pl+0.008, pl+0.018, 'dark', 0.1, null, true, 0.045);           // its shadowed foot
+    for(let k=0;k<4;k++) decalY(out, -d/2, -1, -w/2+0.07, w/2-0.07, pl+0.025+k*0.03, pl+0.04+k*0.03, 'iron', -0.6, null, true, 0.05); // foot grille
+    // side shading: each flank darkens toward the back and catches a lit strip at its front edge
+    for(const [xv,nx] of [[-w/2,-1],[w/2,1]]){
+      decalX(out, xv, nx, 0.0, d/2-0.01, pl+0.01, ht-0.01, 'body', -0.22, null, true, 0.03);
+      decalX(out, xv, nx, d/4, d/2-0.01, pl+0.01, ht-0.01, 'body', -0.38, null, true, 0.035);
+      decalX(out, xv, nx, -d/2+0.005, -d/2+0.025, pl+0.01, ht-0.01, 'body', 0.35, null, true, 0.035); }
+    decalTop(out, -w/2+0.02, w/2-0.02, -d/2+0.02, -d/2+0.06, ht+0.03, 'body', 0.6, 0.06);                       // the lit front of the shoulder
+    for(let k=0;k<8;k++) decalY(out, d/2, 1, -w/2+0.1, w/2-0.1, 0.3+k*0.14, 0.32+k*0.14, 'iron', -0.7, null, true, 0.05);      // coil on the back
+    for(const x of [-w/2+0.12, w/2-0.12]) decalY(out, d/2, 1, x-0.012, x+0.012, 0.28, 1.36, 'iron', -0.3, null, true, 0.06);
+    // the liner: white on the inside faces, the floor of the cold space, lifted by the lamp when open
+    decalX(out, -w/2+t, 1, -d/2+0.005, d/2-t, R.doorZ0, ht-t, 'trim', 0.2+lit, null, true, 0.02);
+    decalX(out, w/2-t, -1, -d/2+0.005, d/2-t, R.doorZ0, ht-t, 'trim', -0.2+lit, null, true, 0.02);
+    decalY(out, d/2-t, -1, -w/2+t, w/2-t, R.doorZ0, ht-t, 'trim', 0.1+lit, null, true, 0.02);
+    decalTop(out, -w/2+t, w/2-t, -d/2, d/2-t, R.doorZ0, 'trim', 0.3+lit, 0.02);
+    // the icebox under the top: a frosted box with its tin flap and a latch
+    const ix0=-w/2+t+0.03, ix1=w/2-t-0.03, iy0=-d/2+0.07, iz0=ht-0.34, iz1=ht-t-0.02;
+    box(out, ix0, ix1, iy0, d/2-t, iz0, iz1, 'frost', 0.1);
+    decalY(out, iy0, -1, ix0+0.02, ix1-0.02, iz0+0.02, iz1-0.02, 'tin', 0.4, null, true, 0.05);
+    decalY(out, iy0, -1, -0.05, 0.05, iz0+0.03, iz0+0.06, 'iron', 0.2, null, true, 0.07);
+    decalY(out, iy0, -1, ix0+0.02, ix1-0.02, iz0+0.02, iz0+0.035, 'frost', 0.9, null, true, 0.06);
+    // two wire shelves
+    const shelf=[0.64, 0.98];
+    for(const z of shelf){ box(out, -w/2+t, w/2-t, -d/2+0.04, d/2-t, z, z+0.012, 'tin', 0.3);
+      for(let k=0;k<5;k++){ const y=-d/2+0.08+k*0.1; box(out, -w/2+t, w/2-t, y-0.004, y+0.004, z+0.012, z+0.016, 'tin', 0.7); } }
+    // the top shelf: a milk bottle, a jam jar, a butter dish
+    const z1=shelf[1]+0.016;
+    prism(out, -0.18, 0.02, 0.045, z1, z1+0.2, 10, 'suds', 0.1);
+    prism(out, -0.18, 0.02, 0.028, z1+0.2, z1+0.24, 10, 'suds', 0.3);
+    prism(out, -0.18, 0.02, 0.03, z1+0.24, z1+0.255, 10, 'tin', 0.6);
+    prism(out, -0.05, 0.1, 0.04, z1, z1+0.09, 10, 'fabric', 0.0);                       // the jam, red
+    prism(out, -0.05, 0.1, 0.042, z1+0.09, z1+0.11, 10, 'brass', 0.4);
+    box(out, 0.04, 0.22, -0.12, 0.0, z1, z1+0.02, 'ceramic', 0.3);
+    box(out, 0.07, 0.19, -0.1, -0.02, z1+0.02, z1+0.06, 'fabric2', 0.3);                 // butter under its dish
+    // the lower shelf: a covered bowl and a parcel of fish in paper, tied
+    const z2=shelf[0]+0.016;
+    prism(out, -0.14, -0.02, 0.1, z2, z2+0.08, 12, 'ceramic', 0.05);
+    prism(out, -0.14, -0.02, 0.105, z2+0.08, z2+0.1, 12, 'fabric2', 0.35);
+    box(out, 0.02, 0.24, -0.06, 0.16, z2, z2+0.07, 'fabric2', 0.15);
+    box(out, 0.02, 0.24, 0.04, 0.06, z2+0.07, z2+0.075, 'iron', 0.2);
+    box(out, 0.12, 0.14, -0.06, 0.16, z2+0.07, z2+0.075, 'iron', 0.2);
+    // the crisper: a glass drawer, apples showing through its top
+    const cz0=R.doorZ0+0.01, cz1=R.doorZ0+0.2;
+    box(out, -w/2+t+0.02, w/2-t-0.02, -d/2+0.05, d/2-t-0.02, cz0, cz1, 'glass', 0.1);
+    for(const [ax,ay] of [[-0.16,-0.08],[-0.06,-0.1],[0.05,-0.06],[0.15,-0.1],[-0.1,0.04],[0.1,0.05]])
+      prism(out, ax, ay, 0.04, cz1, cz1+0.05, 8, 'fabric', 0.2);
+    box(out, -0.06, 0.06, -d/2+0.05, -d/2+0.06, cz1-0.06, cz1-0.03, 'tin', 0.6);         // its pull
+    // the door, built shut and swung about its hinge line (x = +w/2, y = -d/2)
+    const dz0=R.doorZ0, dz1=ht-0.012, dy0=-d/2-R.doorT, dy1=-d/2, door=[];
+    box(door, -w/2, w/2, dy0, dy1, dz0, dz1, 'body', 0.05);
+    box(door, -w/2+0.015, w/2-0.015, dy0-0.008, dy0, dz1-0.02, dz1, 'tin', 0.5);         // chrome rim along the top
+    // the freezer split: a dark seam across the door at the icebox, the top a short freezer door
+    const zs=ht-0.38;
+    decalY(door, dy0, -1, -w/2+0.008, w/2-0.008, zs-0.012, zs+0.006, 'dark', 0.05, null, true, 0.075);
+    decalY(door, dy0, -1, -w/2+0.008, w/2-0.008, zs+0.006, zs+0.016, 'body', 0.55, null, true, 0.075);
+    // the door's own shading: its free edge falls into shadow, its hinge edge catches the light
+    decalY(door, dy0, -1, -w/2+0.004, -w/2+0.03, dz0+0.01, dz1-0.03, 'body', -0.3, null, true, 0.07);
+    decalY(door, dy0, -1, w/2-0.025, w/2-0.004, dz0+0.01, dz1-0.03, 'body', 0.3, null, true, 0.07);
+    decalY(door, dy0, -1, -0.09, 0.09, dz1-0.19, dz1-0.11, 'tin', 0.9, null, true, 0.07); // the badge, chrome
+    decalY(door, dy0, -1, -0.07, 0.07, dz1-0.175, dz1-0.125, 'fabric', 0.15, null, true, 0.08); // red enamel
+    decalY(door, dy0, -1, -0.045, 0.045, dz1-0.155, dz1-0.145, 'tin', 1.0, null, true, 0.09);   // its script
+    const hx=-w/2+0.065, hz0=0.78, hz1=1.14;                                               // the lever handle
+    for(const z of [hz0, hz1-0.05]) box(door, hx-0.016, hx+0.016, dy0-0.05, dy0, z, z+0.05, 'tin', 0.3);
+    box(door, hx-0.02, hx+0.02, dy0-0.07, dy0-0.04, hz0, hz1, 'tin', 0.75);
+    decalY(door, dy0, -1, hx+0.02, hx+0.04, hz0-0.02, hz1, 'dark', 0.25, null, true, 0.072);   // its shadow on the door
+    for(const z of [zs+0.05, zs+0.17]) box(door, hx-0.016, hx+0.016, dy0-0.05, dy0, z, z+0.04, 'tin', 0.3); // the freezer's
+    box(door, hx-0.02, hx+0.02, dy0-0.07, dy0-0.04, zs+0.05, zs+0.21, 'tin', 0.75);
+    decalY(door, dy0, -1, hx+0.02, hx+0.04, zs+0.03, zs+0.21, 'dark', 0.25, null, true, 0.072);
+    // the door's inside: the gasket, the liner, three racks with bottles and eggs
+    decalY(door, dy1, 1, -w/2+0.015, w/2-0.015, dz0+0.015, dz1-0.015, 'dark', 0.2, null, true, 0.04);
+    decalY(door, dy1, 1, -w/2+0.04, w/2-0.04, dz0+0.04, dz1-0.04, 'trim', 0.3+lit, null, true, 0.05);
+    const racks=[0.42, 0.82, 1.18];
+    for(let r=0;r<racks.length;r++){ const z=racks[r];
+      box(door, -w/2+0.06, w/2-0.06, dy1, dy1+0.075, z, z+0.012, 'trim', -0.2);
+      box(door, -w/2+0.06, w/2-0.06, dy1+0.065, dy1+0.075, z+0.012, z+0.07, 'trim', 0.3);
+      if(r===2){ for(let k=0;k<5;k++) prism(door, -0.2+k*0.1, dy1+0.035, 0.025, z+0.012, z+0.05, 8, 'soap', 0.5); continue; }
+      for(let k=0;k<(r?4:3);k++){ const bx=-0.2+k*(r?0.13:0.18), tall=r?0.17:0.24;
+        prism(door, bx, dy1+0.035, 0.028, z+0.012, z+tall, 8, r?'glass':'ceramic', 0.15);
+        prism(door, bx, dy1+0.035, 0.016, z+tall, z+tall+0.04, 8, r?'glass':'ceramic', 0.35);
+        prism(door, bx, dy1+0.035, 0.018, z+tall+0.04, z+tall+0.05, 8, k&1?'brass':'tin', 0.5); } }
+    const th=R.doorDeg[Math.max(0, Math.min(3, s.door|0))]*DEG, ct=Math.cos(th), st=Math.sin(th), Hx=w/2, Hy=-d/2;
+    const rot=(p)=>{ const dx=p[0]-Hx, dy=p[1]-Hy; return [Hx+dx*ct-dy*st, Hy+dx*st+dy*ct, p[2]]; };
+    for(const f of door){ f.v=f.v.map(rot); out.push(f); }
+    // the two hinges stay on the cabinet
+    for(const z of [dz0+0.06, dz1-0.1]) box(out, w/2-0.01, w/2+0.012, -d/2-0.04, -d/2+0.01, z, z+0.06, 'tin', 0.4);
+  }
+
+  // KITCHEN SINK. A painted base unit with cupboard doors under a deep white china sink whose apron stands
+  // proud of the front, set in a wooden worktop with a grooved draining board, a tiled upstand, a brass
+  // bridge tap with two cross handles and a swan spout, a soap dish, a jug on the board and a tea towel on
+  // the rail. The sink is a real hollow and fills, froths and runs exactly as the bathroom basin does.
+  const SINK = { ht:0.9, top:0.05, bowlX:[-0.44, 0.02], bowlBack:0.16, bowlDepth:0.24, apron:0.025 };
+  function grooveTex(pitch){ return (u,v)=>{ const f=((v%pitch)+pitch)%pitch; return f<0.012?-2:(f<0.02?0.6:0); }; }
+  function pKitchenSink(out, s){
+    const P=PROPS[s.name], w=P.foot[0], d=P.foot[1], K=SINK, ht=K.ht, tz=ht, tb=ht-K.top;
+    const bx0=K.bowlX[0], bx1=K.bowlX[1], by0=-d/2-K.apron, by1=K.bowlBack;
+    // the base unit: walls with no lid (the sink sits down into it), the toe kick, doors and a drawer
+    box(out, -w/2, w/2, -d/2, d/2, 0.08, tb, 'body', 0, null, true);
+    box(out, -w/2+0.03, w/2-0.03, -d/2+0.04, d/2, 0, 0.08, 'iron', -0.5, null, true);
+    panelsY(out, -d/2, -w/2+0.04, bx1, 0.1, ht-0.3, 1, 2, true);                    // the sink cupboard, two doors
+    panelsY(out, -d/2, bx1+0.02, w/2-0.04, ht-0.27, tb-0.02, 1, 1, true);           // a drawer
+    panelsY(out, -d/2, bx1+0.02, w/2-0.04, 0.1, ht-0.29, 1, 1, true);               // and a door
+    for(const sx of [-1,1]) decalX(out, sx*w/2, sx, -d/2+0.06, d/2-0.06, 0.12, tb-0.04, 'body', -1.4, null, true, 0.05);
+    // the worktop round the sink: a strip at the left, a strip behind, the grooved draining board at the right
+    box(out, -w/2-0.02, bx0, -d/2-0.02, d/2, tb, tz, 'worktop', 0.1, null, true);
+    slab(out, [[-w/2-0.02,-d/2-0.02],[bx0,-d/2-0.02],[bx0,d/2],[-w/2-0.02,d/2]], tz, 'worktop', 0.3, plankTex(0.06));
+    box(out, bx0, bx1, by1, d/2, tb, tz, 'worktop', 0.1, null, true);
+    slab(out, [[bx0,by1],[bx1,by1],[bx1,d/2],[bx0,d/2]], tz, 'worktop', 0.3, plankTex(0.06));
+    box(out, bx1, w/2+0.02, -d/2-0.02, d/2, tb, tz, 'worktop', 0.1, null, true);
+    slab(out, [[bx1,-d/2-0.02],[w/2+0.02,-d/2-0.02],[w/2+0.02,d/2],[bx1,d/2]], tz, 'worktop', 0.35, grooveTex(0.05));
+    box(out, bx1, w/2+0.02, -d/2-0.025, -d/2-0.005, tz, tz+0.012, 'worktop', 0.45);    // the board's front lip
+    // the tiled upstand behind
+    box(out, -w/2-0.02, w/2+0.02, d/2-0.03, d/2, tz, tz+0.22, 'trim', 0.05, tileTex(0.1));
+    box(out, -w/2-0.03, w/2+0.03, d/2-0.045, d/2+0.005, tz+0.22, tz+0.24, 'trim', 0.4);
+    // the china sink: an outer wall (its apron shows on the front), the rolled rim, the hollow and its drain
+    const bcx=(bx0+bx1)/2, bcy=(by0+by1)/2, ha=(bx1-bx0)/2, hb=(by1-by0)/2, zr=tz+0.012, zf=tz-K.bowlDepth;
+    const oR=rrect(bcx,bcy,ha,hb,0.035,3), iR=rrect(bcx,bcy,ha-0.035,hb-0.035,0.03,3), iF=rrect(bcx,bcy,ha-0.07,hb-0.07,0.05,3);
+    loft(out, oR, oR, tz-0.3, zr, 'ceramic', 0.05);
+    band(out, oR, iR, zr, 'ceramic', 0.45);
+    loft(out, iF, iR, zf, zr, 'ceramic', -1.1, true);
+    slab(out, iF, zf, 'ceramic', -0.8);
+    prism(out, bcx, bcy+0.02, 0.025, zf, zf+0.005, 8, 'dark', 0);
+    box(out, bcx-0.006, bcx+0.006, bcy+0.02, bcy+0.11, zf+0.005, zf+0.009, 'brass', 0.3);   // the plug's chain
+    const surf=water(out, iF, iR, zf, zr-0.03, s.fill, 11+(s.froth|0));
+    suds(out, surf, s.froth, 9);
+    // the bridge tap: two pillars with cross handles on the strip behind, a bridge, a swan spout over the sink
+    const ty=(by1+d/2-0.03)/2, sy=bcy+0.04;
+    for(const tx of [bcx-0.09, bcx+0.09]){
+      box(out, tx-0.02, tx+0.02, ty-0.02, ty+0.02, tz, tz+0.12, 'brass', 0.2);
+      box(out, tx-0.05, tx+0.05, ty-0.01, ty+0.01, tz+0.12, tz+0.14, 'brass', 0.5);
+      box(out, tx-0.01, tx+0.01, ty-0.05, ty+0.05, tz+0.12, tz+0.14, 'brass', 0.5);
+      prism(out, tx, ty, 0.014, tz+0.14, tz+0.158, 6, 'ceramic', 0.6); }
+    box(out, bcx-0.09, bcx+0.09, ty-0.015, ty+0.015, tz+0.07, tz+0.1, 'brass', 0.35);
+    box(out, bcx-0.018, bcx+0.018, ty-0.018, ty+0.018, tz+0.1, tz+0.27, 'brass', 0.15);
+    box(out, bcx-0.018, bcx+0.018, sy, ty+0.018, tz+0.24, tz+0.27, 'brass', 0.4);
+    box(out, bcx-0.016, bcx+0.016, sy-0.01, sy+0.025, tz+0.16, tz+0.25, 'brass', 0.25);
+    if(s.pour) stream(out, bcx, sy+0.007, tz+0.16, surf?surf.z:zf, (s.fill*9)|0, 0.024);
+    // a soap dish behind the board, an enamel jug on it, a towel on the rail of the drawer
+    box(out, bx1+0.06, bx1+0.18, d/2-0.13, d/2-0.05, tz, tz+0.02, 'ceramic', 0.4);
+    box(out, bx1+0.08, bx1+0.16, d/2-0.12, d/2-0.06, tz+0.02, tz+0.045, 'soap', 0.4);
+    prism(out, w/2-0.14, -0.04, 0.06, tz, tz+0.16, 10, 'ceramic', 0.1);
+    prism(out, w/2-0.14, -0.04, 0.07, tz+0.13, tz+0.16, 10, 'ceramic', 0.35);
+    box(out, w/2-0.22, w/2-0.2, -0.06, -0.02, tz+0.05, tz+0.13, 'ceramic', 0.2);
+    prism(out, w/2-0.14, -0.04, 0.072, tz+0.158, tz+0.165, 10, 'iron', 0.1);           // its dark rim
+    box(out, bx1+0.04, w/2-0.04, -d/2-0.05, -d/2-0.03, ht-0.31, ht-0.29, 'tin', 0.5);
+    box(out, bx1+0.12, bx1+0.3, -d/2-0.065, -d/2-0.045, ht-0.6, ht-0.29, 'fabric', 0.1, plankTex(0.05));
+  }
+
+  PROPS.fridge      = { label:'Fridge',       cat:'kitchen', foot:[0.7,0.68], def:{paint:'white',fabric:'red',fabric2:'cream'}, build:pFridge };
+  PROPS.kitchenSink = { label:'Kitchen sink', cat:'kitchen', foot:[1.0,0.6],  def:{paint:'cream',wood:'pine',worktop:'butcher',fabric:'blue'}, build:pKitchenSink };
 
   // ---- the near/far split: clip every face at the plane through the seat, square to the view ----
   function splitFaces(faces, B, seat){ const yS=seat[0]*B.stt + seat[1]*B.ct, out=[];
