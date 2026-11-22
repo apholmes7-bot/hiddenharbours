@@ -627,7 +627,8 @@ Shader "HiddenHarbours/IsoFacet"
                     FragOut blocker;
                     blocker.facet = 0;
                     blocker.dark = 0;
-                    blocker.key = float4(hhBlockerKey, HH_MESH_BLOCKER);
+                    blocker.key = float4(0, 0, 0, HH_MESH_BLOCKER);
+                    blocker.key.rgb = hhBlockerKey;
                     blocker.depth = i.reflectionDepth;
                     return blocker;
                 }
@@ -643,7 +644,8 @@ Shader "HiddenHarbours/IsoFacet"
                     FragOut thinned;
                     thinned.facet = 0;
                     thinned.dark = 0;
-                    thinned.key = float4(hhBlockerKey, HH_MESH_BLOCKER);
+                    thinned.key = float4(0, 0, 0, HH_MESH_BLOCKER);
+                    thinned.key.rgb = hhBlockerKey;
                     thinned.depth = i.reflectionDepth;
                     return thinned;
                 }
