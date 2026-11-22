@@ -54,5 +54,13 @@ pass-2 pieces, so the first-pass icons re-bake byte for byte.
 | `instrument.loran` | `GearIcon_loran` | a deep set with amber digits, a keypad and the antenna lead |
 | `instrument.gps` | `GearIcon_gps` | a landscape chartplotter: blue water, tan coast, the boat and its track |
 
-Still owed after pass 2: the headlamp has no icon (nothing records it as owned, so the KIT page does
-not list it), and any owned id the KIT page Def does not list falls back to the placeholder.
+Still owed after pass 2: any owned id the KIT page Def does not list falls back to the placeholder.
+
+## Pass 3: the headlamp (2026-11-22)
+
+`gear.headlamp` is recorded as owned from the first morning (StartingGear) and is never sold. It gets
+an unlisted, sellerless entry (`Catalog/Gear/Headlamp`, "Headlamp"), a row under CARRIED on the KIT
+page, and `GearIcon_headlamp` from the PASS 3 block of the same bake: the elastic strap loop with a
+strap over the crown, a slide buckle, the red housing and its lens lit, three-quarter on. Its ramps are
+the worn lamp's own colours (`Headlamp.cs`), handed only to this piece, so every earlier icon re-bakes
+byte for byte. Pinned by `GearIconTests` and `HeadlampGearDefTests`.

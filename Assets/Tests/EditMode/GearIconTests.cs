@@ -47,6 +47,8 @@ namespace HiddenHarbours.Tests
             ("instrument.fish_finder", "fish_finder"),
             ("instrument.loran", "loran"),
             ("instrument.gps", "gps"),
+            // pass 3: the headlamp he has from the first morning
+            ("gear.headlamp", "headlamp"),
         };
 
         /// <summary>The smallest icon, px on its long side, that still reads in the card's icon slot.</summary>

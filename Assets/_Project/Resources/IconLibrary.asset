@@ -103,6 +103,8 @@ MonoBehaviour:
     Icon: {fileID: 21300000, guid: 50c83f151b744e859c136692ce548004, type: 3}
   - Id: instrument.gps
     Icon: {fileID: 21300000, guid: 62ca54007eb94bfabad97aad1e6cf563, type: 3}
+  - Id: gear.headlamp
+    Icon: {fileID: 21300000, guid: dca91309e97748b78e73ba7a3921abde, type: 3}
   - Id: license.cod
     Icon: {fileID: 21300000, guid: 4bd247b5cbbe4ca3a9869c1fed00f1d6, type: 3}
   - Id: boat.dory

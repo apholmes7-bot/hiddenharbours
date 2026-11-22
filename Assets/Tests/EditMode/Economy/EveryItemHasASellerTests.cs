@@ -58,6 +58,7 @@ namespace HiddenHarbours.Tests.Economy
         {
             // ---- Starting kit -----------------------------------------------------------------------
             ["watch.harbour_digital"] = "starting item: worn from the first morning (StartsOwned); needs shop: a watch seller for a replacement",
+            ["gear.headlamp"] = "starting item: in his pocket from the first morning and never bought (owner ruling 2026-11-22); no shop sells one",
 
             // ---- No ownership or purchase seam yet (an offer type is code, not data) ------------------
             ["tackle.*"] = "not owned piece by piece yet: the rod's tackle box hands every lure; needs an owned-tackle seam, then shop: the NMC fishing gear wholesaler",
