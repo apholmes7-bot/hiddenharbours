@@ -255,16 +255,63 @@ namespace HiddenHarbours.App.Editor
             /// listed and are not rebuilt: they are the same walls on both storeys.</summary>
             public readonly IReadOnlyList<WallRect> Partitions;
 
+            /// <summary>The storey above's own painted sheet (an asset path to a sprite), for a site whose
+            /// upstairs is not a baked room. ⚠ An upper storey never draws the ground floor's sheet: that
+            /// sheet paints the ground floor's stair, partitions and furniture, and drawn upstairs they read
+            /// as the floor below showing through. A plan names either <see cref="RoomKey"/> or this.</summary>
+            public readonly string UpperSheetPath;
+
+            /// <summary>The storey BELOW's own furniture when this site's ground floor is not the shared
+            /// build's (<see cref="FurnishingsFor"/>); null = the build's list. Ginny's cottage and the
+            /// village's pilot cottage are the same build, and only hers has a bedroom upstairs, so only
+            /// hers moves the bed off the ground floor.</summary>
+            public readonly IReadOnlyList<Furnishing> GroundFurnishings;
+
+            /// <summary>Walls and solid painted pieces that exist only on the storey BELOW (its room
+            /// partitions, the painted settee, the stair run). Built under the ground furniture root, so
+            /// they are switched off with it when you go up: the storey above is drawn higher on screen and
+            /// overlaps the ground floor in world space, and a ground partition left standing would cut
+            /// through the bedrooms.</summary>
+            public readonly IReadOnlyList<WallRect> GroundWalls;
+
             public UpperLevelPlan(string roomKey,
                                   IReadOnlyList<Furnishing> groundAdditions,
                                   IReadOnlyList<Furnishing> furnishings,
-                                  IReadOnlyList<WallRect> partitions)
+                                  IReadOnlyList<WallRect> partitions,
+                                  string upperSheetPath = null,
+                                  IReadOnlyList<Furnishing> groundFurnishings = null,
+                                  IReadOnlyList<WallRect> groundWalls = null)
             {
                 RoomKey = roomKey ?? "";
                 GroundAdditions = groundAdditions;
                 Furnishings = furnishings;
                 Partitions = partitions;
+                UpperSheetPath = upperSheetPath ?? "";
+                GroundFurnishings = groundFurnishings;
+                GroundWalls = groundWalls ?? System.Array.Empty<WallRect>();
             }
+
+            /// <summary>Whether the storey above has a picture of its own (a baked room or a painted
+            /// sheet) rather than none.</summary>
+            public bool HasOwnUpperPicture =>
+                !string.IsNullOrEmpty(RoomKey) || !string.IsNullOrEmpty(UpperSheetPath);
+        }
+
+        /// <summary>The asset path of Ginny's painted upstairs sheet (same cell size and pivot as the
+        /// sage room's ground sheet, so it lands on the same footprint one storey up).</summary>
+        public const string GinnyUpperSheetPath =
+            "Assets/_Project/Art/Sprites/Interiors/Painted/GinnyCottage_Upstairs.png";
+
+        /// <summary>The ground furniture a site's building is stood with: the site's own list when its
+        /// upper-level plan gives one, the build's otherwise. Additions (the stair foot) come on top.</summary>
+        public static IReadOnlyList<Furnishing> GroundFurnishingsFor(string roomKey, string planKey)
+        {
+            if (HasUpperLevel(planKey))
+            {
+                UpperLevelPlan plan = UpperLevelFor(planKey);
+                if (plan.GroundFurnishings != null) return plan.GroundFurnishings;
+            }
+            return FurnishingsFor(roomKey);
         }
 
         /// <summary>The plan key Ginny's cottage asks for. Named after the SITE, not the build, because
@@ -303,21 +350,20 @@ namespace HiddenHarbours.App.Editor
         /// and Ginny does not walk through the room she is lending you. That cost 1.8 m of floor and is
         /// the single thing about this layout worth defending.</para>
         ///
-        /// <para><b>Where the stairwell had to go, and why it is not prettier.</b> It stands at
-        /// (−2.50, 0.90) on BOTH storeys — that is what makes the level swap need no teleport — so it
-        /// has to be clear of the ground floor's shipped furniture as well as of the landing. The
-        /// ground floor is already furnished (the dresser at (−2.75, −0.50), the table and its two chairs
-        /// across the middle) and that furniture is the VILLAGE cottage's too, so it cannot be moved to
-        /// suit this one. (−2.50, 0.90) is the gap that leaves: hard against the right wall, a clear
-        /// 0.68 m nearer the door than the dresser, and well outside the doorway lane.</para>
+        /// <para><b>Where the stairwell goes (owner 2026-11-22: "against the wall so its not interrupting
+        /// the flow of the house").</b> The run stands against the living room's back
+        /// partition (x 1.2..3.3, y 0..1.1), rising north to the left wall where the middle window used to
+        /// be, so the run takes the strip of floor behind the settee that nobody walks through. Upstairs
+        /// that strip is the back of the player's bedroom, clear of the bed, railed on its open sides. The
+        /// interact point is at (1.70, 0.55) on BOTH storeys, just inside the foot of the run, which is what
+        /// makes the level swap need no teleport: you press from the open floor at the foot and arrive at
+        /// the same plan point; the landing pushes him clear of the hole and the rod rack. Ginny's ground floor has its own furniture (<see cref="UpperLevelPlan.GroundFurnishings"/>),
+        /// so the village's pilot cottage, the same build, keeps its own one-room layout.</para>
         ///
-        /// <para><b>⚠ Greybox, and it looks like one.</b> The upper storey draws the SAME baked room
-        /// sheet as the one below, because the footprint is identical and the floor and far walls are
-        /// therefore already the right size — but that sheet has a front door drawn in it, and upstairs
-        /// that door goes nowhere. It is plugged solid (see <see cref="InteriorFootprint.DoorwayPlugQuad"/>)
-        /// so you cannot walk out of it, but it is still DRAWN. That is the one honest ugliness here and
-        /// it is the art lane's to fix: an <c>upstairs</c> room bake, named in <see cref="UpperLevelPlan.RoomKey"/>,
-        /// replaces it without touching a line of this file.</para>
+        /// <para><b>Its own picture upstairs.</b> The storey above draws a painted sheet of its own
+        /// (<see cref="UpperLevelPlan.UpperSheetPath"/>): the bedrooms' partitions, the stairwell railing
+        /// and a closed front wall. It used to draw the ground floor's sheet, which painted the ground
+        /// floor's stair and partitions upstairs too, as if the floor below showed through.</para>
         /// </summary>
         public static UpperLevelPlan UpperLevelFor(string planKey) => planKey switch
         {
@@ -325,25 +371,44 @@ namespace HiddenHarbours.App.Editor
             "creamSaltbox" => EmptyUpperRoom("creamSaltboxUpper"),
             "whiteGable" => EmptyUpperRoom("whiteGableUpper"),
             GinnyCottagePlanKey => new UpperLevelPlan(
-                // Empty = draw the storey below's own room sheet. See the greybox note above.
+                // No baked upstairs room: the storey above draws its own painted sheet (never the ground
+                // floor's, which paints the stair, the partitions and the settee).
                 roomKey: "",
+                upperSheetPath: GinnyUpperSheetPath,
+
+                // ---- the GROUND floor: three rooms, no bed (owner 2026-11-22) -----------------------
+                // The entry/living room is the front (+y) half: the painted settee, armchair and rug in the
+                // north (+x) corner by the door, the table and its two chairs on the south side, and the
+                // stair run against the back partition, rising north beside the kitchen doorway. A north-south partition (y -0.3..0)
+                // closes off the back half; an east-west one splits that into the kitchen (north) and the
+                // washroom (south). Each has its own doorway off the living room.
+                groundFurnishings: new[]
+                {
+                    new Furnishing("table", new Vector2(-1.75f, 1.60f), 4,
+                                   "the living room's table, on the south side clear of the doorway lane, " +
+                                   "with a wide walk to the washroom door between it and the partition"),
+                    new Furnishing("chair", new Vector2(-1.00f, 2.20f), 4,
+                                   "pulled out on the door side of the table"),
+                    new Furnishing("chair", new Vector2(-2.50f, 2.20f), 4,
+                                   "its pair, clear of the washroom doorway"),
+                },
+                groundWalls: GinnyGroundWalls,
 
                 // ---- what the GROUND floor gains: the foot of the stairs ---------------------------
                 groundAdditions: new[]
                 {
-                    new Furnishing("seaChest", new Vector2(-2.50f, 0.90f), 4,
-                                   "the foot of the stairs, against the right wall in the gap between " +
-                                   "the dresser and the chairs — a sea chest STANDING IN for the stair " +
-                                   "art, because it is the only prop in the kit you would plausibly " +
-                                   "step up onto, and a bare interact point would be a way upstairs " +
-                                   "with nothing to see",
+                    new Furnishing("seaChest", new Vector2(GinnyStairAtX, GinnyStairAtY), 4,
+                                   "the stair's interact point, at the foot of the painted stair run against " +
+                                   "the living room's back partition. The sea chest prop is a STAND-IN the builder " +
+                                   "places for it; the placed room hides its picture (the stair is painted " +
+                                   "in the room sheet) and the run's own wall rect is the collider",
                                    InteriorFixture.StairUp),
                 },
 
                 // ---- the storey above ---------------------------------------------------------------
                 furnishings: new[]
                 {
-                    new Furnishing("seaChest", new Vector2(-2.50f, 0.90f), 4,
+                    new Furnishing("seaChest", new Vector2(GinnyStairAtX, GinnyStairAtY), 4,
                                    "the head of the same stairs — the SAME model coordinate as the foot, " +
                                    "which is precisely why coming up needs no teleport",
                                    InteriorFixture.StairDown),
@@ -393,9 +458,42 @@ namespace HiddenHarbours.App.Editor
                                  "the partition BETWEEN the two bedrooms, running from the landing " +
                                  "to the left wall. Solid: each room is entered from the landing, so " +
                                  "neither is a way through to the other"),
+                    new WallRect(GinnyStairX0, GinnyStairX1, GinnyStairwellY0, GinnyStairY1,
+                                 "the stairwell: the hole the stair comes up through, along the back of " +
+                                 "the player's room, railed on its open sides. It stops short of the stair " +
+                                 "run's back edge so his rod rack and gear locker keep the wall strip " +
+                                 "along the bedroom partition"),
                 }),
 
             _ => default,
+        };
+
+        // Ginny's stair run, in the plan frame: against the living room's back partition, from the kitchen
+        // doorway north to the left wall; the interact point sits at its foot, the same on both storeys.
+        public const float GinnyStairX0 = 1.20f, GinnyStairX1 = 3.30f, GinnyStairY0 = 0.00f, GinnyStairY1 = 1.10f;
+        public const float GinnyStairAtX = 1.70f, GinnyStairAtY = 0.55f;
+        // The hole upstairs is the run less its back 0.25 m: the floor above overhangs the run's back edge.
+        public const float GinnyStairwellY0 = 0.25f;
+
+        /// <summary>Ginny's ground-floor walls (plan frame; each rect runs into the wall band it meets).</summary>
+        static WallRect[] GinnyGroundWalls => new[]
+        {
+            new WallRect(0.65f, 3.30f, -0.30f, 0.00f,
+                         "the living room's back partition, north run: from the left wall to the kitchen door " +
+                         "(x -0.55..0.65)"),
+            new WallRect(-1.55f, -0.55f, -0.30f, 0.00f,
+                         "the living room's back partition between the kitchen and washroom doors"),
+            new WallRect(-3.30f, -2.75f, -0.30f, 0.00f,
+                         "the living room's back partition, south stub: right wall to the washroom door " +
+                         "(x -2.75..-1.55)"),
+            new WallRect(-1.25f, -0.95f, -4.025f, -0.30f,
+                         "the partition between the kitchen (north) and the washroom (south)"),
+            new WallRect(GinnyStairX0, GinnyStairX1, GinnyStairY0, GinnyStairY1,
+                         "the stair run against the back partition (painted in the room sheet)"),
+            new WallRect(2.35f, 3.30f, 1.394f, 3.394f,
+                         "the painted settee against the left wall, towards the door"),
+            new WallRect(0.85f, 2.00f, 2.344f, 3.044f,
+                         "the painted armchair on the rug"),
         };
 
         static UpperLevelPlan EmptyUpperRoom(string key) => new UpperLevelPlan(key,
@@ -674,6 +772,19 @@ namespace HiddenHarbours.App.Editor
             //     the greybox: identical footprint, so the floor and far walls are already correct.
             Sprite upperSprite = groundRoomSprite;
             InteriorCatalog.Placement upperRoom = room;
+            if (!string.IsNullOrEmpty(plan.UpperSheetPath))
+            {
+                Sprite painted = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(plan.UpperSheetPath);
+                if (painted != null) upperSprite = painted;
+                else
+                    Debug.LogError(
+                        $"[StPetersInteriors] upper-level plan '{planKey}' names the sheet " +
+                        $"'{plan.UpperSheetPath}', which does not load as a sprite.");
+            }
+            else if (!plan.HasOwnUpperPicture)
+                Debug.LogError(
+                    $"[StPetersInteriors] upper-level plan '{planKey}' names no picture of its own; the " +
+                    "storey above would draw the ground floor's sheet, stair and partitions included.");
             if (!string.IsNullOrEmpty(plan.RoomKey))
             {
                 InteriorCatalog.Placement named = InteriorCatalog.FindRoom(plan.RoomKey);
@@ -749,6 +860,22 @@ namespace HiddenHarbours.App.Editor
             placed += Furnish(groundProps, plan.GroundAdditions, room.Entry.key, footprint,
                               interiorFacing, room.Entry.facings, interior, idPrefix);
 
+            // --- the ground floor's own walls, under its furniture root so they go off with it.
+            if (plan.GroundWalls.Count > 0)
+            {
+                var groundWallsGo = new GameObject(GroundWallsChildName);
+                groundWallsGo.transform.SetParent(groundProps, worldPositionStays: false);
+                groundWallsGo.transform.localPosition = Vector3.zero;
+                BuildRects(groundWallsGo.transform, footprint, plan.GroundWalls);
+            }
+
+            // --- a painted upstairs paints the stair on both sheets: the stand-in prop keeps its
+            //     interact and loses its picture.
+            if (!string.IsNullOrEmpty(plan.UpperSheetPath))
+                foreach (Transform root in new[] { groundProps, upperPropsGo.transform })
+                    foreach (InteriorStair stair in root.GetComponentsInChildren<InteriorStair>(true))
+                        if (stair.TryGetComponent(out SpriteRenderer sr)) sr.enabled = false;
+
             // ⚠ AFTER both furniture roots exist and BEFORE anything else looks at the interior:
             //   ConfigureUpperLevel applies the swap immediately, which is what leaves the upstairs
             //   switched OFF in the editor instead of drawn straight over the ground floor.
@@ -773,16 +900,28 @@ namespace HiddenHarbours.App.Editor
         /// these rects DO overlap the house's walls on purpose (each partition runs into the wall it
         /// meets, so the join cannot leak).</para>
         /// </summary>
-        static void BuildUpperWalls(Transform root, in InteriorFootprint footprint, in UpperLevelPlan plan)
-        {
-            Vector2 origin = root.parent != null ? (Vector2)root.parent.position : Vector2.zero;
+        /// <summary>The name of the ground floor's own walls, under its furniture root.</summary>
+        public const string GroundWallsChildName = "WallsGround";
 
-            foreach (WallRect r in plan.Partitions)
+        /// <summary>One <see cref="PolygonCollider2D"/> per rect on <paramref name="root"/>, whose position is
+        /// the building's (it hangs at local zero under the building or under a furniture root at local
+        /// zero).</summary>
+        static void BuildRects(Transform root, in InteriorFootprint footprint, IReadOnlyList<WallRect> rects)
+        {
+            Vector2 origin = root.position;
+            foreach (WallRect r in rects)
             {
                 var collider = root.gameObject.AddComponent<PolygonCollider2D>();
                 collider.pathCount = 1;
                 collider.SetPath(0, BuildingInteriorStander.ToLocal(footprint.Quad(r.X0, r.X1, r.Y0, r.Y1), origin));
             }
+        }
+
+        static void BuildUpperWalls(Transform root, in InteriorFootprint footprint, in UpperLevelPlan plan)
+        {
+            Vector2 origin = root.parent != null ? (Vector2)root.parent.position : Vector2.zero;
+
+            BuildRects(root, footprint, plan.Partitions);
 
             // The doorway, closed. Derived from the same arithmetic that cut the gap, so the two can
             // never disagree about where the door is.

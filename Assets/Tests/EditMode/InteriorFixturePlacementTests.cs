@@ -191,13 +191,25 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void GinnysBathroomPiecesStandAtLeastNinetyCentimetresApart()
+        public void GinnysBathroomPiecesNeverOverlap()
         {
+            // The washroom is its own room now (1.75 m across), so the basin stands beside the toilet as a vanity
+            // does. That each piece is still the one offered where he stands to use it, and is reachable at
+            // all, is GinnyCottageRoomsTests' walk over the real floor; a fixed spacing stood in for that before.
             var rows = InteriorFixturePlacement.PlacedRows().Where(r => RoomFixturePlan.IsBathroom(r.Kind)).ToList();
             Assert.AreEqual(3, rows.Count, "Ginny's toilet, basin and shower");
+            Rect Box(RoomFixturePlan.Row r)
+            {
+                Vector2 s = RoomFixturePlan.FootprintOf(r);
+                return new Rect(r.At - s * 0.5f, s);
+            }
             for (int i = 0; i < rows.Count; i++)
             for (int j = i + 1; j < rows.Count; j++)
-                Assert.GreaterOrEqual(Vector2.Distance(rows[i].At, rows[j].At), 0.9f, $"{rows[i].Id} and {rows[j].Id}");
+            {
+                Rect a = Box(rows[i]), b = Box(rows[j]);
+                bool overlap = a.xMin < b.xMax - 1e-3f && b.xMin < a.xMax - 1e-3f && a.yMin < b.yMax - 1e-3f && b.yMin < a.yMax - 1e-3f;
+                Assert.IsFalse(overlap, $"{rows[i].Id} and {rows[j].Id} overlap");
+            }
         }
 
         [Test]

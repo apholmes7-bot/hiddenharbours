@@ -190,11 +190,18 @@ namespace HiddenHarbours.App.Editor
             public readonly string BuildingKey;
             public readonly int Level;
             public readonly Rect Area;
-            public readonly float DoorFrom, DoorTo;   // along y, in the x = inner-edge partition
+            public readonly float DoorFrom, DoorTo;   // along y, in the x = inner-edge partition (or along x, below)
 
-            public Closet(string buildingKey, int level, Rect area, float doorFrom, float doorTo)
+            /// <summary>The door is in the closet's FRONT partition (y = <see cref="Area"/>.yMax), and
+            /// <see cref="DoorFrom"/>/<see cref="DoorTo"/> run along x: a washroom entered from the room in
+            /// front of it rather than from beside it (Ginny's).</summary>
+            public readonly bool DoorInFront;
+
+            public Closet(string buildingKey, int level, Rect area, float doorFrom, float doorTo,
+                          bool doorInFront = false)
             {
                 BuildingKey = buildingKey; Level = level; Area = area; DoorFrom = doorFrom; DoorTo = doorTo;
+                DoorInFront = doorInFront;
             }
         }
 
@@ -304,10 +311,8 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         public static readonly IReadOnlyCollection<string> SouthWallExceptions = new HashSet<string>
         {
-            "fixture.st_peters.ginny_cottage.microwave",       // placed; the cold corner, round from the fridge
-            "fixture.st_peters.ginny_cottage.shower",          // placed; the south-east corner, opening north
             "fixture.st_peters.ginny_cottage.toilet",          // placed; west of the shower so the shower never hides it
-            "fixture.st_peters.ginny_cottage.bathroom_sink",   // placed; by the closet's front end
+            "fixture.st_peters.ginny_cottage.bathroom_sink",   // placed; just inside the washroom door
             "fixture.st_peters.red_saltbox.shower",            // planned, not placed; re-plan north before placing
             "fixture.st_peters.white_farmhouse.toilet",        // planned, not placed (SE wall); re-plan before placing
             "fixture.st_peters.white_farmhouse.bathroom_sink", // planned, not placed (SE wall); re-plan before placing

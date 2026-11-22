@@ -276,7 +276,9 @@ namespace HiddenHarbours.Tests.EditMode
             float wall = StPetersInteriors.WallThicknessMetres;
             float hw = RoomFixturePlan.SageW * 0.5f, hl = RoomFixturePlan.SageL * 0.5f;
             float landing = plan.Partitions.Max(p => p.X1 < 0f ? p.X1 : float.MinValue);
-            float between = plan.Partitions.Where(p => p.X1 > 0f).Max(p => p.Y1);
+            // The bedroom partition is the one run straddling the room's middle (the stairwell's rail is
+            // all on the north side).
+            float between = plan.Partitions.Where(p => p.X0 < 0f && p.X1 > 0f).Max(p => p.Y1);
             var room = Rect.MinMaxRect(landing, between, hw - wall, hl - wall);
 
             foreach (Row row in Placed())

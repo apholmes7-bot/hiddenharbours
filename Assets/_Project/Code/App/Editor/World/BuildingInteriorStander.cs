@@ -258,7 +258,7 @@ namespace HiddenHarbours.App.Editor
             propsGo.transform.SetParent(buildingGo.transform, worldPositionStays: false);
             propsGo.transform.localPosition = Vector3.zero;
             int furnished = StPetersInteriors.Furnish(
-                propsGo.transform, StPetersInteriors.FurnishingsFor(room.Entry.key), room.Entry.key,
+                propsGo.transform, StPetersInteriors.GroundFurnishingsFor(room.Entry.key, upperPlanKey), room.Entry.key,
                 footprint, interiorFacing, room.Entry.facings);
 
             // --- the behaviour.

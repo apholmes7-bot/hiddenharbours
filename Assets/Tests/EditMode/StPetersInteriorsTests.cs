@@ -329,6 +329,10 @@ namespace HiddenHarbours.Tests.EditMode
                 foreach (var f in plan.Furnishings)
                     yield return ($"upstairs at '{planKey}'", f);
 
+                if (plan.GroundFurnishings != null)
+                    foreach (var f in plan.GroundFurnishings)
+                        yield return ($"the ground floor of '{planKey}'", f);
+
                 if (plan.GroundAdditions == null) continue;
                 foreach (var f in plan.GroundAdditions)
                     yield return ($"the storey below '{planKey}'", f);
