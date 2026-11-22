@@ -161,7 +161,7 @@ namespace HiddenHarbours.Player
 
         // The move between hand and back: the pose last drawn, and the blend under way. Presentation only:
         // it starts from what was drawn, so it never feeds the simulation.
-        private bool _hasLast, _lastStowed, _blending;
+        private bool _hasLast, _lastStowed, _lastOffHand, _blending;
         private Vector3 _lastGrip, _fromGrip;
         private Quaternion _lastAim = Quaternion.identity, _fromAim = Quaternion.identity;
         private float _blendClock;
@@ -169,7 +169,9 @@ namespace HiddenHarbours.Player
         private void Blend(ToolDef tool, float dt, ref Vector3 grip, ref Quaternion aim)
         {
             float seconds = tool != null ? tool.StowBlendSeconds : 0f;
-            if (_hasLast && Stowed != _lastStowed && seconds > 0f)
+            // A move between his back and his hand, or from one hand to the other, is blended the same short
+            // way, so the tool never jumps.
+            if (_hasLast && (Stowed != _lastStowed || CarriedInOffHand != _lastOffHand) && seconds > 0f)
             {
                 _fromGrip = _lastGrip;
                 _fromAim = _lastAim;
@@ -187,6 +189,7 @@ namespace HiddenHarbours.Player
             Blending = _blending;
             _hasLast = true;
             _lastStowed = Stowed;
+            _lastOffHand = CarriedInOffHand;
             _lastGrip = grip;
             _lastAim = aim;
         }
@@ -202,6 +205,7 @@ namespace HiddenHarbours.Player
         {
             Drawing = false;
             _hasLast = _blending = false;
+            _carriedInOffHand = false;
             Blending = false;
             if (_renderer != null) _renderer.Hide();
             KeepReach(null);
@@ -241,6 +245,7 @@ namespace HiddenHarbours.Player
             aimLocal = Quaternion.identity;
             Carried = false;
             Stowed = false;
+            CarriedInOffHand = false;
             if (!switchOn) return Refusal.SwitchOff;
             if (tool == null) return Refusal.NoTool;
             if (!tool.DrawHeldMeshOnFigure) return Refusal.ToolKeepsSprite;
@@ -273,17 +278,119 @@ namespace HiddenHarbours.Player
             // In his hand: the grip is the palm socket on the frame drawn, every frame, so it follows the
             // hand bone; the aim is the clip's own tool key, or the Def's carried aim on a free gait.
             int gripBone = _mountBone;
+            bool offHand = false;
             if (!aimed && !string.IsNullOrEmpty(carriedMountBone))
             {
                 ResolveCarriedBone(figure.SkinDef, carriedMountBone);
                 if (_carriedBone != CharacterSkinDef.NoBone) gripBone = _carriedBone;
             }
+            else if (!aimed && tool.CarryInNearerHand)
+            {
+                // Carried in the hand you can see: the other hand takes it once its side of him is nearer the
+                // camera by the Def's margin, and gives it back the same way, so a hand behind his body never
+                // holds it. The side is read off bones that do not swing (the shoulders), never the hands.
+                ResolveOffHandBone(figure.SkinDef, tool);
+                if (_offHandBone != CharacterSkinDef.NoBone && _sideBone != CharacterSkinDef.NoBone
+                    && _offSideBone != CharacterSkinDef.NoBone && figure.FacetTransform != null
+                    && figure.TryBonePoint(_sideBone, out Vector3 mainPoint)
+                    && figure.TryBonePoint(_offSideBone, out Vector3 offPoint))
+                {
+                    _carriedInOffHand = CarryInOffHand(_carriedInOffHand,
+                                                       figure.FacetTransform.TransformPoint(mainPoint).z,
+                                                       figure.FacetTransform.TransformPoint(offPoint).z,
+                                                       tool.CarriedHandSwapDepthMetres,
+                                                       FacingAway(figure), tool.CarriedOffHandFacingAwayMin);
+                    offHand = _carriedInOffHand;
+                    if (offHand) gripBone = _offHandBone;
+                }
+            }
             if (!figure.TryBonePoint(gripBone, out gripLocal)) return Refusal.NoMeshFigure;
             Carried = !aimed;
+            CarriedInOffHand = offHand;
             aimLocal = aimed ? HeldPropPose.FromBakedPose(_bakedPitch, _bakedYaw, key.Pitch, key.Yaw)
-                             : HeldPropPose.FromBakedPose(_bakedPitch, _bakedYaw, tool.CarriedPitchDeg, tool.CarriedYawDeg);
+                             : HeldPropPose.FromBakedPose(_bakedPitch, _bakedYaw, tool.CarriedPitchDeg,
+                                                          CarriedYawFor(tool, offHand));
             return Refusal.None;
         }
+
+        /// <summary>
+        /// Which hand carries the tool next (<see cref="ToolDef.CarryInNearerHand"/>): true for the other
+        /// hand. It changes hands only when the other hand is nearer the camera (smaller world z) than the
+        /// one holding it by more than <paramref name="swapDepth"/>; otherwise it stays where it is. The same
+        /// rule the landed catch uses (<see cref="HeldCatchMesh.NearerSocket"/>).
+        /// </summary>
+        public static bool CarryInOffHand(bool inOffHandNow, float mainDepth, float offDepth, float swapDepth)
+        {
+            float holding = inOffHandNow ? offDepth : mainDepth;
+            float other = inOffHandNow ? mainDepth : offDepth;
+            return other < holding - Mathf.Max(0f, swapDepth) ? !inOffHandNow : inOffHandNow;
+        }
+
+        /// <summary>
+        /// As <see cref="CarryInOffHand(bool, float, float, float)"/>, gated by his facing: while he faces the
+        /// camera more than <paramref name="facingAwayMin"/> allows (<paramref name="facingAway"/> under it,
+        /// -1 straight at the camera, 1 straight away) the mount hand carries it, whatever the depths.
+        /// </summary>
+        public static bool CarryInOffHand(bool inOffHandNow, float mainDepth, float offDepth, float swapDepth,
+                                          float facingAway, float facingAwayMin)
+            => facingAway >= facingAwayMin && CarryInOffHand(inOffHandNow, mainDepth, offDepth, swapDepth);
+
+        /// <summary>His facing's share along the camera's depth on the frame drawn: the chest's forward (the
+        /// rig's +y) taken through the facet child, mirror included; -1 straight at the camera, 1 straight
+        /// away, 0 side-on. 0 when the figure has no chest.</summary>
+        public float FacingAway(IsoCharacterFigureRenderer figure)
+        {
+            if (_facingBone == CharacterSkinDef.NoBone || figure.FacetTransform == null
+                || !figure.TryBoneFrame(_facingBone, out Vector3 at, out Quaternion frame))
+                return 0f;
+            Transform t = figure.FacetTransform;
+            Vector3 forward = t.TransformPoint(at + frame * Vector3.up) - t.TransformPoint(at);
+            float length = forward.magnitude;
+            return length > 1e-6f ? forward.z / length : 0f;
+        }
+
+        /// <summary>The carried aim's yaw for the hand holding it: the Def's in the mount hand, mirrored in
+        /// the other, so the tool angles out from the side it is held on.</summary>
+        public static float CarriedYawFor(ToolDef tool, bool offHand)
+            => tool == null ? 0f : offHand ? -tool.CarriedYawDeg : tool.CarriedYawDeg;
+
+        /// <summary>
+        /// Whether a tool's old SPRITE may draw this frame. Never while a mesh figure draws him and the tool's
+        /// Def draws its held mesh on the figure (the switch on): the mesh is the tool's only look on a mesh
+        /// figure, so a frame the mesh cannot draw shows no tool rather than the old sprite. While his body is
+        /// a sprite the sprite tool still draws.
+        /// </summary>
+        public static bool SpriteMayDraw(bool switchOn, ToolDef tool, bool meshFigureDraws)
+            => !(switchOn && meshFigureDraws && tool != null && tool.DrawHeldMeshOnFigure);
+
+        /// <summary>True when the last resolve carried the prop in the Def's other hand
+        /// (<see cref="ToolDef.CarriedOffHandMountBone"/>) because that hand was nearer the camera.</summary>
+        public bool CarriedInOffHand { get; private set; }
+
+        private bool _carriedInOffHand;
+
+        private void ResolveOffHandBone(CharacterSkinDef skin, ToolDef tool)
+        {
+            // Once per skin and Def: the Def's strings are read here and nowhere per frame.
+            if (ReferenceEquals(skin, _offHandSkin) && ReferenceEquals(tool, _offHandTool)) return;
+            _offHandSkin = skin;
+            _offHandTool = tool;
+            _offHandBone = BoneOrNone(skin, tool.CarriedOffHandMountBone);
+            _sideBone = string.IsNullOrEmpty(tool.CarriedSideBone) ? skin.IndexOfBone(tool.HeldMeshMountBone)
+                                                                  : BoneOrNone(skin, tool.CarriedSideBone);
+            _offSideBone = string.IsNullOrEmpty(tool.CarriedOffSideBone) ? _offHandBone
+                                                                         : BoneOrNone(skin, tool.CarriedOffSideBone);
+            _facingBone = skin.IndexOfBone(ChestBoneId);
+        }
+
+        private static int BoneOrNone(CharacterSkinDef skin, string boneId)
+            => string.IsNullOrEmpty(boneId) ? CharacterSkinDef.NoBone : skin.IndexOfBone(boneId);
+
+        private CharacterSkinDef _offHandSkin;
+        private ToolDef _offHandTool;
+        private int _offHandBone = CharacterSkinDef.NoBone;
+        private int _sideBone = CharacterSkinDef.NoBone, _offSideBone = CharacterSkinDef.NoBone;
+        private int _facingBone = CharacterSkinDef.NoBone;
 
         /// <summary>
         /// The slung pose: the rig's back mount (its +y is the slung axis, set by the rig on the chest), the

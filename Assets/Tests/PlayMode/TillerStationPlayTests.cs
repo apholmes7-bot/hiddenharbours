@@ -103,5 +103,42 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual(1, CountDeep(_root.transform, BoatHullSkinner.MotorFitChildName), "one motor fit after a re-skin");
 #endif
         }
+
+        [UnityTest]
+        public IEnumerator ThePunt_SeatsHerSkipperAtHerTiller_OnHerOwnSternBench()
+        {
+#if !UNITY_EDITOR
+            Assert.Ignore("Needs the AssetDatabase: this asserts the REAL committed punt.");
+            yield break;
+#else
+            var punt = AssetDatabase.LoadAssetAtPath<BoatHullDef>($"{BoatsFolder}/Punt.asset");
+            Assert.IsNotNull(punt, "missing the committed Punt hull");
+            Assert.IsNotNull(HullMeshPresentation.Service, "the Art presentation service self-registers");
+
+            _root = new GameObject("Punt");
+            var rig = BoatHullSkinner.ApplyHull(_root, null, punt, boat: null);
+            Assert.IsTrue(rig.Skinned, "the punt skins");
+            yield return null;   // one real LateUpdate: the engine poses
+
+            var station = _root.GetComponent<OutboardTillerStation>();
+            Assert.IsNotNull(station, "the punt's tiller station rides beside her engine");
+            Assert.AreEqual(0, CountDeep(_root.transform, BoatHullSkinner.MotorFitChildName),
+                "the punt's stern bench is part of her hull: no motor fit is hung");
+            var motor = _root.GetComponent<OutboardMotorMeshLayer>();
+            Assert.IsNotNull(motor, "her engine is drawn");
+            ITillerStation seat = station;
+            Assert.IsTrue(seat.TryGetTillerTargets(out RowingTargets t), "the station answers once her engine is wired");
+
+            BoatVisualDef visual = punt.Visual;
+            Vector3 expected = TillerStationMath.Grip(visual.Tiller.TillerGripAtRestLocalMeters,
+                visual.MotorMesh.PivotLocalMeters,
+                OutboardMotorMeshPose.Rotation(motor.SteerDegrees, motor.TiltDegrees),
+                HullPropFitment.Mount(motor.MountMeters(0), visual.MotorMeshFitmentOffsetMeters));
+            Vector3 held = t.StarboardGripValid ? t.StarboardGrip : t.PortGrip;
+            Assert.AreEqual(0f, (held - expected).magnitude, 1e-5f, "the held grip is the tiller where the engine's mesh puts it");
+            Assert.AreEqual(visual.Tiller.SeatLocalMeters, t.Seat, "he sits on the station's seat");
+            Assert.AreEqual(0f, t.TurnStarboardDegrees, 1e-5f, "with nobody at the helm the engine is dead ahead and he sits square");
+#endif
+        }
     }
 }
