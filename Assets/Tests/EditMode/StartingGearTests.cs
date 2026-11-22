@@ -84,7 +84,7 @@ namespace HiddenHarbours.Tests.EditMode
                 try
                 {
                     var sg = go.AddComponent<StartingGear>();
-                    sg.Configure(new[] { PlayerGear.ShovelId, PlayerGear.BucketId }, "flag.granted");
+                    sg.Configure(new[] { PlayerGear.ShovelId, PlayerGear.BucketId }, new string[0], "flag.granted");
 
                     Assert.AreEqual(2, sg.GrantOnce(), "first call grants the kit");
                     Assert.IsTrue(fake.GetFlag("flag.granted"), "the grant flag is set so it won't re-run");
@@ -95,15 +95,117 @@ namespace HiddenHarbours.Tests.EditMode
             finally { GameServices.Reset(); }
         }
 
+        // ---- the headlamp: carried from the start, recorded as owned --------------------------
+
+        [Test]
+        public void ANewGame_RecordsTheHeadlampAsOwned_WithTheStartingKit()
+        {
+            var save = NewSave();
+            var fake = new FlagSaveService(save);
+            GameServices.Reset();
+            GameServices.Save = fake;
+            var go = new UnityEngine.GameObject("StartingGear");
+            try
+            {
+                var sg = go.AddComponent<StartingGear>();   // the shipped defaults, as on the player
+                Assert.IsFalse(PlayerGear.HasHeadlamp(save), "nothing granted yet");
+
+                Assert.AreEqual(3, sg.GrantOnce(), "shovel, bucket and the headlamp from his pocket");
+                Assert.IsTrue(PlayerGear.HasHeadlamp(save), "the headlamp is owned");
+                Assert.IsTrue(PlayerGear.Owns(save, PlayerGear.HeadlampId));
+                Assert.IsTrue(PlayerGear.CanDig(save) && PlayerGear.HasBucket(save), "the kit still lands");
+
+                Assert.AreEqual(0, sg.GrantOnce(), "a second load adds nothing");
+                Assert.AreEqual(1, save.OwnedGear.FindAll(id => id == PlayerGear.HeadlampId).Count, "recorded once");
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(go);
+                GameServices.Reset();
+            }
+        }
+
+        [Test]
+        public void AGameBegunBeforeTheHeadlampWasRecorded_GainsItOnLoad_AndIsSaved()
+        {
+            // The once-flag was set long ago with only the shovel and bucket.
+            var save = NewSave();
+            save.OwnedGear.AddRange(new[] { PlayerGear.ShovelId, PlayerGear.BucketId, PlayerGear.RodId });
+            var fake = new FlagSaveService(save);
+            fake.SetFlag("st_peters_starting_gear_granted", true);
+            GameServices.Reset();
+            GameServices.Save = fake;
+            var go = new UnityEngine.GameObject("StartingGear");
+            try
+            {
+                var sg = go.AddComponent<StartingGear>();
+
+                Assert.AreEqual(1, sg.GrantOnce(), "only the headlamp is new");
+                Assert.IsTrue(PlayerGear.HasHeadlamp(save));
+                Assert.AreEqual(1, fake.Saves, "the new record is written to disk");
+                CollectionAssert.AreEqual(
+                    new[] { PlayerGear.ShovelId, PlayerGear.BucketId, PlayerGear.RodId, PlayerGear.HeadlampId },
+                    save.OwnedGear, "nothing stripped, nothing doubled");
+
+                Assert.AreEqual(0, sg.GrantOnce(), "and the next load is quiet");
+                Assert.AreEqual(1, fake.Saves, "no further writes");
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(go);
+                GameServices.Reset();
+            }
+        }
+
+        [Test]
+        public void TheOwnedHeadlamp_SurvivesASaveRoundTrip_InTheCurrentFormat()
+        {
+            var save = NewSave();
+            StartingGear.Grant(save, new[] { PlayerGear.ShovelId, PlayerGear.BucketId, PlayerGear.HeadlampId });
+
+            SaveData reloaded = SaveSerialization.FromJson(SaveSerialization.ToJson(save));
+
+            Assert.IsNotNull(reloaded);
+            Assert.AreEqual(SaveMigration.CurrentVersion, reloaded.SchemaVersion, "no new save version");
+            Assert.IsTrue(PlayerGear.HasHeadlamp(reloaded), "the headlamp is still owned after a reload");
+            CollectionAssert.AreEqual(save.OwnedGear, reloaded.OwnedGear);
+        }
+
+        [Test]
+        public void TheKitPage_ListsTheOwnedHeadlamp()
+        {
+            var save = NewSave();
+            StartingGear.Grant(save, new[] { PlayerGear.ShovelId, PlayerGear.BucketId, PlayerGear.HeadlampId });
+            SaveData reloaded = SaveSerialization.FromJson(SaveSerialization.ToJson(save));
+
+            var held = new List<HiddenHarbours.World.NotebookGearHolding>();
+            HiddenHarbours.World.SaveGearSource.Collect(reloaded, null, held);
+            Assert.IsTrue(held.Exists(h => h.Id == PlayerGear.HeadlampId), "the save source reads the headlamp");
+
+            HiddenHarbours.World.NotebookGearPageDef page = HiddenHarbours.World.NotebookContentSource.GearPage();
+            Assert.IsNotNull(page, "the shipped KIT page Def loads");
+            List<NotebookBlock> blocks = HiddenHarbours.World.NotebookGearPage.Blocks(held, page, KitPageCols);
+
+            NotebookBlock lamp = blocks.Find(b => b.SourceId == HiddenHarbours.World.NotebookGearPage.SourcePrefix
+                                                              + PlayerGear.HeadlampId);
+            Assert.IsNotNull(lamp, "the KIT page has a block for the headlamp");
+            bool named = false;
+            for (int i = 0; i < lamp.Rows.Count; i++) named |= lamp.Rows[i].Text == "Headlamp";
+            Assert.IsTrue(named, "lettered 'Headlamp'");
+        }
+
+        private const int KitPageCols = 31;
+
         // A save stand-in that actually stores flags (StartingGear's once-guard needs Get/SetFlag).
         private sealed class FlagSaveService : ISaveService
         {
             private readonly Dictionary<string, bool> _flags = new();
             public FlagSaveService(SaveData data) { Current = data; }
             public SaveData Current { get; }
+            public int Saves { get; private set; }
             public bool GetFlag(string key) => _flags.TryGetValue(key, out var v) && v;
             public void SetFlag(string key, bool value) { if (!string.IsNullOrEmpty(key)) _flags[key] = value; }
-            public void Save() { }
+            public void Save() => Saves++;
         }
     }
 }

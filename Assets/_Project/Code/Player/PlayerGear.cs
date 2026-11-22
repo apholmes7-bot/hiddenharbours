@@ -26,6 +26,10 @@ namespace HiddenHarbours.Player
         /// diegetic-UI proof — diegetic-ui-and-inventory.md §3.3). Unlike the boat-fitted instruments
         /// (sounder/radar/gps/compass), the watch is CARRIED on the player and reads on any boat / ashore.</summary>
         public const string WatchId  = "gear.watch";
+        /// <summary>The headlamp: carried in his pocket from the very start and worn from there (owner
+        /// ruling 2026-11-16). Recorded in the owned-gear wallet like the shovel, so the Notebook's KIT
+        /// page and any ownership check see it (<see cref="StartingGear"/> grants it).</summary>
+        public const string HeadlampId = "gear.headlamp";
 
         /// <summary>True iff the player owns the gear with this stable id (reads the live save's owned-gear
         /// list). Null save / null-or-empty id → false.</summary>
@@ -52,5 +56,9 @@ namespace HiddenHarbours.Player
         /// first "true UI" the player earns; before it there is no time on screen, diegetic-ui §3.3.)</summary>
         public static bool HasWatch(SaveData save) => Owns(save, WatchId);
         public static bool HasWatch() => HasWatch(GameServices.Save?.Current);
+
+        /// <summary>Does the player own the headlamp? (Every game starts with it in his pocket.)</summary>
+        public static bool HasHeadlamp(SaveData save) => Owns(save, HeadlampId);
+        public static bool HasHeadlamp() => HasHeadlamp(GameServices.Save?.Current);
     }
 }

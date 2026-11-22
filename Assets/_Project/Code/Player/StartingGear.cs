@@ -21,6 +21,10 @@ namespace HiddenHarbours.Player
     /// opening's kit is editable without code and matches the authored GearOffer ids
     /// (<see cref="PlayerGear"/>). Cross-module-clean: writes only the Core <see cref="SaveData"/> — Economy
     /// isn't involved (this is a grant, not a sale).</para>
+    ///
+    /// <para><b>Carried from the start.</b> The headlamp is in his pocket in every game, so it is
+    /// recorded in the same wallet, but on every load rather than once: games begun before it was
+    /// recorded already carry the once-flag. Existing field, no save-format change.</para>
     /// </summary>
     public class StartingGear : MonoBehaviour
     {
@@ -31,6 +35,12 @@ namespace HiddenHarbours.Player
         [Tooltip("Save flag that marks the one-time starting-gear grant as done, so it isn't re-run on " +
                  "every scene load. Stable, append-only key.")]
         [SerializeField] private string _grantedFlagKey = "st_peters_starting_gear_granted";
+
+        [Tooltip("Gear ids the player has carried since the very start, granted on EVERY load (additive, " +
+                 "de-duplicated) rather than once behind the flag above. Defaults to the headlamp, which " +
+                 "he always has in his pocket: a game begun before it was recorded already has the flag " +
+                 "set, so a once-only grant would never reach it.")]
+        [SerializeField] private string[] _carriedFromStartIds = { PlayerGear.HeadlampId };
 
         // Wait until the loaded save is the truth (M1 §7.8's shell): at the title the blob still belongs
         // to the game the player may be about to write over, and reading the grant flag there would
@@ -47,10 +57,16 @@ namespace HiddenHarbours.Player
             SaveData save = saver?.Current;
             if (save == null) return 0;                                  // no save → nothing to grant into
 
-            if (!string.IsNullOrEmpty(_grantedFlagKey) && saver.GetFlag(_grantedFlagKey))
-                return 0;                                               // already granted this game
+            // What he has carried from the start is topped up on every load, flag or no flag.
+            int carried = Grant(save, _carriedFromStartIds);
 
-            int granted = Grant(save, _startingGearIds);
+            if (!string.IsNullOrEmpty(_grantedFlagKey) && saver.GetFlag(_grantedFlagKey))
+            {
+                if (carried > 0) saver.Save();                          // an older game gains the record
+                return carried;                                         // the kit was granted this game
+            }
+
+            int granted = Grant(save, _startingGearIds) + carried;
 
             if (!string.IsNullOrEmpty(_grantedFlagKey)) saver.SetFlag(_grantedFlagKey, true); // persists
             else if (granted > 0) saver.Save();
@@ -79,6 +95,13 @@ namespace HiddenHarbours.Player
         {
             _startingGearIds = startingGearIds;
             _grantedFlagKey = grantedFlagKey;
+        }
+
+        /// <summary>Wire the starting ids and the carried-from-the-start ids in one call (tests / editor).</summary>
+        public void Configure(string[] startingGearIds, string[] carriedFromStartIds, string grantedFlagKey)
+        {
+            Configure(startingGearIds, grantedFlagKey);
+            _carriedFromStartIds = carriedFromStartIds;
         }
     }
 }
