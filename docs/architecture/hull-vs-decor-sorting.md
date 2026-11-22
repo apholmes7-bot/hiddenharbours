@@ -34,6 +34,7 @@ says "Y-sort".
 | -21 | Terrain splat ground | `Art/TerrainSplatSurface.cs:31` |
 | -21 to -18 | Painted seabed | `Core/Art/SortingBands.cs:30-32`; St Peters shore paint `App/Editor/StPetersShorePainter.cs:50-52` |
 | -9 | Ground prints (footprints, tyre marks) | `Core/GroundPrints/GroundPrintSettings.cs:194`, applied `Art/GroundPrintRenderer.cs:130` |
+| -8 | Dug holes (a shovel's hole in the flat, for the rest of the day or until the tide covers it; Y-sort inside their own group) | `Core/GroundPrints/DugHoleSettings.cs` (`SortingOrder`), applied `Environment/DugHolePresenter.cs` |
 | -8 | Submerged shore plant | `SortingBands.cs:36`; `Art/ShorePlantDef.cs:112`; plant field `Art/PlantFieldDefinition.cs:21` |
 | **-6** | **(PR #1281) `UnderHulls`: lying weed, ground cover, a standing plant behind a hull** | `SortingBands.UnderHulls` in #1281 |
 | **-5** | **The sea plane**, and the displaced water's overlay at the same slot | `SortingBands.cs:39`; scene templates `App/Editor/WaterSceneTemplate.cs:330`, `App/Editor/LandSceneTemplate.cs:263`; overlay `Art/DisplacedWaterSurface.cs:651-653` |
