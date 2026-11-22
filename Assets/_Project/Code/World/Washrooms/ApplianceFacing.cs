@@ -66,6 +66,21 @@ namespace HiddenHarbours.World
             return new Vector2(gx, gy * IsoGround.GroundDepthScale + prop.z * IsoGround.HeightScale);
         }
 
+        /// <summary>The world-space box a piece's ground footprint covers at a cell (offset from its pivot, and
+        /// size): the bounds of the four footprint corners. A wall cell (a quarter turn) gives the exact
+        /// footprint; the front clearance in front of it stays open so it is reached from there.</summary>
+        public static Rect FootprintBox(in ApplianceLayout layout, int cell, int facings = ApplianceSheets.Facings)
+        {
+            float hx = layout.Foot.x * 0.5f, hy = layout.Foot.y * 0.5f;
+            Vector2 min = new Vector2(float.MaxValue, float.MaxValue), max = new Vector2(float.MinValue, float.MinValue);
+            for (int i = 0; i < 4; i++)
+            {
+                Vector2 p = ModelToWorldOffset(cell, new Vector3((i & 1) == 0 ? -hx : hx, (i & 2) == 0 ? -hy : hy, 0f), facings);
+                min = Vector2.Min(min, p); max = Vector2.Max(max, p);
+            }
+            return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
+        }
+
         /// <summary>The compass bearing (0 = north, clockwise) of a PROP-frame ground direction at a cell.</summary>
         public static float BearingDegrees(int cell, Vector2 propDirection, int facings = ApplianceSheets.Facings)
             => IsoGround.BearingDegrees(ModelToWorldOffset(cell, new Vector3(propDirection.x, propDirection.y, 0f), facings));
