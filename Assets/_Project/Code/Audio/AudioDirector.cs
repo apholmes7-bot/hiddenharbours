@@ -106,6 +106,7 @@ namespace HiddenHarbours.Audio
         private OarStrokePlayer _oarPlayer;   // the oars on the stroke (ambience): pooled one-shot voices
         private OarStrokeAudioTuning _oarTuning;
         private AudioListener _listener;      // where the stroke sounds are heard from (found on demand)
+        private float _nextListenerSearch;    // unscaled time before which a missing listener is not searched for again
         private AudioSource _engine;  // outboard-engine bed (ambience, aboard an engine hull)
         private AudioSource _tell;    // rising-wind tell (ambience, wind-driven)
         private AudioSource _cue;     // one-shot stings/warmth (sfx)
@@ -387,9 +388,18 @@ namespace HiddenHarbours.Audio
 
         private Vector2 ListenerPosition(Vector2 fallback)
         {
-            if (_listener == null || !_listener.isActiveAndEnabled)
-                _listener = FindAnyObjectByType<AudioListener>();
-            return _listener != null ? (Vector2)_listener.transform.position : fallback;
+            // A region scene keeps its own review camera's listener, switched OFF; the one that hears is
+            // the enabled one. Searched only when the cached one is gone or off, and at most once a
+            // second, so a scene with no enabled listener does not search on every stroke. With none,
+            // the stroke is heard where it happens (the rower is the player).
+            if ((_listener == null || !_listener.isActiveAndEnabled) && Time.unscaledTime >= _nextListenerSearch)
+            {
+                _nextListenerSearch = Time.unscaledTime + 1f;
+                _listener = null;
+                foreach (var l in FindObjectsByType<AudioListener>(FindObjectsSortMode.None))
+                    if (l.isActiveAndEnabled) { _listener = l; break; }
+            }
+            return _listener != null && _listener.isActiveAndEnabled ? (Vector2)_listener.transform.position : fallback;
         }
 
         private void PlayCue(AudioCue cue)
