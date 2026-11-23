@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace HiddenHarbours.Art
@@ -115,6 +116,215 @@ namespace HiddenHarbours.Art
 
         /// <summary>A face piece smaller than this (m²) is a repeated or collinear station, not ground: it is skipped.</summary>
         public const float MinFacePieceAreaSqMetres = 1e-4f;
+
+        // ── Where a run of chunks ends, and how its faces meet ──────────────────────────────────────
+        // A run is the chain of chunks whose end stations meet. These read only the chunks' brow lines and drops, so
+        // the picture they shape is a pure function of the stations, the same on every machine and on every build.
+
+        /// <summary>Two chunk ends closer than this (m) are one join: the builder writes a join as one shared station.</summary>
+        public const float RunJoinToleranceMetres = 0.01f;
+
+        /// <summary>A run end this close (m) to the start of another run is a slit, not an end: the face is drawn on
+        /// across it (the East Ledges slit is 0.94 m, Nine Mile Creek's 0.20 m). Wider gaps are real gaps (paths, the
+        /// creek mouth) and their ends taper.</summary>
+        public const float RunBridgeMetres = 1.5f;
+
+        /// <summary>At an open run end the face is drawn only this fraction of the way down: it tapers into the ground
+        /// instead of stopping in a square cut.</summary>
+        public const float RunEndKeep = 0.08f;
+
+        /// <summary>How far back from an open end the taper reaches, per metre of drop at the end.</summary>
+        public const float RunEndTaperPerDropMetre = 1.4f;
+
+        /// <summary>The shortest taper (m), so a low end still rounds off instead of stepping.</summary>
+        public const float RunEndTaperMinMetres = 3f;
+
+        /// <summary>The longest taper (m), and so the farthest a chunk looks along its run for an end.</summary>
+        public const float RunEndTaperMaxMetres = 12f;
+
+        /// <summary>On a short run with both ends near, each end's taper takes at most this share of the run's length.</summary>
+        public const float RunEndTaperMaxShareOfRun = 0.3f;
+
+        /// <summary>Where two joined chunks wear different rock, the one drawn in front carries its own rock this far
+        /// (m) over the other's face, fading out, so the swap reads as one wall instead of a straight seam.</summary>
+        public const float RunSeamFeatherMetres = 1.6f;
+
+        /// <summary>Over the last this many metres (m) above a tapered face's foot the rock fades out, and the toe strip
+        /// fades with the taper, so the face sinks into the ground below it instead of ending on a drawn line.</summary>
+        public const float RunEndFadeMetres = 3f;
+
+        /// <summary>How strongly a column fades at its foot: 0 where the face is whole, 1 at an open end.</summary>
+        public static float RunEndFadeStrength(float keep) =>
+            Mathf.Clamp01((1f - keep) / (1f - RunEndKeep));
+
+        /// <summary>The vertex alpha at depth <paramref name="t"/> (0..1 of the surface) of a column that keeps
+        /// <paramref name="keep"/> of a <paramref name="surfaceMetres"/> face. 1 everywhere on a whole face.</summary>
+        public static float RunEndAlphaAt(float t, float keep, float surfaceMetres)
+        {
+            float strength = RunEndFadeStrength(keep);
+            if (strength <= 0f) return 1f;
+            float x = Mathf.Clamp01((keep - t) * surfaceMetres / RunEndFadeMetres);
+            return 1f - strength * (1f - x * x * (3f - 2f * x));
+        }
+
+        /// <summary>The taper length (m) for an open end with this drop.</summary>
+        public static float RunEndTaperMetres(float dropMetres) =>
+            Mathf.Clamp(dropMetres * RunEndTaperPerDropMetre, RunEndTaperMinMetres, RunEndTaperMaxMetres);
+
+        /// <summary>How much of the face (0..1 of its surface, from the brow) is drawn at a column this far (m) along
+        /// the run from an open end whose taper is <paramref name="taperMetres"/> long. 1 past the taper.</summary>
+        public static float RunEndKeepAt(float distanceMetres, float taperMetres)
+        {
+            if (!(distanceMetres < taperMetres) || taperMetres <= 0f) return 1f;
+            float x = Mathf.Clamp01(distanceMetres / taperMetres);
+            return Mathf.Lerp(RunEndKeep, 1f, x * x * (3f - 2f * x));
+        }
+
+        /// <summary>
+        /// One chunk's place in its run. Distances are along the brow, from this chunk's first (or last) station to the
+        /// open run end behind (or ahead of) it; <see cref="float.PositiveInfinity"/> where no open end lies within
+        /// <see cref="RunEndTaperMaxMetres"/>. Indexes are into the list the reach was read from, -1 for none.
+        /// </summary>
+        public struct RunReach
+        {
+            public float StartDistance, StartTaperMetres;
+            public float EndDistance, EndTaperMetres;
+            /// <summary>The chunk whose first station closes the slit after this chunk's last station.</summary>
+            public int BridgeTo;
+            /// <summary>The chunks joined to this one's first and last station.</summary>
+            public int JoinedBefore, JoinedAfter;
+        }
+
+        /// <summary>The polyline length (m) of a brow line.</summary>
+        public static float BrowLengthMetres(Vector2[] brow)
+        {
+            float len = 0f;
+            if (brow != null)
+                for (int i = 1; i < brow.Length; i++) len += Vector2.Distance(brow[i - 1], brow[i]);
+            return len;
+        }
+
+        /// <summary>
+        /// ⭐ <b>Where chunk <paramref name="me"/> sits in its run</b>, from every sibling chunk's brow line and drops.
+        /// A run end is a first station no chunk ends at, or a last station no chunk starts at. An end within
+        /// <see cref="RunBridgeMetres"/> of another run's end is a slit and is not open; every other end is open and
+        /// tapers. Chunks with fewer than two stations are ignored.
+        /// </summary>
+        public static RunReach RunReachOf(IReadOnlyList<Vector2[]> brows, IReadOnlyList<float[]> drops, int me)
+        {
+            var reach = new RunReach
+            {
+                StartDistance = float.PositiveInfinity, EndDistance = float.PositiveInfinity,
+                BridgeTo = -1, JoinedBefore = -1, JoinedAfter = -1,
+            };
+            if (brows == null || me < 0 || me >= brows.Count || !Usable(brows[me])) return reach;
+            reach.JoinedBefore = JoinedBefore(brows, me);
+            reach.JoinedAfter = JoinedAfter(brows, me);
+
+            // Back along the run to its first station.
+            float dist = 0f;
+            int cur = me;
+            for (int guard = 0; guard < brows.Count; guard++)
+            {
+                int prev = cur == me ? reach.JoinedBefore : JoinedBefore(brows, cur);
+                if (prev < 0)
+                {
+                    Vector2 at = brows[cur][0];
+                    if (!NearOtherRunEnd(brows, cur, at, first: true))
+                    {
+                        reach.StartDistance = dist;
+                        reach.StartTaperMetres = RunEndTaperMetres(DropAt(drops, cur, 0));
+                    }
+                    break;
+                }
+                if (prev == me) break;                           // a closed ring has no end
+                dist += BrowLengthMetres(brows[prev]);
+                if (dist >= RunEndTaperMaxMetres) break;
+                cur = prev;
+            }
+
+            // On along the run to its last station.
+            dist = 0f;
+            cur = me;
+            for (int guard = 0; guard < brows.Count; guard++)
+            {
+                int next = cur == me ? reach.JoinedAfter : JoinedAfter(brows, cur);
+                if (next < 0)
+                {
+                    Vector2 at = brows[cur][brows[cur].Length - 1];
+                    if (!NearOtherRunEnd(brows, cur, at, first: false))
+                    {
+                        reach.EndDistance = dist;
+                        reach.EndTaperMetres = RunEndTaperMetres(DropAt(drops, cur, brows[cur].Length - 1));
+                    }
+                    break;
+                }
+                if (next == me) break;
+                dist += BrowLengthMetres(brows[next]);
+                if (dist >= RunEndTaperMaxMetres) break;
+                cur = next;
+            }
+
+            // A slit after my last station: the nearest run start within the bridge distance.
+            if (reach.JoinedAfter < 0)
+            {
+                Vector2 last = brows[me][brows[me].Length - 1];
+                float best = RunBridgeMetres;
+                for (int k = 0; k < brows.Count; k++)
+                {
+                    if (k == me || !Usable(brows[k])) continue;
+                    float d = Vector2.Distance(last, brows[k][0]);
+                    if (d <= best && JoinedBefore(brows, k) < 0) { best = d; reach.BridgeTo = k; }
+                }
+            }
+            return reach;
+        }
+
+        static bool Usable(Vector2[] brow) => brow != null && brow.Length >= 2;
+
+        static float DropAt(IReadOnlyList<float[]> drops, int chunk, int station)
+        {
+            if (drops == null || chunk >= drops.Count || drops[chunk] == null || drops[chunk].Length == 0) return 0f;
+            return drops[chunk][Mathf.Clamp(station, 0, drops[chunk].Length - 1)];
+        }
+
+        static int JoinedBefore(IReadOnlyList<Vector2[]> brows, int i)
+        {
+            Vector2 first = brows[i][0];
+            for (int k = 0; k < brows.Count; k++)
+                if (k != i && Usable(brows[k]) &&
+                    Vector2.Distance(brows[k][brows[k].Length - 1], first) <= RunJoinToleranceMetres) return k;
+            return -1;
+        }
+
+        static int JoinedAfter(IReadOnlyList<Vector2[]> brows, int i)
+        {
+            Vector2 last = brows[i][brows[i].Length - 1];
+            for (int k = 0; k < brows.Count; k++)
+                if (k != i && Usable(brows[k]) &&
+                    Vector2.Distance(brows[k][0], last) <= RunJoinToleranceMetres) return k;
+            return -1;
+        }
+
+        /// <summary>Whether another run's open end lies within <see cref="RunBridgeMetres"/> of this run end.</summary>
+        static bool NearOtherRunEnd(IReadOnlyList<Vector2[]> brows, int chunk, Vector2 at, bool first)
+        {
+            for (int k = 0; k < brows.Count; k++)
+            {
+                if (!Usable(brows[k])) continue;
+                Vector2[] b = brows[k];
+                // Distance first: the join scans are the dear part, and only an end this close needs one.
+                float d0 = Vector2.Distance(b[0], at);
+                if (!(k == chunk && first) && d0 <= RunBridgeMetres && d0 > RunJoinToleranceMetres &&
+                    JoinedBefore(brows, k) < 0)
+                    return true;
+                float d1 = Vector2.Distance(b[b.Length - 1], at);
+                if (!(k == chunk && !first) && d1 <= RunBridgeMetres && d1 > RunJoinToleranceMetres &&
+                    JoinedAfter(brows, k) < 0)
+                    return true;
+            }
+            return false;
+        }
 
         /// <summary>
         /// ⭐ <b>The ground one face segment covers, as solid pieces</b>: the quad from the brow at station

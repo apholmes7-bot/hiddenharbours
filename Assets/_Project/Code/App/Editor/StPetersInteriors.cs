@@ -711,10 +711,12 @@ namespace HiddenHarbours.App.Editor
             // The storey's own footprint: the same rectangle, one storey up. EVERYTHING placed on the
             // upper level is measured from this rather than from the ground floor's, so a prop, a
             // partition and the occupant standing between them cannot end up on different floors.
+            // It takes the ground footprint's FRAME (size, facing), which is turned a quarter from the
+            // room sprite's when the doorway is on a side wall (the harbour gable; InteriorFrame).
             var upperFootprint = new InteriorFootprint(
                 (Vector2)buildingGo.transform.position + new Vector2(0f, upperY),
-                room.Entry.footprintWidthMetres, room.Entry.footprintLengthMetres,
-                interiorFacing, room.Entry.facings, SpriteLightMath.GroundDepthScale,
+                footprint.WidthMetres, footprint.LengthMetres,
+                footprint.Facing, footprint.Facings, SpriteLightMath.GroundDepthScale,
                 footprint.DoorSign, footprint.DoorAcrossMetres);
 
             var upperRoomGo = new GameObject(UpperRoomChildName);

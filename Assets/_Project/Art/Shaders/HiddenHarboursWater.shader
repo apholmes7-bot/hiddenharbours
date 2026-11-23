@@ -1684,6 +1684,10 @@ Shader "HiddenHarbours/Water"
             // x = refraction (1 = crests on the contours), y = static alongshore jitter (deg), z = its
             // wavelength (m). All-zero = unpublished = the offshore heading, as before.
             float4 _BreakerRefract;
+            // The drawn wash's lee edge (WaveFieldBridge.PublishBreakerGlobals): x = how wide the envelope's
+            // land shadow is softened (m, BreakerSettings.BoreLeeSoftenMeters), y = the break depth over which
+            // the run-up takes the drawn edge (m, BoreEdgeFadeDepthMeters). All-zero = the previous hard edge.
+            float4 _BoreLeeFade;
 
             // SRP-batcher friendly: every per-material property in one CBUFFER (the runtime sets these via a
             // MaterialPropertyBlock; the sim-driven ones change on the slow tick, not per frame).
@@ -3835,6 +3839,26 @@ Shader "HiddenHarbours/Water"
             // water edge, so a define added inside the twin costs the advect shader a mandatory edit and
             // buys it nothing. The drawn edge is this shader’s alone; its reference depth lives here.
             #define SURF_EDGE_REF_DEPTH 0.02
+
+            // The direction whose land shadow sets the surf's envelope: the swell's march when the dominant
+            // train is the swell, the wind's otherwise. Unit, or zero when neither is published.
+            float2 BoreLeeShadowDir()
+            {
+                int dominant = clamp((int)(_WaveFieldParams.w + 0.5), 0, 7);
+                float2 d = (_WaveSwell.x > 0.0 && dominant >= 6) ? _WaveSwell.yz : _WaveFetchParams2.zw;
+                float len2 = dot(d, d);
+                return len2 > 1e-8 ? d * rsqrt(len2) : float2(0.0, 0.0);
+            }
+
+            // The drawn edge's lee fade: the run-up's share of the edge grows from 0 where the break depth
+            // first reaches the edge's reference depth to 1 at _BoreLeeFade.y metres. 0 (unpublished) = 1.
+            float BoreEdgeLeeFade01(float fetchEnv)
+            {
+                float fadeDepth = _BoreLeeFade.y;
+                if (fadeDepth <= SURF_EDGE_REF_DEPTH) return 1.0;
+                float bd = BreakerDepthAtEnv(_BreakerDepths.xyz, _BreakerDepths.w, fetchEnv);
+                return smoothstep(SURF_EDGE_REF_DEPTH, fadeDepth, bd);
+            }
 
             // Twin: WaterSurface.DrawnPulseBirth01 - the birth the DRAWN pulse (the run-up, the drawn edge, the
             // face) is scaled by. The since-crest read (SurfBoreBirth01) changes owner AT the front, where the
@@ -6085,7 +6109,30 @@ Shader "HiddenHarbours/Water"
                     if (surfFetchProbeM > 0.0 && dot(surfDir, surfDir) > 1e-6)
                     {
                         float2 fetchProbeXY = surfEvalXY - surfDir * surfFetchProbeM;
-                        surfFetchFactors = FetchFactorsFrom(FetchMarch01(fetchProbeXY), SwellShelter01(fetchProbeXY));
+                        // THE LEE'S EDGE, SOFTENED (the pale wedge at Rice Point, dusk): land shadows the march
+                        // along the wind (or the swell) on a hard straight line, so the envelope the wash reads
+                        // jumped from open sea to dead lee in one pixel and the wash stopped dead on it. With
+                        // _BoreLeeFade.x metres published, the envelope is read at the two points of a world-
+                        // fixed lattice that bracket the probe across the shadow and blended by the probe's
+                        // place between them: the line becomes a ramp that wide, and nothing crawls with the
+                        // camera. 0 = one read, as before. Twin: BreakerMath.BoreLeeLattice.
+                        float leeSoftM = max(_BoreLeeFade.x, 0.0);
+                        float2 leeShadowDir = BoreLeeShadowDir();
+                        if (leeSoftM > 0.0 && dot(leeShadowDir, leeShadowDir) > 1e-6)
+                        {
+                            float2 leeAcross = float2(-leeShadowDir.y, leeShadowDir.x);
+                            float leeC = dot(fetchProbeXY, leeAcross) / leeSoftM;
+                            float leeC0 = floor(leeC);
+                            float leeFr = leeC - leeC0;
+                            float2 leeA = fetchProbeXY + leeAcross * ((leeC0 - leeC) * leeSoftM);
+                            float2 leeB = leeA + leeAcross * leeSoftM;
+                            FetchFactors leeFa = FetchFactorsFrom(FetchMarch01(leeA), SwellShelter01(leeA));
+                            FetchFactors leeFb = FetchFactorsFrom(FetchMarch01(leeB), SwellShelter01(leeB));
+                            surfFetchFactors.low = lerp(leeFa.low, leeFb.low, leeFr);
+                            surfFetchFactors.high = lerp(leeFa.high, leeFb.high, leeFr);
+                        }
+                        else
+                            surfFetchFactors = FetchFactorsFrom(FetchMarch01(fetchProbeXY), SwellShelter01(fetchProbeXY));
                         // The probe is the sea's energy, but THIS pixel's reach still decides what arrives.
                         surfFetchFactors.low *= seaReach;
                         surfFetchFactors.high *= seaReach;
@@ -6377,6 +6424,13 @@ Shader "HiddenHarbours/Water"
                     ? saturate(SurfBreaking01(SURF_EDGE_REF_DEPTH, surfFetchEnv)
                                * saturate(_SurfStrength) * saturate(_SurfRunUpStrength))
                     : 0.0;                                  // the surf block's own reach gate (l.4613)
+                // THE LEE FADE (the pale wedge's second half): the gate above is asked at a fixed 2 cm, so it
+                // opens fully within a few thousandths of the envelope (the break depth crosses 2 cm there);
+                // a softened lee was turned straight back into a step, and the run-up's wash and the foam it
+                // leaves ended on a hard line. The run-up's share of the edge now grows with the break depth
+                // from 2 cm to _BoreLeeFade.y metres, still one shore quantity. 1 where unpublished.
+                float boreEdgeLeeFade = BoreEdgeLeeFade01(surfFetchEnv);
+                boreEdgeBlend *= boreEdgeLeeFade;
                 boreEdgeBlend *= seaReach;                  // no bore runs up a cut-off pool's rim
                 float cosmeticEdgeSwash = edgeSwash;
                 edgeSwash = lerp(edgeSwash, boreEdgeShift, boreEdgeBlend);
@@ -6456,6 +6510,7 @@ Shader "HiddenHarbours/Water"
                     float leftSoft = max(_SurfThresholdSoft, 1e-3);
                     leftFoamA = smoothstep(leftThr - leftSoft, leftThr + leftSoft, saturate(leftChurn + leftFade * 0.75))
                               * leftFade * washPresence * min(saturate(_WashLeftFoamOpacity), saturate(_WashMaxCover));
+                    leftFoamA *= boreEdgeLeeFade;          // fades into a lee with the run-up that left it
                 }
 
                 float dt = saturate((depth - _ShallowDepth) / max(_DeepDepth - _ShallowDepth, 1e-3));

@@ -179,6 +179,8 @@ MonoBehaviour:
     BorePhaseJitterDegrees: 12
     BorePhaseJitterMeters: 64
     BoreFetchProbeMeters: 3
+    BoreLeeSoftenMeters: 6
+    BoreEdgeFadeDepthMeters: 0.08
     RunUpCoefficient: 1
     RunUpCapMeters: 0.35
   SurfSprayIntensityOffset: 0
