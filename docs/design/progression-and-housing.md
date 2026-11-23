@@ -128,7 +128,7 @@ section only describes *how the currencies move you between them*.
 
 | Stage | Identity | Boat (tier) | Region(s) opened | Primary gate to *leave* this stage |
 |---|---|---|---|---|
-| **−1. St Peters prologue** *(M2)* | "Two hands, a shovel, a tide table — **no boat yet**" | none | St Peters Island → Nine Mile Creek (on foot) | Dig clams → **clam licence** → **walk the tide-gated sandbar to Nine Mile Creek** → buy a **cod licence + rod** → **save for + buy a damaged dory and pay the shipwright to repair it** → sail it home to Coddle Cove |
+| **−1. St Peters prologue** *(M2)* | "Two hands, a shovel, a tide table — **no boat yet**" | none | St Peters Island (the first week); then Nine Mile Creek (on foot) | Dig clams → **clam licence** → **rod** at the island store → **save for + buy the broken dory from Basil Samson and mend her by hand on the island** → **cod licence** (on the island) → a fish landed from the dory, shellfish sold, day 7+ → **Ginny's word** → **walk the tide-gated sandbar to Nine Mile Creek** *(amended 2026-11-23, canon §5.8)* |
 | **0. Handline** | "By hand, in the dory you earned" | The Dory (T0) | Coddle Cove | Earn first stake + Fishing→Hauler |
 | **1. First boat & first reef** | Owning a hull, reading tide | Punt/Skiff (T1) | + The Sunkers | Money for a Cape Islander + Seamanship→Deckhand + Tide-Reader's Note |
 | **2. Town & market** | Trading, not just catching | Cape Islander (T2) *or* Lobster Boat (T3) | + Nine Mile Creek, + Drownded Lands (with Flats Permit) | Business→Trader + Offshore License eligibility |
@@ -141,11 +141,14 @@ section only describes *how the currencies move you between them*.
 greybox prototype — canon `../vision-and-pillars.md` §5.8.)* Before the cove and the dory, you start
 on **St Peters Island** with nothing but your hands and the tide. You buy a **clam licence** and
 **dig clams at low water** with a shovel — your very first earned income, the humblest job, done by
-hand (the purest P4 on-ramp). As the tide **falls**, a **sandbar to Nine Mile Creek** bares; you **walk
-it to the mainland** at low water (and learn the tide-gate the kind way — dawdle and you wait for the
-next low). At Nine Mile Creek you buy a **cod fishing licence + a rod**, sell your clams, and **save to buy a
-damaged dory at the shipwright — then pay to repair it**. The boat is *earned*, not inherited. With a
-seaworthy dory you **sail home to Coddle Cove**, where the rest of the arc begins. *(This prologue
+hand (the purest P4 on-ramp). *(Amended 2026-11-23: the **first week is lived on the island alone**, and
+it is the game's demo.)* You buy a **rod** and bait at the island store, **save to buy the broken dory
+beached on the island from Basil Samson — then mend her yourself at the slip**, get the **cod licence** on
+the island, and row and fish from her. The boat is *earned*, not inherited. The rest of the world is closed
+by weather until **Ginny's word** at the island gate; then, as the tide **falls**, the **sandbar to Nine
+Mile Creek** bares and you **walk it to the mainland** at low water (and learn the tide-gate the kind way —
+dawdle and you wait for the next low). In time you **sail home to Coddle Cove**, where the rest of the arc
+begins. *(This prologue
 **reorders and reuses** the Coddle Cove onboarding, which remains the M1 start — see §5.8; the
 existing inherited-dory onboarding beat is **flagged for rework**, not deleted.)*
 

@@ -433,16 +433,18 @@ relationship to the player · questline/service hook.**
 > here is deleted**.
 > **✅ Reconciliation RESOLVED for the buy-and-repair beat (2026 — onboarding relocated to St Peters).**
 > The owner **dropped the "inherit Uncle Ned's dory" framing**; your first boat is now a **plain damaged
-> dory bought and put right**, not handed down. *(Amended 2026-07-25: she lies at the **Nine Mile Creek
-> wharf**, and **no shipwright stands in that region** — so who sells her, and who repairs her for what,
-> are open. This is the beat that most needs a named character; see
-> [`nine-mile-creek-wharf.md`](nine-mile-creek-wharf.md) §1.)* The onboarding has now
+> dory bought and put right**, not handed down. *(Amended 2026-11-23, superseding the 2026-07-25
+> Nine Mile Creek wharf reading: she lies **beached on St Peters**, is **sold by Basil Samson**, and the
+> player **mends her himself** at the island slip. The first week is St Peters alone, and **Ginny's
+> word** at the island gate opens the way to Nine Mile Creek — canon §5.3/§5.8, ADR 0062.)* The onboarding has now
 > been **relocated to the St Peters opening and reworked into the earned/buy-and-repair beat** (the
 > dialogue/onboarding *system* was reused, not rebuilt, exactly as required): **Aunt Ginny** is placed at
 > the St Peters island start (anchored by the cottage — no routine yet, that's M2) teaching the new loop,
 > and **Ned is now a remembered presence** — his **letter** on the island, *no inherited dory* — read in
 > place of the old Coddle-Cove logbook. The onboarding nudge walks the new arc end-to-end (dig clams →
-> cross the bar → Nine Mile Creek cod-licence + rod → buy + **repair** the dory → sail home). Content is **data**:
+> cross the bar → Nine Mile Creek cod-licence + rod → buy + **repair** the dory → sail home; *the 2026-11-23
+> amendment reorders it to the island: rod, buy + mend the dory, cod licence, fish from her, Ginny's word,
+> then the bar — a later onboarding task*). Content is **data**:
 > the cast is authored as `NpcDef` + `DialogueDef` assets under `Data/NPCs` (one entity per file, stable
 > ids `npc.aunt_ginny` / `npc.ned_letter`, `dialogue.ginny_first` / `dialogue.ned_letter`). The cottage +
 > memory remain inherited. *(The legacy Coddle-Cove `WorldStrings` conversations are kept as a fallback —

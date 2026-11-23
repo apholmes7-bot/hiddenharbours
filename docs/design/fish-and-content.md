@@ -262,8 +262,10 @@ later at Nine Mile Creek (the gate on rod-fishing) — is a **real, minimal lice
 tag `ClamFork`). The **shovel** is the St Peters flavour of the `ClamFork` / hand-dig method —
 **reconcile at M2** whether to add a distinct `Shovel`/`ClamRake` `GearTag` or treat the shovel as the
 `ClamFork` tag's presentation (a new tag touches the enum and is review-gated — §6.1). The **rod** (and
-the cod licence that gates rod finfishing) is bought at **Nine Mile Creek**, after the sandbar walk — so St
-Peters' economy is clams-by-hand only. The "two squirting holes" is a **spot tell** (a hotspot cue,
+the cod licence that gates rod finfishing) is bought **on St Peters** *(amended 2026-11-23, canon §5.8: the
+first week is island-only; the store sells a couple of rod tiers and bait, and the cod licence is sold on
+the island, where is open)* — so St Peters' economy is clams by hand, then shore and dory fishing. A fish he
+holds no licence for still bites; he says he must release it, it goes back, and no Notebook entry is made. The "two squirting holes" is a **spot tell** (a hotspot cue,
 §3.3), not a new system.
 
 **(b) Lobster — trap + buoy + bait, hauled by gaffing the buoy (M2).** Lobster already exists
