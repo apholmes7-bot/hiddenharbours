@@ -150,6 +150,19 @@ namespace HiddenHarbours.Core
                  "the pixel (the previous look).")]
         public float BoreFetchProbeMeters;
 
+        [Tooltip("How wide the drawn wash's lee edge is (metres across the wind or swell). Land throws a " +
+                 "hard shadow along the wind, so the envelope the wash reads jumped from open sea to dead lee " +
+                 "on one straight line, and the wash stopped dead on it. The envelope is read at two points " +
+                 "this far apart across the shadow and blended, so it ramps over this width. 0 = one read " +
+                 "(the previous look).")]
+        public float BoreLeeSoftenMeters;
+
+        [Tooltip("Over what break depth the run-up takes the drawn edge (metres). The edge used to switch " +
+                 "to the run-up as soon as the break depth passed 2 cm, which turned any lee ramp back into " +
+                 "a step. The run-up's share now grows from 2 cm to this depth, so the wash fades out into " +
+                 "a lee. At or below 0.02 = the previous switch.")]
+        public float BoreEdgeFadeDepthMeters;
+
         [Header("Run-up — how far the wash reaches up the beach (metres of LEVEL, Hunt 1959)")]
         [Tooltip("Hunt's law: run-up R = coefficient × ξ × H — the vertical reach of the wash above still " +
                  "water for a bore of standing height H on a bed of surf similarity ξ. 1.0 is Hunt's " +
@@ -187,6 +200,8 @@ namespace HiddenHarbours.Core
             BorePhaseJitterDegrees = 12f,
             BorePhaseJitterMeters = 64f,
             BoreFetchProbeMeters = 3f,
+            BoreLeeSoftenMeters = 6f,
+            BoreEdgeFadeDepthMeters = 0.08f,
             RunUpCoefficient = 1f,
             RunUpCapMeters = 0.35f,
         };
@@ -848,6 +863,45 @@ namespace HiddenHarbours.Core
 
             // Shallower = more broken, so the gate runs the other way round from a depth smoothstep.
             return 1f - WaveFetch.SmoothstepEdge(breakDepth, outerDepth, depthMeters);
+        }
+
+        /// <summary>
+        /// <b>The drawn edge's lee fade</b>: the run-up's share of the drawn wet edge, from 0 where the
+        /// break depth first reaches the edge's reference depth (<see cref="MinDepthMeters"/>) to 1 at
+        /// <paramref name="fadeDepthMeters"/>. The edge's break gate is asked at that fixed 2 cm, so it
+        /// opens fully within a few thousandths of the envelope: any lee ramp became a step there, and the
+        /// wash ended on a hard line. This factor spreads the hand-over over the envelope range in which the
+        /// break depth grows to <paramref name="fadeDepthMeters"/>. At or below <see cref="MinDepthMeters"/>
+        /// it returns 1 (the previous switch). Twin of the water shader's <c>BoreEdgeLeeFade01</c>
+        /// (<see cref="BreakerSettings.BoreEdgeFadeDepthMeters"/>).
+        /// </summary>
+        public static float BoreEdgeLeeFade01(float breakDepthMeters, float fadeDepthMeters)
+        {
+            if (fadeDepthMeters <= MinDepthMeters) return 1f;
+            return WaveFetch.SmoothstepEdge(MinDepthMeters, fadeDepthMeters, breakDepthMeters);
+        }
+
+        /// <summary>
+        /// <b>Where the drawn wash reads its envelope when the lee is softened</b>: two points
+        /// <paramref name="softenMeters"/> apart across <paramref name="shadowDir"/> (the march's direction),
+        /// on a world-fixed lattice, and the weight of the second. The envelope is the lerp of the two reads,
+        /// so a land shadow's hard line ramps over <paramref name="softenMeters"/> and nothing crawls as the
+        /// camera moves. Returns false (one read at <paramref name="probe"/>) when the width is 0 or there
+        /// is no direction. Twin of the water shader's lee lattice (<see cref="BreakerSettings.BoreLeeSoftenMeters"/>).
+        /// </summary>
+        public static bool BoreLeeLattice(Vector2 probe, Vector2 shadowDir, float softenMeters,
+                                          out Vector2 a, out Vector2 b, out float weightB)
+        {
+            a = probe; b = probe; weightB = 0f;
+            if (softenMeters <= 0f || shadowDir.sqrMagnitude <= 1e-8f) return false;
+            Vector2 d = shadowDir.normalized;
+            var across = new Vector2(-d.y, d.x);
+            float c = Vector2.Dot(probe, across) / softenMeters;
+            float c0 = Mathf.Floor(c);
+            weightB = c - c0;
+            a = probe + across * ((c0 - c) * softenMeters);
+            b = a + across * softenMeters;
+            return true;
         }
 
         // ==== THE SURF AS A FORCE: everything a hull in the broken water needs (PR 3) ==============
