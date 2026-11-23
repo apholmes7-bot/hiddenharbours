@@ -116,6 +116,9 @@ namespace HiddenHarbours.Tests.PlayMode
 
         [UnityTearDown] public IEnumerator TearDown()
         {
+            // A completed audit load does not imply a runtime neighbour preload has finished.
+            // Let its callbacks land before destroying or enumerating persistent arrivals.
+            yield return HiddenHarbours.Tests.Support.SceneSettle.WaitForPendingSceneOperations();
             Time.timeScale = 1f;
             if (_host != null) { _host.SetCasting(true); _host.enabled = true; }
             if (_camera != null) _camera.targetTexture = null;

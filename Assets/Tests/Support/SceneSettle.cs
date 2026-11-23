@@ -67,6 +67,27 @@ namespace HiddenHarbours.Tests.Support
         /// hang.</summary>
         public const int MaxWaitFrames = 30;
 
+        /// <summary>Bound for an already-issued scene operation to complete before cleanup begins.</summary>
+        public const double PendingOperationTimeoutSeconds = 60d;
+
+        /// <summary>
+        /// Let tracked loads and unloads finish before destroying their requesters or scene objects.
+        /// Destroying a requester does not cancel its load. Yield frames (also at time scale zero),
+        /// and fail rather than proceed into cleanup with an operation still pending. This is only
+        /// a boundary check: it cannot account for untracked operations or prevent future loads.
+        /// </summary>
+        public static IEnumerator WaitForPendingSceneOperations(double timeoutSeconds = PendingOperationTimeoutSeconds)
+        {
+            double deadline = Time.realtimeSinceStartupAsDouble + timeoutSeconds;
+            while (SceneLoadHold.InFlight > 0)
+            {
+                if (Time.realtimeSinceStartupAsDouble >= deadline)
+                    throw new System.TimeoutException("[SceneSettle] " + SceneLoadHold.InFlight +
+                        " tracked scene operation(s) still pending before cleanup after " + timeoutSeconds + " s");
+                yield return null;
+            }
+        }
+
         /// <summary>Yield <see cref="DrainFrames"/> frames: the blind settle, for a load or unload whose
         /// caller does not know what was destroyed before it.</summary>
         public static IEnumerator Frames()
@@ -97,6 +118,7 @@ namespace HiddenHarbours.Tests.Support
         /// </summary>
         public static IEnumerator DestroyAndSettle(IEnumerable<Object> objects)
         {
+            yield return WaitForPendingSceneOperations();
             var mine = new List<Object>();
             if (objects != null)
                 foreach (Object o in objects)
@@ -182,6 +204,7 @@ namespace HiddenHarbours.Tests.Support
             // else unloaded it) is not unloaded twice: that would log an engine error the caller never had.
             bool wasLoaded = scene.IsValid() && scene.isLoaded;
             for (int i = 0; i < DrainFrames; i++) yield return null;
+            yield return WaitForPendingSceneOperations();
             if (wasLoaded && !scene.isLoaded) yield break;
             AsyncOperation op = SceneManager.UnloadSceneAsync(scene);
             SceneLoadHold.Track(op);   // a game load issued behind it is then not held (it would wait on this)
@@ -192,6 +215,7 @@ namespace HiddenHarbours.Tests.Support
         public static IEnumerator Unload(string scene)
         {
             for (int i = 0; i < DrainFrames; i++) yield return null;
+            yield return WaitForPendingSceneOperations();
             AsyncOperation op = SceneManager.UnloadSceneAsync(scene);
             SceneLoadHold.Track(op);
             yield return op;

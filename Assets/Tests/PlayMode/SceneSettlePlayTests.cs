@@ -3,6 +3,8 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using HiddenHarbours.Tests.Support;
+using HiddenHarbours.Core;
+using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace HiddenHarbours.Tests.PlayMode
@@ -42,6 +44,60 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(SceneSettle.MaxHoldTimeouts, Is.InRange(1, 5));
             // allowSceneActivation=false stops an async load's progress at 0.9 once its threaded read is done.
             Assert.That(SceneSettle.ReadDoneProgress, Is.EqualTo(0.9f));
+            Assert.That(SceneSettle.PendingOperationTimeoutSeconds, Is.GreaterThan(0d));
+            Assert.That(SceneSettle.PendingOperationTimeoutSeconds, Is.LessThan(TestHangWatch.DefaultLimitSeconds));
+        }
+
+        [UnityTest]
+        public IEnumerator PendingSceneOperations_WaitsForTrackedUnloadAtZeroTimeScale()
+        {
+            yield return SceneSettle.WaitForPendingSceneOperations();
+            var scene = SceneManager.CreateScene("SettlePendingUnload");
+            var unload = SceneManager.UnloadSceneAsync(scene);
+            SceneLoadHold.Track(unload);
+            float previousScale = Time.timeScale;
+            try
+            {
+                Time.timeScale = 0f;
+                Assert.That(unload, Is.Not.Null);
+                Assert.That(unload.isDone, Is.False, "premise: the unload needs a player-loop turn");
+                Assert.That(SceneLoadHold.InFlight, Is.EqualTo(1));
+                var wait = SceneSettle.WaitForPendingSceneOperations();
+                Assert.That(wait.MoveNext(), Is.True, "cleanup must wait while the operation is pending");
+                Assert.That(wait.Current, Is.Null, "yield a frame so the operation can finish");
+                yield return wait.Current;
+                yield return wait;
+                Assert.That(unload.isDone, Is.True);
+                Assert.That(SceneLoadHold.InFlight, Is.Zero);
+            }
+            finally { Time.timeScale = previousScale; }
+        }
+
+        [UnityTest]
+        public IEnumerator PendingSceneOperations_TimeoutDoesNotForgetTheOperation()
+        {
+            yield return SceneSettle.WaitForPendingSceneOperations();
+            var scene = SceneManager.CreateScene("SettlePendingTimeout");
+            var unload = SceneManager.UnloadSceneAsync(scene);
+            SceneLoadHold.Track(unload);
+            Assert.That(unload, Is.Not.Null);
+            Assert.That(unload.isDone, Is.False);
+            Assert.That(SceneLoadHold.InFlight, Is.EqualTo(1));
+
+            var wait = SceneSettle.WaitForPendingSceneOperations(0d);
+            var error = Assert.Throws<System.TimeoutException>(() => wait.MoveNext());
+            StringAssert.Contains("1 tracked scene operation(s) still pending before cleanup", error.Message);
+            Assert.That(SceneLoadHold.InFlight, Is.EqualTo(1), "a timeout must not reset the shared tracker");
+            yield return unload;
+            Assert.That(SceneLoadHold.InFlight, Is.Zero);
+        }
+
+        [UnityTest]
+        public IEnumerator PendingSceneOperations_WhenIdleAddsNoFrames()
+        {
+            yield return SceneSettle.WaitForPendingSceneOperations();
+            var wait = SceneSettle.WaitForPendingSceneOperations(0d);
+            Assert.That(wait.MoveNext(), Is.False, "no pending work means no extra fixed delay");
         }
 
         [UnityTest]
