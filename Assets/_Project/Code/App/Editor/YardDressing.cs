@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using HiddenHarbours.Art.Editor;
+using HiddenHarbours.Core;
 using HiddenHarbours.World;
 using UnityEngine;
 
@@ -308,12 +309,27 @@ namespace HiddenHarbours.App.Editor
             float bearing = YardCatalog.BearingOf(outward);
             int facing = YardCatalog.FacingFor(contract, bearing);
 
-            int count = Mathf.CeilToInt(length / width - 1e-4f);
+            // ⚠ A DIAGONAL cell draws its panel foreshortened: the art spans its footprint width across
+            // the GROUND, which on screen is a run sloping at the depth scale and shorter than the width.
+            // Counting such a segment by its screen length leaves the pitch longer than the art and the
+            // panels step like a staircase, so a diagonal run is counted in ground metres. Cardinal cells
+            // keep the screen length: E-W panels are not foreshortened and N-S panels already overlap.
+            float tiled = IsDiagonalCell(contract, facing) ? IsoGround.ToGround(b - a).magnitude : length;
+            int count = Mathf.CeilToInt(tiled / width - 1e-4f);
             float pitch = length / count;
 
             for (int i = 0; i < count; i++)
                 plan.Pieces.Add(new PlannedPiece(panel.key, YardKit.Role.Panel,
                                                  a + along * ((i + 0.5f) * pitch), facing, bearing));
+        }
+
+        /// <summary>Does this cell face a diagonal (NE, SE, SW, NW) by the contract's measured table?</summary>
+        public static bool IsDiagonalCell(YardKit.Contract contract, int facing)
+        {
+            var bearings = contract?.cellFaceBearings;
+            if (bearings == null || facing < 0 || facing >= bearings.Length) return false;
+            float offCardinal = Mathf.Repeat(bearings[facing], 90f);
+            return Mathf.Abs(offCardinal - 45f) < 22.5f;
         }
 
         /// <summary>A post at one vertex of a run, facing the way the boundary faces there.</summary>

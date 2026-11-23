@@ -141,3 +141,14 @@ If the quad is down, walkers with the cart kit (93 kg / 210 L) need 1.23 round t
 
 The bar window query and access policy (S2), the cross-region runner (S3), the tractor and forklifts
 (S4, S5, S7), carried props (S6), store stock and NPC consumption (S7).
+
+## The back-room ledger (living island economy, slice 1)
+
+`Assets/_Project/Code/Economy/Island/` turns the plan above into a day-by-day back room for the store,
+recomputed rather than saved: `IslandRunCalendar` says which days the quad run goes (every
+`CadenceDays` from day 0; a run the tide forbids is made up on the first possible day before the next
+one, else missed), and `IslandStoreLedger` replays from a full back room `LookbackDays` earlier (data:
+`Data/IslandLedgers/StPetersIslandLedger.asset`, `islandledger.st_peters`) to give each good's level,
+delivery and shortfall for any day. Nothing reads it in game yet. The plan it belongs to is
+`docs/design/st-peters-living-economy.md`; the tests are `Tests/EditMode/Economy/IslandStoreLedgerTests.cs`
+and `Tests/EditMode/IslandSupply/IslandLedgerShippedTests.cs`.

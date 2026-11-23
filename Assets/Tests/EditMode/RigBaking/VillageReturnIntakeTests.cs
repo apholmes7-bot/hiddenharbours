@@ -368,12 +368,15 @@ namespace HiddenHarbours.Tests.RigBaking
                 "b615632bb1930a90d4c33705b988683e3cbe7747f85dffb7521abd53730322e7", "11fbaf710912e52523b89b5fce3ae7dbf26fd7ea89b49a10a48c4ee18e95b4d1",
                 "f78f6717fdb67f2bb5b82a71ad07fb4e4ff3d3ef759a20139dd8c72c0d2fdb84", "38c024ea606ae731959115e5a5e83b74da11485a0cb0a2fec3869e2ca68aeaa0",
             },
+            // 2026-11-22: re-pinned when the owner asked the red saltbox to wear its board (tin roof,
+            // no shutters, from the St Peters one-scene package's own dials); the classic look draws
+            // those same dials, so its cells moved with them.
             ["redSaltbox"] = new[]
             {
-                "344d4456288146bc07806720230e69279f3713717c8ef264fd2eecadf56c0c28", "7419be359b0f969d01ce478c745d6487220a141b59c0896335b33a0cd4154bf2",
-                "8f84750995069717643c7ebc380f7e48f5a50fa1d8922bcd2d1c99594fe03a2b", "22a358631605feec90443332fb4382f76f86876f0a3729e1dbad72e1998ccde1",
-                "79cb3330f665bc64679a843e1150c97f7105055d7f0227daf05420c62765289a", "bbc6b8cfdae52c4cc6b7c87e2e7b290584bcdc2407350855601ac45ddd02bb09",
-                "d6adab1f2c3107e518d9899610de70caec5ccdfe8918143a7d9102db2178ed68", "57f9c82d3d6f845950a01f7b45648d65a544cfbd52d3ab29149a6fcb38a81ef7",
+                "0a9062185662843588b201ebd4b24f10824c307b6e102c185e94551cae29c23b", "91724671ade343f7e0d65144e5420f9d0628f2f071354600b367f9363e6d41d8",
+                "924bf77855b1035fed03b90ed049565a784d0328b8184010929a6d711268be50", "e5320f911c736e985282c36b98febb84d9606b5a760b2e251f35038f76b0b423",
+                "662ffcbb9c4f79f735e68962b890a18c4f8832183be27f3d3cbf875b68a68d68", "3fbaabab5acfebc3c1d1c79cea04efdf503967e9c9fb7808b06d7498f1ca6d9f",
+                "7f083251f000147ef6c30487e51fcd9dfde7d7e27341581eebba638a6521a7d4", "4ab0662f9c8c04deb0f52b8d55e405da00b100eb93193619c4ba0b6e8728a28c",
             },
             ["sageCottage"] = new[]
             {
@@ -405,6 +408,34 @@ namespace HiddenHarbours.Tests.RigBaking
                 "6599769c316e8d8729f15bf53f0a641335164caae4f41cc7ae2ccd3b8d882c87", "9eded39ef53165095898994100c43773d6a0f6b9bf48aaaa0e7afb98e43dc489",
             },
         };
+
+        /// <summary>
+        /// The owner asked for "the red gothic home in the st peters village art board": the red saltbox
+        /// on the village-east board (St Peters one-scene package, 2026-10-01). Its shell takes that
+        /// package's dials for red_saltbox: the tin roof and no shutters. It keeps its porch-face door
+        /// and its size, so the room, its walls, its footprint collider and the lot all still fit it.
+        /// </summary>
+        [Test]
+        public void RedSaltbox_WearsItsBoardsTinRoofWithoutShutters_AndKeepsItsDoorAndFootprint()
+        {
+            VillageBuildingKit.Build? found = VillageBuildingKit.FindBuild("redSaltbox");
+            Assert.IsTrue(found.HasValue, "the red saltbox is in the village set");
+            VillageBuildingKit.Build b = found.Value;
+            Assert.IsFalse(b.IsPreset, "the red saltbox is dialled");
+            Assert.AreEqual("metal", b.Dialled["roof"], "the board's galvanised tin roof");
+            Assert.AreEqual("none", b.Dialled["shutters"], "the board's windows have no shutters");
+            Assert.AreEqual("front", b.Dialled["porch"], "the door stays on the porch face the room models");
+            Assert.IsFalse(b.Dialled.ContainsKey("entry"),
+                           "a side entry moves the door onto the gable-end wall, where the room has a wall");
+            Assert.AreEqual(0.4, Convert.ToDouble(b.Dialled["size"]), 1e-9, "the footprint must not move");
+
+            VillageBuildingKit.Entry entry = VillageBuildingKit.Find(VillageBuildingKit.Load(), "redSaltbox");
+            Assert.IsNotNull(entry, "the red saltbox is baked into the contract");
+            StringAssert.Contains("roof:'metal'", entry.optionsJs, "the sheet on disk was baked with the tin roof");
+            StringAssert.Contains("shutters:'none'", entry.optionsJs, "the sheet on disk was baked without shutters");
+            Assert.AreEqual(6.96f, entry.footprintWidthMetres, 0.01f, "same footprint width as the placed room");
+            Assert.AreEqual(8.68f, entry.footprintLengthMetres, 0.01f, "same footprint length as the placed room");
+        }
 
         [Test]
         public void TheReturnedHouseInClassicDrawsTodaysHousesPixelForPixel()

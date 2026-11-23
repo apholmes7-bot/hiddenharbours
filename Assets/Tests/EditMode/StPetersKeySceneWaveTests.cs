@@ -104,6 +104,36 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(0, grass.Count(g => room.Contains(g)), "committed grass inside Ginny's cottage");
         }
 
+        /// <summary>
+        /// Every St Peters building with an interior, not only Ginny's: no plant site, scattered or
+        /// authored, grass or flower, roots on ground the building keeps clear (its floor grown by
+        /// <see cref="StPetersBuildingClearance.ClearanceMetres"/>, and one storey's rise behind it). The
+        /// field draws a site by its root's y, so one rooted there paints over the wall or the room.
+        /// Exceptions are named, with reasons, in <see cref="StPetersBuildingClearance.Exceptions"/>.
+        /// </summary>
+        [Test]
+        public void EveryBuilding_HasNoPlantOnItsWallsOrInItsRoom()
+        {
+            var scene = StPetersLayerRefresh.SceneYaml.Parse(File.ReadAllText(StPetersLayerRefresh.ScenePath));
+            var zones = StPetersBuildingClearance.ReadZones(scene);
+            var held = zones.Where(z => !StPetersBuildingClearance.IsException(z.Path)).ToArray();
+            Assert.GreaterOrEqual(held.Length, 9, "the village's houses, shops and school must all be read: " +
+                string.Join(", ", zones.Select(z => z.Path)));
+
+            var sites = StPetersLayerRefresh.CommittedPlantSites(scene);
+            Assert.Greater(sites.Count, 1000, "an empty field would pass vacuously");
+            var definition = UnityEditor.AssetDatabase.LoadAssetAtPath<PlantFieldDefinition>(StPetersGrassFieldTests.DefinitionPath);
+            var failures = new System.Collections.Generic.List<string>();
+            foreach (var zone in held)
+            {
+                int n = sites.Count(s => zone.Contains(s));
+                if (n > 0) failures.Add($"{zone.Path}: {n} plant site(s) on its walls or in its room");
+                foreach (var site in definition.Authored.Where(a => zone.Contains(a.At)))
+                    failures.Add($"{zone.Path}: authored {site.Id} at {site.At}");
+            }
+            Assert.IsEmpty(failures, string.Join("\n", failures));
+        }
+
         [Test]
         public void TheIceHouseAndItsTwoPieces_WaitTogether()
         {
