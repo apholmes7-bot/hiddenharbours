@@ -1595,7 +1595,8 @@ Shader "HiddenHarbours/Water"
             //                        it starts, z = the luminance at which it is full (HullWaveMath.LowLightGain),
             //                        w = x for a motored hull's V waves (MotorVLowLightGain)
             //   _HHHullWaveArcs    : x = how much of a ring packed with a NEGATIVE 1/width (a short hull's) is torn
-            //                        away into arcs, y = whole arcs round the ring (HullWaveBridge.ArcsVector)
+            //                        away into arcs, y = whole arcs round the ring, z = band widths it opens before
+            //                        it is fully torn (0 = torn from birth) (HullWaveBridge.ArcsVector)
             //   _HHHullWaveV       : the V arms a ring packed with a travel draws: x = sin alpha, y = cos alpha,
             //                        z = tan(arm half width), w = arm blend wavelengths (HullWaveMath.VArmFrame)
             //   _HHHullWaveV2      : x = V share (0 = whole rings), y = 1 / (2pi * packet wavelengths), z = arm overlap spans
@@ -2978,10 +2979,14 @@ Shader "HiddenHarbours/Water"
             // circle: a sum of whole-number harmonics round its centre (seamless), turned by a number hashed
             // from where it was laid, so each ring breaks differently and keeps its own break all its life.
             // Fixed in the world (no _Time); deterministic. Any other ring, or x = 0, returns exactly 1.
-            float HullWaveArcGain(float2 d, float2 centre, float flagged)
+            // The tear comes in only as the ring opens (z band widths of front, HullWaveMath.ArcTearShare): a ring
+            // that has not opened is still a disc, and a disc torn by angle is wedges meeting at its centre (a pale
+            // block and a dark wedge on the water ahead of a rowed bow). z = 0 tears from birth, the older look.
+            float HullWaveArcGain(float2 d, float2 centre, float flagged, float front)
             {
                 float share = saturate(_HHHullWaveArcs.x);
                 if (flagged >= 0.0 || share <= 0.001) return 1.0;
+                if (_HHHullWaveArcs.z > 0.0) share *= smoothstep(0.0, 1.0, max(front, 0.0) * -flagged / _HHHullWaveArcs.z);
                 float2 cell = floor(centre * 64.0);
                 float seed = frac(dot(cell, float2(0.0613, 0.1093)) + frac(dot(cell, float2(0.00731, 0.00419))));
                 float lobes = max(floor(_HHHullWaveArcs.y), 1.0);
@@ -3090,7 +3095,7 @@ Shader "HiddenHarbours/Water"
                         continue;
                     }
                     HullWaveSourceHeight(r, a.z, a.w, b.x, b.y, abs(b.z), invSpread, h, dhdr);
-                    float arc = HullWaveArcGain(d, a.xy, b.z);
+                    float arc = HullWaveArcGain(d, a.xy, b.z, a.w);
                     height += h * arc;
                     slope += d * (dhdr * arc / max(r, 1e-4));
                     hwMagAll += abs(h * arc);
