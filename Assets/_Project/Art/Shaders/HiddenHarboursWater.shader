@@ -6409,10 +6409,15 @@ Shader "HiddenHarbours/Water"
                 // the fringe came back as an opaque slab with the cosmetic swash's ragged edge, standing apart
                 // from the wash beside it. In a sea that breaks, the beach beside the bore wears the wash's
                 // language too (_WashLeeShare), so the shore is one line and one see-through sheet throughout.
-                float washSeaBreaks = (_BreakerOuter.w > 0.5 && depth > -surfBeachReach)
+                float washSeaBreaksOpen = (_BreakerOuter.w > 0.5 && depth > -surfBeachReach)
                                     ? saturate(_SurfStrength) * saturate(_SurfRunUpStrength) * saturate(_WashLeeShare) : 0.0;
-                washSeaBreaks *= seaReach;   // a cut-off pool wears no wash
+                float washSeaBreaks = washSeaBreaksOpen * seaReach;   // a cut-off pool wears no wash
                 float washPresence = max(smoothstep(0.0, max(_WashPresenceRamp, 1e-3), boreEdgeBlend), washSeaBreaks);
+                // The shore's LANGUAGE (wash or fringe) is the open sea's, never scaled by the reach: the reach
+                // fades the wash's and the fringe's amounts, not which of the two this shore wears. Scaling the
+                // choice handed a reconnecting pool's shallows back to the fringe at part strength, a pale band
+                // inside the drowned rim for the whole blend. Exactly washPresence wherever the reach is 1.
+                float washPresenceSea = max(smoothstep(0.0, max(_WashPresenceRamp, 1e-3), boreEdgeBlend), washSeaBreaksOpen);
                 float washOnSand = washPresence * (1.0 - smoothstep(0.0, max(_WashSeawardDepth, 1e-3), depth));
                 // THE LINE IS MEASURED ON THE GROUND, PER PIXEL (v7, the editor look of 11-15): a wet pixel is on
                 // the line when the drawn edge lies within _WashLineWidth metres of ground SHOREWARD of it, i.e.
@@ -7337,7 +7342,9 @@ Shader "HiddenHarbours/Water"
                     // is the foam at this edge. Asked through washPresence (of boreEdgeBlend, the edge's
                     // shore quantity), so it cannot leave a stranded strip where the fragment gate dips.
                     // A wash with its line dialled off (_WashLineOpacity 0) keeps the fringe as its edge.
-                    foamCoverage *= 1.0 - washPresence * step(0.001, _WashLineOpacity);
+                    // The open sea's presence (washPresenceSea): the reach below fades the fringe, it does not
+                    // hand the wash's shore back to it.
+                    foamCoverage *= 1.0 - washPresenceSea * step(0.001, _WashLineOpacity);
                     // The shore line (both looks, the older fringe and the one sheet) is the SEA's surf: a
                     // cut-off pool's rim carries none. 1 = unchanged.
                     foamCoverage *= seaReach;

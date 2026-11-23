@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
 using UnityEngine;
+using HiddenHarbours.Core;
 using HiddenHarbours.World;
 
 namespace HiddenHarbours.App.Editor
@@ -73,7 +74,6 @@ namespace HiddenHarbours.App.Editor
             {
                 if (_yards != null) return _yards;
 
-                Vector2 green = StPetersBuilder.VillageGreen;
                 float r = DwellingFootprintRadiusMetres;
                 float back = r + BackSetMarginMetres;
 
@@ -83,18 +83,11 @@ namespace HiddenHarbours.App.Editor
                     StPetersVillageYards.FromDef(SchoolYard),
                     StPetersVillageYards.FromDef(GeneralStoreYard),
 
-                    Yard.Facing(WhiteFarmhouseYard, V2(StPetersBuilder.WhiteFarmhousePos), r,
-                                new Vector2(13.0f, 15.0f), green, YardFence.Picket,
-                                "the white farmhouse keeps its paint and its pickets — the kept end of " +
-                                "the green, and the yard the others are read against",
-                                // Kept, not Striped: the owner held his original three (school, store,
-                                // sage cottage) when offered the swap. Her pickets carry the pride here.
-                                back, mown: MownStyle.Kept),
+                    // Kept, not Striped: the owner held his original three (school, store, sage
+                    // cottage) when offered the swap. Her pickets carry the pride here.
+                    WhiteFarmhouse(r),
 
-                    Yard.Facing(RedSaltboxYard, V2(StPetersBuilder.RedSaltboxPos), r,
-                                new Vector2(13.5f, 15.5f), green, YardFence.PostRail,
-                                "post and rail: a working household with no time for painting pickets",
-                                back, mown: MownStyle.Kept),
+                    RedSaltbox(r),
 
                     StPetersVillageYards.FromDef(SageCottageYard),
                     StPetersVillageYards.FromDef(HarbourGableYard),
@@ -143,6 +136,98 @@ namespace HiddenHarbours.App.Editor
         public static Yard Require(string name) => YardPlan.Require(Yards, name);
 
         static Vector2 V2(Vector3 v) => new Vector2(v.x, v.y);
+
+        // ---- the two homesteads east of the green ---------------------------------------------------
+
+        /// <summary>The farmhouse yard's ground half-extents (m), along the house's own two axes:
+        /// south-west (front, porch side), north-east, south-east and north-west. Each is at least the
+        /// dwelling radius over the depth-squashed distance factor, so the world circle the yard tests hold
+        /// it to fits inside.</summary>
+        public const float FarmhouseFrontMetres = 8.9f, FarmhouseBackMetres = 8.4f,
+                           FarmhouseSouthEastMetres = 8.4f, FarmhouseNorthWestMetres = 8.9f;
+
+        /// <summary>The red saltbox yard, axis-aligned with the house (west, east, south, north edges in
+        /// world metres). The north and south runs are six post-and-rail panels each.</summary>
+        public const float SaltboxWest = 16.1f, SaltboxEast = 32.42f, SaltboxSouth = -1.62f, SaltboxNorth = 14.7f;
+
+        /// <summary>
+        /// <b>The farmhouse stands on the diagonal, so its yard does too — on the ART's diagonal.</b> The
+        /// house art is drawn on the ¾ camera, where a ground diagonal slopes at the depth scale (about
+        /// 33°), not 45°. A rectangle turned 45° in world space put every picket panel a step off the one
+        /// before it. This one is a rectangle on the GROUND, along the house's NE and NW axes, squashed by
+        /// <see cref="IsoGround.GroundDepthScale"/> like everything else drawn on that camera.
+        /// </summary>
+        static Yard WhiteFarmhouse(float radius)
+        {
+            Vector2 c = V2(StPetersBuilder.WhiteFarmhousePos);
+            Vector2 At(float s, float t) => c + IsoGroundDiagonal(s, t);
+            var corners = new[]
+            {
+                At(-FarmhouseFrontMetres, -FarmhouseSouthEastMetres), At(FarmhouseBackMetres, -FarmhouseSouthEastMetres),
+                At(FarmhouseBackMetres, FarmhouseNorthWestMetres), At(-FarmhouseFrontMetres, FarmhouseNorthWestMetres),
+            };
+            // The front gate stands where the east walk comes up to the porch side of the yard.
+            Vector2 gate = CrossingOnEdge(corners[3], corners[0], EastWalkX, out float y)
+                ? new Vector2(EastWalkX, y) : At(-FarmhouseFrontMetres, 0f);
+            return new Yard(WhiteFarmhouseYard, c, radius, new GroundPolygon(corners), YardFence.Picket,
+                new[] { gate },
+                "the white farmhouse keeps its paint and its pickets — the kept end of the green, and the " +
+                "yard the others are read against", MownStyle.Kept);
+        }
+
+        /// <summary>
+        /// <b>Square to the house, open where the slip path runs through.</b> The walked line from the green
+        /// to the slip crosses this lot; the fence takes a gate on each side where it does, rather than a
+        /// rail across the path.
+        /// </summary>
+        static Yard RedSaltbox(float radius)
+        {
+            Vector2 owner = V2(StPetersBuilder.RedSaltboxPos);
+            var corners = new[]
+            {
+                new Vector2(SaltboxWest, SaltboxSouth), new Vector2(SaltboxEast, SaltboxSouth),
+                new Vector2(SaltboxEast, SaltboxNorth), new Vector2(SaltboxWest, SaltboxNorth),
+            };
+            var path = StPetersStarterSplat.VillageToSlipPath();
+            var gates = new[]
+            {
+                new Vector2(SaltboxWest, PathYAt(path, SaltboxWest)),
+                new Vector2(SaltboxEast, PathYAt(path, SaltboxEast)),
+            };
+            return new Yard(RedSaltboxYard, owner, radius, new GroundPolygon(corners), YardFence.PostRail, gates,
+                "post and rail: a working household with no time for painting pickets", MownStyle.Kept);
+        }
+
+        /// <summary>The east walk's centreline x (route.stpeters.east_walk).</summary>
+        const float EastWalkX = 13.25f;
+
+        /// <summary>World offset of a point <paramref name="s"/> ground metres along bearing 45° and
+        /// <paramref name="t"/> along bearing 315°, drawn on the ¾ camera.</summary>
+        public static Vector2 IsoGroundDiagonal(float s, float t)
+        {
+            const float invRoot2 = 0.70710678f;
+            return new Vector2((s - t) * invRoot2, (s + t) * invRoot2 * IsoGround.GroundDepthScale);
+        }
+
+        static bool CrossingOnEdge(Vector2 a, Vector2 b, float x, out float y)
+        {
+            y = 0f;
+            if ((a.x - x) * (b.x - x) > 0f || Mathf.Approximately(a.x, b.x)) return false;
+            y = Mathf.Lerp(a.y, b.y, (x - a.x) / (b.x - a.x));
+            return true;
+        }
+
+        /// <summary>The y of a polyline at <paramref name="x"/> (its first segment spanning it).</summary>
+        static float PathYAt(Vector2[] path, float x)
+        {
+            for (int i = 0; i + 1 < path.Length; i++)
+            {
+                Vector2 a = path[i], b = path[i + 1];
+                if ((a.x - x) * (b.x - x) <= 0f && !Mathf.Approximately(a.x, b.x))
+                    return Mathf.Lerp(a.y, b.y, (x - a.x) / (b.x - a.x));
+            }
+            throw new System.InvalidOperationException("the slip path does not cross x = " + x);
+        }
     }
 }
 #endif

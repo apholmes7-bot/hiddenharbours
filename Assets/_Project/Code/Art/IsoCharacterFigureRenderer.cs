@@ -101,6 +101,27 @@ namespace HiddenHarbours.Art
 
         public bool IsConfigured => _def != null && _posedMesh != null;
 
+        // Every submesh's triangle list, joined once at Configure (topology never moves under skinning),
+        // and a counter bumped on every re-skin: what a cast silhouette reads (MeshFigureCastSilhouette).
+        private int[] _triangles;
+        private int _poseVersion;
+
+        /// <summary>Bumped every time the posed mesh is re-skinned (and at Configure). A reader that
+        /// traced the pose at one version need not trace it again until this moves.</summary>
+        public int PoseVersion => _poseVersion;
+
+        /// <summary>
+        /// The pose as it is drawn: the posed vertices in <see cref="FacetTransform"/>'s local space and
+        /// the joined triangle list. ⚠ The arrays are this renderer's own buffers, handed out to avoid a
+        /// copy per frame (rule 7): READ ONLY. False before Configure.
+        /// </summary>
+        public bool TryGetPosedGeometry(out Vector3[] vertices, out int[] triangles)
+        {
+            vertices = _outVerts;
+            triangles = _triangles;
+            return IsConfigured && _outVerts != null && _triangles != null && _meshChild != null;
+        }
+
         /// <summary>The clip key drawn on the last <see cref="SetPose"/>, or null.</summary>
         public string DrawnStateKey { get; private set; }
 
@@ -421,7 +442,7 @@ namespace HiddenHarbours.Art
                     $"CharacterSkinDef '{def.Id}' has {bones} bones and " +
                     $"{(_bindposes == null ? 0 : _bindposes.Length)} bindposes on its bind mesh.");
 
-            _outVerts = new Vector3[_srcVerts.Length];
+            _outVerts = (Vector3[])_srcVerts.Clone();   // the bind pose until the first SetPose
             _outNorms = new Vector3[_srcVerts.Length];
             _world = new Matrix4x4[bones];
             _drawnWorld = new Matrix4x4[bones];
@@ -450,8 +471,18 @@ namespace HiddenHarbours.Art
             _posedMesh.normals = _srcNorms;
             CopyUv(bind, 0); CopyUv(bind, 1); CopyUv(bind, 2); CopyUv(bind, 3);
             _posedMesh.subMeshCount = bind.subMeshCount;
+            int triCount = 0;
+            for (int s = 0; s < bind.subMeshCount; s++) triCount += (int)bind.GetIndexCount(s);
+            _triangles = new int[triCount];
+            triCount = 0;
             for (int s = 0; s < bind.subMeshCount; s++)
-                _posedMesh.SetTriangles(bind.GetTriangles(s), s, false);
+            {
+                int[] tris = bind.GetTriangles(s);
+                _posedMesh.SetTriangles(tris, s, false);
+                System.Array.Copy(tris, 0, _triangles, triCount, tris.Length);
+                triCount += tris.Length;
+            }
+            _poseVersion++;
             _posedMesh.bounds = bind.bounds;
 
             ReadFaceRuns(def, bind);
@@ -925,6 +956,7 @@ namespace HiddenHarbours.Art
                 _posedMesh.vertices = _outVerts;
                 _posedMesh.normals = _outNorms;
                 _posedMesh.RecalculateBounds();
+                _poseVersion++;
 
                 if (_def.HasHeadSnap)
                 {
