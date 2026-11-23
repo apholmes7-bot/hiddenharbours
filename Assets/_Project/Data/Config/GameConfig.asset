@@ -896,6 +896,7 @@ MonoBehaviour:
     OarCatchRadius: 0.3
     OarPerSecond: 1
     OarCatch: 0.6
+    OarCatchGrowSeconds: 0.1
     OarRelease: 0.26
     OarRingHeightMetres: 0.02
     OarRingWavelengthMetres: 0.8
