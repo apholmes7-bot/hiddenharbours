@@ -28,8 +28,8 @@ namespace HiddenHarbours.Tests.EditMode
             { "ginnyCottage", (RoomFixturePlan.GinnyW, RoomFixturePlan.GinnyL) },
             { "redSaltbox", (RoomFixturePlan.RedW, RoomFixturePlan.RedL) },
             { "whiteFarmhouse", (RoomFixturePlan.FarmW, RoomFixturePlan.FarmL) },
-            { "harbourGable", (RoomFixturePlan.HarbourW, RoomFixturePlan.HarbourL) },
-            { "harbourGableUpper", (RoomFixturePlan.HarbourW, RoomFixturePlan.HarbourL) },
+            { "harbourGable", (RoomFixturePlan.HarbourFrameW, RoomFixturePlan.HarbourFrameL) },   // door on the long wall: the frame is turned
+            { "harbourGableUpper", (RoomFixturePlan.HarbourFrameW, RoomFixturePlan.HarbourFrameL) },
             { "creamSaltbox", (RoomFixturePlan.CreamW, RoomFixturePlan.CreamL) },
             { "creamSaltboxUpper", (RoomFixturePlan.CreamW, RoomFixturePlan.CreamL) },
             { "whiteGable", (RoomFixturePlan.WhiteGableW, RoomFixturePlan.WhiteGableL) },
@@ -84,6 +84,8 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (var kv in Declared)
             {
                 (float w, float l) = Baked(kv.Key);
+                // The harbour gable plans in its turned frame (its door is on the long wall).
+                if (kv.Key.StartsWith("harbourGable")) (w, l) = (l, w);
                 Assert.AreEqual(w, kv.Value.w, 0.011f, $"'{kv.Key}' width");
                 Assert.AreEqual(l, kv.Value.l, 0.011f, $"'{kv.Key}' length");
             }
@@ -273,12 +275,12 @@ namespace HiddenHarbours.Tests.EditMode
             ("fixture.st_peters.white_farmhouse.bath", "whiteFarmhouse", null, 0, -2.64f, -4.27f, Wall.Back),
             ("fixture.st_peters.white_farmhouse.toilet", "whiteFarmhouse", null, 0, -3.19f, -3.42f, Wall.Right),
             ("fixture.st_peters.white_farmhouse.bathroom_sink", "whiteFarmhouse", null, 0, -3.24f, -2.82f, Wall.Right),
-            ("fixture.st_peters.harbour_gable.prep_counter", "harbourGable", "harbourGable", 0, 2.76f, 1.53f, Wall.Left),
-            ("fixture.st_peters.harbour_gable.stove", "harbourGable", "harbourGable", 0, 2.76f, 2.53f, Wall.Left),
-            ("fixture.st_peters.harbour_gable.microwave", "harbourGable", "harbourGable", 0, 2.76f, 3.38f, Wall.Left),
-            ("fixture.st_peters.harbour_gable.toilet", "harbourGableUpper", "harbourGable", 1, -2.71f, -3.48f, Wall.Back),
-            ("fixture.st_peters.harbour_gable.bathroom_sink", "harbourGableUpper", "harbourGable", 1, -1.91f, -3.58f, Wall.Back),
-            ("fixture.st_peters.harbour_gable.shower", "harbourGableUpper", "harbourGable", 1, -2.61f, -2.53f, Wall.Right),
+            ("fixture.st_peters.harbour_gable.prep_counter", "harbourGable", "harbourGable", 0, 3.53f, 0.76f, Wall.Left),
+            ("fixture.st_peters.harbour_gable.stove", "harbourGable", "harbourGable", 0, 3.53f, 1.76f, Wall.Left),
+            ("fixture.st_peters.harbour_gable.microwave", "harbourGable", "harbourGable", 0, 3.53f, 2.61f, Wall.Left),
+            ("fixture.st_peters.harbour_gable.toilet", "harbourGableUpper", "harbourGable", 1, -3.48f, -2.71f, Wall.Back),
+            ("fixture.st_peters.harbour_gable.bathroom_sink", "harbourGableUpper", "harbourGable", 1, -2.68f, -2.81f, Wall.Back),
+            ("fixture.st_peters.harbour_gable.shower", "harbourGableUpper", "harbourGable", 1, -3.38f, -1.76f, Wall.Right),
             ("fixture.st_peters.cream_saltbox.prep_counter", "creamSaltbox", "creamSaltbox", 0, 2.82f, 1.635f, Wall.Left),
             ("fixture.st_peters.cream_saltbox.stove", "creamSaltbox", "creamSaltbox", 0, 2.82f, 2.635f, Wall.Left),
             ("fixture.st_peters.cream_saltbox.microwave", "creamSaltbox", "creamSaltbox", 0, 2.82f, 3.485f, Wall.Left),

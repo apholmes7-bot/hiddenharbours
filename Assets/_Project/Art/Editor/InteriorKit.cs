@@ -374,22 +374,29 @@ namespace HiddenHarbours.Art.Editor
             Build.RoomDialled("harbourGable", "harbour gable ground", new Dictionary<string, object>
                 {
                     ["size"] = 0.3,
+                    // The shell is the house's own dials (VillageBuildingKit harbourGable): its door is
+                    // in the cross gable on the +X eave, and the room rig puts its doorway there only
+                    // when it carries this exact shell.
                     ["shell"] = new Dictionary<string, object>
                     {
-                        ["era"] = "plain",
+                        ["era"] = "gothic",
                         ["shape"] = "gable",
-                        ["siding"] = "clapboard",
-                        ["body"] = "blue",
-                        ["roof"] = "asphaltGrey",
+                        ["siding"] = "shingle",
+                        ["body"] = "teal",
+                        ["roof"] = "metalRed",
                         ["size"] = 0.3,
                         ["windows"] = "twoOverTwo",
-                        ["winDensity"] = 0.55,
-                        ["attic"] = "gable",
-                        ["porch"] = "front",
+                        ["winDensity"] = 0.5,
+                        ["attic"] = "gothic",
+                        ["porch"] = "none",
+                        ["crossGable"] = 1,
+                        ["gableFull"] = true,
+                        ["bargeboard"] = true,
                         ["dormers"] = 0,
                         ["chimneys"] = 1,
-                        ["bay"] = false,
-                        ["weather"] = 0.3,
+                        ["shutters"] = "none",
+                        ["doorPaint"] = "ivory",
+                        ["weather"] = 0.45,
                     },
                     ["storey"] = "ground",
                     ["floor"] = "plank",
@@ -408,22 +415,29 @@ namespace HiddenHarbours.Art.Editor
             Build.RoomDialled("harbourGableUpper", "harbour gable upper", new Dictionary<string, object>
                 {
                     ["size"] = 0.3,
+                    // The shell is the house's own dials (VillageBuildingKit harbourGable): its door is
+                    // in the cross gable on the +X eave, and the room rig puts its doorway there only
+                    // when it carries this exact shell.
                     ["shell"] = new Dictionary<string, object>
                     {
-                        ["era"] = "plain",
+                        ["era"] = "gothic",
                         ["shape"] = "gable",
-                        ["siding"] = "clapboard",
-                        ["body"] = "blue",
-                        ["roof"] = "asphaltGrey",
+                        ["siding"] = "shingle",
+                        ["body"] = "teal",
+                        ["roof"] = "metalRed",
                         ["size"] = 0.3,
                         ["windows"] = "twoOverTwo",
-                        ["winDensity"] = 0.55,
-                        ["attic"] = "gable",
-                        ["porch"] = "front",
+                        ["winDensity"] = 0.5,
+                        ["attic"] = "gothic",
+                        ["porch"] = "none",
+                        ["crossGable"] = 1,
+                        ["gableFull"] = true,
+                        ["bargeboard"] = true,
                         ["dormers"] = 0,
                         ["chimneys"] = 1,
-                        ["bay"] = false,
-                        ["weather"] = 0.3,
+                        ["shutters"] = "none",
+                        ["doorPaint"] = "ivory",
+                        ["weather"] = 0.45,
                     },
                     ["storey"] = "upper",
                     ["floor"] = "plank",

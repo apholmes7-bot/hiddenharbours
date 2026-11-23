@@ -145,6 +145,8 @@ namespace HiddenHarbours.Tools.RigBaking
             new BuildingAxis("bay",        "Bay window",  BuildingAxisKind.Flag,   false),
             new BuildingAxis("bargeboard", "Bargeboard",  BuildingAxisKind.Flag,   false),
             new BuildingAxis("crossGable", "Cross gable", BuildingAxisKind.Count,  0, maxCount: 1),
+            // The cross gable at full width (3.5 m wide, not 2.9 m): the harbour gable's board look.
+            new BuildingAxis("gableFull",  "Full cross gable", BuildingAxisKind.Flag, false),
             new BuildingAxis("garage",     "Garage",      BuildingAxisKind.Flag,   false),
             new BuildingAxis("mirror",     "Mirrored (flipped across the ridge)", BuildingAxisKind.Flag, false),
             // Both paint dials offer PAINTS plus 'none', which a named rig table cannot (the studio would offer

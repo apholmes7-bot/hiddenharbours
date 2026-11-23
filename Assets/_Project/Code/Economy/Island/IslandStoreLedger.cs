@@ -38,7 +38,8 @@ namespace HiddenHarbours.Economy
     ///
     /// <para>Units are each good's own (<see cref="IslandGoodDef.Unit"/>); mass and volume per unit come from
     /// its daily figures. The target includes the player's allowance, the island's use does not: the allowance
-    /// is what stands on the shelf for the player. Player purchases are not modelled yet (they need saving).
+    /// is what stands on the shelf for the player. Player purchases come in through <see cref="ExtraDraw"/>, held
+    /// for the session only (saving them is slice 8).
     /// Plain C#, no Unity lifecycle; drive it from the day tick or read it lazily.</para>
     /// </summary>
     public sealed class IslandStoreLedger
@@ -111,6 +112,15 @@ namespace HiddenHarbours.Economy
 
         /// <summary>How many days before the asked day the replay starts from a full back room.</summary>
         public int LookbackDays { get; }
+
+        /// <summary>
+        /// Units of a good taken from the back room on a day on top of the island's own use, as
+        /// <c>(goodIndex, day) =&gt; units</c>: the player's purchases off the shelf (slice 2, held for the
+        /// session only). Applied after the island's use, never below empty. Null means nothing extra, which
+        /// is the island as the calendar alone says. Draws older than <see cref="LookbackDays"/> fall out of
+        /// the replay: the run tops the room back up, so the deviation clears itself.
+        /// </summary>
+        public Func<int, int, double> ExtraDraw { get; set; }
 
         /// <summary>The stocked goods, in order; the index used by every per-good read.</summary>
         public int GoodCount => _goods.Length;
@@ -223,6 +233,14 @@ namespace HiddenHarbours.Economy
                     _level[i] = 0.0;
                 }
             }
+
+            Func<int, int, double> extra = ExtraDraw;
+            if (extra != null)
+                for (int i = 0; i < n; i++)
+                {
+                    double taken = extra(i, day);
+                    if (taken > 0.0) _level[i] = Math.Max(0.0, _level[i] - taken);
+                }
             return run;
         }
     }

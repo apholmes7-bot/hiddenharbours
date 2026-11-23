@@ -309,7 +309,11 @@ namespace HiddenHarbours.Tests.RigBaking
                     Assert.AreEqual(0, reg.FacingOffset,
                                     $"{room.Key}: the returned room puts its doorway on the gable the house " +
                                     "puts its door on, so each facing stands under the same facing\n" + reg.Report);
-                    Assert.AreEqual(+1, reg.ExteriorGable, room.Key);
+                    // The harbour gable's door is in its cross gable on the +X eave (the board's look):
+                    // no gable, and the room's doorway stands on its +X wall under it.
+                    bool eaveDoor = InteriorKit.ExteriorKeyFor(room.Key) == "harbourGable";
+                    Assert.AreEqual(eaveDoor ? 0 : +1, reg.ExteriorGable, room.Key + "\n" + reg.Report);
+                    if (eaveDoor) StringAssert.Contains("+X eave", reg.Report, room.Key);
                     Assert.AreEqual(+1, reg.InteriorGable, room.Key);
                 }
             }
@@ -388,10 +392,10 @@ namespace HiddenHarbours.Tests.RigBaking
             // E2 ruling 6 and E2b ruling 2: the three new homes, equal on main's house and the returned house in classic.
             ["harbourGable"] = new[]
             {
-                "96c2e50ebfd2a8d4f898bb7996bb63848468e5c6aa794d2cd4c19a395813713c", "e8321d55592c9429edac2cf6fe94d6334fcdd4602bbb6833eab223d145f5f93a",
-                "1f9c58e005e8365a6c6427d96a65d2c49dbd1858b86776037188894e7cea5ccb", "473d18535ac8196f797c64f907887a830b69cfd0fc0744386338c6490f446932",
-                "fecf2b6a06b5fcbc7aef07be94f00eeaac4946e4ab2080160cadfb07ced9dd55", "50380aa9b420ed87e2eeb035a957e2dc81d924173249a3016f19b55b562def22",
-                "b1c8c75792cf2777f126534932fd360d4a8df3a173462950e2ca5b3298420fc1", "73c0783451c53c4d87fa4a47dd8de80d3f3391d9d57d71b86a2ba0cebe5b80c1",
+                "dba068d20e77e5972aab693ab464badb64f7cb9d3cceaf022a00eed9a11be8fe", "7db68231a2ba2d9f17520be06b4b184125f82950bfa79ed36f76c8d9a85eeecc",
+                "3f9485c8bf85880dbc6c9ed209c37374f53dde1e05c8f037fb672c97edd3d4e4", "069bb4640ba6e6895f34e8150d823b532b31c3cfbb1c531e4254b48b435a4549",
+                "510d127cf676325a337af882843e6d5b460837636e1689d6adc2f04fe1e2a34e", "254a749b4c135b787a5bb50effb8bf78b65fb89023b8a772c34fee416f7aa69b",
+                "1686599636c0511b81dbbc673e8ca9af1d9b726f38726643407673ff686b8dd3", "2fbe2e5a1fda7164c8e4ff13d639273fa9a95e5add7f50eb4b9099938df5a9c2",
             },
             ["creamSaltbox"] = new[]
             {
@@ -541,19 +545,22 @@ namespace HiddenHarbours.Tests.RigBaking
 
             AssertNone(failures, "the door's loop no longer agrees with its side — the loop reading's sign " +
                                  "is calibrated on these builds, so BuildingRigAzimuthProbe's eave path is unproven");
-            // E2 ruling 5 (case 7): the 23 builds whose side the probe reads, pinned by name per rig.
+            // E2 ruling 5 (case 7): the 22 builds whose side the probe reads, pinned by name per rig.
+            // The harbour gable's door is in its cross gable on the eave, so on the returned house the
+            // side cannot read it either (the board's look; its room registers through the eave path).
             string[] houses = { "school", "generalStore", "whiteFarmhouse", "redSaltbox", "sageCottage",
                                 "harbourGable", "creamSaltbox", "whiteGable" };
             CollectionAssert.AreEqual(houses, readKeys["main's house"],
                                       "main's house: every village house's door side is read");
-            CollectionAssert.AreEqual(houses.Where(k => k != "generalStore").ToArray(), readKeys["the returned house"],
-                                      "the returned house: every door side but the general store's eave door is read");
+            CollectionAssert.AreEqual(houses.Where(k => k != "generalStore" && k != "harbourGable").ToArray(),
+                                      readKeys["the returned house"],
+                                      "the returned house: every door side but the two eave doors is read");
             CollectionAssert.AreEqual(new[] { "ginnyWoodshed", "ginnyNetStore", "ginnyLeanTo", "stPetersCannery",
                                               "stPetersBaitStore", "stPetersNetLoft", "stPetersNetShed", "stPetersIceHouse" },
                                       readKeys["the wharf"], "the wharf: all eight, O3's four included");
-            Assert.AreEqual(23, read, "the calibration is measured on 23 builds whose side the probe reads " +
-                                      "(8 on main's house, 7 on the returned, 8 wharf including O3's four)");
-            Assert.AreEqual(1, eave, "and exactly one door the side cannot read: the general store's");
+            Assert.AreEqual(22, read, "the calibration is measured on 22 builds whose side the probe reads " +
+                                      "(8 on main's house, 6 on the returned, 8 wharf including O3's four)");
+            Assert.AreEqual(2, eave, "and exactly two doors the side cannot read: the general store's and the harbour gable's");
         }
 
         // =============================================================================
