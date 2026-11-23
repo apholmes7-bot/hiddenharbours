@@ -675,7 +675,20 @@ namespace HiddenHarbours.Art
                 }
                 clip[c] = k;
             }
-            return clip;
+            if (clip == null || w.Length < 2) return clip;
+            // A lone cut column between two whole ones is a brow wiggle (a hook, a jog), not a clifftop in front: cutting
+            // it would open a slot down the face to the sea. Only a cut that spans at least two columns is kept.
+            var kept = (float[])clip.Clone();
+            bool any = false;
+            for (int c = 0; c < w.Length; c++)
+            {
+                if (clip[c] >= 1f) continue;
+                bool leftWhole = c == 0 || clip[c - 1] >= 1f;
+                bool rightWhole = c + 1 >= w.Length || clip[c + 1] >= 1f;
+                if (leftWhole && rightWhole) kept[c] = 1f;
+                else any = true;
+            }
+            return any ? kept : null;
         }
 
         // ── The run: tapered ends, bridged slits, feathered seams ───────────────────────────────────

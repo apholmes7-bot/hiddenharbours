@@ -144,15 +144,24 @@ namespace HiddenHarbours.Tests.EditMode
                     out int hidden, out int cut, out int steps, out List<Vector2> where);
             Assert.AreEqual(16, steps, "St Peters step chunks: six at the wall 168 beach, ten on the bay's two stairs.");
             Assert.Greater(hidden + cut, 0, "the bay's back-facing wall and the walls drawn over the spit must be cut.");
-            List<Vector2> elsewhere = where.Where(p => !InBay(p) && !InStairs(p) && !AtHook(p)).ToList();
-            Assert.IsEmpty(elsewhere, "faces cut outside the West Ledges bay, its hook and the steps: " +
-                                      string.Join(", ", elsewhere));
+            // The hook at wall 171 and the jog at wall 063 turn a single column away; a lone cut column would open a
+            // slot down the face, so those stay whole.
+            List<Vector2> elsewhere = where.Where(p => !InBay(p) && !InStairs(p)).ToList();
+            Assert.IsEmpty(elsewhere, "faces cut outside the West Ledges bay and the steps: " + string.Join(", ", elsewhere));
+        }
+
+        [Test]
+        public void ALoneCutColumnStaysWhole()
+        {
+            // A one-column hook in a wall facing the camera: the tip turns away, but cutting it alone opens a slot.
+            Vector2[] brow = { new(0f, 0f), new(1f, 0f), new(1.2f, 0.6f), new(1.4f, 0f), new(2.4f, 0f) };
+            CliffWallSample[] hook = Wall(brow, -0.5f);
+            hook[2] = new CliffWallSample(brow[2], brow[2] + new Vector2(0f, 0.5f), Drop, 0f);
+            Assert.IsNull(Clip(hook, false), "a lone cut column must be left whole.");
         }
 
         // The bay, where a wall's brow runs back into the land, and the walls drawn on across the spit.
         static bool InBay(Vector2 p) => p.x > -29f && p.x < -24f && p.y > -44f && p.y < -38f;
-        // The hook at wall 171, where the brow turns back on itself: the tip column faces away.
-        static bool AtHook(Vector2 p) => p.x > -15f && p.x < -14f && p.y > -48f && p.y < -47f;
         static bool InStairs(Vector2 p) => p.x > -1f && p.x < 1f && p.y > -58f && p.y < -56f;
 
         [Test]
