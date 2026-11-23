@@ -53,4 +53,15 @@ MonoBehaviour:
   - 2.2
   Depth: 0.14
   Bank: {x: 0.3, y: 0.55}
+  RunOut:
+  - {x: -10.75, y: 102.92}
+  - {x: -10.75, y: 107.1}
+  - {x: -10.75, y: 111.27}
+  - {x: -9.68, y: 115.24}
+  - {x: -7.52, y: 118.2}
+  - {x: -5.87, y: 121.73}
+  - {x: -5.75, y: 125.9}
+  - {x: -5.75, y: 130.08}
+  - {x: -5.75, y: 134.25}
+  RunOutWidth: 3
   Why: 'The main brook: out of the bog pond, down through the barren in a shallow valley, into the marsh as its main creek, out across the mud to the lagoon.'

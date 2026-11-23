@@ -47,5 +47,10 @@ MonoBehaviour:
   - 2
   Depth: 0.14
   Bank: {x: 0.3, y: 0.55}
+  RunOut:
+  - {x: 98.53, y: 108.73}
+  - {x: 94.39, y: 108.75}
+  - {x: 90.25, y: 108.75}
+  RunOutWidth: 3
   Why: 'The swale''s drain: out of the fen pool, down a gully in the cove''s bank,
     a channel across the mud.'

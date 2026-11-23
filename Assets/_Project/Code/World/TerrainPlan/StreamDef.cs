@@ -26,6 +26,23 @@ namespace HiddenHarbours.World
         public float Depth = 0.12f;
         [Tooltip("The bank's slope beside the channel: fresh reach, tidal reach (m per m).")]
         public Vector2 Bank = new Vector2(0.3f, 0.55f);
+        [Tooltip("Where its fresh water runs on past its last point, down the beach to below the spring low (m), or empty. " +
+                 "The thread of water is laid on the ground along it at the brook's depth, so a low tide still shows the stream " +
+                 "reaching the sea; a higher tide covers it.")]
+        public Vector2[] RunOut = new Vector2[0];
+        [Tooltip("The width (m) the run-out's water may lay; its bed's dish sets the thread's real edge.")]
+        public float RunOutWidth = 2.4f;
         [TextArea] public string Why = "";
+
+        /// <summary>The brook's points from <paramref name="from"/> on, then its run-out: the one line a run-out and a bed follow.</summary>
+        public Vector2[] LineWithRunOut(int from)
+        {
+            int f = Mathf.Clamp(from, 0, Mathf.Max(0, Points.Length - 1));
+            int runOut = RunOut == null ? 0 : RunOut.Length;
+            var o = new Vector2[Points.Length - f + runOut];
+            for (int k = f; k < Points.Length; k++) o[k - f] = Points[k];
+            for (int k = 0; k < runOut; k++) o[Points.Length - f + k] = RunOut[k];
+            return o;
+        }
     }
 }

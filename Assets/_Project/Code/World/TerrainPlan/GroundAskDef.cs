@@ -26,6 +26,12 @@ namespace HiddenHarbours.World
 
         /// <summary>A closed hollow filled to its own spill level, raised only, outside a kept circle (fix 4).</summary>
         HollowFill = 4,
+
+        /// <summary>
+        /// A brook's bed cut across the beach: a shallow dish, level from bank to bank, along the brook's line and its
+        /// run-out to the low-water line, so its thread of water has a smooth natural edge (cut and fill).
+        /// </summary>
+        BrookBed = 5,
     }
 
     /// <summary>
@@ -139,5 +145,27 @@ namespace HiddenHarbours.World
         public float LevelTolerance = 0.01f;
         [Tooltip("A rule ask (its id) whose circle the fill keeps out of: texels inside it are held, not filled.")]
         public string KeepOutOf = "";
+
+        [Header("BrookBed: a brook's shallow bed down the beach (reads SampleStep and Sigma too)")]
+        [Tooltip("The brook whose line the bed follows: its points from FromStation on, then its run-out to the low-water line.")]
+        public StreamDef Stream;
+        [Tooltip("The brook's first point (its index) the bed starts at; the bed fades in from there.")]
+        public int FromStation;
+        [Tooltip("The dish's half-width (m) at the bed's start (x) and at its end (y), linear by length between.")]
+        public Vector2 BedHalfWidth = new Vector2(0.8f, 1.2f);
+        [Tooltip("How far the dish's middle sits under its banks (m). With the brook's water depth this sets how wide its thread is.")]
+        public float BedDepth = 0.22f;
+        [Tooltip("Past the dish the bank blends back into the ground over this many metres.")]
+        public float BankWidth = 2f;
+        [Tooltip("Each bank wanders in and out by this fraction of the half-width (x), over this wavelength along the line (y, m): an organic edge.")]
+        public Vector2 BedWander = new Vector2(0.3f, 6f);
+        [Tooltip("The bed fades in over x m from its start and out over y m before its end.")]
+        public Vector2 BedFade = new Vector2(4f, 2f);
+        [Tooltip("The dish's flat floor each side of the line (m): the middle of the bed is level, so the brook's line reads the bed's floor and never a rise.")]
+        public float BedFloor = 0.35f;
+        [Tooltip("Ground standing at or over this level (m) is never cut under it: the beach's dry sand stays over the spring's high water, the brook runs through it in the channel it has.")]
+        public float BedDryAbove = 2.2f;
+        [Tooltip("The banks' wander seed.")]
+        public int Seed;
     }
 }
