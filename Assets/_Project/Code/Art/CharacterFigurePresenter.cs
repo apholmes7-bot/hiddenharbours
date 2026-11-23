@@ -318,6 +318,7 @@ namespace HiddenHarbours.Art
             DrawsInsteadOfSprite = false;
             Stop(Refusal.PresenterDisabled);
             ReleaseAshore();   // her id goes back now; enabled again, she asks at her next draw
+            _castShape.Clear();
         }
 
         private void OnDestroy()
@@ -325,6 +326,7 @@ namespace HiddenHarbours.Art
             RestoreSprite();
             Release();
             ReleaseAshore();
+            _castShape.Dispose();
         }
 
         // ---------------------------------------------------------------- the one path
@@ -337,7 +339,15 @@ namespace HiddenHarbours.Art
             _workProp = null;
             PoseStand(stand, aboard);
             SettleHeldProp();
+            // Her shadow and foliage outline take the shape the mesh is drawn in (the player's rule).
+            _castShape.Sync(_sprite, !DrawsInsteadOfSprite ? null
+                                     : _ashoreFigure != null && _ashoreFigure.Visible ? _ashoreFigure : _figure);
         }
+
+        private readonly MeshFigureCastShape _castShape = new MeshFigureCastShape();
+
+        /// <summary>The outline handed to her shadow and silhouette (tests).</summary>
+        public MeshFigureCastShape CastShape => _castShape;
 
         private void PoseStand(ICharacterFigureStand stand, bool aboard)
         {

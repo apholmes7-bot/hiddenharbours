@@ -408,12 +408,31 @@ namespace HiddenHarbours.Tests.Art.EditMode
         {
             string src = Src();
             int supersede = IndexOf(src, "foamCoverage *= (1.0 - surfSupersede);");
-            int yield = IndexOf(src, "foamCoverage *= 1.0 - washPresence * step(0.001, _WashLineOpacity);");
+            int yield = IndexOf(src, "foamCoverage *= 1.0 - washPresenceSea * step(0.001, _WashLineOpacity);");
             int compose = IndexOf(src, "col.rgb = lerp(col.rgb, fringeFoam, foamCoverage * _FoamColor.a);");
             Assert.That(supersede < yield && yield < compose,
                 "the fringe's hand-back to the wash must sit between the surf supersede and the fringe compose");
             // The fence the one-piece edge fix set stays: the fringe's DEPTH still rides boreFoamBlend.
             StringAssert.Contains("surfRunUpM, boreFoamBlend)", src);
+        }
+
+        [Test]
+        public void TheFringeHandBack_ReadsTheOpenSeasPresence_NotTheReachScaledOne()
+        {
+            // The rejoin pale band (2026-11-22): a reconnecting pool's reach fades the wash's amounts, never
+            // the choice of which language (wash or fringe) the shore wears. The lee share is reach-gated for
+            // the wash itself (washSeaBreaks) but the fringe's hand-back reads it ungated (washSeaBreaksOpen),
+            // so wherever the reach is 1 the two presences are the same expression.
+            string src = Src();
+            int open = IndexOf(src, "float washSeaBreaksOpen = (_BreakerOuter.w > 0.5 && depth > -surfBeachReach)");
+            int gated = IndexOf(src, "float washSeaBreaks = washSeaBreaksOpen * seaReach;");
+            int presence = IndexOf(src,
+                "float washPresence = max(smoothstep(0.0, max(_WashPresenceRamp, 1e-3), boreEdgeBlend), washSeaBreaks);");
+            int sea = IndexOf(src,
+                "float washPresenceSea = max(smoothstep(0.0, max(_WashPresenceRamp, 1e-3), boreEdgeBlend), washSeaBreaksOpen);");
+            int yield = IndexOf(src, "foamCoverage *= 1.0 - washPresenceSea * step(0.001, _WashLineOpacity);");
+            Assert.That(open < gated && gated < presence && presence < sea && sea < yield,
+                "the open lee share, its reach-gated copy, both presences, then the fringe hand-back");
         }
 
         [Test]
