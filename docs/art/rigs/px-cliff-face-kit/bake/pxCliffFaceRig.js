@@ -686,8 +686,10 @@
     const A = ASPECT[aspect] || ASPECT.S, st = clamp(step | 0, 0, 2), R = o.seed || 5527;
     const feat = o.feature || 'notch';
     const t = new Tile(n, m); t.a.fill(0);
-    const bleach = t.addPal('#c9b8a0', .8), shade = t.addRamp(['#160d0a', '#20130e', '#2a1a14', '#35231a', '#412d22']);
-    const grit = t.addPal('#7a6552', .85), wrack = t.addPal('#4a4432', .8);
+    /* 11-23 (owner: "organic and natural"): the bleach and the grit are the ROCK's own colours, salt-
+       paled and broken. A grey-cream wash over red read as grey paint panels on every toe. */
+    const bleach = t.addPal('#c48a68', .8), shade = t.addRamp(['#160d0a', '#20130e', '#2a1a14', '#35231a', '#412d22']);
+    const grit = t.addPal('#86553c', .85), wrack = t.addPal('#4a4432', .8);
     const alpha = new Uint8Array(n * m);
     const put = (x, y, p, b, h, a) => { if (y < 0 || y >= m) return; t.set(x, y, p, b, h, 1); alpha[y * n + ((x % n) + n) % n] = a == null ? 255 : a; };
     for (let x = 0; x < n; x++) {
@@ -702,10 +704,12 @@
          debris banked against the foot, and that is the whole difference at a till toe */
       if (feat === 'slump') {
         const ap = Math.round(m * .52 + (fb(u, .5, 3, 1, R + 15, 3) - .5) * m * .30 + (fb(u, .5, 10, 1, R + 16, 2) - .5) * m * .10);
+        /* clumps of rubble on 2 px cells, not salt-and-pepper noise, and opaque: a dithered veil of
+           grit over the face read as a grey panel */
         for (let y = Math.max(0, ap); y < m; y++) {
-          const v = (y - ap) / Math.max(1, m - ap);
-          if (hash2(x >> 1, y, R + 17) > .30 + v * .82) continue;
-          put(x, y, grit, y === ap || hash2(x, y, R + 18) < .18 ? 3 : hash2(x, y, R + 19) < .3 ? 1 : 2, .3, v > .35 ? 255 : 190);
+          const v = (y - ap) / Math.max(1, m - ap), X = x >> 1, Y = y >> 1;
+          if (fb(u, y / m, 24, 8, R + 17, 2) > .30 + v * .62 || hash2(X, Y, R + 21) > .62 + v * .5) continue;
+          put(x, y, grit, y === ap || hash2(X, Y, R + 18) < .18 ? 3 : hash2(X, Y, R + 19) < .3 ? 1 : 2, .3, 255);
         }
         continue;
       }
