@@ -137,16 +137,25 @@ Every feature must serve at least one pillar. If it serves none, cut it.
 > - **The gate to Nine Mile Creek:** the dory mended, the cod licence held, a fish landed from the
 >   dory, shellfish sold, and day 7 or later; **then Ginny gives her word**. The next morning the
 >   weather has turned.
-> - **A fish he holds no licence for still bites.** He says he must release it; it goes back, and no
->   Notebook entry is made.
+> - **Every catch needs a licence** *(ruled later the same day)*. Ginny still buys the shellfish (clam)
+>   licence. Finfish such as smelt, winter flounder, mackerel and striped bass need a licence, and so
+>   do the trap species (crabs and lobster). Which licences exist, what each covers and where each is
+>   sold is **open**; since the first week is on the island, the first ones must be buyable there.
+> - **Nothing is ever blocked from digging, catching or trapping** *(ruled later the same day)*. A
+>   catch he holds no licence for is **released automatically**; he says "I don't have a license for
+>   this <named catch> yet", naming it, and no Notebook entry is made. This covers the shovel, the rod
+>   and line, and traps alike.
+> - **The calendar** already starts the game on day 1 of **High Summer** (§5.8 seasons), which is the
+>   early summer the owner wants for the first week. No change needed.
 > - **The demo ends at Ginny's word** with a closing beat; he can keep fishing from the dory after.
 >   The boat trailer stays locked to him until after he can reach Nine Mile Creek.
 > - **The simulation rule holds:** the block is a pure function of world seed + game time + saved
 >   progress flags. It never changes or saves the world's wind, tide or sea
 >   ([`adr/0062-the-first-week-is-closed-by-weather.md`](adr/0062-the-first-week-is-closed-by-weather.md)).
 >
-> **Open (not ruled):** where on the island the cod licence is sold (proposal: Rose's post office);
-> the exact repair materials and jobs; the prices.
+> **Open (not ruled):** which licences exist beyond the clam and cod licences, what each covers, and
+> where each is sold (the first ones on the island; proposal for the counter: Rose's post office); the
+> exact repair materials and jobs; the prices.
 
 ### 5.4 Boat ladder (LOCKED — "Dory to Dynasty"). Detail + stats in `design/boats-and-navigation.md`.
 Every tier defines: **length (m)**, **draught (m)** *(how shallow it can go before grounding — ties to tide!)*, **hold capacity**, **crew slots**, **range**, **seaworthiness** *(weather tolerance)*, **handling** *(wind/current vulnerability)*.

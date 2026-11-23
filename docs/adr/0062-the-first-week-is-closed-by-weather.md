@@ -45,11 +45,14 @@ edge; it turns a boat back with wind, rain and a rising sea, shades only what th
   to an island seller and replacing payment with hand jobs is backlog work, not this PR.
 - The barrier director gains a walker case; it must stay as cheap as today (no per-frame allocations) and must stand
   down during the arrival opening for the new walls too.
-- Fishing already lets an unlicensed fish bite and slip back; the ruling adds a spoken line and no Notebook entry.
+- Every catch needs a licence (ruled later on 2026-11-23), but digging, fishing and trapping are never blocked: an
+  unlicensed catch is released automatically with a spoken line naming it, and no Notebook entry is made. Fishing
+  already lets an unlicensed fish slip back; the line, the dig and trap cases and the Notebook rule are new work.
 
 ## Open (not ruled)
 
-- Where on the island the cod licence is sold (proposal: Rose's post office).
+- Which licences exist beyond the clam and cod licences, what each covers, and where each is sold; the first ones
+  must be buyable on the island (proposal for the counter: Rose's post office).
 - The exact repair materials and jobs, and all prices.
 - The gate flag's name and the two new fact flags' names (set by the slice that builds them).
 - Whether the north and south edges, which meet no region and today hold a boat at the edge, also get a storm band

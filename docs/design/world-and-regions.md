@@ -312,8 +312,10 @@ shellfish digging** on the bared flats — the **shovel** and the **"two squirti
 and mend on the island (P4 in miniature: do the humblest job by hand to earn your way up). *(Amended
 2026-11-23: the **rod** — a couple of tiers — bait and a rod rack are sold at the island store, and the
 first rod- and hand-line fishing happens here, from the shore and then from the mended dory. Boat
-hardware is Nine Mile Creek's. A fish he holds no licence for still bites; he says he must release it,
-it goes back, and no Notebook entry is made.)*
+hardware is Nine Mile Creek's. Every catch needs a licence; Ginny still buys the clam licence, and which
+other licences exist, what they cover and where they are sold is open (the first ones must be buyable on
+the island). Digging, fishing and trapping are never blocked: a catch he holds no licence for is released
+automatically, he says "I don't have a license for this <named catch> yet", and no Notebook entry is made.)*
 
 **Tide behaviour.** Tide is the island's defining force from minute one (the purest P1 primer): low
 water bares the clam flats **and** opens the **sandbar** to Nine Mile Creek; high water drowns the flats and
