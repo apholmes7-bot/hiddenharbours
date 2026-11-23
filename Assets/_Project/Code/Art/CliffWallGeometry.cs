@@ -161,11 +161,37 @@ namespace HiddenHarbours.Art
         /// <paramref name="keep"/> of a <paramref name="surfaceMetres"/> face. 1 everywhere on a whole face.</summary>
         public static float RunEndAlphaAt(float t, float keep, float surfaceMetres)
         {
-            float strength = RunEndFadeStrength(keep);
+            float strength = RunEndRockFadeStrength(keep);
             if (strength <= 0f) return 1f;
-            float x = Mathf.Clamp01((keep - t) * surfaceMetres / RunEndFadeMetres);
+            float band = Mathf.Min(RunEndFadeMetres, RunEndFadeShareOfKept * keep * surfaceMetres);
+            if (!(band > 1e-4f)) return 1f - strength;
+            float x = Mathf.Clamp01((keep - t) * surfaceMetres / band);
             return 1f - strength * (1f - x * x * (3f - 2f * x));
         }
+
+        /// <summary>A toe strip shows whole only where the face keeps at least this share of its surface, and is gone
+        /// by <see cref="ToeStripGoneKeep"/>.</summary>
+        public const float ToeStripWholeKeep = 0.97f;
+
+        /// <summary>See <see cref="ToeStripWholeKeep"/>.</summary>
+        public const float ToeStripGoneKeep = 0.8f;
+
+        /// <summary>The toe strip's alpha on a column that keeps <paramref name="keep"/> of its face.</summary>
+        public static float ToeStripShownAt(float keep) =>
+            Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(ToeStripGoneKeep, ToeStripWholeKeep, keep));
+
+        /// <summary>The rock fades at a tapered foot only where the face keeps less than this share of its surface.
+        /// Higher up the taper the foot stays solid: a half-clear face shows the faces and ground behind it through
+        /// the rock as faint layers.</summary>
+        public const float RunEndRockFadeFromKeep = 0.5f;
+
+        /// <summary>At most this share of the kept face fades at its foot: the upper part of a tapered face stays solid.</summary>
+        public const float RunEndFadeShareOfKept = 0.4f;
+
+        /// <summary>How strongly the rock fades at a tapered foot: 0 where the face keeps
+        /// <see cref="RunEndRockFadeFromKeep"/> or more, 1 at an open end.</summary>
+        public static float RunEndRockFadeStrength(float keep) =>
+            Mathf.Clamp01((RunEndRockFadeFromKeep - keep) / (RunEndRockFadeFromKeep - RunEndKeep));
 
         /// <summary>The taper length (m) for an open end with this drop.</summary>
         public static float RunEndTaperMetres(float dropMetres) =>
@@ -324,6 +350,143 @@ namespace HiddenHarbours.Art
                     return true;
             }
             return false;
+        }
+
+        // ── Where the clifftop in front hides a face ────────────────────────────────────────────────
+        // The ground is drawn in plan and a face hangs down-screen from its brow, so where a face is drawn over a
+        // clifftop that stands nearer the camera, the clifftop is what the eye should see. The West Ledges bay is the
+        // case: a wall whose brow runs back into the land is drawn over its own clifftop, and the bay's far wall is
+        // drawn on over the spit in front of it. Read from brow lines alone, like the run ends above.
+
+        /// <summary>The first this share of a face column is never clipped: the column starts on brow lines it touches.</summary>
+        public const float OcclusionStartFraction = 0.02f;
+
+        /// <summary>A clifftop in front hides a face point only if it stands at least this high relative to that point (m,
+        /// below the point's own elevation): a low ledge in front does not hide the upper face behind it.</summary>
+        public const float OcclusionElevationToleranceMetres = 0.25f;
+
+        /// <summary>Under this much of its face kept, a column's brow strip fades out too: a hidden face has no lip to show.</summary>
+        public const float OcclusionLipFadeKeep = 0.15f;
+
+        /// <summary>One segment of a brow line, with the side its clifftop lies on.</summary>
+        public struct BrowEdge
+        {
+            public Vector2 A, B;
+            /// <summary>Unit normal toward the clifftop: away from the side the toe lies on.</summary>
+            public Vector2 Land;
+            /// <summary>Brow elevation (m) at each end, NaN where the chunk has no toe elevations.</summary>
+            public float ElevationA, ElevationB;
+        }
+
+        /// <summary>The brow edge from one station to the next, its land side found from where the toes lie.</summary>
+        public static bool TryBrowEdge(in CliffWallSample a, in CliffWallSample b, bool elevationsKnown, out BrowEdge edge)
+        {
+            edge = default;
+            Vector2 e = b.BrowPlan - a.BrowPlan;
+            if (e.sqrMagnitude < 1e-10f) return false;
+            Vector2 toeSide = (a.ToePlan + b.ToePlan) * 0.5f - (a.BrowPlan + b.BrowPlan) * 0.5f;
+            Vector2 left = new Vector2(-e.y, e.x).normalized;
+            edge.A = a.BrowPlan;
+            edge.B = b.BrowPlan;
+            edge.Land = Cross(e, toeSide) > 0f ? -left : left;
+            edge.ElevationA = elevationsKnown ? a.ToeElevation + a.DropMetres : float.NaN;
+            edge.ElevationB = elevationsKnown ? b.ToeElevation + b.DropMetres : float.NaN;
+            return true;
+        }
+
+        /// <summary>Every brow edge of a chunk's stations, appended to <paramref name="into"/>.</summary>
+        public static void AddBrowEdges(List<BrowEdge> into, CliffWallSample[] samples, bool elevationsKnown)
+        {
+            if (samples == null) return;
+            for (int i = 0; i + 1 < samples.Length; i++)
+                if (TryBrowEdge(in samples[i], in samples[i + 1], elevationsKnown, out BrowEdge e)) into.Add(e);
+        }
+
+        static float Cross(Vector2 a, Vector2 b) => a.x * b.y - a.y * b.x;
+
+        /// <summary>A chunk whose brow runs less than this (m) can be a step: see <see cref="IsStep"/>.</summary>
+        public const float StepMaxBrowMetres = 0.5f;
+
+        /// <summary>A step's drop changes at least this many times faster than its brow runs.</summary>
+        public const float StepDropPerBrowMetre = 2f;
+
+        /// <summary>
+        /// Whether a chunk is a STEP: where the toe climbs to a higher ledge, the builder stacks stations on nearly one
+        /// brow point, their drops falling from one face's height to the other's. Its face is a sliver standing edge-on
+        /// (the West Ledges streak at wall 168), with no rock to show: the faces either side draw the cliff, and the step
+        /// draws none. Its blockers still stand.
+        /// </summary>
+        public static bool IsStep(CliffWallSample[] samples)
+        {
+            if (samples == null || samples.Length < 2) return false;
+            float brow = 0f, minDrop = float.MaxValue, maxDrop = float.MinValue;
+            for (int i = 0; i < samples.Length; i++)
+            {
+                if (i > 0) brow += Vector2.Distance(samples[i - 1].BrowPlan, samples[i].BrowPlan);
+                minDrop = Mathf.Min(minDrop, samples[i].DropMetres);
+                maxDrop = Mathf.Max(maxDrop, samples[i].DropMetres);
+            }
+            return brow < StepMaxBrowMetres && maxDrop - minDrop > StepDropPerBrowMetre * brow;
+        }
+
+        /// <summary>
+        /// Whether a face column leaving its brow point along <paramref name="v"/> heads straight into its own clifftop:
+        /// the face there faces away from the camera and the clifftop hides it. With both brow edges at the point, the land
+        /// near it is the wedge between them: the inside of both where the line turns toward the land, else either.
+        /// </summary>
+        public static bool HeadsIntoOwnLand(Vector2 v, bool hasBefore, in BrowEdge before, bool hasAfter, in BrowEdge after)
+        {
+            if (hasBefore && hasAfter)
+            {
+                bool inBefore = Vector2.Dot(v, before.Land) > 0f, inAfter = Vector2.Dot(v, after.Land) > 0f;
+                bool convex = Vector2.Dot(after.B - after.A, before.Land) > 0f;
+                return convex ? inBefore && inAfter : inBefore || inAfter;
+            }
+            if (hasBefore) return Vector2.Dot(v, before.Land) > 0f;
+            if (hasAfter) return Vector2.Dot(v, after.Land) > 0f;
+            return false;
+        }
+
+        /// <summary>
+        /// ⭐ <b>How much of a face column (0..1 of its surface, from the brow) shows past the clifftops in front of it.</b>
+        /// 0 where the column heads straight into its own clifftop (<see cref="HeadsIntoOwnLand"/>). Else the first point
+        /// where its drawn line, brow to drawn toe, crosses a brow edge into that edge's clifftop, where that clifftop
+        /// stands high enough to hide the face point there; everything past it lies behind that clifftop or the face it
+        /// hangs. 1 where nothing hides it. <paramref name="browElevation"/> NaN skips the height check.
+        /// </summary>
+        public static float OcclusionKeepAt(Vector2 brow, Vector2 drawnToe, float browElevation, float dropMetres,
+                                            bool hasBefore, in BrowEdge before, bool hasAfter, in BrowEdge after,
+                                            IReadOnlyList<BrowEdge> edges)
+        {
+            Vector2 v = drawnToe - brow;
+            if (v.sqrMagnitude < 1e-10f) return 1f;
+            if (HeadsIntoOwnLand(v, hasBefore, before, hasAfter, after)) return 0f;
+            if (edges == null) return 1f;
+            float minX = Mathf.Min(brow.x, drawnToe.x), maxX = Mathf.Max(brow.x, drawnToe.x);
+            float minY = Mathf.Min(brow.y, drawnToe.y), maxY = Mathf.Max(brow.y, drawnToe.y);
+            float best = 1f;
+            for (int k = 0; k < edges.Count; k++)
+            {
+                BrowEdge e = edges[k];
+                if (Mathf.Max(e.A.x, e.B.x) < minX || Mathf.Min(e.A.x, e.B.x) > maxX ||
+                    Mathf.Max(e.A.y, e.B.y) < minY || Mathf.Min(e.A.y, e.B.y) > maxY) continue;
+                if (!(Vector2.Dot(v, e.Land) > 0f)) continue;             // leaving that clifftop, or along it
+                Vector2 d = e.B - e.A;
+                float den = Cross(v, d);
+                if (Mathf.Abs(den) < 1e-9f) continue;
+                Vector2 ab = e.A - brow;
+                float t = Cross(ab, d) / den;
+                float s = Cross(ab, v) / den;
+                if (!(t > OcclusionStartFraction && t < best && s >= 0f && s <= 1f)) continue;
+                if (!float.IsNaN(browElevation))
+                {
+                    float ground = Mathf.LerpUnclamped(e.ElevationA, e.ElevationB, s);
+                    if (!float.IsNaN(ground) &&
+                        ground < browElevation - t * dropMetres - OcclusionElevationToleranceMetres) continue;
+                }
+                best = t;
+            }
+            return best;
         }
 
         /// <summary>
