@@ -130,7 +130,7 @@ namespace HiddenHarbours.Tests.EditMode
             var rows = new List<BuyRow>
             {
                 new BuyRow(counter, ice, ice.Id, ice.DisplayName, "", "", BuyLogic.Supply(ice.Price, money),
-                           CatalogSection.Supplies),
+                           CatalogSection.Gear),
             };
             BuyCatalog.ApplyShelves(Seller, now, rows);
             return rows;
