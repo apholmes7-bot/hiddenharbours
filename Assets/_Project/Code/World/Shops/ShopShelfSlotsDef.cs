@@ -37,6 +37,11 @@ namespace HiddenHarbours.World
         /// <summary>The good is carried off in a hand, so a purchase needs a free one. Off for goods that go
         /// straight to the supply locker or the tackle box.</summary>
         public bool NeedsFreeHand;
+
+        /// <summary>The good goes into the shopping bag in his hand (the store's <see cref="ShopShelfSlotsDef.Bag"/>)
+        /// and is put away into his storage by hand (buying at the shelf, slice 2). Off for goods that go
+        /// straight to the supply locker or the tackle box, and for hand tools (<see cref="NeedsFreeHand"/>).</summary>
+        public bool IntoBag;
     }
 
     /// <summary>
@@ -74,6 +79,9 @@ namespace HiddenHarbours.World
 
         /// <summary>How near (m) the player must stand to a slot's good to see its price and buy one.</summary>
         [Min(0f)] public float ReachMeters = 1f;
+
+        /// <summary>The bag this store's bagged goods (<see cref="ShopShelfSlot.IntoBag"/>) go into.</summary>
+        public HiddenHarbours.Core.ShoppingBagDef Bag;
 
         /// <summary>The slots.</summary>
         public List<ShopShelfSlot> Slots = new List<ShopShelfSlot>();

@@ -53,6 +53,9 @@ P = {
     "C": (232, 240, 244),   # bag
     "H": (250, 252, 252),   # bag highlight
     "S": (180, 200, 214),   # bag shade
+    "p": (190, 150, 98),    # paper bag, kraft
+    "r": (150, 112, 66),    # paper bag shade
+    "L": (214, 180, 128),   # paper bag fold
 }
 
 LOAF = [
@@ -100,6 +103,23 @@ ICE_BAG = [
     ".SSS.",
 ]
 
+# The paper shopping bag in his hand (buying at the shelf, slice 2): a kraft bag with a loaf showing.
+PAPER_BAG = [
+    "...kk.....",
+    "..kmq.....",
+    "DDkmqDDDDD",
+    "DLLLLLLLLD",
+    "DppppppprD",
+    "DppppppprD",
+    "DppppppprD",
+    "DppppppprD",
+    "DppppppprD",
+    "DppppppprD",
+    "DppppppprD",
+    "DrrrrrrrrD",
+    "DDDDDDDDDD",
+]
+
 BAIT_BOX = [
     ".DDDDDDDDDD.",
     "DkkkkkkkkkkD",
@@ -131,6 +151,13 @@ PIVOT = {
     "ShelfIceChestEmpty": (13, 11),
     "ShelfIceBags": (13, 11),
     "ShelfBaitBox": (6, 0),
+    # The three goods bands, each on the gondola's canvas, pivoted at its own slot (each good is counted
+    # on its own line, slice 2): the gondola pivot moved by the slot's offset from the gondola's.
+    "ShelfGondolaBread": (21, 34),
+    "ShelfGondolaOatcakes": (31, 20),
+    "ShelfGondolaBeans": (41, 6),
+    # Held: the bottom centre; the carry pose hangs it its own height below the hand.
+    "ShoppingBagPaper": (5, 0),
 }
 ROOM_RECT = {
     "ShelfGondolaEmpty": (GONDOLA_X0, GONDOLA_Y0, GONDOLA_W, GONDOLA_H),
@@ -138,6 +165,9 @@ ROOM_RECT = {
     "ShelfIceChestEmpty": (ICE_X0, ICE_Y0, ICE_W, ICE_H),
     "ShelfIceBags": (ICE_X0, ICE_Y0, ICE_W, ICE_H),
     "ShelfBaitBox": (BAIT_X0, BAIT_Y0, len(BAIT_BOX[0]), len(BAIT_BOX)),
+    "ShelfGondolaBread": (GONDOLA_X0, GONDOLA_Y0, GONDOLA_W, GONDOLA_H),
+    "ShelfGondolaOatcakes": (GONDOLA_X0, GONDOLA_Y0, GONDOLA_W, GONDOLA_H),
+    "ShelfGondolaBeans": (GONDOLA_X0, GONDOLA_Y0, GONDOLA_W, GONDOLA_H),
 }
 
 
@@ -178,22 +208,49 @@ def gondola_empty():
     return im
 
 
-def gondola_goods():
-    im = blank(GONDOLA_W, GONDOLA_H)
+def gondola_bread(im=None):
+    im = im or blank(GONDOLA_W, GONDOLA_H)
     oy = -GONDOLA_Y0
     # Top shelf: two rows of loaves, the front row set half a loaf over.
     for i in range(6):
         stamp(im, LOAF, 1 + i * 10, 217 + oy)
     for i in range(5):
         stamp(im, LOAF, 6 + i * 10, 224 + oy)
+    return im
+
+
+def gondola_oatcakes(im=None):
+    im = im or blank(GONDOLA_W, GONDOLA_H)
+    oy = -GONDOLA_Y0
     # Second shelf: oatcake packets.
     for i in range(8):
         stamp(im, OATCAKES, 2 + i * 7, 235 + oy)
+    return im
+
+
+def gondola_beans(im=None):
+    im = im or blank(GONDOLA_W, GONDOLA_H)
+    oy = -GONDOLA_Y0
     # Third and bottom shelves: tins of beans.
     for i in range(10):
         stamp(im, TIN_TALL, 1 + i * 6, 245 + oy)
     for i in range(10):
         stamp(im, TIN_SHORT, 3 + i * 6, 253 + oy)
+    return im
+
+
+def gondola_goods():
+    # All three bands at once (the slice 1 sprite, kept for reference; slice 2 draws each band on its own).
+    im = blank(GONDOLA_W, GONDOLA_H)
+    gondola_bread(im)
+    gondola_oatcakes(im)
+    gondola_beans(im)
+    return im
+
+
+def paper_bag():
+    im = blank(len(PAPER_BAG[0]), len(PAPER_BAG))
+    stamp(im, PAPER_BAG, 0, 0)
     return im
 
 
@@ -258,13 +315,20 @@ def main():
         "ShelfIceChestEmpty": ice_chest_empty(),
         "ShelfIceBags": ice_bags(),
         "ShelfBaitBox": bait_box(),
+        "ShelfGondolaBread": gondola_bread(),
+        "ShelfGondolaOatcakes": gondola_oatcakes(),
+        "ShelfGondolaBeans": gondola_beans(),
+        "ShoppingBagPaper": paper_bag(),
     }
     for name, im in made.items():
         im.save(os.path.join(out, name + ".png"))
         w, h = im.size
         px, py = PIVOT[name]
-        ox, oy = offset_of(name)
-        print("%s %dx%d pivot (%.6f, %.6f) offset (%.5f, %.5f)" % (name, w, h, px / w, py / h, ox, oy))
+        if name in ROOM_RECT:
+            ox, oy = offset_of(name)
+            print("%s %dx%d pivot (%.6f, %.6f) offset (%.5f, %.5f)" % (name, w, h, px / w, py / h, ox, oy))
+        else:
+            print("%s %dx%d pivot (%.6f, %.6f) held" % (name, w, h, px / w, py / h))
 
 
 if __name__ == "__main__":

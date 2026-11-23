@@ -85,7 +85,61 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(_slots.CoverSortingOrderAboveRoom, Is.LessThan(_slots.GoodsSortingOrderAboveRoom), "the goods stand on the empty shelf");
             Assert.That(_slots.GoodsSortingOrderAboveRoom, Is.LessThan(_slots.SortingOrderAboveRoom), "the card stands in front of the goods");
             Assert.That(_slots.Slots.Any(s => s.Cover != null), "the painted gondola is covered by an empty one");
-            Assert.That(_slots.Slots.All(s => !s.NeedsFreeHand), "slice 1's goods go to the locker and the tackle box, not the hands");
+            Assert.That(_slots.Slots.All(s => !s.NeedsFreeHand), "the shelf goods go to the bag, the locker and the tackle box, not a free hand");
+        }
+
+        // The goods that go into the paper bag in slice 2: each its own line, its own count and its own card.
+        private static readonly string[] IntoTheBag = { "supply.bread", "supply.oatcakes", "supply.tinned_beans" };
+
+        [Test]
+        public void BreadOatcakesAndBeansGoIntoTheBag_EachOnItsOwnLineAndCard()
+        {
+            Assert.IsNotNull(_slots.Bag, "the store names the bag its goods go into");
+            Assert.That(_slots.Bag.Id, Does.StartWith("shoppingbag."));
+            Assert.That(_slots.Bag.Capacity, Is.GreaterThanOrEqualTo(2), "more than one good fits in the bag");
+            Assert.IsNotNull(_slots.Bag.HeldSprite, "the bag is drawn in his hand");
+            Assert.That(_slots.Bag.PutAwayReachMeters, Is.GreaterThan(0f));
+
+            var bagged = _slots.Slots.Where(s => s.IntoBag).ToList();
+            Assert.That(bagged.Select(s => s.ListingId), Is.EquivalentTo(IntoTheBag));
+            Assert.That(bagged.Select(s => s.LineId).Distinct().Count(), Is.EqualTo(IntoTheBag.Length),
+                        "each bagged good sells out on its own line");
+            var lines = _shelves.Lines.ToDictionary(l => l.Id);
+            foreach (ShopShelfSlot slot in bagged)
+            {
+                Assert.IsFalse(slot.NeedsFreeHand, slot.Id + " goes in the bag, not a free hand");
+                Assert.IsFalse(slot.HideSoldOutCard, slot.Id + " shows its own card");
+                Assert.IsNotNull(slot.Goods, slot.Id + " draws its own goods");
+                Assert.That(lines[slot.LineId].CounterListingIds, Is.EqualTo(new[] { slot.ListingId }),
+                            slot.LineId + " carries this one good");
+            }
+        }
+
+        [Test]
+        public void TheGroceryLinesShareOutTheGood_WithoutShowingMoreThanAllOfIt()
+        {
+            foreach (IGrouping<IslandGoodDef, IslandShelfLine> good in _shelves.Lines.GroupBy(l => l.Good))
+            {
+                double sum = good.Sum(l => IslandStoreShelves.ShareOf(l));
+                Assert.That(sum, Is.LessThanOrEqualTo(1.0 + 1e-6), good.Key.name + " is shown as more than all of it");
+            }
+            IslandGoodDef groceries = _shelves.Lines.Single(x => x.Id == "line.bread").Good;
+            Assert.That(_shelves.Lines.Count(l => l.Good == groceries),
+                        Is.GreaterThan(1), "bread is one share of the groceries, not all of them");
+        }
+
+        [Test]
+        public void TheBagsLinesAreInThePlayersBubble()
+        {
+            List<InnerVoiceLineDef> lines = IslandSupplyTestData.LoadAll<InnerVoiceLineDef>();
+            InnerVoiceLibrary library = UnityEngine.Resources.Load<InnerVoiceLibrary>(InnerVoiceLibrary.ResourcesPath);
+            foreach (string cue in new[] { InnerVoiceCues.ShelfBagged, InnerVoiceCues.ShelfBagFull, InnerVoiceCues.ShoppingPutAway })
+            {
+                InnerVoiceLineDef line = lines.SingleOrDefault(l => l.Trigger == InnerVoiceTrigger.Cue && l.SubjectId == cue);
+                Assert.IsNotNull(line, "no line answers " + cue);
+                Assert.That(line.Line, Is.Not.Empty);
+                Assert.That(library.Lines, Does.Contain(line), line.Id + " is not in the library");
+            }
         }
 
         [Test]

@@ -24,6 +24,13 @@ namespace HiddenHarbours.Economy
         /// <summary>The most items the shelf holds; more in the back room stays out of sight.</summary>
         [Min(1)] public int MaxOnShelf = 1;
 
+        /// <summary>The share of the good this line shows, above 0 and at most 1; 0 (unset) is the whole good.
+        /// Several lines may show one good (bread, oatcakes and beans all come off the island's groceries)
+        /// when their shares add up to no more than 1: each then counts its own items and runs out on its
+        /// own (the owner's ruling, 2026-11-23: "all items are seperate"). The islanders' buying thins each
+        /// line by its share; a purchase draws only from its own line.</summary>
+        [Range(0f, 1f)] public float ShareOfGood;
+
         /// <summary>The counter's listings (<c>supply.bread</c>, <c>bait.capelin</c>) that come off this shelf:
         /// buying one takes one item, and none can be bought while the shelf is empty. A listing named on no
         /// line is not counted (gear, licences). Empty for a shelf the counter does not sell from.</summary>

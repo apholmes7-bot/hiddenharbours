@@ -129,6 +129,21 @@ namespace HiddenHarbours.Tests.EditMode
             public bool IsCarrying => Carried != null;
         }
 
+        /// <summary>The bag in his hands, as the shelf sees it through Core: answers the room it was told to.</summary>
+        private sealed class FakeBagHands : IShoppingBagHands
+        {
+            public ShoppingBagRefusal Room = ShoppingBagRefusal.None;
+            public readonly List<string> Bagged = new List<string>();
+            public bool HoldsBag => Bagged.Count > 0;
+            public ShoppingBagRefusal CanBag(ShoppingBagDef bag) => Room;
+            public ShoppingBagRefusal TryBag(ShoppingBagDef bag, string supplyId)
+            {
+                if (Room != ShoppingBagRefusal.None) return Room;
+                Bagged.Add(supplyId);
+                return ShoppingBagRefusal.None;
+            }
+            public bool TryPutAway(string storageId) { Bagged.Clear(); return true; }
+        }
         // ---- setup -------------------------------------------------------------------------------------------
 
         [SetUp]
@@ -246,6 +261,25 @@ namespace HiddenHarbours.Tests.EditMode
             return good;
         }
 
+        private ShelfGood MakeBaggedGood(ShoppingBagDef bag)
+        {
+            var go = new GameObject("TestBaggedShelfGood");
+            _spawned.Add(go);
+            go.SetActive(false);
+            var good = go.AddComponent<ShelfGood>();
+            good.Configure("shelfslots.test_store.slot.ice", Shop, IceListing, 1f, false, null, bag);
+            go.SetActive(true);
+            return good;
+        }
+
+        private ShoppingBagDef Bag()
+        {
+            var bag = ScriptableObject.CreateInstance<ShoppingBagDef>();
+            bag.Id = "shoppingbag.test";
+            bag.Capacity = 2;
+            _spawned.Add(bag);
+            return bag;
+        }
         // ---- the till: buy one -------------------------------------------------------------------------------
 
         [Test]
@@ -437,6 +471,83 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(good.Press(0.0), Is.EqualTo(ShelfBuyResult.Bought), "one free hand is enough");
         }
 
+        // ---- slice 2: into the paper bag ---------------------------------------------------------------------
+
+        [Test]
+        public void ABaggedGoodIsBoughtAndGoesIntoTheBag_AndSaysSo()
+        {
+            var shelves = new FakeShelves();
+            shelves.Counts[IceLine] = 4;
+            Store store = MakeStore(shelves, 100);
+            var hands = new FakeBagHands();
+            GameServices.BagHands = hands;
+
+            ShelfGood good = MakeBaggedGood(Bag());
+            good.Refresh(0.0);
+            Assert.That(good.Press(0.0), Is.EqualTo(ShelfBuyResult.Bought));
+            Assert.That(hands.Bagged, Is.EqualTo(new[] { IceListing }), "into the bag");
+            Assert.That(store.Wallet.Money, Is.EqualTo(100 - IcePrice));
+            Assert.That(SupplyLocker.Owned(store.Save, IceListing), Is.EqualTo(1), "bought into his supplies, set aside in the bag");
+            Assert.That(shelves.Counts[IceLine], Is.EqualTo(3));
+            Assert.That(_cues, Is.EqualTo(new[] { InnerVoiceCues.ShelfBagged }));
+
+            Assert.That(good.Press(0.0), Is.EqualTo(ShelfBuyResult.Bought), "a second good goes in the same bag");
+            Assert.That(hands.Bagged.Count, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void AFullBagIsRefusedBeforeAnyMoneyMoves()
+        {
+            var shelves = new FakeShelves();
+            shelves.Counts[IceLine] = 4;
+            Store store = MakeStore(shelves, 100);
+            GameServices.BagHands = new FakeBagHands { Room = ShoppingBagRefusal.BagFull };
+
+            ShelfGood good = MakeBaggedGood(Bag());
+            good.Refresh(0.0);
+            Assert.That(good.Press(0.0), Is.EqualTo(ShelfBuyResult.BagFull));
+            Assert.That(_cues, Is.EqualTo(new[] { InnerVoiceCues.ShelfBagFull }));
+            Assert.That(store.Wallet.Money, Is.EqualTo(100));
+            Assert.That(shelves.Counts[IceLine], Is.EqualTo(4));
+            Assert.That(SupplyLocker.Owned(store.Save, IceListing), Is.EqualTo(0));
+        }
+
+        [Test]
+        public void NoHandForABagIsRefusedAsHandsFull_BeforeAnyMoneyMoves()
+        {
+            var shelves = new FakeShelves();
+            shelves.Counts[IceLine] = 4;
+            Store store = MakeStore(shelves, 100);
+            GameServices.BagHands = new FakeBagHands { Room = ShoppingBagRefusal.HandsFull };
+
+            ShelfGood good = MakeBaggedGood(Bag());
+            good.Refresh(0.0);
+            Assert.That(good.Press(0.0), Is.EqualTo(ShelfBuyResult.HandsFull));
+            Assert.That(_cues, Is.EqualTo(new[] { InnerVoiceCues.ShelfHandsFull }));
+            Assert.That(store.Wallet.Money, Is.EqualTo(100));
+            Assert.That(shelves.Counts[IceLine], Is.EqualTo(4));
+        }
+
+        [Test]
+        public void WithNoHandsOrNoGameTheGoodIsBoughtIntoHisSupplies_AsBefore()
+        {
+            var shelves = new FakeShelves();
+            shelves.Counts[IceLine] = 4;
+            Store store = MakeStore(shelves, 100);
+            ShelfGood good = MakeBaggedGood(Bag());
+            good.Refresh(0.0);
+
+            Assert.That(good.Press(0.0), Is.EqualTo(ShelfBuyResult.Bought), "no hands registered");
+            Assert.That(_cues, Is.EqualTo(new[] { InnerVoiceCues.ShelfBought }));
+
+            var hands = new FakeBagHands { Room = ShoppingBagRefusal.NoSave };
+            GameServices.BagHands = hands;
+            _cues.Clear();
+            Assert.That(good.Press(0.0), Is.EqualTo(ShelfBuyResult.Bought), "no game loaded");
+            Assert.That(hands.Bagged, Is.Empty);
+            Assert.That(_cues, Is.EqualTo(new[] { InnerVoiceCues.ShelfBought }));
+            Assert.That(SupplyLocker.Count(store.Save, IceListing), Is.EqualTo(2));
+        }
         [Test]
         public void TheGoodIsOfferedOnlyInside_AndNotForAStoreWithNoTill()
         {

@@ -18,6 +18,10 @@ namespace HiddenHarbours.World
     /// shelf is empty, he cannot afford it, his hands are full. The words are data
     /// (<c>InnerVoiceLineDef</c> assets), not code.</para>
     ///
+    /// <para><b>Into the bag (slice 2).</b> A good configured with a <see cref="ShoppingBagDef"/> goes into
+    /// the paper bag in his hand through the Core <see cref="IShoppingBagHands"/> (<see cref="GameServices.BagHands"/>):
+    /// a full bag, or both hands taken with no bag among them, refuses before any money moves.</para>
+    ///
     /// <para><b>Cheap.</b> The label is rebuilt only when the shelf count or the price changes (the owner
     /// calls <see cref="Refresh"/> on a shelf change); the interact popup reads a cached string.</para>
     /// </summary>
@@ -36,6 +40,7 @@ namespace HiddenHarbours.World
         private float _reach = 1f;
         private bool _needsFreeHand;
         private System.Func<bool> _inside;
+        private ShoppingBagDef _bag;
 
         private bool _quoted;
         private string _name = "";
@@ -52,8 +57,9 @@ namespace HiddenHarbours.World
         /// <summary>Wires the good. <paramref name="inside"/> answers whether the player is in the store,
         /// downstairs (the good is not offered from outside or upstairs).</summary>
         public void Configure(string id, string shopId, string listingId, float reachMeters, bool needsFreeHand,
-                              System.Func<bool> inside)
+                              System.Func<bool> inside, ShoppingBagDef bag = null)
         {
+            _bag = bag;
             _id = id ?? "";
             _shopId = shopId ?? "";
             _listingId = listingId ?? "";
@@ -131,11 +137,27 @@ namespace HiddenHarbours.World
         public ShelfBuyResult Press(double now)
         {
             ShelfBuyResult result;
+            bool bagged = false;
+            IShoppingBagHands bagHands = _bag != null ? GameServices.BagHands : null;
             if (!ShelfTills.TryGet(_shopId, out IShelfTill till)) result = ShelfBuyResult.NotSold;
             else if (_needsFreeHand && !HasFreeHand()) result = ShelfBuyResult.HandsFull;
+            else if (bagHands != null)
+            {
+                // Asked before any money moves: a full bag, or no hand for a new one, refuses the good.
+                ShoppingBagRefusal room = bagHands.CanBag(_bag);
+                if (room == ShoppingBagRefusal.BagFull) result = ShelfBuyResult.BagFull;
+                else if (room == ShoppingBagRefusal.HandsFull) result = ShelfBuyResult.HandsFull;
+                else
+                {
+                    result = till.TryBuyOne(_listingId, now);
+                    // No game loaded (NoSave): bought into his supplies, as the counter always did.
+                    if (result == ShelfBuyResult.Bought && room == ShoppingBagRefusal.None)
+                        bagged = bagHands.TryBag(_bag, _listingId) == ShoppingBagRefusal.None;
+                }
+            }
             else result = till.TryBuyOne(_listingId, now);
 
-            string cue = CueFor(result);
+            string cue = bagged ? InnerVoiceCues.ShelfBagged : CueFor(result);
             if (cue != null) EventBus.Publish(new InnerVoiceCue(cue));
             Refresh(now);
             return result;
@@ -150,6 +172,7 @@ namespace HiddenHarbours.World
                 case ShelfBuyResult.SoldOut: return InnerVoiceCues.ShelfSoldOut;
                 case ShelfBuyResult.TooDear: return InnerVoiceCues.ShelfTooDear;
                 case ShelfBuyResult.HandsFull: return InnerVoiceCues.ShelfHandsFull;
+                case ShelfBuyResult.BagFull: return InnerVoiceCues.ShelfBagFull;
                 default: return null;
             }
         }

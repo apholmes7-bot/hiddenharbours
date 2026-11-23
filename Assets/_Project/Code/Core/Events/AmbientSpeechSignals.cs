@@ -232,5 +232,14 @@ namespace HiddenHarbours.Core
 
         /// <summary>He reached for a shelf good that goes in a hand, and both are full.</summary>
         public const string ShelfHandsFull = "cue.shop.shelf_hands_full";
+
+        /// <summary>He paid for a shelf good and it went into the paper bag in his hand.</summary>
+        public const string ShelfBagged = "cue.shop.shelf_bagged";
+
+        /// <summary>He reached for a bagged good and the paper bag in his hand is full.</summary>
+        public const string ShelfBagFull = "cue.shop.shelf_bag_full";
+
+        /// <summary>He put the shopping in his bag away into his own storage.</summary>
+        public const string ShoppingPutAway = "cue.shop.shopping_put_away";
     }
 }

@@ -24,6 +24,9 @@ namespace HiddenHarbours.Core
 
         /// <summary>The good is carried off in a hand, and no hand is free for it.</summary>
         HandsFull = 4,
+
+        /// <summary>The good goes into the paper bag in his hand, and the bag is full. Nothing was paid.</summary>
+        BagFull = 5,
     }
 
     /// <summary>A shelf good as the player sees it on approach: its name, its price and how many are on

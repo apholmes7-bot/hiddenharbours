@@ -92,7 +92,7 @@ namespace HiddenHarbours.World
                     at.SetActive(false);   // register only once wired
                     var good = at.AddComponent<ShelfGood>();
                     good.Configure(def.Id + "." + slot.Id, def.ShopId, slot.ListingId, def.ReachMeters,
-                                   slot.NeedsFreeHand, _insideNow);
+                                   slot.NeedsFreeHand, _insideNow, slot.IntoBag ? def.Bag : null);
                     at.SetActive(true);
                     _shelfGoods[i] = good;
                 }

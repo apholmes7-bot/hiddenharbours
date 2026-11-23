@@ -24,17 +24,16 @@ MonoBehaviour:
     Good: {fileID: 11400000, guid: f95f5b361481478b8adc530394e0d777, type: 2}
     ItemName: box of groceries
     UnitsPerItem: 5
-    MaxOnShelf: 18
-    CounterListingIds:
-    - supply.bread
-    - supply.oatcakes
-    - supply.tinned_beans
-    SoldAtShelf: 1
+    MaxOnShelf: 5
+    ShareOfGood: 0.25
+    CounterListingIds: []
+    SoldAtShelf: 0
   - Id: line.ice_bag
     Good: {fileID: 11400000, guid: ac996cec036e4ea0920ce4a1f4c61aa2, type: 2}
     ItemName: bag of ice
     UnitsPerItem: 5
     MaxOnShelf: 20
+    ShareOfGood: 0
     CounterListingIds:
     - supply.ice
     SoldAtShelf: 1
@@ -43,6 +42,7 @@ MonoBehaviour:
     ItemName: box of bait
     UnitsPerItem: 2.5
     MaxOnShelf: 20
+    ShareOfGood: 0
     CounterListingIds:
     - bait.capelin
     SoldAtShelf: 1
@@ -51,5 +51,33 @@ MonoBehaviour:
     ItemName: 20 L jerry can of gas
     UnitsPerItem: 20
     MaxOnShelf: 4
+    ShareOfGood: 0
     CounterListingIds: []
     SoldAtShelf: 0
+  - Id: line.bread
+    Good: {fileID: 11400000, guid: f95f5b361481478b8adc530394e0d777, type: 2}
+    ItemName: loaf of bread
+    UnitsPerItem: 1.5
+    MaxOnShelf: 18
+    ShareOfGood: 0.3
+    CounterListingIds:
+    - supply.bread
+    SoldAtShelf: 1
+  - Id: line.oatcakes
+    Good: {fileID: 11400000, guid: f95f5b361481478b8adc530394e0d777, type: 2}
+    ItemName: packet of oatcakes
+    UnitsPerItem: 0.75
+    MaxOnShelf: 18
+    ShareOfGood: 0.15
+    CounterListingIds:
+    - supply.oatcakes
+    SoldAtShelf: 1
+  - Id: line.tinned_beans
+    Good: {fileID: 11400000, guid: f95f5b361481478b8adc530394e0d777, type: 2}
+    ItemName: tin of beans
+    UnitsPerItem: 1.25
+    MaxOnShelf: 22
+    ShareOfGood: 0.3
+    CounterListingIds:
+    - supply.tinned_beans
+    SoldAtShelf: 1
