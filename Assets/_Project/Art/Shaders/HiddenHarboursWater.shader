@@ -1274,7 +1274,7 @@ Shader "HiddenHarbours/Water"
     SubShader
     {
         Tags { "RenderType"="Transparent" "Queue"="Transparent" "RenderPipeline"="UniversalPipeline" "IgnoreProjector"="True" }
-        Blend SrcAlpha OneMinusSrcAlpha
+        Blend SrcAlpha OneMinusSrcAlpha, Zero OneMinusSrcAlpha   // The calm mirror: water marks its pixels with alpha 0
         Cull Off
         ZWrite Off
 
@@ -1329,6 +1329,10 @@ Shader "HiddenHarbours/Water"
             // run (an unbound sampler's grey placeholder has alpha ~0.5 and would smear a flat
             // half-mirror over the whole sea on the first frame of every scene).
             TEXTURE2D(_HHReflectTex);
+            // THE CALM MIRROR'S HANDOVER (CalmMirror.cs): a GLOBAL share of the object reflection the calm
+            // mirror takes over and lays on the water itself, so nothing reflects twice. 0 (unset, the dial
+            // at 0) leaves ObjectReflection exactly as it was; 1 hands all of it to the mirror.
+            float _HHCalmMirrorHandover;
 
             // ADR 0027 #6: the ADVECTED FOAM BUFFER, written by IsoFacetHullFeature's ping-ponged
             // blit and published globally. Single channel; one texel IS one world cell, point
@@ -4403,6 +4407,7 @@ Shader "HiddenHarbours/Water"
                 float lift = 1.0 + max(_ObjectReflectLowLight, 0.0) * darkness;
                 float strength = saturate(_ReflectionStrength) * objChop * objWind
                                * saturate(_ObjectReflectStrength) * lift;
+                strength *= 1.0 - saturate(_HHCalmMirrorHandover);   // the calm mirror's share; unset: x 1 exactly
                 if (strength <= 0.001) return;
 
                 // WHERE on the water this fragment reads its reflection from: displaced by the wave slope,

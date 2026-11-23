@@ -375,6 +375,21 @@ MonoBehaviour:
   HullReflectionEndCutPixels: 3
   HullReflectionEndThinPixels: 3
   HullReflectionEndMinRunPixels: 12
+  WaterMirrorStrength: 0
+  WaterMirror:
+    SeaFadeStart: 0.15
+    SeaFadeEnd: 0.75
+    MaxMetres: 12
+    ReachStartMetres: 3
+    ReachEndMetres: 10
+    StepPixels: 3
+    MinStandPixels: 2
+    RippleCalmMetres: 0.05
+    RippleRoughMetres: 0.45
+    RippleBandPixels: 3
+    BreakCalm: 0.15
+    BreakRough: 0.8
+    Darken: 0.82
   BoatLegacyCabinGlow: 0
   WalkerAutoLantern: 0
   WalkerHeadlampHoldSeconds: 0.4
