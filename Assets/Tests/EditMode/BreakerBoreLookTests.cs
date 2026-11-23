@@ -239,8 +239,8 @@ namespace HiddenHarbours.Tests.EditMode
             for (int k = 0; k < 4; k++)
             {
                 float t = period * k * 0.25f;
-                bool[] dry = Wet(Shoot($"runup-off-{k}", t, new Dials()), land);
-                bool[] wet = Wet(Shoot($"runup-on-{k}", t, new Dials { RunUp = 1f }), land);
+                bool[] dry = Wet(Shoot($"runup-off-{k}", t, new Dials { HardEdge = true }), land);
+                bool[] wet = Wet(Shoot($"runup-on-{k}", t, new Dials { RunUp = 1f, HardEdge = true }), land);
                 int added = 0, removed = 0;
                 for (int i = 0; i < dry.Length; i++)
                 {
@@ -575,11 +575,20 @@ namespace HiddenHarbours.Tests.EditMode
             public bool LiveChurn;         // the shipped evolve/drift (the check-in strip); else frozen
             public float FaceShade;        // >= 0 overrides _SwellFaceShade; -1 leaves the material's
             public Color? Surf;            // the debug colour; null = the shipped white
+            public bool HardEdge;          // the wet film off: the drawn edge as a hard cut (geometry metrics)
         }
 
         Color32[] Shoot(string name, float seconds, Dials d)
         {
             PublishTheSea(seconds);
+            // The wet film thins the last centimetres inside the drawn edge to clear on purpose, so a pixel
+            // there can match a land-only render though the edge has not moved. A metric of WHERE the edge is
+            // asks for the hard cut; the steady edge (x) is left as published.
+            if (d.HardEdge)
+            {
+                Vector4 thin = Shader.GetGlobalVector("_ShoreThinEdge");
+                Shader.SetGlobalVector("_ShoreThinEdge", new Vector4(thin.x, 0f, 0f, 0f));
+            }
 
             var surface = _seaGo.GetComponent<WaterSurface>();
             if (surface != null)
