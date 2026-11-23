@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using HiddenHarbours.App.Editor;
@@ -276,6 +277,71 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
+        /// <summary>A fence never runs across the walked line to the slip or the bar head: where one
+        /// crosses a yard, the boundary has a gate cut on it.</summary>
+        [Test]
+        public void NoFenceRun_CrossesAWalkedPath()
+        {
+            foreach (Yard yard in StPetersYards.Yards)
+            foreach (var run in yard.FenceRuns())
+            for (int i = 0; i + 1 < run.Length; i++)
+            {
+                float length = Vector2.Distance(run[i], run[i + 1]);
+                for (float d = 0f; d <= length; d += 0.1f)
+                {
+                    Vector2 p = Vector2.Lerp(run[i], run[i + 1], length < 1e-4f ? 0f : d / length);
+                    Assert.Greater(StPetersGrass.DistanceToWalkedPath(p), StPetersGrass.PathBareHalfWidthMetres,
+                        $"'{yard.Name}' runs its fence across a walked path at {p}: cut a gate there.");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Every fence run is evenly spaced, with no gap and no doubling: along each straight segment the
+        /// panels stand at one pitch, never longer than a panel on the ground (a hole) and never under half
+        /// of one (two panels on one spot). A diagonal panel is drawn on the ground, so its pitch is
+        /// measured there.
+        /// </summary>
+        [Test]
+        public void EveryFenceRun_IsEvenlySpaced_WithNoGapOrDoubling()
+        {
+            var kit = HiddenHarbours.Art.Editor.YardKit.Load();
+            foreach (Yard yard in StPetersYards.Yards)
+            {
+                var plan = YardDressing.PlanOne(yard, kit);
+                if (!plan.Fenced) continue;
+                float width = kit.Find(YardDressing.StyleFor(yard.Fence).PanelKey).footprintWidthMetres;
+                var panels = plan.Pieces.Where(p => p.Role == HiddenHarbours.Art.Editor.YardKit.Role.Panel).ToList();
+                foreach (var run in plan.Runs)
+                for (int s = 0; s + 1 < run.Length; s++)
+                {
+                    Vector2 a = run[s], b = run[s + 1];
+                    Vector2 along = (b - a).normalized;
+                    var on = panels.Where(p => DistanceToSegment(p.Position, a, b) < 1e-3f)
+                                   .OrderBy(p => Vector2.Dot(p.Position - a, along)).ToList();
+                    if (on.Count < 2) continue;
+                    bool diagonal = YardDressing.IsDiagonalCell(kit, on[0].Facing);
+                    float Pitch(int i) => diagonal
+                        ? HiddenHarbours.Core.IsoGround.ToGround(on[i + 1].Position - on[i].Position).magnitude
+                        : Vector2.Distance(on[i + 1].Position, on[i].Position);
+                    float first = Pitch(0);
+                    for (int i = 0; i + 1 < on.Count; i++)
+                    {
+                        Assert.AreEqual(first, Pitch(i), 1e-3f, $"'{yard.Name}': uneven panel spacing on {a}->{b}");
+                        Assert.LessOrEqual(Pitch(i), width + 1e-3f, $"'{yard.Name}': a hole in the fence on {a}->{b}");
+                        Assert.GreaterOrEqual(Pitch(i), width * 0.5f, $"'{yard.Name}': doubled panels on {a}->{b}");
+                    }
+                }
+            }
+        }
+
+        static float DistanceToSegment(Vector2 p, Vector2 a, Vector2 b)
+        {
+            Vector2 ab = b - a;
+            float t = ab.sqrMagnitude < 1e-12f ? 0f : Mathf.Clamp01(Vector2.Dot(p - a, ab) / ab.sqrMagnitude);
+            return Vector2.Distance(p, a + ab * t);
+        }
+
         [Test]
         public void EveryGate_SitsOnItsOwnBoundary()
         {
@@ -296,9 +362,14 @@ namespace HiddenHarbours.Tests.EditMode
                 Vector2 approach = StPetersVillageYards.TryKey(yard.Name,out string key)
                     ? StPetersVillageYards.Read<LotDef>("lot.st_peters."+key).Approach : green;
                 foreach (Vector2 gate in yard.Gates)
+                {
+                    // A gate cut where a walked path crosses the fence is where that path arrives from,
+                    // whichever side of the house it is on: a rail across the path is the defect.
+                    if (StPetersGrass.DistanceToWalkedPath(gate) <= StPetersGrass.PathBareHalfWidthMetres) continue;
                     Assert.Less(Vector2.Distance(gate, approach), Vector2.Distance(yard.Owner, approach),
                         $"'{yard.Name}' opens on the far side from the green — you would walk round " +
                         "the house to get in the gate.");
+                }
             }
         }
     }

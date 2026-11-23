@@ -35,7 +35,9 @@ namespace HiddenHarbours.Fishing
     /// <c>FishFight</c> FSM — it's the lightest hand-gather: bend down, lift one out.</para>
     ///
     /// <para><b>Clam reveal.</b> While exposed, the "two little squirt holes give the clam away" tell's
-    /// <see cref="ShowingSquirt"/> follows the rig's 2.6–7.8 s period and 420 ms spurt
+    /// <see cref="ShowingSquirt"/> follows the clam show settings (<see cref="ClamShowSettings"/>: the rig's
+    /// 2.6–7.8 s period, a squirt held a little longer than the rig's 420 ms so it reads at the game lens,
+    /// and a squirt at once when the player steps close; the holes are small, the squirt is the giveaway)
     /// to render a hint. It's cosmetic only (real-time, not sim state) and never gates the dig — digging
     /// works whenever the spot is exposed. Determinism is unaffected (the reveal isn't world-sim state).</para>
     ///
@@ -115,6 +117,15 @@ namespace HiddenHarbours.Fishing
         // only — never serialized, never saved (rule 5).
         private bool _saidNoProvider;
         private float _spurtRise, _spurtU;
+        // The interval span this hole's timing was rolled over (a retune re-rolls it).
+        private float _minPeriodUsed, _maxPeriodUsed, _phaseSpanUsed;
+        // The startle squirt (a clam feeling footsteps): when it opened on the spurt clock (negative =
+        // none running), when this hole may startle again, and whether the player was inside the
+        // startle radius last tick (it fires on stepping IN, not on standing there). Runtime only.
+        private double _startleOpenedMs = -1.0;
+        private double _startleReadyAtMs;
+        private bool _playerWasNear;
+        private bool _squirtIsStartle;
         // Spent: has this hole given up (or lost) its clam, and at what game time. Whether that is STILL
         // true is not kept here — Consumed asks the tide whether that moment and now are the same tide.
         private bool _spent;
@@ -124,7 +135,7 @@ namespace HiddenHarbours.Fishing
         /// <summary>True while this hole is squirting — the dig's TELL (cosmetic, never gates).</summary>
         public bool ShowingSquirt => _showingSquirt;
 
-        /// <summary>How high the jet stands, 0..1 (<c>sin(π·u)</c> across the 420 ms window). Zero
+        /// <summary>How high the jet stands, 0..1 (<c>sin(π·u)</c> across the squirt window). Zero
         /// whenever <see cref="ShowingSquirt"/> is false, so a reader that forgets to check draws
         /// nothing rather than a stuck jet.</summary>
         public float SpurtRise => _spurtRise;
@@ -140,6 +151,10 @@ namespace HiddenHarbours.Fishing
         /// <summary>This hole's rolled phase, ms. ⚠️ NOT "when it starts" — the window opens when
         /// <c>(t + phase) % period ≤ dur</c>. See <see cref="ClamSpurtMath"/>.</summary>
         public float SpurtPhaseMs => _phaseMs;
+
+        /// <summary>True while the jet showing is a STARTLE squirt (the player just stepped within
+        /// <see cref="ClamShowSettings.StartleRadiusMetres"/>) rather than the clam's own periodic one.</summary>
+        public bool SquirtIsStartle => _squirtIsStartle;
 
         /// <summary>True while this hole is spent — either dug (it yielded its clam) or escaped (the
         /// skittish clam burrowed away) — <b>on the tide that is running now</b>. A consumed hole no
@@ -197,12 +212,25 @@ namespace HiddenHarbours.Fishing
         /// Roll this hole's phase and period from <c>(worldSeed, its own position)</c>. The position IS
         /// the hole's identity, so a hole that moves is a different hole and must re-roll.
         /// </summary>
-        private void ResolveSpurtTiming()
+        private void ResolveSpurtTiming() => ResolveSpurtTiming(ClamShowSettings.Current);
+
+        // The span comes from the clam show settings (GameConfig > ClamShow), shipped at the rig's own
+        // 2.6 to 7.8 s. The span used is remembered so a live retune re-rolls the hole on its next tick.
+        private void ResolveSpurtTiming(in ClamShowSettings show)
         {
             _seedUsed = SpurtWorldSeed();
+            _minPeriodUsed = show.MinIntervalMilliseconds;
+            _maxPeriodUsed = show.MaxIntervalMilliseconds;
+            _phaseSpanUsed = show.PhaseSpanMilliseconds;
             Vector2 p = SpotPos;
-            ClamSpurtMath.TimingFor(_seedUsed, p.x, p.y, out _phaseMs, out _periodMs);
+            ClamSpurtMath.TimingFor(_seedUsed, p.x, p.y, _minPeriodUsed, _maxPeriodUsed, _phaseSpanUsed,
+                                    out _phaseMs, out _periodMs);
         }
+
+        private bool SpanChanged(in ClamShowSettings show)
+            => show.MinIntervalMilliseconds != _minPeriodUsed
+               || show.MaxIntervalMilliseconds != _maxPeriodUsed
+               || show.PhaseSpanMilliseconds != _phaseSpanUsed;
 
         private void Update()
         {
@@ -602,7 +630,12 @@ namespace HiddenHarbours.Fishing
         /// the only thing dt does now is advance a clock — the answer is a pure function of that
         /// clock, so two holes at the same instant cannot disagree and nothing drifts. It replaced a
         /// stateful 10–20 s / 1.5 s greybox cadence that was invented rather than measured; the rig
-        /// says 2.6–7.8 s apart and 420 ms long.</para>
+        /// says 2.6–7.8 s apart and 420 ms long, and those spans are now the shipped defaults of
+        /// <see cref="ClamShowSettings"/>.</para>
+        ///
+        /// <para>On top of the periodic squirt, a clam squirts once when the player steps within
+        /// <see cref="ClamShowSettings.StartleRadiusMetres"/> (cooldown permitting), as real clams do
+        /// when they feel footsteps. Both jets are shaped by the one <see cref="ClamSpurtMath.TryWindow"/>.</para>
         /// </summary>
         private void UpdateReveal(float dt, bool exposed)
         {
@@ -616,16 +649,57 @@ namespace HiddenHarbours.Fishing
             // environment service is frequently absent at Awake and arrives with the persistent core
             // a moment later, so a hole woken early would otherwise keep the fallback seed for the
             // rest of the session and quietly disagree with every hole woken after it.
-            if (!(_periodMs > 0f) || SpurtWorldSeed() != _seedUsed) ResolveSpurtTiming();
+            ClamShowSettings show = ClamShowSettings.Current;
+            if (!(_periodMs > 0f) || SpurtWorldSeed() != _seedUsed || SpanChanged(show))
+                ResolveSpurtTiming(show);
 
             _spurtClockMs += Mathf.Max(0f, dt) * 1000.0;
-            _showingSquirt = ClamSpurtMath.TrySpurt(_spurtClockMs, _phaseMs, _periodMs,
-                                                    out _spurtRise, out _spurtU);
+            float durationMs = show.SquirtMilliseconds;
+            bool periodic = ClamSpurtMath.TrySpurt(_spurtClockMs, _phaseMs, _periodMs, durationMs,
+                                                   out float rise, out float u);
+
+            // THE STARTLE: stepping within the radius squirts the clam at once (cooldown permitting).
+            // Read off the same in-lane player beacon the skittish-escape timer uses; cosmetic only.
+            bool near = PlayerWithin(show.StartleRadiusMetres);
+            if (near && !_playerWasNear && _spurtClockMs >= _startleReadyAtMs)
+            {
+                _startleOpenedMs = _spurtClockMs;
+                _startleReadyAtMs = _spurtClockMs + Mathf.Max(0f, show.StartleCooldownSeconds) * 1000.0;
+            }
+            _playerWasNear = near;
+
+            _squirtIsStartle = false;
+            if (_startleOpenedMs >= 0.0)
+            {
+                if (ClamSpurtMath.TryWindow(_spurtClockMs - _startleOpenedMs, durationMs,
+                                            out float sRise, out float sU))
+                {
+                    // The taller of the two jets wins, so a startle that lands on a periodic squirt
+                    // never shortens it.
+                    if (!periodic || sRise > rise) { rise = sRise; u = sU; _squirtIsStartle = true; }
+                    periodic = true;
+                }
+                else _startleOpenedMs = -1.0;
+            }
+
+            _showingSquirt = periodic;
+            _spurtRise = periodic ? rise : 0f;
+            _spurtU = periodic ? u : 0f;
+        }
+
+        // Is the on-foot player within radius of this hole? False with the startle off (radius 0) or
+        // no player beacon (EditMode, a scene with no digger).
+        private bool PlayerWithin(float radius)
+        {
+            if (!(radius > 0f) || !ClamDigger.TryGetPlayerPosition(out Vector2 p)) return false;
+            return (p - SpotPos).sqrMagnitude <= radius * radius;
         }
 
         private void ClearSpurt()
         {
             _showingSquirt = false;
+            _squirtIsStartle = false;
+            _startleOpenedMs = -1.0;
             _spurtRise = 0f;
             _spurtU = 0f;
         }

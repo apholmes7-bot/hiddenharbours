@@ -536,6 +536,15 @@ MonoBehaviour:
     OffSchoolSpeciesDamp01: 0.4
     GullSplashScatterRadiusMetres: 2.5
     GullSplashScatterStrength01: 0.5
+  ClamShow:
+    SquirtSeconds: 0.6
+    MinIntervalSeconds: 2.6
+    MaxIntervalSeconds: 7.8
+    PhaseSpanSeconds: 9
+    JetHeightScale: 1
+    CollapseBelowRise: 0.6
+    StartleRadiusMetres: 3
+    StartleCooldownSeconds: 5
   Freshness:
     AmbientRateMultiplier: 1
     LiveRateMultiplier: 0

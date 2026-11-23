@@ -178,6 +178,12 @@ namespace HiddenHarbours.Art
     /// from the stations alone, so it stands whether or not the face's channels are baked, and where the drawn toe
     /// lies over dry ground too. It is derived on every build like the meshes and never saved. The waterline is
     /// colour on rock and changes nothing about any of this.</para>
+    ///
+    /// <para><b>The face is a wall from above too (St Peters cliffs walk fix).</b> The toe blocker held the sea side
+    /// only: from every clifftop he walked over the brow and down the plunge to it, hidden under the face, and where
+    /// a run ended he came up the face's open side and over the brow. So each chunk also fills its whole drawn face,
+    /// brow to drawn toe (<see cref="FaceBlockerChildName"/>, <see cref="CliffWallGeometry.FacePieces"/>): he stops at
+    /// the brow from above and at the foot from below. Same layer, same derivation, never saved.</para>
     /// </summary>
     [ExecuteAlways]
     [DisallowMultipleComponent]
@@ -289,6 +295,10 @@ namespace HiddenHarbours.Art
         /// <summary>The generated child carrying the drawn toe's blocker (see the class note).</summary>
         public const string BlockerChildName = "CliffWallToeBlocker";
 
+        /// <summary>The generated child carrying the face's own blocker: the whole drawn face, brow to drawn toe, as
+        /// solid ground nobody stands on (see <see cref="BuildFaceBlocker"/>).</summary>
+        public const string FaceBlockerChildName = "CliffWallFaceBlocker";
+
         /// <summary>The blocker's layer: Default, the layer the quay wall's colliders stand on and the walker's
         /// foot (and every hull) collides with.</summary>
         public const int BlockerLayer = 0;
@@ -312,6 +322,10 @@ namespace HiddenHarbours.Art
         /// <summary>How many blocker quads this chunk built: one per drawn-toe segment, 0 before it has built.
         /// The collider count the cost line reads.</summary>
         public int BlockerColliderCount { get; private set; }
+
+        /// <summary>How many colliders the face blocker built: one per segment (two where a segment's face folds over
+        /// itself), 0 before it has built.</summary>
+        public int FaceBlockerColliderCount { get; private set; }
 
         /// <summary>The chunk's toe in PLAN, one per station, world XY: the Def's line as the builder pushed it.</summary>
         public IReadOnlyList<Vector2> ToePlan => _toePlan;
@@ -430,12 +444,14 @@ namespace HiddenHarbours.Art
             {
                 Transform child = transform.GetChild(i);
                 if (child.name.StartsWith(BandChildPrefix) ||
-                    child.name == BrowChildName || child.name == ToeChildName || child.name == BlockerChildName)
+                    child.name == BrowChildName || child.name == ToeChildName || child.name == BlockerChildName ||
+                    child.name == FaceBlockerChildName)
                     DestroyGo(child.gameObject);
             }
 
             RendererCount = 0;
             BlockerColliderCount = 0;
+            FaceBlockerColliderCount = 0;
         }
 
         private void Rebuild()
@@ -446,7 +462,9 @@ namespace HiddenHarbours.Art
 
             // The wall the face implies, from the stations alone: before the channel and material checks, so a
             // checkout that has never baked the kit's PNGs walks the same coast as one that has.
-            BuildBlocker(CliffWallGeometry.DrawnToe(BuildSamples(_browPlan, _toePlan, _dropMetres, _toeElevations)));
+            Vector2[] drawnToe = CliffWallGeometry.DrawnToe(BuildSamples(_browPlan, _toePlan, _dropMetres, _toeElevations));
+            BuildBlocker(drawnToe);
+            BuildFaceBlocker(_browPlan, drawnToe);
 
             bool anyBand = false;
             for (int i = 0; i < _bands.Length; i++) if (_bands[i].HasChannels) { anyBand = true; break; }
@@ -601,6 +619,47 @@ namespace HiddenHarbours.Art
 
             _generated.Add(go);
             BlockerColliderCount = built;
+        }
+
+        /// <summary>
+        /// Fill the face itself: for each segment, the ground from its brow down to its drawn toe
+        /// (<see cref="CliffWallGeometry.FacePieces"/>), one solid <see cref="PolygonCollider2D"/> per piece on a DontSave
+        /// child at <see cref="BlockerLayer"/>. One path per collider for the toe blocker's reason (several paths on one
+        /// collider turn their overlaps into holes). The brow edge stops the walker at the clifftop, the drawn toe edge
+        /// stops him from the sea, and the end edges close the run's open sides, so the face he would vanish behind can
+        /// be entered from nowhere. Built from the stations alone, like the toe blocker, so it stands with or without
+        /// the baked face. A joined chunk shares its join station, so the fill is continuous along a run.
+        /// </summary>
+        private void BuildFaceBlocker(Vector2[] brow, Vector2[] drawnToe)
+        {
+            if (brow == null || drawnToe == null) return;
+            int n = Mathf.Min(brow.Length, drawnToe.Length);
+            if (n < 2) return;
+
+            var go = new GameObject(FaceBlockerChildName) { hideFlags = HideFlags.DontSave, layer = BlockerLayer };
+            go.transform.SetParent(transform, false);
+            go.transform.localPosition = Vector3.zero;
+            go.transform.localRotation = Quaternion.identity;
+            go.transform.localScale = Vector3.one;
+
+            int built = 0;
+            for (int s = 0; s + 1 < n; s++)
+            {
+                Vector2 b0 = go.transform.InverseTransformPoint(brow[s]);
+                Vector2 b1 = go.transform.InverseTransformPoint(brow[s + 1]);
+                Vector2 t0 = go.transform.InverseTransformPoint(drawnToe[s]);
+                Vector2 t1 = go.transform.InverseTransformPoint(drawnToe[s + 1]);
+                foreach (Vector2[] piece in CliffWallGeometry.FacePieces(b0, b1, t1, t0))
+                {
+                    var poly = go.AddComponent<PolygonCollider2D>();
+                    poly.pathCount = 1;
+                    poly.SetPath(0, piece);
+                    built++;
+                }
+            }
+
+            _generated.Add(go);
+            FaceBlockerColliderCount = built;
         }
 
         private void BuildBand(CliffWallColumns columns, in CliffFaceBand band, int rows,

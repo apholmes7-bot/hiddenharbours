@@ -113,6 +113,52 @@ namespace HiddenHarbours.Art
         /// </summary>
         public const float BlockerThicknessMetres = 0.35f;
 
+        /// <summary>A face piece smaller than this (m²) is a repeated or collinear station, not ground: it is skipped.</summary>
+        public const float MinFacePieceAreaSqMetres = 1e-4f;
+
+        /// <summary>
+        /// ⭐ <b>The ground one face segment covers, as solid pieces</b>: the quad from the brow at station
+        /// <paramref name="b0"/>..<paramref name="b1"/> down to the drawn toe at <paramref name="t1"/>..<paramref name="t0"/>.
+        /// What the face covers, nobody stands on (ruling t10): not from the sea, and not from the clifftop either.
+        /// The toe blocker alone held the sea side only, so from every clifftop the walker went over the brow, down
+        /// the height field's plunge and into the water hidden under the picture, and where a run ended he came up
+        /// the open side of the face and over the brow onto the plateau.
+        ///
+        /// <para>One piece when the quad is simple (a concave quad is fine for a polygon collider). Where the drawn toe
+        /// folds back across the brow and the quad crosses itself, both of its diagonal splits as triangles, so every
+        /// lobe the picture covers is covered. Pieces under <see cref="MinFacePieceAreaSqMetres"/> are dropped.</para>
+        /// </summary>
+        public static System.Collections.Generic.List<Vector2[]> FacePieces(Vector2 b0, Vector2 b1, Vector2 t1, Vector2 t0)
+        {
+            var pieces = new System.Collections.Generic.List<Vector2[]>(4);
+            bool crosses = SegmentsCross(b0, b1, t1, t0) || SegmentsCross(b1, t1, t0, b0);
+            if (!crosses)
+            {
+                var quad = new[] { b0, b1, t1, t0 };
+                if (Mathf.Abs(SignedArea(quad)) > MinFacePieceAreaSqMetres) pieces.Add(quad);
+                return pieces;
+            }
+            foreach (Vector2[] tri in new[] { new[] { b0, b1, t1 }, new[] { b0, t1, t0 }, new[] { b0, b1, t0 }, new[] { b1, t1, t0 } })
+                if (Mathf.Abs(SignedArea(tri)) > MinFacePieceAreaSqMetres) pieces.Add(tri);
+            return pieces;
+        }
+
+        /// <summary>Shoelace area of a polygon, signed by winding (m²).</summary>
+        public static float SignedArea(Vector2[] p)
+        {
+            float a = 0f;
+            for (int i = 0, j = p.Length - 1; i < p.Length; j = i++) a += (p[j].x * p[i].y) - (p[i].x * p[j].y);
+            return a * 0.5f;
+        }
+
+        /// <summary>True when the open segments a–b and c–d cross at a single interior point.</summary>
+        public static bool SegmentsCross(Vector2 a, Vector2 b, Vector2 c, Vector2 d)
+        {
+            static float Side(Vector2 p, Vector2 q, Vector2 r) => (q.x - p.x) * (r.y - p.y) - (q.y - p.y) * (r.x - p.x);
+            float d1 = Side(c, d, a), d2 = Side(c, d, b), d3 = Side(a, b, c), d4 = Side(a, b, d);
+            return ((d1 > 0f && d2 < 0f) || (d1 < 0f && d2 > 0f)) && ((d3 > 0f && d4 < 0f) || (d3 < 0f && d4 > 0f));
+        }
+
         /// <summary>How far out the face reaches in PLAN — the horizontal run of the plunge, metres.</summary>
         public static float PlanRunMetres(in CliffWallSample s) => (s.ToePlan - s.BrowPlan).magnitude;
 

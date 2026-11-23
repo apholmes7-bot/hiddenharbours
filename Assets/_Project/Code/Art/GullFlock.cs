@@ -1535,6 +1535,10 @@ namespace HiddenHarbours.Art
             // The foot offset is in the scaled bird's OWN units, so the world lift is divided by the scale the node
             // actually carries: the anchor comes back down by exactly the lift and stays on the pivot at every size.
             b.Shadow.FootOffset = SeagullVisualDef.ShadowFootOffset(lift, b.Node.localScale.y);
+            // A bird on the wing is flat to the sun: its shadow keeps the bird's shape at every hour and fades
+            // with height, instead of taking the standing dusk stretch into a thin line. On the ground, the
+            // water or a post the altitude is 0 and the shadow is the ordinary standing one.
+            b.Shadow.HeightAboveGround = (float)b.Sim.AltitudeMetres;
 
             // Sky or world? Above the wheel's own floor the bird is sky and draws over everything;
             // below it, it is among the harbour and sorts by its pivot like anything else standing there.

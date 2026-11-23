@@ -21,9 +21,9 @@ namespace HiddenHarbours.Tests.World.EditMode
     /// </summary>
     public class SpriteHousesStaySpriteHousesTests
     {
-        /// <summary>The GameObject names of committed mesh dwellings. Empty until the camper is placed (ADR
-        /// 0060 PR 6), which adds its site here in the same PR.</summary>
-        static readonly string[] MeshDwellingSites = { };
+        /// <summary>The GameObject names of committed mesh dwellings. The generated Clipper prefab (ADR 0060
+        /// PR 5) is the first; placing the camper (PR 6) adds its scene site here in the same PR.</summary>
+        static readonly string[] MeshDwellingSites = { "CamperClipperDwelling" };
 
         const string BuildingInteriorMeta = "Assets/_Project/Code/World/BuildingInterior.cs.meta";
         const string DwellingCutawayMeta = "Assets/_Project/Code/World/DwellingCutaway.cs.meta";
