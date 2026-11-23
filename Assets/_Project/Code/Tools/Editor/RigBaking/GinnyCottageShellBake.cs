@@ -11,8 +11,8 @@ namespace HiddenHarbours.Tools.RigBaking
     /// <b>Ginny's cottage, baked on its own.</b> Her house started as the village sage cottage, but it has
     /// three real rooms below, a corridor and two bedrooms above and a stair along the north wall, and
     /// that does not fit the sage cottage's 6.6 × 8.05 m footprint. So her shell is the same dialled house
-    /// — same siding, colour, roof, porch and weather — at a larger size, with the old cottage's
-    /// three-window front kept (<see cref="OldFrontDials"/>) and the details from her artboard added
+    /// — same siding, roof and porch — at a larger size, with the old cottage's three-window front kept
+    /// (<see cref="OldFrontDials"/>) and her artboard's yellow body, sea-green shutters and details
     /// (<see cref="ArtboardDetails"/>), baked into its own folder so the village sage cottage (and the
     /// kit's contract, which claims every sheet under the village folder) never move.
     ///
@@ -36,7 +36,7 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <summary>Where her sheets live — outside the village kit's folder on purpose.</summary>
         public const string Folder = "Assets/_Project/Art/Sprites/Buildings/Ginny";
 
-        /// <summary>Her build: the sage cottage's dialled options with only the size changed.</summary>
+        /// <summary>Her build: the sage cottage's dialled options, resized, with the old front and her artboard laid over.</summary>
         public static VillageBuildingKit.Build Build()
         {
             VillageBuildingKit.Build sage = default;
@@ -52,7 +52,7 @@ namespace HiddenHarbours.Tools.RigBaking
             foreach (var kv in OldFrontDials) dialled[kv.Key] = kv.Value;
             foreach (var kv in ArtboardDetails) dialled[kv.Key] = kv.Value;
             return VillageBuildingKit.Build.FromDialled(Key, "Ginny's cottage", sage.RigKey, dialled,
-                "the sage cottage enlarged for Ginny's rooms, with the old three-window front and the artboard's details");
+                "Ginny's yellow cottage from her artboard, enlarged for her rooms, with the old three-window front");
         }
 
         /// <summary>
@@ -69,15 +69,17 @@ namespace HiddenHarbours.Tools.RigBaking
         };
 
         /// <summary>
-        /// <b>The details from Ginny's cottage artboard</b> (the key scenes' return 3, the cottage, 2026-09-28:
-        /// <c>ginnyCottage.dial.json</c>, ruled by the owner that night). Every detail is taken. The artboard's
-        /// yellow body and lighter weathering are NOT: the owner keeps the old sage look, and the artboard's own
-        /// notes say "for the plot's sage colour, set body: sage; every detail stays". Its door is red, which is
-        /// what the rig already picks for a sage body. Its sea-green shutters were chosen to sit with the
-        /// yellow, so the old cottage's joinery-green shutters stay.
+        /// <b>The artboard's colours and details</b> (the key scenes' return 3, the cottage, 2026-09-28:
+        /// <c>ginnyCottage.dial.json</c>, ruled by the owner that night), taken as drawn: the yellow body, the
+        /// sea-green shutters and trim, the artboard's weathering, the red door and every lived-in detail
+        /// (owner 2026-11-22: "can you make it yellow to match the artboard"). Only the size and the window
+        /// row differ from the artboard, and those come from <see cref="SizeDial"/> and <see cref="OldFrontDials"/>.
         /// </summary>
         public static readonly IReadOnlyDictionary<string, object> ArtboardDetails = new Dictionary<string, object>
         {
+            ["body"] = "yellow",
+            ["shutters"] = "green",
+            ["weather"] = 0.45,
             ["doorPaint"] = "red",
             ["windowBoxes"] = true,
             ["wallBench"] = true,

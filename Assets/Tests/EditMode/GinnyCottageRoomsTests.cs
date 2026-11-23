@@ -575,5 +575,37 @@ namespace HiddenHarbours.Tests.EditMode
             }
             return best;
         }
+
+        // =============================================================================
+        //  the smoke leaves her chimney
+        // =============================================================================
+
+        [Test]
+        public void TheChimneySmokeRisesFromHerChimneyTop()
+        {
+            const string json = "Assets/_Project/Art/Sprites/Buildings/Ginny/Village_ginnyCottage.json";
+            string text = System.IO.File.ReadAllText(json);
+            float Num(string key) => float.Parse(System.Text.RegularExpressions.Regex
+                .Match(text, "\"" + key + "\":\\s*([-0-9.]+)").Groups[1].Value,
+                System.Globalization.CultureInfo.InvariantCulture);
+            var cell = System.Text.RegularExpressions.Regex.Match(text,
+                "\"cell\":\\s*" + StPetersGinnyPlot.SmokeFacing +
+                ",.*?\"chimneys\":\\s*\\[\\{\"x\":\\s*([-0-9.]+),\\s*\"y\":\\s*([-0-9.]+)\\}");
+            Assert.IsTrue(cell.Success, "her shell's bake records a chimney anchor for the facing the scene draws");
+            var inv = System.Globalization.CultureInfo.InvariantCulture;
+            float ppu = 32f;
+            var top = new Vector2((float.Parse(cell.Groups[1].Value, inv) - Num("pivotX")) / ppu,
+                                  (Num("pivotY") - float.Parse(cell.Groups[2].Value, inv)) / ppu);
+
+            var go = new GameObject("smoke probe");
+            try
+            {
+                var smoke = go.AddComponent<ChimneySmoke>();
+                Vector2 lift = new SerializedObject(smoke).FindProperty("_chimneyOffset").vector2Value;
+                Assert.AreEqual(top.x, StPetersGinnyPlot.SmokeLocal.x + lift.x, 0.02f, "flue x on the chimney");
+                Assert.AreEqual(top.y, StPetersGinnyPlot.SmokeLocal.y + lift.y, 0.02f, "flue y at the chimney top");
+            }
+            finally { Object.DestroyImmediate(go); }
+        }
     }
 }

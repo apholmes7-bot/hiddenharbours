@@ -283,7 +283,9 @@ namespace HiddenHarbours.Art.Editor
                 ["paper"] = "cream",
                 ["wainscot"] = true,
                 ["windows"] = "twoOverTwo",
-                ["winDensity"] = 0.50,
+                // MUST equal GinnyCottageShellBake.OldFrontDials' winDensity: the room's long wall
+                // paints as many windows as the shell shows outside (three).
+                ["winDensity"] = 0.40,
                 ["door"] = true,
                 ["dividers"] = 0,
                 // No hearth: the sage room's stands mid back wall, which in her plan is where the

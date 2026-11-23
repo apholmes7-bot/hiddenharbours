@@ -110,7 +110,7 @@
             "rigGlobal": "InteriorIso",
             "propName": "",
             "sheet": "Interior_ginnyCottage.png",
-            "optionsJs": "{size:0.5,floor:'plank',wall:'plaster',paper:'cream',wainscot:true,windows:'twoOverTwo',winDensity:0.5,door:true,dividers:0,hearth:false,beams:true,weather:0.35}",
+            "optionsJs": "{size:0.5,floor:'plank',wall:'plaster',paper:'cream',wainscot:true,windows:'twoOverTwo',winDensity:0.4,door:true,dividers:0,hearth:false,beams:true,weather:0.35}",
             "facings": 8,
             "cols": 5,
             "rows": 2,
@@ -192,7 +192,7 @@
                 NaN,
                 NaN
             ],
-            "pngBytes": 360436,
+            "pngBytes": 359731,
             "runtimeBytesRgba32": 4547840,
             "cropSaving": 0.8929415941238403
         },

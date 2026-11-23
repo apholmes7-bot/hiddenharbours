@@ -233,6 +233,26 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         [Test]
+        public void GinnysRoom_PaintsAsManyWindowsAsHerShellShows()
+        {
+            // The room's long wall and the shell's eave wall use the same count formula, so the same size and
+            // density give the same windows inside and out (pass 5 left the room at 0.50: four inside, three out).
+            var room = InteriorKit.FindRoom(GinnyCottageShellBake.Key).Value.Dialled;
+            var shell = GinnyCottageShellBake.Build().Dialled;
+            Assert.AreEqual(System.Convert.ToDouble(shell["size"]), System.Convert.ToDouble(room["size"]), 1e-9);
+            Assert.AreEqual(System.Convert.ToDouble(shell["winDensity"]), System.Convert.ToDouble(room["winDensity"]), 1e-9);
+        }
+
+        [Test]
+        public void GinnysShell_WearsHerArtboardsColours()
+        {
+            var shell = GinnyCottageShellBake.Build().Dialled;
+            Assert.AreEqual("yellow", shell["body"]);
+            Assert.AreEqual("green", shell["shutters"]);
+            Assert.AreEqual("red", shell["doorPaint"]);
+        }
+
+        [Test]
         public void NewVillageRooms_KeepTheirShellAndOneBedUpstairs()
         {
             using IRigScriptHost host = ReturnedHost();
