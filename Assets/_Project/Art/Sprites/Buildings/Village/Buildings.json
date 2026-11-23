@@ -186,7 +186,7 @@
             "sheet": "Village_redSaltbox.png",
             "preset": "",
             "fromPreset": false,
-            "optionsJs": "{era:'modern',shape:'saltbox',siding:'clapboard',body:'red',roof:'asphaltGrey',size:0.4,windows:'twoOverTwo',winDensity:0.6,attic:'none',porch:'front',dormers:0,chimneys:1,bay:false,weather:0.2}",
+            "optionsJs": "{era:'modern',shape:'saltbox',siding:'clapboard',body:'red',roof:'metal',shutters:'none',size:0.4,windows:'twoOverTwo',winDensity:0.6,attic:'none',porch:'front',dormers:0,chimneys:1,bay:false,weather:0.2}",
             "phase": "",
             "decay": "",
             "burnt": false,
@@ -230,7 +230,7 @@
                 250.0041961669922,
                 186.88052368164063
             ],
-            "pngBytes": 383554,
+            "pngBytes": 322543,
             "runtimeBytesRgba32": 6025344,
             "cropSaving": 0.8209335207939148
         },

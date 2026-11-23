@@ -413,13 +413,22 @@ namespace HiddenHarbours.Art.Editor
 
             // The plainest. Red clapboard and the saltbox's long north roof are both kept; it gains
             // the front step it needs to be a house you can walk into.
+            //
+            // ⭐ IT WEARS ITS BOARD (2026-11-22, the owner's "red gothic home in the st peters village
+            // art board"). The board is village-east in the St Peters one-scene package of 2026-10-01,
+            // drawn from that package's own dials for red_saltbox (scenes/keyscene.stp_village/
+            // scene.json, piece building.stp_red_saltbox): a galvanised tin roof and no shutters. Both
+            // are taken as delivered. Its third difference, entry 'left', is NOT taken: the rig moves a
+            // side entry onto the gable-end wall, and the room, its walls and its doorway model a door
+            // on the porch face only, so the shell would show a door where the room has a wall.
             Build.FromDialled("redSaltbox", "Red saltbox", "house", new Dictionary<string, object>
             {
                 ["era"] = "modern",
                 ["shape"] = "saltbox",
                 ["siding"] = "clapboard",
                 ["body"] = "red",
-                ["roof"] = "asphaltGrey",
+                ["roof"] = "metal",           // ⭐ was asphaltGrey: the board's tin roof
+                ["shutters"] = "none",        // ⭐ the board's windows have no shutters
                 ["size"] = 0.4,               // unchanged: the footprint must not move
                 ["windows"] = "twoOverTwo",
                 ["winDensity"] = 0.60,
