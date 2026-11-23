@@ -163,6 +163,18 @@ namespace HiddenHarbours.Core
                  "a lee. At or below 0.02 = the previous switch.")]
         public float BoreEdgeFadeDepthMeters;
 
+        [Tooltip("The steady edge on flat beds (seabed slope, metres per metre). The beach swash puts each " +
+                 "stretch of shore a little out of step with the next, keyed to the shore's direction. A " +
+                 "near-flat bed has no real direction, so that offset turned to speckle and the drawn edge " +
+                 "drew nested rings (the marbling). The offset now fades out below this slope, from a quarter " +
+                 "of it to it, so on a flat the edge runs in and out as one line. 0 = off (the previous look).")]
+        public float SwashSteadyEdgeSlope;
+
+        [Tooltip("The wet film at the drawn edge (metres of level). The water thins from full to clear over " +
+                 "this much depth just inside the drawn edge, so it ends on the sand as a thin film instead " +
+                 "of a hard cut. Foam keeps its own cover. 0 = the hard cut (the previous look).")]
+        public float EdgeWetFilmMeters;
+
         [Header("Run-up — how far the wash reaches up the beach (metres of LEVEL, Hunt 1959)")]
         [Tooltip("Hunt's law: run-up R = coefficient × ξ × H — the vertical reach of the wash above still " +
                  "water for a bore of standing height H on a bed of surf similarity ξ. 1.0 is Hunt's " +
@@ -202,6 +214,8 @@ namespace HiddenHarbours.Core
             BoreFetchProbeMeters = 3f,
             BoreLeeSoftenMeters = 6f,
             BoreEdgeFadeDepthMeters = 0.08f,
+            SwashSteadyEdgeSlope = 0.12f,
+            EdgeWetFilmMeters = 0.06f,
             RunUpCoefficient = 1f,
             RunUpCapMeters = 0.35f,
         };
@@ -902,6 +916,32 @@ namespace HiddenHarbours.Core
             a = probe + across * ((c0 - c) * softenMeters);
             b = a + across * softenMeters;
             return true;
+        }
+
+        /// <summary>
+        /// <b>The steady edge</b>: how much of the beach swash's along-shore offset a bed of this slope keeps.
+        /// 1 at or above <paramref name="steadySlope"/>, 0 at or below a quarter of it, smooth between. The
+        /// offset is keyed to the shore's direction, which a near-flat bed cannot give, so there it is faded
+        /// out and the edge moves as one line. <paramref name="steadySlope"/> at or below 0 returns 1 (the
+        /// previous look). Twin of the water shader's <c>SwashDesyncKeep</c>
+        /// (<see cref="BreakerSettings.SwashSteadyEdgeSlope"/>).
+        /// </summary>
+        public static float SwashDesyncKeep01(float slope, float steadySlope)
+        {
+            if (steadySlope <= 0f) return 1f;
+            return WaveFetch.SmoothstepEdge(0.25f * steadySlope, steadySlope, slope);
+        }
+
+        /// <summary>
+        /// <b>The wet film</b>: the water's cover at a pixel <paramref name="insideEdgeMeters"/> of level
+        /// inside the drawn edge, 0 at the edge rising to 1 at <paramref name="filmMeters"/>. At or below 0
+        /// metres of film it returns 1 (the hard cut). Twin of the water shader's film line
+        /// (<see cref="BreakerSettings.EdgeWetFilmMeters"/>).
+        /// </summary>
+        public static float EdgeWetFilm01(float insideEdgeMeters, float filmMeters)
+        {
+            if (filmMeters <= 0f) return 1f;
+            return WaveFetch.SmoothstepEdge(0f, filmMeters, insideEdgeMeters);
         }
 
         // ==== THE SURF AS A FORCE: everything a hull in the broken water needs (PR 3) ==============

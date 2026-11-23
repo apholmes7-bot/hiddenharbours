@@ -1687,6 +1687,10 @@ Shader "HiddenHarbours/Water"
             // land shadow is softened (m, BreakerSettings.BoreLeeSoftenMeters), y = the break depth over which
             // the run-up takes the drawn edge (m, BoreEdgeFadeDepthMeters). All-zero = the previous hard edge.
             float4 _BoreLeeFade;
+            // The drawn edge on flat beds (WaveFieldBridge.PublishBreakerGlobals): x = the seabed slope below which
+            // the swash's along-shore offset fades out (m/m, BreakerSettings.SwashSteadyEdgeSlope), y = the wet
+            // film's depth inside the drawn edge (m, EdgeWetFilmMeters). All-zero = the previous edge.
+            float4 _ShoreThinEdge;
 
             // SRP-batcher friendly: every per-material property in one CBUFFER (the runtime sets these via a
             // MaterialPropertyBlock; the sim-driven ones change on the slow tick, not per frame).
@@ -2051,7 +2055,7 @@ Shader "HiddenHarbours/Water"
             CBUFFER_END
 
             #define HH_CAUSTIC_VEINS
-            #include "Include/CausticPattern.hlsl"
+            #include "Assets/_Project/Art/Shaders/Include/CausticPattern.hlsl"
 
             // ---- pixelize: snap a world coord to the PPU grid so every layer reads as pixel art (ADR 0010 (2)) ----
             float2 Pixelize(float2 p)
@@ -4307,6 +4311,17 @@ Shader "HiddenHarbours/Water"
             // A subtle along-shore DESYNC (value-noise sampled along the shore TANGENT, low _SwashAlongShoreVary)
             // breaks neighbouring stretches slightly out of sync so the wash isn't one flat pulsing line —
             // WITHOUT a single world direction, so it never becomes a coherent wave travelling around the ring.
+            // THE STEADY EDGE: the desync below is keyed to the shore TANGENT, which a near-flat bed cannot give
+            // (the 8-bit height map's flats turn the normalised gradient round at every bump), so on a flat it
+            // became speckle and the drawn edge's clip drew its contours: the marbling. It fades out below
+            // _ShoreThinEdge.x of slope, so there the swash is one smooth pulse. 1 when unpublished.
+            // Twin: BreakerMath.SwashDesyncKeep01.
+            float SwashDesyncKeep(float2 worldXY)
+            {
+                float steady = _ShoreThinEdge.x;
+                return steady > 0.0 ? smoothstep(0.25 * steady, steady, SeabedSlopeMag(worldXY)) : 1.0;
+            }
+
             float BeachSwash(float2 worldXY, float depth, float t)
             {
                 // shore-normal (toward land) from the seabed gradient; tangent = along the coast.
@@ -4316,7 +4331,7 @@ Shader "HiddenHarbours/Water"
                 // break a touch out of phase — organic, but carries no fixed travel direction around the ring.
                 float alongCoord = dot(Pixelize(worldXY), tangent) * 0.35;
                 float desync = (ValueNoise(float2(alongCoord, alongCoord * 0.7 + 11.3)) - 0.5)
-                               * _SwashAlongShoreVary * 6.2831853;
+                               * _SwashAlongShoreVary * 6.2831853 * SwashDesyncKeep(worldXY);
                 // On the real coast the phase RUNS UP the beach. A crest sits at a constant total phase
                 // theta = t*w + depth*k; holding theta as t grows forces depth to SHRINK, i.e. the crest
                 // marches to ever-shallower water = IN toward the beach (the same radial run-up everywhere on
@@ -4344,7 +4359,7 @@ Shader "HiddenHarbours/Water"
                 float2 tangent = float2(-shore.y, shore.x);
                 float alongCoord = dot(Pixelize(worldXY), tangent) * 0.35;
                 float desync = (ValueNoise(float2(alongCoord, alongCoord * 0.7 + 11.3)) - 0.5)
-                               * _SwashAlongShoreVary * 6.2831853;
+                               * _SwashAlongShoreVary * 6.2831853 * SwashDesyncKeep(worldXY);
                 bool haveShore = dot(shore, shore) > 1e-6;
                 float shoreward = haveShore ? (max(depth, 0.0) * _SwashWavelength) : 0.0;
                 float base = t * _SwashSpeed * 6.2831853 + shoreward;
@@ -6520,6 +6535,10 @@ Shader "HiddenHarbours/Water"
             #else
                 half4 col = lerp(_ShallowColor, _DeepColor, dt);
             #endif
+                // THE WET FILM: the water thins from full to clear over the last _ShoreThinEdge.y metres of level
+                // inside the drawn edge, so it ends on the sand as a film, not a hard cut. Foam keeps its own
+                // cover. 0 (unpublished) = the hard cut. Twin: BreakerMath.EdgeWetFilm01.
+                if (_ShoreThinEdge.y > 0.0) col.a *= smoothstep(0.0, _ShoreThinEdge.y, washEdgeQ);
 
                 // ---- DEEP BLUE enrichment (owner mandate: "deep blues"; col.rgb ONLY) -------------------------
                 // Pull the settled BASE colour toward a rich navy as the water deepens. The shipped material

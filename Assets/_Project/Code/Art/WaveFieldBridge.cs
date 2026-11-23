@@ -143,6 +143,10 @@ namespace HiddenHarbours.Art
         /// (BreakerSettings.BoreLeeSoftenMeters / BoreEdgeFadeDepthMeters, BreakerMath.BoreLeeLattice /
         /// BoreEdgeLeeFade01). All-zero = unpublished = the previous hard lee edge.</summary>
         private static readonly int IdBoreLeeFade = Shader.PropertyToID("_BoreLeeFade");
+        /// <summary>(steady edge slope m/m, wet film metres, 0, 0): the drawn edge on flat beds
+        /// (BreakerSettings.SwashSteadyEdgeSlope / EdgeWetFilmMeters, BreakerMath.SwashDesyncKeep01 /
+        /// EdgeWetFilm01). All-zero = unpublished = the previous edge.</summary>
+        private static readonly int IdShoreThinEdge = Shader.PropertyToID("_ShoreThinEdge");
 
         private const double TwoPi = Math.PI * 2.0;
 
@@ -408,6 +412,13 @@ namespace HiddenHarbours.Art
             Shader.SetGlobalVector(IdBoreLeeFade, new Vector4(
                 Mathf.Max(0f, breakers.BoreLeeSoftenMeters),
                 Mathf.Max(0f, breakers.BoreEdgeFadeDepthMeters),
+                0f, 0f));
+
+            // The drawn edge on FLAT beds: the swash's along-shore offset fades out below x m/m of slope, and
+            // the water thins to a film over the last y metres of level inside the edge.
+            Shader.SetGlobalVector(IdShoreThinEdge, new Vector4(
+                Mathf.Max(0f, breakers.SwashSteadyEdgeSlope),
+                Mathf.Max(0f, breakers.EdgeWetFilmMeters),
                 0f, 0f));
         }
 
