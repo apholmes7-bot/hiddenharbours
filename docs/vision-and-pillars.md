@@ -145,6 +145,15 @@ Every feature must serve at least one pillar. If it serves none, cut it.
 >   catch he holds no licence for is **released automatically**; he says "I don't have a license for
 >   this <named catch> yet", naming it, and no Notebook entry is made. This covers the shovel, the rod
 >   and line, and traps alike.
+> - **Lobster and crab licences are a higher tier** *(a direction, ruled later the same day; not a
+>   finished design)*. The owner: "on pei these licesnes can worth millions for lobster and perhaps
+>   100k for crab … thers a fixes amount of licenses on pei. they are only sold and not created." In
+>   the game they are a **fixed number in the world**, never created, only passed between holders,
+>   and **far dearer than any counter licence** (lobster dearest). They are **never sold over a
+>   counter**. The player first **works as a hand on a lobster or crab boat**; a possible bridge is
+>   fishing under the licence of an **older St Peters fisher who refuses to sell**; later he **buys or
+>   earns** one. This comes **after the first week**; in the first week a lobster or crab he traps on
+>   his own goes back with the spoken line.
 > - **The calendar** already starts the game on day 1 of **High Summer** (§5.8 seasons), which is the
 >   early summer the owner wants for the first week. No change needed.
 > - **The demo ends at Ginny's word** with a closing beat; he can keep fishing from the dory after.
@@ -155,7 +164,9 @@ Every feature must serve at least one pillar. If it serves none, cut it.
 >
 > **Open (not ruled):** which licences exist beyond the clam and cod licences, what each covers, and
 > where each is sold (the first ones on the island; proposal for the counter: Rose's post office); the
-> exact repair materials and jobs; the prices.
+> exact repair materials and jobs; the prices. For lobster and crab: the number of licences, their
+> prices, who holds them, and how one comes up for sale; and recording who holds which licence is
+> **saved data that needs the owner's approval before it is built**.
 
 ### 5.4 Boat ladder (LOCKED — "Dory to Dynasty"). Detail + stats in `design/boats-and-navigation.md`.
 Every tier defines: **length (m)**, **draught (m)** *(how shallow it can go before grounding — ties to tide!)*, **hold capacity**, **crew slots**, **range**, **seaworthiness** *(weather tolerance)*, **handling** *(wind/current vulnerability)*.

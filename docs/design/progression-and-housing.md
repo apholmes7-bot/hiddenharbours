@@ -80,7 +80,7 @@ Representative licenses (full list lives with the data; see §6):
 | License | Eligibility (typical) | Unlocks |
 |---|---|---|
 | **Clam Licence** *(St Peters opening, M2)* | none (small fee at the St Peters general store) | **Clam digging** on the bared low-water flats — the gentlest first instance of the licence gate, and the player's first earned income |
-| **Cod Fishing Licence** *(St Peters opening, M2)* | small fee at **Nine Mile Creek** | **Rod finfishing for cod** — bought after walking the sandbar to Nine Mile Creek, alongside the first **rod**; the gate that turns hand-digging into real fishing |
+| **Cod Fishing Licence** *(St Peters opening, M2)* | small fee, sold **on St Peters** *(amended 2026-11-23; where on the island is open)* | **Rod finfishing for cod** — bought in the first week on the island, after the first **rod**; the gate that turns hand-digging into real fishing |
 | **Inshore Handline** | none (granted in tutorial) | Hand-fishing in Coddle Cove |
 | **Tide-Reader's Note** | Navigation: Coaster + a Sunkers run | Safer Sunkers reef work; tide-table tool upgrade |
 | **Nine Mile Creek Trade Seal** | Story (early) | Use the auction house; rent storage |
@@ -92,6 +92,14 @@ Representative licenses (full list lives with the data; see §6):
 | **Freight Carrier's License** | Business: Manager + freighter-tier hull | Take cargo contracts on **The Shipping Lanes** |
 | **Processing / Warehouse Permits** | Business: Trader+ | Own & operate plants/warehouses (see `economy-and-business.md`) |
 | **Shellfish Lease** *(capture only, not built)* | fee + renewal — **or inherited**, if the owner rules the **lapsed lease** is the starter ruin | **A plot of water over a musselbed**: the right to set longlines on it and grow a crop ([`mussel-lease-and-longline.md`](mussel-lease-and-longline.md)) |
+
+> **Amended 2026-11-23 (canon §5.3's amendment; a direction, not a finished design).** **Every catch
+> needs a licence**, but nothing is blocked: an unlicensed catch is released automatically with a line
+> naming it. **Lobster and crab licences are not fee licences** like the rows above and are **never sold
+> over a counter**: they are a **fixed number in the world**, never created, only passed between holders,
+> and far dearer than any counter licence (lobster dearest). The player first works as a **hand on a
+> lobster or crab boat**; a possible bridge is fishing under an older St Peters fisher's licence; later he
+> buys or earns one. Which other licences exist, and all of the lobster/crab detail, is open.
 
 > **Licence *system* ownership.** This table names the *progression gates*; the **runtime licence
 > system** (the wallet of held licences, the buy interaction, the gate check) is a **real, minimal

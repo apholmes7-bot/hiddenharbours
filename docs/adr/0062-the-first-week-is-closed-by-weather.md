@@ -48,6 +48,9 @@ edge; it turns a boat back with wind, rain and a rising sea, shades only what th
 - Every catch needs a licence (ruled later on 2026-11-23), but digging, fishing and trapping are never blocked: an
   unlicensed catch is released automatically with a spoken line naming it, and no Notebook entry is made. Fishing
   already lets an unlicensed fish slip back; the line, the dig and trap cases and the Notebook rule are new work.
+- Lobster and crab licences are a later, higher tier (owner direction 2026-11-23, canon §5.3): a fixed number in the
+  world, passed between holders, never sold over a counter. Recording who holds which is saved data and needs the
+  owner's approval before it is built; nothing in the first week depends on it.
 
 ## Open (not ruled)
 
