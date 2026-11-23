@@ -374,6 +374,9 @@ MonoBehaviour:
   HullReflectionFadeStartMeters: 0.1
   HullReflectionFadeMeters: 0.6
   HullReflectionStreakPixels: 6
+  HullReflectionEndCutPixels: 3
+  HullReflectionEndThinPixels: 3
+  HullReflectionEndMinRunPixels: 12
   BoatLegacyCabinGlow: 0
   WalkerAutoLantern: 0
   WalkerHeadlampHoldSeconds: 0.4
