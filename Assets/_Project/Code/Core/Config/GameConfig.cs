@@ -1010,6 +1010,9 @@ namespace HiddenHarbours.Core
         public const float DefaultHullReflectionFadeStartMeters = 0.1f;
         public const float DefaultHullReflectionFadeMeters = 0.6f;
         public const float DefaultHullReflectionStreakPixels = 6f;
+        public const float DefaultHullReflectionEndCutPixels = 3f;
+        public const float DefaultHullReflectionEndThinPixels = 3f;
+        public const float DefaultHullReflectionEndMinRunPixels = 12f;
 
         /// <summary>The boat-reflection path's ship default: <b>ON</b> (2026-11-21). The mesh path is the
         /// only one that can draw: the older overlay path records its reflection BEFORE the same frame's
@@ -1036,6 +1039,17 @@ namespace HiddenHarbours.Core
                  "row breaks into runs that go together, the way a reflection breaks on moving water. Under 1 = " +
                  "the hull's 4x4 ordered dither instead.")]
         [Min(0f)] public float HullReflectionStreakPixels = DefaultHullReflectionStreakPixels;
+        [Tooltip("How many of the hull's own pixels each streak row of a boat's reflection may stop short at " +
+                 "either end: every row draws its own amount from 0 up to this, fixed to the hull, so the " +
+                 "reflection under a square stern or bow ends ragged instead of on one straight column. 0 = " +
+                 "every row runs to the hull's outline.")]
+        [Min(0f)] public float HullReflectionEndCutPixels = DefaultHullReflectionEndCutPixels;
+        [Tooltip("Over how many of the hull's pixels inside that each streak row's end thins out (some pixels " +
+                 "kept, more of them further in), so the end frays rather than stops. 0 = a clean end.")]
+        [Min(0f)] public float HullReflectionEndThinPixels = DefaultHullReflectionEndThinPixels;
+        [Tooltip("A reflection row shorter than this many of the hull's pixels keeps its ends, so a thin oar, " +
+                 "rod or mast still reflects; only the long rows under the hull itself fray.")]
+        [Min(0f)] public float HullReflectionEndMinRunPixels = DefaultHullReflectionEndMinRunPixels;
 
         /// <summary>The cabin-glow passthrough's ship default — <b>OFF</b>, which is the owner's ruling
         /// of 2026-09-03: a glow is confined to its space, and an interior's reaches the outside only
