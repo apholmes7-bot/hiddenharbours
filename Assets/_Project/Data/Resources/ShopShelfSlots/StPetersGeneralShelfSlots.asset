@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 601757522be340d496880d499f35806b, type: 3}
+  m_Name: StPetersGeneralShelfSlots
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.ShopShelfSlotsDef
+  Id: shelfslots.st_peters_general
+  ShopId: shop.st_peters_general
+  BuildingName: generalStore
+  SoldOutSign: {fileID: 0}
+  SortingOrderAboveRoom: 1
+  Slots:
+  - Id: slot.groceries
+    LineId: line.grocery_box
+    Offset: {x: 0, y: 0}
+  - Id: slot.ice
+    LineId: line.ice_bag
+    Offset: {x: 0, y: 0}
+  - Id: slot.bait
+    LineId: line.bait_box
+    Offset: {x: 0, y: 0}
+  - Id: slot.gas
+    LineId: line.gas_jerry_can
+    Offset: {x: 0, y: 0}

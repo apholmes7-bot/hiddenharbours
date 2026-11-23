@@ -438,6 +438,10 @@ namespace HiddenHarbours.World
         /// that needs to name him: the mesh reveal hands him to the occupant sort rule.</summary>
         public Transform Occupant => ResolveOccupant();
 
+        /// <summary>The ground storey's room picture (null on a mesh dwelling), for something that stands in
+        /// the room and sorts against it: a store's sold-out cards.</summary>
+        public SpriteRenderer RoomRenderer => _room;
+
         /// <summary>
         /// Who this room is watching, RIGHT NOW — the builder's own reference while it is alive, and
         /// otherwise whoever Core says is walking the world
