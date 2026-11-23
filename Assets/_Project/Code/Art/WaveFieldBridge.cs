@@ -139,6 +139,10 @@ namespace HiddenHarbours.Art
         /// (BreakerMath.BoreClockPoint / BorePhaseJitterDegrees). Read by the water shader's and the foam
         /// buffer's <c>SurfBoreClock*</c> twins. All-zero = the offshore heading, as before.</summary>
         private static readonly int IdBreakerRefract = Shader.PropertyToID("_BreakerRefract");
+        /// <summary>(lee soften metres, edge fade depth metres, 0, 0): how the drawn wash fades into a lee
+        /// (BreakerSettings.BoreLeeSoftenMeters / BoreEdgeFadeDepthMeters, BreakerMath.BoreLeeLattice /
+        /// BoreEdgeLeeFade01). All-zero = unpublished = the previous hard lee edge.</summary>
+        private static readonly int IdBoreLeeFade = Shader.PropertyToID("_BoreLeeFade");
 
         private const double TwoPi = Math.PI * 2.0;
 
@@ -398,6 +402,13 @@ namespace HiddenHarbours.Art
                 Mathf.Max(0f, breakers.BorePhaseJitterDegrees),
                 Mathf.Max(0f, breakers.BorePhaseJitterMeters),
                 Mathf.Max(0f, breakers.BoreFetchProbeMeters)));
+
+            // The wash's LEE EDGE: the envelope read across the land's shadow over x metres, and the run-up's
+            // share of the drawn edge growing over y metres of break depth, so the wash fades into a lee.
+            Shader.SetGlobalVector(IdBoreLeeFade, new Vector4(
+                Mathf.Max(0f, breakers.BoreLeeSoftenMeters),
+                Mathf.Max(0f, breakers.BoreEdgeFadeDepthMeters),
+                0f, 0f));
         }
 
         /// <summary>The breaker model SILENT — nothing breaks anywhere — so a stopped play session or a
