@@ -215,7 +215,7 @@ namespace HiddenHarbours.Core
             BoreLeeSoftenMeters = 6f,
             BoreEdgeFadeDepthMeters = 0.08f,
             SwashSteadyEdgeSlope = 0.12f,
-            EdgeWetFilmMeters = 0.06f,
+            EdgeWetFilmMeters = 0.03f,
             RunUpCoefficient = 1f,
             RunUpCapMeters = 0.35f,
         };

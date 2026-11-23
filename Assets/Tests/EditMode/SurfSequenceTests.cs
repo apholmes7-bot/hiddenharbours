@@ -258,7 +258,7 @@ namespace HiddenHarbours.Tests.EditMode
             MainSource(Read(WaterPath)); // Pins the edge, clip, sheet and both twins to approved main.
             Assert.That(Hash(Read(AdvectPath)), Is.EqualTo("c44e6f51d9260d92c832e7c4e4d319fa848475710ba64aaad57a9bc9f5bc0dfa"));
             Assert.That(Hash(Read("Assets/_Project/Code/Core/Environment/BreakerMath.cs")),
-                Is.EqualTo("976cdd529ec2708609d539929e77a625eb733603b11e7fe2f850c28c579c85ae"));
+                Is.EqualTo("38929596465181c3c5d5f645860136c24fbe4906fd92c3581a0e0a1d17729521"));
             Assert.That(Hash(Read("Assets/_Project/Code/Art/WaterSurface.cs")),
             // Intro at sea PR 2 moves the wind-shape lookup to the hour clock; the pinned source includes it.
             // The shore-normal pulse adds SwellShoreKeep, the CPU twin of the shader's swell yield; the pinned source includes it.

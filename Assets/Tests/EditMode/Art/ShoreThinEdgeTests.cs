@@ -92,7 +92,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(1f, BreakerMath.EdgeWetFilm01(film, film), 1e-6f, "full water past the film");
             Assert.AreEqual(1f, BreakerMath.EdgeWetFilm01(1f, film), 0f, "deep water is untouched");
             float prev = 0f, maxStep = 0f;
-            for (float q = 0f; q <= 0.1f; q += 0.0005f)
+            float dq = film / 120f;   // the film's own scale: a ramp, not a step, at any shipped width
+            for (float q = 0f; q <= 0.1f; q += dq)
             {
                 float a = BreakerMath.EdgeWetFilm01(q, film);
                 Assert.That(a, Is.InRange(0f, 1f));
@@ -100,7 +101,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 maxStep = Mathf.Max(maxStep, a - prev);
                 prev = a;
             }
-            Assert.Less(maxStep, 0.02f, "the film has no band: no step between samples 0.5 mm apart");
+            Assert.Less(maxStep, 0.02f, "the film has no band: no step between samples 1/120 of its width apart");
         }
 
         [Test]

@@ -182,7 +182,7 @@ MonoBehaviour:
     BoreLeeSoftenMeters: 6
     BoreEdgeFadeDepthMeters: 0.08
     SwashSteadyEdgeSlope: 0.12
-    EdgeWetFilmMeters: 0.06
+    EdgeWetFilmMeters: 0.03
     RunUpCoefficient: 1
     RunUpCapMeters: 0.35
   SurfSprayIntensityOffset: 0
