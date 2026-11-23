@@ -33,7 +33,7 @@ Taken from the catalogue data on main (`Data/Resources/Catalog/**`, `Data/Resour
 
 | Seller | Where | Keeper | What it sells today | Shelf plan |
 |---|---|---|---|---|
-| `seller.leblancs` (Leblanc's general store) | St Peters, `generalStore` | Marguerite Leblanc | Bread ₲4, Oatcakes ₲2, Tin of Beans ₲3, Bag of Ice ₲6, Bar of Soap ₲3; bait: Capelin ₲2, Fish Scrap, Herring, Mackerel, Sea Worm, Shucked Clam, Squid Strip; shellfish gear: Clam Bucket, Clam Shovel, Mussel Sack, Oyster Tongs, Peck Basket, Shellfish Rake; Fishing Rod ₲60; Depth Sounder ₲140; Shellfish Licence ₲15 | the only shop with counted island shelves (`StPetersStoreShelves`: grocery, ice, bait, gas lines). Slice 1 moves bread, oatcakes, beans, ice and capelin to the shelf. Slice 2 moves the rest of the shelf goods. |
+| `seller.leblancs` (Leblanc's general store) | St Peters, `generalStore` | Marguerite Leblanc | at her counter in the scene: Bread ₲4, Oatcakes ₲2, Tin of Beans ₲3, Bag of Ice ₲6, Bar of Soap ₲3, Capelin ₲2, Fishing Rod ₲60, Depth Sounder ₲140, Shellfish Licence ₲15. The data also lists her as a stockist of the other baits and the shellfish gear, but her counter does not offer them today | the only shop with counted island shelves (`StPetersStoreShelves`: grocery, ice, bait, gas lines). Slice 1 moves bread, oatcakes, beans, ice and capelin to the shelf. Slice 2 moves soap, and adds the baits and shellfish gear the data already gives her. |
 | `seller.nmc_chandlery` | Nine Mile Creek | Claudette Boudreau | Fishing Rod | rod rack on the wall (slice 5) |
 | `seller.nmc_fishing_gear_wholesaler` | Nine Mile Creek | Bernadette Pitre | the bait list and the shellfish gear above, Rod Rack | bait cooler, gear racks (slice 5) |
 | `seller.nmc_boat_gear_wholesaler` | Nine Mile Creek | Lionel Cormier | Dome Compass, Flush Compass, Wind Dial, Wind Display, Fish Finder, Loran-C, Chartplotter, Radar, Autopilot | display cases (slice 5); the costliest stay "fitted to your boat" through the counter |
@@ -212,8 +212,8 @@ NextSpecialOrderNumber: int
 ## 7. What happens to the clerk's book
 
 - **Slice 1:** the book drops every good sold at the shelf (bread, oatcakes, beans, ice, capelin). The
-  rest stays: the rod, the shellfish gear, the other baits, the soap, the depth sounder and the shellfish
-  licence. Buying at the counter is otherwise unchanged.
+  rest stays: the rod, the soap, the depth sounder and the shellfish licence (checked in the game: those four are what her book shows after the change). Buying at the
+  counter is otherwise unchanged.
 - **Slice 2:** as the rest of the store's goods reach the shelves, they leave the book too.
 - **Slice 4:** the book becomes the counter's **catalogue** (special orders) plus the services a counter
   really sells (the licence). Selling to the clerk is unchanged.
