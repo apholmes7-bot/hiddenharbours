@@ -6217,14 +6217,26 @@ Shader "HiddenHarbours/Water"
                     // largest of the outer and break depths at the three anchors), the gate is 0 whatever the
                     // envelope, so the third read could change no pixel and is not taken. Bit-exact; the read
                     // was two fetch marches over the lee's whole shadow.
+                    // The gate and the march read only the DOMINANT train's slot, which one march decides (the
+                    // swell's shelter when the swell dominates, the wind's fetch otherwise), so that march alone
+                    // is taken here; the other is taken only where a bore is born (the births read every slot),
+                    // and the envelope there is built from the same two marches as before.
+                    int boreDominant = clamp((int)(_WaveFieldParams.w + 0.5), 0, 7);
+                    bool boreDominantIsSwell = _WaveSwell.x > 0.0 && boreDominant >= 6;
+                    float boreHardFetch = 1.0;
+                    float boreHardShelter = 1.0;
+                    bool boreHardReadHalf = false;
                     if (boreHardReadOwed && _BreakerOuter.w >= 0.5 && surfGateDepth > 0.0
                         && surfGateDepth < max(max(max(_BreakerOuter.x, _BreakerOuter.y), _BreakerOuter.z),
                                                max(max(_BreakerDepths.x, _BreakerDepths.y), _BreakerDepths.z) + 1e-3))
                     {
-                        surfBoreFactors = FetchFactorsFrom(FetchMarch01(fetchProbeXY), SwellShelter01(fetchProbeXY));
-                        surfBoreFactors.low *= seaReach;
-                        surfBoreFactors.high *= seaReach;
-                        surfBoreEnv = FetchFactorAt(surfBoreFactors, clamp((int)(_WaveFieldParams.w + 0.5), 0, 7));
+                        if (boreDominantIsSwell) boreHardShelter = SwellShelter01(fetchProbeXY);
+                        else                     boreHardFetch = FetchMarch01(fetchProbeXY);
+                        boreHardReadHalf = true;
+                        FetchFactors boreGateFactors = FetchFactorsFrom(boreHardFetch, boreHardShelter);
+                        boreGateFactors.low *= seaReach;
+                        boreGateFactors.high *= seaReach;
+                        surfBoreEnv = FetchFactorAt(boreGateFactors, boreDominant);
                     }
                     surfBreaking = SurfBreaking01(surfGateDepth, surfBoreEnv);
                     if (surfBreaking > 0.002 && dot(surfDir, surfDir) > 1e-6)
@@ -6263,6 +6275,15 @@ Shader "HiddenHarbours/Water"
                             // (sheetBirth). The PULSE - the run-up, the drawn edge, the face - keeps the reach
                             // its run-in got through the front (previousBirth, one period back) and eases to
                             // the new crest's by half a period, where the pulse is 0: it never jumps.
+                            // The hard read's other march, taken only here (THE HARD READ, ONLY WHERE IT CAN BREAK).
+                            if (boreHardReadHalf)
+                            {
+                                if (boreDominantIsSwell) boreHardFetch = FetchMarch01(fetchProbeXY);
+                                else                     boreHardShelter = SwellShelter01(fetchProbeXY);
+                                surfBoreFactors = FetchFactorsFrom(boreHardFetch, boreHardShelter);
+                                surfBoreFactors.low *= seaReach;
+                                surfBoreFactors.high *= seaReach;
+                            }
                             float sheetBirth = SurfBoreBirth01(SurfBoreClockPoint(breakLinePt), travelS, borePhase, periodS,
                                                                surfFreqScale, surfBoreEnv, surfBoreFactors);
                             float previousBirth = SurfBoreBirth01(SurfBoreClockPoint(breakLinePt), travelS + periodS, borePhase,
