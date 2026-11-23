@@ -194,7 +194,7 @@ namespace HiddenHarbours.World
             BuildingInterior building = GetComponentInParent<BuildingInterior>(true);
             if (building == null) { _cell = 0; return; }
 
-            InteriorFootprint fp = FootprintHolding(building, transform.position);
+            InteriorFootprint fp = FootprintHolding(building, transform);
             int wall = _wallOffset >= 0
                 ? _wallOffset
                 : ApplianceFacing.PickWallOffset(fp.WorldToModel(transform.position), fp.WidthMetres,
@@ -202,9 +202,16 @@ namespace HiddenHarbours.World
             _cell = ApplianceFacing.CellFor(fp.Facing, wall, fp.Facings);
         }
 
-        /// <summary>The storey's footprint the point stands in (the ground floor's when none claims it).</summary>
-        private static InteriorFootprint FootprintHolding(BuildingInterior building, Vector2 world)
+        /// <summary>The footprint of the storey the piece is furnished on: the storey whose props hold it, and
+        /// only for a piece under neither, the storey whose rectangle the point stands in (the ground floor's
+        /// when none claims it). The parent comes first because an upper storey is drawn lifted up the screen
+        /// and its rectangle overlaps the ground floor's back half: by containment alone a ground-floor piece
+        /// against the back wall was read in the upper storey's frame and turned to the wrong wall.</summary>
+        public static InteriorFootprint FootprintHolding(BuildingInterior building, Transform piece)
         {
+            int furnished = building.FurnishedLevelOf(piece);
+            if (furnished >= 0 && furnished <= building.TopLevel) return building.FootprintFor(furnished);
+            Vector2 world = piece.position;
             for (int level = building.TopLevel; level > 0; level--)
             {
                 InteriorFootprint upper = building.FootprintFor(level);
