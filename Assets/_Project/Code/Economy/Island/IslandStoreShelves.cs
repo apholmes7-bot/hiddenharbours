@@ -1,0 +1,225 @@
+using System;
+using System.Collections.Generic;
+using HiddenHarbours.Core;
+
+namespace HiddenHarbours.Economy
+{
+    /// <summary>
+    /// <b>An island store's shelves, recomputed for any moment</b> (living island economy slice 2,
+    /// <c>docs/design/st-peters-living-economy.md</c> §5). Each line shows its back-room good in whole items:
+    /// in the morning the shelf holds what the room holds after the supply run; through the store's hours
+    /// the islanders buy the day's use evenly; the player's purchases come off on top. At closing the shelf
+    /// equals the ledger's level at dusk. A run the bar forbids leaves the shelves thinning day by day until
+    /// they stand empty.
+    ///
+    /// <para><b>Nothing is saved.</b> A read settles the <see cref="IslandStoreLedger"/> for the day (a
+    /// bounded replay, cached until the day or the purchases change) and does plain arithmetic for the
+    /// hour, so the shelves look the same whether the player watched the days or slept through them. The
+    /// player's purchases are held for the session only (saving them is plan slice 8); a run that tops the
+    /// room up clears their effect, and draws older than the ledger's lookback are dropped.</para>
+    ///
+    /// <para>Reads allocate nothing. Plain C#, no Unity lifecycle: warm it from the day tick with
+    /// <see cref="SlowTick"/> or read it lazily.</para>
+    /// </summary>
+    public sealed class IslandStoreShelves : IIslandShelves
+    {
+        private struct Draw
+        {
+            public int Good;
+            public int Day;
+            public double Seconds;
+            public double Units;
+        }
+
+        private readonly IslandStoreLedger _ledger;
+        private readonly double _secondsPerDay;
+        private readonly double _opensHour;
+        private readonly double _closesHour;
+        private readonly Dictionary<string, int> _lineById = new Dictionary<string, int>(StringComparer.Ordinal);
+        private readonly int[] _goodOfLine;
+        private readonly double[] _unitsPerItem;
+        private readonly int[] _maxOnShelf;
+        private readonly List<Draw> _draws = new List<Draw>();
+
+        // The settled day, per ledger good: the level after the morning run, and the islanders' use that day.
+        private readonly double[] _morning;
+        private readonly double[] _use;
+        private int _settledDay = -1;
+        private int _settledVersion = -1;
+        private int _version;
+
+        /// <param name="shopId">The shop these shelves are in.</param>
+        /// <param name="ledger">The back room; its <see cref="IslandStoreLedger.ExtraDraw"/> is taken over by
+        /// these shelves (the player's purchases).</param>
+        /// <param name="lines">One line per good; every good must be one the ledger stocks.</param>
+        /// <param name="secondsPerDay">Clock seconds per game day (<see cref="GameConfig.SecondsPerDay"/>).</param>
+        /// <param name="opensHour">Hour the islanders' buying starts.</param>
+        /// <param name="closesHour">Hour the islanders have bought the day's use.</param>
+        public IslandStoreShelves(string shopId, IslandStoreLedger ledger, IEnumerable<IslandShelfLine> lines,
+                                  double secondsPerDay, double opensHour, double closesHour)
+        {
+            _ledger = ledger ?? throw new ArgumentNullException(nameof(ledger));
+            if (lines == null) throw new ArgumentNullException(nameof(lines));
+            if (!(secondsPerDay > 0.0)) throw new ArgumentException("Seconds per day must be positive.");
+            if (!(opensHour >= 0.0 && opensHour < closesHour && closesHour <= 24.0))
+                throw new ArgumentException("The store must open before it closes, within the day.");
+            ShopId = shopId;
+            _secondsPerDay = secondsPerDay;
+            _opensHour = opensHour;
+            _closesHour = closesHour;
+
+            var goods = new List<int>();
+            var units = new List<double>();
+            var max = new List<int>();
+            foreach (IslandShelfLine line in lines)
+            {
+                if (line == null || string.IsNullOrEmpty(line.Id)) throw new ArgumentException("A shelf line needs an id.");
+                if (_lineById.ContainsKey(line.Id)) throw new ArgumentException("Duplicate shelf line id: " + line.Id);
+                if (line.Good == null) throw new ArgumentException("Shelf line has no good: " + line.Id);
+                if (!(line.UnitsPerItem > 0f) || line.MaxOnShelf < 1)
+                    throw new ArgumentException("Shelf line needs positive item units and room: " + line.Id);
+                int good = GoodIndex(ledger, line.Good);
+                if (good < 0) throw new ArgumentException("The back room does not stock the good of " + line.Id);
+                if (goods.Contains(good)) throw new ArgumentException("Two shelf lines show one good: " + line.Id);
+                _lineById.Add(line.Id, goods.Count);
+                goods.Add(good);
+                units.Add(line.UnitsPerItem);
+                max.Add(line.MaxOnShelf);
+            }
+            _goodOfLine = goods.ToArray();
+            _unitsPerItem = units.ToArray();
+            _maxOnShelf = max.ToArray();
+            _morning = new double[ledger.GoodCount];
+            _use = new double[ledger.GoodCount];
+            _ledger.ExtraDraw = DrawnOn;
+        }
+
+        /// <summary>Builds the shelves an <see cref="IslandStoreShelvesDef"/> describes, over the ledger its
+        /// <see cref="IslandStoreShelvesDef.Ledger"/> describes (see <see cref="IslandStoreLedger.FromDef"/>).</summary>
+        public static IslandStoreShelves FromDef(IslandStoreShelvesDef def, IslandSupplyConfig route,
+                                                 IReadOnlyDictionary<string, CarrierDef> carriers,
+                                                 Func<int, bool> runPossible, double secondsPerDay,
+                                                 Func<int, bool> winter = null)
+        {
+            if (def == null) throw new ArgumentNullException(nameof(def));
+            IslandStoreLedger ledger = IslandStoreLedger.FromDef(def.Ledger, route, carriers, runPossible, winter);
+            return new IslandStoreShelves(def.ShopId, ledger, def.Lines, secondsPerDay, def.OpensHour, def.ClosesHour);
+        }
+
+        public string ShopId { get; }
+
+        /// <summary>The back room these shelves follow.</summary>
+        public IslandStoreLedger Ledger => _ledger;
+
+        public bool HasLine(string lineId) => lineId != null && _lineById.ContainsKey(lineId);
+
+        public int MaxOnShelf(string lineId) => _maxOnShelf[Line(lineId)];
+
+        public int CountAt(string lineId, double totalSeconds)
+        {
+            int line = Line(lineId);
+            if (!(totalSeconds > 0.0)) totalSeconds = 0.0;
+            int day = DayOf(totalSeconds);
+            Settle(day);
+            return Items(line, StockAt(_goodOfLine[line], day, totalSeconds));
+        }
+
+        public bool TryTakeOne(string lineId, double totalSeconds)
+        {
+            int line = Line(lineId);
+            if (!(totalSeconds > 0.0)) totalSeconds = 0.0;
+            int day = DayOf(totalSeconds);
+            Settle(day);
+            if (Items(line, StockAt(_goodOfLine[line], day, totalSeconds)) < 1) return false;
+
+            // Older draws can no longer reach any replay that starts at or after this day's lookback.
+            int oldest = day - _ledger.LookbackDays;
+            for (int i = _draws.Count - 1; i >= 0; i--)
+                if (_draws[i].Day < oldest) _draws.RemoveAt(i);
+            _draws.Add(new Draw { Good = _goodOfLine[line], Day = day, Seconds = totalSeconds, Units = _unitsPerItem[line] });
+            _version++;
+            return true;
+        }
+
+        public bool RunCameOn(int day) => _ledger.RunsOn(day);
+
+        public int DaysSinceRun(int day)
+        {
+            if (day < 0) return -1;
+            for (int k = 0; k <= _ledger.LookbackDays && day - k >= 0; k++)
+                if (_ledger.RunsOn(day - k)) return k;
+            return -1;
+        }
+
+        /// <summary>The day tick: settles the day <paramref name="totalSeconds"/> falls in, so the first read
+        /// of the day costs nothing. Repeated calls on one day are inert.</summary>
+        public void SlowTick(double totalSeconds) => Settle(DayOf(Math.Max(0.0, totalSeconds)));
+
+        /// <summary>The purchases held this session (bounded by the ledger's lookback).</summary>
+        public int HeldDrawCount => _draws.Count;
+
+        private int DayOf(double totalSeconds) => (int)Math.Floor(totalSeconds / _secondsPerDay);
+
+        private void Settle(int day)
+        {
+            if (day == _settledDay && _version == _settledVersion) return;
+            _ledger.Settle(day);
+            for (int i = 0; i < _morning.Length; i++)
+            {
+                _morning[i] = _ledger.LevelAtDawn(i) + _ledger.Delivered(i);
+                _use[i] = _ledger.DailyUse(i, day);
+            }
+            _settledDay = day;
+            _settledVersion = _version;
+        }
+
+        /// <summary>The good's stock at a moment of the settled day: the morning level less the islanders'
+        /// buying so far and the player's purchases so far. Equals the ledger's dusk level after closing.</summary>
+        private double StockAt(int good, int day, double totalSeconds)
+        {
+            double hour = (totalSeconds - day * _secondsPerDay) / _secondsPerDay * 24.0;
+            double share = hour <= _opensHour ? 0.0
+                         : hour >= _closesHour ? 1.0
+                         : (hour - _opensHour) / (_closesHour - _opensHour);
+            double stock = _morning[good] - _use[good] * share;
+            if (stock < 0.0) stock = 0.0;
+            for (int i = 0; i < _draws.Count; i++)
+            {
+                Draw d = _draws[i];
+                if (d.Good == good && d.Day == day && d.Seconds <= totalSeconds) stock -= d.Units;
+            }
+            return stock < 0.0 ? 0.0 : stock;
+        }
+
+        private int Items(int line, double stock)
+        {
+            // A whisker of tolerance so a level that is exactly N items in exact arithmetic reads N.
+            double items = Math.Floor(stock / _unitsPerItem[line] + 1e-9);
+            if (items <= 0.0) return 0;
+            return items >= _maxOnShelf[line] ? _maxOnShelf[line] : (int)items;
+        }
+
+        /// <summary>The ledger's extra draw: everything the player took of a good on a day.</summary>
+        private double DrawnOn(int good, int day)
+        {
+            double sum = 0.0;
+            for (int i = 0; i < _draws.Count; i++)
+                if (_draws[i].Good == good && _draws[i].Day == day) sum += _draws[i].Units;
+            return sum;
+        }
+
+        private int Line(string lineId)
+        {
+            if (lineId == null || !_lineById.TryGetValue(lineId, out int line))
+                throw new KeyNotFoundException("Unknown island shelf line: " + lineId);
+            return line;
+        }
+
+        private static int GoodIndex(IslandStoreLedger ledger, IslandGoodDef good)
+        {
+            for (int i = 0; i < ledger.GoodCount; i++)
+                if (ledger.Good(i) == good || (good.Id != null && ledger.Good(i).Id == good.Id)) return i;
+            return -1;
+        }
+    }
+}

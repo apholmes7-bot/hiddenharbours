@@ -152,3 +152,16 @@ one, else missed), and `IslandStoreLedger` replays from a full back room `Lookba
 delivery and shortfall for any day. Nothing reads it in game yet. The plan it belongs to is
 `docs/design/st-peters-living-economy.md`; the tests are `Tests/EditMode/Economy/IslandStoreLedgerTests.cs`
 and `Tests/EditMode/IslandSupply/IslandLedgerShippedTests.cs`.
+
+## The store's shelves (living island economy, slice 2)
+
+`IslandStoreShelves` (same folder) shows the back room on Marguerite's shelves in whole items: in the
+morning a shelf holds what the room holds after the run, the islanders' buying draws it down evenly through
+the store's hours, and at closing it equals the ledger's level at dusk. A tide-blocked stretch thins the
+shelves day by day to empty; the next run refills them. The player's purchases (`TryTakeOne`) come off the
+shelf and feed the ledger's `ExtraDraw`; they are held for the session only (saving them is slice 8) and
+the next full top-up clears their effect. Data: `Data/IslandLedgers/StPetersStoreShelves.asset`
+(`islandshelves.st_peters_general`: groceries, ice, bait and gas lines, store hours 07:00 to 19:00); the
+Core read contract is `IIslandShelvesView` / `IIslandShelves`. Nothing in game reads it yet: the counter,
+a keeper's line and shelf art are later work. Tests: `Tests/EditMode/Economy/IslandStoreShelvesTests.cs`
+and `Tests/EditMode/IslandSupply/IslandShelvesShippedTests.cs`.

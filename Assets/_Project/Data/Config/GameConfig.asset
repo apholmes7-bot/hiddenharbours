@@ -179,6 +179,8 @@ MonoBehaviour:
     BorePhaseJitterDegrees: 12
     BorePhaseJitterMeters: 64
     BoreFetchProbeMeters: 3
+    BoreLeeSoftenMeters: 6
+    BoreEdgeFadeDepthMeters: 0.08
     RunUpCoefficient: 1
     RunUpCapMeters: 0.35
   SurfSprayIntensityOffset: 0
@@ -372,6 +374,9 @@ MonoBehaviour:
   HullReflectionFadeStartMeters: 0.1
   HullReflectionFadeMeters: 0.6
   HullReflectionStreakPixels: 6
+  HullReflectionEndCutPixels: 3
+  HullReflectionEndThinPixels: 3
+  HullReflectionEndMinRunPixels: 12
   BoatLegacyCabinGlow: 0
   WalkerAutoLantern: 0
   WalkerHeadlampHoldSeconds: 0.4
@@ -816,6 +821,7 @@ MonoBehaviour:
     SmallHullCentreScatterMetres: 0.3
     SmallHullArcShare: 1
     SmallHullArcLobes: 3
+    SmallHullArcOpenWidths: 1.5
     BowShare: 0.7
     LifetimeSecondsPerMetreLength: 0.8
     MinLifetimeSeconds: 3
@@ -892,6 +898,7 @@ MonoBehaviour:
     OarCatchRadius: 0.3
     OarPerSecond: 1
     OarCatch: 0.6
+    OarCatchGrowSeconds: 0.1
     OarRelease: 0.26
     OarRingHeightMetres: 0.02
     OarRingWavelengthMetres: 0.8

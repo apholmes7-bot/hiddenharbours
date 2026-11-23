@@ -52,8 +52,17 @@ namespace HiddenHarbours.Tests.RigBaking
         {
             // The canon says CLAPBOARD houses. Only two of the house rig's five presets are — which is
             // why the third house is dialled rather than quietly substituted with a shingle one.
+            //
+            // One named exception: the harbour gable is drawn on the owner's board as a green shingle
+            // house with a red tin roof, and it is dialled to match that board.
             foreach (var build in VillageBuildingKit.M1Set)
             {
+                if (build.Key == "harbourGable")
+                {
+                    Assert.AreEqual("shingle", build.Dialled["siding"] as string,
+                        "the harbour gable is the board's shingle house");
+                    continue;
+                }
                 string siding = build.IsPreset
                     ? SidingOfPreset(build)
                     : build.Dialled["siding"] as string;

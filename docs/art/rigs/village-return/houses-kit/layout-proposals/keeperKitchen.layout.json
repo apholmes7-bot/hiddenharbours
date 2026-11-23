@@ -13,13 +13,13 @@
     "hearth": true,
     "weather": 0.3
   },
-  "renderSignatureSha256": "d5d1c69503756a6c3adc1ee2353de33df22e42e5e827e8260935d4f7b9327a4c",
+  "renderSignatureSha256": "d1341b2c3213f460057b039a809d7fe094a9e73c1d7b1eb1aad9cec1d5eca1d1",
   "derivedFromRigSha256": "02521fff604ab32b6e2980036daae4c38915216646f9574ede5956404812e940",
   "dependencyHashes": {
     "Art/manorIsoRig.js": "eb59dcbfae10a47ae72d9e5193b789dcee4e5c1b8cb7b3d827d6db9f28dd1241",
     "Art/interiorPropRig.js": "a6c880e159d355ded27d2202fa8f64577a0aae35829987a2c9643dda183f14a6",
     "Art/manorUnitIsoRig.js": "d8bfad68a876f491a642b8aaeb5c7df65cc741c931e7ba2d8a9e3f561cecaf7b",
-    "Art/houseIsoRig.js": "fa73cf987cbf482ada6b3e585210b049137d49d5520220a3f1f08034cc512c90",
+    "Art/houseIsoRig.js": "de103564f73dd977a6af6cc2f5c90104d0cdf2ab112881b36c8357917ce0004d",
     "Art/interiorIsoRig.js": "02521fff604ab32b6e2980036daae4c38915216646f9574ede5956404812e940",
     "Art/wharfBuildingRig.js": "76dbecb0e1ccadfbcacc66b9ec5787d2ebff8112b7d5976668fa953a08ed8163",
     "Art/coastalPass.js": "041b0bc32040c10a1bafc57da1d3f19e76047285c2b802861cff67caca5b166d"

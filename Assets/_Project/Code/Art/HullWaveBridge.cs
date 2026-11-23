@@ -129,9 +129,11 @@ namespace HiddenHarbours.Art
             Shader.SetGlobalVector(IdV2, armMix);
         }
 
-        /// <summary>The short hulls' broken rings for the shader: (arc share, whole arcs round the ring, 0, 0).</summary>
+        /// <summary>The short hulls' broken rings for the shader: (arc share, whole arcs round the ring, band widths
+        /// a ring opens before it is fully torn, 0).</summary>
         public static Vector4 ArcsVector(in HullWaveSettings s)
-            => new Vector4(Mathf.Clamp01(s.SmallHullArcShare), Mathf.Max(1f, Mathf.Round(s.SmallHullArcLobes)), 0f, 0f);
+            => new Vector4(Mathf.Clamp01(s.SmallHullArcShare), Mathf.Max(1f, Mathf.Round(s.SmallHullArcLobes)),
+                           Mathf.Max(s.SmallHullArcOpenWidths, 0f), 0f);
 
         private static bool TryViewRect(out Rect view)
         {
