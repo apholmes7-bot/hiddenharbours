@@ -219,8 +219,22 @@ namespace HiddenHarbours.Tests.Art.EditMode
             int march = IndexOf(src, "SurfMarch(surfEvalXY, surfDir, surfBoreEnv, ageM, travelS);");
             int births = IndexOf(src, "surfFreqScale, surfBoreEnv, surfBoreFactors);");
             int reach = IndexOf(src, "float breakDepth = BreakerDepthAtEnv(_BreakerDepths.xyz, _BreakerDepths.w, surfFetchEnv);");
-            Assert.That(lattice < differ && differ < hard && hard < env && env < gate && gate < march && march < births && births < reach,
-                "one hard read for the bore where the lattice ramps, then the gate, the march and the births on it, the reach on the ramp");
+            // The cost pass: the step only marks the hard read as owed; the read is taken once the gate's depth is
+            // known, and only where that depth could break under some envelope (shallower than the deepest outer
+            // edge or break depth at the three anchors). Past that the gate is 0 for any envelope, so skipping
+            // the read changes no pixel.
+            int owed = IndexOf(src, "boreHardReadOwed = true;");
+            int canBreak = IndexOf(src, "if (boreHardReadOwed && _BreakerOuter.w >= 0.5 && surfGateDepth > 0.0");
+            int hardEnv = src.IndexOf("surfBoreEnv = FetchFactorAt(surfBoreFactors, clamp((int)(_WaveFieldParams.w + 0.5), 0, 7));",
+                                      hard, System.StringComparison.Ordinal);
+            Assert.That(lattice < differ && differ < owed && owed < env && env < canBreak && canBreak < hard && hard < hardEnv
+                        && hardEnv < gate && gate < march && march < births && births < reach,
+                "one hard read for the bore where the lattice ramps and the gate can open, then the gate, the march and the " +
+                "births on it, the reach on the ramp");
+            StringAssert.Contains("&& surfGateDepth < max(max(max(_BreakerOuter.x, _BreakerOuter.y), _BreakerOuter.z),", src);
+            StringAssert.Contains("max(max(_BreakerDepths.x, _BreakerDepths.y), _BreakerDepths.z) + 1e-3))", src);
+            Assert.AreEqual(1, CountOf(src, "surfBoreFactors = FetchFactorsFrom(FetchMarch01(fetchProbeXY), SwellShelter01(fetchProbeXY));"),
+                "one hard read, after the gate's depth");
             Assert.AreEqual(2, CountOf(src, "surfBoreFactors = surfFetchFactors;"), "one envelope where there is no ramp, and with no lattice");
             Assert.AreEqual(2, CountOf(src, "surfBoreEnv, surfBoreFactors);"), "both births");
             StringAssert.Contains("float boreEdgeLeeFade = BoreEdgeLeeFade01(surfFetchEnv);", src);

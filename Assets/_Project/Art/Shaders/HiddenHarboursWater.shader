@@ -6126,9 +6126,11 @@ Shader "HiddenHarbours/Water"
                     // 2026-11-15, "remove any jaggedness"). A headland's lee is wider than the probe and
                     // stays. 0 (unpublished) = the pixel's own envelope, as before.
                     float surfFetchProbeM = max(_BreakerRefract.w, 0.0);
+                    float2 fetchProbeXY = surfEvalXY;
+                    bool boreHardReadOwed = false;
                     if (surfFetchProbeM > 0.0 && dot(surfDir, surfDir) > 1e-6)
                     {
-                        float2 fetchProbeXY = surfEvalXY - surfDir * surfFetchProbeM;
+                        fetchProbeXY = surfEvalXY - surfDir * surfFetchProbeM;
                         // THE LEE'S EDGE, SOFTENED (the pale wedge at Rice Point, dusk): land shadows the march
                         // along the wind (or the swell) on a hard straight line, so the envelope the wash reads
                         // jumped from open sea to dead lee in one pixel and the wash stopped dead on it. With
@@ -6158,10 +6160,12 @@ Shader "HiddenHarbours/Water"
                             // Where the two reads differ by no more than _BoreLeeFade.z (open water, a smooth fetch)
                             // the ramp is no shadow line and the blended envelope is the bore's too, at no third read.
                             // 0 = the hard read wherever the two differ at all. Twin: BreakerMath.BoreTakesHardRead.
+                            // The read itself is taken below, once the break gate's depth is known (THE HARD READ,
+                            // ONLY WHERE IT CAN BREAK).
                             surfBoreFactors = surfFetchFactors;
                             float4 leeStep = max(abs(leeFa.low - leeFb.low), abs(leeFa.high - leeFb.high));
                             if (max(max(leeStep.x, leeStep.y), max(leeStep.z, leeStep.w)) > max(_BoreLeeFade.z, 0.0))
-                                surfBoreFactors = FetchFactorsFrom(FetchMarch01(fetchProbeXY), SwellShelter01(fetchProbeXY));
+                                boreHardReadOwed = true;
                         }
                         else
                         {
@@ -6206,6 +6210,21 @@ Shader "HiddenHarbours/Water"
                                        + ((elevation - SeabedElevation(worldXY + warp + alongShore))
                                           + (elevation - SeabedElevation(worldXY + warp - alongShore))) / 3.0;
                         surfGateDepth = max(lerp(surfEvalDepth, boxDepth, surfShore), 1e-3);
+                    }
+                    // THE HARD READ, ONLY WHERE IT CAN BREAK (the Rice Point noon cost, PR 1471): the bore's
+                    // envelope is read by the gate below and, past it, by the march and the births, and nothing
+                    // else. Where the gate's depth lies past the deepest outer edge any envelope can give (the
+                    // largest of the outer and break depths at the three anchors), the gate is 0 whatever the
+                    // envelope, so the third read could change no pixel and is not taken. Bit-exact; the read
+                    // was two fetch marches over the lee's whole shadow.
+                    if (boreHardReadOwed && _BreakerOuter.w >= 0.5 && surfGateDepth > 0.0
+                        && surfGateDepth < max(max(max(_BreakerOuter.x, _BreakerOuter.y), _BreakerOuter.z),
+                                               max(max(_BreakerDepths.x, _BreakerDepths.y), _BreakerDepths.z) + 1e-3))
+                    {
+                        surfBoreFactors = FetchFactorsFrom(FetchMarch01(fetchProbeXY), SwellShelter01(fetchProbeXY));
+                        surfBoreFactors.low *= seaReach;
+                        surfBoreFactors.high *= seaReach;
+                        surfBoreEnv = FetchFactorAt(surfBoreFactors, clamp((int)(_WaveFieldParams.w + 0.5), 0, 7));
                     }
                     surfBreaking = SurfBreaking01(surfGateDepth, surfBoreEnv);
                     if (surfBreaking > 0.002 && dot(surfDir, surfDir) > 1e-6)
