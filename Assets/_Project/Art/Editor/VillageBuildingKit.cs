@@ -450,23 +450,31 @@ namespace HiddenHarbours.Art.Editor
                 ["bay"] = false,
                 ["weather"] = 0.55,
             }, "the third clapboard house the canon asks for; no rig preset is clapboard AND small"),
+            // The board's harbour gable (houseIsoRig's own plan table, harbour_gable): teal shingle under a
+            // red tin roof, a full-width gothic cross gable centred on the long wall, the door in it, no
+            // porch. porch 'none' puts the door on the +X eave, in the cross gable; the village turns it
+            // to face the lane. 'beds' is the room's dial, not the house's, so it is left out here.
             Build.FromDialled("harbourGable", "harbour gable", "house", new Dictionary<string, object>
                 {
-                    ["era"] = "plain",
+                    ["era"] = "gothic",
                     ["shape"] = "gable",
-                    ["siding"] = "clapboard",
-                    ["body"] = "blue",
-                    ["roof"] = "asphaltGrey",
+                    ["siding"] = "shingle",
+                    ["body"] = "teal",
+                    ["roof"] = "metalRed",
                     ["size"] = 0.3,
                     ["windows"] = "twoOverTwo",
-                    ["winDensity"] = 0.55,
-                    ["attic"] = "gable",
-                    ["porch"] = "front",
+                    ["winDensity"] = 0.5,
+                    ["attic"] = "gothic",
+                    ["porch"] = "none",
+                    ["crossGable"] = 1,
+                    ["gableFull"] = true,
+                    ["bargeboard"] = true,
                     ["dormers"] = 0,
                     ["chimneys"] = 1,
-                    ["bay"] = false,
-                    ["weather"] = 0.3,
-                }, "accepted village lot look"),
+                    ["shutters"] = "none",
+                    ["doorPaint"] = "ivory",
+                    ["weather"] = 0.45,
+                }, "the board's harbour gable: green shingle, red roof, gothic cross gable over the door"),
 
             Build.FromDialled("creamSaltbox", "cream saltbox", "house", new Dictionary<string, object>
                 {
