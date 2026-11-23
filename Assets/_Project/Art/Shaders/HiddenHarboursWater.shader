@@ -1685,12 +1685,19 @@ Shader "HiddenHarbours/Water"
             float4 _BreakerRefract;
             // The drawn wash's lee edge (WaveFieldBridge.PublishBreakerGlobals): x = how wide the envelope's
             // land shadow is softened (m, BreakerSettings.BoreLeeSoftenMeters), y = the break depth over which
-            // the run-up takes the drawn edge (m, BoreEdgeFadeDepthMeters). All-zero = the previous hard edge.
+            // the run-up takes the drawn edge (m, BoreEdgeFadeDepthMeters), z = the step between the two lee
+            // reads above which the bore keeps its own hard read (BoreHardReadStep). All-zero = the previous hard edge.
             float4 _BoreLeeFade;
             // The drawn edge on flat beds (WaveFieldBridge.PublishBreakerGlobals): x = the seabed slope below which
             // the swash's along-shore offset fades out (m/m, BreakerSettings.SwashSteadyEdgeSlope), y = the wet
             // film's depth inside the drawn edge (m, EdgeWetFilmMeters). All-zero = the previous edge.
             float4 _ShoreThinEdge;
+            // The wash's white lip (WaveFieldBridge.PublishBreakerGlobals): x = where it sits inside the wet
+            // film (share of _ShoreThinEdge.y, BreakerSettings.WashLipFilmShare), y = its resting age in the
+            // one foam sheet (WashLipAgeFloor), z = the age it gains on the backwash (WashLipBackwashAge),
+            // w = how much its width follows the sheet's lace (WashLipWidthVary). All-zero = the solid line
+            // at the drawn edge.
+            float4 _ShoreWashLip;
 
             // SRP-batcher friendly: every per-material property in one CBUFFER (the runtime sets these via a
             // MaterialPropertyBlock; the sim-driven ones change on the slow tick, not per frame).
@@ -5927,6 +5934,9 @@ Shader "HiddenHarbours/Water"
                 // envelope until the surf block below moves it to the probe point a bore was born near.
                 FetchFactors surfFetchFactors = waveFetchFactors;
                 float surfFetchEnv = waveFetchEnv;
+                // The BORE's fetch: the same read without the lee's ramp (the surf block below).
+                FetchFactors surfBoreFactors = waveFetchFactors;
+                float surfBoreEnv = waveFetchEnv;
 
                 // ---- layer 2 surface (computed first; warps the coords every other layer reads) -------------
                 // ADR 0027 #9: the octaves' shoal depth — ONE guarded, STILL (unwarped) seabed read. The
@@ -6140,13 +6150,31 @@ Shader "HiddenHarbours/Water"
                             FetchFactors leeFb = FetchFactorsFrom(FetchMarch01(leeB), SwellShelter01(leeB));
                             surfFetchFactors.low = lerp(leeFa.low, leeFb.low, leeFr);
                             surfFetchFactors.high = lerp(leeFa.high, leeFb.high, leeFr);
+                            // THE BORE KEEPS THE HARD READ (Rice Point, noon): the ramp is for the wash's reach and
+                            // its edge. Fed to the bore, it moved the break line, the clock and the birth across the
+                            // ramp, so each slab's hard foam edge cut it at its own place and the slabs broke into
+                            // angular pieces, shifted cell by cell, where the one read draws them whole. The break
+                            // gate, the march, the clock and the births read the probe's own envelope, as before.
+                            // Where the two reads differ by no more than _BoreLeeFade.z (open water, a smooth fetch)
+                            // the ramp is no shadow line and the blended envelope is the bore's too, at no third read.
+                            // 0 = the hard read wherever the two differ at all. Twin: BreakerMath.BoreTakesHardRead.
+                            surfBoreFactors = surfFetchFactors;
+                            float4 leeStep = max(abs(leeFa.low - leeFb.low), abs(leeFa.high - leeFb.high));
+                            if (max(max(leeStep.x, leeStep.y), max(leeStep.z, leeStep.w)) > max(_BoreLeeFade.z, 0.0))
+                                surfBoreFactors = FetchFactorsFrom(FetchMarch01(fetchProbeXY), SwellShelter01(fetchProbeXY));
                         }
                         else
+                        {
                             surfFetchFactors = FetchFactorsFrom(FetchMarch01(fetchProbeXY), SwellShelter01(fetchProbeXY));
+                            surfBoreFactors = surfFetchFactors;
+                        }
                         // The probe is the sea's energy, but THIS pixel's reach still decides what arrives.
                         surfFetchFactors.low *= seaReach;
                         surfFetchFactors.high *= seaReach;
                         surfFetchEnv = FetchFactorAt(surfFetchFactors, clamp((int)(_WaveFieldParams.w + 0.5), 0, 7));
+                        surfBoreFactors.low *= seaReach;
+                        surfBoreFactors.high *= seaReach;
+                        surfBoreEnv = FetchFactorAt(surfBoreFactors, clamp((int)(_WaveFieldParams.w + 0.5), 0, 7));
                     }
                     // THE SHORE ZONE (v8; v9 reads it before the gate): where the ground _WashSurfReach metres
                     // shoreward stands above the run-up's reach, the surf beside it is the shore surf (below). A bar
@@ -6179,11 +6207,11 @@ Shader "HiddenHarbours/Water"
                                           + (elevation - SeabedElevation(worldXY + warp - alongShore))) / 3.0;
                         surfGateDepth = max(lerp(surfEvalDepth, boxDepth, surfShore), 1e-3);
                     }
-                    surfBreaking = SurfBreaking01(surfGateDepth, surfFetchEnv);
+                    surfBreaking = SurfBreaking01(surfGateDepth, surfBoreEnv);
                     if (surfBreaking > 0.002 && dot(surfDir, surfDir) > 1e-6)
                     {
                         float travelS = 0.0;
-                        SurfMarch(surfEvalXY, surfDir, surfFetchEnv, ageM, travelS);
+                        SurfMarch(surfEvalXY, surfDir, surfBoreEnv, ageM, travelS);
                         // The whitewater: the shipped local-speed law, blending toward the travel-time law
                         // as the run-up dial comes up (a wash that could never reach the sand is not a
                         // run-up; at 0 the sheet is today's exactly - see SurfWhitewaterByTravel01).
@@ -6217,9 +6245,9 @@ Shader "HiddenHarbours/Water"
                             // its run-in got through the front (previousBirth, one period back) and eases to
                             // the new crest's by half a period, where the pulse is 0: it never jumps.
                             float sheetBirth = SurfBoreBirth01(SurfBoreClockPoint(breakLinePt), travelS, borePhase, periodS,
-                                                               surfFreqScale, surfFetchEnv, surfFetchFactors);
+                                                               surfFreqScale, surfBoreEnv, surfBoreFactors);
                             float previousBirth = SurfBoreBirth01(SurfBoreClockPoint(breakLinePt), travelS + periodS, borePhase,
-                                                                  periodS, surfFreqScale, surfFetchEnv, surfFetchFactors);
+                                                                  periodS, surfFreqScale, surfBoreEnv, surfBoreFactors);
                             float birth = SurfDrawnBoreBirth01(sheetBirth, previousBirth, borePhase, periodS);
                             surfBore = SurfBorePulse01(borePhase, _BreakerBore.x) * birth;
                             surfSheet = SurfBoreSheet01(borePhase, periodS) * sheetBirth;
@@ -6498,12 +6526,24 @@ Shader "HiddenHarbours/Water"
                 // it holds is now one shore quantity along the normal (the projection above). The test is then a
                 // level band of the drawn edge's own margin, 0 <= depth + edgeSwash < the ground's rise over the
                 // width, which borders the drawn edge wherever the ground rises.
+                // THE LIP (the wet film's look at PR 1471): with the film the water is clear at the drawn edge,
+                // so a line drawn there sat on sand, on a flat a metre or more past the water, smooth and even,
+                // a drawn outline. It now sits _ShoreWashLip.x of the film inside the edge, where the film shows
+                // (washLipInset), its width follows the one foam sheet's lace (_ShoreWashLip.w), and below it is
+                // drawn through the sheet itself. All-zero = the line at the drawn edge, bit-exact.
+                // Twins: BreakerMath.WashLipInsetMeters / WashLipDrawn / WashLipWidthMeters.
                 float washLine = 0.0;
-                if (washOnSand > 0.001 && washEdgeQ >= -1e-4 && dot(groundDir, groundDir) > 1e-6)
+                float washLipInset = max(_ShoreThinEdge.y, 0.0) * saturate(_ShoreWashLip.x);
+                float washLipLace = 0.5;
+                bool washLipSheet = _ShoreWashLip.y > 0.0 || _ShoreWashLip.z > 0.0;
+                if (washOnSand > 0.001 && washEdgeQ >= washLipInset - 1e-4 && dot(groundDir, groundDir) > 1e-6)
                 {
+                    if (washLipSheet || _ShoreWashLip.w > 0.0) washLipLace = FoamSheetLace(worldXY);
+                    float washLipWidth = max(_WashLineWidth, 0.0);
+                    if (_ShoreWashLip.w > 0.0) washLipWidth *= max(1.0 + _ShoreWashLip.w * (2.0 * washLipLace - 1.0), 0.0);
                     // On the tide alone, like the surf it rides (a pond has no run-up; the depth composes once).
-                    float washLandDepth = _WaterLevel - SeabedElevation(worldXY + warp + groundDir * max(_WashLineWidth, 0.0));
-                    if (washLandDepth + edgeSwash < 0.0)
+                    float washLandDepth = _WaterLevel - SeabedElevation(worldXY + warp + groundDir * washLipWidth);
+                    if (washLandDepth + edgeSwash < washLipInset)
                         washLine = washOnSand * saturate(_WashLineOpacity);
                 }
                 // The left foam: the run-up sheet's own metaball language (the evolving churn against a threshold
@@ -7571,7 +7611,22 @@ Shader "HiddenHarbours/Water"
                     col.rgb = lerp(washUnder, col.rgb, lerp(1.0, washCapScale, max(washBeach, shoreSurf)));
                 }
                 // THE WASH'S LEADING LINE: the one foam stroke on the run-up's edge, in the fringe's colour.
-                col.rgb = lerp(col.rgb, _FoamColor.rgb, washLine);
+                // THE LIP IS THE ONE FOAM (the owner's ruling of 11-19: one foam look): with a lip age published
+                // the line's presence is drawn through the sheet's own lace, age tear, threshold and bands, aged
+                // _ShoreWashLip.y at rest and older by _ShoreWashLip.z on the backwash, so it breaks along its
+                // length, whole as the wash runs up and torn as it draws back, and it takes the one colour walk
+                // (FoamAgedColor at the shore line's strength), so it is lit like the foam beside it. Both 0 =
+                // the solid line in _FoamColor, bit-exact. Twin: BreakerMath.WashLipAge01.
+                float3 washLineColor = _FoamColor.rgb;
+                if (washLine > 0.0 && washLipSheet)
+                {
+                    float washLipAge01 = saturate(saturate(_ShoreWashLip.y)
+                                                  + saturate(_ShoreWashLip.z) * BeachSwashBackwash01(worldXY, depthC, t));
+                    washLine = saturate(_WashLineOpacity)
+                             * FoamSheetCover(FoamSheetTear(washOnSand, washLipLace, washLipAge01, 0.0), sheetBay);
+                    washLineColor = FoamAgedColor(washLipAge01, _FoamColor.rgb, _FoamSheetShore.x, col.rgb);
+                }
+                col.rgb = lerp(col.rgb, washLineColor, washLine);
                 col.a   = max(col.a, washLine);
                 if (leftFoamOnly)
                 {

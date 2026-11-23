@@ -181,8 +181,13 @@ MonoBehaviour:
     BoreFetchProbeMeters: 3
     BoreLeeSoftenMeters: 6
     BoreEdgeFadeDepthMeters: 0.08
+    BoreHardReadStep: 0.1
     SwashSteadyEdgeSlope: 0.12
     EdgeWetFilmMeters: 0.03
+    WashLipFilmShare: 0.5
+    WashLipAgeFloor: 0.4
+    WashLipBackwashAge: 0.5
+    WashLipWidthVary: 0.75
     RunUpCoefficient: 1
     RunUpCapMeters: 0.35
   SurfSprayIntensityOffset: 0

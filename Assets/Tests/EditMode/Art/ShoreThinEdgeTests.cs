@@ -136,6 +136,146 @@ namespace HiddenHarbours.Tests.Art.EditMode
             StringAssert.Contains("breakers.EdgeWetFilmMeters", bridge);
         }
 
+        // ---- The wash lip (the wet film's look): the white line sat on sand past the film, smooth and even ----
+
+        [Test]
+        public void TheLip_AtNoInset_IsThePreviousLineExactly()
+        {
+            for (float d = -0.3f; d <= 0.3f; d += 0.0125f)
+                for (float land = -0.3f; land <= 0.3f; land += 0.0125f)
+                    for (float shift = -0.2f; shift <= 0.2f; shift += 0.05f)
+                        Assert.AreEqual(WaterSurface.WashLineDrawn(d, land, shift),
+                            BreakerMath.WashLipDrawn(d, land, shift, BreakerMath.WashLipInsetMeters(0.03f, 0f)),
+                            "inset 0 must be the previous ground-measured line");
+            Assert.AreEqual(0f, BreakerMath.WashLipInsetMeters(0f, 0.5f), 0f, "no film, no inset");
+            Assert.AreEqual(0.1f, BreakerMath.WashLipWidthMeters(0.1f, 0.13f, 0f), 0f, "no vary, the even width");
+            Assert.AreEqual(0f, BreakerMath.WashLipAge01(0f, 0f, 0.7f), 0f);
+        }
+
+        [Test]
+        public void TheLip_SitsWhereTheFilmShows_NotOnTheSandPastIt()
+        {
+            var s = BreakerSettings.Default;
+            float inset = BreakerMath.WashLipInsetMeters(s.EdgeWetFilmMeters, s.WashLipFilmShare);
+            Assert.Greater(inset, 0f, "the shipped lip sits inside the film");
+            Assert.Less(inset, s.EdgeWetFilmMeters, "and never past the full water");
+            // On a 1:100 flat (the St Peters low flat) with a 0.1 m line: walk up the shore normal.
+            const float slope = 0.01f, width = 0.1f, water = -1f, shift = 0.02f;
+            float firstLineX = float.NaN;
+            for (float x = 0f; x < 6f; x += 0.005f)
+            {
+                float depth = water - (-1.04f + slope * x), land = water - (-1.04f + slope * (x + width));
+                if (!float.IsNaN(firstLineX) || !BreakerMath.WashLipDrawn(depth, land, shift, inset)) continue;
+                firstLineX = x;
+                float film = BreakerMath.EdgeWetFilm01(depth + shift, s.EdgeWetFilmMeters);
+                Assert.That(film, Is.InRange(0.3f, 0.95f), "the lip lies on water the film shows, not on clear sand");
+            }
+            Assert.IsFalse(float.IsNaN(firstLineX), "premise: the lip is drawn on the flat");
+            // Without the inset the line is at the drawn edge, where the film is clear.
+            for (float x = 0f; x < 6f; x += 0.005f)
+            {
+                float depth = water - (-1.04f + slope * x), land = water - (-1.04f + slope * (x + width));
+                if (!BreakerMath.WashLipDrawn(depth, land, shift, 0f)) continue;
+                Assert.Less(BreakerMath.EdgeWetFilm01(depth + shift, s.EdgeWetFilmMeters), 0.05f, "the defect: the old line sits on clear film");
+                break;
+            }
+        }
+
+        [Test]
+        public void TheLip_BreaksAndBreathes_WithTheOneFoam()
+        {
+            var s = BreakerSettings.Default;
+            Assert.Greater(s.WashLipAgeFloor + s.WashLipBackwashAge, 0f, "the shipped lip is drawn through the one foam sheet");
+            Assert.Greater(s.WashLipWidthVary, 0f, "the shipped lip's width follows the lace");
+            Assert.Less(BreakerMath.WashLipAge01(s.WashLipAgeFloor, s.WashLipBackwashAge, 0f),
+                        BreakerMath.WashLipAge01(s.WashLipAgeFloor, s.WashLipBackwashAge, 1f), "older on the backwash");
+            float prev = -1f;
+            for (float b = 0f; b <= 1f; b += 0.01f)
+            {
+                float a = BreakerMath.WashLipAge01(s.WashLipAgeFloor, s.WashLipBackwashAge, b);
+                Assert.That(a, Is.InRange(0f, 1f));
+                Assert.GreaterOrEqual(a, prev);
+                prev = a;
+            }
+            float lo = BreakerMath.WashLipWidthMeters(0.1f, 0f, s.WashLipWidthVary);
+            float hi = BreakerMath.WashLipWidthMeters(0.1f, 1f, s.WashLipWidthVary);
+            Assert.AreEqual(0.1f, BreakerMath.WashLipWidthMeters(0.1f, 0.5f, s.WashLipWidthVary), 1e-6f, "the lace's centre keeps the width");
+            Assert.Less(lo, 0.1f); Assert.Greater(hi, 0.1f);
+            Assert.GreaterOrEqual(BreakerMath.WashLipWidthMeters(0.1f, 0f, 3f), 0f, "never a negative width");
+        }
+
+        [Test]
+        public void TheBore_KeepsTheHardRead_AndOnlyTheWashReadsTheLeeRamp()
+        {
+            // Rice Point at noon: fed the lee lattice's ramp, the bore's break line, clock and birth moved across
+            // it, and each slab's hard foam edge cut it at its own place (angular pieces). The bore reads the
+            // probe's own envelope; the wash's reach, its edge and its lee fade keep the ramp.
+            string src = File.ReadAllText(WaterShaderPath);
+            int lattice = IndexOf(src, "surfFetchFactors.low = lerp(leeFa.low, leeFb.low, leeFr);");
+            int hard = IndexOf(src, "surfBoreFactors = FetchFactorsFrom(FetchMarch01(fetchProbeXY), SwellShelter01(fetchProbeXY));");
+            int differ = IndexOf(src, "if (max(max(leeStep.x, leeStep.y), max(leeStep.z, leeStep.w)) > max(_BoreLeeFade.z, 0.0))");
+            int env = IndexOf(src, "surfBoreEnv = FetchFactorAt(surfBoreFactors, clamp((int)(_WaveFieldParams.w + 0.5), 0, 7));");
+            int gate = IndexOf(src, "surfBreaking = SurfBreaking01(surfGateDepth, surfBoreEnv);");
+            int march = IndexOf(src, "SurfMarch(surfEvalXY, surfDir, surfBoreEnv, ageM, travelS);");
+            int births = IndexOf(src, "surfFreqScale, surfBoreEnv, surfBoreFactors);");
+            int reach = IndexOf(src, "float breakDepth = BreakerDepthAtEnv(_BreakerDepths.xyz, _BreakerDepths.w, surfFetchEnv);");
+            Assert.That(lattice < differ && differ < hard && hard < env && env < gate && gate < march && march < births && births < reach,
+                "one hard read for the bore where the lattice ramps, then the gate, the march and the births on it, the reach on the ramp");
+            Assert.AreEqual(2, CountOf(src, "surfBoreFactors = surfFetchFactors;"), "one envelope where there is no ramp, and with no lattice");
+            Assert.AreEqual(2, CountOf(src, "surfBoreEnv, surfBoreFactors);"), "both births");
+            StringAssert.Contains("float boreEdgeLeeFade = BoreEdgeLeeFade01(surfFetchEnv);", src);
+            StringAssert.Contains("float4 leeStep = max(abs(leeFa.low - leeFb.low), abs(leeFa.high - leeFb.high));", src);
+            StringAssert.Contains("Mathf.Max(0f, breakers.BoreHardReadStep)", File.ReadAllText(BridgePath));
+
+            // The twin: only a shadow line's step takes the third read; 0 = any difference, as the first pass did.
+            float step = BreakerSettings.Default.BoreHardReadStep;
+            Assert.Greater(step, 0f);
+            Assert.IsFalse(BreakerMath.BoreTakesHardRead(0.5f * step, step), "a smooth fetch shares the blend");
+            Assert.IsTrue(BreakerMath.BoreTakesHardRead(2f * step, step), "a shadow line takes the hard read");
+            Assert.IsTrue(BreakerMath.BoreTakesHardRead(1e-5f, 0f), "0 = the hard read wherever the two differ");
+            Assert.IsFalse(BreakerMath.BoreTakesHardRead(0f, 0f), "no difference, no third read");
+        }
+
+        private static int IndexOf(string src, string part)
+        {
+            int i = src.IndexOf(part, System.StringComparison.Ordinal);
+            Assert.GreaterOrEqual(i, 0, "missing: " + part);
+            return i;
+        }
+
+        [Test]
+        public void TheShippedConfig_CarriesTheLipDials()
+        {
+            var config = AssetDatabase.LoadAssetAtPath<GameConfig>(ConfigPath);
+            Assert.IsNotNull(config, ConfigPath);
+            var d = BreakerSettings.Default;
+            Assert.AreEqual(d.WashLipFilmShare, config.Breakers.WashLipFilmShare, 1e-6f);
+            Assert.AreEqual(d.WashLipAgeFloor, config.Breakers.WashLipAgeFloor, 1e-6f);
+            Assert.AreEqual(d.WashLipBackwashAge, config.Breakers.WashLipBackwashAge, 1e-6f);
+            Assert.AreEqual(d.WashLipWidthVary, config.Breakers.WashLipWidthVary, 1e-6f);
+            Assert.AreEqual(d.BoreHardReadStep, config.Breakers.BoreHardReadStep, 1e-6f);
+            var off = default(BreakerSettings);
+            Assert.AreEqual(0f, off.WashLipFilmShare + off.WashLipAgeFloor + off.WashLipBackwashAge + off.WashLipWidthVary,
+                            0f, "the breakers-off publish draws the previous line");
+        }
+
+        [Test]
+        public void TheShaderAndTheBridge_UseTheLipAndLeeTwins()
+        {
+            string src = File.ReadAllText(WaterShaderPath);
+            StringAssert.Contains("float4 _ShoreWashLip;", src);
+            StringAssert.Contains("float washLipInset = max(_ShoreThinEdge.y, 0.0) * saturate(_ShoreWashLip.x);", src);
+            StringAssert.Contains("if (washOnSand > 0.001 && washEdgeQ >= washLipInset - 1e-4 && dot(groundDir, groundDir) > 1e-6)", src);
+            StringAssert.Contains("if (_ShoreWashLip.w > 0.0) washLipWidth *= max(1.0 + _ShoreWashLip.w * (2.0 * washLipLace - 1.0), 0.0);", src);
+            StringAssert.Contains("if (washLandDepth + edgeSwash < washLipInset)", src);
+            StringAssert.Contains("* FoamSheetCover(FoamSheetTear(washOnSand, washLipLace, washLipAge01, 0.0), sheetBay);", src);
+            StringAssert.Contains("washLineColor = FoamAgedColor(washLipAge01, _FoamColor.rgb, _FoamSheetShore.x, col.rgb);", src);
+            string bridge = File.ReadAllText(BridgePath);
+            StringAssert.Contains("Shader.PropertyToID(\"_ShoreWashLip\")", bridge);
+            foreach (var f in new[] { "WashLipFilmShare", "WashLipAgeFloor", "WashLipBackwashAge", "WashLipWidthVary" })
+                StringAssert.Contains("breakers." + f, bridge);
+        }
+
         private static int CountOf(string text, string part)
         {
             int n = 0;

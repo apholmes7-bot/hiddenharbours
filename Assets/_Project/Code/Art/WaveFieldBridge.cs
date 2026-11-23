@@ -147,6 +147,11 @@ namespace HiddenHarbours.Art
         /// (BreakerSettings.SwashSteadyEdgeSlope / EdgeWetFilmMeters, BreakerMath.SwashDesyncKeep01 /
         /// EdgeWetFilm01). All-zero = unpublished = the previous edge.</summary>
         private static readonly int IdShoreThinEdge = Shader.PropertyToID("_ShoreThinEdge");
+        /// <summary>(lip film share, lip resting age, lip backwash age, lip width vary): the wash's white lip
+        /// (BreakerSettings.WashLipFilmShare / WashLipAgeFloor / WashLipBackwashAge / WashLipWidthVary,
+        /// BreakerMath.WashLipInsetMeters / WashLipAge01 / WashLipWidthMeters). All-zero = the solid line at
+        /// the drawn edge.</summary>
+        private static readonly int IdShoreWashLip = Shader.PropertyToID("_ShoreWashLip");
 
         private const double TwoPi = Math.PI * 2.0;
 
@@ -408,11 +413,12 @@ namespace HiddenHarbours.Art
                 Mathf.Max(0f, breakers.BoreFetchProbeMeters)));
 
             // The wash's LEE EDGE: the envelope read across the land's shadow over x metres, and the run-up's
-            // share of the drawn edge growing over y metres of break depth, so the wash fades into a lee.
+            // share of the drawn edge growing over y metres of break depth, so the wash fades into a lee; the bore keeps
+            // its own hard read only where the two lee reads step by more than z.
             Shader.SetGlobalVector(IdBoreLeeFade, new Vector4(
                 Mathf.Max(0f, breakers.BoreLeeSoftenMeters),
                 Mathf.Max(0f, breakers.BoreEdgeFadeDepthMeters),
-                0f, 0f));
+                Mathf.Max(0f, breakers.BoreHardReadStep), 0f));
 
             // The drawn edge on FLAT beds: the swash's along-shore offset fades out below x m/m of slope, and
             // the water thins to a film over the last y metres of level inside the edge.
@@ -420,6 +426,14 @@ namespace HiddenHarbours.Art
                 Mathf.Max(0f, breakers.SwashSteadyEdgeSlope),
                 Mathf.Max(0f, breakers.EdgeWetFilmMeters),
                 0f, 0f));
+
+            // The wash's LIP: where it sits in the film, its resting and backwash age in the one foam sheet,
+            // and how much its width follows the sheet's lace.
+            Shader.SetGlobalVector(IdShoreWashLip, new Vector4(
+                Mathf.Clamp01(breakers.WashLipFilmShare),
+                Mathf.Clamp01(breakers.WashLipAgeFloor),
+                Mathf.Clamp01(breakers.WashLipBackwashAge),
+                Mathf.Clamp01(breakers.WashLipWidthVary)));
         }
 
         /// <summary>The breaker model SILENT — nothing breaks anywhere — so a stopped play session or a
