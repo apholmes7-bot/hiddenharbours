@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using HiddenHarbours.Core;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
@@ -33,6 +34,48 @@ namespace HiddenHarbours.Art
         public static float Handover(float dial, float seaState01, in WaterMirrorSettings s)
             => dial > 0f ? SeaFade(seaState01, s) : 0f;
 
+        /// <summary>
+        /// Pack every standable deck with a drawn outline (<see cref="IStandableOutline"/>) that touches
+        /// <paramref name="view"/> into convex quads for the mirror's deck test: corners 0 and 1 in
+        /// <paramref name="a"/>, 2 and 3 in <paramref name="b"/>, and in <paramref name="h"/>.x the height on
+        /// screen (world units) of the face under the deck's front edge: its freeboard above
+        /// <paramref name="waterLevel"/> at the lowest drawn corner, times <see cref="IsoGround.HeightScale"/>.
+        /// A polygon is fanned into quads (a triangle repeats its last corner). Returns how many quads were
+        /// written, never more than the shortest buffer. No allocation: the caller owns every buffer.
+        /// </summary>
+        public static int PackTops(IReadOnlyList<IStandableSurface> surfaces, Rect view, float waterLevel,
+                                   Vector2[] outline, float[] elevation, Vector4[] a, Vector4[] b, Vector4[] h)
+        {
+            if (surfaces == null || outline == null || elevation == null || a == null || b == null || h == null) return 0;
+            int max = Mathf.Min(a.Length, Mathf.Min(b.Length, h.Length));
+            int n = 0;
+            for (int s = 0; s < surfaces.Count && n < max; s++)
+            {
+                if (!(surfaces[s] is IStandableOutline source)) continue;
+                int k = source.GetDrawnOutline(outline, elevation);
+                if (k < 3) continue;
+                float xMin = outline[0].x, xMax = xMin, yMin = outline[0].y, yMax = yMin;
+                int low = 0;
+                for (int i = 1; i < k; i++)
+                {
+                    Vector2 p = outline[i];
+                    if (p.x < xMin) xMin = p.x; else if (p.x > xMax) xMax = p.x;
+                    if (p.y < yMin) { yMin = p.y; low = i; } else if (p.y > yMax) yMax = p.y;
+                }
+                if (xMax < view.xMin || xMin > view.xMax || yMax < view.yMin || yMin > view.yMax) continue;
+                float face = Mathf.Max(0f, elevation[low] - waterLevel) * IsoGround.HeightScale;
+                for (int i = 1; i + 1 < k && n < max; i += 2)
+                {
+                    int j = Mathf.Min(i + 2, k - 1);
+                    a[n] = new Vector4(outline[0].x, outline[0].y, outline[i].x, outline[i].y);
+                    b[n] = new Vector4(outline[i + 1].x, outline[i + 1].y, outline[j].x, outline[j].y);
+                    h[n] = new Vector4(face, 0f, 0f, 0f);
+                    n++;
+                }
+            }
+            return n;
+        }
+
         internal static float Smooth(float a, float b, float x)
         {
             float t = Mathf.Clamp01((x - a) / Mathf.Max(b - a, 1e-4f));
@@ -62,7 +105,25 @@ namespace HiddenHarbours.Art
         static readonly int RectId = Shader.PropertyToID("_CalmMirrorRect");
         static readonly int TexelId = Shader.PropertyToID("_CalmMirrorTexel");
         static readonly int ReachId = Shader.PropertyToID("_CalmMirrorReach");
+        static readonly int TopAId = Shader.PropertyToID("_CalmMirrorTopA");
+        static readonly int TopBId = Shader.PropertyToID("_CalmMirrorTopB");
+        static readonly int TopHId = Shader.PropertyToID("_CalmMirrorTopH");
+        static readonly int TopsId = Shader.PropertyToID("_CalmMirrorTops");
+        static readonly int BandId = Shader.PropertyToID("_CalmMirrorBand");
         internal const string ShaderName = "Hidden/HiddenHarbours/CalmMirror";
+
+        /// <summary>The most deck quads the mirror tests per frame: the length of the shader's arrays
+        /// (HH_MAX_TOPS in HiddenHarboursCalmMirror.shader). A view holds a handful; a deck past the cap is
+        /// mirrored the plain way, never dropped from the picture.</summary>
+        internal const int MaxTops = 24;
+        // The largest outline one surface hands over (a polygon past it is cut to its first corners).
+        const int MaxOutlineCorners = 16;
+        static readonly Vector4[] s_TopA = new Vector4[MaxTops], s_TopB = new Vector4[MaxTops], s_TopH = new Vector4[MaxTops];
+        static readonly Vector2[] s_Outline = new Vector2[MaxOutlineCorners];
+        static readonly float[] s_OutlineElevation = new float[MaxOutlineCorners];
+
+        /// <summary>Looks only: how many deck quads the last recorded frame tested.</summary>
+        internal static int LastTopCount { get; private set; }
 
         /// <summary>The camera alpha that marks a pixel nobody drew over as ground.</summary>
         internal const float GroundAlpha = 0.5f;
@@ -194,6 +255,24 @@ namespace HiddenHarbours.Art
                 Material.SetVector(TexelId, new Vector4(1f / desc.width, 1f / desc.height, ppm, Roughness));
                 Material.SetVector(ReachId, new Vector4(s.ReachStartMetres * pxPerMetre, s.ReachEndMetres * pxPerMetre,
                     s.MinStandPixels, s.RippleBandPixels));
+
+                // Decks: tops are never mirrored, faces mirror about the real waterline (DeckAware).
+                int tops = 0;
+                if (s.DeckAware && StandableSurfaces.Count > 0)
+                {
+                    IEnvironmentService env = GameServices.Environment;
+                    float level = env != null ? env.WaterLevelAt(GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0) : 0f;
+                    var view = new Rect(c.x - w * 0.5f - 1f, c.y - h * 0.5f - 1f, w + 2f, h + 2f);
+                    tops = CalmMirrorMath.PackTops(StandableSurfaces.Active, view, level, s_Outline, s_OutlineElevation,
+                                                   s_TopA, s_TopB, s_TopH);
+                }
+                LastTopCount = tops;
+                Material.SetVectorArray(TopAId, s_TopA);
+                Material.SetVectorArray(TopBId, s_TopB);
+                Material.SetVectorArray(TopHId, s_TopH);
+                Material.SetVector(TopsId, new Vector4(tops, Mathf.Max(0f, s.FaceSnapMetres) * IsoGround.HeightScale,
+                    Mathf.Max(0f, s.FaceFeatherMetres) * IsoGround.HeightScale, Mathf.Clamp01(s.FaceBandShare)));
+                Material.SetVector(BandId, (Vector4)s.FaceBandColour);
 
                 desc.name = "_HHCalmMirrorCopy";
                 desc.clearBuffer = false;

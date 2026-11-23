@@ -50,8 +50,32 @@ namespace HiddenHarbours.Core
         [Tooltip("How much of the light a reflection returns (a reflection is darker than what it shows).")]
         [Range(0f, 1f)] public float Darken;
 
+        [Header("Decks (tops are never mirrored)")]
+        [Tooltip("On: a deck top (wharves, floats, piers, gangways: every standable deck with a drawn outline) is " +
+                 "never mirrored. Its face is mirrored about the real waterline, only as tall as the deck's " +
+                 "freeboard, and anything that stands up through a deck stops reflecting where the deck begins. " +
+                 "Off: the plain flip, which mirrors a deck top as a slab of planks.")]
+        public bool DeckAware;
+        [Tooltip("How far, in metres of height, the art's own waterline under a deck may sit from the one the deck's " +
+                 "data puts there and still be mirrored about the art's. Beyond it the data's waterline is used " +
+                 "(a high pier on piles, where the first thing found above the water is a beam, not the waterline).")]
+        [Range(0f, 2f)] public float FaceSnapMetres;
+        [Tooltip("Metres of height over which a mirrored deck face fades out at its far edge, so it never ends on a hard line.")]
+        [Range(0f, 1f)] public float FaceFeatherMetres;
+        [Tooltip("The colour the face of a deck reflects where the art draws no face there (a float drawn as a top " +
+                 "only, its lowest drawn pixel the deck's own front edge): the side of the structure in its own shade. Where " +
+                 "the art draws the face (a pier on piles) the gaps in it stay open water.")]
+        public Color FaceBandColour;
+        [Tooltip("How strongly that face band is laid, as a share of the mirror's strength.")]
+        [Range(0f, 1f)] public float FaceBandShare;
+
         public static WaterMirrorSettings Default => new WaterMirrorSettings
         {
+            DeckAware = true,
+            FaceSnapMetres = 0.35f,
+            FaceFeatherMetres = 0.12f,
+            FaceBandColour = new Color(0.16f, 0.14f, 0.12f, 1f),
+            FaceBandShare = 0.85f,
             SeaFadeStart = 0.15f,
             SeaFadeEnd = 0.75f,
             MaxMetres = 12f,

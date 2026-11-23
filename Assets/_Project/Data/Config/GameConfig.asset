@@ -390,6 +390,11 @@ MonoBehaviour:
     BreakCalm: 0.15
     BreakRough: 0.8
     Darken: 0.82
+    DeckAware: 1
+    FaceSnapMetres: 0.35
+    FaceFeatherMetres: 0.12
+    FaceBandColour: {r: 0.16, g: 0.14, b: 0.12, a: 1}
+    FaceBandShare: 0.85
   BoatLegacyCabinGlow: 0
   WalkerAutoLantern: 0
   WalkerHeadlampHoldSeconds: 0.4

@@ -156,5 +156,176 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "Shader.Find needs the hidden shader in Always Included Shaders");
             Assert.IsNotNull(Shader.Find(CalmMirror.ShaderName));
         }
+
+        // ---- Decks: a top faces the sky and is never mirrored (slice 3) ----
+
+        sealed class FakeDeck : IStandableSurface, IStandableOutline
+        {
+            public Vector2[] Corners;
+            public float[] Elevations;
+            public string Id => "test.deck";
+            public bool TryGetDeckElevation(Vector2 worldPos, out float deckElevation) { deckElevation = 0f; return false; }
+            public int GetDrawnOutline(Vector2[] drawn, float[] deckElevation)
+            {
+                int n = Mathf.Min(Corners.Length, drawn.Length);
+                for (int i = 0; i < n; i++) { drawn[i] = Corners[i]; deckElevation[i] = Elevations[i]; }
+                return n;
+            }
+        }
+
+        sealed class FootingOnly : IStandableSurface
+        {
+            public string Id => "test.footing";
+            public bool TryGetDeckElevation(Vector2 worldPos, out float deckElevation) { deckElevation = 1f; return true; }
+        }
+
+        static FakeDeck RectDeck(float x, float y, float w, float h, float elevation)
+        {
+            var d = new FakeDeck { Corners = new Vector2[4], Elevations = new float[4] };
+            StandableOutline.Rect(new Rect(x, y, w, h), 0f, elevation, d.Corners, d.Elevations);
+            return d;
+        }
+
+        static readonly Rect View = new Rect(-50f, -50f, 100f, 100f);
+
+        static int Pack(IStandableSurface[] surfaces, float water, out Vector4[] a, out Vector4[] b, out Vector4[] h, int max = CalmMirror.MaxTops)
+        {
+            a = new Vector4[max]; b = new Vector4[max]; h = new Vector4[max];
+            return CalmMirrorMath.PackTops(surfaces, View, water, new Vector2[16], new float[16], a, b, h);
+        }
+
+        [Test]
+        public void Decks_Settings_ShipOn_WithAUsableFace()
+        {
+            Assert.IsTrue(S.DeckAware, "tops are never mirrored, by default");
+            Assert.Greater(S.FaceSnapMetres, 0f);
+            Assert.That(S.FaceFeatherMetres, Is.InRange(0f, 1f));
+            Assert.That(S.FaceBandShare, Is.InRange(0f, 1f));
+            Assert.Less(S.FaceBandColour.grayscale, 0.5f, "a face in its own shade reads darker than the deck");
+            string yaml = File.ReadAllText(ConfigAsset);
+            Assert.IsTrue(Regex.IsMatch(yaml, @"^\s*DeckAware:\s*1\s*$", RegexOptions.Multiline), "the shipped GameConfig turns decks on");
+            foreach (string key in new[] { "FaceSnapMetres", "FaceFeatherMetres", "FaceBandColour", "FaceBandShare" })
+                Assert.IsTrue(Regex.IsMatch(yaml, $@"^\s*{key}:", RegexOptions.Multiline), $"the shipped GameConfig carries {key}");
+        }
+
+        [Test]
+        public void Outline_Rect_LiftsEveryCorner_AndCarriesTheDeck()
+        {
+            var drawn = new Vector2[4]; var e = new float[4];
+            Assert.AreEqual(4, StandableOutline.Rect(new Rect(10f, 20f, 4f, 2f), 0.5f, 1.2f, drawn, e));
+            Assert.AreEqual(new Vector2(10f, 20.5f), drawn[0]);
+            Assert.AreEqual(new Vector2(14f, 20.5f), drawn[1]);
+            Assert.AreEqual(new Vector2(14f, 22.5f), drawn[2]);
+            Assert.AreEqual(new Vector2(10f, 22.5f), drawn[3]);
+            foreach (float v in e) Assert.AreEqual(1.2f, v);
+            Assert.AreEqual(0, StandableOutline.Rect(new Rect(0, 0, 1, 1), 0f, 0f, new Vector2[3], new float[3]), "short buffers write nothing");
+            Assert.AreEqual(2f * IsoGround.HeightScale, StandableOutline.Lift(2f), 1e-6f, "the kit's convention");
+        }
+
+        [Test]
+        public void Outline_Segment_LiftsEachEndByItsOwnDeck()
+        {
+            var drawn = new Vector2[4]; var e = new float[4];
+            Assert.AreEqual(4, StandableOutline.Segment(new Vector2(0f, 10f), 3f, new Vector2(0f, 0f), 1f, 1f, drawn, e));
+            float hs = IsoGround.HeightScale;
+            Assert.AreEqual(10f + 3f * hs, drawn[0].y, 1e-5f);
+            Assert.AreEqual(0f + 1f * hs, drawn[1].y, 1e-5f);
+            Assert.AreEqual(2f, Mathf.Abs(drawn[0].x - drawn[3].x), 1e-5f, "full width across");
+            Assert.AreEqual(3f, e[0]); Assert.AreEqual(1f, e[1]); Assert.AreEqual(1f, e[2]); Assert.AreEqual(3f, e[3]);
+            Assert.AreEqual(0, StandableOutline.Segment(Vector2.one, 0f, Vector2.one, 0f, 1f, drawn, e), "a degenerate brow has no outline");
+        }
+
+        [Test]
+        public void PackTops_ARect_IsOneQuad_WithItsFreeboardOnScreen()
+        {
+            int n = Pack(new IStandableSurface[] { RectDeck(0f, 0f, 10f, 2f, 1.5f) }, 0.5f, out var a, out var b, out var h);
+            Assert.AreEqual(1, n);
+            Assert.AreEqual(new Vector4(0f, 0f, 10f, 0f), a[0]);
+            Assert.AreEqual(new Vector4(10f, 2f, 0f, 2f), b[0]);
+            Assert.AreEqual(1f * IsoGround.HeightScale, h[0].x, 1e-5f, "1 m of freeboard above the water, drawn at HeightScale");
+        }
+
+        [Test]
+        public void PackTops_FaceIsNeverNegative_WhenTheWaterIsOverTheDeck()
+        {
+            Pack(new IStandableSurface[] { RectDeck(0f, 0f, 4f, 2f, 1f) }, 3f, out _, out _, out var h);
+            Assert.AreEqual(0f, h[0].x);
+        }
+
+        [Test]
+        public void PackTops_FaceIsTakenAtTheFrontEdge_TheLowestDrawnCorner()
+        {
+            var ramp = new FakeDeck
+            {
+                Corners = new[] { new Vector2(0f, 0f), new Vector2(2f, 0f), new Vector2(2f, 8f), new Vector2(0f, 8f) },
+                Elevations = new[] { 0.8f, 0.8f, 3.4f, 3.4f },
+            };
+            Pack(new IStandableSurface[] { ramp }, 0f, out _, out _, out var h);
+            Assert.AreEqual(0.8f * IsoGround.HeightScale, h[0].x, 1e-5f);
+        }
+
+        [Test]
+        public void PackTops_CullsDecksOutOfView_AndSkipsSurfacesWithNoOutline()
+        {
+            var surfaces = new IStandableSurface[] { new FootingOnly(), RectDeck(500f, 500f, 4f, 2f, 1f), RectDeck(0f, 0f, 4f, 2f, 1f) };
+            int n = Pack(surfaces, 0f, out var a, out _, out _);
+            Assert.AreEqual(1, n);
+            Assert.AreEqual(0f, a[0].x, "the one in view");
+        }
+
+        [Test]
+        public void PackTops_FansAPolygon_AndATriangleRepeatsItsLastCorner()
+        {
+            var hex = new FakeDeck { Corners = new Vector2[6], Elevations = new float[6] };
+            for (int i = 0; i < 6; i++) hex.Corners[i] = new Vector2(Mathf.Cos(i * Mathf.PI / 3f), Mathf.Sin(i * Mathf.PI / 3f)) * 3f;
+            Assert.AreEqual(2, Pack(new IStandableSurface[] { hex }, 0f, out var a, out var b, out _), "six corners: quads (0,1,2,3) and (0,3,4,5)");
+            Assert.AreEqual(new Vector4(hex.Corners[0].x, hex.Corners[0].y, hex.Corners[3].x, hex.Corners[3].y), a[1]);
+
+            var tri = new FakeDeck { Corners = new[] { Vector2.zero, new Vector2(4f, 0f), new Vector2(0f, 4f) }, Elevations = new float[3] };
+            Assert.AreEqual(1, Pack(new IStandableSurface[] { tri }, 0f, out _, out b, out _));
+            Assert.AreEqual(new Vector4(0f, 4f, 0f, 4f), b[0], "a triangle is a quad with its last corner twice");
+        }
+
+        [Test]
+        public void PackTops_NeverWritesPastItsBuffers()
+        {
+            var many = new IStandableSurface[40];
+            for (int i = 0; i < many.Length; i++) many[i] = RectDeck(i - 20f, 0f, 0.5f, 0.5f, 1f);
+            Assert.AreEqual(CalmMirror.MaxTops, Pack(many, 0f, out _, out _, out _));
+            Assert.AreEqual(3, Pack(many, 0f, out _, out _, out _, 3));
+        }
+
+        [Test]
+        public void CalmMirrorShader_CompilesWithoutError()
+        {
+            // No material asset uses the hidden shader, so the project's material-driven compile guards never
+            // see it: compile its pass here and read the compiler's verdict.
+            const string path = "Assets/_Project/Art/Shaders/HiddenHarboursCalmMirror.shader";
+            UnityEditor.AssetDatabase.ImportAsset(path, UnityEditor.ImportAssetOptions.ForceUpdate | UnityEditor.ImportAssetOptions.ForceSynchronousImport);
+            var shader = UnityEditor.AssetDatabase.LoadAssetAtPath<Shader>(path);
+            Assert.IsNotNull(shader);
+            var mat = new Material(shader);
+            try
+            {
+                for (int pass = 0; pass < Mathf.Max(1, mat.passCount); pass++) UnityEditor.ShaderUtil.CompilePass(mat, pass, true);
+                var errors = new System.Text.StringBuilder();
+                foreach (var msg in UnityEditor.ShaderUtil.GetShaderMessages(shader))
+                    if (msg.severity == UnityEditor.Rendering.ShaderCompilerMessageSeverity.Error)
+                        errors.AppendLine($"{msg.message} (line {msg.line}, {msg.platform})");
+                Assert.IsEmpty(errors.ToString(), "the calm mirror shader must compile (a broken one draws magenta water)");
+            }
+            finally { Object.DestroyImmediate(mat); }
+        }
+
+        [Test]
+        public void Shader_DeckArrays_MatchTheCap()
+        {
+            string src = File.ReadAllText("Assets/_Project/Art/Shaders/HiddenHarboursCalmMirror.shader");
+            Match m = Regex.Match(src, @"#define\s+HH_MAX_TOPS\s+(\d+)");
+            Assert.IsTrue(m.Success);
+            Assert.AreEqual(CalmMirror.MaxTops, int.Parse(m.Groups[1].Value), "CalmMirror packs exactly as many quads as the shader holds");
+            foreach (string array in new[] { "_CalmMirrorTopA", "_CalmMirrorTopB", "_CalmMirrorTopH" })
+                StringAssert.Contains($"float4 {array}[HH_MAX_TOPS];", src);
+        }
     }
 }
