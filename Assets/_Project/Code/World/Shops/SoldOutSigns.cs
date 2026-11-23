@@ -21,12 +21,22 @@ namespace HiddenHarbours.World
     /// returns. The count is read through the Core <see cref="IslandShelvesDirectory"/> (never the Economy
     /// class, rule 4), and only on a change: walking in, an <see cref="IslandShelvesChanged"/> for this shop,
     /// or the shelves appearing. The per-frame cost is two bool reads; nothing allocates after setup.
+    ///
+    /// <para><b>Buying at the shelf (slice 1).</b> A slot may also carry an empty-shelf cover drawn over the
+    /// room picture (so the painted goods are gone when the real ones are), the goods themselves (shown while
+    /// the line has stock), and a <see cref="ShelfGood"/> the player buys from where it sits. All three follow
+    /// the same change-only refresh as the cards.</para>
     /// </summary>
     public sealed class SoldOutSigns : MonoBehaviour
     {
         private ShopShelfSlotsDef _def;
         private BuildingInterior _building;
         private SpriteRenderer[] _cards = new SpriteRenderer[0];
+        private SpriteRenderer[] _covers = new SpriteRenderer[0];
+        private SpriteRenderer[] _goods = new SpriteRenderer[0];
+        private ShelfGood[] _shelfGoods = new ShelfGood[0];
+        private GameObject[] _made = new GameObject[0];
+        private System.Func<bool> _insideNow;
         private bool _wasInside;
         private bool _dirty = true;
         private bool _hadShelves;
@@ -34,40 +44,86 @@ namespace HiddenHarbours.World
         /// <summary>The cards, one per slot in the Def's order (a test reads which are showing).</summary>
         public SpriteRenderer[] Cards => _cards;
 
+        /// <summary>The empty-shelf covers, one per slot in the Def's order; null where a slot has none.</summary>
+        public SpriteRenderer[] Covers => _covers;
+
+        /// <summary>The goods drawn on each slot while it has stock; null where a slot has none.</summary>
+        public SpriteRenderer[] Goods => _goods;
+
+        /// <summary>The goods the player buys at the shelf (buying at the shelf, slice 1), one per slot in the
+        /// Def's order; null where a slot sells nothing itself.</summary>
+        public ShelfGood[] ShelfGoods => _shelfGoods;
+
         /// <summary>Builds the cards for <paramref name="def"/> on <paramref name="building"/>. Idempotent.</summary>
         public void Configure(ShopShelfSlotsDef def, BuildingInterior building)
         {
             _def = def;
             _building = building;
-            for (int i = 0; i < _cards.Length; i++)
-                if (_cards[i] != null)
+            _insideNow ??= Inside;
+            for (int i = 0; i < _made.Length; i++)
+                if (_made[i] != null)
                 {
-                    if (Application.isPlaying) Destroy(_cards[i].gameObject);
-                    else DestroyImmediate(_cards[i].gameObject);
+                    if (Application.isPlaying) Destroy(_made[i]);
+                    else DestroyImmediate(_made[i]);
                 }
-            if (def == null || def.Slots == null) { _cards = new SpriteRenderer[0]; return; }
+            int n = def != null && def.Slots != null ? def.Slots.Count : 0;
+            _cards = new SpriteRenderer[n];
+            _covers = new SpriteRenderer[n];
+            _goods = new SpriteRenderer[n];
+            _shelfGoods = new ShelfGood[n];
+            _made = new GameObject[n];
+            if (n == 0) return;
 
             SpriteRenderer room = building != null ? building.RoomRenderer : null;
-            _cards = new SpriteRenderer[def.Slots.Count];
-            for (int i = 0; i < def.Slots.Count; i++)
+            for (int i = 0; i < n; i++)
             {
                 ShopShelfSlot slot = def.Slots[i];
                 var go = new GameObject("SoldOut_" + (slot != null ? slot.Id : i.ToString()));
                 go.transform.SetParent(transform, false);
                 go.transform.localPosition = slot != null ? (Vector3)slot.Offset : Vector3.zero;
-                var card = go.AddComponent<SpriteRenderer>();
-                card.sprite = def.SoldOutSign;
-                if (room != null)
+                _made[i] = go;
+                _cards[i] = Layer(go, def.SoldOutSign, room, def.SortingOrderAboveRoom);
+                if (slot == null) continue;
+                if (slot.Cover != null) _covers[i] = Layer(Child(go, "Cover"), slot.Cover, room, def.CoverSortingOrderAboveRoom);
+                if (slot.Goods != null) _goods[i] = Layer(Child(go, "Goods"), slot.Goods, room, def.GoodsSortingOrderAboveRoom);
+                if (!string.IsNullOrEmpty(slot.ListingId))
                 {
-                    card.sortingLayerID = room.sortingLayerID;
-                    card.sortingOrder = room.sortingOrder + def.SortingOrderAboveRoom;
-                    card.sharedMaterial = room.sharedMaterial;
+                    GameObject at = Child(go, "Good");
+                    at.SetActive(false);   // register only once wired
+                    var good = at.AddComponent<ShelfGood>();
+                    good.Configure(def.Id + "." + slot.Id, def.ShopId, slot.ListingId, def.ReachMeters,
+                                   slot.NeedsFreeHand, _insideNow);
+                    at.SetActive(true);
+                    _shelfGoods[i] = good;
                 }
-                card.enabled = false;
-                _cards[i] = card;
             }
             _dirty = true;
         }
+
+        private static GameObject Child(GameObject parent, string name)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(parent.transform, false);
+            return go;
+        }
+
+        private static SpriteRenderer Layer(GameObject go, Sprite sprite, SpriteRenderer room, int aboveRoom)
+        {
+            var sr = go.AddComponent<SpriteRenderer>();
+            sr.sprite = sprite;
+            if (room != null)
+            {
+                sr.sortingLayerID = room.sortingLayerID;
+                sr.sortingOrder = room.sortingOrder + aboveRoom;
+                sr.sharedMaterial = room.sharedMaterial;
+            }
+            sr.enabled = false;
+            return sr;
+        }
+
+        /// <summary>Overrides the inside test the shelf goods use (EditMode has no occupant). Call before
+        /// <see cref="Configure"/>.</summary>
+        public void SetInsideTest(System.Func<bool> inside) => _insideNow = inside;
 
         private void OnEnable() => EventBus.Subscribe<IslandShelvesChanged>(OnChanged);
         private void OnDisable() => EventBus.Unsubscribe<IslandShelvesChanged>(OnChanged);
@@ -102,9 +158,12 @@ namespace HiddenHarbours.World
             IslandShelvesDirectory.TryGet(_def.ShopId, out IIslandShelves shelves);
             for (int i = 0; i < _cards.Length; i++)
             {
-                if (_cards[i] == null) continue;
                 ShopShelfSlot slot = _def.Slots[i];
-                _cards[i].enabled = inside && slot != null && SoldOutSignRule.IsSoldOut(shelves, slot.LineId, now);
+                bool soldOut = slot != null && SoldOutSignRule.IsSoldOut(shelves, slot.LineId, now);
+                if (_cards[i] != null) _cards[i].enabled = inside && soldOut && !slot.HideSoldOutCard;
+                if (_covers[i] != null) _covers[i].enabled = inside;
+                if (_goods[i] != null) _goods[i].enabled = inside && !soldOut;
+                if (_shelfGoods[i] != null) _shelfGoods[i].Refresh(now);
             }
         }
     }

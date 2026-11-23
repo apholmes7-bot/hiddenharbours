@@ -29,6 +29,7 @@ MonoBehaviour:
     - supply.bread
     - supply.oatcakes
     - supply.tinned_beans
+    SoldAtShelf: 1
   - Id: line.ice_bag
     Good: {fileID: 11400000, guid: ac996cec036e4ea0920ce4a1f4c61aa2, type: 2}
     ItemName: bag of ice
@@ -36,6 +37,7 @@ MonoBehaviour:
     MaxOnShelf: 20
     CounterListingIds:
     - supply.ice
+    SoldAtShelf: 1
   - Id: line.bait_box
     Good: {fileID: 11400000, guid: 8c86cdb0e06d4829a003516973393a76, type: 2}
     ItemName: box of bait
@@ -43,9 +45,11 @@ MonoBehaviour:
     MaxOnShelf: 20
     CounterListingIds:
     - bait.capelin
+    SoldAtShelf: 1
   - Id: line.gas_jerry_can
     Good: {fileID: 11400000, guid: bb218baf8d4045d7b66a005c35bba906, type: 2}
     ItemName: 20 L jerry can of gas
     UnitsPerItem: 20
     MaxOnShelf: 4
     CounterListingIds: []
+    SoldAtShelf: 0

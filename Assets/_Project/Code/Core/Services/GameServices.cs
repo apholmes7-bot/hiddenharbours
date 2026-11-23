@@ -1644,6 +1644,7 @@ namespace HiddenHarbours.Core
             Voyages = null;              // → EmptyVoyageCatalog.Instance; this property is never null
             CrossingGate = null;         // → AlwaysOpenCrossingGate.Instance; this property is never null
             IslandShelvesDirectory.Clear();   // no store's shelves outlive the services
+            ShelfTills.Clear();               // nor their tills
             TidalTerrain = null;
             StillWater = null;           // → EmptyStillWater.Instance; this property is never null
             PlayerTransform = null;

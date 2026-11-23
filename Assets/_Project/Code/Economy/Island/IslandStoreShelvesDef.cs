@@ -28,6 +28,11 @@ namespace HiddenHarbours.Economy
         /// buying one takes one item, and none can be bought while the shelf is empty. A listing named on no
         /// line is not counted (gear, licences). Empty for a shelf the counter does not sell from.</summary>
         public List<string> CounterListingIds = new List<string>();
+
+        /// <summary>The player takes this line's goods off the shelf himself and pays at the shelf, and the
+        /// counter's book no longer lists them (buying at the shelf, slice 1). Off: the counter sells them
+        /// from its book as before, still counted against this shelf.</summary>
+        public bool SoldAtShelf;
     }
 
     /// <summary>

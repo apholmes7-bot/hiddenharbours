@@ -220,5 +220,17 @@ namespace HiddenHarbours.Core
         /// <summary>An action was refused because she is both (<see cref="NeedsGate"/>): one combined
         /// line, never two bubbles.</summary>
         public const string TooTiredAndHungry = "cue.needs.too_tired_and_hungry";
+
+        /// <summary>He took one off a store's shelf and paid for it (buying at the shelf).</summary>
+        public const string ShelfBought = "cue.shop.shelf_bought";
+
+        /// <summary>He reached for a shelf good and the shelf was empty.</summary>
+        public const string ShelfSoldOut = "cue.shop.shelf_sold_out";
+
+        /// <summary>He reached for a shelf good he cannot pay for.</summary>
+        public const string ShelfTooDear = "cue.shop.shelf_too_dear";
+
+        /// <summary>He reached for a shelf good that goes in a hand, and both are full.</summary>
+        public const string ShelfHandsFull = "cue.shop.shelf_hands_full";
     }
 }
