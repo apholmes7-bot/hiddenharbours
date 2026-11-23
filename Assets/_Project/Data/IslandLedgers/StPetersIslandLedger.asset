@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63d362776f384c5384baeffb44ba92e3, type: 3}
+  m_Name: StPetersIslandLedger
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.IslandLedgerDef
+  Id: islandledger.st_peters
+  IslandRegionId: region.st_peters
+  Runner: {fileID: 11400000, guid: c4120de0f58c4cc4b492f4326bea8a32, type: 2}
+  Goods:
+  - {fileID: 11400000, guid: f95f5b361481478b8adc530394e0d777, type: 2}
+  - {fileID: 11400000, guid: bb218baf8d4045d7b66a005c35bba906, type: 2}
+  - {fileID: 11400000, guid: 6432752e33cf4e089a3f94f50c1f4f41, type: 2}
+  - {fileID: 11400000, guid: ab1fa09100614b0f971161eebad03e63, type: 2}
+  - {fileID: 11400000, guid: e9e5f45b3b5741488b3e684669092159, type: 2}
+  - {fileID: 11400000, guid: ac996cec036e4ea0920ce4a1f4c61aa2, type: 2}
+  - {fileID: 11400000, guid: 8c86cdb0e06d4829a003516973393a76, type: 2}
+  - {fileID: 11400000, guid: 8df1d29d43ee438c8b8d1dff9509a8f8, type: 2}
+  - {fileID: 11400000, guid: 1c359afc28394a4d9cd35740e1400b1d, type: 2}
+  LookbackDays: 28

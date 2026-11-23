@@ -141,3 +141,27 @@ If the quad is down, walkers with the cart kit (93 kg / 210 L) need 1.23 round t
 
 The bar window query and access policy (S2), the cross-region runner (S3), the tractor and forklifts
 (S4, S5, S7), carried props (S6), store stock and NPC consumption (S7).
+
+## The back-room ledger (living island economy, slice 1)
+
+`Assets/_Project/Code/Economy/Island/` turns the plan above into a day-by-day back room for the store,
+recomputed rather than saved: `IslandRunCalendar` says which days the quad run goes (every
+`CadenceDays` from day 0; a run the tide forbids is made up on the first possible day before the next
+one, else missed), and `IslandStoreLedger` replays from a full back room `LookbackDays` earlier (data:
+`Data/IslandLedgers/StPetersIslandLedger.asset`, `islandledger.st_peters`) to give each good's level,
+delivery and shortfall for any day. Nothing reads it in game yet. The plan it belongs to is
+`docs/design/st-peters-living-economy.md`; the tests are `Tests/EditMode/Economy/IslandStoreLedgerTests.cs`
+and `Tests/EditMode/IslandSupply/IslandLedgerShippedTests.cs`.
+
+## The store's shelves (living island economy, slice 2)
+
+`IslandStoreShelves` (same folder) shows the back room on Marguerite's shelves in whole items: in the
+morning a shelf holds what the room holds after the run, the islanders' buying draws it down evenly through
+the store's hours, and at closing it equals the ledger's level at dusk. A tide-blocked stretch thins the
+shelves day by day to empty; the next run refills them. The player's purchases (`TryTakeOne`) come off the
+shelf and feed the ledger's `ExtraDraw`; they are held for the session only (saving them is slice 8) and
+the next full top-up clears their effect. Data: `Data/IslandLedgers/StPetersStoreShelves.asset`
+(`islandshelves.st_peters_general`: groceries, ice, bait and gas lines, store hours 07:00 to 19:00); the
+Core read contract is `IIslandShelvesView` / `IIslandShelves`. Nothing in game reads it yet: the counter,
+a keeper's line and shelf art are later work. Tests: `Tests/EditMode/Economy/IslandStoreShelvesTests.cs`
+and `Tests/EditMode/IslandSupply/IslandShelvesShippedTests.cs`.

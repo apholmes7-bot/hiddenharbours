@@ -479,6 +479,11 @@ namespace HiddenHarbours.Boats
         private readonly bool[] _hasSheet = new bool[2];
         private readonly Vector2[] _lastWater = new Vector2[2];
         private readonly bool[] _hadWater = new bool[2];
+        // The catch's white coming up over OarCatchGrowSeconds: where the blade went in, how long it has
+        // been growing, and how much of the catch's foam is still to lay.
+        private readonly Vector2[] _growEntry = new Vector2[2];
+        private readonly float[] _growTime = new float[2];
+        private readonly float[] _growLeft = new float[2];
         private FoamSheetSettings _sheetCfg;
         private bool _joined;
 
@@ -593,7 +598,7 @@ namespace HiddenHarbours.Boats
             {
                 _primed[i] = false; _wasImmersed[i] = false; _foamCarry[i] = 0f;
                 _dripCarry[i] = 0f; _sinceRelease[i] = float.PositiveInfinity;
-                _hadWater[i] = false; _hasSheet[i] = false;
+                _hadWater[i] = false; _hasSheet[i] = false; _growLeft[i] = 0f;
             }
         }
 
@@ -658,6 +663,7 @@ namespace HiddenHarbours.Boats
                 _foamCarry[oar] = 0f;   // no burst of saved-up foam on the next entry
                 _dripCarry[oar] = 0f;
                 _sinceRelease[oar] = float.PositiveInfinity;   // a shipped blade does not drip on
+                _growLeft[oar] = 0f;
                 return false;
             }
 
@@ -675,7 +681,10 @@ namespace HiddenHarbours.Boats
                     // The puddle the blade leaves, laid where it last worked the water.
                     if (_joined && hadWater)
                     {
-                        LaySheet(oar, lastWater, lastWater, _sheetCfg.OarRelease * strength, strength, _sheetCfg.OarCatchRadius);
+                        // A catch still coming up when the blade leaves lays what it had left here, at once.
+                        float left = _growLeft[oar];
+                        _growLeft[oar] = 0f;
+                        LaySheet(oar, lastWater, lastWater, _sheetCfg.OarRelease * strength + left, strength, _sheetCfg.OarCatchRadius);
                         AskRing(lastWater, _sheetCfg.OarRingHeightMetres * Mathf.Clamp01(_sheetCfg.OarReleaseRingShare) * strength,
                                 isCatch: false);
                     }
@@ -716,8 +725,41 @@ namespace HiddenHarbours.Boats
                 // the frame it went in: one capsule per oar per frame, continuous at any frame rate.
                 Vector2 from = hadWater && !entered ? lastWater : f.BladeWorld;
                 float amount = Mathf.Max(0f, _sheetCfg.OarPerSecond) * strength * Mathf.Max(0f, dt);
-                if (entered) amount += Mathf.Max(0f, _sheetCfg.OarCatch) * strength;
-                LaySheet(oar, from, f.BladeWorld, amount, strength, entered ? _sheetCfg.OarCatchRadius : _sheetCfg.OarRadius);
+                float radius = _sheetCfg.OarRadius;
+                float grow = Mathf.Max(0f, _sheetCfg.OarCatchGrowSeconds);
+                if (entered)
+                {
+                    float catchFoam = Mathf.Max(0f, _sheetCfg.OarCatch) * strength;
+                    if (grow > 0f)
+                    {
+                        _growEntry[oar] = f.BladeWorld;
+                        _growTime[oar] = 0f;
+                        _growLeft[oar] = catchFoam;
+                    }
+                    else
+                    {
+                        amount += catchFoam;
+                        radius = _sheetCfg.OarCatchRadius;
+                    }
+                }
+                if (_growLeft[oar] > 0f)
+                {
+                    // The catch comes up: its share of this frame's slice of the grow time, from the point the
+                    // blade went in to where it is now, widening from the smear's size to the burst's.
+                    float t0 = _growTime[oar];
+                    float t1 = grow > 0f ? Mathf.Min(t0 + Mathf.Max(dt, 0f), grow) : t0;
+                    if (t1 >= grow - 1e-5f) t1 = grow;   // a sum of frame steps lands on the grow time
+                    float catchFoam = Mathf.Max(0f, _sheetCfg.OarCatch) * strength;
+                    float lay = grow > 0f && t1 < grow ? Mathf.Min(_growLeft[oar], catchFoam * (t1 - t0) / grow) : _growLeft[oar];
+                    _growLeft[oar] -= lay;
+                    if (t1 >= grow) _growLeft[oar] = 0f;
+                    _growTime[oar] = t1;
+                    amount += lay;
+                    float u = grow > 0f ? Mathf.Clamp01(t1 / grow) : 1f;
+                    radius = Mathf.Lerp(_sheetCfg.OarRadius, _sheetCfg.OarCatchRadius, u * u * (3f - 2f * u));
+                    from = _growEntry[oar];
+                }
+                LaySheet(oar, from, f.BladeWorld, amount, strength, radius);
                 return entered;
             }
 
