@@ -891,7 +891,8 @@ namespace HiddenHarbours.Tests.EditMode
         /// </summary>
         static float DoorErrorDegrees(VillageBuildingCatalog.Placement p, Vector2 from, Vector2 target,
                                       int facing) =>
-            BuildingFacing.DoorErrorDegrees(p.Entry.doorY, p.Entry.pivotY, p.Entry.facings,
+            // The wall is read off the baked anchors too: the harbour gable's door is on its +X eave.
+            BuildingFacing.DoorErrorDegrees(StPetersVillage.DoorWall(p.Entry), p.Entry.facings,
                                             SpriteLightMath.GroundDepthScale, from, target, facing);
 
         [Test]
@@ -956,6 +957,40 @@ namespace HiddenHarbours.Tests.EditMode
                 $"the village's two furthest buildings are {widest:0.0} m apart — that is a hamlet strung " +
                 "along a road, not a low-tide walk");
             Debug.Log($"[stpeters-village] widest span between two buildings: {widest:0.0} m.");
+        }
+
+        /// <summary>
+        /// No scatter plant grows on the harbour gable or on its doorstep. The plant field reads only
+        /// the painted ground, so the cells under the house (half a metre past its walls) and the strip
+        /// in front of its door down to y 42.5 are excluded there; a fern rooted on that strip used to
+        /// stand in front of the facade.
+        /// </summary>
+        [Test]
+        public void TheHarbourGableGrowsNoScatterPlantsOnTheHouseOrItsDoorstep()
+        {
+            const string Lots = "Assets/_Project/Data/Regions/StPetersVillage/";
+            var lot = UnityEditor.AssetDatabase.LoadAssetAtPath<LotDef>(Lots + "lot.st_peters.harbour_gable.asset");
+            var plan = UnityEditor.AssetDatabase.LoadAssetAtPath<VillagePlanDef>(Lots + "village_plan.st_peters.asset");
+            var ground = UnityEditor.AssetDatabase.LoadAssetAtPath<PlantFieldGroundData>(
+                "Assets/_Project/Data/Plants5/StPetersPlantGround.asset");
+            Assert.That(lot, Is.Not.Null); Assert.That(plan, Is.Not.Null); Assert.That(ground, Is.Not.Null);
+            Vector4 f = plan.Footprints.Single(x => x.Id == lot.FootprintId).LocalBounds;
+            const float margin = 0.5f, doorstepFront = 42.5f;
+            float x0 = lot.Position.x + f.x - margin, x1 = lot.Position.x + f.z + margin;
+            float y1 = lot.Position.y + f.w + margin;
+            Assert.That(doorstepFront, Is.LessThan(lot.Position.y + f.y), "the doorstep strip is in front of the wall");
+
+            byte[] cells = ground.Decode();
+            int checkedCells = 0;
+            for (int y = 0; y < ground.Height; y++)
+            for (int x = 0; x < ground.Width; x++)
+            {
+                Vector2 at = ground.Origin + new Vector2(x + .5f, y + .5f) * ground.CellSize;
+                if (at.x < x0 || at.x > x1 || at.y < doorstepFront || at.y > y1) continue;
+                Assert.That(cells[y * ground.Width + x], Is.EqualTo(255), at.ToString());
+                checkedCells++;
+            }
+            Assert.That(checkedCells, Is.EqualTo(247));
         }
     }
 }

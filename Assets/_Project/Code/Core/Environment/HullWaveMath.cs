@@ -380,6 +380,52 @@ namespace HiddenHarbours.Core
         }
 
         /// <summary>
+        /// How much of a broken ring is torn into arcs, given how far it has opened: the dial's
+        /// <paramref name="share"/> once its <paramref name="front"/> has run out
+        /// <paramref name="openWidths"/> of its own band widths, eased in from 0 at birth. A ring that has not
+        /// opened is still a disc, and a disc torn by angle is wedges meeting at its centre (take s3's pale
+        /// block and dark wedge ahead of a rowed bow). <paramref name="openWidths"/> 0 or less = the dial's share
+        /// from birth, the older look. The water shader's <c>HullWaveArcGain</c> reads the same law
+        /// (<c>_HHHullWaveArcs.z</c>, <see cref="HullWaveMath.ArcGain"/> is its twin).
+        /// </summary>
+        public static float ArcTearShare(float share, float front, float packetWidth, float openWidths)
+        {
+            share = Mathf.Clamp01(share);
+            if (!(openWidths > 0f) || !(packetWidth > 0f)) return share;
+            return share * SmoothStep01(Mathf.Max(front, 0f) / packetWidth / openWidths);
+        }
+
+        /// <summary>
+        /// The water shader's <c>HullWaveArcGain</c>, line for line: the height kept at offset
+        /// <paramref name="d"/> from a ring laid at <paramref name="centre"/> (1 = all of it). A whole ring
+        /// (<paramref name="arcs"/> false) or a zero share returns exactly 1. <paramref name="arcsVector"/> is
+        /// <c>HullWaveBridge.ArcsVector</c> (share, whole arcs round the ring, open widths, 0).
+        /// </summary>
+        public static float ArcGain(Vector2 d, Vector2 centre, bool arcs, float front, float packetWidth, Vector4 arcsVector)
+        {
+            float share = Mathf.Clamp01(arcsVector.x);
+            if (!arcs || share <= 0.001f) return 1f;
+            if (arcsVector.z > 0f) share = ArcTearShare(share, front, packetWidth, arcsVector.z);
+            float cx = Mathf.Floor(centre.x * 64f), cy = Mathf.Floor(centre.y * 64f);
+            float seed = Frac(cx * 0.0613f + cy * 0.1093f + Frac(cx * 0.00731f + cy * 0.00419f));
+            float lobes = Mathf.Max(Mathf.Floor(arcsVector.y), 1f);
+            float th = Mathf.Atan2(d.y, d.x);
+            float n = 0.5f + 0.3f * Mathf.Cos(lobes * th + 6.2831853f * seed)
+                           + 0.2f * Mathf.Cos((2f * lobes + 1f) * th + 6.2831853f * Frac(seed * 7.13f));
+            return Mathf.Lerp(1f, SmoothStep(0.45f, 0.75f, n), share);
+        }
+
+        private static float Frac(float x) => x - Mathf.Floor(x);
+
+        private static float SmoothStep01(float x)
+        {
+            x = Mathf.Clamp01(x);
+            return x * x * (3f - 2f * x);
+        }
+
+        private static float SmoothStep(float a, float b, float x) => SmoothStep01((x - a) / (b - a));
+
+        /// <summary>
         /// The factor a short hull's next interval is laid at: from 1 up to <c>1 + 2·SmallHullSpacingScatter</c>
         /// (never closer, so her budget stays a hard bound), from <see cref="Scatter01"/> of the ring just laid.
         /// 1 for a longer hull or the dial at 0.

@@ -19,11 +19,11 @@ MonoBehaviour:
   Position: {x: -6.25, y: 46.125}
   DoorOffset: {x: 0.0, y: -2.655}
   FootprintId: "footprint.st_peters.harbour_gable"
-  FacingCell: 4
+  FacingCell: 2
   Entry: "front"
   DoorFaces: "S"
-  RoofTop: 55.09
-  ArtBottom: 43.47
+  RoofTop: 54.78
+  ArtBottom: 43.965
   Gate: {x: -6.25, y: 41.5}
   Approach: {x: -6.25, y: 41.1}
   Outline:

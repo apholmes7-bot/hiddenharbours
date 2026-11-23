@@ -66,6 +66,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             public string key;
             public float pivotX, pivotY;
+            public float footprintWidthMetres, footprintLengthMetres;
             public float[] doorX, doorY;
         }
 
@@ -286,7 +287,12 @@ namespace HiddenHarbours.Tests.PlayMode
         /// <summary>The doorway the room is DRAWN with — its bake's own door anchor for the cell it shows,
         /// from the floor centre it pivots on — must land inside the gap its walls leave, which is
         /// <see cref="InteriorFootprint.DoorWorld"/> give or take half a doorway. A room shown half a turn
-        /// out draws its doorway a whole room's length from the gap, on the back wall.</summary>
+        /// out draws its doorway a whole room's length from the gap, on the back wall.
+        /// The anchor sits on the room's +Y wall. A room entered through a side wall (the harbour gable,
+        /// whose door is in its cross gable on +X) stands its walls on a frame turned a quarter: the
+        /// frame's width is the room's length and its length the room's width. Its doorway is on the
+        /// room's +X wall, which in the cell it shows is where the +Y anchor of the cell a quarter turn
+        /// on falls, pulled in from half the room's length to half its width.</summary>
         static void CheckDoorway(Interiors contract, SpriteRenderer room, InteriorFootprint walls,
                                  float halfDoorway, string who, List<string> failures)
         {
@@ -300,8 +306,22 @@ namespace HiddenHarbours.Tests.PlayMode
                 return;
             }
 
-            var drawnOffset = new Vector2(entry.doorX[cell] - entry.pivotX,
-                                          entry.pivotY - entry.doorY[cell]) / contract.ppu;
+            const float SameMetres = 0.01f;
+            int anchorCell = cell;
+            float pull = 1f;
+            bool turnedFrame = entry.footprintWidthMetres > 0f && entry.footprintLengthMetres > 0f &&
+                               Mathf.Abs(entry.footprintWidthMetres - entry.footprintLengthMetres) > SameMetres &&
+                               Mathf.Abs(walls.WidthMetres - entry.footprintLengthMetres) < SameMetres &&
+                               Mathf.Abs(walls.LengthMetres - entry.footprintWidthMetres) < SameMetres;
+            if (turnedFrame)
+            {
+                int facings = entry.doorX.Length;
+                anchorCell = (cell + facings / 4) % facings;
+                pull = entry.footprintWidthMetres / entry.footprintLengthMetres;
+            }
+
+            var drawnOffset = new Vector2(entry.doorX[anchorCell] - entry.pivotX,
+                                          entry.pivotY - entry.doorY[anchorCell]) * pull / contract.ppu;
             Vector2 drawn = (Vector2)room.transform.position + drawnOffset;
             Vector2 gap = walls.DoorWorld;
             float apart = Vector2.Distance(drawn, gap);
