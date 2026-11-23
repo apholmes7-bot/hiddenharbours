@@ -64,4 +64,7 @@ MonoBehaviour:
   - {x: -5.75, y: 130.08}
   - {x: -5.75, y: 134.25}
   RunOutWidth: 3
+  RunOutWidthEnd: 6.5
+  RunOutMeander: {x: 3, y: 14}
+  RunOutSeed: 9302
   Why: 'The main brook: out of the bog pond, down through the barren in a shallow valley, into the marsh as its main creek, out across the mud to the lagoon.'

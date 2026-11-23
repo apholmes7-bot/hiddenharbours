@@ -57,11 +57,16 @@ MonoBehaviour:
   KeepOutOf: 
   Stream: {fileID: 11400000, guid: 035776fbedd76b94736f4e5117dfff21, type: 2}
   FromStation: 5
-  BedHalfWidth: {x: 0.9, y: 1.4}
+  BedHalfWidth: {x: 0.8, y: 2.8}
   BedDepth: 0.22
   BankWidth: 2.5
-  BedWander: {x: 0.3, y: 6}
+  BedWander: {x: 0.45, y: 4}
   BedFade: {x: 4, y: 2}
   BedFloor: 0.35
   BedDryAbove: 2.2
   Seed: 9204
+  BedShallowTo: 0.6
+  BedBraid: {x: 0, y: 0, z: 0, w: 0}
+  BedBraidOffset: 0
+  BedDamp: {x: 0, y: 3}
+  BedDampZone: ripple

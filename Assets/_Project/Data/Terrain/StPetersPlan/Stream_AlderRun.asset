@@ -52,5 +52,8 @@ MonoBehaviour:
   - {x: 94.39, y: 108.75}
   - {x: 90.25, y: 108.75}
   RunOutWidth: 3
+  RunOutWidthEnd: 5
+  RunOutMeander: {x: 0.9, y: 8}
+  RunOutSeed: 9304
   Why: 'The swale''s drain: out of the fen pool, down a gully in the cove''s bank,
     a channel across the mud.'

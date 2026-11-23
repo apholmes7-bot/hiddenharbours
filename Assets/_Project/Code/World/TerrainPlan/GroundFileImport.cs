@@ -80,6 +80,9 @@ namespace HiddenHarbours.World
             // a brook's bed: its dish's half-width at the start and the end, depth, bank, wander, fades and seed
             public double HalfWidthFrom, HalfWidthTo, BedDepth, BankWidth, Wander, WanderLambda, FadeIn, FadeOut, Floor, DryAbove = double.PositiveInfinity;
             public int Seed;
+            // ... its shallowing down the run-out (from Line[RunOutFrom], the brook's last point) and its braid bar
+            public double ShallowTo = 1, BraidMid, BraidLength, BraidHeight, BraidHalf, BraidOffset;
+            public int RunOutFrom = -1;
         }
 
         /// <summary>What one ask did: the cells it laid (a patch) or changed (the game's), and its largest raise and cut.</summary>
@@ -209,7 +212,11 @@ namespace HiddenHarbours.World
                 CentreX = Num(d.Centre.x), CentreY = Num(d.Centre.y), Reach = Num(d.Reach), Level = Num(d.Level), LevelTolerance = Num(d.LevelTolerance),
                 HalfWidthFrom = Num(d.BedHalfWidth.x), HalfWidthTo = Num(d.BedHalfWidth.y), BedDepth = Num(d.BedDepth), BankWidth = Num(d.BankWidth),
                 Wander = Num(d.BedWander.x), WanderLambda = Num(d.BedWander.y), FadeIn = Num(d.BedFade.x), FadeOut = Num(d.BedFade.y), Floor = Num(d.BedFloor), DryAbove = Num(d.BedDryAbove), Seed = d.Seed,
+                ShallowTo = Num(d.BedShallowTo), BraidMid = Num(d.BedBraid.x), BraidLength = Num(d.BedBraid.y), BraidHeight = Num(d.BedBraid.z),
+                BraidHalf = Num(d.BedBraid.w), BraidOffset = Num(d.BedBraidOffset),
             };
+            if (d.Kind == GroundAskKind.BrookBed && d.Stream != null && d.Stream.Points != null && d.Stream.Points.Length > 0)
+                a.RunOutFrom = Math.Max(0, d.Stream.Points.Length - 1 - Math.Max(0, d.FromStation));
             if (keep != null) { a.KeepX = Num(keep.Centre.x); a.KeepY = Num(keep.Centre.y); a.KeepReach = Num(keep.Reach); }
             line = line ?? new Vector2[0];
             a.Line = new PlanPoint[line.Length];
@@ -654,13 +661,42 @@ namespace HiddenHarbours.World
 
         /// <summary>
         /// The dish's half-width on one side at an arc length: the start's to the end's by length, each bank wandering in
-        /// and out by <see cref="Ask.Wander"/> of it (snoise along the line, its own seed per side).
+        /// and out by up to <see cref="Ask.Wander"/> of it (snoise along the line at twice its spread, clipped; its own seed per side).
         /// </summary>
         public static double BedHalfWidth(Ask a, double along, double length, double side)
         {
             double hw = a.HalfWidthFrom + (a.HalfWidthTo - a.HalfWidthFrom) * Clip(along / length, 0, 1);
             if (!(a.Wander > 0)) return hw;
-            return hw * (1 + a.Wander * Clip(SNoise(along, 0, a.Seed + (side > 0 ? 1 : 0), a.WanderLambda), -1, 1));
+            return hw * (1 + a.Wander * Clip(2 * SNoise(along, 0, a.Seed + (side > 0 ? 1 : 0), a.WanderLambda), -1, 1));
+        }
+
+        /// <summary>
+        /// The share of the bed's depth (and of the brook's water over it) at an arc length: 1 down to the brook's last point, then
+        /// linear to <see cref="Ask.ShallowTo"/> at the line's end.
+        /// </summary>
+        public static double ShallowAt(Ask a, PlanLine line, double u)
+        {
+            if (!(a.ShallowTo < 1) || a.RunOutFrom < 0 || line.Knots == null || line.Knots.Length == 0) return 1;
+            double uR = line.Knots[Math.Min(a.RunOutFrom, line.Knots.Length - 1)], L = line.Length;
+            if (!(L > uR)) return 1;
+            return 1 + (a.ShallowTo - 1) * Clip((u - uR) / (L - uR), 0, 1);
+        }
+
+        /// <summary>
+        /// The braid bar's raise of the bed at an arc length and a signed offset across the line: a cosine ridge
+        /// <see cref="Ask.BraidHalf"/> each side of its middle, which sits <see cref="Ask.BraidOffset"/> to the seed's side and wanders
+        /// by half its half-width; it rises and falls as sin π over its length, so the two threads part and rejoin.
+        /// </summary>
+        public static double BraidRaise(Ask a, double L, double u, double across)
+        {
+            if (!(a.BraidHeight > 0)) return 0;
+            double t = (u - (L - a.BraidMid - a.BraidLength / 2)) / a.BraidLength;
+            if (!(t > 0 && t < 1)) return 0;
+            double sideOf = (a.Seed & 1) == 0 ? 1 : -1;
+            double mid = sideOf * a.BraidOffset + 0.5 * a.BraidHalf * Clip(SNoise(u, 0, a.Seed + 2, a.WanderLambda), -1, 1);
+            double q = Math.Abs(across - mid) / a.BraidHalf;
+            if (!(q < 1)) return 0;
+            return a.BraidHeight * Math.Sin(Math.PI * t) * (0.5 + 0.5 * Math.Cos(Math.PI * q));
         }
 
         /// <summary>
@@ -677,8 +713,10 @@ namespace HiddenHarbours.World
             if (a.Line == null || a.Line.Length < 2) throw new InvalidDataException("[GroundFileImport] " + a.Id + ": a brook's bed needs a line of two points or more.");
             if (!(a.SampleStep > 0) || !(a.Sigma > 0) || !(a.HalfWidthFrom > 0) || !(a.HalfWidthTo > 0) || !(a.BedDepth > 0) || !(a.BankWidth > 0) ||
                 !(a.Wander >= 0 && a.Wander < 1) || !(a.WanderLambda > 0) || !(a.FadeIn >= 0) || !(a.FadeOut >= 0) ||
-                !(a.Floor >= 0 && a.Floor < Math.Min(a.HalfWidthFrom, a.HalfWidthTo) * (1 - a.Wander)))
-                throw new InvalidDataException("[GroundFileImport] " + a.Id + ": a brook's bed needs a positive step, sigma, half-widths, depth, bank and wavelength, a wander under 1, fades not negative, and a floor narrower than its narrowest half-width.");
+                !(a.Floor >= 0 && a.Floor < Math.Min(a.HalfWidthFrom, a.HalfWidthTo) * (1 - a.Wander)) ||
+                !(a.ShallowTo > 0 && a.ShallowTo <= 1) || !(a.BraidMid >= 0) || !(a.BraidLength >= 0) || !(a.BraidHeight >= 0) ||
+                !(a.BraidHalf >= 0) || !(a.BraidOffset >= 0) || (a.BraidHeight > 0 && !(a.BraidHalf > 0 && a.BraidLength > 0)))
+                throw new InvalidDataException("[GroundFileImport] " + a.Id + ": a brook's bed needs a positive step, sigma, half-widths, depth, bank and wavelength, a wander under 1, fades not negative, a floor narrower than its narrowest half-width, a shallowing share in (0, 1], and a braid bar's dials not negative (a length and half-width when it has a height).");
             var g = r.Grid;
             var line = BedLine(a);
             var bank = BankLevels(r, a, line);
@@ -695,9 +733,11 @@ namespace HiddenHarbours.World
                     if (!(u > 0 && u < L) || !(d <= reachM)) continue;
                     double fade = (a.FadeIn > 0 ? Ss(u / a.FadeIn) : 1) * (a.FadeOut > 0 ? Ss((L - u) / a.FadeOut) : 1);
                     double hw = BedHalfWidth(a, u, L, side), zb = Interp(u, line.S, bank), target, w;
-                    if (d <= a.Floor) { target = zb - a.BedDepth; w = 1; }
-                    else if (d <= hw) { target = zb - a.BedDepth * (0.5 + 0.5 * Math.Cos(Math.PI * (d - a.Floor) / (hw - a.Floor))); w = 1; }
+                    double dep = a.BedDepth * ShallowAt(a, line, u);
+                    if (d <= a.Floor) { target = zb - dep; w = 1; }
+                    else if (d <= hw) { target = zb - dep * (0.5 + 0.5 * Math.Cos(Math.PI * (d - a.Floor) / (hw - a.Floor))); w = 1; }
                     else { target = zb; w = 1 - Ss((d - hw) / a.BankWidth); }
+                    if (d <= hw) target += BraidRaise(a, L, u, side > 0 ? d : -d);
                     w *= fade;
                     if (!(w > 0)) continue;
                     int i = row * g.W + c;

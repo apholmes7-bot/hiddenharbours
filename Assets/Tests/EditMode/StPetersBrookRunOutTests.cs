@@ -286,6 +286,57 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
+        // The look's floor (11-23): a run-out reads natural only if it wanders off its drawn line and its thread changes width.
+        const float MinMeanderM = 0.8f;        // every cut brook's seeded sway, at least
+        const float WanderShareOfMeander = 0.4f; // the line strays at least this share of its sway off the drawing
+        const float MinWidthRangeM = 1.0f;     // widest less narrowest wet thread above a spring low
+        const float MinWidthSpread = 0.12f;    // the thread width's standard deviation over its mean
+
+        [Test]
+        public void EachCutBrooksRunOut_WandersOffItsDrawnLine()
+        {
+            foreach (var s in Brooks().Where(b => BedOf(b) != null))
+            {
+                Assert.GreaterOrEqual(s.RunOutMeander.x, MinMeanderM, $"{s.Id}: a cut brook's run-out sways (RunOutMeander.x)");
+                Assert.Greater(s.RunOutMeander.y, 0f, $"{s.Id}: over a wavelength");
+                var drawn = new Vector2[s.RunOut.Length + 1];
+                drawn[0] = s.Points[s.Points.Length - 1];
+                Array.Copy(s.RunOut, 0, drawn, 1, s.RunOut.Length);
+                float most = 0;
+                foreach (var p in RunOutSamples(s, fromBed: false))
+                {
+                    float d = float.MaxValue;
+                    for (int k = 0; k + 1 < drawn.Length; k++) d = Mathf.Min(d, DistToSegment(p, drawn[k], drawn[k + 1]));
+                    most = Mathf.Max(most, d);
+                }
+                Debug.Log($"[creeks] {s.Id} strays {most:0.00} m off its drawn run-out (sway {s.RunOutMeander.x})");
+                Assert.GreaterOrEqual(most, WanderShareOfMeander * s.RunOutMeander.x, $"{s.Id}: the run-out is not its drawn straight segments");
+            }
+        }
+
+        [Test]
+        public void AtASpringLow_EachCutBrooksThread_ChangesWidthDownTheBeach()
+        {
+            float low = -_plan.SpringM;
+            foreach (var s in Brooks().Where(b => BedOf(b) != null))
+            {
+                var w = new List<float>();
+                foreach (var p in RunOutSamples(s))   // from the bed's first station: the thread down the whole beach
+                {
+                    float e = Ground(p);
+                    if (e < low) break;
+                    if (!(_still.StillLevelAt(p) > e)) continue;
+                    Vector2 across = Across(s, p);
+                    w.Add(WetReach(p, across) + WetReach(p, -across));
+                }
+                Assert.GreaterOrEqual(w.Count, 8, $"{s.Id}: its thread crosses the beach");
+                float mean = w.Average(), sd = Mathf.Sqrt(w.Sum(x => (x - mean) * (x - mean)) / w.Count), range = w.Max() - w.Min();
+                Debug.Log($"[creeks] {s.Id} thread width {w.Min():0.00}..{w.Max():0.00} m, mean {mean:0.00}, spread {sd / mean:0.00} over {w.Count} samples");
+                Assert.GreaterOrEqual(range, MinWidthRangeM, $"{s.Id}: the thread is not one width ({w.Min():0.00}..{w.Max():0.00} m)");
+                Assert.GreaterOrEqual(sd / mean, MinWidthSpread, $"{s.Id}: its width varies along it (spread {sd / mean:0.00})");
+            }
+        }
+
         static Vector2 Across(StreamDef s, Vector2 p)
         {
             var pts = s.LineWithRunOut(0);

@@ -64,4 +64,7 @@ MonoBehaviour:
   - {x: 184.5, y: -94.9}
   - {x: 186.5, y: -97.4}
   RunOutWidth: 3
+  RunOutWidthEnd: 7
+  RunOutMeander: {x: 2.4, y: 16}
+  RunOutSeed: 9306
   Why: 'Out of the Gap Pond, past the dipping pool under the bridge, east to the shore. Its bed is the import along the line where that stands under the designed bed.'

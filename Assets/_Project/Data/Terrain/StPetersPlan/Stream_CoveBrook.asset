@@ -50,4 +50,7 @@ MonoBehaviour:
   - {x: 62.76, y: 101.76}
   - {x: 65.75, y: 104.75}
   RunOutWidth: 3
+  RunOutWidthEnd: 6
+  RunOutMeander: {x: 2, y: 12}
+  RunOutSeed: 9303
   Why: 'A seep off the barren that cuts a runnel through North Cove''s dune and fans across the sand.'

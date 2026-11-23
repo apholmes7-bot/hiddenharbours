@@ -31,8 +31,8 @@ MonoBehaviour:
   - {x: 13.3, y: -71}
   - {x: 12.665, y: -72.376}
   - {x: 12.1, y: -73.6}
-  - {x: 12.524, y: -74.976}
-  - {x: 12.9, y: -76.2}
+  - {x: 12.4, y: -74.95}
+  - {x: 12.55, y: -76.25}
   - {x: 12.2, y: -77.4}
   - {x: 11.616, y: -78.402}
   BedZ:
@@ -88,5 +88,8 @@ MonoBehaviour:
   - {x: 0.54, y: -107.05}
   - {x: 0.25, y: -111.25}
   RunOutWidth: 3
+  RunOutWidthEnd: 7
+  RunOutMeander: {x: 2.2, y: 15}
+  RunOutSeed: 9301
   Why: '2026-10-07 island-ground@3: the beach bed and brook share these 19 stations;
     ends at (11.616, -78.402), bed 0. The source supplies the first water level.'

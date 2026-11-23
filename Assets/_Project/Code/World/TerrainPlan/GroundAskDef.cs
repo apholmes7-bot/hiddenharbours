@@ -167,5 +167,19 @@ namespace HiddenHarbours.World
         public float BedDryAbove = 2.2f;
         [Tooltip("The banks' wander seed.")]
         public int Seed;
+        [Tooltip("Down its run-out (past the brook's last point) the bed shallows to this share of BedDepth at its end, and the brook's " +
+                 "water over it by the same share: the stream thins out as it spreads over the flat sand. 1 keeps it as deep.")]
+        public float BedShallowTo = 1f;
+        [Tooltip("A low bar in the bed that splits the stream into two threads which rejoin: its middle x m back from the bed's end, " +
+                 "its length y m (it rises and falls over it), its height z m, its half-width w m. (0, 0, 0, 0) lays none.")]
+        public Vector4 BedBraid;
+        [Tooltip("The braid bar's middle sits this many metres to one side of the brook's line (the side by the seed), so the main " +
+                 "thread keeps the line and the second runs beyond the bar.")]
+        public float BedBraidOffset;
+        [Tooltip("Damp sand beside the thread: dry sand within the dish and this many metres past it (x) is painted BedDampZone, its " +
+                 "edge wandering by half the band over y m. (0, 0) paints none.")]
+        public Vector2 BedDamp;
+        [Tooltip("The ground zone damp sand beside the thread is painted (a TerrainPlanZones name). Only plain sand is repainted.")]
+        public string BedDampZone = "ripple";
     }
 }
