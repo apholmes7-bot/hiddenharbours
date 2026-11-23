@@ -188,6 +188,7 @@ MonoBehaviour:
     WashLipAgeFloor: 0.4
     WashLipBackwashAge: 0.5
     WashLipWidthVary: 0.75
+    WashLipStillFresh: 0.75
     RunUpCoefficient: 1
     RunUpCapMeters: 0.35
   SurfSprayIntensityOffset: 0

@@ -269,8 +269,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(d.WashLipBackwashAge, config.Breakers.WashLipBackwashAge, 1e-6f);
             Assert.AreEqual(d.WashLipWidthVary, config.Breakers.WashLipWidthVary, 1e-6f);
             Assert.AreEqual(d.BoreHardReadStep, config.Breakers.BoreHardReadStep, 1e-6f);
+            Assert.AreEqual(d.WashLipStillFresh, config.Breakers.WashLipStillFresh, 1e-6f);
             var off = default(BreakerSettings);
-            Assert.AreEqual(0f, off.WashLipFilmShare + off.WashLipAgeFloor + off.WashLipBackwashAge + off.WashLipWidthVary,
+            Assert.AreEqual(0f, off.WashLipFilmShare + off.WashLipAgeFloor + off.WashLipBackwashAge + off.WashLipWidthVary
+                                + off.WashLipStillFresh,
                             0f, "the breakers-off publish draws the previous line");
         }
 
@@ -289,6 +291,77 @@ namespace HiddenHarbours.Tests.Art.EditMode
             StringAssert.Contains("Shader.PropertyToID(\"_ShoreWashLip\")", bridge);
             foreach (var f in new[] { "WashLipFilmShare", "WashLipAgeFloor", "WashLipBackwashAge", "WashLipWidthVary" })
                 StringAssert.Contains("breakers." + f, bridge);
+        }
+
+        [Test]
+        public void TheLipOverStillWater_ReadsYounger_OnlyPastTheFilmAndWhereNoBoreRuns()
+        {
+            // The St Peters bar head (the owner's word of 11-23, "it can be stronger wash lip"): on a steep shore
+            // no bore runs up, the lip's width reached past the film onto full water and its aged colour took that
+            // water's, so it was all but gone. It now reads younger there; a flat and a bore's run-up keep their age.
+            var s = BreakerSettings.Default;
+            Assert.Greater(s.WashLipStillFresh, 0f);
+            float film = s.EdgeWetFilmMeters;
+            float inset = BreakerMath.WashLipInsetMeters(film, s.WashLipFilmShare);
+            float age = BreakerMath.WashLipAge01(s.WashLipAgeFloor, s.WashLipBackwashAge, 0.5f);
+            Assert.AreEqual(0f, BreakerMath.WashLipOverWater01(inset, inset, film), 1e-6f, "at the inset: in the film");
+            Assert.AreEqual(1f, BreakerMath.WashLipOverWater01(film, inset, film), 1e-6f, "at the film's depth: full water");
+            Assert.AreEqual(0f, BreakerMath.WashLipOverWater01(0f, 0f, 0f), 1e-6f, "no film, no inset: at the edge");
+            Assert.AreEqual(1f, BreakerMath.WashLipOverWater01(1f, 0f, 0f), 1e-6f, "and past it, water");
+            Assert.AreEqual(age, BreakerMath.WashLipStillAge01(age, 0f, 1f, 0f), 0f, "0 = the lip's age, bit-exact");
+            Assert.AreEqual(age, BreakerMath.WashLipStillAge01(age, s.WashLipStillFresh, 0f, 0f), 0f, "in the film (a flat) it keeps its age");
+            Assert.AreEqual(age, BreakerMath.WashLipStillAge01(age, s.WashLipStillFresh, 1f, 1f), 0f, "a bore's run-up keeps its age");
+            float still = BreakerMath.WashLipStillAge01(age, s.WashLipStillFresh, 1f, 0f);
+            Assert.AreEqual(age * (1f - s.WashLipStillFresh), still, 1e-6f, "over full water with no bore it is younger by the dial");
+            Assert.Less(still, age);
+            float prev = still;
+            for (float b = 0.1f; b <= 1.0001f; b += 0.1f)
+            {
+                float a = BreakerMath.WashLipStillAge01(age, s.WashLipStillFresh, 1f, b);
+                Assert.GreaterOrEqual(a, prev - 1e-6f, "a bore takes its share of the edge back to the lip's age");
+                prev = a;
+            }
+
+            string src = File.ReadAllText(WaterShaderPath);
+            int age01 = IndexOf(src, "float washLipAge01 = saturate(saturate(_ShoreWashLip.y)");
+            int younger = IndexOf(src, "washLipAge01 *= 1.0 - saturate(_ShoreThinEdge.z)");
+            int tear = IndexOf(src, "* FoamSheetCover(FoamSheetTear(washOnSand, washLipLace, washLipAge01, 0.0), sheetBay);");
+            Assert.That(age01 < younger && younger < tear, "the still-water age is taken before the sheet reads it");
+            StringAssert.Contains("* smoothstep(washLipInset, max(max(_ShoreThinEdge.y, 0.0), washLipInset + 1e-4), washEdgeQ)", src);
+            StringAssert.Contains("* (1.0 - saturate(boreEdgeBlend));", src);
+            StringAssert.Contains("Mathf.Clamp01(breakers.WashLipStillFresh)", File.ReadAllText(BridgePath));
+        }
+
+        [Test]
+        public void TheEnvelope_IsReadOnlyWhereSomethingReadsIt()
+        {
+            // The Rice Point noon cost: the lee lattice's reads were taken over all the water in the surf block.
+            // They feed only the break gate (0 past the deepest outer or break depth) and the shore's wash, edge
+            // and fringe (each 0 past its own depth), so past all of those they are not taken. The shore zone and
+            // the gate's depth read no envelope and are worked out first.
+            string src = File.ReadAllText(WaterShaderPath);
+            int shoreZone = IndexOf(src, "surfShore = saturate(-shoreTapDepth / max(surfBeachReach, 1e-3));");
+            int gateDepth = IndexOf(src, "surfGateDepth = max(lerp(surfEvalDepth, boxDepth, surfShore), 1e-3);");
+            int canOpen = IndexOf(src, "bool surfGateCanOpen = surfGateDepth > 0.0");
+            int needs = IndexOf(src, "bool surfEnvRead = surfGateCanOpen || surfShore > 0.0");
+            int reads = IndexOf(src, "if (surfEnvRead && surfFetchProbeM > 0.0 && dot(surfDir, surfDir) > 1e-6)");
+            int lattice = IndexOf(src, "surfFetchFactors.low = lerp(leeFa.low, leeFb.low, leeFr);");
+            int gate = IndexOf(src, "surfBreaking = SurfBreaking01(surfGateDepth, surfBoreEnv);");
+            Assert.That(shoreZone < gateDepth && gateDepth < canOpen && canOpen < needs && needs < reads
+                        && reads < lattice && lattice < gate,
+                "the shore zone and the gate's depth, then what needs the envelope, then the reads, then the gate");
+            // Each consumer's own depth, in the shader's own terms: the wash on the sand, the cosmetic shore band
+            // (the drawn edge's swash), the fringe's swash reach, and its foam band less the dither's half.
+            StringAssert.Contains("float surfEnvShoreDepth = max(max(_WashSeawardDepth, 1e-3), shoreCosmeticReach);", src);
+            StringAssert.Contains("float surfEnvFringeDepth = max(max(_FoamWidth, 1e-3) * 2.0 + max(abs(_SwashAmplitude), 1e-3),", src);
+            StringAssert.Contains("max(_FoamWidth, 1e-3) + 0.5 * abs(_FoamEdgeDither));", src);
+            StringAssert.Contains("|| depth < surfEnvShoreDepth || depthC < surfEnvFringeDepth;", src);
+            // The fringe's own terms these mirror (if one moves, this guard must move with it).
+            StringAssert.Contains("float swashReach = max(_FoamWidth, 1e-3) * 2.0 + max(abs(_SwashAmplitude), 1e-3);", src);
+            StringAssert.Contains("float washOnSand = washPresence * (1.0 - smoothstep(0.0, max(_WashSeawardDepth, 1e-3), depth));", src);
+            StringAssert.Contains("if (swashEdgeReach > 0.0 && depth < shoreCosmeticReach)", src);
+            StringAssert.Contains("float foamEdgeDither = (bay - 0.5) * _FoamEdgeDither;", src);
+            StringAssert.Contains("float foamEdge = 1.0 - smoothstep(0.0, max(_FoamWidth, 1e-3), foamDepth + foamEdgeDither);", src);
         }
 
         private static int CountOf(string text, string part)

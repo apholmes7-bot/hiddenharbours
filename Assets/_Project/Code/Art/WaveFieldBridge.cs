@@ -421,11 +421,12 @@ namespace HiddenHarbours.Art
                 Mathf.Max(0f, breakers.BoreHardReadStep), 0f));
 
             // The drawn edge on FLAT beds: the swash's along-shore offset fades out below x m/m of slope, and
-            // the water thins to a film over the last y metres of level inside the edge.
+            // the water thins to a film over the last y metres of level inside the edge; the wash lip reads z of
+            // its age younger where it lies past that film on a shore no bore runs up.
             Shader.SetGlobalVector(IdShoreThinEdge, new Vector4(
                 Mathf.Max(0f, breakers.SwashSteadyEdgeSlope),
                 Mathf.Max(0f, breakers.EdgeWetFilmMeters),
-                0f, 0f));
+                Mathf.Clamp01(breakers.WashLipStillFresh), 0f));
 
             // The wash's LIP: where it sits in the film, its resting and backwash age in the one foam sheet,
             // and how much its width follows the sheet's lace.

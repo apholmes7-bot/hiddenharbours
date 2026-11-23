@@ -203,6 +203,13 @@ namespace HiddenHarbours.Core
                  "0 = an even width (the previous look).")]
         public float WashLipWidthVary;
 
+        [Tooltip("How much younger the wash lip reads over full water on a shore no bore runs up (0..1 of its " +
+                 "age). Where the shore rises steeply the lip's width reaches past the wet film onto full water, " +
+                 "and an aged lip takes that water's colour, so at the St Peters bar head it was all but gone. " +
+                 "Scaled by how far past the film the lip lies and by the share of the edge no bore holds, so a " +
+                 "flat beach and a bore's run-up keep their age. 0 = the lip's age as set above.")]
+        public float WashLipStillFresh;
+
         [Header("Run-up — how far the wash reaches up the beach (metres of LEVEL, Hunt 1959)")]
         [Tooltip("Hunt's law: run-up R = coefficient × ξ × H — the vertical reach of the wash above still " +
                  "water for a bore of standing height H on a bed of surf similarity ξ. 1.0 is Hunt's " +
@@ -249,6 +256,7 @@ namespace HiddenHarbours.Core
             WashLipAgeFloor = 0.4f,
             WashLipBackwashAge = 0.5f,
             WashLipWidthVary = 0.75f,
+            WashLipStillFresh = 0.75f,
             RunUpCoefficient = 1f,
             RunUpCapMeters = 0.35f,
         };
@@ -1034,6 +1042,26 @@ namespace HiddenHarbours.Core
         /// </summary>
         public static float WashLipAge01(float ageFloor, float backwashAge, float backwash01)
             => Mathf.Clamp01(ageFloor + backwashAge * Mathf.Clamp01(backwash01));
+
+        /// <summary>
+        /// <b>How far past the wet film the lip lies</b>: 0 at the lip's inset (<paramref name="insetMeters"/>
+        /// of level inside the drawn edge) rising to 1 at the film's depth (<paramref name="filmMeters"/>), smooth
+        /// between, for a pixel <paramref name="edgeQ"/> of level inside the drawn edge. On a flat the lip's
+        /// width spans almost no level, so it stays near 0; on a steep shore the width reaches full water.
+        /// Twin of the water shader's smoothstep in the lip's still-water age (<see cref="BreakerSettings.WashLipStillFresh"/>).
+        /// </summary>
+        public static float WashLipOverWater01(float edgeQ, float insetMeters, float filmMeters)
+            => WaveFetch.SmoothstepEdge(insetMeters, Mathf.Max(Mathf.Max(filmMeters, 0f), insetMeters + 1e-4f), edgeQ);
+
+        /// <summary>
+        /// <b>The lip over still water</b>: its age <paramref name="age01"/> made younger by
+        /// <paramref name="stillFresh"/> of itself where it lies over full water
+        /// (<paramref name="overWater01"/>, <see cref="WashLipOverWater01"/>) on the share of the edge no bore
+        /// holds (1 - <paramref name="boreBlend"/>). <paramref name="stillFresh"/> 0 returns the age unchanged.
+        /// Twin of the water shader's <c>washLipAge01 *= ...</c> (<see cref="BreakerSettings.WashLipStillFresh"/>).
+        /// </summary>
+        public static float WashLipStillAge01(float age01, float stillFresh, float overWater01, float boreBlend)
+            => age01 * (1f - Mathf.Clamp01(stillFresh) * overWater01 * (1f - Mathf.Clamp01(boreBlend)));
 
         // ==== THE SURF AS A FORCE: everything a hull in the broken water needs (PR 3) ==============
 
