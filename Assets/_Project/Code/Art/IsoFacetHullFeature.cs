@@ -725,7 +725,7 @@ namespace HiddenHarbours.Art
                         int divisor = GameServices.HullReflectionResolutionDivisor;
                         HullMeshReflection.Prepare(mesh, cameraData.camera, Mathf.Max(1, (w + divisor - 1) / divisor),
                             Mathf.Max(1, (h + divisor - 1) / divisor), GameServices.HullReflectionMaxHulls,
-                            GameServices.HullReflectionMaxTriangles);
+                            GameServices.HullReflectionMaxTriangles, KeylineFlood);
                         if (mesh.Overflow && !state.OverflowWarned)
                             Debug.LogWarning("[HullMeshReflection] Submission budget exceeded; this camera draws no mesh reflections.");
                         state.OverflowWarned = mesh.Overflow;
@@ -1401,6 +1401,7 @@ namespace HiddenHarbours.Art
                         d.Material.SetTexture(IsoFacetShaderIds.DepthTex, (RTHandle)d.Depth);
                         d.Material.SetVector(HullMeshReflection.SizeId, d.TexSize);
                         d.Material.SetFloatArray(HullMeshReflection.LitId, d.MeshSnapshot.Lit);
+                        d.Material.SetVector(HullMeshReflection.EndsId, d.MeshSnapshot.Ends);
                         IsoFacetKeylineGate.Apply(d.Material, d.KeylineFlood);
                         IsoFacetFigureInk.Apply(d.Material, d.FigureInk);
                         Blitter.BlitTexture(ctx.cmd, new Vector4(1, 1, 0, 0), d.Material, 1);
