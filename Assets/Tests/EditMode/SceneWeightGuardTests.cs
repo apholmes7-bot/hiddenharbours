@@ -162,7 +162,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void StPetersPlantField_RetiresTheMeasuredRootsWithoutSavingItsChunks()
         {
             var weight = MeasureFile("Assets/_Project/Scenes/StPeters.unity");
-            const long MeasuredStPetersSceneBytes = 4_877_372;
+            const long MeasuredStPetersSceneBytes = 4_877_931;
             const long SharedSceneHeadroomBytes = 64L * 1024;
             const long MinimumPopulatedSceneBytes = 4_500_000;
             // 5,259,646 after PR 5p's plant retirement; 4,792,419 after K0 retired the 186 atlas deck tiles, 467,309 bytes;
@@ -170,9 +170,11 @@ namespace HiddenHarbours.Tests.EditMode
             // rooms (main had reached 4,859,249, the rooms add about 16.5 KB). The plant retirement's saving of
             // about 467 KB is still intact, and that saving is what this guard protects. 4,875,743 measured after
             // merging main's harbour gable (main 4,859,236; the gable's edit trims 13 bytes, the cottage's rooms stay).
+            // 4,876,302 measured after the ground fix's painted tidal terrain joined main's cottage rooms (+559 bytes).
             // 4,877,372 after each placed fixture recorded the wall it backs onto (nine wall records), chairs were
             // turned to face their tables (their colliders turned with them) and Ginny's table and chairs moved to
             // the kitchen (1,629 bytes).
+            // 4,877,931 measured with the ground fix and the facing fix together (559 + 1,629 bytes over 4,875,743).
             // Main's data/water edits move this shared file by tens of bytes per merge. Allow 64 KiB
             // above the measured retirement. The 4.5 MB floor rejects a truncated scene; names prove
             // retirement. It sits about 376 KB below the measured weight.
