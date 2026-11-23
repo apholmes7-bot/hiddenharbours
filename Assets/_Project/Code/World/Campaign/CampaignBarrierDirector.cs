@@ -59,7 +59,18 @@ namespace HiddenHarbours.World
         private void Awake()
         {
             if (Instance == null) Instance = this;
-            if (_walls.Length == 0) _walls = Resources.LoadAll<CampaignBarrierDef>(ResourcesFolder);
+            if (_walls.Length == 0)
+            {
+                _walls = Resources.LoadAll<CampaignBarrierDef>(ResourcesFolder);
+                Sort(_walls);
+            }
+        }
+
+        /// <summary>Put the walls in id order, so which wall is walked first never depends on how the
+        /// asset database happened to list them.</summary>
+        private static void Sort(CampaignBarrierDef[] walls)
+        {
+            System.Array.Sort(walls, (a, b) => string.CompareOrdinal(a != null ? a.Id : null, b != null ? b.Id : null));
         }
 
         private void OnDestroy()
@@ -73,7 +84,8 @@ namespace HiddenHarbours.World
         /// <summary>Replace the walls (fixtures). The committed set comes from Resources.</summary>
         public void LoadWalls(params CampaignBarrierDef[] walls)
         {
-            _walls = walls ?? System.Array.Empty<CampaignBarrierDef>();
+            _walls = walls != null ? (CampaignBarrierDef[])walls.Clone() : System.Array.Empty<CampaignBarrierDef>();
+            Sort(_walls);
             _nextLineAt = 0f;
             Release();
         }
@@ -92,37 +104,57 @@ namespace HiddenHarbours.World
         /// <summary>One physics step of every wall. Public so a proof can step it by hand.</summary>
         public void Step()
         {
-            CampaignBarrierDef wall = FindStanding();
+            CampaignBarrierDef first = FindStanding();
             Transform at = null;
             Component hull = null;
-            if (wall != null)
+            if (first != null)
             {
                 // ⚠ `as Component` then Unity's own null test: a destroyed hull is fake-null.
                 hull = (GameServices.Helm.PilotedHull ?? GameServices.Helm.PlayersBoat) as Component;
                 if (hull == null) hull = null;
                 at = hull != null ? hull.transform : GameServices.PlayerTransform;
             }
-            if (wall == null || at == null) { Release(); return; }
+            if (first == null || at == null) { Release(); return; }
+
+            Vector2 position = at.position;
+            if (hull != null && !ReferenceEquals(hull, _hull))
+            {
+                _hull = hull;
+                _body = hull.GetComponent<Rigidbody2D>();
+            }
+            Rigidbody2D body = hull != null && _body != null && _body.bodyType == RigidbodyType2D.Dynamic
+                ? _body : null;
+            Vector2 velocity = body != null ? body.linearVelocity : Vector2.zero;
+
+            // A region may stand several walls (an island ringed on every side). Each one pushes on its
+            // own; the strongest storm is the one drawn, heard and thought. The walls are walked in id
+            // order (Sort), so the same place and flags always give the same push.
+            CampaignBarrierDef wall = first;
+            float storm = 0f, cap = 0f;
+            Vector2 push = Vector2.zero;
+            string region = GameServices.CurrentRegionId;
+            for (int i = 0; i < _walls.Length; i++)
+            {
+                var w = _walls[i];
+                if (w == null || w.RegionId != region || !Stands(w)) continue;
+                float s = w.Storm01At(position);
+                if (s <= 0f) continue;
+                if (s > storm) { storm = s; wall = w; }
+                if (body == null) continue;
+                float a = w.PushAccelerationAt(position, velocity);
+                if (a <= 0f) continue;
+                push += w.PushDirection * a;
+                cap = Mathf.Max(cap, w.MaxPushAcceleration);
+            }
+            // Where two walls meet (a corner) their pushes add, but never past the stronger cap: the cap
+            // is what keeps a boat found far out from being thrown.
+            if (push.sqrMagnitude > cap * cap) push = push.normalized * cap;
 
             Standing = wall;
-            Vector2 position = at.position;
-            Storm01 = wall.Storm01At(position);
-            PushAcceleration = 0f;
-
-            if (hull != null && Storm01 > 0f)
-            {
-                if (!ReferenceEquals(hull, _hull))
-                {
-                    _hull = hull;
-                    _body = hull.GetComponent<Rigidbody2D>();
-                }
-                if (_body != null && _body.bodyType == RigidbodyType2D.Dynamic)
-                {
-                    PushAcceleration = wall.PushAccelerationAt(position, _body.linearVelocity);
-                    if (PushAcceleration > 0f)
-                        _body.AddForce(wall.PushDirection * (PushAcceleration * _body.mass), ForceMode2D.Force);
-                }
-            }
+            Storm01 = storm;
+            PushAcceleration = push.magnitude;
+            if (body != null && PushAcceleration > 0f)
+                body.AddForce(push * body.mass, ForceMode2D.Force);
 
             if (Storm01 > 0f)
             {
