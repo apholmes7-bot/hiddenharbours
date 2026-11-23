@@ -156,15 +156,16 @@ namespace HiddenHarbours.Tests.EditMode
             return g;
         }
 
+        // Room on the shelf for the whole share, so the count is the stock itself (no back room out of sight).
         private IslandStoreShelves Groceries(IslandGoodDef good)
         {
             var ledger = new IslandStoreLedger(new[] { good }, Plenty, Cadence, BufferDays, Lookback, _ => true);
             var lines = new List<IslandShelfLine>
             {
                 new IslandShelfLine { Id = "line.test_bread", Good = good, ItemName = "loaf", UnitsPerItem = 1f,
-                                      MaxOnShelf = 6, ShareOfGood = 0.5f, SoldAtShelf = true },
+                                      MaxOnShelf = 500, ShareOfGood = 0.5f, SoldAtShelf = true },
                 new IslandShelfLine { Id = "line.test_beans", Good = good, ItemName = "tin", UnitsPerItem = 1f,
-                                      MaxOnShelf = 6, ShareOfGood = 0.5f, SoldAtShelf = true },
+                                      MaxOnShelf = 500, ShareOfGood = 0.5f, SoldAtShelf = true },
             };
             return new IslandStoreShelves(Shop, ledger, lines, SecondsPerDay, Opens, Closes);
         }
