@@ -247,7 +247,7 @@ namespace HiddenHarbours.Tests.PlayMode
             //
             // The bar is derived from the species' OWN authored spread plus a fish length of slack for
             // the shoal's internal spacing — never from the presenter, which is the thing under test.
-            AssertTheShoalHoldsTogether(presenter, shot);
+            AssertTheShoalHoldsTogether(presenter, view, shot);
 
             int drawnOverShallow = presenter.VisibleSwimmers;
             shallow = shot;
@@ -390,39 +390,73 @@ namespace HiddenHarbours.Tests.PlayMode
         /// <para>The bar is the authored <c>ShoalSpreadMetres</c> (the loop the leader swims) plus a
         /// generous allowance for the shoal's own length behind the leader — computed from the species
         /// Def and a literal, never by asking the presenter or ShoalMath for it.</para>
+        ///
+        /// <para>⚠ <b>EACH FISH IS HELD TO ITS OWN SCHOOL, not to the one the camera was aimed at.</b>
+        /// The presenter draws every school in view, and since the 22 m lattice (#802) a frame regularly
+        /// holds two to four of them, so measuring every drawn fish against the shot school's anchor
+        /// reported a neighbouring school's fish as a stray (measured: 67 fish from four schools, the
+        /// furthest 31.5 m from the shot anchor, its neighbour 24.4 m away). A fish is attributed to the
+        /// nearest school the view holds; a fish that truly strayed past its bar is still caught unless
+        /// another school's anchor happens to sit inside that bar.</para>
         /// </summary>
-        void AssertTheShoalHoldsTogether(FishSchoolPresenter presenter, FishSchool school)
+        void AssertTheShoalHoldsTogether(FishSchoolPresenter presenter, IFishSchoolView view, FishSchool school)
         {
-            string primary = school.SpeciesIds != null && school.SpeciesIds.Count > 0
-                ? school.SpeciesIds[0] : null;
-            if (string.IsNullOrEmpty(primary)) return;         // an unstated school states no spread
-
-            FishSpeciesDef def = FishSpeciesRegistry.Get(primary);
-            if (def == null || !def.StatesShoalSpread) return;  // nothing authored to hold it to
+            if (string.IsNullOrEmpty(PrimaryOf(school))) return;   // an unstated school states no spread
 
             // The loop, plus the shoal trailing behind its leader. ShoalMath spaces fish by the species'
             // drawn LENGTH; 4 m of slack is far more than the biggest authored fish needs and still an
             // order of magnitude under the 17.6-44 m the retired rule produced.
             const float shoalTailAllowanceM = 4f;
-            float bar = def.ShoalSpreadMetres + shoalTailAllowanceM;
 
-            float worst = 0f;
-            int counted = 0;
+            // The schools the camera holds right now, asked of the model the same way the presenter asks.
+            double hour = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
+            float h = _cam.orthographicSize * 2f, w = h * _cam.aspect;
+            Vector3 c = _cam.transform.position;
+            var inView = new List<FishSchool>();
+            view.SchoolsInView(new Rect(c.x - w * 0.5f, c.y - h * 0.5f, w, h), hour, inView);
+            if (!inView.Exists(s => s.Centre == school.Centre)) inView.Add(school);
+
+            float worst = 0f, worstBar = 0f, worstToShot = 0f;
+            string worstSpecies = PrimaryOf(school);
+            int counted = 0, ownShot = 0;
             foreach (SpriteRenderer sr in presenter.GetComponentsInChildren<SpriteRenderer>(false))
             {
                 if (sr == null || !sr.enabled) continue;
-                float d = Vector2.Distance(sr.transform.position, school.Centre);
-                if (d > worst) worst = d;
+                Vector2 p = sr.transform.position;
+                worstToShot = Mathf.Max(worstToShot, Vector2.Distance(p, school.Centre));
+
+                FishSchool own = school;
+                float best = float.MaxValue;
+                foreach (FishSchool s in inView)
+                {
+                    float d2 = (p - (Vector2)s.Centre).sqrMagnitude;
+                    if (d2 < best) { best = d2; own = s; }
+                }
+                if (own.Centre == school.Centre) ownShot++;
+
+                FishSpeciesDef def = FishSpeciesRegistry.Get(PrimaryOf(own));
+                if (def == null || !def.StatesShoalSpread) continue;  // nothing authored to hold it to
+                float bar = def.ShoalSpreadMetres + shoalTailAllowanceM;
+                float dist = Mathf.Sqrt(best);
                 counted++;
+                if (dist - bar > worst - worstBar || counted == 1)
+                {
+                    worst = dist; worstBar = bar; worstSpecies = def.Id;
+                }
             }
             if (counted == 0) return;
 
-            Debug.Log($"[{PlateDir}] {primary}: {counted} swimmers, furthest {worst:0.00} m from the " +
-                      $"anchor (authored spread {def.ShoalSpreadMetres:0.0} m, bar {bar:0.0} m)");
-            Assert.LessOrEqual(worst, bar,
-                $"a {primary} was drawn {worst:0.0} m from its school's anchor, past the {bar:0.0} m its " +
-                "authored spread allows — the shoal is swimming a loop scaled to the BOAT's reach again");
+            Debug.Log($"[{PlateDir}] {counted} swimmers from {inView.Count} school(s) in view, {ownShot} of " +
+                      $"them the shot school's; the furthest from its OWN anchor is a {worstSpecies} at " +
+                      $"{worst:0.00} m (bar {worstBar:0.0} m); furthest from the shot anchor {worstToShot:0.00} m");
+            Assert.Greater(ownShot, 0, "the school the camera was aimed at drew no fish of its own");
+            Assert.LessOrEqual(worst, worstBar,
+                $"a {worstSpecies} was drawn {worst:0.0} m from its school's anchor, past the {worstBar:0.0} m " +
+                "its authored spread allows — the shoal is swimming a loop scaled to the BOAT's reach again");
         }
+
+        static string PrimaryOf(in FishSchool s)
+            => s.SpeciesIds != null && s.SpeciesIds.Count > 0 ? s.SpeciesIds[0] : null;
 
         int SwimmersInFrame(FishSchoolPresenter presenter)
         {
