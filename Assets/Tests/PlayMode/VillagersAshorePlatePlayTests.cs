@@ -313,6 +313,11 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return Arrive(NineMileCreekScene, NoonHour);
 
             List<IsoCharacterSprite> creek = CreekVillagers();
+            // A keeper at her counter indoors (#1301 put the wholesalers' keepers inside their shells) is
+            // sheltered: she draws neither picture and never asks for an id, which MeshProblemsOf already holds
+            // her to. The plate is of the villagers out of doors.
+            List<IsoCharacterSprite> outdoors = creek.Where(Shows).ToList();
+            Assert.Greater(outdoors.Count, 0, $"harness: nobody at the creek is out of doors at {Hhmm(NoonHour)}");
             int atArrival = PresenterRefusals();
             for (int i = 0; i < NoRetryFrames; i++) yield return null;
             int afterWaiting = PresenterRefusals();
@@ -334,20 +339,32 @@ namespace HiddenHarbours.Tests.PlayMode
                 $"{NoRetryFrames} frames");
 
             Census census = TakeCensus("cold Nine Mile Creek at noon, ON");
-            yield return _stage.FrameOn(Centre(creek));
+            // Hector's stand moved to his barrel at the boat yard (#1023), about 105 m from Wendell's counter, so
+            // the two no longer share one frame: each villager out of doors gets a frame of his own, in turn.
+            yield return _stage.FrameOn(outdoors[0].transform.position);
             Assert.AreEqual(atArrival, PresenterRefusals(),
                 $"{key}: a refused villager asked again while the plate was framed");
 
-            string verdict = refused.Count == creek.Count
-                ? $"all {creek.Count} REFUSED: their whole sprites, {atArrival} refusal warnings from their presenters " +
-                  $"(one each), none more over {NoRetryFrames} frames or the framing"
-                : $"{refused.Count} of {creek.Count} refused ({Names(refused)}); the rest are their meshes (the pool had room)";
-            Shoot(key, $"Nine Mile Creek {Hhmm(NoonHour)}, loaded cold, the game's camera parked between its villagers " +
-                       $"at {Fmt(Centre(creek))}",
-                  strict: creek, others: new List<IsoCharacterSprite>(), everyone: creek,
-                  alsoInFrame: new List<Transform>(),
-                  extra: $"Verdict: {verdict}\nWarnings from other callers (the player's DeckRiderMeshPresenter and any " +
-                         $"other): {_refusalStacks.Count - atArrival}\n{census}");
+            string verdict = refused.Count == outdoors.Count
+                ? $"all {outdoors.Count} out of doors REFUSED: their whole sprites, {atArrival} refusal warnings from " +
+                  $"their presenters (one each), none more over {NoRetryFrames} frames or the framing"
+                : $"{refused.Count} of {outdoors.Count} out of doors refused ({Names(refused)}); the rest are their " +
+                  "meshes (the pool had room)";
+            verdict += $"; sheltered indoors: {Names(creek.Where(v => !Shows(v)).ToList())}";
+            for (int i = 0; i < outdoors.Count; i++)
+            {
+                IsoCharacterSprite v = outdoors[i];
+                if (i > 0) yield return ReframeOn(v.transform.position);
+                Assert.AreEqual(atArrival, PresenterRefusals(),
+                    $"{key}: a refused villager asked again while {v.name} was framed");
+                Shoot(i == 0 ? key : $"{key}-{i + 1}",
+                      $"Nine Mile Creek {Hhmm(NoonHour)}, loaded cold, the game's camera parked on {v.name} out of " +
+                      $"doors at {Fmt(v.transform.position)}",
+                      strict: new List<IsoCharacterSprite> { v }, others: new List<IsoCharacterSprite>(), everyone: creek,
+                      alsoInFrame: new List<Transform>(),
+                      extra: $"Verdict: {verdict}\nWarnings from other callers (the player's DeckRiderMeshPresenter and " +
+                             $"any other): {_refusalStacks.Count - atArrival}\n{census}");
+            }
         }
 
         /// <summary>
@@ -649,7 +666,9 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return Arrive(NineMileCreekScene, NoonHour);
             List<IsoCharacterSprite> creek = CreekVillagers();
             Census on = TakeCensus("cold Nine Mile Creek noon, ON");
-            List<string> undecided = creek.Where(v => Presenter(v) != null && !HoldsAnId(v) && !Presenter(v).AshoreRefused)
+            // Out of doors only, as at St Peters: a keeper sheltered at her counter indoors (#1301) never asks.
+            List<string> undecided = creek.Where(v => Shows(v) && Presenter(v) != null && !HoldsAnId(v) &&
+                                                      !Presenter(v).AshoreRefused)
                                           .Select(Describe).ToList();
 
             UseSwitches(true, false);
