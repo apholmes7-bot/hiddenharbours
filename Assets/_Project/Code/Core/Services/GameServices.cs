@@ -744,6 +744,21 @@ namespace HiddenHarbours.Core
         private static ICatchHands _catchHands;
 
         /// <summary>
+        /// <b>The paper shopping bag side of the player's hands</b> (buying at the shelf, slice 2): where a
+        /// store's shelf puts a bagged good, and where his storage asks for the shopping to be put away.
+        /// Published by the same <c>CarryHands</c> that publishes <see cref="Hands"/>, with the same lifetime
+        /// and the same fake-null laundering. Null in EditMode and before the core boots: a shelf then puts
+        /// the good straight into his supplies, as the counter always did.
+        /// </summary>
+        public static IShoppingBagHands BagHands
+        {
+            get => _bagHands is UnityEngine.Object o && o == null ? null : _bagHands;
+            set => _bagHands = value;
+        }
+
+        private static IShoppingBagHands _bagHands;
+
+        /// <summary>
         /// <b>The hold she carries on her own person</b> — the clam pail on her belt, published by the
         /// Player lane's <c>ClamBucket</c> so a catch source that cannot reference Player still knows
         /// where a landed thing goes when nothing nearer will take it.
@@ -1451,6 +1466,13 @@ namespace HiddenHarbours.Core
         public static float HullReflectionEndMinRunPixels =>
             Config != null ? UnityEngine.Mathf.Max(0f, Config.HullReflectionEndMinRunPixels)
                 : GameConfig.DefaultHullReflectionEndMinRunPixels;
+        /// <summary>The calm mirror's dial, clamped to 0..1 (<see cref="GameConfig.WaterMirrorStrength"/>);
+        /// the ship default 0 with no config.</summary>
+        public static float WaterMirrorStrength =>
+            Config != null ? UnityEngine.Mathf.Clamp01(Config.WaterMirrorStrength)
+                : GameConfig.DefaultWaterMirrorStrength;
+        public static WaterMirrorSettings WaterMirror =>
+            Config != null ? Config.WaterMirror : WaterMirrorSettings.Default;
 
         /// <summary>Do rig 9 figures blink (character PR 2a)? Same contract as
         /// <see cref="HullKeylineFlood"/>, including the <c>Config != null</c> discipline. Falls back
@@ -1644,11 +1666,14 @@ namespace HiddenHarbours.Core
             Voyages = null;              // → EmptyVoyageCatalog.Instance; this property is never null
             CrossingGate = null;         // → AlwaysOpenCrossingGate.Instance; this property is never null
             IslandShelvesDirectory.Clear();   // no store's shelves outlive the services
+            ShelfTills.Clear();               // nor their tills
             TidalTerrain = null;
             StillWater = null;           // → EmptyStillWater.Instance; this property is never null
             PlayerTransform = null;
             Hands = null;
             CatchHands = null;
+            BagHands = null;
+            ShoppingBagContents.Clear();   // nothing is set aside in a bag nobody holds
             PlayerHold = null;
             PlayerStorage.Clear();       // no container outlives the services that listed it
             CurrentRegionId = null;

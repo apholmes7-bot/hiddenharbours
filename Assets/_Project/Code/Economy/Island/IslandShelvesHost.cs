@@ -39,6 +39,7 @@ namespace HiddenHarbours.Economy
         {
             public IslandStoreShelvesDef Def;
             public IslandStoreShelves Shelves;
+            public IslandShelfTill Till;
             public string[] Lines;
             public int[] Last;
             public double RecheckSeconds;
@@ -164,6 +165,8 @@ namespace HiddenHarbours.Economy
                     _stores.Add(store);
                     IslandShelvesDirectory.Register(shelves);
                     IslandCounterShelves.Bind(def, shelves);
+                    store.Till = new IslandShelfTill(def.ShopId, def.SellerId);
+                    ShelfTills.Register(store.Till);   // buying at the shelf: the World's shelf goods ask this
                 }
                 catch (Exception e)
                 {
@@ -196,6 +199,7 @@ namespace HiddenHarbours.Economy
             {
                 IslandShelvesDirectory.Unregister(_stores[s].Shelves);
                 IslandCounterShelves.Unbind(_stores[s].Shelves);
+                ShelfTills.Unregister(_stores[s].Till);
             }
             _stores.Clear();
             _built = false;
