@@ -157,7 +157,7 @@ Every feature must serve at least one pillar. If it serves none, cut it.
 > - **The calendar** already starts the game on day 1 of **High Summer** (§5.8 seasons), which is the
 >   early summer the owner wants for the first week. No change needed.
 > - **The demo ends at Ginny's word** with a closing beat; he can keep fishing from the dory after.
->   The boat trailer stays locked to him until after he can reach Nine Mile Creek.
+>   The camper trailer on Ginny's lot stays locked to him until he buys it.
 > - **The simulation rule holds:** the block is a pure function of world seed + game time + saved
 >   progress flags. It never changes or saves the world's wind, tide or sea
 >   ([`adr/0062-the-first-week-is-closed-by-weather.md`](adr/0062-the-first-week-is-closed-by-weather.md)).

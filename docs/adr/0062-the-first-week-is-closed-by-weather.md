@@ -35,7 +35,7 @@ edge; it turns a boat back with wind, rain and a rising sea, shades only what th
    "The weather has turned" is a look on top of the sim, not a change to it.
 5. **No new save version.** The new facts are keys in the existing saved flag list; everything else is already saved.
 6. **The demo** ends at Ginny's word with a closing beat; he can keep fishing from the dory after. A demo build holds
-   the barriers up for good. The boat trailer stays locked until after he can reach Nine Mile Creek.
+   the barriers up for good. The camper trailer on Ginny's lot stays locked to him until he buys it.
 
 ## Consequences
 
