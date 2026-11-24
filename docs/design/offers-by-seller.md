@@ -1,12 +1,12 @@
 # Offers by seller
 
-The island store offers basic fishing gear, bait, food, ice, soap and the clam licence. Its depth sounder is the one existing boat-hardware exception: it stays in place until a separate counter change moves it to Nine Mile Creek. The damaged dory and cod licence are still sold in Nine Mile Creek on this base; the first-week island-only ruling is not yet reflected in those offers.
+The island store offers basic fishing gear, bait, food, ice, soap and the clam licence. On the pinned base its depth sounder is the one existing boat-hardware exception. The separate counter relocation in #1532 moves it to the Nine Mile Creek boat/gear wholesaler. The census guard accepts those two exact single-seller states: before relocation it requires precisely the sounder exception, and afterward it requires no island hardware. It rejects a missing sounder seller, simultaneous sellers and every unrelated replacement. The damaged dory and cod licence are still sold in Nine Mile Creek on this base; the first-week island-only ruling is not yet reflected in those offers.
 
-Census of base `37586ae43d2ed0eef2648a642c300a6926ac8bf1`: 67 catalog assets, of which 66 name sellers and one is the free starting headlamp identity. Multiple sellers produce multiple rows. Prices are coin. Listed means the catalog flag is on; unlisted offers are plans, not proof of a working purchase. Counter names below were matched to seller components in the committed regional scenes, with the wiring declarations as a cross-check. No scene was loaded or changed.
+Census of base `541276cbc9308ba60ded8b905308366306438570`: 67 catalog assets, of which 66 name sellers and one is the free starting headlamp identity. Multiple sellers produce multiple rows. Prices are coin. Listed means the catalog flag is on; unlisted offers are plans, not proof of a working purchase. Counter names below were matched to seller components in the committed regional scenes, with the wiring declarations as a cross-check. No scene was loaded or changed.
 
 Stock means **seller inventory**, not how much the player can own. `No` means no depletion binding, even for an owned stack or a one-time licence/hull. The live island shelves count five listings on three lines; the three foods share one grocery line on this base. The dormant `ShopDef` separately describes rod/bait/ice counts and is not evidence that the rod runs out at the live counter.
 
-The new `CatalogListing.BoatHardware` flag defaults false and tags the ten helm instruments, without changing price, listing or purchase behavior. The existing Gear section also contains bait, licences and hand tools, so it cannot identify hardware. The portable rod rack remains general gear (its Def explicitly allows a shed or doorway). `SellerDef.RegionId` records existing/planned geography, with an empty default; neither field is saved player state.
+The new `CatalogListing.BoatHardware` flag defaults false and tags the ten helm instruments and the fitted dory outboard, without changing price, listing or purchase behavior. The existing Gear section also contains bait, licences and hand tools, so it cannot identify hardware. The portable rod rack remains general gear (its Def explicitly allows a shed or doorway). `SellerDef.RegionId` records existing/planned geography, with an empty default; neither field is saved player state.
 
 ## St Peters Island
 
@@ -28,7 +28,7 @@ The new `CatalogListing.BoatHardware` flag defaults false and tags the ten helm 
 | [gear.shellfish_basket](../../Assets/_Project/Data/Resources/Catalog/Gear/ShellfishBasket.asset) | `seller.leblancs` / `GeneralStoreCounter` | 20 | Unlisted | No |
 | [gear.shellfish_rake](../../Assets/_Project/Data/Resources/Catalog/Gear/ShellfishRake.asset) | `seller.leblancs` / `GeneralStoreCounter` | 30 | Unlisted | No |
 | [gear.shovel](../../Assets/_Project/Data/Resources/Catalog/Gear/Shovel.asset) | `seller.leblancs` / `GeneralStoreCounter` | 25 | Unlisted | No |
-| [instrument.depth_sounder](../../Assets/_Project/Data/Resources/Catalog/Instruments/DepthSounderOffer.asset) | `seller.leblancs` / `GeneralStoreCounter` | 140 | Listed | No |
+| [instrument.depth_sounder](../../Assets/_Project/Data/Resources/Catalog/Instruments/DepthSounderOffer.asset) | `seller.leblancs` / `GeneralStoreCounter` | 140 | Listed on pinned base; #1532 moves this same offer to `seller.nmc_boat_gear_wholesaler` / `NmcBoatGearWholesalerCounter` at the same price | No |
 | [license.clam](../../Assets/_Project/Data/Resources/Catalog/Licenses/ClamLicense.asset) | `seller.leblancs` / `GeneralStoreCounter` | 15 | Listed | No |
 | [supply.bread](../../Assets/_Project/Data/Resources/Catalog/Supplies/Bread.asset) | `seller.leblancs` / `GeneralStoreCounter` | 4 | Listed | Yes: shared grocery line (18 initially) |
 | [supply.ice](../../Assets/_Project/Data/Resources/Catalog/Supplies/Ice.asset) | `seller.leblancs` / `GeneralStoreCounter` | 6 | Listed | Yes: ice line (20 initially) |
@@ -129,7 +129,7 @@ The new `CatalogListing.BoatHardware` flag defaults false and tags the ten helm 
 - `seller.nmc_wharf_market` has no outgoing catalog offer. It buys catches at `NmcWharfMarketCounter`. All ten SellerDefs are accounted for above or here.
 - Fuel and property tills identify themselves by station/home id, not by a SellerDef. The two fuel sites are Nine Mile Creek sites; they have no named keeper. These are explicit non-catalog transactions, covered by their existing content tests.
 - `gear.headlamp` is an unlisted, zero-price label for starting gear and names no seller. `watch.harbour_digital` is owned from the start, price zero, no seller. Neither is a sale. Tackle, longline tubs, portable fuel containers and golf clubs have no offer type; see [the existing exemption audit](economy-item-sellers.md). IslandGoodDefs describe logistics, not retail prices: groceries, gasoline, stove oil, propane, hardware, ice, bait, medicine/misc and mail/parcels are not nine additional retail offers.
-- No mending-material offer exists. The dory has a single repair charge of 300, not an authored shopping list. Boat instruments are hardware; complete hulls and portable fishing pots are separately identified products.
+- No mending-material offer exists. The dory has a single repair charge of 300, not an authored shopping list. Boat instruments and the fitted outboard are hardware; complete hulls and portable fishing pots are separately identified products.
 
 ### Live counted items
 
@@ -145,6 +145,8 @@ The dormant `ShopDef` initializes rod/capelin/ice to 4/20/20, with Monday and Th
 
 ### Guards and limits
 
-`SellerContentTests` now checks every catalog offer, including unlisted plans, against real sellers and rejects duplicate (seller, actual item) pairs. Vehicle offer ids are normalized to vehicle ids; pot offers to trap ids. Its single `KnownIslandHardwareExceptions` dictionary contains only the current sounder pair with its scene-move reason, and rejects stale entries as well as new island hardware. All instrument offers must carry the tag. Seller regions must resolve to RegionDefs.
+`SellerContentTests` now checks every catalog offer, including unlisted plans, against real sellers and rejects duplicate (seller, actual item) pairs. Vehicle offer ids are normalized to vehicle ids; pot offers to trap ids. Its exact island-hardware set contains only the current sounder pair before #1532, and is empty after that relocation. The sounder must name exactly the island seller or exactly the mainland boat/gear wholesaler; every other seller set fails. All instrument offers and the fitted dory outboard must carry the tag. Cloned-offer tests exercise both relocation states, reject missing/duplicate/unrelated sounder sellers, reject an untagged outboard and reject an island outboard seller. Seller regions must resolve to RegionDefs.
 
 `ShopStockContentTests` retains the existing ShopDef validation and adds an island-shelf check for a real seller/listing, derived positive starting count, positive shelf capacity and pack units, ledger membership and a positive runner cadence. No existing assertion was relaxed. No editor, compiler, scene playthrough or EditMode run was performed locally; CI must compile and execute these tests. No save-format change is needed for classification metadata; saving shelf purchases remains a separate feature.
+
+The four unlisted mending-material supplies proposed in #1508 are absent from this pinned base. Their empty seller arrays would fail both this census and `EveryItemHasASellerTests`; they need explicit material sourcing before integration. Unlisted offers remain subject to the same real-seller rule.
