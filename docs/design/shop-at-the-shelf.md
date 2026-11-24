@@ -182,13 +182,35 @@ changed for the bag. Instead:
   saved at once, as the counter always did).
 - While the bag is in his hand, the goods in it are **set aside**: his supplies do not count them, so the
   stove and soap cannot use them until he puts the bag away.
-- If the game is reloaded with the bag still in hand, there is no bag after the load, and the goods are
-  found **already put away** in his supplies. Nothing is lost and nothing is paid twice.
 
-**Owner's ruling for the next slice (2026-11-23, not built yet):** the bag is droppable with items
-inside; if he sleeps holding it, the bag is dropped by the bed. This replaces "found already put away"
-above. A dropped bag with goods in it must outlive a reload, so it needs saved data: approval for save
-v26 has been asked for and is not yet given. Until that slice lands, the rule above holds.
+**The bag set down (owner's ruling 2026-11-23, built in slice 2b).** "Bag gets dropped by the bed, bag is
+droppable with items inside."
+
+- **Set down.** With the bag in his hand and nothing else in reach to press, the press is "Set the bag
+  down": the bag stands on the ground at his feet with the goods still in it. At a shelf the press still
+  buys, at a bed it still sleeps, and near his storage it still puts the shopping away; setting down never
+  adds a row to the chooser (it sits on its own last rung of the press ladder, `InteractPriority.LastResort`).
+  The ground rule is the one every carried thing uses (not below the tide line).
+- **Pick up.** Standing over it, the press is "Pick up the bag". It needs a free hand, like the first
+  time. Everything that was in it is still in it.
+- **By the bed.** When he lies down in a bed ashore with the bag in his hand, the bag is left where he
+  stood to turn in, with the goods inside. Nothing is put away for him. Aboard (a bunk), the bag stays in
+  his hand: nothing set down on a deck rides the hull yet.
+- **One bag.** While the bag stands somewhere with goods in it, a shelf does not start a second one. He
+  says so ("I left my bag somewhere. I'll fetch it first.") and no money moves.
+- **Goods in a set-down bag stay set aside**: they cannot be eaten or used from the floor.
+- **A bag left in another region** is not drawn or offered where he is; it is where he left it.
+
+**The bag across leaving and loading (this slice does not change the save).**
+
+- **Leaving for the title and coming back** (the same running game): the bag is never lost. If it was
+  set down, it is **back in his hand** when the game resumes, with everything in it. The same happens if
+  the place it stood in is unloaded under it.
+- **Starting a new game** does not inherit the old game's bag.
+- **Closing the game completely and starting it again:** the save has nowhere to remember the bag yet,
+  so there is no bag after the restart and the goods are in his supplies. Nothing is lost and nothing is
+  paid twice. Save v26 closes this: the set-down bag and its contents become saved data (section 6), and
+  the bag is then found where he left it.
 
 ---
 
@@ -206,7 +228,8 @@ v26 has been asked for and is not yet given. Until that slice lands, the rule ab
 - **The answer.** Every outcome is a line in his own bubble, from data (`InnerVoiceLineDef`):
   bought ("Paid, and put by."), into the bag ("Paid. In the bag."), the bag is full ("The bag's full."),
   sold out ("Shelf's bare. Next run, maybe."), too dear ("Can't afford that."), hands full ("My hands are
-  full."), put away ("Shopping's put away.").
+  full."), put away ("Shopping's put away."), the bag left elsewhere ("I left my bag somewhere. I'll fetch
+  it first.").
 - **Cost per frame.** None. The label is a cached string rebuilt only when the price, name or sold-out
   state changes; the shelf asks for a fresh quote only on a stock change or on walking in.
 
@@ -328,7 +351,7 @@ NextSpecialOrderNumber: int
 |---|---|---|---|---|
 | 1 | **Groceries, ice and capelin at the shelf** (built) | walk to the bread, see its price, buy it; bare gondola and card when sold out; the book is shorter | none | architecture review of one small Core contract |
 | 2 | **The paper bag, and every good counted on its own** (built) | bread, oatcakes and beans go into a paper bag in his hand; more go in the same bag; he puts the shopping away at home or the camper; bread can sell out while beans are still there | none (held bag set aside, see 3.3) | done; the owner's ruling on a dropped bag is the next bag slice (3.3) |
-| 2b | **The bag can be put down** (ruled, not built) | he can drop the bag with the goods still in it; if he sleeps holding it, the bag is left by the bed | saved data, v26 approval asked, not given | the v26 approval |
+| 2b | **The bag can be put down** (built, for the running game) | he sets the bag down with the goods still in it and picks it up again; if he lies down to sleep holding it, the bag is left by the bed | none (see 3.3: kept through the title and back; a full restart finds the goods in his supplies) | the set-down bag joins save v26 in slice 4 |
 | 3 | **The rest of the St Peters stock** | soap into the bag; the rod rack and the bait box on the floor; rods and shellfish gear into a free hand; the depth sounder moves to Nine Mile Creek | none | art for the rack, bait box and goods; new gear defs for the extra rod tiers |
 | 4 | **Save v26** | a bought-out shelf stays bought out after a reload | **v26** (approved) | lead-architect |
 | 5 | **The counter catalogue** | order a rod rack, pay now, collect the parcel at the counter on the first run 2 or more days later; no cancelling | v26 rows from slice 4 | catalogue tab, parcel art |
@@ -347,10 +370,9 @@ no boat hardware at St Peters, the 2-day wait, no cancellations, Nine Mile Creek
 
 Still open:
 
-1. **Saving the bag.** Ruled by the owner on 2026-11-23: the bag is droppable with items inside, and if
-   he sleeps holding it, the bag is dropped by the bed (replaces "found put away", section 3.3). This
-   needs saved data; approval for v26 is asked, not yet given. Lean: fold the dropped bag into v26 as a
-   small extra list.
+1. **Saving the bag.** Ruled by the owner on 2026-11-23 and built for the running game (section 3.3).
+   The set-down bag and its contents are the third thing save v26 carries, with the store purchases and
+   the paid special orders. Until v26, a full restart finds the goods in his supplies and no bag.
 2. **Ice and bait in the bag?** Lean: no. Ice is wet and goes to the locker; bait goes to the tackle box.
    Both are data (`IntoBag` on the slot), so either can change without code.
 3. **The extra rod tiers** need new gear definitions (a cheaper first rod and a better rod), with prices

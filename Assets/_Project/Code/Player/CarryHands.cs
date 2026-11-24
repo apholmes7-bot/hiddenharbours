@@ -242,6 +242,7 @@ namespace HiddenHarbours.Player
             GameServices.Hands = this;
             GameServices.CatchHands = this;
             GameServices.BagHands = this;
+            SubscribeBagSignals();
         }
 
         /// <summary>
@@ -572,7 +573,7 @@ namespace HiddenHarbours.Player
 
         private void LateUpdate()
         {
-            DropEmptyBag();
+            KeepBag();
             if (IsCarrying) ApplyCarriedPose();
             else
             {
@@ -973,6 +974,7 @@ namespace HiddenHarbours.Player
         /// nothing, so it must not leave a rod it hid hidden.</summary>
         private void OnDisable()
         {
+            UnsubscribeBagSignals();
             _catchMesh?.Hide();
             _toolMesh?.Hide();
             _pailMesh?.Hide();

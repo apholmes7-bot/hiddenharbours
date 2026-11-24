@@ -135,6 +135,7 @@ namespace HiddenHarbours.Tests.EditMode
             public ShoppingBagRefusal Room = ShoppingBagRefusal.None;
             public readonly List<string> Bagged = new List<string>();
             public bool HoldsBag => Bagged.Count > 0;
+            public bool BagIsSetDown => false;
             public ShoppingBagRefusal CanBag(ShoppingBagDef bag) => Room;
             public ShoppingBagRefusal TryBag(ShoppingBagDef bag, string supplyId)
             {

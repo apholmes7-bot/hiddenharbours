@@ -27,5 +27,8 @@ namespace HiddenHarbours.Core
 
         /// <summary>How near (m) to his storage he must stand for the bag to offer to put the shopping away.</summary>
         [Min(0f)] public float PutAwayReachMeters = 1.5f;
+
+        /// <summary>How near (m) he must stand to a bag he set down to pick it up again.</summary>
+        [Min(0f)] public float PickUpReachMeters = 1.2f;
     }
 }

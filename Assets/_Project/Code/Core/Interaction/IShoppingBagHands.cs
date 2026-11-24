@@ -14,6 +14,10 @@ namespace HiddenHarbours.Core
 
         /// <summary>No game is loaded to keep the goods in.</summary>
         NoSave = 3,
+
+        /// <summary>His bag is set down somewhere with goods in it, and he has one bag at a time: he
+        /// fetches it before he bags anything more.</summary>
+        BagElsewhere = 4,
     }
 
     /// <summary>
@@ -27,6 +31,9 @@ namespace HiddenHarbours.Core
         /// <summary>A shopping bag is in one of his hands.</summary>
         bool HoldsBag { get; }
 
+        /// <summary>His shopping bag lies set down in the world with goods in it.</summary>
+        bool BagIsSetDown { get; }
+
         /// <summary>Whether one more good can go into a <paramref name="bag"/>, asked BEFORE money moves:
         /// the bag in his hand has room, or a hand is free for a new bag.</summary>
         ShoppingBagRefusal CanBag(ShoppingBagDef bag);
@@ -39,6 +46,40 @@ namespace HiddenHarbours.Core
         /// <summary>Puts the shopping away into his storage <paramref name="storageId"/>: the goods can be
         /// used from now on and the bag leaves his hand. False, and nothing changes, with no bag.</summary>
         bool TryPutAway(string storageId);
+    }
+
+    /// <summary>Raised when the shopping bag is set down with its goods inside: by his own press, or by
+    /// the bed as he lies down to sleep.</summary>
+    public readonly struct ShoppingBagSetDown
+    {
+        /// <summary>The region it was set down in ("" where none is known).</summary>
+        public readonly string RegionId;
+
+        /// <summary>Where it stands, world metres.</summary>
+        public readonly UnityEngine.Vector2 Position;
+
+        /// <summary>How many goods are in it.</summary>
+        public readonly int Count;
+
+        /// <summary>True when he lay down to sleep holding it and it was left by the bed.</summary>
+        public readonly bool ByTheBed;
+
+        public ShoppingBagSetDown(string regionId, UnityEngine.Vector2 position, int count, bool byTheBed)
+        {
+            RegionId = regionId ?? "";
+            Position = position;
+            Count = count;
+            ByTheBed = byTheBed;
+        }
+    }
+
+    /// <summary>Raised when he picks the set-down shopping bag up again.</summary>
+    public readonly struct ShoppingBagPickedUp
+    {
+        /// <summary>How many goods are in it.</summary>
+        public readonly int Count;
+
+        public ShoppingBagPickedUp(int count) { Count = count; }
     }
 
     /// <summary>Raised when he puts the shopping in his bag away into his own storage.</summary>

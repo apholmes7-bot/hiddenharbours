@@ -1,20 +1,31 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace HiddenHarbours.Core
 {
     /// <summary>
-    /// <b>What is in the paper shopping bag in his hand</b> (buying at the shelf, slice 2), as goods
-    /// <b>set aside</b> from his supplies.
+    /// <b>What is in the paper shopping bag, and where the bag is</b> (buying at the shelf, slice 2 and 2b),
+    /// as goods <b>set aside</b> from his supplies.
     ///
-    /// <para><b>Why set aside rather than a second store.</b> Held things are not saved (a fish in hand is
-    /// not either), and the save format may not change for the bag. So a bagged purchase goes into his
-    /// supplies exactly as a counter purchase always did, and is saved at once; this list only says which of
-    /// those supplies are still in the bag. <see cref="SupplyLocker"/> does not count them, so the stove,
-    /// the soap and the recipes cannot use shopping he has not put away. Putting the bag away
-    /// (<see cref="Release"/>) ends the set-aside. A reload has no bag, and the list is tied to the
-    /// <see cref="SaveData"/> it was filled against, so the goods are then simply found put away: nothing
-    /// lost, nothing paid twice.</para>
+    /// <para><b>Why set aside rather than a second store.</b> The save format does not change for the bag
+    /// in this slice. So a bagged purchase goes into his supplies exactly as a counter purchase always did,
+    /// and is saved at once; this list only says which of those supplies are still in the bag.
+    /// <see cref="SupplyLocker"/> does not count them, so the stove, the soap and the recipes cannot use
+    /// shopping he has not put away. Putting the bag away (<see cref="Release"/>) ends the set-aside.</para>
+    ///
+    /// <para><b>The bag can be set down</b> (the owner's ruling, 2026-11-23: "bag gets dropped by the bed,
+    /// bag is droppable with items inside"). The goods stay set aside while it lies there;
+    /// <see cref="IsSetDown"/>, <see cref="SetDownRegionId"/> and <see cref="SetDownPosition"/> say where.
+    /// </para>
+    ///
+    /// <para><b>The bag and the save, until the save holds it.</b> This list lives for the running game
+    /// and is tied to the <see cref="SaveData"/> it was filled against. Leaving for the title and coming
+    /// back keeps that game in memory, so the bag is still his, and it is put back in his hand. A new game
+    /// is another <see cref="SaveData"/>, so the bag of the game that was left is forgotten. A full quit
+    /// forgets the list: the goods are his either way (they were saved when bought), so after a restart
+    /// they are in his supplies and there is no bag. Nothing is lost and nothing is paid twice. Saving the
+    /// set-down bag is the next save change's job.</para>
     ///
     /// <para>One bag at a time (one player). Static and null-safe; reads allocate nothing.</para>
     /// </summary>
@@ -24,6 +35,69 @@ namespace HiddenHarbours.Core
         private static readonly List<string> _ids = new List<string>(8);
         private static readonly List<int> _counts = new List<int>(8);
         private static int _total;
+
+        // ---- where the bag is ----------------------------------------------------------------------
+
+        /// <summary>The kind of bag the goods are in, or null with no bag. Kept so the bag can be put back
+        /// in his hand when its picture was lost (the scene it stood in was unloaded).</summary>
+        public static ShoppingBagDef Bag { get; private set; }
+
+        /// <summary>True while any goods are set aside, whichever game they belong to. The cheap test a
+        /// per-frame reader asks first.</summary>
+        public static bool Any => _total > 0;
+
+        /// <summary>True while the bag of <paramref name="save"/> holds goods and lies set down in the
+        /// world rather than in his hand.</summary>
+        public static bool IsSetDown(SaveData save) => _setDown && Total(save) > 0;
+
+        /// <summary>The region the bag was set down in ("" in his hand, or where no region is known).</summary>
+        public static string SetDownRegionId { get; private set; } = "";
+
+        /// <summary>Where the bag was set down, world metres.</summary>
+        public static Vector2 SetDownPosition { get; private set; }
+
+        /// <summary>True when the bag was set down by a bed as he lay down, rather than by his own press.</summary>
+        public static bool SetDownByTheBed { get; private set; }
+
+        private static bool _setDown;
+
+        /// <summary>Names the kind of bag the goods of <paramref name="save"/> are in. Ignored for a game
+        /// the bag does not belong to.</summary>
+        public static void NoteBag(SaveData save, ShoppingBagDef bag)
+        {
+            if (save != null && ReferenceEquals(save, _save)) Bag = bag;
+        }
+
+        /// <summary>The bag of <paramref name="save"/> now lies at <paramref name="position"/> in
+        /// <paramref name="regionId"/>. False, and nothing changes, when that bag holds nothing.</summary>
+        public static bool MarkSetDown(SaveData save, string regionId, Vector2 position, bool byTheBed)
+        {
+            if (Total(save) <= 0) return false;
+            _setDown = true;
+            SetDownRegionId = regionId ?? "";
+            SetDownPosition = position;
+            SetDownByTheBed = byTheBed;
+            return true;
+        }
+
+        /// <summary>The bag is in his hand again.</summary>
+        public static void MarkHeld()
+        {
+            _setDown = false;
+            SetDownRegionId = "";
+            SetDownPosition = default;
+            SetDownByTheBed = false;
+        }
+
+        /// <summary>Whether the set-down bag of <paramref name="save"/> lies in <paramref name="regionId"/>:
+        /// a bag left in one region is not seen or picked up from another. A bag set down where no region
+        /// was known lies wherever he is.</summary>
+        public static bool LiesIn(SaveData save, string regionId)
+        {
+            if (!IsSetDown(save)) return false;
+            return SetDownRegionId.Length == 0
+                   || string.Equals(SetDownRegionId, regionId ?? "", StringComparison.Ordinal);
+        }
 
         /// <summary>True when goods are set aside against <paramref name="save"/>.</summary>
         public static bool HoldsAny(SaveData save) => Total(save) > 0;
@@ -81,6 +155,7 @@ namespace HiddenHarbours.Core
                 if (_counts[i] > 1) _counts[i]--;
                 else { _ids.RemoveAt(i); _counts.RemoveAt(i); }
                 _total--;
+                if (_total == 0) Clear();   // an empty bag is no bag: it is in no place either
                 return true;
             }
             return false;
@@ -102,6 +177,8 @@ namespace HiddenHarbours.Core
             _ids.Clear();
             _counts.Clear();
             _total = 0;
+            Bag = null;
+            MarkHeld();
         }
     }
 }

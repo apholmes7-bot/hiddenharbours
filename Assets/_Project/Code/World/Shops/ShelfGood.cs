@@ -146,6 +146,7 @@ namespace HiddenHarbours.World
                 // Asked before any money moves: a full bag, or no hand for a new one, refuses the good.
                 ShoppingBagRefusal room = bagHands.CanBag(_bag);
                 if (room == ShoppingBagRefusal.BagFull) result = ShelfBuyResult.BagFull;
+                else if (room == ShoppingBagRefusal.BagElsewhere) result = ShelfBuyResult.BagElsewhere;
                 else if (room == ShoppingBagRefusal.HandsFull) result = ShelfBuyResult.HandsFull;
                 else
                 {
@@ -173,6 +174,7 @@ namespace HiddenHarbours.World
                 case ShelfBuyResult.TooDear: return InnerVoiceCues.ShelfTooDear;
                 case ShelfBuyResult.HandsFull: return InnerVoiceCues.ShelfHandsFull;
                 case ShelfBuyResult.BagFull: return InnerVoiceCues.ShelfBagFull;
+                case ShelfBuyResult.BagElsewhere: return InnerVoiceCues.ShelfBagElsewhere;
                 default: return null;
             }
         }

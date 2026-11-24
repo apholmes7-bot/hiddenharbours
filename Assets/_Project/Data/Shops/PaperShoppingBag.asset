@@ -17,3 +17,4 @@ MonoBehaviour:
   Capacity: 8
   HeldSprite: {fileID: 21300000, guid: 452edb7cbfbd4b47857d6e0b29eeb5c6, type: 3}
   PutAwayReachMeters: 1.5
+  PickUpReachMeters: 1.2
