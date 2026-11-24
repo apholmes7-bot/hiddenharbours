@@ -64,6 +64,10 @@ namespace HiddenHarbours.Tests.PlayMode
         const float LanternBarPixels = 100f;
         const float BarPixelsPerMetre = 64f;
 
+        /// <summary>The coarsest plate the lantern bar is trusted at: today's 32 px/m (a 25 px bar) is fine; much
+        /// coarser and the bar would shrink toward nothing.</summary>
+        const float MinPlatePixelsPerMetre = 24f;
+
         /// <summary>How much brighter than the lamps-off frame a pixel must be to count as LIT. Summed over
         /// the three channels of a 0..255 read-back, so ~4 % of one channel — above the dither and well
         /// below anything a lamp does.</summary>
@@ -196,6 +200,12 @@ namespace HiddenHarbours.Tests.PlayMode
                 $"the BEFORE arm lit {litPool} px against a {noiseFloor} px noise floor — that is the sea " +
                 "moving, not a lamp, so neither number below means anything");
             float density = _h / (2f * _cam.orthographicSize);
+            // A bar that scales with density must not scale to nothing: a plate drawn much further out than
+            // today's 32 px/m cannot judge a 0.14 m lantern at all, so it fails here instead of passing on a
+            // bar of one or two pixels.
+            Assert.GreaterOrEqual(density, MinPlatePixelsPerMetre,
+                $"the plate was drawn at {density:0.0} px/m (ortho {_cam.orthographicSize:0.000} on {_h} px); below " +
+                $"{MinPlatePixelsPerMetre:0} px/m the lantern is too few pixels to say whether it reads");
             int lanternBar = Mathf.RoundToInt(LanternBarPixels * (density / BarPixelsPerMetre) * (density / BarPixelsPerMetre));
             Assert.Greater(litFitting, Mathf.Max(noiseFloor, lanternBar),
                 $"the lantern lit {litFitting} px (noise floor {noiseFloor}): it does not READ. A lamp " +
@@ -356,10 +366,12 @@ namespace HiddenHarbours.Tests.PlayMode
             // 36,888 px. The beam is fine; the first frame is not evidence.
             SetQuadGlowScale(spot, 1f);
             yield return null; yield return null;
-            Capture();
+            byte[] primer = Capture();
 
             yield return null; yield return null;
             byte[] flat = Capture();
+            Debug.Log($"[{PlateDir}] beam primer: the measured full-quad frame is {Footprint(primer, flat)} px brighter " +
+                      $"than the discarded first capture ({Footprint(flat, primer)} px darker)");
             SavePlate("04-beam-0200-fullquad-BEFORE.png", flat);
 
             SetQuadGlowScale(spot, BoatSpotlight.DefaultQuadGlowScale);
