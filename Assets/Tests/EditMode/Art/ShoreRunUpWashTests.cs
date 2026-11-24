@@ -271,10 +271,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // normal, with the run-up held, so it is _WashLineWidth metres of ground on a flat or a slope alike.
             // v8: up the LOCAL shore normal (groundDir), not the waterline point's: on the sand the line's tap was
             // aimed by a point that moves with the warp, so its ground step wandered at peak (the shredded line).
-            int open = IndexOf(src, "if (washOnSand > 0.001 && washEdgeQ >= -1e-4 && dot(groundDir, groundDir) > 1e-6)");
+            // The lip (the wet film's look): the same test, washLipInset metres of level inside the edge (0 with the
+            // lip dials off), and one line-width of ground that may follow the one foam's lace (ShoreThinEdgeTests).
+            int open = IndexOf(src, "if (washOnSand > 0.001 && washEdgeQ >= washLipInset - 1e-4 && dot(groundDir, groundDir) > 1e-6)");
             int land = IndexOf(src,
-                "float washLandDepth = _WaterLevel - SeabedElevation(worldXY + warp + groundDir * max(_WashLineWidth, 0.0));");
-            int past = IndexOf(src, "if (washLandDepth + edgeSwash < 0.0)");
+                "float washLandDepth = _WaterLevel - SeabedElevation(worldXY + warp + groundDir * washLipWidth);");
+            int past = IndexOf(src, "if (washLandDepth + edgeSwash < washLipInset)");
             int line = IndexOf(src, "washLine = washOnSand * saturate(_WashLineOpacity);");
             Assert.That(edgeQ < clip && clip < gate && gate < open && open < land && land < past && past < line,
                 "the wash must read the SAME edgeSwash the clip draws, after it: the leading line is then " +
@@ -394,7 +396,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             int heaviest = IndexOf(src,
                 "float washHeaviest = max(cover * _SurfColor.a, max(lip * _SurfLipColor.a, barrel * _SurfBarrelColor.a));");
             int cap = IndexOf(src, "col.rgb = lerp(washUnder, col.rgb, lerp(1.0, washCapScale, max(washBeach, shoreSurf)));");
-            int washLine = IndexOf(src, "col.rgb = lerp(col.rgb, _FoamColor.rgb, washLine);");
+            int washLine = IndexOf(src, "col.rgb = lerp(col.rgb, washLineColor, washLine);");
             Assert.That(beach < barrelYield && barrelYield < lipYield && lipYield < under && under < barrel &&
                         barrel < lip && lip < heaviest && heaviest < cap && cap < washLine,
                 "the anatomy yields before it is banded, the cap follows every surf layer, and the line is laid last");
@@ -451,7 +453,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             StringAssert.Contains("washAge01, washTorn, surfSheetBay, _FoamSheetWash.x);", src);
             StringAssert.Contains("* lerp(1.0, saturate(_WashSheetOpacity), saturate(washOnSand));", src);
             int lip = IndexOf(src, "col.a   = max(col.a, lip * _SurfLipColor.a);");
-            int washLine = IndexOf(src, "col.rgb = lerp(col.rgb, _FoamColor.rgb, washLine);");
+            int washLine = IndexOf(src, "col.rgb = lerp(col.rgb, washLineColor, washLine);");
             Assert.Greater(washLine, lip, "the leading line is laid over the surf, last");
         }
 
@@ -540,7 +542,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             int share = IndexOf(src, "surfShore = saturate(-shoreTapDepth / max(surfBeachReach, 1e-3));");
             // The box is floored at 1e-3 so a tap on a dry plateau never dries a wet pixel (twin AlongShoreGateDepth).
             int box = IndexOf(src, "surfGateDepth = max(lerp(surfEvalDepth, boxDepth, surfShore), 1e-3);");
-            int breaking = IndexOf(src, "surfBreaking = SurfBreaking01(surfGateDepth, surfFetchEnv);");
+            int breaking = IndexOf(src, "surfBreaking = SurfBreaking01(surfGateDepth, surfBoreEnv);");
             int pocket = IndexOf(src, "surfCover = saturate(surfCover * lerp(1.0, max(_SurfPocketBoost, 1.0), pocket));");
             int fine = IndexOf(src, "max(_SurfNoiseScale, 1e-3) * max(_WashSurfDetail, 1.0),");
             int brk = IndexOf(src, "surfShoreBreak = smoothstep(thr - soft, thr + soft, churnShore);");

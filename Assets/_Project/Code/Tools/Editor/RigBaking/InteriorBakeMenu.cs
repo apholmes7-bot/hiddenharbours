@@ -263,6 +263,13 @@ namespace HiddenHarbours.Tools.RigBaking
         /// </summary>
         public static string ExteriorOptionsFor(string roomKey)
         {
+            // Ginny's room stands inside her own shell, which is baked outside the village kit.
+            if (roomKey == GinnyCottageShellBake.Key)
+            {
+                VillageBuildingKit.Build ginny = GinnyCottageShellBake.Build();
+                return VillageBuildingBakeMenu.BaseOptionsLiteralFor(ginny, RigCatalog.Get(ginny.RigKey).GlobalName);
+            }
+
             string exteriorKey = InteriorKit.ExteriorKeyFor(roomKey);
             if (exteriorKey == null) return null;
 

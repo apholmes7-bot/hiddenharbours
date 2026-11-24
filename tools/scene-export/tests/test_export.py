@@ -39,6 +39,20 @@ import hh_scene_export  # noqa: E402
 
 
 class UnityYamlTests(unittest.TestCase):
+    def test_plain_folded_note_keeps_later_routine_blocks_and_fields(self):
+        docs = U.parse(
+            "--- !u!114 &1\nMonoBehaviour:\n"
+            "  Entries:\n"
+            "  - StartHour: 13\n"
+            "    Why: up the lane with the day's mail,\n"
+            "      then home again\n"
+            "  - StartHour: 21\n"
+            "    Why: home\n"
+            "  Speed: 1.1\n")
+        self.assertEqual([e['StartHour'] for e in docs[0].data['Entries']], ['13', '21'])
+        self.assertEqual(docs[0].data['Entries'][0]['Why'], "up the lane with the day's mail, then home again")
+        self.assertEqual(docs[0].data['Speed'], '1.1')
+
     def test_block_sequence_sits_at_the_key_indent(self):
         docs = U.parse(
             "--- !u!1 &5\n"
@@ -87,6 +101,42 @@ class UnityYamlTests(unittest.TestCase):
         )
         self.assertIn("creek's mouth", docs[0].data["Description"])
         self.assertEqual(docs[0].data["Id"], "region.x")
+
+
+class RoutineAuditTests(unittest.TestCase):
+    def test_sampling_preserves_metres_and_ignores_collinear_vertex_insertion(self):
+        from hhexport.routine_audit import samples
+        expected = [((.25, 0), .5), ((.75, 0), .5), ((1.1, 0), .2)]
+        actual = list(samples([(0, 0), (1.2, 0)]))
+        self.assertEqual(len(actual), 3)
+        for (p, w), (ep, ew) in zip(actual, expected):
+            self.assertAlmostEqual(p[0], ep[0])
+            self.assertAlmostEqual(w, ew)
+        self.assertEqual(actual, list(samples([(0, 0), (.5, 0), (1.2, 0)])))
+        self.assertEqual([], list(samples([(1, 2), (1, 2)])))
+
+    def test_thin_obstacle_between_samples_is_detected_and_gate_is_open(self):
+        from hhexport.routine_audit import intersects, polygon_hit
+        self.assertTrue(polygon_hit((0, 0), (1, 0), [(.1,-1),(.11,-1),(.11,1),(.1,1)]))
+        self.assertTrue(intersects((0,0), (2,0), (1,0), (3,0)))
+        self.assertFalse(intersects((0,0), (2,0), (1,1), (1,2)))
+        self.assertFalse(polygon_hit((0,0), (1,0), [(0,1),(1,1),(1,2),(0,2)]))
+
+    def test_lane_bends_reverse_on_return_trip(self):
+        from hhexport.routine_audit import node_path, lane_polyline
+        lanes = dict(_nodeParents='ffffffff00000000', _nodePositions=[dict(x='0',y='0'),dict(x='5',y='0')],
+                     _viaStart='0000000000000000', _viaCount='0000000002000000',
+                     _via=[dict(x='4',y='1'),dict(x='1',y='2')])
+        outbound, count = lane_polyline(lanes, node_path([-1,0],0,1))
+        inbound, _ = lane_polyline(lanes, node_path([-1,0],1,0))
+        self.assertEqual(outbound, [(0,0),(1,2),(4,1),(5,0)])
+        self.assertEqual(inbound, list(reversed(outbound)))
+        self.assertEqual(count, 2)
+
+    def test_all_authored_entries_survive_the_existing_reader(self):
+        path = os.path.join(REPO, 'Assets/_Project/Data/Routines/MargueriteLeBlancRoutine.asset')
+        self.assertEqual([float(e['StartHour']) for e in U.parse_file(path)[0].data['Entries']],
+                         [7, 13, 14.5, 19, 21])
 
 
 class RigPinningTests(unittest.TestCase):

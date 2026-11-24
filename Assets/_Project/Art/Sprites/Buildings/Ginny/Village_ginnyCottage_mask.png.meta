@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: 0cd84caccdaafe048a252ba23c7e1258
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3857352579801309569
+    second: Village_ginnyCottage_mask_0
+  - first:
+      213: -3415867709196594120
+    second: Village_ginnyCottage_mask_1
+  - first:
+      213: 187453074390940820
+    second: Village_ginnyCottage_mask_2
+  - first:
+      213: 1480414590501414822
+    second: Village_ginnyCottage_mask_3
+  - first:
+      213: 3353826439908686621
+    second: Village_ginnyCottage_mask_4
+  - first:
+      213: -8220183089718545783
+    second: Village_ginnyCottage_mask_5
+  - first:
+      213: -8592861491578373837
+    second: Village_ginnyCottage_mask_6
+  - first:
+      213: -5995241689046179640
+    second: Village_ginnyCottage_mask_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Village_ginnyCottage_mask_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 456
+        width: 456
+        height: 456
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3135965}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9df860f2fbc8f6c44a0703a459b7530f
+      internalID: -1410921781
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_ginnyCottage_mask_d1
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 456
+        width: 456
+        height: 456
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3135965}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5bfa4b4edb1c3b84c810312ff0aeab2f
+      internalID: -726879265
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_ginnyCottage_mask_d2
+      rect:
+        serializedVersion: 2
+        x: 912
+        y: 456
+        width: 456
+        height: 456
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3135965}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6e7798dcaa4b1554db3cdb1992c90532
+      internalID: 1403919964
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_ginnyCottage_mask_d3
+      rect:
+        serializedVersion: 2
+        x: 1368
+        y: 456
+        width: 456
+        height: 456
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3135965}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4dd4106cfae504444a61206b685c561c
+      internalID: -990511159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_ginnyCottage_mask_d4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 456
+        height: 456
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3135965}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: df524d5fadd5f2342a8dd10f20e39e9a
+      internalID: 855779139
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_ginnyCottage_mask_d5
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 0
+        width: 456
+        height: 456
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3135965}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4960bb7d3293adc4098a9b9a3a815bbf
+      internalID: -660604596
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_ginnyCottage_mask_d6
+      rect:
+        serializedVersion: 2
+        x: 912
+        y: 0
+        width: 456
+        height: 456
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3135965}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eff682b9e1949dd41b374ac8aa051b39
+      internalID: 487110975
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_ginnyCottage_mask_d7
+      rect:
+        serializedVersion: 2
+        x: 1368
+        y: 0
+        width: 456
+        height: 456
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3135965}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1ce5476c4f267784d8281e6de56a604c
+      internalID: 1256679958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 95142fe941cee164ba8beaeb4d3a379e
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Village_ginnyCottage_mask_d0: -1410921781
+      Village_ginnyCottage_mask_d1: -726879265
+      Village_ginnyCottage_mask_d2: 1403919964
+      Village_ginnyCottage_mask_d3: -990511159
+      Village_ginnyCottage_mask_d4: 855779139
+      Village_ginnyCottage_mask_d5: -660604596
+      Village_ginnyCottage_mask_d6: 487110975
+      Village_ginnyCottage_mask_d7: 1256679958
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

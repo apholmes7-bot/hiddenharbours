@@ -10,8 +10,8 @@ namespace HiddenHarbours.Tests.EditMode
     /// <summary>
     /// St Peters ROD LICENCE GATE: landing cod on the rod requires the cod licence. The FishingController
     /// routes its land-time decision through <see cref="CatchLicensePolicy.MayLand"/> + the Core
-    /// <see cref="ILicenseService"/>. Covers: unlicensed cod is released cozily (nothing added, no
-    /// FishCaught); the same cod lands once the cod licence is held; an ungated species (a clam) is never
+    /// <see cref="ILicenseService"/>. Covers: unlicensed cod is won, comes to hand and is let go with his own
+    /// line (nothing added, no FishCaught, no Notebook record); the same cod lands once the cod licence is held; an ungated species (a clam) is never
     /// gated. Drives the full FSM via Tick — no scene.
     /// </summary>
     public class FishingLicenseGateTests
@@ -37,27 +37,47 @@ namespace HiddenHarbours.Tests.EditMode
 
         private readonly List<Object> _spawned = new();
         private int _caught;
+        private int _released;
+        private readonly List<UnlicensedCatchReleased> _unlicensed = new();
+        private readonly List<InnerVoiceCue> _cues = new();
         private void OnCaught(FishCaught e) => _caught++;
+        private void OnReleased(CatchReleased e) => _released++;
+        private void OnUnlicensed(UnlicensedCatchReleased e) => _unlicensed.Add(e);
+        private void OnCue(InnerVoiceCue e) => _cues.Add(e);
 
         [SetUp]
         public void SetUp()
         {
             _caught = 0;
-            EventBus.Clear<FishCaught>();
-            EventBus.Clear<FishingStateChanged>();
+            _released = 0;
+            _unlicensed.Clear();
+            _cues.Clear();
+            ClearBus();
             EventBus.Subscribe<FishCaught>(OnCaught);
+            EventBus.Subscribe<CatchReleased>(OnReleased);
+            EventBus.Subscribe<UnlicensedCatchReleased>(OnUnlicensed);
+            EventBus.Subscribe<InnerVoiceCue>(OnCue);
             GameServices.Reset();
+            UnlicensedCatch.UseCatalog(null);   // only the handed licences gate: the test owns the data
         }
 
         [TearDown]
         public void TearDown()
         {
-            EventBus.Unsubscribe<FishCaught>(OnCaught);
-            EventBus.Clear<FishCaught>();
-            EventBus.Clear<FishingStateChanged>();
+            ClearBus();
             GameServices.Reset();
+            UnlicensedCatch.ResetCatalog();
             foreach (var o in _spawned) if (o != null) Object.DestroyImmediate(o);
             _spawned.Clear();
+        }
+
+        private static void ClearBus()
+        {
+            EventBus.Clear<FishCaught>();
+            EventBus.Clear<CatchReleased>();
+            EventBus.Clear<UnlicensedCatchReleased>();
+            EventBus.Clear<InnerVoiceCue>();
+            EventBus.Clear<FishingStateChanged>();
         }
 
         private FishSpeciesDef MakeFish(string id, FishCategory cat)
@@ -116,9 +136,17 @@ namespace HiddenHarbours.Tests.EditMode
             var c = MakeController(hold, new[] { cod }, licenses, seed: 999);
             RunToResult(c);
 
-            Assert.AreEqual(FishingPhase.Snapped, c.Phase, "unlicensed cod slips back (cozy released result)");
+            Assert.AreEqual(FishingPhase.Landed, c.Phase,
+                "the fight is won and the cod comes to hand: the release presentation, not a snapped line");
             Assert.AreEqual(0, hold.UsedUnits, "nothing is stowed without the licence");
             Assert.AreEqual(0, _caught, "no FishCaught when the catch is released for want of a licence");
+            Assert.AreEqual(0, _released, "no CatchReleased either: the Notebook counts that, and he takes no notes");
+            Assert.AreEqual(1, _unlicensed.Count, "the distinct unlicensed-release signal fires once");
+            Assert.AreEqual("fish.atlantic_cod", _unlicensed[0].Item.SpeciesId);
+            Assert.AreEqual("license.cod", _unlicensed[0].RequiredLicenceId);
+            Assert.AreEqual(1, _cues.Count, "he says one line");
+            Assert.AreEqual(InnerVoiceCues.UnlicensedCatch, _cues[0].CueId);
+            Assert.AreEqual("fish.atlantic_cod", _cues[0].Name, "the line names the species (this rig's display name is its id)");
         }
 
         [Test]
@@ -137,6 +165,8 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(FishingPhase.Landed, c.Phase, "with the cod licence the cod lands normally");
             Assert.AreEqual(1, hold.UsedUnits);
             Assert.AreEqual(1, _caught);
+            Assert.AreEqual(0, _unlicensed.Count, "a licensed catch is never released by the licence rule");
+            Assert.AreEqual(0, _cues.Count, "and he says nothing about a licence");
         }
 
         [Test]

@@ -160,8 +160,31 @@ morning a shelf holds what the room holds after the run, the islanders' buying d
 the store's hours, and at closing it equals the ledger's level at dusk. A tide-blocked stretch thins the
 shelves day by day to empty; the next run refills them. The player's purchases (`TryTakeOne`) come off the
 shelf and feed the ledger's `ExtraDraw`; they are held for the session only (saving them is slice 8) and
-the next full top-up clears their effect. Data: `Data/IslandLedgers/StPetersStoreShelves.asset`
+the next full top-up clears their effect. Data: `Data/Resources/IslandSupply/Shelves/StPetersStoreShelves.asset`
 (`islandshelves.st_peters_general`: groceries, ice, bait and gas lines, store hours 07:00 to 19:00); the
-Core read contract is `IIslandShelvesView` / `IIslandShelves`. Nothing in game reads it yet: the counter,
-a keeper's line and shelf art are later work. Tests: `Tests/EditMode/Economy/IslandStoreShelvesTests.cs`
+Core read contract is `IIslandShelvesView` / `IIslandShelves`. Tests: `Tests/EditMode/Economy/IslandStoreShelvesTests.cs`
 and `Tests/EditMode/IslandSupply/IslandShelvesShippedTests.cs`.
+
+### Sold out at the counter and on the shelf
+
+Owner ruling 2026-11-23: a sold-out sign stands where the product normally sits, and the counter cannot
+sell what is not there. `IslandShelvesHost` (Economy, self-installing) builds the shelves in game from the
+Def, the route and the island's tide (a windowed run calendar, `IslandRunDays`, so a long game never holds
+an open-ended one), registers them in the Core `IslandShelvesDirectory`, and rechecks each line every
+`RecheckGameMinutes`, publishing `IslandShelvesChanged` only when a count moves.
+
+- **The counter.** Each shelf line names the counter listings it holds (`CounterListingIds`; the Def's
+  `SellerId` names whose book). `BuyCatalog` counts those rows: the note says how many are on the shelf, an
+  empty one reads "Sold out." in faint ink with the name ruled through, and `Confirm` asks the shelf again
+  before the vendor is called, so an empty shelf takes no money and gives nothing. A sale takes one item off
+  (`TryTakeOne`) and publishes the change. Rows no shelf counts (rod, sounder, soap, licences) are unchanged.
+- **The card.** `ShopShelfSlotsDef` (World, `Data/Resources/ShopShelfSlots/`, one per store) maps a slot
+  on the room picture to a shelf line. `SoldOutSigns` puts a small card (`Art/Sprites/Buildings/Shops/Signs/SoldOutCard.png`)
+  on each empty slot while the player is inside on the ground floor, reading the shelves only through the
+  Core directory and refreshing on walking in or on `IslandShelvesChanged`, never per frame.
+- **Not yet.** The player's purchases are held for the session; a load rebuilds the shelves from the
+  calendar. Saving them is slice 8 (one `EconomyLedgerRows` row per line drawn, see the plan's §4.1).
+  Vendor `TryBuy` calls outside the book (dev keys) are not counted.
+
+Tests: `Tests/EditMode/IslandSupply/StoreSoldOutTests.cs` (refusal, cap, the card through a supply cycle,
+determinism) and `StoreSoldOutShippedTests.cs` (the shipped wiring, the windowed calendar).

@@ -3,9 +3,9 @@
  "schema": "hidden-harbours/terrain-cliff-gameplay@1",
  "rig": "Art/pxCliffFaceRig.js",
  "language": "Art/pixelLanguage.js",
- "derivedFromRigSha256": "3a58411017170055c12f9707e334603270a17cad60cb74fe69ca642ce2af24ba",
+ "derivedFromRigSha256": "a0305e157fa60de711becd5137279afe1620f761d819c6a8f35e15ad99c5e992",
  "languageDerivedFromRigSha256": "2d6fb8201e8454670aeec0abbe4cda2ae744f6a2902924da9357ce09b8242a4d",
- "generated": "2026-09-13",
+ "generated": "2026-11-23",
  "frame": {
   "units": "metres",
   "scale_px_per_m": 32,

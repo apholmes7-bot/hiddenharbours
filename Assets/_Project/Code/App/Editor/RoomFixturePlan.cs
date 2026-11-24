@@ -44,6 +44,8 @@ namespace HiddenHarbours.App.Editor
             Shower = 4,
             Bath = 5,
             Toilet = 6,
+            Fridge = 7,
+            KitchenSink = 8,
         }
 
         /// <summary>A ground compass way, in 45 degree steps clockwise from north (world <c>+y</c>).</summary>
@@ -92,6 +94,8 @@ namespace HiddenHarbours.App.Editor
             Kind.Shower => "shower",
             Kind.Bath => "bath",
             Kind.Toilet => "toilet",
+            Kind.Fridge => "fridge",
+            Kind.KitchenSink => "kitchen_sink",
             _ => "unknown",
         };
 
@@ -106,12 +110,15 @@ namespace HiddenHarbours.App.Editor
             Kind.Shower => "washstation.shower",
             Kind.Bath => "washstation.bath",
             Kind.Toilet => "washstation.toilet",
+            Kind.Fridge => "kitchen_storage.fridge",
+            Kind.KitchenSink => "washstation.sink",
             _ => "",
         };
 
         /// <summary>Planning footprint in metres, as placed: <c>x</c> across the room, <c>y</c> along it.
         /// A counter run hugs the left side wall, so its depth runs across; the closet pieces are given
-        /// as they stand in the template below.</summary>
+        /// as they stand in the template below. The fridge and the kitchen sink are the appliance rig's own feet,
+        /// given as they stand against a FRONT (door) wall: x across their face, y their depth out from it.</summary>
         public static Vector2 Footprint(Kind kind) => kind switch
         {
             Kind.PrepCounter => new Vector2(0.60f, 0.90f),
@@ -121,8 +128,25 @@ namespace HiddenHarbours.App.Editor
             Kind.Shower => new Vector2(0.85f, 0.85f),
             Kind.Bath => new Vector2(1.60f, 0.75f),
             Kind.Toilet => new Vector2(0.45f, 0.70f),
+            Kind.Fridge => new Vector2(0.70f, 0.68f),
+            Kind.KitchenSink => new Vector2(1.00f, 0.60f),
             _ => Vector2.zero,
         };
+
+        /// <summary>A row's planning footprint turned to the wall it backs: <see cref="Footprint"/> gives the
+        /// counter pieces as they stand on a side (left or right) wall and the fridge and kitchen sink as they
+        /// stand on an end (front or back) wall, so a piece on the other kind of wall swaps its two sides. The
+        /// closet pieces are given as they stand on an end wall too (across the wall, then out from it), so a
+        /// toilet or basin on a side wall is turned as well: it reaches out from its wall by its depth, as its
+        /// picture does, not by its width.</summary>
+        public static Vector2 FootprintOf(Row row)
+        {
+            Vector2 f = Footprint(row.Kind);
+            bool side = row.Wall == Wall.Left || row.Wall == Wall.Right;
+            bool counter = row.Kind == Kind.PrepCounter || row.Kind == Kind.Stove || row.Kind == Kind.Microwave;
+            bool endPiece = row.Kind == Kind.Fridge || row.Kind == Kind.KitchenSink || IsBathroom(row.Kind);
+            return (counter && !side) || (endPiece && side) ? new Vector2(f.y, f.x) : f;
+        }
 
         /// <summary>One planned station.</summary>
         public readonly struct Row
@@ -168,11 +192,18 @@ namespace HiddenHarbours.App.Editor
             public readonly string BuildingKey;
             public readonly int Level;
             public readonly Rect Area;
-            public readonly float DoorFrom, DoorTo;   // along y, in the x = inner-edge partition
+            public readonly float DoorFrom, DoorTo;   // along y, in the x = inner-edge partition (or along x, below)
 
-            public Closet(string buildingKey, int level, Rect area, float doorFrom, float doorTo)
+            /// <summary>The door is in the closet's FRONT partition (y = <see cref="Area"/>.yMax), and
+            /// <see cref="DoorFrom"/>/<see cref="DoorTo"/> run along x: a washroom entered from the room in
+            /// front of it rather than from beside it (Ginny's).</summary>
+            public readonly bool DoorInFront;
+
+            public Closet(string buildingKey, int level, Rect area, float doorFrom, float doorTo,
+                          bool doorInFront = false)
             {
                 BuildingKey = buildingKey; Level = level; Area = area; DoorFrom = doorFrom; DoorTo = doorTo;
+                DoorInFront = doorInFront;
             }
         }
 
@@ -191,20 +222,24 @@ namespace HiddenHarbours.App.Editor
                                         Compass door, float w, float l, bool stove = true, bool prep = true)
         {
             float hw = w * 0.5f, hl = l * 0.5f, x = hw - CounterInset;
+            // The microwave's cabinet is shallower than a counter: it stands with its back to the same wall,
+            // so its centre sits nearer that wall by half the difference.
+            float xm = x + (Footprint(Kind.PrepCounter).x - Footprint(Kind.Microwave).x) * 0.5f;
             if (prep) yield return new Row(key, root, building, room, plan, 0, Kind.PrepCounter, new Vector2(x, hl - 2.60f), door, Wall.Left);
             if (stove)
             {
                 yield return new Row(key, root, building, room, plan, 0, Kind.Stove, new Vector2(x, hl - 1.60f), door, Wall.Left);
-                yield return new Row(key, root, building, room, plan, 0, Kind.Microwave, new Vector2(x, hl - 0.75f), door, Wall.Left);
+                yield return new Row(key, root, building, room, plan, 0, Kind.Microwave, new Vector2(xm, hl - 0.75f), door, Wall.Left);
             }
             else
-                yield return new Row(key, root, building, room, plan, 0, Kind.Microwave, new Vector2(x, hl - 1.60f), door, Wall.Left);
+                yield return new Row(key, root, building, room, plan, 0, Kind.Microwave, new Vector2(xm, hl - 1.60f), door, Wall.Left);
         }
 
-        const float ClosetWidth = 1.90f, ClosetDepth = 2.20f;
+        const float ClosetWidth = 1.90f, ClosetDepth = 2.70f;
 
-        /// <summary>The standard closet: toilet against the back wall in the corner, basin beside it,
-        /// shower in front of the toilet against the right wall. <paramref name="front"/> mirrors it to the
+        /// <summary>The standard closet: toilet against the back wall in the corner, basin beside it, and
+        /// the shower against the right wall beyond the floor he stands on to use either of them (it used to
+        /// stand on that floor, 1.6 m out, in front of the toilet). <paramref name="front"/> mirrors it to the
         /// front-right corner, where the toilet and basin back onto the front wall.</summary>
         static IEnumerable<Row> Bathroom(string key, string root, string building, string room, string plan,
                                          int level, Compass door, float w, float l, bool front = false)
@@ -213,7 +248,7 @@ namespace HiddenHarbours.App.Editor
             Wall end = front ? Wall.Front : Wall.Back;
             yield return new Row(key, root, building, room, plan, level, Kind.Toilet, new Vector2(-hw + 0.65f, -s * (hl - 0.65f)), door, end);
             yield return new Row(key, root, building, room, plan, level, Kind.BathroomSink, new Vector2(-hw + 1.45f, -s * (hl - 0.55f)), door, end);
-            yield return new Row(key, root, building, room, plan, level, Kind.Shower, new Vector2(-hw + 0.75f, -s * (hl - 1.60f)), door, Wall.Right);
+            yield return new Row(key, root, building, room, plan, level, Kind.Shower, new Vector2(-hw + 0.75f, -s * (hl - 2.225f)), door, Wall.Right);
         }
 
         static Closet StandardCloset(string key, int level, float w, float l, bool front = false)
@@ -232,6 +267,7 @@ namespace HiddenHarbours.App.Editor
         // they drift. The sage room is shared by Ginny's cottage and the village sage cottage.
 
         public const float SageW = 6.60f, SageL = 8.05f;
+        public const float GinnyW = 7.20f, GinnyL = 9.10f;
         public const float RedW = 6.96f, RedL = 8.68f;
         public const float FarmW = 7.68f, FarmL = 9.94f;
         public const float HarbourW = 6.72f, HarbourL = 8.26f;
@@ -276,13 +312,12 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>
         /// Rows allowed to back onto a south wall (<see cref="IsSouthWall"/>) for now, by id. The rule is
-        /// north first (owner 2026-11-17): kitchens and bathrooms go on north walls. Every id here is a
-        /// row that still has to be re-planned; remove it when it is.
+        /// north first (owner 2026-11-17): kitchens and bathrooms go on north walls. Every planned-only id
+        /// here is a row that still has to be re-planned; remove it when it is. Ginny's placed pieces stay
+        /// (owner 2026-11-22: the north wall is no longer strict there; a piece goes where it reads best).
         /// </summary>
         public static readonly IReadOnlyCollection<string> SouthWallExceptions = new HashSet<string>
         {
-            "fixture.st_peters.ginny_cottage.toilet",          // placed; to be moved north
-            "fixture.st_peters.ginny_cottage.shower",          // placed; to be moved north
             "fixture.st_peters.red_saltbox.shower",            // planned, not placed; re-plan north before placing
             "fixture.st_peters.white_farmhouse.toilet",        // planned, not placed (SE wall); re-plan before placing
             "fixture.st_peters.white_farmhouse.bathroom_sink", // planned, not placed (SE wall); re-plan before placing
@@ -291,6 +326,10 @@ namespace HiddenHarbours.App.Editor
         /// <summary>Whether a kind belongs in a bathroom closet.</summary>
         public static bool IsBathroom(Kind kind) =>
             kind == Kind.BathroomSink || kind == Kind.Shower || kind == Kind.Bath || kind == Kind.Toilet;
+
+        /// <summary>Whether a kind's prefab carries an interact id. The fridge does not yet: its
+        /// <c>KitchenStoreFixture</c> names its Def and has no verb, so it stands as a picture with a footprint.</summary>
+        public static bool HasInteractId(Kind kind) => kind != Kind.Fridge;
     }
 }
 #endif

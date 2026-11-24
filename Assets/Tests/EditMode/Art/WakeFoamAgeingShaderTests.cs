@@ -269,6 +269,13 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 // …and the storm streaks, at their own age.
                 @"float3\s+stormFoam\s*=\s*FoamAgedColor\s*\(\s*stormAge01\s*,\s*_FoamColor\.rgb\s*,\s*stormJoin\s*,\s*col\.rgb\s*\)\s*;" +
                     @"\s*col\.rgb\s*=\s*lerp\s*\(\s*col\.rgb\s*,\s*stormFoam\s*,",
+                // …and the wash's lip (PR 1471): the line on the run-up's edge walks at its own age. Its colour
+                // is chosen inside a gate and laid after it, so the shape pins the whole span: nothing between
+                // the walk and the compose may write col.rgb, or the walk would end on a different water.
+                @"float3\s+washLineColor\s*=\s*_FoamColor\.rgb\s*;\s*if\s*\(\s*washLine\s*>\s*0\.0\s*&&\s*washLipSheet\s*\)\s*\{" +
+                    @"(?:(?!col\.rgb\s*[-+*/]?=)[^{}])*?" +
+                    @"washLineColor\s*=\s*FoamAgedColor\s*\(\s*washLipAge01\s*,\s*_FoamColor\.rgb\s*,\s*_FoamSheetShore\.x\s*,\s*col\.rgb\s*\)\s*;" +
+                    @"\s*\}\s*col\.rgb\s*=\s*lerp\s*\(\s*col\.rgb\s*,\s*washLineColor\s*,",
             };
 
             // …after the last light layers, so the col.rgb they end on is the lit sea.
@@ -284,7 +291,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     $"{compose} runs before the reflections, so the water it ends on is not the lit sea.");
             }
 
-            // …and nothing else calls the walk: two definitions, the wake's adapter, and the four above.
+            // …and nothing else calls the walk: two definitions, the wake's adapter, and the composes above.
             Assert.AreEqual(2 + 1 + composes.Length,
                 Regex.Matches(src, @"(?<![A-Za-z0-9_])(Wake)?FoamAgedColor\s*\(").Count,
                 "A new caller of the foam walk must end it on the col.rgb its own compose lerps from, and " +
