@@ -26,6 +26,7 @@ namespace HiddenHarbours.Economy
         private struct Draw
         {
             public int Good;
+            public int Line;
             public int Day;
             public double Seconds;
             public double Units;
@@ -39,6 +40,7 @@ namespace HiddenHarbours.Economy
         private readonly int[] _goodOfLine;
         private readonly double[] _unitsPerItem;
         private readonly int[] _maxOnShelf;
+        private readonly double[] _shareOfGood;
         private readonly List<Draw> _draws = new List<Draw>();
 
         // The settled day, per ledger good: the level after the morning run, and the islanders' use that day.
@@ -71,6 +73,7 @@ namespace HiddenHarbours.Economy
             var goods = new List<int>();
             var units = new List<double>();
             var max = new List<int>();
+            var shares = new List<double>();
             foreach (IslandShelfLine line in lines)
             {
                 if (line == null || string.IsNullOrEmpty(line.Id)) throw new ArgumentException("A shelf line needs an id.");
@@ -80,15 +83,24 @@ namespace HiddenHarbours.Economy
                     throw new ArgumentException("Shelf line needs positive item units and room: " + line.Id);
                 int good = GoodIndex(ledger, line.Good);
                 if (good < 0) throw new ArgumentException("The back room does not stock the good of " + line.Id);
-                if (goods.Contains(good)) throw new ArgumentException("Two shelf lines show one good: " + line.Id);
+                double share = ShareOf(line);
+                if (!(share > 0.0) || share > 1.0)
+                    throw new ArgumentException("A shelf line's share of its good must be above 0 and at most 1: " + line.Id);
+                double shown = share;
+                for (int i = 0; i < goods.Count; i++)
+                    if (goods[i] == good) shown += shares[i];
+                if (shown > 1.0 + ShareTolerance)
+                    throw new ArgumentException("The shelf lines on one good show more than all of it: " + line.Id);
                 _lineById.Add(line.Id, goods.Count);
                 goods.Add(good);
                 units.Add(line.UnitsPerItem);
                 max.Add(line.MaxOnShelf);
+                shares.Add(share);
             }
             _goodOfLine = goods.ToArray();
             _unitsPerItem = units.ToArray();
             _maxOnShelf = max.ToArray();
+            _shareOfGood = shares.ToArray();
             _morning = new double[ledger.GoodCount];
             _use = new double[ledger.GoodCount];
             _ledger.ExtraDraw = DrawnOn;
@@ -121,7 +133,7 @@ namespace HiddenHarbours.Economy
             if (!(totalSeconds > 0.0)) totalSeconds = 0.0;
             int day = DayOf(totalSeconds);
             Settle(day);
-            return Items(line, StockAt(_goodOfLine[line], day, totalSeconds));
+            return Items(line, StockAt(line, day, totalSeconds));
         }
 
         public bool TryTakeOne(string lineId, double totalSeconds)
@@ -130,13 +142,13 @@ namespace HiddenHarbours.Economy
             if (!(totalSeconds > 0.0)) totalSeconds = 0.0;
             int day = DayOf(totalSeconds);
             Settle(day);
-            if (Items(line, StockAt(_goodOfLine[line], day, totalSeconds)) < 1) return false;
+            if (Items(line, StockAt(line, day, totalSeconds)) < 1) return false;
 
             // Older draws can no longer reach any replay that starts at or after this day's lookback.
             int oldest = day - _ledger.LookbackDays;
             for (int i = _draws.Count - 1; i >= 0; i--)
                 if (_draws[i].Day < oldest) _draws.RemoveAt(i);
-            _draws.Add(new Draw { Good = _goodOfLine[line], Day = day, Seconds = totalSeconds, Units = _unitsPerItem[line] });
+            _draws.Add(new Draw { Good = _goodOfLine[line], Line = line, Day = day, Seconds = totalSeconds, Units = _unitsPerItem[line] });
             _version++;
             return true;
         }
@@ -173,20 +185,23 @@ namespace HiddenHarbours.Economy
             _settledVersion = _version;
         }
 
-        /// <summary>The good's stock at a moment of the settled day: the morning level less the islanders'
-        /// buying so far and the player's purchases so far. Equals the ledger's dusk level after closing.</summary>
-        private double StockAt(int good, int day, double totalSeconds)
+        /// <summary>The line's stock at a moment of the settled day: its share of the good's morning level less
+        /// the islanders' buying so far, less the player's purchases off this line so far. A line holding the
+        /// whole good equals the ledger's dusk level after closing.</summary>
+        private double StockAt(int line, int day, double totalSeconds)
         {
+            int good = _goodOfLine[line];
             double hour = (totalSeconds - day * _secondsPerDay) / _secondsPerDay * 24.0;
             double share = hour <= _opensHour ? 0.0
                          : hour >= _closesHour ? 1.0
                          : (hour - _opensHour) / (_closesHour - _opensHour);
             double stock = _morning[good] - _use[good] * share;
             if (stock < 0.0) stock = 0.0;
+            stock *= _shareOfGood[line];
             for (int i = 0; i < _draws.Count; i++)
             {
                 Draw d = _draws[i];
-                if (d.Good == good && d.Day == day && d.Seconds <= totalSeconds) stock -= d.Units;
+                if (d.Line == line && d.Day == day && d.Seconds <= totalSeconds) stock -= d.Units;
             }
             return stock < 0.0 ? 0.0 : stock;
         }
@@ -214,6 +229,12 @@ namespace HiddenHarbours.Economy
                 throw new KeyNotFoundException("Unknown island shelf line: " + lineId);
             return line;
         }
+
+        // Slack for shares authored as decimals (0.2 + 0.3 + 0.5) that add up to a whisker over one.
+        private const double ShareTolerance = 1e-6;
+
+        /// <summary>The share of its good a line shows; unset (0) means the whole good.</summary>
+        public static double ShareOf(IslandShelfLine line) => line.ShareOfGood > 0f ? line.ShareOfGood : 1.0;
 
         private static int GoodIndex(IslandStoreLedger ledger, IslandGoodDef good)
         {

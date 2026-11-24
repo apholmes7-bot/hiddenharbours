@@ -58,6 +58,18 @@ namespace HiddenHarbours.Tests.EditMode
 
         private const string ClamLicenceId = "license.clam";
 
+        private sealed class FactWallet : IWallet
+        {
+            public int Money { get; private set; }
+            public void Add(int amount) => Money += amount;
+            public bool TrySpend(int amount)
+            {
+                if (amount < 0 || amount > Money) return false;
+                Money -= amount;
+                return true;
+            }
+        }
+
         private sealed class FactHold : IHold
         {
             private readonly List<CatchItem> _items = new();
@@ -408,6 +420,147 @@ namespace HiddenHarbours.Tests.EditMode
             CatchRecords.Install();
             EventBus.Publish(new CatchSold(1, totalCount, default, shellfishCount));
             Assert.AreEqual(counts, GameServices.Save.GetFlag(IslandWeekFactRecorder.ShellfishSoldKey));
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void IslandWeek_TheIslandCounterRecordsOnlyTheShellfishItActuallyBuys(bool shellfish)
+        {
+            var save = new BlobSave(Game());
+            GameServices.Save = save;
+            CatchRecords.Install();
+            var pail = new FactHold();
+            var wallet = new FactWallet();
+            var go = new GameObject("IslandCounter(test)");
+            _spawned.Add(go);
+            var buyer = go.AddComponent<FishBuyer>();
+            var counter = go.AddComponent<WharfSellPoint>();
+            const BindingFlags access = BindingFlags.Instance | BindingFlags.NonPublic;
+            typeof(WharfSellPoint).GetField("_buyer", access).SetValue(counter, buyer);
+            typeof(WharfSellPoint).GetField("_hold", access).SetValue(counter, pail);
+            typeof(WharfSellPoint).GetField("_wallet", access).SetValue(counter, wallet);
+            Assert.IsFalse(counter.SellsWhatIsCarried, "the island counter still uses its wired pail provider");
+            Assert.AreEqual(0, counter.SellOverTheCounter());
+            Assert.AreEqual(0, save.FlagWrites);
+
+            var item = shellfish
+                ? new CatchItem("fish.soft_shell_clam", "Clam", FishCategory.Shellfish, 1f, 10, 0f)
+                : CodCatch();
+            Assert.IsTrue(pail.TryAdd(item));
+            var sales = new List<CatchSold>();
+            EventBus.Subscribe<CatchSold>(sales.Add);
+            try
+            {
+                int paid = counter.SellOverTheCounter();
+                Assert.AreEqual(10, paid);
+                Assert.AreEqual(paid, wallet.Money);
+                Assert.AreEqual(0, pail.UsedUnits);
+                Assert.AreEqual(1, counter.LastUnitsSold);
+                Assert.AreEqual(1, sales.Count);
+                Assert.AreEqual(1, sales[0].Count);
+                Assert.AreEqual(shellfish ? 1 : 0, sales[0].ShellfishCount);
+                Assert.AreEqual(shellfish, save.GetFlag(IslandWeekFactRecorder.ShellfishSoldKey));
+                Assert.AreEqual(shellfish ? 1 : 0, save.FlagWrites);
+                Assert.AreEqual(shellfish ? IslandWeekFact.ShellfishSold : IslandWeekFact.None,
+                    new IslandWeekProgress(IslandRules()).Read(save.Current, 0).Held);
+                Assert.AreEqual(0, counter.SellOverTheCounter());
+                Assert.AreEqual(0, counter.LastUnitsSold);
+                Assert.AreEqual(1, sales.Count, "an emptied pail cannot sell a second time");
+            }
+            finally { EventBus.Unsubscribe<CatchSold>(sales.Add); }
+        }
+
+        [Test]
+        public void IslandWeek_OnlyASuccessfulCodPurchaseThroughTheLicenceServiceSuppliesTheLicenceFact()
+        {
+            var save = new BlobSave(Game());
+            GameServices.Save = save;
+            var go = new GameObject("IslandLicence(test)");
+            _spawned.Add(go);
+            var service = go.AddComponent<LicenseService>();
+            service.Register();
+            var vendor = go.AddComponent<LicenseVendor>();
+            const string catalog = "Assets/_Project/Data/Resources/Catalog/Licenses/";
+            var cod = AssetDatabase.LoadAssetAtPath<LicenseDef>(catalog + "CodLicense.asset");
+            var clam = AssetDatabase.LoadAssetAtPath<LicenseDef>(catalog + "ClamLicense.asset");
+            Assert.NotNull(cod); Assert.NotNull(clam);
+            var wallet = new FactWallet();
+            var progress = new IslandWeekProgress(IslandRules());
+            Assert.IsFalse(vendor.TryBuy(cod, wallet, service));
+            Assert.AreEqual(IslandWeekFact.None, progress.Read(save.Current, 0).Held);
+            wallet.Add(clam.Price + cod.Price);
+            Assert.IsTrue(vendor.TryBuy(clam, wallet, service));
+            Assert.AreEqual(IslandWeekFact.None, progress.Read(save.Current, 0).Held);
+            Assert.IsTrue(vendor.TryBuy(cod, wallet, service));
+            Assert.AreEqual(IslandWeekFact.CodLicence, progress.Read(save.Current, 0).Held);
+            CollectionAssert.AreEquivalent(new[] { clam.Id, cod.Id }, save.Current.OwnedLicenses);
+            Assert.AreEqual(0, wallet.Money);
+            Assert.IsFalse(vendor.TryBuy(cod, wallet, service));
+            Assert.AreEqual(2, save.Current.OwnedLicenses.Count);
+            Assert.AreEqual(0, save.FlagWrites, "licences remain in their existing saved list");
+            var restored = SaveSerialization.FromJson(SaveSerialization.ToJson(save.Current));
+            Assert.AreEqual(IslandWeekFact.CodLicence, progress.Read(restored, 0).Held);
+        }
+
+        [Test]
+        public void IslandWeek_MendingReadsTheRepairLedger_NotOwnershipOrARepairSignal()
+        {
+            var save = new BlobSave(Game());
+            GameServices.Save = save;
+            CatchRecords.Install();
+            var rules = IslandRules();
+            var progress = new IslandWeekProgress(rules);
+            save.Current.OwnedBoats.Add(rules.DoryId);
+            EventBus.Publish(new BoatRepaired(rules.DoryId, 0));
+            Assert.AreEqual(IslandWeekFact.None, progress.Read(save.Current, 0).Held);
+            Assert.IsTrue(RepairLedger.MarkRepaired(save.Current, "boat.punt"));
+            Assert.AreEqual(IslandWeekFact.None, progress.Read(save.Current, 0).Held);
+            Assert.IsTrue(RepairLedger.MarkRepaired(save.Current, rules.DoryId));
+            Assert.IsFalse(RepairLedger.MarkRepaired(save.Current, rules.DoryId));
+            Assert.AreEqual(IslandWeekFact.DoryMended, progress.Read(save.Current, 0).Held);
+            Assert.AreEqual(2, save.Current.RepairedBoats.Count);
+            Assert.AreEqual(0, save.FlagWrites, "mending remains in its existing saved list");
+            var restored = SaveSerialization.FromJson(SaveSerialization.ToJson(save.Current));
+            Assert.AreEqual(IslandWeekFact.DoryMended, progress.Read(restored, 0).Held);
+        }
+
+        [Test]
+        public void IslandWeek_ShelfPurchasesOrdersAndBagsNeitherInventNorEraseHistoricalFacts()
+        {
+            var save = Game();
+            SupplyLocker.Add(save, "supply.bread", 1);
+            save.StorePurchases.Add(new StorePurchaseRowDto
+            {
+                ShopId = "shop.st_peters_general", ShelfLineId = "line.bread", Units = 1, Day = 0, Seconds = 1,
+            });
+            save.SpecialOrders.Add(new SpecialOrderDto
+            {
+                OrderId = "order.test.1", SellerId = "shop.st_peters_general", DeliverToId = "counter.test",
+                Lines = { new SpecialOrderLineDto { ListingId = "specialorder.test", Count = 1, PaidPrice = 10 } },
+                PaidPrice = 10, OrderedAtSeconds = 1, OrderedDay = 0, DueDay = 1,
+            });
+            save.NextSpecialOrderNumber = 2;
+            save.ShoppingBags.Add(new ShoppingBagDto
+            {
+                BagDefId = "shoppingbag.paper", Held = true, Region = "region.st_peters",
+                Items = { new BagItemDto { SupplyId = "supply.bread", Count = 1 } },
+            });
+            var progress = new IslandWeekProgress(IslandRules());
+            Assert.AreEqual(IslandWeekFact.None, progress.Read(save, 0).Held);
+            GameServices.Save = new BlobSave(save);
+            CatchRecords.Install();
+            StandOn("boat.dory");
+            EventBus.Publish(new FishCaught(CodCatch()));
+            EventBus.Publish(new CatchSold(10, 1, default, 1));
+            string json = SaveSerialization.ToJson(save);
+            var restored = SaveSerialization.FromJson(json);
+            Assert.AreEqual(26, restored.SchemaVersion);
+            Assert.AreEqual(IslandWeekFact.FishFromDory | IslandWeekFact.ShellfishSold, progress.Read(restored, 0).Held);
+            Assert.AreEqual(2, restored.OnboardingFlags.Count);
+            Assert.AreEqual(1, restored.StorePurchases.Count);
+            Assert.AreEqual(1, restored.SpecialOrders.Count);
+            Assert.AreEqual(1, restored.ShoppingBags.Count);
+            Assert.AreEqual(json, SaveSerialization.ToJson(restored), "all shopping rows and flag values survive exactly");
         }
 
         [TestCase(false)]

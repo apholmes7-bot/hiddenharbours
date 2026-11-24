@@ -299,6 +299,68 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 > keeps them shut until `HomeDeeds` says the home is his. The plan of ids, Defs and Ginny's placements is
 > `App/Editor/HomeStoragePlan.cs`.
 
+> **Save schema v26 (store purchases, paid special orders, the shopping bag: ONE bump for the three,
+> owner 2026-11-23)**: `SaveData` gained four append-only members (rows in Core/Save/SaveRowsV26.cs).
+> **This is the schema step only: nothing in the game reads or writes them yet.** The `v25→v26` step gives
+> each list an empty list and sets the counter to 1, so an older save loads with its shelves as the
+> calendar says, no order, no bag, and whatever he bought simply in his supplies; nothing else moves.
+> Each of the three is something the player did, which cannot be recomputed; shelf counts, deliveries and
+> the villagers' buying are still rebuilt from the calendar and the seed (rule 5).
+>
+> - `StorePurchases` (`StorePurchaseRowDto`: `ShopId`, `ShelfLineId`, `Units` double, `Day` int, `Seconds`
+>   double): one row per purchase instant per shelf line, the same four values the shelf's own running
+>   record of a draw holds (line, day, seconds, units) plus the shop. Kept in (day, seconds, shop, line)
+>   order, the one order they are replayed in. **Data only.** The repair drops a row with no shop or line,
+>   a negative day or time, or units that are zero, negative or not finite; sorts; and folds rows equal in
+>   shop, line, day and seconds into one with their units added. **The list is not left to grow:** the
+>   shelf only looks back a fixed number of days (its ledger's `LookbackDays`), so the writer prunes rows
+>   older than that look-back when it saves. The load repair does not prune by age (it has no clock and no
+>   shelf to ask).
+> - `SpecialOrders` (`SpecialOrderDto`: `OrderId`, `SellerId`, `DeliverToId`, `Lines`, `PaidPrice`,
+>   `OrderedAtSeconds`, `OrderedDay`, `DueDay`, `State`; each `SpecialOrderLineDto`: `ListingId`, `Count`,
+>   `PaidPrice`) and `NextSpecialOrderNumber`: **reserved, not yet used.** One row per paid order. An order
+>   may hold more than one kind of good (`Lines`), and `DeliverToId` names where it is collected (empty =
+>   the seller's own counter), so neither answer needs a further version. `OrderId` is
+>   `order.<seller>.<n>`, for example `order.seller.leblancs.3`: n is the digits after the LAST dot (the
+>   seller id has dots of its own) and comes from the counter, which starts at 1, never goes back and is
+>   held above every number on a row. A line's `ListingId` is the **special-order offer's Def id**
+>   (`specialorder.*`); the good it stands for is read from that offer, never from the save. `OrderedDay`
+>   is the game day he paid (`DayIndex`), saved beside `OrderedAtSeconds` so "due after ordered" compares
+>   two saved days and does not drift if the length of a day is retuned. `State` is an int (0 waiting,
+>   1 arrived, 2 collected).
+>   **Money:** the order's `PaidPrice` is the total and is the figure that stands; each line's `PaidPrice`
+>   is what was paid for that line, so one line can be refunded exactly. **The repair never rewrites
+>   money.** When the lines' prices do not add up to the order's total, both are kept exactly as they are;
+>   reconciling them is the feature's work. The one exception is a negative price (order or line), which
+>   reads 0, because it would be a refund that takes money.
+>   **A paid order is never dropped by a load**: the repair has no content to look an offer up in and no
+>   purse to refund to, so it drops a row only when it carries nothing (no money paid on the order AND no
+>   line left). A line is dropped only when it is unusable (no listing, or a count under 1) AND has no price
+>   above zero; **a line he paid for is always kept**, and so keeps its order, even if the order's own total
+>   reads 0. Lines for one listing fold into the first with counts added and prices added (the lines' sum is
+>   unchanged). An unreadable order time, a negative ordered day and a negative due day read 0 (due at
+>   once; the due day is never changed to fit the ordered day), a negative count on a kept line reads 0, and
+>   an unknown state reads as waiting. Ids are never rewritten. Refunding an order whose offer is gone, and
+>   dropping collected rows, are the feature's own work.
+> - `ShoppingBags` (`ShoppingBagDto`: `BagDefId`, `Held`, `Region`, `PosX`, `PosY`, `Level`, `HullId`,
+>   `ByTheBed`, `Items`; each `BagItemDto`: `SupplyId`, `Count`): one row per bag that holds goods, in his
+>   hand (`Held`) or set down at a region, position and storey. A list although there is one bag today.
+>   `HullId` is reserved for a bag set down aboard. **Data only.** The goods in a bag stay counted in
+>   `SupplyStock`; a row only says which are set aside, so **a damaged or dropped bag row can never lose
+>   goods** (the worst case is "found put away") and the repair never touches `SupplyStock`. It drops a
+>   bag with no kind, a set-down bag with no region, a position that is not finite or a storey below the
+>   ground, items with no id or no count, folds items of one kind, holds each item to what he owns less
+>   what earlier bags hold, and drops a bag left empty. A region no scene claims is kept. **A set-down bag
+>   must carry its region:** the writer always fills `Region` for a bag that is not in his hand, because the
+>   repair drops one that has none (it could never be found again), and its goods are then simply found put
+>   away.
+>
+> **Opening a v26 save in an older build loses the three lists.** An older build does not know these
+> fields: it reads the file without them, holds the version at its own, and writes the file back without
+> purchases, orders or bags. Goods in a bag are safe (they are in `SupplyStock`) and the shelves read full
+> again, but **a paid order is gone with its money**. Going back a version is not supported for a save that
+> holds a paid order.
+
 **Recomputed, never saved:** tide height, wind, weather, sea state, visibility (from
 `worldSeed + gameTime`), dormant NPC positions, authored geometry, **a boat's effective helm fit and
 its depth-sounder reading** (ADR 0030), **which end of a bed the pillow is on** (see below), and
