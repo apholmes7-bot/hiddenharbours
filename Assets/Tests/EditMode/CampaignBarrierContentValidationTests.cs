@@ -29,7 +29,6 @@ namespace HiddenHarbours.Tests.EditMode
         public static readonly IReadOnlyDictionary<string, string> NotYetSettable = new Dictionary<string, string>
         {
             { "st_peters.weather_turned", "set the morning after her word, after a sleep, not yet built" },
-            { "st_peters.first_week", "set when a new game begins its island week, not yet built" },
         };
 
         private static List<CampaignBarrierDef> Walls() =>
