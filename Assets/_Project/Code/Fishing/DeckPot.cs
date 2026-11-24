@@ -82,6 +82,9 @@ namespace HiddenHarbours.Fishing
             public bool OutOfSeason;
             /// <summary>A protected species (Core <see cref="CatchKeep"/>): never a keeper, always returned.</summary>
             public bool Protected;
+            /// <summary>He holds no licence for the species (owner ruling 2026-11-23): released at the
+            /// haul (born <see cref="DeckAnimalFate.Returned"/>), never a keeper, recorded nowhere.</summary>
+            public bool Unlicensed;
             /// <summary>Whether a sort rule existed for the species (no rule ⇒ always-keeper).</summary>
             public bool HasRule;
             /// <summary>Greybox silhouette shape (from the rule; lobster default).</summary>
@@ -195,6 +198,17 @@ namespace HiddenHarbours.Fishing
                 // turn a protected animal into a keeper; the holds ask the same shared facts.
                 a.Protected = CatchReleaseRule.MustReleaseById(item.SpeciesId, GameServices.FishConservation);
                 if (a.Protected) a.Keeper = false;
+
+                // No licence for the species (owner ruling 2026-11-23): it goes back at the haul, before
+                // any deck work, and is recorded nowhere. Already Returned, so no grab, band or auto-resolve
+                // ever touches it (and an unlicensed protected animal is not documented: the licence wins).
+                // The controller says the one line for the haul (PotDeckWorkController.BringAboard).
+                a.Unlicensed = UnlicensedCatch.MustRelease(item.SpeciesId);
+                if (a.Unlicensed)
+                {
+                    a.Keeper = false;
+                    a.Fate = DeckAnimalFate.Returned;
+                }
                 _animals.Add(a);
             }
         }

@@ -384,11 +384,32 @@ namespace HiddenHarbours.Tests.EditMode
             licence.PermittedSpeciesIds = new[] { fish.Id };
             var (c, save) = BaitedRig(catchOnly, 42, stock: 3, fish: fish, hold: hold,
                 licenses: new[] { licence });
-            Hook(c, rodFight: false);
-            FinishFight(c, win: true);
-            Assert.AreEqual(FishingPhase.Snapped, c.Phase, "a won fight without its licence is released");
-            Assert.AreEqual(0, hold.UsedUnits);
-            Assert.AreEqual(catchOnly ? 3 : 2, TackleBox.BaitCount(save, "bait.herring"));
+            int caught = 0, released = 0;
+            System.Action<FishCaught> onCaught = _ => caught++;
+            System.Action<UnlicensedCatchReleased> onReleased = _ => released++;
+            EventBus.Subscribe(onCaught);
+            EventBus.Subscribe(onReleased);
+            try
+            {
+                Hook(c, rodFight: false);
+                FinishFight(c, win: true);
+                Assert.AreEqual(FishingPhase.Landed, c.Phase,
+                    "a won fight without its licence is landed, then let go with the release beat");
+                Assert.AreEqual(0, hold.UsedUnits);
+                Assert.AreEqual(0, caught, "nothing is recorded for a fish let go for want of a licence");
+                Assert.AreEqual(1, released);
+                Assert.AreEqual(catchOnly ? 3 : 2, TackleBox.BaitCount(save, "bait.herring"),
+                    "spend-on-catch charges nothing for the release; spend-at-bite already paid at the bite");
+                TickUntil(c, FishingPhase.Idle);
+                c.Tick(1f, false);
+                Assert.AreEqual(catchOnly ? 3 : 2, TackleBox.BaitCount(save, "bait.herring"),
+                    "result/reset must not charge again");
+            }
+            finally
+            {
+                EventBus.Unsubscribe(onCaught);
+                EventBus.Unsubscribe(onReleased);
+            }
         }
 
         [TestCase(false, false)]

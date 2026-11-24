@@ -1,6 +1,6 @@
 using UnityEngine;
 using HiddenHarbours.Core;
-using HiddenHarbours.Economy;   // CatchLicensePolicy + LicenseDef: the catch-side licence gate (St Peters)
+using HiddenHarbours.Economy;   // LicenseDef: the scene-wired licences the landing rule (UnlicensedCatch) reads
 
 namespace HiddenHarbours.Fishing
 {
@@ -43,8 +43,9 @@ namespace HiddenHarbours.Fishing
         [SerializeField] private FishSpeciesDef[] _regionFish;
         [Tooltip("The authored licences in play (e.g. the cod licence) — supplied by the region/world the " +
                  "same way the region fish are. Used ONLY to look up which licence (if any) a species " +
-                 "requires at land-time (CatchLicensePolicy); the player's held licences come from the " +
-                 "Core ILicenseService. Null/empty = nothing is licence-gated (all species land freely).")]
+                 "requires at land-time (UnlicensedCatch); the player's held licences come from the " +
+                 "Core ILicenseService. In a live game the shipped licence catalog gates as well, so " +
+                 "this list only ADDS gates; with no licence wallet and an empty list nothing is gated.")]
         [SerializeField] private LicenseDef[] _licenses;
         [Tooltip("A GameObject carrying an IHold (the boat's ShipHold).")]
         [SerializeField] private GameObject _holdProvider;
@@ -737,31 +738,24 @@ namespace HiddenHarbours.Fishing
             _fight = null;
             EndRodFight();
 
-            // --- Protected species (owner ruling 2026-11-15): "documented but must be released". Asked
-            // FIRST, ahead of the licence gate: a protected fish is landed and documented whatever
-            // licence is held, and then it goes back. The verdict is data (FishSpeciesDef.Protected) read
-            // through the one pure rule, never a species list here.
-            if (CatchReleaseRule.MustRelease(fish, GameServices.FishConservation))
+            // --- Licence (owner ruling 2026-11-23): the bite and the fight were never blocked, but a
+            // species he holds no licence for goes straight back at the landing, he says so in his own
+            // voice, and nothing is recorded. Asked FIRST, ahead of the protected rule: an unlicensed
+            // protected fish is not documented either (the licence line wins). Which species need which
+            // licence is the licence data, read by the one shared rule (UnlicensedCatch); the held
+            // licences come from the Core ILicenseService. Ungated species are unaffected.
+            if (UnlicensedCatch.MustRelease(fish.Id, _licenses))
             {
-                ReleaseProtected(fish, tension);
+                ReleaseUnlicensed(fish, tension);
                 return;
             }
 
-            // --- Licence gate (St Peters, P5 cozy): some species may only be LANDED with the right
-            // licence (the rod takes cod only once you hold the cod licence). The mapping species→licence
-            // is the authored licence data (CatchLicensePolicy); the player's held licences come from the
-            // Core ILicenseService — Fishing never references Economy's concrete service. Unlicensed is
-            // cozy: the fish slips back (the existing no-penalty "released" result), nudging you to the
-            // harbourmaster. Ungated species are unaffected; a null licence service fails closed only for
-            // gated species, so unlicensed cod can't be taken before you can hold a licence.
-            if (!CatchLicensePolicy.MayLand(fish.Id, _licenses, GameServices.Licenses))
+            // --- Protected species (owner ruling 2026-11-15): "documented but must be released": a
+            // protected fish he may land is landed and documented, and then it goes back. The verdict is
+            // data (FishSpeciesDef.Protected) read through the one pure rule, never a species list here.
+            if (CatchReleaseRule.MustRelease(fish, GameServices.FishConservation))
             {
-                _phaseTimer = _resultDisplay;
-                Debug.Log($"[Fishing] {fish.DisplayName} — you need the licence to land that. (Slipped it back, no harm done.)");
-                // The rule stands; the silence does not. A won fight that pays nothing names the
-                // species and the licence (both from data), so the player knows where to go next.
-                EventBus.Publish(new DevNotice(FishingStrings.LicenceNeeded(fish, _licenses)));
-                Emit(FishingPhase.Snapped, tension, 1f);   // reuse the cozy "it got away" result; nothing added
+                ReleaseProtected(fish, tension);
                 return;
             }
 
@@ -822,7 +816,29 @@ namespace HiddenHarbours.Fishing
         /// </summary>
         private void ReleaseProtected(FishSpeciesDef fish, float tension)
         {
-            if (_config != null && _config.BaitSpentOnCatchOnly) SpendBait();
+            ReleaseAtLanding(fish, tension, unlicensed: false);
+        }
+
+        /// <summary>
+        /// A won fight on a species he holds no licence for (owner ruling 2026-11-23): the same release
+        /// presentation as a protected fish (the landing beat, the Landed phase, nothing offered to a hand
+        /// or a hold), but nothing is documented: <see cref="UnlicensedCatchReleased"/> goes out instead of
+        /// <see cref="CatchReleased"/>, and he says "I don't have a licence for this &lt;species&gt; yet"
+        /// through the inner-voice line. The shipped bait rule is unchanged: an unlicensed release spends
+        /// no bait.
+        /// </summary>
+        private void ReleaseUnlicensed(FishSpeciesDef fish, float tension)
+        {
+            ReleaseAtLanding(fish, tension, unlicensed: true);
+        }
+
+        /// <summary>The one release presentation at the landing (the landing beat, the Landed phase, the
+        /// fish to no hand and no hold). What differs is only what is said and recorded: a protected fish
+        /// is documented (<see cref="CatchReleased"/>) and spends bait as a kept catch would; an
+        /// unlicensed one records nothing, spends nothing, and he says the licence line.</summary>
+        private void ReleaseAtLanding(FishSpeciesDef fish, float tension, bool unlicensed)
+        {
+            if (!unlicensed && _config != null && _config.BaitSpentOnCatchOnly) SpendBait();
 
             double landedAt = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
             var item = new CatchItem(fish.Id, fish.DisplayName, fish.Category,
@@ -831,11 +847,19 @@ namespace HiddenHarbours.Fishing
 
             Vector2 exit = !_depthGame && _lastCast.IsCast ? _lastCast.LandingPoint : AnglerPosition;
             EventBus.Publish(new JuiceMomentCue(JuiceMoment.Landing, exit, _pendingWeight));
-            EventBus.Publish(new CatchReleased(item));
 
-            string line = FishingStrings.ProtectedReleased(fish.DisplayName, _pendingWeight);
-            Debug.Log($"[Fishing] {line}");
-            EventBus.Publish(new DevNotice(line));
+            if (unlicensed)
+            {
+                UnlicensedCatch.ReleaseAndSay(in item, _licenses);
+                Debug.Log($"[Fishing] {fish.DisplayName}: no licence for it yet, so it went back. Nothing recorded.");
+            }
+            else
+            {
+                EventBus.Publish(new CatchReleased(item));
+                string line = FishingStrings.ProtectedReleased(fish.DisplayName, _pendingWeight);
+                Debug.Log($"[Fishing] {line}");
+                EventBus.Publish(new DevNotice(line));
+            }
 
             _phaseTimer = _resultDisplay;
             Emit(FishingPhase.Landed, tension, 1f);
