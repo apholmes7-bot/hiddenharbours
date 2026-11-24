@@ -181,6 +181,86 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(name, _cues[0].Name, "the line names the species");
         }
 
+        private sealed class PickingHands : ICatchHands
+        {
+            public readonly List<CatchItem> Items = new();
+            public bool TryPutInHand(in CatchItem item)
+            {
+                Items.Add(item);
+                EventBus.Publish(new CatchLanded(item));
+                return true;
+            }
+            public bool TryTakeFromHand(out CatchItem item) { item = default; return false; }
+            public bool TryPeekHand(out CatchItem item) { item = default; return false; }
+        }
+
+        [TestCase("StPetersMussels", false)]
+        [TestCase("StPetersOysters", false)]
+        [TestCase("StPetersMussels", true)]
+        [TestCase("StPetersOysters", true)]
+        public void ShorePicking_UsesTheShippedShellfishLicenceAndSharedReleaseRule(string file, bool licensed)
+        {
+            var bed = UnityEditor.AssetDatabase.LoadAssetAtPath<PickingBedDef>(
+                "Assets/_Project/Data/PickingBeds/" + file + ".asset");
+            var licence = UnityEditor.AssetDatabase.LoadAssetAtPath<LicenseDef>(
+                "Assets/_Project/Data/Resources/Catalog/Licenses/ClamLicense.asset");
+            var config = UnityEditor.AssetDatabase.LoadAssetAtPath<GameConfig>(
+                "Assets/_Project/Data/Config/GameConfig.asset");
+            Assert.IsNotNull(bed);
+            Assert.IsNotNull(licence);
+            Assert.IsNotNull(config);
+            Assert.AreEqual(ClamLicenceId, licence.Id);
+            CollectionAssert.Contains(licence.PermittedSpeciesIds, bed.Species.Id);
+            UnlicensedCatch.UseCatalog(new[] { licence });
+            GameServices.Licenses = _wallet;
+            if (licensed) _wallet.Grant(licence.Id);
+            var tide = new FakeEnv { Level = bed.UncoveredBelowMetres - 1f };
+            var session = new PickingBedSession(bed, tide, config.SecondsPerDay);
+            var hands = new PickingHands();
+
+            tide.Level = bed.UncoveredBelowMetres;
+            Assert.AreEqual(PickingBedStatus.Covered,
+                session.TryPick(bed.RegionId, bed.Position, 0d, hands).Status);
+            Assert.AreEqual(0, _unlicensed.Count, "a covered bed cannot produce a release");
+            Assert.AreEqual(0, _cues.Count);
+            Assert.AreEqual(0, hands.Items.Count);
+            tide.Level = bed.UncoveredBelowMetres - 1f;
+            PickingBedCheck preview = session.Check(bed.RegionId, bed.Position, 0d);
+            Assert.IsTrue(preview.CanPick, "lack of a licence never blocks the attempt");
+            Assert.AreEqual(licensed, preview.CanKeep);
+            Assert.AreEqual(0, _cues.Count, "a preview does not speak or release anything");
+            Assert.AreEqual(0, _unlicensed.Count);
+            PickingBedCheck result = session.TryPick(bed.RegionId, bed.Position, 0d, hands);
+            Assert.AreEqual(licensed, result.Kept);
+            Assert.AreEqual(bed.Capacity - (licensed ? 1 : 0), result.Remaining);
+            Assert.AreEqual(licensed ? 1 : 0, hands.Items.Count);
+            if (licensed)
+            {
+                Assert.AreEqual(PickingBedStatus.Picked, result.Status);
+                Assert.AreEqual(1, _inHand);
+                Assert.AreEqual(0, _caught.Count, "a hand catch is not in a container yet");
+                Assert.AreEqual(0, _unlicensed.Count);
+                Assert.AreEqual(0, _cues.Count);
+            }
+            else
+            {
+                Assert.AreEqual(PickingBedStatus.ReleasedUnlicensed, result.Status);
+                AssertNothingRecorded("shore picking");
+                Assert.AreEqual(1, _unlicensed.Count);
+                Assert.AreEqual(bed.Species.Id, _unlicensed[0].Item.SpeciesId);
+                Assert.AreEqual(licence.Id, _unlicensed[0].RequiredLicenceId);
+                AssertSaidOnce(bed.Species.DisplayName);
+                Assert.AreEqual(0, session.SnapshotAt(0d).TakenAtSeconds.Count,
+                    "a shellfish put straight back in its bed was not taken");
+
+                _wallet.Grant(licence.Id);
+                Assert.IsTrue(session.TryPick(bed.RegionId, bed.Position, 0d, hands).Kept);
+                Assert.AreEqual(bed.Capacity - 1, session.RemainingAt(0d));
+                Assert.AreEqual(1, _unlicensed.Count, "getting the licence changes the next decision");
+                Assert.AreEqual(1, _cues.Count);
+            }
+        }
+
         // ---- fixtures -------------------------------------------------------------------------------
 
         private LicenseDef MakeLicence(string id, params string[] speciesIds)
