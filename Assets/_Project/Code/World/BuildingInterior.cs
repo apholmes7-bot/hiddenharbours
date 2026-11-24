@@ -77,7 +77,7 @@ namespace HiddenHarbours.World
     /// still has no idea a save file exists (rule 4) — and no allocation per frame (rule 5, rule 7).</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class BuildingInterior : MonoBehaviour
+    public sealed partial class BuildingInterior : MonoBehaviour
     {
         [Header("What swaps")]
         [Tooltip("The exterior shell's renderer. Switched OFF while the occupant is inside.")]
@@ -512,6 +512,7 @@ namespace HiddenHarbours.World
 
         void OnEnable()
         {
+            RoomFixtureReach.Register(this);
             // Start OUTSIDE and show it, so a room that is never entered is never visible and a scene
             // that was saved mid-visit does not open with the roof off.
             IsInside = false;
@@ -527,6 +528,7 @@ namespace HiddenHarbours.World
 
         void OnDisable()
         {
+            RoomFixtureReach.Unregister(this);
             EventBus.Unsubscribe<PlayerWokeAt>(OnPlayerWokeAt);
 
             // A house torn down mid-climb must not take the player's legs and the move keys with it. The

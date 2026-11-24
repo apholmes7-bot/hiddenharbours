@@ -31,7 +31,7 @@ namespace HiddenHarbours.Player
     /// scene by this slice.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class CookingStationFixture : MonoBehaviour, IInteractable
+    public sealed class CookingStationFixture : MonoBehaviour, IInteractable, IRoomFixtureReach
     {
         [Tooltip("The station kind: what it runs, how fast, what it refuses, and what it says.")]
         [SerializeField] private CookingStationDef _def;
@@ -80,7 +80,9 @@ namespace HiddenHarbours.Player
         public bool IsAvailable => _def != null;
 
         /// <inheritdoc/>
-        public void Interact(in InteractActor actor) => Use();
+        public bool CanReach(in InteractActor actor) => RoomFixtureReach.Allows(this, actor, WorldPosition);
+
+        public void Interact(in InteractActor actor) { if (CanReach(actor)) Use(); }
 
         /// <summary>Wire this station from a builder.</summary>
         public void Configure(CookingStationDef def, string id)

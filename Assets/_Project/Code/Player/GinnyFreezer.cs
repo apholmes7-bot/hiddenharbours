@@ -178,7 +178,9 @@ namespace HiddenHarbours.Player
         {
             var kb = Keyboard.current;   // New Input System only
             if (kb == null || !kb[_interactKey].wasPressedThisFrame) return;
-            if (!_reach.CanInteract(transform.position)) return;
+            if (!_reach.CanInteract(transform.position, out Vector2 position)) return;
+            var actor = new InteractActor(position, Vector2.zero, InteractContext.OnFoot);
+            if (!RoomFixtureReach.Allows(this, actor, transform.position)) return;
             Exchange();
         }
 
