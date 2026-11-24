@@ -387,6 +387,53 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsFalse(CampaignBarrierDirector.Stands(wall));
         }
 
+        // ---- no local weather: the water surface is fed the sim, bit for bit --------------------------
+
+        [Test]
+        public void WithNoLocalWeather_TheWaterSurfaceIsFedExactlyWhatTheSimGave()
+        {
+            // The water surface reads LocalWeather.Shade(sample) and LocalWeather.Rain(strength). While no
+            // wall shades the weather both must hand back what they were given, so the surface, the surf
+            // and the bore are drawn from the sim's own numbers exactly as before the walls existed.
+            LocalWeather.Clear();
+            Assert.IsFalse(LocalWeather.Active);
+            Assert.IsFalse(LocalWeather.SquallActive);
+            var winds = new[] { Vector2.zero, new Vector2(2f, 1f), new Vector2(-11.5f, 7.25f), new Vector2(0.001f, -24f) };
+            var seas = new[] { 0f, 0.137f, 0.385f, 0.9f, 1f };
+            foreach (var wind in winds)
+                foreach (float sea in seas)
+                    foreach (SeaState step in System.Enum.GetValues(typeof(SeaState)))
+                    {
+                        var sim = new EnvironmentSample(wind, new Vector2(0.3f, -0.2f) * sea, 1.7f - sea, step, 1f - sea * 0.6f, sea);
+                        EnvironmentSample seen = LocalWeather.Shade(sim);
+                        Assert.AreEqual(sim.WindVector, seen.WindVector);
+                        Assert.AreEqual(sim.CurrentVector, seen.CurrentVector);
+                        Assert.AreEqual(sim.TideHeight, seen.TideHeight);
+                        Assert.AreEqual(sim.SeaState, seen.SeaState);
+                        Assert.AreEqual(sim.Visibility, seen.Visibility);
+                        Assert.AreEqual(sim.SeaState01, seen.SeaState01);
+                    }
+            // Rain strength reaches the surface already clamped to 0..1 (AmbientParticleMath.RainIntensity).
+            for (int i = 0; i <= 1000; i++)
+            {
+                float derived = i / 1000f;
+                Assert.AreEqual(derived, LocalWeather.Rain(derived), "rain " + derived);
+            }
+            Assert.AreEqual(Vector2.one, LocalWeather.RainStreakScale);
+
+            // And that is every save today: with the first-week key unset no wall writes a shade at all.
+            var save = StPeters();
+            save.SetFlag(FirstWeekFlag, false);
+            var d = Director(Walls());
+            foreach (var w in Walls())
+            {
+                Hull(w.EdgePoint + w.PushDirection * (w.FullDistanceMetres - 5f), Vector2.zero);
+                d.Step();
+                Assert.IsFalse(LocalWeather.Active, w.Id);
+                Assert.IsFalse(LocalWeather.SquallActive, w.Id);
+            }
+        }
+
         // ---- the look: full where he is stopped, seen coming, gone with the flag ----------------------
 
         [Test]

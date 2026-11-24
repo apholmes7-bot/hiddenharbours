@@ -274,7 +274,8 @@ namespace HiddenHarbours.Tests.EditMode
             // The owner's oar look of 11-19 (the band edges) adds IdFoamSheetDither and pushes GameConfig.FoamSheet.DitherVector in PushFoamSheet; no surf twin moved; the pinned source includes it.
             // The cut-off pools publish the sea's reach from the seabed the water draws (SeaReachGlobals.PublishPainted / PublishElevations, released in OnDisable, its blend refreshed in PushUniforms); no surf twin moved; the pinned source includes it.
             // The shore-wave turn (feat/waves-follow-the-seabed) adds FeedShoreWaveField, built once from the seabed beside the height texture and bound as _ShoreWaveTex; no surf twin moved; the pinned source includes it.
-                Is.EqualTo("212e8192a0f94e0c1ba5b245ef763b4fa11c49d9e08067034ff0b6e2235c47e4"));
+            // The weather walls (feat/st-peters-weather-walls) pass the sampled weather through LocalWeather.Shade in SampleSimTargets and the rain strength through LocalWeather.Rain in PushUniforms: two lines, no surf twin moved, BreakerMath and both shaders untouched. With no local weather set, Shade returns the sample it was given and Rain returns the strength it was given (StPetersWeatherWallsTests.WithNoLocalWeather_TheWaterSurfaceIsFedExactlyWhatTheSimGave), so every value the surface pushes, the bore's inputs included, is bit-exact; the pinned source includes it.
+                Is.EqualTo("ff93a5ab873561fac7199510b3f9f5d0761b4179f240e8bff7b3f330d09a1c91"));
         }
 
         static void RequireGpu()
