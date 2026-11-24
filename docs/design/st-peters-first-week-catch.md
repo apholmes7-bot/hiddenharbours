@@ -70,9 +70,11 @@ daylight gate on digging.
   the rod's spawn table. A registered species alone is not a spawn source.
 - **Baseline licence behaviour:** there is no per-fish required-licence field.
   `CatchLicensePolicy.RequiredLicenseFor` reverses `LicenseDef.PermittedSpeciesIds`.
-  Missing mappings currently mean ungated, and the baseline clam dig has no
-  unlicensed-release call. The separate unlicensed-release change is required
-  before the intended let-go rule is shared by all methods.
+  The rod, clam dig and trap landing paths now call the shared `UnlicensedCatch`
+  release rule: a mapped catch without its licence is let go. Missing mappings
+  still mean ungated under `CatchLicensePolicy.MayLand`; the shared release path
+  does not repair the ten catalogue gaps above. This census records that debt,
+  not proof that every first-week catch requires a licence.
 
 ## Reproducing the census
 
@@ -82,7 +84,12 @@ the licence assets, finds trap allow-lists, checks the runtime species index and
 prints the masks, both hour windows, tide bounds and moving-water flag. The
 licence join is intentionally based on all region declarations, including future
 producers, so unfinished wiring cannot hide a licensing gap. The existing
-licence-id and permitted-species validation remains in place.
+licence-id and permitted-species validation remains in place. Every declared
+species must be present in `FishSpeciesLibrary.Species`; a removed entry or a
+null/empty list fails with the missing species id. The licence-id membership
+check uses the same loaded licence list as the policy, so it does not establish
+runtime catalogue registration. This census does not assert a fixed species
+count, document/table synchronization, seller access or playable catch sources.
 
 Source data: `Data/Fish`, `Data/Resources/Catalog/Licenses`,
 `Data/Resources/Sellers`, `Data/Shops/StPetersGeneral.asset`, `Data/Traps`,

@@ -67,6 +67,9 @@ namespace HiddenHarbours.Tests.EditMode
             var errors = new List<string>();
             foreach (var f in fish)
             {
+                bool registered = library.Species != null && library.Species.Contains(f);
+                if (!registered)
+                    errors.Add($"{f.Id}: declared St Peters species is missing from the runtime species library");
                 var mappings = licences.Where(l => l.PermittedSpeciesIds != null
                     && l.PermittedSpeciesIds.Contains(f.Id)).ToArray();
                 string required = CatchLicensePolicy.RequiredLicenseFor(f.Id, licences);
@@ -91,7 +94,7 @@ namespace HiddenHarbours.Tests.EditMode
                     $"tide=[{f.MinTide}, {f.MaxTide}] | hours=[{f.StartHour}, {f.EndHour}); " +
                     $"second=[{f.SecondStartHour}, {f.SecondEndHour}) | moving={f.MovingWaterOnly} | " +
                     $"licence={required ?? "MISSING"} | sellers={sellers} | traps={pots} | " +
-                    $"registered={library.Species != null && library.Species.Contains(f)}");
+                    $"registered={registered}");
             }
             foreach (var known in KnownStPetersCatchLicenceGaps)
             {
