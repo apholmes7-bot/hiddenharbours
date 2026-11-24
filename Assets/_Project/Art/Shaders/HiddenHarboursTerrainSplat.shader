@@ -211,6 +211,7 @@ Shader "HiddenHarbours/TerrainSplat"
             Tags { "LightMode" = "Universal2D" }
 
             Blend SrcAlpha OneMinusSrcAlpha
+            ColorMask RGB   // The calm mirror: ground cover leaves the alpha class under it alone
             ZWrite Off
             Cull Off
 

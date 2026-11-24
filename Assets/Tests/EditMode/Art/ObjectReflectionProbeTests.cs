@@ -258,8 +258,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
         /// <summary>A pixel that has taken the reflector's warmth: red clearly beating blue over a
         /// cool sea. The margin is generous on purpose — the probe asks "does it READ", not "is it
-        /// byte-exact", and a tight threshold would turn a legitimate tint change into a red test.</summary>
-        static bool IsWarm(Color32 c) => c.r > c.b + 40 && c.a > 8;
+        /// byte-exact", and a tight threshold would turn a legitimate tint change into a red test.
+        /// Colour only: the frame's alpha is not the picture (the water marks its pixels with alpha 0
+        /// for the calm mirror), and an undrawn pixel over the clear background is black, so it is
+        /// never warm.</summary>
+        static bool IsWarm(Color32 c) => c.r > c.b + 40;
 
         static int WarmIn(Color32[] px, int yFrom, int yTo)
         {
