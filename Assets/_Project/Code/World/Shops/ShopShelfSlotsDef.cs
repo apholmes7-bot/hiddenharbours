@@ -71,11 +71,13 @@ namespace HiddenHarbours.World
         /// <summary>Sorting order above the room picture, so the card stands on the shelf in front of it.</summary>
         public int SortingOrderAboveRoom = 1;
 
-        /// <summary>Sorting order above the room picture for a slot's empty-shelf cover (under the goods).</summary>
-        public int CoverSortingOrderAboveRoom = 1;
+        /// <summary>Rungs above the room picture for a slot's empty-shelf cover (under the goods). Added to
+        /// the room renderer's order; the default is the shared rung for a layer on a room sheet.</summary>
+        public int CoverSortingOrderAboveRoom = HiddenHarbours.Core.SortingBands.RoomSheetCoverRungs;
 
-        /// <summary>Sorting order above the room picture for the goods on a slot (under the card).</summary>
-        public int GoodsSortingOrderAboveRoom = 2;
+        /// <summary>Rungs above the room picture for the goods on a slot (over the cover, under the card).
+        /// Added to the room renderer's order; the default is the shared rung for goods on a room sheet.</summary>
+        public int GoodsSortingOrderAboveRoom = HiddenHarbours.Core.SortingBands.RoomSheetGoodsRungs;
 
         /// <summary>How near (m) the player must stand to a slot's good to see its price and buy one.</summary>
         [Min(0f)] public float ReachMeters = 1f;

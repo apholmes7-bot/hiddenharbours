@@ -84,6 +84,15 @@ namespace HiddenHarbours.Tests.EditMode
             }
             Assert.That(_slots.CoverSortingOrderAboveRoom, Is.LessThan(_slots.GoodsSortingOrderAboveRoom), "the goods stand on the empty shelf");
             Assert.That(_slots.GoodsSortingOrderAboveRoom, Is.LessThan(_slots.SortingOrderAboveRoom), "the card stands in front of the goods");
+            // The layers ride the room sheet by the shared rungs: one and two over it, as they have drawn since slice 1.
+            Assert.That(_slots.CoverSortingOrderAboveRoom, Is.EqualTo(SortingBands.RoomSheetCoverRungs));
+            Assert.That(_slots.GoodsSortingOrderAboveRoom, Is.EqualTo(SortingBands.RoomSheetGoodsRungs));
+            Assert.That(SortingBands.RoomSheetCoverRungs, Is.EqualTo(1));
+            Assert.That(SortingBands.RoomSheetGoodsRungs, Is.EqualTo(2));
+            var fresh = UnityEngine.ScriptableObject.CreateInstance<ShopShelfSlotsDef>();
+            Assert.That(fresh.CoverSortingOrderAboveRoom, Is.EqualTo(SortingBands.RoomSheetCoverRungs), "a new store starts on the shared rungs");
+            Assert.That(fresh.GoodsSortingOrderAboveRoom, Is.EqualTo(SortingBands.RoomSheetGoodsRungs));
+            UnityEngine.Object.DestroyImmediate(fresh);
             Assert.That(_slots.Slots.Any(s => s.Cover != null), "the painted gondola is covered by an empty one");
             Assert.That(_slots.Slots.All(s => !s.NeedsFreeHand), "the shelf goods go to the bag, the locker and the tackle box, not a free hand");
         }

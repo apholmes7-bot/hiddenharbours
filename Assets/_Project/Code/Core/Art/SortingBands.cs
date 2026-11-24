@@ -58,6 +58,17 @@ namespace HiddenHarbours.Core
         /// the floor they stand on.</summary>
         public const int InteriorFloor = 1;
 
+        /// <summary>
+        /// Rungs above its room sheet for a flat layer that replaces part of the sheet's own picture (a
+        /// store's empty-shelf cover). Carried: added to the room renderer's order, never an order of its
+        /// own, so it stays over the floor it lies on and under everyone and everything standing in the room.
+        /// </summary>
+        public const int RoomSheetCoverRungs = 1;
+
+        /// <summary>Rungs above its room sheet for what lies on such a cover (the goods on a store shelf):
+        /// one over <see cref="RoomSheetCoverRungs"/>. Carried, as the cover is.</summary>
+        public const int RoomSheetGoodsRungs = RoomSheetCoverRungs + 1;
+
         // --- THE DECOR BAND (YSortSprite's) -----------------------------------------------------------
 
         /// <summary>
