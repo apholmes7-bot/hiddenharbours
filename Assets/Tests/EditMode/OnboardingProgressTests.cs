@@ -380,7 +380,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [TestCase(nameof(WorldStrings.OnboardTalkGinny), "Find Aunt Ginny on the island and press E — she'll set you straight.")]
-        [TestCase(nameof(WorldStrings.OnboardDigClams), "Tab shows the tide table. At low water, dig clams on the bared flats (E by a hole).")]
+        [TestCase(nameof(WorldStrings.OnboardDigClams), "Tab shows the tide table. First buy the Shellfish Licence at LeBlanc's (Ginny fronted the fee), then dig clams on the bared flats at low water (E by a hole).")]
         [TestCase(nameof(WorldStrings.OnboardCrossBar), "Walk the bared sandbar east to Nine Mile Creek before the tide floods it back.")]
         [TestCase(nameof(WorldStrings.OnboardBuyLicence), "At Nine Mile Creek: sell your clams, then buy a COD LICENCE to fish.")]
         [TestCase(nameof(WorldStrings.OnboardBuyRod), "Buy a fishing ROD from the shop — then you can hand-line cod.")]
