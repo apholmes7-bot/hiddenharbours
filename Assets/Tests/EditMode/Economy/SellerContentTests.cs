@@ -69,7 +69,16 @@ namespace HiddenHarbours.Tests.Economy
             foreach (string guid in AssetDatabase.FindAssets("t:ScriptableObject", new[] { CatalogSource.CatalogFolderPath }))
             {
                 var listing = AssetDatabase.LoadMainAssetAtPath(AssetDatabase.GUIDToAssetPath(guid)) as ICatalogListing;
-                if (listing == null || listing.Catalog.Sellers == null) continue;
+                if (listing == null) continue;
+                if (listing is LicenseDef licence && licence.Catalog.Listed)
+                {
+                    Assert.IsNotEmpty(licence.Catalog.Sellers, licence.Id + " is for sale without a seller");
+                    Assert.GreaterOrEqual(licence.Price, 0, licence.Id + " has a negative fee");
+                    foreach (string sellerId in licence.Catalog.Sellers)
+                        CollectionAssert.Contains(CatalogSource.For<LicenseDef>(sellerId), licence,
+                            licence.Id + " must resolve through the seller's runtime catalog");
+                }
+                if (listing.Catalog.Sellers == null) continue;
                 foreach (string sellerId in listing.Catalog.Sellers)
                     Assert.IsTrue(byId.ContainsKey(sellerId), "catalog seller missing: " + sellerId);
             }
