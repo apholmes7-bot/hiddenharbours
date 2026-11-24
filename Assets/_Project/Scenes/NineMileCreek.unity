@@ -438642,6 +438642,7 @@ GameObject:
   - component: {fileID: 901632621}
   - component: {fileID: 901632620}
   - component: {fileID: 901632619}
+  - component: {fileID: 526003167}
   m_Layer: 0
   m_Name: NmcBoatGearWholesalerCounter
   m_TagString: Untagged
@@ -438718,6 +438719,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &526003167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 901632618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b9d0eb07b9fa3045a203d5654276a6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.InstrumentShop
+  _offer: {fileID: 11400000, guid: 10e0e2da0a4042fd8563d356fdc821d8, type: 2}
+  _sellerId: seller.nmc_boat_gear_wholesaler
+  _walletProvider: {fileID: 957678902}
+  _onPurchased:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1292443856
 GameObject:
   m_ObjectHideFlags: 0
