@@ -30,7 +30,7 @@ namespace HiddenHarbours.World
     /// implementation, not a change to the contract — see <see cref="IStandableSurface"/>.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class StandablePlatform : MonoBehaviour, IStandableSurface
+    public sealed class StandablePlatform : MonoBehaviour, IStandableSurface, IStandableOutline
     {
         [Header("Identity")]
         [Tooltip("Stable id of the structure (e.g. 'wharf.st_peters') — diagnostics only; never a lookup key.")]
@@ -49,8 +49,19 @@ namespace HiddenHarbours.World
                  "tide; authored below it, the sea reaches it through the ordinary wade bands.")]
         [SerializeField] private float _deckElevation = 0f;
 
+        [Header("Picture (presentation only)")]
+        [Tooltip("Where the planks are DRAWN, for the calm mirror. Off (the default): the footprint is where the " +
+                 "deck is drawn (a cell-built pier such as St Peters). On: the art draws the deck HeightScale x " +
+                 "its elevation up the screen of the footprint (the kit-built wharves). Never read by walking.")]
+        [SerializeField] private bool _drawnLiftedByDeck = false;
+
         /// <inheritdoc/>
         public string Id => _id;
+
+        /// <inheritdoc/>
+        public int GetDrawnOutline(Vector2[] drawn, float[] deckElevation)
+            => StandableOutline.Rect(_footprint, _drawnLiftedByDeck ? StandableOutline.Lift(_deckElevation) : 0f,
+                                     _deckElevation, drawn, deckElevation);
 
         /// <summary>The world-space rectangle of standable deck (for tests / tooling / the validator).</summary>
         public Rect Footprint => _footprint;

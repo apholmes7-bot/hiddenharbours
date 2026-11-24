@@ -64,6 +64,7 @@ Shader "HiddenHarbours/AdditiveLight"
         // ADDITIVE: ADD the glow into the (darkened) frame, brightening it. Premultiplied-style:
         // the fragment already multiplies colour by its scalar, so One One adds exactly that.
         Blend One One
+        ColorMask RGB   // The calm mirror: ground cover leaves the alpha class under it alone
         Cull Off
         ZWrite Off
         ZTest Always   // draw on top regardless of depth (it is a screen-space-ish overlay element)
