@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
@@ -25,10 +25,11 @@ namespace HiddenHarbours.Tests.EditMode
         static readonly Dictionary<string, (float w, float l)> Declared = new Dictionary<string, (float, float)>
         {
             { "sageCottage", (RoomFixturePlan.SageW, RoomFixturePlan.SageL) },
+            { "ginnyCottage", (RoomFixturePlan.GinnyW, RoomFixturePlan.GinnyL) },
             { "redSaltbox", (RoomFixturePlan.RedW, RoomFixturePlan.RedL) },
             { "whiteFarmhouse", (RoomFixturePlan.FarmW, RoomFixturePlan.FarmL) },
-            { "harbourGable", (RoomFixturePlan.HarbourW, RoomFixturePlan.HarbourL) },
-            { "harbourGableUpper", (RoomFixturePlan.HarbourW, RoomFixturePlan.HarbourL) },
+            { "harbourGable", (RoomFixturePlan.HarbourFrameW, RoomFixturePlan.HarbourFrameL) },   // door on the long wall: the frame is turned
+            { "harbourGableUpper", (RoomFixturePlan.HarbourFrameW, RoomFixturePlan.HarbourFrameL) },
             { "creamSaltbox", (RoomFixturePlan.CreamW, RoomFixturePlan.CreamL) },
             { "creamSaltboxUpper", (RoomFixturePlan.CreamW, RoomFixturePlan.CreamL) },
             { "whiteGable", (RoomFixturePlan.WhiteGableW, RoomFixturePlan.WhiteGableL) },
@@ -60,7 +61,7 @@ namespace HiddenHarbours.Tests.EditMode
                 : StPetersInteriors.UpperLevelFor(row.PlanKey);
             if (row.Level == 0)
             {
-                foreach (var f in StPetersInteriors.FurnishingsFor(row.RoomKey)) yield return f;
+                foreach (var f in StPetersInteriors.GroundFurnishingsFor(row.RoomKey, row.PlanKey)) yield return f;
                 if (plan.GroundAdditions != null) foreach (var f in plan.GroundAdditions) yield return f;
             }
             else if (plan.Furnishings != null)
@@ -83,6 +84,8 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (var kv in Declared)
             {
                 (float w, float l) = Baked(kv.Key);
+                // The harbour gable plans in its turned frame (its door is on the long wall).
+                if (kv.Key.StartsWith("harbourGable")) (w, l) = (l, w);
                 Assert.AreEqual(w, kv.Value.w, 0.011f, $"'{kv.Key}' width");
                 Assert.AreEqual(l, kv.Value.l, 0.011f, $"'{kv.Key}' length");
             }
@@ -122,7 +125,7 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 (float w, float l) = Declared[row.RoomKey];
                 float hw = w * 0.5f, hl = l * 0.5f;
-                Rect r = RectOf(row.At, RoomFixturePlan.Footprint(row.Kind));
+                Rect r = RectOf(row.At, RoomFixturePlan.FootprintOf(row));
                 Assert.Less(Mathf.Abs(row.At.x), hw - wall, $"{row.Id} at {row.At}: centre inside a side wall");
                 Assert.Less(Mathf.Abs(row.At.y), hl - wall, $"{row.Id} at {row.At}: centre inside an end wall");
                 Assert.LessOrEqual(Mathf.Max(-r.xMin, r.xMax), hw + Eps, $"{row.Id}: sticks out through a side wall");
@@ -146,7 +149,7 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.Ignore("no baked interior contract: nothing to read prop footprints from");
             foreach (Row row in RoomFixturePlan.Rows)
             {
-                Rect r = RectOf(row.At, RoomFixturePlan.Footprint(row.Kind));
+                Rect r = RectOf(row.At, RoomFixturePlan.FootprintOf(row));
                 foreach (var f in FurnitureFor(row))
                 {
                     Rect fr = RectOf(f.RoomMetres, FurnitureSize(contract, f));
@@ -163,8 +166,8 @@ namespace HiddenHarbours.Tests.EditMode
             for (int j = i + 1; j < rows.Count; j++)
             {
                 if (rows[i].BuildingKey != rows[j].BuildingKey || rows[i].Level != rows[j].Level) continue;
-                Assert.IsFalse(Overlap(RectOf(rows[i].At, RoomFixturePlan.Footprint(rows[i].Kind)),
-                                       RectOf(rows[j].At, RoomFixturePlan.Footprint(rows[j].Kind))),
+                Assert.IsFalse(Overlap(RectOf(rows[i].At, RoomFixturePlan.FootprintOf(rows[i])),
+                                       RectOf(rows[j].At, RoomFixturePlan.FootprintOf(rows[j]))),
                                $"{rows[i].Id} and {rows[j].Id} overlap");
             }
         }
@@ -187,14 +190,14 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 var closet = RoomFixturePlan.Closets.Single(c => c.BuildingKey == row.BuildingKey);
                 Assert.AreEqual(closet.Level, row.Level, $"{row.Id} is on another storey than its closet");
-                Rect r = RectOf(row.At, RoomFixturePlan.Footprint(row.Kind));
+                Rect r = RectOf(row.At, RoomFixturePlan.FootprintOf(row));
                 Rect a = closet.Area;
                 Assert.IsTrue(r.xMin >= a.xMin - Eps && r.xMax <= a.xMax + Eps && r.yMin >= a.yMin - Eps && r.yMax <= a.yMax + Eps,
                               $"{row.Id} at {row.At} is outside its closet {a}");
             }
             foreach (Row row in RoomFixturePlan.Rows.Where(r => !RoomFixturePlan.IsBathroom(r.Kind)))
                 foreach (var closet in RoomFixturePlan.Closets.Where(c => c.BuildingKey == row.BuildingKey && c.Level == row.Level))
-                    Assert.IsFalse(Overlap(RectOf(row.At, RoomFixturePlan.Footprint(row.Kind)), closet.Area),
+                    Assert.IsFalse(Overlap(RectOf(row.At, RoomFixturePlan.FootprintOf(row)), closet.Area),
                                    $"{row.Id} stands inside the bathroom closet");
         }
 
@@ -211,36 +214,49 @@ namespace HiddenHarbours.Tests.EditMode
                 foreach (var f in FurnitureFor(any))
                     Assert.IsFalse(Overlap(closet.Area, RectOf(f.RoomMetres, FurnitureSize(contract, f))),
                                    $"{closet.BuildingKey}'s closet {closet.Area} overlaps the {f.PropKey} at {f.RoomMetres}");
-                Assert.LessOrEqual(closet.Area.xMax, -(halfDoor + 0.5f), $"{closet.BuildingKey}'s closet reaches the doorway lane");
+                if (closet.DoorInFront)
+                    // Entered from the room in front of it (Ginny's): the closet stands across the BACK of
+                    // the house, so the front door's lane is clear if the closet keeps out of the front half.
+                    Assert.LessOrEqual(closet.Area.yMax, Eps,
+                                       $"{closet.BuildingKey}'s closet reaches into the front half, where the doorway lane runs");
+                else
+                    Assert.LessOrEqual(closet.Area.xMax, -(halfDoor + 0.5f), $"{closet.BuildingKey}'s closet reaches the doorway lane");
                 Assert.GreaterOrEqual(closet.DoorTo - closet.DoorFrom, 0.8f - Eps, $"{closet.BuildingKey}'s closet door is too narrow");
-                Assert.IsTrue(closet.DoorFrom >= closet.Area.yMin && closet.DoorTo <= closet.Area.yMax,
-                              $"{closet.BuildingKey}'s closet door is not in its inner wall");
+                if (closet.DoorInFront)
+                    Assert.IsTrue(closet.DoorFrom >= closet.Area.xMin && closet.DoorTo <= closet.Area.xMax,
+                                  $"{closet.BuildingKey}'s closet door is not in its front partition");
+                else
+                    Assert.IsTrue(closet.DoorFrom >= closet.Area.yMin && closet.DoorTo <= closet.Area.yMax,
+                                  $"{closet.BuildingKey}'s closet door is not in its inner wall");
             }
         }
 
         [Test]
         public void TheCountsMatchThePlanDoc()
         {
-            // docs/world/kitchens-bathrooms-placement-plan.md section 1: 8 house-kit buildings, 52 stations
-            // in St Peters, of which this table holds the 44 with exact coordinates (the two shops' 7 are zones
+            // docs/world/kitchens-bathrooms-placement-plan.md section 1: 8 house-kit buildings, 54 stations
+            // in St Peters, of which this table holds the 46 with exact coordinates (the two shops' 7 are zones
             // awaiting an editor look; the school's outhouse is the outhouse lane's).
-            Assert.AreEqual(44, RoomFixturePlan.Rows.Count);
+            Assert.AreEqual(46, RoomFixturePlan.Rows.Count);
             Assert.AreEqual(8, RoomFixturePlan.Rows.Select(r => r.BuildingKey).Distinct().Count());
             Assert.AreEqual(7, RoomFixturePlan.Closets.Length);
         }
 
         // ---- the pinned row set (the per-building split is behaviour-neutral) -----------------------
 
-        /// <summary>Every row as the single-file table produced it, in order: id, room, plan key, level,
-        /// planned point and the plan wall it backs. A change to any building's rows must change this.</summary>
+        /// <summary>Every row in order: id, room, plan key, level, planned point and the plan wall it backs.
+        /// A change to any building's rows must change this. Ginny's rows are her cottage's own layout (the
+        /// 2026-11-22 re-layout); every other row is as the single-file table produced it.</summary>
         static readonly (string id, string room, string plan, int level, float x, float y, Wall wall)[] Pinned =
         {
-            ("fixture.st_peters.ginny_cottage.prep_counter", "sageCottage", "ginnyCottage", 0, 2.7f, 1.425f, Wall.Left),
-            ("fixture.st_peters.ginny_cottage.stove", "sageCottage", "ginnyCottage", 0, 2.7f, 2.425f, Wall.Left),
-            ("fixture.st_peters.ginny_cottage.microwave", "sageCottage", "ginnyCottage", 0, 2.7f, 3.275f, Wall.Left),
-            ("fixture.st_peters.ginny_cottage.shower", "sageCottage", "ginnyCottage", 0, -2.575f, -2.85f, Wall.Right),
-            ("fixture.st_peters.ginny_cottage.toilet", "sageCottage", "ginnyCottage", 0, -2.775f, -1.475f, Wall.Right),
-            ("fixture.st_peters.ginny_cottage.bathroom_sink", "sageCottage", "ginnyCottage", 0, -1.925f, -3.5f, Wall.Back),
+            ("fixture.st_peters.ginny_cottage.prep_counter", "ginnyCottage", "ginnyCottage", 0, 3.0f, -1.25f, Wall.Left),
+            ("fixture.st_peters.ginny_cottage.stove", "ginnyCottage", "ginnyCottage", 0, 3.0f, -3.175f, Wall.Left),
+            ("fixture.st_peters.ginny_cottage.microwave", "ginnyCottage", "ginnyCottage", 0, 3.075f, -3.85f, Wall.Left),
+            ("fixture.st_peters.ginny_cottage.kitchen_sink", "ginnyCottage", "ginnyCottage", 0, 3.0f, -2.25f, Wall.Left),
+            ("fixture.st_peters.ginny_cottage.fridge", "ginnyCottage", "ginnyCottage", 0, 2.96f, -0.4f, Wall.Left),
+            ("fixture.st_peters.ginny_cottage.shower", "ginnyCottage", "ginnyCottage", 0, -2.575f, -3.825f, Wall.Back),
+            ("fixture.st_peters.ginny_cottage.toilet", "ginnyCottage", "ginnyCottage", 0, -3.075f, -2.4f, Wall.Right),
+            ("fixture.st_peters.ginny_cottage.bathroom_sink", "ginnyCottage", "ginnyCottage", 0, -3.025f, -1.5f, Wall.Right),
             ("fixture.st_peters.sage_cottage.prep_counter", "sageCottage", null, 0, 2.7f, 1.425f, Wall.Left),
             ("fixture.st_peters.sage_cottage.stove", "sageCottage", null, 0, 2.7f, 2.425f, Wall.Left),
             ("fixture.st_peters.sage_cottage.microwave", "sageCottage", null, 0, 2.7f, 3.275f, Wall.Left),
@@ -259,12 +275,12 @@ namespace HiddenHarbours.Tests.EditMode
             ("fixture.st_peters.white_farmhouse.bath", "whiteFarmhouse", null, 0, -2.64f, -4.27f, Wall.Back),
             ("fixture.st_peters.white_farmhouse.toilet", "whiteFarmhouse", null, 0, -3.19f, -3.42f, Wall.Right),
             ("fixture.st_peters.white_farmhouse.bathroom_sink", "whiteFarmhouse", null, 0, -3.24f, -2.82f, Wall.Right),
-            ("fixture.st_peters.harbour_gable.prep_counter", "harbourGable", "harbourGable", 0, 2.76f, 1.53f, Wall.Left),
-            ("fixture.st_peters.harbour_gable.stove", "harbourGable", "harbourGable", 0, 2.76f, 2.53f, Wall.Left),
-            ("fixture.st_peters.harbour_gable.microwave", "harbourGable", "harbourGable", 0, 2.76f, 3.38f, Wall.Left),
-            ("fixture.st_peters.harbour_gable.toilet", "harbourGableUpper", "harbourGable", 1, -2.71f, -3.48f, Wall.Back),
-            ("fixture.st_peters.harbour_gable.bathroom_sink", "harbourGableUpper", "harbourGable", 1, -1.91f, -3.58f, Wall.Back),
-            ("fixture.st_peters.harbour_gable.shower", "harbourGableUpper", "harbourGable", 1, -2.61f, -2.53f, Wall.Right),
+            ("fixture.st_peters.harbour_gable.prep_counter", "harbourGable", "harbourGable", 0, 3.53f, 0.76f, Wall.Left),
+            ("fixture.st_peters.harbour_gable.stove", "harbourGable", "harbourGable", 0, 3.53f, 1.76f, Wall.Left),
+            ("fixture.st_peters.harbour_gable.microwave", "harbourGable", "harbourGable", 0, 3.53f, 2.61f, Wall.Left),
+            ("fixture.st_peters.harbour_gable.toilet", "harbourGableUpper", "harbourGable", 1, -3.48f, -2.71f, Wall.Back),
+            ("fixture.st_peters.harbour_gable.bathroom_sink", "harbourGableUpper", "harbourGable", 1, -2.68f, -2.81f, Wall.Back),
+            ("fixture.st_peters.harbour_gable.shower", "harbourGableUpper", "harbourGable", 1, -3.38f, -1.76f, Wall.Right),
             ("fixture.st_peters.cream_saltbox.prep_counter", "creamSaltbox", "creamSaltbox", 0, 2.82f, 1.635f, Wall.Left),
             ("fixture.st_peters.cream_saltbox.stove", "creamSaltbox", "creamSaltbox", 0, 2.82f, 2.635f, Wall.Left),
             ("fixture.st_peters.cream_saltbox.microwave", "creamSaltbox", "creamSaltbox", 0, 2.82f, 3.485f, Wall.Left),
@@ -317,10 +333,15 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void OnlyGinnysBathroomIsMarkedPlaced()
+        public void OnlyGinnysKitchenAndBathroomAreMarkedPlaced()
         {
             CollectionAssert.AreEquivalent(new[]
             {
+                "fixture.st_peters.ginny_cottage.prep_counter",
+                "fixture.st_peters.ginny_cottage.stove",
+                "fixture.st_peters.ginny_cottage.microwave",
+                "fixture.st_peters.ginny_cottage.kitchen_sink",
+                "fixture.st_peters.ginny_cottage.fridge",
                 "fixture.st_peters.ginny_cottage.shower",
                 "fixture.st_peters.ginny_cottage.toilet",
                 "fixture.st_peters.ginny_cottage.bathroom_sink",
@@ -336,7 +357,7 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 (float w, float l) = Declared[row.RoomKey];
                 float hw = w * 0.5f, hl = l * 0.5f;
-                Rect r = RectOf(row.At, RoomFixturePlan.Footprint(row.Kind));
+                Rect r = RectOf(row.At, RoomFixturePlan.FootprintOf(row));
                 var gaps = new Dictionary<Wall, float>
                 {
                     { Wall.Left, hw - r.xMax }, { Wall.Right, r.xMin + hw },
@@ -360,15 +381,135 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void GinnysPlacedBathroom_ToiletAndShowerSouth_BasinEast()
+        public void GinnysCookingLineIsNorth_MicrowaveIncluded_TheBackWallHoldsTheShower_TheRecordedSouthPieces()
         {
-            // The survey of the standing bathroom read these walls off the scene.
             Row Of(string slot) => RoomFixturePlan.Rows.Single(r => r.Id == "fixture.st_peters.ginny_cottage." + slot);
+            Assert.AreEqual(Compass.North, Of("prep_counter").Backing);
+            Assert.AreEqual(Compass.North, Of("kitchen_sink").Backing);
+            Assert.AreEqual(Compass.North, Of("stove").Backing);
+            Assert.AreEqual(Compass.North, Of("fridge").Backing);
+            Assert.AreEqual(Compass.North, Of("microwave").Backing);
+            Assert.AreEqual(Compass.East, Of("shower").Backing);
             Assert.AreEqual(Compass.South, Of("toilet").Backing);
-            Assert.AreEqual(Compass.South, Of("shower").Backing);
-            Assert.AreEqual(Compass.East, Of("bathroom_sink").Backing);
+            Assert.AreEqual(Compass.South, Of("bathroom_sink").Backing);
+
+            var south = RoomFixturePlan.Rows
+                .Where(r => r.BuildingKey == "ginny_cottage" && RoomFixturePlan.IsSouthWall(r.Backing))
+                .Select(r => r.Id).ToList();
+            CollectionAssert.AreEquivalent(new[] { "fixture.st_peters.ginny_cottage.toilet", "fixture.st_peters.ginny_cottage.bathroom_sink" },
+                                           south, "Ginny's south-backed pieces are the washroom's two low ones");
+            foreach (string id in south)
+                CollectionAssert.Contains(RoomFixturePlan.SouthWallExceptions, id, $"{id} is south-backed and unrecorded");
+        }
+        [Test]
+        public void GinnysShowerStandsClearOfTheEastGableWindow()
+        {
+            // The east gable's window pair is at +-0.42 x half-width, 0.82 m wide (appliance-wall plan 1.4):
+            // a tall shower stands south of it; the low toilet may stand under it.
+            const float windowCentre = 0.42f, windowWidth = 0.82f;
+            float windowSouthEdge = -(RoomFixturePlan.GinnyW * 0.5f * windowCentre + windowWidth * 0.5f);
+            Row shower = RoomFixturePlan.Rows.Single(r => r.Id == "fixture.st_peters.ginny_cottage.shower");
+            Rect s = RectOf(shower.At, RoomFixturePlan.FootprintOf(shower));
+            Assert.LessOrEqual(s.xMax, windowSouthEdge + Eps, "the shower stands clear of the gable window");
+            // That the washroom door is walked through to every piece is GinnyCottageRoomsTests' flood.
         }
 
+        [Test]
+        public void GinnysShowerStandsBesideTheToilet_NeverInFrontOfIt()
+        {
+            // The shower is the tall piece: its picture rises north (up the screen) from its feet, so no washroom
+            // piece may stand north of it inside its width (along the room, y). A kitchen piece beyond the
+            // partition may: the shower's upper part is a glass screen in a thin frame, and the partition
+            // stands between them.
+            Row Of(string slot) => RoomFixturePlan.Rows.Single(r => r.Id == "fixture.st_peters.ginny_cottage." + slot);
+            Row shower = Of("shower");
+            Rect s = RectOf(shower.At, RoomFixturePlan.FootprintOf(shower));
+            foreach (Row row in RoomFixturePlan.Rows.Where(r => r.BuildingKey == "ginny_cottage" && r.Level == 0 &&
+                                                                 r.Kind != Kind.Shower && RoomFixturePlan.IsBathroom(r.Kind)))
+            {
+                Rect r = RectOf(row.At, RoomFixturePlan.FootprintOf(row));
+                bool sameWidth = r.yMin < s.yMax - Eps && s.yMin < r.yMax - Eps;
+                Assert.IsFalse(sameWidth && r.xMin >= s.xMax - Eps, $"{row.Id} stands north of the shower, which would hide it");
+            }
+        }
+
+        [Test]
+        public void GinnysKitchen_FromInFrontOfEachPieceThatPieceIsTheNearest()
+        {
+            // Stand at each piece's front, from just off its face to 0.4 m out, as the player does to use it, and
+            // ask what the press would offer (the old layout offered the stove from in front of the sink). The
+            // press reaches from his transform over the world's ground, where the room's north-south metres are
+            // foreshortened (Ginny's door is west, so the plan's +x, north, is up the screen). A piece with a
+            // foot box stops his transform at its face; a piece without one lets him walk up with his FEET at its
+            // face, which puts his transform 0.7 m further up the screen, so both stances are asked (the second
+            // only where the north wall lets him stand). Each candidate's reach is its prefab's. Whenever
+            // anything is offered there it is that piece, and just off its face it is offered.
+            const float feetBelowTransform = 0.7f, radius = 0.35f;   // the player's collider, below his transform
+            float k = HiddenHarbours.Core.IsoGround.GroundDepthScale;
+            Vector2 World(Vector2 plan) => new Vector2(-plan.y, plan.x * k);
+            var mine =RoomFixturePlan.Rows.Where(r => r.BuildingKey == "ginny_cottage" && r.Level == 0).ToList();
+            var reach = new Dictionary<string, float>();
+            foreach (Row row in mine)
+            {
+                var prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(InteriorFixturePlacement.PrefabFor(row.Kind));
+                Assert.IsNotNull(prefab, InteriorFixturePlacement.PrefabFor(row.Kind));
+                var verb = prefab.GetComponent<HiddenHarbours.Core.IInteractable>();
+                if (verb != null) reach[row.Id] = verb.ReachMeters;   // the fridge has no verb yet
+            }
+            Assert.AreEqual(7, reach.Count, "every Ginny ground-floor piece but the fridge has a verb");
+            foreach (Row row in mine.Where(r => reach.ContainsKey(r.Id)))
+            {
+                int asked = 0;
+                Vector2 outward = row.Wall switch
+                {
+                    Wall.Left => Vector2.left, Wall.Right => Vector2.right,
+                    Wall.Front => Vector2.down, _ => Vector2.up,
+                };
+                Rect r = RectOf(row.At, RoomFixturePlan.FootprintOf(row));
+                float depth = row.Wall == Wall.Left || row.Wall == Wall.Right ? r.width : r.height;
+                foreach (float lift in new[] { 0f, feetBelowTransform })
+                foreach (float gap in new[] { 0.05f, 0.15f, 0.25f, 0.4f })
+                {
+                    Vector2 press = World(row.At + outward * (depth * 0.5f + gap)) + new Vector2(0f, lift);
+                    if (press.y > RoomFixturePlan.GinnyW * 0.5f * k + radius) continue;   // behind the north wall
+                    // His feet would be behind the south wall: a south-wall piece is used from beside it.
+                    if (press.y - feetBelowTransform - radius < -RoomFixturePlan.GinnyW * 0.5f * k) continue;
+                    asked++;
+                    string offered = null; float best = float.MaxValue;
+                    foreach (Row c in mine.Where(o => reach.ContainsKey(o.Id)))
+                    {
+                        float d = Vector2.Distance(press, World(c.At));
+                        if (d <= reach[c.Id] && d < best) { best = d; offered = c.Id; }
+                    }
+                    string where = $"{gap} m in front of the {row.Id}{(lift > 0f ? ", feet at that line" : "")}";
+                    if (lift == 0f && gap < 0.1f) Assert.AreEqual(row.Id, offered, $"just off the {row.Id}'s face it is offered");
+                    else if (offered != null) Assert.AreEqual(row.Id, offered, $"{where} another piece is offered");
+                }
+                Assert.Greater(asked, 0, $"no stance in front of the {row.Id} was asked");
+            }
+
+            // Nothing is offered from the doorway.
+            Vector2 doorway = World(new Vector2(0f, RoomFixturePlan.GinnyL * 0.5f - 0.3f)) + new Vector2(0f, feetBelowTransform);
+            foreach (Row c in mine.Where(o => reach.ContainsKey(o.Id)))
+                Assert.Greater(Vector2.Distance(doorway, World(c.At)), reach[c.Id], $"the {c.Id} is offered from the doorway");
+
+            // The fridge stands on the north wall at the head of the cooking line, facing south: 0.75 m clear in
+            // front of it for its door (appliance layout note), clear of the other pieces and the partitions.
+            Row fridge = mine.Single(r => r.Id == "fixture.st_peters.ginny_cottage.fridge");
+            Assert.AreEqual(Wall.Left, fridge.Wall);
+            Rect f = RectOf(fridge.At, RoomFixturePlan.FootprintOf(fridge));
+            var front = Rect.MinMaxRect(f.xMin - 0.75f, f.yMin, f.xMin, f.yMax);
+            foreach (Row other in mine.Where(o => o.Id != fridge.Id))
+                Assert.IsFalse(Overlap(front, RectOf(other.At, RoomFixturePlan.FootprintOf(other))),
+                               $"the fridge's door swing meets the {other.Id}");
+            foreach (var w in StPetersInteriors.UpperLevelFor(fridge.PlanKey).GroundWalls)
+                Assert.IsFalse(Overlap(front, Rect.MinMaxRect(w.X0, w.Y0, w.X1, w.Y1)), $"the fridge's door swing meets a wall: {w.Why}");
+            InteriorKit.Contract contract = InteriorKit.Load();
+            if (contract?.props != null && contract.props.Length > 0)
+                foreach (var furn in FurnitureFor(fridge))
+                    Assert.IsFalse(Overlap(front, RectOf(furn.RoomMetres, FurnitureSize(contract, furn))),
+                                   $"the fridge's door swing meets the {furn.PropKey} at {furn.RoomMetres}");
+        }
         [Test]
         public void NoRowBacksOntoASouthWall_UnlessItIsAListedException()
         {

@@ -156,6 +156,18 @@ namespace HiddenHarbours.App.Editor
         /// <summary>What the console line is tagged with when a caller does not name itself.</summary>
         public const string DefaultLogPrefix = "[BuildingInteriorStander]";
 
+        /// <summary>
+        /// ⭐ The frame a village room's footprint, walls and <see cref="BuildingInterior"/> are described
+        /// in, for the room drawn at <paramref name="interiorFacing"/>. Its doorway comes from
+        /// <see cref="InteriorCatalog.DoorwayModelMetres"/>; a doorway on a side wall (the harbour
+        /// gable's) turns the frame a quarter (<see cref="InteriorFrame"/>). The room sprite keeps
+        /// <paramref name="interiorFacing"/>. Every other room comes back in its own frame, unchanged.
+        /// <para>Furniture placed through a turned footprint is placed in the turned frame.</para>
+        /// </summary>
+        public static InteriorFrame.Frame RoomFrame(InteriorCatalog.Placement room, int interiorFacing) =>
+            InteriorFrame.For(room.Entry.footprintWidthMetres, room.Entry.footprintLengthMetres,
+                              interiorFacing, room.Entry.facings, InteriorCatalog.DoorwayModelMetres(room));
+
         // =====================================================================================
         //  THE RECIPE
         // =====================================================================================
@@ -239,15 +251,17 @@ namespace HiddenHarbours.App.Editor
             //     two no longer agree: the returned room rig of drop 14 anchors its door at
             //     pj(0, +Ln/2, fZ), centred on +y, where the defaults say −y. Measuring is what
             //     carried that rig drop without a line changing here.
-            Vector2 door = InteriorCatalog.DoorModelMetres(room);
-            float doorSign = door.y >= 0f ? 1f : -1f;
+            //     A doorway on a side wall (the harbour gable's) is described from a frame turned a
+            //     quarter, because InteriorFootprint puts a doorway on ±y only. See RoomFrame.
+            InteriorFrame.Frame frame = RoomFrame(room, interiorFacing);
+            float doorSign = frame.DoorSign;
 
             // --- the footprint everything else is measured from.
             var footprint = new InteriorFootprint(
                 buildingGo.transform.position,
-                room.Entry.footprintWidthMetres, room.Entry.footprintLengthMetres,
-                interiorFacing, room.Entry.facings, SpriteLightMath.GroundDepthScale,
-                doorSign, door.x);
+                frame.WidthMetres, frame.LengthMetres,
+                frame.Facing, room.Entry.facings, SpriteLightMath.GroundDepthScale,
+                doorSign, frame.DoorAcrossMetres);
 
             // --- the walls. Always on, from both sides: the cutaway that drops the two camera-facing
             //     walls is a courtesy to the camera, not a hole in the house.
@@ -258,17 +272,17 @@ namespace HiddenHarbours.App.Editor
             propsGo.transform.SetParent(buildingGo.transform, worldPositionStays: false);
             propsGo.transform.localPosition = Vector3.zero;
             int furnished = StPetersInteriors.Furnish(
-                propsGo.transform, StPetersInteriors.FurnishingsFor(room.Entry.key), room.Entry.key,
+                propsGo.transform, StPetersInteriors.GroundFurnishingsFor(room.Entry.key, upperPlanKey), room.Entry.key,
                 footprint, interiorFacing, room.Entry.facings);
 
             // --- the behaviour.
             var interior = buildingGo.AddComponent<BuildingInterior>();
             interior.Configure(shell, roomRenderer, propsGo.transform,
-                               room.Entry.footprintWidthMetres, room.Entry.footprintLengthMetres,
-                               interiorFacing, room.Entry.facings,
+                               frame.WidthMetres, frame.LengthMetres,
+                               frame.Facing, room.Entry.facings,
                                SpriteLightMath.GroundDepthScale,
                                WallThicknessMetres, DoorwayWidthMetres,
-                               doorOnPlusY: doorSign > 0f, doorAcrossMetres: door.x);
+                               doorOnPlusY: doorSign > 0f, doorAcrossMetres: frame.DoorAcrossMetres);
             interior.SetOccupant(occupant);
 
             // --- THE STOREY ABOVE, if this SITE asked for one. Keyed by plan and not by room, because
@@ -283,7 +297,9 @@ namespace HiddenHarbours.App.Editor
                 $"d{exteriorFacing} (the contract's MEASURED offset), " +
                 $"{room.Entry.footprintWidthMetres:0.#}×{room.Entry.footprintLengthMetres:0.#} m of " +
                 $"floor, {furnished} piece(s) of furniture, doorway on the " +
-                $"{(doorSign > 0f ? "+Y" : "−Y")} wall {door.x:+0.00;-0.00} m off its centre, threshold " +
+                $"{(doorSign > 0f ? "+Y" : "−Y")} wall {frame.DoorAcrossMetres:+0.00;-0.00} m off its centre" +
+                (frame.Facing != interiorFacing ? $" (frame turned to d{frame.Facing}: the doorway is on a side wall)" : "") +
+                ", threshold " +
                 $"at ({footprint.DoorWorld.x:0.#},{footprint.DoorWorld.y:0.#})" +
                 (interior.HasUpperLevel ? ", AND a storey above it." : "."));
 
