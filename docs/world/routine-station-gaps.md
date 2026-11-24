@@ -32,6 +32,33 @@ home once by `StPetersRedSaltbox.asset`. These are authoring gaps, not permissio
 to open the mainland during the first week. The first-week weather policy remains
 separate work.
 
+## Pending mainland station additions
+
+[PR 1537](https://github.com/apholmes7-bot/hiddenharbours/pull/1537) proposes
+both missing Nine Mile Creek stations. Its committed scene table places the bar
+landing at `(59.6192322, -152.379868)` and the fuel stop at `(-155.33, 109.42)`.
+It also extends the crossing to the new landing and adjusts the Wednesday stops
+to allow for that longer journey. These are proposed changes, not the station
+table or crossing on the pinned main `541276cbc9308ba60ded8b905308366306438570`.
+The coordinate evidence above describes the current base; the proposed landing
+is accompanied by the separate crossing correction that evidence requires.
+
+Keep all four current exceptions until those definitions land. Once PR 1537 is
+merged, remove exactly these three entries from `KnownStationExceptions`:
+
+| Consumer | Region | Station | Current missing count |
+|---|---|---|---|
+| `routine.junior_poirier` | `region.nine_mile_creek` | `station.nine_mile_creek.bar_landing` | 2 |
+| `routine.junior_poirier` | `region.nine_mile_creek` | `station.nine_mile_creek.fuel_stop` | 1 |
+| `crossing.st_peters_nine_mile_creek_bar` | `region.nine_mile_creek` | `station.nine_mile_creek.bar_landing` | 1 |
+
+Retain `home.st_peters_red_saltbox` / `region.st_peters` /
+`station.st_peters.home_post_office` with count **1**: PR 1537 does not add the
+upstairs home station. Preserve exact key equivalence and occurrence-count
+assertions; their failure after the mainland additions is the intended signal
+to retire resolved exceptions, not to broaden the allowance. This change edits
+none of PR 1537's scene, builder, crossing, routine or test files.
+
 ## Regression coverage
 
 `RoutineCrossRegionContentTests` already checks weekly schedules and crossing
