@@ -453,6 +453,20 @@ namespace HiddenHarbours.World
             if (text == null || text.Length == 0) return;
 
             NpcDef npc = it.Npc;
+            // A speaker who reads the weather ends on today's read of it (WeatherReadDef): worked out
+            // from the sim's wind through Core, so it is always true. A new array, never the asset's own.
+            if (it.HasNpcData && npc.Dialogue.WeatherRead != null)
+            {
+                string read = WeatherRead.TodayLine(npc.Dialogue.WeatherRead);
+                if (!string.IsNullOrEmpty(read))
+                {
+                    var withRead = new string[text.Length + 1];
+                    System.Array.Copy(text, withRead, text.Length);
+                    withRead[text.Length] = read;
+                    text = withRead;
+                }
+            }
+
             string flag = it.CompletionFlag;
             Speak(it, text,
                   it.HasNpcData ? DialogueOptionPicker.RowsFor(npc.Dialogue.Options) : null,

@@ -62,6 +62,13 @@ namespace HiddenHarbours.World
                  "conversation can be shipped without a safe way out.")]
         public DialogueOption[] Options = new DialogueOption[0];
 
+        [Header("Today's weather, read aloud (optional)")]
+        [Tooltip("When set, the speaker ends every conversation with his read of TODAY'S real wind: where " +
+                 "it is from, how hard, whether it builds or eases, and what that means for a dory. The " +
+                 "words and thresholds live on the WeatherReadDef; the wind is the sim's, so the line is " +
+                 "always true. LEAVE IT EMPTY and nothing changes.")]
+        public WeatherReadDef WeatherRead;
+
         /// <summary>True when this conversation ends in a choice rather than just ending. Half-typed rows
         /// do not count — see <see cref="DialogueOptionPicker.RowsFor"/>, which is the one place a row is
         /// judged fit to show.</summary>

@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1a51cf668aa47ccbeeccccc242ad785, type: 3}
+  m_Name: BasilWeatherRead
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.WeatherReadDef
+  Id: weather_read.basil_samson
+  ReadHour: 7
+  OutlookHour: 15
+  LookWindowHours: 2
+  LookSamples: 5
+  ModerateFrom: 2
+  FreshFrom: 6
+  TooMuchFrom: 8
+  GaleFrom: 11
+  ChangeAtLeast: 1.5
+  CompassWords:
+  - north
+  - nor'east
+  - east
+  - sou'east
+  - south
+  - sou'west
+  - west
+  - nor'west
+  LightLines:
+  - 'Barely a breath this morning, and what there is comes off the {from}.'
+  - 'Light air out of the {from}. Hardly a cat''s paw on her.'
+  - 'Flat as a plate, near enough. A light air from the {from}.'
+  ModerateLines:
+  - 'Nice little breeze out of the {from} this morning.'
+  - 'Wind''s {from}, a working breeze and no more.'
+  - 'Steady breeze from the {from}, enough to put a ripple on her.'
+  FreshLines:
+  - 'Fresh out of the {from} this morning, and a bit of a chop with it.'
+  - 'She''s freshening from the {from}. You''ll feel it on the oars.'
+  - 'Wind''s {from} and fresh. White caps out past the point.'
+  TooMuchLines:
+  - 'Blowing hard out of the {from}, white water all along the point.'
+  - 'Wind''s {from}, and too much of it. Hear it in the wires?'
+  - 'She''s kicking up from the {from}. That''s a lop no dory wants.'
+  GaleLines:
+  - 'Blowing a gale from the {from}. I''d not stand on the end of the wharf, never mind row.'
+  - 'A whole gale out of the {from}. Even the gulls have given up.'
+  - 'Gale of wind from the {from}, and the sea''s gone white.'
+  HoldingLines:
+  - 'Holds like that all day, I''d say. Fair for the dory.'
+  - 'Won''t change much before dark. A good day to row.'
+  - 'She''ll keep like that. Take the dory out and enjoy it.'
+  BuildingLines:
+  - 'Comes up a bit by afternoon, but nothing a dory can''t take. Mind the row home.'
+  - 'More of it later on. Still fit for rowing; keep your bow to it.'
+  - 'Freshens after noon, but not past what a dory can stand.'
+  EasingLines:
+  - 'Eases off by afternoon. Fair for the dory, and fairer later.'
+  - 'Dropping away later. A lovely row by the afternoon.'
+  - 'Lies down after noon. You''ll have it easy coming home.'
+  HomeEarlyLines:
+  - 'But it builds by afternoon, too much for a dory then. Row early and be home by noon.'
+  - 'Comes up hard later on. Go out early if you go, and don''t be late back.'
+  - 'Won''t last. By afternoon it''s no day for a dory, so get your rowing done this morning.'
+  StayInLines:
+  - 'No day for a dory. Stay in the harbour.'
+  - 'Leave the dory where she lies today. She''ll keep, and so will you.'
+  - 'Not today. Mend your gear and let it blow.'
+  StayInEasingLines:
+  - 'Eases off later, but not enough to trust. Stay in the harbour today.'
+  - 'She''ll lie down some by evening. Too late for the dory; leave it till tomorrow.'
+  - 'Drops a bit after noon, but it''s still no day for a dory.'

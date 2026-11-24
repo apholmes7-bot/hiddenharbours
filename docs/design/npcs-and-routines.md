@@ -409,6 +409,20 @@ is the logic and one example; no scene changed.
   and lanes (so he is computed there but not drawn), the quad and cart as drawn carriers with real
   capacity, the supply arithmetic, and tide-aware departure hours.
 
+### 2.10 ⭐ A SPEAKER WHO READS THE WEATHER (first-week slice 12, 2026-11-24)
+
+- **What**: Basil Samson, the St Peters wharf watcher, ends every conversation with his read of TODAY'S
+  wind: where it is from (nor'east, sou'west), how hard, whether it builds or eases by afternoon, and
+  what that means for a man in a rowing dory. It teaches reading the wind (P1) with no HUD text.
+- **Always true**: `WeatherRead` asks Core's wind law (`IWaveWindSource`) for the day's wind around the
+  read hour and the outlook hour and only chooses words for what it gets. Nothing is saved; the pick of
+  words is a hash of (worldSeed, day), so the same day always gets the same line.
+- **Data**: one `WeatherReadDef` per speaker (`weather_read.basil_samson`, next to his dialogue): the
+  hours, the band edges in m/s (light air, breeze, fresh, too much for a dory, gale), the compass words
+  and a handful of now and outlook lines per band. A `DialogueDef` opts in through its `WeatherRead`
+  field; empty means nothing changes.
+- **Not yet**: the tide in his read, a placed harbour wind vane for him to look at.
+
 ---
 
 ## 3. The handcrafted core cast
