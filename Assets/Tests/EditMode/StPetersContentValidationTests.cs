@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -32,6 +33,74 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // ---- licences -------------------------------------------------------------------------
+
+        // Region declarations are included even when a producer has not been wired yet.
+        // Each exception is a missing mapping, never permission to name a broken licence.
+        private static readonly Dictionary<string, string> KnownStPetersCatchLicenceGaps =
+            new Dictionary<string, string>
+            {
+                { "fish.lobster", "The lobster pot has no authored licence mapping." },
+                { "fish.atlantic_herring", "Net-only region content has no licence mapping." },
+                { "fish.atlantic_surf_clam", "The shellfish licence does not list surf clams." },
+                { "fish.green_crab", "The crab pot has no authored licence mapping." },
+                { "fish.mackerel", "The summer rod catch has no licence mapping." },
+                { "fish.northern_quahog", "The shellfish licence does not list quahogs." },
+                { "fish.rainbow_smelt", "The seasonal rod species has no licence mapping." },
+                { "fish.rock_crab", "The crab pot has no authored licence mapping." },
+                { "fish.striped_bass", "The moving-water rod species has no licence mapping." },
+                { "fish.winter_flounder", "The seasonal rod species has no licence mapping." },
+            };
+
+        [Test]
+        public void StPetersCatchCensus_EveryDeclaredSpeciesHasAResolvableLicence_ExceptNamedKnownGaps()
+        {
+            var fish = LoadAll<FishSpeciesDef>().Where(f => f.RegionAllowed("region.st_peters"))
+                .OrderBy(f => f.Id, System.StringComparer.Ordinal).ToArray();
+            var licences = LoadAll<LicenseDef>();
+            var licenceIds = new HashSet<string>(licences.Select(l => l.Id));
+            var traps = LoadAll<TrapDef>();
+            var library = AssetDatabase.LoadAssetAtPath<FishSpeciesLibrary>(
+                "Assets/_Project/Resources/FishSpeciesLibrary.asset");
+            Assert.IsNotNull(library, "St Peters census: runtime species library is missing");
+            Assert.IsNotEmpty(fish, "St Peters census: no region species were loaded");
+            var gaps = new HashSet<string>();
+            var errors = new List<string>();
+            foreach (var f in fish)
+            {
+                var mappings = licences.Where(l => l.PermittedSpeciesIds != null
+                    && l.PermittedSpeciesIds.Contains(f.Id)).ToArray();
+                string required = CatchLicensePolicy.RequiredLicenseFor(f.Id, licences);
+                if (string.IsNullOrWhiteSpace(required))
+                {
+                    gaps.Add(f.Id);
+                    if (!KnownStPetersCatchLicenceGaps.ContainsKey(f.Id))
+                        errors.Add($"{f.Id}: catchable St Peters species has no licence id");
+                }
+                else if (!licenceIds.Contains(required))
+                    errors.Add($"{f.Id}: licence '{required}' does not exist");
+
+                foreach (var mapping in mappings)
+                    if (string.IsNullOrWhiteSpace(mapping.Id))
+                        errors.Add($"{f.Id}: {AssetDatabase.GetAssetPath(mapping)} has a blank licence id");
+
+                string sellers = string.Join(", ", mappings.Where(l => l.Catalog.Listed)
+                    .SelectMany(l => l.Catalog.Sellers ?? new string[0]).Distinct().OrderBy(s => s));
+                string pots = string.Join(", ", traps.Where(t => t.AllowedCatchFishIds != null
+                    && t.AllowedCatchFishIds.Contains(f.Id)).Select(t => t.Id).OrderBy(s => s));
+                TestContext.WriteLine($"{f.Id} | gear={f.AllowedGear} | seasons={f.Seasons} | " +
+                    $"tide=[{f.MinTide}, {f.MaxTide}] | hours=[{f.StartHour}, {f.EndHour}); " +
+                    $"second=[{f.SecondStartHour}, {f.SecondEndHour}) | moving={f.MovingWaterOnly} | " +
+                    $"licence={required ?? "MISSING"} | sellers={sellers} | traps={pots} | " +
+                    $"registered={library.Species != null && library.Species.Contains(f)}");
+            }
+            foreach (var known in KnownStPetersCatchLicenceGaps)
+            {
+                Assert.IsNotEmpty(known.Value, $"{known.Key}: known gap needs a reason");
+                if (!gaps.Contains(known.Key))
+                    errors.Add($"{known.Key}: known licence gap is stale; remove it after fixing the mapping");
+            }
+            Assert.IsEmpty(errors, string.Join("\n", errors));
+        }
 
         [Test]
         public void Licenses_Exist_AndHaveNonEmptyUniqueIds()
