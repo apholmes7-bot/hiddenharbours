@@ -155,7 +155,9 @@ namespace HiddenHarbours.World
         // The tide table's key is named where the player first needs it. World may not see the UI
         // module that owns the binding (rule 4), so the letter is written here and a test holds it to
         // TidePanelInput's shipped key: rebind the table and that test says this line is stale.
-        public const string OnboardDigClams  = "Tab shows the tide table. At low water, dig clams on the bared flats (E by a hole).";
+        // The shore is licensed (license.clam): an unlicensed clam goes straight back, so the line sends
+        // him to LeBlanc's for the Shellfish Licence first — Ginny fronted the fee — and then to the flats.
+        public const string OnboardDigClams  = "Tab shows the tide table. First buy the Shellfish Licence at LeBlanc's (Ginny fronted the fee), then dig clams on the bared flats at low water (E by a hole).";
         public const string OnboardCrossBar  = "Walk the bared sandbar east to Nine Mile Creek before the tide floods it back.";
         public const string OnboardBuyLicence= "At Nine Mile Creek: sell your clams, then buy a COD LICENCE to fish.";
         public const string OnboardBuyRod    = "Buy a fishing ROD from the shop — then you can hand-line cod.";

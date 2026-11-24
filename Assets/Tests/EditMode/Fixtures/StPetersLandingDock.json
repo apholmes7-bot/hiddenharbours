@@ -53,7 +53,7 @@
     "station.st_peters.head_lamp",
     "station.st_peters.slip_lantern"
   ],
-  "outsidePocketTexelsSha256": "9df0071e44bbae2e726980c4dfdf68c7d089878656e752306cd4dce8facf7662",
+  "outsidePocketTexelsSha256": "71947433329f6f1c7b7534d31fb1fd62328780ff33a4976c846d177d30560d6f",
   "expectedWharfDocuments": 79,
   "expectedOutsideTexels": 1580492
 }
