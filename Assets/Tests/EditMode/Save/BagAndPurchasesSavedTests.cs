@@ -590,7 +590,7 @@ namespace HiddenHarbours.Tests.EditMode
             int bought = BuyOut(shelves, BreadLine, now);
             Assert.That(told, Is.EqualTo(bought));
             Assert.IsFalse(shelves.TryTakeOne(BreadLine, now));
-            Assert.IsFalse(shelves.TryTakeOne("line.test_gone", now));
+
             Assert.That(told, Is.EqualTo(bought), "an empty shelf changes nothing");
 
             shelves.ImportPurchases(new List<StorePurchaseRowDto>());

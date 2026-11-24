@@ -90,9 +90,16 @@ namespace HiddenHarbours.Tests.PlayMode
 
         private void EnsureHost()
         {
-            if (Object.FindFirstObjectByType<IslandShelvesHost>() != null) return;
-            _ownHost = new GameObject("[IslandShelvesHost test]");
-            _ownHost.AddComponent<IslandShelvesHost>();
+            IslandShelvesHost host = Object.FindFirstObjectByType<IslandShelvesHost>();
+            if (host == null)
+            {
+                _ownHost = new GameObject("[IslandShelvesHost test]");
+                _ownHost.AddComponent<IslandShelvesHost>();
+                return;
+            }
+            // The fixture's service reset drops every listener: the running host listens again.
+            host.enabled = false;
+            host.enabled = true;
         }
 
         // A loaded game: the host tears its stores down and builds them again on its next frame.

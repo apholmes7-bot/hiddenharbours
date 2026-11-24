@@ -124,7 +124,7 @@ namespace HiddenHarbours.Tests.PlayMode
             EventBus.Subscribe(_onSetDown);
             EventBus.Subscribe(_onPickedUp);
 
-            _save = new SaveData();
+            _save = SaveMigration.NewGame();
             GameServices.Save = new FakeSave(_save);
             _till = new Till { Save = _save };
             ShelfTills.Register(_till);
