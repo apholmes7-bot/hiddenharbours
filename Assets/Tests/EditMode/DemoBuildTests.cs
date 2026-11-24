@@ -93,6 +93,19 @@ namespace HiddenHarbours.Tests.EditMode
             CollectionAssert.AreEqual(full, (string[])select.Invoke(null, new object[] { false }));
         }
 
+        [TestCase(false)]
+        [TestCase(true)]
+        public void DemoPackagingStopsBeforeReadingInputsOrWritingOutput(bool development)
+        {
+            Type builder = Type.GetType("HiddenHarbours.Tools.Editor.PlayerBuild, HiddenHarbours.Tools.Editor", true);
+            MethodInfo build = builder.GetMethod("Build", BindingFlags.NonPublic | BindingFlags.Static);
+            var error = Assert.Throws<TargetInvocationException>(() => build.Invoke(null,
+                new object[] { null, null, null, null, development, false, true }));
+            Assert.That(error.InnerException, Is.TypeOf<UnityEditor.Build.BuildFailedException>());
+            Assert.That(error.InnerException.Message, Is.EqualTo(
+                "Demo packaging is blocked until the island opening is implemented and verified."));
+        }
+
         [Test]
         public void SelectingTheDemoDoesNotEndIt()
         {
@@ -131,7 +144,10 @@ namespace HiddenHarbours.Tests.EditMode
         [TestCase(true)]
         public void WaterComparisonCannotBeToggledInTheDemo(bool demo)
         {
-            var surface = Host().AddComponent<DisplacedWaterSurface>();
+            var host = Host();
+            host.AddComponent<SpriteRenderer>();
+            var surface = host.AddComponent<DisplacedWaterSurface>();
+            Assert.IsNotNull(surface);
             bool before = surface.Displaced;
             DemoBuild.Override = demo;
             surface.SetDisplaced(!before);
