@@ -2,7 +2,9 @@ using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using HiddenHarbours.Core;
 using HiddenHarbours.Tests.Support;
+using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace HiddenHarbours.Tests.PlayMode
@@ -87,6 +89,57 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(a == null, Is.True, "gone in the same frame: nothing is left queued");
             Assert.That(child == null, Is.True);
             Assert.DoesNotThrow(() => SceneSettle.DestroyNow((Object)null));
+        }
+
+        [Test]
+        public void TestLoadHoldAndWaits_AreBoundedInsideTheHangWatchdog()
+        {
+            // One test hold blocks the main thread inside one frame: it must stay under the frozen-thread verdict.
+            Assert.That(SceneSettle.TestHoldSeconds, Is.LessThan(MainThreadPulse.FrozenAfterSeconds));
+            // It exists because the game's cap can run out on a slow runner; a shorter one would buy nothing.
+            Assert.That(SceneSettle.TestHoldSeconds, Is.GreaterThan(SceneSettle.HoldSeconds));
+            Assert.That(SceneSettle.MaxTestHoldTimeouts, Is.InRange(1, 5));
+            // The frame-turning waits fail, naming what they waited for, long before the watchdog ends the run.
+            Assert.That(SceneSettle.PendingOperationTimeoutSeconds + SceneSettle.OperationTimeoutSeconds,
+                Is.LessThan(TestHangWatch.DefaultLimitSeconds / 2.0));
+        }
+
+        [UnityTest]
+        public IEnumerator Await_PastItsBound_FailsNamingTheOperation()
+        {
+            yield return SceneSettle.WaitForPendingSceneOperations("the premise");
+            var scene = SceneManager.CreateScene("SettleAwaitBound");
+            AsyncOperation unload = SceneManager.UnloadSceneAsync(scene);
+            SceneLoadHold.Track(unload);
+            Assert.That(unload, Is.Not.Null);
+            Assert.That(unload.isDone, Is.False, "premise: the unload needs a player-loop turn");
+
+            var wait = SceneSettle.Await(unload, "unload of 'SettleAwaitBound'", 0d);
+            var error = Assert.Throws<System.TimeoutException>(() => wait.MoveNext());
+            StringAssert.Contains("unload of 'SettleAwaitBound' did not complete within 0 s", error.Message);
+            yield return SceneSettle.Await(unload, "unload of 'SettleAwaitBound'");
+            Assert.That(unload.isDone, Is.True);
+        }
+
+        [UnityTest]
+        public IEnumerator WaitForPendingSceneOperations_WaitsForATrackedOperation_AndFailsPastItsBound()
+        {
+            yield return SceneSettle.WaitForPendingSceneOperations("the premise");
+            var idle = SceneSettle.WaitForPendingSceneOperations("nothing", 0d);
+            Assert.That(idle.MoveNext(), Is.False, "nothing in flight adds no frame");
+
+            var scene = SceneManager.CreateScene("SettlePendingBound");
+            AsyncOperation unload = SceneManager.UnloadSceneAsync(scene);
+            SceneLoadHold.Track(unload);
+            Assert.That(SceneLoadHold.InFlight, Is.GreaterThan(0), "premise: the unload is tracked in flight");
+
+            var late = SceneSettle.WaitForPendingSceneOperations("loading 'Somewhere'", 0d);
+            var error = Assert.Throws<System.TimeoutException>(() => late.MoveNext());
+            StringAssert.Contains("before loading 'Somewhere'", error.Message);
+
+            yield return SceneSettle.WaitForPendingSceneOperations("the next load");
+            Assert.That(SceneLoadHold.InFlight, Is.Zero);
+            Assert.That(unload.isDone, Is.True);
         }
     }
 }

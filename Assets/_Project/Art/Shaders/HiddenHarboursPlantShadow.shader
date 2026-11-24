@@ -21,6 +21,7 @@ Shader "HiddenHarbours/PlantShadow"
     {
         Tags { "Queue"="Transparent" "RenderType"="Transparent" "RenderPipeline"="UniversalPipeline" }
         Blend [_SrcBlend] [_DstBlend]
+        ColorMask RGB   // The calm mirror: ground cover leaves the alpha class under it alone
         Cull Off ZWrite Off ZTest LEqual
         Stencil { Ref [_StencilRef] Comp [_StencilComp] Pass [_StencilPass] }
         Pass

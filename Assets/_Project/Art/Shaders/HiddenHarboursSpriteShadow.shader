@@ -164,6 +164,7 @@ Shader "HiddenHarbours/SpriteShadow"
         // Per MATERIAL, not per renderer: SrcAlpha/OneMinusSrcAlpha is the legacy arm (a dark sprite laid
         // over the world), Zero/SrcColor is the shade arm (a multiply laid over the frame).
         Blend [_SrcBlend] [_DstBlend]
+        ColorMask RGB   // The calm mirror: ground cover leaves the alpha class under it alone
         Cull Off
         ZWrite Off
         ZTest LEqual
