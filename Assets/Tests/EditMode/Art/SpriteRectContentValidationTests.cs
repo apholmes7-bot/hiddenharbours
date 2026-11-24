@@ -13,7 +13,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
     {
         const string ArtRoot = "Assets/_Project/Art";
 
-        // Baseline f1b4ab2: no out-of-bounds rects. If an existing exception ever needs to be
+        // Baseline c626cea: no out-of-bounds rects. If an existing exception ever needs to be
         // recorded, pin the entire diagnostic (path, rect and texture size), not a folder or
         // file wildcard. Remove the entry when repaired; it must not excuse another bad slice.
         static readonly string[] KnownOutOfBoundsRectsAtBaseline = { };

@@ -1,3 +1,4 @@
+using HiddenHarbours.Core;
 using UnityEngine;
 
 namespace HiddenHarbours.Fishing
@@ -38,7 +39,8 @@ namespace HiddenHarbours.Fishing
     /// it follows the dig, which follows the deterministic tide and the save.</para>
     ///
     /// <para><b>Cheap &amp; allocation-free.</b> Two <see cref="SpriteRenderer"/>s, a throttled tick for the
-    /// show/hide + frame step, and an index into a cached frame array — no per-frame GC (rule 7). The escape
+    /// holes' show/hide, and a per-frame index into a cached frame array for the squirt — no per-frame GC
+    /// (rule 7). The escape
     /// timer runs each frame on an exposed, un-spent hole (a cheap distance compare); it idles otherwise.</para>
     /// </summary>
     [RequireComponent(typeof(SpriteRenderer))]
@@ -48,13 +50,16 @@ namespace HiddenHarbours.Fishing
                  "(ShowingSquirt) and the spent state (Consumed). Defaults to a ClamDig on this GameObject.")]
         [SerializeField] private ClamDig _dig;
 
-        [Tooltip("The still two-holes sprite, shown on the BASE renderer the whole time the ground is bared.")]
+        [Tooltip("The still two-holes sprite, shown on the BASE renderer the whole time the ground is bared. " +
+                 "Only the two small siphon holes and a faint damp rim, drawn in darkening colours on a " +
+                 "transparent cell, so the ground under it shows through (owner ask 2026-11-22: no mound).")]
         [SerializeField] private Sprite _holeSprite;
 
         [Tooltip("The jet strip, drawn on a SEPARATE overlay renderer ON TOP of the holes while the dig is " +
-                 "squirting. It is a HEIGHT RAMP, not a flip-book: frame 0 is the lip and the last frame is " +
-                 "the crest, and the frame is picked by ClamDig.SpurtRise (the rig's rise x 4 px). Empty -> " +
-                 "no overlay (the holes just don't squirt).")]
+                 "squirting. It is a HEIGHT RAMP, not a flip-book: frame 0 is the lip, the second-to-last " +
+                 "the crest and the last the collapse (droplets falling back); the frame is picked by " +
+                 "ClamDig.SpurtRise and SpurtU (ClamSpurtMath.FrameFor). Each cell's bottom row is the " +
+                 "holes' level. Empty -> no overlay (the holes just don't squirt).")]
         [SerializeField] private Sprite[] _squirtFrames;
 
         [Tooltip("Vertical nudge (local units, positive = up) of the squirt OVERLAY so it animates CENTERED on " +
@@ -88,6 +93,9 @@ namespace HiddenHarbours.Fishing
         private bool _sinking;        // mid sink-into-sand animation (escape fired)
         private float _sinkClock;     // progress through the sink animation
         private bool _hidden;         // spent (dug or escaped) → gone until the dig is fresh again
+
+        private float _jetScaleApplied = 1f;      // the height dial last written to the overlay
+        private float _jetOffsetApplied = float.NaN;
 
         private Vector3 _baseScale;
         private Color _holeBaseColor;
@@ -165,14 +173,18 @@ namespace HiddenHarbours.Fishing
             // If lingering just spooked the clam, hand off to the sink animation this same frame.
             if (_sinking) { TickSink(dt); return; }
 
-            // Throttled show/hide + squirt-overlay step. The escape timer above is per-frame; the picture isn't.
+            // Throttled show/hide of the holes. The escape timer above is per-frame, and so is the squirt
+            // below: a jet that lives 0.6 s cannot be drawn at a few Hz without stepping visibly.
             _refreshTimer -= dt;
-            if (_refreshTimer > 0f) return;
-            _refreshTimer = 1f / _refreshHz;
-            DrawExposed(exposed);
+            if (_refreshTimer <= 0f)
+            {
+                _refreshTimer = 1f / _refreshHz;
+                DrawExposed(exposed);
+            }
+            DrawSquirt();
         }
 
-        // Show the holes (base) while exposed and layer the squirt overlay on top while the tell shows.
+        // Show the holes (base) while exposed. The squirt overlay is drawn every frame by DrawSquirt.
         private void DrawExposed(bool exposed)
         {
             if (!exposed)
@@ -185,31 +197,52 @@ namespace HiddenHarbours.Fishing
             // BASE: the two-holes sprite, always on while exposed (never swapped away by the squirt).
             if (!_holeRenderer.enabled) _holeRenderer.enabled = true;
             if (_holeSprite != null && _holeRenderer.sprite != _holeSprite) _holeRenderer.sprite = _holeSprite;
+        }
 
-            // OVERLAY: the squirt effect on its own renderer, ON TOP of the holes — added, not a swap.
-            //
-            // ⚠️ The frame is chosen by the jet's HEIGHT, not by a clock. shellfishRig2's spurt()
-            // publishes rise = sin(π·u) over the 420 ms window and the sidecar's instruction to the
-            // page is literally "draw a 1 px jet, rise × 4 px tall" — so the strip is a height ramp,
-            // and frame 0 is the lip while the last frame is the crest. Free-running the strip at a
-            // fixed fps (what this did before, 6 fps against a 1.5 s boolean) would put the crest
-            // wherever the clock happened to be, which is exactly the thing the rig took the trouble
-            // to specify away.
-            bool squirting = _dig.ShowingSquirt && _squirtFrames != null && _squirtFrames.Length > 0
-                             && _squirtRenderer != null;
-            if (squirting)
+        // OVERLAY: the squirt effect on its own renderer, ON TOP of the holes — added, not a swap. Only
+        // while the holes are drawn (so a submerged or spent hole never squirts). No allocation: a frame
+        // index, a sprite assignment and, when the height dial moved, one transform write.
+        //
+        // ⚠️ The frame is chosen by the jet's HEIGHT, not by a clock. shellfishRig2's spurt() publishes
+        // rise = sin(π·u) over the window, so the strip is a height ramp: frame 0 is the lip and the
+        // second-to-last the crest. The LAST frame is the collapse (droplets raining back), shown on the
+        // way down once the jet drops below ClamShowSettings.CollapseBelowRise (ClamSpurtMath.FrameFor).
+        private void DrawSquirt()
+        {
+            if (_squirtRenderer == null) return;
+            bool squirting = _holeRenderer != null && _holeRenderer.enabled && _dig != null
+                             && _dig.ShowingSquirt && _squirtFrames != null && _squirtFrames.Length > 0;
+            if (!squirting)
             {
-                int last = _squirtFrames.Length - 1;
-                int frame = last <= 0
-                    ? 0
-                    : Mathf.Clamp(Mathf.RoundToInt(Mathf.Clamp01(_dig.SpurtRise) * last), 0, last);
-                if (_squirtFrames[frame] != null) _squirtRenderer.sprite = _squirtFrames[frame];
-                if (!_squirtRenderer.enabled) _squirtRenderer.enabled = true;
+                if (_squirtRenderer.enabled) _squirtRenderer.enabled = false;
+                return;
             }
-            else
-            {
-                if (_squirtRenderer != null && _squirtRenderer.enabled) _squirtRenderer.enabled = false;
-            }
+
+            ClamShowSettings show = ClamShowSettings.Current;
+            int frame = ClamSpurtMath.FrameFor(_dig.SpurtRise, _dig.SpurtU, _squirtFrames.Length,
+                                               show.CollapseBelowRise);
+            Sprite s = frame >= 0 ? _squirtFrames[frame] : null;
+            if (s == null) { if (_squirtRenderer.enabled) _squirtRenderer.enabled = false; return; }
+
+            if (_squirtRenderer.sprite != s) _squirtRenderer.sprite = s;
+            ApplyJetHeight(show.JetHeightScale, s);
+            if (!_squirtRenderer.enabled) _squirtRenderer.enabled = true;
+        }
+
+        // Stretch the overlay vertically by the height dial with its FOOT kept on the holes. The strip's
+        // cells are centre-pivoted and lifted by _squirtVerticalOffset so a cell's bottom row sits on the
+        // holes; scaling about the centre would lift the foot, so the lift grows by (scale - 1) half-cells.
+        private void ApplyJetHeight(float scale, Sprite cell)
+        {
+            if (!(scale > 0f)) scale = 1f;
+            if (scale == _jetScaleApplied && _squirtVerticalOffset == _jetOffsetApplied) return;
+            _jetScaleApplied = scale;
+            _jetOffsetApplied = _squirtVerticalOffset;
+
+            float halfCell = cell.bounds.extents.y;
+            Transform t = _squirtRenderer.transform;
+            t.localScale = new Vector3(1f, scale, 1f);
+            t.localPosition = new Vector3(0f, _squirtVerticalOffset + (scale - 1f) * halfCell, 0f);
         }
 
         // Linger logic: count up while the player is inside the escape radius; reset the instant they leave.

@@ -54,6 +54,11 @@ namespace HiddenHarbours.Art
         public int DormantCells { get; private set; }
         public int AuthoredPlantCount => Definition != null ? Definition.Authored.Length : 0;
         public int CurrentSeason => _season;
+        /// <summary>Every built site's root, grass or not, scattered or authored.</summary>
+        public void CopyRootsTo(List<Vector2> destination)
+        {
+            foreach (var site in _sites) destination.Add(new Vector2(site.X, site.Y));
+        }
         public void CopyGrassRootsTo(List<Vector2> destination)
         {
             foreach (var site in _sites)

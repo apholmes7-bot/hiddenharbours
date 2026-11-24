@@ -16,8 +16,8 @@ namespace HiddenHarbours.Tests.EditMode
     /// The room-fixture placement step, as committed (kitchens and bathrooms plan, section 3): each scene
     /// holds the fixtures its text patch placed (a re-plan is empty, so the scene, the prefabs and the rows
     /// agree), each interact id is in its scene once, each interior fixture lands on its planned model point,
-    /// each prefab is one interactable of a shipped Def, and R1 places the pilot building's bathroom and
-    /// nothing else. The first two wash stations (#1273) are rows of the same step.
+    /// each prefab is one interactable of a shipped Def, and the step places the pilot building's kitchen
+    /// and bathroom and nothing else. The first two wash stations (#1273) are rows of the same step.
     /// </summary>
     public class InteriorFixturePlacementTests
     {
@@ -112,22 +112,41 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.Less(Vector2.Distance(world, cottage), 8f, "within the cottage's own few metres");
         }
 
-        // ---- the R1 pilot --------------------------------------------------------------------------
+        // ---- the pilot building: Ginny's cottage ----------------------------------------------------
 
         [Test]
-        public void R1PlacesGinnysBathroom_AndNothingElse()
+        public void GinnysKitchenAndBathroomArePlaced_AndNothingElse()
         {
             var placed = InteriorFixturePlacement.PlacedRows().ToList();
             CollectionAssert.AreEquivalent(
-                new[] { RoomFixturePlan.Kind.Toilet, RoomFixturePlan.Kind.BathroomSink, RoomFixturePlan.Kind.Shower },
-                placed.Select(r => r.Kind), "Ginny's cottage plans a toilet, a basin and a shower");
+                new[]
+                {
+                    RoomFixturePlan.Kind.PrepCounter, RoomFixturePlan.Kind.Stove, RoomFixturePlan.Kind.Microwave,
+                    RoomFixturePlan.Kind.KitchenSink, RoomFixturePlan.Kind.Fridge,
+                    RoomFixturePlan.Kind.Toilet, RoomFixturePlan.Kind.BathroomSink, RoomFixturePlan.Kind.Shower,
+                },
+                placed.Select(r => r.Kind), "Ginny's cottage places a kitchen run, a kitchen sink, a fridge, a toilet, a basin and a shower");
             foreach (RoomFixturePlan.Row r in placed)
             {
                 Assert.AreEqual(InteriorFixturePlacement.PilotBuildingKey, r.BuildingKey);
-                Assert.AreEqual(0, r.Level, "the bathroom is on the ground floor");
+                Assert.AreEqual(0, r.Level, "the kitchen and bathroom are on the ground floor");
             }
             Assert.AreEqual(2 + placed.Count + HomeStoragePlacement.Sites().Count, InteriorFixturePlacement.Sites.Length,
-                            "the two first wash stations plus the pilot bathroom, plus the home storage sites");
+                            "the two first wash stations plus Ginny's placed rows, plus the home storage sites");
+        }
+
+        [Test]
+        public void GinnysPlacedRows_NoUnrecordedSouthPiece_AndEachIdIsInTheSceneOnce()
+        {
+            string text = File.ReadAllText(RoomFixturePlan.Scene).Replace("\r\n", "\n");
+            foreach (RoomFixturePlan.Row r in InteriorFixturePlacement.PlacedRows().Where(r => r.BuildingKey == "ginny_cottage"))
+            {
+                Assert.IsFalse(RoomFixturePlan.IsSouthWall(r.Backing) && !RoomFixturePlan.SouthWallExceptions.Contains(r.Id),
+                               $"{r.Id} backs onto the {r.Backing} wall and is not a recorded exception");
+                // The fridge stands with no interact id (it has no verb yet), so its id is not in the scene.
+                int n = Regex.Matches(text, "(?m)^      value: " + Regex.Escape(r.Id) + "$").Count;
+                Assert.AreEqual(RoomFixturePlan.HasInteractId(r.Kind) ? 1 : 0, n, $"{r.Id} in {RoomFixturePlan.Scene}");
+            }
         }
 
         [Test]
@@ -172,12 +191,25 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void GinnysBathroomPiecesStandAtLeastNinetyCentimetresApart()
+        public void GinnysBathroomPiecesNeverOverlap()
         {
-            var rows = InteriorFixturePlacement.PlacedRows().ToList();
+            // The washroom is its own room now (1.75 m across), so the basin stands beside the toilet as a vanity
+            // does. That each piece is still the one offered where he stands to use it, and is reachable at
+            // all, is GinnyCottageRoomsTests' walk over the real floor; a fixed spacing stood in for that before.
+            var rows = InteriorFixturePlacement.PlacedRows().Where(r => RoomFixturePlan.IsBathroom(r.Kind)).ToList();
+            Assert.AreEqual(3, rows.Count, "Ginny's toilet, basin and shower");
+            Rect Box(RoomFixturePlan.Row r)
+            {
+                Vector2 s = RoomFixturePlan.FootprintOf(r);
+                return new Rect(r.At - s * 0.5f, s);
+            }
             for (int i = 0; i < rows.Count; i++)
             for (int j = i + 1; j < rows.Count; j++)
-                Assert.GreaterOrEqual(Vector2.Distance(rows[i].At, rows[j].At), 0.9f, $"{rows[i].Id} and {rows[j].Id}");
+            {
+                Rect a = Box(rows[i]), b = Box(rows[j]);
+                bool overlap = a.xMin < b.xMax - 1e-3f && b.xMin < a.xMax - 1e-3f && a.yMin < b.yMax - 1e-3f && b.yMin < a.yMax - 1e-3f;
+                Assert.IsFalse(overlap, $"{rows[i].Id} and {rows[j].Id} overlap");
+            }
         }
 
         [Test]
@@ -185,10 +217,16 @@ namespace HiddenHarbours.Tests.EditMode
         {
             CollectionAssert.AreEquivalent(new[]
             {
+                "fixture.st_peters.ginny_cottage.prep_counter",
+                "fixture.st_peters.ginny_cottage.stove",
+                "fixture.st_peters.ginny_cottage.microwave",
+                "fixture.st_peters.ginny_cottage.kitchen_sink",
+                "fixture.st_peters.ginny_cottage.fridge",
                 "fixture.st_peters.ginny_cottage.toilet",
                 "fixture.st_peters.ginny_cottage.bathroom_sink",
                 "fixture.st_peters.ginny_cottage.shower",
             }, PilotIds());
+            CollectionAssert.AllItemsAreUnique(PilotIds().ToList());
         }
 
         [Test]
@@ -197,6 +235,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual("BathroomSink", InteriorFixturePlacement.NameOf("bathroom_sink"));
             Assert.AreEqual("Toilet", InteriorFixturePlacement.NameOf("toilet"));
             Assert.AreEqual("PrepCounter", InteriorFixturePlacement.NameOf("prep_counter"));
+            Assert.AreEqual("KitchenSink", InteriorFixturePlacement.NameOf("kitchen_sink"));
         }
 
         [Test]
@@ -207,6 +246,34 @@ namespace HiddenHarbours.Tests.EditMode
                 string path = InteriorFixturePlacement.PrefabFor(kind);
                 Assert.IsTrue(File.Exists(path), $"{kind}: {path}");
             }
+        }
+
+        [Test]
+        public void GinnysKitchenSinkIsAWashStation_AndHerFridgeIsTheFridgeDef_BothInTheSceneOnce()
+        {
+            var sinkPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(InteriorFixturePlacement.PrefabFor(RoomFixturePlan.Kind.KitchenSink));
+            Assert.AreEqual("washstation.sink", sinkPrefab.GetComponent<WashStationPoint>().StationId);
+            Assert.Greater(sinkPrefab.GetComponent<WashStationPoint>().ReachMeters, 0f);
+            var fridgePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(InteriorFixturePlacement.PrefabFor(RoomFixturePlan.Kind.Fridge));
+            var store = fridgePrefab.GetComponent<KitchenStoreFixture>();
+            Assert.IsNotNull(store, "the fridge prefab names its food store");
+            Assert.AreEqual("kitchen_storage.fridge", store.Def.Id);
+            Assert.AreEqual(0L, FactsOf(InteriorFixturePlacement.PrefabFor(RoomFixturePlan.Kind.Fridge)).Point,
+                            "the fridge carries no interact id, so it stands with none");
+
+            InteriorFixturePlacement.Site sink = InteriorFixturePlacement.Sites.Single(s => s.InteractId == "fixture.st_peters.ginny_cottage.kitchen_sink");
+            InteriorFixturePlacement.Site fridge = InteriorFixturePlacement.Sites.Single(s => s.Name == "Fridge" && s.Building == StPetersGinnyPlot.CottageKey);
+            Assert.IsNull(fridge.InteractId);
+            Assert.AreEqual(InteriorFixturePlacement.PrefabFor(RoomFixturePlan.Kind.KitchenSink), sink.Prefab);
+            Assert.AreEqual(InteriorFixturePlacement.PrefabFor(RoomFixturePlan.Kind.Fridge), fridge.Prefab);
+
+            // One "Fridge" instance of the fridge prefab under the cottage's ground furniture root.
+            SceneYaml scene = Scene(fridge.Scene);
+            InteriorFixturePlacement.FootprintOf(scene, fridge, out Doc parent, out _);
+            string guid = FactsOf(fridge.Prefab).Guid;
+            int fridges = parent.FieldRefs("m_Children").Select(c => scene.Require(c, "a child"))
+                .Count(t => t.Stripped && ObjRef.Parse(t.Field("m_CorrespondingSourceObject")).Guid == guid);
+            Assert.AreEqual(1, fridges, "one fridge under Ginny's ground furniture");
         }
 
         // ---- plan, apply, plan again ----------------------------------------------------------------

@@ -262,6 +262,39 @@ namespace HiddenHarbours.Art.Editor
         }
 
         /// <summary>
+        /// Where the room's DOORWAY is in its own model frame, in metres — which is not always where
+        /// <see cref="DoorModelMetres"/> says.
+        ///
+        /// <para>The room rig's door anchor is always the <c>+y</c> gable centre. Its doorway follows
+        /// the shell's door (<c>interiorIsoRig.js</c> "phase 2b": the wall comes from the shell's
+        /// <c>entrance()</c>). For every room whose shell has its door in a gable the two agree. The
+        /// harbour gable's shell has its door in a cross gable on the <c>+x</c> eave, so its room's
+        /// doorway is on the room's <c>+x</c> wall. The shell's own baked anchors say which wall, read
+        /// by <see cref="BuildingFacing.DoorWall"/>; where along that wall is the shell anchor's screen
+        /// x a quarter-turn on (the houses bake counter-clockwise, cell i at rig dir n − i).</para>
+        /// </summary>
+        public static Vector2 DoorwayModelMetres(Placement room)
+        {
+            Vector2 anchor = DoorModelMetres(room);
+            if (!room.IsValid) return anchor;
+
+            string shellKey = InteriorKit.ExteriorKeyFor(room.Key);
+            if (shellKey == null) return anchor;
+            VillageBuildingCatalog.Placement shell = VillageBuildingCatalog.Find(shellKey);
+            if (!shell.IsValid) return anchor;
+
+            VillageBuildingKit.Entry e = shell.Entry;
+            int wall = BuildingFacing.DoorWall(e.doorX, e.doorY, e.pivotX, e.pivotY, e.facings,
+                                               e.footprintWidthMetres, e.footprintLengthMetres);
+            if (wall != BuildingFacing.WallPlusX && wall != BuildingFacing.WallMinusX) return anchor;
+
+            float ppu = Mathf.Max(1, VillageBuildingCatalog.PixelsPerUnit());
+            float along = (e.doorX[e.facings / 4] - e.pivotX) / ppu;
+            float half = room.Entry.footprintWidthMetres * 0.5f;
+            return new Vector2(wall == BuildingFacing.WallPlusX ? half : -half, along);
+        }
+
+        /// <summary>
         /// A one-line report of what is placeable, for a tool's info box and the builder's log: how many
         /// rooms and props, the biggest sheet against the import cap, and the measured facing offset —
         /// which is the number a reader most wants to see confirmed.
