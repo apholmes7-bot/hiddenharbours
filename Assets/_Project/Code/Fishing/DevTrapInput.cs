@@ -105,6 +105,7 @@ namespace HiddenHarbours.Fishing
         // Console. Event-time strings only (a keypress), never per frame.
         private const string NoticePotSet = "Pot set";
         private const string NoticeTooShallow = "Too shallow here";
+        private const string NoticeTooDeep = "Too deep for this pot";
         private const string NoticeNoBait = "No bait aboard";
         private const string NoticeNotWired = "No trap gear wired (dev)";
         // Pots-are-owned: a fresh set needs a SPARE owned pot — the cozy refusal names the fix.
@@ -139,6 +140,7 @@ namespace HiddenHarbours.Fishing
             {
                 PlacedTrapService.PlaceResult.Placed => NoticePotSet,
                 PlacedTrapService.PlaceResult.TooShallow => NoticeTooShallow,
+                PlacedTrapService.PlaceResult.TooDeep => NoticeTooDeep,
                 PlacedTrapService.PlaceResult.NoBait => NoticeNoBait,
                 PlacedTrapService.PlaceResult.NoPotStock => NoticeNoPots,
                 _ => NoticeNotWired,
@@ -174,8 +176,13 @@ namespace HiddenHarbours.Fishing
             }
             else
             {
-                EventBus.Publish(new DevNotice(result == PlacedTrapService.PlaceResult.TooShallow
-                    ? NoticeTooShallow : NoticeNotWired));
+                EventBus.Publish(new DevNotice(result switch
+                {
+                    PlacedTrapService.PlaceResult.TooShallow => NoticeTooShallow,
+                    PlacedTrapService.PlaceResult.TooDeep => NoticeTooDeep,
+                    PlacedTrapService.PlaceResult.NoBait => NoticeDeckUnbaited,
+                    _ => NoticeNotWired,
+                }));
             }
             return result;
         }

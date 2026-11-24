@@ -123,6 +123,70 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void DuplicateFavours_IgnoreCaseButDoNotMultiplyTheBonusAgain()
+        {
+            var lobster = MakeSpecies("fish.lobster", "Lobster", 40);
+            var crab = MakeSpecies("fish.rock_crab", "Crab", 12);
+            var pool = new List<FishSpeciesDef> { null, lobster, crab };
+            var favours = new[] { "FISH.LOBSTER", "fish.lobster", null };
+            var weighted = PlacedTrapCatch.BuildWeightedPool(pool, favours, 3);
+            CollectionAssert.AreEqual(new[] { lobster, crab, lobster, lobster }, weighted);
+            CollectionAssert.AreEqual(new[] { null, lobster, crab }, pool);
+            CollectionAssert.AreEqual(new[] { "FISH.LOBSTER", "fish.lobster", null }, favours);
+        }
+
+        [TestCase(-1)]
+        [TestCase(0)]
+        [TestCase(1)]
+        public void NonBonusMultiplier_KeepsOneCopyPerNonNullSpecies(int multiplier)
+        {
+            var lobster = MakeSpecies("fish.lobster", "Lobster", 40);
+            var pool = new[] { null, lobster };
+            var weighted = PlacedTrapCatch.BuildWeightedPool(pool, new[] { lobster.Id }, multiplier);
+            CollectionAssert.AreEqual(new[] { lobster }, weighted);
+        }
+
+        [Test]
+        public void MissingRandomStream_DoesNotInventACatch()
+        {
+            var ctx = TrapContext();
+            Assert.IsNull(PlacedTrapCatch.Resolve(new[] { MakeSpecies("fish.lobster", "Lobster", 40) },
+                in ctx, null, 1, null));
+        }
+
+        [TestCase(0)]
+        [TestCase(-1)]
+        public void ResolveMany_ZeroOrNegativeRequestClearsThePreviousCatch(int count)
+        {
+            var pool = new[] { MakeSpecies("fish.lobster", "Lobster", 40) };
+            var ctx = TrapContext();
+            var results = new List<CatchItem>();
+            Assert.AreEqual(2, PlacedTrapCatch.ResolveMany(pool, in ctx, null, 1, 2,
+                42, "pot.fixture", 100d, results));
+            Assert.AreEqual(0, PlacedTrapCatch.ResolveMany(pool, in ctx, null, 1, count,
+                42, "pot.fixture", 100d, results));
+            Assert.AreEqual(0, results.Count);
+        }
+
+        [Test]
+        public void ResolveMany_ReusedOutputContainsOnlyTheNewResolution()
+        {
+            var pool = new[] { MakeSpecies("fish.lobster", "Lobster", 40) };
+            var ctx = TrapContext();
+            var results = new List<CatchItem>();
+            Assert.AreEqual(2, PlacedTrapCatch.ResolveMany(pool, in ctx, null, 1, 2,
+                42, "pot.fixture", 100d, results));
+            var first = results[0];
+            Assert.AreEqual(1, PlacedTrapCatch.ResolveMany(pool, in ctx, null, 1, 1,
+                42, "pot.fixture", 100d, results));
+            Assert.AreEqual(1, results.Count);
+            Assert.AreEqual(first, results[0]);
+            Assert.AreEqual(0, PlacedTrapCatch.ResolveMany(null, in ctx, null, 1, 1,
+                42, "pot.fixture", 100d, results));
+            Assert.AreEqual(0, results.Count);
+        }
+
+        [Test]
         public void EmptyPool_YieldsNothing()
         {
             var ctx = TrapContext();

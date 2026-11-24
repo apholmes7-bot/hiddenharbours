@@ -208,5 +208,127 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsNull(placed);
             Assert.AreEqual(0, svc.Live.Count, "no pot set without bait to arm it");
         }
+
+        [TestCase(float.NaN)]
+        [TestCase(float.PositiveInfinity)]
+        [TestCase(float.NegativeInfinity)]
+        public void NonfiniteDepth_CannotPlaceOrSpendBait(float depth)
+        {
+            _env.Level = depth;
+            _save.BaitStock.Add(new BaitStock(_bait.Id, 2));
+            var svc = MakeService();
+            Assert.IsFalse(TrapPlacement.IsDeepEnough(depth, _trap.MinSoakDepthMeters));
+            Assert.IsFalse(TrapPlacement.CanPlaceAt(_trap, _env, _terrain, _clock.Seconds, Vector2.zero));
+            Assert.AreNotEqual(PlacedTrapService.PlaceResult.Placed,
+                svc.TryPlaceGated(_trap, _bait, Vector2.zero, "region.st_peters", out var placed));
+            Assert.IsNull(placed);
+            Assert.AreEqual(0, svc.Live.Count);
+            Assert.AreEqual(0, _save.PlacedTraps.Count);
+            Assert.AreEqual(2, _save.BaitStock[0].Count);
+        }
+
+        [TestCase(39.999f, true)]
+        [TestCase(40f, true)]
+        [TestCase(40.001f, false)]
+        public void MaximumDepth_IncludesTheAuthoredEndpoint(float depth, bool allowed)
+        {
+            _env.Level = depth;
+            Assert.AreEqual(allowed,
+                TrapPlacement.CanPlaceAt(_trap, _env, _terrain, _clock.Seconds, Vector2.zero));
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TooDeep_FreshAndPrebaitedSetsRefuseWithoutSpending(bool prebaited)
+        {
+            _env.Level = _trap.MaxSoakDepthMeters + 0.001f;
+            _save.BaitStock.Add(new BaitStock(_bait.Id, 2));
+            var svc = MakeService();
+            PlacedTrap placed;
+            var result = prebaited
+                ? svc.TryPlacePreBaited(_trap, _bait, Vector2.zero, "region.st_peters", out placed)
+                : svc.TryPlaceGated(_trap, _bait, Vector2.zero, "region.st_peters", out placed);
+            Assert.AreEqual(PlacedTrapService.PlaceResult.TooDeep, result);
+            Assert.IsNull(placed);
+            Assert.AreEqual(0, svc.Live.Count);
+            Assert.AreEqual(0, _save.PlacedTraps.Count);
+            Assert.AreEqual(2, _save.BaitStock[0].Count);
+            Assert.AreEqual(8, PotLocker.AvailableCount(_save, _trap.Id, 0));
+        }
+
+        [TestCase(false, null)]
+        [TestCase(true, null)]
+        [TestCase(false, "bait.other")]
+        [TestCase(true, "bait.other")]
+        [TestCase(false, "BAIT.HERRING")]
+        [TestCase(true, "BAIT.HERRING")]
+        public void RequiredBait_MustBeLoadedWithItsExactId(bool prebaited, string loadedId)
+        {
+            _save.BaitStock.Add(new BaitStock(_trap.RequiredBaitId, 2));
+            BaitDef loaded = null;
+            if (loadedId != null)
+            {
+                _bait.Id = loadedId;
+                loaded = _bait;
+                _save.BaitStock.Add(new BaitStock(loadedId, 2));
+            }
+            var svc = MakeService();
+            PlacedTrap placed;
+            var result = prebaited
+                ? svc.TryPlacePreBaited(_trap, loaded, Vector2.zero, "region.st_peters", out placed)
+                : svc.TryPlaceGated(_trap, loaded, Vector2.zero, "region.st_peters", out placed);
+            Assert.AreEqual(PlacedTrapService.PlaceResult.NoBait, result);
+            Assert.IsNull(placed);
+            Assert.AreEqual(0, svc.Live.Count);
+            Assert.AreEqual(0, _save.PlacedTraps.Count);
+            Assert.AreEqual(loadedId == null ? 1 : 2, _save.BaitStock.Count);
+            foreach (var stock in _save.BaitStock) Assert.AreEqual(2, stock.Count);
+        }
+
+        [Test]
+        public void NoRequiredBait_AllowsAnUnbaitedFreshSet()
+        {
+            _trap.RequiredBaitId = "";
+            var svc = MakeService();
+            Assert.AreEqual(PlacedTrapService.PlaceResult.Placed,
+                svc.TryPlaceGated(_trap, null, Vector2.zero, "region.st_peters", out var placed));
+            Assert.IsNotNull(placed);
+            Assert.AreEqual("", placed.BaitId);
+            Assert.AreEqual(1, _save.PlacedTraps.Count);
+            Assert.AreEqual(0, _save.BaitStock.Count);
+        }
+
+        [Test]
+        public void DropTooDeep_NamesTheDepthRefusalAndSpendsNothing()
+        {
+            _env.Level = _trap.MaxSoakDepthMeters + 1f;
+            _save.BaitStock.Add(new BaitStock(_bait.Id, 2));
+            var svc = MakeService();
+            var dev = svc.gameObject.AddComponent<DevTrapInput>();
+            dev.Configure(svc, svc.transform, _trap, _bait, "region.st_peters");
+            var notices = new List<string>();
+            void OnNotice(DevNotice e) => notices.Add(e.Text);
+            EventBus.Subscribe<DevNotice>(OnNotice);
+            try
+            {
+                Assert.AreEqual(PlacedTrapService.PlaceResult.TooDeep, dev.DropTrap());
+                CollectionAssert.AreEqual(new[] { "Too deep for this pot" }, notices);
+                Assert.AreEqual(0, _save.PlacedTraps.Count);
+                Assert.AreEqual(2, _save.BaitStock[0].Count);
+            }
+            finally { EventBus.Unsubscribe<DevNotice>(OnNotice); }
+        }
+
+        [Test]
+        public void PrebaitedSet_PreservesRemainingBaitStock()
+        {
+            _save.BaitStock.Add(new BaitStock(_bait.Id, 2));
+            var svc = MakeService();
+            Assert.AreEqual(PlacedTrapService.PlaceResult.Placed,
+                svc.TryPlacePreBaited(_trap, _bait, Vector2.zero, "region.st_peters", out var placed));
+            Assert.AreSame(_bait, placed.Bait);
+            Assert.AreEqual(1, _save.PlacedTraps.Count);
+            Assert.AreEqual(2, _save.BaitStock[0].Count);
+        }
     }
 }

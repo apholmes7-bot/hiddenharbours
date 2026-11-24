@@ -278,6 +278,41 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(1, Plan(new[] { Poor("a", -10f), Poor("a", -20f) }, new[] { Vector2.zero, new Vector2(5f, 0f) }, output));
         }
 
+        [TestCase(-4f, 1)]
+        [TestCase(-4.001f, 0)]
+        [TestCase(15f, 1)]
+        [TestCase(15.001f, 0)]
+        public void Planner_DepthWindowIncludesBothEndpoints(float waterLevel, int expected)
+        {
+            var h = Lobster; var r = Rotation;
+            var output = new TrapRotationOrder[1];
+            Assert.AreEqual(expected, TrapRotationPlanner.Plan(new[] { Poor() }, new[] { Vector2.zero },
+                Region, Bed, waterLevel, Bottom, in h, 42, 100d, in r, output));
+            if (expected == 1) Assert.AreEqual(Vector2.zero, output[0].ResetAt);
+        }
+
+        [TestCase(2f, 1)]
+        [TestCase(1.999f, 0)]
+        public void Planner_ExactMinimumSpacingIsAllowed(float separation, int expected)
+        {
+            var traps = new[] { Poor(), new TrapObservation("kept", new Vector2(separation, 0f), 1f, true) };
+            var output = new TrapRotationOrder[1];
+            Assert.AreEqual(expected, Plan(traps, new[] { Vector2.zero }, output));
+            if (expected == 1) Assert.AreEqual("pot.a", output[0].InstanceId);
+        }
+
+        [TestCase(10f, 1)]
+        [TestCase(9.999f, 0)]
+        public void Planner_RegionEdgeAndMaximumTravelAreInclusive(float maximumTravel, int expected)
+        {
+            var h = Lobster; var r = Rotation; r.MaxMoveMetres = maximumTravel;
+            var output = new TrapRotationOrder[1];
+            var edge = new Vector2(5f, 0f);
+            Assert.AreEqual(expected, TrapRotationPlanner.Plan(new[] { Poor() }, new[] { edge },
+                new Rect(-5f, -5f, 10f, 5f), Bed, 0f, Bottom, in h, 42, 100d, in r, output));
+            if (expected == 1) Assert.AreEqual(edge, output[0].ResetAt);
+        }
+
         [Test]
         public void Planner_InvalidSettingsInputsAndMissingTerrainFailClosed()
         {

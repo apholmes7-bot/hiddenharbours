@@ -12,9 +12,9 @@ namespace HiddenHarbours.Fishing
     /// <para><b>Same one number the whole shoreline reads.</b> Depth here is the exact
     /// <c>waterLevel − terrainElevation</c> the walkability sim, the boat-cross gate and the water shader
     /// read (<see cref="TidalExposure.WaterDepth"/> over the authored <see cref="ITidalTerrain"/>) — so a
-    /// trap is placeable exactly where the sea is deep enough to float it, and the picture (the covered
-    /// water) can never disagree with the gate. Where ClamDig requires <c>depth ≤ 0</c> (bared ground), the
-    /// trap requires <c>depth ≥ MinSoakDepthMeters</c> (deep water). This is P1 read as gameplay: you learn
+    /// trap is placeable only within its authored depth band. Where ClamDig requires <c>depth ≤ 0</c>
+    /// (bared ground), the trap requires submerged water between its minimum and maximum depths.
+    /// This is P1 read as gameplay: you learn
     /// to set your pots in the gut, not on the flat that'll bare at low water.</para>
     /// </summary>
     public static class TrapPlacement
@@ -26,14 +26,16 @@ namespace HiddenHarbours.Fishing
         /// <paramref name="minSoakDepthMeters"/> means "any submerged water will do" (depth &gt; 0).
         /// </summary>
         public static bool IsDeepEnough(float depthMeters, float minSoakDepthMeters)
-            => minSoakDepthMeters > 0f ? depthMeters >= minSoakDepthMeters : depthMeters > 0f;
+            => !float.IsNaN(depthMeters) && !float.IsInfinity(depthMeters)
+               && (minSoakDepthMeters > 0f ? depthMeters >= minSoakDepthMeters : depthMeters > 0f);
 
         /// <summary>
         /// Can a trap of <paramref name="trapDef"/> be dropped at <paramref name="worldPos"/> right now? Reads
         /// the deterministic water level for the active region at <paramref name="totalSeconds"/> from
         /// <paramref name="environment"/> and the authored ground elevation from <paramref name="terrain"/>,
         /// computes the water depth, and applies <see cref="IsDeepEnough"/> against the Def's
-        /// <see cref="TrapDef.MinSoakDepthMeters"/>. Returns <c>false</c> (can't place — the safe default)
+        /// <see cref="TrapDef.MinSoakDepthMeters"/> and the inclusive maximum depth.
+        /// Returns <c>false</c> (can't place — the safe default)
         /// when the Def, the environment, or the terrain is missing: a null terrain means "open water" with
         /// no authored height map, so we don't guess a depth and let a placement stand on nothing. Deterministic.
         /// </summary>
@@ -42,7 +44,7 @@ namespace HiddenHarbours.Fishing
         {
             if (trapDef == null || environment == null || terrain == null) return false;
             float depth = TidalExposure.WaterDepth(environment.WaterLevelAt(totalSeconds), terrain.ElevationAt(worldPos));
-            return IsDeepEnough(depth, trapDef.MinSoakDepthMeters);
+            return IsDeepEnough(depth, trapDef.MinSoakDepthMeters) && depth <= trapDef.MaxSoakDepthMeters;
         }
 
         /// <summary>The water depth (m) at <paramref name="worldPos"/> right now — <c>waterLevel −

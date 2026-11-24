@@ -71,6 +71,15 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(90f, DeckWork.SizeMm(h, 90f, 90f), 1e-4f, "a zero-width window is the one value");
         }
 
+        [Test]
+        public void SizeMm_ReversedWindowUsesTheSameSortedRange()
+        {
+            const uint midpoint = 0x80000000;
+            Assert.AreEqual(100f, DeckWork.SizeMm(midpoint, 140f, 60f));
+            Assert.AreEqual(DeckWork.SizeMm(midpoint, 60f, 140f), DeckWork.SizeMm(midpoint, 140f, 60f));
+            Assert.AreEqual(60f, DeckWork.SizeMm(0u, 140f, 60f));
+        }
+
         // ---- the berried flag ------------------------------------------------------------------
 
         [Test]

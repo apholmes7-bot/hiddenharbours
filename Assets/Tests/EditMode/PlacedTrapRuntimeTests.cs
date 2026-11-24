@@ -424,5 +424,126 @@ namespace HiddenHarbours.Tests.EditMode
 
             Assert.AreEqual(1, placedSignals, "each restored trap re-publishes TrapPlaced so the buoy reappears");
         }
+
+        [Test]
+        public void RestartInTheSameClockSecond_NeverReusesARestoredId()
+        {
+            var firstService = MakeService();
+            _clock.Seconds = PlaceTime + 0.125d;
+            var original = firstService.PlaceTrap(_lobsterTrap, _herring, Vector2.zero, "region.st_peters");
+            string originalId = original.InstanceId;
+            Object.DestroyImmediate(firstService.gameObject);
+
+            var restarted = MakeService();
+            restarted.RestoreFromSave(_save);
+            _clock.Seconds = PlaceTime + 0.875d;
+            var next = restarted.PlaceTrap(_lobsterTrap, _herring, Vector2.one, "region.st_peters");
+            Assert.AreEqual("trap.lobster#5000.1", originalId);
+            Assert.AreEqual("trap.lobster#5000.2", next.InstanceId);
+            Assert.AreEqual(2, _save.PlacedTraps.Count);
+            restarted.RemoveTrap(next);
+            Assert.AreEqual(1, restarted.Live.Count);
+            Assert.AreEqual(originalId, restarted.Live[0].InstanceId);
+            Assert.AreEqual(1, _save.PlacedTraps.Count);
+            Assert.AreEqual(originalId, _save.PlacedTraps[0].InstanceId);
+        }
+
+        [Test]
+        public void NewId_SkipsSavedRowsEvenWhenTheirKindCannotBeRestored()
+        {
+            _save.PlacedTraps.Add(new PlacedTrapDto
+            {
+                InstanceId = "trap.lobster#5000.1", TrapDefId = "trap.missing",
+                PlacementGameTimeSeconds = PlaceTime
+            });
+            var svc = MakeService();
+            var next = svc.PlaceTrap(_lobsterTrap, _herring, Vector2.zero, "region.st_peters");
+            Assert.AreEqual("trap.lobster#5000.2", next.InstanceId);
+            Assert.AreEqual(2, _save.PlacedTraps.Count);
+            Assert.AreEqual("trap.missing", _save.PlacedTraps[0].TrapDefId);
+        }
+
+        [Test]
+        public void NewId_SkipsRestoredLiveIdsWithoutASaveService()
+        {
+            _save.PlacedTraps.Add(new PlacedTrapDto
+            {
+                InstanceId = "trap.lobster#5000.1", TrapDefId = _lobsterTrap.Id,
+                PlacementGameTimeSeconds = PlaceTime, Region = "region.st_peters"
+            });
+            GameServices.Save = null;
+            var svc = MakeService();
+            svc.RestoreFromSave(_save);
+            var next = svc.PlaceTrap(_lobsterTrap, null, Vector2.one, "region.st_peters");
+            Assert.AreEqual("trap.lobster#5000.2", next.InstanceId);
+            Assert.AreEqual(2, svc.Live.Count);
+            Assert.AreEqual(1, _save.PlacedTraps.Count);
+        }
+
+        [Test]
+        public void Restore_ReplaysAllPlacementFieldsAndSavedSeedWithoutSpendingBait()
+        {
+            _clock.Seconds = PlaceTime + 0.125d;
+            _save.BaitStock.Add(new BaitStock(_herring.Id, 2));
+            var svc = MakeService();
+            svc.PlaceTrap(_lobsterTrap, _herring, new Vector2(-3.25f, 4.5f), "region.st_peters");
+            var before = _save.PlacedTraps[0];
+            int seed = _save.WorldSeed;
+            _env.Seed++;
+            _clock.Seconds += 100d;
+            svc.RestoreFromSave(_save);
+            Assert.AreEqual(1, svc.Live.Count);
+            var restored = svc.Live[0];
+            Assert.AreEqual(before.InstanceId, restored.InstanceId);
+            Assert.AreEqual(before.TrapDefId, restored.Trap.Id);
+            Assert.AreEqual(before.BaitId, restored.BaitId);
+            Assert.AreEqual(before.Region, restored.RegionId);
+            Assert.AreEqual(before.PlacementGameTimeSeconds, restored.PlacementGameTimeSeconds);
+            Assert.AreEqual(before.PosX, restored.transform.position.x);
+            Assert.AreEqual(before.PosY, restored.transform.position.y);
+            Assert.AreEqual(seed, restored.WorldSeed);
+            Assert.AreEqual(before, _save.PlacedTraps[0]);
+            Assert.AreEqual(1, _save.BaitStock[0].Count);
+        }
+
+        [Test]
+        public void RestoreNull_ClearsOnlyLiveTrapsAndPublishesRemoval()
+        {
+            var svc = MakeService();
+            var live = svc.PlaceTrap(_lobsterTrap, _herring, Vector2.zero, "region.st_peters");
+            string id = live.InstanceId;
+            var removed = new List<string>();
+            void OnRemoved(TrapRemoved e) => removed.Add(e.InstanceId);
+            EventBus.Subscribe<TrapRemoved>(OnRemoved);
+            svc.RestoreFromSave(null);
+            Assert.AreEqual(0, svc.Live.Count);
+            CollectionAssert.AreEqual(new[] { id }, removed);
+            Assert.AreEqual(1, _save.PlacedTraps.Count);
+            Assert.AreEqual(id, _save.PlacedTraps[0].InstanceId);
+        }
+
+        [Test]
+        public void Haul_StampsLandingTimeAndCannotLandTheSameTrapTwice()
+        {
+            RegisterCatchSpecies();
+            var trap = MakeTrapObject("trap.fixture", PlaceTime);
+            _clock.Seconds = PlaceTime + LobsterSoakSpan;
+            var hold = new FakeHold();
+            var caught = new List<CatchItem>();
+            void OnCaught(FishCaught e) => caught.Add(e.Item);
+            EventBus.Subscribe<FishCaught>(OnCaught);
+            var ctx = TrapContext();
+            Assert.IsTrue(trap.TryHaul(hold, in ctx));
+            Assert.AreEqual(PlacedTrapState.Hauled, trap.StateAt(_clock.Seconds));
+            Assert.AreEqual(1, hold.UsedUnits);
+            Assert.AreEqual(1, caught.Count);
+            Assert.AreEqual(_clock.Seconds, hold.Items[0].Freshness.LastSettleGameSeconds);
+            Assert.AreEqual(hold.Items[0], caught[0]);
+            Assert.IsTrue(trap.TryGetLastCatch(out var last));
+            Assert.AreEqual(hold.Items[0], last);
+            Assert.IsFalse(trap.TryHaul(hold, in ctx));
+            Assert.AreEqual(1, hold.UsedUnits);
+            Assert.AreEqual(1, caught.Count);
+        }
     }
 }
