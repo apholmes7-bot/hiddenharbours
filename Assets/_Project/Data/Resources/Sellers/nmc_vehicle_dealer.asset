@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.SellerDef
   Id: seller.nmc_vehicle_dealer
   KeeperNpcId:
+  RegionId: region.nine_mile_creek
   TradeId: trade.vehicles

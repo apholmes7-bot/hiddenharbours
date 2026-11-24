@@ -17,6 +17,7 @@ MonoBehaviour:
   Flavor: A radar set for a compatible helm, with its scanner and display.
   Price: 3600
   Catalog:
+    BoatHardware: 1
     Listed: 0
     Section: 5
     Sellers:

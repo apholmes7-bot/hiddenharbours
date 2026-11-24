@@ -17,6 +17,7 @@ MonoBehaviour:
   Flavor: A digital wind display for a compatible helm.
   Price: 650
   Catalog:
+    BoatHardware: 1
     Listed: 0
     Section: 5
     Sellers:

@@ -17,6 +17,7 @@ MonoBehaviour:
   Flavor: A heading-hold unit for a hull with an offered helm. Fitting is a separate upgrade.
   Price: 6000
   Catalog:
+    BoatHardware: 1
     Listed: 0
     Section: 5
     Sellers:

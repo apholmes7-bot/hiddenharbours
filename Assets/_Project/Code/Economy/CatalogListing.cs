@@ -105,6 +105,9 @@ namespace HiddenHarbours.Economy
                  "a half-authored Def cannot quietly appear on a counter.")]
         public bool Listed;
 
+        [Tooltip("Boat fittings and helm hardware. Classification only; does not change availability or price.")]
+        public bool BoatHardware;
+
         [Tooltip("Which shelf of the book this sits on. Append-only — re-ordering the enum re-shelves " +
                  "everything already authored.")]
         public CatalogSection Section;

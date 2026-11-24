@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using HiddenHarbours.Core;
 using HiddenHarbours.Economy;
 using NUnit.Framework;
@@ -9,6 +10,81 @@ namespace HiddenHarbours.Tests.Economy
 {
     public class SellerContentTests
     {
+        static readonly Dictionary<string, string> KnownIslandHardwareExceptions = new Dictionary<string, string>
+        {
+            ["seller.leblancs|instrument.depth_sounder"] =
+                "Existing island counter template; relocation requires a counter and scene change."
+        };
+
+        static ICatalogListing[] Offers() => AssetDatabase.FindAssets("t:ScriptableObject",
+                new[] { "Assets/_Project/Data" })
+            .Select(AssetDatabase.GUIDToAssetPath)
+            .Select(AssetDatabase.LoadMainAssetAtPath).OfType<ICatalogListing>().ToArray();
+
+        [Test]
+        public void EveryOffer_NamesRealSellers_AndEachSellerOffersAnItemOnce()
+        {
+            var sellers = Resources.LoadAll<SellerDef>(SellerDirectory.ResourceFolder).ToDictionary(s => s.Id);
+            var pairs = new HashSet<string>();
+            var offers = Offers();
+            Assert.That(offers, Is.Not.Empty);
+            foreach (var offer in offers)
+            {
+                // This unlisted, free identity supplies the starting kit's label, not a sale.
+                if (offer.ListingId == "gear.headlamp")
+                {
+                    Assert.That(offer.Catalog.Listed, Is.False);
+                    Assert.That(((GearOffer)offer).Price, Is.Zero);
+                    Assert.That(offer.Catalog.Sellers, Is.Empty);
+                    continue;
+                }
+                Assert.That(offer.Catalog.Sellers, Is.Not.Null.And.Not.Empty, offer.ListingId + " names no seller");
+                string item = offer is VehicleOffer vehicle ? vehicle.VehicleId :
+                    offer is PotOffer pot ? pot.TrapDefId : offer.ListingId;
+                Assert.That(item, Is.Not.Null.And.Not.Empty, offer.ListingId + " names no item");
+                foreach (string seller in offer.Catalog.Sellers)
+                {
+                    Assert.That(seller, Is.Not.Null.And.Not.Empty, offer.ListingId);
+                    Assert.That(sellers.ContainsKey(seller), Is.True, offer.ListingId + " names missing seller " + seller);
+                    Assert.That(pairs.Add(seller + "|" + item), Is.True,
+                        "Duplicate offer for item " + item + " at " + seller);
+                }
+                if (offer is VehicleOffer v)
+                    Assert.That(offer.Catalog.Sellers, Does.Contain(v.SellerId), v.Id + " purchase seller differs from catalog");
+            }
+        }
+
+        [Test]
+        public void IslandSellers_OfferNoBoatHardware_ExceptNamedExistingCounter()
+        {
+            var sellers = Resources.LoadAll<SellerDef>(SellerDirectory.ResourceFolder).ToDictionary(s => s.Id);
+            var regions = new HashSet<string>(AssetDatabase.FindAssets("t:RegionDef", new[] { "Assets/_Project/Data" })
+                .Select(AssetDatabase.GUIDToAssetPath).Select(AssetDatabase.LoadMainAssetAtPath)
+                .Select(a => new SerializedObject(a).FindProperty("Id").stringValue));
+            foreach (var seller in sellers.Values)
+                Assert.That(regions.Contains(seller.RegionId), Is.True, seller.Id + " needs a real region");
+            Assert.That(sellers["seller.leblancs"].RegionId, Is.EqualTo("region.st_peters"));
+            var found = new HashSet<string>();
+            foreach (var offer in Offers())
+            {
+                if (offer is InstrumentOffer)
+                    Assert.That(offer.Catalog.BoatHardware, Is.True, offer.ListingId + " helm fitting needs hardware classification");
+                if (!offer.Catalog.BoatHardware) continue;
+                foreach (string seller in offer.Catalog.Sellers ?? new string[0])
+                {
+                    Assert.That(sellers.ContainsKey(seller), Is.True, offer.ListingId + " names missing seller " + seller);
+                    if (sellers[seller].RegionId != "region.st_peters") continue;
+                    string key = seller + "|" + offer.ListingId;
+                    Assert.That(KnownIslandHardwareExceptions.ContainsKey(key), Is.True,
+                        "Island seller " + seller + " offers boat hardware " + offer.ListingId + "; move the offer to a mainland seller");
+                    Assert.That(KnownIslandHardwareExceptions[key], Is.Not.Empty);
+                    found.Add(key);
+                }
+            }
+            Assert.That(found, Is.EquivalentTo(KnownIslandHardwareExceptions.Keys),
+                "Remove the named exception once its island offer has gone");
+        }
+
         [Test]
         public void EveryCatalogAndConversationSeller_HasUniqueDataAndValidKeeper()
         {
