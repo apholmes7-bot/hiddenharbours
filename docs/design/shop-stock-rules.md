@@ -1,4 +1,10 @@
-# Pilot shop stock: data and pure rules
+# Pilot shop stock: historical data and rules
+
+> Historical design record. The service, restock arithmetic and in-memory state
+> contract described below have been retired. The pilot Def remains for stable
+> identity and content validation; its instant floor and weekday schedule do not
+> govern live shelves. See [the current audit](../architecture/dormant-shop-stock-audit.md)
+> for composed island shelves, migrated assertions and the unchanged save boundary.
 
 Slice 2 of the indoor shops plan. This serves P3's delivery rhythm and P5's gentle essentials
 guarantee. The model is dormant: nothing constructs the service in the running game, and the wares

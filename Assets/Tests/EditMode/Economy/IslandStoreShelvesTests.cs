@@ -281,5 +281,130 @@ namespace HiddenHarbours.Tests.Economy
             Assert.Throws<ArgumentException>(() =>
                 new IslandStoreShelves("shop.test_store", Ledger(Always), Lines(), 0.0, Opens, Closes), "no day length");
         }
+
+        [TestCase(Gas, 4, Grocery, 18)]
+        [TestCase(Grocery, 18, Gas, 4)]
+        public void TakingTheLastItemSellsOutOnlyThatLine_AndRepeatedTakesCannotCrossZero(
+            string line, int count, string other, int otherCount)
+        {
+            var shelves = Shelves(Always);
+            double now = At(30, Opens);
+            Assert.That(shelves.CountAt(line, now), Is.EqualTo(count));
+            for (int left = count - 1; left >= 0; left--)
+            {
+                Assert.IsTrue(shelves.TryTakeOne(line, now));
+                Assert.That(shelves.CountAt(line, now), Is.EqualTo(left));
+                Assert.That(shelves.CountAt(other, now), Is.EqualTo(otherCount));
+            }
+            for (int i = 0; i < 10; i++) Assert.IsFalse(shelves.TryTakeOne(line, now));
+            Assert.That(shelves.CountAt(line, now), Is.Zero);
+            Assert.That(shelves.HeldDrawCount, Is.EqualTo(count), "failed takes create no draws");
+        }
+
+        [Test]
+        public void EssentialBaitAndIceAlsoRunOut_ThereIsNoInstantFloorRefill()
+        {
+            var bait = Good("islandgood.test_bait", 10f, 10f, 10f, 0f);
+            var ice = Good("islandgood.test_ice", 10f, 10f, 10f, 0f);
+            var ledger = new IslandStoreLedger(new[] { bait, ice }, Plenty, 2, 4, Lookback, Always);
+            var lines = new[]
+            {
+                new IslandShelfLine { Id = "line.bait", Good = bait, UnitsPerItem = 10f, MaxOnShelf = 4 },
+                new IslandShelfLine { Id = "line.ice", Good = ice, UnitsPerItem = 10f, MaxOnShelf = 4 }
+            };
+            var shelves = new IslandStoreShelves("shop.essentials", ledger, lines, SecondsPerDay, Opens, Closes);
+            double now = At(30, Opens);
+            foreach (string line in new[] { "line.bait", "line.ice" })
+            {
+                Assert.That(shelves.CountAt(line, now), Is.EqualTo(4));
+                for (int i = 0; i < 4; i++) Assert.IsTrue(shelves.TryTakeOne(line, now));
+                Assert.IsFalse(shelves.TryTakeOne(line, now));
+                shelves.SlowTick(now);
+                Assert.That(shelves.CountAt(line, now), Is.Zero);
+                Assert.That(shelves.CountAt(line, At(31, Opens)), Is.Zero);
+                Assert.That(shelves.CountAt(line, At(32, Opens)), Is.EqualTo(4));
+            }
+        }
+
+        [Test]
+        public void ReadingBeforeTheSlowTickSettlesOnlyOnce_AndDoesNotRepeatADelivery()
+        {
+            var shelves = Shelves(Always);
+            double now = At(30, Opens);
+            Assert.That(shelves.CountAt(Gas, now), Is.EqualTo(4));
+            Assert.IsTrue(shelves.TryTakeOne(Gas, now));
+            for (int i = 0; i < 10; i++)
+            {
+                shelves.SlowTick(now);
+                Assert.That(shelves.CountAt(Gas, now), Is.EqualTo(3));
+            }
+            Assert.That(shelves.CountAt(Gas, At(31, Opens)), Is.EqualTo(2));
+            Assert.That(shelves.CountAt(Gas, At(32, Opens)), Is.EqualTo(4));
+            Assert.That(shelves.HeldDrawCount, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void TheSameCalendarTimeAndPurchasesGiveTheSameStock_WithExtraPolling()
+        {
+            Func<int, bool> possible = d => d % 7 != 3;
+            var first = Shelves(possible);
+            var second = Shelves(possible);
+            for (int day = 0; day < 60; day++)
+            {
+                double now = At(day, 10);
+                second.SlowTick(now); second.SlowTick(now);
+                Assert.That(first.TryTakeOne(Gas, now), Is.EqualTo(second.TryTakeOne(Gas, now)));
+                Assert.That(first.CountAt(Gas, now), Is.EqualTo(second.CountAt(Gas, now)));
+                Assert.That(first.CountAt(Grocery, now), Is.EqualTo(second.CountAt(Grocery, now)));
+                Assert.That(first.HeldDrawCount, Is.EqualTo(second.HeldDrawCount));
+            }
+        }
+
+        [Test]
+        public void SameLineIdInDifferentShopsHasIndependentCounts()
+        {
+            var first = Shelves(Always);
+            var second = new IslandStoreShelves("shop.other", Ledger(Always), Lines(), SecondsPerDay, Opens, Closes);
+            double now = At(30, Opens);
+            Assert.IsTrue(first.TryTakeOne(Gas, now));
+            Assert.That(first.CountAt(Gas, now), Is.EqualTo(3));
+            Assert.That(second.CountAt(Gas, now), Is.EqualTo(4));
+            Assert.Throws<KeyNotFoundException>(() => first.CountAt("line.unknown", now));
+        }
+
+        [Test]
+        public void AuthoredShelfLineMutationsCannotChangeRunningCountsOrIdentity()
+        {
+            var lines = Lines();
+            var shelves = new IslandStoreShelves("shop.snapshot", Ledger(Always), lines, SecondsPerDay, Opens, Closes);
+            lines[0].MaxOnShelf = 1; lines[0].UnitsPerItem = 1; lines[0].Id = "line.changed";
+            lines.Clear();
+            double now = At(30, Opens);
+            Assert.That(shelves.MaxOnShelf(Gas), Is.EqualTo(4));
+            Assert.That(shelves.CountAt(Gas, now), Is.EqualTo(4));
+            Assert.IsTrue(shelves.TryTakeOne(Gas, now));
+            Assert.That(shelves.CountAt(Gas, now), Is.EqualTo(3));
+            Assert.IsFalse(shelves.HasLine("line.changed"));
+        }
+
+        [Test]
+        public void WarmSlowTicksAndReadsAllocateNoMemory_AfterARecordedPurchase()
+        {
+            var shelves = Shelves(Always);
+            Assert.IsTrue(shelves.TryTakeOne(Gas, At(30, Opens)));
+            for (int day = 31; day <= 60; day++) { shelves.SlowTick(At(day, Opens)); shelves.CountAt(Gas, At(day, Opens)); }
+            long before = GC.GetAllocatedBytesForCurrentThread();
+            int last = -1;
+            for (int day = 61; day <= 90; day++)
+            {
+                double now = At(day, Opens);
+                shelves.SlowTick(now); shelves.SlowTick(now);
+                last = shelves.CountAt(Gas, now);
+            }
+            long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+            Assert.That(allocated, Is.Zero);
+            Assert.That(last, Is.EqualTo(4));
+        }
+
     }
 }
