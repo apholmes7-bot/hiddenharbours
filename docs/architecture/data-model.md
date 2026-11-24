@@ -299,6 +299,42 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 > keeps them shut until `HomeDeeds` says the home is his. The plan of ids, Defs and Ginny's placements is
 > `App/Editor/HomeStoragePlan.cs`.
 
+> **Save schema v26 (store purchases, paid special orders, the shopping bag: ONE bump for the three,
+> owner 2026-11-23)**: `SaveData` gained four append-only members (rows in Core/Save/SaveRowsV26.cs).
+> **This is the schema step only: nothing in the game reads or writes them yet.** The `v25→v26` step gives
+> each list an empty list and sets the counter to 1, so an older save loads with its shelves as the
+> calendar says, no order, no bag, and whatever he bought simply in his supplies; nothing else moves.
+> Each of the three is something the player did, which cannot be recomputed; shelf counts, deliveries and
+> the villagers' buying are still rebuilt from the calendar and the seed (rule 5).
+>
+> - `StorePurchases` (`StorePurchaseRowDto`: `ShopId`, `ShelfLineId`, `Units` double, `Day` int, `Seconds`
+>   double): one row per purchase instant per shelf line, the same four values the shelf's own running
+>   record of a draw holds (line, day, seconds, units) plus the shop. Kept in (day, seconds, shop, line)
+>   order, the one order they are replayed in. **Data only.** The repair drops a row with no shop or line,
+>   a negative day or time, or units that are zero, negative or not finite; sorts; and folds rows equal in
+>   shop, line, day and seconds into one with their units added.
+> - `SpecialOrders` (`SpecialOrderDto`: `OrderId`, `SellerId`, `DeliverToId`, `Lines`, `PaidPrice`,
+>   `OrderedAtSeconds`, `DueDay`, `State`; each `SpecialOrderLineDto`: `ListingId`, `Count`) and
+>   `NextSpecialOrderNumber`: **reserved, not yet used.** One row per paid order. An order may hold more
+>   than one kind of good (`Lines`), and `DeliverToId` names where it is collected (empty = the seller's own
+>   counter), so neither answer needs a further version. `OrderId` is `order.<seller>.<n>` with n from the
+>   counter, which starts at 1, never goes back and is held above every number on a row. `State` is an int
+>   (0 waiting, 1 arrived, 2 collected). **A paid order is never dropped by a load**: the repair has no
+>   content to look a listing up in and no purse to refund to, so it drops a row only when it carries
+>   nothing (no money paid AND no usable line left). Inside a kept row it drops unusable lines, folds lines
+>   for one listing, reads a negative price as 0, an unreadable order time or negative due day as 0 (due at
+>   once), and an unknown state as waiting. Ids are never rewritten. Refunding an order whose listing is
+>   gone, and dropping collected rows, are the feature's own work.
+> - `ShoppingBags` (`ShoppingBagDto`: `BagDefId`, `Held`, `Region`, `PosX`, `PosY`, `Level`, `HullId`,
+>   `ByTheBed`, `Items`; each `BagItemDto`: `SupplyId`, `Count`): one row per bag that holds goods, in his
+>   hand (`Held`) or set down at a region, position and storey. A list although there is one bag today.
+>   `HullId` is reserved for a bag set down aboard. **Data only.** The goods in a bag stay counted in
+>   `SupplyStock`; a row only says which are set aside, so **a damaged or dropped bag row can never lose
+>   goods** (the worst case is "found put away") and the repair never touches `SupplyStock`. It drops a
+>   bag with no kind, a set-down bag with no region, a position that is not finite or a storey below the
+>   ground, items with no id or no count, folds items of one kind, holds each item to what he owns less
+>   what earlier bags hold, and drops a bag left empty. A region no scene claims is kept.
+
 **Recomputed, never saved:** tide height, wind, weather, sea state, visibility (from
 `worldSeed + gameTime`), dormant NPC positions, authored geometry, **a boat's effective helm fit and
 its depth-sounder reading** (ADR 0030), **which end of a bed the pillow is on** (see below), and

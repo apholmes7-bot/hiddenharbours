@@ -433,6 +433,17 @@ without naming a class. Contracts, all additive:
   unbound and refuses every change, so an empty view can never be written over the saved catch.
   `GameServices.Reset` still clears the list; whatever outlives a Reset registers again.
 
+### Store purchases, special orders and the shopping bag on the save (save v26, schema only)
+
+Save v26 adds the rows for three things the player does that cannot be recomputed: what he took off a
+store shelf (`SaveData.StorePurchases`), special orders he has paid for (`SpecialOrders` with
+`NextSpecialOrderNumber`, reserved) and his shopping bags (`ShoppingBags`). The rows are plain Core DTOs
+(`Core/Save/SaveRowsV26.cs`); **no gameplay code reads or writes them yet**, and each later slice adds
+behaviour only, with no further version. The load repair is asset-free and idempotent, and holds one rule
+over all three: a load never destroys something the player paid for or owns (a paid order is always kept;
+a bag row only sets aside goods that stay counted in `SupplyStock`). Field list and repair rules:
+[`data-model.md`](data-model.md), save schema v26. Tests: `SaveMigrationV26Tests`.
+
 ### Hulls sort among the scenery (ADR 0059, accepted 2026-11-17)
 
 A boat is an upright world object. Core's pure `HullSorting.OrderAt(waterlinePivotY)` gives her order:
