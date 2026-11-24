@@ -120,13 +120,26 @@ namespace HiddenHarbours.World
         /// the band. Taking the centre instead would hide the player behind their own bedroom floor the
         /// moment they walked past the middle of it.</para>
         /// </summary>
-        public static int UpperRoomSortingOrder(in InteriorFootprint upperFootprint)
+        public static int UpperRoomSortingOrder(in InteriorFootprint upperFootprint) =>
+            UpperRoomSortingOrder(upperFootprint, 0f);
+
+        /// <summary>
+        /// <b>The same rank, for occupants sorted by a pivot that rides above their footing.</b> A body
+        /// is stopped by its solid collider (its footing) but sorted by its transform, which for the
+        /// player sits above the feet. Standing against the far wall, that pivot is PAST the floor's far
+        /// edge, and a sheet ranked by the bare edge ties with him or outranks him: he vanishes on a
+        /// landing or corridor along the north wall. Raising the edge by the occupant's own
+        /// pivot-over-footing keeps every standing body on the floor in front of the sheet.
+        /// A negative or non-finite rise is read as zero (the bare edge).
+        /// </summary>
+        public static int UpperRoomSortingOrder(in InteriorFootprint upperFootprint, float occupantPivotRise)
         {
             Vector2[] corners = upperFootprint.Corners();
             float far = corners[0].y;
             for (int i = 1; i < corners.Length; i++)
                 if (corners[i].y > far) far = corners[i].y;
-            return SortingOrderFor(far);
+            float rise = occupantPivotRise > 0f && !float.IsInfinity(occupantPivotRise) ? occupantPivotRise : 0f;
+            return SortingOrderFor(far + rise);
         }
     }
 }

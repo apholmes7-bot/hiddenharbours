@@ -432,6 +432,56 @@ namespace HiddenHarbours.Tests.World.EditMode
         }
 
         [Test]
+        public void AStairWithALandingCarriesHimAlongTheFlight_ToTheLandingAndBackToTheFoot()
+        {
+            BuildingInterior interior = StandTwoStorey(out SpriteRenderer _);
+            Transform occupant = WalkInside(interior);
+            Vector3 foot = occupant.position;
+
+            // A flight along a wall: the head is somewhere else on the footprint than the foot.
+            var upGo = new GameObject("stair up"); _spawned.Add(upGo);
+            var downGo = new GameObject("stair down"); _spawned.Add(downGo);
+            upGo.transform.position = foot;
+            downGo.transform.position = foot + new Vector3(2.5f, interior.UpperLevelY + 0.4f, 0f);
+            var up = upGo.AddComponent<InteriorStair>();
+            var down = downGo.AddComponent<InteriorStair>();
+            up.Configure(interior, "fixture.test.stair_up", 0, 1, 1.2f, "");
+            down.Configure(interior, "fixture.test.stair_down", 1, 0, 1.2f, "");
+            up.SetLanding(downGo.transform);
+            down.SetLanding(upGo.transform);
+
+            Assert.IsTrue(up.Climb());
+            Assert.AreEqual(1, interior.Level);
+            Assert.IsTrue(interior.IsClimbing);
+            Assert.AreEqual((Vector2)downGo.transform.position, interior.Climb.Head,
+                "going up ends on the landing at the head of the flight, not straight above the foot");
+            Assert.IsFalse(interior.AdvanceClimb(GameServices.StairClimbSeconds + 1f), "the climb finishes");
+            Assert.AreEqual(downGo.transform.position.x, occupant.position.x, 1e-4f);
+            Assert.AreEqual(downGo.transform.position.y, occupant.position.y, 1e-4f);
+
+            Assert.IsTrue(down.Climb());
+            Assert.AreEqual(0, interior.Level);
+            Assert.AreEqual((Vector2)upGo.transform.position, interior.Climb.Head,
+                "and going down ends back at the foot");
+        }
+
+        [Test]
+        public void AStairWithNoLandingStillArrivesStraightAbove()
+        {
+            BuildingInterior interior = StandTwoStorey(out SpriteRenderer _);
+            Transform occupant = WalkInside(interior);
+            Vector3 foot = occupant.position;
+            var upGo = new GameObject("stair up"); _spawned.Add(upGo);
+            var up = upGo.AddComponent<InteriorStair>();
+            up.Configure(interior, "fixture.test.stair_up", 0, 1, 1.2f, "");
+
+            Assert.IsNull(up.Landing);
+            Assert.IsTrue(up.Climb());
+            Assert.AreEqual(foot.x, interior.Climb.Head.x, 1e-5f);
+            Assert.AreEqual(foot.y + interior.UpperLevelY, interior.Climb.Head.y, 1e-5f);
+        }
+
+        [Test]
         public void SomethingElseMovingTheOccupantEndsTheClimbRatherThanDraggingThemBack()
         {
             BuildingInterior interior = StandTwoStorey(out _);

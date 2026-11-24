@@ -102,6 +102,13 @@ namespace HiddenHarbours.World
                  "the same walls on both storeys and stay on throughout.")]
         [SerializeField] private Transform _upperWalls;
 
+        [Tooltip("OPTIONAL. The building's own walls (the 'Walls' child), handed over by a builder whose " +
+                 "upper storey stands its OWN outer walls in WallsUpper. Switched OFF while he is upstairs: " +
+                 "the storey above is drawn UpperLevelY up the screen, so the ground floor's north wall " +
+                 "crosses the upper floor and would wall off half of it. Left empty, the walls stay on " +
+                 "throughout, exactly as every house built before this field behaves.")]
+        [SerializeField] private Transform _groundWalls;
+
         [Tooltip("How far UP THE SCREEN the storey above is drawn, in world units — the rig's declared " +
                  "storey height already projected at the shared ¾ camera (InteriorLevelLayout.UpperLevelY " +
                  "is the one place that projection happens). Written by the builder from the bake's " +
@@ -350,11 +357,13 @@ namespace HiddenHarbours.World
         /// tests against and the height the sheet is drawn at are one number and cannot drift.</para>
         /// </summary>
         public void ConfigureUpperLevel(SpriteRenderer upperRoom, Transform upperProps,
-                                        Transform upperWalls, float upperLevelY)
+                                        Transform upperWalls, float upperLevelY,
+                                        Transform groundWalls = null)
         {
             _upperRoom = upperRoom;
             _upperProps = upperProps;
             _upperWalls = upperWalls;
+            _groundWalls = groundWalls;
             _upperLevelY = float.IsNaN(upperLevelY) ? 0f : Mathf.Max(0f, upperLevelY);
             Level = 0;
             CancelClimb();
@@ -409,7 +418,18 @@ namespace HiddenHarbours.World
         /// region hop, a dev teleport) leaves a consistent house behind it rather than half a
         /// transition.</para>
         /// </summary>
-        public bool TryGoToLevel(int level)
+        public bool TryGoToLevel(int level) => GoToLevel(level, null);
+
+        /// <summary>
+        /// The same move, but the climb ends at <paramref name="arriveAt"/> (a world point on the
+        /// destination storey) instead of straight above where the press was made. A stairwell that runs
+        /// along a wall has its head somewhere else on the footprint than its foot, so the walk carries
+        /// the fisher along the flight to the landing rather than lifting him in place. Everything else —
+        /// the gates, the swap on this frame, the landing push — is the plain overload's.
+        /// </summary>
+        public bool TryGoToLevel(int level, Vector2 arriveAt) => GoToLevel(level, arriveAt);
+
+        bool GoToLevel(int level, Vector2? arriveAt)
         {
             if (!IsInside) return false;
             if (level < 0 || level > TopLevel) return false;
@@ -418,7 +438,7 @@ namespace HiddenHarbours.World
             Vector2 rise = LevelOffset(level) - LevelOffset(Level);
             Level = level;
             Apply(true);
-            BeginClimb(rise);
+            BeginClimb(rise, arriveAt);
             return true;
         }
 
@@ -437,6 +457,10 @@ namespace HiddenHarbours.World
         /// <summary>Who this building is watching right now (<see cref="ResolveOccupant"/>), for a reveal
         /// that needs to name him: the mesh reveal hands him to the occupant sort rule.</summary>
         public Transform Occupant => ResolveOccupant();
+
+        /// <summary>The ground storey's room picture (null on a mesh dwelling), for something that stands in
+        /// the room and sorts against it: a store's sold-out cards.</summary>
+        public SpriteRenderer RoomRenderer => _room;
 
         /// <summary>
         /// Who this room is watching, RIGHT NOW — the builder's own reference while it is alive, and
@@ -586,6 +610,34 @@ namespace HiddenHarbours.World
             Apply(IsInside);
         }
 
+        Transform _footingOwner;
+        Collider2D _footing;
+
+        /// <summary>
+        /// The point the threshold test reads for this occupant: the centre of its solid collider (the
+        /// circle the walls actually stop), falling back to the transform for an occupant without one.
+        /// The collider is looked up once per occupant and read through its own transform and offset, so
+        /// a teleport that has not been through the physics step yet is still seen where it was put, and
+        /// the per-frame read allocates nothing (rule 7).
+        /// </summary>
+        public Vector2 FootingOf(Transform occupant)
+        {
+            if (occupant == null) return Vector2.zero;
+            if (occupant != _footingOwner)
+            {
+                _footingOwner = occupant;
+                _footing = null;
+                foreach (Collider2D c in occupant.GetComponentsInChildren<Collider2D>(true))
+                {
+                    if (c.isTrigger) continue;
+                    _footing = c;
+                    break;
+                }
+            }
+            if (_footing == null || !_footing.enabled) return occupant.position;
+            return _footing.transform.TransformPoint(_footing.offset);
+        }
+
         void Update()
         {
             Transform occupant = ResolveOccupant();
@@ -606,7 +658,15 @@ namespace HiddenHarbours.World
 
             // Against the storey they are ON. Upstairs is the same rectangle one storey up, so this is
             // still ADR 0036's single inside test — it just knows how high the floor is.
-            bool inside = FootprintFor(Level).Contains(occupant.position, inset);
+            // Where they STAND as well as where their transform is: the player's pivot sits well above his
+            // feet, so the pivot alone would read a fisher standing against the north wall (a kitchen counter,
+            // an upstairs corridor) as outside the house while his feet are plainly on its floor. Either point
+            // inside is inside, so nothing that read inside before reads outside now: a fisher held at a seat
+            // against the south wall (the pose puts his pivot on the seat, his feet a step beyond it) stays in.
+            Vector2 pivot = occupant.position;
+            Vector2 footing = FootingOf(occupant);
+            InteriorFootprint storey = FootprintFor(Level);
+            bool inside = storey.Contains(pivot, inset) || storey.Contains(footing, inset);
 
             // ...and, on the way IN with a rest anchor armed, against the storey that anchor names too.
             // A player who slept upstairs is PUT there by the wake restorer before this ever runs
@@ -614,7 +674,8 @@ namespace HiddenHarbours.World
             // currently showing. Without this they read as still outdoors and would stand in their own
             // bedroom looking at the outside of the house.
             if (!inside && !IsInside && _pendingLevel > 0)
-                inside = FootprintFor(_pendingLevel).Contains(occupant.position, inset);
+                inside = FootprintFor(_pendingLevel).Contains(pivot, inset) ||
+                         FootprintFor(_pendingLevel).Contains(footing, inset);
 
             if (inside == IsInside) return;
 
@@ -630,7 +691,7 @@ namespace HiddenHarbours.World
             // later visit — comes in through the front door onto the ground floor, because the one-shot
             // has been spent. An unspent anchor is dropped on the way out for the same reason the level
             // is: whatever it was for, it did not happen.
-            if (inside) ConsumePendingLevel(occupant.position, inset);
+            if (inside) ConsumePendingLevel(pivot, inset);
             else { Level = 0; _pendingLevel = 0; }
 
             Apply(inside);
@@ -685,16 +746,17 @@ namespace HiddenHarbours.World
         /// stairwell they pressed from, and ends at the same point on the storey above. A zero rise, a
         /// zero duration or no occupant to carry all mean the same thing: they are already there.</para>
         /// </summary>
-        void BeginClimb(Vector2 rise)
+        void BeginClimb(Vector2 rise, Vector2? arriveAt = null)
         {
             CancelClimb();
 
             Transform occupant = ResolveOccupant();
-            if (occupant == null || rise.sqrMagnitude <= 0f) return;
+            if (occupant == null) return;
 
             float seconds = GameServices.StairClimbSeconds;
             Vector2 foot = occupant.position;
-            Vector2 head = foot + rise;
+            Vector2 head = arriveAt ?? foot + rise;
+            if ((head - foot).sqrMagnitude <= 0f) return;
 
             if (seconds <= 0f)
             {
@@ -923,10 +985,12 @@ namespace HiddenHarbours.World
         /// the band (ADR 0032) is not asked a question it has no answer to. It is also why the swap
         /// stays a swap and not a fade — a half-transparent upstairs would be exactly that frame.</para>
         ///
-        /// <para><b>The building's walls are absent from here on purpose.</b> They are the same walls on
-        /// both storeys and they are never switched off (see the class remarks). Only
-        /// <see cref="_upperWalls"/> — the partition and the doorway plug, which exist upstairs and
-        /// nowhere else — rides the level.</para>
+        /// <para><b>The building's walls ride the level only when a builder said so.</b> By default they
+        /// stay on throughout and only <see cref="_upperWalls"/> — the partition and the doorway plug,
+        /// which exist upstairs and nowhere else — rides the level. A building that handed over
+        /// <see cref="_groundWalls"/> stands its upper storey's own outer walls in
+        /// <see cref="_upperWalls"/>, and its ground walls go off upstairs, because the upper storey is
+        /// drawn <see cref="UpperLevelY"/> up the screen and the ground's north wall crosses it.</para>
         /// </summary>
         void Apply(bool inside)
         {
@@ -964,11 +1028,26 @@ namespace HiddenHarbours.World
                 if (_b._props != null && _b._props.gameObject.activeSelf != ground)
                     _b._props.gameObject.SetActive(ground);
 
-                if (_b._upperRoom != null) _b._upperRoom.enabled = upper;
+                if (_b._upperRoom != null)
+                {
+                    _b._upperRoom.enabled = upper;
+                    // A standing body is sorted by its pivot, which rides above the footing the walls
+                    // stop. Against the far wall that pivot is past the floor's far edge, so the sheet
+                    // ranked by the bare edge tied with him and hid him on a north-wall landing. Re-rank
+                    // by the edge raised by the occupant's own pivot-over-footing, read off his body.
+                    if (upper && _b.ResolveOccupant() is Transform who)
+                        _b._upperRoom.sortingOrder = InteriorLevelLayout.UpperRoomSortingOrder(
+                            _b.FootprintFor(InteriorLevelLayout.UpperLevel),
+                            who.position.y - _b.FootingOf(who).y);
+                }
                 if (_b._upperProps != null && _b._upperProps.gameObject.activeSelf != upper)
                     _b._upperProps.gameObject.SetActive(upper);
                 if (_b._upperWalls != null && _b._upperWalls.gameObject.activeSelf != upper)
                     _b._upperWalls.gameObject.SetActive(upper);
+                // The ground floor's walls stand outside and downstairs; upstairs the storey's own outer
+                // walls (in _upperWalls) take over. Only for a building that handed them over.
+                if (_b._groundWalls != null && _b._groundWalls.gameObject.activeSelf == upper)
+                    _b._groundWalls.gameObject.SetActive(!upper);
             }
         }
 

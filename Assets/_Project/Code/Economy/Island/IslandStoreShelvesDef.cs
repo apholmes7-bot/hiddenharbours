@@ -23,6 +23,11 @@ namespace HiddenHarbours.Economy
 
         /// <summary>The most items the shelf holds; more in the back room stays out of sight.</summary>
         [Min(1)] public int MaxOnShelf = 1;
+
+        /// <summary>The counter's listings (<c>supply.bread</c>, <c>bait.capelin</c>) that come off this shelf:
+        /// buying one takes one item, and none can be bought while the shelf is empty. A listing named on no
+        /// line is not counted (gear, licences). Empty for a shelf the counter does not sell from.</summary>
+        public List<string> CounterListingIds = new List<string>();
     }
 
     /// <summary>
@@ -40,6 +45,14 @@ namespace HiddenHarbours.Economy
 
         /// <summary>The shop these shelves are in (<c>shop.snake_case</c>, a <see cref="ShopDef"/>'s id).</summary>
         public string ShopId;
+
+        /// <summary>Who sells at this store's counter (<c>seller.snake_case</c>, the shop's own seller id):
+        /// the counter's book is capped by these shelves.</summary>
+        public string SellerId;
+
+        /// <summary>How often, in game minutes, the shelves are re-read for a changed count while the game
+        /// runs (the islanders' buying thins them through the day). Not a per-frame read.</summary>
+        [Min(1f)] public float RecheckGameMinutes = 10f;
 
         /// <summary>The back room the shelves follow.</summary>
         public IslandLedgerDef Ledger;

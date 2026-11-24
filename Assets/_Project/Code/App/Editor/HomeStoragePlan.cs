@@ -21,10 +21,10 @@ namespace HiddenHarbours.App.Editor
     ///
     /// <para><b>Frame.</b> The ROOM's model metres, the frame of <see cref="StPetersInteriors.FurnishingsFor"/>
     /// and <see cref="StPetersInteriors.UpperLevelFor"/>: origin the floor centre, <c>+y</c> toward the front
-    /// door, <c>+x</c> to the LEFT as you come in. Ginny's upstairs: the player's room is the front room,
-    /// x from the landing partition (-0.90) to the left wall (3.0), y from the bedroom partition (-0.40) to
-    /// the front wall (3.725). Both pieces stand against the bedroom partition, across the room from the bed
-    /// and clear of the dresser and of his door.</para>
+    /// door, <c>+x</c> to the LEFT (north) as you come in. Ginny's upstairs: the player's room is the front
+    /// room, x from the south wall (-3.3) to the corridor partition (1.7), y from the bedroom partition (-0.70)
+    /// to the front wall (4.25). Both pieces stand against the bedroom partition, clear of the bed on the
+    /// south wall, of the dresser and of his door off the corridor.</para>
     ///
     /// <para><b>The camper and the shed have no coordinates yet</b>: the camper lot is the camper lane's
     /// (docs/world/camper-home-plan.md, on its own branch). Their rows carry the id and the Def, so the save
@@ -96,10 +96,10 @@ namespace HiddenHarbours.App.Editor
             // ---- Ginny's: his room upstairs, open with no deed (lodging) -------------------------------
             new Row("storage.stpeters.ginny_rod_rack", "stowage.ginny_rod_rack", Kind.RodRack,
                     "ginny_cottage", StPetersGinnyPlot.CottageKey, StPetersInteriors.GinnyCottagePlanKey, 1,
-                    true, new Vector2(0.30f, -0.25f)),
+                    true, new Vector2(-2.10f, -0.40f)),   // against the bedroom partition, south of the locker
             new Row("storage.stpeters.ginny_gear_locker", "stowage.ginny_gear_locker", Kind.GearLocker,
                     "ginny_cottage", StPetersGinnyPlot.CottageKey, StPetersInteriors.GinnyCottagePlanKey, 1,
-                    true, new Vector2(1.40f, -0.10f)),
+                    true, new Vector2(-0.60f, -0.40f)),   // the same partition, 1.5 m north, its top clear of his doorway lane
 
             // ---- the camper: opens with its deed --------------------------------------------------------
             new Row("storage.stpeters.camper_rod_rack", "stowage.camper_rod_rack", Kind.RodRack,
