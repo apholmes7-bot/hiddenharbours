@@ -26,12 +26,16 @@ namespace HiddenHarbours.App.Editor
         // washroom behind the partition rises in front of any of it.
         //
         // THE WASHROOM: the shower stands on the BACK (east) wall in the south-east corner, opening west; the
-        // toilet and then the basin stand along the RIGHT (south) wall towards the door, with a walking gap
-        // between the toilet and the shower. 2.7 m deep from the south wall to the partition, so he stands
-        // clear of all three with floor to spare. The shower's solid tray and panel are low; above them it is
-        // a glass screen in a thin frame. A piece against the south wall is pressed from beside it or from a
-        // step north of it (the press reaches from his transform, 0.7 m up the screen from his feet), which is
-        // why the toilet keeps clear of the shower: standing at the shower's front, the shower is the nearer.
+        // toilet and then the basin stand with their backs to the kitchen partition, the washroom's NORTH wall,
+        // facing south into the room and so toward the camera (owner 2026-11-23: fixtures on the south wall,
+        // facing north, read weaker, showing only their backs). Nothing stands on the south wall. The pair stand
+        // at the door end of the partition, west of the shower's width, so the tall shower hides neither; the
+        // kitchen table stands beyond the partition east of them, so neither low piece draws over it. 2.7 m
+        // deep from the south wall to the partition, so he stands clear of all three with floor to spare. The
+        // shower's solid tray and panel are low; above them it is a glass screen in a thin frame. It stands
+        // near the south wall, so its glass top barely rises past the partition. A piece is pressed from in
+        // front of it; the press reaches from his transform, 0.7 m up the screen from his feet, which a piece
+        // on a north wall suits best.
         const float GinnyWashroomFront = 0.00f, GinnyWashroomInner = -0.60f;
         const float GinnyWashroomDoorFrom = -2.45f, GinnyWashroomDoorTo = -0.95f;
 
@@ -44,9 +48,10 @@ namespace HiddenHarbours.App.Editor
             yield return Ginny(root, Kind.KitchenSink, new Vector2(3.00f, -2.25f), Wall.Left);
             yield return Ginny(root, Kind.Fridge, new Vector2(2.96f, -0.40f), Wall.Left);
 
-            yield return Ginny(root, Kind.Shower, new Vector2(-2.575f, -3.825f), Wall.Back);
-            yield return Ginny(root, Kind.Toilet, new Vector2(-3.075f, -2.40f), Wall.Right);
-            yield return Ginny(root, Kind.BathroomSink, new Vector2(-3.025f, -1.50f), Wall.Right);
+            yield return Ginny(root, Kind.Shower, new Vector2(-2.825f, -3.825f), Wall.Back);
+            // Backed onto the partition (its south face is x -0.60): the plan's Left side, north.
+            yield return Ginny(root, Kind.Toilet, new Vector2(-0.95f, -1.70f), Wall.Left);
+            yield return Ginny(root, Kind.BathroomSink, new Vector2(-0.825f, -1.15f), Wall.Left);
         }
 
         static Row Ginny(string root, Kind k, Vector2 at, Wall wall) =>
