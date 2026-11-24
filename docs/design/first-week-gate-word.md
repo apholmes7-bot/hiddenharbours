@@ -4,7 +4,7 @@
 
 Recommend her first eligible conversation, on about day seven or later, with passage opening the following morning. This follows the timing proposed in the separate first-week canon draft; it is a proposal here, not an implemented transition. The words below say “come morning” so they make that timing clear. A missed conversation stays available. The sea and tide still need reading when the way opens.
 
-This is copy and encounter design only. No dialogue asset, TASKS string, routine, weather, scene or save data changes in this document's change. Evidence is main `c626cea10d`; the five-fact/key contract is the reviewed draft in PR 1511, revision `32eb9272b8`. The first week stays entirely on St Peters: Basil sells the broken dory at the island slip, the player mends her by hand, and the island store sells basic fishing gear without boat hardware.
+This is copy and encounter design only. No dialogue asset, TASKS string, routine, weather, scene or save data changes in this document's change. Evidence is pinned main `541276cbc9`; the five-fact/key contract is the draft in PR 1511, revision `32eb9272b8`. The first week stays entirely on St Peters: Basil sells the broken dory at the island slip, the player mends her by hand, and the island store sells basic fishing gear without boat hardware.
 
 ## The speaker and where to find her
 
@@ -29,17 +29,17 @@ The proposed dependable contact is **Ginny at her village mark during the workin
 
 All five facts must hold together when the gate conversation is offered. Their order below is the evaluator's missing-note order, not a required order of play.
 
-| Fact | Reviewed source | What does not satisfy it |
+| Fact | Source | What does not satisfy it |
 |---|---|---|
 | Dory mended | Repaired boats contains the configured `boat.dory` | Buying her without finishing the repair |
 | Cod licence held | Owned licences contains `license.cod` | The separate `license.clam` |
 | A fish kept from the dory | `st_peters.fact.fish_from_dory` | A fish released for want of a licence, a protected fish released, shellfish, or a shore catch carried aboard afterwards |
 | Shellfish sold | `st_peters.fact.shellfish_sold` | Digging, gifting, dumping, or having shellfish in the pail without selling any |
-| Day seven reached | Core clock `DayIndex >= 6`, with the threshold authored as day 7 | Day six; a stale saved day cache |
+| Day seven reached | Restore the Core clock normally, then pass `IGameClock.DayIndex` to `Read(save, dayIndex)`; index 6 begins day seven with the authored threshold 7 | Day six; a stale saved day cache |
 
-The day rule means **the start of the seventh day**, not seven completed days. The historical catch and sale facts need one qualifying event each; neither asks for a full hold, a full pail, a particular price or a repeated daily quota. A clam sold before he buys the dory still counts. These facts can all be completed on the island. The read-only evaluator does not grant passage by itself.
+The day rule means **the start of the seventh day**, not seven completed days. The historical catch and sale facts need one qualifying event each; neither asks for a full hold, a full pail, a particular price or a repeated daily quota. A clam sold before he buys the dory still counts. The intended week must make every fact achievable on the island, but main still lacks the island cod seller and the proposed hand-repair route described below. This is not a claim that the full sequence is playable now. The read-only evaluator does not grant passage by itself. Its current `Read(SaveData, int dayIndex)` contract accepts no seconds/day-length conversion or `ReadSaved` call; use the restored/live Core clock, not a saved cache or a season day.
 
-In the eventual full-game conversation, finishing the chosen line is the handoff to the passage decision. Cancelling before it finishes leaves the word available. A later talk must not repeatedly award or relock passage. The existing `st_peters.weather_turned` flag is the passage flag discussed by the related draft; this page does not implement its write or a dawn delay. A promise for the following morning needs a reload-safe handoff design before implementation: a boolean alone does not record which morning was promised. No new saved field or save-format change is proposed here.
+In the eventual full-game conversation, finishing the chosen line is the handoff to the passage decision. Cancelling before it finishes leaves the word available. A later talk must not repeatedly award or relock passage. The proposed `st_peters.weather_turned` flag is the passage flag discussed by the related draft, absent from pinned main's runtime/data sources; this page does not implement its write or a dawn delay. A promise for the following morning needs a reload-safe handoff design before implementation: a boolean alone does not record which morning was promised. Until a persistence step is accepted, any new word/pending-morning state must remain session-only in a plain snapshot. A later save step needs an authoritative promised-morning representation, completion semantics, cancellation handling and reload/old-save tests; reusing a boolean flag list alone cannot recover the promised date. This page adds no saved field, flag writer or save-format change.
 
 ## Three versions of Ginny's line
 
@@ -55,15 +55,17 @@ A is the clearest route instruction and leaves the achievement in the player's h
 
 ## The five missing TASKS notes
 
-These are alternatives for the **same five existing keys** proposed in PR 1511. A is the recommended set; B and C are editorial choices, not random variants. Display a note only while its corresponding fact is missing, using the ordinary TASKS surface. Keep the authored key order when several are missing. The copy describes things the player can do in the world and adds no sixth fact.
+These are alternatives for the **same five keys** proposed in PR 1511. A is the recommended set; B and C are editorial choices, not random variants. Display a note only while its corresponding fact is missing, using the ordinary TASKS surface. Keep the authored key order when several are missing. The copy describes things the player can do in the world and adds no sixth fact.
 
 | Text key | A — recommended | B | C |
 |---|---|---|---|
-| `tasks.st_peters.mend_dory` | Mend the dory at the island slip. | Put the old dory right by hand. | Finish the dory's repairs on St Peters. |
-| `tasks.st_peters.cod_licence` | Get a cod licence on St Peters. | Sign for my cod licence. | Get the licence that lets me keep a cod. |
-| `tasks.st_peters.fish_from_dory` | Catch and keep a fish from the dory. | Land a fish I can keep while aboard the dory. | Keep a fish I've caught from the dory. |
-| `tasks.st_peters.sell_shellfish` | Carry shellfish to the island store and sell them. | Sell some shellfish from my pail at the store. | Sell shellfish I've carried to the counter. |
-| `tasks.st_peters.first_week` | Settle into island life until day seven. | See in my seventh day on St Peters. | A little more island life before my seventh morning. |
+| `tasks.st_peters.mend_dory` | Mend the dory at the slip | Put the dory right by hand | Finish the dory's repairs |
+| `tasks.st_peters.cod_licence` | Get a cod licence on St Peters | Sign for my cod licence | Get a licence to keep cod |
+| `tasks.st_peters.fish_from_dory` | Keep a fish from the dory | Land a kept fish from the dory | Fish from the dory and keep one |
+| `tasks.st_peters.sell_shellfish` | Carry shellfish in to sell | Sell shellfish at the store | Sell a clam at the counter |
+| `tasks.st_peters.first_week` | Give it a few more tides | See in my seventh island day | Live on St Peters to day seven |
+
+All fifteen alternatives fit the existing 31-character note budget. This is a text-length check, not visual fit proof.
 
 The cod-licence wording describes the intended island week. Main currently lists [the cod licence](../../Assets/_Project/Data/Resources/Catalog/Licenses/CodLicense.asset) at the mainland harbourmaster, `seller.nmc_harbourmaster`; the island seller must be supplied by its own content change. Do not point him off-island to satisfy this note. The repair note names the slip and hand work; it does not send him to the grocery store for boat hardware or to a mainland yard for a repair fee.
 
@@ -98,4 +100,20 @@ Ginny is the recommended speaker, consistent with the existing canon draft. Basi
 
 Read the two NPC assets, both dialogue assets, both complete routine assets, their serialized scene stations, the current shellfish licence and sale path, the Core clock contract, and the five keys on PR 1511. Read the relevant proposed direction in PRs 1492 and 1498 without editing their files. Main's old opening text and current island equipment are distinguished from the proposed week throughout.
 
-Checked all five key spellings, the three alternatives per key, the three gate lines and the relative source links. No Unity, bubble-layout check, dialogue playthrough, route simulation, save/reload handoff test or weather-transition verification was run. The work delivers a reviewable design page; none of those future behaviors is claimed to ship with it.
+Checked all five key spellings against PR 1511 at `32eb9272b8`, the fifteen note lengths, the three gate alternatives, the nine conversation-line mappings below and the relative source links. No Unity, bubble-layout check, dialogue playthrough, route simulation, save/reload handoff test or weather-transition verification was run. The work delivers a reviewable design page; none of those future behaviors is claimed to ship with it.
+
+## Conversation line, text key and prerequisite
+
+These are proposed text keys, not registered dialogue assets or saved flags. Only one of A/B/C is chosen for the full game. All three require a fresh `AllHold` reading from the five-fact snapshot, with the word not already completed. They also require the promised next-morning handoff to exist before shipping; none is suitable as the permanently closed demo's ending. Early answers apply only before the word is completed and select the first missing fact in the authored order. The overnight answer reads a real pending handoff, not eligibility alone. No sixth eligibility requirement is introduced.
+
+| Conversation line | Proposed text key | Fact or state required |
+|---|---|---|
+| You've found your feet here, child. Try Nine Mile Creek come morning. Mind the tide. | `dialogue.st_peters.ginny_gate.word_a` | All five facts hold; full game; word not yet completed. |
+| That little dory's ready for a longer errand. Nine Mile Creek in the morning, child. No racing the tide. | `dialogue.st_peters.ginny_gate.word_b` | All five facts hold; full game; word not yet completed. |
+| There's more coast waiting for you now. Nine Mile Creek come morning. Bring me back a story, child. | `dialogue.st_peters.ginny_gate.word_c` | All five facts hold; full game; word not yet completed. |
+| Finish putting that dory right, child. We're in no hurry off this island. | `dialogue.st_peters.ginny_gate.mend_dory` | DoryMended is missing. |
+| Get your cod licence sorted, child. Then you can keep a cod for your trouble. | `dialogue.st_peters.ginny_gate.cod_licence` | DoryMended holds; CodLicence is missing. |
+| Have a fish from that dory you can keep, child. You'll know her better for it. | `dialogue.st_peters.ginny_gate.fish_from_dory` | DoryMended and CodLicence hold; FishFromDory is missing. |
+| Sell a clam at the store, child. You'll need your shellfish licence to keep one. | `dialogue.st_peters.ginny_gate.sell_shellfish` | The first three facts hold; ShellfishSold is missing. |
+| Stay a little yet, child. There's time to learn this shore before you take on the next. | `dialogue.st_peters.ginny_gate.first_week` | All four practical facts hold; DayReached is missing (day index below 6 with the current threshold). |
+| Come morning, child. Mind the tide when you go. | `dialogue.st_peters.ginny_gate.pending_morning` | Full game; word completed; promised morning still pending; passage has not opened. |
