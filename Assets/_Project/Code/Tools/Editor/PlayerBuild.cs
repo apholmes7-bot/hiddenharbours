@@ -56,6 +56,9 @@ namespace HiddenHarbours.Tools.Editor
         static void Build(string output, string product, string commit, string mainCommit,
             bool development, bool lz4hc, bool demo)
         {
+            // The single-scene package cannot run the authored sea opening yet.
+            if (demo)
+                throw new BuildFailedException("Demo packaging is blocked until the island opening is implemented and verified.");
             string[] scenes = ScenePaths(demo);
             output = Path.GetFullPath(output);
             string buildRoot = Path.GetFullPath("C:/hh-builds").TrimEnd(

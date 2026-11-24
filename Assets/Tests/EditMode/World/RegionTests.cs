@@ -76,7 +76,27 @@ namespace HiddenHarbours.Tests.World.EditMode
             {
                 string path = UnityEngine.SceneManagement.SceneUtility.GetScenePathByBuildIndex(i);
                 Assert.IsTrue(RegionBuildAvailability.IsAvailable("", path), path);
+                Assert.IsTrue(RegionBuildAvailability.IsAvailable("", System.IO.Path.GetFileNameWithoutExtension(path)), path);
             }
+        }
+
+        [Test]
+        public void BuildAvailability_DisabledSceneIsNotAvailableInEditMode()
+        {
+            var original = UnityEditor.EditorBuildSettings.scenes;
+            var enabled = System.Array.Find(original, scene => scene.enabled &&
+                !UnityEngine.SceneManagement.SceneManager.GetSceneByPath(scene.path).isLoaded);
+            Assert.IsNotNull(enabled);
+            try
+            {
+                UnityEditor.EditorBuildSettings.scenes = new[]
+                {
+                    new UnityEditor.EditorBuildSettingsScene(enabled.path, false)
+                };
+                Assert.IsFalse(RegionBuildAvailability.IsAvailable("", enabled.path));
+                Assert.IsFalse(RegionBuildAvailability.IsAvailable("", System.IO.Path.GetFileNameWithoutExtension(enabled.path)));
+            }
+            finally { UnityEditor.EditorBuildSettings.scenes = original; }
         }
 
         [Test]
