@@ -11,9 +11,16 @@ This document supersedes PR 1485's audit. Its claim that the newer shelves were
 uncomposed described an older revision and is no longer true. PR 1491 owns the
 pending shelf purchase and paper-bag work; none of its files is changed here.
 
+This retirement also supersedes #1506's changes to the unused restock service.
+Its useful live-model coverage is retained here: resident use together with player
+purchases, an emptied shelf waiting through blocked runs, and exact sold-out and
+restocked notification counts from `IslandShelvesHost.Recheck`. The separate
+last-item example is already covered for both lines by the stricter parameterized
+depletion test below. No test that references the retired service is copied back.
+
 ## Reachability proof at the pinned main
 
-Revision: `c626cea10d1cb496df41cca2f9ab2f580ad47b28`. These are source observations,
+Revision: `541276cbc9308ba60ded8b905308366306438570`. These are source observations,
 not an executed player trace. Searches covered C# and serialized asset, scene,
 prefab and JSON text; the full PR 1491 diff was also searched for the retired
 symbols. The reference set contained only the four retired implementation files
@@ -70,6 +77,9 @@ assertions unchanged because the historical Def and its data still exist.
 | Independent shops and unknown ids | `SameLineIdInDifferentShopsHasIndependentCounts` pins 3 versus 4 and rejects an unknown line. Existing bad-ask tests also remain. |
 | Snapshot of authored spec | `AuthoredShelfLineMutationsCannotChangeRunningCountsOrIdentity` changes source line ids, units and capacity after construction and pins the original 4 → 3 counts. The model still reads good assets as before; this is not a claim that it clones every asset. |
 | Warm settlement allocates nothing | `WarmSlowTicksAndReadsAllocateNoMemory_AfterARecordedPurchase` preserves the exact zero-allocation assertion and checks the final count is four. |
+| Resident and player consumption together | `ResidentUseAndPlayerPurchasesConsumeTheSameRemainingStock` preserves the two morning purchases, exact midday gas and grocery counts, final refusal, and next-run refill from #1506. |
+| Empty shelves during blocked runs | `SoldOutStockWaitsForAnAllowedRunAndRefillsOnlyToItsShelf` preserves zero and rejected purchases through days 1–3, then exact gas/grocery maxima on day 4 despite repeated settlement. |
+| Live sold-out and restocked notifications | `HostPublishesSoldOutAndBackInStockOnceDespiteRepeatedPolling` exhausts 16 bags, drives the real host, and requires exactly one zero-count event and one 16-count refill event with matching shop and line ids. |
 | Committed put-back | The current Core shelf contract has no return operation. The old return API is retired, not silently mapped to a purchase. Unpaid bag returns and till rollback belong to PR 1491; no physical return flow is introduced here. |
 
 ## Data deliberately retained
