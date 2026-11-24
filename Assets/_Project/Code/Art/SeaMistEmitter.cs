@@ -127,7 +127,7 @@ namespace HiddenHarbours.Art
             var env = GameServices.Environment;
             if (env != null)
             {
-                EnvironmentSample s = env.Sample();
+                EnvironmentSample s = LocalWeather.Shade(env.Sample());   // and an authored local storm
                 visibility = s.Visibility;
                 seaState01 = s.SeaState01;
             }

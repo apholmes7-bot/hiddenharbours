@@ -64,14 +64,40 @@ namespace HiddenHarbours.World
         [Tooltip("Sea state in the storm (0 glassy .. 1 storm).")]
         [Range(0f, 1f)] public float StormSeaState01 = 0.9f;
 
+        [Tooltip("Metres inside the edge where the look and sound are at full strength. 0 = at the full " +
+                 "line. Set it further in than the full line (where a rowed boat is brought to a stop) so " +
+                 "the player meets the whole storm, not a share of it.")]
+        [Min(0f)] public float LookFullDistanceMetres;
+        [Tooltip("Rain the storm brings at full strength, whatever the sky is doing (0 dry .. 1 a downpour).")]
+        [Range(0f, 1f)] public float StormRain01;
+        [Tooltip("How much wider (x) and longer (y) a streak of that rain is drawn than ordinary rain. " +
+                 "(1, 1) = ordinary.")]
+        public Vector2 StormRainStreakScale = Vector2.one;
+
+        [Header("The dark front seen from a boat before the weather")]
+        [Tooltip("Metres inside the edge where the dark front first shows at the side of the view. " +
+                 "0 = no warning: the dark comes with the weather itself.")]
+        [Min(0f)] public float SightDistanceMetres;
+        [Tooltip("How dark the sky is under the front (0 = draw no front at all .. 1 black).")]
+        [Range(0f, 1f)] public float SquallDarkness01;
+        [Tooltip("How soft the front's leading edge is, as a share of the view (0 hard .. 1 the whole view).")]
+        [Range(0f, 1f)] public float SquallFeather01 = 0.5f;
+        [Tooltip("The colour of the dark.")]
+        public Color SquallTint = new Color(0.05f, 0.07f, 0.1f, 1f);
+
         [Header("The line she thinks")]
         [TextArea(2, 4)]
         [Tooltip("One plain line telling the player why. Empty = say nothing.")]
         public string Line = "";
         [Tooltip("How far into the storm (0..1) she is when she thinks it.")]
         [Range(0f, 1f)] public float LineAtStorm01 = 0.35f;
-        [Tooltip("Seconds before she thinks it again.")]
+        [Tooltip("It is thought once each time the boat comes into the weather, and never again while " +
+                 "she stays in it. This is the least seconds between two of those times.")]
         [Min(0f)] public float LineCooldownSeconds = 60f;
+
+        /// <summary>The share of the front that has crossed the view when the boat reaches the start
+        /// line: the front's soft edge is then overhead, and the rest comes on with the weather.</summary>
+        public const float LoomShareAtTheStartLine = 0.5f;
 
         private Vector2 Normal => InwardNormal.sqrMagnitude > 0f ? InwardNormal.normalized : Vector2.up;
 
@@ -99,6 +125,34 @@ namespace HiddenHarbours.World
             if (StartDistanceMetres <= FullDistanceMetres) return d <= FullDistanceMetres ? 1f : 0f;
             float t = Mathf.InverseLerp(StartDistanceMetres, FullDistanceMetres, d);
             return t * t * (3f - 2f * t);
+        }
+
+        /// <summary>How much of the storm is DRAWN and HEARD at <paramref name="position"/>: 0 at the
+        /// start line and further in, 1 from <see cref="LookFullDistanceMetres"/> (or the full line)
+        /// out to the edge. Never less than <see cref="Storm01At"/>.</summary>
+        public float Look01At(Vector2 position)
+        {
+            if (!Abreast(position)) return 0f;
+            float full = Mathf.Max(LookFullDistanceMetres, FullDistanceMetres);
+            float d = DistanceInside(position);
+            if (StartDistanceMetres <= full) return d <= full ? 1f : 0f;
+            float t = Mathf.InverseLerp(StartDistanceMetres, full, d);
+            return t * t * (3f - 2f * t);
+        }
+
+        /// <summary>
+        /// How much of the dark front is across the view of a boat at <paramref name="position"/>:
+        /// 0 at <see cref="SightDistanceMetres"/> and further in, <see cref="LoomShareAtTheStartLine"/>
+        /// at the start line, 1 where the look is full. Smooth all the way. With no sight distance
+        /// (or one inside the start line) it is the look itself.
+        /// </summary>
+        public float Loom01At(Vector2 position)
+        {
+            float look = Look01At(position);
+            if (SightDistanceMetres <= StartDistanceMetres || !Abreast(position)) return look;
+            float t = Mathf.InverseLerp(SightDistanceMetres, StartDistanceMetres, DistanceInside(position));
+            float seen = t * t * (3f - 2f * t);
+            return LoomShareAtTheStartLine * seen + (1f - LoomShareAtTheStartLine) * look;
         }
 
         /// <summary>

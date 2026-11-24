@@ -7,6 +7,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 using HiddenHarbours.App.Editor;
+using HiddenHarbours.Art;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Core;
 using HiddenHarbours.World;
@@ -179,6 +180,66 @@ namespace HiddenHarbours.Tests.PlayMode
                 $"{edge}: set back inshore");
             Assert.Less(longest, 0.2f, edge);
             AssertAfloatAndHers(boat, edge);
+            Assert.AreEqual(1, _lines.Count(x => x == wall.Line),
+                $"{edge}: the line was thought once in all that time in the weather, not over and over");
+        }
+
+        // ---- the look: the dark front, the rain, and both gone with the flag ---------------------------
+
+        [UnityTest, Timeout(120000)]
+        public IEnumerator TheDarkFrontAndTheRain_AreDrawnInTheWeather_AndGoneTheStepTheFlagIsSet(
+            [ValueSource(nameof(Edges))] string edge)
+        {
+            var wall = Wall(edge);
+            var veil = SquallVeil.Instance;
+            Assert.IsNotNull(veil, "the veil installs itself; no scene places it");
+            var camGo = new GameObject("WallLookCamera") { tag = "MainCamera" };
+            _made.Add(camGo);
+            var cam = camGo.AddComponent<Camera>();
+            cam.orthographic = true;
+            cam.orthographicSize = 9f;
+
+            // Well inside the island's water: no front, no rain.
+            var boat = Boat("Dory", wall, wall.SightDistanceMetres + 20f, headingOut: false);
+            camGo.transform.position = boat.transform.position + Vector3.back * 10f;
+            yield return new WaitForFixedUpdate();
+            yield return null;
+            Assert.IsFalse(veil.Showing, $"{edge}: clear water inside the sight line");
+            Assert.IsFalse(LocalWeather.SquallActive, edge);
+
+            // Between the sight line and the weather: the front shows, dry.
+            boat.transform.position = wall.EdgePoint + wall.PushDirection * (wall.StartDistanceMetres + 15f);
+            boat.GetComponent<Rigidbody2D>().position = boat.transform.position;
+            camGo.transform.position = boat.transform.position + Vector3.back * 10f;
+            yield return new WaitForFixedUpdate();
+            yield return null;
+            Assert.IsTrue(veil.Showing, $"{edge}: the dark front shows before the weather");
+            Assert.Greater(veil.ShownLoom01, 0f, edge);
+            Assert.Less(veil.ShownLoom01, CampaignBarrierDef.LoomShareAtTheStartLine, edge);
+            Assert.AreEqual(0f, LocalWeather.Rain(0f), $"{edge}: dry until the weather itself");
+            Assert.IsFalse(LocalWeather.Active, edge);
+
+            // In the weather, where a rowed boat is stopped: the whole view dark, and rain.
+            boat.transform.position = wall.EdgePoint + wall.PushDirection * (wall.LookFullDistanceMetres - 1f);
+            boat.GetComponent<Rigidbody2D>().position = boat.transform.position;
+            boat.GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
+            yield return new WaitForFixedUpdate();
+            yield return null;
+            Assert.IsTrue(veil.Showing, edge);
+            Assert.Greater(veil.ShownLoom01, 0.9f, $"{edge}: the view is under the front");
+            Assert.Greater(LocalWeather.Rain(0f), 0.5f, $"{edge}: it rains");
+            Assert.IsTrue(LocalWeather.Active, edge);
+
+            // The flag: the same water, the very next step, with him still sitting in it.
+            _save.SetFlag(GateFlag, true);
+            yield return new WaitForFixedUpdate();
+            yield return null;
+            Assert.IsFalse(LocalWeather.Active, $"{edge}: no storm is drawn or heard");
+            Assert.IsFalse(LocalWeather.SquallActive, $"{edge}: no front and no rain of its own");
+            Assert.AreEqual(0f, LocalWeather.Rain(0f), edge);
+            Assert.IsFalse(veil.Showing, $"{edge}: the dark is gone from the view");
+            Assert.AreEqual(0f, _director.Look01, edge);
+            Assert.AreEqual(0f, _director.PushAcceleration, edge);
         }
 
         [UnityTest, Timeout(180000)]

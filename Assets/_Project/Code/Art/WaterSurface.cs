@@ -919,6 +919,7 @@ namespace HiddenHarbours.Art
             float rainIntensity = AmbientParticleMath.RainIntensity(
                 s.Visibility, s.SeaState01, _rainBaselineIntensity, _rainSeaStateWeight,
                 _rainVisOnset, _rainVisFull, _rainSeaOnset);
+            rainIntensity = LocalWeather.Rain(rainIntensity);   // and a local squall's own rain, as the drops do
             _mpb.SetFloat(IdRainIntensity, rainIntensity);
 
             // (ADR 0027 #7, gains 2) The water type, folded on the slow tick; a no-op for a surface that has
@@ -1090,7 +1091,7 @@ namespace HiddenHarbours.Art
         private void SampleSimTargets(IEnvironmentService env)
         {
             double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
-            _sample = env.Sample();
+            _sample = LocalWeather.Shade(env.Sample());   // the surface draws an authored local storm too
             _targetWaterLevel = env.WaterLevelAt(now);
             _targetCurrent = _sample.CurrentVector;
             _targetWind = _sample.WindVector;

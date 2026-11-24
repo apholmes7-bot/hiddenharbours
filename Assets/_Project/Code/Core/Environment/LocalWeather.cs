@@ -24,6 +24,41 @@ namespace HiddenHarbours.Core
         }
     }
 
+    /// <summary>What an authored local squall adds to the PICTURE that the shaded sample cannot carry:
+    /// the dark front the player sees before he is in the weather, and rain of its own. Drawn only;
+    /// like the shade it is never the weather, never read by gameplay and never saved.</summary>
+    public readonly struct LocalSquall
+    {
+        /// <summary>How much of the dark front is across the view: 0 = none of it, 1 = the whole view
+        /// is under it.</summary>
+        public readonly float Loom01;
+        /// <summary>Unit direction from the player toward the weather, world space.</summary>
+        public readonly Vector2 Toward;
+        /// <summary>How dark the sky is under the front (0 none .. 1 black).</summary>
+        public readonly float Darkness01;
+        /// <summary>How soft the front's leading edge is, as a share of the view (0 hard .. 1 the whole view).</summary>
+        public readonly float Feather01;
+        /// <summary>The colour of the dark.</summary>
+        public readonly Color Tint;
+        /// <summary>Rain the squall brings whatever the sim's sky is doing (0 dry .. 1 a downpour).</summary>
+        public readonly float Rain01;
+        /// <summary>How much wider (x) and longer (y) a streak of that rain is than ordinary rain, at
+        /// a downpour. (1, 1) = ordinary.</summary>
+        public readonly Vector2 RainStreakScale;
+
+        public LocalSquall(float loom01, Vector2 toward, float darkness01, float feather01, Color tint,
+                           float rain01, Vector2 rainStreakScale)
+        {
+            Loom01 = Mathf.Clamp01(loom01);
+            Toward = toward.sqrMagnitude > 0f ? toward.normalized : Vector2.zero;
+            Darkness01 = Mathf.Clamp01(darkness01);
+            Feather01 = Mathf.Clamp01(feather01);
+            Tint = tint;
+            Rain01 = Mathf.Clamp01(rain01);
+            RainStreakScale = new Vector2(Mathf.Max(1f, rainStreakScale.x), Mathf.Max(1f, rainStreakScale.y));
+        }
+    }
+
     /// <summary>
     /// The seam between an authored local effect (a campaign storm wall) and the things that DRAW and
     /// SOUND the weather. It is not the weather: <see cref="IEnvironmentService.Sample"/> is never
@@ -33,11 +68,13 @@ namespace HiddenHarbours.Core
     ///
     /// <para>One writer at a time, the last one wins; <see cref="GameServices.Reset"/> clears it.
     /// Nothing here is saved or remembered between frames.</para>
-    /// FLAG lead-architect: new Core contract (presentation-only weather shade).
+    /// FLAG lead-architect: new Core contract (presentation-only weather shade, and the squall's
+    /// front and rain beside it).
     /// </summary>
     public static class LocalWeather
     {
         private static LocalWeatherShade _shade;
+        private static LocalSquall _squall;
         private static readonly ShadedWaveWind Waves = new ShadedWaveWind();
 
         /// <summary>The shade in force. Strength 0 when nothing is set.</summary>
@@ -48,7 +85,30 @@ namespace HiddenHarbours.Core
 
         public static void Set(in LocalWeatherShade shade) => _shade = shade;
 
-        public static void Clear() => _shade = default;
+        /// <summary>Clear the shade and the squall together.</summary>
+        public static void Clear()
+        {
+            _shade = default;
+            _squall = default;
+        }
+
+        /// <summary>The squall in force: its dark front and its rain. All zero when nothing is set.</summary>
+        public static LocalSquall Squall => _squall;
+
+        /// <summary>True while a squall shows anything: any of its front, or any of its rain.</summary>
+        public static bool SquallActive => _squall.Loom01 > 0f || _squall.Rain01 > 0f;
+
+        public static void SetSquall(in LocalSquall squall) => _squall = squall;
+
+        /// <summary>The rain to draw: what the sky's own mood gives (<paramref name="derived01"/>), or
+        /// the squall's own, whichever is more. The falling streaks and the rings on the water both
+        /// ask here, so they stay one rain.</summary>
+        public static float Rain(float derived01) => Mathf.Max(derived01, _squall.Rain01);
+
+        /// <summary>How much wider (x) and longer (y) to draw a rain streak: (1, 1) with no squall
+        /// rain, the squall's own scale at a downpour.</summary>
+        public static Vector2 RainStreakScale =>
+            Vector2.Lerp(Vector2.one, _squall.RainStreakScale, _squall.Rain01);
 
         /// <summary>The sim's sample as the player should see and hear it here. The stepped
         /// <see cref="SeaState"/>, the tide and the current are the sim's own, always.</summary>

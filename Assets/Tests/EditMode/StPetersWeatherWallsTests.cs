@@ -4,6 +4,7 @@ using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 using HiddenHarbours.App.Editor;
+using HiddenHarbours.Art;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Core;
 using HiddenHarbours.World;
@@ -261,6 +262,177 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.AreEqual(0f, d.Storm01, $"after the hand-over at {p}");
                 Assert.AreEqual(0f, d.PushAcceleration);
             }
+        }
+
+        // ---- the line: once per approach, then a long cool-down --------------------------------------
+
+        [Test]
+        public void TheLine_IsThoughtOnceAsHeComesIn_NotWhileHeStays_AndNotAgainInsideItsCoolDown()
+        {
+            StPeters();
+            var east = Walls().Single(w => w.Id == "campaign_barrier.st_peters_storm_east");
+            var north = Walls().Single(w => w.Id == "campaign_barrier.st_peters_storm_north");
+            foreach (var w in Walls())
+                Assert.GreaterOrEqual(w.LineCooldownSeconds, 300f, w.Id + ": minutes, not a nag every minute");
+
+            float now = 100f;
+            var d = Director(Walls());
+            d.Seconds = () => now;
+            Vector2 inIt = east.EdgePoint + east.PushDirection * (east.FullDistanceMetres - 5f) + Vector2.up * 100f;
+            Vector2 clear = east.EdgePoint + east.PushDirection * (east.StartDistanceMetres + 20f) + Vector2.up * 100f;
+            var body = Hull(inIt, Vector2.zero);
+
+            void Sit(Vector2 at, float seconds)
+            {
+                body.transform.position = at;
+                for (int i = 0; i < 50; i++) { now += seconds / 50f; d.Step(); }
+            }
+
+            Sit(inIt, 1f);
+            Assert.AreEqual(1, d.LinesSpoken, "he thinks it as he comes in");
+            Sit(inIt, east.LineCooldownSeconds * 5f);
+            Assert.AreEqual(1, d.LinesSpoken, "and never again while he sits in it, however long");
+
+            // Out and straight back: a new approach, but its cool-down has only just started again.
+            now = 100f;
+            d.LoadWalls(Walls());
+            Sit(inIt, 1f);
+            Assert.AreEqual(2, d.LinesSpoken);
+            Sit(clear, 1f);
+            Sit(inIt, 1f);
+            Assert.AreEqual(2, d.LinesSpoken, "back in inside the cool-down: nothing");
+            Sit(clear, east.LineCooldownSeconds);
+            Sit(inIt, 1f);
+            Assert.AreEqual(3, d.LinesSpoken, "a fresh approach after the cool-down: once more");
+
+            // Another edge is another thought: the east line's cool-down does not swallow the north's.
+            Sit(clear, 1f);
+            Sit(north.EdgePoint + north.PushDirection * (north.FullDistanceMetres - 5f) + Vector2.left * 120f, 1f);
+            Assert.AreEqual(4, d.LinesSpoken);
+        }
+
+        // ---- the look: full where he is stopped, seen coming, gone with the flag ----------------------
+
+        [Test]
+        public void TheLook_IsFullWhereARowedBoatIsStopped_WithRainAndADarkFront_AndIsOffTheStepTheFlagIsSet()
+        {
+            var save = StPeters();
+            foreach (var w in Walls())
+            {
+                Assert.Greater(w.LookFullDistanceMetres, w.FullDistanceMetres, w.Id + ": full before the push is");
+                Assert.Less(w.LookFullDistanceMetres, w.StartDistanceMetres, w.Id);
+                Assert.Greater(w.StormRain01, 0.5f, w.Id + ": it rains");
+                Assert.Greater(w.SquallDarkness01, 0.3f, w.Id + ": the front is dark");
+
+                var d = Director(Walls());
+                Vector2 at = w.EdgePoint + w.PushDirection * (w.LookFullDistanceMetres - 1f);
+                Hull(at, Vector2.zero);
+                d.Step();
+                Assert.AreEqual(1f, d.Look01, 1e-5f, w.Id);
+                Assert.Less(d.Storm01, 1f, w.Id + ": the push is still building where the look is whole");
+                Assert.AreEqual(1f, LocalWeather.Current.Strength01, 1e-5f, w.Id);
+                LocalSquall squall = LocalWeather.Squall;
+                Assert.IsTrue(LocalWeather.SquallActive, w.Id);
+                Assert.AreEqual(1f, squall.Loom01, 1e-5f, w.Id + ": the whole view is under the front");
+                Assert.AreEqual(-w.PushDirection, squall.Toward, w.Id + ": the dark lies toward the edge");
+                Assert.AreEqual(w.SquallDarkness01, squall.Darkness01, 1e-5f, w.Id);
+                Assert.AreEqual(w.StormRain01, squall.Rain01, 1e-5f, w.Id);
+                Assert.AreEqual(w.StormRain01, LocalWeather.Rain(0f), 1e-5f, w.Id + ": rain under a dry sky");
+                Assert.AreEqual(1f, LocalWeather.Rain(1f), w.Id + ": never less than the sky's own");
+
+                save.SetFlag(GateFlag, true);
+                d.Step();
+                Assert.AreEqual(0f, d.Look01, w.Id);
+                Assert.AreEqual(0f, d.Loom01, w.Id);
+                Assert.IsFalse(LocalWeather.Active, w.Id + ": no storm is drawn or heard");
+                Assert.IsFalse(LocalWeather.SquallActive, w.Id + ": no front, no rain");
+                Assert.AreEqual(0f, LocalWeather.Squall.Loom01, w.Id);
+                Assert.AreEqual(0f, LocalWeather.Rain(0f), w.Id);
+                Assert.AreEqual(Vector2.one, LocalWeather.RainStreakScale, w.Id);
+                var sim = new EnvironmentSample(new Vector2(2f, 1f), Vector2.zero, 0.4f, SeaState.Calm, 0.9f, 0.1f);
+                Assert.AreEqual(sim.WindVector, LocalWeather.Shade(sim).WindVector, w.Id + ": the sim's own weather, untouched");
+                Assert.AreEqual(sim.SeaState01, LocalWeather.Shade(sim).SeaState01, w.Id);
+                save.SetFlag(GateFlag, false);
+                Object.DestroyImmediate(d.gameObject);
+            }
+        }
+
+        [Test]
+        public void TheDarkFront_IsSeenFromABoatWellBeforeTheWeather_GrowsAllTheWayIn_AndNeverStandsOverTheIsland()
+        {
+            StPeters();
+            foreach (var w in Walls())
+            {
+                Assert.GreaterOrEqual(w.SightDistanceMetres, w.StartDistanceMetres + 30f, w.Id + ": seen before it is felt");
+                Vector2 P(float inside) => w.EdgePoint + w.PushDirection * inside;
+                Assert.AreEqual(0f, w.Loom01At(P(w.SightDistanceMetres)), 1e-5f, w.Id);
+                Assert.AreEqual(CampaignBarrierDef.LoomShareAtTheStartLine, w.Loom01At(P(w.StartDistanceMetres)), 1e-4f, w.Id);
+                Assert.AreEqual(1f, w.Loom01At(P(w.LookFullDistanceMetres)), 1e-5f, w.Id);
+                float last = 0f;
+                for (float inside = w.SightDistanceMetres + 10f; inside >= 0f; inside -= 1f)
+                {
+                    float loom = w.Loom01At(P(inside));
+                    Assert.GreaterOrEqual(loom, last - 1e-5f, $"{w.Id}: the front only grows as he closes ({inside} m)");
+                    Assert.GreaterOrEqual(loom, w.Look01At(P(inside)) - 1e-5f, $"{w.Id}: never weather without its dark ({inside} m)");
+                    Assert.GreaterOrEqual(w.Look01At(P(inside)), w.Storm01At(P(inside)) - 1e-5f, $"{w.Id}: never a push with no weather ({inside} m)");
+                    last = loom;
+                }
+
+                // The same water in a boat and on foot: afloat he sees the front, ashore he does not.
+                Vector2 seen = P((w.SightDistanceMetres + w.StartDistanceMetres) * 0.5f);
+                var afloat = Director(Walls());
+                Hull(seen, Vector2.zero);
+                afloat.Step();
+                Assert.Greater(afloat.Loom01, 0f, w.Id);
+                Assert.AreEqual(0f, afloat.Look01, w.Id + ": no weather yet, only its front");
+                Assert.IsFalse(LocalWeather.Active, w.Id);
+                Assert.IsTrue(LocalWeather.SquallActive, w.Id);
+                Assert.AreEqual(0f, LocalWeather.Squall.Rain01, w.Id + ": dry until the weather itself");
+                Object.DestroyImmediate(afloat.gameObject);
+                LocalWeather.Clear();
+
+                GameServices.Helm.SetPilotedHull(null);
+                GameServices.Helm.SetPlayersBoat(null);
+                var walker = new GameObject("WallsWalker");
+                _made.Add(walker);
+                walker.transform.position = seen;
+                GameServices.PlayerTransform = walker.transform;
+                var ashore = Director(Walls());
+                ashore.Step();
+                Assert.AreEqual(0f, ashore.Loom01, w.Id + ": on foot the front is not drawn");
+                Assert.IsFalse(LocalWeather.SquallActive, w.Id);
+                Object.DestroyImmediate(ashore.gameObject);
+                GameServices.PlayerTransform = null;
+            }
+
+            // The island's own places lie outside every front even for a boat: the berth is never dark.
+            foreach (var w in Walls())
+                foreach (var p in new Vector2[] { StPetersBuilder.DockZonePos, StPetersBuilder.ArrivalPos,
+                                                  StPetersBuilder.DisembarkPos, new Vector2(StPetersWharf.HeadCellX, 0f),
+                                                  StPetersArrivalOpening.Berth() })
+                    Assert.AreEqual(0f, w.Loom01At(p), $"{w.Id} at {p}");
+        }
+
+        [Test]
+        public void TheVeil_IsOffTheViewAtNoLoom_AndOverAllOfItAtFull()
+        {
+            const float HalfWidth = 16f, HalfHeight = 9f;
+            foreach (var w in Walls())
+            {
+                Vector2 toward = -w.PushDirection;
+                float along = SquallVeil.HalfExtentAlong(toward, HalfWidth, HalfHeight);
+                Assert.AreEqual(Mathf.Abs(toward.x) > 0.5f ? HalfWidth : HalfHeight, along, 1e-4f, w.Id);
+                float feather = SquallVeil.FeatherMetres(w.SquallFeather01, along);
+                Assert.Greater(feather, 1f, w.Id + ": a soft front, never a drawn line");
+                Assert.AreEqual(along, SquallVeil.FrontOffsetMetres(0f, along, feather), 1e-4f,
+                    w.Id + ": at no loom the front's clear end is the view's far side");
+                Assert.LessOrEqual(SquallVeil.FrontOffsetMetres(1f, along, feather) + feather, -along + 1e-4f,
+                    w.Id + ": at full loom the whole view is under the dark");
+                float half = SquallVeil.FrontOffsetMetres(CampaignBarrierDef.LoomShareAtTheStartLine, along, feather);
+                Assert.Less(half, 0f, w.Id + ": at the start line the soft edge is over the boat");
+                Assert.Greater(half + feather, 0f, w.Id);
+            }
+            Assert.Greater(SquallVeil.FeatherMetres(0f, 16f), 0f, "never a zero-length edge");
         }
 
         // ---- a rowed dory cannot out-pull the storm --------------------------------------------------

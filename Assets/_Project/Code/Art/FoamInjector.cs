@@ -381,7 +381,7 @@ namespace HiddenHarbours.Art
             Join();
 
             // ---- the sea this hull rides, sampled as the surface DRAWS it -------------------------
-            EnvironmentSample sample = env.Sample();
+            EnvironmentSample sample = LocalWeather.Shade(env.Sample());   // an authored local storm included
             WaveFieldSettings field = GameServices.WaveField;
             WaveFieldAnimatorSettings smoothing = GameServices.WaveFieldAnimator;
             if (clockSeek) _animator.Reset();
