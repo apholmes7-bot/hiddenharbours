@@ -56,11 +56,24 @@ namespace HiddenHarbours.World
         [Tooltip("What the notice says on arriving. Empty for silence.")]
         [SerializeField] private string _arrivalText = "";
 
+        [Tooltip("Optional. Where the climb ends — normally the other half of the stairwell. Left empty, " +
+                 "you arrive straight above (or below) where you pressed, which is right for a stair " +
+                 "whose foot and head share a footprint point. Set it for a flight that runs along a wall, " +
+                 "so going up lands you on the landing at its head and going down at its foot.")]
+        [SerializeField] private Transform _landing;
+
         /// <summary>Which storey this half works from — see <see cref="_fromLevel"/>.</summary>
         public int FromLevel => _fromLevel;
 
         /// <summary>Which storey it lands you on.</summary>
         public int ToLevel => _toLevel;
+
+        /// <summary>Where the climb ends, or null to arrive straight above/below the press.</summary>
+        public Transform Landing => _landing;
+
+        /// <summary>Point this half at the place it lands you (normally the other half). Null clears
+        /// it.</summary>
+        public void SetLanding(Transform landing) => _landing = landing;
 
         // ---- the interact seam ---------------------------------------------------------------
 
@@ -127,7 +140,10 @@ namespace HiddenHarbours.World
         public bool Climb()
         {
             if (_interior == null) return false;
-            if (!_interior.TryGoToLevel(_toLevel)) return false;
+            bool moved = _landing != null
+                ? _interior.TryGoToLevel(_toLevel, _landing.position)
+                : _interior.TryGoToLevel(_toLevel);
+            if (!moved) return false;
 
             if (!string.IsNullOrEmpty(_arrivalText))
                 EventBus.Publish(new DevNotice(_arrivalText));

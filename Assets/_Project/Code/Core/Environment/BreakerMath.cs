@@ -163,6 +163,53 @@ namespace HiddenHarbours.Core
                  "a lee. At or below 0.02 = the previous switch.")]
         public float BoreEdgeFadeDepthMeters;
 
+        [Tooltip("Where the bore keeps its own hard envelope read (largest step between the two lee reads, 0..1). " +
+                 "The bore reads the probe's own envelope only where the two lee reads differ by more than this " +
+                 "(a land shadow's line); in open water, where the fetch changes smoothly, it shares the wash's " +
+                 "blended read and skips a third march. 0 = the hard read wherever the two differ at all.")]
+        public float BoreHardReadStep;
+
+        [Tooltip("The steady edge on flat beds (seabed slope, metres per metre). The beach swash puts each " +
+                 "stretch of shore a little out of step with the next, keyed to the shore's direction. A " +
+                 "near-flat bed has no real direction, so that offset turned to speckle and the drawn edge " +
+                 "drew nested rings (the marbling). The offset now fades out below this slope, from a quarter " +
+                 "of it to it, so on a flat the edge runs in and out as one line. 0 = off (the previous look).")]
+        public float SwashSteadyEdgeSlope;
+
+        [Tooltip("The wet film at the drawn edge (metres of level). The water thins from full to clear over " +
+                 "this much depth just inside the drawn edge, so it ends on the sand as a thin film instead " +
+                 "of a hard cut. Foam keeps its own cover. 0 = the hard cut (the previous look).")]
+        public float EdgeWetFilmMeters;
+
+        [Tooltip("Where the wash's white lip sits inside the wet film (share of the film, 0..1). The line " +
+                 "used to be drawn at the drawn edge, where the film is already clear, so on a flat it sat on " +
+                 "bare sand a metre or more past the water. At 0.5 it sits where the film is half water, at " +
+                 "the visible edge. 0 = the drawn edge (the previous look).")]
+        public float WashLipFilmShare;
+
+        [Tooltip("The wash lip's resting age in the one foam sheet (0..1). Above 0 the line is drawn " +
+                 "through the sea's one foam (its lace, age tear, threshold, bands and colour walk), so it " +
+                 "breaks into gaps along its length like the rest of the foam. 0 with the backwash age " +
+                 "also 0 = the solid line (the previous look).")]
+        public float WashLipAgeFloor;
+
+        [Tooltip("How much older the wash lip reads as the swash drains back (0..1, added to the resting " +
+                 "age at the height of the backwash). The lip is fresh and whole as the wash runs up and " +
+                 "tears and fades as it draws back. 0 = no swash fade.")]
+        public float WashLipBackwashAge;
+
+        [Tooltip("How much the wash lip's width varies along its length with the one foam's lace " +
+                 "(share, 0..1: the width runs from 1 - this to 1 + this times the line width). " +
+                 "0 = an even width (the previous look).")]
+        public float WashLipWidthVary;
+
+        [Tooltip("How much younger the wash lip reads over full water on a shore no bore runs up (0..1 of its " +
+                 "age). Where the shore rises steeply the lip's width reaches past the wet film onto full water, " +
+                 "and an aged lip takes that water's colour, so at the St Peters bar head it was all but gone. " +
+                 "Scaled by how far past the film the lip lies and by the share of the edge no bore holds, so a " +
+                 "flat beach and a bore's run-up keep their age. 0 = the lip's age as set above.")]
+        public float WashLipStillFresh;
+
         [Header("Run-up — how far the wash reaches up the beach (metres of LEVEL, Hunt 1959)")]
         [Tooltip("Hunt's law: run-up R = coefficient × ξ × H — the vertical reach of the wash above still " +
                  "water for a bore of standing height H on a bed of surf similarity ξ. 1.0 is Hunt's " +
@@ -202,6 +249,14 @@ namespace HiddenHarbours.Core
             BoreFetchProbeMeters = 3f,
             BoreLeeSoftenMeters = 6f,
             BoreEdgeFadeDepthMeters = 0.08f,
+            BoreHardReadStep = 0.1f,
+            SwashSteadyEdgeSlope = 0.12f,
+            EdgeWetFilmMeters = 0.03f,
+            WashLipFilmShare = 0.5f,
+            WashLipAgeFloor = 0.4f,
+            WashLipBackwashAge = 0.5f,
+            WashLipWidthVary = 0.75f,
+            WashLipStillFresh = 0.75f,
             RunUpCoefficient = 1f,
             RunUpCapMeters = 0.35f,
         };
@@ -882,12 +937,26 @@ namespace HiddenHarbours.Core
         }
 
         /// <summary>
+        /// <b>The bore's hard read</b>: whether the bore reads the probe's own envelope rather than the lee
+        /// lattice's blend. True where the largest step between the two lattice reads is above
+        /// <paramref name="step"/> (a land shadow's line); false in open water, where the blend is the bore's too.
+        /// <paramref name="step"/> at or below 0 = true wherever the two differ at all. Twin of the water shader's
+        /// <c>leeStep</c> test (<see cref="BreakerSettings.BoreHardReadStep"/>).
+        /// </summary>
+        public static bool BoreTakesHardRead(float largestStep, float step)
+        {
+            return largestStep > Mathf.Max(step, 0f);
+        }
+
+        /// <summary>
         /// <b>Where the drawn wash reads its envelope when the lee is softened</b>: two points
         /// <paramref name="softenMeters"/> apart across <paramref name="shadowDir"/> (the march's direction),
         /// on a world-fixed lattice, and the weight of the second. The envelope is the lerp of the two reads,
         /// so a land shadow's hard line ramps over <paramref name="softenMeters"/> and nothing crawls as the
         /// camera moves. Returns false (one read at <paramref name="probe"/>) when the width is 0 or there
         /// is no direction. Twin of the water shader's lee lattice (<see cref="BreakerSettings.BoreLeeSoftenMeters"/>).
+        /// Only the wash reads the ramp (its reach, its edge and its lee fade): the bore's break gate, march, clock
+        /// and births keep the probe's own read, or each hard slab is cut across the ramp at its own place.
         /// </summary>
         public static bool BoreLeeLattice(Vector2 probe, Vector2 shadowDir, float softenMeters,
                                           out Vector2 a, out Vector2 b, out float weightB)
@@ -903,6 +972,96 @@ namespace HiddenHarbours.Core
             b = a + across * softenMeters;
             return true;
         }
+
+        /// <summary>
+        /// <b>The steady edge</b>: how much of the beach swash's along-shore offset a bed of this slope keeps.
+        /// 1 at or above <paramref name="steadySlope"/>, 0 at or below a quarter of it, smooth between. The
+        /// offset is keyed to the shore's direction, which a near-flat bed cannot give, so there it is faded
+        /// out and the edge moves as one line. <paramref name="steadySlope"/> at or below 0 returns 1 (the
+        /// previous look). Twin of the water shader's <c>SwashDesyncKeep</c>
+        /// (<see cref="BreakerSettings.SwashSteadyEdgeSlope"/>).
+        /// </summary>
+        public static float SwashDesyncKeep01(float slope, float steadySlope)
+        {
+            if (steadySlope <= 0f) return 1f;
+            return WaveFetch.SmoothstepEdge(0.25f * steadySlope, steadySlope, slope);
+        }
+
+        /// <summary>
+        /// <b>The wet film</b>: the water's cover at a pixel <paramref name="insideEdgeMeters"/> of level
+        /// inside the drawn edge, 0 at the edge rising to 1 at <paramref name="filmMeters"/>. At or below 0
+        /// metres of film it returns 1 (the hard cut). Twin of the water shader's film line
+        /// (<see cref="BreakerSettings.EdgeWetFilmMeters"/>).
+        /// </summary>
+        public static float EdgeWetFilm01(float insideEdgeMeters, float filmMeters)
+        {
+            if (filmMeters <= 0f) return 1f;
+            return WaveFetch.SmoothstepEdge(0f, filmMeters, insideEdgeMeters);
+        }
+
+        /// <summary>
+        /// <b>Where the wash's lip sits</b>: metres of level inside the drawn edge, the share
+        /// <paramref name="filmShare"/> (0..1) of the wet film. With the film the water is clear at the
+        /// drawn edge, so a line drawn there sat on sand; this moves it in to where the film shows. 0 when
+        /// either is 0 (the line at the drawn edge, the previous look). Twin of the water shader's
+        /// <c>washLipInset</c> (<see cref="BreakerSettings.WashLipFilmShare"/>).
+        /// </summary>
+        public static float WashLipInsetMeters(float filmMeters, float filmShare)
+            => Mathf.Max(filmMeters, 0f) * Mathf.Clamp01(filmShare);
+
+        /// <summary>
+        /// <b>The wash lip's test, measured on the ground</b>: a pixel at least <paramref name="insetMeters"/>
+        /// of level inside the drawn edge (<paramref name="depthHere"/> + <paramref name="drawnShift"/>, with
+        /// the clip's epsilon) whose ground one line-width shoreward
+        /// (<paramref name="depthWidthShoreward"/>) is not. At an inset of 0 it is exactly the previous line
+        /// test (<c>WaterSurface.WashLineDrawn</c>). Twin of the water shader's <c>washLine</c> test.
+        /// </summary>
+        public static bool WashLipDrawn(float depthHere, float depthWidthShoreward, float drawnShift, float insetMeters)
+            => depthHere + drawnShift >= insetMeters - 1e-4f && depthWidthShoreward + drawnShift < insetMeters;
+
+        /// <summary>
+        /// <b>The wash lip's width</b> at a pixel: the line width scaled by 1 + <paramref name="vary"/> ×
+        /// (2 × <paramref name="lace01"/> − 1), floored at 0, where <paramref name="lace01"/> is the one foam
+        /// sheet's lace there (it centres near 0.5). <paramref name="vary"/> at or below 0 = the even width.
+        /// Twin of the water shader's <c>washLipWidth</c> (<see cref="BreakerSettings.WashLipWidthVary"/>).
+        /// </summary>
+        public static float WashLipWidthMeters(float widthMeters, float lace01, float vary)
+        {
+            float w = Mathf.Max(widthMeters, 0f);
+            if (vary <= 0f) return w;
+            return w * Mathf.Max(1f + vary * (2f * lace01 - 1f), 0f);
+        }
+
+        /// <summary>
+        /// <b>The wash lip's age</b> in the one foam sheet: <paramref name="ageFloor"/> plus
+        /// <paramref name="backwashAge"/> × the swash's backwash share (0 running up, 1 at the height of the
+        /// backwash), clamped 0..1. The sheet's age tear keeps only the lace's hearts as the age grows, so
+        /// the lip is whole on the run-up and breaks and fades on the backwash. Twin of the water shader's
+        /// <c>washLipAge01</c> (<see cref="BreakerSettings.WashLipAgeFloor"/>,
+        /// <see cref="BreakerSettings.WashLipBackwashAge"/>).
+        /// </summary>
+        public static float WashLipAge01(float ageFloor, float backwashAge, float backwash01)
+            => Mathf.Clamp01(ageFloor + backwashAge * Mathf.Clamp01(backwash01));
+
+        /// <summary>
+        /// <b>How far past the wet film the lip lies</b>: 0 at the lip's inset (<paramref name="insetMeters"/>
+        /// of level inside the drawn edge) rising to 1 at the film's depth (<paramref name="filmMeters"/>), smooth
+        /// between, for a pixel <paramref name="edgeQ"/> of level inside the drawn edge. On a flat the lip's
+        /// width spans almost no level, so it stays near 0; on a steep shore the width reaches full water.
+        /// Twin of the water shader's smoothstep in the lip's still-water age (<see cref="BreakerSettings.WashLipStillFresh"/>).
+        /// </summary>
+        public static float WashLipOverWater01(float edgeQ, float insetMeters, float filmMeters)
+            => WaveFetch.SmoothstepEdge(insetMeters, Mathf.Max(Mathf.Max(filmMeters, 0f), insetMeters + 1e-4f), edgeQ);
+
+        /// <summary>
+        /// <b>The lip over still water</b>: its age <paramref name="age01"/> made younger by
+        /// <paramref name="stillFresh"/> of itself where it lies over full water
+        /// (<paramref name="overWater01"/>, <see cref="WashLipOverWater01"/>) on the share of the edge no bore
+        /// holds (1 - <paramref name="boreBlend"/>). <paramref name="stillFresh"/> 0 returns the age unchanged.
+        /// Twin of the water shader's <c>washLipAge01 *= ...</c> (<see cref="BreakerSettings.WashLipStillFresh"/>).
+        /// </summary>
+        public static float WashLipStillAge01(float age01, float stillFresh, float overWater01, float boreBlend)
+            => age01 * (1f - Mathf.Clamp01(stillFresh) * overWater01 * (1f - Mathf.Clamp01(boreBlend)));
 
         // ==== THE SURF AS A FORCE: everything a hull in the broken water needs (PR 3) ==============
 

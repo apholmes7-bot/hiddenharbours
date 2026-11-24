@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: e41ed23be9544944ab6889f3bb16c157
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8414788606111554145
+    second: Interior_ginnyCottage_0
+  - first:
+      213: 8429725363805461359
+    second: Interior_ginnyCottage_1
+  - first:
+      213: 6039596561390178763
+    second: Interior_ginnyCottage_2
+  - first:
+      213: 4275896433684464911
+    second: Interior_ginnyCottage_3
+  - first:
+      213: -6638636295942398928
+    second: Interior_ginnyCottage_4
+  - first:
+      213: -3136647448121225486
+    second: Interior_ginnyCottage_5
+  - first:
+      213: -6173332595727570055
+    second: Interior_ginnyCottage_6
+  - first:
+      213: 7071144140166260173
+    second: Interior_ginnyCottage_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Interior_ginnyCottage_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 304
+        width: 374
+        height: 304
+      alignment: 9
+      pivot: {x: 0.5, y: 0.39802632}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ff29b2c34b7b5544d9a947d3892cf730
+      internalID: 1600311254
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_ginnyCottage_d1
+      rect:
+        serializedVersion: 2
+        x: 374
+        y: 304
+        width: 374
+        height: 304
+      alignment: 9
+      pivot: {x: 0.5, y: 0.39802632}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7e8a3275f57d81f4b828e12f812898c5
+      internalID: 746066571
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_ginnyCottage_d2
+      rect:
+        serializedVersion: 2
+        x: 748
+        y: 304
+        width: 374
+        height: 304
+      alignment: 9
+      pivot: {x: 0.5, y: 0.39802632}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d59df244d7be7f34683c6e863cc20dd3
+      internalID: -1185562743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_ginnyCottage_d3
+      rect:
+        serializedVersion: 2
+        x: 1122
+        y: 304
+        width: 374
+        height: 304
+      alignment: 9
+      pivot: {x: 0.5, y: 0.39802632}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1abb8fd3902c7794dbc222943582b9fc
+      internalID: -329728762
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_ginnyCottage_d4
+      rect:
+        serializedVersion: 2
+        x: 1496
+        y: 304
+        width: 374
+        height: 304
+      alignment: 9
+      pivot: {x: 0.5, y: 0.39802632}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 314ac3ea1be914242af7e0debead012b
+      internalID: -244071081
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_ginnyCottage_d5
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 374
+        height: 304
+      alignment: 9
+      pivot: {x: 0.5, y: 0.39802632}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 17ef27141797ad74c8d892bf4d11aa4d
+      internalID: 110778820
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_ginnyCottage_d6
+      rect:
+        serializedVersion: 2
+        x: 374
+        y: 0
+        width: 374
+        height: 304
+      alignment: 9
+      pivot: {x: 0.5, y: 0.39802632}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 968463e6e05fa7344a5be317019f0658
+      internalID: 1399229295
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_ginnyCottage_d7
+      rect:
+        serializedVersion: 2
+        x: 748
+        y: 0
+        width: 374
+        height: 304
+      alignment: 9
+      pivot: {x: 0.5, y: 0.39802632}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c76d3e562a91244bbf160d12b580301
+      internalID: 1535933753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: c4d6dc157f867ec499a4debf4f538dff
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Interior_ginnyCottage_d0: 1600311254
+      Interior_ginnyCottage_d1: 746066571
+      Interior_ginnyCottage_d2: -1185562743
+      Interior_ginnyCottage_d3: -329728762
+      Interior_ginnyCottage_d4: -244071081
+      Interior_ginnyCottage_d5: 110778820
+      Interior_ginnyCottage_d6: 1399229295
+      Interior_ginnyCottage_d7: 1535933753
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

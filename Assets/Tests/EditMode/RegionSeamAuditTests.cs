@@ -354,7 +354,9 @@ namespace HiddenHarbours.Tests.EditMode
             // a CookingStationFixture and its art, no travel component. The community hall's kitchen and washroom
             // (N1b) nest the fridge (a KitchenStoreFixture, its art and a cabinet collider), the kitchen sink (a
             // WashStationPoint, its art and a collider) and the cook stove (a CookingStationFixture and its art)
-            // beside the toilet and the washstand: no travel component.
+            // beside the toilet and the washstand: no travel component. Ginny's kitchen run adds the prep counter,
+            // the stove and the microwave: sprites and a CookingStationFixture each, no collider, no travel component;
+            // its kitchen sink (a WashStationPoint) and fridge (a KitchenStoreFixture) add art and a footprint collider.
             Assert.That(seen.Select(g => paths[g].Replace('\\', '/')).OrderBy(p => p, StringComparer.Ordinal), Is.EqualTo(new[] {
                 "Assets/_Project/Prefabs/Bridges/CampBrookBridge.prefab",
                 "Assets/_Project/Prefabs/Bridges/CampPondCulvert.prefab",
@@ -368,6 +370,7 @@ namespace HiddenHarbours.Tests.EditMode
                 "Assets/_Project/Prefabs/Props/Kitchen/Fridge.prefab",
                 "Assets/_Project/Prefabs/Props/Kitchen/KitchenSink.prefab",
                 "Assets/_Project/Prefabs/Props/Kitchen/Microwave.prefab",
+                "Assets/_Project/Prefabs/Props/Kitchen/PrepCounter.prefab",
                 "Assets/_Project/Prefabs/Props/Kitchen/Stove.prefab",
                 "Assets/_Project/Prefabs/Props/Storage/CamperShoreLead.prefab",
                 "Assets/_Project/Prefabs/Props/Storage/GinnyGearLocker.prefab",
