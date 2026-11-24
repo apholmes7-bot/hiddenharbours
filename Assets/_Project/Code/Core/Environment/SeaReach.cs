@@ -44,6 +44,23 @@ namespace HiddenHarbours.Core
             return u * u * (3f - 2f * u);
         }
 
+        /// <summary>
+        /// The sea's share of the water at a point where <b>still water</b> (ADR 0046: a pond, a brook's
+        /// fresh reach) may stand above the tide: 1 where there is none or the tide stands at or above it,
+        /// 0 once the still surface stands <paramref name="bandMeters"/> above the tide, linear between.
+        /// Water that stands above the sea is the still water's, not the sea's: it takes no swell, surf,
+        /// wash or shore foam, as a cut-off pool takes none. A rising tide that drowns it hands it back to
+        /// the sea over the same band. A NaN or missing (−∞) still level is 1, the older look.
+        /// Twin: <c>SeaReachUnderStill01</c> in <c>Include/SeaReach.hlsl</c>.
+        /// </summary>
+        public static float UnderStill01(float waterLevel, float stillLevel, float bandMeters)
+        {
+            if (!(stillLevel > waterLevel)) return 1f;   // none, NaN, or the tide on top
+            float band = bandMeters > 1e-4f ? bandMeters : 1e-4f;
+            float u = (stillLevel - waterLevel) / band;
+            return u >= 1f ? 0f : 1f - u;
+        }
+
         /// <summary>The value the GPU texture stores for a sill (the sentinels made finite).</summary>
         public static float ToTexture(float sill)
             => sill == AlwaysOpen ? TextureAlwaysOpen : sill == Unreachable ? TextureUnreachable : sill;
@@ -329,8 +346,19 @@ namespace HiddenHarbours.Core
             s_Field = null;
         }
 
-        /// <summary>The swell factor at a world position for a water level; exactly 1 with no field.</summary>
+        /// <summary>
+        /// The swell factor at a world position for a water level; exactly 1 with no field. Where the
+        /// region's still water (<see cref="GameServices.StillWater"/>) stands above the level, the sea's
+        /// share fades out over the field's wet band (<see cref="SeaReachMath.UnderStill01"/>): a brook or a
+        /// pond above the tide is still water. Exactly the field's factor wherever there is none.
+        /// Twin: <c>SeaReach01</c> in <c>Include/SeaReach.hlsl</c>.
+        /// </summary>
         public static float FactorAt(Vector2 worldPos, float waterLevel)
-            => s_Owner != null && s_Field != null ? s_Field.FactorAt(worldPos, waterLevel, s_Blend) : 1f;
+        {
+            if (s_Owner == null || s_Field == null) return 1f;
+            float reach = s_Field.FactorAt(worldPos, waterLevel, s_Blend);
+            return reach * SeaReachMath.UnderStill01(waterLevel, GameServices.StillWater.StillLevelAt(worldPos),
+                                                     s_Field.WetBandMeters);
+        }
     }
 }

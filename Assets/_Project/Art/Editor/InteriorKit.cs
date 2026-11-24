@@ -269,6 +269,32 @@ namespace HiddenHarbours.Art.Editor
                 ["weather"] = 0.35,
             }, "the pilot room: the inside of the sage cottage the village already places"),
 
+            // ---- Ginny's cottage ------------------------------------------------------------------
+            // The sage room at the size of Ginny's own shell (GinnyCottageShellBake): her house holds a
+            // living room, kitchen and washroom below and a corridor with two bedrooms above, with the
+            // stair along the north wall, which the sage cottage's 6.6 × 8.05 m does not fit. Same
+            // finishes as the sage room; the partitions are hers and are painted onto her sheets.
+            Build.RoomDialled("ginnyCottage", "Ginny's cottage — ground", new Dictionary<string, object>
+            {
+                // MUST equal GinnyCottageShellBake.SizeDial.
+                ["size"] = 0.5,
+                ["floor"] = "plank",
+                ["wall"] = "plaster",
+                ["paper"] = "cream",
+                ["wainscot"] = true,
+                ["windows"] = "twoOverTwo",
+                // MUST equal GinnyCottageShellBake.OldFrontDials' winDensity: the room's long wall
+                // paints as many windows as the shell shows outside (three).
+                ["winDensity"] = 0.40,
+                ["door"] = true,
+                ["dividers"] = 0,
+                // No hearth: the sage room's stands mid back wall, which in her plan is where the
+                // kitchen meets the washroom. Her kitchen's stove does the cooking.
+                ["hearth"] = false,
+                ["beams"] = true,
+                ["weather"] = 0.35,
+            }, "Ginny's cottage, enlarged for three rooms below and a corridor above"),
+
             // ---- the one-room school ------------------------------------------------------------
             // The smallest room in the set (6.36 × 7.63 m) and the only one that is a PUBLIC room, so
             // it is finished like one: wide boards underfoot and vertical shiplap on the walls rather
@@ -348,22 +374,29 @@ namespace HiddenHarbours.Art.Editor
             Build.RoomDialled("harbourGable", "harbour gable ground", new Dictionary<string, object>
                 {
                     ["size"] = 0.3,
+                    // The shell is the house's own dials (VillageBuildingKit harbourGable): its door is
+                    // in the cross gable on the +X eave, and the room rig puts its doorway there only
+                    // when it carries this exact shell.
                     ["shell"] = new Dictionary<string, object>
                     {
-                        ["era"] = "plain",
+                        ["era"] = "gothic",
                         ["shape"] = "gable",
-                        ["siding"] = "clapboard",
-                        ["body"] = "blue",
-                        ["roof"] = "asphaltGrey",
+                        ["siding"] = "shingle",
+                        ["body"] = "teal",
+                        ["roof"] = "metalRed",
                         ["size"] = 0.3,
                         ["windows"] = "twoOverTwo",
-                        ["winDensity"] = 0.55,
-                        ["attic"] = "gable",
-                        ["porch"] = "front",
+                        ["winDensity"] = 0.5,
+                        ["attic"] = "gothic",
+                        ["porch"] = "none",
+                        ["crossGable"] = 1,
+                        ["gableFull"] = true,
+                        ["bargeboard"] = true,
                         ["dormers"] = 0,
                         ["chimneys"] = 1,
-                        ["bay"] = false,
-                        ["weather"] = 0.3,
+                        ["shutters"] = "none",
+                        ["doorPaint"] = "ivory",
+                        ["weather"] = 0.45,
                     },
                     ["storey"] = "ground",
                     ["floor"] = "plank",
@@ -382,22 +415,29 @@ namespace HiddenHarbours.Art.Editor
             Build.RoomDialled("harbourGableUpper", "harbour gable upper", new Dictionary<string, object>
                 {
                     ["size"] = 0.3,
+                    // The shell is the house's own dials (VillageBuildingKit harbourGable): its door is
+                    // in the cross gable on the +X eave, and the room rig puts its doorway there only
+                    // when it carries this exact shell.
                     ["shell"] = new Dictionary<string, object>
                     {
-                        ["era"] = "plain",
+                        ["era"] = "gothic",
                         ["shape"] = "gable",
-                        ["siding"] = "clapboard",
-                        ["body"] = "blue",
-                        ["roof"] = "asphaltGrey",
+                        ["siding"] = "shingle",
+                        ["body"] = "teal",
+                        ["roof"] = "metalRed",
                         ["size"] = 0.3,
                         ["windows"] = "twoOverTwo",
-                        ["winDensity"] = 0.55,
-                        ["attic"] = "gable",
-                        ["porch"] = "front",
+                        ["winDensity"] = 0.5,
+                        ["attic"] = "gothic",
+                        ["porch"] = "none",
+                        ["crossGable"] = 1,
+                        ["gableFull"] = true,
+                        ["bargeboard"] = true,
                         ["dormers"] = 0,
                         ["chimneys"] = 1,
-                        ["bay"] = false,
-                        ["weather"] = 0.3,
+                        ["shutters"] = "none",
+                        ["doorPaint"] = "ivory",
+                        ["weather"] = 0.45,
                     },
                     ["storey"] = "upper",
                     ["floor"] = "plank",
