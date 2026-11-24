@@ -59,7 +59,8 @@ namespace HiddenHarbours.Core
         /// <summary><see cref="State"/>: collected. The feature drops such a row when it next writes.</summary>
         public const int StateCollected = 2;
 
-        /// <summary>The order's stable id, <c>order.&lt;seller&gt;.&lt;n&gt;</c>, where n comes from
+        /// <summary>The order's stable id, <c>order.&lt;seller&gt;.&lt;n&gt;</c> (e.g.
+        /// <c>order.seller.leblancs.3</c>), where n is the digits after the last dot, comes from
         /// <see cref="SaveData.NextSpecialOrderNumber"/> and is never used twice.</summary>
         public string OrderId = "";
 
@@ -73,11 +74,19 @@ namespace HiddenHarbours.Core
         /// <summary>What was ordered: one line per kind of good.</summary>
         public List<SpecialOrderLineDto> Lines = new List<SpecialOrderLineDto>();
 
-        /// <summary>What left the player's purse for the whole order, kept so a refund is exact.</summary>
+        /// <summary>What left the player's purse for the whole order, kept so a refund is exact. <b>This is
+        /// the total, and it is the figure that stands.</b> Each line also keeps its own share
+        /// (<see cref="SpecialOrderLineDto.PaidPrice"/>); if the shares do not add up to this, the load repair
+        /// leaves both exactly as they are, because it never rewrites money.</summary>
         public int PaidPrice;
 
         /// <summary>The game clock (<c>IGameClock.TotalSeconds</c>) when he paid.</summary>
         public double OrderedAtSeconds;
+
+        /// <summary>The game day he paid on (<c>IGameClock.DayIndex</c>), kept beside the seconds the way a
+        /// purchase row keeps both: "due after ordered" then compares two saved days and stays exact if the
+        /// length of a day is ever retuned.</summary>
+        public int OrderedDay;
 
         /// <summary>The game day of the supply run it comes on, fixed when he paid.</summary>
         public int DueDay;
@@ -94,11 +103,17 @@ namespace HiddenHarbours.Core
     [Serializable]
     public sealed class SpecialOrderLineDto
     {
-        /// <summary>The catalogue listing's stable id.</summary>
+        /// <summary>What was ordered: the special-order offer's stable Def id (<c>specialorder.*</c>). The
+        /// good it stands for comes from that offer, never from the save.</summary>
         public string ListingId = "";
 
-        /// <summary>How many (at least 1 on a kept line).</summary>
+        /// <summary>How many (at least 1 on a usable line).</summary>
         public int Count = 1;
+
+        /// <summary>What he paid for this line, so one line can be refunded exactly if its offer is gone.
+        /// The order's own <see cref="SpecialOrderDto.PaidPrice"/> stays the total. A line with a price above
+        /// zero is never dropped by the load repair, even when the rest of it is unusable.</summary>
+        public int PaidPrice;
     }
 
     /// <summary>

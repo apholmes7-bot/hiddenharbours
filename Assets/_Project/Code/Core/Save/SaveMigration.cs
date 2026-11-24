@@ -711,13 +711,22 @@ namespace HiddenHarbours.Core
 
         /// <summary>
         /// Special orders (reserved at v26). <b>A row is dropped only when it carries nothing</b>: no money
-        /// paid and no usable line left. Every other row is kept, whatever else is wrong with it, because the
-        /// repair cannot refund: an order with a missing id, an unknown state or no lines left still holds
-        /// what he paid, and the feature's own start-up decides what it becomes.
+        /// paid on the order and no line left. Every other row is kept, whatever else is wrong with it,
+        /// because the repair cannot refund: an order with a missing id, an unknown state or no lines left
+        /// still holds what he paid, and the feature's own start-up decides what it becomes.
         ///
-        /// <para>Inside a kept row: a line with no listing or a count under 1 is dropped and lines for the
-        /// same listing fold into the first (counts added); a negative price reads 0; an unreadable or
-        /// negative order time and a negative due day read 0 (due at once, never later); a state outside the
+        /// <para><b>Money on a line counts as something too.</b> A line is dropped only when it is unusable
+        /// (no listing, or a count under 1) AND has no price above zero; a line he paid for stays, so it
+        /// keeps its order alive even when the order's own total reads 0. Lines for the same listing fold
+        /// into the first, counts added and prices added, so folding never changes what the lines sum to.
+        /// <b>The repair never rewrites money</b>: when the lines' prices do not add up to the order's total,
+        /// both are left exactly as they are (the total is the figure that stands; reconciling them is the
+        /// feature's work). The one exception is a negative price, on the order or on a line, which reads 0:
+        /// it would otherwise be a refund that takes money.</para>
+        ///
+        /// <para>Also inside a kept row: an unreadable or negative order time, a negative ordered day and a
+        /// negative due day read 0 (due at once, never later; the due day is never changed to fit the
+        /// ordered day); a negative count on a kept line reads 0; a state outside the
         /// known ones reads as waiting, the one reading that can never cost him the goods. Ids are never
         /// rewritten. The counter is held at 1 or more and above every number on any row, dropped rows
         /// included, so no number is used twice.</para>
@@ -741,22 +750,30 @@ namespace HiddenHarbours.Core
                 for (int k = 0; k < o.Lines.Count; k++)
                 {
                     SpecialOrderLineDto line = o.Lines[k];
-                    if (line == null || string.IsNullOrEmpty(line.ListingId) || line.Count < 1)
+                    if (line != null && line.PaidPrice < 0) line.PaidPrice = 0;
+                    // A line goes only when it is unusable AND holds no money. A paid line stays, whatever
+                    // else is wrong with it: its price is the exact refund for that line.
+                    if (line == null
+                        || ((string.IsNullOrEmpty(line.ListingId) || line.Count < 1) && line.PaidPrice <= 0))
                     {
                         o.Lines.RemoveAt(k--);
                         continue;
                     }
+                    line.ListingId ??= "";
+                    if (line.Count < 0) line.Count = 0;
                     for (int first = 0; first < k; first++)
                     {
                         if (!string.Equals(o.Lines[first].ListingId, line.ListingId, System.StringComparison.Ordinal))
                             continue;
                         o.Lines[first].Count = AddClamped(o.Lines[first].Count, line.Count);
+                        o.Lines[first].PaidPrice = AddClamped(o.Lines[first].PaidPrice, line.PaidPrice);
                         o.Lines.RemoveAt(k--);
                         break;
                     }
                 }
                 if (o.PaidPrice < 0) o.PaidPrice = 0;
                 if (!IsFiniteNumber(o.OrderedAtSeconds) || o.OrderedAtSeconds < 0d) o.OrderedAtSeconds = 0d;
+                if (o.OrderedDay < 0) o.OrderedDay = 0;
                 if (o.DueDay < 0) o.DueDay = 0;
                 if (o.State < SpecialOrderDto.StateWaiting || o.State > SpecialOrderDto.StateCollected)
                     o.State = SpecialOrderDto.StateWaiting;

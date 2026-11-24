@@ -202,10 +202,11 @@ namespace HiddenHarbours.Tests.EditMode
                 OrderId = "order.shop.st_peters_general.4", SellerId = Shop, DeliverToId = "counter.nmc_chandlery",
                 Lines =
                 {
-                    new SpecialOrderLineDto { ListingId = "listing.outboard_9hp", Count = 1 },
-                    new SpecialOrderLineDto { ListingId = "listing.fuel_can", Count = 2 },
+                    new SpecialOrderLineDto { ListingId = "specialorder.outboard_9hp", Count = 1, PaidPrice = 1390 },
+                    new SpecialOrderLineDto { ListingId = "specialorder.fuel_can", Count = 2, PaidPrice = 60 },
                 },
-                PaidPrice = 1450, OrderedAtSeconds = 90000.25, DueDay = 5, State = SpecialOrderDto.StateArrived,
+                PaidPrice = 1450, OrderedAtSeconds = 90000.25, OrderedDay = 1, DueDay = 5,
+                State = SpecialOrderDto.StateArrived,
             });
             save.NextSpecialOrderNumber = 5;
             save.ShoppingBags.Add(new ShoppingBagDto
@@ -234,12 +235,15 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(Shop, o.SellerId);
             Assert.AreEqual("counter.nmc_chandlery", o.DeliverToId, "an order collected somewhere else is held");
             Assert.AreEqual(2, o.Lines.Count, "one order may hold more than one kind of good");
-            Assert.AreEqual("listing.outboard_9hp", o.Lines[0].ListingId);
+            Assert.AreEqual("specialorder.outboard_9hp", o.Lines[0].ListingId);
             Assert.AreEqual(1, o.Lines[0].Count);
-            Assert.AreEqual("listing.fuel_can", o.Lines[1].ListingId);
+            Assert.AreEqual(1390, o.Lines[0].PaidPrice, "each line keeps what was paid for it");
+            Assert.AreEqual("specialorder.fuel_can", o.Lines[1].ListingId);
             Assert.AreEqual(2, o.Lines[1].Count);
-            Assert.AreEqual(1450, o.PaidPrice);
+            Assert.AreEqual(60, o.Lines[1].PaidPrice);
+            Assert.AreEqual(1450, o.PaidPrice, "the order keeps the total");
             Assert.AreEqual(90000.25, o.OrderedAtSeconds);
+            Assert.AreEqual(1, o.OrderedDay, "the day he paid is saved, not worked out from the seconds");
             Assert.AreEqual(5, o.DueDay);
             Assert.AreEqual(SpecialOrderDto.StateArrived, o.State);
             Assert.AreEqual(5, back.NextSpecialOrderNumber);
@@ -387,7 +391,7 @@ namespace HiddenHarbours.Tests.EditMode
                 new SpecialOrderDto
                 {
                     OrderId = "order.shop.a.1", SellerId = "shop.a", PaidPrice = 60,
-                    OrderedAtSeconds = double.NaN, DueDay = -3, State = 9,
+                    OrderedAtSeconds = double.NaN, OrderedDay = -4, DueDay = -3, State = 9,
                     Lines =
                     {
                         new SpecialOrderLineDto { ListingId = "listing.rope", Count = 1 },
@@ -400,7 +404,7 @@ namespace HiddenHarbours.Tests.EditMode
                 new SpecialOrderDto
                 {
                     OrderId = "order.shop.a.2", SellerId = "shop.a", PaidPrice = -50, State = -1,
-                    OrderedAtSeconds = -10,
+                    OrderedAtSeconds = -10, OrderedDay = 6, DueDay = 2,
                     Lines = { new SpecialOrderLineDto { ListingId = "listing.rope", Count = 1 } },
                 },
             };
@@ -415,6 +419,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual("listing.paint", a.Lines[1].ListingId);
             Assert.AreEqual(60, a.PaidPrice);
             Assert.AreEqual(0d, a.OrderedAtSeconds);
+            Assert.AreEqual(0, a.OrderedDay, "a negative ordered day reads 0");
             Assert.AreEqual(0, a.DueDay, "an unreadable due day is due at once, never later");
             Assert.AreEqual(SpecialOrderDto.StateWaiting, a.State,
                             "an unknown state reads as waiting: the one reading that cannot cost him the goods");
@@ -424,10 +429,174 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(SpecialOrderDto.StateWaiting, b.State);
             Assert.AreEqual(0d, b.OrderedAtSeconds);
             Assert.AreEqual(1, b.Lines.Count, "goods are still owed on it, so it stays");
+            Assert.AreEqual(6, b.OrderedDay, "a readable ordered day is kept");
+            Assert.AreEqual(2, b.DueDay, "a due day before the ordered day is left as it is: the repair does not guess");
 
             string once = SaveSerialization.ToJson(save);
             SaveMigration.Migrate(save);
             Assert.AreEqual(once, SaveSerialization.ToJson(save), "a second repair changes nothing");
+        }
+
+        [Test]
+        public void MoneyOnALineIsNeverDropped_NorRewritten()
+        {
+            SaveData save = SaveMigration.NewGame();
+            save.Money = 10;
+            save.SpecialOrders = new List<SpecialOrderDto>
+            {
+                // 0: unusable lines, some paid for: the paid ones stay, the unpaid ones go
+                new SpecialOrderDto
+                {
+                    OrderId = "order.shop.a.1", SellerId = "shop.a", PaidPrice = 100,
+                    Lines =
+                    {
+                        new SpecialOrderLineDto { ListingId = "specialorder.rope", Count = 0, PaidPrice = 30 },
+                        new SpecialOrderLineDto { ListingId = "specialorder.hooks", Count = -2, PaidPrice = 20 },
+                        new SpecialOrderLineDto { ListingId = null, Count = 1, PaidPrice = 5 },
+                        new SpecialOrderLineDto { ListingId = "specialorder.paint", Count = 0, PaidPrice = 0 },
+                        new SpecialOrderLineDto { ListingId = "", Count = 4, PaidPrice = -7 },
+                    },
+                },
+                // 1: the order's own total reads 0, but a line was paid for: the row stays
+                new SpecialOrderDto
+                {
+                    OrderId = "order.shop.a.2", SellerId = "shop.a", PaidPrice = 0,
+                    Lines = { new SpecialOrderLineDto { ListingId = "", Count = 0, PaidPrice = 45 } },
+                },
+                // 2: two lines for one listing fold, prices added; the lines sum to 70, the order says 90:
+                //    both are left exactly as they are
+                new SpecialOrderDto
+                {
+                    OrderId = "order.shop.a.3", SellerId = "shop.a", PaidPrice = 90,
+                    Lines =
+                    {
+                        new SpecialOrderLineDto { ListingId = "specialorder.rope", Count = 1, PaidPrice = 25 },
+                        new SpecialOrderLineDto { ListingId = "specialorder.net", Count = 1, PaidPrice = 10 },
+                        new SpecialOrderLineDto { ListingId = "specialorder.rope", Count = 2, PaidPrice = 35 },
+                    },
+                },
+                // 3: the lines sum to more than the total: still both as they are
+                new SpecialOrderDto
+                {
+                    OrderId = "order.shop.a.4", SellerId = "shop.a", PaidPrice = 10,
+                    Lines = { new SpecialOrderLineDto { ListingId = "specialorder.net", Count = 1, PaidPrice = 500 } },
+                },
+                // 4: nothing paid on the order, and its only line is unusable and unpaid: the row goes
+                new SpecialOrderDto
+                {
+                    OrderId = "order.shop.a.5", SellerId = "shop.a", PaidPrice = 0,
+                    Lines = { new SpecialOrderLineDto { ListingId = "", Count = 2, PaidPrice = -3 } },
+                },
+            };
+
+            SaveMigration.Migrate(save);
+
+            Assert.AreEqual(4, save.SpecialOrders.Count, "only the row with no money and no usable line goes");
+
+            SpecialOrderDto a = save.SpecialOrders[0];
+            Assert.AreEqual(3, a.Lines.Count, "a line he paid for stays, whatever else is wrong with it");
+            Assert.AreEqual("specialorder.rope", a.Lines[0].ListingId);
+            Assert.AreEqual(0, a.Lines[0].Count);
+            Assert.AreEqual(30, a.Lines[0].PaidPrice);
+            Assert.AreEqual("specialorder.hooks", a.Lines[1].ListingId);
+            Assert.AreEqual(0, a.Lines[1].Count, "a negative count on a kept line reads 0");
+            Assert.AreEqual(20, a.Lines[1].PaidPrice);
+            Assert.AreEqual("", a.Lines[2].ListingId, "a missing listing is repaired to empty, never invented");
+            Assert.AreEqual(1, a.Lines[2].Count);
+            Assert.AreEqual(5, a.Lines[2].PaidPrice);
+            Assert.AreEqual(100, a.PaidPrice, "the total is not rewritten to fit the lines (55)");
+
+            SpecialOrderDto b = save.SpecialOrders[1];
+            Assert.AreEqual("order.shop.a.2", b.OrderId, "a paid line keeps its order alive");
+            Assert.AreEqual(0, b.PaidPrice, "and the total is not made up from the line");
+            Assert.AreEqual(1, b.Lines.Count);
+            Assert.AreEqual(45, b.Lines[0].PaidPrice);
+
+            SpecialOrderDto c = save.SpecialOrders[2];
+            Assert.AreEqual(2, c.Lines.Count);
+            Assert.AreEqual("specialorder.rope", c.Lines[0].ListingId);
+            Assert.AreEqual(3, c.Lines[0].Count);
+            Assert.AreEqual(60, c.Lines[0].PaidPrice, "folded lines add their prices, so the lines' sum is unchanged");
+            Assert.AreEqual(10, c.Lines[1].PaidPrice);
+            Assert.AreEqual(90, c.PaidPrice, "lines sum to 70, the order says 90: both stand");
+
+            SpecialOrderDto d = save.SpecialOrders[3];
+            Assert.AreEqual(10, d.PaidPrice);
+            Assert.AreEqual(500, d.Lines[0].PaidPrice);
+
+            Assert.AreEqual(10, save.Money, "the repair never touches his purse");
+
+            string once = SaveSerialization.ToJson(save);
+            SaveMigration.Migrate(save);
+            Assert.AreEqual(once, SaveSerialization.ToJson(save), "a second repair changes nothing");
+        }
+
+        [Test]
+        public void ADamagedFile_MigratedTwice_IsTheSameAsMigratedOnce()
+        {
+            // A v25 file with damage in its own rows: the same species twice, the same container twice, a
+            // supply row with a count below zero and one with no id.
+            const string damagedV25 =
+                "{\"SchemaVersion\":25,\"WorldSeed\":77,\"GameTimeSeconds\":4321.5,\"Money\":250,\"DayIndex\":3," +
+                "\"OwnedBoats\":[\"boat.dory\",\"boat.dory\"],\"ActiveHullId\":\"boat.dory\"," +
+                "\"SupplyStock\":[{\"SupplyId\":\"supply.ice\",\"Count\":4},{\"SupplyId\":\"supply.ice\",\"Count\":2}," +
+                    "{\"SupplyId\":\"supply.bread\",\"Count\":-3},{\"SupplyId\":\"\",\"Count\":1}]," +
+                "\"CaughtSpecies\":[{\"SpeciesId\":\"fish.atlantic_cod\",\"DisplayName\":\"Atlantic cod\"," +
+                    "\"Count\":3,\"ReleasedCount\":1,\"RecordWeightKg\":4.5}," +
+                    "{\"SpeciesId\":\"fish.atlantic_cod\",\"DisplayName\":\"Atlantic cod\"," +
+                    "\"Count\":2,\"ReleasedCount\":0,\"RecordWeightKg\":6.25}]," +
+                "\"StoredContainers\":[{\"Key\":\"storage.stpeters.ginny_rod_rack\"," +
+                    "\"ContainerDefId\":\"stowage.ginny_rod_rack\"," +
+                    "\"Items\":[{\"ItemId\":\"tool.rod\",\"InstanceId\":\"tool.st_peters.rod\",\"Count\":1}]," +
+                    "\"Catch\":[]}," +
+                    "{\"Key\":\"storage.stpeters.ginny_rod_rack\",\"ContainerDefId\":\"stowage.ginny_rod_rack\"," +
+                    "\"Items\":[{\"ItemId\":\"tool.rod\",\"InstanceId\":\"tool.st_peters.rod\",\"Count\":1}]," +
+                    "\"Catch\":[]},{\"Key\":\"\",\"ContainerDefId\":\"\"}]}";
+
+            // A current file with damage in every one of the three new lists.
+            const string damagedV26 =
+                "{\"SchemaVersion\":26,\"WorldSeed\":5,\"Money\":40,\"NextSpecialOrderNumber\":0," +
+                "\"SupplyStock\":[{\"SupplyId\":\"supply.bread\",\"Count\":2}]," +
+                "\"StorePurchases\":[{\"ShopId\":\"shop.b\",\"ShelfLineId\":\"line.milk\",\"Units\":1.5,\"Day\":2,\"Seconds\":9.5}," +
+                    "{\"ShopId\":\"\",\"ShelfLineId\":\"line.milk\",\"Units\":1.0,\"Day\":1,\"Seconds\":1.0}," +
+                    "{\"ShopId\":\"shop.a\",\"ShelfLineId\":\"line.bread\",\"Units\":-2.0,\"Day\":1,\"Seconds\":3.0}," +
+                    "{\"ShopId\":\"shop.a\",\"ShelfLineId\":\"line.bread\",\"Units\":0.5,\"Day\":1,\"Seconds\":3.0}," +
+                    "{\"ShopId\":\"shop.a\",\"ShelfLineId\":\"line.bread\",\"Units\":0.25,\"Day\":1,\"Seconds\":3.0}]," +
+                "\"SpecialOrders\":[{\"OrderId\":\"order.seller.leblancs.9\",\"SellerId\":\"seller.leblancs\"," +
+                    "\"PaidPrice\":80,\"OrderedAtSeconds\":-5.0,\"OrderedDay\":-1,\"DueDay\":-2,\"State\":7," +
+                    "\"Lines\":[{\"ListingId\":\"specialorder.rope\",\"Count\":1,\"PaidPrice\":30}," +
+                        "{\"ListingId\":\"specialorder.rope\",\"Count\":2,\"PaidPrice\":20}," +
+                        "{\"ListingId\":\"\",\"Count\":0,\"PaidPrice\":15}," +
+                        "{\"ListingId\":\"specialorder.net\",\"Count\":0,\"PaidPrice\":-4}]}," +
+                    "{\"OrderId\":\"\",\"SellerId\":\"\",\"PaidPrice\":0,\"Lines\":[]}]," +
+                "\"ShoppingBags\":[{\"BagDefId\":\"shoppingbag.paper\",\"Held\":false,\"Region\":\"region.st_peters\"," +
+                    "\"PosX\":1.5,\"PosY\":2.5,\"Level\":0," +
+                    "\"Items\":[{\"SupplyId\":\"supply.bread\",\"Count\":5},{\"SupplyId\":\"supply.milk\",\"Count\":1}]}," +
+                    "{\"BagDefId\":\"shoppingbag.paper\",\"Held\":false,\"Region\":\"\"," +
+                    "\"Items\":[{\"SupplyId\":\"supply.bread\",\"Count\":1}]}]}";
+
+            foreach (string file in new[] { damagedV25, damagedV26 })
+            {
+                string once = SaveSerialization.ToJson(SaveSerialization.FromJson(file));
+                string twice = SaveSerialization.ToJson(SaveSerialization.FromJson(once));
+                Assert.AreEqual(once, twice, "load, save, load gives the file that one load gave");
+            }
+
+            // and the damaged current file did come out repaired, so the comparison is of repaired files
+            SaveData healed = SaveSerialization.FromJson(damagedV26);
+            Assert.AreEqual(1, healed.SpecialOrders.Count);
+            Assert.AreEqual(2, healed.SpecialOrders[0].Lines.Count);
+            Assert.AreEqual(50, healed.SpecialOrders[0].Lines[0].PaidPrice);
+            Assert.AreEqual(15, healed.SpecialOrders[0].Lines[1].PaidPrice);
+            Assert.AreEqual(80, healed.SpecialOrders[0].PaidPrice);
+            Assert.AreEqual(0, healed.SpecialOrders[0].OrderedDay);
+            Assert.AreEqual(10, healed.NextSpecialOrderNumber, "the counter is past the highest number in use");
+            Assert.AreEqual(2, healed.StorePurchases.Count);
+            Assert.AreEqual(1, healed.ShoppingBags.Count, "the bag with no region is gone, the other is kept");
+            Assert.AreEqual(1, healed.ShoppingBags[0].Items.Count);
+            Assert.AreEqual(2, healed.ShoppingBags[0].Items[0].Count, "held to the two loaves he owns");
+            Assert.AreEqual(1, healed.SupplyStock.Count);
+            Assert.AreEqual(2, healed.SupplyStock[0].Count, "the bag repair took nothing from his supplies");
         }
 
         // ---- 6. the bag never loses goods ---------------------------------------------------------------
