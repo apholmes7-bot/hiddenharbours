@@ -18,6 +18,7 @@ namespace HiddenHarbours.Core
         public static bool IsAvailable(string regionId, string sceneName)
         {
             if (string.IsNullOrWhiteSpace(sceneName)) return false;
+            if (!DemoBuild.IncludesScene(sceneName)) return false;
 #if UNITY_EDITOR
             if (Override != null) return Override(regionId, sceneName);
             // Scenes created by an editor fixture can be revisited without a build entry.

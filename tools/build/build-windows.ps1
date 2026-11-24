@@ -16,6 +16,7 @@ param(
     [string]$ProductName = 'Red Skies At Night',
     [ValidateSet('None', 'Lz4HC')][string]$Compression = 'None',
     [switch]$Development,
+    [switch]$Demo,
     [switch]$Playtest,
     [switch]$AllowColdImport,
     [switch]$ReuseBakedAssets,
@@ -205,6 +206,7 @@ try {
     $packageName = 'red-skies-at-night-' + $buildId
     $buildHome = Join-Path $buildRoot $buildId
     $variantHome = $buildHome
+    if ($Demo) { $variantHome = Join-Path $variantHome 'demo' }
     if ($Development) { $variantHome = Join-Path $variantHome 'development' }
     if ($Compression -eq 'Lz4HC') { $variantHome = Join-Path $variantHome 'lz4hc' }
     $output = Join-Path $variantHome $packageName
@@ -259,6 +261,7 @@ try {
             '-buildOutput', $output, '-buildProduct', $ProductName, '-buildCommit', $commit,
             '-buildMainCommit', $MainCommit, '-buildCompression', $Compression, '-logFile', $unityLog)
         if ($Development) { $unityArgs += '-buildDevelopment' }
+        if ($Demo) { $unityArgs += '-buildDemo' }
         if ($ReuseBakedAssets) { $unityArgs += '-buildReuseBakedAssets' }
         Invoke-Editor $unityArgs
         if ((Identity-Lines) -ne $identityBefore) { throw 'STOP: a build name stuck in ProjectSettings.' }

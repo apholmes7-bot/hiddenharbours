@@ -119,6 +119,7 @@ namespace HiddenHarbours.Tests.PlayMode
         public void TearDown()
         {
             RegionBuildAvailability.Override = null;
+            DemoBuild.Override = null;
             if (_root != null) Object.DestroyImmediate(_root);
             MooringCleats.Clear();
             Interactables.Clear();
@@ -166,6 +167,19 @@ namespace HiddenHarbours.Tests.PlayMode
                 Object.DestroyImmediate(sea);
                 Object.DestroyImmediate(region);
             }
+        }
+
+        [UnityTest]
+        public IEnumerator DemoMode_DoesNotForceAnAlreadyFinishedOpening()
+        {
+            var opening = Build(false, true);
+            typeof(ArrivalOpening).GetField("_alwaysRunInEditor",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                .SetValue(opening, true);
+            DemoBuild.Override = true;
+            Assert.IsFalse(opening.TryBegin());
+            yield return null;
+            Assert.IsFalse(opening.IsRunning);
         }
 
         private ArrivalOpening Build(bool hasRestAnchor, bool alreadyArrived)
