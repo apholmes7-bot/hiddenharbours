@@ -43,7 +43,14 @@ namespace HiddenHarbours.Tests.EditMode
         };
 
         /// <summary>The game's own asks after them: fix 2 (amendment 1 §4.4), fix 3 (§4.5) and fix 4 (amendment 2 §4.3).</summary>
-        static readonly string[] GameAsks = { "ground.stp_main_beach_west_blend", "ground.stp_bluff_channel_hold", "ground.stp_ne_neck_hollow_fill", "ground.stp_north_pocket" };
+        static readonly string[] GameAsks =
+        {
+            "ground.stp_main_beach_west_blend", "ground.stp_bluff_channel_hold", "ground.stp_ne_neck_hollow_fill", "ground.stp_north_pocket",
+            // the sea-filled channels dried, then the fresh brooks' beds down the beach to the low-water line
+            "ground.stp_storm_mouth_hollow_fill", "ground.stp_gap_mouth_hollow_fill",
+            "ground.stp_heath_brook_bed", "ground.stp_barren_brook_bed", "ground.stp_cove_brook_bed", "ground.stp_alder_run_bed",
+            "ground.stp_gap_brook_bed",
+        };
 
         const string Fix4Id = "ground.stp_ne_neck_hollow_fill", CanneryHoldId = "ground.stp_cannery_hold";
 

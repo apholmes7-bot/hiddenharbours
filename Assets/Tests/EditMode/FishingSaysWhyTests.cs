@@ -58,6 +58,9 @@ namespace HiddenHarbours.Tests.EditMode
         private readonly List<Object> _spawned = new();
         private readonly List<string> _said = new();
         private readonly List<string> _cues = new();
+        private readonly List<string> _cueNames = new();
+        private int _unlicensedReleases;
+        private void OnUnlicensed(UnlicensedCatchReleased e) => _unlicensedReleases++;
         private readonly List<AmbientSpeechRequested> _spoken = new();
 
         private void OnNotice(DevNotice e) => _said.Add(e.Text);
@@ -67,6 +70,7 @@ namespace HiddenHarbours.Tests.EditMode
         private void OnCue(InnerVoiceCue e)
         {
             _cues.Add(e.CueId);
+            _cueNames.Add(e.Name);
             if (!_lineIsRefused) EventBus.Publish(new InnerVoiceCueSpoken(e.CueId));
         }
         private void OnSpoken(AmbientSpeechRequested e) => _spoken.Add(e);
@@ -83,12 +87,16 @@ namespace HiddenHarbours.Tests.EditMode
         {
             _said.Clear();
             _cues.Clear();
+            _cueNames.Clear();
+            _unlicensedReleases = 0;
             _spoken.Clear();
             _lineIsRefused = false;
             ClearBus();
             GameServices.Reset();
             InteractionGate.Reset();
+            UnlicensedCatch.UseCatalog(null);   // only the handed licences gate: the test owns the data
             EventBus.Subscribe<DevNotice>(OnNotice);
+            EventBus.Subscribe<UnlicensedCatchReleased>(OnUnlicensed);
             EventBus.Subscribe<InnerVoiceCue>(OnCue);
             EventBus.Subscribe<AmbientSpeechRequested>(OnSpoken);
         }
@@ -99,6 +107,7 @@ namespace HiddenHarbours.Tests.EditMode
             ClearBus();
             GameServices.Reset();
             InteractionGate.Reset();
+            UnlicensedCatch.ResetCatalog();
             foreach (var o in _spawned) if (o != null) Object.DestroyImmediate(o);
             _spawned.Clear();
         }
@@ -111,6 +120,7 @@ namespace HiddenHarbours.Tests.EditMode
             EventBus.Clear<AmbientSpeechRequested>();
             EventBus.Clear<FishingStateChanged>();
             EventBus.Clear<FishCaught>();
+            EventBus.Clear<UnlicensedCatchReleased>();
         }
 
         // ---- rig ----------------------------------------------------------------------------------
@@ -244,10 +254,10 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(1, _said.Count);
         }
 
-        // ---- the licence: the rule stays, the silence goes ------------------------------------------
+        // ---- the licence: he lets it go and says why, in his own voice -------------------------------
 
         [Test]
-        public void AWonFightWithoutTheLicence_NamesTheSpeciesAndTheLicence()
+        public void AWonFightWithoutTheLicence_HeLetsItGo_AndNamesTheSpecies()
         {
             var cod = MakeFish("fish.atlantic_cod", "Atlantic Cod");
             var licences = new[] { MakeLicence("license.cod", "Cod Fishing License", "fish.atlantic_cod") };
@@ -261,36 +271,29 @@ namespace HiddenHarbours.Tests.EditMode
             while (!IsResult(c.Phase) && t < 120f)
             { c.Tick(0.05f, actionHeld: c.State.Tension01 < 0.5f); t += 0.05f; }   // a paced, winning fight
 
-            Assert.AreEqual(FishingPhase.Snapped, c.Phase, "the rule is unchanged: unlicensed cod goes back");
-            Assert.AreEqual(1, _said.Count, "one sentence explains it");
-            StringAssert.Contains("Atlantic Cod", _said[0], "the line names the species from its Def");
-            StringAssert.Contains("Cod Fishing License", _said[0], "and the licence from its Def");
+            Assert.AreEqual(FishingPhase.Landed, c.Phase,
+                "the fight is won and the cod comes to hand; it is let go, not snapped off");
+            Assert.AreEqual(0, _said.Count, "no developer notice: the explanation is his own voice now");
+            Assert.AreEqual(1, _cues.Count, "he says one line");
+            Assert.AreEqual(InnerVoiceCues.UnlicensedCatch, _cues[0]);
+            Assert.AreEqual("Atlantic Cod", _cueNames[0], "the line names the species from its Def");
+            Assert.AreEqual(1, _unlicensedReleases, "and the catch is let go through the one shared rule");
             Assert.AreEqual(0, Said(FishingStrings.ThrewTheHook),
                 "she did not throw the hook: the fight was won, and the line must not blame the player");
         }
 
         [Test]
-        public void TheLicenceLine_IsBuiltFromData_AndDegradesToAnUnnamedOne()
+        public void TheLicenceLine_IsData_WithTheSpeciesNamePutIn()
         {
-            var cod = MakeFish("fish.atlantic_cod", "Atlantic Cod");
-            var mackerel = MakeFish("fish.mackerel", "Mackerel");
-            var licences = new[]
-            {
-                MakeLicence("license.mackerel", "Mackerel Permit", "fish.mackerel"),
-                MakeLicence("license.cod", "Cod Fishing License", "fish.atlantic_cod"),
-            };
+            var line = ScriptableObject.CreateInstance<InnerVoiceLineDef>();
+            _spawned.Add(line);
+            line.Line = "I don't have a licence for this " + InnerVoiceCues.NameToken + " yet.";
 
-            string codLine = FishingStrings.LicenceNeeded(cod, licences);
-            StringAssert.Contains("Atlantic Cod", codLine);
-            StringAssert.Contains("Cod Fishing License", codLine);
-            StringAssert.DoesNotContain("Mackerel", codLine, "it names the licence that gates THIS species");
+            Assert.AreEqual("I don't have a licence for this Atlantic Cod yet.", line.TextFor("Atlantic Cod"));
+            Assert.AreEqual(line.Line, line.TextFor(null), "no name, the authored words stand as written");
 
-            string mackerelLine = FishingStrings.LicenceNeeded(mackerel, licences);
-            StringAssert.Contains("Mackerel Permit", mackerelLine);
-
-            Assert.AreEqual(FishingStrings.LicenceNeededUnnamed, FishingStrings.LicenceNeeded(cod, null));
-            Assert.AreEqual(FishingStrings.LicenceNeededUnnamed, FishingStrings.LicenceNeeded((FishSpeciesDef)null, licences));
-            Assert.AreEqual(FishingStrings.LicenceNeededUnnamed, FishingStrings.LicenceNeeded("Cod", ""));
+            line.Line = "Back you go.";
+            Assert.AreEqual("Back you go.", line.TextFor("Atlantic Cod"), "a line without the token ignores the name");
         }
 
         [Test]
@@ -303,7 +306,7 @@ namespace HiddenHarbours.Tests.EditMode
             var lines = new[]
             {
                 FishingStrings.StruckTooSoon, FishingStrings.SpatIt, FishingStrings.ThrewTheHook,
-                FishingStrings.NothingBiting, FishingStrings.LicenceNeededUnnamed,
+                FishingStrings.NothingBiting,
             };
             var seen = new HashSet<string>();
             foreach (string s in lines)
