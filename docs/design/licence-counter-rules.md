@@ -15,9 +15,11 @@ later system: a fixed set of individually held rights, passed on rather than cre
 player able to work under another holder. Main cannot represent those rights yet. This audit adds
 documentation and tests only. It adds no registry, licence asset, runtime rule or saved field.
 
-Baseline: `c626cea10d1cb496df41cca2f9ab2f580ad47b28`, save version 25. The island-only first week
+Baseline: `541276cbc9308ba60ded8b905308366306438570`, save version 25. The island-only first week
 and demo are the governing direction. The older comments describing a first-week mainland cod
 purchase are historical. The numbers and disputed choices in #1493 remain proposals, not approvals.
+The pinned-main merge changes no fish, licence, seller or permission-query input to this
+audit. All exact inventories and named exceptions remain unchanged after the merge.
 
 ## 1. What is actually for sale
 
