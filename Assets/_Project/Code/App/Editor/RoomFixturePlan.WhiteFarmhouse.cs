@@ -20,9 +20,11 @@ namespace HiddenHarbours.App.Editor
                 yield return row;
 
             float hw = FarmW * 0.5f, hl = FarmL * 0.5f;
-            yield return Farm(Kind.Bath, new Vector2(-hw + 1.20f, -hl + 0.70f), Wall.Back);
+            // The bath stands toward the closet's inner end, so the floor in front of its middle is clear of
+            // the toilet; the basin's back is flush with the right wall (it is 0.45 m deep).
+            yield return Farm(Kind.Bath, new Vector2(-hw + 1.40f, -hl + 0.70f), Wall.Back);
             yield return Farm(Kind.Toilet, new Vector2(-hw + 0.65f, -hl + 1.55f), Wall.Right);
-            yield return Farm(Kind.BathroomSink, new Vector2(-hw + 0.60f, -hl + 2.15f), Wall.Right);
+            yield return Farm(Kind.BathroomSink, new Vector2(-hw + 0.525f, -hl + 2.15f), Wall.Right);
         }
 
         static Row Farm(Kind k, Vector2 at, Wall wall) =>
