@@ -122,7 +122,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void IslandWeek_EveryCombinationReportsExactlyItsFactsAndMissingKeys([Range(0, 31)] int mask)
+        public void IslandWeek_EveryCombinationReportsExactlyItsFactsAndMissingKeys([NUnit.Framework.Range(0, 31)] int mask)
         {
             var rules = IslandRules();
             var save = Game();
