@@ -80,9 +80,28 @@ namespace HiddenHarbours.Tests.PlayMode
         /// <summary>St Peters stands six routines today. Fewer means the scene lost villagers.</summary>
         private const int VillagersOnTheIsland = 6;
 
-        /// <summary>The saved Nine Mile Creek holds Wendell and Hector. Claudette is in NineMileCreekPeople's list
-        /// and not in the saved scene.</summary>
-        private const int VillagersAtTheCreek = 2;
+        /// <summary>The saved Nine Mile Creek holds four villagers with a body: Wendell and Hector out of doors, and
+        /// the two wholesalers' keepers, Lionel and Bernadette, at their counters indoors (#1301). Claudette is in
+        /// NineMileCreekPeople's list and not in the saved scene.</summary>
+        private const int VillagersAtTheCreek = 4;
+
+        /// <summary>Who MUST be out of doors and drawn at the creek at noon, pinned by name rather than read off who
+        /// happens to render: a resident whose sprite is wrongly hidden has to fail the plate, not drop out of it.
+        /// Wendell keeps the store counter (an out-of-doors station); Hector stands at his barrel in the boat yard
+        /// (#1023).</summary>
+        private static readonly string[] CreekOutdoorsAtNoon = { "WendellArsenault", "HectorBernard" };
+
+        /// <summary>The keepers who are sheltered at noon, each with the indoor counter station his or her routine
+        /// holds from opening to closing (NmcWholesalerKeepers in the editor code: BoatGear and FishingGear). An
+        /// exemption is granted only to a keeper verified standing at that station, indoors.</summary>
+        private static readonly (string Name, string CounterStation)[] CreekKeepersIndoorsAtNoon =
+        {
+            ("LionelCormier", "station.nine_mile_creek.boat_gear_counter"),
+            ("BernadettePitre", "station.nine_mile_creek.fishing_gear_counter"),
+        };
+
+        /// <summary>How far a sheltered keeper may stand from his or her counter station and still count as at it.</summary>
+        private const float AtTheCounterMetres = 1.5f;
 
         /// <summary>The facet id hulls share at exhaustion. A figure never takes it.</summary>
         private const int OverflowId = 255;
@@ -295,7 +314,8 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         /// <summary>
-        /// ⭐ <b>PLATE 3: Nine Mile Creek at noon, its two villagers refused honestly.</b> The creek is loaded cold,
+        /// ⭐ <b>PLATE 3: Nine Mile Creek at noon, its two villagers out of doors refused honestly</b> (its two
+        /// keepers are verified sheltered at their counters indoors and are not photographed). The creek is loaded cold,
         /// as the existing creek plates load it, and today its hulls exhaust the facet ids at load. A refused
         /// villager is her whole sprite, with one warning for her one ask and no ask again. The listener is up
         /// before the load, because the villagers ask in the region's first frames. The warnings carry no context
@@ -313,11 +333,12 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return Arrive(NineMileCreekScene, NoonHour);
 
             List<IsoCharacterSprite> creek = CreekVillagers();
-            // A keeper at her counter indoors (#1301 put the wholesalers' keepers inside their shells) is
-            // sheltered: she draws neither picture and never asks for an id, which MeshProblemsOf already holds
-            // her to. The plate is of the villagers out of doors.
-            List<IsoCharacterSprite> outdoors = creek.Where(Shows).ToList();
-            Assert.Greater(outdoors.Count, 0, $"harness: nobody at the creek is out of doors at {Hhmm(NoonHour)}");
+            // Who is out of doors is pinned, not read off who renders: each pinned resident must show, and each
+            // keeper is exempt only when verified at his or her indoor counter (#1301), BEFORE any subject is
+            // chosen. The plate is of the pinned residents out of doors.
+            List<string> roster = CreekNoonRosterProblems(creek, out List<IsoCharacterSprite> outdoors);
+            Assert.IsEmpty(roster, $"the creek at {Hhmm(NoonHour)} is not who this plate says is out of doors:\n  " +
+                                   string.Join("\n  ", roster));
             int atArrival = PresenterRefusals();
             for (int i = 0; i < NoRetryFrames; i++) yield return null;
             int afterWaiting = PresenterRefusals();
@@ -350,7 +371,7 @@ namespace HiddenHarbours.Tests.PlayMode
                   $"their presenters (one each), none more over {NoRetryFrames} frames or the framing"
                 : $"{refused.Count} of {outdoors.Count} out of doors refused ({Names(refused)}); the rest are their " +
                   "meshes (the pool had room)";
-            verdict += $"; sheltered indoors: {Names(creek.Where(v => !Shows(v)).ToList())}";
+            verdict += $"; sheltered indoors at their counters: {Names(creek.Where(v => !outdoors.Contains(v)).ToList())}";
             for (int i = 0; i < outdoors.Count; i++)
             {
                 IsoCharacterSprite v = outdoors[i];
@@ -365,6 +386,38 @@ namespace HiddenHarbours.Tests.PlayMode
                       extra: $"Verdict: {verdict}\nWarnings from other callers (the player's DeckRiderMeshPresenter and " +
                              $"any other): {_refusalStacks.Count - atArrival}\n{census}");
             }
+        }
+
+        /// <summary>
+        /// <b>GUARD: a resident hidden out of doors fails the creek roster.</b> The noon creek is first checked
+        /// clean; then Hector, who must be out of doors, has his sprite switched off, and the same roster check must
+        /// name him rather than quietly drop him from the picture subjects and the census. His sprite is put back
+        /// before the frame ends.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator Guard_AnOutdoorResidentHidden_FailsTheCreekRoster_NineMileCreekNoon()
+        {
+            WharfNightStage.RequireAGraphicsDevice();
+            yield return Arrive(NineMileCreekScene, NoonHour);
+
+            List<IsoCharacterSprite> creek = CreekVillagers();
+            List<string> clean = CreekNoonRosterProblems(creek, out _);
+            Assert.IsEmpty(clean, "harness: the creek's noon roster is wrong before anything is hidden:\n  " +
+                                  string.Join("\n  ", clean));
+
+            const string hidden = "HectorBernard";
+            IsoCharacterSprite hector = creek.Single(v => v.name == hidden);
+            var sprite = hector.GetComponent<SpriteRenderer>();
+            Assert.IsNotNull(sprite, $"harness: {Who(hector)} has no SpriteRenderer to hide");
+            sprite.enabled = false;
+            List<string> broken;
+            try { broken = CreekNoonRosterProblems(creek, out _); }
+            finally { sprite.enabled = true; }
+
+            Debug.Log($"[{PlateDir}] guard: with {hidden}'s sprite off the roster reports:\n  " + string.Join("\n  ", broken));
+            Assert.IsTrue(broken.Any(p => p.Contains(hidden)),
+                $"with {hidden}'s sprite switched off the roster still passed ({broken.Count} problems), so a resident " +
+                "wrongly hidden out of doors would drop out of every strict check");
         }
 
         /// <summary>
@@ -665,11 +718,15 @@ namespace HiddenHarbours.Tests.PlayMode
             const string key = "numbers-census-creek-cold-noon";
             yield return Arrive(NineMileCreekScene, NoonHour);
             List<IsoCharacterSprite> creek = CreekVillagers();
+            // Out of doors only, as at St Peters: a keeper verified at the counter indoors (#1301) never asks. The
+            // residents out of doors are pinned and must show, so a wrongly hidden one fails here too.
+            List<string> roster = CreekNoonRosterProblems(creek, out List<IsoCharacterSprite> outdoors);
+            Assert.IsEmpty(roster, $"the creek at {Hhmm(NoonHour)} is not who this census says is out of doors:\n  " +
+                                   string.Join("\n  ", roster));
             Census on = TakeCensus("cold Nine Mile Creek noon, ON");
-            // Out of doors only, as at St Peters: a keeper sheltered at her counter indoors (#1301) never asks.
-            List<string> undecided = creek.Where(v => Shows(v) && Presenter(v) != null && !HoldsAnId(v) &&
-                                                      !Presenter(v).AshoreRefused)
-                                          .Select(Describe).ToList();
+            List<string> undecided = outdoors.Where(v => Presenter(v) != null && !HoldsAnId(v) &&
+                                                         !Presenter(v).AshoreRefused)
+                                             .Select(Describe).ToList();
 
             UseSwitches(true, false);
             for (int i = 0; i < SwitchSettleFrames; i++) yield return null;
@@ -985,8 +1042,57 @@ namespace HiddenHarbours.Tests.PlayMode
                 .ToList();
             Assert.GreaterOrEqual(creek.Count, VillagersAtTheCreek,
                 $"harness: Nine Mile Creek stands {creek.Count} villagers with a body ([{Names(creek)}]); the saved scene " +
-                "holds Wendell and Hector");
+                "holds Wendell, Hector and the two wholesalers' keepers");
             return creek;
+        }
+
+        /// <summary>
+        /// The creek's noon roster, checked against who it MUST be rather than who renders: every pinned resident
+        /// out of doors is there and shows; every pinned keeper is there, stands within
+        /// <see cref="AtTheCounterMetres"/> of an indoor counter station, and is sheltered (her sprite off, her
+        /// presenter saying so, no figure drawn); and nobody at the creek is in neither list. Returns the problems
+        /// (empty when right) and the residents out of doors, in pinned order, for the picture subjects.
+        /// </summary>
+        private List<string> CreekNoonRosterProblems(List<IsoCharacterSprite> creek, out List<IsoCharacterSprite> outdoors)
+        {
+            var problems = new List<string>();
+            outdoors = new List<IsoCharacterSprite>();
+            foreach (string name in CreekOutdoorsAtNoon)
+            {
+                IsoCharacterSprite v = creek.SingleOrDefault(x => x.name == name);
+                if (v == null) { problems.Add($"'{name}' must be out of doors at {Hhmm(NoonHour)} and is not at the creek ([{Names(creek)}])"); continue; }
+                if (!Shows(v)) problems.Add($"{Who(v)} must be out of doors and drawn at {Hhmm(NoonHour)}, and does not show: {Describe(v)}");
+                outdoors.Add(v);
+            }
+
+            RoutineStations[] tables = Object.FindObjectsByType<RoutineStations>(FindObjectsInactive.Include)
+                .Where(t => t.gameObject.scene.name == NineMileCreekScene).ToArray();
+            foreach ((string name, string stationId) in CreekKeepersIndoorsAtNoon)
+            {
+                IsoCharacterSprite v = creek.SingleOrDefault(x => x.name == name);
+                if (v == null) { problems.Add($"keeper '{name}' is not at the creek ([{Names(creek)}])"); continue; }
+                RoutineStationEntry counter = default;
+                bool found = false;
+                foreach (RoutineStations t in tables)
+                    if (t.TryFind(stationId, out counter)) { found = true; break; }
+                if (!found) { problems.Add($"{Who(v)}: no station '{stationId}' in the creek's {tables.Length} station tables"); continue; }
+                if (!counter.Indoors) problems.Add($"{Who(v)}: her counter '{stationId}' is not inside a building");
+                float off = Vector2.Distance(v.transform.position, counter.Position);
+                if (off > AtTheCounterMetres)
+                    problems.Add($"{Who(v)}: exempt only at her counter, and stands {off:0.00} m from '{stationId}' at " +
+                                 $"{Fmt(counter.Position)} (she is at {Fmt(v.transform.position)})");
+                if (Shows(v)) problems.Add($"{Who(v)}: at her counter indoors and still drawn out of doors: {Describe(v)}");
+                CharacterFigurePresenter p = Presenter(v);
+                if (p != null && p.WhyNot != CharacterFigurePresenter.Refusal.SpriteDisabled)
+                    problems.Add($"{Who(v)}: sheltered, and her presenter says '{p.NotDrawingReason}'");
+                if (p != null && p.AshoreFigure != null && p.AshoreFigure.Visible)
+                    problems.Add($"{Who(v)}: sheltered, and her figure is still visible");
+            }
+
+            foreach (IsoCharacterSprite v in creek)
+                if (!CreekOutdoorsAtNoon.Contains(v.name) && !CreekKeepersIndoorsAtNoon.Any(k => k.Name == v.name))
+                    problems.Add($"{Who(v)} is at the creek and in neither the out-of-doors list nor the keepers': pin him or her");
+            return problems;
         }
 
         private static IsoCharacterSprite Named(List<IsoCharacterSprite> villagers, string name)
