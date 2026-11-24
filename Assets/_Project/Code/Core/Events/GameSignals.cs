@@ -51,6 +51,8 @@ namespace HiddenHarbours.Core
     {
         public readonly int TotalPaid;   // ₲
         public readonly int Count;
+        /// <summary>Shellfish units actually sold; zero when legacy callers provide no breakdown.</summary>
+        public readonly int ShellfishCount;
         /// <summary>Data-authored keeper, vendor and trade; legacy/default signals report unknown.</summary>
         public TradeCounterparty Counterparty { get; }
         public string MerchantId => Counterparty.MerchantId;
@@ -62,9 +64,13 @@ namespace HiddenHarbours.Core
             : this(totalPaid, count, default) { }
 
         public CatchSold(int totalPaid, int count, TradeCounterparty counterparty)
+            : this(totalPaid, count, counterparty, 0) { }
+
+        public CatchSold(int totalPaid, int count, TradeCounterparty counterparty, int shellfishCount)
         {
             TotalPaid = totalPaid; Count = count;
             Counterparty = counterparty;
+            ShellfishCount = shellfishCount;
         }
     }
 

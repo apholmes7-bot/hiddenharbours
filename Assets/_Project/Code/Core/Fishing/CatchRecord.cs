@@ -95,14 +95,16 @@ namespace HiddenHarbours.Core
         /// <summary>The number of distinct species on the record.</summary>
         public int SpeciesCount => _entries.Count;
 
-        /// <summary>A fresh catch came into her hand: count it and remember it until it is stowed.</summary>
-        public void RecordLandedInHand(in CatchItem item, object session = null)
+        /// <summary>A fresh catch came into the player's hand: count it and remember it until it is
+        /// stowed. Returns true only when this call counted a new catch.</summary>
+        public bool RecordLandedInHand(in CatchItem item, object session = null)
         {
             BindTo(session);
-            if (!Count(in item, released: false)) return;
+            if (!Count(in item, released: false)) return false;
 
             if (_inHand.Count >= MaxPendingHandCatches) _inHand.RemoveAt(0);
             _inHand.Add(item);
+            return true;
         }
 
         /// <summary>A catch left the player's hand, any way (stowed, eaten, gifted). The remembered hand
@@ -124,14 +126,14 @@ namespace HiddenHarbours.Core
         }
 
         /// <summary>A catch entered a hold on <paramref name="tick"/>. Counted unless it is the catch the
-        /// hand gave up on that same tick (the stow).</summary>
-        public void RecordEnteredHold(in CatchItem item, long tick, object session = null)
+        /// hand gave up on that same tick (the stow). Returns true only for a new catch.</summary>
+        public bool RecordEnteredHold(in CatchItem item, long tick, object session = null)
         {
             BindTo(session);
             bool stow = _handoffArmed && _handoffTick == tick && SameCatch(_handoff, item);
             _handoffArmed = false;
-            if (stow) return;
-            Count(in item, released: false);
+            if (stow) return false;
+            return Count(in item, released: false);
         }
 
         /// <summary>A protected catch was documented and released: caught, and released.</summary>
@@ -275,6 +277,7 @@ namespace HiddenHarbours.Core
         public static CatchRecordLog Log { get; } = new CatchRecordLog();
 
         private static bool _installed;
+        private static IslandWeekFactRecorder _islandWeek;
 
         /// <summary>True while the record is listening.</summary>
         public static bool IsInstalled => _installed;
@@ -292,14 +295,17 @@ namespace HiddenHarbours.Core
         /// <summary>Start listening. Idempotent, and a re-arm: it drops any earlier subscription before
         /// adding one, so calling it again after a test suite's <c>EventBus.Clear</c> makes the record hear
         /// again without ever subscribing twice.</summary>
-        public static void Install()
+        public static void Install(IslandWeekRulesDef islandWeekRules = null)
         {
             _installed = true;
             Unsubscribe();
+            var rules = islandWeekRules != null ? islandWeekRules : Resources.Load<IslandWeekRulesDef>("IslandWeek");
+            _islandWeek = rules != null && rules.ValidationError() == null ? new IslandWeekFactRecorder(rules) : null;
             EventBus.Subscribe<CatchLanded>(OnLanded);
             EventBus.Subscribe<FishCaught>(OnCaught);
             EventBus.Subscribe<CatchReleased>(OnReleased);
             EventBus.Subscribe<CatchTakenFromHand>(OnTaken);
+            EventBus.Subscribe<CatchSold>(OnSold);
         }
 
         /// <summary>Stop listening. Idempotent. The record itself is kept.</summary>
@@ -307,6 +313,7 @@ namespace HiddenHarbours.Core
         {
             _installed = false;
             Unsubscribe();
+            _islandWeek = null;
         }
 
         /// <summary>The rows for the game being played now (the live save object's session).</summary>
@@ -318,10 +325,20 @@ namespace HiddenHarbours.Core
             EventBus.Unsubscribe<FishCaught>(OnCaught);
             EventBus.Unsubscribe<CatchReleased>(OnReleased);
             EventBus.Unsubscribe<CatchTakenFromHand>(OnTaken);
+            EventBus.Unsubscribe<CatchSold>(OnSold);
         }
 
-        private static void OnLanded(CatchLanded e) => Log.RecordLandedInHand(e.Item, CurrentSession());
-        private static void OnCaught(FishCaught e) => Log.RecordEnteredHold(e.Item, Tick(), CurrentSession());
+        private static void OnLanded(CatchLanded e)
+        {
+            if (Log.RecordLandedInHand(e.Item, CurrentSession())) RecordIslandCatch(e.Item);
+        }
+        private static void OnCaught(FishCaught e)
+        {
+            if (Log.RecordEnteredHold(e.Item, Tick(), CurrentSession())) RecordIslandCatch(e.Item);
+        }
+        private static void RecordIslandCatch(in CatchItem item)
+            => _islandWeek?.RecordKeptCatch(GameServices.Save, in item, GameServices.Helm.PlayersBoatId);
+        private static void OnSold(CatchSold e) => _islandWeek?.RecordSale(GameServices.Save, in e);
         private static void OnReleased(CatchReleased e) => Log.RecordReleased(e.Item, CurrentSession());
         private static void OnTaken(CatchTakenFromHand e) => Log.RecordTakenFromHand(e.Item, Tick(), CurrentSession());
 
