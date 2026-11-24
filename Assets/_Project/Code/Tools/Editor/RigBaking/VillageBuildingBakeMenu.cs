@@ -374,7 +374,7 @@ namespace HiddenHarbours.Tools.RigBaking
         /// cell, the crop, the pivot, the footprint metres and the measured convention all came from the
         /// rig via <see cref="BuildingRigBaker"/>.
         /// </summary>
-        static VillageBuildingKit.Entry ToEntry(VillageBuildingKit.Build build, BuildingBakeResult r)
+        internal static VillageBuildingKit.Entry ToEntry(VillageBuildingKit.Build build, BuildingBakeResult r)
         {
             var rig = RigCatalog.Get(build.RigKey);
             var entry = new VillageBuildingKit.Entry

@@ -413,13 +413,22 @@ namespace HiddenHarbours.Art.Editor
 
             // The plainest. Red clapboard and the saltbox's long north roof are both kept; it gains
             // the front step it needs to be a house you can walk into.
+            //
+            // ⭐ IT WEARS ITS BOARD (2026-11-22, the owner's "red gothic home in the st peters village
+            // art board"). The board is village-east in the St Peters one-scene package of 2026-10-01,
+            // drawn from that package's own dials for red_saltbox (scenes/keyscene.stp_village/
+            // scene.json, piece building.stp_red_saltbox): a galvanised tin roof and no shutters. Both
+            // are taken as delivered. Its third difference, entry 'left', is NOT taken: the rig moves a
+            // side entry onto the gable-end wall, and the room, its walls and its doorway model a door
+            // on the porch face only, so the shell would show a door where the room has a wall.
             Build.FromDialled("redSaltbox", "Red saltbox", "house", new Dictionary<string, object>
             {
                 ["era"] = "modern",
                 ["shape"] = "saltbox",
                 ["siding"] = "clapboard",
                 ["body"] = "red",
-                ["roof"] = "asphaltGrey",
+                ["roof"] = "metal",           // ⭐ was asphaltGrey: the board's tin roof
+                ["shutters"] = "none",        // ⭐ the board's windows have no shutters
                 ["size"] = 0.4,               // unchanged: the footprint must not move
                 ["windows"] = "twoOverTwo",
                 ["winDensity"] = 0.60,
@@ -450,23 +459,31 @@ namespace HiddenHarbours.Art.Editor
                 ["bay"] = false,
                 ["weather"] = 0.55,
             }, "the third clapboard house the canon asks for; no rig preset is clapboard AND small"),
+            // The board's harbour gable (houseIsoRig's own plan table, harbour_gable): teal shingle under a
+            // red tin roof, a full-width gothic cross gable centred on the long wall, the door in it, no
+            // porch. porch 'none' puts the door on the +X eave, in the cross gable; the village turns it
+            // to face the lane. 'beds' is the room's dial, not the house's, so it is left out here.
             Build.FromDialled("harbourGable", "harbour gable", "house", new Dictionary<string, object>
                 {
-                    ["era"] = "plain",
+                    ["era"] = "gothic",
                     ["shape"] = "gable",
-                    ["siding"] = "clapboard",
-                    ["body"] = "blue",
-                    ["roof"] = "asphaltGrey",
+                    ["siding"] = "shingle",
+                    ["body"] = "teal",
+                    ["roof"] = "metalRed",
                     ["size"] = 0.3,
                     ["windows"] = "twoOverTwo",
-                    ["winDensity"] = 0.55,
-                    ["attic"] = "gable",
-                    ["porch"] = "front",
+                    ["winDensity"] = 0.5,
+                    ["attic"] = "gothic",
+                    ["porch"] = "none",
+                    ["crossGable"] = 1,
+                    ["gableFull"] = true,
+                    ["bargeboard"] = true,
                     ["dormers"] = 0,
                     ["chimneys"] = 1,
-                    ["bay"] = false,
-                    ["weather"] = 0.3,
-                }, "accepted village lot look"),
+                    ["shutters"] = "none",
+                    ["doorPaint"] = "ivory",
+                    ["weather"] = 0.45,
+                }, "the board's harbour gable: green shingle, red roof, gothic cross gable over the door"),
 
             Build.FromDialled("creamSaltbox", "cream saltbox", "house", new Dictionary<string, object>
                 {

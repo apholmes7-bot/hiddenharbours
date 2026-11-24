@@ -21,11 +21,11 @@ namespace HiddenHarbours.Tests.EditMode
         {
             ["home.st_peters_red_saltbox/ResidentMovesTo | region.st_peters | station.st_peters.home_post_office"] =
                 "Rose MacIsaac's move above the post office is declared on her home but has no station yet.",
-            ["routine.junior_poirier/WeeklyDays[0].Entries[2] | region.nine_mile_creek | station.nine_mile_creek.bar_landing"] =
+            ["routine.junior_poirier/WeeklyDays[0:Wednesday].Entries[2] | region.nine_mile_creek | station.nine_mile_creek.bar_landing"] =
                 "Junior Poirier's weekly arrival names a mainland bar landing absent from the committed station table.",
-            ["routine.junior_poirier/WeeklyDays[0].Entries[3] | region.nine_mile_creek | station.nine_mile_creek.fuel_stop"] =
+            ["routine.junior_poirier/WeeklyDays[0:Wednesday].Entries[3] | region.nine_mile_creek | station.nine_mile_creek.fuel_stop"] =
                 "Junior Poirier's weekly fuel errand names a stop absent from the committed station table.",
-            ["routine.junior_poirier/WeeklyDays[0].Entries[4] | region.nine_mile_creek | station.nine_mile_creek.bar_landing"] =
+            ["routine.junior_poirier/WeeklyDays[0:Wednesday].Entries[4] | region.nine_mile_creek | station.nine_mile_creek.bar_landing"] =
                 "Junior Poirier's weekly return names the same missing mainland landing as a separate schedule row.",
             ["crossing.st_peters_nine_mile_creek_bar/ToStationId | region.nine_mile_creek | station.nine_mile_creek.bar_landing"] =
                 "The bar crossing's mainland endpoint has no committed routine station."
@@ -167,7 +167,7 @@ namespace HiddenHarbours.Tests.EditMode
                 }
                 Day("Entries", routine.Entries);
                 for (int i = 0; i < (routine.WeeklyDays?.Length ?? 0); i++)
-                    Day("WeeklyDays[" + i + "].Entries", routine.WeeklyDays[i].Entries);
+                    Day("WeeklyDays[" + i + ":" + routine.WeeklyDays[i].Weekday + "].Entries", routine.WeeklyDays[i].Entries);
             }
             foreach (ConversationDef conversation in LoadAll<ConversationDef>())
                 Check(conversation.Id + "/StationId", conversation.RegionId, conversation.StationId);
@@ -180,10 +180,26 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void StPetersDeclaredStations_AreExactlyTheCommittedStations()
+        public void DeclaredRegionalStations_AreExactlyTheCommittedStations()
         {
-            Assert.That(NpcScenes()["StPeters"].Stations, Is.EquivalentTo(StPetersRoutines.AllStationIds),
-                "A builder declaration alone cannot satisfy a routine in the committed scene");
+            var regions = LoadAll<RegionDef>();
+            Assert.That(regions, Is.Not.Empty);
+            var declared = regions.ToDictionary(r => r.Id, _ => new HashSet<string>(StringComparer.Ordinal));
+            declared["region.st_peters"].UnionWith(StPetersRoutines.AllStationIds);
+            declared[HeronViewRoster.RegionId].UnionWith(CumberlandCourse.Read().Stations.Select(s => s.Id));
+            foreach (var keeper in NmcWholesalerKeepers.All)
+            {
+                declared["region.nine_mile_creek"].Add(keeper.CounterStationId);
+                declared["region.nine_mile_creek"].Add(keeper.HomeStationId);
+            }
+            var scenes = NpcScenes();
+            foreach (var region in regions)
+            {
+                IEnumerable<string> placed = scenes.TryGetValue(region.SceneName, out var scene)
+                    ? scene.Stations : Enumerable.Empty<string>();
+                Assert.That(placed, Is.EquivalentTo(declared[region.Id]), region.Id +
+                    ": declarations and committed stations must agree; routine references are checked against this same set");
+            }
         }
 
         [Test]

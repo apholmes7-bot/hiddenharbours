@@ -326,8 +326,41 @@ namespace HiddenHarbours.Art
         }
 
         private bool _castOnWalkingDeck;
-        private bool CasterVisible => _caster != null && !_artExcluded && !Quiet &&
+        private bool CasterVisible => _caster != null && !(_artExcluded && _silhouetteOverride == null) && !Quiet &&
             (_caster.enabled || (_castOnWalkingDeck && DeckStance.IsActive));
+
+        // ── what the shadow traces when the caster is drawn some other way ─────────────────────────
+        private Sprite _silhouetteOverride;
+
+        /// <summary>
+        /// The outline this caster's shadow traces INSTEAD of its own sprite, or null for its own sprite
+        /// (the default). For an owner that draws the caster as something else while its sprite stays
+        /// enabled and hidden: the player's mesh figure (<see cref="MeshFigureCastSilhouette"/>), whose
+        /// hidden body sprite otherwise cast the old standing pose whatever he was doing. The override is
+        /// in the caster's local space with its feet at the sprite's pivot, and it is never flipped (it is
+        /// already the drawn shape). Visibility is unchanged: still the caster's own rules.
+        /// </summary>
+        public Sprite SilhouetteOverride
+        {
+            get => _silhouetteOverride;
+            set
+            {
+                if (value == _silhouetteOverride) return;
+                _silhouetteOverride = value;
+                _lastSprite = null;                    // force the silhouette re-sync onto the new outline
+                if (isActiveAndEnabled) Tick();
+            }
+        }
+
+        /// <summary>Whether the caster's own visibility rules would show a shadow now, whatever its shape:
+        /// an owner that traces an override asks this first, so nothing is traced for a shadow nobody
+        /// sees (the rower at the oars, whose body is disabled off a walking deck).</summary>
+        public bool WouldCast => isActiveAndEnabled && _caster != null && !Quiet &&
+            (_caster.enabled || (_castOnWalkingDeck && DeckStance.IsActive));
+
+        /// <summary>The sprite the shadow is cast from this frame: the override, else the caster's own.</summary>
+        private Sprite CastSprite => _silhouetteOverride != null ? _silhouetteOverride
+                                     : _caster != null ? _caster.sprite : null;
 
         /// <summary>
         /// True: this caster throws no silhouette, no ground pool and no lamp shadow, whatever its sprite
@@ -668,20 +701,22 @@ namespace HiddenHarbours.Art
             state = default;
             if (_caster == null) _caster = GetComponent<SpriteRenderer>();
             if (!CasterVisible) return false;
-            Sprite sprite = _caster.sprite;
+            Sprite sprite = CastSprite;
             if (sprite == null || sprite.texture == null) return false;
+            bool flipX = _silhouetteOverride == null && _caster.flipX;   // an override is the drawn shape
+            bool flipY = _silhouetteOverride == null && _caster.flipY;
 
             Vector3 foot = transform.TransformPoint(new Vector3(0f, -_footOffset, 0f));
             LampShadowMath.SpriteWorldRect(
                 (Vector2)transform.position, transform.lossyScale, sprite.rect, sprite.pivot,
-                sprite.pixelsPerUnit, _caster.flipX, _caster.flipY, out Vector2 min, out Vector2 max);
+                sprite.pixelsPerUnit, flipX, flipY, out Vector2 min, out Vector2 max);
 
             state.Foot = new Vector2(foot.x, foot.y);
             state.RectMin = min;
             state.RectMax = max;
             state.Sheet = sprite.texture;
             state.UvRect = LampShadowMath.SpriteUvRect(
-                sprite.rect, sprite.texture.width, sprite.texture.height, _caster.flipX, _caster.flipY);
+                sprite.rect, sprite.texture.width, sprite.texture.height, flipX, flipY);
             return state.IsValid;
         }
 
@@ -827,7 +862,7 @@ namespace HiddenHarbours.Art
         {
             if (_shadow == null || _caster == null) return;
 
-            Sprite sprite = _caster.sprite;
+            Sprite sprite = CastSprite;
             if (sprite == _lastSprite) return;      // the overwhelmingly common case — one compare, no work
             _lastSprite = sprite;
             RefreshArtExclusion();                  // belt and braces behind the sprite-change callback
@@ -970,8 +1005,9 @@ namespace HiddenHarbours.Art
             var color = new Color(tint.r, tint.g, tint.b, alpha);
 
             _shadow.GetPropertyBlock(_mpb);
-            if (_caster.sprite != null && _caster.sprite.texture != null)
-                _mpb.SetTexture(IdMainTex, _caster.sprite.texture);
+            Sprite cast = CastSprite;
+            if (cast != null && cast.texture != null)
+                _mpb.SetTexture(IdMainTex, cast.texture);
             _mpb.SetColor(IdShadowColor, color);
             _mpb.SetVector(IdShadowDir, new Vector4(shadowDir.x, shadowDir.y, 0f, 0f));
             _mpb.SetFloat(IdShadowLen, localLen);
@@ -1067,11 +1103,11 @@ namespace HiddenHarbours.Art
             Material arm = ArmMaterial(look.ScreenSpaceShade);
             if (arm != null && _pool.sharedMaterial != arm) _pool.sharedMaterial = arm;
             bool on = radius > 0f && poolAlpha > 0f && tallEnough && _castsGroundContact && CasterVisible
-                   && _caster.sprite != null && _pool.sharedMaterial != null;
+                   && CastSprite != null && _pool.sharedMaterial != null;
             _pool.enabled = on;
             if (!on) return;
 
-            float worldWidth = _caster.sprite.bounds.size.x * Mathf.Abs(transform.lossyScale.x);
+            float worldWidth = CastSprite.bounds.size.x * Mathf.Abs(transform.lossyScale.x);
             Vector2 size = GroundContactSize(worldWidth, radius);
 
             float parentX = Mathf.Abs(transform.lossyScale.x); if (parentX < 1e-5f) parentX = 1f;
@@ -1137,8 +1173,9 @@ namespace HiddenHarbours.Art
         /// <summary>The caster's on-screen height in world units (sprite bounds × lossy Y scale).</summary>
         private float CasterWorldHeight()
         {
-            if (_caster != null && _caster.sprite != null)
-                return _caster.sprite.bounds.size.y * Mathf.Abs(transform.lossyScale.y);
+            Sprite cast = CastSprite;
+            if (cast != null)
+                return cast.bounds.size.y * Mathf.Abs(transform.lossyScale.y);
             return Mathf.Abs(transform.lossyScale.y);   // fallback: 1 unit at unit scale
         }
 
