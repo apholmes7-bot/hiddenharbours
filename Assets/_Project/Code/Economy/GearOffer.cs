@@ -39,6 +39,13 @@ namespace HiddenHarbours.Economy
                  "when the container is built; nothing in Economy enforces it.")]
         public int CarryCapacityUnits;
 
+        [Header("Rod reach (proposal; caller must opt in)")]
+        [Min(0f)]
+        [Tooltip("Maximum flick-cast reach in metres. Zero inherits the existing cast settings exactly. " +
+                 "A positive finite value replaces that reach for both aim and release. " +
+                 "No effect on bite timing, fish size, licences or weighted-line depth.")]
+        public float RodCastCapMetres = 0f;
+
         [Header("Catalog")]
         [Tooltip("Whether a seller's wares book lists this, on which shelf, and who stocks it. Off by " +
                  "default: nothing appears in any book until this says so.")]

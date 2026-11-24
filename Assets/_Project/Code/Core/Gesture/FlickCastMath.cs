@@ -102,6 +102,13 @@ namespace HiddenHarbours.Core
     /// </summary>
     public static class FlickCastMath
     {
+        /// <summary>Use a rod's authored reach when positive and finite. Zero means legacy reach;
+        /// malformed overrides also inherit. Return the legacy value unchanged so existing callers
+        /// retain their own handling of invalid settings. Use this same cap for aim and release.</summary>
+        public static float ResolveRodCastCap(float rodCastCapMetres, float legacyCastCapMetres)
+            => rodCastCapMetres > 0f && !float.IsInfinity(rodCastCapMetres)
+                ? rodCastCapMetres : legacyCastCapMetres;
+
         /// <summary>
         /// Resolve a finished gesture (the hold was released) into a cast. Pure and deterministic: the same
         /// samples, anchor, settings and cap always produce the identical result. Samples with any NaN

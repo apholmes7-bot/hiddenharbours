@@ -2,6 +2,8 @@ using NUnit.Framework;
 using UnityEngine;
 using HiddenHarbours.Core;
 using HiddenHarbours.Fishing;
+using HiddenHarbours.Economy;
+using UnityEditor;
 
 namespace HiddenHarbours.Tests.EditMode
 {
@@ -19,6 +21,104 @@ namespace HiddenHarbours.Tests.EditMode
         private static readonly Vector2 Anchor = Vector2.zero;
 
         private static FlickCastSettings S => FlickCastSettings.Default;
+
+        [TestCase(0f)]
+        [TestCase(-1f)]
+        [TestCase(float.NaN)]
+        [TestCase(float.PositiveInfinity)]
+        [TestCase(float.NegativeInfinity)]
+        public void RodReach_UnsetOrInvalidOverrideInheritsWithoutChangingTheLegacyValue(float authored)
+        {
+            foreach (float legacy in new[] { 0f, -1f, 12f, float.MaxValue,
+                                             float.NaN, float.PositiveInfinity })
+                Assert.AreEqual(legacy, FlickCastMath.ResolveRodCastCap(authored, legacy));
+        }
+
+        [TestCase(float.Epsilon)]
+        [TestCase(0.5f)]
+        [TestCase(12f)]
+        [TestCase(18f)]
+        public void RodReach_PositiveFiniteOverrideReplacesTheCap_EvenBelowTheCozyFloor(float authored)
+        {
+            float cap = FlickCastMath.ResolveRodCastCap(authored, 12f);
+            Assert.AreEqual(authored, cap);
+            var full = new[] { new FlickSample(new Vector2(-9f, 0f), 0f),
+                               new FlickSample(Vector2.right, 0.04f) };
+            var cast = FlickCastMath.Evaluate(full, full.Length, Anchor, S, cap);
+            Assert.IsTrue(cast.IsCast);
+            Assert.AreEqual(authored, cast.DistanceMetres, "full cast reaches exactly the rod cap");
+        }
+
+        [Test]
+        public void RodReach_LongerRodAddsReach_WhileTheFirstRodStillReachesTheSameNearWater()
+        {
+            var full = new[] { new FlickSample(new Vector2(-9f, 0f), 0f),
+                               new FlickSample(Vector2.right, 0.04f) };
+            float cane = FlickCastMath.ResolveRodCastCap(12f, S.MaxCastDistanceMetres);
+            float coast = FlickCastMath.ResolveRodCastCap(18f, S.MaxCastDistanceMetres);
+            Assert.AreEqual(12f, FlickCastMath.Evaluate(full, full.Length, Anchor, S, cane).DistanceMetres);
+            Assert.AreEqual(18f, FlickCastMath.Evaluate(full, full.Length, Anchor, S, coast).DistanceMetres);
+
+            // Half and one-third wind-back both aim at six metres with these example rods.
+            foreach (float cap in new[] { cane, coast })
+            {
+                float back = S.FullRangeWindBackMetres * 6f / cap;
+                var gesture = new[] { new FlickSample(new Vector2(-back, 0f), 0f),
+                                      new FlickSample(Vector2.right, 0.01f) };
+                Vector2 aim = FlickCastMath.WindBackAimOffset(gesture[0].Position, Anchor,
+                    S.FullRangeWindBackMetres, cap);
+                var cast = FlickCastMath.Evaluate(gesture, gesture.Length, Anchor, S, cap);
+                Assert.IsTrue(cast.IsCast);
+                Assert.AreEqual(6f, cast.DistanceMetres, 0.00001f);
+                Assert.AreEqual(aim.x, cast.LandingPoint.x, 0.00001f);
+                Assert.AreEqual(aim.y, cast.LandingPoint.y, 0.00001f);
+            }
+        }
+
+        [Test]
+        public void RodReach_LegacyRodAssetAndNewDefaultsKeepEveryCastFieldExactly()
+        {
+            // The baseline has one rod offer; the separate rod rack is storage furniture.
+            var shipped = AssetDatabase.LoadAssetAtPath<GearOffer>(
+                "Assets/_Project/Data/Resources/Catalog/Gear/Rod.asset");
+            Assert.IsNotNull(shipped);
+            Assert.AreEqual("gear.rod", shipped.Id);
+            Assert.AreEqual(0f, shipped.RodCastCapMetres);
+            var fresh = ScriptableObject.CreateInstance<GearOffer>();
+            try { Assert.AreEqual(0f, fresh.RodCastCapMetres); }
+            finally { Object.DestroyImmediate(fresh); }
+            var config = AssetDatabase.LoadAssetAtPath<GameConfig>("Assets/_Project/Data/Config/GameConfig.asset");
+            Assert.IsNotNull(config);
+            var settings = config.FlickCast;
+            float cap = FlickCastMath.ResolveRodCastCap(shipped.RodCastCapMetres,
+                                                       settings.MaxCastDistanceMetres);
+            Assert.AreEqual(settings.MaxCastDistanceMetres, cap);
+            foreach (var gesture in new[] { CleanFlick(), new FlickSample[0],
+                     new[] { new FlickSample(new Vector2(-9f, 0f), 0f),
+                             new FlickSample(Vector2.right, 0.04f) } })
+            {
+                var before = FlickCastMath.Evaluate(gesture, gesture.Length, Anchor, settings,
+                                                   settings.MaxCastDistanceMetres);
+                var after = FlickCastMath.Evaluate(gesture, gesture.Length, Anchor, settings, cap);
+                Assert.AreEqual(before, after, "all result fields must be exactly equal");
+            }
+        }
+
+        [Test]
+        public void RodReach_Determinism_InterleavedRodsDoNotChangeRepeatedResults()
+        {
+            var gesture = CleanFlick();
+            var expected = FlickCastMath.Evaluate(gesture, gesture.Length, Anchor, S,
+                FlickCastMath.ResolveRodCastCap(18f, 12f));
+            for (int i = 0; i < 32; i++)
+            {
+                FlickCastMath.Evaluate(gesture, gesture.Length, Anchor, S,
+                    FlickCastMath.ResolveRodCastCap(i, 12f));
+                var actual = FlickCastMath.Evaluate(gesture, gesture.Length, Anchor, S,
+                    FlickCastMath.ResolveRodCastCap(18f, 12f));
+                Assert.AreEqual(expected, actual, "no state, clock or random source affects reach");
+            }
+        }
 
         // A clean flick toward +X: wind back 1.4 m, then sweep 2.4 m forward at a brisk pace.
         private static FlickSample[] CleanFlick() => new[]
