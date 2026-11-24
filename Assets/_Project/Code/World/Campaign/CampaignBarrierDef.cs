@@ -36,6 +36,12 @@ namespace HiddenHarbours.World
         [Tooltip("The saved campaign flag that lifts the wall for good. While it is unset the wall stands.")]
         public string LiftedByFlag = "";
 
+        [Header("When it stands at all")]
+        [Tooltip("A saved campaign flag the wall needs before it stands. Empty = it always stands. While this " +
+                 "flag is unset the wall is down: no push, no weather, no line. A save that never had the flag " +
+                 "written never meets the wall.")]
+        public string StandsWhileFlag = "";
+
         [Header("How far in it reaches (metres inside the edge)")]
         [Tooltip("Where the weather first turns and the push begins.")]
         [Min(0f)] public float StartDistanceMetres = 170f;

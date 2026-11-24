@@ -19,6 +19,7 @@ MonoBehaviour:
   InwardNormal: {x: -1, y: 0}
   HalfLengthMetres: 0
   LiftedByFlag: st_peters.weather_turned
+  StandsWhileFlag: st_peters.first_week
   StartDistanceMetres: 130
   FullDistanceMetres: 85
   LimitDistanceMetres: 55

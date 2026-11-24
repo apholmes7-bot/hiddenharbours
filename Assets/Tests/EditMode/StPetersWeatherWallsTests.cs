@@ -20,6 +20,7 @@ namespace HiddenHarbours.Tests.EditMode
     public class StPetersWeatherWallsTests
     {
         const string GateFlag = "st_peters.weather_turned";
+        const string FirstWeekFlag = "st_peters.first_week";
         const string Region = StPetersLayerRefresh.StPetersRegionId;
 
         static readonly Dictionary<string, Vector2> Inward = new Dictionary<string, Vector2>
@@ -32,7 +33,8 @@ namespace HiddenHarbours.Tests.EditMode
 
         sealed class FlagSave : ISaveService
         {
-            readonly HashSet<string> _flags = new HashSet<string>();
+            // A save made by the first-week opening: the key the walls stand on is already written.
+            readonly HashSet<string> _flags = new HashSet<string> { FirstWeekFlag };
             public SaveData Current { get; } = new SaveData();
             public bool GetFlag(string key) => _flags.Contains(key);
             public void SetFlag(string key, bool value) { if (value) _flags.Add(key); else _flags.Remove(key); }
@@ -309,6 +311,80 @@ namespace HiddenHarbours.Tests.EditMode
             Sit(clear, 1f);
             Sit(north.EdgePoint + north.PushDirection * (north.FullDistanceMetres - 5f) + Vector2.left * 120f, 1f);
             Assert.AreEqual(4, d.LinesSpoken);
+        }
+
+        // ---- the first week: a save without its key never meets the walls ------------------------------
+
+        [Test]
+        public void TheWallsStandOnlyInTheFirstWeek_NoKeyNoWall_KeyAndGateFlagNoWall()
+        {
+            var save = StPeters();
+            foreach (var w in Walls())
+            {
+                Assert.AreEqual(FirstWeekFlag, w.StandsWhileFlag, w.Id);
+                Vector2 at = w.EdgePoint + w.PushDirection * (w.FullDistanceMetres - 5f);
+
+                // A save that was never in the first week: nothing at all, at the worst of the weather.
+                save.SetFlag(FirstWeekFlag, false);
+                save.SetFlag(GateFlag, false);
+                Assert.IsFalse(CampaignBarrierDirector.Stands(w), w.Id + ": no key, no wall");
+                var d = Director(Walls());
+                float now = 0f;
+                d.Seconds = () => now;
+                var body = Hull(at, Vector2.zero);
+                for (int i = 0; i < 5; i++) { now += 1f; d.Step(); }
+                Assert.IsNull(d.Standing, w.Id);
+                Assert.AreEqual(0f, d.Storm01, w.Id);
+                Assert.AreEqual(0f, d.PushAcceleration, w.Id + ": no push");
+                Assert.AreEqual(0f, d.Look01, w.Id);
+                Assert.AreEqual(0f, d.Loom01, w.Id);
+                Assert.AreEqual(0, d.LinesSpoken, w.Id + ": no line");
+                Assert.IsFalse(LocalWeather.Active, w.Id + ": no weather shade is written");
+                Assert.IsFalse(LocalWeather.SquallActive, w.Id + ": no front and no rain are written");
+                Assert.AreEqual(0f, LocalWeather.Rain(0f), w.Id);
+                Assert.AreEqual(at, (Vector2)body.transform.position, w.Id);
+
+                // The first week, the weather not yet turned: it stands as before.
+                save.SetFlag(FirstWeekFlag, true);
+                Assert.IsTrue(CampaignBarrierDirector.Stands(w), w.Id + ": the key alone stands it up");
+                d.Step();
+                Assert.AreSame(w, d.Standing, w.Id);
+                Assert.AreEqual(w.PushAcceleration, d.PushAcceleration, 1e-4f, w.Id);
+                Assert.IsTrue(LocalWeather.SquallActive, w.Id);
+                Assert.AreEqual(1, d.LinesSpoken, w.Id);
+
+                // Both set: the weather has turned, and it is down for good.
+                save.SetFlag(GateFlag, true);
+                Assert.IsFalse(CampaignBarrierDirector.Stands(w), w.Id + ": key and gate flag, no wall");
+                d.Step();
+                Assert.IsNull(d.Standing, w.Id);
+                Assert.AreEqual(0f, d.PushAcceleration, w.Id);
+                Assert.IsFalse(LocalWeather.Active, w.Id);
+                Assert.IsFalse(LocalWeather.SquallActive, w.Id);
+
+                // The gate flag alone (a save that skipped the week) does not stand it either.
+                save.SetFlag(FirstWeekFlag, false);
+                Assert.IsFalse(CampaignBarrierDirector.Stands(w), w.Id);
+                Object.DestroyImmediate(d.gameObject);
+                LocalWeather.Clear();
+            }
+        }
+
+        [Test]
+        public void AWallThatNamesNoKey_AlwaysStands_AsItDidBefore()
+        {
+            var save = StPeters();
+            foreach (var w in AllWalls().Where(w => w.RegionId != Region))
+                Assert.IsEmpty(w.StandsWhileFlag, w.Id + ": only the St Peters walls wait on the first week");
+
+            var wall = ScriptableObject.CreateInstance<CampaignBarrierDef>();
+            _made.Add(wall);
+            wall.LiftedByFlag = "fixture.lifted";
+            Assert.IsEmpty(wall.StandsWhileFlag, "the default names no key");
+            save.SetFlag(FirstWeekFlag, false);
+            Assert.IsTrue(CampaignBarrierDirector.Stands(wall));
+            save.SetFlag("fixture.lifted", true);
+            Assert.IsFalse(CampaignBarrierDirector.Stands(wall));
         }
 
         // ---- the look: full where he is stopped, seen coming, gone with the flag ----------------------

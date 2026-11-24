@@ -24,13 +24,15 @@ namespace HiddenHarbours.Tests.PlayMode
     {
         const float SimSpeed = 8f;
         const string GateFlag = "st_peters.weather_turned";
+        const string FirstWeekFlag = "st_peters.first_week";
         const string Region = StPetersLayerRefresh.StPetersRegionId;
 
         static readonly string[] Edges = { "east", "west", "north", "south" };
 
         sealed class FlagSave : ISaveService
         {
-            readonly HashSet<string> _flags = new HashSet<string>();
+            // A save made by the first-week opening: the key the walls stand on is already written.
+            readonly HashSet<string> _flags = new HashSet<string> { FirstWeekFlag };
             public SaveData Current { get; } = new SaveData();
             public bool GetFlag(string key) => _flags.Contains(key);
             public void SetFlag(string key, bool value) { if (value) _flags.Add(key); else _flags.Remove(key); }
@@ -271,6 +273,29 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual(0f, _director.Storm01);
             Assert.AreEqual(0f, _director.PushAcceleration);
             Assert.IsFalse(LocalWeather.Active, "no storm is drawn or heard");
+            CollectionAssert.DoesNotContain(_lines, wall.Line);
+        }
+
+        // ---- a save that was never in the first week ---------------------------------------------------
+
+        [UnityTest, Timeout(180000)]
+        public IEnumerator WithoutTheFirstWeekKey_NoWallStands_TheDoryRowsOnToTheEdge(
+            [ValueSource(nameof(Edges))] string edge)
+        {
+            _save.SetFlag(FirstWeekFlag, false);
+            var wall = Wall(edge);
+            Assert.IsFalse(CampaignBarrierDirector.Stands(wall), edge);
+            var boat = Boat("Dory", wall, wall.LimitDistanceMetres + 15f);
+            float closest = 0f, longest = 0f, turn = 0f;
+            yield return Drive(boat, wall, 60f, true, (c, l, t) => { closest = c; longest = l; turn = t; });
+            Assert.Less(closest, wall.LimitDistanceMetres - 30f, $"{edge}: she rowed on past the limit line ({closest} m)");
+            Assert.IsNull(_director.Standing);
+            Assert.AreEqual(0f, _director.Storm01);
+            Assert.AreEqual(0f, _director.PushAcceleration);
+            Assert.AreEqual(0f, _director.Look01);
+            Assert.AreEqual(0f, _director.Loom01);
+            Assert.IsFalse(LocalWeather.Active, "no storm is drawn or heard");
+            Assert.IsFalse(LocalWeather.SquallActive, "no front and no rain");
             CollectionAssert.DoesNotContain(_lines, wall.Line);
         }
 
