@@ -454,10 +454,38 @@ namespace HiddenHarbours.World
 
             NpcDef npc = it.Npc;
             string flag = it.CompletionFlag;
+
+            // A story gate rides on an ordinary Talk with somebody he already knows (her opening is never
+            // skipped for it). Who carries one, what must hold and every word of it are data
+            // (StoryGateDef); the facts come through Core. With no live gate on this speaker nothing here
+            // changes what she says.
+            if (npc != null && (metBefore || string.IsNullOrEmpty(flag)))
+            {
+                StoryGateTalk gate = StoryGates.TalkWith(npc.Id, _flagStore);
+                if (gate.Kind == StoryGateTalkKind.Word)
+                {
+                    // The word, alone in her bubble. Heard to its end it sets the gate's flag, and what
+                    // waits on that flag answers the same step; walked away from, it is still to be heard.
+                    string sets = gate.SetsFlag;
+                    Speak(it, gate.Lines, null, null,
+                          () => { if (!_presenter.WasCancelled) _flagStore.Set(sets, true); });
+                    return;
+                }
+                if (gate.Kind == StoryGateTalkKind.Hint) text = Appended(text, gate.Lines);
+            }
+
             Speak(it, text,
                   it.HasNpcData ? DialogueOptionPicker.RowsFor(npc.Dialogue.Options) : null,
                   it.HasNpcData ? npc.Dialogue.Id : it.ConversationId,
                   () => { if (!string.IsNullOrEmpty(flag)) _flags.Set(flag, true); });
+        }
+
+        private static string[] Appended(string[] lines, string[] more)
+        {
+            var all = new string[lines.Length + more.Length];
+            System.Array.Copy(lines, all, lines.Length);
+            System.Array.Copy(more, 0, all, lines.Length, more.Length);
+            return all;
         }
 
         /// <summary>
