@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using HiddenHarbours.World;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Tests.World.EditMode
 {
@@ -28,12 +29,104 @@ namespace HiddenHarbours.Tests.World.EditMode
         [TearDown]
         public void TearDown()
         {
+            RegionBuildAvailability.Override = null;
             foreach (var o in _spawned)
                 if (o != null) Object.DestroyImmediate(o);
             _spawned.Clear();
         }
 
         // ---- RegionDef ----------------------------------------------------------------------
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void BuildAvailability_UsesTheEditorOverride(bool included)
+        {
+            string askedId = null, askedScene = null;
+            RegionBuildAvailability.Override = (id, scene) =>
+            {
+                askedId = id; askedScene = scene;
+                return included;
+            };
+            Assert.AreEqual(included, RegionBuildAvailability.IsAvailable("region.neighbour", "Neighbour"));
+            Assert.AreEqual("region.neighbour", askedId);
+            Assert.AreEqual("Neighbour", askedScene);
+        }
+
+        [TestCase(null)]
+        [TestCase("")]
+        [TestCase("   ")]
+        public void BuildAvailability_NoSceneCannotBeIncluded(string scene)
+        {
+            RegionBuildAvailability.Override = (_, __) => true;
+            Assert.IsFalse(RegionBuildAvailability.IsAvailable("region.neighbour", scene));
+        }
+
+        [Test]
+        public void BuildAvailability_MissingSceneIsFalseWithoutAnOverride()
+        {
+            Assert.IsFalse(RegionBuildAvailability.IsAvailable("region.missing", "MissingSceneForAvailabilityTest"));
+        }
+
+        [Test]
+        public void BuildAvailability_EnabledBuildScenesAreAvailable()
+        {
+            int count = UnityEngine.SceneManagement.SceneManager.sceneCountInBuildSettings;
+            Assert.Greater(count, 0);
+            for (int i = 0; i < count; i++)
+            {
+                string path = UnityEngine.SceneManagement.SceneUtility.GetScenePathByBuildIndex(i);
+                Assert.IsTrue(RegionBuildAvailability.IsAvailable("", path), path);
+            }
+        }
+
+        [Test]
+        public void Preload_AbsentNeighbourDoesNotStartOrAnnounceTravel()
+        {
+            var host = new GameObject("AvailabilityLoader");
+            _spawned.Add(host);
+            var loader = host.AddComponent<RegionSceneLoader>();
+            var region = MakeRegion("region.absent", "AbsentNeighbour");
+            RegionBuildAvailability.Override = (_, __) => false;
+            int refusals = 0;
+            System.Action<RegionTravelRefused> refused = _ => refusals++;
+            EventBus.Subscribe(refused);
+            try
+            {
+                Assert.IsFalse(loader.Preload(region));
+                Assert.IsFalse(loader.Preload(region));
+                Assert.IsNull(loader.PreloadingSceneName);
+                Assert.AreEqual(0, refusals, "warming is not a travel request");
+            }
+            finally { EventBus.Unsubscribe(refused); }
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TravelTo_AbsentNeighbourRefusesByIdOrDef(bool byId)
+        {
+            var host = new GameObject("AvailabilityLoader");
+            _spawned.Add(host);
+            var loader = host.AddComponent<RegionSceneLoader>();
+            var region = MakeRegion("region.absent", "AbsentNeighbour");
+            typeof(RegionSceneLoader).GetField("_registry",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                .SetValue(loader, new RegionRegistry(new[] { region }));
+            RegionBuildAvailability.Override = (_, __) => false;
+            var refusals = new List<RegionTravelRefused>();
+            EventBus.Subscribe<RegionTravelRefused>(refusals.Add);
+            try
+            {
+                UnityEngine.TestTools.LogAssert.Expect(LogType.Warning,
+                    new System.Text.RegularExpressions.Regex("Could not load scene 'AbsentNeighbour'"));
+                if (byId) loader.TravelTo(region.Id);
+                else Assert.IsFalse(loader.Travel(region));
+                Assert.AreEqual(1, refusals.Count);
+                Assert.AreEqual(region.Id, refusals[0].RegionId);
+                Assert.AreEqual(region.SceneName, refusals[0].SceneName);
+                Assert.IsNull(loader.PreloadingSceneName);
+            }
+            finally { EventBus.Unsubscribe<RegionTravelRefused>(refusals.Add); }
+        }
 
         [Test]
         public void RegionDef_HasScene_ReflectsSceneName()

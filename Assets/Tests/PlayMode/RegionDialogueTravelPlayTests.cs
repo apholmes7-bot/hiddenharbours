@@ -194,6 +194,7 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTearDown]
         public IEnumerator TearDownScenes()
         {
+            RegionBuildAvailability.Override = null;
             // Stop listening BEFORE the scenes come apart — a coordinator still subscribed would react to
             // the teardown's own active-scene change and start toggling roots that are being destroyed.
             if (_coordinatorGo != null) Object.DestroyImmediate(_coordinatorGo);
@@ -252,6 +253,36 @@ namespace HiddenHarbours.Tests.PlayMode
 
             Object.DestroyImmediate(_devCore);            // DevRegionBootstrap.cs: Destroy(_devCoreRoot)
             yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator AnExcludedNeighbour_RefusesThePassageThenAcceptsItWhenIncluded()
+        {
+            var passage = MakePassage();
+            int refusals = 0;
+            RegionTravelRefused last = default;
+            System.Action<RegionTravelRefused> refused = message => { refusals++; last = message; };
+            EventBus.Subscribe(refused);
+            try
+            {
+                RegionBuildAvailability.Override = (_, __) => false;
+                LogAssert.Expect(LogType.Warning, new System.Text.RegularExpressions.Regex("Could not load scene"));
+                passage.Activate();
+                yield return null;
+                Assert.AreEqual(SourceSceneName, SceneManager.GetActiveScene().name);
+                Assert.IsNull(GameServices.PendingArrivalKey);
+                Assert.AreEqual(1, refusals);
+                Assert.AreEqual(_destRegion.Id, last.RegionId);
+                Assert.AreEqual(DestSceneName, last.SceneName);
+                Assert.IsFalse(InteractionGate.IsBlocked);
+
+                RegionBuildAvailability.Override = (_, __) => true;
+                passage.Activate();
+                yield return null;
+                Assert.AreEqual(DestSceneName, SceneManager.GetActiveScene().name);
+                Assert.AreEqual(1, refusals);
+            }
+            finally { EventBus.Unsubscribe(refused); }
         }
 
         /// <summary>Put the player somewhere and let one Update see them there. Two frames, because the
