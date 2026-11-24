@@ -185,9 +185,10 @@ changed for the bag. Instead:
 - If the game is reloaded with the bag still in hand, there is no bag after the load, and the goods are
   found **already put away** in his supplies. Nothing is lost and nothing is paid twice.
 
-**Question for the owner:** should held things (the shopping bag, a fish in hand) be saved, so that a
-reload puts the bag back in his hand? That needs a save version change. Until then the rule above
-holds.
+**Owner's ruling for the next slice (2026-11-23, not built yet):** the bag is droppable with items
+inside; if he sleeps holding it, the bag is dropped by the bed. This replaces "found already put away"
+above. A dropped bag with goods in it must outlive a reload, so it needs saved data: approval for save
+v26 has been asked for and is not yet given. Until that slice lands, the rule above holds.
 
 ---
 
@@ -326,7 +327,8 @@ NextSpecialOrderNumber: int
 | # | Slice | What the owner sees | Save | Needs |
 |---|---|---|---|---|
 | 1 | **Groceries, ice and capelin at the shelf** (built) | walk to the bread, see its price, buy it; bare gondola and card when sold out; the book is shorter | none | architecture review of one small Core contract |
-| 2 | **The paper bag, and every good counted on its own** (built) | bread, oatcakes and beans go into a paper bag in his hand; more go in the same bag; he puts the shopping away at home or the camper; bread can sell out while beans are still there | none (held bag set aside, see 3.3) | the owner's answer on saving held things |
+| 2 | **The paper bag, and every good counted on its own** (built) | bread, oatcakes and beans go into a paper bag in his hand; more go in the same bag; he puts the shopping away at home or the camper; bread can sell out while beans are still there | none (held bag set aside, see 3.3) | done; the owner's ruling on a dropped bag is the next bag slice (3.3) |
+| 2b | **The bag can be put down** (ruled, not built) | he can drop the bag with the goods still in it; if he sleeps holding it, the bag is left by the bed | saved data, v26 approval asked, not given | the v26 approval |
 | 3 | **The rest of the St Peters stock** | soap into the bag; the rod rack and the bait box on the floor; rods and shellfish gear into a free hand; the depth sounder moves to Nine Mile Creek | none | art for the rack, bait box and goods; new gear defs for the extra rod tiers |
 | 4 | **Save v26** | a bought-out shelf stays bought out after a reload | **v26** (approved) | lead-architect |
 | 5 | **The counter catalogue** | order a rod rack, pay now, collect the parcel at the counter on the first run 2 or more days later; no cancelling | v26 rows from slice 4 | catalogue tab, parcel art |
@@ -345,9 +347,10 @@ no boat hardware at St Peters, the 2-day wait, no cancellations, Nine Mile Creek
 
 Still open:
 
-1. **Save held things?** Should the shopping bag (and a fish in hand) be saved, so a reload puts it back
-   in his hand? Needs a save change. Lean: fold it into v26 as a small third list; until then the bag's
-   goods are found put away after a reload (section 3.3).
+1. **Saving the bag.** Ruled by the owner on 2026-11-23: the bag is droppable with items inside, and if
+   he sleeps holding it, the bag is dropped by the bed (replaces "found put away", section 3.3). This
+   needs saved data; approval for v26 is asked, not yet given. Lean: fold the dropped bag into v26 as a
+   small extra list.
 2. **Ice and bait in the bag?** Lean: no. Ice is wet and goes to the locker; bait goes to the tackle box.
    Both are data (`IntoBag` on the slot), so either can change without code.
 3. **The extra rod tiers** need new gear definitions (a cheaper first rod and a better rod), with prices
