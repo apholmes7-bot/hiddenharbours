@@ -460,6 +460,162 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void JobWithoutAnAuthoredTideRuleKeepsTheLowWaterDefault()
+        {
+            var job = Make<DoryMendingJobDef>();
+            Assert.That(job.NeedsLowWater, Is.True);
+            JsonUtility.FromJsonOverwrite("{\"Id\":\"mendjob.legacy\"}", job);
+            Assert.That(job.NeedsLowWater, Is.True);
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void JobTideRuleSurvivesDataSerialization(bool needsLowWater)
+        {
+            var source = Make<DoryMendingJobDef>();
+            source.NeedsLowWater = needsLowWater;
+            var restored = Make<DoryMendingJobDef>();
+            JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(source), restored);
+            Assert.That(restored.NeedsLowWater, Is.EqualTo(needsLowWater));
+        }
+
+        [TestCase(-1f)]
+        [TestCase(0f)]
+        [TestCase(1f)]
+        public void DryJobCanStartAndFinishBelowAtOrAboveTheWorkLine(float metresAboveLine)
+        {
+            var job = _def.Jobs[0];
+            job.NeedsLowWater = false;
+            _def.WorkBelowMetres = _tide.TideHeightAt(_clock.TotalSeconds) - metresAboveLine;
+            _def.LaunchAboveMetres = _def.WorkBelowMetres + 1f;
+            _session = NewSession();
+            double before = _clock.TotalSeconds;
+
+            Assert.That(_session.CheckStart(job.Id, Place), Is.EqualTo(DoryMendReason.None));
+            Start();
+            Assert.That(_session.WorkFor(job.WorkGameMinutes, Place, out var reason), Is.True);
+            Assert.That(reason, Is.EqualTo(DoryMendReason.None));
+            Assert.That(_clock.TotalSeconds - before, Is.EqualTo(job.WorkGameMinutes * Minute).Within(1e-9));
+            Assert.That(_save.GetFlag(job.CompletedFlag), Is.True);
+            Assert.That(_carry.Consumes, Is.EqualTo(1));
+            Assert.That(_carry.Count("supply.patch_plank"), Is.Zero);
+            Assert.That(_carry.Count("supply.copper_nails"), Is.Zero);
+            CollectionAssert.AreEqual(new[] { "start:mendjob.patch_plank", "done:mendjob.patch_plank" }, _events);
+        }
+
+        [TestCase(0f)]
+        [TestCase(1f)]
+        public void LowWaterJobRefusesAtOrAboveTheLineWithTheExistingReason(float metresAboveLine)
+        {
+            var job = _def.Jobs[0];
+            Assert.That(job.NeedsLowWater, Is.True);
+            _def.WorkBelowMetres = _tide.TideHeightAt(_clock.TotalSeconds) - metresAboveLine;
+            _def.LaunchAboveMetres = _def.WorkBelowMetres + 1f;
+            _session = NewSession();
+            double before = _clock.TotalSeconds;
+            string saveBefore = JsonUtility.ToJson(_save.Current);
+
+            Assert.That(_session.CheckStart(job.Id, Place), Is.EqualTo(DoryMendReason.LowWaterRequired));
+            Assert.That(_session.TryStart(job.Id, Place, out var reason), Is.False);
+            Assert.That(reason, Is.EqualTo(DoryMendReason.LowWaterRequired));
+            Assert.That(reason.TextKey(), Is.EqualTo("dory_mend.wait_for_low_water"));
+            Assert.That(_clock.TotalSeconds, Is.EqualTo(before));
+            Assert.That(JsonUtility.ToJson(_save.Current), Is.EqualTo(saveBefore));
+            Assert.That(_save.Writes, Is.Zero);
+            Assert.That(_carry.Consumes, Is.Zero);
+            Assert.That(_session.Snapshot.MaterialsCommitted, Is.False);
+            Assert.That(_events, Is.Empty);
+        }
+
+        [Test]
+        public void DryJobContinuesAcrossFloodAndStopsAtItsOwnDuration()
+        {
+            var job = _def.Jobs[0];
+            job.NeedsLowWater = false;
+            job.WorkGameMinutes = _config.TidalPeriodHours * 60f * 2f;
+            var windows = CrossingMath.FindWindows(_tide.TideHeightAt, _def.WorkBelowMetres,
+                                                   0, _config.SecondsPerDay, Minute, _config);
+            _clock.TotalSeconds = windows[0].EndSeconds - 10 * Minute;
+            double before = _clock.TotalSeconds;
+            Start();
+
+            Assert.That(_session.WorkFor(job.WorkGameMinutes + 1, Place, out var reason), Is.True);
+            Assert.That(reason, Is.EqualTo(DoryMendReason.None));
+            Assert.That(_clock.TotalSeconds - before, Is.EqualTo(job.WorkGameMinutes * Minute).Within(1e-8));
+            Assert.That(_save.GetFlag(job.CompletedFlag), Is.True);
+            Assert.That(_session.Snapshot.Working, Is.False);
+            Assert.That(_carry.Consumes, Is.EqualTo(1));
+            Assert.That(_session.NextJob.Id, Is.EqualTo(_def.Jobs[1].Id));
+        }
+
+        [Test]
+        public void DryJobCanPauseAtLowWaterAndResumeAtHighWithoutMoreMaterials()
+        {
+            var job = _def.Jobs[0];
+            job.NeedsLowWater = false;
+            Start();
+            Assert.That(_session.WorkFor(10, Place, out _), Is.True);
+            _session.Pause();
+            _clock.TotalSeconds = (3 + _config.TidalPeriodHours) * Hour;
+            Assert.That(_tide.TideHeightAt(_clock.TotalSeconds), Is.GreaterThan(_def.WorkBelowMetres));
+            Assert.That(_session.Snapshot.WorkedSeconds, Is.EqualTo(10 * Minute));
+            double before = _clock.TotalSeconds;
+
+            Start();
+            Assert.That(_session.WorkFor(20, Place, out var reason), Is.True);
+            Assert.That(reason, Is.EqualTo(DoryMendReason.None));
+            Assert.That(_clock.TotalSeconds - before, Is.EqualTo(20 * Minute).Within(1e-9));
+            Assert.That(_carry.Consumes, Is.EqualTo(1));
+            CollectionAssert.AreEqual(new[] { "start:mendjob.patch_plank", "done:mendjob.patch_plank" }, _events);
+        }
+
+        [Test]
+        public void DryJobDoesNotRemoveTheNextJobsLowWaterRule()
+        {
+            _def.Jobs[0].NeedsLowWater = false;
+            _clock.TotalSeconds = 3 * Hour;
+            Finish();
+            Assert.That(_tide.TideHeightAt(_clock.TotalSeconds), Is.GreaterThan(_def.WorkBelowMetres));
+            Assert.That(_def.Jobs[1].NeedsLowWater, Is.True);
+            double before = _clock.TotalSeconds;
+
+            Assert.That(_session.TryStart(_def.Jobs[1].Id, Place, out var reason), Is.False);
+            Assert.That(reason, Is.EqualTo(DoryMendReason.LowWaterRequired));
+            Assert.That(reason.TextKey(), Is.EqualTo("dory_mend.wait_for_low_water"));
+            Assert.That(_clock.TotalSeconds, Is.EqualTo(before));
+            Assert.That(_carry.Consumes, Is.EqualTo(1));
+            Assert.That(_carry.Count("supply.oakum"), Is.EqualTo(1));
+            Assert.That(_save.GetFlag(_def.Jobs[1].CompletedFlag), Is.False);
+        }
+
+        [TestCase(DoryMendReason.MissingMaterials)]
+        [TestCase(DoryMendReason.ClockUnavailable)]
+        [TestCase(DoryMendReason.BoatNotOwned)]
+        [TestCase(DoryMendReason.WrongPlace)]
+        public void DryJobStillHonoursTheOtherStartRules(DoryMendReason expected)
+        {
+            _def.Jobs[0].NeedsLowWater = false;
+            _clock.TotalSeconds = 3 * Hour;
+            string place = Place;
+            switch (expected)
+            {
+                case DoryMendReason.MissingMaterials: _carry.Stock["supply.copper_nails"] = 0; break;
+                case DoryMendReason.ClockUnavailable: _clock.IsHeld = true; break;
+                case DoryMendReason.BoatNotOwned: _save.Current.OwnedBoats.Clear(); break;
+                case DoryMendReason.WrongPlace: place = "region.elsewhere"; break;
+            }
+            double before = _clock.TotalSeconds;
+            string saveBefore = JsonUtility.ToJson(_save.Current);
+            Assert.That(_session.TryStart(_def.Jobs[0].Id, place, out var reason), Is.False);
+            Assert.That(reason, Is.EqualTo(expected));
+            Assert.That(_clock.TotalSeconds, Is.EqualTo(before));
+            Assert.That(JsonUtility.ToJson(_save.Current), Is.EqualTo(saveBefore));
+            Assert.That(_carry.Consumes, Is.Zero);
+            Assert.That(_session.Snapshot.MaterialsCommitted, Is.False);
+            Assert.That(_events, Is.Empty);
+        }
+
+        [Test]
         public void EveryReasonHasAUniqueStableTextKey()
         {
             var keys = new HashSet<string>();

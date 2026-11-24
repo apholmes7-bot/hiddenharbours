@@ -61,6 +61,32 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(AssetDatabase.FindAssets("t:DoryMendingDef", new[] { Root.TrimEnd('/') }).Length, Is.EqualTo(1));
         }
 
+        [TestCase(false)]
+        [TestCase(true)]
+        public void SequenceAcceptsEitherTideRuleOnAnIndividualJob(bool needsLowWater)
+        {
+            var source = AssetDatabase.LoadAssetAtPath<DoryMendingDef>(Root + "StPetersDory.asset");
+            Assert.That(source, Is.Not.Null);
+            var def = UnityEngine.Object.Instantiate(source);
+            var job = UnityEngine.Object.Instantiate(source.Jobs[0]);
+            try
+            {
+                def.Jobs = (DoryMendingJobDef[])source.Jobs.Clone();
+                def.Jobs[0] = job;
+                job.NeedsLowWater = needsLowWater;
+                Assert.DoesNotThrow(() => def.Validate());
+                Assert.That(def.Jobs[0].NeedsLowWater, Is.EqualTo(needsLowWater));
+                Assert.That(def.Jobs[1].NeedsLowWater, Is.True);
+                Assert.That(def.Jobs[2].NeedsLowWater, Is.True);
+                Assert.That(source.Jobs[0].NeedsLowWater, Is.True, "the authored default must stay unchanged");
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(job);
+                UnityEngine.Object.DestroyImmediate(def);
+            }
+        }
+
         [TestCase("order")]
         [TestCase("id")]
         [TestCase("flag")]
