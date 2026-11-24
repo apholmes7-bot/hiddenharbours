@@ -14,7 +14,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         const string SquareMeta = "Assets/_Project/Art/Sprites/Square.png.meta";
         const string CensusPath = "docs/art/placeholder-square-census.md";
 
-        // Existing debt at f1b4ab2, not approval to add more placeholders. Remove a line when
+        // Existing debt at c626cea, not approval to add more placeholders. Remove a line when
         // the prefab stops using Square, along with its rows in the census. Never add new users.
         static readonly string[] KnownSquarePrefabs =
         {

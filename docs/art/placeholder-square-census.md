@@ -1,8 +1,10 @@
 # Placeholder square census
 
-Baseline: `f1b4ab2f59f417eda06f2239f7dee25d4c52ad23` (2026-11-22).
+Baseline: `c626cea10d1cb496df41cca2f9ab2f580ad47b28` (2026-11-23).
 
-Scanned all 148 `.prefab` files under `Assets/_Project` as YAML text. **Seven prefabs contain 117 explicit SpriteRenderer references** to `Assets/_Project/Art/Sprites/Square.png`, GUID `0c1634d5861312443ac89b42a97625b6`.
+Scanned all 149 `.prefab` files under `Assets/_Project` as YAML text. **Seven prefabs contain 117 explicit SpriteRenderer references** to `Assets/_Project/Art/Sprites/Square.png`, GUID `0c1634d5861312443ac89b42a97625b6`.
+
+Since the first census at `f1b4ab2`, main added `Assets/_Project/Prefabs/Dwellings/CamperClipperDwelling.prefab`. It has no Square reference. The seven-prefab list and all 117 renderer rows below are unchanged.
 
 This records existing content debt; it does not accept a look or authorize more square placeholders. No asset was changed and no scene was rendered.
 

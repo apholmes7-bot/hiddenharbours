@@ -277,6 +277,8 @@ Shader "Hidden/HiddenHarbours/IsoFacetResolve"
                 input.positionCS.xy = p;
                 float4 c = frag(input);
                 if (c.a <= 0) return 0;
+                // The ragged ends (HullReflection.hlsl): a dropped end texel draws nothing, as a blocker.
+                if (HHMeshReflectEndDrops(p, w)) return 0;
                 return HHReflectPremultiply(c.rgb, 1, _HHMeshReflectLit[(int)round(c.a * 255)], _DayNightTint.rgb);
             }
         ENDHLSL

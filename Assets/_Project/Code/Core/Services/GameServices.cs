@@ -1442,6 +1442,15 @@ namespace HiddenHarbours.Core
         public static float HullReflectionStreakPixels =>
             Config != null ? UnityEngine.Mathf.Max(0f, Config.HullReflectionStreakPixels)
                 : GameConfig.DefaultHullReflectionStreakPixels;
+        public static float HullReflectionEndCutPixels =>
+            Config != null ? UnityEngine.Mathf.Max(0f, Config.HullReflectionEndCutPixels)
+                : GameConfig.DefaultHullReflectionEndCutPixels;
+        public static float HullReflectionEndThinPixels =>
+            Config != null ? UnityEngine.Mathf.Max(0f, Config.HullReflectionEndThinPixels)
+                : GameConfig.DefaultHullReflectionEndThinPixels;
+        public static float HullReflectionEndMinRunPixels =>
+            Config != null ? UnityEngine.Mathf.Max(0f, Config.HullReflectionEndMinRunPixels)
+                : GameConfig.DefaultHullReflectionEndMinRunPixels;
 
         /// <summary>Do rig 9 figures blink (character PR 2a)? Same contract as
         /// <see cref="HullKeylineFlood"/>, including the <c>Config != null</c> discipline. Falls back
@@ -1634,6 +1643,7 @@ namespace HiddenHarbours.Core
             Crew = null;                 // → a fresh, empty roster on next read
             Voyages = null;              // → EmptyVoyageCatalog.Instance; this property is never null
             CrossingGate = null;         // → AlwaysOpenCrossingGate.Instance; this property is never null
+            IslandShelvesDirectory.Clear();   // no store's shelves outlive the services
             TidalTerrain = null;
             StillWater = null;           // → EmptyStillWater.Instance; this property is never null
             PlayerTransform = null;
