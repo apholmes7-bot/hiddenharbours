@@ -13,9 +13,11 @@ namespace HiddenHarbours.Economy
     /// is the only gate. The full proficiency/reputation eligibility tower (progression-and-housing
     /// §2.1/§2.3) is deliberately NOT modelled here yet — when it lands it adds fields to this asset and
     /// a check in the vendor, without changing the <c>ILicenseService</c> contract or the save shape.
-    /// <see cref="PermittedSpeciesIds"/> is informational/flavour for the buy UI and validation (which
-    /// species this unlocks); the runtime catch-gate keys off the license <see cref="Id"/> the species
-    /// requires, not this list, so the two can't silently drift the gate.</para>
+    /// <see cref="PermittedSpeciesIds"/> IS the runtime catch gate, not flavour: a species listed here
+    /// needs this licence to be kept, and a species no licence lists is free
+    /// (<see cref="CatchLicensePolicy.RequiredLicenseFor"/>). Every landing path (rod, dig, trap haul)
+    /// reads it through one shared rule; a species caught without the licence is released at once and
+    /// not recorded (owner ruling 2026-11-23). Authoring this list is the only place a gate is declared.</para>
     /// </summary>
     [CreateAssetMenu(menuName = "Hidden Harbours/License", fileName = "License")]
     public class LicenseDef : ScriptableObject, ICatalogListing
@@ -34,10 +36,10 @@ namespace HiddenHarbours.Economy
                  "in code).")]
         public int Price = 120;
 
-        [Header("What it permits (informational for the buy UI / validation)")]
+        [Header("What it permits (the runtime catch gate)")]
         [Tooltip("Stable FishSpeciesDef ids this licence legally unlocks (e.g. \"fish.atlantic_cod\"). " +
-                 "The runtime gate keys off the licence id the SPECIES requires; this list is the buy-UI " +
-                 "blurb and the validation cross-check, so authoring stays legible.")]
+                 "This list IS the gate: a species listed here is released at the landing (rod, dig or " +
+                 "trap) unless the player holds this licence. A species no licence lists is free.")]
         public string[] PermittedSpeciesIds = { "fish.atlantic_cod" };
 
         [Header("Catalog")]

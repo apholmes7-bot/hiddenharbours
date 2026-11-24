@@ -338,9 +338,11 @@ namespace HiddenHarbours.Tests.EditMode
                         WorldCenter = new Vector2(0f, 0f), WorldSize = new Vector2(760f, 520f),
                         // Terrain PR 5 B: ground.stp_island's import (StPetersPlan.manifest.json's height values).
                         Bits = 16, StillBound = true,
-                        // island-ground@3 plus ground.stp_north_pocket: independent PNG decode, little-endian R16, bottom row first.
-                        // Outside the issue boxes every code still equals main; the 1e-5 m decode bar stands.
-                        CodesSha256 = "ea64488374619d4020afa2c1f05afddd3aec7d65d830182ac16aed3b941d9679",
+                        // island-ground@3 plus ground.stp_north_pocket, then the brook beds and mouth-hollow fills
+                        // (ground.stp_*_brook_bed, ground.stp_alder_run_bed, ground.stp_*_mouth_hollow_fill):
+                        // independent PNG decode, little-endian R16, bottom row first; equals the manifest's height
+                        // values. The beds move 9,853 texels, none inside the north cut; the 1e-5 m decode bar stands.
+                        CodesSha256 = "2ff67757d1eff837646fe530ab75c69d93fd6bc82f50fedee38dd9b3e3704cd9",
                     };
                 case "NineMileCreek":
                     return new CommittedMap

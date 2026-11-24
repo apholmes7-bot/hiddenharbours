@@ -482,10 +482,10 @@ namespace HiddenHarbours.App.Editor
             {
                 var falls = new List<WaterfallDef>();
                 foreach (var f in x.Plan.Falls) if (f != null && f.Stream != null && f.Stream.Id == st.Id) falls.Add(f);
-                var line = Catmull(Num(st.Points), Num(x.Plan.LineStep));
+                var line = StreamLine(x, st, out double uEnd);
                 double climb;
                 int at, skipped;
-                if (falls.Count == 0) climb = Climb(x, st, line, null, out at, out skipped);
+                if (falls.Count == 0) climb = Climb(x, st, line, null, out at, out skipped, uEnd);
                 else
                 {
                     var skip = new HashSet<int>();
@@ -520,7 +520,8 @@ namespace HiddenHarbours.App.Editor
         /// A stream's climb: along its line, the largest rise over its lowest point upstream, a pond, still pool or the stream's
         /// fall's pool read as its water at its surface. Stations <paramref name="skip"/> takes are left out.
         /// </summary>
-        static double Climb(Ctx x, StreamDef st, PlanLine line, Func<PlanPoint, bool> skip, out int at, out int skipped)
+        static double Climb(Ctx x, StreamDef st, PlanLine line, Func<PlanPoint, bool> skip, out int at, out int skipped,
+                            double uEnd = double.PositiveInfinity)
         {
             var water = new List<PondDef>();
             foreach (var p in x.Plan.Ponds) if (p != null) water.Add(p);
@@ -532,6 +533,7 @@ namespace HiddenHarbours.App.Editor
             bool first = true;
             for (int j = 0; j < line.R.Length; j++)
             {
+                if (line.S[j] > uEnd + 1e-9) break;                          // past its last point: its run-out's
                 double X = line.R[j].X, Y = line.R[j].Y;
                 if (skip != null && skip(line.R[j])) { skipped++; continue; }
                 double e = x.G.Sample(x.R.E, X, Y);
@@ -541,6 +543,18 @@ namespace HiddenHarbours.App.Editor
                 first = false;
             }
             return climb;
+        }
+
+        /// <summary>
+        /// A stream's line as the derivation lays its water: its points, or, for a brook that runs on to the sea, its points and
+        /// run-out drawn as one line (its last reach bends into the run-out). <paramref name="uEnd"/> is its last point's arc length.
+        /// </summary>
+        static PlanLine StreamLine(Ctx x, StreamDef st, out double uEnd)
+        {
+            bool runsOn = st.RunOut != null && st.RunOut.Length > 0;
+            var line = Catmull(Num(runsOn ? st.LineWithRunOut(0) : st.Points), Num(x.Plan.LineStep));
+            uEnd = line.Knots[st.Points.Length - 1];
+            return line;
         }
 
         /// <summary>A pond's radius at a point, no wobble (1 on its rim): the fall's PoolQ.</summary>
@@ -1323,16 +1337,20 @@ namespace HiddenHarbours.App.Editor
             StreamDef st = null;
             foreach (var s in x.Plan.Streams) if (s != null && s.Id == HeathBrookId) st = s;
             if (st == null) throw new InvalidOperationException("the plan has no " + HeathBrookId);
-            var line = Catmull(Num(st.Points), Num(x.Plan.LineStep));
-            double climb = Climb(x, st, line, null, out int at, out _);
+            var line = StreamLine(x, st, out double uEnd);
+            double climb = Climb(x, st, line, null, out int at, out _, uEnd);
             double mean = (x.In.SpringLow + x.In.SpringHigh) / 2;
-            int n = line.R.Length;
-            var end = line.R[n - 1];
+            int n = 1;                                                              // its samples up to its last point
+            for (int j = 1; j < line.R.Length; j++) if (Math.Abs(line.S[j] - uEnd) < Math.Abs(line.S[n - 1] - uEnd)) n = j + 1;
+            var end = Num(st.Points[st.Points.Length - 1]);                       // its Def's last point, exactly
             double dx = end.X - line.R[n - 2].X, dy = end.Y - line.R[n - 2].Y, len = Hypot(dx, dy);
             dx /= len; dy /= len;
-            double eEnd = x.G.Sample(x.R.E, end.X, end.Y), under = double.NaN;
+            // The shore is read on the ground before the game's asks: since the low-tide stream rule (owner, 11-23) the brook's
+            // own bed is cut on down the beach past its Def's end to the low-water line, so the bed is not the shore.
+            var shore = x.BeforeTheGameAsks();
+            double eEnd = x.G.Sample(shore, end.X, end.Y), under = double.NaN;
             for (int j = 1; j * MouthStep <= MouthReach + 1e-9; j++)
-                if (x.G.Sample(x.R.E, end.X + dx * j * MouthStep, end.Y + dy * j * MouthStep) < mean) { under = j * MouthStep; break; }
+                if (x.G.Sample(shore, end.X + dx * j * MouthStep, end.Y + dy * j * MouthStep) < mean) { under = j * MouthStep; break; }
             k.Pass = climb <= StreamClimb && Math.Abs(Num(st.BedZ[st.BedZ.Length - 1]) - mean) <= x.Step &&
                      Math.Abs(eEnd - mean) <= MouthLevelTolerance && !double.IsNaN(under);
             k.Detail = HeathBrookId + " climbs " + F(climb) + " m" + (at >= 0 ? " at (" + F(line.R[at].X) + ", " + F(line.R[at].Y) + ")" : "") + " (at most " +

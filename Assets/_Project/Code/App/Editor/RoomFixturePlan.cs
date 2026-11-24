@@ -136,13 +136,15 @@ namespace HiddenHarbours.App.Editor
         /// <summary>A row's planning footprint turned to the wall it backs: <see cref="Footprint"/> gives the
         /// counter pieces as they stand on a side (left or right) wall and the fridge and kitchen sink as they
         /// stand on an end (front or back) wall, so a piece on the other kind of wall swaps its two sides. The
-        /// closet pieces are as given.</summary>
+        /// closet pieces are given as they stand on an end wall too (across the wall, then out from it), so a
+        /// toilet or basin on a side wall is turned as well: it reaches out from its wall by its depth, as its
+        /// picture does, not by its width.</summary>
         public static Vector2 FootprintOf(Row row)
         {
             Vector2 f = Footprint(row.Kind);
             bool side = row.Wall == Wall.Left || row.Wall == Wall.Right;
             bool counter = row.Kind == Kind.PrepCounter || row.Kind == Kind.Stove || row.Kind == Kind.Microwave;
-            bool endPiece = row.Kind == Kind.Fridge || row.Kind == Kind.KitchenSink;
+            bool endPiece = row.Kind == Kind.Fridge || row.Kind == Kind.KitchenSink || IsBathroom(row.Kind);
             return (counter && !side) || (endPiece && side) ? new Vector2(f.y, f.x) : f;
         }
 
@@ -220,20 +222,24 @@ namespace HiddenHarbours.App.Editor
                                         Compass door, float w, float l, bool stove = true, bool prep = true)
         {
             float hw = w * 0.5f, hl = l * 0.5f, x = hw - CounterInset;
+            // The microwave's cabinet is shallower than a counter: it stands with its back to the same wall,
+            // so its centre sits nearer that wall by half the difference.
+            float xm = x + (Footprint(Kind.PrepCounter).x - Footprint(Kind.Microwave).x) * 0.5f;
             if (prep) yield return new Row(key, root, building, room, plan, 0, Kind.PrepCounter, new Vector2(x, hl - 2.60f), door, Wall.Left);
             if (stove)
             {
                 yield return new Row(key, root, building, room, plan, 0, Kind.Stove, new Vector2(x, hl - 1.60f), door, Wall.Left);
-                yield return new Row(key, root, building, room, plan, 0, Kind.Microwave, new Vector2(x, hl - 0.75f), door, Wall.Left);
+                yield return new Row(key, root, building, room, plan, 0, Kind.Microwave, new Vector2(xm, hl - 0.75f), door, Wall.Left);
             }
             else
-                yield return new Row(key, root, building, room, plan, 0, Kind.Microwave, new Vector2(x, hl - 1.60f), door, Wall.Left);
+                yield return new Row(key, root, building, room, plan, 0, Kind.Microwave, new Vector2(xm, hl - 1.60f), door, Wall.Left);
         }
 
-        const float ClosetWidth = 1.90f, ClosetDepth = 2.20f;
+        const float ClosetWidth = 1.90f, ClosetDepth = 2.70f;
 
-        /// <summary>The standard closet: toilet against the back wall in the corner, basin beside it,
-        /// shower in front of the toilet against the right wall. <paramref name="front"/> mirrors it to the
+        /// <summary>The standard closet: toilet against the back wall in the corner, basin beside it, and
+        /// the shower against the right wall beyond the floor he stands on to use either of them (it used to
+        /// stand on that floor, 1.6 m out, in front of the toilet). <paramref name="front"/> mirrors it to the
         /// front-right corner, where the toilet and basin back onto the front wall.</summary>
         static IEnumerable<Row> Bathroom(string key, string root, string building, string room, string plan,
                                          int level, Compass door, float w, float l, bool front = false)
@@ -242,7 +248,7 @@ namespace HiddenHarbours.App.Editor
             Wall end = front ? Wall.Front : Wall.Back;
             yield return new Row(key, root, building, room, plan, level, Kind.Toilet, new Vector2(-hw + 0.65f, -s * (hl - 0.65f)), door, end);
             yield return new Row(key, root, building, room, plan, level, Kind.BathroomSink, new Vector2(-hw + 1.45f, -s * (hl - 0.55f)), door, end);
-            yield return new Row(key, root, building, room, plan, level, Kind.Shower, new Vector2(-hw + 0.75f, -s * (hl - 1.60f)), door, Wall.Right);
+            yield return new Row(key, root, building, room, plan, level, Kind.Shower, new Vector2(-hw + 0.75f, -s * (hl - 2.225f)), door, Wall.Right);
         }
 
         static Closet StandardCloset(string key, int level, float w, float l, bool front = false)
@@ -312,8 +318,6 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         public static readonly IReadOnlyCollection<string> SouthWallExceptions = new HashSet<string>
         {
-            "fixture.st_peters.ginny_cottage.toilet",          // placed; west of the shower so the shower never hides it
-            "fixture.st_peters.ginny_cottage.bathroom_sink",   // placed; just inside the washroom door
             "fixture.st_peters.red_saltbox.shower",            // planned, not placed; re-plan north before placing
             "fixture.st_peters.white_farmhouse.toilet",        // planned, not placed (SE wall); re-plan before placing
             "fixture.st_peters.white_farmhouse.bathroom_sink", // planned, not placed (SE wall); re-plan before placing

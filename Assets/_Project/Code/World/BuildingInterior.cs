@@ -209,6 +209,18 @@ namespace HiddenHarbours.World
         /// <summary>The topmost storey that exists here: 1 with an upper level, 0 without.</summary>
         public int TopLevel => HasUpperLevel ? 1 : 0;
 
+        /// <summary>The storey a child of this building is furnished on, read from the parent it was put
+        /// under: 1 under the upper storey's props, 0 under the ground floor's, -1 under neither. A storey is
+        /// drawn lifted up the screen, so its rectangle can overlap the floor below it on screen: where a
+        /// piece stands on screen cannot say which storey it is on, but which list holds it can.</summary>
+        public int FurnishedLevelOf(Transform child)
+        {
+            if (child == null) return -1;
+            if (_upperProps != null && child.IsChildOf(_upperProps)) return InteriorLevelLayout.UpperLevel;
+            if (_props != null && child.IsChildOf(_props)) return InteriorLevelLayout.GroundLevel;
+            return -1;
+        }
+
         /// <summary>The room's footprint in world units, rebuilt from the serialized fields. Cheap
         /// (a struct of floats) and deliberately not cached: the builder may re-face a room in the
         /// editor and a stale cache would keep the old walls.
