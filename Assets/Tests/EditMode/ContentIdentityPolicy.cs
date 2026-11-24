@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace HiddenHarbours.Tests.EditMode
 {
-    // Test-only policy at f1b4ab2f59. These are semantic namespaces, not class-name guesses.
+    // Test-only policy at c626cea10d. These are semantic namespaces, not class-name guesses.
     // New types need an explicit review here; additions to the identity ledger do not grant a prefix.
     internal static class ContentIdentityPolicy
     {
@@ -112,6 +112,8 @@ namespace HiddenHarbours.Tests.EditMode
             { "HiddenHarbours.Economy.FuelStationDef", new[] { "station" } },
             { "HiddenHarbours.Economy.HomeDef", new[] { "home" } },
             { "HiddenHarbours.Economy.InstrumentOffer", new[] { "instrument" } },
+            { "HiddenHarbours.Economy.IslandLedgerDef", new[] { "islandledger" } },
+            { "HiddenHarbours.Economy.IslandStoreShelvesDef", new[] { "islandshelves" } },
             { "HiddenHarbours.Economy.LicenseDef", new[] { "license" } },
             { "HiddenHarbours.Economy.PlantIntake.FishGradeDef", new[] { "fishgrade" } },
             { "HiddenHarbours.Economy.PlantIntake.FishIntakeDef", new[] { "fishintake" } },
@@ -187,6 +189,7 @@ namespace HiddenHarbours.Tests.EditMode
             { "HiddenHarbours.World.RoutineDef", new[] { "routine" } },
             { "HiddenHarbours.World.SaltPanDef", new[] { "pan" } },
             { "HiddenHarbours.World.ShoreRockDef", new[] { "rock" } },
+            { "HiddenHarbours.World.ShopShelfSlotsDef", new[] { "shelfslots" } },
             { "HiddenHarbours.World.StreamDef", new[] { "stream" } },
             { "HiddenHarbours.World.TidalBarDef", new[] { "bar" } },
             { "HiddenHarbours.World.TidalCreekDef", new[] { "creek", "gut" } },

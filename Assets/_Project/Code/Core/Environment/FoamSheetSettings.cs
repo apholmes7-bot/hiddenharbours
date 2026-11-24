@@ -127,6 +127,10 @@ namespace HiddenHarbours.Core
         [Range(0f, 10f)] public float OarPerSecond;
         [Tooltip("Foam laid at once where a blade goes in, at full strength: the white of the catch.")]
         [Range(0f, 1f)] public float OarCatch;
+        [Tooltip("How long the catch's white takes to come up (s): it is laid over this time, growing from the " +
+                 "pull's smear to the burst's size and drawn out along the blade's sweep, instead of all on the " +
+                 "one frame the blade goes in (which reads as a flat disc popping on). 0 = all at once.")]
+        [Range(0f, 0.5f)] public float OarCatchGrowSeconds;
         [Tooltip("Foam laid at once where a blade comes out, at full strength: the puddle it leaves.")]
         [Range(0f, 1f)] public float OarRelease;
         [Tooltip("Crest height (m) of the ring of real water waves a blade sends out where it goes in, at full " +
@@ -181,6 +185,9 @@ namespace HiddenHarbours.Core
             OarCatchRadius = 0.3f,
             OarPerSecond = 1f,
             OarCatch = 0.6f,
+            // The sunset rowing clip: the catch's white popped on as a flat disc on one frame. A tenth of a
+            // second (six frames at 60 fps) lets it come up and stretch along the stroke.
+            OarCatchGrowSeconds = 0.1f,
             OarRelease = 0.26f,
             // Each catch reads again as a splash with a ring spreading from it, the ring being the sea's own
             // waves rather than a drawn picture. Owner 11-21, "the very circular wake wave pattern": a low,

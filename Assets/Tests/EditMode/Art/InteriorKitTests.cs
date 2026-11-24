@@ -288,6 +288,14 @@ namespace HiddenHarbours.Tests.Art.EditMode
                                      $"room '{room.Key}' maps to '{target}', which the village kit does not build.");
                     continue;
                 }
+                // A building baked on its own (not in the village kit) carries its own shell contract
+                // beside its sheets, Buildings/<Owner>/Village_<key>.json, and its plot places it:
+                // Ginny's cottage. Its room is named after that building all the same.
+                string ownShell = Path.Combine(Application.dataPath, "_Project/Art/Sprites/Buildings");
+                bool hasOwnShell = Directory.Exists(ownShell) &&
+                                   Array.Exists(Directory.GetFiles(ownShell, $"Village_{room.Key}.json", SearchOption.AllDirectories),
+                                                p => Path.GetFileName(Path.GetDirectoryName(p)) != "Village");
+                if (hasOwnShell) continue;
                 Assert.IsNotNull(VillageBuildingKit.FindBuild(room.Key),
                                  $"room '{room.Key}' has no village building of the same key, so " +
                                  "nothing will ever place it. Name a room after the building it is " +

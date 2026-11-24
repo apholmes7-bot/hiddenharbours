@@ -53,7 +53,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
         // anchor: if discovery ever stops finding THIS, the guard would silently pass while guarding nothing.
         private const string WaterMaterialPath = "Assets/_Project/Art/Materials/Water.mat";
 
-        [Test]
+        // This is a serial batch over ALL material-backed project shaders, not just water:
+        // currently 18 forced shader imports plus every pass of 33 shipped materials.
+        // The shared 180 s default proved too short on a slow worker. Allow 10 minutes for
+        // the whole batch (including discovery); retain every import/variant/error check.
+        [Test, Timeout(600000)]
         public void ProjectShaders_CompileTheirShippedVariant_NoShaderErrors()
         {
             // The importer/compiler logs shader errors to the console. Without this, Unity's test runner fails the

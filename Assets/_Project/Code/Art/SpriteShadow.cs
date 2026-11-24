@@ -260,9 +260,107 @@ namespace HiddenHarbours.Art
             set => _footOffset = value;
         }
 
+        // ── a caster in the air ─────────────────────────────────────────────────────────────────────
+        // Everything above treats the caster as an upright standee, which is right for a tree, a post or
+        // a figure and wrong for a bird on the wing: seen by the sun a flying gull is FLAT, so its shadow
+        // keeps roughly its own outline at every hour. Stretched by the dusk multiplier instead, a gull's
+        // few-pixel-tall silhouette became a 2.5 m sliver on the water that nobody could read as a bird.
+        private float _heightAboveGround;
+        // What the last Tick folded in, so LateUpdate re-ticks only when the visible result would move.
+        private float _tickedAloftWeight, _tickedAloftAlpha = 1f;
+
+        /// <summary>
+        /// How high above the ground the caster is, metres (0 = standing on it, the default for every
+        /// caster). Above 0 the caster is treated as FLAT to the sun rather than upright: its rake is capped
+        /// at <see cref="SpriteShadowProfile.AloftMaxLength"/> (eased in over
+        /// <see cref="SpriteShadowProfile.AloftBlendMetres"/>, so a take-off or a landing never jumps) and its
+        /// darkness fades with height toward <see cref="SpriteShadowProfile.AloftFarAlpha"/>. Set by the owner
+        /// that knows the height (<see cref="GullFlock"/>); a gull standing on the ground or a post sets 0
+        /// and keeps the normal standing shadow. Not the <see cref="FootOffset"/>, which only moves the anchor.
+        /// </summary>
+        public float HeightAboveGround
+        {
+            get => _heightAboveGround;
+            set => _heightAboveGround = value > 0f ? value : 0f;
+        }
+
+        /// <summary>The smallest change in the aloft weight or fade that is worth an extra tick between the
+        /// throttled ones. A climbing bird re-ticks a few times a second, a cruising one never.</summary>
+        private const float AloftRetickStep = 0.02f;
+
+        /// <summary>
+        /// How far a caster at <paramref name="heightMetres"/> has gone from STANDING (0) to FLAT (1):
+        /// smoothstep over <paramref name="blendMetres"/>, so value and rate are continuous through a take-off.
+        /// A blend of 0 is a switch at the first centimetre. Pure, allocation-free.
+        /// </summary>
+        public static float AloftWeight(float heightMetres, float blendMetres)
+        {
+            if (!(heightMetres > 0f)) return 0f;
+            if (!(blendMetres > 0f)) return 1f;
+            return Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(heightMetres / blendMetres));
+        }
+
+        /// <summary>
+        /// The length multiplier a caster actually rakes by: the standing multiplier, capped at
+        /// <paramref name="aloftCap"/> in proportion to how far aloft it is. Never LONGER than standing (a cap
+        /// above the standing value is no change), so the noon stub is untouched and only the low-sun
+        /// stretch is taken away from a bird in the air.
+        /// </summary>
+        public static float AloftLengthMultiplier(float standingMultiplier, float aloftWeight, float aloftCap)
+        {
+            float flat = Mathf.Min(standingMultiplier, Mathf.Max(0f, aloftCap));
+            return Mathf.Lerp(standingMultiplier, flat, Mathf.Clamp01(aloftWeight));
+        }
+
+        /// <summary>
+        /// The fraction of its darkness a caster's shadow keeps at <paramref name="heightMetres"/>: 1 on the
+        /// ground, falling evenly to <paramref name="farAlpha"/> at <paramref name="fadeMetres"/> and held
+        /// there above it. A fade height of 0 drops straight to the far value once airborne.
+        /// </summary>
+        public static float AloftAlphaScale(float heightMetres, float fadeMetres, float farAlpha)
+        {
+            if (!(heightMetres > 0f)) return 1f;
+            float far = Mathf.Clamp01(farAlpha);
+            if (!(fadeMetres > 0f)) return far;
+            return Mathf.Lerp(1f, far, Mathf.Clamp01(heightMetres / fadeMetres));
+        }
+
         private bool _castOnWalkingDeck;
-        private bool CasterVisible => _caster != null && !_artExcluded && !Quiet &&
+        private bool CasterVisible => _caster != null && !(_artExcluded && _silhouetteOverride == null) && !Quiet &&
             (_caster.enabled || (_castOnWalkingDeck && DeckStance.IsActive));
+
+        // ── what the shadow traces when the caster is drawn some other way ─────────────────────────
+        private Sprite _silhouetteOverride;
+
+        /// <summary>
+        /// The outline this caster's shadow traces INSTEAD of its own sprite, or null for its own sprite
+        /// (the default). For an owner that draws the caster as something else while its sprite stays
+        /// enabled and hidden: the player's mesh figure (<see cref="MeshFigureCastSilhouette"/>), whose
+        /// hidden body sprite otherwise cast the old standing pose whatever he was doing. The override is
+        /// in the caster's local space with its feet at the sprite's pivot, and it is never flipped (it is
+        /// already the drawn shape). Visibility is unchanged: still the caster's own rules.
+        /// </summary>
+        public Sprite SilhouetteOverride
+        {
+            get => _silhouetteOverride;
+            set
+            {
+                if (value == _silhouetteOverride) return;
+                _silhouetteOverride = value;
+                _lastSprite = null;                    // force the silhouette re-sync onto the new outline
+                if (isActiveAndEnabled) Tick();
+            }
+        }
+
+        /// <summary>Whether the caster's own visibility rules would show a shadow now, whatever its shape:
+        /// an owner that traces an override asks this first, so nothing is traced for a shadow nobody
+        /// sees (the rower at the oars, whose body is disabled off a walking deck).</summary>
+        public bool WouldCast => isActiveAndEnabled && _caster != null && !Quiet &&
+            (_caster.enabled || (_castOnWalkingDeck && DeckStance.IsActive));
+
+        /// <summary>The sprite the shadow is cast from this frame: the override, else the caster's own.</summary>
+        private Sprite CastSprite => _silhouetteOverride != null ? _silhouetteOverride
+                                     : _caster != null ? _caster.sprite : null;
 
         /// <summary>
         /// True: this caster throws no silhouette, no ground pool and no lamp shadow, whatever its sprite
@@ -603,20 +701,22 @@ namespace HiddenHarbours.Art
             state = default;
             if (_caster == null) _caster = GetComponent<SpriteRenderer>();
             if (!CasterVisible) return false;
-            Sprite sprite = _caster.sprite;
+            Sprite sprite = CastSprite;
             if (sprite == null || sprite.texture == null) return false;
+            bool flipX = _silhouetteOverride == null && _caster.flipX;   // an override is the drawn shape
+            bool flipY = _silhouetteOverride == null && _caster.flipY;
 
             Vector3 foot = transform.TransformPoint(new Vector3(0f, -_footOffset, 0f));
             LampShadowMath.SpriteWorldRect(
                 (Vector2)transform.position, transform.lossyScale, sprite.rect, sprite.pivot,
-                sprite.pixelsPerUnit, _caster.flipX, _caster.flipY, out Vector2 min, out Vector2 max);
+                sprite.pixelsPerUnit, flipX, flipY, out Vector2 min, out Vector2 max);
 
             state.Foot = new Vector2(foot.x, foot.y);
             state.RectMin = min;
             state.RectMax = max;
             state.Sheet = sprite.texture;
             state.UvRect = LampShadowMath.SpriteUvRect(
-                sprite.rect, sprite.texture.width, sprite.texture.height, _caster.flipX, _caster.flipY);
+                sprite.rect, sprite.texture.width, sprite.texture.height, flipX, flipY);
             return state.IsValid;
         }
 
@@ -635,6 +735,24 @@ namespace HiddenHarbours.Art
             SyncSilhouette();
             PoseShadow();
             SyncFootOffset();
+            SyncAloft();
+        }
+
+        /// <summary>
+        /// Re-tick between the throttled ticks when the caster's height has moved its shadow visibly: a gull
+        /// landing goes from flat to standing in well under a second, and at 10 Hz the dusk rake would grow
+        /// in visible steps. Everything on the ground (height 0, weight 0, fade 1) pays two compares.
+        /// </summary>
+        private void SyncAloft()
+        {
+            if (_heightAboveGround <= 0f && _tickedAloftWeight <= 0f && _tickedAloftAlpha >= 1f) return;
+            SpriteShadowProfile look = SharedProfile;
+            float w = AloftWeight(_heightAboveGround, look.AloftBlendMetres);
+            float a = AloftAlphaScale(_heightAboveGround, look.AloftFadeMetres, look.AloftFarAlpha);
+            if (Mathf.Abs(w - _tickedAloftWeight) < AloftRetickStep && Mathf.Abs(a - _tickedAloftAlpha) < AloftRetickStep
+                && !(w == 0f && _tickedAloftWeight > 0f) && !(a == 1f && _tickedAloftAlpha < 1f))
+                return;
+            Tick();
         }
 
         // The foot offset the shadow's block last carried, in the shadow's LOCAL units (NaN = never).
@@ -744,7 +862,7 @@ namespace HiddenHarbours.Art
         {
             if (_shadow == null || _caster == null) return;
 
-            Sprite sprite = _caster.sprite;
+            Sprite sprite = CastSprite;
             if (sprite == _lastSprite) return;      // the overwhelmingly common case — one compare, no work
             _lastSprite = sprite;
             RefreshArtExclusion();                  // belt and braces behind the sprite-change callback
@@ -862,13 +980,18 @@ namespace HiddenHarbours.Art
                 ? Mathf.Clamp01(Shader.GetGlobalFloat(IdShadowStrength))
                 : DayNightMath.ShadowStrength(_fallbackHour, sunrise, sunset, 0f, overcastFades);
             SpriteShadowProfile look = SharedProfile;
-            float alpha = DayNightMath.ShadowAlpha(look.MaxAlpha, strength);
+            // A caster in the air keeps less of its darkness the higher it is (1 for everything standing).
+            _tickedAloftWeight = AloftWeight(_heightAboveGround, look.AloftBlendMetres);
+            _tickedAloftAlpha = AloftAlphaScale(_heightAboveGround, look.AloftFadeMetres, look.AloftFarAlpha);
+            float alpha = DayNightMath.ShadowAlpha(look.MaxAlpha, strength) * _tickedAloftAlpha;
 
             // Length multiplier (× height) from the elevation, clamped so dawn/dusk don't shoot to infinity.
             // ⚠️ The cap is on the MULTIPLIER, and the multiplier's own ceiling is LengthAtHorizon — so a cap
             // above that never binds. The component's historical 7 never once clamped a caster in this game;
             // the shipped asset carries 3, which does. See SpriteShadowProfile.
             float lenMul = DayNightMath.ShadowLength(elevation, look.LengthAtNoon, look.LengthAtHorizon, look.MaxLength);
+            // ...and a caster in the AIR is flat to the sun, not upright: no low-sun stretch (see HeightAboveGround).
+            lenMul = AloftLengthMultiplier(lenMul, _tickedAloftWeight, look.AloftMaxLength);
 
             // Convert the world shear length into the shadow sprite's LOCAL-Y units (the shader shears in
             // object space, scaled by uv.y feet->head). worldHeight = caster height; localHeight = the sprite
@@ -882,8 +1005,9 @@ namespace HiddenHarbours.Art
             var color = new Color(tint.r, tint.g, tint.b, alpha);
 
             _shadow.GetPropertyBlock(_mpb);
-            if (_caster.sprite != null && _caster.sprite.texture != null)
-                _mpb.SetTexture(IdMainTex, _caster.sprite.texture);
+            Sprite cast = CastSprite;
+            if (cast != null && cast.texture != null)
+                _mpb.SetTexture(IdMainTex, cast.texture);
             _mpb.SetColor(IdShadowColor, color);
             _mpb.SetVector(IdShadowDir, new Vector4(shadowDir.x, shadowDir.y, 0f, 0f));
             _mpb.SetFloat(IdShadowLen, localLen);
@@ -979,11 +1103,11 @@ namespace HiddenHarbours.Art
             Material arm = ArmMaterial(look.ScreenSpaceShade);
             if (arm != null && _pool.sharedMaterial != arm) _pool.sharedMaterial = arm;
             bool on = radius > 0f && poolAlpha > 0f && tallEnough && _castsGroundContact && CasterVisible
-                   && _caster.sprite != null && _pool.sharedMaterial != null;
+                   && CastSprite != null && _pool.sharedMaterial != null;
             _pool.enabled = on;
             if (!on) return;
 
-            float worldWidth = _caster.sprite.bounds.size.x * Mathf.Abs(transform.lossyScale.x);
+            float worldWidth = CastSprite.bounds.size.x * Mathf.Abs(transform.lossyScale.x);
             Vector2 size = GroundContactSize(worldWidth, radius);
 
             float parentX = Mathf.Abs(transform.lossyScale.x); if (parentX < 1e-5f) parentX = 1f;
@@ -1049,8 +1173,9 @@ namespace HiddenHarbours.Art
         /// <summary>The caster's on-screen height in world units (sprite bounds × lossy Y scale).</summary>
         private float CasterWorldHeight()
         {
-            if (_caster != null && _caster.sprite != null)
-                return _caster.sprite.bounds.size.y * Mathf.Abs(transform.lossyScale.y);
+            Sprite cast = CastSprite;
+            if (cast != null)
+                return cast.bounds.size.y * Mathf.Abs(transform.lossyScale.y);
             return Mathf.Abs(transform.lossyScale.y);   // fallback: 1 unit at unit scale
         }
 

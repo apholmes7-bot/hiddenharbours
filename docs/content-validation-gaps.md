@@ -1,0 +1,60 @@
+# Content validation coverage and gaps
+
+Audit refreshed against `c626cea10d1cb496df41cca2f9ab2f580ad47b28`, including the validation changes in this branch. This is a source audit, not an EditMode execution report. The aim is to protect the working coast (P3) from broken content additions. This document incorporates and supersedes the audit in PR 1444.
+
+Since the first audit at `f1b4ab2`, main added three identity-bearing types (`IslandLedgerDef`, `IslandStoreShelvesDef`, `ShopShelfSlotsDef`) and four identities, including the unlicensed-catch inner-voice line. The combined ledger now contains 2,416 identities across 176 declared types. Their reviewed semantic prefixes are `islandledger`, `islandshelves`, and `shelfslots`; the new inner-voice line uses the existing `innervoice` policy. The 66 exact legacy format exceptions are unchanged. These additions are content already on main, not exceptions to the ID rule.
+
+## Candidate rules
+
+Test paths below are relative to `Assets/Tests/EditMode/`. “Covered” describes the stated scope, not every possible serialized field.
+
+| Rule | What this branch checks | Remaining gap / safe next step |
+|---|---|---|
+| ID format | `ContentValidationTests.IdentityAndReferences.cs` applies strict single-dot, lower-case snake-case shape to every discovered `Id` or `Spec.Id`. `LegacyIdFormatAllowlist` records exactly 66 existing GUID/type/ID bindings, and its set must match the malformed inventory exactly. | New malformed IDs fail; repaired or changed legacy bindings require explicit exception removal. The identity suite still proves the loaded inventory agrees with the ledger. |
+| Unique IDs across all Defs | `DefIdentityContractTests` reflects concrete project ScriptableObjects whose names end in `Def`, plus `InstrumentOffer`; requires uniqueness within type and exactly 16 cross-type shared plant IDs, each belonging only to `PlantSpeciesDef` and `ShorePlantDef`. `ContentValidationTests.DefIds_AreGloballyUnique_AcrossAllDefTypes` itself covers only fish, hull, region, trap, bait, water and plume. | Already covered within the reflected inventory. Do not introduce a competing blanket uniqueness rule that rejects the approved plant pairs. Non-Def offers other than `InstrumentOffer` are outside that reflection selector. |
+| Prefix matches class | `ContentIdentityPolicy` declares reviewed semantic prefixes for all 176 identity-bearing types. The reflected type set must equal the policy keys. Semantic aliases such as `fish` for `FishSpeciesDef` and shared `shoreplant` remain explicit. | New types require review; additions to the ledger alone do not grant a prefix. Domain suites retain more specific rules such as roost versus haunt by kind. |
+| Every Def reference resolves | Existing domain suites resolve their typed edges. The added authored-reference sweep checks GUID existence for standard external YAML references from identified Def assets and resolves local file IDs for identified Def targets. | Expected field type, required-null semantics, non-Def subassets and scene reachability are not established by this sweep. There is no universal string-reference schema: flags, anchors, station tokens and instance IDs are different domains. |
+| Prices strictly positive | Fish `BaseValue` is now **positive**, as all 19 shipped fish already require. Licence fees and gear prices retain their **nonnegative** contracts. Supplies and bait prices, pot offers and named wholesaler stock are **positive**. The damaged dory's repair cost is positive; its purchase price is nonnegative. | No common all-price rule; zero remains permitted by the typed contracts that already allow it. No authored price changes. |
+| Weights strictly positive | Fish endpoints must both be finite and positive, with `MinWeightKg <= MaxWeightKg`. Island goods and research containers retain their specific dimensions/mass validators. | No universal finite-number rule for arbitrary fields. Optional capacities and normalized weights need their own semantics. All 19 authored fish already meet the strengthened rule. |
+| Stack sizes strictly positive | Bait lots are at least one; deck stack capacities match the rig's explicit numbers; research tubs have `MaxStackCount == 1`; research data pass their model validators. | No common stack-size field exists across Defs. Zero can mean a surface is unavailable. Keep typed rules rather than reflecting any field containing “stack” and demanding positivity. |
+| No two files define one entity; one entity per file | Within-type uniqueness and the GUID/type/ID ledger bind each registered entity to one GUID. The added file-shape check requires each discovered identity to be the main asset and exactly one Def or `InstrumentOffer` at its path, including different-type subassets. | Entirely undiscovered files and semantic duplicates with different IDs still require other checks. Native loading must verify the subasset inventory. |
+| Sale goods have a buyer | Existing counter and market suites cover their sale flows. The added catalog check resolves every listed `ICatalogListing` seller against `SellerDef`, including offers outside the Def-name selector. | There is no shipped universal `BuyerDef` registry or sale-good flag. Seller resolution does not prove buyer reachability. Universal buyer coverage needs an explicit domain contract. |
+| Recipe inputs/outputs exist | `Food/RecipeContentValidationTests` retains its output, shape, work-time and Resources checks and now resolves species/category/intermediate inputs independently of station. Every recipe station must be accepted by an authored cooking station. The existing item-input sweep already covers every station. Food forms and edible output checks remain in their domain suites. | Outputs are minted by recipes; prep intermediates need no second edible-food entity. These checks do not prove scene placement, all processing cycles or player access. |
+| Stable / retired IDs | The identity ledger preserves every GUID/type/ID, requires additions to be registered and requires type coverage. Its reader rejects malformed rows, repeated JSON fields, duplicate GUIDs, duplicate type/ID pairs and undeclared types. The retired-ID sweep in `ContentValidationTests` covers fish, hulls, regions, traps and bait; held props also check retirement. | Frozen baseline must never be appended. New registrations belong in addition files. Retirement checks are not universal across all reflected types. |
+| Authored YAML survives loading | `ContentValidationTests.AuthoredAssetText_EscapesEveryApostrophe_SoNoLineIsSilentlyTruncated` scans `.asset` files under Data for improperly closed single-quoted scalars, including multiline strings. | It is a targeted quote check, not a YAML parser or universal missing-script/GUID validator. |
+
+## Main harness inventory
+
+The following table accounts for all 31 test methods in `ContentValidationTests.cs`, grouping only methods that enforce the same subject's contract. The partial identity/reference file adds four inventory tests and 22 parameterized policy/parser cases; the recipe suite adds one station-independent input test. Identity and specialist suites above complement this harness; they are not all called by it.
+
+| Test(s), by method stem | Assertions in this branch |
+|---|---|
+| `SunCasterRules_Exist` | Resources singleton loads, fixed ID, `IsValid`, exactly one asset. |
+| `NmcKeyScenes_Exist` | Twelve region-specific scenes; only the two specified ones placed; unique scene/piece IDs, existing region, source hash marker; piece ID shape, owner/kit/variants, empty words, no retired pieces; light piece links. |
+| `VillagePlans_Exist` | Exactly one plan; nonblank unique ID; lot/yard/route/commons/light lists match complete inventories; roadside piece links. |
+| `VillageLots_Exist` | Nine lots; nonblank unique IDs; street/walk/footprint/building resolution and walk ownership. |
+| `VillageYards_Exist` | Nine yards; nonblank unique IDs; lot and dressing piece resolution; outline at least three points. |
+| `VillageRoutes_Exist` | Twenty-three routes; nonblank unique IDs; at least two points, positive width, optional lot resolution. |
+| `VillageCommons_Exist` | Three commons; nonblank unique IDs; outlines, furniture piece/optional route and station node resolution. |
+| `VillageLights_Exist` | Sixteen lights; nonblank unique IDs; lot or commons owner and optional route resolve; positive reach, named lighter, matching package position. |
+| `FishSpecies_Exist`, `FishSpecies_AreReachable` | Nonempty inventory; nonblank unique IDs; nonempty, nonblank region list; nonzero gear and season masks; ordered finite, positive weight endpoints and positive base value. |
+| `Bait_Have`, `BaitFavorsSpeciesIds` | Nonblank unique bait IDs; every supplied favored fish ID is nonblank and resolves. Null list allowed. |
+| `Traps_Have`, `TrapRequiredBaitIds`, `TrapAllowedCatchFishIds`, `TrapFillWindows` | Nonblank unique trap IDs; authored required bait and catch IDs resolve; `HoursToFullPot >= SoakHours` (equality explicitly allowed). |
+| `BoatHulls_Exist`, `BoatHulls_HaveNameAndHold` | Nonempty inventory, nonblank unique IDs/names, hold at least one. |
+| `BoatHulls_FuelIsAuthoredCoherently`, `TheRowedDory_HasNoTank` | Known optional fuel grade; positive-capacity tank requires grade and positive burn; absent tank requires zero burn; named rowed dory remains tankless. |
+| `Regions_Exist`, `Regions_HaveNameAndAScene`, `RegionSpawnFishIds` | Nonempty inventory, nonblank unique IDs/names, `HasScene`, nonnegative tide amplitude; authored spawn fish entries are nonblank and resolve. Scene-name nonemptiness is not scene loading. |
+| `CurlingBreakerSites_HaveStableIdsAndResolvedRegions` | Valid config, ID format and uniqueness, region and folder resolution, site validity, enabled count within pool capacity. |
+| `WaterTypesAndPlumes_HaveStableIdsAndValidValues` | Nonempty water inventory, unique formatted IDs, expected folders, validity checks; plumes resolve region and shipped water type. |
+| `FishRegionIds_ResolveToRealRegions` | Nonempty region inventory; every nonblank fish region reference resolves. |
+| `DefIds_AreGloballyUnique_AcrossAllDefTypes` | No cross-type collision among its seven explicitly enumerated families (see reflected suite above for broader coverage). |
+| `NoShippedDef_AuthorsARetiredId`, `TheRetiredIdsLedger_IsWellFormed` | Five-family retirement sweep; nonblank unique retirement entries; lookup agrees, excludes live dory/null/blank. |
+| `HeldPropIds_StableAndUnique` | Shape, uniqueness, family/variant identity, retirement and exact shipped held-prop membership. |
+| `AuthoredAssetText_EscapesEveryApostrophe` | Nonempty Data asset scan; no unescaped single quote ending an authored scalar prematurely. |
+
+## Implementation boundaries
+
+The implementation extends `ContentValidationTests` and `Food/RecipeContentValidationTests`, and reuses the public type selector in `DefIdentityContractTests` without changing it. Exception lists remain test-only and exact (type, GUID and ID where applicable); stale entries fail so a fix removes its exception. No IDs, assets or frozen-ledger rows are changed.
+
+The 66 format departures are: 23 route IDs, 16 light IDs, nine lot IDs, nine yard IDs, three commons IDs, three relationship IDs, two conversation IDs and one beach ID. This count comes from the committed ledger plus additions, not a Unity import. The related identity suite remains responsible for proving the inventory matches loaded assets.
+
+Native type discovery, imports, scene wiring and the EditMode pass remain unverified here. Text and source inspection cannot establish buyer reachability or visual correctness. The new shelf, ledger and sold-out data also have dedicated tests in `Economy/IslandStoreLedgerTests.cs`, `Economy/IslandStoreShelvesTests.cs` and `IslandSupply/`; those domain checks complement the generic identity/reference sweep. The first-week and limited-licence designs do not introduce a generic buyer registry or alter this audit's ID exceptions.

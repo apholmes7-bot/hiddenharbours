@@ -18,6 +18,7 @@ namespace HiddenHarbours.App.Editor
             public VillageMove[] Moves;
             public VillageHome[] Homes;
             public VillageYard[] Yards;
+            public VillageYard[] HomesteadYards;
             public IReadOnlyList<StPetersVillageDressing.Row> Dressing;
             public LightPostDef[] Lights;
             public VillageStation[] Stations;
@@ -65,7 +66,7 @@ namespace HiddenHarbours.App.Editor
             if (beams.Count != StPetersMachines.Row.Count) throw new Refusal("Village refresh needs all three machine beams.");
             return new VillageInputs
             {
-                Moves = moves, Homes = ReadNewVillageHomes(), Yards = ReadVillageYards(), Dressing = StPetersVillageDressing.ReadPlan(),
+                Moves = moves, Homes = ReadNewVillageHomes(), Yards = ReadVillageYards(), HomesteadYards = ReadHomesteadYards(), Dressing = StPetersVillageDressing.ReadPlan(),
                 Lights = plan.LightIds.Select(StPetersVillageYards.Read<LightPostDef>).ToArray(), Stations = VillageStationRows(moves),
                 Lanes = new Dictionary<string, Vector2>
                 {
@@ -114,6 +115,7 @@ namespace HiddenHarbours.App.Editor
             foreach (var p in MoveVillageBuildings(scene, data.Moves)) Add(p);
             Add(NewVillageHomes(scene, data.Homes, data.LightAssets));
             Add(VillageYardBoundaries(scene, data.Yards, data.BoundaryAssets));
+            if (data.HomesteadYards != null) Add(HomesteadYardBoundaries(scene, data.HomesteadYards, data.BoundaryAssets));
             foreach (var p in VillageDressing(scene, data.Dressing, data.DressingAssets)) Add(p);
             Add(VillageLights(scene, data.Lights, data.LightAssets));
             Add(VillageRoutines(scene, data.Stations, data.Lanes));

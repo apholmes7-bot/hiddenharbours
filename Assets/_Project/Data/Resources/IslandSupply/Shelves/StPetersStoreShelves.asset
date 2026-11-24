@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b91328293c940dfaea9ad86a36f3764, type: 3}
+  m_Name: StPetersStoreShelves
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.IslandStoreShelvesDef
+  Id: islandshelves.st_peters_general
+  ShopId: shop.st_peters_general
+  SellerId: seller.leblancs
+  RecheckGameMinutes: 10
+  Ledger: {fileID: 11400000, guid: e4bc34a533794007880fd70def1ab3fb, type: 2}
+  OpensHour: 7
+  ClosesHour: 19
+  Lines:
+  - Id: line.grocery_box
+    Good: {fileID: 11400000, guid: f95f5b361481478b8adc530394e0d777, type: 2}
+    ItemName: box of groceries
+    UnitsPerItem: 5
+    MaxOnShelf: 18
+    CounterListingIds:
+    - supply.bread
+    - supply.oatcakes
+    - supply.tinned_beans
+  - Id: line.ice_bag
+    Good: {fileID: 11400000, guid: ac996cec036e4ea0920ce4a1f4c61aa2, type: 2}
+    ItemName: bag of ice
+    UnitsPerItem: 5
+    MaxOnShelf: 20
+    CounterListingIds:
+    - supply.ice
+  - Id: line.bait_box
+    Good: {fileID: 11400000, guid: 8c86cdb0e06d4829a003516973393a76, type: 2}
+    ItemName: box of bait
+    UnitsPerItem: 2.5
+    MaxOnShelf: 20
+    CounterListingIds:
+    - bait.capelin
+  - Id: line.gas_jerry_can
+    Good: {fileID: 11400000, guid: bb218baf8d4045d7b66a005c35bba906, type: 2}
+    ItemName: 20 L jerry can of gas
+    UnitsPerItem: 20
+    MaxOnShelf: 4
+    CounterListingIds: []

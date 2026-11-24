@@ -182,7 +182,14 @@ namespace HiddenHarbours.Core
         /// <summary>Which moment: one of <see cref="InnerVoiceCues"/>. Matched whole, case-sensitive.</summary>
         public readonly string CueId;
 
-        public InnerVoiceCue(string cueId) { CueId = cueId; }
+        /// <summary>A name to say in the line, or null. A line asset that carries
+        /// <see cref="InnerVoiceCues.NameToken"/> has it replaced by this (e.g. the species of a catch he
+        /// has to let go); a line without the token ignores it.</summary>
+        public readonly string Name;
+
+        public InnerVoiceCue(string cueId) { CueId = cueId; Name = null; }
+
+        public InnerVoiceCue(string cueId, string name) { CueId = cueId; Name = name; }
     }
 
     /// <summary>
@@ -220,5 +227,14 @@ namespace HiddenHarbours.Core
         /// <summary>An action was refused because she is both (<see cref="NeedsGate"/>): one combined
         /// line, never two bubbles.</summary>
         public const string TooTiredAndHungry = "cue.needs.too_tired_and_hungry";
+
+        /// <summary>A catch was released because he holds no licence for its species (owner ruling
+        /// 2026-11-23). Raised with the species' display name in <see cref="InnerVoiceCue.Name"/>: once per
+        /// rod landing, once per dig, and once per trap haul however many went back.</summary>
+        public const string UnlicensedCatch = "cue.fishing.unlicensed_catch";
+
+        /// <summary>The placeholder a line asset writes where <see cref="InnerVoiceCue.Name"/> is said
+        /// (e.g. "I don't have a licence for this {name} yet.").</summary>
+        public const string NameToken = "{name}";
     }
 }

@@ -399,7 +399,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 $"Expected the wash's reach predicate three times (the surf block, the edge blend that rides " +
                 $"along with it, and the run-up wash's lee share) — found {reachGates}. Without the second the " +
                 "edge blend outlives the block that feeds it, and the dry side stops being bit-identical.");
-            StringAssert.Contains("float washSeaBreaks = (_BreakerOuter.w > 0.5 && depth > -surfBeachReach)", src,
+            StringAssert.Contains("float washSeaBreaksOpen = (_BreakerOuter.w > 0.5 && depth > -surfBeachReach)", src,
                 "the run-up wash's lee share must be gated by the same reach as the surf block");
 
             // The FENCE: foam families A/B/C are not this change's business. The foam fringe keeps reading
