@@ -30,7 +30,7 @@ Shader "HiddenHarbours/IsoFacetOverlay"
             Name "HHHullOverlay"
             Tags { "LightMode" = "Universal2D" }
 
-            Blend SrcAlpha OneMinusSrcAlpha
+            Blend One Zero   // the same colour as SrcAlpha OneMinusSrcAlpha at alpha 1; the alpha carries the calm mirror's mesh tag
             ZWrite Off
             Cull Off
 
@@ -57,6 +57,7 @@ Shader "HiddenHarbours/IsoFacetOverlay"
             float _HullId;
             float _HullIdFore;
             float _HullIdForeSpan;
+            float _HHCalmMirrorMeshTag;   // global: 1 while the calm mirror runs (CalmMirror), else unset = 0
 
             // The figure pixel look (route 1, GameConfig.FigurePixelTarget; IsoFacetFigureTarget): the
             // figures at one texel per art pixel, and the map from a screen pixel to its texel,
@@ -125,7 +126,8 @@ Shader "HiddenHarbours/IsoFacetOverlay"
                 // Only THIS hull's pixels — either of her ids.
                 clip(HHIsThisHull(c.a) ? 1.0 : -1.0);
                 clip(c.a - 0.5 / 255.0);
-                return float4(c.rgb, 1.0);
+                // While the calm mirror runs, a mesh pixel carries alpha 0.875 so the mirror leaves it to the mesh mirror pass.
+                return float4(c.rgb, _HHCalmMirrorMeshTag > 0.5 ? 0.875 : 1.0);
             }
             ENDHLSL
         }

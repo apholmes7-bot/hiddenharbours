@@ -248,7 +248,13 @@ namespace HiddenHarbours.World
         int BrookOnGround(double[] G, double[] still, int n)
         {
             var st = _plan.Streams[n];
-            var g = _streamLines[n];
+            // A brook that runs on to the sea is drawn as one line with its run-out, so its last reach bends into the run-out
+            // as the bed cut down the beach does; its own water stops at its last point, where the run-out's begins.
+            bool runsOn = st.RunOut != null && st.RunOut.Length > 0;
+            var g = runsOn ? Catmull(Num(st.LineWithRunOut(0)), _lineStep) : _streamLines[n];
+            double uEnd = runsOn ? g.Knots[st.Points.Length - 1] : double.PositiveInfinity;
+            var knots = g.Knots;
+            if (runsOn) { knots = new double[st.Points.Length]; Array.Copy(g.Knots, knots, knots.Length); }   // its own points' knots
             var z = Num(st.BedZ);
             double depth = Num(st.Depth);
             foreach (var p in _plan.Ponds)
@@ -266,7 +272,7 @@ namespace HiddenHarbours.World
                 double e = _g.Sample(G, x, y);
                 double body = BodyAt(x, y);
                 if (!double.IsNaN(body)) e = Math.Max(e, body - depth);
-                zb[j] = BrookHeadLevel(st, Math.Min(Interp(g.S[j], g.Knots, z), e), j) - depth;                   // the file's bed: no running minimum
+                zb[j] = BrookHeadLevel(st, Math.Min(Interp(g.S[j], knots, z), e), j) - depth;                   // the file's bed: no running minimum
             }
             var widths = Num(st.Widths);
             double x0 = double.PositiveInfinity, y0 = double.PositiveInfinity, x1 = double.NegativeInfinity, y1 = double.NegativeInfinity;
@@ -278,7 +284,8 @@ namespace HiddenHarbours.World
             for (int c = c0; c < c1; c++)
             {
                 g.Query(_xs[c], _ys[r], ref hint, out double d, out _, out double u);
-                double hw = Interp(u, g.Knots, widths) / 2.0;
+                if (u > uEnd) continue;
+                double hw = Interp(u, knots, widths) / 2.0;
                 if (!(d <= hw + Rules.ChannelEdge)) continue;
                 double b = Interp(u, g.S, zb);
                 if (double.IsNaN(b)) continue;
@@ -286,7 +293,102 @@ namespace HiddenHarbours.World
                 laid++;
             }
             _r.Note(st.Id + ".ground_cells", laid);
+            return laid + RunOutOnGround(G, still, st, depth);
+        }
+
+        /// <summary>
+        /// A brook's run-out (fresh water running on to the sea): past its last point (or from its cut bed's first station),
+        /// along its points and run-out drawn as one line, the bed is the ground on the line, never climbing, and the water its bed plus the brook's depth, out to
+        /// <see cref="StreamDef.RunOutWidth"/>. Below the tide the sea covers it; at a low tide it is the thread that reaches
+        /// the water. Returns the cells laid.
+        /// </summary>
+        int RunOutOnGround(double[] G, double[] still, StreamDef st, double depth)
+        {
+            if (st.RunOut == null || st.RunOut.Length == 0) return 0;
+            var line = Catmull(Num(st.LineWithRunOut(0)), _lineStep);
+            // Where a brook's bed was cut down the beach (a BrookBed ask on this stream) the bed is the ground: the run-out's
+            // water starts at the bed's first station, so a dip the bed filled never strands the brook's designed bed under it.
+            int fromStation = st.Points.Length - 1;
+            var bedDef = BedAskOf(st);
+            if (bedDef != null) fromStation = Math.Min(fromStation, Math.Max(0, bedDef.FromStation));
+            double from = line.Knots[fromStation], uR = line.Knots[st.Points.Length - 1], L = line.Length;
+            // where the bed shallows down its run-out the water over it shallows by the same share (the bed's own line, its arc from its start)
+            GroundFileImport.Ask bed = null; PlanLine bedLine = null;
+            if (bedDef != null) { bed = GroundFileImport.AskOf(bedDef, null, st.LineWithRunOut(bedDef.FromStation)); bedLine = GroundFileImport.BedLine(bed); }
+            int m = line.R.Length;
+            var zb = new double[m];
+            double low = double.PositiveInfinity;
+            for (int j = 0; j < m; j++)
+            {
+                if (line.S[j] < from) { zb[j] = double.NaN; continue; }
+                low = Math.Min(low, _g.Sample(G, line.R[j].X, line.R[j].Y));
+                zb[j] = low;
+            }
+            double hwMax = Math.Max(Num(st.RunOutWidth), Num(st.RunOutWidthAt(1f))) / 2.0, reachMax = hwMax + Rules.ChannelEdge;
+            if (!Win(line.MinX - reachMax, line.MinY - reachMax, line.MaxX + reachMax, line.MaxY + reachMax, out int r0, out int r1, out int c0, out int c1)) return 0;
+            int hint = -1, laid = 0;
+            for (int r = r0; r < r1; r++)
+            for (int c = c0; c < c1; c++)
+            {
+                line.Query(_xs[c], _ys[r], ref hint, out double d, out _, out double u);
+                if (!(u > from && u < L)) continue;
+                double t = L > uR ? Math.Max(0, (u - uR) / (L - uR)) : 0;
+                if (!(d <= Num(st.RunOutWidthAt((float)t)) / 2.0 + Rules.ChannelEdge)) continue;
+                double b = Interp(u, line.S, zb);
+                if (double.IsNaN(b)) continue;
+                double share = bed != null ? GroundFileImport.ShallowAt(bed, bedLine, u - from) : 1;
+                Lay(still, r * _w + c, b + depth * share);
+                laid++;
+            }
+            _r.Note(st.Id + ".run_out_cells", laid);
             return laid;
+        }
+
+        /// <summary>The ground file's live BrookBed ask cut down this brook's line, or null.</summary>
+        GroundAskDef BedAskOf(StreamDef st)
+        {
+            if (_plan.Ground == null || _plan.Ground.Asks == null) return null;
+            foreach (var a in _plan.Ground.Asks)
+                if (a != null && !a.Retired && a.Kind == GroundAskKind.BrookBed && ReferenceEquals(a.Stream, st)) return a;
+            return null;
+        }
+
+        /// <summary>
+        /// Damp sand beside each brook's bed (its ask's <see cref="GroundAskDef.BedDamp"/>): plain sand that stays dry within the bed's
+        /// dish and the band past it, the band's edge wandering by half its width (seeded noise over the ask's wavelength), is
+        /// painted the ask's <see cref="GroundAskDef.BedDampZone"/>, so the thread's water meets darker wet sand, never a hard cut
+        /// against dry. Runs on the final ground and water. Returns the cells painted.
+        /// </summary>
+        int DampBesideBrooks()
+        {
+            int painted = 0;
+            foreach (var st in _plan.Streams)
+            {
+                var def = BedAskOf(st);
+                if (def == null || !(def.BedDamp.x > 0) || !(def.BedDamp.y > 0)) continue;
+                byte zone = Zi(def.BedDampZone);
+                var a = GroundFileImport.AskOf(def, null, st.LineWithRunOut(def.FromStation));
+                var line = GroundFileImport.BedLine(a);
+                double band = Num(def.BedDamp.x), lam = Num(def.BedDamp.y), L = line.Length;
+                double reach = Math.Max(a.HalfWidthFrom, a.HalfWidthTo) * (1 + a.Wander) + 1.5 * band;
+                if (!Win(line.MinX - reach, line.MinY - reach, line.MaxX + reach, line.MaxY + reach, out int r0, out int r1, out int c0, out int c1)) continue;
+                int hint = -1, n = 0;
+                for (int r = r0; r < r1; r++)
+                for (int c = c0; c < c1; c++)
+                {
+                    int i = r * _w + c;
+                    if (_zone[i] != ZSand || !double.IsNaN(_still[i])) continue;
+                    line.Query(_xs[c], _ys[r], ref hint, out double d, out double side, out double u);
+                    if (!(u > 0 && u < L)) continue;
+                    double edge = GroundFileImport.BedHalfWidth(a, u, L, side) + band * (1 + 0.5 * Clip(2 * SNoise(_xs[c], _ys[r], a.Seed + 3, lam), -1, 1));
+                    if (!(d <= edge)) continue;
+                    _zone[i] = zone;
+                    n++;
+                }
+                _r.Note(st.Id + ".damp_cells", n);
+                painted += n;
+            }
+            return painted;
         }
 
         /// <summary>The surface of a pond or a key scene's pool whose ellipse (unwobbled) holds the point, else NaN.</summary>
