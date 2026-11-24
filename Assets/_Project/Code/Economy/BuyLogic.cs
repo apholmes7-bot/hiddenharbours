@@ -40,13 +40,27 @@ namespace HiddenHarbours.Economy
         /// <summary>The player's money covers <see cref="Price"/> (only meaningful when not owned).</summary>
         public readonly bool Affordable;
 
-        /// <summary>True iff Confirm should be enabled: not already owned, and affordable.</summary>
-        public bool CanBuy => !Owned && Affordable;
+        /// <summary>Items on the shelf this row comes off, or <see cref="NotCounted"/> when the row is not
+        /// counted (gear, licences, a store with no shelves). Store sold-out slice.</summary>
+        public readonly int OnShelf;
 
-        public BuyQuote(BuyRowKind kind, int price, bool owned, bool affordable)
+        /// <summary><see cref="OnShelf"/> for a row no shelf counts.</summary>
+        public const int NotCounted = -1;
+
+        /// <summary>The row is counted and its shelf is empty: nothing to sell, whatever the purse.</summary>
+        public bool SoldOut => OnShelf == 0;
+
+        /// <summary>True iff Confirm should be enabled: not already owned, affordable, and on the shelf.</summary>
+        public bool CanBuy => !Owned && Affordable && !SoldOut;
+
+        public BuyQuote(BuyRowKind kind, int price, bool owned, bool affordable, int onShelf = NotCounted)
         {
             Kind = kind; Price = price; Owned = owned; Affordable = affordable;
+            OnShelf = onShelf < 0 ? NotCounted : onShelf;
         }
+
+        /// <summary>The same quote, counted against a shelf holding <paramref name="onShelf"/> items.</summary>
+        public BuyQuote OnShelfOf(int onShelf) => new BuyQuote(Kind, Price, Owned, Affordable, onShelf);
     }
 
     /// <summary>

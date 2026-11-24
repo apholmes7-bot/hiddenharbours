@@ -1643,6 +1643,7 @@ namespace HiddenHarbours.Core
             Crew = null;                 // → a fresh, empty roster on next read
             Voyages = null;              // → EmptyVoyageCatalog.Instance; this property is never null
             CrossingGate = null;         // → AlwaysOpenCrossingGate.Instance; this property is never null
+            IslandShelvesDirectory.Clear();   // no store's shelves outlive the services
             TidalTerrain = null;
             StillWater = null;           // → EmptyStillWater.Instance; this property is never null
             PlayerTransform = null;
