@@ -362,6 +362,22 @@ namespace HiddenHarbours.App.Editor
         /// and a closed front wall. It used to draw the ground floor's sheet, which painted the ground
         /// floor's stair and partitions upstairs too, as if the floor below showed through.</para>
         /// </summary>
+        // ---- chairs face their table ----------------------------------------------------------------
+        // A chair's facing offset is the side of its table it stands on, in the plan frame: its back is then to
+        // that side and its seat faces the table. On the +y (door) side 0, the +x side 2, the -y side 4, the
+        // -x side 6. Every chair was once offset 4 whatever side it stood on, which turned the door-side chairs
+        // away from their tables (owner 2026-11-23).
+        public const int ChairSidePlusY = 0, ChairSidePlusX = 2, ChairSideMinusY = 4, ChairSideMinusX = 6;
+
+        /// <summary>The facing offset that turns a chair at <paramref name="chair"/> toward a table at
+        /// <paramref name="table"/>: the side of the table it stands on, by the larger of its two offsets.</summary>
+        public static int ChairFacingOffset(Vector2 chair, Vector2 table)
+        {
+            Vector2 d = chair - table;
+            if (Mathf.Abs(d.y) >= Mathf.Abs(d.x)) return d.y >= 0f ? ChairSidePlusY : ChairSideMinusY;
+            return d.x >= 0f ? ChairSidePlusX : ChairSideMinusX;
+        }
+
         public static UpperLevelPlan UpperLevelFor(string planKey) => planKey switch
         {
             "harbourGable" => EmptyUpperRoom("harbourGableUpper"),
@@ -382,13 +398,20 @@ namespace HiddenHarbours.App.Editor
                 // kitchen (north) and the washroom (south). Each has its own doorway off the living room.
                 groundFurnishings: new[]
                 {
-                    new Furnishing("table", new Vector2(-1.60f, 1.75f), 4,
-                                   "the living room's table, on the south side clear of the doorway lane, " +
-                                   "with a wide walk to the washroom door between it and the partition"),
-                    new Furnishing("chair", new Vector2(-1.00f, 2.45f), 4,
-                                   "pulled out on the door side of the table"),
-                    new Furnishing("chair", new Vector2(-2.20f, 2.45f), 4,
-                                   "its pair, clear of the settee"),
+                    // The dining table stands in the KITCHEN, its long side against the kitchen's SOUTH wall
+                    // (the partition, whose north face is x -0.30), at the back of the room, east of the
+                    // washroom's toilet and basin behind the partition so neither draws over it, and clear of
+                    // the kitchen doorway (owner 2026-11-23). Turned a quarter (offset 2) so it runs along
+                    // the wall. Its chairs stand on its open north side, each facing it: a chair's offset is
+                    // the side of the table it stands on (ChairFacingOffset), so its back is away from the
+                    // table and it faces south across it.
+                    new Furnishing("table", new Vector2(0.09f, -3.05f), 2,
+                                   "the dining table, its long side against the kitchen's south wall, at the " +
+                                   "back of the kitchen and clear of the doorway"),
+                    new Furnishing("chair", new Vector2(0.74f, -2.50f), ChairSidePlusX,
+                                   "on the table's open north side, facing it"),
+                    new Furnishing("chair", new Vector2(0.74f, -3.60f), ChairSidePlusX,
+                                   "its pair, on the same side, facing the table"),
                 },
                 groundWalls: GinnyGroundWalls,
 
@@ -560,10 +583,10 @@ namespace HiddenHarbours.App.Editor
                 new Furnishing("table", new Vector2(-0.90f, 0.40f), 4,
                                "middle of the room, off centre so the doorway lane stays clear — " +
                                "THE prop the owner is asked to walk behind and then in front of"),
-                new Furnishing("chair", new Vector2(-0.30f, 1.15f), 4,
-                               "pulled out on the door side of the table"),
-                new Furnishing("chair", new Vector2(-1.50f, 1.15f), 4,
-                               "the second chair — a one-room cottage that seats two reads as lived in"),
+                new Furnishing("chair", new Vector2(-0.30f, 1.15f), ChairSidePlusY,
+                               "pulled out on the door side of the table, facing it"),
+                new Furnishing("chair", new Vector2(-1.50f, 1.15f), ChairSidePlusY,
+                               "the second chair, facing the table too — a one-room cottage that seats two reads as lived in"),
                 new Furnishing("dresser", new Vector2(-2.75f, -0.50f), 6,
                                "against the right wall, turned a quarter so its back is to the wall " +
                                "— proves a prop can sit flush without fighting the wall collider"),
@@ -577,13 +600,13 @@ namespace HiddenHarbours.App.Editor
             {
                 new Furnishing("table", new Vector2(0f, -0.55f), 4,
                                "the pupils' bench-desk, square in the middle of the room"),
-                new Furnishing("chair", new Vector2(0.60f, 0.15f), 4,
-                               "two seats at it, on the door side so the class faces the front"),
-                new Furnishing("chair", new Vector2(-0.60f, 0.15f), 4,
+                new Furnishing("chair", new Vector2(0.60f, 0.15f), ChairSidePlusY,
+                               "two seats at it, on the door side, facing it and the front of the room"),
+                new Furnishing("chair", new Vector2(-0.60f, 0.15f), ChairSidePlusY,
                                "the second seat"),
                 new Furnishing("table", new Vector2(0f, -2.10f), 4,
                                "the teacher's desk at the stove end, facing back down the room"),
-                new Furnishing("chair", new Vector2(0f, -2.85f), 4,
+                new Furnishing("chair", new Vector2(0f, -2.85f), ChairSideMinusY,
                                "her chair behind it, between the desk and the hearth"),
                 new Furnishing("dresser", new Vector2(-2.55f, -1.30f), 6,
                                "the book press against the right wall, turned a quarter"),
@@ -603,9 +626,9 @@ namespace HiddenHarbours.App.Editor
                                "at the foot of the bed"),
                 new Furnishing("table", new Vector2(-1.20f, -0.40f), 4,
                                "off centre to the right, so the doorway lane stays clear"),
-                new Furnishing("chair", new Vector2(-0.70f, 0.35f), 4,
-                               "pulled out on the door side"),
-                new Furnishing("chair", new Vector2(-1.75f, 0.35f), 4,
+                new Furnishing("chair", new Vector2(-0.70f, 0.35f), ChairSidePlusY,
+                               "pulled out on the door side, facing the table"),
+                new Furnishing("chair", new Vector2(-1.75f, 0.35f), ChairSidePlusY,
                                "the second chair"),
                 new Furnishing("dresser", new Vector2(-2.85f, -2.20f), 6,
                                "against the right wall in the back half, turned a quarter"),
@@ -619,13 +642,13 @@ namespace HiddenHarbours.App.Editor
             {
                 new Furnishing("table", new Vector2(-0.60f, -0.70f), 4,
                                "the family table, off centre so the doorway lane stays clear"),
-                new Furnishing("chair", new Vector2(0.20f, 0.10f), 4,
+                new Furnishing("chair", new Vector2(0.20f, 0.10f), ChairSidePlusY,
                                "near side, left"),
-                new Furnishing("chair", new Vector2(-1.40f, 0.10f), 4,
+                new Furnishing("chair", new Vector2(-1.40f, 0.10f), ChairSidePlusY,
                                "near side, right"),
-                new Furnishing("chair", new Vector2(0.20f, -1.50f), 4,
+                new Furnishing("chair", new Vector2(0.20f, -1.50f), ChairSideMinusY,
                                "far side, left — the seat you have to walk round the table to reach"),
-                new Furnishing("chair", new Vector2(-1.40f, -1.50f), 4,
+                new Furnishing("chair", new Vector2(-1.40f, -1.50f), ChairSideMinusY,
                                "far side, right"),
                 new Furnishing("dresser", new Vector2(-3.10f, -1.60f), 6,
                                "the dresser against the right wall, turned a quarter"),
