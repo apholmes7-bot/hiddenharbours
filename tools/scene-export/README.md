@@ -5,6 +5,21 @@
 > packages and the CI job; the code and the tests stay here, parked. After "To revive", this
 > README describes the tool as it was the day it retired.
 
+## Read-only routine audit
+
+The optional audit mode reuses the YAML reader and scene hierarchy without reviving
+package export. It reads the committed St Peters routines, stations, lane tree,
+building footprints, fence runs, cliff lines and Path mask. Python 3.10+ and Pillow
+are required for this mode; it needs the Path PNG bytes already present locally.
+
+```powershell
+python tools/scene-export/hh_scene_export.py --routine-audit Evidence~/gpt-goods/routine-audit.json --routine-audit-doc docs/world/st-peters-routine-routes-audit.md
+```
+
+The destination directories must exist. This writes only the two named reports.
+The [audit document](../../docs/world/st-peters-routine-routes-audit.md) defines the
+sampling and crossing rules, scope limits, and focused verification commands.
+
 ## To revive
 
 1. **Restore the CI job and the `.gitattributes` rule** from the parent of the retiring PR's squash
