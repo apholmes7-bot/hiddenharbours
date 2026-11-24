@@ -76,6 +76,60 @@ namespace HiddenHarbours.Tests.Economy
         private static int Items(double units, double perItem, int max) =>
             Math.Min(max, Math.Max(0, (int)Math.Floor(units / perItem + 1e-9)));
 
+        [Test]
+        public void BuyingTheLastItemOfOneGoodLeavesTheOtherGoodUntouched()
+        {
+            var shelves = Shelves(Always);
+            double now = At(0, Opens);
+            for (int left = 3; left >= 0; left--)
+            {
+                Assert.That(shelves.TryTakeOne(Gas, now), Is.True);
+                Assert.That(shelves.CountAt(Gas, now), Is.EqualTo(left));
+                Assert.That(shelves.CountAt(Grocery, now), Is.EqualTo(18));
+            }
+            Assert.That(shelves.TryTakeOne(Gas, now), Is.False);
+            Assert.That(shelves.CountAt(Gas, now), Is.Zero);
+            Assert.That(shelves.CountAt(Grocery, now), Is.EqualTo(18));
+        }
+
+        [Test]
+        public void ResidentUseAndPlayerPurchasesConsumeTheSameRemainingStock()
+        {
+            var shelves = Shelves(Always);
+            Assert.That(shelves.TryTakeOne(Gas, At(0, Opens)), Is.True);
+            Assert.That(shelves.TryTakeOne(Gas, At(0, Opens)), Is.True);
+            Assert.That(shelves.CountAt(Gas, At(0, Opens)), Is.EqualTo(2));
+            // Residents use ten litres by midday; only one complete can remains after two purchases.
+            Assert.That(shelves.CountAt(Gas, At(0, 13)), Is.EqualTo(1));
+            Assert.That(shelves.TryTakeOne(Gas, At(0, 13)), Is.True);
+            Assert.That(shelves.TryTakeOne(Gas, At(0, 13)), Is.False);
+            Assert.That(shelves.CountAt(Gas, At(0, Closes)), Is.Zero);
+            Assert.That(shelves.CountAt(Grocery, At(0, 13)), Is.EqualTo(16));
+            Assert.That(shelves.CountAt(Grocery, At(0, Closes)), Is.EqualTo(14));
+            Assert.That(shelves.CountAt(Gas, At(1, Opens)), Is.Zero);
+            Assert.That(shelves.CountAt(Gas, At(2, Opens)), Is.EqualTo(4));
+        }
+
+        [Test]
+        public void SoldOutStockWaitsForAnAllowedRunAndRefillsOnlyToItsShelf()
+        {
+            var shelves = Shelves(day => day != 2 && day != 3);
+            for (int i = 0; i < 4; i++) Assert.That(shelves.TryTakeOne(Gas, At(0, Opens)), Is.True);
+            for (int day = 1; day <= 3; day++)
+            {
+                Assert.That(shelves.RunCameOn(day), Is.False);
+                Assert.That(shelves.CountAt(Gas, At(day, Opens)), Is.Zero);
+                Assert.That(shelves.TryTakeOne(Gas, At(day, Opens)), Is.False);
+            }
+            Assert.That(shelves.RunCameOn(4), Is.True);
+            for (int i = 0; i < 3; i++)
+            {
+                shelves.SlowTick(At(4, Opens));
+                Assert.That(shelves.CountAt(Gas, At(4, Opens)), Is.EqualTo(4));
+                Assert.That(shelves.CountAt(Grocery, At(4, Opens)), Is.EqualTo(18));
+            }
+        }
+
         // ---- determinism and the absent player ------------------------------------------------------------
 
         [Test]

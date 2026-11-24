@@ -56,6 +56,93 @@ namespace HiddenHarbours.Tests.EditMode.Economy
             Assert.That(stock.IsSoldOut(Shop, Line), Is.False);
         }
 
+        private static ShopStockSpec TwoItems()
+        {
+            var spec = Spec(3, 1, 2);
+            var other = spec.Stock[0].Snapshot();
+            other.Id = "line.other";
+            other.ListingId = "supply.other";
+            other.FirstSlot = 3;
+            other.MaxOnShelf = 4;
+            other.ItemsPerDelivery = 1;
+            other.DeliveryWeekdays = ShopDeliveryDays.Tuesday;
+            spec.Shelves[0].SlotCount = 7;
+            spec.Stock = new[] { spec.Stock[0], other };
+            return spec;
+        }
+
+        [Test]
+        public void LastSaleAndFailedExtraSaleLeaveEveryOtherLineAlone()
+        {
+            var stock = Service(TwoItems(), new Clock());
+            for (int remaining = 2; remaining >= 0; remaining--)
+            {
+                Assert.That(stock.TryTakeOne(Shop, Line), Is.True);
+                Assert.That(stock.CountOf(Shop, Line), Is.EqualTo(remaining));
+                Assert.That(stock.CountOf(Shop, "line.other"), Is.EqualTo(4));
+            }
+            Assert.That(stock.TryTakeOne(Shop, Line), Is.False);
+            Assert.That(stock.CountOf(Shop, Line), Is.Zero);
+            Assert.That(stock.CountOf(Shop, "line.other"), Is.EqualTo(4));
+        }
+
+        [TestCase(17u)]
+        [TestCase(9841u)]
+        public void EachItemUsesItsOwnDeliveryDayAndRepeatedReadsCannotRepeatIt(uint seed)
+        {
+            var clock = new Clock();
+            var watched = Service(TwoItems(), clock, seed: seed);
+            var lazy = Service(TwoItems(), clock, seed: seed);
+            foreach (var stock in new[] { watched, lazy })
+            {
+                for (int i = 0; i < 3; i++) Assert.That(stock.TryTakeOne(Shop, Line), Is.True);
+                for (int i = 0; i < 4; i++) Assert.That(stock.TryTakeOne(Shop, "line.other"), Is.True);
+            }
+            var expected = new[] { new[] { 0, 0 }, new[] { 0, 1 }, new[] { 0, 1 },
+                new[] { 2, 1 }, new[] { 2, 1 }, new[] { 2, 1 }, new[] { 2, 1 },
+                new[] { 3, 1 }, new[] { 3, 2 } };
+            for (int day = 0; day < expected.Length; day++)
+            {
+                clock.Day = day;
+                watched.SlowTick();
+                for (int read = 0; read < 3; read++)
+                    foreach (var stock in new[] { watched, lazy })
+                    {
+                        Assert.That(stock.CountOf(Shop, Line), Is.EqualTo(expected[day][0]), "first item day " + day);
+                        Assert.That(stock.CountOf(Shop, "line.other"), Is.EqualTo(expected[day][1]), "second item day " + day);
+                    }
+            }
+        }
+
+        [Test]
+        public void SoldOutAndBackInStockNotificationsOccurOncePerTransition()
+        {
+            var clock = new Clock();
+            var changes = new List<ShopStockChanged>();
+            var stock = Service(TwoItems(), clock, notify: changes.Add);
+            for (int i = 0; i < 3; i++) Assert.That(stock.TryTakeOne(Shop, Line), Is.True);
+            Assert.That(changes.ConvertAll(c => c.Count), Is.EqualTo(new[] { 2, 1, 0 }));
+            Assert.That(changes.TrueForAll(c => c.ShopId == Shop && c.LineId == Line && c.Reason == ShopStockChange.Taken), Is.True);
+            changes.Clear();
+            for (int i = 0; i < 5; i++)
+            {
+                Assert.That(stock.TryTakeOne(Shop, Line), Is.False);
+                Assert.That(stock.IsSoldOut(Shop, Line), Is.True);
+                stock.SlowTick();
+            }
+            Assert.That(changes, Is.Empty);
+            clock.Day = 3;
+            for (int i = 0; i < 5; i++)
+            {
+                Assert.That(stock.CountOf(Shop, Line), Is.EqualTo(2));
+                stock.SlowTick();
+            }
+            Assert.That(changes.Count, Is.EqualTo(1));
+            Assert.That(changes[0].LineId, Is.EqualTo(Line));
+            Assert.That(changes[0].Reason, Is.EqualTo(ShopStockChange.Restocked));
+            Assert.That(changes[0].Count, Is.EqualTo(2));
+        }
+
         [Test]
         public void EmptyAndFullShelvesRefuseChangesWithoutCrossingTheirBounds()
         {
@@ -73,13 +160,14 @@ namespace HiddenHarbours.Tests.EditMode.Economy
 
         [TestCase("bait.capelin")]
         [TestCase("supply.ice")]
-        public void EssentialsRemainTakeableAtTheirAuthoredFloor(string listingId)
+        public void EssentialsRunOutEvenWithALegacyAuthoredFloor(string listingId)
         {
             var spec = Spec(3, 1); spec.Stock[0].ListingId = listingId;
             var stock = Service(spec, new Clock());
-            for (int i = 0; i < 30; i++) Assert.That(stock.TryTakeOne(Shop, Line), Is.True);
-            Assert.That(stock.CountOf(Shop, Line), Is.EqualTo(1));
-            Assert.That(stock.IsSoldOut(Shop, Line), Is.False);
+            for (int i = 0; i < 3; i++) Assert.That(stock.TryTakeOne(Shop, Line), Is.True);
+            for (int i = 0; i < 30; i++) Assert.That(stock.TryTakeOne(Shop, Line), Is.False);
+            Assert.That(stock.CountOf(Shop, Line), Is.Zero);
+            Assert.That(stock.IsSoldOut(Shop, Line), Is.True);
         }
 
         [Test]
@@ -198,10 +286,16 @@ namespace HiddenHarbours.Tests.EditMode.Economy
         }
 
         [Test]
-        public void RestoringEssentialsRepairsTheirFloorEvenWithoutADelivery()
+        public void RestoringSoldOutEssentialsWaitsForTheirDelivery()
         {
             var state = new MemoryShopStockStateStore(); state.Write(new ShopStockRecord(Shop, Line, 0, 1));
-            Assert.That(Service(Spec(5, 1), new Clock { Day = 1 }, state).CountOf(Shop, Line), Is.EqualTo(1));
+            var clock = new Clock { Day = 1 };
+            var stock = Service(Spec(5, 1), clock, state);
+            Assert.That(stock.CountOf(Shop, Line), Is.Zero);
+            clock.Day = 2;
+            Assert.That(stock.CountOf(Shop, Line), Is.Zero);
+            clock.Day = 3;
+            Assert.That(stock.CountOf(Shop, Line), Is.EqualTo(2));
         }
 
         [Test]

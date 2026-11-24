@@ -31,6 +31,7 @@ namespace HiddenHarbours.Economy
         public int UnitsPerItem;
         public ShopDeliveryDays DeliveryWeekdays;
         public int ItemsPerDelivery;
+        // Retained for existing content compatibility; no longer replenishes stock on a sale or read.
         public int Floor;
         public ShopStockLine Snapshot() => (ShopStockLine)MemberwiseClone();
     }

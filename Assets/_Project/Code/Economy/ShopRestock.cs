@@ -33,16 +33,16 @@ namespace HiddenHarbours.Economy
         {
             long deliveries = DeliveriesBetween(line.DeliveryWeekdays, settledThroughDay, today);
             // An int day span times an int delivery count fits in long; clamp before narrowing.
-            long available = Math.Max(line.Floor, Math.Min(line.MaxOnShelf, count));
+            long available = Math.Max(0, Math.Min(line.MaxOnShelf, count));
             return (int)Math.Min(line.MaxOnShelf, available + deliveries * line.ItemsPerDelivery);
         }
 
-        /// <summary>The essentials guarantee replenishes the minimum immediately; it remains takeable.</summary>
+        /// <summary>Every sale consumes one item, including the last; only a delivery or return replaces it.</summary>
         public static bool TryTakeOne(ShopStockLine line, int count, out int remaining)
         {
             remaining = count;
             if (count <= 0) return false;
-            remaining = Math.Max(line.Floor, count - 1);
+            remaining = count - 1;
             return true;
         }
 
