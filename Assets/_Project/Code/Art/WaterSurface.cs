@@ -502,6 +502,7 @@ namespace HiddenHarbours.Art
         // the owner's "choppy/stuttery when transitioning between states": the sim may step, the surface may
         // not. Presentation only — nothing here feeds the sim or is saved (rule 5).
         private bool _targetsValid;              // a slow tick has sampled the sim at least once
+        private int _surfaceWeatherEdition;      // LocalWeather.SurfaceEdition as last sampled
         private EnvironmentSample _sample;       // the last sampled weather (the mood blend + rain read it)
         // (ADR 0027 #7, gains 2) The water type's values, folded on the slow tick and pushed every frame.
         // Sized once (rule 7): the push hands the same three arrays back each frame without allocating.
@@ -834,6 +835,13 @@ namespace HiddenHarbours.Art
             }
 
             // ---- SLOW TIER: re-read the deterministic sim + the mood anchors into the TARGETS -------------
+            // A local storm that shades the surface came on or lifted: read again now, not on the next
+            // slow tick, so its sample is not drawn on after it has gone.
+            if (_surfaceWeatherEdition != LocalWeather.SurfaceEdition)
+            {
+                _surfaceWeatherEdition = LocalWeather.SurfaceEdition;
+                _targetsValid = false;
+            }
             if (sampleSim || !_targetsValid) SampleSimTargets(env);
             // The sea-reach blend follows a tuning edit on the slow tier (no flood, no upload).
             if (sampleSim) SeaReachGlobals.RefreshBlend(this);
@@ -1091,7 +1099,7 @@ namespace HiddenHarbours.Art
         private void SampleSimTargets(IEnvironmentService env)
         {
             double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
-            _sample = LocalWeather.Shade(env.Sample());   // the surface draws an authored local storm too
+            _sample = LocalWeather.ShadeSurface(env.Sample());   // a local storm that asks for it is drawn too
             _targetWaterLevel = env.WaterLevelAt(now);
             _targetCurrent = _sample.CurrentVector;
             _targetWind = _sample.WindVector;

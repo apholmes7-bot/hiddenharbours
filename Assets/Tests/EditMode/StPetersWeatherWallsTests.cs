@@ -392,27 +392,18 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void WithNoLocalWeather_TheWaterSurfaceIsFedExactlyWhatTheSimGave()
         {
-            // The water surface reads LocalWeather.Shade(sample) and LocalWeather.Rain(strength). While no
+            // The water surface reads LocalWeather.ShadeSurface(sample) and LocalWeather.Rain(strength). While no
             // wall shades the weather both must hand back what they were given, so the surface, the surf
             // and the bore are drawn from the sim's own numbers exactly as before the walls existed.
             LocalWeather.Clear();
             Assert.IsFalse(LocalWeather.Active);
             Assert.IsFalse(LocalWeather.SquallActive);
-            var winds = new[] { Vector2.zero, new Vector2(2f, 1f), new Vector2(-11.5f, 7.25f), new Vector2(0.001f, -24f) };
-            var seas = new[] { 0f, 0.137f, 0.385f, 0.9f, 1f };
-            foreach (var wind in winds)
-                foreach (float sea in seas)
-                    foreach (SeaState step in System.Enum.GetValues(typeof(SeaState)))
-                    {
-                        var sim = new EnvironmentSample(wind, new Vector2(0.3f, -0.2f) * sea, 1.7f - sea, step, 1f - sea * 0.6f, sea);
-                        EnvironmentSample seen = LocalWeather.Shade(sim);
-                        Assert.AreEqual(sim.WindVector, seen.WindVector);
-                        Assert.AreEqual(sim.CurrentVector, seen.CurrentVector);
-                        Assert.AreEqual(sim.TideHeight, seen.TideHeight);
-                        Assert.AreEqual(sim.SeaState, seen.SeaState);
-                        Assert.AreEqual(sim.Visibility, seen.Visibility);
-                        Assert.AreEqual(sim.SeaState01, seen.SeaState01);
-                    }
+            Assert.IsFalse(LocalWeather.ShadesSurface);
+            foreach (var sim in Sims())
+            {
+                Same(sim, LocalWeather.Shade(sim), "shade");
+                Same(sim, LocalWeather.ShadeSurface(sim), "surface");
+            }
             // Rain strength reaches the surface already clamped to 0..1 (AmbientParticleMath.RainIntensity).
             for (int i = 0; i <= 1000; i++)
             {
@@ -432,6 +423,193 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.IsFalse(LocalWeather.Active, w.Id);
                 Assert.IsFalse(LocalWeather.SquallActive, w.Id);
             }
+        }
+
+        static void Same(EnvironmentSample sim, EnvironmentSample seen, string what)
+        {
+            Assert.AreEqual(sim.WindVector, seen.WindVector, what);
+            Assert.AreEqual(sim.CurrentVector, seen.CurrentVector, what);
+            Assert.AreEqual(sim.TideHeight, seen.TideHeight, what);
+            Assert.AreEqual(sim.SeaState, seen.SeaState, what);
+            Assert.AreEqual(sim.Visibility, seen.Visibility, what);
+            Assert.AreEqual(sim.SeaState01, seen.SeaState01, what);
+        }
+
+        static IEnumerable<EnvironmentSample> Sims()
+        {
+            var winds = new[] { Vector2.zero, new Vector2(2f, 1f), new Vector2(-11.5f, 7.25f), new Vector2(0.001f, -24f) };
+            var seas = new[] { 0f, 0.137f, 0.385f, 0.9f, 1f };
+            foreach (var wind in winds)
+                foreach (float sea in seas)
+                    foreach (SeaState step in System.Enum.GetValues(typeof(SeaState)))
+                        yield return new EnvironmentSample(wind, new Vector2(0.3f, -0.2f) * sea, 1.7f - sea, step, 1f - sea * 0.6f, sea);
+        }
+
+        // ---- the storm that stood before these walls: its water is the sim's, bit for bit --------------
+
+        [Test]
+        public void WithTheEarlierStormStandingAtFull_TheWaterSurfaceIsStillFedExactlyWhatTheSimGave()
+        {
+            // The storm authored before these walls (another region, lifted by its own flag) has always
+            // shaded the sky's grade, the falling rain, the wave field and the sound. It never shaded the
+            // water surface, its foam, mist or spray, and it must not start to: those four read
+            // LocalWeather.ShadeSurface(sample) and LocalWeather.Rain(strength), and with that storm
+            // standing at full strength both must hand back what they were given.
+            var earlier = AllWalls().Where(w => w.RegionId != Region).ToArray();
+            Assert.IsNotEmpty(earlier, "the earlier storm is still authored");
+            foreach (var w in earlier)
+            {
+                Assert.IsFalse(w.StormShadesWaterSurface, w.Id + ": it does not ask for the water surface");
+                Assert.AreEqual(0f, w.StormRain01, w.Id + ": it brings no rain of its own");
+
+                StPeters();
+                GameServices.CurrentRegionId = w.RegionId;
+                LocalWeather.Clear();
+                Assert.IsTrue(CampaignBarrierDirector.Stands(w), w.Id + ": it stands in a new save");
+                int edition = LocalWeather.SurfaceEdition;
+                var d = Director(w);
+                Hull(w.EdgePoint + w.PushDirection * (w.FullDistanceMetres - 5f), Vector2.zero);
+                for (int i = 0; i < 3; i++) d.Step();
+
+                // It is really on, with its real shade.
+                Assert.AreSame(w, d.Standing, w.Id);
+                Assert.AreEqual(1f, d.Look01, 1e-5f, w.Id);
+                Assert.IsTrue(LocalWeather.Active, w.Id);
+                Assert.AreEqual(1f, LocalWeather.Current.Strength01, 1e-5f, w.Id);
+                Assert.AreEqual(w.StormWind, LocalWeather.Current.Wind, w.Id);
+                Assert.AreEqual(w.StormSeaState01, LocalWeather.Current.SeaState01, 1e-6f, w.Id);
+                var calm = new EnvironmentSample(new Vector2(2f, 1f), Vector2.zero, 0.4f, SeaState.Calm, 0.9f, 0.1f);
+                Assert.AreNotEqual(calm.WindVector, LocalWeather.Shade(calm).WindVector, w.Id + ": the sky and sound still take it");
+                Assert.Greater(LocalWeather.Shade(calm).SeaState01, calm.SeaState01, w.Id);
+
+                // And the water surface is fed the sim, exactly.
+                Assert.IsFalse(LocalWeather.ShadesSurface, w.Id);
+                Assert.AreEqual(edition, LocalWeather.SurfaceEdition, w.Id + ": the surface is never told to read again");
+                foreach (var sim in Sims()) Same(sim, LocalWeather.ShadeSurface(sim), w.Id);
+                for (int i = 0; i <= 1000; i++)
+                    Assert.AreEqual(i / 1000f, LocalWeather.Rain(i / 1000f), w.Id + " rain " + i);
+                Assert.AreEqual(Vector2.one, LocalWeather.RainStreakScale, w.Id);
+
+                Object.DestroyImmediate(d.gameObject);
+                LocalWeather.Clear();
+                Assert.AreEqual(edition, LocalWeather.SurfaceEdition, w.Id);
+            }
+        }
+
+        // ---- these walls: the water surface takes the storm, and is told the step it lifts -------------
+
+        [Test]
+        public void TheseWallsShadeTheWaterSurface_AndTheSurfaceIsToldToReadAgainTheStepTheyLift()
+        {
+            var save = StPeters();
+            foreach (var w in Walls())
+            {
+                Assert.IsTrue(w.StormShadesWaterSurface, w.Id + ": asked for as data");
+                LocalWeather.Clear();
+                int before = LocalWeather.SurfaceEdition;
+                var d = Director(Walls());
+                Hull(w.EdgePoint + w.PushDirection * (w.LookFullDistanceMetres - 1f), Vector2.zero);
+                d.Step();
+                Assert.IsTrue(LocalWeather.ShadesSurface, w.Id);
+                int inIt = LocalWeather.SurfaceEdition;
+                Assert.AreNotEqual(before, inIt, w.Id + ": coming on is a change");
+                for (int i = 0; i < 5; i++) d.Step();
+                Assert.AreEqual(inIt, LocalWeather.SurfaceEdition, w.Id + ": staying in it is not");
+                foreach (var sim in Sims()) Same(LocalWeather.Shade(sim), LocalWeather.ShadeSurface(sim), w.Id);
+                var calm = new EnvironmentSample(new Vector2(2f, 1f), Vector2.zero, 0.4f, SeaState.Calm, 0.9f, 0.1f);
+                Assert.Greater(LocalWeather.ShadeSurface(calm).SeaState01, calm.SeaState01, w.Id);
+
+                // The flag, with him still sitting in it: the same step the surface's sample is the
+                // sim's again, and a surface that kept a sample is told to read at once.
+                save.SetFlag(GateFlag, true);
+                d.Step();
+                Assert.IsFalse(LocalWeather.ShadesSurface, w.Id);
+                Assert.AreNotEqual(inIt, LocalWeather.SurfaceEdition, w.Id + ": lifting is a change");
+                foreach (var sim in Sims()) Same(sim, LocalWeather.ShadeSurface(sim), w.Id);
+                Assert.AreEqual(0f, LocalWeather.Rain(0f), w.Id);
+
+                save.SetFlag(GateFlag, false);
+                Object.DestroyImmediate(d.gameObject);
+            }
+        }
+
+        [Test]
+        public void AShadeThatDoesNotAsk_NeverReachesTheWaterSurface_AndOneWithNoStrengthDoesNotEither()
+        {
+            LocalWeather.Clear();
+            int edition = LocalWeather.SurfaceEdition;
+            var shade = new LocalWeatherShade(1f, new Vector2(0f, 22f), 0.2f, 0.9f);
+            LocalWeather.Set(shade);
+            Assert.IsTrue(LocalWeather.Active);
+            Assert.IsFalse(LocalWeather.ShadesSurface, "the one-argument Set is the old behaviour");
+            LocalWeather.Set(new LocalWeatherShade(0f, new Vector2(0f, 22f), 0.2f, 0.9f), true);
+            Assert.IsFalse(LocalWeather.ShadesSurface, "nothing to shade with");
+            Assert.AreEqual(edition, LocalWeather.SurfaceEdition);
+            LocalWeather.Set(shade, true);
+            Assert.IsTrue(LocalWeather.ShadesSurface);
+            Assert.AreNotEqual(edition, LocalWeather.SurfaceEdition);
+            GameServices.Reset();
+            Assert.IsFalse(LocalWeather.ShadesSurface, "a reset clears it");
+        }
+
+        // ---- the line again: leaving the region, or the wall coming down, is a new approach -----------
+
+        [Test]
+        public void TheLine_IsReadyAgain_AfterHeLeavesTheRegionOrTheWallComesDown_WithoutClearWaterBetween()
+        {
+            var save = StPeters();
+            var east = Walls().Single(w => w.Id == "campaign_barrier.st_peters_storm_east");
+            float now = 100f;
+            var d = Director(Walls());
+            d.Seconds = () => now;
+            Vector2 inIt = east.EdgePoint + east.PushDirection * (east.FullDistanceMetres - 5f) + Vector2.up * 100f;
+            Hull(inIt, Vector2.zero);
+            void Sit(float seconds) { for (int i = 0; i < 50; i++) { now += seconds / 50f; d.Step(); } }
+
+            Sit(1f);
+            Assert.AreEqual(1, d.LinesSpoken);
+
+            // Another region, then straight back into the same weather: he never sat in clear water here.
+            GameServices.CurrentRegionId = "region.somewhere_else";
+            Sit(east.LineCooldownSeconds);
+            Assert.AreEqual(1, d.LinesSpoken, "nothing is thought where the wall does not stand");
+            GameServices.CurrentRegionId = Region;
+            Sit(1f);
+            Assert.AreEqual(2, d.LinesSpoken, "coming back to the region is a new approach");
+
+            // Away and back inside the cool-down: still nothing, the cool-down is kept.
+            GameServices.CurrentRegionId = "region.somewhere_else";
+            Sit(1f);
+            GameServices.CurrentRegionId = Region;
+            Sit(1f);
+            Assert.AreEqual(2, d.LinesSpoken, "the cool-down runs on through the trip");
+
+            // One wall of two comes down and stands again while the other stands throughout.
+            var far = ScriptableObject.CreateInstance<CampaignBarrierDef>();
+            var near = ScriptableObject.CreateInstance<CampaignBarrierDef>();
+            _made.Add(far);
+            _made.Add(near);
+            far.Id = "campaign_barrier.fixture_far";
+            near.Id = "campaign_barrier.fixture_near";
+            far.RegionId = near.RegionId = "region.fixture";
+            far.EdgePoint = new Vector2(0f, -10000f);
+            near.StandsWhileFlag = "fixture.key";
+            near.Line = "Not through that.";
+            save.SetFlag("fixture.key", true);
+            GameServices.CurrentRegionId = "region.fixture";
+            var two = Director(far, near);
+            float then = 0f;
+            two.Seconds = () => then;
+            Hull(near.EdgePoint + near.PushDirection * (near.FullDistanceMetres - 5f), Vector2.zero);
+            two.Step();
+            Assert.AreEqual(1, two.LinesSpoken);
+            save.SetFlag("fixture.key", false);
+            then += near.LineCooldownSeconds;
+            two.Step();
+            Assert.AreSame(far, two.Standing, "the other wall still stands, so the director never let go");
+            save.SetFlag("fixture.key", true);
+            two.Step();
+            Assert.AreEqual(2, two.LinesSpoken, "a wall that came down and stood again is met anew");
         }
 
         // ---- the look: full where he is stopped, seen coming, gone with the flag ----------------------
@@ -489,7 +667,9 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.GreaterOrEqual(w.SightDistanceMetres, w.StartDistanceMetres + 30f, w.Id + ": seen before it is felt");
                 Vector2 P(float inside) => w.EdgePoint + w.PushDirection * inside;
                 Assert.AreEqual(0f, w.Loom01At(P(w.SightDistanceMetres)), 1e-5f, w.Id);
-                Assert.AreEqual(CampaignBarrierDef.LoomShareAtTheStartLine, w.Loom01At(P(w.StartDistanceMetres)), 1e-4f, w.Id);
+                Assert.Greater(w.SquallShareAtStart01, 0f, w.Id + ": some of the front is seen before the weather");
+                Assert.Less(w.SquallShareAtStart01, 1f, w.Id + ": and the rest comes on with it");
+                Assert.AreEqual(w.SquallShareAtStart01, w.Loom01At(P(w.StartDistanceMetres)), 1e-4f, w.Id);
                 Assert.AreEqual(1f, w.Loom01At(P(w.LookFullDistanceMetres)), 1e-5f, w.Id);
                 float last = 0f;
                 for (float inside = w.SightDistanceMetres + 10f; inside >= 0f; inside -= 1f)
@@ -551,7 +731,7 @@ namespace HiddenHarbours.Tests.EditMode
                     w.Id + ": at no loom the front's clear end is the view's far side");
                 Assert.LessOrEqual(SquallVeil.FrontOffsetMetres(1f, along, feather) + feather, -along + 1e-4f,
                     w.Id + ": at full loom the whole view is under the dark");
-                float half = SquallVeil.FrontOffsetMetres(CampaignBarrierDef.LoomShareAtTheStartLine, along, feather);
+                float half = SquallVeil.FrontOffsetMetres(w.SquallShareAtStart01, along, feather);
                 Assert.Less(half, 0f, w.Id + ": at the start line the soft edge is over the boat");
                 Assert.Greater(half + feather, 0f, w.Id);
             }

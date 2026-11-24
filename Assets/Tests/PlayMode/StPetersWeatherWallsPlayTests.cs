@@ -217,7 +217,7 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
             Assert.IsTrue(veil.Showing, $"{edge}: the dark front shows before the weather");
             Assert.Greater(veil.ShownLoom01, 0f, edge);
-            Assert.Less(veil.ShownLoom01, CampaignBarrierDef.LoomShareAtTheStartLine, edge);
+            Assert.Less(veil.ShownLoom01, wall.SquallShareAtStart01, edge);
             Assert.AreEqual(0f, LocalWeather.Rain(0f), $"{edge}: dry until the weather itself");
             Assert.IsFalse(LocalWeather.Active, edge);
 
@@ -242,6 +242,30 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsFalse(veil.Showing, $"{edge}: the dark is gone from the view");
             Assert.AreEqual(0f, _director.Look01, edge);
             Assert.AreEqual(0f, _director.PushAcceleration, edge);
+        }
+
+        [UnityTest, Timeout(60000)]
+        public IEnumerator AVeilThatIsDestroyed_TakesItsTwoSpritesAndTheirTexturesWithIt()
+        {
+            // A second veil, so the installed one the other proofs read is left alone.
+            var installed = SquallVeil.Instance;
+            Assert.IsNotNull(installed);
+            var go = new GameObject("VeilTeardown");
+            _made.Add(go);
+            go.AddComponent<SquallVeil>();
+            var parts = go.GetComponentsInChildren<SpriteRenderer>(true);
+            Assert.AreEqual(2, parts.Length, "the front and the body");
+            var sprites = parts.Select(p => p.sprite).ToArray();
+            var textures = sprites.Select(s => s.texture).ToArray();
+            foreach (var s in sprites) Assert.IsTrue(s != null);
+            foreach (var t in textures) Assert.IsTrue(t != null);
+
+            Object.Destroy(go);
+            yield return null;
+            yield return null;
+            foreach (var s in sprites) Assert.IsTrue(s == null, "a sprite the veil made outlived it");
+            foreach (var t in textures) Assert.IsTrue(t == null, "a texture the veil made outlived it");
+            Assert.AreSame(installed, SquallVeil.Instance, "the installed veil is untouched");
         }
 
         [UnityTest, Timeout(180000)]

@@ -40,6 +40,8 @@ namespace HiddenHarbours.Art
         public static SquallVeil Instance { get; private set; }
 
         private SpriteRenderer _ramp, _solid;
+        // The sprites this veil made (each on a texture it made), kept so they can be discarded with it.
+        private Sprite _rampSprite, _solidSprite;
 
         /// <summary>True while the veil is drawn.</summary>
         public bool Showing { get; private set; }
@@ -62,8 +64,10 @@ namespace HiddenHarbours.Art
             if (Instance == null) Instance = this;
             var group = gameObject.AddComponent<SortingGroup>();
             group.sortingOrder = _sortingOrder;
-            _ramp = Part("front", BuildRamp(Mathf.Max(2, _rampTexels)));
-            _solid = Part("body", BuildSolid());
+            _rampSprite = BuildRamp(Mathf.Max(2, _rampTexels));
+            _solidSprite = BuildSolid();
+            _ramp = Part("front", _rampSprite);
+            _solid = Part("body", _solidSprite);
         }
 
         private SpriteRenderer Part(string partName, Sprite sprite)
@@ -88,6 +92,29 @@ namespace HiddenHarbours.Art
         private void OnDestroy()
         {
             if (Instance == this) Instance = null;
+            // The two sprites and their textures were made here, so they go with the veil.
+            if (_ramp != null) _ramp.sprite = null;
+            if (_solid != null) _solid.sprite = null;
+            _ramp = null;
+            _solid = null;
+            Release(ref _rampSprite);
+            Release(ref _solidSprite);
+        }
+
+        private static void Release(ref Sprite made)
+        {
+            Sprite sprite = made;
+            made = null;
+            if (sprite == null) return;
+            Texture2D texture = sprite.texture;
+            Discard(sprite);
+            if (texture != null) Discard(texture);
+        }
+
+        private static void Discard(Object made)
+        {
+            if (Application.isPlaying) Destroy(made);
+            else DestroyImmediate(made);
         }
 
         private void LateUpdate() => Place(AmbientGlobals.ResolveCamera());

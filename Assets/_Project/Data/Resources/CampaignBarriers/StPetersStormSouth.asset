@@ -30,6 +30,7 @@ MonoBehaviour:
   StormWindSpeed: 22
   StormVisibility01: 0.12
   StormSeaState01: 1
+  StormShadesWaterSurface: 1
   LookFullDistanceMetres: 105
   StormRain01: 1
   StormRainStreakScale: {x: 8, y: 2}
@@ -37,6 +38,7 @@ MonoBehaviour:
   SquallDarkness01: 0.6
   SquallFeather01: 0.5
   SquallTint: {r: 0.05, g: 0.07, b: 0.1, a: 1}
+  SquallShareAtStart01: 0.5
   Line: "Black to the south, and the wind's setting me back. Not that way. Not yet."
   LineAtStorm01: 0.35
   LineCooldownSeconds: 600

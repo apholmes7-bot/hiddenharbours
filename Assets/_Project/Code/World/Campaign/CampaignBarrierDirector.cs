@@ -163,7 +163,11 @@ namespace HiddenHarbours.World
             for (int i = 0; i < _walls.Length; i++)
             {
                 var w = _walls[i];
-                if (w == null || w.RegionId != region || !Stands(w)) continue;
+                if (w == null || w.RegionId != region || !Stands(w))
+                {
+                    _lineSpent[i] = false;   // not his weather here and now: coming back to it is a new approach
+                    continue;
+                }
 
                 float l = w.Look01At(position);
                 if (l > look) { look = l; lookWall = w; }
@@ -196,7 +200,9 @@ namespace HiddenHarbours.World
             if (look > 0f || loom > 0f)
             {
                 LocalWeather.Set(new LocalWeatherShade(look, lookWall.StormWind, lookWall.StormVisibility01,
-                    lookWall.StormSeaState01));
+                    lookWall.StormSeaState01), lookWall.StormShadesWaterSurface);
+                // At a corner the front's direction, dark and tint are the wall whose front shows most,
+                // and the rain is the wall whose weather is strongest.
                 LocalWeather.SetSquall(new LocalSquall(loom, -loomWall.PushDirection, loomWall.SquallDarkness01,
                     loomWall.SquallFeather01, loomWall.SquallTint, lookWall.StormRain01 * look,
                     lookWall.StormRainStreakScale));
@@ -250,6 +256,9 @@ namespace HiddenHarbours.World
             PushAcceleration = 0f;
             _hull = null;
             _body = null;
+            // No wall stands where he is (another region, an unloaded one, the walls lifted): his next
+            // meeting with any of them is a new approach. The cool-down still runs.
+            System.Array.Clear(_lineSpent, 0, _lineSpent.Length);
         }
     }
 }

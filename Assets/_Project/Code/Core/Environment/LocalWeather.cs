@@ -75,6 +75,8 @@ namespace HiddenHarbours.Core
     {
         private static LocalWeatherShade _shade;
         private static LocalSquall _squall;
+        private static bool _shadesSurface;
+        private static int _surfaceEdition;
         private static readonly ShadedWaveWind Waves = new ShadedWaveWind();
 
         /// <summary>The shade in force. Strength 0 when nothing is set.</summary>
@@ -83,14 +85,49 @@ namespace HiddenHarbours.Core
         /// <summary>True while a shade with any strength is set.</summary>
         public static bool Active => _shade.Strength01 > 0f;
 
-        public static void Set(in LocalWeatherShade shade) => _shade = shade;
+        /// <summary>Set the shade for the readers that have always taken it (the sky's grade, the
+        /// falling rain, the wave field, the sound). The water surface and its foam, mist and spray
+        /// are NOT shaded by this: see <see cref="Set(in LocalWeatherShade, bool)"/>.</summary>
+        public static void Set(in LocalWeatherShade shade) => Set(in shade, false);
+
+        /// <summary>Set the shade, and say whether the water surface and its foam, mist and spray
+        /// take it too (<see cref="ShadeSurface"/>). An effect that does not ask leaves those four
+        /// reading the sim's own sample, exactly.</summary>
+        public static void Set(in LocalWeatherShade shade, bool shadesSurface)
+        {
+            _shade = shade;
+            TakeSurface(shadesSurface && shade.Strength01 > 0f);
+        }
 
         /// <summary>Clear the shade and the squall together.</summary>
         public static void Clear()
         {
             _shade = default;
             _squall = default;
+            TakeSurface(false);
         }
+
+        private static void TakeSurface(bool on)
+        {
+            if (on == _shadesSurface) return;
+            _shadesSurface = on;
+            unchecked { _surfaceEdition++; }
+        }
+
+        /// <summary>True while a shade is set that the water surface and its foam, mist and spray
+        /// take as well.</summary>
+        public static bool ShadesSurface => _shadesSurface;
+
+        /// <summary>Changes each time <see cref="ShadesSurface"/> turns on or off, and at no other
+        /// time. A surface reader that keeps a sample between its own slow ticks compares this and
+        /// reads again at once, so a shade that lifts is not drawn on from a kept sample.</summary>
+        public static int SurfaceEdition => _surfaceEdition;
+
+        /// <summary>The sim's sample as the WATER SURFACE and its foam, mist and spray should draw it:
+        /// shaded only while the effect in force asked for that (<see cref="ShadesSurface"/>);
+        /// otherwise <paramref name="sim"/> itself, untouched.</summary>
+        public static EnvironmentSample ShadeSurface(in EnvironmentSample sim) =>
+            _shadesSurface ? Shade(in sim) : sim;
 
         /// <summary>The squall in force: its dark front and its rain. All zero when nothing is set.</summary>
         public static LocalSquall Squall => _squall;
