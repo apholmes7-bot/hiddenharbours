@@ -402,11 +402,16 @@ is the logic and one example; no scene changed.
   other villager runs exactly the code it did). While the resolver puts them elsewhere they are hidden and
   cannot be talked to; on a crossing in this region they are placed on the crossing path.
 - **The example**: Junior Poirier's Wednesday — over the St Peters bar on the quad (5.5 m/s) at 08:30 to
-  the Nine Mile Creek landing, fuel and the week's order, back over at 11:30, a late dinner, then the
-  afternoon tide as any day. The bar as the game draws it is about 315 m from the bar head to the Nine Mile
-  Creek landing: three game hours on foot at his 1.35 m/s, under one on the quad.
-- **Not yet**: the real bar window off the tide (a gate implementation), Nine Mile Creek's station table
-  and lanes (so he is computed there but not drawn), the quad and cart as drawn carriers with real
+  the Nine Mile Creek landing, fuel and the week's order at 10:30, back over at 11:30, a late dinner at 13:30, then the
+  afternoon tide as any day. The bar as the game draws it is about 600 m from the bar head to the Nine Mile
+  Creek landing (about 300 m on each side of the seam): six game hours on foot at his 1.35 m/s, about an
+  hour and a half on the quad.
+- **The creek's two stations** (`NmcRoutineStationsPatch`, root `NmcRoutineStations` in `NineMileCreek.unity`):
+  `station.nine_mile_creek.bar_landing`, where the bar's axis meets the drawn coastline at the foot of the bar
+  road, dry above spring high (the crossing's path ends there, so a tide-shut bar holds him ashore, not on the
+  crest); and `station.nine_mile_creek.fuel_stop`, beside the forecourt's gas hose nearest the store.
+- **Not yet**: the real bar window off the tide (a gate implementation), Nine Mile Creek's lanes for a
+  visitor (so he is computed there but not drawn), the quad and cart as drawn carriers with real
   capacity, the supply arithmetic, and tide-aware departure hours.
 
 ---
