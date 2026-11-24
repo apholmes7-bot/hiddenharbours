@@ -171,36 +171,7 @@ namespace HiddenHarbours.Tests.EditMode
         /// hundreds of KB.
         /// </summary>
         public static Dictionary<string, string> IndexMetas(IEnumerable<string> roots)
-        {
-            var index = new Dictionary<string, string>();
-            foreach (string root in roots)
-            {
-                if (!Directory.Exists(root)) continue;
-                foreach (string meta in Directory.GetFiles(root, "*.meta", SearchOption.AllDirectories))
-                {
-                    if (!meta.EndsWith(".meta", System.StringComparison.Ordinal)) continue;
-                    string guid = GuidOfMeta(meta);
-                    if (guid != null && !index.ContainsKey(guid))
-                        index[guid] = meta.Substring(0, meta.Length - ".meta".Length).Replace('\\', '/');
-                }
-            }
-            return index;
-        }
-
-        static string GuidOfMeta(string path)
-        {
-            using (var reader = new StreamReader(path))
-            {
-                for (int i = 0; i < 8; i++)
-                {
-                    string line = reader.ReadLine();
-                    if (line == null) break;
-                    if (line.StartsWith("guid: ", System.StringComparison.Ordinal))
-                        return line.Substring(6).Trim().ToLowerInvariant();
-                }
-            }
-            return null;
-        }
+            => AssetGuidIndex.Build(roots);
 
         /// <summary>
         /// The references that do not resolve: no meta carries the guid, or one does and the asset beside
