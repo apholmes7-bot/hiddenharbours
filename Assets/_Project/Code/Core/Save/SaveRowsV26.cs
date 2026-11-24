@@ -10,7 +10,8 @@ namespace HiddenHarbours.Core
     /// always gives the same shelves (rule 5). What a villager bought, what a delivery brought and what a
     /// shelf holds are recomputed and have no row here.
     ///
-    /// <para><b>Data only at v26.</b> The row and its list exist; nothing reads or writes them yet. Flat and
+    /// <para>Written by the store as each purchase is made and read back when the stores are built for a
+    /// loaded game; rows older than the store's lookback are dropped by the writer. Flat and
     /// JsonUtility-friendly.</para>
     /// </summary>
     [Serializable]
@@ -125,7 +126,8 @@ namespace HiddenHarbours.Core
     /// cannot be used until it is put away. So a damaged or dropped bag row can never lose goods: the worst
     /// case is that they are found put away.</para>
     ///
-    /// <para><b>Data only at v26.</b> Nothing reads or writes the list yet. Flat and JsonUtility-friendly.</para>
+    /// <para>Read and changed through <see cref="ShoppingBagContents"/>, which keeps no state of its own.
+    /// Flat and JsonUtility-friendly.</para>
     /// </summary>
     [Serializable]
     public sealed class ShoppingBagDto

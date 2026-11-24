@@ -150,10 +150,18 @@ namespace HiddenHarbours.World
                 else if (room == ShoppingBagRefusal.HandsFull) result = ShelfBuyResult.HandsFull;
                 else
                 {
-                    result = till.TryBuyOne(_listingId, now);
-                    // No game loaded (NoSave): bought into his supplies, as the counter always did.
-                    if (result == ShelfBuyResult.Bought && room == ShoppingBagRefusal.None)
-                        bagged = bagHands.TryBag(_bag, _listingId) == ShoppingBagRefusal.None;
+                    // One write for the purchase and the bag it went into.
+                    ISaveService save = GameServices.Save;
+                    using (save?.DeferWrites())
+                    {
+                        result = till.TryBuyOne(_listingId, now);
+                        // No game loaded (NoSave): bought into his supplies, as the counter always did.
+                        if (result == ShelfBuyResult.Bought && room == ShoppingBagRefusal.None)
+                        {
+                            bagged = bagHands.TryBag(_bag, _listingId) == ShoppingBagRefusal.None;
+                            if (bagged) save?.Save();
+                        }
+                    }
                 }
             }
             else result = till.TryBuyOne(_listingId, now);
