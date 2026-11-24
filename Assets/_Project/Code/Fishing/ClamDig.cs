@@ -246,7 +246,8 @@ namespace HiddenHarbours.Fishing
 
         /// <summary>
         /// Attempt one dig. Lands a single clam into the bucket and raises <see cref="FishCaught"/> iff all
-        /// three gates pass (exposed, shovel owned, bucket has room). Returns true iff a clam was dug.
+        /// three gates pass (exposed, shovel owned, bucket has room). Returns true iff a clam was dug AND
+        /// kept: a clam he holds no licence for is dug, put back with his line, and returns false.
         /// Public so EditMode tests can drive it without the scene lifecycle / input.
         /// </summary>
         public bool TryDig()
@@ -324,6 +325,22 @@ namespace HiddenHarbours.Fishing
             var clam = new CatchItem(_clamSpecies.Id, _clamSpecies.DisplayName, _clamSpecies.Category,
                                      weight, _clamSpecies.BaseValue, _clamSpecies.SupplyElasticity,
                                      _clamSpecies.SpoilPerDay, Freshness.Landed(dugAt));
+
+            // NO LICENCE, AND IT GOES BACK (owner ruling 2026-11-23). The dig itself is never blocked:
+            // every gate above still decides whether he CAN dig, and the press digs (the strike beat
+            // plays, the hole is spent for this tide). But a species he holds no licence for is put
+            // straight back: nothing enters a hand or the pail, nothing is recorded, and he says "I don't
+            // have a licence for this <species> yet". Which species need a licence is the licence data,
+            // read by the one shared rule (UnlicensedCatch), never a list here.
+            if (UnlicensedCatch.MustRelease(_clamSpecies.Id))
+            {
+                EventBus.Publish(new JuiceMomentCue(JuiceMoment.DigStrike, SpotPos, weight));
+                Spend(dugAt);
+                UnlicensedCatch.ReleaseAndSay(in clam);
+                Debug.Log($"[ClamDig] Dug a {clam.DisplayName}, but no licence for it yet: put it back.");
+                return false;
+            }
+
             // INTO HER HAND if the hands are there to take it; into the pail if they are not.
             //
             // The fallback is not a nicety — it is what keeps every context that has no CarryHands working

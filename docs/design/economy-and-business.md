@@ -509,7 +509,11 @@ module refs):
   via `RepairLedger`) and raises the Core `BoatRepaired` event. A non-damaged buy is repaired-on-grant.
   Greybox-minimal: **instant repair on payment**. The *usable* gate (boarding) is gameplay-systems' —
   they read `RepairLedger.IsRepaired` off the save. The St Peters dory is a **plain bought + repaired**
-  boat (no inheritance).
+  boat (no inheritance). *(Amended 2026-11-23, canon §5.8 / ADR 0062: the first dory is sold on St Peters
+  by Basil Samson and **mended by hand** at the island slip — repair materials bought at the island store,
+  then two or three jobs, each remembered as a saved flag — instead of instant repair on payment at the
+  NMC yard. The island store sells rods (a couple of tiers), bait and a rod rack; boat hardware is NMC's
+  only; the cod licence is sold on the island (where is open). Materials, jobs and prices are open.)*
 - **New Core events (additive, in `Core/Events/LicenseSignals.cs`, NOT `GameSignals.cs`):**
   `LicensePurchased`, `BoatRepaired`, `GearPurchased` — for ui-ux toasts / world-content beats /
   gameplay-systems capability enable, all via EventBus so no module references Economy.
