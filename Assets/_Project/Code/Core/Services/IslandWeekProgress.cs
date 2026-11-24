@@ -34,8 +34,8 @@ namespace HiddenHarbours.Core
     /// <summary>Reads the five facts. It cannot grant the weather flag, a conversation or an exit.</summary>
     public interface IIslandWeekProgress
     {
-        IslandWeekSnapshot Read(SaveData save, double gameTimeSeconds, double secondsPerDay);
-        IslandWeekSnapshot ReadSaved(SaveData save, double secondsPerDay);
+        /// <summary>Pass the Core clock's zero-based <see cref="IGameClock.DayIndex"/>.</summary>
+        IslandWeekSnapshot Read(SaveData save, int dayIndex);
     }
 
     /// <summary>On-demand, deterministic evaluation over explicit saved facts and the game clock.</summary>
@@ -58,19 +58,14 @@ namespace HiddenHarbours.Core
                                 rules.ShellfishSoldTextKey, rules.DayReachedTextKey };
         }
 
-        public IslandWeekSnapshot ReadSaved(SaveData save, double secondsPerDay)
-            => Read(save, save?.GameTimeSeconds ?? 0d, secondsPerDay);
-
-        public IslandWeekSnapshot Read(SaveData save, double gameTimeSeconds, double secondsPerDay)
+        public IslandWeekSnapshot Read(SaveData save, int dayIndex)
         {
             IslandWeekFact held = IslandWeekFact.None;
             if (save?.RepairedBoats != null && save.RepairedBoats.Contains(_doryId)) held |= IslandWeekFact.DoryMended;
             if (save?.OwnedLicenses != null && save.OwnedLicenses.Contains(_licenceId)) held |= IslandWeekFact.CodLicence;
             if (HasFlag(save, IslandWeekFactRecorder.FishFromDoryKey)) held |= IslandWeekFact.FishFromDory;
             if (HasFlag(save, IslandWeekFactRecorder.ShellfishSoldKey)) held |= IslandWeekFact.ShellfishSold;
-            if (gameTimeSeconds >= 0d && !double.IsInfinity(gameTimeSeconds)
-                && secondsPerDay > 0d && !double.IsInfinity(secondsPerDay)
-                && gameTimeSeconds / secondsPerDay >= _earliestDay - 1d)
+            if (dayIndex >= _earliestDay - 1)
                 held |= IslandWeekFact.DayReached;
 
             var missing = new List<string>(_textKeys.Length);

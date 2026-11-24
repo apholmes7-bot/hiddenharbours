@@ -5,7 +5,10 @@ using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.TestTools;
 using HiddenHarbours.Core;
+using HiddenHarbours.Environment;
+using HiddenHarbours.Player;
 using HiddenHarbours.Economy;   // LicenseDef / GearOffer / ShipwrightOffer — the shipped Defs the ids are held to
 using HiddenHarbours.UI;        // TidePanelInput — the binding the dig line names
 using HiddenHarbours.World;
@@ -114,7 +117,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(7, rules.EarliestDay);
             CollectionAssert.AreEqual(new[] { "tasks.st_peters.mend_dory", "tasks.st_peters.cod_licence",
                 "tasks.st_peters.fish_from_dory", "tasks.st_peters.sell_shellfish", "tasks.st_peters.first_week" },
-                new IslandWeekProgress(rules).ReadSaved(Game(), 1000d).MissingTextKeys);
+                new IslandWeekProgress(rules).Read(Game(), 0).MissingTextKeys);
             Assert.AreEqual("st_peters.fact.fish_from_dory", IslandWeekFactRecorder.FishFromDoryKey);
             Assert.AreEqual("st_peters.fact.shellfish_sold", IslandWeekFactRecorder.ShellfishSoldKey);
             CollectionAssert.Contains(rules.FinfishCategories, FishCategory.InshoreGroundfish);
@@ -130,11 +133,11 @@ namespace HiddenHarbours.Tests.EditMode
             if ((mask & 2) != 0) save.OwnedLicenses.Add(rules.LicenceId);
             if ((mask & 4) != 0) save.OnboardingFlags.Add(new SaveFlag(IslandWeekFactRecorder.FishFromDoryKey, true));
             if ((mask & 8) != 0) save.OnboardingFlags.Add(new SaveFlag(IslandWeekFactRecorder.ShellfishSoldKey, true));
-            save.GameTimeSeconds = (mask & 16) != 0 ? 6000d : 5000d;
+            int dayIndex = (mask & 16) != 0 ? 6 : 5;
             string before = SaveSerialization.ToJson(save);
 
             IIslandWeekProgress progress = new IslandWeekProgress(rules);
-            IslandWeekSnapshot reading = progress.ReadSaved(save, 1000d);
+            IslandWeekSnapshot reading = progress.Read(save, dayIndex);
             Assert.AreEqual((IslandWeekFact)mask, reading.Held);
             Assert.AreEqual(mask == 31, reading.AllHold);
             string[] keys = { rules.DoryMendedTextKey, rules.CodLicenceTextKey, rules.FishFromDoryTextKey,
@@ -152,7 +155,7 @@ namespace HiddenHarbours.Tests.EditMode
             var reload = SaveSerialization.FromJson(before);
             for (int repeat = 0; repeat < 3; repeat++)
             {
-                var again = progress.ReadSaved(reload, 1000d);
+                var again = progress.Read(reload, dayIndex);
                 Assert.AreEqual(reading.Held, again.Held);
                 CollectionAssert.AreEqual(reading.MissingTextKeys, again.MissingTextKeys);
             }
@@ -164,15 +167,26 @@ namespace HiddenHarbours.Tests.EditMode
         [TestCase(6000d, true)]
         [TestCase(7000d, true)]
         [TestCase(112000d, true)]
-        public void IslandWeek_DaySevenUsesAbsoluteGameTime_NotSeasonOrSavedDayCache(double seconds, bool reached)
+        public void IslandWeek_DaySevenUsesCoreClockDayIndex_NotSeasonOrSavedDayCache(double seconds, bool reached)
         {
+            var config = ScriptableObject.CreateInstance<GameConfig>();
+            _spawned.Add(config);
+            config.SecondsPerDay = 1000f;
+            var go = new GameObject("IslandClock(test)");
+            _spawned.Add(go);
+            var clock = go.AddComponent<GameClock>();
+            typeof(GameClock).GetField("_config", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(clock, config);
+            GameServices.Clock = clock;
             var save = Game();
             save.GameTimeSeconds = seconds;
             save.DayIndex = 999;
+            clock.SeekTo(save.GameTimeSeconds);
             var progress = new IslandWeekProgress(IslandRules());
-            Assert.AreEqual(reached, progress.ReadSaved(save, 1000d).Holds(IslandWeekFact.DayReached));
-            Assert.IsFalse(progress.Read(save, 0d, 1000d).Holds(IslandWeekFact.DayReached),
-                "a supplied live clock is explicit, never replaced by the save's older clock");
+            Assert.AreEqual(reached, progress.Read(save, GameServices.Clock.DayIndex).Holds(IslandWeekFact.DayReached));
+            clock.SeekTo(0d);
+            Assert.IsFalse(progress.Read(save, GameServices.Clock.DayIndex).Holds(IslandWeekFact.DayReached),
+                "the restored Core clock owns the day; neither saved seconds nor the cached day overrides it");
         }
 
         [Test]
@@ -191,10 +205,10 @@ namespace HiddenHarbours.Tests.EditMode
             save.OnboardingFlags.Add(new SaveFlag(IslandWeekFactRecorder.FishFromDoryKey, false));
             save.OnboardingFlags.Add(new SaveFlag(IslandWeekFactRecorder.ShellfishSoldKey, false));
             var progress = new IslandWeekProgress(IslandRules());
-            Assert.AreEqual(IslandWeekFact.None, progress.ReadSaved(save, 1000d).Held);
-            Assert.AreEqual(IslandWeekFact.None, progress.ReadSaved(null, 1000d).Held);
+            Assert.AreEqual(IslandWeekFact.None, progress.Read(save, 0).Held);
+            Assert.AreEqual(IslandWeekFact.None, progress.Read(null, 0).Held);
             save.RepairedBoats = null; save.OwnedLicenses = null; save.OnboardingFlags = null;
-            Assert.AreEqual(IslandWeekFact.None, progress.ReadSaved(save, 1000d).Held);
+            Assert.AreEqual(IslandWeekFact.None, progress.Read(save, 0).Held);
         }
 
         [Test]
@@ -211,21 +225,32 @@ namespace HiddenHarbours.Tests.EditMode
             var progress = new IslandWeekProgress(rules);
             rules.EarliestDay = 20;
             rules.LicenceId = "license.changed";
-            var snapshot = progress.Read(save, 2000d, 1000d);
+            var snapshot = progress.Read(save, 2);
             Assert.AreEqual(IslandWeekFact.DoryMended | IslandWeekFact.CodLicence | IslandWeekFact.DayReached, snapshot.Held);
-            Assert.AreEqual(IslandWeekFact.DoryMended, new IslandWeekProgress(rules).Read(save, 2000d, 1000d).Held);
+            Assert.AreEqual(IslandWeekFact.DoryMended, new IslandWeekProgress(rules).Read(save, 2).Held);
         }
 
-        [TestCase(-1d, 1000d)]
-        [TestCase(double.NaN, 1000d)]
-        [TestCase(double.PositiveInfinity, 1000d)]
-        [TestCase(6000d, 0d)]
-        [TestCase(6000d, -1d)]
-        [TestCase(6000d, double.NaN)]
-        [TestCase(6000d, double.PositiveInfinity)]
-        public void IslandWeek_InvalidClockCannotSatisfyTheDay(double time, double dayLength)
-            => Assert.IsFalse(new IslandWeekProgress(IslandRules()).Read(Game(), time, dayLength)
+        [TestCase(int.MinValue, false)]
+        [TestCase(-1, false)]
+        [TestCase(0, false)]
+        [TestCase(5, false)]
+        [TestCase(6, true)]
+        [TestCase(7, true)]
+        [TestCase(int.MaxValue, true)]
+        public void IslandWeek_DayIndexUsesTheExactZeroBasedBoundary(int dayIndex, bool reached)
+            => Assert.AreEqual(reached, new IslandWeekProgress(IslandRules()).Read(Game(), dayIndex)
                 .Holds(IslandWeekFact.DayReached));
+
+        [Test]
+        public void IslandWeek_FirstDayRequirementStillRejectsAnInvalidDayIndex()
+        {
+            var rules = Object.Instantiate(IslandRules());
+            _spawned.Add(rules);
+            rules.EarliestDay = 1;
+            var progress = new IslandWeekProgress(rules);
+            Assert.IsFalse(progress.Read(Game(), -1).Holds(IslandWeekFact.DayReached));
+            Assert.IsTrue(progress.Read(Game(), 0).Holds(IslandWeekFact.DayReached));
+        }
 
         [TestCase("day")]
         [TestCase("licence")]
@@ -307,9 +332,11 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsFalse(GameServices.Save.GetFlag(IslandWeekFactRecorder.FishFromDoryKey));
         }
 
-        [TestCase(false)]
-        [TestCase(true)]
-        public void IslandWeek_TheActualLandingChokePointCountsOnlyTheLicensedKeptFish(bool licensed)
+        [TestCase(false, false)]
+        [TestCase(false, true)]
+        [TestCase(true, false)]
+        [TestCase(true, true)]
+        public void IslandWeek_TheActualLandingChokePointCountsOnlyTheLicensedKeptFish(bool licensed, bool inHand)
         {
             GameServices.Save = new BlobSave(Game());
             var licences = new FactLicences();
@@ -324,15 +351,49 @@ namespace HiddenHarbours.Tests.EditMode
             var go = new GameObject("IslandLanding(test)");
             _spawned.Add(go);
             var controller = go.AddComponent<FishingController>();
+            var hands = go.AddComponent<CarryHands>();
+            GameServices.CatchHands = hands;
+            controller.OnControlModeChanged(new ControlModeChanged(inHand ? ControlMode.OnFoot : ControlMode.Aboard));
             var hold = new FactHold();
             controller.Configure(hold, new[] { fish }, "region.st_peters", Gear.Handline, 1, new[] { licence });
             const BindingFlags access = BindingFlags.Instance | BindingFlags.NonPublic;
             typeof(FishingController).GetField("_pendingFish", access).SetValue(controller, fish);
             typeof(FishingController).GetField("_pendingWeight", access).SetValue(controller, 2f);
-            typeof(FishingController).GetMethod("OnLanded", access).Invoke(controller, null);
-            Assert.AreEqual(licensed ? 1 : 0, hold.UsedUnits);
-            Assert.AreEqual(licensed ? FishingPhase.Landed : FishingPhase.Snapped, controller.Phase);
-            Assert.AreEqual(licensed, GameServices.Save.GetFlag(IslandWeekFactRecorder.FishFromDoryKey));
+            int landed = 0, caught = 0, unlicensed = 0, documentedReleases = 0;
+            void OnHand(CatchLanded _) => landed++;
+            void OnHold(FishCaught _) => caught++;
+            void OnRelease(UnlicensedCatchReleased e)
+            {
+                unlicensed++;
+                Assert.AreEqual(fish.Id, e.Item.SpeciesId);
+                Assert.AreEqual(licence.Id, e.RequiredLicenceId);
+            }
+            void OnDocumented(CatchReleased _) => documentedReleases++;
+            EventBus.Subscribe<CatchLanded>(OnHand);
+            EventBus.Subscribe<FishCaught>(OnHold);
+            EventBus.Subscribe<UnlicensedCatchReleased>(OnRelease);
+            EventBus.Subscribe<CatchReleased>(OnDocumented);
+            try
+            {
+                typeof(FishingController).GetMethod("OnLanded", access).Invoke(controller, null);
+                Assert.AreEqual(licensed && !inHand ? 1 : 0, hold.UsedUnits);
+                Assert.AreEqual(licensed && inHand, hands.TryPeekHand(out _));
+                Assert.AreEqual(licensed && inHand ? 1 : 0, landed);
+                Assert.AreEqual(licensed && !inHand ? 1 : 0, caught);
+                Assert.AreEqual(licensed ? 0 : 1, unlicensed);
+                Assert.AreEqual(0, documentedReleases);
+                Assert.AreEqual(FishingPhase.Landed, controller.Phase, "a won fight lands even when the fish is let go");
+                Assert.AreEqual(licensed ? 1 : 0, CatchRecords.Current().Count);
+                Assert.AreEqual(licensed, GameServices.Save.GetFlag(IslandWeekFactRecorder.FishFromDoryKey));
+                Assert.IsFalse(GameServices.Save.GetFlag("st_peters.weather_turned"));
+            }
+            finally
+            {
+                EventBus.Unsubscribe<CatchLanded>(OnHand);
+                EventBus.Unsubscribe<FishCaught>(OnHold);
+                EventBus.Unsubscribe<UnlicensedCatchReleased>(OnRelease);
+                EventBus.Unsubscribe<CatchReleased>(OnDocumented);
+            }
         }
 
         [TestCase(1, 0, false)]
@@ -347,6 +408,66 @@ namespace HiddenHarbours.Tests.EditMode
             CatchRecords.Install();
             EventBus.Publish(new CatchSold(1, totalCount, default, shellfishCount));
             Assert.AreEqual(counts, GameServices.Save.GetFlag(IslandWeekFactRecorder.ShellfishSoldKey));
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void IslandWeek_MissingOrInvalidResourceWarnsOnceAcrossReinstalls(bool invalid)
+        {
+            GameServices.Save = new BlobSave(Game());
+            StandOn("boat.dory");
+            CatchRecords.Install();
+            IslandWeekRulesDef broken = null;
+            if (invalid)
+            {
+                broken = Object.Instantiate(IslandRules());
+                _spawned.Add(broken);
+                broken.EarliestDay = 0;
+            }
+            int loads = 0, warnings = 0;
+            IslandWeekRulesDef Load(string path)
+            {
+                Assert.AreEqual("IslandWeek", path);
+                Assert.AreEqual(CatchRecords.IslandWeekResourcesPath, path);
+                loads++;
+                return broken;
+            }
+            void OnLog(string message, string stack, LogType type)
+            {
+                if (type == LogType.Warning) warnings++;
+            }
+            string reason = invalid ? "The earliest day is one-based." : "Asset is missing.";
+            LogAssert.Expect(LogType.Warning,
+                $"[CatchRecords] Resources/IslandWeek: {reason} Island week facts will not be recorded.");
+            Application.logMessageReceived += OnLog;
+            try
+            {
+                for (int repeat = 0; repeat < 3; repeat++)
+                {
+                    CatchRecords.Install(null, Load);
+                    EventBus.Publish(new FishCaught(CodCatch()));
+                    EventBus.Publish(new CatchSold(10, 1, default, 1));
+                    if (repeat == 1) CatchRecords.Uninstall();
+                }
+                Assert.AreEqual(3, loads);
+                Assert.AreEqual(1, warnings, "re-arming listeners must not flood the log");
+                Assert.AreEqual(3, CatchRecords.Current()[0].Count, "ordinary catch recording keeps working");
+                Assert.IsFalse(GameServices.Save.GetFlag(IslandWeekFactRecorder.FishFromDoryKey));
+                Assert.IsFalse(GameServices.Save.GetFlag(IslandWeekFactRecorder.ShellfishSoldKey));
+
+                CatchRecords.Install();
+                EventBus.Publish(new FishCaught(CodCatch()));
+                EventBus.Publish(new CatchSold(10, 1, default, 1));
+                Assert.AreEqual(4, CatchRecords.Current()[0].Count);
+                Assert.IsTrue(GameServices.Save.GetFlag(IslandWeekFactRecorder.FishFromDoryKey));
+                Assert.IsTrue(GameServices.Save.GetFlag(IslandWeekFactRecorder.ShellfishSoldKey));
+                Assert.AreEqual(1, warnings, "a valid resource recovers silently");
+                Assert.IsFalse(GameServices.Save.GetFlag("st_peters.weather_turned"));
+            }
+            finally
+            {
+                Application.logMessageReceived -= OnLog;
+            }
         }
 
         [Test]
@@ -381,7 +502,7 @@ namespace HiddenHarbours.Tests.EditMode
             var restored = SaveSerialization.FromJson(SaveSerialization.ToJson(save));
             Assert.AreEqual(SaveMigration.CurrentVersion, restored.SchemaVersion);
             Assert.AreEqual(IslandWeekFact.FishFromDory | IslandWeekFact.ShellfishSold,
-                new IslandWeekProgress(IslandRules()).ReadSaved(restored, 1000d).Held);
+                new IslandWeekProgress(IslandRules()).Read(restored, 0).Held);
 
             GameServices.Save = new BlobSave(Game());
             EventBus.Publish(new GameLoaded());
@@ -399,8 +520,8 @@ namespace HiddenHarbours.Tests.EditMode
         public void SetUp()
         {
             GameServices.Reset();
-            CatchRecords.Uninstall();
-            CatchRecords.Log.Clear();
+            ResetCatchRecords();
+            UnlicensedCatch.ResetCatalog();
             _dir = Path.Combine(Path.GetTempPath(), "hh_onboarding_progress_tests");
             Directory.CreateDirectory(_dir);
         }
@@ -408,13 +529,17 @@ namespace HiddenHarbours.Tests.EditMode
         [TearDown]
         public void TearDown()
         {
-            CatchRecords.Uninstall();
-            CatchRecords.Log.Clear();
+            ResetCatchRecords();
+            UnlicensedCatch.ResetCatalog();
             GameServices.Reset();
             foreach (Object o in _spawned) if (o != null) Object.DestroyImmediate(o);
             _spawned.Clear();
             if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true);
         }
+
+        private static void ResetCatchRecords()
+            => typeof(CatchRecords).GetMethod("ResetStatics", BindingFlags.Static | BindingFlags.NonPublic)
+                .Invoke(null, null);
 
         // ---- fixtures --------------------------------------------------------------------------------
 

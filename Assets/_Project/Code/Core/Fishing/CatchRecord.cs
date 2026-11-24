@@ -273,11 +273,14 @@ namespace HiddenHarbours.Core
     /// </summary>
     public static class CatchRecords
     {
+        public const string IslandWeekResourcesPath = "IslandWeek";
+
         /// <summary>The one record. Never null.</summary>
         public static CatchRecordLog Log { get; } = new CatchRecordLog();
 
         private static bool _installed;
         private static IslandWeekFactRecorder _islandWeek;
+        private static bool _warnedIslandWeekRules;
 
         /// <summary>True while the record is listening.</summary>
         public static bool IsInstalled => _installed;
@@ -287,6 +290,7 @@ namespace HiddenHarbours.Core
         {
             Uninstall();
             Log.Clear();
+            _warnedIslandWeekRules = false;
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -296,11 +300,21 @@ namespace HiddenHarbours.Core
         /// adding one, so calling it again after a test suite's <c>EventBus.Clear</c> makes the record hear
         /// again without ever subscribing twice.</summary>
         public static void Install(IslandWeekRulesDef islandWeekRules = null)
+            => Install(islandWeekRules, Resources.Load<IslandWeekRulesDef>);
+
+        internal static void Install(IslandWeekRulesDef islandWeekRules,
+                                     System.Func<string, IslandWeekRulesDef> loadRules)
         {
             _installed = true;
             Unsubscribe();
-            var rules = islandWeekRules != null ? islandWeekRules : Resources.Load<IslandWeekRulesDef>("IslandWeek");
-            _islandWeek = rules != null && rules.ValidationError() == null ? new IslandWeekFactRecorder(rules) : null;
+            var rules = islandWeekRules != null ? islandWeekRules : loadRules(IslandWeekResourcesPath);
+            string error = rules == null ? "Asset is missing." : rules.ValidationError();
+            _islandWeek = error == null ? new IslandWeekFactRecorder(rules) : null;
+            if (error != null && !_warnedIslandWeekRules)
+            {
+                _warnedIslandWeekRules = true;
+                Debug.LogWarning($"[CatchRecords] Resources/{IslandWeekResourcesPath}: {error} Island week facts will not be recorded.");
+            }
             EventBus.Subscribe<CatchLanded>(OnLanded);
             EventBus.Subscribe<FishCaught>(OnCaught);
             EventBus.Subscribe<CatchReleased>(OnReleased);
