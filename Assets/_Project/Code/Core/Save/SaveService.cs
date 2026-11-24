@@ -42,6 +42,8 @@ namespace HiddenHarbours.Core
 
         public bool LoadedExistingSave { get; private set; }
 
+        public long CompletedWrites { get; private set; }
+
         // ---- self-installing bootstrap ---------------------------------------------------------
 
         /// <summary>Create the persistent service before the first scene's objects awake, so flags are
@@ -169,6 +171,7 @@ namespace HiddenHarbours.Core
             // the quit had just written. It is also what the resume needs to be true: the shell only seeks
             // the clock to the saved instant for a game it believes is on disk.
             LoadedExistingSave = true;
+            CompletedWrites++;
         }
 
         public System.IDisposable DeferWrites()

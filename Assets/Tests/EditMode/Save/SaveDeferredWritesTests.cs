@@ -102,5 +102,40 @@ namespace HiddenHarbours.Tests.EditMode
             _service.Save();
             Assert.AreEqual(2, _writes);
         }
+
+        [Test]
+        public void CompletedWriteReceipt_AdvancesOnlyAfterTheDeferredWriteLands()
+        {
+            long before = _service.CompletedWrites;
+            using (_service.DeferWrites())
+            {
+                _service.Save();
+                _service.Save();
+                Assert.AreEqual(before, _service.CompletedWrites);
+            }
+            Assert.AreEqual(before + 1, _service.CompletedWrites);
+            Assert.AreEqual(1, _writes);
+        }
+
+        [Test]
+        public void CompletedWriteReceipt_DoesNotAdvanceWhenAWriteIsRefused()
+        {
+            long before = _service.CompletedWrites;
+            ShellFlow.EnterTitle();
+            _service.Save();
+            Assert.AreEqual(before, _service.CompletedWrites);
+            Assert.AreEqual(0, _writes);
+        }
+
+        [Test]
+        public void CompletedWriteReceipt_DoesNotAdvanceWhenTheDiskWriteThrows()
+        {
+            long before = _service.CompletedWrites;
+            byte[] kept = File.ReadAllBytes(_path);
+            SaveStore.BeforeReplaceForTests = path => { if (path == _path) throw new IOException("Fixture replace failed."); };
+            Assert.Throws<IOException>(() => _service.Save());
+            Assert.AreEqual(before, _service.CompletedWrites);
+            CollectionAssert.AreEqual(kept, File.ReadAllBytes(_path));
+        }
     }
 }

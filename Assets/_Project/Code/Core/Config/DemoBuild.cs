@@ -68,6 +68,6 @@ namespace HiddenHarbours.Core
         }
     }
 
-    /// <summary>Reserved for a future ending presentation. No gameplay path publishes this yet.</summary>
+    /// <summary>Published once per session after the qualifying saved sleep. Presentation listens here and uses DemoEnding.TextKey.</summary>
     public readonly struct DemoEnded { }
 }

@@ -29,6 +29,10 @@ namespace HiddenHarbours.Core
         /// <c>SaveService</c> overrides it.</para></summary>
         bool LoadedExistingSave => false;
 
+        /// <summary>Session-only receipt count for successful synchronous Save writes. A deferred,
+        /// refused or failed write leaves it unchanged. Backends without receipts default to zero.</summary>
+        long CompletedWrites => 0;
+
         /// <summary>Read a persisted boolean flag by stable key (backs the world's onboarding flags).</summary>
         bool GetFlag(string key);
 

@@ -114,6 +114,7 @@ namespace HiddenHarbours.Core
         {
             IGameClock clock = GameServices.Clock;
             GameConfig config = GameServices.Config;
+            DemoSleepTicket demoSleep = DemoEndingSession.BeginSleep();
 
             // Dark BEFORE the clock moves. The cover is asked for only when the morning is actually
             // coming: a held hour or a clockless context changes no light and so hides nothing.
@@ -121,6 +122,8 @@ namespace HiddenHarbours.Core
             if (covered) EventBus.Publish(new RegionTravelCover(true));
 
             GameSaved outcome;
+            bool woke;
+            bool committed;
             try
             {
                 // The morning comes FIRST: the write below snapshots the clock, and a reload must wake
@@ -129,7 +132,7 @@ namespace HiddenHarbours.Core
                 // Owner ruling 2026-11-15: never more than eight hours. Turned in at night this is the
                 // morning, exactly as before; turned in at noon it is eight hours on (SleepPlan).
                 double bedtime = ClockSeconds(clock);
-                bool woke = SleepPlan.SleepDefault(clock, config);
+                woke = SleepPlan.SleepDefault(clock, config);
                 // The sleep need is relieved here, and ONLY here: after the clock has moved (so a night
                 // slept is a night, whatever the hour you lay down) and before the write below (so the
                 // reload wakes rested, the same morning the player just saw). Gated on `woke`: a held
@@ -140,7 +143,7 @@ namespace HiddenHarbours.Core
                 if (woke) GameServices.Needs.SleepSince(bedtime);
 
                 bool morning = woke && ClockSeconds(clock) == RestMorning.WakeSeconds(bedtime, config);
-                outcome = Keep(request, woke, morning ? WokeText : SleepFlow.RestedText);
+                outcome = Keep(request, woke, morning ? WokeText : SleepFlow.RestedText, out committed);
             }
             finally
             {
@@ -150,6 +153,7 @@ namespace HiddenHarbours.Core
             }
 
             EventBus.Publish(outcome);
+            DemoEndingSession.CompleteSleep(demoSleep, woke, committed);
             return outcome;
         }
 
@@ -247,12 +251,16 @@ namespace HiddenHarbours.Core
         /// Shared by the instant night (<see cref="Fulfil"/>) and the chosen one (<see cref="SleepFlow.Wake"/>)
         /// so the write cannot drift between them. Publishes nothing: the caller does.
         /// </summary>
-        internal static GameSaved Keep(in RestSaveRequested request, bool woke, string wokeText)
+        internal static GameSaved Keep(in RestSaveRequested request, bool woke, string wokeText, out bool committed)
         {
             ISaveService save = GameServices.Save;
-            return save == null
+            SaveData game = save?.Current;
+            long before = save?.CompletedWrites ?? 0;
+            GameSaved outcome = save == null
                 ? new GameSaved(false, NoServiceText)
                 : Write(save, request, woke ? wokeText : SavedText);
+            committed = save != null && ReferenceEquals(game, save.Current) && save.CompletedWrites > before;
+            return outcome;
         }
 
         static GameSaved Write(ISaveService save, in RestSaveRequested request, string keptText)

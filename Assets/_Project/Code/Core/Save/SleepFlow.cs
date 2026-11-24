@@ -69,6 +69,7 @@ namespace HiddenHarbours.Core
         public static RestSaveRequested Request => _request;
 
         private static RestSaveRequested _request;
+        private static DemoSleepTicket _demoSleep;
 
         /// <summary>
         /// Lie down in the bed <paramref name="request"/> names, and offer a length. True if a sleep is now
@@ -131,6 +132,7 @@ namespace HiddenHarbours.Core
             }
             if (!RestQuorum.IsMet(1)) return;   // the others are not asleep yet (no multiplayer today)
 
+            _demoSleep = DemoEndingSession.BeginSleep();
             StartSeconds = clock.TotalSeconds;
             WakeSeconds = SleepPlan.WakeSeconds(StartSeconds, Hours, GameServices.Config);
             Phase = SleepPhase.Asleep;
@@ -204,11 +206,14 @@ namespace HiddenHarbours.Core
             if (slept) GameServices.Needs.SleepSince(StartSeconds);
 
             string text = now >= WakeSeconds ? RestedText : WokeEarlyText;
-            GameSaved outcome = RestSaveResponder.Keep(_request, slept, text);
+            DemoSleepTicket demoSleep = _demoSleep;
+            _demoSleep = default;
+            GameSaved outcome = RestSaveResponder.Keep(_request, slept, text, out bool committed);
 
             RestQuorum.Release(_request.BedId, RestQuorum.LocalSleeper);
             Announce(clock);
             EventBus.Publish(outcome);
+            DemoEndingSession.CompleteSleep(demoSleep, slept, committed);
             return outcome;
         }
 
@@ -230,11 +235,13 @@ namespace HiddenHarbours.Core
             StartSeconds = 0d;
             WakeSeconds = 0d;
             _request = default;
+            _demoSleep = default;
             RestQuorum.Reset();
         }
 
         private static void Release()
         {
+            _demoSleep = default;
             RestQuorum.Release(_request.BedId, RestQuorum.LocalSleeper);
             Phase = SleepPhase.Awake;
         }
