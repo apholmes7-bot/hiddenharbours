@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: StPetersHerring
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.SpecialOrderLineDef
   Id: specialorder.st_peters_herring
-  ItemId: bait.herring
+  Bait: {fileID: 11400000, guid: b21273961c48421c907782e724b25bab, type: 2}
   SellerId: seller.leblancs
-  Price: 3
   DeliveryDays: 2
   MaxOnOrder: 20

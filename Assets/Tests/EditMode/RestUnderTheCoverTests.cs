@@ -203,10 +203,10 @@ namespace HiddenHarbours.Tests.EditMode
             GameClock clock = RealClockAt(22);
             var wallet = clock.gameObject.AddComponent<HiddenHarbours.Player.PlayerWallet>();
             wallet.Add(12);
-            using var book = new SpecialOrderBook("seller.test",
+            using var book = new SpecialOrderBook(
                 new[] { new SpecialOrderLine("specialorder.test", "bait.herring", "seller.test", 3, 1, 4) },
                 wallet, clock);
-            Assert.That(book.Place("specialorder.test", 2, out _), Is.EqualTo(SpecialOrderRefusal.None));
+            Assert.That(book.Place("seller.test", "specialorder.test", 2, out _), Is.EqualTo(SpecialOrderRefusal.None));
             var seen = new List<double>();
             Action<SpecialOrderArrived> read = order => seen.Add(clock.TotalSeconds);
             EventBus.Subscribe(read);
@@ -222,7 +222,7 @@ namespace HiddenHarbours.Tests.EditMode
                 }
                 Assert.That(seen, Is.EqualTo(new[] { At(1, 0) }));
                 Assert.That(book.Capture().Orders[0].Arrived, Is.True);
-                Assert.That(book.Capture().Orders[0].DayDue, Is.EqualTo(1));
+                Assert.That(book.Capture().Orders[0].DueDay, Is.EqualTo(1));
                 Assert.That(wallet.Money, Is.EqualTo(6));
                 book.RefreshArrivals();
                 Assert.That(seen.Count, Is.EqualTo(1));

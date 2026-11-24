@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: StPetersShuckedClam
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.SpecialOrderLineDef
   Id: specialorder.st_peters_shucked_clam
-  ItemId: bait.shucked_clam
+  Bait: {fileID: 11400000, guid: 8976f51b0e5b41449f772042dc4a20c3, type: 2}
   SellerId: seller.leblancs
-  Price: 3
   DeliveryDays: 2
   MaxOnOrder: 20

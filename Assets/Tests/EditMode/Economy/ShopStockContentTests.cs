@@ -34,12 +34,45 @@ namespace HiddenHarbours.Tests.EditMode.Economy
                 Assert.That(line.SellerId, Is.EqualTo(shop.Spec.SellerId));
                 Assert.That(sellers, Does.Contain(line.SellerId));
                 Assert.That(baits.ContainsKey(line.ItemId), Is.True, line.Id);
+                Assert.That(line.Bait, Is.SameAs(baits[line.ItemId]));
                 Assert.That(baits[line.ItemId].Catalog.Listed, Is.False, "No existing stock is moved to special order.");
                 Assert.That(line.Price, Is.EqualTo(baits[line.ItemId].Price), "One individual bait per unit.");
+                Assert.That(line.BuildLine().Price, Is.EqualTo(baits[line.ItemId].Price));
                 Assert.That(line.DeliveryDays, Is.EqualTo(2));
                 Assert.That(line.MaxOnOrder, Is.EqualTo(20));
                 Assert.That(shop.Spec.Stock.Select(stock => stock.ListingId), Does.Not.Contain(line.ItemId));
                 Assert.That(shelves.Lines.SelectMany(shelf => shelf.CounterListingIds), Does.Not.Contain(line.ItemId));
+            }
+        }
+
+        [Test]
+        public void SpecialOrderPrice_ReadsItsBaitDefWithoutASerializedPriceCopy()
+        {
+            var bait = ScriptableObject.CreateInstance<BaitDef>();
+            var offer = ScriptableObject.CreateInstance<SpecialOrderLineDef>();
+            try
+            {
+                bait.Id = "bait.test";
+                bait.Price = 3;
+                offer.Id = "specialorder.test";
+                offer.SellerId = "seller.test";
+                offer.Bait = bait;
+                offer.DeliveryDays = 2;
+                offer.MaxOnOrder = 20;
+                Assert.That(offer.BuildLine().Price, Is.EqualTo(3));
+                bait.Price = 17;
+                Assert.That(offer.Price, Is.EqualTo(17));
+                Assert.That(offer.BuildLine().Price, Is.EqualTo(17));
+                Assert.That(offer.BuildLine().ItemId, Is.EqualTo(bait.Id));
+                Assert.That(new SerializedObject(offer).FindProperty("Price"), Is.Null);
+                Assert.That(new SerializedObject(offer).FindProperty("ItemId"), Is.Null);
+                offer.Bait = null;
+                Assert.Throws<ArgumentException>(() => offer.BuildLine());
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(offer);
+                UnityEngine.Object.DestroyImmediate(bait);
             }
         }
 

@@ -1,16 +1,32 @@
+using System;
+using System.Collections.Generic;
+
 namespace HiddenHarbours.Core
 {
-    /// <summary>Immutable receipt for a paid order; quantities are individual delivered units.</summary>
+    public readonly struct SpecialOrderLineReceipt
+    {
+        public readonly string ListingId, BaitId;
+        public readonly int Count, PaidPrice;
+        public SpecialOrderLineReceipt(string listingId, string baitId, int count, int paidPrice)
+        {
+            ListingId = listingId; BaitId = baitId; Count = count; PaidPrice = paidPrice;
+        }
+    }
+
+    /// <summary>Immutable receipt; line prices are paid shares, quantities are individual baits.</summary>
     public readonly struct SpecialOrderReceipt
     {
-        public readonly int OrderId, Quantity, DayPlaced, DayDue;
-        public readonly string SellerId, LineId, ItemId;
+        public readonly string OrderId, SellerId, DeliverToId;
+        public readonly int PaidPrice, OrderedDay, DueDay;
+        public readonly double OrderedAtSeconds;
+        public readonly IReadOnlyList<SpecialOrderLineReceipt> Lines;
 
-        public SpecialOrderReceipt(int orderId, string sellerId, string lineId, string itemId,
-            int quantity, int dayPlaced, int dayDue)
+        public SpecialOrderReceipt(string orderId, string sellerId, string deliverToId, int paidPrice,
+            double orderedAtSeconds, int orderedDay, int dueDay, SpecialOrderLineReceipt[] lines)
         {
-            OrderId = orderId; SellerId = sellerId; LineId = lineId; ItemId = itemId;
-            Quantity = quantity; DayPlaced = dayPlaced; DayDue = dayDue;
+            OrderId = orderId; SellerId = sellerId; DeliverToId = deliverToId; PaidPrice = paidPrice;
+            OrderedAtSeconds = orderedAtSeconds; OrderedDay = orderedDay; DueDay = dueDay;
+            Lines = Array.AsReadOnly((SpecialOrderLineReceipt[])lines.Clone());
         }
     }
 

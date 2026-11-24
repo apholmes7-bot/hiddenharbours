@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: StPetersFishScrap
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.SpecialOrderLineDef
   Id: specialorder.st_peters_fish_scrap
-  ItemId: bait.fish_scrap
+  Bait: {fileID: 11400000, guid: 3670c332359846afb5463017fe6bea78, type: 2}
   SellerId: seller.leblancs
-  Price: 1
   DeliveryDays: 2
   MaxOnOrder: 20

@@ -203,6 +203,63 @@ namespace HiddenHarbours.Tests.EditMode
         // ---- the shipped tuning stays coherent ----------------------------------------------------
 
         [Test]
+        public void DetachedBaitHandover_AddsEveryKindAndFoldsRepeatedBaitIds()
+        {
+            var stock = new List<BaitStock> { new BaitStock("bait.herring", 2) };
+            var delivery = new[]
+            {
+                new BaitStock("bait.herring", 3), new BaitStock("bait.squid_strip", 4),
+                new BaitStock("bait.herring", 1)
+            };
+            Assert.IsTrue(TackleBox.TryReceiveBait(stock, delivery));
+            CollectionAssert.AreEqual(new[]
+            {
+                new BaitStock("bait.herring", 6), new BaitStock("bait.squid_strip", 4)
+            }, stock);
+            CollectionAssert.AreEqual(new[]
+            {
+                new BaitStock("bait.herring", 3), new BaitStock("bait.squid_strip", 4),
+                new BaitStock("bait.herring", 1)
+            }, delivery);
+        }
+
+        [TestCase("overflow")]
+        [TestCase("non_bait")]
+        [TestCase("empty_id")]
+        [TestCase("zero_count")]
+        [TestCase("negative_count")]
+        public void DetachedBaitHandover_RejectsWholeDeliveryWhenALaterLineFails(string fault)
+        {
+            var stock = new List<BaitStock> { new BaitStock("bait.herring", int.MaxValue) };
+            var invalid = new BaitStock("bait.herring", 1);
+            if (fault == "non_bait") invalid = new BaitStock("supply.ice", 1);
+            if (fault == "empty_id") invalid = new BaitStock(null, 1);
+            if (fault == "zero_count") invalid = new BaitStock("bait.herring", 0);
+            if (fault == "negative_count") invalid = new BaitStock("bait.herring", -1);
+            Assert.IsFalse(TackleBox.TryReceiveBait(stock, new[] { new BaitStock("bait.capelin", 2), invalid }));
+            CollectionAssert.AreEqual(new[] { new BaitStock("bait.herring", int.MaxValue) }, stock);
+        }
+
+        [Test]
+        public void DetachedBaitHandover_RejectsMissingOrDamagedStockAndEmptyDelivery()
+        {
+            var delivery = new[] { new BaitStock("bait.herring", 1) };
+            Assert.IsFalse(TackleBox.TryReceiveBait(null, delivery));
+            var stock = new List<BaitStock> { new BaitStock("bait.herring", 1) };
+            Assert.IsFalse(TackleBox.TryReceiveBait(stock, null));
+            Assert.IsFalse(TackleBox.TryReceiveBait(stock, System.Array.Empty<BaitStock>()));
+            CollectionAssert.AreEqual(delivery, stock);
+            stock.Add(new BaitStock("bait.herring", 2));
+            var before = stock.ToArray();
+            Assert.IsFalse(TackleBox.TryReceiveBait(stock, delivery));
+            CollectionAssert.AreEqual(before, stock);
+            stock.Clear();
+            stock.Add(new BaitStock("bait.herring", -1));
+            Assert.IsFalse(TackleBox.TryReceiveBait(stock, delivery));
+            CollectionAssert.AreEqual(new[] { new BaitStock("bait.herring", -1) }, stock);
+        }
+
+        [Test]
         public void TheDefaultTuning_IsWeightsNotWalls()
         {
             var k = BaitTackleSettings.Default;

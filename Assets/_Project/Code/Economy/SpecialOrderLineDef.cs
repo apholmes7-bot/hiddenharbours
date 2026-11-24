@@ -8,11 +8,13 @@ namespace HiddenHarbours.Economy
     public sealed class SpecialOrderLineDef : ScriptableObject
     {
         public string Id;
-        public string ItemId;
+        public BaitDef Bait;
         public string SellerId;
-        [Min(1)] public int Price;
         [Min(1)] public int DeliveryDays;
         [Min(1)] public int MaxOnOrder;
+
+        public string ItemId => Bait == null ? null : Bait.Id;
+        public int Price => Bait == null ? 0 : Bait.Price;
 
         public SpecialOrderLine BuildLine() => new SpecialOrderLine(
             Id, ItemId, SellerId, Price, DeliveryDays, MaxOnOrder);
@@ -31,7 +33,7 @@ namespace HiddenHarbours.Economy
         public SpecialOrderLine(string id, string itemId, string sellerId, int price,
             int deliveryDays, int maxOnOrder)
         {
-            if (!StableId(id, "specialorder") || !StableId(itemId) || !StableId(sellerId, "seller")
+            if (!StableId(id, "specialorder") || !StableId(itemId, "bait") || !StableId(sellerId, "seller")
                 || price <= 0 || deliveryDays <= 0 || maxOnOrder <= 0)
                 throw new ArgumentException("Order lines require stable ids and positive price, wait and limit.");
             Id = id; ItemId = itemId; SellerId = sellerId;
