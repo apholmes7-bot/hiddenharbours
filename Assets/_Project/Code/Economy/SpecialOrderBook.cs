@@ -13,7 +13,8 @@ namespace HiddenHarbours.Economy
     }
 
     /// <summary>
-    /// One book per player, shared by every counter. Dispose with the session. No scene or save access.
+    /// One book per player, shared by every counter and bound to the current save's existing rows.
+    /// Dispose before changing saves. Construction reads paid orders without replaying transactions.
     /// Delivery uses absolute game days, independent of seed: equal inputs always give equal dates.
     /// </summary>
     public sealed class SpecialOrderBook : IDisposable
@@ -21,12 +22,12 @@ namespace HiddenHarbours.Economy
         private readonly IWallet _wallet;
         private readonly IGameClock _clock;
         private readonly Dictionary<string, SpecialOrderLine> _lines = new(StringComparer.Ordinal);
-        private readonly List<SpecialOrderState> _orders = new();
-        private int _nextSpecialOrderNumber = 1;
+        private readonly SaveData _save;
         private bool _busy, _disposed;
 
-        public SpecialOrderBook(IEnumerable<SpecialOrderLine> lines, IWallet wallet, IGameClock clock)
+        public SpecialOrderBook(SaveData save, IEnumerable<SpecialOrderLine> lines, IWallet wallet, IGameClock clock)
         {
+            _save = save ?? throw new ArgumentNullException(nameof(save));
             _wallet = wallet ?? throw new ArgumentNullException(nameof(wallet));
             _clock = clock ?? throw new ArgumentNullException(nameof(clock));
             if (lines == null) throw new ArgumentNullException(nameof(lines));
@@ -35,6 +36,8 @@ namespace HiddenHarbours.Economy
                 if (line == null) throw new ArgumentException("Null order line.");
                 _lines.Add(line.Id, line);
             }
+            _save.SpecialOrders ??= new List<SpecialOrderDto>();
+            ReserveUsedNumbers();
             EventBus.Subscribe<DayStarted>(OnDayStarted);
         }
 
@@ -53,41 +56,51 @@ namespace HiddenHarbours.Economy
             double seconds = _clock.TotalSeconds;
             if (day < 0 || !FiniteNonNegative(seconds)) return SpecialOrderRefusal.DayOutOfRange;
             long cost = 0, due = day;
-            var lines = new SpecialOrderLineState[requests.Count];
-            var seen = new HashSet<string>(StringComparer.Ordinal);
+            var lines = new List<SpecialOrderLineDto>();
+            var requested = new Dictionary<string, SpecialOrderLineDto>(StringComparer.Ordinal);
+            var openCounts = OpenIdCounts();
             for (int i = 0; i < requests.Count; i++)
             {
                 var request = requests[i];
                 if (request.ListingId == null || !_lines.TryGetValue(request.ListingId, out var line)
                     || line.SellerId != sellerId) return SpecialOrderRefusal.UnknownLine;
-                if (request.Count <= 0 || !seen.Add(line.Id)) return SpecialOrderRefusal.InvalidQuantity;
+                if (request.Count <= 0) return SpecialOrderRefusal.InvalidQuantity;
+                requested.TryGetValue(line.Id, out var combined);
+                long count = (long)(combined?.Count ?? 0) + request.Count;
                 long open = 0;
-                foreach (var order in _orders)
-                    if (!order.RequiresRefund)
+                foreach (var order in _save.SpecialOrders)
+                    if (IsOpen(order) && RefundReason(order, openCounts).Length == 0)
                         foreach (var paidLine in order.Lines)
                             if (paidLine.ListingId == line.Id) open += paidLine.Count;
-                if (open + request.Count > line.MaxOnOrder) return SpecialOrderRefusal.LimitReached;
+                if (open + count > line.MaxOnOrder) return SpecialOrderRefusal.LimitReached;
                 long share = (long)line.Price * request.Count;
                 cost += share;
                 if (cost > int.MaxValue) return SpecialOrderRefusal.PriceOutOfRange;
                 due = Math.Max(due, (long)day + line.DeliveryDays);
                 if (due > int.MaxValue) return SpecialOrderRefusal.DayOutOfRange;
-                lines[i] = new SpecialOrderLineState
-                    { ListingId = line.Id, Count = request.Count, PaidPrice = (int)share };
+                if (combined == null)
+                {
+                    combined = new SpecialOrderLineDto { ListingId = line.Id, Count = 0 };
+                    requested.Add(line.Id, combined);
+                    lines.Add(combined);
+                }
+                combined.Count = (int)count;
+                combined.PaidPrice += (int)share;
             }
-            if (_nextSpecialOrderNumber == int.MaxValue) return SpecialOrderRefusal.OrderNumbersExhausted;
+            ReserveUsedNumbers();
+            if (_save.NextSpecialOrderNumber == int.MaxValue) return SpecialOrderRefusal.OrderNumbersExhausted;
             _busy = true;
             try
             {
                 if (!_wallet.TrySpend((int)cost)) return SpecialOrderRefusal.CannotPay;
-                var order = new SpecialOrderState
+                var order = new SpecialOrderDto
                 {
-                    OrderId = "order." + sellerId + "." + _nextSpecialOrderNumber.ToString(CultureInfo.InvariantCulture),
+                    OrderId = "order." + sellerId + "." + _save.NextSpecialOrderNumber.ToString(CultureInfo.InvariantCulture),
                     SellerId = sellerId, Lines = lines, PaidPrice = (int)cost, OrderedAtSeconds = seconds,
                     OrderedDay = day, DueDay = (int)due
                 };
-                _nextSpecialOrderNumber++;
-                _orders.Add(order);
+                _save.NextSpecialOrderNumber++;
+                _save.SpecialOrders.Add(order);
                 orderId = order.OrderId;
                 EventBus.Publish(new SpecialOrderPlaced(Receipt(order)));
                 return SpecialOrderRefusal.None;
@@ -96,27 +109,27 @@ namespace HiddenHarbours.Economy
         }
 
         /// <summary>
-        /// Called when he collects at the counter. Receives every line into detached session bait stock
-        /// through the tackle box, or changes nothing. Arrival alone never grants bait.
+        /// Called after he completes the counter handover. Pass the current save's bait stock so goods
+        /// and the collected receipt persist together. Arrival alone never grants bait.
         /// </summary>
-        public SpecialOrderRefusal Collect(string orderId, List<BaitStock> sessionBaitStock)
+        public SpecialOrderRefusal Collect(string orderId, List<BaitStock> baitStock)
         {
             ThrowIfDisposed();
             if (_busy) return SpecialOrderRefusal.Busy;
             RefreshArrivals();
-            var order = _orders.Find(row => row.OrderId == orderId);
+            var order = _save.SpecialOrders.Find(row => IsOpen(row) && row.OrderId == orderId);
             if (order == null) return SpecialOrderRefusal.UnknownOrder;
-            if (order.RequiresRefund) return SpecialOrderRefusal.RefundRequired;
-            if (!order.Arrived) return SpecialOrderRefusal.NotArrived;
+            if (RefundReason(order, OpenIdCounts()).Length != 0) return SpecialOrderRefusal.RefundRequired;
+            if (order.State != SpecialOrderDto.StateArrived) return SpecialOrderRefusal.NotArrived;
             _busy = true;
             try
             {
                 var receipt = Receipt(order);
-                var delivery = new BaitStock[order.Lines.Length];
+                var delivery = new BaitStock[order.Lines.Count];
                 for (int i = 0; i < delivery.Length; i++)
                     delivery[i] = new BaitStock(receipt.Lines[i].BaitId, receipt.Lines[i].Count);
-                if (!TackleBox.TryReceiveBait(sessionBaitStock, delivery)) return SpecialOrderRefusal.BaitStoreUnavailable;
-                _orders.Remove(order);
+                if (!TackleBox.TryReceiveBait(baitStock, delivery)) return SpecialOrderRefusal.BaitStoreUnavailable;
+                order.State = SpecialOrderDto.StateCollected;
                 EventBus.Publish(new SpecialOrderCollected(receipt));
                 return SpecialOrderRefusal.None;
             }
@@ -131,57 +144,59 @@ namespace HiddenHarbours.Economy
             _busy = true;
             try
             {
-                foreach (var order in _orders)
-                    if (!order.RequiresRefund && !order.Arrived && _clock.DayIndex >= order.DueDay)
+                var counts = OpenIdCounts();
+                foreach (var order in _save.SpecialOrders)
+                    if (IsOpen(order) && order.State == SpecialOrderDto.StateWaiting
+                        && RefundReason(order, counts).Length == 0 && _clock.DayIndex >= order.DueDay)
                     {
-                        order.State = SpecialOrderState.ArrivedState;
+                        order.State = SpecialOrderDto.StateArrived;
                         EventBus.Publish(new SpecialOrderArrived(Receipt(order)));
                     }
             }
             finally { _busy = false; }
         }
 
-        // Capture is observational, including immediately after Restore.
-        public SpecialOrderSnapshot Capture() => new SpecialOrderSnapshot
-        {
-            NextSpecialOrderNumber = _nextSpecialOrderNumber,
-            Orders = _orders.ConvertAll(row => row.Copy()).ToArray()
-        };
-
-        /// <summary>
-        /// Restore each row without spending, granting bait or publishing. Damaged paid rows remain
-        /// with their original payment and a refund reason. Collected rows only reserve their number.
-        /// </summary>
-        public void Restore(SpecialOrderSnapshot snapshot)
+        /// <summary>A detached view of outstanding rows; reading it never changes the save.</summary>
+        public SpecialOrderSnapshot Capture()
         {
             ThrowIfDisposed();
-            if (_busy) throw new InvalidOperationException("An order transaction is in progress.");
-            if (snapshot == null) return;
-            int next = Math.Max(_nextSpecialOrderNumber, Math.Max(1, snapshot.NextSpecialOrderNumber));
-            var rows = snapshot.Orders ?? Array.Empty<SpecialOrderState>();
-            var counts = new Dictionary<string, int>(StringComparer.Ordinal);
-            foreach (var row in rows)
+            var counts = OpenIdCounts();
+            var orders = new List<SpecialOrderState>();
+            foreach (var row in _save.SpecialOrders)
+            {
+                if (!IsOpen(row)) continue;
+                var order = SpecialOrderRowAdapter.Capture(row);
+                order.RefundReasonKey = RefundReason(row, counts);
+                orders.Add(order);
+            }
+            return new SpecialOrderSnapshot
+                { NextSpecialOrderNumber = _save.NextSpecialOrderNumber, Orders = orders.ToArray() };
+        }
+
+        private void ReserveUsedNumbers()
+        {
+            int next = Math.Max(1, _save.NextSpecialOrderNumber);
+            foreach (var row in _save.SpecialOrders)
             {
                 if (row == null) continue;
                 int used = NumberOf(row.OrderId);
                 if (used >= next) next = used == int.MaxValue ? int.MaxValue : used + 1;
-                if (row.State != SpecialOrderState.Collected && !string.IsNullOrEmpty(row.OrderId))
-                    counts[row.OrderId] = counts.TryGetValue(row.OrderId, out int count) ? count + 1 : 1;
             }
-            var copy = new List<SpecialOrderState>();
-            foreach (var row in rows)
-            {
-                if (row == null || row.State == SpecialOrderState.Collected) continue;
-                var order = row.Copy();
-                order.RefundReasonKey = RefundReason(order, counts);
-                copy.Add(order);
-            }
-            _orders.Clear();
-            _orders.AddRange(copy);
-            _nextSpecialOrderNumber = next;
+            _save.NextSpecialOrderNumber = next;
         }
 
-        private string RefundReason(SpecialOrderState order, Dictionary<string, int> counts)
+        private static bool IsOpen(SpecialOrderDto row) => row != null && row.State != SpecialOrderDto.StateCollected;
+
+        private Dictionary<string, int> OpenIdCounts()
+        {
+            var counts = new Dictionary<string, int>(StringComparer.Ordinal);
+            foreach (var row in _save.SpecialOrders)
+                if (IsOpen(row) && !string.IsNullOrEmpty(row.OrderId))
+                    counts[row.OrderId] = counts.TryGetValue(row.OrderId, out int count) ? count + 1 : 1;
+            return counts;
+        }
+
+        private string RefundReason(SpecialOrderDto order, Dictionary<string, int> counts)
         {
             if (string.IsNullOrWhiteSpace(order.OrderId)) return "special_order.empty_id";
             if (counts[order.OrderId] > 1) return "special_order.duplicate_id";
@@ -190,10 +205,10 @@ namespace HiddenHarbours.Economy
                 return "special_order.invalid_id";
             if (order.OrderedDay < 0 || order.DueDay <= order.OrderedDay) return "special_order.invalid_due_day";
             if (!FiniteNonNegative(order.OrderedAtSeconds)) return "special_order.invalid_time";
-            if (order.State != SpecialOrderState.Waiting && order.State != SpecialOrderState.ArrivedState)
+            if (order.State != SpecialOrderDto.StateWaiting && order.State != SpecialOrderDto.StateArrived)
                 return "special_order.invalid_state";
             if (!string.IsNullOrEmpty(order.DeliverToId)) return "special_order.unsupported_destination";
-            if (order.Lines == null || order.Lines.Length == 0) return "special_order.missing_lines";
+            if (order.Lines == null || order.Lines.Count == 0) return "special_order.missing_lines";
             long shares = 0;
             var seen = new HashSet<string>(StringComparer.Ordinal);
             foreach (var line in order.Lines)
@@ -218,10 +233,10 @@ namespace HiddenHarbours.Economy
                 && number > 0 ? number : 0;
         }
 
-        private SpecialOrderReceipt Receipt(SpecialOrderState row)
+        private SpecialOrderReceipt Receipt(SpecialOrderDto row)
         {
-            var lines = Array.ConvertAll(row.Lines, line => new SpecialOrderLineReceipt(
-                line.ListingId, _lines[line.ListingId].ItemId, line.Count, line.PaidPrice));
+            var lines = row.Lines.ConvertAll(line => new SpecialOrderLineReceipt(
+                line.ListingId, _lines[line.ListingId].ItemId, line.Count, line.PaidPrice)).ToArray();
             return new SpecialOrderReceipt(row.OrderId, row.SellerId, row.DeliverToId, row.PaidPrice,
                 row.OrderedAtSeconds, row.OrderedDay, row.DueDay, lines);
         }

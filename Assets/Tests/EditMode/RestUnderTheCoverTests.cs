@@ -75,6 +75,7 @@ namespace HiddenHarbours.Tests.EditMode
             public int Saves;
             public bool Throws;
             public double ClockAtWrite = double.NaN;
+            public string JsonAtWrite;
             public RecordingSave(List<string> log) => _log = log;
 
             public SaveData Current { get; } = SaveMigration.NewGame();
@@ -89,6 +90,7 @@ namespace HiddenHarbours.Tests.EditMode
                 IGameClock clock = GameServices.Clock;
                 if (clock != null) ClockAtWrite = clock.TotalSeconds;
                 if (Throws) throw new InvalidOperationException("the disk is full");
+                JsonAtWrite = SaveSerialization.ToJson(Current);
                 LoadedExistingSave = true;
             }
         }
@@ -203,7 +205,7 @@ namespace HiddenHarbours.Tests.EditMode
             GameClock clock = RealClockAt(22);
             var wallet = clock.gameObject.AddComponent<HiddenHarbours.Player.PlayerWallet>();
             wallet.Add(12);
-            using var book = new SpecialOrderBook(
+            using var book = new SpecialOrderBook(_save.Current,
                 new[] { new SpecialOrderLine("specialorder.test", "bait.herring", "seller.test", 3, 1, 4) },
                 wallet, clock);
             Assert.That(book.Place("seller.test", "specialorder.test", 2, out _), Is.EqualTo(SpecialOrderRefusal.None));
@@ -223,6 +225,16 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(seen, Is.EqualTo(new[] { At(1, 0) }));
                 Assert.That(book.Capture().Orders[0].Arrived, Is.True);
                 Assert.That(book.Capture().Orders[0].DueDay, Is.EqualTo(1));
+                Assert.That(_save.Current.SpecialOrders[0].State, Is.EqualTo(SpecialOrderDto.StateArrived));
+                if (sleep)
+                {
+                    var loaded = SaveSerialization.FromJson(_save.JsonAtWrite);
+                    Assert.That(loaded.SpecialOrders.Count, Is.EqualTo(1));
+                    Assert.That(loaded.SpecialOrders[0].State, Is.EqualTo(SpecialOrderDto.StateArrived));
+                    Assert.That(loaded.SpecialOrders[0].PaidPrice, Is.EqualTo(6));
+                    Assert.That(loaded.SpecialOrders[0].Lines[0].PaidPrice, Is.EqualTo(6));
+                    Assert.That(loaded.NextSpecialOrderNumber, Is.EqualTo(2));
+                }
                 Assert.That(wallet.Money, Is.EqualTo(6));
                 book.RefreshArrivals();
                 Assert.That(seen.Count, Is.EqualTo(1));

@@ -1,8 +1,9 @@
 using System;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Economy
 {
-    /// <summary>One player's session book across all sellers. Not connected to a save.</summary>
+    /// <summary>Detached view of outstanding saved orders, including derived refund reasons.</summary>
     [Serializable]
     public sealed class SpecialOrderSnapshot
     {
@@ -13,7 +14,8 @@ namespace HiddenHarbours.Economy
     [Serializable]
     public sealed class SpecialOrderState
     {
-        public const int Waiting = 0, ArrivedState = 1, Collected = 2;
+        public const int Waiting = SpecialOrderDto.StateWaiting, ArrivedState = SpecialOrderDto.StateArrived,
+            Collected = SpecialOrderDto.StateCollected;
         public string OrderId = "";
         public string SellerId = "";
         public string DeliverToId = "";

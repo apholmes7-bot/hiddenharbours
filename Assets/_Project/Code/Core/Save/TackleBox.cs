@@ -22,8 +22,8 @@ namespace HiddenHarbours.Core
     public static class TackleBox
     {
         /// <summary>
-        /// Receive a whole counter handover into detached session bait stock. Invalid contents or an
-        /// overflowing count leave both lists untouched. This helper never accesses a save.
+        /// Receive a whole counter handover into the supplied bait stock. Invalid contents or an
+        /// overflowing count leave both lists untouched. The caller chooses which stock receives it.
         /// </summary>
         public static bool TryReceiveBait(List<BaitStock> stock, IReadOnlyList<BaitStock> delivery)
         {
