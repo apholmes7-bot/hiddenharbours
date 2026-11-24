@@ -136,7 +136,10 @@ namespace HiddenHarbours.Tests.PlayMode
             region.Id = "region.absent_sea";
             region.SceneName = "AbsentOpeningSea";
             sea.SeaRegion = region;
-            var clock = _root.AddComponent<HiddenHarbours.Environment.GameClock>();
+            var clockHost = new GameObject("OpeningClock");
+            clockHost.SetActive(false);
+            clockHost.transform.SetParent(_root.transform);
+            var clock = clockHost.AddComponent<HiddenHarbours.Environment.GameClock>();
             GameServices.Clock = clock;
             var loader = _root.AddComponent<RegionSceneLoader>();
             opening.ConfigureSea(sea, loader);
