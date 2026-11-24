@@ -90,6 +90,18 @@ No local Unity run or compilation was performed. CI must compile and execute the
 cases plus the existing fishing, identity-ledger and content-validation suites.
 No plate or playtest was performed and no appearance judgement is claimed.
 
+The first automated run reported six EditMode failures. Four parameterizations of
+`StarterRod_ReplaysThePreProfileFightFormula` differed by a floating-point unit:
+the reference calculation had collapsed the old clamped `weight01` intermediate
+into the strength expression. The frozen reference now preserves the former
+arguments, normalization and operation order, and compares all seven tuning fields
+exactly before comparing the complete fight. No tolerance is introduced.
+The two `HigherRodInHand_OpensTheExistingCastGateAndCapturesItsNumbers` cases
+inherited the dry clam-flat fixture. They now provide wet landing water and assert
+the live input gate before retaining the exact `Cast` and captured-profile checks.
+The corrected cases still require automated execution; no passing result is
+claimed for these changes. Pinned main was merged without a rod census change.
+
 Save version 25 is unchanged. `RodSnapshot` is a plain session value; the existing
 cast already restarts rather than resuming from a save. Before selling new tiers,
 a follow-up must define distinct purchase identities and verify reconstruction of

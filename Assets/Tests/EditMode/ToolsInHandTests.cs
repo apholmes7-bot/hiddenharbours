@@ -471,6 +471,8 @@ namespace HiddenHarbours.Tests.EditMode
         [TestCase("RodDeep")]
         public void HigherRodInHand_OpensTheExistingCastGateAndCapturesItsNumbers(string asset)
         {
+            // The shared dig fixture is dry; a successful cast needs water along its landing arc.
+            _env.Level = 2f;
             DevFishingInput dev = Rig();
             var def = AssetDatabase.LoadAssetAtPath<ToolDef>($"Assets/_Project/Data/Tools/{asset}.asset");
             var hands = ToolInHand.Holding(def.Id, _spawned);
@@ -478,6 +480,7 @@ namespace HiddenHarbours.Tests.EditMode
             held.Tool.RodTier = def.RodTier;
             held.Tool.RodFishing = def.RodFishing;
             Assert.IsTrue(dev.RodIsToHand);
+            Assert.IsTrue(dev.FishingLive);
             Assert.IsTrue(CarriedRod.TryRead(hands, out var profile));
             Assert.AreEqual(def.RodFishing, profile);
             var controller = dev.GetComponent<FishingController>();

@@ -146,14 +146,15 @@ namespace HiddenHarbours.Tests.EditMode
             for (int cast = 0; cast < 40; cast++)
             {
                 float weight = 1f + (float)weights.NextDouble() * 7f;
-                float strength = UnityEngine.Mathf.Clamp01(0.5f * floor + 0.5f * ((weight - 1f) / 7f));
-                var old = new FishFightTuning(
-                    UnityEngine.Mathf.Lerp(0.60f, 1.00f, strength),
-                    UnityEngine.Mathf.Lerp(0.70f, 0.50f, strength),
-                    UnityEngine.Mathf.Lerp(0.40f, 0.22f, strength),
-                    UnityEngine.Mathf.Lerp(3.0f, 1.6f, strength), 0.8f,
-                    UnityEngine.Mathf.Lerp(0.15f, 0.40f, strength), true);
+                var old = PreProfileTuning(floor, weight, 1f, 8f);
                 var now = FishFightTuning.For(category, weight, 1f, 8f, RodFishingProfile.Default);
+                Assert.AreEqual(old.TensionRisePerSec, now.TensionRisePerSec);
+                Assert.AreEqual(old.TensionFallPerSec, now.TensionFallPerSec);
+                Assert.AreEqual(old.LandingFillPerSec, now.LandingFillPerSec);
+                Assert.AreEqual(old.SurgeIntervalSec, now.SurgeIntervalSec);
+                Assert.AreEqual(old.SurgeDurationSec, now.SurgeDurationSec);
+                Assert.AreEqual(old.SurgePressure, now.SurgePressure);
+                Assert.AreEqual(old.SnapEnabled, now.SnapEnabled);
                 var before = new FishFight(old, new System.Random(cast));
                 var after = new FishFight(now, new System.Random(cast));
                 int ticks = 0;
@@ -168,6 +169,19 @@ namespace HiddenHarbours.Tests.EditMode
                 }
                 Assert.IsTrue(before.IsOver, "the parity comparison must reach a result");
             }
+        }
+
+        // Preserve the previous formula's arguments, clamped intermediate and operation order.
+        private static FishFightTuning PreProfileTuning(float floor, float weightKg, float minKg, float maxKg)
+        {
+            float weight01 = (maxKg > minKg) ? UnityEngine.Mathf.Clamp01((weightKg - minKg) / (maxKg - minKg)) : 0f;
+            float strength = UnityEngine.Mathf.Clamp01(0.5f * floor + 0.5f * weight01);
+            return new FishFightTuning(
+                UnityEngine.Mathf.Lerp(0.60f, 1.00f, strength),
+                UnityEngine.Mathf.Lerp(0.70f, 0.50f, strength),
+                UnityEngine.Mathf.Lerp(0.40f, 0.22f, strength),
+                UnityEngine.Mathf.Lerp(3.0f, 1.6f, strength), 0.8f,
+                UnityEngine.Mathf.Lerp(0.15f, 0.40f, strength), true);
         }
 
     }
