@@ -260,18 +260,25 @@ namespace HiddenHarbours.Tests.PlayMode
             sale = dory.Sale;
             Assert.IsNotNull(sale, "the scene's slip dory carries no sale");
 
-            Assert.AreEqual(SlipBoatSaleResult.TooDear, dory.Press(), "an empty purse is refused");
+            // The loaded game may hand the purse its starting money, so the checks are relative to it.
+            if (purse.Money < sale.Price)
+            {
+                int short_ = purse.Money;
+                Assert.AreEqual(SlipBoatSaleResult.TooDear, dory.Press(), "a short purse is refused");
+                Assert.AreEqual(short_, purse.Money, "a refused sale spends nothing");
+            }
             Assert.AreEqual(0, save.Current.OwnedBoats.Count(b => b == sale.BoatId));
 
             purse.Add(sale.Price);
+            int before = purse.Money;
             Assert.AreEqual(SlipBoatSaleResult.Bought, dory.Press());
-            Assert.AreEqual(0, purse.Money, "the purse drops by exactly her price");
+            Assert.AreEqual(before - sale.Price, purse.Money, "the purse drops by exactly her price");
             Assert.AreEqual(1, save.Current.OwnedBoats.Count(b => b == sale.BoatId), "she is his, once");
             Assert.AreEqual(sale.WithPrice(sale.OwnedLabel), dory.VerbLabel);
 
-            purse.Add(sale.Price);
+            int after = purse.Money;
             Assert.AreEqual(SlipBoatSaleResult.AlreadyHis, dory.Press(), "a second press does nothing");
-            Assert.AreEqual(sale.Price, purse.Money);
+            Assert.AreEqual(after, purse.Money);
             Assert.AreEqual(1, save.Current.OwnedBoats.Count(b => b == sale.BoatId));
 
             yield return null;
