@@ -12,6 +12,38 @@ namespace HiddenHarbours.Tests.EditMode.Economy
         private const string PilotPath = "Assets/_Project/Data/Shops/StPetersGeneral.asset";
 
         [Test]
+        public void SpecialOrders_AreSixExistingUnstockedBaits_WithValidCounterAndTerms()
+        {
+            var lines = Resources.LoadAll<SpecialOrderLineDef>("SpecialOrders");
+            Assert.That(lines.Select(line => line.ItemId), Is.EquivalentTo(new[]
+            {
+                "bait.fish_scrap", "bait.herring", "bait.mackerel", "bait.sea_worm",
+                "bait.shucked_clam", "bait.squid_strip"
+            }));
+            Assert.That(AssetDatabase.FindAssets("t:SpecialOrderLineDef", new[] { "Assets/_Project/Data" }),
+                Has.Length.EqualTo(6), "Every authored line must be in the discoverable directory.");
+            Assert.That(lines.Select(line => line.Id).Distinct().Count(), Is.EqualTo(6));
+            var baits = Resources.LoadAll<BaitDef>("Catalog").ToDictionary(bait => bait.Id);
+            var sellers = Resources.LoadAll<SellerDef>("Sellers").Select(seller => seller.Id).ToArray();
+            var shop = AssetDatabase.LoadAssetAtPath<ShopDef>(PilotPath);
+            var shelves = Resources.LoadAll<IslandStoreShelvesDef>("IslandSupply/Shelves")
+                .Single(shelf => shelf.SellerId == shop.Spec.SellerId);
+            foreach (var line in lines)
+            {
+                Assert.DoesNotThrow(() => line.BuildLine(), line.Id);
+                Assert.That(line.SellerId, Is.EqualTo(shop.Spec.SellerId));
+                Assert.That(sellers, Does.Contain(line.SellerId));
+                Assert.That(baits.ContainsKey(line.ItemId), Is.True, line.Id);
+                Assert.That(baits[line.ItemId].Catalog.Listed, Is.False, "No existing stock is moved to special order.");
+                Assert.That(line.Price, Is.EqualTo(baits[line.ItemId].Price), "One individual bait per unit.");
+                Assert.That(line.DeliveryDays, Is.EqualTo(2));
+                Assert.That(line.MaxOnOrder, Is.EqualTo(20));
+                Assert.That(shop.Spec.Stock.Select(stock => stock.ListingId), Does.Not.Contain(line.ItemId));
+                Assert.That(shelves.Lines.SelectMany(shelf => shelf.CounterListingIds), Does.Not.Contain(line.ItemId));
+            }
+        }
+
+        [Test]
         public void EveryShopLineNamesARealSellerListingAndUniqueDeclaredSlots()
         {
             var paths = AssetDatabase.FindAssets("t:ShopDef", new[] { "Assets/_Project/Data" })

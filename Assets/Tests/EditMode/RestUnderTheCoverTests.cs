@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using HiddenHarbours.Core;
+using HiddenHarbours.Economy;
 using HiddenHarbours.Environment;
 using HiddenHarbours.UI;
 using NUnit.Framework;
@@ -194,6 +195,40 @@ namespace HiddenHarbours.Tests.EditMode
         static GameSaved Rest() => RestSaveResponder.Fulfil(new RestSaveRequested("your bed at Ginny's"));
 
         // ---- the order --------------------------------------------------------------------------
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void Paid_order_arrives_at_due_midnight_whether_waited_or_slept_through(bool sleep)
+        {
+            GameClock clock = RealClockAt(22);
+            var wallet = clock.gameObject.AddComponent<HiddenHarbours.Player.PlayerWallet>();
+            wallet.Add(12);
+            using var book = new SpecialOrderBook("seller.test",
+                new[] { new SpecialOrderLine("specialorder.test", "bait.herring", "seller.test", 3, 1, 4) },
+                wallet, clock);
+            Assert.That(book.Place("specialorder.test", 2, out _), Is.EqualTo(SpecialOrderRefusal.None));
+            var seen = new List<double>();
+            Action<SpecialOrderArrived> read = order => seen.Add(clock.TotalSeconds);
+            EventBus.Subscribe(read);
+            try
+            {
+                if (sleep) Assert.That(Rest().Ok, Is.True);
+                else
+                {
+                    clock.SeekTo(At(1, 0) - 1);
+                    book.RefreshArrivals();
+                    Assert.That(seen, Is.Empty);
+                    clock.Advance(1);
+                }
+                Assert.That(seen, Is.EqualTo(new[] { At(1, 0) }));
+                Assert.That(book.Capture().Orders[0].Arrived, Is.True);
+                Assert.That(book.Capture().Orders[0].DayDue, Is.EqualTo(1));
+                Assert.That(wallet.Money, Is.EqualTo(6));
+                book.RefreshArrivals();
+                Assert.That(seen.Count, Is.EqualTo(1));
+            }
+            finally { EventBus.Unsubscribe(read); }
+        }
 
         [Test]
         public void The_screen_is_dark_before_the_clock_moves_and_the_light_returns_after_the_save()
