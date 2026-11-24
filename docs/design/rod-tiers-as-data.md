@@ -18,6 +18,28 @@ new assets keep every appearance field and reference from that rod, including th
 Neither is loaded into a shop. Both retain the original ownership link pending a
 separate purchase design; the hand gate is the default gameplay gate.
 
+## Relationship to the reach-only proposal
+
+#1502 proposes a narrower alternative: a zero-default `GearOffer.RodCastCapMetres`
+and a pure `FlickCastMath.ResolveRodCastCap` helper, with no production caller.
+Its example tiers are 12 and 18 metres. Zero or malformed overrides inherit the
+global cap, and species, bite timing, line depth and fight rules stay unchanged.
+
+This proposal deliberately differs. Capability belongs to the physical `ToolDef`
+held through `IRodFishingEquipment`, is captured once per cast, and uses positive
+validated profiles rather than a zero-as-inherit offer field. Both wind-back aim
+and release read that same captured cap. Its examples are 12, 16 and 22 metres;
+upgrades also extend weighted line length and change fight assistance. The seeded
+day tests therefore assert improved landings, which the reach-only proposal does
+not promise for the same nearby fish. Neither proposal changes species eligibility.
+
+These are alternative balance and data-ownership proposals, not two cumulative
+sources of rod tuning. This branch does not copy or consume #1502's offer field or
+resolver. Combining them requires selecting one source of truth and deciding
+whether progression is reach alone or also fight assistance; the unsold profiles
+here do not settle that decision. No existing cast, fight or parity assertion is
+relaxed to make the alternatives appear equivalent.
+
 | Number | Starter | Coast proposal | Deep proposal |
 |---|---:|---:|---:|
 | Cast reach, metres | 12 | 16 | 22 |
