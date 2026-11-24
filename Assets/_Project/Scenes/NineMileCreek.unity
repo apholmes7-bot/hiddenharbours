@@ -439026,6 +439026,65 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!1 &126923252
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1843337230}
+  - component: {fileID: 753161818}
+  m_Layer: 0
+  m_Name: NmcRoutineStations
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1843337230
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 126923252}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &753161818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 126923252}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b62134dab38776c42951df356e3588ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RoutineStations
+  _stations:
+  - Id: station.nine_mile_creek.bar_landing
+    Position: {x: 59.6192322, y: -152.379868}
+    StandHeadingDegrees: 104.211769
+    Interior: {fileID: 0}
+    OutOfSight: 0
+    LaneNodeName: 
+    Why: the top of the beach where the bar comes ashore, by the bar road
+  - Id: station.nine_mile_creek.fuel_stop
+    Position: {x: -155.33, y: 109.42}
+    StandHeadingDegrees: 90
+    Interior: {fileID: 0}
+    OutOfSight: 0
+    LaneNodeName: 
+    Why: beside the gas hose nearest the store, fuel for the quad
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -439090,3 +439149,4 @@ SceneRoots:
   - {fileID: 439306325}
   - {fileID: 1700554555}
   - {fileID: 1292443859}
+  - {fileID: 1843337230}
