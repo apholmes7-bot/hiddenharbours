@@ -236,6 +236,12 @@ def _scalar_value(lines, i, rest):
                 break
             text += "\n" + lines[i].strip()
         return _unquote(text, quote), i + 1
+    # Force Text also wraps UNQUOTED prose. Leaving its continuation dangling
+    # stops the enclosing mapping/sequence and can silently lose later entries.
+    key_indent = _indent(lines[i]) + (2 if lines[i].lstrip().startswith("- ") else 0)
+    while i + 1 < len(lines) and lines[i + 1].strip() and _indent(lines[i + 1]) > key_indent:
+        i += 1
+        rest += " " + lines[i].strip()
     return rest, i + 1
 
 
