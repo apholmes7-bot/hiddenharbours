@@ -162,14 +162,19 @@ namespace HiddenHarbours.Tests.EditMode
         public void StPetersPlantField_RetiresTheMeasuredRootsWithoutSavingItsChunks()
         {
             var weight = MeasureFile("Assets/_Project/Scenes/StPeters.unity");
-            const long MeasuredLandingDeckSceneBytes = 4_806_598;
+            const long MeasuredStPetersSceneBytes = 4_876_302;
             const long SharedSceneHeadroomBytes = 64L * 1024;
             const long MinimumPopulatedSceneBytes = 4_500_000;
-            // 5,259,646 after PR 5p's plant retirement; 4,792,419 after K0 retired the 186 atlas deck tiles, 467,309 bytes.
+            // 5,259,646 after PR 5p's plant retirement; 4,792,419 after K0 retired the 186 atlas deck tiles, 467,309 bytes;
+            // 4,806,598 with the baked landing deck; 4,875,756 after the cottage fit-out gave Ginny's cottage real
+            // rooms (main had reached 4,859,249, the rooms add about 16.5 KB). The plant retirement's saving of
+            // about 467 KB is still intact, and that saving is what this guard protects. 4,875,743 measured after
+            // merging main's harbour gable (main 4,859,236; the gable's edit trims 13 bytes, the cottage's rooms stay).
+            // 4,876,302 measured after the ground fix's painted tidal terrain joined main's cottage rooms (+559 bytes).
             // Main's data/water edits move this shared file by tens of bytes per merge. Allow 64 KiB
             // above the measured retirement. The 4.5 MB floor rejects a truncated scene; names prove
-            // retirement. It sits about 290 KB below the measured weight, as the old floor did.
-            Assert.LessOrEqual(weight.Bytes, MeasuredLandingDeckSceneBytes + SharedSceneHeadroomBytes,
+            // retirement. It sits about 376 KB below the measured weight.
+            Assert.LessOrEqual(weight.Bytes, MeasuredStPetersSceneBytes + SharedSceneHeadroomBytes,
                 "the named plant retirement must retain its saving with shared-scene headroom");
             Assert.Greater(weight.Bytes, MinimumPopulatedSceneBytes, "the remaining scene must stay populated");
             string text = File.ReadAllText("Assets/_Project/Scenes/StPeters.unity");

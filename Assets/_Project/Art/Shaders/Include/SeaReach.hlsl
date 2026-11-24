@@ -18,7 +18,8 @@
 //        _HHSeaReachWet     (wet band metres, 0, 0, 0)
 //
 // TWIN: HiddenHarbours.Core.SeaReachMath.Factor01 and SeaReachField.FactorAt (same cells, same weights,
-// same off-map rule, same smoothstep). Change one, change both in the same PR.
+// same off-map rule, same smoothstep), and SeaReach.FactorAt for the still water's share
+// (SeaReachMath.UnderStill01). Change one, change both in the same PR.
 //
 // POINT READS, NEVER A FILTERED SAMPLE: four Load()s of the nearest cells, blended bilinearly between
 // their centres in code, each weighted by how WET the cell stands at this level. Dry ground never votes,
@@ -32,6 +33,10 @@
 // open it is exactly 1.
 //
 // Globals, declared OUTSIDE any per-material CBUFFER (the SRP batcher's layout rule).
+
+// The still water above the tide (ADR 0046) is read here so the water and the foam deposit agree on it;
+// the include guard makes this a no-op in the water, which includes it first.
+#include "Assets/_Project/Art/Shaders/Include/StillWater.hlsl"
 
 Texture2D<float2> _HHSeaReachTex;
 float4 _HHSeaReachRect;
@@ -61,8 +66,21 @@ void SeaReachVote(float2 sf, float weight, float level, inout float num, inout f
     den += w;
 }
 
-// The swell factor (0..1) at a world position for a water level.
-float SeaReach01(float2 worldXY, float level)
+// STILL WATER IS NOT THE SEA'S (ADR 0046; owner 11-22 "fix the creek strips look"): where a pond or a
+// brook's fresh reach stands ABOVE the tide, that water takes none of the sea's swell, surf, wash or
+// shore foam: 1 where there is none or the tide is on top, 0 once the still surface stands one wet band
+// above the tide, linear between. Without it a brook on a beach read as a pale sheet of shore foam, since
+// its cells drain to the sea (always open) and its few centimetres sit inside the fringe band.
+// Twin: HiddenHarbours.Core.SeaReachMath.UnderStill01, applied by SeaReach.FactorAt. No still map:
+// StillLevelAt is -1e30 and this is exactly 1.
+float SeaReachUnderStill01(float2 worldXY, float level)
+{
+    float still = StillLevelAt(worldXY);
+    return 1.0 - saturate((still - level) / max(_HHSeaReachWet.x, 1e-4));
+}
+
+// The swell factor (0..1) of the flooded sills alone (twin: SeaReachField.FactorAt).
+float SeaReachOfSills01(float2 worldXY, float level)
 {
     if (_HHSeaReachParams.y < 0.5) return 1.0;
     float2 uv = (worldXY - _HHSeaReachRect.xy) / max(_HHSeaReachRect.zw, float2(1e-3, 1e-3));
@@ -90,6 +108,13 @@ float SeaReach01(float2 worldXY, float level)
     SeaReachVote(s11, fx * fy, level, num, den);
     if (den <= 1e-6) return SeaReachFactorOfSill(_HHSeaReachTex.Load(int3(own, 0)).x, level);
     return num / den;
+}
+
+// The swell factor (0..1) at a world position for a water level, the still water's share taken out.
+float SeaReach01(float2 worldXY, float level)
+{
+    if (_HHSeaReachParams.y < 0.5) return 1.0;
+    return SeaReachOfSills01(worldXY, level) * SeaReachUnderStill01(worldXY, level);
 }
 
 #endif // HIDDEN_HARBOURS_SEA_REACH_INCLUDED

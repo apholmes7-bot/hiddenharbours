@@ -214,7 +214,10 @@ namespace HiddenHarbours.Tests.RigBaking
         {
             foreach (InteriorKit.Build room in InteriorKit.RoomSet)
             {
-                VillageBuildingKit.Build? shell = VillageBuildingKit.FindBuild(InteriorKit.ExteriorKeyFor(room.Key));
+                // Ginny's room stands inside her own shell, baked outside the village kit.
+                VillageBuildingKit.Build? shell = room.Key == GinnyCottageShellBake.Key
+                    ? GinnyCottageShellBake.Build()
+                    : VillageBuildingKit.FindBuild(InteriorKit.ExteriorKeyFor(room.Key));
                 Assert.IsNotNull(shell, $"{room.Key} stands inside a village shell of the same key");
 
                 string own = VillageBuildingBakeMenu.BaseOptionsLiteralFor(
@@ -227,6 +230,26 @@ namespace HiddenHarbours.Tests.RigBaking
                                 $"{room.Key}: the room is measured against its shell's own options, not " +
                                 "{size} alone — the returned house puts a size-only door on an eave");
             }
+        }
+
+        [Test]
+        public void GinnysRoom_PaintsAsManyWindowsAsHerShellShows()
+        {
+            // The room's long wall and the shell's eave wall use the same count formula, so the same size and
+            // density give the same windows inside and out (pass 5 left the room at 0.50: four inside, three out).
+            var room = InteriorKit.FindRoom(GinnyCottageShellBake.Key).Value.Dialled;
+            var shell = GinnyCottageShellBake.Build().Dialled;
+            Assert.AreEqual(System.Convert.ToDouble(shell["size"]), System.Convert.ToDouble(room["size"]), 1e-9);
+            Assert.AreEqual(System.Convert.ToDouble(shell["winDensity"]), System.Convert.ToDouble(room["winDensity"]), 1e-9);
+        }
+
+        [Test]
+        public void GinnysShell_WearsHerArtboardsColours()
+        {
+            var shell = GinnyCottageShellBake.Build().Dialled;
+            Assert.AreEqual("yellow", shell["body"]);
+            Assert.AreEqual("green", shell["shutters"]);
+            Assert.AreEqual("red", shell["doorPaint"]);
         }
 
         [Test]
