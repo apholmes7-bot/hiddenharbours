@@ -195,7 +195,12 @@ namespace HiddenHarbours.Economy
             if (_book == null || !_book.HasRows) return false;
 
             BuyRow row = _book.Current;
-            if (!BuyCatalog.Confirm(row)) return false;
+            if (!BuyCatalog.Confirm(row))
+            {
+                // A refusal re-reads the shelves, so a row that emptied while the book was open says so.
+                if (row.Shelves != null) { Rebuild(); Draw(); }
+                return false;
+            }
 
             Rebuild();     // money moved and the row may have gone owned
             Draw();
@@ -289,7 +294,8 @@ namespace HiddenHarbours.Economy
                       leafW - 2 * NotebookKit.RuleInset, 1, NotebookInk.Rule);
 
                 CatalogRowState state = CatalogBook.StateOf(row);
-                Color ink = state == CatalogRowState.TooDear ? NotebookInk.InkFaint : NotebookInk.Ink;
+                Color ink = state == CatalogRowState.TooDear || state == CatalogRowState.SoldOut
+                    ? NotebookInk.InkFaint : NotebookInk.Ink;
 
                 if (r == _book.IndexOnPage)
                 {
@@ -303,6 +309,13 @@ namespace HiddenHarbours.Economy
 
                 // Ownership is a STAMP, a rule through the price and a sentence — three codings of one
                 // fact, which is what ux-and-mobile-controls.md §4 asks for instead of colour alone.
+                // Sold out is the name ruled through and the status sentence, never the done stamp: the
+                // stamp means "yours", and an empty shelf is not.
+                if (state == CatalogRowState.SoldOut)
+                {
+                    Piece("Struck", null, textX, y + NotebookKit.CellHeight / 2, textW, 1, NotebookInk.Ink);
+                    continue;
+                }
                 if (state != CatalogRowState.Owned) continue;
                 Piece("Stamp", _stamp, leafW - NotebookKit.PadR - 8, y, 8, 8, NotebookInk.Gold);
                 Piece("Struck", null, textX, y + NotebookKit.CellHeight / 2, textW, 1, NotebookInk.Ink);
