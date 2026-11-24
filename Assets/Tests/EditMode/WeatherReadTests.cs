@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -9,7 +9,7 @@ using HiddenHarbours.Core;
 using HiddenHarbours.Environment;
 using HiddenHarbours.World;
 
-namespace HiddenHarbours.Tests.World.EditMode
+namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
     /// <b>Basil reads the weather</b>: the day's spoken read is worked out from the deterministic wind,
