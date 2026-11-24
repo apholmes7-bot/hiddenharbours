@@ -26,6 +26,11 @@ namespace HiddenHarbours.World
         public const string LandedCatchKey = "landed_first_catch";
         public const string BoughtDoryKey  = "bought_damaged_dory";
 
+        // The island week. Written once, by the shell's New Game (IslandWeekStart), and never to a save
+        // that was already under way: it is what the weather on the island's sea edges and the gate at
+        // the end of the week stand on, so a save without it meets neither. A key in this same list.
+        public const string FirstWeekKey   = HiddenHarbours.Core.IslandWeekStart.FirstWeekKey;
+
         // ⭐ A FOURTH FLAG LIVES IN THIS SAME STORE AND IS NOT DECLARED HERE:
         // HiddenHarbours.App.ArrivalOpening.ArrivedFlagKey ("arrived_st_peters"), which says the player
         // has been piloted in (owner's ruling, 2026-08-19 — the opening's step ZERO, the one before
