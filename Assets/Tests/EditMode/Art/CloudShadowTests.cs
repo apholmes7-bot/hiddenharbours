@@ -181,6 +181,20 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.That(earlier, Is.EqualTo(new CloudDrift().Offsets(wind, 123, 80010, Day, _def)));
         }
 
+        [Test] public void ANewWindLaw_IsSummedAgain_NotAddedToTheOldOnesSum()
+        {
+            var calm = new Wind { Steady = new Vector2(1, 0) };
+            var drift = new CloudDrift();
+            drift.Offsets(calm, 123, 80100, Day, _def);
+            // the same source now answers with another law (a region's wind profile arrives)
+            calm.Steady = new Vector2(0, 4);
+            Assert.That(drift.Offsets(calm, 123, 80200, Day, _def), Is.EqualTo(new CloudDrift().Offsets(calm, 123, 80200, Day, _def)));
+            // a different source (a new environment) gives the fresh answer too
+            var other = new Wind { Steady = new Vector2(0, 4) };
+            drift.Offsets(calm, 123, 80300, Day, _def);
+            Assert.That(drift.Offsets(other, 123, 80400, Day, _def), Is.EqualTo(new CloudDrift().Offsets(other, 123, 80400, Day, _def)));
+        }
+
         [Test] public void EachDay_StartsAFreshSky_AtMidnight()
         {
             var wind = new Wind { Steady = new Vector2(3, 1) };

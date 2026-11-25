@@ -116,6 +116,7 @@ namespace HiddenHarbours.Art
     public sealed class CloudDrift
     {
         int _seed; long _day = long.MinValue, _cells; double _step = -1, _dayLength = -1, _sumX, _sumY;
+        IWaveWindSource _source;
         Vector2 _edge;
 
         /// <summary>Metres of downwind travel per (m/s) of wind since the start of <paramref name="day"/>:
@@ -128,9 +129,13 @@ namespace HiddenHarbours.Art
             double start = day * secondsPerDay;
             double local = Math.Max(0, gameSeconds - start);
             long n = (long)Math.Floor(local / stepSeconds);
-            if (seed != _seed || day != _day || n < _cells || stepSeconds != _step || secondsPerDay != _dayLength)
+            // The sum so far is kept only while it is still the law's: same source, and the wind it ends on
+            // is still what the source says there (a region's wind law swapped in, a dev override, a new
+            // environment). Otherwise it is summed again from midnight, so the answer is always f(seed, time).
+            if (seed != _seed || day != _day || n < _cells || stepSeconds != _step || secondsPerDay != _dayLength
+                || !ReferenceEquals(source, _source) || source.WaveWindAt(start + _cells * stepSeconds).Wind != _edge)
             {
-                _seed = seed; _day = day; _step = stepSeconds; _dayLength = secondsPerDay;
+                _seed = seed; _day = day; _step = stepSeconds; _dayLength = secondsPerDay; _source = source;
                 _cells = 0; _sumX = 0; _sumY = 0;
                 _edge = source.WaveWindAt(start).Wind;
             }
