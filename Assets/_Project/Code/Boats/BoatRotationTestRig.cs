@@ -45,24 +45,32 @@ namespace HiddenHarbours.Boats
 
         private void Update()
         {
+            if (!HiddenHarbours.Core.DemoBuild.DevShortcutsAllowed) return;
             var kb = Keyboard.current;
             if (kb == null) return;
 
-            if (_directional != null && kb[_toggleModeKey].wasPressedThisFrame)
+            HandleShortcuts(kb[_toggleModeKey].wasPressedThisFrame, kb[_toggleAutoYawKey].wasPressedThisFrame);
+
+            // Slow hands-free turn, yielding whenever the helm is touched.
+            if (_autoYawOn && !HelmTouched(kb))
+                transform.Rotate(0f, 0f, _autoYawDegPerSec * Time.deltaTime);
+        }
+
+        public void HandleShortcuts(bool toggleMode, bool toggleAutoYaw)
+        {
+            if (!HiddenHarbours.Core.DemoBuild.DevShortcutsAllowed) return;
+            if (_directional != null && toggleMode)
             {
                 var mode = _directional.ToggleMode();
                 Debug.Log($"[BoatRotationTest] Mode -> {mode}  (press {_toggleModeKey} to toggle)");
             }
 
-            if (kb[_toggleAutoYawKey].wasPressedThisFrame)
+            if (toggleAutoYaw)
             {
                 _autoYawOn = !_autoYawOn;
                 Debug.Log($"[BoatRotationTest] Auto-yaw -> {(_autoYawOn ? "ON" : "OFF")}  (press {_toggleAutoYawKey} to toggle)");
             }
 
-            // Slow hands-free turn. Yields to a manual helm input so the owner can grab the wheel any time.
-            if (_autoYawOn && !HelmTouched(kb))
-                transform.Rotate(0f, 0f, _autoYawDegPerSec * Time.deltaTime);
         }
 
         // True while the owner is actively steering (A/D or arrows) — auto-yaw stands down so it doesn't fight him.
