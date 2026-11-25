@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e462da886a40bdc4b939f20562ce84c3, type: 3}
+  m_Name: OdileMarchandRoutine
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RoutineDef
+  Id: routine.odile_marchand
+  RegionId: region.st_peters
+  Npc: {fileID: 11400000, guid: 60cc0f7d7e8fbc9744aee13120d72fae, type: 2}
+  Entries:
+  - StartHour: 7
+    StationId: station.st_peters.whelps_cottage_door
+    Activity: 0
+    Why: up with the light, on her own doorstep with the first birds
+  - StartHour: 10
+    StationId: station.st_peters.whelps_lookout_bench
+    Activity: 3
+    Why: the morning watch from the bench over the Whelps
+  - StartHour: 13
+    StationId: station.st_peters.whelps_cottage_door
+    Activity: 0
+    Why: home for dinner and the notebook
+  - StartHour: 17
+    StationId: station.st_peters.whelps_lookout_bench
+    Activity: 3
+    Why: the evening watch, when the gulls come in
+  - StartHour: 20
+    StationId: station.st_peters.whelps_cottage_inside
+    Activity: 0
+    Why: in for the night
+  WalkSpeedMetresPerSecond: 0.9
+  ScheduleJitterMinutes: 6

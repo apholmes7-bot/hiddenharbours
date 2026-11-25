@@ -46,6 +46,9 @@ namespace HiddenHarbours.Tests.PlayMode
             new BoardFrame("whelps_lookout.lookout.noon", 154f, 199f, -50.893f, -26.893f, 12f, 0.63f),
             new BoardFrame("whelps_lookout.lookout.2230", 154f, 199f, -50.893f, -26.893f, 22.5f, 0.63f),
             new BoardFrame("whelps_lookout.skerries.low", 172f, 200f, -57.75f, -42f, 12f, -1.4f),
+            new BoardFrame("ne_light.keeper.1000", 197f, 215f, 52f, 63f, 10f, 0.63f),
+            new BoardFrame("whelps_lookout.cottage.0800", 154f, 176f, -43f, -24f, 8f, 0.63f),
+            new BoardFrame("whelps_lookout.bench.1130", 154f, 176f, -43f, -24f, 11.5f, 0.63f),
         };
 
         /// <summary>The north-east light in the loaded region: its lantern is where the clock says, at any hour.</summary>
@@ -76,6 +79,40 @@ namespace HiddenHarbours.Tests.PlayMode
                 Vector2 up = lamp.BeamTransforms[0].up;
                 float drawn = HiddenHarbours.World.LightSweep.DrawnDegrees(want, IsoGround.GroundDepthScale);
                 Assert.AreEqual(0f, Mathf.DeltaAngle(Mathf.Atan2(up.y, up.x) * Mathf.Rad2Deg, drawn), 0.05f);
+            }
+            GameServices.Clock.TimeScale = 1f;
+        }
+
+        /// <summary>The two keepers who live away from the village are where their days put them, by the clock alone.</summary>
+        [UnityTest]
+        public IEnumerator StPeters_TheKeepers_AreAtTheirPostsByDay_AndIndoorsByNight()
+        {
+            yield return LoadRegion(StPeters);
+            var keepers = new[]
+            {
+                (name: "AlbanDoucet", npc: "npc.alban_doucet", anchor: "anchor.stp_ne_light.tower_door", hour: 9f),
+                (name: "OdileMarchand", npc: "npc.odile_marchand", anchor: "anchor.stp_whelps.cottage_door", hour: 8.5f),
+            };
+            foreach (var k in keepers)
+            {
+                GameObject who = GameObject.Find(k.name), where = GameObject.Find(k.anchor);
+                Assert.IsNotNull(who, k.name + " is not on the island.");
+                Assert.IsNotNull(where, "no " + k.anchor + " to be sent to.");
+                var talk = who.GetComponent<HiddenHarbours.World.Interactable>();
+                var routine = who.GetComponent<HiddenHarbours.World.KeeperRound>();
+                Assert.IsNotNull(talk); Assert.IsNotNull(routine);
+                Assert.AreEqual(k.npc, talk.Npc != null ? talk.Npc.Id : null);
+
+                yield return PinTheHour(k.hour, ClearRunSeconds);
+                for (int i = 0; i < 4; i++) yield return null;
+                Assert.Less(Vector2.Distance(who.transform.position, where.transform.position), 0.75f,
+                    $"at {k.hour} h {k.name} is not at {k.anchor}");
+                Assert.IsTrue(who.GetComponent<SpriteRenderer>().enabled, k.name + " is at the post but not drawn");
+                Assert.IsTrue(talk.enabled, k.name + " is at the post but cannot be spoken to");
+
+                yield return PinTheHour(2f, ClearRunSeconds);
+                for (int i = 0; i < 4; i++) yield return null;
+                Assert.IsFalse(who.GetComponent<SpriteRenderer>().enabled, k.name + " is indoors at two in the morning");
             }
             GameServices.Clock.TimeScale = 1f;
         }
