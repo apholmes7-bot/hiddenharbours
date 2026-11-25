@@ -25,8 +25,9 @@ namespace HiddenHarbours.Tests.PlayMode
     /// is what is in the pail he carries: the purse rises by the counter's own quote from the data, the pail is empty
     /// and still in his hands, and the belt pail is untouched. Without the pail the belt pail sells as it always did.
     ///
-    /// <para><b>Over a save and a relaunch</b>, the belt pail's clams come back (its saved row) and the carried pail's
-    /// do not: the carried pail has no saved home, and this states that as it is.</para>
+    /// <para><b>Over a save and a relaunch</b> (owner 2026-11-24), both pails' clams come back: the belt pail's from
+    /// its saved row, the carried pail's from its storage row under its id. The carried pail stands at its authored
+    /// spot and his hands are empty, since neither its place nor his hold on it is saved; its clams still sell.</para>
     ///
     /// <para>Every step writes what happened (which hold the dig filled, what the counter read, what she said, the
     /// purse) before it asserts, so a failing run still records the whole walk. The save is a fresh file under the
@@ -213,6 +214,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(sale.Wallet.Money - sale.WalletBefore, Is.EqualTo(sale.Quote), "the purse rises by exactly that");
             Assert.That(rig.Pail.UsedUnits, Is.EqualTo(0), "the pail is empty");
             Assert.That(CarriedItem.IsHeld(GameServices.Hands, rig.Pail), Is.True, "and still in his hands");
+            Assert.That(StoredContainers.Find(GameServices.Save.Current, PailId), Is.Null, "and its saved row is gone with them");
             Assert.That(rig.Belt.UsedUnits, Is.EqualTo(0), "the belt pail was never filled and is still empty");
         }
 
@@ -241,10 +243,11 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator OverASaveAndARelaunch_TheBeltPailKeepsItsClams_AndTheCarriedPailComesBackEmpty()
+        public IEnumerator OverASaveAndARelaunch_BothPailsKeepTheirClams_AndTheCarriedPailIsBackAtItsSpot()
         {
             var rig = new Rig();
             yield return Boot(rig);
+            Vector3 authoredSpot = rig.Pail.transform.position;
             yield return PickUp(rig, rig.Shovel, "the shovel");
             yield return LowWater(rig, 3);
             yield return DigAndStow(rig, "belt clam");
@@ -261,7 +264,10 @@ namespace HiddenHarbours.Tests.PlayMode
             List<string> rows = (disk.StoredContainers ?? new List<StoredContainerDto>()).Select(c => c.Key).ToList();
             TestContext.WriteLine($"ON DISK: v{disk.SchemaVersion}, BucketCatch {disk.BucketCatch?.Count ?? 0} record(s), " +
                                   $"StoredContainers [{string.Join(",", rows)}], money {disk.Money}");
-            Assert.That(rows.Contains(PailId), Is.False, "the carried pail has no saved row");
+            Assert.That(disk.SchemaVersion, Is.EqualTo(26), "the save version is unchanged");
+            Assert.That(rows.Count(k => k == PailId), Is.EqualTo(1), "the carried pail has one saved row");
+            Assert.That(Units(StoredContainers.CatchIn(disk, PailId)), Is.EqualTo(2), "holding its two clams");
+            Assert.That(Units(disk.BucketCatch), Is.EqualTo(1), "and the belt pail its one: three in all, none twice");
 
             // A relaunch: the region goes, the services go, the save is read back from disk, the region boots again.
             yield return UnloadRegion();
@@ -283,9 +289,29 @@ namespace HiddenHarbours.Tests.PlayMode
                                   $"held: {first?.DefId ?? "nothing"} / {second?.DefId ?? "nothing"}, money {GameServices.Wallet.Money} (was {money})");
             Assert.That(again.Belt.UsedUnits, Is.EqualTo(1), "the belt pail's clam comes back from its saved row");
             Assert.That(GameServices.Wallet.Money, Is.EqualTo(money), "the purse comes back as it was");
-            Assert.That(again.Pail.UsedUnits, Is.EqualTo(0),
-                "TODAY: the carried pail's contents have no saved home, so its two clams do not come back. " +
-                "If this fails because they do, a save step has landed: update this test.");
+            Assert.That(again.Pail.UsedUnits, Is.EqualTo(2), "the carried pail's two clams come back in it");
+            Assert.That(first == null && second == null, Is.True, "his hands are empty: being held is not saved");
+            Assert.That(Vector2.Distance(again.Pail.transform.position, authoredSpot), Is.LessThan(0.01f),
+                "the pail stands at its authored spot: where it was set is not saved");
+
+            // And they are the same clams to sell: the counter buys both, and the next save keeps no stale row.
+            yield return PickUp(again, again.Pail, "the pail again");
+            Sale sale = Prepare(again.Pail, 2);
+            yield return WalkUpAndSell(again, sale);
+            Report(again, sale);
+            Assert.That(sale.Report.HasValue && sale.Report.Value.UnitsSold == 2, Is.True, "both reloaded clams are bought");
+            Assert.That(again.Pail.UsedUnits, Is.EqualTo(0), "the pail is empty");
+            GameServices.Save.Save();
+            SaveData after = SaveStore.Read(_path);
+            Assert.That(StoredContainers.Find(after, PailId), Is.Null, "an emptied pail writes no stale clams");
+            Assert.That(Units(after.BucketCatch), Is.EqualTo(1), "the belt clam is still his, unsold");
+        }
+
+        static int Units(IReadOnlyList<HeldCatchDto> records)
+        {
+            int n = 0;
+            if (records != null) foreach (HeldCatchDto r in records) n += r.Quantity;
+            return n;
         }
 
         // ---- steps ------------------------------------------------------------------------------------------------

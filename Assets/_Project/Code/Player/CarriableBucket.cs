@@ -24,9 +24,13 @@ namespace HiddenHarbours.Player
     /// One consequence worth knowing: you cannot put the pail down while holding a fish, because stowing
     /// the fish is the more specific act — and it is also the one you were about to do.</para>
     ///
-    /// <para><b>What it does NOT do.</b> No persistence: a pail set down is SESSION-LOCAL, the same honest
-    /// half-measure the carried tool and the fuel can ship with, because world-placed persistence is
-    /// net-new save schema and its own ADR (<c>diegetic-ui-and-inventory.md</c> §4.3). No ownership gate:
+    /// <para><b>Its catch is saved, its place is not</b> (owner 2026-11-24: clams left in the carried pail
+    /// survive a relaunch). A pail with an authored id keeps its catch in the v25 storage rows under that id
+    /// (<see cref="StoredContainers.WriteCatch"/>, the <see cref="CamperFreezer"/> pattern), written on every
+    /// change and read back on enable and on <see cref="GameLoaded"/>. Where it stands and whether it is in
+    /// his hands have no saved home, so after a relaunch it is back at its authored spot with its catch and
+    /// his hands are empty; world-placed persistence is net-new save schema and its own ADR
+    /// (<c>diegetic-ui-and-inventory.md</c> §4.3). No ownership gate:
     /// this is a physical object you are holding, so owning <c>gear.bucket</c> has nothing to say about
     /// it — the gate belongs to the belt pail, which is a capability rather than a thing.</para>
     ///
@@ -89,13 +93,70 @@ namespace HiddenHarbours.Player
         public bool TryAdd(CatchItem item)
         {
             if (!CatchKeep.MayKeep(in item)) return false;   // protected: release-only, never held
+            if (!IsBound()) return false;                    // the saved catch has not been read yet
             if (_items.Count >= CapacityUnits) return false;
             _items.Add(item);
+            SyncToSave();
             return true;
         }
 
         /// <inheritdoc/>
-        public void Clear() => _items.Clear();
+        public void Clear()
+        {
+            if (!IsBound()) return;   // never write an empty view over catch it has not read
+            _items.Clear();
+            SyncToSave();
+        }
+
+        // ---- the save (v26, the v25 storage rows) ------------------------------------------------------
+
+        /// <summary>
+        /// The key its catch is kept under in <see cref="StoredContainers"/>: its authored instance id
+        /// (<c>container.st_peters.bucket</c>), or null when none was authored. A derived id changes from
+        /// run to run, so such a pail keeps nothing over a relaunch (session-local, as before).
+        /// </summary>
+        public string SaveKey => string.IsNullOrEmpty(_id) ? null : _id;
+
+        /// <summary>Read its catch back from the save it has not read yet (or <paramref name="force"/>).
+        /// Public for EditMode, where <c>OnEnable</c> does not fire. The <see cref="CamperFreezer"/> bind:
+        /// with no <see cref="GameServices.CatchFactory"/> a saved row cannot be rebuilt, so a pail whose
+        /// row holds catch stays unbound (every change refused) and the row is left exactly as it is.</summary>
+        public void BindToSave(bool force = false)
+        {
+            SaveData data = GameServices.Save?.Current;
+            if (data == null || SaveKey == null || (!force && ReferenceEquals(data, _boundTo))) return;
+            IReadOnlyList<HeldCatchDto> saved = StoredContainers.CatchIn(data, SaveKey);
+            ICatchItemFactory factory = GameServices.CatchFactory;
+            if (factory == null && saved != null && saved.Count > 0)
+            {
+                _items.Clear();   // a view of an older save must not show; the row itself is untouched
+                _boundTo = null;
+                return;
+            }
+            _boundTo = data;
+            HoldCatchCodec.Restore(saved, factory, _items);
+        }
+
+        /// <summary>True when a change may be written: no save or no key to guard, or the current save has
+        /// been read (binding now if it can).</summary>
+        public bool IsBound()
+        {
+            SaveData data = GameServices.Save?.Current;
+            if (data == null || SaveKey == null) return true;
+            if (!ReferenceEquals(data, _boundTo)) BindToSave();
+            return ReferenceEquals(data, _boundTo);
+        }
+
+        // Every change writes the whole catch (an emptied pail drops its row, so no stale clams remain).
+        private void SyncToSave()
+        {
+            if (SaveKey == null) return;
+            StoredContainers.WriteCatch(GameServices.Save?.Current, SaveKey, _defId, _items);
+        }
+
+        private SaveData _boundTo;   // the save blob it last restored from
+
+        private void OnGameLoaded(GameLoaded _) => BindToSave(force: true);
 
         // ---- ICarriable / ICarryAnchored / IHandLoad ---------------------------------------------------
 
@@ -312,9 +373,18 @@ namespace HiddenHarbours.Player
 
         // ---- registration -------------------------------------------------------------------------------
 
-        private void OnEnable() => Interactables.Register(this);
+        private void OnEnable()
+        {
+            Interactables.Register(this);
+            EventBus.Subscribe<GameLoaded>(OnGameLoaded);
+            BindToSave();   // a region enabled after the load edge reads the save it has not read
+        }
 
-        private void OnDisable() => Interactables.Unregister(this);
+        private void OnDisable()
+        {
+            Interactables.Unregister(this);
+            EventBus.Unsubscribe<GameLoaded>(OnGameLoaded);
+        }
 
         /// <summary>Wire the pail in one call (the region builders / tests) — the Configure seam used
         /// across the lane, because EditMode never runs a builder. A non-positive
@@ -326,6 +396,7 @@ namespace HiddenHarbours.Player
             if (!string.IsNullOrEmpty(defId)) _defId = defId;
             _id = id;
             _resolvedId = null;
+            _boundTo = null;   // a new key reads its own row on the next change
         }
 
         private void ResolveHands()

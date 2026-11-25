@@ -292,7 +292,11 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 > list (`HeldCatchDto`, the same records Ginny's freezer keeps in `FreezerCatch`, via `HoldCatchCodec`):
 > the camper's chest freezer (`CamperFreezer`, `FreezerDef` `freezer.camper_freezer`, 40 units, fixed id
 > `storage.stpeters.camper_freezer`) takes landed catch frozen, as Ginny's does; the repair drops catch
-> records with no species or quantity and folds them with the rest. **Food is not here**: the camper's
+> records with no species or quantity and folds them with the rest. A carried pail (`CarriableBucket`) with an
+> authored instance id keeps its catch the same way under that id (`container.st_peters.bucket`,
+> `container.st_peters.hod`, `container.nine_mile_creek.bucket`; owner 2026-11-24, no new field at v26). It is
+> not a `PlayerStorage` container, so its key is not `storage.*`; its place and whether it is held are not
+> saved, so after a load it stands at its authored spot with its catch. **Food is not here**: the camper's
 > fridge and pantry are `KitchenStorageDef`s whose state rides the v23 `KitchenStores` rows under their
 > `storage.*` key. Gated stores name a deed (`DeedHomeId`, on `StowageDef`, `FreezerDef` and
 > `KitchenStorageDef`); `StorageAccess`
