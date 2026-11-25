@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.GearOffer
   Id: gear.mussel_sack
   DisplayName: Mussel Sack
-  Flavor: "An onion-mesh sack that drains as you walk. It holds more than the pail and weighs nothing empty."
+  Flavor: "An onion-mesh sack that drains as you walk. It holds more than the bucket and weighs nothing empty."
   Price: 10
   CarryCapacityUnits: 30
   Catalog:

@@ -16,7 +16,7 @@ MonoBehaviour:
   DisplayName: Atlantic Surf Clam
   Category: 1
   Rarity: 0
-  Flavor: 'The bar clam: a big smooth clam of the clean sand, bared only on the biggest low tides of summer. GEAR NOTE: hand-gather only, on the ClamFork tag the clam uses. BALANCE NOTE: placeholder value, weight and elasticity set beside its neighbours - flagged for economy-sim to tune.'
+  Flavor: 'The bar clam: a big smooth clam of the clean sand, bared only on the biggest low tides of summer.'
   RegionIds:
   - region.st_peters
   - region.cumberland

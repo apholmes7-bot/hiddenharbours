@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.GearOffer
   Id: gear.shovel
   DisplayName: Clam Shovel
-  Flavor: 'For digging soft-shell clams out of the bared flats at low water. gameplay-systems
-    maps gear.shovel to the hand-dig method (reconcile Shovel vs ClamFork GearTag, fish-and-content 3.5a).'
+  Flavor: 'For digging soft-shell clams out of the bared flats at low water.'
   Price: 25
   Catalog:
     Listed: 0

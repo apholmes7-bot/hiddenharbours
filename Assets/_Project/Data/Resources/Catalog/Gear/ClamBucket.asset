@@ -14,9 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.GearOffer
   Id: gear.bucket
   DisplayName: Clam Bucket
-  Flavor: 'Holds what you dig before you have a boat - a 20-clam pail. HOLD NOTE: the
-    20-unit capacity is gameplay-systems'' IHold/ShipHold mechanic; Economy records the
-    purchase, they wire the on-foot 20-capacity hold from gear.bucket.'
+  Flavor: 'A galvanised bucket for the flats. Twenty clams to a load, carried home by hand until you have a boat to carry them.'
   Price: 15
   Catalog:
     Listed: 0

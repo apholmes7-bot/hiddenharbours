@@ -16,7 +16,7 @@ MonoBehaviour:
   DisplayName: Green Crab
   Category: 1
   Rarity: 0
-  Flavor: 'The invader: a small dark-green shore crab that eats the young clams. Takes the bait in any crab pot; kept, never thrown back. Bait and a bounty, not a meal. BALANCE NOTE: placeholder value, weight and elasticity set beside its neighbours - flagged for economy-sim to tune.'
+  Flavor: 'The invader: a small dark-green shore crab that eats the young clams. Takes the bait in any crab pot; kept, never thrown back. Bait and a bounty, not a meal.'
   RegionIds:
   - region.st_peters
   - region.east_water
