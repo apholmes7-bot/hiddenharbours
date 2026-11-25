@@ -60,6 +60,17 @@ namespace HiddenHarbours.Player
 
         public bool IsFishingRod => RodTier > 0 || Id == RodId;
 
+        [Header("Rods from parts (empty = a whole rod, fished with RodFishing above)")]
+        [Tooltip("The rod part this rod is. With a line and reel below, the rod is fished from its parts " +
+                 "and each player's own fit; the pre-fitted parts give exactly RodFishing above.")]
+        public RodBlankDef RodBlank;
+
+        [Tooltip("The line this rod comes with (the player's fit may change it).")]
+        public FishingLineDef DefaultLine;
+
+        [Tooltip("The reel this rod comes with (the player's fit may change it).")]
+        public FishingReelDef DefaultReel;
+
         [Tooltip("One line for the pick-up message and later the tool rack's label. Greybox copy.")]
         [TextArea(2, 4)]
         public string Flavor;

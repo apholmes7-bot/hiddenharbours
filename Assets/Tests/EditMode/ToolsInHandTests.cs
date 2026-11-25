@@ -461,6 +461,8 @@ namespace HiddenHarbours.Tests.EditMode
                              System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.DeclaredOnly))
                 {
                     if (field.Name == "Id" || field.Name == "RodTier" || field.Name == "RodFishing") continue;
+                    // A rod's parts differ by tier on purpose; they set its numbers, not its look.
+                    if (field.Name == "RodBlank" || field.Name == "DefaultLine" || field.Name == "DefaultReel") continue;
                     Assert.AreEqual(field.GetValue(rods[0]), field.GetValue(rods[i]), field.Name);
                 }
             }
@@ -501,6 +503,15 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 object boxed = RodFishingProfile.Default;
                 field.SetValue(boxed, invalid);
+                // The small-fish mark is the one place 0 is a real setting: 0 kg = puts no fish off,
+                // 0 damp = the smallest fish never bite. Everything else must be above zero.
+                bool zeroIsASetting = field.Name == nameof(RodFishingProfile.SmallFishShyBelowKg)
+                                   || field.Name == nameof(RodFishingProfile.SmallFishShyDamp01);
+                if (zeroIsASetting && invalid == 0f)
+                {
+                    Assert.IsTrue(((RodFishingProfile)boxed).IsValid, field.Name + ": 0 is allowed");
+                    continue;
+                }
                 Assert.IsFalse(((RodFishingProfile)boxed).IsValid, field.Name + ": " + invalid);
             }
             var reversed = RodFishingProfile.Default;

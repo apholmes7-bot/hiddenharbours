@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e61f56ef56054095b1d99bacb68033e2, type: 3}
+  m_Name: ReelDeep
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.FishingReelDef
+  Id: reel.deep
+  DisplayName: Deep reel
+  Flavor: A geared reel for hauling up from the bottom.
+  GearId:
+  Tier: 3
+  ReelUpMetresPerSecond: 2.1
+  FightEase: 0
