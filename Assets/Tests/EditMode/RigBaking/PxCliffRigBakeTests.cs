@@ -232,6 +232,38 @@ namespace HiddenHarbours.Tests.RigBaking
             }
         }
 
+        /// <summary>
+        /// The toe strips are the ROCK's colours (owner, 11-23: "organic and natural"). The salt bleach
+        /// and the rubble were a grey-cream wash and grey grit, and over red rock they read as grey paint
+        /// panels on every foot. Scored on the strip's lit texels (luma 60 and up, so the notch's cast
+        /// shade does not count): fewer than 8% may be near-neutral (red minus blue under 40), and the
+        /// slump apron is opaque rubble, never a dithered veil.
+        /// </summary>
+        [Test]
+        public void TheToeStrips_AreTheRocksOwnColours_NotGreyPanels()
+        {
+            foreach (string aspect in CliffCatalog.Aspects)
+                foreach (string feature in new[] { "notch", "slump" })
+                {
+                    string opts = feature == "notch" ? "{}" : "{feature: 'slump'}";
+                    _host.Execute($"globalThis.__t = {PG}.toe('{aspect}', {CliffCatalog.BaseStep}, {opts});" +
+                                  "globalThis.__g = (function(d){ let lit = 0, grey = 0, veil = 0;" +
+                                  " for (let i = 0; i < d.length; i += 4) { if (!d[i+3]) continue;" +
+                                  "  if (d[i+3] < 255) veil++;" +
+                                  "  const l = .299*d[i] + .587*d[i+1] + .114*d[i+2]; if (l < 60) continue;" +
+                                  "  lit++; if (d[i] - d[i+2] < 40) grey++; }" +
+                                  " return { lit, grey, veil }; })(__t.data);");
+                    double lit = _host.EvaluateNumber("__g.lit"), grey = _host.EvaluateNumber("__g.grey");
+                    Assert.Greater(lit, 0, $"toe {aspect} {feature} drew nothing lit.");
+                    Assert.Less(grey / lit, 0.08,
+                        $"toe {aspect} {feature}: {grey / lit:P1} of its lit texels are grey. The bleach and " +
+                        "the rubble are the rock's own colours, salt-paled and broken.");
+                    if (feature == "slump")
+                        Assert.AreEqual(0, (int)_host.EvaluateNumber("__g.veil"),
+                            $"toe {aspect} slump: the apron is opaque rubble, not a translucent veil.");
+                }
+        }
+
         // =====================================================================================
         //  the shadow — recovered, not supplied
         // =====================================================================================

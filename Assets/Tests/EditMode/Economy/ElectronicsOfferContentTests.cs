@@ -45,10 +45,11 @@ namespace HiddenHarbours.Tests.Economy
         }
 
         [Test]
-        public void DepthSounder_StaysAtTheIslandSeller()
+        public void DepthSounder_IsSoldOnlyAtTheBoatGearWholesaler_ListedAtTheSamePrice()
         {
             var sounder = CatalogSource.All<InstrumentOffer>().Single(o => o.Id == "instrument.depth_sounder");
-            CollectionAssert.AreEqual(new[] { "seller.leblancs" }, sounder.Catalog.Sellers);
+            CollectionAssert.AreEqual(new[] { Seller }, sounder.Catalog.Sellers,
+                                      "the island store sells basic fishing gear; boat hardware is the mainland wholesaler's (ruling 11-23)");
             Assert.IsTrue(sounder.Catalog.Listed);
             Assert.AreEqual(140, sounder.Price);
         }

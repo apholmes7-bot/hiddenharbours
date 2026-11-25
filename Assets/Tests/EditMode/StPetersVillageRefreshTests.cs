@@ -527,7 +527,7 @@ namespace HiddenHarbours.Tests.EditMode
                     Key = s.Key, Position = s.Position, Shell = assets.Post, Room = assets.Post, UpperRoom = assets.Post,
                     ShellMaterial = assets.Material, RoomMaterial = assets.Material, Mask = assets.Post.Sprite,
                     Normal = assets.Post.Sprite, Emit = assets.Post.Sprite,
-                    Width = 7, Length = 8, DoorSign = 1, DoorAcross = .2f, StoreyHeight = 3.1f, RoomFacing = 4, Facings = 8,
+                    Width = 7, Length = 8, DoorSign = 1, DoorAcross = .2f, StoreyHeight = 3.1f, RoomFacing = 4, FrameFacing = 4, Facings = 8,
                 }).ToArray();
             var patch = NewVillageHomes(scene, homes, assets);
             var after = patch.Apply(scene);

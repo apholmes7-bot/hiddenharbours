@@ -1,6 +1,6 @@
 # Notebook icon readability audit
 
-Base: `1abca5974ce3d16a3257777797bb2547c9ad8d53`. Source-pixel review; no runtime acceptance is claimed.
+Observation base: `1abca5974ce3d16a3257777797bb2547c9ad8d53`. The observations below are historical source-pixel judgements; no runtime acceptance is claimed. Refreshed against `d46bde303e6aa256d23d47a05ede5d7d6f38e51e`: the icon sources have no intervening changes, so the original observations are retained without a new visual assessment. Sprite changes remain paused.
 
 The evidence sheet `notebook-12-all.png` contains all 49 mapped KIT and CAUGHT identities at native 1x and nearest-neighbour 3x on paper RGB (235, 226, 204), rounded from `NotebookInk.Paper`. KIT follows `GearPage.asset`: Rods and tackle (7), Pots and lines (3), Bait (7), Shore tools (6), Boat electronics (4), Carried (2), then Other gear (1). CAUGHT includes 19 species, sorted by id for a stable sheet; the game uses first-caught order. The six missing instrument identities have no source icon and are listed separately in the missing-icon audit. Other library keys (boats, currency, hold, buoy and licence) are not KIT/CAUGHT content.
 

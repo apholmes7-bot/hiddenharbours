@@ -59,6 +59,14 @@ namespace HiddenHarbours.Art
         /// <summary>The hidden child's renderer, for the tests and for nothing else.</summary>
         public SpriteRenderer MaskRenderer => _mask;
 
+        /// <summary>
+        /// The shape to stamp instead of the caster's own sprite, unflipped, in the caster's local space
+        /// (the mesh figure's traced outline, <see cref="MeshFigureCastSilhouette"/>), or null for the
+        /// caster's sprite. The body under a mesh figure stays <c>enabled</c>, so visibility still
+        /// follows it; only the shape changes.
+        /// </summary>
+        public Sprite SilhouetteOverride { get; set; }
+
         void OnEnable()
         {
             _caster = GetComponent<SpriteRenderer>();
@@ -169,11 +177,14 @@ namespace HiddenHarbours.Art
             if (_mask.enabled != visible) _mask.enabled = visible;
             if (!visible) return;
 
-            // Flip is cheap and must never lag — a bool compare, not a sprite compare.
-            if (_mask.flipX != _caster.flipX) _mask.flipX = _caster.flipX;
-            if (_mask.flipY != _caster.flipY) _mask.flipY = _caster.flipY;
+            // Flip is cheap and must never lag — a bool compare, not a sprite compare. An override is
+            // already the drawn shape, facing included, so it is never flipped again.
+            bool overridden = SilhouetteOverride != null;
+            bool flipX = !overridden && _caster.flipX, flipY = !overridden && _caster.flipY;
+            if (_mask.flipX != flipX) _mask.flipX = flipX;
+            if (_mask.flipY != flipY) _mask.flipY = flipY;
 
-            Sprite sprite = _caster.sprite;
+            Sprite sprite = overridden ? SilhouetteOverride : _caster.sprite;
             if (sprite == _lastSprite) return;   // the overwhelmingly common case — one compare, no work
             _lastSprite = sprite;
             _mask.sprite = sprite;
