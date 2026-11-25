@@ -65,6 +65,37 @@ namespace HiddenHarbours.Economy
         /// </summary>
         public bool TryBuy(LicenseDef license) => TryBuy(license, _wallet, GameServices.Licenses);
 
+        /// <summary>Confirm the contribution shown in the book. A changed purse requires a fresh quote.</summary>
+        public bool TryBuy(LicenseDef license, int quotedPrice)
+            => TryBuy(license, _wallet, GameServices.Licenses, quotedPrice);
+
+        /// <summary>The book and the transaction use the same quote. Missing recovery data, save or
+        /// licence service leaves the ordinary price in place. Reading a quote changes no state.</summary>
+        public BuyQuote Quote(LicenseDef license, int money, SaveData save, ILicenseService licenses)
+        {
+            if (license == null || string.IsNullOrEmpty(license.Id))
+                return new BuyQuote(BuyRowKind.License, 0, false, false);
+
+            bool held = (licenses != null && licenses.IsLicensed(license.Id))
+                        || (save?.OwnedLicenses != null && save.OwnedLicenses.Contains(license.Id));
+            bool recover = licenses != null && license.Price > 0
+                           && !string.IsNullOrWhiteSpace(license.FeeRecoverySellerId)
+                           && license.FeeRecoverySellerId == _sellerId
+                           && !string.IsNullOrWhiteSpace(license.FeeRecoveryUsedFlag)
+                           && license.FeeRecoveryUsedFlag != license.FeeRecoveryGrantFlag
+                           && HasFlag(save, license.FeeRecoveryGrantFlag)
+                           && !HasFlag(save, license.FeeRecoveryUsedFlag);
+            return BuyLogic.License(license.Price, money, held, recover);
+        }
+
+        private static bool HasFlag(SaveData save, string key)
+        {
+            if (string.IsNullOrWhiteSpace(key) || save?.OnboardingFlags == null) return false;
+            foreach (var flag in save.OnboardingFlags)
+                if (flag.Key == key) return flag.Value;
+            return false;
+        }
+
         /// <summary>
         /// Core buy seam (testable): checks the fee, spends from the wallet, and on success grants the
         /// license and raises <c>LicensePurchased(id, fee)</c>. Money is only deducted if the purchase
@@ -72,6 +103,9 @@ namespace HiddenHarbours.Economy
         /// (returns false, charges nothing). Returns true iff a NEW license was bought.
         /// </summary>
         public bool TryBuy(LicenseDef license, IWallet wallet, ILicenseService licenses)
+            => TryBuy(license, wallet, licenses, null);
+
+        private bool TryBuy(LicenseDef license, IWallet wallet, ILicenseService licenses, int? quotedPrice)
         {
             LastPurchaseSucceeded = false;
             if (license == null)
@@ -86,24 +120,39 @@ namespace HiddenHarbours.Economy
                 return false;
             }
 
-            // Don't double-charge for a license the player already holds.
-            if (licenses != null && licenses.IsLicensed(license.Id))
+            var saver = GameServices.Save;
+            BuyQuote quote = Quote(license, wallet.Money, saver?.Current, licenses);
+            if (quotedPrice.HasValue && quotedPrice.Value != quote.Price) return false;
+            // Also respect saved ownership while the live licence service is being restored.
+            if (quote.Owned)
             {
                 Debug.Log($"[LicenseVendor] Already hold {license.DisplayName} ({license.Id}).");
                 return false;
             }
 
-            if (!wallet.TrySpend(license.Price))
+            if (!quote.CanBuy)
             {
                 Debug.Log($"[LicenseVendor] Can't afford {license.DisplayName}: need ₲{license.Price}, have ₲{wallet.Money}.");
                 return false;
             }
 
-            licenses?.Grant(license.Id);
-            EventBus.Publish(new LicensePurchased(license.Id, license.Price, SellerDirectory.Resolve(_sellerId)));
+            bool recovered = quote.Price < license.Price;
+            using (saver?.DeferWrites())
+            {
+                // Reserve before TrySpend can publish MoneyChanged and re-enter another counter.
+                // The used flag, purse and owned licence are kept in the same save write.
+                if (recovered) saver.SetFlag(license.FeeRecoveryUsedFlag, true);
+                if (!wallet.TrySpend(quote.Price))
+                {
+                    if (recovered) saver.SetFlag(license.FeeRecoveryUsedFlag, false);
+                    return false;
+                }
+                licenses?.Grant(license.Id);
+            }
+            EventBus.Publish(new LicensePurchased(license.Id, quote.Price, SellerDirectory.Resolve(_sellerId)));
             LastPurchaseSucceeded = true;
-            Debug.Log($"[LicenseVendor] Bought {license.DisplayName} ({license.Id}) for ₲{license.Price}.");
-            _onPurchased?.Invoke(license.Price);
+            Debug.Log($"[LicenseVendor] Bought {license.DisplayName} ({license.Id}) for ₲{quote.Price}.");
+            _onPurchased?.Invoke(quote.Price);
             return true;
         }
     }

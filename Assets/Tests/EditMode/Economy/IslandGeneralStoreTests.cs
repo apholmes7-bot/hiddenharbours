@@ -31,11 +31,15 @@ namespace HiddenHarbours.Tests.Economy
         {
             public FakeWallet(int starting) { Money = starting; }
             public int Money { get; private set; }
-            public void Add(int amount) => Money += amount;
+            public int Credits { get; private set; }
+            public bool RefuseSpend;
+            public System.Action OnSpend;
+            public void Add(int amount) { Money += amount; Credits += amount; }
             public bool TrySpend(int amount)
             {
-                if (amount < 0 || amount > Money) return false;
+                if (RefuseSpend || amount < 0 || amount > Money) return false;
                 Money -= amount;
+                OnSpend?.Invoke();
                 return true;
             }
         }
@@ -52,12 +56,50 @@ namespace HiddenHarbours.Tests.Economy
 
         private sealed class FlagSaveService : ISaveService
         {
-            private readonly Dictionary<string, bool> _flags = new();
             public FlagSaveService(SaveData data) { Current = data; }
             public SaveData Current { get; }
-            public bool GetFlag(string key) => _flags.TryGetValue(key, out var v) && v;
-            public void SetFlag(string key, bool value) { if (!string.IsNullOrEmpty(key)) _flags[key] = value; }
-            public void Save() { }
+            public readonly List<string> Writes = new();
+            private int _depth;
+            private bool _pending;
+            public bool GetFlag(string key)
+            {
+                foreach (var flag in Current.OnboardingFlags)
+                    if (flag.Key == key) return flag.Value;
+                return false;
+            }
+            public void SetFlag(string key, bool value)
+            {
+                if (string.IsNullOrEmpty(key)) return;
+                for (int i = 0; i < Current.OnboardingFlags.Count; i++)
+                    if (Current.OnboardingFlags[i].Key == key)
+                    {
+                        Current.OnboardingFlags[i] = new SaveFlag(key, value);
+                        Save();
+                        return;
+                    }
+                Current.OnboardingFlags.Add(new SaveFlag(key, value));
+                Save();
+            }
+            public void Save()
+            {
+                if (_depth > 0) { _pending = true; return; }
+                if (GameServices.Wallet != null) Current.Money = GameServices.Wallet.Money;
+                Writes.Add(SaveSerialization.ToJson(Current));
+            }
+            public System.IDisposable DeferWrites() { _depth++; return new Scope(this); }
+            private sealed class Scope : System.IDisposable
+            {
+                private readonly FlagSaveService _owner;
+                public Scope(FlagSaveService owner) { _owner = owner; }
+                public void Dispose()
+                {
+                    if (--_owner._depth == 0 && _owner._pending)
+                    {
+                        _owner._pending = false;
+                        _owner.Save();
+                    }
+                }
+            }
         }
 
         private sealed class FakeLicenses : ILicenseService
@@ -77,6 +119,8 @@ namespace HiddenHarbours.Tests.Economy
             EventBus.Clear<BaitPurchased>();
             EventBus.Clear<SupplyPurchased>();
             EventBus.Clear<FeeFronted>();
+            EventBus.Clear<LicensePurchased>();
+            GameServices.Reset();
         }
 
         [TearDown]
@@ -86,6 +130,7 @@ namespace HiddenHarbours.Tests.Economy
             EventBus.Clear<BaitPurchased>();
             EventBus.Clear<SupplyPurchased>();
             EventBus.Clear<FeeFronted>();
+            EventBus.Clear<LicensePurchased>();
             GameServices.Reset();
             foreach (var o in _spawned) if (o != null) Object.DestroyImmediate(o);
             _spawned.Clear();
@@ -529,6 +574,332 @@ namespace HiddenHarbours.Tests.Economy
 
             Assert.IsFalse(FrontedFeeGrant.Grant(null, 20), "no wallet → nothing granted");
             Assert.IsFalse(FrontedFeeGrant.Grant(new FakeWallet(0), 0), "and a non-positive fee is not a grant");
+        }
+
+        [Test]
+        public void ClamFeeRecovery_IsAuthoredForTheExistingGrantAndOnlyItsIslandSeller()
+        {
+            int configured = 0;
+            foreach (var license in CatalogSource.Licenses())
+            {
+                bool any = !string.IsNullOrWhiteSpace(license.FeeRecoveryGrantFlag)
+                           || !string.IsNullOrWhiteSpace(license.FeeRecoveryUsedFlag)
+                           || !string.IsNullOrWhiteSpace(license.FeeRecoverySellerId)
+                           || !string.IsNullOrWhiteSpace(license.FeeRecoveryNote);
+                if (!any) continue;
+                configured++;
+                Assert.AreEqual("license.clam", license.Id);
+                Assert.AreEqual(FrontedFeeGrant.DefaultGrantKey, license.FeeRecoveryGrantFlag);
+                Assert.AreEqual("ginny_clam_fee_recovered", license.FeeRecoveryUsedFlag);
+                Assert.AreNotEqual(license.FeeRecoveryGrantFlag, license.FeeRecoveryUsedFlag);
+                Assert.AreEqual("seller.leblancs", license.FeeRecoverySellerId);
+                Assert.IsTrue(license.Catalog.Listed);
+                CollectionAssert.Contains(license.Catalog.Sellers, license.FeeRecoverySellerId);
+                Assert.Greater(license.Price, 0);
+                Assert.IsFalse(string.IsNullOrWhiteSpace(license.FeeRecoveryNote));
+            }
+            Assert.AreEqual(1, configured, "only the first shellfish licence gets this recovery");
+        }
+
+        private const string RecoverySeller = "seller.leblancs";
+        private const string RecoveryUsed = "ginny_clam_fee_recovered";
+
+        private LicenseDef MakeRecoverableLicense()
+        {
+            var license = MakeLicense("license.clam", 15, "fish.soft_shell_clam");
+            license.FeeRecoveryGrantFlag = FrontedFeeGrant.DefaultGrantKey;
+            license.FeeRecoveryUsedFlag = RecoveryUsed;
+            license.FeeRecoverySellerId = RecoverySeller;
+            license.FeeRecoveryNote = "Put down what you have, child. I'll settle the rest.";
+            return license;
+        }
+
+        private LicenseVendor RecoveryVendor(LicenseDef license, IWallet wallet,
+                                              string seller = RecoverySeller)
+        {
+            var go = new GameObject("StoreCounter");
+            _spawned.Add(go);
+            var vendor = go.AddComponent<LicenseVendor>();
+            var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+            typeof(LicenseVendor).GetField("_sellerId", flags).SetValue(vendor, seller);
+            typeof(LicenseVendor).GetField("_wallet", flags).SetValue(vendor, wallet);
+            typeof(LicenseVendor).GetField("_license", flags).SetValue(vendor, license);
+            return vendor;
+        }
+
+        private LicenseService RestoreLicenses()
+        {
+            var go = new GameObject("LicenseService");
+            _spawned.Add(go);
+            var licenses = go.AddComponent<LicenseService>();
+            licenses.Register();
+            return licenses;
+        }
+
+        private static BuyRow LicenceRow(LicenseVendor vendor, LicenseDef license, int money,
+                                         SaveData save, ILicenseService licenses)
+        {
+            var rows = new List<BuyRow>();
+            var arms = new BuyCatalog.SellerArms(null, null, null, null, null, null, vendor);
+            var stock = new BuyCatalog.CatalogStock(null, null, null, null, null, null, new[] { license });
+            BuyCatalog.BuildFrom(arms, stock, money, save, licenses, rows);
+            Assert.AreEqual(1, rows.Count);
+            return rows[0];
+        }
+
+        [TestCase(0)]
+        [TestCase(4)]
+        [TestCase(14)]
+        public void SpentFee_RecoversThroughTheBook_WithoutReplacementCoinsOrRepeatProfit(int left)
+        {
+            var saver = new FlagSaveService(SaveMigration.NewGame());
+            var wallet = new FakeWallet(0);
+            GameServices.Save = saver;
+            GameServices.Wallet = wallet;
+            var config = MakeConfig();
+            config.FrontedLicenceFee = 20;
+            var grant = MakeGrant(config, FrontedFeeGrant.DefaultGrantKey);
+            Assert.AreEqual(20, grant.GrantOnce());
+            Assert.IsTrue(wallet.TrySpend(20 - left));
+            var license = MakeRecoverableLicense();
+            var licenses = RestoreLicenses();
+            var vendor = RecoveryVendor(license, wallet);
+            var purchases = new List<LicensePurchased>();
+            EventBus.Subscribe<LicensePurchased>(purchases.Add);
+
+            int writesBefore = saver.Writes.Count;
+            string beforeQuote = SaveSerialization.ToJson(saver.Current);
+            var row = LicenceRow(vendor, license, wallet.Money, saver.Current, licenses);
+            Assert.IsTrue(row.Quote.CanBuy, "the visible book must let the broke player confirm");
+            Assert.AreEqual(left, row.Quote.Price);
+            Assert.AreEqual(license.FeeRecoveryNote, row.Note);
+            Assert.AreEqual("", row.Flavor, "the recovery explanation replaces the ordinary description");
+            Assert.AreEqual(beforeQuote, SaveSerialization.ToJson(saver.Current), "browsing is read-only");
+
+            Assert.IsTrue(BuyCatalog.Confirm(row));
+            Assert.AreEqual(0, wallet.Money);
+            Assert.AreEqual(20, wallet.Credits, "only the original grant credits the purse");
+            Assert.IsTrue(licenses.IsLicensed(license.Id));
+            Assert.IsTrue(CatchLicensePolicy.MayLand("fish.soft_shell_clam", new[] { license }, licenses));
+            Assert.IsTrue(saver.GetFlag(FrontedFeeGrant.DefaultGrantKey));
+            Assert.IsTrue(saver.GetFlag(RecoveryUsed));
+            Assert.AreEqual(writesBefore + 1, saver.Writes.Count, "fee, licence and used flag persist together");
+            Assert.AreEqual(1, purchases.Count);
+            Assert.AreEqual(left, purchases[0].PricePaid);
+            Assert.AreEqual(license.Id, purchases[0].LicenseId);
+            Assert.AreEqual(RecoverySeller, purchases[0].VendorId);
+
+            Assert.IsFalse(BuyCatalog.Confirm(row), "a stale row cannot redeem again");
+            Assert.IsFalse(RecoveryVendor(license, wallet).TryBuy());
+            Assert.AreEqual(0, grant.GrantOnce());
+            Assert.AreEqual(1, purchases.Count);
+            var saved = SaveSerialization.FromJson(saver.Writes[saver.Writes.Count - 1]);
+            Assert.AreEqual(0, saved.Money);
+            CollectionAssert.AreEqual(new[] { license.Id }, saved.OwnedLicenses);
+
+            var resumed = new FlagSaveService(saved);
+            var resumedWallet = new FakeWallet(saved.Money);
+            GameServices.Save = resumed;
+            GameServices.Wallet = resumedWallet;
+            var resumedLicenses = RestoreLicenses();
+            var resumedVendor = RecoveryVendor(license, resumedWallet);
+            Assert.IsTrue(resumed.GetFlag(RecoveryUsed));
+            Assert.IsFalse(resumedVendor.TryBuy());
+            Assert.AreEqual(0, resumedWallet.Credits);
+            Assert.AreEqual(0, resumed.Writes.Count);
+            Assert.AreEqual("", LicenceRow(resumedVendor, license, 0, saved, resumedLicenses).Note);
+        }
+
+        [TestCase(15)]
+        [TestCase(20)]
+        [TestCase(100)]
+        public void AffordableFirstLicence_KeepsItsPriceAndDoesNotUseRecovery(int money)
+        {
+            var save = SaveMigration.NewGame();
+            save.OnboardingFlags.Add(new SaveFlag(FrontedFeeGrant.DefaultGrantKey, true));
+            var saver = new FlagSaveService(save);
+            var wallet = new FakeWallet(money);
+            GameServices.Save = saver;
+            GameServices.Wallet = wallet;
+            var licenses = RestoreLicenses();
+            var license = MakeRecoverableLicense();
+            var vendor = RecoveryVendor(license, wallet);
+            var purchases = new List<LicensePurchased>();
+            EventBus.Subscribe<LicensePurchased>(purchases.Add);
+            var row = LicenceRow(vendor, license, money, save, licenses);
+            Assert.AreEqual(15, row.Quote.Price);
+            Assert.AreEqual("", row.Note);
+            Assert.AreEqual(license.Flavor, row.Flavor);
+            Assert.IsTrue(BuyCatalog.Confirm(row));
+            Assert.AreEqual(money - 15, wallet.Money);
+            Assert.AreEqual(0, wallet.Credits);
+            Assert.IsFalse(saver.GetFlag(RecoveryUsed));
+            Assert.AreEqual(1, save.OnboardingFlags.Count, "normal buyers gain no recovery flag");
+            Assert.AreEqual(1, purchases.Count);
+            Assert.AreEqual(license.Price, purchases[0].PricePaid);
+        }
+
+        [TestCase(25)]
+        [TestCase(26)]
+        public void OlderLicensedSave_IsUnchangedByBrowsingBuyingOrTheGrant(int version)
+        {
+            var old = new SaveData { SchemaVersion = version, Money = 37 };
+            old.OwnedLicenses.Add("license.clam");
+            old.OnboardingFlags.Add(new SaveFlag(FrontedFeeGrant.DefaultGrantKey, true));
+            old.OnboardingFlags.Add(new SaveFlag("met_ginny", true));
+            var loaded = SaveSerialization.FromJson(SaveSerialization.ToJson(old));
+            string before = SaveSerialization.ToJson(loaded);
+            var saver = new FlagSaveService(loaded);
+            var wallet = new FakeWallet(loaded.Money);
+            GameServices.Save = saver;
+            GameServices.Wallet = wallet;
+            var licenses = RestoreLicenses();
+            var license = MakeRecoverableLicense();
+            var vendor = RecoveryVendor(license, wallet);
+            var purchases = new List<LicensePurchased>();
+            EventBus.Subscribe<LicensePurchased>(purchases.Add);
+            var row = LicenceRow(vendor, license, wallet.Money, loaded, licenses);
+            Assert.IsTrue(row.Quote.Owned);
+            Assert.AreEqual("", row.Note);
+            Assert.IsFalse(BuyCatalog.Confirm(row));
+            Assert.IsFalse(vendor.TryBuy());
+            Assert.AreEqual(0, MakeGrant(MakeConfig(), FrontedFeeGrant.DefaultGrantKey).GrantOnce());
+            Assert.AreEqual(37, wallet.Money);
+            Assert.AreEqual(0, wallet.Credits);
+            Assert.AreEqual(0, saver.Writes.Count);
+            Assert.AreEqual(0, purchases.Count);
+            Assert.AreEqual(before, SaveSerialization.ToJson(loaded));
+        }
+
+        [TestCase("no_grant")]
+        [TestCase("false_grant")]
+        [TestCase("used")]
+        [TestCase("wrong_seller")]
+        [TestCase("no_save")]
+        [TestCase("no_licences")]
+        [TestCase("unconfigured")]
+        [TestCase("no_used_flag")]
+        [TestCase("same_flags")]
+        public void Recovery_RequiresTheRecordedGrantAndItsAuthoredCounter(string missing)
+        {
+            var save = SaveMigration.NewGame();
+            if (missing != "no_grant")
+                save.OnboardingFlags.Add(new SaveFlag(FrontedFeeGrant.DefaultGrantKey, missing != "false_grant"));
+            if (missing == "used") save.OnboardingFlags.Add(new SaveFlag(RecoveryUsed, true));
+            var saver = new FlagSaveService(save);
+            var wallet = new FakeWallet(4);
+            GameServices.Save = missing == "no_save" ? null : saver;
+            GameServices.Wallet = wallet;
+            var licenses = missing == "no_licences" ? null : RestoreLicenses();
+            var license = MakeRecoverableLicense();
+            if (missing == "unconfigured") license.FeeRecoveryGrantFlag = "";
+            if (missing == "no_used_flag") license.FeeRecoveryUsedFlag = "";
+            if (missing == "same_flags") license.FeeRecoveryUsedFlag = license.FeeRecoveryGrantFlag;
+            var vendor = RecoveryVendor(license, wallet, missing == "wrong_seller" ? "seller.other" : RecoverySeller);
+            string before = SaveSerialization.ToJson(save);
+            var row = LicenceRow(vendor, license, 4, GameServices.Save?.Current, licenses);
+            Assert.IsFalse(row.Quote.CanBuy);
+            Assert.AreEqual(15, row.Quote.Price);
+            Assert.AreEqual("", row.Note);
+            Assert.IsFalse(vendor.TryBuy());
+            Assert.AreEqual(4, wallet.Money);
+            Assert.AreEqual(0, wallet.Credits);
+            Assert.AreEqual(0, saver.Writes.Count);
+            Assert.AreEqual(before, SaveSerialization.ToJson(save));
+        }
+
+        [Test]
+        public void RefusedSpend_LeavesRecoveryAvailable_AndReentrantCounterCannotClaimItTwice()
+        {
+            var save = SaveMigration.NewGame();
+            save.OnboardingFlags.Add(new SaveFlag(FrontedFeeGrant.DefaultGrantKey, true));
+            var saver = new FlagSaveService(save);
+            var wallet = new FakeWallet(4) { RefuseSpend = true };
+            GameServices.Save = saver;
+            GameServices.Wallet = wallet;
+            var licenses = RestoreLicenses();
+            var license = MakeRecoverableLicense();
+            var vendor = RecoveryVendor(license, wallet);
+            Assert.IsFalse(vendor.TryBuy());
+            Assert.IsFalse(saver.GetFlag(RecoveryUsed));
+            Assert.IsFalse(licenses.IsLicensed(license.Id));
+            Assert.AreEqual(4, wallet.Money);
+
+            var otherCounter = RecoveryVendor(license, wallet);
+            int nestedCalls = 0;
+            wallet.RefuseSpend = false;
+            wallet.OnSpend = () => { nestedCalls++; Assert.IsFalse(otherCounter.TryBuy()); };
+            var purchases = new List<LicensePurchased>();
+            EventBus.Subscribe<LicensePurchased>(purchases.Add);
+            Assert.IsTrue(vendor.TryBuy());
+            Assert.AreEqual(1, nestedCalls);
+            Assert.AreEqual(1, purchases.Count);
+            Assert.AreEqual(4, purchases[0].PricePaid);
+            Assert.AreEqual(0, wallet.Money);
+            Assert.IsTrue(saver.GetFlag(RecoveryUsed));
+        }
+
+        [Test]
+        public void Recovery_ReplaysIdenticallyFromTheSameSavedSeedTimeAndFlags()
+        {
+            var start = SaveMigration.NewGame();
+            start.WorldSeed = 481;
+            start.GameTimeSeconds = 23456;
+            start.Money = 7;
+            start.OnboardingFlags.Add(new SaveFlag(FrontedFeeGrant.DefaultGrantKey, true));
+            string input = SaveSerialization.ToJson(start);
+            string first = null;
+            for (int run = 0; run < 2; run++)
+            {
+                var saver = new FlagSaveService(SaveSerialization.FromJson(input));
+                var wallet = new FakeWallet(saver.Current.Money);
+                GameServices.Save = saver;
+                GameServices.Wallet = wallet;
+                RestoreLicenses();
+                var license = MakeRecoverableLicense();
+                var vendor = RecoveryVendor(license, wallet);
+                var purchases = new List<LicensePurchased>();
+                EventBus.Subscribe<LicensePurchased>(purchases.Add);
+                Assert.IsTrue(vendor.TryBuy());
+                Assert.AreEqual(1, saver.Writes.Count);
+                Assert.AreEqual(1, purchases.Count);
+                Assert.AreEqual(7, purchases[0].PricePaid);
+                Assert.AreEqual(481, saver.Current.WorldSeed);
+                Assert.AreEqual(23456, saver.Current.GameTimeSeconds);
+                if (first == null) first = saver.Writes[0];
+                else Assert.AreEqual(first, saver.Writes[0]);
+                EventBus.Unsubscribe<LicensePurchased>(purchases.Add);
+            }
+        }
+
+        [TestCase(0)]
+        [TestCase(8)]
+        [TestCase(20)]
+        public void ChangedPurse_RequiresARefreshedContributionBeforeConfirm(int moneyNow)
+        {
+            var save = SaveMigration.NewGame();
+            save.OnboardingFlags.Add(new SaveFlag(FrontedFeeGrant.DefaultGrantKey, true));
+            var saver = new FlagSaveService(save);
+            var wallet = new FakeWallet(4);
+            GameServices.Save = saver;
+            GameServices.Wallet = wallet;
+            var licenses = RestoreLicenses();
+            var license = MakeRecoverableLicense();
+            var vendor = RecoveryVendor(license, wallet);
+            var stale = LicenceRow(vendor, license, wallet.Money, save, licenses);
+            Assert.AreEqual(4, stale.Quote.Price);
+            if (moneyNow < wallet.Money) Assert.IsTrue(wallet.TrySpend(wallet.Money - moneyNow));
+            else wallet.Add(moneyNow - wallet.Money);
+
+            Assert.IsFalse(BuyCatalog.Confirm(stale), "never silently charge a different contribution");
+            Assert.AreEqual(moneyNow, wallet.Money);
+            Assert.IsFalse(licenses.IsLicensed(license.Id));
+            Assert.AreEqual(0, saver.Writes.Count);
+
+            var fresh = LicenceRow(vendor, license, wallet.Money, save, licenses);
+            Assert.AreEqual(System.Math.Min(moneyNow, license.Price), fresh.Quote.Price);
+            Assert.IsTrue(BuyCatalog.Confirm(fresh));
+            Assert.AreEqual(System.Math.Max(0, moneyNow - license.Price), wallet.Money);
         }
 
         // =====================================================================================

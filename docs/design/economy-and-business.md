@@ -523,6 +523,46 @@ module refs):
 > Economy provides the components + data; the **builders are re-run by those lanes next wave** to surface
 > the vendors/clam spots. The full M2 proficiency/reputation licence tower stays deferred.
 
+#### First shellfish licence: proposed recovery (2026-11-24)
+
+**PROPOSAL, nobody has accepted this.** The current opening fronts 20 coins once and the
+shellfish licence costs 15. The player can spend the whole grant before signing at the store,
+leaving him unable to keep the clams that would earn the fee. Keep the existing grant, price,
+counter and signing action. If he cannot afford that first licence, Ginny covers the shortfall
+directly at the counter; he pays his remaining coins. No replacement coins enter his purse.
+
+The shellfish `LicenseDef` authors the required grant flag, the recovery-used flag, the seller
+and the short explanation. The existing book shows his actual contribution and Ginny's words
+only for an eligible recovery. Her opening conversation and ordinary licence descriptions stay
+unchanged. The vendor checks the live quote again; if his purse changed since the book quoted
+it, he must refresh the quote before paying.
+
+`ginny_fronted_clam_fee` remains the original grant record. Recovery writes
+`ginny_clam_fee_recovered` in the existing flag list, together with the held licence and purse
+through deferred save writes. Save version 26 and its fields are unchanged. The used flag is
+reserved before the wallet signals a spend, so another counter cannot redeem the same recovery
+inside that signal. A refused spend leaves recovery available. Licence ownership prevents
+repeat buying, including after reload. Existing licensed saves, and players buying normally,
+receive no recovery flag, rebate or new words. An older stranded save with the original grant
+flag can recover when the player confirms at the counter; merely loading or browsing grants
+nothing. No sale-history requirement is invented: this is a one-time right to the first
+shellfish licence, not repeat income support.
+
+Alternatives considered:
+
+- Pay for every first licence in advance: removes the overspending incentive entirely, but changes
+  the normal opening purse/payment and Ginny's existing instructions for everyone.
+- Issue the licence on account, repaid from the first sale: preserves an earned repayment, but needs
+  a debt amount, sale deductions and a decision about partial or refused sales. No debt system is
+  introduced here, and the existing spoken repayment promise remains unenforced.
+- Give one more cash top-up: can be spent elsewhere again, so it does not guarantee recovery;
+  unlimited top-ups would create repeat income.
+
+The tradeoff for review is a bounded subsidy of up to the licence price (currently 15): deliberate
+overspending can keep more purchased goods than buying the licence first. Lean toward accepting
+that one-time cost to preserve the existing opening while removing its dead end. If that incentive
+is unacceptable, prefer the prepaid licence instead of adding debt collection to this slice.
+
 ### 9.1b Pots are bought, not conjured (owner green-light 2026-07-15)
 
 The trap loop's first real **P2/P4 money turn**: lobster/crab pots are **owned, finite, counted

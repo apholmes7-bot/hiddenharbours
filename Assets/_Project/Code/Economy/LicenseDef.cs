@@ -36,6 +36,16 @@ namespace HiddenHarbours.Economy
                  "in code).")]
         public int Price = 120;
 
+        [Header("First licence fee recovery")]
+        [Tooltip("Existing saved grant flag required for the seller to cover a shortfall. Empty disables recovery.")]
+        public string FeeRecoveryGrantFlag = "";
+        [Tooltip("Saved flag recording that this licence's shortfall was covered once.")]
+        public string FeeRecoveryUsedFlag = "";
+        [Tooltip("Only this seller may cover the shortfall; the player pays his remaining coins.")]
+        public string FeeRecoverySellerId = "";
+        [Tooltip("Shown in the book only when the seller is covering a shortfall.")]
+        [TextArea] public string FeeRecoveryNote = "";
+
         [Header("What it permits (the runtime catch gate)")]
         [Tooltip("Stable FishSpeciesDef ids this licence legally unlocks (e.g. \"fish.atlantic_cod\"). " +
                  "This list IS the gate: a species listed here is released at the landing (rod, dig or " +
