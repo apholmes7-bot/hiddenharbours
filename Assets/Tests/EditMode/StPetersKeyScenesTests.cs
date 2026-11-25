@@ -652,6 +652,9 @@ namespace HiddenHarbours.Tests.EditMode
             return sb.ToString();
         }
 
+        /// <summary>The slip dory's prefab instance, the root mend and launch adds after the open-air fixtures.</summary>
+        const long SlipDoryInstance = 1946273810L;
+
         /// <summary>The step re-adds its root LAST: SceneRoots must be the committed list with only the key
         /// root moved from index 53 to the end, every other root in its committed order, nothing else changed.</summary>
         static void AssertOnlyTheKeyRootMovesToTheEnd(string committed, string rebuilt)
@@ -665,12 +668,14 @@ namespace HiddenHarbours.Tests.EditMode
             // E2 ruling 8 and PR 5p: three retired roots leave the key root at index 53.
             Assert.AreEqual(53, before.IndexOf(key), "the key root's index in the committed SceneRoots");
             // E2 ruling 8, D1/D5 and Amendment 1 point 5: commons then lights; PR 5p field; then the open-air
-            // fixtures root the interior-fixtures step adds for the camper's shore power lead (storage, owner 11-17).
-            CollectionAssert.AreEqual(new[] { 1757780506L, 866884044L, 910510002L, 1709556905L }, before.Skip(54).ToArray(),
+            // fixtures root the interior-fixtures step adds for the camper's shore power lead (storage, owner 11-17);
+            // then the slip dory's prefab instance (mend and launch Basil's dory).
+            CollectionAssert.AreEqual(new[] { 1757780506L, 866884044L, 910510002L, 1709556905L, SlipDoryInstance }, before.Skip(54).ToArray(),
                                       "the committed roots after the key root");
             Assert.AreEqual(1757780506L, c.TransformOf(c.RootGameObject(StPetersVillageDressing.CommonsRoot)));
             Assert.AreEqual(866884044L, c.TransformOf(c.RootGameObject(StPetersVillageLights.RootName)));
             Assert.AreEqual(1709556905L, c.TransformOf(c.RootGameObject(InteriorFixturePlacement.StPetersOpenAirRootName)));
+            Assert.AreEqual(1001, c.ClassOf(SlipDoryInstance), "the slip dory root is a prefab instance");
             // E2 ruling 8 (case 11): re-added by the step, only the key root moves, to the end.
             CollectionAssert.AreEqual(before.Where(id => id != key).Append(key).ToArray(), after,
                                       "the step's SceneRoots against the committed list with its root moved last");
