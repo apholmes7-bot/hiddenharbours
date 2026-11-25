@@ -19,6 +19,8 @@ MonoBehaviour:
   FavorsSpeciesIds:
   - fish.haddock
   - fish.atlantic_cod
+  - fish.winter_flounder
+  - fish.striped_bass
   Catalog:
     Listed: 0
     Section: 5

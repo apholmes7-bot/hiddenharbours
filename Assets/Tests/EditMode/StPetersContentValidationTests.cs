@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -152,7 +153,7 @@ namespace HiddenHarbours.Tests.EditMode
                 "ice must exist — it is what makes cold carriable away from Ginny's freezer (§7.3)");
         }
 
-        // ---- bait (prices and lot sizes) -------------------------------------------------------
+        // ---- bait (prices, lot sizes and seasonal preferences) ---------------------------------
 
         [Test]
         public void Baits_SellInSaneLots_AndCapelinCarriesTheRepricedValue()
@@ -173,6 +174,95 @@ namespace HiddenHarbours.Tests.EditMode
                 "capelin is repriced to 2₲ (m1-progression-pacing §7.4's own recommendation, landed with " +
                 "the §7.5 store pass): at 5₲ it was half a 10₲ mackerel, which put two shipped species " +
                 "over the bait-share ceiling before a single miss");
+        }
+
+        private static readonly string[] IslandHookBaitIds =
+        {
+            "bait.capelin", "bait.sea_worm", "bait.squid_strip", "bait.shucked_clam"
+        };
+
+        private static List<BaitDef> IslandHookBaits()
+        {
+            var baits = LoadAll<BaitDef>().Where(b => IslandHookBaitIds.Contains(b.Id)).ToList();
+            var missing = IslandHookBaitIds.Except(baits.Select(b => b.Id)).ToArray();
+            if (missing.Length != 0)
+                Assert.Ignore("Waiting for the four hook baits used by #1573; absent bait ids: " +
+                              string.Join(", ", missing));
+            Assert.That(baits.Select(b => b.Id), Is.Unique, "hook bait ids must resolve exactly once");
+            return baits;
+        }
+
+        private static List<FishSpeciesDef> IslandRodFishIn(Season season)
+        {
+            var fish = LoadAll<FishSpeciesDef>().Where(f => f.RegionIds != null &&
+                f.RegionIds.Contains("region.st_peters") && f.GearAllowed(Gear.Handline)).ToList();
+            CollectionAssert.IsSubsetOf(new[]
+            {
+                "fish.atlantic_cod", "fish.mackerel", "fish.rainbow_smelt",
+                "fish.striped_bass", "fish.winter_flounder"
+            }, fish.Select(f => f.Id).ToArray(), "the first-week rod species must remain in island data");
+            foreach (var f in fish)
+                Assert.That(f.Seasons, Is.Not.EqualTo((SeasonMask)0), f.Id + " has no catchable season");
+            var inSeason = fish.Where(f => f.SeasonAllowed(season)).ToList();
+            Assert.IsNotEmpty(inSeason, season + ": the bait check must cover real island fish");
+            return inSeason;
+        }
+
+        [TestCase(Season.EarlySpring)]
+        [TestCase(Season.HighSummer)]
+        [TestCase(Season.TheTurn)]
+        [TestCase(Season.HardWinter)]
+        public void IslandRodFish_EachSeasonHasAPreferredHookBait(Season season)
+        {
+            var baits = IslandHookBaits();
+            foreach (var fish in IslandRodFishIn(season))
+                Assert.That(baits.Where(b => b.FavorsSpeciesIds != null && b.FavorsSpeciesIds.Contains(fish.Id)),
+                    Is.Not.Empty, fish.Id + " in " + season + " has no preference among the four hook baits");
+        }
+
+        [TestCase(Season.EarlySpring)]
+        [TestCase(Season.HighSummer)]
+        [TestCase(Season.TheTurn)]
+        [TestCase(Season.HardWinter)]
+        public void IslandRodFish_EachSeasonHasAStockedPreferredHookBait(Season season)
+        {
+            var baits = IslandHookBaits();
+            var shelves = LoadAll<IslandStoreShelvesDef>().Single(s => s.ShopId == "shop.st_peters_general");
+            var additions = baits.Where(b => b.Id != "bait.capelin").ToList();
+            bool hasAddedShelfIds = shelves.Lines.Any(l => l.CounterListingIds != null &&
+                additions.Any(b => l.CounterListingIds.Contains(b.Id)));
+            if (!hasAddedShelfIds && additions.All(b => !b.Catalog.Listed))
+                Assert.Ignore("Waiting for #1573: bait.sea_worm, bait.squid_strip and bait.shucked_clam " +
+                              "are unlisted and absent from the St Peters shelf lines. Preferences are " +
+                              "checked separately; stocked coverage has not run.");
+
+            // Once any addition is listed or shelved, incomplete integration must fail, not skip.
+            var stocked = new List<BaitDef>();
+            var lineIds = new HashSet<string>();
+            Assert.IsNotNull(shelves.Ledger, "the island bait shelf needs a back room");
+            foreach (var bait in baits)
+            {
+                Assert.IsTrue(bait.Catalog.Listed, bait.Id + " is not listed for sale");
+                CollectionAssert.Contains(bait.Catalog.Sellers, shelves.SellerId, bait.Id + " has no island seller");
+                var lines = shelves.Lines.Where(l => l.CounterListingIds != null &&
+                    l.CounterListingIds.Contains(bait.Id)).ToList();
+                Assert.That(lines.Count, Is.EqualTo(1), bait.Id + " needs exactly one stock line");
+                var line = lines[0];
+                Assert.IsTrue(lineIds.Add(line.Id), bait.Id + " shares another hook bait's stock line");
+                Assert.IsTrue(line.SoldAtShelf, bait.Id + " cannot be bought at the shelf");
+                Assert.That(line.MaxOnShelf, Is.GreaterThan(0), bait.Id + " has no shelf capacity");
+                Assert.That(line.UnitsPerItem, Is.GreaterThan(0), bait.Id + " has no stock units");
+                Assert.IsNotNull(line.Good, bait.Id + " has no supply good");
+                CollectionAssert.Contains(shelves.Ledger.Goods, line.Good, bait.Id + " has no back-room supply");
+                Assert.That(line.Good.DailyUnits, Is.GreaterThan(0), bait.Id + " has no replenishment");
+                if (season == Season.HardWinter)
+                    Assert.That(line.Good.WinterMultiplier, Is.GreaterThan(0), bait.Id + " has no winter supply");
+                stocked.Add(bait);
+            }
+
+            foreach (var fish in IslandRodFishIn(season))
+                Assert.That(stocked.Where(b => b.FavorsSpeciesIds != null && b.FavorsSpeciesIds.Contains(fish.Id)),
+                    Is.Not.Empty, fish.Id + " in " + season + " has no stocked preferred hook bait");
         }
 
         // ---- gear offers ----------------------------------------------------------------------
