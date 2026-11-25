@@ -26,6 +26,7 @@ MonoBehaviour:
     UnitsPerItem: 1.25
     MaxOnShelf: 4
     ShareOfGood: 0.1
+    ReservedForSales: 1
     CounterListingIds:
     - gear.rod
     SoldAtShelf: 0

@@ -31,6 +31,10 @@ namespace HiddenHarbours.Economy
         /// line by its share; a purchase draws only from its own line.</summary>
         [Range(0f, 1f)] public float ShareOfGood;
 
+        /// <summary>A booked reserve sold only by explicit purchases. Overnight use does not consume it;
+        /// a delivery fills its shortfall by the fraction of the back room's order that arrived.</summary>
+        public bool ReservedForSales;
+
         /// <summary>The counter's listings (<c>supply.bread</c>, <c>bait.capelin</c>) that come off this shelf:
         /// buying one takes one item, and none can be bought while the shelf is empty. A listing named on no
         /// line is not counted (gear, licences). Empty for a shelf the counter does not sell from.</summary>

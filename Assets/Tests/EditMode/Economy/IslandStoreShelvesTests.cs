@@ -236,6 +236,49 @@ namespace HiddenHarbours.Tests.Economy
 
         // ---- bounds and validation -----------------------------------------------------------------------
 
+        [TestCase(0.0, 0)]
+        [TestCase(12.0, 2)]
+        [TestCase(1000.0, 4)]
+        public void AReservedLineReceivesOnlyTheDeliveredFractionOfItsBookedShortfall(double capacity, int restored)
+        {
+            // Target 40, reserve 4. Four sold plus two days' use = 24 wanted on day 2.
+            // The day 0 run delivers nothing because the room starts full.
+            var good = Good("islandgood.test_rods", 10f, 10f, 10f, 0f);
+            var ledger = new IslandStoreLedger(new[] { good }, new MassVolume(capacity, capacity),
+                2, 4, Lookback, _ => true);
+            var shelves = new IslandStoreShelves("shop.test_store", ledger, new[]
+            {
+                new IslandShelfLine { Id = "line.test_rods", Good = good, UnitsPerItem = 1f,
+                    MaxOnShelf = 4, ShareOfGood = 0.1f, ReservedForSales = true },
+            }, SecondsPerDay, Opens, Closes);
+            for (int i = 0; i < 4; i++) Assert.IsTrue(shelves.TryTakeOne("line.test_rods", At(0, Opens)));
+            Assert.That(shelves.CountAt("line.test_rods", At(0, Closes)), Is.EqualTo(0));
+            Assert.That(shelves.CountAt("line.test_rods", At(1, Opens)), Is.EqualTo(0));
+            Assert.That(shelves.CountAt("line.test_rods", At(2, Opens)), Is.EqualTo(restored));
+            Assert.That(shelves.CountAt("line.test_rods", At(2, Closes)), Is.EqualTo(restored));
+            Assert.That(shelves.CountAt("line.test_rods", At(3, Opens)), Is.EqualTo(restored));
+        }
+
+        [Test]
+        public void TwoBuyersShareTheReservedCount_AndARepeatedDeliveryReadCannotOverfillIt()
+        {
+            var lines = Lines();
+            lines[0].ReservedForSales = true;
+            var shelves = new IslandStoreShelves("shop.test_store", Ledger(Always), lines, SecondsPerDay, Opens, Closes);
+            Assert.IsTrue(shelves.TryTakeOne(Gas, At(0, Opens)));
+            Assert.IsTrue(shelves.TryTakeOne(Gas, At(0, Opens)));
+            Assert.That(shelves.CountAt(Gas, At(1, Opens)), Is.EqualTo(2));
+            for (int i = 0; i < 3; i++)
+            {
+                shelves.SlowTick(At(2, Opens));
+                Assert.That(shelves.CountAt(Gas, At(2, Opens)), Is.EqualTo(4));
+            }
+            Assert.IsTrue(shelves.TryTakeOne(Gas, At(2, 12)));
+            Assert.That(shelves.CountAt(Gas, At(2, Opens)), Is.EqualTo(4));
+            Assert.That(shelves.CountAt(Gas, At(2, Closes)), Is.EqualTo(3));
+            Assert.That(shelves.CountAt(Gas, At(3, Opens)), Is.EqualTo(3));
+        }
+
         [Test]
         public void CountsStayWithinTheShelf_AndBadAsksAreRefused()
         {

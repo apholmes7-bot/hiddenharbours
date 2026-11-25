@@ -116,11 +116,6 @@ given as an offset from the room's pivot, standing on one **shelf line** (the co
 A line is marked `SoldAtShelf` in the shelves data. Every listing on such a line must have exactly one
 slot, and every slot's listing must come off its own line; a content test holds both ways.
 
-**Counted first-rod proposal:** [first-rod-and-bait.md](first-rod-and-bait.md) audits the acquisition
-paths and the seven occupied slots. It adds a four-rod line to the island shelves but keeps that line
-in the counter book until a physical purchase place exists. Capelin remains a ten-unit, 20-coin box.
-Neither physical delivery nor the removal of free rod/bait acquisition is included in that fallback.
-
 ### 2.3 Every good is counted on its own
 
 The owner's ruling: all items are separate, so bread can run out before beans. The island supply run

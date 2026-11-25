@@ -159,14 +159,22 @@ namespace HiddenHarbours.Economy
         /// inputs: calling it for any days in any order gives the same answers.
         /// </summary>
         public IslandStoreDay Settle(int day)
+            => Replay(day, Math.Max(0, day - LookbackDays), null);
+
+        // A booked reserve must replay from its oldest purchase, even across a long blocked crossing.
+        // The callback observes each day's actual delivery before the next day's results overwrite it.
+        internal IslandStoreDay Replay(int day, int start, Action<int> afterDay)
         {
             if (day < 0) day = 0;
-            int start = Math.Max(0, day - LookbackDays);
             int n = _goods.Length;
             for (int i = 0; i < n; i++) _level[i] = Target(i, start);
 
             bool run = false;
-            for (int t = start; t <= day; t++) run = Step(t);
+            for (int t = start; t <= day; t++)
+            {
+                run = Step(t);
+                afterDay?.Invoke(t);
+            }
 
             double dKg = 0.0, dL = 0.0, sKg = 0.0, sL = 0.0;
             for (int i = 0; i < n; i++)

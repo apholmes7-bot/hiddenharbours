@@ -75,6 +75,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(rod.MaxOnShelf, Is.EqualTo(4));
             Assert.That(rod.UnitsPerItem, Is.EqualTo(1.25f));
             Assert.That(rod.ShareOfGood, Is.EqualTo(0.1f));
+            Assert.IsTrue(rod.ReservedForSales, "rod stock changes only on a sale or delivery");
             Assert.That(rod.Good.Id, Is.EqualTo("islandgood.hardware"));
             Assert.That(bait.Good, Is.Not.SameAs(rod.Good));
             Assert.IsFalse(rod.SoldAtShelf, "a listing without a purchase slot must remain reachable in the book");
