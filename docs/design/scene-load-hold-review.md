@@ -9,7 +9,7 @@ hold at all.
 
 **PROPOSAL, nobody has accepted this.** This review changes no production code,
 cap, configuration, scene or appearance. Baseline:
-`c626cea10d1cb496df41cca2f9ab2f580ad47b28`. No local Unity session, compiler,
+`d46bde303e6aa256d23d47a05ede5d7d6f38e51e`. No local editor session, compiler,
 PlayMode run, slow-machine timing or native-deadlock reproduction was performed.
 
 ## What it actually guarantees
@@ -73,14 +73,16 @@ measured playthrough or a proposal to change a fade.
 |---|---|
 | `World/RegionSceneLoader.cs:142-148`, `StartAdditiveLoad` | The single production load start calls `SceneManager.LoadSceneAsync` first, then holds only inside `#if UNITY_EDITOR`. Both `Travel` (line 108) and `Preload` (196) use it. Neither consumes the outcome; they wait for engine completion to activate the destination or park the warmed scene. Revisited scenes and a travel request joining an existing preload do not start another hold. |
 | `App/RegionTravelCoordinator.cs:737-751`, `ReleaseWarmNeighbours` | Issues an unload separately, then calls conditional `Track`. Unloads need frames and are never held. A still-loading neighbour is left to complete; destroying its requester is not cancellation. |
-| `Tests/Support/SceneSettle.cs:161-174`, `StartLoad` / `StartLoadInPlayMode` | Both test load starts enter the helper's local wrapper, which calls the shared hold at this base. Test loads therefore share its timeout budget with game-initiated region loads. |
-| `Tests/Support/SceneSettle.cs:179-197`, both `Unload` overloads | Yield the existing drain frames, issue unload separately, track it, then yield its completion. They do not hold the main thread. |
+| `Tests/Support/SceneSettle.cs`, `StartLoad` / `StartLoadInPlayMode` | Both enter a local test wrapper with its own 40-second cap and three-timeout budget, sharing only the tracking and pure WaitForRead seam with Core. The coroutine Load wrappers first wait for tracked operations to drain. Direct StartLoad callers can still encounter the queue/budget refusal paths. |
+| `Tests/Support/SceneSettle.cs`, both `Unload` overloads | Yield the existing drain frames, wait for tracked operations within 60 seconds, issue and track the unload, then await its completion within 120 seconds. Neither frame-yielding wait holds the main thread. |
 | `SceneLoadHold.cs:123-125,134-158` | The convenience overload forwards to the outcome overload; both refusal and post-wait paths track unfinished operations. `ShouldHold` and `WaitForRead` are the existing plain policy/wait seams. |
 | `Tests/EditMode/World/SceneLoadHoldTests.cs` | Direct pure calls cover grant, queue/budget refusal and bounded waiting; reflection/source checks pin the player-build exclusion and prevent issuing a scene operation inside conditional `Track`. |
 
-The caller search covered all C# under `Assets/`. `SceneSettle` also exposes the
-shared cap, threshold and counters; those are read-only forwarding properties,
-not additional load starts. Paths in this table are relative to
+The caller search covered all C# under `Assets/`. `SceneSettle` exposes the Core
+cap, threshold and counters as read-only forwards, while its separate test hold
+uses `TestHoldSeconds`, `MaxTestHoldTimeouts`, `TestHeldLoads` and
+`TestHoldTimeouts`. Both budgets reset at subsystem registration, independently.
+Neither counter group is another load start. Paths in this table are relative to
 `Assets/_Project/Code/`, except paths beginning `Tests/`, which are under `Assets/`.
 
 ## Relation to the existing freeze work
@@ -92,15 +94,19 @@ caused a particular hang, nor that the cap itself froze the editor. The identifi
 asset-notifier cycle is editor-specific; this review does not infer a matching
 standalone-player deadlock.
 
-PR 1513 owns `SceneSettle`, `SceneSettlePlayTests` and
-`SunCastersEverywherePlayTests`. Its diff was read and none of those files is
-changed here. It adds pending-operation waits before test loads/unloads, a separate
+PR 1513 is merged as `b89c49c373` on this base. Its `SceneSettle`,
+`SceneSettlePlayTests` and `SunCastersEverywherePlayTests` implementations are
+unchanged here. It supplies pending-operation waits before test loads/unloads, a separate
 **40 s** test read hold with **three** test timeouts, and named completion failures
 at **60 s** for pending operations / **120 s** for an issued operation. It also
-drains tracked work before the implicated caster teardown. These are proposed
-test-side limits, not changes to the game's 10 s hold. Its direct StartLoad paths
+drains tracked work before the implicated caster teardown. These are installed
+test-side limits, separate from the game's 10 s hold. Its direct StartLoad paths
 can still refuse a hold, and its own timeout path still permits frames; it does not
 establish a universal native deadlock guarantee.
+
+Main still does not drain pending operations inside `DestroyAndSettle` itself.
+The additional destruction boundary in open PR 1488 remains separate from this
+baseline. The pure Core boundary cases here do not duplicate that PlayMode work.
 
 ## Constants versus policy data
 
@@ -111,7 +117,7 @@ establish a universal native deadlock guarantee.
 | `ReadDoneProgress = 0.9f` | Core code constant | Keep fixed in code: this is the engine activation/read threshold, not a balance dial. |
 | `Thread.Sleep(1)` | Literal milliseconds | Name as a scheduling constant if implementation is revisited; do not expose an owner-facing gameplay setting without evidence that polling cadence needs tuning. It cannot guarantee a 1 ms wake-up. |
 | Fade out 0.15 s, fade in 0.2 s, max-black 1.5 s | Already `GameConfig` defaults and asset values | Keep existing settings; they are separate presentation policy and do not bound Arriving. |
-| PR 1513 test limits | Test-harness constants | Keep in the test harness and under its watchdog contract, not in shipped balance data. |
+| Installed test limits: 40 s read, three timeouts, 60 s pending, 120 s completion | Test-harness constants from PR 1513 | Keep in the test harness and under its watchdog contract, not in shipped balance data. |
 
 `GameConfig` is also owned by open work. This review proposes configuration
 ownership only; it introduces no field and changes no current value.
@@ -130,8 +136,8 @@ ownership only; it introduces no field and changes no current value.
    unfinished work, register every owned operation, and defer known destructive
    cleanup until tracked reads have drained. On a diagnostic deadline, fail or
    stop the requested transition before proceeding with unsafe cleanup. This is
-   the direction to investigate alongside PR 1513, while retaining its test-side
-   ownership. Cost: queue/lifetime plumbing across travel and teardown, reduced
+   the direction to investigate building on the merged test-side waits, while
+   keeping production lifecycle changes separate. Cost: queue/lifetime plumbing across travel and teardown, reduced
    overlap, explicit pending/failure handling and integration tests. It still
    needs native evidence: uncontrolled engine/import work and already-queued
    destruction may lie outside that coordinator. An issued AsyncOperation has no
@@ -162,8 +168,9 @@ negative-cap handling, budget exhaustion and editor-only call placement.
 Added cases pin threshold completion exactly at the cap, scheduler overshoot,
 zero-cap progress boundaries, no clock access for a completed read, no budget
 refund after queue drain, and null-operation bookkeeping. They perform no sleep
-and launch no load. CI must compile and execute the suite and report its executed
-count; the additions are not local execution evidence.
+and launch no load. The previous head passed automated run 45323484580. The
+merged head still needs its own execution of all 18 declared cases; source counts
+and the previous result are not proof of the updated head.
 
 Actual operation completion/counter lifetimes, activation, sustained slow reads,
 the complete suite prefix and the native lock-holder stacks still need the owned

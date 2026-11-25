@@ -114,6 +114,7 @@ Shader "HiddenHarbours/FlowerWind"
     {
         Tags { "RenderType"="Transparent" "Queue"="Transparent" "RenderPipeline"="UniversalPipeline" "IgnoreProjector"="True" }
         Blend SrcAlpha OneMinusSrcAlpha
+        ColorMask RGB   // The calm mirror: ground cover leaves the alpha class under it alone
         Cull Off
         ZWrite Off
 

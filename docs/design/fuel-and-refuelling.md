@@ -189,9 +189,13 @@ P4 beat and already has a hook (stamina is spent on the manual bilge pump and fi
 (b) **where the shipwright's yard lives instead**, since boat purchase and upgrades for the whole
 rest of the game hang off it (`Data/Shipwright/` is built and shipping today).
 
-**The opening, end to end, as it now stands:** dig clams at St Peters → cross the bar on foot →
+**The opening, end to end, as it stood on 2026-07-25:** dig clams at St Peters → cross the bar on foot →
 find the damaged dory at the Nine Mile Creek wharf → earn her, buy her, put her right → **row**
 her home to St Peters → Aunt Ginny hands over Ned's old motor → your first errand is buying gas.
+
+> **Amended 2026-11-23 (canon §5.8, ADR 0062):** the first dory is now bought on St Peters from Basil
+> Samson and mended there by hand, and the first week is island-only; the bar opens at the island gate.
+> Where the motor and the first gas errand fall in that order is not re-decided here.
 
 ---
 

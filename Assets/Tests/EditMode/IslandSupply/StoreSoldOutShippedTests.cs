@@ -76,7 +76,8 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(slot.Id, Does.Match("^slot\\.[a-z0-9_]+$"), slot.Id);
                 Assert.IsTrue(ids.Add(slot.Id), "duplicate slot " + slot.Id);
                 Assert.IsTrue(lines.Contains(slot.LineId), slot.Id + " stands on " + slot.LineId + ", which the shelves do not hold");
-                Assert.IsTrue(onLine.Add(slot.LineId), "two cards for " + slot.LineId);
+                // A line may have several slots (one per good bought at the shelf), but only one card.
+                if (!slot.HideSoldOutCard) Assert.IsTrue(onLine.Add(slot.LineId), "two cards for " + slot.LineId);
             }
         }
 
