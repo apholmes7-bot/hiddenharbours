@@ -60367,6 +60367,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1175454506}
   - component: {fileID: 1175454507}
+  - component: {fileID: 1175454508}
   m_Layer: 0
   m_Name: Fitting_ladder
   m_TagString: Untagged
@@ -60415,7 +60416,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 47326f29b3c09a7418b085a535c77803, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -60438,17 +60439,35 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 2
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 159253323, guid: 1296edfe2a78aeb4182e57d0a78e122c, type: 3}
+  m_Sprite: {fileID: 6578884898650929053, guid: ccb1f4a510a826b44a941af26a00fd99, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.28125, y: 0.625}
+  m_Size: {x: 0.8125, y: 6.71875}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!114 &1175454508
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1175454505}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1fd79b9327744fa94aed39ce3d77e99, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.TidalFaceWaterline
+  _lipWorldY: 2.533452
+  _lipElevation: 5.354004
+  _ridesTheTide: 1
+  _configured: 1
+  _heightTexture: {fileID: 2800000, guid: 4f4d144dc280ecf4e9c80314746ef254, type: 3}
+  _heightDecode: {x: -8.116644, y: 8.116644, z: -5.354004}
 --- !u!1 &1190636137
 GameObject:
   m_ObjectHideFlags: 0
@@ -132562,6 +132581,8 @@ MonoBehaviour:
   _faceHeadingDegrees: 180
   _rungMetres: 0.3
   _standoffMetres: 0.275
+  _kind: {fileID: 11400000, guid: f4001b876e974e7c8f6a70a9d783f657, type: 2}
+  _lengthMetres: 8.1
 --- !u!212 &1549036211
 SpriteRenderer:
   serializedVersion: 3
