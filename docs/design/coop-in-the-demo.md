@@ -1,6 +1,6 @@
 # Co-op in the demo
 
-Status: **Proposed. Study and plan only.** No code, scene, art, package or save change is made here.
+Status: **Plan, revised to the owner's answers of 2026-11-25. Study and plan only.** No code, scene, art, package or save change is made here.
 Checked against main `f808af6ae5` (save version 26). Nothing was built or run for this document.
 The decisions it proposes are recorded in [ADR 0063](../adr/0063-coop-demo-authority-and-sync.md), also Proposed.
 
@@ -12,40 +12,42 @@ and they leave out review, waiting for tests, and new art.
 
 ## 1. The answer
 
-**Two players in the demo: yes, realistic.** It is a real project, not a switch. About **55 to 95 work
-days**. With three or four workers in parallel that is roughly two to three months, if the decisions in
-section 8 are made early. Risk: **medium to high**, and almost all of it sits in one job: the game was
-built around one player, and that has to be taken apart carefully (section 4).
+*Revised 2026-11-25 after the owner answered the questions in section 8. His answers are recorded there.*
 
-**Four players in the demo: possible, and it uses the same design.** It is honest to call it **"two
-first, four after"**. The plan below never writes the number two into the game, so four is a matter of
-raising a limit, not of rebuilding. What four adds on top: the bunkhouse (section 5), an answer to "how
-do four people use one dory", wider testing, and a speed check with four characters on screen. About
-**10 to 18 work days more**, plus bunkhouse art. Risk: medium. I would ship the demo to you and your
-friend with two, and open three and four once the bunkhouse and the dory question are settled.
+**Two players in the demo: yes, realistic.** It is a real project, not a switch. About **70 to 115 work
+days**. With three or four workers in parallel that is roughly two and a half to four months. Risk:
+**medium to high**. Most of it sits in two jobs: the game was built around one player (section 4), and
+the owner's answer on joining means the host's computer must keep **two places running at once** when
+the players are apart (section 7, slice 8).
 
-**What you and your friend can test this month** is much smaller: the old trial, brought up to today's
-game. You each sail your own dory at St Peters, see each other, and share one clock, tide and weather.
-No shared catch, no shared money, nothing saved, no walking the village together. About **3 to 5 work
-days**. That is slice 0 in section 7. It is a bug hunt and a first look, not the co-op demo.
+**The estimate went up from 55 to 95.** Three of his answers add work, and I would rather say so:
+- *Join at any time, wherever the host is, and the players may be in different scenes:* about 10 to 16
+  work days. This is the largest single addition.
+- *A guest's held things and last bed are remembered on the host:* about 2 to 3 more in the save slice.
+- *One rows while the other fishes:* about 1 to 2 more in the dory slice.
 
-**Playing with a friend through Steam invites** costs about **5 to 8 work days more**, and needs accounts
-and choices that are yours to make (section 6). Until then, two PCs connect by typing an address.
+**Four players: possible with the same design, as "two first, four after".** He chose two at first. The
+plan never writes the number two into the game, so four is a matter of raising a limit plus the
+bunkhouse (section 5), wider testing and a speed check. About **10 to 18 work days more**, plus art.
+
+**What he and his friend can test first** is slice 0: each sails his own dory at St Peters, they see
+each other, and they share one clock, tide and weather. No shared catch, no shared money, nothing
+saved. It connects by a typed address, with no Steam, as he asked.
+
+**Steam is parked.** He wants the demo working for two without Steam for now. Steam invites stay in the
+plan as a later, separate slice of about 5 to 8 work days.
 
 | What | Rough effort | Risk | When |
 |---|---|---|---|
-| Two-PC test: two dories, one sea | 3 to 5 work days | Low to medium | First |
-| Two-player co-op demo, host saves, guest remembered | 55 to 95 work days in all | Medium to high | After the decisions in section 8 |
+| Two-PC test: two dories, one sea | 3 to 5 work days | Low to medium | Now (slice 0) |
+| Two-player co-op demo, join anywhere, host saves, guest remembered | 70 to 115 work days in all | Medium to high | Slices 1 to 12 and 16 |
 | Four players and the bunkhouse | +10 to 18 work days, plus art | Medium | After two players work |
-| Steam invites for the demo | +5 to 8 work days, plus your accounts | Medium | Any time after the two-PC test |
+| Steam invites for the demo | +5 to 8 work days, plus accounts | Medium | Parked |
 
-Why this is larger than the earlier estimate (35 to 60 work days in the campaign plan of 13 November):
-the game has grown. The single shared "player" service is now read in about 1,500 places in 359 files
-(it was 535 places in August). Hunger, body, cleanliness, the paper bag and the shelf ledger have all
-arrived since, and each is one more thing that belongs to one person.
-
-Why it is smaller than it could be: the demo is one island. Everyone is in the same scene. The hardest
-part of the campaign plan, travelling between regions together, is not needed for the demo.
+Why this is larger than the campaign plan of 13 November (35 to 60): the game has grown. The single
+shared "player" service is now read in about 1,500 places in 359 files (it was 535 places in August).
+Hunger, body, cleanliness, the paper bag and the shelf ledger have all arrived since, and each is one
+more thing that belongs to one person.
 
 ---
 
@@ -53,22 +55,26 @@ part of the campaign plan, travelling between regions together, is not needed fo
 
 Stardew facts are written from what I know of the game. I have marked the ones I am less sure of.
 "Drafts" means the open co-op work here: the trial (#1182), chat (#1183), the sleep rule (#1526), the
-money and goods comparison (#1529) and the ownership map (#1521).
+money and goods comparison (#1529) and the ownership map (#1521). The last column is now the owner's
+answer of 2026-11-25 where he gave one.
 
-| Question | Stardew Valley | Our drafts today | Recommended for the demo | Your decision? |
+| Question | Stardew Valley | Our drafts today | What this game will do | Settled? |
 |---|---|---|---|---|
-| Who owns the world and the save | The host. The farm and every friend's character live in the host's save file. | The trial keeps no save at all. The plan documents propose one save on the host. | Same as Stardew: one world, one save, on the host's PC. | **Yes** (Q6) |
-| How friends join | Steam or GOG friend invite, an invite code, or LAN and typed address. Split screen on one PC since 1.5. | Typed IPv4 address and a launch command, UDP port 7777. No menu, no invite. | Host and Join on the title menu, typed address first. Steam invites as a later slice. No split screen. | **Yes** for Steam (section 6) |
-| Where friends live | Each friend needs a cabin on the farm. Cabins are built, or chosen when the farm is made. | Nothing. One guest bed exists at Ginny's. | Your ruling: two bunks in Ginny's guest room and in every home; a bunkhouse with two more for players three and four. | Ruled. Details in Q9 |
-| Money | Shared by default. Separate wallets is an option, switched at the mayor's house. | One purse (your ruling of 4 August). #1529 compares the choices and leans the same way. | One shared purse. | **Yes** (Q1), to confirm |
-| Sleep and the end of the day | The day ends when every player is in bed and agrees. Staying up to 2 a.m. makes a player pass out. | #1526: the night passes only when every player lies in a separate bunk. Sleep is the save. | Keep #1526. It already matches your ruling. | Ruled |
-| Time | The clock keeps running while a player has a menu open. I believe it stops only when every player is in a menu or scene at once (*not certain*). | The trial copies the host's pause to the guest, so a host menu stops everyone. | The clock runs for everyone. A menu never stops a friend's day. The host's pause menu may stop the world; a guest's cannot. | **Yes** (Q10) |
-| Who moves the story on | The big goals are shared. Friendships, skills and marriage are personal. Many quests are personal (*details not certain*). | Story flags are one list with no owner (#1521 names it as a debt). | Island facts are shared: the dory bought, the dory mended, Ginny's word. What each player has met, read and caught is his own. | No, unless you disagree |
-| When the host leaves | The session ends for everyone. Friends cannot play that farm without the host. | Same in every draft. | Same. No handing the world to a guest. | No |
-| Player count | Four as standard. Up to eight on PC from version 1.6. | Two, written into the trial's code. | Built for up to four. Demo opens with two, then four. | **Yes** (Q8) |
-| Joining part-way | A friend can join a running game if a cabin is free. | The trial lets a second player connect at any time. | Join at any time ashore. Not during the opening at sea, not during a sleep. | **Yes** (Q4) |
-| What a guest keeps | His character, items and skills, inside the host's save. Nothing goes home to his own farm. | Proposed: the guest keeps only his look and name. | Same as Stardew: the guest's character is remembered in the host's save. Nothing travels to his own game. | **Yes** (Q5, Q6) |
-| A demo | Stardew has no demo. | A demo with its own save is drafted (#1510). | Co-op uses the demo's own save file, never the full game's. | No |
+| Who owns the world and the save | The host. The farm and every friend's character live in the host's save file. | The trial keeps no save at all. | Same as Stardew: one world, one save, on the host's PC. A guest's PC saves nothing. | **Ruled** |
+| How friends join | Steam or GOG friend invite, an invite code, or LAN and typed address. Split screen on one PC since 1.5. | Typed IPv4 address and a launch command, UDP port 7777. | A typed address, with no Steam, for now. Steam invites later. No split screen. | **Ruled** (no Steam for now) |
+| Where friends live | Each friend needs a cabin on the farm. | One guest bed exists at Ginny's. | Two bunks in Ginny's guest room and in every home. A bunkhouse with two more for players three and four. | **Ruled** |
+| Money | Shared by default. Separate wallets is an option. | One purse. | One shared purse. Either player may buy anything alone. | **Ruled** |
+| Licences | Not a Stardew idea. | One set held by the outfit. | Shared. | **Ruled** |
+| The boat | Not a Stardew idea. | Each player has his own free dory in the trial. | One shared dory. Two can ride. One rows. The other may fish while he is rowed. Both may fish when nobody rows. The same on any boat with someone at the helm, though fishing at speed may not be workable. | **Ruled** |
+| Sleep and the end of the day | The day ends when every player is in bed and agrees. | #1526: the night passes only when every player lies in a separate bunk. Sleep is the save. | Keep #1526. | **Ruled** |
+| Time and pausing | The clock keeps running while a player has a menu open. I believe it stops only when every player is in a menu at once (*not certain*). | The trial copies the host's pause to the guest. | The clock runs for everyone. **Only the host can pause.** | **Ruled** |
+| Being apart | Players go anywhere on their own: farm, town, mine. The host's computer keeps every place a player is in running. | The earlier plan kept both players in one region. | Players may be in **different scenes at once**. The host keeps both running. | **Ruled**. Cost in section 7, slice 8 |
+| Joining part-way | A friend can join a running game if a cabin is free. He wakes in his cabin. | The trial lets a second player connect at any time. | **Join at any time, wherever the host is.** The joiner appears at his last saved bed. If that bed was on a boat and the boat is gone, at his last bed on land. | **Ruled** |
+| What a guest keeps | His character, items and skills, inside the host's save. Nothing goes home to his own farm. | Proposed: only his look and name. | When he leaves, **his character and whatever he holds vanish with him** and come back with him, the same, next time. Kept on the host's PC only. | **Ruled**. Needs a save change (slice 12): his separate yes |
+| Who moves the story on | The big goals are shared. Friendships, skills and marriage are personal (*details not certain*). | Story flags are one list with no owner. | Island facts are shared: the dory bought, the dory mended, Ginny's word. What each player has met, read and caught is his own. | Recommended, not asked |
+| When the host leaves | The session ends for everyone. | Same in every draft. | Same. The host may also play alone when his friend is away. | **Ruled** (host alone: yes) |
+| Player count | Four as standard. Up to eight on PC from version 1.6. | Two, written into the trial's code. | **Two at first.** Built for up to four. | **Ruled** |
+| A demo | Stardew has no demo. | A demo with its own save is drafted (#1510). | Co-op uses the demo's own save file, never the full game's. | Recommended, not asked |
 
 The lesson from Stardew that matters most here: **it added co-op about two years after release, with
 outside help, because the game had been built for one player** (*as I recall it*). We are in the same
@@ -142,10 +148,10 @@ wins, and the other player's actions land on the wrong body. File and line refer
 | The Notebook | One presenter, one notes list, one caught list. | A friend's catch is written into your Notebook. | Per-player notes and caught list. Shared tasks stay shared. |
 | Talking to islanders | One conversation director. The relationship code names a single fixed "player". | Two people talking to Ginny at once fight over her. Gifts and friendship merge into one. | One conversation claim at a time per islander. Friendship keyed by player. |
 | Shop stock and money | One stock per shelf line and one purse. No buyer is recorded. | Two buyers take the last loaf, or spend the same last coins. | The host puts purchases in order: one succeeds, one is politely refused. |
-| Licences | One set, held by the outfit. | Works as shared. Wrong only if you want personal licences. | Nothing, if shared (Q2). |
+| Licences | One set, held by the outfit. | Works as shared. The owner ruled shared. | Nothing. |
 | The dory | One fleet with one live boat, one hold and one "aboard" flag. One helm. | Two players cannot both be "aboard" in the code, and both would steer. | One helm holder at a time. A list of who is aboard. Where the second person sits or stands (*not checked on the dory's art*). |
 | Sleep and the save | `RestQuorum` says the player count is one. One rest place is saved. | Night would pass with one player still awake. | #1526 fixes the rule. The per-player rest place needs the save change. |
-| Scenes | One "current region". | Not a demo problem: St Peters is one scene, and its house interiors are storeys of that scene. | Each player's storey and cutaway is his own. The opening at sea moves between scenes, so guests join after landfall (Q4). |
+| Scenes | One "current region", one arrival key, one active scene. | The owner ruled that players may be in different scenes at once. The host must then run two. | Slice 8: a region per player, and the host keeps the second scene running unseen. House interiors are storeys of the same scene, so each player's storey and cutaway is simply his own. |
 | Pausing | One pause, used by every menu. | A guest opening a menu would stop the world. | Menus stop only the local player's input. |
 | The demo's end | One story flag list. | Who triggers Ginny's word, and who sees it? | A shared fact, shown to every player present. The demo's ending rule is itself still open (#1533, #1535). |
 | Events | No event says who did it. | "A fish was caught" cannot tell whose. | Add the player to the events that are counted. Additive. |
@@ -198,8 +204,8 @@ drops to two, three things are possible:
    like this when a cabin is removed (*not certain of the detail*).
 3. The bunkhouse stays for the life of that save once it has appeared.
 
-I recommend **2**: nothing is lost and nothing is hidden. It is your call (Q9). A player whose saved
-waking place was in the bunkhouse wakes in Ginny's guest room instead.
+**The owner chose 3** (2026-11-25): "bunkhouse stays, things stay with player until return." Once a save
+has known a third player, the bunkhouse is always placed for that save, and nothing is moved out of it.
 
 ---
 
@@ -243,77 +249,115 @@ is in another house, the cheapest route is a private network app on both PCs; ch
 
 ## 7. The build order
 
+*Revised 2026-11-25 to the owner's answers. Slice 8 is new. Slices 7 and 12 grew. Steam moved to the end.*
+
 Each slice is one pull request unless marked, and can be tested alone. Smallest first. "Editor" means it
 needs a running editor session. "Core" means it adds shared contracts and needs the lead architect.
 
 | # | Slice | After it | Work days | Editor | Art | Save format | Runs beside |
 |---|---|---|---|---|---|---|---|
-| **0** | **The two-PC test.** Bring the trial (#1182) to today's main, off unless asked for. Start at St Peters. Drop the unused Relay package. Fix the crash on close. Build one zip with Host and Join launchers. | You and your friend each sail a dory at St Peters, see each other, and share the sea. Nothing else is shared. Nothing is saved. | 3 to 5, +1 to 2 for the crash | Yes | No | No | 1, 6 |
-| 1 | **The player list.** A Core contract: who is in the session, which one is local, and the most allowed (a tunable, four). Merge the ownership guard (#1521) and the sleep rule (#1526) with it. | Nothing visible. Sleep already asks "is everyone in a separate bunk". | 2 to 3 | No | No | No | 0, 6 |
-| 2 | **One record per player.** Two PRs. First the Core record (body, hands, pail, helm claim, needs, look) with today's single-player reads kept working. Then the features moved over, group by group. | Nothing visible with one player. Two bodies can exist without stealing each other's hands. | 8 to 12 | No for the first PR, yes for the second | No | No | 3, 4, 6 |
-| 3 | **Host and Join on the title menu.** A guest's game cannot write a save. Wrong version or wrong seed is refused with a plain message. | Start a session from the menu with a typed address. | 3 to 5 | Yes | Small (menu) | No | 2, 4, 6 |
-| 4 | **The whole clock.** Send the clock's hold and flow as well as the time. A guest's menu stops nobody. | Same hour on both screens in every case, including a held hour. | 2 to 4 | No | No | No | 2, 3, 6 |
-| 5 | **Two bodies ashore.** The friend is seen walking the village, on the right storey indoors, with the right look. Each camera follows its own player. | Walk St Peters together. | 5 to 8 | Yes | Check only | No | 6 |
+| **0** | **The two-PC test.** The trial (#1182) rebuilt on today's main, off unless asked for. Starts at St Peters. Two packages, not three. A plain Host and Join entry that exists only in a development or demo build. Typed address. | Two friends each sail a dory at St Peters, see each other, and share the sea. Nothing else is shared. Nothing is saved. | 3 to 5 | Yes | No | No | 1, 6 |
+| 1 | **The player list.** A Core contract: who is in the session, which one is local, and the most allowed (a tunable). Merge the ownership guard (#1521) and the sleep rule (#1526) with it. | Nothing visible. Sleep already asks "is everyone in a separate bunk". | 2 to 3 | No | No | No | 0, 6 |
+| 2 | **One record per player.** Two PRs. First the Core record (body, hands, pail, helm claim, needs, look, **which region he is in**) with today's single-player reads kept working. Then the features moved over, group by group. | Nothing visible with one player. Two bodies can exist without stealing each other's hands. | 8 to 12 | No, then yes | No | No | 3, 4, 6 |
+| 3 | **Host and Join on the real title menu.** A guest's game cannot write a save. Wrong version or wrong seed is refused with a plain message. | Start a session from the menu with a typed address. | 3 to 5 | Yes | Small (menu) | No | 2, 4, 6 |
+| 4 | **The whole clock.** Send the clock's hold and flow as well as the time. Only the host's pause stops the world. | Same hour on both screens in every case. | 2 to 4 | No | No | No | 2, 3, 6 |
+| 5 | **Two bodies ashore.** The friend is seen walking the village, on the right storey indoors, with the right look. Each camera follows its own player. Until slice 12 a joiner appears at Ginny's guest room with empty hands. | Walk St Peters together. | 5 to 8 | Yes | Check only | No | 6 |
 | 6 | **Two bunks.** A second bed in Ginny's guest room and in the camper. The rule and test for every home. | Two beds to sleep in. Works for one player too. | 3 to 5 | Yes | **Yes** if a bunk bed or a new camper berth is drawn | No | Anything. **Can start at once.** |
-| 7 | **One dory, two people.** One at the helm or oars, one aboard. Boarding and leaving. | Row out together. **This is the go or stop point**: does standing on a moving boat feel right for the guest? | 5 to 8 | Yes | Check, perhaps a seated pose | No | 8 after 2 |
-| 8 | **The host decides what is counted.** Two PRs. Catch, dig, pick up, put down, pail and paper bag each go to the host as a request and happen once. | Fish and dig together. Pass a pail. | 7 to 12 | Yes | Check only | No | 9, 10 |
-| 9 | **One purse, one shelf.** Buying and selling put in order by the host. | Buy the last loaf once. Sell a pail once. | 4 to 7 | Yes | No | No | 8, 10 |
-| 10 | **One story.** Two PRs. Island facts shared, personal facts personal. One talk at a time per islander. Notebook per player. The demo's end shown to all. | Be taught by Ginny together. Reach her word together. | 6 to 10 | Yes | No | No | 8, 9 |
-| 11 | **The guest is remembered.** One small record per player in the host's demo save. Old saves still load. | Quit at night, come back as the same people in the same bunks. | 5 to 8 | No for the change, yes for one proof | No | **Yes. Your approval and a new version number.** | After 2, 8, 9, 10 |
-| 12 | **Three and four.** The bunkhouse from the player count. The limit raised to four. | Four friends, four bunks. | 4 to 6 | Yes | **Yes: the bunkhouse** | Uses 11 | After 6, 11 |
-| 13 | **Steam invites.** A Steam connection under the same networking, lobbies, the demo's App ID. | Invite a friend from the Steam list. | 5 to 8 | Yes | No | No | Any time after 3 |
+| 7 | **One dory, two people.** One rows, one rides. The rider may fish while rowed. Both may fish when nobody rows. The same rule for any boat with someone at the helm; whether fishing works at speed is tested, not promised. | Row out together and fish. **This is the go or stop point**: does standing and fishing on a moving boat feel right for the guest? | 6 to 10 | Yes | Check, perhaps a seated pose | No | 8 |
+| **8** | **Two places at once.** Two PRs. The host's computer keeps a second scene running when a player is in it: its tide and weather, its islanders, its boats and its counted things. Each computer shows and hears only the place its own player is in. | One player stays ashore while the other is somewhere else. A friend can join wherever the host is. | 10 to 16 | Yes | No | No | 7, 9 |
+| 9 | **The host decides what is counted.** Two PRs. Catch, dig, pick up, put down, pail and paper bag each go to the host as a request and happen once. | Fish and dig together. Pass a pail. | 7 to 12 | Yes | Check only | No | 10, 11 |
+| 10 | **One purse, one shelf.** Buying and selling put in order by the host. Either player may buy anything alone. | Buy the last loaf once. Sell a pail once. | 4 to 7 | Yes | No | No | 9, 11 |
+| 11 | **One story.** Two PRs. Island facts shared, personal facts personal. One talk at a time per islander. Notebook per player. The demo's end shown to all. | Be taught by Ginny together. Reach her word together. | 6 to 10 | Yes | No | No | 9, 10 |
+| **12** | **The guest is remembered.** One record per player in the host's demo save: look, Notebook, what he caught, hunger and body, **what he holds**, **his last bed on land and his last bed on a boat**. Leaving removes his character and held things from the world. Returning puts him at his last saved bed with the same things; if that was a boat bed and the boat is gone, at his last land bed. Old saves still load. | Quit at night, come back as the same people in the same bunks with the same things. | 7 to 11 | No for the change, yes for one proof | No | **Yes. This is the slice where the save changes. It needs his separate yes and a new version number.** | After 2, 9, 10, 11 |
+| 13 | **Three and four.** The bunkhouse appears when the save knows a third player, and then stays. The limit raised to four. | Four friends, four bunks. | 4 to 6 | Yes | **Yes: the bunkhouse** | Uses 12 | After 6, 12 |
 | 14 | **Chat.** Bring #1183 to main on top of slice 0. | Type to each other. | 2 to 3 | Yes | Small | No | Any time after 0 |
-| 15 | **The proving run.** Two real PCs, start to Ginny's word, sleep and resume. Frame rate and network use measured. | A demo you can hand to friends. | 3 to 5 | Yes | No | No | Last |
+| 15 | **The proving run.** Two real PCs, start to Ginny's word, apart and together, sleep and resume. Frame rate and network use measured. | A demo to hand to friends. | 3 to 5 | Yes | No | No | Last |
+| 16 | **Steam invites.** Parked by the owner for now. | Invite a friend from the Steam list. | 5 to 8 | Yes | No | No | When he asks |
 
-**What can start tomorrow, side by side:** slice 0 (one worker, one editor), slice 1 (no editor), the
-first half of slice 2 (no editor), and slice 6 (editor and perhaps art). Slices 0 and 6 both need an
-editor, so they take turns or use separate machines.
+**What can run side by side now:** slice 0, slice 1 (no editor), the first half of slice 2 (no editor),
+and slice 6 (editor and perhaps art).
 
-**Where the save format changes:** slice 11 only, and slice 12 leans on it. Until then a guest is not
-remembered between sessions and joins with empty hands. Each of those is a question for you (Q6, Q7).
+**Where the save format changes:** slice 12 only, and slice 13 leans on it. Until then a guest is not
+remembered between sessions, appears at Ginny's guest room and has empty hands.
 
-**Where to stop and look:** after slice 7. If two people in one dory does not feel right on your
-friend's real connection, the plan changes there, cheaply, before the expensive slices.
+**Where to stop and look:** after slice 7, and again after slice 8.
 
-**What I would not do:** build the opening at sea for two before the island works for two. It moves
-between scenes and holds the clock, and it is the hardest place to join. The earlier draft plan put it
-early. For the demo I recommend the guest arrives after the host is ashore (Q4).
+### What "two places at once" needs (slice 8)
+
+Loading a second region scene beside the first already works: that is how travel loads a region today.
+What does not exist is two scenes that are both *lived in*. Honestly, this is what it takes.
+
+- **Who runs the second place.** The host's computer does, because the host decides everything that is
+  counted. So when the guest is somewhere the host is not, the host loads that scene too and keeps it
+  running without drawing it. The guest's computer loads only the place the guest is in.
+- **One "current region" becomes one per player.** Today there is a single current region, a single
+  arrival key and a single "where is the player" answer (`GameServices.cs:807`, `:828`, `:876`), and
+  the scene loader makes one scene the active one (`RegionSceneLoader.cs:85`). Each of these has to
+  ask "for which player".
+- **Tide, wind and weather.** These are worked out from seed and time, so a second place costs no
+  network traffic. But the service that answers them holds one region's profile at a time. It has to
+  answer for a named region, so that an islander or a boat in the unseen scene reads its own tide.
+- **Islanders.** Their day is worked out from the clock, which is cheap. The parts that are not are a
+  conversation in progress and anything an islander does that changes goods or money. The host must
+  run those for both places. The code that drives islanders asks for one current region today.
+- **Things that tick.** Boats, traps, spoiling catch, shelf stock. In the unseen scene the host keeps
+  the counted parts on the slow tick and switches off everything that only exists to be looked at:
+  water, particles, wakes, lights, animation.
+- **The host's camera.** It follows the host only and never draws the other scene. Regions sit in one
+  shared world frame (ADR 0057, proposed, as I read it), so two scenes do not lie on top of each other, which
+  makes this a matter of what is switched on, not of moving anything.
+- **Sound.** Each computer hears only its own player's place. The unseen scene on the host is silent.
+- **Speed and memory.** The host pays for a second scene's objects and textures. This is the real
+  risk: the target is 60 frames a second on an ordinary laptop, and the host with a friend in a second
+  scene is the worst case. It must be measured on a real machine before the slice is accepted. If it
+  does not fit, the unseen scene is thinned further; the picture the host sees is not degraded.
+- **Joining anywhere.** A joiner asks the host for his last saved bed. If that place is not loaded, the
+  host loads it, then lets him in. Until slice 12 there is no saved bed, so he appears at Ginny's.
+- **For the demo this is smaller than for the full game.** The demo is St Peters, plus the water scene
+  of the opening. Two live scenes is the limit that needs proving; four players in four scenes is not
+  promised by this slice.
+
+**What I would not do:** build the opening at sea for two as its own special case. With slice 8 in
+place it is simply "the host is in another scene", and a friend who joins then appears at his bed on
+the island and waits for the boat to come in.
 
 ---
 
-## 8. Decisions only you can make
+## 8. The owner's decisions
 
-1. **One purse or one each?** Recommend: **one shared purse**, as you ruled on 4 August and as Stardew
-   does by default. Separate purses roughly doubles the money work and splits the dory fund.
-2. **Licences shared or personal?** Recommend: **shared** for ordinary licences. The scarce lobster and
-   crab licences stay one-of-a-kind and are not part of the first week.
-3. **Whose dory is it, and who rows?** Recommend: **the outfit's dory**. Either player may take the oars
-   when aboard; one at a time. No second free dory. Nobody can move it from a distance.
-4. **Join at any time, or only from a lobby before the day starts?** Recommend: **join at any time
-   while the host is ashore.** Not during the opening at sea, and not during a sleep. A guest arrives at
-   Ginny's guest room. This sets aside the earlier wish for both to be aboard the opening boat; that
-   can come after the demo.
-5. **What does a guest keep when he leaves?** Recommend: **his character stays in the host's world**:
-   look, name, Notebook, what he has caught, where he sleeps. What he is carrying is set down where he
-   stood. Nothing goes home to his own game.
-6. **Is a guest's progress saved on his own PC, or only on the host's?** Recommend: **only the host's**,
-   as in Stardew. The guest's PC writes no save at all. This needs your yes to a save format change
-   (slice 11). Without it, guests start fresh each session.
-7. **May the save format change for this, and when?** Recommend: **yes, once, at slice 11**, with a new
-   version number you hand out, and only in the demo's own save file first.
-8. **How many players in the demo?** Recommend: **two at first, four once the bunkhouse is in.** Built
-   for four from the start.
-9. **When the third player is gone for good, what happens to the bunkhouse and his things?** Recommend:
-   the bunkhouse goes when the save knows fewer than three players, and his things are set out in a
-   crate by Ginny's door.
-10. **Whose menu can stop the clock?** Recommend: **only the host's pause menu.** Nobody else's.
-11. **May the host play on alone when the friend is away?** Recommend: **yes.** The friend's character
-    sleeps in his bunk and catches up with the world when he returns.
-12. **May either player make a large purchase alone?** Recommend: everyday supplies, yes. Buying or
-    selling a boat needs both players present to agree. (From #1529.)
-13. **May we add two networking packages?** Recommend: **yes** to Unity's networking and transport
-    packages, **no** to Relay for now. This also needs the lead architect.
-14. **The Steam questions S1 to S6 in section 6.**
+Answered 2026-11-25. His words are quoted where he gave them.
+
+| # | Question | His answer | What it means for the build |
+|---|---|---|---|
+| 1 | One purse or one each? | "one shared" | One balance. The host puts spending in order. |
+| 2 | Licences shared or personal? | "shared" | One set for the outfit. |
+| 3 | Whose dory, and who rows? | "one shared, 2 players can ride, one rows, one can fish if the other is rowing, both can fish if they arent rowing, same rules to any boat if someone as at the helm but fishing while sailing fast may not be viable." | Slice 7. One helm or oars holder at a time. Fishing is allowed for anyone aboard who is not rowing or steering. Fishing at speed is tested before it is promised. |
+| 4 | Join at any time, or lobby only? | "join anytime regardless where host is, we need 2 scenes to be functinal at once incase player is another scene. loaded player spawns at last saved bed, if last saved bed was a boat and boat is somehow destroyed they will spawn at their last land bed." | Slice 8 (two places at once) and slice 12 (two saved beds per player: last on land, last on a boat). |
+| 5 | What does a guest keep when he leaves? | "character disappears and anything held dissapears with him until returned to game then they still have same items." | Slice 12. Held things are stored with his record, not set down in the world. |
+| 6 | Where is a guest's progress saved? | The host's PC only. | A guest's game never writes a save. |
+| 7 | How many players in the demo? | Two at first. | Built for a list, limit set to two, raised later. |
+| 8 | The bunkhouse when a third player is gone | "bunkhouse stays, things stay with player until return." | Once a save has known a third player, the bunkhouse is always placed. Nothing is moved out of it. |
+| 9 | Whose menu can stop the clock? | Only the host can pause. | Slice 4. |
+| 10 | May the host play on alone? | Yes. | The absent friend's character is not in the world. |
+| 11 | May one player make any purchase alone? | "yes for everthing" | No agreement step, even for a boat. |
+| 12 | Steam | "yes i need demo to be functianl for me and my friend without steam for now" | A typed address. Steam is parked (slice 16). |
+
+**Still his to decide, each when its slice comes up:**
+
+- **The save format change at slice 12.** One record per player on the host: look, Notebook, catch
+  list, needs, what he holds, his last land bed and last boat bed. It needs his separate yes and a
+  version number handed out then. Nothing in this plan changes the save before that.
+- **The two networking packages.** They arrive on the slice 0 draft PR and are not merged without his
+  explicit yes.
+- **Two live scenes, measured.** If the host's frame rate with a friend in a second scene does not
+  hold on his laptop, he chooses between a thinner unseen scene and a lower promise.
+- **A lost boat bed.** His rule covers the boat being destroyed. Not yet covered: the boat exists but
+  is in a scene nobody is in, or is under way with another player at the helm. I recommend the joiner
+  appears aboard if the boat exists anywhere, and that is checked with him at slice 12.
+- **What "leaving" does to a pail or bag a guest was carrying for the outfit.** His answer means the
+  shared clams leave the world with him until he returns. I recommend keeping exactly that, as ruled,
+  and saying so on screen when a player leaves holding goods.
+- **Steam questions S1 to S6** in section 6, whenever Steam is wanted.
 
 ---
 
