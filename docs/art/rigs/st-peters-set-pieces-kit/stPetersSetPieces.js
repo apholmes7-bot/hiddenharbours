@@ -41,6 +41,7 @@
     copper: ['#1e3a33', '#2a4c42', '#386052', '#4a7563', '#5f8a75', '#7aa08b'],     // verdigris
     soot: ['#141516', '#1c1e1f', '#262829', '#303335', '#3c3f41', '#4a4d4f'],
     cinder: ['#2a2521', '#38312b', '#473f36', '#584e42', '#6a5f50', '#7d7160'],     // the rail bed: cinders gone to dirt
+    earth: ['#261f17', '#342a1f', '#443729', '#554534', '#67543f', '#7a644b'],      // worn earth where the bed meets the grass
     rope: ['#3f3424', '#56472f', '#6e5c3c', '#87714b', '#9e865b', '#b39b6e'],
     plank: ['#33291f', '#473829', '#5d4a35', '#745d42', '#8b7151', '#a18663'],      // the trolley's oak deck
     grass: ['#233a24', '#2f4a2c', '#3c5b33', '#4b6c3b', '#5c7d45', '#6f8e50'],
@@ -226,26 +227,37 @@
   PIECES.trolleyLine = {
     id: 'structure.stp_cannery_trolley_line', name: 'Trolley line', defType: 'SetPieceDef', scene: 'keyscene.stp_cannery',
     layer: 'floor', walk: 'on', footprint: null,
-    defaults: { path: [[0, 0], [6, -2], [12, -4.2]], gauge: 0.6, decay: 'derelict', seed: 7 },
+    defaults: { path: [[0, 0], [6, -2], [12, -4.2]], gauge: 0.6, decay: 'derelict', seed: 7, lift: 'end' },
     build(o) {
       const out = [], P = o.path, g = o.gauge / 2, der = o.decay !== 'restored';
       let s = 0;
       for (let k = 0; k + 1 < P.length; k++) {
         const A = P[k], B = P[k + 1], dx = B[0] - A[0], dy = B[1] - A[1], L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L, nx = -uy, ny = ux;
-        // the ballast: cinders and dirt under the sleepers, 1.3 m wide, ragged at the edges (the piece's own floor, not a ground change)
-        for (let t = 0; t < L; t += 0.5) { const t1 = Math.min(L, t + 0.5), w0 = 0.62 + 0.1 * hash(k, Math.round(t * 2), o.seed + 5), w1 = 0.62 + 0.1 * hash(k, Math.round(t * 2) + 1, o.seed + 5);
-          F(out, [[A[0] + ux * t - nx * w0, A[1] + uy * t - ny * w0, 0.005], [A[0] + ux * t1 - nx * w1, A[1] + uy * t1 - ny * w1, 0.005], [A[0] + ux * t1 + nx * w1, A[1] + uy * t1 + ny * w1, 0.005], [A[0] + ux * t + nx * w0, A[1] + uy * t + ny * w0, 0.005]], der ? 'cinder' : 'soot', -0.3, 'ballast'); }
-        // sleepers every 0.7 m, some missing, some skewed
+        // the ballast: cinders and dirt under the sleepers, 1.3 m wide, ragged at the edges (the piece's own floor, not a ground change).
+        // It lies IN the ground: a fringe of worn earth where the bed meets the grass, and grass creeping back over its edges, so
+        // the bed reads as sunk, never as a causeway standing on the field.
+        for (let t = 0; t < L; t += 0.5) { const t1 = Math.min(L, t + 0.5), i0 = Math.round(t * 2), w0 = 0.62 + 0.1 * hash(k, i0, o.seed + 5), w1 = 0.62 + 0.1 * hash(k, i0 + 1, o.seed + 5);
+          const Q = (tt, w) => [A[0] + ux * tt + nx * w, A[1] + uy * tt + ny * w];
+          for (const sd of [-1, 1]) { if (hash(k, i0, o.seed + 13 + sd) < 0.3) continue;
+            const e0 = w0 + 0.1 + 0.16 * hash(k, i0, o.seed + 17 + sd), e1 = w1 + 0.1 + 0.16 * hash(k, i0 + 1, o.seed + 17 + sd);
+            const q = sd > 0 ? [Q(t, w0), Q(t1, w1), Q(t1, e1), Q(t, e0)] : [Q(t, -e0), Q(t1, -e1), Q(t1, -w1), Q(t, -w0)];
+            F(out, q.map(p => [p[0], p[1], 0.003]), 'earth', -0.45, 'bed'); }
+          F(out, [[A[0] + ux * t - nx * w0, A[1] + uy * t - ny * w0, 0.005], [A[0] + ux * t1 - nx * w1, A[1] + uy * t1 - ny * w1, 0.005], [A[0] + ux * t1 + nx * w1, A[1] + uy * t1 + ny * w1, 0.005], [A[0] + ux * t + nx * w0, A[1] + uy * t + ny * w0, 0.005]], der ? 'cinder' : 'soot', -0.55, 'ballast');
+          for (const sd of [-1, 1]) for (let j = 0; j < 2; j++) { const h = hash(k * 31 + i0, j * 2 + (sd > 0 ? 1 : 0), o.seed + 23); if (h < 0.55) continue;
+            const tt = t + (j + hash(k, i0 * 4 + j, o.seed + 29)) * 0.25, w = (sd > 0 ? w0 : -w0), r = 0.06 + 0.1 * h, c = Q(tt, w - sd * r * 0.6);
+            const tri = [[c[0] - ux * r, c[1] - uy * r, 0.007], [c[0] + ux * r, c[1] + uy * r, 0.007], [c[0] + nx * sd * r * 1.2, c[1] + ny * sd * r * 1.2, 0.007]];
+            F(out, sd > 0 ? tri : tri.reverse(), 'grass', -0.7, 'bed.grass'); } }
+        // sleepers every 0.7 m, some missing, some skewed; half bedded in the cinders
         for (let t = 0.2; t < L; t += 0.7, s++) { const miss = der && hash(s, k, o.seed) < 0.18; if (miss) continue;
           const cx = A[0] + ux * t, cy = A[1] + uy * t, sk = der ? (hash(s, 9, o.seed) - 0.5) * 0.25 : 0, a = Math.atan2(ny, nx) + sk;
-          obox(out, cx, cy, 0.52, 0.09, -0.02, 0.06, a, 'wood', 'sleeper'); }
-        // the rails: two iron bars 0.05 wide, 0.07 high; derelict, the outer rail lifts off its last metres
-        for (const side of [-1, 1]) { const ox = nx * g * side, oy = ny * g * side, lift = der && side > 0 && k === P.length - 2;
+          obox(out, cx, cy, 0.52, 0.09, -0.02, 0.035, a, 'wood', 'sleeper'); }
+        // the rails: two iron bars 0.05 wide, 0.07 high; derelict, the outer rail lifts off its last metres unless o.lift is 'none'
+        for (const side of [-1, 1]) { const ox = nx * g * side, oy = ny * g * side, lift = der && o.lift !== 'none' && side > 0 && k === P.length - 2;
           const n = Math.max(1, Math.ceil(L / 1.5));
           for (let j = 0; j < n; j++) { const t0 = j / n * L, t1 = (j + 1) / n * L, z0 = lift ? Math.max(0, (t0 - L + 3) * 0.12) : 0, z1 = lift ? Math.max(0, (t1 - L + 3) * 0.12) : 0;
             stick(out, [A[0] + ux * t0 + ox, A[1] + uy * t0 + oy, 0.08 + z0], [A[0] + ux * t1 + ox, A[1] + uy * t1 + oy, 0.08 + z1], 0.05, der ? 'rust' : 'iron', 'rail'); } }
       }
-      return { faces: out, mats: mats(['wood', 'rust', 'iron', 'cinder', 'soot']), anchors: { path: P, words: [] } };
+      return { faces: out, mats: mats(['wood', 'rust', 'iron', 'cinder', 'soot', 'earth', 'grass']), anchors: { path: P, words: [] } };
     },
     notes: 'A floor piece, walked on; the path is in the piece\'s own metres from its origin (the cannery door end).',
   };
@@ -265,8 +277,8 @@
         F(out, pts, der ? 'rust' : 'iron', -0.1, 'wheel'); F(out, pts.map(p => [p[0], p[1] + (y < 0 ? 0.05 : -0.05), p[2]]).reverse(), der ? 'rust' : 'iron', 0.05, 'wheel'); }
       stick(out, [-0.5, -0.36, 0.17], [-0.5, 0.36, 0.17], 0.05, 'iron', 'axle'); stick(out, [0.5, -0.36, 0.17], [0.5, 0.36, 0.11], 0.05, 'iron', 'axle');
       // the frame and the deck boards (one missing when derelict)
-      stick(out, [-0.75, -0.42, zAt(-0.75) - 0.06], [0.75, -0.42, zAt(0.75) - 0.06], 0.08, der ? 'rust' : 'iron', 'frame');
-      stick(out, [-0.75, 0.42, zAt(-0.75) - 0.06], [0.75, 0.42, zAt(0.75) - 0.06], 0.08, der ? 'rust' : 'iron', 'frame');
+      stick(out, [-0.75, -0.42, zAt(-0.75) - 0.06], [0.75, -0.42, zAt(0.75) - 0.06], 0.08, der ? 'rust' : 'red', 'frame');
+      stick(out, [-0.75, 0.42, zAt(-0.75) - 0.06], [0.75, 0.42, zAt(0.75) - 0.06], 0.08, der ? 'rust' : 'red', 'frame');
       for (let k = 0; k < 6; k++) { if (der && k === 2) continue; const x0 = -0.75 + k * 0.25, x1 = x0 + 0.23;
         F(out, [[x0, -0.5, zAt(x0)], [x1, -0.5, zAt(x1)], [x1, 0.5, zAt(x1)], [x0, 0.5, zAt(x0)]], 'plank', k % 2 ? 0.05 : -0.05, 'deck');
         F(out, [[x0, -0.5, zAt(x0) - 0.05], [x1, -0.5, zAt(x1) - 0.05], [x1, -0.5, zAt(x1)], [x0, -0.5, zAt(x0)]], 'plank', -0.2, 'deck'); }
@@ -356,6 +368,112 @@
           interact: [nx0 + 0.23, y - 0.6, 0], lock: [0, y - 0.05, zc - 0.27] } };
     },
     notes: 'Mount at the cannery\'s door anchor, at the door\'s own facing. interact is where a player stands to read it.',
+  };
+
+  // a polygon in the x-z plane, pts [[x, z]..], extruded along y from y0 to y1: gear wheels, shafts, drums
+  function prismY(out, pts, y0, y1, mat, tag, b) {
+    let a2 = 0; for (let k = 0; k < pts.length; k++) { const p = pts[k], q = pts[(k + 1) % pts.length]; a2 += p[0] * q[1] - q[0] * p[1]; }
+    const P = a2 > 0 ? pts : pts.slice().reverse(), bb = b || 0;   // counter-clockwise in (x, z)
+    F(out, P.map(p => [p[0], y0, p[1]]), mat, bb - 0.15, tag);                // the -y face
+    F(out, P.slice().reverse().map(p => [p[0], y1, p[1]]), mat, bb + 0.15, tag); // the +y face
+    for (let k = 0; k < P.length; k++) { const p = P[k], q = P[(k + 1) % P.length];
+      F(out, [[q[0], y0, q[1]], [p[0], y0, p[1]], [p[0], y1, p[1]], [q[0], y1, q[1]]], mat, bb + (q[1] + p[1] > 0 ? 0.05 : -0.1), tag); }
+  }
+  function ring(cx, cz, r, n, teeth, th) { const o = []; for (let k = 0; k < n; k++) { const a = k / n * 2 * Math.PI, rr = teeth && (k % 2) ? r + th : r; o.push([cx + rr * Math.cos(a), cz + rr * Math.sin(a)]); } return o; }
+
+  /* THE TROLLEY STAGE (structure.stp_cannery_trolley_stage) — where the line ends: a low timber loading stage just north of
+     the wharf, beside the net shed, its deck flush with the rail tops so a cart and a barrow both roll on and off. The
+     rails run on to a buffer stop: two posts and an oxide-red beam, iron-shod, braced back. A floor piece: walked on, drawn
+     under figures. Its local x runs along the rails (the line's last run), its centre is the origin. */
+  PIECES.trolleyStage = {
+    id: 'structure.stp_cannery_trolley_stage', name: 'Trolley stage', defType: 'SetPieceDef', scene: 'keyscene.stp_cannery',
+    layer: 'floor', walk: 'on', footprint: null,
+    defaults: { length: 2.8, depth: 1.8, deck: 0.1, gauge: 0.6, buffer: 0.35, seed: 11 },
+    build(o) {
+      const out = [], hx = o.length / 2, hy = o.depth / 2, z = o.deck, g = o.gauge / 2, bx = o.buffer;
+      // bedded: a ragged apron of worn earth where feet and barrows have scuffed the grass at the stage's edges
+      const step = 0.35;
+      for (let x = -hx; x < hx - 1e-6; x += step) { const x1 = Math.min(hx, x + step), i = Math.round((x + hx) / step);
+        for (const sd of [-1, 1]) { if (hash(i, sd, o.seed) < 0.2) continue; const e0 = 0.08 + 0.16 * hash(i, sd + 3, o.seed), e1 = 0.08 + 0.16 * hash(i + 1, sd + 3, o.seed);
+          const q = sd > 0 ? [[x, hy], [x1, hy], [x1, hy + e1], [x, hy + e0]] : [[x, -hy - e0], [x1, -hy - e1], [x1, -hy], [x, -hy]];
+          flat(out, q, 0.003, 'earth', 'bed', -0.8); } }
+      // the bearers: a sill on each long edge and each end, sunk to the deck's underside
+      box(out, -hx, hx, -hy, -hy + 0.12, 0, z - 0.035, 'wood', 'sill'); box(out, -hx, hx, hy - 0.12, hy, 0, z - 0.035, 'wood', 'sill');
+      box(out, -hx, -hx + 0.12, -hy, hy, 0, z - 0.035, 'wood', 'sill'); box(out, hx - 0.12, hx, -hy, hy, 0, z - 0.035, 'wood', 'sill');
+      // the deck: boards across the rails, silvered, one split short where a barrow wheel found it
+      const n = Math.round(o.length / 0.2);
+      for (let k = 0; k < n; k++) { const x0 = -hx + k * 0.2 + 0.006, x1 = -hx + (k + 1) * 0.2 - 0.006, short = hash(k, 1, o.seed) < 0.1;
+        box(out, x0, x1, -hy, short ? hy - 0.32 : hy, z - 0.035, z, 'wood', 'deck', { tagTop: 'deck' });
+        if (hash(k, 2, o.seed) < 0.35) flat(out, [[x0, -hy + 0.2], [x1, -hy + 0.2], [x1, hy - 0.2], [x0, hy - 0.2]], z + 0.001, 'wood', 'deck.wear', -0.35);
+        // nail heads over each sill, every other board
+        for (const yy of [-hy + 0.06, hy - 0.06]) if (!(short && yy > 0) && k % 2 === 0) box(out, (x0 + x1) / 2 - 0.012, (x0 + x1) / 2 + 0.012, yy - 0.012, yy + 0.012, z, z + 0.004, 'iron', 'deck.nail'); }
+      // the rails, let into the boards with their tops just proud, from the line's end to the buffer
+      for (const side of [-1, 1]) stick(out, [-hx, side * g, z - 0.012], [bx, side * g, z - 0.012], 0.05, 'rust', 'rail');
+      // the buffer stop: two posts on the rails, an oxide-red beam with an iron face plate, and two short back braces
+      for (const side of [-1, 1]) box(out, bx, bx + 0.14, side * g - 0.07, side * g + 0.07, z, z + 0.42, 'wood', 'buffer.post');
+      box(out, bx - 0.1, bx, -0.5, 0.5, z + 0.2, z + 0.42, 'red', 'buffer.beam');
+      F(out, [[bx - 0.105, -0.16, z + 0.24], [bx - 0.105, 0.16, z + 0.24], [bx - 0.105, 0.16, z + 0.38], [bx - 0.105, -0.16, z + 0.38]], 'iron', 0.1, 'buffer.plate');
+      for (const yy of [-0.42, 0.42]) box(out, bx - 0.104, bx + 0.003, yy - 0.03, yy + 0.03, z + 0.2, z + 0.42, 'iron', 'buffer.strap');
+      for (const side of [-1, 1]) stick(out, [bx + 0.12, side * g, z + 0.36], [bx + 0.32, side * g, z + 0.02], 0.08, 'wood', 'buffer.brace');
+      return { faces: out, mats: mats(['wood', 'rust', 'iron', 'red', 'earth']),
+        anchors: { lineEnd: [-hx, 0, z], buffer: [bx - 0.1, 0, z + 0.31], words: [] } };
+    },
+    notes: 'A floor piece, walked on. Its deck is at rail height; the line\'s last run meets it at lineEnd, and a cart stops against buffer.',
+  };
+
+  /* THE HAND WINCH (prop.stp_cannery_hand_winch) — a crab winch on a timber skid, stood on the stage beyond the buffer:
+     cast-iron A-frames, a rope drum with its flanges, a big spur wheel driven by a pinion on the crank shaft, a ratchet and
+     pawl, two cranks set opposite. The rope leaves the drum's underside toward local +x, the way the cart lies. Serviceable,
+     weathered, not derelict: it is the one thing on the line that still works. Its show face (+y) carries the spur wheel. */
+  PIECES.handWinch = {
+    id: 'prop.stp_cannery_hand_winch', name: 'Hand winch', defType: 'SetPieceDef', scene: 'keyscene.stp_cannery',
+    layer: 'raised', walk: 'behind', footprint: [[-0.4, -0.42], [0.4, -0.42], [0.4, 0.42], [-0.4, 0.42]],
+    defaults: { deck: 0.1, lead: 0.75 },
+    build(o) {
+      const out = [], z0 = o.deck, fy = 0.33, zd = z0 + 0.6, gr = 0.27, pr = 0.075, cd = gr + pr + 0.012;
+      const xc = -cd * Math.cos(40 * D2R), zc = zd + cd * Math.sin(40 * D2R);
+      // the skid: two sills along x, two cross sills, bolt heads
+      for (const yy of [-0.36, 0.36]) box(out, -0.4, 0.4, yy - 0.06, yy + 0.06, z0, z0 + 0.11, 'wood', 'skid');
+      for (const xx of [-0.3, 0.3]) box(out, xx - 0.05, xx + 0.05, -0.42, 0.42, z0, z0 + 0.08, 'wood', 'skid');
+      for (const xx of [-0.3, 0.3]) for (const yy of [-0.36, 0.36]) box(out, xx - 0.02, xx + 0.02, yy - 0.02, yy + 0.02, z0 + 0.11, z0 + 0.13, 'iron', 'skid.bolt');
+      // the two A-frames, each a pair of cast legs, a tie, a strut up to the crank shaft's bearing
+      for (const yy of [-fy, fy]) {
+        stick(out, [-0.34, yy, z0 + 0.11], [0, yy, zd + 0.04], 0.055, 'red', 'frame');
+        stick(out, [0.34, yy, z0 + 0.11], [0, yy, zd + 0.04], 0.055, 'red', 'frame');
+        stick(out, [-0.24, yy, z0 + 0.3], [0.24, yy, z0 + 0.3], 0.045, 'red', 'frame');
+        stick(out, [-0.34, yy, z0 + 0.11], [xc, yy, zc], 0.05, 'red', 'frame');
+        stick(out, [0, yy, zd + 0.04], [xc, yy, zc], 0.045, 'red', 'frame');
+        prismY(out, ring(0, zd, 0.06, 10), yy - 0.035, yy + 0.035, 'red', 'frame.boss', 0.1);
+        prismY(out, ring(xc, zc, 0.045, 8), yy - 0.035, yy + 0.035, 'red', 'frame.boss', 0.1); }
+      // the drum: rope wound in turns between two flanges, on its shaft
+      prismY(out, ring(0, zd, 0.022, 8), -0.47, 0.47, 'iron', 'shaft');
+      for (const s of [-1, 1]) prismY(out, ring(0, zd, 0.19, 16), s > 0 ? 0.255 : -0.28, s > 0 ? 0.28 : -0.255, 'iron', 'drum.flange');
+      for (let k = 0; k < 9; k++) { const y0 = -0.255 + k * 0.0567; prismY(out, ring(0, zd, k % 2 ? 0.148 : 0.155, 16), y0, y0 + 0.0567, 'rope', 'drum.rope', k % 2 ? -0.1 : 0.08); }
+      // the spur wheel on the show face and the pinion that drives it, toothed
+      // the spur wheel is a toothed rim on six spokes, open between them, so the drum shows through
+      const nt = 18, ri = gr - 0.055;
+      for (let k = 0; k < nt; k++) { const a0 = k / nt * 2 * Math.PI, a1 = (k + 1) / nt * 2 * Math.PI, am = (a0 + a1) / 2, C = (a, r) => [Math.cos(a) * r, zd + Math.sin(a) * r];
+        prismY(out, [C(a0, ri), C(a1, ri), C(a1, gr), C(am + 0.06, gr + 0.03), C(am - 0.06, gr + 0.03), C(a0, gr)], 0.38, 0.415, 'iron', 'gear.rim', k % 2 ? 0 : 0.08); }
+      for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3 + 0.26; stick(out, [Math.cos(a) * 0.05, 0.398, zd + Math.sin(a) * 0.05], [Math.cos(a) * (ri + 0.01), 0.398, zd + Math.sin(a) * (ri + 0.01)], 0.03, 'iron', 'gear.spoke'); }
+      prismY(out, ring(0, zd, 0.06, 10), 0.37, 0.44, 'iron', 'gear.hub', 0.2);
+      prismY(out, ring(xc, zc, pr, 16, true, 0.025), 0.38, 0.415, 'iron', 'pinion');
+      // the ratchet and its pawl on the back face
+      prismY(out, ring(0, zd, 0.12, 24, true, 0.02), -0.42, -0.39, 'rust', 'ratchet');
+      stick(out, [-0.2, -0.41, zd + 0.12], [-0.06, -0.41, zd + 0.1], 0.03, 'iron', 'pawl');
+      // the crank shaft and its two cranks, set opposite: the show-face crank down and forward, the back one up
+      prismY(out, ring(xc, zc, 0.02, 8), -0.52, 0.53, 'iron', 'crank.shaft');
+      const arm = 0.28;
+      stick(out, [xc, 0.5, zc], [xc + arm * 0.45, 0.5, zc - arm * 0.9], 0.04, 'iron', 'crank.arm');
+      stick(out, [xc + arm * 0.45, 0.5, zc - arm * 0.9], [xc + arm * 0.45, 0.66, zc - arm * 0.9], 0.045, 'wood', 'crank.grip');
+      stick(out, [xc, -0.5, zc], [xc - arm * 0.45, -0.5, zc + arm * 0.9], 0.04, 'iron', 'crank.arm');
+      stick(out, [xc - arm * 0.45, -0.5, zc + arm * 0.9], [xc - arm * 0.45, -0.66, zc + arm * 0.9], 0.045, 'wood', 'crank.grip');
+      // the rope off the drum's underside toward +x, down to the stage and along it to the cart's drawbar
+      const r0 = [0.06, 0, zd - 0.15], r1 = [0.42, 0, z0 + 0.03], r2 = [o.lead, 0, z0 + 0.02];
+      stick(out, r0, r1, 0.03, 'rope', 'rope'); stick(out, r1, r2, 0.03, 'rope', 'rope');
+      return { faces: out, mats: mats(['wood', 'iron', 'rust', 'rope', 'red']),
+        anchors: { crank: [xc + arm * 0.45, 0.62, zc - arm * 0.9], ropeEnd: r2, drum: [0, 0, zd], stand: [xc + 0.1, 0.95, z0], words: [] } };
+    },
+    notes: 'Raised. Stands on the trolley stage beyond the buffer, rope lead (+x) toward the cart. stand is where a cranker stands; crank is the grip.',
   };
 
   // ---- the smoke (fx.stp_cannery_smoke): the restored cannery's plume, a runtime overlay, not a sprite --------------------

@@ -16,86 +16,86 @@ MonoBehaviour:
   DisplayName: Trolley line
   RigKey: trolleyLine
   SceneId: keyscene.stp_cannery
-  BakedOptionsJson: '{"path":[[0,0],[4.01,-4.17],[6.41,-7.17],[8.01,-9.27]],"gauge":0.6,"decay":"derelict","seed":7}'
+  BakedOptionsJson: '{"path":[[0,0],[3.4,-2.4],[5.6,-3.95],[6.7,-4.5],[7.6,-4.73],[8.46,-4.73]],"gauge":0.6,"decay":"derelict","seed":7,"lift":"none"}'
   Layer: floor
   Walk: on
   Mount: ground
-  BoundsMin: {x: -0.511, y: -9.676, z: 0}
-  BoundsMax: {x: 8.542, y: 0.491, z: 0.465}
+  BoundsMin: {x: -0.488, y: -5.643, z: 0}
+  BoundsMax: {x: 8.628, y: 0.696, z: 0.105}
   Frames:
   - Sprite: {fileID: 1071240320091042161, guid: ac26b0c27041df344b2a3e2003c41818, type: 3}
     RigDir: 0
     ShowFaces: N
     BearingDeg: 0
     CameraSees: its back
-    NativeSize: {x: 297, y: 217}
-    NativePivot: {x: 20, y: 14}
+    NativeSize: {x: 299, y: 138}
+    NativePivot: {x: 19, y: 18}
     Crop: {x: 4, y: 4}
-    Pivot: {x: 16, y: 10}
+    Pivot: {x: 15, y: 14}
   - Sprite: {fileID: -5539112420125556944, guid: ac26b0c27041df344b2a3e2003c41818, type: 3}
     RigDir: 7
     ShowFaces: NE
     BearingDeg: 45
     CameraSees: its back
-    NativeSize: {x: 80, y: 263}
-    NativePivot: {x: 53, y: 6}
+    NativeSize: {x: 139, y: 215}
+    NativePivot: {x: 30, y: 7}
     Crop: {x: 4, y: 3}
-    Pivot: {x: 49, y: 3}
+    Pivot: {x: 26, y: 4}
   - Sprite: {fileID: 2092928035224988202, guid: ac26b0c27041df344b2a3e2003c41818, type: 3}
     RigDir: 6
     ShowFaces: E
     BearingDeg: 90
     CameraSees: the show face, edge-on or at a diagonal
-    NativeSize: {x: 333, y: 194}
-    NativePivot: {x: 313, y: 14}
-    Crop: {x: 4, y: 4}
-    Pivot: {x: 309, y: 10}
+    NativeSize: {x: 210, y: 195}
+    NativePivot: {x: 184, y: 14}
+    Crop: {x: 3, y: 4}
+    Pivot: {x: 181, y: 10}
   - Sprite: {fileID: 7492895981216867507, guid: ac26b0c27041df344b2a3e2003c41818, type: 3}
     RigDir: 5
     ShowFaces: SE
     BearingDeg: 135
     CameraSees: the show face
-    NativeSize: {x: 402, y: 54}
-    NativePivot: {x: 397, y: 36}
-    Crop: {x: 3, y: 4}
-    Pivot: {x: 394, y: 32}
+    NativeSize: {x: 330, y: 92}
+    NativePivot: {x: 321, y: 21}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 317, y: 17}
   - Sprite: {fileID: -4972453422737620070, guid: ac26b0c27041df344b2a3e2003c41818, type: 3}
     RigDir: 4
     ShowFaces: S
     BearingDeg: 180
     CameraSees: the show face
-    NativeSize: {x: 297, y: 217}
-    NativePivot: {x: 277, y: 203}
+    NativeSize: {x: 299, y: 138}
+    NativePivot: {x: 280, y: 120}
     Crop: {x: 4, y: 4}
-    Pivot: {x: 273, y: 199}
+    Pivot: {x: 276, y: 116}
   - Sprite: {fileID: -188276055836539024, guid: ac26b0c27041df344b2a3e2003c41818, type: 3}
     RigDir: 3
     ShowFaces: SW
     BearingDeg: 225
     CameraSees: the show face
-    NativeSize: {x: 80, y: 271}
-    NativePivot: {x: 26, y: 267}
-    Crop: {x: 3, y: 3}
-    Pivot: {x: 23, y: 264}
+    NativeSize: {x: 139, y: 215}
+    NativePivot: {x: 108, y: 208}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 104, y: 204}
   - Sprite: {fileID: 8845643306398823871, guid: ac26b0c27041df344b2a3e2003c41818, type: 3}
     RigDir: 2
     ShowFaces: W
     BearingDeg: 270
     CameraSees: the show face, edge-on or at a diagonal
-    NativeSize: {x: 333, y: 199}
-    NativePivot: {x: 19, y: 185}
-    Crop: {x: 3, y: 4}
-    Pivot: {x: 16, y: 181}
+    NativeSize: {x: 210, y: 195}
+    NativePivot: {x: 26, y: 181}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 22, y: 177}
   - Sprite: {fileID: -1657928754648862829, guid: ac26b0c27041df344b2a3e2003c41818, type: 3}
     RigDir: 1
     ShowFaces: NW
     BearingDeg: 315
     CameraSees: its back
-    NativeSize: {x: 402, y: 54}
-    NativePivot: {x: 4, y: 18}
-    Crop: {x: 4, y: 3}
-    Pivot: {x: 0, y: 15}
-  CellSize: {x: 395, y: 265}
+    NativeSize: {x: 330, y: 92}
+    NativePivot: {x: 8, y: 71}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 4, y: 67}
+  CellSize: {x: 321, y: 208}
   PixelsPerMetre: 32
   ElevationDeg: 40
   BakedLit: 0
@@ -103,9 +103,11 @@ MonoBehaviour:
   Anchors: []
   Path:
   - {x: 0, y: 0}
-  - {x: 4.01, y: -4.17}
-  - {x: 6.41, y: -7.17}
-  - {x: 8.01, y: -9.27}
+  - {x: 3.4, y: -2.4}
+  - {x: 5.6, y: -3.95}
+  - {x: 6.7, y: -4.5}
+  - {x: 7.6, y: -4.73}
+  - {x: 8.46, y: -4.73}
   TideMarks: []
   Words: []
   HasLight: 0
@@ -120,3 +122,22 @@ MonoBehaviour:
     BakedAtDeg: 0
     RigDir: 0
     Headings: []
+  GameplayJson: '{"schema":"hidden-harbours/st-peters-set-piece@1","generatedBy":"StPetersSetPieces
+    1.0.0","key":"trolleyLine","id":"structure.stp_cannery_trolley_line","name":"Trolley
+    line","defType":"SetPieceDef","scene":"keyscene.stp_cannery","units":"metres,
+    the piece''s own frame: +x right, +y the show face, +z up from its ground point
+    (the pivot)","bounds":{"x":[-0.488,8.628],"y":[-5.643,0.696],"z":[0,0.105]},"layer":"floor","walk":"on","mount":"ground","colliders":[],"facings":[{"dir":0,"showFaces":"N","bearingDeg":0,"cameraSees":"its
+    back"},{"dir":1,"showFaces":"NW","bearingDeg":315,"cameraSees":"its back"},{"dir":2,"showFaces":"W","bearingDeg":270,"cameraSees":"the
+    show face, edge-on or at a diagonal"},{"dir":3,"showFaces":"SW","bearingDeg":225,"cameraSees":"the
+    show face"},{"dir":4,"showFaces":"S","bearingDeg":180,"cameraSees":"the show
+    face"},{"dir":5,"showFaces":"SE","bearingDeg":135,"cameraSees":"the show face"},{"dir":6,"showFaces":"E","bearingDeg":90,"cameraSees":"the
+    show face, edge-on or at a diagonal"},{"dir":7,"showFaces":"NE","bearingDeg":45,"cameraSees":"its
+    back"}],"cells":[{"dir":0,"w":299,"h":138,"pivot":[19,18]},{"dir":1,"w":330,"h":92,"pivot":[8,71]},{"dir":2,"w":210,"h":195,"pivot":[26,181]},{"dir":3,"w":139,"h":215,"pivot":[108,208]},{"dir":4,"w":299,"h":138,"pivot":[280,120]},{"dir":5,"w":330,"h":92,"pivot":[321,21]},{"dir":6,"w":210,"h":195,"pivot":[184,14]},{"dir":7,"w":139,"h":215,"pivot":[30,7]}],"anchors":{"path":[[0,0],[3.4,-2.4],[5.6,-3.95],[6.7,-4.5],[7.6,-4.73],[8.46,-4.73]],"words":[],"px":{}},"options":{"path":[[0,0],[3.4,-2.4],[5.6,-3.95],[6.7,-4.5],[7.6,-4.73],[8.46,-4.73]],"gauge":0.6,"decay":"derelict","seed":7,"lift":"none"},"light":null,"animated":null,"notes":"A
+    floor piece, walked on; the path is in the piece''s own metres from its origin
+    (the cannery door end)."}'
+  State: 
+  Variants: []
+  HasVendor: 0
+  Vendor:
+    Seller: 
+    At: {x: 0, y: 0, z: 0}

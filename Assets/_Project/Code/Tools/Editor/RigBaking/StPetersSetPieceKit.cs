@@ -50,7 +50,8 @@ namespace HiddenHarbours.Tools.RigBaking
             "stPetersSetPieces.js",
         };
 
-        /// <summary>The eight pieces, rig key to Def id, in the kit's own KEYS order.</summary>
+        /// <summary>The pieces, rig key to Def id, in the kit's own KEYS order: the delivered eight, then the
+        /// trolley line's loading stage and its hand winch.</summary>
         public static readonly IReadOnlyList<KeyValuePair<string, string>> Pieces = new[]
         {
             new KeyValuePair<string, string>("slipTideBoard", "prop.stp_slip_tide_board"),
@@ -61,6 +62,8 @@ namespace HiddenHarbours.Tools.RigBaking
             new KeyValuePair<string, string>("conveyor", "prop.stp_cannery_conveyor"),
             new KeyValuePair<string, string>("fallenSign", "prop.stp_cannery_fallen_sign"),
             new KeyValuePair<string, string>("doorNotice", "prop.stp_cannery_door_notice"),
+            new KeyValuePair<string, string>("trolleyStage", "structure.stp_cannery_trolley_stage"),
+            new KeyValuePair<string, string>("handWinch", "prop.stp_cannery_hand_winch"),
         };
 
         public static string SidecarPath(string id) => $"{GameplayFolder}/{id}.gameplay.json";

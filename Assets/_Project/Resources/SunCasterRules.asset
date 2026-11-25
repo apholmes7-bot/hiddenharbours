@@ -54,6 +54,8 @@ MonoBehaviour:
   - '*Smoke*'
   - DeckRider
   - 'DeckGear_*'
+  - '*trolley_line*'
+  - '*trolley_stage*'
   ExcludedScenes:
   - 'InitTestScene*'
   Classes:
