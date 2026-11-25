@@ -172,11 +172,14 @@ namespace HiddenHarbours.Fishing
         {
             get
             {
-                if (_requireRodInHand && !CarriedItem.InHand(_rodToolId)) return false;
+                if (_requireRodInHand && !RodInHand) return false;
                 if (_requireRodOwnership && !OwnsRod()) return false;
                 return true;
             }
         }
+
+        private bool RodInHand => CarriedItem.InHand(_rodToolId)
+            || (_rodToolId == "tool.rod" && CarriedRod.TryRead(GameServices.Hands, out _));
 
         private bool OwnsRod()
         {
@@ -288,7 +291,7 @@ namespace HiddenHarbours.Fishing
             if (_requireReleaseBeforeCast) return;
             if (InteractionGate.IsBlocked || ShellFlow.WorldInputBlocked || CastActionClaim.IsClaimed) return;
 
-            bool rodInHand = CarriedItem.InHand(_rodToolId);
+            bool rodInHand = RodInHand;
             if (_mode == ControlMode.Aboard)
             {
                 if (rodInHand) EventBus.Publish(new DevNotice(NoticeCastAtHelm));

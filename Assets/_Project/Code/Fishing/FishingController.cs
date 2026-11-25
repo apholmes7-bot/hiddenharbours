@@ -17,7 +17,7 @@ namespace HiddenHarbours.Fishing
     /// character (the rod rig follows it — the baked Fisher_castBack sheet animates off the WindBack
     /// phase). Releasing evaluates the whole gesture through the pure <see cref="FlickCastMath"/>:
     /// direction = the flick vector, RANGE = how far you wound back (capped per rod — the cap is
-    /// <see cref="GameConfig.FlickCast"/> data today, per-gear later), SNAP = how hard you swept forward,
+    /// the held rod's numeric profile), SNAP = how hard you swept forward,
     /// which decides how much of that range you deliver. A good flick flies the line (Cast phase) out to
     /// <see cref="LastCast"/>.LandingPoint; a weak one is just a SHORT cast, and a gesture that never
     /// wound back simply doesn't fly — reel in, recast, no penalty.</para>
@@ -77,12 +77,6 @@ namespace HiddenHarbours.Fishing
         [SerializeField] private GameConfig _config;
 
         [Header("Interaction tuning (forgiving — no magic numbers)")]
-        [Tooltip("Shortest wait for a bite after casting (real seconds).")]
-        [SerializeField] private float _minBiteDelay = 1.5f;
-        [Tooltip("Longest wait for a bite after casting (real seconds).")]
-        [SerializeField] private float _maxBiteDelay = 4.0f;
-        [Tooltip("Forgiving hook window after a bite: press to hook early, else it auto-hooks (real seconds).")]
-        [SerializeField] private float _hookWindow = 1.2f;
         [Tooltip("How long a Landed/Snapped/NoBite result is shown before returning to Idle (real seconds).")]
         [SerializeField] private float _resultDisplay = 1.5f;
 
@@ -103,6 +97,31 @@ namespace HiddenHarbours.Fishing
                  "her: a fish well down moves the entry point a little, not a lot. 0 pins the line dead " +
                  "still while deep — which leaves the deep half unreadable now that the bars are gone.")]
         [Range(0f, 1f)] [SerializeField] private float _deepEntryRoamFraction = 0.45f;
+
+        private RodFishingProfile _rod = RodFishingProfile.Default;
+        private RodFishingProfile? _configuredRod;
+
+        /// <summary>Session-only rig override; live play reads the held rod at each new cast.</summary>
+        public void ConfigureRod(RodFishingProfile? profile)
+        {
+            if (profile.HasValue && !profile.Value.IsValid)
+                throw new System.ArgumentException("Invalid rod profile.", nameof(profile));
+            _configuredRod = profile;
+        }
+
+        public RodFishingProfile RodSnapshot => _rod;
+
+        private void CaptureRod()
+        {
+            if (_configuredRod.HasValue) { _rod = _configuredRod.Value; return; }
+            if (CarriedRod.TryRead(GameServices.Hands, out _rod)) return;
+            _rod = RodFishingProfile.Default;
+            // Unwired rigs retain their authored configuration; held rods own these limits.
+            if (_config == null) return;
+            _rod.CastMetres = _config.FlickCast.MaxCastDistanceMetres;
+            _rod.LineMetres = _config.DepthDrop.MaxLineMeters;
+            _rod.ReelUpMetresPerSecond = _config.DepthDrop.ReelUpMps;
+        }
 
         private IHold _hold;
         private System.Random _rng;
@@ -420,6 +439,7 @@ namespace HiddenHarbours.Fishing
                 return;
             }
 
+            CaptureRod();
             _pendingFish = null;
             _pendingWeight = 0f;
 
@@ -474,9 +494,7 @@ namespace HiddenHarbours.Fishing
                 _gestureScratch[i] = _gestureRing[(start + i) % GestureCapacity];
 
             FlickCastSettings s = _config != null ? _config.FlickCast : FlickCastSettings.Default;
-            // The per-gear cap seam: today the cap is the GameConfig field; a rod/tackle GearDef's own
-            // cap slots in here later (P4 upgrades extend the reach) without touching the maths.
-            float cap = s.MaxCastDistanceMetres;
+            float cap = _rod.CastMetres;
 
             FlickCastResult cast = FlickCastMath.Evaluate(
                 _gestureScratch, _gestureCount, AnglerPosition, in s, cap);
@@ -600,13 +618,13 @@ namespace HiddenHarbours.Fishing
             // RodFightDef shape); everything else keeps the forgiving auto-hook window exactly.
             if (fish.Bite != null)
             {
-                _biteSim = new BiteSequenceSim(fish.Bite.ToProfile(), _rng);
+                _biteSim = new BiteSequenceSim(fish.Bite.ToProfile(_rod.TakeWindowMultiplier), _rng);
                 _strikeYank.Reset();   // a fresh sequence starts with a clean pull-back accumulator
                 Emit(BitePhases.ToFishingPhase(_biteSim.Phase), 0f, 0f);
                 return;
             }
 
-            _phaseTimer = _hookWindow;
+            _phaseTimer = _rod.AutoHookSeconds;
             Emit(FishingPhase.Bite, 0f, 0f);
         }
 
@@ -681,7 +699,7 @@ namespace HiddenHarbours.Fishing
             if (!tend) AnnounceBigOne();
             if (_pendingFish.RodFight != null && !tend)
             {
-                _rodFight = new RodFightSim(_pendingFish.RodFight, _rng);
+                _rodFight = new RodFightSim(_pendingFish.RodFight, _rng, _rod);
                 _lastSteerAlignment = 0f;
                 // The surface anchor — where the line entered the water: the cast's landing point on
                 // the cast path, the rig's drop spot (the angler) on the depth path. The fish's
@@ -697,7 +715,7 @@ namespace HiddenHarbours.Fishing
             }
 
             var tuning = FishFightTuning.For(
-                _pendingFish.Category, _pendingWeight, _pendingFish.MinWeightKg, _pendingFish.MaxWeightKg);
+                _pendingFish.Category, _pendingWeight, _pendingFish.MinWeightKg, _pendingFish.MaxWeightKg, _rod);
             _fight = new FishFight(in tuning, _rng);
 
             Emit(tend ? FishingPhase.Tending : FishingPhase.Fighting, 0f, 0f);
@@ -1061,7 +1079,7 @@ namespace HiddenHarbours.Fishing
                 if (!_lastPointerValid) return Vector2.zero;
                 FlickCastSettings s = _config != null ? _config.FlickCast : FlickCastSettings.Default;
                 return FlickCastMath.WindBackAimOffset(_lastPointerWorld, AnglerPosition,
-                                                       s.FullRangeWindBackMetres, s.MaxCastDistanceMetres);
+                                                       s.FullRangeWindBackMetres, _rod.CastMetres);
             }
 
             if (_depthGame || !_lastCast.IsCast) return Vector2.zero;
@@ -1179,8 +1197,8 @@ namespace HiddenHarbours.Fishing
         /// before.</para></summary>
         private float RandomBiteDelay()
         {
-            float lo = Mathf.Min(_minBiteDelay, _maxBiteDelay);
-            float hi = Mathf.Max(_minBiteDelay, _maxBiteDelay);
+            float lo = Mathf.Min(_rod.MinBiteDelaySeconds, _rod.MaxBiteDelaySeconds);
+            float hi = Mathf.Max(_rod.MinBiteDelaySeconds, _rod.MaxBiteDelaySeconds);
             float delay = lo + (float)(_rng?.NextDouble() ?? 0.0) * (hi - lo);
 
             SeaFishingSettings s = _config != null ? _config.SeaFishing : SeaFishingSettings.Default;
@@ -1261,7 +1279,7 @@ namespace HiddenHarbours.Fishing
             _depthGame = true;
             _depthM = 0f;
             _bottomed = false;
-            _floorM = DepthDropMath.FloorMeters(columnM, DepthSettings.MaxLineMeters);
+            _floorM = DepthDropMath.FloorMeters(columnM, _rod.LineMetres);
             PromiseAFeedingSea();
             Emit(FishingPhase.Sinking, 0f, 0f);
         }
@@ -1287,7 +1305,7 @@ namespace HiddenHarbours.Fishing
         private void TickDepthHold(float dt, bool actionHeld)
         {
             if (!actionHeld) return;
-            _depthM = DepthDropMath.ReelStep(_depthM, DepthSettings.ReelUpMps, dt);
+            _depthM = DepthDropMath.ReelStep(_depthM, _rod.ReelUpMetresPerSecond, dt);
             _bottomed = DepthDropMath.IsBottomed(_depthM, _floorM);
             Emit(FishingPhase.Waiting, 0f, 0f);
         }

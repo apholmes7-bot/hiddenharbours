@@ -46,6 +46,10 @@ namespace HiddenHarbours.Fishing
         /// weight sits in the species' size range.
         /// </summary>
         public static FishFightTuning For(FishCategory category, float weightKg, float minKg, float maxKg)
+            => For(category, weightKg, minKg, maxKg, RodFishingProfile.Default);
+
+        public static FishFightTuning For(FishCategory category, float weightKg, float minKg, float maxKg,
+                                         in RodFishingProfile rod)
         {
             if (IsHandGathered(category))
             {
@@ -61,12 +65,12 @@ namespace HiddenHarbours.Fishing
             // Bigger = tension rises faster (tighter band) and lands slower (longer fight); easing stays
             // generous so the fight reads as forgiving. Surges get more frequent with strength.
             return new FishFightTuning(
-                risePerSec:    Mathf.Lerp(0.60f, 1.00f, strength),
-                fallPerSec:    Mathf.Lerp(0.70f, 0.50f, strength),
-                landingPerSec: Mathf.Lerp(0.40f, 0.22f, strength),
-                surgeInterval: Mathf.Lerp(3.0f, 1.6f, strength),
-                surgeDuration: 0.8f,
-                surgePressure: Mathf.Lerp(0.15f, 0.40f, strength),
+                risePerSec:    Mathf.Lerp(rod.TensionRiseEasy, rod.TensionRiseHard, strength) / rod.LineStrengthMultiplier,
+                fallPerSec:    Mathf.Lerp(rod.TensionFallEasy, rod.TensionFallHard, strength),
+                landingPerSec: Mathf.Lerp(rod.LandingEasy, rod.LandingHard, strength) * rod.LandingMultiplier,
+                surgeInterval: Mathf.Lerp(rod.SurgeIntervalEasy, rod.SurgeIntervalHard, strength),
+                surgeDuration: rod.SurgeDurationSeconds,
+                surgePressure: Mathf.Lerp(rod.SurgePressureEasy, rod.SurgePressureHard, strength) / rod.LineStrengthMultiplier,
                 snapEnabled:   true);
         }
 
