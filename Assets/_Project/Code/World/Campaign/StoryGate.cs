@@ -9,9 +9,10 @@ namespace HiddenHarbours.World
     {
         /// <summary>Their ordinary talk; the gate has nothing to add.</summary>
         Normal,
-        /// <summary>Their ordinary talk, and one line about the first thing still to do.</summary>
+        /// <summary>Their ordinary talk, and one line more: the first thing still to do, a word to come
+        /// back at the right hour, or (in a demo, after the word) that there is fishing here yet.</summary>
         Hint,
-        /// <summary>The word: every fact holds. Heard to its end, it sets the gate's flag.</summary>
+        /// <summary>The word: every fact holds and the hour is right. Heard to its end, it is given.</summary>
         Word,
     }
 
@@ -19,14 +20,14 @@ namespace HiddenHarbours.World
     public readonly struct StoryGateTalk
     {
         public readonly StoryGateTalkKind Kind;
-        /// <summary>The word's lines, or the one hint line. Null for <see cref="StoryGateTalkKind.Normal"/>.</summary>
+        /// <summary>The word's lines, or the one added line. Null for <see cref="StoryGateTalkKind.Normal"/>.</summary>
         public readonly string[] Lines;
-        /// <summary>The flag the word sets. Null unless this is the word.</summary>
-        public readonly string SetsFlag;
+        /// <summary>The gate that answered. Null for <see cref="StoryGateTalkKind.Normal"/>.</summary>
+        public readonly StoryGateDef Gate;
 
-        public StoryGateTalk(StoryGateTalkKind kind, string[] lines, string setsFlag)
+        public StoryGateTalk(StoryGateTalkKind kind, string[] lines, StoryGateDef gate)
         {
-            Kind = kind; Lines = lines; SetsFlag = setsFlag;
+            Kind = kind; Lines = lines; Gate = gate;
         }
 
         public static StoryGateTalk Normal => default;
@@ -34,15 +35,15 @@ namespace HiddenHarbours.World
 
     /// <summary>
     /// The rule of a story gate, with no scene, clock or save service in it: given the gate's data,
-    /// the saved flags and a reading of the facts, what does a Talk become and what does the Tasks
-    /// note say.
+    /// the saved flags, a reading of the facts, the hour and whether this is a demo, what does a Talk
+    /// become and what does the Tasks note say. The same inputs always give the same answer.
     /// </summary>
     public static class StoryGate
     {
         /// <summary>
-        /// True while the gate has work to do: the flag it waits on (if it names one) is set and the flag
-        /// it sets is not. A save that never had the first written never meets the gate; a save that has
-        /// the second is past it for good.
+        /// True while the word is still to be given: the flag the gate waits on (if it names one) is set
+        /// and the flag it sets is not. A save that never had the first written never meets the gate; a
+        /// save that has the second has heard the word.
         /// </summary>
         public static bool IsLive(StoryGateDef gate, IFlagStore flags)
         {
@@ -51,36 +52,52 @@ namespace HiddenHarbours.World
             return string.IsNullOrEmpty(gate.LiveWhileFlag) || flags.Get(gate.LiveWhileFlag);
         }
 
+        /// <summary>True once the word has been given in this save.</summary>
+        public static bool IsGiven(StoryGateDef gate, IFlagStore flags)
+            => gate != null && flags != null && !string.IsNullOrEmpty(gate.SetsFlag) && flags.Get(gate.SetsFlag);
+
         /// <summary>
-        /// What a Talk with the gate's islander is. The word only when every fact holds; before that,
+        /// What a Talk with the gate's islander is. The word only when every fact holds AND the hour is
+        /// inside the gate's window; with the facts but not the hour, a line to come back; before that,
         /// one line about the FIRST missing fact (the reading's own order), so asking twice gives the
-        /// same answer while nothing has changed.
+        /// same answer while nothing has changed. After the word she talks as ever, except in a demo,
+        /// where she has one line more.
         /// </summary>
-        public static StoryGateTalk Talk(StoryGateDef gate, IFlagStore flags, in IslandWeekSnapshot facts)
+        public static StoryGateTalk Talk(StoryGateDef gate, IFlagStore flags, in IslandWeekSnapshot facts,
+                                         float hourOfDay, bool demo)
         {
+            if (IsGiven(gate, flags))
+                return demo ? Added(gate, gate.DemoAfterLine) : StoryGateTalk.Normal;
             if (!IsLive(gate, flags)) return StoryGateTalk.Normal;
 
             if (facts.AllHold)
             {
-                string[] word = gate.Word != null ? gate.Word.FirstLines : null;
+                if (!gate.InHours(hourOfDay)) return Added(gate, gate.OutsideHoursLine);
+                string[] word = gate.WordLines(demo);
                 // A gate with nothing to say stays shut: the flag is only ever set by a word he heard.
-                if (word == null || word.Length == 0) return StoryGateTalk.Normal;
-                return new StoryGateTalk(StoryGateTalkKind.Word, word, gate.SetsFlag);
+                return word == null ? StoryGateTalk.Normal : new StoryGateTalk(StoryGateTalkKind.Word, word, gate);
             }
 
-            return TryFirstMissing(gate, in facts, out StoryGateNote note) && !string.IsNullOrWhiteSpace(note.SpokenHint)
-                ? new StoryGateTalk(StoryGateTalkKind.Hint, new[] { note.SpokenHint }, null)
+            return TryFirstMissing(gate, in facts, out StoryGateNote note)
+                ? Added(gate, note.SpokenHint)
                 : StoryGateTalk.Normal;
         }
 
-        /// <summary>The Tasks note for the first missing fact, or null (not live, all hold, or no row).</summary>
+        /// <summary>The Tasks note: the first missing fact's, or the gate's own once every fact holds.
+        /// Null when the gate is not live or has nothing to say.</summary>
         public static string TaskNote(StoryGateDef gate, IFlagStore flags, in IslandWeekSnapshot facts)
         {
-            if (!IsLive(gate, flags) || facts.AllHold) return null;
+            if (!IsLive(gate, flags)) return null;
+            if (facts.AllHold) return string.IsNullOrWhiteSpace(gate.AllHoldNote) ? null : gate.AllHoldNote;
             return TryFirstMissing(gate, in facts, out StoryGateNote note) && !string.IsNullOrWhiteSpace(note.TaskNote)
                 ? note.TaskNote
                 : null;
         }
+
+        private static StoryGateTalk Added(StoryGateDef gate, string line)
+            => string.IsNullOrWhiteSpace(line)
+                ? StoryGateTalk.Normal
+                : new StoryGateTalk(StoryGateTalkKind.Hint, new[] { line }, gate);
 
         private static bool TryFirstMissing(StoryGateDef gate, in IslandWeekSnapshot facts, out StoryGateNote note)
         {
@@ -93,8 +110,14 @@ namespace HiddenHarbours.World
 
     /// <summary>
     /// The shipped story gates and the live reading behind them: the one place the talk and the
-    /// Tasks note ask. The facts come through <see cref="GameServices.IslandWeek"/>, the day from the
-    /// Core clock, the flags from the caller's own store.
+    /// Tasks note ask, and the one place a word is given. The facts come through
+    /// <see cref="GameServices.IslandWeek"/>, the day and hour from the Core clock, the flags from the
+    /// caller's own store.
+    ///
+    /// <para><b>The word belongs to the household.</b> The flags are the save's, and the save is shared:
+    /// whoever talks to her hears the word, and it is given for everyone. Nothing here names a player.
+    /// With guests in the game, a guest's <see cref="Give"/> has to be carried to the host, who owns
+    /// the save; until there are guests the caller's store IS the host's.</para>
     /// </summary>
     public static class StoryGates
     {
@@ -129,16 +152,6 @@ namespace HiddenHarbours.World
             _gates = gates;
         }
 
-        /// <summary>The live gate carried by <paramref name="npcId"/>'s talk, or null.</summary>
-        public static StoryGateDef LiveFor(string npcId, IFlagStore flags)
-        {
-            if (string.IsNullOrEmpty(npcId)) return null;
-            IReadOnlyList<StoryGateDef> all = All;
-            for (int i = 0; i < all.Count; i++)
-                if (all[i] != null && all[i].NpcId == npcId && StoryGate.IsLive(all[i], flags)) return all[i];
-            return null;
-        }
-
         /// <summary>The first live gate, or null. Two flag reads per gate and no allocation: cheap enough
         /// to ask every frame before paying for a reading of the facts.</summary>
         public static StoryGateDef FirstLive(IFlagStore flags)
@@ -149,13 +162,35 @@ namespace HiddenHarbours.World
             return null;
         }
 
-        /// <summary>What a Talk with <paramref name="npcId"/> is, right now.</summary>
+        /// <summary>What a Talk with <paramref name="npcId"/> is, right now. The first of their gates
+        /// with anything to say answers.</summary>
         public static StoryGateTalk TalkWith(string npcId, IFlagStore flags)
         {
-            StoryGateDef gate = LiveFor(npcId, flags);
-            if (gate == null) return StoryGateTalk.Normal;
-            IslandWeekSnapshot facts = ReadFacts();
-            return StoryGate.Talk(gate, flags, in facts);
+            if (string.IsNullOrEmpty(npcId) || flags == null) return StoryGateTalk.Normal;
+            IReadOnlyList<StoryGateDef> all = All;
+            for (int i = 0; i < all.Count; i++)
+            {
+                StoryGateDef gate = all[i];
+                if (gate == null || gate.NpcId != npcId) continue;
+                if (!StoryGate.IsLive(gate, flags) && !StoryGate.IsGiven(gate, flags)) continue;
+                StoryGateTalk talk = Now(gate, flags);
+                if (talk.Kind != StoryGateTalkKind.Normal) return talk;
+            }
+            return StoryGateTalk.Normal;
+        }
+
+        /// <summary>
+        /// The word was heard to its end: give it. Asked again here, so a word begun at the last minute
+        /// of the window, or under facts that no longer hold, is not given. True when it was. It writes
+        /// the gate's flag once and raises <see cref="StoryWordGiven"/> once; a second call does nothing.
+        /// </summary>
+        public static bool Give(StoryGateDef gate, IFlagStore flags)
+        {
+            if (gate == null || flags == null) return false;
+            if (Now(gate, flags).Kind != StoryGateTalkKind.Word) return false;
+            flags.Set(gate.SetsFlag, true);
+            EventBus.Publish(new StoryWordGiven(gate.Id, gate.SetsFlag, gate.EndsDemo));
+            return true;
         }
 
         /// <summary>The Tasks note of the first live gate, right now, or null. It reads the facts, which
@@ -164,13 +199,20 @@ namespace HiddenHarbours.World
         {
             StoryGateDef gate = FirstLive(flags);
             if (gate == null) return null;
-            IslandWeekSnapshot facts = ReadFacts();
+            IslandWeekSnapshot facts = ReadFacts(out _);
             return StoryGate.TaskNote(gate, flags, in facts);
         }
 
-        private static IslandWeekSnapshot ReadFacts()
+        private static StoryGateTalk Now(StoryGateDef gate, IFlagStore flags)
+        {
+            IslandWeekSnapshot facts = ReadFacts(out float hour);
+            return StoryGate.Talk(gate, flags, in facts, hour, DemoBuild.Enabled);
+        }
+
+        private static IslandWeekSnapshot ReadFacts(out float hourOfDay)
         {
             IGameClock clock = GameServices.Clock;
+            hourOfDay = clock != null ? clock.HourOfDay : 0f;
             return GameServices.IslandWeek.Read(GameServices.Save?.Current, clock != null ? clock.DayIndex : 0);
         }
     }

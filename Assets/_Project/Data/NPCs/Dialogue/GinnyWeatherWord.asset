@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.DialogueDef
   Id: dialogue.ginny_weather_word
   FirstLines:
-  - "You've found your feet here, child. The weather's lifting off the island at last."
-  - "Try Nine Mile Creek when you're ready. Mind the tide."
+  - "You've found your feet here, child."
+  - "Try Nine Mile Creek come morning. Mind the tide."
   RepeatLines: []
   ConditionalFlag:
   ConditionalLines: []

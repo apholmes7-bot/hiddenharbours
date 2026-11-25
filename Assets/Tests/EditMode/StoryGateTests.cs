@@ -9,11 +9,12 @@ using HiddenHarbours.World;
 namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
-    /// <b>The end of the first week on St Peters, as a rule and as shipped data.</b> When the five
-    /// facts hold, an ordinary Talk with the gate's islander is the word; the word sets one saved flag;
-    /// that flag is what the four St Peters weather walls wait on. Before the facts hold she adds one
-    /// line about the first thing still to do, and the Tasks note says the same thing. A save that
-    /// never started the island week meets none of it.
+    /// <b>The islander's word at the end of the first week on St Peters, as a rule and as shipped
+    /// data.</b> When the five facts hold and it is evening, an ordinary Talk with the gate's islander
+    /// is the word; heard out, the word is given once: one saved flag, one signal. With the facts but
+    /// not the hour she asks him back; before the facts hold she adds one line about the first thing
+    /// still to do, and the Tasks note says the same thing. A save that never started the island week
+    /// meets none of it.
     ///
     /// <para>Everything here runs on the shipped assets (the gate, the rules, the walls) and a real
     /// <see cref="SaveData"/> behind a small flag service, so a change to the data is a change to what
@@ -24,9 +25,11 @@ namespace HiddenHarbours.Tests.EditMode
         private const string GatePath = "Assets/_Project/Data/Resources/StoryGates/StPetersWeather.asset";
         private const string RulesPath = "Assets/_Project/Data/Resources/IslandWeek.asset";
         private const string DataRoot = "Assets/_Project/Data";
+        private const float Evening = 19f;
+        private const float Noon = 12f;
 
         /// <summary>The flag service a save file is behind: flags live in the save's own list and nowhere else.</summary>
-        private sealed class FlagSave : ISaveService
+        internal sealed class FlagSave : ISaveService
         {
             public readonly Dictionary<string, int> Writes = new Dictionary<string, int>();
             public SaveData Current { get; set; } = new SaveData();
@@ -56,16 +59,38 @@ namespace HiddenHarbours.Tests.EditMode
             public void Save() { }
         }
 
+        /// <summary>A clock that is whatever day and hour the case says.</summary>
+        internal sealed class FixedClock : IGameClock
+        {
+            public int Day;
+            public float Hour = Evening;
+            public double TotalSeconds => (Day + Hour / 24.0) * GameConfig.DefaultSecondsPerDay;
+            public GameTime Now => new GameTime(TotalSeconds);
+            public Season Season => Season.EarlySpring;
+            public int Year => 1;
+            public int DayIndex => Day;
+            public int DayOfSeason => Day + 1;
+            public Weekday Weekday => Weekday.Monday;
+            public bool IsMarketDay => false;
+            public float HourOfDay => Hour;
+            public float DayFraction => Hour / 24f;
+            public bool IsPaused { get; set; }
+            public float TimeScale { get; set; } = 1f;
+        }
+
         private StoryGateDef _gate;
         private IslandWeekRulesDef _rules;
         private IslandWeekProgress _progress;
         private FlagSave _save;
         private SaveFlagStore _flags;
+        private FixedClock _clock;
+        private int _wordsGiven;
 
         [SetUp]
         public void SetUp()
         {
             GameServices.Reset();
+            DemoBuild.Override = false;
             _gate = AssetDatabase.LoadAssetAtPath<StoryGateDef>(GatePath);
             _rules = AssetDatabase.LoadAssetAtPath<IslandWeekRulesDef>(RulesPath);
             Assert.IsNotNull(_gate, "the shipped gate asset");
@@ -74,31 +99,39 @@ namespace HiddenHarbours.Tests.EditMode
             _save = new FlagSave();
             GameServices.Save = _save;
             GameServices.IslandWeek = _progress;
+            _clock = new FixedClock { Day = _rules.EarliestDay - 1 };
+            GameServices.Clock = _clock;
             _flags = new SaveFlagStore();
             StoryGates.Load(_gate);
+            _wordsGiven = 0;
+            EventBus.Subscribe<StoryWordGiven>(CountWord);
         }
 
         [TearDown]
         public void TearDown()
         {
+            EventBus.Unsubscribe<StoryWordGiven>(CountWord);
             StoryGates.Load(null);
+            DemoBuild.Override = null;
             GameServices.Reset();
         }
+
+        private void CountWord(StoryWordGiven e) => _wordsGiven++;
 
         // ---- fixtures ---------------------------------------------------------------------------
 
         private int EarliestDayIndex => _rules.EarliestDay - 1;
 
         /// <summary>A save in its island week holding exactly the saved facts of <paramref name="held"/>.</summary>
-        private SaveData WeekSave(IslandWeekFact held, bool firstWeek = true)
+        internal static SaveData WeekSave(StoryGateDef gate, IslandWeekRulesDef rules, IslandWeekFact held, bool firstWeek = true)
         {
             var save = new SaveData { SchemaVersion = SaveMigration.CurrentVersion };
             save.RepairedBoats = new List<string>();
             save.OwnedLicenses = new List<string>();
             save.OnboardingFlags = new List<SaveFlag>();
-            if (firstWeek) save.OnboardingFlags.Add(new SaveFlag(_gate.LiveWhileFlag, true));
-            if ((held & IslandWeekFact.DoryMended) != 0) save.RepairedBoats.Add(_rules.DoryId);
-            if ((held & IslandWeekFact.CodLicence) != 0) save.OwnedLicenses.Add(_rules.LicenceId);
+            if (firstWeek) save.OnboardingFlags.Add(new SaveFlag(gate.LiveWhileFlag, true));
+            if ((held & IslandWeekFact.DoryMended) != 0) save.RepairedBoats.Add(rules.DoryId);
+            if ((held & IslandWeekFact.CodLicence) != 0) save.OwnedLicenses.Add(rules.LicenceId);
             if ((held & IslandWeekFact.FishFromDory) != 0)
                 save.OnboardingFlags.Add(new SaveFlag(IslandWeekFactRecorder.FishFromDoryKey, true));
             if ((held & IslandWeekFact.ShellfishSold) != 0)
@@ -106,14 +139,16 @@ namespace HiddenHarbours.Tests.EditMode
             return save;
         }
 
+        private SaveData WeekSave(IslandWeekFact held, bool firstWeek = true) => WeekSave(_gate, _rules, held, firstWeek);
+
         private int DayFor(IslandWeekFact held)
             => (held & IslandWeekFact.DayReached) != 0 ? EarliestDayIndex : EarliestDayIndex - 1;
 
-        private StoryGateTalk TalkOn(SaveData save, int dayIndex)
+        private StoryGateTalk TalkOn(SaveData save, int dayIndex, float hour = Evening, bool demo = false)
         {
             _save.Current = save;
             IslandWeekSnapshot facts = _progress.Read(save, dayIndex);
-            return StoryGate.Talk(_gate, _flags, in facts);
+            return StoryGate.Talk(_gate, _flags, in facts, hour, demo);
         }
 
         private static List<CampaignBarrierDef> StPetersWalls()
@@ -137,14 +172,13 @@ namespace HiddenHarbours.Tests.EditMode
                 if (held == IslandWeekFact.All)
                 {
                     words++;
-                    Assert.AreEqual(StoryGateTalkKind.Word, talk.Kind, "every fact holds");
+                    Assert.AreEqual(StoryGateTalkKind.Word, talk.Kind, "every fact holds, in the evening");
                     CollectionAssert.AreEqual(_gate.Word.FirstLines, talk.Lines, "the word is the gate's own lines");
-                    Assert.AreEqual(_gate.SetsFlag, talk.SetsFlag);
+                    Assert.AreSame(_gate, talk.Gate);
                 }
                 else
                 {
                     Assert.AreNotEqual(StoryGateTalkKind.Word, talk.Kind, $"mask {mask} ({held}) is not the whole week");
-                    Assert.IsNull(talk.SetsFlag, $"mask {mask}: nothing is set by an unfinished week");
                 }
             }
             Assert.AreEqual(1, words);
@@ -171,13 +205,52 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.IsTrue(_gate.TryNote(keys[first], out StoryGateNote note), keys[first]);
 
                 SaveData save = WeekSave(held);
-                StoryGateTalk talk = TalkOn(save, DayFor(held));
-                Assert.AreEqual(StoryGateTalkKind.Hint, talk.Kind, $"mask {mask}");
-                CollectionAssert.AreEqual(new[] { note.SpokenHint }, talk.Lines, $"mask {mask}");
+                foreach (float hour in new[] { Noon, Evening })
+                {
+                    StoryGateTalk talk = TalkOn(save, DayFor(held), hour);
+                    Assert.AreEqual(StoryGateTalkKind.Hint, talk.Kind, $"mask {mask} at {hour}");
+                    CollectionAssert.AreEqual(new[] { note.SpokenHint }, talk.Lines, $"mask {mask} at {hour}");
+                }
 
                 IslandWeekSnapshot facts = _progress.Read(save, DayFor(held));
                 Assert.AreEqual(note.TaskNote, StoryGate.TaskNote(_gate, _flags, in facts), $"mask {mask}");
             }
+        }
+
+        [Test]
+        public void WithEveryFactButNotTheHour_SheAsksHimBack_AndTheWordWaitsForTheEvening()
+        {
+            SaveData save = WeekSave(IslandWeekFact.All);
+            foreach (float hour in new[] { _gate.ToHour, 6f, Noon, _gate.FromHour - 0.01f })
+            {
+                StoryGateTalk talk = TalkOn(save, EarliestDayIndex, hour);
+                Assert.AreEqual(StoryGateTalkKind.Hint, talk.Kind, $"hour {hour}");
+                CollectionAssert.AreEqual(new[] { _gate.OutsideHoursLine }, talk.Lines, $"hour {hour}");
+            }
+            foreach (float hour in new[] { _gate.FromHour, 21f, 23.99f, 0f, _gate.ToHour - 0.01f })
+                Assert.AreEqual(StoryGateTalkKind.Word, TalkOn(save, EarliestDayIndex, hour).Kind, $"hour {hour}");
+
+            IslandWeekSnapshot facts = _progress.Read(save, EarliestDayIndex);
+            Assert.AreEqual(_gate.AllHoldNote, StoryGate.TaskNote(_gate, _flags, in facts),
+                "with nothing left to do the note sends him to her");
+            Assert.IsEmpty(_save.Writes, "asking writes nothing");
+        }
+
+        [Test]
+        public void TheHours_RunPastMidnight_AndAGateWithNoHoursIsAnyHour()
+        {
+            var gate = Object.Instantiate(_gate);
+            try
+            {
+                gate.FromHour = 17f; gate.ToHour = 4.5f;
+                Assert.IsTrue(gate.InHours(17f)); Assert.IsTrue(gate.InHours(2f)); Assert.IsTrue(gate.InHours(23.5f));
+                Assert.IsFalse(gate.InHours(4.5f)); Assert.IsFalse(gate.InHours(16.9f));
+                gate.FromHour = 9f; gate.ToHour = 12f;
+                Assert.IsTrue(gate.InHours(9f)); Assert.IsFalse(gate.InHours(12f)); Assert.IsFalse(gate.InHours(8f));
+                gate.FromHour = 0f; gate.ToHour = 0f;
+                Assert.IsTrue(gate.InHours(0f)); Assert.IsTrue(gate.InHours(13f));
+            }
+            finally { Object.DestroyImmediate(gate); }
         }
 
         [Test]
@@ -187,22 +260,50 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(StoryGateTalkKind.Hint, TalkOn(WeekSave(four), EarliestDayIndex - 1).Kind);
             Assert.AreEqual(StoryGateTalkKind.Word, TalkOn(WeekSave(four), EarliestDayIndex).Kind);
             Assert.AreEqual(StoryGateTalkKind.Word, TalkOn(WeekSave(four), EarliestDayIndex + 30).Kind,
-                "a talk he missed on the day is still there later");
+                "an evening he missed on the day is still there later");
+        }
+
+        // ---- giving the word --------------------------------------------------------------------
+
+        [Test]
+        public void WhileAFactIsMissing_OrItIsNotEvening_NoWordIsGiven()
+        {
+            for (int mask = 0; mask < 31; mask++)
+            {
+                var held = (IslandWeekFact)mask;
+                _save.Current = WeekSave(held);
+                _clock.Day = DayFor(held);
+                Assert.IsFalse(StoryGates.Give(_gate, _flags), $"mask {mask}");
+            }
+
+            _save.Current = WeekSave(IslandWeekFact.All);
+            _clock.Day = EarliestDayIndex;
+            _clock.Hour = Noon;
+            Assert.IsFalse(StoryGates.Give(_gate, _flags), "every fact, but at noon");
+
+            Assert.AreEqual(0, _wordsGiven);
+            Assert.IsEmpty(_save.Writes, "nothing was written");
         }
 
         [Test]
-        public void OnceTheWordIsHeard_TheFlagIsWrittenOnce_SurvivesTheFile_AndTalkIsOrdinaryAgain()
+        public void MetInTheEvening_TheWordIsGivenOnce_NeverTwice_AndStaysGivenThroughTheFile()
         {
             SaveData save = WeekSave(IslandWeekFact.All);
-            StoryGateTalk talk = TalkOn(save, EarliestDayIndex);
-            Assert.AreEqual(StoryGateTalkKind.Word, talk.Kind);
+            _save.Current = save;
+            Assert.AreEqual(StoryGateTalkKind.Word, StoryGates.TalkWith(_gate.NpcId, _flags).Kind);
 
-            _flags.Set(talk.SetsFlag, true);          // what the talk does when the word is heard out
-            Assert.AreEqual(1, _save.Writes[_gate.SetsFlag]);
+            Assert.IsTrue(StoryGates.Give(_gate, _flags), "heard out, it is given");
+            Assert.AreEqual(1, _wordsGiven, "one signal");
+            Assert.AreEqual(1, _save.Writes[_gate.SetsFlag], "one write");
 
-            // Every later talk is her ordinary talk: there is no second word to set the flag again.
+            // Every later talk, any hour, any day: no second word.
             for (int i = 0; i < 3; i++)
-                Assert.AreEqual(StoryGateTalkKind.Normal, TalkOn(save, EarliestDayIndex + i).Kind);
+            {
+                _clock.Day = EarliestDayIndex + i;
+                Assert.AreEqual(StoryGateTalkKind.Normal, StoryGates.TalkWith(_gate.NpcId, _flags).Kind);
+                Assert.IsFalse(StoryGates.Give(_gate, _flags));
+            }
+            Assert.AreEqual(1, _wordsGiven, "never twice");
             Assert.AreEqual(1, _save.Writes[_gate.SetsFlag], "set once");
             Assert.IsNull(StoryGates.TaskNote(_flags), "nothing left on the note");
 
@@ -212,27 +313,48 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(SaveMigration.CurrentVersion, back.SchemaVersion);
             _save.Current = back;
             Assert.IsTrue(_save.GetFlag(_gate.SetsFlag), "the flag came back from the file");
-            Assert.AreEqual(StoryGateTalkKind.Normal, TalkOn(back, EarliestDayIndex).Kind);
             Assert.AreEqual(save.OnboardingFlags.Count, back.OnboardingFlags.Count, "no flag gained or lost");
-            Assert.IsTrue(_progress.Read(back, EarliestDayIndex).AllHold, "and the week's facts came back with it");
+            Assert.AreEqual(StoryGateTalkKind.Normal, StoryGates.TalkWith(_gate.NpcId, _flags).Kind);
+            Assert.IsFalse(StoryGates.Give(_gate, _flags));
+            Assert.AreEqual(1, _wordsGiven, "loading a save that holds the word raises nothing");
         }
 
         [Test]
-        public void TheWord_BringsAllFourStPetersWallsDown()
+        public void TheSignal_NamesTheGateAndTheFlag_AndNoPlayer()
+        {
+            StoryWordGiven? heard = null;
+            void Listen(StoryWordGiven e) => heard = e;
+            EventBus.Subscribe<StoryWordGiven>(Listen);
+            try
+            {
+                _save.Current = WeekSave(IslandWeekFact.All);
+                Assert.IsTrue(StoryGates.Give(_gate, _flags));
+            }
+            finally { EventBus.Unsubscribe<StoryWordGiven>(Listen); }
+
+            Assert.IsTrue(heard.HasValue);
+            Assert.AreEqual(_gate.Id, heard.Value.GateId);
+            Assert.AreEqual(_gate.SetsFlag, heard.Value.Flag);
+            Assert.AreEqual(_gate.EndsDemo, heard.Value.EndsDemo);
+            CollectionAssert.AreEquivalent(new[] { "GateId", "Flag", "EndsDemo" },
+                typeof(StoryWordGiven).GetFields().Select(f => f.Name).ToArray(),
+                "the word is the household's: the signal carries nobody's name");
+        }
+
+        [Test]
+        public void TheWordItself_OpensNoSeaEdge()
         {
             _save.Current = WeekSave(IslandWeekFact.All);
             List<CampaignBarrierDef> walls = StPetersWalls();
             foreach (CampaignBarrierDef wall in walls)
             {
-                Assert.AreEqual(_gate.SetsFlag, wall.LiftedByFlag, wall.Id + " waits on the gate's flag");
+                Assert.AreNotEqual(_gate.SetsFlag, wall.LiftedByFlag, wall.Id + " does not wait on the word");
                 Assert.AreEqual(_gate.LiveWhileFlag, wall.StandsWhileFlag, wall.Id + " stands in the gate's week");
-                Assert.IsTrue(CampaignBarrierDirector.Stands(wall), wall.Id + " stands through the week");
             }
 
-            _flags.Set(TalkOn(_save.Current, EarliestDayIndex).SetsFlag, true);
-
+            Assert.IsTrue(StoryGates.Give(_gate, _flags));
             foreach (CampaignBarrierDef wall in walls)
-                Assert.IsFalse(CampaignBarrierDirector.Stands(wall), wall.Id + " is down the moment the flag is set");
+                Assert.IsTrue(CampaignBarrierDirector.Stands(wall), wall.Id + " still stands the evening she speaks");
         }
 
         [Test]
@@ -252,24 +374,29 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 var held = (IslandWeekFact)mask;
                 SaveData save = WeekSave(held, firstWeek: false);
-                Assert.AreEqual(StoryGateTalkKind.Normal, TalkOn(save, DayFor(held)).Kind, $"mask {mask}");
+                foreach (bool demo in new[] { false, true })
+                    Assert.AreEqual(StoryGateTalkKind.Normal, TalkOn(save, DayFor(held), Evening, demo).Kind, $"mask {mask}");
                 Assert.IsNull(StoryGates.TaskNote(_flags), $"mask {mask}");
-                Assert.IsNull(StoryGates.LiveFor(_gate.NpcId, _flags), $"mask {mask}");
+                Assert.IsNull(StoryGates.FirstLive(_flags), $"mask {mask}");
             }
 
             _save.Current = old;
             Assert.AreEqual(StoryGateTalkKind.Normal, StoryGates.TalkWith(_gate.NpcId, _flags).Kind);
-            Assert.AreEqual(before, JsonUtility.ToJson(old), "reading the gate wrote nothing to the save");
+            Assert.IsFalse(StoryGates.Give(_gate, _flags));
+            Assert.AreEqual(before, JsonUtility.ToJson(old), "the gate wrote nothing to the save");
             Assert.IsEmpty(_save.Writes, "and set no flag");
+            Assert.AreEqual(0, _wordsGiven);
         }
 
         [Test]
         public void OnlyTheGatesOwnIslander_CarriesIt()
         {
             _save.Current = WeekSave(IslandWeekFact.All);
-            GameServices.Clock = null;      // no clock: day 0, so the live reading is short of the day
             Assert.AreEqual(StoryGateTalkKind.Normal, StoryGates.TalkWith("npc.basil_samson", _flags).Kind);
             Assert.AreEqual(StoryGateTalkKind.Normal, StoryGates.TalkWith(null, _flags).Kind);
+            Assert.AreEqual(StoryGateTalkKind.Word, StoryGates.TalkWith(_gate.NpcId, _flags).Kind);
+
+            GameServices.Clock = null;      // no clock: day 0, so the live reading is short of the day
             Assert.AreEqual(StoryGateTalkKind.Hint, StoryGates.TalkWith(_gate.NpcId, _flags).Kind,
                 "her own talk reads the live facts: four held, the day not yet reached");
         }
@@ -284,6 +411,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(IslandWeekFact.None, none.Held);
             Assert.IsEmpty(none.MissingTextKeys);
             Assert.AreEqual(StoryGateTalkKind.Normal, StoryGates.TalkWith(_gate.NpcId, _flags).Kind);
+            Assert.IsFalse(StoryGates.Give(_gate, _flags));
             Assert.IsNull(StoryGates.TaskNote(_flags));
         }
 
@@ -309,9 +437,11 @@ namespace HiddenHarbours.Tests.EditMode
             try
             {
                 mute.Word = null;
+                mute.DemoWord = null;
                 _save.Current = WeekSave(IslandWeekFact.All);
                 IslandWeekSnapshot facts = _progress.Read(_save.Current, EarliestDayIndex);
-                Assert.AreEqual(StoryGateTalkKind.Normal, StoryGate.Talk(mute, _flags, in facts).Kind);
+                Assert.AreEqual(StoryGateTalkKind.Normal, StoryGate.Talk(mute, _flags, in facts, Evening, false).Kind);
+                Assert.IsFalse(StoryGates.Give(mute, _flags));
                 Assert.IsNotNull(mute.ValidationError());
             }
             finally { Object.DestroyImmediate(mute); }
@@ -336,6 +466,22 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsNotNull(islander, _gate.NpcId + " is a shipped islander");
             Assert.AreEqual(InteractKind.Talk, islander.Kind, "somebody he talks to");
             Assert.IsTrue(islander.HasDialogue, "with an ordinary talk for the gate to ride on");
+        }
+
+        [Test]
+        public void TheShippedGate_HasAnEvening_ADemoWord_AndEveryLineItCanSay()
+        {
+            Assert.IsFalse(Mathf.Approximately(_gate.FromHour, _gate.ToHour), "the word has hours");
+            Assert.IsTrue(_gate.InHours(Evening));
+            Assert.IsFalse(_gate.InHours(Noon));
+            Assert.IsTrue(_gate.EndsDemo, "a demo ends at this word");
+            Assert.IsNotNull(_gate.DemoWord, "and has its own word for it");
+            CollectionAssert.AreNotEqual(_gate.WordLines(false), _gate.WordLines(true),
+                "the demo's word promises no crossing");
+            foreach (string line in new[] { _gate.OutsideHoursLine, _gate.AllHoldNote, _gate.DemoAfterLine })
+                Assert.IsFalse(string.IsNullOrWhiteSpace(line));
+            Assert.LessOrEqual(QuestPanelLayout.Rows(_gate.AllHoldNote).Count, QuestPanelLayout.MaxLines,
+                "the last note fits the Tasks note");
         }
 
         [Test]

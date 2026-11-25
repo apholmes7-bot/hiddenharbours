@@ -8,17 +8,19 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 using HiddenHarbours.Core;
+using HiddenHarbours.UI;
 using HiddenHarbours.World;
 
 namespace HiddenHarbours.Tests.PlayMode
 {
     /// <summary>
-    /// <b>Day seven on St Peters, played.</b> A save in its island week with the dory mended, the cod
-    /// licence held, a fish kept from the dory and shellfish sold; the clock on the seventh day; the
-    /// gate's own islander (the shipped asset) within reach, inside the weather on the island's east
-    /// edge. He talks to her: her bubble carries the word, and when he has heard it out the flag is in
-    /// the save and the very next step of the weather has no wall standing and nothing laid over the
-    /// look. Walking away from the word leaves it to be heard.
+    /// <b>The evening of day seven on St Peters, played.</b> A save in its island week with the dory
+    /// mended, the cod licence held, a fish kept from the dory and shellfish sold; the clock on the
+    /// evening of the seventh day; the gate's own islander (the shipped asset) within reach. He talks
+    /// to her: her bubble carries the word, and when he has heard it out the word is in the save. In
+    /// the demo that ends the week: the ending is in the save, the closing card is up over a stopped
+    /// world, and its one button goes back to the title, saving first. In the full game the same word
+    /// ends nothing. Walking away from the word leaves it to be heard.
     ///
     /// <para>The save is a fixture in memory. No save file is read or written.</para>
     /// </summary>
@@ -55,7 +57,8 @@ namespace HiddenHarbours.Tests.PlayMode
                 Current.OnboardingFlags.Add(new SaveFlag(key, value));
             }
 
-            public void Save() { }
+            public int Saves;
+            public void Save() => Saves++;
         }
 
         sealed class DayClock : IGameClock
@@ -69,7 +72,8 @@ namespace HiddenHarbours.Tests.PlayMode
             public int DayOfSeason => Day + 1;
             public Weekday Weekday => Weekday.Monday;
             public bool IsMarketDay => false;
-            public float HourOfDay => 12f;
+            public float Hour = 19f;
+            public float HourOfDay => Hour;
             public float DayFraction => 0.5f;
             public bool IsPaused { get; set; }
             public float TimeScale { get; set; } = 1f;
@@ -85,6 +89,11 @@ namespace HiddenHarbours.Tests.PlayMode
         DialoguePresenter _presenter;
         WorldInteractor _interactor;
         CampaignBarrierDirector _weather;
+        int _ended;
+        int _toTitle;
+
+        void CountEnded(DemoEnded e) => _ended++;
+        void CountToTitle(ReturnToTitleRequested e) => _toTitle++;
 
         [SetUp]
         public void SetUp()
@@ -96,6 +105,15 @@ namespace HiddenHarbours.Tests.PlayMode
             InteractActorProbe.Reset();
             InteractOffer.Reset();
             LocalWeather.Clear();
+            ShellPause.Reset();
+            DemoBuild.Override = true;      // the demo, unless a case says otherwise
+            DemoWeek.IsHost = null;
+            DemoWeek.Listen();
+            DemoClosingCard.Listen();
+            _ended = 0;
+            _toTitle = 0;
+            EventBus.Subscribe<DemoEnded>(CountEnded);
+            EventBus.Subscribe<ReturnToTitleRequested>(CountToTitle);
 
             _gate = AssetDatabase.LoadAssetAtPath<StoryGateDef>(GatePath);
             _rules = AssetDatabase.LoadAssetAtPath<IslandWeekRulesDef>(RulesPath);
@@ -143,6 +161,11 @@ namespace HiddenHarbours.Tests.PlayMode
         public void TearDown()
         {
             if (_presenter != null && _presenter.IsShowing) _presenter.Close();
+            DemoClosingCard.CloseIfOpen();
+            EventBus.Unsubscribe<DemoEnded>(CountEnded);
+            EventBus.Unsubscribe<ReturnToTitleRequested>(CountToTitle);
+            DemoBuild.Override = null;
+            ShellPause.Reset();
             foreach (Object o in _spawned) if (o != null) Object.Destroy(o);
             _spawned.Clear();
             if (_weather != null)
@@ -188,7 +211,7 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator OnDaySeven_HerWordSetsTheFlag_AndTheWallsAreGoneTheSameStep()
+        public IEnumerator InTheDemo_HerEveningWordEndsTheWeek_TheCardComesUp_AndGoesBackToTheTitle()
         {
             Assert.AreSame(_save, GameServices.Save, "the fixture save, never a file");
             AssertTheWallsStand();
@@ -197,37 +220,80 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
             Assert.IsTrue(_presenter.IsShowing, "her ordinary speech bubble");
             Assert.IsFalse(_save.GetFlag(_gate.SetsFlag), "not while she is still speaking");
+            Assert.IsFalse(DemoClosingCard.IsOpen);
 
             var heard = new List<string>();
             yield return HearItOut(heard);
             string all = string.Join(" ", heard);
-            foreach (string line in _gate.Word.FirstLines)
-                StringAssert.Contains(Flat(line), all, "the word is the gate's own lines");
+            foreach (string line in _gate.DemoWord.FirstLines)
+                StringAssert.Contains(Flat(line), all, "the demo's word, the gate's own lines");
 
-            Assert.IsTrue(_save.GetFlag(_gate.SetsFlag), "heard out, the flag is in the save");
+            Assert.IsTrue(_save.GetFlag(_gate.SetsFlag), "heard out, the word is in the save");
             Assert.AreEqual(1, _save.Writes[_gate.SetsFlag]);
+            Assert.IsTrue(_save.GetFlag(DemoWeek.EndedKey), "and so is the ending");
+            Assert.AreEqual(1, _ended, "raised once");
+            Assert.IsTrue(DemoWeek.Ended);
 
-            // The very next step of the weather: nothing stands, nothing is laid over the look.
-            _weather.Step();
-            Assert.IsNull(_weather.Standing);
-            Assert.AreEqual(0f, _weather.Look01);
-            Assert.AreEqual(0f, _weather.Storm01);
-            Assert.AreEqual(0f, _weather.PushAcceleration);
-            Assert.IsFalse(LocalWeather.Active, "the storm look is cleared");
-            Assert.IsFalse(LocalWeather.SquallActive, "and the front with it");
-            foreach (CampaignBarrierDef wall in Walls().Where(w => w.RegionId == Region))
-                Assert.IsFalse(CampaignBarrierDirector.Stands(wall), wall.Id + " is down");
-
-            // Talking to her again is her ordinary talk, and writes the flag no second time.
             yield return null;
+            Assert.IsTrue(DemoClosingCard.IsOpen, "the closing card is up");
+            Assert.IsTrue(ShellPause.IsPaused, "over a stopped world");
+            Assert.IsTrue(InteractionGate.IsBlocked, "that takes no other input");
+            var card = Object.FindFirstObjectByType<DemoClosingCard>();
+            string[] shown = card.GetComponentsInChildren<UnityEngine.UI.Text>(true).Select(t => t.text).ToArray();
+            CollectionAssert.Contains(shown, ShellStrings.DemoEndTitle);
+            CollectionAssert.Contains(shown, ShellStrings.DemoEndLine1);
+            CollectionAssert.Contains(shown, ShellStrings.DemoEndLine2);
+
+            // The weather stays: in the demo no way off the island ever opens.
+            foreach (CampaignBarrierDef wall in Walls().Where(w => w.RegionId == Region))
+                Assert.IsTrue(CampaignBarrierDirector.Stands(wall), wall.Id);
+
+            // Its one button: save, then back to the title.
+            int savesBefore = _save.Saves;
+            var leave = card.GetComponentsInChildren<UnityEngine.UI.Button>(true).Single();
+            leave.onClick.Invoke();
+            yield return null;
+            Assert.IsFalse(DemoClosingCard.IsOpen, "the card is down");
+            Assert.IsFalse(ShellPause.IsPaused, "the clock is handed back");
+            Assert.IsFalse(InteractionGate.IsBlocked);
+            Assert.Greater(_save.Saves, savesBefore, "saved before leaving");
+            Assert.AreEqual(1, _toTitle, "and back to the title");
+
+            // Talking to her again: one line more, no second word, no second ending.
             Assert.IsTrue(_interactor.BeginInteract());
             yield return null;
             heard.Clear();
             yield return HearItOut(heard);
             all = string.Join(" ", heard);
-            StringAssert.DoesNotContain(Flat(_gate.Word.FirstLines[0]), all, "the word is said once");
+            StringAssert.DoesNotContain(Flat(_gate.DemoWord.FirstLines[1]), all, "the word is said once");
             StringAssert.Contains(Flat(_islander.Dialogue.Lines(true)[0]), all, "her ordinary talk");
+            StringAssert.Contains(Flat(_gate.DemoAfterLine), all);
+            yield return null;
             Assert.AreEqual(1, _save.Writes[_gate.SetsFlag], "set once");
+            Assert.AreEqual(1, _ended, "ended once");
+            Assert.IsFalse(DemoClosingCard.IsOpen, "the card is not replayed");
+        }
+
+        [UnityTest]
+        public IEnumerator InTheFullGame_HerEveningWordIsGiven_AndNothingEnds()
+        {
+            DemoBuild.Override = false;
+
+            Assert.IsTrue(_interactor.BeginInteract());
+            yield return null;
+            var heard = new List<string>();
+            yield return HearItOut(heard);
+            string all = string.Join(" ", heard);
+            foreach (string line in _gate.Word.FirstLines)
+                StringAssert.Contains(Flat(line), all, "the full game's word");
+
+            yield return null;
+            Assert.IsTrue(_save.GetFlag(_gate.SetsFlag), "the word is given");
+            Assert.AreEqual(0, _ended, "nothing ends");
+            Assert.IsFalse(DemoClosingCard.IsOpen, "no card");
+            Assert.IsFalse(ShellPause.IsPaused, "the world runs on");
+            Assert.IsFalse(_save.Writes.ContainsKey(DemoWeek.EndedKey));
+            Assert.AreEqual(0, _toTitle);
         }
 
         [UnityTest]
@@ -239,15 +305,35 @@ namespace HiddenHarbours.Tests.PlayMode
 
             _presenter.Close();                 // he walked off mid-word
             yield return null;
-            Assert.IsFalse(_save.GetFlag(_gate.SetsFlag), "a word he did not hear out opens nothing");
-            AssertTheWallsStand();
+            Assert.IsFalse(_save.GetFlag(_gate.SetsFlag), "a word he did not hear out is not given");
+            Assert.AreEqual(0, _ended);
+            Assert.IsFalse(DemoClosingCard.IsOpen);
 
             Assert.IsTrue(_interactor.BeginInteract(), "and she will say it again");
             yield return null;
             var heard = new List<string>();
             yield return HearItOut(heard);
-            StringAssert.Contains(Flat(_gate.Word.FirstLines[0]), string.Join(" ", heard));
+            StringAssert.Contains(Flat(_gate.DemoWord.FirstLines[0]), string.Join(" ", heard));
             Assert.IsTrue(_save.GetFlag(_gate.SetsFlag));
+            Assert.AreEqual(1, _ended);
+        }
+
+        [UnityTest]
+        public IEnumerator BeforeEvening_SheAsksHimBack_AndNothingEnds()
+        {
+            _clock.Hour = 11f;
+
+            Assert.IsTrue(_interactor.BeginInteract());
+            yield return null;
+            var heard = new List<string>();
+            yield return HearItOut(heard);
+            string all = string.Join(" ", heard);
+
+            StringAssert.Contains(Flat(_gate.OutsideHoursLine), all, "come back this evening");
+            StringAssert.Contains(Flat(_islander.Dialogue.Lines(true)[0]), all, "after her ordinary talk");
+            Assert.IsFalse(_save.Writes.ContainsKey(_gate.SetsFlag));
+            Assert.AreEqual(0, _ended);
+            Assert.IsFalse(DemoClosingCard.IsOpen);
         }
 
         [UnityTest]
@@ -266,6 +352,7 @@ namespace HiddenHarbours.Tests.PlayMode
             StringAssert.Contains(Flat(_islander.Dialogue.Lines(true)[0]), all, "after her ordinary talk");
             Assert.IsFalse(_save.GetFlag(_gate.SetsFlag));
             Assert.IsFalse(_save.Writes.ContainsKey(_gate.SetsFlag));
+            Assert.AreEqual(0, _ended);
             AssertTheWallsStand();
         }
 
@@ -284,10 +371,12 @@ namespace HiddenHarbours.Tests.PlayMode
             var heard = new List<string>();
             yield return HearItOut(heard);
             string all = string.Join(" ", heard);
-            StringAssert.DoesNotContain(Flat(_gate.Word.FirstLines[0]), all);
+            StringAssert.DoesNotContain(Flat(_gate.DemoWord.FirstLines[1]), all);
+            StringAssert.DoesNotContain(Flat(_gate.OutsideHoursLine), all);
             foreach (StoryGateNote note in _gate.Notes)
                 StringAssert.DoesNotContain(Flat(note.SpokenHint), all);
             Assert.IsFalse(_save.Writes.ContainsKey(_gate.SetsFlag), "and nothing is written for the gate");
+            Assert.AreEqual(0, _ended);
         }
     }
 }

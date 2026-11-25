@@ -439,6 +439,8 @@ namespace HiddenHarbours.World
             if (_presenter == null) return;
 
             bool metBefore = _flags.Get(it.CompletionFlag);
+            if (BeginStoryGate(it, metBefore)) return;
+
             // Content as DATA first (CLAUDE.md rule 2): an NpcDef → DialogueDef supplies the lines when
             // wired; only fall back to the legacy WorldStrings table for the older string-driven cove
             // interactables that have no NpcDef.
@@ -454,38 +456,47 @@ namespace HiddenHarbours.World
 
             NpcDef npc = it.Npc;
             string flag = it.CompletionFlag;
-
-            // A story gate rides on an ordinary Talk with somebody he already knows (her opening is never
-            // skipped for it). Who carries one, what must hold and every word of it are data
-            // (StoryGateDef); the facts come through Core. With no live gate on this speaker nothing here
-            // changes what she says.
-            if (npc != null && (metBefore || string.IsNullOrEmpty(flag)))
-            {
-                StoryGateTalk gate = StoryGates.TalkWith(npc.Id, _flagStore);
-                if (gate.Kind == StoryGateTalkKind.Word)
-                {
-                    // The word, alone in her bubble. Heard to its end it sets the gate's flag, and what
-                    // waits on that flag answers the same step; walked away from, it is still to be heard.
-                    string sets = gate.SetsFlag;
-                    Speak(it, gate.Lines, null, null,
-                          () => { if (!_presenter.WasCancelled) _flagStore.Set(sets, true); });
-                    return;
-                }
-                if (gate.Kind == StoryGateTalkKind.Hint) text = Appended(text, gate.Lines);
-            }
-
             Speak(it, text,
                   it.HasNpcData ? DialogueOptionPicker.RowsFor(npc.Dialogue.Options) : null,
                   it.HasNpcData ? npc.Dialogue.Id : it.ConversationId,
                   () => { if (!string.IsNullOrEmpty(flag)) _flags.Set(flag, true); });
         }
 
-        private static string[] Appended(string[] lines, string[] more)
+        /// <summary>
+        /// A story gate rides on an ordinary Talk with somebody he already knows (their opening is never
+        /// skipped for it). Who carries one, what must hold, the hours and every word of it are data
+        /// (<see cref="StoryGateDef"/>); the facts come through Core. True when the gate took the
+        /// conversation; with no gate on this speaker nothing changes what they say.
+        /// </summary>
+        private bool BeginStoryGate(Interactable it, bool metBefore)
         {
-            var all = new string[lines.Length + more.Length];
-            System.Array.Copy(lines, all, lines.Length);
-            System.Array.Copy(more, 0, all, lines.Length, more.Length);
-            return all;
+            if (!it.HasNpcData) return false;
+            NpcDef npc = it.Npc;
+            string flag = it.CompletionFlag;
+            if (!metBefore && !string.IsNullOrEmpty(flag)) return false;
+
+            StoryGateTalk gate = StoryGates.TalkWith(npc.Id, _flagStore);
+            if (gate.Kind == StoryGateTalkKind.Normal) return false;
+
+            if (gate.Kind == StoryGateTalkKind.Word)
+            {
+                // The word, alone in their bubble. Heard to its end it is given: once, for the whole
+                // household. Walked away from, it is still to be heard.
+                StoryGateDef def = gate.Gate;
+                Speak(it, gate.Lines, null, null,
+                      () => { if (!_presenter.WasCancelled) StoryGates.Give(def, _flagStore); });
+                return true;
+            }
+
+            // Their ordinary talk, with the gate's one line after it.
+            string[] own = it.DialogueLines(metBefore, _flagStore);
+            if (own == null || own.Length == 0) return false;
+            var all = new string[own.Length + gate.Lines.Length];
+            System.Array.Copy(own, all, own.Length);
+            System.Array.Copy(gate.Lines, 0, all, own.Length, gate.Lines.Length);
+            Speak(it, all, DialogueOptionPicker.RowsFor(npc.Dialogue.Options), npc.Dialogue.Id,
+                  () => { if (!string.IsNullOrEmpty(flag)) _flags.Set(flag, true); });
+            return true;
         }
 
         /// <summary>
