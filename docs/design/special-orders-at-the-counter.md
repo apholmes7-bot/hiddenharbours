@@ -6,9 +6,12 @@ After the delivery reaches the store, he returns to the counter and carries his 
 hands or paper bag. An order is a reason to come back to a working place. It is never a remote
 purchase or a delivery into his pocket.
 
-Status: interaction and delivery design, 2026-11-23. No screen, scene or artwork is changed by this
-page. The [companion logic proposal](https://github.com/apholmes7-bot/hiddenharbours/pull/1503) supplies
-session-only payment, day-based arrival, collection and snapshots. The first week and demo stay on
+Status: interaction and delivery design, reconciled with main `d46bde303e` on 2026-11-25.
+No screen, scene or artwork is changed by this page. The companion logic proposal (#1503)
+now binds payment, day-based arrival and collection to main's existing version-26 order rows;
+its snapshots are detached observations, not a second persistence format. Main already saves
+shelf purchases and paper bags, but neither main nor that proposal wires the special-order counter.
+The first week and demo stay on
 St Peters: the player stays with Ginny, earns and repairs Basil's broken dory at the island slip, and
 an islander's word opens the way to Nine Mile Creek around day seven. Weather closes the other
 regions. Special orders must not require leaving the island to complete that week.
@@ -62,7 +65,8 @@ day index is never player-facing. A promise from day one for two days later mean
 7. The goods are brought onto the counter and handed to him. The carrying integration checks the
    actual free hand and bag capacity for the entire selected order. A free bag slot counts only if
    that bag can receive these goods. A full bag may still permit a suitable free hand, and vice versa.
-8. Successful handover marks that receipt collected and removes it from the open-order book. He
+8. Successful handover marks that receipt collected and removes it from the open-order view;
+   the existing saved receipt remains to prevent a second grant after restart. He
    walks out holding the goods or their filled bag. He carries them to wherever he wants them and
    unloads by hand. Nothing goes directly into his boat, home, storage or ownership list.
 
@@ -142,7 +146,8 @@ The delivery integration should follow these steps:
    paid order and show "Held up by the weather" at the counter. Never charge again or fabricate a
    delivery. A revised estimate is explained locally when he next visits.
 
-The companion logic is intentionally smaller: it calculates `DayDue = DayPlaced + DeliveryDays`
+The companion logic is intentionally smaller: it calculates `DueDay = OrderedDay + DeliveryDays`
+for a single line (the latest due day for a multi-line order),
 and marks arrival on that absolute day. **It does not reserve carrier space, consult weather, or
 wait for unloading.** Before a visible catalogue can promise a real delivery, a separate integration
 must feed the route's quoted day into the order and gate arrival on completed delivery, with tests
@@ -162,8 +167,9 @@ in the island supply system first. This page neither creates one nor exempts it 
 Keep the shelf useful: basic fishing gear, the existing everyday bait and groceries stay obtainable
 there, subject to each item's stock. Ordering is optional and must not gate clam digging, shore
 fishing, buying the broken dory, repairing her by hand or launching. The store offers no boat
-hardware through either shelves or special orders. Fitted instruments, engines, hulls and repair
-parts do not belong in this catalogue. The dory repair beat needs its own on-island source of parts.
+hardware through either shelves or special orders. Fitted instruments, engines and hulls do not
+belong in this catalogue. Ordinary repair materials belong to the island's hand-mending plan once
+specified; the special-order examples here are bait only and do not supply that required beat.
 
 The companion's six example lines use existing, currently unlisted bait items. Their prices are the
 existing per-bait prices, not the usual ten-bait counter lot; the order page must state that unit.
@@ -191,20 +197,28 @@ receipts not collected, must carry forward when the demo's save continues into t
 
 ## State and the next implementation steps
 
-The current format remains version 25. The companion book has no save hookup. Its plain snapshot
-contains the seller, the next order number, and every open order's line id, quantity, placed day,
-due day, arrived flag and unique order number. Stable numbers distinguish repeated purchases of
-the same line. Capture and restore must not spend money or replay collection events.
+The current format is **version 26**. Main commit `5ac27e352b` added `SaveData.SpecialOrders`,
+`NextSpecialOrderNumber`, `StorePurchases` and `ShoppingBags`; `328ff145c9` connected the shelf
+purchases and bags to their existing rows. Do not add a parallel order list or another save version.
+The companion book uses the existing order rows directly, including seller/destination, listing
+counts, original line payments and total, ordered time/day, due day and waiting/arrived/collected
+state. One saved counter reserves unique receipt numbers across sellers and restarts.
 
-The later version-26 step must store both travelling and arrived-but-uncollected paid orders, restore
-them after the game clock, and catch up arrival once. Retired line ids need an explicit migration;
-silently dropping a prepaid order loses the player's money. The carrying handover and removing an
-open order must share a save boundary, so a reload cannot duplicate or lose goods. Collected receipt
-history and "heard the news" are presentation needs beyond the open-order snapshot; do not add saved
-fields for them in this slice. A later save proposal should decide their minimal representation.
+Its host must construct the book against the current save after restoring the clock, refresh
+arrivals explicitly after a load or seek, and dispose it before switching saves. Construction and
+snapshot capture do not replay transactions. Day events can advance arrivals in a constructed book;
+collection itself does not refresh overdue orders. Retired or malformed paid lines remain owed and
+are classified for refund rather than silently deleted. Refund settlement is still absent.
 
-Build the visible interaction only after the route promise, physical receiving adapter and save
-step exist. Verify full hands and bag, two same-line receipts, an order delayed by a missed run, a
+Collected receipts already remain in the existing rows. No new saved field is needed for them.
+Ordinary save points serialize order state, and the host must save only after payment or physical
+handover is complete so wallet, goods and receipt agree. The book makes no disk writes. A paper
+bag's persisted solo state does not provide the special-order handover adapter or two-player
+custody. "Heard the news" has no saved field here: keep the notification session-only unless a
+later explicit persistence decision is made, without hiding paid orders from the counter book.
+
+Build the visible interaction only after the route promise, physical receiving adapter and
+complete transaction save boundary exist. Verify full hands and bag, two same-line receipts, an order delayed by a missed run, a
 sleep over delivery, collection after reopening, and leaving a paid order untouched through day
 seven. A final physical playthrough must follow the goods from carrier to counter to hands to storage.
 

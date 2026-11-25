@@ -83,6 +83,9 @@ namespace HiddenHarbours.World
         /// asserts on without a canvas.</summary>
         public string LastSpokenId { get; private set; }
 
+        /// <summary>The words of that line as they went out, with any name said in it, or null.</summary>
+        public string LastSpokenText { get; private set; }
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Install()
         {
@@ -149,7 +152,7 @@ namespace HiddenHarbours.World
                 if (_offerLines[i].WantsOffer(offer.Id)) { TrySpeak(_offerLines[i]); return; }
         }
 
-        private void OnCue(InnerVoiceCue cue) => HearCue(cue.CueId);
+        private void OnCue(InnerVoiceCue cue) => HearCue(cue.CueId, cue.Name);
 
         /// <summary>
         /// A gameplay moment asked for her thought (the Core <see cref="InnerVoiceCue"/>). The first
@@ -158,13 +161,18 @@ namespace HiddenHarbours.World
         /// does go out is acknowledged with <see cref="InnerVoiceCueSpoken"/>; a refused one is not.
         /// <para>Public so a fixture can drive it without the bus, like <see cref="SpeakNow"/>.</para>
         /// </summary>
-        public bool HearCue(string cueId)
+        public bool HearCue(string cueId) => HearCue(cueId, null);
+
+        /// <summary>As <see cref="HearCue(string)"/>, saying <paramref name="name"/> wherever the line
+        /// writes <see cref="InnerVoiceCues.NameToken"/> (the composed text is built once, at the cue,
+        /// never per frame).</summary>
+        public bool HearCue(string cueId, string name)
         {
             if (string.IsNullOrEmpty(cueId)) return false;
             for (int i = 0; i < _cueLines.Count; i++)
             {
                 if (!_cueLines[i].WantsCue(cueId)) continue;
-                if (!TrySpeak(_cueLines[i])) return false;
+                if (!TrySpeak(_cueLines[i], name)) return false;
                 // Said, not merely asked: the publisher spends its "once" on this, never on the cue.
                 EventBus.Publish(new InnerVoiceCueSpoken(cueId));
                 return true;
@@ -220,7 +228,9 @@ namespace HiddenHarbours.World
         /// noise, and the modal owns the screen); she has heard a once-only line before (the save
         /// remembers, owner Q4); a repeatable line is still cooling down.</para>
         /// </summary>
-        private bool TrySpeak(InnerVoiceLineDef line)
+        private bool TrySpeak(InnerVoiceLineDef line) => TrySpeak(line, null);
+
+        private bool TrySpeak(InnerVoiceLineDef line, string name)
         {
             if (line == null || string.IsNullOrWhiteSpace(line.Line)) return false;
 
@@ -251,17 +261,19 @@ namespace HiddenHarbours.World
             // struct field would store a reference that every plain null check downstream sails past.
             // This launders it into a real null (the GameServices.PlayerTransform lesson).
             Transform player = GameServices.PlayerTransform;
+            string text = line.TextFor(name);
             EventBus.Publish(new AmbientSpeechRequested(
                 AmbientSpeechId.Next(),
                 player != null ? player : null,
                 new Vector3(0f, BubbleHeightMetres, 0f),
                 speakerId: null,                 // her own thought has no NpcDef behind it
                 speakerName: null,               // and no name chip: see AmbientSpeechPresenter
-                line: line.Line,
+                line: text,
                 voiceId: line.VoiceId,
                 kind: AmbientSpeechKind.InnerVoice));
 
             LastSpokenId = line.Id;
+            LastSpokenText = text;
             return true;
         }
 
@@ -286,6 +298,7 @@ namespace HiddenHarbours.World
             _inside.Clear();
             _tickedIn = null;
             LastSpokenId = null;
+            LastSpokenText = null;
         }
     }
 }
