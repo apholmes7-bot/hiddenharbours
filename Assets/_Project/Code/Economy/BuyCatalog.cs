@@ -372,8 +372,13 @@ namespace HiddenHarbours.Economy
 
             if (row.Shelves == null) return Sell(row);
             if (row.Shelves.CountAt(row.ShelfLine, now) < 1) return false;
-            if (!Sell(row)) return false;
-            row.Shelves.TryTakeOne(row.ShelfLine, now);
+            // One write for the whole sale: the purse, the good and the shelf's purchase row land together,
+            // so a game closed right after can never hold the good and a full shelf.
+            using (GameServices.Save?.DeferWrites())
+            {
+                if (!Sell(row)) return false;
+                row.Shelves.TryTakeOne(row.ShelfLine, now);
+            }
             EventBus.Publish(new IslandShelvesChanged(row.Shelves.ShopId, row.ShelfLine,
                                                       row.Shelves.CountAt(row.ShelfLine, now)));
             return true;
