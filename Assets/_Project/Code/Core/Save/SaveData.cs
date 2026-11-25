@@ -474,6 +474,42 @@ namespace HiddenHarbours.Core
         /// FLAG lead-architect: save schema v25 (storage contents).
         /// </summary>
         public List<StoredContainerDto> StoredContainers = new();
+
+        // ---- save v26: store purchases, paid special orders, the shopping bag ----------------------
+        // ONE bump carrying exactly these three things. Each is something the player did, which cannot be
+        // recomputed; nothing derived is here (shelf counts, deliveries and the villagers' buying are
+        // rebuilt from the calendar and the seed, rule 5). Rows in SaveRowsV26.cs.
+
+        /// <summary>
+        /// <b>What the player took off the store shelves</b>, one row per purchase instant per shelf line,
+        /// kept in (day, seconds, shop, line) order so replaying them over the calendar always gives the
+        /// same shelves. Written as each purchase is made and read back when the stores are built. Older saves start
+        /// with none, so their shelves are exactly what the calendar says.
+        /// </summary>
+        public List<StorePurchaseRowDto> StorePurchases = new();
+
+        /// <summary>
+        /// <b>Special orders the player has paid for</b>, one row per order. Added in v26 and
+        /// <b>reserved, not yet used</b>. A row that carries money or goods is never dropped by the load
+        /// repair. Older saves start with none.
+        /// </summary>
+        public List<SpecialOrderDto> SpecialOrders = new();
+
+        /// <summary>
+        /// The number the next special order takes (the n of <see cref="SpecialOrderDto.OrderId"/>). Starts
+        /// at 1, only ever goes up, and is held above every number already on a row, so no order number is
+        /// used twice. A saved counter, not a random id (rule 5). Added in v26, reserved with the orders.
+        /// </summary>
+        public int NextSpecialOrderNumber = 1;
+
+        /// <summary>
+        /// <b>The player's shopping bags that hold goods</b>, in his hand or set down, one row per bag. The
+        /// goods stay counted in <see cref="SupplyStock"/>; a row only says which are set aside in the bag.
+        /// A list although the game has one bag today, so more bags need no new version. The bag is read
+        /// and changed here directly (<see cref="ShoppingBagContents"/>). Older saves start with none (their
+        /// goods are simply in his supplies).
+        /// </summary>
+        public List<ShoppingBagDto> ShoppingBags = new();
     }
 
     /// <summary>

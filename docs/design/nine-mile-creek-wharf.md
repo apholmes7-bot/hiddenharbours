@@ -8,6 +8,11 @@
 > **[`nine-mile-creek-mainland.md`](nine-mile-creek-mainland.md)**; §4's size row is superseded there
 > (600 × 400 → **760 × 560 m**), and §4's depth-gate table gains a correction (see the box in §4).
 >
+> **Amended 2026-11-23 — the first dory is no longer here.** She lies beached on St Peters, is sold by
+> Basil Samson and is mended there by hand; the first week is St Peters alone and Nine Mile Creek opens
+> at the island gate (canon §5.3/§5.8, ADR 0062). The town's yard keeps selling and repairing **later**
+> boats, and boat hardware is sold here only. Rider 2 in §1 and the dory steps below are history.
+>
 > **Status:** the structural question is **RULED** (owner, 2026-07-25 — §1): this is Port Greywick's
 > working wharf, one region with the town, and it is where the damaged dory is bought. Subordinate to
 > [`../vision-and-pillars.md`](../vision-and-pillars.md) (canon) and
