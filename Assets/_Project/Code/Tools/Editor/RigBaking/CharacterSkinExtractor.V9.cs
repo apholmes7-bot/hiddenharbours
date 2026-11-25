@@ -154,6 +154,9 @@ namespace HiddenHarbours.Tools.RigBaking
                         $"{kit.ScriptPath} says it is '{rig}' pass {pass}; this reader is written for " +
                         $"'{kit.RigName}' pass {kit.Pass}.");
             }
+            // A cast member's own clothes over a preset's body, in this host's copy of BUILDS only;
+            // the rig's CAST10 and its bytes stay as they ship (CharacterOutfits).
+            CharacterOutfits.Install(host, kit);
             if (held == null) HostKits.Add(host, kit);
         }
 
@@ -196,6 +199,7 @@ namespace HiddenHarbours.Tools.RigBaking
             CharacterRigKit kit = KitOf(host);
             string g = kit.GlobalName;
             if (host.EvaluateBool($"{g}.{kit.PresetTable}.indexOf({Js(preset)})>=0")) return;
+            if (CharacterOutfits.Has(kit, preset)) return;
             if (kit.PresetTable != "CAST" && host.EvaluateBool($"{g}.CAST.indexOf({Js(preset)})>=0"))
                 throw new ArgumentException(
                     $"'{preset}' is one of {kit.Name}'s NPCs, not one of its {kit.PresetTable}. The game " +
@@ -1101,7 +1105,8 @@ namespace HiddenHarbours.Tools.RigBaking
         {
             AssertPreset9(host, preset);
             CharacterRigKit kit = KitOf(host);
-            string file = kit.GameplayFile(preset);
+            // An outfit is its base preset in other clothes: the base's sidecar states its blink and look.
+            string file = kit.GameplayFile(CharacterOutfits.SidecarPresetFor(kit, preset));
             string text = ReadKitText9(kit.KitRoot, file);
             string g = kit.GlobalName;
             host.Execute("globalThis.__hhSide9=JSON.parse(" + JsText9(text) + ");");
