@@ -39,6 +39,14 @@ namespace HiddenHarbours.Tests.PlayMode
     /// both. (The PANES do not flicker at all — see <see cref="BoatWindowGlow"/> — which is one fewer
     /// thing for this fixture to hold still.)</para>
     ///
+    /// <para>⚠️ <b>The camera is framed when it is made, not at the first capture.</b> It used to be
+    /// created at the origin (z 0) and moved to its frame (z −100) only inside the first
+    /// <see cref="Capture"/>. Everything posed against the camera's depth during the first
+    /// <see cref="Pose"/> was posed against the camera at the origin, so the test's very first render
+    /// differed from every later one: 84 px between the two dark shots of the same arm (the noise
+    /// floor), and 242 px between the dark and lit noon shots. The same fault, and the same cure, as #1519 in
+    /// <c>MeshInteriorLampsPlayTests</c>. In play the camera never jumps in depth.</para>
+    ///
     /// <para>GPU fixture: SKIPS on CI, which has no graphics device. The coordinator re-runs it on the
     /// 4060 and the plates go to the PR.</para>
     /// </summary>
@@ -331,6 +339,17 @@ namespace HiddenHarbours.Tests.PlayMode
             _cam.allowHDR = false;
             _cam.allowMSAA = false;
             _cam.targetTexture = _rt;
+            // Framed NOW, before anything poses: see the class remarks on the first render.
+            FrameTheCell();
+        }
+
+        /// <summary>Put the camera over the cell: the pivot's offset from the cell centre, 100 m back.</summary>
+        void FrameTheCell()
+        {
+            float ppu = _def.PxPerMetre;
+            float ox = (_def.PivotPx.x - _def.CellW / 2f) / ppu;
+            float oy = (_def.CellH / 2f - _def.PivotPx.y) / ppu;
+            _cam.transform.position = new Vector3(-ox, -oy, -100f);
         }
 
         static GameConfig ConfigWith(bool legacyGlow)
@@ -428,10 +447,7 @@ namespace HiddenHarbours.Tests.PlayMode
         /// <summary>Frame the cell over the origin and render NOW — no frame passes.</summary>
         byte[] Capture()
         {
-            float ppu = _def.PxPerMetre;
-            float ox = (_def.PivotPx.x - _def.CellW / 2f) / ppu;
-            float oy = (_def.CellH / 2f - _def.PivotPx.y) / ppu;
-            _cam.transform.position = new Vector3(-ox, -oy, -100f);
+            FrameTheCell();
             _cam.Render();
 
             int w = _def.CellW, h = _def.CellH;

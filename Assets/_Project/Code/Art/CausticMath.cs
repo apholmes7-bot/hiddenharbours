@@ -79,9 +79,19 @@ namespace HiddenHarbours.Art
         }
 
         private static float Frac(float value) => value - Mathf.Floor(value);
-        private static float Hash(Vector2 p)
+        /// <summary>The value-noise corner hash, as the GPU actually runs it. In the shader the corner is
+        /// <c>HHCausticHash21(i + float2(1, 0))</c>, and the compiler distributes the first multiply over
+        /// that sum: it computes <c>i * k + offset * k</c>, rounded twice, not <c>(i + offset) * k</c>.
+        /// Measured on Direct3D 12 against a compute probe: every corner value matches this form bit for
+        /// bit. The strict form disagrees by a whole hash period at about a third of the corners (a
+        /// world sample read 0.953 here and 0.097 on the GPU), so a twin that evaluated it strictly
+        /// described a pattern no player ever sees. The casts are load-bearing: the editor's runtime keeps
+        /// float sums in double precision unless told otherwise, which silently restores the strict form.</summary>
+        private static float Hash(Vector2 cell, Vector2 corner)
         {
-            p = new Vector2(Frac(p.x * 123.34f), Frac(p.y * 345.45f));
+            float cellX = (float)(cell.x * 123.34f), cornerX = (float)(corner.x * 123.34f);
+            float cellY = (float)(cell.y * 345.45f), cornerY = (float)(corner.y * 345.45f);
+            var p = new Vector2(Frac((float)(cellX + cornerX)), Frac((float)(cellY + cornerY)));
             float d = Vector2.Dot(p, p + Vector2.one * 34.345f);
             p += Vector2.one * d;
             return Frac(p.x * p.y);
@@ -96,8 +106,8 @@ namespace HiddenHarbours.Art
             Vector2 i = new Vector2(Mathf.Floor(p.x), Mathf.Floor(p.y));
             Vector2 f = p - i;
             Vector2 u = new Vector2(f.x * f.x * (3f - 2f * f.x), f.y * f.y * (3f - 2f * f.y));
-            return Mathf.LerpUnclamped(Mathf.LerpUnclamped(Hash(i), Hash(i + Vector2.right), u.x),
-                Mathf.LerpUnclamped(Hash(i + Vector2.up), Hash(i + Vector2.one), u.x), u.y);
+            return Mathf.LerpUnclamped(Mathf.LerpUnclamped(Hash(i, Vector2.zero), Hash(i, Vector2.right), u.x),
+                Mathf.LerpUnclamped(Hash(i, Vector2.up), Hash(i, Vector2.one), u.x), u.y);
         }
 
         private static float Untile(Vector2 world, Vector2 scroll, in VeinSettings settings,
