@@ -13,18 +13,24 @@ The generated day-by-day model of the same week lives in `docs/design/first-week
 | What he starts with (wallet 0 + Ginny's fronted fee 20) | 20 |
 | Careful player's clam income, days 1-7 (13 bucket loads x 20 clams x 1 coin) | 260 |
 | **Money in** | **280** |
-| Every purchase the week's end forces (section 3), cod licence included | 355 |
+| Every purchase the week's end forces (section 3), cod licence included | 295 |
 | Food to stay fit to dig (section 4) | 93 |
-| **Money out** | **448** |
-| **Short at the word on day 7** | **168** |
+| **Money out** | **388** |
+| **Short at the word on day 7** | **108** |
+
+**The dory's mending supplies are not bought (owner ruling, 2026-11-25).** The patch plank, copper nails,
+oakum and linseed paint (60 coins together in the earlier draft of this page) are given to him by three
+people through conversation, and LeBlanc's does not sell them. They are out of every figure on this page.
 
 **Correction to the earlier trial figure.** The trial said "about 475 needed against 20 plus about 260",
-which is 195 short. That counted the cod licence twice: the 355 purchase list already holds the 120
-licence. It also left out food. The true figure is **448 needed against 280: 168 short.** Without food it
-would be 75 short, but a hungry player is refused heavy work (digging refuses at hunger 0.97), so food is
-not optional.
+which is 195 short. That counted the cod licence twice, and it left out food. With the supplies gone
+too, the true figure is **388 needed against 280: 108 short.** Without food it would be 15 short, but a
+hungry player is refused heavy work (digging refuses at hunger 0.97), so food is not optional.
 
-An ordinary player (one bucket a day) earns 140 and is 288 short.
+An ordinary player (one bucket a day) earns 140 and is 228 short.
+
+The careful player reaches the rod on day 2, bait on day 3 and the dory on day 6, ends day 7 with 12
+coins, and is 108 short of the cod licence. The cod licence is the whole gap.
 
 ## 2. What he starts with
 
@@ -46,15 +52,13 @@ dory and has sold shellfish (`IslandWeek.asset`). Working back from that:
 | Rod | 60 | `Data/Resources/Catalog/Gear/Rod.asset` | yes, LeBlanc's |
 | Bait, one lot of 10 capelin | 20 | `Data/Resources/Catalog/Bait/Capelin.asset` (2 each, lot of 10) | yes, LeBlanc's shelf |
 | Basil's dory, on the slip | 80 | `Data/Regions/StPetersVillage/slipsale.basils_dory.asset` | open draft (1539) |
-| Patch plank | 24 | `supply.patch_plank` | open draft (1508) |
-| Copper nails | 8 | `supply.copper_nails` | open draft (1508) |
-| Oakum | 12 | `supply.oakum` | open draft (1508) |
-| Linseed paint | 16 | `supply.linseed_paint` | open draft (1508) |
 | Cod licence | 120 | `Data/Resources/Catalog/Licenses/CodLicense.asset` | yes; sold at LeBlanc's from this change, and still at the Nine Mile Creek harbourmaster |
-| **Total** | **355** | | |
+| **Total** | **295** | | |
 
-One of each mending supply is assumed (each mending job in 1508 asks for `Count: 1`). One bait lot is
-assumed to be enough to keep a fish from the dory.
+Not bought: the four mending supplies the dory's repair needs (patch plank, copper nails, oakum, linseed
+paint; 24, 8, 12 and 16 in open draft 1508). They are given through dialogue by three people, and
+LeBlanc's does not stock them (ruling 2026-11-25). One bait lot is assumed to be enough to keep a fish
+from the dory.
 
 ## 4. Food
 
@@ -104,8 +108,8 @@ Not counted, and both could help a careful player:
 ## 6. Three ways to close the gap (PROPOSAL)
 
 Each set is a short list of data edits. "Careful" and "ordinary" are the same two players as above;
-the purchase order is licence, rod, bait, dory, the four supplies, cod licence, each bought as soon as
-the purse allows.
+the purchase order is licence, rod, bait, dory, cod licence, each bought as soon as the purse allows.
+Without any set, the careful player is 108 short and the ordinary player 228 short.
 
 ### Set 1: cheaper big tickets
 
@@ -113,12 +117,13 @@ the purse allows.
 |---|---:|---:|
 | `CodLicense.asset` Price | 120 | 30 |
 | `slipsale.basils_dory` Price (1539) | 80 | 40 |
-| `supply.patch_plank` / `copper_nails` / `oakum` / `linseed_paint` (1508) | 24 / 8 / 12 / 16 | 12 / 4 / 6 / 10 |
 | `Rod.asset` Price | 60 | 40 |
 
-Purchases fall from 355 to 177. Careful: rod and bait on day 2, the dory and plank on day 4, the other
-supplies on day 5, the cod licence on day 6, and **10 coins to spare.** Ordinary: still 110 short (he
-reaches the rod on day 5).
+Purchases fall from 295 to 145. Careful: rod and bait on day 2, the dory on day 4, the cod licence on
+day 5, and **42 coins to spare** at the word. Ordinary: **still 78 short** (he reaches the rod on day 5
+and nothing after it).
+
+What it leaves: the careful week closes with room; the ordinary week does not.
 
 Feel: the week stays a clam grind with a steady drip of purchases; every day buys something. The cost
 is elsewhere: there is one cod licence Def, so the harbourmaster's price drops to 30 too, and a 30-coin
@@ -133,9 +138,11 @@ licence no longer feels like a milestone. A rod at 40 also cheapens the mainland
 
 Clam income does not move smoothly: it is 1 coin a clam until base x level reaches 6, then 2 coins a
 clam (the first clam of the day fetches 6). With 7 x 0.9 = 6.3 the careful week earns **527** instead of
-260. Careful: rod and bait on day 1, the dory and three supplies on day 3, paint on day 4, the cod
-licence on day 5, and **99 coins to spare.** Ordinary: 287 earned, 141 short (he has the dory and two
-supplies by day 7). Rod fish at level 0.9: about +25 for the week.
+260. Careful: rod and bait on day 1, the dory on day 3, the cod licence on day 4, and **159 coins to
+spare** at the word. Ordinary: 287 earned, **81 short** (he has the dory on day 6 but not the cod
+licence). Rod fish at level 0.9: about +25 for the week.
+
+What it leaves: the careful week has a large surplus; the ordinary player still falls 81 short.
 
 Feel: digging pays, the week relaxes after day 3, and the careful player ends with money to spend.
 Side effects: the island still pays less than Nine Mile Creek for the first clam (6 against 7), so the
@@ -148,14 +155,21 @@ earns nothing extra at all, because 4.5 is under the 6 threshold.
 | Data | Today | PROPOSAL |
 |---|---:|---:|
 | Basil lets him take the dory now, owed | 80 cash | 0 now, 80 owed to Basil |
-| Ginny hands over the four mending supplies, owed | 60 cash | 0 now, 60 owed to Ginny |
 | Ginny fronts part of the cod licence (like the shellfish fee) | 0 | 60 fronted, owed |
 | Share of each sale that goes to the debt, starting after Ginny's word | - | 25% |
 
-Cash purchases fall from 355 to 155 (licence, rod, bait, half the cod licence). Careful: the dory and
-supplies are his as soon as he asks, the rod on day 2, bait on day 3, the cod licence on day 5, **32
-coins to spare**, and he ends the week owing 200. (If the 25% share started on day 1 instead, the
-careful week would lose 65 of its 260 and fall 33 short.) Ordinary: still 88 short (the cod licence's cash half and the rod are out of reach).
+(The mending supplies were part of this set in the earlier draft; they are now given, so there is
+nothing left to front there.)
+
+Cash purchases fall from 295 to 155 (licence, rod, bait, half the cod licence). Careful: the dory is his
+as soon as he asks, the rod on day 2, bait on day 3, the cod licence on day 5, **32 coins to spare**, and
+he ends the week owing 140. (If the 25% share started on day 1 instead, the careful week would lose 65
+of its 260 and fall 33 short.) Ordinary: **still 88 short** (the rod and the cod licence's cash half are
+out of reach).
+
+What it leaves: the careful week closes and carries a 140 debt into week two; the ordinary week does
+not close. Because the supplies are now given, this set gains nothing from the ruling: it was already
+fronting them.
 
 Feel: the most "Living Working Coast" of the three: the island carries him, and the second week has a
 purpose (pay Basil and Ginny back). It keeps every price as it is, so nothing at Nine Mile Creek moves.
@@ -177,6 +191,16 @@ is built.
 Read from data on main at `98f9f3c55a` plus the open drafts named in section 3. The week's money was
 worked with the shipped formulas (`SellPricing.UnitPrice`, `MarketMath.PriceMultiplier`, daily recovery
 `GameConfig.MarketDailyRecovery` 0.5, one supply per sale) in a hand model of 20-clam loads and the
-purchase order above. The generated model in `first-week-purse.md` gives the same 260 income, 93 food,
-355 purchases and 168 short for the careful player. Not checked in a playthrough: walking and selling
-time, whether two trips fit in one tide, bite rates, and cooking on the island.
+purchase order above. The generated model in `first-week-purse.md` (written before the supplies ruling)
+gives the same 260 income and 93 food; its 355 purchases and 168 short still include the 60 of supplies.
+Not checked in a playthrough: walking and selling time, whether two trips fit in one tide, bite rates,
+and cooking on the island.
+
+### At a glance (supplies given, not bought)
+
+| | Careful | Ordinary |
+|---|---:|---:|
+| No change | 108 short | 228 short |
+| Set 1, cheaper big tickets | +42 | 78 short |
+| Set 2, better island prices | +159 | 81 short |
+| Set 3, Basil and Ginny front | +32, owing 140 | 88 short |
