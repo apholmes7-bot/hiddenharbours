@@ -255,7 +255,9 @@ namespace HiddenHarbours.UI
 
             // The region the page is FOR. A tide table is local — saying so is both flavour and truth,
             // since the heights are the active region's profile and no one else's.
-            string region = GameServices.CurrentRegionId;
+            // The page names the place as the player knows it; a region with no registered name shows
+            // nothing rather than its id.
+            string region = RegionDisplayNames.Get(GameServices.CurrentRegionId);
             if (!string.IsNullOrEmpty(region))
                 MakeText(page, HudStrings.TideTableForRegion(region), 24, TextAnchor.UpperRight,
                          PanelW - 380f - 40f, -40f, 380f, 34f, InkFaint);

@@ -107,11 +107,15 @@ namespace HiddenHarbours.UI
         public static string TideTableNextTurn(bool rising)
             => rising ? "Next high water in" : "Next low water in";
 
-        /// <summary>A column heading: "Today" / "Tomorrow", else the absolute day for a wider page.</summary>
+        /// <summary>A column heading: "Today" / "Tomorrow", with the day number the title page uses.
+        /// <paramref name="dayIndex"/> counts from 0 (the clock's day); the player reads days from 1,
+        /// the same as the title page's "Day N".</summary>
         public static string TideTableDayHeading(bool isToday, int dayIndex)
-            => isToday ? "Today" : "Tomorrow — day " + dayIndex.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            => isToday ? "Today" : "Tomorrow — day " + (dayIndex + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
 
-        /// <summary>Which place the page is for — a tide table is always local.</summary>
-        public static string TideTableForRegion(string regionId) => "for " + regionId;
+        /// <summary>Which place the page is for — a tide table is always local. Takes the place's
+        /// DISPLAY name; an empty name gives an empty line (never a raw region id).</summary>
+        public static string TideTableForRegion(string placeName)
+            => string.IsNullOrWhiteSpace(placeName) ? string.Empty : "for " + placeName;
     }
 }

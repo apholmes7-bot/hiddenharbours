@@ -12,7 +12,7 @@ namespace HiddenHarbours.UI
     /// were things the player must be able to read in under a second while acting.
     ///
     /// <para><b>Four of the five are no longer drawn</b> (the owner's 2026-08-22 diegetic ruling; see
-    /// the paragraph below). What is left always-on is the WATCH, which she is wearing. The other four
+    /// the paragraph below). What is left always-on is the WATCH, which he is wearing. The other four
     /// are built, wired and tested exactly as before, and shown only when
     /// <see cref="HudVisibilityPolicy"/> allows it. Pillar 1 (The Sea Has Moods) is still treated here
     /// as a UI problem — the answer just stopped being "put the number on the screen".</para>
@@ -509,13 +509,13 @@ namespace HiddenHarbours.UI
             // is optional in the same way ActiveBoat is (ashore, EditMode) — a null one is simply "no
             // dash", which leaves the cluster exactly where VS-19 put it.
             // ⚠ IsPlayerHelm, not HasHelm: the cluster yields to a dash the PLAYER is looking at.
-            // HasHelm is true of any driven motor hull — a skipper's boat carrying her in as a
-            // passenger included — and suppressing her compass for somebody else's wheelhouse would
-            // take her only heading read away at the one moment she cannot steer.
+            // HasHelm is true of any driven motor hull — a skipper's boat carrying him in as a
+            // passenger included — and suppressing his compass for somebody else's wheelhouse would
+            // take his only heading read away at the one moment he cannot steer.
             // ADR 0050: and it keeps out of whatever the helm's UI covers (the Core footprint seam) —
             // beside a card that reaches it, the tiller's included; above a full-width band. Only the
-            // helm in her hand covers anything (the host says nothing without one), so this 4 Hz read
-            // never dodges a card the host has not yet taken back in the frame she let go of it.
+            // helm in his hand covers anything (the host says nothing without one), so this 4 Hz read
+            // never dodges a card the host has not yet taken back in the frame he let go of it.
             IHelmControl helm = GameServices.HelmControl;
             bool atHelm = helm != null && helm.IsPlayerHelm;
             HelmFootprintArea covered = atHelm ? HelmFootprint.Current : HelmFootprintArea.None;

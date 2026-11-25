@@ -265,8 +265,7 @@ namespace HiddenHarbours.Economy
             return default;
         }
 
-        private static string Money(int amount)
-            => "₲" + amount.ToString("N0", System.Globalization.CultureInfo.InvariantCulture);
+        private static string Money(int amount) => MoneyFormat.Balance(amount);
 
         private static void EnsureEventSystem()
         {

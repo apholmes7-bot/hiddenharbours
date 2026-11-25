@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CodLicense
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.LicenseDef
   Id: license.cod
-  DisplayName: Cod Fishing License
+  DisplayName: Cod Fishing Licence
   Flavor: Nine Mile Creek's harbourmaster signs you off to take cod on rod and line.
   Price: 120
   PermittedSpeciesIds:

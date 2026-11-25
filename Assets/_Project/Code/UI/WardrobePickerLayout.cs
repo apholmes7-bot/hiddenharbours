@@ -28,7 +28,7 @@ namespace HiddenHarbours.UI
     /// the preview (the diegetic-UI canon: no paper-doll screen, no mannequin render). A panel that
     /// covered them would be a clothes menu that hides the clothes. So the list is offset clear of the
     /// anchor rather than centred on it, and the fisher — who stands in front of and below the fixture
-    /// she is using — is left in the open.</para>
+    /// he is using — is left in the open.</para>
     ///
     /// <para><b>Right by default, left when the right would not fit.</b> Not a preference: a wardrobe
     /// sits against a wall and the free floor is whichever side the room has. Trying the preferred side

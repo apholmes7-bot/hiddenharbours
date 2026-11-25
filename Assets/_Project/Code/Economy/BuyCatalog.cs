@@ -419,7 +419,7 @@ namespace HiddenHarbours.Economy
             int wet = PotLocker.DeployedCount(save, o.TrapDefId);
             var ci = System.Globalization.CultureInfo.InvariantCulture;
             return wet > 0
-                ? "You own " + owned.ToString(ci) + " - " + wet.ToString(ci) + " in the water."
+                ? "You own " + owned.ToString(ci) + " — " + wet.ToString(ci) + " in the water."
                 : "You own " + owned.ToString(ci) + ".";
         }
 
@@ -448,8 +448,9 @@ namespace HiddenHarbours.Economy
         // Confirm. (Loc-seam literals, HudStrings convention.)
         private static string InstrumentNoteFor(string hullId, bool owned)
         {
-            if (string.IsNullOrEmpty(hullId)) return "Fitted to a boat - you aren't aboard one.";
-            return owned ? "Already fitted to " + hullId + "." : "Fits to " + hullId + ".";
+            // The hull is named by its id here, which is not a word for the player: say "your boat".
+            if (string.IsNullOrEmpty(hullId)) return "Fitted to a boat — you aren't aboard one.";
+            return owned ? "Already fitted to your boat." : "Fits to your boat.";
         }
 
         // Stock note for a supply row (ice), read through SupplyLocker — the same locker the purchase writes.
@@ -466,10 +467,9 @@ namespace HiddenHarbours.Economy
         private static string NoteFor(BuyRowKind kind, ShipwrightOffer o)
         {
             if (kind == BuyRowKind.BoatRepair)
-                return "Owned, but she needs work - pay the yard to make her seaworthy.";
+                return "Owned, but she needs work — pay the yard to make her seaworthy.";
             if (o.StartsDamaged)
-                return "Sold as-is - needs ₲" + o.RepairCost.ToString(
-                    System.Globalization.CultureInfo.InvariantCulture) + " of repairs before she'll sail.";
+                return "Sold as-is — needs " + MoneyFormat.Balance(o.RepairCost) + " of repairs before she'll sail.";
             return "";
         }
     }

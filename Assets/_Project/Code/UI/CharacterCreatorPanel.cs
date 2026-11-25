@@ -818,14 +818,14 @@ namespace HiddenHarbours.UI
     {
         public static readonly string[] Tabs={"BODY","COLOURS","OUTFIT","NAME","TRAITS","READY"};
         public static readonly string[] Animations={"Idle","Walk"};
-        public const string Hint="Arrows/stick: turn   Space/Y: pose   R/X: randomize\nUp/down: select   A/D or d-pad: change   Tab/shoulders: step   Enter/A: choose   Esc/B: leave";
+        public const string Hint="Arrows/stick: turn   Space/Y: pose   R/X: randomise\nUp/down: select   A/D or d-pad: change   Tab/shoulders: step   Enter or pad A: choose   Esc/B: leave";
         public const string NameHint="D-pad/stick: pick a key   A: type   Start/Done: finish   B: back";
         public const string TypedNameHint="Type a name   Enter or Done: finish   Esc/B: back";
         public const string TypedNameInstructions="Type a name, or leave it blank.\nEnter or Done: finish.";
         public const string PadNameInstructions="Use the letter grid below.\nStart or Done: finish.";
         public const string You="YOU", Clothes="CLOTHES", YourName="YOUR NAME (OPTIONAL)", Ready="READY";
         public const string Pose="Pose: ", Wear="Wear: ", Done="Done";
-        public const string Randomize="Randomize";
+        public const string Randomize="Randomise";
         public const string TraitHint="Up/down: select   Enter/A or click: pick or unpick   Tab/shoulders: step   Esc/B: leave";
         public static string PickTraits(int required) => required == 1 ? "PICK 1 TRAIT" : "PICK " + required + " TRAITS";
         public static string FieldName(string field) => field == "skin" ? "Skin" : field == "hair" ? "Hair"

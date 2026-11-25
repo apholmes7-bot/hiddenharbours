@@ -426,7 +426,7 @@ namespace HiddenHarbours.UI
         public const string UnknownColour = "That colour field is not offered by this body.";
         public const string UnknownOutfit = "That starter outfit is not in the wardrobe.";
         public const string NoSave = "No game is loaded, so there is nowhere to keep these choices.";
-        public static readonly string[] KeyActions = { "Space", "Back", "A/a", "Done" };
+        public static readonly string[] KeyActions = { "Space", "Delete", "A/a", "Done" };
         public const string Traits = "Traits: ";
         public const string NoTraits = "none yet";
         public const string UnknownTrait = "That trait is not on offer.";
