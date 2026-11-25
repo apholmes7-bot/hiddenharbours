@@ -1,17 +1,17 @@
 # Mending the dory
 
-The proposed route has the player buy the broken dory on the St Peters slip,
+The accepted three-job plan has the player buy the broken dory on the St Peters slip,
 carry her materials there, and patch, caulk and paint her himself. The proposed
-materials cost **60 coin** and the three jobs take **75 game minutes**. The current
+materials originally cost **PROPOSAL 60 coin** and the three jobs take **75 game minutes**. The current
 mending draft describes a hull supported on dry ground above high water: these
 three jobs do not wait for low tide. Completing them records a repaired boat but
 does not move or float her. A supported route from the slip to the water remains
 separate unfinished work.
 
-This is a proposed days 4–5 beat within the island-only first week. The repair
-materials are affordable from a week of clams; **buying and repairing the boat by
-day 4–5 is not established by main's economy**. The arithmetic below identifies the
-gap before anyone places a promise the player cannot afford.
+The patch, caulk and paint sequence on days 4–5 is accepted within the island-only
+first week. Prices remain **PROPOSAL**, and the calendar describes the intended
+beat rather than a forced gate. The purse alternatives below separate the accepted
+hand work from the unsettled cost and from unfinished physical integration.
 
 The [first-week direction](../adr/0062-the-first-week-is-closed-by-weather.md)
 keeps him on St Peters until an islander's word and suitable weather open the way
@@ -27,10 +27,10 @@ him, and nothing arrives from a remote inventory.
 
 | Job | What he carries to the slip | Hand work | Material cost |
 | --- | --- | --- | --- |
-| Patch the plank | One patch plank and one packet of copper nails | 30 game minutes | 24 + 8 = 32 coin |
-| Caulk the seam | One hank of oakum | 25 game minutes | 12 coin |
-| Paint the patch | One tin of linseed paint | 20 game minutes | 16 coin |
-| Total | Four purchased units | 75 game minutes | 60 coin |
+| Patch the plank | One patch plank and one packet of copper nails | 30 game minutes | PROPOSAL 24 + 8 = 32 coin |
+| Caulk the seam | One hank of oakum | 25 game minutes | PROPOSAL 12 coin |
+| Paint the patch | One tin of linseed paint | 20 game minutes | PROPOSAL 16 coin |
+| Total | Four purchased units | 75 game minutes | PROPOSAL 60 coin |
 
 These are the authored proposals in the
 [mending rules draft](https://github.com/apholmes7-bot/hiddenharbours/pull/1508).
@@ -81,92 +81,143 @@ the slip state. No physical launch or paint-curing timer is implemented by the
 logic draft. The [dry-slip placement draft](https://github.com/apholmes7-bot/hiddenharbours/pull/1539)
 and the mending draft are still separate, unmerged work.
 
-## What the first-week purse can actually pay
+## Prices that fit the week
 
-These figures were rechecked against pinned main `d46bde303e6aa256d23d47a05ede5d7d6f38e51e`.
-No price or existing configuration value is changed by this proposal.
+**PROPOSAL — every price alternative, day, purse, quantity and result in this
+section is a conditional budget, not an accepted balance value.** Reference values
+below are identified separately as existing data. No asset or configuration value
+is changed here. The three jobs are accepted; their prices are not.
 
-| Existing main data | Coin | Consequence |
-| --- | ---: | --- |
-| Damaged dory offer | 400 | Main's existing yard offer supplies this price; the island sale is a separate draft |
-| Existing paid repair option | 300 | The hand-work path replaces this charge when placed; do not charge both |
-| Rod | 60 | Budgeted as a purchase |
-| Cod licence | 120 | Required before keeping the cod used in the example |
-| Shellfish licence | 15 | The fronted fee is 20, leaving 5 after buying it |
-| Bread | 4 | Daily living costs must come out of any remaining purse |
-| Bag of ice | 6 | Optional recurring catch care, not a repair material |
-| Soft-shell clam base value | 2 per unit | This is not the island buyer's final payment |
-| Atlantic cod base value | 14 per unit | This is also before outlet, supply and freshness adjustments |
+The model is [the first-week purse](https://github.com/apholmes7-bot/hiddenharbours/pull/1558),
+read at `c56f56d8c53ab7fb1c1bd4f230e722ca261aabe8` and checked against pinned main
+`f808af6ae5d5a0041f3d2147d74b1ddef7dce609`. Its `FirstWeekPurseTests` already owns
+this model; this document does not introduce another runtime budget or test fixture.
+The earlier optimistic cod-income example is superseded.
 
-The wallet starts at zero. If the existing fee grant has occurred and the shellfish
-licence has been bought, the useful starting remainder is `0 + 20 − 15 = 5` coin.
-If that grant or purchase has not occurred, do not assume the remainder is present.
+Existing data: the initial fee leaves `20 - 15 = 5` coins after the shellfish
+licence. Rod costs 60; capelin bait costs 20 for a lot of 10; the cod licence costs
+120 and has no island seller. A fresh clam pays 1 coin after marginal sale pricing
+and its minimum-price rule. A pail carries 20. Careful visits produce 40 coins on
+each of days 1–6 and 20 on day 7, for 260; ordinary visits produce 20 daily, for
+140. No fish earnings, additional fee grant, free rod or off-island trade is added.
 
-The fixed bill is:
+The existing cheapest whole-item ration is three bean tins on arrival (9 coins)
+and four bean tins plus an oatcake on each later day (14), totalling 93. Food is
+funded before progression purchases. Purchase order remains shellfish licence,
+rod, bait, hull, plank, nails, oakum, paint, cod licence. Purchases are end-of-day
+cash earmarks, as in the source model; they do not establish opening hours or that
+work can finish that evening. Carrying, repairs and supported launch still take time.
 
-- Boat and hand repairs: `400 + 32 + 12 + 16 = 460` coin.
-- Including a purchased rod and cod licence: `460 + 60 + 120 = 640` coin.
-- Income needed after the 5-coin remainder: `640 − 5 = 635` coin, before food, bait
-  or ice. A gifted rod would reduce this by 60; no gift is assumed here.
-- The old boat-plus-paid-repair total is `400 + 300 = 700`. This proposal's boat
-  and material bill is 240 coin lower. That is a proposed pacing consequence,
-  not a silent change to the old offer.
+Independent arithmetic reproduces the source's careful closing purses
+`36, 2, 8, 34, 60, 6, 12` and ordinary purses `16, 22, 28, 34, 40, 46, 52`.
+The original **PROPOSAL** hull/material set gives the reported deficits:
+`15 + 60 + 20 + 80 + 24 + 8 + 12 + 16 + 120 + 93 - 20 - 260 = 168`
+for the careful full list; `60 - 28 = 32` for the ordinary rod on day 3.
+The mainland yard's existing 400-coin offer is a different route, not the island
+hull's **PROPOSAL 80** reference price.
 
-Main's island store has price level **0.6** and demand **0.7**. The existing sale
-calculation, for fresh catches and neutral selling traits, is:
+### Alternative prices — all PROPOSAL, in coins
 
-`max(1, round(baseValue × clamp(1 / (1 + elasticity × supply / 0.7), 0.25, 1.6) × 0.6))`
+| PROPOSAL set | Hull | Plank | Nails | Oakum | Paint | Hull + materials | Other changes needed |
+|---|---:|---:|---:|---:|---:|---:|---|
+| A: least retuning | 60 | 12 | 4 | 6 | 8 | 90 | None for the careful mended-hull cash target; ordinary and cod remain out of reach |
+| B: earlier hand work | 40 | 8 | 2 | 4 | 6 | 60 | None for the careful mended-hull cash target; ordinary and cod remain out of reach |
+| C: whole-week package | 20 | 6 | 2 | 3 | 4 | 35 | Tinned beans price 1; cod licence price 100; an island cod seller still required |
 
-Each sold unit adds 1 to its category's supply; the daily settle removes half.
-Clams use elasticity 0.45 and cod 0.2. Weight does not multiply these per-unit
-prices. A fresh clam therefore sells for **1 coin** at this outlet even at zero
-supply: `round(2 × 0.6) = 1`. A first fresh cod sells for **8**, then its price falls
-as finfish supply rises. Other catches in the same category can lower it further.
-Spoiled, refused or unlicensed catches contribute no assumed income here.
+Set C's two additional price changes are **PROPOSAL only**, specifically
+`Catalog/Supplies/TinnedBeans.asset` and `Catalog/Licenses/CodLicense.asset`.
+They are not implemented here or implied by the mending data. Rod stays at its
+accepted price of 60 in every set. No nutrition or configuration change is assumed.
+At bean price **PROPOSAL 1**, the same cheapest-whole-ration search chooses three
+tins on arrival and five per later day: **PROPOSAL 3 + 6 × 5 = 33** coins per week.
+This requires **PROPOSAL 33 tins**, versus the reference **27 tins and 6 oatcakes**;
+finite stock and other shoppers must be measured before adopting it.
 
-**The materials alone are within reach:** 32 clams pay for the patch materials,
-12 for the oakum and 16 for the paint. That is 60 saleable clams, or 55 after using
-the initial 5 coin. At an illustrative 30 clams per day, two days cover the materials.
-This is a threshold calculation; it does not establish how many holes he can find,
-dig, carry and sell during a real low water.
+### Set A: PROPOSAL day-by-day purses
 
-**A mixed week does not establish the full purchase.** The following deliberately
-optimistic cash model gives him 30 fresh saleable clams and 10 licensed cod every
-day, initial category supplies of zero, no other sales, neutral traits and free
-bait. It even grants access to the rod and licence from day 1 while counting their
-cost in the fixed bill. Actual purchase timing can only make that assumption harder.
-Catch rates are chosen examples, not measured yields or authored guarantees.
+All entries in this table are **PROPOSAL**. Licence in the purchase column means
+shellfish unless explicitly labelled cod. Income is shown before meals.
 
-| Day | 30 clams | 10 cod after that day's marginal pricing | Daily gross |
-| --- | ---: | ---: | ---: |
-| 1 | 30 | 43 | 73 |
-| 2 | 30 | 24 | 54 |
-| 3 | 30 | 21 | 51 |
-| 4 | 30 | 20 | 50 |
-| 5 | 30 | 20 | 50 |
-| 6 | 30 | 20 | 50 |
-| 7 | 30 | 20 | 50 |
-| Total | 210 | 168 | 378 |
+| PROPOSAL day | Careful income / food | Careful buys | Careful end | Ordinary income / food | Ordinary buys | Ordinary end |
+|---|---:|---|---:|---:|---|---:|
+| 1 | 40 / 9 | licence | 36 | 20 / 9 | licence | 16 |
+| 2 | 40 / 14 | rod | 2 | 20 / 14 | - | 22 |
+| 3 | 40 / 14 | bait | 8 | 20 / 14 | - | 28 |
+| 4 | 40 / 14 | - | 34 | 20 / 14 | - | 34 |
+| 5 | 40 / 14 | hull | 0 | 20 / 14 | - | 40 |
+| 6 | 40 / 14 | plank, nails, oakum | 4 | 20 / 14 | - | 46 |
+| 7 | 20 / 14 | paint | 2 | 20 / 14 | - | 52 |
 
-The resulting purse is `5 + 378 = 383`. It is **77 short** even of the 460-coin
-boat-and-material bill and **257 short** of the 640-coin bill including gear and
-licence, before eating. Even by day 4 its optimistic cash is only
-`5 + 73 + 54 + 51 + 50 = 233`, so this model does not buy a 400-coin boat that day.
-With the same seven-day cod proceeds, the full bill needs
-`635 − 168 = 467` saleable clams in the week, about 67 per day, plus the 70 cod.
-That workload needs observation before adoption.
+### Set B: PROPOSAL day-by-day purses
 
-For a bait sensitivity check, main authors shucked-clam bait at 3 coin per unit,
-with the ten-unit default lot costing 30. Seventy paid units would cost
-`70 × 3 = 210`, reducing the mixed week's 378 gross to 168 before fixed costs.
-That item is currently unlisted, so this is a cost sensitivity, not a claim that
-he can buy it on the island. The shipped catch-only bait policy limits waste on
-misses; it does not make bait free. Bread, ice, freshness loss and travel time are
-additional costs or constraints, not hidden allowances in the table.
+All entries in this table are **PROPOSAL**. Licence in the purchase column means
+shellfish unless explicitly labelled cod. Income is shown before meals.
 
-Main also lists the cod licence at the mainland harbourmaster. The island-only
-week requires a reachable way to obtain the appropriate licences before this
-cod income is possible. The arithmetic prices that licence but does not move it.
+| PROPOSAL day | Careful income / food | Careful buys | Careful end | Ordinary income / food | Ordinary buys | Ordinary end |
+|---|---:|---|---:|---:|---|---:|
+| 1 | 40 / 9 | licence | 36 | 20 / 9 | licence | 16 |
+| 2 | 40 / 14 | rod | 2 | 20 / 14 | - | 22 |
+| 3 | 40 / 14 | bait | 8 | 20 / 14 | - | 28 |
+| 4 | 40 / 14 | - | 34 | 20 / 14 | - | 34 |
+| 5 | 40 / 14 | hull, plank, nails, oakum, paint | 0 | 20 / 14 | - | 40 |
+| 6 | 40 / 14 | - | 26 | 20 / 14 | - | 46 |
+| 7 | 20 / 14 | - | 32 | 20 / 14 | - | 52 |
+
+### Set C: PROPOSAL day-by-day purses
+
+All entries in this table are **PROPOSAL**. Licence in the purchase column means
+shellfish unless explicitly labelled cod. Income is shown before meals.
+
+| PROPOSAL day | Careful income / food | Careful buys | Careful end | Ordinary income / food | Ordinary buys | Ordinary end |
+|---|---:|---|---:|---:|---|---:|
+| 1 | 40 / 3 | licence | 42 | 20 / 3 | licence | 22 |
+| 2 | 40 / 5 | rod | 17 | 20 / 5 | - | 37 |
+| 3 | 40 / 5 | bait, hull, plank, nails, oakum | 1 | 20 / 5 | - | 52 |
+| 4 | 40 / 5 | paint | 32 | 20 / 5 | rod | 7 |
+| 5 | 40 / 5 | - | 67 | 20 / 5 | bait | 2 |
+| 6 | 40 / 5 | cod licence | 2 | 20 / 5 | - | 17 |
+| 7 | 20 / 5 | - | 17 | 20 / 5 | hull, plank, nails, oakum | 1 |
+
+### Recommendation — PROPOSAL C as a package
+
+**PROPOSAL C** meets the intended difference between the two players: the careful
+player can fund every repair supply by **PROPOSAL day 4**, leaving the accepted
+hand-work beat room on days 4–5. He funds the cod licence by **PROPOSAL day 6** and
+ends with **PROPOSAL 17 coins**. This is affordability evidence, not proof that he
+has performed the work, launched or landed a fish.
+
+The ordinary player ends with **PROPOSAL 1 coin**, having paid for the hull, plank,
+nails and oakum. The paint is **PROPOSAL 4**, so his visible remaining repair target
+is **PROPOSAL 3 coins / 3 saleable clams**. He can see exactly what remains at the
+slip. He still lacks the cod licence: the complete demo gate is **PROPOSAL 103 coins**
+away, and the rod arrives on **PROPOSAL day 4**, not day 3 (**PROPOSAL 8 short** on
+day 3). Do not describe this as both players finishing the demo in the same week.
+An extra carried load, later fishing income or a later finish must be measured,
+not silently credited. Catch licensing remains mandatory.
+
+For comparison, **PROPOSAL A** funds all careful materials at the end of
+**PROPOSAL day 7** with **PROPOSAL 2 left**, so same-day physical completion is
+unproven. His cod shortfall is **PROPOSAL 118**. **PROPOSAL B** funds materials at
+the end of **PROPOSAL day 5**, leaves **PROPOSAL 32** on day 7 and has a cod
+shortfall of **PROPOSAL 88**. Ordinary remains **PROPOSAL 8 short of the rod** on
+day 7 under either set; total shortfall to rod, bait and mended hull is
+**PROPOSAL 118 for A / 88 for B**, and full-list shortfall is
+**PROPOSAL 238 for A / 208 for B**. Neither satisfies the ordinary-nearly-there goal.
+
+Changing only the five repair/purchase prices cannot fix this: the ordinary
+post-food budget is **PROPOSAL 52**, below the existing rod alone. Even the careful
+budget is **PROPOSAL 172**, below the existing rod, bait and cod bill of 200 before
+any hull. Set C is therefore a conditional recommendation for explicit wider
+balance decisions. If cheaper beans and the cod change are declined, use B only
+as the careful repair target and retain the ordinary/full-week shortfalls openly.
+
+These tables reuse the source's tide/carry yields and food-first cash ordering;
+they do not rerun the terrain exposure or minute-by-minute needs simulation.
+The independent ration search and ledger reproduce both source deficits and
+check nonnegative purses. The lower meal bill still buys full hunger relief;
+stock, eating access, timing, physical work, multiplayer supply competition and
+supported launch remain unverified. Every purse is per player, never a shared
+household subsidy. No editor or C# test execution was performed for this document.
 
 ## When something goes wrong gently
 
@@ -218,7 +269,7 @@ new saved fields.
 | Question | Lean and reason |
 | --- | --- |
 | Which counted shelf positions supply the four materials? | Follow the canon's store-bought repair consumables: four separate counted lines at the island general store, collected and carried by hand. The mainland boat-hardware range stays separate. Seller wiring, physical goods, capacity and delivery shares remain unfinished; do not substitute a remote parcel or unlimited stock. |
-| Is day 4–5 a firm promise or a likely outcome for a practiced player? | Make it a likely outcome with a measured purse target. Keep the 60-coin labour-material proposal, then measure low-water yields and cash before deciding whether the 400-coin purchase price, a credit arrangement or island sale terms should change. The current numbers do not prove the promised day. |
+| Is day 4–5 a firm promise or a likely outcome for a practiced player? | Make it a likely outcome with a measured purse target. Use the conditional price alternatives above, then measure real carrying, eating, work and launch time. The accepted job sequence does not accept a price or guarantee an exact completion day. |
 | Can he borrow the hammer, caulking iron and brush at the slip? | Yes, as physically present reusable implements. It gives the hand work a clear place without an extra first-week shopping bill. |
 | Does paint need a separate drying wait? | No additional timer in this proposal. A later finish or launch design may justify one, but high water is not a drying or launch gate for the dry hull. |
 | Must the jobs span separate visits? | No. Keep their order and physical materials, and let errands create the two-day rhythm. All three dry jobs can fit into one 75-minute work visit. |
