@@ -510,6 +510,32 @@ namespace HiddenHarbours.Core
         /// goods are simply in his supplies).
         /// </summary>
         public List<ShoppingBagDto> ShoppingBags = new();
+
+        // ---- save v27: clothes, the clothing rack's sales, skills (ADR 0064) -------------------------
+        // ONE bump carrying exactly these three lists. Each is something the player did, which cannot be
+        // recomputed. The two per-player lists are rows keyed by a player key (SavePlayerKeys) from the
+        // start, so a save with more players later adds rows and never moves these. Rows in SaveRowsV27.cs.
+
+        /// <summary>
+        /// <b>The clothes each player owns and has on</b>, one row per player (garment ids only). Added in v27
+        /// as <b>data only</b>: written and read through <see cref="PlayerClothingRows"/>. Older saves start
+        /// with none: he owns no garment and wears only his own outfit colours.
+        /// </summary>
+        public List<PlayerClothingDto> PlayerClothing = new();
+
+        /// <summary>
+        /// <b>Garments sold off each clothing rack</b>, one row per rack, garment and day, kept in (day, rack,
+        /// garment) order. A rack's stock is its Def's less what these rows sold. Added in v27 as <b>data
+        /// only</b> (<see cref="ClothingRackSaleRows"/>). Older saves start with none: every rack is full.
+        /// </summary>
+        public List<ClothingRackSaleDto> ClothingRackSales = new();
+
+        /// <summary>
+        /// <b>Each player's experience in each skill</b>, one row per player and skill (the rod-fishing skill
+        /// first). The level is worked out from it, never saved. Added in v27 as <b>data only</b>
+        /// (<see cref="PlayerSkillRows"/>). Older saves start with none: every skill at zero.
+        /// </summary>
+        public List<PlayerSkillDto> PlayerSkills = new();
     }
 
     /// <summary>

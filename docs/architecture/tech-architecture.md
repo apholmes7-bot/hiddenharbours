@@ -444,6 +444,16 @@ over all three: a load never destroys something the player paid for or owns (a p
 a bag row only sets aside goods that stay counted in `SupplyStock`). Field list and repair rules:
 [`data-model.md`](data-model.md), save schema v26. Tests: `SaveMigrationV26Tests`.
 
+### Clothes, rack sales and skills on the save (save v27, ADR 0064, schema only)
+
+Save v27 adds three lists: each player's garments owned and worn (`SaveData.PlayerClothing`), what each
+clothing rack has sold (`ClothingRackSales`) and each player's skill experience (`PlayerSkills`). Rows are
+plain Core DTOs with ids and ints only (`Core/Save/SaveRowsV27.cs`), reached through three stateless,
+null-safe helpers (`PlayerClothingRows`, `ClothingRackSaleRows`, `PlayerSkillRows`); **no gameplay code reads
+or writes them yet**. The per-player lists are keyed by a stable player key (`SavePlayerKeys.Local`) from the
+start, so co-op adds rows, never a migration of these. Field list and repair rules:
+[`data-model.md`](data-model.md), save schema v27. Tests: `SaveMigrationV27Tests`.
+
 ### Hulls sort among the scenery (ADR 0059, accepted 2026-11-17)
 
 A boat is an upright world object. Core's pure `HullSorting.OrderAt(waterlinePivotY)` gives her order:
