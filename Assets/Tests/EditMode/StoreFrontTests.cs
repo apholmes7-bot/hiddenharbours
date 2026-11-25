@@ -109,6 +109,66 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(sign.activeSelf, Is.True, "closing hours never take the sign in");
         }
 
+        private sealed class RecordingPresentation : HiddenHarbours.Core.IGroundPropPresentationService
+        {
+            public readonly List<(GameObject host, Sprite sprite, HiddenHarbours.Core.GroundGlow glow)> Dressed =
+                new List<(GameObject, Sprite, HiddenHarbours.Core.GroundGlow)>();
+
+            public void Dress(GameObject host, Sprite sprite, in HiddenHarbours.Core.GroundGlow glow) =>
+                Dressed.Add((host, sprite, glow));
+        }
+
+        /// <summary>A lamp asks the village lamp look for its light once, at its bulb, and the light goes in with
+        /// the wall while he is inside; the board and the displays ask for none.</summary>
+        [Test]
+        public void ALamp_AsksTheVillageLampLookForItsLight_AtItsBulb_AndGoesInWithTheWall()
+        {
+            var was = HiddenHarbours.Core.GroundPropPresentation.Service;
+            var seen = new RecordingPresentation();
+            HiddenHarbours.Core.GroundPropPresentation.Service = seen;
+            try
+            {
+                var def = ScriptableObject.CreateInstance<StoreFrontDef>();
+                _made.Add(def);
+                def.Pieces = new List<StoreFrontPiece>
+                {
+                    new StoreFrontPiece { Id = "front.sign", HideWhileInside = true },
+                    new StoreFrontPiece { Id = "front.lamp", HideWhileInside = true, Offset = new Vector2(-0.9f, 0.5f),
+                                          Glows = true, GlowOffset = new Vector2(0.1f, 0f), GlowRangeMetres = 1.5f,
+                                          GlowIntensity = 0.8f, GlowColor = Color.yellow },
+                    new StoreFrontPiece { Id = "front.crate", OnlyWhileOpen = true },
+                };
+                var building = new GameObject("generalStore");
+                _made.Add(building);
+                StoreFront front = StoreFront.Build(def, building.transform);
+                Assert.That(seen.Dressed.Count, Is.EqualTo(1), "one light, for the one lamp");
+                var (host, sprite, glow) = seen.Dressed[0];
+                Assert.That(sprite, Is.Null, "the lamp draws its own picture; only the light is asked for");
+                Assert.That(glow.Lit, Is.True);
+                Assert.That(glow.RangeMetres, Is.EqualTo(1.5f));
+                Assert.That(glow.Intensity, Is.EqualTo(0.8f));
+                Assert.That(glow.Color, Is.EqualTo(Color.yellow));
+                Assert.That(glow.HeightMetres, Is.Zero, "the light hangs at the bulb");
+                Assert.That((Vector2)host.transform.position, Is.EqualTo(new Vector2(-0.8f, 0.5f)).Using(Vector2EqualityComparer.Instance));
+                Assert.That(front.LampLights.Single(), Is.SameAs(host));
+                front.ApplyInside(true);
+                Assert.That(host.activeInHierarchy, Is.False, "inside: the lamp and its light are away with the wall");
+                front.ApplyInside(false);
+                Assert.That(host.activeInHierarchy, Is.True);
+            }
+            finally
+            {
+                HiddenHarbours.Core.GroundPropPresentation.Service = was;
+            }
+        }
+
+        private sealed class Vector2EqualityComparer : IEqualityComparer<Vector2>
+        {
+            public static readonly Vector2EqualityComparer Instance = new Vector2EqualityComparer();
+            public bool Equals(Vector2 a, Vector2 b) => (a - b).sqrMagnitude < 1e-8f;
+            public int GetHashCode(Vector2 v) => 0;
+        }
+
         [Test]
         public void IsOpenAt_IsHalfOpen_FromOpeningUpToClosing()
         {
@@ -135,8 +195,11 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(front.ShopId, Is.EqualTo(shelves.ShopId));
             Assert.That(front.OpensHour, Is.EqualTo(shelves.OpensHour), "the displays go out when the store opens");
             Assert.That(front.ClosesHour, Is.EqualTo(shelves.ClosesHour), "the displays come in when it closes");
-            Assert.That(front.Pieces.Count(p => !p.OnlyWhileOpen), Is.EqualTo(1), "one sign, always out");
-            Assert.That(front.Pieces.Single(p => !p.OnlyWhileOpen).HideWhileInside, Is.True, "the sign hangs on the wall");
+            Assert.That(front.Pieces.Count(p => !p.OnlyWhileOpen && !p.Glows), Is.EqualTo(1), "one name board, always out");
+            Assert.That(front.Pieces.Where(p => !p.OnlyWhileOpen).All(p => p.HideWhileInside), Is.True,
+                        "the board and its lamps are fixed to the store's face");
+            Assert.That(front.Pieces.Count(p => p.Glows), Is.InRange(2, 3), "two or three lamps over the board");
+            Assert.That(front.Pieces.Where(p => p.Glows).All(p => !p.OnlyWhileOpen), Is.True, "the lamps stay up when it closes");
             Assert.That(front.Pieces.Where(p => p.OnlyWhileOpen).All(p => !p.HideWhileInside), Is.True, "the displays stand on the ground");
             int displays = front.Pieces.Count(p => p.OnlyWhileOpen);
             Assert.That(displays, Is.InRange(2, 3), "two or three displays");
@@ -187,11 +250,11 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
-        /// <summary>The sign hangs on the wall over the door (the first look: the post sign by the path hid the
-        /// left planter and stood in front of the vehicle row): its middle is over the door, its foot above it,
-        /// drawn just over the building's own picture so the facade's blank board is covered.</summary>
+        /// <summary>The name board is on the store itself, above the awning (owner 2026-11-25: the post sign was
+        /// "a little big and too commercial looking for a small island"): centred on the store, well above the
+        /// door, modest in size, drawn just over the building's own picture (1060).</summary>
         [Test]
-        public void TheShippedSign_HangsOverTheDoor_JustInFrontOfTheWall()
+        public void TheShippedBoard_IsOnTheStoresFace_AboveTheAwning_AndModest()
         {
             StoreFrontDef front = Shipped();
             StoreFrontPiece sign = front.Pieces.Single(p => p.Id == "front.sign");
@@ -200,9 +263,33 @@ namespace HiddenHarbours.Tests.EditMode
                 .Single(r => r != null && r.Id == WalkId);
             Vector2 at = BuildingGroundPoint(front.BuildingName) + sign.Offset;
             Vector2 door = walk.Points.OrderByDescending(p => p.y).First();
-            Assert.That(Mathf.Abs(at.x - door.x), Is.LessThan(sign.Sprite.bounds.extents.x), "the sign is over the door");
-            Assert.That(at.y, Is.InRange(door.y, door.y + 1f), "the sign hangs just above the door");
-            Assert.That(sign.SortingOrder, Is.InRange(1061, 1062), "just over the building's picture (1060), under anyone in front");
+            Assert.That(Mathf.Abs(sign.Offset.x), Is.LessThan(0.1f), "centred on the store's face");
+            Assert.That(at.y, Is.GreaterThan(door.y + 2f), "above the awning, not over the door");
+            Assert.That(sign.Sprite.bounds.size.x, Is.LessThanOrEqualTo(2f), "a modest board, two metres at most");
+            Assert.That(sign.Sprite.bounds.size.y, Is.LessThanOrEqualTo(0.5f), "it fits under the upper windows");
+            Assert.That(sign.SortingOrder, Is.EqualTo(1061), "just over the building's picture (1060), under its lamps");
+        }
+
+        /// <summary>The lamps hang over the board, one over each end, and light it from just above.</summary>
+        [Test]
+        public void TheShippedLamps_HangOverTheBoardsEnds_AndLightIt()
+        {
+            StoreFrontDef front = Shipped();
+            StoreFrontPiece sign = front.Pieces.Single(p => p.Id == "front.sign");
+            float half = sign.Sprite.bounds.extents.x;
+            float top = sign.Offset.y + sign.Sprite.bounds.size.y;
+            var lamps = front.Pieces.Where(p => p.Glows).ToList();
+            Assert.That(lamps.Any(l => l.Offset.x < sign.Offset.x) && lamps.Any(l => l.Offset.x > sign.Offset.x), Is.True,
+                        "a lamp over each end");
+            foreach (StoreFrontPiece lamp in lamps)
+            {
+                Vector2 bulb = lamp.Offset + lamp.GlowOffset;
+                Assert.That(Mathf.Abs(bulb.x - sign.Offset.x), Is.LessThan(half), lamp.Id + "'s bulb is over the board");
+                Assert.That(bulb.y, Is.InRange(top - 0.05f, top + 0.25f), lamp.Id + "'s bulb hangs just over the board");
+                Assert.That(lamp.SortingOrder, Is.GreaterThan(sign.SortingOrder), lamp.Id + " in front of the board");
+                Assert.That(lamp.GlowRangeMetres, Is.GreaterThan(half * 0.5f), lamp.Id + " reaches across its half of the board");
+                Assert.That(lamp.GlowIntensity, Is.GreaterThan(0f), lamp.Id);
+            }
         }
 
         [Test]

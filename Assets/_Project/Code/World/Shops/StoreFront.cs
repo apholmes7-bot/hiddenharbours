@@ -5,8 +5,10 @@ using HiddenHarbours.Core;
 namespace HiddenHarbours.World
 {
     /// <summary>
-    /// <b>One store's front</b>: its sign on the wall over the door, shown except while the player is inside
-    /// (the wall is taken away then), and its displays, out only while the store is open.
+    /// <b>One store's front</b>: its name board and lamps on the face above the awning, shown except while the
+    /// player is inside (the wall is taken away then), and its displays, out only while the store is open.
+    /// A lamp's light is asked of the village's lamp look through Core (<see cref="GroundPropPresentation"/>),
+    /// so it comes on with the dark exactly as every other village lamp does.
     /// Built once under the building (so it moves and unloads with it) by <see cref="StoreFrontsDirector"/>.
     /// It looks at the clock every <see cref="StoreFrontDef.CheckRealSeconds"/> and only touches the displays
     /// when the open state changes, so it costs nothing between the two changes a day. No state is saved:
@@ -17,6 +19,7 @@ namespace HiddenHarbours.World
         private StoreFrontDef _def;
         private readonly List<GameObject> _displays = new List<GameObject>();
         private readonly List<GameObject> _onWall = new List<GameObject>();
+        private readonly List<GameObject> _lamps = new List<GameObject>();
         private BuildingInterior _building;
         private float _sinceCheck;
         private int _shown = -1;   // -1 not yet decided, 0 put away, 1 out
@@ -28,8 +31,11 @@ namespace HiddenHarbours.World
         /// <summary>True while the displays are out.</summary>
         public bool DisplaysOut => _shown == 1;
 
-        /// <summary>True while the pieces on the wall (the sign) show: whenever the player is not inside.</summary>
+        /// <summary>True while the pieces on the wall (the board, its lamps) show: whenever the player is not inside.</summary>
         public bool WallPiecesShown => _wallShown != 0;
+
+        /// <summary>The lamps' light points, one per lamp, each a child of its lamp.</summary>
+        public IReadOnlyList<GameObject> LampLights => _lamps;
 
         /// <summary>Builds the front's pieces under <paramref name="building"/>. Public so a test can build one.</summary>
         public static StoreFront Build(StoreFrontDef def, Transform building)
@@ -58,7 +64,26 @@ namespace HiddenHarbours.World
                 if (def.Material != null) sr.sharedMaterial = def.Material;
                 if (piece.OnlyWhileOpen) _displays.Add(go);
                 if (piece.HideWhileInside) _onWall.Add(go);
+                if (piece.Glows) _lamps.Add(Light(go, piece));
             }
+        }
+
+        private static GameObject Light(GameObject lamp, StoreFrontPiece piece)
+        {
+            var at = new GameObject(lamp.name + ".light");
+            at.transform.SetParent(lamp.transform, false);
+            at.transform.localPosition = piece.GlowOffset;
+            // The light hangs at the bulb (no lift), so its glow falls on the board under it. Visual only, never saved.
+            GroundPropPresentation.Service?.Dress(at, null, new GroundGlow
+            {
+                Lit = true,
+                Color = piece.GlowColor,
+                RangeMetres = piece.GlowRangeMetres,
+                Intensity = piece.GlowIntensity,
+                Flicker01 = 0f,
+                HeightMetres = 0f,
+            });
+            return at;
         }
 
         /// <summary>Puts the displays out or away for <paramref name="hourOfDay"/>. Returns true when that

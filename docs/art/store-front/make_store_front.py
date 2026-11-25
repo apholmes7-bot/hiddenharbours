@@ -1,11 +1,13 @@
 """LeBlanc's store front: the shop sign and the three open-hours displays (store front, 2026-11-25).
 
 Drawn at the village's pixel scale (32 px a metre), point filtered, each pivoted at its bottom centre so it
-stands on the ground (or, for the sign, hangs on the wall) where the store front data puts it (Data/Resources/StoreFronts/StPetersGeneralStoreFront).
+stands on the ground (or, for the board and its lamps, is fixed to the store's face) where the store front data puts it (Data/Resources/StoreFronts/StPetersGeneralStoreFront).
 
     python make_store_front.py <out_dir>
 
-StoreFront_Sign          the name board on the wall over the door: "LeBlanc's", hidden while inside
+StoreFront_Sign          the name board on the face above the awning: "LeBlanc's", hidden while inside
+StoreFront_LampLeft      a gooseneck lamp over the board's left end, lit at night; hidden while inside
+StoreFront_LampRight     its mirror over the right end
 StoreFront_PotatoCrate   a crate of potatoes on a low stand, out while the store is open
 StoreFront_BuoyRack      a rack of painted buoys and a coil of rope, out while the store is open
 StoreFront_BucketStand   galvanised buckets, a broom and a mop, out while the store is open
@@ -45,6 +47,13 @@ P = {
     "G": (160, 132, 64),    # broom straw shade
     "m": (226, 222, 210),   # mop head
     "M": (190, 186, 172),   # mop shade
+    "q": (52, 84, 64),      # board paint, island green
+    "Q": (72, 108, 84),     # board paint, green light
+    "j": (40, 42, 46),      # lamp iron
+    "z": (96, 100, 106),    # lamp wall plate
+    "n": (46, 82, 60),      # lamp shade, green enamel
+    "N": (84, 124, 92),     # lamp shade light
+    "u": (240, 228, 188),   # bulb glass
 }
 
 def canvas(w, h):
@@ -76,33 +85,67 @@ def write(img, text, font, x, y, key, gap=1):
         x += len(glyph[0]) + gap
 
 
-# 4 x 6 letters for the name on the wall board (lower case sits on the bottom four rows).
-WALL = {
-    "L": ["#...", "#...", "#...", "#...", "#...", "####"],
-    "e": ["....", "....", ".##.", "####", "#...", ".###"],
-    "B": ["###.", "#..#", "###.", "#..#", "#..#", "###."],
-    "l": ["##.", ".#.", ".#.", ".#.", ".#.", "###"],
-    "a": ["....", "....", ".###", "#..#", "#..#", ".###"],
-    "n": ["....", "....", "###.", "#..#", "#..#", "#..#"],
-    "c": ["....", "....", ".###", "#...", "#...", ".###"],
-    "'": ["#", "#", ".", ".", ".", "."],
-    "s": ["....", "....", ".###", "##..", "..##", "###."],
+# Hand-painted letters for the name board, 7 rows tall (lower case on the bottom five), a little uneven on
+# purpose: the kick on the L, the curl on the l and the comma of the apostrophe are a sign painter's, not a type.
+HAND = {
+    "L": ["##...", ".#...", ".#...", ".#...", ".#...", ".#..#", "#####"],
+    "e": ["....", "....", ".##.", "#..#", "####", "#...", ".###"],
+    "B": ["####.", ".#..#", ".#..#", ".###.", ".#..#", ".#..#", "####."],
+    "l": ["##.", ".#.", ".#.", ".#.", ".#.", ".#.", ".##"],
+    "a": ["....", "....", ".##.", "...#", ".###", "#..#", ".###"],
+    "n": ["....", "....", "#.#.", "##.#", "#..#", "#..#", "#..#"],
+    "c": ["....", "....", ".###", "#...", "#...", "#...", ".###"],
+    "'": [".#", ".#", "#.", "..", "..", "..", ".."],
+    "s": ["....", "....", ".###", "#...", ".##.", "...#", "###."],
 }
 
 
 def sign():
-    # The name board on the wall over the door (store front look, 2026-11-25: the post sign by the path hid
-    # the left planter and stood in front of the vehicle row). It hangs over the facade's own blank red board,
-    # a little larger so none of it shows, and reads from the road: cream letters on the store's red.
-    w, h = 46, 14
+    # The name board painted on the store's face above the awning (owner 2026-11-25: on the store itself, not a
+    # big post sign; modest, readable, lit at night by shaded lamps on arms). A plain board in the island's
+    # green with cream hand lettering and a painted diamond at each end, framed in weathered wood. It fits the
+    # band of siding between the awning and the upper windows; the two lamps hang over its ends.
+    w, h = 60, 13
     img = canvas(w, h)
     rect(img, 0, 0, w - 1, h - 1, "D")
-    rect(img, 1, 1, w - 2, h - 2, "r")
-    rect(img, 1, 1, w - 2, 1, "R")
+    rect(img, 1, 1, w - 2, h - 2, "w")
+    rect(img, 1, 1, w - 2, 1, "W")
     rect(img, 1, h - 2, w - 2, h - 2, "v")
+    rect(img, 2, 2, w - 3, h - 3, "q")
+    rect(img, 2, 2, w - 3, 2, "Q")
     name = "LeBlanc's"
-    tw = text_width(name, WALL, 1)
-    write(img, name, WALL, (w - tw) // 2, 4, "c")
+    tw = text_width(name, HAND, 1)
+    write(img, name, HAND, (w - tw) // 2, 3, "c")
+    for cx in (5, w - 6):
+        put(img, cx, 4, "C"); put(img, cx - 1, 5, "C"); put(img, cx, 5, "c"); put(img, cx + 1, 5, "C"); put(img, cx, 6, "C")
+    return img
+
+
+# A gooseneck lamp: a plate on the wall, an iron arm curving up and over, a green enamel shade hung from its
+# end with the bulb under it. Drawn for the lamp on the board's left (its plate outside the board, its shade
+# over the board's end); the right one is its mirror.
+LAMP = [
+    "...jjjjj......",
+    "..j.....j.....",
+    ".j.......j....",
+    ".j........j...",
+    "jjj.......j...",
+    "jzj.......j...",
+    "jzj......jnj..",
+    "jzj.....jnNnj.",
+    "jjj....jnNNnnj",
+    ".......jjjjjjj",
+    ".........uuu..",
+]
+
+
+def lamp(mirror):
+    w, h = len(LAMP[0]), len(LAMP)
+    img = canvas(w, h)
+    for y, row in enumerate(LAMP):
+        for x, key in enumerate(row):
+            if key != ".":
+                put(img, (w - 1 - x) if mirror else x, y, key)
     return img
 
 def potato_crate():
@@ -206,7 +249,8 @@ def bucket_stand():
 
 def main(out):
     os.makedirs(out, exist_ok=True)
-    for name, img in (("StoreFront_Sign", sign()), ("StoreFront_PotatoCrate", potato_crate()),
+    for name, img in (("StoreFront_Sign", sign()), ("StoreFront_LampLeft", lamp(False)), ("StoreFront_LampRight", lamp(True)),
+                      ("StoreFront_PotatoCrate", potato_crate()),
                       ("StoreFront_BuoyRack", buoy_rack()), ("StoreFront_BucketStand", bucket_stand())):
         img.save(os.path.join(out, name + ".png"))
         print(name, img.size)

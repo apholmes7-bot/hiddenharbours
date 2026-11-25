@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace HiddenHarbours.World
 {
-    /// <summary>One thing outside a store: its sign on the wall, or a display put out while it is open.</summary>
+    /// <summary>One thing outside a store: its name board or a lamp on its face, or a display put out while it is open.</summary>
     [Serializable]
     public sealed class StoreFrontPiece
     {
@@ -24,9 +24,25 @@ namespace HiddenHarbours.World
         /// <summary>Out only while the store is open, and put away when it closes. Off for the sign.</summary>
         public bool OnlyWhileOpen;
 
-        /// <summary>Hung on the building's wall (the sign board over the door): hidden while the player is
+        /// <summary>Fixed to the building's face (the name board, its lamps): hidden while the player is
         /// inside, when the wall itself is taken away to show the room.</summary>
         public bool HideWhileInside;
+
+        /// <summary>A lamp: it gives light at <see cref="GlowOffset"/> once it is dark, through the village's
+        /// one lamp look (the dark gate every village lamp has; nothing here reads the clock for it).</summary>
+        public bool Glows;
+
+        /// <summary>Where the light comes from, metres from the piece's foot (the bulb under the shade).</summary>
+        public Vector2 GlowOffset;
+
+        /// <summary>The lamp's colour.</summary>
+        public Color GlowColor = new Color(1f, 0.84f, 0.58f, 1f);
+
+        /// <summary>How far round the bulb it lights, metres.</summary>
+        [Min(0f)] public float GlowRangeMetres = 1.25f;
+
+        /// <summary>How bright, on the village lamp look's own scale (1 = as bright as it).</summary>
+        [Min(0f)] public float GlowIntensity = 1f;
     }
 
     /// <summary>
@@ -68,7 +84,7 @@ namespace HiddenHarbours.World
         [Tooltip("The material the pieces draw with (the village props' lit sprite material). Optional.")]
         public Material Material;
 
-        /// <summary>The sign and the displays.</summary>
+        /// <summary>The name board, its lamps and the displays.</summary>
         public List<StoreFrontPiece> Pieces = new List<StoreFrontPiece>();
 
         /// <summary>True from the opening hour up to, not including, the closing hour.</summary>
