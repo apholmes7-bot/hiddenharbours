@@ -44,6 +44,7 @@ namespace HiddenHarbours.Tests.EditMode
             var listings = new Dictionary<string, ICatalogListing>(StringComparer.Ordinal);
             foreach (SupplyDef s in IslandSupplyTestData.LoadAll<SupplyDef>()) listings[s.Id] = s;
             foreach (BaitDef b in IslandSupplyTestData.LoadAll<BaitDef>()) listings[b.Id] = b;
+            foreach (GearOffer g in IslandSupplyTestData.LoadAll<GearOffer>()) listings[g.Id] = g;
 
             var seen = new HashSet<string>(StringComparer.Ordinal);
             int counted = 0;
@@ -51,11 +52,39 @@ namespace HiddenHarbours.Tests.EditMode
                 foreach (string id in line.CounterListingIds)
                 {
                     Assert.IsTrue(seen.Add(id), id + " is counted on two shelves");
-                    Assert.IsTrue(listings.TryGetValue(id, out ICatalogListing listing), id + " is not a shipped supply or bait listing");
+                    Assert.IsTrue(listings.TryGetValue(id, out ICatalogListing listing), id + " is not a shipped supply, bait or gear listing");
                     Assert.IsTrue(listing.Catalog.IsStockedBy(_def.SellerId), id + " is not sold at " + _def.SellerId);
                     counted++;
                 }
             Assert.That(counted, Is.GreaterThan(0), "at least one counter listing comes off a shelf");
+        }
+
+        [Test]
+        public void TheCountedRodStaysInTheBookUntilItHasAPurchaseSlot()
+        {
+            IslandShelfLine rod = _def.Lines.Single(l => l.CounterListingIds.Contains("gear.rod"));
+            IslandShelfLine bait = _def.Lines.Single(l => l.CounterListingIds.Contains("bait.capelin"));
+            ShopShelfSlotsDef slots = IslandSupplyTestData.LoadAll<ShopShelfSlotsDef>().Single(d => d.Id == SlotsId);
+            GearOffer offer = IslandSupplyTestData.LoadAll<GearOffer>().Single(g => g.Id == "gear.rod");
+            BaitDef capelin = IslandSupplyTestData.LoadAll<BaitDef>().Single(b => b.Id == "bait.capelin");
+            ShopDef shop = IslandSupplyTestData.LoadAll<ShopDef>().Single(s => s.Spec.Id == _def.ShopId);
+
+            Assert.That(rod.Id, Is.EqualTo("line.fishing_rod"));
+            Assert.That(rod.CounterListingIds, Is.EqualTo(new[] { offer.Id }));
+            Assert.That(rod.MaxOnShelf, Is.EqualTo(shop.Spec.Stock.Single(l => l.ListingId == offer.Id).MaxOnShelf));
+            Assert.That(rod.MaxOnShelf, Is.EqualTo(4));
+            Assert.That(rod.UnitsPerItem, Is.EqualTo(1.25f));
+            Assert.That(rod.ShareOfGood, Is.EqualTo(0.1f));
+            Assert.That(rod.Good.Id, Is.EqualTo("islandgood.hardware"));
+            Assert.That(bait.Good, Is.Not.SameAs(rod.Good));
+            Assert.IsFalse(rod.SoldAtShelf, "a listing without a purchase slot must remain reachable in the book");
+            Assert.IsTrue(bait.SoldAtShelf);
+            Assert.That(slots.Slots.Count(s => s.ListingId == offer.Id), Is.Zero);
+            Assert.That(slots.Slots.Single(s => s.ListingId == capelin.Id).LineId, Is.EqualTo(bait.Id));
+            Assert.That(offer.Price, Is.EqualTo(60));
+            Assert.That(capelin.Price, Is.EqualTo(2));
+            Assert.That(capelin.LotSize, Is.EqualTo(10));
+            Assert.That(BaitShop.LotPriceOf(capelin), Is.EqualTo(20));
         }
 
         [Test]

@@ -74,6 +74,70 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void BuyingEveryRodOrBaitItem_EmptiesOnlyThatLine()
+        {
+            foreach (string bought in new[] { "line.fishing_rod", "line.bait_box" })
+            {
+                IslandStoreShelves shelves = IslandStoreShelves.FromDef(
+                    _def, _route, _carriers, _ => true, _cfg.SecondsPerDay);
+                double now = At(0, _def.OpensHour);
+                var before = _def.Lines.ToDictionary(l => l.Id, l => shelves.CountAt(l.Id, now));
+                int count = _def.Lines.Single(l => l.Id == bought).MaxOnShelf;
+                Assert.That(before[bought], Is.EqualTo(count), bought + " starts full after a run");
+                for (int i = 0; i < count; i++)
+                {
+                    Assert.IsTrue(shelves.TryTakeOne(bought, now));
+                    Assert.That(shelves.CountAt(bought, now), Is.EqualTo(count - i - 1));
+                    foreach (IslandShelfLine other in _def.Lines.Where(l => l.Id != bought))
+                        Assert.That(shelves.CountAt(other.Id, now), Is.EqualTo(before[other.Id]), other.Id);
+                }
+                Assert.IsFalse(shelves.TryTakeOne(bought, now));
+                var rows = new List<StorePurchaseRowDto>();
+                shelves.ExportPurchases(rows);
+                Assert.That(rows.Count, Is.EqualTo(count), "refusing an empty line records no purchase");
+                Assert.That(rows.All(r => r.ShelfLineId == bought), Is.True);
+                Assert.That(rows.Sum(r => r.Units), Is.EqualTo(count * (double)_def.Lines.Single(l => l.Id == bought).UnitsPerItem));
+            }
+        }
+
+        [Test]
+        public void RodAndBaitPurchases_ReplayExactlyWithoutChangingAnOlderGamesGear()
+        {
+            IslandStoreShelves Make() => IslandStoreShelves.FromDef(
+                _def, _route, _carriers, day => day % 3 != 1, _cfg.SecondsPerDay);
+            IslandStoreShelves original = Make();
+            double now = At(0, _def.OpensHour);
+            Assert.IsTrue(original.TryTakeOne("line.fishing_rod", now));
+            Assert.IsTrue(original.TryTakeOne("line.bait_box", now));
+            var old = new SaveData { SchemaVersion = 25, Money = 85, WorldSeed = 73 };
+            old.OwnedGear.Add("gear.rod");
+            old.OwnedGear.Add("gear.shovel");
+            old.BaitStock.Add(new BaitStock("bait.herring", 6));
+            SaveData loaded = SaveSerialization.FromJson(SaveSerialization.ToJson(old));
+            IslandShelvesHost.WritePurchases(loaded, original);
+            loaded = SaveSerialization.FromJson(SaveSerialization.ToJson(loaded));
+            IslandStoreShelves replayed = Make();
+            Assert.That(IslandShelvesHost.ReadPurchases(loaded, replayed), Is.EqualTo(2));
+            Assert.That(loaded.OwnedGear, Is.EqualTo(old.OwnedGear));
+            Assert.That(loaded.BaitStock.Count, Is.EqualTo(1));
+            Assert.That(loaded.BaitStock[0].BaitId, Is.EqualTo("bait.herring"));
+            Assert.That(loaded.BaitStock[0].Count, Is.EqualTo(6));
+            Assert.That(loaded.Money, Is.EqualTo(85));
+            Assert.That(loaded.WorldSeed, Is.EqualTo(73));
+            Assert.That(loaded.ShoppingBags, Is.Empty);
+            Assert.That(loaded.SchemaVersion, Is.EqualTo(26));
+
+            var watched = new Dictionary<(string, int), int>();
+            for (int day = 0; day <= _def.Ledger.LookbackDays; day++)
+                foreach (IslandShelfLine line in _def.Lines)
+                    watched[(line.Id, day)] = original.CountAt(line.Id, At(day, _def.OpensHour));
+            for (int day = _def.Ledger.LookbackDays; day >= 0; day--)
+                foreach (IslandShelfLine line in _def.Lines)
+                    Assert.That(replayed.CountAt(line.Id, At(day, _def.OpensHour)),
+                                Is.EqualTo(watched[(line.Id, day)]), line.Id + " day " + day);
+        }
+
+        [Test]
         public void EachShelfHoldsTheWholeBufferTarget_ToWithinOneItem()
         {
             foreach (IslandShelfLine line in _def.Lines)

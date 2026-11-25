@@ -20,6 +20,15 @@ MonoBehaviour:
   OpensHour: 7
   ClosesHour: 19
   Lines:
+  - Id: line.fishing_rod
+    Good: {fileID: 11400000, guid: 8df1d29d43ee438c8b8d1dff9509a8f8, type: 2}
+    ItemName: fishing rod
+    UnitsPerItem: 1.25
+    MaxOnShelf: 4
+    ShareOfGood: 0.1
+    CounterListingIds:
+    - gear.rod
+    SoldAtShelf: 0
   - Id: line.grocery_box
     Good: {fileID: 11400000, guid: f95f5b361481478b8adc530394e0d777, type: 2}
     ItemName: box of groceries
