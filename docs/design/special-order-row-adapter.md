@@ -1,125 +1,120 @@
 # Paid special orders on the saved rows
 
-Reconciled with main `d46bde303e6aa256d23d47a05ede5d7d6f38e51e` (2026-11-25).
-Main already persists shelf purchases and shopping bags through version 26. Those
-systems do not construct this book or deliver special orders; the counter and
-physical handover integrations below are still required. This proposal adds no
-saved field and does not replace the shelf purchase or bag state.
+The transaction model uses the existing version-26 order rows. Main already persists shelf
+purchases and shopping bags; neither system constructs this book. There is still no counter
+interaction, physical parcel, delivery host or handover in this change.
 
-One `SpecialOrderBook` belongs to the player and serves every seller. Its constructor takes the
-current `SaveData`, the offers, the wallet and the clock. `SaveData.SpecialOrders` and
-`NextSpecialOrderNumber` are the book's only order storage. Placement appends to that list;
-arrival and collection update its rows in place. Every existing save point already serializes
-those fields. Loading needs no order adoption, export or copy-back step.
+## One book, two to four players
 
-The six offer assets reference existing bait Defs and read their current prices when offers are
-built. Paid orders retain their original total, per-listing payments, counts and promised dates
-when content is retuned. No scene host or counter interaction is installed by this change.
+Construct one `SpecialOrderBook` per saved world and share it across counters and players.
+Every `Place`, `Capture` and `Collect` call names the acting player. The host must obtain that
+identity from the authenticated actor, never from another player's editable request data.
+The shared book serializes callbacks through one transaction guard and allocates order numbers
+across all players and sellers. It has no static player or singleton player state.
 
-## Saved contract
+Core's `ISpecialOrderAccounts` supplies two operations: pay and assign an order to its payer,
+and look up that owner. `SessionSpecialOrderAccounts` binds explicit player identities to
+`IWallet` instances. It charges only the named player's purse, assigns ownership before the
+placement event and never reassigns an existing order. Separate purses and an explicitly shared
+purse can both be supplied; parcel ownership always stays with the player who ordered it.
 
-The book uses the existing Core `SpecialOrderDto` and `SpecialOrderLineDto` directly. No saved
-field, field type, schema version or load repair changes. `SpecialOrderRowAdapter` now only makes
-a detached snapshot for inspection; it declares no substitute transport or save rows.
+Each player's book view contains only his outstanding orders. Collection checks ownership
+before reading the row's state or receiving goods. Another player and an unknown owner receive
+`UnknownOrder`, with no changes to money, goods, rows or events. Outstanding offer limits apply
+per player. Arrival and collection receipts include the payer identity so a host can route them.
+There is no cancellation or refund API for any player: the saved rows have no settlement marker.
 
-| Field | Meaning |
+**Ownership is session-only.** The exact missing saved value is the payer's stable `PlayerId`
+for each `SpecialOrderDto.OrderId`. `SellerId` identifies the seller and `DeliverToId` identifies
+the collection place; neither can be reused for the payer. This change adds no saved field or
+schema version. A future approved save step must persist that association atomically with the
+payment and order, restore it before exposing the book, and define how older ownerless rows are
+assigned. It must also bind the correct persisted purse and receiving inventory to each player.
+Until then, keep the same accounts object when reconstructing a book within a session. A fresh
+session cannot infer ownership: existing rows remain intact but are hidden, cannot advance and
+cannot be collected. New orders can still be owned for that session.
+
+`CaptureOwnership()` exposes detached, sorted plain session facts. Editing that snapshot cannot
+transfer ownership; it is not an import method or a saved DTO.
+
+## Promised day and actual arrival
+
+The six offers reference existing bait Defs for prices. Their `DeliveryDays` is a minimum lead,
+not a delivery timer. A multi-line order takes the longest lead, then selects the first eligible
+run on or after that day. `SpecialOrderSupplySchedule` requires the seller's existing
+`IslandStoreLedger.RunsOn` policy, or the same `IslandRunCalendar.RunsOn` composed with
+`IslandRunDays.Possible` and the runner's authored cadence. It does not simulate tide or weather.
+The host supplies a positive configured search bound. No run within that bound means refusal
+before payment, without allocating an order number. The search safely ends at the last integer day.
+
+With a two-day cadence and open crossings, an order on day 1 with a two-day lead promises day 4.
+If day 4's crossing is closed and day 5 is possible, the existing calendar promises day 5.
+That promised `DueDay` is saved once and never recomputed after retuning or loading.
+
+Calendar availability is not completed delivery. A separate host callback reports the last run
+actually unloaded at that seller by the supplied game seconds, or no run. It must be deterministic
+for that world's seed and game time. `RefreshArrivals()` requires that completed run to be a valid
+calendar day, at or after the promise and no later than the current day. Midnight alone cannot
+release a parcel. If a promised unloading is missed, a later completed run can fulfil the order
+while the original promise remains on its receipt. Repeated refreshes do not repeat arrival events.
+
+The host must refresh after unloading and after restoring or seeking the clock. Day events also
+refresh, but still require completed-delivery evidence. Arrival changes only the order state and
+never grants goods. `Collect` does not refresh any order; it follows completed handover at the
+seller's counter. It atomically receives every bait line into the acting player's supplied stock,
+then marks only that receipt collected. A waiting order, unknown owner, unusable paid row, missing
+stock or stock overflow leaves all rows, money, goods and events unchanged.
+
+## Saved contract and damaged orders
+
+`SaveData.SpecialOrders` and `NextSpecialOrderNumber` remain the only saved order storage.
+Placement appends a row; arrival and collection update it. Original quantities, total price,
+per-listing paid shares, game time and promised day remain unchanged after content retuning.
+Repeated listing requests add to their first line's count and payment; separate orders remain
+separate. The whole count, price, lead, run and number are validated before payment.
+
+| Existing field | Meaning |
 | --- | --- |
-| `NextSpecialOrderNumber` | One counter across all sellers, starting at 1. |
-| `OrderId` | `order.<seller>.<n>`; n follows the last dot. |
-| `SellerId`, `DeliverToId` | Seller and destination; empty destination means his counter. |
-| `Lines` | One listing per line: offer id, individual count and the whole line's paid share. |
-| `PaidPrice` | Total that left the purse, never recomputed from current prices. |
-| `OrderedAtSeconds`, `OrderedDay`, `DueDay` | Original game time and promised days, retained across a restart or retuning. |
-| `State` | 0 waiting, 1 arrived, 2 collected. Collected receipts remain saved but leave the outstanding view. |
+| `NextSpecialOrderNumber` | One monotonically reserved number across every player and seller. |
+| `OrderId` | `order.<seller>.<n>`; every readable retained number remains reserved. |
+| `SellerId`, `DeliverToId` | Seller and collection place; empty destination means that counter. |
+| `Lines` | Listing id, count and whole line's paid share. |
+| `PaidPrice` | Original order total; never recalculated from current offers. |
+| `OrderedAtSeconds`, `OrderedDay`, `DueDay` | Original game time, order day and promised run day. |
+| `State` | 0 waiting, 1 arrived, 2 collected. Collected receipts are retained. |
 
-Repeated requests for a listing within one placement add to the first line's count and payment.
-The combined count, outstanding limit, whole-order price and due day are validated before the
-wallet is charged once. Different orders never fold together. Multi-line orders use the latest
-delivery day among their lines: ordered day plus that offer's delivery wait. Seed and catalogue
-iteration order do not change the promise.
+`SaveSerialization.FromJson` still performs the existing version-26 repair. The book neither
+changes that repair nor silently rewrites paid terms. It classifies unusable rows with derived
+reason keys and preserves them. Removed content stays owed at the recorded amount.
 
-The existing load repair folds repeated listings in older rows the same way, preserving the sum
-paid per listing and the order total. The book creates canonical rows, so its saved rows survive
-that repair unchanged. It never rewrites pre-existing paid lines, even when their payments disagree
-with the order total. Already damaged rows are classified for review, not silently reconciled.
+ID collisions count **every retained row**, including collected receipts and rows owned by other
+players. Every outstanding participant is blocked from arrival and collection. A collected row
+plus an arrived or waiting duplicate cannot grant goods again. Both records and all their paid
+terms survive JSON loading. There is no automatic erasure or refund of an ambiguous payment.
 
-`SaveSerialization.FromJson` runs the version-26 repair before the book sees loaded rows. That repair
-normalizes negative or non-finite order times to zero and unknown states to waiting. Classification
-uses those repaired values. Directly supplied malformed rows are a separate boundary: the book flags
-their invalid values without repairing them itself. Neither path changes the intended duplicate-line
-folding or substitutes line payments for the recorded order total.
+Snapshots deeply copy outstanding rows and expose `RequiresRefund`, `RefundReasonKey` and
+`RefundAmount`; these fields are not saved. The amount is the original total, floored at zero
+for a negative damaged total. Settlement remains absent. Snapshots cannot replace live paid rows.
 
-Construction reserves every readable order number, including collected and damaged rows, and only
-raises the saved counter. `int.MaxValue` is the exhaustion sentinel: placement refuses before
-payment when there is no representable successor. Collected rows are retained as receipts and
-cannot grant goods again. There is no API for replacing a live book from a snapshot.
+## Integration and verification
 
-## Owed orders and snapshots
+The future host must supply all sellers' offers, the restored game clock, the same supply calendar
+as the shelves, completed unloading information and the world accounts. Dispose the book before
+changing saves. It must complete physical handover before collection and persist the entire
+wallet/order/stock transaction together. No disk write, bag transfer, remote delivery, scene
+host, saved payer identity, cancellation or refund settlement is implemented here.
 
-`Capture()` is observational and deeply copies outstanding rows. It exposes derived
-`RequiresRefund`, `RefundReasonKey` and `RefundAmount` without saving those fields. Construction
-neither charges the wallet nor publishes arrival or collection events. An overdue waiting row
-advances only on a day event or an explicit `RefreshArrivals()` after the clock is restored.
-An already arrived row stays arrived without replaying its event.
+Main already supplies `IslandRunCalendar`, `IslandRunDays`, `IslandStoreLedger`, save migration,
+stock-content, bait/tackle and sleep-clock tests. This change extends `SpecialOrderBookTests`
+and `RestUnderTheCoverTests`; it does not introduce another calendar or inventory store.
+The midnight rule is migrated to completed daylight unloading, with exact payment, receipt,
+stock, event and JSON assertions retained. Most transaction fixtures use a daily confirmed test
+carrier; the calendar cases explicitly exercise two-day cadence, a closed crossing, bounded
+search, missed unloading, late completion and unchanged promised dates. The real-clock cases
+check both waiting and sleeping, a still-waiting sleep save and the later arrived save.
 
-`Collect` never catches up arrivals, including those of other overdue orders. A waiting order still
-returns `NotArrived` after a clock seek until the caller refreshes arrivals. Unknown orders and
-unavailable or overflowing bait stock leave all saved rows, money, goods and event counts unchanged.
-A successful collection changes only its own order and the receiving stock.
-
-Missing or repeated open ids, unavailable or mismatched offers, unusable lines, invalid dates or
-times, unsupported destinations, invalid states and inconsistent payments receive a plain
-`special_order.*` reason key. Every open participant in a duplicate id is flagged. A seller or
-listing that no longer ships remains owed with the exact recorded total and line payments.
-Flagged rows cannot arrive or be collected and do not consume an active offer's outstanding limit.
-
-The refund amount is the recorded total, floored at zero for a negative damaged total. Line
-payments remain visible even when their sum disagrees with that total. The book never credits a
-refund, removes a paid row or guesses a replacement offer. Refund status is derived from current
-content and can be recomputed when content becomes available again.
-
-## Integration still required
-
-1. The future counter host must construct one book with `GameServices.Save.Current` after loading
-   and restoring the clock, plus all sellers' offers and the live wallet. Dispose it before changing
-   saves and construct a new book against the newly loaded `SaveData`.
-2. Call `RefreshArrivals()` after restoring or seeking the clock. Day events already advance waiting
-   rows in a constructed book. The physical supply run, its arrival presentation and its counter
-   notification are not wired. Arrival changes the saved state and grants no bait.
-3. Bind `Collect` to a completed handover at the seller's counter, passing that save's `BaitStock`.
-   `TackleBox.TryReceiveBait` receives all lines or none. The row becomes collected only after receipt
-   succeeds. Refresh arrivals before offering the handover after a seek; collection itself performs
-   no refresh. No shopping bag, automatic transport or physical handover presentation is added here.
-4. Ordinary save points serialize the current order rows and counter directly. The existing save
-   service captures the live wallet and clock; collection must use the same save's bait stock so
-   goods and the collected receipt persist together. No new save step or field is needed for orders.
-   Save after the transaction completes; the book does not request disk writes itself.
-5. Counter refund presentation and settlement remain work to do. Missing or repeated ids require
-   unambiguous row selection. The reserved rows contain no refund-settlement marker; there is no
-   automatic refund or invented saved field in this change.
-
-## Verification
-
-The existing `SpecialOrderBookTests` covers real save JSON through `SaveSerialization.FromJson`
-(and therefore load repair), exact equality of all nine order fields and three line fields, repeated
-listing coalescing, all three saved states, numbering after restart, missing order lists, retired
-content, original paid terms, deterministic dates, refusals, reentrancy and detached snapshots.
-Overdue refusal cases compare the entire saved JSON and snapshot before and after collection, including
-unrelated due rows, exact stock and money, and arrival/collection event counts. Separate version-26
-JSON cases prove time/state repair precedes classification and leaves the paid goods collectible.
-`RestUnderTheCoverTests` checks due-midnight arrival with the real clock and observes the arrived
-row in the sleep save's JSON. Existing content and atomic bait-receipt cases remain in
-`ShopStockContentTests` and `BaitAndTackleTests`.
-
-The old duplicate-request refusal becomes summed counts/payments with exact combined-limit checks.
-Snapshot adoption becomes construction on the saved rows; empty views cannot erase payments.
-Collected rows leave the outstanding view but remain saved receipts. These are explicit rule
-changes; exact payment, count, event, date and refusal assertions remain.
-Collection no longer advances arrivals implicitly. The two collection/restart cases that sought the
-clock now refresh explicitly, retaining every payment, receipt, quantity and non-reuse assertion.
-
-The pre-reconciliation head `26f433d082` passed CI run `45535514904`. Its order code,
-content and test bodies are unchanged by the reconciliation; only this status note
-and accepted main were added. Local verification is source, scope and metadata
-inspection. Native tests and a complete build were not run locally; the merged head
-still needs CI. No visual or gameplay acceptance is claimed.
+Ownership cases cover two, three and four players, separate money and stock, private book views,
+cross-player collection refusal, per-player limits, failed payment, callback reentrancy,
+detached ownership snapshots, reconstruction within a session and a fresh session without payer
+identity. Source checks are not executable proof. No local compiler, native test run, live-save
+write or gameplay capture was performed; the new head requires CI. No appearance change is made.

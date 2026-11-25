@@ -200,15 +200,19 @@ namespace HiddenHarbours.Tests.EditMode
 
         [TestCase(false)]
         [TestCase(true)]
-        public void Paid_order_arrives_at_due_midnight_whether_waited_or_slept_through(bool sleep)
+        public void Paid_order_waits_for_the_supply_run_whether_waited_or_slept_through(bool sleep)
         {
             GameClock clock = RealClockAt(22);
             var wallet = clock.gameObject.AddComponent<HiddenHarbours.Player.PlayerWallet>();
             wallet.Add(12);
+            var accounts = new SessionSpecialOrderAccounts(new Dictionary<string, IWallet> { ["player.first"] = wallet });
+            var supply = new SpecialOrderSupplySchedule(
+                (seller, day) => IslandRunCalendar.RunsOn(day, 2, _ => true),
+                (seller, seconds) => seconds >= At(2, 12) ? 2 : (int?)null, 28);
             using var book = new SpecialOrderBook(_save.Current,
-                new[] { new SpecialOrderLine("specialorder.test", "bait.herring", "seller.test", 3, 1, 4) },
-                wallet, clock);
-            Assert.That(book.Place("seller.test", "specialorder.test", 2, out _), Is.EqualTo(SpecialOrderRefusal.None));
+                new[] { new SpecialOrderLine("specialorder.test", "bait.herring", "seller.test", 3, 2, 4) },
+                accounts, clock, supply);
+            Assert.That(book.Place("player.first", "seller.test", "specialorder.test", 2, out _), Is.EqualTo(SpecialOrderRefusal.None));
             var seen = new List<double>();
             Action<SpecialOrderArrived> read = order => seen.Add(clock.TotalSeconds);
             EventBus.Subscribe(read);
@@ -222,19 +226,37 @@ namespace HiddenHarbours.Tests.EditMode
                     Assert.That(seen, Is.Empty);
                     clock.Advance(1);
                 }
-                Assert.That(seen, Is.EqualTo(new[] { At(1, 0) }));
-                Assert.That(book.Capture().Orders[0].Arrived, Is.True);
-                Assert.That(book.Capture().Orders[0].DueDay, Is.EqualTo(1));
-                Assert.That(_save.Current.SpecialOrders[0].State, Is.EqualTo(SpecialOrderDto.StateArrived));
+                Assert.That(seen, Is.Empty);
+                clock.SeekTo(At(2, 0));
+                book.RefreshArrivals();
+                Assert.That(seen, Is.Empty);
+                Assert.That(book.Capture("player.first").Orders[0].Arrived, Is.False);
+                Assert.That(book.Capture("player.first").Orders[0].DueDay, Is.EqualTo(2));
+                Assert.That(_save.Current.SpecialOrders[0].State, Is.EqualTo(SpecialOrderDto.StateWaiting));
                 if (sleep)
                 {
                     var loaded = SaveSerialization.FromJson(_save.JsonAtWrite);
                     Assert.That(loaded.SpecialOrders.Count, Is.EqualTo(1));
-                    Assert.That(loaded.SpecialOrders[0].State, Is.EqualTo(SpecialOrderDto.StateArrived));
+                    Assert.That(loaded.SpecialOrders[0].State, Is.EqualTo(SpecialOrderDto.StateWaiting));
                     Assert.That(loaded.SpecialOrders[0].PaidPrice, Is.EqualTo(6));
                     Assert.That(loaded.SpecialOrders[0].Lines[0].PaidPrice, Is.EqualTo(6));
                     Assert.That(loaded.NextSpecialOrderNumber, Is.EqualTo(2));
                 }
+                clock.SeekTo(At(2, 12) - 1);
+                book.RefreshArrivals();
+                Assert.That(seen, Is.Empty);
+                clock.Advance(1);
+                book.RefreshArrivals();
+                Assert.That(seen, Is.EqualTo(new[] { At(2, 12) }));
+                Assert.That(book.Capture("player.first").Orders[0].Arrived, Is.True);
+                Assert.That(_save.Current.SpecialOrders[0].State, Is.EqualTo(SpecialOrderDto.StateArrived));
+                Assert.That(_save.Current.SpecialOrders[0].DueDay, Is.EqualTo(2));
+                _save.Save();
+                var arrived = SaveSerialization.FromJson(_save.JsonAtWrite);
+                Assert.That(arrived.SpecialOrders[0].State, Is.EqualTo(SpecialOrderDto.StateArrived));
+                Assert.That(arrived.SpecialOrders[0].PaidPrice, Is.EqualTo(6));
+                Assert.That(arrived.SpecialOrders[0].Lines[0].PaidPrice, Is.EqualTo(6));
+                Assert.That(arrived.NextSpecialOrderNumber, Is.EqualTo(2));
                 Assert.That(wallet.Money, Is.EqualTo(6));
                 book.RefreshArrivals();
                 Assert.That(seen.Count, Is.EqualTo(1));

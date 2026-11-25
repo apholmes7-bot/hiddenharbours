@@ -16,15 +16,15 @@ namespace HiddenHarbours.Core
     /// <summary>Immutable receipt; line prices are paid shares, quantities are individual baits.</summary>
     public readonly struct SpecialOrderReceipt
     {
-        public readonly string OrderId, SellerId, DeliverToId;
+        public readonly string PlayerId, OrderId, SellerId, DeliverToId;
         public readonly int PaidPrice, OrderedDay, DueDay;
         public readonly double OrderedAtSeconds;
         public readonly IReadOnlyList<SpecialOrderLineReceipt> Lines;
 
-        public SpecialOrderReceipt(string orderId, string sellerId, string deliverToId, int paidPrice,
+        public SpecialOrderReceipt(string playerId, string orderId, string sellerId, string deliverToId, int paidPrice,
             double orderedAtSeconds, int orderedDay, int dueDay, SpecialOrderLineReceipt[] lines)
         {
-            OrderId = orderId; SellerId = sellerId; DeliverToId = deliverToId; PaidPrice = paidPrice;
+            PlayerId = playerId; OrderId = orderId; SellerId = sellerId; DeliverToId = deliverToId; PaidPrice = paidPrice;
             OrderedAtSeconds = orderedAtSeconds; OrderedDay = orderedDay; DueDay = dueDay;
             Lines = Array.AsReadOnly((SpecialOrderLineReceipt[])lines.Clone());
         }
