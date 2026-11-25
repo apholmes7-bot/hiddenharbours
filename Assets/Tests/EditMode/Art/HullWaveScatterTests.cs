@@ -253,8 +253,60 @@ namespace HiddenHarbours.Tests.Art.EditMode
             StringAssert.Contains("float4_HHHullWaveArcs;", src);
             StringAssert.Contains("if(flagged>=0.0||share<=0.001)return1.0;", src, "a whole ring is untouched, bit-exact");
             StringAssert.Contains("HullWaveSourceHeight(r,a.z,a.w,b.x,b.y,abs(b.z),invSpread,h,dhdr);", src);
-            StringAssert.Contains("floatarc=HullWaveArcGain(d,a.xy,b.z);", src);
+            StringAssert.Contains("floatarc=HullWaveArcGain(d,a.xy,b.z,a.w);", src);
             StringAssert.DoesNotContain("_Time", ExtractFunction(src, "floatHullWaveArcGain("), "fixed in the world");
+            // HullWaveMath.ArcTearShare's twin: the tear eased in over z band widths of front (-flagged = 1/width).
+            StringAssert.Contains("if(_HHHullWaveArcs.z>0.0)share*=smoothstep(0.0,1.0,max(front,0.0)*-flagged/_HHHullWaveArcs.z);",
+                                  ExtractFunction(src, "floatHullWaveArcGain("));
+        }
+
+        // Take s3 (sunset rowing clip, 2026-11-23): a soft pale upright block with a dark wedge beside it sat on the
+        // water about 1.5 m ahead of the rowing dory's bow for a second. It was the bow's newest ring, laid at the
+        // stem and torn into arcs from birth: while a ring's front is still inside its own band the ring is a disc,
+        // and the arc break (a function of the angle round its centre) cut that disc into pie wedges, one pale and
+        // one dark, which the bow then rowed over. A ring is now torn only as it opens.
+        [Test]
+        public void AYoungRowedRing_IsNotCutIntoWedges_UntilItHasOpened()
+        {
+            HullWaveSettings shipped = S;
+            Vector4 arcs = HiddenHarbours.Art.HullWaveBridge.ArcsVector(in shipped);
+            Assert.Greater(shipped.SmallHullArcOpenWidths, 0f, "the shipped look tears a ring only once it has opened");
+            Assert.AreEqual(shipped.SmallHullArcOpenWidths, arcs.z, 0f, "the dial reaches the shader");
+
+            // The s3 ring: laid at the stem 0.13 s before the block's frame, band 0.56 m, front 0.07 m.
+            var centre = new Vector2(-111.723f, -171.296f);
+            const float width = 0.562f;
+            float Spread(float front, Vector4 v)
+            {
+                float lo = 1f, hi = 0f;
+                for (int i = 0; i < 72; i++)
+                {
+                    float th = i * Mathf.PI / 36f;
+                    var d = new Vector2(Mathf.Cos(th), Mathf.Sin(th)) * (0.5f * width);
+                    float g = HullWaveMath.ArcGain(d, centre, true, front, width, v);
+                    lo = Mathf.Min(lo, g); hi = Mathf.Max(hi, g);
+                }
+                return hi - lo;
+            }
+            Vector4 older = arcs; older.z = 0f;
+            Assert.Greater(Spread(0.07f, older), 0.8f, "the older law: a disc cut into full-strength wedges at birth");
+            Assert.Less(Spread(0.07f, arcs), 0.05f, "a ring that has not opened is drawn whole");
+            Assert.Less(Spread(0f, arcs), 1e-6f, "at birth, exactly whole");
+            float open = shipped.SmallHullArcOpenWidths * width;
+            Assert.AreEqual(Spread(open, older), Spread(open, arcs), 1e-5f, "once open, the same broken arcs as before");
+            Assert.AreEqual(Spread(3f * open, older), Spread(3f * open, arcs), 1e-5f, "and from then on");
+
+            // Every ring the tear eases in on, monotonically, and a whole ring is never touched.
+            float last = 0f;
+            for (int i = 0; i <= 20; i++)
+            {
+                float t = HullWaveMath.ArcTearShare(1f, i * open / 20f, width, shipped.SmallHullArcOpenWidths);
+                Assert.GreaterOrEqual(t, last - 1e-6f);
+                last = t;
+            }
+            Assert.AreEqual(1f, last, 1e-6f, "fully torn once open");
+            Assert.AreEqual(0.6f, HullWaveMath.ArcTearShare(0.6f, 0f, width, 0f), 0f, "0 = torn from birth");
+            Assert.AreEqual(1f, HullWaveMath.ArcGain(Vector2.one, centre, false, 0f, width, arcs), 0f, "a whole ring");
         }
 
         static string ExtractFunction(string src, string head)
@@ -320,6 +372,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                          ("SmallHullCentreScatterMetres", d.SmallHullCentreScatterMetres),
                          ("SmallHullArcShare", d.SmallHullArcShare),
                          ("SmallHullArcLobes", d.SmallHullArcLobes),
+                         ("SmallHullArcOpenWidths", d.SmallHullArcOpenWidths),
                      })
             {
                 var m = Regex.Match(yaml, @"(?m)^    " + name + @": (-?[\d.]+)$");

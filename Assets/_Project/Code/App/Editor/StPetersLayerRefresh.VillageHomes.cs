@@ -20,7 +20,9 @@ namespace HiddenHarbours.App.Editor
             public SpriteRef Shell, Room, UpperRoom;
             public ObjRef ShellMaterial, RoomMaterial, Mask, Normal, Emit;
             public float Width, Length, DoorSign, DoorAcross, StoreyHeight;
-            public int RoomFacing, Facings;
+            /// <summary>RoomFacing is the room SPRITE's facing; FrameFacing (with Width, Length, DoorSign and
+            /// DoorAcross) is the footprint's, turned a quarter for a side doorway (InteriorFrame).</summary>
+            public int RoomFacing, FrameFacing, Facings;
         }
 
         public static VillageHome[] ReadNewVillageHomes()
@@ -41,7 +43,7 @@ namespace HiddenHarbours.App.Editor
                     throw new Refusal("Village home needs its shell and both rooms: " + site.Key);
                 int facing = StPetersVillage.FacingFor(shell, site);
                 int roomFacing = InteriorCatalog.InteriorFacingFor(facing);
-                var door = InteriorCatalog.DoorModelMetres(room);
+                var frame = BuildingInteriorStander.RoomFrame(room, roomFacing);
                 SpriteRef Sprite(Sprite sprite)
                 {
                     if (sprite == null) throw new Refusal("Village home has an unsliced sheet: " + site.Key);
@@ -55,9 +57,9 @@ namespace HiddenHarbours.App.Editor
                     Mask = Asset(AssetDatabase.LoadAssetAtPath<Texture2D>(VillageBuildingKit.SheetPath(site.Key, VillageBuildingKit.Channel.Mask))),
                     Normal = Asset(AssetDatabase.LoadAssetAtPath<Texture2D>(VillageBuildingKit.SheetPath(site.Key, VillageBuildingKit.Channel.Normal))),
                     Emit = Asset(AssetDatabase.LoadAssetAtPath<Texture2D>(VillageBuildingKit.SheetPath(site.Key, VillageBuildingKit.Channel.Emit))),
-                    Width = room.Entry.footprintWidthMetres, Length = room.Entry.footprintLengthMetres,
-                    DoorSign = door.y >= 0 ? 1 : -1, DoorAcross = door.x, StoreyHeight = room.Entry.storeyHeightMetres,
-                    RoomFacing = roomFacing, Facings = room.Entry.facings,
+                    Width = frame.WidthMetres, Length = frame.LengthMetres,
+                    DoorSign = frame.DoorSign, DoorAcross = frame.DoorAcrossMetres, StoreyHeight = room.Entry.storeyHeightMetres,
+                    RoomFacing = roomFacing, FrameFacing = frame.Facing, Facings = room.Entry.facings,
                 };
             }).ToArray();
         }
@@ -87,6 +89,7 @@ namespace HiddenHarbours.App.Editor
             {
                 if (!(home.Width > 0 && home.Length > 0) || home.Facings <= 0 ||
                     home.RoomFacing < 0 || home.RoomFacing >= home.Facings ||
+                    home.FrameFacing < 0 || home.FrameFacing >= home.Facings ||
                     InteriorLevelLayout.DrawsOverGroundFloor(InteriorLevelLayout.UpperLevelY(home.StoreyHeight)))
                     throw new Refusal("Invalid village room geometry: " + home.Key);
                 foreach (var asset in new[] { home.Shell.Sprite, home.Room.Sprite, home.UpperRoom.Sprite,
@@ -100,9 +103,9 @@ namespace HiddenHarbours.App.Editor
                 var partTrs = new Dictionary<string, long>();
                 var partSprites = new Dictionary<string, long>();
                 float rise = InteriorLevelLayout.UpperLevelY(home.StoreyHeight);
-                var footprint = new InteriorFootprint(Vector2.zero, home.Width, home.Length, home.RoomFacing,
+                var footprint = new InteriorFootprint(Vector2.zero, home.Width, home.Length, home.FrameFacing,
                     home.Facings, SpriteLightMath.GroundDepthScale, home.DoorSign, home.DoorAcross);
-                var upstairs = new InteriorFootprint(new Vector2(0, rise), home.Width, home.Length, home.RoomFacing,
+                var upstairs = new InteriorFootprint(new Vector2(0, rise), home.Width, home.Length, home.FrameFacing,
                     home.Facings, SpriteLightMath.GroundDepthScale, home.DoorSign, home.DoorAcross);
                 foreach (string part in new[] { "Interior", "Walls", "Furniture", "InteriorUpper", "FurnitureUpper", "WallsUpper" })
                 {
@@ -114,7 +117,7 @@ namespace HiddenHarbours.App.Editor
                     {
                         long psr = Next(part, "SpriteRenderer"); components.Add(psr); partSprites.Add(part, psr);
                         int order = part == "Interior" ? InteriorCatalog.RoomSortingOrder : InteriorLevelLayout.UpperRoomSortingOrder(
-                            new InteriorFootprint(home.Position + new Vector2(0, rise), home.Width, home.Length, home.RoomFacing,
+                            new InteriorFootprint(home.Position + new Vector2(0, rise), home.Width, home.Length, home.FrameFacing,
                                 home.Facings, SpriteLightMath.GroundDepthScale, home.DoorSign, home.DoorAcross));
                         string sprite = SpriteRendererYaml(psr, pgo, home.RoomMaterial,
                             part == "Interior" ? home.Room : home.UpperRoom, order);
@@ -155,7 +158,7 @@ namespace HiddenHarbours.App.Editor
                     "  _shell: " + Link(sr), "  _room: " + Link(partSprites["Interior"]), "  _props: " + Link(partTrs["Furniture"]),
                     "  _upperRoom: " + Link(partSprites["InteriorUpper"]), "  _upperProps: " + Link(partTrs["FurnitureUpper"]),
                     "  _upperWalls: " + Link(partTrs["WallsUpper"]), "  _upperLevelY: " + F(rise), "  _occupant: {fileID: 0}",
-                    "  _widthMetres: " + F(home.Width), "  _lengthMetres: " + F(home.Length), "  _facing: " + Int(home.RoomFacing),
+                    "  _widthMetres: " + F(home.Width), "  _lengthMetres: " + F(home.Length), "  _facing: " + Int(home.FrameFacing),
                     "  _facings: " + Int(home.Facings), "  _groundDepthScale: " + F(SpriteLightMath.GroundDepthScale),
                     "  _wallThicknessMetres: " + F(BuildingInteriorStander.WallThicknessMetres), "  _hysteresisMetres: 0.15",
                     "  _doorwayWidthMetres: " + F(BuildingInteriorStander.DoorwayWidthMetres), "  _doorOnPlusY: " + (home.DoorSign > 0 ? "1" : "0"),

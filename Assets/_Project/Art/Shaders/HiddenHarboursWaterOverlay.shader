@@ -23,7 +23,7 @@ Shader "HiddenHarbours/WaterOverlay"
             Name "HHWaterOverlay"
             Tags { "LightMode" = "Universal2D" }
 
-            Blend SrcAlpha OneMinusSrcAlpha
+            Blend SrcAlpha OneMinusSrcAlpha, Zero OneMinusSrcAlpha   // The calm mirror: water marks its pixels with alpha 0
             ZWrite Off
             Cull Off
 

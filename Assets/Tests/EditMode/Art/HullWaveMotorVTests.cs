@@ -553,7 +553,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             StringAssert.Contains("HullWaveArmSource(d,a,b,invWidth,armL,invSpread,hv,gv);", src);
             StringAssert.Contains("HullWaveSourceHeight(r,a.z,a.w,b.x,b.y,abs(b.z),invSpread,h,dhdr);", src,
                 "a whole ring is drawn exactly as before");
-            StringAssert.Contains("floatarc=HullWaveArcGain(d,a.xy,b.z);", src);
+            StringAssert.Contains("floatarc=HullWaveArcGain(d,a.xy,b.z,a.w);", src);
             StringAssert.DoesNotContain("HullWaveVGain", src, "the first look's angular window is gone");
         }
 

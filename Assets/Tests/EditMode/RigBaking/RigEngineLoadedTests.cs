@@ -63,8 +63,9 @@ namespace HiddenHarbours.Tests.RigBaking
         /// <summary>
         /// The bulk <c>ReadBytes</c> path is a hard requirement of ADR 0021 (measured: render+
         /// readback 7.61 ms vs 7.94 ms render-only — free). This does not prove the API used, but it
-        /// does prove readback is not costing more than the render, which is what a per-element
-        /// marshal would immediately show.
+        /// guards against the sustained order-of-magnitude cost of a per-element marshal.
+        /// Independent medians keep one scheduling/GC stall from failing the readback or inflating
+        /// the render-only baseline enough to hide a regression.
         /// </summary>
         [Test]
         public void PixelReadback_IsNotTheBottleneck()
@@ -76,23 +77,33 @@ namespace HiddenHarbours.Tests.RigBaking
 
             host.EvaluateBytes($"{g}.render(0,{{}})"); // warm
 
-            var renderOnly = System.Diagnostics.Stopwatch.StartNew();
-            for (int i = 0; i < 8; i++)
-                host.EvaluateNumber($"({g}.render({i.ToString(CultureInfo.InvariantCulture)},{{}}), 1)");
-            renderOnly.Stop();
+            const int repeats = 3;
+            var renderSamples = new double[repeats];
+            var readbackSamples = new double[repeats];
+            for (int sample = 0; sample < repeats; sample++)
+            {
+                var renderOnly = System.Diagnostics.Stopwatch.StartNew();
+                for (int i = 0; i < 8; i++)
+                    host.EvaluateNumber($"({g}.render({i.ToString(CultureInfo.InvariantCulture)},{{}}), 1)");
+                renderOnly.Stop();
+                renderSamples[sample] = renderOnly.Elapsed.TotalMilliseconds;
 
-            var withReadback = System.Diagnostics.Stopwatch.StartNew();
-            for (int i = 0; i < 8; i++)
-                host.EvaluateBytes($"{g}.render({i.ToString(CultureInfo.InvariantCulture)},{{}})");
-            withReadback.Stop();
+                var withReadback = System.Diagnostics.Stopwatch.StartNew();
+                for (int i = 0; i < 8; i++)
+                    host.EvaluateBytes($"{g}.render({i.ToString(CultureInfo.InvariantCulture)},{{}})");
+                withReadback.Stop();
+                readbackSamples[sample] = withReadback.Elapsed.TotalMilliseconds;
+            }
 
-            double r = renderOnly.Elapsed.TotalMilliseconds;
-            double rb = withReadback.Elapsed.TotalMilliseconds;
-            Debug.Log($"[rig-baker] punt ×8 — render only {r:F1} ms, render+readback {rb:F1} ms " +
+            System.Array.Sort(renderSamples);
+            System.Array.Sort(readbackSamples);
+            double r = renderSamples[repeats / 2];
+            double rb = readbackSamples[repeats / 2];
+            Debug.Log($"[rig-baker] punt ×8, median of {repeats} — render only {r:F1} ms, render+readback {rb:F1} ms " +
                       $"({rb / r:F2}×)");
 
             Assert.Less(rb, r * 3.0 + 50.0,
-                $"Readback took {rb:F1} ms against {r:F1} ms for render alone. The bulk " +
+                $"Median readback took {rb:F1} ms against {r:F1} ms for render alone ({repeats} samples each). The bulk " +
                 "ITypedArray<byte>.ReadBytes path is the one implementation constraint ADR 0021 " +
                 "names; a per-element marshal here would erase the entire engine advantage.");
         }

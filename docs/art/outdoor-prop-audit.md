@@ -2,6 +2,8 @@
 
 Base: `1abca5974ce3d16a3257777797bb2547c9ad8d53`.
 
+Status at `d46bde303e6aa256d23d47a05ede5d7d6f38e51e`: this is a historical inventory and assessment of the base above, not a current acceptance of the art. All 341 inventoried PNGs and their importers are unchanged between those commits. Two prefabs changed, and 45 PNG paths outside this inventory changed; direct references, missing-category claims and overall coverage below remain statements about the original base. No new visual assessment was made during this update.
+
 Scope: loose outdoor props, yard and wharf furniture, utilities, fuel containers, signs, navigation buoys, deck traps, landing fittings and boats on stocks. Large buildings, wharf surfaces, terrain, height maps and indoor fixtures are excluded. Whole-sheet dimensions are reported; facing count comes from importer rectangles. Each PNG is one row.
 
 Prefab column reports direct serialized texture GUID references across Assets. “None” means no direct prefab reference, not proof that a builder or data definition never loads it. This audit does not modify placement.
