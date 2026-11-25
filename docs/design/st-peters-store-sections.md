@@ -102,10 +102,13 @@ The island's bait top-up (10 kg a day) carries all four. Every number below is *
 
 | Shelf line | Share of the bait top-up | Per item | Most on the shelf |
 |---|---|---|---|
-| capelin (box) | 0.4 (was all of it) | 2.5 kg (unchanged) | 20 (unchanged) |
-| sea worm (tub) | 0.2 | 1 kg | 12 |
-| squid strip (tray) | 0.2 | 1 kg | 12 |
-| shucked clam (tub) | 0.2 | 1 kg | 12 |
+| capelin (box) | 0.4 (was all of it) | 2.5 kg (unchanged) | 8 (was 20) |
+| sea worm (tub) | 0.2 | 1 kg | 10 |
+| squid strip (tray) | 0.2 | 1 kg | 10 |
+| shucked clam (tub) | 0.2 | 1 kg | 10 |
+
+A full shelf is the line's share of the island's four-day buffer (4 days of 10 kg, plus his quarter): 50 kg
+of bait, so capelin holds 20 kg (8 boxes) and each other bait 10 kg (10). A test holds every shelf line to its share.
 
 The rod: four rods on the bottom shelf at ₲60 (owner: fine). The rod's shelf picture is drawn and ready
 (`ShelfGondolaRods`), but the rod has no shelf line on main: the counted rod stock is draft #1554's. When

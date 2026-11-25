@@ -41,7 +41,7 @@ MonoBehaviour:
     Good: {fileID: 11400000, guid: 8c86cdb0e06d4829a003516973393a76, type: 2}
     ItemName: box of bait
     UnitsPerItem: 2.5
-    MaxOnShelf: 20
+    MaxOnShelf: 8
     ShareOfGood: 0.4
     CounterListingIds:
     - bait.capelin
@@ -50,7 +50,7 @@ MonoBehaviour:
     Good: {fileID: 11400000, guid: 8c86cdb0e06d4829a003516973393a76, type: 2}
     ItemName: tub of sea worms
     UnitsPerItem: 1
-    MaxOnShelf: 12
+    MaxOnShelf: 10
     ShareOfGood: 0.2
     CounterListingIds:
     - bait.sea_worm
@@ -59,7 +59,7 @@ MonoBehaviour:
     Good: {fileID: 11400000, guid: 8c86cdb0e06d4829a003516973393a76, type: 2}
     ItemName: tray of squid strip
     UnitsPerItem: 1
-    MaxOnShelf: 12
+    MaxOnShelf: 10
     ShareOfGood: 0.2
     CounterListingIds:
     - bait.squid_strip
@@ -68,7 +68,7 @@ MonoBehaviour:
     Good: {fileID: 11400000, guid: 8c86cdb0e06d4829a003516973393a76, type: 2}
     ItemName: tub of shucked clam
     UnitsPerItem: 1
-    MaxOnShelf: 12
+    MaxOnShelf: 10
     ShareOfGood: 0.2
     CounterListingIds:
     - bait.shucked_clam
