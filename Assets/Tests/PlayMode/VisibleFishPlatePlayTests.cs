@@ -247,7 +247,7 @@ namespace HiddenHarbours.Tests.PlayMode
             //
             // The bar is derived from the species' OWN authored spread plus a fish length of slack for
             // the shoal's internal spacing — never from the presenter, which is the thing under test.
-            AssertTheShoalHoldsTogether(presenter, shot);
+            AssertTheShoalHoldsTogether(presenter, view, shot);
 
             int drawnOverShallow = presenter.VisibleSwimmers;
             shallow = shot;
@@ -380,50 +380,233 @@ namespace HiddenHarbours.Tests.PlayMode
             return drawn > 0 ? sum / drawn : Vector2.zero;
         }
 
-        /// <summary>How many drawn swimmers the camera can actually see — the only count a plate is
-        /// evidence for.</summary>
         /// <summary>
-        /// EVERY DRAWN FISH IS WITHIN ITS SPECIES' OWN SPREAD of the school's anchor — the assertion
+        /// EVERY DRAWN FISH IS WITHIN ITS SPECIES' OWN SPREAD of its OWN school's anchor — the assertion
         /// that would have gone red on the retired <c>0.8 x school.RadiusMetres</c> loop, and the reason
         /// this plate is now a picture of a shoal rather than of one fish and some water.
         ///
-        /// <para>The bar is the authored <c>ShoalSpreadMetres</c> (the loop the leader swims) plus a
-        /// generous allowance for the shoal's own length behind the leader — computed from the species
-        /// Def and a literal, never by asking the presenter or ShoalMath for it.</para>
+        /// <para>The bar is the authored <c>ShoalSpreadMetres</c> (the loop the leader swims; the
+        /// config's fallback for a species that states none) plus a generous allowance for the shoal's own
+        /// length behind the leader — computed from the species Def, the config and a literal, never by
+        /// asking the presenter or ShoalMath for it.</para>
+        ///
+        /// <para>⚠ <b>EACH FISH IS HELD TO THE SCHOOL IT WAS DRAWN FOR.</b> The presenter draws every
+        /// school in view, and since the 22 m lattice (#802) a frame regularly holds two to four of them,
+        /// so measuring every drawn fish against the shot school's anchor reported a neighbouring school's
+        /// fish as a stray (measured: 67 fish from four schools, the furthest 31.5 m from the shot anchor,
+        /// its neighbour 24.4 m away). Which school a fish belongs to is the paint's own record
+        /// (<see cref="FishSchoolPresenter.TryGetDrawn"/>), never the nearest anchor: two schools that
+        /// swapped their whole shoals would otherwise read as no displacement at all. The record is then
+        /// checked against the model's own schools in view (key, anchor and species), so the anchor and the
+        /// bar come from the model and the Defs, not from the presenter.</para>
         /// </summary>
-        void AssertTheShoalHoldsTogether(FishSchoolPresenter presenter, FishSchool school)
+        void AssertTheShoalHoldsTogether(FishSchoolPresenter presenter, IFishSchoolView view, FishSchool school)
         {
-            string primary = school.SpeciesIds != null && school.SpeciesIds.Count > 0
-                ? school.SpeciesIds[0] : null;
-            if (string.IsNullOrEmpty(primary)) return;         // an unstated school states no spread
+            // The schools the camera holds right now, asked of the model the same way the presenter asks.
+            double hour = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
+            float h = _cam.orthographicSize * 2f, w = h * _cam.aspect;
+            Vector3 c = _cam.transform.position;
+            var inView = new List<FishSchool>();
+            view.SchoolsInView(new Rect(c.x - w * 0.5f, c.y - h * 0.5f, w, h), hour, inView);
 
-            FishSpeciesDef def = FishSpeciesRegistry.Get(primary);
-            if (def == null || !def.StatesShoalSpread) return;  // nothing authored to hold it to
-
-            // The loop, plus the shoal trailing behind its leader. ShoalMath spaces fish by the species'
-            // drawn LENGTH; 4 m of slack is far more than the biggest authored fish needs and still an
-            // order of magnitude under the 17.6-44 m the retired rule produced.
-            const float shoalTailAllowanceM = 4f;
-            float bar = def.ShoalSpreadMetres + shoalTailAllowanceM;
-
-            float worst = 0f;
-            int counted = 0;
-            foreach (SpriteRenderer sr in presenter.GetComponentsInChildren<SpriteRenderer>(false))
+            var positions = new List<Vector2>();
+            var records = new List<FishSchoolPresenter.DrawnFor>();
+            float worstToShot = 0f;
+            for (int i = 0; i < presenter.VisibleSwimmers; i++)
             {
-                if (sr == null || !sr.enabled) continue;
-                float d = Vector2.Distance(sr.transform.position, school.Centre);
-                if (d > worst) worst = d;
-                counted++;
+                Assert.IsTrue(presenter.TryGetDrawn(i, out SpriteRenderer sr, out FishSchoolPresenter.DrawnFor rec),
+                    $"drawn slot {i} of {presenter.VisibleSwimmers} has no renderer or no record");
+                if (!sr.enabled) continue;
+                positions.Add(sr.transform.position);
+                records.Add(rec);
+                worstToShot = Mathf.Max(worstToShot, Vector2.Distance(sr.transform.position, school.Centre));
             }
-            if (counted == 0) return;
 
-            Debug.Log($"[{PlateDir}] {primary}: {counted} swimmers, furthest {worst:0.00} m from the " +
-                      $"anchor (authored spread {def.ShoalSpreadMetres:0.0} m, bar {bar:0.0} m)");
-            Assert.LessOrEqual(worst, bar,
-                $"a {primary} was drawn {worst:0.0} m from its school's anchor, past the {bar:0.0} m its " +
-                "authored spread allows — the shoal is swimming a loop scaled to the BOAT's reach again");
+            ShoalVerdict v = CheckShoals(positions, records, inView, FishSchoolPresenter.SchoolKey(school), BarFor);
+            Debug.Log($"[{PlateDir}] {v.Checked} swimmers checked from {inView.Count} school(s) in view, " +
+                      $"{v.OwnShot} of them drawn for the shot school; the largest excess over its own bar is a " +
+                      $"{v.WorstSpecies} at {v.Worst:0.00} m (bar {v.WorstBar:0.0} m); furthest from the shot " +
+                      $"anchor {worstToShot:0.00} m");
+            Assert.IsEmpty(v.Faults, "the drawn shoals do not hold to their own schools:\n  " +
+                                     string.Join("\n  ", v.Faults));
         }
 
+        /// <summary>The loop, plus the shoal trailing behind its leader. ShoalMath spaces fish by the
+        /// species' drawn LENGTH; 4 m of slack is far more than the biggest authored fish needs and still an
+        /// order of magnitude under the 17.6-44 m the retired rule produced.</summary>
+        const float ShoalTailAllowanceMetres = 4f;
+
+        /// <summary>A species' bar: its authored spread, or the config's fallback when it states none
+        /// (an unstated school is a real school drawn as the generic swimmer), plus the tail allowance.</summary>
+        static float BarFor(string speciesId)
+        {
+            FishSpeciesDef def = string.IsNullOrEmpty(speciesId) ? null : FishSpeciesRegistry.Get(speciesId);
+            float spread = def != null && def.StatesShoalSpread
+                ? def.ShoalSpreadMetres
+                : GameServices.Config != null ? GameServices.Config.FishSchools.ShoalSpreadMetres
+                                              : FishSchoolSettings.ShoalMathReferenceSpreadMetres;
+            return spread + ShoalTailAllowanceMetres;
+        }
+
+        /// <summary>What <see cref="CheckShoals"/> found.</summary>
+        internal struct ShoalVerdict
+        {
+            public int Checked, OwnShot;
+            public float Worst, WorstBar;
+            public string WorstSpecies;
+            public List<string> Faults;
+        }
+
+        /// <summary>
+        /// The whole judgement, pure so its failure cases can be tested without a graphics device.
+        /// <paramref name="positions"/>[i] is where drawn fish i stands and <paramref name="records"/>[i]
+        /// what the paint drew it for. A fish fails when its record names no school the model holds in view,
+        /// when the record's anchor or species disagree with that school, or when it stands past its
+        /// species' bar from that school's anchor. The verdict also fails when nothing was checked, or when
+        /// no checked fish was drawn for the shot school.
+        /// </summary>
+        internal static ShoalVerdict CheckShoals(IReadOnlyList<Vector2> positions,
+                                                 IReadOnlyList<FishSchoolPresenter.DrawnFor> records,
+                                                 IReadOnlyList<FishSchool> modelInView, uint shotKey,
+                                                 System.Func<string, float> barFor)
+        {
+            var v = new ShoalVerdict { Faults = new List<string>(), WorstSpecies = "(none)" };
+            float worstExcess = float.NegativeInfinity;
+            int strays = 0;
+            for (int i = 0; i < positions.Count; i++)
+            {
+                FishSchoolPresenter.DrawnFor rec = records[i];
+                int m = -1;
+                for (int k = 0; k < modelInView.Count; k++)
+                    if (FishSchoolPresenter.SchoolKey(modelInView[k]) == rec.SchoolKey) { m = k; break; }
+                if (m < 0)
+                {
+                    v.Faults.Add($"fish {i} was drawn for school key {rec.SchoolKey}, which the model does not hold in view");
+                    continue;
+                }
+                FishSchool own = modelInView[m];
+                if ((rec.Anchor - own.Centre).sqrMagnitude > 1e-6f)
+                    v.Faults.Add($"fish {i} was drawn about {rec.Anchor}, but its school's anchor is {own.Centre}");
+                string species = PrimaryOf(own);
+                if (!string.Equals(species, rec.SpeciesId, System.StringComparison.Ordinal))
+                    v.Faults.Add($"fish {i} was drawn as {rec.SpeciesId ?? "(unstated)"}, but its school leads with " +
+                                 $"{species ?? "(unstated)"}");
+
+                float bar = barFor(species);
+                float dist = Vector2.Distance(positions[i], own.Centre);
+                v.Checked++;
+                if (rec.SchoolKey == shotKey) v.OwnShot++;
+                if (dist - bar > worstExcess)
+                {
+                    worstExcess = dist - bar;
+                    v.Worst = dist; v.WorstBar = bar; v.WorstSpecies = species ?? "(unstated)";
+                }
+                if (dist > bar) strays++;
+            }
+
+            if (strays > 0)
+                v.Faults.Add($"{strays} fish stand past their own school's bar; the worst is a {v.WorstSpecies} " +
+                             $"{v.Worst:0.0} m from its anchor, past the {v.WorstBar:0.0} m its spread allows — the " +
+                             "shoal is swimming a loop scaled to the BOAT's reach again");
+            if (v.Checked == 0) v.Faults.Add("not one drawn fish was checked, so the spread check proved nothing");
+            else if (v.OwnShot == 0) v.Faults.Add("the school the camera was aimed at drew no fish of its own");
+            return v;
+        }
+
+        static string PrimaryOf(in FishSchool s)
+            => s.SpeciesIds != null && s.SpeciesIds.Count > 0 ? s.SpeciesIds[0] : null;
+
+        // ---- the judgement's own failure cases (no graphics device: they run everywhere) -----------
+
+        static readonly FishSchool SchoolA = new FishSchool(new Vector2(0f, 0f), 10f, 2f, 3,
+                                                            new[] { "fish.test_a" }, 100.0, 900.0);
+        static readonly FishSchool SchoolB = new FishSchool(new Vector2(22f, 0f), 10f, 2f, 3,
+                                                            new[] { "fish.test_b" }, 100.0, 900.0);
+        const float TestBarMetres = 5.2f;
+
+        static FishSchoolPresenter.DrawnFor RecordFor(in FishSchool s)
+            => new FishSchoolPresenter.DrawnFor(FishSchoolPresenter.SchoolKey(s), s.Centre, PrimaryOf(s));
+
+        /// <summary>Three fish tight on each school, each recorded for its own school.</summary>
+        static void TwoTightShoals(out List<Vector2> positions, out List<FishSchoolPresenter.DrawnFor> records)
+        {
+            positions = new List<Vector2>();
+            records = new List<FishSchoolPresenter.DrawnFor>();
+            foreach (FishSchool s in new[] { SchoolA, SchoolB })
+                for (int k = 0; k < 3; k++)
+                {
+                    positions.Add(s.Centre + new Vector2(k - 1f, 0.5f));
+                    records.Add(RecordFor(s));
+                }
+        }
+
+        [Test]
+        public void TheJudgement_PassesTwoTightShoalsHeldToTheirOwnSchools()
+        {
+            TwoTightShoals(out var positions, out var records);
+            ShoalVerdict v = CheckShoals(positions, records, new[] { SchoolA, SchoolB },
+                                         FishSchoolPresenter.SchoolKey(SchoolA), _ => TestBarMetres);
+            Assert.IsEmpty(v.Faults, string.Join("\n", v.Faults));
+            Assert.AreEqual(6, v.Checked);
+            Assert.AreEqual(3, v.OwnShot);
+        }
+
+        [Test]
+        public void TheJudgement_FailsWhenTwoSchoolsSwapTheirWholeShoals()
+        {
+            TwoTightShoals(out var positions, out var records);
+            // Every fish of A now stands where B's fish stood and back: each is ~0 m from the OTHER anchor,
+            // which a nearest-school attribution would read as no displacement at all.
+            for (int k = 0; k < 3; k++)
+                (positions[k], positions[k + 3]) = (positions[k + 3], positions[k]);
+            ShoalVerdict v = CheckShoals(positions, records, new[] { SchoolA, SchoolB },
+                                         FishSchoolPresenter.SchoolKey(SchoolA), _ => TestBarMetres);
+            Assert.IsNotEmpty(v.Faults, "a 22 m swap of two whole shoals passed the spread check");
+            Assert.Greater(v.Worst, 20f);
+        }
+
+        [Test]
+        public void TheJudgement_FailsWhenAFishIsDrawnAsAnotherSchoolsSpecies()
+        {
+            TwoTightShoals(out var positions, out var records);
+            records[0] = new FishSchoolPresenter.DrawnFor(records[0].SchoolKey, records[0].Anchor, "fish.test_b");
+            ShoalVerdict v = CheckShoals(positions, records, new[] { SchoolA, SchoolB },
+                                         FishSchoolPresenter.SchoolKey(SchoolA), _ => TestBarMetres);
+            Assert.IsNotEmpty(v.Faults, "a fish drawn as the neighbour's species passed");
+        }
+
+        [Test]
+        public void TheJudgement_FailsWhenAFishIsDrawnForASchoolTheModelDoesNotHold()
+        {
+            TwoTightShoals(out var positions, out var records);
+            ShoalVerdict v = CheckShoals(positions, records, new[] { SchoolA },
+                                         FishSchoolPresenter.SchoolKey(SchoolA), _ => TestBarMetres);
+            Assert.IsNotEmpty(v.Faults, "fish drawn for a school outside the model's view passed");
+        }
+
+        [Test]
+        public void TheJudgement_FailsWhenNothingWasChecked()
+        {
+            ShoalVerdict v = CheckShoals(new List<Vector2>(), new List<FishSchoolPresenter.DrawnFor>(),
+                                         new[] { SchoolA, SchoolB }, FishSchoolPresenter.SchoolKey(SchoolA),
+                                         _ => TestBarMetres);
+            Assert.AreEqual(0, v.Checked);
+            Assert.IsNotEmpty(v.Faults, "a check over no fish at all passed");
+        }
+
+        [Test]
+        public void TheJudgement_FailsWhenTheShotSchoolDrewNothingOfItsOwn()
+        {
+            TwoTightShoals(out var positions, out var records);
+            positions.RemoveRange(0, 3);
+            records.RemoveRange(0, 3);
+            ShoalVerdict v = CheckShoals(positions, records, new[] { SchoolA, SchoolB },
+                                         FishSchoolPresenter.SchoolKey(SchoolA), _ => TestBarMetres);
+            Assert.IsNotEmpty(v.Faults, "the shot school drew no fish and the check passed");
+        }
+
+        /// <summary>How many drawn swimmers the camera can actually see — the only count a plate is
+        /// evidence for.</summary>
         int SwimmersInFrame(FishSchoolPresenter presenter)
         {
             int inFrame = 0;
