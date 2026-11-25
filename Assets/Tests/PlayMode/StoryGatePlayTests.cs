@@ -58,13 +58,14 @@ namespace HiddenHarbours.Tests.PlayMode
             }
 
             public int Saves;
+            public bool LoadedExistingSave => Saves > 0;
             public void Save() => Saves++;
         }
 
         sealed class DayClock : IGameClock
         {
             public int Day;
-            public double TotalSeconds => Day * (double)GameConfig.DefaultSecondsPerDay + GameConfig.DefaultSecondsPerDay * 0.5;
+            public double TotalSeconds => (Day + Hour / 24d) * GameConfig.DefaultSecondsPerDay;
             public GameTime Now => new GameTime(TotalSeconds);
             public Season Season => Season.EarlySpring;
             public int Year => 1;
@@ -74,9 +75,16 @@ namespace HiddenHarbours.Tests.PlayMode
             public bool IsMarketDay => false;
             public float Hour = 19f;
             public float HourOfDay => Hour;
-            public float DayFraction => 0.5f;
+            public float DayFraction => Hour / 24f;
             public bool IsPaused { get; set; }
             public float TimeScale { get; set; } = 1f;
+            public bool FastForwardTo(double target)
+            {
+                if (target <= TotalSeconds) return false;
+                Day = (int)System.Math.Floor(target / GameConfig.DefaultSecondsPerDay);
+                Hour = (float)((target / GameConfig.DefaultSecondsPerDay - Day) * 24d);
+                return true;
+            }
         }
 
         readonly List<Object> _spawned = new List<Object>();
@@ -108,6 +116,7 @@ namespace HiddenHarbours.Tests.PlayMode
             DemoBuild.Override = true;      // the demo, unless a case says otherwise
             DemoWeek.IsHost = null;
             DemoWeek.Listen();
+            StoryGates.ListenForMorning();
             DemoClosingCard.Listen();
             _ended = 0;
             _toTitle = 0;
@@ -308,8 +317,11 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual(1, _save.Writes[_gate.SetsFlag], "no second word");
             Assert.IsFalse(_save.GetFlag(_gate.PendingUntilFlag), "talk never opens passage");
 
-            // Supply the passage fact in memory; this conversation does not produce it.
-            _save.SetFlag(_gate.PendingUntilFlag, true);
+            _clock.Hour = 22f;
+            Assert.IsTrue(RestSaveResponder.Fulfil(new RestSaveRequested("fixture bed")).Ok);
+            Assert.AreEqual(1, _save.Saves, "the sleep was kept before passage opened");
+            foreach (CampaignBarrierDef wall in Walls().Where(w => w.RegionId == Region))
+                Assert.IsFalse(CampaignBarrierDirector.Stands(wall), wall.Id);
             Assert.IsTrue(_interactor.BeginInteract());
             yield return null;
             heard.Clear();
