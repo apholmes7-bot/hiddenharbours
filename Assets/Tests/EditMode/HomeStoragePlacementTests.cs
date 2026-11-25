@@ -98,7 +98,7 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.AreEqual(StPetersGinnyPlot.CottageKey, site.Building);
                 Assert.AreEqual(row.Level, site.Level, $"{row.StorageId}: his room upstairs");
                 Assert.AreEqual(row.At, site.At, $"{row.StorageId}: the plan's model point");
-                Assert.IsFalse(site.PlanFrame, $"{row.StorageId}: the UpperLevelFor frame the bed is stood in, no half turn");
+                Assert.IsTrue(site.PlanFrame, $"{row.StorageId}: the UpperLevelFor frame the bed is planned in, door at +y, half-turned like a fixture row");
                 Assert.AreEqual(HomeStoragePlacement.PrefabFor(row), site.Prefab);
             }
         }

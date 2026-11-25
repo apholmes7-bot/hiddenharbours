@@ -2,7 +2,10 @@ namespace HiddenHarbours.Tests.EditMode
 {
     public partial class ModuleBoundaryTests
     {
-        // Reviewed base f1b4ab2f59f417eda06f2239f7dee25d4c52ad23, 2026-11-22.
+        // Original base f1b4ab2f59f417eda06f2239f7dee25d4c52ad23, 2026-11-22.
+        // Reconciled with d46bde303e6aa256d23d47a05ede5d7d6f38e51e, 2026-11-25:
+        // calm-mirror phase fallback added; two old speech clock lines replaced by one injected read.
+        // Unchanged entries retain their original source line references.
         // Companion audit: docs/design/randomness-and-clock-source-audit.md (separate documentation change).
         // Each fingerprint hashes the complete whitespace-normalized source line in UTF-8, not just
         // the matched API. Counts forbid duplicate copies; line numbers below are review references.
@@ -31,6 +34,8 @@ namespace HiddenHarbours.Tests.EditMode
             new SourceAllowance("Art/AmbientParticleMath.cs", "086b8abf50c6fe4a9b7d50eb61ce603c81351a2f42c4724649af67090a5f3c9b", 1),
             // PRESENTATION, base line(s) 623: Spotlight flicker only; process-dependent hash is also presentation.
             new SourceAllowance("Art/BoatSpotlight.cs", "258b3530a082bd9c1915ef4c41ca146238c715320afa5d47430e333e89321810", 1),
+            // PRESENTATION, current line 247: Mirror ripple phase fallback when the game clock is absent; no simulation mutation.
+            new SourceAllowance("Art/CalmMirror.cs", "7880186a505fbb2a207accdda77a10b193a37d069d8ab85ffff933f2e0d5160c", 1),
             // PRESENTATION, base line(s) 27: Comment or literal only; no executed read, RNG construction or divergence at this hit.
             new SourceAllowance("Art/CharacterFigureLife.cs", "e6f094a62eb97739a0b84dd6b08a132fc13d783bd8c527e0d30474164c7c25b5", 1),
             // PRESENTATION, base line(s) 16: Comment or literal only; no executed read, RNG construction or divergence at this hit.
@@ -297,10 +302,8 @@ namespace HiddenHarbours.Tests.EditMode
             new SourceAllowance("World/Beach/BeachLifeDirector.Gatherings.cs", "23ee4e4ac0dffe7b5da663538066fbc58e06fdcf6eef3c6f32b19e33852d18b7", 1),
             // SIM, base line(s) 333: KNOWN FAULT: wall-time talk timeout/body cache can change who is held or eligible for a conversation at equal seed/time.
             new SourceAllowance("World/Beach/BeachLifeDirector.Gatherings.cs", "2fb92a6e8810f46e2150c5f470583a5033f668e0a49b55a4754e55db07090868", 1),
-            // PRESENTATION, base line(s) 140: Speech cooldown only; barrier and weather decisions precede this read.
-            new SourceAllowance("World/Campaign/CampaignBarrierDirector.cs", "8331167ea94578faa48eefd58e6a76e687f89f103c15f01dfe6ccbe2227d4fd9", 1),
-            // PRESENTATION, base line(s) 142: Speech cooldown only; barrier and weather decisions precede this read.
-            new SourceAllowance("World/Campaign/CampaignBarrierDirector.cs", "140230558efb4ee5d9cb14470e0d9b6c487a3636d58f530d807debb3882ca357", 1),
+            // PRESENTATION, current line 222: Injected speech cooldown clock with engine-time fallback; barrier forces and weather precede this read.
+            new SourceAllowance("World/Campaign/CampaignBarrierDirector.cs", "f6a57df5bc90a7a79b01b703c67baad8a38d8aba5c8c5f4ce98afb3a64ec03c3", 1),
             // SIM, base line(s) 10: Comment or literal only; no executed read, RNG construction or divergence at this hit.
             new SourceAllowance("World/Conversations/ConversationSchedule.cs", "3136e528db7d4ee604476b335cdaae893033392201658c9c1311b564c31469fa", 1),
             // SIM, base line(s) 61: Comment or literal only; no executed read, RNG construction or divergence at this hit.

@@ -97,6 +97,11 @@ namespace HiddenHarbours.Core
         [Range(0f, 1f)] public float SmallHullArcShare;
         [Tooltip("How many arcs round a short hull's broken ring (whole numbers; SmallHullArcShare).")]
         [Range(1f, 6f)] public float SmallHullArcLobes;
+        [Tooltip("How far a short hull's ring must have opened before it is torn into arcs, in its own band " +
+                 "widths: the tear comes in smoothly as its front runs out to this. A ring that has not opened " +
+                 "yet is still a disc, and tearing a disc leaves wedges meeting at its centre (a pale block and " +
+                 "a dark wedge sitting on the water ahead of a rowed bow). 0 = torn from birth (the older look).")]
+        [Range(0f, 4f)] public float SmallHullArcOpenWidths;
         [Tooltip("The bow's waves as a share of the stern's.")]
         [Range(0f, 2f)] public float BowShare;
 
@@ -294,6 +299,7 @@ namespace HiddenHarbours.Core
             SmallHullCentreScatterMetres = 0.3f,
             SmallHullArcShare = 1f,
             SmallHullArcLobes = 3f,
+            SmallHullArcOpenWidths = 1.5f,
             BowShare = 0.7f,
 
             LifetimeSecondsPerMetreLength = 0.8f,

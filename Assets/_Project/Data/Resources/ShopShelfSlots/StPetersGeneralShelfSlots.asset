@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 601757522be340d496880d499f35806b, type: 3}
+  m_Name: StPetersGeneralShelfSlots
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.ShopShelfSlotsDef
+  Id: shelfslots.st_peters_general
+  ShopId: shop.st_peters_general
+  BuildingName: generalStore
+  SoldOutSign: {fileID: 21300000, guid: c21cbcf13b5afb84aadf7d7c6a387c71, type: 3}
+  SortingOrderAboveRoom: 3
+  CoverSortingOrderAboveRoom: 1
+  GoodsSortingOrderAboveRoom: 2
+  ReachMeters: 1.5
+  Bag: {fileID: 11400000, guid: b12288d2dcfc4811941e251a7d8969ca, type: 2}
+  Slots:
+  - Id: slot.groceries
+    LineId: line.grocery_box
+    Offset: {x: -0.75, y: -0.84375}
+    ListingId:
+    Cover: {fileID: 21300000, guid: 3dcc4b597e7a4444b753d7817d08c842, type: 3}
+    Goods: {fileID: 0}
+    HideSoldOutCard: 1
+    NeedsFreeHand: 0
+    IntoBag: 0
+  - Id: slot.ice
+    LineId: line.ice_bag
+    Offset: {x: 1.5, y: -1.1875}
+    ListingId: supply.ice
+    Cover: {fileID: 21300000, guid: 2fca635b98bb422eba74f82e277bf0af, type: 3}
+    Goods: {fileID: 21300000, guid: d3d590e800aa4ec1ae5a802fd8e82e74, type: 3}
+    HideSoldOutCard: 0
+    NeedsFreeHand: 0
+    IntoBag: 0
+  - Id: slot.bait
+    LineId: line.bait_box
+    Offset: {x: 2.34375, y: -0.46875}
+    ListingId: bait.capelin
+    Cover: {fileID: 0}
+    Goods: {fileID: 21300000, guid: 23b1d8663512426aab0eafc800ecb65b, type: 3}
+    HideSoldOutCard: 0
+    NeedsFreeHand: 0
+    IntoBag: 0
+  - Id: slot.gas
+    LineId: line.gas_jerry_can
+    Offset: {x: 3, y: 2.9}
+    ListingId:
+    Cover: {fileID: 0}
+    Goods: {fileID: 0}
+    HideSoldOutCard: 0
+    NeedsFreeHand: 0
+    IntoBag: 0
+  - Id: slot.bread
+    LineId: line.bread
+    Offset: {x: -1.0625, y: -0.3125}
+    ListingId: supply.bread
+    Cover: {fileID: 0}
+    Goods: {fileID: 21300000, guid: 8c8a8608f8e9458085040b49c292cff5, type: 3}
+    HideSoldOutCard: 0
+    NeedsFreeHand: 0
+    IntoBag: 1
+  - Id: slot.oatcakes
+    LineId: line.oatcakes
+    Offset: {x: -0.75, y: -0.75}
+    ListingId: supply.oatcakes
+    Cover: {fileID: 0}
+    Goods: {fileID: 21300000, guid: 99504d3f39e3431abba5fe438578a1e9, type: 3}
+    HideSoldOutCard: 0
+    NeedsFreeHand: 0
+    IntoBag: 1
+  - Id: slot.beans
+    LineId: line.tinned_beans
+    Offset: {x: -0.4375, y: -1.1875}
+    ListingId: supply.tinned_beans
+    Cover: {fileID: 0}
+    Goods: {fileID: 21300000, guid: 996f199deac341308710705e807f0ba3, type: 3}
+    HideSoldOutCard: 0
+    NeedsFreeHand: 0
+    IntoBag: 1

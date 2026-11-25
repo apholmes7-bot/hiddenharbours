@@ -122,7 +122,7 @@ MonoBehaviour:
     Source: "Buildings.json"
     Provisional: 0
   - Id: "footprint.st_peters.harbour_gable"
-    LocalBounds: {x: -3.36, y: -2.655, z: 3.36, w: 2.655}
+    LocalBounds: {x: -4.13, y: -2.16, z: 4.13, w: 2.16}
     Source: "houseIsoRig (new_homes.js)"
     Provisional: 1
   LotIds:

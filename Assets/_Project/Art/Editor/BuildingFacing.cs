@@ -76,12 +76,67 @@ namespace HiddenHarbours.Art.Editor
         /// so one measured wall side plus the turntable's step is exact, whereas eight separate
         /// <c>atan2</c>s of an off-centre anchor are eight separately-wrong angles.</para>
         /// </summary>
-        public static float[] DoorBearings(float[] doorY, float pivotY, int facings)
+        public static float[] DoorBearings(float[] doorY, float pivotY, int facings) =>
+            DoorBearings(DoorSign(doorY, pivotY) > 0f ? WallPlusY : WallMinusY, facings);
+
+        // ---- the eave door ------------------------------------------------------------------------
+        //
+        // A house with no porch has its door on a long (eave) wall, ±x. The harbour gable's door is in
+        // a cross gable on +x. The two reads above only tell +y from −y, so an eave door would be read
+        // as a gable door and turned a quarter-turn off. These read the wall first.
+
+        /// <summary>The door is in the <c>+y</c> gable.</summary>
+        public const int WallPlusY = 1;
+        /// <summary>The door is in the <c>−y</c> gable.</summary>
+        public const int WallMinusY = -1;
+        /// <summary>The door is in the <c>+x</c> eave wall.</summary>
+        public const int WallPlusX = 2;
+        /// <summary>The door is in the <c>−x</c> eave wall.</summary>
+        public const int WallMinusX = -2;
+
+        /// <summary>
+        /// Which model-frame wall the door is in at facing 0, one of the <c>Wall*</c> constants.
+        ///
+        /// <para>Screen x does not depend on height, so the door's ground position can be read from x
+        /// alone: at facing 0 the anchor's x is the model x, and a quarter-turn later it is the model y
+        /// (up to a sign this does not need). Each is divided by its half-wall, and the larger one names
+        /// the wall. A gable door gives (0, 1); the harbour gable's eave door gives (1.18, 0).</para>
+        ///
+        /// <para>Falls back to <see cref="DoorSign"/> (a gable) when it cannot read the quarter-turn: no
+        /// anchors, a facing count that is not a multiple of four, or no footprint.</para>
+        /// </summary>
+        public static int DoorWall(float[] doorX, float[] doorY, float pivotX, float pivotY, int facings,
+                                   float footprintWidthMetres, float footprintLengthMetres)
+        {
+            if (doorX != null && facings > 0 && facings % 4 == 0 && doorX.Length >= facings &&
+                footprintWidthMetres > 0f && footprintLengthMetres > 0f)
+            {
+                float across = Mathf.Abs(doorX[0] - pivotX) / (footprintWidthMetres * 0.5f);
+                float along = Mathf.Abs(doorX[facings / 4] - pivotX) / (footprintLengthMetres * 0.5f);
+                if (across > along) return doorX[0] > pivotX ? WallPlusX : WallMinusX;
+            }
+            return DoorSign(doorY, pivotY) > 0f ? WallPlusY : WallMinusY;
+        }
+
+        /// <summary>The ground bearing a wall's outward normal points at facing 0, in degrees: +y is
+        /// north (90°), +x is east (0°).</summary>
+        public static float BearingAtZero(int wall)
+        {
+            switch (wall)
+            {
+                case WallPlusX: return 0f;
+                case WallMinusX: return 180f;
+                case WallMinusY: return -90f;
+                default: return 90f;
+            }
+        }
+
+        /// <summary>The bearing table for a door in <paramref name="wall"/>.</summary>
+        public static float[] DoorBearings(int wall, int facings)
         {
             if (facings <= 0) return System.Array.Empty<float>();
 
-            float sign = DoorSign(doorY, pivotY);
-            float atZero = sign * 90f;               // +y is north; −y is south
+            float atZero = BearingAtZero(wall);
             float perCell = 360f / facings;
 
             var bearings = new float[facings];
@@ -100,11 +155,16 @@ namespace HiddenHarbours.Art.Editor
         /// pointing it at a wall.</para>
         /// </summary>
         public static int FacingToward(float[] doorY, float pivotY, int facings, float depthScale,
-                                       Vector2 from, Vector2 target)
+                                       Vector2 from, Vector2 target) =>
+            FacingToward(DoorSign(doorY, pivotY) > 0f ? WallPlusY : WallMinusY, facings, depthScale, from, target);
+
+        /// <summary><see cref="FacingToward(float[],float,int,float,Vector2,Vector2)"/> for a door in a
+        /// known wall (<see cref="DoorWall"/>), so an eave door turns the right way too.</summary>
+        public static int FacingToward(int wall, int facings, float depthScale, Vector2 from, Vector2 target)
         {
             if (facings <= 0) return 0;
 
-            float[] bearings = DoorBearings(doorY, pivotY, facings);
+            float[] bearings = DoorBearings(wall, facings);
             if (bearings.Length == 0) return 0;
 
             Vector2 d = target - from;
@@ -128,9 +188,15 @@ namespace HiddenHarbours.Art.Editor
         /// itself.
         /// </summary>
         public static float DoorErrorDegrees(float[] doorY, float pivotY, int facings, float depthScale,
+                                             Vector2 from, Vector2 target, int facing) =>
+            DoorErrorDegrees(DoorSign(doorY, pivotY) > 0f ? WallPlusY : WallMinusY, facings, depthScale,
+                             from, target, facing);
+
+        /// <summary>The error for a door in a known wall (<see cref="DoorWall"/>).</summary>
+        public static float DoorErrorDegrees(int wall, int facings, float depthScale,
                                              Vector2 from, Vector2 target, int facing)
         {
-            float[] bearings = DoorBearings(doorY, pivotY, facings);
+            float[] bearings = DoorBearings(wall, facings);
             if (bearings.Length == 0) return 0f;
 
             Vector2 d = target - from;

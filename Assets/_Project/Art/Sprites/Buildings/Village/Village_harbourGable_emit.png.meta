@@ -117,11 +117,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 422
-        width: 426
-        height: 422
+        y: 461
+        width: 370
+        height: 461
       alignment: 9
-      pivot: {x: 0.5, y: 0.31516588}
+      pivot: {x: 0.5, y: 0.2516269}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -138,12 +138,12 @@ TextureImporter:
       name: Village_harbourGable_emit_d1
       rect:
         serializedVersion: 2
-        x: 426
-        y: 422
-        width: 426
-        height: 422
+        x: 370
+        y: 461
+        width: 370
+        height: 461
       alignment: 9
-      pivot: {x: 0.5, y: 0.31516588}
+      pivot: {x: 0.5, y: 0.2516269}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -160,12 +160,12 @@ TextureImporter:
       name: Village_harbourGable_emit_d2
       rect:
         serializedVersion: 2
-        x: 852
-        y: 422
-        width: 426
-        height: 422
+        x: 740
+        y: 461
+        width: 370
+        height: 461
       alignment: 9
-      pivot: {x: 0.5, y: 0.31516588}
+      pivot: {x: 0.5, y: 0.2516269}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -182,12 +182,12 @@ TextureImporter:
       name: Village_harbourGable_emit_d3
       rect:
         serializedVersion: 2
-        x: 1278
-        y: 422
-        width: 426
-        height: 422
+        x: 1110
+        y: 461
+        width: 370
+        height: 461
       alignment: 9
-      pivot: {x: 0.5, y: 0.31516588}
+      pivot: {x: 0.5, y: 0.2516269}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -204,12 +204,12 @@ TextureImporter:
       name: Village_harbourGable_emit_d4
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 426
-        height: 422
+        x: 1480
+        y: 461
+        width: 370
+        height: 461
       alignment: 9
-      pivot: {x: 0.5, y: 0.31516588}
+      pivot: {x: 0.5, y: 0.2516269}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -226,12 +226,12 @@ TextureImporter:
       name: Village_harbourGable_emit_d5
       rect:
         serializedVersion: 2
-        x: 426
+        x: 0
         y: 0
-        width: 426
-        height: 422
+        width: 370
+        height: 461
       alignment: 9
-      pivot: {x: 0.5, y: 0.31516588}
+      pivot: {x: 0.5, y: 0.2516269}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -248,12 +248,12 @@ TextureImporter:
       name: Village_harbourGable_emit_d6
       rect:
         serializedVersion: 2
-        x: 852
+        x: 370
         y: 0
-        width: 426
-        height: 422
+        width: 370
+        height: 461
       alignment: 9
-      pivot: {x: 0.5, y: 0.31516588}
+      pivot: {x: 0.5, y: 0.2516269}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -270,12 +270,12 @@ TextureImporter:
       name: Village_harbourGable_emit_d7
       rect:
         serializedVersion: 2
-        x: 1278
+        x: 740
         y: 0
-        width: 426
-        height: 422
+        width: 370
+        height: 461
       alignment: 9
-      pivot: {x: 0.5, y: 0.31516588}
+      pivot: {x: 0.5, y: 0.2516269}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

@@ -73,16 +73,26 @@ namespace HiddenHarbours.Fishing
         /// </summary>
         public static void TimingFor(int worldSeed, float worldX, float worldY,
                                      out float phaseMs, out float periodMs)
+            => TimingFor(worldSeed, worldX, worldY, MinPeriodMilliseconds, MaxPeriodMilliseconds,
+                         PhaseSpanMilliseconds, out phaseMs, out periodMs);
+
+        /// <summary>
+        /// The same roll over a TUNED span (the clam show settings): the hash streams are the rig
+        /// overload's, so at the rig's numbers this returns exactly what it does. A max below the min
+        /// is read as the min, so a mistyped span cannot hand back a negative period.
+        /// </summary>
+        public static void TimingFor(int worldSeed, float worldX, float worldY,
+                                     float minPeriodMs, float maxPeriodMs, float phaseSpanMs,
+                                     out float phaseMs, out float periodMs)
         {
             int hx = (int)Math.Round(worldX * 100.0);
             int hy = (int)Math.Round(worldY * 100.0);
 
             uint h = Mix((uint)worldSeed, (uint)hx, (uint)hy);
-            phaseMs = Unit(h) * PhaseSpanMilliseconds;
+            phaseMs = Unit(h) * Math.Max(0f, phaseSpanMs);
 
             uint h2 = Mix(h, 0x9E3779B9u, (uint)hy);
-            periodMs = MinPeriodMilliseconds
-                     + Unit(h2) * (MaxPeriodMilliseconds - MinPeriodMilliseconds);
+            periodMs = minPeriodMs + Unit(h2) * Math.Max(0f, maxPeriodMs - minPeriodMs);
         }
 
         /// <summary>
@@ -95,17 +105,59 @@ namespace HiddenHarbours.Fishing
         /// </summary>
         public static bool TrySpurt(double timeMilliseconds, float phaseMs, float periodMs,
                                     out float rise, out float u)
+            => TrySpurt(timeMilliseconds, phaseMs, periodMs, SpurtMilliseconds, out rise, out u);
+
+        /// <summary>The same window with a TUNED squirt length (<paramref name="durationMs"/>), on the
+        /// rig's phase convention. At <see cref="SpurtMilliseconds"/> it is the rig overload.</summary>
+        public static bool TrySpurt(double timeMilliseconds, float phaseMs, float periodMs, float durationMs,
+                                    out float rise, out float u)
         {
             rise = 0f; u = 0f;
             if (!(periodMs > 0f)) return false;              // also rejects NaN
 
             double l = (timeMilliseconds + phaseMs) % periodMs;
             if (l < 0) l += periodMs;                        // a negative clock must not go dark
-            if (l > SpurtMilliseconds) return false;
+            return TryWindow(l, durationMs, out rise, out u);
+        }
 
-            u = (float)(l / SpurtMilliseconds);
+        /// <summary>
+        /// One squirt window read <paramref name="sinceOpenMs"/> after it opened: false (and zero rise)
+        /// before it opens or once <paramref name="durationMs"/> has passed, otherwise <c>sin(π·u)</c>.
+        /// The periodic squirt and the startle squirt (a clam feeling footsteps) both draw through this,
+        /// so the two can never shape the jet differently.
+        /// </summary>
+        public static bool TryWindow(double sinceOpenMs, float durationMs, out float rise, out float u)
+        {
+            rise = 0f; u = 0f;
+            if (!(durationMs > 0f)) return false;            // also rejects NaN
+            if (sinceOpenMs < 0 || sinceOpenMs > durationMs) return false;
+
+            u = (float)(sinceOpenMs / durationMs);
             rise = (float)Math.Sin(Math.PI * u);
             return true;
+        }
+
+        /// <summary>
+        /// Which frame of a squirt strip to draw. The strip is a height ramp with one extra frame at the
+        /// end: frames <c>0 .. count-2</c> are the jet from lip to crest, and the LAST frame is the
+        /// collapse (droplets raining back). Rising (<paramref name="u"/> below one half) the frame
+        /// follows the height; falling, the crest holds until the height drops below
+        /// <paramref name="collapseBelowRise"/>, then the collapse frame shows to the end.
+        ///
+        /// <para>A strip of one or two frames has no room for a collapse frame and is a plain height
+        /// ramp. An empty strip answers -1 (draw nothing).</para>
+        /// </summary>
+        public static int FrameFor(float rise, float u, int frameCount, float collapseBelowRise)
+        {
+            if (frameCount <= 0) return -1;
+            float r = rise > 0f ? (rise < 1f ? rise : 1f) : 0f;   // also maps NaN to 0
+            int last = frameCount - 1;
+            if (frameCount <= 2) return (int)Math.Round(r * last, MidpointRounding.AwayFromZero);
+
+            int crest = last - 1;
+            if (u >= 0.5f) return r >= collapseBelowRise ? crest : last;
+            int f = (int)Math.Round(r * crest, MidpointRounding.AwayFromZero);
+            return f < 0 ? 0 : (f > crest ? crest : f);
         }
 
         /// <summary>Jet height in pixels for a rise — the sidecar's <c>rise × 4 px</c>.</summary>

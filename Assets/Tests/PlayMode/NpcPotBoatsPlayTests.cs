@@ -392,6 +392,21 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator HerDrawnDeckDestroyedBeforeSheIsUnbound_EveryFrameStaysQuiet()
+        {
+            Assert.IsTrue(_boats.TryBind(_def, _hull));
+            yield return At(_today.DepartSeconds - 60.0);
+            NpcPotDeck deck = _boats.DeckOf(_def.Id);
+            Assert.IsNotNull(deck);
+            Object.DestroyImmediate(deck.InHand.gameObject);
+            for (int i = 0; i < 3; i++) Assert.DoesNotThrow(_boats.Tick, "a lost hand renderer must not throw every frame");
+            Object.DestroyImmediate(_hull.gameObject);
+            for (int i = 0; i < 3; i++) Assert.DoesNotThrow(_boats.Tick, "a lost hull must not throw before the slow tick unbinds her");
+            yield return At(_today.DepartSeconds);
+            Assert.IsNull(_boats.DeckOf(_def.Id), "the next slow tick lets her go");
+        }
+
+        [UnityTest]
         public IEnumerator Landing_SheCarriesEachCrateUpTheLadderToTheBuyer_AndItIsSold()
         {
             Assert.IsTrue(_boats.TryBind(_def, _hull));
