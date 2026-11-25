@@ -96,6 +96,16 @@ namespace HiddenHarbours.Boats
 
         private readonly List<BoatBunk> _bunks = new List<BoatBunk>();
 
+        /// <summary>A cabin-light switch's node prefix: <c>CabinLightSwitch.&lt;spot id&gt;</c>.</summary>
+        public const string LightSwitchChildName = "CabinLightSwitch";
+
+        /// <summary>The cabin-light switches it built: one at the helm, plus one by the door when the
+        /// helm is far from it. Empty on a hull with no cabin. Read by tests.</summary>
+        public IReadOnlyList<CabinLightSwitch> LightSwitches => _lightSwitches;
+
+        private readonly List<CabinLightSwitch> _lightSwitches = new List<CabinLightSwitch>();
+        private readonly CabinLightSwitchSpot[] _switchSpots = new CabinLightSwitchSpot[CabinLightSwitchRule.MaxSwitchesPerBoat];
+
         /// <summary>The cutaway it built, or null on a hull with no mesh to cut. Read by tests.</summary>
         public BoatCutaway Cutaway { get; private set; }
 
@@ -244,6 +254,9 @@ namespace HiddenHarbours.Boats
             // --- the bunks (owner 2026-11-14: "bunks on boats sleepable") ------------------------
             BuildBunks(def, controller, exteriorCcw, elevation);
 
+            // --- the cabin-light switches (owner 2026-11-25) --------------------------------------
+            BuildLightSwitches(def, visual, hull, exteriorCcw, elevation);
+
             // ⚠ SEAM(kitchen pieces, kitchens slice 1): the def now carries food_storage, sit and table
             // anchors (BoatInteriorKitchen.Pieces reads them). No interactable is built for them yet. A
             // food store needs a carried-food inventory to put things in and take them out (the food slice,
@@ -285,6 +298,40 @@ namespace HiddenHarbours.Boats
                 var bunk = bunkGo.AddComponent<BoatBunk>();
                 bunk.Configure(Interior, controller, $"fixture.boat.{def.Id}.{anchorId}", a.ReachPoint);
                 _bunks.Add(bunk);
+            }
+        }
+
+        /// <summary>
+        /// One <see cref="CabinLightSwitch"/> per spot <see cref="CabinLightSwitchRule.PlanFor"/> lays out
+        /// for this hull: at her helm, and by her door when the helm is far from it (or exactly the
+        /// switches her visual def names). All of them throw the root's one
+        /// <see cref="CabinLightSwitchboard"/>, which outlives a hull swap so each boat keeps her setting.
+        /// </summary>
+        private void BuildLightSwitches(BoatInteriorDef def, BoatVisualDef visual, BoatHullDef hull,
+                                        bool exteriorCcw, float elevation)
+        {
+            GameConfig config = GameServices.Config;
+            float far = config != null ? config.CabinLightSwitchDoorDistanceMetres
+                                       : GameConfig.DefaultCabinLightSwitchDoorDistanceMetres;
+            int n = CabinLightSwitchRule.PlanFor(visual, far, _switchSpots);
+            if (n == 0) return;
+
+            var board = GetComponent<CabinLightSwitchboard>();
+            if (board == null) board = gameObject.AddComponent<CabinLightSwitchboard>();
+            board.BeginBoat(OwnedBoatId.FirstOf(hull != null ? hull.Id : ""));
+
+            for (int i = 0; i < n; i++)
+            {
+                CabinLightSwitchSpot spot = _switchSpots[i];
+                var go = new GameObject($"{LightSwitchChildName}.{spot.Id}");
+                go.transform.SetParent(transform, false);
+                var anchor = go.AddComponent<HullLocalAnchor>();
+                anchor.Configure(transform, spot.LocalMetres, exteriorCcw, elevation);
+
+                var sw = go.AddComponent<CabinLightSwitch>();
+                sw.Configure(board, Interior, CabinLightSwitchRule.FixtureId(def.Id, spot.Id), spot.Role,
+                             spot.LocalMetres);
+                _lightSwitches.Add(sw);
             }
         }
 
@@ -352,6 +399,8 @@ namespace HiddenHarbours.Boats
                 if (_additionalDoors[i] != null) DestroyImmediate(_additionalDoors[i].gameObject);
             for (int i = 0; i < _bunks.Count; i++)
                 if (_bunks[i] != null) DestroyImmediate(_bunks[i].gameObject);
+            for (int i = 0; i < _lightSwitches.Count; i++)
+                if (_lightSwitches[i] != null) DestroyImmediate(_lightSwitches[i].gameObject);
             if (_room != null) DestroyImmediate(_room);
             if (Cutaway != null) DestroyImmediate(Cutaway);
             if (Interior != null) DestroyImmediate(Interior);
@@ -359,6 +408,7 @@ namespace HiddenHarbours.Boats
             Door = null;
             _additionalDoors.Clear();
             _bunks.Clear();
+            _lightSwitches.Clear();
             _room = null;
             Cutaway = null;
             Interior = null;

@@ -1549,6 +1549,22 @@ route.
   and region crossings (`RegionTravelCoordinator` calls `Stop()` at every crossing), so its state
   must live outside a manned `BoatController`. Saving a route is a later save step.
 
+### 9.14 Cabin-light switches (2026-11-25)
+
+- **Where:** every boat with a cabin gets a physical switch at her helm (her deck's helm station,
+  else her interior's `enter_helm` anchor). When the helm is more than
+  `GameConfig.CabinLightSwitchDoorDistanceMetres` (2.5 m, straight line) from her main entry door, she
+  gets a second switch by the door. A boat that lists `BoatVisualDef.CabinLightSwitches` gets exactly
+  those instead. Built by `BoatInteriorInstaller` beside her bunks and doors.
+- **What:** both switches throw one state per boat (`CabinLightSwitchboard` on the root): Auto (the
+  lights' automatic rule), On, Off. A player's boat starts on Auto; the first press flips what is
+  showing, then On and Off swap. NPC boats are never offered the switch and stay on Auto. Each press
+  publishes `CabinLightSwitchThrown` once. The state reaches the lights through `ICabinLightsOutlet`,
+  which joins the lights' own Core contract when that lands.
+- **Saved:** never (no save row fits). A loaded game starts every boat on Auto.
+- **Owed:** at the helm station E takes the helm before any registered fixture, so the helm switch is
+  only pressable once the helm press offers the chooser (helm + fixtures at the helm). Switch art.
+
 ## 10. Open questions
 
 1. **Direct boat control vs point-to-move (mobile).** Do we offer **full manual** throttle+helm (best for P1 skill, harder on touch) and an optional **assisted/auto-pilot-to-waypoint** for transits/accessibility — and where exactly does autopilot disengage near danger? Likely both, with autopilot for known-safe transits and manual demanded in tide/weather pinch points. Needs UX prototyping.

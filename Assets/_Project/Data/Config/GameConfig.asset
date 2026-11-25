@@ -23,6 +23,8 @@ MonoBehaviour:
   SleepGameHoursPerRealSecond: 1
   BunkRequiresMooredOrAnchored: 1
   BunkReachMetres: 1
+  CabinLightSwitchDoorDistanceMetres: 2.5
+  CabinLightSwitchReachMetres: 1
   StartSeason: 1
   StartDayOfSeason: 1
   DaysPerWeek: 7
