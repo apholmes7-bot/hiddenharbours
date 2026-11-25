@@ -258,11 +258,15 @@ namespace HiddenHarbours.Tests.EditMode
                     File.WriteAllText(Path.Combine(root, package), "resolved external source");
                 }
                 var budget = EmptyBudget();
+                budget.recordedBytes = new FileInfo(Path.Combine(root, "Assets/test.shader")).Length;
                 budget.knownExceptions = new[] { new DemoContentClosure.KnownException
                     { rule = "ExternalPackageInclude", target = package, reason = "External include bytes are outside the project-source count." } };
                 var report = DemoContentClosure.Build(root, budget, new Dictionary<string, string>());
+                Assert.That(report.ReachableBytes, Is.EqualTo(budget.recordedBytes));
                 CollectionAssert.AreEquivalent(new[] { package, missing }, report.Unresolved.Select(r => r.Target));
-                Assert.That(DemoContentClosure.Violations(report, budget).Single(), Does.Contain(missing));
+                string violation = DemoContentClosure.Violations(report, budget).Single();
+                StringAssert.StartsWith("DemoContent.UnresolvedReference:", violation);
+                Assert.That(violation, Does.Contain(missing));
                 report.Unresolved.RemoveAll(r => r.Target == missing);
                 Assert.That(DemoContentClosure.Violations(report, budget), Is.Empty);
                 report.Unresolved[0].ObjectId = "serialized";
