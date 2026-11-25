@@ -300,7 +300,9 @@ namespace HiddenHarbours.Tests.EditMode
             for (int i = 0; i < 3; i++)
             {
                 _clock.Day = EarliestDayIndex + i;
-                Assert.AreEqual(StoryGateTalkKind.Normal, StoryGates.TalkWith(_gate.NpcId, _flags).Kind);
+                StoryGateTalk talk = StoryGates.TalkWith(_gate.NpcId, _flags);
+                Assert.AreEqual(StoryGateTalkKind.Hint, talk.Kind, "passage still waits for sleep");
+                CollectionAssert.AreEqual(_gate.PendingDialogue.FirstLines, talk.Lines);
                 Assert.IsFalse(StoryGates.Give(_gate, _flags));
             }
             Assert.AreEqual(1, _wordsGiven, "never twice");
@@ -314,9 +316,88 @@ namespace HiddenHarbours.Tests.EditMode
             _save.Current = back;
             Assert.IsTrue(_save.GetFlag(_gate.SetsFlag), "the flag came back from the file");
             Assert.AreEqual(save.OnboardingFlags.Count, back.OnboardingFlags.Count, "no flag gained or lost");
-            Assert.AreEqual(StoryGateTalkKind.Normal, StoryGates.TalkWith(_gate.NpcId, _flags).Kind);
+            StoryGateTalk restored = StoryGates.TalkWith(_gate.NpcId, _flags);
+            Assert.AreEqual(StoryGateTalkKind.Hint, restored.Kind, "the reminder survives through the same flags");
+            CollectionAssert.AreEqual(_gate.PendingDialogue.FirstLines, restored.Lines);
             Assert.IsFalse(StoryGates.Give(_gate, _flags));
             Assert.AreEqual(1, _wordsGiven, "loading a save that holds the word raises nothing");
+        }
+
+        [TestCase(false, false, false, StoryGateTalkKind.Word)]
+        [TestCase(false, true, false, StoryGateTalkKind.Word)]
+        [TestCase(false, false, true, StoryGateTalkKind.Word)]
+        [TestCase(false, true, true, StoryGateTalkKind.Word)]
+        [TestCase(true, false, false, StoryGateTalkKind.Hint)]
+        [TestCase(true, true, false, StoryGateTalkKind.Normal)]
+        [TestCase(true, false, true, StoryGateTalkKind.Hint)]
+        [TestCase(true, true, true, StoryGateTalkKind.Hint)]
+        public void PendingTalk_ReadsTheWordAndPassageFlags_AndKeepsTheDemoSeparate(
+            bool given, bool passageOpen, bool demo, StoryGateTalkKind expected)
+        {
+            _save.Current = WeekSave(IslandWeekFact.All);
+            _save.Current.OnboardingFlags.Add(new SaveFlag(_gate.SetsFlag, given));
+            _save.Current.OnboardingFlags.Add(new SaveFlag(_gate.PendingUntilFlag, passageOpen));
+            DemoBuild.Override = demo;
+            string before = JsonUtility.ToJson(_save.Current);
+
+            StoryGateTalk talk = StoryGates.TalkWith(_gate.NpcId, _flags);
+            Assert.AreEqual(expected, talk.Kind);
+            if (!given)
+                CollectionAssert.AreEqual(_gate.WordLines(demo), talk.Lines);
+            else if (demo)
+                CollectionAssert.AreEqual(new[] { _gate.DemoAfterLine }, talk.Lines);
+            else if (!passageOpen)
+                CollectionAssert.AreEqual(_gate.PendingDialogue.FirstLines, talk.Lines);
+            else
+                Assert.IsNull(talk.Lines, "ordinary talk once passage is open");
+
+            Assert.AreEqual(before, JsonUtility.ToJson(_save.Current), "selecting a line changes no saved fact");
+            Assert.IsEmpty(_save.Writes);
+            Assert.AreEqual(0, _wordsGiven, "a reminder never gives the word again");
+        }
+
+        [Test]
+        public void PendingTalk_WaitsThroughLaterDays_WithoutRequiringTheFactsOrEveningAgain()
+        {
+            _save.Current = WeekSave(IslandWeekFact.All);
+            Assert.IsTrue(StoryGates.Give(_gate, _flags));
+            GameServices.IslandWeek = NullIslandWeekProgress.Instance;
+            string before = JsonUtility.ToJson(_save.Current);
+
+            foreach (int daysLater in new[] { 0, 1, 10 })
+                foreach (float hour in new[] { 0f, Noon, Evening })
+                {
+                    _clock.Day = EarliestDayIndex + daysLater;
+                    _clock.Hour = hour;
+                    StoryGateTalk talk = StoryGates.TalkWith(_gate.NpcId, _flags);
+                    Assert.AreEqual(StoryGateTalkKind.Hint, talk.Kind, $"day +{daysLater}, hour {hour}");
+                    CollectionAssert.AreEqual(_gate.PendingDialogue.FirstLines, talk.Lines);
+                    Assert.IsFalse(StoryGates.Give(_gate, _flags));
+                }
+
+            Assert.AreEqual(before, JsonUtility.ToJson(_save.Current));
+            Assert.AreEqual(1, _save.Writes.Count);
+            Assert.AreEqual(1, _save.Writes[_gate.SetsFlag]);
+            Assert.AreEqual(1, _wordsGiven);
+            Assert.IsNull(StoryGates.TaskNote(_flags));
+        }
+
+        [Test]
+        public void AGateWithoutPendingDialogue_KeepsItsOrdinaryTalkAfterTheWord()
+        {
+            var gate = Object.Instantiate(_gate);
+            try
+            {
+                gate.PendingUntilFlag = "";
+                gate.PendingDialogue = null;
+                Assert.IsNull(gate.ValidationError());
+                _save.Current = WeekSave(IslandWeekFact.All);
+                _save.Current.OnboardingFlags.Add(new SaveFlag(gate.SetsFlag, true));
+                IslandWeekSnapshot facts = _progress.Read(_save.Current, EarliestDayIndex);
+                Assert.AreEqual(StoryGateTalkKind.Normal, StoryGate.Talk(gate, _flags, in facts, Evening, false).Kind);
+                Assert.IsEmpty(_save.Writes);
+            }
+            finally { Object.DestroyImmediate(gate); }
         }
 
         [Test]
@@ -482,6 +563,58 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.IsFalse(string.IsNullOrWhiteSpace(line));
             Assert.LessOrEqual(QuestPanelLayout.Rows(_gate.AllHoldNote).Count, QuestPanelLayout.MaxLines,
                 "the last note fits the Tasks note");
+        }
+
+        [Test]
+        public void ThePendingReminder_IsOneAuthoredDialogue_AndStopsAtTheSeaEdgesPassageFlag()
+        {
+            Assert.IsNotNull(_gate.PendingDialogue);
+            Assert.AreEqual("dialogue.ginny_pending_morning", _gate.PendingDialogue.Id);
+            CollectionAssert.AreEqual(new[] { "Get some sleep, child. Mind the tide when you go." },
+                _gate.PendingDialogue.FirstLines);
+            Assert.IsEmpty(_gate.PendingDialogue.RepeatLines);
+            Assert.IsEmpty(_gate.PendingDialogue.ConditionalFlag);
+            Assert.IsEmpty(_gate.PendingDialogue.ConditionalLines);
+            Assert.IsEmpty(_gate.PendingDialogue.Options);
+            Assert.AreEqual("st_peters.weather_turned", _gate.PendingUntilFlag);
+            foreach (CampaignBarrierDef wall in StPetersWalls())
+                Assert.AreEqual(wall.LiftedByFlag, _gate.PendingUntilFlag, wall.Id);
+        }
+
+        [Test]
+        public void APendingReminder_NeedsItsOwnEndFlagAndNonemptyDialogue()
+        {
+            var gate = Object.Instantiate(_gate);
+            var dialogue = Object.Instantiate(_gate.PendingDialogue);
+            try
+            {
+                gate.PendingDialogue = null;
+                const string pairError = "A pending reminder needs both a dialogue and the flag that ends it.";
+                Assert.AreEqual(pairError, gate.ValidationError());
+                gate.PendingDialogue = dialogue;
+                gate.PendingUntilFlag = " ";
+                Assert.AreEqual(pairError, gate.ValidationError());
+                foreach (string flag in new[] { gate.SetsFlag, gate.LiveWhileFlag })
+                {
+                    gate.PendingUntilFlag = flag;
+                    Assert.AreEqual("The pending reminder must end on a different flag from the word or its activation.",
+                        gate.ValidationError());
+                }
+                gate.PendingUntilFlag = _gate.PendingUntilFlag;
+                dialogue.FirstLines = null;
+                Assert.AreEqual("The pending reminder has no lines.", gate.ValidationError());
+                dialogue.FirstLines = new string[0];
+                Assert.AreEqual("The pending reminder has no lines.", gate.ValidationError());
+                dialogue.FirstLines = new[] { " " };
+                Assert.AreEqual("A line of the word is empty.", gate.ValidationError());
+                dialogue.FirstLines = new[] { "A reminder from its own data." };
+                Assert.IsNull(gate.ValidationError());
+            }
+            finally
+            {
+                Object.DestroyImmediate(dialogue);
+                Object.DestroyImmediate(gate);
+            }
         }
 
         [Test]

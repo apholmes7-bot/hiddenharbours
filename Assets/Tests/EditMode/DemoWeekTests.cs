@@ -158,8 +158,9 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(0, _ended, "and nothing ends");
             Assert.IsFalse(DemoWeek.Ended);
             Assert.IsFalse(_save.Writes.ContainsKey(DemoWeek.EndedKey), "the full game never writes the demo's key");
-            Assert.AreEqual(StoryGateTalkKind.Normal, StoryGates.TalkWith(_gate.NpcId, _flags).Kind,
-                "afterwards she talks as ever");
+            StoryGateTalk after = StoryGates.TalkWith(_gate.NpcId, _flags);
+            Assert.AreEqual(StoryGateTalkKind.Hint, after.Kind, "the full game waits for a morning sleep");
+            CollectionAssert.AreEqual(_gate.PendingDialogue.FirstLines, after.Lines);
 
             // Even a save that somehow carries the demo's key is not an ended game outside the demo.
             _save.SetFlag(DemoWeek.EndedKey, true);

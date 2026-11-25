@@ -26,6 +26,8 @@ MonoBehaviour:
   SetsFlag: st_peters.ginny_word_completed
   EndsDemo: 1
   DemoAfterLine: "There's plenty of fishing here yet, child. Come home for supper."
+  PendingUntilFlag: st_peters.weather_turned
+  PendingDialogue: {fileID: 11400000, guid: c3f82c125c08472993659b3219517dde, type: 2}
   Notes:
   - TextKey: tasks.st_peters.mend_dory
     TaskNote: Mend the dory at the island slip.
