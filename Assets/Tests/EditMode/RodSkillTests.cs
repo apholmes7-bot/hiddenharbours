@@ -266,10 +266,12 @@ namespace HiddenHarbours.Tests.EditMode
             book.For(RodSkillBook.LocalPlayerKey).RecordLanded(1f);
             RodFishingProfile rod = Rod("RodDeep");
             RodFishingProfile sink = default;
-            Assert.That(() =>
+            TestDelegate read = () =>
             {
                 for (int i = 0; i < 200; i++) sink = book.For(RodSkillBook.LocalPlayerKey).Apply(in rod);
-            }, Is.Not.AllocatingGCMemory());
+            };
+            read();   // warm up: the first call compiles the path; the steady read is what is measured
+            Assert.That(read, Is.Not.AllocatingGCMemory());
             Assert.IsTrue(sink.IsValid);
         }
 
