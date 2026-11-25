@@ -58,7 +58,7 @@ namespace HiddenHarbours.Art
                  "independently — the same dial BoatSpotlight's searchlight carries, and for the same reason.")]
         [Range(0f, 2f)] [SerializeField] private float _waterStrength = 0.8f;
 
-        private SceneLight _light;
+        private SceneLight _light, _lens;
         private WaterLightState _waterLight;
         private bool _live = true;
         private bool _hasHeadPoint;
@@ -87,6 +87,11 @@ namespace HiddenHarbours.Art
         /// <summary>The lamp this drives.</summary>
         public SceneLight Light => _light != null ? _light : _light = GetComponent<SceneLight>();
 
+        /// <summary>The lens's own glow: a small round glass lamp at the lens point (the beam's quad is a
+        /// cone, which would cut a round lens in half), with no pool of its own. Built by
+        /// <see cref="Configure"/>; null before.</summary>
+        public SceneLight Lens => _lens;
+
         /// <summary>Set the height it is worn at before a mesh head exists. The beam's SHAPE is not a
         /// parameter: it comes from <see cref="LightPresets.ConeHalfDegrees"/>, so the angle is written in
         /// exactly one place and the preset library's own guard can assert it. Called once by the carrier.</summary>
@@ -104,7 +109,27 @@ namespace HiddenHarbours.Art
             l.BloomLiftMetres = browHeightMetres;      // the lit lens rides on his forehead (#733)
             l.LampHeightMeters = browHeightMetres;     // and its cast shadows are thrown from there
             l.CastsShadows = true;
+            // The beam draws no glow of its own: its quad is the cone. The lens is a separate round glass
+            // lamp riding the same point (ADR 0016, "lamps light what they can see").
+            l.DrawsBloom = false;
+            BuildLens(browHeightMetres);
             ApplyBeamState();
+        }
+
+        private void BuildLens(float browHeightMetres)
+        {
+            if (_lens == null)
+            {
+                var go = new GameObject("HeadlampLens");
+                go.transform.SetParent(transform, worldPositionStays: false);
+                _lens = go.AddComponent<SceneLight>();
+            }
+            LightPresets.Apply(_lens, LightPresets.Kind.Headlamp);   // the lens look, glass, from GlassLook
+            _lens.Shape = SceneLight.LightShape.Radial;
+            _lens.ReachMetres = 0f;                                  // the beam lights the ground, not the lens
+            _lens.CastsShadows = false;
+            _lens.BloomLiftMetres = browHeightMetres;
+            _lens.LampHeightMeters = browHeightMetres;
         }
 
         /// <summary>Take it out of the pocket and put it on, lit. Already worn, it just lights.</summary>
@@ -305,14 +330,23 @@ namespace HiddenHarbours.Art
                                                      liveFigure.AshoreOverlay.sortingOrder + 1);
                 }
             }
-            // THE LENS AMONG THE WORLD (ADR 0016, "lamps light what they can see"). Glowing glass sorted one
+            // THE LENS AMONG THE WORLD (ADR 0016, "lamps light what they can see"). The lens is its own small
+            // round glass lamp (the beam's quad is a cone and would cut a round lens in half), sorted one
             // rung over the drawn fitting on his head, not at the ceiling over everything: a wall, a shed or a
             // stack of traps nearer the camera covers his lamp as it covers him. From behind his head the lens
             // is not seen, so it draws no glow there; the beam still lights what is in front of him.
             bool overFitting = drawn && _fitting != null && liveFigure.AshoreOverlay != null;
-            Light.SetCarrierOrder(overFitting ? _fitting.sortingOrder : (int?)null);
-            bool lensSeen = !_hasHeadPoint || LensShows(_view);
-            if (Light.DrawsBloom != lensSeen) Light.DrawsBloom = lensSeen;
+            if (Light.DrawsBloom) Light.DrawsBloom = false;
+            if (_lens != null)
+            {
+                _lens.OriginOffset = Vector2.zero;
+                _lens.BloomLiftMetres = _projectedLift;
+                _lens.LampHeightMeters = Light.LampHeightMeters;
+                _lens.SetCarrierOrder(overFitting ? _fitting.sortingOrder : (int?)null);
+                bool lensSeen = !_hasHeadPoint || LensShows(_view);
+                if (_lens.DrawsBloom != lensSeen) _lens.DrawsBloom = lensSeen;
+                _lens.RefreshMount();
+            }
         }
 
         /// <summary>
@@ -503,6 +537,7 @@ namespace HiddenHarbours.Art
         private void ApplyBeamState()
         {
             if (Light != null) Light.enabled = _live && _on;
+            if (_lens != null) _lens.enabled = _live && _on;
             if (_fitting != null)
             {
                 if (!(_live && _worn)) _fitting.enabled = false;

@@ -128,17 +128,43 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
-        public void TheHeadlampIsNotPartOfThisLook()
+        public void TheHeadlampLensIsGlass_WithNoStreak()
         {
             SceneLight light = NewLight("glass-headlamp");
             try
             {
                 LightPresets.Apply(light, LightPresets.Kind.Headlamp);
-                Assert.IsFalse(light.HasGlass);
-                Assert.IsFalse(light.Streak.IsOn);
-                Assert.IsTrue(light.DrawsBloom);
+                Assert.IsTrue(light.HasGlass, "the headlamp's lens glows as glass, like the other lamps");
+                Assert.IsFalse(light.Streak.IsOn, "a lamp on his brow throws no streak on the water");
+                Assert.IsTrue(light.DrawsBloom, "its lens still draws");
             }
             finally { Object.DestroyImmediate(light.gameObject); }
+        }
+
+        [Test]
+        public void TheWornHeadlamp_GlowsFromARoundLens_AndItsBeamPaintsNoGlow()
+        {
+            var go = new GameObject("glass-worn-headlamp") { hideFlags = HideFlags.HideAndDontSave };
+            try
+            {
+                var lamp = go.AddComponent<Headlamp>();
+                lamp.Configure(1.6f);
+                Assert.IsFalse(lamp.Light.DrawsBloom, "the beam's quad is a cone; it would cut a round lens in half");
+                Assert.AreEqual(SceneLight.LightShape.Cone, lamp.Light.Shape, "the beam still throws a cone");
+                Assert.Greater(lamp.Light.ReachMetres, 0f, "and lights the ground in front of him");
+                SceneLight lens = lamp.Lens;
+                Assert.IsNotNull(lens, "the lens is its own lamp");
+                Assert.AreEqual(SceneLight.LightShape.Radial, lens.Shape, "a round lens");
+                Assert.IsTrue(lens.HasGlass, "glowing glass");
+                Assert.AreEqual(0f, lens.ReachMetres, "with no pool of its own: the beam lights the ground");
+                Assert.IsFalse(lens.CastsShadows);
+                Assert.AreEqual(lamp.Light.BloomLiftMetres, lens.BloomLiftMetres, 1e-5f, "on the same point as the beam");
+                lamp.TakeOff();
+                Assert.IsFalse(lens.enabled, "pocketed, the lens is dark");
+                lamp.PutOn();
+                Assert.IsTrue(lens.enabled, "worn and lit, it glows");
+            }
+            finally { Object.DestroyImmediate(go); }
         }
 
         [Test]

@@ -1225,21 +1225,26 @@ camera and three extra loads per lit mesh pixel. Off: `LampShadowProfile.PoolsLi
 window spill, and each doorstep lantern by its placement id, is on a wall facing the camera: its pool is cut at
 the wall line, `WallBackMetres` behind its foot, softened over `WallSoftMetres` (`LightMath.PoolWallGate`, the
 shader's step 4). In this view what lies behind a south wall's line is the wall above the lamp, its eave, a
-canopy and the roof, so the light falls out and down. The general store's lantern hangs under its canopy: its
-bloom sorts `SortBackMetres` (4 m) further back, behind the building's front, so the canopy covers it and its
-light shows on the step and the ground in front. A lamp no entry matches stands free, as before.
+canopy and the roof, so the light falls out and down. The general store's lantern hangs under its canopy: the
+scene measured its glow 2.07 m up, which drew it on the canopy's stripes, so its mount draws the glow `BloomLiftMetres`
+(0.3 m) over its foot, just below the canopy's edge and in front of the doorway, and its pool lights the step and
+the ground in front. A lamp no entry matches stands free, as before.
 
-**The headlamp.** Its lens is glowing glass (the shore lens), sorted among the world one rung over the fitting
-drawn on his head (`SceneLight.SetCarrierOrder`), not at the sorting ceiling, so a wall or a stack of traps in
-front of him covers it as it covers him. From behind his head the lens is not seen and draws no glow. The beam is
+**The headlamp.** Its lens is its own small round lamp of glowing glass (the shore lens): the beam's quad is a
+cone with the lamp at its base, which cut a round lens in half and left one grey pixel, so the beam now paints no
+glow and the lens rides the same point. The lens sorts among the world one rung over the fitting drawn on his head
+(`SceneLight.SetCarrierOrder`), not at the sorting ceiling, so a wall or a stack of traps in front of him covers it
+as it covers him. From behind his head the lens is not seen and draws no glow. The beam is
 the same pool, aimed: it lights what is in front of him and nothing behind, and lights mesh faces by `N·L` like
 every other lamp.
 
 **What is approximation, honestly.**
 - Blocking is by facing only. A face turned away from the lamp is dark; a face turned toward it behind another
   object is still lit. There is no shadow map: the existing lamp shadows (PR B) remain the only thrown shadows.
-- Figures and sprites are not in the hull depth. A figure walking past a lamp is lit as the ground at its feet
-  (the pool's screen-space multiply), as before; its own sprite light (`SpriteLitDecor`) is unchanged.
+- Mesh figures are drawn in the hull pass, so they are in the published depth and are lit by their faces like a
+  hull: a figure walking south of a lamp keeps the side the camera sees dark, because the lamp is behind him.
+  That is the model working, but it reads darker than the old ground-lit figure. Sprites have no depth and are
+  lit as the ground at their feet, as before.
 - The height plane assumes the fleet's 40° depth shear for every mesh. A vehicle or a camper drawn with another
   shear gets a slightly wrong height, so slightly wrong face lighting near its edges.
 - The wall line is a straight line on the ground at the lamp's foot. A wall that is not straight, or a house that
@@ -1254,5 +1259,5 @@ every other lamp.
 | A shore lamp's planks over the sea | `LampShadowProfile._shoreLampDeckLiftMetres` | 1.5 m |
 | Window spill on a wall, facing | `LampMounts._windowSpill` | (0, −1) |
 | Doorstep lanterns on walls, wall line | `LampMounts._byId` | 0.3 m behind the foot |
-| The store lantern under its canopy | `LampMounts._byId[0].SortBackMetres` | 4 m |
+| The store lantern's glow under its canopy | `LampMounts._byId[0].BloomLiftMetres` | 0.3 m |
 | The wall line's soft edge | `LampMounts._wallSoftMetres` | 0.35 m |

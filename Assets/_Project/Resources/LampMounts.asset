@@ -16,14 +16,17 @@ MonoBehaviour:
     IdPrefix: 
     Facing: {x: 0, y: -1}
     WallBackMetres: 0
-    SortBackMetres: 0
+    HangsUnderCanopy: 0
+    BloomLiftMetres: 0
   _byId:
   - IdPrefix: light.st_peters.doorstep_lantern_general_store
     Facing: {x: 0, y: -1}
     WallBackMetres: 0.3
-    SortBackMetres: 4
+    HangsUnderCanopy: 1
+    BloomLiftMetres: 0.3
   - IdPrefix: light.st_peters.doorstep_lantern_
     Facing: {x: 0, y: -1}
     WallBackMetres: 0.3
-    SortBackMetres: 0
+    HangsUnderCanopy: 0
+    BloomLiftMetres: 0
   _wallSoftMetres: 0.35

@@ -446,28 +446,26 @@ namespace HiddenHarbours.Art
                 ResolveCarrier();
             if (_carrierGroup != null) return _carrierGroup.sortingOrder;
             if (_carrierSprite != null) return _carrierSprite.sortingOrder;
-            return CarrierOrderAtFoot(WorldOrigin.y + _sortBackMetres);
+            return CarrierOrderAtFoot(WorldOrigin.y);
         }
 
-        // ---- the mount (LampMounts): a lamp on a wall, a lamp under a canopy, a lamp worn by a figure ----
+        // ---- the mount (LampMounts): a lamp on a wall, a lamp worn by a figure ----
         [System.NonSerialized] private Vector2 _wallFacing;
-        [System.NonSerialized] private float _wallBackMetres, _wallSoftMetres = 0.35f, _sortBackMetres;
+        [System.NonSerialized] private float _wallBackMetres, _wallSoftMetres = 0.35f;
         [System.NonSerialized] private bool _hasCarrierOrder;
         [System.NonSerialized] private int _carrierOrderOverride;
 
         /// <summary>
         /// Fix this lamp to a wall facing <paramref name="facing"/> (zero = free-standing): its ground pool
         /// lights only what is in front of the wall line, <paramref name="wallBackMetres"/> behind its foot,
-        /// softened over <paramref name="softMetres"/>. <paramref name="sortBackMetres"/> sorts its bloom as
-        /// though it stood that far back (a lamp under a canopy, which the canopy covers). Runtime state,
-        /// stamped by <see cref="LampMounts"/>; never saved.
+        /// softened over <paramref name="softMetres"/>. Runtime state, stamped by <see cref="LampMounts"/>;
+        /// never saved.
         /// </summary>
-        public void SetWallMount(Vector2 facing, float wallBackMetres, float softMetres, float sortBackMetres)
+        public void SetWallMount(Vector2 facing, float wallBackMetres, float softMetres)
         {
             _wallFacing = facing.sqrMagnitude > 1e-6f ? facing.normalized : Vector2.zero;
             _wallBackMetres = Mathf.Max(0f, wallBackMetres);
             _wallSoftMetres = Mathf.Max(0.01f, softMetres);
-            _sortBackMetres = Mathf.Max(0f, sortBackMetres);
         }
 
         /// <summary>The way the lamp's wall faces (zero = free-standing).</summary>
@@ -476,8 +474,6 @@ namespace HiddenHarbours.Art
         public float WallBackMetres => _wallBackMetres;
         /// <summary>The wall line's soft edge, metres.</summary>
         public float WallSoftMetres => _wallSoftMetres;
-        /// <summary>How far back the bloom sorts, metres (a lamp under a canopy).</summary>
-        public float SortBackMetres => _sortBackMetres;
 
         /// <summary>
         /// Sort over a carrier the hierarchy cannot find: the order of the thing that wears this lamp (the

@@ -533,8 +533,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
         /// <summary>
         /// <b>The mounts are data.</b> Every window spill is a wall lamp; doorstep lanterns are matched by
-        /// their placement id; the general store's lantern hangs under its canopy, so its bloom sorts behind
-        /// the building front; a lamp post matches nothing and stays free-standing.
+        /// their placement id; the general store's lantern hangs under its canopy, so its glow draws below the
+        /// canopy's edge; a lamp post matches nothing and stays free-standing.
         /// </summary>
         [Test]
         public void TheShippedMountsPutWindowsAndDoorstepsOnWalls_AndTheStoreLanternUnderItsCanopy()
@@ -547,11 +547,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
             var store = mounts.For("light.st_peters.doorstep_lantern_general_store", LightPresets.Kind.HungLantern);
             Assert.IsTrue(store.HasWall);
-            Assert.Greater(store.SortBackMetres, 0f, "the store lantern hangs under the canopy, which covers it");
+            Assert.IsTrue(store.HangsUnderCanopy, "the store lantern hangs under the canopy");
 
             var house = mounts.For("light.st_peters.doorstep_lantern_school", LightPresets.Kind.HungLantern);
             Assert.IsTrue(house.HasWall, "a doorstep lantern is on its house wall");
-            Assert.AreEqual(0f, house.SortBackMetres, Eps, "and nothing hangs over it");
+            Assert.IsFalse(house.HangsUnderCanopy, "and nothing hangs over it");
 
             var post = mounts.For("light.st_peters.lantern_post_green", LightPresets.Kind.HungLantern);
             Assert.IsFalse(post.HasWall, "a lamp post stands free and lights every side");
@@ -563,12 +563,18 @@ namespace HiddenHarbours.Tests.Art.EditMode
             {
                 light.transform.position = new Vector3(1.64f, 32.05f, 0f);
                 LightPresets.Apply(light, LightPresets.Kind.HungLantern);
+                light.BloomLiftMetres = 2.06832f;   // what the scene's placement measured: up on the canopy
                 int atFoot = light.BloomSortingOrder;
                 mounts.ApplyTo(light, "light.st_peters.doorstep_lantern_general_store", LightPresets.Kind.HungLantern);
                 Assert.AreEqual(store.Facing.normalized, light.WallFacing);
-                Assert.Less(light.BloomSortingOrder, atFoot, "sorted further back, behind the canopy at the front");
-                Assert.AreEqual(SceneLight.CarrierOrderAtFoot(32.05f + store.SortBackMetres) + SceneLight.RungsOverCarrier,
-                    light.BloomSortingOrder);
+                Assert.AreEqual(store.BloomLiftMetres, light.BloomLiftMetres, Eps,
+                    "its glow draws below the canopy's edge, in front of the doorway");
+                Assert.Less(light.BloomLiftMetres, 0.6f, "low enough to clear the canopy it hangs under");
+                Assert.AreEqual(atFoot, light.BloomSortingOrder, "and still sorts at its own foot, over the shop front");
+
+                light.BloomLiftMetres = 2.06832f;
+                mounts.ApplyTo(light, "light.st_peters.doorstep_lantern_school", LightPresets.Kind.HungLantern);
+                Assert.AreEqual(2.06832f, light.BloomLiftMetres, Eps, "a lantern with no canopy keeps its measured height");
             }
             finally { Object.DestroyImmediate(light.gameObject); }
         }

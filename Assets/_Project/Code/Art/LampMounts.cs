@@ -7,9 +7,9 @@ namespace HiddenHarbours.Art
     /// <b>Where a lamp is mounted</b> (ADR 0016, "lamps light what they can see"; CLAUDE.md rule 6). A lamp
     /// fixed to a WALL lights what is in front of that wall and not the wall above it, its eave, a canopy
     /// over the door or the roof: in this view all of those lie behind the wall's line on the ground, so the
-    /// ground pool is cut there (<see cref="LightMath.PoolWallGate"/>). A lamp hung UNDER a canopy is also
-    /// hidden by the canopy: its bloom sorts as if it stood <see cref="Mount.SortBackMetres"/> further back,
-    /// behind the building's front, so the canopy draws over it and its light shows on the step below.
+    /// ground pool is cut there (<see cref="LightMath.PoolWallGate"/>). A lamp hung UNDER a canopy draws its
+    /// glow below the canopy's edge (<see cref="Mount.BloomLiftMetres"/>), in front of the doorway, not on the
+    /// canopy itself; its light then shows on the step and the ground in front.
     ///
     /// <para>One asset, <c>Resources/LampMounts</c>, read by <see cref="PreconfiguredLight"/> when it stamps
     /// its preset. Every window spill is a wall lamp (<see cref="WindowSpill"/>); any other lamp is matched
@@ -39,9 +39,12 @@ namespace HiddenHarbours.Art
                      "the wall is still lit; behind the line nothing is.")]
             [Min(0f)] public float WallBackMetres;
 
-            [Tooltip("How far back the bloom sorts, metres: a lamp under a canopy sorts behind the building's " +
-                     "front so the canopy covers it. 0 = sorts at its own foot.")]
-            [Min(0f)] public float SortBackMetres;
+            [Tooltip("A lamp hung under a canopy: draw its glow this high over its foot (metres on screen), " +
+                     "below the canopy's edge, instead of at the height the placement measured.")]
+            public bool HangsUnderCanopy;
+
+            [Tooltip("With HangsUnderCanopy: how high over its foot the glow draws, metres on screen.")]
+            [Min(0f)] public float BloomLiftMetres;
 
             /// <summary>Is this a wall at all?</summary>
             public bool HasWall => Facing.sqrMagnitude > 1e-6f;
@@ -95,8 +98,8 @@ namespace HiddenHarbours.Art
         {
             if (light == null) return;
             Mount m = For(placementId, kind);
-            light.SetWallMount(m.HasWall ? m.Facing.normalized : Vector2.zero, m.WallBackMetres, _wallSoftMetres,
-                               m.SortBackMetres);
+            light.SetWallMount(m.HasWall ? m.Facing.normalized : Vector2.zero, m.WallBackMetres, _wallSoftMetres);
+            if (m.HangsUnderCanopy) light.BloomLiftMetres = m.BloomLiftMetres;
         }
     }
 }
