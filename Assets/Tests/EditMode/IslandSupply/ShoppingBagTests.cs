@@ -14,8 +14,8 @@ namespace HiddenHarbours.Tests.EditMode
     /// or cooked until it is put away, the bag holds no more than its capacity, a new game does not inherit
     /// the bag, and putting away releases everything at once. The bag can be set down with its goods inside
     /// (owner ruling 2026-11-23): they stay set aside, and the bag says which region and where it stands. The
-    /// save does not change shape here. Shelf lines sharing one good count and sell out separately and
-    /// deterministically.
+    /// bag lives in the save's own row (save v26), so each game has its own. Shelf lines sharing one good count
+    /// and sell out separately and deterministically.
     /// </summary>
     public class ShoppingBagTests
     {
@@ -119,8 +119,9 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(SupplyLocker.Count(other, Bread), Is.EqualTo(1), "this game's own loaf is all his");
 
             Assert.IsTrue(ShoppingBagContents.TryPut(other, Bread, Capacity), "a new bag for the new game");
-            Assert.IsFalse(ShoppingBagContents.HoldsAny(before), "and the old one is gone");
             Assert.IsFalse(ShoppingBagContents.IsSetDown(other), "the new bag is in his hand, not where the old one stood");
+            Assert.IsTrue(ShoppingBagContents.IsSetDown(before), "and the game that was left still has its own, where it stood");
+            Assert.That(ShoppingBagContents.SetDownRegionId, Is.EqualTo("region.test"));
         }
 
         [Test]
@@ -243,13 +244,56 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void ResettingTheServicesEmptiesTheBag()
+        public void ResettingTheServicesForgetsTheGame_ButTheBagStaysWithItsSave()
         {
             var save = new SaveData();
             SupplyLocker.Add(save, Bread, 1);
             Assert.IsTrue(ShoppingBagContents.TryPut(save, Bread, Capacity));
+            Assert.IsTrue(ShoppingBagContents.Any);
             GameServices.Reset();
-            Assert.IsFalse(ShoppingBagContents.HoldsAny(save));
+            Assert.IsFalse(ShoppingBagContents.Any, "no game is being asked about");
+            Assert.IsTrue(ShoppingBagContents.HoldsAny(save), "the bag is part of the save, not of the session");
+            Assert.That(SupplyLocker.Count(save, Bread), Is.EqualTo(0), "so its goods are still set aside");
+        }
+
+        [Test]
+        public void TheBagIsTheSavesOwnRow_AndAnEmptyBagLeavesNoRow()
+        {
+            var save = new SaveData();
+            SupplyLocker.Add(save, Bread, 2);
+            Assert.That(save.ShoppingBags.Count, Is.EqualTo(0));
+            Assert.IsTrue(ShoppingBagContents.TryPut(save, Bread, Capacity));
+            Assert.IsTrue(ShoppingBagContents.TryPut(save, Bread, Capacity));
+            Assert.That(save.ShoppingBags.Count, Is.EqualTo(1), "one bag");
+            Assert.IsTrue(save.ShoppingBags[0].Held);
+            Assert.That(save.ShoppingBags[0].Items.Count, Is.EqualTo(1));
+            Assert.That(save.ShoppingBags[0].Items[0].SupplyId, Is.EqualTo(Bread));
+            Assert.That(save.ShoppingBags[0].Items[0].Count, Is.EqualTo(2));
+
+            Assert.IsTrue(ShoppingBagContents.MarkSetDown(save, "region.test", new Vector2(3f, 4f), 1, true));
+            ShoppingBagDto row = save.ShoppingBags[0];
+            Assert.IsFalse(row.Held);
+            Assert.That(row.Region, Is.EqualTo("region.test"));
+            Assert.That(row.PosX, Is.EqualTo(3f));
+            Assert.That(row.PosY, Is.EqualTo(4f));
+            Assert.That(row.Level, Is.EqualTo(1));
+            Assert.That(row.HullId, Is.EqualTo(""), "reserved: nothing is set down aboard");
+            Assert.IsTrue(row.ByTheBed);
+            Assert.That(ShoppingBagContents.SetDownLevel, Is.EqualTo(1));
+
+            Assert.That(ShoppingBagContents.Release(save), Is.EqualTo(2));
+            Assert.That(save.ShoppingBags.Count, Is.EqualTo(0), "put away: no row");
+        }
+
+        [Test]
+        public void ABagSetDownWhereNoRegionIsKnownStillCarriesARegion()
+        {
+            var save = new SaveData();
+            SupplyLocker.Add(save, Bread, 1);
+            Assert.IsTrue(ShoppingBagContents.TryPut(save, Bread, Capacity));
+            Assert.IsTrue(ShoppingBagContents.MarkSetDown(save, "", Vector2.zero, false));
+            Assert.That(save.ShoppingBags[0].Region, Is.EqualTo(ShoppingBagContents.UnknownRegionId),
+                        "a set-down row with no region would be dropped by the load repair");
         }
 
         // ---- separate counts on one good ---------------------------------------------------------------------

@@ -92,8 +92,44 @@ namespace HiddenHarbours.Fishing
         /// <summary>How many schools the last view query returned.</summary>
         public int VisibleSchools { get; private set; }
 
+        /// <summary>
+        /// What one drawn swimmer was drawn FOR: the key and anchor of its school and the species it draws
+        /// as (null for a school that states none). Written by the paint for every slot it claims.
+        /// </summary>
+        public readonly struct DrawnFor
+        {
+            public readonly uint SchoolKey;
+            public readonly Vector2 Anchor;
+            public readonly string SpeciesId;
+
+            public DrawnFor(uint schoolKey, Vector2 anchor, string speciesId)
+            {
+                SchoolKey = schoolKey;
+                Anchor = anchor;
+                SpeciesId = speciesId;
+            }
+        }
+
+        /// <summary>
+        /// TEST SEAM (the visible-fish plate): the renderer in a drawn slot and the school it was drawn
+        /// for, so a fixture takes a fish's school from the paint itself and never infers it from where
+        /// the fish happens to be. Valid for slots below <see cref="VisibleSwimmers"/>; read-only, and
+        /// never a gameplay input.
+        /// </summary>
+        public bool TryGetDrawn(int slot, out SpriteRenderer renderer, out DrawnFor drawnFor)
+        {
+            renderer = null;
+            drawnFor = default;
+            if (slot < 0 || slot >= VisibleSwimmers || slot >= _pool.Count || slot >= _drawnFor.Length)
+                return false;
+            renderer = _pool[slot];
+            drawnFor = _drawnFor[slot];
+            return renderer != null;
+        }
+
         // ---- pooled renderers + scratch (rule 7: nothing allocates in steady state) ------------------
         private readonly List<SpriteRenderer> _pool = new List<SpriteRenderer>(64);
+        private DrawnFor[] _drawnFor = new DrawnFor[64];
         private readonly List<FishSchool> _schools = new List<FishSchool>(FishSchoolModel.ViewCells);
         private ShoalMath.Swimmer[] _swimmers = new ShoalMath.Swimmer[12];
 
@@ -327,6 +363,8 @@ namespace HiddenHarbours.Fishing
                     if (!Place(used, school, _swimmers[i], kind, draw,
                                acting ? ev : ShoalEventKind.None, evStart, now,
                                scattering ? scatter01 : 0f, scatterFrom, spread)) continue;
+                    if (used >= _drawnFor.Length) System.Array.Resize(ref _drawnFor, _drawnFor.Length * 2);
+                    _drawnFor[used] = new DrawnFor(key, new Vector2(school.Centre.x, school.Centre.y), primary);
                     used++;
                 }
             }
