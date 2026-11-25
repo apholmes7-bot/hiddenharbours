@@ -165,5 +165,55 @@ namespace HiddenHarbours.Tests.EditMode
                     }
                 }
         }
+
+        /// <summary>Every row a shipped section can show fits the chooser's widest line whole, its number and
+        /// the chooser's own reason on a greyed row included: the first look cut the sold-out bait row to
+        /// "sold out (not ...". Checked with the most the shelf can hold and the good's real name and price.</summary>
+        [Test]
+        public void EverySectionsRow_SoldOutOrNot_FitsTheChoosersLineWhole()
+        {
+            var supplies = IslandSupplyTestData.LoadAll<SupplyDef>();
+            var baits = IslandSupplyTestData.LoadAll<BaitDef>();
+            string reason = " " + HiddenHarbours.UI.InteractChooserStrings.ReasonOpen
+                            + HiddenHarbours.UI.InteractChooserLayout.ReasonFor(InteractChoiceBlock.Unavailable)
+                            + HiddenHarbours.UI.InteractChooserStrings.ReasonClose;
+            int widest = HiddenHarbours.UI.InteractChooserLayout.MaxRowCharacters;
+            int checkedRows = 0;
+            foreach (ShopShelfSlotsDef def in _all)
+                foreach (ShopShelfSection section in def.Sections)
+                    for (int k = 0; k < section.SlotIds.Count; k++)
+                    {
+                        ShopShelfSlot slot = def.Slots.Single(s => s.Id == section.SlotIds[k]);
+                        Assert.IsTrue(RowNameAndPrice(slot, supplies, baits, out string name, out int price),
+                                      slot.ListingId + " is neither a supply nor a bait");
+                        int most = _shelves.Where(s => s.ShopId == def.ShopId).SelectMany(s => s.Lines)
+                                           .Where(l => l.Id == slot.LineId).Select(l => l.MaxOnShelf).DefaultIfEmpty(99).Max();
+                        string number = (k + 1).ToString(System.Globalization.CultureInfo.InvariantCulture) + "  ";
+                        string open = number + string.Format(ShelfGood.ChoiceLabelFormat, name, MoneyFormat.Balance(price), most);
+                        string gone = number + string.Format(ShelfGood.ChoiceSoldOutFormat, name) + reason;
+                        Assert.That(open.Length, Is.LessThanOrEqualTo(widest), "cut: \"" + open + "\"");
+                        Assert.That(gone.Length, Is.LessThanOrEqualTo(widest), "cut: \"" + gone + "\"");
+                        checkedRows++;
+                    }
+            Assert.That(checkedRows, Is.GreaterThan(0), "no section rows found");
+        }
+
+        // The row's name and price as the till quotes them: a supply's own, a bait's by the lot (BuyCatalog).
+        private static bool RowNameAndPrice(ShopShelfSlot slot, List<SupplyDef> supplies, List<BaitDef> baits,
+                                            out string name, out int price)
+        {
+            SupplyDef s = supplies.FirstOrDefault(d => d.Id == slot.ListingId);
+            if (s != null) { name = s.DisplayName; price = s.Price; return true; }
+            BaitDef b = baits.FirstOrDefault(d => d.Id == slot.ListingId);
+            if (b != null)
+            {
+                int lot = BaitShop.LotSizeOf(b);
+                name = lot > 1 ? b.DisplayName + " x" + lot.ToString(System.Globalization.CultureInfo.InvariantCulture) : b.DisplayName;
+                price = BaitShop.LotPriceOf(b);
+                return true;
+            }
+            name = null; price = 0;
+            return false;
+        }
     }
 }

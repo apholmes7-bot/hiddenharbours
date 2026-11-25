@@ -16,8 +16,9 @@ orders are the counter's catalogue book, not shelves.
 - Each row says the item, its price and how many are left: `Oatcakes — ₲2 · 5 left`.
 - Choosing a row buys one, exactly as a single shelf spot does today: the same money, the same paper bag or
   hand, the same purchase records the save already keeps. Nothing new is saved.
-- Each item still has its own stock. A sold-out item reads `Tin of Beans — sold out`, is greyed and cannot
-  be picked, and its sold-out card still stands on the shelf.
+- Each item still has its own stock. A sold-out item reads `Tin of Beans: out (not now)`, is greyed and
+  cannot be picked, and its sold-out card still stands on the shelf. Every row, sold out or not, fits the
+  chooser's widest line (34 characters with its number and the chooser's reason; a test holds it).
 - Sections are data (a list on the store's shelf-slots asset), so adding an item to a section is an asset
   edit, not code. A section holds at most as many items as the chooser shows rows (6 today).
 
