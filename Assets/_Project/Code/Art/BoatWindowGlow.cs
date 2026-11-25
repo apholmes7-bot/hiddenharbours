@@ -648,20 +648,40 @@ namespace HiddenHarbours.Art
             // OCCLUSION (GlassLook): the panes are her windows, so they sort one rung over HER and under
             // whatever stands nearer the camera than she does (another hull, a pier, a figure), with the
             // day/night tint divided back out in the shader. Off = over everything, as before.
+            // A hull carried by a sorting group (every boat): the panes sort INSIDE that group, at its top,
+            // so the whole boat sorts as one object and a hull nearer the camera covers her panes with
+            // her. One rung over her as a root element tied with a hull a quarter metre nearer, and the
+            // back boat's panes drew through the front one.
             bool inWorld = glass.SortsInWorld;
             int order = SceneLight.MaxSortingOrder;
+            bool nest = false;
             if (inWorld)
             {
                 if (!_carrierResolved) { _carrierGroup = SceneLight.OuterSortingGroup(transform); _carrierResolved = true; }
-                int carrier = _carrierGroup != null ? _carrierGroup.sortingOrder
-                                                    : SceneLight.CarrierOrderAtFoot(transform.position.y);
-                order = Mathf.Min(carrier + SceneLight.RungsOverCarrier, SceneLight.WorldSortCeiling);
+                nest = _carrierGroup != null;
+                order = nest ? SceneLight.WorldSortCeiling
+                             : Mathf.Min(SceneLight.CarrierOrderAtFoot(transform.position.y) + SceneLight.RungsOverCarrier,
+                                         SceneLight.WorldSortCeiling);
             }
             _mpb.SetFloat(SceneLight.IdInWorld, inWorld ? 1f : 0f);
             _paneRenderer.SetPropertyBlock(_mpb);
             _paneRenderer.sortingOrder = order;
-            if (_paneSorting != null) _paneSorting.sortingOrder = order;
+            if (_paneSorting != null)
+            {
+                _paneSorting.sortingOrder = order;
+                if (_paneSorting.sortAtRoot == nest) _paneSorting.sortAtRoot = !nest;
+            }
+            _panesNested = nest;
         }
+
+        [System.NonSerialized] private bool _panesNested;
+
+        /// <summary>Do the lit panes sort inside the boat's own sorting group? Tests and fixtures.</summary>
+        public bool PanesNestInCarrier => _panesNested;
+
+        /// <summary>The order the panes actually compete at among the world: the boat's group order when
+        /// they nest in it, else their own. Tests and fixtures.</summary>
+        public int PaneWorldOrder => _panesNested && _carrierGroup != null ? _carrierGroup.sortingOrder : PaneSortingOrder;
 
         private SortingGroup _carrierGroup;
         [System.NonSerialized] private bool _carrierResolved;

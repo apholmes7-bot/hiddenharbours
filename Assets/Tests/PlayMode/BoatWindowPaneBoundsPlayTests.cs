@@ -58,6 +58,19 @@ namespace HiddenHarbours.Tests.PlayMode
                 Assert.Greater(b.size.x * b.size.y, 0f,
                     $"{name}: the lit pane mesh has a zero-size box {b}, so the camera culls her windows");
 
+                // Sorted as part of HER, so a hull nearer the camera can never tie with the panes alone
+                // (one rung over a root group tied with a runner a quarter metre nearer and showed through).
+                if (GlassLook.Current.SortsInWorld)
+                {
+                    var paneGroup = glow.PaneRenderer.GetComponent<UnityEngine.Rendering.SortingGroup>();
+                    Assert.IsTrue(glow.PanesNestInCarrier, $"{name}: the lit panes do not sort inside her own group");
+                    Assert.IsNotNull(paneGroup, $"{name}: the panes lost their sorting group");
+                    Assert.IsFalse(paneGroup.sortAtRoot, $"{name}: the panes still sort at the root, over her group");
+                    var carrier = SceneLight.OuterSortingGroup(glow.transform);
+                    Assert.AreEqual(carrier.sortingOrder, glow.PaneWorldOrder,
+                        $"{name}: among the world her panes compete as she does");
+                }
+
                 foreach (HullPane p in hull.Panes)
                 {
                     if (!p.IsUsable) continue;

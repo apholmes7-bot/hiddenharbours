@@ -221,14 +221,19 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 BoatLampPresets.Apply(light, HullLampKind.Masthead);
 
                 Assert.IsTrue(light.SortsInWorld, "the shipped look sorts a navigation lamp among the world");
-                Assert.AreEqual(group.sortingOrder + SceneLight.RungsOverCarrier, light.BloomSortingOrder,
-                    "one rung over the boat's own group (the one that sorts at the root), not over a local order inside her");
+                Assert.IsTrue(light.BloomNestsInCarrier,
+                    "a lamp her group carries sorts INSIDE the boat, so nothing nearer can tie with the lamp alone");
+                Assert.AreEqual(SceneLight.WorldSortCeiling, light.BloomSortingOrder,
+                    "the top of whatever group it nests in, so over her own hull");
+                Assert.AreEqual(group.sortingOrder, light.BloomWorldOrder,
+                    "among the world it competes as the boat's own group (the one that sorts at the root)");
                 Assert.Less(light.BloomSortingOrder, SortingBands.WorldTint,
-                    "sorted among the world, so under the day/night tint whose darkening the shader divides out");
-                Assert.Greater(HullSorting.OrderAt(3f - 1f), light.BloomSortingOrder,
-                    "a hull a metre nearer the camera sorts over this lamp, so it hides it");
-                Assert.Less(HullSorting.OrderAt(3f + 1f), light.BloomSortingOrder,
+                    "under the day/night tint whose darkening the shader divides out");
+                Assert.Greater(HullSorting.OrderAt(3f - 0.25f), light.BloomWorldOrder,
+                    "a hull even a quarter metre nearer the camera sorts over this lamp, so it hides it (no tie)");
+                Assert.Less(HullSorting.OrderAt(3f + 1f), light.BloomWorldOrder,
                     "and a hull a metre further away sorts under it");
+
 
                 Assert.AreEqual(SortingBands.WharfDeckMin, light.StreakSortingOrder,
                     "the streak lies on the sea: over it, under every other deck row, every hull and every stander");
@@ -236,7 +241,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Assert.Less(light.StreakSortingOrder, SortingBands.DecorFloor);
 
                 group.sortingOrder += 7;   // she moved: her one writer re-sorts her
-                Assert.AreEqual(group.sortingOrder + SceneLight.RungsOverCarrier, light.BloomSortingOrder,
+                Assert.AreEqual(group.sortingOrder, light.BloomWorldOrder,
                     "the lamp follows its boat's order as she moves");
             }
             finally { Object.DestroyImmediate(boat); }

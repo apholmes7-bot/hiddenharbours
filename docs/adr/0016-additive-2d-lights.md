@@ -1141,12 +1141,16 @@ shouldnt show if they would be blocked by the hull at the players camera angle".
 **Decision.** A lamp stamped with the glass look no longer sorts at the ceiling over the whole frame. It sorts
 among the world, using the order the game already uses for whatever carries it (ADR 0032, ADR 0059):
 
-- **The bloom** sorts one rung over its carrier: the boat's own sorting group (the one that sorts at the root),
-  else the post's own sprite, else the decor band's Y-sort at the lamp's foot. A hull, shed, wall, piling or
-  figure nearer the camera draws over it, exactly as it draws over the lamp's own post or mast.
+- **The bloom** of a lamp a sorting group carries (every boat) sorts INSIDE that group, at the top of it, so
+  the boat sorts as one object and the lamp can only ever be covered with her. A lamp with no group sorts one
+  rung over its post's own sprite, else over the decor band's Y-sort at its foot. A hull, shed, wall, piling
+  or figure nearer the camera draws over it, exactly as it draws over the lamp's own post or mast.
+  (Amended in pass 3: one rung over a boat's root group TIED with a hull a quarter metre nearer, since the
+  band has four orders per metre, and a tie between two groups is broken by nothing we control. The back
+  boat's panes were seen drawing through the front boat.)
 - **The streak** sorts at `SortingBands.WharfDeckMin`: over the sea, under every other deck row, every hull and
   everything standing. The hull mask stays, so a hull that drops behind a pier still hides it.
-- **Cabin panes** sort one rung over their boat, so another hull or a pier in front hides them.
+- **Cabin panes** sort inside their boat's own group, at its top, so another hull or a pier in front hides them.
 - Sorted under the day/night tint, the shader divides that tint back out of the light (`_InWorld`), so
   where nothing covers it a lamp adds exactly what it added before: `(base + L / t) * t = base * t + L`.
   `t` must be the colour the overlay actually multiplies by, which in this linear project is the published

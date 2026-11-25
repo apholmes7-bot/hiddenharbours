@@ -395,9 +395,9 @@ namespace HiddenHarbours.Art
 
         /// <summary>
         /// <b>Sort among the world</b> (owner, 2026-11-25: "objects shouldnt glow through objects they
-        /// normally wouldnt"). On, the bloom sorts <see cref="RungsOverCarrier"/> over the thing that
-        /// carries it (the boat's sorting group, the post's own sprite, else the decor band's Y-sort at
-        /// the lamp's foot), so a hull, a shed, a wall or a figure nearer the camera draws over it as it
+        /// normally wouldnt"). On, the bloom sorts inside the boat's sorting group when one carries it,
+        /// else <see cref="RungsOverCarrier"/> over the post's own sprite, else over the decor band's
+        /// Y-sort at the lamp's foot, so a hull, a shed, a wall or a figure nearer the camera draws over it as it
         /// would over the lamp itself; the streak sorts at <see cref="StreakWorldOrder"/>, under every
         /// hull, deck and stander. Both then sit under the day/night tint, and the shader divides that
         /// tint back out of the light, so where nothing covers it a lamp adds exactly what it added
@@ -412,8 +412,24 @@ namespace HiddenHarbours.Art
         /// <summary>Does this lamp sort among the world? Tests and fixtures.</summary>
         public bool SortsInWorld => _worldSort;
 
-        /// <summary>The order the bloom quad is given now.</summary>
-        public int BloomSortingOrder => _worldSort ? Mathf.Min(CarrierOrder() + RungsOverCarrier, WorldSortCeiling) : SafeSortingOrder;
+        /// <summary>
+        /// Does the bloom sort INSIDE the sorting group that carries it (a boat's), rather than as its own
+        /// root element one rung over it? Inside is what a lamp carried by a group does: the group sorts
+        /// as one object, so nothing nearer the camera can tie with the lamp, only with the whole boat.
+        /// One rung over a root group tied with a hull a quarter metre nearer and could draw through it.
+        /// </summary>
+        public bool BloomNestsInCarrier => _worldSort && CarrierGroup() != null;
+
+        /// <summary>The order the bloom quad is given now: inside its carrier group, the top of that group
+        /// (<see cref="WorldSortCeiling"/> as a local order); otherwise its order among the world.</summary>
+        public int BloomSortingOrder =>
+            !_worldSort ? SafeSortingOrder
+            : BloomNestsInCarrier ? WorldSortCeiling
+            : Mathf.Min(CarrierOrder() + RungsOverCarrier, WorldSortCeiling);
+
+        /// <summary>The order the bloom actually competes at among the world: its carrier group's own
+        /// order when it nests inside it, else <see cref="BloomSortingOrder"/>.</summary>
+        public int BloomWorldOrder => BloomNestsInCarrier ? CarrierGroup().sortingOrder : BloomSortingOrder;
 
         /// <summary>The order the streak quad is given now.</summary>
         public int StreakSortingOrder => _worldSort ? StreakWorldOrder : SafeSortingOrder;
@@ -430,6 +446,14 @@ namespace HiddenHarbours.Art
             if (_carrierGroup != null) return _carrierGroup.sortingOrder;
             if (_carrierSprite != null) return _carrierSprite.sortingOrder;
             return CarrierOrderAtFoot(WorldOrigin.y);
+        }
+
+        /// <summary>The carrier's sorting group, resolved once; null when it has none.</summary>
+        private UnityEngine.Rendering.SortingGroup CarrierGroup()
+        {
+            if (!_carrierResolved || (_carrierGroup == null && _carrierSprite == null && _carrierWasFound))
+                ResolveCarrier();
+            return _carrierGroup;
         }
 
         [System.NonSerialized] private bool _carrierWasFound;
@@ -751,7 +775,12 @@ namespace HiddenHarbours.Art
 
             int order = BloomSortingOrder;
             _quadRenderer.sortingOrder = order;
-            if (_sortingGroup != null) _sortingGroup.sortingOrder = order;   // keep the 2D-sort group in sync
+            if (_sortingGroup != null)
+            {
+                _sortingGroup.sortingOrder = order;   // keep the 2D-sort group in sync
+                bool atRoot = !BloomNestsInCarrier;   // a group-carried lamp sorts as part of its boat
+                if (_sortingGroup.sortAtRoot != atRoot) _sortingGroup.sortAtRoot = atRoot;
+            }
             ApplyQuadEnabled();
             TickStreak(Mathf.Max(_intensity, 0f) * flicker, seconds);
         }
