@@ -22,7 +22,8 @@ namespace HiddenHarbours.Tests.EditMode
 
         // The goods the owner's ruling moves to the shelf in slice 1, and the ones that stay in the book.
         private static readonly string[] AtShelf =
-            { "supply.bread", "supply.oatcakes", "supply.tinned_beans", "supply.ice", "bait.capelin" };
+            { "supply.bread", "supply.oatcakes", "supply.tinned_beans", "supply.ice", "bait.capelin",
+              "bait.sea_worm", "bait.squid_strip", "bait.shucked_clam" };
         private static readonly string[] StaysInBook = { "supply.soap" };
 
         private IslandStoreShelvesDef _shelves;
