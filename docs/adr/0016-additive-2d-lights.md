@@ -1187,3 +1187,72 @@ its sides (`AcrossFalloff`), a slight per-cell unevenness (`Unevenness`), and a 
 window: each window gets a fixed shade from a hash of its hull's seed and index (UV2 on the cabin mesh; the
 hashed centre texel of its run on a house), blended toward `TintAlt` by `TintVariation`. Every number is in
 `GlassLook.asset`; the occlusion above is unchanged. No draw, texture, pass or save field is added.
+
+## Amendment — lamps light what they can see: a lamp is a 3D orb, not a 2D disc (2026-11-25)
+
+The owner, on the night pictures: "lights also need to correctly illuminate the surfaces of the meshes around
+them, ie on a boat the decks, or any face that is unobstructed from the light"; "lights are 3d orbs which should
+illuminate items correctly, not 2d circles with missing pie slices"; the St Peters dock lamp left "a missing part
+of the dock" south of it; the light from Ginny's windows reached the roof under the eave; LeBlanc's entry light
+glowed through the canopy instead of under it; and the headlamp "read poorly and did not glow correctly".
+
+**The model.** A lamp is a point at a height (its fitting) that sends light equally in every direction (a cone
+lamp: inside its cone). A surface it reaches is lit by `N·L`, the cosine between the surface's own normal and the
+direction to the fitting, times the falloff with ground distance from the lamp's foot (`PoolFalloff`, to
+`ReachMetres`), times the cone, times the night gate. The ground is the case `N = up`, and that is exactly the
+pool's existing `h/√(h²+d²)`; nothing about the ground changes except the fix below.
+
+**The missing slice was a bug, not a shadow.** The pool shader ran a RADIAL lamp (cos half-angle −1) through the
+cone's feather. With `PoolEdgeSoftness` 0.55 that dimmed every direction within about 50° of straight away from
+the axis, and the axis is up the screen, so every round lamp in the game cut a dark wedge out of the ground
+directly south of it. A radial lamp is now a branch to 1 (`LightMath.PoolCone`, the shader's step 3).
+
+**Mesh faces (hulls, vehicles, the camper).** The hull pass already drew each mesh pixel's world depth; it now
+keeps it for the pools as a published target, `_HHHullDepthTex` (RFloat, world z, before the ADR 0033 clip
+shear, including each hull's depth bias), with `_HHHullDepthLive` raised in its resolve pass and lowered at the
+top of every camera, so a stale target is never read. From the depth the pool rebuilds the pixel's height above
+the still sea through the displaced sea's own frame (`LightMath.HullHeightPlane`, the plane `HullCausticLighting`
+already uses, with the fleet's 40° depth shear), puts it in the pool's frame (`HullPoint`: x, the ground y under
+it, metres up), takes the face from the neighbouring pixels on the same mesh (the smaller depth step on each
+axis, so an edge between two faces does not bend it), turns it to the camera, and lights it by `N·L` toward the
+fitting (`HullFaceGain`). A deck near a lamp lifts; the far side of a cabin, a hull side turned away and a roof
+above the lamp stay dark. A shore lamp's fitting height is measured from its planks, which stand
+`ShoreLampDeckLiftMetres` (1.5 m) over the sea; a lamp a hull carries measures from the water already. Same
+pools, same slots (`MaxPools`), same throttled choice, no per-frame allocation, no new draw: one RFloat target per
+camera and three extra loads per lit mesh pixel. Off: `LampShadowProfile.PoolsLightMeshFaces`.
+
+**A lamp on a wall lights what is in front of the wall.** `LampMounts.asset` says where a lamp is fixed. Every
+window spill, and each doorstep lantern by its placement id, is on a wall facing the camera: its pool is cut at
+the wall line, `WallBackMetres` behind its foot, softened over `WallSoftMetres` (`LightMath.PoolWallGate`, the
+shader's step 4). In this view what lies behind a south wall's line is the wall above the lamp, its eave, a
+canopy and the roof, so the light falls out and down. The general store's lantern hangs under its canopy: its
+bloom sorts `SortBackMetres` (4 m) further back, behind the building's front, so the canopy covers it and its
+light shows on the step and the ground in front. A lamp no entry matches stands free, as before.
+
+**The headlamp.** Its lens is glowing glass (the shore lens), sorted among the world one rung over the fitting
+drawn on his head (`SceneLight.SetCarrierOrder`), not at the sorting ceiling, so a wall or a stack of traps in
+front of him covers it as it covers him. From behind his head the lens is not seen and draws no glow. The beam is
+the same pool, aimed: it lights what is in front of him and nothing behind, and lights mesh faces by `N·L` like
+every other lamp.
+
+**What is approximation, honestly.**
+- Blocking is by facing only. A face turned away from the lamp is dark; a face turned toward it behind another
+  object is still lit. There is no shadow map: the existing lamp shadows (PR B) remain the only thrown shadows.
+- Figures and sprites are not in the hull depth. A figure walking past a lamp is lit as the ground at its feet
+  (the pool's screen-space multiply), as before; its own sprite light (`SpriteLitDecor`) is unchanged.
+- The height plane assumes the fleet's 40° depth shear for every mesh. A vehicle or a camper drawn with another
+  shear gets a slightly wrong height, so slightly wrong face lighting near its edges.
+- The wall line is a straight line on the ground at the lamp's foot. A wall that is not straight, or a house that
+  faces sideways, needs its own entry with its own facing.
+- A sprite house has no depth, so its wall is not lit by `N·L`: it is cut out of the pool, not lit by it.
+
+### Tunables (rule 6)
+
+| What | Where | Shipped |
+|------|-------|---------|
+| Light mesh faces by `N·L` | `LampShadowProfile._poolsLightMeshFaces` | on |
+| A shore lamp's planks over the sea | `LampShadowProfile._shoreLampDeckLiftMetres` | 1.5 m |
+| Window spill on a wall, facing | `LampMounts._windowSpill` | (0, −1) |
+| Doorstep lanterns on walls, wall line | `LampMounts._byId` | 0.3 m behind the foot |
+| The store lantern under its canopy | `LampMounts._byId[0].SortBackMetres` | 4 m |
+| The wall line's soft edge | `LampMounts._wallSoftMetres` | 0.35 m |

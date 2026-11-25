@@ -305,6 +305,14 @@ namespace HiddenHarbours.Art
                                                      liveFigure.AshoreOverlay.sortingOrder + 1);
                 }
             }
+            // THE LENS AMONG THE WORLD (ADR 0016, "lamps light what they can see"). Glowing glass sorted one
+            // rung over the drawn fitting on his head, not at the ceiling over everything: a wall, a shed or a
+            // stack of traps nearer the camera covers his lamp as it covers him. From behind his head the lens
+            // is not seen, so it draws no glow there; the beam still lights what is in front of him.
+            bool overFitting = drawn && _fitting != null && liveFigure.AshoreOverlay != null;
+            Light.SetCarrierOrder(overFitting ? _fitting.sortingOrder : (int?)null);
+            bool lensSeen = !_hasHeadPoint || LensShows(_view);
+            if (Light.DrawsBloom != lensSeen) Light.DrawsBloom = lensSeen;
         }
 
         /// <summary>

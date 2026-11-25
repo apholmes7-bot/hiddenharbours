@@ -245,7 +245,9 @@ namespace HiddenHarbours.Art
         /// <summary>
         /// Glass and streak for a placed shore light, written after its preset. A window glow is not a
         /// lamp: it gets no glass, and (with <see cref="WindowSpillIsPool"/>) stops painting its disc so
-        /// only its pool on the ground remains. The worn headlamp is not part of this look.
+        /// only its pool on the ground remains. The worn headlamp's lens is glass too, sorted among the
+        /// world over the fitting on his head (<see cref="Headlamp"/> hands it that order), with no streak:
+        /// it is carried at a man's brow, not hung over the water.
         /// </summary>
         public void ApplyShore(SceneLight light, LightPresets.Kind kind)
         {
@@ -253,6 +255,8 @@ namespace HiddenHarbours.Art
             switch (kind)
             {
                 case LightPresets.Kind.Headlamp:
+                    light.SetGlass(_shoreLens, coloured: false, _pixelsPerMetre);
+                    light.SetWorldSort(_sortInWorld);
                     return;
                 case LightPresets.Kind.WindowGlow:
                     if (_windowSpillIsPool) light.DrawsBloom = false;

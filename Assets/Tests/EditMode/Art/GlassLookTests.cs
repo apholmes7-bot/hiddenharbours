@@ -287,7 +287,14 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Assert.AreEqual(SceneLight.MaxSortingOrder, bare.StreakSortingOrder);
 
                 LightPresets.Apply(head, LightPresets.Kind.Headlamp);
-                Assert.IsFalse(head.SortsInWorld, "the worn headlamp is not part of this look");
+                Assert.IsTrue(head.HasGlass, "the worn headlamp's lens is glowing glass too");
+                Assert.IsTrue(head.SortsInWorld, "and it sorts among the world, not at the ceiling");
+                Assert.IsFalse(head.Streak.IsOn, "a lamp at a man's brow lays no streak on the water");
+                head.SetCarrierOrder(1500);
+                Assert.AreEqual(1501, head.BloomSortingOrder, "one rung over the fitting on his head");
+                head.SetCarrierOrder(null);
+                Assert.AreEqual(SceneLight.CarrierOrderAtFoot(head.WorldOrigin.y) + SceneLight.RungsOverCarrier,
+                    head.BloomSortingOrder, "with no fitting drawn, as a thing standing at his feet");
 
                 Override(so => so.FindProperty("_sortInWorld").boolValue = false);
                 BoatLampPresets.Apply(bare, HullLampKind.Masthead);

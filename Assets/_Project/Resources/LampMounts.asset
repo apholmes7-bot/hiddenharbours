@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9483c1078454386b0e62f95be9befd9, type: 3}
+  m_Name: LampMounts
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.LampMounts
+  _windowSpill:
+    IdPrefix: 
+    Facing: {x: 0, y: -1}
+    WallBackMetres: 0
+    SortBackMetres: 0
+  _byId:
+  - IdPrefix: light.st_peters.doorstep_lantern_general_store
+    Facing: {x: 0, y: -1}
+    WallBackMetres: 0.3
+    SortBackMetres: 4
+  - IdPrefix: light.st_peters.doorstep_lantern_
+    Facing: {x: 0, y: -1}
+    WallBackMetres: 0.3
+    SortBackMetres: 0
+  _wallSoftMetres: 0.35

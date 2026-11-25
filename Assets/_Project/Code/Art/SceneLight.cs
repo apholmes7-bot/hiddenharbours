@@ -418,7 +418,7 @@ namespace HiddenHarbours.Art
         /// as one object, so nothing nearer the camera can tie with the lamp, only with the whole boat.
         /// One rung over a root group tied with a hull a quarter metre nearer and could draw through it.
         /// </summary>
-        public bool BloomNestsInCarrier => _worldSort && CarrierGroup() != null;
+        public bool BloomNestsInCarrier => _worldSort && !_hasCarrierOrder && CarrierGroup() != null;
 
         /// <summary>The order the bloom quad is given now: inside its carrier group, the top of that group
         /// (<see cref="WorldSortCeiling"/> as a local order); otherwise its order among the world.</summary>
@@ -441,11 +441,53 @@ namespace HiddenHarbours.Art
         /// ancestor's sprite, else the decor band's Y-sort at its foot. Resolved once, not per frame.</summary>
         private int CarrierOrder()
         {
+            if (_hasCarrierOrder) return _carrierOrderOverride;
             if (!_carrierResolved || (_carrierGroup == null && _carrierSprite == null && _carrierWasFound))
                 ResolveCarrier();
             if (_carrierGroup != null) return _carrierGroup.sortingOrder;
             if (_carrierSprite != null) return _carrierSprite.sortingOrder;
-            return CarrierOrderAtFoot(WorldOrigin.y);
+            return CarrierOrderAtFoot(WorldOrigin.y + _sortBackMetres);
+        }
+
+        // ---- the mount (LampMounts): a lamp on a wall, a lamp under a canopy, a lamp worn by a figure ----
+        [System.NonSerialized] private Vector2 _wallFacing;
+        [System.NonSerialized] private float _wallBackMetres, _wallSoftMetres = 0.35f, _sortBackMetres;
+        [System.NonSerialized] private bool _hasCarrierOrder;
+        [System.NonSerialized] private int _carrierOrderOverride;
+
+        /// <summary>
+        /// Fix this lamp to a wall facing <paramref name="facing"/> (zero = free-standing): its ground pool
+        /// lights only what is in front of the wall line, <paramref name="wallBackMetres"/> behind its foot,
+        /// softened over <paramref name="softMetres"/>. <paramref name="sortBackMetres"/> sorts its bloom as
+        /// though it stood that far back (a lamp under a canopy, which the canopy covers). Runtime state,
+        /// stamped by <see cref="LampMounts"/>; never saved.
+        /// </summary>
+        public void SetWallMount(Vector2 facing, float wallBackMetres, float softMetres, float sortBackMetres)
+        {
+            _wallFacing = facing.sqrMagnitude > 1e-6f ? facing.normalized : Vector2.zero;
+            _wallBackMetres = Mathf.Max(0f, wallBackMetres);
+            _wallSoftMetres = Mathf.Max(0.01f, softMetres);
+            _sortBackMetres = Mathf.Max(0f, sortBackMetres);
+        }
+
+        /// <summary>The way the lamp's wall faces (zero = free-standing).</summary>
+        public Vector2 WallFacing => _wallFacing;
+        /// <summary>How far behind the lamp's foot its wall line stands, metres.</summary>
+        public float WallBackMetres => _wallBackMetres;
+        /// <summary>The wall line's soft edge, metres.</summary>
+        public float WallSoftMetres => _wallSoftMetres;
+        /// <summary>How far back the bloom sorts, metres (a lamp under a canopy).</summary>
+        public float SortBackMetres => _sortBackMetres;
+
+        /// <summary>
+        /// Sort over a carrier the hierarchy cannot find: the order of the thing that wears this lamp (the
+        /// headlamp's drawn fitting on his head). The bloom then sorts one rung over it, among the world.
+        /// Null hands it back to the hierarchy.
+        /// </summary>
+        public void SetCarrierOrder(int? order)
+        {
+            _hasCarrierOrder = order.HasValue;
+            _carrierOrderOverride = order ?? 0;
         }
 
         /// <summary>The carrier's sorting group, resolved once; null when it has none.</summary>

@@ -102,6 +102,147 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         /// <summary>
+        /// <b>A round lamp lights the ground the same way in every direction: no slice is missing.</b> A radial
+        /// lamp ships cosHalf −1 and its axis up the screen; fed through the cone's feather, the ground straight
+        /// south of it (cos −1) came out dark. The twin and the shader both branch the radial case to 1.
+        /// </summary>
+        [Test]
+        public void ARoundLampLightsTheGroundOnEverySide_ItsSouthToo()
+        {
+            const float soft = 0.35f;   // the shipped PoolEdgeSoftness
+            for (int deg = 0; deg < 360; deg += 15)
+            {
+                float cosAngle = Mathf.Cos(deg * Mathf.Deg2Rad);
+                Assert.AreEqual(1f, LightMath.PoolCone(cosAngle, -1f, soft), Eps, $"radial lamp at {deg} deg from its axis");
+            }
+
+            // An aimed lamp still pools a feathered wedge.
+            float cosHalf = Mathf.Cos(30f * Mathf.Deg2Rad);
+            Assert.AreEqual(1f, LightMath.PoolCone(1f, cosHalf, soft), Eps, "on the beam's axis");
+            Assert.AreEqual(0f, LightMath.PoolCone(Mathf.Cos(40f * Mathf.Deg2Rad), cosHalf, soft), Eps, "outside the beam");
+            Assert.AreEqual(0f, LightMath.PoolCone(-1f, cosHalf, soft), Eps, "behind the beam");
+
+            string shader = System.IO.File.ReadAllText(System.IO.Path.Combine(Application.dataPath,
+                "_Project/Art/Shaders/HiddenHarboursLampPool.shader"));
+            StringAssert.Contains("cosHalf <= -0.9999 ? 1.0 :", shader, "the shader keeps the twin's radial branch");
+            Assert.AreEqual(-0.9999f, LightMath.RadialCosHalf, 0f, "the twin's radial threshold matches the shader's");
+        }
+
+        // ---- a lamp lights the FACES of a mesh it can see -------------------------------------------
+
+        private const float Elev = 40f;
+        private static readonly float Se = Mathf.Sin(Elev * Mathf.Deg2Rad), Ce = Mathf.Cos(Elev * Mathf.Deg2Rad);
+        private const float RefY = -60f, BaseZ = 0.3f, HullY = 12f;
+
+        private static float Shear => HiddenHarbours.Art.DisplacedWaterMath.HullDepthShear(Elev);
+        private static Vector4 Plane => LightMath.HullHeightPlane(RefY, Ce, Se, BaseZ, Shear);
+
+        // A point of a hull moored at world y HullY, `north` metres along the ground and `up` metres above the
+        // still sea, as the facet pass draws it: the rig's projection rows (y = n·sin + h·cos, z = n·cos −
+        // h·sin) plus her calibrated root constant (HullDepthBias with ADR 0033's shear compensation).
+        private static Vector3 HullWorld(float east, float north, float up)
+        {
+            float rootZ = BaseZ + (HullY - RefY) * (Ce + Shear);
+            return new Vector3(east, HullY + north * Se + up * Ce, rootZ + north * Ce - up * Se);
+        }
+
+        private static Vector3 Point(Vector3 w) => LightMath.HullPoint(w.x, w.y, w.z, Plane, Ce);
+
+        /// <summary>
+        /// <b>The hull depth gives back each pixel's true height above the sea, and the ground point under
+        /// it.</b> The pools light a mesh in their own frame (world x, the world y of the ground under the
+        /// pixel, metres up), so the plane must undo the facet pass's projection exactly — heading-free.
+        /// </summary>
+        [Test]
+        public void AHullPixelsDepthGivesItsHeightAboveTheSeaAndTheGroundUnderIt()
+        {
+            foreach (var (n, h) in new[] { (0f, 0f), (3f, 0f), (-4f, 1.2f), (2.5f, 3.4f), (-1f, 7.8f) })
+            {
+                Vector3 p = Point(HullWorld(1f, n, h));
+                Assert.AreEqual(h, p.z, 1e-3f, $"height at north {n}, up {h}");
+                Assert.AreEqual(HullY + n * Se, p.y, 1e-3f, "the ground under her is where her plan draws");
+            }
+        }
+
+        /// <summary>
+        /// <b>The face at a pixel is rebuilt from its neighbours, and it faces the camera.</b> A deck reads
+        /// straight up, a wall turned toward the camera reads toward the camera's side, whichever order the
+        /// neighbours come in.
+        /// </summary>
+        [Test]
+        public void AFaceIsRebuiltFromTheNeighbouringPixels_AndTurnedToTheCamera()
+        {
+            Vector3 view = LightMath.HullViewDirection(Plane, Ce);
+            Vector3 c = Point(HullWorld(0f, 0f, 1f));
+
+            // A deck: one pixel across is a step east; one pixel down-screen is a step south on the deck.
+            Vector3 ax = Point(HullWorld(0.03f, 0f, 1f)) - c, ay = Point(HullWorld(0f, -0.05f, 1f)) - c;
+            Vector3 deck = LightMath.HullFaceNormal(ax, ay, view);
+            Assert.AreEqual(1f, deck.z, 1e-3f, "a deck faces up");
+            Assert.AreEqual(deck, LightMath.HullFaceNormal(ay, ax, view), "order of the taps does not matter");
+
+            // The south wall of a cabin: down-screen is down the wall.
+            Vector3 wy = Point(HullWorld(0f, 0f, 0.95f)) - c;
+            Vector3 wall = LightMath.HullFaceNormal(ax, wy, view);
+            Assert.AreEqual(-1f, wall.y, 1e-3f, "a wall the camera sees faces south, toward the camera");
+        }
+
+        /// <summary>
+        /// <b>A lamp lights the faces that look at it and none that look away.</b> The cabin's own deck near a
+        /// lamp lifts; the wall turned from it, and a roof above it, stay dark; and a deck seen square under
+        /// the lamp reads exactly the ground pool's number, because the ground is the same sum with its
+        /// normal straight up.
+        /// </summary>
+        [Test]
+        public void ALampLightsTheFacesThatLookAtIt_AndNotTheOnesThatLookAway()
+        {
+            const float gain = 2f, reach = 4f, soft = 0.55f;
+            Vector2 foot = new Vector2(0f, HullY);
+            const float lampUp = 2.2f;
+            Vector3 up = Vector3.forward, south = Vector3.down, north = Vector3.up;
+
+            Vector3 deckNear = Point(HullWorld(0.8f, -0.5f, 0.9f));
+            float lit = LightMath.HullFaceGain(gain, up, deckNear, foot, lampUp, reach, soft, -1f, Vector2.up);
+            Assert.Greater(lit, 0.5f, "the deck beside the lamp lifts");
+
+            Vector3 roof = Point(HullWorld(0.5f, 1f, 2.6f));
+            Assert.AreEqual(0f, LightMath.HullFaceGain(gain, up, roof, foot, lampUp, reach, soft, -1f, Vector2.up),
+                            1e-6f, "a roof above the lamp is not lit from below");
+
+            // A wall north of the lamp, facing north (away from it): the far side of the cabin.
+            Vector3 farWall = Point(HullWorld(0f, 1.2f, 1.5f));
+            Assert.AreEqual(0f, LightMath.HullFaceGain(gain, north, farWall, foot, lampUp, reach, soft, -1f, Vector2.up),
+                            1e-6f, "the far side of the cabin stays dark");
+            Assert.Greater(LightMath.HullFaceGain(gain, south, farWall, foot, lampUp, reach, soft, -1f, Vector2.up), 0f,
+                           "the same wall's lamp-side face is lit");
+
+            // The ground is the special case: height 0, normal straight up.
+            for (float d = 0f; d < reach; d += 0.5f)
+            {
+                var ground = new Vector3(d, HullY, 0f);
+                float face = LightMath.HullFaceGain(gain, up, ground, foot, lampUp, reach, soft, -1f, Vector2.up);
+                float pool = LightMath.PoolGain(gain, lampUp, d, reach, soft);
+                Assert.AreEqual(pool, face, 1e-5f, $"at {d} m the ground reads the ground pool's number");
+            }
+        }
+
+        /// <summary>The shader keeps the twin's hull path: the published depth, the height plane, the face
+        /// from three taps, and N·L toward the fitting.</summary>
+        [Test]
+        public void ThePoolShaderLightsAMeshPixelByItsFace_AsTheTwinDoes()
+        {
+            string shader = System.IO.File.ReadAllText(System.IO.Path.Combine(Application.dataPath,
+                "_Project/Art/Shaders/HiddenHarboursLampPool.shader"));
+            StringAssert.Contains("_HHHullDepthTex", shader);
+            StringAssert.Contains("_HHHullDepthLive > 0.5", shader);
+            StringAssert.Contains("_HHLampHullPlane.y * world.y + _HHLampHullPlane.z * z + _HHLampHullPlane.w", shader);
+            StringAssert.Contains("world.y - h * _PoolLampSea.z", shader);
+            StringAssert.Contains("float3 n = cross(sx, sy);", shader);
+            StringAssert.Contains("if (dot(n, view) > 0.0) n = -n;", shader);
+            StringAssert.Contains("saturate(dot(n, toLamp) / dl)", shader);
+        }
+
+        /// <summary>
         /// <b>The night gate is a factor, so a pool is a night thing by the same machinery every other light
         /// in the project gates on.</b> No preset, no profile and no pool may reach around it.
         /// </summary>
@@ -362,6 +503,85 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Assert.AreEqual(1f, p.PoolStrength, Eps, "clamped: the ground may double, not quintuple");
             }
             finally { Object.DestroyImmediate(p); }
+        }
+
+        // ---- a lamp ON A WALL lights what is in front of the wall, never the eave, canopy or roof ------
+
+        /// <summary>
+        /// <b>Light from a window falls out and down.</b> The owner, at Ginny's cottage: the window light
+        /// was "glowing the roof which would be obstructed by the houses eave". A wall lamp's pool is cut at
+        /// the wall line: ground in front of it is lit as before, and everything behind it (in this view the
+        /// wall above the lamp, the eave, a canopy and the roof) is not.
+        /// </summary>
+        [Test]
+        public void AWallLampLightsTheGroundInFrontOfItsWall_AndNothingBehindIt()
+        {
+            Vector2 south = Vector2.down;
+            Assert.AreEqual(1f, LightMath.PoolWallGate(new Vector2(0f, -2f), south, 0.3f, 0.35f), Eps,
+                "two metres out in front of the wall is fully lit");
+            Assert.AreEqual(1f, LightMath.PoolWallGate(new Vector2(1.5f, -1f), south, 0.3f, 0.35f), Eps,
+                "and to either side in front of it");
+            Assert.AreEqual(0f, LightMath.PoolWallGate(new Vector2(0f, 1.5f), south, 0.3f, 0.35f), Eps,
+                "a metre and a half behind the lamp's foot (the wall above it, the eave) is not lit at all");
+            Assert.AreEqual(0.5f, LightMath.PoolWallGate(new Vector2(0f, 0.3f), south, 0.3f, 0.35f), Eps,
+                "the wall line itself is the middle of the soft edge");
+            Assert.AreEqual(1f, LightMath.PoolWallGate(new Vector2(0f, 1.5f), Vector2.zero, 0.3f, 0.35f), Eps,
+                "a free-standing lamp (no wall) lights every side, as before");
+            Assert.AreEqual(0f, LightMath.PoolWallGate(new Vector2(-1.5f, 0f), Vector2.right, 0f, 0.35f), Eps,
+                "a wall facing east lights nothing west of it");
+        }
+
+        /// <summary>
+        /// <b>The mounts are data.</b> Every window spill is a wall lamp; doorstep lanterns are matched by
+        /// their placement id; the general store's lantern hangs under its canopy, so its bloom sorts behind
+        /// the building front; a lamp post matches nothing and stays free-standing.
+        /// </summary>
+        [Test]
+        public void TheShippedMountsPutWindowsAndDoorstepsOnWalls_AndTheStoreLanternUnderItsCanopy()
+        {
+            LampMounts mounts = Resources.Load<LampMounts>(LampMounts.ResourcePath);
+            Assert.IsNotNull(mounts, "Resources/LampMounts.asset ships");
+            var spill = mounts.For("WindowGlow", LightPresets.Kind.WindowGlow);
+            Assert.IsTrue(spill.HasWall, "a window is in a wall");
+            Assert.Less(spill.Facing.y, 0f, "and its light falls toward the camera, out and down");
+
+            var store = mounts.For("light.st_peters.doorstep_lantern_general_store", LightPresets.Kind.HungLantern);
+            Assert.IsTrue(store.HasWall);
+            Assert.Greater(store.SortBackMetres, 0f, "the store lantern hangs under the canopy, which covers it");
+
+            var house = mounts.For("light.st_peters.doorstep_lantern_school", LightPresets.Kind.HungLantern);
+            Assert.IsTrue(house.HasWall, "a doorstep lantern is on its house wall");
+            Assert.AreEqual(0f, house.SortBackMetres, Eps, "and nothing hangs over it");
+
+            var post = mounts.For("light.st_peters.lantern_post_green", LightPresets.Kind.HungLantern);
+            Assert.IsFalse(post.HasWall, "a lamp post stands free and lights every side");
+            Assert.IsFalse(mounts.For("lanternPost_1", LightPresets.Kind.HungLantern).HasWall,
+                "the St Peters dock lamp stands free");
+
+            SceneLight light = new GameObject("mount-store") { hideFlags = HideFlags.HideAndDontSave }.AddComponent<SceneLight>();
+            try
+            {
+                light.transform.position = new Vector3(1.64f, 32.05f, 0f);
+                LightPresets.Apply(light, LightPresets.Kind.HungLantern);
+                int atFoot = light.BloomSortingOrder;
+                mounts.ApplyTo(light, "light.st_peters.doorstep_lantern_general_store", LightPresets.Kind.HungLantern);
+                Assert.AreEqual(store.Facing.normalized, light.WallFacing);
+                Assert.Less(light.BloomSortingOrder, atFoot, "sorted further back, behind the canopy at the front");
+                Assert.AreEqual(SceneLight.CarrierOrderAtFoot(32.05f + store.SortBackMetres) + SceneLight.RungsOverCarrier,
+                    light.BloomSortingOrder);
+            }
+            finally { Object.DestroyImmediate(light.gameObject); }
+        }
+
+        /// <summary>The shader keeps the twin's wall line.</summary>
+        [Test]
+        public void ThePoolShaderCutsAWallLampAtItsWall_AsTheTwinDoes()
+        {
+            string shader = System.IO.File.ReadAllText(System.IO.Path.Combine(Application.dataPath,
+                "_Project/Art/Shaders/HiddenHarboursLampPool.shader"));
+            StringAssert.Contains("float ahead = dot(toFrag, normalize(_PoolWall.xy)) + _PoolWall.z;", shader);
+            StringAssert.Contains("wall = smoothstep(-ws, ws, ahead);", shader);
+            StringAssert.Contains("incidence * edge * cone * wall *", shader);
         }
     }
 }

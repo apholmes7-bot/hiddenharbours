@@ -46,6 +46,17 @@ namespace HiddenHarbours.Art
                  "a lamp with no published reach (every boat lamp, by default) is not a candidate at all.")]
         [Range(0, 32)] [SerializeField] private int _maxPools = 8;
 
+        [Tooltip("Do the pools light a MESH (a hull, a vehicle, a camper) by its own faces? ON: each mesh " +
+                 "pixel is lit by how squarely its face looks at the lamp, so a deck near the lamp lifts and " +
+                 "the far side of a cabin stays dark. OFF: every pixel is lit as ground, the frame before.")]
+        [SerializeField] private bool _poolsLightMeshFaces = true;
+
+        [Tooltip("How far a SHORE lamp's ground stands above the still sea (metres), added to its own height " +
+                 "when it lights a mesh: a wharf's planks stand over water, and the lamp's height is " +
+                 "measured from them. A lamp carried by a hull measures from the water already and adds " +
+                 "nothing.")]
+        [Min(0f)] [SerializeField] private float _shoreLampDeckLiftMetres = 1.5f;
+
         [Header("Darkness")]
         [Tooltip("THE dial. The fraction of the light at a pixel a lamp's shadow removes, at the caster's " +
                  "feet, at the cone's core: 1 = a fully shadowed pixel keeps none of the lamp's light, 0 = " +
@@ -106,6 +117,10 @@ namespace HiddenHarbours.Art
         public float PoolEdgeSoftness { get => _poolEdgeSoftness; set => _poolEdgeSoftness = Mathf.Clamp01(value); }
         /// <summary>How many ground pools may draw at once.</summary>
         public int MaxPools { get => _maxPools; set => _maxPools = Mathf.Clamp(value, 0, 32); }
+        /// <summary>Do the pools light a mesh pixel by its own face (true) or as ground (false)?</summary>
+        public bool PoolsLightMeshFaces { get => _poolsLightMeshFaces; set => _poolsLightMeshFaces = value; }
+        /// <summary>How far a shore lamp's ground stands above the still sea when it lights a mesh (m).</summary>
+        public float ShoreLampDeckLiftMetres { get => _shoreLampDeckLiftMetres; set => _shoreLampDeckLiftMetres = Mathf.Max(0f, value); }
 
         public float Strength { get => _strength; set => _strength = Mathf.Clamp01(value); }
         public Color ShadowColor { get => _shadowColor; set => _shadowColor = value; }

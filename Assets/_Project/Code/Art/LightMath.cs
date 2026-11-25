@@ -555,6 +555,121 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
+        /// <b>The pool's angular gate</b> — the CPU twin of the cone line in <c>HiddenHarboursLampPool.shader</c>.
+        /// An aimed lamp (the searchlight on a dock) pools a feathered wedge: a smoothstep from
+        /// <paramref name="cosHalf"/> over <c>(1 − cosHalf) × softness</c>. A RADIAL lamp ships
+        /// <c>cosHalf ≤ −1</c> and is open in every direction.
+        ///
+        /// <para><b>⚠ THE RADIAL CASE IS A BRANCH, NOT THE CONE WITH THE GATE WIDE OPEN.</b> At cosHalf −1 the
+        /// feather runs from −1 to <c>−1 + 2 × softness</c>, so with the shipped softness 0.35 every direction
+        /// within about 45° of straight AWAY from the axis was dimmed, down to nothing at −1. The axis is up the
+        /// screen, so every radial lamp in the game left a dark wedge on the ground directly south of it: the
+        /// missing slice of the St Peters dock.</para>
+        /// </summary>
+        public static float PoolCone(float cosAngle, float cosHalf, float edgeSoftness)
+        {
+            if (cosHalf <= RadialCosHalf) return 1f;
+            float band = Mathf.Max(1f - cosHalf, 1e-3f) * Mathf.Clamp01(edgeSoftness);
+            return SmoothStep01(cosHalf, cosHalf + band, cosAngle);
+        }
+
+        /// <summary>At or below this a pool's cone is a radial lamp: open in every direction.</summary>
+        public const float RadialCosHalf = -0.9999f;
+
+        /// <summary>
+        /// A lamp ON A WALL lights only what is in front of the wall: 1 for a ground point well out from
+        /// the wall line, 0 well behind it, a smoothstep over <paramref name="softMetres"/> either side.
+        /// <paramref name="toFrag"/> is the ground point minus the lamp's foot, <paramref name="facing"/> the
+        /// way the wall faces, <paramref name="wallBackMetres"/> how far behind the foot the wall line
+        /// stands. A zero facing is a free-standing lamp: 1 everywhere. In this view what lies behind a
+        /// south wall's line is the wall itself above the lamp, its eave, a canopy over a door and the
+        /// roof, which is why a window's spill no longer climbs onto them. Twin of the pool shader's step 4.
+        /// </summary>
+        public static float PoolWallGate(Vector2 toFrag, Vector2 facing, float wallBackMetres, float softMetres)
+        {
+            if (facing.sqrMagnitude <= 1e-6f) return 1f;
+            float ahead = Vector2.Dot(toFrag, facing.normalized) + wallBackMetres;
+            float ws = Mathf.Max(softMetres, 1e-3f);
+            return SmoothStep01(-ws, ws, ahead);
+        }
+
+        // ==== a lamp lights the FACES of a mesh it can see (ADR 0016, "lamps light what they can see") ====
+        //
+        // The pool's ground term h/√(h²+d²) is N·L for one normal, straight up, at one height, zero. A mesh
+        // pixel (a hull, a vehicle, a camper) has its own normal and its own height, and the hull pass
+        // already knows both: its depth (world z) per pixel, kept for the pools as _HHHullDepthTex. These are
+        // the CPU twins of HiddenHarboursLampPool.shader's hull path, line for line.
+        //
+        // The frame both sides use is the POOL'S OWN: x and y are world x and the world y of the ground
+        // point under the pixel (the units the pool measures its reach in), z is metres above the still sea.
+        // A deck seen square under its lamp therefore reads exactly the ground pool's number.
+
+        /// <summary>
+        /// The plane that turns a hull pixel's world (y, z) into metres above the still sea: <c>h = P.y·y +
+        /// P.z·z + P.w</c>. The hull's depth is UNsheared (the facet pass writes <c>wpos.z</c> before ADR
+        /// 0033's shear), so the y coefficient carries the shear: <c>(g + cos)·sin</c>. The same plane
+        /// <c>HullCausticLighting</c> measures her wet band with. Zero (no height) when no displaced sea
+        /// publishes a frame, which turns the hull path off.
+        /// </summary>
+        public static Vector4 HullHeightPlane(float referenceY, float cosElev, float sinElev, float baseZ, float shear)
+        {
+            float y = (shear + cosElev) * sinElev;
+            return new Vector4(0f, y, -sinElev, sinElev * baseZ - y * referenceY);
+        }
+
+        /// <summary>A hull pixel's point in the pool's frame: <c>(x, y − h·heightScale, h)</c>, where h is
+        /// its height above the still sea (<see cref="HullHeightPlane"/>) and <paramref name="heightScale"/>
+        /// is how far up the screen one metre of height draws (<c>IsoGround.HeightScale</c>).</summary>
+        public static Vector3 HullPoint(float worldX, float worldY, float depthZ, Vector4 plane, float heightScale)
+        {
+            float h = plane.y * worldY + plane.z * depthZ + plane.w;
+            return new Vector3(worldX, worldY - h * heightScale, h);
+        }
+
+        /// <summary>The way the camera looks, in the pool's frame: one metre of world z deeper is
+        /// <c>P.z</c> metres of height and <c>−P.z·heightScale</c> of ground y. A face whose normal does not
+        /// point against it is a far side, and <see cref="HullFaceNormal"/> turns it round.</summary>
+        public static Vector3 HullViewDirection(Vector4 plane, float heightScale) =>
+            new Vector3(0f, -plane.z * heightScale, plane.z);
+
+        /// <summary>
+        /// The face at a pixel, from the pixel's point and its neighbours one pixel across and one pixel
+        /// down: the normalised cross product, turned to face the camera. The shader picks, on each axis, the
+        /// neighbour on the same hull with the smaller depth step (so an edge between two faces, or a hull
+        /// over the sea, does not bend the normal); this is the arithmetic once they are chosen. A degenerate
+        /// triple answers straight up, the ground's own normal.
+        /// </summary>
+        public static Vector3 HullFaceNormal(Vector3 alongX, Vector3 alongY, Vector3 view)
+        {
+            Vector3 n = Vector3.Cross(alongX, alongY);
+            float len = n.magnitude;
+            if (len < 1e-8f) return Vector3.forward;   // (0,0,1): up, in the pool's frame
+            n /= len;
+            return Vector3.Dot(n, view) > 0f ? -n : n;
+        }
+
+        /// <summary>
+        /// <b>How much a lamp lifts one face of a mesh</b>, as the pool's multiplier: the pool's base gain ×
+        /// <c>N·L</c> (zero on a face turned away) × the pool's own edge and cone over the GROUND distance
+        /// from the lamp's foot. <paramref name="lampFoot"/> is the lamp's ground point (the pool's
+        /// <c>WorldOrigin</c>) and <paramref name="lampSeaHeight"/> its fitting's height above the still sea.
+        /// </summary>
+        public static float HullFaceGain(float baseGain, Vector3 normal, Vector3 point, Vector2 lampFoot,
+                                         float lampSeaHeight, float reachMetres, float edgeSoftness,
+                                         float cosHalf, Vector2 coneAxis)
+        {
+            Vector3 toLamp = new Vector3(lampFoot.x - point.x, lampFoot.y - point.y, lampSeaHeight - point.z);
+            float dist = toLamp.magnitude;
+            if (dist < 1e-5f) return Mathf.Max(baseGain, 0f) * PoolFalloff(0f, reachMetres, edgeSoftness);
+            float facing = Mathf.Clamp01(Vector3.Dot(normal, toLamp) / dist);
+            Vector2 ground = new Vector2(point.x - lampFoot.x, point.y - lampFoot.y);
+            float d = ground.magnitude;
+            float aligned = d > 1e-4f ? Vector2.Dot(ground / d, coneAxis) : 1f;
+            return Mathf.Max(baseGain, 0f) * facing * PoolFalloff(d, reachMetres, edgeSoftness)
+                 * PoolCone(aligned, cosHalf, edgeSoftness);
+        }
+
+        /// <summary>
         /// <b>The pool's gain BEFORE the ground's own geometry — the part that is per-lamp, per-frame, and
         /// therefore computed once on the CPU rather than a million times in the fragment.</b>
         ///

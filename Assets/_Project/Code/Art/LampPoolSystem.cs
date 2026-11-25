@@ -79,6 +79,9 @@ namespace HiddenHarbours.Art
         private static readonly int IdPoolCone  = Shader.PropertyToID("_PoolCone");
         private static readonly int IdPoolGate  = Shader.PropertyToID("_PoolGate");
         private static readonly int IdDayNightTint = Shader.PropertyToID("_DayNightTint");
+        private static readonly int IdPoolLampSea = Shader.PropertyToID("_PoolLampSea");
+        private static readonly int IdPoolWall = Shader.PropertyToID("_PoolWall");
+        private static readonly int IdHullPlane = Shader.PropertyToID("_HHLampHullPlane");
 
         private struct Slot
         {
@@ -95,6 +98,9 @@ namespace HiddenHarbours.Art
         private Slot[] _slots = new Slot[0];
         private readonly List<SceneLight> _chosen = new List<SceneLight>(8);
         private readonly List<float> _chosenDistSq = new List<float>(8);
+        // Per chosen lamp: how far its ground stands above the still sea when it lights a mesh face (0 for a
+        // lamp carried by a hull, the profile's shore lift otherwise). Decided at the throttled selection.
+        private readonly List<float> _chosenSeaLift = new List<float>(8);
         private LampShadowProfile _profile;
         private MaterialPropertyBlock _mpb;
         private float _timer;
@@ -206,6 +212,7 @@ namespace HiddenHarbours.Art
         {
             _chosen.Clear();
             _chosenDistSq.Clear();
+            _chosenSeaLift.Clear();
             _active = 0;
 
             IReadOnlyList<SceneLight> lights = LampShadowSystem.LiveLights;
@@ -227,6 +234,9 @@ namespace HiddenHarbours.Art
                 Insert(light, d2, cap);
             }
             _active = _chosen.Count;
+            float shoreLift = EnsureProfile().ShoreLampDeckLiftMetres;
+            for (int i = 0; i < _chosen.Count; i++)
+                _chosenSeaLift.Add(_chosen[i].GetComponentInParent<IsoFacetHullRenderer>() != null ? 0f : shoreLift);
         }
 
         /// <summary>Insertion-sort a lamp into the nearest-N slots by camera distance. O(N) with N = the pool
@@ -257,6 +267,16 @@ namespace HiddenHarbours.Art
             float luma = LightMath.Luminance(tint);
             bool cycleActive = luma >= CycleActiveLuminance;
 
+            // The plane that turns a hull pixel's depth into its height above the still sea. It needs the
+            // displaced sea's iso-depth frame (the hull depth is calibrated against it); with no sea there
+            // is no frame, the plane is zero and every pixel is lit as ground, as before.
+            WaterIsoDepthFrame frame = default;
+            bool faces = p.PoolsLightMeshFaces && DisplacedWaterRegistry.TryGetIsoDepthFrame(out frame);
+            Shader.SetGlobalVector(IdHullPlane, faces
+                ? LightMath.HullHeightPlane(frame.ReferenceY, frame.CosElev, frame.SinElev, frame.BaseZ,
+                      DisplacedWaterMath.HullDepthShear(HiddenHarbours.Core.IsoGround.CameraElevationDegrees))
+                : Vector4.zero);
+
             int drawn = 0;
             for (int i = 0; i < _slots.Length; i++)
             {
@@ -278,8 +298,9 @@ namespace HiddenHarbours.Art
                 slot.T.localScale = new Vector3(reach, reach, 1f);
 
                 // A cone lamp pools a WEDGE — the searchlight sweeping a dock. A radial ships cosHalf at −1,
-                // which makes the shader's angular gate exactly 1 in every direction: one code path, and the
-                // round case is the cone case with the gate wide open.
+                // which the shader's angular gate (LightMath.PoolCone) branches to exactly 1 in every
+                // direction. (It used to run the radial through the cone's feather, which cut a dark wedge
+                // out of the ground straight south of every round lamp.)
                 bool cone = light.Shape == SceneLight.LightShape.Cone && light.ConeHalfAngle < 180f;
                 float cosHalf = cone ? Mathf.Cos(Mathf.Clamp(light.ConeHalfAngle, 0f, 180f) * Mathf.Deg2Rad) : -1f;
                 Vector2 axis = cone ? light.BeamDirection.normalized : Vector2.up;
@@ -300,6 +321,12 @@ namespace HiddenHarbours.Art
                 // The night gate is already inside `gain` (PoolBaseGain takes it), so the shader's own
                 // gate slot ships at 1: applying it twice would square a fraction and put dusk out.
                 _mpb.SetVector(IdPoolGate, new Vector4(1f, 0f, 0f, 0f));
+                float seaLift = i < _chosenSeaLift.Count ? _chosenSeaLift[i] : 0f;
+                _mpb.SetVector(IdPoolLampSea, new Vector4(light.LampHeightMeters + seaLift, faces ? 1f : 0f,
+                                                          HiddenHarbours.Core.IsoGround.HeightScale, 0f));
+                // A lamp on a wall lights only what is in front of it (LampMounts, LightMath.PoolWallGate).
+                Vector2 wall = light.WallFacing;
+                _mpb.SetVector(IdPoolWall, new Vector4(wall.x, wall.y, light.WallBackMetres, light.WallSoftMetres));
                 slot.Renderer.SetPropertyBlock(_mpb);
 
                 slot.Renderer.sortingOrder = SceneLight.MaxSortingOrder;
