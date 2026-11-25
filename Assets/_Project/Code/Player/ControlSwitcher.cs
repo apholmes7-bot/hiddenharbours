@@ -1000,14 +1000,7 @@ namespace HiddenHarbours.Player
                     // E steps ashore (when a standable step-off is there). ⭐ At a cabin door inside the
                     // helm radius the helm stands down (owner, 2026-09-17): the door keeps the press, and
                     // BeginInteract is what hands it over.
-                    if (TakesTheHelmOnThisPress())
-                    {
-                        // A fixture at this wheel (the cabin-light switch) makes the press a choice:
-                        // take the helm, or work the fixture. None in reach: the helm, as always.
-                        if (TryOpenHelmChooser(atTheHelm: false)) return true;
-                        TakeHelm();
-                        return true;
-                    }
+                    if (TakesTheHelmOnThisPress()) { TakeHelm(); return true; }
                     if (StepAshoreOnThisPress()) { Disembark(); return true; }
                     return false;
 
@@ -1029,9 +1022,6 @@ namespace HiddenHarbours.Player
                 // contract, so every arm here is explicit and the next mode appended fails loudly rather
                 // than silently inheriting the helm's behaviour.
                 case ControlMode.Aboard:   // at the helm → step back onto the deck, always allowed
-                    // …unless a fixture at the wheel is in reach (2026-11-25): then the press offers
-                    // "Leave the helm" and the fixture, and picking the fixture keeps him at the wheel.
-                    if (TryOpenHelmChooser(atTheHelm: true)) return true;
                     LeaveHelm();
                     return true;
 
@@ -1203,50 +1193,6 @@ namespace HiddenHarbours.Player
         /// </remarks>
         private bool TryInteractCandidate()
             => _interactVerb && InteractVerb.TryPress(ActorNow(), _interactArcDegrees);
-
-        // ---- fixtures at the wheel (2026-11-25) -----------------------------------------------
-
-        private readonly HelmStationChoices _helmChoices = new HelmStationChoices();
-        private readonly InteractChoiceList _helmRows = new InteractChoiceList();
-        private System.Action _takeHelmAction;
-        private System.Action _leaveHelmAction;
-
-        /// <summary>
-        /// The helm press as a choice, when there is one to make (owner ask 2026-11-25: the cabin-light
-        /// switch at the helm, worked without leaving the wheel). Gathers this boat's
-        /// <see cref="IHelmFixture"/> registrants in reach and, with at least one, opens the chooser on
-        /// the station's own action plus each fixture. True when the press was spent here.
-        ///
-        /// <para><b>With no fixture it returns false and touches nothing</b>, so the caller takes or
-        /// leaves the helm exactly as before: a boat with nothing at her wheel is unchanged. The same
-        /// holds with the verb or the chooser switched off, or when the chooser refuses to open.</para>
-        ///
-        /// <para>⚠ The press that just picked a row is still "pressed this frame". Where a fixture is in
-        /// reach, that press is swallowed here (as <see cref="InteractVerb.TryPress"/> swallows it), or
-        /// picking the switch would also step him off the wheel on the same frame.</para>
-        /// </summary>
-        private bool TryOpenHelmChooser(bool atTheHelm)
-        {
-            if (!_interactVerb || Boat == null) return false;
-            GameConfig config = GameServices.Config;
-            bool chooserOn = config != null ? config.InteractChooserEnabled : GameConfig.DefaultInteractChooserEnabled;
-            if (!chooserOn) return false;
-
-            InteractActor actor = ActorNow();
-            if (_leaveHelmAction == null) _leaveHelmAction = LeaveHelm;   // made once, not per press
-            if (_takeHelmAction == null) _takeHelmAction = TakeHelm;
-            System.Action station = atTheHelm ? _leaveHelmAction : _takeHelmAction;
-            string label = atTheHelm ? ControlStrings.LeaveHelm : ControlStrings.TakeHelm;
-            if (_helmChoices.Gather(Interactables.Active, Boat, actor, _interactArcDegrees,
-                                    label, station, _helmRadius) == 0)
-                return false;
-
-            if (InteractChooser.ClosedThisFrame) return true;
-
-            int maxRows = config != null ? config.InteractChooserMaxRows : GameConfig.DefaultInteractChooserMaxRows;
-            _helmRows.BuildActionsOf(_helmChoices, maxRows);
-            return InteractChooser.OpenUnregistered(_helmRows, actor, _interactArcDegrees);
-        }
 
         /// <summary>
         /// The actor, as Core sees it: where the player is standing, which way they face, and which of the

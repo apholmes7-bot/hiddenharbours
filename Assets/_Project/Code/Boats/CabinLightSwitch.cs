@@ -8,9 +8,9 @@ namespace HiddenHarbours.Boats
     /// the helm is far from it (<see cref="CabinLightSwitchRule"/>). Pressing either throws the boat's
     /// one cabin-light state (<see cref="CabinLightSwitchboard"/>).
     ///
-    /// <para><b>No text at the helm.</b> This is an ordinary interactable on the shared chooser: a lone
-    /// switch in reach is pressed with the interact button, and its verb is only read where the
-    /// chooser lists more than one thing to do.</para>
+    /// <para><b>It takes no press from anything else.</b> It sits on the last rung of the ladder, so it
+    /// answers E only when it is the one thing in reach: the helm and the doors keep every press they
+    /// had, and the switch never adds a row to a list.</para>
     ///
     /// <para><b>The player's boats only.</b> The switch is fitted on every boat with a cabin (it is part
     /// of her), but it is offered only aboard the player's boat. An NPC boat keeps her lights' automatic
@@ -21,7 +21,7 @@ namespace HiddenHarbours.Boats
     /// is. Everything read on the interaction query path is a field or a constant: no allocation.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class CabinLightSwitch : MonoBehaviour, IInteractable, IHelmFixture
+    public sealed class CabinLightSwitch : MonoBehaviour, IInteractable
     {
         /// <summary>The chooser's verb when the press will turn the cabin lights on.</summary>
         public const string VerbOn = "Cabin lights on";
@@ -61,9 +61,18 @@ namespace HiddenHarbours.Boats
             }
         }
 
-        public int Priority => InteractPriority.Fixture;
+        /// <summary>
+        /// The last rung (2026-11-25, after the first draft took presses from the helm and the door): the
+        /// switch takes E only where nothing else in reach wants it. Beside her door the door keeps the
+        /// press and no list opens; the switch is never a chooser row beside another thing. The helm
+        /// station is decided before any registrant, so at the wheel E takes or leaves the helm exactly
+        /// as before.
+        /// </summary>
+        public int Priority => InteractPriority.LastResort;
 
-        public InteractContext Contexts => InteractContext.OnDeck | InteractContext.AtHelm;
+        /// <summary>From her deck. At the helm the press always steps him back, so a helm context could
+        /// never be reached.</summary>
+        public InteractContext Contexts => InteractContext.OnDeck;
 
         public bool RequiresFacing => false;
 
@@ -86,11 +95,6 @@ namespace HiddenHarbours.Boats
                 return level < 0 || level == _cabin.Level;
             }
         }
-
-        /// <summary>The helm switch is worked from the wheel (the switcher offers it beside "Leave the
-        /// helm"); the door switch is not at a helm, so it answers null.</summary>
-        public GameObject HelmBoat
-            => _role == CabinLightSwitchRole.Helm && _board != null ? _board.gameObject : null;
 
         public void Configure(CabinLightSwitchboard board, BoatInterior cabin, string id,
                               CabinLightSwitchRole role, Vector3 localMetres)

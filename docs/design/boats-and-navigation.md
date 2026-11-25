@@ -1562,12 +1562,15 @@ route.
   publishes `CabinLightSwitchThrown` once. The state reaches the lights through `ICabinLightsOutlet`,
   which joins the lights' own Core contract when that lands.
 - **Saved:** never (no save row fits). A loaded game starts every boat on Auto.
-- **At the wheel:** the helm switch is a Core `IHelmFixture`. With one in reach, the helm press opens
-  the interaction chooser instead of acting at once: at the helm its rows are "Leave the helm" then the
-  switch, so he throws it without leaving the wheel; next to the helm on deck they are "Take the
-  helm" then the switch. Row 0 is always the station and is selected first, and the fixtures follow
-  by id (a stable gamepad order). With no helm fixture, the press is unchanged (`ControlSwitcher`,
-  `Player/HelmStationChoices`).
+- **It takes no press from anything else:** the switch is on the last rung
+  (`InteractPriority.LastResort`), on deck only. The helm station is decided before any registrant,
+  so at and beside the wheel E takes or leaves the helm exactly as before. Beside a door the door
+  keeps E and no list opens. The switch answers E only where it is the one thing in reach. (A first
+  draft offered it on a chooser at the helm; that put a list in front of every helm and door press,
+  and was withdrawn.)
+- **Not yet reachable at the wheel itself:** at the helm E always steps him back. Throwing the
+  switch without leaving the wheel needs its own control there (a dash switch, like the anchor's),
+  which is the seat's call.
 - **Co-op:** the state is the boat's, not a player's: any player aboard may throw either switch, and
   nothing records who did.
 - **Owed:** switch art.
