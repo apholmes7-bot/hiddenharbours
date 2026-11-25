@@ -199,12 +199,15 @@ namespace HiddenHarbours.Core
         private CookRefusal CheckLocker(CookingStationDef station, RecipeBook book, out CookPlan plan)
         {
             plan = default;
-            List<SupplyStock> stock = _save()?.Current?.SupplyStock;
+            SaveData save = _save()?.Current;
+            List<SupplyStock> stock = save?.SupplyStock;
             if (stock == null || stock.Count == 0) return CookRefusal.NothingToCook;
 
             _scratch.Clear();
+            // Through the locker, not the raw count: shopping still in his bag is not cooked until put away.
             for (int i = 0; i < stock.Count; i++)
-                if (stock[i].Count > 0 && !string.IsNullOrEmpty(stock[i].SupplyId)) _scratch.Add(stock[i].SupplyId);
+                if (!string.IsNullOrEmpty(stock[i].SupplyId) && SupplyLocker.Has(save, stock[i].SupplyId))
+                    _scratch.Add(stock[i].SupplyId);
             _scratch.Sort(string.CompareOrdinal);
 
             bool refusedForMicrowave = false;
