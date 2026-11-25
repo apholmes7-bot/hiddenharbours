@@ -55,6 +55,19 @@ namespace HiddenHarbours.Tests.Support
     /// region loader applies it, editor-only, to the loads the GAME starts (a crossing, a passage, a preload),
     /// which this helper cannot see. Every load and unload here is tracked there too, so a load queued behind
     /// another operation is left plain async instead of running out the bound.</para>
+    ///
+    /// <para><b>Fourth slice (2026-11-24): a test load is always held, and nothing here waits forever.</b> CI
+    /// hung again (run 45197233449, <c>SunCastersEverywherePlayTests.Audit_Cumberland_VillagersGainCasters</c>)
+    /// with the same two native stacks, the read side inside a region scene load. The shared hold has a 10 s
+    /// cap and a three-timeout budget for the whole session; a region read on a desktop already takes up to
+    /// 7.7 s (Nine Mile Creek), so on the slower CI runner a hold can run out and release the main thread
+    /// mid-read, and once the budget is spent no later load is held at all. A load issued while another
+    /// tracked operation is still in flight is not held either. So test loads now (1) wait, by frames and
+    /// within <see cref="PendingOperationTimeoutSeconds"/>, until no tracked scene operation is in flight, so
+    /// the hold is not refused for a queued load; (2) hold with their own cap, <see cref="TestHoldSeconds"/>,
+    /// kept inside the watchdog's frozen-thread verdict and not drawn from the game's budget; and (3) wait for
+    /// completion within <see cref="OperationTimeoutSeconds"/> and then FAIL with the scene's name, so a stall
+    /// that still turns frames costs minutes and names itself.</para>
     /// </summary>
     public static class SceneSettle
     {
@@ -121,14 +134,83 @@ namespace HiddenHarbours.Tests.Support
         public static IEnumerator Load(string scene, LoadSceneMode mode)
         {
             for (int i = 0; i < DrainFrames; i++) yield return null;
-            yield return StartLoad(scene, mode);
+            yield return WaitForPendingSceneOperations("loading '" + scene + "'");
+            yield return Await(StartLoad(scene, mode), "load of '" + scene + "'");
         }
 
         /// <summary>Settle, then <see cref="EditorSceneManager.LoadSceneAsyncInPlayMode"/> and wait.</summary>
         public static IEnumerator LoadInPlayMode(string path, LoadSceneParameters parameters)
         {
             for (int i = 0; i < DrainFrames; i++) yield return null;
-            yield return StartLoadInPlayMode(path, parameters);
+            yield return WaitForPendingSceneOperations("loading '" + path + "'");
+            yield return Await(StartLoadInPlayMode(path, parameters), "load of '" + path + "'");
+        }
+
+        /// <summary>Longest a test waits for tracked scene operations already in flight to finish before it
+        /// issues its own (real time, frames keep turning). Far below the watchdog's per-test limit.</summary>
+        public const double PendingOperationTimeoutSeconds = 60d;
+
+        /// <summary>Longest a test waits for one load or unload it issued to complete (real time, frames keep
+        /// turning). A region load is seconds; this is far past that and far below the watchdog's limit.</summary>
+        public const double OperationTimeoutSeconds = 120d;
+
+        /// <summary>Longest a test load holds the main thread for its threaded read. Below the watchdog's
+        /// frozen-thread verdict, so a hold is never reported as the hang it prevents.</summary>
+        public const float TestHoldSeconds = 40f;
+
+        /// <summary>Test holds that may run out before later test loads stop holding, so a hold that cannot
+        /// work on some editor costs a bounded amount of time per run.</summary>
+        public const int MaxTestHoldTimeouts = 3;
+
+        static int s_testHeld, s_testHoldTimeouts;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetSession()
+        {
+            s_testHeld = 0;
+            s_testHoldTimeouts = 0;
+        }
+
+        /// <summary>Test loads held to the end of their read this session, and test holds that ran out.</summary>
+        public static int TestHeldLoads => s_testHeld;
+        public static int TestHoldTimeouts => s_testHoldTimeouts;
+
+        /// <summary>
+        /// Yield frames until no tracked scene operation (<see cref="SceneLoadHold.InFlight"/>) is in flight, so
+        /// the load or unload issued next is not queued behind one (a queued load cannot be held). Throws
+        /// <see cref="System.TimeoutException"/> naming <paramref name="before"/> past
+        /// <paramref name="timeoutSeconds"/>. Adds no frame when nothing is in flight.
+        /// </summary>
+        public static IEnumerator WaitForPendingSceneOperations(string before,
+            double timeoutSeconds = PendingOperationTimeoutSeconds)
+        {
+            double deadline = Time.realtimeSinceStartupAsDouble + timeoutSeconds;
+            while (SceneLoadHold.InFlight > 0)
+            {
+                if (Time.realtimeSinceStartupAsDouble >= deadline)
+                    throw new System.TimeoutException("[SceneSettle] before " + before + ": " + SceneLoadHold.InFlight +
+                        " tracked scene operation(s) still in flight after " + timeoutSeconds + " s");
+                yield return null;
+            }
+        }
+
+        /// <summary>
+        /// Yield frames until <paramref name="op"/> is done, as <c>yield return op</c> did, but throw
+        /// <see cref="System.TimeoutException"/> naming <paramref name="what"/> and its progress past
+        /// <paramref name="timeoutSeconds"/>. A null operation (the engine refused it) returns at once.
+        /// </summary>
+        public static IEnumerator Await(AsyncOperation op, string what, double timeoutSeconds = OperationTimeoutSeconds)
+        {
+            if (op == null) yield break;
+            double deadline = Time.realtimeSinceStartupAsDouble + timeoutSeconds;
+            while (!op.isDone)
+            {
+                if (Time.realtimeSinceStartupAsDouble >= deadline)
+                    throw new System.TimeoutException("[SceneSettle] " + what + " did not complete within " +
+                        timeoutSeconds + " s (progress " + op.progress.ToString("0.00") + ", " +
+                        SceneLoadHold.InFlight + " tracked operation(s) in flight)");
+                yield return null;
+            }
         }
 
         // The hold itself is the shared Core guard (third slice, 2026-11-16), so test loads and the loads the
@@ -146,8 +228,8 @@ namespace HiddenHarbours.Tests.Support
         /// (<see cref="SceneLoadHold.MaxTimeouts"/>).</summary>
         public const int MaxHoldTimeouts = SceneLoadHold.MaxTimeouts;
 
-        /// <summary>How many loads were held to the end of their read, and how many ran out the bound, game
-        /// and test loads together.</summary>
+        /// <summary>How many GAME loads (the shared Core hold) were held to the end of their read, and how many
+        /// ran out its bound. Test loads count in <see cref="TestHeldLoads"/> and <see cref="TestHoldTimeouts"/>.</summary>
         public static int HeldLoads => SceneLoadHold.HeldLoads;
         public static int HoldTimeouts => SceneLoadHold.Timeouts;
 
@@ -169,9 +251,41 @@ namespace HiddenHarbours.Tests.Support
             return HoldUntilRead(EditorSceneManager.LoadSceneAsyncInPlayMode(path, parameters));
         }
 
+        // The shared Core hold's cap and session budget are sized for the game's loads; a test load holds with
+        // its own (fourth slice). A load queued behind a tracked operation is left plain async, as in Core:
+        // it waits on that operation, which needs frames, so holding could only run out the cap. Load and
+        // LoadInPlayMode drain those first; a caller of StartLoad that did not is told so in the log.
         static AsyncOperation HoldUntilRead(AsyncOperation op)
         {
-            return SceneLoadHold.HoldUntilRead(op);
+            if (op == null) return null;
+            if (op.isDone || SceneLoadHold.InFlight > 0 || s_testHoldTimeouts >= MaxTestHoldTimeouts)
+            {
+                if (!op.isDone)
+                    Debug.LogWarning("[SceneSettle] a test scene load was not held (" + SceneLoadHold.InFlight +
+                        " tracked operation(s) in flight, " + s_testHoldTimeouts + " test hold timeouts): its read " +
+                        "overlaps frames, where a delayed sprite destroy can deadlock the editor");
+                SceneLoadHold.Track(op);
+                return op;
+            }
+
+            op.allowSceneActivation = false;
+            System.Diagnostics.Stopwatch clock = System.Diagnostics.Stopwatch.StartNew();
+            SceneLoadHold.Outcome outcome = SceneLoadHold.WaitForRead(() => op.progress,
+                () => clock.Elapsed.TotalSeconds, () => System.Threading.Thread.Sleep(1), TestHoldSeconds);
+            if (outcome == SceneLoadHold.Outcome.ReadDone)
+            {
+                s_testHeld++;
+            }
+            else
+            {
+                s_testHoldTimeouts++;
+                Debug.LogWarning("[SceneSettle] a test scene load's threaded read did not finish within " +
+                    TestHoldSeconds + " s while the main thread was held (progress " + op.progress.ToString("0.00") +
+                    "); after " + MaxTestHoldTimeouts + " of these, later test loads this session are not held");
+            }
+            op.allowSceneActivation = true;
+            SceneLoadHold.Track(op);
+            return op;
         }
 
         /// <summary>Settle, then <see cref="SceneManager.UnloadSceneAsync(Scene)"/> and wait, as
@@ -181,20 +295,23 @@ namespace HiddenHarbours.Tests.Support
             // A scene that was loaded when the caller checked and went away during the settle (something
             // else unloaded it) is not unloaded twice: that would log an engine error the caller never had.
             bool wasLoaded = scene.IsValid() && scene.isLoaded;
+            string name = scene.IsValid() ? scene.name : "(invalid scene)";
             for (int i = 0; i < DrainFrames; i++) yield return null;
+            yield return WaitForPendingSceneOperations("unloading '" + name + "'");
             if (wasLoaded && !scene.isLoaded) yield break;
             AsyncOperation op = SceneManager.UnloadSceneAsync(scene);
             SceneLoadHold.Track(op);   // a game load issued behind it is then not held (it would wait on this)
-            yield return op;
+            yield return Await(op, "unload of '" + name + "'");
         }
 
         /// <summary>Settle, then <see cref="SceneManager.UnloadSceneAsync(string)"/> and wait.</summary>
         public static IEnumerator Unload(string scene)
         {
             for (int i = 0; i < DrainFrames; i++) yield return null;
+            yield return WaitForPendingSceneOperations("unloading '" + scene + "'");
             AsyncOperation op = SceneManager.UnloadSceneAsync(scene);
             SceneLoadHold.Track(op);
-            yield return op;
+            yield return Await(op, "unload of '" + scene + "'");
         }
 
         static bool AnyAlive(List<Object> objects)

@@ -29,7 +29,7 @@ The coordinates come from `StPetersBarHead` flat transects 1 and 3. The threshol
 
 ## Saving later
 
-Save version 25 is unchanged. Restarting or loading resets these sessions, even when already-kept catches have been saved by the existing hands or containers; reload persistence is deliberately absent from this slice. A future save step needs an approved schema migration for per-bed outstanding removal timestamps and the last accepted pick time, keyed by the stable bed id. World seed and game time already belong to the world save. Restore must validate ids and finite ordered times against loaded game time, reject duplicate or over-capacity rows, and define how changed bed tuning affects old removals. It should recompute tide and remaining stock, rather than save a water level or redundant count.
+The pinned main `d46bde303e6aa256d23d47a05ede5d7d6f38e51e` uses save version 26, unchanged by this slice. Its store-purchase, special-order and shopping-bag rows do not persist picking-bed depletion. Restarting or loading resets these sessions, even when already-kept catches have been saved by the existing hands or containers; reload persistence is deliberately absent from this slice. A future save step needs an approved schema migration for per-bed outstanding removal timestamps and the last accepted pick time, keyed by the stable bed id. World seed and game time already belong to the world save. Restore must validate ids and finite ordered times against loaded game time, reject duplicate or over-capacity rows, and define how changed bed tuning affects old removals. It should recompute tide and remaining stock, rather than save a water level or redundant count.
 
 ## Verification
 

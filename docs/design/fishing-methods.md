@@ -131,7 +131,11 @@ Method sources: [fish and content, section 3.5](fish-and-content.md#35-phased-ge
 - **Grounds and time:** inshore, all year on main. The canon's seasonal trap moves remain owed
   under their separate charter.
 - **Catch:** lobster and rock crab.
-- **Licence:** none on main; lobster is ungated.
+- **Licence:** none on main; lobster is ungated. *(Superseded as design 2026-11-23, canon §5.3's
+  amendment: lobster and crab need a licence; those licences are a fixed number in the world, passed
+  between holders and never sold over a counter, and the player first works as a hand on a lobster or
+  crab boat. Until he holds one, a lobster or crab he traps goes back automatically with a line naming
+  it. A direction, not a finished design.)*
 - **NPC fleet:** other boats' strings of buoys on the grounds, in their own colours, with seasonal
   pot moves still owed. Their landings move prices (M2-19).
 - **Automated later:** M2-33's powered winch takes the haul (P4); a sternman works the deck

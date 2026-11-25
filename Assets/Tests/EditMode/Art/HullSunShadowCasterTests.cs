@@ -76,6 +76,16 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
+        public void DestroyedDraw_LetsGoQuietly_ThenRebuilds()
+        {
+            Object.DestroyImmediate(_caster.ShadowRenderer.gameObject);
+            Assert.DoesNotThrow(_caster.Tick, "A draw destroyed by a teardown must not throw every frame.");
+            Assert.That(_caster.Proxy == null, Is.True, "The orphaned proxy is released with the lost draw.");
+            _caster.Tick();
+            Assert.That(_caster.ShadowRenderer != null, Is.True, "A host that is still here gets a fresh draw.");
+        }
+
+        [Test]
         public void DoorProxy_ContainsBothPosesInOneSubmesh()
         {
             Mesh proxy = HullSunShadowMesh.Build(_mesh, _mesh, _mesh);

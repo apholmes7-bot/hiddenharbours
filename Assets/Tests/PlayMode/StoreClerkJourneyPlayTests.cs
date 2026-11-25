@@ -164,7 +164,7 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         /// <summary>
-        /// St Peters' general store counter, as <c>StPetersBuilder</c> builds it: five vendors and a
+        /// St Peters' general store counter, as <c>StPetersBuilder</c> builds it: four vendors and a
         /// Market → FishBuyer → WharfSellPoint on one GameObject, all stamped <c>seller.leblancs</c>,
         /// with the pail you carry as the hold.
         ///
@@ -191,7 +191,6 @@ namespace HiddenHarbours.Tests.PlayMode
             Vendor<GearShop>("_offer", Asset<GearOffer>($"{CatalogFolder}/Gear/Rod.asset"));
             Vendor<BaitShop>("_bait", Asset<BaitDef>($"{CatalogFolder}/Bait/Capelin.asset"));
             Vendor<SupplyShop>("_supply", Asset<SupplyDef>($"{CatalogFolder}/Supplies/Ice.asset"));
-            Vendor<InstrumentShop>("_offer", Asset<InstrumentOffer>($"{CatalogFolder}/Instruments/DepthSounderOffer.asset"));
             Vendor<LicenseVendor>("_license", Asset<LicenseDef>($"{CatalogFolder}/Licenses/ClamLicense.asset"));
 
             var market = counter.AddComponent<Market>();
