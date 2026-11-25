@@ -19,6 +19,22 @@ namespace HiddenHarbours.Tests.EditMode
     {
         private const string DataRoot = "Assets/_Project/Data";
 
+        [Test]
+        public void FirstWeekWords_MentionOutsidePlacesOnlyOnTheShrinkingExceptionList()
+        {
+            var corpus = FirstWeekTextCorpus.Read();
+            var guard = new FirstWeekTextGuard(corpus.Outside);
+            var mentions = guard.Scan(corpus.Fields);
+            var exceptions = JsonUtility.FromJson<FirstWeekTextGuard.ExceptionAsset>(
+                System.IO.File.ReadAllText(FirstWeekTextCorpus.ExceptionsPath));
+            Assert.That(exceptions.Lines, Is.Not.Null, "The exception asset must contain its explicit list.");
+            foreach (var category in corpus.Counts)
+                TestContext.WriteLine(category.Key + ": " + category.Value + " text fields");
+            foreach (var mention in mentions) TestContext.WriteLine(mention.ToString());
+            Assert.That(guard.Problems(mentions, exceptions.Lines), Is.Empty,
+                "First-week words must stay on the island. Remove an exception as soon as its line is corrected.");
+        }
+
         private static List<T> LoadAll<T>() where T : Object
         {
             var list = new List<T>();
