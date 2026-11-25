@@ -387936,7 +387936,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -6
   m_MaskInteraction: 0
   m_Sprite: {fileID: 1199452794057329991, guid: 2d55ed5d235b359e31f70d83ec27d981, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -388213,7 +388213,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -6
   m_MaskInteraction: 0
   m_Sprite: {fileID: 2369311796284908352, guid: b65b41fe91dc41554452fb4d2acbe392, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -388295,7 +388295,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -6
   m_MaskInteraction: 0
   m_Sprite: {fileID: 5782535587410689943, guid: dc5c8e8961f676b7dab80238fafa03f7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -388742,7 +388742,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -6
   m_MaskInteraction: 0
   m_Sprite: {fileID: 2324535541954764506, guid: a4c664979855505a096021677188f7c0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -390470,7 +390470,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -6
   m_MaskInteraction: 0
   m_Sprite: {fileID: 1258741295058945193, guid: 1a05b7f4acd5c1633bb177bdf33893d7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -391006,7 +391006,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -6
   m_MaskInteraction: 0
   m_Sprite: {fileID: 1148798963984907597, guid: ab95519eb7989f32e1205fe273b0a967, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -391088,7 +391088,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -6
   m_MaskInteraction: 0
   m_Sprite: {fileID: 5947157514210782086, guid: 929ef71513fc21ca2c0e163ceeaca066, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -391170,7 +391170,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -6
   m_MaskInteraction: 0
   m_Sprite: {fileID: 1201545385578475557, guid: 78b370fecca2e8bd61f94f9b17d5813b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -391268,7 +391268,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -6
   m_MaskInteraction: 0
   m_Sprite: {fileID: 1597061778386967851, guid: ae8645de4b0b20d00312dcf23c12c6ab, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -391350,7 +391350,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -6
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7372815473369995444, guid: 71612b594bce10b8222e8319b4a59182, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -391432,7 +391432,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -6
   m_MaskInteraction: 0
   m_Sprite: {fileID: 6903893106114162150, guid: c525977e0c123d68a8624a5bd93b854e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -391514,7 +391514,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -6
   m_MaskInteraction: 0
   m_Sprite: {fileID: 1768591743551200393, guid: 771ba1e316c455b98fd9f243949eba1a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -398151,7 +398151,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -6
   m_MaskInteraction: 0
   m_Sprite: {fileID: 3311220279167630630, guid: a52c712d5cc71632c863b0215d83cec4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

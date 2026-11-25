@@ -147,7 +147,9 @@ namespace HiddenHarbours.App.Editor
                         if(gang==null)node.PictureScaleY=1f/IsoGround.GroundDepthScale;
                         Sprite sprite=WaterSprite(def,partKey==keys[0]?null:name,0);
                         string layer=WS(WM(p,"motionLayer"));
-                        int order=NineMileCreekWharf.FloatSortingOrder+(layer=="back"?-1:layer=="front"?1:0);
+                        // Fixed: not a float, not one of a float's back/front motion layers, not a brow rung.
+                        bool fixedPart=!WB(WM(p,"floating"))&&gang==null&&layer!="back"&&layer!="front";
+                        int order=fixedPart?NineMileCreekWharf.FixedWaterSideSortingOrder:NineMileCreekWharf.FloatSortingOrder+(layer=="back"?-1:layer=="front"?1:0);
                         writer.Picture(node,sprite,order);
                         if(WB(WM(p,"floating")))writer.Mono(node,"ride","Assets/_Project/Code/World/FloatingPlatformVisual.cs","HiddenHarbours.World","HiddenHarbours.World.FloatingPlatformVisual",
                             new[]{"  _platform: {fileID: "+floats[name]+"}","  _bakedDeckElevation: "+F(WN(WM(p,"freeboard"))*node.PictureScaleY),"  _planY: "+F(at.y)});

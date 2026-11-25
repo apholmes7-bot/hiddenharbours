@@ -447,6 +447,16 @@ namespace HiddenHarbours.App.Editor
         public static int FloatPilesSortingOrder => FloatSortingOrder - 1;
 
         /// <summary>
+        /// The rung the FIXED water-side pictures draw at (the cribbed wall, the concrete wharf, the
+        /// apron, the ramps, the breakwater arms): UNDER the sea plane. Their faces are drawn about
+        /// 9 m deep from the lip, so at the deck band they covered the water south of the wall at
+        /// every tide and the wall berths' boats sat on a dark face with no sea under them. Under the
+        /// sea, the plane covers whatever part of a face stands where the painted bed is below the
+        /// water, and the deck (dry ground) still shows. The floats and the brow keep their rungs.
+        /// </summary>
+        public static int FixedWaterSideSortingOrder => SortingBands.UnderHulls;
+
+        /// <summary>
         /// The rung the BROW draws at — the top of the wharf-deck band.
         ///
         /// <para>It has to be over BOTH things it touches, and they are on different rungs: its hinge is
