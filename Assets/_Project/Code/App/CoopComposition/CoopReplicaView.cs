@@ -11,6 +11,7 @@ namespace HiddenHarbours.CoopSpike
         private string _hullId;
         private SpriteRenderer _hull;
         private Transform _skipper;
+        private SpriteRenderer _skipperRenderer;
         private IsoCharacterSprite _character;
         private BoatHullSkinner.Rig _rig;
         private Vector3 _standRigMetres;
@@ -31,8 +32,7 @@ namespace HiddenHarbours.CoopSpike
             var skipper = new GameObject("RemoteSkipper");
             skipper.transform.SetParent(transform, false);
             _skipper = skipper.transform;
-            var renderer = skipper.AddComponent<SpriteRenderer>();
-            renderer.sortingOrder = 10;
+            _skipperRenderer = skipper.AddComponent<SpriteRenderer>();
             _character = skipper.AddComponent<IsoCharacterSprite>();
             _character.Configure(settings.Character);
         }
@@ -61,6 +61,10 @@ namespace HiddenHarbours.CoopSpike
                 ride.Configure(LocalPictureDatum(), hull.DraughtMeters);
                 _rig = BoatHullSkinner.ApplyHull(gameObject, _hull, hull, null);
                 _hullId = id;
+                // The skipper rides the boat's sorting group (ADR 0059): one order above her hull inside
+                // it, as a moored boat's skipper does, rather than a fixed order in the decor band.
+                int hullOrder = hull.Visual != null ? hull.Visual.SortingOrder : _hull.sortingOrder;
+                _skipperRenderer.sortingOrder = hullOrder + 1;
                 // The existing hull data chooses its renderer. Rebind after a hull swap so the
                 // figure reads that hull's private depth frame, without installing a player rider.
                 _figure = CharacterFigurePresentation.Service?.Attach(_skipper.gameObject, this);
