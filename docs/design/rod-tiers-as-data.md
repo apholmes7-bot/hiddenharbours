@@ -99,10 +99,12 @@ exactly before comparing the complete fight. No tolerance is introduced.
 The two `HigherRodInHand_OpensTheExistingCastGateAndCapturesItsNumbers` cases
 inherited the dry clam-flat fixture. They now provide wet landing water and assert
 the live input gate before retaining the exact `Cast` and captured-profile checks.
-The corrected cases still require automated execution; no passing result is
-claimed for these changes. Pinned main was merged without a rod census change.
+The corrected head subsequently passed CI in run 45347940287. This refresh merges
+main `d46bde303e6aa256d23d47a05ede5d7d6f38e51e`; none of the profile or controller
+inputs changed on that intervening main. The refreshed head still requires its own
+CI result; no local execution is claimed.
 
-Save version 25 is unchanged. `RodSnapshot` is a plain session value; the existing
+Main uses save version 26 for store purchases, special orders and shopping bags. This proposal leaves that format unchanged. `RodSnapshot` is a plain session value; the existing
 cast already restarts rather than resuming from a save. Before selling new tiers,
 a follow-up must define distinct purchase identities and verify reconstruction of
 the correct physical Def in existing rack storage and loose placement. Persisting
