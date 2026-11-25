@@ -126,6 +126,15 @@ namespace HiddenHarbours.Art
         static readonly List<IsoFacetHullRenderer> s_Hulls = new List<IsoFacetHullRenderer>();
         static readonly List<IsoCharacterFigureRenderer> s_Figures = new List<IsoCharacterFigureRenderer>();
         internal static int Count => s_Hulls.Count;
+        /// <summary>Whether the mesh mirror pass has anything to draw for this camera: a hull, or (only while the
+        /// calm mirror runs) a figure standing ashore.</summary>
+        internal static bool HasSubjects => s_Hulls.Count > 0 || (CalmMirror.Active && HasAshoreFigure());
+        static bool HasAshoreFigure()
+        {
+            for (int f = 0; f < s_Figures.Count; f++)
+                if (s_Figures[f] != null && s_Figures[f].IsAshore) return true;
+            return false;
+        }
         internal static void Register(IsoFacetHullRenderer hull) { if (!s_Hulls.Contains(hull)) s_Hulls.Add(hull); }
         internal static void Unregister(IsoFacetHullRenderer hull) => s_Hulls.Remove(hull);
         internal static void Register(IsoCharacterFigureRenderer figure) { if (!s_Figures.Contains(figure)) s_Figures.Add(figure); }
@@ -151,6 +160,9 @@ namespace HiddenHarbours.Art
             internal Bounds Bounds;
             internal int Pass, Submesh;
             internal long Triangles;
+            /// <summary>The calm mirror's figures ashore: a true mirror has no fade with depth (the hull fade
+            /// would thin a figure standing metres above the water to nothing).</summary>
+            internal bool NoFade;
             internal readonly MaterialPropertyBlock Properties = new MaterialPropertyBlock();
             internal void Set(Renderer source, Mesh mesh, int submesh, Matrix4x4 mirror, Vector4 plane)
             {
@@ -187,6 +199,7 @@ namespace HiddenHarbours.Art
                 ObjectToWorld = source.localToWorldMatrix;
                 Mirror = mirror;
                 Plane = plane;
+                NoFade = false;
                 Bounds = TransformBounds(mesh.bounds, mirror * ObjectToWorld);
                 // Snapshot material state as well as MPBs: a second camera cannot alter an
                 // earlier camera's figure face uniforms, ramps or ink state before execution.
@@ -401,6 +414,7 @@ namespace HiddenHarbours.Art
                 for (int packet = before; packet < output.Count; packet++)
                     output.Packets[packet].Properties.SetFloat(IsoFacetShaderIds.HullId, id / 255f);
             }
+            if (CalmMirror.Active && !PrepareAshore(output, camera, maxHulls, maxTriangles)) return;
             if (output.Count == 0) return;
             // Original-view cullResults never participates; only full reflected bounds do.
             Array.Sort(output.Packets, 0, output.Count, PacketOrder.Instance);
@@ -422,9 +436,51 @@ namespace HiddenHarbours.Art
             {
                 output.Packets[i].Properties.SetVector(SizeId, new Vector4(width, height, 0, 0));
                 output.Packets[i].Properties.SetVector(DepthRangeId, output.DepthRange);
-                output.Packets[i].Properties.SetVector(FadeId, fade);
+                output.Packets[i].Properties.SetVector(FadeId, output.Packets[i].NoFade ? Vector4.zero : fade);
                 output.Packets[i].Properties.SetVector(EndsId, output.Ends);
             }
+        }
+
+        /// <summary>
+        /// The calm mirror's figures ashore (the player, villagers): each is mirrored about the water plane under
+        /// her feet, (standing height - water level) below the soles: the deck on a wharf, the ground on a shore.
+        /// Wading, the plane is above the soles and what is under the water is cut away. One figure counts as one
+        /// hull toward the budget. False when the budget overflowed (the snapshot is cleared, as for hulls).
+        /// </summary>
+        static bool PrepareAshore(Snapshot output, Camera camera, int maxHulls, long maxTriangles)
+        {
+            var environment = GameServices.Environment;
+            if (environment == null) return true;
+            float water = environment.WaterLevelAt(GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0);
+            for (int f = 0; f < s_Figures.Count; f++)
+            {
+                IsoCharacterFigureRenderer figure = s_Figures[f];
+                if (figure == null || !figure.isActiveAndEnabled || !figure.IsAshore || figure.ReflectionMesh == null
+                    || figure.ReflectionRenderer == null) continue;
+                Vector2 at = figure.transform.position;
+                float ground = GameServices.TidalTerrain != null ? GameServices.TidalTerrain.ElevationAt(at) : 0f;
+                float w = water - StandableSurfaces.StandingElevationNow(ground, at);
+                // The posed mesh's own origin, with its depth, as hulls use theirs.
+                Vector3 origin = figure.ReflectionRenderer.transform.position;
+                Matrix4x4 mirror = IsoFacetMath.HullReflectionMatrix(origin, figure.ReflectionElevationDeg, w);
+                Vector4 plane = IsoFacetMath.HullReflectionPlane(origin, figure.ReflectionElevationDeg, w);
+                int before = output.Count;
+                bool fits = output.Add(figure.ReflectionRenderer, figure.ReflectionMesh, mirror, plane, camera);
+                if (output.Count > before) output.HullCount++;
+                if (!fits || output.HullCount > maxHulls || output.Triangles > maxTriangles)
+                {
+                    output.Clear(); output.Overflow = true; return false;
+                }
+                for (int packet = before; packet < output.Count; packet++)
+                {
+                    Packet p = output.Packets[packet];
+                    p.NoFade = true;
+                    p.Properties.SetFloat(IsoFacetShaderIds.HullId, 1 / 255f);
+                    // Her reflection is of her dry: the figure's own water line belongs to wading aboard a hull.
+                    p.Properties.SetVector(IsoFacetFigureShaderIds.FigureWater, Vector4.zero);
+                }
+            }
+            return true;
         }
 
         internal static bool OverlapsTarget(Bounds bounds, Camera camera, int width, int height)

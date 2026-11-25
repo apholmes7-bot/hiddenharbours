@@ -57,7 +57,8 @@ namespace HiddenHarbours.Player
     // (101), which says whether it is drawing its own rod: a carried prop posed before either would be
     // a frame behind the hand it is in.
     [DefaultExecutionOrder(102)]
-    public sealed class CarryHands : MonoBehaviour, IHandsCarrier, ICatchHands, IDigBladeReader
+    public sealed partial class CarryHands : MonoBehaviour, IHandsCarrier, ICatchHands, IDigBladeReader,
+                                             IShoppingBagHands
     {
         [Header("Wiring (auto-resolved off this object if empty)")]
         [Tooltip("The player's own renderer — the SORTING DATUM the carried sprite rides. Null = the " +
@@ -240,6 +241,8 @@ namespace HiddenHarbours.Player
         {
             GameServices.Hands = this;
             GameServices.CatchHands = this;
+            GameServices.BagHands = this;
+            SubscribeBagSignals();
         }
 
         /// <summary>
@@ -256,6 +259,7 @@ namespace HiddenHarbours.Player
         {
             if (ReferenceEquals(GameServices.Hands, this)) GameServices.Hands = null;
             if (ReferenceEquals(GameServices.CatchHands, this)) GameServices.CatchHands = null;
+            if (ReferenceEquals(GameServices.BagHands, this)) GameServices.BagHands = null;
             _catchMesh?.Dispose();
             _catchMesh = null;
             _toolMesh?.Dispose();
@@ -569,6 +573,7 @@ namespace HiddenHarbours.Player
 
         private void LateUpdate()
         {
+            KeepBag();
             if (IsCarrying) ApplyCarriedPose();
             else
             {
@@ -969,6 +974,7 @@ namespace HiddenHarbours.Player
         /// nothing, so it must not leave a rod it hid hidden.</summary>
         private void OnDisable()
         {
+            UnsubscribeBagSignals();
             _catchMesh?.Hide();
             _toolMesh?.Hide();
             _pailMesh?.Hide();

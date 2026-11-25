@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace HiddenHarbours.Tests.EditMode
 {
-    // Test-only policy at c626cea10d. These are semantic namespaces, not class-name guesses.
+    // Test-only policy at d46bde303e. These are semantic namespaces, not class-name guesses.
     // New types need an explicit review here; additions to the identity ledger do not grant a prefix.
     internal static class ContentIdentityPolicy
     {
@@ -98,6 +98,7 @@ namespace HiddenHarbours.Tests.EditMode
             { "HiddenHarbours.Core.RelationshipTieDef", new[] { "tie" } },
             { "HiddenHarbours.Core.RowingStyleDef", new[] { "rowstyle" } },
             { "HiddenHarbours.Core.SailPolarDef", new[] { "sailpolar" } },
+            { "HiddenHarbours.Core.ShoppingBagDef", new[] { "shoppingbag" } },
             { "HiddenHarbours.Core.StaffRoleDef", new[] { "role" } },
             { "HiddenHarbours.Core.SupplyRoleDef", new[] { "supplyrole" } },
             { "HiddenHarbours.Core.SwellClimateDef", new[] { "swell" } },
