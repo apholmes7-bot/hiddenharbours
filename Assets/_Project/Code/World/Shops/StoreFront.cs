@@ -20,6 +20,8 @@ namespace HiddenHarbours.World
         private readonly List<GameObject> _displays = new List<GameObject>();
         private readonly List<GameObject> _onWall = new List<GameObject>();
         private readonly List<GameObject> _lamps = new List<GameObject>();
+        private readonly List<GameObject> _nightPictures = new List<GameObject>();
+        private int _night = -1;   // -1 not yet decided, 0 day, 1 night
         private BuildingInterior _building;
         private float _sinceCheck;
         private int _shown = -1;   // -1 not yet decided, 0 put away, 1 out
@@ -65,7 +67,32 @@ namespace HiddenHarbours.World
                 if (piece.OnlyWhileOpen) _displays.Add(go);
                 if (piece.HideWhileInside) _onWall.Add(go);
                 if (piece.Glows) _lamps.Add(Light(go, piece));
+                if (piece.NightSprite != null)
+                {
+                    var lit = new GameObject(go.name + ".night");
+                    lit.transform.SetParent(go.transform, false);
+                    var litRenderer = lit.AddComponent<SpriteRenderer>();
+                    litRenderer.sprite = piece.NightSprite;
+                    litRenderer.sortingOrder = def.NightSortingOrder;
+                    lit.SetActive(false);
+                    _nightPictures.Add(lit);
+                }
             }
+        }
+
+        /// <summary>True while the lit night pictures show.</summary>
+        public bool NightPicturesShown => _night == 1;
+
+        /// <summary>Shows the lit night pictures when <paramref name="night"/> and hides them otherwise. Returns
+        /// true when that changed anything. Public so a test drives it without a clock.</summary>
+        public bool ApplyNight(bool night)
+        {
+            int want = night ? 1 : 0;
+            if (want == _night) return false;
+            _night = want;
+            for (int i = 0; i < _nightPictures.Count; i++)
+                if (_nightPictures[i] != null) _nightPictures[i].SetActive(want == 1);
+            return true;
         }
 
         private static GameObject Light(GameObject lamp, StoreFrontPiece piece)
@@ -131,7 +158,12 @@ namespace HiddenHarbours.World
         private void Check()
         {
             IGameClock clock = GameServices.Clock;
-            if (clock != null) ApplyHour(clock.HourOfDay);
+            if (clock != null)
+            {
+                ApplyHour(clock.HourOfDay);
+                // The board is lit over the same hours as the village's windows: the shared sky's sunset to sunrise.
+                if (_nightPictures.Count > 0) ApplyNight(WatchFaceState.NightAt(clock.HourOfDay));
+            }
             if (_onWall.Count > 0) ApplyInside(_building != null && _building.IsInside);
         }
     }

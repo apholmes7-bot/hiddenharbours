@@ -43,6 +43,11 @@ namespace HiddenHarbours.World
 
         /// <summary>How bright, on the village lamp look's own scale (1 = as bright as it).</summary>
         [Min(0f)] public float GlowIntensity = 1f;
+
+        /// <summary>Optional: the piece as its lamps light it after sunset (the name board under its lamps),
+        /// drawn over it above the night's darkness the way a lit window pane is, from sunset to sunrise (the
+        /// shared sky's hours, <c>WatchFaceState.NightAt</c>). Same size and pivot as <see cref="Sprite"/>.</summary>
+        public Sprite NightSprite;
     }
 
     /// <summary>
@@ -80,6 +85,10 @@ namespace HiddenHarbours.World
         [Tooltip("How often, in real seconds, the front looks at the clock. A slow check: the hour moves far " +
                  "slower than this.")]
         [Min(0.1f)] public float CheckRealSeconds = 1f;
+
+        [Tooltip("The draw order of a piece's lit night picture: over the day/night darkness (32760), as a lit " +
+                 "window pane is, and just under the lamps' own glow (32767).")]
+        public int NightSortingOrder = 32765;
 
         [Tooltip("The material the pieces draw with (the village props' lit sprite material). Optional.")]
         public Material Material;

@@ -18,6 +18,7 @@ MonoBehaviour:
   OpensHour: 7
   ClosesHour: 19
   CheckRealSeconds: 1
+  NightSortingOrder: 32765
   Material: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   Pieces:
   - Id: front.sign
@@ -31,6 +32,7 @@ MonoBehaviour:
     GlowColor: {r: 1, g: 0.84, b: 0.58, a: 1}
     GlowRangeMetres: 1.25
     GlowIntensity: 1
+    NightSprite: {fileID: 21300000, guid: e67ff8f948b84e2bb2cd83339cb6d6cc, type: 3}
   - Id: front.sign_lamp_left
     Sprite: {fileID: 21300000, guid: 6a8e31c1c5b745628421b54968e6d48d, type: 3}
     Offset: {x: -0.875, y: 0.486}
@@ -42,6 +44,7 @@ MonoBehaviour:
     GlowColor: {r: 1, g: 0.84, b: 0.58, a: 1}
     GlowRangeMetres: 1.25
     GlowIntensity: 1
+    NightSprite: {fileID: 0}
   - Id: front.sign_lamp_right
     Sprite: {fileID: 21300000, guid: d11c83bbc2e24fb3b5f73e5639fef5c6, type: 3}
     Offset: {x: 0.875, y: 0.486}
@@ -53,6 +56,7 @@ MonoBehaviour:
     GlowColor: {r: 1, g: 0.84, b: 0.58, a: 1}
     GlowRangeMetres: 1.25
     GlowIntensity: 1
+    NightSprite: {fileID: 0}
   - Id: front.potato_crate
     Sprite: {fileID: 21300000, guid: 4140d4b019db498fa0e46270feadcc8e, type: 3}
     Offset: {x: 1.5, y: -5.572}
@@ -64,6 +68,7 @@ MonoBehaviour:
     GlowColor: {r: 1, g: 0.84, b: 0.58, a: 1}
     GlowRangeMetres: 1.25
     GlowIntensity: 1
+    NightSprite: {fileID: 0}
   - Id: front.bucket_stand
     Sprite: {fileID: 21300000, guid: 6ba0fa475b584396b4a696283e331a38, type: 3}
     Offset: {x: 2.25, y: -4.972}
@@ -75,6 +80,7 @@ MonoBehaviour:
     GlowColor: {r: 1, g: 0.84, b: 0.58, a: 1}
     GlowRangeMetres: 1.25
     GlowIntensity: 1
+    NightSprite: {fileID: 0}
   - Id: front.buoy_rack
     Sprite: {fileID: 21300000, guid: fe39f2f9f1c54dab8fbadd78a9869814, type: 3}
     Offset: {x: -4.05, y: -5.622}
@@ -86,3 +92,4 @@ MonoBehaviour:
     GlowColor: {r: 1, g: 0.84, b: 0.58, a: 1}
     GlowRangeMetres: 1.25
     GlowIntensity: 1
+    NightSprite: {fileID: 0}

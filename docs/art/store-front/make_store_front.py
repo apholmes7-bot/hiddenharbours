@@ -6,6 +6,7 @@ stands on the ground (or, for the board and its lamps, is fixed to the store's f
     python make_store_front.py <out_dir>
 
 StoreFront_Sign          the name board on the face above the awning: "LeBlanc's", hidden while inside
+StoreFront_SignNight     the board as its lamps light it after sunset, drawn over the night like a lit pane
 StoreFront_LampLeft      a gooseneck lamp over the board's left end, lit at night; hidden while inside
 StoreFront_LampRight     its mirror over the right end
 StoreFront_PotatoCrate   a crate of potatoes on a low stand, out while the store is open
@@ -120,6 +121,28 @@ def sign():
         put(img, cx, 4, "C"); put(img, cx - 1, 5, "C"); put(img, cx, 5, "c"); put(img, cx + 1, 5, "C"); put(img, cx, 6, "C")
     return img
 
+
+def sign_night():
+    # The board as its two lamps light it after sunset, drawn over the night's darkness the way a lit window
+    # pane is: each lamp throws a warm pool down from its bulb (just over the board's ends), fading toward the
+    # middle, over a dim warm floor so the whole name still reads.
+    day = sign()
+    w, h = day.size
+    img = canvas(w, h)
+    bulbs = ((5.5, -1.0), (w - 5.5, -1.0))
+    for y in range(h):
+        for x in range(w):
+            r, g, b, a = day.getpixel((x, y))
+            if a == 0:
+                continue
+            lit = 0.22
+            for bx, by in bulbs:
+                d2 = ((x + 0.5 - bx) / 1.0) ** 2 + ((y + 0.5 - by) * 1.6) ** 2
+                lit += 0.95 / (1.0 + d2 / 90.0)
+            lit = min(lit, 1.1)
+            warm = (1.0, 0.86, 0.62)
+            img.putpixel((x, y), tuple(min(255, int(round(c * lit * k))) for c, k in zip((r, g, b), warm)) + (255,))
+    return img
 
 # A gooseneck lamp: a plate on the wall, an iron arm curving up and over, a green enamel shade hung from its
 # end with the bulb under it. Drawn for the lamp on the board's left (its plate outside the board, its shade
@@ -249,7 +272,7 @@ def bucket_stand():
 
 def main(out):
     os.makedirs(out, exist_ok=True)
-    for name, img in (("StoreFront_Sign", sign()), ("StoreFront_LampLeft", lamp(False)), ("StoreFront_LampRight", lamp(True)),
+    for name, img in (("StoreFront_Sign", sign()), ("StoreFront_SignNight", sign_night()), ("StoreFront_LampLeft", lamp(False)), ("StoreFront_LampRight", lamp(True)),
                       ("StoreFront_PotatoCrate", potato_crate()),
                       ("StoreFront_BuoyRack", buoy_rack()), ("StoreFront_BucketStand", bucket_stand())):
         img.save(os.path.join(out, name + ".png"))

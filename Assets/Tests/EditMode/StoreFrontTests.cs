@@ -162,6 +162,64 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
+        /// <summary>A piece with a night picture gets it as a hidden child drawn at the front's night order; it
+        /// shows from sunset and goes again at sunrise, and goes in with the wall while he is inside.</summary>
+        [Test]
+        public void TheBoardsNightPicture_ShowsFromSunsetToSunrise_OverTheDark_AndGoesInWithTheWall()
+        {
+            var def = ScriptableObject.CreateInstance<StoreFrontDef>();
+            _made.Add(def);
+            var tex = new Texture2D(4, 2);
+            _made.Add(tex);
+            Sprite lit = Sprite.Create(tex, new Rect(0, 0, 4, 2), new Vector2(0.5f, 0f), 32f);
+            _made.Add(lit);
+            def.Pieces = new List<StoreFrontPiece>
+            {
+                new StoreFrontPiece { Id = "front.sign", HideWhileInside = true, NightSprite = lit },
+                new StoreFrontPiece { Id = "front.crate", OnlyWhileOpen = true },
+            };
+            var building = new GameObject("generalStore");
+            _made.Add(building);
+            StoreFront front = StoreFront.Build(def, building.transform);
+            Transform night = front.transform.Find("front.sign/front.sign.night");
+            Assert.That(night, Is.Not.Null, "the board's night picture hangs on the board");
+            Assert.That(front.transform.Find("front.crate/front.crate.night"), Is.Null, "a display has none");
+            var sr = night.GetComponent<SpriteRenderer>();
+            Assert.That(sr.sprite, Is.SameAs(lit));
+            Assert.That(sr.sortingOrder, Is.EqualTo(def.NightSortingOrder));
+            Assert.That(night.gameObject.activeSelf, Is.False, "hidden until the front has looked at the hour");
+
+            Assert.That(front.ApplyNight(HiddenHarbours.Core.WatchFaceState.NightAt(12f)), Is.True);
+            Assert.That(night.gameObject.activeSelf, Is.False, "noon: the board shows by day");
+            Assert.That(front.ApplyNight(HiddenHarbours.Core.WatchFaceState.NightAt(22f)), Is.True);
+            Assert.That(night.gameObject.activeSelf, Is.True, "22:00: the lamps light the board");
+            Assert.That(front.NightPicturesShown, Is.True);
+            Assert.That(front.ApplyNight(HiddenHarbours.Core.WatchFaceState.NightAt(23f)), Is.False, "still night: nothing to change");
+            front.ApplyInside(true);
+            Assert.That(night.gameObject.activeInHierarchy, Is.False, "inside: away with the wall");
+            front.ApplyInside(false);
+            Assert.That(night.gameObject.activeInHierarchy, Is.True);
+            front.ApplyNight(HiddenHarbours.Core.WatchFaceState.NightAt(6f));
+            Assert.That(night.gameObject.activeSelf, Is.False, "06:00: day again");
+        }
+
+        /// <summary>The night picture draws over the day/night darkness (32760) and under the lamps' own glow
+        /// (SceneLight's top order, 32767), and the shipped board's night picture is its day picture lit: the same
+        /// size, pivot and density, so it lies exactly over it.</summary>
+        [Test]
+        public void TheShippedBoardsNightPicture_LiesExactlyOverIt_BetweenTheDarkAndTheGlow()
+        {
+            StoreFrontDef front = Shipped();
+            Assert.That(front.NightSortingOrder, Is.InRange(32761, 32766), "over the darkness, under the lamps' glow");
+            StoreFrontPiece sign = front.Pieces.Single(p => p.Id == "front.sign");
+            Assert.That(sign.NightSprite, Is.Not.Null, "the board is lit at night");
+            Assert.That(sign.NightSprite.rect.size, Is.EqualTo(sign.Sprite.rect.size), "same size as by day");
+            Assert.That(sign.NightSprite.pivot, Is.EqualTo(sign.Sprite.pivot), "same pivot as by day");
+            Assert.That(sign.NightSprite.pixelsPerUnit, Is.EqualTo(sign.Sprite.pixelsPerUnit));
+            Assert.That(front.Pieces.Where(p => p.Id != "front.sign").All(p => p.NightSprite == null), Is.True,
+                        "only the board has a night picture");
+        }
+
         private sealed class Vector2EqualityComparer : IEqualityComparer<Vector2>
         {
             public static readonly Vector2EqualityComparer Instance = new Vector2EqualityComparer();
