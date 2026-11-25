@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: supply.copper_nails
   DisplayName: Packet of copper nails
   Flavor: A counted packet for fastening the patch plank.
-  Price: 8
+  PriceSource: {fileID: 11400000, guid: b93db39c5a454a0daa5b6c0720849f5b, type: 2}
   Catalog:
     Listed: 0
     Section: 5

@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: supply.patch_plank
   DisplayName: Patch plank
   Flavor: A sound board cut for a small hull patch. Carry it to the slip.
-  Price: 24
+  PriceSource: {fileID: 11400000, guid: b93db39c5a454a0daa5b6c0720849f5b, type: 2}
   Catalog:
     Listed: 0
     Section: 5

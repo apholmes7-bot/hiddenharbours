@@ -75,31 +75,32 @@ namespace HiddenHarbours.Core
     {
         public readonly string BoatId;
         public readonly string JobId;
+        public readonly string PlayerId;
         public readonly double WorkedSeconds;
         public readonly bool MaterialsReserved;
         public readonly bool Working;
         public DoryMendingSnapshot(string boatId, string jobId, double workedSeconds,
-                                  bool materialsReserved, bool working)
+                                  bool materialsReserved, bool working, string playerId)
         {
             BoatId = boatId; JobId = jobId; WorkedSeconds = workedSeconds;
-            MaterialsReserved = materialsReserved; Working = working;
+            MaterialsReserved = materialsReserved; Working = working; PlayerId = playerId;
         }
     }
 
     public readonly struct DoryMendingJobStarted
     {
-        public readonly string BoatId, JobId;
+        public readonly string BoatId, JobId, PlayerId;
         public readonly double GameSeconds;
-        public DoryMendingJobStarted(string boatId, string jobId, double seconds)
-        { BoatId = boatId; JobId = jobId; GameSeconds = seconds; }
+        public DoryMendingJobStarted(string boatId, string jobId, double seconds, string playerId)
+        { BoatId = boatId; JobId = jobId; GameSeconds = seconds; PlayerId = playerId; }
     }
 
     public readonly struct DoryMendingJobDone
     {
-        public readonly string BoatId, JobId;
+        public readonly string BoatId, JobId, PlayerId;
         public readonly double GameSeconds;
-        public DoryMendingJobDone(string boatId, string jobId, double seconds)
-        { BoatId = boatId; JobId = jobId; GameSeconds = seconds; }
+        public DoryMendingJobDone(string boatId, string jobId, double seconds, string playerId)
+        { BoatId = boatId; JobId = jobId; GameSeconds = seconds; PlayerId = playerId; }
     }
 
     public readonly struct DoryMended

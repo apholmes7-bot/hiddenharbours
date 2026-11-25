@@ -20,6 +20,40 @@ namespace HiddenHarbours.Economy
                  "be proven dry from the tide's rate bound, including a complete tide between samples.")]
         [Min(0.01f)] public float SearchStepGameMinutes = 1f;
         public DoryMendingJobDef[] Jobs;
+        [Serializable]
+        public struct MaterialPrice
+        {
+            public string ItemId;
+            [Min(1)] public int Coins;
+        }
+        public MaterialPrice[] MaterialPrices;
+
+        public int PriceFor(string itemId)
+        {
+            ValidatePrices();
+            foreach (var row in MaterialPrices) if (row.ItemId == itemId) return row.Coins;
+            throw new ArgumentException("Missing mending supply price: " + itemId);
+        }
+
+        public void ValidatePrices()
+        {
+            var expected = new HashSet<string>(StringComparer.Ordinal);
+            if (Jobs == null) throw new ArgumentException("Missing mending jobs.");
+            foreach (var job in Jobs)
+            {
+                if (job == null || job.Materials == null) throw new ArgumentException("Missing materials.");
+                foreach (var material in job.Materials) expected.Add(material.ItemId);
+            }
+            if (MaterialPrices == null) throw new ArgumentException("Missing mending prices.");
+            var priced = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var row in MaterialPrices)
+            {
+                Require(row.ItemId, "supply");
+                if (row.Coins <= 0 || !priced.Add(row.ItemId))
+                    throw new ArgumentException("Mending prices must be positive and unique.");
+            }
+            if (!priced.SetEquals(expected)) throw new ArgumentException("Price every required supply exactly once.");
+        }
 
         /// <summary>Validate the sequence before consuming anything. Content checks also supply an
         /// item lookup so misspelled or missing material ids cannot reach a placed interaction.</summary>
