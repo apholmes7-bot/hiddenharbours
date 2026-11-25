@@ -141,7 +141,7 @@ MonoBehaviour:
     Kit: stPetersSetPieces
     Piece: trolleyLine
     State: 
-    At: {x: 175.59, y: 9.57}
+    At: {x: 174.59, y: 9.87}
     Z: 6
     StandsOn: ground
     MountHost: 
@@ -169,7 +169,7 @@ MonoBehaviour:
     Kit: stPetersSetPieces
     Piece: trolleyLine
     State: 
-    At: {x: 175.59, y: 9.57}
+    At: {x: 174.59, y: 9.87}
     Z: 6
     StandsOn: ground
     MountHost: 
@@ -197,7 +197,7 @@ MonoBehaviour:
     Kit: stPetersSetPieces
     Piece: trolley
     State: 
-    At: {x: 178, y: 6.9}
+    At: {x: 176.95, y: 8.08}
     Z: 6
     StandsOn: ground
     MountHost: 
@@ -223,7 +223,7 @@ MonoBehaviour:
     Kit: stPetersSetPieces
     Piece: trolley
     State: 
-    At: {x: 180.9, y: 3.6}
+    At: {x: 179.85, y: 5.97}
     Z: 6
     StandsOn: ground
     MountHost: 
