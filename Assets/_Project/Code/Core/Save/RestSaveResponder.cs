@@ -139,8 +139,10 @@ namespace HiddenHarbours.Core
                 // Relief in proportion to the hours actually slept (owner ruling 2026-11-15).
                 if (woke) GameServices.Needs.SleepSince(bedtime);
 
-                bool morning = woke && ClockSeconds(clock) == RestMorning.WakeSeconds(bedtime, config);
+                double now = ClockSeconds(clock);
+                bool morning = woke && now == RestMorning.WakeSeconds(bedtime, config);
                 outcome = Keep(request, woke, morning ? WokeText : SleepFlow.RestedText);
+                if (woke) AnnounceMorning(outcome, bedtime, now, config);
             }
             finally
             {
@@ -253,6 +255,15 @@ namespace HiddenHarbours.Core
             return save == null
                 ? new GameSaved(false, NoServiceText)
                 : Write(save, request, woke ? wokeText : SavedText);
+        }
+
+        /// <summary>Both sleep paths use the same boundary, after Keep has succeeded.</summary>
+        internal static void AnnounceMorning(in GameSaved outcome, double bedtime, double now, GameConfig config)
+        {
+            if (!outcome.Ok || !(now > bedtime)) return;
+            double morning = RestMorning.WakeSeconds(bedtime, config);
+            if (morning > bedtime && now >= morning)
+                EventBus.Publish(new SleepReachedMorning(morning));
         }
 
         static GameSaved Write(ISaveService save, in RestSaveRequested request, string keptText)

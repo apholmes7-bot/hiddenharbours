@@ -28,6 +28,7 @@ namespace HiddenHarbours.Tests.EditMode
         private string _dir;
         private string _save;
         private string _variableBefore;
+        private bool? _demoBefore;
         private readonly List<GameObject> _made = new List<GameObject>();
 
         [SetUp]
@@ -37,6 +38,8 @@ namespace HiddenHarbours.Tests.EditMode
             Directory.CreateDirectory(_dir);
             _save = Path.Combine(_dir, SaveStore.DefaultFileName);
             _variableBefore = System.Environment.GetEnvironmentVariable(SaveStore.TestRunSaveVariable);
+            _demoBefore = DemoBuild.Override;
+            DemoBuild.Override = false;
             GameServices.Reset();
             ShellFlow.Reset();
         }
@@ -49,6 +52,7 @@ namespace HiddenHarbours.Tests.EditMode
             GameServices.Reset();
             ShellFlow.Reset();
             System.Environment.SetEnvironmentVariable(SaveStore.TestRunSaveVariable, _variableBefore);
+            DemoBuild.Override = _demoBefore;
             if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true);
         }
 
@@ -67,6 +71,76 @@ namespace HiddenHarbours.Tests.EditMode
             System.Environment.SetEnvironmentVariable(SaveStore.TestRunSaveVariable, _save);
             Assert.That(SaveStore.ActivePath, Is.EqualTo(_save));
             Assert.That(SaveStore.ActivePath, Is.Not.EqualTo(SaveStore.DefaultPath));
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void DefaultPath_SelectsOnlyTheCurrentMode(bool demo)
+        {
+            DemoBuild.Override = demo;
+            System.Environment.SetEnvironmentVariable(SaveStore.TestRunSaveVariable, null);
+            string expected = demo
+                ? Path.Combine(Application.persistentDataPath, "demo", SaveStore.DefaultFileName)
+                : Path.Combine(Application.persistentDataPath, SaveStore.DefaultFileName);
+            Assert.That(SaveStore.DefaultPath, Is.EqualTo(expected));
+            Assert.That(SaveStore.ActivePath, Is.EqualTo(expected));
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void Modes_NeverContinueOrReplaceTheOtherGame(bool demo)
+        {
+            DemoBuild.Override = demo;
+            System.Environment.SetEnvironmentVariable(SaveStore.TestRunSaveVariable, _save);
+            string selected = demo ? Path.Combine(_dir, "demo", SaveStore.DefaultFileName) : _save;
+            string other = demo ? _save : Path.Combine(_dir, "demo", SaveStore.DefaultFileName);
+            Assert.That(SaveStore.ActivePath, Is.EqualTo(selected));
+            WriteGame(other, money: 4242);
+            var protectedFiles = new List<string> { other, other + ".tmp" };
+            for (int n = 1; n <= SaveStore.KeptGameCount; n++)
+                protectedFiles.Add(SaveStore.KeptPath(other, n));
+            foreach (string path in protectedFiles.Skip(1)) File.WriteAllText(path, "other game: " + path);
+            var original = protectedFiles.ToDictionary(path => path, File.ReadAllBytes);
+            var locks = new List<FileStream>();
+            try
+            {
+                foreach (string path in protectedFiles)
+                    locks.Add(new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None));
+                var service = OpenService(SaveStore.ActivePath);
+                Assert.That(service.SavePath, Is.EqualTo(selected));
+                Assert.That(service.LoadedExistingSave, Is.False,
+                    "The title must not offer the other mode's game as Continue.");
+                Assert.That(service.Current.Money, Is.EqualTo(SaveMigration.NewGame().Money));
+                service.BeginNewGame();
+                service.Current.Money = 77;
+                service.Save();
+                Assert.That(SaveStore.Read(selected).Money, Is.EqualTo(77));
+                var replaced = new List<byte[]>();
+                for (int n = 0; n <= SaveStore.KeptGameCount; n++)
+                {
+                    service.Current.Money = 100 + n;
+                    service.Save();
+                    replaced.Add(File.ReadAllBytes(selected));
+                    service.BeginNewGame();
+                }
+                for (int n = 1; n <= SaveStore.KeptGameCount; n++)
+                    Assert.That(File.ReadAllBytes(SaveStore.KeptPath(selected, n)),
+                        Is.EqualTo(replaced[replaced.Count - n]));
+                service.Current.Money = 88;
+                service.Save();
+                service.Open(SaveStore.ActivePath);
+                Assert.That(service.LoadedExistingSave, Is.True);
+                Assert.That(service.Current.Money, Is.EqualTo(88));
+                var expectedFiles = new List<string> { selected };
+                for (int n = 1; n <= SaveStore.KeptGameCount; n++)
+                    expectedFiles.Add(SaveStore.KeptPath(selected, n));
+                CollectionAssert.AreEquivalent(expectedFiles,
+                    Directory.GetFiles(Path.GetDirectoryName(selected)),
+                    "Only the selected save and its kept copies belong to this slot.");
+            }
+            finally { foreach (var stream in locks) stream.Dispose(); }
+            foreach (var pair in original)
+                Assert.That(File.ReadAllBytes(pair.Key), Is.EqualTo(pair.Value));
         }
 
         // ---- keeping a replaced file ---------------------------------------------------------------

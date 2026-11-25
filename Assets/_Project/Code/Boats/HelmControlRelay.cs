@@ -108,7 +108,7 @@ namespace HiddenHarbours.Boats
             get
             {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-                return DevIgnoreEquipmentGating
+                return DemoBuild.DevShortcutsAllowed && DevIgnoreEquipmentGating
                        && (GameServices.Config == null || GameServices.Config.DevAllHelmInstruments);
 #else
                 return false;

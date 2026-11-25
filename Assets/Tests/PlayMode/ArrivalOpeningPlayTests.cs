@@ -118,12 +118,68 @@ namespace HiddenHarbours.Tests.PlayMode
         [TearDown]
         public void TearDown()
         {
+            RegionBuildAvailability.Override = null;
+            DemoBuild.Override = null;
             if (_root != null) Object.DestroyImmediate(_root);
             MooringCleats.Clear();
             Interactables.Clear();
             GameServices.Save = null;
             GameServices.PlayerTransform = null;
             GameServices.Reset();
+        }
+
+        [UnityTest]
+        public IEnumerator AnAbsentOpeningSea_ReleasesTheCoverClockAndArrivalKey()
+        {
+            var opening = Build(false, false);
+            var sea = ScriptableObject.CreateInstance<ArrivalSeaDef>();
+            var region = ScriptableObject.CreateInstance<RegionDef>();
+            region.Id = "region.absent_sea";
+            region.SceneName = "AbsentOpeningSea";
+            sea.SeaRegion = region;
+            var clockHost = new GameObject("OpeningClock");
+            clockHost.SetActive(false);
+            clockHost.transform.SetParent(_root.transform);
+            var clock = clockHost.AddComponent<HiddenHarbours.Environment.GameClock>();
+            GameServices.Clock = clock;
+            var loader = _root.AddComponent<RegionSceneLoader>();
+            opening.ConfigureSea(sea, loader);
+            var covers = new List<bool>();
+            System.Action<RegionTravelCover> cover = message => covers.Add(message.IsLoading);
+            EventBus.Subscribe(cover);
+            RegionBuildAvailability.Override = (_, __) => false;
+            try
+            {
+                LogAssert.Expect(LogType.Warning,
+                    new System.Text.RegularExpressions.Regex("Could not load scene 'AbsentOpeningSea'"));
+                Assert.IsFalse(opening.TryBegin());
+                Assert.IsFalse(opening.WaitingForSea);
+                Assert.IsFalse(GameServices.OpeningCinematicRunning);
+                Assert.IsNull(GameServices.PendingArrivalKey);
+                CollectionAssert.AreEqual(new[] { true, false }, covers);
+                Assert.IsFalse(clock.IsHeld);
+                yield return null;
+                Assert.IsFalse(opening.IsRunning);
+            }
+            finally
+            {
+                EventBus.Unsubscribe(cover);
+                Object.DestroyImmediate(sea);
+                Object.DestroyImmediate(region);
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator DemoMode_DoesNotForceAnAlreadyFinishedOpening()
+        {
+            var opening = Build(false, true);
+            typeof(ArrivalOpening).GetField("_alwaysRunInEditor",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                .SetValue(opening, true);
+            DemoBuild.Override = true;
+            Assert.IsFalse(opening.TryBegin());
+            yield return null;
+            Assert.IsFalse(opening.IsRunning);
         }
 
         private ArrivalOpening Build(bool hasRestAnchor, bool alreadyArrived)

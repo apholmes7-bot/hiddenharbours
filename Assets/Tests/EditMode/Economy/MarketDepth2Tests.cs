@@ -192,5 +192,70 @@ namespace HiddenHarbours.Tests.Economy
             Assert.AreEqual(4f, market.SupplyOf(Cod), 1e-4f, "the sold lot raised cod's supply (future prices drop)");
             Assert.AreEqual(0f, market.SupplyOf(Mackerel), 1e-4f, "and left mackerel's supply untouched");
         }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void SaleSignal_CountsOnlyShellfishActuallySold_AndKeepsSpoiledUnits(bool all)
+        {
+            var hold = new FakeHold();
+            var clam = new CatchItem("fish.soft_shell_clam", "Clam", FishCategory.Shellfish, 1f, 10, 0f);
+            hold.TryAdd(clam);
+            hold.TryAdd(clam);
+            hold.TryAdd(new CatchItem("fish.soft_shell_clam", "Clam", FishCategory.Shellfish,
+                1f, 10, 0f, 1f, Freshness.Landed(0d)));
+            hold.TryAdd(new CatchItem("fish.atlantic_cod", "Cod", Cod, 1f, 10, 0f));
+            var signals = new List<CatchSold>();
+            EventBus.Subscribe<CatchSold>(signals.Add);
+            var wallet = new FakeWallet();
+            var spoil = new SpoilContext(2000d, 1000f, SpoilPolicy.Default);
+            int paid = all ? SellService.SellAll(hold, wallet, null, spoil)
+                : SellService.SellSpecies(hold, wallet, null, "fish.soft_shell_clam", 1, spoil);
+
+            Assert.AreEqual(1, signals.Count);
+            Assert.AreEqual(all ? 3 : 1, signals[0].Count);
+            Assert.AreEqual(all ? 2 : 1, signals[0].ShellfishCount);
+            Assert.AreEqual(paid, signals[0].TotalPaid);
+            Assert.AreEqual(paid, wallet.Money);
+            Assert.AreEqual(all ? 1 : 3, hold.UsedUnits);
+            int spoiled = 0;
+            foreach (CatchItem item in hold.Items) if (spoil.IsSpoiled(item)) spoiled++;
+            Assert.AreEqual(1, spoiled, "refused shellfish never enters the sale count");
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void FinfishOnlySaleHasNoShellfish_AndAnEmptySaleHasNoSignal(bool all)
+        {
+            var hold = new FakeHold();
+            hold.TryAdd(new CatchItem("fish.atlantic_cod", "Cod", Cod, 1f, 10, 0f));
+            var signals = new List<CatchSold>();
+            EventBus.Subscribe<CatchSold>(signals.Add);
+            var wallet = new FakeWallet();
+            var spoil = new SpoilContext(0d, 1000f, SpoilPolicy.Default);
+            if (all) SellService.SellAll(hold, wallet, null, spoil);
+            else SellService.SellSpecies(hold, wallet, null, "fish.atlantic_cod", 1, spoil);
+            Assert.AreEqual(1, signals.Count);
+            Assert.AreEqual(1, signals[0].Count);
+            Assert.AreEqual(0, signals[0].ShellfishCount);
+            Assert.AreEqual(0, SellService.SellAll(hold, wallet, null, spoil));
+            Assert.AreEqual(1, signals.Count);
+        }
+
+        [Test]
+        public void RefusedShellfishDoesNotSupplyASaleSignal()
+        {
+            var hold = new FakeHold();
+            hold.TryAdd(new CatchItem("fish.soft_shell_clam", "Clam", FishCategory.Shellfish,
+                1f, 10, 0f, 1f, Freshness.Landed(0d)));
+            var signals = new List<CatchSold>();
+            EventBus.Subscribe<CatchSold>(signals.Add);
+            var wallet = new FakeWallet();
+            var spoil = new SpoilContext(2000d, 1000f, SpoilPolicy.Default);
+            Assert.AreEqual(0, SellService.SellSpecies(hold, wallet, null, "fish.soft_shell_clam", 1, spoil));
+            Assert.AreEqual(0, SellService.SellAll(hold, wallet, null, spoil));
+            Assert.AreEqual(0, signals.Count);
+            Assert.AreEqual(0, wallet.Money);
+            Assert.AreEqual(1, hold.UsedUnits);
+        }
     }
 }
