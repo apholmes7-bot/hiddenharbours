@@ -254,16 +254,22 @@ low-water flats, buried clams betray themselves with **two little squirting hole
 the player reads the tell, **digs with a shovel**, and pulls the clam. Mechanically this is the
 **passive "tend" beat** of §3.4 (read-the-spot + dig, no tension fight), tuned cozy. It is
 **licence-gated** by a **clam licence** bought at the St Peters general store. *Ownership note (this
-wave):* the licence system itself — including the clam licence and the **cod fishing licence** bought
-later at Nine Mile Creek (the gate on rod-fishing) — is a **real, minimal licence system owned by
+wave):* the licence system itself — including the clam licence and the **cod fishing licence** (bought
+on the island since the 2026-11-23 amendment) — is a **real, minimal licence system owned by
 [`economy-and-business.md`](economy-and-business.md)** (not authored here, and not the
 `progression-and-housing.md` currency table's job to implement); this doc only declares that clams are
 **gated** behind it. *Data note:* clam content already exists (`soft-shell-clam`, `blue-mussel`; gear
 tag `ClamFork`). The **shovel** is the St Peters flavour of the `ClamFork` / hand-dig method —
 **reconcile at M2** whether to add a distinct `Shovel`/`ClamRake` `GearTag` or treat the shovel as the
 `ClamFork` tag's presentation (a new tag touches the enum and is review-gated — §6.1). The **rod** (and
-the cod licence that gates rod finfishing) is bought at **Nine Mile Creek**, after the sandbar walk — so St
-Peters' economy is clams-by-hand only. The "two squirting holes" is a **spot tell** (a hotspot cue,
+the cod licence that gates rod finfishing) is bought **on St Peters** *(amended 2026-11-23, canon §5.8: the
+first week is island-only; the store sells a couple of rod tiers and bait, and the cod licence is sold on
+the island, where is open)* — so St Peters' economy is clams by hand, then shore and dory fishing.
+*(Amended 2026-11-23: **every catch needs a licence** — smelt, winter flounder, mackerel, striped bass and
+the trap species (crabs, lobster) included; Ginny still buys the clam licence. Which licences exist, what
+each covers and where each is sold is open. **Nothing is blocked:** digging, rod and line, and traps all
+work without a licence, but an unlicensed catch is **released automatically**, he says "I don't have a
+license for this <named catch> yet", naming it, and no Notebook entry is made.)* The "two squirting holes" is a **spot tell** (a hotspot cue,
 §3.3), not a new system.
 
 **(b) Lobster — trap + buoy + bait, hauled by gaffing the buoy (M2).** Lobster already exists

@@ -115,6 +115,13 @@ namespace HiddenHarbours.Tests.EditMode
             if (value is StoredContainerDto stored)
                 foreach (StoredItemDto item in stored.Items)
                     if (item.IsInstance) item.InstanceId += "_in_container_" + variant;
+            // The goods in a shopping bag are goods he OWNS, set aside (the load repair holds a bag to his
+            // supplies and drops one left empty). The generic fill names bag goods he owns none of, an
+            // impossible save; put every bagged good in his supplies as well.
+            if (value is SaveData whole)
+                foreach (ShoppingBagDto bag in whole.ShoppingBags)
+                    foreach (BagItemDto item in bag.Items)
+                        SupplyLocker.Add(whole, item.SupplyId, item.Count);
             return value;
         }
 
