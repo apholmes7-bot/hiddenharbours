@@ -64,3 +64,4 @@ MonoBehaviour:
     BreathSpeed: 0.7
     ProbeTexels: 6
   _windowSpillIsPool: 1
+  _sortInWorld: 1

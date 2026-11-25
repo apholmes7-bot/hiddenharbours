@@ -344,11 +344,20 @@ float3 SpriteLitDecorEmit(float2 uv, SpriteLitDecorEmitParams e)
     float texel = SAMPLE_TEXTURE2D(_LightEmit, sampler_LightEmit, uv).r;
     float gate = SpriteLightNightGate(_DayNightTint.rgb, e.gateThreshold, e.gateSoftness, e.gateNoCycle);
     float3 glow = e.color * (max(0.0, e.strength) * SpriteLightEmit(texel, gate));
-    // Glowing glass: shape the flat bake into a lit pane. Only on a glass texel, only when the look
-    // is on, and only at night (a dark texel or a day frame never pays for the taps).
-    if (_HHWindowGlassA.x > 0.5 && texel > 0.5 / 255.0 && gate > 0.0)
-        glow *= WindowGlassLevel(uv);
     return SpriteLightCompensateForDayNight(glow, _DayNightTint.rgb);
+}
+
+// Glowing glass: the scalar that shapes the flat bake into a lit pane, applied by the caller to the
+// glow above. A scalar factor commutes with the day/night compensation (a per-channel divide), so the
+// glow term itself stays exactly the pinned law. 1 (no change) off glass, with the look off, or by day
+// (a dark texel or a day frame never pays for the taps).
+float WindowGlassShape(float2 uv, SpriteLitDecorEmitParams e)
+{
+    if (_HHWindowGlassA.x < 0.5) return 1.0;
+    float texel = SAMPLE_TEXTURE2D(_LightEmit, sampler_LightEmit, uv).r;
+    float gate = SpriteLightNightGate(_DayNightTint.rgb, e.gateThreshold, e.gateSoftness, e.gateNoCycle);
+    if (texel <= 0.5 / 255.0 || gate <= 0.0) return 1.0;
+    return WindowGlassLevel(uv);
 }
 
 // ================================================================================================

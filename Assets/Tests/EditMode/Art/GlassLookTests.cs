@@ -200,6 +200,146 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(1f, GlassLook.Current.CabinBreath(99, 3.3), Eps, "off is a steady lamp");
         }
 
+        // =========================================================================================
+        //  OCCLUSION (owner, 2026-11-25: "objects shouldnt glow through objects they normally wouldnt")
+        // =========================================================================================
+
+        [Test]
+        public void ANavigationLampSortsOneRungOverItsBoat_AndItsStreakUnderEveryHullAndDeckRow()
+        {
+            var boat = new GameObject("occlusion-boat") { hideFlags = HideFlags.HideAndDontSave };
+            try
+            {
+                var group = boat.AddComponent<UnityEngine.Rendering.SortingGroup>();
+                group.sortingOrder = HullSorting.OrderAt(3f);
+                var hull = new GameObject("hull");
+                hull.transform.SetParent(boat.transform, false);
+                hull.AddComponent<UnityEngine.Rendering.SortingGroup>().sortingOrder = 1;   // her local order inside the boat
+                var mast = new GameObject("masthead");
+                mast.transform.SetParent(hull.transform, false);
+                SceneLight light = mast.AddComponent<SceneLight>();
+                BoatLampPresets.Apply(light, HullLampKind.Masthead);
+
+                Assert.IsTrue(light.SortsInWorld, "the shipped look sorts a navigation lamp among the world");
+                Assert.AreEqual(group.sortingOrder + SceneLight.RungsOverCarrier, light.BloomSortingOrder,
+                    "one rung over the boat's own group (the one that sorts at the root), not over a local order inside her");
+                Assert.Less(light.BloomSortingOrder, SortingBands.WorldTint,
+                    "sorted among the world, so under the day/night tint whose darkening the shader divides out");
+                Assert.Greater(HullSorting.OrderAt(3f - 1f), light.BloomSortingOrder,
+                    "a hull a metre nearer the camera sorts over this lamp, so it hides it");
+                Assert.Less(HullSorting.OrderAt(3f + 1f), light.BloomSortingOrder,
+                    "and a hull a metre further away sorts under it");
+
+                Assert.AreEqual(SortingBands.WharfDeckMin, light.StreakSortingOrder,
+                    "the streak lies on the sea: over it, under every other deck row, every hull and every stander");
+                Assert.Greater(light.StreakSortingOrder, SortingBands.Sea);
+                Assert.Less(light.StreakSortingOrder, SortingBands.DecorFloor);
+
+                group.sortingOrder += 7;   // she moved: her one writer re-sorts her
+                Assert.AreEqual(group.sortingOrder + SceneLight.RungsOverCarrier, light.BloomSortingOrder,
+                    "the lamp follows its boat's order as she moves");
+            }
+            finally { Object.DestroyImmediate(boat); }
+        }
+
+        [Test]
+        public void AWharfLampSortsOneRungOverItsOwnPost_AndALooseLampByItsFoot()
+        {
+            var post = new GameObject("occlusion-post") { hideFlags = HideFlags.HideAndDontSave };
+            SceneLight loose = NewLight("occlusion-loose");
+            try
+            {
+                post.transform.position = new Vector3(4f, -12f, 0f);
+                var sr = post.AddComponent<SpriteRenderer>();
+                sr.sortingOrder = SceneLight.CarrierOrderAtFoot(-12f);
+                SceneLight light = post.AddComponent<SceneLight>();
+                LightPresets.Apply(light, LightPresets.Kind.Lightpost);
+                Assert.IsTrue(light.SortsInWorld);
+                Assert.AreEqual(sr.sortingOrder + SceneLight.RungsOverCarrier, light.BloomSortingOrder,
+                    "over its own post, under whatever stands a quarter metre nearer the camera");
+
+                loose.transform.position = new Vector3(0f, 20f, 0f);
+                LightPresets.Apply(loose, LightPresets.Kind.Lightpost);
+                Assert.AreEqual(SceneLight.CarrierOrderAtFoot(loose.WorldOrigin.y) + SceneLight.RungsOverCarrier,
+                    loose.BloomSortingOrder, "a lamp nothing carries sorts as a thing standing at its foot");
+            }
+            finally
+            {
+                Object.DestroyImmediate(post);
+                Object.DestroyImmediate(loose.gameObject);
+            }
+        }
+
+        [Test]
+        public void ABareLight_TheHeadlamp_AndTheLookSwitchedOff_StillSortOverEverything()
+        {
+            SceneLight bare = NewLight("occlusion-bare");
+            SceneLight head = NewLight("occlusion-headlamp");
+            try
+            {
+                Assert.IsFalse(bare.SortsInWorld, "a light nobody stamped keeps the old ladder");
+                Assert.AreEqual(SceneLight.MaxSortingOrder, bare.BloomSortingOrder);
+                Assert.AreEqual(SceneLight.MaxSortingOrder, bare.StreakSortingOrder);
+
+                LightPresets.Apply(head, LightPresets.Kind.Headlamp);
+                Assert.IsFalse(head.SortsInWorld, "the worn headlamp is not part of this look");
+
+                Override(so => so.FindProperty("_sortInWorld").boolValue = false);
+                BoatLampPresets.Apply(bare, HullLampKind.Masthead);
+                Assert.IsFalse(bare.SortsInWorld, "switched off, a lamp sorts over everything as before");
+                Assert.AreEqual(SceneLight.MaxSortingOrder, bare.BloomSortingOrder);
+
+                Override(so => so.FindProperty("_enabled").boolValue = false);
+                LightPresets.Apply(bare, LightPresets.Kind.Lightpost);
+                Assert.IsFalse(bare.SortsInWorld, "the whole look off is the look before");
+                Assert.IsFalse(GlassLook.Current.SortsInWorld);
+            }
+            finally
+            {
+                Object.DestroyImmediate(bare.gameObject);
+                Object.DestroyImmediate(head.gameObject);
+            }
+        }
+
+        [Test]
+        public void ALightSortedUnderTheTint_DividesOutTheTintTheOverlayApplies()
+        {
+            const string additive = "Assets/_Project/Art/Shaders/HiddenHarboursAdditiveLight.shader";
+            const string response = "Assets/_Project/Art/Shaders/Include/SpriteLightResponse.hlsl";
+            string src = System.IO.File.ReadAllText(additive);
+            string law = System.IO.File.ReadAllText(response);
+
+            float Define(string text, string name)
+            {
+                var m = System.Text.RegularExpressions.Regex.Match(text, @"#define\s+" + name + @"\s+([0-9.eE+-]+)");
+                Assert.IsTrue(m.Success, name + " is not defined");
+                return float.Parse(m.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture);
+            }
+            StringAssert.Contains("tint = HHSrgbToLinear(tint);", src,
+                "the overlay multiplies by the LINEAR tint, so that is what is divided out");
+            StringAssert.Contains("return rgb / max(tint, HH_LIGHT_INWORLD_MIN_CHANNEL);", src);
+            StringAssert.Contains("if (_InWorld < 0.5) return rgb;", src, "off draws exactly as before");
+            Assert.AreEqual(3, System.Text.RegularExpressions.Regex.Matches(src, @"return half4\(InWorld\(").Count,
+                "the pane, the streak and the lens all undo the tint when sorted among the world");
+            float floorCh = Define(src, "HH_LIGHT_INWORLD_MIN_CHANNEL");
+            Assert.Less(floorCh, Define(law, "SPRITE_LIGHT_DN_COMP_MIN_CHANNEL"),
+                "the in-world floor sits below a deep-night linear channel, so a night lamp is not clamped dim");
+
+            // The twin: what lands on the frame is what the light added over the tint, where uncovered.
+            // The published tint is the night value the 2026-11-25 capture read; the overlay applies it linear.
+            var published = new Color(0.118f, 0.135f, 0.183f, 1f);
+            Color tint = published.linear;
+            Assert.Greater(Mathf.Min(tint.r, Mathf.Min(tint.g, tint.b)), floorCh, "a real night channel is above the floor");
+            var lamp = new Color(0.9f, 0.7f, 0.4f, 1f);
+            var under = new Color(0.3f, 0.35f, 0.4f, 1f);
+            Color comp = LightMath.CompensateForDayNightTint(lamp, tint, floorCh);
+            Color inWorld = (under + comp) * tint;
+            Color overTint = under * tint + lamp;
+            Assert.AreEqual(overTint.r, inWorld.r, 1e-4f);
+            Assert.AreEqual(overTint.g, inWorld.g, 1e-4f);
+            Assert.AreEqual(overTint.b, inWorld.b, 1e-4f);
+        }
+
         [Test]
         public void ThePaneGradientIsBrighterLow()
         {

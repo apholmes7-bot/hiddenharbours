@@ -64,6 +64,7 @@ namespace HiddenHarbours.Art
         private static readonly int IdStreakMode     = Shader.PropertyToID("_StreakMode");
         private static readonly int IdStreakLook     = Shader.PropertyToID("_StreakLook");
         private static readonly int IdStreakTime     = Shader.PropertyToID("_StreakTime");
+        internal static readonly int IdInWorld       = Shader.PropertyToID("_InWorld");
 
         // ONE shared fallback material for the missing-Resources path, minted at most once across ALL lights
         // (the normal path loads Resources/AdditiveLight.mat). A per-instance material would leak + break the
@@ -251,6 +252,24 @@ namespace HiddenHarbours.Art
         private UnityEngine.Rendering.SortingGroup _streakSorting;
         private MaterialPropertyBlock _streakMpb;
 
+        // ---- occlusion (GlassLook): sort among the world, behind whatever stands in front ----
+        [System.NonSerialized] private bool _worldSort;
+        [System.NonSerialized] private bool _carrierResolved;
+        private UnityEngine.Rendering.SortingGroup _carrierGroup;
+        private SpriteRenderer _carrierSprite;
+
+        /// <summary>Rungs a lamp sorts over the thing that carries it: one, so it draws over its own
+        /// post or hull and under anything that stands a quarter metre or more nearer the camera.</summary>
+        public const int RungsOverCarrier = 1;
+
+        /// <summary>Where a lamp's streak sorts when it sorts among the world: the north row of the
+        /// wharf deck, over the sea and under every other deck row, every hull and everything standing.</summary>
+        public const int StreakWorldOrder = SortingBands.WharfDeckMin;
+
+        /// <summary>The highest order a lamp sorting among the world may take: under the day/night tint,
+        /// whose darkening the shader then undoes for the light alone.</summary>
+        public const int WorldSortCeiling = SortingBands.WorldTint - 1;
+
         // ---- public surface (so BoatSpotlight / tools drive a light without touching serialized fields) ----
 
         /// <summary>
@@ -366,8 +385,78 @@ namespace HiddenHarbours.Art
             _glass = default;
             _glassWhiten = 0f;
             _streak = default;
+            _worldSort = false;
             ApplyQuadEnabled();
         }
+
+        /// <summary>
+        /// <b>Sort among the world</b> (owner, 2026-11-25: "objects shouldnt glow through objects they
+        /// normally wouldnt"). On, the bloom sorts <see cref="RungsOverCarrier"/> over the thing that
+        /// carries it (the boat's sorting group, the post's own sprite, else the decor band's Y-sort at
+        /// the lamp's foot), so a hull, a shed, a wall or a figure nearer the camera draws over it as it
+        /// would over the lamp itself; the streak sorts at <see cref="StreakWorldOrder"/>, under every
+        /// hull, deck and stander. Both then sit under the day/night tint, and the shader divides that
+        /// tint back out of the light, so where nothing covers it a lamp adds exactly what it added
+        /// before. Off = over everything (<see cref="SafeSortingOrder"/>), the order before.
+        /// </summary>
+        public void SetWorldSort(bool on)
+        {
+            _worldSort = on;
+            _carrierResolved = false;
+        }
+
+        /// <summary>Does this lamp sort among the world? Tests and fixtures.</summary>
+        public bool SortsInWorld => _worldSort;
+
+        /// <summary>The order the bloom quad is given now.</summary>
+        public int BloomSortingOrder => _worldSort ? Mathf.Min(CarrierOrder() + RungsOverCarrier, WorldSortCeiling) : SafeSortingOrder;
+
+        /// <summary>The order the streak quad is given now.</summary>
+        public int StreakSortingOrder => _worldSort ? StreakWorldOrder : SafeSortingOrder;
+
+        private void OnTransformParentChanged() => _carrierResolved = false;
+
+        /// <summary>The order of the thing that carries this lamp: the sorting group its renderers
+        /// actually compete in (the outermost, or the first that sorts at the root), else its own or an
+        /// ancestor's sprite, else the decor band's Y-sort at its foot. Resolved once, not per frame.</summary>
+        private int CarrierOrder()
+        {
+            if (!_carrierResolved || (_carrierGroup == null && _carrierSprite == null && _carrierWasFound))
+                ResolveCarrier();
+            if (_carrierGroup != null) return _carrierGroup.sortingOrder;
+            if (_carrierSprite != null) return _carrierSprite.sortingOrder;
+            return CarrierOrderAtFoot(WorldOrigin.y);
+        }
+
+        [System.NonSerialized] private bool _carrierWasFound;
+
+        private void ResolveCarrier()
+        {
+            _carrierResolved = true;
+            _carrierGroup = OuterSortingGroup(transform);
+            _carrierSprite = _carrierGroup == null ? GetComponentInParent<SpriteRenderer>() : null;
+            _carrierWasFound = _carrierGroup != null || _carrierSprite != null;
+        }
+
+        /// <summary>The sorting group a renderer under <paramref name="from"/> really sorts in: walking up,
+        /// the first group that sorts at the root, else the outermost. Null when there is none.</summary>
+        public static UnityEngine.Rendering.SortingGroup OuterSortingGroup(Transform from)
+        {
+            UnityEngine.Rendering.SortingGroup found = null;
+            for (Transform n = from; n != null; n = n.parent)
+            {
+                var g = n.GetComponent<UnityEngine.Rendering.SortingGroup>();
+                if (g == null || !g.enabled) continue;
+                found = g;
+                if (g.sortAtRoot) break;
+            }
+            return found;
+        }
+
+        /// <summary>The decor band's Y-sort at a lamp's foot: the order of a thing standing there.</summary>
+        public static int CarrierOrderAtFoot(float footY) =>
+            YSortSprite.OrderFor(footY, SortingBands.DecorBase, SortingBands.OrdersPerMetre,
+                                 SortingBands.DecorFloor, SortingBands.DecorCeiling);
 
         /// <summary>Is this lamp drawn as glowing glass? Tests and fixtures.</summary>
         public bool HasGlass => _glass.IsOn;
@@ -649,10 +738,12 @@ namespace HiddenHarbours.Art
                 _mpb.SetVector(IdPixelGrid, new Vector4(px / Mathf.Max(halfX, 1e-4f), px / Mathf.Max(halfY, 1e-4f), 0f, 0f));
             }
             _mpb.SetFloat(IdStreakMode, 0f);
+            _mpb.SetFloat(IdInWorld, _worldSort ? 1f : 0f);
             _quadRenderer.SetPropertyBlock(_mpb);
 
-            _quadRenderer.sortingOrder = SafeSortingOrder;
-            if (_sortingGroup != null) _sortingGroup.sortingOrder = SafeSortingOrder;   // keep the 2D-sort group in sync
+            int order = BloomSortingOrder;
+            _quadRenderer.sortingOrder = order;
+            if (_sortingGroup != null) _sortingGroup.sortingOrder = order;   // keep the 2D-sort group in sync
             ApplyQuadEnabled();
             TickStreak(Mathf.Max(_intensity, 0f) * flicker, seconds);
         }
@@ -682,9 +773,11 @@ namespace HiddenHarbours.Art
             _streakMpb.SetVector(IdPixelGrid, new Vector4(px / halfX, px / halfY, 0f, 0f));
             _streakMpb.SetFloat(IdGlassCore, 0f);
             _streakMpb.SetFloat(IdCoreRadius, 0f);
+            _streakMpb.SetFloat(IdInWorld, _worldSort ? 1f : 0f);
             _streakRenderer.SetPropertyBlock(_streakMpb);
-            _streakRenderer.sortingOrder = SafeSortingOrder;
-            if (_streakSorting != null) _streakSorting.sortingOrder = SafeSortingOrder;
+            int order = StreakSortingOrder;
+            _streakRenderer.sortingOrder = order;
+            if (_streakSorting != null) _streakSorting.sortingOrder = order;
         }
 
         /// <summary>The streak's pooled quad: the same shared mesh, material and sort-as-2D group as the

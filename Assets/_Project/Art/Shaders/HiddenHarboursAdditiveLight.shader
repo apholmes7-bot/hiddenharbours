@@ -66,6 +66,9 @@ Shader "HiddenHarbours/AdditiveLight"
         _StreakLook         ("Streak x rows, y breakup, z wobble, w speed", Vector) = (12, 0.4, 0.35, 0.9)
         _StreakTime         ("Streak game time (seconds, set by the component)", Float) = 0
 
+        [Header(Sorted among the world. Zero is over everything)]
+        _InWorld            ("Sorted under the day/night tint (1 = divide the tint back out)", Float) = 0
+
         [Header(Night gate)]
         _GateThreshold      ("Gate darkness threshold (0..1)", Range(0, 1)) = 0.12
         _GateSoftness       ("Gate fade band (0..1)", Range(0, 1)) = 0.35
@@ -161,9 +164,36 @@ Shader "HiddenHarbours/AdditiveLight"
                 float  _StreakMode;
                 float4 _StreakLook;
                 float  _StreakTime;
+                float  _InWorld;
             CBUFFER_END
 
             // --- pure helpers (mirror LightMath; defined BEFORE use) ---
+
+            // A light SORTED AMONG THE WORLD (SceneLight.SetWorldSort) draws under the day/night tint,
+            // which then multiplies it dark. Dividing the tint out first makes what lands on the frame
+            // exactly what the same light added over the tint: (base + L / t) * t = base * t + L. An
+            // unset tint compensates nothing. Off (0) = the light sorts over the tint, untouched.
+            // t is the colour the OVERLAY multiplies by: in a linear project that is the published tint
+            // made linear (measured 2026-11-25: dividing by the raw global left a night lamp at ~0.12x,
+            // the sRGB-to-linear ratio of the tint). The floor only guards a zero channel; the overlay
+            // multiplies the same t back, so a deep-night channel (~0.013 linear) must not be clamped.
+            #define HH_LIGHT_INWORLD_MIN_CHANNEL 0.002
+            float3 HHSrgbToLinear(float3 c)
+            {
+                float3 lo = c / 12.92;
+                float3 hi = pow(max((c + 0.055) / 1.055, 0.0), 2.4);
+                return float3(c.r <= 0.04045 ? lo.r : hi.r, c.g <= 0.04045 ? lo.g : hi.g, c.b <= 0.04045 ? lo.b : hi.b);
+            }
+            float3 InWorld(float3 rgb)
+            {
+                if (_InWorld < 0.5) return rgb;
+                float3 tint = _DayNightTint.rgb;
+                if (tint.r + tint.g + tint.b <= 1e-3) return rgb;
+                #if !defined(UNITY_COLORSPACE_GAMMA)
+                tint = HHSrgbToLinear(tint);
+                #endif
+                return rgb / max(tint, HH_LIGHT_INWORLD_MIN_CHANNEL);
+            }
 
             float Luma(float3 c)
             {
@@ -271,7 +301,7 @@ Shader "HiddenHarbours/AdditiveLight"
                     if (pk <= 0.0) discard;
                     // Deep amber at the head, toward a warm white where the pane is hottest.
                     float3 prgb = lerp(_LightColor.rgb, lerp(_LightColor.rgb, float3(1.0, 1.0, 1.0), 0.5), saturate(pk - 0.6));
-                    return half4(prgb * pk, pk);
+                    return half4(InWorld(prgb * pk), pk);
                 }
 
                 // ---- the reflection streak (SceneLight's second quad) --------------------------------
@@ -283,7 +313,7 @@ Shader "HiddenHarbours/AdditiveLight"
                     float hull = _HHHullScreenTex.Load(int3(int2(IN.positionCS.xy), 0)).a;
                     float sk = max(_Intensity, 0.0) * StreakShape(sq) * IsWater(IN.positionWS) * step(hull, 0.0) * NightGate();
                     if (sk <= 0.0) discard;
-                    return half4(_LightColor.rgb * sk, sk);
+                    return half4(InWorld(_LightColor.rgb * sk), sk);
                 }
 
                 // Quad space: map uv [0,1]^2 to q in [-1,1]^2 (the quad centre is 0,0). The LAMP sits at
@@ -374,7 +404,7 @@ Shader "HiddenHarbours/AdditiveLight"
 
                 // Premultiplied additive: colour already scaled by k; Blend One One adds it to the frame.
                 float3 rgb = lerp(_LightColor.rgb, float3(1.0, 1.0, 1.0), whiten) * k;
-                return half4(rgb, k);
+                return half4(InWorld(rgb), k);
             }
             ENDHLSL
         }

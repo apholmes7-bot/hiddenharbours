@@ -1131,3 +1131,38 @@ texture, no new full-screen pass, no save change.
 | Shore streak (off: needs a deck mask) | `_shoreStreak` | 0, 3.2, 0.4, 0.6, 2, 0.42, 0.35, 0, 1 |
 | Panes: head, sill, centre lift, bands, frame px, mullion px, mullion min px, breath, breath speed, probe texels | `_panes` | 0.62, 1, 0.22, 3, 0, 1, 7, 0, 0.7, 6 |
 | A window glow lights the ground, not a disc | `_windowSpillIsPool` | on |
+| Lamps, streaks and cabin panes sort among the world | `_sortInWorld` | on |
+
+### Occlusion: a glow is hidden by what stands in front of it (2026-11-25)
+
+The owner, on the first pictures: "objects shouldnt glow through objects they normally wouldnt, reflecitons
+shouldnt show if they would be blocked by the hull at the players camera angle".
+
+**Decision.** A lamp stamped with the glass look no longer sorts at the ceiling over the whole frame. It sorts
+among the world, using the order the game already uses for whatever carries it (ADR 0032, ADR 0059):
+
+- **The bloom** sorts one rung over its carrier: the boat's own sorting group (the one that sorts at the root),
+  else the post's own sprite, else the decor band's Y-sort at the lamp's foot. A hull, shed, wall, piling or
+  figure nearer the camera draws over it, exactly as it draws over the lamp's own post or mast.
+- **The streak** sorts at `SortingBands.WharfDeckMin`: over the sea, under every other deck row, every hull and
+  everything standing. The hull mask stays, so a hull that drops behind a pier still hides it.
+- **Cabin panes** sort one rung over their boat, so another hull or a pier in front hides them.
+- Sorted under the day/night tint, the shader divides that tint back out of the light (`_InWorld`), so
+  where nothing covers it a lamp adds exactly what it added before: `(base + L / t) * t = base * t + L`.
+  `t` must be the colour the overlay actually multiplies by, which in this linear project is the published
+  tint made linear (`HHSrgbToLinear`). Measured 2026-11-25: dividing by the raw global left a night lamp at
+  about 0.12x, the sRGB-to-linear ratio of the night tint. The floor is 0.002, not the house windows' 0.02:
+  a deep-night linear channel is about 0.013, and the overlay multiplies the same `t` back, so the floor
+  only has to guard a zero. (The house windows' glow divides by the raw global with the 0.02 floor, so it
+  is under-compensated at night the same way; that is part of the accepted subtle look and is left alone.)
+
+A light nobody stamped (and the worn headlamp, the searchlight, the channel marks) keeps the ceiling, so the
+ladder in this ADR and its tests are unchanged for them. No new draw, texture, pass or save field; the order
+is read from the cached carrier at the light's 20 Hz tick.
+
+**Not covered.** A boat's own cabin cannot hide that boat's own lamps: the boat sorts as one object, and its
+per-pixel depth is private to the hull pass. The ground pools (`LampPoolSystem`) and the lamp shadows stay at
+the ceiling: they multiply whatever is in the pixel by design, and their ladder (pool, bloom, shadow by camera
+depth) is pinned by `LightsIlluminatePlatePlayTests`. The north wharf deck row ties with the streak's order.
+The sun's shade (32763) now lands on a sorted lamp; its strength follows the sun, so it should be near nothing
+once the lamps are lit (not measured at dusk).

@@ -573,10 +573,31 @@ namespace HiddenHarbours.Art
                 int worldSeed = GameServices.Environment != null ? GameServices.Environment.WorldSeed : 0;
                 _mpb.SetFloat(IdIntensity, PaneIntensity * _boost * glass.CabinBreath(_breathSeed ^ worldSeed, seconds));
             }
+
+            // OCCLUSION (GlassLook): the panes are her windows, so they sort one rung over HER and under
+            // whatever stands nearer the camera than she does (another hull, a pier, a figure), with the
+            // day/night tint divided back out in the shader. Off = over everything, as before.
+            bool inWorld = glass.SortsInWorld;
+            int order = SceneLight.MaxSortingOrder;
+            if (inWorld)
+            {
+                if (!_carrierResolved) { _carrierGroup = SceneLight.OuterSortingGroup(transform); _carrierResolved = true; }
+                int carrier = _carrierGroup != null ? _carrierGroup.sortingOrder
+                                                    : SceneLight.CarrierOrderAtFoot(transform.position.y);
+                order = Mathf.Min(carrier + SceneLight.RungsOverCarrier, SceneLight.WorldSortCeiling);
+            }
+            _mpb.SetFloat(SceneLight.IdInWorld, inWorld ? 1f : 0f);
             _paneRenderer.SetPropertyBlock(_mpb);
-            _paneRenderer.sortingOrder = SceneLight.MaxSortingOrder;
-            if (_paneSorting != null) _paneSorting.sortingOrder = SceneLight.MaxSortingOrder;
+            _paneRenderer.sortingOrder = order;
+            if (_paneSorting != null) _paneSorting.sortingOrder = order;
         }
+
+        private SortingGroup _carrierGroup;
+        [System.NonSerialized] private bool _carrierResolved;
+        private void OnTransformParentChanged() => _carrierResolved = false;
+
+        /// <summary>The order the lit panes are given now. Tests and fixtures.</summary>
+        public int PaneSortingOrder => _paneRenderer != null ? _paneRenderer.sortingOrder : SceneLight.MaxSortingOrder;
 
         /// <summary>
         /// Put each wall's wash at the middle of its lit glass and point it the way that glass faces.

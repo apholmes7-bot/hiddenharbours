@@ -152,7 +152,15 @@ namespace HiddenHarbours.Art
         [Tooltip("A house window glow stops painting a disc over the wall; its light lands on the ground as a pool.")]
         [SerializeField] private bool _windowSpillIsPool = true;
 
+        [Header("Occlusion")]
+        [Tooltip("Lamps, their streaks on the water, a cabin's wash on deck and its lit panes sort AMONG the " +
+                 "world: a hull, shed, wall, piling or figure nearer the camera draws over them as it would " +
+                 "over the lamp itself. Off = drawn over everything, as before.")]
+        [SerializeField] private bool _sortInWorld = true;
+
         public bool Enabled => _enabled;
+        /// <summary>Do lamps sort among the world (see <see cref="SceneLight.SetWorldSort"/>)?</summary>
+        public bool SortsInWorld => _enabled && _sortInWorld;
         public float PixelsPerMetre => _pixelsPerMetre;
         public Lens NavLens => _navLens;
         public Streak NavStreak => _navStreak;
@@ -210,6 +218,7 @@ namespace HiddenHarbours.Art
             bool coloured = kind == HullLampKind.PortSidelight || kind == HullLampKind.StarboardSidelight;
             light.SetGlass(_navLens, coloured, _pixelsPerMetre);
             light.SetStreak(_navStreak, _pixelsPerMetre);
+            light.SetWorldSort(_sortInWorld);
         }
 
         /// <summary>
@@ -230,6 +239,7 @@ namespace HiddenHarbours.Art
                 default:
                     light.SetGlass(_shoreLens, coloured: false, _pixelsPerMetre);
                     light.SetStreak(_shoreStreak, _pixelsPerMetre);
+                    light.SetWorldSort(_sortInWorld);
                     return;
             }
         }
