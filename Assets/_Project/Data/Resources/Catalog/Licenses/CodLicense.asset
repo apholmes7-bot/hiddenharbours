@@ -16,7 +16,7 @@ MonoBehaviour:
   DisplayName: Cod Fishing License
   Flavor: Signs you off to take cod on rod and line. Written over the counter at LeBlanc's
     on St Peters, or by the Nine Mile Creek harbourmaster - the same paper either way.
-  Price: 120
+  Price: 60
   PermittedSpeciesIds:
   - fish.atlantic_cod
   Catalog:

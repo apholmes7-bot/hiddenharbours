@@ -103,7 +103,7 @@ the reason recorded in the guard.
 | `instrument.gps` (chartplotter) | 1,800 | nmc_boat_gear_wholesaler (moved from nmc_chandlery; wants a wheelhouse boat) | offer |
 | `instrument.loran` | 900 | nmc_boat_gear_wholesaler only (the leblancs placeholder and its St Peters vendor are gone; wants a wheelhouse boat) | offer |
 | `license.clam` | 15 | leblancs | shelf |
-| `license.cod` | 120 | nmc_harbourmaster | shelf |
+| `license.cod` | 60 | nmc_harbourmaster, leblancs | shelf |
 
 ### Traps
 
