@@ -375,12 +375,20 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 if (k > 0) yield return _stage.ReFrameOn(lamps[k].WorldOrigin);
 
-                profile.PoolsLightMeshFaces = true;
-                yield return Settle();
-                byte[] on = _stage.Capture();
+                // Off, on, off again, all in ONE frame: nothing in the world moves between them, and a pixel
+                // the two OFF frames disagree on is the renderer's own render-to-render motion (the sea's
+                // accumulated foam and ripple), which no lamp setting made. Only a pixel both OFF frames
+                // agree on can say whether the faces lit it.
                 profile.PoolsLightMeshFaces = false;
                 yield return Settle();
+                LampPoolSystem.Instance.PublishFrame(_stage.Camera);
                 byte[] off = _stage.Capture();
+                profile.PoolsLightMeshFaces = true;
+                LampPoolSystem.Instance.PublishFrame(_stage.Camera);
+                byte[] on = _stage.Capture();
+                profile.PoolsLightMeshFaces = false;
+                LampPoolSystem.Instance.PublishFrame(_stage.Camera);
+                byte[] off2 = _stage.Capture();
                 foreach (IsoFacetHullRenderer h in hulls) if (h != null) h.enabled = false;
                 yield return Settle();
                 byte[] none = _stage.Capture();
@@ -388,16 +396,20 @@ namespace HiddenHarbours.Tests.PlayMode
                 profile.PoolsLightMeshFaces = true;
                 yield return Settle();
 
-                int t = 0, f = 0, n = 0;
+                int t = 0, f = 0, n = 0, moving = 0;
                 for (int i = 0; i + 3 < on.Length; i += 4)
                 {
+                    if (Diff(off, off2, i) > 3) { moving++; continue; }
                     bool seen = Diff(off, none, i) > 3;
                     int d = Diff(on, off, i);
                     if (!seen) { n++; if (d > 3) t++; }
                     else if (d > 3) f++;
                 }
                 Debug.Log($"[{PlateDir}] faces seen: lamp {lamps[k].name} at {lamps[k].WorldOrigin}  |  pixels with " +
-                          $"no hull seen {n}, of them changed by her faces {t}  |  hull pixels her faces changed {f}");
+                          $"no hull seen {n}, of them changed by her faces {t}  |  hull pixels her faces changed {f}" +
+                          $"  |  pixels that moved between the two OFF renders {moving}");
+                Assert.Less(moving, on.Length / 4 / 10,
+                    "a tenth of the frame moved between two OFF renders of one frame: nothing here can be read");
                 if (t > 0) _stage.SavePlate($"20-faces-through-{lamps[k].name}-ON.png", on);
                 _stage.SavePlate($"21-faces-{lamps[k].name}-OFF.png", off);
                 through += t; faces += f; hidden += n; framed++;

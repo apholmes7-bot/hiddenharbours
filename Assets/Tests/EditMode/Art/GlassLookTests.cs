@@ -83,26 +83,6 @@ namespace HiddenHarbours.Tests.Art.EditMode
             finally { Object.DestroyImmediate(builtIn); }
         }
 
-        /// <summary>The owner, 2026-11-25: "sometimes theres a roof ledge which should obstruct them and its
-        /// not". A lit pane is hidden wherever her own mesh at that pixel stands nearer the camera than the
-        /// glass by more than the wall's relief. From the hull pass's depth, never a number per boat.</summary>
-        [Test]
-        public void ABoatPaneHidesUnderANearerLedgeOfHerOwnMesh()
-        {
-            Assert.IsTrue(GlassLook.Current.PanesHideUnderNearerHull, "the ledge test ships off");
-            Assert.Greater(GlassLook.Current.PaneLedgeDepthMetres, 0f,
-                "at zero the wall a pane sits in would hide it wherever the two depths round apart");
-            Assert.Less(GlassLook.Current.PaneLedgeDepthMetres, 0.25f,
-                "deeper than a roof's overhang, and no ledge would ever hide a pane");
-            string shader = System.IO.File.ReadAllText(System.IO.Path.Combine(Application.dataPath,
-                "_Project/Art/Shaders/HiddenHarboursAdditiveLight.shader")).Replace("\r\n", "\n");
-            StringAssert.Contains("_HHHullDepthTex.Load(int3(hp, 0)) < IN.paneZ - _PaneFrame.w", shader);
-            StringAssert.Contains("if (_PaneFrame.w >= 0.0 && _HHHullDepthLive > 0.5)", shader);
-            string glow = System.IO.File.ReadAllText(System.IO.Path.Combine(Application.dataPath,
-                "_Project/Code/Art/BoatWindowGlow.cs"));
-            StringAssert.Contains("_mesh.SetUVs(3, _paneDepths);", glow);
-        }
-
         [Test]
         public void TheLookInForceIsTheShippedAsset()
         {

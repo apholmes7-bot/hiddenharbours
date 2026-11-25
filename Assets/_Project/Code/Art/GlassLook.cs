@@ -183,19 +183,8 @@ namespace HiddenHarbours.Art
                  "world: a hull, shed, wall, piling or figure nearer the camera draws over them as it would " +
                  "over the lamp itself. Off = drawn over everything, as before.")]
         [SerializeField] private bool _sortInWorld = true;
-        [Tooltip("A lit boat pane is hidden wherever her own mesh stands NEARER the camera than the glass: a " +
-                 "roof ledge or overhang over the windows, a post, the far side's coaming. Read per pixel from " +
-                 "the hull pass's own depth, so it follows every rig without a number per boat.")]
-        [SerializeField] private bool _panesHideUnderNearerHull = true;
-        [Tooltip("How much nearer than the glass (metres of the hull's depth) the mesh must stand to hide it. " +
-                 "More than the pane's own inset in its wall, so the wall it sits in never hides it.")]
-        [Min(0f)] [SerializeField] private float _paneLedgeDepthMetres = 0.08f;
 
         public bool Enabled => _enabled;
-        /// <summary>Is a lit pane hidden where her own mesh stands nearer than it?</summary>
-        public bool PanesHideUnderNearerHull => _enabled && _panesHideUnderNearerHull;
-        /// <summary>How much nearer than the glass the mesh must be to hide it, metres.</summary>
-        public float PaneLedgeDepthMetres => _paneLedgeDepthMetres;
         /// <summary>Do lamps sort among the world (see <see cref="SceneLight.SetWorldSort"/>)?</summary>
         public bool SortsInWorld => _enabled && _sortInWorld;
         public float PixelsPerMetre => _pixelsPerMetre;

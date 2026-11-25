@@ -264,6 +264,11 @@ namespace HiddenHarbours.Art
             return c != null ? c.WalkerHeadlampStrapBackMetres : GameConfig.DefaultWalkerHeadlampStrapBackMetres;
         }
 
+        /// <summary>True while the beam is aimed by his drawn head (set each LateUpdate from the posed figure).
+        /// While it holds, nothing else turns the lamp: <see cref="WalkerLights"/> aims by the interact probe
+        /// only when no head is drawn, so the beam never flips between the two within a frame.</summary>
+        public bool AimsByDrawnHead { get; private set; }
+
         // A visible mesh is the source of truth. Hidden figures retain stale HeadSnapPoint data.
         private void SynchronizeMount()
         {
@@ -287,6 +292,7 @@ namespace HiddenHarbours.Art
                     { _facet = _filters[i].transform; break; }
             }
             bool drawn = liveFigure != null && _facet != null;
+            if (!drawn) AimsByDrawnHead = false;
             if (drawn)
             {
                 Vector4 h = liveFigure.HeadSnapPoint;
@@ -312,8 +318,8 @@ namespace HiddenHarbours.Art
                 // drawn heading: the figure turns through the diagonals and eases round, the probe does not, so
                 // the cone pointed one way while his face pointed another. Here, after the figure has drawn
                 // (order 200 > 100), the drawn head is the one source for the lens, the view and the beam.
-                if (DrawnGroundDirection(headForward, _facet, out Vector2 aim))
-                    transform.up = new Vector3(aim.x, aim.y, 0f);
+                AimsByDrawnHead = DrawnGroundDirection(headForward, _facet, out Vector2 aim);
+                if (AimsByDrawnHead) transform.up = new Vector3(aim.x, aim.y, 0f);
                 _hasHeadPoint = true;
             }
             // ConstantLiftUntilFirstHeadPoint; after that, every sprite pose holds this root offset.

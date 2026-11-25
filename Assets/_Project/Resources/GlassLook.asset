@@ -78,5 +78,3 @@ MonoBehaviour:
   _windowSpillIsPool: 1
   _headlampLensRadiusMetres: 0.1
   _sortInWorld: 1
-  _panesHideUnderNearerHull: 1
-  _paneLedgeDepthMetres: 0.08

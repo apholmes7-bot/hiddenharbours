@@ -105,31 +105,31 @@ Shader "HiddenHarbours/LampPool"
             // ⚠️ RESTATED, LINE FOR LINE, in HiddenHarboursIsoFacetOverlay.shader (HHLampPoolGain), which
             // lights a hull's FACES with it; LampPoolTests holds the two copies equal.
             float HHLampPoolGain(float incidence, float2 toFrag, float d, float reach, float gainCeiling,
-                                 float4 coneV, float4 wallV)
+                                 float4 _PoolCone, float4 _PoolWall)
             {
                 // 2 · THE EDGE: 1 out to reach*(1-soft), smoothly to 0 at reach. LightMath.PoolFalloff.
-                float soft  = saturate(coneV.x);
+                float soft  = saturate(_PoolCone.x);
                 float inner = reach * (1.0 - soft);
                 float edge  = 1.0 - smoothstep(inner, reach, d);
                 // 3 · THE CONE, for a lamp that is aimed (the searchlight sweeping a dock). LightMath.PoolCone.
                 // ⚠️ A RADIAL lamp (cosHalf <= -1) is a BRANCH to 1: run through the feather below, cosHalf -1
                 // dimmed every direction within ~45 deg of straight away from the axis, and the axis is up the
                 // screen, so every radial lamp cut a dark wedge out of the ground directly SOUTH of it.
-                float cosHalf = coneV.y;
-                float2 axis   = coneV.zw;
+                float cosHalf = _PoolCone.y;
+                float2 axis   = _PoolCone.zw;
                 float  aligned = d > 1e-4 ? dot(toFrag / d, axis) : 1.0;
                 float coneBand = max(1.0 - cosHalf, 1e-3) * soft;
                 float cone = cosHalf <= -0.9999 ? 1.0 : smoothstep(cosHalf, cosHalf + coneBand, aligned);
                 // 4 · THE WALL, for a lamp on one: light falls OUT and DOWN, so nothing behind the wall line is
                 // lit. LightMath.PoolWallGate.
                 float wall = 1.0;
-                if (dot(wallV.xy, wallV.xy) > 1e-6)
+                if (dot(_PoolWall.xy, _PoolWall.xy) > 1e-6)
                 {
-                    float ahead = dot(toFrag, normalize(wallV.xy)) + wallV.z;
-                    float ws = max(wallV.w, 1e-3);
+                    float ahead = dot(toFrag, normalize(_PoolWall.xy)) + _PoolWall.z;
+                    float ws = max(_PoolWall.w, 1e-3);
                     wall = smoothstep(-ws, ws, ahead);
                 }
-                float gain = gainCeiling * incidence * edge * cone * wall;
+                float gain = incidence * edge * cone * wall * gainCeiling;
                 return gain <= 1e-4 ? 0.0 : gain;
             }
 

@@ -163,9 +163,6 @@ namespace HiddenHarbours.Art
         // Each pane's drawn size in art pixels (UV1), for the glass look's frame and mullions. Rewritten
         // with the vertices: a pane seen edge-on is narrower than one seen square.
         private Vector2[] _paneSizes;
-        // Each pane's depth (UV3.x): the posed world z of its corners, the unit the hull pass keeps in
-        // _HHHullDepthTex, so the shader can hide the glass where her own mesh stands nearer (a roof ledge).
-        private Vector2[] _paneDepths;
         private int _breathSeed;
 
         private SceneLight[] _spills;
@@ -369,7 +366,6 @@ namespace HiddenHarbours.Art
         {
             _verts = new Vector3[n * 4];
             _paneSizes = new Vector2[n * 4];
-            _paneDepths = new Vector2[n * 4];
             Transform root = BoatLamps.BoatRootOf(transform);
             _breathSeed = StableSeed(root != null ? root.name : name);
             var uvs = new Vector2[n * 4];
@@ -391,7 +387,6 @@ namespace HiddenHarbours.Art
             _mesh.uv = uvs;
             _mesh.SetUVs(1, _paneSizes);
             _mesh.SetUVs(2, WindowIds(n, _breathSeed));
-            _mesh.SetUVs(3, _paneDepths);
             _mesh.triangles = tris;
         }
 
@@ -578,10 +573,6 @@ namespace HiddenHarbours.Art
                     _verts[v + 3] = new Vector3(a3.x, a3.y, 0f);
                     var size = new Vector2(((Vector2)(a1 - a0)).magnitude, ((Vector2)(a3 - a0)).magnitude) * ppm;
                     _paneSizes[v + 0] = _paneSizes[v + 1] = _paneSizes[v + 2] = _paneSizes[v + 3] = size;
-                    _paneDepths[v + 0] = new Vector2(a0.z, 0f);
-                    _paneDepths[v + 1] = new Vector2(a1.z, 0f);
-                    _paneDepths[v + 2] = new Vector2(a2.z, 0f);
-                    _paneDepths[v + 3] = new Vector2(a3.z, 0f);
 
                     int w = (int)p.Wall;
                     _wallOut[w] += new Vector2(nOut.x, nOut.y);
@@ -609,7 +600,6 @@ namespace HiddenHarbours.Art
             // allocates, and using the pair invites somebody to read it back in this same loop.
             _mesh.SetVertices(_verts);
             _mesh.SetUVs(1, _paneSizes);
-            _mesh.SetUVs(3, _paneDepths);
             _mesh.bounds = PaneBounds(_verts, v);   // see PaneBounds: SetVertices leaves them at zero
 
             if (_paneRenderer != null)
@@ -642,10 +632,7 @@ namespace HiddenHarbours.Art
             GlassLook.PaneLook p = glass.Panes;
             _mpb.SetFloat(IdPaneMode, panes ? 1f : 0f);
             _mpb.SetVector(IdPaneLook, new Vector4(p.HeadLevel, p.SillLevel, p.CentreLift, p.Bands));
-            // w: how much nearer than the glass her own mesh must stand to hide it (a roof ledge), metres of
-            // hull depth; negative = never hidden (GlassLook).
-            _mpb.SetVector(IdPaneFrame, new Vector4(p.FramePixels, p.MullionPixels, p.MullionMinPixels,
-                glass.PanesHideUnderNearerHull ? glass.PaneLedgeDepthMetres : -1f));
+            _mpb.SetVector(IdPaneFrame, new Vector4(p.FramePixels, p.MullionPixels, p.MullionMinPixels, 0f));
             _mpb.SetVector(IdPaneLook2, new Vector4(p.AcrossFalloff, p.Unevenness, p.TintVariation, 0f));
             _mpb.SetColor(IdPaneTint, p.TintAlt);
             _mpb.SetFloat(IdGlassCore, 0f);

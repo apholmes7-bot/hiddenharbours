@@ -206,9 +206,10 @@ namespace HiddenHarbours.Art
 
             OwnsDecorLight = onFoot && _headlamp != null && _headlamp.IsOn;
 
-            // Aim: he is the actor, so the probe's facing IS the beam's axis. SceneLight throws its cone
-            // along transform.up, which is the same contract BoatSpotlight aims by.
-            if (_headlamp != null && onFoot)
+            // Aim: SceneLight throws its cone along transform.up, the same contract BoatSpotlight aims by.
+            // Once his head is drawn the lamp aims itself by that head (Headlamp.AimsByDrawnHead: the beam
+            // follows the sprite, the owner 2026-11-25); until then the probe's facing stands in.
+            if (_headlamp != null && onFoot && !_headlamp.AimsByDrawnHead)
             {
                 Vector2 facing = InteractActorProbe.Current.Facing;
                 if (facing.sqrMagnitude > 1e-6f)
