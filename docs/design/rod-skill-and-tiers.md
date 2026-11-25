@@ -57,21 +57,25 @@ fish always gives the same amount.
 | Level | Experience to reach | + Reach m | + Line | + Reel m/s | + Fight help |
 |---:|---:|---:|---:|---:|---:|
 | 0 | 0 | 0 | 0 | 0 | 0 |
-| 1 | 30 | 0.4 | 0.03 | 0.03 | 0.03 |
-| 2 | 80 | 0.8 | 0.06 | 0.06 | 0.06 |
-| 3 | 160 | 1.2 | 0.09 | 0.09 | 0.09 |
-| 4 | 280 | 1.6 | 0.12 | 0.12 | 0.12 |
-| 5 | 450 | 2.0 | 0.15 | 0.15 | 0.15 |
-| 6 | 680 | 2.4 | 0.18 | 0.18 | 0.18 |
-| 7 | 980 | 2.8 | 0.21 | 0.21 | 0.21 |
-| 8 | 1360 | 3.2 | 0.24 | 0.24 | 0.24 |
-| 9 | 1840 | 3.6 | 0.27 | 0.27 | 0.27 |
-| 10 | 2440 | 4.0 | 0.30 | 0.30 | 0.30 |
+| 1 | 30 | 0.4 | 0.03 | 0.03 | 0.06 |
+| 2 | 80 | 0.8 | 0.06 | 0.06 | 0.12 |
+| 3 | 160 | 1.2 | 0.09 | 0.09 | 0.18 |
+| 4 | 280 | 1.6 | 0.12 | 0.12 | 0.24 |
+| 5 | 450 | 2.0 | 0.15 | 0.15 | 0.30 |
+| 6 | 680 | 2.4 | 0.18 | 0.18 | 0.36 |
+| 7 | 980 | 2.8 | 0.21 | 0.21 | 0.42 |
+| 8 | 1360 | 3.2 | 0.24 | 0.24 | 0.48 |
+| 9 | 1840 | 3.6 | 0.27 | 0.27 | 0.54 |
+| 10 | 2440 | 4.0 | 0.30 | 0.30 | 0.60 |
 
 Pace, as a rough guide: at about 8 experience per fish, level 10 is about 300 fish. A steady
 day of rod fishing (around 20 fish) reaches level 3 on day one and level 5 by day three; the top
 takes a couple of weeks of real rod fishing. A level-10 hand is worth a little less than one rod
 tier (the starter at level 10 casts 16 m, like a beginner with the coast rod).
+
+**Fight help is mostly skill** (owner, 2026-11-25, "Yes, raise skill"): its steps are twice the
+others', +0.06 a level to +0.60 at level 10, so a top hand helps the fight more than the best rod's
+own lift (+0.5 on the deep rod). The rods' lift is not lowered.
 
 **The formula, in one line:** for reach, line, reel and fight help,
 `effective = rod value + skill bonus at his level`.
