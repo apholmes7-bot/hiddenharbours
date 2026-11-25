@@ -49,6 +49,7 @@ namespace HiddenHarbours.Tests.PlayMode
         const float LowWaterSearchSeconds = 26f * 3600f;
         /// <summary>Distances are the player's transform to Marguerite, which is what the interactor measures.</summary>
         const float Standoff = 2.6f, Arrived = 1.5f, Overshoot = 0.6f;
+        const int SquareUpTries = 6;
 
         readonly HashSet<GameObject> _residentBefore = new HashSet<GameObject>();
         SaveService _save;
@@ -274,8 +275,12 @@ namespace HiddenHarbours.Tests.PlayMode
             foreach (GameObject root in PersistentRoots())
                 if (root != null && !_residentBefore.Contains(root)) Object.DestroyImmediate(root);
             GameServices.Reset();
-            // What a real launch does at BeforeSceneLoad (FishSpeciesRegistrar): the saved catch's species resolver.
+            // What a real launch does at BeforeSceneLoad (FishSpeciesRegistrar): the species library and the saved
+            // catch's resolver. In a full run an earlier class resets the species registry, and a launch fills it
+            // again before any restore, so the relaunch here must too or no saved clam can be rebuilt.
+            Resources.Load<FishSpeciesLibrary>(FishSpeciesRegistrar.ResourcesPath)?.RegisterAll();
             GameServices.CatchFactory ??= new SpeciesCatchItemFactory();
+            Assert.That(FishSpeciesRegistry.Has(ClamId), Is.True, "the relaunch can resolve the saved clam's species");
             _save.Open(_path);
             Assert.That(_save.LoadedExistingSave, Is.True, "the relaunch reads the saved game");
             GameServices.Save = _save;
@@ -449,9 +454,28 @@ namespace HiddenHarbours.Tests.PlayMode
             }
             _held.Release(); Time.timeScale = 1f;
             for (int i = 0; i < 3; i++) yield return null;
-            float d = Vector2.Distance(rig.Walker.transform.position, at);
-            TestContext.WriteLine($"WALKED {steps} steps up to {Marguerite}, {d:0.###} m away, carrying the pail: " +
+            // Square up to her before the press, as a player does: at the 4x walk a slow machine can stop him a
+            // step off her line, facing past her, and the interactor offers only who he is looking at. One short
+            // step toward where she stands now turns him to her; the offer itself is still what is asserted.
+            int squared = 0;
+            for (; squared < SquareUpTries && interactor.Nearest != marguerite; squared++)
+            {
+                Vector2 toHer = (Vector2)marguerite.transform.position - rig.Body.position;
+                if (toHer.sqrMagnitude > 1e-6f) _held.Walk(toHer.normalized);
+                yield return new WaitForFixedUpdate();
+                _held.Release();
+                yield return null;
+            }
+            float d = Vector2.Distance(rig.Walker.transform.position, marguerite.transform.position);
+            TestContext.WriteLine($"WALKED {steps} steps up to {Marguerite}, {d:0.###} m away (squared up {squared}x), carrying the pail: " +
                                   $"{CarriedItem.IsHeld(GameServices.Hands, rig.Pail)} (pail {rig.Pail.UsedUnits}, belt {rig.Belt.UsedUnits})");
+            if (interactor.Nearest != marguerite)
+            {
+                Vector2 facing = InteractActorProbe.Has ? InteractActorProbe.Current.Facing : Vector2.zero;
+                TestContext.WriteLine($"NOT OFFERED: nearest {(interactor.Nearest != null ? interactor.Nearest.name : "none")}, " +
+                                      $"her interactable active {marguerite.isActiveAndEnabled}, moved {Vector2.Distance(at, marguerite.transform.position):0.###} m, " +
+                                      $"facing ({facing.x:0.##}, {facing.y:0.##}), gate blocked {InteractionGate.IsBlocked}, bubble up {bubble.IsShowing}");
+            }
             Assert.That(interactor.Nearest, Is.SameAs(marguerite), $"the interactor offers {Marguerite} once the walk arrives ({d:0.###} m)");
 
             Assert.That(interactor.BeginInteract(), Is.True, "the press is spent on Marguerite");
