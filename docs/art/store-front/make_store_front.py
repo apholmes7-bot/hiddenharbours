@@ -1,0 +1,246 @@
+"""LeBlanc's store front: the shop sign and the three open-hours displays (store front, 2026-11-25).
+
+Drawn at the village's pixel scale (32 px a metre), point filtered, each pivoted at its bottom centre so it
+stands on the ground where the store front data puts it (Data/Resources/StoreFronts/StPetersGeneralStoreFront).
+
+    python make_store_front.py <out_dir>
+
+StoreFront_Sign          the post sign by the path: "LeBlanc's" over "GENERAL STORE", always out
+StoreFront_PotatoCrate   a crate of potatoes on a low stand, out while the store is open
+StoreFront_BuoyRack      a rack of painted buoys and a coil of rope, out while the store is open
+StoreFront_BucketStand   galvanised buckets, a broom and a mop, out while the store is open
+"""
+import os
+import sys
+
+from PIL import Image
+
+P = {
+    "D": (52, 36, 28),      # outline, dark wood
+    "w": (128, 86, 52),     # post wood
+    "W": (166, 118, 72),    # post wood light
+    "v": (98, 64, 40),      # post wood shade
+    "c": (236, 226, 198),   # board paint, cream
+    "C": (212, 198, 164),   # board paint shade
+    "r": (160, 52, 40),     # store red (the awning's)
+    "R": (198, 82, 62),     # store red light
+    "i": (60, 34, 28),      # lettering ink
+    "k": (112, 98, 70),     # crate slat shade
+    "K": (176, 146, 96),    # crate slat
+    "L": (206, 178, 122),   # crate slat light
+    "p": (176, 136, 86),    # potato
+    "P": (204, 166, 110),   # potato light
+    "o": (136, 100, 60),    # potato shade
+    "y": (232, 196, 70),    # buoy yellow
+    "Y": (250, 228, 130),   # buoy yellow light
+    "b": (70, 110, 160),    # buoy blue
+    "B": (110, 150, 196),   # buoy blue light
+    "x": (220, 222, 216),   # buoy white
+    "h": (188, 164, 112),   # rope
+    "H": (150, 126, 80),    # rope shade
+    "s": (168, 174, 178),   # galvanised steel
+    "S": (212, 216, 218),   # steel light
+    "z": (110, 116, 122),   # steel dark
+    "g": (196, 170, 96),    # broom straw
+    "G": (160, 132, 64),    # broom straw shade
+    "m": (226, 222, 210),   # mop head
+    "M": (190, 186, 172),   # mop shade
+}
+
+# 5 x 7 capitals and lower case for the name, 3 x 5 capitals for the plaque. '#' is ink.
+BIG = {
+    "L": ["#....", "#....", "#....", "#....", "#....", "#....", "#####"],
+    "e": [".....", ".....", ".###.", "#...#", "#####", "#....", ".####"],
+    "B": ["####.", "#...#", "#...#", "####.", "#...#", "#...#", "####."],
+    "l": [".##..", "..#..", "..#..", "..#..", "..#..", "..#..", ".###."],
+    "a": [".....", ".....", ".###.", "....#", ".####", "#...#", ".####"],
+    "n": [".....", ".....", "####.", "#...#", "#...#", "#...#", "#...#"],
+    "c": [".....", ".....", ".####", "#....", "#....", "#....", ".####"],
+    "'": ["#", "#", ".", ".", ".", ".", "."],
+    "s": [".....", ".....", ".####", "#....", ".###.", "....#", "####."],
+}
+SMALL = {
+    "G": ["###", "#..", "#.#", "#.#", "###"],
+    "E": ["###", "#..", "##.", "#..", "###"],
+    "N": ["#..#", "##.#", "#.##", "#..#", "#..#"],
+    "R": ["##.", "#.#", "##.", "#.#", "#.#"],
+    "A": [".#.", "#.#", "###", "#.#", "#.#"],
+    "L": ["#..", "#..", "#..", "#..", "###"],
+    "S": ["###", "#..", "###", "..#", "###"],
+    "T": ["###", ".#.", ".#.", ".#.", ".#."],
+    "O": ["###", "#.#", "#.#", "#.#", "###"],
+    " ": ["..", "..", "..", "..", ".."],
+}
+
+
+def canvas(w, h):
+    return Image.new("RGBA", (w, h), (0, 0, 0, 0))
+
+
+def put(img, x, y, key):
+    if 0 <= x < img.width and 0 <= y < img.height and key in P:
+        img.putpixel((x, y), P[key] + (255,))
+
+
+def rect(img, x0, y0, x1, y1, key):
+    for y in range(y0, y1 + 1):
+        for x in range(x0, x1 + 1):
+            put(img, x, y, key)
+
+
+def text_width(text, font, gap):
+    return sum(len(font[ch][0]) for ch in text) + gap * (len(text) - 1)
+
+
+def write(img, text, font, x, y, key, gap=1):
+    for ch in text:
+        glyph = font[ch]
+        for gy, row in enumerate(glyph):
+            for gx, cell in enumerate(row):
+                if cell == "#":
+                    put(img, x + gx, y + gy, key)
+        x += len(glyph[0]) + gap
+
+
+def sign():
+    w, h = 72, 58
+    img = canvas(w, h)
+    # Two square posts, capped, standing in the ground.
+    for px in (3, 64):
+        rect(img, px, 2, px + 4, h - 1, "w")
+        rect(img, px, 2, px, h - 1, "D")
+        rect(img, px + 4, 2, px + 4, h - 1, "D")
+        rect(img, px + 1, 2, px + 1, h - 1, "W")
+        rect(img, px + 3, 2, px + 3, h - 1, "v")
+        rect(img, px - 1, 0, px + 5, 1, "D")
+        rect(img, px, 1, px + 4, 1, "W")
+    # The name board: red frame, cream field, the store's name in ink.
+    rect(img, 1, 6, 70, 27, "D")
+    rect(img, 2, 7, 69, 26, "r")
+    rect(img, 2, 7, 69, 7, "R")
+    rect(img, 4, 9, 67, 24, "c")
+    rect(img, 4, 24, 67, 24, "C")
+    name = "LeBlanc's"
+    tw = text_width(name, BIG, 1)
+    write(img, name, BIG, (w - tw) // 2, 13, "i")
+    # The plaque under it, hung on two short chains (the posts carry it).
+    rect(img, 7, 31, 64, 41, "D")
+    rect(img, 8, 32, 63, 40, "c")
+    rect(img, 8, 40, 63, 40, "C")
+    plaque = "GENERAL STORE"
+    pw = text_width(plaque, SMALL, 1)
+    write(img, plaque, SMALL, (w - pw) // 2, 34, "r")
+    for cx in (14, 57):
+        put(img, cx, 28, "D"); put(img, cx, 29, "s"); put(img, cx, 30, "D")
+    return img
+
+
+def potato_crate():
+    w, h = 34, 24
+    img = canvas(w, h)
+    # Low stand legs.
+    for lx in (3, 29):
+        rect(img, lx, 18, lx + 1, h - 1, "v")
+        put(img, lx, h - 1, "D"); put(img, lx + 1, h - 1, "D")
+    # The crate, three slats on its face.
+    rect(img, 1, 9, 32, 19, "D")
+    for i, y in enumerate((10, 13, 16)):
+        rect(img, 2, y, 31, y + 1, "K")
+        rect(img, 2, y, 31, y, "L")
+        rect(img, 2, y + 2, 31, y + 2, "k")
+    rect(img, 2, 19, 31, 19, "k")
+    # A heap of potatoes over the rim.
+    spuds = [(4, 7), (8, 6), (12, 5), (16, 4), (20, 5), (24, 6), (28, 7), (7, 3), (13, 2), (19, 2), (25, 3), (10, 0), (17, 0)]
+    for sx, sy in spuds:
+        rect(img, sx, sy + 1, sx + 4, sy + 3, "p")
+        rect(img, sx + 1, sy, sx + 3, sy, "p")
+        rect(img, sx + 1, sy + 4, sx + 3, sy + 4, "o")
+        put(img, sx + 1, sy + 1, "P"); put(img, sx + 2, sy + 1, "P")
+        put(img, sx + 3, sy + 3, "o")
+    return img
+
+
+def buoy(img, x, y, top, top_light):
+    # A lobster buoy, 6 wide and 11 tall, with a spindle up through it.
+    rect(img, x + 2, y - 3, x + 3, y, "w")
+    rect(img, x, y + 1, x + 5, y + 4, top)
+    rect(img, x + 1, y, x + 4, y, top)
+    rect(img, x, y + 5, x + 5, y + 7, "x")
+    rect(img, x + 1, y + 8, x + 4, y + 9, top)
+    put(img, x + 1, y + 1, top_light); put(img, x + 1, y + 2, top_light)
+    rect(img, x + 5, y + 1, x + 5, y + 9, "z")
+
+
+def buoy_rack():
+    w, h = 32, 34
+    img = canvas(w, h)
+    # The rack: two uprights and two rails.
+    for ux in (2, 28):
+        rect(img, ux, 4, ux + 1, h - 1, "w")
+        rect(img, ux + 1, 4, ux + 1, h - 1, "v")
+    rect(img, 1, 4, 30, 5, "W")
+    rect(img, 1, 5, 30, 5, "v")
+    rect(img, 1, 19, 30, 20, "W")
+    rect(img, 1, 20, 30, 20, "v")
+    # Three buoys hung from the top rail.
+    buoy(img, 5, 9, "r", "R")
+    buoy(img, 13, 9, "y", "Y")
+    buoy(img, 21, 9, "b", "B")
+    # A coil of rope on the bottom rail.
+    for cx in (9, 22):
+        cy = 22
+        rect(img, cx - 5, cy, cx + 5, cy + 7, "h")
+        for ring in (1, 3):
+            rect(img, cx - 5 + ring, cy + ring, cx + 5 - ring, cy + ring, "H")
+            rect(img, cx - 5 + ring, cy + 7 - ring, cx + 5 - ring, cy + 7 - ring, "H")
+            rect(img, cx - 5 + ring, cy + ring, cx - 5 + ring, cy + 7 - ring, "H")
+            rect(img, cx + 5 - ring, cy + ring, cx + 5 - ring, cy + 7 - ring, "H")
+        rect(img, cx - 4, cy + 7, cx + 4, cy + 7, "H")
+        for qx, qy in ((cx - 5, cy), (cx + 5, cy), (cx - 5, cy + 7), (cx + 5, cy + 7)):
+            img.putpixel((qx, qy), (0, 0, 0, 0))
+    return img
+
+
+def bucket(img, x, y, w, h):
+    rect(img, x, y, x + w - 1, y + h - 1, "s")
+    rect(img, x, y, x + w - 1, y, "S")
+    rect(img, x + w - 2, y + 1, x + w - 1, y + h - 1, "z")
+    rect(img, x + 1, y + h - 1, x + w - 2, y + h - 1, "z")
+    rect(img, x + 1, y + 1, x + 1, y + h - 2, "S")
+
+
+def bucket_stand():
+    w, h = 28, 38
+    img = canvas(w, h)
+    # A broom on the left and a mop on the right, stood head up behind the buckets.
+    rect(img, 2, 0, 7, 8, "g")
+    rect(img, 2, 7, 7, 8, "G")
+    rect(img, 3, 0, 6, 0, "G")
+    for i in range(22):
+        put(img, 5, 9 + i, "w")
+    rect(img, 20, 0, 26, 7, "m")
+    rect(img, 21, 6, 26, 7, "M")
+    put(img, 20, 3, "M"); put(img, 24, 2, "M")
+    for i in range(22):
+        put(img, 23, 8 + i, "W")
+    # Three galvanised buckets: two on the ground, one stacked on them.
+    bucket(img, 3, 28, 10, 10)
+    bucket(img, 14, 28, 10, 10)
+    bucket(img, 8, 19, 11, 10)
+    # Wire bails.
+    for bx, by, bw in ((3, 28, 10), (14, 28, 10), (8, 19, 11)):
+        for i in range(bw):
+            put(img, bx + i, by - 2 if 1 < i < bw - 2 else by - 1, "z")
+    return img
+
+
+def main(out):
+    os.makedirs(out, exist_ok=True)
+    for name, img in (("StoreFront_Sign", sign()), ("StoreFront_PotatoCrate", potato_crate()),
+                      ("StoreFront_BuoyRack", buoy_rack()), ("StoreFront_BucketStand", bucket_stand())):
+        img.save(os.path.join(out, name + ".png"))
+        print(name, img.size)
+
+
+if __name__ == "__main__":
+    main(sys.argv[1] if len(sys.argv) > 1 else ".")

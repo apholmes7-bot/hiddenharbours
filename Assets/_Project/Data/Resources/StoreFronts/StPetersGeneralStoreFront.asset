@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab099dfc13a6426ba6d691cf5af78109, type: 3}
+  m_Name: StPetersGeneralStoreFront
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.StoreFrontDef
+  Id: storefront.st_peters_general
+  ShopId: shop.st_peters_general
+  BuildingName: generalStore
+  OpensHour: 7
+  ClosesHour: 19
+  CheckRealSeconds: 1
+  Material: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  Pieces:
+  - Id: front.sign
+    Sprite: {fileID: 21300000, guid: a4488824e8d24e93a6c2c79e61758f21, type: 3}
+    Offset: {x: -2.1, y: -5.622}
+    SortingOrder: 1083
+    OnlyWhileOpen: 0
+  - Id: front.potato_crate
+    Sprite: {fileID: 21300000, guid: 4140d4b019db498fa0e46270feadcc8e, type: 3}
+    Offset: {x: 1.5, y: -5.572}
+    SortingOrder: 1083
+    OnlyWhileOpen: 1
+  - Id: front.bucket_stand
+    Sprite: {fileID: 21300000, guid: 6ba0fa475b584396b4a696283e331a38, type: 3}
+    Offset: {x: 2.25, y: -4.972}
+    SortingOrder: 1080
+    OnlyWhileOpen: 1
+  - Id: front.buoy_rack
+    Sprite: {fileID: 21300000, guid: fe39f2f9f1c54dab8fbadd78a9869814, type: 3}
+    Offset: {x: -4.05, y: -5.622}
+    SortingOrder: 1083
+    OnlyWhileOpen: 1
