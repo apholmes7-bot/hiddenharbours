@@ -5,8 +5,8 @@ using HiddenHarbours.Core;
 namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
-    /// v25 -> v26: STORE PURCHASES, PAID SPECIAL ORDERS AND THE SHOPPING BAG (one bump for the three, data
-    /// only: nothing in the game reads or writes them yet). Pins the obligations of a schema bump: an older
+    /// v25 -> v26: STORE PURCHASES, PAID SPECIAL ORDERS AND THE SHOPPING BAG (one bump for the three, the
+    /// rows; the bag and the purchases are read and written by the game, the orders are reserved). Pins the obligations of a schema bump: an older
     /// save survives and starts with none of the three (nothing invented, nothing else moved), a missing or
     /// damaged list is repaired, full rows come back from the real JSON exactly, and the repair never
     /// destroys something the player paid for or owns.
@@ -642,9 +642,10 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(1, bag.Items[1].Count);
 
             Assert.AreEqual(2, save.SupplyStock.Count, "the repair never adds or removes a supply row");
-            Assert.AreEqual(3, SupplyLocker.Count(save, Bread), "and never changes a count");
-            Assert.AreEqual(1, SupplyLocker.Count(save, Milk));
-            Assert.AreEqual(0, SupplyLocker.Count(save, Beans));
+            Assert.AreEqual(3, SupplyLocker.Owned(save, Bread), "and never changes what he owns");
+            Assert.AreEqual(1, SupplyLocker.Owned(save, Milk));
+            Assert.AreEqual(0, SupplyLocker.Owned(save, Beans));
+            Assert.AreEqual(0, SupplyLocker.Count(save, Bread), "the bag's goods are set aside until it is put away");
 
             string once = SaveSerialization.ToJson(save);
             SaveMigration.Migrate(save);
@@ -686,8 +687,9 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual("region.nowhere", save.ShoppingBags[1].Region);
 
             Assert.AreEqual(1, save.SupplyStock.Count);
-            Assert.AreEqual(50, SupplyLocker.Count(save, Bread),
+            Assert.AreEqual(50, SupplyLocker.Owned(save, Bread),
                             "every dropped bag's goods are still his: found put away, never lost");
+            Assert.AreEqual(49, SupplyLocker.Count(save, Bread), "only the kept bag in his hand sets one aside");
 
             string once = SaveSerialization.ToJson(save);
             SaveMigration.Migrate(save);

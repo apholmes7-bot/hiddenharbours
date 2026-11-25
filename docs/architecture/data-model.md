@@ -301,7 +301,7 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 
 > **Save schema v26 (store purchases, paid special orders, the shopping bag: ONE bump for the three,
 > owner 2026-11-23)**: `SaveData` gained four append-only members (rows in Core/Save/SaveRowsV26.cs).
-> **This is the schema step only: nothing in the game reads or writes them yet.** The `v25→v26` step gives
+> **The bag and the store purchases are read and written by the game; the special orders are reserved** (see the wiring note at the end of this block). The `v25→v26` step gives
 > each list an empty list and sets the counter to 1, so an older save loads with its shelves as the
 > calendar says, no order, no bag, and whatever he bought simply in his supplies; nothing else moves.
 > Each of the three is something the player did, which cannot be recomputed; shelf counts, deliveries and
@@ -354,6 +354,15 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 >   must carry its region:** the writer always fills `Region` for a bag that is not in his hand, because the
 >   repair drops one that has none (it could never be found again), and its goods are then simply found put
 >   away.
+>
+> **Wiring (no further schema change).** The bag: `ShoppingBagContents` (Core) keeps no state and reads
+> and changes `ShoppingBags[0]` directly, so every save point writes the bag as it stands (held, or set
+> down with region, position, storey and by-the-bed) and a load needs no adoption step; the picture is
+> rebuilt from the row by the player's hands. A set-down bag always has a region (`region.unknown` where
+> the game knows none). The purchases: `IslandShelvesHost` (Economy) replaces a shop's rows as each
+> purchase is made (`StorePurchaseRows.ReplaceShop`, the repair's own order and fold) and hands them to
+> `IslandStoreShelves.ImportPurchases` when the stores are built; rows older than the ledger's lookback are
+> dropped. `SpecialOrders` and `NextSpecialOrderNumber` are untouched.
 >
 > **Opening a v26 save in an older build loses the three lists.** An older build does not know these
 > fields: it reads the file without them, holds the version at its own, and writes the file back without

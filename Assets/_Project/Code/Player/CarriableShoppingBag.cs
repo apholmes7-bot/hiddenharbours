@@ -22,7 +22,7 @@ namespace HiddenHarbours.Player
     ///   (<see cref="InteractPriority.LastResort"/>): at a shelf the press still buys, at a bed it still
     ///   sleeps, and with nothing else in reach the bag goes on the ground at his feet.</item>
     ///   <item><b>On the ground</b>: "Pick up the bag", like any loose thing at his feet. A bag left in
-    ///   another region is not drawn and not offered here.</item>
+    ///   another region, or on another storey of the house, is not drawn and not offered here.</item>
     /// </list>
     ///
     /// <para>The nearest storage is found once a frame over the handful registered; the labels are
@@ -63,9 +63,22 @@ namespace HiddenHarbours.Player
         /// <summary>True while the bag is in one of his hands. Read from the hands, never stored.</summary>
         public bool IsCarried => _hands != null && _hands.Slots.SideOf(this) != CarryHandSide.None;
 
-        /// <summary>True while the bag stands on the ground in the region he is in.</summary>
+        /// <summary>True while the bag stands on the ground in the region he is in, on the storey he is on:
+        /// a bag left upstairs is not seen or picked up from the floor below.</summary>
         public bool StandsHere
-            => !IsCarried && ShoppingBagContents.LiesIn(GameServices.Save?.Current, GameServices.CurrentRegionId);
+            => !IsCarried
+               && ShoppingBagContents.LiesIn(GameServices.Save?.Current, GameServices.CurrentRegionId)
+               && ShoppingBagContents.SetDownLevel == PlayerStorey.Level;
+
+        /// <summary>The bag picture that exists right now, in a hand or on the ground, or null. There is one
+        /// bag; hands that were rebuilt (a return from the title) take this one over instead of making a
+        /// second.</summary>
+        public static CarriableShoppingBag Standing => _standing != null ? _standing : null;
+
+        private static CarriableShoppingBag _standing;
+
+        /// <summary>These hands now own the bag (see <see cref="Standing"/>).</summary>
+        public void Adopt(CarryHands hands) => _hands = hands;
 
         /// <summary>Makes a bag of <paramref name="def"/> under <paramref name="parent"/>, for
         /// <paramref name="hands"/>.</summary>
@@ -88,8 +101,17 @@ namespace HiddenHarbours.Player
             return bag;
         }
 
-        private void OnEnable() => Interactables.Register(this);
-        private void OnDisable() => Interactables.Unregister(this);
+        private void OnEnable()
+        {
+            Interactables.Register(this);
+            _standing = this;
+        }
+
+        private void OnDisable()
+        {
+            Interactables.Unregister(this);
+            if (ReferenceEquals(_standing, this)) _standing = null;
+        }
 
         private void Update()
         {
@@ -101,7 +123,14 @@ namespace HiddenHarbours.Player
 
             _target = null;
             _targetId = "";
-            // A bag left in another region is not drawn in this one.
+            // A picture nobody owns, of a bag the loaded game does not have (another game was begun around
+            // it): it goes.
+            if (_hands == null && !ShoppingBagContents.HoldsAny(GameServices.Save?.Current))
+            {
+                Destroy(gameObject);
+                return;
+            }
+            // A bag left in another region, or on another storey, is not drawn here.
             bool here = StandsHere;
             if (_renderer != null && _renderer.enabled != here) _renderer.enabled = here;
         }

@@ -1673,7 +1673,8 @@ namespace HiddenHarbours.Core
             Hands = null;
             CatchHands = null;
             BagHands = null;
-            ShoppingBagContents.Clear();   // nothing is set aside in a bag nobody holds
+            ShoppingBagContents.Clear();   // the bag stays with its save; only the last-asked game is forgotten
+            PlayerStorey.Clear();          // nobody is upstairs in a building that is gone
             PlayerHold = null;
             PlayerStorage.Clear();       // no container outlives the services that listed it
             CurrentRegionId = null;

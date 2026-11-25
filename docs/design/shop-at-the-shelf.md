@@ -173,10 +173,9 @@ St Peters general store, after slice 2:
   at the boat), and road vehicles have no storage yet, so neither offers "put away" yet; when either gets
   a place, the bag works with it with no change here.
 
-### 3.3 The bag and the save (no save change)
+### 3.3 The bag and the save
 
-Nothing a player holds is saved today: a catch in hand is not saved either. The save format is not
-changed for the bag. Instead:
+The bag is saved (save v26, section 6). The goods rule did not change:
 
 - The purchase itself is saved exactly as before (the goods are added to his supplies and the game is
   saved at once, as the counter always did).
@@ -201,16 +200,17 @@ droppable with items inside."
 - **Goods in a set-down bag stay set aside**: they cannot be eaten or used from the floor.
 - **A bag left in another region** is not drawn or offered where he is; it is where he left it.
 
-**The bag across leaving and loading (this slice does not change the save).**
+**The bag across leaving and loading (save v26).**
 
-- **Leaving for the title and coming back** (the same running game): the bag is never lost. If it was
-  set down, it is **back in his hand** when the game resumes, with everything in it. The same happens if
-  the place it stood in is unloaded under it.
+- **The bag is in the save**, with what is in it: in his hand, or set down with its region, its place,
+  its storey and whether it was left by the bed.
+- **After any load** (the title and back, or the game closed and started again): a bag that was in his
+  hand is in his hand; a bag that was set down stands where he left it, with everything in it. Left by
+  the bed, it is by the bed when he wakes. Left upstairs, it is upstairs.
+- **A bag left in another region** stays there and is there when he comes back to that region.
 - **Starting a new game** does not inherit the old game's bag.
-- **Closing the game completely and starting it again:** the save has nowhere to remember the bag yet,
-  so there is no bag after the restart and the goods are in his supplies. Nothing is lost and nothing is
-  paid twice. Save v26 closes this: the set-down bag and its contents become saved data (section 6), and
-  the bag is then found where he left it.
+- **A damaged bag record** loses nothing: the goods are his from the moment he pays, so the worst case
+  is that they are found in his supplies with no bag.
 
 ---
 
@@ -351,7 +351,7 @@ NextSpecialOrderNumber: int
 |---|---|---|---|---|
 | 1 | **Groceries, ice and capelin at the shelf** (built) | walk to the bread, see its price, buy it; bare gondola and card when sold out; the book is shorter | none | architecture review of one small Core contract |
 | 2 | **The paper bag, and every good counted on its own** (built) | bread, oatcakes and beans go into a paper bag in his hand; more go in the same bag; he puts the shopping away at home or the camper; bread can sell out while beans are still there | none (held bag set aside, see 3.3) | done; the owner's ruling on a dropped bag is the next bag slice (3.3) |
-| 2b | **The bag can be put down** (built, for the running game) | he sets the bag down with the goods still in it and picks it up again; if he lies down to sleep holding it, the bag is left by the bed | none (see 3.3: kept through the title and back; a full restart finds the goods in his supplies) | the set-down bag joins save v26 in slice 4 |
+| 2b | **The bag can be put down** (built, for the running game) | he sets the bag down with the goods still in it and picks it up again; if he lies down to sleep holding it, the bag is left by the bed | none at the time; the bag is saved since slice 4 (see 3.3) | done |
 | 3 | **The rest of the St Peters stock** | soap into the bag; the rod rack and the bait box on the floor; rods and shellfish gear into a free hand; the depth sounder moves to Nine Mile Creek | none | art for the rack, bait box and goods; new gear defs for the extra rod tiers |
 | 4 | **Save v26** | a bought-out shelf stays bought out after a reload | **v26** (approved) | lead-architect |
 | 5 | **The counter catalogue** | order a rod rack, pay now, collect the parcel at the counter on the first run 2 or more days later; no cancelling | v26 rows from slice 4 | catalogue tab, parcel art |
@@ -372,7 +372,7 @@ Still open:
 
 1. **Saving the bag.** Ruled by the owner on 2026-11-23 and built for the running game (section 3.3).
    The set-down bag and its contents are the third thing save v26 carries, with the store purchases and
-   the paid special orders. Until v26, a full restart finds the goods in his supplies and no bag.
+   the paid special orders. Built: the bag and the store purchases are read and written; special orders stay reserved.
 2. **Ice and bait in the bag?** Lean: no. Ice is wet and goes to the locker; bait goes to the tackle box.
    Both are data (`IntoBag` on the slot), so either can change without code.
 3. **The extra rod tiers** need new gear definitions (a cheaper first rod and a better rod), with prices
