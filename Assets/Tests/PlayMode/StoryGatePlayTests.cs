@@ -19,7 +19,7 @@ namespace HiddenHarbours.Tests.PlayMode
     /// evening of the seventh day; the gate's own islander (the shipped asset) within reach. He talks
     /// to her: her bubble carries the word, and when he has heard it out the word is in the save. In
     /// the demo that ends the week: the ending is in the save, the closing card is up over a stopped
-    /// world, and its one button goes back to the title, saving first. In the full game the same word
+    /// world, and its one button takes the card down and goes on to the title. In the full game the same word
     /// ends nothing. Walking away from the word leaves it to be heard.
     ///
     /// <para>The save is a fixture in memory. No save file is read or written.</para>
@@ -93,7 +93,6 @@ namespace HiddenHarbours.Tests.PlayMode
         int _toTitle;
 
         void CountEnded(DemoEnded e) => _ended++;
-        void CountToTitle(ReturnToTitleRequested e) => _toTitle++;
 
         [SetUp]
         public void SetUp()
@@ -113,7 +112,9 @@ namespace HiddenHarbours.Tests.PlayMode
             _ended = 0;
             _toTitle = 0;
             EventBus.Subscribe<DemoEnded>(CountEnded);
-            EventBus.Subscribe<ReturnToTitleRequested>(CountToTitle);
+            // The card's way on is the shell's quit to the title, which rebuilds the world and would
+            // take every later fixture with it. Here it is counted, not taken.
+            DemoClosingCard.Leave = () => _toTitle++;
 
             _gate = AssetDatabase.LoadAssetAtPath<StoryGateDef>(GatePath);
             _rules = AssetDatabase.LoadAssetAtPath<IslandWeekRulesDef>(RulesPath);
@@ -163,7 +164,7 @@ namespace HiddenHarbours.Tests.PlayMode
             if (_presenter != null && _presenter.IsShowing) _presenter.Close();
             DemoClosingCard.CloseIfOpen();
             EventBus.Unsubscribe<DemoEnded>(CountEnded);
-            EventBus.Unsubscribe<ReturnToTitleRequested>(CountToTitle);
+            DemoClosingCard.Leave = null;
             DemoBuild.Override = null;
             ShellPause.Reset();
             foreach (Object o in _spawned) if (o != null) Object.Destroy(o);
@@ -248,15 +249,13 @@ namespace HiddenHarbours.Tests.PlayMode
             foreach (CampaignBarrierDef wall in Walls().Where(w => w.RegionId == Region))
                 Assert.IsTrue(CampaignBarrierDirector.Stands(wall), wall.Id);
 
-            // Its one button: save, then back to the title.
-            int savesBefore = _save.Saves;
+            // Its one button: the card comes down and the way on is taken, once.
             var leave = card.GetComponentsInChildren<UnityEngine.UI.Button>(true).Single();
             leave.onClick.Invoke();
             yield return null;
             Assert.IsFalse(DemoClosingCard.IsOpen, "the card is down");
             Assert.IsFalse(ShellPause.IsPaused, "the clock is handed back");
             Assert.IsFalse(InteractionGate.IsBlocked);
-            Assert.Greater(_save.Saves, savesBefore, "saved before leaving");
             Assert.AreEqual(1, _toTitle, "and back to the title");
 
             // Talking to her again: one line more, no second word, no second ending.

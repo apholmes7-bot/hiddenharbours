@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using HiddenHarbours.Core;
@@ -20,6 +21,10 @@ namespace HiddenHarbours.UI
     {
         private static DemoClosingCard _instance;
         private static bool _listening;
+
+        /// <summary>The way on from the card. Unset, it is the shell's quit to the title, which saves
+        /// first. A seam so the card can be driven without rebuilding the world.</summary>
+        public static Action Leave { get; set; }
 
         /// <summary>True while the card is on screen.</summary>
         public static bool IsOpen => _instance != null;
@@ -44,6 +49,7 @@ namespace HiddenHarbours.UI
         {
             _instance = null;
             _listening = false;
+            Leave = null;
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -134,7 +140,8 @@ namespace HiddenHarbours.UI
         private void OnLeave()
         {
             Close();                    // hand the clock back before the world is rebuilt
-            ShellFlow.QuitToTitle();    // saves first, then returns to the title
+            if (Leave != null) Leave();
+            else ShellFlow.QuitToTitle();   // saves first, then returns to the title
         }
     }
 }
