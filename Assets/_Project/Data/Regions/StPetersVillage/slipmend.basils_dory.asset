@@ -24,7 +24,7 @@ MonoBehaviour:
   JobDoneLine: That's done. Next I {next}.
   MendedLine: She's sound. Now to get her down the slip.
   MissingLine: I need the makings in my bag to {job}.
-  LaunchedLine: Down she goes. She floats, and she's mine to row.
+  LaunchedLine: Down she goes. She's tied at the pier head, and she's mine to row.
   VoiceId: voice.inner
   BubbleHeightMetres: 2.1
   LaunchRegionId: region.st_peters

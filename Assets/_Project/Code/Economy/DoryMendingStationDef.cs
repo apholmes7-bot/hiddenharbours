@@ -50,8 +50,8 @@ namespace HiddenHarbours.Economy
         [Tooltip("When the bag in his hand lacks the job's supplies. {job} is the job, lower-cased.")]
         public string MissingLine = "I need the makings in my bag to {job}.";
 
-        [Tooltip("When she goes down the slip.")]
-        public string LaunchedLine = "Down she goes. She floats, and she's mine to row.";
+        [Tooltip("When she goes down the slip. Names where she now lies: the launch berth is out of the camera's view from the slip.")]
+        public string LaunchedLine = "Down she goes. She's tied at the pier head, and she's mine to row.";
 
         [Tooltip("The voice the thoughts are spoken in.")]
         public string VoiceId = "voice.inner";
