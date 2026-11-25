@@ -244,8 +244,8 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var config = UnityEditor.AssetDatabase.LoadAssetAtPath<GameConfig>("Assets/_Project/Data/Config/GameConfig.asset");
             Assert.IsNotNull(config, "no shipped GameConfig");
-            Assert.AreEqual(0.30f, config.LobsterFloatRadiusMeters, 1e-4f,
-                            "the painted float's radius (19 px widest row at 32 PPU) did not ship");
+            Assert.AreEqual(0.084f, config.LobsterFloatRadiusMeters, 1e-4f,
+                            "the player's spindle float radius (the pot-float rig's META.bullet.waterRadius) did not ship");
         }
 
         // ---- the shader cuts, tints and draws the pale line on ONE curve ------------------------------

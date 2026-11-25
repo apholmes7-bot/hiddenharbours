@@ -122,6 +122,12 @@ namespace HiddenHarbours.Boats
             new Color(0.20f, 0.65f, 0.30f),   // green
             new Color(0.95f, 0.55f, 0.15f),   // orange
         };
+        [Tooltip("The float the fleet's gear wears (a pot-float rig sheet cell), painted per boat from " +
+                 "BuoyPalette by ramp swap. Null = the small code-built greybox, tinted the same way.")]
+        public Sprite BuoySprite;
+        [Tooltip("That float's radius where it meets still water, in metres (the rig's META.<shape>." +
+                 "waterRadius): the curved waterline wraps the body at this width. Unused by the greybox.")]
+        [Min(0f)] public float BuoyFloatRadiusMeters;
         [Tooltip("NO LONGER READ (ADR 0059 step 2): a buoy sorts by the decor band's Y-sort where it floats, " +
                  "like the player's trap buoys (Core EffectSorting). Kept so existing assets load unchanged.")]
         public int BuoySortingOrder = 3;

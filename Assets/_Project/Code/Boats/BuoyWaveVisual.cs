@@ -80,6 +80,19 @@ namespace HiddenHarbours.Boats
         private static readonly int IdWaterlineFoamWidth = Shader.PropertyToID("_WaterlineFoamWidth");
         private static readonly int IdSpriteHeightPx     = Shader.PropertyToID("_SpriteHeightPx");
         private static readonly int IdWaterlineArc       = Shader.PropertyToID("_WaterlineArc");
+        private static readonly int IdPaletteFrom        = Shader.PropertyToID("_CharPaletteFrom");
+        private static readonly int IdPaletteTo          = Shader.PropertyToID("_CharPaletteTo");
+        private static readonly int IdPaletteCount       = Shader.PropertyToID("_CharPaletteCount");
+        private static readonly int IdPaletteEpsSq       = Shader.PropertyToID("_CharPaletteEpsSq");
+
+        /// <summary>The shader's swap array length (CharacterPalette.hlsl CHARACTER_PALETTE_MAX). An
+        /// array property is sized at its first upload, so it is always uploaded at full length.</summary>
+        private const int PaletteSlots = CharacterPalette.MaxSwaps;
+
+        /// <summary>The swap's match radius, squared, in linear space: the shader's own default. The
+        /// closest any swappable float colour comes to another colour in the sheet is 0.0084 (measured,
+        /// PotFloatArtTests), so this radius of 0.00176 cannot catch a neighbour.</summary>
+        private const float PaintMatchEpsilonSquared = 3.1e-06f;
 
         [Header("Bob (the crest lifts the buoy)")]
         [Tooltip("Screen-vertical lift (world units) per metre of wave height under the buoy. The buoy floats HIGH on the water, so it reads a bigger bob than the heavy boat (BoatWaveMotion uses ~0.12) — a cork on the swell.")]
@@ -142,6 +155,9 @@ namespace HiddenHarbours.Boats
         private Sprite _arcSprite;              // the sprite the cached arc was read off
         private float _arcRadius = -1f;         // the radius the cached arc was built for
         private Vector4 _arc;                   // the packed _WaterlineArc for the current sprite
+        private Vector4[] _paletteFrom;         // the owner's paint swap (null = the float as baked)
+        private Vector4[] _paletteTo;
+        private int _paletteCount;
 
         private bool _baseCached;
         private Vector3 _baseLocalPosition;
@@ -169,6 +185,55 @@ namespace HiddenHarbours.Boats
         {
             _waterlineRadiusMeters = float.IsNaN(radiusMeters) ? 0f : Mathf.Max(0f, radiusMeters);
             _arcRadius = -1f;   // force a rebuild on the next push
+        }
+
+        /// <summary>How many paint swaps the float carries (0 = drawn as baked). For tests / tooling.</summary>
+        public int PaintSwapCount => _paletteCount;
+
+        /// <summary>The owner's body coat last configured (white until <see cref="ConfigurePaint"/>).</summary>
+        public Color PaintBody { get; private set; } = Color.white;
+
+        /// <summary>
+        /// Paint a pot float in its owner's colours: the baked key coats (<see cref="PotFloatPaint"/>)
+        /// become <paramref name="body"/> and <paramref name="band"/> through the shader's exact ramp
+        /// swap, so the shading, dither and wet line stay the art's own. An owner who wears the baked
+        /// colours carries no swap at all. Leave the renderer's colour white: it still multiplies.
+        /// </summary>
+        public void ConfigurePaint(Color body, Color band)
+        {
+            _paletteFrom ??= new Vector4[PaletteSlots];
+            _paletteTo ??= new Vector4[PaletteSlots];
+            _paletteCount = PotFloatPaint.BuildSwaps(body, band, _paletteFrom, _paletteTo);
+            PaintBody = body;
+            // Upload now, not only on the next LateUpdate: a presenter may show the float with this
+            // component disabled (a dip or rise beat) before it ever runs.
+            if (_renderer == null) return;
+            _mpb ??= new MaterialPropertyBlock();
+            _renderer.GetPropertyBlock(_mpb);
+            PushPaint();
+            _renderer.SetPropertyBlock(_mpb);
+        }
+
+        private void PushPaint()
+        {
+            if (_paletteFrom == null) return;
+            _mpb.SetVectorArray(IdPaletteFrom, _paletteFrom);
+            _mpb.SetVectorArray(IdPaletteTo, _paletteTo);
+            _mpb.SetFloat(IdPaletteCount, _paletteCount);
+            _mpb.SetFloat(IdPaletteEpsSq, PaintMatchEpsilonSquared);
+        }
+
+        /// <summary>
+        /// Seat the float geometry from its OWN art: the pot-float sheets pivot on the still waterline,
+        /// exactly as the nav sheets do, so the sprite's height and normalised pivot ARE the hull's
+        /// height and float line (no cork defaults). A foam float follows the slope like the cork the
+        /// bob was tuned on. No-op without a sprite.
+        /// </summary>
+        public void ConfigureFloatFromSprite(Sprite sprite)
+        {
+            if (sprite == null || sprite.rect.height <= 0f || sprite.pixelsPerUnit <= 0f) return;
+            ConfigureFloatGeometry(sprite.rect.height / sprite.pixelsPerUnit,
+                                   sprite.pivot.y / sprite.rect.height, slopeFollow: 0f);
         }
 
         /// <summary>
@@ -256,10 +321,13 @@ namespace HiddenHarbours.Boats
         private void OnDisable()
         {
             RestoreVisual();
-            // Put the original material + colour back so a disabled buoy leaves its sprite untouched.
+            // Put the original material + colour back so a disabled buoy leaves its sprite untouched. A
+            // PAINTED float keeps its instance (dry: RestoreVisual zeroed the waterline, which is the
+            // shader's passthrough) because its owner's colours live in that shader's swap; on the plain
+            // sprite material it would flash the baked key coats while a presenter animates it.
             if (_renderer != null)
             {
-                if (_originalMaterial != null) _renderer.sharedMaterial = _originalMaterial;
+                if (_originalMaterial != null && _paletteCount == 0) _renderer.sharedMaterial = _originalMaterial;
                 if (_baseCached) _renderer.color = _baseColor;
             }
         }
@@ -402,6 +470,7 @@ namespace HiddenHarbours.Boats
             _mpb.SetFloat(IdWaterlineFrac, waterline);
             _mpb.SetFloat(IdSpriteHeightPx, _spriteHeightPx);
             _mpb.SetVector(IdWaterlineArc, _arc);
+            PushPaint();
             _renderer.SetPropertyBlock(_mpb);
 
             // VANISH: fade the sprite's own alpha (folded into the shader via IN.color) — the full

@@ -44,6 +44,8 @@ MonoBehaviour:
   - {r: 0.92, g: 0.92, b: 0.88, a: 1}
   - {r: 0.2, g: 0.65, b: 0.3, a: 1}
   - {r: 0.95, g: 0.55, b: 0.15, a: 1}
+  BuoySprite: {fileID: 5025605785760592356, guid: 44150562fa8e43d89a07e2cfde851490, type: 3}
+  BuoyFloatRadiusMeters: 0.104
   BuoySortingOrder: 3
   HullVisual: {fileID: 11400000, guid: 659bf2471d548444ea2d4b2389c7e79e, type: 2}
   HullFacings: []

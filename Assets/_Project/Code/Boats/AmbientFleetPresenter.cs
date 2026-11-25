@@ -369,9 +369,21 @@ namespace HiddenHarbours.Boats
                 fisher.Heading = Vector2.up;
 
                 fisher.Buoys = new Buoy[spotsPerBoat];
-                Sprite buoySprite = BuildBuoySprite(tint);
+                // The fleet's float art (data) painted in this fisher's colour by ramp swap; without art,
+                // the code greybox in the same colour, exactly as before.
+                bool realFloat = def.BuoySprite != null;
+                Sprite buoySprite = realFloat ? def.BuoySprite : BuildBuoySprite(tint);
+                Color band = GameServices.Config != null ? GameServices.Config.PotFloatBandColour
+                                                         : (Color)PotFloatPaint.BakedBand;
                 for (int j = 0; j < spotsPerBoat; j++)
+                {
                     fisher.Buoys[j] = BuildBuoy(fleet.Root.transform, def.Id, b, j, buoySprite);
+                    BuoyWaveVisual wave = fisher.Buoys[j].WaveVisual;
+                    if (!realFloat) continue;
+                    wave.ConfigureFloatFromSprite(buoySprite);
+                    wave.ConfigureWaterlineArc(def.BuoyFloatRadiusMeters);
+                    wave.ConfigurePaint(tint, band);
+                }
 
                 fleet.Boats[b] = fisher;
             }

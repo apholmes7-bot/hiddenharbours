@@ -106,11 +106,20 @@ namespace HiddenHarbours.Boats
 
             var buoy = go.AddComponent<BuoyWaveVisual>();
             buoy.Configure(sr, visualGo.transform);
-            // The waterline wraps the float: the painted float's radius is data (GameConfig); the
-            // greybox fallback's is the half-width it is drawn with below.
-            buoy.ConfigureWaterlineArc(art == _sprite
-                ? GreyboxFloatRadiusPx / (float)GreyboxPixelsPerUnit
-                : (GameServices.Config != null ? GameServices.Config.LobsterFloatRadiusMeters : 0f));
+            if (art == _sprite)
+            {
+                // The greybox fallback: its waterline wraps at the half-width it is drawn with below.
+                buoy.ConfigureWaterlineArc(GreyboxFloatRadiusPx / (float)GreyboxPixelsPerUnit);
+            }
+            else
+            {
+                // The pot-float sheet: geometry off its own art (pivot = still waterline), the waterline
+                // wrapping at the radius in data, and the player's colours painted on by ramp swap.
+                GameConfig cfg = GameServices.Config;
+                buoy.ConfigureFloatFromSprite(art);
+                buoy.ConfigureWaterlineArc(cfg != null ? cfg.LobsterFloatRadiusMeters : 0f);
+                if (cfg != null) buoy.ConfigurePaint(cfg.PlayerPotFloatColour, cfg.PlayerPotFloatBandColour);
+            }
 
             _buoys[e.InstanceId] = go;
         }

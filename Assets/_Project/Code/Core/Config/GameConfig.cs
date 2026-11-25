@@ -637,13 +637,24 @@ namespace HiddenHarbours.Core
         public float SurfSprayIntensity => Mathf.Clamp(1f + SurfSprayIntensityOffset, 0f, 2f);
 
         [Header("Round floats (the waterline wraps the body)")]
-        [Tooltip("The painted lobster-pot float's radius at its waterline, in metres (the player's float " +
-                 "and the NPC pots both wear it). A round float meets the water in a circle the 3/4 camera " +
+        [Tooltip("The player's pot float's radius at its waterline, in metres (the spindle float of the " +
+                 "pot-float rig, PotFloats_bullet). A round float meets the water in a circle the 3/4 camera " +
                  "draws as an ellipse, so its waterline bows down across the near side and wraps up to the " +
-                 "sides; this is how wide that ellipse is. 0.30 is the float's widest painted row (19 px at " +
-                 "32 PPU). 0 = the old straight cut. The navigation marks take theirs from their own " +
-                 "DiameterMeters instead.")]
-        [Min(0f)] public float LobsterFloatRadiusMeters = 0.30f;
+                 "sides; this is how wide that ellipse is. 0.084 is the rig's own barrel radius at the still " +
+                 "waterline (META.bullet.waterRadius; a test holds the two together). 0 = the old straight " +
+                 "cut. NPC pots take theirs from their TrapDef, the ambient fleet from its AmbientFleetDef, " +
+                 "the navigation marks from their own DiameterMeters.")]
+        [Min(0f)] public float LobsterFloatRadiusMeters = 0.084f;
+
+        [Tooltip("The player's pot float paint: the body coat. Buoy colour says whose gear it is, and the " +
+                 "player's is YELLOW. Swapped onto the baked float at draw time (one sheet for every owner).")]
+        public Color PlayerPotFloatColour = new Color32(0xe0, 0xb1, 0x3a, 0xff);
+        [Tooltip("The player's pot float paint: the band (shoulder stripe, stick tip, flag stripe).")]
+        public Color PlayerPotFloatBandColour = new Color32(0x9c, 0x4a, 0x3c, 0xff);
+        [Tooltip("The band every OTHER fisher's float wears when their data names only a body colour " +
+                 "(NPC pot days, the ambient fleet). Dark, so it reads on every body colour and never " +
+                 "matches the player's rust band.")]
+        public Color PotFloatBandColour = new Color32(0x2a, 0x3b, 0x52, 0xff);
 
         [Header("Market (VS-16)")]
         [Tooltip("Demand D at the home cove (Coddle Cove) in priceMult = 1/(1+e·S/D). 1 = neutral baseline.")]
