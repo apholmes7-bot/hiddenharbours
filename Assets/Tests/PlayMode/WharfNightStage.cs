@@ -361,6 +361,41 @@ namespace HiddenHarbours.Tests.PlayMode
             return (n == 0 || lumaSum <= 0) ? 0f : (float)(stepSum / lumaSum);
         }
 
+        /// <summary>
+        /// <see cref="RelativeLocalContrast"/> measured in LINEAR light: each read-back byte is taken back
+        /// through the sRGB curve before the luminance. A multiply scales linear light, so this is the
+        /// measure under which a multiply is exactly a no-op. The gamma measure is not: the sRGB curve
+        /// is steep near black, so lighting very dark ground (a few of 255) lifts its mean by more than
+        /// its 8-bit steps, and the gamma ratio falls although no detail is lost and nothing clips.
+        /// </summary>
+        public float RelativeLocalContrastLinear(byte[] frame, bool[] mask)
+        {
+            double stepSum = 0, lumaSum = 0; int n = 0;
+            for (int y = 0; y < Height - 1; y++)
+            {
+                for (int x = 0; x < Width - 1; x++)
+                {
+                    int p = y * Width + x;
+                    if (!mask[p]) continue;
+                    double c = LumaLinear(frame, p);
+                    stepSum += System.Math.Abs(LumaLinear(frame, p + 1) - c)
+                             + System.Math.Abs(LumaLinear(frame, p + Width) - c);
+                    lumaSum += c;
+                    n++;
+                }
+            }
+            return (n == 0 || lumaSum <= 0) ? 0f : (float)(stepSum / lumaSum);
+        }
+
+        /// <summary>Luminance of a read-back pixel in linear light (the bytes are gamma).</summary>
+        public static double LumaLinear(byte[] frame, int pixel)
+        {
+            int i = pixel * 4;
+            return 0.299 * Mathf.GammaToLinearSpace(frame[i] / 255f)
+                 + 0.587 * Mathf.GammaToLinearSpace(frame[i + 1] / 255f)
+                 + 0.114 * Mathf.GammaToLinearSpace(frame[i + 2] / 255f);
+        }
+
         /// <summary>Mean luminance over a mask, 0..1 — "how lit is this patch".</summary>
         public static float MeanLuma(byte[] frame, bool[] mask)
         {

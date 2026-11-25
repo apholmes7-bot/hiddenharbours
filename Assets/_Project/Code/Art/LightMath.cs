@@ -593,6 +593,38 @@ namespace HiddenHarbours.Art
             return SmoothStep01(-ws, ws, ahead);
         }
 
+        /// <summary>
+        /// Where a lamp at <paramref name="heightMetres"/>, its beam tilted <paramref name="tiltDownDegrees"/>
+        /// below the horizontal and spread <paramref name="halfAngleDegrees"/> either side, lights the flat
+        /// ground: the beam's LOWER edge lands at <paramref name="startMetres"/> ahead of the lamp's foot, its
+        /// axis at <paramref name="fullMetres"/>. A worn headlamp is the case: at 1.7 m, tilted 30 degrees,
+        /// the ground lights from about 1.4 m ahead of his feet and is full at about 2.9 m, not at his toes.
+        /// Angles are clamped inside (1, 89) degrees so neither distance is infinite or zero.
+        /// </summary>
+        public static void HeadlampThrow(float heightMetres, float tiltDownDegrees, float halfAngleDegrees,
+                                         out float startMetres, out float fullMetres)
+        {
+            float h = Mathf.Max(0f, heightMetres);
+            float axis = Mathf.Clamp(tiltDownDegrees, 1f, 89f);
+            float lower = Mathf.Clamp(tiltDownDegrees + Mathf.Max(0f, halfAngleDegrees), 1f, 89f);
+            startMetres = h / Mathf.Tan(lower * Mathf.Deg2Rad);
+            fullMetres = Mathf.Max(startMetres, h / Mathf.Tan(axis * Mathf.Deg2Rad));
+        }
+
+        /// <summary>
+        /// The throw gate of a tilted lamp at a ground point: 0 nearer than <paramref name="startMetres"/>
+        /// along <paramref name="axis"/> (behind the lamp too), 1 from <paramref name="fullMetres"/>, a
+        /// smoothstep between. No throw (full not past start) = 1 everywhere. Twin of the throw step in the
+        /// pool shader and the hull overlay, and the shadow system multiplies a caster's shadow by it, so a
+        /// shadow is never thrown across ground the lamp does not light.
+        /// </summary>
+        public static float ThrowGate(Vector2 toFrag, Vector2 axis, float startMetres, float fullMetres)
+        {
+            if (fullMetres <= startMetres + 1e-4f) return 1f;
+            float along = Vector2.Dot(toFrag, axis.sqrMagnitude > 1e-8f ? axis.normalized : Vector2.up);
+            return SmoothStep01(startMetres, fullMetres, along);
+        }
+
         // ==== a lamp lights the FACES of a mesh it can see (ADR 0016, "lamps light what they can see") ====
         //
         // The pool's ground term h/√(h²+d²) is N·L for one normal, straight up, at one height, zero. A mesh

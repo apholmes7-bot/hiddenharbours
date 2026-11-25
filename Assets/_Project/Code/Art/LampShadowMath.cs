@@ -181,6 +181,20 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
+        /// <b>Does this caster lie on the ground?</b> True when more than <paramref name="belowFootFraction"/>
+        /// of its drawn height hangs below its own feet: a track, path or mat seen from above, whose pivot sits
+        /// at one end with the rest of it drawn down the screen. A lamp shadow is thrown from the feet up; the
+        /// part below them would fold back across the lamp. A hull is never ground art. 1 never skips.
+        /// </summary>
+        public static bool LiesOnTheGround(in LampShadowCasterState state, float belowFootFraction)
+        {
+            if (state.IsHull || belowFootFraction >= 1f) return false;
+            float height = state.RectMax.y - state.RectMin.y;
+            if (!(height > 0f)) return false;
+            return state.Foot.y - state.RectMin.y > Mathf.Max(0f, belowFootFraction) * height;
+        }
+
+        /// <summary>
         /// The world-space rectangle a sprite's whole CELL occupies (not its tight mesh bounds — the
         /// silhouette lookup maps world → texture through this rect, so it must be the rect the
         /// texture cell fills), from the renderer's position, scale, cell rect, pivot and PPU. Flips

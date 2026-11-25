@@ -337,6 +337,10 @@ namespace HiddenHarbours.Art
                 if (caster == null || (caster is Object uo && uo == null) ||
                     !caster.TryGetLampShadowCaster(out LampShadowCasterState state))
                     state = default;
+                // Art lying on the ground (a track drawn down the screen from its pivot) throws nothing: its
+                // half below the feet folded back across the lamp — the trolley line's wedge in the headlamp
+                // pool, 2026-11-25. Stays in the carrier map below; it only stops being a candidate.
+                if (LampShadowMath.LiesOnTheGround(state, p.GroundArtBelowFootFraction)) state = default;
                 _casterScratch[i] = state;
                 Transform ct = caster is Component c ? c.transform : null;
                 _casterCarrier[i] = ct;
@@ -401,7 +405,11 @@ namespace HiddenHarbours.Art
                 {
                     ref LampShadowCasterState s = ref _casterScratch[ci];
                     if (!s.IsValid) continue;
-                    if (carrier != null && ReferenceEquals(_casterCarrier[ci], carrier)) continue;
+                    // The carrier AND what hangs under it: his silhouette mask is a caster of its own on a child
+                    // of his body, and without the descendant check his headlamp threw it down its own beam (a
+                    // dark wedge beside the pool facing north, measured 2026-11-25). Only a mounted lamp pays
+                    // the walk, and only on the throttled pairing tick.
+                    if (carrier != null && _casterCarrier[ci] != null && _casterCarrier[ci].IsChildOf(carrier)) continue;
                     float d2 = (s.Foot - lamp).sqrMagnitude;
                     if (d2 >= r2) continue;
                     count = Insert(light, Casters[ci], d2, count);
@@ -502,6 +510,11 @@ namespace HiddenHarbours.Art
                 float shape = LampShadowMath.LampShapeAtFoot(
                     lamp, light.BeamDirection, ShadowReachOf(light), radial ? 180f : light.ConeHalfAngle,
                     light.AngularSoftness, light.EdgeSoftness, foot);
+                // A tilted lamp (the worn headlamp) lights the ground ahead of its foot, so it throws no
+                // shadow across the ground nearer than that, which it does not light (LightMath.ThrowGate).
+                if (light.HasThrow)
+                    shape *= LightMath.ThrowGate(foot - lamp, light.BeamDirection,
+                                                 light.ThrowStartMetres, light.ThrowFullMetres);
                 float alpha = LampShadowMath.ShadowAlpha(
                     p.Strength, shape, gate, LampShadowMath.IntensityShare(light.Intensity));
                 if (alpha <= 0f) { SetEnabled(ref slot, false); continue; }

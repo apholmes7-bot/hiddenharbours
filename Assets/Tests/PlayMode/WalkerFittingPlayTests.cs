@@ -320,6 +320,60 @@ namespace HiddenHarbours.Tests.PlayMode
             }
         }
 
+        /// <summary>
+        /// <b>The light starts at the lamp on his head, not at his feet</b> (the owner, 2026-11-25). In all
+        /// eight facings, standing and walking: the light's origin is the drawn lens (the head anchor, within
+        /// one screen pixel), lifted off the figure's root by the lens's own height and not sitting on the
+        /// root; its ground foot is straight under the lens; the cone is thrown from the lens height; and the
+        /// lit ground is stamped to begin AHEAD of his feet along the beam (LightMath.HeadlampThrow), so the
+        /// pool at his toes is dark and his lamp shadows read the same throw.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator TheLightStartsAtHisHead_NotAtTheRoot_AndLandsAheadOfHim()
+        {
+            WharfNightStage.RequireAGraphicsDevice();
+            yield return SetUpStage();
+            Assert.IsTrue(_config.FigurePixelTarget, "premise: the expected figure point is valid");
+            float half = LightPresets.ConeHalfDegrees(LightPresets.Kind.Headlamp);
+            float tilt = GlassLook.Current.HeadlampTiltDownDegrees;
+            var log = new StringBuilder("state,facing,origin_px,root_px,lift_m,height_m,throw_start_m,throw_full_m\n");
+            int samples = 0;
+            foreach (string state in new[] { "idle", "walk" })
+            {
+                Assert.IsTrue(_skin.TryGetClip(state, out var clip), state);
+                foreach (int frame in new[] { 0, clip.FrameCount / 2 })
+                for (int dir = 0; dir < 8; dir++)
+                {
+                    Pose(state, frame, dir);
+                    Step(_walker.Beam, "LateUpdate");
+                    string name = state + "/" + frame + "/" + dir;
+                    SceneLight light = _walker.Beam.Light;
+                    Vector3 lensRig = LensRig();
+                    Vector2 expected = DrawnLensScreen();
+                    Vector2 origin = _stage.Camera.WorldToScreenPoint(BloomOrigin());
+                    Vector2 root = _stage.Camera.WorldToScreenPoint(_root.transform.position);
+                    float originPx = Vector2.Distance(expected, origin);
+                    float rootPx = Vector2.Distance(root, origin);
+                    float headPx = (float)(IsoGround.HeightScale * lensRig.z * PixelsPerWorldUnit());
+                    Assert.LessOrEqual(originPx, 1f, name + ": the light leaves the drawn lens on his head");
+                    Assert.Greater(rootPx, 0.5f * headPx, name + ": and not the figure's root at his feet");
+                    Assert.AreEqual(IsoGround.HeightScale * lensRig.z, light.BloomLiftMetres, 1e-4f, name + ": lifted by the lens's own height");
+                    Assert.AreEqual(lensRig.z, light.LampHeightMeters, 1e-4f, name + ": the cone and the shadows are thrown from that height");
+                    LightMath.HeadlampThrow(lensRig.z, tilt, half, out float start, out float full);
+                    Assert.IsTrue(light.HasThrow, name + ": a worn lamp throws its light ahead");
+                    Assert.AreEqual(start, light.ThrowStartMetres, 1e-4f, name + ": lit from the beam's lower edge");
+                    Assert.AreEqual(full, light.ThrowFullMetres, 1e-4f, name + ": full where its axis lands");
+                    Vector2 axis = light.BeamDirection;
+                    Assert.AreEqual(0f, LightMath.ThrowGate((Vector2)_root.transform.position - light.WorldOrigin, axis, start, full), 1e-4f,
+                        name + ": the ground at his feet is not lit by his own lamp");
+                    log.AppendLine($"{state},{dir},{originPx:R},{rootPx:R},{light.BloomLiftMetres:R},{light.LampHeightMeters:R},{start:R},{full:R}");
+                    samples++;
+                }
+            }
+            File.WriteAllText(Path.Combine(PlateDir, "headlamp-origin.csv"), log.ToString());
+            Assert.AreEqual(2 * 2 * 8, samples);
+        }
+
         [UnityTest]
         public IEnumerator TheLamp_HoldsThroughASpritePose_WithoutAJump()
         {

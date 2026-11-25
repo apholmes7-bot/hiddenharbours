@@ -649,6 +649,85 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         /// <summary>
+        /// <b>What hangs under the carrier is the carrier too.</b> His silhouette mask is a caster of its own on
+        /// a CHILD of his body; the walk up from the lamp stops at his root and an exact compare against it let
+        /// the mask through, so his headlamp threw his own outline down its beam: the dark wedge beside the
+        /// pool when he faced north (2026-11-25). Pool of ONE, so the crowding is the assertion.
+        /// </summary>
+        [Test]
+        public void ACasterUnderTheCarrier_IsNotThrownByItsLamp_HisSilhouetteMask()
+        {
+            _system.Profile.MaxShadows = 1;
+
+            var tex = new Texture2D(16, 96, TextureFormat.RGBA32, false);
+            _spawned.Add(tex);
+            var sprite = Sprite.Create(tex, new Rect(0f, 0f, 16f, 96f), new Vector2(0.5f, 0f), 32f);
+            _spawned.Add(sprite);
+
+            var walker = new GameObject("walker");
+            _spawned.Add(walker);
+            walker.transform.position = Vector3.zero;
+            walker.AddComponent<SpriteRenderer>().sprite = sprite;
+            LampShadowSystem.RegisterCaster(walker.AddComponent<SpriteShadow>());
+
+            var mask = new GameObject("HHSilhouetteMask");
+            _spawned.Add(mask);
+            mask.transform.SetParent(walker.transform, worldPositionStays: false);
+            mask.AddComponent<SpriteRenderer>().sprite = sprite;
+            var maskShadow = mask.AddComponent<SpriteShadow>();
+            LampShadowSystem.RegisterCaster(maskShadow);
+
+            var brow = new GameObject("headlamp");
+            _spawned.Add(brow);
+            brow.transform.SetParent(walker.transform, worldPositionStays: false);
+            var light = brow.AddComponent<SceneLight>();
+            light.Shape = SceneLight.LightShape.Radial;
+            light.ConeHalfAngle = 180f;
+            light.Range = 9f;
+            light.Intensity = 1.5f;
+            LampShadowSystem.RegisterLight(light);
+
+            FakeCaster tree = Caster(new Vector2(4f, 0f));
+
+            Assert.IsTrue(maskShadow.TryGetLampShadowCaster(out LampShadowCasterState m),
+                "the mask really is a valid caster — the rule has to exclude it, not rely on it failing");
+            Assert.Less((m.Foot - light.WorldOrigin).sqrMagnitude, 1f, "and it is nearer the lamp than the tree");
+
+            _system.PublishFrame(_cam);
+
+            Assert.AreEqual(1, _system.ActiveShadowCount, "the one slot is spent");
+            Assert.AreSame(tree, _system.SlotCaster(0), "on the tree, not on his own outline from under his body");
+        }
+
+        /// <summary>
+        /// <b>Art lying on the ground throws no lamp shadow.</b> The cannery's trolley line is drawn from a pivot
+        /// at its north end with nine metres of track down the screen below it; paired with the headlamp it folded
+        /// that track back across the pool as a dark wedge. A standing caster (feet at its bottom) still throws,
+        /// and a dial of 1 restores the old pairing.
+        /// </summary>
+        [Test]
+        public void ArtLyingOnTheGround_ThrowsNoLampShadow_StandingArtStillDoes()
+        {
+            Lamp(Vector2.zero, range: 12f);
+            FakeCaster track = Caster(new Vector2(0f, 3f));
+            track.State.RectMin = new Vector2(0f, -6f);    // 9 m drawn below its feet, 0.5 m above
+            track.State.RectMax = new Vector2(8f, 3.5f);
+            FakeCaster post = Caster(new Vector2(4f, 0f));
+
+            Assert.IsTrue(LampShadowMath.LiesOnTheGround(track.State, 0.5f), "the track lies on the ground");
+            Assert.IsFalse(LampShadowMath.LiesOnTheGround(post.State, 0.5f), "the post stands");
+            Assert.IsFalse(LampShadowMath.LiesOnTheGround(track.State, 1f), "1 never skips");
+
+            _system.PublishFrame(_cam);
+            Assert.AreEqual(1, _system.ActiveShadowCount, "only the standing caster is paired");
+            Assert.AreSame(post, _system.SlotCaster(0));
+
+            _system.Profile.GroundArtBelowFootFraction = 1f;
+            _system.PublishFrame(_cam);
+            Assert.AreEqual(2, _system.ActiveShadowCount, "the dial at 1 pairs the track again");
+        }
+
+        /// <summary>
         /// <b>The carrier walk is BOUNDED at the first caster, and this is the trap it avoids.</b> Every
         /// placed lamp in the game is parented under plain grouping objects — <c>NineMileCreekDressing</c>
         /// and its <c>Lamps</c> child, the region root above those. A walk that climbed to the scene root

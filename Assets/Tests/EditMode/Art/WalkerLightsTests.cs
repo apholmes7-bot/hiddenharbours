@@ -430,6 +430,24 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         /// <summary>
+        /// <b>The headlamp in a boat</b> (ruled 2026-11-25): his on his feet; his in an open boat, at her oars
+        /// or standing in her; not his on a boat whose spotlight answers the key, so the key still switches
+        /// exactly one beam; never his behind a road vehicle's wheel or with nobody published.
+        /// </summary>
+        [Test]
+        public void TheHeadlampIsHisAshoreAndInAnOpenBoat_NotWhereASpotlightAnswersTheKey()
+        {
+            Assert.IsTrue(WalkerLights.HeadlampIsHis(InteractContext.OnFoot, false));
+            Assert.IsTrue(WalkerLights.HeadlampIsHis(InteractContext.OnFoot, true), "ashore no boat's light is his key");
+            Assert.IsTrue(WalkerLights.HeadlampIsHis(InteractContext.AtHelm, false), "rowing a dory: the lamp is his");
+            Assert.IsTrue(WalkerLights.HeadlampIsHis(InteractContext.OnDeck, false), "standing in a skiff: the lamp is his");
+            Assert.IsFalse(WalkerLights.HeadlampIsHis(InteractContext.AtHelm, true), "at a helm with a spotlight the beam is hers");
+            Assert.IsFalse(WalkerLights.HeadlampIsHis(InteractContext.OnDeck, true), "on her deck the key is her spotlight's");
+            Assert.IsFalse(WalkerLights.HeadlampIsHis(InteractContext.Driving, false));
+            Assert.IsFalse(WalkerLights.HeadlampIsHis(InteractContext.None, false));
+        }
+
+        /// <summary>
         /// With nobody published at all — a bare art scene, a fixture, the frames before the player is
         /// spawned — he owns nothing. <see cref="InteractActorProbe"/>'s <c>Current</c> is <c>default</c>
         /// then, whose context is <see cref="InteractContext.None"/>; a <c>default</c> that happened to

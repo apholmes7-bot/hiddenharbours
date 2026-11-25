@@ -45,7 +45,8 @@ Shader "HiddenHarbours/LampPool"
         // x = edge softness, y = cos(cone half-angle) (<= -1 for a radial), z/w = cone axis xy.
         _PoolCone       ("x soft, y cosHalf, zw axis", Vector) = (0.35, -1, 0, 1)
         // The night gate, resolved on the CPU and handed in: x = gate 0..1. A pool is a night thing.
-        _PoolGate       ("x = night gate", Vector) = (1, 0, 0, 0)
+        // y/z = a tilted lamp's throw along the cone axis, metres (lit from y, full at z; 0/0 = none).
+        _PoolGate       ("x = night gate, y/z throw start/full m", Vector) = (1, 0, 0, 0)
         // x = fitting height above the still sea (m), y = light mesh faces (1) or not (0), z = height scale.
         _PoolLampSea    ("x sea height, y mesh faces on, z height scale", Vector) = (0, 0, 0.766, 0)
         // A lamp on a wall: xy = the way the wall faces (0 = a free-standing lamp, no wall), z = how far
@@ -167,8 +168,13 @@ Shader "HiddenHarbours/LampPool"
                 // Peters dock showed her lit silhouette on the planks (the owner, 2026-11-25).
                 float incidence = h * rsqrt(h * h + d * d);
 
+                // 5 · THE THROW, for a lamp held high and tilted down (the worn headlamp): its ground lights
+                // where the beam lands, ahead of the foot, not under it. LightMath.ThrowGate. Kept OUT of
+                // HHLampPoolGain so the two copies of that function stay the same text.
+                float throwGate = _PoolGate.z > _PoolGate.y + 1e-4
+                    ? smoothstep(_PoolGate.y, _PoolGate.z, dot(toFrag, _PoolCone.zw)) : 1.0;
                 float gain = HHLampPoolGain(incidence, toFrag, d, reach, _PoolColor.a, _PoolCone, _PoolWall)
-                           * saturate(_PoolGate.x);
+                           * saturate(_PoolGate.x) * throwGate;
                 if (gain <= 1e-4) return half4(0, 0, 0, 0);
 
                 // The colour rides the gain: a sodium lamp warms the planks it lifts, and the multiply

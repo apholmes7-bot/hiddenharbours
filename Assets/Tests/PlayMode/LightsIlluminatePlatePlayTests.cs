@@ -302,10 +302,18 @@ namespace HiddenHarbours.Tests.PlayMode
             bool[] mask = WharfNightStage.LitMask(noPool, pooled, out int lit);
             float before = WharfNightStage.MeanLuma(noPool, mask);
             float after = WharfNightStage.MeanLuma(pooled, mask);
-            float contrastBefore = _stage.RelativeLocalContrast(noPool, mask);
-            float contrastAfter = _stage.RelativeLocalContrast(pooled, mask);
+            // In LINEAR light (changed from the gamma read-back's measure, same 25% and the same live
+            // expectation). The round-lamp fix lights the creek's very dark south ground (about 8 of 255);
+            // there the sRGB curve lifts the mean more than the steps, so the gamma ratio fell 0.271 -> 0.205
+            // while the same detail in linear light ROSE 0.295 -> 0.311, with 0 clipped pixels. A multiply is
+            // exactly a no-op in linear light, which is the promise this line asks of.
+            float contrastBefore = _stage.RelativeLocalContrastLinear(noPool, mask);
+            float contrastAfter = _stage.RelativeLocalContrastLinear(pooled, mask);
+            float gammaBefore = _stage.RelativeLocalContrast(noPool, mask);
+            float gammaAfter = _stage.RelativeLocalContrast(pooled, mask);
             int px = _stage.Width * _stage.Height;
 
+            Debug.Log($"[{PlateDir}] creek wall gamma relative local contrast {gammaBefore:0.0000} -> {gammaAfter:0.0000}");
             Debug.Log($"[{PlateDir}] creek wall {_stage.Width}x{_stage.Height}  lamps placed {placed}, pools " +
                       $"{LampPoolSystem.Instance?.ActivePoolCount}  |  lit {lit} px ({100f * lit / px:0.00} %)" +
                       $"  |  mean luma {before:0.0000} -> {after:0.0000} " +
@@ -366,6 +374,23 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.Greater(lamps.Count, 0, "no shore lamp at St Peters has a hull within reach");
             foreach (SceneLight l in lamps) l.FlickerAmount = 0f;
 
+            // ⭐ HE STANDS WELL OUT OF EVERY MEASURED LAMP'S REACH, for the reference frames and the measured
+            // ones alike. His drawn figure cannot be hidden from a frame, he is lit on his own faces (rightly),
+            // and his own headlamp is a lamp too; moved away, the count is hulls only.
+            GameObject him = GameObject.FindWithTag("Player");
+            Rigidbody2D hisBody = him != null ? him.GetComponent<Rigidbody2D>() : null;
+            bool hisBodyWas = hisBody != null && hisBody.simulated;
+            if (him != null)
+            {
+                Vector2 away = PointAwayFromEvery(lamps, PlayerClearanceMetres);
+                if (hisBody != null) { hisBody.simulated = false; hisBody.position = away; }
+                him.transform.position = new Vector3(away.x, away.y, him.transform.position.z);
+                for (int i = 0; i < 10; i++) yield return null;
+                foreach (SceneLight l in lamps)
+                    Assert.Greater(((Vector2)him.transform.position - l.WorldOrigin).magnitude, l.ReachMetres + PlayerClearanceMetres * 0.5f,
+                        $"premise: he stands out of {l.name}'s reach");
+            }
+
             yield return _stage.FrameOn(lamps[0].WorldOrigin);
             LampShadowProfile profile = PoolProfile();
             Assert.IsTrue(profile.PoolsLightMeshFaces, "the shipped default lights mesh faces");
@@ -389,10 +414,9 @@ namespace HiddenHarbours.Tests.PlayMode
                 profile.PoolsLightMeshFaces = false;
                 LampPoolSystem.Instance.PublishFrame(_stage.Camera);
                 byte[] off2 = _stage.Capture();
-                // "Seen" means drawn by anything her faces could light: every hull with all of her boat's
-                // own renderers (gunwale, oars and lamps are sprites, not the hull mesh), and every mesh
-                // figure (he and the villagers are lit by their faces too). Hide all of them; what still
-                // shows is ground, dock and buildings, which the faces must never change.
+                // "Seen" means drawn by her boat: every hull with all of her boat's own renderers (gunwale,
+                // oars and lamps are sprites, not the hull mesh). Hide them; what still shows is ground, dock,
+                // buildings and figures.
                 var hidden0 = new List<(Behaviour b, bool was)>();
                 var hiddenR = new List<(Renderer r, bool was)>();
                 foreach (IsoFacetHullRenderer h in hulls)
@@ -403,22 +427,6 @@ namespace HiddenHarbours.Tests.PlayMode
                     if (root == null) root = h.transform;
                     foreach (Renderer r in root.GetComponentsInChildren<Renderer>(true)) { hiddenR.Add((r, r.forceRenderingOff)); r.forceRenderingOff = true; }
                 }
-                // forceRenderingOff, not enabled: a figure's own visibility rules set its renderers' enabled
-                // every frame, and a figure left drawn in the "none" frame reads as ground. A figure's body
-                // sprite and kit hang beside it under its own root, so that root's renderers go too (unless
-                // the root is a container of many things, which would hide the dock itself).
-                foreach (IsoCharacterFigureRenderer fig in Object.FindObjectsByType<IsoCharacterFigureRenderer>(FindObjectsSortMode.None))
-                {
-                    hidden0.Add((fig, fig.enabled)); fig.enabled = false;
-                    Transform walker = fig.transform.root.GetComponentsInChildren<Renderer>(true).Length <= 64
-                                       ? fig.transform.root : fig.transform;
-                    foreach (Renderer r in walker.GetComponentsInChildren<Renderer>(true)) { hiddenR.Add((r, r.forceRenderingOff)); r.forceRenderingOff = true; }
-                }
-                // He is a figure too, drawn from his own root (measured: the counted pixels at the dock lamp
-                // were the 'Player' sprite's, standing at the lamp).
-                GameObject him = GameObject.FindWithTag("Player");
-                if (him != null)
-                    foreach (Renderer r in him.transform.root.GetComponentsInChildren<Renderer>(true)) { hiddenR.Add((r, r.forceRenderingOff)); r.forceRenderingOff = true; }
                 yield return Settle();
                 byte[] none = _stage.Capture();
                 for (int j = hiddenR.Count - 1; j >= 0; j--) if (hiddenR[j].r != null) hiddenR[j].r.forceRenderingOff = hiddenR[j].was;
@@ -426,27 +434,39 @@ namespace HiddenHarbours.Tests.PlayMode
                 profile.PoolsLightMeshFaces = true;
                 yield return Settle();
 
-                int t = 0, f = 0, n = 0, moving = 0;
-                for (int i = 0; i + 3 < on.Length; i += 4)
+                // ⭐ FIGURES ARE SET ASIDE, NOT HIDDEN. He and the villagers are mesh figures, lit on their own
+                // faces, which is right, and their drawn figure cannot be hidden from this frame (it is drawn
+                // by a pass that no renderer switch reaches). So each figure's box (every renderer under its
+                // root, plus a margin) is left out of the count, and the box is asked to hold no hull pixel,
+                // so leaving it out can never hide a boat lit through the dock.
+                bool[] figure = FigureBoxes(_stage, FigureMarginMetres);
+
+                int t = 0, f = 0, n = 0, moving = 0, setAside = 0, hullInFigure = 0;
+                for (int i = 0, p = 0; i + 3 < on.Length; i += 4, p++)
                 {
                     if (Diff(off, off2, i) > 3) { moving++; continue; }
                     bool seen = Diff(off, none, i) > 3;
+                    if (figure[p]) { setAside++; if (seen) hullInFigure++; continue; }
                     int d = Diff(on, off, i);
                     if (!seen) { n++; if (d > 3) t++; }
                     else if (d > 3) f++;
                 }
                 Debug.Log($"[{PlateDir}] faces seen: lamp {lamps[k].name} at {lamps[k].WorldOrigin}  |  pixels with " +
                           $"no hull seen {n}, of them changed by her faces {t}  |  hull pixels her faces changed {f}" +
-                          $"  |  pixels that moved between the two OFF renders {moving}");
+                          $"  |  pixels that moved between the two OFF renders {moving}  |  figure pixels set aside " +
+                          $"{setAside}, hull pixels among them {hullInFigure}");
                 Assert.Less(moving, on.Length / 4 / 10,
                     "a tenth of the frame moved between two OFF renders of one frame: nothing here can be read");
+                Assert.AreEqual(0, hullInFigure,
+                    $"{hullInFigure} hull pixels fall inside a figure's set-aside box at {lamps[k].name}: the box " +
+                    "would hide a boat from the count, so it cannot be set aside here");
                 if (t > 0)
                 {
                     _stage.SavePlate($"20-faces-through-{lamps[k].name}-ON.png", on);
                     var mask = (byte[])on.Clone();
                     int firstThrough = -1;
                     for (int i = 0; i + 3 < on.Length; i += 4)
-                        if (Diff(off, off2, i) <= 3 && Diff(off, none, i) <= 3 && Diff(on, off, i) > 3)
+                        if (!figure[i / 4] && Diff(off, off2, i) <= 3 && Diff(off, none, i) <= 3 && Diff(on, off, i) > 3)
                         { mask[i] = 255; mask[i + 1] = 0; mask[i + 2] = 0; if (firstThrough < 0) firstThrough = i / 4; }
                     // Name what stands at the first counted pixel, so a failure says WHAT was lit, not only how much.
                     Vector3 w = _stage.Camera.ScreenToWorldPoint(new Vector3(
@@ -467,11 +487,79 @@ namespace HiddenHarbours.Tests.PlayMode
                 through += t; faces += f; hidden += n; framed++;
             }
 
+            if (hisBody != null) hisBody.simulated = hisBodyWas;
             Assert.Greater(hidden, 0, "every pixel was a hull: nothing was asked");
             Assert.LessOrEqual(through, 20,
                 $"{through} pixels where no hull is seen changed when her faces were lit: a lamp lit a boat " +
                 "through the dock (or the shed, or the pile) standing in front of her");
             Assert.Greater(faces, 0, "where she is seen, lighting her faces changed nothing: the face path is off");
+        }
+
+        /// <summary>Metres added round a figure's renderers when its box is set aside (a keyline and a
+        /// held rod reach a little past the body's bounds).</summary>
+        const float FigureMarginMetres = 0.25f;
+        /// <summary>How far past every measured lamp's reach he is moved for the dock check, metres.</summary>
+        const float PlayerClearanceMetres = 30f;
+
+        /// <summary>A point at least <paramref name="clearance"/> metres past every lamp's reach: the first of
+        /// a fixed ring of candidates round the first lamp that clears them all (deterministic).</summary>
+        static Vector2 PointAwayFromEvery(List<SceneLight> lamps, float clearance)
+        {
+            Vector2 c = lamps[0].WorldOrigin;
+            for (float r = 40f; r <= 200f; r += 40f)
+                for (int k = 0; k < 8; k++)
+                {
+                    float a = k * Mathf.PI * 0.25f;
+                    Vector2 p = c + new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * r;
+                    bool clear = true;
+                    foreach (SceneLight l in lamps)
+                        if ((p - l.WorldOrigin).magnitude < l.ReachMetres + clearance) { clear = false; break; }
+                    if (clear) return p;
+                }
+            return c + new Vector2(0f, 400f);
+        }
+        /// <summary>A standing figure's box when none of its renderers is live: width and height, metres.</summary>
+        const float FigureWidthMetres = 0.8f, FigureHeightMetres = 2.0f;
+
+        /// <summary>One flag per plate pixel (bottom-left origin): inside a figure's box. A figure is every
+        /// <see cref="IsoCharacterFigureRenderer"/> and the player, and its box is the union of the bounds of
+        /// every renderer under its root (the figure's own transform when the root is a big container),
+        /// grown by <paramref name="margin"/> metres and projected through the plate's camera.</summary>
+        static bool[] FigureBoxes(WharfNightStage stage, float margin)
+        {
+            var mask = new bool[stage.Width * stage.Height];
+            var roots = new List<Transform>();
+            foreach (IsoCharacterFigureRenderer fig in Object.FindObjectsByType<IsoCharacterFigureRenderer>(FindObjectsSortMode.None))
+                roots.Add(fig.transform.root.GetComponentsInChildren<Renderer>(true).Length <= 64 ? fig.transform.root : fig.transform);
+            GameObject him = GameObject.FindWithTag("Player");
+            if (him != null) roots.Add(him.transform.root);
+            foreach (Transform root in roots)
+            {
+                bool any = false; Bounds box = default;
+                foreach (Renderer r in root.GetComponentsInChildren<Renderer>())
+                {
+                    if (!r.enabled) continue;
+                    if (!any) { box = r.bounds; any = true; } else box.Encapsulate(r.bounds);
+                }
+                // No live renderer under the root (his body sprite is hidden while his mesh is drawn): a
+                // standing figure's box at his feet, a figure's width and height.
+                if (!any) box = new Bounds(root.position + new Vector3(0f, FigureHeightMetres * 0.5f, 0f),
+                                           new Vector3(FigureWidthMetres, FigureHeightMetres, 0f));
+                box.Expand(new Vector3(margin * 2f, margin * 2f, 0f));
+                // Through the VIEWPORT, scaled to the plate: a screen point is in whatever the camera targets
+                // at the moment of the call, which between captures is not the plate.
+                Vector3 a = stage.Camera.WorldToViewportPoint(new Vector3(box.min.x, box.min.y, 0f));
+                Vector3 b = stage.Camera.WorldToViewportPoint(new Vector3(box.max.x, box.max.y, 0f));
+                int x0 = Mathf.Clamp(Mathf.FloorToInt(Mathf.Min(a.x, b.x) * stage.Width), 0, stage.Width);
+                int x1 = Mathf.Clamp(Mathf.CeilToInt(Mathf.Max(a.x, b.x) * stage.Width), 0, stage.Width);
+                int y0 = Mathf.Clamp(Mathf.FloorToInt(Mathf.Min(a.y, b.y) * stage.Height), 0, stage.Height);
+                int y1 = Mathf.Clamp(Mathf.CeilToInt(Mathf.Max(a.y, b.y) * stage.Height), 0, stage.Height);
+                if (x1 > x0 && y1 > y0)
+                    Debug.Log($"[{PlateDir}] figure box '{root.name}' at {(Vector2)box.center}: plate px x {x0}..{x1}, y {y0}..{y1}");
+                for (int y = y0; y < y1; y++)
+                    for (int x = x0; x < x1; x++) mask[y * stage.Width + x] = true;
+            }
+            return mask;
         }
 
         static int Diff(byte[] a, byte[] b, int i) =>

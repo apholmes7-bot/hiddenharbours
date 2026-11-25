@@ -499,6 +499,30 @@ namespace HiddenHarbours.Art
         /// <summary>The wall line's soft edge, metres.</summary>
         public float WallSoftMetres => _wallSoftMetres;
 
+        // ---- the throw: a lamp held high and tilted down lights the ground AHEAD of its foot ----
+        [System.NonSerialized] private float _throwStartMetres, _throwFullMetres;
+
+        /// <summary>
+        /// Light a tilted lamp's ground from where its beam's lower edge lands: nothing nearer than
+        /// <paramref name="startMetres"/> along the beam axis, full from <paramref name="fullMetres"/>, a
+        /// smoothstep between (<see cref="LightMath.ThrowGate"/>). Both zero (the default) = no throw, the
+        /// pool runs from the foot as every placed lamp's does. Runtime state, stamped each frame by the
+        /// worn <see cref="Headlamp"/> from its lens height (2026-11-25: the light must start at the lamp
+        /// on his head, not at his feet); never saved.
+        /// </summary>
+        public void SetThrow(float startMetres, float fullMetres)
+        {
+            _throwStartMetres = Mathf.Max(0f, startMetres);
+            _throwFullMetres = Mathf.Max(_throwStartMetres, fullMetres);
+        }
+
+        /// <summary>Where along the beam the lit ground begins, metres from the foot (0 = at the foot).</summary>
+        public float ThrowStartMetres => _throwStartMetres;
+        /// <summary>Where along the beam the lit ground is at full strength, metres from the foot.</summary>
+        public float ThrowFullMetres => _throwFullMetres;
+        /// <summary>Does this lamp throw its light ahead (a tilted, worn lamp)?</summary>
+        public bool HasThrow => _throwFullMetres > _throwStartMetres + 1e-4f;
+
         /// <summary>
         /// Sort over a carrier the hierarchy cannot find: the order of the thing that wears this lamp (the
         /// headlamp's drawn fitting on his head). The bloom then sorts one rung over it, among the world.

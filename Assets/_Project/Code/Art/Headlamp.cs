@@ -279,8 +279,25 @@ namespace HiddenHarbours.Art
             for (int i = 0; i < _figures.Count; i++)
             {
                 var f = _figures[i];
-                if (f.isActiveAndEnabled && f.IsConfigured && f.IsAshore && f.Visible && f.HeadSnapPoint.w > .5f)
+                // Ashore, or riding a hull: in an open boat the lamp is his too (WalkerLights.HeadlampIsHis),
+                // and his figure is drawn by the hull there, so it holds no ashore id but still a drawn head.
+                if (f.isActiveAndEnabled && f.IsConfigured && (f.IsAshore || f.Hull != null) && f.Visible &&
+                    f.HeadSnapPoint.w > .5f)
                 { liveFigure = f; break; }
+            }
+            // Aboard the hull draws him: his figure hangs under its posed mesh, not under him, and names him
+            // as its wearer. Without this the beam stood fixed aboard while his drawn head turned.
+            if (liveFigure == null)
+            {
+                IReadOnlyList<IsoCharacterFigureRenderer> worn = IsoCharacterFigureRenderer.WornFigures;
+                for (int i = 0; i < worn.Count; i++)
+                {
+                    var f = worn[i];
+                    if (f == null || f.Wearer == null || !f.Wearer.IsChildOf(_carrier) && !_carrier.IsChildOf(f.Wearer))
+                        continue;
+                    if (f.isActiveAndEnabled && f.IsConfigured && f.Hull != null && f.Visible && f.HeadSnapPoint.w > .5f)
+                    { liveFigure = f; break; }
+                }
             }
             if (liveFigure != null && liveFigure != _mountedFigure)
             {
@@ -327,8 +344,21 @@ namespace HiddenHarbours.Art
             transform.position = new Vector3(point.x, point.y - _projectedLift, _carrier.position.z);
             Light.OriginOffset = Vector2.zero;
             Light.BloomLiftMetres = _projectedLift;
+            // THE LIGHT STARTS AT THE LAMP ON HIS HEAD (the owner, 2026-11-25: "the light appears to originate
+            // from the players feet and not from their headlamp"). The foot above is the ground under the
+            // lens and the height is the lens's own, so the geometry was already the head's; what read as
+            // "from his feet" was the pool, brightest straight under the lamp like a post's. A lamp on a
+            // brow tilted down lights the ground where its beam lands, ahead of him: nothing nearer than the
+            // beam's lower edge, full where its axis lands. The shadows read the same throw.
+            LightMath.HeadlampThrow(Light.LampHeightMeters, GlassLook.Current.HeadlampTiltDownDegrees,
+                                    Light.ConeHalfAngle, out float throwStart, out float throwFull);
+            Light.SetThrow(throwStart, throwFull);
             Light.RefreshMount(); // SceneLight's earlier LateUpdate must not leave a one-frame bloom lag.
             if (drawn && _hasHeadPoint && _fitting == null) BuildFitting();
+            // What his figure is drawn at: his own overlay ashore; aboard, the hull that draws him.
+            Renderer carrierOverlay = !drawn ? null
+                : liveFigure.AshoreOverlay != null ? liveFigure.AshoreOverlay
+                : liveFigure.Hull != null ? liveFigure.Hull.OverlayRenderer : null;
             if (_fitting != null)
             {
                 _fitting.enabled = FittingShows(drawn, _live, _worn);
@@ -338,11 +368,11 @@ namespace HiddenHarbours.Art
                 Vector2 at = LensShows(_view) ? point : point + _bandOffset;
                 _fitting.transform.position = new Vector3(at.x, at.y, _carrier.position.z);
                 _fitting.transform.rotation = Quaternion.identity;
-                if (drawn && liveFigure.AshoreOverlay != null)
+                if (carrierOverlay != null)
                 {
-                    _fitting.sortingLayerID = liveFigure.AshoreOverlay.sortingLayerID;
+                    _fitting.sortingLayerID = carrierOverlay.sortingLayerID;
                     _fitting.sortingOrder = Mathf.Min(SceneLight.MaxSortingOrder - 10,
-                                                     liveFigure.AshoreOverlay.sortingOrder + 1);
+                                                     carrierOverlay.sortingOrder + 1);
                 }
             }
             // THE LENS AMONG THE WORLD (ADR 0016, "lamps light what they can see"). The lens is its own small
@@ -350,7 +380,7 @@ namespace HiddenHarbours.Art
             // rung over the drawn fitting on his head, not at the ceiling over everything: a wall, a shed or a
             // stack of traps nearer the camera covers his lamp as it covers him. From behind his head the lens
             // is not seen, so it draws no glow there; the beam still lights what is in front of him.
-            bool overFitting = drawn && _fitting != null && liveFigure.AshoreOverlay != null;
+            bool overFitting = _fitting != null && carrierOverlay != null;
             if (Light.DrawsBloom) Light.DrawsBloom = false;
             if (_lens != null)
             {

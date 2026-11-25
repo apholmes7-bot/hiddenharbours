@@ -342,7 +342,9 @@ namespace HiddenHarbours.Art
                 _mpb.SetVector(IdPoolCone, new Vector4(p.PoolEdgeSoftness, cosHalf, axis.x, axis.y));
                 // The night gate is already inside `gain` (PoolBaseGain takes it), so the shader's own
                 // gate slot ships at 1: applying it twice would square a fraction and put dusk out.
-                _mpb.SetVector(IdPoolGate, new Vector4(1f, 0f, 0f, 0f));
+                // y/z: a tilted lamp's THROW (SceneLight.SetThrow, LightMath.ThrowGate), measured along `axis`:
+                // the worn headlamp lights the ground ahead of his feet, not at them. 0/0 = no throw.
+                _mpb.SetVector(IdPoolGate, new Vector4(1f, light.ThrowStartMetres, light.ThrowFullMetres, 0f));
                 float seaLift = i < _chosenSeaLift.Count ? _chosenSeaLift[i] : 0f;
                 _mpb.SetVector(IdPoolLampSea, new Vector4(light.LampHeightMeters + seaLift, faces ? 1f : 0f,
                                                           HiddenHarbours.Core.IsoGround.HeightScale, 0f));
@@ -357,7 +359,8 @@ namespace HiddenHarbours.Art
                     s_FaceColor[drawn] = new Vector4(c.r, c.g, c.b, gain);
                     s_FaceLamp[drawn]  = new Vector4(lamp.x, lamp.y, light.LampHeightMeters, reach);
                     s_FaceCone[drawn]  = new Vector4(p.PoolEdgeSoftness, cosHalf, axis.x, axis.y);
-                    s_FaceSea[drawn]   = new Vector4(light.LampHeightMeters + seaLift, 0f, 0f, 0f);
+                    s_FaceSea[drawn]   = new Vector4(light.LampHeightMeters + seaLift, light.ThrowStartMetres,
+                                                     light.ThrowFullMetres, 0f);
                     s_FaceWall[drawn]  = new Vector4(wall.x, wall.y, light.WallBackMetres, light.WallSoftMetres);
                 }
 

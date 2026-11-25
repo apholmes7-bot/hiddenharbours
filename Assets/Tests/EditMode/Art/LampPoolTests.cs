@@ -568,6 +568,43 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "a wall facing east lights nothing west of it");
         }
 
+        // ---- a lamp on his BROW lights the ground ahead of him, not at his feet (2026-11-25) -----------
+
+        /// <summary>
+        /// <b>The light starts at the lamp on his head.</b> The owner, 2026-11-25: "the light appears to
+        /// originate from the players feet and not from their headlamp". A lamp on a brow, tilted down,
+        /// lights the ground from where its beam's lower edge lands to where its axis lands: at the lens's
+        /// own height, the shipped tilt and the headlamp's half angle, that is past his toes, and the gate
+        /// is 0 at his feet and behind him, 1 at and beyond the axis, and the same in any facing.
+        /// </summary>
+        [Test]
+        public void AHeadlampLightsTheGroundAheadOfHisFeet_NotUnderThem()
+        {
+            float half = LightPresets.ConeHalfDegrees(LightPresets.Kind.Headlamp);
+            float tilt = GlassLook.Current.HeadlampTiltDownDegrees;
+            LightMath.HeadlampThrow(1.7f, tilt, half, out float start, out float full);
+            Assert.AreEqual(1.7f / Mathf.Tan((tilt + half) * Mathf.Deg2Rad), start, Eps, "lit from the beam's lower edge");
+            Assert.AreEqual(1.7f / Mathf.Tan(tilt * Mathf.Deg2Rad), full, Eps, "full where its axis lands");
+            Assert.Greater(start, 0.5f, "the lit ground begins clear of his toes");
+            Assert.Less(full, LightPresets.ReachMetres(LightPresets.Kind.Headlamp), "and is full well inside the reach");
+
+            foreach (Vector2 axis in new[] { Vector2.up, Vector2.right, Vector2.down, new Vector2(-1f, 1f).normalized })
+            {
+                Assert.AreEqual(0f, LightMath.ThrowGate(Vector2.zero, axis, start, full), Eps, "nothing at his feet");
+                Assert.AreEqual(0f, LightMath.ThrowGate(-axis * 2f, axis, start, full), Eps, "nothing behind him");
+                Assert.AreEqual(0f, LightMath.ThrowGate(axis * (start * 0.9f), axis, start, full), Eps, "nothing short of the lower edge");
+                Assert.AreEqual(1f, LightMath.ThrowGate(axis * full, axis, start, full), Eps, "full on the axis");
+                Assert.AreEqual(1f, LightMath.ThrowGate(axis * (full + 3f), axis, start, full), Eps, "and beyond it");
+                float mid = LightMath.ThrowGate(axis * ((start + full) * 0.5f), axis, start, full);
+                Assert.AreEqual(0.5f, mid, Eps, "the ramp's middle");
+            }
+
+            Assert.AreEqual(1f, LightMath.ThrowGate(Vector2.zero, Vector2.up, 0f, 0f), Eps,
+                "a lamp with no throw (every placed lamp) lights from its foot, as before");
+            LightMath.HeadlampThrow(0.9f, tilt, half, out float lowStart, out _);
+            Assert.Less(lowStart, start, "a lamp worn lower (crouched, sat at the oars) lands nearer");
+        }
+
         /// <summary>
         /// <b>The mounts are data.</b> Every window spill is a wall lamp; doorstep lanterns are matched by
         /// their placement id; the general store's lantern hangs under its canopy, so its glow draws below the

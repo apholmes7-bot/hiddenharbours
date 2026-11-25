@@ -69,6 +69,42 @@ namespace HiddenHarbours.Art
             InteractActorProbe.Has && InteractActorProbe.Current.Context == InteractContext.OnFoot;
 
         /// <summary>
+        /// <b>Is the HEADLAMP his to wear and switch here?</b> (the seat's ruling, 2026-11-25: on and following
+        /// his drawn head while he rows or stands in an open boat; off at a helm that has a boat spotlight.)
+        ///
+        /// <para>On his feet, always. Aboard (on her deck or at her oars or wheel), only when his boat carries
+        /// no spotlight that the lamp key switches: a dory or a skiff has none, so the key and the light are
+        /// his. A boat whose spotlight answers the key keeps the key partition of
+        /// <see cref="WalksHisOwnBeam"/> whole: one key, one beam, and on that boat the beam is hers. Driving
+        /// a road vehicle is neither.</para>
+        /// </summary>
+        public static bool HeadlampIsHis(InteractContext context, bool boatSpotlightAnswersTheKey)
+        {
+            if (context == InteractContext.OnFoot) return true;
+            bool aboard = context == InteractContext.OnDeck || context == InteractContext.AtHelm;
+            return aboard && !boatSpotlightAnswersTheKey;
+        }
+
+        // The player's boat the spotlight lookup was made for, and what it found (one lookup per boat
+        // change, never per frame).
+        private object _spotBoat;
+        private BoatSpotlight _spotOfBoat;
+
+        /// <summary>Does the boat he is aboard carry a spotlight the lamp key switches?</summary>
+        private bool BoatSpotlightAnswersTheKey()
+        {
+            object boat = GameServices.Helm.PlayersBoat;
+            if (!ReferenceEquals(boat, _spotBoat))
+            {
+                _spotBoat = boat;
+                GameObject go = boat as GameObject;
+                if (go == null && boat is Component c && c != null) go = c.gameObject;
+                _spotOfBoat = go != null ? go.GetComponentInChildren<BoatSpotlight>(true) : null;
+            }
+            return _spotOfBoat != null && _spotOfBoat.isActiveAndEnabled && _spotOfBoat.PlayerSwitchesThisBeam;
+        }
+
+        /// <summary>
         /// <b>Does the walker own the decor light singleton this frame?</b> True when he is walking his
         /// own beam AND that beam is lit.
         ///
@@ -177,6 +213,9 @@ namespace HiddenHarbours.Art
             if (_lantern == null || _headlamp == null) Build(him);
 
             bool onFoot = WalksHisOwnBeam;
+            bool headlampHis = InteractActorProbe.Has &&
+                               HeadlampIsHis(InteractActorProbe.Current.Context,
+                                             !onFoot && BoatSpotlightAnswersTheKey());
 
             // The SWITCH, read the way BoatSpotlight reads it — New Input System only (Keyboard.current);
             // legacy UnityEngine.Input compiles in this project and then throws at runtime.
@@ -184,7 +223,7 @@ namespace HiddenHarbours.Art
             // ⭐ ONE PLACE, so the input-intents lane (ADR 0043) can lift it. When WalkIntents grows a lamp
             // press this is the only block that changes; ReadLampKey already holds the rule.
             var kb = Keyboard.current;
-            if (onFoot && _headlamp != null && kb != null)
+            if (headlampHis && _headlamp != null && kb != null)
             {
                 var key = kb[ToggleKey];
                 if (key.wasPressedThisFrame) _pressedAt = Time.unscaledTime;
@@ -202,14 +241,15 @@ namespace HiddenHarbours.Art
             bool automaticLantern = GameServices.Config != null
                 ? GameServices.Config.WalkerAutoLantern : GameConfig.DefaultWalkerAutoLantern;
             if (_lantern != null) _lantern.enabled = onFoot && automaticLantern;
-            if (_headlamp != null) _headlamp.SetLive(onFoot);
+            // The headlamp is his in an open boat too (HeadlampIsHis); the lantern stays an ashore light.
+            if (_headlamp != null) _headlamp.SetLive(headlampHis);
 
-            OwnsDecorLight = onFoot && _headlamp != null && _headlamp.IsOn;
+            OwnsDecorLight = headlampHis && _headlamp != null && _headlamp.IsOn;
 
             // Aim: SceneLight throws its cone along transform.up, the same contract BoatSpotlight aims by.
             // Once his head is drawn the lamp aims itself by that head (Headlamp.AimsByDrawnHead: the beam
             // follows the sprite, the owner 2026-11-25); until then the probe's facing stands in.
-            if (_headlamp != null && onFoot && !_headlamp.AimsByDrawnHead)
+            if (_headlamp != null && headlampHis && !_headlamp.AimsByDrawnHead)
             {
                 Vector2 facing = InteractActorProbe.Current.Facing;
                 if (facing.sqrMagnitude > 1e-6f)

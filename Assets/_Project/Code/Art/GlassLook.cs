@@ -177,6 +177,10 @@ namespace HiddenHarbours.Art
         [Tooltip("The worn headlamp's glass lens: its glow radius, metres. Its own number, not the headlamp " +
                  "preset's bloom (0.18 m), which drew the lens wider than the lamp on his brow.")]
         [Min(0.01f)] [SerializeField] private float _headlampLensRadiusMetres = 0.10f;
+        [Tooltip("How far below the horizontal the worn headlamp's beam is tilted, degrees. With the lens " +
+                 "height and the beam's half angle it sets where the lit ground begins ahead of his feet " +
+                 "(LightMath.HeadlampThrow): the light starts at the lamp on his head, not at his toes.")]
+        [Range(5f, 85f)] [SerializeField] private float _headlampTiltDownDegrees = 30f;
 
         [Header("Occlusion")]
         [Tooltip("Lamps, their streaks on the water, a cabin's wash on deck and its lit panes sort AMONG the " +
@@ -196,6 +200,8 @@ namespace HiddenHarbours.Art
         public bool WindowSpillIsPool => _windowSpillIsPool;
         /// <summary>The worn headlamp's lens glow radius, metres (its own number, not the preset's bloom).</summary>
         public float HeadlampLensRadiusMetres => _headlampLensRadiusMetres;
+        /// <summary>The worn headlamp's beam tilt below the horizontal, degrees (its ground throw).</summary>
+        public float HeadlampTiltDownDegrees => _headlampTiltDownDegrees;
 
         // -------------------------------------------------------------------------------------------
         //  the profile in force

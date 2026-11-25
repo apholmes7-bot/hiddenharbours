@@ -79,6 +79,12 @@ namespace HiddenHarbours.Art
                  "of which pairs to draw is throttled.")]
         [Min(1f)] [SerializeField] private float _refreshHz = 10f;
 
+        [Tooltip("Art LYING ON THE GROUND throws no lamp shadow: a caster with more than this fraction of its " +
+                 "drawn height below its own feet is a track, a path or a mat seen from above, not something " +
+                 "standing. A lamp shadow is thrown from the feet up, so the part below them folded back over " +
+                 "the lamp (a trolley line threw a dark wedge across the headlamp's pool). 1 = never skip.")]
+        [Range(0f, 1f)] [SerializeField] private float _groundArtBelowFootFraction = 0.5f;
+
         [Header("Length (× the caster's height) — the sun's own curve, driven by the LAMP's elevation")]
         [Tooltip("Shadow length when the lamp is straight overhead the caster — a short stub under the feet.")]
         [Min(0f)] [SerializeField] private float _lengthAtNoon = 0.35f;
@@ -126,6 +132,12 @@ namespace HiddenHarbours.Art
         public Color ShadowColor { get => _shadowColor; set => _shadowColor = value; }
         public int MaxShadows { get => _maxShadows; set => _maxShadows = Mathf.Clamp(value, 1, 64); }
         public float RefreshHz { get => _refreshHz; set => _refreshHz = Mathf.Max(1f, value); }
+        /// <summary>Above this share of its height below its feet, a caster lies on the ground and throws nothing.</summary>
+        public float GroundArtBelowFootFraction
+        {
+            get => _groundArtBelowFootFraction;
+            set => _groundArtBelowFootFraction = Mathf.Clamp01(value);
+        }
         public float LengthAtNoon { get => _lengthAtNoon; set => _lengthAtNoon = Mathf.Max(0f, value); }
         public float LengthAtHorizon { get => _lengthAtHorizon; set => _lengthAtHorizon = Mathf.Max(0f, value); }
         public float MaxLength { get => _maxLength; set => _maxLength = Mathf.Max(0f, value); }

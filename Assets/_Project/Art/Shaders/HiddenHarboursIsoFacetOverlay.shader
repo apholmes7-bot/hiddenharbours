@@ -114,7 +114,7 @@ Shader "HiddenHarbours/IsoFacetOverlay"
             float4 _HHLampFaceColor[HH_LAMP_FACE_MAX];   // rgb colour, a gain ceiling (the pool's _PoolColor)
             float4 _HHLampFaceLamp[HH_LAMP_FACE_MAX];    // xy foot, z height, w reach (the pool's _PoolLamp)
             float4 _HHLampFaceCone[HH_LAMP_FACE_MAX];    // the pool's _PoolCone
-            float4 _HHLampFaceSea[HH_LAMP_FACE_MAX];     // x the fitting's height above the still sea
+            float4 _HHLampFaceSea[HH_LAMP_FACE_MAX];     // x the fitting's height above the still sea, y/z its throw (m)
             float4 _HHLampFaceWall[HH_LAMP_FACE_MAX];    // the pool's _PoolWall
 
             // The pool's own term, RESTATED LINE FOR LINE from HiddenHarboursLampPool.shader (LampPoolTests
@@ -226,6 +226,15 @@ Shader "HiddenHarbours/IsoFacetOverlay"
                     float dF = length(toF);
                     float f = HHLampPoolGain(incF, toF, dF, reach,
                                              _HHLampFaceColor[k].a, _HHLampFaceCone[k], _HHLampFaceWall[k]);
+                    // A tilted lamp's THROW (the worn headlamp; LightMath.ThrowGate), on both terms so the
+                    // ground the pool drew and the face lit here agree: y = lit from, z = full at, metres.
+                    float4 S = _HHLampFaceSea[k];
+                    if (S.z > S.y + 1e-4)
+                    {
+                        float2 ax = _HHLampFaceCone[k].zw;
+                        g *= smoothstep(S.y, S.z, dot(toG, ax));
+                        f *= smoothstep(S.y, S.z, dot(toF, ax));
+                    }
                     float3 col = _HHLampFaceColor[k].rgb;
                     ratio *= (1.0 + col * f) / (1.0 + col * g);
                 }

@@ -162,6 +162,30 @@ namespace HiddenHarbours.Art
         /// <summary>True while she holds a figure id and draws with no hull (<see cref="EnterAshore"/>).</summary>
         public bool IsAshore => _figureId != 0;
 
+        private static readonly List<IsoCharacterFigureRenderer> s_wornFigures = new List<IsoCharacterFigureRenderer>(4);
+        [System.NonSerialized] private Transform _wearer;
+
+        /// <summary>
+        /// <b>Whose figure this is</b> when it is drawn outside his own hierarchy. Aboard, the hull draws him:
+        /// his figure hangs under the hull's posed mesh, a sibling of his body, so a search of his own
+        /// children (the headlamp's, which must follow his drawn head in an open boat) cannot find it.
+        /// The presenter that builds the figure names the body it belongs to; null for a figure that lives
+        /// under its owner (every NPC, his ashore figure).
+        /// </summary>
+        public Transform Wearer
+        {
+            get => _wearer;
+            set
+            {
+                _wearer = value;
+                if (value == null) s_wornFigures.Remove(this);
+                else if (!s_wornFigures.Contains(this)) s_wornFigures.Add(this);
+            }
+        }
+
+        /// <summary>Every live figure with a <see cref="Wearer"/>. Read-only; destroyed figures leave it.</summary>
+        public static IReadOnlyList<IsoCharacterFigureRenderer> WornFigures => s_wornFigures;
+
         /// <summary>Her facet id ashore, in [1, 254]; 0 when not ashore.</summary>
         public int FigureId => _figureId;
 
@@ -1431,7 +1455,11 @@ namespace HiddenHarbours.Art
             SyncInk();
         }
 
-        private void OnDestroy() => Teardown(keepDef: false);
+        private void OnDestroy()
+        {
+            s_wornFigures.Remove(this);
+            Teardown(keepDef: false);
+        }
 
         private void Teardown(bool keepDef)
         {
