@@ -105,7 +105,7 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>Characters strings ask the face for that it does not have yet. Each needs a glyph drawn
         /// in the bubble kit and the face re-baked; until then the character draws as nothing.</summary>
-        private static readonly char[] KnownMissing = { '₲' /* ₲ */, '▸' /* ▸ */, '◀' /* ◀ */ };
+        private static readonly char[] KnownMissing = { };
 
         private static HashSet<char> FaceGlyphs()
         {
@@ -209,7 +209,7 @@ namespace HiddenHarbours.Tests.EditMode
         static readonly System.Text.RegularExpressions.Regex IdShape =
             new System.Text.RegularExpressions.Regex(@"\b[a-z]+\.[a-z][a-z0-9]*_[a-z0-9_]+\b|\b(fish|seller|region|npc|item|license|trade|quest|bait)\.[a-z_]+\b");
 
-        static readonly string[] DevWords = { "(dev)", "wired", "ADR ", "TODO", "OPTIONAL", "UPGRADEABLE", "null" };
+        static readonly string[] DevWords = { "(dev)", "wired", "ADR ", "TODO", "STANDBY", "UPGRADEABLE", "null" };
 
         /// <summary>Every player-facing constant on the strings tables, minus the ones that are ids by
         /// name (a transit id, a resource key). Reflection, so a new line is checked the day it lands.</summary>

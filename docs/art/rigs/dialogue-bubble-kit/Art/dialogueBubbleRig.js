@@ -140,6 +140,17 @@
     '=': F(2, ['####', '....', '####']),
     '%': F(0, ['#..#', '...#', '..#.', '.#..', '#...', '#..#']),
     ' ': F(0, ['....']),
+    // The money mark, the menu cursors and the small marks the screens set in this face. Escaped
+    // like the dash so the file stays plain ASCII.
+    '\u20B2': F(0, ['.###', '#.#.', '#.#.', '#.##', '#.##', '.###', '..#.']),  // the money mark: G, struck
+    '\u25B8': F(1, ['#...', '##..', '###.', '##..', '#...']),                  // cursor, pointing on
+    '\u25C0': F(1, ['..#.', '.##.', '###.', '.##.', '..#.']),                  // cursor, pointing back
+    '\u00B7': F(3, ['.#..']),                                                  // middle dot
+    '\u00D7': F(2, ['#.#.', '.#..', '#.#.']),                                  // times
+    '\u00B0': F(0, ['.#..', '#.#.', '.#..']),                                  // degree
+    '\u2022': F(3, ['.##.', '.##.']),                                          // bullet
+    '\u25B2': F(2, ['.##.', '####']),                                          // rising (the tide table)
+    '\u25BC': F(2, ['####', '.##.']),                                          // falling
   };
   /* the ONE cell every derived number below comes from */
   const CELL = { adv: 5, w: 4, cap: 6, xh: 4, desc: 2, box: 8, line: 10, baseline: 5, leading: 2 };

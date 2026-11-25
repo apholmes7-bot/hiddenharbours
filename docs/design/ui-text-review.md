@@ -1,4 +1,4 @@
-# UI text review — pass 1
+# UI text review — passes 1 and 2
 
 Every piece of text the player reads, and how it is drawn: the Notebook, the HUD, the chooser,
 shop and shelf prices, the paper bag, bubbles, prompts, the KIT tab, menus, settings, the
@@ -6,7 +6,7 @@ creator, and the title screen.
 
 Pictures live in `docs/design/ui-text-review/`. Each is drawn from the game's own baked glyph
 atlas at whole-pixel scale, so they show the real letter shapes. In-game captures at
-1920x1080 and 1280x720 are still owed (see the end).
+1920x1080 and 1280x720, before and after, were taken for the review and are attached to the pull request discussion, not kept in the repo.
 
 ---
 
@@ -140,25 +140,43 @@ Written as "E: talk", with a colon and no brackets.
 
 ---
 
-## Taste picks — the owner's call
+## Taste picks — decided
 
-These are mock-ups only. Nothing here ships until a pick is made.
+The owner picked A for all three.
 
-**1. One face, or the pixel face plus a smooth face for menus?**
-`taste-1-type-family-A-B.png`.
-- A: pixel face everywhere, including the HUD and menus.
-- B: pixel face in the world and on paper; a smooth face for menus only.
+1. **One face everywhere.** The title, pause and settings pages, the tide table, the sell screen,
+   the arrival card and the toasts now set in the pixel face. Sizes are whole multiples of 24
+   (glyph height 8 times the kit's scale 3) on a snapped canvas, so no letter is resampled.
+   Not yet on the face: the HUD, the wardrobe panel and the deck freshness tag (see Still owed).
+2. **Title layout: wordmark top left.** This is the layout already in the game. The wordmark is
+   still type, not drawn art.
+3. **Notebook paper: ruled.** This is the paper already in the game. No change.
 
-**2. Title screen layout.**
-`taste-2-title-layout-A-B.png`.
-- A: wordmark top left, menu under it, last save under Continue.
-- B: wordmark centred, menu centred below.
-The wordmark in the mock-up is a stand-in.
+---
 
-**3. Notebook paper.**
-`taste-3-notebook-paper-A-B.png`.
-- A: ruled lines, as now.
-- B: plain stock with a margin rule only.
+## Pass 2 — what changed
+
+**No ids, no developer words.**
+- Sellers have a display name in their data. The catalogue head shows it, never the id.
+- A Notebook entry with no fish name falls back to a plain name made from the id, never the id.
+- The creator's field names fall back the same way.
+- Toasts lose "(dev)", "not wired" and "Lid ON/OFF". The dash screens say NOT FITTED, not
+  "STANDBY · OPTIONAL".
+
+**One key table.** Every prompt names its key through `KeyNames` (Core): E, Esc, Tab, Enter,
+the pad's A, B, X, Y and Start, and the paired forms Esc/B, Enter/A, Arrows/stick. A test fails if a
+prompt spells a key another way.
+
+**Bucket, never pail.** Every line the player reads, display names in data included. Ids keep
+their old names; ids never change.
+
+**Sentence case** where a line was plainly out of step with its neighbours: "Tide table".
+
+**The face gains nine glyphs:** ₲ ▸ ◀ ▲ ▼ · × ° •, drawn in the face's own 4x8 cells.
+
+**Tests** (`UiTextReviewTests`): no id shapes or developer words in player strings, no second
+spelling of a key, no "pail" in strings or in the data the player reads, every seller named, the
+key table uses only the face's letters, and the pages on the face use only its glyphs.
 
 ---
 
@@ -179,10 +197,14 @@ Medium: a new economy strings table for the shop, catalogue and sale screen.
 
 ## Still owed
 
-- In-game captures at 1920x1080 and 1280x720, day and night, before and after.
-- ₲ and ▸ in the pixel face (art, re-bake).
-- A display name on sellers (content).
+- **HUD glyphs.** The HUD needs arrows and marks the face does not have: the eight compass and wind
+  arrows, ⤴ ▮ ▪ ○ ↗ → ▾ and ~. The HUD stays on the system font until they are drawn.
+- **Wardrobe panel.** Its rows are sized for a 16 px system font; at the face's 24 they need a new
+  layout. Its [ ] marks also need glyphs.
+- **Deck freshness tag.** A world-space label; it needs its own pixel sizing before it can wear the face.
+- **Dash rig text.** The rig sources for both dash consoles still say STANDBY; the game draws NOT FITTED.
+- **Wordmark art.** The title wordmark is still type.
+- **Tide table close hint** runs past the page edge in the face at 24; it needs a shorter line or a wider box.
 - A dev-only gate on dev toasts.
 - Chooser and popup scale snapping (layout).
-- One prompt table for key names.
-- Pail or bucket, and the two "(working name)" waters.
+- The two "(working name)" waters.
