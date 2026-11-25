@@ -53,18 +53,27 @@ namespace HiddenHarbours.Tests.Art.EditMode
         // anchor: if discovery ever stops finding THIS, the guard would silently pass while guarding nothing.
         private const string WaterMaterialPath = "Assets/_Project/Art/Materials/Water.mat";
 
-        // This is a serial batch over ALL material-backed project shaders, not just water:
-        // currently 18 forced shader imports plus every pass of 33 shipped materials.
-        // The shared 180 s default proved too short on a slow worker. Allow 10 minutes for
-        // the whole batch (including discovery); retain every import/variant/error check.
-        [Test, Timeout(600000)]
-        public void ProjectShaders_CompileTheirShippedVariant_NoShaderErrors()
-        {
-            // The importer/compiler logs shader errors to the console. Without this, Unity's test runner fails the
-            // test on the unexpected log line ("Unhandled log message") instead of via our assertion below — wrong
-            // reason, opaque message. We own the verdict here through ShaderUtil.GetShaderMessages.
-            LogAssert.ignoreFailingMessages = true;
+        // Per-shader bound. The guard used to be ONE case over every material-backed project shader, and on CI that
+        // one batch took 3 s to 4 s when the shader cache was warm, 91 s to 174 s when it was cold, and ran past the
+        // old shared 180 s default twice on busy runners (stopped at 204 s and 244 s): slow cold compiles, not a hang.
+        // It is now one case per shader, so each case's own duration is in the
+        // results file and a slow or stuck compile names its shader. Each case keeps the 10 minute bound the whole
+        // batch had: one shader can never need more than all of them did, so no case is held to less than before.
+        private const int PerShaderTimeoutMs = 600000;
 
+        /// <summary>Every project shader with at least one shipped material, by asset path, sorted.</summary>
+        private static IEnumerable<string> ProjectShaderPaths()
+        {
+            var paths = new List<string>(MapProjectShadersToMaterials().Keys);
+            paths.Sort(System.StringComparer.Ordinal);
+            return paths;
+        }
+
+        // Discovery on its own: the case source above cannot fail, so an empty set or a missing hero material is
+        // asserted here, as a red, never a silent pass over nothing.
+        [Test]
+        public void ProjectShaders_DiscoveryFindsTheHeroWaterMaterial()
+        {
             Dictionary<string, List<Material>> shaderToMaterials = MapProjectShadersToMaterials();
 
             Assert.IsNotEmpty(
@@ -82,44 +91,58 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 waterAnchored,
                 $"The hero water material ('{WaterMaterialPath}') was not found among project-shader materials. " +
                 "That leaves the magenta class UNGUARDED — treat it as a failure, not a pass.");
+        }
+
+        [Test, Timeout(PerShaderTimeoutMs)]
+        [TestCaseSource(nameof(ProjectShaderPaths))]
+        public void ProjectShaders_CompileTheirShippedVariant_NoShaderErrors(string shaderPath)
+        {
+            // The importer/compiler logs shader errors to the console. Without this, Unity's test runner fails the
+            // test on the unexpected log line ("Unhandled log message") instead of via our assertion below — wrong
+            // reason, opaque message. We own the verdict here through ShaderUtil.GetShaderMessages.
+            LogAssert.ignoreFailingMessages = true;
+
+            // Re-derived inside the case (not carried over from discovery) so the materials are live objects.
+            Assert.IsTrue(
+                MapProjectShadersToMaterials().TryGetValue(shaderPath, out List<Material> materials),
+                $"'{shaderPath}' was discovered as a project shader but no longer has a shipped material.");
 
             var errors = new StringBuilder();
             var warnings = new StringBuilder();
             int compiledVariants = 0;
 
-            foreach (var kvp in shaderToMaterials)
+            // A line before each step, so a compile that stalls names itself in the editor log even when the
+            // timeout is what ends the case.
+            Debug.Log($"[ShaderCompileGuard] import '{shaderPath}'");
+
+            // Force a fresh synchronous reimport so the shader compiler re-runs from the on-disk source (no stale
+            // cache can hide a fresh break or fake a fresh one), then read the shader ASSET'S import-time state.
+            AssetDatabase.ImportAsset(
+                shaderPath, ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
+            var shader = AssetDatabase.LoadAssetAtPath<Shader>(shaderPath);
+            Assert.IsNotNull(shader, $"Could not load shader asset at '{shaderPath}'.");
+
+            CollectMessages(errors, warnings, shaderPath, "<import>", null, ShaderUtil.GetShaderMessages(shader));
+
+            // Force-compile each shipped material's EXACT keyword variant (catches a variant that PARSES but
+            // fails to compile only under specific keywords/targets — the precise #96 [unroll] magenta class).
+            foreach (Material mat in materials)
             {
-                string shaderPath = kvp.Key;
-                List<Material> materials = kvp.Value;
-
-                // Force a fresh synchronous reimport so the shader compiler re-runs from the on-disk source (no stale
-                // cache can hide a fresh break or fake a fresh one), then read the shader ASSET'S import-time state.
-                AssetDatabase.ImportAsset(
-                    shaderPath, ImportAssetOptions.ForceUpdate | ImportAssetOptions.ForceSynchronousImport);
-                var shader = AssetDatabase.LoadAssetAtPath<Shader>(shaderPath);
-                Assert.IsNotNull(shader, $"Could not load shader asset at '{shaderPath}'.");
-
-                CollectMessages(errors, warnings, shaderPath, "<import>", null, ShaderUtil.GetShaderMessages(shader));
-
-                // Force-compile each shipped material's EXACT keyword variant (catches a variant that PARSES but
-                // fails to compile only under specific keywords/targets — the precise #96 [unroll] magenta class).
-                foreach (Material mat in materials)
+                int passes = mat.passCount > 0 ? mat.passCount : 1;
+                Debug.Log($"[ShaderCompileGuard] compile '{AssetPathOf(mat)}' ({passes} pass(es)) of '{shaderPath}'");
+                for (int pass = 0; pass < passes; pass++)
                 {
-                    int passes = mat.passCount > 0 ? mat.passCount : 1;
-                    for (int pass = 0; pass < passes; pass++)
-                    {
-                        ShaderUtil.CompilePass(mat, pass, true);
-                        compiledVariants++;
-                    }
-                    CollectMessages(
-                        errors, warnings, shaderPath, AssetPathOf(mat), DescribeKeywords(mat),
-                        ShaderUtil.GetShaderMessages(mat.shader));
+                    ShaderUtil.CompilePass(mat, pass, true);
+                    compiledVariants++;
                 }
+                CollectMessages(
+                    errors, warnings, shaderPath, AssetPathOf(mat), DescribeKeywords(mat),
+                    ShaderUtil.GetShaderMessages(mat.shader));
             }
 
             Assert.That(
                 compiledVariants, Is.GreaterThan(0),
-                "No shader variants were compile-checked — the guard did not actually run, which is as bad as a magenta build slipping through.");
+                $"No variant of '{shaderPath}' was compile-checked — the guard did not actually run, which is as bad as a magenta build slipping through.");
 
             // Warnings are surfaced (so a regression toward noise is visible) but do NOT fail the build.
             if (warnings.Length > 0)

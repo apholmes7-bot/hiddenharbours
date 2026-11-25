@@ -76,6 +76,17 @@ namespace HiddenHarbours.Tests.PlayMode
     /// birds cannot draw or cast; TearDown restores the saved enabled flags so the gulls' own fixture
     /// still finds the same installed flock. The lamps and every pixel bar stay as before.</para>
     ///
+    /// <para>⚠️ <b>The camera is framed when it is made, not at the first capture.</b> It used to be
+    /// created at the origin (z 0) and moved to its frame (z −100) only inside the first
+    /// <c>Capture</c>. Everything pinned to the camera's depth (the lamps' quads, the window panes,
+    /// the deck shadow, the night overlay) had last been posed against the camera at the origin,
+    /// so the test's very first render differed from every later one: 242 px at 90°, 30–45 values
+    /// darker along the foot of the cabin walls, and a second render in the same frame already
+    /// agreed with the control. It read as "closed up, lit: full vs stripped" and as the lit noise
+    /// floor at once, because both compare against that first render. Measured on the 4060: with
+    /// the camera framed at creation every heading is 0 / 0 in both columns, and every other column
+    /// is byte-identical except (2) at 90°, which drops by exactly those 242 px.</para>
+    ///
     /// <para>⚠️ GPU-only, by nature. The report and the plates go to the temporary cache, never the
     /// repo; the PR body quotes them.</para>
     /// </summary>
@@ -182,6 +193,8 @@ namespace HiddenHarbours.Tests.PlayMode
             _cam.allowHDR = false;
             _cam.allowMSAA = false;
             _cam.targetTexture = _rt;
+            // Framed NOW, before anything poses: see the class remarks on the first render.
+            FrameTheCell(def);
 
             Mesh stripped = MeshWithoutTheRoom(def.Mesh, out int roomVerts, out int hullVerts);
             _spawned.Add(stripped);
@@ -297,6 +310,10 @@ namespace HiddenHarbours.Tests.PlayMode
                 Assert.AreEqual(0, noiseFloor,
                     $"at {heading}° the same arm, dark, captured on two frames differs by {noiseFloor} px " +
                     "— time is not frozen, and every other number here carries that noise");
+                Assert.AreEqual(0, litNoiseFloor,
+                    $"at {heading}° the same arm, LIT, captured on two frames differs by {litNoiseFloor} px " +
+                    "— the lit shot is not settled, and the lit parity below would carry it (class remarks: " +
+                    "the camera framed at creation)");
                 Assert.AreEqual(0, parityClosedDark,
                     $"at {heading}° with the lamps DARK, {parityClosedDark} px differ between the two " +
                     "arms — the arms differ for a reason that is not the lamps, so no lit number here " +
@@ -440,10 +457,7 @@ namespace HiddenHarbours.Tests.PlayMode
         /// <summary>Frame the cell over the origin and render NOW — no frame passes.</summary>
         byte[] Capture(Arm arm)
         {
-            float ppu = arm.Def.PxPerMetre;
-            float ox = (arm.Def.PivotPx.x - arm.Def.CellW / 2f) / ppu;
-            float oy = (arm.Def.CellH / 2f - arm.Def.PivotPx.y) / ppu;
-            _cam.transform.position = new Vector3(-ox, -oy, -100f);
+            FrameTheCell(arm.Def);
             AssertGullsCannotDraw();
             _cam.Render();
 
@@ -459,6 +473,15 @@ namespace HiddenHarbours.Tests.PlayMode
             System.Array.Copy(bytes, copy, bytes.Length);
             Object.Destroy(tex);
             return copy;
+        }
+
+        /// <summary>Put the camera over the cell: the pivot's offset from the cell centre, 100 m back.</summary>
+        void FrameTheCell(HullMeshDef def)
+        {
+            float ppu = def.PxPerMetre;
+            float ox = (def.PivotPx.x - def.CellW / 2f) / ppu;
+            float oy = (def.CellH / 2f - def.PivotPx.y) / ppu;
+            _cam.transform.position = new Vector3(-ox, -oy, -100f);
         }
 
         static int CountInked(byte[] rgba)

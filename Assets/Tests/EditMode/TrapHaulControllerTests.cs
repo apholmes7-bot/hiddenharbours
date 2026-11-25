@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
 using HiddenHarbours.Core;
@@ -358,8 +359,13 @@ namespace HiddenHarbours.Tests.EditMode
             PlaceAt(svc, Vector2.zero);
             var ctrl = MakeController(svc, new FakeHold(), Vector2.zero);
             Assert.IsTrue(ctrl.TryStartHaul());
-            ctrl.TickHaul(0.5f, true);
-            ctrl.SendMessage("OnDisable", SendMessageOptions.RequireReceiver);
+            Assert.IsTrue(ctrl.TickHaul(0.5f, true));
+            Assert.AreEqual(0.3f, ctrl.Line01, 1e-6f);
+            // Invoke the lifecycle method directly, as in the other EditMode controller fixtures.
+            MethodInfo onDisable = typeof(TrapHaulController).GetMethod(
+                "OnDisable", BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.IsNotNull(onDisable);
+            onDisable.Invoke(ctrl, null);
             Assert.IsFalse(ctrl.IsHauling);
             Assert.AreEqual(0f, ctrl.Line01);
             Assert.AreEqual(0f, ctrl.Strain01);

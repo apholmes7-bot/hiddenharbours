@@ -32,7 +32,7 @@ stable owned boat id, whether the autopilot is purchased and whether it is
 currently fitted. A removed but purchased unit must survive loading or refitting
 would charge twice. No paid-price receipt is needed because there is no refund.
 The hull's offered flag stays in its Def; neither eligibility nor transient
-engagement/target heading should be saved here. The save format remains v25.
+engagement/target heading should be saved here. This fitting adds no saved field and no save version (the format was v25 when it was built and is v26 now, for the store purchases and the shopping bag).
 
 Today `BoatController.AutopilotFitted` decides heading-hold availability from a
 non-null hull, `AutopilotOffered`, and either a sail plan or an engine helm.
