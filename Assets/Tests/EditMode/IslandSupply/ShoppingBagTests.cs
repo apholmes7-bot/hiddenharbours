@@ -65,7 +65,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void ABaggedGoodCannotBeEatenOrCooked_FromTheBag()
+        public void ABaggedGoodCannotBeSpentThroughTheSupplyLocker()
         {
             var save = new SaveData();
             SupplyLocker.Add(save, Bread, 1);
