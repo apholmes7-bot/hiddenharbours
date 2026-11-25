@@ -212,6 +212,9 @@ PIVOT = {
     "ShelfGondolaRods": (31, 2),
     # Held: the bottom centre; the carry pose hangs it its own height below the hand.
     "ShoppingBagPaper": (5, 0),
+    # Sold-out cards: their centre, over the slot's own pivot.
+    "ShelfSoldOutBand": (17, 4),
+    "ShelfSoldOutSmall": (7, 4),
 }
 ROOM_RECT = {
     "ShelfGondolaEmpty": (GONDOLA_X0, GONDOLA_Y0, GONDOLA_W, GONDOLA_H),
@@ -383,6 +386,48 @@ def bait_box():
     return im
 
 
+# Sold-out cards sized to one shelf band (store sections look, 2026-11-25: the store's 19 x 15 card on a bait
+# slot covered the tins on the band above). Eight rows tall, the height of a band and its lip, in the store
+# card's own colours and 3 x 5 letters: "SOLD OUT" on one line for a slot as wide as a band, "OUT" for a
+# bait slot (two tubs wide). Centre pivot, even sizes, so each lands on whole pixels over its slot.
+CARD_EDGE = (74, 50, 36)
+CARD_FIELD = (237, 224, 190)
+CARD_SHADE = (224, 214, 190)
+CARD_INK = (154, 52, 40)
+CARD_FONT = {
+    "S": ["###", "#..", "###", "..#", "###"],
+    "O": ["###", "#.#", "#.#", "#.#", "###"],
+    "L": ["#..", "#..", "#..", "#..", "###"],
+    "D": ["##.", "#.#", "#.#", "#.#", "##."],
+    "U": ["#.#", "#.#", "#.#", "#.#", "###"],
+    "T": ["###", ".#.", ".#.", ".#.", ".#."],
+    " ": ["..", "..", "..", "..", ".."],
+}
+
+
+def sold_out_card(text, w):
+    h = 8
+    im = blank(w, h)
+    for y in range(h):
+        for x in range(w):
+            corner = (x in (0, w - 1)) and (y in (0, h - 1))
+            if corner:
+                continue
+            edge = x in (0, w - 1) or y in (0, h - 1)
+            c = CARD_EDGE if edge else (CARD_SHADE if y == h - 2 else CARD_FIELD)
+            im.putpixel((x, y), c + (255,))
+    tw = sum(len(CARD_FONT[ch][0]) for ch in text) + (len(text) - 1)
+    x = (w - tw) // 2
+    for ch in text:
+        glyph = CARD_FONT[ch]
+        for gy, row in enumerate(glyph):
+            for gx, cell in enumerate(row):
+                if cell == "#":
+                    im.putpixel((x + gx, 1 + gy), CARD_INK + (255,))
+        x += len(glyph[0]) + 1
+    return im
+
+
 def offset_of(name):
     x0, y0, w, h = ROOM_RECT[name]
     px, py = PIVOT[name]
@@ -394,6 +439,8 @@ def main():
     out = sys.argv[1]
     os.makedirs(out, exist_ok=True)
     made = {
+        "ShelfSoldOutBand": sold_out_card("SOLD OUT", 34),
+        "ShelfSoldOutSmall": sold_out_card("OUT", 14),
         "ShelfGondolaEmpty": gondola_empty(),
         "ShelfGondolaGoods": gondola_goods(),
         "ShelfIceChestEmpty": ice_chest_empty(),

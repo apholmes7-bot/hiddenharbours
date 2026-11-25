@@ -57,7 +57,7 @@ ITEMS = {
         ".DsssD.",
         "..DDD..",
     ],
-    # gear.bucket: a galvanised pail with its bail.
+    # gear.bucket: a galvanised bucket with its wire handle.
     "StoreItem_Bucket": [
         "..DDDDDD..",
         ".D......D.",

@@ -114,6 +114,12 @@ the store then needs a slot `slot.rod` at (-0.75, -1.3125) with the rods picture
 `section.fishing`. Rod stats and the fishing controller are another lane's and are not touched here.
 Hooks, line and sinkers are not items in the game (the rod is the gear).
 
+Sold-out cards are sized to their slot: a bait that runs out shows a small `OUT` card over its own two tubs
+(14 by 8 pixels), and the beans a one-line `SOLD OUT` card over their own band (34 by 8), so a card never
+covers the goods beside or above it (the first look: the store's 19 by 15 card on the sea worm hid the tins
+above). The bread and oatcakes keep the store's card, which fits their taller places. A test holds that no
+two section cards overlap.
+
 ### 3. Ice: the chest (unchanged)
 
 Bag of ice, ₲6, own picture, first week.

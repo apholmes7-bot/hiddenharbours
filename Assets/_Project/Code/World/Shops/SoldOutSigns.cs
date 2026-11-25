@@ -86,7 +86,8 @@ namespace HiddenHarbours.World
                 go.transform.SetParent(transform, false);
                 go.transform.localPosition = slot != null ? (Vector3)slot.Offset : Vector3.zero;
                 _made[i] = go;
-                _cards[i] = Layer(go, def.SoldOutSign, room, def.SortingOrderAboveRoom);
+                _cards[i] = Layer(go, slot != null ? slot.CardOr(def.SoldOutSign) : def.SoldOutSign, room,
+                                  def.SortingOrderAboveRoom);
                 if (slot == null) continue;
                 if (slot.Cover != null) _covers[i] = Layer(Child(go, "Cover"), slot.Cover, room, def.CoverSortingOrderAboveRoom);
                 if (slot.Goods != null) _goods[i] = Layer(Child(go, "Goods"), slot.Goods, room, def.GoodsSortingOrderAboveRoom);
