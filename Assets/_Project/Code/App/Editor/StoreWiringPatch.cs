@@ -81,20 +81,28 @@ namespace HiddenHarbours.App.Editor
             public override string ToString() => $"{Root}'s {Kind?.Name} ({Wares})";
         }
 
-        /// <summary>One region's wiring: its scene file and its vendors, in the order its builder adds them.</summary>
+        /// <summary>One region's wiring: its scene file, its vendors in the order its builder adds them, and the
+        /// vendors that have left it (<see cref="Retired"/>).</summary>
         public sealed class Region
         {
             public readonly string Name;
             public readonly string ScenePath;
             public readonly IReadOnlyList<Seller> Sellers;
 
-            public Region(string name, string scenePath, IReadOnlyList<Seller> sellers)
+            /// <summary>Vendors the region's scene must no longer hold: a ware that moved to another seller. A
+            /// retired vendor still standing is taken off its root (its document deleted, its entry out of the
+            /// root's component list); one already gone is nothing to do, so a second plan is empty.</summary>
+            public readonly IReadOnlyList<Seller> Retired;
+
+            public Region(string name, string scenePath, IReadOnlyList<Seller> sellers, IReadOnlyList<Seller> retired = null)
             {
-                Name = name; ScenePath = scenePath; Sellers = sellers;
+                Name = name; ScenePath = scenePath; Sellers = sellers; Retired = retired ?? Array.Empty<Seller>();
             }
         }
 
-        /// <summary>St Peters: the general store counter's nine vendors, all Marguerite's.</summary>
+        /// <summary>St Peters: the general store counter's eight vendors, all Marguerite's. The depth sounder left
+        /// her counter for the Nine Mile Creek boat/gear wholesaler (ruling 11-23: the island store sells basic
+        /// fishing gear, and boat hardware belongs to the mainland town).</summary>
         public static readonly Region StPeters = new Region("StPeters", StPetersLayerRefresh.ScenePath, new[]
         {
             new Seller("GeneralStoreCounter", typeof(GearShop), "gear.rod", StPetersBuilder.StoreSellerId),
@@ -104,8 +112,10 @@ namespace HiddenHarbours.App.Editor
             new Seller("GeneralStoreCounter", typeof(SupplyShop), "supply.oatcakes", StPetersBuilder.StoreSellerId),
             new Seller("GeneralStoreCounter", typeof(SupplyShop), "supply.tinned_beans", StPetersBuilder.StoreSellerId),
             new Seller("GeneralStoreCounter", typeof(SupplyShop), "supply.soap_bar", StPetersBuilder.StoreSellerId),
-            new Seller("GeneralStoreCounter", typeof(InstrumentShop), "instrument.depth_sounder", StPetersBuilder.StoreSellerId),
             new Seller("GeneralStoreCounter", typeof(LicenseVendor), "license.clam", StPetersBuilder.StoreSellerId),
+        }, new[]
+        {
+            new Seller("GeneralStoreCounter", typeof(InstrumentShop), "instrument.depth_sounder", StPetersBuilder.StoreSellerId),
         });
 
         /// <summary>
@@ -125,6 +135,7 @@ namespace HiddenHarbours.App.Editor
             new Seller(NmcWholesalerKeepers.BoatGearCounterRoot, typeof(InstrumentShop), "instrument.loran", NmcWholesalerKeepers.BoatGearSellerId),
             new Seller(NmcWholesalerKeepers.BoatGearCounterRoot, typeof(InstrumentShop), "instrument.fish_finder", NmcWholesalerKeepers.BoatGearSellerId),
             new Seller(NmcWholesalerKeepers.BoatGearCounterRoot, typeof(InstrumentShop), "instrument.gps", NmcWholesalerKeepers.BoatGearSellerId),
+            new Seller(NmcWholesalerKeepers.BoatGearCounterRoot, typeof(InstrumentShop), "instrument.depth_sounder", NmcWholesalerKeepers.BoatGearSellerId),
             new Seller(NmcWholesalerKeepers.FishingGearCounterRoot, typeof(GearShop), "gear.rod_rack", NmcWholesalerKeepers.FishingGearSellerId),
         };
 
@@ -198,14 +209,17 @@ namespace HiddenHarbours.App.Editor
             SceneYaml scene = SceneYaml.Parse(sceneText);
             var patches = new List<LayerPatch>();
             var claimed = new HashSet<long>();
-            foreach (IGrouping<string, Seller> root in region.Sellers.GroupBy(s => s.Root))
+            IEnumerable<string> roots = region.Sellers.Select(s => s.Root).Concat(region.Retired.Select(s => s.Root)).Distinct();
+            foreach (string root in roots)
             {
-                Doc go = scene.RootNamed(root.Key);
-                var patch = new LayerPatch(StepOf(region, root.Key), root.Key, go.FileId);
+                List<Seller> rows = region.Sellers.Where(s => s.Root == root).ToList();
+                Doc go = scene.RootNamed(root);
+                var patch = new LayerPatch(StepOf(region, root), root, go.FileId);
                 List<Doc> comps = scene.ComponentsOf(go);
-                HashSet<(Type, string)> added = AddMissingCopies(patch, scene, go, comps, root.ToList(), region, assets);
-                foreach (Seller s in root)
+                HashSet<(Type, string)> added = AddMissingCopies(patch, scene, go, comps, rows, region, assets);
+                foreach (Seller s in rows)
                     if (!added.Contains((s.Kind, s.Wares))) Wire(patch, comps, s, assets, claimed);
+                Retire(patch, go, comps, region.Retired.Where(s => s.Root == root).ToList(), rows, assets, added.Count > 0);
                 patches.Add(patch.Seal(scene));
             }
             patches.Add(Book(scene, region, assets).Seal(scene));
@@ -367,6 +381,50 @@ namespace HiddenHarbours.App.Editor
             var own = new HashSet<long>(comps.Select(c => c.FileId)) { go.FileId };
             patch.AddAfter = scene.Docs.Last(d => own.Contains(d.FileId)).FileId;
             return added;
+        }
+
+        /// <summary>
+        /// The retired vendors still standing on one root, taken off it: each found by class and wares, exactly as
+        /// <see cref="Wire"/> finds one, its document deleted and its entry taken out of the root's component list.
+        /// A retired vendor must still sell as the row's id (the step never removes a vendor it cannot name), and
+        /// a ware may not be both wired and retired on the same root. One already gone is nothing to do.
+        /// </summary>
+        static void Retire(LayerPatch patch, Doc go, List<Doc> comps, List<Seller> retired, List<Seller> wired,
+                           IStoreWiringAssets assets, bool rootEdited)
+        {
+            var gone = new List<(Seller Row, Doc Vendor)>();
+            foreach (Seller s in retired)
+            {
+                if (wired.Any(w => w.Kind == s.Kind && w.Wares == s.Wares))
+                    throw new Refusal($"{patch.Step}: {s} is both wired and retired.");
+                FieldInfo wares = WaresField(s.Kind);
+                string guid = assets.WaresGuid(wares.FieldType, s.Wares);
+                List<Doc> hits = comps.Where(c => c.IsScript(s.Kind.FullName) && ObjRef.Parse(c.Field(wares.Name)).Guid == guid).ToList();
+                if (hits.Count == 0) continue;
+                if (hits.Count > 1)
+                    throw new Refusal($"{patch.Step}: '{s.Root}' holds {hits.Count} {s.Kind.Name}s stocking {s.Wares} ({guid}); " +
+                                      "the step retires exactly one.");
+                string now = hits[0].Field(SellerIdField);
+                if (now != s.SellerId)
+                    throw new Refusal($"{patch.Step}: {s} (&{hits[0].FileId}) sells as '{now}', and the retired row says '{s.SellerId}'. " +
+                                      "The step removes only the vendor the row names.");
+                gone.Add((s, hits[0]));
+            }
+            if (gone.Count == 0) return;
+            if (rootEdited)
+                throw new Refusal($"{patch.Step}: '{go.Field("m_Name")}' both gains and loses vendors in one plan. Apply one, then plan again.");
+
+            var entries = new HashSet<string>(gone.Select(g => "  - component: {fileID: " + g.Vendor.FileId.ToString(CultureInfo.InvariantCulture) + "}"),
+                                              StringComparer.Ordinal);
+            List<string> goLines = go.Lines.Where(l => !entries.Contains(l)).ToList();
+            if (goLines.Count != go.Lines.Length - gone.Count)
+                throw new Refusal($"{patch.Step}: {NameOf(go)} (&{go.FileId}) does not list each retired vendor exactly once.");
+            patch.Edit(go, string.Join("\n", goLines), $"{NameOf(go)} (&{go.FileId}): no longer lists its {gone.Count} retired vendors");
+            foreach ((Seller s, Doc v) in gone)
+            {
+                patch.Delete(v, $"{s} (&{v.FileId}), retired");
+                patch.Note($"{s.Root}'s {s.Kind.Name}", $"retired, no longer sells {s.Wares} as {s.SellerId}");
+            }
         }
 
         static string NameOf(Doc go) => go.Field("m_Name") ?? "the counter";

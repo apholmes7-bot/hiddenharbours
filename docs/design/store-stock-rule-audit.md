@@ -1,6 +1,6 @@
 # Separate stock rule audit
 
-The last item must be consumed. Buying it must not reduce another item's count, and an empty shelf waits for a delivery or a return. This audit uses base `37586ae43d2ed0eef2648a642c300a6926ac8bf1` and distinguishes the two stock models already present.
+The last item must be consumed. Buying it must not reduce another item's count, and an empty shelf waits for a delivery or a return. This audit uses base `d46bde303e6aa256d23d47a05ede5d7d6f38e51e` and distinguishes the two stock models already present.
 
 ## Corrected fault: a sale at the floor created unlimited stock
 
@@ -19,16 +19,16 @@ The existing `ShopStockRulesTests` essential-floor cases now require exactly thr
 
 The three existing fixtures extended are `ShopStockRulesTests`, `IslandStoreShelvesTests` and `StoreSoldOutTests`. There is no individually simulated NPC checkout buyer on this base; island residents are modeled as continuous daily demand, so the resident/player case uses that real demand path.
 
-## Recorded fault owned by PR 1491
+## Shelf separation now on main
 
-On this base, `StPetersStoreShelves.asset` maps bread, oatcakes and beans to the same `line.grocery_box`. Its 90 kg opening target divided by 5 kg per item yields 18 shared items. Eighteen bread purchases empty that line, so all three listings read zero even if no beans or oatcakes were bought. `IslandCounterShelves.Bind` maps each listing to the same line, and `IslandStoreShelves` rejects a second line for the same good. This is a source/data reproduction, not an executed editor result.
+Main incorporated shelf purchasing in PR 1491 (`00912f3e4c`). Bread, oatcakes and beans now have separate line IDs and shares of the grocery good; the former single retail grocery line is no longer their binding. The grocery reserve keeps a quarter share without a retail listing. `ShopAtTheShelfTests` and `ShopAtTheShelfShippedTests` cover this purchase path. The earlier first-day shared-line fault is therefore historical, not a current claim.
 
-The fix requires the files PR 1491 owns: the shelf asset, `IslandStoreShelves`, `IslandStoreShelvesDef`, and counter binding. They were not edited. The reviewed diff adds per-line shares, separate bread/oatcake/bean lines and shelf purchasing. Those changes still need their own execution proof; this audit does not claim the live store already has separate food stock. Its new different-good tests prove only the independent lines that main supports. No skipped failing test or weakened assertion masks the shared-line fault.
+The synthetic independent-good and host-event cases added here remain useful and are not copies of those physical purchase tests. Their goods occupy whole shares, so their exact 18-box and four-can expectations are unchanged. No scene or shelf asset was edited.
 
-A further integration check is needed after PR 1491: carry each line's purchase history across midnight. That diff records a line id for today's draws but still feeds past draws through the shared good ledger; verify that buying bread does not lower the next morning's untouched beans. This is an inspection concern, not a demonstrated failure on a merged build.
+Independent history across midnight is a separate boundary: `IslandStoreShelves.DrawnOn` still aggregates prior purchases by good for ledger replay, while same-day deductions identify a line. These tests do not establish that buying one food leaves every other food unchanged on later mornings. Save round trips are covered separately by `Save/BagAndPurchasesSavedTests`; that is not proof of independent food depletion across every delivery window.
 
 ## Verification and save boundary
 
-Whitespace and protected-file checks are local. No local compiler, Unity, EditMode execution, visual check or save write ran. CI must execute the three fixtures; eight additional test cases and three migrated cases are expected. A static arithmetic check independently verified the stated day table and resident-use example, not C# execution.
+Whitespace and protected-file checks are local. No local compiler, Unity, EditMode execution, visual check or save write ran. The previous CI run passed; the refreshed head still needs all three fixtures executed; eight additional test cases and three migrated cases are expected. A static arithmetic check independently verified the stated day table and resident-use example, not C# execution.
 
-No saved field or save-version change is added. The dormant service already exposes `ShopStockRecord` snapshots through its memory state store. A future save step would need to persist those records (shop, line, count, settled day). The live island model still needs per-line timed purchase history plus restoration policy; that work is outside this change. The dormant fix changes no visible shelf until that service is composed; the live independent-food fault remains with PR 1491.
+No saved field or save-version change is added. The dormant service already exposes `ShopStockRecord` snapshots through its memory state store. A future save step would need to persist those records (shop, line, count, settled day). Main now persists per-line timed shelf purchases and shopping bags in save version 26 through PR 1543. This draft adds no saved fields and does not alter that restoration path. The dormant fix changes no visible shelf until that service is composed. PR 1524 proposes retiring this dormant service and includes the useful live-stock cases; those alternative changes must not be combined by restoring the retired service.

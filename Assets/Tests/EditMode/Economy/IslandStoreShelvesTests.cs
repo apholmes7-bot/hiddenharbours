@@ -11,7 +11,7 @@ namespace HiddenHarbours.Tests.Economy
     /// The island store's shelves (docs/design/st-peters-living-economy.md Â§5, slice 2) on synthetic goods, so
     /// each rule shows in the numbers: the shelf holds the back room after the morning run, the islanders'
     /// buying thins it through the store's hours, it equals the back room at dusk, a tide-blocked stretch
-    /// empties it, and the player's purchases come off it for the session only. Every read is a pure function
+    /// empties it, and the player's purchases come off it. Every read is a pure function
     /// of the moment asked (rule 5), so the player's absence changes nothing.
     /// </summary>
     public class IslandStoreShelvesTests
@@ -254,7 +254,7 @@ namespace HiddenHarbours.Tests.Economy
             Assert.That(shelves.CountAt(Grocery, At(30, Opens)), Is.EqualTo(18), "and the groceries");
         }
 
-        // ---- the player's purchases (session only) -------------------------------------------------------
+        // ---- the player's purchases --------------------------------------------------------------------
 
         [Test]
         public void ThePlayersPurchaseComesOffTheShelf_LastsTheDay_AndTheNextFullRunClearsIt()

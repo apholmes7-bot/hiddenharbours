@@ -29,7 +29,8 @@ namespace HiddenHarbours.Tests.PlayMode
             Vector4 oldSun=Shader.GetGlobalVector("_SunDir");float oldE=Shader.GetGlobalFloat("_SunElevation"),oldS=Shader.GetGlobalFloat("_ShadowStrength");
             var cameraObject=new GameObject("DeckPlayCamera");var camera=cameraObject.AddComponent<Camera>();
             camera.orthographic=true;camera.orthographicSize=15;camera.cullingMask=1<<31;camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=Color.gray;
-            camera.transform.position=host.transform.position+Vector3.back*100;camera.farClipPlane=500;camera.allowHDR=false;camera.allowMSAA=false;
+            camera.transform.position=host.transform.position+Vector3.back*100;camera.farClipPlane=500;camera.allowMSAA=false;
+            camera.allowHDR=true;   // like the scene camera: an intermediate target, so the shade stencil is cleared every render
             var target=new RenderTexture(256,256,24,RenderTextureFormat.ARGB32);camera.targetTexture=target;
             var pixels=new Texture2D(256,256,TextureFormat.RGBA32,false);
             try
