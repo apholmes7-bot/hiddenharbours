@@ -170,5 +170,28 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual("Tomorrow — day 2", HudStrings.TideTableDayHeading(false, 1),
                 "clock day index 1 is the player's second day");
         }
+
+        [Test]
+        public void FaintInk_StillReadsOnThePaper()
+        {
+            // Faint ink is ink laid thin over the stock: blend it, then the usual contrast ratio.
+            Color paper = NotebookInk.Paper, faint = NotebookInk.InkFaint;
+            Color seen = Color.Lerp(paper, faint, faint.a);
+            Assert.GreaterOrEqual(ContrastRatio(seen, paper), 4.5f,
+                "a done step or a greyed row is faded, not gone — small pixel text needs 4.5:1");
+            Assert.Less(faint.a, 1f, "and it is still lighter than full ink");
+        }
+
+        private static float ContrastRatio(Color a, Color b)
+        {
+            float la = Luminance(a), lb = Luminance(b);
+            return (Mathf.Max(la, lb) + 0.05f) / (Mathf.Min(la, lb) + 0.05f);
+        }
+
+        private static float Luminance(Color c)
+        {
+            static float Ch(float v) => v <= 0.03928f ? v / 12.92f : Mathf.Pow((v + 0.055f) / 1.055f, 2.4f);
+            return 0.2126f * Ch(c.r) + 0.7152f * Ch(c.g) + 0.0722f * Ch(c.b);
+        }
     }
 }

@@ -63,7 +63,7 @@ namespace HiddenHarbours.UI
         private static readonly Color PanelStock = new Color(0.941f, 0.925f, 0.878f, 0.98f);
         private static readonly Color PanelEdge = new Color(0.180f, 0.176f, 0.157f, 1f);
         private static readonly Color Ink = new Color(0.145f, 0.137f, 0.125f, 1f);
-        private static readonly Color InkFaint = new Color(0.145f, 0.137f, 0.125f, 0.62f);
+        private static readonly Color InkFaint = new Color(0.145f, 0.137f, 0.125f, 0.70f); // same faint weight as the notebook's
         private static readonly Color RowSelected = new Color(0.180f, 0.176f, 0.157f, 0.14f);
         private static readonly Color RowIdle = new Color(0f, 0f, 0f, 0f);
         private static readonly Color ChipEdge = new Color(0.180f, 0.176f, 0.157f, 0.85f);

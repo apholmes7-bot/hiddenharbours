@@ -68,7 +68,7 @@ namespace HiddenHarbours.UI
         private static readonly Color Paper      = new Color(0.898f, 0.855f, 0.761f, 0.99f);
         private static readonly Color PaperEdge  = new Color(0.792f, 0.737f, 0.627f, 1f);
         private static readonly Color Ink        = new Color(0.157f, 0.133f, 0.106f, 1f);
-        private static readonly Color InkFaint   = new Color(0.157f, 0.133f, 0.106f, 0.55f);
+        private static readonly Color InkFaint   = new Color(0.157f, 0.133f, 0.106f, 0.70f); // same faint weight as the notebook's
         private static readonly Color Rule       = new Color(0.157f, 0.133f, 0.106f, 0.16f);
         private static readonly Color HighInk    = new Color(0.145f, 0.325f, 0.239f, 1f); // sea green
         private static readonly Color LowInk     = new Color(0.478f, 0.231f, 0.153f, 1f); // dried rust
