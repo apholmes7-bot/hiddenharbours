@@ -79,17 +79,18 @@ One chooser, three rows. Shelves 3 and 4 of the gondola are now empty, for fishi
 
 | Item | Price | Picture today | First week? |
 |---|---|---|---|
-| Capelin (bait) | ₲2 each | yes (bait box on the counter; moves here, redrawn) | yes |
-| Herring (bait) | ₲3 | none, to draw | yes |
-| Mackerel (bait) | ₲4 | none, to draw | yes |
-| Sea worm (bait) | ₲4 | none, to draw | yes |
-| Squid strip (bait) | ₲6 | none, to draw | later in the week |
+| Capelin (bait) | ₲2 each | yes (bait box on the counter; moves here, redrawn for the gondola) | yes |
 | Fishing rod | ₲60 | rod art exists for the hand, none for the shelf | yes, once the counted rod stock (draft #1554) lands |
 
-How many of each bait sit on the shelf, and their share of the store's bait delivery, are new numbers:
-**PROPOSAL**. Shucked clam and fish scrap stay in the book: the player can make both himself, and the
-chooser holds six rows. Hooks, line and sinkers are not items in the game (the rod is the gear), so they
-are not proposed for the first week.
+That is the whole first-week fishing shelf the data supports today. The other baits in the book are not
+proposed for it: herring is listed at no stock at this store (a stand-in row, and lobster bait, which waits
+on the licence), and mackerel, sea worm and squid strip are not in the island's bait delivery. Adding any
+of them means a share of the delivery and a shelf count, both new numbers: **PROPOSAL**, the owner's call.
+Shucked clam and fish scrap stay in the book: the player can make both himself. Hooks, line and sinkers
+are not items in the game (the rod is the gear).
+
+A section of one good is just a shelf spot, so the fishing section is built when the rod's shelf stock
+lands (draft #1554), with capelin and the rod as its two rows and a new shelf picture for each.
 
 ### 3. Ice: the chest (unchanged)
 
