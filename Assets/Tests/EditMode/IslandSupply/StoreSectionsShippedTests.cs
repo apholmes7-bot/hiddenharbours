@@ -200,7 +200,7 @@ namespace HiddenHarbours.Tests.EditMode
                     Assert.IsFalse(byTexture.ContainsKey(tex), item.ItemId + " shares its picture (" + AssetDatabase.GetAssetPath(tex) + ") with "
                                                                + (byTexture.TryGetValue(tex, out string other) ? other : ""));
                     byTexture[tex] = item.ItemId;
-                    if (item.ItemId.StartsWith("gear.") || item.ItemId.StartsWith("bait.") || item.ItemId == "supply.soap_bar")
+                    if (item.ItemId.StartsWith("gear.") || item.ItemId.StartsWith("bait.") || item.ItemId.StartsWith("supply."))
                         Assert.That(listings, Has.Member(item.ItemId), item.ItemId + " names no catalog listing");
                 }
             }

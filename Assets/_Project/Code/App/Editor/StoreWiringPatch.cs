@@ -100,8 +100,8 @@ namespace HiddenHarbours.App.Editor
             }
         }
 
-        /// <summary>St Peters: the general store counter's eleven vendors, all Marguerite's (the three hook baits of
-        /// the store's fishing section joined 2026-11-25). The depth sounder left
+        /// <summary>St Peters: the general store counter's fourteen vendors, all Marguerite's (the three hook baits of
+        /// the store's fishing section and the three household goods joined 2026-11-25). The depth sounder left
         /// her counter for the Nine Mile Creek boat/gear wholesaler (ruling 11-23: the island store sells basic
         /// fishing gear, and boat hardware belongs to the mainland town).</summary>
         public static readonly Region StPeters = new Region("StPeters", StPetersLayerRefresh.ScenePath, new[]
@@ -117,6 +117,10 @@ namespace HiddenHarbours.App.Editor
             new Seller("GeneralStoreCounter", typeof(SupplyShop), "supply.oatcakes", StPetersBuilder.StoreSellerId),
             new Seller("GeneralStoreCounter", typeof(SupplyShop), "supply.tinned_beans", StPetersBuilder.StoreSellerId),
             new Seller("GeneralStoreCounter", typeof(SupplyShop), "supply.soap_bar", StPetersBuilder.StoreSellerId),
+            // The household goods (2026-11-25, owner: matches, candles and lamp oil as real items).
+            new Seller("GeneralStoreCounter", typeof(SupplyShop), "supply.matches", StPetersBuilder.StoreSellerId),
+            new Seller("GeneralStoreCounter", typeof(SupplyShop), "supply.candles", StPetersBuilder.StoreSellerId),
+            new Seller("GeneralStoreCounter", typeof(SupplyShop), "supply.lamp_oil", StPetersBuilder.StoreSellerId),
             new Seller("GeneralStoreCounter", typeof(LicenseVendor), "license.clam", StPetersBuilder.StoreSellerId),
         }, new[]
         {
