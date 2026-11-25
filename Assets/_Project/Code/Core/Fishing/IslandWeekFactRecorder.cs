@@ -20,10 +20,11 @@ namespace HiddenHarbours.Core
             _finfishCategories = (FishCategory[])rules.FinfishCategories.Clone();
         }
 
-        /// <summary>Only called after the existing catch record accepts a fresh kept catch.</summary>
-        public void RecordKeptCatch(ISaveService save, in CatchItem item, string occupiedHullId)
+        /// <summary>Consumes landing provenance, never the notebook's bounded transfer history.</summary>
+        public void RecordKeptCatch(ISaveService save, in FreshCatchKept landing)
         {
-            if (occupiedHullId != _doryId || string.IsNullOrEmpty(item.SpeciesId)
+            CatchItem item = landing.Item;
+            if (landing.LandingHullId != _doryId || !landing.HullWasRepaired || string.IsNullOrEmpty(item.SpeciesId)
                 || Array.IndexOf(_finfishCategories, item.Category) < 0) return;
             SetOnce(save, FishFromDoryKey);
         }

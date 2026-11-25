@@ -73,10 +73,16 @@ namespace HiddenHarbours.Tests.EditMode
         private sealed class FactHold : IHold
         {
             private readonly List<CatchItem> _items = new();
+            public bool AcceptsCatch = true;
             public int CapacityUnits => 10;
             public int UsedUnits => _items.Count;
             public IReadOnlyList<CatchItem> Items => _items;
-            public bool TryAdd(CatchItem item) { _items.Add(item); return true; }
+            public bool TryAdd(CatchItem item)
+            {
+                if (!AcceptsCatch) return false;
+                _items.Add(item);
+                return true;
+            }
             public void Clear() => _items.Clear();
         }
 
@@ -302,7 +308,7 @@ namespace HiddenHarbours.Tests.EditMode
         [TestCase("boat.punt", false, false)]
         [TestCase("", true, false)]
         [TestCase("", false, false)]
-        public void IslandWeek_CatchSignalsUseTheOccupiedHull_NotTheLastSavedHull(string hullId, bool inHand, bool counts)
+        public void IslandWeek_LandingProvenanceNamesTheHull_DeliveryAloneCannotEarnTheFact(string hullId, bool inHand, bool counts)
         {
             var save = Game();
             save.ActiveHullId = "boat.dory";
@@ -312,6 +318,9 @@ namespace HiddenHarbours.Tests.EditMode
             var catchItem = CodCatch();
             if (inHand) EventBus.Publish(new CatchLanded(catchItem));
             else EventBus.Publish(new FishCaught(catchItem));
+            Assert.IsFalse(GameServices.Save.GetFlag(IslandWeekFactRecorder.FishFromDoryKey),
+                "delivery signals alone carry no fresh landing provenance");
+            EventBus.Publish(new FreshCatchKept(catchItem, hullId, true));
             Assert.AreEqual(counts, GameServices.Save.GetFlag(IslandWeekFactRecorder.FishFromDoryKey));
             Assert.IsFalse(GameServices.Save.GetFlag("st_peters.weather_turned"));
         }
@@ -323,11 +332,16 @@ namespace HiddenHarbours.Tests.EditMode
             CatchRecords.Install();
             var cod = CodCatch();
             EventBus.Publish(new CatchLanded(cod));
+            EventBus.Publish(new FreshCatchKept(cod, "", false));
+            Assert.IsFalse(GameServices.Save.GetFlag(IslandWeekFactRecorder.FishFromDoryKey));
             StandOn("boat.dory");
             EventBus.Publish(new CatchTakenFromHand(cod));
             EventBus.Publish(new FishCaught(cod));
             Assert.IsFalse(GameServices.Save.GetFlag(IslandWeekFactRecorder.FishFromDoryKey));
             EventBus.Publish(new FishCaught(cod));
+            Assert.IsFalse(GameServices.Save.GetFlag(IslandWeekFactRecorder.FishFromDoryKey),
+                "even a counted hold entry cannot prove where a catch was landed");
+            EventBus.Publish(new FreshCatchKept(cod, "boat.dory", true));
             Assert.IsTrue(GameServices.Save.GetFlag(IslandWeekFactRecorder.FishFromDoryKey), "a separate fresh catch counts");
             Assert.AreEqual(2, CatchRecords.Current()[0].Count, "the existing handoff counted each catch once");
         }
@@ -341,20 +355,26 @@ namespace HiddenHarbours.Tests.EditMode
             EventBus.Publish(new CatchReleased(CodCatch()));
             EventBus.Publish(new FishCaught(new CatchItem("fish.soft_shell_clam", "Clam", FishCategory.Shellfish, 1f, 1, 0f)));
             EventBus.Publish(new FishCaught(default));
+            EventBus.Publish(new FreshCatchKept(new CatchItem("fish.soft_shell_clam", "Clam",
+                FishCategory.Shellfish, 1f, 1, 0f), "boat.dory", true));
+            EventBus.Publish(new FreshCatchKept(default, "boat.dory", true));
             Assert.IsFalse(GameServices.Save.GetFlag(IslandWeekFactRecorder.FishFromDoryKey));
         }
 
-        [TestCase(false, false)]
-        [TestCase(false, true)]
-        [TestCase(true, false)]
-        [TestCase(true, true)]
-        public void IslandWeek_TheActualLandingChokePointCountsOnlyTheLicensedKeptFish(bool licensed, bool inHand)
+        [Test, Combinatorial]
+        public void IslandWeek_TheActualLandingChokePointCountsOnlyTheLicensedKeptFish(
+            [Values(false, true)] bool licensed, [Values(false, true)] bool inHand,
+            [Values("shore", "pier", "boat.punt", "boat.dory")] string origin,
+            [Values(false, true)] bool repaired)
         {
             GameServices.Save = new BlobSave(Game());
+            string hullId = origin.StartsWith("boat.", System.StringComparison.Ordinal) ? origin : "";
+            GameServices.Save.Current.ActiveHullId = "boat.dory";
+            if (repaired) GameServices.Save.Current.RepairedBoats.Add("boat.dory");
             var licences = new FactLicences();
             if (licensed) licences.Grant("license.cod");
             GameServices.Licenses = licences;
-            StandOn("boat.dory");
+            StandOn(hullId);
             CatchRecords.Install();
             var fish = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>("Assets/_Project/Data/Fish/AtlanticCod.asset");
             var licence = AssetDatabase.LoadAssetAtPath<LicenseDef>(
@@ -371,7 +391,14 @@ namespace HiddenHarbours.Tests.EditMode
             const BindingFlags access = BindingFlags.Instance | BindingFlags.NonPublic;
             typeof(FishingController).GetField("_pendingFish", access).SetValue(controller, fish);
             typeof(FishingController).GetField("_pendingWeight", access).SetValue(controller, 2f);
-            int landed = 0, caught = 0, unlicensed = 0, documentedReleases = 0;
+            int landed = 0, caught = 0, unlicensed = 0, documentedReleases = 0, fresh = 0;
+            void OnFresh(FreshCatchKept e)
+            {
+                fresh++;
+                Assert.AreEqual(fish.Id, e.Item.SpeciesId);
+                Assert.AreEqual(hullId, e.LandingHullId);
+                Assert.AreEqual(repaired && hullId == "boat.dory", e.HullWasRepaired);
+            }
             void OnHand(CatchLanded _) => landed++;
             void OnHold(FishCaught _) => caught++;
             void OnRelease(UnlicensedCatchReleased e)
@@ -385,6 +412,7 @@ namespace HiddenHarbours.Tests.EditMode
             EventBus.Subscribe<FishCaught>(OnHold);
             EventBus.Subscribe<UnlicensedCatchReleased>(OnRelease);
             EventBus.Subscribe<CatchReleased>(OnDocumented);
+            EventBus.Subscribe<FreshCatchKept>(OnFresh);
             try
             {
                 typeof(FishingController).GetMethod("OnLanded", access).Invoke(controller, null);
@@ -394,9 +422,11 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.AreEqual(licensed && !inHand ? 1 : 0, caught);
                 Assert.AreEqual(licensed ? 0 : 1, unlicensed);
                 Assert.AreEqual(0, documentedReleases);
+                Assert.AreEqual(licensed ? 1 : 0, fresh);
                 Assert.AreEqual(FishingPhase.Landed, controller.Phase, "a won fight lands even when the fish is let go");
                 Assert.AreEqual(licensed ? 1 : 0, CatchRecords.Current().Count);
-                Assert.AreEqual(licensed, GameServices.Save.GetFlag(IslandWeekFactRecorder.FishFromDoryKey));
+                Assert.AreEqual(licensed && repaired && hullId == "boat.dory",
+                    GameServices.Save.GetFlag(IslandWeekFactRecorder.FishFromDoryKey));
                 Assert.IsFalse(GameServices.Save.GetFlag("st_peters.weather_turned"));
             }
             finally
@@ -405,7 +435,143 @@ namespace HiddenHarbours.Tests.EditMode
                 EventBus.Unsubscribe<FishCaught>(OnHold);
                 EventBus.Unsubscribe<UnlicensedCatchReleased>(OnRelease);
                 EventBus.Unsubscribe<CatchReleased>(OnDocumented);
+                EventBus.Unsubscribe<FreshCatchKept>(OnFresh);
             }
+        }
+
+        private FishingController LicensedRodLanding(bool inHand, FactHold hold, out CarryHands hands)
+        {
+            var licences = new FactLicences();
+            licences.Grant("license.cod");
+            GameServices.Licenses = licences;
+            var fish = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>("Assets/_Project/Data/Fish/AtlanticCod.asset");
+            var licence = AssetDatabase.LoadAssetAtPath<LicenseDef>(
+                "Assets/_Project/Data/Resources/Catalog/Licenses/CodLicense.asset");
+            Assert.NotNull(fish); Assert.NotNull(licence);
+            var go = new GameObject("LandingOrigin(test)");
+            _spawned.Add(go);
+            var controller = go.AddComponent<FishingController>();
+            hands = go.AddComponent<CarryHands>();
+            GameServices.CatchHands = hands;
+            controller.OnControlModeChanged(new ControlModeChanged(inHand ? ControlMode.OnFoot : ControlMode.Aboard));
+            controller.Configure(hold, new[] { fish }, "region.st_peters", Gear.Handline, 1, new[] { licence });
+            return controller;
+        }
+
+        private static void LandCod(FishingController controller, float weight = 2f, FishSpeciesDef fish = null)
+        {
+            const BindingFlags access = BindingFlags.Instance | BindingFlags.NonPublic;
+            fish ??= AssetDatabase.LoadAssetAtPath<FishSpeciesDef>("Assets/_Project/Data/Fish/AtlanticCod.asset");
+            typeof(FishingController).GetField("_pendingFish", access).SetValue(controller, fish);
+            typeof(FishingController).GetField("_pendingWeight", access).SetValue(controller, weight);
+            typeof(FishingController).GetMethod("OnLanded", access).Invoke(controller, null);
+        }
+
+        [TestCase("shore")]
+        [TestCase("pier")]
+        [TestCase("boat.punt")]
+        [TestCase("boat.dory")]
+        public void IslandWeek_ForgottenCatchPlacedLiftedAndStowedCannotAcquireDoryProvenance(string origin)
+        {
+            GameServices.Save = new BlobSave(Game());
+            string hullId = origin.StartsWith("boat.", System.StringComparison.Ordinal) ? origin : "";
+            // The dory case deliberately lands every old fish before she is mended.
+            if (hullId != "boat.dory") GameServices.Save.Current.RepairedBoats.Add("boat.dory");
+            StandOn(hullId);
+            CatchRecords.Install();
+            var hold = new FactHold();
+            var rod = LicensedRodLanding(true, hold, out CarryHands hands);
+            ICarriable oldest = null;
+            int fresh = 0;
+            Listen<FreshCatchKept>(_ => fresh++);
+            int landings = CatchRecordLog.MaxPendingHandCatches + 1;
+            for (int i = 0; i < landings; i++)
+            {
+                LandCod(rod, 1f + i);
+                Assert.IsFalse(GameServices.Save.GetFlag(IslandWeekFactRecorder.FishFromDoryKey), $"landing {i}");
+                ICarriable placed = hands.Carried;
+                Assert.NotNull(placed);
+                _spawned.Add(placed.Transform.gameObject);
+                if (i == 0) oldest = placed;
+                Assert.AreEqual(CarryRefusal.None, hands.TryPlace(placed));
+                Assert.IsFalse(GameServices.Save.GetFlag(IslandWeekFactRecorder.FishFromDoryKey), $"placing {i}");
+            }
+            Assert.AreEqual(landings, fresh);
+            Assert.AreEqual(landings, CatchRecords.Current()[0].Count);
+            Assert.AreEqual(0, hold.UsedUnits);
+            Assert.AreEqual(CarryRefusal.None, hands.TryPickUp(oldest));
+            Assert.IsFalse(GameServices.Save.GetFlag(IslandWeekFactRecorder.FishFromDoryKey), "lifting");
+            if (hullId == "boat.dory") GameServices.Save.Current.RepairedBoats.Add("boat.dory");
+            StandOn("boat.dory");
+            Assert.IsFalse(GameServices.Save.GetFlag(IslandWeekFactRecorder.FishFromDoryKey), "boarding after repair");
+            Assert.IsTrue(hands.TryGiveCatchTo(hold));
+            Assert.AreEqual(1, hold.UsedUnits);
+            Assert.AreEqual(1f, hold.Items[0].WeightKg);
+            Assert.IsFalse(GameServices.Save.GetFlag(IslandWeekFactRecorder.FishFromDoryKey), "stowing the forgotten fish");
+            Assert.AreEqual(landings, fresh, "a transfer is not a fresh landing");
+            Assert.AreEqual(landings + 1, CatchRecords.Current()[0].Count,
+                "the existing bounded notebook pin is preserved, including its recount of a forgotten fish");
+            LandCod(rod);
+            Assert.IsTrue(GameServices.Save.GetFlag(IslandWeekFactRecorder.FishFromDoryKey));
+            Assert.AreEqual(landings + 1, fresh);
+            Assert.AreEqual(landings + 2, CatchRecords.Current()[0].Count);
+            Assert.IsFalse(GameServices.Save.GetFlag("st_peters.weather_turned"));
+        }
+
+        [TestCase("", false, "boat.dory", true, false)]
+        [TestCase("boat.dory", false, "boat.dory", true, false)]
+        [TestCase("boat.dory", true, "", false, true)]
+        public void IslandWeek_OriginAndRepairAreCapturedBeforeDeliveryCallbacks(
+            string beforeHull, bool beforeRepair, string afterHull, bool afterRepair, bool counts)
+        {
+            GameServices.Save = new BlobSave(Game());
+            if (beforeRepair) GameServices.Save.Current.RepairedBoats.Add("boat.dory");
+            StandOn(beforeHull);
+            CatchRecords.Install();
+            var rod = LicensedRodLanding(true, new FactHold(), out _);
+            Listen<CatchLanded>(_ =>
+            {
+                StandOn(afterHull);
+                GameServices.Save.Current.RepairedBoats.Clear();
+                if (afterRepair) GameServices.Save.Current.RepairedBoats.Add("boat.dory");
+            });
+            int fresh = 0;
+            Listen<FreshCatchKept>(e =>
+            {
+                fresh++;
+                Assert.AreEqual(beforeHull, e.LandingHullId);
+                Assert.AreEqual(beforeRepair, e.HullWasRepaired);
+            });
+            LandCod(rod);
+            Assert.AreEqual(1, fresh);
+            Assert.AreEqual(counts, GameServices.Save.GetFlag(IslandWeekFactRecorder.FishFromDoryKey));
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void IslandWeek_ProtectedOrUndeliverableLandingPublishesNoKeptProvenance(bool protectedFish)
+        {
+            GameServices.Save = new BlobSave(Game());
+            GameServices.Save.Current.RepairedBoats.Add("boat.dory");
+            StandOn("boat.dory");
+            CatchRecords.Install();
+            var hold = new FactHold { AcceptsCatch = protectedFish };
+            var rod = LicensedRodLanding(false, hold, out CarryHands hands);
+            var fish = Object.Instantiate(AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(
+                "Assets/_Project/Data/Fish/AtlanticCod.asset"));
+            _spawned.Add(fish);
+            fish.Protected = protectedFish;
+            int fresh = 0, released = 0, caught = 0;
+            Listen<FreshCatchKept>(_ => fresh++);
+            Listen<CatchReleased>(_ => released++);
+            Listen<FishCaught>(_ => caught++);
+            LandCod(rod, fish: fish);
+            Assert.AreEqual(0, fresh);
+            Assert.AreEqual(protectedFish ? 1 : 0, released);
+            Assert.AreEqual(0, caught);
+            Assert.AreEqual(0, hold.UsedUnits);
+            Assert.IsFalse(hands.TryPeekHand(out _));
+            Assert.IsFalse(GameServices.Save.GetFlag(IslandWeekFactRecorder.FishFromDoryKey));
         }
 
         [TestCase(1, 0, false)]
@@ -599,6 +765,7 @@ namespace HiddenHarbours.Tests.EditMode
                 {
                     CatchRecords.Install(null, Load);
                     EventBus.Publish(new FishCaught(CodCatch()));
+                    EventBus.Publish(new FreshCatchKept(CodCatch(), "boat.dory", true));
                     EventBus.Publish(new CatchSold(10, 1, default, 1));
                     if (repeat == 1) CatchRecords.Uninstall();
                 }
@@ -610,6 +777,7 @@ namespace HiddenHarbours.Tests.EditMode
 
                 CatchRecords.Install();
                 EventBus.Publish(new FishCaught(CodCatch()));
+                EventBus.Publish(new FreshCatchKept(CodCatch(), "boat.dory", true));
                 EventBus.Publish(new CatchSold(10, 1, default, 1));
                 Assert.AreEqual(4, CatchRecords.Current()[0].Count);
                 Assert.IsTrue(GameServices.Save.GetFlag(IslandWeekFactRecorder.FishFromDoryKey));
@@ -633,7 +801,9 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsFalse(GameServices.Save.GetFlag(IslandWeekFactRecorder.ShellfishSoldKey));
             CatchRecords.Uninstall();
             EventBus.Publish(new CatchSold(10, 1, default, 1));
+            EventBus.Publish(new FreshCatchKept(CodCatch(), "boat.dory", true));
             Assert.IsFalse(GameServices.Save.GetFlag(IslandWeekFactRecorder.ShellfishSoldKey));
+            Assert.IsFalse(GameServices.Save.GetFlag(IslandWeekFactRecorder.FishFromDoryKey));
         }
 
         [Test]
@@ -647,6 +817,8 @@ namespace HiddenHarbours.Tests.EditMode
             CatchRecords.Install();
             EventBus.Publish(new FishCaught(CodCatch()));
             EventBus.Publish(new FishCaught(CodCatch()));
+            EventBus.Publish(new FreshCatchKept(CodCatch(), "boat.dory", true));
+            EventBus.Publish(new FreshCatchKept(CodCatch(), "boat.dory", true));
             EventBus.Publish(new CatchSold(10, 1, default, 1));
             EventBus.Publish(new CatchSold(10, 1, default, 1));
             Assert.AreEqual(3, save.OnboardingFlags.Count);
@@ -667,7 +839,14 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         private readonly List<Object> _spawned = new();
+        private readonly List<System.Action> _unsubscribe = new();
         private string _dir;
+
+        private void Listen<T>(System.Action<T> handler)
+        {
+            EventBus.Subscribe(handler);
+            _unsubscribe.Add(() => EventBus.Unsubscribe(handler));
+        }
 
         [SetUp]
         public void SetUp()
@@ -682,6 +861,8 @@ namespace HiddenHarbours.Tests.EditMode
         [TearDown]
         public void TearDown()
         {
+            foreach (var unsubscribe in _unsubscribe) unsubscribe();
+            _unsubscribe.Clear();
             ResetCatchRecords();
             UnlicensedCatch.ResetCatalog();
             GameServices.Reset();

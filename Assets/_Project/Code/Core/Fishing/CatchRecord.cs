@@ -126,7 +126,8 @@ namespace HiddenHarbours.Core
         }
 
         /// <summary>A catch entered a hold on <paramref name="tick"/>. Counted unless it is the catch the
-        /// hand gave up on that same tick (the stow). Returns true only for a new catch.</summary>
+        /// hand gave up on that same tick (the stow). Returns true when the notebook counts it;
+        /// the bounded hand history cannot establish fresh landing provenance.</summary>
         public bool RecordEnteredHold(in CatchItem item, long tick, object session = null)
         {
             BindTo(session);
@@ -320,6 +321,7 @@ namespace HiddenHarbours.Core
             EventBus.Subscribe<CatchReleased>(OnReleased);
             EventBus.Subscribe<CatchTakenFromHand>(OnTaken);
             EventBus.Subscribe<CatchSold>(OnSold);
+            EventBus.Subscribe<FreshCatchKept>(OnFreshCatch);
         }
 
         /// <summary>Stop listening. Idempotent. The record itself is kept.</summary>
@@ -340,18 +342,12 @@ namespace HiddenHarbours.Core
             EventBus.Unsubscribe<CatchReleased>(OnReleased);
             EventBus.Unsubscribe<CatchTakenFromHand>(OnTaken);
             EventBus.Unsubscribe<CatchSold>(OnSold);
+            EventBus.Unsubscribe<FreshCatchKept>(OnFreshCatch);
         }
 
-        private static void OnLanded(CatchLanded e)
-        {
-            if (Log.RecordLandedInHand(e.Item, CurrentSession())) RecordIslandCatch(e.Item);
-        }
-        private static void OnCaught(FishCaught e)
-        {
-            if (Log.RecordEnteredHold(e.Item, Tick(), CurrentSession())) RecordIslandCatch(e.Item);
-        }
-        private static void RecordIslandCatch(in CatchItem item)
-            => _islandWeek?.RecordKeptCatch(GameServices.Save, in item, GameServices.Helm.PlayersBoatId);
+        private static void OnLanded(CatchLanded e) => Log.RecordLandedInHand(e.Item, CurrentSession());
+        private static void OnCaught(FishCaught e) => Log.RecordEnteredHold(e.Item, Tick(), CurrentSession());
+        private static void OnFreshCatch(FreshCatchKept e) => _islandWeek?.RecordKeptCatch(GameServices.Save, in e);
         private static void OnSold(CatchSold e) => _islandWeek?.RecordSale(GameServices.Save, in e);
         private static void OnReleased(CatchReleased e) => Log.RecordReleased(e.Item, CurrentSession());
         private static void OnTaken(CatchTakenFromHand e) => Log.RecordTakenFromHand(e.Item, Tick(), CurrentSession());

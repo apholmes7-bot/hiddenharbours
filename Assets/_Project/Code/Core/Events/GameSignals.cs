@@ -46,6 +46,23 @@ namespace HiddenHarbours.Core
         public FishCaught(CatchItem item) { Item = item; }
     }
 
+    /// <summary>A fresh, licensed, non-protected catch successfully kept at the landing.
+    /// The landing producer captures the occupied hull and its repair state before delivery callbacks.
+    /// Hand/hold transfers never publish this event. This snapshot is not saved.</summary>
+    public readonly struct FreshCatchKept
+    {
+        public readonly CatchItem Item;
+        public readonly string LandingHullId;
+        public readonly bool HullWasRepaired;
+
+        public FreshCatchKept(CatchItem item, string landingHullId, bool hullWasRepaired)
+        {
+            Item = item;
+            LandingHullId = landingHullId;
+            HullWasRepaired = hullWasRepaired;
+        }
+    }
+
     /// <summary>Raised when a hold's catch is sold at market.</summary>
     public readonly struct CatchSold : ICustomSignal
     {
