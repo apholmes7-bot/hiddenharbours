@@ -17,8 +17,9 @@ namespace HiddenHarbours.Tests.PlayMode
     /// supplies and the bag leaves his hand. A full pair of hands with no bag among them refuses the good. The
     /// bag can be set down with the goods inside and picked up again (slice 2b): away from a shelf, a bed and
     /// his storage the press stands it at his feet, a shelf sells nothing while it stands there, lying down to
-    /// sleep ashore leaves it by the bed, coming back to the same game puts it back in his hand, and a new game
-    /// does not inherit it. The
+    /// sleep ashore leaves it by the bed, a new game does not inherit it, and the bag is in the save (v26): a
+    /// loaded game has it where it was left, the picture is made again when it is missing, and after the game is
+    /// closed and started again he picks it up from beside the bed with the same goods. The
     /// till is a plain double that puts what it sells into the save's supplies, as the store's real till does.
     /// Headless-safe: nothing renders.
     /// </summary>
@@ -58,9 +59,10 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             public FakeSave(SaveData data) { Current = data; }
             public SaveData Current { get; }
+            public int Saves;
             public bool GetFlag(string key) => false;
             public void SetFlag(string key, bool value) { }
-            public void Save() { }
+            public void Save() { Saves++; }
         }
 
         /// <summary>His storage, as any of his containers registers it.</summary>
@@ -114,6 +116,7 @@ namespace HiddenHarbours.Tests.PlayMode
             EventBus.Subscribe(_onCue);
             EventBus.Subscribe(_onPutAway);
             ShoppingBagContents.Clear();
+            PlayerStorey.Clear();
             _setDown.Clear();
             _pickedUp.Clear();
             _onSetDown = s => _setDown.Add(s);
@@ -121,7 +124,7 @@ namespace HiddenHarbours.Tests.PlayMode
             EventBus.Subscribe(_onSetDown);
             EventBus.Subscribe(_onPickedUp);
 
-            _save = new SaveData();
+            _save = SaveMigration.NewGame();
             GameServices.Save = new FakeSave(_save);
             _till = new Till { Save = _save };
             ShelfTills.Register(_till);
@@ -131,10 +134,11 @@ namespace HiddenHarbours.Tests.PlayMode
             bag.DisplayName = "Paper bag";
             bag.Capacity = 2;
             bag.PutAwayReachMeters = 1.5f;
+            _bagDef = bag;
+            // After a restart the bag's kind is found from its saved id.
+            ShoppingBagContents.BagSource = id => id == bag.Id ? bag : null;
 
-            var player = Track(new GameObject("Player"));
-            player.AddComponent<SpriteRenderer>();
-            _hands = player.AddComponent<CarryHands>();
+            _hands = NewPlayer(Vector2.zero);
 
             var shelf = Track(new GameObject("Bread"));
             shelf.SetActive(false);
@@ -159,7 +163,10 @@ namespace HiddenHarbours.Tests.PlayMode
             EventBus.Unsubscribe(_onPickedUp);
             // A bag set down stands at the scene root, not under the player: it is cleared by hand.
             if (_hands != null && _hands.Bag != null) Object.Destroy(_hands.Bag.gameObject);
+            if (CarriableShoppingBag.Standing != null) Object.Destroy(CarriableShoppingBag.Standing.gameObject);
+            ShoppingBagContents.BagSource = null;
             ShoppingBagContents.Clear();
+            PlayerStorey.Clear();
             foreach (Object o in _spawned)
                 if (o != null) Object.Destroy(o);
             _spawned.Clear();
@@ -167,6 +174,37 @@ namespace HiddenHarbours.Tests.PlayMode
             PlayerStorage.Clear();
             Interactables.Clear();
             GameServices.Reset();
+        }
+
+        private ShoppingBagDef _bagDef;
+
+        private CarryHands NewPlayer(Vector2 at)
+        {
+            var player = Track(new GameObject("Player"));
+            player.transform.position = at;
+            player.AddComponent<SpriteRenderer>();
+            return player.AddComponent<CarryHands>();
+        }
+
+        /// <summary>The game is closed and started again: the save goes through its real JSON, nothing in
+        /// memory survives (the player, the bag's picture, what the session knew), and the game is loaded
+        /// with the player standing at <paramref name="wakeAt"/>.</summary>
+        private IEnumerator CloseTheGameAndStartItAgain(Vector2 wakeAt)
+        {
+            string onDisk = SaveSerialization.ToJson(_save);
+            if (CarriableShoppingBag.Standing != null) Object.Destroy(CarriableShoppingBag.Standing.gameObject);
+            Object.Destroy(_hands.gameObject);
+            yield return null;
+            ShoppingBagContents.Clear();
+            PlayerStorey.Clear();
+
+            _save = SaveSerialization.FromJson(onDisk);
+            GameServices.Save = new FakeSave(_save);
+            _till.Save = _save;
+            _hands = NewPlayer(wakeAt);
+            EventBus.Publish(new GameLoaded());
+            yield return null;
+            yield return null;
         }
 
         private Vector2 At => _hands.transform.position;
@@ -379,7 +417,7 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator ComingBackToTheGame_PutsTheBagBackInHisHand_AndALostBagIsMadeAgain()
+        public IEnumerator ComingBackToTheGame_TheBagStandsWhereHeLeftIt_AndALostPictureIsMadeAgainThere()
         {
             yield return null;
             Press();
@@ -390,23 +428,143 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return StandAt(ByTheBed);
             Assert.IsFalse(_hands.HoldsBag);
 
-            // The title and back: the same game, loaded again.
+            // The title and back: the same game, loaded again. The bag is where it was left.
             EventBus.Publish(new GameLoaded());
             yield return null;
-            Assert.That(_hands.HeldBag, Is.SameAs(bag), "the bag he left is back in his hand");
-            Assert.IsFalse(_hands.BagIsSetDown);
+            yield return null;
+            Assert.IsFalse(_hands.HoldsBag, "it is not put back in his hand");
+            Assert.IsTrue(_hands.BagIsSetDown);
+            Assert.That(_hands.Bag, Is.SameAs(bag), "the same bag");
+            Assert.That((Vector2)bag.transform.position, Is.EqualTo(OpenGround), "where he left it");
             Assert.That(ShoppingBagContents.InBag(_save, Listing), Is.EqualTo(1));
 
-            // The place the bag stood in is unloaded under it: the goods are his, so the bag is made again.
-            yield return StandAt(OpenGround);
-            Assert.That(_hands.TrySetBagDown(), Is.EqualTo(CarryRefusal.None));
+            // The place the bag stood in is unloaded under it: the picture is made again where the save says.
             Object.Destroy(bag.gameObject);
             yield return null;
             yield return null;
-            Assert.IsTrue(_hands.HoldsBag, "a bag with his goods in it is in his hand");
-            Assert.IsFalse(_hands.BagIsSetDown);
+            CarriableShoppingBag again = _hands.Bag;
+            Assert.IsNotNull(again, "the bag is drawn again");
+            Assert.IsFalse(_hands.HoldsBag, "still on the ground");
+            Assert.IsTrue(_hands.BagIsSetDown);
+            Assert.That((Vector2)again.transform.position, Is.EqualTo(OpenGround));
             Assert.That(ShoppingBagContents.InBag(_save, Listing), Is.EqualTo(1), "nothing lost");
             Assert.That(SupplyLocker.Owned(_save, Listing), Is.EqualTo(1), "and nothing doubled");
+
+            yield return StandAt(OpenGround);
+            Assert.That(Best()?.VerbLabel, Is.EqualTo(CarriableShoppingBag.PickUpLabel));
+            Press();
+            yield return null;
+            Assert.That(_hands.HeldBag, Is.SameAs(again));
+        }
+
+        // ---- the bag across a restart (save v26) -----------------------------------------------------------------
+
+        [UnityTest]
+        public IEnumerator HeBuysAtTheShelf_SetsTheBagDown_Sleeps_RestartsTheGame_AndPicksItUpWithTheSameGoods()
+        {
+            yield return null;
+            Press();
+            yield return null;
+            Press();
+            yield return null;
+            Assert.That(ShoppingBagContents.Total(_save), Is.EqualTo(2), "two loaves in the bag");
+            int moneyLeft = _till.Money;
+
+            // He walks to the bed and lies down: the bag is left by the bed, and the sleep is the save.
+            yield return StandAt(ByTheBed);
+            EventBus.Publish(new RestSaveRequested("his bed", ByTheBed, 0, "bed.test"));
+            yield return null;
+            Assert.IsTrue(_hands.BagIsSetDown);
+
+            yield return CloseTheGameAndStartItAgain(ByTheBed + new Vector2(0.4f, 0f));
+
+            Assert.IsFalse(_hands.HoldsBag, "he wakes with empty hands");
+            Assert.IsTrue(_hands.BagIsSetDown, "the bag is in the save, set down");
+            Assert.IsTrue(ShoppingBagContents.SetDownByTheBed);
+            CarriableShoppingBag bag = _hands.Bag;
+            Assert.IsNotNull(bag, "and stands in the world again");
+            Assert.That(bag.Def, Is.SameAs(_bagDef), "the same kind of bag");
+            Assert.That((Vector2)bag.transform.position, Is.EqualTo(ByTheBed), "by the bed, where he left it");
+            Assert.That(ShoppingBagContents.InBag(_save, Listing), Is.EqualTo(2), "with both loaves in it");
+            Assert.That(SupplyLocker.Owned(_save, Listing), Is.EqualTo(2), "nothing doubled");
+            Assert.That(SupplyLocker.Count(_save, Listing), Is.EqualTo(0), "and nothing put away behind his back");
+
+            // One bag at a time survives the restart too.
+            Assert.That(_hands.CanBag(_bagDef), Is.EqualTo(ShoppingBagRefusal.BagElsewhere));
+
+            yield return StandAt(ByTheBed);
+            Assert.That(Best()?.VerbLabel, Is.EqualTo(CarriableShoppingBag.PickUpLabel));
+            Press();
+            yield return null;
+            Assert.That(_hands.HeldBag, Is.SameAs(bag), "he picks it up");
+            Assert.That(ShoppingBagContents.InBag(_save, Listing), Is.EqualTo(2), "with the same goods");
+            Assert.That(_pickedUp.Count, Is.EqualTo(1));
+            Assert.That(_pickedUp[0].Count, Is.EqualTo(2));
+            Assert.That(_till.Money, Is.EqualTo(moneyLeft), "nothing was paid twice");
+
+            // And home it goes.
+            yield return StandAt(_pantry.transform.position);
+            Press();
+            yield return null;
+            Assert.That(SupplyLocker.Count(_save, Listing), Is.EqualTo(2), "both loaves are in his storage");
+            Assert.That(_save.ShoppingBags.Count, Is.EqualTo(0));
+        }
+
+        [UnityTest]
+        public IEnumerator ABagInHisHandIsInHisHandAfterARestart()
+        {
+            yield return null;
+            Press();
+            yield return null;
+            Assert.IsTrue(_hands.HoldsBag);
+
+            yield return CloseTheGameAndStartItAgain(OpenGround);
+
+            Assert.IsTrue(_hands.HoldsBag, "in his hand, as it was");
+            Assert.IsFalse(_hands.BagIsSetDown);
+            Assert.That(_hands.HeldBag.Def, Is.SameAs(_bagDef));
+            Assert.That(ShoppingBagContents.InBag(_save, Listing), Is.EqualTo(1));
+            Assert.That(SupplyLocker.Count(_save, Listing), Is.EqualTo(0), "still set aside");
+
+            yield return StandAt(Vector2.zero);
+            Press();
+            yield return null;
+            Assert.That(ShoppingBagContents.Total(_save), Is.EqualTo(2), "and the shelf sells into it again");
+        }
+
+        [UnityTest]
+        public IEnumerator ABagLeftUpstairsIsNotOfferedDownstairsAfterARestart()
+        {
+            yield return null;
+            Press();
+            yield return null;
+            yield return StandAt(OpenGround);
+            var house = new object();
+            PlayerStorey.Report(house, true, 1);
+            Assert.That(_hands.TrySetBagDown(), Is.EqualTo(CarryRefusal.None));
+            Assert.That(_save.ShoppingBags[0].Level, Is.EqualTo(1), "set down on the floor above");
+
+            yield return CloseTheGameAndStartItAgain(OpenGround);
+
+            Assert.IsNotNull(_hands.Bag, "the bag stands in the house");
+            Assert.IsFalse(_hands.Bag.IsAvailable, "but he is downstairs: it is not offered");
+            PlayerStorey.Report(house, true, 1);
+            yield return null;
+            Assert.IsTrue(_hands.Bag.IsAvailable, "upstairs it is");
+            Assert.That(Best()?.VerbLabel, Is.EqualTo(CarriableShoppingBag.PickUpLabel));
+        }
+
+        [UnityTest]
+        public IEnumerator ABuyAtTheShelfAsksForOneWrite_WithTheBagInIt()
+        {
+            yield return null;
+            var save = (FakeSave)GameServices.Save;
+            int before = save.Saves;
+            Press();
+            yield return null;
+            Assert.That(save.Saves, Is.GreaterThan(before), "the bagged purchase is written");
+            Assert.That(_save.ShoppingBags.Count, Is.EqualTo(1));
+            Assert.That(_save.ShoppingBags[0].BagDefId, Is.EqualTo(_bagDef.Id), "the row names its kind, so the load repair keeps it");
         }
 
         [UnityTest]

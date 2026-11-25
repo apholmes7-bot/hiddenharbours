@@ -15,15 +15,15 @@ namespace HiddenHarbours.Player
     /// and take it up again; lying down to sleep ashore with it in his hand leaves it by the bed. There is
     /// one bag: while it stands somewhere with goods in it, a shelf refuses to start a second.</para>
     ///
-    /// <para><b>Never lost.</b> The goods are his from the moment he pays. If the bag's picture is gone
-    /// while its goods are still set aside (he left for the title and came back, the scene it stood in was
-    /// unloaded), the bag is put back in his hand. See <see cref="ShoppingBagContents"/> for what a full
-    /// quit does until the save holds the bag.</para>
+    /// <para><b>Saved, and never lost.</b> The goods are his from the moment he pays, and the bag is in the
+    /// save (<see cref="ShoppingBagContents"/>): after a load it is in his hand if it was in his hand, and
+    /// otherwise stands where he left it, in its region, at its place, on its storey. The picture is made
+    /// again from the save whenever it is missing (a restart, the scene it stood in was unloaded and
+    /// loaded again); a bag left in another region has no picture here until he is back there.</para>
     /// </summary>
     public sealed partial class CarryHands
     {
         private CarriableShoppingBag _bag;
-        private bool _bagBackToHand;
 
         /// <summary>His bag, in a hand or set down, or null.</summary>
         public CarriableShoppingBag Bag => _bag != null ? _bag : null;
@@ -137,10 +137,13 @@ namespace HiddenHarbours.Player
         public void OnRestRequested(RestSaveRequested request)
         {
             if (request.Aboard || HeldBag == null) return;
-            SetBagDown(byTheBed: true);
+            // The bed names its own storey; it is the floor he is standing on to turn in.
+            SetBagDown(byTheBed: true, level: Mathf.Max(request.WakeLevel, PlayerStorey.Level));
         }
 
-        private CarryRefusal SetBagDown(bool byTheBed)
+        private CarryRefusal SetBagDown(bool byTheBed) => SetBagDown(byTheBed, PlayerStorey.Level);
+
+        private CarryRefusal SetBagDown(bool byTheBed, int level)
         {
             CarriableShoppingBag held = HeldBag;
             SaveData save = GameServices.Save?.Current;
@@ -151,93 +154,94 @@ namespace HiddenHarbours.Player
 
             Vector2 at = held.transform.position;
             string region = GameServices.CurrentRegionId;
-            ShoppingBagContents.MarkSetDown(save, region, at, byTheBed);
+            ShoppingBagContents.MarkSetDown(save, region, at, level, byTheBed);
             EventBus.Publish(new ShoppingBagSetDown(region, at, ShoppingBagContents.Total(save), byTheBed));
             return CarryRefusal.None;
         }
 
-        // A game was loaded or resumed: his bag goes back in his hand (KeepBag, next frame).
-        private void OnGameLoadedForBag(GameLoaded _) => _bagBackToHand = true;
+        private void SubscribeBagSignals() => EventBus.Subscribe<RestSaveRequested>(OnRestRequested);
 
-        private void SubscribeBagSignals()
-        {
-            EventBus.Subscribe<RestSaveRequested>(OnRestRequested);
-            EventBus.Subscribe<GameLoaded>(OnGameLoadedForBag);
-        }
-
-        private void UnsubscribeBagSignals()
-        {
-            EventBus.Unsubscribe<RestSaveRequested>(OnRestRequested);
-            EventBus.Unsubscribe<GameLoaded>(OnGameLoadedForBag);
-        }
+        private void UnsubscribeBagSignals() => EventBus.Unsubscribe<RestSaveRequested>(OnRestRequested);
 
         /// <summary>
-        /// Keeps the bag and its goods in step, once a frame; one static read with no bag anywhere.
+        /// Keeps the bag's picture in step with the save, once a frame; a couple of reads with no bag
+        /// anywhere.
         /// <list type="bullet">
-        ///   <item>No goods of the loaded game are set aside (put away, used up, or the bag belonged to a
-        ///   game that was left for a new one): there is no bag.</item>
-        ///   <item>Goods are set aside and the bag's picture is gone: it is put back in his hand, or at his
-        ///   feet when no hand is free.</item>
-        ///   <item>A game was just loaded or resumed and the bag stands somewhere: it is back in his hand
-        ///   when a hand is free.</item>
+        ///   <item>The loaded game has nothing in a bag (put away, used up, a new game, another game
+        ///   loaded): there is no bag picture.</item>
+        ///   <item>The save says the bag is in his hand and there is no picture: it is made in his hand,
+        ///   or stood at his feet when no hand is free.</item>
+        ///   <item>The save says the bag stands in the region he is in and there is no picture: it is made
+        ///   where it stands. A bag left in another region gets no picture until he is back there.</item>
         /// </list>
         /// Public so a test settles it without waiting a frame.
         /// </summary>
         public void KeepBag()
         {
-            if (ReferenceEquals(_bag, null) && !ShoppingBagContents.Any)
-            {
-                _bagBackToHand = false;
-                return;
-            }
-
             SaveData save = GameServices.Save?.Current;
+            bool holds = ShoppingBagContents.HoldsAny(save);
+            if (ReferenceEquals(_bag, null) && !holds) return;
+
             CarriableShoppingBag bag = Bag;
-            if (!ShoppingBagContents.HoldsAny(save))
+            if (!holds)
             {
                 if (bag != null) RemoveBag(bag);
                 _bag = null;
-                _bagBackToHand = false;
-                // Goods set aside against a game that is no longer the loaded one: that bag is gone.
-                if (save != null && ShoppingBagContents.Any) ShoppingBagContents.Clear();
                 return;
             }
 
             if (bag == null) RestoreBag(save);
-            else if (_bagBackToHand && _slots.SideOf(bag) == CarryHandSide.None) TryPickUpBag();
-            _bagBackToHand = false;
         }
 
         private void RestoreBag(SaveData save)
         {
+            _bag = null;
+            bool setDown = ShoppingBagContents.IsSetDown(save);
+            // It stands in another region: nothing to draw here, and nothing to look up.
+            if (setDown && !ShoppingBagContents.LiesIn(save, GameServices.CurrentRegionId)) return;
+
             ShoppingBagDef def = ShoppingBagContents.Bag;
             if (def == null)
             {
-                // No kind of bag to draw: the goods are his, so they are simply in his supplies.
+                // A kind of bag that no longer ships: the goods are his, so they are simply in his supplies.
                 ShoppingBagContents.Release(save);
-                _bag = null;
                 return;
             }
 
-            CarriableShoppingBag bag = CarriableShoppingBag.Create(def, transform, this);
+            // A picture of it may already stand in the world (the player was rebuilt around it).
+            CarriableShoppingBag bag = CarriableShoppingBag.Standing;
+            if (bag != null && bag.Def == def && _slots.SideOf(bag) == CarryHandSide.None) bag.Adopt(this);
+            else bag = CarriableShoppingBag.Create(def, transform, this);
             _bag = bag;
+
+            if (setDown)
+            {
+                Stand(bag, ShoppingBagContents.SetDownPosition);
+                return;
+            }
+
             if (_slots.TryTake(bag, false, PreferredHand(bag), out CarryHandSide side) == HandSlotRefusal.None)
             {
                 RememberParent(side, null);
                 _lastTaken = bag;
-                ShoppingBagContents.MarkHeld();
+                bag.OnLifted(this);
+                bag.transform.SetParent(transform, worldPositionStays: false);
                 ApplyCarriedPose();
                 return;
             }
 
             // Both hands taken: it stands at his feet.
             Vector2 feet = transform.position;
-            bag.transform.SetParent(null, worldPositionStays: false);
-            bag.transform.position = feet;
-            bag.OnPlaced();
-            ShoppingBagContents.MarkSetDown(save, GameServices.CurrentRegionId, feet, byTheBed: false);
+            Stand(bag, feet);
+            ShoppingBagContents.MarkSetDown(save, GameServices.CurrentRegionId, feet, PlayerStorey.Level, byTheBed: false);
         }
 
+        private static void Stand(CarriableShoppingBag bag, Vector2 at)
+        {
+            bag.transform.SetParent(null, worldPositionStays: false);
+            bag.transform.position = at;
+            bag.OnPlaced();
+        }
         private void RemoveBag(CarriableShoppingBag bag)
         {
             // Forget() clears both remembered parents for a thing in no hand, so only a held bag is forgotten.
