@@ -32,13 +32,17 @@ namespace HiddenHarbours.Tests.Economy
             public FakeWallet(int starting) { Money = starting; }
             public int Money { get; private set; }
             public int Credits { get; private set; }
+            public int SpendCalls { get; private set; }
             public bool RefuseSpend;
+            public System.Action BeforeSpend;
             public System.Action OnSpend;
             public void Add(int amount) { Money += amount; Credits += amount; }
             public bool TrySpend(int amount)
             {
+                BeforeSpend?.Invoke();
                 if (RefuseSpend || amount < 0 || amount > Money) return false;
                 Money -= amount;
+                SpendCalls++;
                 OnSpend?.Invoke();
                 return true;
             }
@@ -56,7 +60,8 @@ namespace HiddenHarbours.Tests.Economy
 
         private sealed class FlagSaveService : ISaveService
         {
-            public FlagSaveService(SaveData data) { Current = data; }
+            private readonly IWallet _wallet;
+            public FlagSaveService(SaveData data, IWallet wallet = null) { Current = data; _wallet = wallet; }
             public SaveData Current { get; }
             public readonly List<string> Writes = new();
             private int _depth;
@@ -83,7 +88,8 @@ namespace HiddenHarbours.Tests.Economy
             public void Save()
             {
                 if (_depth > 0) { _pending = true; return; }
-                if (GameServices.Wallet != null) Current.Money = GameServices.Wallet.Money;
+                var wallet = _wallet ?? GameServices.Wallet;
+                if (wallet != null) Current.Money = wallet.Money;
                 Writes.Add(SaveSerialization.ToJson(Current));
             }
             public System.IDisposable DeferWrites() { _depth++; return new Scope(this); }
@@ -105,8 +111,16 @@ namespace HiddenHarbours.Tests.Economy
         private sealed class FakeLicenses : ILicenseService
         {
             private readonly HashSet<string> _held = new();
+            private readonly ISaveService _saver;
+            public FakeLicenses(ISaveService saver = null) { _saver = saver; }
             public bool IsLicensed(string id) => string.IsNullOrEmpty(id) || _held.Contains(id);
-            public void Grant(string id) { if (!string.IsNullOrEmpty(id)) _held.Add(id); }
+            public void Grant(string id)
+            {
+                if (string.IsNullOrEmpty(id) || !_held.Add(id)) return;
+                if (_saver == null) return;
+                _saver.Current.OwnedLicenses.Add(id);
+                _saver.Save();
+            }
             public int Count => _held.Count;
         }
 
@@ -837,6 +851,179 @@ namespace HiddenHarbours.Tests.Economy
             Assert.AreEqual(4, purchases[0].PricePaid);
             Assert.AreEqual(0, wallet.Money);
             Assert.IsTrue(saver.GetFlag(RecoveryUsed));
+        }
+
+        [TestCase(15, false)]
+        [TestCase(20, false)]
+        [TestCase(30, false)]
+        [TestCase(100, false)]
+        [TestCase(15, true)]
+        [TestCase(20, true)]
+        [TestCase(30, true)]
+        [TestCase(100, true)]
+        public void NormalPurchase_SpendCallbackCannotChargeAgain(int money, bool sameCounter)
+        {
+            var save = SaveMigration.NewGame();
+            save.OnboardingFlags.Add(new SaveFlag(FrontedFeeGrant.DefaultGrantKey, true));
+            var saver = new FlagSaveService(save);
+            var wallet = new FakeWallet(money);
+            GameServices.Save = saver;
+            GameServices.Wallet = wallet;
+            var licenses = RestoreLicenses();
+            var license = MakeRecoverableLicense();
+            var vendor = RecoveryVendor(license, wallet);
+            var otherCounter = sameCounter ? vendor : RecoveryVendor(license, wallet);
+            int callbacks = 0;
+            bool nestedSucceeded = true;
+            wallet.OnSpend = () =>
+            {
+                callbacks++;
+                wallet.OnSpend = null;
+                nestedSucceeded = otherCounter.TryBuy();
+            };
+            var purchases = new List<LicensePurchased>();
+            EventBus.Subscribe<LicensePurchased>(purchases.Add);
+
+            Assert.IsTrue(vendor.TryBuy());
+            Assert.IsFalse(nestedSucceeded);
+            Assert.AreEqual(1, callbacks);
+            Assert.AreEqual(1, wallet.SpendCalls);
+            Assert.AreEqual(money - 15, wallet.Money);
+            Assert.AreEqual(0, wallet.Credits);
+            Assert.AreEqual(1, licenses.Count);
+            Assert.IsTrue(licenses.IsLicensed(license.Id));
+            CollectionAssert.AreEqual(new[] { license.Id }, save.OwnedLicenses);
+            Assert.IsFalse(saver.GetFlag(RecoveryUsed));
+            Assert.AreEqual(1, save.OnboardingFlags.Count, "ordinary payment creates no recovery row");
+            Assert.AreEqual(1, purchases.Count);
+            Assert.AreEqual(15, purchases[0].PricePaid);
+            Assert.AreEqual(license.Id, purchases[0].LicenseId);
+            Assert.AreEqual(RecoverySeller, purchases[0].VendorId);
+            Assert.AreEqual(1, saver.Writes.Count);
+            Assert.AreEqual(money - 15, SaveSerialization.FromJson(saver.Writes[0]).Money);
+            Assert.IsTrue(vendor.LastPurchaseSucceeded);
+            Assert.IsFalse(otherCounter.TryBuy());
+            Assert.AreEqual(1, wallet.SpendCalls);
+            Assert.AreEqual(1, purchases.Count);
+        }
+
+        [TestCase(4, false)]
+        [TestCase(4, true)]
+        [TestCase(20, false)]
+        [TestCase(20, true)]
+        public void UnspentPurchase_LeavesNoSavedChange_AndReleasesItsGuard(int money, bool throws)
+        {
+            var save = SaveMigration.NewGame();
+            save.OnboardingFlags.Add(new SaveFlag(FrontedFeeGrant.DefaultGrantKey, true));
+            var saver = new FlagSaveService(save);
+            var wallet = new FakeWallet(money) { RefuseSpend = !throws };
+            if (throws) wallet.BeforeSpend = () => throw new System.InvalidOperationException("Spend unavailable");
+            GameServices.Save = saver;
+            GameServices.Wallet = wallet;
+            var licenses = RestoreLicenses();
+            var license = MakeRecoverableLicense();
+            var vendor = RecoveryVendor(license, wallet);
+            var purchases = new List<LicensePurchased>();
+            EventBus.Subscribe<LicensePurchased>(purchases.Add);
+            string before = SaveSerialization.ToJson(save);
+
+            if (throws) Assert.Throws<System.InvalidOperationException>(() => vendor.TryBuy());
+            else Assert.IsFalse(vendor.TryBuy());
+            Assert.AreEqual(before, SaveSerialization.ToJson(save));
+            Assert.AreEqual(0, saver.Writes.Count);
+            Assert.AreEqual(money, wallet.Money);
+            Assert.AreEqual(0, wallet.SpendCalls);
+            Assert.AreEqual(0, licenses.Count);
+            Assert.AreEqual(0, purchases.Count);
+            Assert.IsFalse(vendor.LastPurchaseSucceeded);
+
+            wallet.BeforeSpend = null;
+            wallet.RefuseSpend = false;
+            Assert.IsTrue(RecoveryVendor(license, wallet).TryBuy(), "every exit releases the shared guard");
+            Assert.AreEqual(System.Math.Max(0, money - 15), wallet.Money);
+            Assert.AreEqual(1, wallet.SpendCalls);
+            Assert.AreEqual(1, licenses.Count);
+            Assert.AreEqual(money < 15, saver.GetFlag(RecoveryUsed));
+            Assert.AreEqual(1, purchases.Count);
+            Assert.AreEqual(System.Math.Min(money, 15), purchases[0].PricePaid);
+            Assert.AreEqual(1, saver.Writes.Count);
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TwoPlayers_UseTheirOwnRecoveryAtTheSameCounter(bool secondDuringSpend)
+        {
+            var license = MakeRecoverableLicense();
+            var firstWallet = new FakeWallet(4);
+            var secondWallet = new FakeWallet(7);
+            var firstSave = new FlagSaveService(SaveMigration.NewGame(), firstWallet);
+            var secondSave = new FlagSaveService(SaveMigration.NewGame(), secondWallet);
+            firstSave.Current.OnboardingFlags.Add(new SaveFlag(FrontedFeeGrant.DefaultGrantKey, true));
+            secondSave.Current.OnboardingFlags.Add(new SaveFlag(FrontedFeeGrant.DefaultGrantKey, true));
+            var firstLicenses = new FakeLicenses(firstSave);
+            var secondLicenses = new FakeLicenses(secondSave);
+            // Keep the legacy context on the first player, including while the second player buys.
+            GameServices.Save = firstSave;
+            GameServices.Wallet = firstWallet;
+            GameServices.Licenses = firstLicenses;
+            var vendor = RecoveryVendor(license, firstWallet);
+            var purchases = new List<LicensePurchased>();
+            EventBus.Subscribe<LicensePurchased>(purchases.Add);
+            string secondBefore = SaveSerialization.ToJson(secondSave.Current);
+            int nestedCalls = 0;
+            if (secondDuringSpend)
+                firstWallet.OnSpend = () =>
+                {
+                    nestedCalls++;
+                    Assert.IsTrue(vendor.TryBuy(license, secondWallet, secondLicenses, secondSave));
+                };
+
+            Assert.IsTrue(vendor.TryBuy(license, firstWallet, firstLicenses, firstSave));
+            string firstAfter = SaveSerialization.ToJson(firstSave.Current);
+            if (!secondDuringSpend)
+            {
+                Assert.AreEqual(secondBefore, SaveSerialization.ToJson(secondSave.Current));
+                Assert.AreEqual(7, secondWallet.Money);
+                Assert.AreEqual(0, secondWallet.SpendCalls);
+                Assert.AreEqual(0, secondLicenses.Count);
+                Assert.AreEqual(0, secondSave.Writes.Count);
+                Assert.IsFalse(secondSave.GetFlag(RecoveryUsed));
+                Assert.IsTrue(vendor.TryBuy(license, secondWallet, secondLicenses, secondSave));
+            }
+
+            Assert.AreEqual(firstAfter, SaveSerialization.ToJson(firstSave.Current));
+            Assert.AreEqual(secondDuringSpend ? 1 : 0, nestedCalls);
+            Assert.AreEqual(0, firstWallet.Money);
+            Assert.AreEqual(0, secondWallet.Money);
+            Assert.AreEqual(0, firstWallet.Credits);
+            Assert.AreEqual(0, secondWallet.Credits);
+            Assert.AreEqual(1, firstWallet.SpendCalls);
+            Assert.AreEqual(1, secondWallet.SpendCalls);
+            Assert.AreEqual(1, firstLicenses.Count);
+            Assert.AreEqual(1, secondLicenses.Count);
+            CollectionAssert.AreEqual(new[] { license.Id }, firstSave.Current.OwnedLicenses);
+            CollectionAssert.AreEqual(new[] { license.Id }, secondSave.Current.OwnedLicenses);
+            Assert.IsTrue(firstSave.GetFlag(RecoveryUsed));
+            Assert.IsTrue(secondSave.GetFlag(RecoveryUsed));
+            Assert.AreEqual(2, firstSave.Current.OnboardingFlags.Count);
+            Assert.AreEqual(2, secondSave.Current.OnboardingFlags.Count);
+            Assert.AreEqual(1, firstSave.Writes.Count);
+            Assert.AreEqual(1, secondSave.Writes.Count);
+            Assert.AreEqual(0, SaveSerialization.FromJson(firstSave.Writes[0]).Money);
+            Assert.AreEqual(0, SaveSerialization.FromJson(secondSave.Writes[0]).Money);
+            Assert.AreEqual(2, purchases.Count);
+            Assert.AreEqual(secondDuringSpend ? 7 : 4, purchases[0].PricePaid);
+            Assert.AreEqual(secondDuringSpend ? 4 : 7, purchases[1].PricePaid);
+            foreach (var purchase in purchases)
+            {
+                Assert.AreEqual(license.Id, purchase.LicenseId);
+                Assert.AreEqual(RecoverySeller, purchase.VendorId);
+            }
+            Assert.IsFalse(vendor.TryBuy(license, firstWallet, firstLicenses, firstSave));
+            Assert.IsFalse(vendor.TryBuy(license, secondWallet, secondLicenses, secondSave));
+            Assert.AreEqual(1, firstWallet.SpendCalls);
+            Assert.AreEqual(1, secondWallet.SpendCalls);
+            Assert.AreEqual(2, purchases.Count);
         }
 
         [Test]

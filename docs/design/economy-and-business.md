@@ -523,9 +523,9 @@ module refs):
 > Economy provides the components + data; the **builders are re-run by those lanes next wave** to surface
 > the vendors/clam spots. The full M2 proficiency/reputation licence tower stays deferred.
 
-#### First shellfish licence: proposed recovery (2026-11-24)
+#### First shellfish licence: one-time recovery (2026-11-25)
 
-**PROPOSAL, nobody has accepted this.** The current opening fronts 20 coins once and the
+The current opening fronts 20 coins once and the
 shellfish licence costs 15. The player can spend the whole grant before signing at the store,
 leaving him unable to keep the clams that would earn the fee. Keep the existing grant, price,
 counter and signing action. If he cannot afford that first licence, Ginny covers the shortfall
@@ -539,14 +539,24 @@ it, he must refresh the quote before paying.
 
 `ginny_fronted_clam_fee` remains the original grant record. Recovery writes
 `ginny_clam_fee_recovered` in the existing flag list, together with the held licence and purse
-through deferred save writes. Save version 26 and its fields are unchanged. The used flag is
-reserved before the wallet signals a spend, so another counter cannot redeem the same recovery
-inside that signal. A refused spend leaves recovery available. Licence ownership prevents
+through deferred save writes. Save version 26 and its fields are unchanged. A transient guard
+per player wallet and licence id spans the quote, spend, grant and purchase notifications across
+counter instances. It is acquired before any wallet callback, including for a full-price buy:
+the reduced purse cannot trigger a nested discounted purchase before ownership is granted.
+The guard is released on every exit and is never saved. The used flag is recorded only after
+the wallet accepts payment; a refused spend leaves recovery available without writing a flag.
+Licence ownership prevents
 repeat buying, including after reload. Existing licensed saves, and players buying normally,
 receive no recovery flag, rebate or new words. An older stranded save with the original grant
 flag can recover when the player confirms at the counter; merely loading or browsing grants
 nothing. No sale-history requirement is invented: this is a one-time right to the first
 shellfish licence, not repeat income support.
+
+The explicit purchase seam takes the player's wallet, licence service and save together. Each
+player has his own grant and recovery flags; one player's purchase does not consume another's
+entitlement, even if the second purchase occurs during the first player's spend notification.
+The existing scene interaction still supplies its current service context. This does not add
+multiplayer connection or player-selection wiring, or change the single-slot save service.
 
 Alternatives considered:
 
@@ -558,10 +568,9 @@ Alternatives considered:
 - Give one more cash top-up: can be spent elsewhere again, so it does not guarantee recovery;
   unlimited top-ups would create repeat income.
 
-The tradeoff for review is a bounded subsidy of up to the licence price (currently 15): deliberate
-overspending can keep more purchased goods than buying the licence first. Lean toward accepting
-that one-time cost to preserve the existing opening while removing its dead end. If that incentive
-is unacceptable, prefer the prepaid licence instead of adding debt collection to this slice.
+The accepted tradeoff is a bounded subsidy of up to the licence price (currently 15): deliberate
+overspending can keep more purchased goods than buying the licence first. That one-time cost
+preserves the existing opening while removing its dead end; no debt collection is added.
 
 ### 9.1b Pots are bought, not conjured (owner green-light 2026-07-15)
 
