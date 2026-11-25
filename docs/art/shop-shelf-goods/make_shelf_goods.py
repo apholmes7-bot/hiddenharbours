@@ -56,7 +56,52 @@ P = {
     "p": (190, 150, 98),    # paper bag, kraft
     "r": (150, 112, 66),    # paper bag shade
     "L": (214, 180, 128),   # paper bag fold
+    "P": (205, 120, 120),   # sea worm
+    "R": (70, 50, 35),      # worm box soil
+    "Y": (236, 226, 220),   # squid strip
+    "y": (214, 170, 172),   # squid strip edge
+    "c": (226, 200, 150),   # shucked clam
+    "o": (196, 150, 96),    # clam shade
+    "g": (60, 62, 66),      # rod butt and tip
+    "t": (128, 84, 46),     # rod blank, varnished
 }
+
+# The fishing section (2026-11-25): four baits on the third shelf, each two tubs or boxes, then the rods
+# lying along the bottom shelf. Six rows tall, to fit band 3 (rows 245..250).
+CAPELIN_TUB = [
+    ".DDDDD.",
+    "DsszssD",
+    "DzssszD",
+    "DkkkkkD",
+    "DmmmmmD",
+    ".DDDDD.",
+]
+WORM_BOX = [
+    ".DDDDD.",
+    "DRPRPRD",
+    "DPRRPRD",
+    "DkkkkkD",
+    "DqqqqqD",
+    ".DDDDD.",
+]
+SQUID_TRAY = [
+    ".jjjjj.",
+    "jYyYyYj",
+    "jyYyYyj",
+    "jYyYyYj",
+    "jBBBBBj",
+    ".jjjjj.",
+]
+CLAM_TUB = [
+    ".DDDDD.",
+    "DcocoyD",
+    "DoccocD",
+    "DlllllD",
+    "DBBBBBD",
+    ".DDDDD.",
+]
+BAND3_ROW = 245
+BAITS_X = {"capelin": 1, "worm": 16, "squid": 31, "clam": 46}
 
 LOAF = [
     ".DDDDDDD.",
@@ -158,6 +203,13 @@ PIVOT = {
     "ShelfGondolaBread": (15, 34),
     "ShelfGondolaOatcakes": (47, 33),
     "ShelfGondolaBeans": (31, 20),
+    # The fishing section: the four baits on band 3, each pivoted at the middle of its two tubs, and the
+    # rods along band 4.
+    "ShelfGondolaCapelin": (BAITS_X["capelin"] + 7, 10),
+    "ShelfGondolaSeaWorm": (BAITS_X["worm"] + 7, 10),
+    "ShelfGondolaSquidStrip": (BAITS_X["squid"] + 7, 10),
+    "ShelfGondolaShuckedClam": (BAITS_X["clam"] + 7, 10),
+    "ShelfGondolaRods": (31, 2),
     # Held: the bottom centre; the carry pose hangs it its own height below the hand.
     "ShoppingBagPaper": (5, 0),
 }
@@ -170,6 +222,11 @@ ROOM_RECT = {
     "ShelfGondolaBread": (GONDOLA_X0, GONDOLA_Y0, GONDOLA_W, GONDOLA_H),
     "ShelfGondolaOatcakes": (GONDOLA_X0, GONDOLA_Y0, GONDOLA_W, GONDOLA_H),
     "ShelfGondolaBeans": (GONDOLA_X0, GONDOLA_Y0, GONDOLA_W, GONDOLA_H),
+    "ShelfGondolaCapelin": (GONDOLA_X0, GONDOLA_Y0, GONDOLA_W, GONDOLA_H),
+    "ShelfGondolaSeaWorm": (GONDOLA_X0, GONDOLA_Y0, GONDOLA_W, GONDOLA_H),
+    "ShelfGondolaSquidStrip": (GONDOLA_X0, GONDOLA_Y0, GONDOLA_W, GONDOLA_H),
+    "ShelfGondolaShuckedClam": (GONDOLA_X0, GONDOLA_Y0, GONDOLA_W, GONDOLA_H),
+    "ShelfGondolaRods": (GONDOLA_X0, GONDOLA_Y0, GONDOLA_W, GONDOLA_H),
 }
 
 
@@ -237,6 +294,32 @@ def gondola_beans(im=None):
     # Second shelf: a row of tins of beans.
     for i in range(10):
         stamp(im, TIN_TALL, 1 + i * 6, 236 + oy)
+    return im
+
+
+def gondola_bait(pattern, key):
+    im = blank(GONDOLA_W, GONDOLA_H)
+    x = BAITS_X[key]
+    stamp(im, pattern, x, BAND3_ROW - GONDOLA_Y0)
+    stamp(im, pattern, x + 7, BAND3_ROW - GONDOLA_Y0)
+    return im
+
+
+def gondola_rods():
+    # Bottom shelf (rows 254..257): four rods lying along it, two to a row, end to end, the lower pair
+    # set two pixels over: a dark butt, a cork grip, a reel seat, then the varnished blank to the tip.
+    im = blank(GONDOLA_W, GONDOLA_H)
+    for row, shift in ((255, 0), (257, 2)):
+        y = row - GONDOLA_Y0
+        for x0 in (2 + shift, 31 + shift):
+            put(im, x0, y, "g")
+            for x in range(x0 + 1, x0 + 6):
+                put(im, x, y, "c")
+            put(im, x0 + 6, y, "s")
+            put(im, x0 + 7, y, "g")
+            for x in range(x0 + 8, x0 + 27):
+                put(im, x, y, "t")
+            put(im, x0 + 26, y, "g")
     return im
 
 
@@ -320,6 +403,11 @@ def main():
         "ShelfGondolaOatcakes": gondola_oatcakes(),
         "ShelfGondolaBeans": gondola_beans(),
         "ShoppingBagPaper": paper_bag(),
+        "ShelfGondolaCapelin": gondola_bait(CAPELIN_TUB, "capelin"),
+        "ShelfGondolaSeaWorm": gondola_bait(WORM_BOX, "worm"),
+        "ShelfGondolaSquidStrip": gondola_bait(SQUID_TRAY, "squid"),
+        "ShelfGondolaShuckedClam": gondola_bait(CLAM_TUB, "clam"),
+        "ShelfGondolaRods": gondola_rods(),
     }
     for name, im in made.items():
         im.save(os.path.join(out, name + ".png"))

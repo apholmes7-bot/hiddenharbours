@@ -42,10 +42,10 @@ MonoBehaviour:
     IntoBag: 0
   - Id: slot.bait
     LineId: line.bait_box
-    Offset: {x: 2.34375, y: -0.46875}
+    Offset: {x: -1.46875, y: -1.0625}
     ListingId: bait.capelin
     Cover: {fileID: 0}
-    Goods: {fileID: 21300000, guid: 23b1d8663512426aab0eafc800ecb65b, type: 3}
+    Goods: {fileID: 21300000, guid: 08bad2bfb2194bfc8a678a0f0b1b1dbc, type: 3}
     HideSoldOutCard: 0
     NeedsFreeHand: 0
     IntoBag: 0
@@ -85,6 +85,33 @@ MonoBehaviour:
     HideSoldOutCard: 0
     NeedsFreeHand: 0
     IntoBag: 1
+  - Id: slot.sea_worm
+    LineId: line.bait_sea_worm
+    Offset: {x: -1, y: -1.0625}
+    ListingId: bait.sea_worm
+    Cover: {fileID: 0}
+    Goods: {fileID: 21300000, guid: cc4a60a0f40c45909ea36419c4f374ef, type: 3}
+    HideSoldOutCard: 0
+    NeedsFreeHand: 0
+    IntoBag: 0
+  - Id: slot.squid_strip
+    LineId: line.bait_squid_strip
+    Offset: {x: -0.53125, y: -1.0625}
+    ListingId: bait.squid_strip
+    Cover: {fileID: 0}
+    Goods: {fileID: 21300000, guid: 3501dac13ff746d18ccc7941f3bd87d1, type: 3}
+    HideSoldOutCard: 0
+    NeedsFreeHand: 0
+    IntoBag: 0
+  - Id: slot.shucked_clam
+    LineId: line.bait_shucked_clam
+    Offset: {x: -0.0625, y: -1.0625}
+    ListingId: bait.shucked_clam
+    Cover: {fileID: 0}
+    Goods: {fileID: 21300000, guid: d778bd4bd6f94837a81ebe8e52fcea91, type: 3}
+    HideSoldOutCard: 0
+    NeedsFreeHand: 0
+    IntoBag: 0
   Sections:
   - Id: section.food
     VerbLabel: Look at the groceries
@@ -93,3 +120,11 @@ MonoBehaviour:
     - slot.bread
     - slot.oatcakes
     - slot.beans
+  - Id: section.fishing
+    VerbLabel: Look at the bait
+    Offset: {x: -0.75, y: -1}
+    SlotIds:
+    - slot.bait
+    - slot.sea_worm
+    - slot.squid_strip
+    - slot.shucked_clam

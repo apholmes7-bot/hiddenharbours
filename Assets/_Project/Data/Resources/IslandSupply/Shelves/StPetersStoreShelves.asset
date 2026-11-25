@@ -42,9 +42,36 @@ MonoBehaviour:
     ItemName: box of bait
     UnitsPerItem: 2.5
     MaxOnShelf: 20
-    ShareOfGood: 0
+    ShareOfGood: 0.4
     CounterListingIds:
     - bait.capelin
+    SoldAtShelf: 1
+  - Id: line.bait_sea_worm
+    Good: {fileID: 11400000, guid: 8c86cdb0e06d4829a003516973393a76, type: 2}
+    ItemName: tub of sea worms
+    UnitsPerItem: 1
+    MaxOnShelf: 12
+    ShareOfGood: 0.2
+    CounterListingIds:
+    - bait.sea_worm
+    SoldAtShelf: 1
+  - Id: line.bait_squid_strip
+    Good: {fileID: 11400000, guid: 8c86cdb0e06d4829a003516973393a76, type: 2}
+    ItemName: tray of squid strip
+    UnitsPerItem: 1
+    MaxOnShelf: 12
+    ShareOfGood: 0.2
+    CounterListingIds:
+    - bait.squid_strip
+    SoldAtShelf: 1
+  - Id: line.bait_shucked_clam
+    Good: {fileID: 11400000, guid: 8c86cdb0e06d4829a003516973393a76, type: 2}
+    ItemName: tub of shucked clam
+    UnitsPerItem: 1
+    MaxOnShelf: 12
+    ShareOfGood: 0.2
+    CounterListingIds:
+    - bait.shucked_clam
     SoldAtShelf: 1
   - Id: line.gas_jerry_can
     Good: {fileID: 11400000, guid: bb218baf8d4045d7b66a005c35bba906, type: 2}

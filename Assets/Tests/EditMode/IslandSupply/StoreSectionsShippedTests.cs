@@ -162,8 +162,83 @@ namespace HiddenHarbours.Tests.EditMode
                         string listing = def.Slots.Single(s => s.Id == slotId).ListingId;
                         foreach (SupplyDef s in supplies.Where(s => s.Id == listing))
                             Check(s.DisplayName, listing + "'s name");
+                        foreach (BaitDef b in Baits().Where(b => b.Id == listing))
+                            Check(b.DisplayName, listing + "'s name");
                     }
                 }
+        }
+
+        /// <summary>Every good a store plans but does not shelve yet has its own picture too: none shared with
+        /// another planned good or with a good on the shelves, none planned twice or already shelved, and every
+        /// planned id the catalog already authors (gear., supply., bait.) is a real listing.</summary>
+        [Test]
+        public void EveryPlannedGood_HasItsOwnPicture_SharedWithNoOther()
+        {
+            var plans = AssetDatabase.FindAssets("t:StoreItemPicturesDef")
+                .Select(g => AssetDatabase.LoadAssetAtPath<StoreItemPicturesDef>(AssetDatabase.GUIDToAssetPath(g)))
+                .Where(p => p != null).ToList();
+            Assert.That(plans.Select(p => p.ShopId), Has.Member(_stPeters.ShopId), "the St Peters store's planned goods are missing");
+            var listings = new HashSet<string>(AssetDatabase.FindAssets("t:ScriptableObject", new[] { "Assets/_Project/Data/Resources/Catalog" })
+                .Select(g => AssetDatabase.LoadAssetAtPath<ScriptableObject>(AssetDatabase.GUIDToAssetPath(g)))
+                .OfType<ICatalogListing>().Select(l => l.ListingId));
+            Assert.That(listings, Has.Member("gear.rod"), "the catalog sweep found nothing: the check would pass on nothing");
+            foreach (StoreItemPicturesDef plan in plans)
+            {
+                Assert.That(plan.Id, Does.Match("^storepictures\\.[a-z0-9_]+$"), plan.name);
+                ShopShelfSlotsDef shelves = _all.SingleOrDefault(d => d.ShopId == plan.ShopId);
+                Assert.IsNotNull(shelves, plan.Id + " plans for " + plan.ShopId + ", which has no shelves");
+                var byTexture = new Dictionary<Texture2D, string>();
+                foreach (ShopShelfSlot slot in shelves.Slots.Where(s => s?.Goods != null && !string.IsNullOrEmpty(s.ListingId)))
+                    byTexture[slot.Goods.texture] = slot.ListingId;
+                var ids = new HashSet<string>();
+                foreach (StoreItemPicture item in plan.Items)
+                {
+                    Assert.IsTrue(ids.Add(item.ItemId), plan.Id + " plans " + item.ItemId + " twice");
+                    Assert.IsFalse(shelves.Slots.Any(s => s.ListingId == item.ItemId), item.ItemId + " is shelved already; its slot carries its picture");
+                    Assert.IsNotNull(item.Picture, item.ItemId + " has no picture");
+                    Texture2D tex = item.Picture.texture;
+                    Assert.IsFalse(byTexture.ContainsKey(tex), item.ItemId + " shares its picture (" + AssetDatabase.GetAssetPath(tex) + ") with "
+                                                               + (byTexture.TryGetValue(tex, out string other) ? other : ""));
+                    byTexture[tex] = item.ItemId;
+                    if (item.ItemId.StartsWith("gear.") || item.ItemId.StartsWith("bait.") || item.ItemId == "supply.soap_bar")
+                        Assert.That(listings, Has.Member(item.ItemId), item.ItemId + " names no catalog listing");
+                }
+            }
+        }
+
+        private static List<BaitDef> Baits() => AssetDatabase.FindAssets("t:BaitDef")
+            .Select(g => AssetDatabase.LoadAssetAtPath<BaitDef>(AssetDatabase.GUIDToAssetPath(g)))
+            .Where(b => b != null).ToList();
+
+        /// <summary>The fishing section (owner 2026-11-25: baits for what the store sells gear for and what each
+        /// season's fish take): the four hook baits, each its own listed good with its own shelf line, none in the
+        /// paper bag; and every one is taken by a fish a St Peters rod catches in some season, read from the data.</summary>
+        [Test]
+        public void TheStPetersFishingSection_SellsHookBaitsThatStPetersRodFishTake()
+        {
+            ShopShelfSection fishing = _stPeters.Sections.Single(s => s.Id == "section.fishing");
+            Assert.That(fishing.SlotIds, Is.EqualTo(new[] { "slot.bait", "slot.sea_worm", "slot.squid_strip", "slot.shucked_clam" }));
+            IslandStoreShelvesDef shelves = _shelves.Single(s => s.ShopId == _stPeters.ShopId);
+            var rodFish = AssetDatabase.FindAssets("t:FishSpeciesDef")
+                .Select(g => AssetDatabase.LoadAssetAtPath<HiddenHarbours.Fishing.FishSpeciesDef>(AssetDatabase.GUIDToAssetPath(g)))
+                .Where(f => f != null && f.RegionIds != null && f.RegionIds.Contains("region.st_peters")
+                            && f.GearAllowed(HiddenHarbours.Fishing.Gear.Handline) && f.Seasons != 0)
+                .Select(f => f.Id).ToList();
+            Assert.That(rodFish, Is.Not.Empty, "no St Peters fish takes a rod: the check below would pass on nothing");
+            var lines = new HashSet<string>();
+            foreach (string slotId in fishing.SlotIds)
+            {
+                ShopShelfSlot slot = _stPeters.Slots.Single(s => s.Id == slotId);
+                Assert.IsFalse(slot.IntoBag, slotId + ": bait goes to the tackle box, not the paper bag");
+                Assert.IsTrue(lines.Add(slot.LineId), slotId + " shares its shelf line; each bait runs out on its own");
+                IslandShelfLine line = shelves.Lines.Single(l => l.Id == slot.LineId);
+                Assert.IsTrue(line.SoldAtShelf, slot.LineId + " is not sold at the shelf");
+                Assert.That(line.CounterListingIds, Is.EqualTo(new[] { slot.ListingId }), slot.LineId + " counts another listing");
+                BaitDef bait = Baits().Single(b => b.Id == slot.ListingId);
+                Assert.IsTrue(bait.Catalog.Listed, bait.Id + " is on the shelf but not listed, so the till cannot sell it");
+                Assert.That(bait.FavorsSpeciesIds.Intersect(rodFish), Is.Not.Empty,
+                            bait.Id + " is taken by no fish a St Peters rod catches");
+            }
         }
     }
 }

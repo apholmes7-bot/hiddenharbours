@@ -100,13 +100,18 @@ namespace HiddenHarbours.App.Editor
             }
         }
 
-        /// <summary>St Peters: the general store counter's eight vendors, all Marguerite's. The depth sounder left
+        /// <summary>St Peters: the general store counter's eleven vendors, all Marguerite's (the three hook baits of
+        /// the store's fishing section joined 2026-11-25). The depth sounder left
         /// her counter for the Nine Mile Creek boat/gear wholesaler (ruling 11-23: the island store sells basic
         /// fishing gear, and boat hardware belongs to the mainland town).</summary>
         public static readonly Region StPeters = new Region("StPeters", StPetersLayerRefresh.ScenePath, new[]
         {
             new Seller("GeneralStoreCounter", typeof(GearShop), "gear.rod", StPetersBuilder.StoreSellerId),
             new Seller("GeneralStoreCounter", typeof(BaitShop), "bait.capelin", StPetersBuilder.StoreSellerId),
+            // The store's fishing section (2026-11-25, owner: baits for what St Peters' season fish take).
+            new Seller("GeneralStoreCounter", typeof(BaitShop), "bait.sea_worm", StPetersBuilder.StoreSellerId),
+            new Seller("GeneralStoreCounter", typeof(BaitShop), "bait.squid_strip", StPetersBuilder.StoreSellerId),
+            new Seller("GeneralStoreCounter", typeof(BaitShop), "bait.shucked_clam", StPetersBuilder.StoreSellerId),
             new Seller("GeneralStoreCounter", typeof(SupplyShop), "supply.ice", StPetersBuilder.StoreSellerId),
             new Seller("GeneralStoreCounter", typeof(SupplyShop), "supply.bread", StPetersBuilder.StoreSellerId),
             new Seller("GeneralStoreCounter", typeof(SupplyShop), "supply.oatcakes", StPetersBuilder.StoreSellerId),
@@ -123,7 +128,8 @@ namespace HiddenHarbours.App.Editor
         /// were placed by <see cref="NmcWholesalerKeepers.Place"/>, which wires the vendors itself, so the plan
         /// for these rows is empty once the scene holds them (<c>docs/design/economy-item-sellers.md</c> §5.1).
         ///
-        /// <para>Only the offers that name a wholesaler and nobody else are here. The bait, the clam shovel and
+        /// <para>The offers that name a wholesaler and nobody else are here, and the three hook baits St Peters'
+        /// store lists too (its fishing section, 2026-11-25, a vendor on each counter). The other bait, the clam shovel and
         /// the clam bucket also name <c>seller.leblancs</c>, so listing them needs a St Peters vendor as well
         /// (guard 4 counts every seller a listed offer names); and the rake, tongs, sack and basket wait for
         /// hand-gathering. See <see cref="NmcWholesalerKeepers.Waiting"/>.</para>
@@ -137,6 +143,10 @@ namespace HiddenHarbours.App.Editor
             new Seller(NmcWholesalerKeepers.BoatGearCounterRoot, typeof(InstrumentShop), "instrument.gps", NmcWholesalerKeepers.BoatGearSellerId),
             new Seller(NmcWholesalerKeepers.BoatGearCounterRoot, typeof(InstrumentShop), "instrument.depth_sounder", NmcWholesalerKeepers.BoatGearSellerId),
             new Seller(NmcWholesalerKeepers.FishingGearCounterRoot, typeof(GearShop), "gear.rod_rack", NmcWholesalerKeepers.FishingGearSellerId),
+            // Also on LeBlanc's counter at St Peters (its fishing section, 2026-11-25): listed, so both vendors stand.
+            new Seller(NmcWholesalerKeepers.FishingGearCounterRoot, typeof(BaitShop), "bait.sea_worm", NmcWholesalerKeepers.FishingGearSellerId),
+            new Seller(NmcWholesalerKeepers.FishingGearCounterRoot, typeof(BaitShop), "bait.squid_strip", NmcWholesalerKeepers.FishingGearSellerId),
+            new Seller(NmcWholesalerKeepers.FishingGearCounterRoot, typeof(BaitShop), "bait.shucked_clam", NmcWholesalerKeepers.FishingGearSellerId),
         };
 
         /// <summary>Nine Mile Creek: the yard's shed and dory yard, the harbourmaster, the chandlery, Hector's barrel,

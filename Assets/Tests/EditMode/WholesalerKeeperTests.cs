@@ -264,13 +264,17 @@ namespace HiddenHarbours.Tests.EditMode
             foreach ((string id, string[] sellers, bool listed) in offers)
             {
                 bool onlyWholesalers = sellers.All(s => WholesalerIds.Contains(s));
+                string[] wholesalers = sellers.Where(s => WholesalerIds.Contains(s)).ToArray();
                 StoreWiringPatch.Seller[] row = rows.Where(r => r.Wares == id).ToArray();
                 if (onlyWholesalers)
                     Assert.AreEqual(1, sellers.Length, $"{id} names both wholesalers; one counter row cannot sell as two");
-                if (onlyWholesalers && !waiting.Contains(id))
+                // A ware the wholesaler shares with another counter (the St Peters store's baits, 2026-11-25) is
+                // wired like one only the wholesaler sells, once its other counter stands too (guard 4 counts both).
+                if ((onlyWholesalers || listed) && !waiting.Contains(id))
                 {
-                    Assert.AreEqual(1, row.Length, $"{id} is sold only by a wholesaler and has no counter row");
-                    Assert.AreEqual(sellers[0], row[0].SellerId, $"{id}'s row sells as the wrong wholesaler");
+                    Assert.AreEqual(1, wholesalers.Length, $"{id} names both wholesalers; one counter row cannot sell as two");
+                    Assert.AreEqual(1, row.Length, $"{id} is sold by a wholesaler and has no counter row");
+                    Assert.AreEqual(wholesalers[0], row[0].SellerId, $"{id}'s row sells as the wrong wholesaler");
                 }
                 else
                 {

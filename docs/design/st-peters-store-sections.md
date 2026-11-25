@@ -75,22 +75,43 @@ Prices below come from the game's data unless marked **PROPOSAL** (the owner dec
 
 One chooser, three rows. Shelves 3 and 4 of the gondola are now empty, for fishing.
 
-### 2. Fishing: gondola, bottom two shelves (next change)
+### 2. Fishing: gondola, bottom two shelves (the second change)
 
-| Item | Price | Picture today | First week? |
+The owner (2026-11-25): baits for what St Peters' gear catches and what each season's fish take. The store
+sells the rod, so the baits are the rod's (hook) baits. What St Peters fish take, read from the fish and
+bait data:
+
+| Season | Fish a rod catches here | Baits it takes (data) | Sold here? |
 |---|---|---|---|
-| Capelin (bait) | ₲2 each | yes (bait box on the counter; moves here, redrawn for the gondola) | yes |
-| Fishing rod | ₲60 | rod art exists for the hand, none for the shelf | yes, once the counted rod stock (draft #1554) lands |
+| all four | Atlantic cod | capelin, sea worm, shucked clam, squid strip | yes, all four |
+| high summer, the turn | mackerel | capelin | yes |
+| early spring, the turn, hard winter | rainbow smelt | none in the data (jig or bare hook) | n/a |
+| high summer, the turn (5 to 9 h) | striped bass | none in the data | n/a |
+| early spring, the turn (6 to 18 h) | winter flounder | none in the data | n/a |
+| all four | lobster (trap, licence) | herring, mackerel | no: trap bait, waits on the licence |
+| all four | rock crab (trap) | fish scrap | no: trap bait |
 
-That is the whole first-week fishing shelf the data supports today. The other baits in the book are not
-proposed for it: herring is listed at no stock at this store (a stand-in row, and lobster bait, which waits
-on the licence), and mackerel, sea worm and squid strip are not in the island's bait delivery. Adding any
-of them means a share of the delivery and a shelf count, both new numbers: **PROPOSAL**, the owner's call.
-Shucked clam and fish scrap stay in the book: the player can make both himself. Hooks, line and sinkers
-are not items in the game (the rod is the gear).
+So the fishing section is four hook baits, each its own listed good with its own picture and shelf line,
+each running out on its own: capelin ₲2, sea worm ₲4, squid strip ₲6, shucked clam ₲3 (the book's prices,
+unchanged; a bait is bought by the lot, as at the counter). Sea worm, squid strip and shucked clam were in
+the book but unlisted; they are now listed for the store and for the Nine Mile Creek fishing wholesaler,
+whose counter also gets a vendor for each (the wholesaler list already named them).
 
-A section of one good is just a shelf spot, so the fishing section is built when the rod's shelf stock
-lands (draft #1554), with capelin and the rod as its two rows and a new shelf picture for each.
+The island's bait top-up (10 kg a day) carries all four. Every number below is **PROPOSAL**:
+
+| Shelf line | Share of the bait top-up | Per item | Most on the shelf |
+|---|---|---|---|
+| capelin (box) | 0.4 (was all of it) | 2.5 kg (unchanged) | 20 (unchanged) |
+| sea worm (tub) | 0.2 | 1 kg | 12 |
+| squid strip (tray) | 0.2 | 1 kg | 12 |
+| shucked clam (tub) | 0.2 | 1 kg | 12 |
+
+The rod: four rods on the bottom shelf at ₲60 (owner: fine). The rod's shelf picture is drawn and ready
+(`ShelfGondolaRods`), but the rod has no shelf line on main: the counted rod stock is draft #1554's. When
+#1554 lands, it adds one shelf line, `line.fishing_rod` (MaxOnShelf 4, CounterListingIds `gear.rod`), and
+the store then needs a slot `slot.rod` at (-0.75, -1.3125) with the rods picture and the slot id added to
+`section.fishing`. Rod stats and the fishing controller are another lane's and are not touched here.
+Hooks, line and sinkers are not items in the game (the rod is the gear).
 
 ### 3. Ice: the chest (unchanged)
 
@@ -100,24 +121,24 @@ Bag of ice, ₲6, own picture, first week.
 
 Clam shovel ₲25, clam bucket ₲15, shellfish rake ₲30, peck basket ₲20, mussel sack ₲10, oyster tongs ₲45.
 He starts with a shovel and a bucket, so these are spares and upgrades, not first-day needs. They need the
-gear counted on the shelf (the rule draft #1554 adds) and the carry-in-a-free-hand delivery. No shelf
-pictures today: each needs one.
+gear counted on the shelf (the rule draft #1554 adds) and the carry-in-a-free-hand delivery. Each has its
+own picture, drawn and ready to bind (see Pictures).
 
 ### 5. Boat mending: back shelf right (later, after draft #1508)
 
 Patch plank ₲24, copper nails ₲8, oakum ₲12, linseed paint ₲16: all four prices are **PROPOSAL** from
-draft #1508. No pictures today; #1508 lists the canvas and card each needs.
+draft #1508. Each has its own picture, drawn and ready to bind.
 
-### 6. Household: back shelf right, lower (later)
+### 6. Household: back shelf right, lower (the third change)
 
-Bar of soap ₲3 (in the data, sold from the book today). Matches, candles and lamp oil are not items in the
-game. The headlamp is starting gear and has no batteries, so nothing to sell for it. Each new item would
-need the owner's say and a picture.
+Bar of soap ₲3 (in the data, sold from the book today). The owner (2026-11-25): matches, candles and lamp
+oil as real items with a use. They are the third change, with their item data, prices (**PROPOSAL**) and
+uses on systems already in the game; their pictures are drawn and ready here.
 
-### 7. Clothing (later, owner's taste)
+### 7. Clothing
 
-Oilskins exist as an outfit, not as something sold. Whether the store sells clothes, and where, is the
-owner's call.
+See the clothing draft. The floor in front of the back shelf, left of the door, is kept clear for a
+clothes rack.
 
 ### 8. The counter (unchanged)
 
@@ -130,4 +151,12 @@ Every item sold at the shelf has its own picture, shared with no other item. A c
 shelf good has no picture or shares one. The shelf pictures are drawn by
 `docs/art/shop-shelf-goods/make_shelf_goods.py` on the gondola's 62 x 44 canvas, 32 pixels per metre,
 point filtering, in the room's palette. There is no separate hand or bag icon per item: bagged goods show
-as the one paper bag.
+as the one paper bag, and the baits, rod, rake, tongs, basket and sack already have their own gear icons.
+
+The goods planned but not shelved yet have their own pictures too, drawn by
+`docs/art/shop-shelf-goods/make_store_items.py` (bottom-centre pivot, to stand on a shelf, hook or floor
+spot) and listed with the id each will bind to in `Data/Shops/StPetersStoreItemPictures.asset`: the rod
+(gondola), shovel, bucket, rake, basket, mussel sack, oyster tongs, patch plank, copper nails, oakum,
+linseed paint, soap, matches, candles and lamp oil. The same content test holds them to a picture each,
+shared with no other good, planned or shelved. The clam shovel and bucket have no gear icon yet; they get
+one if they are ever listed for the player to own.
