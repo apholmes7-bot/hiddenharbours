@@ -248,9 +248,10 @@ namespace HiddenHarbours.Tests.EditMode
             CollectionAssert.AreEquivalent(
                 new[] { "gear.rod", "bait.capelin", "supply.ice", "license.clam",
                         "supply.bread", "supply.tinned_beans", "supply.oatcakes", "supply.soap_bar",
-                        "bait.sea_worm", "bait.squid_strip", "bait.shucked_clam" },
+                        "bait.sea_worm", "bait.squid_strip", "bait.shucked_clam",
+                        "supply.matches", "supply.candles", "supply.lamp_oil" },
                 ids, "her book on day one is the counter #356 built plus the first food staples, the bar of " +
-                     "soap and the fishing section's three hook baits, item for item (the Loran and then the depth " +
+                     "soap, the fishing section's three hook baits and the three household goods, item for item (the Loran and then the depth " +
                      "sounder left her counter for the Nine Mile Creek boat/gear wholesaler)");
         }
 

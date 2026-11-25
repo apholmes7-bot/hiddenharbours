@@ -132,8 +132,29 @@ draft #1508. Each has its own picture, drawn and ready to bind.
 ### 6. Household: back shelf right, lower (the third change)
 
 Bar of soap ₲3 (in the data, sold from the book today). The owner (2026-11-25): matches, candles and lamp
-oil as real items with a use. They are the third change, with their item data, prices (**PROPOSAL**) and
-uses on systems already in the game; their pictures are drawn and ready here.
+oil as real items with a use. The third change adds them as supplies, each its own item with a stable id,
+listed in Marguerite's book and sold from her counter like the soap, each counted on its own in the supply
+locker (no new saved field), each with its own picture:
+
+| Item | Id | Price | Use in the game today |
+|---|---|---|---|
+| Box of matches | `supply.matches` | ₲1 **PROPOSAL** | none yet: no stove, lamp or fire asks for a light |
+| Pack of candles | `supply.candles` | ₲2 **PROPOSAL** | none yet: no placeable or carried light that burns one |
+| Tin of lamp oil | `supply.lamp_oil` | ₲5 **PROPOSAL** | none yet: no oil lamp in the game |
+
+What is missing for the uses, on systems already in the game:
+
+- Matches: the cooking stations (`CookingStationDef`, `RecipeRunner`) have no fuel or lighting cost. A
+  station field naming a supply to spend when cooking starts (the soap's `SupplyLocker.TrySpend` path)
+  would make the stove ask for a match. That is the food lane's call, and it changes cooking for everyone.
+- Candles and lamp oil: the lights the player owns are the battery headlamp (no fuel) and the boat lamps
+  (switched, no fuel). A house light he lights (a candle on the table, a hurricane lamp on a hook) is a
+  `SceneLight` the lighting lane already draws; what is missing is the interactable that lights it, spends
+  one candle or a measure of oil, and burns for a set number of game hours (worked out from the clock, not
+  saved). That interactable is the open piece.
+
+Shelving them on the back shelf needs a household line in the island's top-up (a new island good) and
+slots on the back-shelf picture; until then they sell from the book.
 
 ### 7. Clothing
 
