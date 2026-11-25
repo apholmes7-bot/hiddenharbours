@@ -226,20 +226,57 @@ namespace HiddenHarbours.Tests.Art.EditMode
             }
         }
 
-        /// <summary>The shader keeps the twin's hull path: the published depth, the height plane, the face
-        /// from three taps, and N·L toward the fitting.</summary>
+        static string ShaderText(string file) => System.IO.File.ReadAllText(System.IO.Path.Combine(
+            Application.dataPath, "_Project/Art/Shaders/" + file)).Replace("\r\n", "\n");
+
+        /// <summary>The hull's own overlay keeps the twin's face path: the published depth, the height plane,
+        /// the face from three taps, and N·L toward the fitting. It lives in the OVERLAY because the overlay
+        /// draws at her place in the sort: a pixel of her that something stands in front of is never hers to
+        /// light (the dory behind the St Peters dock, 2026-11-25).</summary>
         [Test]
-        public void ThePoolShaderLightsAMeshPixelByItsFace_AsTheTwinDoes()
+        public void TheHullOverlayLightsAMeshPixelByItsFace_AsTheTwinDoes()
         {
-            string shader = System.IO.File.ReadAllText(System.IO.Path.Combine(Application.dataPath,
-                "_Project/Art/Shaders/HiddenHarboursLampPool.shader"));
+            string shader = ShaderText("HiddenHarboursIsoFacetOverlay.shader");
             StringAssert.Contains("_HHHullDepthTex", shader);
-            StringAssert.Contains("_HHHullDepthLive > 0.5", shader);
+            StringAssert.Contains("_HHHullDepthLive < 0.5", shader);
             StringAssert.Contains("_HHLampHullPlane.y * world.y + _HHLampHullPlane.z * z + _HHLampHullPlane.w", shader);
-            StringAssert.Contains("world.y - h * _PoolLampSea.z", shader);
+            StringAssert.Contains("world.y - h * _HHLampFaceScale", shader);
             StringAssert.Contains("float3 n = cross(sx, sy);", shader);
             StringAssert.Contains("if (dot(n, view) > 0.0) n = -n;", shader);
             StringAssert.Contains("saturate(dot(n, toLamp) / dl)", shader);
+            // what she carries is face over ground, so the pool's ground multiply leaves her lit by her face
+            StringAssert.Contains("ratio *= (1.0 + col * f) / (1.0 + col * g);", shader);
+            StringAssert.Contains("c.rgb *= HHLampFaceRatio(", shader);
+            StringAssert.Contains("#define HH_LAMP_FACE_MAX 32", shader);
+            Assert.AreEqual(32, LampPoolSystem.MaxFaceLamps, "the arrays and the shader disagree on their size");
+        }
+
+        /// <summary>The ceiling pool lights every pixel as GROUND: it never reads the hull pass, which holds her
+        /// even where the dock is drawn over her.</summary>
+        [Test]
+        public void ThePoolLightsEveryPixelAsGround_AndNeverReadsTheHullPass()
+        {
+            string pool = ShaderText("HiddenHarboursLampPool.shader");
+            StringAssert.DoesNotContain("_HHHullDepthTex", pool);
+            StringAssert.DoesNotContain("_HHHullScreenTex", pool);
+            StringAssert.Contains("float incidence = h * rsqrt(h * h + d * d);", pool);
+        }
+
+        /// <summary>The pool's term is written twice, once per shader. The two must be the same text, or the
+        /// overlay's ground term would not cancel the pool's and every hull near a lamp would change.</summary>
+        [Test]
+        public void ThePoolGainIsTheSameTextInThePoolAndTheOverlay()
+        {
+            string Body(string s)
+            {
+                int a = s.IndexOf("float HHLampPoolGain(", System.StringComparison.Ordinal);
+                Assert.GreaterOrEqual(a, 0, "HHLampPoolGain is missing");
+                int b = s.IndexOf("return gain <= 1e-4 ? 0.0 : gain;", a, System.StringComparison.Ordinal);
+                Assert.Greater(b, a, "HHLampPoolGain has no end");
+                return s.Substring(a, b - a);
+            }
+            Assert.AreEqual(Body(ShaderText("HiddenHarboursLampPool.shader")),
+                            Body(ShaderText("HiddenHarboursIsoFacetOverlay.shader")));
         }
 
         /// <summary>

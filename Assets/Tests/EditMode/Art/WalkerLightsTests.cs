@@ -295,6 +295,36 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         /// <summary>
+        /// <b>The beam leaves the way his drawn head faces</b> (the owner, 2026-11-25: "headlamp should always
+        /// follow players sprite"). In all eight facings, through a foreshortened facet, the beam's ground
+        /// direction is the drawn head's, so the view the lamp is drawn in and the way its cone points agree.
+        /// </summary>
+        [Test]
+        public void TheBeamPointsTheWayTheDrawnHeadFaces_InAllEightFacings()
+        {
+            var facet = new GameObject("facet").transform;
+            _spawned.Add(facet.gameObject);
+            facet.localScale = new Vector3(1f, .5f, 1f);
+            for (int k = 0; k < 8; k++)
+            {
+                float yaw = k * 45f;
+                float r = yaw * Mathf.Deg2Rad;
+                Vector3 forward = new Vector3(Mathf.Sin(r), Mathf.Cos(r), 0f);
+                Assert.IsTrue(Headlamp.DrawnGroundDirection(forward, facet, out Vector2 aim), "yaw " + yaw);
+                Assert.AreEqual(1f, aim.magnitude, 1e-5f, "yaw " + yaw);
+                // On screen: the figure's +x is east, its +y north (shrunk, but never turned round).
+                Assert.AreEqual(Mathf.Sign(Mathf.Round(forward.x * 1000f)), Mathf.Sign(Mathf.Round(aim.x * 1000f)), "east-west, yaw " + yaw);
+                Assert.AreEqual(Mathf.Sign(Mathf.Round(forward.y * 1000f)), Mathf.Sign(Mathf.Round(aim.y * 1000f)), "north-south, yaw " + yaw);
+                // The view drawn and the way the beam points are one reading: the beam's angle from
+                // straight toward the viewer (screen down), positive to screen right, gives the same view.
+                float fromViewer = Mathf.Atan2(aim.x, -aim.y) * Mathf.Rad2Deg;
+                Assert.AreEqual(Headlamp.ViewOf(forward, facet), Headlamp.ViewOfAngle(fromViewer), "yaw " + yaw);
+            }
+            Assert.IsFalse(Headlamp.DrawnGroundDirection(Vector3.forward, facet, out _),
+                "a head pointing straight up has no ground direction, and the beam keeps its last aim");
+        }
+
+        /// <summary>
         /// <b>The lens pixel is the sprite's pivot</b>, in every view that shows a lens, lit and unlit — so
         /// placing the sprite at the light's origin puts the lens exactly there. The lens is the only pixel
         /// the switch changes, and left views are right views mirrored.

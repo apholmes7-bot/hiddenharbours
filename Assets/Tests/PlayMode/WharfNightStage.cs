@@ -206,6 +206,34 @@ namespace HiddenHarbours.Tests.PlayMode
             for (int i = 0; i < 2; i++) yield return null;
         }
 
+        /// <summary>Move an already-framed camera to another place, keeping its plate target (law 4): engine
+        /// time runs while the camera travels and stops again once it has arrived (laws 1 and 3). The game
+        /// clock is not touched, so the hour holds.</summary>
+        public IEnumerator ReFrameOn(Vector2 at)
+        {
+            Assert.IsNotNull(Camera, "ReFrameOn before FrameOn: there is no plate to keep");
+            var follow = Object.FindFirstObjectByType<CameraFollow>();
+            Assert.IsNotNull(follow, "the region lost its CameraFollow");
+            var anchor = Track(new GameObject("PlateAnchor"));
+            anchor.transform.position = new Vector3(at.x, at.y, 0f);
+            follow.Target = anchor.transform;
+            follow.Smooth = 1000f;
+            Time.timeScale = 1f;
+            Vector3 lastPos = Camera.transform.position;
+            int still = 0, frames = 0;
+            while (still < 5 && frames < 400)
+            {
+                yield return null;
+                frames++;
+                still = (Camera.transform.position - lastPos).sqrMagnitude > 1e-8f ? 0 : still + 1;
+                lastPos = Camera.transform.position;
+            }
+            Assert.Less(frames, 400, "the camera never stopped moving");
+            for (int i = 0; i < 6; i++) yield return null;
+            Time.timeScale = 0f;
+            for (int i = 0; i < 2; i++) yield return null;
+        }
+
         /// <summary>Render the game's camera as the player sees it and read it back, gamma-corrected — the
         /// project is LINEAR, so a raw float read-back saves far too dark.</summary>
         public byte[] Capture()

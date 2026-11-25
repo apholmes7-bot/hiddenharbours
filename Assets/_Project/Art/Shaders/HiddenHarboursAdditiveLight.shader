@@ -63,7 +63,7 @@ Shader "HiddenHarbours/AdditiveLight"
         [Header(Lit window pane. Mode zero is off)]
         _PaneMode           ("Window pane mode (0 off, 1 on)", Float) = 0
         _PaneLook           ("Pane x head level, y sill level, z centre lift, w bands", Vector) = (0.62, 1, 0.22, 3)
-        _PaneFrame          ("Pane x frame px, y mullion px, z mullion min px", Vector) = (0, 1, 7, 0)
+        _PaneFrame          ("Pane x frame px, y mullion px, z mullion min px, w ledge depth m (below 0 off)", Vector) = (0, 0, 7, -1)
         _PaneLook2          ("Pane x across falloff, y unevenness, z tint variation", Vector) = (0, 0, 0, 0)
         _PaneTint           ("Pane second warm interior colour", Color) = (1, 0.72, 0.42, 1)
 
@@ -112,6 +112,7 @@ Shader "HiddenHarbours/AdditiveLight"
                 float2 uv         : TEXCOORD0;
                 float2 uv1        : TEXCOORD1;   // window panes only: the pane's drawn size in art pixels
                 float2 uv2        : TEXCOORD2;   // window panes only: x = this window's own 0..1 (stable)
+                float2 uv3        : TEXCOORD3;   // window panes only: x = the glass's posed world z (hull depth units)
             };
 
             struct Varyings
@@ -121,6 +122,7 @@ Shader "HiddenHarbours/AdditiveLight"
                 float2 uv1        : TEXCOORD1;
                 float2 positionWS : TEXCOORD2;   // the streak's water test
                 float2 uv2        : TEXCOORD3;
+                float  paneZ      : TEXCOORD4;
             };
 
             // Global published by DayNightController (read-only here): the whole-frame multiply tint.
@@ -141,6 +143,10 @@ Shader "HiddenHarbours/AdditiveLight"
             float4 _HHSeabedRange;    // x = min elevation, y = max, w = 1 when bound
             float4 _HHSeaLevelWorld;  // x = the drawn sea level (m), w > 0.5 when published
             Texture2D<float4> _HHHullScreenTex;
+            // The hull pass's depth (world z, unsheared, larger = farther) and whether it is this camera's,
+            // this frame (IsoFacetHullFeature). A lit pane reads it to hide under a nearer ledge of her mesh.
+            Texture2D<float>  _HHHullDepthTex;
+            float  _HHHullDepthLive;
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _LightColor;
@@ -309,6 +315,7 @@ Shader "HiddenHarbours/AdditiveLight"
                 OUT.uv = IN.uv;
                 OUT.uv1 = IN.uv1;
                 OUT.uv2 = IN.uv2;
+                OUT.paneZ = IN.uv3.x;
                 return OUT;
             }
 
@@ -318,6 +325,16 @@ Shader "HiddenHarbours/AdditiveLight"
                 if (_PaneMode > 0.5)
                 {
                     float id = IN.uv2.x;
+                    // UNDER A LEDGE: where her mesh at this pixel stands nearer the camera than the glass by more
+                    // than the wall's own relief (a roof overhang, a post), the glass is behind it and is not seen.
+                    // From the hull pass's own depth, so it follows every rig with no number per boat. GlassLook.
+                    if (_PaneFrame.w >= 0.0 && _HHHullDepthLive > 0.5)
+                    {
+                        int2 hp = int2(IN.positionCS.xy);
+                        if (_HHHullScreenTex.Load(int3(hp, 0)).a >= 0.5 / 255.0 &&
+                            _HHHullDepthTex.Load(int3(hp, 0)) < IN.paneZ - _PaneFrame.w)
+                            discard;
+                    }
                     float pk = max(_Intensity, 0.0) * PaneShape(IN.uv, IN.uv1, id) * NightGate();
                     if (pk <= 0.0) discard;
                     // This window's own warm colour (the room behind it is not one stamp), then deep

@@ -305,7 +305,15 @@ namespace HiddenHarbours.Art
                 float height = Mathf.Max(.01f, lensRig.z);
                 _projectedLift = IsoGround.HeightScale * height;
                 Light.LampHeightMeters = height;
-                _view = ViewOf(liveFigure.HeadDirectionToFigure(Vector3.up), _facet);
+                Vector3 headForward = liveFigure.HeadDirectionToFigure(Vector3.up);
+                _view = ViewOf(headForward, _facet);
+                // THE BEAM LEAVES THE WAY HIS DRAWN HEAD FACES (the owner, 2026-11-25: "headlamp should always
+                // follow players sprite"). WalkerLights aims it by the interact probe's facing, which is not the
+                // drawn heading: the figure turns through the diagonals and eases round, the probe does not, so
+                // the cone pointed one way while his face pointed another. Here, after the figure has drawn
+                // (order 200 > 100), the drawn head is the one source for the lens, the view and the beam.
+                if (DrawnGroundDirection(headForward, _facet, out Vector2 aim))
+                    transform.up = new Vector3(aim.x, aim.y, 0f);
                 _hasHeadPoint = true;
             }
             // ConstantLiftUntilFirstHeadPoint; after that, every sprite pose holds this root offset.
@@ -388,6 +396,23 @@ namespace HiddenHarbours.Art
             if (g.sqrMagnitude < 1e-9f || toward.sqrMagnitude < 1e-12f || right.sqrMagnitude < 1e-12f) return View.Front;
             float a = Mathf.Atan2(Vector2.Dot(g, right.normalized), Vector2.Dot(g, toward.normalized)) * Mathf.Rad2Deg;
             return ViewOfAngle(a);
+        }
+
+        /// <summary>
+        /// The world ground direction his head points, from the head's facing in the figure's frame read
+        /// through the facet's own projection (the same frame <see cref="ViewOf"/> reads): a ground step drawn
+        /// on screen IS the world ground step, because the camera is orthographic down +Z and the ground is
+        /// drawn at its own world (x, y). False (no aim) for a degenerate facet or a head pointing straight up.
+        /// </summary>
+        public static bool DrawnGroundDirection(Vector3 headForwardFigure, Transform facet, out Vector2 aim)
+        {
+            aim = Vector2.zero;
+            if (facet == null) return false;
+            Vector3 ex = facet.TransformVector(Vector3.right), ey = facet.TransformVector(Vector3.up);
+            Vector2 d = new Vector2(ex.x, ex.y) * headForwardFigure.x + new Vector2(ey.x, ey.y) * headForwardFigure.y;
+            if (d.sqrMagnitude < 1e-12f) return false;
+            aim = d.normalized;
+            return true;
         }
 
         /// <summary>The view for a facing angle in degrees (0 toward the viewer, positive to screen right).</summary>

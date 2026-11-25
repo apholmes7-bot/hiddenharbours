@@ -330,6 +330,90 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         /// <summary>
+        /// <b>A boat behind the dock is not lit through it</b> (the owner, 2026-11-25: "the dory which is
+        /// visually behind the dock from camera is showing now with the lamp on").
+        ///
+        /// <para>A lamp lights a mesh pixel by its own FACE. Done in the ceiling pool from the hull pass's
+        /// texture, it lit her wherever she is in that texture, which is also where the dock is drawn over her,
+        /// so her lit silhouette showed on the planks. Every pixel where no hull is SEEN (the frame with the
+        /// hulls hidden equals the frame with them shown) must be the same with the face lighting on and off:
+        /// the dock in front of her is ground. Where she IS seen, the faces must still change her, or the
+        /// face lighting was simply switched off.</para>
+        ///
+        /// <para>Shot at 02:00 at St Peters on the scene's own lamps that have a hull within reach.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator AHullBehindTheDock_IsNotLitThroughIt()
+        {
+            WharfNightStage.RequireAGraphicsDevice();
+
+            _stage = new WharfNightStage(SceneName, PlateDir);
+            yield return _stage.Load();
+            yield return _stage.SetNight(2f);
+
+            var hulls = Object.FindObjectsByType<IsoFacetHullRenderer>(FindObjectsSortMode.None);
+            var lamps = new List<SceneLight>();
+            foreach (SceneLight l in Object.FindObjectsByType<SceneLight>(FindObjectsSortMode.None))
+            {
+                if (!l.isActiveAndEnabled || l.ReachMetres <= 0f || l.LampHeightMeters <= 0f) continue;
+                if (l.GetComponentInParent<IsoFacetHullRenderer>() != null) continue;   // a shore lamp
+                foreach (IsoFacetHullRenderer h in hulls)
+                    if (h.isActiveAndEnabled &&
+                        ((Vector2)h.transform.position - l.WorldOrigin).magnitude < l.ReachMetres + 4f)
+                    { lamps.Add(l); break; }
+            }
+            lamps.Sort((a, b) => string.CompareOrdinal(a.name, b.name));
+            Assert.Greater(lamps.Count, 0, "no shore lamp at St Peters has a hull within reach");
+            foreach (SceneLight l in lamps) l.FlickerAmount = 0f;
+
+            yield return _stage.FrameOn(lamps[0].WorldOrigin);
+            LampShadowProfile profile = PoolProfile();
+            Assert.IsTrue(profile.PoolsLightMeshFaces, "the shipped default lights mesh faces");
+
+            int through = 0, faces = 0, hidden = 0, framed = 0;
+            for (int k = 0; k < lamps.Count && k < 3; k++)
+            {
+                if (k > 0) yield return _stage.ReFrameOn(lamps[k].WorldOrigin);
+
+                profile.PoolsLightMeshFaces = true;
+                yield return Settle();
+                byte[] on = _stage.Capture();
+                profile.PoolsLightMeshFaces = false;
+                yield return Settle();
+                byte[] off = _stage.Capture();
+                foreach (IsoFacetHullRenderer h in hulls) if (h != null) h.enabled = false;
+                yield return Settle();
+                byte[] none = _stage.Capture();
+                foreach (IsoFacetHullRenderer h in hulls) if (h != null) h.enabled = true;
+                profile.PoolsLightMeshFaces = true;
+                yield return Settle();
+
+                int t = 0, f = 0, n = 0;
+                for (int i = 0; i + 3 < on.Length; i += 4)
+                {
+                    bool seen = Diff(off, none, i) > 3;
+                    int d = Diff(on, off, i);
+                    if (!seen) { n++; if (d > 3) t++; }
+                    else if (d > 3) f++;
+                }
+                Debug.Log($"[{PlateDir}] faces seen: lamp {lamps[k].name} at {lamps[k].WorldOrigin}  |  pixels with " +
+                          $"no hull seen {n}, of them changed by her faces {t}  |  hull pixels her faces changed {f}");
+                if (t > 0) _stage.SavePlate($"20-faces-through-{lamps[k].name}-ON.png", on);
+                _stage.SavePlate($"21-faces-{lamps[k].name}-OFF.png", off);
+                through += t; faces += f; hidden += n; framed++;
+            }
+
+            Assert.Greater(hidden, 0, "every pixel was a hull: nothing was asked");
+            Assert.LessOrEqual(through, 20,
+                $"{through} pixels where no hull is seen changed when her faces were lit: a lamp lit a boat " +
+                "through the dock (or the shed, or the pile) standing in front of her");
+            Assert.Greater(faces, 0, "where she is seen, lighting her faces changed nothing: the face path is off");
+        }
+
+        static int Diff(byte[] a, byte[] b, int i) =>
+            System.Math.Abs(a[i] - b[i]) + System.Math.Abs(a[i + 1] - b[i + 1]) + System.Math.Abs(a[i + 2] - b[i + 2]);
+
+        /// <summary>
         /// <b>The searchlight lights the dock it sweeps</b> — the charter's third acceptance, and the half of
         /// the owner's sentence that #733 could only half answer.
         ///

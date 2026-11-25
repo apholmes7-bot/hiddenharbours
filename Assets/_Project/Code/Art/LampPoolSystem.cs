@@ -82,6 +82,27 @@ namespace HiddenHarbours.Art
         private static readonly int IdPoolLampSea = Shader.PropertyToID("_PoolLampSea");
         private static readonly int IdPoolWall = Shader.PropertyToID("_PoolWall");
         private static readonly int IdHullPlane = Shader.PropertyToID("_HHLampHullPlane");
+        private static readonly int IdFaceCount = Shader.PropertyToID("_HHLampFaceCount");
+        private static readonly int IdFaceScale = Shader.PropertyToID("_HHLampFaceScale");
+        private static readonly int IdFaceColor = Shader.PropertyToID("_HHLampFaceColor");
+        private static readonly int IdFaceLamp  = Shader.PropertyToID("_HHLampFaceLamp");
+        private static readonly int IdFaceCone  = Shader.PropertyToID("_HHLampFaceCone");
+        private static readonly int IdFaceSea   = Shader.PropertyToID("_HHLampFaceSea");
+        private static readonly int IdFaceWall  = Shader.PropertyToID("_HHLampFaceWall");
+
+        /// <summary>The most pools whose light the hull overlay can read for her FACES — the size of the
+        /// shader's arrays (HiddenHarboursIsoFacetOverlay.shader, HH_LAMP_FACE_MAX), which is the profile's
+        /// own ceiling on <see cref="LampShadowProfile.MaxPools"/>, so every pool drawn is one she can read.</summary>
+        public const int MaxFaceLamps = 32;
+
+        // The pools, restated as globals for the hull overlay, which lights a mesh pixel by its own face
+        // where she is SEEN (ADR 0016, "lamps light what they can see"). Fixed length, allocated once: the
+        // array size a shader global takes is fixed by its first upload, and a per-frame array is garbage.
+        private static readonly Vector4[] s_FaceColor = new Vector4[MaxFaceLamps];
+        private static readonly Vector4[] s_FaceLamp  = new Vector4[MaxFaceLamps];
+        private static readonly Vector4[] s_FaceCone  = new Vector4[MaxFaceLamps];
+        private static readonly Vector4[] s_FaceSea   = new Vector4[MaxFaceLamps];
+        private static readonly Vector4[] s_FaceWall  = new Vector4[MaxFaceLamps];
 
         private struct Slot
         {
@@ -203,6 +224,7 @@ namespace HiddenHarbours.Art
         public void DisableAll()
         {
             _active = 0;
+            Shader.SetGlobalFloat(IdFaceCount, 0f);   // no pool, so no face of hers to light
             for (int i = 0; i < _slots.Length; i++) SetEnabled(ref _slots[i], false);
         }
 
@@ -329,6 +351,16 @@ namespace HiddenHarbours.Art
                 _mpb.SetVector(IdPoolWall, new Vector4(wall.x, wall.y, light.WallBackMetres, light.WallSoftMetres));
                 slot.Renderer.SetPropertyBlock(_mpb);
 
+                // The same numbers for her overlay, which lights her faces where she is seen.
+                if (drawn < MaxFaceLamps)
+                {
+                    s_FaceColor[drawn] = new Vector4(c.r, c.g, c.b, gain);
+                    s_FaceLamp[drawn]  = new Vector4(lamp.x, lamp.y, light.LampHeightMeters, reach);
+                    s_FaceCone[drawn]  = new Vector4(p.PoolEdgeSoftness, cosHalf, axis.x, axis.y);
+                    s_FaceSea[drawn]   = new Vector4(light.LampHeightMeters + seaLift, 0f, 0f, 0f);
+                    s_FaceWall[drawn]  = new Vector4(wall.x, wall.y, light.WallBackMetres, light.WallSoftMetres);
+                }
+
                 slot.Renderer.sortingOrder = SceneLight.MaxSortingOrder;
                 slot.Group.sortingOrder = SceneLight.MaxSortingOrder;
                 slot.Light = light;
@@ -336,6 +368,17 @@ namespace HiddenHarbours.Art
                 drawn++;
             }
             _active = drawn;
+
+            // Every slot of the arrays goes up each frame (a shader global's length is fixed by its first
+            // upload); the count says how many are live. No faces (the switch off, or no sea frame to read
+            // her height from) = count 0, and every pixel of her is lit as ground.
+            Shader.SetGlobalVectorArray(IdFaceColor, s_FaceColor);
+            Shader.SetGlobalVectorArray(IdFaceLamp, s_FaceLamp);
+            Shader.SetGlobalVectorArray(IdFaceCone, s_FaceCone);
+            Shader.SetGlobalVectorArray(IdFaceSea, s_FaceSea);
+            Shader.SetGlobalVectorArray(IdFaceWall, s_FaceWall);
+            Shader.SetGlobalFloat(IdFaceScale, HiddenHarbours.Core.IsoGround.HeightScale);
+            Shader.SetGlobalFloat(IdFaceCount, faces ? Mathf.Min(drawn, MaxFaceLamps) : 0f);
         }
 
         /// <summary>The world Z the pool quads sit at: <see cref="PoolDepthOffset"/> in front of the camera,
