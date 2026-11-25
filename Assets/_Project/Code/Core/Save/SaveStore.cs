@@ -24,8 +24,9 @@ namespace HiddenHarbours.Core
         public const string DefaultFileName = "savegame.json";
 
         /// <summary>The default save path for the running game.</summary>
-        public static string DefaultPath => PathForMode(
-            Path.Combine(Application.persistentDataPath, DefaultFileName), DemoBuild.Enabled);
+        public static string DefaultPath => DemoBuild.Enabled
+            ? Path.Combine(Application.persistentDataPath, "demo", DefaultFileName)
+            : Path.Combine(Application.persistentDataPath, DefaultFileName);
 
         /// <summary>Keep the demo and its replacement copies in their own directory; never import implicitly.</summary>
         internal static string PathForMode(string fullGamePath, bool demo) => demo

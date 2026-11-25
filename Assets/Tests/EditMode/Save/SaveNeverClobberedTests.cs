@@ -82,8 +82,13 @@ namespace HiddenHarbours.Tests.EditMode
             string expected = demo
                 ? Path.Combine(Application.persistentDataPath, "demo", SaveStore.DefaultFileName)
                 : Path.Combine(Application.persistentDataPath, SaveStore.DefaultFileName);
-            Assert.That(SaveStore.DefaultPath, Is.EqualTo(expected));
-            Assert.That(SaveStore.ActivePath, Is.EqualTo(expected));
+            string other = demo
+                ? Path.Combine(Application.persistentDataPath, SaveStore.DefaultFileName)
+                : Path.Combine(Application.persistentDataPath, "demo", SaveStore.DefaultFileName);
+            Assert.That(Path.GetFullPath(SaveStore.DefaultPath), Is.EqualTo(Path.GetFullPath(expected)));
+            Assert.That(Path.GetFullPath(SaveStore.ActivePath), Is.EqualTo(Path.GetFullPath(expected)));
+            Assert.That(Path.GetFullPath(SaveStore.DefaultPath), Is.Not.EqualTo(Path.GetFullPath(other)),
+                "The demo and the full game must never select the same file.");
         }
 
         [TestCase(false)]
