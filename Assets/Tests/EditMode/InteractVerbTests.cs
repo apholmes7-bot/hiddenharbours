@@ -123,16 +123,21 @@ namespace HiddenHarbours.Tests.EditMode
         public void WallClosingAfterChooserOpensRefusesConfirmation()
         {
             var fixture = At("fixture", 0.5f, 0f);
+            var alternative = At("alternative", 1f, 0f);
             Interactables.Register(fixture);
+            Interactables.Register(alternative);
             var rows = new InteractChoiceList();
-            rows.Build(new[] { fixture }, Actor(), 360f, int.MaxValue, InteractChoiceList.HardCap);
+            rows.Build(new[] { fixture, alternative }, Actor(), 360f, int.MaxValue, InteractChoiceList.HardCap);
             try
             {
+                Assert.AreEqual(2, rows.Count, "the chooser requires an actual choice");
+                Assert.AreSame(fixture, rows.Default);
                 Assert.IsTrue(InteractChooser.Open(rows, Actor(), 360f));
                 fixture.ReachAllowed = false;
                 Assert.IsTrue(InteractChooser.Confirm());
                 Assert.IsFalse(InteractChooser.IsOpen);
                 Assert.AreEqual(0, fixture.Calls);
+                Assert.AreEqual(0, alternative.Calls, "confirmation must not fall through to another fixture");
                 Assert.AreEqual(0, _performed.Count);
             }
             finally { InteractChooser.Reset(); }

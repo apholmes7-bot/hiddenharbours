@@ -32,8 +32,13 @@ Existing `InteractVerbTests` and `RoomFixtureFacingTests` are extended. The latt
 uses every applicable room-plan row and its current partition data, including
 planned rows that are not installed yet. `RoomReachTests` covers polygon edges,
 real component wiring, live wall changes, doorway/outdoor cases and unchanged
-distance boundaries. No Unity tests or player build were run locally; compilation
-and EditMode execution are pending CI. These tests do not claim visual acceptance.
+distance boundaries. The upstairs-bed fixture now supplies actual wall polygons
+and a clear bedside stance before asserting its wake storey. The chooser case
+supplies two candidates before closing the selected fixture's reach. These
+premises preserve the geometry and chooser contracts exposed by the prior
+automated failures. Main's storey-reporting lifecycle from #1543 is retained.
+No local test or player build ran for this update; fresh automated execution is
+pending. These tests do not claim visual acceptance.
 
 The adapter scans architectural polygons with reused lists: work is proportional
 to the walls and vertices considered per eligible fixture. Exterior queries first
