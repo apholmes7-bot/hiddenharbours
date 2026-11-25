@@ -23,7 +23,8 @@ Each is explicitly recorded in `NmcWholesalerKeepers.Waiting` until its dedicate
 counter vendor is committed; the accounting test requires waiting offers to stay
 unlisted, with no counter row and a reason for waiting.
 
-The depth sounder remains listed at the island store for 140. Existing electronics,
+The depth sounder remains listed at the island store for 140 (later moved, at the same
+price, to the boat/gear wholesaler by ruling 11-23; see `docs/design/economy-item-sellers.md` §5.1). Existing electronics,
 both wholesalers and the boatyard retain their identities and prices. No stock
 quantities or shelf-stock model are introduced.
 
@@ -31,9 +32,9 @@ quantities or shelf-stock model are introduced.
 item Def to duplicate. The identity contract now discovers that type as well as
 Def types. Addition files register all ten instrument offers, including the four
 existing identities, so the new coverage starts complete. The frozen ledger is
-unchanged. Content tests require exactly nine boat-wholesaler electronics on file,
-one offer per new id, real seller identities, separate trades, dormant new tags
-and the retained island sounder.
+unchanged. Content tests require the boat-wholesaler electronics on file (ten since
+the sounder moved there), one offer per new id, real seller identities, separate
+trades and dormant new tags.
 
 The autopilot offer does not grant heading hold or persist a fitment. The later
 fitting and save integration must validate hull eligibility before any charge.
