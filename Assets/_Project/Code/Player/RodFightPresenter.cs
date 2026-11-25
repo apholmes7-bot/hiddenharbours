@@ -357,7 +357,11 @@ namespace HiddenHarbours.Player
             _splash?.Stop();
         }
 
-        /// <summary>Public so tests can drive the presenter through the same path the bus uses.</summary>
+        /// <summary>
+        /// Public so tests can drive the presenter through the same path the bus uses. Safe before
+        /// <c>Awake</c> (edit mode, an inactive object): the state and the clocks are taken, and the
+        /// shared pieces, which Awake makes, simply catch up on the next publish after it.
+        /// </summary>
         public void OnFishingState(FishingStateChanged e)
         {
             FishingState prev = _s;
@@ -398,7 +402,7 @@ namespace HiddenHarbours.Player
                 if (next.Phase == FishingPhase.FightSurface && prev.Phase != FishingPhase.FightSurface)
                 {
                     _surfaceClock = 0f;
-                    _fish.OnSurfaced();
+                    _fish?.OnSurfaced();
                 }
 
                 // The splash flourishes — surface breaks on the beats that break the surface. Which edge
@@ -424,7 +428,7 @@ namespace HiddenHarbours.Player
             // Species lookup only when the id actually changes, and the RUNG only when the species or
             // the weight moves (SurfacedFishDrawer.Resolve). What she does on the line is asked once
             // per species through the Core seam (rule 4 — Player does not reference Fishing).
-            if (_fish.Resolve(in next, _species, _fishArt, GameServices.FishBehaviour, _fightJumpPeriodSeconds))
+            if (_fish != null && _fish.Resolve(in next, _species, _fishArt, GameServices.FishBehaviour, _fightJumpPeriodSeconds))
             {
                 // The same fish as a mesh for the landing, at the sized kind the hands will carry it as.
                 FishArtLibrary table = _fishArt != null ? _fishArt : FishArtLibrary.Shared;
@@ -1053,7 +1057,7 @@ namespace HiddenHarbours.Player
 
         private void SplashAt(Vector2 pos)
         {
-            if (_splash.Begin(pos, _splashFrames)) _splashClock = 0f;
+            if (_splash != null && _splash.Begin(pos, _splashFrames)) _splashClock = 0f;
         }
 
         private void RenderSplash()

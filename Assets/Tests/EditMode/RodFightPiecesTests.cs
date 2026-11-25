@@ -14,7 +14,9 @@ namespace HiddenHarbours.Tests.EditMode
     /// The four pieces the player's rod fight shares (<see cref="RodLineStrand"/>,
     /// <see cref="RodSplashFlourish"/>, <see cref="SurfacedFishDrawer"/>, <see cref="LandedCatchHold"/>)
     /// and the pure splash-edge table, tested on their own: each reads no clock, so the seconds handed
-    /// in are the only time there is.
+    /// in are the only time there is. The line is pinned at a zero feel and at the shipped feel with a
+    /// heavy fish; the surfaced fish at the player's own speed smoothing and her rung-and-jump resolve
+    /// table; and the presenter takes a state before Awake without throwing.
     /// </summary>
     public class RodFightPiecesTests
     {
@@ -136,6 +138,210 @@ namespace HiddenHarbours.Tests.EditMode
             strand.Hide();
             Assert.IsFalse(strand.Line.enabled);
             Assert.AreEqual(0, strand.Line.positionCount);
+        }
+
+        [Test]
+        public void AHeavyFish_TightensWhitensAndHumsTheLine_ByTheFeelItIsHanded()
+        {
+            var home = Track(new GameObject("RodLineStrandHeavyHome"));
+            var strand = new RodLineStrand(home.transform, 0.02f, 12);
+            // A low fight floor, so her weight's own floor is what holds the line tight.
+            var look = new RodLineLook
+            {
+                MaxSagM = 0.5f, LineColor = Color.white, StrainColor = Color.red, SlackColor = Color.gray,
+                WhitenLateBias = 2f, ShudderStart01 = 0.5f, ShudderAmpM = 0.03f, ShudderHz = 9f,
+                RestTaut = 0.2f, SinkTaut = 0.6f, FightTautFloor = 0.1f, SlackOvershoot01 = 0.4f, SlackSettleSeconds = 0.3f,
+            };
+            FishFeelSettings feel = FishFeelSettings.Default;
+            const float size = 0.8f, load = 0.6f, slackEdge = 0.05f;
+            // Below the strain shudder's start: any hum is her weight's alone.
+            var s = new FishingState(FishingPhase.FightDeep, 0.3f, 0.6f, Cod, Cod, FishCategory.InshoreGroundfish,
+                                     5.59f, 0f, false, 0.2f, 1f, -1f, 0f, 0f, 0f, 0f, 0f, 0f, size);
+            Vector2 tip = new Vector2(0.2f, 0.9f), far = new Vector2(2.1f, -0.7f);
+
+            float baseTaut = RodPresenterMath.TautFor(s.Phase, false, s.RodBend01, s.Tension01,
+                                                      look.RestTaut, look.SinkTaut, look.FightTautFloor);
+            float taut = FishFeelMath.LineTaut01(baseTaut, size, false, in feel);
+            float baseWhiten = RodLineMath.Whiten01(s.Tension01, look.WhitenLateBias);
+            float whiten = FishFeelMath.LineWhiten01(baseWhiten, size, in feel);
+            float shudder01 = FishFeelMath.LineShudder01(
+                RodLineMath.StrainShudder01(s.Tension01, look.ShudderStart01), size, load, false, in feel);
+            float amp = look.ShudderAmpM * shudder01;
+            Assert.Greater(taut, baseTaut + 1e-3f, "harness: her weight does not tighten this line");
+            Assert.Greater(whiten, baseWhiten + 1e-3f, "harness: her weight does not whiten this line");
+            Assert.Greater(amp, 1e-4f, "harness: her weight does not hum this line");
+
+            foreach (float t in new[] { 0f, 0.137f, 1.5f })
+            {
+                strand.Render(tip, far, in s, in look, in feel, load, slackEdge, t, true, 41);
+                var want = new Vector2[12];
+                RodLineMath.SampleLine(tip, far, taut, look.MaxSagM, want);
+                Vector2 span = far - tip;
+                Vector2 perp = new Vector2(-span.y, span.x) / span.magnitude;
+                float phase = t * look.ShudderHz * (2f * Mathf.PI);
+                for (int i = 0; i < 12; i++)
+                {
+                    Vector2 p = want[i] + perp * RodLineMath.ShudderOffset(i, 12, phase, amp);
+                    Vector3 got = strand.Line.GetPosition(i);
+                    Assert.AreEqual(p.x, got.x, 1e-6f, $"t={t} point {i} x");
+                    Assert.AreEqual(p.y, got.y, 1e-6f, $"t={t} point {i} y");
+                }
+                Color c = Color.Lerp(look.LineColor, look.StrainColor, whiten);
+                Color drawn = strand.Line.startColor;
+                Assert.AreEqual(c.r, drawn.r, 1.5f / 255f, $"t={t} colour r");
+                Assert.AreEqual(c.g, drawn.g, 1.5f / 255f, $"t={t} colour g");
+                Assert.AreEqual(c.b, drawn.b, 1.5f / 255f, $"t={t} colour b");
+            }
+        }
+
+        // ---- the surfaced fish reads no clock -------------------------------------------------------
+
+        sealed class Facts : IFishBehaviourFacts
+        {
+            public int Asked;
+            public bool Jumps(string fishId) { Asked++; return fishId == Jumper; }
+            public float FightJumpPeriodSeconds(string fishId) => fishId == Jumper ? 0.9f : 0f;
+            public bool TryWeightRangeKg(string fishId, out float minKg, out float maxKg)
+            { minKg = 0f; maxKg = 0f; return false; }
+        }
+
+        const string Jumper = "fish.test_jumper";
+        const string Sitter = "fish.test_sitter";
+
+        Sprite[] Sheet(string name, int count)
+        {
+            var tex = Track(new Texture2D(2, 2));
+            var s = new Sprite[count];
+            for (int i = 0; i < count; i++)
+            {
+                s[i] = Track(Sprite.Create(tex, new Rect(0, 0, 2, 2), Vector2.zero));
+                s[i].name = $"{name}#{i}";
+            }
+            return s;
+        }
+
+        FishSpeciesVisual Species(string id)
+        {
+            const int per = 2, dirs = 8;
+            var rung = new FishRungVisual
+            {
+                Kg = 3f,
+                DartFrames = Sheet(id + "_dart", dirs * per), DartFramesPerDir = per,
+                ThrashFrames = Sheet(id + "_thrash", dirs * per), ThrashFramesPerDir = per,
+                JumpFrames = Sheet(id + "_jump", dirs * FishJumpArc.Frames), JumpFramesPerDir = FishJumpArc.Frames,
+            };
+            return new FishSpeciesVisual { FishId = id, Rungs = new[] { rung } };
+        }
+
+        static FishingState Surface(string fish, float kg, float offX, float offY)
+            => new FishingState(FishingPhase.FightSurface, 0.3f, 0.3f, fish, fish, FishCategory.InshoreGroundfish,
+                                kg, 0.4f, false, 0.2f, offX, offY, 0f, 0f, 0f, 0f, 0f, 0f, 0f);
+
+        [Test]
+        public void HeldStill_SheTurnsFromDartToThrash_OnTheFrameTheSmoothingSays()
+        {
+            // The player's own smoothing, read off the presenter, so a changed constant fails here.
+            FieldInfo k = typeof(RodFightPresenter).GetField("FishSpeedSmoothing01",
+                BindingFlags.NonPublic | BindingFlags.Static);
+            Assert.IsNotNull(k, "harness: the presenter's smoothing constant moved");
+            float smoothing = (float)k.GetRawConstantValue();
+            Assert.AreEqual(0.35f, smoothing, "the player's fish speed smoothing changed");
+
+            const float dt = 0.02f, dartMps = 1.2f;
+            var sr = Track(new GameObject("SurfacedFish")).AddComponent<SpriteRenderer>();
+            var drawer = new SurfacedFishDrawer(sr);
+            var species = new[] { Species(Sitter) };
+            FishingState s = Surface(Sitter, 3f, 1f, -1f);
+            Assert.IsTrue(drawer.Resolve(in s, species, null, new Facts(), 4.5f));
+            Assert.IsNotNull(drawer.Rung, "harness: no rung for the test fish");
+
+            // The formula: her first drawn frame jumps from the origin, then she holds still.
+            float speed = 0f;
+            Vector2 last = Vector2.zero, pos = new Vector2(1f, -1f);
+            int predicted = -1;
+            for (int f = 0; f < 60; f++)
+            {
+                speed = Mathf.Lerp(speed, (pos - last).magnitude / dt, smoothing);
+                last = pos;
+                if (!RodPresenterMath.IsDarting(speed, dartMps)) { predicted = f; break; }
+            }
+            Assert.Greater(predicted, 2, "harness: the switch comes too soon to tell the arguments apart");
+
+            int switched = -1;
+            for (int f = 0; f < 60; f++)
+            {
+                drawer.Render(Vector2.zero, in s, dt, f * dt, f * dt, 0.1f, dartMps, smoothing, 30,
+                              out bool splashDue, out _);
+                Assert.IsFalse(splashDue, "a fish that does not jump threw a splash");
+                Assert.IsTrue(sr.enabled, $"frame {f}: she was not drawn");
+                bool thrash = sr.sprite.name.StartsWith(Sitter + "_thrash");
+                if (thrash && switched < 0) switched = f;
+                if (switched < 0)
+                    StringAssert.StartsWith(Sitter + "_dart", sr.sprite.name, $"frame {f}: she should still dart");
+                else
+                    Assert.IsTrue(thrash, $"frame {f}: she went back to darting while held still");
+                Assert.AreEqual(30, sr.sortingOrder);
+            }
+            Assert.AreEqual(predicted, switched, "she turned from dart to thrash on a different frame from the formula");
+        }
+
+        [Test]
+        public void Resolve_IsTrueOnTheFirstPublish_AndOnAMove_AndASpeciesChangeAloneResetsTheJumps()
+        {
+            var sr = Track(new GameObject("SurfacedJumper")).AddComponent<SpriteRenderer>();
+            var drawer = new SurfacedFishDrawer(sr);
+            var facts = new Facts();
+            var species = new[] { Species(Jumper), Species(Sitter) };
+
+            FishingState first = Surface(Jumper, 3.1f, 1f, 0.5f);
+            Assert.IsTrue(drawer.Resolve(in first, species, null, facts, 4.5f), "the first publish (NaN weight) did not resolve");
+            Assert.AreEqual(0, drawer.SpeciesIndex);
+            Assert.AreEqual(1, facts.Asked);
+            Assert.IsFalse(drawer.Resolve(in first, species, null, facts, 4.5f), "the same fish at the same weight re-resolved");
+            Assert.AreEqual(1, facts.Asked, "the species seam was asked again for the same fish");
+
+            // Let her jump at least once.
+            drawer.OnSurfaced();
+            for (int f = 0; f < 200 && drawer.JumpsDrawn == 0; f++)
+                drawer.Render(Vector2.zero, in first, 0.02f, f * 0.02f, f * 0.02f, 0.1f, 1.2f, 0.35f, 30, out _, out _);
+            Assert.Greater(drawer.JumpsDrawn, 0, "harness: the jumper never jumped");
+            int jumps = drawer.JumpsDrawn;
+
+            FishingState heavier = Surface(Jumper, 3.4f, 1f, 0.5f);
+            Assert.IsTrue(drawer.Resolve(in heavier, species, null, facts, 4.5f), "a weight change did not re-pick the rung");
+            Assert.AreEqual(jumps, drawer.JumpsDrawn, "a weight change reset this fight's jumps");
+            Assert.AreEqual(1, facts.Asked, "a weight change asked the species seam again");
+
+            FishingState other = Surface(Sitter, 3.4f, 1f, 0.5f);
+            Assert.IsTrue(drawer.Resolve(in other, species, null, facts, 4.5f), "a species change did not resolve");
+            Assert.AreEqual(0, drawer.JumpsDrawn, "a species change kept the last fish's jumps");
+            Assert.IsFalse(drawer.FishAirborne);
+            Assert.AreEqual(1, drawer.SpeciesIndex);
+            Assert.AreEqual(2, facts.Asked);
+        }
+
+        // ---- the presenter before Awake --------------------------------------------------------------
+
+        [Test]
+        public void ThePresenter_TakesAStateBeforeAwake_WithoutThrowing()
+        {
+            var go = Track(new GameObject("RodFightPresenterBeforeAwake"));
+            go.SetActive(false);
+            var rod = go.AddComponent<RodFightPresenter>();
+            Assert.DoesNotThrow(() =>
+            {
+                // Every edge that reaches for a shared piece: the bite, the hook-set, her break (a splash
+                // and the surfacing), the landing.
+                rod.OnFishingState(new FishingStateChanged(new FishingState(
+                    FishingPhase.Bite, 0f, 0f, Jumper, Jumper, FishCategory.InshoreGroundfish, 3.1f)));
+                rod.OnFishingState(new FishingStateChanged(new FishingState(
+                    FishingPhase.FightDeep, 0.3f, 0.2f, Jumper, Jumper, FishCategory.InshoreGroundfish, 3.1f)));
+                rod.OnFishingState(new FishingStateChanged(Surface(Jumper, 3.1f, 1f, 0.5f)));
+                rod.OnFishingState(new FishingStateChanged(new FishingState(
+                    FishingPhase.Landed, 0f, 1f, Jumper, Jumper, FishCategory.InshoreGroundfish, 3.1f)));
+            });
+            Assert.AreEqual(-1, rod.SpeciesIndex);
+            Assert.AreEqual(0, rod.JumpsDrawn);
         }
 
         // ---- the splash reads no clock --------------------------------------------------------------
