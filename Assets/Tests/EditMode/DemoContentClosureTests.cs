@@ -192,7 +192,8 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void DiskReader_RootsUnreferencedResourcesAndStreaming_AndFollowsImporterInputs()
         {
-            string root = Path.Combine(TestContext.CurrentContext.WorkDirectory, "closure-" + Guid.NewGuid().ToString("N"));
+            string root = Path.Combine(Directory.GetCurrentDirectory(), "Evidence~", "demo-content-tests",
+                "closure-" + Guid.NewGuid().ToString("N"));
             string[] files = { "Assets/island.unity", "Assets/Resources/unused.asset", "Assets/StreamingAssets/other.bin",
                 "Assets/input.png", "Assets/recipe.hhterrain", "Assets/Editor/Resources/preview.asset", "Assets/other.unity" };
             try
@@ -207,6 +208,9 @@ namespace HiddenHarbours.Tests.EditMode
                 budget.importerInputs = new[] { new DemoContentClosure.ImporterInputs
                     { asset = "Assets/recipe.hhterrain", importer = "Assets/Editor/importer.cs", sources = new[] { "Assets/input.png" } } };
                 var report = DemoContentClosure.Build(root, budget, new Dictionary<string, string>());
+                Assert.That(Path.IsPathRooted(root), Is.True);
+                Assert.That(report.Problems, Is.Empty);
+                Assert.That(report.Unresolved, Is.Empty);
                 CollectionAssert.AreEquivalent(new[] { "Assets/island.unity", "Assets/recipe.hhterrain", "Assets/input.png",
                     "Assets/Resources/unused.asset", "Assets/StreamingAssets/other.bin" }, report.Parent.Keys);
                 Assert.That(report.Assets.ContainsKey("Assets/Editor/Resources/preview.asset"), Is.False);
@@ -214,6 +218,57 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(report.ReachableBytes, Is.EqualTo(30));
                 Assert.That(report.UnreachableBytes, Is.EqualTo(6));
                 Assert.That(report.Chain("Assets/input.png"), Is.EqualTo("Assets/recipe.hhterrain -> Assets/input.png"));
+            }
+            finally
+            {
+                if (Directory.Exists(root)) Directory.Delete(root, true);
+            }
+        }
+
+        [Test]
+        public void ManifestContract_IgnoresFormattingAndObjectOrder_ButPinsEveryValue()
+        {
+            const string original = "{\"dependencies\":{\"package.a\":\"1\",\"package.b\":\"2\"},\"testables\":[\"a\",\"b\"]}";
+            const string reordered = "{\r\n  \"testables\": [\"a\", \"b\"], \"dependencies\": {\"package.b\": \"2\", \"package.a\": \"1\"}\r\n}";
+            string hash = DemoContentClosure.ManifestHash(original);
+            Assert.That(DemoContentClosure.ManifestHash(reordered), Is.EqualTo(hash));
+            Assert.That(DemoContentClosure.ManifestHash(original.Replace("\"1\"", "\"3\"")), Is.Not.EqualTo(hash));
+            Assert.That(DemoContentClosure.ManifestHash(original.Replace("package.a", "package.c")), Is.Not.EqualTo(hash));
+            Assert.That(DemoContentClosure.ManifestHash(original.Replace("[\"a\",\"b\"]", "[\"b\",\"a\"]")), Is.Not.EqualTo(hash));
+            Assert.That(DemoContentClosure.ManifestHash(original.Replace("\"testables\"", "\"scopedRegistries\"")), Is.Not.EqualTo(hash));
+            Assert.Throws<FormatException>(() => DemoContentClosure.ManifestHash(original + " broken"));
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void PackageInclude_IsExplicitWithOrWithoutResolvedBytes_AndNeverWaivesAProjectReference(bool resolved)
+        {
+            string root = Path.Combine(Directory.GetCurrentDirectory(), "Evidence~", "demo-content-tests",
+                "includes-" + Guid.NewGuid().ToString("N"));
+            const string package = "Packages/com.example.render/Library/Core.hlsl";
+            const string missing = "Assets/missing.hlsl";
+            try
+            {
+                Directory.CreateDirectory(Path.Combine(root, "Assets"));
+                File.WriteAllText(Path.Combine(root, "Assets/test.shader"),
+                    "#include \"" + package + "\"\n#include \"" + missing + "\"\n");
+                if (resolved)
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(root, package)));
+                    File.WriteAllText(Path.Combine(root, package), "resolved external source");
+                }
+                var budget = EmptyBudget();
+                budget.knownExceptions = new[] { new DemoContentClosure.KnownException
+                    { rule = "ExternalPackageInclude", target = package, reason = "External include bytes are outside the project-source count." } };
+                var report = DemoContentClosure.Build(root, budget, new Dictionary<string, string>());
+                CollectionAssert.AreEquivalent(new[] { package, missing }, report.Unresolved.Select(r => r.Target));
+                Assert.That(DemoContentClosure.Violations(report, budget).Single(), Does.Contain(missing));
+                report.Unresolved.RemoveAll(r => r.Target == missing);
+                Assert.That(DemoContentClosure.Violations(report, budget), Is.Empty);
+                report.Unresolved[0].ObjectId = "serialized";
+                Assert.That(DemoContentClosure.Violations(report, budget).Count, Is.EqualTo(2), "only an include may use this exception");
+                report.Unresolved.Clear();
+                StringAssert.StartsWith("DemoContent.StaleKnownException:", DemoContentClosure.Violations(report, budget).Single());
             }
             finally
             {

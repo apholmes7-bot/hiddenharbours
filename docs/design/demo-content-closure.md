@@ -1,6 +1,6 @@
 # Island demo content closure
 
-An island-only scene list retains **336,360,966 bytes (320.78 MiB)** across **7,547 project source files** on the pinned base `541276cbc9308ba60ded8b905308366306438570`. Another **179,021,879 bytes (170.73 MiB)** across **4,934 files** have no route from the recorded demo roots. The largest avoidable inclusion is the Nine Mile Creek road floor: **162,807,070 bytes (155.26 MiB), 3,745 files**, copied through StreamingAssets even though its scene is absent. Scene selection alone does not make a small demo.
+An island-only scene list retains **336,528,840 bytes (320.94 MiB)** across **7,581 project source files** on the pinned base `d46bde303e6aa256d23d47a05ede5d7d6f38e51e`. Another **179,024,831 bytes (170.74 MiB)** across **4,935 files** have no route from the recorded demo roots. The largest avoidable inclusion is the Nine Mile Creek road floor: **162,807,070 bytes (155.26 MiB), 3,745 files**, copied through StreamingAssets even though its scene is absent. Scene selection alone does not make a small demo.
 
 **Distribution status:** [the corrected demo configuration](https://github.com/apholmes7-bot/hiddenharbours/pull/1510) blocks both release and development demo packaging until an authored island opening is implemented and verified. Its save slot is isolated at `demo/savegame.json`; the full game retains `savegame.json`, with no automatic import. This source audit neither opens saves nor enables packaging. The single-island closure remains a prospective content budget, not evidence of a releasable demo. The configuration is a separate dependency and its source changes are not included in this measurement.
 
@@ -12,7 +12,7 @@ These are **source bytes, not download, installed, imported-texture or resident-
 | --- | ---: | --- |
 | `Assets/_Project/Data/Boats/HullMeshes/ExpeditionYacht120IsoHullMesh.asset` | 8,267,941 | `Assets/_Project/Scenes/StPeters.unity` |
 | `Assets/_Project/Data/Boats/HullMeshes/SportFisherSkybridgeIsoHullMesh.asset` | 4,967,836 | `Assets/_Project/Scenes/StPeters.unity` |
-| `Assets/_Project/Scenes/StPeters.unity` | 4,877,931 | `Scene root` |
+| `Assets/_Project/Scenes/StPeters.unity` | 4,877,271 | `Scene root` |
 | `Assets/_Project/Data/Boats/HullMeshes/MotorYacht84IsoHullMesh.asset` | 3,829,803 | `Assets/_Project/Scenes/StPeters.unity` |
 | `Assets/_Project/Data/Boats/HullMeshes/SportFisherConvertibleIsoHullMesh.asset` | 3,759,255 | `Assets/_Project/Scenes/StPeters.unity` |
 | `Assets/StreamingAssets/RoadFloor/NineMileCreek/RoadFloor.json` | 2,422,656 | `StreamingAssets copy` |
@@ -27,7 +27,7 @@ These can stay out of the island package under the audited reference rules. Some
 
 | Source file | Bytes |
 | --- | ---: |
-| `Assets/_Project/Scenes/NineMileCreek.unity` | 12,932,076 |
+| `Assets/_Project/Scenes/NineMileCreek.unity` | 12,934,571 |
 | `Assets/Settings/Lit2DSceneTemplate.scenetemplate` | 3,942,809 |
 | `Assets/_Project/Art/Sprites/Shipyard/Iso/smallYard.png` | 2,974,929 |
 | `Assets/_Project/Art/Sprites/Shipyard/Iso/industrialYard.png` | 2,572,859 |
@@ -55,7 +55,7 @@ The universe is importable files beneath Assets plus embedded package assets wit
 
 1. `Assets/_Project/Scenes/StPeters.unity`. `PlayerBuild.cs` starts its explicit six-scene list with this scene. The proposed demo option keeps that first scene. The editor build-settings list also contains prototypes; those are not demo roots. There is no committed Bootstrap or separate always-loaded scene. `GameRoot` is serialized into St Peters and uses `DontDestroyOnLoad`; the shell is a state of that persistent core, not another scene.
 2. Every player Resources file, whether or not any code happens to call its resource key during the week, and all StreamingAssets files. Runtime source, plugins, shader sources and includes are conservative roots to avoid pretending a serialized-script scan models managed-code stripping or dynamic shader lookup.
-3. Asset GUID references from graphics, quality and player settings, plus only `m_configObjects` from editor build settings. `preloadedAssets` is empty on this base. There is no Addressables package, settings asset or bundle catalog. The package manifest is a checked source contract, so adding such a delivery path requires a new audit.
+3. Asset GUID references from graphics, quality and player settings, plus only `m_configObjects` from editor build settings. `preloadedAssets` is empty on this base. There is no Addressables package, settings asset or bundle catalog. The package manifest is a checked semantic source contract: object order and whitespace do not affect its hash, while every key, value and array order does. Adding a delivery path or changing a package still requires a new audit. The existing editor JSON parser is reused; the standalone Windows reader uses the framework JSON parser and the same canonical hash.
 4. Serialized GUID references in scenes, prefabs, materials, Defs, other text assets and their import metadata; JSON asset GUIDs and local shader includes. Built-in engine GUIDs have no project source bytes. Code comments are not asset references. Each scene reference retains its serialized object file ID and line for a useful failure message.
 5. Custom terrain importers construct dependencies from strings. The checked importer-input data records **63 detail PNGs, 180 relight PNGs plus their manifest, and 15 shore-edge PNGs**. Their recipe/source hashes use UTF-8 with LF line endings. A changed recipe, importer, packer or relight manifest fails `DemoContent.ImportContractChanged` until the dependencies are re-audited. This observes existing inputs; it does not bake, change or judge their appearance.
 
@@ -69,17 +69,19 @@ The command writes `content-closure.tsv` (the **complete two sets**, source byte
 
 ## Guard and known limits
 
-The original recorded source budget remains **336,273,589 bytes**, with a data-held **16,777,216-byte margin**. The exact ceiling is **353,050,805 bytes**. The pinned-main scan is 87,377 bytes above the original measurement and still inside that unchanged ceiling, with zero guard violations. Main added creek and mirror dependencies and bounded scene-wait code; the dependency contracts and exception list remain valid without alteration. The margin allows small additions and text line-ending differences; it is not a new memory or download target. The guard fails at the first byte above it with `DemoContent.ReachableSizeGrew`. Missing roots, missing dependency targets, opaque serialized inputs and stale exceptions cannot quietly shrink the measured set.
+The original recorded source budget remains **336,273,589 bytes**, with a data-held **16,777,216-byte margin**. The exact ceiling is **353,050,805 bytes**. The current scan is 255,251 bytes above the original measurement and still inside that unchanged ceiling, with zero guard violations. Main added saved purchases and bags plus dormant island barriers. The package manifest contract now ignores formatting only. Five exact registry include paths are recorded alongside the existing external GUID exceptions; no project-reference exception or byte allowance was enlarged. The margin allows small additions and text line-ending differences; it is not a new memory or download target. The guard fails at the first byte above it with `DemoContent.ReachableSizeGrew`. Missing roots, missing dependency targets, opaque serialized inputs and stale exceptions cannot quietly shrink the measured set.
 
 `DemoContent.ForeignSceneReference` names any direct St Peters object reference whose target is beneath a foreign-region folder prefix in the budget. There are **zero such references on this base**. A region-named Def in a shared data folder is not the same condition, and the Resources and StreamingAssets inclusions above remain visible in the inventory. The guard is about direct scene-object references; it does not claim every nested library must be island-exclusive. Folder prefixes are explicit reviewable data, including the existing legacy place spellings.
 
 There are **196 distinct unresolved registry-package GUIDs**, recorded as `ExternalPackageGuid` exceptions in the one list. They are seen in render-pipeline settings, the shared default sprite material, the pixel-perfect camera and the input importer. Their package bytes cannot be obtained from this checkout and are deliberately not guessed. The remaining exact exception is the island object's old `_detailArray512` GUID (`8c0da9ac9cc7ea640b61f54b9647b3ce`, object `1201741992`). The field has no declaration on the current `TerrainSplatSurface`, and its old asset is absent. This is recorded as unresolved legacy serialization, not a claimed live texture or a licence to waive future missing references. No scene is edited.
 
-The source closure cannot predict engine-generated assets, import expansion, compression, or package dependency sizes. A player build and its build report are still required to measure the deliverable. No Unity run, EditMode run, player build or visual comparison was performed locally. The standalone C# source audit ran without importing assets; the EditMode cases are for CI. No visual assets, existing tuning values, save fields or scene lists changed.
+The five external include paths are the core package?s `Runtime/Utilities/Blit.hlsl` and `ShaderLibrary/Common.hlsl`, plus the universal package?s `ShaderLibrary/Core.hlsl`, `Shaders/2D/Include/Core2D.hlsl` and `Shaders/2D/Include/2DCommon.hlsl`. They are recorded whether or not the editor resolves package bytes locally. An exception applies only to that exact package include; a changed path, missing project include or stale exception still fails. Package bytes remain outside this source-only budget.
+
+The source closure cannot predict engine-generated assets, import expansion, compression, or package dependency sizes. A player build and its build report are still required to measure the deliverable. No Unity run, EditMode run, player build or visual comparison was performed locally. The standalone C# source audit ran without importing assets and reported zero violations; the 24 authored EditMode cases are for CI. The disk fixture now uses an explicit project-relative evidence directory because the runner can leave its work-directory property unset. No visual assets, existing tuning values, save fields or scene lists changed.
 
 ## LFS objects absent from the checkout
 
-The inventory uses the declared `size` from a valid LFS pointer when object bytes are not hydrated at that file. It does not fetch or hydrate anything, and it does not claim the object is absent from every local object store. **128 reachable pointers contribute 963,092 bytes; 50 unreachable pointers contribute 1,202,907 bytes.** All remaining sizes are file lengths on disk. The paths below are the complete pointer-size subset, so the measurement does not hide small placeholder files as real images.
+The inventory uses the declared `size` from a valid LFS pointer when object bytes are not hydrated at that file. It does not fetch or hydrate anything, and it does not claim the object is absent from every local object store. **170 reachable pointers contribute 5,302,231 bytes; 53 unreachable pointers contribute 1,209,201 bytes.** All remaining sizes are file lengths on disk. The paths below are the complete pointer-size subset, so the measurement does not hide small placeholder files as real images.
 
 | Set | Source file | Declared bytes |
 | --- | --- | ---: |
@@ -234,10 +236,33 @@ The inventory uses the declared `size` from a valid LFS pointer when object byte
 | reachable | `Assets/_Project/Art/Resources/Appliances/Appliance_shower.png` | 93,055 |
 | reachable | `Assets/_Project/Art/Resources/Appliances/Appliance_toilet.png` | 17,998 |
 | reachable | `Assets/_Project/Art/Resources/Appliances/Appliance_wharfShower.png` | 34,747 |
+| reachable | `Assets/_Project/Art/Sprites/Buildings/Ginny/Village_ginnyCottage.png` | 521,048 |
+| reachable | `Assets/_Project/Art/Sprites/Buildings/Ginny/Village_ginnyCottage_emit.png` | 13,927 |
+| reachable | `Assets/_Project/Art/Sprites/Buildings/Ginny/Village_ginnyCottage_mask.png` | 344,298 |
+| reachable | `Assets/_Project/Art/Sprites/Buildings/Ginny/Village_ginnyCottage_normal.png` | 115,169 |
 | unreachable | `Assets/_Project/Art/Sprites/Buildings/NineMileCreek/NmcCommunityHall_cutaway.png` | 7,282 |
 | unreachable | `Assets/_Project/Art/Sprites/Buildings/NineMileCreek/NmcCommunityHall_exterior.png` | 18,642 |
 | unreachable | `Assets/_Project/Art/Sprites/Buildings/NineMileCreek/NmcFishPlant_cutaway.png` | 28,628 |
 | unreachable | `Assets/_Project/Art/Sprites/Buildings/NineMileCreek/NmcFishPlant_exterior.png` | 53,800 |
+| reachable | `Assets/_Project/Art/Sprites/Buildings/Shops/ShelfGoods/ShelfBaitBox.png` | 185 |
+| reachable | `Assets/_Project/Art/Sprites/Buildings/Shops/ShelfGoods/ShelfGondolaBeans.png` | 237 |
+| reachable | `Assets/_Project/Art/Sprites/Buildings/Shops/ShelfGoods/ShelfGondolaBread.png` | 266 |
+| reachable | `Assets/_Project/Art/Sprites/Buildings/Shops/ShelfGoods/ShelfGondolaEmpty.png` | 234 |
+| unreachable | `Assets/_Project/Art/Sprites/Buildings/Shops/ShelfGoods/ShelfGondolaGoods.png` | 457 |
+| reachable | `Assets/_Project/Art/Sprites/Buildings/Shops/ShelfGoods/ShelfGondolaOatcakes.png` | 193 |
+| reachable | `Assets/_Project/Art/Sprites/Buildings/Shops/ShelfGoods/ShelfIceBags.png` | 156 |
+| reachable | `Assets/_Project/Art/Sprites/Buildings/Shops/ShelfGoods/ShelfIceChestEmpty.png` | 238 |
+| reachable | `Assets/_Project/Art/Sprites/Buildings/Shops/ShelfGoods/ShoppingBagPaper.png` | 144 |
+| reachable | `Assets/_Project/Art/Sprites/Buildings/Shops/Signs/SoldOutCard.png` | 210 |
+| reachable | `Assets/_Project/Art/Sprites/Buildings/Village/Village_harbourGable.png` | 276,264 |
+| reachable | `Assets/_Project/Art/Sprites/Buildings/Village/Village_harbourGable_emit.png` | 14,040 |
+| reachable | `Assets/_Project/Art/Sprites/Buildings/Village/Village_harbourGable_mask.png` | 267,674 |
+| reachable | `Assets/_Project/Art/Sprites/Buildings/Village/Village_harbourGable_normal.png` | 87,848 |
+| reachable | `Assets/_Project/Art/Sprites/Buildings/Village/Village_redSaltbox.png` | 322,543 |
+| reachable | `Assets/_Project/Art/Sprites/Buildings/Village/Village_redSaltbox_mask.png` | 284,900 |
+| reachable | `Assets/_Project/Art/Sprites/Buildings/Village/Village_redSaltbox_normal.png` | 94,784 |
+| reachable | `Assets/_Project/Art/Sprites/ClamHole.png` | 171 |
+| reachable | `Assets/_Project/Art/Sprites/ClamSquirt.png` | 402 |
 | reachable | `Assets/_Project/Art/Sprites/Crate.png` | 407 |
 | unreachable | `Assets/_Project/Art/Sprites/Fixtures/Fixture_bath.png` | 2,924 |
 | unreachable | `Assets/_Project/Art/Sprites/Fixtures/Fixture_bathroomSink.png` | 1,415 |
@@ -254,10 +279,32 @@ The inventory uses the declared `size` from a valid LFS pointer when object byte
 | unreachable | `Assets/_Project/Art/Sprites/Fixtures/Fixture_toiletModern.png` | 2,750 |
 | unreachable | `Assets/_Project/Art/Sprites/Fixtures/Fixture_washstand.png` | 4,676 |
 | unreachable | `Assets/_Project/Art/Sprites/Fixtures/Fixture_wharfShower.png` | 6,255 |
+| reachable | `Assets/_Project/Art/Sprites/Interiors/Painted/GinnyCottage_Upstairs.png` | 13,775 |
+| reachable | `Assets/_Project/Art/Sprites/Interiors/Rooms/Interior_ginnyCottage.png` | 255,452 |
+| reachable | `Assets/_Project/Art/Sprites/Interiors/Rooms/Interior_harbourGable.png` | 316,570 |
+| reachable | `Assets/_Project/Art/Sprites/Interiors/Rooms/Interior_sageCottage.png` | 219,503 |
 | unreachable | `Assets/_Project/Art/Sprites/NineMileCreek/FuelStop/SetPiece_bench.png` | 4,338 |
 | unreachable | `Assets/_Project/Art/Sprites/NineMileCreek/FuelStop/SetPiece_picnic.png` | 6,973 |
+| reachable | `Assets/_Project/Art/Terrain/Cliffs/Decals/Toe_E.png` | 3,148 |
+| reachable | `Assets/_Project/Art/Terrain/Cliffs/Decals/Toe_E_slump.png` | 3,398 |
+| reachable | `Assets/_Project/Art/Terrain/Cliffs/Decals/Toe_S.png` | 2,817 |
+| reachable | `Assets/_Project/Art/Terrain/Cliffs/Decals/Toe_SE.png` | 3,148 |
+| reachable | `Assets/_Project/Art/Terrain/Cliffs/Decals/Toe_SE_slump.png` | 3,398 |
+| reachable | `Assets/_Project/Art/Terrain/Cliffs/Decals/Toe_SW.png` | 2,817 |
+| reachable | `Assets/_Project/Art/Terrain/Cliffs/Decals/Toe_SW_slump.png` | 3,020 |
+| reachable | `Assets/_Project/Art/Terrain/Cliffs/Decals/Toe_S_slump.png` | 3,020 |
+| unreachable | `Assets/_Project/Art/Terrain/Cliffs/Decals/Toe_W.png` | 2,817 |
+| unreachable | `Assets/_Project/Art/Terrain/Cliffs/Decals/Toe_W_slump.png` | 3,020 |
 | unreachable | `Assets/_Project/Data/Terrain/RicePointGround/RicePointSeabed_HeightTex_plan.png` | 905,723 |
 | unreachable | `Assets/_Project/Data/Terrain/RicePointGround/RicePointSplatA.png` | 12,441 |
 | unreachable | `Assets/_Project/Data/Terrain/RicePointGround/RicePointSplatB.png` | 9,020 |
 | unreachable | `Assets/_Project/Data/Terrain/RicePointGround/RicePointSplatC.png` | 4,638 |
 | unreachable | `Assets/_Project/Data/Terrain/RicePointGround/RicePointSplatE.png` | 5,742 |
+| reachable | `Assets/_Project/Data/Terrain/StPetersSeabed_HeightTex.png` | 459,851 |
+| reachable | `Assets/_Project/Data/Terrain/StPetersSeabed_SeabedTex.png` | 400,486 |
+| reachable | `Assets/_Project/Data/Terrain/StPetersSplatA.png` | 53,896 |
+| reachable | `Assets/_Project/Data/Terrain/StPetersSplatB.png` | 74,594 |
+| reachable | `Assets/_Project/Data/Terrain/StPetersSplatC.png` | 43,806 |
+| reachable | `Assets/_Project/Data/Terrain/StPetersSplatD.png` | 42,691 |
+| reachable | `Assets/_Project/Data/Terrain/StPetersSplatE.png` | 54,032 |
+| reachable | `Assets/_Project/Data/Terrain/StPetersStillWater.png` | 34,786 |

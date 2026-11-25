@@ -1406,6 +1406,31 @@
       "objectId": "",
       "target": "fb60a22f311433c4c962b888d1393f88",
       "reason": "External render pipeline reference, first seen in Assets/DefaultVolumeProfile.asset. Registry package bytes are outside this project-source budget; package cache is not a stable source root."
+    },
+    {
+      "rule": "ExternalPackageInclude",
+      "target": "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl",
+      "reason": "Registry shader include; retained as an external dependency, with package bytes outside the project-source budget."
+    },
+    {
+      "rule": "ExternalPackageInclude",
+      "target": "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl",
+      "reason": "Registry shader include; retained as an external dependency, with package bytes outside the project-source budget."
+    },
+    {
+      "rule": "ExternalPackageInclude",
+      "target": "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl",
+      "reason": "Registry shader include; retained as an external dependency, with package bytes outside the project-source budget."
+    },
+    {
+      "rule": "ExternalPackageInclude",
+      "target": "Packages/com.unity.render-pipelines.universal/Shaders/2D/Include/2DCommon.hlsl",
+      "reason": "Registry shader include; retained as an external dependency, with package bytes outside the project-source budget."
+    },
+    {
+      "rule": "ExternalPackageInclude",
+      "target": "Packages/com.unity.render-pipelines.universal/Shaders/2D/Include/Core2D.hlsl",
+      "reason": "Registry shader include; retained as an external dependency, with package bytes outside the project-source budget."
     }
   ],
   "importerInputs": [
@@ -1706,7 +1731,7 @@
     },
     {
       "path": "Packages/manifest.json",
-      "sha256": "6b814deed168c4dfea58ee50cca364cb288372f1f195a7d60931b50914cc8a02"
+      "sha256": "04b3477996656d46470e4e36ba292dcba489d578e7938a73aead6f040bee2a76"
     },
     {
       "path": "Assets/_Project/Art/Terrain/TerrainDetail256.hhterrain",

@@ -12,7 +12,7 @@ if (-not $output.StartsWith($evidence, [StringComparison]::OrdinalIgnoreCase)) {
 
 Push-Location $root
 try {
-    Add-Type -Path 'Assets/Tests/EditMode/AssetGuidIndex.cs', 'Assets/Tests/EditMode/DemoContentClosure.cs'
+    Add-Type -ReferencedAssemblies 'System.dll', 'System.Core.dll', 'System.Web.Extensions.dll' -Path 'Assets/Tests/EditMode/AssetGuidIndex.cs', 'Assets/Tests/EditMode/DemoContentClosure.cs'
     $budget = [HiddenHarbours.Tests.EditMode.DemoContentClosure+Budget](
         Get-Content 'Assets/Tests/EditMode/Fixtures/DemoContentBudget.json' -Raw | ConvertFrom-Json)
     $index = [HiddenHarbours.Tests.EditMode.AssetGuidIndex]::Build([string[]]@('Assets', 'Packages'))

@@ -6,6 +6,11 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+#if UNITY_EDITOR
+using HiddenHarbours.Art.Editor;
+#else
+using System.Web.Script.Serialization;
+#endif
 
 namespace HiddenHarbours.Tests.EditMode
 {
@@ -219,8 +224,44 @@ namespace HiddenHarbours.Tests.EditMode
 
         public static string TextHash(string path)
         {
+            string text = File.ReadAllText(path).Replace("\r\n", "\n");
+            if (path.Replace('\\', '/').EndsWith("/Packages/manifest.json", StringComparison.Ordinal))
+                return ManifestHash(text);
+            return Hash(text);
+        }
+
+        // Object order and whitespace are not package changes; every key, value and array order is.
+        public static string ManifestHash(string json)
+        {
+#if UNITY_EDITOR
+            return Hash(CanonicalValue(MiniJson.Parse(json)));
+#else
+            return Hash(CanonicalValue(new JavaScriptSerializer().DeserializeObject(json)));
+#endif
+        }
+
+        static string CanonicalValue(object value)
+        {
+            if (value == null) return "null;";
+            var map = value as Dictionary<string, object>;
+            if (map != null)
+                return "{" + string.Concat(map.OrderBy(p => p.Key, StringComparer.Ordinal)
+                    .Select(p => CanonicalValue(p.Key) + CanonicalValue(p.Value))) + "}";
+            var list = value as IEnumerable<object>;
+            if (list != null) return "[" + string.Concat(list.Select(CanonicalValue)) + "]";
+            var text = value as string;
+            if (text != null) return "s" + text.Length.ToString(CultureInfo.InvariantCulture) + ":" + text;
+            if (value is bool) return (bool)value ? "true;" : "false;";
+            if (value is double) return "n" + ((double)value).ToString("R", CultureInfo.InvariantCulture) + ";";
+            if (value is int || value is long || value is decimal)
+                return "n" + Convert.ToString(value, CultureInfo.InvariantCulture) + ";";
+            throw new InvalidDataException("DemoContent.InvalidManifestValue");
+        }
+
+        static string Hash(string text)
+        {
             using (var sha = SHA256.Create())
-                return BitConverter.ToString(sha.ComputeHash(Encoding.UTF8.GetBytes(File.ReadAllText(path).Replace("\r\n", "\n"))))
+                return BitConverter.ToString(sha.ComputeHash(Encoding.UTF8.GetBytes(text)))
                     .Replace("-", "").ToLowerInvariant();
         }
 
@@ -255,10 +296,18 @@ namespace HiddenHarbours.Tests.EditMode
                         Match include = Include.Match(line);
                         if (!include.Success) continue;
                         string target = include.Groups[1].Value;
+                        // Package include paths are explicit external dependencies even when the
+                        // editor can resolve them through its package cache. Their bytes are excluded.
+                        if (target.StartsWith("Packages/", StringComparison.Ordinal))
+                        {
+                            asset.References.Add(new Reference { Source = path, ObjectId = "include", Target = target });
+                            continue;
+                        }
+                        bool projectInclude = target.StartsWith("Assets/", StringComparison.Ordinal);
                         if (!target.StartsWith("Assets/", StringComparison.Ordinal) && !target.StartsWith("Packages/", StringComparison.Ordinal))
                             target = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(absolute), target));
                         else target = Path.Combine(root, target);
-                        if (File.Exists(target) && target.StartsWith(root + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+                        if ((projectInclude || File.Exists(target)) && target.StartsWith(root + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
                             asset.References.Add(new Reference { Source = path, ObjectId = "include", Target = target.Substring(root.Length + 1).Replace('\\', '/') });
                     }
                 }
@@ -308,7 +357,8 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (KnownException exception in budget.knownExceptions)
             {
                 string key = exception.rule + "|" + exception.source + "|" + exception.objectId + "|" + exception.target;
-                if (exception.rule == "ExternalPackageGuid") key = exception.rule + "|" + exception.target;
+                if (exception.rule == "ExternalPackageGuid" || exception.rule == "ExternalPackageInclude")
+                    key = exception.rule + "|" + exception.target;
                 if (string.IsNullOrWhiteSpace(exception.reason) || !observed.Contains(key))
                     problems.Add("DemoContent.StaleKnownException: " + key);
             }
@@ -326,6 +376,13 @@ namespace HiddenHarbours.Tests.EditMode
                     budget.knownExceptions.Any(e => e.rule == "ExternalPackageGuid" && e.target == reference.Guid))
                 {
                     observed.Add("ExternalPackageGuid|" + reference.Guid);
+                    continue;
+                }
+                if (rule == "UnresolvedReference" && reference.ObjectId == "include" &&
+                    reference.Target != null && reference.Target.StartsWith("Packages/", StringComparison.Ordinal) &&
+                    budget.knownExceptions.Any(e => e.rule == "ExternalPackageInclude" && e.target == reference.Target))
+                {
+                    observed.Add("ExternalPackageInclude|" + reference.Target);
                     continue;
                 }
                 if (!budget.knownExceptions.Any(e => e.rule == rule && e.source == reference.Source && e.objectId == reference.ObjectId && e.target == target))
