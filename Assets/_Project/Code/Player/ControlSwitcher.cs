@@ -356,6 +356,7 @@ namespace HiddenHarbours.Player
         public bool WithinBoardReach()
             => !_carriedAboard
                && Player != null && Boat != null
+               && Boat.gameObject.activeInHierarchy   // a boat kept out of the world cannot be boarded
                && Vector2.Distance(Player.position, NearestPointOnHull()) <= BoardReachMetres;
 
         /// <summary>
