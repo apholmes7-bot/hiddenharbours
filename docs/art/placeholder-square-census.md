@@ -6,6 +6,8 @@ Scanned all 149 `.prefab` files under `Assets/_Project` as YAML text. **Seven pr
 
 Since the first census at `f1b4ab2`, main added `Assets/_Project/Prefabs/Dwellings/CamperClipperDwelling.prefab`. It has no Square reference. The seven-prefab list and all 117 renderer rows below are unchanged.
 
+Checked again at `d46bde303e6aa256d23d47a05ede5d7d6f38e51e`: the same 149 prefab files and all seven users remain. Their source files are unchanged from the previous passing census run, so every renderer row and the shrinking allowlist are retained exactly. This refresh does not replace any pixel expectation.
+
 This records existing content debt; it does not accept a look or authorize more square placeholders. No asset was changed and no scene was rendered.
 
 ## Scope and maintenance
