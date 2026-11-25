@@ -46,8 +46,13 @@ namespace HiddenHarbours.Boats
         [Tooltip("Height above the tray, in metres, that the mark floats.")]
         [SerializeField] private float _heightMeters = 0.55f;
 
-        [Tooltip("World size of the mark's text. Small — this is a tag on a tote, not a banner.")]
-        [Min(0.001f)] [SerializeField] private float _characterMeters = 0.11f;
+        [Tooltip("World pixels per letter pixel. The mark is set in the pixel face on the world's own " +
+                 "pitch (32 a metre), so 2 draws each letter pixel as two world pixels: small, as a tag on a " +
+                 "tote should be, and on the same grid as the art around it.")]
+        [Min(1)] [SerializeField] private int _worldPixelsPerFacePixel = 2;
+
+        // A TextMesh draws one font pixel across a tenth of its characterSize.
+        private const float TextMeshPixelPerCharacterSize = 0.1f;
 
         // Sits just above the tray so the mark is never hidden behind the catch it describes.
         private const int TagSortingOrder = DeckContainerPresenter.ContainerSortingOrder + 1;
@@ -157,8 +162,9 @@ namespace HiddenHarbours.Boats
             _text.font = DefaultFont();
             _text.anchor = TextAnchor.LowerCenter;
             _text.alignment = TextAlignment.Center;
-            _text.fontSize = 64;                       // rendered small by characterSize; keeps it crisp
-            _text.characterSize = _characterMeters;
+            _text.fontSize = HarbourType.GlyphHeight;  // the face's own size: one font pixel a face pixel
+            _text.characterSize = _worldPixelsPerFacePixel
+                                  / (float)DialogueBubbleKit.PixelsPerUnit / TextMeshPixelPerCharacterSize;
             _text.color = Turning;
 
             _textRenderer = go.GetComponent<MeshRenderer>();
@@ -171,11 +177,11 @@ namespace HiddenHarbours.Boats
             }
         }
 
-        // Unity 6 removed Arial.ttf from Resources; LegacyRuntime.ttf is the built-in fallback.
+        // The game's one pixel face; the built-in font only where the face did not load.
         private static Font DefaultFont()
         {
-            var f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            if (f == null) f = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            var f = HarbourType.Load();
+            if (f == null) f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             return f;
         }
     }

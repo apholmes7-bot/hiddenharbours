@@ -371,6 +371,7 @@ namespace HiddenHarbours.Economy
             var t = go.GetComponent<Text>();
             t.font = DefaultFont();
             t.fontSize = t.font != null && t.font.name == HarbourType.FontName ? HarbourType.SizeNearest(fontSize) : fontSize;
+            t.text = text; // the title, headings, buttons and species rows are given their words here
             t.alignment = align;
             t.color = Color.white;
             t.horizontalOverflow = HorizontalWrapMode.Overflow;

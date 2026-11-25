@@ -79,6 +79,8 @@ namespace HiddenHarbours.Tests.EditMode
                 "UI/InteractChooserView.cs",   // shares PaperUi.MakeScreen and the HUD band's scale
                 "UI/InteractPopup.cs",         // ditto
                 "UI/CharacterCreatorPanel.cs", // 1920x1080 reference: whole at 720p/1080p/1440p, not at 768p
+                "UI/HudController.cs",         // the band's scale is the helm overlays' too; face sizes in
+                                               // steps of 16 are whole at 720p/1080p/1440p/4K (HudBandLayout.FaceSize)
             };
 
             string root = Path.Combine(Application.dataPath, "_Project", "Code");
@@ -132,6 +134,38 @@ namespace HiddenHarbours.Tests.EditMode
             yield return HudStrings.TideTableDayHeading(false, 1);
             yield return HudStrings.TideTurnLabel(true) + HudStrings.TideTurnLabel(false);
             yield return MoneyFormat.Balance(0) + "   x3";
+
+            // The HUD band, set in the face since pass 3: every heading, wind and drift read.
+            for (int b = 0; b < 360; b += 15)
+            {
+                yield return CompassReadout.Ribbon(b);
+                yield return CompassReadout.HeadingArrow(b) + " " + CompassReadout.Degrees(b) + " " + CompassReadout.Cardinal(b);
+                yield return CompassReadout.SetAndDrift(b, b + 20f, 2f);
+                yield return CompassReadout.SetAndDrift(b, b - 20f, 2f);
+                yield return ApparentWindReadout.Format(0f, new Vector2(Mathf.Sin(b * Mathf.Deg2Rad), Mathf.Cos(b * Mathf.Deg2Rad)) * 6f);
+                var wind = new Vector2(Mathf.Sin(b * Mathf.Deg2Rad), Mathf.Cos(b * Mathf.Deg2Rad)) * 8f;
+                yield return WindReadout.ArrowGlyph(wind) + " " + WindReadout.Cardinal(wind);
+            }
+            yield return ApparentWindReadout.Format(0f, Vector2.zero);
+            for (int knots = 0; knots <= 60; knots += 3)
+                yield return HudFormat.WindBarbs(knots) + " " + HudFormat.WindKnots(knots) + " " + HudFormat.BeaufortLabel(knots / 5);
+            foreach (SeaState sea in System.Enum.GetValues(typeof(SeaState)))
+                yield return HudFormat.Sea(sea);
+            yield return HudStrings.TideArrow(true) + HudStrings.TideArrow(false) + HudStrings.TurnGlyph
+                         + HudStrings.TideDirection(true) + HudStrings.TideDirection(false);
+            yield return HudStrings.FishingAtHelm;
+            yield return HudStrings.TrailerCaptured;
+            yield return HudFormat.CatchCard("Atlantic cod", 2.4f, 12);
+            yield return HudFormat.HeightMeters(-1.2f) + HudFormat.ClockHHMM(13.5f);
+            yield return "\u25BE\u00D7";   // the compass needle and the watch's hide mark, set in HudController
+
+            // The wardrobe card and the deck's freshness mark.
+            foreach (var f in typeof(WardrobeStrings).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static))
+                if (f.IsLiteral && f.FieldType == typeof(string)) yield return (string)f.GetRawConstantValue();
+            yield return HoldReadStrings.Countdown(3.5) + HoldReadStrings.Countdown(0.5);
+            yield return HoldReadStrings.Rubbish(1) + HoldReadStrings.Rubbish(2);
+            foreach (StorageMode mode in System.Enum.GetValues(typeof(StorageMode)))
+                yield return HoldReadStrings.Held(mode);
         }
 
         [Test]

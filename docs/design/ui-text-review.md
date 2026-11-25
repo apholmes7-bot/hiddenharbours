@@ -1,4 +1,4 @@
-# UI text review — passes 1 and 2
+# UI text review — passes 1 to 3
 
 Every piece of text the player reads, and how it is drawn: the Notebook, the HUD, the chooser,
 shop and shelf prices, the paper bag, bubbles, prompts, the KIT tab, menus, settings, the
@@ -147,7 +147,7 @@ The owner picked A for all three.
 1. **One face everywhere.** The title, pause and settings pages, the tide table, the sell screen,
    the arrival card and the toasts now set in the pixel face. Sizes are whole multiples of 24
    (glyph height 8 times the kit's scale 3) on a snapped canvas, so no letter is resampled.
-   Not yet on the face: the HUD, the wardrobe panel and the deck freshness tag (see Still owed).
+   Pass 3 brought the HUD, the wardrobe panel and the deck freshness tag onto the face too.
 2. **Title layout: wordmark top left.** This is the layout already in the game. The wordmark is
    still type, not drawn art.
 3. **Notebook paper: ruled.** This is the paper already in the game. No change.
@@ -180,6 +180,30 @@ key table uses only the face's letters, and the pages on the face use only its g
 
 ---
 
+## Pass 3 — what changed
+
+**The HUD wears the face.** Its labels are sized in steps of 16 (`HudBandLayout.FaceSize`). The
+HUD band keeps its plain scaler, because the helm overlay, the chooser and the interact popup
+all read its raw scale. At the 1280x720 reference that scale is 1, 1.5, 2 and 3 at 720p, 1080p,
+1440p and 4K, so a size of 16 is a whole number of screen pixels per face pixel at all four.
+
+**The face gains 17 glyphs**, 107 in all, on a 64x56 atlas: the eight compass and wind arrows,
+▾ ⤴ ▮ ▪ ○ [ ] ~ and ⚠. A test walks every heading, wind speed, sea state, tide turn, catch card
+and hold line the HUD can draw, and fails on any character the face lacks.
+
+**Wardrobe panel** is laid out for the face at 24 on a snapped canvas. Its cursor, chip and name
+sit in fixed columns, and a garment with no display name shows a plain name, never its id.
+
+**Deck freshness tag** wears the face at the world's pixel pitch: one face pixel is two world
+pixels, so it matches the art around it.
+
+**Tide table close hint** is shorter and fits its page at both sizes.
+
+**Sell screen** shows its title, headings, button words and fish rows. They were built without
+their text before, on this screen in every font.
+
+---
+
 ## Strings still in code
 
 Content is data. These are still written in C#. They are listed here, not moved.
@@ -197,14 +221,17 @@ Medium: a new economy strings table for the shop, catalogue and sale screen.
 
 ## Still owed
 
-- **HUD glyphs.** The HUD needs arrows and marks the face does not have: the eight compass and wind
-  arrows, ⤴ ▮ ▪ ○ ↗ → ▾ and ~. The HUD stays on the system font until they are drawn.
-- **Wardrobe panel.** Its rows are sized for a 16 px system font; at the face's 24 they need a new
-  layout. Its [ ] marks also need glyphs.
-- **Deck freshness tag.** A world-space label; it needs its own pixel sizing before it can wear the face.
-- **Dash rig text.** The rig sources for both dash consoles still say STANDBY; the game draws NOT FITTED.
-- **Wordmark art.** The title wordmark is still type.
-- **Tide table close hint** runs past the page edge in the face at 24; it needs a shorter line or a wider box.
+- **Dash rig text.** The rig sources for both dash consoles still say STANDBY; the game draws NOT
+  FITTED. Those sources are a reference for a hand port, with no bake to re-run, and their own
+  font has no F, so the change is more than a word swap. Left as it is.
+- **Wordmark art.** The title wordmark is still type. In the live game it sits over the bright
+  truck and the white boat cabin with no backing, so its contrast is weak in places. It needs
+  a backing or drawn art.
+- **Sell screen at the wharf.** The wharf counter buys what is carried and has no hold, so this
+  screen does not open from it. It was checked opened on a hold.
+- **Pause page.** "Your harbour is saved either way." and the Esc line run past their boxes at 24.
+- **Tide table heights** ("+2.1 m") crowd the times in their small boxes.
+- **HUD snapping.** The HUD, chooser, popup and helm overlay share one raw scale. Snapping them
+  is one layout change for all four.
 - A dev-only gate on dev toasts.
-- Chooser and popup scale snapping (layout).
 - The two "(working name)" waters.

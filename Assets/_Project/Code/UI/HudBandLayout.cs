@@ -52,6 +52,19 @@ namespace HiddenHarbours.UI
         public const float SidePaddingRef = 32f;
 
         /// <summary>
+        /// The pixel face's size step on the band. At size 16 one face pixel is 2 reference units, and
+        /// the band's scale is 1, 1.5, 2 or 3 at 720p, 1080p, 1440p and 4K, so 2 units is a whole number
+        /// of screen pixels at every one of them. The band keeps the plain scaler because the helm
+        /// overlays, the chooser and the popup all place themselves by <see cref="ScaleFactor"/>; on a
+        /// window between those sizes the face falls between pixels until all of them move together.
+        /// </summary>
+        public const int FaceStep = 16;
+
+        /// <summary>The nearest multiple of <see cref="FaceStep"/>, and never smaller than one step.</summary>
+        public static int FaceSize(int asked)
+            => Mathf.Max(FaceStep, Mathf.RoundToInt(asked / (float)FaceStep) * FaceStep);
+
+        /// <summary>
         /// <c>CanvasScaler.ScaleMode.ScaleWithScreenSize</c>'s own factor for
         /// <see cref="MatchWidthOrHeight"/> — <c>(w/refW)^(1−m) · (h/refH)^m</c>. Screen pixels per
         /// reference unit.
