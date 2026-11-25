@@ -98,7 +98,7 @@ the reason recorded in the guard.
 | `bait.fish_scrap` | 1 | leblancs, nmc_fishing_gear_wholesaler | offer |
 | `supply.ice` / `bread` / `tinned_beans` / `oatcakes` | 6 / 4 / 3 / 2 | leblancs | shelf |
 | `supply.soap_bar` | 3 | leblancs (8 showers or baths a bar; see `docs/world/washrooms-plan.md` §1a) | shelf |
-| `instrument.depth_sounder` | 140 | leblancs | shelf (moves to the boat/gear wholesaler with its counter; see §5) |
+| `instrument.depth_sounder` | 140 | nmc_boat_gear_wholesaler (moved from leblancs, ruling 11-23; see §5) | shelf |
 | `instrument.fish_finder` | 650 | nmc_boat_gear_wholesaler (moved from leblancs; same dash cutout as the sounder) | offer |
 | `instrument.gps` (chartplotter) | 1,800 | nmc_boat_gear_wholesaler (moved from nmc_chandlery; wants a wheelhouse boat) | offer |
 | `instrument.loran` | 900 | nmc_boat_gear_wholesaler only (the leblancs placeholder and its St Peters vendor are gone; wants a wheelhouse boat) | offer |
@@ -210,9 +210,11 @@ it cannot create a counter from nothing, and neither wholesaler shell has a vend
    from them; the rake, tongs, sack and basket wait for hand-gathering as well
    (`NmcWholesalerKeepers.Waiting`). A seat or owner call; a new row is all the step needs.
 4. **Moves that wait for that counter, so nothing goes unbuyable in between:** the depth sounder off
-   `leblancs` (approved: electronics are the boat/gear wholesaler's alone; it is the St Peters counter's
-   `InstrumentShop` template today, and the StPeters builder and `StoreClerkContentTests` name it), and
-   the fishing gear wholesaler joining the listed rod, capelin and both pots (the rod then leaves
+   `leblancs` is DONE (ruling 11-23: the island store sells basic fishing gear, boat hardware is the
+   mainland's). Its offer names only the boat/gear wholesaler at 140; its `InstrumentShop` stands on
+   `NmcBoatGearWholesalerCounter` as a copy of the Loran's (a `NineMileCreekWholesalers` row), and the St
+   Peters counter's shop was taken off by the step's `Retired` row (`Region.Retired`: a retired vendor still
+   standing is deleted and unlisted; one already gone is nothing to do). Still waiting: the fishing gear wholesaler joining the listed rod, capelin and both pots (the rod then leaves
    `nmc_chandlery`, the pots leave `nmc_yard`, per §2 of the stock proposal).
 
 ### 5.2 Wholesaler items that do not exist yet (owed; no offer invented here)

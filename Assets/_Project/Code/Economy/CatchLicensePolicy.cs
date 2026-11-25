@@ -12,7 +12,8 @@ namespace HiddenHarbours.Economy
     /// <para><b>One source of truth, kept in lane.</b> The mapping "cod → license.cod" is derived from the
     /// licence data, not duplicated — so authoring a licence is the only place the gate is declared, and
     /// it can't drift from the species. This is a pure helper over the Core <see cref="ILicenseService"/>
-    /// contract: Fishing (gameplay-systems) calls <see cref="MayLand"/> at land-time WITHOUT referencing
+    /// contract: Fishing (gameplay-systems) calls <see cref="MayLand"/> at land-time (through its one
+    /// shared rule for the rod, the dig and the trap haul alike) WITHOUT referencing
     /// the Economy concrete classes (it passes the species id + reads <see cref="GameServices.Licenses"/>),
     /// and it's fully EditMode-testable. We deliberately do NOT add a RequiredLicenseId field to the
     /// Fishing <c>FishSpeciesDef</c> (that's gameplay-systems' schema) — the gate is keyed by id.</para>

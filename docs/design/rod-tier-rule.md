@@ -41,8 +41,9 @@ new gear exclusion, and no deep-water or catch-size advantage is implied.
 
 ## Controller handoff
 
-The controller is protected by the unlicensed-release work. This proposal does
-not edit it. Once that work settles, resolve the equipped gear's scalar through
+The shared unlicensed-release path is already on the pinned main
+`d46bde303e6aa256d23d47a05ede5d7d6f38e51e`. This proposal leaves that controller
+unchanged. Future integration must resolve the equipped gear's scalar through
 the Core boundary and make this call in a shared reach accessor:
 
 ```csharp

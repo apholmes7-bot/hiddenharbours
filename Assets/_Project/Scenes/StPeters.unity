@@ -286,7 +286,7 @@ GameObject:
   - component: {fileID: 804075}
   - component: {fileID: 804074}
   m_Layer: 0
-  m_Name: Table (1.6,-1.8)
+  m_Name: Table (-0.1,3.1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -301,7 +301,7 @@ Transform:
   m_GameObject: {fileID: 804072}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.75, y: -1.02846, z: 0}
+  m_LocalPosition: {x: 3.050003, y: 0.057849884, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -353,10 +353,10 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -0.3899994, y: 0.7440262}
-      - {x: -0.3899994, y: -0.7440262}
-      - {x: 0.3899994, y: -0.7440262}
-      - {x: 0.3899994, y: 0.7440262}
+    - - {x: 1.1575012, y: 0.25068665}
+      - {x: -1.1575012, y: 0.25068665}
+      - {x: -1.1575012, y: -0.25068665}
+      - {x: 1.1575012, y: -0.25068665}
   m_UseDelaunayMesh: 1
 --- !u!114 &804075
 MonoBehaviour:
@@ -423,9 +423,9 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1092
+  m_SortingOrder: 1090
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 793178075, guid: 05219ab29f41acd4c811ff89e4744241, type: 3}
+  m_Sprite: {fileID: -1076643010, guid: 05219ab29f41acd4c811ff89e4744241, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -5836,7 +5836,7 @@ GameObject:
   - component: {fileID: 122409396}
   - component: {fileID: 122409395}
   m_Layer: 0
-  m_Name: Chair (2.2,-2.5)
+  m_Name: Chair (-0.7,3.6)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5851,7 +5851,7 @@ Transform:
   m_GameObject: {fileID: 122409393}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.45, y: -1.414133, z: 0}
+  m_LocalPosition: {x: 3.5999985, y: 0.47566223, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5903,10 +5903,10 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -0.20999908, y: 0.14141273}
-      - {x: -0.20999908, y: -0.14141273}
-      - {x: 0.20999908, y: -0.14141273}
-      - {x: 0.20999908, y: 0.14141273}
+    - - {x: 0.22000122, y: 0.13498497}
+      - {x: -0.22000122, y: 0.13498497}
+      - {x: -0.22000122, y: -0.13498497}
+      - {x: 0.22000122, y: -0.13498497}
   m_UseDelaunayMesh: 1
 --- !u!114 &122409396
 MonoBehaviour:
@@ -5973,9 +5973,9 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1094
+  m_SortingOrder: 1088
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -743921023, guid: 82a90aaa2856526478e058ef5a9797a7, type: 3}
+  m_Sprite: {fileID: -1600550398, guid: 82a90aaa2856526478e058ef5a9797a7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -25080,7 +25080,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1101
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -358628381, guid: 82a90aaa2856526478e058ef5a9797a7, type: 3}
+  m_Sprite: {fileID: 1912259018, guid: 82a90aaa2856526478e058ef5a9797a7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -33170,7 +33170,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1174
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -743921023, guid: 82a90aaa2856526478e058ef5a9797a7, type: 3}
+  m_Sprite: {fileID: 691296538, guid: 82a90aaa2856526478e058ef5a9797a7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -46100,10 +46100,10 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -0.22, y: -0.13498539}
-      - {x: 0.22000003, y: -0.13498539}
-      - {x: 0.22000003, y: 0.13498539}
-      - {x: -0.22, y: 0.13498539}
+    - - {x: 0.22000003, y: 0.13498537}
+      - {x: -0.21999997, y: 0.13498539}
+      - {x: -0.22000003, y: -0.13498539}
+      - {x: 0.21999997, y: -0.13498539}
   m_UseDelaunayMesh: 1
 --- !u!114 &879726374
 MonoBehaviour:
@@ -46172,7 +46172,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1061
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -1600550398, guid: 82a90aaa2856526478e058ef5a9797a7, type: 3}
+  m_Sprite: {fileID: -511161966, guid: 82a90aaa2856526478e058ef5a9797a7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -52889,7 +52889,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1098
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -358628381, guid: 82a90aaa2856526478e058ef5a9797a7, type: 3}
+  m_Sprite: {fileID: 1912259018, guid: 82a90aaa2856526478e058ef5a9797a7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -55862,7 +55862,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1172
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -743921023, guid: 82a90aaa2856526478e058ef5a9797a7, type: 3}
+  m_Sprite: {fileID: 691296538, guid: 82a90aaa2856526478e058ef5a9797a7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -69628,7 +69628,6 @@ GameObject:
   - component: {fileID: 1384401483}
   - component: {fileID: 1384401482}
   - component: {fileID: 1384401481}
-  - component: {fileID: 1384401480}
   - component: {fileID: 1384401479}
   - component: {fileID: 1384401478}
   - component: {fileID: 1384401477}
@@ -69704,24 +69703,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.LicenseVendor
   _license: {fileID: 11400000, guid: ff1692a5736e4c9f947eccb90b32c27d, type: 2}
-  _sellerId: seller.leblancs
-  _walletProvider: {fileID: 1773492499}
-  _onPurchased:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!114 &1384401480
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1384401473}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b9d0eb07b9fa3045a203d5654276a6d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.InstrumentShop
-  _offer: {fileID: 11400000, guid: 10e0e2da0a4042fd8563d356fdc821d8, type: 2}
   _sellerId: seller.leblancs
   _walletProvider: {fileID: 1773492499}
   _onPurchased:
@@ -87821,10 +87802,10 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -0.22, y: -0.13498539}
+    - - {x: 0.22, y: 0.13498539}
+      - {x: -0.21999998, y: 0.13498539}
+      - {x: -0.22000001, y: -0.13498539}
       - {x: 0.22, y: -0.13498539}
-      - {x: 0.22, y: 0.13498539}
-      - {x: -0.22, y: 0.13498539}
   m_UseDelaunayMesh: 1
 --- !u!114 &1730609274
 MonoBehaviour:
@@ -87893,7 +87874,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1038
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -1600550398, guid: 82a90aaa2856526478e058ef5a9797a7, type: 3}
+  m_Sprite: {fileID: -511161966, guid: 82a90aaa2856526478e058ef5a9797a7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -93273,7 +93254,7 @@ GameObject:
   - component: {fileID: 1814612370}
   - component: {fileID: 1814612369}
   m_Layer: 0
-  m_Name: Chair (1,-2.5)
+  m_Name: Chair (-0.7,2.5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -93288,7 +93269,7 @@ Transform:
   m_GameObject: {fileID: 1814612367}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.45, y: -0.6427876, z: 0}
+  m_LocalPosition: {x: 2.5, y: 0.47566223, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -93340,10 +93321,10 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -0.20999908, y: 0.14141273}
-      - {x: -0.20999908, y: -0.14141273}
-      - {x: 0.20999908, y: -0.14141273}
-      - {x: 0.20999908, y: 0.14141273}
+    - - {x: 0.22000122, y: 0.13498497}
+      - {x: -0.22000122, y: 0.13498497}
+      - {x: -0.22000122, y: -0.13498497}
+      - {x: 0.22000122, y: -0.13498497}
   m_UseDelaunayMesh: 1
 --- !u!114 &1814612370
 MonoBehaviour:
@@ -93410,9 +93391,9 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1091
+  m_SortingOrder: 1088
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -743921023, guid: 82a90aaa2856526478e058ef5a9797a7, type: 3}
+  m_Sprite: {fileID: -1600550398, guid: 82a90aaa2856526478e058ef5a9797a7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -100901,10 +100882,10 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -0.22000003, y: -0.13498539}
-      - {x: 0.22000003, y: -0.13498539}
-      - {x: 0.22000003, y: 0.13498539}
+    - - {x: 0.22000003, y: 0.13498539}
       - {x: -0.22000003, y: 0.13498539}
+      - {x: -0.22000003, y: -0.13498539}
+      - {x: 0.22000003, y: -0.13498539}
   m_UseDelaunayMesh: 1
 --- !u!114 &1985141119
 MonoBehaviour:
@@ -100973,7 +100954,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1038
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -1600550398, guid: 82a90aaa2856526478e058ef5a9797a7, type: 3}
+  m_Sprite: {fileID: -511161966, guid: 82a90aaa2856526478e058ef5a9797a7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -102545,10 +102526,10 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -0.22000003, y: -0.13498539}
-      - {x: 0.22, y: -0.13498539}
-      - {x: 0.22, y: 0.13498539}
-      - {x: -0.22000003, y: 0.13498539}
+    - - {x: 0.22000003, y: 0.13498537}
+      - {x: -0.21999997, y: 0.13498539}
+      - {x: -0.22000003, y: -0.13498539}
+      - {x: 0.21999997, y: -0.13498539}
   m_UseDelaunayMesh: 1
 --- !u!114 &2030141670
 MonoBehaviour:
@@ -102617,7 +102598,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1061
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -1600550398, guid: 82a90aaa2856526478e058ef5a9797a7, type: 3}
+  m_Sprite: {fileID: -511161966, guid: 82a90aaa2856526478e058ef5a9797a7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -154819,6 +154800,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: WashStand
       objectReference: {fileID: 0}
+    - target: {fileID: 7353005641984347720, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: _wallOffset
+      value: 4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -154845,13 +154830,17 @@ PrefabInstance:
       propertyPath: _id
       value: fixture.st_peters.ginny_cottage.toilet
       objectReference: {fileID: 0}
+    - target: {fileID: 8210519831782915013, guid: 71ac4057a9e647aaa5b1f3e7d70f2d07, type: 3}
+      propertyPath: _wallOffset
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 8939669668250744907, guid: 71ac4057a9e647aaa5b1f3e7d70f2d07, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.4000015
+      value: 1.699997
       objectReference: {fileID: 0}
     - target: {fileID: 8939669668250744907, guid: 71ac4057a9e647aaa5b1f3e7d70f2d07, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.976572
+      value: -0.6106491
       objectReference: {fileID: 0}
     - target: {fileID: 8939669668250744907, guid: 71ac4057a9e647aaa5b1f3e7d70f2d07, type: 3}
       propertyPath: m_LocalPosition.z
@@ -154909,11 +154898,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.5
+      value: 1.1500015
       objectReference: {fileID: 0}
     - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.9444332
+      value: -0.53030014
       objectReference: {fileID: 0}
     - target: {fileID: 2012394428601004863, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
       propertyPath: m_LocalPosition.z
@@ -154951,6 +154940,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BathroomSink
       objectReference: {fileID: 0}
+    - target: {fileID: 7353005641984347720, guid: 069317a148180ae4f894cf79cb417d39, type: 3}
+      propertyPath: _wallOffset
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -154979,7 +154972,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3338759676406241365, guid: f348edbf00544ddb89acd7e879c8a671, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.6551781
+      value: -1.815876
       objectReference: {fileID: 0}
     - target: {fileID: 3338759676406241365, guid: f348edbf00544ddb89acd7e879c8a671, type: 3}
       propertyPath: m_LocalPosition.z
@@ -155011,6 +155004,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3338759676406241365, guid: f348edbf00544ddb89acd7e879c8a671, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4662167718837410890, guid: f348edbf00544ddb89acd7e879c8a671, type: 3}
+      propertyPath: _wallOffset
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7947399269567592422, guid: f348edbf00544ddb89acd7e879c8a671, type: 3}
@@ -155309,6 +155306,10 @@ PrefabInstance:
       propertyPath: _id
       value: fixture.st_peters.ginny_cottage.prep_counter
       objectReference: {fileID: 0}
+    - target: {fileID: 2750645011639472959, guid: c8d5bbd1a5294b93b5982ed4ccc0221c, type: 3}
+      propertyPath: _wallOffset
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -155374,6 +155375,10 @@ PrefabInstance:
     - target: {fileID: 7182004520000003, guid: 842d1ae7c83b4ec884779914eca0a351, type: 3}
       propertyPath: _id
       value: fixture.st_peters.ginny_cottage.stove
+      objectReference: {fileID: 0}
+    - target: {fileID: 121953926539357967, guid: 842d1ae7c83b4ec884779914eca0a351, type: 3}
+      propertyPath: _wallOffset
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -155441,6 +155446,10 @@ PrefabInstance:
       propertyPath: _id
       value: fixture.st_peters.ginny_cottage.microwave
       objectReference: {fileID: 0}
+    - target: {fileID: 8642531395547780508, guid: fa0c51b2257145638556b64c0cffeb5b, type: 3}
+      propertyPath: _wallOffset
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -155507,6 +155516,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8979622393243261543, guid: 3a17cb235b8446c41b2d1d20a0822b0f, type: 3}
+      propertyPath: _wallOffset
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -155564,6 +155577,10 @@ PrefabInstance:
     - target: {fileID: 2116664568372689540, guid: 011c92d48b40684438a5014bc4358d5a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4739240499944767174, guid: 011c92d48b40684438a5014bc4358d5a, type: 3}
+      propertyPath: _wallOffset
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 6069593847639722371, guid: 011c92d48b40684438a5014bc4358d5a, type: 3}
       propertyPath: m_Name
