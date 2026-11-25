@@ -536,6 +536,14 @@ namespace HiddenHarbours.Core
         /// (<see cref="PlayerSkillRows"/>). Older saves start with none: every skill at zero.
         /// </summary>
         public List<PlayerSkillDto> PlayerSkills = new();
+
+        /// <summary>
+        /// <b>The line and reel each player has fitted to each rod</b>, one row per player and rod; an empty part
+        /// id is the rod's own part, so a rod never fitted has no row. The parts he owns stay in
+        /// <see cref="OwnedGear"/>. Added in v27 as <b>data only</b> (<see cref="RodFittingRows"/>). Older saves
+        /// start with none: every rod carries its own parts.
+        /// </summary>
+        public List<RodFittingDto> RodFittings = new();
     }
 
     /// <summary>

@@ -99,4 +99,31 @@ namespace HiddenHarbours.Core
         /// <summary>The experience earned so far, a whole number, never below zero.</summary>
         public int Experience;
     }
+
+    /// <summary>
+    /// <b>The line and reel one player has fitted to one rod, as saved</b> (save v27). One row per player and
+    /// rod. <b>An empty part id means the rod's own default part</b>, so a rod never fitted has no row.
+    ///
+    /// <para><b>Ids only.</b> The parts' numbers, and the rod's combined stats, are read from their Defs and
+    /// never saved. A part he has bought is owned in <see cref="SaveData.OwnedGear"/>, the existing presence
+    /// list; this row only says which owned part is on which rod. An id whose Def is missing is kept as written
+    /// (ids are append-only) and read as the default part by <see cref="RodFittingRows"/>.</para>
+    ///
+    /// <para>Read and written through <see cref="RodFittingRows"/>. Flat and JsonUtility-friendly.</para>
+    /// </summary>
+    [Serializable]
+    public sealed class RodFittingDto
+    {
+        /// <summary>Whose fitting this is (<see cref="SavePlayerKeys"/>).</summary>
+        public string PlayerKey = SavePlayerKeys.Local;
+
+        /// <summary>The rod's stable tool id (for example <c>tool.rod_coast</c>).</summary>
+        public string RodKey = "";
+
+        /// <summary>The fitted line's Def id (<c>fishing_line.*</c>); empty for the rod's own line.</summary>
+        public string LineId = "";
+
+        /// <summary>The fitted reel's Def id (<c>reel.*</c>); empty for the rod's own reel.</summary>
+        public string ReelId = "";
+    }
 }

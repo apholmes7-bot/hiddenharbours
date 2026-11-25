@@ -23,6 +23,10 @@ namespace HiddenHarbours.Tests.EditMode
         const string Boots = "clothing.rubber_boots";
         const string Cap = "clothing.watch_cap";
         const string RodSkill = "skill.rod_fishing";
+        const string CoastRod = "tool.rod_coast";
+        const string DeepRod = "tool.rod_deep";
+        const string HeavyLine = "fishing_line.heavy";
+        const string DeepReel = "reel.deep";
 
         /// <summary>A v26 file as main writes it today: purchases, a held paper bag, a paid special order and
         /// the older rows around them. No v27 key appears in it.</summary>
@@ -72,6 +76,10 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(0, PlayerClothingRows.Worn(save, Local).Count);
             Assert.AreEqual(0, ClothingRackSaleRows.Sold(save, Rack, Oilskin));
             Assert.AreEqual(0, PlayerSkillRows.Experience(save, Local, RodSkill));
+            Assert.IsNotNull(save.RodFittings);
+            Assert.AreEqual(0, save.RodFittings.Count, "every rod carries its own parts");
+            Assert.AreEqual("", RodFittingRows.LineOf(save, Local, CoastRod));
+            Assert.AreEqual("", RodFittingRows.ReelOf(save, Local, CoastRod));
         }
 
         [Test]
@@ -136,6 +144,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(0, save.PlayerClothing.Count);
             Assert.AreEqual(0, save.ClothingRackSales.Count);
             Assert.AreEqual(0, save.PlayerSkills.Count);
+            Assert.AreEqual(0, save.RodFittings.Count);
         }
 
         [Test]
@@ -144,11 +153,12 @@ namespace HiddenHarbours.Tests.EditMode
             SaveData save = SaveMigration.Migrate(new SaveData
             {
                 SchemaVersion = SaveMigration.CurrentVersion,
-                PlayerClothing = null, ClothingRackSales = null, PlayerSkills = null,
+                PlayerClothing = null, ClothingRackSales = null, PlayerSkills = null, RodFittings = null,
             });
             Assert.IsNotNull(save.PlayerClothing);
             Assert.IsNotNull(save.ClothingRackSales);
             Assert.IsNotNull(save.PlayerSkills);
+            Assert.IsNotNull(save.RodFittings);
         }
 
         // ---- 2. a v27 save ------------------------------------------------------------------------------
@@ -174,6 +184,8 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(2, ClothingRackSaleRows.Sold(loaded, Rack, Boots));
             Assert.AreEqual(0, ClothingRackSaleRows.Sold(loaded, Rack, Cap));
             Assert.AreEqual(57, PlayerSkillRows.Experience(loaded, Local, RodSkill));
+            Assert.AreEqual(HeavyLine, RodFittingRows.LineOf(loaded, Local, CoastRod));
+            Assert.AreEqual(DeepReel, RodFittingRows.ReelOf(loaded, Local, CoastRod));
         }
 
         [Test]
@@ -181,7 +193,8 @@ namespace HiddenHarbours.Tests.EditMode
         {
             string json = SaveSerialization.ToJson(Dressed());
             foreach (string key in new[] { "\"PlayerClothing\"", "\"OwnedClothing\"", "\"WornClothing\"",
-                                           "\"ClothingRackSales\"", "\"PlayerSkills\"", "\"PlayerKey\"" })
+                                           "\"ClothingRackSales\"", "\"PlayerSkills\"", "\"PlayerKey\"",
+                                           "\"RodFittings\"", "\"RodKey\"", "\"LineId\"", "\"ReelId\"" })
                 StringAssert.Contains(key, json);
             foreach (string forbidden in new[] { "tide", "wind", "weather" })
                 Assert.AreEqual(-1, json.IndexOf(forbidden, StringComparison.OrdinalIgnoreCase), forbidden);
@@ -259,7 +272,10 @@ namespace HiddenHarbours.Tests.EditMode
                     "{\"PlayerKey\":\"player.local\",\"OwnedClothing\":[\"clothing.rubber_boots\"],\"WornClothing\":[]}]," +
                 "\"ClothingRackSales\":[{\"RackId\":\"clothing_rack.st_peters_general\",\"ClothingId\":\"clothing.watch_cap\",\"Units\":1,\"Day\":3}," +
                     "{\"RackId\":\"clothing_rack.st_peters_general\",\"ClothingId\":\"clothing.watch_cap\",\"Units\":1,\"Day\":1}]," +
-                "\"PlayerSkills\":[{\"PlayerKey\":\"\",\"SkillId\":\"skill.rod_fishing\",\"Experience\":-1}]}";
+                "\"PlayerSkills\":[{\"PlayerKey\":\"\",\"SkillId\":\"skill.rod_fishing\",\"Experience\":-1}]," +
+                "\"RodFittings\":[{\"PlayerKey\":\"\",\"RodKey\":\"tool.rod_coast\",\"LineId\":\"\",\"ReelId\":\"reel.deep\"}," +
+                    "{\"PlayerKey\":\"player.local\",\"RodKey\":\"tool.rod_coast\",\"LineId\":\"fishing_line.heavy\",\"ReelId\":\"\"}," +
+                    "{\"PlayerKey\":\"player.local\",\"RodKey\":\"\",\"LineId\":\"fishing_line.heavy\",\"ReelId\":\"\"}]}";
             string once = SaveSerialization.ToJson(SaveSerialization.FromJson(damaged));
             string twice = SaveSerialization.ToJson(SaveSerialization.FromJson(once));
             Assert.AreEqual(once, twice);
@@ -340,6 +356,77 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsFalse(PlayerSkillRows.SetExperience(null, Local, RodSkill, 1));
         }
 
+        // ---- 4b. fitted rod parts ----------------------------------------------------------------------
+
+        [Test]
+        public void RodFittings_AreKeptPerPlayerAndRod_AndADefaultFitHasNoRow()
+        {
+            SaveData save = SaveMigration.NewGame();
+            Assert.IsTrue(RodFittingRows.Fit(save, Local, CoastRod, HeavyLine, ""));
+            Assert.IsTrue(RodFittingRows.Fit(save, Guest, CoastRod, "", DeepReel));
+            Assert.IsTrue(RodFittingRows.Fit(save, null, DeepRod, HeavyLine, DeepReel));
+            Assert.IsFalse(RodFittingRows.Fit(save, Local, "", HeavyLine, ""));
+
+            Assert.AreEqual(3, save.RodFittings.Count);
+            Assert.AreEqual(HeavyLine, RodFittingRows.LineOf(save, Local, CoastRod));
+            Assert.AreEqual("", RodFittingRows.ReelOf(save, Local, CoastRod), "an unfitted part is the rod's own");
+            Assert.AreEqual(DeepReel, RodFittingRows.ReelOf(save, Guest, CoastRod), "a second player is only another row");
+            Assert.AreEqual("", RodFittingRows.LineOf(save, Guest, CoastRod));
+            Assert.AreEqual(DeepReel, RodFittingRows.ReelOf(save, Local, DeepRod));
+
+            Assert.IsTrue(RodFittingRows.Fit(save, Local, CoastRod, "", null));
+            Assert.AreEqual(2, save.RodFittings.Count, "back to the rod's own parts: no row");
+            Assert.IsNull(RodFittingRows.Find(save, Local, CoastRod));
+        }
+
+        [Test]
+        public void RodFittings_AnIdWithNoDef_IsKeptButReadAsTheDefault()
+        {
+            SaveData save = Migrated("\"RodFittings\":[{\"PlayerKey\":\"player.local\",\"RodKey\":\"tool.rod_coast\"," +
+                                     "\"LineId\":\"fishing_line.retired\",\"ReelId\":\"reel.deep\"}]");
+            Func<string, bool> shipped = id => id == DeepReel;
+            Assert.AreEqual("fishing_line.retired", save.RodFittings[0].LineId, "ids are append-only: never rewritten");
+            Assert.AreEqual("", RodFittingRows.LineOf(save, Local, CoastRod, shipped));
+            Assert.AreEqual(DeepReel, RodFittingRows.ReelOf(save, Local, CoastRod, shipped));
+            Assert.AreEqual("fishing_line.retired", RodFittingRows.LineOf(save, Local, CoastRod), "no check, the id as written");
+        }
+
+        [Test]
+        public void Repair_RodFittings_EmptyKeyIsLocal_DuplicatesFold_NoRodOrAllDefaultIsDropped()
+        {
+            SaveData save = Migrated("\"RodFittings\":[" +
+                "{\"PlayerKey\":\"\",\"RodKey\":\"tool.rod_coast\",\"LineId\":\"fishing_line.heavy\",\"ReelId\":\"\"}," +
+                "{\"PlayerKey\":\"player.local\",\"RodKey\":\"\",\"LineId\":\"fishing_line.heavy\",\"ReelId\":\"\"}," +
+                "{\"PlayerKey\":\"player.local\",\"RodKey\":\"tool.rod_deep\",\"LineId\":\"\",\"ReelId\":\"\"}," +
+                "{\"PlayerKey\":\"player.local\",\"RodKey\":\"tool.rod_coast\",\"LineId\":\"fishing_line.light\",\"ReelId\":\"reel.deep\"}," +
+                "{\"PlayerKey\":\"player.guest.1\",\"RodKey\":\"tool.rod_coast\",\"LineId\":\"fishing_line.light\",\"ReelId\":\"\"}]");
+            Assert.AreEqual(2, save.RodFittings.Count);
+            Assert.AreEqual(Local, save.RodFittings[0].PlayerKey);
+            Assert.AreEqual(HeavyLine, RodFittingRows.LineOf(save, Local, CoastRod), "the first row stands");
+            Assert.AreEqual(DeepReel, RodFittingRows.ReelOf(save, Local, CoastRod), "a later row fills a part left at default");
+            Assert.AreEqual("fishing_line.light", RodFittingRows.LineOf(save, Guest, CoastRod));
+            Assert.IsNull(RodFittingRows.Find(save, Local, DeepRod), "all-default means no row");
+        }
+
+        [Test]
+        public void RodFittings_AWrite_IsWhatTheRepairWouldLeave()
+        {
+            SaveData save = SaveMigration.NewGame();
+            RodFittingRows.Fit(save, Local, CoastRod, HeavyLine, DeepReel);
+            RodFittingRows.Fit(save, Guest, DeepRod, "", DeepReel);
+            string written = SaveSerialization.ToJson(save);
+            Assert.AreEqual(written, SaveSerialization.ToJson(SaveSerialization.FromJson(written)));
+        }
+
+        [Test]
+        public void RodFittings_AreNullSafe()
+        {
+            Assert.AreEqual("", RodFittingRows.LineOf(null, Local, CoastRod));
+            Assert.AreEqual("", RodFittingRows.ReelOf(null, Local, CoastRod));
+            Assert.IsFalse(RodFittingRows.Fit(null, Local, CoastRod, HeavyLine, ""));
+            Assert.IsNull(RodFittingRows.Find(null, Local, CoastRod));
+        }
+
         // ---- 5. both save files -------------------------------------------------------------------------
 
         [Test]
@@ -401,6 +488,7 @@ namespace HiddenHarbours.Tests.EditMode
             ClothingRackSaleRows.Record(save, Rack, Oilskin, 1, 3);
             ClothingRackSaleRows.Record(save, Rack, Boots, 2, 3);
             PlayerSkillRows.SetExperience(save, Local, RodSkill, 57);
+            RodFittingRows.Fit(save, Local, CoastRod, HeavyLine, DeepReel);
             return save;
         }
 

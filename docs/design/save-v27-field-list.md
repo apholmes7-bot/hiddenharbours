@@ -5,8 +5,8 @@ What save version 27 adds, one row per field. Decision and detail: [ADR 0064](..
 a "no" removes that group's rows and the version still holds the rest.
 
 **Your existing save:** it loads as before, nothing changed or lost. You start with no store-bought garments
-(your outfit colours stay), a full clothing rack, and rod skill zero. Tide, wind and weather are still never
-saved.
+(your outfit colours stay), a full clothing rack, rod skill zero, and every rod with its own line and reel. Tide,
+wind and weather are still never saved.
 
 ## Group A: clothing (asked for in the store clothing change, accepted 2026-11-25)
 
@@ -35,22 +35,24 @@ saved.
 key in every row, a friend who joins later is simply one more row, and his clothes and skill are kept on the
 host's PC with no second save change. Without it, the co-op save step would have to change these rows again.
 
-## Group C: fitted rod parts (FIELDS TO COME)
-
-The owner ruled (2026-11-25) that a rod is built from parts bought separately (rod, line, reel) and fitted per
-player. What fitting must save is still being worked out; **this group is a placeholder and adds nothing yet.**
-Its rows will be keyed by the same player key as groups A and B and will join this same version 27 before it
-merges, with no second version. This list will be updated with them before the owner is asked to approve.
+## Group C: fitted rod parts (owner ruling 2026-11-25: rods built from a rod, a line and a reel, fitted per player)
 
 | Field | What it means | Who asked | Example |
 |---|---|---|---|
-| (to come) | Which rod, line and reel each player has fitted together | Owner ruling 2026-11-25; rod parts work | (to come) |
+| `RodFittings` | Which line and reel each player has put on each rod, one entry per player per rod | Rod parts (#1574) | one entry |
+| `RodFittings[].PlayerKey` | Whose fitting this is | Rod parts; co-op (#1563) | `player.local` (you) |
+| `RodFittings[].RodKey` | Which rod | Rod parts | `tool.rod_coast` |
+| `RodFittings[].LineId` | The line on it. Empty means the rod's own line | Rod parts | `fishing_line.heavy` |
+| `RodFittings[].ReelId` | The reel on it. Empty means the rod's own reel | Rod parts | `reel.deep` |
+
+A rod he has never changed has no entry. The parts he has bought are kept where his other gear is already kept
+(nothing new for that). Spare lines used up one by one would need a count, and are **not** in v27.
 
 ## Room for more before the bump merges
 
-Version 27 is open until its change merges: any further group (the fitted rod parts above, or co-op guest
-records if they are ready in time) is added to the same version-27 step, and the old-save rule stays the same
-(an older save starts each new list empty). Once version 27 has merged, anything else needs version 28.
+Version 27 is open until its change merges: a further group (co-op guest records if they are ready in time) is
+added to the same version-27 step, and the old-save rule stays the same (an older save starts each new list
+empty). Once version 27 has merged, anything else needs version 28.
 
 ## Not in v27 (could join; each needs its own yes)
 
@@ -64,5 +66,5 @@ records if they are ready in time) is added to the same version-27 step, and the
 
 ## Size
 
-About 80 bytes for a save that has not used any of it yet; under 2 KB for a demo week with clothes bought and
-the rod skill growing.
+About 100 bytes for a save that has not used any of it yet; under 2 KB for a demo week with clothes bought,
+the rod skill growing and a rod or two fitted (about 170 bytes per fitted rod).

@@ -370,12 +370,14 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 > again, but **a paid order is gone with its money**. Going back a version is not supported for a save that
 > holds a paid order.
 
-> **Save schema v27 (clothes, the clothing rack's sales, skills: ONE bump for the three lists, owner
-> 2026-11-25 "Yes, plan v27"; ADR 0064; field list for the owner in `docs/design/save-v27-field-list.md`)**:
-> `SaveData` gained three append-only lists (rows in Core/Save/SaveRowsV27.cs). **Data only:** nothing in the
-> game reads or writes them yet; the clothing and rod-skill changes wire themselves to the row helpers. The
-> `v26→v27` step gives each an empty list, so an older save loads with no garment owned or worn
-> (`WornOutfitId` untouched), every rack full and every skill at zero; nothing else moves.
+> **Save schema v27 (clothes, the clothing rack's sales, skills, fitted rod parts: ONE bump for the four
+> lists, owner 2026-11-25 "Yes, plan v27"; ADR 0064; field list for the owner in
+> `docs/design/save-v27-field-list.md`)**:
+> `SaveData` gained four append-only lists (rows in Core/Save/SaveRowsV27.cs). **Data only:** nothing in the
+> game reads or writes them yet; the clothing, rod-skill and rod-parts changes wire themselves to the row
+> helpers. The `v26→v27` step gives each an empty list, so an older save loads with no garment owned or worn
+> (`WornOutfitId` untouched), every rack full, every skill at zero and every rod on its own parts; nothing
+> else moves.
 >
 > - `PlayerClothing` (`PlayerClothingDto`: `PlayerKey`, `OwnedClothing` and `WornClothing`, lists of
 >   `clothing.*` ids): one row per player. Worn is a list of ids; the slot is the garment Def's, and the
@@ -390,11 +392,18 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 >   skill. The level is derived from experience by the skill Def, never saved. Helper: `PlayerSkillRows`
 >   (`Experience`, `SetExperience`). Repair: drop rows with no skill id; empty key is `player.local`;
 >   negative experience reads 0; repeats keep the larger.
+> - `RodFittings` (`RodFittingDto`: `PlayerKey`, `RodKey` the rod's tool id, `LineId` a `fishing_line.*` id,
+>   `ReelId` a `reel.*` id): one row per player and rod he has changed. An empty part id is the rod's own
+>   default part, so a rod never fitted has no row. Parts bought stay presence in `OwnedGear` (no new field);
+>   consumable spare lines would need counted stock and are not in v27. Helper: `RodFittingRows` (`LineOf`,
+>   `ReelOf`, `Fit`; an id whose Def is missing reads as default, the row keeps it). Repair: drop rows with no
+>   rod key; empty key is `player.local`; null parts read empty; repeats fold into the first, a later row
+>   only filling a part left at default; a row with both parts at default is dropped; unknown ids kept.
 >
 > **Player keys** (`SavePlayerKeys.Local = "player.local"`, the save's own player): stable ids, never reused.
 > A later co-op step adds player records keyed the same way and leaves these rows where they are (ADR 0064 §6).
 >
-> **Opening a v27 save in an older build loses the three lists** (clothes, rack sales, skill); everything
+> **Opening a v27 save in an older build loses the four lists** (clothes, rack sales, skill, rod fittings); everything
 > else stays.
 
 **Recomputed, never saved:** tide height, wind, weather, sea state, visibility (from

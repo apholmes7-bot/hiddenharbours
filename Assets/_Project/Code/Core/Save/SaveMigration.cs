@@ -425,16 +425,17 @@ namespace HiddenHarbours.Core
                 data.SchemaVersion = 26;
             }
 
-            // v26 -> v27: CLOTHES, THE CLOTHING RACK'S SALES AND SKILLS (owner 2026-11-25: "Yes, plan v27";
-            // ADR 0064). An older game recorded none of them, so each starts empty: he owns no garment and
-            // wears only his own outfit colours, every rack is full, every skill is at zero. Nothing is
-            // transformed and nothing else in the save moves. Until this step has shipped, a further v27 list
-            // (fitted rod parts are to come) is set empty here too; after it ships, anything new is v28.
+            // v26 -> v27: CLOTHES, THE CLOTHING RACK'S SALES, SKILLS AND FITTED ROD PARTS (owner 2026-11-25:
+            // "Yes, plan v27"; ADR 0064). An older game recorded none of them, so each starts empty: he owns no
+            // garment and wears only his own outfit colours, every rack is full, every skill is at zero, and
+            // every rod carries its own line and reel. Nothing is transformed and nothing else in the save
+            // moves. Once this step has shipped, anything new is v28.
             if (data.SchemaVersion < 27)
             {
                 data.PlayerClothing = new System.Collections.Generic.List<PlayerClothingDto>();
                 data.ClothingRackSales = new System.Collections.Generic.List<ClothingRackSaleDto>();
                 data.PlayerSkills = new System.Collections.Generic.List<PlayerSkillDto>();
+                data.RodFittings = new System.Collections.Generic.List<RodFittingDto>();
                 data.SchemaVersion = 27;
             }
 
@@ -494,6 +495,7 @@ namespace HiddenHarbours.Core
             data.PlayerClothing ??= new System.Collections.Generic.List<PlayerClothingDto>();
             data.ClothingRackSales ??= new System.Collections.Generic.List<ClothingRackSaleDto>();
             data.PlayerSkills ??= new System.Collections.Generic.List<PlayerSkillDto>();
+            data.RodFittings ??= new System.Collections.Generic.List<RodFittingDto>();
             HealV27Rows(data);
             // Same defensive spirit as the null-repair above, for the one field where a zero is not a
             // value but a crash: a hand-edited JSON, or a row written by a build between the field landing
@@ -918,6 +920,43 @@ namespace HiddenHarbours.Core
             HealPlayerClothing(data.PlayerClothing);
             HealClothingRackSales(data.ClothingRackSales);
             HealPlayerSkills(data.PlayerSkills);
+            HealRodFittings(data.RodFittings);
+        }
+
+        /// <summary>
+        /// Rod fittings: drop a null row or one with no rod; an empty player key means the local player; a null
+        /// part id reads empty (the rod's own part). Two rows for one player and rod fold into the first: it
+        /// stands, and a later one only fills a part the first leaves at default, so no part he chose is lost.
+        /// A row left with both parts at default is dropped (it means the same as no row). Part ids are never
+        /// rewritten, known or not.
+        /// </summary>
+        private static void HealRodFittings(System.Collections.Generic.List<RodFittingDto> rows)
+        {
+            for (int i = rows.Count - 1; i >= 0; i--)
+            {
+                RodFittingDto r = rows[i];
+                if (r == null || string.IsNullOrEmpty(r.RodKey)) { rows.RemoveAt(i); continue; }
+                r.PlayerKey = SavePlayerKeys.Normalise(r.PlayerKey);
+                r.LineId ??= "";
+                r.ReelId ??= "";
+            }
+            // Walk forward so a later duplicate folds into the first row, in order.
+            for (int i = 1; i < rows.Count; i++)
+            {
+                for (int j = 0; j < i; j++)
+                {
+                    if (!string.Equals(rows[j].PlayerKey, rows[i].PlayerKey, System.StringComparison.Ordinal)
+                        || !string.Equals(rows[j].RodKey, rows[i].RodKey, System.StringComparison.Ordinal))
+                        continue;
+                    if (rows[j].LineId.Length == 0) rows[j].LineId = rows[i].LineId;
+                    if (rows[j].ReelId.Length == 0) rows[j].ReelId = rows[i].ReelId;
+                    rows.RemoveAt(i);
+                    i--;
+                    break;
+                }
+            }
+            for (int i = rows.Count - 1; i >= 0; i--)
+                if (rows[i].LineId.Length == 0 && rows[i].ReelId.Length == 0) rows.RemoveAt(i);
         }
 
         /// <summary>
