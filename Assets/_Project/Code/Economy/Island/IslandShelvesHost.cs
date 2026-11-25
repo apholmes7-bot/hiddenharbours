@@ -12,10 +12,13 @@ namespace HiddenHarbours.Economy
     /// each in the Core <see cref="IslandShelvesDirectory"/> (so the World module's sold-out cards read them
     /// without naming this class) and binds the counter's listings in <see cref="IslandCounterShelves"/>.
     ///
-    /// <para><b>Nothing is saved.</b> The shelves are recomputed from the clock and the tide; the player's
-    /// purchases are held for the session and dropped when a game is loaded (saving them is the island
-    /// economy's slice 8). The tide is the environment's water level, which in this archipelago is the one
-    /// bar's tide in every region.</para>
+    /// <para><b>The shelves are never saved; the player's purchases are</b> (save v26). The shelves are
+    /// recomputed from the clock and the tide. Each purchase is written into the game's
+    /// <see cref="SaveData.StorePurchases"/> as it is made (<see cref="WritePurchases"/>) and read back when
+    /// the stores are built for a loaded game (<see cref="ReadPurchases"/>), so a shelf he emptied is still
+    /// empty after a restart and fills again on the day its rule says. Rows older than a store's lookback
+    /// are dropped on the slow re-read. The tide is the environment's water level, which in this archipelago
+    /// is the one bar's tide in every region.</para>
     ///
     /// <para><b>Cheap.</b> It re-reads the shelves every <see cref="IslandStoreShelvesDef.RecheckGameMinutes"/>
     /// game minutes, not per frame, and publishes <see cref="IslandShelvesChanged"/> only when a line's whole
@@ -39,12 +42,14 @@ namespace HiddenHarbours.Economy
         {
             public IslandStoreShelvesDef Def;
             public IslandStoreShelves Shelves;
+            public IslandShelfTill Till;
             public string[] Lines;
             public int[] Last;
             public double RecheckSeconds;
         }
 
         private static IslandShelvesHost _instance;
+        private static readonly List<StorePurchaseRowDto> RowScratch = new List<StorePurchaseRowDto>();
         private readonly List<Store> _stores = new List<Store>();
         private bool _built;
         private double _nextCheck;
@@ -75,8 +80,38 @@ namespace HiddenHarbours.Economy
 
         private void OnGameLoaded(GameLoaded _)
         {
-            // A loaded game is the whole truth: this session's purchases belong to the game that was left.
+            // A loaded game is the whole truth: the stores are built again and take that game's purchases.
             TearDown();
+        }
+
+        /// <summary>
+        /// Writes the purchases <paramref name="shelves"/> holds into <paramref name="save"/> in place of
+        /// that shop's rows (other shops' rows are left alone), in the save's fixed order. Public so a test
+        /// drives the same writer the game runs.
+        /// </summary>
+        public static void WritePurchases(SaveData save, IslandStoreShelves shelves)
+        {
+            if (save == null || shelves == null) return;
+            save.StorePurchases ??= new List<StorePurchaseRowDto>();
+            RowScratch.Clear();
+            shelves.ExportPurchases(RowScratch);
+            StorePurchaseRows.ReplaceShop(save.StorePurchases, shelves.ShopId, RowScratch);
+            RowScratch.Clear();
+        }
+
+        /// <summary>Gives <paramref name="shelves"/> the purchases <paramref name="save"/> holds for its
+        /// shop (a loaded game). Returns how many it took in.</summary>
+        public static int ReadPurchases(SaveData save, IslandStoreShelves shelves)
+            => shelves != null ? shelves.ImportPurchases(save?.StorePurchases) : 0;
+
+        // A purchase was made: put it in the game and ask for a write (grouped with the purse's own write
+        // when the sale deferred them).
+        private static void OnPurchase(IslandStoreShelves shelves)
+        {
+            ISaveService save = GameServices.Save;
+            if (save?.Current == null) return;
+            WritePurchases(save.Current, shelves);
+            save.Save();
         }
 
         private void Update()
@@ -107,6 +142,10 @@ namespace HiddenHarbours.Economy
             for (int s = 0; s < _stores.Count; s++)
             {
                 Store store = _stores[s];
+                // Purchases no replay can reach any more leave the game too. Not at the title: the clock
+                // there is not the loaded game's. The rows go to disk with the next write.
+                if (!ShellFlow.AtTitle && store.Shelves.DropOldPurchases(now))
+                    WritePurchases(GameServices.Save?.Current, store.Shelves);
                 store.Shelves.SlowTick(now);
                 for (int i = 0; i < store.Lines.Length; i++)
                 {
@@ -152,6 +191,8 @@ namespace HiddenHarbours.Economy
                 try
                 {
                     IslandStoreShelves shelves = Build(def, route, carriers, cfg, waterAt);
+                    ReadPurchases(GameServices.Save?.Current, shelves);
+                    shelves.PurchasesChanged = () => OnPurchase(shelves);
                     var store = new Store
                     {
                         Def = def,
@@ -164,6 +205,8 @@ namespace HiddenHarbours.Economy
                     _stores.Add(store);
                     IslandShelvesDirectory.Register(shelves);
                     IslandCounterShelves.Bind(def, shelves);
+                    store.Till = new IslandShelfTill(def.ShopId, def.SellerId);
+                    ShelfTills.Register(store.Till);   // buying at the shelf: the World's shelf goods ask this
                 }
                 catch (Exception e)
                 {
@@ -194,8 +237,10 @@ namespace HiddenHarbours.Economy
         {
             for (int s = 0; s < _stores.Count; s++)
             {
+                _stores[s].Shelves.PurchasesChanged = null;
                 IslandShelvesDirectory.Unregister(_stores[s].Shelves);
                 IslandCounterShelves.Unbind(_stores[s].Shelves);
+                ShelfTills.Unregister(_stores[s].Till);
             }
             _stores.Clear();
             _built = false;

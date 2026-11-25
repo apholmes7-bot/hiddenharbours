@@ -75,7 +75,30 @@ def main(argv=None):
     parser.add_argument("--check", action="store_true",
                         help="write nothing; fail if the output on disk is not what would be "
                              "written (a determinism / staleness gate)")
+    parser.add_argument("--routine-audit", metavar="JSON",
+                        help="write the St Peters routine audit only; requires Pillow and Path PNG bytes")
+    parser.add_argument("--routine-audit-doc", metavar="MARKDOWN",
+                        help="also write the document accompanying --routine-audit")
     args = parser.parse_args(argv)
+
+    if args.routine_audit_doc and not args.routine_audit:
+        parser.error("--routine-audit-doc requires --routine-audit")
+
+    if args.routine_audit:
+        from hhexport.routine_audit import collect
+        if args.check or args.region or args.allow_downgrade:
+            parser.error("--routine-audit is separate from package export options")
+        audit = collect(args.repo)
+        target = os.path.join(args.repo, args.routine_audit)
+        with open(target, "w", encoding="utf-8", newline="\n") as stream:
+            json.dump(audit, stream, indent=2, sort_keys=True)
+            stream.write("\n")
+        if args.routine_audit_doc:
+            from hhexport.routine_audit import markdown
+            with open(os.path.join(args.repo, args.routine_audit_doc), "w", encoding="utf-8", newline="\n") as stream:
+                stream.write(markdown(audit))
+        print("Routine audit: %d residents, %d legs" % (len(audit['routines']), len(audit['legs'])))
+        return 0
 
     repo = Repo(args.repo)
     out_dir = os.path.join(repo.root, args.out)

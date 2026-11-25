@@ -290,6 +290,26 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void ALastResortThing_ActsOnlyAlone_AndIsNeverARowBesideSomethingElse()
+        {
+            // Setting down the bag in his hand: at a shelf the press buys and no list opens.
+            var setDown = At("bag", 0.2f, "Set the bag down", InteractPriority.LastResort);
+            var shelf = At("shelf.bread", 1.0f, "Loaf of bread");
+
+            InteractChoiceList rows = Build(new IInteractable[] { setDown, shelf });
+            Assert.AreSame(shelf, rows.Default, "the fixture outranks it though the bag is nearer");
+            CollectionAssert.AreEqual(new[] { "Loaf of bread" }, Labels(rows));
+            Assert.IsFalse(rows.IsChoice, "one row: the press acts at once");
+
+            rows = Build(new IInteractable[] { setDown, At("a.bunk", 1.0f, "Sleep", InteractPriority.Berth) });
+            CollectionAssert.AreEqual(new[] { "Sleep" }, Labels(rows), "a bed outranks it too");
+
+            rows = Build(new IInteractable[] { setDown });
+            Assert.AreSame(setDown, rows.Default, "alone, it takes the press");
+            CollectionAssert.AreEqual(new[] { "Set the bag down" }, Labels(rows));
+        }
+
+        [Test]
         public void TheRows_AreCapped()
         {
             var many = new List<IInteractable>();

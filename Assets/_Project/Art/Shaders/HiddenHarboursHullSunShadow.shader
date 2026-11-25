@@ -14,6 +14,7 @@ Shader "HiddenHarbours/HullSunShadow"
     {
         Tags { "RenderType"="Transparent" "Queue"="Transparent" "RenderPipeline"="UniversalPipeline" }
         Blend [_SrcBlend] [_DstBlend]
+        ColorMask RGB   // The calm mirror: ground cover leaves the alpha class under it alone
         ZWrite Off
         ZTest Always
         Cull Off

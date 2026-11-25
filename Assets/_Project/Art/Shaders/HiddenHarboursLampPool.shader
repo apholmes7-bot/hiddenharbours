@@ -54,6 +54,7 @@ Shader "HiddenHarbours/LampPool"
 
         // dst * (1 + src): a MULTIPLICATIVE brighten. See the header — this is the whole design.
         Blend DstColor One
+        ColorMask RGB   // The calm mirror: ground cover leaves the alpha class under it alone
         Cull Off
         ZWrite Off
         ZTest Always   // a compositing element above the world, like the quads it brightens under

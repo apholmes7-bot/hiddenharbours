@@ -39,7 +39,7 @@ namespace HiddenHarbours.Economy
     /// <para>Units are each good's own (<see cref="IslandGoodDef.Unit"/>); mass and volume per unit come from
     /// its daily figures. The target includes the player's allowance, the island's use does not: the allowance
     /// is what stands on the shelf for the player. Player purchases come in through <see cref="ExtraDraw"/>, held
-    /// for the session only (saving them is slice 8).
+    /// with the game (save v26).
     /// Plain C#, no Unity lifecycle; drive it from the day tick or read it lazily.</para>
     /// </summary>
     public sealed class IslandStoreLedger

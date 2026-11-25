@@ -155,48 +155,92 @@ namespace HiddenHarbours.Tests.EditMode
         // ---- 2c: a listed InstrumentShop missing from its counter is added the same way ------------------
 
         [Test]
-        public void StPeters_AMissingInstrumentShop_IsAddedAsACopyOfTheSounderShop_AndOnlyOnce()
+        public void NineMileCreek_TheSounderShop_IsACopyOfTheBoatGearCountersFirstInstrumentShop_AddedOnlyOnce()
         {
-            // The Loran left this counter for the Nine Mile Creek boat/gear wholesaler, so no committed row needs
-            // the copy today. The step keeps the ability: a wiring with one more InstrumentShop row than the
-            // committed one, planned over the committed scene, adds that vendor as a copy of the sounder's.
-            const string Extra = "instrument.fish_finder";
-            string committed = File.ReadAllText(StPetersPath);
+            // The depth sounder joined the Nine Mile Creek boat/gear wholesaler's counter (ruling 11-23) as a copy
+            // of that counter's first InstrumentShop, the Loran's. Taken back out by the test's hand, the step adds
+            // it back byte for byte, under the id it gave it, and planned again it adds nothing.
+            string committed = File.ReadAllText(NineMileCreekPath);
             var t = new LayerRefreshSceneText(committed);
             List<Listing> catalog = Listings();
             string instrumentClass = ClassIdOf(typeof(InstrumentShop));
-            long counter = t.RootGameObject("GeneralStoreCounter");
+            long counter = t.RootGameObject(NmcWholesalerKeepers.BoatGearCounterRoot);
             List<long> instrumentShops = t.Order.Where(id => t.ClassOf(id) == 114 && t.Field(id, "m_EditorClassIdentifier") == instrumentClass &&
                                                              t.Ref(id, "m_GameObject") == counter).ToList();
             string sounderGuid = catalog.Single(l => l.Id == "instrument.depth_sounder").Guid;
-            string extraGuid = catalog.Single(l => l.Id == Extra).Guid;
+            string loranGuid = catalog.Single(l => l.Id == "instrument.loran").Guid;
             long sounder = instrumentShops.Single(id => t.Text(id).Contains(sounderGuid));
-            Assert.IsFalse(instrumentShops.Any(id => t.Text(id).Contains(extraGuid)), $"the committed counter already stocks {Extra}");
-            foreach (string gone in new[] { "instrument.loran" })
-                Assert.IsFalse(instrumentShops.Any(id => t.Text(id).Contains(catalog.Single(l => l.Id == gone).Guid)),
-                               $"the committed counter still stocks {gone}");
+            long template = instrumentShops.Single(id => t.Text(id).Contains(loranGuid));
+            Assert.AreEqual(sounder, t.Refs(counter, "m_Component").Last(), "the counter lists the sounder's shop last");
+            Assert.AreEqual(t.Field(template, "_walletProvider"), t.Field(sounder, "_walletProvider"), "the sounder shop pays into the Loran shop's wallet");
+            Assert.AreEqual(NmcWholesalerKeepers.BoatGearSellerId, t.Field(sounder, SellerIdKey));
 
-            Region wider = new Region(StoreWiringPatch.StPeters.Name, StoreWiringPatch.StPeters.ScenePath,
-                                      StoreWiringPatch.StPeters.Sellers
-                                          .Concat(new[] { new Seller("GeneralStoreCounter", typeof(InstrumentShop), Extra, StPetersBuilder.StoreSellerId) })
-                                          .ToList());
-            List<LayerPatch> patches = StoreWiringPatch.Plan(committed, wider, Assets);
+            string bare = WithoutComponents(committed, counter, new[] { sounder });
+            List<LayerPatch> patches = StoreWiringPatch.Plan(bare, StoreWiringPatch.NineMileCreek, Assets);
             List<Op> ops = patches.SelectMany(p => p.Ops).ToList();
             Assert.IsEmpty(ops.Where(o => o.Kind == OpKind.Delete).Select(o => o.Name).ToList(), "the store patch deletes");
             Op add = ops.Single(o => o.Kind == OpKind.Add);
+            Assert.AreEqual(sounder, add.FileId, "the step does not add the sounder shop under the id it gave it");
             CollectionAssert.AreEqual(new[] { counter }, ops.Where(o => o.Kind == OpKind.Edit).Select(o => o.FileId).ToList(),
                                       "the store patch edits something other than the counter's component list");
 
+            string once = StoreWiringPatch.ApplyAll(bare, patches);
+            Assert.IsTrue(once == committed, $"the step's sounder shop is not the committed one: {FirstDifference(committed, once)}");
+            Assert.IsTrue(StoreWiringPatch.Plan(once, StoreWiringPatch.NineMileCreek, Assets).All(p => p.IsEmpty),
+                          "planned again on its own output, the step still adds");
+        }
+
+        // ---- 2d: a retired vendor still standing is taken off its counter, once --------------------------
+
+        [Test]
+        public void StPeters_TheSounderIsRetired_AndTheCommittedCounterHoldsNoInstrumentShop()
+        {
+            Seller retired = StoreWiringPatch.StPeters.Retired.Single();
+            Assert.AreEqual("instrument.depth_sounder", retired.Wares);
+            Assert.AreEqual(typeof(InstrumentShop), retired.Kind);
+            Assert.AreEqual(StPetersBuilder.StoreSellerId, retired.SellerId);
+            Assert.IsFalse(StoreWiringPatch.StPeters.Sellers.Any(s => s.Wares == retired.Wares), "the sounder is still wired at St Peters");
+
+            var t = new LayerRefreshSceneText(File.ReadAllText(StPetersPath));
+            long counter = t.RootGameObject(retired.Root);
+            string instrumentClass = ClassIdOf(typeof(InstrumentShop));
+            Assert.IsFalse(t.Order.Any(id => t.ClassOf(id) == 114 && t.Field(id, "m_EditorClassIdentifier") == instrumentClass &&
+                                             t.Ref(id, "m_GameObject") == counter),
+                           "the island counter still holds an InstrumentShop");
+        }
+
+        [Test]
+        public void ARetiredVendor_IsDeletedAndUnlisted_TouchingNothingElse_AndOnlyOnce()
+        {
+            // The step that took the sounder off the island counter, shown on a scene that still holds a vendor:
+            // the committed creek scene, with the sounder shop retired from the boat/gear counter instead of wired.
+            string committed = File.ReadAllText(NineMileCreekPath);
+            var t = new LayerRefreshSceneText(committed);
+            string sounderGuid = Listings().Single(l => l.Id == "instrument.depth_sounder").Guid;
+            long counter = t.RootGameObject(NmcWholesalerKeepers.BoatGearCounterRoot);
+            long sounder = t.Order.Single(id => t.ClassOf(id) == 114 && t.Ref(id, "m_GameObject") == counter && t.Text(id).Contains(sounderGuid));
+            Seller row = StoreWiringPatch.NineMileCreek.Sellers.Single(s => s.Wares == "instrument.depth_sounder");
+            Region retiring = new Region(StoreWiringPatch.NineMileCreek.Name, StoreWiringPatch.NineMileCreek.ScenePath,
+                                         StoreWiringPatch.NineMileCreek.Sellers.Where(s => s.Wares != row.Wares).ToList(), new[] { row });
+
+            List<LayerPatch> patches = StoreWiringPatch.Plan(committed, retiring, Assets);
+            List<Op> ops = patches.SelectMany(p => p.Ops).ToList();
+            CollectionAssert.AreEqual(new[] { sounder }, ops.Where(o => o.Kind == OpKind.Delete).Select(o => o.FileId).ToList(),
+                                      "the step deletes something other than the retired vendor");
+            CollectionAssert.AreEqual(new[] { counter }, ops.Where(o => o.Kind == OpKind.Edit).Select(o => o.FileId).ToList(),
+                                      "the step edits something other than the counter's component list");
+            Assert.IsEmpty(ops.Where(o => o.Kind == OpKind.Add).ToList(), "the step adds while retiring");
+
             string once = StoreWiringPatch.ApplyAll(committed, patches);
-            var after = new LayerRefreshSceneText(once);
-            Assert.AreEqual(counter, after.Ref(add.FileId, "m_GameObject"), "the copy stands on the counter");
-            Assert.AreEqual(add.FileId, after.Refs(counter, "m_Component").Last(), "the counter lists the copy last");
-            Assert.AreEqual(instrumentClass, after.Field(add.FileId, "m_EditorClassIdentifier"));
-            Assert.AreEqual(t.Field(sounder, "_walletProvider"), after.Field(add.FileId, "_walletProvider"), "the copy pays into the sounder shop's wallet");
-            Assert.AreEqual(StPetersBuilder.StoreSellerId, after.Field(add.FileId, SellerIdKey));
-            StringAssert.Contains(extraGuid, after.Text(add.FileId), "the copy stocks the wiring's wares");
-            StringAssert.DoesNotContain(sounderGuid, after.Text(add.FileId), "the copy still stocks the sounder");
-            Assert.IsTrue(StoreWiringPatch.Plan(once, wider, Assets).All(p => p.IsEmpty), "planned again on its own output, the step still adds");
+            string expected = WithoutComponents(committed, counter, new[] { sounder });
+            Assert.IsTrue(once == expected, $"the retirement is not the vendor taken out by hand: {FirstDifference(expected, once)}");
+            Assert.IsTrue(StoreWiringPatch.Plan(once, retiring, Assets).All(p => p.IsEmpty), "planned again on its own output, the step still retires");
+
+            Region wrongId = new Region(retiring.Name, retiring.ScenePath, retiring.Sellers,
+                                        new[] { new Seller(row.Root, row.Kind, row.Wares, StPetersBuilder.StoreSellerId) });
+            Assert.Throws<Refusal>(() => StoreWiringPatch.Plan(committed, wrongId, Assets), "the step retired a vendor selling as another id");
+            Region both = new Region(retiring.Name, retiring.ScenePath, StoreWiringPatch.NineMileCreek.Sellers, new[] { row });
+            Assert.Throws<Refusal>(() => StoreWiringPatch.Plan(committed, both, Assets), "the step took a ware both wired and retired");
         }
 
         /// <summary>The scene without the given components of one GameObject: their documents and their entries

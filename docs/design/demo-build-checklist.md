@@ -8,14 +8,20 @@ off the island closed. This page specifies a one-scene Windows package and the
 checks needed before anyone distributes it.
 
 **Status: release plan, not a verified demo.** Source audit: main
-`37586ae43d2ed0eef2648a642c300a6926ac8bf1`, 2026-11-23. The missing-scene safety
+`d46bde303e6aa256d23d47a05ede5d7d6f38e51e`, 2026-11-25. The missing-scene safety
 proposal is #1504; the build option and shortcut gates are #1510. Neither supplies
-the island week, a replacement arrival, weather presentation or an ending card.
+the complete island week, a replacement arrival or an ending card. Main now has
+dormant weather on all four island sea edges; its activation and the walking
+bar closure remain release prerequisites.
 No editor, player build or clean-machine playthrough was run for this document.
 The existing arrival still depends on an omitted scene, so release is blocked
 until an island-only arrival is authored and demonstrated.
 
 ## Package contents
+
+The following is the target package after the opening prerequisite is met.
+Draft #1510 currently refuses both development and release demo packaging before
+setup. Its separate demo save slot is implemented, but it supplies no import.
 
 Use the existing [player build entry point](../../Assets/_Project/Code/Tools/Editor/PlayerBuild.cs)
 and [Windows packaging command](../../tools/build/build-windows.ps1). In #1510,
@@ -64,7 +70,7 @@ the deck figure could draw through the boat. A pink title surface was also
 reported without a proven cause. Those observations require a new release check,
 not a declaration that the present settings have fixed every symptom.
 
-The eight project entries currently in
+The nine project entries currently in
 [Always Included Shaders](../../ProjectSettings/GraphicsSettings.asset) are below.
 Labels identify their role; GUIDs identify the exact assets without relying on
 the shortened labels as shader lookup strings. Preserve the seven existing
@@ -80,12 +86,13 @@ built-in entries as well.
 | Silhouette mask | `c2e78043073d72b489d5be9ff0b4f32d` |
 | Figure pixel target | `a9f736b500508ffe6b0ce1e9d6a9adc3` |
 | Foam transport | `d9d005d31eb743e0b2f147655ebd8461` |
+| Calm-water mirror | `6a5e1af317bb477a9e05add1ed7284e0` |
 
 The facet resolve shader, `67d9d1239e5587841bf1d251b3a2a947`, is serialized in
 [Renderer2D](../../Assets/Settings/Renderer2D.asset); retain that reference too.
 Runtime lookups also exist for ordinary sprites, water overlays, night overlays,
 buoys, lamps, shadows, submergence, terrain and tidal faces. Their material,
-resource and scene references remain required; the eight-row table is not a
+resource and scene references remain required; the nine-row table is not a
 replacement for them. In particular,
 [TidalFaceWaterline](../../Assets/_Project/Code/Art/TidalFaceWaterline.cs) loads a
 resource material before its shader fallback. Do not prune these retention
@@ -94,8 +101,8 @@ materials because their names appear unrelated to a scene.
 Check the release player at the title, creator, cabin, deck, first step ashore,
 day and night, with water and interactions visible. Inspect its log for missing
 shaders and its screen for pink surfaces, invisible figures or failed occlusion.
-Shader-setting reconciliation belongs with the rendering work in #1477; this
-page changes no rendering assets or accepted appearance.
+The calm-water mirror from #1477 is now on main. It adds the ninth retained
+project shader; this page changes no rendering assets or accepted appearance.
 
 ## Size: measured baseline and planning allowance
 
@@ -176,9 +183,12 @@ Continue applies the save in the boot scene; it does not select a region scene
 from disk. An out-of-region rest anchor currently emits a wake request and leaves
 the local spawn in place; no runtime subscriber loads the requested region.
 Use synthetic save fixtures to check this safety case. It is not proof that a
-full-game save is suitable for the demo. Save format remains version 25 and no
-new completion field is introduced. `DemoEnded` exists only as an unraised event:
-there is no automatic day-seven stop or closing card in these proposals.
+full-game save is suitable for the demo. Save format is version 26: store purchases,
+special orders and the shopping bag are represented, with no demo completion field.
+The configuration draft reserves `DemoEnded` without a publisher. Draft #1535
+proposes a session-only signal after a saved sleep; that differs from the canonical
+ending at the islander's word in ADR 0062. No closing card is implemented, and a
+fixed day-seven stop is not the accepted ending rule.
 
 ## Every route off St Peters
 
@@ -211,11 +221,15 @@ down in a framed region: the full edge governs travel. The scripted opening and
 explicit activation remain separate paths, so testing only trigger bands misses
 the ordinary crossing path.
 
-On pinned main, the only resource campaign barrier is
+Pinned main retains
 [IntroStormEastWaterSouth](../../Assets/_Project/Data/Resources/CampaignBarriers/IntroStormEastWaterSouth.asset).
 It belongs to EastWater and lifts on `onboarded`; it does not close the island.
-The St Peters weather work in #1494 must be reconciled and tested on all four
-edges and at the foot crossing. Region unavailability and `RegionTravelRefused`
+Merged #1494 adds `StPetersStormEast`, `StPetersStormWest`, `StPetersStormNorth`
+and `StPetersStormSouth` in the same resource folder. All four stand only while
+`st_peters.first_week` is set and lift on `st_peters.weather_turned`; the enabling
+flag has no producer on this base, so the bands remain dormant. They push boats;
+the walking bar still needs its weather closure. The demo must also keep the bands
+active after the full-game gate would lift them. Region unavailability and `RegionTravelRefused`
 are safety mechanisms; neither draws weather or supplies final player wording.
 No visible wall is an acceptable substitute.
 
@@ -240,7 +254,7 @@ not by itself mean that its input should be disabled.
 12. Check staying aboard and boarding again; confirm no ferry or passenger route can leave the island.
 13. Exercise every listed development shortcut after New game and Continue; verify ordinary fishing, pot work and movement still work.
 14. Test warm-up, absent-region NPC schedules, sleep/wake and synthetic outside-region saves without hangs or unintended loads.
-15. Test save, quit, relaunch, Continue and quit-to-title on a disposable profile; retain version 25 and the chosen demo save namespace.
+15. Test save, quit, relaunch, Continue and quit-to-title on a disposable profile; retain version 26 and the separate demo save namespace.
 16. Play the island week: licensed catches kept, unlicensed catches released, separate shelf stocks, bag carry and boat repair by hand.
 17. Verify weather stays closed after repair and around day seven; apply the approved ending policy without opening an omitted region.
 18. Record outstanding defects and owner decisions; distribute only after first-step, closure and release-rendering evidence is accepted.
@@ -250,7 +264,7 @@ not by itself mean that its input should be disabled.
 | Decision | Lean and reason |
 | --- | --- |
 | How does the arrival fit entirely inside St Peters? | Keep the skipper, cabin, creator and step ashore, but author the complete approach inside the included scene. The existing sea hop cannot satisfy the one-scene requirement. Do not silently skip the introduction or add EastWater. |
-| What exactly ends the demo, and what can the player do afterward? | Let the islander's word after the intended week mark completion, with an explicit continue-on-island choice. Keep every external scene unavailable. A fixed elapsed-day trigger could interrupt unfinished repair; no event publisher or card is part of the present work. |
+| How is the canonical ending presented and remembered? | ADR 0062 places completion at the islander's word and allows continued island fishing. Keep every external scene unavailable. The saved-sleep timing in #1535 is a separate proposal; presentation and persistence still need a decision. |
 | How does weather close the exposed bar and remain closed after repair? | Give the foot route a clear weather reason as well as the four sea edges; keep the demo closure independent of a full-game unlock flag. A generic unavailable-region message alone does not explain an exposed walkable bar. |
-| Should demo and full-game saves share a product namespace or transfer later? | Isolate the demo namespace for initial distribution. Avoid an accidental New game overwrite or waking into an omitted region; design any later transfer explicitly without changing version 25 here. |
+| Should the saved demo week be copied into the full game? | #1510 already separates the demo subfolder from the full-game slot. Prefer an explicit import that preserves both playthroughs; no import is implemented and no version-26 field change is proposed here. |
 | Which minimum machines and download ceiling are promised? | Start with a private Windows x64 release and the existing 4 GB archive ceiling, then set public minimums from measured machines and the actual one-scene package. Do not promise a smaller download from scene count alone. |
