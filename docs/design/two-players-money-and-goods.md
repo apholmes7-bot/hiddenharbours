@@ -1,6 +1,33 @@
-# Two players: money and goods
+# Two to four players: money and goods
 
-Keep the first week about two friends earning and repairing one dory together. The
+## Decision summary for two to four players
+
+Recommendation: one small crew earns its first boat together, while each player keeps his
+own hands and paid parcel claims. These choices apply equally to two, three or four players;
+the two-person examples below show the simplest case. Shared purse, fleet and ordinary
+licences retain the existing ruling. Payer-owned special orders follow the settled order-book
+direction. Goods and sale permissions remain recommendations for a decision.
+
+| Area | Shared or per player? | Recommendation for the first week | Stardew Valley's nearest equivalent |
+|---|---|---|---|
+| Purse | **Shared** | Keep one crew purse so everyone's work funds the same dory. | Offers shared or separate money; separate money became an option in 1.4. [Official change notes](https://www.stardewvalley.net/stardew-valley-1-4-update-full-changelog/). |
+| Goods | **Shared working goods; personal carrying** | Any player can shop for the crew. Each bag has one carrier or resting place; hand goods over physically. | Inventories are separate even though the farm is shared. [Multiplayer introduction](https://www.stardewvalley.net/stardew-valley-v1-3-beta/). |
+| Licences | **Shared ordinary licences** | Cover the crew once. Later scarce rights keep one holder and explicit crew permissions; never multiply their allowance by player count. | **No direct fishing-licence equivalent verified.** The nearest progression comparison is each player's own Fishing skill and experience, which does not decide licence ownership here. [Skills and experience](https://stardewvalleywiki.com/Multiplayer#Experience). |
+| The dory | **Shared** | Earn and mend one hull; one player steers at a time. Do not assume it can safely carry all four. | The farm is shared. Its repaired boat is ticketed transport piloted by an NPC; that is only a partial comparison to owning and steering a dory. [Shared farm](https://stardewvalleywiki.com/Multiplayer#Gameplay), [boat service](https://stardewvalleywiki.com/Fish_Shop). |
+| Catch sales | **Shared proceeds; personal catch record** | Any crew member may sell shared catch he physically delivers. Pay the crew once; keep the catcher's Notebook credit. | With shared money, sales feed the common funds; Fishing experience belongs to the catcher. [Money and experience](https://stardewvalleywiki.com/Multiplayer#Money). |
+| Special orders | **Per player** | Only the payer sees and collects his parcel, even with a shared purse. A friend cannot cancel it; cancellation is currently unavailable to everyone. | The closest purchase is an individual tool upgrade: pay, wait two days, then collect. **Another player's pickup permissions were not verified.** [Individual upgrades](https://stardewvalleywiki.com/Multiplayer#Gameplay), [upgrade wait](https://stardewvalleywiki.com/Tools). |
+
+Sources checked 2026-11-25. These are comparisons, not a claim that the games have identical
+ownership rules. Stardew's similarly named Special Orders board contains quests rather than
+prepaid shop parcels. [Quest system](https://stardewvalleywiki.com/Quests#List_of_Special_Orders).
+
+The current save has no payer identity for an order. The order-book draft can enforce ownership
+within a session, but persistence still needs a stable payer id attached to each order id, plus
+a decision for older ownerless rows. Nothing in this document authorizes that saved field.
+
+## Detailed options and current implementation
+
+Keep the first week about two to four friends earning and repairing one dory together. The
 least disruptive choice is the existing shared purse and outfit-owned fleet, with
 separate hands and personal catch records. Bought goods still go into a paper bag at
 the shelf and travel by hand. Shared money is not shared reach: neither player gains
@@ -13,12 +40,13 @@ licences remain scarce world rights, with explicit rules for who may work under 
 These goods, sale and finite-holder details are recommendations, not new approvals.
 
 This is a source-based options document reconciled with
-`d46bde303e6aa256d23d47a05ede5d7d6f38e51e` (2026-11-25), save version 26.
+`f808af6ae5d5a0041f3d2147d74b1ddef7dce609` (2026-11-25), save version 26.
 No code, saved field, content or existing tuning value changes here.
 The comparison concerns the island-only first week and demo: arrival and lodging,
 clams, shore fishing, the broken dory at the St Peters slip, repair by hand, launch and
 fishing aboard. Other regions remain closed by weather until the islander's word
-around day seven. None of the options supplies a second boat for free or introduces
+around day seven. The demo ends at that evening word and keeps its own save file.
+None of the options supplies a second boat for free or introduces
 later licence auctions, leases or business accounts into that week automatically.
 
 ## What is settled, and what main actually provides
@@ -33,7 +61,7 @@ The [limited-licence design](limited-licences-and-crewing.md) introduces finite 
 named holders, crewing arrangements and seasonal tags; much of that is later-phase
 design rather than current runtime state.
 
-| Current source | Consequence for two players |
+| Current source | Consequence for two to four players |
 |---|---|
 | [PlayerWallet](../../Assets/_Project/Code/Player/PlayerWallet.cs), [IWallet](../../Assets/_Project/Code/Core/Economy/IWallet.cs), `GameServices.Wallet`, `SaveData.Money` | One balance. Existing vendor overloads accept an `IWallet`, which is useful, but scene providers and global reads select only one today. There is no account identity, transfer or joint-approval policy. |
 | [BuyCatalog.Confirm](../../Assets/_Project/Code/Economy/BuyCatalog.cs), [IslandStoreShelves](../../Assets/_Project/Code/Economy/Island/IslandStoreShelves.cs), `IslandShelvesHost` | The solo purchase rechecks stock, spends/grants, then debits the shelf inside one deferred-write scope. Version-26 `StorePurchases` rows now retain withdrawals; the host restores them and prunes to the accepted lookback. This is not an actor-attributed, idempotent two-player commit. Stock remains one pool per shop/line. |
@@ -43,7 +71,7 @@ design rather than current runtime state.
 | [OwnedFleet](../../Assets/_Project/Code/Boats/OwnedFleet.cs), `Shipwright`, `RepairLedger`, [HelmSlot](../../Assets/_Project/Code/Core/Boats/HelmSlot.cs) | A roster of hull-type ids drives one active runtime hull and one piloted slot. Repair is currently a saved boolean membership, not stages of hand-work. Buying together does not by itself produce a two-person boarding or helm-claim system. |
 | [WharfSellPoint](../../Assets/_Project/Code/Economy/WharfSellPoint.cs#L142), `CarriedHold`, [SellService](../../Assets/_Project/Code/Economy/SellService.cs#L131), `Market` | A carried-pail path exists, alongside wired-hold paths. Sale takes an `IHold` and `IWallet`, removes fish, updates market supply and pays; it knows neither catcher nor owner. Price uses the current player's trait factor. |
 | [CatchItem](../../Assets/_Project/Code/Core/Economy/CatchItem.cs), `HeldCatchDto`, `CatchRecordLog`, `CatchRecords` | Catch has species, value/weight and freshness, but no owner/catcher instance identity. The one global catch log receives actorless events. Personal Notebook credit must be separated from cargo custody and sale proceeds. |
-| `SaveData.SpecialOrders`, `NextSpecialOrderNumber`, [SaveRowsV26](../../Assets/_Project/Code/Core/Save/SaveRowsV26.cs) | Main already reserves paid-order rows and their numbering; the separate order-book proposal (#1503) binds them. There is no buyer/player field or production counter host. A shared authority must preserve each prepaid obligation once and attribute requests without duplicating these rows. |
+| `SaveData.SpecialOrders`, `NextSpecialOrderNumber`, [SaveRowsV26](../../Assets/_Project/Code/Core/Save/SaveRowsV26.cs) | Main already reserves paid-order rows and their numbering. The separate order-book draft (#1503) binds them and now provides session payer ownership, private views and collection checks through a Core interface. There is still no saved buyer/player field or production counter host. A fresh session cannot infer an old order's payer; preserve the obligation and refuse access until ownership is known. |
 | [SaveService](../../Assets/_Project/Code/Core/Save/SaveService.cs#L174), `SaveData` | `DeferWrites` can defer disk writes while an operation completes; it does not supply rollback, ownership checks or a two-actor transaction. Sleep is the deliberate checkpoint; existing pause/quit/mutation writes also need coherent state. |
 
 ## Purse options
@@ -149,7 +177,8 @@ map existing personal state to one original player, and account for every old co
 licence, boat and unit of goods exactly once.
 
 - **World facts:** `Money` if shared; existing `StorePurchases`, paid `SpecialOrders`
-  and `ShoppingBags` retained once (delivery and routine use stay recomputed); market supply
+  and `ShoppingBags` retained once (delivery and routine use stay recomputed); payer identity
+  for each order, even when the purse is shared; market supply
   affected by sales; `OwnedBoats`/`RepairedBoats` mapped to physical boats; `HullFuel`,
   `HullInstruments` and instrument preferences; `PlacedTraps`; container contents,
   freshness and locations; limited-right transfers/usage when that phase is approved.
@@ -175,7 +204,7 @@ two-player playtest, save migration or visual verification was performed here.
 
 1. **May either partner commit large purchases from the shared purse without the
    other agreeing?** Lean: ordinary supplies need no prompt; buying or selling a boat
-   or scarce licence requires both present players to agree. This adds a small
+   or scarce licence requires all present players to agree. This adds a small
    approval state for exceptional acts while preserving the shared-purse ruling.
 2. **Are ordinary working goods and catches outfit property, or should the buyer/
    catcher retain personal ownership?** Lean: share working goods and catch, keep
@@ -203,5 +232,5 @@ two-player playtest, save migration or visual verification was performed here.
 8. **May the host spend, sell or consume shared goods while the friend is away?**
    Lean: allow routine shared work if solo continuation is allowed, retain the absent
    player's identity and personal possessions, and postpone jointly approved asset
-   disposal until both return. Offline elapsed wall time must not simulate extra
+   disposal until everyone involved returns. Offline elapsed wall time must not simulate extra
    income or move goods.
