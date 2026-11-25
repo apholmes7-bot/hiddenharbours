@@ -6,8 +6,9 @@ namespace HiddenHarbours.World
     /// <summary>
     /// <b>The broken dory on the St Peters slip.</b> She lies there from a new game's first morning, she is
     /// her owner's, and pressing on her shows her price and buys her if his purse allows
-    /// (<see cref="SlipBoatSale"/>). After that she is his, still broken, still on the slip: nothing here
-    /// can launch her.
+    /// (<see cref="SlipBoatSale"/>). After that she is his, still broken, still on the slip, and this
+    /// candidate stands aside: the mending station on the same prop mends and launches her, and a launch
+    /// (<see cref="SlipDoryLaunched"/>) hides the prop.
     ///
     /// <para><b>Shown only in a game that has her.</b> Her body is drawn and pressable only while the save
     /// says the dory lies on the slip (<see cref="SlipDoryStory"/>). An old save never set that flag, so
@@ -49,6 +50,7 @@ namespace HiddenHarbours.World
             if (!_subscribed)
             {
                 EventBus.Subscribe<GameLoaded>(OnGameLoaded);
+                EventBus.Subscribe<SlipDoryLaunched>(OnLaunched);
                 _subscribed = true;
             }
             Refresh();
@@ -61,12 +63,16 @@ namespace HiddenHarbours.World
             if (_subscribed)
             {
                 EventBus.Unsubscribe<GameLoaded>(OnGameLoaded);
+                EventBus.Unsubscribe<SlipDoryLaunched>(OnLaunched);
                 _subscribed = false;
             }
             SetRegistered(false);
         }
 
         private void OnGameLoaded(GameLoaded e) => Refresh();
+
+        // Launched: the flag is gone, so Refresh hides the prop and takes her off the interact list.
+        private void OnLaunched(SlipDoryLaunched e) => Refresh();
 
         /// <summary>Re-read the save: is she on the slip, and whose is she? Shows or hides her body and
         /// recomposes the labels. Called on enable, at start, on each game load and after a press.</summary>
@@ -106,7 +112,9 @@ namespace HiddenHarbours.World
 
         public bool RequiresFacing => false;
 
-        public bool IsAvailable => _onTheSlip;
+        // Once she is his, the work on her is the mending station's verb on the same prop; offering the
+        // look-over beside it would put a chooser in front of every held press.
+        public bool IsAvailable => _onTheSlip && !SlipBoatSale.IsHis(_sale, GameServices.Save);
 
         public void Interact(in InteractActor actor) => Press();
 

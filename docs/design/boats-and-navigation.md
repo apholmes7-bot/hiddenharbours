@@ -1549,6 +1549,23 @@ route.
   and region crossings (`RegionTravelCoordinator` calls `Stop()` at every crossing), so its state
   must live outside a manned `BoatController`. Saving a route is a later save step.
 
+### 9.x Mending and launching the slip dory (first week)
+
+- **Mend:** once he has bought her, the slip prop offers one verb, the next job's name
+  (`DoryMendingStation`, data `slipmend.basils_dory`). A press starts the job, and holding the interact
+  key works it: each held second is `GameMinutesPerHeldSecond` game minutes, handed to the
+  `DoryMendingSession` every `WorkTickSeconds`. Letting go, walking out of reach or a modal pauses it.
+- **What counts as carried:** only the goods in the paper bag in his hand (`ShoppingBagMendingCarry`).
+  A bag he has set down, or shopping he has put away at home, does not count. Goods are spent only when
+  a job finishes.
+- **Launch:** once she is in `RepairedBoats`, the verb is `LaunchLabel`. One press is the supported
+  journey down the slip: `SlipDoryStory.TryLaunch` clears `st_peters.dory_on_slip` once (host only) and
+  sets `ActiveHullId` if it is empty. The slip prop hides, and his `boat.dory` is put at
+  `LaunchBerth`, which is her mooring (`StPetersBuilder.DoryMooredPos`). The mooring, not the slip
+  foot, because boat whereabouts are not saved and the rig puts her back there after every load.
+- **Saved:** nothing new. Existing fields only: the job flags, `RepairedBoats`, `OwnedBoats`, the slip
+  flag and `ActiveHullId`.
+
 ## 10. Open questions
 
 1. **Direct boat control vs point-to-move (mobile).** Do we offer **full manual** throttle+helm (best for P1 skill, harder on touch) and an optional **assisted/auto-pilot-to-waypoint** for transits/accessibility — and where exactly does autopilot disengage near danger? Likely both, with autopilot for known-safe transits and manual demanded in tide/weather pinch points. Needs UX prototyping.

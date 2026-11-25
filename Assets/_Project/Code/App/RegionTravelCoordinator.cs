@@ -44,6 +44,7 @@ namespace HiddenHarbours.App
             // The region scenes' dev boats are not: only this core's hold is listed.
             if (_hold != null) PlayerStorage.Register(_hold);
             EventBus.Subscribe<GameLoaded>(OnGameLoaded);
+            EventBus.Subscribe<SlipDoryLaunched>(OnSlipDoryLaunched);
         }
 
         // A new game keeps the sailing boat out of the world until the slip dory is launched
@@ -52,9 +53,13 @@ namespace HiddenHarbours.App
 
         private void OnGameLoaded(GameLoaded e) => ApplyBoatWithhold();
 
+        // The mended slip dory went down the slip: the save no longer withholds his boat, so show her.
+        private void OnSlipDoryLaunched(SlipDoryLaunched e) => ApplyBoatWithhold();
+
         private void OnDisable()
         {
             EventBus.Unsubscribe<GameLoaded>(OnGameLoaded);
+            EventBus.Unsubscribe<SlipDoryLaunched>(OnSlipDoryLaunched);
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
             // A rig switched off mid-fade must never leave the screen black: drop the fade and clear the cover.
             _seamFade.Reset();

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4410718250913307002}
   - component: {fileID: 4410718250913307003}
+  - component: {fileID: 4410718250913307004}
   m_Layer: 0
   m_Name: SlipDory
   m_TagString: Untagged
@@ -47,6 +48,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.SlipDory
   _sale: {fileID: 11400000, guid: 5c44c122895e4595a5e20f55df8dabee, type: 2}
   _body: {fileID: 4410718250913307011}
+--- !u!114 &4410718250913307004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4410718250913307001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18797296b8294deaa79ebe7d9189c631, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.DoryMendingStation
+  _station: {fileID: 11400000, guid: 680d295fd14d44b29738caf1c2196842, type: 2}
+  _holdKey: 19
 --- !u!1 &4410718250913307011
 GameObject:
   m_ObjectHideFlags: 0
