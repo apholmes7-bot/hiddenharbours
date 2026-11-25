@@ -79,8 +79,11 @@ namespace HiddenHarbours.Player
 
         /// <summary>The Def this tool draws its identity from.</summary>
         public ToolDef Tool => _tool;
-        public bool IsFishingRod => _tool != null && _tool.IsFishingRod;
-        public RodFishingProfile RodFishing => _tool != null ? _tool.RodFishing : RodFishingProfile.Default;
+        public bool TryGetRodFishing(out RodFishingProfile profile)
+        {
+            profile = default;
+            return _tool != null && _tool.TryGetRodFishing(out profile);
+        }
 
         // ---- ICarriable -----------------------------------------------------------------------------
 

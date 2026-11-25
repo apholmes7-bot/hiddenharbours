@@ -433,80 +433,118 @@ namespace HiddenHarbours.Tests.EditMode
                             "set down where she actually stood");
         }
 
-        [Test]
-        public void RodTiers_LoadValidateAndReuseEveryAppearanceField()
+        [TestCase("Rod", "tool.rod", 1, 12f, 60f, 1.5f, 1f)]
+        [TestCase("RodCoast", "tool.rod_coast", 2, 16f, 75f, 1.8f, 1.2f)]
+        [TestCase("RodDeep", "tool.rod_deep", 3, 22f, 90f, 2.1f, 1.5f)]
+        public void EachRodOwnsExactlyFourAuthoredNumbers(string asset, string id, int tier,
+            float cast, float line, float reel, float help)
         {
-            var names = new[] { "Rod", "RodCoast", "RodDeep" };
-            var ids = new[] { "tool.rod", "tool.rod_coast", "tool.rod_deep" };
-            var rods = names.Select(n => AssetDatabase.LoadAssetAtPath<ToolDef>(
-                $"Assets/_Project/Data/Tools/{n}.asset")).ToArray();
-            Assert.AreEqual(3, rods.Length);
-            var improvements = new HashSet<string> { "CastMetres", "LineMetres", "ReelUpMetresPerSecond",
-                "TakeWindowMultiplier", "LineStrengthMultiplier", "LandingMultiplier" };
-            for (int i = 0; i < rods.Length; i++)
+            var def = AssetDatabase.LoadAssetAtPath<ToolDef>($"Assets/_Project/Data/Tools/{asset}.asset");
+            Assert.IsNotNull(def);
+            Assert.AreEqual(id, def.Id);
+            Assert.AreEqual(tier, def.RodTier);
+            IRodFishingEquipment equipment = def;
+            Assert.IsTrue(equipment.TryGetRodFishing(out var profile));
+            Assert.AreEqual(cast, profile.CastMetres);
+            Assert.AreEqual(line, profile.LineMetres);
+            Assert.AreEqual(reel, profile.ReelUpMetresPerSecond);
+            Assert.AreEqual(help, profile.FightHelp);
+            CollectionAssert.AreEquivalent(new[] { "CastMetres", "LineMetres", "ReelUpMetresPerSecond", "FightHelp" },
+                typeof(RodFishingProfile).GetFields().Select(f => f.Name).ToArray());
+
+            var serialized = new SerializedObject(def);
+            foreach (string field in new[] { "CastMetres", "LineMetres", "ReelUpMetresPerSecond", "FightHelp" })
+                Assert.IsNotNull(serialized.FindProperty("RodFishing." + field), field);
+        }
+
+        [Test]
+        public void NumericTiersReuseEveryAppearanceField()
+        {
+            var starter = AssetDatabase.LoadAssetAtPath<ToolDef>("Assets/_Project/Data/Tools/Rod.asset");
+            foreach (string name in new[] { "RodCoast", "RodDeep" })
             {
-                Assert.IsNotNull(rods[i], names[i]);
-                Assert.AreEqual(ids[i], rods[i].Id);
-                Assert.IsTrue(rods[i].IsFishingRod);
-                Assert.IsTrue(rods[i].RodFishing.IsValid, names[i]);
-                if (i == 0) continue;
-                foreach (var field in typeof(RodFishingProfile).GetFields())
-                {
-                    float lower = (float)field.GetValue(rods[i - 1].RodFishing);
-                    float upper = (float)field.GetValue(rods[i].RodFishing);
-                    if (improvements.Contains(field.Name)) Assert.Greater(upper, lower, field.Name);
-                    else Assert.AreEqual(lower, upper, field.Name);
-                }
+                var def = AssetDatabase.LoadAssetAtPath<ToolDef>($"Assets/_Project/Data/Tools/{name}.asset");
+                Assert.IsNotNull(def);
                 foreach (var field in typeof(ToolDef).GetFields(System.Reflection.BindingFlags.Public |
                              System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.DeclaredOnly))
                 {
                     if (field.Name == "Id" || field.Name == "RodTier" || field.Name == "RodFishing") continue;
-                    Assert.AreEqual(field.GetValue(rods[0]), field.GetValue(rods[i]), field.Name);
+                    Assert.AreEqual(field.GetValue(starter), field.GetValue(def), field.Name);
                 }
             }
-            Assert.AreEqual(RodFishingProfile.Default, rods[0].RodFishing);
+        }
+
+        [Test]
+        public void EquipmentInstancesReturnIndependentValueSnapshotsWithoutApplyingSkill()
+        {
+            var firstDef = Object.Instantiate(AssetDatabase.LoadAssetAtPath<ToolDef>("Assets/_Project/Data/Tools/RodCoast.asset"));
+            var secondDef = Object.Instantiate(AssetDatabase.LoadAssetAtPath<ToolDef>("Assets/_Project/Data/Tools/RodDeep.asset"));
+            _spawned.Add(firstDef);
+            _spawned.Add(secondDef);
+            var firstObject = new GameObject("first rod");
+            var secondObject = new GameObject("second rod");
+            _spawned.Add(firstObject);
+            _spawned.Add(secondObject);
+            var first = firstObject.AddComponent<CarriableTool>();
+            var second = secondObject.AddComponent<CarriableTool>();
+            first.Configure(firstDef, null, "instance.first_rod");
+            second.Configure(secondDef, null, "instance.second_rod");
+            Assert.IsTrue(((IRodFishingEquipment)first).TryGetRodFishing(out var a));
+            Assert.IsTrue(((IRodFishingEquipment)second).TryGetRodFishing(out var b));
+            Assert.AreEqual(firstDef.RodFishing, a);
+            Assert.AreEqual(secondDef.RodFishing, b);
+            a.FightHelp += 3f; // A caller's contribution is outside the equipment and belongs to that caller.
+            firstDef.RodFishing.CastMetres = 18f;
+            Assert.AreEqual(16f, a.CastMetres, "the returned value does not follow later equipment edits");
+            Assert.IsTrue(((IRodFishingEquipment)first).TryGetRodFishing(out var reread));
+            Assert.AreEqual(1.2f, reread.FightHelp, "editing a snapshot cannot edit the asset");
+            Assert.IsTrue(((IRodFishingEquipment)second).TryGetRodFishing(out var other));
+            Assert.AreEqual(b, other, "one equipment instance cannot change another's numbers");
         }
 
         [TestCase("RodCoast")]
         [TestCase("RodDeep")]
-        public void HigherRodInHand_OpensTheExistingCastGateAndCapturesItsNumbers(string asset)
+        public void NumericDataAloneDoesNotActivateAnUpgradeInTheFishingGate(string asset)
         {
-            // The shared dig fixture is dry; a successful cast needs water along its landing arc.
-            _env.Level = 2f;
             DevFishingInput dev = Rig();
             var def = AssetDatabase.LoadAssetAtPath<ToolDef>($"Assets/_Project/Data/Tools/{asset}.asset");
             var hands = ToolInHand.Holding(def.Id, _spawned);
             var held = (CarriableTool)hands.Carried;
             held.Tool.RodTier = def.RodTier;
             held.Tool.RodFishing = def.RodFishing;
-            Assert.IsTrue(dev.RodIsToHand);
-            Assert.IsTrue(dev.FishingLive);
-            Assert.IsTrue(CarriedRod.TryRead(hands, out var profile));
+            Assert.IsTrue(((IRodFishingEquipment)held).TryGetRodFishing(out var profile));
             Assert.AreEqual(def.RodFishing, profile);
-            var controller = dev.GetComponent<FishingController>();
-            FlickGestures.Flick(dev, controller);
-            Assert.AreEqual(FishingPhase.Cast, controller.Phase);
-            Assert.AreEqual(profile, controller.RodSnapshot);
-            held.Tool.RodFishing = RodFishingProfile.Default;
-            Assert.AreEqual(profile, controller.RodSnapshot, "changing equipment cannot alter an in-flight cast");
-            dev.ConfigureRodGate(true, "tool.some_other_rod");
-            Assert.IsFalse(dev.RodIsToHand, "an explicit gate for another kind still means that kind");
+            Assert.IsFalse(dev.RodIsToHand, "the existing cast gate still names the starter identity");
+            Assert.IsFalse(dev.FishingLive);
         }
 
         [Test]
-        public void EveryRodNumber_RejectsZeroNegativeNanAndInfinity()
+        public void MissingNonRodAndInvalidEquipmentCannotReturnUsableNumbers()
         {
+            var go = new GameObject("empty equipment");
+            _spawned.Add(go);
+            IRodFishingEquipment empty = go.AddComponent<CarriableTool>();
+            Assert.IsFalse(empty.TryGetRodFishing(out var missing));
+            Assert.AreEqual(default(RodFishingProfile), missing);
+            var def = ScriptableObject.CreateInstance<ToolDef>();
+            _spawned.Add(def);
+            def.Id = ToolDef.ShovelId;
+            def.RodFishing = new RodFishingProfile { CastMetres = 12f, LineMetres = 60f,
+                ReelUpMetresPerSecond = 1.5f, FightHelp = 1f };
+            Assert.IsFalse(def.TryGetRodFishing(out var nonRod));
+            Assert.AreEqual(default(RodFishingProfile), nonRod);
+            def.RodTier = 1;
             foreach (var field in typeof(RodFishingProfile).GetFields())
             foreach (float invalid in new[] { 0f, -1f, float.NaN, float.PositiveInfinity, float.NegativeInfinity })
             {
-                object boxed = RodFishingProfile.Default;
+                object boxed = new RodFishingProfile { CastMetres = 12f, LineMetres = 60f,
+                    ReelUpMetresPerSecond = 1.5f, FightHelp = 1f };
                 field.SetValue(boxed, invalid);
-                Assert.IsFalse(((RodFishingProfile)boxed).IsValid, field.Name + ": " + invalid);
+                def.RodFishing = (RodFishingProfile)boxed;
+                Assert.IsFalse(def.RodFishing.IsValid, field.Name + ": " + invalid);
+                Assert.IsFalse(def.TryGetRodFishing(out var rejected), field.Name);
+                Assert.AreEqual(default(RodFishingProfile), rejected);
             }
-            var reversed = RodFishingProfile.Default;
-            reversed.MaxBiteDelaySeconds = reversed.MinBiteDelaySeconds / 2f;
-            Assert.IsFalse(reversed.IsValid);
         }
-
     }
 }

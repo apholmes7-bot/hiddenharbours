@@ -1,5 +1,4 @@
 using UnityEngine;
-using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Fishing
 {
@@ -34,7 +33,6 @@ namespace HiddenHarbours.Fishing
         private readonly float _rise, _fall, _fill, _effectiveRunPressure, _steerRelief, _surfaceThreshold;
         private readonly float _giveBack, _maxGiveBack;
         private readonly float _roamScale, _holdsDeep01;
-        private readonly float _lineStrength;
 
         // The high-water mark of how landed she has ever been. She may be dragged back from it, but never
         // by more than _maxGiveBack — "you always keep most of what you won" (owner's ruling 2026-07-23).
@@ -98,9 +96,6 @@ namespace HiddenHarbours.Fishing
         /// fight identically (tests). The caller must supply an RNG.</summary>
         /// <exception cref="System.ArgumentNullException"><paramref name="rng"/> is null.</exception>
         public RodFightSim(RodFightDef def, System.Random rng)
-            : this(def, rng, RodFishingProfile.Default) { }
-
-        public RodFightSim(RodFightDef def, System.Random rng, in RodFishingProfile rod)
         {
             if (rng == null) throw new System.ArgumentNullException(nameof(rng));
             _rhythm = new RodFightRhythm(def.StaminaCadence, rng);
@@ -109,8 +104,7 @@ namespace HiddenHarbours.Fishing
 
             _rise = def.tensionRisePerSec;
             _fall = def.tensionFallPerSec;
-            _fill = def.landingFillPerSec * rod.LandingMultiplier;
-            _lineStrength = rod.LineStrengthMultiplier;
+            _fill = def.landingFillPerSec;
             _effectiveRunPressure = RodFightStrength.EffectiveRunPressure(def.runTensionPressure, def.Strength);
             _steerRelief = def.counterSteerRelief;
             _surfaceThreshold = def.surfaceThreshold01;
@@ -199,8 +193,6 @@ namespace HiddenHarbours.Fishing
             float landingRate = RodFightMath.LandingRatePerSec(reeling, effort, steerAlignment, phase,
                 _fill, _giveBack);
 
-            // Stronger line reduces rising strain, including sea and deck pressure. Recovery stays intact.
-            if (tensionRate > 0f) tensionRate /= _lineStrength;
             Tension01 = Mathf.Clamp01(Tension01 + tensionRate * dt);
 
             // Landing can now FALL (she takes line) — but never below the high-water floor, so a bad run

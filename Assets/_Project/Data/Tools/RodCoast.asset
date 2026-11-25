@@ -49,20 +49,4 @@ MonoBehaviour:
     CastMetres: 16
     LineMetres: 75
     ReelUpMetresPerSecond: 1.8
-    MinBiteDelaySeconds: 1.5
-    MaxBiteDelaySeconds: 4
-    AutoHookSeconds: 1.2
-    TakeWindowMultiplier: 1.2
-    LineStrengthMultiplier: 1.2
-    LandingMultiplier: 1.2
-    TensionRiseEasy: 0.6
-    TensionRiseHard: 1
-    TensionFallEasy: 0.7
-    TensionFallHard: 0.5
-    LandingEasy: 0.4
-    LandingHard: 0.22
-    SurgeIntervalEasy: 3
-    SurgeIntervalHard: 1.6
-    SurgeDurationSeconds: 0.8
-    SurgePressureEasy: 0.15
-    SurgePressureHard: 0.4
+    FightHelp: 1.2

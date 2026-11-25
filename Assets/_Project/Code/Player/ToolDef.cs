@@ -28,7 +28,7 @@ namespace HiddenHarbours.Player
     /// your hands", by the gate that cares, through <c>Core.CarriedItem</c>.</para>
     /// </summary>
     [CreateAssetMenu(menuName = "Hidden Harbours/Tool", fileName = "Tool")]
-    public class ToolDef : ScriptableObject
+    public class ToolDef : ScriptableObject, IRodFishingEquipment
     {
         /// <summary>The rod's stable tool id. ⚠️ This is the <c>ICarriable.DefId</c> a gate matches on —
         /// NOT <see cref="PlayerGear.RodId"/>, which is the OWNERSHIP record. Holding and owning are
@@ -55,10 +55,14 @@ namespace HiddenHarbours.Player
         [Tooltip("Rod progression tier; zero for other equipment. The original rod remains tier one.")]
         public int RodTier;
 
-        [Tooltip("Numeric fishing capability. Copied at cast start, never saved on a live fight.")]
-        public RodFishingProfile RodFishing = RodFishingProfile.Default;
+        [Tooltip("The rod's four numeric contributions, before any player's skill is added.")]
+        public RodFishingProfile RodFishing;
 
-        public bool IsFishingRod => RodTier > 0 || Id == RodId;
+        public bool TryGetRodFishing(out RodFishingProfile profile)
+        {
+            profile = RodTier > 0 && RodFishing.IsValid ? RodFishing : default;
+            return profile.IsValid;
+        }
 
         [Tooltip("One line for the pick-up message and later the tool rack's label. Greybox copy.")]
         [TextArea(2, 4)]

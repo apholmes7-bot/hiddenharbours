@@ -44,3 +44,9 @@ MonoBehaviour:
   - walk
   - run
   StowBlendSeconds: 0.2
+  RodTier: 1
+  RodFishing:
+    CastMetres: 12
+    LineMetres: 60
+    ReelUpMetresPerSecond: 1.5
+    FightHelp: 1
