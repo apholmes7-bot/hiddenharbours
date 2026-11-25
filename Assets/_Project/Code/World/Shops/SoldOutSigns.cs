@@ -35,7 +35,9 @@ namespace HiddenHarbours.World
         private SpriteRenderer[] _covers = new SpriteRenderer[0];
         private SpriteRenderer[] _goods = new SpriteRenderer[0];
         private ShelfGood[] _shelfGoods = new ShelfGood[0];
+        private ShelfSection[] _sections = new ShelfSection[0];
         private GameObject[] _made = new GameObject[0];
+        private GameObject[] _madeSections = new GameObject[0];
         private System.Func<bool> _insideNow;
         private bool _wasInside;
         private bool _dirty = true;
@@ -54,24 +56,26 @@ namespace HiddenHarbours.World
         /// Def's order; null where a slot sells nothing itself.</summary>
         public ShelfGood[] ShelfGoods => _shelfGoods;
 
+        /// <summary>The shelf sections (store sections), one per <see cref="ShopShelfSlotsDef.Sections"/> entry
+        /// in the Def's order; their goods are the slots' <see cref="ShelfGoods"/>, sold only through them.</summary>
+        public ShelfSection[] Sections => _sections;
+
         /// <summary>Builds the cards for <paramref name="def"/> on <paramref name="building"/>. Idempotent.</summary>
         public void Configure(ShopShelfSlotsDef def, BuildingInterior building)
         {
             _def = def;
             _building = building;
             _insideNow ??= Inside;
-            for (int i = 0; i < _made.Length; i++)
-                if (_made[i] != null)
-                {
-                    if (Application.isPlaying) Destroy(_made[i]);
-                    else DestroyImmediate(_made[i]);
-                }
+            DestroyAll(_made);
+            DestroyAll(_madeSections);
             int n = def != null && def.Slots != null ? def.Slots.Count : 0;
             _cards = new SpriteRenderer[n];
             _covers = new SpriteRenderer[n];
             _goods = new SpriteRenderer[n];
             _shelfGoods = new ShelfGood[n];
             _made = new GameObject[n];
+            _sections = new ShelfSection[0];
+            _madeSections = new GameObject[0];
             if (n == 0) return;
 
             SpriteRenderer room = building != null ? building.RoomRenderer : null;
@@ -93,11 +97,63 @@ namespace HiddenHarbours.World
                     var good = at.AddComponent<ShelfGood>();
                     good.Configure(def.Id + "." + slot.Id, def.ShopId, slot.ListingId, def.ReachMeters,
                                    slot.NeedsFreeHand, _insideNow, slot.IntoBag ? def.Bag : null);
+                    // A good its section sells is handed over before it can register on its own.
+                    if (def.SectionOf(slot.Id) != null) good.PutInSection();
                     at.SetActive(true);
                     _shelfGoods[i] = good;
                 }
             }
+            BuildSections(def);
             _dirty = true;
+        }
+
+        // One reachable place per section, at its own offset, selling its slots' goods through the chooser.
+        private void BuildSections(ShopShelfSlotsDef def)
+        {
+            int m = def.Sections != null ? def.Sections.Count : 0;
+            _sections = new ShelfSection[m];
+            _madeSections = new GameObject[m];
+            for (int s = 0; s < m; s++)
+            {
+                ShopShelfSection section = def.Sections[s];
+                if (section == null) continue;
+                int count = 0;
+                ShelfGood[] goods = new ShelfGood[section.SlotIds != null ? section.SlotIds.Count : 0];
+                for (int k = 0; k < goods.Length; k++)
+                {
+                    ShelfGood good = GoodOfSlot(def, section.SlotIds[k]);
+                    if (good != null) goods[count++] = good;
+                }
+                if (count < goods.Length) System.Array.Resize(ref goods, count);
+
+                var go = new GameObject("Section_" + section.Id);
+                go.transform.SetParent(transform, false);
+                go.transform.localPosition = section.Offset;
+                go.SetActive(false);   // register only once wired
+                var shelf = go.AddComponent<ShelfSection>();
+                shelf.Configure(def.Id + "." + section.Id, section.VerbLabel, def.ReachMeters, _insideNow, goods);
+                go.SetActive(true);
+                _sections[s] = shelf;
+                _madeSections[s] = go;
+            }
+        }
+
+        private ShelfGood GoodOfSlot(ShopShelfSlotsDef def, string slotId)
+        {
+            for (int i = 0; i < def.Slots.Count; i++)
+                if (def.Slots[i] != null && string.Equals(def.Slots[i].Id, slotId, System.StringComparison.Ordinal))
+                    return _shelfGoods[i];
+            return null;
+        }
+
+        private static void DestroyAll(GameObject[] made)
+        {
+            for (int i = 0; i < made.Length; i++)
+                if (made[i] != null)
+                {
+                    if (Application.isPlaying) Destroy(made[i]);
+                    else DestroyImmediate(made[i]);
+                }
         }
 
         private static GameObject Child(GameObject parent, string name)
