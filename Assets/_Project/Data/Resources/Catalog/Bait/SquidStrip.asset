@@ -20,7 +20,7 @@ MonoBehaviour:
   - fish.atlantic_cod
   - fish.pollock
   Catalog:
-    Listed: 0
+    Listed: 1
     Section: 5
     Sellers:
     - seller.leblancs

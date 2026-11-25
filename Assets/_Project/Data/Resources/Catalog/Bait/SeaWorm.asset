@@ -20,7 +20,7 @@ MonoBehaviour:
   - fish.haddock
   - fish.atlantic_cod
   Catalog:
-    Listed: 0
+    Listed: 1
     Section: 5
     Sellers:
     - seller.leblancs

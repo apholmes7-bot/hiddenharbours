@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84cefdd2669644d0b0e0f7321e1aaf98, type: 3}
+  m_Name: StPetersStoreItemPictures
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.StoreItemPicturesDef
+  Id: storepictures.st_peters_general
+  ShopId: shop.st_peters_general
+  Items:
+  - ItemId: gear.rod
+    Picture: {fileID: 21300000, guid: 57bcc667690b4274bbd240f41bfa69ad, type: 3}
+    Note: Fishing section, bottom shelf of the gondola (four rods). Binds when the rod has a shelf line (line.fishing_rod).
+  - ItemId: gear.shovel
+    Picture: {fileID: 21300000, guid: def7870aa88342a0a8d268928a12e353, type: 3}
+    Note: Shore section, back wall. Binds when listed for the store.
+  - ItemId: gear.bucket
+    Picture: {fileID: 21300000, guid: 18845435a7f04beda81a9b1950166501, type: 3}
+    Note: Shore section, back wall floor. Binds when listed for the store.
+  - ItemId: gear.shellfish_rake
+    Picture: {fileID: 21300000, guid: 7904be9b88ed42ab871eb030376c2256, type: 3}
+    Note: Shore section, back wall. Held for hand-gathering.
+  - ItemId: gear.shellfish_basket
+    Picture: {fileID: 21300000, guid: be690d8f1feb48988e285ada94648214, type: 3}
+    Note: Shore section, back wall floor. Held for hand-gathering.
+  - ItemId: gear.mussel_sack
+    Picture: {fileID: 21300000, guid: ab0d7d7da1e54eabbfa48fe848360cbe, type: 3}
+    Note: Shore section, back wall. Held for hand-gathering.
+  - ItemId: gear.oyster_tongs
+    Picture: {fileID: 21300000, guid: 015df258b82643589e1bbba4a9b5e724, type: 3}
+    Note: Shore section, back wall. Held for hand-gathering.
+  - ItemId: line.patch_plank
+    Picture: {fileID: 21300000, guid: 0ba687c240b64d489f3ff9f5f1ba4760, type: 3}
+    Note: Mending section, side shelf. The mending draft's shelf line; binds when it merges.
+  - ItemId: line.copper_nails
+    Picture: {fileID: 21300000, guid: 6091bc7bc1ff4f7680d712716d5dc75d, type: 3}
+    Note: Mending section, side shelf. The mending draft's shelf line; binds when it merges.
+  - ItemId: line.oakum
+    Picture: {fileID: 21300000, guid: 54d32281f462463fb05e6bc44bd565a6, type: 3}
+    Note: Mending section, side shelf. The mending draft's shelf line; binds when it merges.
+  - ItemId: line.linseed_paint
+    Picture: {fileID: 21300000, guid: bf480bcef8a745f481b8079bf19dccc7, type: 3}
+    Note: Mending section, side shelf. The mending draft's shelf line; binds when it merges.
+  - ItemId: supply.soap_bar
+    Picture: {fileID: 21300000, guid: 877012e30f4e49728e0cfcc4ca3048f2, type: 3}
+    Note: Household section, side shelf. Sold at the counter today; binds when it moves to the shelf.
+  - ItemId: supply.matches
+    Picture: {fileID: 21300000, guid: d9b328b560f24b8f98199ad889df8f51, type: 3}
+    Note: Household section, side shelf. Planned household good.
+  - ItemId: supply.candles
+    Picture: {fileID: 21300000, guid: b6b2464849f245eb960de70dac81fb21, type: 3}
+    Note: Household section, side shelf. Planned household good.
+  - ItemId: supply.lamp_oil
+    Picture: {fileID: 21300000, guid: faaee9578ba347d68db159dd1bc37933, type: 3}
+    Note: Household section, side shelf. Planned household good.

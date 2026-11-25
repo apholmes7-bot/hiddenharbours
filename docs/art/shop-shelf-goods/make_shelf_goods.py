@@ -56,7 +56,52 @@ P = {
     "p": (190, 150, 98),    # paper bag, kraft
     "r": (150, 112, 66),    # paper bag shade
     "L": (214, 180, 128),   # paper bag fold
+    "P": (205, 120, 120),   # sea worm
+    "R": (70, 50, 35),      # worm box soil
+    "Y": (236, 226, 220),   # squid strip
+    "y": (214, 170, 172),   # squid strip edge
+    "c": (226, 200, 150),   # shucked clam
+    "o": (196, 150, 96),    # clam shade
+    "g": (60, 62, 66),      # rod butt and tip
+    "t": (128, 84, 46),     # rod blank, varnished
 }
+
+# The fishing section (2026-11-25): four baits on the third shelf, each two tubs or boxes, then the rods
+# lying along the bottom shelf. Six rows tall, to fit band 3 (rows 245..250).
+CAPELIN_TUB = [
+    ".DDDDD.",
+    "DsszssD",
+    "DzssszD",
+    "DkkkkkD",
+    "DmmmmmD",
+    ".DDDDD.",
+]
+WORM_BOX = [
+    ".DDDDD.",
+    "DRPRPRD",
+    "DPRRPRD",
+    "DkkkkkD",
+    "DqqqqqD",
+    ".DDDDD.",
+]
+SQUID_TRAY = [
+    ".jjjjj.",
+    "jYyYyYj",
+    "jyYyYyj",
+    "jYyYyYj",
+    "jBBBBBj",
+    ".jjjjj.",
+]
+CLAM_TUB = [
+    ".DDDDD.",
+    "DcocoyD",
+    "DoccocD",
+    "DlllllD",
+    "DBBBBBD",
+    ".DDDDD.",
+]
+BAND3_ROW = 245
+BAITS_X = {"capelin": 1, "worm": 16, "squid": 31, "clam": 46}
 
 LOAF = [
     ".DDDDDDD.",
@@ -158,8 +203,18 @@ PIVOT = {
     "ShelfGondolaBread": (15, 34),
     "ShelfGondolaOatcakes": (47, 33),
     "ShelfGondolaBeans": (31, 20),
+    # The fishing section: the four baits on band 3, each pivoted at the middle of its two tubs, and the
+    # rods along band 4.
+    "ShelfGondolaCapelin": (BAITS_X["capelin"] + 7, 10),
+    "ShelfGondolaSeaWorm": (BAITS_X["worm"] + 7, 10),
+    "ShelfGondolaSquidStrip": (BAITS_X["squid"] + 7, 10),
+    "ShelfGondolaShuckedClam": (BAITS_X["clam"] + 7, 10),
+    "ShelfGondolaRods": (31, 2),
     # Held: the bottom centre; the carry pose hangs it its own height below the hand.
     "ShoppingBagPaper": (5, 0),
+    # Sold-out cards: their centre, over the slot's own pivot.
+    "ShelfSoldOutBand": (17, 4),
+    "ShelfSoldOutSmall": (7, 4),
 }
 ROOM_RECT = {
     "ShelfGondolaEmpty": (GONDOLA_X0, GONDOLA_Y0, GONDOLA_W, GONDOLA_H),
@@ -170,6 +225,11 @@ ROOM_RECT = {
     "ShelfGondolaBread": (GONDOLA_X0, GONDOLA_Y0, GONDOLA_W, GONDOLA_H),
     "ShelfGondolaOatcakes": (GONDOLA_X0, GONDOLA_Y0, GONDOLA_W, GONDOLA_H),
     "ShelfGondolaBeans": (GONDOLA_X0, GONDOLA_Y0, GONDOLA_W, GONDOLA_H),
+    "ShelfGondolaCapelin": (GONDOLA_X0, GONDOLA_Y0, GONDOLA_W, GONDOLA_H),
+    "ShelfGondolaSeaWorm": (GONDOLA_X0, GONDOLA_Y0, GONDOLA_W, GONDOLA_H),
+    "ShelfGondolaSquidStrip": (GONDOLA_X0, GONDOLA_Y0, GONDOLA_W, GONDOLA_H),
+    "ShelfGondolaShuckedClam": (GONDOLA_X0, GONDOLA_Y0, GONDOLA_W, GONDOLA_H),
+    "ShelfGondolaRods": (GONDOLA_X0, GONDOLA_Y0, GONDOLA_W, GONDOLA_H),
 }
 
 
@@ -240,6 +300,32 @@ def gondola_beans(im=None):
     return im
 
 
+def gondola_bait(pattern, key):
+    im = blank(GONDOLA_W, GONDOLA_H)
+    x = BAITS_X[key]
+    stamp(im, pattern, x, BAND3_ROW - GONDOLA_Y0)
+    stamp(im, pattern, x + 7, BAND3_ROW - GONDOLA_Y0)
+    return im
+
+
+def gondola_rods():
+    # Bottom shelf (rows 254..257): four rods lying along it, two to a row, end to end, the lower pair
+    # set two pixels over: a dark butt, a cork grip, a reel seat, then the varnished blank to the tip.
+    im = blank(GONDOLA_W, GONDOLA_H)
+    for row, shift in ((255, 0), (257, 2)):
+        y = row - GONDOLA_Y0
+        for x0 in (2 + shift, 31 + shift):
+            put(im, x0, y, "g")
+            for x in range(x0 + 1, x0 + 6):
+                put(im, x, y, "c")
+            put(im, x0 + 6, y, "s")
+            put(im, x0 + 7, y, "g")
+            for x in range(x0 + 8, x0 + 27):
+                put(im, x, y, "t")
+            put(im, x0 + 26, y, "g")
+    return im
+
+
 def gondola_goods():
     # All three bands at once (the slice 1 sprite, kept for reference; slice 2 draws each band on its own).
     im = blank(GONDOLA_W, GONDOLA_H)
@@ -300,6 +386,48 @@ def bait_box():
     return im
 
 
+# Sold-out cards sized to one shelf band (store sections look, 2026-11-25: the store's 19 x 15 card on a bait
+# slot covered the tins on the band above). Eight rows tall, the height of a band and its lip, in the store
+# card's own colours and 3 x 5 letters: "SOLD OUT" on one line for a slot as wide as a band, "OUT" for a
+# bait slot (two tubs wide). Centre pivot, even sizes, so each lands on whole pixels over its slot.
+CARD_EDGE = (74, 50, 36)
+CARD_FIELD = (237, 224, 190)
+CARD_SHADE = (224, 214, 190)
+CARD_INK = (154, 52, 40)
+CARD_FONT = {
+    "S": ["###", "#..", "###", "..#", "###"],
+    "O": ["###", "#.#", "#.#", "#.#", "###"],
+    "L": ["#..", "#..", "#..", "#..", "###"],
+    "D": ["##.", "#.#", "#.#", "#.#", "##."],
+    "U": ["#.#", "#.#", "#.#", "#.#", "###"],
+    "T": ["###", ".#.", ".#.", ".#.", ".#."],
+    " ": ["..", "..", "..", "..", ".."],
+}
+
+
+def sold_out_card(text, w):
+    h = 8
+    im = blank(w, h)
+    for y in range(h):
+        for x in range(w):
+            corner = (x in (0, w - 1)) and (y in (0, h - 1))
+            if corner:
+                continue
+            edge = x in (0, w - 1) or y in (0, h - 1)
+            c = CARD_EDGE if edge else (CARD_SHADE if y == h - 2 else CARD_FIELD)
+            im.putpixel((x, y), c + (255,))
+    tw = sum(len(CARD_FONT[ch][0]) for ch in text) + (len(text) - 1)
+    x = (w - tw) // 2
+    for ch in text:
+        glyph = CARD_FONT[ch]
+        for gy, row in enumerate(glyph):
+            for gx, cell in enumerate(row):
+                if cell == "#":
+                    im.putpixel((x + gx, 1 + gy), CARD_INK + (255,))
+        x += len(glyph[0]) + 1
+    return im
+
+
 def offset_of(name):
     x0, y0, w, h = ROOM_RECT[name]
     px, py = PIVOT[name]
@@ -311,6 +439,8 @@ def main():
     out = sys.argv[1]
     os.makedirs(out, exist_ok=True)
     made = {
+        "ShelfSoldOutBand": sold_out_card("SOLD OUT", 34),
+        "ShelfSoldOutSmall": sold_out_card("OUT", 14),
         "ShelfGondolaEmpty": gondola_empty(),
         "ShelfGondolaGoods": gondola_goods(),
         "ShelfIceChestEmpty": ice_chest_empty(),
@@ -320,6 +450,11 @@ def main():
         "ShelfGondolaOatcakes": gondola_oatcakes(),
         "ShelfGondolaBeans": gondola_beans(),
         "ShoppingBagPaper": paper_bag(),
+        "ShelfGondolaCapelin": gondola_bait(CAPELIN_TUB, "capelin"),
+        "ShelfGondolaSeaWorm": gondola_bait(WORM_BOX, "worm"),
+        "ShelfGondolaSquidStrip": gondola_bait(SQUID_TRAY, "squid"),
+        "ShelfGondolaShuckedClam": gondola_bait(CLAM_TUB, "clam"),
+        "ShelfGondolaRods": gondola_rods(),
     }
     for name, im in made.items():
         im.save(os.path.join(out, name + ".png"))

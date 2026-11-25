@@ -22,4 +22,4 @@ MonoBehaviour:
   PlayerAllowanceFraction: 0.25
   WinterMultiplier: 1
   Container: pail or tote
-  Basis: Capelin and herring top-up; bulk lobster bait comes by sea. Island supply plan 2026-11-15 table (h).
+  Basis: Capelin and herring top-up; bulk lobster bait comes by sea. Island supply plan 2026-11-15 table (h). The store's hook baits share it (capelin 0.4, sea worm, squid strip and shucked clam 0.2 each; PROPOSAL 2026-11-25, docs/design/st-peters-store-sections.md).
