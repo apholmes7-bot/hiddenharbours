@@ -1,5 +1,10 @@
 # Deciding when the night may pass
 
+Reconciled with main `d46bde303e6aa256d23d47a05ede5d7d6f38e51e` (2026-11-25).
+The quorum implementation and test bodies are unchanged from `bd1ddf6cee`, whose
+CI run `45322145167` passed. Main's version-26 store rows do not add player rest
+anchors or a second sleeper. Native execution on this reconciled head is unverified.
+
 The night may pass only when every participating player is lying in a separate bunk.
 A wheelhouse bench counts as a bunk. The bunks may be aboard and ashore, in different
 regions. Sleep still lasts at most eight game hours and keeps the completed rest.
@@ -12,8 +17,8 @@ The existing `Assets/Tests/EditMode/Save/SleepFlowTests.cs` fixture is extended,
 partial file for quorum cases. Its instant-versus-chosen sleep, day rollover, needs,
 early wake, occupancy and save assertions are retained. Three characterization cases
 were written before the extraction for named, empty and null legacy bed ids: each must
-reach the same morning, write once and preserve the original rest anchor. No local Unity
-or compiler run was performed; these assertions await CI execution.
+reach the same morning, write once and preserve the original rest anchor. No local native
+test or compiler run was performed; the reconciled head still requires CI execution.
 
 ## Core contract
 
@@ -71,7 +76,7 @@ without publishing it. Both paths retain `SleepPlan`'s existing cap and defaults
 
 ## Persistence boundary
 
-The current flow still has one local request, one local needs service and one v25 rest
+The current flow still has one local request, one local needs service and one v26 rest
 anchor. This is a readiness seam for later integration, not a completed two-player
 sleep/save system. Session snapshots are not saved; no GameConfig value or saved field
 changes. To persist two sleepers, a separate approved migration would need player ids
@@ -81,3 +86,11 @@ should become one world pose per physical hull, referenced by each sleeper, rath
 than two competing copies. One checkpoint must include both players and the shared
 clock atomically. It must not infer a second player's anchor from the first player's
 record. No migration or technical save trigger is added here.
+
+## Integration with other sleep work
+
+The demo-ending proposal (#1535) also changes `SleepFlow.cs`; combining the two
+current drafts has a content conflict there. Reconciliation must preserve both the
+quorum recheck before any clock advance and the demo's completed-sleep boundary.
+This refresh does not resolve that conflict or import the other proposal. The shared
+test-file changes in #1510 and #1504 combine cleanly in the checked versions.

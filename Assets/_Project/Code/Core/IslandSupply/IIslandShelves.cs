@@ -8,7 +8,7 @@ namespace HiddenHarbours.Core
     ///
     /// <para>Readers in other modules (a dialogue line, a shelf presenter, the counter) use this contract and
     /// never the Economy class (rule 4). Every read is a pure function of the time asked and the purchases
-    /// recorded so far; nothing here is saved.</para>
+    /// recorded so far. The shelves are never saved; the purchases are (save v26).</para>
     /// </summary>
     public interface IIslandShelvesView
     {
@@ -36,8 +36,8 @@ namespace HiddenHarbours.Core
     public interface IIslandShelves : IIslandShelvesView
     {
         /// <summary>Takes one item off the line's shelf at <paramref name="totalSeconds"/>; false when the shelf
-        /// is empty. A committed stock change only: it neither charges money nor gives the item. Held for the
-        /// session only until the island's memory is saved (plan slice 8).</summary>
+        /// is empty. A committed stock change only: it neither charges money nor gives the item. The
+        /// purchase is kept with the game (save v26), so a reload does not put the item back.</summary>
         bool TryTakeOne(string lineId, double totalSeconds);
     }
 }

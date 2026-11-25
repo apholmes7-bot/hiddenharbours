@@ -12,11 +12,14 @@ namespace HiddenHarbours.Economy
     /// equals the ledger's level at dusk. A run the bar forbids leaves the shelves thinning day by day until
     /// they stand empty.
     ///
-    /// <para><b>Nothing is saved.</b> A read settles the <see cref="IslandStoreLedger"/> for the day (a
-    /// bounded replay, cached until the day or the purchases change) and does plain arithmetic for the
-    /// hour, so the shelves look the same whether the player watched the days or slept through them. The
-    /// player's purchases are held for the session only (saving them is plan slice 8); a run that tops the
-    /// room up clears their effect, and draws older than the ledger's lookback are dropped.</para>
+    /// <para><b>The shelves are never saved; the player's purchases are.</b> A read settles the
+    /// <see cref="IslandStoreLedger"/> for the day (a bounded replay, cached until the day or the purchases
+    /// change) and does plain arithmetic for the hour, so the shelves look the same whether the player
+    /// watched the days or slept through them. What the player took is the one thing that cannot be
+    /// recomputed: it is handed out as save rows (<see cref="ExportPurchases"/>) and taken back in on a load
+    /// (<see cref="ImportPurchases"/>), so a loaded game's shelves are exactly the shelves that were left.
+    /// A run that tops the room up clears a purchase's effect, and purchases older than the ledger's
+    /// lookback are dropped (<see cref="DropOldPurchases"/>): no replay can reach them.</para>
     ///
     /// <para>Reads allocate nothing. Plain C#, no Unity lifecycle: warm it from the day tick with
     /// <see cref="SlowTick"/> or read it lazily.</para>
@@ -26,6 +29,7 @@ namespace HiddenHarbours.Economy
         private struct Draw
         {
             public int Good;
+            public int Line;
             public int Day;
             public double Seconds;
             public double Units;
@@ -36,9 +40,11 @@ namespace HiddenHarbours.Economy
         private readonly double _opensHour;
         private readonly double _closesHour;
         private readonly Dictionary<string, int> _lineById = new Dictionary<string, int>(StringComparer.Ordinal);
+        private readonly string[] _lineIds;
         private readonly int[] _goodOfLine;
         private readonly double[] _unitsPerItem;
         private readonly int[] _maxOnShelf;
+        private readonly double[] _shareOfGood;
         private readonly List<Draw> _draws = new List<Draw>();
 
         // The settled day, per ledger good: the level after the morning run, and the islanders' use that day.
@@ -71,6 +77,7 @@ namespace HiddenHarbours.Economy
             var goods = new List<int>();
             var units = new List<double>();
             var max = new List<int>();
+            var shares = new List<double>();
             foreach (IslandShelfLine line in lines)
             {
                 if (line == null || string.IsNullOrEmpty(line.Id)) throw new ArgumentException("A shelf line needs an id.");
@@ -80,15 +87,26 @@ namespace HiddenHarbours.Economy
                     throw new ArgumentException("Shelf line needs positive item units and room: " + line.Id);
                 int good = GoodIndex(ledger, line.Good);
                 if (good < 0) throw new ArgumentException("The back room does not stock the good of " + line.Id);
-                if (goods.Contains(good)) throw new ArgumentException("Two shelf lines show one good: " + line.Id);
+                double share = ShareOf(line);
+                if (!(share > 0.0) || share > 1.0)
+                    throw new ArgumentException("A shelf line's share of its good must be above 0 and at most 1: " + line.Id);
+                double shown = share;
+                for (int i = 0; i < goods.Count; i++)
+                    if (goods[i] == good) shown += shares[i];
+                if (shown > 1.0 + ShareTolerance)
+                    throw new ArgumentException("The shelf lines on one good show more than all of it: " + line.Id);
                 _lineById.Add(line.Id, goods.Count);
                 goods.Add(good);
                 units.Add(line.UnitsPerItem);
                 max.Add(line.MaxOnShelf);
+                shares.Add(share);
             }
+            _lineIds = new string[goods.Count];
+            foreach (KeyValuePair<string, int> line in _lineById) _lineIds[line.Value] = line.Key;
             _goodOfLine = goods.ToArray();
             _unitsPerItem = units.ToArray();
             _maxOnShelf = max.ToArray();
+            _shareOfGood = shares.ToArray();
             _morning = new double[ledger.GoodCount];
             _use = new double[ledger.GoodCount];
             _ledger.ExtraDraw = DrawnOn;
@@ -121,7 +139,7 @@ namespace HiddenHarbours.Economy
             if (!(totalSeconds > 0.0)) totalSeconds = 0.0;
             int day = DayOf(totalSeconds);
             Settle(day);
-            return Items(line, StockAt(_goodOfLine[line], day, totalSeconds));
+            return Items(line, StockAt(line, day, totalSeconds));
         }
 
         public bool TryTakeOne(string lineId, double totalSeconds)
@@ -130,15 +148,79 @@ namespace HiddenHarbours.Economy
             if (!(totalSeconds > 0.0)) totalSeconds = 0.0;
             int day = DayOf(totalSeconds);
             Settle(day);
-            if (Items(line, StockAt(_goodOfLine[line], day, totalSeconds)) < 1) return false;
+            if (Items(line, StockAt(line, day, totalSeconds)) < 1) return false;
 
-            // Older draws can no longer reach any replay that starts at or after this day's lookback.
-            int oldest = day - _ledger.LookbackDays;
-            for (int i = _draws.Count - 1; i >= 0; i--)
-                if (_draws[i].Day < oldest) _draws.RemoveAt(i);
-            _draws.Add(new Draw { Good = _goodOfLine[line], Day = day, Seconds = totalSeconds, Units = _unitsPerItem[line] });
+            DropBefore(day - _ledger.LookbackDays);
+            _draws.Add(new Draw { Good = _goodOfLine[line], Line = line, Day = day, Seconds = totalSeconds, Units = _unitsPerItem[line] });
             _version++;
+            PurchasesChanged?.Invoke();
             return true;
+        }
+
+        // ---- the player's purchases, out to the save and back ------------------------------------------
+
+        /// <summary>Raised after the held purchases change by a purchase (not by an import or a drop), so
+        /// whoever keeps the save can write them down.</summary>
+        public Action PurchasesChanged;
+
+        /// <summary>
+        /// Drops the purchases no replay can reach from <paramref name="totalSeconds"/> on: those made
+        /// before the ledger's lookback. True when any went (the save's rows are then out of date).
+        /// </summary>
+        public bool DropOldPurchases(double totalSeconds)
+            => DropBefore(DayOf(Math.Max(0.0, totalSeconds)) - _ledger.LookbackDays);
+
+        // Older draws can no longer reach any replay that starts at or after the day's lookback.
+        private bool DropBefore(int oldestDay)
+        {
+            bool any = false;
+            for (int i = _draws.Count - 1; i >= 0; i--)
+            {
+                if (_draws[i].Day >= oldestDay) continue;
+                _draws.RemoveAt(i);
+                any = true;
+            }
+            if (any) _version++;
+            return any;
+        }
+
+        /// <summary>
+        /// Appends the held purchases to <paramref name="into"/> as save rows, one per purchase, with the
+        /// units as they were taken (a retuned item size does not change an old purchase).
+        /// </summary>
+        public void ExportPurchases(List<StorePurchaseRowDto> into)
+        {
+            if (into == null) return;
+            for (int i = 0; i < _draws.Count; i++)
+            {
+                Draw d = _draws[i];
+                into.Add(new StorePurchaseRowDto
+                {
+                    ShopId = ShopId, ShelfLineId = _lineIds[d.Line], Units = d.Units, Day = d.Day, Seconds = d.Seconds,
+                });
+            }
+        }
+
+        /// <summary>
+        /// Replaces the held purchases with the rows of this shop in <paramref name="rows"/> (a loaded
+        /// game). Rows of other shops, of a line this store no longer has, or with no amount are skipped.
+        /// The day a purchase counts on is the day its time falls in, so the shelf and the back room always
+        /// agree. Returns how many were taken in.
+        /// </summary>
+        public int ImportPurchases(IReadOnlyList<StorePurchaseRowDto> rows)
+        {
+            _draws.Clear();
+            _version++;
+            if (rows == null) return 0;
+            for (int i = 0; i < rows.Count; i++)
+            {
+                StorePurchaseRowDto r = rows[i];
+                if (r == null || !string.Equals(r.ShopId, ShopId, StringComparison.Ordinal)) continue;
+                if (r.ShelfLineId == null || !_lineById.TryGetValue(r.ShelfLineId, out int line)) continue;
+                if (!(r.Units > 0.0) || double.IsInfinity(r.Units) || !(r.Seconds >= 0.0) || double.IsInfinity(r.Seconds)) continue;
+                _draws.Add(new Draw { Good = _goodOfLine[line], Line = line, Day = DayOf(r.Seconds), Seconds = r.Seconds, Units = r.Units });
+            }
+            return _draws.Count;
         }
 
         public bool RunCameOn(int day) => _ledger.RunsOn(day);
@@ -155,7 +237,7 @@ namespace HiddenHarbours.Economy
         /// of the day costs nothing. Repeated calls on one day are inert.</summary>
         public void SlowTick(double totalSeconds) => Settle(DayOf(Math.Max(0.0, totalSeconds)));
 
-        /// <summary>The purchases held this session (bounded by the ledger's lookback).</summary>
+        /// <summary>The purchases held (bounded by the ledger's lookback).</summary>
         public int HeldDrawCount => _draws.Count;
 
         private int DayOf(double totalSeconds) => (int)Math.Floor(totalSeconds / _secondsPerDay);
@@ -173,20 +255,23 @@ namespace HiddenHarbours.Economy
             _settledVersion = _version;
         }
 
-        /// <summary>The good's stock at a moment of the settled day: the morning level less the islanders'
-        /// buying so far and the player's purchases so far. Equals the ledger's dusk level after closing.</summary>
-        private double StockAt(int good, int day, double totalSeconds)
+        /// <summary>The line's stock at a moment of the settled day: its share of the good's morning level less
+        /// the islanders' buying so far, less the player's purchases off this line so far. A line holding the
+        /// whole good equals the ledger's dusk level after closing.</summary>
+        private double StockAt(int line, int day, double totalSeconds)
         {
+            int good = _goodOfLine[line];
             double hour = (totalSeconds - day * _secondsPerDay) / _secondsPerDay * 24.0;
             double share = hour <= _opensHour ? 0.0
                          : hour >= _closesHour ? 1.0
                          : (hour - _opensHour) / (_closesHour - _opensHour);
             double stock = _morning[good] - _use[good] * share;
             if (stock < 0.0) stock = 0.0;
+            stock *= _shareOfGood[line];
             for (int i = 0; i < _draws.Count; i++)
             {
                 Draw d = _draws[i];
-                if (d.Good == good && d.Day == day && d.Seconds <= totalSeconds) stock -= d.Units;
+                if (d.Line == line && d.Day == day && d.Seconds <= totalSeconds) stock -= d.Units;
             }
             return stock < 0.0 ? 0.0 : stock;
         }
@@ -214,6 +299,12 @@ namespace HiddenHarbours.Economy
                 throw new KeyNotFoundException("Unknown island shelf line: " + lineId);
             return line;
         }
+
+        // Slack for shares authored as decimals (0.2 + 0.3 + 0.5) that add up to a whisker over one.
+        private const double ShareTolerance = 1e-6;
+
+        /// <summary>The share of its good a line shows; unset (0) means the whole good.</summary>
+        public static double ShareOf(IslandShelfLine line) => line.ShareOfGood > 0f ? line.ShareOfGood : 1.0;
 
         private static int GoodIndex(IslandStoreLedger ledger, IslandGoodDef good)
         {
