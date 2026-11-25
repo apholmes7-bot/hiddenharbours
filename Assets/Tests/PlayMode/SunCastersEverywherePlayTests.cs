@@ -116,9 +116,10 @@ namespace HiddenHarbours.Tests.PlayMode
 
         [UnityTearDown] public IEnumerator TearDown()
         {
-            // A completed audit load does not imply a runtime neighbour preload has finished.
-            // Let its callbacks land before destroying or enumerating persistent arrivals.
-            yield return HiddenHarbours.Tests.Support.SceneSettle.WaitForPendingSceneOperations();
+            // A scene operation a region started (a neighbour warming, a release) is not cancelled by destroying
+            // its requester: let it finish, within a bound that names itself, before sprites are destroyed.
+            yield return HiddenHarbours.Tests.Support.SceneSettle.WaitForPendingSceneOperations(
+                "the caster audit's teardown destroys its arrivals");
             Time.timeScale = 1f;
             if (_host != null) { _host.SetCasting(true); _host.enabled = true; }
             if (_camera != null) _camera.targetTexture = null;
@@ -215,7 +216,8 @@ namespace HiddenHarbours.Tests.PlayMode
             while (population == null && Time.realtimeSinceStartup < deadline) yield return null;
             _host.enabled = false;
             _host.ScanCompleted -= Complete;
-            Assert.That(population, Is.Not.Null, "Wait for the installer's complete loaded-and-persistent scan.");
+            Assert.That(population, Is.Not.Null, scene + ": the installer's complete loaded-and-persistent scan " +
+                "did not report within 10 s of real time.");
             _host.SetCasting(true);
             var rules = Resources.Load<SunCasterRules>(nameof(SunCasterRules));
             int total = 0, villagers = 0, houses = 0, piers = 0, excluded = 0;

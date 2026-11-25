@@ -72,7 +72,7 @@ namespace HiddenHarbours.Tests.EditMode
         GameConfig _cfg;
         Sky _sky;
         float _perHour;
-        TidalTerrain _terrain;
+        ITidalTerrain _terrain;   // the terrain the scene walks on (the enabled one)
         RoutineLanes _lanes;
         RoutineStations _stations;
         BeachLifeLibrary _library;
@@ -91,11 +91,17 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (GameObject root in _scene.GetRootGameObjects())
             {
                 villagers.AddRange(root.GetComponentsInChildren<VillagerRoutine>(true));
-                if (_terrain == null) _terrain = root.GetComponentInChildren<TidalTerrain>(true);
+                if (_terrain == null)
+                {
+                    // the ground the game walks on: the enabled terrain (St Peters walks on its painted seabed)
+                    var painted = root.GetComponentInChildren<PaintedTidalTerrain>(true);
+                    if (painted != null && painted.enabled) _terrain = painted;
+                    else { var analytic = root.GetComponentInChildren<TidalTerrain>(true); if (analytic != null && analytic.enabled) _terrain = analytic; }
+                }
                 if (_lanes == null) _lanes = root.GetComponentInChildren<RoutineLanes>(true);
                 if (_stations == null) _stations = root.GetComponentInChildren<RoutineStations>(true);
             }
-            Assert.That(_terrain, Is.Not.Null, "the scene has no TidalTerrain");
+            Assert.That(_terrain, Is.Not.Null, "the scene has no enabled terrain");
             Assert.That(_lanes, Is.Not.Null, "the scene has no RoutineLanes");
             Assert.That(_stations, Is.Not.Null, "the scene has no RoutineStations");
 

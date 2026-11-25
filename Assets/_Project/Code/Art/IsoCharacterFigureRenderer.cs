@@ -1422,6 +1422,8 @@ namespace HiddenHarbours.Art
 
         internal MeshRenderer ReflectionRenderer => _meshRenderer;
         internal Mesh ReflectionMesh => _posedMesh;
+        /// <summary>The rig's camera elevation, for the calm mirror's plane under a figure ashore.</summary>
+        internal float ReflectionElevationDeg => _def != null ? _def.ElevationDeg : 30f;
         internal void PrepareReflection()
         {
             if (_figureId != 0) return;

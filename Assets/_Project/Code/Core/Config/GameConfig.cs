@@ -1051,6 +1051,21 @@ namespace HiddenHarbours.Core
                  "rod or mast still reflects; only the long rows under the hull itself fray.")]
         [Min(0f)] public float HullReflectionEndMinRunPixels = DefaultHullReflectionEndMinRunPixels;
 
+        /// <summary>The calm mirror's ship default: <b>0, off</b>. The owner liked 0.6 on the prototype
+        /// (2026-11-23) and asked for it behind a dial, off until he has seen it in game.</summary>
+        public const float DefaultWaterMirrorStrength = 0f;
+
+        [Tooltip("THE CALM MIRROR: how strongly calm water mirrors what stands on it (0..1). Boats, their " +
+                 "fittings, the crew aboard and figures ashore show their true reflection, the view from " +
+                 "below the water; wharves, sheds, piles and cliffs are flipped about where they meet the " +
+                 "water. Fades out as the sea gets up. 0 = off, the water exactly as before. The owner's " +
+                 "liked value is 0.6.")]
+        [Range(0f, 1f)] public float WaterMirrorStrength = DefaultWaterMirrorStrength;
+
+        [Tooltip("The calm mirror's shaping dials: sea-state fade, reach, ripple and darkening. Read only " +
+                 "while WaterMirrorStrength is above 0.")]
+        public WaterMirrorSettings WaterMirror = WaterMirrorSettings.Default;
+
         /// <summary>The cabin-glow passthrough's ship default — <b>OFF</b>, which is the owner's ruling
         /// of 2026-09-03: a glow is confined to its space, and an interior's reaches the outside only
         /// through the windows. A const for exactly the reason the keyline's is: a consumer with no

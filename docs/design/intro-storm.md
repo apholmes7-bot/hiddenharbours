@@ -47,3 +47,10 @@ afloat.
 Add one `CampaignBarrierDef` asset to the same Resources folder: a region id, a point on the edge,
 the inward direction, the flag that lifts it, the distances, the push and the line. St Peters' south
 edge will need its own when that lane opens an exit to the South Water.
+
+**Amended 2026-11-23 (canon §5.8, ADR 0062): the first week rings St Peters.** Each St Peters edge that
+meets another region gets a wall of this kind (whether the north and south edges, which face nothing,
+get one too is proposed, not ruled), lifted by the island gate's flag (set when Ginny gives her word), not by the dory's
+repair; and strong wind raising surf over the bar turns a walker back until the same flag. Pushing on is
+turned back gently, never damaged or capsized. Each wall stays a pure function of world seed, game time,
+saved progress flags and where the player is.

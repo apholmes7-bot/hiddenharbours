@@ -2,8 +2,8 @@ using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using HiddenHarbours.Tests.Support;
 using HiddenHarbours.Core;
+using HiddenHarbours.Tests.Support;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
@@ -49,66 +49,32 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator PendingSceneOperations_WaitsForTrackedUnloadAtZeroTimeScale()
-        {
-            yield return SceneSettle.WaitForPendingSceneOperations();
-            var scene = SceneManager.CreateScene("SettlePendingUnload");
-            var unload = SceneManager.UnloadSceneAsync(scene);
-            SceneLoadHold.Track(unload);
-            float previousScale = Time.timeScale;
-            try
-            {
-                Time.timeScale = 0f;
-                Assert.That(unload, Is.Not.Null);
-                Assert.That(unload.isDone, Is.False, "premise: the unload needs a player-loop turn");
-                Assert.That(SceneLoadHold.InFlight, Is.EqualTo(1));
-                var wait = SceneSettle.WaitForPendingSceneOperations();
-                Assert.That(wait.MoveNext(), Is.True, "cleanup must wait while the operation is pending");
-                Assert.That(wait.Current, Is.Null, "yield a frame so the operation can finish");
-                yield return wait.Current;
-                yield return wait;
-                Assert.That(unload.isDone, Is.True);
-                Assert.That(SceneLoadHold.InFlight, Is.Zero);
-            }
-            finally { Time.timeScale = previousScale; }
-        }
-
-        [UnityTest]
-        public IEnumerator PendingSceneOperations_TimeoutDoesNotForgetTheOperation()
-        {
-            yield return SceneSettle.WaitForPendingSceneOperations();
-            var scene = SceneManager.CreateScene("SettlePendingTimeout");
-            var unload = SceneManager.UnloadSceneAsync(scene);
-            SceneLoadHold.Track(unload);
-            Assert.That(unload, Is.Not.Null);
-            Assert.That(unload.isDone, Is.False);
-            Assert.That(SceneLoadHold.InFlight, Is.EqualTo(1));
-
-            var wait = SceneSettle.WaitForPendingSceneOperations(0d);
-            var error = Assert.Throws<System.TimeoutException>(() => wait.MoveNext());
-            StringAssert.Contains("1 tracked scene operation(s) still pending before cleanup", error.Message);
-            Assert.That(SceneLoadHold.InFlight, Is.EqualTo(1), "a timeout must not reset the shared tracker");
-            yield return unload;
-            Assert.That(SceneLoadHold.InFlight, Is.Zero);
-        }
-
-        [UnityTest]
-        public IEnumerator PendingSceneOperations_WhenIdleAddsNoFrames()
-        {
-            yield return SceneSettle.WaitForPendingSceneOperations();
-            var wait = SceneSettle.WaitForPendingSceneOperations(0d);
-            Assert.That(wait.MoveNext(), Is.False, "no pending work means no extra fixed delay");
-        }
-
-        [UnityTest]
         public IEnumerator DestroyAndSettle_LeavesEveryObjectUnityNull()
         {
+            yield return SceneSettle.WaitForPendingSceneOperations("the destruction premise");
             var a = SpriteHierarchy("SettleA");
             var b = SpriteHierarchy("SettleB");
             var child = a.transform.GetChild(0).gameObject;
             var mesh = new Mesh();
 
-            yield return SceneSettle.DestroyAndSettle(a, b, mesh, null);
+            var scene = SceneManager.CreateScene("SettleDestroyPending");
+            var unload = SceneManager.UnloadSceneAsync(scene);
+            SceneLoadHold.Track(unload);
+            Assert.That(unload, Is.Not.Null);
+            Assert.That(unload.isDone, Is.False);
+
+            var destroy = SceneSettle.DestroyAndSettle(a, b, mesh, null);
+            Assert.That(destroy.MoveNext(), Is.True);
+            var pending = destroy.Current as IEnumerator;
+            Assert.That(pending, Is.Not.Null, "destruction first yields the pending-operation gate");
+            Assert.That(pending.MoveNext(), Is.True);
+            Assert.That(pending.Current, Is.Null, "the pending operation needs a frame");
+            yield return pending.Current;
+            Assert.That(a != null && b != null && mesh != null, Is.True,
+                "destruction is not queued while the gate owns the boundary");
+            yield return pending;
+            Assert.That(unload.isDone, Is.True);
+            yield return destroy;
 
             Assert.That(a == null, Is.True, "the root is destroyed, not queued");
             Assert.That(child == null, Is.True, "its child went with it");
@@ -143,6 +109,71 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(a == null, Is.True, "gone in the same frame: nothing is left queued");
             Assert.That(child == null, Is.True);
             Assert.DoesNotThrow(() => SceneSettle.DestroyNow((Object)null));
+        }
+
+        [Test]
+        public void TestLoadHoldAndWaits_AreBoundedInsideTheHangWatchdog()
+        {
+            // One test hold blocks the main thread inside one frame: it must stay under the frozen-thread verdict.
+            Assert.That(SceneSettle.TestHoldSeconds, Is.LessThan(MainThreadPulse.FrozenAfterSeconds));
+            // It exists because the game's cap can run out on a slow runner; a shorter one would buy nothing.
+            Assert.That(SceneSettle.TestHoldSeconds, Is.GreaterThan(SceneSettle.HoldSeconds));
+            Assert.That(SceneSettle.MaxTestHoldTimeouts, Is.InRange(1, 5));
+            // The frame-turning waits fail, naming what they waited for, long before the watchdog ends the run.
+            Assert.That(SceneSettle.PendingOperationTimeoutSeconds + SceneSettle.OperationTimeoutSeconds,
+                Is.LessThan(TestHangWatch.DefaultLimitSeconds / 2.0));
+        }
+
+        [UnityTest]
+        public IEnumerator Await_PastItsBound_FailsNamingTheOperation()
+        {
+            yield return SceneSettle.WaitForPendingSceneOperations("the premise");
+            var scene = SceneManager.CreateScene("SettleAwaitBound");
+            AsyncOperation unload = SceneManager.UnloadSceneAsync(scene);
+            SceneLoadHold.Track(unload);
+            Assert.That(unload, Is.Not.Null);
+            Assert.That(unload.isDone, Is.False, "premise: the unload needs a player-loop turn");
+
+            var wait = SceneSettle.Await(unload, "unload of 'SettleAwaitBound'", 0d);
+            var error = Assert.Throws<System.TimeoutException>(() => wait.MoveNext());
+            StringAssert.Contains("unload of 'SettleAwaitBound' did not complete within 0 s", error.Message);
+            yield return SceneSettle.Await(unload, "unload of 'SettleAwaitBound'");
+            Assert.That(unload.isDone, Is.True);
+        }
+
+        [UnityTest]
+        public IEnumerator WaitForPendingSceneOperations_WaitsForATrackedOperation_AndFailsPastItsBound()
+        {
+            yield return SceneSettle.WaitForPendingSceneOperations("the premise");
+            var idle = SceneSettle.WaitForPendingSceneOperations("nothing", 0d);
+            Assert.That(idle.MoveNext(), Is.False, "nothing in flight adds no frame");
+
+            var scene = SceneManager.CreateScene("SettlePendingBound");
+            AsyncOperation unload = SceneManager.UnloadSceneAsync(scene);
+            SceneLoadHold.Track(unload);
+            Assert.That(unload, Is.Not.Null);
+            Assert.That(unload.isDone, Is.False, "premise: the unload needs a player-loop turn");
+            Assert.That(SceneLoadHold.InFlight, Is.EqualTo(1), "premise: exactly one unload is tracked");
+
+            float previousScale = Time.timeScale;
+            try
+            {
+                Time.timeScale = 0f;
+                var late = SceneSettle.WaitForPendingSceneOperations("loading 'Somewhere'", 0d);
+                var error = Assert.Throws<System.TimeoutException>(() => late.MoveNext());
+                StringAssert.Contains("before loading 'Somewhere'", error.Message);
+                StringAssert.Contains("1 tracked scene operation(s) still in flight", error.Message);
+                Assert.That(SceneLoadHold.InFlight, Is.EqualTo(1), "a timeout must not reset the tracker");
+
+                var wait = SceneSettle.WaitForPendingSceneOperations("the next load");
+                Assert.That(wait.MoveNext(), Is.True, "cleanup waits while the operation is pending");
+                Assert.That(wait.Current, Is.Null, "yield a frame also at zero time scale");
+                yield return wait.Current;
+                yield return wait;
+                Assert.That(SceneLoadHold.InFlight, Is.Zero);
+                Assert.That(unload.isDone, Is.True);
+            }
+            finally { Time.timeScale = previousScale; }
         }
     }
 }

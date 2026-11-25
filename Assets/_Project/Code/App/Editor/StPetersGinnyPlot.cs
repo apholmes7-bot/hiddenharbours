@@ -110,6 +110,19 @@ namespace HiddenHarbours.App.Editor
         public const string CottageKey = "sageCottage";
 
         /// <summary>
+        /// Where her chimney smoke object stands on the cottage, in the cottage's local metres. Her shell's
+        /// bake records a chimney-top anchor per facing (<c>Village_ginnyCottage.json</c>); for the facing
+        /// the scene draws (6) it is cell px (309.5, 59.8) against the pivot (228, 313) at 32 px/m, so
+        /// (2.55, 7.91) m. <see cref="ChimneySmoke"/> lifts its flue 0.5 m above its own transform, so the
+        /// object stands 0.5 m below the top and the plume leaves the chimney mouth.
+        /// <c>GinnyCottageRoomsTests</c> re-reads the anchor, so a re-bake that moves the chimney fails there.
+        /// </summary>
+        public static readonly Vector2 SmokeLocal = new Vector2(2.548f, 7.413f);
+
+        /// <summary>The facing of her shell the scene draws, whose chimney anchor <see cref="SmokeLocal"/> is.</summary>
+        public const int SmokeFacing = 6;
+
+        /// <summary>
         /// Where her door looks: back down the island toward the village green, which is the direction you
         /// arrive from. The village turns every door toward <see cref="StPetersBuilder.VillageGreen"/> for
         /// this reason and the plot keeps the rule — a door is turned toward the ground people walk up
@@ -415,7 +428,10 @@ namespace HiddenHarbours.App.Editor
                     // the same build (see CottageKey), so a plan hung off 'sageCottage' would have put the
                     // player's bed — and a save point — inside a stranger's house on the green as well.
                     // Ginny's is the one with a lodger in it.
-                    bool enterable = StPetersInteriors.Stand(go, shell, CottageKey, facing, occupant,
+                    // Her ROOM is her own (7.2 x 9.1 m, the ginnyCottage bake), larger than the sage
+                    // cottage's; the room is found by that key, while the building keeps its name.
+                    bool enterable = StPetersInteriors.Stand(go, shell, StPetersInteriors.GinnyCottagePlanKey,
+                                                             facing, occupant,
                                                              StPetersInteriors.GinnyCottagePlanKey);
                     if (!enterable)
                         Debug.LogWarning(
@@ -440,7 +456,7 @@ namespace HiddenHarbours.App.Editor
 
                     var chimneyGo = new GameObject("ChimneySmoke");
                     chimneyGo.transform.SetParent(go.transform, worldPositionStays: false);
-                    chimneyGo.transform.localPosition = new Vector3(0.6f, 1.6f, 0f);   // roofline, flue side
+                    chimneyGo.transform.localPosition = new Vector3(SmokeLocal.x, SmokeLocal.y, 0f);   // her chimney top
                     chimneyGo.AddComponent<ChimneySmoke>();
 
                     placed++;

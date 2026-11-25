@@ -181,6 +181,14 @@ MonoBehaviour:
     BoreFetchProbeMeters: 3
     BoreLeeSoftenMeters: 6
     BoreEdgeFadeDepthMeters: 0.08
+    BoreHardReadStep: 0.1
+    SwashSteadyEdgeSlope: 0.12
+    EdgeWetFilmMeters: 0.03
+    WashLipFilmShare: 0.5
+    WashLipAgeFloor: 0.4
+    WashLipBackwashAge: 0.5
+    WashLipWidthVary: 0.75
+    WashLipStillFresh: 0.75
     RunUpCoefficient: 1
     RunUpCapMeters: 0.35
   SurfSprayIntensityOffset: 0
@@ -377,6 +385,26 @@ MonoBehaviour:
   HullReflectionEndCutPixels: 3
   HullReflectionEndThinPixels: 3
   HullReflectionEndMinRunPixels: 12
+  WaterMirrorStrength: 0
+  WaterMirror:
+    SeaFadeStart: 0.15
+    SeaFadeEnd: 0.75
+    MaxMetres: 12
+    ReachStartMetres: 3
+    ReachEndMetres: 10
+    StepPixels: 3
+    MinStandPixels: 2
+    RippleCalmMetres: 0.05
+    RippleRoughMetres: 0.45
+    RippleBandPixels: 3
+    BreakCalm: 0.15
+    BreakRough: 0.8
+    Darken: 0.82
+    DeckAware: 1
+    FaceSnapMetres: 0.35
+    FaceFeatherMetres: 0.12
+    FaceBandColour: {r: 0.16, g: 0.14, b: 0.12, a: 1}
+    FaceBandShare: 0.85
   BoatLegacyCabinGlow: 0
   WalkerAutoLantern: 0
   WalkerHeadlampHoldSeconds: 0.4

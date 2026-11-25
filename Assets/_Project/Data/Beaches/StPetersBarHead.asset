@@ -36,9 +36,9 @@ MonoBehaviour:
     Toe: {x: -66, y: 10.5}
     Why: North side, the last of the even slope.
   Promenade:
-  - Top: {x: -54, y: -13}
-    Toe: {x: -66, y: -13}
-    Why: The south end of the walk.
+  - Top: {x: -53, y: -11.5}
+    Toe: {x: -66, y: -11.5}
+    Why: The south end of the walk, on the drawn shoulder that stays dry.
   - Top: {x: -54, y: -1.5}
     Toe: {x: -100, y: -1.5}
     Why: Out along the spine of the bar when the tide lets them, the root of it when not.
@@ -62,11 +62,11 @@ MonoBehaviour:
     Toe: {x: -108, y: -5}
     Why: The low south edge: only on a good ebb.
   Shallows:
-  - Top: {x: -54, y: -19}
-    Toe: {x: -68, y: -19}
-    Why: The south face, an even slope to below low water.
-  - Top: {x: -54, y: -15.5}
-    Toe: {x: -68, y: -15.5}
+  - Top: {x: -48, y: -18}
+    Toe: {x: -70, y: -21}
+    Why: The south face, from the knoll down across the drawn gully to below mid tide.
+  - Top: {x: -52, y: -10}
+    Toe: {x: -70, y: -17.5}
     Why: The south face, nearer the bar.
   - Top: {x: -54, y: 15.5}
     Toe: {x: -68, y: 15.5}

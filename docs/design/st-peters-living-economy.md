@@ -232,11 +232,23 @@ gives that for free:
 
 **Smallest save change I propose (needs your approval; nothing before slice 8 needs it):** one
 append-only list, `EconomyLedgerRows`, each row `{ LedgerId, KeyId, Units, SettledThroughDay }`, at the
-next free save version (v26 on current main). One shape covers the shop shelves (the existing
+next free save version (v26 when this was written; see the note below). One shape covers the shop shelves (the existing
 `ShopStockRecord`), the market glut (the persistence proposal's `MarketStates`) and the player's draw on
 the back room. The player's draw is self-clearing: after the next run that tops the back room up fully,
 the deviation is gone and the row is dropped, so the list stays short. Old saves load with an empty list,
 which means "the island as the calendar says".
+
+For the store's shelves the row is `{ LedgerId = shop id, KeyId = shelf line, Units = items taken, Day,
+Seconds }` per purchase, folded into one row per line once a day settles, and replayed into
+`IslandStoreShelves` on load as the same session draws the counter makes today (store sold-out slice,
+2026-11-23). Until then a load rebuilds the shelves from the calendar alone.
+
+**What was built (save v26).** The store-shelf part is done, in its own shape: `SaveData.StorePurchases`,
+one `StorePurchaseRowDto { ShopId, ShelfLineId, Units, Day, Seconds }` per purchase moment, written as he
+buys and read back when the stores are built, dropped once older than the ledger's lookback (see
+`island-supply.md`). Save v26 also carries the shopping bag and the reserved special orders. The general
+`EconomyLedgerRows` list was not built: the market glut and `ShopStockRecord` are still unsaved, and
+saving them would be a later save version, not v26.
 
 ---
 
@@ -247,13 +259,13 @@ Each is one PR. "Sees" is what you would notice in game.
 | # | Slice | Sees | Data it adds | Tests | Depends on | New art |
 |---|---|---|---|---|---|---|
 | 1 | **The back-room ledger** (built now, draft PR) | nothing yet: a pinned numbers table in this page | `IslandLedgerDef` type; `islandledger.st_peters` | run calendar from the real tide; replay converges (lookback 28 vs 56); top-up capped by kit; a 5-day gap starves goods with no allowance; deterministic | none | none |
-| 2 | **Marguerite's shelves follow the back room** (shelf model, data and tests built; the counter, her line and shelf art not yet wired, see `island-supply.md`) | the store's gas, ice, bait and grocery shelves thin before a spring tide and fill the day after Junior's run; she says the quad has not been over | new store lines for island goods; dialogue lines | shelf equals back room on each day; player purchases come off the shelf (session only until slice 8) | 1 | icons for jerry can, propane bottle, grocery box if missing |
+| 2 | **Marguerite's shelves follow the back room** (shelf model, data and tests built; the counter refuses an empty shelf and a sold-out card stands on it, owner ruling 2026-11-23; her line not yet wired, see `island-supply.md`) | the store's gas, ice, bait and grocery shelves thin before a spring tide and fill the day after Junior's run; she says the quad has not been over | new store lines for island goods; dialogue lines | shelf equals back room on each day; player purchases come off the shelf (saved since save v26) | 1 | icons for jerry can, propane bottle, grocery box if missing |
 | 3 | **Junior's run is real** | Junior and the quad cross every second day at low water, the trailer loaded on the way back, never on the spring days the tide forbids | his routine gets run-day legs from the ledger's calendar (a Core day-source query) | his crossing days equal the ledger's run days; he is never on the bar when the crest is wet | 1; Q4, Q5 | quad trailer, a load of crates and jerry cans on it |
 | 4 | **An island boat** | one small boat leaves the St Peters wharf in the morning, works pots in season, lands at the slip in the afternoon; Basil takes her lines | `npc.monique_landry`, `npc.angus_gillis` routines; a St Peters `NpcPotDayDef`; berth data | catch plan deterministic; lands only inside the season | Q1 | the boat (reuse a hull), two working-clothes builds |
 | 5 | **The wharf stage and the run to the plant** | crates of iced fish stack on the wharf; on low-tide days they go over the bar to the NMC plant; NMC prices dip on big landing days | stage hands' routines (Theresa, Dougie, Rene); stage Defs; NPC landings feed the market | stage tally equals landed catch; one market registration per landed fish; replay converges | 4; Q2 | fish crates/tubs, a crate stack prop, the salt-fish flakes in use |
 | 6 | **The new residents' days** | the Landry children walk to school; the families keep their rows; pickers on the mussel and oyster beds at low water | routines for the Landry family and pickers; school days | no two people on one station; school hours; picking only at low water | village plan V2 stations (world-content) | builds for the eight residents (child builds exist) |
 | 7 | **The tractor with forks** | Paul Landry drives the tractor village to wharf and cannery yard, moving a fuel-drum pallet or a bucket of fish or seaweed, leaving tire marks, a slightly different line each run | tractor role, loads, its days | loads within forks/bucket limits (pinned in island supply); the line is seeded per day | Q3; vehicles module | tractor mesh, forks, bucket, tire-mark decal, pallet and drum props |
-| 8 | **The island remembers the player** | what he buys or sells on the island survives save and load | `EconomyLedgerRows` at save v26 | round trip; migration from v25; self-clearing rows | **your approval (Q7)** | none |
+| 8 | **The island remembers the player** | what he buys or sells on the island survives save and load | shelf purchases: `StorePurchases` at save v26 (built); glut and sales: a later save version | round trip; migration from v25; self-clearing rows | **your approval (Q7)** | none |
 
 Slices 1 to 3 can run without art beyond slice 3's trailer load; 4, 5 and 7 need the art first.
 
@@ -271,7 +283,7 @@ Slices 1 to 3 can run without art beyond slice 3's trailer load; 4, 5 and 7 need
    come back after 20:00 on those days, rather than raising the buffer? (**yes, early/late runs**)
 6. **Freight by sea:** no passenger ferry; a weekly NPC freight boat at high water for diesel, heating oil
    and bulk bait, later? (**yes, later**)
-7. **Save:** approve one small save change (v26, the list in §4.1) when slice 8 comes? (**yes, at slice 8**)
+7. **Save:** approve one small save change (the list in §4.1; the shelf purchases landed in v26) when slice 8 comes? (**yes, at slice 8**)
 8. **Island money:** shown only through dialogue and shelves, never a meter? (**yes**, matches the
    11-14 no-bars ruling)
 9. **Small fish sales on the island:** keep Marguerite's store buying small lots (it already has a

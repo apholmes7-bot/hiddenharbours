@@ -151,16 +151,164 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
-        public void DampBand_IsCentredOnTheLine_Symmetric_AndDiesAtItsEdges()
+        public void Submerged_IsDrawnInFourFlatSteps()
         {
-            const float band = 0.6f;
-            Assert.AreEqual(1f, CliffWaterlineMath.DampBand01(0f, band), 1e-5f, "peak AT the waterline.");
-            Assert.AreEqual(CliffWaterlineMath.DampBand01(0.25f, band),
-                            CliffWaterlineMath.DampBand01(-0.25f, band), 1e-6f,
-                "rock just above the line is wet from the last wave; rock just below is still worked.");
-            Assert.AreEqual(0f, CliffWaterlineMath.DampBand01(band, band), 1e-6f);
-            Assert.AreEqual(0f, CliffWaterlineMath.DampBand01(-band * 2f, band), 1e-6f);
-            Assert.AreEqual(0f, CliffWaterlineMath.DampBand01(0f, 0f), 1e-6f, "a zero band is an off switch.");
+            var seen = new System.Collections.Generic.HashSet<float>();
+            float previous = -1f;
+            for (int i = 0; i <= 60; i++)
+            {
+                float v = CliffWaterlineMath.SubmergedStepped01(i * 0.05f, 2.2f);
+                Assert.GreaterOrEqual(v, previous, "deeper rock can never read drier.");
+                previous = v;
+                seen.Add(v);
+            }
+            CollectionAssert.IsSubsetOf(seen, new[] { 0f, 0.25f, 0.5f, 0.75f, 1f }, "no gradient under the line.");
+        }
+
+        // ==== the wet foot (owner, 11-23: "organic and natural") ======================================
+
+        private const float Band = 0.55f;
+        private static readonly float[] Tides = { -1.895f, 0.138f, 2.187f };   // St Peters daylight low, mid, high
+
+        [Test]
+        public void WetBand_FollowsTheWaterLevel_AtLowMidAndHighTide()
+        {
+            const float texel = 1f / CliffWaterlineMath.TexelsPerMetre;
+            foreach (float sea in Tides)
+                for (int x = 0; x < 192; x += 7)
+                {
+                    float top = CliffWaterlineMath.WetBandTopMetres(x, Band);
+                    float Wet(float elevation) =>
+                        CliffWaterlineMath.WetBand01(CliffWaterlineMath.SubmergenceMetres(elevation, sea), x, Band);
+                    Assert.AreEqual(1f, Wet(sea + texel * 0.5f), $"just above the line at sea {sea} is wet.");
+                    Assert.AreEqual(1f, Wet(sea + top - texel * 0.5f), "the band reaches its own top.");
+                    Assert.AreEqual(0f, Wet(sea + top + texel * 0.5f), "and stops there: dry rock above.");
+                    Assert.AreEqual(0f, Wet(sea - texel), "under the line is the water's, not the band's.");
+                }
+
+            // The same rock is dry at low water and wet at high water: the band moves with the tide.
+            float rock = 0.3f;
+            Assert.AreEqual(0f, CliffWaterlineMath.WetBand01(
+                CliffWaterlineMath.SubmergenceMetres(rock, Tides[0]), 10f, Band));
+            Assert.AreEqual(1f, CliffWaterlineMath.WetBand01(
+                CliffWaterlineMath.SubmergenceMetres(rock, rock - 0.05f), 10f, Band));
+        }
+
+        [Test]
+        public void WetBand_TopIsTorn_NotRuled_AndStaysInItsRange()
+        {
+            const float texel = 1f / CliffWaterlineMath.TexelsPerMetre;
+            var tops = new System.Collections.Generic.HashSet<float>();
+            int steps = 0;
+            float last = CliffWaterlineMath.WetBandTopMetres(0, Band);
+            for (int x = 0; x < 192; x++)
+            {
+                float top = CliffWaterlineMath.WetBandTopMetres(x, Band);
+                Assert.GreaterOrEqual(top, Band * 0.55f - texel - 1e-5f);
+                Assert.LessOrEqual(top, Band * 1.45f + texel + 1e-5f);
+                tops.Add(Mathf.Round(top * 1000f));
+                if (Mathf.Abs(top - last) > texel * 0.5f) steps++;
+                last = top;
+            }
+            Assert.Greater(tops.Count, 20, "a ruled top would have one height.");
+            Assert.Greater(steps, 30, "the top steps along the shore.");
+            Assert.AreEqual(0f, CliffWaterlineMath.WetBandTopMetres(5f, 0f), "a zero band is an off switch.");
+        }
+
+        [Test]
+        public void WeedFringe_SitsOnlyAtTheLine_AndIsTufted()
+        {
+            const float weed = 0.22f, texel = 1f / CliffWaterlineMath.TexelsPerMetre;
+            foreach (float sea in Tides)
+            {
+                int atLine = 0, cells = 0;
+                for (int x = 0; x < 192; x++)
+                    for (int r = -40; r <= 40; r++)
+                    {
+                        var cell = new Vector2(x, Mathf.Floor(sea * CliffWaterlineMath.TexelsPerMetre) + r);
+                        float sub = CliffWaterlineMath.SubmergenceMetres(CliffWaterlineMath.CellElevation(cell), sea);
+                        float w = CliffWaterlineMath.WeedFringe01(sub, cell, weed, 0.6f);
+                        if (w > 0f)
+                        {
+                            Assert.GreaterOrEqual(-sub, -texel - 1e-5f, "weed hangs at most a texel under the water.");
+                            Assert.Less(-sub, weed * 1.6f + 1e-5f, "and never climbs the dry face.");
+                        }
+                        if (Mathf.Abs(sub) < texel) { cells++; if (w > 0f) atLine++; }
+                    }
+                Assert.Greater(atLine, cells / 4, $"weed fringes the line at sea {sea}.");
+                Assert.Less(atLine, cells, "in tufts, not a stripe.");
+            }
+        }
+
+        [Test]
+        public void TheFoot_DissolvesIntoTheSea_InFourDitheredSteps()
+        {
+            const float fade = 0.5f;
+            float previous = 2f;
+            for (int i = 0; i <= 12; i++)
+            {
+                float depth = i * 0.05f;
+                float sum = 0f;
+                for (int x = 0; x < 4; x++) for (int y = 0; y < 4; y++)
+                    sum += CliffWaterlineMath.SubmergedKeep01(depth, new Vector2(x, y), fade);
+                float mean = sum / 16f;
+                Assert.LessOrEqual(mean, previous, "deeper rock never draws more.");
+                Assert.AreEqual(0f, Mathf.Repeat(mean * 4f, 1f), 1e-5f, "flat quarter steps only.");
+                previous = mean;
+            }
+            Assert.AreEqual(1f, CliffWaterlineMath.SubmergedKeep01(-0.3f, Vector2.zero, fade), "dry rock always draws.");
+            Assert.AreEqual(0f, CliffWaterlineMath.SubmergedKeep01(fade, new Vector2(3, 3), fade), "gone by the fade depth.");
+            Assert.AreEqual(1f, CliffWaterlineMath.SubmergedKeep01(3f, Vector2.zero, 0f), "a zero fade keeps the old foot.");
+        }
+
+        [Test]
+        public void SoftEdges_AreAPixelDissolve_ThatKeepsTheirAlpha()
+        {
+            float previous = -1f;
+            for (int k = 0; k <= 10; k++)
+            {
+                float alpha = k / 10f, sum = 0f;
+                for (int x = 0; x < 64; x++) for (int y = 0; y < 64; y++)
+                {
+                    float d = CliffWaterlineMath.Dissolve01(alpha, new Vector2(x, y));
+                    Assert.IsTrue(d == 0f || d == 1f, "a cell draws or it does not: no glass.");
+                    sum += d;
+                }
+                float mean = sum / 4096f;
+                Assert.AreEqual(alpha, mean, 0.1f, $"alpha {alpha} still covers about that much.");
+                Assert.GreaterOrEqual(mean, previous);
+                previous = mean;
+            }
+        }
+
+        [Test]
+        public void TheFoamCollar_IsBrokenIntoFlecks()
+        {
+            const float collar = 0.16f, bias = 0.45f;
+            int on = 0;
+            for (int x = 0; x < 192; x++)
+                on += (int)CliffWaterlineMath.FoamFleck01(collar * bias, new Vector2(x, 0), collar, bias, 0.85f);
+            Assert.Greater(on, 192 / 2, "foam still marks the line.");
+            Assert.Less(on, 192, "but broken, not a painted stroke.");
+            Assert.AreEqual(0f, CliffWaterlineMath.FoamFleck01(-1f, Vector2.zero, collar, bias, 0.85f), "none up the dry face.");
+        }
+
+        [Test]
+        public void TheWetFoot_IsTheTwinTheTestsDrive()
+        {
+            string src = ReadRepoText(CliffShaderPath);
+            AssertDefine(src, "CLIFF_TEXELS_PER_METRE", CliffWaterlineMath.TexelsPerMetre);
+            AssertDefine(src, "CLIFF_WET_TOP_GROUP", CliffWaterlineMath.WetTopGroupTexels);
+            StringAssert.Contains("{ 0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5 }", src, "Bayer4's table.");
+            StringAssert.Contains("frac((cell.x + salt * 17.0) * 0.1031)", src, "Hash01's arithmetic.");
+            StringAssert.Contains("band * (0.55 + 0.9 * CliffHash(float2(group, 0.0), 1.0))", src, "WetBandTopMetres.");
+            StringAssert.Contains("_WeedMetres * (0.4 + 1.2 * CliffHash(float2(floor(cell.x / 2.0), 0.0), 3.0))", src,
+                "WeedFringe01's torn top.");
+            StringAssert.Contains("ceil(saturate(submergence / _WetFadeMetres) * 4.0) / 4.0", src, "SubmergedKeep01.");
+            StringAssert.Contains("CliffDissolve(IN.color.a, cell)", src,
+                "the wall's soft edges are drawn as a pixel dissolve (Dissolve01).");
+            Assert.AreEqual(1, Regex.Matches(src, @"_WaterlineStrength > 0\.001").Count,
+                "the wet foot lives inside the ONE waterline.");
         }
 
         [Test]

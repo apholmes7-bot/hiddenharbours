@@ -39,9 +39,9 @@ namespace HiddenHarbours.App.Editor
     /// upper storey's, which <see cref="BuildingInterior"/> switches on only while the player is on that
     /// level.</para>
     ///
-    /// <para><b>The pilot (R1).</b> Only Ginny's cottage gets a bathroom in this slice: the toilet, the
-    /// basin and the shower of its <see cref="RoomFixturePlan"/> rows, on the ground floor. The closet
-    /// partition around them, the kitchen and every other building are R2 onward.</para>
+    /// <para><b>The pilot building.</b> Only Ginny's cottage has placed rows so far: its kitchen (prep
+    /// counter, stove, microwave, kitchen sink and fridge) and its bathroom (toilet, basin, shower), all on the ground floor. The
+    /// closet partition around the bathroom and every other building are later slices.</para>
     ///
     /// <para><b>The player's storage</b> (owner 2026-11-17) rides the same step: <see cref="HomeStoragePlacement"/>
     /// adds Ginny's rod rack and gear locker (their interact id is the row's <c>storage.*</c> save key) and the
@@ -64,7 +64,7 @@ namespace HiddenHarbours.App.Editor
 
         public const string KitchenFolder = "Assets/_Project/Prefabs/Props/Kitchen";
 
-        /// <summary>The one building R1 places fixtures in.</summary>
+        /// <summary>The one building with placed rows (its kitchen and bathroom).</summary>
         public const string PilotBuildingKey = "ginny_cottage";
 
         /// <summary>The named step for a scene.</summary>
@@ -83,6 +83,8 @@ namespace HiddenHarbours.App.Editor
             RoomFixturePlan.Kind.Shower => ShowerPrefab,
             RoomFixturePlan.Kind.Bath => BathPrefab,
             RoomFixturePlan.Kind.Toilet => ToiletPrefab,
+            RoomFixturePlan.Kind.Fridge => KitchenFolder + "/Fridge.prefab",
+            RoomFixturePlan.Kind.KitchenSink => KitchenFolder + "/KitchenSink.prefab",
             _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, null),
         };
 
@@ -112,21 +114,31 @@ namespace HiddenHarbours.App.Editor
             /// at <c>+y</c>; false for a site written in the footprint's own frame.</summary>
             public readonly bool PlanFrame;
 
+            /// <summary>The wall the piece stands with its back to, as a plan-frame wall offset
+            /// (<see cref="RoomFixturePlan.Wall"/>: 0 the door wall, 2 the left, 4 the back, 6 the right), or -1
+            /// for a site that names none (its art, if any, picks the nearest wall itself). Written into the
+            /// piece's <see cref="ApplianceArt"/> so the picture faces the room the plan says, whatever storey's
+            /// rectangle the point also falls in on screen.</summary>
+            public readonly int Wall;
+
             public Site(string scene, string prefab, string name, string interactId, Vector2 at, string why,
-                        string buildingRoot = null, string building = null, int level = 0, bool planFrame = false)
+                        string buildingRoot = null, string building = null, int level = 0, bool planFrame = false,
+                        int wall = -1)
             {
                 Scene = scene; Prefab = prefab; Name = name; InteractId = interactId; At = at; Why = why;
-                BuildingRoot = buildingRoot; Building = building; Level = level; PlanFrame = planFrame;
+                BuildingRoot = buildingRoot; Building = building; Level = level; PlanFrame = planFrame; Wall = wall;
             }
 
             public bool IsInterior => !string.IsNullOrEmpty(BuildingRoot);
         }
 
-        /// <summary>A planned row as a site.</summary>
+        /// <summary>A planned row as a site. A kind whose prefab carries no interact id (the fridge) stands with
+        /// none, as a picture with its footprint.</summary>
         public static Site SiteOf(RoomFixturePlan.Row row) =>
-            new Site(RoomFixturePlan.Scene, PrefabFor(row.Kind), NameOf(RoomFixturePlan.Slot(row.Kind)), row.Id, row.At,
+            new Site(RoomFixturePlan.Scene, PrefabFor(row.Kind), NameOf(RoomFixturePlan.Slot(row.Kind)),
+                     RoomFixturePlan.HasInteractId(row.Kind) ? row.Id : null, row.At,
                      $"{row.BuildingKey}, room '{row.RoomKey}', level {row.Level}: the plan's {RoomFixturePlan.Slot(row.Kind)}",
-                     row.BuildingRoot, row.Building, row.Level, planFrame: true);
+                     row.BuildingRoot, row.Building, row.Level, planFrame: true, wall: (int)row.Wall);
 
         /// <summary>
         /// The site's point in the footprint's own model frame. A plan row's frame has the door at <c>+y</c>;
@@ -137,9 +149,21 @@ namespace HiddenHarbours.App.Editor
         public static Vector2 ModelPoint(InteriorFootprint footprint, Site site) =>
             site.PlanFrame && footprint.DoorSign < 0f ? -site.At : site.At;
 
+        /// <summary>
+        /// The site's backing wall as the footprint's own model-frame wall offset, the value its art's
+        /// <c>_wallOffset</c> takes; -1 when the site names no wall. The half turn is the same as
+        /// <see cref="ModelPoint"/>'s: a plan wall of a door-at-<c>-y</c> footprint is the opposite model wall.
+        /// </summary>
+        public static int ModelWall(InteriorFootprint footprint, Site site)
+        {
+            if (site.Wall < 0) return -1;
+            int turn = site.PlanFrame && footprint.DoorSign < 0f ? 4 : 0;
+            return (site.Wall + turn) % 8;
+        }
+
         /// <summary>The rows this step places: every <see cref="RoomFixturePlan"/> row marked
         /// <see cref="RoomFixturePlan.Row.Placed"/> in its building's own plan file (today the pilot
-        /// building's bathroom), so a later slice places a building by editing only that building's file.</summary>
+        /// building's kitchen and bathroom), so a later slice places a building by editing only that building's file.</summary>
         public static IEnumerable<RoomFixturePlan.Row> PlacedRows() =>
             RoomFixturePlan.Rows.Where(r => r.Placed);
 
@@ -151,10 +175,11 @@ namespace HiddenHarbours.App.Editor
             var sites = new List<Site>
             {
                 new Site(StPetersScene, WashStationPlacement.WashStandPrefab, "WashStand", WashStationPlacement.GinnyWashstandId,
-                         new Vector2(0.45f, 3.55f),
-                         "the player's room upstairs at Ginny's: against the front wall, between the landing door " +
-                         "and the head of his bed, clear of the doorway lane and the wardrobe",
-                         StPetersGinnyPlot.RootName, StPetersGinnyPlot.CottageKey, level: 1),
+                         new Vector2(0.25f, 3.90f),
+                         "the player's room upstairs at Ginny's: against the front wall, between the foot of his bed " +
+                         "and the wardrobe, clear of his door off the corridor (plan frame, door at +y)",
+                         StPetersGinnyPlot.RootName, StPetersGinnyPlot.CottageKey, level: 1, planFrame: true,
+                         wall: (int)RoomFixturePlan.Wall.Front),
                 new Site(NineMileCreekScene, WashStationPlacement.WharfShowerPrefab, "WharfShower", WashStationPlacement.NmcWharfShowerId,
                          new Vector2(90.2f, 108.2f),
                          "the wharf's land side, on the open ground between the harbourmaster's office and the " +
@@ -198,6 +223,18 @@ namespace HiddenHarbours.App.Editor
                 InteriorFootprint footprint = interior.FootprintFor(site.Level);
                 Vector2 world = footprint.ModelToWorld(ModelPoint(footprint, site));
                 go.transform.position = new Vector3(world.x, world.y, 0f);
+                int modelWall = ModelWall(footprint, site);
+                if (modelWall >= 0)
+                {
+                    var art = go.GetComponentInChildren<ApplianceArt>(true);
+                    if (art == null) Debug.LogWarning($"[InteriorFixturePlacement] {site.Prefab} has no ApplianceArt to face its wall.");
+                    else
+                    {
+                        var aso = new SerializedObject(art);
+                        aso.FindProperty("_wallOffset").intValue = modelWall;
+                        aso.ApplyModifiedPropertiesWithoutUndo();
+                    }
+                }
                 MonoBehaviour point = site.InteractId != null ? IdComponentOf(go) : null;
                 if (point != null)
                 {
@@ -236,6 +273,10 @@ namespace HiddenHarbours.App.Editor
             public string Path, Name, Guid;
             public long GameObject, Transform, Point;
 
+            /// <summary>The MonoBehaviour that serializes <c>_wallOffset</c> (the appliance art), or 0 for a
+            /// prefab with none.</summary>
+            public long Art;
+
             public static PrefabFacts Read(string projectRoot, string path)
             {
                 string file = System.IO.Path.Combine(projectRoot, path);
@@ -248,10 +289,13 @@ namespace HiddenHarbours.App.Editor
                 var points = prefab.ComponentsOf(go)
                     .Where(d => d.ClassId == 114 && Regex.IsMatch(d.Text, @"(?m)^  _id: ")).ToList();
                 if (points.Count > 1) throw new Refusal($"interior-fixtures: {path}'s root has {points.Count} components with an _id.");
+                var arts = prefab.Docs.Where(d => d.ClassId == 114 && Regex.IsMatch(d.Text, @"(?m)^  _wallOffset: ")).ToList();
+                if (arts.Count > 1) throw new Refusal($"interior-fixtures: {path} has {arts.Count} components with a _wallOffset.");
                 return new PrefabFacts
                 {
                     Path = path, Name = go.Field("m_Name"), Guid = guid.Groups[1].Value,
                     GameObject = go.FileId, Transform = rootTr.FileId, Point = points.Count == 1 ? points[0].FileId : 0L,
+                    Art = arts.Count == 1 ? arts[0].FileId : 0L,
                 };
             }
         }
@@ -262,6 +306,8 @@ namespace HiddenHarbours.App.Editor
             PrefabFacts prefab = prefabs(site.Prefab);
             if (site.InteractId != null && prefab.Point == 0L)
                 throw new Refusal($"interior-fixtures: {site.Prefab}'s root serializes no _id.");
+            if (site.Wall >= 0 && prefab.Art == 0L)
+                throw new Refusal($"interior-fixtures: {site.Prefab} has no appliance art to face the wall the site names.");
             return prefab;
         }
 
@@ -272,8 +318,9 @@ namespace HiddenHarbours.App.Editor
         /// <summary>The St Peters open-air root (the camper's shore lead).</summary>
         public const string StPetersOpenAirRootName = "StPetersOpenAirFixtures";
 
-        /// <summary>The allocator key of a site: its interact id, or its name when it has none.</summary>
-        static string KeyOf(Site site) => site.InteractId ?? site.Name;
+        /// <summary>The allocator key of a site: its interact id, or when it has none its name (an interior site's
+        /// prefixed with its building, so two buildings' fridges never share a key).</summary>
+        static string KeyOf(Site site) => site.InteractId ?? (site.IsInterior ? site.Building + "/" + site.Name : site.Name);
 
         /// <summary>Plan the scene's sites (every <see cref="Sites"/> row for <paramref name="scenePath"/>), one
         /// patch per root touched. Re-planning the patched text gives patches with no operations.</summary>
@@ -347,7 +394,8 @@ namespace HiddenHarbours.App.Editor
             foreach (Site site in sites)
             {
                 PrefabFacts prefab = FactsFor(site, prefabs);
-                Vector2 world = InteriorWorld(scene, site, out Doc parentTr, out _);
+                InteriorFootprint footprint = FootprintOf(scene, site, out Doc parentTr, out _);
+                Vector2 world = footprint.ModelToWorld(ModelPoint(footprint, site));
                 Vector2 local = world - WorldOf(scene, parentTr);
                 if (!childrenOf.TryGetValue(parentTr.FileId, out var kids))
                 {
@@ -357,7 +405,8 @@ namespace HiddenHarbours.App.Editor
                 FindInstance(scene, kids.before, prefab, site.Name, out Doc pi, out Doc piTr);
                 long piId = pi?.FileId ?? ids.Next($"{step}/{KeyOf(site)}/PrefabInstance");
                 long trId = piTr?.FileId ?? ids.Next($"{step}/{KeyOf(site)}/Transform");
-                Put(patch, pi, Instance(piId, parentTr.FileId, prefab, site.Name, local, site.InteractId), site.Name + " (PrefabInstance)");
+                Put(patch, pi, Instance(piId, parentTr.FileId, prefab, site.Name, local, site.InteractId, ModelWall(footprint, site)),
+                    site.Name + " (PrefabInstance)");
                 Put(patch, piTr, Stripped(trId, piId, prefab), site.Name + "/Transform (stripped)");
                 if (!kids.after.Contains(trId)) kids.after.Add(trId);
                 if (pi == null)
@@ -418,9 +467,10 @@ namespace HiddenHarbours.App.Editor
             }
         }
 
-        /// <summary>An instance as the editor writes one dropped under a parent: its name, its interact id
-        /// and the root transform's ten records, ordered by target.</summary>
-        static string Instance(long id, long parent, PrefabFacts prefab, string name, Vector2 at, string interactId)
+        /// <summary>An instance as the editor writes one dropped under a parent: its name, its interact id,
+        /// the wall its art faces from (when the site names one) and the root transform's ten records, ordered
+        /// by target.</summary>
+        static string Instance(long id, long parent, PrefabFacts prefab, string name, Vector2 at, string interactId, int wall = -1)
         {
             var records = new List<(long target, string path, string value)>
             {
@@ -433,6 +483,7 @@ namespace HiddenHarbours.App.Editor
                 (prefab.Transform, "m_LocalEulerAnglesHint.z", "0"),
             };
             if (interactId != null) records.Add((prefab.Point, "_id", Plain(interactId)));
+            if (wall >= 0) records.Add((prefab.Art, "_wallOffset", wall.ToString(CultureInfo.InvariantCulture)));
             var lines = new List<string>
             {
                 $"--- !u!1001 &{Id(id)}", "PrefabInstance:", "  m_ObjectHideFlags: 0", "  serializedVersion: 2",
