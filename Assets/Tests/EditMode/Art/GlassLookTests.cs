@@ -70,6 +70,19 @@ namespace HiddenHarbours.Tests.Art.EditMode
             finally { Object.DestroyImmediate(builtIn); }
         }
 
+        /// <summary>The owner, 2026-11-25: the cross frame is "traditionally on houses and not marine
+        /// equipment". A boat pane is one light between the rig's own posts, so the glass draws no cross;
+        /// a house window's cross is in its own art and this field never touches it.</summary>
+        [Test]
+        public void ABoatPaneHasNoCrossBar_ItIsMarineGlass()
+        {
+            Assert.AreEqual(0f, GlassLook.Current.Panes.MullionPixels, 0f,
+                "a boat pane drew a house window's cross bar");
+            GlassLook builtIn = GlassLook.CreateDefault();
+            try { Assert.AreEqual(0f, builtIn.Panes.MullionPixels, 0f, "the code default carries a cross bar"); }
+            finally { Object.DestroyImmediate(builtIn); }
+        }
+
         [Test]
         public void TheLookInForceIsTheShippedAsset()
         {

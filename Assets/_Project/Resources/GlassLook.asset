@@ -66,7 +66,7 @@ MonoBehaviour:
     CentreLift: 0.22
     Bands: 3
     FramePixels: 1
-    MullionPixels: 1
+    MullionPixels: 0
     MullionMinPixels: 7
     Breath: 0
     BreathSpeed: 0.7
