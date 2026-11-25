@@ -1,5 +1,11 @@
 # Paid special orders on the saved rows
 
+Reconciled with main `d46bde303e6aa256d23d47a05ede5d7d6f38e51e` (2026-11-25).
+Main already persists shelf purchases and shopping bags through version 26. Those
+systems do not construct this book or deliver special orders; the counter and
+physical handover integrations below are still required. This proposal adds no
+saved field and does not replace the shelf purchase or bag state.
+
 One `SpecialOrderBook` belongs to the player and serves every seller. Its constructor takes the
 current `SaveData`, the offers, the wallet and the clock. `SaveData.SpecialOrders` and
 `NextSpecialOrderNumber` are the book's only order storage. Placement appends to that list;
@@ -112,5 +118,8 @@ changes; exact payment, count, event, date and refusal assertions remain.
 Collection no longer advances arrivals implicitly. The two collection/restart cases that sought the
 clock now refresh explicitly, retaining every payment, receipt, quantity and non-reuse assertion.
 
-Local verification is source, scope and metadata inspection. No editor, C# compilation or test
-execution ran locally; those cases await CI. No visual or gameplay acceptance is claimed.
+The pre-reconciliation head `26f433d082` passed CI run `45535514904`. Its order code,
+content and test bodies are unchanged by the reconciliation; only this status note
+and accepted main were added. Local verification is source, scope and metadata
+inspection. Native tests and a complete build were not run locally; the merged head
+still needs CI. No visual or gameplay acceptance is claimed.

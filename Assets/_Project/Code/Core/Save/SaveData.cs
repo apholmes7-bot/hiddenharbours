@@ -483,7 +483,7 @@ namespace HiddenHarbours.Core
         /// <summary>
         /// <b>What the player took off the store shelves</b>, one row per purchase instant per shelf line,
         /// kept in (day, seconds, shop, line) order so replaying them over the calendar always gives the
-        /// same shelves. Added in v26 as <b>data only</b>: nothing reads or writes it yet. Older saves start
+        /// same shelves. Written as each purchase is made and read back when the stores are built. Older saves start
         /// with none, so their shelves are exactly what the calendar says.
         /// </summary>
         public List<StorePurchaseRowDto> StorePurchases = new();
@@ -505,9 +505,9 @@ namespace HiddenHarbours.Core
         /// <summary>
         /// <b>The player's shopping bags that hold goods</b>, in his hand or set down, one row per bag. The
         /// goods stay counted in <see cref="SupplyStock"/>; a row only says which are set aside in the bag.
-        /// A list although the game has one bag today, so more bags need no new version. Added in v26 as
-        /// <b>data only</b>: nothing reads or writes it yet. Older saves start with none (their goods are
-        /// simply in his supplies).
+        /// A list although the game has one bag today, so more bags need no new version. The bag is read
+        /// and changed here directly (<see cref="ShoppingBagContents"/>). Older saves start with none (their
+        /// goods are simply in his supplies).
         /// </summary>
         public List<ShoppingBagDto> ShoppingBags = new();
     }
