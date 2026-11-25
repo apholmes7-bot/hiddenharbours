@@ -219,7 +219,7 @@ namespace HiddenHarbours.Player
 
         private void BuildPool()
         {
-            var canvasGo = new GameObject("DevToast_Canvas", typeof(Canvas), typeof(CanvasScaler));
+            var canvasGo = new GameObject("DevToast_Canvas", typeof(Canvas), typeof(PixelSnappedCanvasScaler));
             canvasGo.transform.SetParent(transform, false);
             var canvas = canvasGo.GetComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -243,8 +243,9 @@ namespace HiddenHarbours.Player
                 rt.sizeDelta = new Vector2(EntryWidth, EntryHeight);
 
                 var text = go.GetComponent<Text>();
-                text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-                text.fontSize = _fontSize;
+                text.font = HarbourType.Load();
+                if (text.font == null) text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                text.fontSize = text.font.name == HarbourType.FontName ? HarbourType.SizeNearest(_fontSize) : _fontSize;
                 text.alignment = TextAnchor.LowerCenter;
                 text.color = new Color(1f, 0.95f, 0.75f, 1f);   // parchment-ish so it reads as dev, not HUD
                 text.horizontalOverflow = HorizontalWrapMode.Overflow;

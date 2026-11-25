@@ -324,7 +324,7 @@ namespace HiddenHarbours.Art
             if (displaced) Activate();
             else Deactivate();
             EventBus.Publish(new DevNotice(displaced
-                ? "Water → DISPLACED surface (ADR 0023). Press " + _toggleKey + " to flip back."
+                ? "Water → moving surface. Press " + _toggleKey + " to flip back."
                 : "Water → flat (today's look)."));
         }
 

@@ -128,9 +128,9 @@ namespace HiddenHarbours.Economy
             _book.SetRows(_rows, SellerNameFor(_sellerId), purse, openOn);
         }
 
-        /// <summary>The name in the head. The seller id until content gives sellers names of their own —
-        /// a stand-in that is honest about being one rather than a blank.</summary>
-        private static string SellerNameFor(string sellerId) => sellerId ?? "";
+        /// <summary>The name in the head: the seller's own display name from its data. Read on open and
+        /// after a purchase, never per frame.</summary>
+        private static string SellerNameFor(string sellerId) => SellerDirectory.DisplayNameFor(sellerId);
 
         // ---- input ---------------------------------------------------------------------------------
 

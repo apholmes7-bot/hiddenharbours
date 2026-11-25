@@ -35,7 +35,7 @@ namespace HiddenHarbours.UI
         public const string MenuMarker = "▸";
 
         /// <summary>How to drive the page, said once, quietly, at the foot of it.</summary>
-        public const string MenuHint = "↑ ↓ to choose   ·   Enter to pick";
+        public const string MenuHint = KeyNames.UpDown + KeyNames.Says + "choose" + KeyNames.Gap + KeyNames.Confirm + KeyNames.Says + "pick";
 
         /// <summary>Shown under Continue on a first launch, where there is nothing to go back to.</summary>
         public const string NoGameYet = "No harbour yet — start one.";
@@ -80,7 +80,7 @@ namespace HiddenHarbours.UI
 
         /// <summary>The shell's separator between two small facts on one line — the same spacing the
         /// hints use, so the corner reads in the page's own voice.</summary>
-        public const string Separator = "   ·   ";
+        public const string Separator = KeyNames.Gap;
 
         // ---- the New Game confirm ------------------------------------------------------------
         // The item M1 §7.8 says actually blocks the playtest. One slot, no undo — so the page states the
@@ -105,7 +105,7 @@ namespace HiddenHarbours.UI
         public const string Notebook       = "Your notebook";
         public const string QuitToTitle    = "Quit to title";
         public const string QuitToDesktop  = "Quit to desktop";
-        public const string PauseHint      = "Esc to carry on   ·   the tide is stopped while you're here";
+        public const string PauseHint      = KeyNames.Back + KeyNames.Says + "carry on" + KeyNames.Gap + "the tide is stopped while you're here";
 
         /// <summary>Said under the two Quit lines, because both of them save and a player should know
         /// that before they pick one.</summary>
@@ -128,7 +128,7 @@ namespace HiddenHarbours.UI
         public const string TasksNoteChip    = "Chip";
         public const string TasksNoteHidden  = "Hidden";
         public const string Back             = "Back";
-        public const string SettingsHint    = "← → to set a level   ·   Esc to go back";
+        public const string SettingsHint    = KeyNames.LeftRight + KeyNames.Says + "set a level" + KeyNames.Gap + KeyNames.Back + KeyNames.Says + "go back";
 
         /// <summary>Shown in place of the faders when no audio director is running (EditMode, a stripped
         /// build). An honest "there is nothing to move here" beats four sliders that do nothing.</summary>
@@ -143,7 +143,7 @@ namespace HiddenHarbours.UI
         /// </summary>
         public static string SavedGameSummary(int dayIndex, int money)
             => "Day " + (dayIndex + 1).ToString(CultureInfo.InvariantCulture)
-             + "   ·   " + HudStrings.Currency + money.ToString(CultureInfo.InvariantCulture);
+             + KeyNames.Gap + MoneyFormat.Balance(money);
 
         /// <summary>A fader's level as a whole percent. Called only when that whole number changes, never
         /// per frame of a drag.</summary>

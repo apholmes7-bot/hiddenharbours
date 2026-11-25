@@ -170,7 +170,7 @@ namespace HiddenHarbours.UI
         private void Build()
         {
             var canvasGo = new GameObject("TidePanel_Canvas",
-                typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+                typeof(Canvas), typeof(PixelSnappedCanvasScaler), typeof(GraphicRaycaster));
             canvasGo.transform.SetParent(transform, false);
 
             var canvas = canvasGo.GetComponent<Canvas>();
@@ -273,8 +273,8 @@ namespace HiddenHarbours.UI
             TideState st = TideReadout.Derive(heightAt, now, slopeDt, scanStep, horizon);
 
             string line = HudStrings.TideTableNowLabel + "  "
-                        + HudFormat.ClockHHMM(TideAlmanac.HourOfDayAt(now, secondsPerDay)) + "   ·   "
-                        + HudFormat.HeightMeters(st.HeightMeters) + "   ·   "
+                        + HudFormat.ClockHHMM(TideAlmanac.HourOfDayAt(now, secondsPerDay)) + KeyNames.Gap
+                        + HudFormat.HeightMeters(st.HeightMeters) + KeyNames.Gap
                         + HudStrings.TideArrow(st.Rising) + " " + HudStrings.TideDirection(st.Rising);
             MakeText(page, line, 28, TextAnchor.UpperLeft, 40f, -110f, PanelW - 80f, 38f, Ink);
 
@@ -420,7 +420,7 @@ namespace HiddenHarbours.UI
             var t = go.GetComponent<Text>();
             t.text = text;                 // the whole point of the label — see the note below
             t.font = DefaultFont();
-            t.fontSize = fontSize;
+            t.fontSize = t.font != null && t.font.name == HarbourType.FontName ? HarbourType.SizeNearest(fontSize) : fontSize;
             t.alignment = align;
             t.color = color;
             t.horizontalOverflow = HorizontalWrapMode.Overflow;
@@ -483,10 +483,12 @@ namespace HiddenHarbours.UI
             DontDestroyOnLoad(es);
         }
 
-        // Unity 6 removed Arial.ttf from Resources; LegacyRuntime.ttf is the built-in fallback.
+        // The pixel face, one face for everything the player reads. The built-in font is only the
+        // fallback for a box where the face is not imported (Unity 6 removed Arial.ttf from Resources).
         private static Font DefaultFont()
         {
-            var f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var f = HarbourType.Load();
+            if (f == null) f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             if (f == null) f = Resources.GetBuiltinResource<Font>("Arial.ttf");
             return f;
         }

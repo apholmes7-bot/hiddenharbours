@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: nmc_yard
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.SellerDef
   Id: seller.nmc_yard
+  DisplayName: Boatyard
   KeeperNpcId: npc.nmc_yard
   TradeId: trade.boatyard

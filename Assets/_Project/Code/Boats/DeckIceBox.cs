@@ -98,8 +98,8 @@ namespace HiddenHarbours.Boats
             if (actor.Context != InteractContext.OnDeck || !IsAvailable) return;
             SetLid(!_lidOn);
             EventBus.Publish(new DevNotice(_lidOn
-                ? $"Lid ON — the ice stretches ({DescribeRemaining()})."
-                : $"Lid OFF ({DescribeRemaining()})."));
+                ? $"Lid on — the ice keeps longer ({DescribeRemaining()})."
+                : $"Lid off ({DescribeRemaining()})."));
         }
 
         // A catch landed while the ice holds goes straight onto it — otherwise a fresh fish would rot

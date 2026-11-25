@@ -345,7 +345,7 @@ namespace HiddenHarbours.UI
                       night ? RigDrawUtil.Hex("ffbe3c") : RigDrawUtil.Hex("7fd6c9"), night ? 0.10f : 0.09f);
             RigDrawUtil.TextC(s, kind, cx, y + 8, 2,
                               night ? RigDrawUtil.Hex("ffd77a") : RigDrawUtil.Hex("a9e7dd"));
-            RigDrawUtil.TextC(s, "STANDBY · OPTIONAL", cx, y + h - 13, 1,
+            RigDrawUtil.TextC(s, "NOT FITTED", cx, y + h - 13, 1,
                               night ? RigDrawUtil.Hex("8a6a2c") : RigDrawUtil.Hex("4e7d78"));
             s.BlendRect(x + 3, y + 3, w - 6, 2, WHITE, 0.06f);                      // glass glare
             RigDrawUtil.Circle(s, x + w - 8, y + 7, 2, night ? AMBER : GREEN[1]);   // standby LED

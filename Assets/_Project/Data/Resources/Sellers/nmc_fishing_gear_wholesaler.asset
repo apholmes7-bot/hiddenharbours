@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: nmc_fishing_gear_wholesaler
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.SellerDef
   Id: seller.nmc_fishing_gear_wholesaler
+  DisplayName: Fishing Gear Wholesale
   KeeperNpcId: npc.bernadette_pitre
   TradeId: trade.fishing_gear_wholesale

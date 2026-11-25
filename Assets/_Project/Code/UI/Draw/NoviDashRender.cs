@@ -350,7 +350,7 @@ namespace HiddenHarbours.UI
             }
             s.AddRect(x + 2, y + 2, w - 4, h - 4, night ? ICE[4] : ICE[3], night ? 0.09f : 0.08f);
             RigDrawUtil.TextC(s, kind, cx, y + 8, 2, ICE[5]);
-            RigDrawUtil.TextC(s, "STANDBY · UPGRADEABLE", cx, y + h - 13, 1, night ? ICE[2] : ICE[1]);
+            RigDrawUtil.TextC(s, "NOT FITTED", cx, y + h - 13, 1, night ? ICE[2] : ICE[1]);
             s.BlendRect(x + 3, y + 3, w - 6, 2, WHITE, 0.05f);
             RigDrawUtil.Circle(s, x + w - 8, y + 7, 2, night ? ICE[3] : ICE[4]);
         }

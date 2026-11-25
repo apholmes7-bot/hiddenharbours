@@ -75,11 +75,11 @@ namespace HiddenHarbours.Fishing
         /// rebound these lines move with it.
         /// </summary>
         public const string NoticeCastAtHelm =
-            "No casting from the helm — E to step back on deck, then cast.";
+            "No casting from the helm — " + KeyNames.Interact + " to step back on deck, then cast.";
 
         /// <inheritdoc cref="NoticeCastAtHelm"/>
         public const string NoticeCastNeedsRod =
-            "Pick up a rod first (E) — then hold left mouse or Space and flick to cast.";
+            "Pick up a rod first with " + KeyNames.Interact + " — then hold " + KeyNames.LeftMouse + " or " + KeyNames.Space + " and flick to cast.";
 
         /// <summary>The handline FSM this drives (required sibling). Resolved lazily + cached so it works
         /// whether Awake has run (play mode) or not (EditMode AddComponent doesn't fire Awake).</summary>

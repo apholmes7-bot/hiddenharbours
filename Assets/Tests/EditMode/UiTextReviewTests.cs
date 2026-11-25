@@ -88,7 +88,8 @@ namespace HiddenHarbours.Tests.EditMode
                 string rel = path.Substring(root.Length + 1).Replace('\\', '/');
                 if (rel.Contains("/Editor/")) continue;
                 string src = File.ReadAllText(path);
-                bool face = src.Contains("HarbourType.ResourceKey") || src.Contains("BubbleFace.");
+                bool face = src.Contains("HarbourType.ResourceKey") || src.Contains("HarbourType.Load(")
+                            || src.Contains("BubbleFace.");
                 bool scales = src.Contains("ScaleMode.ScaleWithScreenSize") || src.Contains("PaperUi.MakeScreen");
                 if (!face || !scales) continue;
                 if (src.Contains("PixelSnappedCanvasScaler")) continue;
@@ -104,7 +105,7 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>Characters strings ask the face for that it does not have yet. Each needs a glyph drawn
         /// in the bubble kit and the face re-baked; until then the character draws as nothing.</summary>
-        private static readonly char[] KnownMissing = { '₲' /* ₲ */, '▸' /* ▸ */ };
+        private static readonly char[] KnownMissing = { '₲' /* ₲ */, '▸' /* ▸ */, '◀' /* ◀ */ };
 
         private static HashSet<char> FaceGlyphs()
         {
@@ -122,6 +123,15 @@ namespace HiddenHarbours.Tests.EditMode
             yield return MoneyFormat.Payout(35);
             yield return WorldStrings.ContinueHint;
             yield return WorldStrings.OptionCursor;
+            // The pages now set in the face: the shell, the tide table, the sell screen.
+            foreach (var f in typeof(ShellStrings).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static))
+                if (f.IsLiteral && f.FieldType == typeof(string)) yield return (string)f.GetRawConstantValue();
+            yield return HudStrings.TideTableTitle;
+            yield return HudStrings.TideTableCloseHint;
+            yield return HudStrings.TideTableNowMarker;
+            yield return HudStrings.TideTableDayHeading(false, 1);
+            yield return HudStrings.TideTurnLabel(true) + HudStrings.TideTurnLabel(false);
+            yield return MoneyFormat.Balance(0) + "   x3";
         }
 
         [Test]
@@ -192,6 +202,136 @@ namespace HiddenHarbours.Tests.EditMode
         {
             static float Ch(float v) => v <= 0.03928f ? v / 12.92f : Mathf.Pow((v + 0.055f) / 1.055f, 2.4f);
             return 0.2126f * Ch(c.r) + 0.7152f * Ch(c.g) + 0.0722f * Ch(c.b);
+        }
+
+        // ---- pass 2: no ids, no dev words, one way to name a key ---------------------------------
+
+        static readonly System.Text.RegularExpressions.Regex IdShape =
+            new System.Text.RegularExpressions.Regex(@"\b[a-z]+\.[a-z][a-z0-9]*_[a-z0-9_]+\b|\b(fish|seller|region|npc|item|license|trade|quest|bait)\.[a-z_]+\b");
+
+        static readonly string[] DevWords = { "(dev)", "wired", "ADR ", "TODO", "OPTIONAL", "UPGRADEABLE", "null" };
+
+        /// <summary>Every player-facing constant on the strings tables, minus the ones that are ids by
+        /// name (a transit id, a resource key). Reflection, so a new line is checked the day it lands.</summary>
+        static IEnumerable<TestCaseData> PlayerStrings()
+        {
+            var types = new List<System.Type>
+            {
+                typeof(HudStrings), typeof(WorldStrings), typeof(ShellStrings),
+                typeof(WardrobeStrings), typeof(HiddenHarbours.Player.ControlStrings),
+                typeof(HiddenHarbours.Boats.BoatAnchor), typeof(HiddenHarbours.Fishing.DevFishingInput),
+            };
+            System.Type creator = typeof(HudStrings).Assembly.GetType("HiddenHarbours.UI.CharacterCreatorViewStrings");
+            if (creator != null) types.Add(creator);
+            foreach (System.Type t in types)
+                foreach (var f in t.GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic |
+                                              System.Reflection.BindingFlags.Static))
+                {
+                    if (!f.IsLiteral || f.FieldType != typeof(string)) continue;
+                    if (f.Name.StartsWith("Id") || f.Name.EndsWith("Id") || f.Name.EndsWith("Key") || f.Name.EndsWith("Path")
+                        || f.Name.EndsWith("Prefix") || f.Name.EndsWith("Folder")) continue;
+                    yield return new TestCaseData((string)f.GetRawConstantValue()).SetName($"PlayerString_{t.Name}_{f.Name}");
+                }
+        }
+
+        [TestCaseSource(nameof(PlayerStrings))]
+        public void NoPlayerString_ShowsAnIdOrADevWord(string text)
+        {
+            Assert.IsFalse(IdShape.IsMatch(text ?? ""), $"\"{text}\" shows an id to the player");
+            foreach (string w in DevWords)
+                StringAssert.DoesNotContain(w, text ?? "", $"\"{text}\" carries a developer word");
+        }
+
+        [TestCaseSource(nameof(PlayerStrings))]
+        public void NoPlayerString_SpellsAKeyAnotherWay(string text)
+        {
+            foreach (string old in new[] { "Esc / B", "Enter / A", "Arrows / stick", "Enter / Start", "Enter or pad A", "(E)", "Enter or Done", "Start or Done", "·", "←", "→", "↑", "↓" })
+                StringAssert.DoesNotContain(old, text ?? "", $"\"{text}\" names a key by hand; write it through KeyNames");
+        }
+
+        [TestCaseSource(nameof(PlayerStrings))]
+        public void NoPlayerString_SaysPail(string text)
+            => Assert.IsFalse(System.Text.RegularExpressions.Regex.IsMatch(text ?? "", @"\b[Pp]ails?\b"),
+                $"\"{text}\" says pail; the word is bucket");
+
+        [Test]
+        public void NoDataTheyRead_SaysPail()
+        {
+            // Every text line in the data folder, minus the lines that are ids or asset names (a bucket
+            // TIER id "pail" is append-only and never shown).
+            var skip = new System.Text.RegularExpressions.Regex(@"^\s*-?\s*(m_Name|m_EditorClassIdentifier|\w*Id|Provenance|\w*Path|guid)\s*:");
+            var pail = new System.Text.RegularExpressions.Regex(@"\b[Pp]ails?\b");
+            var hits = new List<string>();
+            foreach (string path in Directory.GetFiles("Assets/_Project/Data", "*.asset", SearchOption.AllDirectories))
+            {
+                string[] lines = File.ReadAllLines(path);
+                for (int i = 0; i < lines.Length; i++)
+                    if (pail.IsMatch(lines[i]) && !skip.IsMatch(lines[i]))
+                        hits.Add($"{path}:{i + 1}: {lines[i].Trim()}");
+            }
+            Assert.IsEmpty(hits, "the word is bucket:\n" + string.Join("\n", hits));
+        }
+
+        [Test]
+        public void EverySeller_HasAName_AndTheBookShowsIt_NeverTheId()
+        {
+            SellerDef[] sellers = Resources.LoadAll<SellerDef>(SellerDirectory.ResourceFolder);
+            Assert.IsNotEmpty(sellers);
+            foreach (SellerDef s in sellers)
+            {
+                string shown = SellerDirectory.DisplayNameFor(s.Id, sellers);
+                Assert.IsFalse(string.IsNullOrWhiteSpace(shown), s.Id + " has no display name");
+                Assert.AreNotEqual(s.Id, shown);
+                Assert.IsFalse(IdShape.IsMatch(shown), $"{s.Id} is named \"{shown}\"");
+            }
+            Assert.AreEqual("", SellerDirectory.DisplayNameFor("seller.nobody_at_all", sellers),
+                "an unknown seller reads as nothing, never as its id");
+        }
+
+        [TestCase("fish.atlantic_cod", "Atlantic cod")]
+        [TestCase("bootCol", "Boot")]
+        [TestCase("hatCol", "Hat")]
+        [TestCase("soft_shell_clam", "Soft shell clam")]
+        [TestCase("", "")]
+        public void ACodeName_ReadsPlain(string id, string expected)
+            => Assert.AreEqual(expected, PlainName.FromId(id));
+
+        [Test]
+        public void TheCatalogue_IsHeadedByTheSellersName()
+        {
+            string src = File.ReadAllText("Assets/_Project/Code/Economy/CatalogBookPresenter.cs");
+            StringAssert.Contains("SellerDirectory.DisplayNameFor(sellerId)", src,
+                "the head reads the seller's name from data, not the id");
+        }
+
+        [Test]
+        public void KeyNames_UseOnlyTheFacesLetters()
+        {
+            Font face = AssetDatabase.LoadAssetAtPath<Font>(HarbourType.FontPath);
+            Assume.That(face, Is.Not.Null, "the face is not imported in this box");
+            foreach (var f in typeof(KeyNames).GetFields())
+            {
+                if (!f.IsLiteral) continue;
+                string s = (string)f.GetRawConstantValue();
+                foreach (char c in s)
+                    Assert.IsTrue(face.HasCharacter(c), $"KeyNames.{f.Name} uses '{c}', which the face does not have");
+            }
+        }
+
+        [Test]
+        public void TheHints_NameTheirKeysThroughTheTable()
+        {
+            StringAssert.Contains(KeyNames.BackEither + KeyNames.Says, ReadCreatorHint(), "the creator hint names Esc/B from the table");
+            StringAssert.StartsWith(KeyNames.TideTable + " ", WorldStrings.OnboardDigClams);
+            StringAssert.StartsWith(KeyNames.Interact + " ", WorldStrings.ContinueHint);
+            StringAssert.Contains(KeyNames.Back + KeyNames.Says, ShellStrings.PauseHint);
+        }
+
+        static string ReadCreatorHint()
+        {
+            System.Type creator = typeof(HudStrings).Assembly.GetType("HiddenHarbours.UI.CharacterCreatorViewStrings");
+            Assume.That(creator, Is.Not.Null);
+            return (string)creator.GetField("Hint").GetRawConstantValue();
         }
     }
 }

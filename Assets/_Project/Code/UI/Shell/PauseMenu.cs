@@ -121,7 +121,7 @@ namespace HiddenHarbours.UI
 
         private void Build()
         {
-            _host = PaperUi.MakeScreen(transform, "PauseMenu_Canvas", PaperUi.PauseSortingOrder);
+            _host = PaperUi.MakeScreen(transform, "PauseMenu_Canvas", PaperUi.PauseSortingOrder, pixelFace: true);
             PaperUi.MakeScrim(_host, PaperUi.Scrim);
 
             PaperUi.MakeText(_host, ShellStrings.PauseTitle, 52, TextAnchor.UpperLeft,

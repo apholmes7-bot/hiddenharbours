@@ -1,8 +1,7 @@
-using HiddenHarbours.Core;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace HiddenHarbours.World
+namespace HiddenHarbours.Core
 {
     /// <summary>
     /// A ScaleWithScreenSize canvas scaler whose scale is snapped so a kit pixel lands on whole screen
