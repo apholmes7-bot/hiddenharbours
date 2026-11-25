@@ -1149,7 +1149,10 @@ among the world, using the order the game already uses for whatever carries it (
   band has four orders per metre, and a tie between two groups is broken by nothing we control. The back
   boat's panes were seen drawing through the front boat.)
 - **The streak** sorts at `SortingBands.WharfDeckMin`: over the sea, under every other deck row, every hull and
-  everything standing. The hull mask stays, so a hull that drops behind a pier still hides it.
+  everything standing. The hull mask stays, so a hull that drops behind a pier still hides it. No whole order
+  lies between the sea (-5) and the north deck row (-4), so the streak draws from its own shared material one
+  render queue under the transparent queue (`SceneLight.StreakRenderQueue`, 2999): at the same layer and order
+  the 2D renderer draws the lower queue first, so the north row draws over the streak instead of tying with it.
 - **Cabin panes** sort inside their boat's own group, at its top, so another hull or a pier in front hides them.
 - Sorted under the day/night tint, the shader divides that tint back out of the light (`_InWorld`), so
   where nothing covers it a lamp adds exactly what it added before: `(base + L / t) * t = base * t + L`.
@@ -1167,7 +1170,7 @@ is read from the cached carrier at the light's 20 Hz tick.
 **Not covered.** A boat's own cabin cannot hide that boat's own lamps: the boat sorts as one object, and its
 per-pixel depth is private to the hull pass. The ground pools (`LampPoolSystem`) and the lamp shadows stay at
 the ceiling: they multiply whatever is in the pixel by design, and their ladder (pool, bloom, shadow by camera
-depth) is pinned by `LightsIlluminatePlatePlayTests`. The north wharf deck row ties with the streak's order.
+depth) is pinned by `LightsIlluminatePlatePlayTests`.
 The sun's shade (32763) now lands on a sorted lamp; its strength follows the sun, so it should be near nothing
 once the lamps are lit (not measured at dusk).
 
@@ -1232,7 +1235,8 @@ the ground in front. A lamp no entry matches stands free, as before.
 
 **The headlamp.** Its lens is its own small round lamp of glowing glass (the shore lens): the beam's quad is a
 cone with the lamp at its base, which cut a round lens in half and left one grey pixel, so the beam now paints no
-glow and the lens rides the same point. The lens sorts among the world one rung over the fitting drawn on his head
+glow and the lens rides the same point. The lens has its own size, `GlassLook._headlampLensRadiusMetres`
+(0.10 m): the headlamp preset's bloom (0.18 m) drew it wider than the lamp on his brow. The lens sorts among the world one rung over the fitting drawn on his head
 (`SceneLight.SetCarrierOrder`), not at the sorting ceiling, so a wall or a stack of traps in front of him covers it
 as it covers him. From behind his head the lens is not seen and draws no glow. The beam is
 the same pool, aimed: it lights what is in front of him and nothing behind, and lights mesh faces by `N·L` like
@@ -1260,4 +1264,5 @@ every other lamp.
 | Window spill on a wall, facing | `LampMounts._windowSpill` | (0, −1) |
 | Doorstep lanterns on walls, wall line | `LampMounts._byId` | 0.3 m behind the foot |
 | The store lantern's glow under its canopy | `LampMounts._byId[0].BloomLiftMetres` | 0.3 m |
+| The worn headlamp's lens glow radius | `GlassLook._headlampLensRadiusMetres` | 0.10 m |
 | The wall line's soft edge | `LampMounts._wallSoftMetres` | 0.35 m |
