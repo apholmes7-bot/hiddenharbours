@@ -145,6 +145,8 @@ namespace HiddenHarbours.Tools.RigBaking
             new BuildingAxis("bay",        "Bay window",  BuildingAxisKind.Flag,   false),
             new BuildingAxis("bargeboard", "Bargeboard",  BuildingAxisKind.Flag,   false),
             new BuildingAxis("crossGable", "Cross gable", BuildingAxisKind.Count,  0, maxCount: 1),
+            // The cross gable at full width (3.5 m wide, not 2.9 m): the harbour gable's board look.
+            new BuildingAxis("gableFull",  "Full cross gable", BuildingAxisKind.Flag, false),
             new BuildingAxis("garage",     "Garage",      BuildingAxisKind.Flag,   false),
             new BuildingAxis("mirror",     "Mirrored (flipped across the ridge)", BuildingAxisKind.Flag, false),
             // Both paint dials offer PAINTS plus 'none', which a named rig table cannot (the studio would offer
@@ -154,6 +156,14 @@ namespace HiddenHarbours.Tools.RigBaking
                              inline: new[] { "none", "join", "red", "blue", "green", "ivory", "iron", "oak" }),
             new BuildingAxis("doorPaint",  "Door paint",  BuildingAxisKind.Choice, "none",
                              inline: new[] { "none", "join", "red", "blue", "green", "ivory", "iron", "oak" }),
+            // A home lived in (the key scenes' return 3, the cottage): live look only, each off unless dialled.
+            new BuildingAxis("windowBoxes", "Window boxes", BuildingAxisKind.Flag,  false),
+            new BuildingAxis("wallBench",  "Wall bench",  BuildingAxisKind.Flag,   false),
+            new BuildingAxis("stovepipe",  "Stovepipe",   BuildingAxisKind.Flag,   false),
+            new BuildingAxis("roofPatches","Roof patches",BuildingAxisKind.Count,  0, maxCount: 6),
+            new BuildingAxis("roofLadder", "Roof ladder", BuildingAxisKind.Flag,   false),
+            // On unless dialled off: off keeps a tall eave wall to one row of windows (Ginny's enlarged cottage).
+            new BuildingAxis("upperWindows", "Upper-storey eave windows", BuildingAxisKind.Flag, true),
             new BuildingAxis("weather",    "Weathering",  BuildingAxisKind.Unit,   0.0),
             new BuildingAxis("night",      "Night (lit)", BuildingAxisKind.Flag,   false),
         };

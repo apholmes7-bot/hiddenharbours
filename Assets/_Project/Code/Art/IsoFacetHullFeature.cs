@@ -183,6 +183,9 @@ namespace HiddenHarbours.Art
             // The figure pixel look's map is per camera: zero (the overlays' untouched path) unless
             // this camera's recording publishes its own. A no-op once zero.
             IsoFacetFigureTarget.Unpublish();
+            // The calm mirror (GameConfig.WaterMirrorStrength): at the shipped 0 it records nothing and leaves every
+            // value it owns at its unset 0. Before the early returns, so its per-camera state is never stale.
+            CalmMirror.AddTo(renderer, renderingData.cameraData.camera);
             // "Hulls" is the facet block: every subject of the HHHullFacet list. A mesh hull is one;
             // a skinned figure standing on NO hull (ADR 0044, ashore) is the other, and only while
             // she holds a figure id. With neither registered this is false and nothing below changes.
@@ -201,7 +204,7 @@ namespace HiddenHarbours.Art
             bool meshReflect = GameServices.HullMeshReflections;
             HullMeshReflection.SetMode(meshReflect);
             bool reflect = (meshReflect ? ReflectionRegistry.NonHullCount : ReflectionRegistry.Count) > 0;
-            bool meshSubjects = meshReflect && HullMeshReflection.Count > 0;
+            bool meshSubjects = meshReflect && HullMeshReflection.HasSubjects;
             if (!reflect && !meshSubjects) ReflectionRegistry.BindIdle();
             // ADR 0027 #6: the advected foam buffer joins as one persistent ping-ponged target, on
             // the same zero-cost-when-idle contract and with BOTH halves of it enforced — no hull is
@@ -340,6 +343,7 @@ namespace HiddenHarbours.Art
             Shader.SetGlobalFloat(UnderWaterShaderIds.UnderWaterLive, 0f);
             // ADR 0040 B2: nor fading its lip under a curl nobody draws any more.
             CurlingBreakerPasses.Lower();
+            CalmMirror.Release();
             _pass?.Dispose();
             _pass = null;
             CoreUtils.Destroy(_resolveMaterial);
@@ -714,7 +718,7 @@ namespace HiddenHarbours.Art
                 bool drawHulls = DrawHulls && ResolveMaterial != null;
                 bool drawFoam = DrawFoam && FoamMaterial != null;
                 HullMeshReflection.Snapshot mesh = null;
-                if (MeshReflections && ResolveMaterial != null && HullMeshReflection.Count > 0)
+                if (MeshReflections && ResolveMaterial != null && HullMeshReflection.HasSubjects)
                 {
                     var id = cameraData.camera.GetEntityId();
                     if (!_meshCameras.TryGetValue(id, out var state))
@@ -725,7 +729,7 @@ namespace HiddenHarbours.Art
                         int divisor = GameServices.HullReflectionResolutionDivisor;
                         HullMeshReflection.Prepare(mesh, cameraData.camera, Mathf.Max(1, (w + divisor - 1) / divisor),
                             Mathf.Max(1, (h + divisor - 1) / divisor), GameServices.HullReflectionMaxHulls,
-                            GameServices.HullReflectionMaxTriangles);
+                            GameServices.HullReflectionMaxTriangles, KeylineFlood);
                         if (mesh.Overflow && !state.OverflowWarned)
                             Debug.LogWarning("[HullMeshReflection] Submission budget exceeded; this camera draws no mesh reflections.");
                         state.OverflowWarned = mesh.Overflow;
@@ -1401,6 +1405,7 @@ namespace HiddenHarbours.Art
                         d.Material.SetTexture(IsoFacetShaderIds.DepthTex, (RTHandle)d.Depth);
                         d.Material.SetVector(HullMeshReflection.SizeId, d.TexSize);
                         d.Material.SetFloatArray(HullMeshReflection.LitId, d.MeshSnapshot.Lit);
+                        d.Material.SetVector(HullMeshReflection.EndsId, d.MeshSnapshot.Ends);
                         IsoFacetKeylineGate.Apply(d.Material, d.KeylineFlood);
                         IsoFacetFigureInk.Apply(d.Material, d.FigureInk);
                         Blitter.BlitTexture(ctx.cmd, new Vector4(1, 1, 0, 0), d.Material, 1);
