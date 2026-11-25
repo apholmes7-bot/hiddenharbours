@@ -5,7 +5,7 @@ Rows are screen rows, 0 = TOP of the cell. Lower row number = higher up.
   per-tag exterior height (mesh local z, m above the keel):
     tag  5  top z   19.13  (352 verts)
     tag  3  top z   12.62  (232 verts)
-    tag  2  top z   11.75  (1140 verts)
+    tag  2  top z   11.75  (1068 verts)
     tag  1  top z    6.36  (368 verts)
 
   heading    90°  whole rows 506..1076  |  without rigging 597..1076  |  rigging 15589 px, rows 506..884

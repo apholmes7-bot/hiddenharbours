@@ -3,7 +3,7 @@ The tag is DERIVED from the mesh (highest exterior geometry), not named.
 Rows are screen rows, 0 = TOP of the cell. Lower row number = higher up.
 
   per-tag exterior height (mesh local z, m above the keel):
-    tag  3  top z   4.977  (412 verts)
+    tag  3  top z   4.977  (368 verts)
     tag  5  top z   4.765  (40 verts)
     tag  2  top z   2.818  (60 verts)
     tag  1  top z    1.73  (308 verts)

@@ -75,6 +75,35 @@ namespace HiddenHarbours.App.Editor
             public Vector2 CottageAt;
         }
 
+        /// <summary>The lamp over the cottage door: how high it hangs and how far it lights the step, metres.</summary>
+        public const float WhelpsDoorLampHeightMetres = 2f, WhelpsDoorLampReachMetres = 3.4f;
+        public const string DoorLampName = "DoorLamp";
+
+        /// <summary>The cottage's plan on the ground as drawn, about <paramref name="centre"/>.</summary>
+        public static Vector2[] WhelpsCottagePlan(Vector2 centre)
+        {
+            Vector2 u = WhelpsDoorAxis() * (WhelpsCottageLength * 0.5f);
+            Vector2 v = new Vector2(-WhelpsDoorAxis().y, WhelpsDoorAxis().x) * (WhelpsCottageWidth * 0.5f);
+            return new[] { centre + Drawn(-u - v), centre + Drawn(u - v), centre + Drawn(u + v), centre + Drawn(-u + v) };
+        }
+
+        /// <summary>The ground each keeper's cottage in the scene stands on, for the rule that keeps planting off
+        /// buildings: a cottage drawn whole has no room to read, so its plan is given here.</summary>
+        public static List<StPetersBuildingClearance.Zone> KeeperCottageZones(SceneYaml scene)
+        {
+            var zones = new List<StPetersBuildingClearance.Zone>();
+            if (!scene.Docs.Any(d => d.ClassId == GameObjectClass && !d.Stripped && d.Field("m_Name") == KeepersRootName)) return zones;
+            var owned = scene.SubtreeOf(scene.RootNamed(KeepersRootName).FileId);
+            foreach (var go in scene.Docs.Where(d => owned.Contains(d.FileId) && d.ClassId == GameObjectClass &&
+                         (d.Field("m_Name") ?? "").EndsWith("Cottage", StringComparison.Ordinal)))
+                zones.Add(new StPetersBuildingClearance.Zone
+                {
+                    Path = KeepersRootName + "/" + go.Field("m_Name"),
+                    Corners = WhelpsCottagePlan(InteriorFixturePlacement.WorldOf(scene, scene.TransformOf(go))),
+                });
+            return zones;
+        }
+
         /// <summary>The cottage's long axis on the ground: toward its door.</summary>
         static Vector2 WhelpsDoorAxis()
         {
@@ -227,13 +256,14 @@ namespace HiddenHarbours.App.Editor
                     long cg = Next(child, "GameObject"), ct = Next(child, "Transform"), sr = Next(child, "SpriteRenderer");
                     long sort = Next(child, "YSortSprite"), walls = Next(child, "PolygonCollider2D");
                     long binder = Next(child, "SpriteLightBinder");
-                    Vector2 u = WhelpsDoorAxis() * (WhelpsCottageLength * 0.5f);
-                    Vector2 v = new Vector2(-WhelpsDoorAxis().y, WhelpsDoorAxis().x) * (WhelpsCottageWidth * 0.5f);
-                    var plan = new List<Vector2[]> { new[] { Drawn(-u - v), Drawn(u - v), Drawn(u + v), Drawn(-u + v) } };
+                    string lampChild = child + "/" + DoorLampName;
+                    long lg = Next(lampChild, "GameObject"), lt = Next(lampChild, "Transform");
+                    long light = Next(lampChild, "SceneLight"), preset = Next(lampChild, "PreconfiguredLight");
+                    var plan = new List<Vector2[]> { WhelpsCottagePlan(Vector2.zero) };
                     int order = YSortSprite.OrderFor(post.CottageAt.y, SortingBands.DecorBase, SortingBands.OrdersPerMetre,
                         SortingBands.DecorFloor, SortingBands.DecorCeiling);
                     wanted.Add(Want(GameObjectYaml(cg, child, new[] { ct, sr, sort, binder, walls }), child, "GameObject"));
-                    wanted.Add(Want(TransformYaml(ct, cg, post.CottageAt, none, rootTr), child, "Transform"));
+                    wanted.Add(Want(TransformYaml(ct, cg, post.CottageAt, new[] { lt }, rootTr), child, "Transform"));
                     wanted.Add(Want(SpriteRendererYaml(sr, cg, assets.CottageMaterial, assets.Cottage(WhelpsCottageFacing), order), child, "SpriteRenderer"));
                     wanted.Add(Want(MonoBehaviourYaml(sort, cg, assets.ScriptFor(typeof(YSortSprite)), new[]
                     {
@@ -251,6 +281,20 @@ namespace HiddenHarbours.App.Editor
                         "  _emitSheet: " + assets.CottageSheet(VillageBuildingKit.Channel.Emit).Yaml,
                     }), child, "SpriteLightBinder"));
                     wanted.Add(Want(PolygonColliderYaml(walls, cg, plan), child, "PolygonCollider2D"));
+
+                    // ---- the lamp over the door, a lantern like any doorstep's: lit when the night comes ----
+                    var look = LightPresets.For(LightPresets.Kind.Lantern);
+                    Vector2 doorOnTheGround = Drawn(WhelpsDoorAxis() * (WhelpsCottageLength * 0.5f));
+                    wanted.Add(Want(GameObjectYaml(lg, DoorLampName, new[] { lt, light, preset }), lampChild, "GameObject"));
+                    wanted.Add(Want(TransformYaml(lt, lg, doorOnTheGround, none, ct), lampChild, "Transform"));
+                    wanted.Add(Want(MonoBehaviourYaml(light, lg, assets.ScriptFor(typeof(SceneLight)), SceneLightFields(look.Shape, 30f,
+                        look.Range, look.Color, look.Intensity, look.EdgeSoftness, look.FlickerAmount, WhelpsDoorLampHeightMetres,
+                        WhelpsDoorLampHeightMetres * IsoGround.HeightScale, WhelpsDoorLampReachMetres, 20f)), lampChild, "SceneLight"));
+                    wanted.Add(Want(MonoBehaviourYaml(preset, lg, assets.ScriptFor(typeof(PreconfiguredLight)), new[]
+                    {
+                        "  _preset: " + Int((int)LightPresets.Kind.Lantern), "  _intensityScale: 1", "  _fittingWidthMetres: 0",
+                        "  _reachOverrideMetres: " + F(WhelpsDoorLampReachMetres),
+                    }), lampChild, "PreconfiguredLight"));
                     rootChildren.Add(ct);
                 }
 

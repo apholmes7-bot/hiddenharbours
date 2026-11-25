@@ -1,0 +1,3 @@
+SceneLight tick=20 Hz; flicker speed=1; 12000 intervals from t=1950; seeds=0,1,41,73,731,12345,-1,2147483647
+amount=0.28, largest_tick_change=0.0571528077, at_time=2062.95, seed=731
+amount=0.34, largest_tick_change=0.06939989, at_time=2062.95, seed=731

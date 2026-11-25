@@ -1,18 +1,18 @@
 B — ONE TAG, BOTH HALVES OF THE SWAP (spike/interior-mesh)
 hull: LobsterBoatIso   level tagged: house_sole (id 1)
-combined mesh: 5232 verts / 1586 tris  (hull 4284/1428 + rooms 948/158)
-hull faces carrying THIS level's tag: 223 of 231 tagged in all   interior material id reused: 2   fore bias 14.54 m (the hull's own bounding-sphere diameter)
+combined mesh: 8190 verts / 2572 tris  (hull 7242/2414 + rooms 948/158)
+hull faces carrying THIS level's tag: 949 of 1020 tagged in all   interior material id reused: 9   fore bias 14.54 m (the hull's own bounding-sphere diameter)
 
 pixel accounting at the dock pose, 90 deg:
-   exterior house of the level, drawn alone : 13615 px
-   the room, drawn alone                    : 8534 px
+   exterior house of the level, drawn alone : 14147 px
+   the room, drawn alone                    : 6895 px
    the tagged house faces, DRAWN AT THE GATE: 0 px   (must be 0 — this is the cull, asked exactly)
-   hull revealed behind it while inside     : 5002 px  (the deck and far rail the house used to hide; NOT a leak)
-   room pixels outside the house silhouette : 446 px  (containment, in pixels)
-   room pixels the SHIPPED frame covers     : 8088 px  (overlap of the two masks: 8088)
+   hull revealed behind it while inside     : 6702 px  (the deck and far rail the house used to hide; NOT a leak)
+   room pixels outside the house silhouette : 3 px  (containment, in pixels)
+   room pixels the SHIPPED frame covers     : 6892 px  (overlap of the two masks: 6892)
 
-   room pixels SURVIVING into the combined frame, WITH the fore bias : 8330 of 8534  (97.6%)
-   room pixels SURVIVING with db = 0, the SWAP ALONE               : 1729 of 8534  (20.3%)
+   room pixels SURVIVING into the combined frame, WITH the fore bias : 3873 of 6895  (56.2%)
+   room pixels SURVIVING with db = 0, the SWAP ALONE               : 319 of 6895  (4.6%)
 
    ⇒ the swap turns the CABIN off; it does not turn off the hull's own near
      topsides, which in a 3/4 view stand between the camera and a cabin sole.

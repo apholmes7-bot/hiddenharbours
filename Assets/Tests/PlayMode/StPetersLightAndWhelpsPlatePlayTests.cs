@@ -16,6 +16,9 @@ namespace HiddenHarbours.Tests.PlayMode
         /// <summary>Where these plates go. Unset, they land beside the harness's other plates.</summary>
         const string KeySceneBoardPlatesVariable = "HH_KEY_SCENE_PLATES";
 
+        /// <summary>Set to shoot only the frames whose id holds this text. Unset, every frame is shot.</summary>
+        const string KeySceneBoardFramesVariable = "HH_KEY_SCENE_FRAMES";
+
         /// <summary>The boards are drawn at 32 px a metre; so are these.</summary>
         const float BoardPixelsPerMetre = 32f;
 
@@ -49,6 +52,12 @@ namespace HiddenHarbours.Tests.PlayMode
             new BoardFrame("ne_light.keeper.1000", 197f, 215f, 52f, 63f, 10f, 0.63f),
             new BoardFrame("whelps_lookout.cottage.0800", 154f, 176f, -43f, -24f, 8f, 0.63f),
             new BoardFrame("whelps_lookout.bench.1130", 154f, 176f, -43f, -24f, 11.5f, 0.63f),
+            new BoardFrame("whelps_lookout.cottage.2230", 154f, 176f, -43f, -24f, 22.5f, 0.63f),
+            new BoardFrame("whelps_lookout.skerries.half", 172f, 200f, -57.75f, -42f, 12f, -0.8f),
+            new BoardFrame("whelps_lookout.skerries.half.2230", 172f, 200f, -57.75f, -42f, 22.5f, -0.8f),
+            new BoardFrame("whelps_lookout.skerries.low.2230", 172f, 200f, -57.75f, -42f, 22.5f, -1.4f),
+            new BoardFrame("whelps_lookout.rocks_close.half", 180f, 190f, -49.5f, -43.5f, 12f, -0.8f),
+            new BoardFrame("whelps_lookout.rocks_close.low", 180f, 190f, -49.5f, -43.5f, 12f, -1.4f),
         };
 
         /// <summary>The north-east light in the loaded region: its lantern is where the clock says, at any hour.</summary>
@@ -139,8 +148,10 @@ namespace HiddenHarbours.Tests.PlayMode
                 .Where(b => b.GetType().Name == "PixelPerfectCamera" && b.enabled).ToArray();
             try
             {
+                string only = System.Environment.GetEnvironmentVariable(KeySceneBoardFramesVariable);
                 foreach (BoardFrame frame in LightAndWhelpsFrames())
                 {
+                    if (!string.IsNullOrEmpty(only) && !frame.Id.Contains(only)) continue;
                     yield return PinTheHour(frame.Hour, ClearRunSeconds);
 
                     GameServices.Environment = new LandingBoardTide(held, frame.Tide);
