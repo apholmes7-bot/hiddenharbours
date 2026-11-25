@@ -1,10 +1,10 @@
 # Opening words for the island week
 
-Keep the player's first week on St Peters in the words as well as in the weather. Ginny welcomes him into her home; the flats give him his first work. He signs for a shellfish licence, digs clams, sells them at the island store, buys his fishing gear from the shelf, and learns from shore. He earns Basil's broken dory on the slip, mends her with his own hands, then rows and fishes in island water. Nobody sends him away until the weather turns. The first instruction to cross belongs after that turn. Ginny may promise the following morning during the earned evening conversation; she does not send him across that night.
+Keep the player's first week on St Peters in the words as well as in the weather. Ginny welcomes him into her home; the flats give him his first work. He signs for a shellfish licence, digs clams, sells them at the island store, buys his fishing gear from the shelf, and learns from shore. He earns Basil's broken dory on the slip, mends her with his own hands, then rows and fishes in island water. The demo ends when Ginny finishes her word in the evening on day seven or later. There is no crossing or following-morning task in the first-week sequence. The full game's later passage is a separate continuation.
 
 This is proposed wording, not a change to the game. The tables pair every line in the opening conversations, its pinned hints and its Tasks entries with the words to keep or replace. They also cover the shop conversation, licence and shelf messages that the opening sends him to, and the notebook's three available instruction pages. Unrelated island greetings, gifts and later-region conversations are outside this opening-copy inventory; Basil's introduction is included because he now owns the dory beat. A matching right-hand entry means keep the words.
 
-Read against pinned main `d46bde303e6aa256d23d47a05ede5d7d6f38e51e`, on 2026-11-25, and [ADR 0062](../adr/0062-the-first-week-is-closed-by-weather.md). The first-week amendment in [the canon](../vision-and-pillars.md) controls the sequence. The later direction that the island store carries basic fishing gear and **no boat hardware** controls the shop wording; basic repair materials come from the St Peters store and are carried to the slip for hand work. Exact material identities, jobs, quantities and prices remain content decisions; Basil guides the work instead of supplying a free repair pile. The draft deliberately promises no repair shopping list, price or fixed delivery day.
+Read against pinned main `f808af6ae5d5a0041f3d2147d74b1ddef7dce609`, on 2026-11-25, and [ADR 0062](../adr/0062-the-first-week-is-closed-by-weather.md). The first-week amendment in [the canon](../vision-and-pillars.md) controls the sequence. The later direction that the island store carries basic fishing gear and **no boat hardware** controls the shop wording; basic repair materials come from the St Peters store and are carried to the slip for hand work. The three-job hand-mending plan is accepted; exact material rows, quantities and prices remain content work; Basil guides the work instead of supplying a free repair pile. The draft deliberately promises no repair shopping list, price or fixed delivery day.
 
 ## What the player should hear first
 
@@ -69,13 +69,13 @@ Source: [`Assets/_Project/Data/NPCs/Dialogue/NedLetter.asset`](../../Assets/_Pro
 
 ## The pinned Tasks note: every opening constant
 
-Source: [`Assets/_Project/Code/World/WorldStrings.cs`](../../Assets/_Project/Code/World/WorldStrings.cs); class `WorldStrings`; no asset currently owns these sentences. They should become editable opening-text data, retaining the existing accessors during a later migration. The stable text ids below are proposed, not existing lookups. `OnboardCrossBar` is reserved for after the weather turn; the other proposed lines describe island activities, subject to the route gaps below.
+Source: [`Assets/_Project/Code/World/WorldStrings.cs`](../../Assets/_Project/Code/World/WorldStrings.cs); class `WorldStrings`; no asset currently owns these sentences. They should become editable opening-text data, retaining the existing accessors during a later migration. The stable text ids below are proposed, not existing lookups. `OnboardCrossBar` is excluded from first-week selection. Any full-game crossing copy belongs to later content after passage opens; the proposed first-week lines below describe only island activities, subject to the route gaps below. The Today column records obsolete source text, not endorsed dialogue.
 
 | Key / field | Today | Proposed wording |
 | --- | --- | --- |
 | `OnboardTalkGinny` | Find Aunt Ginny on the island and press E — she'll set you straight. | Find Aunt Ginny on the island — she'll set you straight. |
 | `OnboardDigClams` | Tab shows the tide table. First buy the Shellfish Licence at LeBlanc's (Ginny fronted the fee), then dig clams on the bared flats at low water (E by a hole). | Tab shows the tide table. Sign for the Shellfish Licence at LeBlanc's — Ginny fronted the fee. Take the shovel and pail to the flats at low water; E by a clam hole digs. |
-| `OnboardCrossBar` | Walk the bared sandbar east to Nine Mile Creek before the tide floods it back. | The weather has turned. Wait for low water, then walk the bared bar to Nine Mile Creek. Be back before the flood. |
+| `OnboardCrossBar` | Walk the bared sandbar east to Nine Mile Creek before the tide floods it back. | No first-week line; leave this key unselected until separate full-game passage content. |
 | `OnboardBuyLicence` | At Nine Mile Creek: sell your clams, then buy a COD LICENCE to fish. | Sell your clams at LeBlanc's. Sign for a cod licence on the island to keep your cod. Without it, the catch goes back. |
 | `OnboardBuyRod` | Buy a fishing ROD from the shop — then you can hand-line cod. | Buy a rod and bait from the store's shelf. Try a cast from shore before you take to the dory. |
 | `OnboardBuyDory` | Save up, then BUY the damaged dory at the Nine Mile Creek shipwright. | Save for Basil's broken dory on the island slip. Buy her when you've earned the price. |
@@ -119,10 +119,10 @@ The week needs later notes for shore practice, selling clams, a kept fish from t
 | `tasks.st_peters.mend_dory` | Mend the dory at the slip |
 | `tasks.st_peters.cod_licence` | Get a cod licence on St Peters |
 | `tasks.st_peters.fish_from_dory` | Keep a fish from the dory |
-| `tasks.st_peters.sell_shellfish` | Sell shellfish at the store |
+| `tasks.st_peters.sell_shellfish` | Carry shellfish in to sell |
 | `tasks.st_peters.first_week` | Give it a few more tides |
 
-Do not show all five as an order to finish on day one. The last line gives no countdown and does not claim that time alone opens the bar. All five fit the existing 31-character note budget and use the recommended set in #1533. PR 1511 at `f6006e9fb9` supplies a reading of facts; it does not display these sentences or implement the conversation. Its fish fact requires a fresh licensed landing from the already-repaired dory; a stored shore fish, another hull or a pre-repair catch cannot supply it. Copy does not relax that rule.
+Do not show all five as an order to finish on day one. The last line gives no countdown and does not claim that time alone opens the bar. All five fit the existing 31-character note budget and transcribe the chosen set in the [single source for Ginny's word](https://github.com/apholmes7-bot/hiddenharbours/blob/4b2d7f62f5d05f4b523c9f333fc3d1928914f472/docs/design/first-week-gate-word.md). That page controls changes to these notes. PR 1511 at `f6006e9fb9` uses zero-based clock index 6 for the start of day seven, not seven completed days. It supplies a reading of facts; it does not display these sentences or implement the conversation. Its fish fact requires a fresh licensed landing from the already-repaired dory; a stored shore fish, another hull or a pre-repair catch cannot supply it. Copy does not relax that rule.
 
 ## LeBlanc's: buy at the shelf, sell at the counter
 
@@ -176,11 +176,11 @@ PR 1539 supplies the slip sale separately. Its draft asset `Assets/_Project/Data
 | `BoughtLine` | She's mine now. Broken, but mine. | She's mine now. Broken, but mine. |
 | `NeedsMendingLine` | She wants a plank, caulking and paint before she'll swim. | She wants mending before she'll swim. Best look her over, then put my hands to it. |
 
-Keep the specific plank/caulking/paint line only once those materials and jobs are agreed and obtainable on the island. The draft price is data and is not copied into the opening speech. Buying her is not repairing or launching her.
+The three-job hand-mending plan is accepted. Keep the specific plank/caulking/paint line only when its final material rows are obtainable on the island; the price remains unsettled. The draft price is data and is not copied into the opening speech. Buying her is not repairing or launching her.
 
 ## The licence and shelf replies already in data
 
-The unlicensed catch speaks in the player's own voice. Keep the existing sentence: it names the catch and leaves room for learning. The rule is never “you cannot dig/cast/haul.”
+The unlicensed-catch sentence is in the player's own voice and names the catch. Nobody speaks at the helm, including inner voice: while he controls it, release the catch without displaying or queuing speech. Ashore, the existing sentence can explain the release. Licence enforcement never waits for speech; it never prevents trying a dig, cast or haul. This is a required presentation condition, not a claim that every current cue already enforces it.
 
 Source: [`Assets/_Project/Data/NPCs/InnerVoice/UnlicensedCatch.asset`](../../Assets/_Project/Data/NPCs/InnerVoice/UnlicensedCatch.asset); asset `UnlicensedCatch`, id `innervoice.unlicensed_catch`, cue `cue.fishing.unlicensed_catch`. Editable data.
 
@@ -356,21 +356,21 @@ Fallback array: `LogbookAgain`.
 | --- | --- | --- |
 | `LogbookAgain[0]` | Ned's logbook. "Mind the tide, watch the sky, and go and meet the coast. — Ned" | Ned's logbook. "Mind the tide, watch the sky, and learn the water close to home. — Ned" |
 
-## The first mention of the way off the island
+## Ginny's word: one source, one endpoint
 
-Proposed after the gate conversation has been earned **and the weather has actually turned**:
+The [single source for Ginny's word](https://github.com/apholmes7-bot/hiddenharbours/blob/4b2d7f62f5d05f4b523c9f333fc3d1928914f472/docs/design/first-week-gate-word.md) owns the exact ending line, early replies, daytime invitation and full-game sleep reminder. Use `dialogue.st_peters.ginny_gate.word` from that page; this proposal supplies no alternate ending, weather-watch speech or early crossing direction.
 
-> Hear that? The surf's eased off the bar. Nine Mile Creek's across there when the tide is low. Go on foot, and mind the flood coming home.
+All five facts from #1511 must hold for the addressed player, with day index 6 beginning day seven. Recheck them and the authored evening window at completion. A fresh licensed landing from the already-repaired dory counts; a stored shore fish carried aboard does not. Talking to Ginny early or finishing repairs cannot bank the later word.
 
-Before that turn, a gate conversation can say:
+The demo ends at that completed evening word. It supplies no next-morning note, crossing task or further playable time for the completed player. The full-game sleep and passage contract belongs to #1533; it is not another first-week instruction. No NPC or inner voice speaks at the helm. Talk to Ginny ashore, at her actual routine destination.
 
-> You've put in a week's work, and that little boat's earned her water. Listen to the wind tonight. We'll see what the morning brings.
+For two to four players, resolve dialogue conditions and completion against the addressed player's own facts. Do not choose speech through a singleton that means the only player, combine different players' facts, or complete another player's word. A participant's completion ends his own playable demo; shared closing presentation follows #1533. This page adds no multiplayer implementation.
 
-These are new proposed beats, with proposed text ids `opening.weather_turned` and `opening.weather_watch`; no asset on pinned main owns them. Neither line belongs on a dory-repair event. Do not name the crossing in the demo's closing words if the demo leaves the weather barriers up. Ginny is the settled speaker, and full-game passage follows actual sleep through the next qualifying morning after her word. #1533 separates `st_peters.ginny_word_completed` from `st_peters.weather_turned`; the latter is never written during the conversation. Staying awake, an early wake or a day event alone does not open passage. The demo uses separate closing copy, permits continued island fishing and keeps every outward route closed permanently. PR 1498's weather-reading conversation is separate from a passage-granting promise.
+The Notebook has one **CAUGHT** list and no **FREED** page. An unlicensed release earns no CAUGHT entry. Pinned main currently spells `NotebookContent.LabelCaught` as `CATCH`; the settled wording for a later text change is `CAUGHT`. Do not add a second list to keep both labels. Narration uses "the player" or "he".
 
-Main now contains four sea-edge weather barriers (#1494), dormant until `st_peters.first_week` is set and lifted immediately by `st_peters.weather_turned`. The evening line cannot write the latter. Walking-bar surf and a complete demo passage policy remain integration work. No dialogue proposal here activates those barriers or certifies the island is closed.
+Main's four sea-edge barriers remain dormant until `st_peters.first_week` is set, and `st_peters.weather_turned` lifts them immediately. Evening dialogue cannot write the latter. Walking-bar surf and demo termination still need integration; this wording does not certify a closed, playable island.
 
-Main also saves shelf purchases and paper-bag contents on the existing version-26 rows (#1543). Those rows do not prove a rod shelf slot, carried-pail selection, completed repair jobs or the word's pending-morning timing. #1552–#1556 contain separate counter, pail, rod-stock, fee and eating work; this page changes none of their files or behavior. New word/pending state stays a plain session snapshot until its authoritative persistence representation and reload tests are accepted; this copy adds no saved field or writer.
+Main saves shelf purchases and paper-bag contents in version 26. Those rows do not prove a rod purchase point, carried-pail selection, repair jobs or word completion. The demo uses its own save file. This page changes no saved field or writer; proposed word/pending state stays in per-player session snapshots. A future save step needs player attribution, durable demo completion, authoritative full-game morning timing, atomic writes and exact reload behavior. No cross-edition transfer is promised.
 
 ## What can be edited as words, and what needs more work
 
@@ -381,15 +381,17 @@ Main also saves shelf purchases and paper-bag contents on the existing version-2
 | Licence, rod and shelf outcome descriptions | Catalogue `DisplayName`/`Flavor`; `InnerVoiceLineDef.Line` | Island cod-licence sale, universal species coverage and the missing rod purchase slot must be supplied. Price and stock stay data. |
 | Pinned opening hints and old conversation arrays | Constants and arrays in code | Move authored sentences to a small opening-text asset or the established dialogue data, with stable text ids and validation. No runtime text catalogue for these ids exists today. |
 | Shelf labels and notebook/shared interface labels | Constants in code | Shared text data should retain format tokens; no layout or appearance work is proposed. |
-| Basil's sale messages | Editable data in PR 1539, not pinned main | Owning work supplies the slip sale. Store-sourced repair materials must be carried to the slip; exact jobs, material rows, quantities and prices remain separate content work. |
-| Weather-watch and crossing words | Only proposed here | Ginny's settled role, the five facts, morning-after-sleep transition and permanent demo closure must be wired before any direction to cross. |
+| Basil's sale messages | Editable data in PR 1539, not pinned main | Owning work supplies the slip sale. Store-sourced repair materials must be carried to the slip; the three hand jobs are accepted, while final material rows, quantities and prices remain separate content work. |
+| Ginny's word | Exact copy owned by #1533 | Per-player five-fact eligibility, ashore evening talk and demo termination must be wired. Full-game crossing content is outside this first-week page. |
 
-The existing sources above were searched before proposing any new text home. A later implementation should extend them, preserve stable identities and the existing flag store, and prove its words are selected at the right time. This document creates no class, validator, asset, saved field or game-line change. No Unity, compiler, tests, playthrough or layout check ran for this document; the verification is source-to-table transcription and repository links.
+The existing sources above were searched before proposing any new text home. A later implementation should extend them, preserve stable identities and the existing flag store, and prove its words are selected at the right time. This document creates no class, validator, asset, saved field or game-line change. No local compilation, game tests, playthrough or layout check ran for this document; the verification is source-to-table transcription and repository links.
 
-## Decisions only the owner can make
+## Remaining content dependencies
 
-1. **Who signs the first cod licence on St Peters?** Lean: Rose at the post office, giving him a reason to meet another islander. Keep the shellfish signing at LeBlanc's unless its story is also moved. Until decided and placed, the cod hint says only “on the island.”
-2. **Which basic repair materials, jobs, quantities and prices should the island store supply?** Lean: a few ordinary consumable materials for short hand jobs, bought at the store and carried to the slip. The store source and mainland-only boat hardware are settled. Basil guides the work; he does not replace the store as supplier. Choose the actual content before promising a plank, caulking or paint.
-3. **Which evening encounter and line should stage Ginny's word?** Lean: the first eligible ordinary evening talk, still available on later evenings if missed, with #1533's concise full-game line. Ginny is the settled speaker; Basil remains the dory seller, practical guide and separate weather reader. A guaranteed day-seven meeting needs its own encounter data.
-4. **Which separate demo closing words should ship?** Lean: #1533's invitation to keep fishing and come home for supper. Full-game passage after the following qualifying sleep and permanently closed demo routes are settled requirements. The full game uses the crossing line only after weather passage actually opens; neither edition opens it during her word.
-5. **Is Ginny's fronted fee a debt he will actually repay, or family kindness she calls a debt?** Lean: a small, repayable obligation once the flats pay; keep the existing reminder as flavour until a real repayment interaction exists. Do not add a new charge or saved debt merely by changing her words.
+- The first cod licence must be obtainable on St Peters. Its exact counter remains separate content work; the opening names only the island.
+- Three hand jobs are accepted. Ordinary repair materials come from the island store and are carried to the slip; final rows, quantities and prices must make the words true.
+- Four rods on the island shelf at 60 are accepted in #1554. Counted stock and the purchase point remain separate implementation; no fixed price is repeated in speech.
+- The one-time shellfish-licence shortfall support in #1555 must not charge twice. The existing conditional reminder is flavour, not a new saved debt or repayment interaction.
+- Ginny's first eligible ordinary evening talk and exact ending follow #1533. A missed evening remains available later; a guaranteed day-seven appointment is not supplied by current routines.
+
+The speaker, evening endpoint, separate demo save, male player, single CAUGHT list, silence at the helm, island-only week and hand work are settled. This proposal changes only this document; it leaves all runtime and content sources for their own implementation.

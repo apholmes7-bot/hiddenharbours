@@ -305,7 +305,11 @@ namespace HiddenHarbours.Tests.PlayMode
                                     _presenter.AshoreFigure.Visible = false;
                                     byte[] absent = _stage.Capture();
                                     _presenter.AshoreFigure.Visible = true;
-                                    Assert.Greater(WharfNightStage.Footprint(image, absent), 5,
+                                    // Both signs. Footprint(image, absent) counts only the pixels the
+                                    // climber makes DARKER; on the low-tide ladder he is lit against the
+                                    // dark wet wall, so all 419 of his pixels are brighter and it read 0
+                                    // with him plainly on the rungs (422 changed, 0 between two shots).
+                                    Assert.Greater(ChangedPixels(image, absent), 5,
                                         "the plate must contain visible pixels from the actual mesh climber");
                                     visibleClimberProved = true;
                                 }
