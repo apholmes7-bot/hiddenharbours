@@ -165,7 +165,9 @@ namespace HiddenHarbours.Tests.PlayMode
             WharfNightStage.RequireAGraphicsDevice(); yield return Load("StPeters");
             Target(new Vector2(203, 2.649f), 796, 448);
             _system.HeldFrame = new CloudShadowFrame(123, 1000, new SteadyWind { Wind = Vector2.right }, .5f, 1);
-            _system.SetCasting(false); byte[] off = Capture(); Assert.That(_system.ShadowRenderer, Is.Null);
+            // The first render after re-targeting the camera settles per-render state elsewhere in the scene
+            // (it differs from every later render with or without this system), so it is thrown away.
+            _system.SetCasting(false); Capture(); byte[] off = Capture(); Assert.That(_system.ShadowRenderer, Is.Null);
             Object.DestroyImmediate(_system.gameObject); _system = null;
             byte[] absent = Capture(); Assert.That(Changed(off, absent), Is.Zero, "OFF equals no system in the same frozen frame");
         }
