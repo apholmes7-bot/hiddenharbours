@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Reflection;
 using HiddenHarbours.Core;
 using HiddenHarbours.Player;
 using NUnit.Framework;
@@ -18,6 +19,7 @@ namespace HiddenHarbours.Tests.EditMode
         private const double Hour = 100d;
 
         private readonly List<Object> _made = new List<Object>();
+        private readonly List<MonoBehaviour> _enabled = new List<MonoBehaviour>();
         private readonly List<AteFood> _ate = new List<AteFood>();
         private readonly List<EatRefused> _refused = new List<EatRefused>();
         private TraitFixtures.MemorySave _save;
@@ -71,6 +73,9 @@ namespace HiddenHarbours.Tests.EditMode
             EventBus.Clear<AteFood>();
             EventBus.Clear<EatRefused>();
             InteractChooser.Reset();
+            for (int i = _enabled.Count - 1; i >= 0; i--)
+                if (_enabled[i] != null) Callback(_enabled[i], "OnDisable");
+            _enabled.Clear();
             foreach (Object o in _made) if (o != null) Object.DestroyImmediate(o);
             _made.Clear();
             Interactables.Clear();
@@ -402,6 +407,21 @@ namespace HiddenHarbours.Tests.EditMode
 
         private static InteractActor Actor => InteractActor.For(Vector2.zero, Vector2.right, ControlMode.OnFoot);
 
+        // Plain MonoBehaviours do not receive these callbacks in EditMode. Drive the registration
+        // contract explicitly, as the existing carry fixtures do; engine dispatch needs PlayMode.
+        private static void Callback(MonoBehaviour component, string name)
+        {
+            MethodInfo method = component.GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.IsNotNull(method, name);
+            method.Invoke(component, null);
+        }
+
+        private void EnableBehaviour(MonoBehaviour component)
+        {
+            Callback(component, "OnEnable");
+            _enabled.Add(component);
+        }
+
         private InteractChoiceList Choices()
         {
             var rows = new InteractChoiceList();
@@ -478,6 +498,9 @@ namespace HiddenHarbours.Tests.EditMode
             var player = new GameObject("food test carrier");
             _made.Add(player);
             var hands = player.AddComponent<CarryHands>();
+            EnableBehaviour(hands);
+            Assert.AreSame(hands, GameServices.BagHands, "the bag check must reach these physical hands");
+            Assert.AreSame(hands, GameServices.CatchHands);
             SupplyLocker.Add(_save.Current, "supply.test_bread", bread);
             for (int i = 0; i < bread; i++)
                 Assert.AreEqual(ShoppingBagRefusal.None, hands.TryBag(_paper, "supply.test_bread"));
@@ -486,7 +509,15 @@ namespace HiddenHarbours.Tests.EditMode
                 SupplyLocker.Add(_save.Current, "supply.test_oatcakes", 1);
                 Assert.AreEqual(ShoppingBagRefusal.None, hands.TryBag(_paper, "supply.test_oatcakes"));
             }
-            return hands.HeldBag;
+            CarriableShoppingBag bag = hands.HeldBag;
+            Assert.IsNotNull(bag);
+            EnableBehaviour(bag);
+            Assert.IsTrue(bag.IsCarried);
+            Assert.IsTrue(bag.IsAvailable);
+            Assert.AreEqual(1, Interactables.Count, "the carried bag must be registered before querying choices");
+            Assert.AreSame(bag, Interactables.Active[0]);
+            Assert.AreEqual(EatRefusal.None, GameServices.Food.CheckBag("supply.test_bread", out _));
+            return bag;
         }
 
         [Test]
@@ -523,12 +554,18 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void BagChooser_AChangedBagCannotRetargetAFrozenFoodRow()
         {
-            CarriedBag(1, secondFood: true);
+            CarriableShoppingBag bag = CarriedBag(1, secondFood: true);
             Assert.IsTrue(InteractVerb.TryPress(Actor, InteractResolver.DefaultFacingArcDegrees));
             Assert.AreEqual(3, InteractChooser.Rows.Count);
             Assert.AreEqual(_book.FindByItem("supply.test_bread").BagEatLabel, InteractChooser.Rows[1].Label);
+            int breadAction = InteractChooser.Rows[1].Action;
             Assert.AreEqual(EatRefusal.None, GameServices.Food.TryEatFromBag("supply.test_bread"));
+            Assert.IsFalse(bag.ActionAvailable(breadAction), "the frozen action is unavailable, not retargeted");
+            Assert.AreEqual(breadAction, InteractChooser.Rows[1].Action);
+            string afterBread = SaveSerialization.ToJson(_save.Current);
             Assert.IsTrue(InteractChooser.Pick(1));
+            Assert.IsFalse(InteractChooser.IsOpen);
+            Assert.AreEqual(afterBread, SaveSerialization.ToJson(_save.Current), "the stale choice changes no saved value");
             Assert.AreEqual(1, _ate.Count, "the vanished bread row must not become the oatcakes row");
             Assert.AreEqual(1, ShoppingBagContents.InBag(_save.Current, "supply.test_oatcakes"));
         }
@@ -609,7 +646,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void RealHands_RegisterAndRemoveTheHeldFoodChoiceAcrossTheirLifetime()
+        public void RealHands_RegistrationCallbacksRemoveAndRestoreTheHeldFoodChoice()
         {
             SetHunger(0.8f);
             GameServices.Save = _save;
@@ -617,12 +654,16 @@ namespace HiddenHarbours.Tests.EditMode
             var player = new GameObject("food test carrier");
             _made.Add(player);
             CarryHands hands = player.AddComponent<CarryHands>();
+            EnableBehaviour(hands);
+            Assert.AreSame(hands, GameServices.CatchHands);
             Assert.AreEqual(0, Interactables.Count);
             Assert.IsTrue(hands.TryPutInHand(Catch("fish.test_clam")));
             Assert.AreEqual(1, Interactables.Count);
             player.SetActive(false);
+            Callback(hands, "OnDisable");
             Assert.AreEqual(0, Interactables.Count);
             player.SetActive(true);
+            Callback(hands, "OnEnable");
             Assert.AreEqual(1, Interactables.Count);
             Assert.AreEqual("Eat", Choices()[0].Label);
             Assert.IsTrue(InteractVerb.TryPress(Actor, InteractResolver.DefaultFacingArcDegrees));
