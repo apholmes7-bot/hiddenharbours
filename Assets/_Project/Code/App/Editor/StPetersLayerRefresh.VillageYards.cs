@@ -47,11 +47,38 @@ namespace HiddenHarbours.App.Editor
                 .Select(y => new VillageYard { Yard = y, Plan = YardDressing.PlanOne(y, kit) }).ToArray();
         }
 
+        /// <summary>The two homesteads east of the green whose yards the table builds in code rather than
+        /// from a YardDef: the red saltbox and the white farmhouse.</summary>
+        public static readonly string[] HomesteadYardNames = { StPetersYards.RedSaltboxYard, StPetersYards.WhiteFarmhouseYard };
+
+        public static VillageYard[] ReadHomesteadYards()
+        {
+            var kit = YardKit.Load();
+            if (!YardCatalog.HasMeasuredBearings(kit)) throw new Refusal("Yard boundary bearings are not baked.");
+            return StPetersYards.Yards.Where(y => HomesteadYardNames.Contains(y.Name))
+                .Select(y => new VillageYard { Yard = y, Plan = YardDressing.PlanOne(y, kit) }).ToArray();
+        }
+
+        /// <summary>The homestead yards' boundaries, re-placed in the scene the same way the five active
+        /// yards are, so their fences follow the table instead of the old full build.</summary>
+        public static LayerPatch HomesteadYardBoundaries(SceneYaml scene, IReadOnlyList<VillageYard> rows, IVillageBoundaryAssets assets)
+        {
+            if (!rows.Select(r => r.Yard.Name).OrderBy(s => s, StringComparer.Ordinal).SequenceEqual(
+                HomesteadYardNames.OrderBy(s => s, StringComparer.Ordinal)))
+                throw new Refusal("Homestead boundary refresh needs exactly the two homestead yards.");
+            return YardBoundaries(scene, rows, assets, "HomesteadYards");
+        }
+
         public static LayerPatch VillageYardBoundaries(SceneYaml scene, IReadOnlyList<VillageYard> rows, IVillageBoundaryAssets assets)
         {
             if (!rows.Select(r => r.Yard.Name).OrderBy(s => s, StringComparer.Ordinal).SequenceEqual(
                 new[] { "GeneralStore", "HarbourGable", "SageCottage", "School", "WhiteGable" }))
                 throw new Refusal("Boundary refresh needs exactly the five active yards.");
+            return YardBoundaries(scene, rows, assets, "VillageYards");
+        }
+
+        static LayerPatch YardBoundaries(SceneYaml scene, IReadOnlyList<VillageYard> rows, IVillageBoundaryAssets assets, string step)
+        {
             var root = scene.RootNamed(YardDressing.RootName);
             var rootTr = scene.TransformOf(root);
             RequireIdentity(rootTr, YardDressing.RootName);
@@ -138,7 +165,7 @@ namespace HiddenHarbours.App.Editor
                 wanted.Add(Want(TransformYaml(tr, go, Vector2.zero, children, rootTr.FileId), name, "Transform"));
                 keep.Add(tr);
             }
-            var patch = new LayerPatch("VillageYards", YardDressing.RootName, root.FileId);
+            var patch = new LayerPatch(step, YardDressing.RootName, root.FileId);
             patch.Edit(rootTr, SetRefList(rootTr.Text, "m_Children", keep), "Yards active boundaries");
             var wantedIds = new HashSet<long>(wanted.Select(w => w.FileId));
             foreach (var doc in scene.Docs.Where(d => owned.Contains(d.FileId) && !wantedIds.Contains(d.FileId)))

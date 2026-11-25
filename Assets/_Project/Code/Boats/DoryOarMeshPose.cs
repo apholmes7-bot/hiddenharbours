@@ -133,6 +133,69 @@ namespace HiddenHarbours.Boats
             return RigRotationMath.FromMatrix(m);
         }
 
+        /// <summary>
+        /// <summary>
+        /// <b>The pose that holds a drawn blade over the water</b> (the sunset rowing clip of 11-22:
+        /// the far oar read as a dark pole with no blade).
+        ///
+        /// <para>Two things put the blade under the drawn sea. The stroke's dip is measured in the
+        /// HULL's frame and the oar is a fitting on her posed mesh, so it takes her whole rock: the
+        /// dory's canned rock rolls her a few degrees, and the low side's blade drops by its lateral
+        /// reach times the roll, about 15 cm at 4.7 degrees. And the rig buries the blade to its
+        /// throat through the drive (28.5 degrees of dip at the bottom) and skims it only 6 cm over
+        /// still water on the recovery, while the drawn sea a blade's length out from the hull (the
+        /// swell, her own waves, the oar's own rings) stands well over the design waterline. Either
+        /// way the blade was drawn under the sea and only the loom showed, cut off square at the
+        /// water.</para>
+        ///
+        /// <para>This turns the oar about its own oarlock until the point
+        /// <paramref name="bladeReachMeters"/> out along it sits as high above
+        /// <paramref name="waterlineZ"/> (the rig's design waterline) as it would with the hull level,
+        /// and no lower than <paramref name="floorMeters"/> over it (<see cref="DrawnBladeZ"/>),
+        /// keeping its bearing on the horizontal. Roll only, about the rig's own fore-and-aft axis
+        /// through its origin, the same rotation <c>IsoFacetMath.RigToWorld</c> applies
+        /// (<c>z1 = −x·sin r + z·cos r</c>, so a positive roll lowers starboard); pitch moves both
+        /// blades alike and is left alone. <paramref name="weight"/> 0, a zero reach, or a zero roll
+        /// with no floor returns <paramref name="pose"/> itself.</para>
+        /// </summary>
+        public static Pose Levelled(int side, in Pose pose, Vector3 oarlock, float rollDegrees,
+                                    float bladeReachMeters, float weight, float waterlineZ = 0f,
+                                    float floorMeters = float.NegativeInfinity)
+        {
+            float w = Mathf.Clamp01(weight);
+            bool floored = !float.IsNegativeInfinity(floorMeters);
+            if (w <= 0f || (rollDegrees == 0f && !floored) || !(bladeReachMeters > 0f)) return pose;
+            float r = rollDegrees * Mathf.Deg2Rad, cr = Mathf.Cos(r), sr = Mathf.Sin(r);
+            Vector3 d0 = Direction(side, pose.SweepDegrees, pose.DipDegrees);
+
+            // Where the blade point would stand with her level (held off the floor), and where the
+            // lock stands rolled.
+            float wantZ = DrawnBladeZ(oarlock.z + bladeReachMeters * d0.z, waterlineZ, floorMeters);
+            float lockZ = -oarlock.x * sr + oarlock.z * cr;
+            float dz = Mathf.Clamp((wantZ - lockZ) / bladeReachMeters, -1f, 1f);
+
+            // The level-frame direction with that height and the stroke's own horizontal bearing.
+            float flat = Mathf.Sqrt(d0.x * d0.x + d0.y * d0.y);
+            if (flat < 1e-6f) return pose;
+            float k = Mathf.Sqrt(Mathf.Max(0f, 1f - dz * dz)) / flat;
+            Vector3 dw = new Vector3(d0.x * k, d0.y * k, dz);
+
+            // Back into the rolled hull's frame: the inverse of the roll above.
+            Vector3 dr = new Vector3(dw.x * cr - dw.z * sr, dw.y, dw.x * sr + dw.z * cr);
+            float dip = -Mathf.Asin(Mathf.Clamp(dr.z, -1f, 1f)) * Mathf.Rad2Deg;
+            float sweep = Mathf.Atan2(-dr.y, Mathf.Sign(side) * dr.x) * Mathf.Rad2Deg;
+            return new Pose(Mathf.Lerp(pose.SweepDegrees, sweep, w), Mathf.Lerp(pose.DipDegrees, dip, w));
+        }
+
+        /// <summary>
+        /// <b>The height a blade point is drawn at</b> for the height the stroke puts it at: never lower
+        /// than <paramref name="floorMeters"/> over <paramref name="waterlineZ"/> (negative = under it;
+        /// negative infinity = no floor), its own height when that is higher. Never falls as the
+        /// stroke's height rises, so the stroke keeps its shape over the floor.
+        /// </summary>
+        public static float DrawnBladeZ(float bladeZ, float waterlineZ, float floorMeters)
+            => Mathf.Max(bladeZ, waterlineZ + floorMeters);
+
         /// <summary>The rig's frame construction, verbatim. See the class note on its handedness.</summary>
         public static void Frame(Vector3 ax, out Vector3 axis, out Vector3 right, out Vector3 up)
         {

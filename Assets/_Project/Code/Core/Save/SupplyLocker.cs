@@ -23,8 +23,18 @@ namespace HiddenHarbours.Core
     /// </summary>
     public static class SupplyLocker
     {
-        /// <summary>How much of this supply the player has. 0 for an unknown id, a null save, or a null id.</summary>
+        /// <summary>How much of this supply the player has to use: what he owns, less what is still in the
+        /// shopping bag in his hand (<see cref="ShoppingBagContents"/>, not put away yet). 0 for an unknown
+        /// id, a null save, or a null id.</summary>
         public static int Count(SaveData save, string supplyId)
+        {
+            int n = Owned(save, supplyId) - ShoppingBagContents.InBag(save, supplyId);
+            return n > 0 ? n : 0;
+        }
+
+        /// <summary>How much of this supply the player owns, put away or still in his shopping bag (what the
+        /// save holds).</summary>
+        public static int Owned(SaveData save, string supplyId)
         {
             if (save?.SupplyStock == null || string.IsNullOrEmpty(supplyId)) return 0;
             for (int i = 0; i < save.SupplyStock.Count; i++)
@@ -42,6 +52,7 @@ namespace HiddenHarbours.Core
         public static bool TrySpend(SaveData save, string supplyId)
         {
             if (save?.SupplyStock == null || string.IsNullOrEmpty(supplyId)) return false;
+            if (Count(save, supplyId) <= 0) return false;   // what is left is still in his shopping bag
             for (int i = 0; i < save.SupplyStock.Count; i++)
             {
                 if (save.SupplyStock[i].SupplyId != supplyId || save.SupplyStock[i].Count <= 0) continue;
@@ -57,7 +68,7 @@ namespace HiddenHarbours.Core
         /// Non-positive counts are ignored rather than silently subtracting.</summary>
         public static int Add(SaveData save, string supplyId, int count)
         {
-            if (save == null || string.IsNullOrEmpty(supplyId) || count <= 0) return Count(save, supplyId);
+            if (save == null || string.IsNullOrEmpty(supplyId) || count <= 0) return Owned(save, supplyId);
             save.SupplyStock ??= new List<SupplyStock>();
             for (int i = 0; i < save.SupplyStock.Count; i++)
                 if (save.SupplyStock[i].SupplyId == supplyId)

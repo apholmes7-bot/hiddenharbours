@@ -18,7 +18,9 @@ namespace HiddenHarbours.Fishing
     ///
     /// <para><b>It stamps the clock itself.</b> <see cref="EventBus"/> publishes synchronously, so the
     /// moment of delivery IS the moment of the splash; taking <see cref="GameServices.Clock"/> here puts
-    /// the splash and the fish on one clock — the same <c>TotalSeconds</c> the presenter draws on —
+    /// the splash and the fish on one clock — the same flow reading the presenter poses the fish on
+    /// (<see cref="FishSchoolPresenter.PoseSeconds"/>, which is <c>TotalSeconds</c> except while the
+    /// hour is held) —
     /// rather than trusting a publisher's stamp to agree with a consumer's read. The clock may be absent
     /// (a fixture, a boot frame); zero is then the honest reading, and every splash in that world shares
     /// it.</para>
@@ -106,7 +108,7 @@ namespace HiddenHarbours.Fishing
         }
 
         private void Record(GullSplashed splash)
-            => RecordAt(splash, GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0);
+            => RecordAt(splash, FishSchoolPresenter.PoseSeconds(GameServices.Clock));
 
         /// <summary>
         /// Is this school bolting, and from what? The strongest splash still inside its <c>dart</c>
@@ -114,7 +116,7 @@ namespace HiddenHarbours.Fishing
         /// not from the average of them.
         /// </summary>
         /// <param name="school">The school being drawn.</param>
-        /// <param name="nowSeconds">The presenter's <c>GameServices.Clock.TotalSeconds</c>.</param>
+        /// <param name="nowSeconds">The presenter's pose time, <see cref="FishSchoolPresenter.PoseSeconds"/>.</param>
         /// <param name="reachMetres">
         /// <c>GameConfig.FishSchools.GullSplashScatterRadiusMetres</c>.</param>
         /// <param name="maxStrength01">

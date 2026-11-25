@@ -57,6 +57,7 @@ Shader "HiddenHarbours/LampShadow"
         // MULTIPLY: dst *= src.rgb. The fragment outputs lerp(1, tint, alpha), so an alpha of 0 is
         // the identity and full alpha pulls the pixel to the tint.
         Blend Zero SrcColor
+        ColorMask RGB   // The calm mirror: ground cover leaves the alpha class under it alone
         Cull Off
         ZWrite Off
         ZTest Always   // a compositing element above the world, like the light quads it darkens

@@ -189,6 +189,8 @@ namespace HiddenHarbours.Core
             {
                 IInteractable c = _scratch[i];
                 if (c.Priority > maxChoicePriority) continue;
+                // A last-resort thing acts only alone: beside anything better it is not a row.
+                if (i > 0 && c.Priority <= InteractPriority.LastResort) continue;
                 string group = GroupOf(c);
                 if (group != null)
                 {

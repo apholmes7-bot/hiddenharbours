@@ -1,8 +1,15 @@
 # Remaining legacy fish art audit
 
-Audited main: `1abca5974ce3d16a3257777797bb2547c9ad8d53` (2026-11-22).
-All line numbers below refer to that commit. This is a source and committed-reference audit,
-not a report of a new play session.
+Source inventory rechecked against main `d46bde303e6aa256d23d47a05ede5d7d6f38e51e`
+(2026-11-25): 7,979 tracked text files, zero references to the 27 retired GUIDs,
+and 19 exact species Def/icon-registry pairs. The fish definitions, icon registry,
+fishing-art inventory, retirement guard and catch-library implementation have not
+changed since the original audit. The stale clam exception remains outstanding.
+
+All line numbers and picture observations below retain their original reference,
+`1abca5974ce3d16a3257777797bb2547c9ad8d53` (2026-11-22); callers may have moved.
+This is a source and committed-reference audit, not a new play session or picture
+acceptance. No new picture was produced or judged during the source recheck.
 
 **No remaining player-facing reference to the retired sprite set was found.** There are
 zero class **(a)** reference swaps and zero class **(b)** missing-species replacements in this
@@ -136,7 +143,7 @@ species' sprite. It creates no class (b) row for this retirement task.
 about absent held meshes and old icons must not be used as current reference evidence.
 The committed assets and current guards take precedence for this audit.
 
-## Picture evidence and remaining weakness
+## Historical picture evidence and remaining weakness (2026-11-22)
 
 `11-old-fish-contact-sheet.png` is retained in local evidence, not committed. It shows cod,
 mackerel, soft-shell clam and lobster: the unreferenced retired file, pinned main before,

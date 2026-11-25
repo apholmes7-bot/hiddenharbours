@@ -198,7 +198,6 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(id, Does.Match(@"^fixture\.nmc\.[a-z]+(_[a-z]+)*\.(toilet|bathroom_sink|microwave)$"), id);
             Assert.That(ids, Does.Contain("fixture.nmc.boat_gear_wholesaler.toilet"));
             Assert.That(ids, Does.Contain("fixture.nmc.fishing_gear_wholesaler.bathroom_sink"));
-            Assert.That(NmcBuildingShells.FishPlant.Fixtures, Is.Empty, "the fish plant stands no fixtures in this slice");
         }
 
         [Test]
@@ -341,7 +340,7 @@ namespace HiddenHarbours.Tests.EditMode
                 else Assert.Fail($"{name}: an unexpected {c.GetType().Name} on {c.name}");
             }
             Assert.That(circles.Count, Is.GreaterThanOrEqualTo(2), $"{name}: the toilet and the basin each carry a collider");
-            if (s == NmcBuildingShells.CommunityHall)
+            if (s == NmcBuildingShells.CommunityHall || s == NmcBuildingShells.FishPlant)
                 Assert.That(boxes, Is.EqualTo(2), $"{name}: the fridge and the kitchen sink each carry a cabinet collider");
 
             Rect floor = Rect.MinMaxRect(fp.Corners().Min(v => v.x), fp.Corners().Min(v => v.y), fp.Corners().Max(v => v.x), fp.Corners().Max(v => v.y));
@@ -366,6 +365,15 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 Assert.That(Free(from), Is.True, $"{name}: {who} starts inside a collider at {from}");
                 List<Vector2> reached = Flood(area, from, Free);
+                // the plant's working floor stays behind its rails and the staff rooms' wall (the brief: no walk
+                // through running equipment); the way to the staff rooms must not open a way onto it
+                if (s == NmcBuildingShells.FishPlant)
+                {
+                    Rect working = PlantWorkingFloorModel;
+                    Vector2 a = fp.ModelToWorld(working.min), b = fp.ModelToWorld(working.max);
+                    Rect onGround = Rect.MinMaxRect(Mathf.Min(a.x, b.x), Mathf.Min(a.y, b.y), Mathf.Max(a.x, b.x), Mathf.Max(a.y, b.y));
+                    Assert.That(reached.Any(q => onGround.Contains(q)), Is.False, $"{name}: {who} walks onto the working floor");
+                }
                 foreach (var (f, reach) in interactables)
                 {
                     Assert.That(reach, Is.GreaterThan(0f), $"{name}/{f.Name} has no reach");
@@ -383,7 +391,8 @@ namespace HiddenHarbours.Tests.EditMode
         // ---- the community hall's kitchen and washroom (kitchens and bathrooms plan, N1b) -------------------
 
         static readonly NmcBuildingShells.Shell[] Fitted =
-            { NmcBuildingShells.BoatGearWholesaler, NmcBuildingShells.FishingGearWholesaler, NmcBuildingShells.CommunityHall };
+            { NmcBuildingShells.BoatGearWholesaler, NmcBuildingShells.FishingGearWholesaler, NmcBuildingShells.CommunityHall,
+              NmcBuildingShells.FishPlant };
 
         static IEnumerable<string> FittedNames() => Fitted.Select(s => s.Name);
 
@@ -522,6 +531,164 @@ namespace HiddenHarbours.Tests.EditMode
             // a point in each doorway of the back-room wall is open, as is the gym's
             foreach (float x in new[] { -5f, 2.6f, 6f })
                 Assert.That(inner.Any(c => Inside(c, fp.ModelToWorld(new Vector2(x, 0f)))), Is.False, $"the back-room doorway at model x {x} is walled");
+        }
+
+        // ---- the fish plant's staff room and staff wash (kitchens and bathrooms plan, N1c) ------------------
+
+        static NmcBuildingShells.Shell Plant => NmcBuildingShells.FishPlant;
+
+        /// <summary>The plant's working floor in the model frame: everything north of the staff rooms' wall and
+        /// west of the delivery-edge rail, inside the outer walls.</summary>
+        static Rect PlantWorkingFloorModel => Rect.MinMaxRect(
+            -Plant.WidthMetres * 0.5f + BuildingInteriorStander.WallThicknessMetres, -7.85f,
+            15.85f, Plant.LengthMetres * 0.5f - BuildingInteriorStander.WallThicknessMetres);
+
+        /// <summary>The plant's south-row rooms, model frame: the staff wash and the staff room (the brief's
+        /// zones, inside their partitions).</summary>
+        static readonly Rect PlantStaffWash = Rect.MinMaxRect(-13.85f, -14f, -4.15f, -8.15f);
+        static readonly Rect PlantStaffRoom = Rect.MinMaxRect(-3.85f, -14f, 5.85f, -8.15f);
+
+        [Test]
+        public void ThePlantStandsALunchRoomAndAStaffWash_WithIdsOfItsOwn()
+        {
+            Assert.That(Plant.BuildingKey, Is.EqualTo("fish_plant"));
+            Assert.That(Plant.Fixtures.Select(f => f.Slot), Is.EquivalentTo(new[]
+                { NmcBuildingShells.FridgeSlot, NmcBuildingShells.KitchenSinkSlot, "stove", "microwave", "bathroom_sink", "toilet" }));
+            Assert.That(Plant.Fixtures.Select(f => f.Name).Distinct().Count(), Is.EqualTo(Plant.Fixtures.Length), "one name per slot");
+            var ids = Plant.Fixtures.Where(f => f.HasId).Select(f => NmcBuildingShells.FixtureId(Plant, f)).ToList();
+            Assert.That(ids, Is.EquivalentTo(new[]
+            {
+                "fixture.nmc.fish_plant.kitchen_sink", "fixture.nmc.fish_plant.stove", "fixture.nmc.fish_plant.microwave",
+                "fixture.nmc.fish_plant.bathroom_sink", "fixture.nmc.fish_plant.toilet",
+            }));
+            Assert.That(Plant.Fixtures.Single(f => !f.HasId).Slot, Is.EqualTo(NmcBuildingShells.FridgeSlot));
+            // no id is another building's
+            var others = NmcBuildingShells.All.Where(s => s != Plant)
+                .SelectMany(s => s.Fixtures.Where(f => f.HasId).Select(f => NmcBuildingShells.FixtureId(s, f)));
+            Assert.That(ids.Intersect(others), Is.Empty);
+            // the kitchen in the staff room, the washroom pieces in the staff wash
+            foreach (NmcBuildingShells.Fixture f in Plant.Fixtures)
+            {
+                bool wash = f.Slot == "bathroom_sink" || f.Slot == "toilet";
+                Assert.That((wash ? PlantStaffWash : PlantStaffRoom).Contains(f.At), Is.True,
+                            $"{f.Name} at {f.At} is not in the {(wash ? "staff wash" : "staff room")}");
+            }
+        }
+
+        [Test]
+        public void ThePlantsPrefabCarriesEachFixtureBound_FacingTheWayItsWallSays()
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(Plant.PrefabPath);
+            Transform props = prefab.transform.Find(BuildingInteriorStander.PropsChildName);
+            InteriorFootprint fp = NmcBuildingShells.FootprintAt(Plant, Vector2.zero);
+            foreach (NmcBuildingShells.Fixture f in Plant.Fixtures)
+            {
+                Transform t = props.Find(f.Name);
+                Assert.That(t, Is.Not.Null, $"the plant has no {f.Name}");
+                Assert.That(PrefabUtility.GetCorrespondingObjectFromSource(t.gameObject),
+                            Is.EqualTo(AssetDatabase.LoadAssetAtPath<GameObject>(f.Prefab)), $"{f.Name} is not {f.Prefab}");
+                Assert.That(Vector2.Distance((Vector2)t.position - (Vector2)prefab.transform.position, fp.ModelToWorld(f.At)), Is.LessThan(1e-3f),
+                            $"{f.Name} stands off its model point {f.At}");
+                var art = t.GetComponent<ApplianceArt>();
+                Assert.That(art, Is.Not.Null, $"{f.Name} has no art");
+                using (var so = new SerializedObject(art))
+                    Assert.That(so.FindProperty("_wallOffset").intValue, Is.EqualTo(f.Wall), $"{f.Name}'s art is not told its wall");
+                string id = NmcBuildingShells.FixtureId(Plant, f);
+                switch (f.Slot)
+                {
+                    case NmcBuildingShells.FridgeSlot:
+                        var store = t.GetComponent<KitchenStoreFixture>();
+                        Assert.That(store, Is.Not.Null, f.Name);
+                        Assert.That(store.Def, Is.Not.Null, "the fridge names no store Def");
+                        break;
+                    case NmcBuildingShells.KitchenSinkSlot:
+                    case "bathroom_sink":
+                        var wash = t.GetComponent<WashStationPoint>();
+                        Assert.That(wash, Is.Not.Null, f.Name);
+                        Assert.That(wash.Id, Is.EqualTo(id));
+                        Assert.That(wash.StationId, Is.EqualTo("washstation.sink"));
+                        break;
+                    case "toilet":
+                        var seat = t.GetComponent<SitPoint>();
+                        Assert.That(seat, Is.Not.Null, f.Name);
+                        Assert.That(seat.Id, Is.EqualTo(id));
+                        Assert.That(seat.StationId, Is.EqualTo(RoomFixturePlan.DefId(RoomFixturePlan.Kind.Toilet)));
+                        break;
+                    default:
+                        var cook = t.GetComponent<HiddenHarbours.Player.CookingStationFixture>();
+                        Assert.That(cook, Is.Not.Null, f.Name);
+                        Assert.That(cook.Id, Is.EqualTo(id));
+                        Assert.That(cook.Def, Is.Not.Null, $"{f.Name} has no station def");
+                        Assert.That(cook.Def.Id, Is.EqualTo(RoomFixturePlan.DefId(f.Kind)));
+                        break;
+                }
+            }
+        }
+
+        /// <summary>Every plant fixture backs onto its room's NORTH wall (owner 11-22): the staff rooms' row wall,
+        /// which at the plant's facing of 0 is model +y. Its sheet cell is the north-wall cell, its footprint
+        /// touches that wall's face, stands inside its room and clear of every solid block and every other fixture.</summary>
+        [Test]
+        public void EachPlantFixtureBacksOntoItsRoomsNorthWall_ClearOfEveryBlockAndEachOther()
+        {
+            Assert.That(Plant.Facing, Is.EqualTo(0), "the wall turns below assume model +y is north");
+            Assert.That(ApplianceFacing.CellFor(Plant.Facing, NmcBuildingShells.PlusYWall), Is.EqualTo(0), "+y is not the north cell");
+            var solids = NmcBuildingShells.Layout(Plant).Where(b => b.Solid).ToList();
+            var rects = Plant.Fixtures.Select(f => (f, r: NmcBuildingShells.FixtureFootprint(Plant, f))).ToList();
+            foreach (var (f, r) in rects)
+            {
+                Assert.That(f.Wall, Is.EqualTo(NmcBuildingShells.PlusYWall), $"{f.Name} does not back onto a north wall");
+                Assert.That(solids.Any(b => Mathf.Abs(b.Model.yMin - r.yMax) < 0.01f && b.Model.xMin <= r.xMin && b.Model.xMax >= r.xMax),
+                            Is.True, $"{f.Name}'s back {r} stands against no partition face");
+                Rect room = f.Slot == "bathroom_sink" || f.Slot == "toilet" ? PlantStaffWash : PlantStaffRoom;
+                Assert.That(r.xMin >= room.xMin - 1e-3f && r.xMax <= room.xMax + 1e-3f && r.yMin >= room.yMin - 1e-3f && r.yMax <= room.yMax + 1e-3f,
+                            Is.True, $"{f.Name}'s footprint {r} runs out of its room {room}");
+                foreach (var b in solids)
+                    Assert.That(b.Model.Overlaps(r), Is.False, $"{f.Name}'s footprint {r} runs into {b.Name}");
+                foreach (var (g, q) in rects.Where(x => !x.f.Equals(f)))
+                    Assert.That(q.Overlaps(r), Is.False, $"{f.Name} {r} overlaps {g.Name} {q}");
+            }
+        }
+
+        /// <summary>The plant fridge's door swing (ApplianceSheets.Fridge: 0.75 m clear in front, 0.2 m on the
+        /// hinge side) holds no fixture and no solid block, and stays clear of the staff room's doorway.</summary>
+        [Test]
+        public void ThePlantFridgesDoorSwingIsClear()
+        {
+            NmcBuildingShells.Fixture fridge = Plant.Fixtures.Single(f => f.Slot == NmcBuildingShells.FridgeSlot);
+            Rect r = NmcBuildingShells.FixtureFootprint(Plant, fridge);
+            // backed onto +y (north) and facing -y (south): its right, as you face it, is +x (east)
+            var front = Rect.MinMaxRect(r.xMin, r.yMin - FridgeFrontClearMetres, r.xMax, r.yMin);
+            var hinge = Rect.MinMaxRect(r.xMax, r.yMin, r.xMax + FridgeHingeClearMetres, r.yMax);
+            var doorway = Rect.MinMaxRect(-4.15f, -11.7f, -3.85f, -10.3f);
+            foreach (var (what, clear) in new[] { ("in front", front), ("on the hinge side", hinge) })
+            {
+                foreach (var b in NmcBuildingShells.Layout(Plant).Where(b => b.Solid))
+                    Assert.That(b.Model.Overlaps(clear), Is.False, $"the fridge's swing {what} {clear} runs into {b.Name}");
+                foreach (var f in Plant.Fixtures.Where(f => !f.Equals(fridge)))
+                    Assert.That(NmcBuildingShells.FixtureFootprint(Plant, f).Overlaps(clear), Is.False, $"the fridge's swing {what} hits {f.Name}");
+                Assert.That(clear.yMin, Is.GreaterThan(doorway.yMax), $"the swing {what} reaches the staff room's doorway");
+            }
+        }
+
+        [Test]
+        public void ThePlantsStoveAndMicrowaveAreSolidThroughTheInnerWalls_AndTheStaffDoorwaysAreOpen()
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(Plant.PrefabPath);
+            InteriorFootprint fp = NmcBuildingShells.FootprintAt(Plant, Vector2.zero);
+            var inner = prefab.transform.Find("InnerWalls").GetComponents<PolygonCollider2D>();
+            Assert.That(inner.Length, Is.EqualTo(NmcBuildingShells.InnerWallPaths(Plant, fp).Count), "the inner walls are not the layout's");
+            foreach (NmcBuildingShells.Fixture f in Plant.Fixtures.Where(f => f.Slot == "stove" || f.Slot == "microwave"))
+            {
+                Assert.That(f.SolidFootprint, Is.True, f.Name);
+                Assert.That(inner.Any(c => Inside(c, fp.ModelToWorld(f.At))), Is.True, $"nothing stops the player walking through the {f.Name}");
+            }
+            // the office wall's doorway north of the counter, and each staff room's doorway in its east wall
+            foreach (Vector2 m in new[] { new Vector2(16f, -8.9f), new Vector2(6f, -11f), new Vector2(-4f, -11f) })
+                Assert.That(inner.Any(c => Inside(c, fp.ModelToWorld(m))), Is.False, $"the doorway at model {m} is walled");
+            // and the row wall stands between the staff rooms and the working floor
+            foreach (float x in new[] { -13f, -4f, 0f, 6f, 15f })
+                Assert.That(inner.Any(c => Inside(c, fp.ModelToWorld(new Vector2(x, -8f)))), Is.True, $"the row wall is open at model x {x}");
         }
 
         /// <summary>Every free cell 4-connected to <paramref name="from"/> on a <see cref="CellMetres"/> grid.</summary>

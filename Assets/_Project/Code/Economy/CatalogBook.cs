@@ -13,6 +13,9 @@ namespace HiddenHarbours.Economy
         Owned = 1,
         /// <summary>Faint ink, and the SHORTFALL — a number to plan against, not a refusal.</summary>
         TooDear = 2,
+        /// <summary>The shelf is empty: faint ink, the name ruled through, "Sold out." — nothing to buy
+        /// whatever the purse (store sold-out slice). Appended; earlier values never shift.</summary>
+        SoldOut = 3,
     }
 
     /// <summary>
@@ -201,6 +204,7 @@ namespace HiddenHarbours.Economy
         public static CatalogRowState StateOf(in BuyRow row)
         {
             if (row.Quote.Owned) return CatalogRowState.Owned;
+            if (row.Quote.SoldOut) return CatalogRowState.SoldOut;
             return row.Quote.Affordable ? CatalogRowState.Affordable : CatalogRowState.TooDear;
         }
 
@@ -237,10 +241,15 @@ namespace HiddenHarbours.Economy
                     return "Already yours.";
                 case CatalogRowState.TooDear:
                     return "You're " + Price(row.Quote.Price - Purse) + " short.";
+                case CatalogRowState.SoldOut:
+                    return SoldOutStatus;
                 default:
                     return VerbFor(row);
             }
         }
+
+        /// <summary>The buy line of a row whose shelf is empty, the same words as the card on the shelf.</summary>
+        public const string SoldOutStatus = "Sold out.";
 
         /// <summary>A price as the book writes it — the mark, a thin space, and grouped digits.</summary>
         public static string Price(int amount)

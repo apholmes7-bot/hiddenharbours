@@ -328,12 +328,14 @@ namespace HiddenHarbours.Player
             NotDrawingReason = "presenter disabled";
             Release();
             ReleaseAshore();   // her body is hers again: nobody is left to give it back later
+            _castShape.Clear();
         }
 
         private void OnDestroy()
         {
             Release();
             ReleaseAshore();
+            _castShape.Dispose();
         }
 
         // ---------------------------------------------------------------- the one path
@@ -347,6 +349,20 @@ namespace HiddenHarbours.Player
         /// (<see cref="ICharacterFigureStand"/>, moved into Core by ADR 0044's 2026-09-17 amendment so
         /// the cast can take the same seam).</remarks>
         public void PoseFigure(ICharacterFigureStand stand, bool aboard)
+        {
+            PoseDrawnFigure(stand, aboard);
+            // His shadow and foliage outline take the shape the mesh is drawn in, not the hidden
+            // standing sprite's; the frame no figure draws, the body's own sprite casts again.
+            _castShape.Sync(_rider != null ? _rider.BodyRenderer : null,
+                            DrawsAshore ? _ashoreFigure : DrawsInsteadOfSprite ? _figure : null);
+        }
+
+        private readonly MeshFigureCastShape _castShape = new MeshFigureCastShape();
+
+        /// <summary>The outline handed to his shadow and silhouette (tests and the look probe).</summary>
+        public MeshFigureCastShape CastShape => _castShape;
+
+        private void PoseDrawnFigure(ICharacterFigureStand stand, bool aboard)
         {
             DrawsInsteadOfSprite = false;
             Rowing = false;
