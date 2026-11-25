@@ -20,7 +20,7 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0.12
+      value: 0
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -28,8 +28,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.25
-      value: 0.18
+      time: 0.2
+      value: 0.5
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -38,7 +38,7 @@ MonoBehaviour:
       outWeight: 0
     - serializedVersion: 3
       time: 0.5
-      value: 0.28
+      value: 0.65
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -46,8 +46,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.85
-      value: 0.08
+      time: 0.8
+      value: 0.35
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -71,7 +71,7 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0.4
+      value: 0.2
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -79,8 +79,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.25
-      value: 0.5
+      time: 0.2
+      value: 0.35
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -89,7 +89,7 @@ MonoBehaviour:
       outWeight: 0
     - serializedVersion: 3
       time: 0.5
-      value: 0.65
+      value: 0.55
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -97,8 +97,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.85
-      value: 0.9
+      time: 0.8
+      value: 0.8
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -117,13 +117,21 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  ShadeColour: {r: 0.62, g: 0.67, b: 0.8, a: 1}
   FullSunElevation: 0.25
-  NoiseSize: 64
+  IndoorFadeSeconds: 0.6
+  NoiseSize: 128
+  NoiseCells: 8
+  NoiseOctaves: 4
   ScaleMetres: 1024
-  DriftMetresPerGameSecondPerMps: 0.03
+  Softness: 0.12
   SecondaryScale: 1.73
   SecondaryRate: 0.71
   SecondaryWeight: 0.35
-  Softness: 0.075
+  DriftMetresPerGameSecondPerMps: 0.08
+  DriftStepSeconds: 15
+  FairCoverMax: 0.5
+  FairCoverPeriodSeconds: 600
+  FairCoverClearBelow: 0.4
   WorldPlaneZ: 0
   CullingOversize: 1.1

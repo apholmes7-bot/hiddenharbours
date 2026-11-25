@@ -5,14 +5,22 @@ using UnityEngine.Rendering.Universal;
 
 namespace HiddenHarbours.Art
 {
-    /// <summary>One world-anchored multiply per world camera. No simulation, stencil claim or saved state.</summary>
+    /// <summary>
+    /// The soft cloud shade over land and water: one world-anchored multiply per world camera, drawn in the
+    /// sun-shade rung (above the day/night tint, below the lamps' glow, so it never dims a lamp and never
+    /// touches the screen-space HUD). One texture made per world seed, one quad, one material, one property
+    /// block. The wind carries it; the weather and the sun decide how much there is; indoors there is none.
+    /// No simulation, stencil claim or saved state.
+    /// </summary>
     [DisallowMultipleComponent]
     public sealed class CloudShadowSystem : MonoBehaviour
     {
-        static readonly int NoiseId = Shader.PropertyToID("_CloudNoise");
-        static readonly int OffsetsId = Shader.PropertyToID("_CloudOffsets");
-        static readonly int ShapeId = Shader.PropertyToID("_CloudShape");
-        static readonly int ScaleId = Shader.PropertyToID("_CloudScale");
+        static readonly int NoiseId = Shader.PropertyToID("_CloudShadeNoise");
+        static readonly int OffsetsId = Shader.PropertyToID("_CloudShadeOffsets");
+        static readonly int ShapeId = Shader.PropertyToID("_CloudShadeShape");
+        static readonly int ScaleId = Shader.PropertyToID("_CloudShadeScale");
+        static readonly int ColourId = Shader.PropertyToID("_CloudShadeColour");
+        static readonly int SunElevationId = Shader.PropertyToID("_SunElevation");
         static CloudShadowSystem _instance;
         CloudShadowDef _def;
         DayNightProfile _day;
@@ -22,9 +30,16 @@ namespace HiddenHarbours.Art
         Texture2D _noise;
         MeshRenderer _renderer;
         MaterialPropertyBlock _properties;
-        bool _casting = true, _initialized;
-        int _seed;
-        double _lastTime, _x, _y, _secondaryX, _secondaryY;
+        readonly CloudDrift _drift = new CloudDrift();
+        readonly HeldWind _heldWind = new HeldWind();
+        bool _casting = true, _subscribed;
+        int _noiseSeed;
+        bool _inCabin;
+        EntityId _cabinHull;
+        IWaveWindSource _preparedWind;
+        double _preparedSeconds = double.NaN;
+        int _preparedSeed;
+        float _outdoors = 1;
 
         public static CloudShadowSystem Instance => _instance;
         public bool Casting => _casting;
@@ -32,6 +47,11 @@ namespace HiddenHarbours.Art
         public MeshRenderer ShadowRenderer => _renderer;
         public int DrawCount => _renderer != null && _renderer.enabled && _renderer.gameObject.activeInHierarchy ? 1 : 0;
         public Vector4 Offsets { get; private set; }
+        /// <summary>The strength last sent to the shader (0 = not drawn).</summary>
+        public float LastStrength { get; private set; }
+        /// <summary>1 outdoors, 0 indoors, easing between over <see cref="CloudShadowDef.IndoorFadeSeconds"/>.</summary>
+        public float Outdoors => _outdoors;
+        /// <summary>A fixed frame for looks and tests; when set, the live clock and weather are not read.</summary>
         public CloudShadowFrame? HeldFrame { get; set; }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -51,9 +71,10 @@ namespace HiddenHarbours.Art
 
         public void Configure(CloudShadowDef def)
         {
-            ReleaseDraw(); _initialized = false;
+            ReleaseDraw();
             _def = def != null && def.IsValid() ? def : null;
             _day = Resources.Load<DayNightProfile>("DayNightProfile");
+            _preparedSeconds = double.NaN;
         }
 
         public void SetCasting(bool enabled)
@@ -62,9 +83,51 @@ namespace HiddenHarbours.Art
             if (!enabled) ReleaseDraw();
         }
 
-        void OnEnable() => RenderPipelineManager.beginCameraRendering += BeginCamera;
-        void OnDisable() { RenderPipelineManager.beginCameraRendering -= BeginCamera; ReleaseDraw(); }
+        /// <summary>Snap the indoor fade (tests and looks); live play eases it in <see cref="LateUpdate"/>.</summary>
+        public void SetOutdoors(float outdoors) => _outdoors = Mathf.Clamp01(outdoors);
+
+        /// <summary>Indoors is a building that holds the player (Core's <see cref="PlayerStorey"/>) or a
+        /// boat cabin he has stepped into.</summary>
+        public bool Indoors => PlayerStorey.Indoors || _inCabin;
+
+        void OnEnable()
+        {
+            RenderPipelineManager.beginCameraRendering += BeginCamera;
+            if (!_subscribed)
+            {
+                EventBus.Subscribe<CabinEntered>(OnCabinEntered);
+                EventBus.Subscribe<CabinEntryLandingEntered>(OnCabinLanding);
+                EventBus.Subscribe<CabinLeft>(OnCabinLeft);
+                _subscribed = true;
+            }
+        }
+
+        void OnDisable()
+        {
+            RenderPipelineManager.beginCameraRendering -= BeginCamera;
+            if (_subscribed)
+            {
+                EventBus.Unsubscribe<CabinEntered>(OnCabinEntered);
+                EventBus.Unsubscribe<CabinEntryLandingEntered>(OnCabinLanding);
+                EventBus.Unsubscribe<CabinLeft>(OnCabinLeft);
+                _subscribed = false;
+            }
+            ReleaseDraw();
+        }
+
         void OnDestroy() { ReleaseDraw(); if (_instance == this) _instance = null; }
+
+        void OnCabinEntered(CabinEntered e) { _inCabin = true; _cabinHull = e.HullId; }
+        void OnCabinLanding(CabinEntryLandingEntered e) { _inCabin = true; _cabinHull = e.HullId; }
+        void OnCabinLeft(CabinLeft e) { if (e.HullId == _cabinHull) _inCabin = false; }
+
+        void LateUpdate()
+        {
+            if (_def == null) return;
+            float target = Indoors ? 0 : 1;
+            float fade = _def.IndoorFadeSeconds;
+            _outdoors = fade > 0 ? Mathf.MoveTowards(_outdoors, target, Time.unscaledDeltaTime / fade) : target;
+        }
 
         void BeginCamera(ScriptableRenderContext context, Camera camera)
         {
@@ -73,8 +136,12 @@ namespace HiddenHarbours.Art
             var clock = GameServices.Clock; var environment = GameServices.Environment;
             if (clock == null || environment == null) { Hide(); return; }
             var weather = environment.Sample();
-            Prepare(camera, new CloudShadowFrame(environment.WorldSeed, clock.TotalSeconds, weather.WindVector,
-                CloudShadowMath.Overcast(weather.Visibility, weather.SeaState01, _day), Shader.GetGlobalFloat("_SunElevation")));
+            IWaveWindSource wind = environment as IWaveWindSource;
+            if (wind == null) { _heldWind.Wind = weather.WindVector; wind = _heldWind; }
+            double seconds = clock.TotalSeconds;
+            float cover = CloudShadowMath.Cover(_def, environment.WorldSeed, seconds,
+                CloudShadowMath.Overcast(weather.Visibility, weather.SeaState01, _day));
+            Prepare(camera, new CloudShadowFrame(environment.WorldSeed, seconds, wind, cover, Shader.GetGlobalFloat(SunElevationId)));
         }
 
         public static bool IsWorldCamera(Camera camera)
@@ -87,51 +154,42 @@ namespace HiddenHarbours.Art
         {
             if (_def == null || !_def.Enabled || !_casting) { ReleaseDraw(); return; }
             if (!IsWorldCamera(camera)) { Hide(); return; }
-            Advance(frame);
-            float strength = CloudShadowMath.Strength(_def, frame.Overcast, frame.Elevation);
+            float strength = CloudShadowMath.Strength(_def, frame.Cover, frame.Elevation, _outdoors);
+            LastStrength = strength;
             if (strength <= 0) { Hide(); return; }
-            EnsureDraw();
+            Advance(frame);
+            EnsureDraw(frame.Seed);
             float half = camera.orthographicSize * _def.CullingOversize;
             _draw.transform.SetPositionAndRotation(camera.transform.position + camera.transform.forward *
                 (camera.nearClipPlane + DayNightController.OverlayNearOffset), camera.transform.rotation);
             _draw.transform.localScale = new Vector3(half * camera.aspect * 2, half * 2, 1);
             _properties.SetVector(OffsetsId, Offsets);
-            _properties.SetVector(ShapeId, new Vector4(Mathf.Clamp01(_def.Coverage.Evaluate(frame.Overcast)),
+            _properties.SetVector(ShapeId, new Vector4(Mathf.Clamp01(_def.Coverage.Evaluate(frame.Cover)),
                 _def.Softness, strength, _def.SecondaryWeight));
             _properties.SetVector(ScaleId, new Vector4(_def.ScaleMetres, _def.SecondaryScale, _def.WorldPlaneZ, 0));
+            _properties.SetColor(ColourId, _def.ShadeColour);
             _renderer.SetPropertyBlock(_properties);
             _renderer.enabled = true;
         }
 
         void Advance(CloudShadowFrame frame)
         {
-            if (!_initialized || frame.Seed != _seed || frame.Seconds < _lastTime)
-            {
-                _seed = frame.Seed;
-                var origin = CloudShadowMath.SeedOrigin(_seed, _def);
-                _x = origin.x; _y = origin.y; _secondaryX = origin.y; _secondaryY = origin.x;
-                _lastTime = 0; _initialized = true;
-                if (_noise != null) ReleaseDraw();
-            }
-            double delta = frame.Seconds - _lastTime;
-            double rate = _def.DriftMetresPerGameSecondPerMps;
-            _x = CloudShadowMath.Wrap(_x + frame.Wind.x * delta * rate, _def.ScaleMetres);
-            _y = CloudShadowMath.Wrap(_y + frame.Wind.y * delta * rate, _def.ScaleMetres);
-            _secondaryX = CloudShadowMath.Wrap(_secondaryX + frame.Wind.x * delta * rate * _def.SecondaryRate, _def.ScaleMetres);
-            _secondaryY = CloudShadowMath.Wrap(_secondaryY + frame.Wind.y * delta * rate * _def.SecondaryRate, _def.ScaleMetres);
-            _lastTime = frame.Seconds;
-            Offsets = new Vector4((float)_x, (float)_y, (float)_secondaryX, (float)_secondaryY);
+            // Every camera this frame asks for the same moment: work it out once.
+            if (frame.Seconds == _preparedSeconds && frame.Seed == _preparedSeed && ReferenceEquals(frame.Wind, _preparedWind)) return;
+            Offsets = _drift.Offsets(frame.Wind, frame.Seed, frame.Seconds, GameServices.SecondsPerDay, _def);
+            _preparedSeconds = frame.Seconds; _preparedSeed = frame.Seed; _preparedWind = frame.Wind;
         }
 
-        void EnsureDraw()
+        void EnsureDraw(int seed)
         {
-            if (_draw != null) return;
-            _noise = new Texture2D(_def.NoiseSize, _def.NoiseSize, TextureFormat.RGBA32, false, true)
-                { name = "CloudNoise", hideFlags = HideFlags.HideAndDontSave, filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Repeat };
-            var pixels = new Color32[_def.NoiseSize * _def.NoiseSize];
-            var random = new System.Random(_seed);
-            for (int i = 0; i < pixels.Length; i++) { byte value = (byte)random.Next(256); pixels[i] = new Color32(value, value, value, byte.MaxValue); }
-            _noise.SetPixels32(pixels); _noise.Apply(false, true);
+            if (_draw != null && _noiseSeed == seed) return;
+            if (_draw != null) ReleaseDraw();
+            _noiseSeed = seed;
+            int size = _def.NoiseSize;
+            _noise = new Texture2D(size, size, TextureFormat.R8, false, true)
+                { name = "CloudShadeNoise", hideFlags = HideFlags.HideAndDontSave, filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Repeat };
+            _noise.SetPixelData(CloudShadowMath.BuildNoise(seed, size, _def.NoiseCells, _def.NoiseOctaves), 0);
+            _noise.Apply(false, true);
             _material = new Material(_def.Shader) { name = "CloudShadow (runtime)", hideFlags = HideFlags.HideAndDontSave };
             _mesh = new Mesh { name = "CloudShadowQuad", hideFlags = HideFlags.HideAndDontSave };
             _mesh.vertices = new[] { new Vector3(-.5f, -.5f, 0), new Vector3(.5f, -.5f, 0), new Vector3(.5f, .5f, 0), new Vector3(-.5f, .5f, 0) };
@@ -157,5 +215,12 @@ namespace HiddenHarbours.Art
         }
         static void Dispose(Object value)
         { if (value == null) return; if (Application.isPlaying) Destroy(value); else DestroyImmediate(value); }
+
+        /// <summary>The fallback when the environment offers no wind law: today's wind, held.</summary>
+        sealed class HeldWind : IWaveWindSource
+        {
+            public Vector2 Wind;
+            public WaveWindSample WaveWindAt(double gameTimeSeconds) => new WaveWindSample(Wind, 0);
+        }
     }
 }
