@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using HiddenHarbours.App;
 using HiddenHarbours.App.Editor;
+using HiddenHarbours.Core;
 using HiddenHarbours.World;
 using NUnit.Framework;
 using UnityEditor;
@@ -44,6 +45,35 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(StPetersBuilder.FromEastWaterArrivalKey, def.HomeArrivalKey);
             Assert.AreEqual((Vector2)EastWaterPlan.OpeningLiePos, def.LiePosition);
             Assert.AreEqual(EastWaterPlan.OpeningExitTarget, def.ExitTarget);
+        }
+
+        [Test]
+        public void DemoSceneListContainsEveryRegionTheOpeningLoads()
+        {
+            var def = AssetDatabase.LoadAssetAtPath<ArrivalSeaDef>(ArrivalSeaAuthoring.DefPath);
+            Assert.IsNotNull(def);
+            Assert.IsNotNull(def.SeaRegion);
+            Assert.IsNotNull(def.HomeRegion);
+            var builder = System.Type.GetType("HiddenHarbours.Tools.Editor.PlayerBuild, HiddenHarbours.Tools.Editor", true);
+            var scenes = (string[])builder.GetMethod("ScenePaths").Invoke(null, new object[] { true });
+            Assert.AreEqual(def.HomeRegion.SceneName, System.IO.Path.GetFileNameWithoutExtension(scenes[0]));
+            var before = DemoBuild.Override;
+            var availability = RegionBuildAvailability.Override;
+            try
+            {
+                DemoBuild.Override = true;
+                RegionBuildAvailability.Override = (_, __) => true;
+                foreach (var region in new[] { def.SeaRegion, def.HomeRegion })
+                {
+                    CollectionAssert.Contains(scenes, "Assets/_Project/Scenes/" + region.SceneName + ".unity");
+                    Assert.IsTrue(RegionBuildAvailability.IsAvailable(region.Id, region.SceneName), region.SceneName);
+                }
+            }
+            finally
+            {
+                DemoBuild.Override = before;
+                RegionBuildAvailability.Override = availability;
+            }
         }
 
         [Test]

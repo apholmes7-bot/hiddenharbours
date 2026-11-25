@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using HiddenHarbours.Core;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
@@ -35,24 +36,47 @@ namespace HiddenHarbours.Tools.Editor
         {
             string output = EditorUtility.OpenFolderPanel("Player output (outside the project)", "", "");
             if (string.IsNullOrEmpty(output)) return;
-            Build(output, DefaultProduct, GitRevision("HEAD"), GitRevision("origin/main"), false, false);
+            Build(output, DefaultProduct, GitRevision("HEAD"), GitRevision("origin/main"), false, false, false);
         }
 
         /// <summary>Use with -executeMethod HiddenHarbours.Tools.Editor.PlayerBuild.BuildWindows.</summary>
         public static void BuildWindows()
         {
-            string[] args = System.Environment.GetCommandLineArgs();
+            var request = ParseArguments(System.Environment.GetCommandLineArgs());
+            Build(request.Output, request.Product, request.Commit, request.MainCommit,
+                request.Development, request.Lz4HC, request.Demo);
+        }
+
+        public sealed class BuildRequest
+        {
+            public string Output, Product, Commit, MainCommit;
+            public bool Development, Lz4HC, Demo;
+        }
+
+        public static BuildRequest ParseArguments(string[] args)
+        {
+            if (args == null) throw new ArgumentNullException(nameof(args));
             string compression = Argument(args, "-buildCompression", "None");
             if (compression != "None" && compression != "Lz4HC")
                 throw new ArgumentException("-buildCompression must be None or Lz4HC.");
-            Build(Argument(args, "-buildOutput"), Argument(args, "-buildProduct", DefaultProduct),
-                Argument(args, "-buildCommit"), Argument(args, "-buildMainCommit"),
-                args.Contains("-buildDevelopment"), compression == "Lz4HC");
+            return new BuildRequest
+            {
+                Output = Argument(args, "-buildOutput"),
+                Product = Argument(args, "-buildProduct", DefaultProduct),
+                Commit = Argument(args, "-buildCommit"),
+                MainCommit = Argument(args, "-buildMainCommit"),
+                Development = args.Contains("-buildDevelopment"),
+                Lz4HC = compression == "Lz4HC",
+                Demo = args.Contains("-buildDemo")
+            };
         }
 
+        public static string[] ScenePaths(bool demo) => demo ? DemoBuild.ScenePaths() : (string[])Scenes.Clone();
+
         static void Build(string output, string product, string commit, string mainCommit,
-            bool development, bool lz4hc)
+            bool development, bool lz4hc, bool demo)
         {
+            string[] scenes = ScenePaths(demo);
             output = Path.GetFullPath(output);
             string buildRoot = Path.GetFullPath("C:/hh-builds").TrimEnd(
                 Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
@@ -70,7 +94,7 @@ namespace HiddenHarbours.Tools.Editor
                 throw new ArgumentException("Source and main commits must be full commit hashes.");
             if (!BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows64))
                 throw new BuildFailedException("Install Windows Mono build support for the pinned editor.");
-            foreach (string scene in Scenes)
+            foreach (string scene in scenes)
                 if (AssetDatabase.LoadAssetAtPath<SceneAsset>(scene) == null)
                     throw new BuildFailedException("Missing player scene: " + scene);
             if (Directory.Exists(output) && Directory.EnumerateFileSystemEntries(output).Any())
@@ -95,13 +119,14 @@ namespace HiddenHarbours.Tools.Editor
                 if (lz4hc) options |= BuildOptions.CompressWithLz4HC;
                 BuildReport report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
                 {
-                    scenes = Scenes,
+                    scenes = scenes,
+                    extraScriptingDefines = demo ? new[] { DemoBuild.ScriptingDefine } : Array.Empty<string>(),
                     locationPathName = Path.Combine(output, product + ".exe"),
                     target = BuildTarget.StandaloneWindows64,
                     options = options
                 });
                 if (report == null) throw new BuildFailedException("No player build report was returned.");
-                WriteReport(output, report);
+                WriteReport(output, report, scenes);
                 if (report.summary.result != BuildResult.Succeeded)
                     throw new BuildFailedException("Player build failed: " + report.summary.result);
                 File.WriteAllLines(Path.Combine(output, "build-info.txt"), new[]
@@ -111,6 +136,7 @@ namespace HiddenHarbours.Tools.Editor
                     "built-utc: " + DateTime.UtcNow.ToString("O"),
                     "editor: " + Application.unityVersion,
                     "configuration: " + (development ? "development" : "release"),
+                    "demo: " + (demo ? "true" : "false"),
                     "target: Windows x64 / Mono",
                     "compression: " + (lz4hc ? "Lz4HC" : "None"),
                     "product: " + product,
@@ -147,7 +173,7 @@ namespace HiddenHarbours.Tools.Editor
                 throw new BuildFailedException("Run tools/build/build-windows.ps1 to bake the road floor first.");
         }
 
-        static void WriteReport(string output, BuildReport report)
+        static void WriteReport(string output, BuildReport report, string[] scenes)
         {
             var text = new StringBuilder();
             text.AppendLine("result: " + report.summary.result);
@@ -157,7 +183,7 @@ namespace HiddenHarbours.Tools.Editor
             text.AppendLine("errors: " + report.summary.totalErrors);
             text.AppendLine("warnings: " + report.summary.totalWarnings);
             text.AppendLine("scenes:");
-            foreach (string scene in Scenes) text.AppendLine(scene);
+            foreach (string scene in scenes) text.AppendLine(scene);
             text.AppendLine("largest packed assets (bytes, asset):");
             foreach (var asset in report.packedAssets.SelectMany(p => p.contents)
                 .GroupBy(a => a.sourceAssetPath)

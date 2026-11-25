@@ -42,7 +42,7 @@ namespace HiddenHarbours.Environment
             var clock = GameServices.Clock;
             if (clock == null) return;
 
-            if (_enabled)
+            if (_enabled && DemoBuild.DevShortcutsAllowed)
             {
                 clock.TimeScale = Mathf.Max(1f, _fastScale);
                 _applied = true;

@@ -55,14 +55,14 @@ namespace HiddenHarbours.Tests.World.EditMode
             var log = new CatchRecordLog();
             CatchItem cod = Catch(Cod, 2.4f);
 
-            log.RecordLandedInHand(cod);
+            Assert.IsTrue(log.RecordLandedInHand(cod), "a fresh hand catch is accepted");
             // The stow: the hand gives it up and the hold takes it, in one call on one tick.
             log.RecordTakenFromHand(cod, 5);
-            log.RecordEnteredHold(cod, 5);
+            Assert.IsFalse(log.RecordEnteredHold(cod, 5), "the transfer is not another fresh catch");
 
             Assert.That(log.Entries[0].Count, Is.EqualTo(1));
 
-            log.RecordEnteredHold(Catch(Cod, 2.4f), 5);   // a second fish of the same weight, same tick
+            Assert.IsTrue(log.RecordEnteredHold(Catch(Cod, 2.4f), 5));   // a second fish of the same weight, same tick
             Assert.That(log.Entries[0].Count, Is.EqualTo(2), "the handoff is spent, not reused");
         }
 
