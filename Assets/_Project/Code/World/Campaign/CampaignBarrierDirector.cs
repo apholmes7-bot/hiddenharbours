@@ -113,13 +113,14 @@ namespace HiddenHarbours.World
 
         /// <summary>
         /// True while <paramref name="wall"/> stands: there is a save, the flag it stands on (if it names
-        /// one) is set, and the flag that lifts it is unset.
+        /// one) is set, and the flag that lifts it is unset. The demo keeps the existing walls standing.
         /// </summary>
         public static bool Stands(CampaignBarrierDef wall)
         {
             if (wall == null) return false;
             var save = GameServices.Save;
             if (save == null) return false;
+            if (DemoBuild.Enabled) return true;
             if (!string.IsNullOrEmpty(wall.StandsWhileFlag) && !save.GetFlag(wall.StandsWhileFlag)) return false;
             return string.IsNullOrEmpty(wall.LiftedByFlag) || !save.GetFlag(wall.LiftedByFlag);
         }
