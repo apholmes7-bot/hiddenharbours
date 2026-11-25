@@ -4,7 +4,7 @@ Rows are screen rows, 0 = TOP of the cell. Lower row number = higher up.
 
   per-tag exterior height (mesh local z, m above the keel):
     tag  5  top z   5.593  (264 verts)
-    tag  3  top z   3.049  (176 verts)
+    tag  3  top z   3.049  (212 verts)
     tag  2  top z    2.51  (60 verts)
     tag  1  top z    1.55  (256 verts)
 
