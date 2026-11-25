@@ -111,12 +111,13 @@ namespace HiddenHarbours.Economy
         /// <summary>
         /// Called after he completes the counter handover. Pass the current save's bait stock so goods
         /// and the collected receipt persist together. Arrival alone never grants bait.
+        /// Refresh arrivals separately after a clock seek. A refusal changes no rows, goods or money
+        /// and publishes no events; collection never advances other orders.
         /// </summary>
         public SpecialOrderRefusal Collect(string orderId, List<BaitStock> baitStock)
         {
             ThrowIfDisposed();
             if (_busy) return SpecialOrderRefusal.Busy;
-            RefreshArrivals();
             var order = _save.SpecialOrders.Find(row => IsOpen(row) && row.OrderId == orderId);
             if (order == null) return SpecialOrderRefusal.UnknownOrder;
             if (RefundReason(order, OpenIdCounts()).Length != 0) return SpecialOrderRefusal.RefundRequired;

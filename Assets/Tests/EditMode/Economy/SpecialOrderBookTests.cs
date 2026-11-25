@@ -291,6 +291,86 @@ namespace HiddenHarbours.Tests.Economy
             Assert.That(_collected.Count, Is.EqualTo(1));
         }
 
+        [TestCase("missing", SpecialOrderRefusal.UnknownOrder)]
+        [TestCase("null_id", SpecialOrderRefusal.UnknownOrder)]
+        [TestCase("null_stock", SpecialOrderRefusal.NotArrived)]
+        [TestCase("overflow", SpecialOrderRefusal.NotArrived)]
+        [TestCase("available", SpecialOrderRefusal.NotArrived)]
+        public void CollectionAfterSeek_LeavesAllDueOrdersUntouchedUntilExplicitRefresh(
+            string request, SpecialOrderRefusal expected)
+        {
+            string first = Place(3), second = Place(2);
+            _clock.At(4);
+            var stock = new List<BaitStock>();
+            if (request == "overflow") stock.Add(new BaitStock(Item, int.MaxValue));
+            var stockBefore = stock.ToArray();
+            string savedBefore = SaveSerialization.ToJson(_save), viewBefore = Json(_book);
+            string id = request == "missing" ? "order.seller.test.99" : request == "null_id" ? null : first;
+
+            Assert.That(_book.Collect(id, request == "null_stock" ? null : stock), Is.EqualTo(expected));
+
+            Assert.That(SaveSerialization.ToJson(_save), Is.EqualTo(savedBefore));
+            Assert.That(Json(_book), Is.EqualTo(viewBefore));
+            Assert.That(_save.SpecialOrders.Select(row => row.State),
+                Is.EqualTo(new[] { SpecialOrderDto.StateWaiting, SpecialOrderDto.StateWaiting }));
+            Assert.That(stock, Is.EqualTo(stockBefore));
+            Assert.That(_wallet.Money, Is.EqualTo(985));
+            Assert.That(_wallet.Calls, Is.EqualTo(2));
+            Assert.That(_placed.Count, Is.EqualTo(2));
+            Assert.That(_arrived, Is.Empty);
+            Assert.That(_collected, Is.Empty);
+
+            _book.RefreshArrivals();
+            _book.RefreshArrivals();
+            Assert.That(_arrived.Select(receipt => receipt.OrderId), Is.EqualTo(new[] { first, second }));
+            Assert.That(_save.SpecialOrders.Select(row => row.State),
+                Is.EqualTo(new[] { SpecialOrderDto.StateArrived, SpecialOrderDto.StateArrived }));
+            Assert.That(_book.Collect(first, _save.BaitStock), Is.EqualTo(SpecialOrderRefusal.None));
+            Assert.That(_save.BaitStock, Is.EqualTo(new[] { new BaitStock(Item, 3) }));
+            Assert.That(_collected.Single().OrderId, Is.EqualTo(first));
+            Assert.That(_wallet.Money, Is.EqualTo(985));
+            Assert.That(_wallet.Calls, Is.EqualTo(2));
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void UnavailableCollection_LeavesAnArrivedOrderAndAnOverdueNeighbourUntouched(bool overflow)
+        {
+            string first = Place(3);
+            _clock.StartDay(2);
+            string second = Place(2);
+            _clock.At(4);
+            _save.BaitStock.Add(new BaitStock(Item, int.MaxValue));
+            string savedBefore = SaveSerialization.ToJson(_save), viewBefore = Json(_book);
+
+            Assert.That(_book.Collect(first, overflow ? _save.BaitStock : null),
+                Is.EqualTo(SpecialOrderRefusal.BaitStoreUnavailable));
+
+            Assert.That(SaveSerialization.ToJson(_save), Is.EqualTo(savedBefore));
+            Assert.That(Json(_book), Is.EqualTo(viewBefore));
+            Assert.That(_save.BaitStock, Is.EqualTo(new[] { new BaitStock(Item, int.MaxValue) }));
+            Assert.That(_save.SpecialOrders.Select(row => row.State),
+                Is.EqualTo(new[] { SpecialOrderDto.StateArrived, SpecialOrderDto.StateWaiting }));
+            Assert.That(_wallet.Money, Is.EqualTo(985));
+            Assert.That(_wallet.Calls, Is.EqualTo(2));
+            Assert.That(_placed.Count, Is.EqualTo(2));
+            Assert.That(_arrived.Select(receipt => receipt.OrderId), Is.EqualTo(new[] { first }));
+            Assert.That(_collected, Is.Empty);
+
+            _save.BaitStock.Clear();
+            Assert.That(_book.Collect(first, _save.BaitStock), Is.EqualTo(SpecialOrderRefusal.None));
+            Assert.That(_save.BaitStock, Is.EqualTo(new[] { new BaitStock(Item, 3) }));
+            Assert.That(_save.SpecialOrders.Select(row => row.State),
+                Is.EqualTo(new[] { SpecialOrderDto.StateCollected, SpecialOrderDto.StateWaiting }));
+            Assert.That(_arrived.Select(receipt => receipt.OrderId), Is.EqualTo(new[] { first }));
+            Assert.That(_collected.Single().OrderId, Is.EqualTo(first));
+            _book.RefreshArrivals();
+            Assert.That(_arrived.Select(receipt => receipt.OrderId), Is.EqualTo(new[] { first, second }));
+            Assert.That(_save.SpecialOrders[1].State, Is.EqualTo(SpecialOrderDto.StateArrived));
+            Assert.That(_wallet.Money, Is.EqualTo(985));
+            Assert.That(_wallet.Calls, Is.EqualTo(2));
+        }
+
         [Test]
         public void SavedBookRoundTrip_IsIdenticalAndSnapshotsDoNotReplayMoneyOrEvents()
         {
@@ -514,6 +594,7 @@ namespace HiddenHarbours.Tests.Economy
             Assert.That(first, Is.EqualTo("order.seller.test.1"));
             Assert.That(second, Is.EqualTo("order.seller.other.2"));
             _clock.At(4);
+            book.RefreshArrivals();
             Assert.That(book.Collect(first, _bait), Is.EqualTo(SpecialOrderRefusal.None));
             Assert.That(book.Collect(second, _bait), Is.EqualTo(SpecialOrderRefusal.None));
             Assert.That(book.Capture().Orders, Is.Empty);
@@ -903,6 +984,7 @@ namespace HiddenHarbours.Tests.Economy
             string id = Place(3);
             var receipt = _save.SpecialOrders.Single();
             _clock.At(2);
+            _book.RefreshArrivals();
             Assert.That(_book.Collect(id, _save.BaitStock), Is.EqualTo(SpecialOrderRefusal.None));
             Assert.That(_save.SpecialOrders.Single(), Is.SameAs(receipt));
             Assert.That(receipt.State, Is.EqualTo(SpecialOrderDto.StateCollected));
@@ -999,6 +1081,61 @@ namespace HiddenHarbours.Tests.Economy
             Assert.That(_wallet.Calls, Is.Zero);
             Assert.That(book.Capture().Orders, Is.Empty);
             Assert.That(book.Capture().NextSpecialOrderNumber, Is.EqualTo(1));
+        }
+
+        [TestCase(-1d, SpecialOrderDto.StateWaiting, 0d, SpecialOrderDto.StateWaiting)]
+        [TestCase(1200.125d, 91, 1200.125d, SpecialOrderDto.StateWaiting)]
+        [TestCase(-1d, 91, 0d, SpecialOrderDto.StateWaiting)]
+        [TestCase(-1d, SpecialOrderDto.StateArrived, 0d, SpecialOrderDto.StateArrived)]
+        public void Version26Json_RepairsTimeAndStateBeforeTheBookClassifiesPaidRows(
+            double seconds, int state, double repairedSeconds, int repairedState)
+        {
+            _clock.At(1);
+            string id = Place(2);
+            _book.Dispose();
+            var source = _save.SpecialOrders.Single();
+            source.OrderedAtSeconds = seconds;
+            source.State = state;
+            Assert.That(SaveMigration.CurrentVersion, Is.EqualTo(26));
+            Assert.That(_save.SchemaVersion, Is.EqualTo(26));
+            string text = SaveSerialization.ToJson(_save);
+            var loaded = SaveSerialization.FromJson(text);
+            Assert.That(loaded, Is.Not.Null);
+            Assert.That(loaded.SchemaVersion, Is.EqualTo(26));
+            var expected = JsonUtility.FromJson<SaveData>(text);
+            expected.SpecialOrders.Single().OrderedAtSeconds = repairedSeconds;
+            expected.SpecialOrders.Single().State = repairedState;
+            AssertSavedOrdersEqual(expected, loaded);
+            Assert.That(source.OrderedAtSeconds, Is.EqualTo(seconds));
+            Assert.That(source.State, Is.EqualTo(state));
+
+            var wallet = new TestWallet(loaded);
+            var resumed = Book(save: loaded, wallet: wallet);
+            var row = resumed.Capture().Orders.Single();
+            Assert.That(row.OrderId, Is.EqualTo(id));
+            Assert.That(row.OrderedAtSeconds, Is.EqualTo(repairedSeconds));
+            Assert.That(row.State, Is.EqualTo(repairedState));
+            Assert.That(row.RequiresRefund, Is.False);
+            Assert.That(row.RefundReasonKey, Is.Empty);
+            Assert.That(row.PaidPrice, Is.EqualTo(6));
+            Assert.That(row.Lines.Single().PaidPrice, Is.EqualTo(6));
+            Assert.That(row.Lines.Single().Count, Is.EqualTo(2));
+            Assert.That(wallet.Money, Is.EqualTo(994));
+            Assert.That(wallet.Calls, Is.Zero);
+            Assert.That(_placed.Count, Is.EqualTo(1));
+            Assert.That(_arrived, Is.Empty);
+            Assert.That(_collected, Is.Empty);
+            AssertSavedOrdersEqual(expected, SaveSerialization.FromJson(SaveSerialization.ToJson(loaded)));
+
+            _clock.At(3);
+            resumed.RefreshArrivals();
+            Assert.That(_arrived.Count, Is.EqualTo(repairedState == SpecialOrderDto.StateWaiting ? 1 : 0));
+            Assert.That(resumed.Collect(id, loaded.BaitStock), Is.EqualTo(SpecialOrderRefusal.None));
+            Assert.That(loaded.SpecialOrders.Single().State, Is.EqualTo(SpecialOrderDto.StateCollected));
+            Assert.That(loaded.BaitStock, Is.EqualTo(new[] { new BaitStock(Item, 2) }));
+            Assert.That(wallet.Money, Is.EqualTo(994));
+            Assert.That(wallet.Calls, Is.Zero);
+            Assert.That(_collected.Single().OrderId, Is.EqualTo(id));
         }
 
         [TestCase(70, false)]

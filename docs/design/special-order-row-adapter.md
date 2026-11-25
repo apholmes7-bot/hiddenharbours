@@ -37,6 +37,12 @@ paid per listing and the order total. The book creates canonical rows, so its sa
 that repair unchanged. It never rewrites pre-existing paid lines, even when their payments disagree
 with the order total. Already damaged rows are classified for review, not silently reconciled.
 
+`SaveSerialization.FromJson` runs the version-26 repair before the book sees loaded rows. That repair
+normalizes negative or non-finite order times to zero and unknown states to waiting. Classification
+uses those repaired values. Directly supplied malformed rows are a separate boundary: the book flags
+their invalid values without repairing them itself. Neither path changes the intended duplicate-line
+folding or substitutes line payments for the recorded order total.
+
 Construction reserves every readable order number, including collected and damaged rows, and only
 raises the saved counter. `int.MaxValue` is the exhaustion sentinel: placement refuses before
 payment when there is no representable successor. Collected rows are retained as receipts and
@@ -49,6 +55,11 @@ cannot grant goods again. There is no API for replacing a live book from a snaps
 neither charges the wallet nor publishes arrival or collection events. An overdue waiting row
 advances only on a day event or an explicit `RefreshArrivals()` after the clock is restored.
 An already arrived row stays arrived without replaying its event.
+
+`Collect` never catches up arrivals, including those of other overdue orders. A waiting order still
+returns `NotArrived` after a clock seek until the caller refreshes arrivals. Unknown orders and
+unavailable or overflowing bait stock leave all saved rows, money, goods and event counts unchanged.
+A successful collection changes only its own order and the receiving stock.
 
 Missing or repeated open ids, unavailable or mismatched offers, unusable lines, invalid dates or
 times, unsupported destinations, invalid states and inconsistent payments receive a plain
@@ -71,7 +82,8 @@ content and can be recomputed when content becomes available again.
    notification are not wired. Arrival changes the saved state and grants no bait.
 3. Bind `Collect` to a completed handover at the seller's counter, passing that save's `BaitStock`.
    `TackleBox.TryReceiveBait` receives all lines or none. The row becomes collected only after receipt
-   succeeds. No shopping bag, automatic transport or physical handover presentation is added here.
+   succeeds. Refresh arrivals before offering the handover after a seek; collection itself performs
+   no refresh. No shopping bag, automatic transport or physical handover presentation is added here.
 4. Ordinary save points serialize the current order rows and counter directly. The existing save
    service captures the live wallet and clock; collection must use the same save's bait stock so
    goods and the collected receipt persist together. No new save step or field is needed for orders.
@@ -86,6 +98,9 @@ The existing `SpecialOrderBookTests` covers real save JSON through `SaveSerializ
 (and therefore load repair), exact equality of all nine order fields and three line fields, repeated
 listing coalescing, all three saved states, numbering after restart, missing order lists, retired
 content, original paid terms, deterministic dates, refusals, reentrancy and detached snapshots.
+Overdue refusal cases compare the entire saved JSON and snapshot before and after collection, including
+unrelated due rows, exact stock and money, and arrival/collection event counts. Separate version-26
+JSON cases prove time/state repair precedes classification and leaves the paid goods collectible.
 `RestUnderTheCoverTests` checks due-midnight arrival with the real clock and observes the arrived
 row in the sleep save's JSON. Existing content and atomic bait-receipt cases remain in
 `ShopStockContentTests` and `BaitAndTackleTests`.
@@ -94,6 +109,8 @@ The old duplicate-request refusal becomes summed counts/payments with exact comb
 Snapshot adoption becomes construction on the saved rows; empty views cannot erase payments.
 Collected rows leave the outstanding view but remain saved receipts. These are explicit rule
 changes; exact payment, count, event, date and refusal assertions remain.
+Collection no longer advances arrivals implicitly. The two collection/restart cases that sought the
+clock now refresh explicitly, retaining every payment, receipt, quantity and non-reuse assertion.
 
 Local verification is source, scope and metadata inspection. No editor, C# compilation or test
 execution ran locally; those cases await CI. No visual or gameplay acceptance is claimed.
