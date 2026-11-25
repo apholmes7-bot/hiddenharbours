@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using HiddenHarbours.Art;
+using HiddenHarbours.Art.Editor;
 using HiddenHarbours.Core;
 using HiddenHarbours.World;
 using UnityEditor;
@@ -25,7 +26,8 @@ namespace HiddenHarbours.App.Editor
         public const string KeepersNpcFolder = "Assets/_Project/Data/NPCs";
         public const string KeepersInteractorName = "WorldInteractor";
         const string KeepersCharacterMaterialGuid = "a97c105638bdf8b4a8650670310a4cd3";
-        const string KeepersCottageSheet = "Assets/_Project/Art/Sprites/Buildings/Village/Village_sageCottage.png";
+        /// <summary>The cottage's build in the village kit: its shell, and the sheets that say how it takes the light.</summary>
+        public const string KeepersCottageBuild = "sageCottage";
 
         // ---- the north-east light: from the tower's ground, metres across and away (already as drawn) ----
         public const string LightKeeperAnchorId = "anchor.stp_ne_light.tower_door";
@@ -130,6 +132,9 @@ namespace HiddenHarbours.App.Editor
             /// <summary>A cell of the keeper's own sheet for the renderer to hold until the first frame.</summary>
             SpriteRef FirstSpriteOf(string npcPath, out ObjRef visual);
             SpriteRef Cottage(int facing);
+            /// <summary>The material every village house draws with, and one of the cottage's own light sheets.</summary>
+            ObjRef CottageMaterial { get; }
+            ObjRef CottageSheet(VillageBuildingKit.Channel channel);
             ObjRef Material { get; }
             ScriptRef ScriptFor(Type type);
         }
@@ -166,11 +171,23 @@ namespace HiddenHarbours.App.Editor
 
             public SpriteRef Cottage(int facing)
             {
-                string want = "Village_sageCottage_d" + facing;
-                Sprite cell = AssetDatabase.LoadAllAssetRepresentationsAtPath(KeepersCottageSheet).OfType<Sprite>()
-                    .FirstOrDefault(s => s.name == want);
-                if (cell == null) throw new Refusal($"{KeepersStep}: the cottage sheet has no {want}.");
+                var shell = VillageBuildingCatalog.Find(KeepersCottageBuild);
+                Sprite cell = shell.IsValid ? VillageBuildingCatalog.LoadFacing(shell, facing) : null;
+                if (cell == null) throw new Refusal($"{KeepersStep}: the village kit has no {KeepersCottageBuild} facing {facing}.");
                 return EditorShoreRockSprites.RefOf(cell);
+            }
+
+            public ObjRef CottageMaterial => Imported(VillageBuildingCatalog.LoadLitMaterial(), 2, "the lit house material");
+
+            public ObjRef CottageSheet(VillageBuildingKit.Channel channel) => Imported(
+                AssetDatabase.LoadAssetAtPath<Texture2D>(VillageBuildingKit.SheetPath(KeepersCottageBuild, channel)), 3,
+                "the cottage's " + channel + " sheet");
+
+            static ObjRef Imported(UnityEngine.Object value, int type, string what)
+            {
+                if (value == null || !AssetDatabase.TryGetGUIDAndLocalFileIdentifier(value, out string guid, out long id))
+                    throw new Refusal($"{KeepersStep}: {what} is not baked and imported.");
+                return new ObjRef(id, guid, type);
             }
         }
 
@@ -209,20 +226,30 @@ namespace HiddenHarbours.App.Editor
                     string child = name + "Cottage";
                     long cg = Next(child, "GameObject"), ct = Next(child, "Transform"), sr = Next(child, "SpriteRenderer");
                     long sort = Next(child, "YSortSprite"), walls = Next(child, "PolygonCollider2D");
+                    long binder = Next(child, "SpriteLightBinder");
                     Vector2 u = WhelpsDoorAxis() * (WhelpsCottageLength * 0.5f);
                     Vector2 v = new Vector2(-WhelpsDoorAxis().y, WhelpsDoorAxis().x) * (WhelpsCottageWidth * 0.5f);
                     var plan = new List<Vector2[]> { new[] { Drawn(-u - v), Drawn(u - v), Drawn(u + v), Drawn(-u + v) } };
                     int order = YSortSprite.OrderFor(post.CottageAt.y, SortingBands.DecorBase, SortingBands.OrdersPerMetre,
                         SortingBands.DecorFloor, SortingBands.DecorCeiling);
-                    wanted.Add(Want(GameObjectYaml(cg, child, new[] { ct, sr, sort, walls }), child, "GameObject"));
+                    wanted.Add(Want(GameObjectYaml(cg, child, new[] { ct, sr, sort, binder, walls }), child, "GameObject"));
                     wanted.Add(Want(TransformYaml(ct, cg, post.CottageAt, none, rootTr), child, "Transform"));
-                    wanted.Add(Want(SpriteRendererYaml(sr, cg, assets.Material, assets.Cottage(WhelpsCottageFacing), order), child, "SpriteRenderer"));
+                    wanted.Add(Want(SpriteRendererYaml(sr, cg, assets.CottageMaterial, assets.Cottage(WhelpsCottageFacing), order), child, "SpriteRenderer"));
                     wanted.Add(Want(MonoBehaviourYaml(sort, cg, assets.ScriptFor(typeof(YSortSprite)), new[]
                     {
                         "  _dynamic: 0", "  _baseOrder: " + F(SortingBands.DecorBase),
                         "  _orderPerUnit: " + F(SortingBands.OrdersPerMetre), "  _minOrder: " + Int(SortingBands.DecorFloor),
                         "  _maxOrder: " + Int(SortingBands.DecorCeiling), "  _pivotYOffset: 0",
                     }), child, "YSortSprite"));
+                    // A village house, placed as every village house is: the lit house material, and the binder that
+                    // hands the renderer its own mask, normal and window sheets.
+                    wanted.Add(Want(MonoBehaviourYaml(binder, cg, assets.ScriptFor(typeof(SpriteLightBinder)), new[]
+                    {
+                        "  _lightSheet: " + assets.CottageSheet(VillageBuildingKit.Channel.Mask).Yaml,
+                        "  _normalSheet: " + assets.CottageSheet(VillageBuildingKit.Channel.Normal).Yaml,
+                        "  _rimGateSheet: {fileID: 0}", "  _rimGateChannel: 0",
+                        "  _emitSheet: " + assets.CottageSheet(VillageBuildingKit.Channel.Emit).Yaml,
+                    }), child, "SpriteLightBinder"));
                     wanted.Add(Want(PolygonColliderYaml(walls, cg, plan), child, "PolygonCollider2D"));
                     rootChildren.Add(ct);
                 }

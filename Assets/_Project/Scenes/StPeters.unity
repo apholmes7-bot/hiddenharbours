@@ -164870,6 +164870,7 @@ GameObject:
   - component: {fileID: 863561472}
   - component: {fileID: 2080974136}
   - component: {fileID: 619342119}
+  - component: {fileID: 1399268795}
   - component: {fileID: 1828480674}
   m_Layer: 0
   m_Name: OdileMarchandCottage
@@ -164919,7 +164920,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: e41a93ddb4d64064a90f725ea27b61c2, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -165240,6 +165241,23 @@ MonoBehaviour:
     OutOfSight: 1
     LaneNodeName: 
     Why: 'indoors in the cottage'
+--- !u!114 &1399268795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1598437918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 566388fab64545bfb3c024c9d2ed3d49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SpriteLightBinder
+  _lightSheet: {fileID: 2800000, guid: 1398622992aa36044bb71c1a7f82e940, type: 3}
+  _normalSheet: {fileID: 2800000, guid: f675e3bebd606f5449b03a92c8744216, type: 3}
+  _rimGateSheet: {fileID: 0}
+  _rimGateChannel: 0
+  _emitSheet: {fileID: 2800000, guid: ee55a954d4e58314ea24294bc07d9e1d, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
