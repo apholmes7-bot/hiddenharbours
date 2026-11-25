@@ -226,9 +226,9 @@ namespace HiddenHarbours.Tests.PlayMode
 
             ShelfSection section = signs.Sections.Single(s => s.Id == slots.Id + "." + food.Id);
             var registered = new List<IInteractable>(Interactables.Active);
-            Assert.That(registered, Does.Contain(section), "the section registers itself");
+            Assert.That(registered, Has.Member(section), "the section registers itself");
             foreach (ShelfGood g in section.Goods)
-                Assert.That(registered, Does.Not.Contain(g), g.ListingId + " is sold only through the section");
+                Assert.That(registered, Has.No.Member(g), g.ListingId + " is sold only through the section");
 
             // He walks toward the section, a step a frame, until it is offered.
             Vector2 target = section.WorldPosition;

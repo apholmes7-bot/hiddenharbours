@@ -79,8 +79,9 @@ namespace HiddenHarbours.World
             }
         }
 
-        /// <inheritdoc/>
-        public string VerbLabel => _verb;
+        /// <summary>The section's words (<c>Look at the groceries</c>); a section of ONE good says that good's
+        /// own words instead (its name and price), since its press buys it without a list.</summary>
+        public string VerbLabel => _goods.Length == 1 && _goods[0] != null ? _goods[0].VerbLabel : _verb;
 
         /// <summary>The plain press (one row, or a list with a single good left to buy): the first good with
         /// stock, else the first good, whose press then says the shelf is empty.</summary>

@@ -185,7 +185,7 @@ namespace HiddenHarbours.Tests.EditMode
             ShelfGood bread = signs.ShelfGoods[0];
             Interactables.Register(bread);
             bread.PutInSection();
-            Assert.That(new List<IInteractable>(Interactables.Active), Does.Not.Contain(bread));
+            Assert.That(new List<IInteractable>(Interactables.Active), Has.No.Member(bread));
             Assert.IsTrue(section.IsAvailable);
             Assert.That(section.VerbLabel, Is.EqualTo("Look at the groceries"));
         }
