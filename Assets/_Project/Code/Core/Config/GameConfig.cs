@@ -669,8 +669,12 @@ namespace HiddenHarbours.Core
         [Range(0.05f, 1f)] public float PotFloatSurfaceFollow = 0.75f;
         [Tooltip("The pot and marker floats' drawn size against their true size (1 = true size: a spindle " +
                  "float ~6 px wide at 32 px a metre). One number for every float; the waterline arc and the " +
-                 "ride scale with it.")]
-        [Range(0.5f, 3f)] public float PotFloatDrawScale = 1f;
+                 "ride scale with it. 2 = the owner's pick, 2026-11-25: true size read as a speck from the dory.")]
+        [Range(0.5f, 3f)] public float PotFloatDrawScale = 2f;
+        [Tooltip("Half-height of the pale waterline band on a pot or marker float, in the sprite's own texels. " +
+                 "The buoy default is a fraction of the sprite's height (several texels on a small float), which " +
+                 "bled down a thin stick as a pale tick in a trough. 1.5 = one bright row at the line.")]
+        [Range(0.5f, 4f)] public float PotFloatFoamTexels = 1.5f;
 
         [Header("Market (VS-16)")]
         [Tooltip("Demand D at the home cove (Coddle Cove) in priceMult = 1/(1+e·S/D). 1 = neutral baseline.")]

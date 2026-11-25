@@ -121,7 +121,8 @@ namespace HiddenHarbours.Boats
                 if (cfg != null)
                 {
                     buoy.ConfigurePaint(cfg.PlayerPotFloatColour, cfg.PlayerPotFloatBandColour);
-                    buoy.ConfigureRide(cfg.PotFloatSurfaceFollow, cfg.LobsterFloatDraftMeters, cfg.LobsterFloatFreeboardMeters);
+                    buoy.ConfigureRide(cfg.PotFloatSurfaceFollow, cfg.LobsterFloatDraftMeters, cfg.LobsterFloatFreeboardMeters,
+                                       cfg.PotFloatFoamTexels);
                     buoy.ConfigureDrawScale(cfg.PotFloatDrawScale);
                 }
             }

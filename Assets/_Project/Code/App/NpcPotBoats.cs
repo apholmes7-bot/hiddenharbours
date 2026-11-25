@@ -519,7 +519,8 @@ namespace HiddenHarbours.App
             if (GameServices.Config != null)
             {
                 pot.Wave.ConfigureRide(GameServices.Config.PotFloatSurfaceFollow,
-                                       def.Trap.BuoyDraftMeters, def.Trap.BuoyFreeboardMeters);
+                                       def.Trap.BuoyDraftMeters, def.Trap.BuoyFreeboardMeters,
+                                       GameServices.Config.PotFloatFoamTexels);
                 pot.Wave.ConfigureDrawScale(GameServices.Config.PotFloatDrawScale);
             }
             pot.Wave.enabled = false;

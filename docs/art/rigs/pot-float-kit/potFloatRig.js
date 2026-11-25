@@ -101,11 +101,16 @@
 
   // The float's shadow on the water, the small cousin of the nav marks' dark wet mass: a thin dark
   // disc at the surface, a little wider than the body and set toward the camera, so it reads below and
-  // around the float. Kept tight (a wet ring, not a skirt): it is painted on the sprite, so when a trough
-  // lowers the line a little it shows as the float's wet foot rather than a dark brim in the air.
-  const SHADOW_SPREAD = 1.2, SHADOW_TOWARD = 0.3;
-  const shadow = (F, r) => push(F, K.tube(0, -r * SHADOW_TOWARD, -0.006, -0.002, r * SHADOW_SPREAD,
-                                            r * SHADOW_SPREAD, SEG, 'SHADE', { caps: 'top', b: -0.2, capB: -0.2 }));
+  // around the float. Kept tight (a wet ring, not a skirt). It sits at the float's draft (META.draft),
+  // the lowest the engine ever lets a trough take the waterline, plus half the curved line's near-side
+  // drop (ground squash sin 40 x waterRadius): so the deepest line, centre column included, still lands
+  // on this wet ring, never on the bare stick or pole under the body (which drew a stray pale tick there).
+  const SHADOW_SPREAD = 1.2, SHADOW_TOWARD = 0.3, SHADOW_ARC = 0.5 * Math.sin(40 * Math.PI / 180);
+  const shadow = (F, r, m) => {
+    const depth = m.draft + SHADOW_ARC * m.waterRadius;
+    push(F, K.tube(0, -r * SHADOW_TOWARD, -depth - 0.004, -depth, r * SHADOW_SPREAD,
+                   r * SHADOW_SPREAD, SEG, 'SHADE', { caps: 'top', b: -0.2, capB: -0.2 }));
+  };
 
   const META = {
     // waterRadius = the body's radius where it meets still water (the engine's curved waterline);
@@ -132,7 +137,7 @@
     push(F, tube(0.215, 0.265, 0.079, 0.055, 'BODY', tone({ b: 0.2 })));
     push(F, tube(0.265, 0.30, 0.055, 0.020, 'BODY', tone({ caps: 'top', b: 0.3, capB: 0.6 })));
     growth(F, 0.084);
-    shadow(F, 0.084);
+    shadow(F, 0.084, META.bullet);
     return F;
   }
 
@@ -146,7 +151,7 @@
     push(F, tube(zc - R - 0.02, zc - R + 0.01, 0.024, 0.028, 'DARK', { seg: 10, caps: 'bottom', b: 0.2 }));
     eye(F, zc - R - 0.02, 0.035);
     growth(F, Math.sqrt(R * R - zc * zc));
-    shadow(F, Math.sqrt(R * R - zc * zc));
+    shadow(F, Math.sqrt(R * R - zc * zc), META.ball);
     return F;
   }
 
@@ -168,7 +173,7 @@
     push(F, tube(0.30, 0.33, 0.060, 0.022, 'BODY', tone({ caps: 'top', b: 0.3, capB: 0.6 })));
     eye(F, -0.54, 0.035);
     growth(F, 0.104);
-    shadow(F, 0.104);
+    shadow(F, 0.104, META.spar);
     return F;
   }
   const BUILD = { bullet, ball, spar };

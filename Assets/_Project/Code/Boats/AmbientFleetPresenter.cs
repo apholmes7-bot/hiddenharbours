@@ -386,7 +386,8 @@ namespace HiddenHarbours.Boats
                     if (GameServices.Config != null)
                     {
                         wave.ConfigureRide(GameServices.Config.PotFloatSurfaceFollow,
-                                           def.BuoyDraftMeters, def.BuoyFreeboardMeters);
+                                           def.BuoyDraftMeters, def.BuoyFreeboardMeters,
+                                           GameServices.Config.PotFloatFoamTexels);
                         wave.ConfigureDrawScale(GameServices.Config.PotFloatDrawScale);
                     }
                 }

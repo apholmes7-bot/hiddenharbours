@@ -199,7 +199,8 @@ MonoBehaviour:
   LobsterFloatDraftMeters: 0.08
   LobsterFloatFreeboardMeters: 0.17
   PotFloatSurfaceFollow: 0.75
-  PotFloatDrawScale: 1
+  PotFloatDrawScale: 2
+  PotFloatFoamTexels: 1.5
   MarketDemandCove: 1
   MarketDemandNineMileCreek: 1.4
   MarketDemandStPetersStore: 0.7

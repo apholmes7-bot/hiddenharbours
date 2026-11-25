@@ -162,6 +162,7 @@ namespace HiddenHarbours.Boats
         private float _rideFollow;
         private float _rideDraftMeters;
         private float _rideFreeboardMeters;
+        private float _rideFoamTexels;          // the ride's waterline band half-height in sprite texels (0 = the material's)
         private float _drawScale = 1f;          // the pot floats' drawn size against true size
 
         private bool _baseCached;
@@ -256,8 +257,11 @@ namespace HiddenHarbours.Boats
         /// trough shows the body's foot, never the eye) to <paramref name="freeboardMeters"/> above (only
         /// a big crest washes over the top). All three come from data (GameConfig and the float's def,
         /// measured off the rig). Nav marks never call this, so they ride exactly as before.
+        /// <paramref name="foamTexels"/> (GameConfig.PotFloatFoamTexels) sets the pale waterline band's
+        /// half-height in the sprite's own texels: the buoy default is a fraction of the sprite's height,
+        /// several texels on a small float, and it bled down a thin stick as a pale tick. 0 keeps the default.
         /// </summary>
-        public void ConfigureRide(float follow, float draftMeters, float freeboardMeters)
+        public void ConfigureRide(float follow, float draftMeters, float freeboardMeters, float foamTexels = 0f)
         {
             bool ok = follow > 0f && follow <= 1f && draftMeters > 0f && freeboardMeters > 0f;
             _ride = ok;
@@ -265,7 +269,12 @@ namespace HiddenHarbours.Boats
             _rideFollow = follow;
             _rideDraftMeters = draftMeters;
             _rideFreeboardMeters = freeboardMeters;
+            _rideFoamTexels = Mathf.Max(0f, foamTexels);
         }
+
+        /// <summary>The waterline band's half-height in uv.y this float draws with. For tests / tooling.</summary>
+        public float WaterlineFoamWidth =>
+            _ride && _rideFoamTexels > 0f ? _rideFoamTexels / Mathf.Max(1f, _spriteHeightPx) : _waterlineFoamWidth;
 
         /// <summary>
         /// Draw the float <paramref name="scale"/> times its true size (the owner's
@@ -523,6 +532,7 @@ namespace HiddenHarbours.Boats
             if (tex != null) _mpb.SetTexture(IdMainTex, tex);
             _mpb.SetFloat(IdWaterlineFrac, waterline);
             _mpb.SetFloat(IdSpriteHeightPx, _spriteHeightPx);
+            if (_ride && _rideFoamTexels > 0f) _mpb.SetFloat(IdWaterlineFoamWidth, WaterlineFoamWidth);
             _mpb.SetVector(IdWaterlineArc, _arc);
             PushPaint();
             _renderer.SetPropertyBlock(_mpb);

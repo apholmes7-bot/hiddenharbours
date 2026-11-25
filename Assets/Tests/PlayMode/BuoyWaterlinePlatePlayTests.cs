@@ -29,9 +29,10 @@ namespace HiddenHarbours.Tests.PlayMode
     /// nav marks never opt in and keep the cork bob they had.</para>
     ///
     /// <para><b>More plates for the eye.</b> The scale line-up puts each float beside a nav mark, a
-    /// standing fisher and the dory (all at true size, 32 px a metre); the colour plate paints every shape
-    /// in every owner's colours from data; the size comparison draws the floats at 1x, 1.5x and 2x
-    /// (<see cref="GameConfig.PotFloatDrawScale"/>) at the on-foot framing and at sea around the dory.</para>
+    /// standing fisher and the dory (the props at true size, 32 px a metre, the floats at the shipped
+    /// <see cref="GameConfig.PotFloatDrawScale"/>, the owner's 2x); the colour plate paints every shape
+    /// in every owner's colours from data; the size comparison draws the floats at 1x, 1.5x and 2x at the
+    /// on-foot framing and at sea around the dory; the shipped plate is the dory's screen at the shipped size.</para>
     ///
     /// <para>Pictures land in <c>HH_WATERLINE_PLATES</c> (the size sheets in <c>HH_SIZE_PLATES</c>; both
     /// default to the project's own <c>Temp/</c>, never the shared cache dir).</para>
@@ -113,9 +114,10 @@ namespace HiddenHarbours.Tests.PlayMode
 
         /// <summary>A pot float off the sheet, wired as the presenters wire it: geometry off the art,
         /// the arc at the radius in data, the owner's paint by ramp swap, the ride reach from its def
-        /// and the drawn size.</summary>
-        private Float PotFloat(string shape, float x, float y, Color body, Color band, float scale = 1f)
+        /// and the drawn size (the shipped <see cref="GameConfig.PotFloatDrawScale"/> unless one is given).</summary>
+        private Float PotFloat(string shape, float x, float y, Color body, Color band, float scale = 0f)
         {
+            if (scale <= 0f) scale = Config().PotFloatDrawScale;
             string defPath = DefFor(shape);
             float radius = Field(defPath, "BuoyFloatRadiusMeters");
             float draft = Field(defPath, "BuoyDraftMeters"), freeboard = Field(defPath, "BuoyFreeboardMeters");
@@ -132,7 +134,7 @@ namespace HiddenHarbours.Tests.PlayMode
             wave.ConfigureFloatFromSprite(art);
             wave.ConfigureWaterlineArc(radius);
             wave.ConfigurePaint(body, band);
-            wave.ConfigureRide(Config().PotFloatSurfaceFollow, draft, freeboard);
+            wave.ConfigureRide(Config().PotFloatSurfaceFollow, draft, freeboard, Config().PotFloatFoamTexels);
             wave.ConfigureDrawScale(scale);
             return new Float
             {
@@ -339,19 +341,34 @@ namespace HiddenHarbours.Tests.PlayMode
                 NavMark("Assets/_Project/Data/NavBuoys/PortCan.asset", 3.4f, 1.6f),
                 NavMark("Assets/_Project/Data/NavBuoys/Mooring.asset", 5.4f, 1.6f),
                 NavMark("Assets/_Project/Data/NavBuoys/CardinalN.asset", 7.4f, 1.4f),
-                PotFloat("bullet", 9.0f, 1.6f, gold, rust),
-                PotFloat("ball", 9.8f, 1.6f, gold, rust),
-                PotFloat("spar", 10.6f, 1.6f, gold, rust),
+                PotFloat("bullet", 8.9f, 1.6f, gold, rust),
+                PotFloat("ball", 10.0f, 1.6f, gold, rust),
+                PotFloat("spar", 11.1f, 1.6f, gold, rust),
             };
             yield return null;   // Awake/LateUpdate settle; every shot below overrides the wave by hand
 
             foreach (var f in floats)
                 Assert.Greater(f.Radius, 0f, $"{f.Name} never opted into the arc");
             for (int i = 0; i < 4; i++)
+            {
                 Assert.IsFalse(floats[i].Wave.RidesTheSurface, $"{floats[i].Name}: a nav mark must keep its own bob");
+                Assert.AreEqual(1f, floats[i].Renderer.transform.lossyScale.y, 1e-6f, $"{floats[i].Name}: a nav mark is never scaled");
+                Assert.AreEqual(1f, floats[i].Wave.DrawScale, 1e-6f, $"{floats[i].Name}: a nav mark keeps true size");
+            }
+            for (int i = 4; i < floats.Count; i++)
+                Assert.AreEqual(cfg.PotFloatDrawScale, floats[i].Renderer.transform.lossyScale.y, 1e-6f,
+                                $"{floats[i].Name}: drawn at the shipped size");
 
             var rest = new Dictionary<Float, float>();
             foreach (var f in floats) { f.Wave.ApplyWaveHeight(0f, Amplitude); rest[f] = f.Wave.WaterlineFrac; }
+            // The pale band at the line: a pot float's is PotFloatFoamTexels of its own texels (a wide band bled
+            // down the thin stick as a pale tick in a trough); a nav mark keeps the buoy default.
+            for (int i = 4; i < floats.Count; i++)
+                Assert.AreEqual(cfg.PotFloatFoamTexels / floats[i].Renderer.sprite.rect.height,
+                                floats[i].Wave.WaterlineFoamWidth, 1e-6f, $"{floats[i].Name}: band in its own texels");
+            for (int i = 0; i < 4; i++)
+                Assert.Greater(floats[i].Wave.WaterlineFoamWidth, floats[4].Wave.WaterlineFoamWidth,
+                               $"{floats[i].Name}: a nav mark keeps the buoy's own band");
 
             string dir = Folder();
             foreach (var st in States)
@@ -370,7 +387,7 @@ namespace HiddenHarbours.Tests.PlayMode
                     Assert.AreNotEqual(Vector4.zero, f.Wave.WaterlineArc, $"{f.Name}: no arc pushed");
                     LineAndCentre(f, out int row, out int col);
                     Sprite s = f.Renderer.sprite;
-                    int halfW = Mathf.CeilToInt(s.rect.width * 0.5f) + 1;
+                    int halfW = Mathf.CeilToInt(s.rect.width * 0.5f * f.Renderer.transform.lossyScale.x) + 1;
                     int changedCentre = 0, changedAbove = 0;
                     for (int x = Mathf.Max(0, col - halfW); x < Mathf.Min(W, col + halfW); x++)
                     {
@@ -414,9 +431,9 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 NavMark(NunPath, 1.1f, 1.8f),
                 OldFloat(7.6f, 1.8f, cfg.LobsterFloatRadiusMeters),
-                PotFloat("bullet", 8.7f, 1.8f, gold, rust),
-                PotFloat("ball", 9.6f, 1.8f, gold, rust),
-                PotFloat("spar", 10.6f, 1.8f, gold, rust),
+                PotFloat("bullet", 8.6f, 1.8f, gold, rust),
+                PotFloat("ball", 9.8f, 1.8f, gold, rust),
+                PotFloat("spar", 11.0f, 1.8f, gold, rust),
             };
             yield return null;
 
@@ -432,7 +449,7 @@ namespace HiddenHarbours.Tests.PlayMode
             // taller than the fisher (a 1.8 m man is ~58 px)
             Sprite bullet = floats[2].Renderer.sprite;
             Assert.AreEqual(Ppu, bullet.pixelsPerUnit, 0.01f, "true scale: 32 px a metre");
-            Assert.AreEqual(1f, cfg.PotFloatDrawScale, 1e-6f, "the shipped size stays true until the owner picks");
+            Assert.AreEqual(2f, cfg.PotFloatDrawScale, 1e-6f, "the owner's pick (2026-11-25): pot floats are drawn at 2x");
             Debug.Log($"[BuoyWaterlinePlate] line-up in {dir}");
         }
 
@@ -466,7 +483,8 @@ namespace HiddenHarbours.Tests.PlayMode
             for (int s = 0; s < shapes.Length; s++)
                 for (int o = 0; o < owners.Count; o++)
                 {
-                    Float f = PotFloat(shapes[s], 0.6f + o * step, rowY[s], owners[o].body, owners[o].band);
+                    // true size here: a paint check, packed tight (the shipped size is on the other plates)
+                    Float f = PotFloat(shapes[s], 0.6f + o * step, rowY[s], owners[o].body, owners[o].band, 1f);
                     bool bodyBaked = (Color32)owners[o].body is var b && b.r == 0xe0 && b.g == 0xb1 && b.b == 0x3a;
                     bool bandBaked = (Color32)owners[o].band is var n && n.r == 0x9c && n.g == 0x4a && n.b == 0x3c;
                     int want = (bodyBaked ? 0 : 5) + (bandBaked ? 0 : 5);
@@ -482,7 +500,80 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         /// <summary>
-        /// <b>The size question, for the owner's eye (no size ships from this).</b> The same line-up (a
+        /// <b>The float, its arc and its ride scale together.</b> One float at true size and one at 2x on
+        /// the same wave: the arc (in the sprite's own UV) is the same vector, so it wraps the drawn body
+        /// at the drawn width; the bob (world metres of water) is the same; and the line moves half as far
+        /// up the drawn-up sprite, which is the same water against a body twice the size.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator TheFloatItsArcAndItsRideScaleTogether()
+        {
+            GameConfig cfg = Config();
+            BuildStage();
+            Float one = PotFloat("bullet", 3f, 2f, cfg.PlayerPotFloatColour, cfg.PlayerPotFloatBandColour, 1f);
+            Float two = PotFloat("bullet", 8f, 2f, cfg.PlayerPotFloatColour, cfg.PlayerPotFloatBandColour, 2f);
+            yield return null;
+
+            one.Wave.ApplyWaveHeight(0f, Amplitude); two.Wave.ApplyWaveHeight(0f, Amplitude);
+            float rest1 = one.Wave.WaterlineFrac, rest2 = two.Wave.WaterlineFrac;
+            Assert.AreEqual(rest1, rest2, 1e-6f, "the same float line at any size");
+
+            const float h = 0.2f;   // small enough that neither clamps
+            one.Wave.ApplyWaveHeight(h, Amplitude); two.Wave.ApplyWaveHeight(h, Amplitude);
+            Assert.AreEqual(one.Wave.WaterlineArc, two.Wave.WaterlineArc, "the arc is the sprite's own, so it scales with it");
+            Assert.AreEqual((one.Wave.WaterlineFrac - rest1) * 0.5f, two.Wave.WaterlineFrac - rest2, 1e-5f,
+                            "the same water climbs half as far up a body drawn twice the size");
+            float bob1 = one.Renderer.transform.position.y - one.Wave.transform.position.y;
+            float bob2 = two.Renderer.transform.position.y - two.Wave.transform.position.y;
+            Assert.AreEqual(bob1, bob2, 1e-5f, "the lift is metres of water, the same at any size");
+            Assert.AreEqual(2f, two.Renderer.transform.lossyScale.x, 1e-6f);
+            Assert.AreEqual(2f, two.Wave.DrawScale, 1e-6f);
+        }
+
+        /// <summary>
+        /// <b>The shipped size from the dory.</b> What a 1920x1080 screen shows in the dory's framing (x3,
+        /// 20 m x 11.25 m) with the floats at the shipped <see cref="GameConfig.PotFloatDrawScale"/>: a
+        /// nav mark, the fisher in the dory, floats 5 m and about 9.7 m off, at rest, in a trough, on a
+        /// crest and in a deep trough that holds the line at its draft. Into <c>HH_SHIPPED_PLATES</c>.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator TheShippedSizeFromTheDory()
+        {
+            GameConfig cfg = Config();
+            Color gold = cfg.PlayerPotFloatColour, rust = cfg.PlayerPotFloatBandColour;
+            string dir = Folder("HH_SHIPPED_PLATES", "ShippedPlates");
+            const int w = ScreenW / GameZoom, h = ScreenH / GameZoom;   // 640 x 360 texels
+            BuildStage(w, h);
+            float cx = w / (2f * Ppu), cy = h / (2f * Ppu);
+            Prop(DoryPath, DorySprite, cx, cy);
+            Prop(FisherPath, FisherSprite, cx, cy + 0.2f);
+            var floats = new List<Float> { NavMark(NunPath, cx - 6f, cy + 2f) };
+            string[] shapes = { "bullet", "ball", "spar" };
+            float scale = cfg.PotFloatDrawScale;
+            for (int s = 0; s < shapes.Length; s++)
+            {
+                floats.Add(PotFloat(shapes[s], cx + 3.2f + s * 0.7f * scale, cy - 1.5f, gold, rust));
+                floats.Add(PotFloat(shapes[s], cx + 8.6f - (2 - s) * 0.7f * scale, cy - 4.4f, gold, rust));
+            }
+            yield return null;
+
+            var rest = new Dictionary<Float, float>();
+            foreach (var f in floats) { f.Wave.ApplyWaveHeight(0f, Amplitude); rest[f] = f.Wave.WaterlineFrac; }
+            var states = new List<(string name, float height)>(States) { ("deeptrough", -1.0f) };
+            foreach (var st in states)
+            {
+                yield return null;
+                Color32[] shot = Shoot(floats, st.height, Amplitude);
+                Save(shot, w, h, dir, $"shipped_{SizeName(scale)}_dory_{st.name}", GameZoom);
+                foreach (var f in floats)
+                    if (f.Wave.RidesTheSurface)
+                        AssertRideHeld(f, st.name == "deeptrough" ? "trough" : st.name, rest[f]);
+            }
+            Debug.Log($"[BuoyWaterlinePlate] shipped-size plates in {dir}");
+        }
+
+        /// <summary>
+        /// <b>The size question, as put to the owner (he picked 2x, 2026-11-25).</b> The same line-up (a
         /// nav mark, a standing fisher, the dory, the three floats) with the floats drawn at 1x, 1.5x and
         /// 2x through the one data value (<see cref="GameConfig.PotFloatDrawScale"/>), at rest, in a
         /// trough and on a crest:

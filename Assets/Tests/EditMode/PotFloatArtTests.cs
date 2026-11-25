@@ -229,7 +229,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(MetaOf("ball", "freeboard"), crab.BuoyFreeboardMeters, 1e-4, "crab freeboard");
             Assert.AreEqual(MetaOf("spar", "draft"), fleet.BuoyDraftMeters, 1e-4, "fleet draft");
             Assert.AreEqual(MetaOf("spar", "freeboard"), fleet.BuoyFreeboardMeters, 1e-4, "fleet freeboard");
-            Assert.AreEqual(1f, cfg.PotFloatDrawScale, 1e-6, "the drawn size stays true until the owner picks");
+            Assert.AreEqual(2f, cfg.PotFloatDrawScale, 1e-6, "the owner's pick (2026-11-25): pot floats are drawn at 2x");
         }
 
         [Test]
