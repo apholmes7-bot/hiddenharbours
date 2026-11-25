@@ -121,10 +121,10 @@ MonoBehaviour:
   FullSunElevation: 0.25
   IndoorFadeSeconds: 0.6
   NoiseSize: 128
-  NoiseCells: 8
+  NoiseCells: 16
   NoiseOctaves: 4
   ScaleMetres: 1024
-  Softness: 0.12
+  Softness: 0.08
   SecondaryScale: 1.73
   SecondaryRate: 0.71
   SecondaryWeight: 0.35

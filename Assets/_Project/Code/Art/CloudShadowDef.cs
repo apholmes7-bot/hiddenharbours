@@ -39,13 +39,13 @@ namespace HiddenHarbours.Art
         [Tooltip("Noise texture edge in texels (power of two). Made once per world seed; never an asset.")]
         [Min(2)] public int NoiseSize = 128;
         [Tooltip("Lattice cells across the texture for the broadest octave; must divide NoiseSize.")]
-        [Min(1)] public int NoiseCells = 8;
+        [Min(1)] public int NoiseCells = 16;
         [Tooltip("Octaves of detail, each half the size of the last.")]
         [Min(1)] public int NoiseOctaves = 4;
-        [Tooltip("World metres one texture repeat covers. 1024 m and 8 cells make the broadest clouds ~128 m.")]
+        [Tooltip("World metres one texture repeat covers. 1024 m and 16 cells make the broadest clouds ~64 m: bigger than the view, far bigger than a boat, with an edge that crosses the screen.")]
         [Min(0)] public float ScaleMetres = 1024;
         [Tooltip("Width of a patch's soft edge, in noise units either side of the threshold.")]
-        [Range(0, 1)] public float Softness = .12f;
+        [Range(0, 1)] public float Softness = .08f;
         [Min(0)] public float SecondaryScale = 1.73f;
         [Min(0)] public float SecondaryRate = .71f;
         [Range(0, 1)] public float SecondaryWeight = .35f;
