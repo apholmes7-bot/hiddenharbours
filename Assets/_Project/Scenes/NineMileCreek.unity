@@ -438841,6 +438841,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1700554555}
   - component: {fileID: 1700554554}
+  - component: {fileID: 997553289}
+  - component: {fileID: 834738938}
+  - component: {fileID: 1050743325}
   m_Layer: 0
   m_Name: NmcFishingGearWholesalerCounter
   m_TagString: Untagged
@@ -438861,6 +438864,60 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.GearShop
   _offer: {fileID: 11400000, guid: 58aa4b2b9fdf4938b5a4793d995a8562, type: 2}
+  _sellerId: seller.nmc_fishing_gear_wholesaler
+  _walletProvider: {fileID: 957678902}
+  _onPurchased:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &997553289
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1700554553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e457f04c6ad54f02a070dcbd46ff2735, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.BaitShop
+  _bait: {fileID: 11400000, guid: 82954235fd9a4d288553f2746c459a35, type: 2}
+  _sellerId: seller.nmc_fishing_gear_wholesaler
+  _walletProvider: {fileID: 957678902}
+  _onPurchased:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &834738938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1700554553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e457f04c6ad54f02a070dcbd46ff2735, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.BaitShop
+  _bait: {fileID: 11400000, guid: f0270fb70448431dac5615f6431c6dc9, type: 2}
+  _sellerId: seller.nmc_fishing_gear_wholesaler
+  _walletProvider: {fileID: 957678902}
+  _onPurchased:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &1050743325
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1700554553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e457f04c6ad54f02a070dcbd46ff2735, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.BaitShop
+  _bait: {fileID: 11400000, guid: 8976f51b0e5b41449f772042dc4a20c3, type: 2}
   _sellerId: seller.nmc_fishing_gear_wholesaler
   _walletProvider: {fileID: 957678902}
   _onPurchased:

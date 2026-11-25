@@ -311,10 +311,13 @@ namespace HiddenHarbours.App.Editor
         /// <summary>The vendor classes the step may ADD as a copy of one the counter already holds, in the order
         /// their new documents are written. Each is a plain wares + seller id + wallet + empty purchase event
         /// component, so a copy differs from its template by its wares and its id alone.</summary>
-        static readonly Type[] CopyableKinds = { typeof(SupplyShop), typeof(InstrumentShop) };
+        // The bait shops first: St Peters' counter lists its three hook baits ahead of the four everyday goods,
+        // so the food shops, added back alone, land last where the committed scene holds them.
+        static readonly Type[] CopyableKinds = { typeof(BaitShop), typeof(SupplyShop), typeof(InstrumentShop) };
 
         /// <summary>
-        /// The vendors the step may ADD: a <see cref="SupplyShop"/> or an <see cref="InstrumentShop"/> the wiring
+        /// The vendors the step may ADD: a <see cref="SupplyShop"/>, an <see cref="InstrumentShop"/> or a
+        /// <see cref="BaitShop"/> (the St Peters store's hook baits, 2026-11-25; the same plain shape) the wiring
         /// lists on a counter that already holds at least one of that class. The new vendor is a copy of the
         /// counter's first of its class (same script, same GameObject, same <c>_walletProvider</c>, same empty
         /// purchase event), stocking the listed wares and selling as the row's id, written where Unity serialises

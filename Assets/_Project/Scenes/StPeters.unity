@@ -69632,6 +69632,9 @@ GameObject:
   - component: {fileID: 1384401478}
   - component: {fileID: 1384401477}
   - component: {fileID: 1384401476}
+  - component: {fileID: 1706184173}
+  - component: {fileID: 1438489330}
+  - component: {fileID: 1115408928}
   - component: {fileID: 1809999676}
   - component: {fileID: 518165546}
   - component: {fileID: 2071340022}
@@ -69855,6 +69858,60 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1706184173
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1384401473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e457f04c6ad54f02a070dcbd46ff2735, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.BaitShop
+  _bait: {fileID: 11400000, guid: 82954235fd9a4d288553f2746c459a35, type: 2}
+  _sellerId: seller.leblancs
+  _walletProvider: {fileID: 1773492499}
+  _onPurchased:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &1438489330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1384401473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e457f04c6ad54f02a070dcbd46ff2735, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.BaitShop
+  _bait: {fileID: 11400000, guid: f0270fb70448431dac5615f6431c6dc9, type: 2}
+  _sellerId: seller.leblancs
+  _walletProvider: {fileID: 1773492499}
+  _onPurchased:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &1115408928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1384401473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e457f04c6ad54f02a070dcbd46ff2735, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.BaitShop
+  _bait: {fileID: 11400000, guid: 8976f51b0e5b41449f772042dc4a20c3, type: 2}
+  _sellerId: seller.leblancs
+  _walletProvider: {fileID: 1773492499}
+  _onPurchased:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &1809999676
 MonoBehaviour:
   m_ObjectHideFlags: 0
