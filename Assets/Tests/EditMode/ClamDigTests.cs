@@ -19,10 +19,11 @@ namespace HiddenHarbours.Tests.EditMode
         {
             private readonly List<CatchItem> _items = new();
             public int Capacity = 20;
+            public bool RejectAdds;
             public int CapacityUnits => Capacity;
             public int UsedUnits => _items.Count;
             public IReadOnlyList<CatchItem> Items => _items;
-            public bool TryAdd(CatchItem item) { if (_items.Count >= Capacity) return false; _items.Add(item); return true; }
+            public bool TryAdd(CatchItem item) { if (RejectAdds || _items.Count >= Capacity) return false; _items.Add(item); return true; }
             public void Clear() => _items.Clear();
         }
 
@@ -305,6 +306,135 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsTrue(digger.TryDigNearest());
             Assert.AreEqual(0, holdA.UsedUnits, "the farther hole is untouched");
             Assert.AreEqual(1, holdB.UsedUnits, "the nearest in-range hole is the one dug");
+        }
+
+        [Test]
+        public void Digger_SkipsASpentNearHole_AndTakesTheNextFreshOne()
+        {
+            var spentHold = new FakeHold();
+            var freshHold = new FakeHold();
+            var spent = MakeDigAt(spentHold, MakeClam(), Vector2.zero);
+            var fresh = MakeDigAt(freshHold, MakeClam(), new Vector2(0.5f, 0f));
+            spent.MarkConsumed();
+            var digger = MakeDigger(Vector2.zero);
+
+            Assert.AreSame(fresh, ClamDigger.NearestDiggable(Vector2.zero));
+            Assert.IsTrue(digger.TryDigNearest());
+            Assert.AreEqual(0, spentHold.UsedUnits);
+            Assert.AreEqual(1, freshHold.UsedUnits);
+            Assert.AreEqual(1, _caught);
+            Assert.IsNull(ClamDigger.NearestDiggable(Vector2.zero));
+            Assert.IsFalse(digger.TryDigNearest());
+            Assert.AreEqual(1, _caught);
+        }
+
+        [TestCase(0.999f, true)]
+        [TestCase(1f, true)]
+        [TestCase(1.001f, false)]
+        public void Dig_ExposureIncludesGroundExactlyAtWaterLevel(float water, bool expected)
+        {
+            _env.Level = water;
+            var hold = new FakeHold();
+            var dig = MakeDig(hold, MakeClam());
+            Assert.AreEqual(expected, dig.IsExposedNow());
+            Assert.AreEqual(expected, dig.TryDig());
+            Assert.AreEqual(expected ? 1 : 0, hold.UsedUnits);
+            Assert.AreEqual(expected ? 1 : 0, _caught);
+            Assert.AreEqual(expected, dig.Consumed);
+        }
+
+        [TestCase(1.249f, true)]
+        [TestCase(1.25f, true)]
+        [TestCase(1.251f, false)]
+        public void Digger_ReachIncludesTheConfiguredBoundary(float distance, bool expected)
+        {
+            var hold = new FakeHold();
+            var dig = MakeDigAt(hold, MakeClam(), Vector2.zero, 1.25f);
+            var digger = MakeDigger(new Vector2(distance, 0f));
+            Assert.AreEqual(expected, dig.WithinReach(new Vector2(distance, 0f)));
+            Assert.AreEqual(expected, digger.TryDigNearest());
+            Assert.AreEqual(expected ? 1 : 0, hold.UsedUnits);
+        }
+
+        [Test]
+        public void MissingEnvironment_RefusesWithoutSpendingTheHole()
+        {
+            GameServices.Environment = null;
+            var hold = new FakeHold();
+            var dig = MakeDig(hold, MakeClam());
+            Assert.IsFalse(dig.IsAvailable);
+            Assert.IsFalse(dig.TryDig());
+            Assert.IsFalse(dig.Consumed);
+            Assert.AreEqual(0, hold.UsedUnits);
+            Assert.AreEqual(0, _caught);
+        }
+
+        [Test]
+        public void RefusedInsertion_LeavesTheHoleFreshForARetry()
+        {
+            var hold = new FakeHold { RejectAdds = true };
+            var dig = MakeDig(hold, MakeClam());
+            Assert.IsFalse(dig.TryDig());
+            Assert.IsFalse(dig.Consumed);
+            Assert.AreEqual(0, _save.SpentClamHoles.Count);
+            Assert.AreEqual(0, _caught);
+            hold.RejectAdds = false;
+            Assert.IsTrue(dig.TryDig());
+            Assert.IsTrue(dig.Consumed);
+            Assert.AreEqual(1, hold.UsedUnits);
+            Assert.AreEqual(1, _save.SpentClamHoles.Count);
+            Assert.AreEqual(1, _caught);
+        }
+
+        [Test]
+        public void QuietHole_CanBeDugWithoutWaitingForItsSquirt()
+        {
+            var hold = new FakeHold();
+            var dig = MakeDig(hold, MakeClam());
+            Assert.IsFalse(dig.ShowingSquirt);
+            Assert.IsTrue(dig.IsAvailable);
+            Assert.IsTrue(dig.TryDig());
+            Assert.AreEqual(1, hold.UsedUnits);
+            Assert.IsFalse(dig.IsAvailable);
+        }
+
+        [TestCase("SoftShellClam", "fish.soft_shell_clam", 0.05f, 0.2f)]
+        [TestCase("AtlanticSurfClam", "fish.atlantic_surf_clam", 0.2f, 0.5f)]
+        public void AuthoredClam_YieldsOneOfItsOwnSpeciesAndWeightRange(
+            string asset, string speciesId, float minKg, float maxKg)
+        {
+            var species = UnityEditor.AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(
+                "Assets/_Project/Data/Fish/" + asset + ".asset");
+            Assert.IsNotNull(species);
+            Assert.AreEqual(speciesId, species.Id);
+            Assert.AreEqual(minKg, species.MinWeightKg);
+            Assert.AreEqual(maxKg, species.MaxWeightKg);
+            var hold = new FakeHold();
+            var dig = MakeDig(hold, species, seed: 7);
+            Assert.IsTrue(dig.TryDig());
+            Assert.AreEqual(1, hold.UsedUnits);
+            Assert.AreEqual(speciesId, hold.Items[0].SpeciesId);
+            Assert.AreEqual(CatchResolver.RollWeight(species, new System.Random(7)), hold.Items[0].WeightKg);
+            Assert.AreEqual(species.BaseValue, hold.Items[0].BaseValue);
+            Assert.AreEqual(species.SpoilPerDay, hold.Items[0].SpoilPerDay);
+        }
+
+        [Test]
+        public void DirectDig_CurrentlyUsesExposureRatherThanSpeciesCatchWindows()
+        {
+            var species = MakeClam();
+            species.RegionIds = new[] { "region.other" };
+            species.Seasons = SeasonMask.HardWinter;
+            species.StartHour = 6f;
+            species.EndHour = 20f;
+            species.MaxTide = -0.44f;
+            species.AllowedGear = Gear.None;
+            GameServices.Clock = new StampClock { TotalSeconds = 123d };
+            var context = new CatchContext("region.st_peters", _env.Level, 0f, Season.EarlySpring, Gear.ClamFork);
+            Assert.IsFalse(CatchResolver.Matches(species, context));
+            var hold = new FakeHold();
+            Assert.IsTrue(MakeDig(hold, species).TryDig());
+            Assert.AreEqual(1, hold.UsedUnits);
         }
 
         [Test]
