@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d8e5a17c94b4f2e9a6b0c1d2e7f4a58, type: 3}
+  m_Name: StPetersRockPlacement
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.ShoreRockPlacementDef
+  Id: rockplacement.st_peters
+  Rocks:
+  - Name: Rock_m
+    At: {x: 217.51648, y: 15.402516}
+  - Name: Rock_s
+    At: {x: 146.46307, y: 81.714615}
+  - Name: Rock_s
+    At: {x: 19.110401, y: 83.75696}
+  - Name: Rock_m
+    At: {x: -59.072388, y: 45.64033}
+  - Name: Rock_s
+    At: {x: -67.446884, y: -44.643917}
+  - Name: Rock_m
+    At: {x: 32.111015, y: -91.01116}
+  - Name: Rock_m
+    At: {x: 142.42873, y: -83.1966}
+  - Name: Rock_m
+    At: {x: 192.06223, y: -44.92551}
+  - Name: Rock_reef
+    At: {x: 219.74556, y: 16.604492}
+  - Name: Rock_reef
+    At: {x: 139.68318, y: 76.68466}
+  - Name: Rock_reef
+    At: {x: 37.999996, y: 90.75729}
+  - Name: Rock_reef
+    At: {x: 2.7833328, y: 81.71474}
+  - Name: Rock_reef
+    At: {x: -33.393066, y: 73.903275}
+  - Name: Rock_reef
+    At: {x: -69.333435, y: -40.213352}
+  - Name: Rock_reef
+    At: {x: -19.641968, y: -73.95732}
+  - Name: Rock_reef
+    At: {x: 39.106323, y: -84.04992}
+  - Name: Rock_reef
+    At: {x: 131.77649, y: -76.42956}
+  - Name: Rock_reef
+    At: {x: 176.35498, y: -55.980892}
+  - Name: Rock_bm
+    At: {x: 199.59541, y: 21.976654}
+  - Name: Rock_bs
+    At: {x: 189.81767, y: 35.82409}
+  - Name: Rock_bm
+    At: {x: -16.300842, y: -62.600094}
+  - Name: Rock_bl
+    At: {x: 14.860973, y: -74.39502}
+  - Name: Rock_bm
+    At: {x: 82.966705, y: -78.49187}
+  - Name: Rock_bs
+    At: {x: 114.98439, y: -69.632286}
+  - Name: Rock_bl
+    At: {x: 156.26546, y: -59.19893}
+  - Name: Rock_bs
+    At: {x: 179.58127, y: -44.53014}
+  - Name: FieldRock_bm
+    At: {x: 84.256836, y: 49.805676}
+  - Name: FieldRock_bs
+    At: {x: 115.6248, y: 57.121513}
+  - Name: FieldRock_bl
+    At: {x: 123.9332, y: 56.399147}
+  - Name: FieldRock_bs
+    At: {x: 58.72657, y: 37.886158}
+  - Name: FieldRock_bs
+    At: {x: 122.00507, y: -47.86218}
+  - Name: FieldRock_bs
+    At: {x: 104.33841, y: -56.538673}
+  - Name: FieldRock_bs
+    At: {x: 4.5837708, y: -45.33265}

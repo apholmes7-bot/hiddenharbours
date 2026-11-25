@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
+using HiddenHarbours.Core;
 using HiddenHarbours.World;
 using HiddenHarbours.App.Editor;
 using HiddenHarbours.Art.Editor;
@@ -93,30 +94,42 @@ namespace HiddenHarbours.Tests.EditMode
             var terrain = _terrainGo.AddComponent<TidalTerrain>();
             StPetersBuilder.ConfigureTidalTerrain(terrain);   // the same zones the scene is built with
             ShoreRockSwapChecks.SwapChangesOnlyTheNamed(_sceneText, StPetersLayerRefresh.PainterPlacement(terrain),
-                                                        ShoreRockSwapChecks.PaintedToday,
-                                                        ShoreRockSwapChecks.PaintedToday.Select(Def).ToList(),
-                                                        placementIsTheCommittedRocks: false);
+                                                        ShoreRockSwapChecks.All, TheSwaps(), placementIsTheCommittedRocks: false);
         }
 
+        /// <summary>The painter lays the rocks the scene keeps: the placement Def is the scene's 33 rocks,
+        /// by name and exact place, in the scene's own child order (and not the scatter's 21).</summary>
         [Test]
-        public void TheThirteenRocksThePainterNoLongerPlaces_StopTheRefresh_RatherThanBeDeleted()
+        public void ThePaintersPlacement_IsTheScenesThirtyThreeRocks_InTheirOrder()
         {
-            _terrainGo = new GameObject("TidalTerrain_ShoreRockSwapTest");
-            var terrain = _terrainGo.AddComponent<TidalTerrain>();
-            StPetersBuilder.ConfigureTidalTerrain(terrain);
-            List<StPetersLayerRefresh.PlacedRock> today = StPetersLayerRefresh.PainterPlacement(terrain);
-            Assert.AreEqual(13, ShoreRockSwapChecks.NotPaintedToday.Length);
-            foreach (string id in ShoreRockSwapChecks.NotPaintedToday)
+            List<StPetersLayerRefresh.PlacedRock> kept = StPetersLayerRefresh.PainterPlacement(null);
+            List<StPetersLayerRefresh.PlacedRock> scene = StPetersLayerRefresh.RocksInScene(StPetersLayerRefresh.SceneYaml.Parse(_sceneText));
+            Assert.AreEqual(33, scene.Count, "the scene's rocks");
+            Assert.AreEqual(scene.Count, kept.Count, "the placement's rocks");
+            for (int i = 0; i < scene.Count; i++)
             {
-                ShoreRockSwapChecks.Row row = ShoreRockSwapChecks.All.Single(r => r.Id == id);
-                var at = new Vector2(row.X, row.Y);
-                Assert.IsFalse(today.Any(p => p.Name == row.Today && Vector2.Distance(p.Position, at) <= 0.01f),
-                               id + " is painted today: move it back to PaintedToday");
+                Assert.AreEqual(scene[i].Name, kept[i].Name, $"rock {i}: name");
+                Assert.AreEqual(scene[i].SpriteKey, kept[i].SpriteKey, $"rock {i}: sheet key");
+                Assert.IsTrue(scene[i].Position.x == kept[i].Position.x && scene[i].Position.y == kept[i].Position.y,
+                              $"rock {i} ({kept[i].Name}): placed at ({kept[i].Position.x:R}, {kept[i].Position.y:R}), " +
+                              $"the scene holds ({scene[i].Position.x:R}, {scene[i].Position.y:R})");
             }
+        }
+
+        /// <summary>The refresh on the committed scene, with the committed Defs and the real kit, changes
+        /// nothing: every one of the 33 rocks stays where it is, wearing its Def's sprite, and the contact
+        /// shade under each stays too.</summary>
+        [Test]
+        public void TheRefresh_LeavesAllThirtyThreeRocksWhereTheyAre_WithTheirDefSprites()
+        {
+            List<ShoreRockDef> defs = StPetersLayerRefresh.LoadStPetersShoreRockDefs();
+            Assert.AreEqual(33, defs.Count, "one committed Def per rock");
             var scene = StPetersLayerRefresh.SceneYaml.Parse(_sceneText);
-            var refusal = Assert.Throws<StPetersLayerRefresh.Refusal>(() => StPetersLayerRefresh.Shoreline(
-                scene, today, new ShoreRockSwapChecks.TestShoreRockSprites(), TheSwaps()));
-            StringAssert.Contains("0 painted rocks match it", refusal.Message);
+            StPetersLayerRefresh.LayerPatch patch = StPetersLayerRefresh.Shoreline(
+                scene, (ITidalTerrain)null, new StPetersLayerRefresh.EditorShoreRockSprites(), defs);
+            string after = patch.ApplyTo(_sceneText);
+            Assert.AreEqual(_sceneText.Length, after.Length, "the refresh changed the scene's length");
+            Assert.IsTrue(string.Equals(_sceneText, after, StringComparison.Ordinal), "the refresh changed the scene");
         }
 
         [Test]
@@ -357,22 +370,6 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>Every St Peters swap: the nine, then the rest.</summary>
         internal static readonly Row[] All = Nine.Concat(Rest).ToArray();
-
-        /// <summary>
-        /// The thirteen committed rocks the shore painter no longer places: its scatter has moved on
-        /// since the scene was painted (today it places 21 rocks and the scene keeps 33). A Shoreline
-        /// refresh would have deleted these rocks. Their Defs now stop it with a refusal instead, until
-        /// someone decides whether the painter or the scene is right.
-        /// </summary>
-        internal static readonly string[] NotPaintedToday =
-        {
-            "rock.stp_bl_1", "rock.stp_bl_2", "rock.stp_bm_1", "rock.stp_bm_2", "rock.stp_bs_1",
-            "rock.stp_m_2", "rock.stp_m_3", "rock.stp_m_4",
-            "rock.stp_reef_5", "rock.stp_reef_6", "rock.stp_reef_7", "rock.stp_reef_8", "rock.stp_s_3",
-        };
-
-        /// <summary>Every swap whose rock the painter still places today.</summary>
-        internal static readonly Row[] PaintedToday = All.Where(r => !NotPaintedToday.Contains(r.Id)).ToArray();
 
         /// <summary>"Within a hundredth of a metre of At" (ShoreRockDef's own contract).</summary>
         const float MatchMetres = 0.01f;
