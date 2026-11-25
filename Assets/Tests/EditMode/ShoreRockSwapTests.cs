@@ -31,9 +31,15 @@ namespace HiddenHarbours.Tests.EditMode
     /// committed rocks already wear, read from the scene text.</para>
     ///
     /// <para><b>Since terrain PR 5w the committed scene carries the nine swaps</b>, so the nine wear the kit's
-    /// Rock Px sprites. A key's ShoreIso sprite is read from the committed rocks no swap names, and without
-    /// swaps the step hands the nine back their key's ShoreIso sprite: on the committed rocks it changes the
-    /// nine's sprite and size and nothing else (checked first).</para>
+    /// Rock Px sprites.</para>
+    ///
+    /// <para><b>Since the shaded-rocks PR every St Peters rock has a swap</b>: the nine plus 24 more
+    /// (<see cref="ShoreRockSwapChecks.Rest"/>), so no rock wears the old flat ShoreIso sprite. No committed
+    /// rock is left to read a key's ShoreIso sprite from, so the test reads it from the sheet's own
+    /// <c>.meta</c> (its sprite's internal id and rect, as the editor loads it). Without swaps the step hands
+    /// all 33 back their key's ShoreIso sprite: on the committed rocks it changes their sprite and size and
+    /// nothing else (checked first). The table is written out by hand, and the committed Def assets are held
+    /// to it row for row.</para>
     /// </summary>
     public class ShoreRockSwapTests
     {
@@ -66,32 +72,103 @@ namespace HiddenHarbours.Tests.EditMode
 
         List<ShoreRockDef> TheNine() => ShoreRockSwapChecks.Nine.Select(Def).ToList();
 
+        List<ShoreRockDef> TheSwaps() => ShoreRockSwapChecks.All.Select(Def).ToList();
+
         // =============================================================================================
         //  the swap
         // =============================================================================================
 
         [Test]
-        public void TheNineSwaps_ChangeOnlyTheNineSprites_OnTheCommittedRocks()
+        public void TheSwaps_ChangeOnlyTheirSprites_OnTheCommittedRocks()
         {
             var scene = StPetersLayerRefresh.SceneYaml.Parse(_sceneText);
-            ShoreRockSwapChecks.SwapChangesOnlyTheNine(_sceneText, StPetersLayerRefresh.RocksInScene(scene), TheNine(),
-                                                       placementIsTheCommittedRocks: true);
+            ShoreRockSwapChecks.SwapChangesOnlyTheNamed(_sceneText, StPetersLayerRefresh.RocksInScene(scene),
+                                                        ShoreRockSwapChecks.All, TheSwaps(), placementIsTheCommittedRocks: true);
         }
 
         [Test]
-        public void TheNineSwaps_ChangeOnlyTheNineSprites_OnThePaintersPlacementToday()
+        public void TheSwaps_ChangeOnlyTheirSprites_OnThePaintersPlacementToday()
         {
             _terrainGo = new GameObject("TidalTerrain_ShoreRockSwapTest");
             var terrain = _terrainGo.AddComponent<TidalTerrain>();
             StPetersBuilder.ConfigureTidalTerrain(terrain);   // the same zones the scene is built with
-            ShoreRockSwapChecks.SwapChangesOnlyTheNine(_sceneText, StPetersLayerRefresh.PainterPlacement(terrain), TheNine(),
-                                                       placementIsTheCommittedRocks: false);
+            ShoreRockSwapChecks.SwapChangesOnlyTheNamed(_sceneText, StPetersLayerRefresh.PainterPlacement(terrain),
+                                                        ShoreRockSwapChecks.PaintedToday,
+                                                        ShoreRockSwapChecks.PaintedToday.Select(Def).ToList(),
+                                                        placementIsTheCommittedRocks: false);
+        }
+
+        [Test]
+        public void TheThirteenRocksThePainterNoLongerPlaces_StopTheRefresh_RatherThanBeDeleted()
+        {
+            _terrainGo = new GameObject("TidalTerrain_ShoreRockSwapTest");
+            var terrain = _terrainGo.AddComponent<TidalTerrain>();
+            StPetersBuilder.ConfigureTidalTerrain(terrain);
+            List<StPetersLayerRefresh.PlacedRock> today = StPetersLayerRefresh.PainterPlacement(terrain);
+            Assert.AreEqual(13, ShoreRockSwapChecks.NotPaintedToday.Length);
+            foreach (string id in ShoreRockSwapChecks.NotPaintedToday)
+            {
+                ShoreRockSwapChecks.Row row = ShoreRockSwapChecks.All.Single(r => r.Id == id);
+                var at = new Vector2(row.X, row.Y);
+                Assert.IsFalse(today.Any(p => p.Name == row.Today && Vector2.Distance(p.Position, at) <= 0.01f),
+                               id + " is painted today: move it back to PaintedToday");
+            }
+            var scene = StPetersLayerRefresh.SceneYaml.Parse(_sceneText);
+            var refusal = Assert.Throws<StPetersLayerRefresh.Refusal>(() => StPetersLayerRefresh.Shoreline(
+                scene, today, new ShoreRockSwapChecks.TestShoreRockSprites(), TheSwaps()));
+            StringAssert.Contains("0 painted rocks match it", refusal.Message);
+        }
+
+        [Test]
+        public void TheNineSwapsAlone_ChangeOnlyTheNineSprites_OnThePaintersPlacementToday()
+        {
+            _terrainGo = new GameObject("TidalTerrain_ShoreRockSwapTest");
+            var terrain = _terrainGo.AddComponent<TidalTerrain>();
+            StPetersBuilder.ConfigureTidalTerrain(terrain);
+            ShoreRockSwapChecks.SwapChangesOnlyTheNamed(_sceneText, StPetersLayerRefresh.PainterPlacement(terrain),
+                                                        ShoreRockSwapChecks.Nine, TheNine(), placementIsTheCommittedRocks: false);
+        }
+
+        [Test]
+        public void EveryCommittedRock_IsNamedByExactlyOneRow()
+        {
+            var t = new LayerRefreshSceneText(_sceneText);
+            long rocks = t.ChildNamed(t.RootGameObject(StPetersShorePainter.RootName), StPetersShorePainter.RocksRootName);
+            List<long> gos = t.ChildGameObjects(rocks);
+            Assert.AreEqual(ShoreRockSwapChecks.All.Length, gos.Count, "the committed rocks, one row each");
+            var named = new HashSet<string>(StringComparer.Ordinal);
+            foreach (long go in gos)
+            {
+                List<ShoreRockSwapChecks.Row> rows = ShoreRockSwapChecks.RowsNaming(t, go);
+                Assert.AreEqual(1, rows.Count, $"rows naming the {t.Field(go, "m_Name")} at {t.Vec3(t.TransformOf(go), "m_LocalPosition")}");
+                Assert.IsTrue(named.Add(rows[0].Id), $"{rows[0].Id} names two rocks");
+            }
+        }
+
+        [Test]
+        public void TheCommittedDefs_AreTheTable()
+        {
+            List<ShoreRockDef> defs = StPetersLayerRefresh.LoadStPetersShoreRockDefs();
+            CollectionAssert.AreEquivalent(ShoreRockSwapChecks.All.Select(r => r.Id).ToList(), defs.Select(d => d.Id).ToList(),
+                                           "St Peters' ShoreRockDef ids against the table");
+            foreach (ShoreRockDef d in defs)
+            {
+                ShoreRockSwapChecks.Row row = ShoreRockSwapChecks.All.Single(r => r.Id == d.Id);
+                Assert.AreEqual(row.Today, d.Today, d.Id + ": Today");
+                Assert.That(Vector2.Distance(new Vector2(row.X, row.Y), d.At), Is.LessThan(1e-4f), d.Id + ": At");
+                Assert.AreEqual(row.Form, d.Form, d.Id + ": Form");
+                Assert.AreEqual(row.Stone, d.Stone, d.Id + ": Stone");
+                Assert.AreEqual(row.State, d.State, d.Id + ": State");
+                Assert.AreEqual("bare", d.Dress, d.Id + ": Dress");
+                Assert.AreEqual(row.Variant, d.Variant, d.Id + ": Variant");
+                Assert.AreEqual(row.Mirrored, d.Mirrored, d.Id + ": Mirrored");
+            }
         }
 
         [Test]
         public void TheTestsRockPxSprites_AreNoAsset()
         {
-            foreach (ShoreRockSwapChecks.Row row in ShoreRockSwapChecks.Nine)
+            foreach (ShoreRockSwapChecks.Row row in ShoreRockSwapChecks.All)
             {
                 string guid = ShoreRockSwapChecks.TestGuid(row.Cell);
                 Assert.That(AssetDatabase.GUIDToAssetPath(guid), Is.Null.Or.Empty,
@@ -156,11 +233,11 @@ namespace HiddenHarbours.Tests.EditMode
         // =============================================================================================
 
         [Test]
-        public void TheNine_NameTheKitsCellsAndSheets()
+        public void TheRows_NameTheKitsCellsAndSheets()
         {
-            List<ShoreRockDef> nine = TheNine();
-            for (int i = 0; i < nine.Count; i++)
-                ShoreRockSwapChecks.NamesItsCell(ShoreRockSwapChecks.Nine[i], nine[i]);
+            List<ShoreRockDef> all = TheSwaps();
+            for (int i = 0; i < all.Count; i++)
+                ShoreRockSwapChecks.NamesItsCell(ShoreRockSwapChecks.All[i], all[i]);
         }
 
         [Test]
@@ -200,9 +277,11 @@ namespace HiddenHarbours.Tests.EditMode
         {
             public string Id, Today, Form, Stone, State, Cell, Sheet;
             public float X, Y;
+            public int Variant;
+            public bool Mirrored;
 
-            /// <summary>The table's six columns. Dress, variant and mirror are left at the Def's own
-            /// defaults: part 2 names none, so the rock is bare, variant A, unmirrored.</summary>
+            /// <summary>The table's columns. Dress is left at the Def's own default (bare); the nine's
+            /// variant and mirror are too (part 2 names none, so variant A, unmirrored).</summary>
             public void WriteTo(ShoreRockDef def)
             {
                 def.Id = Id;
@@ -211,11 +290,18 @@ namespace HiddenHarbours.Tests.EditMode
                 def.Form = Form;
                 def.Stone = Stone;
                 def.State = State;
+                def.Variant = Variant;
+                def.Mirrored = Mirrored;
             }
         }
 
         static Row R(string id, string today, float x, float y, string form, string stone, string state, string cell, string sheet) =>
             new Row { Id = id, Today = today, X = x, Y = y, Form = form, Stone = stone, State = state, Cell = cell, Sheet = sheet };
+
+        static Row R(string id, string today, float x, float y, string form, string stone, string state, int variant, bool mirrored,
+                     string cell, string sheet) =>
+            new Row { Id = id, Today = today, X = x, Y = y, Form = form, Stone = stone, State = state, Variant = variant,
+                      Mirrored = mirrored, Cell = cell, Sheet = sheet };
 
         /// <summary>
         /// Part 2 §4.4's table, as it is written there. <c>Cell</c> is the kit's sprite for the row
@@ -235,15 +321,68 @@ namespace HiddenHarbours.Tests.EditMode
             R("rock.stp_field_erratic_3",  "FieldRock_bs",   4.58f, -45.33f, "erratic", "granite",   "dry", "Erratic_granite_c0_r0",   "Erratic_granite"),
         };
 
+        /// <summary>
+        /// The shaded-rocks PR: every St Peters rock the nine leave on the old flat ShoreIso sprite takes the
+        /// closest-footprint kit form (shore rocks wet sandstone, field rocks dry granite erratics, the reef
+        /// the smallest skerry), alternate rocks of a kind mirrored. Written out by hand; the committed Defs
+        /// are held to it (<c>TheCommittedDefs_AreTheTable</c>).
+        /// </summary>
+        internal static readonly Row[] Rest =
+        {
+            R("rock.stp_field_bl_1",  "FieldRock_bl", 123.93f,  56.40f, "erratic", "granite",   "dry", 0, false, "Erratic_granite_c0_r0",   "Erratic_granite"),
+            R("rock.stp_field_bm_1",  "FieldRock_bm",  84.26f,  49.81f, "erratic", "granite",   "dry", 2, false, "Erratic_granite_c2_r0",   "Erratic_granite"),
+            R("rock.stp_field_bs_1",  "FieldRock_bs", 115.62f,  57.12f, "erratic", "granite",   "dry", 2, false, "Erratic_granite_c2_r0",   "Erratic_granite"),
+            R("rock.stp_field_bs_2",  "FieldRock_bs",  58.73f,  37.89f, "erratic", "granite",   "dry", 2, true,  "Erratic_granite_c6_r0",   "Erratic_granite"),
+            R("rock.stp_bl_1",        "Rock_bl",      156.27f, -59.20f, "knuckle", "sandstone", "wet", 1, false, "Knuckle_sandstone_c1_r1", "Knuckle_sandstone"),
+            R("rock.stp_bl_2",        "Rock_bl",       14.86f, -74.40f, "knuckle", "sandstone", "wet", 1, true,  "Knuckle_sandstone_c5_r1", "Knuckle_sandstone"),
+            R("rock.stp_bm_1",        "Rock_bm",      -16.30f, -62.60f, "block",   "sandstone", "wet", 2, false, "Block_sandstone_c2_r1",   "Block_sandstone"),
+            R("rock.stp_bm_2",        "Rock_bm",       82.97f, -78.49f, "block",   "sandstone", "wet", 2, true,  "Block_sandstone_c6_r1",   "Block_sandstone"),
+            R("rock.stp_bs_1",        "Rock_bs",      179.58f, -44.53f, "erratic", "sandstone", "wet", 2, false, "Erratic_sandstone_c2_r1", "Erratic_sandstone"),
+            R("rock.stp_m_1",         "Rock_m",       -59.07f,  45.64f, "fin",     "sandstone", "wet", 2, false, "Fin_sandstone_c2_r1",     "Fin_sandstone"),
+            R("rock.stp_m_2",         "Rock_m",       192.06f, -44.93f, "fin",     "sandstone", "wet", 2, true,  "Fin_sandstone_c6_r1",     "Fin_sandstone"),
+            R("rock.stp_m_3",         "Rock_m",       142.43f, -83.20f, "fin",     "sandstone", "wet", 2, false, "Fin_sandstone_c2_r1",     "Fin_sandstone"),
+            R("rock.stp_m_4",         "Rock_m",        32.11f, -91.01f, "fin",     "sandstone", "wet", 2, true,  "Fin_sandstone_c6_r1",     "Fin_sandstone"),
+            R("rock.stp_reef_1",      "Rock_reef",     38.00f,  90.76f, "skerry",  "sandstone", "wet", 2, false, "Skerry_sandstone_c2_r1",  "Skerry_sandstone"),
+            R("rock.stp_reef_2",      "Rock_reef",      2.78f,  81.71f, "skerry",  "sandstone", "wet", 2, true,  "Skerry_sandstone_c6_r1",  "Skerry_sandstone"),
+            R("rock.stp_reef_3",      "Rock_reef",    139.68f,  76.68f, "skerry",  "sandstone", "wet", 2, false, "Skerry_sandstone_c2_r1",  "Skerry_sandstone"),
+            R("rock.stp_reef_4",      "Rock_reef",    -33.39f,  73.90f, "skerry",  "sandstone", "wet", 2, true,  "Skerry_sandstone_c6_r1",  "Skerry_sandstone"),
+            R("rock.stp_reef_5",      "Rock_reef",    -69.33f, -40.21f, "skerry",  "sandstone", "wet", 2, false, "Skerry_sandstone_c2_r1",  "Skerry_sandstone"),
+            R("rock.stp_reef_6",      "Rock_reef",    -19.64f, -73.96f, "skerry",  "sandstone", "wet", 2, true,  "Skerry_sandstone_c6_r1",  "Skerry_sandstone"),
+            R("rock.stp_reef_7",      "Rock_reef",    131.78f, -76.43f, "skerry",  "sandstone", "wet", 2, false, "Skerry_sandstone_c2_r1",  "Skerry_sandstone"),
+            R("rock.stp_reef_8",      "Rock_reef",     39.11f, -84.05f, "skerry",  "sandstone", "wet", 2, true,  "Skerry_sandstone_c6_r1",  "Skerry_sandstone"),
+            R("rock.stp_s_1",         "Rock_s",        19.11f,  83.76f, "wedge",   "sandstone", "wet", 2, false, "Wedge_sandstone_c2_r1",   "Wedge_sandstone"),
+            R("rock.stp_s_2",         "Rock_s",       146.46f,  81.71f, "wedge",   "sandstone", "wet", 2, true,  "Wedge_sandstone_c6_r1",   "Wedge_sandstone"),
+            R("rock.stp_s_3",         "Rock_s",       -67.45f, -44.64f, "wedge",   "sandstone", "wet", 2, false, "Wedge_sandstone_c2_r1",   "Wedge_sandstone"),
+        };
+
+        /// <summary>Every St Peters swap: the nine, then the rest.</summary>
+        internal static readonly Row[] All = Nine.Concat(Rest).ToArray();
+
+        /// <summary>
+        /// The thirteen committed rocks the shore painter no longer places: its scatter has moved on
+        /// since the scene was painted (today it places 21 rocks and the scene keeps 33). A Shoreline
+        /// refresh would have deleted these rocks. Their Defs now stop it with a refusal instead, until
+        /// someone decides whether the painter or the scene is right.
+        /// </summary>
+        internal static readonly string[] NotPaintedToday =
+        {
+            "rock.stp_bl_1", "rock.stp_bl_2", "rock.stp_bm_1", "rock.stp_bm_2", "rock.stp_bs_1",
+            "rock.stp_m_2", "rock.stp_m_3", "rock.stp_m_4",
+            "rock.stp_reef_5", "rock.stp_reef_6", "rock.stp_reef_7", "rock.stp_reef_8", "rock.stp_s_3",
+        };
+
+        /// <summary>Every swap whose rock the painter still places today.</summary>
+        internal static readonly Row[] PaintedToday = All.Where(r => !NotPaintedToday.Contains(r.Id)).ToArray();
+
         /// <summary>"Within a hundredth of a metre of At" (ShoreRockDef's own contract).</summary>
         const float MatchMetres = 0.01f;
 
-        /// <summary>Is this rock one a row names: the row's name, within a hundredth of a metre of its place?</summary>
-        internal static bool IsOneOfTheNine(LayerRefreshSceneText t, long go)
+        /// <summary>The rows of <see cref="All"/> that name this rock: its name, within a hundredth of a metre of its place.</summary>
+        internal static List<Row> RowsNaming(LayerRefreshSceneText t, long go)
         {
             string name = t.Field(go, "m_Name");
             Vector2 at = t.Vec3(t.TransformOf(go), "m_LocalPosition");
-            return Nine.Any(r => r.Today == name && Vector2.Distance(at, new Vector2(r.X, r.Y)) <= MatchMetres);
+            return All.Where(r => r.Today == name && Vector2.Distance(at, new Vector2(r.X, r.Y)) <= MatchMetres).ToList();
         }
 
         internal const long TestFileId = 21300000;
@@ -261,50 +400,44 @@ namespace HiddenHarbours.Tests.EditMode
         static string TestSpriteYaml(string cell) => $"{{fileID: {TestFileId.ToString(CultureInfo.InvariantCulture)}, guid: {TestGuid(cell)}, type: 3}}";
 
         /// <summary>
-        /// The sprites the step is given: for the painter's keys, the ShoreIso sprite the committed
-        /// rocks of that key already wear (read from the scene text), less the nine the swaps name, which
-        /// wear the kit's Rock Px sprites since terrain PR 5w; for a swap, the test's own
+        /// The sprites the step is given: for the painter's keys, the ShoreIso sheet's own sprite for the
+        /// key (its GUID, its internal id and its rect over its pixels per unit, read from the sheet's
+        /// <c>.meta</c>: since the shaded-rocks PR no committed rock wears one); for a swap, the test's own
         /// sprite for the cell it names, and a record of every cell asked for.
         /// </summary>
         internal sealed class TestShoreRockSprites : StPetersLayerRefresh.IShoreRockSprites
         {
-            static readonly Regex TypeRx = new Regex(@"type: (\d+)", RegexOptions.CultureInvariant);
+            static readonly Regex GuidRx = new Regex(@"^guid: ([0-9a-f]{32})", RegexOptions.Multiline | RegexOptions.CultureInvariant);
+            static readonly Regex PpuRx = new Regex(@"spritePixelsToUnits: ([0-9.]+)", RegexOptions.CultureInvariant);
 
-            readonly Dictionary<string, StPetersLayerRefresh.SpriteRef> _worn =
+            readonly Dictionary<string, StPetersLayerRefresh.SpriteRef> _iso =
                 new Dictionary<string, StPetersLayerRefresh.SpriteRef>(StringComparer.Ordinal);
             readonly bool _haveRockPx;
             public readonly List<string> Asked = new List<string>();
 
-            public TestShoreRockSprites(string committedSceneText, bool haveRockPx = true)
+            public TestShoreRockSprites(bool haveRockPx = true)
             {
                 _haveRockPx = haveRockPx;
-                var t = new LayerRefreshSceneText(committedSceneText);
-                long rocks = t.ChildNamed(t.RootGameObject(StPetersShorePainter.RootName), StPetersShorePainter.RocksRootName);
-                foreach (long go in t.ChildGameObjects(rocks))
+                string meta = File.ReadAllText(StPetersShorePainter.RockSheetPath + ".meta");
+                string guid = GuidRx.Match(meta).Groups[1].Value;
+                float ppu = float.Parse(PpuRx.Match(meta).Groups[1].Value, NumberStyles.Float, CultureInfo.InvariantCulture);
+                foreach (string key in ShorelineIsoCatalog.RockSprites)
                 {
-                    string name = t.Field(go, "m_Name");
-                    if (IsOneOfTheNine(t, go)) continue;                     // it wears its swap's Rock Px sprite
-                    string key = name.Substring(name.LastIndexOf('_') + 1);   // the painter names a rock <prefix>_<key>
-                    long sr = t.ComponentOfClass(go, 212);
-                    string sprite = t.Field(sr, "m_Sprite");
-                    Match type = TypeRx.Match(sprite ?? "");
-                    var worn = new StPetersLayerRefresh.SpriteRef(
-                        new StPetersLayerRefresh.ObjRef(LayerRefreshSceneText.FileIdIn(sprite), LayerRefreshSceneText.GuidIn(sprite),
-                                                        type.Success ? int.Parse(type.Groups[1].Value, CultureInfo.InvariantCulture) : 0),
-                        t.Vec2(sr, "m_Size"));
-                    if (!_worn.TryGetValue(key, out StPetersLayerRefresh.SpriteRef had))
-                    {
-                        _worn.Add(key, worn);
-                        continue;
-                    }
-                    Assert.IsTrue(had.Sprite.FileId == worn.Sprite.FileId && had.Sprite.Guid == worn.Sprite.Guid &&
-                                  had.Sprite.Type == worn.Sprite.Type && had.Size == worn.Size,
-                                  $"the committed '{key}' rocks wear two different sprites, so the test cannot say which is the key's");
+                    string name = "ShoreIsoSprites_" + key;
+                    Match id = Regex.Match(meta, @"^\s+" + Regex.Escape(name) + @": (-?\d+)\s*$", RegexOptions.Multiline);
+                    Match rect = Regex.Match(meta, @"name: " + Regex.Escape(name) + @"\s*\n\s+rect:\s*\n\s+serializedVersion: 2\s*\n" +
+                                                   @"\s+x: [-0-9.]+\s*\n\s+y: [-0-9.]+\s*\n\s+width: ([0-9.]+)\s*\n\s+height: ([0-9.]+)");
+                    if (!id.Success || !rect.Success) continue;   // the sheet has no sprite for that key, and the painter skips it too
+                    var size = new Vector2(float.Parse(rect.Groups[1].Value, CultureInfo.InvariantCulture) / ppu,
+                                           float.Parse(rect.Groups[2].Value, CultureInfo.InvariantCulture) / ppu);
+                    _iso[key] = new StPetersLayerRefresh.SpriteRef(
+                        new StPetersLayerRefresh.ObjRef(long.Parse(id.Groups[1].Value, CultureInfo.InvariantCulture), guid, 3), size);
                 }
+                Assert.IsNotEmpty(_iso, "the test read no ShoreIso rock sprite from " + StPetersShorePainter.RockSheetPath + ".meta");
             }
 
             public bool TryShoreIso(string spriteKey, out StPetersLayerRefresh.SpriteRef sprite) =>
-                _worn.TryGetValue(spriteKey ?? "", out sprite);
+                _iso.TryGetValue(spriteKey ?? "", out sprite);
 
             public bool TryRockPx(ShoreRockDef def, out StPetersLayerRefresh.SpriteRef sprite)
             {
@@ -316,33 +449,34 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>
-        /// The Shoreline step with the nine swaps against the same step without them, on one placement:
-        /// the documents, their order and every byte agree except the nine rocks' SpriteRenderers, and
+        /// The Shoreline step with the rows' swaps against the same step without them, on one placement:
+        /// the documents, their order and every byte agree except the named rocks' SpriteRenderers, and
         /// those differ only in the sprite (the test's own for the row's cell) and its size.
         /// </summary>
-        internal static void SwapChangesOnlyTheNine(string sceneText, IReadOnlyList<StPetersLayerRefresh.PlacedRock> placement,
-                                                    IReadOnlyList<ShoreRockDef> nine, bool placementIsTheCommittedRocks)
+        internal static void SwapChangesOnlyTheNamed(string sceneText, IReadOnlyList<StPetersLayerRefresh.PlacedRock> placement,
+                                                     IReadOnlyList<Row> rowsSwapped, IReadOnlyList<ShoreRockDef> swaps,
+                                                     bool placementIsTheCommittedRocks)
         {
             var scene = StPetersLayerRefresh.SceneYaml.Parse(sceneText);
-            var sprites = new TestShoreRockSprites(sceneText);
+            var sprites = new TestShoreRockSprites();
 
             string plain = StPetersLayerRefresh.Shoreline(scene, placement, sprites, Array.Empty<ShoreRockDef>()).ApplyTo(sceneText);
             Assert.IsEmpty(sprites.Asked, "without swaps, the step asked for a Rock Px sprite");
 
-            string swapped = StPetersLayerRefresh.Shoreline(scene, placement, sprites, nine).ApplyTo(sceneText);
-            CollectionAssert.AreEquivalent(Nine.Select(r => r.Cell).ToList(), sprites.Asked, "the cells the nine swaps asked the kit for");
+            string swapped = StPetersLayerRefresh.Shoreline(scene, placement, sprites, swaps).ApplyTo(sceneText);
+            CollectionAssert.AreEquivalent(rowsSwapped.Select(r => r.Cell).ToList(), sprites.Asked, "the cells the swaps asked the kit for");
 
             var p = new LayerRefreshSceneText(plain);
             var s = new LayerRefreshSceneText(swapped);
             CollectionAssert.AreEqual(p.Order, s.Order, "the swaps added, removed or reordered a document");
 
-            // The nine, found by this test's own search of the rocks: the rock of the row's name within a
-            // hundredth of a metre of its place, exactly one for each row, nine different rocks.
+            // The named rocks, found by this test's own search of the rocks: the rock of the row's name within a
+            // hundredth of a metre of its place, exactly one for each row, a different rock for each row.
             var partOf = new Dictionary<long, (Row Row, string Part)>();
             var renderers = new Dictionary<long, Row>();
             long rocks = p.ChildNamed(p.RootGameObject(StPetersShorePainter.RootName), StPetersShorePainter.RocksRootName);
             List<long> rockGos = p.ChildGameObjects(rocks);
-            foreach (Row row in Nine)
+            foreach (Row row in rowsSwapped)
             {
                 List<long> hits = rockGos.Where(go => p.Field(go, "m_Name") == row.Today &&
                                                       Vector2.Distance(p.Vec3(p.TransformOf(go), "m_LocalPosition"),
@@ -356,9 +490,8 @@ namespace HiddenHarbours.Tests.EditMode
                 renderers[p.ComponentOfClass(go, 212)] = row;
             }
 
-            // Since terrain PR 5w the committed rocks wear the nine swaps: without swaps, on the committed rocks
-            // and the sprites they wear, the step hands the nine back their key's ShoreIso sprite and changes
-            // nothing else.
+            // Since the shaded-rocks PR every committed rock wears its swap: without swaps, on the committed rocks,
+            // the step hands each named rock back its key's ShoreIso sprite and changes nothing else.
             if (placementIsTheCommittedRocks)
             {
                 var committed = new LayerRefreshSceneText(sceneText);
@@ -389,7 +522,7 @@ namespace HiddenHarbours.Tests.EditMode
                     if (p.Text(id) == s.Text(id)) continue;
                     Assert.Fail(partOf.TryGetValue(id, out (Row Row, string Part) part)
                                     ? $"{part.Row.Id}: the swap changed its rock's {part.Part}"
-                                    : $"{p.ObjectName(id)} (&{id}) is not one of the nine, and the swaps changed it");
+                                    : $"{p.ObjectName(id)} (&{id}) is no row's rock, and the swaps changed it");
                 }
 
                 string[] a = p.Text(id).Split('\n'), b = s.Text(id).Split('\n');
@@ -407,7 +540,7 @@ namespace HiddenHarbours.Tests.EditMode
         internal static void Refused(string sceneText, IReadOnlyList<ShoreRockDef> swaps, string messagePart, bool haveRockPx = true)
         {
             var scene = StPetersLayerRefresh.SceneYaml.Parse(sceneText);
-            var sprites = new TestShoreRockSprites(sceneText, haveRockPx);
+            var sprites = new TestShoreRockSprites(haveRockPx);
             var refusal = Assert.Throws<StPetersLayerRefresh.Refusal>(() =>
                 StPetersLayerRefresh.Shoreline(scene, StPetersLayerRefresh.RocksInScene(scene), sprites, swaps));
             StringAssert.Contains(messagePart, refusal.Message);
