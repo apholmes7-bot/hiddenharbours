@@ -138,12 +138,41 @@ namespace HiddenHarbours.Economy
         /// (<see cref="CarriedHold.From"/>, through Core's <c>GameServices.Hands</c>): the delivered pail of the
         /// 2026-11-11 ruling. Everything sellable in it is bought, the pail stays in her hands empty, and empty
         /// hands sell nothing.</para>
+        ///
+        /// <para><b>A counter whose provider is the player's own belt pail</b> (the St Peters store) reads the
+        /// container in his hands first, see <see cref="HoldAtTheCounter"/>.</para>
         /// </summary>
         public int SellOverTheCounter()
         {
             LastUnitsSold = 0;
-            IHold hold = _sellsWhatIsCarried ? CarriedHold.From(GameServices.Hands) : _hold;
-            return Sell(hold, _wallet);
+            return Sell(HoldAtTheCounter(), _wallet);
         }
+
+        /// <summary>
+        /// The hold a counter sale reads right now.
+        ///
+        /// <list type="bullet">
+        ///   <item>A counter that sells what is carried: the container in his hands, or nothing.</item>
+        ///   <item>A counter whose provider is the player's own belt pail (<see cref="GameServices.PlayerHold"/>):
+        ///     the container in his hands when there is catch in it, otherwise the belt pail. This is the rule
+        ///     the belt pail already keeps when it is filled (it stands down while a container is in his
+        ///     hands, so a clam he stows goes into the pail he carries): the counter reads the pail the clams
+        ///     went into. A carried pail with nothing in it never hides a belt pail that has catch, so no
+        ///     clam is stranded, and each sale reads exactly one hold, so none is sold twice.</item>
+        ///   <item>Any other provider (a boat's hold): that hold, as before.</item>
+        /// </list>
+        /// </summary>
+        public IHold HoldAtTheCounter()
+        {
+            IHold carried = CarriedHold.From(GameServices.Hands);
+            if (_sellsWhatIsCarried) return carried;
+            if (carried != null && carried.UsedUnits > 0 && IsThePlayersBeltPail(_hold)) return carried;
+            return _hold;
+        }
+
+        /// <summary>Is this the hold the player wears (Core's <see cref="GameServices.PlayerHold"/>)? Asked by
+        /// reference through Core, so Economy never names the Player module's pail class.</summary>
+        private static bool IsThePlayersBeltPail(IHold hold)
+            => hold != null && ReferenceEquals(hold, GameServices.PlayerHold);
     }
 }
