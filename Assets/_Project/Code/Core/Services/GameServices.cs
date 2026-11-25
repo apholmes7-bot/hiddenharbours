@@ -744,6 +744,21 @@ namespace HiddenHarbours.Core
         private static ICatchHands _catchHands;
 
         /// <summary>
+        /// <b>The paper shopping bag side of the player's hands</b> (buying at the shelf, slice 2): where a
+        /// store's shelf puts a bagged good, and where his storage asks for the shopping to be put away.
+        /// Published by the same <c>CarryHands</c> that publishes <see cref="Hands"/>, with the same lifetime
+        /// and the same fake-null laundering. Null in EditMode and before the core boots: a shelf then puts
+        /// the good straight into his supplies, as the counter always did.
+        /// </summary>
+        public static IShoppingBagHands BagHands
+        {
+            get => _bagHands is UnityEngine.Object o && o == null ? null : _bagHands;
+            set => _bagHands = value;
+        }
+
+        private static IShoppingBagHands _bagHands;
+
+        /// <summary>
         /// <b>The hold she carries on her own person</b> — the clam pail on her belt, published by the
         /// Player lane's <c>ClamBucket</c> so a catch source that cannot reference Player still knows
         /// where a landed thing goes when nothing nearer will take it.
@@ -1651,11 +1666,15 @@ namespace HiddenHarbours.Core
             Voyages = null;              // → EmptyVoyageCatalog.Instance; this property is never null
             CrossingGate = null;         // → AlwaysOpenCrossingGate.Instance; this property is never null
             IslandShelvesDirectory.Clear();   // no store's shelves outlive the services
+            ShelfTills.Clear();               // nor their tills
             TidalTerrain = null;
             StillWater = null;           // → EmptyStillWater.Instance; this property is never null
             PlayerTransform = null;
             Hands = null;
             CatchHands = null;
+            BagHands = null;
+            ShoppingBagContents.Clear();   // the bag stays with its save; only the last-asked game is forgotten
+            PlayerStorey.Clear();          // nobody is upstairs in a building that is gone
             PlayerHold = null;
             PlayerStorage.Clear();       // no container outlives the services that listed it
             CurrentRegionId = null;

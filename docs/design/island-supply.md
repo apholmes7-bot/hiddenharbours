@@ -159,7 +159,7 @@ and `Tests/EditMode/IslandSupply/IslandLedgerShippedTests.cs`.
 morning a shelf holds what the room holds after the run, the islanders' buying draws it down evenly through
 the store's hours, and at closing it equals the ledger's level at dusk. A tide-blocked stretch thins the
 shelves day by day to empty; the next run refills them. The player's purchases (`TryTakeOne`) come off the
-shelf and feed the ledger's `ExtraDraw`; they are held for the session only (saving them is slice 8) and
+shelf and feed the ledger's `ExtraDraw`; they are saved with the game (save v26, below) and
 the next full top-up clears their effect. Data: `Data/Resources/IslandSupply/Shelves/StPetersStoreShelves.asset`
 (`islandshelves.st_peters_general`: groceries, ice, bait and gas lines, store hours 07:00 to 19:00); the
 Core read contract is `IIslandShelvesView` / `IIslandShelves`. Tests: `Tests/EditMode/Economy/IslandStoreShelvesTests.cs`
@@ -182,9 +182,13 @@ an open-ended one), registers them in the Core `IslandShelvesDirectory`, and rec
   on the room picture to a shelf line. `SoldOutSigns` puts a small card (`Art/Sprites/Buildings/Shops/Signs/SoldOutCard.png`)
   on each empty slot while the player is inside on the ground floor, reading the shelves only through the
   Core directory and refreshing on walking in or on `IslandShelvesChanged`, never per frame.
-- **Not yet.** The player's purchases are held for the session; a load rebuilds the shelves from the
-  calendar. Saving them is slice 8 (one `EconomyLedgerRows` row per line drawn, see the plan's §4.1).
-  Vendor `TryBuy` calls outside the book (dev keys) are not counted.
+- **Saved.** Each purchase is one `StorePurchaseRowDto` row in the save (`SaveData.StorePurchases`, save
+  v26: shop, line, units, day, seconds). `IslandShelvesHost` writes a shop's rows as each purchase is made,
+  in the same disk write as the purse, and gives them back to the shelves when the stores are built for a
+  loaded game, so a shelf he emptied is still empty after a restart, its sold-out card is back as soon as he
+  walks in, and it fills again on the day the run rule says. Rows older than the ledger's lookback are
+  dropped by the writer. The shelves themselves are still never saved.
+- **Not counted.** Vendor `TryBuy` calls outside the book (dev keys).
 
 Tests: `Tests/EditMode/IslandSupply/StoreSoldOutTests.cs` (refusal, cap, the card through a supply cycle,
 determinism) and `StoreSoldOutShippedTests.cs` (the shipped wiring, the windowed calendar).

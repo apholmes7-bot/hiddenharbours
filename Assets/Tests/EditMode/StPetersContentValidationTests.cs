@@ -169,8 +169,8 @@ namespace HiddenHarbours.Tests.EditMode
             CollectionAssert.Contains(clam.PermittedSpeciesIds, "fish.soft_shell_clam",
                 "the clam licence must permit the soft-shell clam (the flats gate)");
 
-            Assert.IsNotNull(cod, "and license.cod is untouched — it stays the one you EARN later at " +
-                                  "Nine Mile Creek, out of your own money");
+            Assert.IsNotNull(cod, "license.cod remains separate from the first shellfish licence; " +
+                                  "the first-week canon requires an island seller for it");
             CollectionAssert.DoesNotContain(clam.PermittedSpeciesIds, "fish.atlantic_cod",
                 "the clam licence must not quietly unlock cod as well — licence two is the earned one");
         }

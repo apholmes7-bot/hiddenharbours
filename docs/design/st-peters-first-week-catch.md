@@ -1,5 +1,9 @@
 # St Peters: the first week's catch census
 
+Baseline checked against `d46bde303e6aa256d23d47a05ede5d7d6f38e51e`.
+The first-week canon is current; the missing sellers and producers below are
+implementation gaps, not proposed exceptions to the island-only week.
+
 The island has fourteen species declared in its fish data, but it does not yet
 have fourteen working ways to catch them. The opening starts on High Summer day
 1. Cod, mackerel and striped bass can enter the rod pool that week; the flats
