@@ -317,8 +317,8 @@ namespace HiddenHarbours.Economy
             if (arms.Instrument != null)
             {
                 // An instrument is fitted to ONE hull, so ownership is asked of the boat the player is
-                // aboard — and the Note names it, because "you already own this" is only meaningful once
-                // you know which boat it is on.
+                // aboard — and the Note says so ("your boat", never the hull id), because "you already own
+                // this" is only meaningful once you know which boat it is on.
                 string hull = InstrumentShop.TargetHull(save);
                 bool hasHull = !string.IsNullOrEmpty(hull);
                 foreach (InstrumentOffer o in Each(stock.Instruments))
