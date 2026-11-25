@@ -34,12 +34,24 @@ namespace HiddenHarbours.Economy
         /// <summary>Which shelf of the book this row sits on.</summary>
         public readonly CatalogSection Section;
 
+        /// <summary>The island shelf this row comes off, or null when it is not counted (store sold-out slice).</summary>
+        public readonly IIslandShelves Shelves;
+        /// <summary>The line on <see cref="Shelves"/> (<c>line.snake_case</c>); null when not counted.</summary>
+        public readonly string ShelfLine;
+
         public BuyRow(Component vendor, ScriptableObject offer, string id, string displayName,
-                      string flavor, string note, BuyQuote quote, CatalogSection section)
+                      string flavor, string note, BuyQuote quote, CatalogSection section,
+                      IIslandShelves shelves = null, string shelfLine = null)
         {
             Vendor = vendor; Offer = offer; Id = id; DisplayName = displayName;
             Flavor = flavor ?? ""; Note = note ?? ""; Quote = quote; Section = section;
+            Shelves = shelves; ShelfLine = shelves != null ? shelfLine : null;
         }
+
+        /// <summary>This row counted against a shelf: its quote carries the count, and the note says it.</summary>
+        public BuyRow WithShelf(IIslandShelves shelves, string shelfLine, int onShelf, string note)
+            => new BuyRow(Vendor, Offer, Id, DisplayName, Flavor, note, Quote.OnShelfOf(onShelf), Section,
+                          shelves, shelfLine);
     }
 
     /// <summary>
@@ -175,8 +187,69 @@ namespace HiddenHarbours.Economy
         public static void Build(string sellerId, in SellerArms arms, int money, SaveData save,
             ILicenseService licenses, List<BuyRow> into)
         {
+            BuildCounted(sellerId, arms, money, save, licenses, Now(), into);
+            DropSoldAtShelf(sellerId, into);
+        }
+
+        /// <summary>
+        /// Every row <paramref name="sellerId"/> stocks, counted against its shelves at
+        /// <paramref name="now"/>, INCLUDING the goods the player buys at the shelf: the rows the shelf till
+        /// (<see cref="IslandShelfTill"/>) sells through, with the same quotes and the same Confirm the book
+        /// uses (buying at the shelf, slice 1).
+        /// </summary>
+        public static void BuildCounted(string sellerId, in SellerArms arms, int money, SaveData save,
+            ILicenseService licenses, double now, List<BuyRow> into)
+        {
             if (string.IsNullOrEmpty(sellerId)) { into.Clear(); return; }
             BuildFrom(arms, CatalogStock.Sweep(sellerId), money, save, licenses, into);
+            ApplyShelves(sellerId, now, into);
+        }
+
+        /// <summary>
+        /// Takes out of the book the rows the player now buys at the shelf
+        /// (<see cref="IslandShelfLine.SoldAtShelf"/>; buying at the shelf, slice 1): the counter no longer
+        /// sells them, the shelf does. Every other row, counted or not, stays.
+        /// </summary>
+        public static void DropSoldAtShelf(string sellerId, List<BuyRow> rows)
+        {
+            if (rows == null || string.IsNullOrEmpty(sellerId)) return;
+            for (int i = rows.Count - 1; i >= 0; i--)
+                if (IslandCounterShelves.IsSoldAtShelf(sellerId, rows[i].Id)) rows.RemoveAt(i);
+        }
+
+        /// <summary>The game clock's seconds, or 0 before the clock exists (EditMode, pre-boot).</summary>
+        private static double Now() => GameServices.Clock?.TotalSeconds ?? 0.0;
+
+        /// <summary>
+        /// <b>Counts the rows a store's shelves hold</b> (store sold-out slice; the owner's ruling: the counter
+        /// cannot sell what is not on the shelf). Each row whose listing <paramref name="sellerId"/> sells off an
+        /// island shelf (<see cref="IslandCounterShelves"/>) carries the shelf's count at
+        /// <paramref name="now"/>: an empty shelf makes the row sold out, refused at Confirm whatever the
+        /// purse, and the note says how many are left. Rows no shelf counts are untouched.
+        /// </summary>
+        public static void ApplyShelves(string sellerId, double now, List<BuyRow> rows)
+        {
+            if (rows == null || string.IsNullOrEmpty(sellerId)) return;
+            for (int i = 0; i < rows.Count; i++)
+            {
+                BuyRow row = rows[i];
+                if (!IslandCounterShelves.TryFind(sellerId, row.Id, out IIslandShelves shelves, out string line))
+                    continue;
+                int count = shelves.CountAt(line, now);
+                rows[i] = row.WithShelf(shelves, line, count, ShelfNoteFor(row.Note, count));
+            }
+        }
+
+        // The shelf's word on a counted row, after whatever the row already said (what the player holds).
+        // (Loc-seam literals, HudStrings convention.)
+        internal const string SoldOutNote = "None left on the shelf. More comes when the run gets over the bar.";
+
+        private static string ShelfNoteFor(string note, int count)
+        {
+            string shelf = count <= 0
+                ? SoldOutNote
+                : count.ToString(System.Globalization.CultureInfo.InvariantCulture) + " on the shelf.";
+            return string.IsNullOrEmpty(note) ? shelf : note + " " + shelf;
         }
 
         /// <summary>The build itself, over stock already resolved. Every quote arm and note string here
@@ -285,10 +358,34 @@ namespace HiddenHarbours.Economy
         /// <para>Returns false for a row that cannot be bought (unaffordable, already owned, no vendor),
         /// which is the same answer the vendors give and lets the book refuse without knowing why.</para>
         /// </summary>
-        public static bool Confirm(in BuyRow row)
+        public static bool Confirm(in BuyRow row) => Confirm(row, Now());
+
+        /// <summary>
+        /// <see cref="Confirm(in BuyRow)"/> at a given clock time. A counted row is asked of its shelf AGAIN
+        /// here, not trusted from the book: an empty shelf refuses before the vendor is called, so no money
+        /// moves and nothing is given; a sale takes one item off the shelf and tells the world
+        /// (<see cref="IslandShelvesChanged"/>).
+        /// </summary>
+        public static bool Confirm(in BuyRow row, double now)
         {
             if (!row.Quote.CanBuy || row.Vendor == null) return false;
 
+            if (row.Shelves == null) return Sell(row);
+            if (row.Shelves.CountAt(row.ShelfLine, now) < 1) return false;
+            // One write for the whole sale: the purse, the good and the shelf's purchase row land together,
+            // so a game closed right after can never hold the good and a full shelf.
+            using (GameServices.Save?.DeferWrites())
+            {
+                if (!Sell(row)) return false;
+                row.Shelves.TryTakeOne(row.ShelfLine, now);
+            }
+            EventBus.Publish(new IslandShelvesChanged(row.Shelves.ShopId, row.ShelfLine,
+                                                      row.Shelves.CountAt(row.ShelfLine, now)));
+            return true;
+        }
+
+        private static bool Sell(in BuyRow row)
+        {
             switch (row.Quote.Kind)
             {
                 case BuyRowKind.Boat:

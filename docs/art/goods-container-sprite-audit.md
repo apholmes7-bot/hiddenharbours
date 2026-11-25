@@ -1,12 +1,14 @@
 # Goods, containers and cargo sprite audit
 
-Baseline: `1abca5974ce3d16a3257777797bb2547c9ad8d53`. Documentation only.
+Source snapshot: `1abca5974ce3d16a3257777797bb2547c9ad8d53`. Documentation only.
+
+Retained against main `d46bde303e6aa256d23d47a05ede5d7d6f38e51e`. All inventory counts, direct references and source observations below describe that earlier snapshot, not a new acceptance of the current appearance. The five named candidate images have no intervening change on main. The shopping bag and shelf purchases now survive a restart; the absence of a sprite field on a goods definition does not mean shelf purchasing or physical carrying is absent. See [shop at the shelf](../design/shop-at-the-shelf.md) for that implemented path. No images were rendered or judged again for this documentation refresh.
 
 Scope: physical stock, fish deck/cradle forms and inventory icons, wharf containers and handling props, fuel containers, shore pickups, and research goods/storage definitions. Swimming/strike animations, buildings, UI chrome and fixed ground are excluded. Sizes below are the entire PNG and one imported cell, not world dimensions. Direct references are read from serialized Def/prefab GUIDs; no direct reference does not prove absence from a scene or a runtime loader.
 
 The existing fish box equivalent is `Sprites/Gear/FishTray.png`: 160Ã—72, a 5Ã—3 grid of 32Ã—24 cells (13 imported slices). Its deck container Def has an empty FillSprites array. New standalone fill-state candidates should use 32Ã—24 canvases; this audit makes no wiring changes.
 
-## Five weakest (review judgment)
+## Five candidates recorded at the source snapshot
 
 | Rank | Sprite | Readability issue | Next action |
 |---|---|---|---|
@@ -386,13 +388,13 @@ Ranking is based on rendered source sheets beside existing wharf props, not an i
 | `Sprites/Wharf/Decor/wheelbarrow.png` | 352Ã—43 | 44Ã—43 | No direct Def/prefab sprite reference |
 | `Sprites/Wharf/Decor/woodStack.png` | 560Ã—62 | 70Ã—62 | No direct Def/prefab sprite reference |
 
-| `Sprites/Crate.png` | 32×32 | 26×26 | `Assets/_Project/Data/Traps/NmcGallantMariePotDay.asset`<br>`Assets/_Project/Data/Traps/NmcDoironYvettePotDay.asset`<br>`Assets/_Project/Data/Traps/NmcArsenaultLeoPotDay.asset` |
-| `Sprites/Barrel.png` | 32×32 | 25×31 | No direct Def/prefab sprite reference |
-| `Sprites/Interiors/Props/InteriorProp_seaChest.png` | 288×35 | 36×35 | No direct Def/prefab sprite reference |
-| `Sprites/Fixtures/Fixture_iceCooler.png` | 240×30 | 30×30 | No direct Def/prefab sprite reference |
-| `Resources/Appliances/Appliance_chestFreezer.png` | 512×546 | 64×78 | `Assets/_Project/Prefabs/Props/Kitchen/GinnyFreezer.prefab` |
-| `Resources/Appliances/Appliance_chestFreezerLarge.png` | 608×595 | 76×85 | `Assets/_Project/Prefabs/Props/Kitchen/CamperFreezer.prefab` |
-| `Sprites/Yard/Yard_barrelPlanter.png` | 176×30 | 22×30 | No direct Def/prefab sprite reference |
+| `Sprites/Crate.png` | 32Ã—32 | 26Ã—26 | `Assets/_Project/Data/Traps/NmcGallantMariePotDay.asset`<br>`Assets/_Project/Data/Traps/NmcDoironYvettePotDay.asset`<br>`Assets/_Project/Data/Traps/NmcArsenaultLeoPotDay.asset` |
+| `Sprites/Barrel.png` | 32Ã—32 | 25Ã—31 | No direct Def/prefab sprite reference |
+| `Sprites/Interiors/Props/InteriorProp_seaChest.png` | 288Ã—35 | 36Ã—35 | No direct Def/prefab sprite reference |
+| `Sprites/Fixtures/Fixture_iceCooler.png` | 240Ã—30 | 30Ã—30 | No direct Def/prefab sprite reference |
+| `Resources/Appliances/Appliance_chestFreezer.png` | 512Ã—546 | 64Ã—78 | `Assets/_Project/Prefabs/Props/Kitchen/GinnyFreezer.prefab` |
+| `Resources/Appliances/Appliance_chestFreezerLarge.png` | 608Ã—595 | 76Ã—85 | `Assets/_Project/Prefabs/Props/Kitchen/CamperFreezer.prefab` |
+| `Sprites/Yard/Yard_barrelPlanter.png` | 176Ã—30 | 22Ã—30 | No direct Def/prefab sprite reference |
 
 ## Goods and storage definitions
 
@@ -575,6 +577,6 @@ Every relevant definition is listed, including research-only data. NO SPRITE mea
 
 ## Consequences
 
-The nine island supply goods describe containers as text and have no sprite property. The research container, carrier and fish-storage rows are planning data, not evidence of rendered fill states. Fish species and gear may resolve icons through a registry rather than their own asset. Physical hand/deck/wharf presentation must be connected explicitly in a later approved task.
+At the source snapshot, the nine island supply goods describe containers as text and have no sprite property. The research container, carrier and fish-storage rows are planning data, not evidence of rendered fill states. Fish species and gear may resolve icons through a registry rather than their own asset. Any missing hand/deck/wharf presentation in those planning rows needs explicit connections; this is not a claim that main lacks its implemented shopping-bag path.
 
 Review evidence is the native 2x full-sheet contact sheet retained outside version control. All sources were checked for LFS pointers first and recovered from local objects only. No scene, prefab, definition, importer or source image changed in this audit.

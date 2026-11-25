@@ -402,11 +402,16 @@ is the logic and one example; no scene changed.
   other villager runs exactly the code it did). While the resolver puts them elsewhere they are hidden and
   cannot be talked to; on a crossing in this region they are placed on the crossing path.
 - **The example**: Junior Poirier's Wednesday — over the St Peters bar on the quad (5.5 m/s) at 08:30 to
-  the Nine Mile Creek landing, fuel and the week's order, back over at 11:30, a late dinner, then the
-  afternoon tide as any day. The bar as the game draws it is about 315 m from the bar head to the Nine Mile
-  Creek landing: three game hours on foot at his 1.35 m/s, under one on the quad.
-- **Not yet**: the real bar window off the tide (a gate implementation), Nine Mile Creek's station table
-  and lanes (so he is computed there but not drawn), the quad and cart as drawn carriers with real
+  the Nine Mile Creek landing, fuel and the week's order at 10:30, back over at 11:30, a late dinner at 13:30, then the
+  afternoon tide as any day. The bar as the game draws it is about 600 m from the bar head to the Nine Mile
+  Creek landing (about 300 m on each side of the seam): six game hours on foot at his 1.35 m/s, about an
+  hour and a half on the quad.
+- **The creek's two stations** (`NmcRoutineStationsPatch`, root `NmcRoutineStations` in `NineMileCreek.unity`):
+  `station.nine_mile_creek.bar_landing`, where the bar's axis meets the drawn coastline at the foot of the bar
+  road, dry above spring high (the crossing's path ends there, so a tide-shut bar holds him ashore, not on the
+  crest); and `station.nine_mile_creek.fuel_stop`, beside the forecourt's gas hose nearest the store.
+- **Not yet**: the real bar window off the tide (a gate implementation), Nine Mile Creek's lanes for a
+  visitor (so he is computed there but not drawn), the quad and cart as drawn carriers with real
   capacity, the supply arithmetic, and tide-aware departure hours.
 
 ---
@@ -433,16 +438,18 @@ relationship to the player · questline/service hook.**
 > here is deleted**.
 > **✅ Reconciliation RESOLVED for the buy-and-repair beat (2026 — onboarding relocated to St Peters).**
 > The owner **dropped the "inherit Uncle Ned's dory" framing**; your first boat is now a **plain damaged
-> dory bought and put right**, not handed down. *(Amended 2026-07-25: she lies at the **Nine Mile Creek
-> wharf**, and **no shipwright stands in that region** — so who sells her, and who repairs her for what,
-> are open. This is the beat that most needs a named character; see
-> [`nine-mile-creek-wharf.md`](nine-mile-creek-wharf.md) §1.)* The onboarding has now
+> dory bought and put right**, not handed down. *(Amended 2026-11-23, superseding the 2026-07-25
+> Nine Mile Creek wharf reading: she lies **beached on St Peters**, is **sold by Basil Samson**, and the
+> player **mends her himself** at the island slip. The first week is St Peters alone, and **Ginny's
+> word** at the island gate opens the way to Nine Mile Creek — canon §5.3/§5.8, ADR 0062.)* The onboarding has now
 > been **relocated to the St Peters opening and reworked into the earned/buy-and-repair beat** (the
 > dialogue/onboarding *system* was reused, not rebuilt, exactly as required): **Aunt Ginny** is placed at
 > the St Peters island start (anchored by the cottage — no routine yet, that's M2) teaching the new loop,
 > and **Ned is now a remembered presence** — his **letter** on the island, *no inherited dory* — read in
 > place of the old Coddle-Cove logbook. The onboarding nudge walks the new arc end-to-end (dig clams →
-> cross the bar → Nine Mile Creek cod-licence + rod → buy + **repair** the dory → sail home). Content is **data**:
+> cross the bar → Nine Mile Creek cod-licence + rod → buy + **repair** the dory → sail home; *the 2026-11-23
+> amendment reorders it to the island: rod, buy + mend the dory, cod licence, fish from her, Ginny's word,
+> then the bar — a later onboarding task*). Content is **data**:
 > the cast is authored as `NpcDef` + `DialogueDef` assets under `Data/NPCs` (one entity per file, stable
 > ids `npc.aunt_ginny` / `npc.ned_letter`, `dialogue.ginny_first` / `dialogue.ned_letter`). The cottage +
 > memory remain inherited. *(The legacy Coddle-Cove `WorldStrings` conversations are kept as a fallback —

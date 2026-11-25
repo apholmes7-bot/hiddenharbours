@@ -1007,6 +1007,12 @@ namespace HiddenHarbours.Core
         public const int DefaultHullReflectionMaxHulls = 64;
         public const int DefaultHullReflectionMaxPackets = 1024;
         public const int DefaultHullReflectionMaxTriangles = 1000000;
+        public const float DefaultHullReflectionFadeStartMeters = 0.1f;
+        public const float DefaultHullReflectionFadeMeters = 0.6f;
+        public const float DefaultHullReflectionStreakPixels = 6f;
+        public const float DefaultHullReflectionEndCutPixels = 3f;
+        public const float DefaultHullReflectionEndThinPixels = 3f;
+        public const float DefaultHullReflectionEndMinRunPixels = 12f;
 
         /// <summary>The boat-reflection path's ship default: <b>ON</b> (2026-11-21). The mesh path is the
         /// only one that can draw: the older overlay path records its reflection BEFORE the same frame's
@@ -1022,6 +1028,43 @@ namespace HiddenHarbours.Core
         [Min(1)] public int HullReflectionMaxHulls = DefaultHullReflectionMaxHulls;
         [Min(1)] public int HullReflectionMaxPackets = DefaultHullReflectionMaxPackets;
         [Min(1)] public int HullReflectionMaxTriangles = DefaultHullReflectionMaxTriangles;
+        [Tooltip("How far below the waterline a boat's reflection runs whole before it starts to thin, metres " +
+                 "(its source's height above the line). The thinning is the hull's own pixel dither, so the " +
+                 "reflection stays crisp and fades with distance from the hull instead of sitting as one block.")]
+        [Min(0f)] public float HullReflectionFadeStartMeters = DefaultHullReflectionFadeStartMeters;
+        [Tooltip("Over how many metres below that the reflection thins to nothing. 0 = no fade (the look " +
+                 "before the sunset rowing clip of 11-22: the whole mirrored hull at one strength).")]
+        [Min(0f)] public float HullReflectionFadeMeters = DefaultHullReflectionFadeMeters;
+        [Tooltip("How long the streaks a boat's reflection thins in are, in the hull's own pixels: each pixel " +
+                 "row breaks into runs that go together, the way a reflection breaks on moving water. Under 1 = " +
+                 "the hull's 4x4 ordered dither instead.")]
+        [Min(0f)] public float HullReflectionStreakPixels = DefaultHullReflectionStreakPixels;
+        [Tooltip("How many of the hull's own pixels each streak row of a boat's reflection may stop short at " +
+                 "either end: every row draws its own amount from 0 up to this, fixed to the hull, so the " +
+                 "reflection under a square stern or bow ends ragged instead of on one straight column. 0 = " +
+                 "every row runs to the hull's outline.")]
+        [Min(0f)] public float HullReflectionEndCutPixels = DefaultHullReflectionEndCutPixels;
+        [Tooltip("Over how many of the hull's pixels inside that each streak row's end thins out (some pixels " +
+                 "kept, more of them further in), so the end frays rather than stops. 0 = a clean end.")]
+        [Min(0f)] public float HullReflectionEndThinPixels = DefaultHullReflectionEndThinPixels;
+        [Tooltip("A reflection row shorter than this many of the hull's pixels keeps its ends, so a thin oar, " +
+                 "rod or mast still reflects; only the long rows under the hull itself fray.")]
+        [Min(0f)] public float HullReflectionEndMinRunPixels = DefaultHullReflectionEndMinRunPixels;
+
+        /// <summary>The calm mirror's ship default: <b>0, off</b>. The owner liked 0.6 on the prototype
+        /// (2026-11-23) and asked for it behind a dial, off until he has seen it in game.</summary>
+        public const float DefaultWaterMirrorStrength = 0f;
+
+        [Tooltip("THE CALM MIRROR: how strongly calm water mirrors what stands on it (0..1). Boats, their " +
+                 "fittings, the crew aboard and figures ashore show their true reflection, the view from " +
+                 "below the water; wharves, sheds, piles and cliffs are flipped about where they meet the " +
+                 "water. Fades out as the sea gets up. 0 = off, the water exactly as before. The owner's " +
+                 "liked value is 0.6.")]
+        [Range(0f, 1f)] public float WaterMirrorStrength = DefaultWaterMirrorStrength;
+
+        [Tooltip("The calm mirror's shaping dials: sea-state fade, reach, ripple and darkening. Read only " +
+                 "while WaterMirrorStrength is above 0.")]
+        public WaterMirrorSettings WaterMirror = WaterMirrorSettings.Default;
 
         /// <summary>The cabin-glow passthrough's ship default — <b>OFF</b>, which is the owner's ruling
         /// of 2026-09-03: a glow is confined to its space, and an interior's reaches the outside only
@@ -1445,6 +1488,13 @@ namespace HiddenHarbours.Core
                  "Recomputed from (worldSeed, gameTime, place, weather, season) like the tide — never " +
                  "saved, so tuning these moves the whole sea at once with no save surgery.")]
         public FishSchoolSettings FishSchools = FishSchoolSettings.Default;
+
+        [Header("Bar clam show (the squirt that gives a buried clam away)")]
+        [Tooltip("Owner ask 2026-11-22: a clam's holes are small and sit in the sand; its squirt is the " +
+                 "main giveaway. How often and how long a clam squirts, how tall the jet is drawn, and how " +
+                 "it squirts when the player walks up. Cosmetic only, never saved. Read through " +
+                 "ClamShowSettings.Current.")]
+        public ClamShowSettings ClamShow = ClamShowSettings.Default;
 
         [Header("Freshness & rot (M1 §7.3 — the clock on every catch)")]
         [Tooltip("How fast each storage mode rots a landed catch, and how far gone a catch can be " +

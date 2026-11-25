@@ -254,6 +254,15 @@ namespace HiddenHarbours.Tools.RigBaking
                     "formula) rather than shimming the difference downstream.");
 
             // ---- 3. the door gables ---------------------------------------------------------------
+            // A door on neither gable may be on an eave: the harbour gable's is in a cross gable on +X.
+            // That is read from a quarter turn and registered against the room's doorway, which the
+            // room rig puts on the shell's own entrance wall. See MeasureSideDoor.
+            {
+                double y0 = host.EvaluateNumber($"{exteriorGlobal}.anchors(0,{eo}).door.y");
+                double y4 = host.EvaluateNumber($"{exteriorGlobal}.anchors({facings / 2},{eo}).door.y");
+                if (Math.Abs(y4 - y0) < MinGableTravelPx && facings % 4 == 0)
+                    return MeasureSideDoor(host, exteriorGlobal, eo, interiorGlobal, io, facings, iWd, iLn, sb);
+            }
             int eGable = DoorGable(host, exteriorGlobal, eo, out double eTravel);
             int iGable = DoorGable(host, interiorGlobal, io, out double iTravel);
             sb.AppendLine($"  door gable (ext): {(eGable > 0 ? "+Y" : "−Y")} " +
@@ -319,6 +328,102 @@ namespace HiddenHarbours.Tools.RigBaking
                           "a foundation; the room's is on the floor).");
 
             return new Registration(found, eGable, iGable, iWd, iLn, gap, sb.ToString());
+        }
+
+        /// <summary>
+        /// The registration for a shell whose door is on an EAVE (<c>±X</c>), not a gable: the harbour
+        /// gable, whose door is in a cross gable on its long wall.
+        ///
+        /// <para>The wall is MEASURED the way the gable is, a quarter-turn on: a door on <c>+X</c> projects
+        /// away at <c>dir 2</c> and toward the camera at <c>dir 6</c>. The room's door anchor stays on its
+        /// <c>+Y</c> gable whatever the shell, but its DOORWAY follows the shell's <c>entrance()</c>
+        /// (<c>interiorIsoRig.js</c> phase 2b) — and only when the room is dialled with that shell. So the
+        /// room must carry the same entrance as the shell (wall and position), or this refuses: a size-only
+        /// shell, or a room without a shell, puts the doorway on the wrong wall. The offset is then the one
+        /// <c>k</c> that lines the shell's door anchor up with the room rig's own projection of that
+        /// doorway at all facings.</para>
+        ///
+        /// <para><see cref="Registration.ExteriorGable"/> is 0 for an eave door.</para>
+        /// </summary>
+        static Registration MeasureSideDoor(IRigScriptHost host, string exteriorGlobal, string eo,
+                                            string interiorGlobal, string io, int facings,
+                                            double iWd, double iLn, StringBuilder sb)
+        {
+            int q = facings / 4;
+            double y2 = host.EvaluateNumber($"{exteriorGlobal}.anchors({q},{eo}).door.y");
+            double y6 = host.EvaluateNumber($"{exteriorGlobal}.anchors({3 * q},{eo}).door.y");
+            double travel = y6 - y2;
+            if (Math.Abs(travel) < MinGableTravelPx)
+                throw new InvalidOperationException(
+                    $"INTERIOR AZIMUTH PROBE REFUSED: {exteriorGlobal}'s door anchor barely moves between " +
+                    $"dir 0 and dir {facings / 2}, or between dir {q} and dir {3 * q} ({travel:F1} px). A door " +
+                    "on no wall means this rig is not shaped the way the probe assumes.\n\n" + sb);
+            string wall = travel > 0 ? "+X" : "-X";
+            sb.AppendLine($"  door wall (ext) : {wall} eave (door.y travels {travel:+0.0;-0.0} px from " +
+                          $"dir {q} to dir {3 * q}; none from dir 0 to dir {facings / 2})");
+
+            string Entrance(string optsExpr) =>
+                host.EvaluateString("(function(o){var e=o?" + exteriorGlobal + ".anchors(0,o).entrance:null;" +
+                                    "return e?(e.facing+' '+e.x.toFixed(4)+' '+e.y.toFixed(4)+' '+e.z.toFixed(4)):'';})(" +
+                                    optsExpr + ")");
+            string shellEntrance = Entrance(eo);
+            string roomEntrance = Entrance($"({io}).shell");
+            sb.AppendLine($"  entrance (ext)  : {shellEntrance}");
+            sb.AppendLine($"  entrance (room) : {(roomEntrance.Length > 0 ? roomEntrance + " (the room's shell)" : "none: the room carries no shell, so its doorway is on +Y")}");
+            if (roomEntrance != shellEntrance)
+                throw new InvalidOperationException(
+                    "INTERIOR REGISTRATION REFUSED: the shell's door is on its " + wall + " eave, but the room " +
+                    "does not carry that shell's entrance, so its doorway is somewhere else.\n\n" + sb +
+                    "\nThe room rig moves its doorway to the shell's entrance only when it is dialled with " +
+                    "that shell. Dial the room's `shell` with the house's own options.");
+
+            string[] parts = shellEntrance.Split(' ');
+            double ex = double.Parse(parts[1], CultureInfo.InvariantCulture);
+            double ey = double.Parse(parts[2], CultureInfo.InvariantCulture);
+            double ez = double.Parse(parts[3], CultureInfo.InvariantCulture);
+            string point = $"[{Num(ex)},{Num(ey)},{Num(ez + 1.0)}]";
+
+            double ePivX = host.EvaluateNumber($"{exteriorGlobal}.pivot.x");
+            double ePivY = host.EvaluateNumber($"{exteriorGlobal}.pivot.y");
+            double iPivX = host.EvaluateNumber($"{interiorGlobal}.pivot.x");
+            double iPivY = host.EvaluateNumber($"{interiorGlobal}.pivot.y");
+            var exX = new double[facings]; var exY = new double[facings];
+            var inX = new double[facings]; var inY = new double[facings];
+            for (int d = 0; d < facings; d++)
+            {
+                exX[d] = host.EvaluateNumber($"{exteriorGlobal}.anchors({d},{eo}).door.x") - ePivX;
+                exY[d] = host.EvaluateNumber($"{exteriorGlobal}.anchors({d},{eo}).door.y") - ePivY;
+                inX[d] = host.EvaluateNumber($"{interiorGlobal}.project({d},{point}).x") - iPivX;
+                inY[d] = host.EvaluateNumber($"{interiorGlobal}.project({d},{point}).y") - iPivY;
+            }
+
+            int found = -1;
+            double gap = 0;
+            for (int k = 0; k < facings && found < 0; k++)
+            {
+                double first = 0;
+                bool all = true;
+                for (int d = 0; d < facings && all; d++)
+                {
+                    int j = (d + k) % facings;
+                    if (Math.Abs(exX[d] - inX[j]) > RegistrationTolerancePx) all = false;
+                    double g = exY[d] - inY[j];
+                    if (d == 0) first = g;
+                    else if (Math.Abs(g - first) > RegistrationTolerancePx) all = false;
+                }
+                if (all) { found = k; gap = first; }
+            }
+            if (found < 0)
+                throw new InvalidOperationException(
+                    "INTERIOR REGISTRATION REFUSED: no single facing offset puts the room's doorway under " +
+                    "the shell's eave door at all " + facings + " facings.\n\n" + sb);
+
+            int iGable = DoorGable(host, interiorGlobal, io, out double iTravel);
+            sb.AppendLine($"  door gable (int): {(iGable > 0 ? "+Y" : "−Y")} anchor (door.y travels " +
+                          $"{iTravel:+0.0;-0.0} px); the doorway itself is on the room's {wall} wall");
+            sb.AppendLine($"  ⇒ interior facing = (exterior facing + {found}) mod {facings}; the shell's eave " +
+                          "door and the room's projection of it share a screen-x at every facing.");
+            return new Registration(found, 0, iGable, iWd, iLn, gap, sb.ToString());
         }
 
         static string Num(double v) => v.ToString("R", CultureInfo.InvariantCulture);

@@ -401,8 +401,10 @@ namespace HiddenHarbours.Tests.EditMode
 
         static int CountChildren(GameObject go, string childName)
         {
+            // The ground storey's partitions ride its furniture root (so they switch off upstairs) but are
+            // walls, not furniture.
             Transform t = go.transform.Find(childName);
-            return t == null ? 0 : t.childCount;
+            return t == null ? 0 : t.Cast<Transform>().Count(c => c.name != StPetersInteriors.GroundWallsChildName);
         }
 
         static string[] ChildNames(Transform t) =>
@@ -476,7 +478,7 @@ namespace HiddenHarbours.Tests.EditMode
                 propsGo.transform.SetParent(buildingGo.transform, worldPositionStays: false);
                 propsGo.transform.localPosition = Vector3.zero;
                 StPetersInteriors.Furnish(propsGo.transform,
-                                          StPetersInteriors.FurnishingsFor(room.Entry.key),
+                                          StPetersInteriors.GroundFurnishingsFor(room.Entry.key, upperPlanKey),
                                           room.Entry.key, footprint, interiorFacing, room.Entry.facings);
 
                 var interior = buildingGo.AddComponent<BuildingInterior>();

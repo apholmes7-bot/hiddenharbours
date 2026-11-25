@@ -345,6 +345,9 @@ MonoBehaviour:
     RestBreathSeconds: 4
     RestHandAlongThigh: 0.86
     RestHandAboveThighMeters: 0.07
+    RockLevelling: 1
+    RockLevelReachMeters: 1.45
+    BladeFloorMeters: 0.2
   OarStow:
     Enabled: 1
     SweepDegrees: -95

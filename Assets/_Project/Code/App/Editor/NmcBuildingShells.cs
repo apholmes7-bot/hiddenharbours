@@ -164,6 +164,10 @@ namespace HiddenHarbours.App.Editor
         /// on the ground at the hall's facing of 2.</summary>
         public const int MinusXWall = 6;
 
+        /// <summary>The model wall turn of the room's +y wall (<see cref="ApplianceFacing.WallOffsets"/>): north
+        /// on the ground at the fish plant's facing of 0.</summary>
+        public const int PlusYWall = 0;
+
         /// <summary>A fixture's floor footprint in the model frame: its art's foot, square on to the wall it backs
         /// onto (across the wall, then out from it).</summary>
         public static Rect ModelFootprint(Fixture f, Vector2 foot, int wall)
@@ -242,6 +246,19 @@ namespace HiddenHarbours.App.Editor
         /// staff rooms, cold stores and dock are real allocated floor behind closed thresholds until the job lane
         /// opens them. The 26 m truck court east of the east facade is left as ground: its paving, gate, spur and
         /// trucks are the road and vehicle lanes'.
+        ///
+        /// <para><b>The staff room and the staff wash</b> (owner, 11-22: fit out the existing rooms now; fixtures on
+        /// north walls where possible). The south row's staff rooms are walled as rooms: a cut-down partition along
+        /// the row's north edge (model y -8, the line the brief draws between the staff rooms and the working
+        /// floor) is the north wall every piece backs onto (<see cref="PlusYWall"/>), and closes the row off the
+        /// production floor, so no way round it reaches the line. The staff room is the lunch room: fridge, sink,
+        /// cook stove and microwave in a row, the fridge at the west end with its hinge side (its right, east) and
+        /// its door swing kept clear. The staff wash has its basin by the way in from the staff room and the
+        /// toilet in the far (west) corner. The brief's own staff door in the south wall (u -33) needs a second
+        /// doorway the room recipe does not have yet, so for now the rooms are reached through the office: a
+        /// doorway in the office wall north of the counter (that wall now drawn cut down too, so the doorway
+        /// shows), then one in each room's east wall. No stall
+        /// partition and no staff lockers yet: no art exists for either.</para>
         /// </summary>
         public static readonly Shell FishPlant = new Shell
         {
@@ -282,9 +299,20 @@ namespace HiddenHarbours.App.Editor
             },
             Blocks = new[]
             {
-                // the public area's edges: the office wall (its counter faces the reception), the delivery-edge
-                // rail over the grading floor, and the rail that closes the returns wash.
-                new Block("OfficeWall", 15.85f, 16.15f, -14f, -8f, 3f, Partition, true),
+                // the public area's edges: the office wall (its counter faces the reception; the doorway north
+                // of the counter leads to the staff rooms, and the wall is drawn cut down so that doorway shows),
+                // the delivery-edge rail over the grading floor, and the rail that closes the returns wash.
+                new Block("OfficeWall", 15.85f, 16.15f, -14f, -10f, CutWallMetres, Partition, true),
+                // the staff rooms' walls, drawn cut down so the rooms read as inside: the row's north wall (the
+                // staff rooms' backs, and the line the working floor stops at), the staff wash's west wall, and
+                // the staff room's and the office's west walls, each with its doorway (the room convention's
+                // width) mid-row
+                new Block("StaffRowWall", -14.15f, 15.85f, -8.15f, -7.85f, CutWallMetres, Partition, true),
+                new Block("StaffWashWestWall", -14.15f, -13.85f, -14f, -8.15f, CutWallMetres, Partition, true),
+                new Block("StaffRoomWestWallSouth", -4.15f, -3.85f, -14f, -11.7f, CutWallMetres, Partition, true),
+                new Block("StaffRoomWestWallNorth", -4.15f, -3.85f, -10.3f, -8.15f, CutWallMetres, Partition, true),
+                new Block("OfficeWestWallSouth", 5.85f, 6.15f, -14f, -11.7f, CutWallMetres, Partition, true),
+                new Block("OfficeWestWallNorth", 5.85f, 6.15f, -10.3f, -8.15f, CutWallMetres, Partition, true),
                 new Block("DeliveryEdgeRail", 15.85f, 16.15f, -8f, 2f, 1.1f, Rail, true),
                 new Block("ReturnsRail", 16.15f, 24f, 1.85f, 2.15f, 1.1f, Rail, true),
                 new Block("OfficeCounter", 16.15f, 16.85f, -13f, -10f, 1.05f, Wood, true),
@@ -320,6 +348,20 @@ namespace HiddenHarbours.App.Editor
                 new Dressing("StaffParking2", "wheelStop", -16.25f, 12f),
                 new Dressing("StaffParking3", "wheelStop", -13.75f, 12f),
                 new Dressing("StaffParking4", "wheelStop", -11.25f, 12f),
+            },
+            BuildingKey = "fish_plant",
+            Fixtures = new[]
+            {
+                // the staff room's north wall (the row wall's face at y -8.15), west to east: the fridge by the
+                // west wall, its hinge side 0.3 m clear; the sink; the cook stove and the microwave, each solid
+                // through the inner walls
+                new Fixture(FridgeSlot, FridgePrefab, -3.45f, -8.49f, PlusYWall, hasId: false),
+                new Fixture(KitchenSinkSlot, KitchenSinkPrefab, -2.3f, -8.45f, PlusYWall, hasId: true),
+                new Fixture(RoomFixturePlan.Kind.Stove, -1.1f, -8.441f, PlusYWall, solidFootprint: true),
+                new Fixture(RoomFixturePlan.Kind.Microwave, 0f, -8.37f, PlusYWall, solidFootprint: true),
+                // the staff wash's north wall: the basin by the way in (east), the toilet in the far (west) corner
+                new Fixture(RoomFixturePlan.Kind.BathroomSink, -5f, -8.37f, PlusYWall),
+                new Fixture(RoomFixturePlan.Kind.Toilet, -13.4f, -8.5f, PlusYWall),
             },
         };
 

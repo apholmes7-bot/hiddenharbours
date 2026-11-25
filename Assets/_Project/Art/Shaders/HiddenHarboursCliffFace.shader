@@ -133,12 +133,27 @@ Shader "HiddenHarbours/CliffFace"
         _SubmergedTint ("Rock seen through water", Color) = (0.30, 0.46, 0.52, 1)
         _SubmergedDepth ("Depth over which the rock drowns, metres", Float) = 2.2
         _SubmergedFloor ("How much rock survives at full depth", Range(0, 1)) = 0.18
-        _DampBandMetres ("Damp band half width, metres", Float) = 0.55
-        _DampDarken ("How much the damp band darkens the rock", Range(0, 1)) = 0.45
+        // The wet band's mean height above the line. Its top is torn per column, 0.55 to 1.45 of this.
+        _DampBandMetres ("Wet band height above the line, metres", Float) = 0.55
+        _DampDarken ("How much the wet band darkens the rock", Range(0, 1)) = 0.45
         _FoamCollarMetres ("Foam collar half width, metres", Float) = 0.16
         _FoamCollarBias ("How far the collar sits into the water", Range(0, 1)) = 0.45
         _FoamColour ("Collar colour where sea meets rock", Color) = (0.92, 0.96, 0.98, 1)
         _SurgeGain ("How much of the swell the waterline rides", Range(0, 2)) = 1
+
+        [Header(The WET FOOT. All on the kit texel grid. Owner 11 23)]
+        // The foot dissolves into the sea over this depth in four dithered steps. 0 keeps it opaque.
+        _WetFadeMetres ("Depth the foot dissolves over, metres", Float) = 0.5
+        // Rockweed at the line: its mean height, how many cells it covers, and the tint it puts on the rock.
+        _WeedMetres ("Weed fringe height, metres", Float) = 0.22
+        _WeedDensity ("Weed fringe cover", Range(0, 1)) = 0.6
+        _WeedTint ("Weed tint on the lit rock", Color) = (0.42, 0.56, 0.34, 1)
+        // Barnacle flecks just above the weed: the strip's height, cover, and how far they lift to pale grey.
+        _BarnacleMetres ("Barnacle strip height, metres", Float) = 0.3
+        _BarnacleDensity ("Barnacle cover", Range(0, 1)) = 0.12
+        _BarnacleLift ("Barnacle lift to pale grey", Float) = 1.45
+        // How broken the foam collar is. 0 is a solid stroke, 1 is flecks.
+        _FoamBreak ("Foam collar break up", Range(0, 1)) = 0.85
 
         [Header(Sprite common)]
         _Color ("Tint", Color) = (1, 1, 1, 1)
@@ -262,6 +277,14 @@ Shader "HiddenHarbours/CliffFace"
                 float  _FoamCollarMetres;
                 float  _FoamCollarBias;
                 float  _SurgeGain;
+                float4 _WeedTint;
+                float  _WetFadeMetres;
+                float  _WeedMetres;
+                float  _WeedDensity;
+                float  _BarnacleMetres;
+                float  _BarnacleDensity;
+                float  _BarnacleLift;
+                float  _FoamBreak;
                 // The px look's two, declared in BOTH variants so the per material buffer has one
                 // layout whichever look the material ships.
                 float4 _PxKey;
@@ -382,6 +405,44 @@ Shader "HiddenHarbours/CliffFace"
                 return SAMPLE_TEXTURE2D_LOD(_Palette, sampler_Palette, lutUv, 0).rgb;
             }
 
+            // ---- THE TEXEL GRID (owner 11 23: organic, natural, no hard cuts) ---------------------------
+            // The wet foot and the pixel dissolve are cut on the kit's own texel grid, 32 px a metre in
+            // 2 px texels, so every edge they add is a pixel step and never a gradient.
+            // Twin: CliffWaterlineMath.TexelsPerMetre, TexelCell, Hash01, Bayer4.
+            #define CLIFF_TEXELS_PER_METRE 16.0
+            #define CLIFF_WET_TOP_GROUP    3.0
+
+            // A stable 0 to 1 hash of a cell, with no sine (a sine hash drifts between GPUs).
+            float CliffHash(float2 cell, float salt)
+            {
+                float x = frac((cell.x + salt * 17.0) * 0.1031);
+                float y = frac((cell.y + salt * 31.0) * 0.1030);
+                float z = frac((cell.x + salt * 17.0) * 0.0973);
+                float d = x * (y + 33.33) + y * (z + 33.33) + z * (x + 33.33);
+                x += d; y += d; z += d;
+                return frac((x + y) * z);
+            }
+
+            // The 4 by 4 ordered dither threshold of a cell.
+            static const float CLIFF_BAYER[16] = { 0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5 };
+            float CliffBayer4(float2 cell)
+            {
+                float2 m = cell - 4.0 * floor(cell / 4.0);
+                int i = clamp((int)m.y * 4 + (int)m.x, 0, 15);
+                return (CLIFF_BAYER[i] + 0.5) / 16.0;
+            }
+
+            // A soft edge's alpha as a pixel dissolve: the ordered dither offset per 2 by 2 block by a
+            // hash and wrapped, so the covered share stays the alpha but the edge crumbles irregularly.
+            // Twin: CliffWaterlineMath.Dissolve01.
+            float CliffDissolve(float alpha, float2 cell)
+            {
+                if (alpha >= 0.999) return 1.0;
+                if (alpha <= 0.0) return 0.0;
+                float th = frac(CliffBayer4(cell) + 0.5 * CliffHash(floor(cell / 2.0), 6.0));
+                return alpha > th ? 1.0 : 0.0;
+            }
+
             Varyings vert(Attributes IN)
             {
                 Varyings OUT;
@@ -478,50 +539,96 @@ Shader "HiddenHarbours/CliffFace"
                 // therefore renders the wall exactly as it did before, instead of drowning it to the
                 // brow off a number that only looks like chart datum.
                 // Mirrored by CliffWaterlineMath: ElevationAt, SubmergenceMetres, Submerged01,
-                // DampBand01, FoamCollar01, HasPublishedSea.
+                // WetBand01, WeedFringe01, Barnacle01, SubmergedKeep01, FoamFleck01, HasPublishedSea.
+                // THE TEXEL CELL this fragment falls in: texels of the tile along the shore, and texels of
+                // ELEVATION down the face where the wall has one (texels of the tile where it does not).
+                // Twin: CliffWaterlineMath.TexelCell.
+                float2 cell = float2(floor(IN.uv.x * _TileMetresS * CLIFF_TEXELS_PER_METRE),
+                                     IN.waterline.z > 0.5
+                                         ? floor(IN.waterline.x * CLIFF_TEXELS_PER_METRE)
+                                         : floor(IN.uv.y * _TileMetresT * CLIFF_TEXELS_PER_METRE));
+                float keep = 1.0;   // 0 where the foot has dissolved into the sea
+
                 if (_WaterlineStrength > 0.001 && _HHSeaLevelWorld.w > 0.5 && IN.waterline.z > 0.5)
                 {
-                    float submergence = IN.waterline.y - IN.waterline.x;   // metres under the sea
+                    // Judged at the cell's centre row, so every band edge lands on a texel row.
+                    // Twin: CliffWaterlineMath.CellElevation, SubmergenceMetres.
+                    float submergence = IN.waterline.y - (cell.y + 0.5) / CLIFF_TEXELS_PER_METRE;
                     float strength = saturate(_WaterlineStrength);
+                    float above = -submergence;   // metres above the line
 
-                    // SEEN THROUGH WATER below the line, in two honest steps: the column ABSORBS, so
-                    // the rock keeps its shape and takes the water's colour; and detail is then LOST
-                    // into that colour with depth, floored by _SubmergedFloor so a plunging foot never
-                    // flattens into a painted silhouette.
+                    // SEEN THROUGH WATER below the line: the column ABSORBS, so the rock keeps its shape
+                    // and takes the water's colour, then detail is LOST into it with depth, floored by
+                    // _SubmergedFloor. In four flat steps, never a gradient.
                     float drown = submergence > 0.0
-                                ? saturate(submergence / max(_SubmergedDepth, 1e-3)) : 0.0;
+                                ? ceil(saturate(submergence / max(_SubmergedDepth, 1e-3)) * 4.0) / 4.0 : 0.0;
                     float3 wet = lit * _SubmergedTint.rgb;
                     lit = lerp(lit, wet, drown * strength);
                     float lost = drown * (1.0 - saturate(_SubmergedFloor));
                     lit = lerp(lit, _SubmergedTint.rgb * 0.6, lost * strength);
 
-                    // THE DAMP BAND: the strip the tide keeps wet, centred ON the line and reaching
-                    // either side of it. Rock just above is wet from the last wave; rock just below is
-                    // still being worked. Symmetric, smoothstepped, so neither edge is ruled.
-                    float band = max(_DampBandMetres, 0.0);
-                    if (band > 0.0)
+                    // THE FOOT DISSOLVES into the sea: four dithered steps over _WetFadeMetres, so the
+                    // water shows through and the toe has no hard line. The quay's tidal face discards
+                    // below its line for the same reason. Twin: CliffWaterlineMath.SubmergedKeep01.
+                    if (submergence > 0.0 && _WetFadeMetres > 0.0)
                     {
-                        float d = abs(submergence);
-                        float t = saturate(1.0 - d / band);
-                        float damp = t * t * (3.0 - 2.0 * t);
-                        lit *= lerp(1.0, 1.0 - saturate(_DampDarken), damp * strength);
+                        float level = ceil(saturate(submergence / _WetFadeMetres) * 4.0) / 4.0;
+                        keep = CliffBayer4(cell) >= level ? 1.0 : 0.0;
                     }
 
-                    // THE FOAM COLLAR: the bright edge where sea meets rock. Tighter than the damp band
-                    // and biased DOWN into the water, because foam gathers on the water side; the two
-                    // together read as a wet strip with a lit edge instead of one fat glow.
+                    // THE WET BAND: rock the tide has just left, from the CURRENT line up to a torn top
+                    // that steps every few columns. It rides the tide because it is measured from the
+                    // line. Twin: CliffWaterlineMath.WetBandTopMetres, WetBand01.
+                    float band = max(_DampBandMetres, 0.0);
+                    if (band > 0.0 && above >= 0.0)
+                    {
+                        float group = floor(cell.x / CLIFF_WET_TOP_GROUP);
+                        float top = band * (0.55 + 0.9 * CliffHash(float2(group, 0.0), 1.0))
+                                  + (CliffHash(float2(cell.x, 0.0), 2.0) - 0.5) * 2.0 / CLIFF_TEXELS_PER_METRE;
+                        top = max(top, 1.0 / CLIFF_TEXELS_PER_METRE);
+                        if (above < top)
+                            lit *= 1.0 - saturate(_DampDarken) * strength;
+                    }
+
+                    // ROCKWEED at the line, in tufts: from a texel under the water to a torn top, on the
+                    // cells its cover picks. A tint on the LIT rock, so it darkens with the day.
+                    // Twin: CliffWaterlineMath.WeedFringe01.
+                    float weedTop = _WeedMetres * (0.4 + 1.2 * CliffHash(float2(floor(cell.x / 2.0), 0.0), 3.0));
+                    if (_WeedMetres > 0.0 && above >= -1.0 / CLIFF_TEXELS_PER_METRE && above < weedTop
+                        && CliffHash(cell, 4.0) < _WeedDensity)
+                        lit = lerp(lit, lit * _WeedTint.rgb, strength);
+
+                    // BARNACLE flecks just above the weed: sparse cells lifted to a pale grey of their own
+                    // light. Twin: CliffWaterlineMath.Barnacle01.
+                    float barnFrom = max(_WeedMetres, 0.0) * 0.5;
+                    if (_BarnacleMetres > 0.0 && above >= barnFrom && above < barnFrom + _BarnacleMetres
+                        && CliffHash(cell, 5.0) < _BarnacleDensity)
+                    {
+                        float luma = dot(lit, float3(0.299, 0.587, 0.114));
+                        lit = lerp(lit, saturate(luma * _BarnacleLift * float3(1.0, 0.98, 0.92)), strength);
+                    }
+
+                    // THE FOAM COLLAR in flecks: tighter than the wet band and biased DOWN into the
+                    // water, broken so it reads as broken water and not a painted stroke.
+                    // Twin: CliffWaterlineMath.FoamCollar01, FoamFleck01.
                     float collar = max(_FoamCollarMetres, 0.0);
                     if (collar > 0.0)
                     {
                         float c = abs(submergence - collar * saturate(_FoamCollarBias));
                         float ct = saturate(1.0 - c / collar);
                         float foam = ct * ct * (3.0 - 2.0 * ct);
-                        lit = lerp(lit, _FoamColour.rgb, foam * strength * _FoamColour.a);
+                        float brk = saturate(_FoamBreak);
+                        float fleck = foam * (1.0 - 0.4 * brk) > brk * CliffHash(cell, 7.0) + (1.0 - brk) * 0.5
+                                    ? 1.0 : 0.0;
+                        lit = lerp(lit, _FoamColour.rgb, fleck * strength * _FoamColour.a);
+                        keep = max(keep, fleck);   // foam sits ON the water, so it draws where the foot has gone
                     }
                 }
 
-                // Coverage rides in mask.A — full on a face, meaningful on the brow and toe decals.
-                half4 col = half4(lit, unlit.a * msk.a) * IN.color;
+                // Coverage rides in mask.A — full on a face, meaningful on the brow and toe decals. The
+                // wall's soft edges (seam feathers, tapered run ends, the brow's fade) arrive in vertex
+                // alpha and are drawn as a PIXEL DISSOLVE, never as glass.
+                half4 col = half4(lit * IN.color.rgb, unlit.a * msk.a * CliffDissolve(IN.color.a, cell) * keep);
                 clip(col.a - _AlphaClip);
                 return col;
             }

@@ -29,9 +29,11 @@ namespace HiddenHarbours.Tests.Economy
         const string FishingGear = "seller.nmc_fishing_gear_wholesaler";
         const string Loran = "instrument.loran";
 
-        /// <summary>Authored electronics: three existing prices and six approved, unlisted offers.</summary>
+        /// <summary>Authored electronics: four existing prices (the depth sounder joined from the island counter,
+        /// ruling 11-23, at its unchanged price) and six approved, unlisted offers.</summary>
         static readonly Dictionary<string, int> BoatGearStock = new Dictionary<string, int>(StringComparer.Ordinal)
         {
+            ["instrument.depth_sounder"] = 140,
             [Loran] = 900,
             ["instrument.fish_finder"] = 650,
             ["instrument.gps"] = 1800,
@@ -118,7 +120,7 @@ namespace HiddenHarbours.Tests.Economy
         // ---- the two lists -----------------------------------------------------------------------------------
 
         [Test]
-        public void TheBoatGearWholesaler_NamesAllNineElectronics_AtTheirAuthoredPrices() =>
+        public void TheBoatGearWholesaler_NamesAllTenElectronics_AtTheirAuthoredPrices() =>
             StocksExactly(BoatGear, BoatGearStock);
 
         [Test]
