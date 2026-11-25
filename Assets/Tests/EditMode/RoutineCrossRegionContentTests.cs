@@ -41,9 +41,6 @@ namespace HiddenHarbours.Tests.EditMode
         static readonly Dictionary<(string owner, string region, string station), int> KnownStationExceptions =
             new Dictionary<(string, string, string), int>
             {
-                { ("routine.junior_poirier", "region.nine_mile_creek", "station.nine_mile_creek.bar_landing"), 2 },
-                { ("routine.junior_poirier", "region.nine_mile_creek", "station.nine_mile_creek.fuel_stop"), 1 },
-                { ("crossing.st_peters_nine_mile_creek_bar", "region.nine_mile_creek", "station.nine_mile_creek.bar_landing"), 1 },
                 { ("home.st_peters_red_saltbox", "region.st_peters", "station.st_peters.home_post_office"), 1 },
             };
 

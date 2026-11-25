@@ -69,13 +69,14 @@ MonoBehaviour:
     - StartHour: 8.5
       StationId: station.nine_mile_creek.bar_landing
       Activity: 2
-      Why: "over the bar on the quad to the Nine Mile Creek landing (about 315 m of
-        sand; on foot that is three game hours, on the quad well under one)"
+      Why: "over the bar on the quad to the Nine Mile Creek landing (about 600 m of
+        sand, both halves of the bar; on foot that is six game hours, on the quad
+        about an hour and a half)"
       Uninterruptible: 1
       RegionId: region.nine_mile_creek
       CrossingCarrierId: vehicle.utility_quad
       CrossingSpeedMetresPerSecond: 5.5
-    - StartHour: 10
+    - StartHour: 10.5
       StationId: station.nine_mile_creek.fuel_stop
       Activity: 2
       Why: fuel for the quad and the week's order for the house
@@ -99,7 +100,7 @@ MonoBehaviour:
       RegionId: region.st_peters
       CrossingCarrierId: vehicle.utility_quad
       CrossingSpeedMetresPerSecond: 5.5
-    - StartHour: 13
+    - StartHour: 13.5
       StationId: station.st_peters.store_customer_b
       Activity: 2
       Why: in for a late dinner, the middle slot at the counter

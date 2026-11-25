@@ -485,16 +485,37 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Shader.SetGlobalVector("_MoonPhaseState", new Vector4(0.5f, 0f, 1f, 1f));
             float moonUp = CloudImprint(scene, mat, c, "moon_up");
 
+            // SUN DOWN, MOON DOWN: true night with nothing to light the clouds. Below #1349's
+            // _NightSunCutoff the night content is gated in full, so the old 0.01 veil bar still
+            // holds here (0.0005 to 0.0008 measured on 2026-11-24) and a veil at real night still fails.
+            Apply(mat, At("night_moonless", new Vector2(-1.5f, -2.6f), 0.2f, DuskTint, -0.05f));
+            Shader.SetGlobalVector("_MoonPhaseState", new Vector4(0.5f, 0f, 0f, 0f));
+            float sunDown = CloudImprint(scene, mat, c, "sun_down");
+            Apply(mat, c);
+            Shader.SetGlobalVector("_MoonPhaseState", new Vector4(0.5f, 0f, 1f, 1f));   // back to the moon-up state the legacy arm was measured in
+
             // LEGACY (sabotage the same assert): _CloudMoonlitVis = 1 is the exact pre-fix
             // full-strength night share — the veil magnitude.
             mat.SetFloat("_CloudMoonlitVis", 1f);
             float legacyVeil = CloudImprint(scene, mat, c, "legacy_veil");
             Debug.Log($"[white-out] dusk cloud imprint: moonDown {moonDown:F4}, moonUp {moonUp:F4}, " +
-                      $"legacy veil {legacyVeil:F4}");
+                      $"legacy veil {legacyVeil:F4}, sun down {sunDown:F4}");
 
-            Assert.Less(moonDown, 0.01f,
-                $"on a MOONLESS dusk the night-cloud share still painted a {moonDown:F4} mean-|ΔL| " +
-                "veil over the sea — unlit clouds must not glow (the 2026-07-23 white-veil defect).");
+            // #1349 ("no moon or stars while the sun is up") moves the clouds' share into the DAY
+            // bucket while the sun is above _NightSunCutoff, so at this frame's sun elevation (0.06)
+            // a moonless dusk now carries a day-sky cloud reflection: 0.0244 to 0.0252 measured across
+            // runs on 2026-11-24 (it was under 0.01 before #1349). The bar bounds that look with an
+            // 11-15 % margin; the legacy full-strength night share (0.066-0.068) still trips it.
+            Assert.Less(moonDown, 0.028f,
+                $"on a MOONLESS dusk the cloud share painted a {moonDown:F4} mean-|ΔL| veil over " +
+                "the sea, above the day-sky reflection #1349 chose (~0.025) — unlit clouds must not " +
+                "glow (the 2026-07-23 white-veil defect).");
+            Assert.Less(sunDown, 0.01f,
+                $"with the sun below the cutoff and no moon the clouds still painted a {sunDown:F4} " +
+                "mean-|ΔL| veil — at true night nothing lights them (the 2026-07-23 white-veil defect).");
+            Assert.Greater(legacyVeil, 0.028f,
+                $"SABOTAGE NOT DETECTED — the legacy full-strength night share ({legacyVeil:F4}) " +
+                "does not exceed the moonless-dusk bar, so that bar cannot see the veil it pins.");
             Assert.Greater(moonUp, 0.004f,
                 $"under a full high moon the moonlit cloud share vanished ({moonUp:F4}) — the " +
                 "owner's approved night sky content must survive the veil fix, merely FAINT.");
@@ -597,16 +618,37 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "the 'static' shore scene drifted between renders — a time-driven layer is " +
                 "still live and the band-imprint difference below would be noise.");
 
+            // THE SHIPPED ARM: #1361's relative swell read (_SwellReadRelative = 1 in Water.mat, the
+            // owner's pick of 2026-11-20) lifts the troughs, so open water's bands are softer than
+            // before: 0.0070 open and an in-seam ratio of 0.389 measured on 2026-11-24 (they were over
+            // 0.010 and under 0.35 before #1361). The bars bound that look with a small margin.
+            float shippedRead = mat.GetFloat("_SwellReadRelative");
+            BandArm(scene, mat, "relative read (shipped)", openBar: 0.006f, ratioBar: 0.45f);
+
+            // THE OLD ARM: with the relative read off, the pre-#1361 bars still hold (0.0118 open,
+            // ratio 0.199 measured on 2026-11-24), so both looks stay pinned.
+            mat.SetFloat("_SwellReadRelative", 0f);
+            BandArm(scene, mat, "relative read off", openBar: 0.010f, ratioBar: 0.35f);
+            mat.SetFloat("_SwellReadRelative", shippedRead);
+        }
+
+        /// <summary>One arm of the band pin: open water keeps its bands above <paramref name="openBar"/>,
+        /// the seam band carries under <paramref name="ratioBar"/> of them, and a no-fade band (the
+        /// SABOTAGE: ≈0 degrades ShoreFade01 to the documented legacy no-fade contract) trips that
+        /// same ratio bar, so the assert can still see the worms it exists to pin.</summary>
+        static void BandArm(SeaFrameScene scene, Material mat, string arm, float openBar, float ratioBar)
+        {
+            float band = mat.GetFloat("_ShoreFadeBand");
             float inSeam = BandImprint(scene, mat, 0.2f, 1.0f, out int inPx);
             float outSeam = BandImprint(scene, mat, 2.75f, 3.4f, out int outPx);
-            Debug.Log($"[shore-bands] in-seam (0.2..1.0m) {inSeam:F4} ({inPx} px); " +
-                      $"open (2.75..3.4m) {outSeam:F4} ({outPx} px)");
+            Debug.Log($"[shore-bands] {arm}: in-seam (0.2..1.0m) {inSeam:F4} ({inPx} px); " +
+                      $"open (2.75..3.4m) {outSeam:F4} ({outPx} px); ratio {inSeam / Mathf.Max(outSeam, 1e-6f):F3}");
 
-            Assert.Greater(outSeam, 0.010f,
-                $"open water lost its envelope bands ({outSeam:F4}) — the seam fade must never " +
+            Assert.Greater(outSeam, openBar,
+                $"{arm}: open water lost its envelope bands ({outSeam:F4}) — the seam fade must never " +
                 "reach past the band (the §23 marked-wave style is owner-approved).");
-            Assert.Less(inSeam, outSeam * 0.35f,
-                $"the envelope bands still draw inside the seam band ({inSeam:F4} vs open " +
+            Assert.Less(inSeam, outSeam * ratioBar,
+                $"{arm}: the envelope bands still draw inside the seam band ({inSeam:F4} vs open " +
                 $"{outSeam:F4}) — the band worms are back on the dying displaced edge " +
                 "(the 2026-07-23 swirl defect).");
 
@@ -614,10 +656,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
             mat.SetFloat("_ShoreFadeBand", 0.0001f);   // degrades to "no fade" (the legacy contract)
             float inSeamLegacy = BandImprint(scene, mat, 0.2f, 1.0f, out _);
             float outSeamLegacy = BandImprint(scene, mat, 2.75f, 3.4f, out _);
-            Debug.Log($"[shore-bands] SABOTAGE (no-fade band): in-seam {inSeamLegacy:F4}, " +
-                      $"open {outSeamLegacy:F4}");
-            Assert.GreaterOrEqual(inSeamLegacy, outSeamLegacy * 0.35f,
-                "SABOTAGE NOT DETECTED — with the seam fade disabled the in-seam band imprint " +
+            mat.SetFloat("_ShoreFadeBand", band);
+            Debug.Log($"[shore-bands] {arm} SABOTAGE (no-fade band): in-seam {inSeamLegacy:F4}, " +
+                      $"open {outSeamLegacy:F4}; ratio {inSeamLegacy / Mathf.Max(outSeamLegacy, 1e-6f):F3}");
+            Assert.GreaterOrEqual(inSeamLegacy, outSeamLegacy * ratioBar,
+                $"SABOTAGE NOT DETECTED ({arm}) — with the seam fade disabled the in-seam band imprint " +
                 $"({inSeamLegacy:F4}) still sits below the bar relative to open water " +
                 $"({outSeamLegacy:F4}); the assert cannot see the unfaded worms it exists to pin.");
         }

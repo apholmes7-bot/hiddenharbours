@@ -45,6 +45,15 @@ namespace HiddenHarbours.Core
     /// </summary>
     public static class InteractPriority
     {
+        /// <summary>
+        /// Something that takes the press only when nothing else in reach wants it: setting down the
+        /// shopping bag in his hand. Every other rung outranks it, so at a shelf the press buys and at a
+        /// bed the press sleeps. A thing on this rung is also never a row of the chooser beside something
+        /// else (<see cref="InteractChoiceList"/>): a list at every fixture because a bag is in hand would
+        /// be a tax on carrying it.
+        /// </summary>
+        public const int LastResort = -100;
+
         /// <summary>A deck container's lid: yields to doors, fuel work and every other fixture.
         /// Helm stations are resolved before this candidate ladder.</summary>
         public const int DeckStorage = -10;
