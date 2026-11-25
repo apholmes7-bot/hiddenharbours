@@ -308,7 +308,9 @@ This single rule produces *every* tidal gameplay consequence:
 > mechanic from minute one: as the deterministic tide **falls**, **exposed seabed becomes walkable**,
 > and a **tide-gated sandbar between St Peters and Nine Mile Creek bares as a walking path at low water**
 > (with **boat-crossable channels that narrow as the tide falls**) — the **first way to reach the
-> mainland, on foot**. St Peters runs a **deliberately big amplitude** (~3–4 m) against the **Cove's
+> mainland, on foot** (from the end of the first week; until the island gate, wind-driven surf over the
+> bar turns a walker back — a look and a push only, a pure function of seed, game time and saved flags,
+> never a change to this sim; amended 2026-11-23, ADR 0062). St Peters runs a **deliberately big amplitude** (~3–4 m) against the **Cove's
 > gentle tide**, so the same falling tide that bares the **clam flats** (the by-hand first catch) also
 > **opens the sandbar** and, at the flood, **seals the island off** (`world-and-regions.md` §6.0,
 > §7). **One source of truth:** terrain (world) and the walkability sim (gameplay) both decide
