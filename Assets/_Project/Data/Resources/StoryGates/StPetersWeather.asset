@@ -24,6 +24,7 @@ MonoBehaviour:
   AllHoldNote: See Ginny at her cottage this evening.
   LiveWhileFlag: st_peters.first_week
   SetsFlag: st_peters.ginny_word_completed
+  MorningSetsFlag: st_peters.weather_turned
   EndsDemo: 1
   DemoAfterLine: "There's plenty of fishing here yet, child. Come home for supper."
   PendingUntilFlag: st_peters.weather_turned

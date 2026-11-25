@@ -136,7 +136,35 @@ namespace HiddenHarbours.World
         private static StoryGateDef[] _gates;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetStatics() => _gates = null;
+        private static void ResetStatics()
+        {
+            _gates = null;
+            ListenForMorning();
+        }
+
+        /// <summary>Listen once, including after a bus reset. No player state is kept here.</summary>
+        public static void ListenForMorning()
+        {
+            EventBus.Unsubscribe<SleepReachedMorning>(OnMorning);
+            EventBus.Subscribe<SleepReachedMorning>(OnMorning);
+        }
+
+        /// <summary>Only the host changes shared passage flags. The demo still ends at the word.</summary>
+        private static void OnMorning(SleepReachedMorning morning)
+        {
+            if (DemoBuild.Enabled || (DemoWeek.IsHost != null && !DemoWeek.IsHost())) return;
+            ISaveService save = GameServices.Save;
+            if (save == null || save.Current == null) return;
+            IReadOnlyList<StoryGateDef> all = All;
+            for (int i = 0; i < all.Count; i++)
+            {
+                StoryGateDef gate = all[i];
+                if (gate == null || string.IsNullOrWhiteSpace(gate.MorningSetsFlag) ||
+                    string.IsNullOrWhiteSpace(gate.SetsFlag) || !save.GetFlag(gate.SetsFlag) ||
+                    save.GetFlag(gate.MorningSetsFlag)) continue;
+                save.SetFlag(gate.MorningSetsFlag, true);
+            }
+        }
 
         /// <summary>Every gate, in id order.</summary>
         public static IReadOnlyList<StoryGateDef> All
