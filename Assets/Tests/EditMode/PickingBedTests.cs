@@ -19,13 +19,16 @@ namespace HiddenHarbours.Tests.EditMode
         private GameConfig _config;
         private TideProbe _tide;
         private Hands _hands;
+        private Licences _licences;
         private PickingBedSession _session;
 
         private sealed class Licences : ILicenseService
         {
-            public bool IsLicensed(string id) => true;
-            public void Grant(string id) { }
-            public int Count => 1;
+            public bool Held = true;
+            public Action OnCheck;
+            public bool IsLicensed(string id) { OnCheck?.Invoke(); return Held; }
+            public void Grant(string id) { Held = true; }
+            public int Count => Held ? 1 : 0;
         }
 
         private sealed class Hands : ICatchHands
@@ -54,12 +57,14 @@ namespace HiddenHarbours.Tests.EditMode
             public float WaterOffset;
             public bool RealTide;
             public double LastRead;
+            public Action OnRead;
             public EnvironmentSample Sample() => default;
             public float TideHeightAt(double time) => RealTide
                 ? TideModel.Height(time, ActiveTideProfile, Config) : Level;
             public float WaterLevelAt(double time)
             {
                 LastRead = time;
+                OnRead?.Invoke();
                 return TideHeightAt(time) + WaterOffset;
             }
         }
@@ -80,7 +85,7 @@ namespace HiddenHarbours.Tests.EditMode
             _bed.Species = _species;
             _hands = new Hands();
             _tide = new TideProbe { Config = _config, Level = _bed.UncoveredBelowMetres - 1f };
-            GameServices.Licenses = new Licences();
+            _licences = new Licences();
             _session = NewSession();
         }
 
@@ -96,7 +101,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         private PickingBedSession NewSession() => new PickingBedSession(_bed, _tide, _config.SecondsPerDay);
-        private PickingBedCheck Pick(double time = 0d) => _session.TryPick(_bed.RegionId, _bed.Position, time, _hands);
+        private PickingBedCheck Pick(double time = 0d) => _session.TryPick(_bed.RegionId, _bed.Position, time, _hands, _licences);
         private double RegrowSeconds => (double)_bed.RegrowDays * _config.SecondsPerDay;
 
         [Test]
@@ -144,7 +149,7 @@ namespace HiddenHarbours.Tests.EditMode
                 {
                     double time = (day + sample / (double)samplesPerDay) * _config.SecondsPerDay;
                     bool uncovered = TideModel.Height(time, _tide.ActiveTideProfile, _config) < bed.UncoveredBelowMetres;
-                    PickingBedCheck check = session.Check(bed.RegionId, bed.Position, time);
+                    PickingBedCheck check = session.Check(bed.RegionId, bed.Position, time, _licences);
                     Assert.AreEqual(uncovered ? PickingBedStatus.Ready : PickingBedStatus.Covered, check.Status,
                         file + " day " + day + " sample " + sample);
                     Assert.AreEqual(time, _tide.LastRead);
@@ -185,6 +190,189 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(_bed.Capacity, _session.SnapshotAt(0d).TakenAtSeconds.Count);
         }
 
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TwoPickersPreviewTheLastShellfish_OnlyTheFirstAttemptGetsIt(bool reverseOrder)
+        {
+            for (int i = 0; i < _bed.Capacity - 1; i++) Assert.IsTrue(Pick().Kept);
+            var hands = new[] { new Hands(), new Hands() };
+            var wallets = new[] { new Licences(), new Licences() };
+            for (int i = 0; i < hands.Length; i++)
+            {
+                PickingBedCheck preview = _session.Check(_bed.RegionId, _bed.Position, 10d, wallets[i]);
+                Assert.IsTrue(preview.CanKeep);
+                Assert.AreEqual(1, preview.Remaining);
+            }
+
+            int first = reverseOrder ? 1 : 0;
+            int second = 1 - first;
+            int landed = 0, stowed = 0;
+            EventBus.Subscribe<CatchLanded>(_ => landed++);
+            EventBus.Subscribe<FishCaught>(_ => stowed++);
+            PickingBedCheck winner = _session.TryPick(_bed.RegionId, _bed.Position, 10d, hands[first], wallets[first]);
+            PickingBedCheck loser = _session.TryPick(_bed.RegionId, _bed.Position, 10d, hands[second], wallets[second]);
+
+            Assert.AreEqual(PickingBedStatus.Picked, winner.Status);
+            Assert.AreEqual(PickingBedStatus.Empty, loser.Status);
+            Assert.AreEqual(0, winner.Remaining);
+            Assert.AreEqual(0, loser.Remaining);
+            Assert.AreEqual(1, hands[first].Accepted.Count);
+            Assert.AreEqual(0, hands[second].Accepted.Count);
+            Assert.AreEqual(_species.Id, hands[first].Accepted[0].SpeciesId);
+            Assert.AreEqual(1, landed);
+            Assert.AreEqual(0, stowed);
+            Assert.AreEqual(_bed.Capacity, _session.SnapshotAt(10d).TakenAtSeconds.Count);
+            Assert.AreEqual(0, _session.RemainingAt(10d));
+        }
+
+        [TestCase(2)]
+        [TestCase(3)]
+        [TestCase(4)]
+        public void EveryPickerUsesOneBedCount_AndRegrowthCanGoToADifferentPicker(int playerCount)
+        {
+            _bed.Capacity = playerCount;
+            _session = NewSession();
+            var hands = new Hands[playerCount];
+            var wallets = new Licences[playerCount];
+            for (int i = 0; i < playerCount; i++)
+            {
+                hands[i] = new Hands();
+                wallets[i] = new Licences();
+                PickingBedCheck result = _session.TryPick(_bed.RegionId, _bed.Position, i, hands[i], wallets[i]);
+                Assert.AreEqual(PickingBedStatus.Picked, result.Status);
+                Assert.AreEqual(playerCount - i - 1, result.Remaining);
+                Assert.AreEqual(1, hands[i].Accepted.Count);
+                Assert.AreEqual((double)i, hands[i].Accepted[0].Freshness.LastSettleGameSeconds);
+            }
+            PickingBedSnapshot empty = _session.SnapshotAt(playerCount);
+            Assert.AreEqual(0, empty.Remaining);
+            Assert.AreEqual(playerCount, empty.TakenAtSeconds.Count);
+            for (int i = 0; i < playerCount; i++)
+            {
+                Assert.AreEqual(PickingBedStatus.Empty,
+                    _session.TryPick(_bed.RegionId, _bed.Position, playerCount, hands[i], wallets[i]).Status);
+                Assert.AreEqual(1, hands[i].Accepted.Count);
+            }
+
+            Assert.AreEqual(0, _session.RemainingAt(RegrowSeconds - 0.001d));
+            Assert.AreEqual(1, _session.RemainingAt(RegrowSeconds));
+            Assert.IsTrue(_session.TryPick(_bed.RegionId, _bed.Position, RegrowSeconds,
+                hands[playerCount - 1], wallets[playerCount - 1]).Kept);
+            Assert.AreEqual(0, _session.RemainingAt(RegrowSeconds));
+            Assert.AreEqual(1, _session.RemainingAt(RegrowSeconds + 1d));
+            Assert.AreEqual(0, empty.Remaining, "an earlier detached snapshot stays empty");
+            for (int i = 0; i < playerCount; i++)
+                Assert.AreEqual(i == playerCount - 1 ? 2 : 1, hands[i].Accepted.Count);
+        }
+
+        [Test]
+        public void FullHandsLeaveTheLastShellfishForTheOtherPicker()
+        {
+            _bed.Capacity = 1;
+            _session = NewSession();
+            _hands.Full = true;
+            Assert.AreEqual(PickingBedStatus.HandsFull, Pick(10d).Status);
+            Assert.AreEqual(1, _session.RemainingAt(10d));
+            Assert.AreEqual(0, _session.SnapshotAt(10d).TakenAtSeconds.Count);
+            var otherHands = new Hands();
+            Assert.IsTrue(_session.TryPick(_bed.RegionId, _bed.Position, 10d, otherHands, new Licences()).Kept);
+            Assert.AreEqual(0, _hands.Accepted.Count);
+            Assert.AreEqual(1, otherHands.Accepted.Count);
+            Assert.AreEqual(0, _session.RemainingAt(10d));
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void EachPickerUsesHisOwnLicence_RegardlessOfTheGlobalWallet(bool globalLicensed)
+        {
+            GameServices.Licenses = new Licences { Held = globalLicensed };
+            _bed.Capacity = 1;
+            _session = NewSession();
+            var unlicensed = new Licences { Held = false };
+            var otherHands = new Hands();
+            int released = 0;
+            Action<UnlicensedCatchReleased> onRelease = _ => released++;
+            EventBus.Subscribe(onRelease);
+            try
+            {
+                Assert.AreEqual(PickingBedStatus.ReleasedUnlicensed,
+                    _session.Check(_bed.RegionId, _bed.Position, 10d, unlicensed).Status);
+                Assert.AreEqual(PickingBedStatus.ReleasedUnlicensed,
+                    _session.TryPick(_bed.RegionId, _bed.Position, 10d, otherHands, unlicensed).Status);
+                Assert.AreEqual(1, released);
+                Assert.AreEqual(0, otherHands.Accepted.Count);
+                Assert.AreEqual(1, _session.RemainingAt(10d));
+                Assert.IsTrue(Pick(10d).Kept);
+                Assert.AreEqual(1, _hands.Accepted.Count);
+                Assert.AreEqual(0, _session.RemainingAt(10d));
+                Assert.AreEqual(1, released);
+            }
+            finally { EventBus.Unsubscribe(onRelease); }
+        }
+
+        [Test]
+        public void MissingPersonalWalletCannotBorrowTheGlobalLicence()
+        {
+            GameServices.Licenses = _licences;
+            Assert.AreEqual(PickingBedStatus.LicenceServiceUnavailable,
+                _session.TryPick(_bed.RegionId, _bed.Position, 10d, _hands, null).Status);
+            Assert.AreEqual(0, _hands.Accepted.Count);
+            Assert.AreEqual(_bed.Capacity, _session.RemainingAt(10d));
+        }
+
+        [TestCase("tide")]
+        [TestCase("licence")]
+        [TestCase("hands")]
+        public void AnotherPickerCannotEnterDuringTheLastPick(string callback)
+        {
+            _bed.Capacity = 1;
+            _session = NewSession();
+            var otherHands = new Hands();
+            var otherWallet = new Licences();
+            int attempts = 0;
+            Action tryOther = () =>
+            {
+                attempts++;
+                Assert.AreEqual(PickingBedStatus.Busy,
+                    _session.Check(_bed.RegionId, _bed.Position, 0d, otherWallet).Status);
+                Assert.AreEqual(PickingBedStatus.Busy,
+                    _session.TryPick(_bed.RegionId, _bed.Position, 0d, otherHands, otherWallet).Status);
+            };
+            if (callback == "tide") _tide.OnRead = tryOther;
+            else if (callback == "licence") _licences.OnCheck = tryOther;
+            else _hands.OnPut = tryOther;
+
+            Assert.IsTrue(Pick().Kept);
+            Assert.AreEqual(1, attempts);
+            Assert.AreEqual(1, _hands.Accepted.Count);
+            Assert.AreEqual(0, otherHands.Accepted.Count);
+            Assert.AreEqual(0, _session.RemainingAt(0d));
+            Assert.AreEqual(PickingBedStatus.Empty,
+                _session.TryPick(_bed.RegionId, _bed.Position, 0d, otherHands, otherWallet).Status);
+        }
+
+        [TestCase("tide")]
+        [TestCase("licence")]
+        [TestCase("hands")]
+        public void ThrowingCallbackReleasesTheAttemptWithoutTakingStock(string callback)
+        {
+            Action fail = () => throw new InvalidOperationException("Delivery unavailable.");
+            if (callback == "tide") _tide.OnRead = fail;
+            else if (callback == "licence") _licences.OnCheck = fail;
+            else _hands.OnPut = fail;
+            Assert.Throws<InvalidOperationException>(() => Pick());
+            Assert.AreEqual(_bed.Capacity, _session.RemainingAt(0d));
+            Assert.AreEqual(0, _session.SnapshotAt(0d).TakenAtSeconds.Count);
+            Assert.AreEqual(0, _hands.Accepted.Count);
+            _tide.OnRead = null;
+            _licences.OnCheck = null;
+            _hands.OnPut = null;
+            var otherHands = new Hands();
+            Assert.IsTrue(_session.TryPick(_bed.RegionId, _bed.Position, 0d, otherHands, new Licences()).Kept);
+            Assert.AreEqual(1, otherHands.Accepted.Count);
+            Assert.AreEqual(_bed.Capacity - 1, _session.RemainingAt(0d));
+        }
+
         [Test]
         public void EveryRemovalRegrowsOnItsOwnDeadline_NotAtMidnightOrHighWater()
         {
@@ -217,7 +405,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void DayLengthIsAnInput_AndDoesNotAssumeRealWorldSeconds()
         {
             var session = new PickingBedSession(_bed, _tide, _config.SecondsPerDay * 2d);
-            Assert.IsTrue(session.TryPick(_bed.RegionId, _bed.Position, 0d, _hands).Kept);
+            Assert.IsTrue(session.TryPick(_bed.RegionId, _bed.Position, 0d, _hands, _licences).Kept);
             Assert.AreEqual(_bed.Capacity - 1, session.RemainingAt(RegrowSeconds));
             Assert.AreEqual(_bed.Capacity, session.RemainingAt(RegrowSeconds * 2d));
         }
@@ -234,7 +422,7 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.AreEqual(_bed.Capacity - i, _session.RemainingAt(time + 0.25d));
                 Assert.AreEqual(_bed.Capacity - i, _session.RemainingAt(time));
                 Assert.IsTrue(Pick(time).Kept);
-                Assert.IsTrue(other.TryPick(_bed.RegionId, _bed.Position, time, hands).Kept);
+                Assert.IsTrue(other.TryPick(_bed.RegionId, _bed.Position, time, hands, _licences).Kept);
                 Assert.AreEqual(_hands.Accepted[i], hands.Accepted[i]);
                 CollectionAssert.AreEqual(_session.SnapshotAt(time).TakenAtSeconds, other.SnapshotAt(time).TakenAtSeconds);
             }
@@ -253,8 +441,8 @@ namespace HiddenHarbours.Tests.EditMode
             for (int i = 0; i < 4; i++)
             {
                 Assert.IsTrue(Pick(i).Kept);
-                Assert.IsTrue(otherSeed.TryPick(_bed.RegionId, _bed.Position, i, seedHands).Kept);
-                Assert.IsTrue(otherBed.TryPick(_bed.RegionId, _bed.Position, i, bedHands).Kept);
+                Assert.IsTrue(otherSeed.TryPick(_bed.RegionId, _bed.Position, i, seedHands, _licences).Kept);
+                Assert.IsTrue(otherBed.TryPick(_bed.RegionId, _bed.Position, i, bedHands, _licences).Kept);
             }
             CollectionAssert.AreNotEqual(_hands.Accepted, seedHands.Accepted);
             CollectionAssert.AreNotEqual(_hands.Accepted, bedHands.Accepted);
@@ -266,7 +454,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void RefusedHandsLeaveNoRemoval_AndRetryProducesTheSameItem()
         {
             Assert.AreEqual(PickingBedStatus.HandsUnavailable,
-                _session.TryPick(_bed.RegionId, _bed.Position, 10d, null).Status);
+                _session.TryPick(_bed.RegionId, _bed.Position, 10d, null, _licences).Status);
             _hands.Full = true;
             Assert.AreEqual(PickingBedStatus.HandsFull, Pick(10d).Status);
             Assert.AreEqual(0, _session.SnapshotAt(10d).TakenAtSeconds.Count);
@@ -274,7 +462,7 @@ namespace HiddenHarbours.Tests.EditMode
             var fresh = NewSession();
             var otherHands = new Hands();
             Assert.IsTrue(Pick(10d).Kept);
-            Assert.IsTrue(fresh.TryPick(_bed.RegionId, _bed.Position, 10d, otherHands).Kept);
+            Assert.IsTrue(fresh.TryPick(_bed.RegionId, _bed.Position, 10d, otherHands, _licences).Kept);
             Assert.AreEqual(otherHands.Accepted[0], _hands.Accepted[0]);
         }
 
@@ -282,13 +470,13 @@ namespace HiddenHarbours.Tests.EditMode
         public void WrongShoreAndDistantPlayerCannotTakeStock_ReachBoundaryIsInclusive()
         {
             Assert.AreEqual(PickingBedStatus.WrongRegion,
-                _session.TryPick("region.nine_mile_creek", _bed.Position, 0d, _hands).Status);
+                _session.TryPick("region.nine_mile_creek", _bed.Position, 0d, _hands, _licences).Status);
             Assert.AreEqual(PickingBedStatus.OutOfReach,
-                _session.TryPick(_bed.RegionId, _bed.Position + Vector2.up * (_bed.ReachMetres + 1f), 0d, _hands).Status);
+                _session.TryPick(_bed.RegionId, _bed.Position + Vector2.up * (_bed.ReachMetres + 1f), 0d, _hands, _licences).Status);
             Assert.AreEqual(PickingBedStatus.OutOfReach,
-                _session.TryPick(_bed.RegionId, new Vector2(float.NaN, 0f), 0d, _hands).Status);
+                _session.TryPick(_bed.RegionId, new Vector2(float.NaN, 0f), 0d, _hands, _licences).Status);
             Assert.AreEqual(_bed.Capacity, _session.RemainingAt(0d));
-            Assert.IsTrue(_session.TryPick(_bed.RegionId, _bed.Position + Vector2.up * _bed.ReachMetres, 0d, _hands).Kept);
+            Assert.IsTrue(_session.TryPick(_bed.RegionId, _bed.Position + Vector2.up * _bed.ReachMetres, 0d, _hands, _licences).Kept);
         }
 
         [TestCase(double.NaN)]
@@ -328,8 +516,8 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var noTide = new PickingBedSession(_bed, null, _config.SecondsPerDay);
             Assert.AreEqual(PickingBedStatus.TideUnavailable,
-                noTide.TryPick(_bed.RegionId, _bed.Position, 0d, _hands).Status);
-            GameServices.Licenses = null;
+                noTide.TryPick(_bed.RegionId, _bed.Position, 0d, _hands, _licences).Status);
+            _licences = null;
             Assert.AreEqual(PickingBedStatus.LicenceServiceUnavailable, Pick().Status);
             Assert.AreEqual(0, _hands.Accepted.Count);
         }

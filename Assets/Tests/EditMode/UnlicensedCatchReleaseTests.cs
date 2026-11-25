@@ -220,17 +220,17 @@ namespace HiddenHarbours.Tests.EditMode
 
             tide.Level = bed.UncoveredBelowMetres;
             Assert.AreEqual(PickingBedStatus.Covered,
-                session.TryPick(bed.RegionId, bed.Position, 0d, hands).Status);
+                session.TryPick(bed.RegionId, bed.Position, 0d, hands, _wallet).Status);
             Assert.AreEqual(0, _unlicensed.Count, "a covered bed cannot produce a release");
             Assert.AreEqual(0, _cues.Count);
             Assert.AreEqual(0, hands.Items.Count);
             tide.Level = bed.UncoveredBelowMetres - 1f;
-            PickingBedCheck preview = session.Check(bed.RegionId, bed.Position, 0d);
+            PickingBedCheck preview = session.Check(bed.RegionId, bed.Position, 0d, _wallet);
             Assert.IsTrue(preview.CanPick, "lack of a licence never blocks the attempt");
             Assert.AreEqual(licensed, preview.CanKeep);
             Assert.AreEqual(0, _cues.Count, "a preview does not speak or release anything");
             Assert.AreEqual(0, _unlicensed.Count);
-            PickingBedCheck result = session.TryPick(bed.RegionId, bed.Position, 0d, hands);
+            PickingBedCheck result = session.TryPick(bed.RegionId, bed.Position, 0d, hands, _wallet);
             Assert.AreEqual(licensed, result.Kept);
             Assert.AreEqual(bed.Capacity - (licensed ? 1 : 0), result.Remaining);
             Assert.AreEqual(licensed ? 1 : 0, hands.Items.Count);
@@ -254,7 +254,7 @@ namespace HiddenHarbours.Tests.EditMode
                     "a shellfish put straight back in its bed was not taken");
 
                 _wallet.Grant(licence.Id);
-                Assert.IsTrue(session.TryPick(bed.RegionId, bed.Position, 0d, hands).Kept);
+                Assert.IsTrue(session.TryPick(bed.RegionId, bed.Position, 0d, hands, _wallet).Kept);
                 Assert.AreEqual(bed.Capacity - 1, session.RemainingAt(0d));
                 Assert.AreEqual(1, _unlicensed.Count, "getting the licence changes the next decision");
                 Assert.AreEqual(1, _cues.Count);

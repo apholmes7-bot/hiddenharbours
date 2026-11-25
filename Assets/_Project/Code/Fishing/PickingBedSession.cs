@@ -67,10 +67,12 @@ namespace HiddenHarbours.Fishing
     }
 
     /// <summary>
-    /// Keep one instance per bed for the whole world session, including region exits. Initially full;
+    /// Keep one instance per bed shared by every picker for the whole world session, including region exits. Initially full;
     /// each kept shellfish returns after RegrowDays. Queries do not advance or refill stored state.
     /// Stock has no random component; catch weights use the world seed, bed id, time and removal index.
     /// The caller supplies the active region's Core tide service and the configured seconds per day.
+    /// Dispatch all attempts in authority order on the game thread, as required by the hands and EventBus.
+    /// Every attempt supplies that player's wallet and hands; no player service is read from global state.
     /// No frame ticks, wall clock, inventory fallback or save writes are involved.
     /// </summary>
     public sealed class PickingBedSession
@@ -105,11 +107,19 @@ namespace HiddenHarbours.Fishing
             _worldSeed = environment?.WorldSeed ?? 0;
         }
 
-        public PickingBedCheck Check(string activeRegionId, Vector2 playerPosition, double gameTimeSeconds)
+        public PickingBedCheck Check(string activeRegionId, Vector2 playerPosition, double gameTimeSeconds,
+            ILicenseService licences)
+        {
+            if (!ValidTime(gameTimeSeconds)) return new PickingBedCheck(PickingBedStatus.InvalidTime, 0);
+            if (_picking) return new PickingBedCheck(PickingBedStatus.Busy, RemainingAt(gameTimeSeconds));
+            return CheckAvailable(activeRegionId, playerPosition, gameTimeSeconds, licences);
+        }
+
+        private PickingBedCheck CheckAvailable(string activeRegionId, Vector2 playerPosition,
+            double gameTimeSeconds, ILicenseService licences)
         {
             if (!ValidTime(gameTimeSeconds)) return new PickingBedCheck(PickingBedStatus.InvalidTime, 0);
             int remaining = RemainingAt(gameTimeSeconds);
-            if (_picking) return new PickingBedCheck(PickingBedStatus.Busy, remaining);
             if (!string.Equals(activeRegionId, _regionId, StringComparison.Ordinal))
                 return new PickingBedCheck(PickingBedStatus.WrongRegion, remaining);
             double dx = (double)playerPosition.x - _position.x, dy = (double)playerPosition.y - _position.y;
@@ -122,21 +132,25 @@ namespace HiddenHarbours.Fishing
             if (water >= _uncoveredBelow)
                 return new PickingBedCheck(PickingBedStatus.Covered, remaining);
             if (remaining == 0) return new PickingBedCheck(PickingBedStatus.Empty, remaining);
-            if (GameServices.Licenses == null)
+            if (licences == null)
                 return new PickingBedCheck(PickingBedStatus.LicenceServiceUnavailable, remaining);
-            return new PickingBedCheck(UnlicensedCatch.MustRelease(_species.Id)
+            return new PickingBedCheck(UnlicensedCatch.MustRelease(_species.Id, null,
+                UnlicensedCatch.LiveCatalog(licences), licences)
                 ? PickingBedStatus.ReleasedUnlicensed : PickingBedStatus.Ready, remaining);
         }
 
         /// <summary>One attempt, one shellfish. The hands own CatchLanded; no hold event is emitted here.</summary>
         public PickingBedCheck TryPick(string activeRegionId, Vector2 playerPosition,
-            double gameTimeSeconds, ICatchHands hands)
+            double gameTimeSeconds, ICatchHands hands, ILicenseService licences)
         {
-            PickingBedCheck check = Check(activeRegionId, playerPosition, gameTimeSeconds);
-            if (!check.CanPick) return check;
+            if (!ValidTime(gameTimeSeconds)) return new PickingBedCheck(PickingBedStatus.InvalidTime, 0);
+            if (_picking) return new PickingBedCheck(PickingBedStatus.Busy, RemainingAt(gameTimeSeconds));
+            // Guard the checks too: tide, licence and hand callbacks cannot admit another picker.
             _picking = true;
             try
             {
+                PickingBedCheck check = CheckAvailable(activeRegionId, playerPosition, gameTimeSeconds, licences);
+                if (!check.CanPick) return check;
                 uint seed = unchecked((uint)StableHash.CatchSeed(_worldSeed, _id, gameTimeSeconds));
                 seed = StableHash.Finalize(StableHash.Fold(seed, _capacity - check.Remaining));
                 float weight = CatchResolver.RollWeight(_species, new System.Random(unchecked((int)seed)));
@@ -145,7 +159,7 @@ namespace HiddenHarbours.Fishing
                     Freshness.Landed(gameTimeSeconds));
                 if (check.Status == PickingBedStatus.ReleasedUnlicensed)
                 {
-                    UnlicensedCatch.ReleaseAndSay(in item);
+                    UnlicensedCatch.ReleaseAndSay(in item, null, UnlicensedCatch.LiveCatalog(licences));
                     return check;
                 }
                 if (hands == null) return new PickingBedCheck(PickingBedStatus.HandsUnavailable, check.Remaining);
