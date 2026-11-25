@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using HiddenHarbours.Economy;   // LicenseDef + CatchLicensePolicy: the licence line names its licence from data
-
 namespace HiddenHarbours.Fishing
 {
     /// <summary>
@@ -16,8 +13,9 @@ namespace HiddenHarbours.Fishing
     /// this is the one place to say where it is.</para>
     ///
     /// <para><b>None of these names a key</b>, and every constant is an interned literal: no composed
-    /// string, no garbage. The one composed sentence is <see cref="LicenceNeeded(string, string)"/>,
-    /// built once at the moment a won fish is let go, never per frame.</para>
+    /// string, no garbage. The one composed sentence is <see cref="ProtectedReleased"/>, built once at
+    /// the moment a protected fish is let go, never per frame. (The licence line is not here: it is the
+    /// player's own voice, an inner-voice line asset, see <c>UnlicensedCatch</c>.)</para>
     /// </summary>
     public static class FishingStrings
     {
@@ -51,10 +49,6 @@ namespace HiddenHarbours.Fishing
         /// <summary>The wait ran out over water that holds nothing for this rig, here, now.</summary>
         public const string NothingBiting = "Nothing biting here.";
 
-        /// <summary>The fight was won on a species this licence data gates, and the licence is not held.
-        /// Used when the data cannot name the licence.</summary>
-        public const string LicenceNeededUnnamed = "You need a licence for that — she went back.";
-
         /// <summary>The line for a mistimed strike, or null when there was no miss to explain.</summary>
         public static string MissedStrike(BiteMiss miss)
         {
@@ -64,36 +58,6 @@ namespace HiddenHarbours.Fishing
                 case BiteMiss.Late:  return SpatIt;
                 default:             return null;
             }
-        }
-
-        /// <summary>"You need the Cod Fishing License to keep Atlantic Cod — she went back." Both names
-        /// come from the Defs' display names, exactly as authored. Falls back to
-        /// <see cref="LicenceNeededUnnamed"/> when either name is missing.</summary>
-        public static string LicenceNeeded(string speciesName, string licenceName)
-        {
-            if (string.IsNullOrWhiteSpace(speciesName) || string.IsNullOrWhiteSpace(licenceName))
-                return LicenceNeededUnnamed;
-            return "You need the " + licenceName + " to keep " + speciesName + " — she went back.";
-        }
-
-        /// <summary>The licence line for <paramref name="fish"/>, with the licence looked up in the
-        /// authored licence data by the same rule the landing gate uses
-        /// (<see cref="CatchLicensePolicy.RequiredLicenseFor"/>).</summary>
-        public static string LicenceNeeded(FishSpeciesDef fish, IReadOnlyList<LicenseDef> licences)
-        {
-            if (fish == null) return LicenceNeededUnnamed;
-
-            string requiredId = CatchLicensePolicy.RequiredLicenseFor(fish.Id, licences);
-            string licenceName = null;
-            if (!string.IsNullOrEmpty(requiredId) && licences != null)
-            {
-                for (int i = 0; i < licences.Count; i++)
-                {
-                    LicenseDef lic = licences[i];
-                    if (lic != null && lic.Id == requiredId) { licenceName = lic.DisplayName; break; }
-                }
-            }
-            return LicenceNeeded(fish.DisplayName, licenceName);
         }
 
         // ---- protected species (owner ruling 2026-11-15: documented, then released) ---------------

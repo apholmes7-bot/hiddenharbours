@@ -52,6 +52,16 @@ ruling reaching the progression ladder as well as the sea.
 | 11–13 | **Traps / pots** | — |
 | 13–15 | **Used outboard** | the closing rung |
 
+> **Amended 2026-11-23 (canon §5.3/§5.8, ADR 0062): the first week is St Peters alone.** The rows from
+> day 4 on are superseded in order: the **rod** (a couple of tiers) and bait are the island store's; the
+> **broken dory is bought on St Peters from Basil Samson and mended by hand** (store materials, two or
+> three jobs) by about day 5, not bought and repaired at Nine Mile Creek on days 6–9; the **cod licence**
+> is bought on the island (where is open); and **the crossing comes at the island gate** (dory mended,
+> cod licence, a fish landed from the dory, shellfish sold, day 7 or later, then Ginny's word). Nine
+> Mile Creek is closed by weather until then. The day targets and every price below are **not re-tuned
+> here** — prices are open, and the ladder wants re-modelling against the island-only week before the
+> §5 guard is written.
+
 **The shape that matters more than any single number:** early rungs are hours apart, later rungs are days
 apart, and the *gap never grows faster than the earning rate does*. A player who has just unlocked offshore
 fishing should feel their income step up at the same moment their next target steps up.

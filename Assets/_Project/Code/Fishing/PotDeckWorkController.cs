@@ -314,6 +314,7 @@ namespace HiddenHarbours.Fishing
             _recoilLeft = 0f;
             _holdVerb = DeckVerb.None;
             _requireRelease = true;   // the haul's hold is likely still down — a fresh verb needs a release
+            ReleaseUnlicensed(_pot);
             BuildPotVisuals();
 
             if (!_taughtPick) { EventBus.Publish(new DevNotice(NoticePotAboard)); _taughtPick = true; }
@@ -322,6 +323,27 @@ namespace HiddenHarbours.Fishing
             // on the stern deck"). Presentation only; the catch inside her is untouched.
             PublishMoment(SternDeckStage.Aboard);
             return true;
+        }
+
+        /// <summary>
+        /// The animals he holds no licence for went back at the haul (the deck pot is built with them
+        /// already Returned, see <see cref="DeckPot.Animal.Unlicensed"/>): publish the unrecorded release
+        /// for each, and say ONE line for the haul naming the first species let go (owner ruling
+        /// 2026-11-23). Event-time, no allocation.
+        /// </summary>
+        private static void ReleaseUnlicensed(DeckPot pot)
+        {
+            if (pot == null) return;
+            DeckPot.Animal first = null;
+            var animals = pot.Animals;
+            for (int i = 0; i < animals.Count; i++)
+            {
+                DeckPot.Animal a = animals[i];
+                if (!a.Unlicensed) continue;
+                UnlicensedCatch.Release(in a.Item);
+                first ??= a;
+            }
+            if (first != null) UnlicensedCatch.Say(first.Item.DisplayName, first.Item.SpeciesId);
         }
 
         /// <summary>Drop the deck pot after a successful SET (the sibling dev input placed it back in the

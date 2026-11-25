@@ -665,6 +665,7 @@ namespace HiddenHarbours.World
                 if (double.IsInfinity(s) || !(_E[i] < s)) { _still[i] = double.NaN; dropped++; }
             }
             SouthStillPaint();
+            int damp = DampBesideBrooks();
             Routes(_zone, _still);
             _biome = BiomeOf(_E, _secidx, _secw);
             double frozenAt = Num(_keep.FrozenAt);
@@ -702,7 +703,7 @@ namespace HiddenHarbours.World
             _r.FrozenWhy = why;
             _r.Note("frozen.tier1_cells", t1);
             _r.Note("frozen.tier2_cells", t2);
-            Log("finish", "still water where it stands above the ground (" + dropped + " cells dropped); biomes on the final ground; " + t1 +
+            Log("finish", "still water where it stands above the ground (" + dropped + " cells dropped); " + damp + " cells of damp sand beside the brooks; biomes on the final ground; " + t1 +
                           " tier-1 and " + t2 + " tier-2 cells in the frozen map");
         }
     }

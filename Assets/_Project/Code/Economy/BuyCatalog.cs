@@ -187,9 +187,34 @@ namespace HiddenHarbours.Economy
         public static void Build(string sellerId, in SellerArms arms, int money, SaveData save,
             ILicenseService licenses, List<BuyRow> into)
         {
+            BuildCounted(sellerId, arms, money, save, licenses, Now(), into);
+            DropSoldAtShelf(sellerId, into);
+        }
+
+        /// <summary>
+        /// Every row <paramref name="sellerId"/> stocks, counted against its shelves at
+        /// <paramref name="now"/>, INCLUDING the goods the player buys at the shelf: the rows the shelf till
+        /// (<see cref="IslandShelfTill"/>) sells through, with the same quotes and the same Confirm the book
+        /// uses (buying at the shelf, slice 1).
+        /// </summary>
+        public static void BuildCounted(string sellerId, in SellerArms arms, int money, SaveData save,
+            ILicenseService licenses, double now, List<BuyRow> into)
+        {
             if (string.IsNullOrEmpty(sellerId)) { into.Clear(); return; }
             BuildFrom(arms, CatalogStock.Sweep(sellerId), money, save, licenses, into);
-            ApplyShelves(sellerId, Now(), into);
+            ApplyShelves(sellerId, now, into);
+        }
+
+        /// <summary>
+        /// Takes out of the book the rows the player now buys at the shelf
+        /// (<see cref="IslandShelfLine.SoldAtShelf"/>; buying at the shelf, slice 1): the counter no longer
+        /// sells them, the shelf does. Every other row, counted or not, stays.
+        /// </summary>
+        public static void DropSoldAtShelf(string sellerId, List<BuyRow> rows)
+        {
+            if (rows == null || string.IsNullOrEmpty(sellerId)) return;
+            for (int i = rows.Count - 1; i >= 0; i--)
+                if (IslandCounterShelves.IsSoldAtShelf(sellerId, rows[i].Id)) rows.RemoveAt(i);
         }
 
         /// <summary>The game clock's seconds, or 0 before the clock exists (EditMode, pre-boot).</summary>
@@ -347,8 +372,13 @@ namespace HiddenHarbours.Economy
 
             if (row.Shelves == null) return Sell(row);
             if (row.Shelves.CountAt(row.ShelfLine, now) < 1) return false;
-            if (!Sell(row)) return false;
-            row.Shelves.TryTakeOne(row.ShelfLine, now);
+            // One write for the whole sale: the purse, the good and the shelf's purchase row land together,
+            // so a game closed right after can never hold the good and a full shelf.
+            using (GameServices.Save?.DeferWrites())
+            {
+                if (!Sell(row)) return false;
+                row.Shelves.TryTakeOne(row.ShelfLine, now);
+            }
             EventBus.Publish(new IslandShelvesChanged(row.Shelves.ShopId, row.ShelfLine,
                                                       row.Shelves.CountAt(row.ShelfLine, now)));
             return true;

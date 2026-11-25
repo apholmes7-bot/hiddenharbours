@@ -114,6 +114,20 @@ namespace HiddenHarbours.World
         /// see <see cref="DialogueVoiceCatalog"/>.</summary>
         public string VoiceId => Voice != null ? Voice.Id : null;
 
+        /// <summary>
+        /// The words to say, with <paramref name="name"/> put where the line writes
+        /// <see cref="HiddenHarbours.Core.InnerVoiceCues.NameToken"/>. A line without the token is returned
+        /// as authored (no new string); a missing name leaves the line as authored too, so a cue that
+        /// forgot its name shows the placeholder rather than a sentence with a hole in it.
+        /// </summary>
+        public string TextFor(string name)
+        {
+            string token = HiddenHarbours.Core.InnerVoiceCues.NameToken;
+            if (string.IsNullOrEmpty(Line) || string.IsNullOrEmpty(name) || Line.IndexOf(token, System.StringComparison.Ordinal) < 0)
+                return Line;
+            return Line.Replace(token, name);
+        }
+
         /// <summary>Is this line waiting on <paramref name="offerId"/>? False for a proximity line, for
         /// an empty subject, and for a null offer (the offer channel publishes those to say "nothing is
         /// offered", and nothing is not a thing to have a thought about).</summary>
