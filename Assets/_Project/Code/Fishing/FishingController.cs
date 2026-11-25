@@ -111,7 +111,29 @@ namespace HiddenHarbours.Fishing
 
         public RodFishingProfile RodSnapshot => _rod;
 
+        [Tooltip("Whose rod skill this rig reads and feeds (co-op: each player's own key). The default is " +
+                 "the player at this machine.")]
+        [SerializeField] private string _anglerKey = RodSkillBook.LocalPlayerKey;
+
+        /// <summary>The player key the rod skill is read and earned under (see the serialized field).</summary>
+        public string AnglerKey { get => _anglerKey; set => _anglerKey = value; }
+
+        // The fight in progress earns rod skill when won: false for a hand-gathered tend. Its difficulty
+        // is fixed at the hook, so the experience is the same however the fight goes.
+        private bool _fightEarnsSkill;
+        private float _fightDifficulty01;
+
+        private IRodSkill AnglerSkill => GameServices.RodSkills.For(_anglerKey);
+
+        /// <summary>The cast's numbers, captured once at its start: the held rod (or the rig's own) PLUS
+        /// the angler's rod skill (owner ruling 2026-11-25, effective = rod + skill).</summary>
         private void CaptureRod()
+        {
+            CaptureRodAlone();
+            _rod = AnglerSkill.Apply(in _rod);
+        }
+
+        private void CaptureRodAlone()
         {
             if (_configuredRod.HasValue) { _rod = _configuredRod.Value; return; }
             if (CarriedRod.TryRead(GameServices.Hands, out _rod)) return;
@@ -696,6 +718,11 @@ namespace HiddenHarbours.Fishing
         private void BeginFight()
         {
             bool tend = FishFightTuning.IsHandGathered(_pendingFish.Category);
+            _fightEarnsSkill = !tend;
+            _fightDifficulty01 = _pendingFish.RodFight != null
+                ? _pendingFish.RodFight.Strength
+                : FishFightTuning.Strength01(_pendingFish.Category, _pendingWeight,
+                                             _pendingFish.MinWeightKg, _pendingFish.MaxWeightKg);
             if (!tend) AnnounceBigOne();
             if (_pendingFish.RodFight != null && !tend)
             {
@@ -755,6 +782,11 @@ namespace HiddenHarbours.Fishing
             float tension = _fight != null ? _fight.Tension01 : (_rodFight != null ? _rodFight.Tension01 : 0f);
             _fight = null;
             EndRodFight();
+
+            // A won rod fight is rod skill earned, whatever happens to the fish next (kept, documented
+            // and released, or sent back for want of a licence): the skill is in landing it.
+            if (_fightEarnsSkill) AnglerSkill.RecordLanded(_fightDifficulty01);
+            _fightEarnsSkill = false;
 
             // --- Licence (owner ruling 2026-11-23): the bite and the fight were never blocked, but a
             // species he holds no licence for goes straight back at the landing, he says so in his own
@@ -887,6 +919,7 @@ namespace HiddenHarbours.Fishing
         {
             float landing = _fight != null ? _fight.Landing01 : (_rodFight != null ? _rodFight.Landing01 : 0f);
             _fight = null;
+            _fightEarnsSkill = false;   // a lost fish earns nothing, and costs nothing
             EndRodFight();
             _phaseTimer = _resultDisplay;
             Debug.Log("[Fishing] The line ran slack — it threw the hook. (No harm done.)");
