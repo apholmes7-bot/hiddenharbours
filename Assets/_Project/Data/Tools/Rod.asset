@@ -44,3 +44,6 @@ MonoBehaviour:
   - walk
   - run
   StowBlendSeconds: 0.2
+  RodBlank: {fileID: 11400000, guid: af49b3bfaf2243ce8e8d23bf0e9ab6d1, type: 2}
+  DefaultLine: {fileID: 11400000, guid: a7c8be9d59c9454580f5a8af97652c72, type: 2}
+  DefaultReel: {fileID: 11400000, guid: 27738f4182304372951ee8e8a7516735, type: 2}

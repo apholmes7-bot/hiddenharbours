@@ -66,3 +66,6 @@ MonoBehaviour:
     SurgeDurationSeconds: 0.8
     SurgePressureEasy: 0.15
     SurgePressureHard: 0.4
+  RodBlank: {fileID: 11400000, guid: 62fb01829546419ab931fb24593bbc12, type: 2}
+  DefaultLine: {fileID: 11400000, guid: 80eccb521643470dad2ebd4e52b48855, type: 2}
+  DefaultReel: {fileID: 11400000, guid: 24b8bfc0bb4446538eb8db9ba12adb41, type: 2}

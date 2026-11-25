@@ -29,6 +29,15 @@ namespace HiddenHarbours.Core
         public float SurgePressureEasy;
         public float SurgePressureHard;
 
+        // The LINE's small-fish shyness (rods from parts): a species whose top weight is under
+        // SmallFishShyBelowKg bites less, down to SmallFishShyDamp01 for the smallest. 0 = no fish put off,
+        // which is what every whole rod authored before parts existed reads.
+        public float SmallFishShyBelowKg;
+        public float SmallFishShyDamp01;
+
+        /// <summary>True when this line puts some fish off (see <see cref="RodFit.ShyFactor"/>).</summary>
+        public bool PutsSmallFishOff => SmallFishShyBelowKg > 0f && SmallFishShyDamp01 < 1f;
+
         public static RodFishingProfile Default => new RodFishingProfile
         {
             CastMetres = 12f, LineMetres = 60f, ReelUpMetresPerSecond = 1.5f,
@@ -51,7 +60,9 @@ namespace HiddenHarbours.Core
             && Positive(LandingEasy) && Positive(LandingHard)
             && Positive(SurgeIntervalEasy) && Positive(SurgeIntervalHard)
             && Positive(SurgeDurationSeconds) && Positive(SurgePressureEasy) && Positive(SurgePressureHard)
-            && TensionFallEasy > SurgePressureEasy && TensionFallHard > SurgePressureHard;
+            && TensionFallEasy > SurgePressureEasy && TensionFallHard > SurgePressureHard
+            && SmallFishShyBelowKg >= 0f && !float.IsInfinity(SmallFishShyBelowKg)
+            && SmallFishShyDamp01 >= 0f && SmallFishShyDamp01 <= 1f;
 
         private static bool Positive(float value) => value > 0f && !float.IsInfinity(value);
     }
