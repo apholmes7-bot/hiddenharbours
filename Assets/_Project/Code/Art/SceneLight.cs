@@ -54,6 +54,16 @@ namespace HiddenHarbours.Art
         private static readonly int IdBandSteps      = Shader.PropertyToID("_BandSteps");
         private static readonly int IdCoreWhiten     = Shader.PropertyToID("_CoreWhiten");
         private static readonly int IdPixelGrid      = Shader.PropertyToID("_PixelGrid");
+        private static readonly int IdGlassCore      = Shader.PropertyToID("_GlassCore");
+        private static readonly int IdGlassRim       = Shader.PropertyToID("_GlassRim");
+        private static readonly int IdGlassWhiten    = Shader.PropertyToID("_GlassWhiten");
+        private static readonly int IdGlassRimLevel  = Shader.PropertyToID("_GlassRimLevel");
+        private static readonly int IdGlassTail      = Shader.PropertyToID("_GlassTail");
+        private static readonly int IdGlassTailScale = Shader.PropertyToID("_GlassTailScale");
+        private static readonly int IdGlassBands     = Shader.PropertyToID("_GlassBands");
+        private static readonly int IdStreakMode     = Shader.PropertyToID("_StreakMode");
+        private static readonly int IdStreakLook     = Shader.PropertyToID("_StreakLook");
+        private static readonly int IdStreakTime     = Shader.PropertyToID("_StreakTime");
 
         // ONE shared fallback material for the missing-Resources path, minted at most once across ALL lights
         // (the normal path loads Resources/AdditiveLight.mat). A per-instance material would leak + break the
@@ -230,6 +240,17 @@ namespace HiddenHarbours.Art
         private float _timer;
         private static Mesh _sharedMesh;
 
+        // ---- glowing glass (GlassLook) — stamped at runtime from data, never serialized ----
+        [System.NonSerialized] private GlassLook.Lens _glass;
+        [System.NonSerialized] private float _glassWhiten;
+        [System.NonSerialized] private float _glassPixelsPerMetre;
+        [System.NonSerialized] private GlassLook.Streak _streak;
+        [System.NonSerialized] private float _streakPixelsPerMetre;
+        private Transform _streakQuad;
+        private MeshRenderer _streakRenderer;
+        private UnityEngine.Rendering.SortingGroup _streakSorting;
+        private MaterialPropertyBlock _streakMpb;
+
         // ---- public surface (so BoatSpotlight / tools drive a light without touching serialized fields) ----
 
         /// <summary>
@@ -312,13 +333,57 @@ namespace HiddenHarbours.Art
             _bandSteps = 0;
             _coreWhiten = 0f;
             _pixelsPerMetre = 0f;
+            ClearGlass();
             DrawsBloom = true;
         }
+
+        /// <summary>
+        /// <b>Glowing glass</b> (<see cref="GlassLook"/>): draw this lamp as a hot core, a rim of its own
+        /// colour and a glow that falls off like light, in place of the core-and-halo or smooth glow.
+        /// The bloom's SIZE stays <see cref="Range"/>; the glass lives inside it. A lens that is off
+        /// (<see cref="GlassLook.Lens.IsOn"/> false) clears the glass.
+        /// </summary>
+        public void SetGlass(in GlassLook.Lens lens, bool coloured, float pixelsPerMetre)
+        {
+            _glass = lens;
+            _glassWhiten = coloured ? lens.ColouredWhiten : lens.Whiten;
+            _glassPixelsPerMetre = Mathf.Max(0f, pixelsPerMetre);
+        }
+
+        /// <summary>The broken reflection under this lamp (<see cref="GlassLook.Streak"/>). One more
+        /// pooled quad, built only the first time a streak is switched on.</summary>
+        public void SetStreak(in GlassLook.Streak streak, float pixelsPerMetre)
+        {
+            _streak = streak;
+            _streakPixelsPerMetre = Mathf.Max(0f, pixelsPerMetre);
+            if (_streak.IsOn) EnsureStreakQuad();
+            ApplyQuadEnabled();
+        }
+
+        /// <summary>No glass and no streak: the look before <see cref="GlassLook"/>.</summary>
+        public void ClearGlass()
+        {
+            _glass = default;
+            _glassWhiten = 0f;
+            _streak = default;
+            ApplyQuadEnabled();
+        }
+
+        /// <summary>Is this lamp drawn as glowing glass? Tests and fixtures.</summary>
+        public bool HasGlass => _glass.IsOn;
+        /// <summary>The glass in force (default when none).</summary>
+        public GlassLook.Lens Glass => _glass;
+        /// <summary>The streak in force (default when none).</summary>
+        public GlassLook.Streak Streak => _streak;
+        /// <summary>Is the reflection streak actually drawing right now? Tests and fixtures.</summary>
+        public bool StreakVisible => _streakRenderer != null && _streakRenderer.enabled;
 
         private void ApplyQuadEnabled()
         {
             if (_quadRenderer == null) return;
             _quadRenderer.enabled = _drawsBloom && isActiveAndEnabled && _quadRenderer.sharedMaterial != null;
+            if (_streakRenderer != null)
+                _streakRenderer.enabled = _quadRenderer.enabled && _streak.IsOn && _streakRenderer.sharedMaterial != null;
         }
 
         // ---- what the lamp-shadow system reads (ADR 0016, lights PR B) ----
@@ -400,6 +465,7 @@ namespace HiddenHarbours.Art
         private void OnDisable()
         {
             if (_quadRenderer != null) _quadRenderer.enabled = false;   // pooled, not destroyed
+            if (_streakRenderer != null) _streakRenderer.enabled = false;
             LampShadowSystem.UnregisterLight(this);   // a dark lamp throws nothing
         }
 
@@ -562,11 +628,87 @@ namespace HiddenHarbours.Art
                 grid = new Vector4(px / Mathf.Max(halfX, 1e-4f), px / Mathf.Max(halfY, 1e-4f), 0f, 0f);
             }
             _mpb.SetVector(IdPixelGrid, grid);
+
+            // GLOWING GLASS. Fractions of the throw, like the core above. The rim is whole art pixels;
+            // with no grid of its own it borrows the lamp look's. Zero core = no glass, the branch the
+            // shader skips, so a lamp nobody stamped glass on draws exactly as before.
+            float glassPpm = _glassPixelsPerMetre > 0f ? _glassPixelsPerMetre : _pixelsPerMetre;
+            bool glass = _glass.IsOn;
+            _mpb.SetFloat(IdGlassCore, glass ? Mathf.Clamp01(_glass.CoreFraction) : 0f);
+            _mpb.SetFloat(IdGlassRim, glass && glassPpm > 0f ? Mathf.Clamp01(_glass.RimPixels / glassPpm / r) : 0f);
+            _mpb.SetFloat(IdGlassWhiten, glass ? _glassWhiten : 0f);
+            _mpb.SetFloat(IdGlassRimLevel, glass ? _glass.RimLevel : 0f);
+            _mpb.SetFloat(IdGlassTail, glass ? _glass.Tail : 0f);
+            _mpb.SetFloat(IdGlassTailScale, glass ? Mathf.Max(_glass.TailScale, 0.01f) : 1f);
+            _mpb.SetFloat(IdGlassBands, glass ? _glass.Bands : 0f);
+            if (glass && grid == Vector4.zero && glassPpm > 0f)
+            {
+                float halfX = radial ? r : ConeWorldWidth(r) * 0.5f;
+                float halfY = radial ? r : r * 0.5f;
+                float px = 1f / glassPpm;
+                _mpb.SetVector(IdPixelGrid, new Vector4(px / Mathf.Max(halfX, 1e-4f), px / Mathf.Max(halfY, 1e-4f), 0f, 0f));
+            }
+            _mpb.SetFloat(IdStreakMode, 0f);
             _quadRenderer.SetPropertyBlock(_mpb);
 
             _quadRenderer.sortingOrder = SafeSortingOrder;
             if (_sortingGroup != null) _sortingGroup.sortingOrder = SafeSortingOrder;   // keep the 2D-sort group in sync
             ApplyQuadEnabled();
+            TickStreak(Mathf.Max(_intensity, 0f) * flicker, seconds);
+        }
+
+        /// <summary>The streak's own block: the lamp's colour and (flickering) brightness, scaled by the
+        /// streak's strength, and the row/sway shape in quad space. Same 20 Hz throttle as the bloom.</summary>
+        private void TickStreak(float lampIntensity, double seconds)
+        {
+            if (_streakRenderer == null || _streakMpb == null || !_streak.IsOn) return;
+            float ppm = _streakPixelsPerMetre > 0f ? _streakPixelsPerMetre : 32f;
+            float rows = Mathf.Max(1f, _streak.LengthMetres * ppm / Mathf.Max(1f, _streak.RowPixels));
+            float halfX = Mathf.Max(_streak.WidthMetres * 0.5f, 1e-3f);
+            float halfY = Mathf.Max(_streak.LengthMetres * 0.5f, 1e-3f);
+            float px = 1f / ppm;
+
+            _streakRenderer.GetPropertyBlock(_streakMpb);
+            _streakMpb.SetColor(IdLightColor, _color);
+            _streakMpb.SetFloat(IdIntensity, lampIntensity * _streak.Strength);
+            _streakMpb.SetFloat(IdGateThreshold, _gateThreshold);
+            _streakMpb.SetFloat(IdGateSoftness, _gateSoftness);
+            _streakMpb.SetFloat(IdGateFallback, _gateFallback);
+            _streakMpb.SetFloat(IdStreakMode, 1f);
+            _streakMpb.SetVector(IdStreakLook, new Vector4(rows, _streak.Breakup, _streak.Wobble, _streak.Speed));
+            // Game time, wrapped so a float keeps its precision late in a long game (the streak only
+            // needs whole seconds and a sway phase; 3600 s is a whole number of both).
+            _streakMpb.SetFloat(IdStreakTime, (float)(seconds % 3600.0));
+            _streakMpb.SetVector(IdPixelGrid, new Vector4(px / halfX, px / halfY, 0f, 0f));
+            _streakMpb.SetFloat(IdGlassCore, 0f);
+            _streakMpb.SetFloat(IdCoreRadius, 0f);
+            _streakRenderer.SetPropertyBlock(_streakMpb);
+            _streakRenderer.sortingOrder = SafeSortingOrder;
+            if (_streakSorting != null) _streakSorting.sortingOrder = SafeSortingOrder;
+        }
+
+        /// <summary>The streak's pooled quad: the same shared mesh, material and sort-as-2D group as the
+        /// bloom's, built once, the first time a streak is switched on.</summary>
+        private void EnsureStreakQuad()
+        {
+            if (_streakQuad != null) return;
+            var go = new GameObject("SceneLightStreak") { hideFlags = HideFlags.DontSave };
+            go.transform.SetParent(transform, worldPositionStays: false);
+            _streakQuad = go.transform;
+            go.AddComponent<MeshFilter>().sharedMesh = SharedMesh();
+            _streakRenderer = go.AddComponent<MeshRenderer>();
+            _streakRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            _streakRenderer.receiveShadows = false;
+            _streakRenderer.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
+            _streakRenderer.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
+            _streakRenderer.sortingOrder = SafeSortingOrder;
+            _streakSorting = go.AddComponent<UnityEngine.Rendering.SortingGroup>();
+            _streakSorting.sortingOrder = SafeSortingOrder;
+            _streakSorting.sortAtRoot = true;
+            Material mat = SharedLightMaterial();
+            if (mat != null) _streakRenderer.sharedMaterial = mat;
+            _streakRenderer.enabled = false;
+            _streakMpb = new MaterialPropertyBlock();
         }
 
         /// <summary>The world width of a cone's quad at its far end — one rule, read by the pose and
@@ -619,6 +761,23 @@ namespace HiddenHarbours.Art
                 float worldWidth = ConeWorldWidth(r);
                 _quad.localScale = new Vector3(worldWidth * 0.5f, r * 0.5f, 1f);   // local span 2 -> world width/height
                 _quad.position = PinDepthToCamera(origin + (Vector3)((Vector2)(transform.up) * (r * 0.5f)));
+            }
+
+            // THE STREAK hangs straight DOWN the screen from the lamp whatever the carrier's heading: a
+            // reflection lies under the light, toward the viewer, not along the boat. Upright, unscaled
+            // by the parent. It starts at the WATERLINE under the fitting (the lamp's own height brought
+            // down the screen, so a masthead's streak starts below her hull, not on her roof), plus
+            // DropMetres.
+            if (_streakQuad != null && _streak.IsOn)
+            {
+                float halfLen = Mathf.Max(_streak.LengthMetres * 0.5f, 1e-3f);
+                Vector3 top = origin - new Vector3(0f, _streak.DropMetres + _streak.HeightShare * _lampHeightMeters * SpriteLightMath.HeightScale, 0f);
+                _streakQuad.rotation = Quaternion.identity;
+                _streakQuad.position = PinDepthToCamera(top - new Vector3(0f, halfLen, 0f));
+                Vector3 parent = transform.lossyScale;
+                _streakQuad.localScale = new Vector3(
+                    Mathf.Max(_streak.WidthMetres * 0.5f, 1e-3f) / (Mathf.Approximately(parent.x, 0f) ? 1f : parent.x),
+                    halfLen / (Mathf.Approximately(parent.y, 0f) ? 1f : parent.y), 1f);
             }
         }
 

@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33c4203c030b4c39881a0d464499b7fa, type: 3}
+  m_Name: GlassLook
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.GlassLook
+  _enabled: 1
+  _pixelsPerMetre: 32
+  _navLens:
+    CoreFraction: 0.17
+    RimPixels: 1
+    Whiten: 0.85
+    ColouredWhiten: 0.3
+    RimLevel: 1
+    Tail: 0.32
+    TailScale: 0.22
+    Bands: 3
+  _navStreak:
+    Strength: 0.42
+    LengthMetres: 3.6
+    WidthMetres: 0.34
+    DropMetres: 0.15
+    RowPixels: 2
+    Breakup: 0.4
+    Wobble: 0.35
+    Speed: 0
+    HeightShare: 0.45
+  _shoreLens:
+    CoreFraction: 0.22
+    RimPixels: 1
+    Whiten: 0.8
+    ColouredWhiten: 0.3
+    RimLevel: 0.95
+    Tail: 0.3
+    TailScale: 0.24
+    Bands: 3
+  _shoreStreak:
+    Strength: 0
+    LengthMetres: 3.2
+    WidthMetres: 0.4
+    DropMetres: 0.6
+    RowPixels: 2
+    Breakup: 0.42
+    Wobble: 0.35
+    Speed: 0
+    HeightShare: 1
+  _panes:
+    HeadLevel: 0.62
+    SillLevel: 1
+    CentreLift: 0.22
+    Bands: 3
+    FramePixels: 0
+    MullionPixels: 1
+    MullionMinPixels: 7
+    Breath: 0
+    BreathSpeed: 0.7
+    ProbeTexels: 6
+  _windowSpillIsPool: 1

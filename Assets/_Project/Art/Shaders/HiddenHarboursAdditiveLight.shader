@@ -1,10 +1,10 @@
-// HiddenHarboursAdditiveLight.shader — the reusable ADDITIVE 2D LIGHT (ADR 0016): a soft glow with a
+// HiddenHarboursAdditiveLight.shader â€” the reusable ADDITIVE 2D LIGHT (ADR 0016): a soft glow with a
 // CONE/RADIAL shape that brightens (cuts through) the darkened night frame.
 //
 // WHY ADDITIVE-ABOVE-THE-OVERLAY (ADR 0016, building on ADR 0013). Sprites are Sprite-UNLIT and night is a
-// full-screen MULTIPLY darkening overlay drawn at sortingOrder ~32760 — so a URP Light2D would do nothing
+// full-screen MULTIPLY darkening overlay drawn at sortingOrder ~32760 â€” so a URP Light2D would do nothing
 // (the unlit sprites sample no 2D light). A light here is instead an ADDITIVE quad drawn ABOVE that overlay
-// (sortingOrder ~32770), blended One-One, so it ADDS brightness back into the crushed-dark frame — a lantern
+// (sortingOrder ~32770), blended One-One, so it ADDS brightness back into the crushed-dark frame â€” a lantern
 // "punching a hole in the dark". The component (SceneLight) positions/orients/colors it; this shader does the
 // soft shape + the night-gate.
 //
@@ -13,7 +13,7 @@
 // is ~invisible at a bright noon (so it can't wash daytime out) and full in a dark night. Mirrors LightMath.
 // NightGate exactly (that C# copy is unit-tested headless). When the cycle is OFF the tint global is unset /
 // near-black; we then DEFAULT TO SHOWING the light (tunable via _GateFallback) so the demo + edit-mode preview
-// work — exactly how the water shader treats an unset tint.
+// work â€” exactly how the water shader treats an unset tint.
 //
 // SHAPE. We work in the light's NORMALIZED local space: the quad spans [-1,1]; the light origin is the bottom-
 // centre (uv.y=0 at the lamp, uv.y=1 at the far throw) so a CONE points "up" the local quad (the component
@@ -22,7 +22,7 @@
 //
 // Pixel-art friendly: smooth additive falloff with no texture (resolution-independent, crisp at any zoom), tiny
 // cost (one quad). Visual-only: drives no sim, saves nothing (rule 5). Force-compiled by the magenta guard via
-// the shipped Resources/AdditiveLight.mat — a break fails CI RED, not magenta-in-build.
+// the shipped Resources/AdditiveLight.mat â€” a break fails CI RED, not magenta-in-build.
 //
 // NOTE: no plus / operator characters inside any [Header] / [Tooltip] label (ShaderLab's lexer rejects them);
 // no [unroll] over a runtime loop count; every symbol is defined before it is used.
@@ -46,6 +46,25 @@ Shader "HiddenHarbours/AdditiveLight"
         _BandSteps          ("Falloff bands (0 is smooth)", Float) = 0
         _CoreWhiten         ("Core pull toward white (0..1)", Range(0, 1)) = 0
         _PixelGrid          ("One art pixel in quad space (xy, 0 is no snap)", Vector) = (0, 0, 0, 0)
+
+        [Header(Glowing glass. Core zero is off)]
+        _GlassCore          ("Glass hot core radius (fraction of throw, 0 is off)", Range(0, 1)) = 0
+        _GlassRim           ("Glass coloured rim width (fraction of throw)", Range(0, 1)) = 0
+        _GlassWhiten        ("Glass core pull toward white (0..1)", Range(0, 1)) = 0
+        _GlassRimLevel      ("Glass rim brightness (0..1)", Range(0, 1)) = 1
+        _GlassTail          ("Glow tail brightness beside the glass (0..1)", Range(0, 1)) = 0
+        _GlassTailScale     ("Glow tail half distance (fraction of throw)", Range(0.01, 1)) = 0.25
+        _GlassBands         ("Glow tail bands (0 is smooth)", Float) = 0
+
+        [Header(Lit window pane. Mode zero is off)]
+        _PaneMode           ("Window pane mode (0 off, 1 on)", Float) = 0
+        _PaneLook           ("Pane x head level, y sill level, z centre lift, w bands", Vector) = (0.62, 1, 0.22, 3)
+        _PaneFrame          ("Pane x frame px, y mullion px, z mullion min px", Vector) = (0, 1, 7, 0)
+
+        [Header(Reflection streak. Mode zero is off)]
+        _StreakMode         ("Reflection streak mode (0 off, 1 on)", Float) = 0
+        _StreakLook         ("Streak x rows, y breakup, z wobble, w speed", Vector) = (12, 0.4, 0.35, 0.9)
+        _StreakTime         ("Streak game time (seconds, set by the component)", Float) = 0
 
         [Header(Night gate)]
         _GateThreshold      ("Gate darkness threshold (0..1)", Range(0, 1)) = 0.12
@@ -82,12 +101,15 @@ Shader "HiddenHarbours/AdditiveLight"
             {
                 float3 positionOS : POSITION;
                 float2 uv         : TEXCOORD0;
+                float2 uv1        : TEXCOORD1;   // window panes only: the pane's drawn size in art pixels
             };
 
             struct Varyings
             {
                 float4 positionCS : SV_POSITION;
                 float2 uv         : TEXCOORD0;
+                float2 uv1        : TEXCOORD1;
+                float2 positionWS : TEXCOORD2;   // the streak's water test
             };
 
             // Global published by DayNightController (read-only here): the whole-frame multiply tint.
@@ -96,6 +118,18 @@ Shader "HiddenHarbours/AdditiveLight"
             #define HH_LAMP_GATE_DECLARED
             float4 _HHLampGate;   // the shared lamp band (x off-darkness, y on-darkness); global
             #endif
+
+            // The streak's masks, all published globals (read-only here). WATER = the published seabed
+            // below the published sea level (SeabedGlobals, WaterSurface), the same decode the foam
+            // buffer uses; with either unpublished there is no water to put a streak on, so none is
+            // drawn. HULLS = IsoFacetHullRegistry's screen texture, alpha non-zero wherever a hull is
+            // drawn (a 1x1 clear fallback is bound before it first runs), so a reflection never paints
+            // over a boat.
+            TEXTURE2D(_HHSeabedTex); SAMPLER(sampler_HHSeabedTex);
+            float4 _HHSeabedRect;     // xy = world min (m), zw = world size (m)
+            float4 _HHSeabedRange;    // x = min elevation, y = max, w = 1 when bound
+            float4 _HHSeaLevelWorld;  // x = the drawn sea level (m), w > 0.5 when published
+            Texture2D<float4> _HHHullScreenTex;
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _LightColor;
@@ -114,6 +148,19 @@ Shader "HiddenHarbours/AdditiveLight"
                 float  _BandSteps;
                 float  _CoreWhiten;
                 float4 _PixelGrid;
+                float  _GlassCore;
+                float  _GlassRim;
+                float  _GlassWhiten;
+                float  _GlassRimLevel;
+                float  _GlassTail;
+                float  _GlassTailScale;
+                float  _GlassBands;
+                float  _PaneMode;
+                float4 _PaneLook;
+                float4 _PaneFrame;
+                float  _StreakMode;
+                float4 _StreakLook;
+                float  _StreakTime;
             CBUFFER_END
 
             // --- pure helpers (mirror LightMath; defined BEFORE use) ---
@@ -141,16 +188,104 @@ Shader "HiddenHarbours/AdditiveLight"
                 return lerp(saturate(_GateFallback), gated, cycleActive);
             }
 
+            // A cheap stable hash, 0..1 (visual only: drives no sim).
+            float Hash21(float2 p)
+            {
+                return frac(sin(dot(p, float2(12.9898, 78.233))) * 43758.5453);
+            }
+
+            // Is this world point open water? The seabed under the published sea level.
+            float IsWater(float2 worldXY)
+            {
+                if (_HHSeabedRange.w < 0.5 || _HHSeaLevelWorld.w < 0.5) return 0.0;
+                float2 suv = (worldXY - _HHSeabedRect.xy) / max(_HHSeabedRect.zw, float2(1e-3, 1e-3));
+                if (any(suv < 0.0) || any(suv > 1.0)) return 0.0;
+                float r = SAMPLE_TEXTURE2D_LOD(_HHSeabedTex, sampler_HHSeabedTex, suv, 0).r;
+                float elevation = lerp(_HHSeabedRange.x, _HHSeabedRange.y, r);
+                return step(elevation, _HHSeaLevelWorld.x);
+            }
+
+            // THE LIT PANE: brightness at one point of a window, 0 on its frame and mullions. 'uv' is the
+            // pane's own 0..1 (v = 0 at the sill), 'sizePx' its drawn size in art pixels. Brighter low and
+            // in the middle, because the lamp inside stands on a table, not on the ceiling.
+            float PaneShape(float2 uv, float2 sizePx)
+            {
+                float2 sz = max(sizePx, float2(1.0, 1.0));
+                float2 cell = floor(saturate(uv) * sz - 1e-3);    // which art pixel of the pane
+                float2 p = cell + 0.5;
+                float fr = max(_PaneFrame.x, 0.0);
+                float inside = step(fr, cell.x) * step(fr, cell.y) * step(cell.x, sz.x - 1.0 - fr) * step(cell.y, sz.y - 1.0 - fr);
+                float mw = max(_PaneFrame.y, 0.0);
+                float mull = 1.0;
+                if (mw >= 1.0)
+                {
+                    float2 lo = floor(sz * 0.5) - floor((mw - 1.0) * 0.5);
+                    float2 hi = lo + mw - 1.0;
+                    if (sz.x >= _PaneFrame.z) mull *= 1.0 - step(lo.x, cell.x) * step(cell.x, hi.x);
+                    if (sz.y >= _PaneFrame.z) mull *= 1.0 - step(lo.y, cell.y) * step(cell.y, hi.y);
+                }
+                float v = saturate(p.y / sz.y);
+                float level = lerp(_PaneLook.y, _PaneLook.x, v);
+                float2 c = (p / sz - float2(0.5, 0.4)) * float2(2.0, 2.0);
+                level += _PaneLook.z * saturate(1.0 - dot(c, c));
+                float bands = floor(max(_PaneLook.w, 0.0));
+                if (bands >= 1.0) level = ceil(level * bands) / bands;
+                return level * inside * mull;
+            }
+
+            // THE STREAK: a lamp's broken reflection, a column of short rows hanging under it. 'q' is the
+            // streak quad's -1..1 space (y = 1 at the lamp end). Rows re-break and sway with GAME time, handed in by the component (_StreakTime), so a frozen clock is a frozen streak.
+            float StreakShape(float2 q)
+            {
+                float t = saturate((1.0 - q.y) * 0.5);            // 0 at the lamp end, 1 at the far end
+                float rows = max(_StreakLook.x, 1.0);
+                float row = floor(t * rows);
+                float tm = _StreakTime * max(_StreakLook.w, 0.0);
+                float h1 = Hash21(float2(row, floor(tm)));
+                float h2 = Hash21(float2(row + 17.0, floor(tm * 0.7 + 0.5)));
+                float sway = sin(row * 1.93 + tm * 2.1) * saturate(_StreakLook.z);
+                float halfW = lerp(1.0, 0.4, t) * lerp(0.45, 1.0, h1);
+                float bar = step(abs(q.x - sway * halfW), halfW);
+                float kept = step(saturate(_StreakLook.y), h2);
+                float body = pow(saturate(4.0 * t * (1.0 - t)), 0.7);   // brightest mid-way, fading both ends
+                return bar * kept * body;
+            }
+
             Varyings vert(Attributes IN)
             {
                 Varyings OUT;
-                OUT.positionCS = GetVertexPositionInputs(IN.positionOS).positionCS;
+                VertexPositionInputs pos = GetVertexPositionInputs(IN.positionOS);
+                OUT.positionCS = pos.positionCS;
+                OUT.positionWS = pos.positionWS.xy;
                 OUT.uv = IN.uv;
+                OUT.uv1 = IN.uv1;
                 return OUT;
             }
 
             half4 frag(Varyings IN) : SV_Target
             {
+                // ---- the lit window pane (BoatWindowGlow) ----------------------------------------------
+                if (_PaneMode > 0.5)
+                {
+                    float pk = max(_Intensity, 0.0) * PaneShape(IN.uv, IN.uv1) * NightGate();
+                    if (pk <= 0.0) discard;
+                    // Deep amber at the head, toward a warm white where the pane is hottest.
+                    float3 prgb = lerp(_LightColor.rgb, lerp(_LightColor.rgb, float3(1.0, 1.0, 1.0), 0.5), saturate(pk - 0.6));
+                    return half4(prgb * pk, pk);
+                }
+
+                // ---- the reflection streak (SceneLight's second quad) --------------------------------
+                if (_StreakMode > 0.5)
+                {
+                    float2 sq = IN.uv * 2.0 - 1.0;
+                    if (_PixelGrid.x > 0.0 && _PixelGrid.y > 0.0)
+                        sq = (floor(sq / _PixelGrid.xy) + 0.5) * _PixelGrid.xy;
+                    float hull = _HHHullScreenTex.Load(int3(int2(IN.positionCS.xy), 0)).a;
+                    float sk = max(_Intensity, 0.0) * StreakShape(sq) * IsWater(IN.positionWS) * step(hull, 0.0) * NightGate();
+                    if (sk <= 0.0) discard;
+                    return half4(_LightColor.rgb * sk, sk);
+                }
+
                 // Quad space: map uv [0,1]^2 to q in [-1,1]^2 (the quad centre is 0,0). The LAMP sits at
                 // _LampPos in this space (bottom-centre (0,-1) for a cone so the beam throws "up"; centre (0,0)
                 // for a radial so the halo is a full disc). 'rel' is the point relative to the lamp; the beam
@@ -190,7 +325,26 @@ Shader "HiddenHarbours/AdditiveLight"
 
                 float shape;
                 float whiten = 0.0;
-                if (_CoreRadius > 0.0)
+                if (_GlassCore > 0.0)
+                {
+                    // GLOWING GLASS (GlassLook): a near-white hot core, a ring of the lamp's own colour
+                    // round it (the glass), then a glow that falls off the way light does, an
+                    // inverse-square tail windowed to reach zero at the bloom's edge, cut into bands.
+                    float d = length(rel) / max(_Throw, 1e-4);
+                    float coreR = _GlassCore;
+                    float rimR = coreR + max(_GlassRim, 0.0);
+                    float coreMask = step(d, coreR);
+                    float rimMask = step(d, rimR) * (1.0 - coreMask);
+                    float x = max(d - rimR, 0.0) / max(_GlassTailScale, 1e-3);
+                    float fall = 1.0 / (1.0 + x * x);
+                    float edge = saturate(1.0 - (d - rimR) / max(1.0 - rimR, 1e-4));
+                    float glow = saturate(_GlassTail) * fall * edge * edge;
+                    float gb = floor(max(_GlassBands, 0.0));
+                    if (gb >= 1.0) glow = floor(glow / max(saturate(_GlassTail), 1e-4) * gb + 0.5) / gb * saturate(_GlassTail);
+                    shape = max(coreMask, max(rimMask * saturate(_GlassRimLevel), glow)) * cone;
+                    whiten = coreMask * saturate(_GlassWhiten);
+                }
+                else if (_CoreRadius > 0.0)
                 {
                     // THE LAMP LOOK (mirrors LightMath.LampShape): a flat hot core out to _CoreRadius,
                     // then a faint halo from the core's edge to the throw, cut into flat bands. A lamp

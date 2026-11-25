@@ -288,6 +288,54 @@ struct SpriteLitDecorEmitParams
     e.gateSoftness  = _EmitGateSoftness; \
     e.gateNoCycle   = _EmitGateNoCycle;
 
+// GLOWING GLASS on a house window (GlassLook, published as globals so every house reads one look):
+// _HHWindowGlassA = (on, head level, sill level, centre lift), _HHWindowGlassB = (probe texels, bands).
+// x 0 (unpublished, or the look switched off) = the bake's own flat glow, exactly as before.
+float4 _HHWindowGlassA;
+float4 _HHWindowGlassB;
+
+// Is the emitter texel 'k' texels away along 'stepUv' still glass? 1 or 0.
+#define HH_GLASS_LIT(uv0, stepUv, k) step(0.5 / 255.0, SAMPLE_TEXTURE2D_LOD(_LightEmit, sampler_LightEmit, (uv0) + (stepUv) * (k), 0).r)
+
+// How many texels of glass run on from 'uv' along 'stepUv', counted to the first that is not (frame,
+// mullion or wall), up to 'probe' (at most 8). No loop: eight fixed taps, each gated by the last.
+float WindowGlassRun(float2 uv, float2 stepUv, float probe)
+{
+    float run = 0.0, alive = 1.0;
+    alive *= HH_GLASS_LIT(uv, stepUv, 1.0) * step(1.0, probe); run += alive;
+    alive *= HH_GLASS_LIT(uv, stepUv, 2.0) * step(2.0, probe); run += alive;
+    alive *= HH_GLASS_LIT(uv, stepUv, 3.0) * step(3.0, probe); run += alive;
+    alive *= HH_GLASS_LIT(uv, stepUv, 4.0) * step(4.0, probe); run += alive;
+    alive *= HH_GLASS_LIT(uv, stepUv, 5.0) * step(5.0, probe); run += alive;
+    alive *= HH_GLASS_LIT(uv, stepUv, 6.0) * step(6.0, probe); run += alive;
+    alive *= HH_GLASS_LIT(uv, stepUv, 7.0) * step(7.0, probe); run += alive;
+    alive *= HH_GLASS_LIT(uv, stepUv, 8.0) * step(8.0, probe); run += alive;
+    return run;
+}
+
+// The pane's brightness at this texel: lower is brighter (the lamp inside stands low) and the middle
+// is warmest. Where it sits in its own light of glass is found from the sheet itself, by how far the
+// glass runs up, down, left and right before a mullion or the frame stops it, so every light of a
+// four-light sash gets its own gradient and the art needs no new data.
+float WindowGlassLevel(float2 uv)
+{
+    float w, h;
+    _LightEmit.GetDimensions(w, h);
+    float2 texel = float2(1.0 / max(w, 1.0), 1.0 / max(h, 1.0));
+    float probe = clamp(_HHWindowGlassB.x, 1.0, 8.0);
+    float up    = WindowGlassRun(uv, float2(0.0,  texel.y), probe);
+    float down  = WindowGlassRun(uv, float2(0.0, -texel.y), probe);
+    float left  = WindowGlassRun(uv, float2(-texel.x, 0.0), probe);
+    float right = WindowGlassRun(uv, float2( texel.x, 0.0), probe);
+    float v = (down + 0.5) / (up + down + 1.0);                   // 0 at the sill, 1 at the head
+    float across = abs(right - left) / (right + left + 1.0);      // 0 in the middle, 1 at a side
+    float level = lerp(_HHWindowGlassA.z, _HHWindowGlassA.y, v);
+    level += _HHWindowGlassA.w * saturate(1.0 - across) * saturate(1.0 - abs(v - 0.4) * 1.6);
+    float bands = floor(max(_HHWindowGlassB.y, 0.0));
+    if (bands >= 1.0) level = ceil(level * bands) / bands;
+    return level;
+}
+
 // Returns the ADDITIVE rgb of the glow, already compensated for the day/night overlay, because a lit
 // window must survive the night exactly as the boat lamp does (HDR stays ON). Sampled at the ALBEDO's
 // uv, like every other sheet: the emitter sheet is baked at the albedo's dimensions and cell layout.
@@ -296,6 +344,10 @@ float3 SpriteLitDecorEmit(float2 uv, SpriteLitDecorEmitParams e)
     float texel = SAMPLE_TEXTURE2D(_LightEmit, sampler_LightEmit, uv).r;
     float gate = SpriteLightNightGate(_DayNightTint.rgb, e.gateThreshold, e.gateSoftness, e.gateNoCycle);
     float3 glow = e.color * (max(0.0, e.strength) * SpriteLightEmit(texel, gate));
+    // Glowing glass: shape the flat bake into a lit pane. Only on a glass texel, only when the look
+    // is on, and only at night (a dark texel or a day frame never pays for the taps).
+    if (_HHWindowGlassA.x > 0.5 && texel > 0.5 / 255.0 && gate > 0.0)
+        glow *= WindowGlassLevel(uv);
     return SpriteLightCompensateForDayNight(glow, _DayNightTint.rgb);
 }
 

@@ -1078,3 +1078,56 @@ its bloom at its whole pool, by the owner's preference, and now casts a ground p
 | How far one lamp lights | `SceneLight.ReachMetres` (from `LightPresets.ReachMetres`) | 3.4 / 3.6 / 5.2 / 7 m by kind; 0 = no pool |
 | The gain's ceiling and the ambient floor | `LightMath.MaxPoolGain` / `MinPoolAmbientLuminance` | 8 / 0.02 |
 
+
+## Amendment — glowing glass: a lamp is a LENS, a window is a PANE, and the sea shows a streak (2026-11-24)
+
+**Context.** The owner, looking at the night frames: *"what about making the lights more realistic? like
+glowing glass? right now they look pretty bad"*, then *"yes do house windows and wharf lamps too"*. What read
+badly: a navigation lamp was a flat disc with a cross of pixels at its middle and nothing on the water under
+it; a lit window was a flat orange sheet under a 3.4 m round disc; a wharf lamp was a small orange dot. The
+2026-09-03 ruling still stands: a room's light shows only through its windows.
+
+**Decision.** One shared look, `GlassLook` (`Resources/GlassLook.asset`), drawn by the shaders that already
+exist. It changes how a lamp is DRAWN, never when it shows, how big its bloom is, or what colour it signals.
+
+- **The lens** (navigation lamps and shore lamps). Inside the existing bloom quad: a hot core
+  (`CoreFraction` of the radius, whitened by `Whiten`, or only `ColouredWhiten` for a red or green sidelight so
+  the signal keeps its colour), a one-pixel rim, and a short `1/(1+x^2)` tail that fades to nothing at the quad's
+  edge. Banded to `Bands` steps and snapped to the pixel grid, so it stays crisp pixel art.
+- **The streak.** One extra quad per navigation lamp, hung from the water under it (`HeightShare` of the lamp's own height brought down the screen, plus `DropMetres`), drawn only where the seabed map says the ground is
+  below sea level and nowhere a hull is drawn (`_HHHullScreenTex`). Broken into rows that break up and sway on
+  GAME time, never `_Time`, so a frozen clock gives a still frame. It ships STILL (`Speed` 0): a broken column
+  that does not move. Motion is one number away. **Shore lamps ship with the streak OFF**
+  (`_shoreStreak.Strength` 0): a wharf's planks stand over water on the seabed map, so the streak painted the deck
+  and the people on it. Turning it on for shore lamps needs a deck mask (a screen mask of what is drawn over the
+  water, as the hulls already publish), which this change does not add.
+- **The cabin pane** (`BoatWindowGlow`). Each pane now knows its own size in pixels (UV1). It draws a dark frame
+  and centre mullions on panes wide enough to carry them, a warm gradient brighter at the sill than the head,
+  and, when switched on, a slight breath (`Breath`) from the game clock and a seed taken from the hull's name. It ships
+  steady (`Breath` 0). A navigation lamp never breathes.
+- **The house window** (`SpriteLitDecor.hlsl`). The baked emitter sheet is unchanged; the shader measures each
+  lit texel's place in its run of glass (eight fixed taps each way) and draws the same sill-to-head gradient.
+  No art and no scene changed. There is no who-is-home rule in the emitter (the source bits are reserved), so
+  every bound window still lights by the night gate, exactly as before.
+- **The window glow** (`LightPresets.Kind.WindowGlow`) stops painting its disc (`_windowSpillIsPool`); its
+  ground pool is unchanged. This reverses the 2026-09-04 preference that kept Ginny's bloom, and it is one
+  switch back.
+- The worn headlamp is not part of this look. The channel marks (`NavLightPresets`) are not changed.
+
+**Cost (rule 7).** A navigation lamp is two draws instead of one (bloom plus streak; same mesh, same
+material, its own property block written at the light's 20 Hz tick). A shore lamp stays one draw (no streak). A window glow goes from one draw to none.
+Cabin panes and houses add no draws; a lit house texel at night takes up to 32 extra texture taps. No new
+texture, no new full-screen pass, no save change.
+
+### Tunables (rule 6)
+
+| Tunable | Where | Default |
+|---|---|---|
+| The whole look on or off | `GlassLook._enabled` | **on** (off = the frame before this amendment) |
+| Pixels per metre the glass snaps to | `_pixelsPerMetre` | 32 |
+| Navigation lens: core, rim px, whiten, coloured whiten, rim level, tail, tail scale, bands | `_navLens` | 0.17, 1, 0.85, 0.3, 1, 0.32, 0.22, 3 |
+| Navigation streak: strength, length m, width m, drop m, row px, breakup, wobble, speed, height share | `_navStreak` | 0.42, 3.6, 0.34, 0.15, 2, 0.4, 0.35, 0, 0.45 |
+| Shore lens | `_shoreLens` | 0.22, 1, 0.8, 0.3, 0.95, 0.3, 0.24, 3 |
+| Shore streak (off: needs a deck mask) | `_shoreStreak` | 0, 3.2, 0.4, 0.6, 2, 0.42, 0.35, 0, 1 |
+| Panes: head, sill, centre lift, bands, frame px, mullion px, mullion min px, breath, breath speed, probe texels | `_panes` | 0.62, 1, 0.22, 3, 0, 1, 7, 0, 0.7, 6 |
+| A window glow lights the ground, not a disc | `_windowSpillIsPool` | on |
