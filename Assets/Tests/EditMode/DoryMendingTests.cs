@@ -50,6 +50,9 @@ namespace HiddenHarbours.Tests.EditMode
         {
             public SaveData Current { get; set; } = new SaveData();
             public int Writes;
+            public Action OnWrite;
+            private int _depth;
+            private bool _pending;
             public bool GetFlag(string key)
             {
                 foreach (var flag in Current.OnboardingFlags) if (flag.Key == key) return flag.Value;
@@ -63,22 +66,79 @@ namespace HiddenHarbours.Tests.EditMode
                 Current.OnboardingFlags.Add(new SaveFlag(key, value));
                 Save();
             }
-            public void Save() { Writes++; }
+            public void Save()
+            {
+                if (_depth > 0) { _pending = true; return; }
+                Writes++;
+                OnWrite?.Invoke();
+            }
+            public IDisposable DeferWrites() { _depth++; return new Scope(this); }
+            private sealed class Scope : IDisposable
+            {
+                private Saved _owner;
+                public Scope(Saved owner) { _owner = owner; }
+                public void Dispose()
+                {
+                    if (_owner == null) return;
+                    var owner = _owner; _owner = null;
+                    if (--owner._depth == 0 && owner._pending)
+                    { owner._pending = false; owner.Save(); }
+                }
+            }
         }
 
         private sealed class Carry : IMendingCarry
         {
             public readonly Dictionary<string, int> Stock = new Dictionary<string, int>();
             public bool Refuse;
+            public bool RefuseCommit;
             public int Consumes;
-            public int Count(string itemId) => Stock.TryGetValue(itemId, out int count) ? count : 0;
-            public bool TryConsume(IReadOnlyList<MendingMaterial> materials)
+            public int Reservations;
+            private readonly Dictionary<string, int> _reserved = new Dictionary<string, int>();
+            public int Owned(string itemId) => Stock.TryGetValue(itemId, out int count) ? count : 0;
+            public int Count(string itemId) => Owned(itemId) - (_reserved.TryGetValue(itemId, out int n) ? n : 0);
+            public bool TryReserve(IReadOnlyList<MendingMaterial> materials, out IMendingReservation reservation)
             {
+                reservation = null;
                 if (Refuse) return false;
                 foreach (var material in materials) if (Count(material.ItemId) < material.Count) return false;
-                foreach (var material in materials) Stock[material.ItemId] -= material.Count;
-                Consumes++;
+                var copy = new List<MendingMaterial>(materials);
+                foreach (var material in copy)
+                    _reserved[material.ItemId] = (_reserved.TryGetValue(material.ItemId, out int n) ? n : 0) + material.Count;
+                reservation = new Reservation(this, copy);
+                Reservations++;
                 return true;
+            }
+            private sealed class Reservation : IMendingReservation
+            {
+                private readonly Carry _owner;
+                private readonly List<MendingMaterial> _materials;
+                private bool _closed;
+                public Reservation(Carry owner, List<MendingMaterial> materials) { _owner = owner; _materials = materials; }
+                public bool IsValid
+                {
+                    get
+                    {
+                        if (_closed) return false;
+                        foreach (var material in _materials)
+                            if (_owner.Owned(material.ItemId) < _owner._reserved[material.ItemId]) return false;
+                        return true;
+                    }
+                }
+                public bool TryConsume()
+                {
+                    if (!IsValid || _owner.RefuseCommit) return false;
+                    foreach (var material in _materials) _owner.Stock[material.ItemId] -= material.Count;
+                    _owner.Consumes++;
+                    Dispose();
+                    return true;
+                }
+                public void Dispose()
+                {
+                    if (_closed) return;
+                    _closed = true;
+                    foreach (var material in _materials) _owner._reserved[material.ItemId] -= material.Count;
+                }
             }
         }
 
@@ -136,6 +196,7 @@ namespace HiddenHarbours.Tests.EditMode
         [TearDown]
         public void TearDown()
         {
+            _session?.Dispose();
             EventBus.Unsubscribe<DoryMendingJobStarted>(Started);
             EventBus.Unsubscribe<DoryMendingJobDone>(Done);
             EventBus.Unsubscribe<DoryMended>(Mended);
@@ -159,6 +220,262 @@ namespace HiddenHarbours.Tests.EditMode
         {
             Start(index);
             Assert.That(_session.WorkFor(30, Place, out var why), Is.True, why.TextKey());
+        }
+
+        // An in-memory snapshot of the test carrier and clock in the existing save rows. This is
+        // deliberately not a production bag adapter or a disk-save integration test.
+        private string CaptureState()
+        {
+            var snapshot = JsonUtility.FromJson<SaveData>(JsonUtility.ToJson(_save.Current));
+            snapshot.GameTimeSeconds = _clock.TotalSeconds;
+            snapshot.SupplyStock.Clear();
+            foreach (var entry in _carry.Stock)
+                if (entry.Value > 0) snapshot.SupplyStock.Add(new SupplyStock(entry.Key, entry.Value));
+            return JsonUtility.ToJson(snapshot);
+        }
+
+        private void RestoreState(string json)
+        {
+            _session.Dispose();
+            _save.Current = JsonUtility.FromJson<SaveData>(json);
+            _clock.TotalSeconds = _save.Current.GameTimeSeconds;
+            _carry = new Carry();
+            foreach (var row in _save.Current.SupplyStock) _carry.Stock[row.SupplyId] = row.Count;
+            _session = NewSession();
+        }
+
+        [Test]
+        public void StartReservesWithoutDebitAndAnotherSessionCannotSpendTheClaim()
+        {
+            Start();
+            Assert.That(_session.Snapshot.MaterialsReserved, Is.True);
+            Assert.That(_carry.Owned("supply.patch_plank"), Is.EqualTo(1));
+            Assert.That(_carry.Owned("supply.copper_nails"), Is.EqualTo(1));
+            Assert.That(_carry.Count("supply.patch_plank"), Is.Zero);
+            Assert.That(_carry.Count("supply.copper_nails"), Is.Zero);
+            Assert.That(_carry.Consumes, Is.Zero);
+            Assert.That(_carry.Reservations, Is.EqualTo(1));
+            Assert.That(_save.Writes, Is.Zero);
+            using (var other = NewSession())
+            {
+                Assert.That(other.TryStart(_def.Jobs[0].Id, Place, out var why), Is.False);
+                Assert.That(why, Is.EqualTo(DoryMendReason.MissingMaterials));
+                Assert.That(other.Snapshot.MaterialsReserved, Is.False);
+            }
+            _session.Dispose();
+            _session.Dispose();
+            Assert.That(_carry.Count("supply.patch_plank"), Is.EqualTo(1));
+            Assert.That(_carry.Count("supply.copper_nails"), Is.EqualTo(1));
+            Assert.That(_carry.Consumes, Is.Zero);
+            Assert.That(_session.TryStart(_def.Jobs[0].Id, Place, out var closed), Is.False);
+            Assert.That(closed, Is.EqualTo(DoryMendReason.SessionChanged));
+        }
+
+        [TestCase(0, false)]
+        [TestCase(10, false)]
+        [TestCase(10, true)]
+        public void RestartDropsOnlyUnfinishedTimeAndKeepsEveryReservedMaterial(int minutes, bool paused)
+        {
+            Start();
+            if (minutes > 0) Assert.That(_session.WorkFor(minutes, Place, out _), Is.True);
+            if (paused) _session.Pause();
+            Assert.That(_session.Snapshot.WorkedSeconds, Is.EqualTo(minutes * Minute));
+            Assert.That(_carry.Consumes, Is.Zero);
+            string saved = CaptureState();
+            RestoreState(saved);
+            Assert.That(_session.Snapshot.JobId, Is.Null);
+            Assert.That(_session.Snapshot.WorkedSeconds, Is.Zero);
+            Assert.That(_session.Snapshot.MaterialsReserved, Is.False);
+            Assert.That(_save.Current.OnboardingFlags, Is.Empty);
+            foreach (var job in _def.Jobs)
+                foreach (var material in job.Materials)
+                    Assert.That(_carry.Count(material.ItemId), Is.EqualTo(material.Count));
+            double before = _clock.TotalSeconds;
+            Finish();
+            Assert.That(_clock.TotalSeconds - before, Is.EqualTo(30 * Minute));
+            Assert.That(_carry.Consumes, Is.EqualTo(1));
+            Assert.That(_carry.Owned("supply.patch_plank"), Is.Zero);
+            Assert.That(_carry.Owned("supply.copper_nails"), Is.Zero);
+            Assert.That(_save.GetFlag(_def.Jobs[0].CompletedFlag), Is.True);
+        }
+
+        [Test]
+        public void PauseKeepsTheSameReservationUntilCompletion()
+        {
+            Start();
+            Assert.That(_session.WorkFor(10, Place, out _), Is.True);
+            _session.Pause();
+            Assert.That(_carry.Consumes, Is.Zero);
+            Assert.That(_carry.Owned("supply.patch_plank"), Is.EqualTo(1));
+            Assert.That(_carry.Count("supply.patch_plank"), Is.Zero);
+            Start();
+            Assert.That(_carry.Reservations, Is.EqualTo(1));
+            Assert.That(_session.WorkFor(20, Place, out _), Is.True);
+            Assert.That(_carry.Consumes, Is.EqualTo(1));
+            Assert.That(_session.Snapshot.MaterialsReserved, Is.False);
+        }
+
+        [Test]
+        public void ARefusedCompletionDebitsNothingAndCanRetryWithoutRepeatingTheWork()
+        {
+            Start();
+            _carry.RefuseCommit = true;
+            Assert.That(_session.WorkFor(30, Place, out var why), Is.False);
+            Assert.That(why, Is.EqualTo(DoryMendReason.MissingMaterials));
+            Assert.That(_session.Snapshot.WorkedSeconds, Is.EqualTo(30 * Minute));
+            Assert.That(_session.Snapshot.Working, Is.False);
+            Assert.That(_carry.Consumes, Is.Zero);
+            Assert.That(_carry.Owned("supply.patch_plank"), Is.EqualTo(1));
+            Assert.That(_carry.Owned("supply.copper_nails"), Is.EqualTo(1));
+            Assert.That(_save.Current.OnboardingFlags, Is.Empty);
+            Assert.That(_save.Current.RepairedBoats, Is.Empty);
+            CollectionAssert.AreEqual(new[] { "start:mendjob.patch_plank" }, _events);
+            _carry.RefuseCommit = false;
+            double before = _clock.TotalSeconds;
+            Start();
+            Assert.That(_session.WorkFor(1, Place, out why), Is.True);
+            Assert.That(why, Is.EqualTo(DoryMendReason.None));
+            Assert.That(_clock.TotalSeconds, Is.EqualTo(before));
+            Assert.That(_carry.Consumes, Is.EqualTo(1));
+            Assert.That(_carry.Reservations, Is.EqualTo(1));
+            CollectionAssert.AreEqual(new[] { "start:mendjob.patch_plank", "done:mendjob.patch_plank" }, _events);
+        }
+
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public void ClockAutosaveSeesCompletedFlagsAndMatchingGoodsTogether(int completedJobs)
+        {
+            string stored = null;
+            _save.OnWrite = () => stored = CaptureState();
+            _clock.DuringAdvance = () => _save.Save();
+            for (int i = 0; i < completedJobs; i++) Finish(i);
+            Assert.That(_save.Writes, Is.EqualTo(completedJobs));
+            Assert.That(_carry.Consumes, Is.EqualTo(completedJobs));
+            Assert.That(stored, Is.Not.Null);
+            RestoreState(stored);
+            Assert.That(_save.Current.OnboardingFlags.Count, Is.EqualTo(completedJobs));
+            Assert.That(RepairLedger.IsRepaired(_save.Current, _def.BoatId), Is.EqualTo(completedJobs == 3));
+            Assert.That(_clock.TotalSeconds, Is.EqualTo(9 * Hour + completedJobs * 30 * Minute));
+            for (int i = 0; i < _def.Jobs.Length; i++)
+                foreach (var material in _def.Jobs[i].Materials)
+                    Assert.That(_carry.Owned(material.ItemId), Is.EqualTo(i < completedJobs ? 0 : material.Count));
+            Assert.That(_session.NextJob, Is.EqualTo(completedJobs == 3 ? null : _def.Jobs[completedJobs]));
+            Assert.That(_session.Snapshot.MaterialsReserved, Is.False);
+        }
+
+        [Test]
+        public void FailedSnapshotWriteLeavesMatchingCompletionAndDebitWithoutASecondCharge()
+        {
+            Start();
+            _save.OnWrite = () => throw new InvalidOperationException("snapshot unavailable");
+            Assert.Throws<InvalidOperationException>(() => _session.WorkFor(30, Place, out _));
+            Assert.That(_save.GetFlag(_def.Jobs[0].CompletedFlag), Is.True);
+            Assert.That(_carry.Consumes, Is.EqualTo(1));
+            Assert.That(_carry.Owned("supply.patch_plank"), Is.Zero);
+            Assert.That(_carry.Owned("supply.copper_nails"), Is.Zero);
+            Assert.That(_session.Snapshot.MaterialsReserved, Is.False);
+            Assert.That(_session.Snapshot.JobId, Is.Null);
+            CollectionAssert.AreEqual(new[] { "start:mendjob.patch_plank" }, _events);
+            Assert.That(_session.TryStart(_def.Jobs[0].Id, Place, out var why), Is.False);
+            Assert.That(why, Is.EqualTo(DoryMendReason.JobAlreadyDone));
+            string stored = null;
+            _save.OnWrite = () => stored = CaptureState();
+            _save.Save();
+            RestoreState(stored);
+            Assert.That(_save.GetFlag(_def.Jobs[0].CompletedFlag), Is.True);
+            Assert.That(_carry.Owned("supply.patch_plank"), Is.Zero);
+            Assert.That(_carry.Owned("supply.copper_nails"), Is.Zero);
+        }
+
+        [Test]
+        public void DisposeDuringClockCallbacksReleasesGoodsAndCannotFinishTheJob()
+        {
+            Start();
+            _clock.DuringAdvance = () => _session.Dispose();
+            Assert.That(_session.WorkFor(30, Place, out var why), Is.False);
+            Assert.That(why, Is.EqualTo(DoryMendReason.SessionChanged));
+            Assert.That(_carry.Consumes, Is.Zero);
+            Assert.That(_carry.Count("supply.patch_plank"), Is.EqualTo(1));
+            Assert.That(_carry.Count("supply.copper_nails"), Is.EqualTo(1));
+            Assert.That(_save.Current.OnboardingFlags, Is.Empty);
+        }
+
+        [Test]
+        public void EndingPlayOnTheSameSaveReleasesTheClaimAndDiscardsPartialTime()
+        {
+            Start();
+            Assert.That(_session.WorkFor(10, Place, out _), Is.True);
+            _session.Pause();
+            var sameSave = _save.Current;
+            _session.Dispose();
+            _session = NewSession();
+            Assert.That(_save.Current, Is.SameAs(sameSave));
+            Assert.That(_session.Snapshot.WorkedSeconds, Is.Zero);
+            Assert.That(_carry.Count("supply.patch_plank"), Is.EqualTo(1));
+            Assert.That(_carry.Count("supply.copper_nails"), Is.EqualTo(1));
+            Finish();
+            Assert.That(_carry.Consumes, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void InvalidatedCarrierCannotAdvanceTimeOrRecordCompletion()
+        {
+            Start();
+            _carry.Stock["supply.copper_nails"] = 0;
+            double before = _clock.TotalSeconds;
+            Assert.That(_session.WorkFor(30, Place, out var why), Is.False);
+            Assert.That(why, Is.EqualTo(DoryMendReason.MissingMaterials));
+            Assert.That(_clock.TotalSeconds, Is.EqualTo(before));
+            Assert.That(_carry.Owned("supply.patch_plank"), Is.EqualTo(1));
+            Assert.That(_carry.Consumes, Is.Zero);
+            Assert.That(_save.Current.OnboardingFlags, Is.Empty);
+        }
+
+        [Test]
+        public void AChangedTideConfigurationCannotReuseTheOldSafetyBound()
+        {
+            Start();
+            _config.TidalPeriodHours /= 2;
+            double before = _clock.TotalSeconds;
+            Assert.That(_session.WorkFor(30, Place, out var why), Is.False);
+            Assert.That(why, Is.EqualTo(DoryMendReason.SessionChanged));
+            Assert.That(_clock.TotalSeconds, Is.EqualTo(before));
+            Assert.That(_carry.Count("supply.patch_plank"), Is.EqualTo(1));
+            Assert.That(_carry.Count("supply.copper_nails"), Is.EqualTo(1));
+            Assert.That(_carry.Consumes, Is.Zero);
+        }
+
+        [Test]
+        public void OwnershipLostDuringClockCallbacksCannotDebitMaterials()
+        {
+            Start();
+            _clock.DuringAdvance = () => _save.Current.OwnedBoats.Clear();
+            Assert.That(_session.WorkFor(30, Place, out var why), Is.False);
+            Assert.That(why, Is.EqualTo(DoryMendReason.BoatNotOwned));
+            Assert.That(_carry.Count("supply.patch_plank"), Is.EqualTo(1));
+            Assert.That(_carry.Count("supply.copper_nails"), Is.EqualTo(1));
+            Assert.That(_save.Current.OnboardingFlags, Is.Empty);
+            Assert.That(_carry.Consumes, Is.Zero);
+        }
+
+        [TestCase("lunar_zero")]
+        [TestCase("lunar_infinite")]
+        [TestCase("neap_negative")]
+        [TestCase("neap_above_one")]
+        [TestCase("amplitude_nan")]
+        public void InvalidTideParametersCannotCreateASafetyBound(string fault)
+        {
+            switch (fault)
+            {
+                case "lunar_zero": _config.LunarMonthDays = 0; break;
+                case "lunar_infinite": _config.LunarMonthDays = float.PositiveInfinity; break;
+                case "neap_negative": _config.NeapAmplitudeFraction = -1; break;
+                case "neap_above_one": _config.NeapAmplitudeFraction = 2; break;
+                case "amplitude_nan": _tide.ActiveTideProfile = new TideProfile { Amplitude = float.NaN }; break;
+            }
+            Assert.Throws<ArgumentException>(() => NewSession());
+            Assert.That(_carry.Consumes, Is.Zero);
         }
 
         [TestCase(DoryMendReason.WrongPlace)]
@@ -206,7 +523,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(why, Is.EqualTo(DoryMendReason.MissingMaterials));
             Assert.That(_carry.Count("supply.patch_plank"), Is.EqualTo(1));
             Assert.That(_carry.Count("supply.copper_nails"), Is.EqualTo(1));
-            Assert.That(_session.Snapshot.MaterialsCommitted, Is.False);
+            Assert.That(_session.Snapshot.MaterialsReserved, Is.False);
         }
 
         [Test]
@@ -264,6 +581,103 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void ShippedDryHullFinishesAtHighWaterButStillNeedsASupportedLaunch()
+        {
+            _def = UnityEditor.AssetDatabase.LoadAssetAtPath<DoryMendingDef>(
+                "Assets/_Project/Data/Resources/DoryMending/StPetersDory.asset");
+            var region = UnityEditor.AssetDatabase.LoadAssetAtPath<HiddenHarbours.World.RegionDef>(
+                "Assets/_Project/Data/Regions/StPeters.asset");
+            Assert.That(_def, Is.Not.Null); Assert.That(region, Is.Not.Null);
+            _tide.ActiveTideProfile = new TideProfile {
+                MeanLevel = region.TideMeanLevel, Amplitude = region.TideAmplitude, PhaseHours = region.TidePhaseHours
+            };
+            _session = NewSession();
+            _clock.TotalSeconds = (_config.TidalPeriodHours / 4 - region.TidePhaseHours) * Hour;
+            double before = _clock.TotalSeconds;
+            foreach (var job in _def.Jobs)
+            {
+                Assert.That(job.NeedsLowWater, Is.False);
+                Assert.That(_tide.TideHeightAt(_clock.TotalSeconds), Is.GreaterThan(_def.WorkBelowMetres));
+                Assert.That(_session.TryStart(job.Id, Place, out var why), Is.True, why.TextKey());
+                Assert.That(_session.WorkFor(10000, Place, out why), Is.True, why.TextKey());
+                Assert.That(_save.GetFlag(job.CompletedFlag), Is.True);
+            }
+            Assert.That(_clock.TotalSeconds - before, Is.EqualTo(75 * Minute).Within(1e-8));
+            Assert.That(_carry.Consumes, Is.EqualTo(3));
+            foreach (var job in _def.Jobs)
+                foreach (var material in job.Materials) Assert.That(_carry.Owned(material.ItemId), Is.Zero);
+            Assert.That(_save.Current.RepairedBoats, Is.EqualTo(new[] { "boat.dory" }));
+            Assert.That(_events, Is.EqualTo(new[] {
+                "start:mendjob.patch_plank", "done:mendjob.patch_plank",
+                "start:mendjob.caulk_seam", "done:mendjob.caulk_seam",
+                "start:mendjob.paint", "done:mendjob.paint", "repaired:boat.dory:0", "mended:boat.dory"
+            }));
+            string afterRepair = JsonUtility.ToJson(_save.Current);
+            Assert.That(_session.CheckLaunch(Place), Is.EqualTo(DoryMendReason.SupportedLaunchRequired));
+            Assert.That(_session.CheckLaunch(Place).TextKey(), Is.EqualTo("dory_mend.bring_hull_to_water"));
+            _session.PollLaunch(Place); _session.PollLaunch(Place);
+            Assert.That(_ready, Is.Zero);
+            Assert.That(JsonUtility.ToJson(_save.Current), Is.EqualTo(afterRepair));
+        }
+
+        [TestCase(1f, -0.2f)]
+        [TestCase(720f, -0.2f)]
+        [TestCase(7200f, -0.2f)]
+        [TestCase(720f, 0.9999f)]
+        public void CoarseSamplesCannotSkipTheFirstFlood(float stepMinutes, float workLine)
+        {
+            _config.TidalPeriodHours = 12;
+            _config.NeapAmplitudeFraction = 1;
+            _tide.ActiveTideProfile = new TideProfile { MeanLevel = 0, Amplitude = 1, PhaseHours = 0 };
+            _def.WorkBelowMetres = workLine;
+            _def.LaunchAboveMetres = 2;
+            _def.SearchStepGameMinutes = stepMinutes;
+            _def.Jobs[0].WorkGameMinutes = 600;
+            _session = NewSession();
+            _clock.TotalSeconds = 9 * Hour;
+            double start = _clock.TotalSeconds;
+            double firstFlood = (12 + Math.Asin(workLine) * 12 / (2 * Math.PI)) * Hour;
+            Start();
+            Assert.That(_session.WorkFor(600, Place, out var why), Is.True, why.TextKey());
+            // Float-returning heights put a very narrow high-water crossing within 0.02 seconds
+            // of its double-precision closed form; the ordinary work line is much tighter.
+            double tolerance = workLine > 0 ? 0.02 : 0.00001;
+            Assert.That(_clock.TotalSeconds, Is.EqualTo(firstFlood).Within(tolerance));
+            Assert.That(_clock.TotalSeconds, Is.LessThanOrEqualTo(firstFlood));
+            Assert.That(_session.Snapshot.WorkedSeconds, Is.EqualTo(_clock.TotalSeconds - start).Within(1e-9));
+            Assert.That(_session.Snapshot.Working, Is.False);
+            Assert.That(_session.Snapshot.MaterialsReserved, Is.True);
+            Assert.That(_save.GetFlag(_def.Jobs[0].CompletedFlag), Is.False);
+            Assert.That(_carry.Consumes, Is.Zero);
+            Assert.That(_carry.Owned("supply.patch_plank"), Is.EqualTo(1));
+            Assert.That(_carry.Owned("supply.copper_nails"), Is.EqualTo(1));
+        }
+
+        [Test]
+        public void RapidLunarEnvelopeCannotHideAnEarlierFloodInsideTheCarrierLow()
+        {
+            _config.TidalPeriodHours = 12;
+            _config.NeapAmplitudeFraction = 0;
+            _config.LunarMonthDays = 1.5f;
+            _tide.ActiveTideProfile = new TideProfile { MeanLevel = 0, Amplitude = 1, PhaseHours = 0 };
+            _def.WorkBelowMetres = -0.001f;
+            _def.SearchStepGameMinutes = 720;
+            _def.Jobs[0].WorkGameMinutes = 600;
+            _session = NewSession();
+            _clock.TotalSeconds = 7 * Hour;
+            var windows = CrossingMath.FindWindows(_tide.TideHeightAt, _def.WorkBelowMetres,
+                0, _config.SecondsPerDay, Minute / 100, _config);
+            var expected = windows.Find(w => w.StartSeconds <= _clock.TotalSeconds && _clock.TotalSeconds < w.EndSeconds);
+            Assert.That(expected.EndSeconds, Is.GreaterThan(7 * Hour));
+            Assert.That(expected.EndSeconds, Is.LessThan(9 * Hour));
+            Start();
+            Assert.That(_session.WorkFor(600, Place, out _), Is.True);
+            Assert.That(_clock.TotalSeconds, Is.EqualTo(expected.EndSeconds).Within(1e-5));
+            Assert.That(_save.GetFlag(_def.Jobs[0].CompletedFlag), Is.False);
+            Assert.That(_carry.Consumes, Is.Zero);
+        }
+
+        [Test]
         public void TideInterruptsLargeRequestAndResumeUsesNoMoreMaterials()
         {
             var windows = CrossingMath.FindWindows(_tide.TideHeightAt, _def.WorkBelowMetres,
@@ -301,7 +715,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void ClockRefusalAndPauseKeepCommittedProgress()
+        public void ClockRefusalAndPauseKeepReservedProgress()
         {
             Start();
             _clock.Refuse = true;
@@ -347,6 +761,9 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(original.OnboardingFlags, Is.Empty);
             Assert.That(_save.Current.OnboardingFlags, Is.Empty);
             Assert.That(_session.Snapshot.Working, Is.False);
+            Assert.That(_carry.Consumes, Is.Zero);
+            Assert.That(_carry.Count("supply.patch_plank"), Is.EqualTo(1));
+            Assert.That(_carry.Count("supply.copper_nails"), Is.EqualTo(1));
         }
 
         [Test]
@@ -412,7 +829,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(_save.Current.OnboardingFlags.Count, Is.EqualTo(1));
             Assert.That(_save.Current.OnboardingFlags[0].Key, Is.EqualTo("st_peters.dory_mend.patch_plank"));
             Assert.That(_save.Current.OnboardingFlags[0].Value, Is.True);
-            Assert.That(_session.Snapshot.MaterialsCommitted, Is.False);
+            Assert.That(_session.Snapshot.MaterialsReserved, Is.False);
         }
 
         [TestCase(0)]
@@ -452,6 +869,7 @@ namespace HiddenHarbours.Tests.EditMode
             _clock.TotalSeconds = 9 * Hour;
             _save = new Saved(); _save.Current.OwnedBoats.Add(_def.BoatId);
             _carry.Stock["supply.patch_plank"] = 1; _carry.Stock["supply.copper_nails"] = 1;
+            _session.Dispose();
             _events.Clear(); _session = NewSession();
             Start(); _session.WorkFor(10, Place, out _);
             Assert.That(_session.Snapshot, Is.EqualTo(first));
@@ -466,6 +884,15 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(job.NeedsLowWater, Is.True);
             JsonUtility.FromJsonOverwrite("{\"Id\":\"mendjob.legacy\"}", job);
             Assert.That(job.NeedsLowWater, Is.True);
+        }
+
+        [Test]
+        public void UnauthoredLaunchContractKeepsTheExistingWetSlipDefault()
+        {
+            var def = Make<DoryMendingDef>();
+            Assert.That(def.RequiresSupportedLaunch, Is.False);
+            JsonUtility.FromJsonOverwrite("{\"Id\":\"mending.legacy\"}", def);
+            Assert.That(def.RequiresSupportedLaunch, Is.False);
         }
 
         [TestCase(false)]
@@ -523,7 +950,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(JsonUtility.ToJson(_save.Current), Is.EqualTo(saveBefore));
             Assert.That(_save.Writes, Is.Zero);
             Assert.That(_carry.Consumes, Is.Zero);
-            Assert.That(_session.Snapshot.MaterialsCommitted, Is.False);
+            Assert.That(_session.Snapshot.MaterialsReserved, Is.False);
             Assert.That(_events, Is.Empty);
         }
 
@@ -611,7 +1038,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(_clock.TotalSeconds, Is.EqualTo(before));
             Assert.That(JsonUtility.ToJson(_save.Current), Is.EqualTo(saveBefore));
             Assert.That(_carry.Consumes, Is.Zero);
-            Assert.That(_session.Snapshot.MaterialsCommitted, Is.False);
+            Assert.That(_session.Snapshot.MaterialsReserved, Is.False);
             Assert.That(_events, Is.Empty);
         }
 
@@ -624,7 +1051,7 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(keys.Add(reason.TextKey()), Is.True, reason.ToString());
                 StringAssert.StartsWith("dory_mend.", reason.TextKey());
             }
-            Assert.That(keys.Count, Is.EqualTo(18));
+            Assert.That(keys.Count, Is.EqualTo(19));
         }
     }
 }

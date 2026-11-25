@@ -29,6 +29,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(def.PlaceId, Is.EqualTo("region.st_peters"));
             Assert.That(def.WorkBelowMetres, Is.EqualTo(-0.2f));
             Assert.That(def.LaunchAboveMetres, Is.EqualTo(0.8f));
+            Assert.That(def.RequiresSupportedLaunch, Is.True);
             Assert.That(def.Jobs.Length, Is.EqualTo(3));
             string[] names = { "patch_plank", "caulk_seam", "paint" };
             float[] minutes = { 30, 25, 20 };
@@ -40,7 +41,7 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(job.Order, Is.EqualTo(i));
                 Assert.That(job.Id, Is.EqualTo("mendjob." + names[i]));
                 Assert.That(job.CompletedFlag, Is.EqualTo("st_peters.dory_mend." + names[i]));
-                Assert.That(job.NeedsLowWater, Is.True);
+                Assert.That(job.NeedsLowWater, Is.False, "the island hull rests above high water");
                 Assert.That(job.WorkGameMinutes, Is.EqualTo(minutes[i]));
                 int cost = 0;
                 foreach (var material in job.Materials)
@@ -76,9 +77,9 @@ namespace HiddenHarbours.Tests.EditMode
                 job.NeedsLowWater = needsLowWater;
                 Assert.DoesNotThrow(() => def.Validate());
                 Assert.That(def.Jobs[0].NeedsLowWater, Is.EqualTo(needsLowWater));
-                Assert.That(def.Jobs[1].NeedsLowWater, Is.True);
-                Assert.That(def.Jobs[2].NeedsLowWater, Is.True);
-                Assert.That(source.Jobs[0].NeedsLowWater, Is.True, "the authored default must stay unchanged");
+                Assert.That(def.Jobs[1].NeedsLowWater, Is.False);
+                Assert.That(def.Jobs[2].NeedsLowWater, Is.False);
+                Assert.That(source.Jobs[0].NeedsLowWater, Is.False, "editing a clone must leave the dry hull data unchanged");
             }
             finally
             {

@@ -11,12 +11,24 @@ namespace HiddenHarbours.Core
         public MendingMaterial(string itemId, int count) { ItemId = itemId; Count = count; }
     }
 
-    /// <summary>Only the goods physically carried to the slip. Implementations must consume the whole
-    /// request atomically, or return false without changing anything. Remote storage is excluded.</summary>
+    /// <summary>Only goods physically carried to the slip. Count excludes reservations. Reserving
+    /// locks the whole request against spending, transfer and use elsewhere without debiting saved
+    /// contents. A failed reservation changes nothing. Remote storage is excluded.</summary>
     public interface IMendingCarry
     {
         int Count(string itemId);
-        bool TryConsume(IReadOnlyList<MendingMaterial> materials);
+        bool TryReserve(IReadOnlyList<MendingMaterial> materials, out IMendingReservation reservation);
+    }
+
+    /// <summary>A session-owned claim on physically carried goods, bound to the loaded save and
+    /// carrier. Dispose releases unconsumed goods without changing their saved count. TryConsume
+    /// debits the whole claim exactly once, or returns false with no changes. Consumption must be
+    /// synchronous, without callbacks or save writes; the caller records completion before saving.
+    /// Losing the carrier or loaded save invalidates the claim. Never serialize a reservation.</summary>
+    public interface IMendingReservation : IDisposable
+    {
+        bool IsValid { get; }
+        bool TryConsume();
     }
 
     public enum DoryMendReason
@@ -24,7 +36,7 @@ namespace HiddenHarbours.Core
         None, Busy, SessionChanged, WrongPlace, BoatNotOwned, BoatAlreadyRepaired,
         UnknownJob, EarlierJobsIncomplete, JobAlreadyDone, JobInProgress, MissingMaterials,
         LowWaterRequired, ClockUnavailable, NotStarted, InvalidWorkDuration, InvalidProgress,
-        NotRepaired, HighWaterRequired
+        NotRepaired, HighWaterRequired, SupportedLaunchRequired
     }
 
     public static class DoryMendingReasons
@@ -51,6 +63,7 @@ namespace HiddenHarbours.Core
                 case DoryMendReason.InvalidProgress: return "dory_mend.invalid_progress";
                 case DoryMendReason.NotRepaired: return "dory_mend.finish_repairs";
                 case DoryMendReason.HighWaterRequired: return "dory_mend.wait_for_high_water";
+                case DoryMendReason.SupportedLaunchRequired: return "dory_mend.bring_hull_to_water";
                 default: throw new ArgumentOutOfRangeException(nameof(reason));
             }
         }
@@ -63,13 +76,13 @@ namespace HiddenHarbours.Core
         public readonly string BoatId;
         public readonly string JobId;
         public readonly double WorkedSeconds;
-        public readonly bool MaterialsCommitted;
+        public readonly bool MaterialsReserved;
         public readonly bool Working;
         public DoryMendingSnapshot(string boatId, string jobId, double workedSeconds,
-                                  bool materialsCommitted, bool working)
+                                  bool materialsReserved, bool working)
         {
             BoatId = boatId; JobId = jobId; WorkedSeconds = workedSeconds;
-            MaterialsCommitted = materialsCommitted; Working = working;
+            MaterialsReserved = materialsReserved; Working = working;
         }
     }
 

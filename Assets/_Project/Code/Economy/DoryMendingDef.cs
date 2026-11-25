@@ -13,6 +13,11 @@ namespace HiddenHarbours.Economy
         public string PlaceId;
         public float WorkBelowMetres;
         public float LaunchAboveMetres;
+        [Tooltip("A hull resting above high water needs a separate supported journey to the water. " +
+                 "When enabled, this sequence never grants launch readiness from tide height alone.")]
+        public bool RequiresSupportedLaunch;
+        [Tooltip("Maximum interval between water samples. Work subdivides any interval that cannot " +
+                 "be proven dry from the tide's rate bound, including a complete tide between samples.")]
         [Min(0.01f)] public float SearchStepGameMinutes = 1f;
         public DoryMendingJobDef[] Jobs;
 

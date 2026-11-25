@@ -20,4 +20,4 @@ MonoBehaviour:
   - ItemId: supply.oakum
     Count: 1
   WorkGameMinutes: 25
-  NeedsLowWater: 1
+  NeedsLowWater: 0

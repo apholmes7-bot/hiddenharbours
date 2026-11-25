@@ -22,4 +22,4 @@ MonoBehaviour:
   - ItemId: supply.copper_nails
     Count: 1
   WorkGameMinutes: 30
-  NeedsLowWater: 1
+  NeedsLowWater: 0

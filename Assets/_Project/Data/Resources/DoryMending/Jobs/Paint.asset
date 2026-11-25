@@ -20,4 +20,4 @@ MonoBehaviour:
   - ItemId: supply.linseed_paint
     Count: 1
   WorkGameMinutes: 20
-  NeedsLowWater: 1
+  NeedsLowWater: 0
