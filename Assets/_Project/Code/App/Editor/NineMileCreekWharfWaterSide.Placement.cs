@@ -159,7 +159,8 @@ namespace HiddenHarbours.App.Editor
                         bool cut=fixedPart&&walkRaw!=null&&NineMileCreekWharf.TryWaterlineLip(WA(walkRaw).Select(WP).ToArray(),WM(WM(WM(p,"module"),"o"),"toeZ")==null,neighbours,out lip);
                         writer.Picture(node,sprite,order,cut?WaterAsset(TidalFaceMaterialPath,2100000,2):(ObjRef?)null);
                         if(cut)writer.Mono(node,"waterline","Assets/_Project/Code/Art/TidalFaceWaterline.cs","HiddenHarbours.Art","HiddenHarbours.Art.TidalFaceWaterline",
-                            new[]{"  _lipWorldY: "+F(lip),"  _lipElevation: "+F(elevation),"  _ridesTheTide: 1","  _configured: 1"});
+                            new[]{"  _lipWorldY: "+F(lip),"  _lipElevation: "+F(elevation),"  _ridesTheTide: 1","  _configured: 1",
+                                  "  _dressing: "+(int)NineMileCreekWharf.DressingFor(WS(WM(WM(p,"module"),"key")))});
                         if(WB(WM(p,"floating")))writer.Mono(node,"ride","Assets/_Project/Code/World/FloatingPlatformVisual.cs","HiddenHarbours.World","HiddenHarbours.World.FloatingPlatformVisual",
                             new[]{"  _platform: {fileID: "+floats[name]+"}","  _bakedDeckElevation: "+F(WN(WM(p,"freeboard"))*node.PictureScaleY),"  _planY: "+F(at.y)});
                         else if(gang!=null)

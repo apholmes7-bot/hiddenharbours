@@ -487,6 +487,22 @@ namespace HiddenHarbours.App.Editor
             return true;
         }
 
+        /// <summary>The H5 kit's module kinds, as the sidecar names them (<c>module.key</c>).</summary>
+        public const string LogCribModule = "logCrib", ConcreteQuayModule = "concreteQuay", BreakwaterModule = "breakwater";
+
+        /// <summary>
+        /// What a cut face above the water is made of, from its wharf module's kind: a log crib shows log
+        /// courses, a concrete quay its pour lifts and form panels, a breakwater a waterline that follows
+        /// the stone. Anything else draws its shipped picture.
+        /// </summary>
+        public static TidalFaceDressing DressingFor(string moduleKey) => moduleKey switch
+        {
+            LogCribModule => TidalFaceDressing.TimberCrib,
+            ConcreteQuayModule => TidalFaceDressing.ConcreteQuay,
+            BreakwaterModule => TidalFaceDressing.RockBreakwater,
+            _ => TidalFaceDressing.None,
+        };
+
         /// <summary>
         /// The rung the BROW draws at — the top of the wharf-deck band.
         ///

@@ -60,6 +60,10 @@ MonoBehaviour:
   - 'WaterSide_fleet_conc*'
   - 'WaterSide_east_east*'
   - 'WaterSide_arm_w_*'
+  - float
+  - 'float_*'
+  - 'finger*'
+  - 'recFloat*'
   ExcludedScenes:
   - 'InitTestScene*'
   Classes:

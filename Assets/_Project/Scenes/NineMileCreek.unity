@@ -439127,6 +439127,7 @@ MonoBehaviour:
   _lipElevation: 3.4000001
   _ridesTheTide: 1
   _configured: 1
+  _dressing: 2
 --- !u!114 &1253226833
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -439143,6 +439144,7 @@ MonoBehaviour:
   _lipElevation: 3.4000001
   _ridesTheTide: 1
   _configured: 1
+  _dressing: 2
 --- !u!114 &1042726735
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -439159,6 +439161,7 @@ MonoBehaviour:
   _lipElevation: 3.4000001
   _ridesTheTide: 1
   _configured: 1
+  _dressing: 1
 --- !u!114 &1402879735
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -439175,6 +439178,7 @@ MonoBehaviour:
   _lipElevation: 3.4000001
   _ridesTheTide: 1
   _configured: 1
+  _dressing: 2
 --- !u!114 &1491097808
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -439191,6 +439195,7 @@ MonoBehaviour:
   _lipElevation: 3.5999999
   _ridesTheTide: 1
   _configured: 1
+  _dressing: 3
 --- !u!114 &395019455
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -439207,6 +439212,7 @@ MonoBehaviour:
   _lipElevation: 3.5999999
   _ridesTheTide: 1
   _configured: 1
+  _dressing: 3
 --- !u!114 &164856812
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -439223,6 +439229,7 @@ MonoBehaviour:
   _lipElevation: 3.5999999
   _ridesTheTide: 1
   _configured: 1
+  _dressing: 3
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

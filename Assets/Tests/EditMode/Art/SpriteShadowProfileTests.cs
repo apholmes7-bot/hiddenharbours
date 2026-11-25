@@ -153,6 +153,31 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "project with no asset gets this PR's sorting without anyone choosing it.");
             Assert.AreEqual(1f, p.HullWaterLowSunAlpha, 1e-6f,
                 "The built-in default must not fade a floating hull's shadow: a project with no asset keeps main's frame.");
+            Assert.IsFalse(ShadowOnWater.AnyRule(p),
+                "The built-in default must carry no water rule (no cap, no fade, no breakup): a project with no " +
+                "asset draws a shadow on water exactly as main does.");
+        }
+
+        /// <summary>Round 4 (owner 2026-11-25): any shadow on open water is short, faint and broken, by one rule
+        /// for every caster; the shipped asset carries the rule and the code's field defaults are its numbers.</summary>
+        [Test]
+        public void TheShippedAsset_CarriesTheOneWaterRule()
+        {
+            var asset = Resources.Load<SpriteShadowProfile>(SpriteShadow.ProfileResourcePath);
+            Assert.IsNotNull(asset);
+            var fresh = ScriptableObject.CreateInstance<SpriteShadowProfile>();
+            try
+            {
+                Assert.IsTrue(ShadowOnWater.AnyRule(asset), "the shipped asset carries the water rule");
+                Assert.Less(asset.WaterMaxLength, 1f, "a shadow on water is shorter than the caster is tall");
+                Assert.Less(asset.WaterAlpha, 1f, "a shadow on water is fainter than one on ground");
+                Assert.Greater(asset.WaterBreakup, 0f, "a shadow on water is broken by the ripples");
+                Assert.AreEqual(fresh.WaterMaxLength, asset.WaterMaxLength, 1e-6f, "field default == asset");
+                Assert.AreEqual(fresh.WaterAlpha, asset.WaterAlpha, 1e-6f, "field default == asset");
+                Assert.AreEqual(fresh.WaterBreakup, asset.WaterBreakup, 1e-6f, "field default == asset");
+                Assert.AreEqual(fresh.WaterBreakupGrid, asset.WaterBreakupGrid, "field default == asset");
+            }
+            finally { Object.DestroyImmediate(fresh); }
         }
 
         /// <summary>The sunset fix (11-21): the shipped asset fades a FLOATING hull's low-sun shadow to a faint

@@ -100,6 +100,9 @@ namespace HiddenHarbours.Tests.EditMode
                     Assert.AreEqual(expected.lip, ParseFloat(tide.Field("_lipWorldY")), 1e-3f, what + " is cut from its walk's seaward lip");
                     Assert.AreEqual(expected.elevation, ParseFloat(tide.Field("_lipElevation")), 1e-3f, what + " is cut at its deck's elevation");
                     Assert.AreEqual("1", tide.Field("_configured"), what + " is told its lip");
+                    Assert.AreEqual(((int)NineMileCreekWharf.DressingFor(expected.module)).ToString(), tide.Field("_dressing"),
+                        what + " is dressed as its wharf type (" + expected.module + ")");
+                    Assert.AreNotEqual("0", tide.Field("_dressing"), what + " is dressed: a cut face is never left a dark slab");
                     StringAssert.Contains(tideMaterial, renderer.Text, what + " draws through the tidal-face material");
                 }
             }
@@ -121,15 +124,16 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.IsFalse(rules.ExcludedNames.Any(p => SunCasterRules.Matches(sprite, p)), sprite + " is not cut and keeps its shadow");
         }
 
-        static Dictionary<string, (float lip, float elevation)> Lips()
+        static Dictionary<string, (float lip, float elevation, string module)> Lips()
         {
-            var lips = new Dictionary<string, (float, float)>();
+            var lips = new Dictionary<string, (float, float, string)>();
             foreach (object part in DeckSidecarJson.AsArray(DeckSidecarJson.Member(NineMileCreekWharfWaterSide.ReadToday(), "parts")))
             {
                 object walk = DeckSidecarJson.Member(part, "walkPolygon");
                 if (walk == null) continue;
                 float lip = DeckSidecarJson.AsArray(walk).Select(q => DeckSidecarJson.Float(DeckSidecarJson.AsArray(q)[1])).Min();
-                lips[DeckSidecarJson.String(DeckSidecarJson.Member(part, "key"))] = (lip, DeckSidecarJson.Float(DeckSidecarJson.Member(part, "elevation")));
+                lips[DeckSidecarJson.String(DeckSidecarJson.Member(part, "key"))] = (lip, DeckSidecarJson.Float(DeckSidecarJson.Member(part, "elevation")),
+                    DeckSidecarJson.String(DeckSidecarJson.Member(DeckSidecarJson.Member(part, "module"), "key")));
             }
             return lips;
         }
