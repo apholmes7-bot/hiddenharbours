@@ -32,9 +32,36 @@ namespace HiddenHarbours.Core
         /// stage change at once. A non-positive amount or no save does nothing.</summary>
         void Eat(float amount);
 
+        /// <summary>Spend energy (body slice 2): raise hunger by <paramref name="amount"/> (meals' worth) from
+        /// its level now, never past full hunger, and return the part that did not fit (the body burns that
+        /// from mass). The one way work and exercise make the player hungrier; announces a stage change at
+        /// once. A non-positive amount or no save does nothing and returns 0.</summary>
+        float Spend(float amount);
+
+        /// <summary>Add exertion tiredness at the clock now, clamped to one, in addition to passive rise.
+        /// Non-finite/non-positive amounts do nothing. Older implementations have no exertion cost.</summary>
+        void Exert(float amount) { }
+
+        /// <summary>Bank a seated stretch (kitchens slice 1): tiredness from
+        /// <paramref name="seatedSinceGameSeconds"/> to now follows <see cref="SeatedRest"/> instead of the
+        /// clock's rise, so it drifts toward the sitting floor and stops there, always short of what a
+        /// night's sleep gives. A stretch before the last sleep or bank counts only from it. No save does
+        /// nothing. The default (an implementation that predates kitchens) banks nothing.</summary>
+        void RestSeated(double seatedSinceGameSeconds) { }
+
         /// <summary>A night's sleep: tiredness back to rested from now. Hunger is untouched; the hours slept
         /// already counted against it on the clock. Announces a stage change at once. No save does nothing.</summary>
         void Sleep();
+
+        /// <summary>
+        /// A sleep that began at <paramref name="bedtimeSeconds"/> and ends NOW (owner ruling 2026-11-15:
+        /// the player chooses how long, and can wake early). Tiredness falls by
+        /// <see cref="NeedsSettings.SleepReliefPerGameHour"/> for each in-game hour actually slept, from
+        /// its level at bedtime (it does not rise while asleep), and is stamped at the waking. Hunger is
+        /// untouched, as for <see cref="Sleep"/>. A bedtime at or after now relieves nothing.
+        /// The default (an implementation that predates the ruling) is the whole-night <see cref="Sleep"/>.
+        /// </summary>
+        void SleepSince(double bedtimeSeconds) => Sleep();
 
         /// <summary>The slow tick (driven by the game clock, never per frame): anchors a fresh game's needs
         /// to the clock the first time it runs, and publishes <see cref="NeedStageChanged"/> for each need

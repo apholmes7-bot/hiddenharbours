@@ -168,6 +168,22 @@ namespace HiddenHarbours.Tests.World.EditMode
         }
 
         [Test]
+        public void TheChipTextBoxHoldsEveryAdvanceOfTheName_SoTheLastLetterIsNeverClipped()
+        {
+            // "Basil" drew as "Basi": the chip is sized to the name's INK (the last letter's trailing
+            // advance column is blank), but the text box needs every advance, and a pad-pad inset left
+            // it one short — the last glyph wrapped onto a line the chip has no room for.
+            for (int chars = 1; chars <= 16; chars++)
+            {
+                int textBox = DialogueBubbleKit.ChipWidthFor(chars)
+                              - DialogueBubbleKit.ChipPadX - DialogueBubbleKit.ChipTextInsetR;
+                Assert.That(textBox, Is.EqualTo(DialogueBubbleKit.ChipTextWidthFor(chars)),
+                            $"a {chars}-letter name's text box must hold {chars} advances");
+                Assert.That(textBox, Is.EqualTo(chars * DialogueBubbleKit.CellWidth));
+            }
+        }
+
+        [Test]
         public void SpeechIsSentenceCase_AndLabelsAreCaps()
         {
             // The owner's 2026-08-17 ruling, pinned so a later "let's just caps it all" has to argue

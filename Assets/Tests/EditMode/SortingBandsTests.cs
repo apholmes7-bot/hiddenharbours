@@ -96,6 +96,8 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.Less(SortingBands.PaintedSeabedMin, SortingBands.PaintedSeabedMax, "seabed rungs inverted");
             Assert.Less(SortingBands.PaintedSeabedMax, SortingBands.SubmergedShorePlant, "seabed must be under a submerged plant");
             Assert.Less(SortingBands.SubmergedShorePlant, SortingBands.Sea, "a submerged plant must be under the sea");
+            Assert.Less(SortingBands.SubmergedShorePlant, SortingBands.UnderHulls, "weed lying under a hull is over a submerged plant");
+            Assert.Less(SortingBands.UnderHulls, SortingBands.Sea, "weed lying under a hull is under the sea plane");
             Assert.Less(SortingBands.Sea, SortingBands.WharfDeckMin, "the deck stands OVER the water");
             Assert.Less(SortingBands.WharfDeckMin, SortingBands.WharfDeckMax, "deck rows inverted");
             Assert.Less(SortingBands.WharfDeckMax, SortingBands.DecorFloor,

@@ -32,6 +32,8 @@ namespace HiddenHarbours.Core
         public const string ShovelFamily = "shovel";
         public const string FishFamily = "fish";
         public const string BucketFamily = "bucket";
+        /// <summary>A crustacean held by the back, or a handful of shells (the crustacean rig hosts both).</summary>
+        public const string ShellfishFamily = "shellfish";
 
         /// <summary>Every held-prop id starts here (CLAUDE.md §5: <c>type.snake_case</c>).</summary>
         public const string IdPrefix = "heldprop.";
@@ -47,7 +49,7 @@ namespace HiddenHarbours.Core
                  "ids outlive assets, so a withdrawn one is retired, never re-used.")]
         public string Id = "heldprop.unnamed";
 
-        [Tooltip("Which rig family this state belongs to: rod / shovel / fish / bucket.")]
+        [Tooltip("Which rig family this state belongs to: rod / shovel / fish / bucket / shellfish.")]
         public string Family = "";
 
         [Tooltip("The state inside the family, in the rig's own words: a rod tier (cane), a species " +

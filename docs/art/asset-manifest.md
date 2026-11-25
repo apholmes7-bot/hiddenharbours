@@ -268,7 +268,7 @@ Individual sprites on a Y-sorted layer, pivot **centre** (props) unless noted, C
 | Crate (`Crate`) | (per file) | centre | Single | **IMPORTED** | P1 |
 | Wharf post (`WharfPost`) | (per file) | centre | Single | **IMPORTED** | P1 |
 | Fishing spot anchor (`FishingSpot`) | 32×32 | centre | Single — cast/fish interactable | **IMPORTED** | P1 |
-| Clam hole (`ClamHole`) | 32×32 | centre | Single — dig spot (two holes in sand) | **IMPORTED** | P1 |
+| Clam hole (`ClamHole`) | 32×32 | centre | Single — dig spot: two small siphon holes (about a boot wide) and a faint damp rim on a transparent cell, darkening colours only, so the ground under it shows through; no mound (2026-11-22) | **IMPORTED** | P1 |
 | Trees (`Tree01`–`Tree37`, four-season decor pack) | 64×64 each | **BottomCenter** | Single each (37 sprites) | **IMPORTED** (free-to-use, owner's pack; AI-disclosure flagged for credits) | P1 |
 | **Mooring cleat / post / tie-item** (rope anchor prop) | ~32×32 | centre | Single (future mooring §9.6) | **NEEDED** | P2 |
 | Nets / drying racks / dories-on-the-hard / slipway clutter | varies | centre | Single each — working-coast dressing (P3) | **NEEDED** | P2 |
@@ -343,8 +343,8 @@ World/boat effect overlays (filed under `VFX/`, not `UI/`). Pivot centre; sheets
 |---|---|---|---|---|---|
 | Boat wake (`BoatWake`) | 64×96 | centre | Single — scaled by speed/turn | **IMPORTED** | P1 |
 | Catch sparkle (`CatchSparkle`) | 72×24 | centre | 3×1 of 24×24 (good-catch celebration) | **IMPORTED** | P1 |
-| Wind pennant (`WindPennant`) | 160×48 | centre | 4×1 of 40×48 (wind-direction tell) | **IMPORTED** | P1 |
-| Clam squirt (`ClamSquirt`) | 128×32 | centre | 4×1 of 32×32 (the "live clam" tell on the flats) | **IMPORTED** | P1 |
+| Wind pennant (`WindPennant`) | 160×48 | centre | 4×1 of 40×48 (wind-direction tell) | **IMPORTED, UNUSED**: no boat flies a pennant (owner ruling 2026-11-20) | P1 |
+| Clam squirt (`ClamSquirt`) | 128×32 | centre | 4×1 of 32×32 (the "live clam" tell on the flats, and its main giveaway): lip, half jet, crest (about 0.75 m), collapse; each cell's bottom row is the holes' level; timing and height in GameConfig > ClamShow (2026-11-22) | **IMPORTED** | P1 |
 | **Splash / ripple** (cast hit, boat nudge) | ~32–64 | centre | Small flipbook | **NEEDED** | P1 |
 | Rain / snow particle overlays | tileable | — | Lightweight particle sheets (weather) | **NEEDED** | P2 |
 | Fog overlay (animated, parallax, density-graded) | tileable | — | Overlay layer (Smother / weather) | **NEEDED** | P2 |

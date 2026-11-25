@@ -386,6 +386,106 @@ at 100 before choosing the single visible drawer. Its five order-100 peers retai
 The cast and fresh-bake lists enable the same 27 states; the cast presenter still refuses claimed
 sprites and poses only stance/gait. No shipped cast caller plays these explicit moves yet.
 
+### Region crossings: one world frame (ADR 0057, owner ruling 2026-11-15)
+
+Regions are still separate scenes loaded additively, but each `RegionDef` now carries a `WorldOrigin`,
+and the `Resources/WorldMap` asset lists the regions that form one world. The pure Core `WorldFrame`
+(published on `GameServices.WorldFrame`) turns that into seams and boundaries. The persistent
+`RegionTravelCoordinator` checks the mover (walker on foot, boat aboard) each physics step: past a shared
+edge by `GameConfig.RegionCrossingHysteresisMetres` it travels to the neighbour and translates the mover
+by `from.WorldOrigin - to.WorldOrigin` (same world point, same heading, same speed); past an edge facing
+nothing it holds the mover at the edge. Keyed `RegionPassage` bands stand down in listed regions (the
+arrival opening keeps its authored door). A foot crossing never moves the boat: she stays in her region
+(`BoatRegionId`) and is hidden until the player returns. Core's `Whereabouts` / `IWorldWhereabouts`
+(on `GameServices.Whereabouts`) report where the player and the boat are, for save and sleep. Layout
+table and rules: [`world-frame.md`](world-frame.md).
+
+### The player's storage containers (storage with memory, owner 2026-11-17, save v25)
+
+Core `PlayerStorage` is the one list of the containers the player keeps things in (the boat's hold, the
+freezer at Ginny's, a rod rack or gear locker at home); a reader in another lane (the gift rows) walks it
+without naming a class. Contracts, all additive:
+
+- `IStorageContainer` (`StorageId`, `StoragePriority`): a stable `storage.snake_case` id (`StorageIds`;
+  the boat's hold is the fixed `storage.boat_hold`). The id is the container's SAVE KEY, so it is unique:
+  registering a second live container under one id logs a warning, and `HomeStoragePlanTests` refuses a
+  repeated id in the plan or in any placed scene or prefab.
+- `IHold` stays an optional facet with `Register(IHold)` kept: `PlayerStorage.Get(i)` answers only catch
+  holds (a rack reads null there), `GetContainer(i)` only named containers, `Find(id)` one by id. A type
+  that is both registers through the generic `Register<T>` (one entry).
+- **Order is deterministic**: priority (boat hold 10, home freezer 20, fixtures 50, an unnamed hold 100),
+  then ordinal id; only exact ties keep listing order. That order is the Give rows' order and the container
+  a gift comes from.
+- **Lifetime: register on enable, unregister on destroy, never on disable** (the `GameServices.PlayerHold`
+  rule: a region hop toggles roots, and a container that left on disable would vanish mid-crossing). A
+  null or already-listed container is ignored, unlisting one not listed is a no-op, and one object is one
+  entry whichever facet lists or unlists it. A destroyed scene container still counts until it is
+  unlisted, but every getter and `Find` read it as null, so a rebuilt container under the same id is
+  found (and is not warned about). Priority and id are read once, at listing. Reading is a count and an
+  index, allocation-free. Tests: `PlayerStorageOrderTests`, `PlayerStorageCoverageTests`,
+  `StoredContainersTests`, `SaveMigrationV25Tests`.
+- `IHoldRemove.TryRemoveAt(index)` (on `ShipHold`, `GinnyFreezer`, `CamperFreezer`, `ClamBucket`): the gift take removes the
+  one item and touches nothing else; a hold without it is still emptied and refilled.
+- **The save is the source of truth.** The contents live in `SaveData.StoredContainers` (and food in v23
+  `KitchenStores`) under the container's id; the scene object is a view that binds to its record by id on
+  enable (a changed save), on start and on `GameLoaded`, not only on the load edge. A catch hold binds only
+  once `GameServices.CatchFactory` exists (a restore without it rebuilds nothing); until then it stays
+  unbound and refuses every change, so an empty view can never be written over the saved catch.
+  `GameServices.Reset` still clears the list; whatever outlives a Reset registers again.
+
+### Store purchases, special orders and the shopping bag on the save (save v26, schema only)
+
+Save v26 adds the rows for three things the player does that cannot be recomputed: what he took off a
+store shelf (`SaveData.StorePurchases`), special orders he has paid for (`SpecialOrders` with
+`NextSpecialOrderNumber`, reserved) and his shopping bags (`ShoppingBags`). The rows are plain Core DTOs
+(`Core/Save/SaveRowsV26.cs`); **no gameplay code reads or writes them yet**, and each later slice adds
+behaviour only, with no further version. The load repair is asset-free and idempotent, and holds one rule
+over all three: a load never destroys something the player paid for or owns (a paid order is always kept;
+a bag row only sets aside goods that stay counted in `SupplyStock`). Field list and repair rules:
+[`data-model.md`](data-model.md), save schema v26. Tests: `SaveMigrationV26Tests`.
+
+### Hulls sort among the scenery (ADR 0059, accepted 2026-11-17)
+
+A boat is an upright world object. Core's pure `HullSorting.OrderAt(waterlinePivotY)` gives her order:
+the decor band's Y-sort at her waterline pivot (the boat root, `HullFootprint.Center`, which does not
+ride the swell), `SortingBands.HullYieldRungs` (1) behind, the same rule as the mesh vehicles.
+`HullSorting.OrderFor(HullFootprint)` reads the pivot off a footprint. Each boat sorts as one object
+(step 3): `Boats/BoatSortingGroup` keeps one root `SortingGroup` at `HullSorting.OrderFor(pivot, input)`,
+installed by `BoatHullSkinner` on both paths, so everything aboard (hull facets, deck, fittings, the
+rider and his rod, containers, lamps) keeps its order inside the group, and `BoatVisualDef.SortingOrder`
+is now local to it. A situational rule (the St Peters pier) is an `IHullSortingInput` the group asks,
+never a second writer. Things that must reach the world from aboard (mooring line, anchor rode, haul
+rope) escape with `HullSorting.EscapeTheBoat` (`sortAtRoot`).
+
+Free effects never take a fixed order in the band's low floor (step 2). Core's `EffectSorting` is the
+one table: an anchored effect (spray, splashes, buoys, an emergent shore plant, the NPC catch without a
+skipper) sorts at `EffectSorting.OrderAt(effect, anchorY)`, the band's Y-sort at its emission point plus
+its rungs; a carried one (the rod line two rungs behind the fisher, the rod splash one over him, an NPC pot boat's
+gear at her rail one over her group) at `EffectSorting.OrderOver(effect, carrierOrder)`.
+`EffectSortingTests` pins the table and guards the low floor (`DecorFloor` to `DecorFloor + 100`) against
+new literals.
+
+### Parked dwellings are facet meshes (ADR 0060, accepted 2026-11-19)
+
+A home that does not move (the camper, the lot shed, later the houses) is the third door onto the facet
+renderer, beside hulls and vehicles. The Core contracts live in `Core/Dwellings/`, all additive:
+
+- `DwellingMeshDef` (id `dwelling.snake_case`, one per variant): the render payload (mesh, shell and
+  interior ramps under the hull's two slot caps, light, dither, cell, measured azimuth) plus the room:
+  `DwellingLevel[]` (rig level id, face tag, lid tag, enclosed, `BuildingInterior` storey, floor outline in
+  rig metres), one `DwellingThreshold`, and `DwellingFixtureAnchor[]` (anchor id, verb, optional Def id,
+  level, position, reach point, optional footprint). The rig says what a fixture is; the site plan says
+  which instance it is and owns its save key.
+- `DwellingMeshRules`: pure lookups, `CutFor(levels, levelId)` in the renderer's own `HullMeshDef.Cut`
+  (unknown, open or tag-0 levels cut nothing), and `FirstRoomProblem`, the check the def's `IsUsable` and
+  the bake's refusals share.
+- `IDwellingMeshPresentationService` (`Install`, `AttachPart`, `DetachPart`, `Remove`) and its locator
+  `DwellingMeshPresentation.Service`: still pose, no foam, no reflection. The caller sets the heading once
+  from the site's ground bearing and sorts the dwelling once at `HullSorting.OrderAt` of its ground pivot;
+  the cut is `as IHullCutaway`, driven only by `BuildingInterior`'s inside state.
+
+Nothing here is saved. Tests: `DwellingMeshContractTests`.
+
 ## 5. Boat & entity architecture (composition)
 
 **Character clothing interchange (CW-01, 2026-09-13).** Core now defines the version-1

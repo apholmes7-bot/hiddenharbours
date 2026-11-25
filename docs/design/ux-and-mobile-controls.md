@@ -82,6 +82,35 @@ are available.
     default.
 - **Interact:** the context Action Button, or simply walk into / tap an interactable (NPC, door,
   trap, shop). A subtle highlight shows the current interactable.
+- **The interaction chooser (owner ask 2026-11-15, built).** Pressing interact where **two or more**
+  options are in reach puts up a small list in the popup's corner, drawn as the speech bubble's option
+  list (owner ruling: the notebook and chat-bubble design language). It is one cream bubble panel with
+  the ink ring and chamfered corners. Rows show the key number and the verb in the game's one face, in
+  notebook ink. The selected row has the bubble's gold pill behind it, the pointing hand beside it, and
+  the strongest ink. All measures are the bubble kit's, on the same 1280x720 grid. The panel and pill
+  sprites are the bubble's own, reached through `Core/Art/BubbleKitLink`. There is no tail, because the
+  list sits in a screen corner. The panel is as wide as its longest row, from the popup's width up to the
+  kit's widest line (34 characters). It grows up and left from the popup's corner, and only past the cap
+  is a row cut ("..."). The single-action popup wears the same dress: a one-line speech bubble
+  (18 kit px tall) in the same corner, sized to its label like the speech bubble (from the kit's
+  narrowest panel up to 28 characters, cut with "..."), its right edge fixed. Both snap to whole screen
+  pixels right edge first, so they end on one column, and set their type upper-left, a whole number of
+  kit pixels in, as the speech bubble's body is set. Rows
+  that read exactly the same collapse into the nearer one. With one option the press acts at once, as before. The
+  player picks with W/S or the arrows plus E or Enter, with the number keys 1–9, or with the mouse
+  (hover selects, click picks); Esc puts it down. The order is the interact ladder: priority, then
+  nearness, then id. Only things on the fixture rung or below become rows; a held, carried or
+  tool-target thing keeps the single press. **Bunks and beds:** an occupied one is greyed ("Sleep
+  (taken)") and can't be picked. A free one in reach stands in for it, both in the list and on a single
+  press, for any number of bunks; this is one row per "somewhere to sleep". Tunables live in
+  `GameConfig` → *Interaction chooser*: on/off, the highest rung that joins, and the row cap.
+  Code: `Core/Interaction/InteractChoiceList` (the rule), `InteractChooser` (the open list),
+  `UI/InteractChooserView` (the drawing), and `Core/Input/ChooserIntents` (the hands, ADR 0043).
+- **Refusals for needs (helper, 2026-11-15).** An action can opt in to be refused when the player is too
+  tired and/or too hungry (`INeedsGated`, `NeedsGate`). She then says "I'm too tired.", "I'm too
+  hungry." or "I'm too tired and too hungry." as inner-voice lines (data assets keyed on
+  `cue.needs.*`). **No action opts in yet**: the needs ruling says a need never *stops* the character,
+  so the owner decides which actions take a bar. `GameConfig.HeavyWorkNeeds` is that bar's default.
 - **No combat controls** — there is no combat (anti-pillar). Frees the whole scheme for traversal &
   work verbs.
 
@@ -179,6 +208,15 @@ important UI in the game (P1).
 > 4. All of them stay reachable for debugging: *Hidden Harbours ▸ Dev ▸ HUD*.
 > 5. The **current quest** left its bottom-centre banner and is drawn **lower-right**, as a leaf off
 >    the notebook in the notebook's own stock, ink and hand.
+>    **It folds, and it hides** (owner asks 2026-11-16): T or the pad's west button cycles the note
+>    shown, chip ("TASKS 1 +", same corner), hidden, shown. A click on the note's head folds it to
+>    the chip and a click on the chip opens it; no click ever hides it, so a mouse-only player
+>    cannot lose it by accident. The settings sheet's "Tasks note" row sets Shown / Chip / Hidden.
+>    As a chip, a new or finished task flashes it gold for a moment and the note never re-opens
+>    itself. Hidden, nothing is drawn and task changes are silent; the Notebook's TASKS page is
+>    where they are read. The mode is a setting (kept across launches), never the save. T and the
+>    west button are bound to nothing else; the autopilot's switch is P / the pad's north button
+>    (ADR 0043), so at the helm X folds the note and Y switches the autopilot.
 >
 > What is still always-on is the **watch** (she is wearing it) and the **boat's own instruments** —
 > the helm compass, the chartplotter, the apparent-wind read. Those are untouched, and deliberately:

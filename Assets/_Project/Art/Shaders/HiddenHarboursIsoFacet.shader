@@ -256,6 +256,16 @@ Shader "HiddenHarbours/IsoFacet"
             float  _HHFigureInkOn;          // the dark target's alpha flag is 1 minus this: 1 while the rig's ink
                                             // is live with its keyline ring, 0.75 while it is live without one
                                             // (rig 10, owner ruling K4), 0 off
+            // THE SEA ON HIM (ADR 0061). x = 1 while the line is live, y = its height in the figure's
+            // own frame (metres, z up: the posed mesh is the figure frame, so positionOS.z IS height).
+            // z = the foam band's height over the line (m, 0: a hard cut), w = how pale the foam goes.
+            // Under the line the reflection never draws; the facet and the guard draw it only while
+            // _HHFigureWaterLook.y is 1 (the old sprite's submerged look: tinted and dimmed toward
+            // the sea), and discard it otherwise. Never written for the cast or the player ashore on
+            // dry ground: x = 0, and this variant draws exactly what it drew before.
+            float4 _HHFigureWater;
+            float4 _HHFigureWaterTint;      // rgb = the sea colour the submerged part tints toward, a = how far
+            float4 _HHFigureWaterLook;      // x = how much the submerged part dims, y = 1 while it is drawn
 #endif
 
             struct Attributes
@@ -308,6 +318,8 @@ Shader "HiddenHarbours/IsoFacet"
 #ifndef HH_FIGURE
                 float3 causticPoint : TEXCOORD8; // plane-projected world XY and physical height
                 nointerpolation float4 causticFace : TEXCOORD9; // exterior, upward normal, ground-plane normal
+#else
+                float figureUp : TEXCOORD8;      // the posed vertex's height in the figure frame (m)
 #endif
 #ifdef HH_LEVEL_GATE
                 // xy = the level tag, z = 1 when the camera is rendering this
@@ -321,6 +333,25 @@ Shader "HiddenHarbours/IsoFacet"
             };
 
             #include "Include/HullReflection.hlsl"
+
+            // THE NEAR PLANE IS NOT A CEILING. In this projection height comes toward the camera
+            // twice: in the rig's own depth, then again in the ADR 0033 shear. Every scene camera
+            // stands only about 10 m in front of the water with near 0.3, so anything that reached
+            // past that plane was clipped flat. Sloop 88's mast stopped near 26 m of her 37, and
+            // the tanker's stern house was cut the same way. Within HH_NEAR_EASE metres of the
+            // plane, depth now eases toward it instead of going through. The curve is monotone, so
+            // every ordering between two fragments is kept. Further than that it is the identity,
+            // so the water, every waterline and everything more than 4 m behind the plane keep
+            // their exact depths.
+            // The rational curve, not exp, keeps depth steps measurable at 50 m (about 5 mm per metre).
+            #define HH_NEAR_EASE 4.0
+            float HHKeepBehindNearPlane(float z)
+            {
+                if (unity_OrthoParams.w < 0.5) return z;   // only the orthographic game camera
+                float edge = _WorldSpaceCameraPos.z + _ProjectionParams.y + 0.01 + HH_NEAR_EASE;
+                float t = edge - z;                         // the camera looks along +Z
+                return t > 0.0 ? edge - HH_NEAR_EASE * t / (t + HH_NEAR_EASE) : z;
+            }
 
             struct FragOut
             {
@@ -357,6 +388,7 @@ Shader "HiddenHarbours/IsoFacet"
                 // dot with LN — see the header comment.
                 float sh = dot(wn, _LN.xyz);
 #ifdef HH_FIGURE
+                o.figureUp = v.positionOS.z;
                 // RIG 10 LIGHTS ON THE SMOOTH NORMAL: "a face with a smooth normal is culled on its own
                 // normal and lit on the smooth one" (characterIsoRig10.js, paint). The renderer posed it
                 // into markAttr.xyz; the cull below still reads normalOS, the face's own.
@@ -407,6 +439,7 @@ Shader "HiddenHarbours/IsoFacet"
                 {
                     wp.z  -= (wp.y - _HullShear.y) * _HullShear.x;   // ADR 0033: the y→z shear
                     wp.z  -= v.attrs.z;              // f.db pulls the face toward the camera
+                    wp.z   = HHKeepBehindNearPlane(wp.z);   // a tall mast is not cut by the near plane
                 }
                 o.positionCS = TransformWorldToHClip(wp);
                 if (reflection) o.positionCS.z = HHMeshReflectClipDepth(o.reflectionDepth) * o.positionCS.w;
@@ -573,15 +606,10 @@ Shader "HiddenHarbours/IsoFacet"
 #ifdef HH_LEVEL_GATE
                 if (reflection ? i.lvl.y > 0.5 : HHLevelDiscards(i.lvl)) discard;
 #endif
-                if (reflection && i.reflectionHeight < 0)
-                {
-                    FragOut blocker;
-                    blocker.facet = 0;
-                    blocker.dark = 0;
-                    blocker.key = float4(0, 0, 0, HH_MESH_BLOCKER);
-                    blocker.depth = i.reflectionDepth;
-                    return blocker;
-                }
+#ifdef HH_FIGURE
+                bool hhUnder = _HHFigureWater.x > 0.5 && i.figureUp < _HHFigureWater.y;
+                if (hhUnder && (reflection || _HHFigureWaterLook.y < 0.5)) discard;
+#endif
                 // The hull-cell pixel this fragment lands on, derived from WORLD position: the
                 // rig's screen grid is just world metres times PPU with y down and the pivot as
                 // origin. Locked to the hull, immune to render-target conventions.
@@ -589,7 +617,38 @@ Shader "HiddenHarbours/IsoFacet"
                     (i.wpos.x - _HullOrigin.x) * _PixelsPerMetre + _PivotPx.x,
                     _PivotPx.y - (i.wpos.y - _HullOrigin.y) * _PixelsPerMetre);
                 int2 cell = int2(floor(cellF));
+                // THE RAGGED ENDS (HullReflection.hlsl): while on, every reflection fragment, a
+                // blocker included, carries its hull cell in the key colour for the resolve to
+                // measure its row's end by. Off: the keyline colour (and black on a blocker), as before.
+                bool hhEnds = reflection && _HHMeshReflectEnds.w > 0.5;
+                float3 hhBlockerKey = hhEnds ? HHMeshReflectCellKey(cell) : float3(0, 0, 0);
+                if (reflection && i.reflectionHeight < 0)
+                {
+                    FragOut blocker;
+                    blocker.facet = 0;
+                    blocker.dark = 0;
+                    blocker.key = float4(0, 0, 0, HH_MESH_BLOCKER);
+                    blocker.key.rgb = hhBlockerKey;
+                    blocker.depth = i.reflectionDepth;
+                    return blocker;
+                }
                 float bay = _Bayer[cell.x & 3][cell.y & 3];
+                // THE REFLECTION THINS WITH DEPTH below the line, on her own cell grid: in horizontal
+                // streaks along each pixel row (or her ordered dither with streaks off), a crisp pixel
+                // pattern, never a blur. A thinned fragment is a BLOCKER, not a hole, so the mirrored
+                // geometry behind it cannot show through. Fade off (y = 0): never taken, every
+                // fragment as before.
+                if (reflection && _HHMeshReflectFade.y > 0.0 &&
+                    HHMeshReflectFadeKeep(i.reflectionHeight) <= HHMeshReflectFadeThreshold(cell, bay))
+                {
+                    FragOut thinned;
+                    thinned.facet = 0;
+                    thinned.dark = 0;
+                    thinned.key = float4(0, 0, 0, HH_MESH_BLOCKER);
+                    thinned.key.rgb = hhBlockerKey;
+                    thinned.depth = i.reflectionDepth;
+                    return thinned;
+                }
 
                 int m    = (int)round(i.mat);
 #ifdef HH_FIGURE
@@ -671,11 +730,28 @@ Shader "HiddenHarbours/IsoFacet"
                 // A figure inked without its keyline ring (rig 10, K4) reads 0.25: the resolve gives
                 // it the figure's edge and no ring.
                 o.dark  = float4(_DarkRampTex.Load(int3(idx, m, 0)).rgb, 1.0 - _HHFigureInkOn);
+                // THE SEA ON HIM, its look: under the line tinted and dimmed toward the sea, and a pale
+                // foam band fading up from the line. Colour only; the alpha ids are untouched.
+                if (_HHFigureWater.x > 0.5)
+                {
+                    if (hhUnder)
+                    {
+                        float keep = 1.0 - _HHFigureWaterLook.x;
+                        o.facet.rgb = lerp(o.facet.rgb, _HHFigureWaterTint.rgb, _HHFigureWaterTint.a) * keep;
+                        o.dark.rgb  = lerp(o.dark.rgb,  _HHFigureWaterTint.rgb, _HHFigureWaterTint.a) * keep;
+                    }
+                    else if (_HHFigureWater.z > 0.0 && i.figureUp < _HHFigureWater.y + _HHFigureWater.z)
+                    {
+                        float foam = _HHFigureWater.w * (1.0 - (i.figureUp - _HHFigureWater.y) / _HHFigureWater.z);
+                        o.facet.rgb = lerp(o.facet.rgb, float3(1, 1, 1), foam);
+                        o.dark.rgb  = lerp(o.dark.rgb,  float3(1, 1, 1), foam);
+                    }
+                }
 #else
                 o.facet = float4(_RampTex.Load(int3(idx, m, 0)).rgb, hullId);
                 o.dark  = float4(_DarkRampTex.Load(int3(idx, m, 0)).rgb, 1.0);
 #endif
-                o.key   = float4(_KeyColor.rgb, 1.0);
+                o.key   = float4(hhEnds ? HHMeshReflectCellKey(cell) : _KeyColor.rgb, 1.0);
 #ifndef HH_FIGURE
                 // Only the ordinary facet draw receives the band; reflected packets keep their original art.
                 if (!reflection && _HHHullCausticSettings.z > 0.5)
@@ -717,6 +793,9 @@ Shader "HiddenHarbours/IsoFacet"
 #ifdef HH_LEVEL_GATE
                 nointerpolation float4 lvl : TEXCOORD1;   // see HHLevelDiscards
 #endif
+#ifdef HH_FIGURE
+                float figureUp : TEXCOORD1;               // see _HHFigureWater
+#endif
             };
 
             GuardVaryings vertGuard (Attributes v)
@@ -726,6 +805,10 @@ Shader "HiddenHarbours/IsoFacet"
                 Varyings f = vert(v);
                 o.positionCS = f.positionCS;
                 o.lvl = f.lvl;
+#elif defined(HH_FIGURE)
+                Varyings f = vert(v);
+                o.positionCS = f.positionCS;
+                o.figureUp = f.figureUp;
 #else
                 o.positionCS = vert(v).positionCS;
 #endif
@@ -746,6 +829,13 @@ Shader "HiddenHarbours/IsoFacet"
                 bool front = dot(wn, UNITY_MATRIX_V[2].xyz) >= 0.0;
                 int code = (int)round(v.attrs.w);
                 bool interior = code == 1 || code == (front ? 2 : 3);
+#ifdef HH_LEVEL_GATE
+                // A ROOM face (ADR 0041, UV1.y = 1) is inside the cabin by construction, and is only
+                // drawn while its level is shown. The bake appends the room after the classifier has
+                // run, so its side code is 0, and without this the sea drew on the cabin's lining
+                // below the waterline. The caustic path above has always read the flag the same way.
+                interior = interior || v.levelTag.y > 0.5;
+#endif
                 o.interior = interior ? 1.0 : 0.0;
                 return o;
             }
@@ -754,6 +844,9 @@ Shader "HiddenHarbours/IsoFacet"
             {
 #ifdef HH_LEVEL_GATE
                 if (HHLevelDiscards(i.lvl)) discard;
+#endif
+#ifdef HH_FIGURE
+                if (_HHFigureWater.x > 0.5 && i.figureUp < _HHFigureWater.y && _HHFigureWaterLook.y < 0.5) discard;
 #endif
                 return i.interior;
             }

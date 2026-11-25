@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Core;
@@ -209,6 +210,7 @@ namespace HiddenHarbours.App
             for (int b = 0; b < _boats.Count; b++)
             {
                 Boat boat = _boats[b];
+                if (boat.Hull == null) continue;   // her scene went down; the next slow tick unbinds her
                 if (boat.Today == null || boat.Today.DayIndex != dayIndex || boat.Seed != seed
                     || boat.SecondsPerDay != secondsPerDay)
                 {
@@ -330,11 +332,19 @@ namespace HiddenHarbours.App
             Vector2 rail = pose.Position + NpcPotDay.Starboard(pose.HeadingDegrees) * def.HaulerLocalMeters.x
                                          + NpcPotDay.Along(pose.HeadingDegrees) * def.HaulerLocalMeters.y;
 
+            // ADR 0059 step 3: her hull sorts by where she lies, as one object. The gear is not her child, so
+            // whatever is being worked at her rail (the haul rope, the pot aboard, the gaffed or tossed buoy)
+            // takes her order plus a rung, or it would draw under the hull it is worked over. Gear out on the
+            // water keeps its own order: the soaking rope and the pot under water at the rope's, a floating
+            // buoy where it floats.
+            int overHer = RailOrder(boat);
+
             switch (state.Phase)
             {
                 case NpcPotPhase.Soaking:
                     ShowBuoy(pot, afloat);
                     ShowRope(pot, boat.SoakGradient, changed, afloat, onTheBottom, taut01: 1f, def);
+                    SetOrder(pot.Rope, def.RopeSortingOrder);
                     HidePot(pot);
                     break;
 
@@ -342,7 +352,9 @@ namespace HiddenHarbours.App
                 {
                     Vector2 buoy = Vector2.Lerp(afloat, rail, Mathf.SmoothStep(0f, 1f, state.Phase01));
                     ShowBuoy(pot, buoy);
+                    SetOrder(pot.BuoyRenderer, overHer);
                     ShowRope(pot, boat.SoakGradient, changed, buoy, onTheBottom, taut01: 1f, def);
+                    SetOrder(pot.Rope, overHer);
                     HidePot(pot);
                     break;
                 }
@@ -354,8 +366,10 @@ namespace HiddenHarbours.App
                                                               def.DepthDrawFraction);
                     HideBuoy(pot);
                     ShowRope(pot, boat.HaulGradient, changed, rail, rising, taut01: 1f, def);
+                    SetOrder(pot.Rope, overHer);
                     ShowPot(pot, def.Trap.TrapSpriteWet, rising,
                             PotRopeMath.SeenThroughWater01(below, def.SeenToDepthMeters));
+                    SetOrder(pot.PotRenderer, def.RopeSortingOrder);
                     break;
                 }
 
@@ -363,6 +377,7 @@ namespace HiddenHarbours.App
                     HideBuoy(pot);
                     HideRope(pot);
                     ShowPot(pot, def.Trap.TrapSprite, rail, 1f);
+                    SetOrder(pot.PotRenderer, overHer);
                     break;
 
                 case NpcPotPhase.Setting:
@@ -378,11 +393,13 @@ namespace HiddenHarbours.App
                                                                def.DepthDrawFraction);
                     ShowPot(pot, def.Trap.TrapSpriteWet, sinking,
                             PotRopeMath.SeenThroughWater01(below, def.SeenToDepthMeters));
+                    SetOrder(pot.PotRenderer, def.RopeSortingOrder);
                     if (state.Phase01 < BuoyTossAt01)
                     {
                         HideBuoy(pot);
                         ShowRope(pot, boat.HaulGradient, changed || pot.BuoyOut, rail, sinking,
                                  taut01: 1f - state.Phase01, def);
+                        SetOrder(pot.Rope, overHer);
                         pot.BuoyOut = false;
                     }
                     else
@@ -390,7 +407,9 @@ namespace HiddenHarbours.App
                         float thrown = Mathf.InverseLerp(BuoyTossAt01, 1f, state.Phase01);
                         Vector2 buoy = Vector2.Lerp(rail, afloat, Mathf.SmoothStep(0f, 1f, thrown));
                         ShowBuoy(pot, buoy);
+                        SetOrder(pot.BuoyRenderer, overHer);
                         ShowRope(pot, boat.SoakGradient, changed || !pot.BuoyOut, buoy, sinking, taut01: 1f, def);
+                        SetOrder(pot.Rope, overHer);
                         pot.BuoyOut = true;
                     }
                     break;
@@ -398,9 +417,30 @@ namespace HiddenHarbours.App
             }
         }
 
+        /// <summary>The order gear worked at her rail sorts at: her root group's order (the boat's one writer,
+        /// ADR 0059 step 3), plus <see cref="EffectSorting.NpcGearOverHullRungs"/>.</summary>
+        private static int RailOrder(Boat boat)
+        {
+            if (boat.HullGroup == null && boat.HullTransform != null)
+                boat.HullGroup = boat.HullTransform.GetComponent<SortingGroup>();
+            int hull = boat.HullGroup != null
+                ? boat.HullGroup.sortingOrder
+                : HullSorting.OrderAt(boat.HullTransform != null ? boat.HullTransform.position.y : 0f);
+            return EffectSorting.OrderOver(SortedEffect.NpcGearAtRail, hull);
+        }
+
+        /// <summary>One int, written only when it changes.</summary>
+        private static void SetOrder(Renderer r, int order)
+        {
+            if (r != null && r.sortingOrder != order) r.sortingOrder = order;
+        }
+
         private static void ShowBuoy(Pot pot, Vector2 at)
         {
             pot.BuoyRoot.transform.position = new Vector3(at.x, at.y, 0f);
+            // ADR 0059 step 2: sorted where it floats, written only when that changes (one int, no allocation).
+            int order = EffectSorting.OrderAt(SortedEffect.Buoy, at.y);
+            if (pot.BuoyRenderer != null && pot.BuoyRenderer.sortingOrder != order) pot.BuoyRenderer.sortingOrder = order;
             if (pot.BuoyRoot.activeSelf) return;
             pot.BuoyRoot.SetActive(true);
             pot.Wave.enabled = true;
@@ -463,7 +503,8 @@ namespace HiddenHarbours.App
             var buoyRenderer = visual.AddComponent<SpriteRenderer>();
             buoyRenderer.sprite = def.Trap.BuoySprite;
             buoyRenderer.color = def.BuoyColour;          // whose gear it is; set before the wave rider caches it
-            buoyRenderer.sortingOrder = def.BuoySortingOrder;
+            buoyRenderer.sortingOrder = EffectSorting.OrderAt(SortedEffect.Buoy, pot.BuoyRoot.transform.position.y);
+            pot.BuoyRenderer = buoyRenderer;   // re-sorted where it floats each time it is shown (ShowBuoy)
             pot.Wave = pot.BuoyRoot.AddComponent<BuoyWaveVisual>();   // the proven wave rider, reused unchanged
             pot.Wave.Configure(buoyRenderer, visual.transform);
             pot.Wave.enabled = false;
@@ -544,6 +585,7 @@ namespace HiddenHarbours.App
             public NpcPotDayDef Def;
             public MooredBoat Hull;
             public Transform HullTransform;
+            public SortingGroup HullGroup;   // her root group (ADR 0059 step 3), found on first use
             public IsoCharacterSprite Skipper;
             public float Z;
             public GameObject GearRoot;
@@ -566,6 +608,7 @@ namespace HiddenHarbours.App
         private sealed class Pot
         {
             public GameObject BuoyRoot;
+            public SpriteRenderer BuoyRenderer;
             public BuoyWaveVisual Wave;
             public LineRenderer Rope;
             public SpriteRenderer PotRenderer;

@@ -1037,6 +1037,32 @@ share is composited after the palette grade, overlay-compensated — see §11.6)
    moon/stars/boat beam) so the dusk tint's downstream multiply can't mute its authored warm gold — at midday
    the tint is ~1 so the compensation is a natural no-op, and the gate is ~0 there anyway (midday water is
    effectively unchanged). Inherits the sea-state fade + sharpness smear like all sky content.
+   **Form (11-22).** `_SunGlitterForm` chooses how the path is drawn: 0 = the noise lanes above (the shader
+   default), 1 = **sparkles** (shipped in `Water.mat`). Seen from above, the noise lanes drew metre-wide
+   loops and worms on open water. The sparkle form is a world-fixed grid of cells (`_SunGlitterCell`: cell
+   size, share of cells lit, lives per second); each lit cell holds one short level dash (`_SunGlitterDash`:
+   half length, half thickness) that is born short, flares and dies in three steps. A lane through the viewer
+   along the sun's bearing (`_SunGlitterDash.z` half width) and the sunward side raise the **count** of
+   glints, never their brightness; `_SunGlitterDash.w` is the thin scatter outside the lane and
+   `_SunGlitterSpark` a gain on this form only. Pure in (position, time).
+5. **The LOW SUN sea (11-22).** The day/night overlay multiplies the frame by the tint, and a multiply can
+   only darken: under a red-gold tint the sea was the noon sea made dark and brown, with no light on it,
+   while white foam took the tint whole and stood far above it. Three dials on the water material answer
+   that, inside one window over the sun's elevation (`_LowSunWindow`: below-horizon end, high-sun fade start
+   and end; the weight is exactly 0 at high sun, at night and with no cycle, so noon cannot move):
+   - **`_LowSunSheen`** (strength, wave relief, reach in view half-heights, lane lift): the glowing sky the
+     sea mirrors, added with the sky mirror (under the foam, so foam ages back to this sea), `_LowSunSkyNear`
+     toward the sun and `_LowSunSkyFar` away from it, brighter on faces tipped to the sun. It is divided by
+     the tint so it reads on screen as authored, and it fades with the tint's own saturation
+     (`_LowSunWindow.w` = the saturation for a full sheen), so an overcast evening has none, and with the
+     tint's brightness (its strongest channel), so a storm's dark dusk and the blue hour get little. Rain removes it.
+   - **`_LowSunHueHold`**: how far the finished sea keeps its own hue under the coloured light (0 = takes the
+     tint whole, 1 = takes only its brightness). Brightness is never changed by it.
+   - The hull waves' low-light shade (sized on the dark sea) is scaled by how far the sheen lifted the sea.
+     **`_LowSunWakeHold`** sets how: 0 keeps a wake's swing in levels, 1 keeps it as a share of the lit sea.
+   Every shader default is the passthrough; the look ships in `Water.mat`. Twins: `WaterLowSun`
+   (`Weight`, `Colourful`, `Bright`, `Clear`, `Sheen`, `HullWaveDilute`, `HueHoldFactor`, `SparkleLitShare`, `SparkleLength`),
+   tested in `Assets/Tests/EditMode/Art/WaterLowSunTests.cs`.
 
 **Invariants (all hold):** everything **inherits the §11 sea-state fade** (reuses `ReflectionStrength()` /
 `ReflectionSharpness()` — strong on CALM, gone in chop/storm); the moon + stars additionally **gate by night**
@@ -2339,6 +2365,30 @@ col.rgb = lerp(col.rgb, bed.rgb, saturate(bedT) * saturate(bed.a) * bedIn);
   column darkens it again: whether both stay is the art director's call. A plant is absorbed at the depth of the
   ground under each of its pixels, not at its own height. The plants ship with the floor: alone they would bend
   against the unbent bake.
+- **The plant field's weed (2026-11-17, the kelp beds).** The procedural plant field (`PlantField`, the Plant
+  shader) joins the same list, chunk by chunk: a chunk whose species has a tide ladder and which sorts under the
+  sea plane (its submerged order, or the lying order, which also sits under the Sea) takes bit 27 and registers,
+  while both `PlantFieldDefinition.UnderWater` and `GameConfig.ShallowsSubmergedProps` are on
+  (`PlantField.JoinsUnderWater`). The Plant shader's own `HHUnderWater` pass draws the chunk's albedo and clump
+  tone, premultiplied and unlit, so the depth darkening, caustics and grade stay the column's alone. Two things are
+  the weed's own, both data: a per-species hue (`PlantSpeciesDef.UnderWaterTint` and `UnderWaterTintAmount`, which
+  take a sheet baked in a cold wet ramp back toward its colour in air at each pixel's own brightness, so the column
+  does not blue it twice; sugar kelp 0.8, every other species 0), and a soft surge sway along the wind
+  (`PlantFieldDefinition.UnderWaterSwayM`, `UnderWaterSwayPeriodS`, `UnderWaterSwayWavelengthM`; 0.12 m, 7 s, 9 m)
+  in place of the wind bend and walker push. Membership is rebuilt with the chunk on the field's slow tick, so
+  nothing is per frame.
+- **The kelp reads as a bed (2026-11-17, tuning).** Two more dials, both data. `PlantSpeciesDef.UnderWaterShade`
+  darkens a species' fronds after the hue (1 as bright as the sheet; sugar kelp 0.8, tint 0.38/0.33/0.13 at amount
+  1, every other species 1). `GameConfig.UnderWaterWeedClarity` (0.85, capped at 0.9, code default 0) is the column
+  law's ONE named exception, `UnderWaterPropTransmission` with the C# twin `WaterAbsorption.WeedTransmission`:
+  where a prop covers the bed, the column's own banded transmission is raised to the power `1 - clarity`, so the
+  fronds, which stand up toward the light, are read through less water than the floor they grow from. Same
+  per-channel order (red still goes first, so a bed at 3-6 m reads green-blue, an olive-brown one at mid tide),
+  same bands, no second exponential and no second depth. `ShallowsFloorShaderTests.TheWeedsClarity_IsTheOneNamedExceptionToTheColumnLaw`
+  pins the helper's body and that it is the only one. Measured at St Peters: after the composite the bed's
+  contrast is cut to about a quarter by the layers drawn over it (envelope bands, swell read, sky, palette grade),
+  which is why the weed needs the extra transmission rather than only a darker frond; a darker frond alone reads
+  less at high water, dark on a dark sea.
 
 #### Why the sea draws them: the three routes
 
@@ -3717,10 +3767,12 @@ the promotion into the field is P2, gated on an ADR 0018 amendment.
 
 ## 26. Object reflections — a filtered renderer list into an RT, wave-warped (ADR 0027 #8)
 
-**R3 mesh path (2026-10-01, default off):** [Hull mesh reflections](hull-reflection-mesh.md)
+**R3 mesh path (2026-10-01; shipped default ON from 2026-11-21):** [Hull mesh reflections](hull-reflection-mesh.md)
 adds a bounded physical-height reflected draw of current hull/leaf/fitting/figure meshes,
-with retained submerged colourless depth occlusion. The legacy path below remains shipped
-until the owner rules from Phase C's matched GPU plates. Water look assets and lookup are unchanged.
+with retained submerged colourless depth occlusion. The legacy hull overlay below never drew
+in the game: it records before the hull keyline resolve that publishes `_HHHullScreenTex`,
+and the render graph rebinds that global to black after each graph (measured and pinned, see
+the linked page). Water look assets and lookup are unchanged.
 
 
 Boats, wharf structures and bankside trees **reflect in the water**. This is the project's first render

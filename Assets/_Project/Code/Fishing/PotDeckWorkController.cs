@@ -152,6 +152,7 @@ namespace HiddenHarbours.Fishing
         private const string NoticeNipTeach = "Nipped! A fuller hold is a safer grab";
         private const string NoticeNip = "Nipped — she's still in the pot";
         private const string NoticeKeeperTeach = "A keeper — HOLD over it to band the claws";
+        private const string NoticeOutOfSeason = "Out of season here — back she goes";
         private const string NoticeBaitTeach = "Pot's empty — HOLD over her to bait";
         private const string NoticePotBaited = "Pot baited — T sets her";
         private const string NoticeNoBait = "No bait aboard";
@@ -304,12 +305,16 @@ namespace HiddenHarbours.Fishing
             if (_pot != null || trap == null || trap.Trap == null || trap.Trap.DeckWork == null) return false;
             if (catchItems == null || catchItems.Count == 0) return false;
 
+            // The season is read at the haul (today's date where the pot was SET) — recomputed, never saved.
+            SeasonDate haulDate = SeasonDate.From(GameServices.Clock, GameServices.DaysPerSeason);
             _pot = new DeckPot(trap.Trap, trap.Trap.DeckWork, trap.InstanceId,
-                               trap.PlacementGameTimeSeconds, trap.WorldSeed, catchItems);
+                               trap.PlacementGameTimeSeconds, trap.WorldSeed, catchItems,
+                               trap.RegionId, haulDate);
             _holdSeconds = 0f;
             _recoilLeft = 0f;
             _holdVerb = DeckVerb.None;
             _requireRelease = true;   // the haul's hold is likely still down — a fresh verb needs a release
+            ReleaseUnlicensed(_pot);
             BuildPotVisuals();
 
             if (!_taughtPick) { EventBus.Publish(new DevNotice(NoticePotAboard)); _taughtPick = true; }
@@ -318,6 +323,27 @@ namespace HiddenHarbours.Fishing
             // on the stern deck"). Presentation only; the catch inside her is untouched.
             PublishMoment(SternDeckStage.Aboard);
             return true;
+        }
+
+        /// <summary>
+        /// The animals he holds no licence for went back at the haul (the deck pot is built with them
+        /// already Returned, see <see cref="DeckPot.Animal.Unlicensed"/>): publish the unrecorded release
+        /// for each, and say ONE line for the haul naming the first species let go (owner ruling
+        /// 2026-11-23). Event-time, no allocation.
+        /// </summary>
+        private static void ReleaseUnlicensed(DeckPot pot)
+        {
+            if (pot == null) return;
+            DeckPot.Animal first = null;
+            var animals = pot.Animals;
+            for (int i = 0; i < animals.Count; i++)
+            {
+                DeckPot.Animal a = animals[i];
+                if (!a.Unlicensed) continue;
+                UnlicensedCatch.Release(in a.Item);
+                first ??= a;
+            }
+            if (first != null) UnlicensedCatch.Say(first.Item.DisplayName, first.Item.SpeciesId);
         }
 
         /// <summary>Drop the deck pot after a successful SET (the sibling dev input placed it back in the
@@ -346,9 +372,12 @@ namespace HiddenHarbours.Fishing
             if (_pot == null) return;
 
             var landed = new List<CatchItem>(_pot.Animals.Count);   // event-time alloc, never per frame
-            _pot.AutoResolve(_hold, landed, out int kept, out int returned, out int noRoom);
+            var released = new List<CatchItem>();                     // event-time alloc, never per frame
+            _pot.AutoResolve(_hold, landed, released, out int kept, out int returned, out int noRoom);
             for (int i = 0; i < landed.Count; i++)
                 EventBus.Publish(new FishCaught(landed[i]));
+            for (int i = 0; i < released.Count; i++)
+                EventBus.Publish(new CatchReleased(released[i]));   // documented, then back, as the hand grab
 
             string summary = noRoom > 0
                 ? $"Squared away the pot — {kept} stowed, {returned} went back, {noRoom} no room"
@@ -545,6 +574,18 @@ namespace HiddenHarbours.Fishing
                 case GrabOutcome.ReturnedBerried:
                     StartSplash(animal);
                     EventBus.Publish(new DevNotice("Berried hen — back she goes"));
+                    break;
+
+                case GrabOutcome.ReturnedOutOfSeason:
+                    StartSplash(animal);
+                    EventBus.Publish(new DevNotice(NoticeOutOfSeason));
+                    break;
+
+                case GrabOutcome.ReturnedProtected:
+                    // Documented, then released (owner ruling 2026-11-15): the record hears the whole item.
+                    StartSplash(animal);
+                    EventBus.Publish(new CatchReleased(animal.Item));
+                    EventBus.Publish(new DevNotice(FishingStrings.ProtectedReleased(animal.Item.DisplayName, animal.Item.WeightKg)));
                     break;
             }
             RefreshPotSprite();

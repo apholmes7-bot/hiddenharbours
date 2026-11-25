@@ -57,7 +57,8 @@ namespace HiddenHarbours.Player
     // (101), which says whether it is drawing its own rod: a carried prop posed before either would be
     // a frame behind the hand it is in.
     [DefaultExecutionOrder(102)]
-    public sealed class CarryHands : MonoBehaviour, IHandsCarrier, ICatchHands
+    public sealed partial class CarryHands : MonoBehaviour, IHandsCarrier, ICatchHands, IDigBladeReader,
+                                             IShoppingBagHands
     {
         [Header("Wiring (auto-resolved off this object if empty)")]
         [Tooltip("The player's own renderer — the SORTING DATUM the carried sprite rides. Null = the " +
@@ -95,16 +96,25 @@ namespace HiddenHarbours.Player
                  "below.")]
         [SerializeField] private CarryAnchorTableDef _carryAnchors;
 
+        [Tooltip("The carry-pose table (CharacterCarryPoseDef): for a carried kind with a row that names " +
+                 "sockets (the pail), which socket of the MESH figure it hangs from in each hand, where " +
+                 "its grip sits above its sprite pivot, and the depth band that decides near side from " +
+                 "far side. Empty = the shipped table under Resources.")]
+        [SerializeField] private CharacterCarryPoseDef _carryPoses;
+
         [SerializeField, Tooltip("The catch ART table — which held sprite each landed species draws " +
-                                 "in the hand. Null is survivable: a catch then falls back to its UI " +
-                                 "icon, which is what every catch did before pass 2 baked held poses.")]
+                                 "in the hand. Empty = the shared fish art table's (Resources/" +
+                                 "FishArtLibrary), so a scene saved before this field still draws the " +
+                                 "new held art; only with neither does a catch fall back to its UI icon.")]
         private HiddenHarbours.Art.CatchItemLibrary _catchArt;
 
         [Header("How it is held (greybox tunables, rule 6)")]
         [Tooltip("FALLBACK only — where a carried object with no hand-prop row sits relative to the " +
                  "fisher's feet, in metres, on her RIGHT side. ⚠️ ONE offset for every facing, which is " +
                  "why it is only a fallback now: the fuel kit bakes no hand anchors and the rig bakes no " +
-                 "spade or pail row, so a jerry can, a shovel and the dev bucket still hang here. " +
+                 "spade or pail row, so a jerry can, a shovel and the dev bucket still hang here (the " +
+                 "pail only while the sprite draws him: on the mesh figure it hangs from his hand " +
+                 "socket, per the carry-pose table). " +
                  "Everything the rig DOES bake a row for (the rod, a fish, a handful of clams) is posed " +
                  "from the table above and ignores this.")]
         [SerializeField] private Vector2 _hipOffsetMeters = new Vector2(0.28f, 0.34f);
@@ -160,6 +170,67 @@ namespace HiddenHarbours.Player
         /// <summary>True when either hand holds something.</summary>
         public bool IsCarrying => !_slots.IsEmpty;
 
+        /// <summary>
+        /// The Def of the rod the fight draws in his hands — the carried tool whose id is the one this
+        /// carrier hides while the fight draws it — or null when neither hand holds it. The fight reads it
+        /// for the rod's held mesh (ADR 0053). Allocation-free.
+        /// </summary>
+        public ToolDef HeldFightRod
+        {
+            get
+            {
+                if (_slots.Right is CarriableTool right && right != null
+                    && string.Equals(right.DefId, _fightRodToolId, System.StringComparison.Ordinal)) return right.Tool;
+                if (_slots.Left is CarriableTool left && left != null
+                    && string.Equals(left.DefId, _fightRodToolId, System.StringComparison.Ordinal)) return left.Tool;
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// The Def of the fight's rod while it is SLUNG (<see cref="Slung"/>: tucked away to free a hand for a
+        /// landed catch), or null. Still his rod, so the mesh figure draws it on his back. Allocation-free.
+        /// </summary>
+        public ToolDef SlungFightRod
+            => Slung is CarriableTool slung && slung != null
+               && string.Equals(slung.DefId, _fightRodToolId, System.StringComparison.Ordinal) ? slung.Tool : null;
+
+        /// <summary>
+        /// True while he has the fight's rod but his hands are busy with something else: the other hand
+        /// holds something too, or the rod is slung for a catch. Read from the hands every call, never
+        /// latched; the rod is then drawn on his back (<see cref="ToolDef.StowOnBack"/>). Allocation-free.
+        /// </summary>
+        public bool FightRodHandsBusy
+        {
+            get
+            {
+                if (SlungFightRod != null) return true;
+                return HeldFightRod != null && _slots.UsedHands >= 2;
+            }
+        }
+
+        /// <summary>
+        /// True while the tools he carries are stowed rather than drawn: he is swimming (or treading
+        /// water) and <see cref="GameConfig.SwimStowsCarriedTools"/> is on. The carried sprite never draws
+        /// then, and the fight's rod mesh is not in his hand: it rides his back when its Def slings it
+        /// (<see cref="ToolDef.StowOnBack"/>), otherwise it draws nothing; both come back to his hand the
+        /// frame he finds his footing. Stated from the
+        /// walker's water state every read, never latched. Allocation-free.
+        /// </summary>
+        public bool ToolsStowed
+        {
+            get
+            {
+                Resolve();
+                return _walk != null && StowsTools(GameServices.Config, _walk.WaterState);
+            }
+        }
+
+        /// <summary>The stow rule on its own: only the swim band stows, and only with the switch on.
+        /// Dry ground and wading keep the tools in his hands.</summary>
+        public static bool StowsTools(GameConfig config, OnFootWaterState state)
+            => config != null && config.SwimStowsCarriedTools && state == OnFootWaterState.Swim;
+
         // ---- the Core relay ------------------------------------------------------------------------
 
         /// <summary>
@@ -170,6 +241,8 @@ namespace HiddenHarbours.Player
         {
             GameServices.Hands = this;
             GameServices.CatchHands = this;
+            GameServices.BagHands = this;
+            SubscribeBagSignals();
         }
 
         /// <summary>
@@ -186,6 +259,13 @@ namespace HiddenHarbours.Player
         {
             if (ReferenceEquals(GameServices.Hands, this)) GameServices.Hands = null;
             if (ReferenceEquals(GameServices.CatchHands, this)) GameServices.CatchHands = null;
+            if (ReferenceEquals(GameServices.BagHands, this)) GameServices.BagHands = null;
+            _catchMesh?.Dispose();
+            _catchMesh = null;
+            _toolMesh?.Dispose();
+            _toolMesh = null;
+            _pailMesh?.Dispose();
+            _pailMesh = null;
         }
 
         // ---- the catch seam: a landed catch takes the free hand ---------------------------------------
@@ -226,6 +306,7 @@ namespace HiddenHarbours.Player
         /// </summary>
         public bool TryPutInHand(in CatchItem item)
         {
+            if (!CatchKeep.MayKeep(in item)) return false;    // protected: release-only, never in hand
             if (Slung != null) return false;                  // a sling outstanding means a hand is busy
 
             float lengthMeters = CatchSize.LengthMeters(item);
@@ -253,7 +334,7 @@ namespace HiddenHarbours.Player
                 return false;
             }
 
-            CarriableCatch catchObject = CarriableCatch.Create(item, transform, _catchArt);
+            CarriableCatch catchObject = CarriableCatch.Create(item, transform, EffectiveCatchArt);
             CarryHandSide preferred = PreferredHand(catchObject);
             if (_slots.TryTake(catchObject, cradle, preferred, out CarryHandSide side) != HandSlotRefusal.None)
             {
@@ -283,7 +364,10 @@ namespace HiddenHarbours.Player
         {
             if (hold == null) return false;
             if (_slots.FirstOf(HandLoad.Catch) is not CarriableCatch held || !held.HasItem) return false;
-            if (hold.UsedUnits >= hold.CapacityUnits) return false;
+            // The one storage rule (Core.StowageRule): a catch is General and every hold takes General, so
+            // this is the old "full is full" check, asked where the rod rack asks it.
+            if (StowageRule.Check(StowageClass.General, StowageRule.ExistingContainer,
+                                  hold.UsedUnits, hold.CapacityUnits) != StowRefusal.None) return false;
 
             CatchItem item = held.Item;
             if (!hold.TryAdd(item)) return false;
@@ -327,6 +411,7 @@ namespace HiddenHarbours.Player
             CatchItem item = held.Take();
             Forget(held);
             DestroyCatch(held);
+            _catchMesh?.Hide();
             TakeBackSlung();
             EventBus.Publish(new CatchTakenFromHand(item));
             return item;
@@ -463,9 +548,182 @@ namespace HiddenHarbours.Player
             return CarryRefusal.None;
         }
 
+        /// <summary>
+        /// Hand one carried thing to a fixture that keeps it (a rod rack's slot) instead of setting it on
+        /// the ground. The caller has already asked <see cref="StowageRule.Check"/>; this only moves it.
+        /// Returns false, and NOTHING changes, when it is not in her hands or there is no holder — the
+        /// thing stays where it legally was.
+        ///
+        /// <para>No ground check, unlike <see cref="TryPlace(ICarriable)"/>: it is not going on the
+        /// ground. Re-parented, never rebuilt, so the object that comes back out is the one that went in.
+        /// </para>
+        /// </summary>
+        public bool TryStowInto(ICarriable thing, Transform holder)
+        {
+            if (holder == null || thing == null || thing.Transform == null) return false;
+            if (_slots.SideOf(thing) == CarryHandSide.None) return false;
+
+            Forget(thing);
+            thing.Transform.SetParent(holder, worldPositionStays: false);
+            thing.Transform.localPosition = Vector3.zero;
+            thing.OnPlaced();
+            TakeBackSlung();
+            return true;
+        }
+
         private void LateUpdate()
         {
+            KeepBag();
             if (IsCarrying) ApplyCarriedPose();
+            else
+            {
+                if (_catchMesh != null && _catchMesh.Drawing) _catchMesh.Hide();
+                if (_toolMesh != null && _toolMesh.Drawing) _toolMesh.Hide();
+                if (_pailMesh != null && _pailMesh.Drawing) _pailMesh.Hide();
+            }
+        }
+
+        // ---- a hand tool (the clam shovel) as its mesh on the mesh figure (ADR 0053) ---------------
+
+        private HeldRodMesh _toolMesh;
+        private bool _toolMeshPosed;
+
+        /// <summary>The hand-tool mesh driver (every tool but the fight's rod), once made. For tests and
+        /// plates.</summary>
+        public HeldRodMesh ToolMesh => _toolMesh;
+
+        /// <summary>The dig's blade as drawn on the last frame (<see cref="HeldRodMesh.TryTipOverGround"/>),
+        /// and where he stands. False while the shovel is not a mesh aimed by the clip (the sprite body,
+        /// carried, slung).</summary>
+        public bool TryReadDigBlade(out Vector2 ground, out float lift, out Vector2 feet)
+        {
+            feet = transform.position;
+            ground = Vector2.zero;
+            lift = 0f;
+            return _toolMesh != null && _toolMesh.TryTipOverGround(out ground, out lift);
+        }
+
+        /// <summary>
+        /// A carried tool that is not the fight's rod (the fight presenter draws that one), as its held mesh
+        /// in the mesh figure's hand when its Def asks for it: aimed by the clip's own tool track while he
+        /// digs, at the Def's carried aim on a free gait, gripped in the hand it is in. The SAME driver the
+        /// rod uses (<see cref="HeldRodMesh"/>); its sprite is held out of the picture exactly while the mesh
+        /// draws. Stated every frame; nothing is latched or saved. One hand tool mesh at a time: a second
+        /// non-rod tool would keep its sprite (none ships).
+        /// </summary>
+        private void StateToolMesh(ICarriable carried, CarryHandSide hand)
+        {
+            if (carried is not CarriableTool tool || tool.Tool == null || _toolMeshPosed) return;
+            if (string.Equals(tool.DefId, _fightRodToolId, System.StringComparison.Ordinal)) return;
+            GameConfig config = GameServices.Config;
+            bool on = config != null && config.MeshHandToolInHand && !ToolsStowed;
+            if (!on && _toolMesh == null) return;
+            _toolMesh ??= new HeldRodMesh(transform, "HeldToolMesh", IsoCharacterFigureRenderer.HeldReachHandTool);
+            CarryHandSide side = MeshHand(CarryHandSide.None, hand, carried);
+            string carriedSocket = side == CarryHandSide.Left ? HeldPropSockets.LeftHandTool : HeldPropSockets.RightHandTool;
+            float width = config != null ? config.HeldPropLineWidthPx : GameConfig.DefaultHeldPropLineWidthPx;
+            HeldRodMesh.Use use = _slots.UsedHands >= 2 ? HeldRodMesh.Use.HandsBusy : HeldRodMesh.Use.Free;
+            if (!_toolMesh.TryDraw(on, tool.Tool, LiveFigure(), width, use, Time.deltaTime, carriedSocket)) return;
+            tool.SetDrawnElsewhere(true);
+            _toolMeshPosed = true;
+        }
+
+        // ---- the pail as its mesh hung from the mesh figure's hand (ADR 0053) -----------------------
+
+        private HeldCatchMesh _pailMesh;
+        private bool _pailMeshPosed;
+        private Matrix4x4[] _swingWorld;
+        private CharacterSkinDef _swingSkin;
+        private string _swingClipKey;
+        private bool _swingClipKnown;
+        private CharacterSkinDef.SkinClip _swingClip;
+
+        /// <summary>The pail mesh hanger, once made. For tests and plates.</summary>
+        public HeldCatchMesh PailMesh => _pailMesh;
+
+        /// <summary>
+        /// A carried pail as the bucket rig's held mesh at its fill and catch, hung by its bail (the mesh's
+        /// grip) from the socket <see cref="TryMeshFigurePose"/> chose, so his legs and the pail sort pixel by
+        /// pixel instead of the whole sprite going in front or behind. It swings back from the hand's motion
+        /// by the row's numbers. The sprite is held out of the picture exactly while the mesh draws; a pail
+        /// with no baked mesh state (the clam hod) keeps it. Stated every frame; nothing is saved.
+        /// </summary>
+        private void StatePailMesh(ICarriable carried, in CharacterCarryPoseDef.Row row, string socket,
+                                   int socketBone, IsoCharacterFigureRenderer figure)
+        {
+            if (carried is not CarriableBucket bucket || _pailMeshPosed) return;
+            GameConfig config = GameServices.Config;
+            bool on = config != null && config.MeshPailInHand && !string.IsNullOrEmpty(row.MeshTier);
+            if (!on && _pailMesh == null) { bucket.SetDrawnElsewhere(false); return; }
+            HeldPropMeshDef def = on ? bucket.HeldMeshFor(row.MeshTier) : null;
+            _pailMesh ??= new HeldCatchMesh(transform, "HeldPailMesh", IsoCharacterFigureRenderer.HeldReachCarry);
+            float perMetre = def != null && def.PxPerMetre > 0 ? 1f / def.PxPerMetre : 0f;
+            float width = config != null ? config.HeldPropLineWidthPx : GameConfig.DefaultHeldPropLineWidthPx;
+            var options = new IsoFacetHeldPropMesh.Options { Scale = 1f, LineWidthMeters = width * perMetre };
+            Quaternion swing = on ? PailSwing(row, figure, socketBone) : Quaternion.identity;
+            bool drawn = _pailMesh.TryDrawHung(on, def, options, socket, swing, figure);
+            bucket.SetDrawnElsewhere(drawn);
+            _pailMeshPosed |= drawn;
+        }
+
+        /// <summary>The row's swing for the frame drawn, from the clip's own socket motion
+        /// (<see cref="CarryMath.TryClipSocketVelocity"/>); the identity when it cannot be read.</summary>
+        private Quaternion PailSwing(in CharacterCarryPoseDef.Row row, IsoCharacterFigureRenderer figure, int socketBone)
+        {
+            if (row.MeshSwingDegPerMetrePerSecond <= 0f || row.MeshSwingMaxDeg <= 0f) return Quaternion.identity;
+            CharacterSkinDef skin = figure.SkinDef;
+            string key = figure.DrawnStateKey;
+            if (!ReferenceEquals(skin, _swingSkin) || !ReferenceEquals(key, _swingClipKey))
+            {
+                _swingSkin = skin;
+                _swingClipKey = key;
+                _swingClipKnown = skin.TryGetClip(key, out _swingClip);
+                if (_swingWorld == null || _swingWorld.Length < skin.BoneCount) _swingWorld = new Matrix4x4[skin.BoneCount];
+            }
+            if (!_swingClipKnown
+                || !CarryMath.TryClipSocketVelocity(_swingClip, skin.Bones, socketBone, figure.DrawnFrame, _swingWorld,
+                                                    out Vector3 velocity))
+                return Quaternion.identity;
+            return CarryMath.HungSwing(velocity, row.MeshSwingDegPerMetrePerSecond, row.MeshSwingMaxDeg);
+        }
+
+        // ---- the catch as a mesh on the mesh figure (ADR 0053) -------------------------------------
+
+        private HeldCatchMesh _catchMesh;
+        private DeckRiderMeshPresenter _meshPresenter;
+        private bool _catchMeshPosed;
+
+        /// <summary>The fish-in-hand mesh, once made. For tests and plates.</summary>
+        public HeldCatchMesh CatchMesh => _catchMesh;
+
+        /// <summary>
+        /// A carried fish, as its mesh on the hand's socket when the mesh figure draws him and its
+        /// species has one (<see cref="HeldCatchMesh"/>); its sprite is hidden while the mesh draws and
+        /// shown whenever it does not. <paramref name="hand"/> is the hand the pose path hung it from.
+        /// </summary>
+        private void StateCatchMesh(ICarriable carried, CarryHandSide hand)
+        {
+            if (carried is not CarriableCatch fish) return;
+            GameConfig config = GameServices.Config;
+            bool wanted = fish.HeldMesh != null && config != null && config.MeshCatchInHand;
+            if (!wanted && _catchMesh == null) { fish.SetSpriteVisible(true); return; }
+            _catchMesh ??= new HeldCatchMesh(transform);
+            string socket = hand == CarryHandSide.Left ? HeldPropSockets.LeftHandTool : HeldPropSockets.RightHandTool;
+            float turn = HeldCatchMesh.TurnToFacingDegrees(fish.HeldMesh, fish.FacingMap, fish.Facing, DrawnHeadingDegrees);
+            float scale = HeldCatchMesh.ReadableScale(fish.HeldMesh, fish.HeldMeshScale, config.HeldFishMinLengthPx);
+            bool drawn = _catchMesh.TryDraw(config, fish.HeldMesh, scale, socket, turn, LiveFigure());
+            fish.SetSpriteVisible(!drawn);
+            _catchMeshPosed |= drawn;
+        }
+
+        /// <summary>The figure drawing him this frame, or null while he is a sprite. The figure was posed
+        /// for this frame at order 100, before this component's 102.</summary>
+        private IsoCharacterFigureRenderer LiveFigure()
+        {
+            if (_meshPresenter == null) TryGetComponent(out _meshPresenter);
+            DeckRiderMeshPresenter p = _meshPresenter;
+            if (p == null || !p.DrawsInsteadOfSprite) return null;
+            return p.DrawsAshore ? p.AshoreFigure : p.Figure;
         }
 
         /// <summary>
@@ -481,6 +739,21 @@ namespace HiddenHarbours.Player
         /// meet in the same hand at the headings where they agree.</para>
         /// </summary>
         public void ApplyCarriedPose()
+        {
+            _catchMeshPosed = _toolMeshPosed = _pailMeshPosed = false;
+            PoseEveryCarried();
+            if (!_catchMeshPosed && _catchMesh != null && _catchMesh.Drawing) _catchMesh.Hide();
+            if (!_toolMeshPosed && _toolMesh != null && _toolMesh.Drawing) _toolMesh.Hide();
+            if (!_pailMeshPosed)
+            {
+                // No pail mesh this frame (the sprite body, no socket, the switch off): the sprite draws.
+                if (_pailMesh != null && _pailMesh.Drawing) _pailMesh.Hide();
+                if (_slots.Right is CarriableBucket rightPail) rightPail.SetDrawnElsewhere(false);
+                if (_slots.Left is CarriableBucket leftPail) leftPail.SetDrawnElsewhere(false);
+            }
+        }
+
+        private void PoseEveryCarried()
         {
             _slots.ForgetDestroyed();
             if (_slots.IsEmpty) return;
@@ -517,6 +790,7 @@ namespace HiddenHarbours.Player
         {
             if (carried == null || carried.Transform == null) return;
             StateDrawnByTheFight(carried);
+            StateToolMesh(carried, hand);
 
             // Both paths are posed off the BODY AS DRAWN: the pin (or the fallback) is measured from her
             // feet in the picture, and aboard the picture is not at this root (DrawnBodyOffsetLocal). The
@@ -528,14 +802,127 @@ namespace HiddenHarbours.Player
                     + DrawnBodyOffsetLocal();
                 carried.ShowFacing(row.ItemFacing);
                 RideBodyBand(carried, row.Behind ? -OrdersFor(hand) : OrdersFor(hand));
+                StateCatchMesh(carried, MeshHand(row.Hand, hand, carried));
                 return;
             }
+
+            if (TryMeshFigurePose(carried, hand)) return;
 
             carried.Transform.localPosition = FallbackOffset(hand) + DrawnBodyOffsetLocal();
 
             float heading = DrawnHeadingDegrees;
             carried.ShowFacing(CarryMath.BakedFacingIndex(heading, carried.BakedFacings));
             RideBodyBand(carried, CarryMath.AheadOrdersFor(heading, OrdersFor(hand)));
+            StateCatchMesh(carried, MeshHand(CarryHandSide.None, hand, carried));
+        }
+
+        /// <summary>The hand a carried mesh hangs from: the one the pose path named, else the rig's row,
+        /// else the slot it was given. A cradle (Both) hangs from the right hand: the wrists' midpoint is
+        /// inside his body, and a prop must never clip through him.</summary>
+        private CarryHandSide MeshHand(CarryHandSide rowHand, CarryHandSide hand, ICarriable carried)
+        {
+            CarryHandSide side = hand != CarryHandSide.None ? hand
+                : rowHand != CarryHandSide.None ? rowHand
+                : _slots.SideOf(carried);
+            return side == CarryHandSide.Left ? CarryHandSide.Left : CarryHandSide.Right;
+        }
+
+        /// <summary>
+        /// <b>Hang a carried thing from the mesh figure's own hand</b>, when the figure is drawing him and
+        /// the thing's kind has a carry row that names sockets (the pail: <c>carry_L</c> / <c>carry_R</c>,
+        /// the rig's grip pins for a bail). False, and nothing written, otherwise: the sprite body, a
+        /// thing with no row, a skin without the socket.
+        ///
+        /// <para><b>Where:</b> the grip on the socket of the hand the thing is actually IN (the slot, or
+        /// the shared-pair hand), read off the frame the figure drew this frame. The single fallback
+        /// offset hung the pail 0.28 m to screen-right of his feet at every heading, so it hung from his
+        /// left hand facing the camera, in front of his stride facing east and behind his back facing
+        /// west, with the grip 0.1 to 0.3 m above the hand.</para>
+        ///
+        /// <para><b>Which side it draws on:</b> the hand's own depth against the body bone, through
+        /// <see cref="CarryMath.SideOrdersFor"/>. The heading-only rule put a pail in front of him at
+        /// every southward and abeam heading even when it was in his far hand, where his legs pass in
+        /// front of it.</para>
+        /// </summary>
+        private bool TryMeshFigurePose(ICarriable carried, CarryHandSide hand)
+        {
+            CharacterCarryPoseDef table = CarryPoses();
+            if (table == null || !table.TryRow(carried.DefId, out CharacterCarryPoseDef.Row row)) return false;
+
+            CarryHandSide side = hand != CarryHandSide.None ? hand : _slots.SideOf(carried);
+            string socket = row.SocketFor(side);
+            if (socket == null) return false;
+
+            IsoCharacterFigureRenderer figure = DrawnMeshFigure();
+            if (figure == null || figure.SkinDef == null || figure.FacetTransform == null) return false;
+
+            ResolveFigureBones(figure.SkinDef, socket, row.BodyBone, out int socketBone, out int bodyBone);
+            if (!figure.TryBonePoint(socketBone, out Vector3 socketFacet)) return false;
+            if (!figure.TryBonePoint(bodyBone, out Vector3 bodyFacet)) return false;
+
+            Matrix4x4 facetToWorld = figure.FacetTransform.localToWorldMatrix;
+            Vector3 grip = facetToWorld.MultiplyPoint3x4(socketFacet);
+            Transform t = carried.Transform;
+            float drop = row.GripAbovePivotMeters * t.lossyScale.y;
+            t.position = new Vector3(grip.x, grip.y - drop, transform.position.z);
+
+            float heading = DrawnHeadingDegrees;
+            carried.ShowFacing(CarryMath.BakedFacingIndex(heading, carried.BakedFacings));
+            float towardCamera = CarryMath.TowardCameraMetres(facetToWorld, socketFacet, bodyFacet);
+            RideBodyBand(carried, CarryMath.SideOrdersFor(towardCamera, row.DepthDeadbandMeters, heading,
+                                                          OrdersFor(hand)));
+            StatePailMesh(carried, row, socket, socketBone, figure);
+            return true;
+        }
+
+        /// <summary>The mesh figure drawing him right now (ashore or on a facet hull), or null while his
+        /// sprite is the picture.</summary>
+        private IsoCharacterFigureRenderer DrawnMeshFigure()
+        {
+            if (_meshPresenter == null || !_meshPresenter.DrawsInsteadOfSprite) return null;
+            return _meshPresenter.DrawsAshore ? _meshPresenter.AshoreFigure : _meshPresenter.Figure;
+        }
+
+        /// <summary>The carry-pose table: the wired one, else the shipped one, loaded once.</summary>
+        private CharacterCarryPoseDef CarryPoses()
+        {
+            if (_carryPoses == null && !_carryPosesLoaded)
+            {
+                _carryPosesLoaded = true;
+                _carryPoses = Resources.Load<CharacterCarryPoseDef>(CharacterCarryPoseDef.ResourcesPath);
+            }
+            return _carryPoses;
+        }
+
+        /// <summary>Bone indices for a socket and a body bone, looked up once per skin and name pair, not
+        /// per frame (<see cref="CharacterSkinDef.IndexOfBone"/> is a linear scan).</summary>
+        private void ResolveFigureBones(CharacterSkinDef skin, string socket, string body,
+                                        out int socketBone, out int bodyBone)
+        {
+            if (!ReferenceEquals(skin, _boneSkin)
+                || !string.Equals(socket, _boneSocketId, System.StringComparison.Ordinal)
+                || !string.Equals(body, _boneBodyId, System.StringComparison.Ordinal))
+            {
+                _boneSkin = skin;
+                _boneSocketId = socket;
+                _boneBodyId = body;
+                _socketBone = skin.IndexOfBone(socket);
+                _bodyBone = skin.IndexOfBone(body);
+            }
+            socketBone = _socketBone;
+            bodyBone = _bodyBone;
+        }
+
+        private bool _carryPosesLoaded;
+        private CharacterSkinDef _boneSkin;
+        private string _boneSocketId, _boneBodyId;
+        private int _socketBone = CharacterSkinDef.NoBone, _bodyBone = CharacterSkinDef.NoBone;
+
+        /// <summary>Wire the carry-pose table (tests, builders); null goes back to the shipped one.</summary>
+        public void ConfigureCarryPoses(CharacterCarryPoseDef table)
+        {
+            _carryPoses = table;
+            _carryPosesLoaded = table != null;
         }
 
         /// <summary>
@@ -578,15 +965,23 @@ namespace HiddenHarbours.Player
             if (!(carried is CarriableTool tool)) return;
             bool drawnByTheFight = _fight != null && _fight.DrawsRod
                 && string.Equals(tool.DefId, _fightRodToolId, System.StringComparison.Ordinal);
-            tool.SetDrawnElsewhere(drawnByTheFight);
+            // Stowed while he swims (ToolsStowed): out of the picture the same way, so nothing hangs
+            // above the water that is not really there.
+            tool.SetDrawnElsewhere(drawnByTheFight || ToolsStowed);
         }
 
         /// <summary>Whatever the fight was drawing in its place is drawn again: a disabled carrier states
         /// nothing, so it must not leave a rod it hid hidden.</summary>
         private void OnDisable()
         {
+            UnsubscribeBagSignals();
+            _catchMesh?.Hide();
+            _toolMesh?.Hide();
+            _pailMesh?.Hide();
             if (_slots.Right is CarriableTool right) right.SetDrawnElsewhere(false);
             if (_slots.Left is CarriableTool left) left.SetDrawnElsewhere(false);
+            if (_slots.Right is CarriableBucket rightPail) rightPail.SetDrawnElsewhere(false);
+            if (_slots.Left is CarriableBucket leftPail) leftPail.SetDrawnElsewhere(false);
         }
 
         /// <summary>How far out of the body's sorting band this hand's item draws. The left hand takes one
@@ -687,6 +1082,12 @@ namespace HiddenHarbours.Player
         /// <summary>The catch art table currently wired, or null. For tests / tooling.</summary>
         public HiddenHarbours.Art.CatchItemLibrary CatchArt => _catchArt;
 
+        /// <summary>The catch art table a landed catch is actually drawn from: the wired one, else the
+        /// shared fish art table's (St Peters and Nine Mile Creek were saved before the field existed).
+        /// Asked once per landed catch, never per frame.</summary>
+        public HiddenHarbours.Art.CatchItemLibrary EffectiveCatchArt
+            => FishArtLibrary.ResolveCatchArt(_catchArt, FishArtLibrary.Shared);
+
         /// <summary>The hand-prop table currently wired, or null. For tests / tooling.</summary>
         public CarryAnchorTableDef CarryAnchors => _carryAnchors;
 
@@ -755,6 +1156,7 @@ namespace HiddenHarbours.Player
             if (_walk == null) _walk = GetComponent<PlayerWalkController>();
             if (_rider == null) _rider = GetComponent<DeckRiderVisual>();
             if (_fight == null) _fight = GetComponent<RodFightPresenter>();
+            if (_meshPresenter == null) _meshPresenter = GetComponent<DeckRiderMeshPresenter>();
         }
     }
 }

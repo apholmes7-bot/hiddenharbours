@@ -48,35 +48,71 @@ namespace HiddenHarbours.Tests.EditMode
         // ---- the leading end ---------------------------------------------------------------------
 
         [Test]
-        public void Ahead_TheBowThrowsTheLeadingFoam_AcrossHer()
+        public void Ahead_TheBowWave_PartsRoundHerStem_AlongEachFlank()
         {
-            HullContactFoam.Stamp lead = HullContactFoam.Lead(3f, HalfLength, HalfBeam, in S);
-            Assert.IsTrue(lead.IsActive);
-            Assert.AreEqual(HalfLength, lead.From.y, 1e-6f);
-            Assert.AreEqual(HalfLength, lead.To.y, 1e-6f);
-            Assert.Less(lead.From.x, 0f);
-            Assert.Greater(lead.To.x, 0f);
-            Assert.LessOrEqual(lead.To.x, HalfBeam, "the bar stays inside her beam");
+            // The owner, 2026-11-16: "the bow foam looks irregular its sqaure". One bar across the stem,
+            // its back half under her hull, left a square slab ahead of her; the bow wave is now two arms
+            // that meet at the stem and run aft along her tapering waterline.
+            HullContactFoam.Stamp port = HullContactFoam.Lead(3f, HalfLength, HalfBeam, in S, starboardArm: false);
+            HullContactFoam.Stamp star = HullContactFoam.Lead(3f, HalfLength, HalfBeam, in S, starboardArm: true);
+            Assert.IsTrue(port.IsActive && star.IsActive);
+            float stem = HalfBeam * S.ContactStemHalfBeams;
+            Assert.AreEqual(HalfLength, port.From.y, 1e-6f, "each arm starts at her stem");
+            Assert.AreEqual(HalfLength, star.From.y, 1e-6f);
+            Assert.AreEqual(-stem, port.From.x, 1e-6f, "at the stem the arms are as close as her waterline");
+            Assert.AreEqual(stem, star.From.x, 1e-6f);
+            Assert.Less(port.To.y, HalfLength, "and run aft");
+            Assert.AreEqual(port.To.y, star.To.y, 1e-6f, "the two arms are mirror images");
+            Assert.AreEqual(-port.To.x, star.To.x, 1e-6f);
+            Assert.AreEqual(HalfBeam * S.LeadSpanHalfBeams, star.To.x, 1e-6f, "out to the span");
+            Assert.LessOrEqual(star.To.x, HalfBeam, "inside her beam");
+
+            // Every point of an arm lies on her waterline as the foam transport draws it: her half-beam aft
+            // of the taper, narrowing straight to the stem.
+            float taperFrom = HalfLength - 2f * HalfLength * S.ContactBowTaper;
+            for (float t = 0f; t <= 1f; t += 0.125f)
+            {
+                Vector2 p = Vector2.Lerp(star.From, star.To, t);
+                float along01 = Mathf.Clamp01((p.y - taperFrom) / (HalfLength - taperFrom));
+                float waterline = HalfBeam * (1f - along01 * (1f - S.ContactStemHalfBeams));
+                Assert.AreEqual(waterline, p.x, 1e-4f, $"at {t:0.000} of the arm");
+            }
         }
 
         [Test]
+        public void Ahead_NoPartOfTheBowWave_IsASlabAheadOfHerStem()
+        {
+            // Nothing a capsule lays reaches further ahead of her stem than its own radius: a rounded point,
+            // never a bar the width of her bow.
+            foreach (bool starboard in new[] { false, true })
+            {
+                HullContactFoam.Stamp arm = HullContactFoam.Lead(3f, HalfLength, HalfBeam, in S, starboard);
+                Assert.LessOrEqual(Mathf.Max(arm.From.y, arm.To.y), HalfLength + 1e-6f);
+                float acrossAtStem = Mathf.Abs(arm.From.y >= arm.To.y ? arm.From.x : arm.To.x);
+                Assert.Less(acrossAtStem, 0.5f * HalfBeam * S.LeadSpanHalfBeams,
+                    "the end at her stem sits on her centreline's side of the span, not out at a bar's end");
+            }
+        }
+        [Test]
         public void Astern_TheTransomThrowsTheLeadingFoam()
         {
-            HullContactFoam.Stamp lead = HullContactFoam.Lead(-3f, HalfLength, HalfBeam, in S);
+            HullContactFoam.Stamp lead = HullContactFoam.Lead(-3f, HalfLength, HalfBeam, in S, false);
             Assert.IsTrue(lead.IsActive);
             Assert.AreEqual(-HalfLength, lead.From.y, 1e-6f);
             Assert.AreEqual(-HalfLength, lead.To.y, 1e-6f);
+            Assert.Less(lead.From.x, 0f, "astern it is still a bar across her square transom");
+            Assert.Greater(lead.To.x, 0f);
         }
 
         [Test]
         public void TheLeadingFoam_GrowsWithSpeed_AndIsNoneAtRest()
         {
-            Assert.IsFalse(HullContactFoam.Lead(0f, HalfLength, HalfBeam, in S).IsActive);
-            float slow = HullContactFoam.Lead(0.5f, HalfLength, HalfBeam, in S).Rate01;
-            float fast = HullContactFoam.Lead(2.5f, HalfLength, HalfBeam, in S).Rate01;
+            Assert.IsFalse(HullContactFoam.Lead(0f, HalfLength, HalfBeam, in S, true).IsActive);
+            float slow = HullContactFoam.Lead(0.5f, HalfLength, HalfBeam, in S, true).Rate01;
+            float fast = HullContactFoam.Lead(2.5f, HalfLength, HalfBeam, in S, true).Rate01;
             Assert.Greater(slow, 0f);
             Assert.Greater(fast, slow);
-            Assert.LessOrEqual(HullContactFoam.Lead(50f, HalfLength, HalfBeam, in S).Rate01, 1f);
+            Assert.LessOrEqual(HullContactFoam.Lead(50f, HalfLength, HalfBeam, in S, true).Rate01, 1f);
         }
 
         // ---- the pushed side ---------------------------------------------------------------------
@@ -129,14 +165,14 @@ namespace HiddenHarbours.Tests.EditMode
         public void ZeroWeights_LayNothing_TheGameAsItShipped()
         {
             var off = S; off.LeadWeight = 0f; off.SideWeight = 0f;
-            Assert.IsFalse(HullContactFoam.Lead(5f, HalfLength, HalfBeam, in off).IsActive);
+            Assert.IsFalse(HullContactFoam.Lead(5f, HalfLength, HalfBeam, in off, true).IsActive);
             Assert.IsFalse(HullContactFoam.Side(2f, 1f, HalfLength, HalfBeam, in off).IsActive);
         }
 
         [Test]
         public void AHullWithNoMeasuredLength_LaysNoContactFoam()
         {
-            Assert.IsFalse(HullContactFoam.Lead(5f, 0f, HalfBeam, in S).IsActive);
+            Assert.IsFalse(HullContactFoam.Lead(5f, 0f, HalfBeam, in S, true).IsActive);
             Assert.IsFalse(HullContactFoam.Side(2f, 1f, 0f, HalfBeam, in S).IsActive);
         }
 

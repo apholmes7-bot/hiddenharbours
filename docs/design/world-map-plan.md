@@ -307,7 +307,8 @@ The mid-bay, deeper beds and East Point route remain at step 4. The opening stay
 ## 7. Open questions for the owner
 
 1. **Where does the Home Cove (canon: Coddle Cove — the cottage you row the dory to) sit in the
-   bay?** The arc says: buy and repair the dory at Nine Mile Creek, row her *home*. The chart offers
+   bay?** The arc says (amended 2026-11-23): buy and mend the dory on St Peters, and after the first week's
+   island gate, take her *home*. The chart offers
    candidates (a cove on the west shore south of the bar; a cove on the north shore) but this is not
    ruled, and it decides the dory's first real voyage.
 2. **The far arc's geography** — the Banks, Ironbound, the Smother, the Drownded Lands, Fundy Rips

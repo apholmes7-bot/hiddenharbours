@@ -319,10 +319,12 @@ namespace HiddenHarbours.Tests.EditMode
                     Assert.AreEqual(ToastBaseY + slot * ToastSpacing,
                                     DevToast.SlotY(ToastBaseY, 0f, slot, ToastSpacing), $"{Name(s)} slot {slot}");
 
-                // The popup: main's lower-right, 16 in from both edges of the 1280×720 host.
+                // The popup: main's lower-right, 16 in from both edges of the 1280×720 host. Its top is
+                // 720 - 16 - 54 down: the one-line speech bubble's height (18 kit px x 3) since the action
+                // UI took the bubble's dress.
                 Vector2 popup = InteractPopupLayout.PanelAnchoredPosition(in none, s.x, s.y);
                 Assert.AreEqual(964f, popup.x, Name(s));
-                Assert.AreEqual(-660f, popup.y, Name(s));
+                Assert.AreEqual(-650f, popup.y, Name(s));
 
                 // The note: main's corner, 8 of its own pixels in.
                 for (int rows = 1; rows <= QuestPanelLayout.MaxLines; rows++)

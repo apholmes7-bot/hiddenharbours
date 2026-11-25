@@ -16,9 +16,9 @@ namespace HiddenHarbours.Tests.EditMode
     /// </summary>
     public class DoryOarSplashTests
     {
-        // The dory's own facts: oarlock z 0.5156 m (DoryOarPortPropMesh.PivotLocalMeters) over a
+        // The dory's own facts: oarlock z 0.58808 m (DoryOarPortPropMesh.PivotLocalMeters) over a
         // 0.11 m resting draught (DoryIsoHullMesh.RestingDraftMeters).
-        private const float LockHeight = 0.5156f - 0.11f;
+        private const float LockHeight = 0.58808f - 0.11f;
         private const float Dt = 1f / 60f;
 
         private static OarSplashConfig Config => OarSplashConfig.Default;
@@ -53,7 +53,7 @@ namespace HiddenHarbours.Tests.EditMode
         private static void Row(DoryOarSplashSystem sys, in OarSplashConfig cfg, int strokes, float direction)
         {
             float fps = DoryOarMath.DefaultStrokeFramesPerSecond;
-            float phase = DoryOarMath.StrokeColumns * 0.5f;   // dip = 6 − 22 = −16°: clear of the water
+            float phase = DoryOarMath.StrokeColumns * 0.5f;   // dip = 12 − 16 = −4°: clear of the water
             int steps = Mathf.RoundToInt(strokes * DoryOarMath.StrokeColumns / (fps * Dt));
             for (int i = 0; i < steps; i++)
             {
@@ -203,7 +203,9 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.Greater(sys.Foam.AliveCount, 0);
 
             var shipped = FrameFor(DoryOarMeshPose.Resting, false, cfg);
-            float longest = cfg.FoamLifetime * (1f + cfg.LifetimeJitter) + 0.5f;
+            // The release's puddle puffs live SwirlLifetimeScale x FoamLifetime (2026-11-17), so the
+            // wait is the longest-lived foam the oars lay, not the pull foam alone.
+            float longest = cfg.FoamLifetime * Mathf.Max(1f, cfg.SwirlLifetimeScale) * (1f + cfg.LifetimeJitter) + 0.5f;
             for (float t = 0f; t < longest; t += Dt) sys.Step(in shipped, in shipped, 0f, Vector2.zero, Dt, in cfg);
 
             Assert.AreEqual(0, sys.Foam.AliveCount, "foam left by the oars fades out; it is not a permanent mark");
@@ -229,8 +231,8 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheSplash_IsLaidOutboardOfTheLock_OnTheOarsOwnSide()
         {
             OarSplashConfig cfg = Config;
-            var lockPort = new Vector3(-0.71395f, -0.855f, 0.5156f);
-            var lockStar = new Vector3(0.71395f, -0.855f, 0.5156f);
+            var lockPort = new Vector3(-0.69731f, -1.089f, 0.58808f);
+            var lockStar = new Vector3(0.69731f, -1.089f, 0.58808f);
             DoryOarMeshPose.Pose catchPose = DoryOarMeshPose.Row(0f);
 
             Vector3 port = DoryOarSplashMath.BladeOnWaterLocal(lockPort, DoryOarMeshLayer.PortSide, in catchPose,

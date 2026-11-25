@@ -47,8 +47,8 @@ namespace HiddenHarbours.World
     ///
     /// <para>It replaced a bottom-CENTRE banner of plain white text. The banner was the last thing on
     /// screen that told the player something in the game's own voice while pretending to be the game's
-    /// own UI; drawn as a page in her hand, in the notebook's stock and ink, it says the same words as
-    /// something she wrote down. The corner is chosen and not merely free: bottom-centre is the nav
+    /// own UI; drawn as a page in his hand, in the notebook's stock and ink, it says the same words as
+    /// something he wrote down. The corner is chosen and not merely free: bottom-centre is the nav
     /// cluster's and the helm dash's, and the note must never be the thing sitting on the compass.</para>
     ///
     /// <para><b>Integer scale only</b>, for the same reason the book has it — a pixel face on a
@@ -168,6 +168,116 @@ namespace HiddenHarbours.World
             Vector2 a = AnchoredPosition(in fit);
             float right = screenW + a.x;
             return new Rect(right - fit.ScreenWidthPx, a.y, fit.ScreenWidthPx, fit.ScreenHeightPx);
+        }
+
+        // ---- the fold (owner ask 2026-11-16: "a way to minimize hide the current tasks ui") ----------
+
+        /// <summary>
+        /// The open note's HEAD, in screen pixels where the note actually stands: the strip the TASKS
+        /// label is lettered on. A click here folds the note down to its chip. The head and not the whole
+        /// leaf, so a click meant for the world that strays onto the step's words does not fold it.
+        /// </summary>
+        public static Rect HeadScreenRect(in QuestPanelFit fit, in HelmFootprintArea covered,
+                                          float screenW, float screenH)
+        {
+            Rect box = NoteScreenRect(in fit, in covered, screenW, screenH);
+            float head = NotebookKit.HeadHeight * fit.Scale;
+            return new Rect(box.x, box.yMax - head, box.width, head);
+        }
+
+        /// <summary>
+        /// Characters across the folded chip's writing: the head label, a space and a one-digit count
+        /// ("TASKS 1"), then a space and the open mark. The chip is the note folded up to its head, so it
+        /// is lettered exactly as the head is.
+        /// </summary>
+        public const int ChipCols = 9;
+
+        /// <summary>The folded chip's width in KIT pixels (before scale): the leaf's own margins and
+        /// cursor lane around <see cref="ChipCols"/> characters.</summary>
+        public static int ChipWidthPx
+            => NotebookKit.PadL + NotebookKit.CursorLane + NotebookKit.CellWidth * ChipCols + NotebookKit.PadR;
+
+        /// <summary>The folded chip's height in KIT pixels: one head strip, the note folded to it.</summary>
+        public static int ChipHeightPx => NotebookKit.HeadHeight;
+
+        /// <summary>
+        /// The folded chip's box in SCREEN pixels: in the note's own corner at the note's own scale (so
+        /// folding never moves the corner or changes the pixel size of the face), kept out of what the
+        /// helm covers by the same rule as the note.
+        /// </summary>
+        public static Rect ChipScreenRect(int scale, in HelmFootprintArea covered, float screenW, float screenH)
+        {
+            int s = Mathf.Max(1, scale);
+            float w = ChipWidthPx * s, h = ChipHeightPx * s, margin = MarginPx * s;
+            var home = new Rect(screenW - margin - w, margin, w, h);
+            if (covered.IsNone) return home;
+            home.y += covered.LiftToClear(home, margin);
+            return home;
+        }
+
+        /// <summary>Where the chip's LOWER-RIGHT corner goes, for a rect anchored and pivoted to the
+        /// screen's lower-right (the note's own rect, re-used).</summary>
+        public static Vector2 ChipAnchoredPosition(int scale, in HelmFootprintArea covered,
+                                                   float screenW, float screenH)
+        {
+            Rect box = ChipScreenRect(scale, in covered, screenW, screenH);
+            return new Vector2(box.xMax - screenW, box.y);
+        }
+
+        /// <summary>
+        /// The chip's flash: on for <paramref name="blinkSeconds"/>, off for as long, from the moment the
+        /// signal started. <paramref name="elapsed"/> is time since it started. Starts ON, so the very
+        /// frame a task changes is the frame the chip answers.
+        /// </summary>
+        public static bool SignalLit(float elapsed, float blinkSeconds)
+        {
+            if (!(blinkSeconds > 0f)) return true;
+            return Mathf.FloorToInt(Mathf.Max(0f, elapsed) / blinkSeconds) % 2 == 0;
+        }
+    }
+
+    /// <summary>
+    /// <b>The folded chip's signal</b>: a short gold flash when a task is added or finished while the
+    /// note is folded. It never re-opens the note (the owner's ask: the player folded it, it stays
+    /// folded). Pure, so the whole rule is provable headlessly; the presenter only ticks and tints.
+    /// </summary>
+    public sealed class QuestChipSignal
+    {
+        private float _duration;
+        private float _elapsed;
+
+        /// <summary>True while the chip is flashing.</summary>
+        public bool Active => _elapsed < _duration;
+
+        /// <summary>Seconds since the flash began.</summary>
+        public float Elapsed => _elapsed;
+
+        /// <summary>Does this change of the note's line call for a flash? Only as a chip (shown, the note
+        /// says it; hidden, task changes are silent), and only for a real change: a task added (nothing
+        /// to something), finished (something to nothing) or moved on (one step to the next).</summary>
+        public static bool Calls(TasksNoteMode mode, string before, string after)
+        {
+            if (mode != TasksNoteMode.Chip) return false;
+            if (string.IsNullOrEmpty(before) && string.IsNullOrEmpty(after)) return false;
+            return !string.Equals(before, after, System.StringComparison.Ordinal);
+        }
+
+        public void Start(float seconds)
+        {
+            _duration = Mathf.Max(0f, seconds);
+            _elapsed = 0f;
+        }
+
+        public void Stop()
+        {
+            _duration = 0f;
+            _elapsed = 0f;
+        }
+
+        public void Tick(float deltaSeconds)
+        {
+            if (!Active) return;
+            _elapsed = Mathf.Min(_duration, _elapsed + Mathf.Max(0f, deltaSeconds));
         }
     }
 }

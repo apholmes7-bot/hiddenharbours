@@ -123,7 +123,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 if (!clean.IsValid()) clean = SceneManager.CreateScene(Cleanup);
                 SceneManager.SetActiveScene(clean);
                 Scene region = SceneManager.GetSceneByName(Region);
-                if (region.IsValid() && region.isLoaded) yield return SceneManager.UnloadSceneAsync(region);
+                if (region.IsValid() && region.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(region);
             }
             foreach (GameObject root in PersistentRoots())
                 if (root != null && !_residentBefore.Contains(root)) Object.DestroyImmediate(root);
@@ -145,7 +145,7 @@ namespace HiddenHarbours.Tests.PlayMode
             // diagnostics are tolerated. All diagnostics during the actual visits remain failures.
             LogAssert.ignoreFailingMessages = true;
             _loaded = true;
-            yield return SceneManager.LoadSceneAsync(Region, LoadSceneMode.Single);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Load(Region, LoadSceneMode.Single);
             for (int frame = 0; frame < 4; frame++) yield return null;
             LogAssert.ignoreFailingMessages = false;
             ShellFlow.ContinueGame();
@@ -320,8 +320,15 @@ namespace HiddenHarbours.Tests.PlayMode
                 Vector2 footOfStair = _body.position;
                 yield return PressStair(up, building);
                 AssertFloor(building, 1);
-                Assert.That(_body.position.y, Is.EqualTo(footOfStair.y + building.UpperLevelY).Within(0.02f));
-                Assert.That(_body.position.x, Is.EqualTo(footOfStair.x).Within(0.02f));
+                // A stair whose flight runs along a wall names its landing (the other half of the
+                // stairwell) and the climb ends there; one without a landing rises straight up.
+                if (up.Landing != null)
+                    Assert.That(up.Landing, Is.SameAs(down.transform), building.name + " going up lands at the head of the stairs");
+                Vector2 headLanding = up.Landing != null
+                    ? (Vector2)up.Landing.position
+                    : footOfStair + Vector2.up * building.UpperLevelY;
+                Assert.That(_body.position.y, Is.EqualTo(headLanding.y).Within(0.02f), building.name + " arrives where the stair lands him");
+                Assert.That(_body.position.x, Is.EqualTo(headLanding.x).Within(0.02f), building.name + " arrives where the stair lands him");
                 result.Step = "upper floor";
                 Vector2 landing = _body.position;
                 InteriorFootprint upstairs = building.FootprintFor(1);
@@ -341,8 +348,13 @@ namespace HiddenHarbours.Tests.PlayMode
                 yield return PressStair(down, building);
                 AssertFloor(building, 0);
                 result.Step = "descent";
-                Assert.That(Vector2.Distance(_body.position, headOfStair - Vector2.up * building.UpperLevelY),
-                    Is.LessThan(0.02f), building.name + " descends from the actual stair press position");
+                if (down.Landing != null)
+                    Assert.That(down.Landing, Is.SameAs(up.transform), building.name + " coming down lands at the foot of the stairs");
+                Vector2 footLanding = down.Landing != null
+                    ? (Vector2)down.Landing.position
+                    : headOfStair - Vector2.up * building.UpperLevelY;
+                Assert.That(Vector2.Distance(_body.position, footLanding),
+                    Is.LessThan(0.02f), building.name + " descends from the actual stair press position to where the stair lands him");
                 result.Climbed = true;
                 result.Step = "return to doorway";
                 // Plan the return against the live ground-floor furniture too.

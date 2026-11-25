@@ -182,7 +182,14 @@ namespace HiddenHarbours.Core
         /// <summary>Which moment: one of <see cref="InnerVoiceCues"/>. Matched whole, case-sensitive.</summary>
         public readonly string CueId;
 
-        public InnerVoiceCue(string cueId) { CueId = cueId; }
+        /// <summary>A name to say in the line, or null. A line asset that carries
+        /// <see cref="InnerVoiceCues.NameToken"/> has it replaced by this (e.g. the species of a catch he
+        /// has to let go); a line without the token ignores it.</summary>
+        public readonly string Name;
+
+        public InnerVoiceCue(string cueId) { CueId = cueId; Name = null; }
+
+        public InnerVoiceCue(string cueId, string name) { CueId = cueId; Name = name; }
     }
 
     /// <summary>
@@ -210,5 +217,48 @@ namespace HiddenHarbours.Core
         /// <summary>The hook has just been set in a fish in the top band of her species
         /// (<c>GameConfig.FishFeel.BigOneThreshold01</c>). Raised by the rod loop once per such hook.</summary>
         public const string BigOneHooked = "cue.fishing.big_one_hooked";
+
+        /// <summary>An action was refused because she is too tired (<see cref="NeedsGate"/>).</summary>
+        public const string TooTired = "cue.needs.too_tired";
+
+        /// <summary>An action was refused because she is too hungry (<see cref="NeedsGate"/>).</summary>
+        public const string TooHungry = "cue.needs.too_hungry";
+
+        /// <summary>An action was refused because she is both (<see cref="NeedsGate"/>): one combined
+        /// line, never two bubbles.</summary>
+        public const string TooTiredAndHungry = "cue.needs.too_tired_and_hungry";
+
+        /// <summary>He took one off a store's shelf and paid for it (buying at the shelf).</summary>
+        public const string ShelfBought = "cue.shop.shelf_bought";
+
+        /// <summary>He reached for a shelf good and the shelf was empty.</summary>
+        public const string ShelfSoldOut = "cue.shop.shelf_sold_out";
+
+        /// <summary>He reached for a shelf good he cannot pay for.</summary>
+        public const string ShelfTooDear = "cue.shop.shelf_too_dear";
+
+        /// <summary>He reached for a shelf good that goes in a hand, and both are full.</summary>
+        public const string ShelfHandsFull = "cue.shop.shelf_hands_full";
+
+        /// <summary>He paid for a shelf good and it went into the paper bag in his hand.</summary>
+        public const string ShelfBagged = "cue.shop.shelf_bagged";
+
+        /// <summary>He reached for a bagged good and the paper bag in his hand is full.</summary>
+        public const string ShelfBagFull = "cue.shop.shelf_bag_full";
+
+        /// <summary>He reached for a bagged good while his paper bag is set down somewhere else.</summary>
+        public const string ShelfBagElsewhere = "cue.shop.shelf_bag_elsewhere";
+
+        /// <summary>He put the shopping in his bag away into his own storage.</summary>
+        public const string ShoppingPutAway = "cue.shop.shopping_put_away";
+
+        /// <summary>A catch was released because he holds no licence for its species (owner ruling
+        /// 2026-11-23). Raised with the species' display name in <see cref="InnerVoiceCue.Name"/>: once per
+        /// rod landing, once per dig, and once per trap haul however many went back.</summary>
+        public const string UnlicensedCatch = "cue.fishing.unlicensed_catch";
+
+        /// <summary>The placeholder a line asset writes where <see cref="InnerVoiceCue.Name"/> is said
+        /// (e.g. "I don't have a licence for this {name} yet.").</summary>
+        public const string NameToken = "{name}";
     }
 }

@@ -92,7 +92,7 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void GreyboxLadder_TheSkiffHold_ReadsEmptyLowHalfBrim()
         {
-            // The shipped read: HoldUnits 6 (dory/skiff) over the 4 greybox states — the exact ladder
+            // HoldUnits 6 (dory/skiff) over four painted states (empty/low/half/brim) — the exact ladder
             // the owner sees as he bands keepers one by one.
             int[] expected = { 0, 1, 1, 2, 2, 2, 3 };
             for (int used = 0; used <= 6; used++)

@@ -50,19 +50,19 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void AuthoredFillStates_HaveNoHoles_AndAtLeastTwoStates()
         {
-            // An EMPTY array is the deliberate greybox choice (code-built silhouettes). But once the
-            // owner's painted states land, the set must be complete: no null holes (a hole would flash
-            // greybox mid-ladder) and at least empty + brim (one sprite cannot visibly change).
+            // An EMPTY array means no tray is drawn until the art lands. But once the owner's painted
+            // states land, the set must be complete: no null holes (a hole would blank the tray
+            // mid-ladder) and at least empty + brim (one sprite cannot visibly change).
             foreach (var d in LoadAll<DeckContainerDef>())
             {
                 string path = AssetDatabase.GetAssetPath(d);
-                if (d.FillSprites == null || d.FillSprites.Length == 0) continue;   // greybox fallback — fine
+                if (d.FillSprites == null || d.FillSprites.Length == 0) continue;   // not painted yet: draws nothing
 
                 Assert.GreaterOrEqual(d.FillSprites.Length, 2,
                     $"{path}: one painted state can't read fullness — author at least empty + brim");
                 for (int i = 0; i < d.FillSprites.Length; i++)
                     Assert.IsNotNull(d.FillSprites[i],
-                        $"{path}: FillSprites[{i}] is a null hole — the tray would flash greybox mid-ladder");
+                        $"{path}: FillSprites[{i}] is a null hole — the tray would vanish mid-ladder");
             }
         }
 

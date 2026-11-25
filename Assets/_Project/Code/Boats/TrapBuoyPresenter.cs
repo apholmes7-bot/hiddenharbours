@@ -35,9 +35,8 @@ namespace HiddenHarbours.Boats
     /// </summary>
     public sealed class TrapBuoyPresenter : MonoBehaviour
     {
-        // Draw ABOVE the Sea plane (St Peters' Sea is order -5), the water-surface-prop order the
-        // LobsterBuoy decor used, so the buoy sits ON the water in front of the surface.
-        private const int BuoySortingOrder = 3;
+        // ADR 0059 step 2: no fixed order. The buoy sorts by the decor band's Y-sort at the point it floats
+        // (EffectSorting, SortedEffect.Buoy): above the Sea plane still, and now among the decor by position.
 
         /// <summary>The Core icon key the player's trap-buoy sprite is authored under (an IconLibrary
         /// entry). A registry KEY like the UI's "ui.coin" glyphs, not a Def id — the colour-of-ownership
@@ -98,7 +97,7 @@ namespace HiddenHarbours.Boats
 
             var sr = visualGo.AddComponent<SpriteRenderer>();
             sr.sprite = art;
-            sr.sortingOrder = BuoySortingOrder;
+            sr.sortingOrder = EffectSorting.OrderAt(SortedEffect.Buoy, e.PosY);
 
             var buoy = go.AddComponent<BuoyWaveVisual>();
             buoy.Configure(sr, visualGo.transform);

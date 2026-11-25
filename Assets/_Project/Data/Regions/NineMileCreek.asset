@@ -22,6 +22,7 @@ MonoBehaviour:
   WorldCenter: {x: 0, y: 0}
   WorldSizeMeters: {x: 760, y: 560}
   SeabedPixelsPerMetre: 2
+  WorldOrigin: {x: 0, y: 0}
   IsDeepHarbour: 0
   HarbourDepthMeters: 1.6
   TideMeanLevel: 0

@@ -361,6 +361,9 @@ namespace HiddenHarbours.Boats
 
                     var wave = fisher.Root.AddComponent<BoatWaveMotion>();
                     wave.Configure(visualGo.transform, (IBoatHullPresenter)null);
+
+                    // Still one boat among the scenery (ADR 0059 step 3), as the skinned branch is.
+                    BoatSortingGroup.Install(fisher.Root);
                 }
 
                 fisher.Heading = Vector2.up;
@@ -368,7 +371,7 @@ namespace HiddenHarbours.Boats
                 fisher.Buoys = new Buoy[spotsPerBoat];
                 Sprite buoySprite = BuildBuoySprite(tint);
                 for (int j = 0; j < spotsPerBoat; j++)
-                    fisher.Buoys[j] = BuildBuoy(fleet.Root.transform, def.Id, b, j, buoySprite, def.BuoySortingOrder);
+                    fisher.Buoys[j] = BuildBuoy(fleet.Root.transform, def.Id, b, j, buoySprite);
 
                 fleet.Boats[b] = fisher;
             }
@@ -376,7 +379,7 @@ namespace HiddenHarbours.Boats
         }
 
         private static Buoy BuildBuoy(Transform parent, string fleetId, int boatIndex, int spotIndex,
-                                      Sprite sprite, int sortingOrder)
+                                      Sprite sprite)
         {
             var buoy = new Buoy();
             buoy.Id = $"fleet.{fleetId}.boat{boatIndex}.buoy{spotIndex}";   // SnagTargets key while shown
@@ -389,7 +392,8 @@ namespace HiddenHarbours.Boats
 
             buoy.Renderer = visualGo.AddComponent<SpriteRenderer>();
             buoy.Renderer.sprite = sprite;
-            buoy.Renderer.sortingOrder = sortingOrder;
+            // ADR 0059 step 2: sorted where it floats; re-sorted each time the day's plan places it.
+            buoy.Renderer.sortingOrder = EffectSorting.OrderAt(SortedEffect.Buoy, buoy.Root.transform.position.y);
 
             // The proven wave-rider, reused unchanged (bob + waterline + vanish-under-a-crest).
             buoy.WaveVisual = buoy.Root.AddComponent<BuoyWaveVisual>();
@@ -459,7 +463,10 @@ namespace HiddenHarbours.Boats
                     bool present = j < fisher.Spots.Length &&
                                    AmbientFleetSchedule.BuoyPresent(s, j, fisher.Spots.Length, flip);
                     if (j < fisher.Spots.Length)
+                    {
                         buoy.Root.transform.position = new Vector3(fisher.Spots[j].x, fisher.Spots[j].y, 0f);
+                        buoy.Renderer.sortingOrder = EffectSorting.OrderAt(SortedEffect.Buoy, fisher.Spots[j].y);
+                    }
                     SnapBuoy(buoy, present);
                 }
             }

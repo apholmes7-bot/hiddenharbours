@@ -110,6 +110,8 @@ namespace HiddenHarbours.Art
             if (profile == null) return Color.white;   // no profile → no tint (full daylight); never throw
             float t = TintPhase(hour, profile);
             Color sky = profile.SkyTint.Evaluate(t);
+            float glow = SunsetGlowWeight(hour, profile);
+            if (glow > 0f) sky = Color.Lerp(sky, profile.SunsetGlowTint, glow);
             float intensity = Mathf.Max(profile.Intensity.Evaluate(IntensityPhase(hour, profile)), 0f);
             Color lit = new Color(sky.r * intensity, sky.g * intensity, sky.b * intensity, 1f);
 
@@ -123,15 +125,42 @@ namespace HiddenHarbours.Art
             return outCol;
         }
 
+        /// <summary>
+        /// How far the day tint is pulled toward <see cref="DayNightProfile.SunsetGlowTint"/> this hour (0..1): a
+        /// smooth rise over the <see cref="DayNightProfile.SunsetGlowLeadHours"/> before the published sunset to
+        /// <see cref="DayNightProfile.SunsetGlowStrength"/> at sunset, then a smooth fall to 0 by NightHour. Zero
+        /// everywhere when the strength is 0 (the tint is then exactly the gradient's). Pure (rule 5).
+        /// </summary>
+        public static float SunsetGlowWeight(float hour, DayNightProfile profile)
+        {
+            if (profile == null) return 0f;
+            float strength = Mathf.Clamp01(profile.SunsetGlowStrength);
+            if (strength <= 0f) return 0f;
+            float h = Mathf.Repeat(hour, 24f);
+            float dawn = Mathf.Clamp(profile.SunriseHour, 0.001f, 23.99f);
+            float dusk = Mathf.Clamp(profile.SunsetHour, dawn + 0.001f, 23.995f);
+            float night = Mathf.Clamp(profile.NightHour, dusk + 0.001f, 23.999f);
+            float start = Mathf.Max(dusk - Mathf.Max(profile.SunsetGlowLeadHours, 0.001f), dawn);
+            if (h <= start || h >= night) return 0f;
+            float w = h < dusk
+                ? Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(start, dusk, h))
+                : 1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(dusk, night, h));
+            return strength * w;
+        }
+
         /// <summary>Map the clock onto the authored solar keys, using the same hours as the sun.</summary>
         public static float TintPhase(float hour, DayNightProfile profile)
-            => SolarPhase(hour, profile, profile.SunsetHour - profile.WarmKeyBeforeSunsetHours);
+            => SolarPhase(hour, profile, profile.SunsetHour - profile.WarmKeyBeforeSunsetHours,
+                          profile.NightBlendHours);
 
         /// <summary>Brightness retains its existing key hours; the warm-colour lead does not retime it.</summary>
         public static float IntensityPhase(float hour, DayNightProfile profile)
-            => SolarPhase(hour, profile, profile.SunsetHour);
+            => SolarPhase(hour, profile, profile.SunsetHour, float.PositiveInfinity);
 
-        static float SolarPhase(float hour, DayNightProfile profile, float warmHour)
+        /// <param name="nightBlendHours">How long before NightHour the warm key (0.75) starts sinking toward
+        /// night (0.80). Infinity, or anything covering the whole warm-to-night stretch, is the single long
+        /// blend this method always had.</param>
+        static float SolarPhase(float hour, DayNightProfile profile, float warmHour, float nightBlendHours)
         {
             float h = Mathf.Repeat(hour, 24f);
             float dawn = Mathf.Clamp(profile.SunriseHour, 0.001f, 23.99f);
@@ -144,7 +173,12 @@ namespace HiddenHarbours.Art
             if (h < morning) return Mathf.Lerp(0.20f, 0.32f, Mathf.InverseLerp(dawn, morning, h));
             if (h < noon) return Mathf.Lerp(0.32f, 0.50f, Mathf.InverseLerp(morning, noon, h));
             if (h < warm) return Mathf.Lerp(0.50f, 0.75f, Mathf.InverseLerp(noon, warm, h));
-            if (h < night) return Mathf.Lerp(0.75f, 0.80f, Mathf.InverseLerp(warm, night, h));
+            if (h < night)
+            {
+                float blendFrom = Mathf.Clamp(night - Mathf.Max(nightBlendHours, 0f), warm, night - 0.001f);
+                if (h < blendFrom) return 0.75f;
+                return Mathf.Lerp(0.75f, 0.80f, Mathf.InverseLerp(blendFrom, night, h));
+            }
             return Mathf.Lerp(0.80f, 1f, Mathf.InverseLerp(night, 24f, h));
         }
 

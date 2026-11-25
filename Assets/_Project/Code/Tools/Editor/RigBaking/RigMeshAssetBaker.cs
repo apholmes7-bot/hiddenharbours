@@ -963,12 +963,7 @@ namespace HiddenHarbours.Tools.RigBaking
 
             var room = BoatInteriorGeometryExtractor.Extract(host, interiorKey, data, interiorRig,
                                                              variantLiteral);
-            if (room.Materials.Count > HullMeshDef.InteriorRampSlots)
-                throw new InvalidOperationException(
-                    $"{globalName}'s room paints {room.Materials.Count} ramps and the facet shader's " +
-                    $"_RampMetaInterior holds {HullMeshDef.InteriorRampSlots}. Do NOT spend the hull's " +
-                    "own 16 to fix this — that cap is a fleet law. Merge ramps in the extraction, or " +
-                    "take a widening upstream with a measured cost.");
+            RigRoomExtraction.RequireInteriorRampsFit(globalName, room.Materials.Count);
 
             data.Faces.AddRange(room.Faces);
             data.InteriorMaterials = room.Materials;

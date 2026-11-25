@@ -131,7 +131,13 @@ namespace HiddenHarbours.World
         private Func<IReadOnlyList<QuestDef>> _quests;
         private Func<IReadOnlyList<KnowledgePageDef>> _knowledge;
         private Func<IReadOnlyList<NotebookNote>> _notes;
+        private Func<IReadOnlyList<CaughtSpeciesEntry>> _caught;
         private IFlagStore _flags;
+
+        // The Gear page: what he holds (asked fresh on every open) and the page's authored shape.
+        private INotebookGearSource _gearSource;
+        private NotebookGearPageDef _gearPage;
+        private readonly List<NotebookGearHolding> _gearHeld = new List<NotebookGearHolding>();
 
         // ---- the purse (the 2026-08-22 diegetic ruling) ---------------------------------------------
         // The money came OFF the HUD band and lives here. Tracked rather than read straight from the
@@ -153,7 +159,8 @@ namespace HiddenHarbours.World
         private Text _registerLabel;                      // the left head, left: the lift line
         private Text _weightLabel;                        // the left head, right: the weight readout
         private string _registerLine = "";                // the last landing's line (stands until the next)
-        private readonly CountUp _weight = new CountUp(); // tenths of a kg
+        private readonly CountUp _weight = new CountUp(); // whole grams (WeightFormat reads them as g or kg)
+        private int _weightTargetGrams;                   // where the readout lands (the register's reserve)
         private bool _weightAnimating;
         private readonly CountUp _purse = new CountUp();  // the balance after a sale
         private readonly StringBuilder _sb = new StringBuilder(32);   // pre-sized; ONE small string per tick
@@ -267,17 +274,47 @@ namespace HiddenHarbours.World
         public void WireContent(Func<IReadOnlyList<QuestDef>> quests,
                                 Func<IReadOnlyList<KnowledgePageDef>> knowledge,
                                 Func<IReadOnlyList<NotebookNote>> notes,
-                                IFlagStore flags)
+                                IFlagStore flags,
+                                Func<IReadOnlyList<CaughtSpeciesEntry>> caught = null)
         {
             _quests = quests;
             _knowledge = knowledge;
             _notes = notes;
             _flags = flags;
+            _caught = caught;
 
             // Wired EXPLICITLY, so the runtime defaults stand down — including when an argument is null.
             // A test that wants an empty book must be able to say so, and "you passed nothing" and "you
             // said nothing" are different sentences.
             _contentWired = true;
+        }
+
+        /// <summary>
+        /// Tell the book where the Gear page's holdings and shape come from. A test or tooling hands in a
+        /// fake source; <b>null puts the running game's back</b> (the save's lockers and the shipped page
+        /// Def), so a test that borrowed the page cannot leave the installed book without one.
+        /// <see cref="WireContent"/> alone leaves the Gear page off, so a book wired for an exact tab set
+        /// keeps exactly that set.
+        /// </summary>
+        public void WireGear(INotebookGearSource source, NotebookGearPageDef page = null)
+        {
+            if (source == null)
+            {
+                _gearSource = NotebookContentSource.Gear();
+                _gearPage = NotebookContentSource.GearPage();
+                return;
+            }
+
+            _gearSource = source;
+            _gearPage = page;
+        }
+
+        /// <summary>The index of the stub with this key in <see cref="Tabs"/>, or -1.</summary>
+        public int TabIndexOf(string key)
+        {
+            for (int i = 0; i < _tabs.Count; i++)
+                if (_tabs[i].Key == key) return i;
+            return -1;
         }
 
         // ---- what the book resolves for itself --------------------------------------------------------
@@ -345,7 +382,9 @@ namespace HiddenHarbours.World
             _quests = NotebookContentSource.Quests;
             _knowledge = NotebookContentSource.Knowledge;
             _notes = NotebookContentSource.Notes;
+            _caught = NotebookContentSource.Caught;
             _flags = NotebookContentSource.Flags();
+            if (_gearSource == null) WireGear(null);
         }
 
         // ---- open / close ----------------------------------------------------------------------------
@@ -462,8 +501,15 @@ namespace HiddenHarbours.World
             Fit = FitForScreen();
 
             _tabs.Clear();
+            IReadOnlyList<NotebookGearHolding> gear = null;
+            if (_gearSource != null)
+            {
+                _gearSource.Collect(_gearHeld);
+                gear = _gearHeld;
+            }
             var built = NotebookContent.Build(
-                _quests?.Invoke(), _knowledge?.Invoke(), _notes?.Invoke(), _flags, Fit.Cols);
+                _quests?.Invoke(), _knowledge?.Invoke(), _notes?.Invoke(), _flags, Fit.Cols,
+                droppedTabs: null, caught: _caught?.Invoke(), gear: gear, gearPage: _gearPage);
             _tabs.AddRange(built);
 
             if (_tabs.Count == 0)
@@ -769,12 +815,24 @@ namespace HiddenHarbours.World
                         }
                     }
 
+                    bool faint = row.State == NotebookStepState.Done;
+
+                    if (row.HasIcon)
+                    {
+                        // A pictured block (the Gear page): the picture once, beside its first line, and
+                        // every line of the block indented past it.
+                        if (!row.Continuation) DrawIcon(page, row.IconId, row.Text, titleX, rowY, faint);
+                        int lane = NotebookLayout.IconLaneCells * NotebookKit.CellWidth;
+                        AddText(page, row.Text, titleX + lane, rowY, titleW - lane, faint ? InkFaint : Ink);
+                        continue;
+                    }
+
                     bool wide = row.Wide;
                     AddText(page, row.Text,
                             wide ? titleX : textX,
                             rowY,
                             wide ? titleW : textW,
-                            row.State == NotebookStepState.Done ? InkFaint : Ink);
+                            faint ? InkFaint : Ink);
                 }
 
                 if (placement.Block.Archived && _stampDone != null && placement.FromRow == 0)
@@ -784,6 +842,44 @@ namespace HiddenHarbours.World
                 }
             }
         }
+
+        /// <summary>The name of a drawn picture, and of the paper placeholder drawn where an id has none —
+        /// what a test looks for.</summary>
+        public const string IconPieceName = "GearIcon";
+        public const string IconPlaceholderName = "GearIconPlaceholder";
+
+        /// <summary>
+        /// One picture beside a pictured block's first line: the id's icon from Core's
+        /// <see cref="IconRegistry"/>, square and aspect-kept, or — where the id has none yet — a tidy
+        /// paper placeholder (a ruled frame with the item's initial in faint pencil), never a blank and
+        /// never a missing-texture square.
+        /// </summary>
+        private void DrawIcon(RectTransform page, string iconId, string name, int x, int rowY, bool faint)
+        {
+            int size = NotebookLayout.IconSize;
+            int y = rowY - 2;   // two ruled lines tall, clear of the second line's rule
+            Sprite icon = IconRegistry.Get(iconId);
+
+            if (icon != null)
+            {
+                RectTransform piece = AddPiece(page, IconPieceName, icon, x, y, size, size, Ink);
+                var image = piece.GetComponent<Image>();
+                image.preserveAspect = true;
+                if (faint) image.color = FaintPicture;
+                return;
+            }
+
+            RectTransform slot = AddPiece(page, IconPlaceholderName, null, x, y, size, size, PaperInk);
+            AddPiece(slot, "Edge", null, 0, 0, size, 1, RuleInk);
+            AddPiece(slot, "Edge", null, 0, size - 1, size, 1, RuleInk);
+            AddPiece(slot, "Edge", null, 0, 0, 1, size, RuleInk);
+            AddPiece(slot, "Edge", null, size - 1, 0, 1, size, RuleInk);
+            if (!string.IsNullOrEmpty(name))
+                AddText(slot, name.Substring(0, 1).ToUpperInvariant(), 0, (size - NotebookKit.CellHeight) / 2 + 1,
+                        size, InkFaint, TextAnchor.UpperCenter);
+        }
+
+        private static readonly Color FaintPicture = new Color(1f, 1f, 1f, 0.4f);
 
         private void DrawTabs(int x, int y)
         {
@@ -795,9 +891,13 @@ namespace HiddenHarbours.World
                 // stands proud of the fore-edge", and those 9 px are exactly what a five-character
                 // label needs — ChipChars × CellWidth = 25 px against TabCol's 22 px lane. Drawn at
                 // TabCol, TASKS overflowed its own chip (found on the 2026-08-20 eyeball proofs).
-                RectTransform chip = AddPiece(_bookRect, "Tab", _tab, x, tabY,
+                // The selected stub is the kit's "on" state: pulled out, inked edge, lit top row. A
+                // tint alone cannot carry it: a baked chip draws white, so the gold never showed.
+                bool on = i == TabIndex;
+                RectTransform chip = AddPiece(_bookRect, "Tab", _tab, on ? x + NotebookKit.TabPull : x, tabY,
                                               NotebookKit.TabChipWidth, NotebookKit.TabHeight,
-                                              i == TabIndex ? GoldInk : TabInk);
+                                              on ? GoldInk : TabInk);
+                if (on) DrawTabOn(chip);
 
                 // The chip clips at the kit's cap, applied here rather than at the model, so the full
                 // label stays readable to anything that wants it.
@@ -813,6 +913,19 @@ namespace HiddenHarbours.World
             {
                 AddPiece(_bookRect, "Ribbon", _ribbon, x - NotebookKit.RibbonWidth - 1, y, 5, 26, GoldInk);
             }
+        }
+
+        /// <summary>The "on" stub's ink, drawn over the card in the rig's order: an ink line down the
+        /// end nearest the page and along the top, and a paper-lit row under the top line. Its outer
+        /// end takes the gold band, the one warm accent the shared palette keeps for the selected stub.</summary>
+        private void DrawTabOn(RectTransform chip)
+        {
+            int w = NotebookKit.TabChipWidth, h = NotebookKit.TabHeight;
+            AddPiece(chip, "TabOnGold", null, w - NotebookKit.TabPull, 0, NotebookKit.TabPull, h, GoldInk);
+            AddPiece(chip, "TabOnEdge", null, 0, 0, NotebookKit.Edge, h, InkStrong);
+            AddPiece(chip, "TabOnTop", null, 0, 0, w, NotebookKit.Edge, InkStrong);
+            AddPiece(chip, "TabOnLit", null, NotebookKit.Edge, NotebookKit.Edge,
+                     w - NotebookKit.Edge - NotebookKit.TabPull, NotebookKit.Edge, PaperInk);
         }
 
         private void DrawPageMarks(int x, int y, int pageW, int pageH)
@@ -915,8 +1028,12 @@ namespace HiddenHarbours.World
         /// <summary>The last landing's line in the register — what the left head letters (tests, proofs).</summary>
         public string RegisterLine => _registerLine;
 
-        /// <summary>The weight readout right now, in tenths of a kg (tests: the count-up, and where it landed).</summary>
-        public int WeightTenths => _weight.Value;
+        /// <summary>The weight readout right now, in whole grams (tests: the count-up, and where it landed).
+        /// It is lettered by <see cref="WeightFormat.WriteGrams"/>: grams under a kilogram, else kg to one decimal.</summary>
+        public int WeightGrams => _weight.Value;
+
+        /// <summary>The weight readout's text right now ("40 g", "1.2 kg") — what the left head letters.</summary>
+        public string WeightReadout => WeightText();
 
         /// <summary>The balance the purse letters right now: the true balance, or — for the length of a sale's
         /// coins and count-up — the balance she SEES climbing toward it.</summary>
@@ -934,7 +1051,24 @@ namespace HiddenHarbours.World
             _registerLine = LiftLine.For(e.Item);
             if (!IsOpen) return;
             EnsureRegisterLabels();
-            if (_registerLabel != null && _registerLabel.text != _registerLine) _registerLabel.text = _registerLine;
+            RepaintRegister();
+        }
+
+        /// <summary>The register line as the head letters it: fitted to the cells the head has beside the
+        /// weight readout, so it never runs across the gutter onto the facing leaf.</summary>
+        public string RegisterShown =>
+            NotebookLayout.FitLine(_registerLine, NotebookLayout.RegisterCols(_leftHeadW, RegisterWeightGrams));
+
+        // A lettered readout always takes its room, even reading "0 g" (hence the floor of one gram).
+        private int RegisterWeightGrams =>
+            _weightLabel != null || _weight.Value > 0 || _weight.Running
+                ? Mathf.Max(1, Mathf.Max(_weight.Value, _weightTargetGrams)) : 0;
+
+        private void RepaintRegister()
+        {
+            if (_registerLabel == null) return;
+            string shown = RegisterShown;
+            if (_registerLabel.text != shown) _registerLabel.text = shown;
         }
 
         /// <summary>
@@ -944,19 +1078,22 @@ namespace HiddenHarbours.World
         public void OnMoment(JuiceMomentCue e)
         {
             if (e.Kind != JuiceMoment.Landing && e.Kind != JuiceMoment.DigStrike) return;
-            int tenths = Mathf.RoundToInt(Mathf.Max(0f, e.Strength) * 10f);
+            // Whole grams, not tenths of a kg: a 40 g smelt is 0 tenths, which read "0.0 kg" (or nothing).
+            int grams = WeightFormat.Grams(e.Strength);
+            _weightTargetGrams = grams;
             JuiceSettings j = Juice;
             if (!IsOpen || !j.MomentsEnabled || j.WeightCountUpSeconds <= 0f)
             {
-                _weight.Set(tenths);
+                _weight.Set(grams);
                 _weightAnimating = false;
-                if (IsOpen) { EnsureRegisterLabels(); RepaintWeight(1f); }
+                if (IsOpen) { EnsureRegisterLabels(); RepaintWeight(1f); RepaintRegister(); }
                 return;
             }
+            _weight.Start(0, grams, j.WeightCountUpSeconds);
             EnsureRegisterLabels();
-            _weight.Start(0, tenths, j.WeightCountUpSeconds);
             _weightAnimating = true;
             RepaintWeight(1f);
+            RepaintRegister();
         }
 
         /// <summary>The sale: arm the coins (crate → purse) and the balance's climb behind them (§4.2).
@@ -1069,16 +1206,14 @@ namespace HiddenHarbours.World
         {
             if (_bookRect == null) return;
             if (_registerLabel == null && !string.IsNullOrEmpty(_registerLine))
-                _registerLabel = AddText(_bookRect, _registerLine, _leftHeadX, _leftHeadY, _leftHeadW, Ink, TextAnchor.UpperLeft);
+                _registerLabel = AddText(_bookRect, RegisterShown, _leftHeadX, _leftHeadY, _leftHeadW, Ink, TextAnchor.UpperLeft);
             if (_weightLabel == null && (_weight.Value > 0 || _weight.Running))
                 _weightLabel = AddText(_bookRect, WeightText(), _leftHeadX, _leftHeadY, _leftHeadW, InkStrong, TextAnchor.UpperRight);
         }
 
         private string WeightText()
         {
-            _sb.Clear();
-            _weight.WriteTo(_sb, 1);
-            _sb.Append(" kg");
+            WeightFormat.WriteGrams(_sb, _weight.Value);
             return _sb.ToString();
         }
 

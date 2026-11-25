@@ -76,6 +76,13 @@ namespace HiddenHarbours.World
             public double CentreX, CentreY, Reach;
             public double Level, LevelTolerance;
             public double KeepX, KeepY, KeepReach = -1;
+
+            // a brook's bed: its dish's half-width at the start and the end, depth, bank, wander, fades and seed
+            public double HalfWidthFrom, HalfWidthTo, BedDepth, BankWidth, Wander, WanderLambda, FadeIn, FadeOut, Floor, DryAbove = double.PositiveInfinity;
+            public int Seed;
+            // ... its shallowing down the run-out (from Line[RunOutFrom], the brook's last point) and its braid bar
+            public double ShallowTo = 1, BraidMid, BraidLength, BraidHeight, BraidHalf, BraidOffset;
+            public int RunOutFrom = -1;
         }
 
         /// <summary>What one ask did: the cells it laid (a patch) or changed (the game's), and its largest raise and cut.</summary>
@@ -167,7 +174,12 @@ namespace HiddenHarbours.World
             {
                 if (d.Retired) continue;
                 var line = d.Line;
-                if (!string.IsNullOrEmpty(d.LineOf))
+                if (d.Kind == GroundAskKind.BrookBed)
+                {
+                    if (d.Stream == null) throw new InvalidDataException("[GroundFileImport] " + d.Id + ": a brook's bed names no brook.");
+                    line = d.Stream.LineWithRunOut(d.FromStation);
+                }
+                else if (!string.IsNullOrEmpty(d.LineOf))
                 {
                     if (!byId.TryGetValue(d.LineOf, out var of)) throw new InvalidDataException("[GroundFileImport] " + d.Id + " reads the line of " + d.LineOf + ", which the file does not list.");
                     line = of.Line;
@@ -198,7 +210,13 @@ namespace HiddenHarbours.World
                 SeaFade = Num(d.SeaFade.x), SeaFadeOver = Num(d.SeaFade.y), LandFade = Num(d.LandFade.x), LandFadeOver = Num(d.LandFade.y),
                 SeaZ = Num(d.SeaZ), SeaTail = Num(d.SeaTail), Margin = Num(d.Margin), FootprintStep = Num(d.FootprintStep),
                 CentreX = Num(d.Centre.x), CentreY = Num(d.Centre.y), Reach = Num(d.Reach), Level = Num(d.Level), LevelTolerance = Num(d.LevelTolerance),
+                HalfWidthFrom = Num(d.BedHalfWidth.x), HalfWidthTo = Num(d.BedHalfWidth.y), BedDepth = Num(d.BedDepth), BankWidth = Num(d.BankWidth),
+                Wander = Num(d.BedWander.x), WanderLambda = Num(d.BedWander.y), FadeIn = Num(d.BedFade.x), FadeOut = Num(d.BedFade.y), Floor = Num(d.BedFloor), DryAbove = Num(d.BedDryAbove), Seed = d.Seed,
+                ShallowTo = Num(d.BedShallowTo), BraidMid = Num(d.BedBraid.x), BraidLength = Num(d.BedBraid.y), BraidHeight = Num(d.BedBraid.z),
+                BraidHalf = Num(d.BedBraid.w), BraidOffset = Num(d.BedBraidOffset),
             };
+            if (d.Kind == GroundAskKind.BrookBed && d.Stream != null && d.Stream.Points != null && d.Stream.Points.Length > 0)
+                a.RunOutFrom = Math.Max(0, d.Stream.Points.Length - 1 - Math.Max(0, d.FromStation));
             if (keep != null) { a.KeepX = Num(keep.Centre.x); a.KeepY = Num(keep.Centre.y); a.KeepReach = Num(keep.Reach); }
             line = line ?? new Vector2[0];
             a.Line = new PlanPoint[line.Length];
@@ -241,6 +259,7 @@ namespace HiddenHarbours.World
                     case GroundAskKind.ShoreBlend: ShoreBlend(r, a, k, rec); Reach(rec, a.WinX0, a.WinY0, a.WinX1, a.WinY1); break;
                     case GroundAskKind.ChannelHold: ChannelHold(r, a, k, springLow, rec); ReachOfLine(rec, a.Line, g.Mpp); break;
                     case GroundAskKind.HollowFill: HollowFill(r, a, k, rec); Reach(rec, a.WinX0, a.WinY0, a.WinX1, a.WinY1); break;
+                    case GroundAskKind.BrookBed: BrookBed(r, a, k, rec); break;
                     case GroundAskKind.Rule: Reach(rec, a.CentreX - a.Reach, a.CentreY - a.Reach, a.CentreX + a.Reach, a.CentreY + a.Reach); break;
                     default: throw new InvalidDataException("[GroundFileImport] " + a.Id + ": no such kind " + a.Kind + ".");
                 }
@@ -605,6 +624,131 @@ namespace HiddenHarbours.World
                 r.E[i] = en;
                 r.Owner[i] = k;
                 rec.Cells++;
+            }
+        }
+
+        // ---- a brook's bed down the beach --------------------------------------------------------------------------------
+
+        /// <summary>The bed's line: the brook's points and run-out as the derivation draws a brook (Catmull-Rom), at the ask's step.</summary>
+        public static PlanLine BedLine(Ask a) => Catmull(a.Line, a.SampleStep);
+
+        /// <summary>
+        /// The bed's bank level along its line, at the line's samples: the ground on the line, smoothed along it by a
+        /// Gaussian of <see cref="Ask.Sigma"/> (cut at three sigmas, renormalised at the ends), then never climbing downstream:
+        /// a dip on the line is filled to the lip below it (the water spills over the lip and on), never cut to the dip's floor.
+        /// </summary>
+        public static double[] BankLevels(Result r, Ask a, PlanLine line)
+        {
+            int n = line.R.Length;
+            var raw = new double[n];
+            for (int j = 0; j < n; j++) raw[j] = r.Bilinear(r.E, line.R[j].X, line.R[j].Y);
+            double sig = a.Sigma / a.SampleStep;
+            int half = (int)Math.Ceiling(3 * sig);
+            var bank = new double[n];
+            for (int j = 0; j < n; j++)
+            {
+                double acc = 0, wsum = 0;
+                for (int q = Math.Max(0, j - half); q <= Math.Min(n - 1, j + half); q++)
+                {
+                    double u = (q - j) / sig, w = Math.Exp(-0.5 * u * u);
+                    acc += raw[q] * w; wsum += w;
+                }
+                bank[j] = acc / wsum;
+            }
+            for (int j = n - 2; j >= 0; j--) bank[j] = Math.Max(bank[j], bank[j + 1]);
+            return bank;
+        }
+
+        /// <summary>
+        /// The dish's half-width on one side at an arc length: the start's to the end's by length, each bank wandering in
+        /// and out by up to <see cref="Ask.Wander"/> of it (snoise along the line at twice its spread, clipped; its own seed per side).
+        /// </summary>
+        public static double BedHalfWidth(Ask a, double along, double length, double side)
+        {
+            double hw = a.HalfWidthFrom + (a.HalfWidthTo - a.HalfWidthFrom) * Clip(along / length, 0, 1);
+            if (!(a.Wander > 0)) return hw;
+            return hw * (1 + a.Wander * Clip(2 * SNoise(along, 0, a.Seed + (side > 0 ? 1 : 0), a.WanderLambda), -1, 1));
+        }
+
+        /// <summary>
+        /// The share of the bed's depth (and of the brook's water over it) at an arc length: 1 down to the brook's last point, then
+        /// linear to <see cref="Ask.ShallowTo"/> at the line's end.
+        /// </summary>
+        public static double ShallowAt(Ask a, PlanLine line, double u)
+        {
+            if (!(a.ShallowTo < 1) || a.RunOutFrom < 0 || line.Knots == null || line.Knots.Length == 0) return 1;
+            double uR = line.Knots[Math.Min(a.RunOutFrom, line.Knots.Length - 1)], L = line.Length;
+            if (!(L > uR)) return 1;
+            return 1 + (a.ShallowTo - 1) * Clip((u - uR) / (L - uR), 0, 1);
+        }
+
+        /// <summary>
+        /// The braid bar's raise of the bed at an arc length and a signed offset across the line: a cosine ridge
+        /// <see cref="Ask.BraidHalf"/> each side of its middle, which sits <see cref="Ask.BraidOffset"/> to the seed's side and wanders
+        /// by half its half-width; it rises and falls as sin π over its length, so the two threads part and rejoin.
+        /// </summary>
+        public static double BraidRaise(Ask a, double L, double u, double across)
+        {
+            if (!(a.BraidHeight > 0)) return 0;
+            double t = (u - (L - a.BraidMid - a.BraidLength / 2)) / a.BraidLength;
+            if (!(t > 0 && t < 1)) return 0;
+            double sideOf = (a.Seed & 1) == 0 ? 1 : -1;
+            double mid = sideOf * a.BraidOffset + 0.5 * a.BraidHalf * Clip(SNoise(u, 0, a.Seed + 2, a.WanderLambda), -1, 1);
+            double q = Math.Abs(across - mid) / a.BraidHalf;
+            if (!(q < 1)) return 0;
+            return a.BraidHeight * Math.Sin(Math.PI * t) * (0.5 + 0.5 * Math.Cos(Math.PI * q));
+        }
+
+        /// <summary>
+        /// A brook's bed cut down the beach (cut and fill). Along the line the bank level is <see cref="BankLevels"/>;
+        /// across it, a flat floor <see cref="Ask.BedDepth"/> under that level out to <see cref="Ask.Floor"/>, then the ground
+        /// that level less BedDepth × (½ + ½ cos πt), t the distance past the floor over the rest of the half-width, so the bed is
+        /// level from bank to bank and its middle (the brook's line) is its floor; past the
+        /// dish it blends back to the ground over <see cref="Ask.BankWidth"/>. The whole fades in from the line's start and
+        /// out before its end; a cell past either end is never touched. A brook's water laid on its line then meets this
+        /// ground in a smooth, even edge on both sides, wherever the beach slopes across it.
+        /// </summary>
+        static void BrookBed(Result r, Ask a, int k, AskRecord rec)
+        {
+            if (a.Line == null || a.Line.Length < 2) throw new InvalidDataException("[GroundFileImport] " + a.Id + ": a brook's bed needs a line of two points or more.");
+            if (!(a.SampleStep > 0) || !(a.Sigma > 0) || !(a.HalfWidthFrom > 0) || !(a.HalfWidthTo > 0) || !(a.BedDepth > 0) || !(a.BankWidth > 0) ||
+                !(a.Wander >= 0 && a.Wander < 1) || !(a.WanderLambda > 0) || !(a.FadeIn >= 0) || !(a.FadeOut >= 0) ||
+                !(a.Floor >= 0 && a.Floor < Math.Min(a.HalfWidthFrom, a.HalfWidthTo) * (1 - a.Wander)) ||
+                !(a.ShallowTo > 0 && a.ShallowTo <= 1) || !(a.BraidMid >= 0) || !(a.BraidLength >= 0) || !(a.BraidHeight >= 0) ||
+                !(a.BraidHalf >= 0) || !(a.BraidOffset >= 0) || (a.BraidHeight > 0 && !(a.BraidHalf > 0 && a.BraidLength > 0)))
+                throw new InvalidDataException("[GroundFileImport] " + a.Id + ": a brook's bed needs a positive step, sigma, half-widths, depth, bank and wavelength, a wander under 1, fades not negative, a floor narrower than its narrowest half-width, a shallowing share in (0, 1], and a braid bar's dials not negative (a length and half-width when it has a height).");
+            var g = r.Grid;
+            var line = BedLine(a);
+            var bank = BankLevels(r, a, line);
+            double L = line.Length, reachM = Math.Max(a.HalfWidthFrom, a.HalfWidthTo) * (1 + a.Wander) + a.BankWidth;
+            Reach(rec, line.MinX - reachM, line.MinY - reachM, line.MaxX + reachM, line.MaxY + reachM);
+            if (!g.Win(rec.X0, rec.Y0, rec.X1, rec.Y1, out int r0, out int r1, out int c0, out int c1)) return;
+            int hint = -1;
+            for (int row = r0; row < r1; row++)
+            {
+                double y = g.YG(row);
+                for (int c = c0; c < c1; c++)
+                {
+                    line.Query(g.XG(c), y, ref hint, out double d, out double side, out double u);
+                    if (!(u > 0 && u < L) || !(d <= reachM)) continue;
+                    double fade = (a.FadeIn > 0 ? Ss(u / a.FadeIn) : 1) * (a.FadeOut > 0 ? Ss((L - u) / a.FadeOut) : 1);
+                    double hw = BedHalfWidth(a, u, L, side), zb = Interp(u, line.S, bank), target, w;
+                    double dep = a.BedDepth * ShallowAt(a, line, u);
+                    if (d <= a.Floor) { target = zb - dep; w = 1; }
+                    else if (d <= hw) { target = zb - dep * (0.5 + 0.5 * Math.Cos(Math.PI * (d - a.Floor) / (hw - a.Floor))); w = 1; }
+                    else { target = zb; w = 1 - Ss((d - hw) / a.BankWidth); }
+                    if (d <= hw) target += BraidRaise(a, L, u, side > 0 ? d : -d);
+                    w *= fade;
+                    if (!(w > 0)) continue;
+                    int i = row * g.W + c;
+                    double e = r.E[i], en = e + w * (target - e);
+                    if (e >= a.DryAbove) en = Math.Max(en, a.DryAbove);         // dry sand is never cut under its level
+                    if (en == e) continue;
+                    Track(rec, en - e, i);
+                    r.E[i] = en;
+                    r.Owner[i] = k;
+                    rec.Cells++;
+                }
             }
         }
 

@@ -42,3 +42,20 @@ MonoBehaviour:
   Foghorn: {fileID: 8300000, guid: 0eb1b6ef1f234313a52b3ac1f46a28f2, type: 3}
   Songs: []
   SongGapSeconds: 4
+  OarStrokes:
+    CatchGain: 0.8
+    ReleaseGain: 0.8
+    LightStrokeGain: 0.75
+    PitchVariation: 0.04
+    GainVariation: 0.1
+    Seed: 23
+    MinGapSeconds: 0.3
+    FullVolumeMetres: 12
+    EarshotMetres: 40
+    PanWidth: 0.5
+    Voices: 4
+    CatchStartSeconds: 0
+    CatchLengthSeconds: 0.95
+    ReleaseStartSeconds: 1
+    ReleaseLengthSeconds: 0.3
+    CutFadeSeconds: 0.005

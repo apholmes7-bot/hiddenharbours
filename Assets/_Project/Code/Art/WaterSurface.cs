@@ -253,6 +253,18 @@ namespace HiddenHarbours.Art
                  "Leave at 0 (mean datum) unless the scene's water plane sits at a different level; this is the " +
                  "estimate's reference, NOT the live sim tide (which the shader applies as _WaterLevel on top).")]
         [SerializeField] private float _referenceWaterLevel = 0f;
+
+        [Header("Shore waves (the drawn waves turn to meet each beach)")]
+        [Tooltip("Cells per side of the shore-wave field, built once when this sea's seabed is fed. It holds how " +
+                 "far each spot lies offshore; the shader turns the waves along it. Coarse is fine: it is smooth.")]
+        [Range(32, 512)] [SerializeField] private int _shoreWaveResolution = 256;
+        [Tooltip("The seabed elevation (m above datum) that counts as the shoreline for the shore-wave field. " +
+                 "0 = the mean tide. Not the live tide: the field is built once and the turn reads it at any level.")]
+        [SerializeField] private float _shoreWaveReferenceLevel = 0f;
+        [Tooltip("Distances past this (m) read as open sea. Keep it above the material's shore-wave reach.")]
+        [Min(1f)] [SerializeField] private float _shoreWaveMaxDistance = 192f;
+        [Tooltip("3x3 smoothing passes over the distance, rounding the creases where two shores meet in a bay.")]
+        [Range(0, 8)] [SerializeField] private int _shoreWaveSmoothing = 3;
         [Tooltip("Painted LAND tilemaps to read as land (any cell holding a tile = land). For the hand-painted " +
                  "cove, assign the terrain tilemap(s) you paint the island/beach on. Empty → every Tilemap in the " +
                  "scene is treated as land (fine when you only paint ground; assign explicitly if you also paint " +
@@ -310,6 +322,9 @@ namespace HiddenHarbours.Art
         private static readonly int IdHWorldMin  = Shader.PropertyToID("_HeightWorldMin");
         private static readonly int IdHWorldSize = Shader.PropertyToID("_HeightWorldSize");
         private static readonly int IdSeabedTex  = Shader.PropertyToID("_SeabedTex");
+        // The shore-wave field (ShoreWaveField): metres offshore + gradient over the height rect, and its gate.
+        private static readonly int IdShoreWaveTex = Shader.PropertyToID("_ShoreWaveTex");
+        private static readonly int IdShoreWaveOn  = Shader.PropertyToID("_ShoreWaveOn");
         // (W4-4) The floor's gate: 1 only while a live ground sharing this sea's frame is bound with
         // its kit loaded (TerrainSplatSurface.WriteGroundFloor writes it); 0 keeps the floor off.
         private static readonly int IdDetailLoaded = Shader.PropertyToID("_DetailLoaded");
@@ -317,10 +332,22 @@ namespace HiddenHarbours.Art
         private static readonly int IdCapSalienceStrength  = Shader.PropertyToID("_CapSalienceStrength");
         private static readonly int IdCapEnvelopeThreshold = Shader.PropertyToID("_CapEnvelopeThreshold");
         private static readonly int IdEnvelopeBandStrength = Shader.PropertyToID("_EnvelopeBandStrength");
+        // The one foam sheet (owner 2026-11-19): how each foam source joins it, pushed from _config when wired.
+        private static readonly int IdFoamSheetShore = Shader.PropertyToID("_FoamSheetShore");
+        private static readonly int IdFoamSheetCaps = Shader.PropertyToID("_FoamSheetCaps");
+        private static readonly int IdFoamSheetStorm = Shader.PropertyToID("_FoamSheetStorm");
+        private static readonly int IdFoamSheetConv = Shader.PropertyToID("_FoamSheetConv");
+        private static readonly int IdFoamSheetWash = Shader.PropertyToID("_FoamSheetWash");
+        private static readonly int IdFoamSheetAgeTear = Shader.PropertyToID("_FoamSheetAgeTear");
+        private static readonly int IdFoamSheetEdge = Shader.PropertyToID("_FoamSheetEdge");
+        private static readonly int IdFoamSheetDither = Shader.PropertyToID("_FoamSheetDither");
         // (W4-4b) The floor in the shallows: its switch and its bend, pushed from _config beside the salience
         // knobs (GameConfig.ShallowsFloor / ShallowsFloorRefraction). Shader globals, never Properties.
         private static readonly int IdShallowsFloor = Shader.PropertyToID("_ShallowsFloor");
         private static readonly int IdShallowsFloorRefraction = Shader.PropertyToID("_ShallowsFloorRefraction");
+        // (2026-11-17, the kelp beds) The weed's clarity under the water (GameConfig.UnderWaterWeedClarity),
+        // pushed with the floor's switch. A shader global, never a Property.
+        private static readonly int IdUnderWaterClarity = Shader.PropertyToID("_HHUnderWaterClarity");
         // (ADR 0027 #7, gains 2) The water type: the region's sigma and body, the surface's rect and seam, and
         // up to four plumes. Shader globals, never Properties: a surface with no type never writes them, so
         // the shader reads 0 and draws today's sea.
@@ -423,6 +450,7 @@ namespace HiddenHarbours.Art
         private Renderer _renderer;
         private MaterialPropertyBlock _mpb;
         private Texture2D _heightTex;
+        private Texture2D _shoreWaveTex;
 
         /// <summary>The graphics device the height format was probed on — a probe is only valid for the
         /// device that answered it, and an editor can change device without a domain reload.</summary>
@@ -474,6 +502,7 @@ namespace HiddenHarbours.Art
         // the owner's "choppy/stuttery when transitioning between states": the sim may step, the surface may
         // not. Presentation only — nothing here feeds the sim or is saved (rule 5).
         private bool _targetsValid;              // a slow tick has sampled the sim at least once
+        private int _surfaceWeatherEdition;      // LocalWeather.SurfaceEdition as last sampled
         private EnvironmentSample _sample;       // the last sampled weather (the mood blend + rain read it)
         // (ADR 0027 #7, gains 2) The water type's values, folded on the slow tick and pushed every frame.
         // Sized once (rule 7): the push hands the same three arrays back each frame without allocating.
@@ -583,8 +612,10 @@ namespace HiddenHarbours.Art
             PublishSeaLevelUnset();
             SeabedGlobals.PublishUnset();   // the published seabed goes with the waterline (ADR 0040 rev 3)
             StillWaterGlobals.Release(this);   // the last sea to go unsets the still water too (ADR 0046)
+            SeaReachGlobals.Release(this);     // ...and its sea-reach map (only this sea's own)
             // (WS-2) Free the baked fallback height texture (the painted path never allocates _heightTex).
             DestroyBakedHeightTexture();
+            DestroyShoreWaveTexture();
         }
 
         /// <summary>
@@ -641,6 +672,15 @@ namespace HiddenHarbours.Art
         {
             // (WS-2) Belt-and-braces: ensure the baked texture is freed even if OnDisable didn't run.
             DestroyBakedHeightTexture();
+            DestroyShoreWaveTexture();
+        }
+
+        private void DestroyShoreWaveTexture()
+        {
+            if (_shoreWaveTex == null) return;
+            if (Application.isPlaying) Destroy(_shoreWaveTex);
+            else DestroyImmediate(_shoreWaveTex);
+            _shoreWaveTex = null;
         }
 
         /// <summary>
@@ -782,6 +822,7 @@ namespace HiddenHarbours.Art
                     // reads the same sea Play will (a no-op while no config is wired).
                     PushSalienceKnobs(_mpb);
                     PushShallowsFloor(_mpb);
+                    PushFoamSheet(_mpb);
                     // The region's water type shows in the Scene view too, dry: no clock, no rain to remember.
                     SampleWaterType(0.0, null);
                     PushWaterType(_mpb);
@@ -794,7 +835,16 @@ namespace HiddenHarbours.Art
             }
 
             // ---- SLOW TIER: re-read the deterministic sim + the mood anchors into the TARGETS -------------
+            // A local storm that shades the surface came on or lifted: read again now, not on the next
+            // slow tick, so its sample is not drawn on after it has gone.
+            if (_surfaceWeatherEdition != LocalWeather.SurfaceEdition)
+            {
+                _surfaceWeatherEdition = LocalWeather.SurfaceEdition;
+                _targetsValid = false;
+            }
             if (sampleSim || !_targetsValid) SampleSimTargets(env);
+            // The sea-reach blend follows a tuning edit on the slow tier (no flood, no upload).
+            if (sampleSim) SeaReachGlobals.RefreshBlend(this);
 
             // ---- FAST TIER: ease every drawn value toward its target, THIS FRAME --------------------------
             // Frame-rate-independent exponential easing, so a 30 fps machine and a 144 fps machine reach the
@@ -877,6 +927,7 @@ namespace HiddenHarbours.Art
             float rainIntensity = AmbientParticleMath.RainIntensity(
                 s.Visibility, s.SeaState01, _rainBaselineIntensity, _rainSeaStateWeight,
                 _rainVisOnset, _rainVisFull, _rainSeaOnset);
+            rainIntensity = LocalWeather.Rain(rainIntensity);   // and a local squall's own rain, as the drops do
             _mpb.SetFloat(IdRainIntensity, rainIntensity);
 
             // (ADR 0027 #7, gains 2) The water type, folded on the slow tick; a no-op for a surface that has
@@ -888,6 +939,7 @@ namespace HiddenHarbours.Art
             // block, which the displaced surface COPIES each tick — one push covers both passes.
             PushSalienceKnobs(_mpb);
             PushShallowsFloor(_mpb);
+            PushFoamSheet(_mpb);
 
             // (W4-4) The ground's floor, re-bound only when a ground enabled, disabled or re-pushed: an
             // int compare per push, and the bind itself writes no new texture and allocates nothing.
@@ -1047,7 +1099,7 @@ namespace HiddenHarbours.Art
         private void SampleSimTargets(IEnvironmentService env)
         {
             double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
-            _sample = env.Sample();
+            _sample = LocalWeather.ShadeSurface(env.Sample());   // a local storm that asks for it is drawn too
             _targetWaterLevel = env.WaterLevelAt(now);
             _targetCurrent = _sample.CurrentVector;
             _targetWind = _sample.WindVector;
@@ -1154,6 +1206,26 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
+        /// The one foam sheet (the owner, 2026-11-19): how each foam source joins the sea's one foam sheet,
+        /// from <see cref="GameConfig.FoamSheet"/>, re-read every push like the salience knobs. A no-op with
+        /// no config wired: the shader's property defaults are the same values (<c>FoamSheetTests</c> pins
+        /// the pair). Owner policy, not weather mood, so absent from <see cref="MoodFloatNames"/>.
+        /// </summary>
+        private void PushFoamSheet(MaterialPropertyBlock mpb)
+        {
+            if (_config == null) return;
+            FoamSheetSettings fs = _config.FoamSheet;
+            mpb.SetVector(IdFoamSheetShore, fs.ShoreVector);
+            mpb.SetVector(IdFoamSheetCaps, fs.CapsVector);
+            mpb.SetVector(IdFoamSheetStorm, fs.StormVector);
+            mpb.SetVector(IdFoamSheetConv, fs.ConvVector);
+            mpb.SetVector(IdFoamSheetWash, fs.WashVector);
+            mpb.SetFloat(IdFoamSheetAgeTear, Mathf.Clamp01(fs.AgeTear));
+            mpb.SetVector(IdFoamSheetEdge, fs.EdgeVector);
+            mpb.SetVector(IdFoamSheetDither, fs.DitherVector);
+        }
+
+        /// <summary>
         /// (W4-4b) The floor in the shallows: its switch and its bend, from <see cref="GameConfig.ShallowsFloor"/>
         /// and <see cref="GameConfig.ShallowsFloorRefraction"/>, re-read every push as the salience knobs are,
         /// so turning it on in Play reaches the sea within one refresh. Unlike them it ALWAYS writes: with no
@@ -1166,6 +1238,10 @@ namespace HiddenHarbours.Art
             float bend = _config != null ? _config.ShallowsFloorRefraction : GameConfig.DefaultShallowsFloorRefraction;
             mpb.SetFloat(IdShallowsFloor, on ? 1f : 0f);
             mpb.SetFloat(IdShallowsFloorRefraction, bend);
+            // The weed under the water is read through less of the column than the floor (the sea's
+            // UnderWaterPropTransmission); with no config wired, the code's default.
+            float clarity = _config != null ? _config.UnderWaterWeedClarity : GameConfig.DefaultUnderWaterWeedClarity;
+            mpb.SetFloat(IdUnderWaterClarity, GameConfig.ClampUnderWaterWeedClarity(clarity));
         }
 
         /// <summary>
@@ -1700,7 +1776,12 @@ namespace HiddenHarbours.Art
             _mpb.SetVector(IdHWorldMin, new Vector4(min.x, min.y, 0f, 0f));
             _mpb.SetVector(IdHWorldSize, new Vector4(_heightWorldSize.x, _heightWorldSize.y, 0f, 0f));
             FeedSeabedTexture(_mpb);
+            FeedShoreWaveField(_mpb, elevation, res);
             SeabedGlobals.Publish(_heightTex, min, _heightWorldSize, _heightMin, _heightMax, ShoreSampleStep());
+            // The sea's reach (cut-off pools stay still) floods REAL heights only: a distance-to-land
+            // stand-in has no sills, so it leaves the older look in place.
+            if (useTerrain) SeaReachGlobals.PublishElevations(this, elevation, res, res, min, _heightWorldSize);
+            else SeaReachGlobals.Release(this);
             _renderer.SetPropertyBlock(_mpb);
 
             // Enable the shader's height-map branch so the depth read uses the bake.
@@ -1724,10 +1805,87 @@ namespace HiddenHarbours.Art
             _mpb.SetVector(IdHWorldMin, new Vector4(min.x, min.y, 0f, 0f));
             _mpb.SetVector(IdHWorldSize, new Vector4(_heightWorldSize.x, _heightWorldSize.y, 0f, 0f));
             FeedSeabedTexture(_mpb);
+            FeedShoreWaveField(_mpb, null, 0);
             SeabedGlobals.Publish(_paintedHeightTex, min, _heightWorldSize, _heightMin, _heightMax, ShoreSampleStep());
+            // The sea's reach (cut-off pools stay still): flooded once from this same seabed (cached by
+            // texture, rect and settings, so a re-feed of the same bed costs nothing).
+            SeaReachGlobals.PublishPainted(this, _paintedHeightTex, min, _heightWorldSize, _heightMin, _heightMax);
             _renderer.SetPropertyBlock(_mpb);
 
             EnableHeightTexKeyword();
+        }
+
+        /// <summary>
+        /// Build this sea's shore-wave field (<see cref="ShoreWaveField"/>) from the seabed just fed and
+        /// bind it, over the same world rect as <c>_HeightTex</c>. Runs only with a height feed (enable, a
+        /// terrain arriving, an edit-mode inspector change), never per frame; nothing is saved. With
+        /// <paramref name="baked"/> null it reads the painted height texture (readable by contract, the
+        /// same bytes the sim decodes). If no source can be read the gate stays 0 and the waves draw
+        /// straight, exactly as before.
+        /// </summary>
+        private void FeedShoreWaveField(MaterialPropertyBlock mpb, float[] baked, int bakedRes)
+        {
+            int res = Mathf.Clamp(_shoreWaveResolution, 32, 512);
+            float[] elevation = ShoreWaveElevation(res, baked, bakedRes);
+            if (elevation == null)
+            {
+                mpb.SetFloat(IdShoreWaveOn, 0f);
+                return;
+            }
+            float[] field = ShoreWaveField.Build(elevation, res, res, _heightWorldSize.x / res,
+                _heightWorldSize.y / res, _shoreWaveReferenceLevel, _shoreWaveMaxDistance,
+                Mathf.Clamp(_shoreWaveSmoothing, 0, 8));
+
+            if (_shoreWaveTex == null || _shoreWaveTex.width != res)
+            {
+                DestroyShoreWaveTexture();
+                _shoreWaveTex = new Texture2D(res, res, TextureFormat.RGBAHalf, false, true)
+                {
+                    name = "WaterSurface.ShoreWaveField",
+                    wrapMode = TextureWrapMode.Clamp,
+                    filterMode = FilterMode.Bilinear,
+                    hideFlags = HideFlags.DontSave,
+                };
+            }
+            var halves = new ushort[field.Length];
+            for (int i = 0; i < field.Length; i++) halves[i] = Mathf.FloatToHalf(field[i]);
+            _shoreWaveTex.SetPixelData(halves, 0);
+            _shoreWaveTex.Apply(false, false);
+            mpb.SetTexture(IdShoreWaveTex, _shoreWaveTex);
+            mpb.SetFloat(IdShoreWaveOn, 1f);
+        }
+
+        // The seabed elevations (m) at the shore-wave field's cell centres: the painted texture through
+        // its own bilinear read, or the baked grid by the same bilinear rule the GPU applies to it.
+        private float[] ShoreWaveElevation(int res, float[] baked, int bakedRes)
+        {
+            bool painted = baked == null;
+            if (painted && (_paintedHeightTex == null || !_paintedHeightTex.isReadable)) return null;
+            if (!painted && (bakedRes < 1 || baked.Length != bakedRes * bakedRes)) return null;
+            var elevation = new float[res * res];
+            for (int y = 0; y < res; y++)
+            for (int x = 0; x < res; x++)
+            {
+                float u = (x + 0.5f) / res, v = (y + 0.5f) / res;
+                float e;
+                if (painted)
+                {
+                    e = Mathf.Lerp(_heightMin, _heightMax, _paintedHeightTex.GetPixelBilinear(u, v).r);
+                }
+                else
+                {
+                    float gx = Mathf.Clamp(u * bakedRes - 0.5f, 0f, bakedRes - 1f);
+                    float gy = Mathf.Clamp(v * bakedRes - 0.5f, 0f, bakedRes - 1f);
+                    int x0 = Mathf.Min((int)gx, bakedRes - 1), y0 = Mathf.Min((int)gy, bakedRes - 1);
+                    int x1 = Mathf.Min(x0 + 1, bakedRes - 1), y1 = Mathf.Min(y0 + 1, bakedRes - 1);
+                    float fx = gx - x0, fy = gy - y0;
+                    float bottom = Mathf.Lerp(baked[y0 * bakedRes + x0], baked[y0 * bakedRes + x1], fx);
+                    float top = Mathf.Lerp(baked[y1 * bakedRes + x0], baked[y1 * bakedRes + x1], fx);
+                    e = Mathf.Lerp(bottom, top, fy);
+                }
+                elevation[y * res + x] = e;
+            }
+            return elevation;
         }
 
         /// <summary>
@@ -2374,6 +2532,22 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
+        /// (owner clip review 2026-11-15: "All pulsing should be with the waves and move perpendicular to the
+        /// shoreline") How much of the offshore swell's light the shader's <c>SwellShoreKeep()</c> leaves at a
+        /// shore pixel. The swell yields by <paramref name="yield"/> (<c>_SurfSwellYield</c>) to the shore-normal
+        /// surf inside the break (<paramref name="surfBreaking01"/>) and over the shoaling band
+        /// (<paramref name="shoalDepth"/>, <c>_SwellShoalDepth</c>, linear in depth to the waterline), whichever
+        /// is further on. Both gates are functions of depth and the break, never of the swell's own phase, so
+        /// nothing left near the beach can slide along it. 1 offshore; the break gate alone at shoalDepth 0.
+        /// Pure; presentation only (rule 5).
+        /// </summary>
+        public static float SwellShoreKeep(float surfBreaking01, float depth, float yield, float shoalDepth)
+        {
+            float shoal = shoalDepth > 0f ? 1f - Mathf.Clamp01(Mathf.Max(depth, 0f) / shoalDepth) : 0f;
+            return 1f - Mathf.Clamp01(yield) * Mathf.Max(Mathf.Clamp01(surfBreaking01), shoal);
+        }
+
+        /// <summary>
         /// (owner judge pass 2026-08-01) The bounded shift the swash applies to the DRAWN water edge — the
         /// shader's <c>edgeSwash</c>. The owner asked for "the swash in and out of the water along with the
         /// tides"; until now the swash moved only the FOAM band, so the water's own edge never budged and
@@ -2455,6 +2629,164 @@ namespace HiddenHarbours.Art
             float cap = Mathf.Max(Mathf.Clamp01(maxShift), 0f);
             float bore = Mathf.Clamp(runUpMeters, -cap, cap);
             return Mathf.Lerp(Mathf.Clamp(cosmeticShift, -cap, cap), bore, Mathf.Clamp01(blend01));
+        }
+
+        /// <summary>
+        /// (owner clip review 2026-11-15, "the in is great, the return/pull is jarring") <b>The birth the DRAWN
+        /// pulse is scaled by</b> — the shader's <c>SurfDrawnBoreBirth01</c>. The since-crest birth
+        /// (<see cref="BreakerMath.BoreBirthEnergy01"/>) changes owner AT the front, where the pulse is 1, so in a
+        /// lull the edge jumped from the run-in's reach to the small new crest's in one frame. The run-in (from half
+        /// a period behind the last front up to the next) keeps <paramref name="sinceCrestBirth"/> exactly; behind a
+        /// front the drain starts from <paramref name="previousBirth"/> (the crest one period earlier, the one the
+        /// run-in was scaled by) and eases to the new crest's by half a period, where the pulse is 0. Pure time.
+        /// </summary>
+        public static float DrawnPulseBirth01(float sinceCrestBirth, float previousBirth, float secondsSinceCrest,
+                                              float periodSeconds)
+        {
+            float half = Mathf.Max(periodSeconds, 0f) * 0.5f;
+            if (half <= 1e-4f || secondsSinceCrest >= half) return sinceCrestBirth;
+            float u = Mathf.Max(secondsSinceCrest, 0f) / half;
+            return Mathf.Lerp(previousBirth, sinceCrestBirth, u * u * (3f - 2f * u));
+        }
+
+        /// <summary>
+        /// (owner clip review 2026-11-15, "the return/pull is jarring") <b>The foam a wave leaves</b> — the
+        /// shader's <c>leftFoamOnly</c>: a pixel the last crest's run-up reached (<paramref name="leftReachMeters"/>,
+        /// the drawn-edge law at that crest's peak) but the live edge (<paramref name="liveRunUpMeters"/>) has drained
+        /// from. It keeps that crest's foam, fading in place, instead of the edge's foam riding back to the sea.
+        /// Off when either dial is 0 or the bore does not own the edge. Pure function of time: no history.
+        /// </summary>
+        public static bool LeftFoamDrawn(float depth, float cosmeticShift, float liveRunUpMeters,
+                                         float leftReachMeters, float blend01, float maxShift,
+                                         float leftFoamSeconds, float leftFoamOpacity)
+        {
+            if (leftFoamOpacity <= 0.001f || leftFoamSeconds <= 0.001f || blend01 <= 0f || leftReachMeters <= 0f)
+                return false;
+            bool drained = depth + DrawnEdgeShift(cosmeticShift, liveRunUpMeters, blend01, maxShift) < 0f;
+            return drained && depth + DrawnEdgeShift(cosmeticShift, leftReachMeters, blend01, maxShift) >= 0f;
+        }
+
+        /// <summary>
+        /// The left foam's fade — the shader's <c>exp(-secondsSinceCrest / _WashLeftFoamSeconds)</c>: 1 as its crest
+        /// passes, falling smoothly (never a step) toward 0 over a few seconds. 0 seconds = none.
+        /// </summary>
+        public static float LeftFoamFade01(float secondsSinceCrest, float fadeSeconds)
+            => fadeSeconds <= 0.001f ? 0f : Mathf.Exp(-Mathf.Max(secondsSinceCrest, 0f) / Mathf.Max(fadeSeconds, 1e-3f));
+
+        /// <summary>
+        /// (the editor look of 2026-11-15) <b>The wash's leading line, measured on the ground</b> — the shader's
+        /// <c>washLine</c> test: a pixel inside the drawn edge (<paramref name="depthHere"/> + the held run-up
+        /// <paramref name="drawnShift"/> &gt;= 0, the clip's own epsilon) whose ground one line-width SHOREWARD up the
+        /// normal (<paramref name="depthLineWidthShoreward"/>) is already past the edge. A per-pixel law: no screen
+        /// derivative, so no 2x2 quad can decide it for four pixels (the 2-px stair it replaced). v8: "up the normal"
+        /// is the ground's own gradient at the pixel, and the run-up is the same at both reads (BeachSurfEvalPoint).
+        /// </summary>
+        public static bool WashLineDrawn(float depthHere, float depthLineWidthShoreward, float drawnShift)
+            => depthHere + drawnShift >= -1e-4f && depthLineWidthShoreward + drawnShift < 0f;
+
+        /// <summary>
+        /// The share of a wash pixel that is BEACH, not water — the shader's <c>washBeach</c>: 0 at and below the
+        /// still line (the breaker's lip and barrel draw untouched in the water), rising to the wash's presence by
+        /// <paramref name="anatomyFade"/> metres of level above it, where the lip and barrel have given way.
+        /// </summary>
+        public static float WashBeachShare01(float depth, float washPresence, float anatomyFade)
+            => Mathf.Clamp01(washPresence) * Mathf.Clamp01(-depth / Mathf.Max(anatomyFade, 1e-3f));
+
+        /// <summary>
+        /// The wash's cover cap — the shader's <c>washCapScale</c>: the factor that brings the heaviest surf layer's
+        /// weight on the sand down to <paramref name="maxCover"/> (1 when it is already under), so the ground always
+        /// keeps at least 1 - maxCover of its own colour.
+        /// </summary>
+        public static float WashCapScale(float heaviestWeight, float maxCover)
+        {
+            float cap = Mathf.Clamp01(maxCover);
+            return heaviestWeight > cap ? cap / Mathf.Max(heaviestWeight, 1e-4f) : 1f;
+        }
+
+        /// <summary>
+        /// (the editor look of f07a839) <b>Where a beach pixel reads the surf</b> — the shader's <c>surfEvalXY</c> for
+        /// depth &lt;= 0: from the point the depth was read at (<paramref name="worldXY"/> + <paramref name="warp"/>),
+        /// down the ground's uphill <paramref name="groundDir"/> by the tide depth read there over the floored slope.
+        /// On a beach steeper than the floor every pixel of one shore normal lands on the same point of the still line,
+        /// whatever the chop warp, so the run-up it reads is one shore quantity along the normal. (v7 started from
+        /// <paramref name="worldXY"/> with the warped depth, so the warp's normal component moved the point.)
+        /// v9: the direction and slope are the ground frame's over ±_WashGroundScale, and the shader then takes ONE
+        /// correcting step (<see cref="BeachSurfEvalPointRefined"/>) so a gravel mound's pixels, sent past the still
+        /// line by their bump, come back onto it.
+        /// </summary>
+        public static Vector2 BeachSurfEvalPoint(Vector2 worldXY, Vector2 warp, Vector2 groundDir,
+                                                 float tideDepthAtWarped, float swashSlope)
+            => worldXY + warp + groundDir * (tideDepthAtWarped / Mathf.Max(swashSlope, 1e-3f));
+
+        /// <summary>
+        /// (v9, the editor look of 7e16896, the line torn round the gravel mounds) <see cref="BeachSurfEvalPoint"/>
+        /// plus the shader's one Newton step along the same normal: the tide depth read where the first step landed
+        /// (<paramref name="tideDepthAt"/>, metres; &lt; 0 = still dry) moves the point on by that depth over the slope.
+        /// On a planar beach the first step already lands on the still line and this one is 0.
+        /// </summary>
+        public static Vector2 BeachSurfEvalPointRefined(Vector2 worldXY, Vector2 warp, Vector2 groundDir,
+                                                        float tideDepthAtWarped, float swashSlope,
+                                                        System.Func<Vector2, float> tideDepthAt)
+        {
+            Vector2 p = BeachSurfEvalPoint(worldXY, warp, groundDir, tideDepthAtWarped, swashSlope);
+            return p + groundDir * (tideDepthAt(p) / Mathf.Max(swashSlope, 1e-3f));
+        }
+
+        /// <summary>
+        /// The share of the breaker that is SHORE surf — the shader's <c>surfShore</c>: 0 while the ground
+        /// <c>_WashSurfReach</c> metres shoreward is under water (<paramref name="tapDepth"/> &gt;= 0: a bar with water
+        /// behind it, open water; the open breaker's look), rising to 1 as that ground stands the run-up's whole reach
+        /// (<paramref name="beachReach"/>, metres of level) above the water.
+        /// </summary>
+        public static float ShoreSurfShare01(float tapDepth, float beachReach)
+            => Mathf.Clamp01(-tapDepth / Mathf.Max(beachReach, 1e-3f));
+
+        /// <summary>
+        /// The shore surf's cover — the shader's <c>surfCoverShore</c>: the churn, lifted by the bore's
+        /// <paramref name="density"/> at <paramref name="lift"/> of the open breaker's 0.75, gated by the break
+        /// (<paramref name="gate"/> = saturate(breaking * density)) INSIDE the soft threshold, so the band breaks into
+        /// patches with water between them and its edges follow the churn, not the depth contour.
+        /// </summary>
+        public static float ShoreSurfCover01(float churn, float density, float gate, float lift, float threshold, float soft)
+        {
+            float field = Mathf.Clamp01(churn + density * 0.75f * Mathf.Clamp01(lift)) * Mathf.Clamp01(gate);
+            return HlslSmoothStep(threshold - soft, threshold + soft, field);
+        }
+
+        /// <summary>The open breaker's cover law (the shader's <c>surfCover</c> before the pocket boost), for comparison.</summary>
+        public static float OpenSurfCover01(float churn, float density, float breaking, float threshold, float soft)
+            => HlslSmoothStep(threshold - soft, threshold + soft, Mathf.Clamp01(churn + density * 0.75f))
+             * Mathf.Clamp01(breaking * density);
+
+        /// <summary>
+        /// (v9, the editor look of 7e16896) <b>The depth the break gate reads beside a beach</b>: the shader's
+        /// <c>surfGateDepth</c>. On the 8-bit height map the shore runs in flat plateaus about 1.5 m long, so the gate's
+        /// depth contour stepped about 20 px seaward at each one. Beside a beach (<paramref name="shoreShare"/>) the
+        /// depth is the mean of the pixel's read and two reads <c>_WashSurfSmooth / 3</c> metres either side ALONG the
+        /// shore, which spans a plateau and ramps the step. Out at sea (share 0) the gate reads its own depth as before.
+        /// Wet water stays wet (floor 1e-3, the shader's): a tap on the next plateau up, above the still line, must not
+        /// read a wet pixel as dry ground, the gate's 0, which cut thin unbroken lenses into the band.
+        /// Only called for a wet pixel (centreDepth &gt; 0), as the shader's branch is.
+        /// </summary>
+        public static float AlongShoreGateDepth(float centreDepth, float plusDepth, float minusDepth, float shoreShare)
+        {
+            float box = (centreDepth + plusDepth + minusDepth) / 3f;
+            return Mathf.Max(Mathf.Lerp(centreDepth, box, Mathf.Clamp01(shoreShare)), 1e-3f);
+        }
+
+        /// <summary>
+        /// (v9) <b>The lip beside a beach breaks with the churn</b>, the shader's <c>lip * lerp(1, surfShoreBreak,
+        /// shoreSurf)</c>. The slab at peak was the lip band: 1 across 1.5-2 m, drawn smooth since v8. Beside a beach
+        /// (<paramref name="shoreSurf"/>) it is multiplied by the thresholded fine churn
+        /// (<paramref name="shoreBreak"/>), so water shows through it; out at sea it is the open breaker's lip.
+        /// </summary>
+        public static float ShoreLip01(float lip, float shoreBreak, float shoreSurf)
+            => Mathf.Clamp01(lip) * Mathf.Lerp(1f, Mathf.Clamp01(shoreBreak), Mathf.Clamp01(shoreSurf));
+
+        static float HlslSmoothStep(float a, float b, float x)
+        {
+            float t = Mathf.Clamp01((x - a) / (b - a));
+            return t * t * (3f - 2f * t);
         }
 
         /// <summary>

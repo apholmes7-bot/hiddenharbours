@@ -5,7 +5,7 @@
  "hull": "dory_iso",
  "label": "BANKS DORY",
  "kind": "open",
- "derivedFromRigSha256": "b981cd79806d211c30661fc51ad0c8a1003d2606aa2bd4cf09569e18c5d305c7",
+ "derivedFromRigSha256": "914d04d167813dc9c4b64bcd58f2eaad779adea441879a087167c51f2d5f2027",
  "authoring": "Written by the rig: DoryIso.byId('dory_iso').walk(), every number its own (mm), stamped with the rig's LF sha256 and fitted to character rig 10.3 (qa.character) by tools/rig-recipes/hull-walk.mjs. Regenerate with node tools/rig-recipes/hull-walk.mjs --write; never edit by hand.",
  "units": "metres",
  "frame": "metres; +x starboard, +y bow, +z up; origin amidships, keel bottom, centreline; polygons counter-clockwise seen from above",
@@ -250,14 +250,14 @@
     },
     "tholes": [
      {
-      "x": -0.7139,
-      "y": -0.855,
-      "z": 0.5156
+      "x": -0.6973,
+      "y": -1.089,
+      "z": 0.5881
      },
      {
-      "x": 0.714,
-      "y": -0.855,
-      "z": 0.5156
+      "x": 0.6973,
+      "y": -1.089,
+      "z": 0.5881
      }
     ],
     "note": "the station the oars are baked to: oarlockPt"
@@ -271,14 +271,14 @@
     },
     "tholes": [
      {
-      "x": -0.7279,
-      "y": 0.315,
-      "z": 0.5112
+      "x": -0.7404,
+      "y": 0.081,
+      "z": 0.5629
      },
      {
-      "x": 0.728,
-      "y": 0.315,
-      "z": 0.5112
+      "x": 0.7404,
+      "y": 0.081,
+      "z": 0.5629
      }
     ],
     "note": "the second pair of tholes: a second rower, or the same oars shifted forward to trim her"
@@ -288,37 +288,37 @@
    {
     "id": "port",
     "lock": {
-     "x": -0.7139,
-     "y": -0.855,
-     "z": 0.5156
+     "x": -0.6973,
+     "y": -1.089,
+     "z": 0.5881
     },
     "blade": {
-     "x": -0.9142,
-     "y": 0.5702,
-     "z": 0.6923
+     "x": -1.1429,
+     "y": 0.2825,
+     "z": 0.4365
     },
     "handle": {
-     "x": -0.5965,
-     "y": -1.6905,
-     "z": 0.412
+     "x": -0.4975,
+     "y": -1.7038,
+     "z": 0.656
     }
    },
    {
     "id": "star",
     "lock": {
-     "x": 0.714,
-     "y": -0.855,
-     "z": 0.5156
+     "x": 0.6973,
+     "y": -1.089,
+     "z": 0.5881
     },
     "blade": {
-     "x": 0.9142,
-     "y": 0.5702,
-     "z": 0.6923
+     "x": 1.1429,
+     "y": 0.2825,
+     "z": 0.4365
     },
     "handle": {
-     "x": 0.5965,
-     "y": -1.6905,
-     "z": 0.412
+     "x": 0.4975,
+     "y": -1.7038,
+     "z": 0.656
     }
    }
   ],
@@ -404,7 +404,7 @@
     "y": -0.3,
     "z": 0.06
    },
-   "note": "she is steered from the oars, and the oars are worked from the after thwart, facing aft: the tholes are 0.135 m abaft its centre. Taken from the boards forward of it."
+   "note": "she is steered from the oars, and the oars are worked from the after thwart, facing aft: the tholes are 0.369 m abaft its centre. Taken from the boards forward of it."
   },
   {
    "id": "seat_forward_thwart",
@@ -546,7 +546,7 @@
    "exportSymbol": "CharacterIso10",
    "revision": "10.3",
    "derivedFromRigSha256": "ad563075475740cea1258de68d05c184f2fc136491357bc22988a10d810413f3",
-   "posesDerivedFromRigSha256": "a28e5d92638d3cf1b26bbc49f887b23221acd3a9590bc36fd8b842ac6127c92d",
+   "posesDerivedFromRigSha256": "f30abc9af074356041dfe43f9c8cb50b032faafb357dd31d15836a862ee1ab98",
    "builds": 30,
    "crown_m": [
     1.257,

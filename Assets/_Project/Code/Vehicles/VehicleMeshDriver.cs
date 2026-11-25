@@ -83,6 +83,8 @@ namespace HiddenHarbours.Vehicles
             // A freshly installed renderer carries the ashore clamp (0/0), so the dirty flag must
             // agree with it or the first afloat frame would decide there was nothing to raise.
             _waterlineClampRaised = false;
+            // A fresh renderer sorts at whatever its SortingGroup was born with, so the next pose writes.
+            _sortOrder = int.MinValue;
         }
 
         private void LateUpdate() => Drive();
@@ -97,9 +99,70 @@ namespace HiddenHarbours.Vehicles
             _renderer.HeadingDirUnits = CurrentDirUnits;
 
             PosePixelGrid();
+            PoseSorting();
             PoseFlotation();
             PoseWheels();
+            TrackTirePrints();
         }
+
+        /// <summary>The order last written to the renderer, so a parked machine writes once and a moving
+        /// one writes only when she crosses a rung (every quarter metre of Y).</summary>
+        private int _sortOrder = int.MinValue;
+
+        /// <summary>The order this machine sorts at, read back for tests and probes.</summary>
+        public int SortingOrder => _sortOrder;
+
+        /// <summary>
+        /// The order a machine standing at <paramref name="groundY"/> sorts at among the things people walk
+        /// round: the decor band's own Y-sort (ADR 0032, the rule every <c>YSortSprite</c> follows), taken
+        /// from her root, which is where she stands on the ground, and one rung BEHIND it.
+        ///
+        /// <para><b>Why the rung.</b> A machine that shows her driver stands him on her root, so his own
+        /// Y-sort lands on exactly her order. A tie between a sorting group and a sprite is broken by
+        /// nothing we control, so the machine yields the rung and the rider on her always draws over
+        /// her. A quarter metre is less than any body she has, so nobody beside her notices.</para>
+        /// </summary>
+        public static int OrderAt(float groundY)
+        {
+            int order = Mathf.RoundToInt(SortingBands.DecorBase - groundY * SortingBands.OrdersPerMetre) - 1;
+            return Mathf.Clamp(order, SortingBands.DecorFloor, SortingBands.DecorCeiling);
+        }
+
+        /// <summary>
+        /// ⭐ <b>Sort her by where she stands</b>, like everything else a person can walk round.
+        ///
+        /// <para>Her picture is a mesh in a SortingGroup, and nothing ever set that group's order, so every
+        /// machine sat at 0: under the whole decor band. A player (or a villager, or a tuft of grass)
+        /// north of a parked trailer then drew OVER her roof, because every one of them sorts in the
+        /// band and she sorted below it. ADR 0032 calls a fixed order on an upright world object a bug
+        /// by default; this is that bug, closed the way <c>BeachedWreck</c> closed it for a hull on the
+        /// beach. Goes through the Core seam (<see cref="IHullMeshRenderer.SetSorting"/>) because
+        /// Vehicles may not name the Art renderer (rule 4).</para>
+        /// </summary>
+        private void PoseSorting()
+        {
+            int order = OrderAt(transform.position.y);
+            if (order == _sortOrder) return;
+            _renderer.SetSorting(SortingLayer.NameToID("Default"), order);
+            _sortOrder = order;
+        }
+
+        /// <summary>Her tyre marks (GroundPrintMade): one pair per segment, laid from the REAR axle, its
+        /// gauge and tyre width read off her mesh def. The print layer decides whether the ground takes
+        /// them; a parked machine lays nothing because she has not moved.</summary>
+        private readonly TirePrintTrail _tirePrints = new TirePrintTrail();
+
+        private void TrackTirePrints()
+        {
+            Vector2 up = transform.up;
+            Vector2 axle = (Vector2)transform.position + up * _def.RearAxleY;
+            float tire = _def.TireWidthMeters > 0f
+                ? _def.TireWidthMeters
+                : GroundPrintSettings.Current.DefaultTireWidthMetres;
+            _tirePrints.Track(axle, _def.TrackWidthMeters, tire);
+        }
+
+        private void OnDisable() => _tirePrints.Reset();
 
         /// <summary>
         /// ⭐ <b>Put the machine's PICTURE back on the pixel grid</b> (owner playtest 2026-08-23 —

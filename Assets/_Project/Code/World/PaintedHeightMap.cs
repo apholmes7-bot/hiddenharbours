@@ -46,8 +46,22 @@ namespace HiddenHarbours.World
     /// elevation SOURCE changed (analytic → painted), and both are deterministic.</para>
     /// </summary>
     [CreateAssetMenu(fileName = "PaintedHeightMap", menuName = "Hidden Harbours/Painted Height Map", order = 60)]
-    public sealed class PaintedHeightMap : ScriptableObject
+    public sealed class PaintedHeightMap : ScriptableObject, ITidalTerrain
     {
+        /// <summary>
+        /// The painted elevation at a world point, offered through Core's <see cref="ITidalTerrain"/> so a
+        /// module that may not reference World (rule 4) can hold this asset as plain data and still ask
+        /// "how high is the ground here?" — the grass thinning rule does exactly that to keep tufts off the
+        /// strand. Explicit, so it adds nothing to this asset's own surface; it is the same
+        /// <see cref="PaintedHeightField.ElevationAt"/> the terrain samples. A map with no readable texture
+        /// answers <see cref="float.NegativeInfinity"/>: the contract's "no height map means open water".
+        /// </summary>
+        float ITidalTerrain.ElevationAt(Vector2 worldPos)
+        {
+            var field = Field;
+            return field != null ? field.ElevationAt(worldPos) : float.NegativeInfinity;
+        }
+
         [Header("Painted height texture (R = normalized elevation; MUST be CPU-readable)")]
         [Tooltip("The painted height texture. R channel 0..1 maps to Min..Max elevation. Authored by the " +
                  "Terrain Paint Tool as an EXTERNAL .png next to this .asset (LFS-friendly, smart-mergeable). " +
@@ -74,6 +88,10 @@ namespace HiddenHarbours.World
                  "water. 16-bit (R16), CPU-readable, DERIVED from the terrain plan — never painted by hand. " +
                  "Empty = no still water anywhere.")]
         [SerializeField] private Texture2D _stillLevelTexture;
+        [Tooltip("How many texels the still water's surface is smoothed over, inside the water only. A brook's " +
+                 "level is laid bed plus depth per texel, so it steps row to row and its edge jogs at each step; " +
+                 "a small smoothing turns the steps into a ramp. Ponds stay flat; no water is added. 0 = off.")]
+        [SerializeField, Range(0, 4)] private int _stillLevelSmoothTexels = 2;
 
         public Texture2D HeightTexture => _heightTexture;
         public Vector2 WorldCenter => _worldCenter;
@@ -105,6 +123,7 @@ namespace HiddenHarbours.World
         public void Rebuild()
         {
             _field = Decode();
+            _still?.Dispose();
             _still = DecodeStill();
         }
 
@@ -177,7 +196,10 @@ namespace HiddenHarbours.World
                 return null;
             }
 
-            return new PaintedStillWater(_stillLevelTexture, _worldCenter, _worldSize, _minElevation, _maxElevation);
+            // The levels are smoothed inside the water so a brook's per-texel steps read as a ramp, and the
+            // ground is handed in so every rim's waterline follows the ground (PaintedStillWater.SealRims).
+            return new PaintedStillWater(_stillLevelTexture, _worldCenter, _worldSize, _minElevation, _maxElevation,
+                                         _stillLevelSmoothTexels, Field);
         }
     }
 }

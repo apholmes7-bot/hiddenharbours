@@ -204,6 +204,19 @@ namespace HiddenHarbours.Boats
                  "is ADR 0025.")]
         public HelmConsoleDef Helm;
 
+        [Header("Autopilot (heading hold — GameConfig.HelmAutopilot)")]
+        [Tooltip("Is an AUTOPILOT OFFERED for her helm? At the helm, the autopilot press (Helm/Autopilot, " +
+                 "P or the pad's Y) then holds the heading she is on, on her own rudder, until a steer " +
+                 "input, leaving the helm, going aground, a knock, or losing way hands it back. The owner's " +
+                 "ruling (2026-11-16): offered on every helm hull WITHOUT AN OUTBOARD (inboards, " +
+                 "sterndrives, the jet ski, the sailing hulls), never on an outboard hull or the rowed " +
+                 "dory; an expensive upgrade. HeadingHoldAutopilotTests holds the fleet to that rule. " +
+                 "OFF by default: a hull asset whose YAML omits this key reads false.")]
+        // OFFERED, not FITTED. Today an offered hull's helm has the autopilot outright
+        // (BoatController.AutopilotFitted). Once the purchase step exists, "fitted" becomes offered by
+        // this Def AND bought for this boat in the save; this flag stays the Def's half only.
+        public bool AutopilotOffered = false;
+
         [Header("Helm throttle detents (0 = use the GameConfig default)")]
         [Tooltip("Per-hull override for the notched throttle's AHEAD detent count (ADR 0025 S1 — a " +
                  "small outboard may want coarser travel than a binnacle lever). 0 = the shared " +
@@ -305,6 +318,12 @@ namespace HiddenHarbours.Boats
 
         [Tooltip("Polar target speed (kn) at which unmanned round-up reaches twice its wind-loaded floor.")]
         [Min(0.01f)] public float RoundUpReferenceDriveKn = 6f;
+
+        [Tooltip("Weather helm while her sails are drawing: how hard the wind turns her bow UP into it, against " +
+                 "the hull's own fall-off (GameConfig.SeaYaw.HullWindYawBias). 0 = none (a hull without sails, " +
+                 "or one balanced to neutral); 2 = she rounds up about as hard as an unsailed hull falls off. " +
+                 "Felt as a gentle pull to windward the helmsman holds off, growing with the wind.")]
+        [Min(0f)] public float SailWeatherHelm = 0f;
 
         /// <summary>True when this hull is driven by her sails and has a table to sail to. A hull
         /// declared <see cref="PropulsionType.Sail"/> with no polar is NOT sailable — she falls back

@@ -38,39 +38,108 @@ namespace HiddenHarbours.UI
         /// </summary>
         public const int SortingOrder = 208;
 
-        /// <summary>Panel size in reference units. One line of type with a little air, wide enough for
-        /// "Set the fuel can down" at <see cref="FontSize"/> and no wider — a corner note, not a
-        /// banner.</summary>
-        public const float PanelWidth = 300f, PanelHeight = 44f;
+        /// <summary>Reference units per kit pixel — the speech bubble's own art scale, on the same 1280x720
+        /// reference (owner ruling: the action UI wears the notebook and chat-bubble language).</summary>
+        public const int Kit = DialogueBubbleKit.ArtScale;
+
+        /// <summary>
+        /// The panel's PLACED size in reference units — what the helm footprint and the quest note step
+        /// around. The width is the narrowest the drawn bubble gets (100 kit pixels — a corner note, not a
+        /// banner); the height is a one-line speech bubble's, exactly
+        /// <c>DialogueBubbleKit.PanelHeightFor(1)</c> x <see cref="Kit"/> (inset, one glyph, inset).
+        ///
+        /// <para>A label longer than the width holds draws a WIDER bubble (<see cref="BubbleWidth"/>) that
+        /// grows leftward from this rect's right edge, as the chooser does.</para>
+        /// </summary>
+        public const float PanelWidth = 300f,
+                           PanelHeight = (DialogueBubbleKit.PanelInsetT + DialogueBubbleKit.GlyphHeight
+                                          + DialogueBubbleKit.PanelInsetB) * Kit;
 
         /// <summary>How far the panel's outer edges sit from the screen's, in reference units. Matched to
         /// the HUD band's own <see cref="HudBandLayout.SidePaddingRef"/> half-gap (16) so the popup's right
         /// edge lines up with the band's above it.</summary>
         public const float MarginX = 16f, MarginY = 16f;
 
-        /// <summary>Type size in reference units. Smaller than a menu line (24) and larger than the shell's
-        /// faint detail (16): it must be readable at a glance in peripheral vision without becoming a
-        /// second HUD.</summary>
-        public const int FontSize = 20;
+        /// <summary>Type size: the game's one face (<see cref="HarbourType"/>) at a whole multiple of its
+        /// baked size — <c>GlyphHeight x Kit</c>, the speech bubble's own size, so a glyph pixel is a kit
+        /// pixel and the face is never resampled.</summary>
+        public const int FontSize = HarbourType.GlyphHeight * Kit;
 
-        /// <summary>Inset from the panel's edge to its type, in reference units.</summary>
-        public const float TextPadX = 14f, TextPadY = 6f;
+        /// <summary>One character's advance in the face, reference units (monospace).</summary>
+        public const float AdvanceUnits = HarbourType.Advance * Kit;
+
+        /// <summary>Inset from the bubble's edge to its type: the speech bubble's own panel insets.</summary>
+        public const float TextPadX = DialogueBubbleKit.PanelInsetL * Kit,
+                           TextPadY = DialogueBubbleKit.PanelInsetT * Kit;
+
+        /// <summary>Spare width after the words, kit pixels, so the longest label never sits flush on the
+        /// ring (the 2026-11-15 look measured 450 of 450).</summary>
+        public const int SlackKitPixels = 2;
 
         /// <summary>
         /// The longest label the popup will draw. Anything longer is cut with an ellipsis by
         /// <see cref="Fit"/> rather than wrapped or shrunk.
         ///
-        /// <para>Derived, not guessed: <see cref="PanelWidth"/> minus both <see cref="TextPadX"/> insets is
-        /// 272 reference units, and the shell's face at <see cref="FontSize"/> averages a shade under 10
-        /// units per character in this copy's mix of letters — so 28 characters is the honest fit with a
-        /// character in hand. It is a CAP on authored copy, not a layout engine: a label that needs
-        /// trimming is a label that wanted rewriting, and the cut is what makes that obvious in the
-        /// build rather than in a review.</para>
+        /// <para>Kept at the cap every caller's copy was written to (<c>InteractOfferTests</c> holds the
+        /// shipped labels under it). The bubble widens to hold it (<see cref="MaxBubbleWidth"/>). It is a
+        /// CAP on authored copy, not a layout engine: a label that needs trimming is a label that wanted
+        /// rewriting, and the cut is what makes that obvious in the build rather than in a review.</para>
         /// </summary>
         public const int MaxCharacters = 28;
 
-        /// <summary>What a cut label ends with.</summary>
-        public const string Ellipsis = "…";
+        /// <summary>What a cut label ends with. Three full stops, not "…": the face has no ellipsis
+        /// glyph, and a missing glyph draws nothing.</summary>
+        public const string Ellipsis = "...";
+
+        /// <summary>The widest the drawn bubble gets: both insets, <see cref="MaxCharacters"/> of the
+        /// face and the slack.</summary>
+        public const float MaxBubbleWidth = TextPadX * 2f + MaxCharacters * AdvanceUnits + SlackKitPixels * Kit;
+
+        /// <summary>The drawn width of <paramref name="text"/> in the face, reference units.</summary>
+        public static float EstimateTextUnits(string text)
+            => string.IsNullOrEmpty(text) ? 0f : text.Length * AdvanceUnits;
+
+        /// <summary>The narrowest the drawn bubble gets: the speech bubble's own narrowest panel
+        /// (<c>DialogueBubbleKit.PanelWidthFor(MinCols)</c>), so "Climb in" is a small bubble, not a
+        /// mostly empty one.</summary>
+        public const float MinBubbleWidth =
+            (DialogueBubbleKit.PanelInsetL + DialogueBubbleKit.MinCols * DialogueBubbleKit.CellWidth - 1
+             + DialogueBubbleKit.PanelInsetR) * Kit;
+
+        /// <summary>
+        /// The drawn bubble's width for a label <paramref name="textUnits"/> wide: insets + words + slack,
+        /// rounded up to whole kit pixels (so the 9-slice lands on the grid), in
+        /// [<see cref="MinBubbleWidth"/>, <see cref="MaxBubbleWidth"/>]. It sizes to its words, as the
+        /// speech bubble does; the PLACED rect stays <see cref="PanelWidth"/> wide.
+        /// </summary>
+        public static float BubbleWidth(float textUnits)
+        {
+            float raw = Mathf.Clamp(TextPadX * 2f + textUnits + SlackKitPixels * Kit, MinBubbleWidth, MaxBubbleWidth);
+            return Mathf.Ceil(raw / Kit - 0.001f) * Kit;
+        }
+
+        /// <summary>
+        /// A horizontal span (<paramref name="left"/>, <paramref name="width"/>, reference units from the
+        /// host's left) put on whole screen pixels RIGHT EDGE FIRST: the right edge is snapped, the left is
+        /// derived from it and snapped too, and the width is what lies between. Every surface in the corner
+        /// snaps the same right edge the same way, so the popup and the chooser end on one pixel column,
+        /// and the words still start on a whole pixel. Returns (left, width).
+        /// </summary>
+        public static Vector2 SnapSpan(float left, float width, float scale)
+        {
+            float right = SnapToScreen(left + width, scale);
+            float l = SnapToScreen(right - width, scale);
+            return new Vector2(l, right - l);
+        }
+
+        /// <summary>
+        /// <paramref name="units"/> (a reference-unit coordinate measured from the host's top-left corner,
+        /// either axis) moved to the nearest whole SCREEN pixel at canvas scale <paramref name="scale"/> —
+        /// the speech bubble's rule ("rounded in SCREEN pixels before the canvas conversion"), so the
+        /// bitmap face starts on the pixel grid rather than between two pixels.
+        /// </summary>
+        public static float SnapToScreen(float units, float scale)
+            => scale > 0f ? Mathf.Round(units * scale) / scale : units;
 
         /// <summary>
         /// The panel's anchored position in the top-left-pivoted reference host — lower right, inset by

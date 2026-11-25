@@ -190,6 +190,36 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>
+        /// One hookup's position in the rig's body frame (<c>x</c> the curb side, <c>y</c> toward the hitch,
+        /// <c>z</c> up, metres), by its <c>HOOKUPS</c> id (<c>shore_power</c>). False (never throws) when the
+        /// variant, the file, the block or that id is missing.
+        /// </summary>
+        public static bool TryReadHookup(string variant, string hookupId, out Vector3 pos)
+        {
+            pos = default;
+            string relative = PathFor(variant);
+            if (string.IsNullOrEmpty(relative) || string.IsNullOrEmpty(hookupId)) return false;
+            string full = Path.Combine(RigCatalog.RepoRoot, relative);
+            if (!File.Exists(full)) return false;
+            string json;
+            try { json = File.ReadAllText(full); }
+            catch (IOException) { return false; }
+            string hookupsText = Block(json, "\"HOOKUPS\"", '[', ']');
+            if (hookupsText == null) return false;
+            HookupListDto hookups;
+            try { hookups = JsonUtility.FromJson<HookupListDto>("{\"items\":" + hookupsText + "}"); }
+            catch (ArgumentException) { return false; }
+            if (hookups?.items == null) return false;
+            foreach (var k in hookups.items)
+            {
+                if (k == null || k.id != hookupId || k.pos == null || k.pos.Length < 3) continue;
+                pos = new Vector3(k.pos[0], k.pos[1], k.pos[2]);
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// The text of the value that follows <paramref name="key"/>, from its opening bracket to the
         /// matching closing one, or null if the key is absent or the document is truncated. Depth-counted
         /// rather than "find the next <c>}</c>", because <c>STEP</c> holds an array of tread objects and

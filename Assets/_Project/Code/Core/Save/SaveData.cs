@@ -393,6 +393,123 @@ namespace HiddenHarbours.Core
         /// FLAG lead-architect: save schema v19 (needs).
         /// </summary>
         public PlayerNeedsDto PlayerNeeds = new();
+
+        /// <summary>
+        /// <b>The player's body</b> (body slice 1, owner ask 2026-11-15, added in v21): the frame and height
+        /// the creator chose, the mass at one instant and the stomach at one instant. Values now are worked
+        /// out from the clock (<see cref="BodyMath"/>). Unset (negative) shape and mass read as the default
+        /// body at its lean mass, which is today's player exactly; a new game and every older save start
+        /// there. Written only through <see cref="IBodyService"/>.
+        /// FLAG lead-architect: save schema v21 (body).
+        /// </summary>
+        public PlayerBodyDto PlayerBody = new();
+
+        /// <summary>
+        /// <b>Messes left in the world</b> (body slice 1, added in v21), oldest first: where the player was
+        /// sick. Removed only by <see cref="IMessRegistry.CleanUp"/>. Written only through
+        /// <see cref="IMessRegistry"/>.
+        /// </summary>
+        public List<MessRecordDto> Messes = new();
+
+        /// <summary>The last mess id serial handed out (<c>mess.N</c>), so an id is never reused, even after
+        /// its mess is cleaned up. Added in v21; 0 = none yet.</summary>
+        public int NextMessSerial;
+
+        /// <summary>
+        /// <b>The player's cleanliness</b> (cleanliness slice 1, owner ask 2026-11-15, added in v22): the dirt
+        /// at one instant, that instant, and the stretch of work or the wash going on since. The dirt now is
+        /// worked out from the clock (<see cref="CleanlinessMath.DirtAt"/>). A new game starts clean and
+        /// unanchored; an older save is migrated to clean at its own saved time. Written only through
+        /// <see cref="ICleanlinessService"/>.
+        /// FLAG lead-architect: save schema v22 (cleanliness).
+        /// </summary>
+        public PlayerCleanlinessDto PlayerCleanliness = new();
+
+        /// <summary>
+        /// The food stores (kitchens slice 1): a galley's pantry, cooler and fridge aboard, and later a
+        /// home's, a shop's or a player-built kitchen's, each keyed by where it stands
+        /// (<see cref="KitchenStorageStateDto.Key"/>). Contents and freshness clocks are saved; a cooler's
+        /// cold is one saved instant (when its ice runs out), never a ticking number. Written only through
+        /// <see cref="KitchenStores"/>. Added in v23; every older save starts with none.
+        /// FLAG lead-architect: save schema v23 (kitchens).
+        /// </summary>
+        public List<KitchenStorageStateDto> KitchenStores = new();
+
+        /// <summary>
+        /// <b>The catch record</b> (the Notebook's catch page): one row per species caught, in first-caught
+        /// order, with the count, the released count and the record weight. Written only through
+        /// <see cref="CatchRecordLog"/>. Added in v24; every older save starts with none (catches made
+        /// before v24 were never recorded, so nothing is invented).
+        /// FLAG lead-architect: save schema v24 (catch record, gift days, cook jobs, Loran numbers).
+        /// </summary>
+        public List<CaughtSpeciesDto> CaughtSpecies = new();
+
+        /// <summary>
+        /// <b>Gifts accepted today, per person</b> (the gifting daily limit). Only today's rows are kept.
+        /// Added in v24 as data only: the gifting lane captures and restores it. Older saves start empty.
+        /// </summary>
+        public List<NpcGiftDayDto> NpcGiftDays = new();
+
+        /// <summary>
+        /// <b>Cook jobs running on placed stations</b> (kitchens and microwaves). Added in v24; a row is
+        /// written when a job starts, removed when it finishes, and restored on load by
+        /// <see cref="CookJobSave"/>. Older saves start with nothing cooking.
+        /// </summary>
+        public List<CookJobDto> CookJobs = new();
+
+        /// <summary>
+        /// <b>The Loran numbers each hull's receiver remembers</b>, as time differences. Added in v24; read and
+        /// written per hull by a <c>LoranWaypointStore</c> bound to this save (<c>LoranWaypointSave</c>).
+        /// Older saves start with none.
+        /// </summary>
+        public List<LoranWaypointDto> HullLoranWaypoints = new();
+
+        /// <summary>
+        /// <b>What is in the player's storage containers</b> (gear lockers, rod racks, a shed's stores), one row
+        /// per container keyed by where it stands (<see cref="StoredContainerDto.Key"/>). A world object is
+        /// kept by its stable instance id, so the load puts that same object back rather than making another;
+        /// a counted lot is kept by kind and count. Food stores stay in <see cref="KitchenStores"/>. Written
+        /// only through <see cref="StoredContainers"/>. Added in v25 (owner 2026-11-17: storage with memory);
+        /// every older save starts with every container empty, and its tools lie where the world places them.
+        /// FLAG lead-architect: save schema v25 (storage contents).
+        /// </summary>
+        public List<StoredContainerDto> StoredContainers = new();
+
+        // ---- save v26: store purchases, paid special orders, the shopping bag ----------------------
+        // ONE bump carrying exactly these three things. Each is something the player did, which cannot be
+        // recomputed; nothing derived is here (shelf counts, deliveries and the villagers' buying are
+        // rebuilt from the calendar and the seed, rule 5). Rows in SaveRowsV26.cs.
+
+        /// <summary>
+        /// <b>What the player took off the store shelves</b>, one row per purchase instant per shelf line,
+        /// kept in (day, seconds, shop, line) order so replaying them over the calendar always gives the
+        /// same shelves. Written as each purchase is made and read back when the stores are built. Older saves start
+        /// with none, so their shelves are exactly what the calendar says.
+        /// </summary>
+        public List<StorePurchaseRowDto> StorePurchases = new();
+
+        /// <summary>
+        /// <b>Special orders the player has paid for</b>, one row per order. Added in v26 and
+        /// <b>reserved, not yet used</b>. A row that carries money or goods is never dropped by the load
+        /// repair. Older saves start with none.
+        /// </summary>
+        public List<SpecialOrderDto> SpecialOrders = new();
+
+        /// <summary>
+        /// The number the next special order takes (the n of <see cref="SpecialOrderDto.OrderId"/>). Starts
+        /// at 1, only ever goes up, and is held above every number already on a row, so no order number is
+        /// used twice. A saved counter, not a random id (rule 5). Added in v26, reserved with the orders.
+        /// </summary>
+        public int NextSpecialOrderNumber = 1;
+
+        /// <summary>
+        /// <b>The player's shopping bags that hold goods</b>, in his hand or set down, one row per bag. The
+        /// goods stay counted in <see cref="SupplyStock"/>; a row only says which are set aside in the bag.
+        /// A list although the game has one bag today, so more bags need no new version. The bag is read
+        /// and changed here directly (<see cref="ShoppingBagContents"/>). Older saves start with none (their
+        /// goods are simply in his supplies).
+        /// </summary>
+        public List<ShoppingBagDto> ShoppingBags = new();
     }
 
     /// <summary>

@@ -61,6 +61,7 @@ Eight tiers, **a branching tree near the top** (canon): the **Lobster Boat** (sh
 ### 1.2 Per-tier feel & role (prose, for the agents writing them)
 
 - **Tier 0 — The Dory.** Uncle's. Oars + a cranky small outboard. Tiny hold, inshore only, *tender* (rolls easily), spray comes aboard in a Popple. Every trip in the dory is intimate and a little precarious — this is where P1+P5 are taught at low stakes. Sentimental; never sold outright (kept as a keepsake/tender even after you move up).
+  - *At her tiller.* Once her motor is fitted (the `DoryOutboard` hull) she gains a stern bench and a transom motor board, and the skipper sits on that bench to port of the tiller, one hand on its grip. The tiller and his arm follow the steering; he sits up a little as the throttle opens. Rowed, she has no bench and he rows from the thwart as before. Seat, braces, grip and lean are data on her visual (`BoatVisualDef.Tiller`). Under power her oars are stowed (owner 2026-11-22): out of the tholes, lying fore and aft inside the boat on the two rowing thwarts, blades forward, handles ending forward of the tiller seat. Cut the motor and they are back in the tholes. Where they lie is data on her visual (`BoatVisualDef.OarStow`).
 - **Tier 1 — Punt / Skiff.** First *purchase*; the "I'm a real fisher now" beat. A bit more hold and reach, a real (if small) outboard, slightly drier. Still inshore. The proof you can earn and spend (P2 onramp).
 - **Tier 2 — Cape Islander.** The iconic Maritime workboat and the **hub of the tree**. Real range, a proper hold, can mount lines *and* traps, a wheelhouse out of the weather. The first boat that feels like a *career*. From here you choose a lane.
 - **Tier 3 — Lobster Boat (specialist).** Wide working deck, trap-hauler mount, stable. Optimized for shellfish grounds (the Sunkers, inshore reefs). A *complete life* if you want it — and a cash engine for the commerce climb. Parallel to, not above, the Dragger.
@@ -154,6 +155,35 @@ Concrete skill expressions the model produces *for free*:
 - **Using the tide:** ride a fair tide (current with you) to save fuel/time; **time the slack** to cross Fundy Rips (the 3 m/s rip from [`time-tides-weather.md`](time-tides-weather.md) §3.7 will overpower a small boat at mid-tide — you *must* go near slack).
 - **Lee shores & docking:** wind pins you onto or off a wharf; docking a big boat in a cross-wind/cross-tide is a genuine skill moment (and why the Tanker gets tug assist). A **gentle docking assist** (auto-fender / snap when slow & close) keeps it cozy for small boats; big boats stay manual-ish for the satisfaction.
 - **Windage matters by size:** the high-sided Packet/Tanker get blown around far more than a low dory for the same wind — different boats, different problems (P2).
+
+#### 2.5.1 The wind and the sea turn her head (owner ask 2026-11-17)
+
+Before this, the wind shove acted at the centre of mass (no lever, so no turn) and the seakeeping
+slew read the sea at the hull's middle only (a passing wave swung her both ways and averaged out),
+so on a rough day the heading barely moved. The **sea yaw** (`SeaYawMath`, dials on
+`GameConfig.SeaYaw`) adds the two turns a real hull feels:
+
+- **Wind:** above `CalmWindMetresPerSecond` every gust in the weather model's wind turns her, most
+  with the wind on her beam, none dead ahead or astern. An unsailed hull's bow **blows off
+  downwind** (`HullWindYawBias`); with her sails drawing, `BoatHullDef.SailWeatherHelm` brings her
+  **up into the wind** instead (weather helm, the sloops ship 2.5); at anchor she lies **head to
+  wind** (`AnchoredWindYawBias`). An unmanned sailing hull is left to the sail drive's own round-up.
+- **Waves:** the difference in the sea's beam slope under her **bow and her stern**, read from the
+  same trains as the swell force (SEE==FEEL applies). A beam sea shoves her bodily; a quartering or
+  **following sea** turns her, and running before it she meets the waves slowly, so each swing lasts
+  long enough for the **stern to wander**.
+
+**Every strength is a share of her own full helm** (rudder at full authority; one oar at full pull
+for a rowed hull), scaled per hull from existing data: wind by `WindExposure` over `MassKg` (to the
+`MassExponent`), waves by the seakeeping response (liveliness over mass factor). The dory is the
+reference hull; a cape islander feels about a quarter of the dory's wind turn, a tanker under
+a twentieth. This is the TURN, as a share of her helm; the high-sided hulls above still DRIFT more
+in absolute terms (the shove at the centre is unchanged). The sum is capped at `MaxHelmShare`
+(0.45, under the autopilot's 0.6 `MaxHelm`), so with way on **the rudder always wins** and the
+autopilot holds. Both turns fade with the seakeeping exposure ramp (sheltered water turns nothing),
+calm air and a glass sea turn nothing, and a hull with a **mooring line out** is held by it: the
+dock is unchanged. Deterministic: the wind and waves are the sim's own (worldSeed, gameTime)
+fields, nothing is random and nothing is saved. `Enabled` off restores the previous handling.
 
 ### 2.6 Speed, range & fuel
 
@@ -537,6 +567,7 @@ When stability fully fails (sustained broachRisk → knockdown → capsize) or t
 | **Compass** | Reliable heading even with no landmarks (fog/night). | Basic fog/night nav; baseline for The Smother. |
 | **Depth sounder** | Live **under-keel clearance** + shoaling alarm. | **Grounding warning** (§3.1) — read the bottom before you hit it. |
 | **Radar** | Detects **terrain & other boats through fog** (a sweep overlay). | **Collisions in fog** (§3.4); makes **The Smother** navigable (canon: navigate by instrument). Huge P5→P2 payoff. |
+| **Loran-C receiver** | Two **time differences** and a blink lamp; stored "numbers" with bearing/distance to them. Repeatable, not exact. ([`loran-navigation.md`](loran-navigation.md)) | Finding a ground again in fog before GPS; the 1982 wheelhouse's position fix. Feeds a later autopilot. |
 | **GPS / chartplotter** | Your **position + course-over-ground** on a chart even blind; waypoints/routes. | Confident navigation in zero visibility; supports the Smother and long Shipping-Lane runs; enables **route automation** for crewed/fleet boats (P4). |
 | **Marine radio** | Live **weather warnings at sea** ([`time-tides-weather.md`](time-tides-weather.md) §4.7) **and** the **tow call** (§3.7). | Early storm warning offshore; the paid rescue net. |
 | **Barometer (boat-mounted)** | On-boat pressure trend. | Early weather telegraph without returning to the cottage instrument. |
@@ -1482,6 +1513,41 @@ policy and entry-landing checks remain required. The same hull-local decision us
 measured width; no additional tuning is needed. `BoatCabinPassageDecisionTests` covers the pure
 decision for the 0.529 m opening and a wide opening, in both directions, and
 `BoatCabinDoorWalkthroughTests` pins its connection to the cabin state.
+
+### 9.13 Autopilot, slice 1: heading hold (2026-11-16)
+
+The owner ruled (2026-11-15) that set-a-course becomes an **autopilot, a purchased tool offered on
+recommended hulls** (P4: earn it, then automate it). Slice 1 holds a heading; it does not follow a
+route.
+
+- **Who has one:** a hull whose `BoatHullDef.AutopilotOffered` is true and that has a rudder (an engine
+  helm or a sail plan). The owner ruled (2026-11-16): *available on anything without an outboard,
+  an expensive upgrade.* So it is offered on every inboard, sterndrive (bowrider, express cruiser,
+  go-fast), jet (the jet ski) and sailing hull, and on no outboard hull (punts, skiffs, Zodiacs, the
+  outboard dory, the yacht tender) and not on the rowed dory (no rudder). No hull field names the
+  drive, so each hull's rig source decides it; `HeadingHoldAutopilotTests` holds the fleet to the
+  rule. The purchase, a high-priced upgrade sold at the NMC boat and gear wholesaler, is slice 2
+  (with the save step). The flag says **offered**, not fitted: once the purchase exists, a helm has the autopilot when
+  her Def offers it AND the save says it was bought for that boat.
+- **The switch:** at the helm, `Helm/Autopilot` (P, or Y on a pad) holds the heading she is on
+  (`BoatController.ToggleAutopilot`). Engaging is refused under the same rules that end a hold.
+- **The controller:** `HeadingHoldAutopilot`, a PID on the wrapped heading error with a yaw-rate
+  damping term and a clamped integral, writing the same helm (−1..1) a steer key writes, on the fixed
+  step before the drive reads it. The hull's own way-scaled rudder does the turning: no new physics.
+  Tuning: `GameConfig.HelmAutopilot`.
+- **It hands the helm back on:** a steer key or stick past `SteerOverrideThreshold`, a grab of the
+  wheel, the switch again, leaving the helm (or any `Stop`), a hull swap, going aground, a knock
+  harder than `CollisionMinImpactMetresPerSecond`, or way ahead below `MinWayMetresPerSecond`
+  (astern counts as below).
+- **What the player sees:** the dash wheel, which mirrors the helm, turns by itself while it holds.
+  There is no lamp or text yet: the helm band has no generic switch lamp to reuse.
+- **The signal:** each engage and each hand-back publishes the Core `AutopilotStateChanged`
+  (`Engaged`, and the Core `AutopilotDisengage` reason, append-only), so a lamp, a click or a chime
+  can answer it without reading the boat's controller. A refused press publishes nothing.
+- **Saved:** never. A loaded game starts with it off.
+- **Owed by slice 2 (route following):** the hold must survive leaving the helm, the unmanned tick
+  and region crossings (`RegionTravelCoordinator` calls `Stop()` at every crossing), so its state
+  must live outside a manned `BoatController`. Saving a route is a later save step.
 
 ## 10. Open questions
 

@@ -211,6 +211,92 @@ namespace HiddenHarbours.Player
         // so it separates "abeam" from any heading a fisher is actually drawn at.
         private const float AbeamEpsilon = 1e-4f;
 
+        /// <summary>
+        /// <b>How much nearer the camera a socket on the mesh figure is than a body bone</b>, in world
+        /// units: positive = the socket is on the NEAR side of his body, negative = the far side.
+        ///
+        /// <para>Both points are taken down to the figure's ground plane (z = 0 in its frame) before they
+        /// are projected, so only where the hand IS around his body counts, never how high it hangs: in
+        /// this elevated view a lower point projects farther from the camera, and a hanging hand is
+        /// lower than the hips, which would push every hand toward "far".</para>
+        ///
+        /// <para><paramref name="facetToWorld"/> is the figure's facet frame
+        /// (<c>IsoCharacterFigureRenderer.FacetTransform.localToWorldMatrix</c>), heading, ashore frame
+        /// and mirror included; the camera looks down +z, so the smaller world z is the nearer.</para>
+        /// </summary>
+        public static float TowardCameraMetres(in Matrix4x4 facetToWorld, Vector3 socketFacet, Vector3 bodyFacet)
+        {
+            Vector3 socket = facetToWorld.MultiplyPoint3x4(new Vector3(socketFacet.x, socketFacet.y, 0f));
+            Vector3 body = facetToWorld.MultiplyPoint3x4(new Vector3(bodyFacet.x, bodyFacet.y, 0f));
+            return body.z - socket.z;
+        }
+
+        /// <summary>
+        /// <b>How far a thing hung from a hand swings, and which way</b>: back from the way the hand is moving
+        /// (a pail lags its bail), <paramref name="degPerMetrePerSecond"/> degrees per metre per second of the
+        /// hand's horizontal speed, at most <paramref name="maxDeg"/>. A turn about the grip in the figure's
+        /// frame (+z up); the identity when the hand is still or either number is zero. Pure, no allocation.
+        /// </summary>
+        public static Quaternion HungSwing(Vector3 handVelocity, float degPerMetrePerSecond, float maxDeg)
+        {
+            var flat = new Vector3(handVelocity.x, handVelocity.y, 0f);
+            float speed = flat.magnitude;
+            if (speed < 1e-5f || degPerMetrePerSecond <= 0f || maxDeg <= 0f) return Quaternion.identity;
+            float deg = Mathf.Min(maxDeg, degPerMetrePerSecond * speed);
+            // About up x motion: the hanging end (−z) moves against the motion.
+            Vector3 axis = Vector3.Cross(Vector3.forward, flat / speed);
+            return Quaternion.AngleAxis(deg, axis);
+        }
+
+        /// <summary>
+        /// <b>How fast a socket moves against his body on one frame of a clip</b>, metres per second in the
+        /// figure's frame: the socket's place on the frames either side (wrapped on a looping clip, held at
+        /// the ends of one that is not) over the time between them. Read off the clip itself, so the same
+        /// frame always gives the same answer and nothing is carried between frames. <paramref name="world"/>
+        /// is a caller's buffer of at least the bone count. False when the clip cannot be read.
+        /// </summary>
+        public static bool TryClipSocketVelocity(in CharacterSkinDef.SkinClip clip, CharacterSkinDef.Bone[] bones,
+                                                 int bone, int frame, Matrix4x4[] world, out Vector3 velocity)
+        {
+            velocity = Vector3.zero;
+            int n = clip.FrameCount;
+            if (bones == null || world == null || world.Length < bones.Length || bone < 0 || bone >= bones.Length
+                || n < 2 || clip.FramesPerSecond <= 0f)
+                return false;
+            int f = Mathf.Clamp(frame, 0, n - 1);
+            int before = clip.Loop ? (f - 1 + n) % n : Mathf.Max(0, f - 1);
+            int after = clip.Loop ? (f + 1) % n : Mathf.Min(n - 1, f + 1);
+            int steps = clip.Loop ? 2 : after - before;
+            if (steps <= 0) return true;
+            CharacterSkinPose.ComposeWorld(clip, before, bones, world);
+            Vector3 a = world[bone].MultiplyPoint3x4(Vector3.zero);
+            CharacterSkinPose.ComposeWorld(clip, after, bones, world);
+            Vector3 b = world[bone].MultiplyPoint3x4(Vector3.zero);
+            velocity = (b - a) * (clip.FramesPerSecond / steps);
+            return true;
+        }
+
+        /// <summary>
+        /// <b>Which side of the mesh figure a thing hanging from one hand draws on</b>: ahead of him when
+        /// the hand is on his near side, behind him when it is on his far side. A pail in the far hand is
+        /// hidden by his legs; one in the near hand hides them. Within
+        /// <paramref name="deadbandMetres"/> of the body the hand is beside him (he faces straight toward
+        /// or away from the camera) and the facing decides, exactly as <see cref="AheadOrdersFor"/> does
+        /// for a thing with no hand to measure.
+        /// </summary>
+        /// <param name="towardCameraMetres"><see cref="TowardCameraMetres"/> for the hand's socket.</param>
+        /// <param name="deadbandMetres">The beside-him band, from the carry row (negative reads as 0).</param>
+        /// <param name="drawnHeadingDegrees">The body's drawn compass heading, for the beside-him case.</param>
+        /// <param name="aheadOrders">Magnitude of the step, in sorting orders.</param>
+        public static int SideOrdersFor(float towardCameraMetres, float deadbandMetres, float drawnHeadingDegrees,
+                                        int aheadOrders)
+        {
+            float band = Mathf.Max(0f, deadbandMetres);
+            if (towardCameraMetres > band) return aheadOrders;
+            if (towardCameraMetres < -band) return -aheadOrders;
+            return AheadOrdersFor(drawnHeadingDegrees, aheadOrders);
+        }
+
         // ---- the words ---------------------------------------------------------------------------
 
         /// <summary>

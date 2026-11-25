@@ -17,3 +17,10 @@ MonoBehaviour:
   Flavor: 'For digging soft-shell clams out of the bared flats at low water. gameplay-systems
     maps gear.shovel to the hand-dig method (reconcile Shovel vs ClamFork GearTag, fish-and-content 3.5a).'
   Price: 25
+  Catalog:
+    Listed: 0
+    Section: 5
+    Sellers:
+    - seller.leblancs
+    - seller.nmc_fishing_gear_wholesaler
+    SortOrder: 20

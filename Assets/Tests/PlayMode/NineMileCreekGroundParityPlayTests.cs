@@ -55,7 +55,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             _oldIgnore = LogAssert.ignoreFailingMessages;
             LogAssert.ignoreFailingMessages = true; // existing decor-import errors, as other NMC fixtures
-            yield return SceneManager.LoadSceneAsync("NineMileCreek", LoadSceneMode.Single);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Load("NineMileCreek", LoadSceneMode.Single);
             _loaded = SceneManager.GetSceneByName("NineMileCreek");
             for (int i = 0; i < 4; i++) yield return null;
         }
@@ -66,7 +66,7 @@ namespace HiddenHarbours.Tests.PlayMode
             LogAssert.ignoreFailingMessages = _oldIgnore;
             var empty = SceneManager.CreateScene("GroundParityCleanup");
             SceneManager.SetActiveScene(empty);
-            if (_loaded.IsValid() && _loaded.isLoaded) yield return SceneManager.UnloadSceneAsync(_loaded);
+            if (_loaded.IsValid() && _loaded.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(_loaded);
         }
 
         [UnityTest]

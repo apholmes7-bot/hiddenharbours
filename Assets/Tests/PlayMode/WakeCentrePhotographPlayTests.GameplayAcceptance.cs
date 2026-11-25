@@ -79,7 +79,8 @@ namespace HiddenHarbours.Tests.PlayMode
             LogAssert.ignoreFailingMessages = false;
             _v24LoadedIntro = true;
             Time.timeScale = 1f;
-            var load = SceneManager.LoadSceneAsync("StPeters", LoadSceneMode.Single);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Frames();
+            var load = HiddenHarbours.Tests.Support.SceneSettle.StartLoad("StPeters", LoadSceneMode.Single);
             float wall = Time.realtimeSinceStartup;
             while (!load.isDone) { Assert.Less(Time.realtimeSinceStartup-wall, 90f, "Authored boot timed out"); yield return null; }
             for (int i=0; i<8; i++) yield return null;

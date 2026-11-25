@@ -165,9 +165,17 @@ namespace HiddenHarbours.App.Editor
         {
             if (entry == null || entry.facings <= 0) return 0;
 
-            return BuildingFacing.FacingToward(entry.doorY, entry.pivotY, entry.facings,
+            return BuildingFacing.FacingToward(DoorWall(entry), entry.facings,
                                                SpriteLightMath.GroundDepthScale, from, target);
         }
+
+        /// <summary>The wall a house's door is in, read from its baked anchors. Every village house but
+        /// the harbour gable has it in the +y gable; the harbour gable's is in its cross gable on the +x
+        /// eave, which the gable-only read would turn a quarter-turn wrong.</summary>
+        public static int DoorWall(VillageBuildingKit.Entry entry) =>
+            entry == null ? BuildingFacing.WallPlusY
+                : BuildingFacing.DoorWall(entry.doorX, entry.doorY, entry.pivotX, entry.pivotY, entry.facings,
+                                          entry.footprintWidthMetres, entry.footprintLengthMetres);
 
         /// <summary>The facing a site is placed at — its door turned toward
         /// <see cref="StPetersBuilder.VillageGreen"/>.</summary>

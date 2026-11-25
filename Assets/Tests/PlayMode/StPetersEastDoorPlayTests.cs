@@ -91,7 +91,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 Scene s = SceneManager.GetSceneAt(i);
                 if (s.IsValid() && s != clean && s.name == SceneName)
-                    yield return SceneManager.UnloadSceneAsync(s);
+                    yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(s);
             }
 
             // ⭐ …and the other half: everything the load promoted out of that scene. Destroyed by
@@ -110,7 +110,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             // The island logs unrelated decor complaints; a stray one must not fail a claim about a passage.
             LogAssert.ignoreFailingMessages = true;
-            yield return SceneManager.LoadSceneAsync(SceneName, LoadSceneMode.Single);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Load(SceneName, LoadSceneMode.Single);
             for (int i = 0; i < 4; i++) yield return null;   // let self-installing components register
             LogAssert.ignoreFailingMessages = false;
         }
@@ -301,7 +301,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 Scene s = SceneManager.GetSceneAt(i);
                 if (s.IsValid() && s != clean && s.name == SceneName)
-                    yield return SceneManager.UnloadSceneAsync(s);
+                    yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(s);
             }
             Assert.That(PersistentRoots().Count, Is.GreaterThan(before),
                 "UNLOADING THE SCENE IS NOT CLEANUP — this is the whole point: the roots outlive it");

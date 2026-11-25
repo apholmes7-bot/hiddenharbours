@@ -147,6 +147,8 @@ Material:
     - _NightSoftness: 0.3
     - _NightStart: 0.35
     - _NoiseScale: 0.35
+    - _ObjectReflectFadeChop: 0.75
+    - _ObjectReflectLowLight: 4
     - _ObjectReflectSink: 0.35
     - _ObjectReflectStrength: 0.5
     - _ObjectReflectWarp: 0.35
@@ -169,7 +171,7 @@ Material:
     - _RainRingScale: 6
     - _RainRingSpeed: 1.5
     - _RainRingStrength: 0.6
-    - _RippleStrength: 0.45
+    - _RippleStrength: 0.25
     - _ReflectionChopScatter: 1.5
     - _ReflectionFadeChop: 0.6
     - _ReflectionSkyTint: 0.85
@@ -202,7 +204,11 @@ Material:
     - _StormFoamLaneScale: 0.3
     - _StormFoamLaneStrength: 0.75
     - _StormFoamLaneStretch: 6
-    - _SunGlitterStrength: 0.6
+    - _SunGlitterStrength: 0.25
+    - _SunGlitterForm: 1
+    - _SunGlitterSpark: 10
+    - _LowSunHueHold: 0.4
+    - _LowSunWakeHold: 0.6
     - _SunSideStrength: 1.7
     - _SurfAgeStrength: 1
     - _SurfBandDither: 0.7
@@ -224,6 +230,7 @@ Material:
     - _SurfRunUpStrength: 1
     - _SurfStrength: 1
     - _SurfSupersedeFringe: 1
+    - _SurfSwellYield: 1
     - _SurfThreshold: 0.42
     - _SurfThresholdSoft: 0.16
     - _SurfaceTexStrength: 0.169
@@ -237,8 +244,10 @@ Material:
     - _SwashWavelength: 1.2
     - _SwellFaceShade: 0.22
     - _SwellReadBands: 0
+    - _SwellReadRelative: 1
     - _SwellReadSeaStateLo: 0.1
     - _SwellReadStrength: 0.2
+    - _SwellShoalDepth: 1.5
     - _Turbidity: 0.25
     - _UntileStrength: 1
     - _UseCausticTex: 1
@@ -262,6 +271,22 @@ Material:
     - _WakeFoamStrength: 0.85
     - _WakeFoamThreshold: 0.12
     - _WakeFoamWhiteHold: 0.12
+    - _WashAnatomyFade: 0.05
+    - _WashGroundScale: 1.5
+    - _WashLeeShare: 1
+    - _WashLeftFoamOpacity: 0.6
+    - _WashLeftFoamSeconds: 2
+    - _WashLineOpacity: 0.85
+    - _WashLineWidth: 0.1
+    - _WashMaxCover: 0.6
+    - _WashPresenceRamp: 0.1
+    - _WashResidueSoften: 0.125
+    - _WashSeawardDepth: 0.8
+    - _WashSheetOpacity: 0.2
+    - _WashSurfDetail: 3
+    - _WashSurfLift: 0
+    - _WashSurfReach: 10
+    - _WashSurfSmooth: 1.5
     - _WaterLevel: 0
     - _WhitecapCollapseRate: 1.5
     - _WhitecapFormSharpness: 0.5
@@ -297,6 +322,12 @@ Material:
     - _ShallowColor: {r: 0.16, g: 0.5, b: 0.72, a: 0.95}
     - _SpecColor: {r: 0.9, g: 0.95, b: 1, a: 1}
     - _SunGlitterColor: {r: 1, g: 0.82, b: 0.54999995, a: 1}
+    - _SunGlitterCell: {r: 0.5, g: 0.25, b: 0.35, a: 1.2}
+    - _SunGlitterDash: {r: 0.09, g: 0.016, b: 3, a: 0.06}
+    - _LowSunWindow: {r: -0.2, g: 0.35, b: 0.5, a: 0.4}
+    - _LowSunSheen: {r: 0.35, g: 0.5, b: 3, a: 0.8}
+    - _LowSunSkyNear: {r: 1, g: 0.72, b: 0.42, a: 1}
+    - _LowSunSkyFar: {r: 0.62, g: 0.4, b: 0.5, a: 1}
     - _SurfBarrelColor: {r: 0.16, g: 0.26, b: 0.34, a: 1}
     - _SurfColor: {r: 1, g: 1, b: 1, a: 1}
     - _SurfLipColor: {r: 1, g: 1, b: 1, a: 1}

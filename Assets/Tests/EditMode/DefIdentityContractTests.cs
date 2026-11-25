@@ -60,7 +60,8 @@ namespace HiddenHarbours.Tests.EditMode
             // VehicleOffer has always carried the saved deed identity, despite its non-Def name.
             // Include that exact catalog type so every existing and future vehicle deed is frozen too.
             .Where(type => !type.IsAbstract && (type.Name.EndsWith("Def", StringComparison.Ordinal)
-                || type == typeof(HiddenHarbours.Economy.VehicleOffer))
+                || type == typeof(HiddenHarbours.Economy.VehicleOffer)
+                || type == typeof(HiddenHarbours.Economy.InstrumentOffer))
                 && type.Namespace != null && type.Namespace.StartsWith("HiddenHarbours", StringComparison.Ordinal))
             .OrderBy(type => type.FullName, StringComparer.Ordinal);
 

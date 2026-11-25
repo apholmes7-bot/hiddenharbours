@@ -13,7 +13,12 @@ namespace HiddenHarbours.App.Editor
     public static partial class StPetersLayerRefresh
     {
         /// <summary>Reads the committed field's actual sites, not the builder's prospective keepouts.</summary>
-        public static List<Vector2> CommittedGrassSites(SceneYaml scene)
+        public static List<Vector2> CommittedGrassSites(SceneYaml scene) => CommittedSites(scene, grassOnly: true);
+
+        /// <summary>Every committed plant field site, grass, flower, shrub, scattered or authored.</summary>
+        public static List<Vector2> CommittedPlantSites(SceneYaml scene) => CommittedSites(scene, grassOnly: false);
+
+        static List<Vector2> CommittedSites(SceneYaml scene, bool grassOnly)
         {
             var result = new List<Vector2>();
             var plant = scene.Docs.SingleOrDefault(d => d.ClassId == MonoBehaviourClass &&
@@ -30,7 +35,8 @@ namespace HiddenHarbours.App.Editor
                 {
                     var ground = go.AddComponent<StPetersPlantGround>(); ground.Data = groundData;
                     var field = go.AddComponent<PlantField>(); field.Definition = definition; field.GroundSource = ground;
-                    field.Rebuild(false); field.CopyGrassRootsTo(result);
+                    field.Rebuild(false);
+                    if (grassOnly) field.CopyGrassRootsTo(result); else field.CopyRootsTo(result);
                 }
                 finally { UnityEngine.Object.DestroyImmediate(go); }
                 if (result.Count == 0) throw new Refusal("The committed plant field has no grass sites");

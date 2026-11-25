@@ -38,7 +38,74 @@ MonoBehaviour:
     - {fileID: 1844000205, guid: 9ad557ac1ad42b04b9b5bdf40b30c661, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 11400000, guid: 43b342f20260e624bb3e4e2b33741a93, type: 2}
+    HeldMeshScale: 1.17964
+    SizeOf: 
+    SizeKg: 7.55
+    HeldLengthPx: 26
+  - Kind: bass_sm
+    Variants:
+    - {fileID: 1217899266, guid: 0407b47bcb920d248b937659f07b3122, type: 3}
+    - {fileID: -292466523, guid: 0407b47bcb920d248b937659f07b3122, type: 3}
+    - {fileID: 1852973885, guid: 0407b47bcb920d248b937659f07b3122, type: 3}
+    - {fileID: -68624809, guid: 0407b47bcb920d248b937659f07b3122, type: 3}
+    Held:
+    - {fileID: 1981263723, guid: ed316e85496dd444896dd5d3daa224f3, type: 3}
+    - {fileID: -1762667881, guid: ed316e85496dd444896dd5d3daa224f3, type: 3}
+    - {fileID: -1686820616, guid: ed316e85496dd444896dd5d3daa224f3, type: 3}
+    - {fileID: 1461452770, guid: ed316e85496dd444896dd5d3daa224f3, type: 3}
+    - {fileID: 297018932, guid: ed316e85496dd444896dd5d3daa224f3, type: 3}
+    - {fileID: -756013210, guid: ed316e85496dd444896dd5d3daa224f3, type: 3}
+    - {fileID: 2044515065, guid: ed316e85496dd444896dd5d3daa224f3, type: 3}
+    - {fileID: 1394169557, guid: ed316e85496dd444896dd5d3daa224f3, type: 3}
+    - {fileID: 873916802, guid: ed316e85496dd444896dd5d3daa224f3, type: 3}
+    - {fileID: -1840942184, guid: ed316e85496dd444896dd5d3daa224f3, type: 3}
+    - {fileID: -1017577375, guid: ed316e85496dd444896dd5d3daa224f3, type: 3}
+    - {fileID: 14981724, guid: ed316e85496dd444896dd5d3daa224f3, type: 3}
+    - {fileID: -1397181895, guid: ed316e85496dd444896dd5d3daa224f3, type: 3}
+    - {fileID: -1333056235, guid: ed316e85496dd444896dd5d3daa224f3, type: 3}
+    - {fileID: -1315696005, guid: ed316e85496dd444896dd5d3daa224f3, type: 3}
+    - {fileID: 2056283306, guid: ed316e85496dd444896dd5d3daa224f3, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
+    HeldFacingMap: 
+    HeldMesh: {fileID: 11400000, guid: 43b342f20260e624bb3e4e2b33741a93, type: 2}
+    HeldMeshScale: 0.601241
+    SizeOf: bass
+    SizeKg: 1
+    HeldLengthPx: 13
+  - Kind: bass_lg
+    Variants:
+    - {fileID: -1791210117, guid: 286ef82f30a56e847a7740953246de6a, type: 3}
+    - {fileID: 1020856754, guid: 286ef82f30a56e847a7740953246de6a, type: 3}
+    - {fileID: 1393795965, guid: 286ef82f30a56e847a7740953246de6a, type: 3}
+    - {fileID: -883196861, guid: 286ef82f30a56e847a7740953246de6a, type: 3}
+    Held:
+    - {fileID: -1672493544, guid: 4b8f5ced1cc04c042bec5c13c7e0e6ab, type: 3}
+    - {fileID: -1143697821, guid: 4b8f5ced1cc04c042bec5c13c7e0e6ab, type: 3}
+    - {fileID: 290641930, guid: 4b8f5ced1cc04c042bec5c13c7e0e6ab, type: 3}
+    - {fileID: -736573402, guid: 4b8f5ced1cc04c042bec5c13c7e0e6ab, type: 3}
+    - {fileID: 1946481962, guid: 4b8f5ced1cc04c042bec5c13c7e0e6ab, type: 3}
+    - {fileID: 1244361237, guid: 4b8f5ced1cc04c042bec5c13c7e0e6ab, type: 3}
+    - {fileID: 496726430, guid: 4b8f5ced1cc04c042bec5c13c7e0e6ab, type: 3}
+    - {fileID: 233112452, guid: 4b8f5ced1cc04c042bec5c13c7e0e6ab, type: 3}
+    - {fileID: 1737276541, guid: 4b8f5ced1cc04c042bec5c13c7e0e6ab, type: 3}
+    - {fileID: -2126059287, guid: 4b8f5ced1cc04c042bec5c13c7e0e6ab, type: 3}
+    - {fileID: 136401808, guid: 4b8f5ced1cc04c042bec5c13c7e0e6ab, type: 3}
+    - {fileID: -830672572, guid: 4b8f5ced1cc04c042bec5c13c7e0e6ab, type: 3}
+    - {fileID: -1740488168, guid: 4b8f5ced1cc04c042bec5c13c7e0e6ab, type: 3}
+    - {fileID: -651249202, guid: 4b8f5ced1cc04c042bec5c13c7e0e6ab, type: 3}
+    - {fileID: -596042172, guid: 4b8f5ced1cc04c042bec5c13c7e0e6ab, type: 3}
+    - {fileID: 1900816487, guid: 4b8f5ced1cc04c042bec5c13c7e0e6ab, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
+    HeldFacingMap: 
+    HeldMesh: {fileID: 11400000, guid: 43b342f20260e624bb3e4e2b33741a93, type: 2}
+    HeldMeshScale: 1.758039
+    SizeOf: bass
+    SizeKg: 25
+    HeldLengthPx: 39
   - Kind: cod
     Variants:
     - {fileID: -2137819845, guid: 0ae85c3b18a93644ba4e29e415f60def, type: 3}
@@ -64,7 +131,167 @@ MonoBehaviour:
     - {fileID: -1872140467, guid: eba37c8ff4bdb9540bb4ee98e9a11ef6, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 11400000, guid: 1dd9f87186210aa4fa4d8159b9cb9622, type: 2}
+    HeldMeshScale: 1.22915
+    SizeOf: 
+    SizeKg: 5.59
+    HeldLengthPx: 26
+  - Kind: cod_sm
+    Variants:
+    - {fileID: -1956734648, guid: eb3a56e1cac94314ca8e4990cdb7f78e, type: 3}
+    - {fileID: -1086485029, guid: eb3a56e1cac94314ca8e4990cdb7f78e, type: 3}
+    - {fileID: -1249122228, guid: eb3a56e1cac94314ca8e4990cdb7f78e, type: 3}
+    - {fileID: 1304323929, guid: eb3a56e1cac94314ca8e4990cdb7f78e, type: 3}
+    Held:
+    - {fileID: -2081898766, guid: 4edbfc2dc3ec90646849d5caee253337, type: 3}
+    - {fileID: -915065476, guid: 4edbfc2dc3ec90646849d5caee253337, type: 3}
+    - {fileID: 1078994062, guid: 4edbfc2dc3ec90646849d5caee253337, type: 3}
+    - {fileID: 2099073549, guid: 4edbfc2dc3ec90646849d5caee253337, type: 3}
+    - {fileID: 585314372, guid: 4edbfc2dc3ec90646849d5caee253337, type: 3}
+    - {fileID: -1169532002, guid: 4edbfc2dc3ec90646849d5caee253337, type: 3}
+    - {fileID: 869242265, guid: 4edbfc2dc3ec90646849d5caee253337, type: 3}
+    - {fileID: 325121469, guid: 4edbfc2dc3ec90646849d5caee253337, type: 3}
+    - {fileID: 1709507604, guid: 4edbfc2dc3ec90646849d5caee253337, type: 3}
+    - {fileID: 1720081984, guid: 4edbfc2dc3ec90646849d5caee253337, type: 3}
+    - {fileID: 580309072, guid: 4edbfc2dc3ec90646849d5caee253337, type: 3}
+    - {fileID: 214472310, guid: 4edbfc2dc3ec90646849d5caee253337, type: 3}
+    - {fileID: 148770986, guid: 4edbfc2dc3ec90646849d5caee253337, type: 3}
+    - {fileID: -1188731381, guid: 4edbfc2dc3ec90646849d5caee253337, type: 3}
+    - {fileID: 278907385, guid: 4edbfc2dc3ec90646849d5caee253337, type: 3}
+    - {fileID: 943123888, guid: 4edbfc2dc3ec90646849d5caee253337, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
+    HeldFacingMap: 
+    HeldMesh: {fileID: 11400000, guid: 1dd9f87186210aa4fa4d8159b9cb9622, type: 2}
+    HeldMeshScale: 0.872629
+    SizeOf: cod
+    SizeKg: 2
+    HeldLengthPx: 18
+  - Kind: cod_lg
+    Variants:
+    - {fileID: -1008036311, guid: 66ebafe07add22d4681f10072f86e39c, type: 3}
+    - {fileID: -859219111, guid: 66ebafe07add22d4681f10072f86e39c, type: 3}
+    - {fileID: -6886763, guid: 66ebafe07add22d4681f10072f86e39c, type: 3}
+    - {fileID: 1538567751, guid: 66ebafe07add22d4681f10072f86e39c, type: 3}
+    Held:
+    - {fileID: 1384917590, guid: d2b14f3d2f0244c47ae577a091d04d55, type: 3}
+    - {fileID: -1491281053, guid: d2b14f3d2f0244c47ae577a091d04d55, type: 3}
+    - {fileID: 1860242102, guid: d2b14f3d2f0244c47ae577a091d04d55, type: 3}
+    - {fileID: -813135669, guid: d2b14f3d2f0244c47ae577a091d04d55, type: 3}
+    - {fileID: 1040202445, guid: d2b14f3d2f0244c47ae577a091d04d55, type: 3}
+    - {fileID: 767560722, guid: d2b14f3d2f0244c47ae577a091d04d55, type: 3}
+    - {fileID: 646406466, guid: d2b14f3d2f0244c47ae577a091d04d55, type: 3}
+    - {fileID: -878338793, guid: d2b14f3d2f0244c47ae577a091d04d55, type: 3}
+    - {fileID: 862639629, guid: d2b14f3d2f0244c47ae577a091d04d55, type: 3}
+    - {fileID: 1765697201, guid: d2b14f3d2f0244c47ae577a091d04d55, type: 3}
+    - {fileID: -1688601124, guid: d2b14f3d2f0244c47ae577a091d04d55, type: 3}
+    - {fileID: 721806628, guid: d2b14f3d2f0244c47ae577a091d04d55, type: 3}
+    - {fileID: 477703883, guid: d2b14f3d2f0244c47ae577a091d04d55, type: 3}
+    - {fileID: 2018892771, guid: d2b14f3d2f0244c47ae577a091d04d55, type: 3}
+    - {fileID: -1391319334, guid: d2b14f3d2f0244c47ae577a091d04d55, type: 3}
+    - {fileID: 1812135645, guid: d2b14f3d2f0244c47ae577a091d04d55, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
+    HeldFacingMap: 
+    HeldMesh: {fileID: 11400000, guid: 1dd9f87186210aa4fa4d8159b9cb9622, type: 2}
+    HeldMeshScale: 1.585672
+    SizeOf: cod
+    SizeKg: 12
+    HeldLengthPx: 34
+  - Kind: cunner
+    Variants:
+    - {fileID: -1418579505, guid: 7ae4063b919dcd743a222556e311224f, type: 3}
+    - {fileID: 471680808, guid: 7ae4063b919dcd743a222556e311224f, type: 3}
+    - {fileID: -1022077759, guid: 7ae4063b919dcd743a222556e311224f, type: 3}
+    - {fileID: -1281907673, guid: 7ae4063b919dcd743a222556e311224f, type: 3}
+    Held:
+    - {fileID: -102760376, guid: b895c6c1cdf992a44be150a51642357e, type: 3}
+    - {fileID: 426183961, guid: b895c6c1cdf992a44be150a51642357e, type: 3}
+    - {fileID: -719441060, guid: b895c6c1cdf992a44be150a51642357e, type: 3}
+    - {fileID: -1991750064, guid: b895c6c1cdf992a44be150a51642357e, type: 3}
+    - {fileID: 1168464204, guid: b895c6c1cdf992a44be150a51642357e, type: 3}
+    - {fileID: -710141316, guid: b895c6c1cdf992a44be150a51642357e, type: 3}
+    - {fileID: -297057361, guid: b895c6c1cdf992a44be150a51642357e, type: 3}
+    - {fileID: 1030121016, guid: b895c6c1cdf992a44be150a51642357e, type: 3}
+    - {fileID: -1152107186, guid: b895c6c1cdf992a44be150a51642357e, type: 3}
+    - {fileID: -1228080436, guid: b895c6c1cdf992a44be150a51642357e, type: 3}
+    - {fileID: -1897844573, guid: b895c6c1cdf992a44be150a51642357e, type: 3}
+    - {fileID: -654572871, guid: b895c6c1cdf992a44be150a51642357e, type: 3}
+    - {fileID: 324957834, guid: b895c6c1cdf992a44be150a51642357e, type: 3}
+    - {fileID: 1563478075, guid: b895c6c1cdf992a44be150a51642357e, type: 3}
+    - {fileID: 386869853, guid: b895c6c1cdf992a44be150a51642357e, type: 3}
+    - {fileID: 1329057437, guid: b895c6c1cdf992a44be150a51642357e, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
+    HeldFacingMap: 
+    HeldMesh: {fileID: 11400000, guid: 8101b1bec2297194eb7f33a21adbb63d, type: 2}
+    HeldMeshScale: 1.092194
+    SizeOf: 
+    SizeKg: 0.28
+    HeldLengthPx: 8
+  - Kind: cunner_sm
+    Variants:
+    - {fileID: 436917898, guid: cda4e0c3838168d45aab535ed358066e, type: 3}
+    - {fileID: 158465059, guid: cda4e0c3838168d45aab535ed358066e, type: 3}
+    - {fileID: -914688323, guid: cda4e0c3838168d45aab535ed358066e, type: 3}
+    - {fileID: 1332482152, guid: cda4e0c3838168d45aab535ed358066e, type: 3}
+    Held:
+    - {fileID: -1399615071, guid: b9d6992100f70f24d9df401053b381ea, type: 3}
+    - {fileID: -1940899145, guid: b9d6992100f70f24d9df401053b381ea, type: 3}
+    - {fileID: -908520610, guid: b9d6992100f70f24d9df401053b381ea, type: 3}
+    - {fileID: 1818351746, guid: b9d6992100f70f24d9df401053b381ea, type: 3}
+    - {fileID: 1545490215, guid: b9d6992100f70f24d9df401053b381ea, type: 3}
+    - {fileID: 14693228, guid: b9d6992100f70f24d9df401053b381ea, type: 3}
+    - {fileID: -631988051, guid: b9d6992100f70f24d9df401053b381ea, type: 3}
+    - {fileID: 1469244305, guid: b9d6992100f70f24d9df401053b381ea, type: 3}
+    - {fileID: 1226266946, guid: b9d6992100f70f24d9df401053b381ea, type: 3}
+    - {fileID: 165260361, guid: b9d6992100f70f24d9df401053b381ea, type: 3}
+    - {fileID: 1278573584, guid: b9d6992100f70f24d9df401053b381ea, type: 3}
+    - {fileID: -408231821, guid: b9d6992100f70f24d9df401053b381ea, type: 3}
+    - {fileID: 96215120, guid: b9d6992100f70f24d9df401053b381ea, type: 3}
+    - {fileID: -1917483533, guid: b9d6992100f70f24d9df401053b381ea, type: 3}
+    - {fileID: -819720629, guid: b9d6992100f70f24d9df401053b381ea, type: 3}
+    - {fileID: -1256408822, guid: b9d6992100f70f24d9df401053b381ea, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
+    HeldFacingMap: 
+    HeldMesh: {fileID: 11400000, guid: 8101b1bec2297194eb7f33a21adbb63d, type: 2}
+    HeldMeshScale: 0.775397
+    SizeOf: cunner
+    SizeKg: 0.1
+    HeldLengthPx: 6
+  - Kind: cunner_lg
+    Variants:
+    - {fileID: -394829465, guid: b2340178134b12b44b90db0c66ac772d, type: 3}
+    - {fileID: -64893671, guid: b2340178134b12b44b90db0c66ac772d, type: 3}
+    - {fileID: 881394821, guid: b2340178134b12b44b90db0c66ac772d, type: 3}
+    - {fileID: -1171379130, guid: b2340178134b12b44b90db0c66ac772d, type: 3}
+    Held:
+    - {fileID: 690084141, guid: c2c49d85c4a0c3d43813fa848d2593b4, type: 3}
+    - {fileID: -678897330, guid: c2c49d85c4a0c3d43813fa848d2593b4, type: 3}
+    - {fileID: -2059641134, guid: c2c49d85c4a0c3d43813fa848d2593b4, type: 3}
+    - {fileID: 2104898013, guid: c2c49d85c4a0c3d43813fa848d2593b4, type: 3}
+    - {fileID: -34008103, guid: c2c49d85c4a0c3d43813fa848d2593b4, type: 3}
+    - {fileID: -1600384552, guid: c2c49d85c4a0c3d43813fa848d2593b4, type: 3}
+    - {fileID: 1822428622, guid: c2c49d85c4a0c3d43813fa848d2593b4, type: 3}
+    - {fileID: 714333761, guid: c2c49d85c4a0c3d43813fa848d2593b4, type: 3}
+    - {fileID: -1054641071, guid: c2c49d85c4a0c3d43813fa848d2593b4, type: 3}
+    - {fileID: 1266762758, guid: c2c49d85c4a0c3d43813fa848d2593b4, type: 3}
+    - {fileID: -1843709567, guid: c2c49d85c4a0c3d43813fa848d2593b4, type: 3}
+    - {fileID: -163906099, guid: c2c49d85c4a0c3d43813fa848d2593b4, type: 3}
+    - {fileID: 680042015, guid: c2c49d85c4a0c3d43813fa848d2593b4, type: 3}
+    - {fileID: 1222599409, guid: c2c49d85c4a0c3d43813fa848d2593b4, type: 3}
+    - {fileID: 482051519, guid: c2c49d85c4a0c3d43813fa848d2593b4, type: 3}
+    - {fileID: 1445364330, guid: c2c49d85c4a0c3d43813fa848d2593b4, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
+    HeldFacingMap: 
+    HeldMesh: {fileID: 11400000, guid: 8101b1bec2297194eb7f33a21adbb63d, type: 2}
+    HeldMeshScale: 1.40899
+    SizeOf: cunner
+    SizeKg: 0.6
+    HeldLengthPx: 10
   - Kind: flounder
     Variants:
     - {fileID: 10148047, guid: 46c2619bce74db745a8dd5c09af71589, type: 3}
@@ -90,7 +317,74 @@ MonoBehaviour:
     - {fileID: 1078626344, guid: 671a9daa0f931874bb312d40446f9c41, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 0100000001000000010000000400000005000000050000000500000000000000
     HeldMesh: {fileID: 11400000, guid: fc90e4a6451fcc24ab25fb64043d4bdd, type: 2}
+    HeldMeshScale: 1.215647
+    SizeOf: 
+    SizeKg: 0.78
+    HeldLengthPx: 13
+  - Kind: flounder_sm
+    Variants:
+    - {fileID: -486357052, guid: 2d282f9e3b259404786b2fb74b46cf43, type: 3}
+    - {fileID: -406382195, guid: 2d282f9e3b259404786b2fb74b46cf43, type: 3}
+    - {fileID: 593887322, guid: 2d282f9e3b259404786b2fb74b46cf43, type: 3}
+    - {fileID: 780197145, guid: 2d282f9e3b259404786b2fb74b46cf43, type: 3}
+    Held:
+    - {fileID: -1774091921, guid: f49fecbaa7314ab4d846b3df68774be6, type: 3}
+    - {fileID: 823592877, guid: f49fecbaa7314ab4d846b3df68774be6, type: 3}
+    - {fileID: -1551597952, guid: f49fecbaa7314ab4d846b3df68774be6, type: 3}
+    - {fileID: 1876221389, guid: f49fecbaa7314ab4d846b3df68774be6, type: 3}
+    - {fileID: 2022403063, guid: f49fecbaa7314ab4d846b3df68774be6, type: 3}
+    - {fileID: -390923919, guid: f49fecbaa7314ab4d846b3df68774be6, type: 3}
+    - {fileID: -1597749520, guid: f49fecbaa7314ab4d846b3df68774be6, type: 3}
+    - {fileID: -1505699740, guid: f49fecbaa7314ab4d846b3df68774be6, type: 3}
+    - {fileID: -510894215, guid: f49fecbaa7314ab4d846b3df68774be6, type: 3}
+    - {fileID: -299095277, guid: f49fecbaa7314ab4d846b3df68774be6, type: 3}
+    - {fileID: -1964243188, guid: f49fecbaa7314ab4d846b3df68774be6, type: 3}
+    - {fileID: 728989888, guid: f49fecbaa7314ab4d846b3df68774be6, type: 3}
+    - {fileID: -654273207, guid: f49fecbaa7314ab4d846b3df68774be6, type: 3}
+    - {fileID: -1183822499, guid: f49fecbaa7314ab4d846b3df68774be6, type: 3}
+    - {fileID: -512306557, guid: f49fecbaa7314ab4d846b3df68774be6, type: 3}
+    - {fileID: 1189380046, guid: f49fecbaa7314ab4d846b3df68774be6, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
+    HeldFacingMap: 0100000001000000010000000400000004000000050000000500000000000000
+    HeldMesh: {fileID: 11400000, guid: fc90e4a6451fcc24ab25fb64043d4bdd, type: 2}
+    HeldMeshScale: 0.770754
+    SizeOf: flounder
+    SizeKg: 0.2
+    HeldLengthPx: 8
+  - Kind: flounder_lg
+    Variants:
+    - {fileID: 324682995, guid: 50b2ea2ef2576ab46a1d3bf2e8c60a6f, type: 3}
+    - {fileID: 248806050, guid: 50b2ea2ef2576ab46a1d3bf2e8c60a6f, type: 3}
+    - {fileID: 2112669960, guid: 50b2ea2ef2576ab46a1d3bf2e8c60a6f, type: 3}
+    - {fileID: 265435526, guid: 50b2ea2ef2576ab46a1d3bf2e8c60a6f, type: 3}
+    Held:
+    - {fileID: -705891516, guid: fdb73fec224340043987c7a93599f0d1, type: 3}
+    - {fileID: -327257445, guid: fdb73fec224340043987c7a93599f0d1, type: 3}
+    - {fileID: 210283673, guid: fdb73fec224340043987c7a93599f0d1, type: 3}
+    - {fileID: -1420259548, guid: fdb73fec224340043987c7a93599f0d1, type: 3}
+    - {fileID: 510159727, guid: fdb73fec224340043987c7a93599f0d1, type: 3}
+    - {fileID: 1142198967, guid: fdb73fec224340043987c7a93599f0d1, type: 3}
+    - {fileID: 897197935, guid: fdb73fec224340043987c7a93599f0d1, type: 3}
+    - {fileID: -914702532, guid: fdb73fec224340043987c7a93599f0d1, type: 3}
+    - {fileID: -1676395070, guid: fdb73fec224340043987c7a93599f0d1, type: 3}
+    - {fileID: -1821018959, guid: fdb73fec224340043987c7a93599f0d1, type: 3}
+    - {fileID: 798064436, guid: fdb73fec224340043987c7a93599f0d1, type: 3}
+    - {fileID: 1495777555, guid: fdb73fec224340043987c7a93599f0d1, type: 3}
+    - {fileID: -632390235, guid: fdb73fec224340043987c7a93599f0d1, type: 3}
+    - {fileID: -263245565, guid: fdb73fec224340043987c7a93599f0d1, type: 3}
+    - {fileID: -1902476028, guid: fdb73fec224340043987c7a93599f0d1, type: 3}
+    - {fileID: -1778195626, guid: fdb73fec224340043987c7a93599f0d1, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
+    HeldFacingMap: 0100000001000000010000000400000005000000050000000500000000000000
+    HeldMesh: {fileID: 11400000, guid: fc90e4a6451fcc24ab25fb64043d4bdd, type: 2}
+    HeldMeshScale: 1.660539
+    SizeOf: flounder
+    SizeKg: 2
+    HeldLengthPx: 17
   - Kind: haddock
     Variants:
     - {fileID: 215540679, guid: db63267d07e4b594db982c61291d4fc5, type: 3}
@@ -116,7 +410,74 @@ MonoBehaviour:
     - {fileID: 274749164, guid: 492afce9fd9c42447860c5eae234d2b0, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 11400000, guid: e05700ba238ba3249a951c54cc98219e, type: 2}
+    HeldMeshScale: 1.171668
+    SizeOf: 
+    SizeKg: 2.79
+    HeldLengthPx: 19
+  - Kind: haddock_sm
+    Variants:
+    - {fileID: 882314877, guid: 4a081f76203bd7f4f83e281fbf4aad42, type: 3}
+    - {fileID: -284586832, guid: 4a081f76203bd7f4f83e281fbf4aad42, type: 3}
+    - {fileID: -350286967, guid: 4a081f76203bd7f4f83e281fbf4aad42, type: 3}
+    - {fileID: 519215070, guid: 4a081f76203bd7f4f83e281fbf4aad42, type: 3}
+    Held:
+    - {fileID: 925014100, guid: 25fc18e89feaefa4a8b5f91ef72b2f3b, type: 3}
+    - {fileID: -1809626928, guid: 25fc18e89feaefa4a8b5f91ef72b2f3b, type: 3}
+    - {fileID: -148430075, guid: 25fc18e89feaefa4a8b5f91ef72b2f3b, type: 3}
+    - {fileID: 2049984557, guid: 25fc18e89feaefa4a8b5f91ef72b2f3b, type: 3}
+    - {fileID: -1400311557, guid: 25fc18e89feaefa4a8b5f91ef72b2f3b, type: 3}
+    - {fileID: 656960229, guid: 25fc18e89feaefa4a8b5f91ef72b2f3b, type: 3}
+    - {fileID: 352157627, guid: 25fc18e89feaefa4a8b5f91ef72b2f3b, type: 3}
+    - {fileID: 968366448, guid: 25fc18e89feaefa4a8b5f91ef72b2f3b, type: 3}
+    - {fileID: 463663910, guid: 25fc18e89feaefa4a8b5f91ef72b2f3b, type: 3}
+    - {fileID: 149325444, guid: 25fc18e89feaefa4a8b5f91ef72b2f3b, type: 3}
+    - {fileID: -1290729392, guid: 25fc18e89feaefa4a8b5f91ef72b2f3b, type: 3}
+    - {fileID: -1984324319, guid: 25fc18e89feaefa4a8b5f91ef72b2f3b, type: 3}
+    - {fileID: -1605817779, guid: 25fc18e89feaefa4a8b5f91ef72b2f3b, type: 3}
+    - {fileID: -748085254, guid: 25fc18e89feaefa4a8b5f91ef72b2f3b, type: 3}
+    - {fileID: -317942955, guid: 25fc18e89feaefa4a8b5f91ef72b2f3b, type: 3}
+    - {fileID: -1243113089, guid: 25fc18e89feaefa4a8b5f91ef72b2f3b, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
+    HeldFacingMap: 
+    HeldMesh: {fileID: 11400000, guid: e05700ba238ba3249a951c54cc98219e, type: 2}
+    HeldMeshScale: 0.83182
+    SizeOf: haddock
+    SizeKg: 1
+    HeldLengthPx: 13
+  - Kind: haddock_lg
+    Variants:
+    - {fileID: 534143428, guid: 0d0e3dd31ad4a354aabceda119d473b8, type: 3}
+    - {fileID: -2060134013, guid: 0d0e3dd31ad4a354aabceda119d473b8, type: 3}
+    - {fileID: -1110106665, guid: 0d0e3dd31ad4a354aabceda119d473b8, type: 3}
+    - {fileID: -1465865207, guid: 0d0e3dd31ad4a354aabceda119d473b8, type: 3}
+    Held:
+    - {fileID: 650692687, guid: 6a162810a8ff3834783df1140aa6fed6, type: 3}
+    - {fileID: -1642649702, guid: 6a162810a8ff3834783df1140aa6fed6, type: 3}
+    - {fileID: 1392684206, guid: 6a162810a8ff3834783df1140aa6fed6, type: 3}
+    - {fileID: 1791085386, guid: 6a162810a8ff3834783df1140aa6fed6, type: 3}
+    - {fileID: -1565083938, guid: 6a162810a8ff3834783df1140aa6fed6, type: 3}
+    - {fileID: -709596935, guid: 6a162810a8ff3834783df1140aa6fed6, type: 3}
+    - {fileID: 1992478947, guid: 6a162810a8ff3834783df1140aa6fed6, type: 3}
+    - {fileID: 575262632, guid: 6a162810a8ff3834783df1140aa6fed6, type: 3}
+    - {fileID: -402499362, guid: 6a162810a8ff3834783df1140aa6fed6, type: 3}
+    - {fileID: 1473978158, guid: 6a162810a8ff3834783df1140aa6fed6, type: 3}
+    - {fileID: -883080807, guid: 6a162810a8ff3834783df1140aa6fed6, type: 3}
+    - {fileID: 177896527, guid: 6a162810a8ff3834783df1140aa6fed6, type: 3}
+    - {fileID: 393188794, guid: 6a162810a8ff3834783df1140aa6fed6, type: 3}
+    - {fileID: -730449874, guid: 6a162810a8ff3834783df1140aa6fed6, type: 3}
+    - {fileID: -686142499, guid: 6a162810a8ff3834783df1140aa6fed6, type: 3}
+    - {fileID: -147787707, guid: 6a162810a8ff3834783df1140aa6fed6, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
+    HeldFacingMap: 
+    HeldMesh: {fileID: 11400000, guid: e05700ba238ba3249a951c54cc98219e, type: 2}
+    HeldMeshScale: 1.511517
+    SizeOf: haddock
+    SizeKg: 6
+    HeldLengthPx: 24
   - Kind: herring
     Variants:
     - {fileID: 1529871688, guid: 57c8659b67a50e1459b6c4f7f767e601, type: 3}
@@ -142,7 +503,74 @@ MonoBehaviour:
     - {fileID: 289850681, guid: ce2171e49c89c894d804ec8e7b4d6d3a, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 11400000, guid: fd943c4c961170a4d9c7cec999e4319e, type: 2}
+    HeldMeshScale: 1.176211
+    SizeOf: 
+    SizeKg: 0.25
+    HeldLengthPx: 9
+  - Kind: herring_sm
+    Variants:
+    - {fileID: -1517033314, guid: 0ba67d70a91c7384ca6eabbaa4b687fa, type: 3}
+    - {fileID: -1680829990, guid: 0ba67d70a91c7384ca6eabbaa4b687fa, type: 3}
+    - {fileID: -1814463609, guid: 0ba67d70a91c7384ca6eabbaa4b687fa, type: 3}
+    - {fileID: 1856520706, guid: 0ba67d70a91c7384ca6eabbaa4b687fa, type: 3}
+    Held:
+    - {fileID: 996483899, guid: bd120924d508312428da38d6837016be, type: 3}
+    - {fileID: -242479771, guid: bd120924d508312428da38d6837016be, type: 3}
+    - {fileID: -165053059, guid: bd120924d508312428da38d6837016be, type: 3}
+    - {fileID: -281164550, guid: bd120924d508312428da38d6837016be, type: 3}
+    - {fileID: 1052095985, guid: bd120924d508312428da38d6837016be, type: 3}
+    - {fileID: -1205998817, guid: bd120924d508312428da38d6837016be, type: 3}
+    - {fileID: 445920528, guid: bd120924d508312428da38d6837016be, type: 3}
+    - {fileID: 217923720, guid: bd120924d508312428da38d6837016be, type: 3}
+    - {fileID: 1473913171, guid: bd120924d508312428da38d6837016be, type: 3}
+    - {fileID: -46668191, guid: bd120924d508312428da38d6837016be, type: 3}
+    - {fileID: 1454575972, guid: bd120924d508312428da38d6837016be, type: 3}
+    - {fileID: -1261173553, guid: bd120924d508312428da38d6837016be, type: 3}
+    - {fileID: -276425059, guid: bd120924d508312428da38d6837016be, type: 3}
+    - {fileID: 152292690, guid: bd120924d508312428da38d6837016be, type: 3}
+    - {fileID: 1817819643, guid: bd120924d508312428da38d6837016be, type: 3}
+    - {fileID: 1152616048, guid: bd120924d508312428da38d6837016be, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
+    HeldFacingMap: 
+    HeldMesh: {fileID: 11400000, guid: fd943c4c961170a4d9c7cec999e4319e, type: 2}
+    HeldMeshScale: 0.86806
+    SizeOf: herring
+    SizeKg: 0.1
+    HeldLengthPx: 7
+  - Kind: herring_lg
+    Variants:
+    - {fileID: 202277615, guid: 3bb4ffe7ccb6a5347afe0eae888963b5, type: 3}
+    - {fileID: -1458280140, guid: 3bb4ffe7ccb6a5347afe0eae888963b5, type: 3}
+    - {fileID: -731177898, guid: 3bb4ffe7ccb6a5347afe0eae888963b5, type: 3}
+    - {fileID: 1210601768, guid: 3bb4ffe7ccb6a5347afe0eae888963b5, type: 3}
+    Held:
+    - {fileID: 1813504083, guid: 79e0bf8931b9a074e8101a84a8a6ec0f, type: 3}
+    - {fileID: 1409147830, guid: 79e0bf8931b9a074e8101a84a8a6ec0f, type: 3}
+    - {fileID: -715251238, guid: 79e0bf8931b9a074e8101a84a8a6ec0f, type: 3}
+    - {fileID: 1699299183, guid: 79e0bf8931b9a074e8101a84a8a6ec0f, type: 3}
+    - {fileID: 1835604895, guid: 79e0bf8931b9a074e8101a84a8a6ec0f, type: 3}
+    - {fileID: 14573643, guid: 79e0bf8931b9a074e8101a84a8a6ec0f, type: 3}
+    - {fileID: 2016900168, guid: 79e0bf8931b9a074e8101a84a8a6ec0f, type: 3}
+    - {fileID: 1369320066, guid: 79e0bf8931b9a074e8101a84a8a6ec0f, type: 3}
+    - {fileID: -970464307, guid: 79e0bf8931b9a074e8101a84a8a6ec0f, type: 3}
+    - {fileID: -597782916, guid: 79e0bf8931b9a074e8101a84a8a6ec0f, type: 3}
+    - {fileID: 223951568, guid: 79e0bf8931b9a074e8101a84a8a6ec0f, type: 3}
+    - {fileID: -432209086, guid: 79e0bf8931b9a074e8101a84a8a6ec0f, type: 3}
+    - {fileID: -1780949272, guid: 79e0bf8931b9a074e8101a84a8a6ec0f, type: 3}
+    - {fileID: -650565454, guid: 79e0bf8931b9a074e8101a84a8a6ec0f, type: 3}
+    - {fileID: -939546507, guid: 79e0bf8931b9a074e8101a84a8a6ec0f, type: 3}
+    - {fileID: -1405321849, guid: 79e0bf8931b9a074e8101a84a8a6ec0f, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
+    HeldFacingMap: 
+    HeldMesh: {fileID: 11400000, guid: fd943c4c961170a4d9c7cec999e4319e, type: 2}
+    HeldMeshScale: 1.484362
+    SizeOf: herring
+    SizeKg: 0.5
+    HeldLengthPx: 11
   - Kind: mackerel
     Variants:
     - {fileID: 287460093, guid: 469f3f01633bb264e9bc846edcb195ab, type: 3}
@@ -168,7 +596,74 @@ MonoBehaviour:
     - {fileID: -1140674986, guid: c126921156f46cf468a964035712d532, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 11400000, guid: 869ce0b9a6f833649bac060932e59c32, type: 2}
+    HeldMeshScale: 0.972473
+    SizeOf: 
+    SizeKg: 0.75
+    HeldLengthPx: 13
+  - Kind: mackerel_sm
+    Variants:
+    - {fileID: -1412050813, guid: 4ab558e5e8f449446a037b54a4fbd941, type: 3}
+    - {fileID: -1465676746, guid: 4ab558e5e8f449446a037b54a4fbd941, type: 3}
+    - {fileID: 64764478, guid: 4ab558e5e8f449446a037b54a4fbd941, type: 3}
+    - {fileID: 358228582, guid: 4ab558e5e8f449446a037b54a4fbd941, type: 3}
+    Held:
+    - {fileID: 1474555599, guid: 55adf917e5b839d41a3b706eda69ecc7, type: 3}
+    - {fileID: -1658988151, guid: 55adf917e5b839d41a3b706eda69ecc7, type: 3}
+    - {fileID: 546424051, guid: 55adf917e5b839d41a3b706eda69ecc7, type: 3}
+    - {fileID: 1852631685, guid: 55adf917e5b839d41a3b706eda69ecc7, type: 3}
+    - {fileID: -182714627, guid: 55adf917e5b839d41a3b706eda69ecc7, type: 3}
+    - {fileID: -1524310950, guid: 55adf917e5b839d41a3b706eda69ecc7, type: 3}
+    - {fileID: 609983247, guid: 55adf917e5b839d41a3b706eda69ecc7, type: 3}
+    - {fileID: 1266698408, guid: 55adf917e5b839d41a3b706eda69ecc7, type: 3}
+    - {fileID: -1182004765, guid: 55adf917e5b839d41a3b706eda69ecc7, type: 3}
+    - {fileID: 73785090, guid: 55adf917e5b839d41a3b706eda69ecc7, type: 3}
+    - {fileID: -1094709862, guid: 55adf917e5b839d41a3b706eda69ecc7, type: 3}
+    - {fileID: 2000992713, guid: 55adf917e5b839d41a3b706eda69ecc7, type: 3}
+    - {fileID: 1332663602, guid: 55adf917e5b839d41a3b706eda69ecc7, type: 3}
+    - {fileID: -170661576, guid: 55adf917e5b839d41a3b706eda69ecc7, type: 3}
+    - {fileID: 1095733896, guid: 55adf917e5b839d41a3b706eda69ecc7, type: 3}
+    - {fileID: -106357785, guid: 55adf917e5b839d41a3b706eda69ecc7, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
+    HeldFacingMap: 
+    HeldMesh: {fileID: 11400000, guid: 869ce0b9a6f833649bac060932e59c32, type: 2}
+    HeldMeshScale: 0.717699
+    SizeOf: mackerel
+    SizeKg: 0.3
+    HeldLengthPx: 10
+  - Kind: mackerel_lg
+    Variants:
+    - {fileID: -1702975071, guid: 6c74475469629a8408eaacea7df286ba, type: 3}
+    - {fileID: -477343565, guid: 6c74475469629a8408eaacea7df286ba, type: 3}
+    - {fileID: 1808915164, guid: 6c74475469629a8408eaacea7df286ba, type: 3}
+    - {fileID: -1890988552, guid: 6c74475469629a8408eaacea7df286ba, type: 3}
+    Held:
+    - {fileID: -774164010, guid: 2ece43baaaa52c247aaab46b21cb96e9, type: 3}
+    - {fileID: 813986838, guid: 2ece43baaaa52c247aaab46b21cb96e9, type: 3}
+    - {fileID: -1953459034, guid: 2ece43baaaa52c247aaab46b21cb96e9, type: 3}
+    - {fileID: 1151966273, guid: 2ece43baaaa52c247aaab46b21cb96e9, type: 3}
+    - {fileID: 1009665561, guid: 2ece43baaaa52c247aaab46b21cb96e9, type: 3}
+    - {fileID: 561906504, guid: 2ece43baaaa52c247aaab46b21cb96e9, type: 3}
+    - {fileID: -1027995575, guid: 2ece43baaaa52c247aaab46b21cb96e9, type: 3}
+    - {fileID: 8112824, guid: 2ece43baaaa52c247aaab46b21cb96e9, type: 3}
+    - {fileID: 1292871188, guid: 2ece43baaaa52c247aaab46b21cb96e9, type: 3}
+    - {fileID: 811285162, guid: 2ece43baaaa52c247aaab46b21cb96e9, type: 3}
+    - {fileID: 850717572, guid: 2ece43baaaa52c247aaab46b21cb96e9, type: 3}
+    - {fileID: -1718691763, guid: 2ece43baaaa52c247aaab46b21cb96e9, type: 3}
+    - {fileID: -1356233703, guid: 2ece43baaaa52c247aaab46b21cb96e9, type: 3}
+    - {fileID: -182532610, guid: 2ece43baaaa52c247aaab46b21cb96e9, type: 3}
+    - {fileID: -1282097423, guid: 2ece43baaaa52c247aaab46b21cb96e9, type: 3}
+    - {fileID: 406788593, guid: 2ece43baaaa52c247aaab46b21cb96e9, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
+    HeldFacingMap: 
+    HeldMesh: {fileID: 11400000, guid: 869ce0b9a6f833649bac060932e59c32, type: 2}
+    HeldMeshScale: 1.227247
+    SizeOf: mackerel
+    SizeKg: 1.5
+    HeldLengthPx: 16
   - Kind: pollock
     Variants:
     - {fileID: -2106970796, guid: 09413df64d4029845b4049ca288fb002, type: 3}
@@ -194,7 +689,260 @@ MonoBehaviour:
     - {fileID: 1606076144, guid: eea70fcaf09080941942d033d1a40c75, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
+    HeldFacingMap: 
     HeldMesh: {fileID: 11400000, guid: 1e43f1fc305a06d449c09a2ae2b922f0, type: 2}
+    HeldMeshScale: 1.283932
+    SizeOf: 
+    SizeKg: 4.19
+    HeldLengthPx: 22
+  - Kind: pollock_sm
+    Variants:
+    - {fileID: 636153633, guid: 174acd0f743b6f7458c1280dc5e82f5b, type: 3}
+    - {fileID: 1857661407, guid: 174acd0f743b6f7458c1280dc5e82f5b, type: 3}
+    - {fileID: -465442382, guid: 174acd0f743b6f7458c1280dc5e82f5b, type: 3}
+    - {fileID: -1381597401, guid: 174acd0f743b6f7458c1280dc5e82f5b, type: 3}
+    Held:
+    - {fileID: 716395237, guid: 370bc0ed1d03dcd4fbc9fa68d7935b72, type: 3}
+    - {fileID: -811269502, guid: 370bc0ed1d03dcd4fbc9fa68d7935b72, type: 3}
+    - {fileID: -1356652981, guid: 370bc0ed1d03dcd4fbc9fa68d7935b72, type: 3}
+    - {fileID: 957352849, guid: 370bc0ed1d03dcd4fbc9fa68d7935b72, type: 3}
+    - {fileID: -900120187, guid: 370bc0ed1d03dcd4fbc9fa68d7935b72, type: 3}
+    - {fileID: -1134035849, guid: 370bc0ed1d03dcd4fbc9fa68d7935b72, type: 3}
+    - {fileID: 782567766, guid: 370bc0ed1d03dcd4fbc9fa68d7935b72, type: 3}
+    - {fileID: 446884637, guid: 370bc0ed1d03dcd4fbc9fa68d7935b72, type: 3}
+    - {fileID: 1149498038, guid: 370bc0ed1d03dcd4fbc9fa68d7935b72, type: 3}
+    - {fileID: -136479767, guid: 370bc0ed1d03dcd4fbc9fa68d7935b72, type: 3}
+    - {fileID: 1395585865, guid: 370bc0ed1d03dcd4fbc9fa68d7935b72, type: 3}
+    - {fileID: -403956224, guid: 370bc0ed1d03dcd4fbc9fa68d7935b72, type: 3}
+    - {fileID: -281968930, guid: 370bc0ed1d03dcd4fbc9fa68d7935b72, type: 3}
+    - {fileID: -1838830957, guid: 370bc0ed1d03dcd4fbc9fa68d7935b72, type: 3}
+    - {fileID: -384746633, guid: 370bc0ed1d03dcd4fbc9fa68d7935b72, type: 3}
+    - {fileID: 1895332617, guid: 370bc0ed1d03dcd4fbc9fa68d7935b72, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
+    HeldFacingMap: 
+    HeldMesh: {fileID: 11400000, guid: 1e43f1fc305a06d449c09a2ae2b922f0, type: 2}
+    HeldMeshScale: 0.911521
+    SizeOf: pollock
+    SizeKg: 1.5
+    HeldLengthPx: 16
+  - Kind: pollock_lg
+    Variants:
+    - {fileID: -108855495, guid: a0d8003e4a79c1d4289f91818e552987, type: 3}
+    - {fileID: 1319937578, guid: a0d8003e4a79c1d4289f91818e552987, type: 3}
+    - {fileID: -874881122, guid: a0d8003e4a79c1d4289f91818e552987, type: 3}
+    - {fileID: -1639025249, guid: a0d8003e4a79c1d4289f91818e552987, type: 3}
+    Held:
+    - {fileID: 1600579434, guid: 7187377126a071a4e86ec71ad3271492, type: 3}
+    - {fileID: -1604592932, guid: 7187377126a071a4e86ec71ad3271492, type: 3}
+    - {fileID: -1948984295, guid: 7187377126a071a4e86ec71ad3271492, type: 3}
+    - {fileID: 1858019483, guid: 7187377126a071a4e86ec71ad3271492, type: 3}
+    - {fileID: 1287700024, guid: 7187377126a071a4e86ec71ad3271492, type: 3}
+    - {fileID: 1623786210, guid: 7187377126a071a4e86ec71ad3271492, type: 3}
+    - {fileID: -158603367, guid: 7187377126a071a4e86ec71ad3271492, type: 3}
+    - {fileID: 1419481626, guid: 7187377126a071a4e86ec71ad3271492, type: 3}
+    - {fileID: -564823956, guid: 7187377126a071a4e86ec71ad3271492, type: 3}
+    - {fileID: 1479028288, guid: 7187377126a071a4e86ec71ad3271492, type: 3}
+    - {fileID: -351960283, guid: 7187377126a071a4e86ec71ad3271492, type: 3}
+    - {fileID: 1411173186, guid: 7187377126a071a4e86ec71ad3271492, type: 3}
+    - {fileID: -481240841, guid: 7187377126a071a4e86ec71ad3271492, type: 3}
+    - {fileID: -2018670760, guid: 7187377126a071a4e86ec71ad3271492, type: 3}
+    - {fileID: 1822637990, guid: 7187377126a071a4e86ec71ad3271492, type: 3}
+    - {fileID: 820589425, guid: 7187377126a071a4e86ec71ad3271492, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
+    HeldFacingMap: 
+    HeldMesh: {fileID: 11400000, guid: 1e43f1fc305a06d449c09a2ae2b922f0, type: 2}
+    HeldMeshScale: 1.656343
+    SizeOf: pollock
+    SizeKg: 9
+    HeldLengthPx: 30
+  - Kind: smelt
+    Variants:
+    - {fileID: -2056686993, guid: 2f8cd8d21d194394f9727fab9bd2be6e, type: 3}
+    - {fileID: 305278347, guid: 2f8cd8d21d194394f9727fab9bd2be6e, type: 3}
+    - {fileID: -1129199568, guid: 2f8cd8d21d194394f9727fab9bd2be6e, type: 3}
+    - {fileID: -123385342, guid: 2f8cd8d21d194394f9727fab9bd2be6e, type: 3}
+    Held:
+    - {fileID: -361134010, guid: c00270319b3e2bb43bb6c2dd36c66d74, type: 3}
+    - {fileID: 306570793, guid: c00270319b3e2bb43bb6c2dd36c66d74, type: 3}
+    - {fileID: 1462733368, guid: c00270319b3e2bb43bb6c2dd36c66d74, type: 3}
+    - {fileID: 249040881, guid: c00270319b3e2bb43bb6c2dd36c66d74, type: 3}
+    - {fileID: 1447943812, guid: c00270319b3e2bb43bb6c2dd36c66d74, type: 3}
+    - {fileID: 1209723535, guid: c00270319b3e2bb43bb6c2dd36c66d74, type: 3}
+    - {fileID: 77514711, guid: c00270319b3e2bb43bb6c2dd36c66d74, type: 3}
+    - {fileID: -1598818240, guid: c00270319b3e2bb43bb6c2dd36c66d74, type: 3}
+    - {fileID: 1926590247, guid: c00270319b3e2bb43bb6c2dd36c66d74, type: 3}
+    - {fileID: -1332435495, guid: c00270319b3e2bb43bb6c2dd36c66d74, type: 3}
+    - {fileID: -17060577, guid: c00270319b3e2bb43bb6c2dd36c66d74, type: 3}
+    - {fileID: -1403877723, guid: c00270319b3e2bb43bb6c2dd36c66d74, type: 3}
+    - {fileID: 2055060560, guid: c00270319b3e2bb43bb6c2dd36c66d74, type: 3}
+    - {fileID: 428229470, guid: c00270319b3e2bb43bb6c2dd36c66d74, type: 3}
+    - {fileID: -1712352557, guid: c00270319b3e2bb43bb6c2dd36c66d74, type: 3}
+    - {fileID: -1575573823, guid: c00270319b3e2bb43bb6c2dd36c66d74, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
+    HeldFacingMap: 
+    HeldMesh: {fileID: 11400000, guid: b31efeaab05907849bff2f92388dd7dd, type: 2}
+    HeldMeshScale: 1.033407
+    SizeOf: 
+    SizeKg: 0.05
+    HeldLengthPx: 7
+  - Kind: smelt_sm
+    Variants:
+    - {fileID: 1437870439, guid: ec9af83660bfa1345bfe9ec87ea9f6b3, type: 3}
+    - {fileID: 1971330461, guid: ec9af83660bfa1345bfe9ec87ea9f6b3, type: 3}
+    - {fileID: 1398280777, guid: ec9af83660bfa1345bfe9ec87ea9f6b3, type: 3}
+    - {fileID: 1016097813, guid: ec9af83660bfa1345bfe9ec87ea9f6b3, type: 3}
+    Held:
+    - {fileID: -704853565, guid: 415ee5e071af2784f8dc8eac3623338d, type: 3}
+    - {fileID: 1055220884, guid: 415ee5e071af2784f8dc8eac3623338d, type: 3}
+    - {fileID: 989189671, guid: 415ee5e071af2784f8dc8eac3623338d, type: 3}
+    - {fileID: -1635740730, guid: 415ee5e071af2784f8dc8eac3623338d, type: 3}
+    - {fileID: 1835489276, guid: 415ee5e071af2784f8dc8eac3623338d, type: 3}
+    - {fileID: -417136419, guid: 415ee5e071af2784f8dc8eac3623338d, type: 3}
+    - {fileID: 397976255, guid: 415ee5e071af2784f8dc8eac3623338d, type: 3}
+    - {fileID: 340909105, guid: 415ee5e071af2784f8dc8eac3623338d, type: 3}
+    - {fileID: 217065392, guid: 415ee5e071af2784f8dc8eac3623338d, type: 3}
+    - {fileID: -2056446457, guid: 415ee5e071af2784f8dc8eac3623338d, type: 3}
+    - {fileID: 2020694423, guid: 415ee5e071af2784f8dc8eac3623338d, type: 3}
+    - {fileID: 1473170307, guid: 415ee5e071af2784f8dc8eac3623338d, type: 3}
+    - {fileID: -1042296674, guid: 415ee5e071af2784f8dc8eac3623338d, type: 3}
+    - {fileID: 384760860, guid: 415ee5e071af2784f8dc8eac3623338d, type: 3}
+    - {fileID: 852973989, guid: 415ee5e071af2784f8dc8eac3623338d, type: 3}
+    - {fileID: 927175303, guid: 415ee5e071af2784f8dc8eac3623338d, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
+    HeldFacingMap: 
+    HeldMesh: {fileID: 11400000, guid: b31efeaab05907849bff2f92388dd7dd, type: 2}
+    HeldMeshScale: 0.762669
+    SizeOf: smelt
+    SizeKg: 0.02
+    HeldLengthPx: 5
+  - Kind: smelt_lg
+    Variants:
+    - {fileID: -1981285100, guid: ea3fd4e11a2c881449c905f31ac84d69, type: 3}
+    - {fileID: 393748541, guid: ea3fd4e11a2c881449c905f31ac84d69, type: 3}
+    - {fileID: 1370157245, guid: ea3fd4e11a2c881449c905f31ac84d69, type: 3}
+    - {fileID: 1636389143, guid: ea3fd4e11a2c881449c905f31ac84d69, type: 3}
+    Held:
+    - {fileID: -873633256, guid: 721ab0f313cf2e24b8a8b831420943d7, type: 3}
+    - {fileID: -555886752, guid: 721ab0f313cf2e24b8a8b831420943d7, type: 3}
+    - {fileID: -1037303333, guid: 721ab0f313cf2e24b8a8b831420943d7, type: 3}
+    - {fileID: -222738397, guid: 721ab0f313cf2e24b8a8b831420943d7, type: 3}
+    - {fileID: 1998213262, guid: 721ab0f313cf2e24b8a8b831420943d7, type: 3}
+    - {fileID: 1966901934, guid: 721ab0f313cf2e24b8a8b831420943d7, type: 3}
+    - {fileID: -106381365, guid: 721ab0f313cf2e24b8a8b831420943d7, type: 3}
+    - {fileID: 574506652, guid: 721ab0f313cf2e24b8a8b831420943d7, type: 3}
+    - {fileID: 1387847954, guid: 721ab0f313cf2e24b8a8b831420943d7, type: 3}
+    - {fileID: 1350263994, guid: 721ab0f313cf2e24b8a8b831420943d7, type: 3}
+    - {fileID: -181110851, guid: 721ab0f313cf2e24b8a8b831420943d7, type: 3}
+    - {fileID: 747446649, guid: 721ab0f313cf2e24b8a8b831420943d7, type: 3}
+    - {fileID: 91769193, guid: 721ab0f313cf2e24b8a8b831420943d7, type: 3}
+    - {fileID: 814118430, guid: 721ab0f313cf2e24b8a8b831420943d7, type: 3}
+    - {fileID: 1489773213, guid: 721ab0f313cf2e24b8a8b831420943d7, type: 3}
+    - {fileID: -1816730128, guid: 721ab0f313cf2e24b8a8b831420943d7, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
+    HeldFacingMap: 
+    HeldMesh: {fileID: 11400000, guid: b31efeaab05907849bff2f92388dd7dd, type: 2}
+    HeldMeshScale: 1.304145
+    SizeOf: smelt
+    SizeKg: 0.1
+    HeldLengthPx: 8
+  - Kind: tomcod
+    Variants:
+    - {fileID: 1261266710, guid: 8602cc817553ae349a5c606cf038b49b, type: 3}
+    - {fileID: -268884327, guid: 8602cc817553ae349a5c606cf038b49b, type: 3}
+    - {fileID: -1701155520, guid: 8602cc817553ae349a5c606cf038b49b, type: 3}
+    - {fileID: 1801546823, guid: 8602cc817553ae349a5c606cf038b49b, type: 3}
+    Held:
+    - {fileID: 1676568621, guid: 50a9c9359d42d8947bbfda7039261be7, type: 3}
+    - {fileID: 1604051817, guid: 50a9c9359d42d8947bbfda7039261be7, type: 3}
+    - {fileID: 482034682, guid: 50a9c9359d42d8947bbfda7039261be7, type: 3}
+    - {fileID: 1291416144, guid: 50a9c9359d42d8947bbfda7039261be7, type: 3}
+    - {fileID: -830711062, guid: 50a9c9359d42d8947bbfda7039261be7, type: 3}
+    - {fileID: -165549260, guid: 50a9c9359d42d8947bbfda7039261be7, type: 3}
+    - {fileID: -898784786, guid: 50a9c9359d42d8947bbfda7039261be7, type: 3}
+    - {fileID: 2084378199, guid: 50a9c9359d42d8947bbfda7039261be7, type: 3}
+    - {fileID: 532435986, guid: 50a9c9359d42d8947bbfda7039261be7, type: 3}
+    - {fileID: 639368528, guid: 50a9c9359d42d8947bbfda7039261be7, type: 3}
+    - {fileID: 1463629446, guid: 50a9c9359d42d8947bbfda7039261be7, type: 3}
+    - {fileID: 889209545, guid: 50a9c9359d42d8947bbfda7039261be7, type: 3}
+    - {fileID: -816012727, guid: 50a9c9359d42d8947bbfda7039261be7, type: 3}
+    - {fileID: -1733063679, guid: 50a9c9359d42d8947bbfda7039261be7, type: 3}
+    - {fileID: -1729606483, guid: 50a9c9359d42d8947bbfda7039261be7, type: 3}
+    - {fileID: -985648127, guid: 50a9c9359d42d8947bbfda7039261be7, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
+    HeldFacingMap: 
+    HeldMesh: {fileID: 11400000, guid: 07494d1499576ff43869e32ee1e4636a, type: 2}
+    HeldMeshScale: 1.048267
+    SizeOf: 
+    SizeKg: 0.14
+    HeldLengthPx: 8
+  - Kind: tomcod_sm
+    Variants:
+    - {fileID: 1777714807, guid: 4524bf21cddaff94eb0902bbadf049d9, type: 3}
+    - {fileID: 1549873007, guid: 4524bf21cddaff94eb0902bbadf049d9, type: 3}
+    - {fileID: 696259123, guid: 4524bf21cddaff94eb0902bbadf049d9, type: 3}
+    - {fileID: -378939627, guid: 4524bf21cddaff94eb0902bbadf049d9, type: 3}
+    Held:
+    - {fileID: 1438005859, guid: dcc095139f5037f428d844e36ac74dd2, type: 3}
+    - {fileID: 1973286166, guid: dcc095139f5037f428d844e36ac74dd2, type: 3}
+    - {fileID: 884187696, guid: dcc095139f5037f428d844e36ac74dd2, type: 3}
+    - {fileID: -1753598520, guid: dcc095139f5037f428d844e36ac74dd2, type: 3}
+    - {fileID: 1635404563, guid: dcc095139f5037f428d844e36ac74dd2, type: 3}
+    - {fileID: -741893354, guid: dcc095139f5037f428d844e36ac74dd2, type: 3}
+    - {fileID: -98384728, guid: dcc095139f5037f428d844e36ac74dd2, type: 3}
+    - {fileID: 1624691977, guid: dcc095139f5037f428d844e36ac74dd2, type: 3}
+    - {fileID: 1287116478, guid: dcc095139f5037f428d844e36ac74dd2, type: 3}
+    - {fileID: -2121591448, guid: dcc095139f5037f428d844e36ac74dd2, type: 3}
+    - {fileID: -1312705399, guid: dcc095139f5037f428d844e36ac74dd2, type: 3}
+    - {fileID: -1169498357, guid: dcc095139f5037f428d844e36ac74dd2, type: 3}
+    - {fileID: 1414359457, guid: dcc095139f5037f428d844e36ac74dd2, type: 3}
+    - {fileID: -955244221, guid: dcc095139f5037f428d844e36ac74dd2, type: 3}
+    - {fileID: -2080204544, guid: dcc095139f5037f428d844e36ac74dd2, type: 3}
+    - {fileID: 1971391286, guid: dcc095139f5037f428d844e36ac74dd2, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
+    HeldFacingMap: 
+    HeldMesh: {fileID: 11400000, guid: 07494d1499576ff43869e32ee1e4636a, type: 2}
+    HeldMeshScale: 0.744212
+    SizeOf: tomcod
+    SizeKg: 0.05
+    HeldLengthPx: 6
+  - Kind: tomcod_lg
+    Variants:
+    - {fileID: 1430499172, guid: 08ffc25006bafc646bcac2adbb0167e7, type: 3}
+    - {fileID: -1700399750, guid: 08ffc25006bafc646bcac2adbb0167e7, type: 3}
+    - {fileID: -1145099014, guid: 08ffc25006bafc646bcac2adbb0167e7, type: 3}
+    - {fileID: -1834493450, guid: 08ffc25006bafc646bcac2adbb0167e7, type: 3}
+    Held:
+    - {fileID: -476870822, guid: 02545ff3daa051843a322162967816e2, type: 3}
+    - {fileID: -938080387, guid: 02545ff3daa051843a322162967816e2, type: 3}
+    - {fileID: -234458775, guid: 02545ff3daa051843a322162967816e2, type: 3}
+    - {fileID: -1808844445, guid: 02545ff3daa051843a322162967816e2, type: 3}
+    - {fileID: -870727342, guid: 02545ff3daa051843a322162967816e2, type: 3}
+    - {fileID: 218112828, guid: 02545ff3daa051843a322162967816e2, type: 3}
+    - {fileID: -1260652015, guid: 02545ff3daa051843a322162967816e2, type: 3}
+    - {fileID: 1960768568, guid: 02545ff3daa051843a322162967816e2, type: 3}
+    - {fileID: 1815731405, guid: 02545ff3daa051843a322162967816e2, type: 3}
+    - {fileID: 1424113471, guid: 02545ff3daa051843a322162967816e2, type: 3}
+    - {fileID: -1717936467, guid: 02545ff3daa051843a322162967816e2, type: 3}
+    - {fileID: 1474297542, guid: 02545ff3daa051843a322162967816e2, type: 3}
+    - {fileID: 128594644, guid: 02545ff3daa051843a322162967816e2, type: 3}
+    - {fileID: 910288198, guid: 02545ff3daa051843a322162967816e2, type: 3}
+    - {fileID: -654375824, guid: 02545ff3daa051843a322162967816e2, type: 3}
+    - {fileID: -1011466991, guid: 02545ff3daa051843a322162967816e2, type: 3}
+    HeldFacings: 8
+    HeldFramesPerFacing: 2
+    HeldFacingMap: 
+    HeldMesh: {fileID: 11400000, guid: 07494d1499576ff43869e32ee1e4636a, type: 2}
+    HeldMeshScale: 1.352322
+    SizeOf: tomcod
+    SizeKg: 0.3
+    HeldLengthPx: 10
   - Kind: clam
     Variants:
     - {fileID: -591464610, guid: bf1180af116a57a409bb665f3e564cde, type: 3}
@@ -206,7 +954,12 @@ MonoBehaviour:
     - {fileID: 642901098, guid: 41ebc4a4146cf7c4ea4338238b7925e7, type: 3}
     HeldFacings: 1
     HeldFramesPerFacing: 2
-    HeldMesh: {fileID: 0}
+    HeldFacingMap: 
+    HeldMesh: {fileID: 11400000, guid: f55ad1dafa8eb7f4895e8ee121a4f9d0, type: 2}
+    HeldMeshScale: 1
+    SizeOf: 
+    SizeKg: 0
+    HeldLengthPx: 0
   - Kind: crab
     Variants:
     - {fileID: -909582081, guid: 3d119cd01366379488ca5f9b1bfd2906, type: 3}
@@ -232,7 +985,12 @@ MonoBehaviour:
     - {fileID: -1055340020, guid: 0a6543ce775e8294eb781ff8dea17c1f, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
-    HeldMesh: {fileID: 0}
+    HeldFacingMap: 
+    HeldMesh: {fileID: 11400000, guid: 20916c177c5b31345a6b1eca2571df85, type: 2}
+    HeldMeshScale: 1
+    SizeOf: 
+    SizeKg: 0
+    HeldLengthPx: 0
   - Kind: lobster
     Variants:
     - {fileID: -1296597542, guid: bf2eca950dfca1f45b25067a71473aef, type: 3}
@@ -258,7 +1016,12 @@ MonoBehaviour:
     - {fileID: -2140742918, guid: 1dd3317b82174214e90260bc2ca44e29, type: 3}
     HeldFacings: 8
     HeldFramesPerFacing: 2
-    HeldMesh: {fileID: 0}
+    HeldFacingMap: 
+    HeldMesh: {fileID: 11400000, guid: fb6a8dfb68aea81478404f8c8434bcd9, type: 2}
+    HeldMeshScale: 1
+    SizeOf: 
+    SizeKg: 0
+    HeldLengthPx: 0
   - Kind: mussel
     Variants:
     - {fileID: -2103132598, guid: 59c56e0d48c6a594f9816505a9926518, type: 3}
@@ -270,7 +1033,12 @@ MonoBehaviour:
     - {fileID: -39917994, guid: 98f48a7ae105e2644812ab8918360797, type: 3}
     HeldFacings: 1
     HeldFramesPerFacing: 2
-    HeldMesh: {fileID: 0}
+    HeldFacingMap: 
+    HeldMesh: {fileID: 11400000, guid: f236ee450ac2cd349aa7a6befddfbe4b, type: 2}
+    HeldMeshScale: 1
+    SizeOf: 
+    SizeKg: 0
+    HeldLengthPx: 0
   - Kind: oyster
     Variants:
     - {fileID: -1376756797, guid: d54c85ce2444bb24ea6e38c5888f1376, type: 3}
@@ -282,7 +1050,12 @@ MonoBehaviour:
     - {fileID: -350328097, guid: 1c2136947e9e01449853b8e4afa468ea, type: 3}
     HeldFacings: 1
     HeldFramesPerFacing: 2
-    HeldMesh: {fileID: 0}
+    HeldFacingMap: 
+    HeldMesh: {fileID: 11400000, guid: fb4a03ef733620744b20894bde54dab5, type: 2}
+    HeldMeshScale: 1
+    SizeOf: 
+    SizeKg: 0
+    HeldLengthPx: 0
   - Kind: periwinkle
     Variants:
     - {fileID: 156112072, guid: 8b6cd73a141fb2f4293aa2ca5961b1db, type: 3}
@@ -294,7 +1067,12 @@ MonoBehaviour:
     - {fileID: -432732285, guid: b76ed376f8128e744819b5b8da52b29f, type: 3}
     HeldFacings: 1
     HeldFramesPerFacing: 2
-    HeldMesh: {fileID: 0}
+    HeldFacingMap: 
+    HeldMesh: {fileID: 11400000, guid: f6330ef69dac0de40a6b596ee563a144, type: 2}
+    HeldMeshScale: 1
+    SizeOf: 
+    SizeKg: 0
+    HeldLengthPx: 0
   - Kind: scallop
     Variants:
     - {fileID: -1760578941, guid: 11c3f48b8f3e36e4fb81009cb8ed1f12, type: 3}
@@ -306,34 +1084,89 @@ MonoBehaviour:
     - {fileID: -2127248993, guid: 60a768c643921664fbb7bcf5adccb136, type: 3}
     HeldFacings: 1
     HeldFramesPerFacing: 2
-    HeldMesh: {fileID: 0}
+    HeldFacingMap: 
+    HeldMesh: {fileID: 11400000, guid: 76102e440e3d2184b998700dd94c644f, type: 2}
+    HeldMeshScale: 1
+    SizeOf: 
+    SizeKg: 0
+    HeldLengthPx: 0
   _species:
   - SpeciesId: fish.american_oyster
     Kind: oyster
+    BorrowsKind: 0
+    HeldMesh: {fileID: 0}
   - SpeciesId: fish.atlantic_cod
     Kind: cod
+    BorrowsKind: 0
+    HeldMesh: {fileID: 0}
   - SpeciesId: fish.atlantic_herring
     Kind: herring
+    BorrowsKind: 0
+    HeldMesh: {fileID: 0}
+  - SpeciesId: fish.atlantic_surf_clam
+    Kind: clam
+    BorrowsKind: 0
+    HeldMesh: {fileID: 11400000, guid: 3aaf9cc07be5dff489a4af826d4bddb8, type: 2}
+  - SpeciesId: fish.atlantic_tomcod
+    Kind: tomcod
+    BorrowsKind: 0
+    HeldMesh: {fileID: 0}
   - SpeciesId: fish.blue_mussel
     Kind: mussel
+    BorrowsKind: 0
+    HeldMesh: {fileID: 0}
+  - SpeciesId: fish.cunner
+    Kind: cunner
+    BorrowsKind: 0
+    HeldMesh: {fileID: 0}
+  - SpeciesId: fish.green_crab
+    Kind: crab
+    BorrowsKind: 0
+    HeldMesh: {fileID: 11400000, guid: d3de72705cbb5b145b6315e92c5ac9e4, type: 2}
   - SpeciesId: fish.haddock
     Kind: haddock
+    BorrowsKind: 0
+    HeldMesh: {fileID: 0}
   - SpeciesId: fish.lobster
     Kind: lobster
+    BorrowsKind: 0
+    HeldMesh: {fileID: 0}
   - SpeciesId: fish.mackerel
     Kind: mackerel
+    BorrowsKind: 0
+    HeldMesh: {fileID: 0}
+  - SpeciesId: fish.northern_quahog
+    Kind: clam
+    BorrowsKind: 1
+    HeldMesh: {fileID: 11400000, guid: d3656fbdb589790469e09c6f1500b98c, type: 2}
   - SpeciesId: fish.pollock
     Kind: pollock
+    BorrowsKind: 0
+    HeldMesh: {fileID: 0}
+  - SpeciesId: fish.rainbow_smelt
+    Kind: smelt
+    BorrowsKind: 0
+    HeldMesh: {fileID: 0}
   - SpeciesId: fish.rock_crab
     Kind: crab
+    BorrowsKind: 0
+    HeldMesh: {fileID: 0}
   - SpeciesId: fish.sea_scallop
     Kind: scallop
+    BorrowsKind: 0
+    HeldMesh: {fileID: 0}
   - SpeciesId: fish.soft_shell_clam
     Kind: clam
+    BorrowsKind: 0
+    HeldMesh: {fileID: 0}
   - SpeciesId: fish.striped_bass
     Kind: bass
+    BorrowsKind: 0
+    HeldMesh: {fileID: 0}
   - SpeciesId: fish.winter_flounder
     Kind: flounder
+    BorrowsKind: 0
+    HeldMesh: {fileID: 0}
   _fallbackKind: cod
   _bucketMeshes:
   - TierId: pail

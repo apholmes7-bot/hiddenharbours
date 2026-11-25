@@ -30,6 +30,10 @@ namespace HiddenHarbours.Player
             Vector2 offset = cue.At - (Vector2)transform.position;
             _digHeading = offset.sqrMagnitude >= MinFacingOffsetM * MinFacingOffsetM
                 ? IsoGround.BearingDegrees(offset) : _isoSkin.HeadingDegrees;
+            // His back to the camera hides the shovel and the dirt behind him: turn the body a little off
+            // straight away so the blade and the toss show past it (presentation only).
+            JuiceSettings juice = GameServices.Config != null ? GameServices.Config.Juice : JuiceSettings.Default;
+            _digHeading = PlayerFishingAnimMath.DigHeadingAwayTurn(_digHeading, juice.DigAwayTurnDegrees);
         }
 
         private void AdvanceDig(float dt)

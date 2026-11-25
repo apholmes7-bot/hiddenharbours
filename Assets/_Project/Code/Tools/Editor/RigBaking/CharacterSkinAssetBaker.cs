@@ -222,6 +222,8 @@ namespace HiddenHarbours.Tools.RigBaking
         {
             var states = new List<string>(existing);
             states.AddRange(new[] { "hold", "cast", "bite", "strike", "reel", "land", "castBack", "castRelease", "dig" });
+            // The one-stroke rowing clip (row-stroke.md), switched on by BakeRowStrokeCli.
+            states.Add("row_oars");
             return states.ToArray();
         }
 
@@ -678,7 +680,10 @@ namespace HiddenHarbours.Tools.RigBaking
                 bake = LiveRigIsV9 ? ComposeV9(host, preset, existing, progress)
                                    : Compose(host, preset, existing, progress);
                 if (LiveKit == CharacterRigKit.Rig10)
+                {
                     AppendSeatedHelms(host, bake.Def, bake.Bones, enable: false);
+                    AppendRowStroke(host, bake.Def, bake.Bones, enable: false);
+                }
             }
 
             CharacterSkinDef def = bake.Def;

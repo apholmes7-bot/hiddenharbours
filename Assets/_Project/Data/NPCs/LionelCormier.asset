@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2794216af134af8a37690830c8d2064, type: 3}
+  m_Name: LionelCormier
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.NpcDef
+  Id: npc.lionel_cormier
+  DisplayName: Lionel Cormier
+  Kind: 0
+  Dialogue: {fileID: 11400000, guid: 081903da25b94839853d9adbd3c02476, type: 2}
+  CompletionFlag: met_lionel
+  Voice: {fileID: 0}
+  Build: {fileID: 11400000, guid: 2b27ab4c0b694b5f806e0d25514ca44a, type: 2}
+  Gifts:
+    LovedItemIds:
+    - fish.haddock
+    LikedItemIds:
+    - fish.winter_flounder
+    DislikedItemIds:
+    - fish.green_crab
+    LovedTags: []
+    LikedTags: []
+    DislikedTags: []
+    Lines:
+      Loved:
+      - 'Haddock. Now there is a fish a man can have for his supper without a speech about it. Thank you.'
+      Liked:
+      - 'Flounder. My wife does them in the pan with butter. You have made a friend at home as well.'
+      Neutral:
+      - 'Well. That is kind of you. I will find it a corner of the cooler.'
+      Disliked:
+      - 'A green crab. They eat everything worth having in the bay. Are you giving it to me or getting rid of it?'
+      NotGiftable: []
+      AlreadyGiftedToday: []

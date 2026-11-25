@@ -129,12 +129,14 @@ namespace HiddenHarbours.Art
         {
             _timer = 0f;
             Tick();   // push once immediately so the first frame is correct, not a stale default
+            UnityEngine.Rendering.RenderPipelineManager.beginCameraRendering += OnBeginCameraRendering;
         }
 
         // Leave no lamp band behind: an EditMode test or a bare art scene after this controller sees the old
         // gate exactly (the band is a process-wide static on the C# side and a global on the GPU side).
         private void OnDisable()
         {
+            UnityEngine.Rendering.RenderPipelineManager.beginCameraRendering -= OnBeginCameraRendering;
             LightMath.SetLampBand(0f, 0f);
             Shader.SetGlobalVector(IdLampGate, Vector4.zero);
         }
@@ -151,6 +153,16 @@ namespace HiddenHarbours.Art
         // fast pan/zoom can never reveal an un-tinted screen edge between ticks. The follow is a cheap
         // transform set; it runs after camera movement (LateUpdate).
         private void LateUpdate() => FitOverlayToCamera();
+
+        // ⭐ And again as the live camera begins to RENDER (PR 1223 play look: the first frame of a region
+        // reached across a seam rendered at full daylight under the cover, mean 78 against 1.8 at night). A
+        // seam crossing moves the camera hundreds of metres in the physics step, and a frame rendered before
+        // this LateUpdate (a capture, a coroutine render) found the quad where the camera was, far outside any
+        // oversize. Fitted here, the quad is where the camera is for every frame it draws, whatever moved it.
+        private void OnBeginCameraRendering(UnityEngine.Rendering.ScriptableRenderContext context, Camera cam)
+        {
+            if (cam != null && cam == ResolveCamera()) FitOverlayTo(cam);
+        }
 
         private void Tick()
         {
@@ -264,11 +276,16 @@ namespace HiddenHarbours.Art
         /// fast pan/zoom never reveals an un-tinted edge). Placed just in front of the camera, facing it,
         /// sized to the frustum and oversized a little for safety.
         /// </summary>
-        private void FitOverlayToCamera()
+        private void FitOverlayToCamera() => FitOverlayTo(ResolveCamera());
+
+        /// <summary>The overlay quad (null before Awake or with no overlay), for tests.</summary>
+        public Transform Overlay => _overlay;
+
+        /// <summary>Fit the screen-filling quad to <paramref name="cam"/> (null: hide it). Public for tests.</summary>
+        public void FitOverlayTo(Camera cam)
         {
             if (_overlay == null || _overlayRenderer == null) return;
 
-            Camera cam = ResolveCamera();
             if (cam == null) { _overlayRenderer.enabled = false; return; }
             if (!_overlayRenderer.enabled && _overlayRenderer.sharedMaterial != null) _overlayRenderer.enabled = true;
 

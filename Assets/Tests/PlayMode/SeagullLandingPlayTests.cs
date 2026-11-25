@@ -419,8 +419,9 @@ namespace HiddenHarbours.Tests.PlayMode
         /// exactly <c>0.6 m x cos 40</c> — the entry altitude the sidecar gives <c>land</c>, turned into
         /// a screen offset — to exactly zero on frame 0 of <c>stand</c>.
         ///
-        /// <para>And her scale never changes. The same lossy scale at fourteen metres and on the
-        /// shingle is the owner's ruling as an assertion: altitude is an offset up the screen, so a
+        /// <para>And her scale never grows with height. Unit lossy scale in the air, and on the shingle
+        /// exactly the def's ground size (owner, 2026-11-15), with the shadow's foot still on the spot
+        /// at every size between. The 2026-09-09 ruling as an assertion: altitude is an offset up the screen, so a
         /// gull is 1.4 m across at every height rather than a giant one near the camera.</para>
         /// </summary>
         [Test]
@@ -482,14 +483,16 @@ namespace HiddenHarbours.Tests.PlayMode
                     "the shadow slid " + Vector2.Distance(feet[i], feet[0]) + " m at tick " + i +
                     " of the arrival; a shadow that moves while she settles reads as a miss");
 
-            // THE SCALE: the same bird at height and on the ground (owner, 2026-09-09).
+            // THE SCALE: in the air, strict world scale at every height (owner, 2026-09-09: no giant gulls near
+            // the camera); on the ground, exactly the def's ground size and nothing else (owner, 2026-11-15: "make
+            // landed birds slightly smaller as they are further from camera than a flying one").
             Vector3 scaleDown = flock.BirdTransform(bird).lossyScale;
             Assert.AreEqual(1f, scaleAloft.x, 1e-6f, "the airborne bird is not drawn at unit scale");
             Assert.AreEqual(1f, scaleAloft.y, 1e-6f, "the airborne bird is not drawn at unit scale");
-            Assert.AreEqual(scaleAloft.x, scaleDown.x, 1e-6f,
-                "she changed width between the sky and the ground — altitude is being drawn as a scale");
-            Assert.AreEqual(scaleAloft.y, scaleDown.y, 1e-6f,
-                "she changed height between the sky and the ground — altitude is being drawn as a scale");
+            Assert.AreEqual(_visual.GroundScale, scaleDown.x, 1e-6f,
+                "her width on the ground is not the def's ground size - something other than that law scales her");
+            Assert.AreEqual(_visual.GroundScale, scaleDown.y, 1e-6f,
+                "her height on the ground is not the def's ground size - something other than that law scales her");
 
             // And she STAYS there: a settled bird is not re-homed onto the wheel under the camera.
             Step(flock, 90);

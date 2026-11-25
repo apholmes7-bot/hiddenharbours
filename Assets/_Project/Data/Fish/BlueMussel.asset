@@ -17,16 +17,16 @@ MonoBehaviour:
   Category: 1
   Rarity: 0
   Flavor: "Hand-gathered off the rocks at low water. Cheap, reliable. GEAR NOTE: hand-gather only, on the ClamFork tag the clam uses; deliberately not in the rod's catch pool and in no trap."
-  Sprite: {fileID: 0}
+  Sprite: {fileID: 21300000, guid: 14ed8d0305e045feaa8d2564c5250cd5, type: 3}
   RegionIds:
   - region.st_peters
-  - region.east_water
   AllowedGear: 64
   Seasons: 15
   MinTide: -10
   MaxTide: 0.11
   StartHour: 0
   EndHour: 24
+  DepthBands: 3
   MinWeightKg: 0.02
   MaxWeightKg: 0.05
   BaseValue: 1

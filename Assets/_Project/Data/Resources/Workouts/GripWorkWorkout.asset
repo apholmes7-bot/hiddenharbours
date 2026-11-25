@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3743f69bd6324e8b988714c95e319042, type: 3}
+  m_Name: GripWorkWorkout
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.WorkoutDef
+  Id: workout.grip_work
+  Equipment: {fileID: 11400000, guid: 9dd5d874ed79437ab730a6873b5114d3, type: 2}
+  Exercise: {fileID: 11400000, guid: 2c6145f47fe042a9846524436f2e9673, type: 2}
+  DurationGameMinutes: 10
+  Units: 30
+  TirednessPerGameHour: 0.12
+  DailyTrainingUnits: 90
+  MinimumPace: 0.6

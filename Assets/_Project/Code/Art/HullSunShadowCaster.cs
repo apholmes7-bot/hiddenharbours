@@ -75,6 +75,9 @@ namespace HiddenHarbours.Art
             HullSunShadowState state = _hull.SunShadowState;
             if (_proxy == null || _source != state.Hull || _closed != state.ClosedLeaf || _open != state.OpenLeaf)
                 Rebuild(state);
+            // The draw lives in the host's scene, so a teardown can destroy it before the host: let go quietly
+            // and build a fresh one next frame if the host is still here.
+            if (_renderer == null) { Release(); return; }
             SpriteShadowProfile look = Profile;
             Material material = look.ScreenSpaceShade ? (_multiply != null ? _multiply : _multiply = Resources.Load<Material>(MaterialPath))
                 : (_legacy != null ? _legacy : _legacy = Resources.Load<Material>(LegacyMaterialPath));
@@ -100,7 +103,9 @@ namespace HiddenHarbours.Art
             _block.SetVector(ProjectionId, projection);
             _block.SetFloat(WaterlineId, waterline);
             Color tint = look.ShadowColor;
-            _block.SetColor(ColorId, new Color(tint.r, tint.g, tint.b, DayNightMath.ShadowAlpha(look.MaxAlpha, strength)));
+            float water = HullSunShadowMath.WaterAlphaScale(e, IsAfloat(transform.position), look.HullWaterLowSunAlpha,
+                look.HullWaterFullSunElevation);
+            _block.SetColor(ColorId, new Color(tint.r, tint.g, tint.b, DayNightMath.ShadowAlpha(look.MaxAlpha, strength) * water));
             _block.SetVector(IdsId, new Vector4(_hull.HullId / 255f, _hull.ForeHullId / 255f, IsoFacetHullRenderer.DeckOccupantSlots, 0));
             _block.SetFloat(GateId, state.LevelGate ? 1 : 0);
             _block.SetFloat(DoorId, state.DoorOpen ? 1 : 0);
@@ -113,6 +118,15 @@ namespace HiddenHarbours.Art
             int order = look.ScreenSpaceShade ? SortingBands.SunShade : _hull.OverlayRenderer.sortingOrder - 1;
             _group.sortingOrder = order;
             _renderer.sortingOrder = order;
+        }
+
+        /// <summary>Over water at the live tide: the region's seabed lies below the water level here. No terrain
+        /// service (a bare test scene, a vehicle-only scene) reads as land, so the shadow is left as it was.</summary>
+        static bool IsAfloat(Vector2 at)
+        {
+            ITidalTerrain terrain = GameServices.TidalTerrain;
+            if (terrain == null || GameServices.Environment == null || GameServices.Clock == null) return false;
+            return GameServices.Environment.WaterLevelAt(GameServices.Clock.TotalSeconds) - terrain.ElevationAt(at) > 0f;
         }
 
         void Rebuild(HullSunShadowState state)

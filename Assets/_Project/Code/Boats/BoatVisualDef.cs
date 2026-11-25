@@ -149,8 +149,9 @@ namespace HiddenHarbours.Boats
                  "and they drift as she turns.")]
         [Range(0f, 90f)] public float ArtBakeElevationDegrees = 90f;
 
-        [Tooltip("SpriteRenderer sortingOrder for the hull picture. 1 draws it above the hidden base hull " +
-                 "renderer at 0 and below the on-foot player at 10. Overlays take the orders above this.")]
+        [Tooltip("The hull picture's order INSIDE the boat's sorting group (ADR 0059): 1 draws it above the " +
+                 "hidden base hull renderer at 0 and under everything aboard; overlays take the orders above " +
+                 "this. Against other boats and the scenery the whole boat sorts by where she lies.")]
         public int SortingOrder = 1;
 
         [Header("Rock grid (OPTIONAL — wave-coupled rock, drawn not faked)")]
@@ -193,6 +194,18 @@ namespace HiddenHarbours.Boats
                  "oars are mesh fittings, only while they are being rowed. Feel dials — safe to tune; " +
                  "Enabled off rows dry.")]
         public OarSplashConfig OarSplash = OarSplashConfig.Default;
+
+        [Tooltip("THE ROWING STATION: where the rower holds each oar (metres inboard of its oarlock), " +
+                 "the thwart he sits on and the boards his feet brace against, in this hull's rig " +
+                 "metres. Read only on a hull whose oars are mesh fittings: the mesh rower is solved " +
+                 "onto these points every frame, hands on the handles. Enabled off = he plays his clip " +
+                 "as authored.")]
+        public RowingStationConfig Rowing = RowingStationConfig.Default;
+
+        [Tooltip("THE OARS STOWED (owner ruling 2026-11-22): where a hull whose oars are mesh fittings lays " +
+                 "them while her outboard drives her: out of the tholes, fore and aft on the thwarts, blades " +
+                 "forward. Rowed, nothing here is read. Enabled off = shipped in the tholes under power, as before.")]
+        public OarStowConfig OarStow = OarStowConfig.Default;
 
         [Header("Outboard motor (OPTIONAL — the hull's engine, drawn)")]
         [Tooltip("Motor LOWER sheet (leg + plate + skeg + prop), element [heading·MotorColumnCount + col]. " +
@@ -249,6 +262,18 @@ namespace HiddenHarbours.Boats
                  "engine, and it must never be used to fix a fitting on the boat it belongs to.")]
         public Vector3 MotorMeshFitmentOffsetMeters = Vector3.zero;
 
+        [Tooltip("The baked MOTOR FIT as a mesh fitting: what a hull gains with her engine besides the " +
+                 "engine itself (the dory's stern bench and transom motor board). Drawn only while the " +
+                 "engine is fitted, so the plain hull stays plain. Null for every hull whose body " +
+                 "already carries her helm. Produced and wired by the fitting bake.")]
+        public HiddenHarbours.Core.HullPropMeshDef MotorFitMesh = null;
+
+        [Tooltip("THE TILLER STATION: where the skipper sits, braces and holds the tiller on a hull " +
+                 "steered by a tiller outboard with no helm console. Read only while the engine is " +
+                 "fitted (a dory that has bought her motor); the same hull rowed keeps her rowing " +
+                 "station. Enabled off = the pilot stance below decides, as before.")]
+        public TillerStationConfig Tiller = TillerStationConfig.Default;
+
         [Tooltip("The baked HELM BAR as a mesh fitting: the part of the helm the rider turns (a " +
                  "jetski's handlebars), left out of the hull body so it can turn with the helm. Null " +
                  "for every hull whose wheel is part of her body mesh. Produced and wired by the " +
@@ -296,6 +321,13 @@ namespace HiddenHarbours.Boats
                  "steered. Set it explicitly only where Auto reads wrong (a sculled hull, a hull whose " +
                  "oars are decor). Never decided in code — that is rule 2.")]
         public PilotStanceChoice PilotStance = PilotStanceChoice.Auto;
+
+        [Tooltip("Which way a ROWER faces on this hull, as a deck bearing in degrees (0 = the bow, 180 = " +
+                 "the stern). Read only when the pilot stance resolves to Oars. A dory is pulled from the " +
+                 "after thwart facing aft (her rig: the tholes are abaft the thwart), so the default is " +
+                 "180: he reaches toward the stern at the catch and leans back on the drive. A steered " +
+                 "helm always faces the bow.")]
+        public float OarsPilotDeckBearingDegrees = DefaultOarsPilotDeckBearingDegrees;
 
         [Tooltip("Calibrated seated skin clip at this helm. Empty keeps the standing pilot. " +
                  "Imported with the seat's floor origin from the hull's source walk.")]
@@ -348,6 +380,45 @@ namespace HiddenHarbours.Boats
         /// <see cref="HiddenHarbours.Core.CharacterStance.Free"/> — an unfigured helm, drawn as an
         /// ordinary standing body.</para>
         /// </summary>
+        /// <summary>The deck bearing of a steered pilot: the bow. A helm station faces forward.</summary>
+        public const float HelmPilotDeckBearingDegrees = 0f;
+
+        /// <summary>The default rower's bearing: the stern (see <see cref="OarsPilotDeckBearingDegrees"/>).</summary>
+        public const float DefaultOarsPilotDeckBearingDegrees = 180f;
+
+        /// <summary>
+        /// <b>Which way the figure piloting this hull faces</b>, as a deck bearing (0 = the bow): the
+        /// def's own <see cref="OarsPilotDeckBearingDegrees"/> when its pilot rows, and the bow at a helm.
+        /// Like <see cref="PilotStanceFor"/>, the answer is the asset's, never a rule in a consumer.
+        /// </summary>
+        public float PilotDeckBearingDegrees() =>
+            PilotStanceFor() == HiddenHarbours.Core.CharacterStance.Oars
+                ? OarsPilotDeckBearingDegrees
+                : HelmPilotDeckBearingDegrees;
+
+        /// <summary>
+        /// True when the pilot of a hull drawn through this visual with <paramref name="propulsion"/>
+        /// sits at a TILLER: the station is enabled and the hull is driven by her engine. The dory and
+        /// the dory with her motor share this visual; only the second is steered from the stern bench.
+        /// </summary>
+        public bool SeatsAtTiller(PropulsionType propulsion) =>
+            Tiller.Enabled && propulsion == PropulsionType.Engine;
+
+        /// <summary>
+        /// The pilot's stance for a hull drawn through this visual with <paramref name="propulsion"/>:
+        /// a helm (the tiller) when <see cref="SeatsAtTiller"/>, otherwise <see cref="PilotStanceFor()"/>.
+        /// </summary>
+        public HiddenHarbours.Core.CharacterStance PilotStanceFor(PropulsionType propulsion) =>
+            SeatsAtTiller(propulsion) ? HiddenHarbours.Core.CharacterStance.Helm : PilotStanceFor();
+
+        /// <summary>
+        /// The pilot's deck bearing for a hull drawn through this visual with <paramref name="propulsion"/>:
+        /// the tiller station's own facing when <see cref="SeatsAtTiller"/>, otherwise
+        /// <see cref="PilotDeckBearingDegrees()"/>.
+        /// </summary>
+        public float PilotDeckBearingDegrees(PropulsionType propulsion) =>
+            SeatsAtTiller(propulsion) ? Tiller.FacingDeckBearingDegrees : PilotDeckBearingDegrees();
+
         public HiddenHarbours.Core.CharacterStance PilotStanceFor() => PilotStance switch
         {
             PilotStanceChoice.Helm => HiddenHarbours.Core.CharacterStance.Helm,

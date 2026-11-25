@@ -153,7 +153,12 @@ namespace HiddenHarbours.Tests.EditMode
                  .Replace("Vector4", "float4");
             Assert.AreEqual(Canonical(c), Canonical(a), "complete curve expression parity");
             StringAssert.Contains("amplitude *= FetchFactorAt(fetch, i)", water);
-            StringAssert.Contains("FetchFactorsFrom(FetchMarch01(worldXY), SwellShelter01(worldXY))", foam);
+            // The foam buffer reads the per-train law where the drawn bore was born: _BreakerRefract.w metres
+            // seaward along the shore normal (the water shader's shore fetch, BoreFetchProbeMeters), and at
+            // this pixel, as before, while that probe is 0 or unpublished.
+            StringAssert.Contains("FetchFactorsFrom(FetchMarch01(fetchXY), SwellShelter01(fetchXY))", foam);
+            StringAssert.Contains("float2 fetchXY = (_BreakerRefract.w > 0.0 && dot(dir, dir) > 1e-6)", foam);
+            StringAssert.Contains("? worldXY - dir * _BreakerRefract.w : worldXY;", foam);
             Assert.AreEqual(1, Regex.Matches(water, "float waveFetch01 = FetchMarch01\\(worldXY\\)").Count);
         }
 
@@ -270,10 +275,13 @@ namespace HiddenHarbours.Tests.EditMode
                 Canonical(Group(water, @"float FoamDensityAt\(float roughness\)\s*\{(.*?)\}")));
             Assert.AreEqual(Canonical(Group(water, @"float SwashSeaStateGate\(\)\s*\{(.*?)\}").Replace("_Chop", "sea01")),
                 Canonical(Group(water, @"float SwashSeaStateGateAt\(float sea01\)\s*\{(.*?)\}")));
-            // The drawn edge's swash and the fringe's take one lee factor, so they run up and back together.
+            // The drawn edge's swash and the fringe's take one lee factor, so they run up and back together. It
+            // is read off the SHORE's fetch (the surf's probe seaward of the pixel, BoreFetchProbeMeters), which
+            // is this pixel's own envelope until the surf block moves it, so with the probe off it is as before.
             string code = Canonical(water);
             foreach (string line in new[] {
-                "float leeOpen = FringeLeeOpen01(waveFetchEnv);",
+                "float surfFetchEnv = waveFetchEnv;",
+                "float leeOpen = FringeLeeOpen01(surfFetchEnv);",
                 "float leeSea = FringeLeeReading(saturate(_Chop), _WaveFetchFringe.y, leeOpen);",
                 "float leeSwash = leeSea < saturate(_Chop) ? SwashSeaStateGateAt(leeSea) / max(SwashSeaStateGate(), 1e-3) : 1.0;",
                 "edgeSwash = clamp(BeachSwash(worldXY, max(depth, 0.0), t) * swashSlope * saturate(_SwashEdgeShift) * leeSwash, -cap, cap);",

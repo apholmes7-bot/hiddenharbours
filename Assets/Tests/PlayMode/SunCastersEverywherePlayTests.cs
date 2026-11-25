@@ -116,6 +116,10 @@ namespace HiddenHarbours.Tests.PlayMode
 
         [UnityTearDown] public IEnumerator TearDown()
         {
+            // A scene operation a region started (a neighbour warming, a release) is not cancelled by destroying
+            // its requester: let it finish, within a bound that names itself, before sprites are destroyed.
+            yield return HiddenHarbours.Tests.Support.SceneSettle.WaitForPendingSceneOperations(
+                "the caster audit's teardown destroys its arrivals");
             Time.timeScale = 1f;
             if (_host != null) { _host.SetCasting(true); _host.enabled = true; }
             if (_camera != null) _camera.targetTexture = null;
@@ -147,7 +151,7 @@ namespace HiddenHarbours.Tests.PlayMode
             for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
             {
                 var scene = SceneManager.GetSceneAt(i);
-                if (scene != clean && scene.isLoaded) yield return SceneManager.UnloadSceneAsync(scene);
+                if (scene != clean && scene.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(scene);
             }
             if (_clockOnEntry != null && !(_clockOnEntry is Object clockObject && clockObject == null))
             {
@@ -187,7 +191,7 @@ namespace HiddenHarbours.Tests.PlayMode
             _host.SetCasting(false);
             LogAssert.ignoreFailingMessages = true; // Existing region import/decor diagnostics are unrelated.
             Time.timeScale = 1f;
-            yield return SceneManager.LoadSceneAsync(scene, LoadSceneMode.Single);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Load(scene, LoadSceneMode.Single);
             for (int i = 0; i < 12; i++) yield return null;
             if (GameServices.Config == null && config != null) GameServices.Config = config;
             if (GameServices.Clock == null && clock != null) GameServices.Clock = clock;
@@ -212,7 +216,8 @@ namespace HiddenHarbours.Tests.PlayMode
             while (population == null && Time.realtimeSinceStartup < deadline) yield return null;
             _host.enabled = false;
             _host.ScanCompleted -= Complete;
-            Assert.That(population, Is.Not.Null, "Wait for the installer's complete loaded-and-persistent scan.");
+            Assert.That(population, Is.Not.Null, scene + ": the installer's complete loaded-and-persistent scan " +
+                "did not report within 10 s of real time.");
             _host.SetCasting(true);
             var rules = Resources.Load<SunCasterRules>(nameof(SunCasterRules));
             int total = 0, villagers = 0, houses = 0, piers = 0, excluded = 0;

@@ -42,7 +42,7 @@ namespace HiddenHarbours.Tests.PlayMode
             for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
             {
                 Scene scene = SceneManager.GetSceneAt(i);
-                if (scene.IsValid() && scene != clean) yield return SceneManager.UnloadSceneAsync(scene);
+                if (scene.IsValid() && scene != clean) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(scene);
             }
             foreach (GameObject root in PersistentRoots())
                 if (root != null && !_persistentBefore.Contains(root)) Object.DestroyImmediate(root);
@@ -61,7 +61,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 // Scene startup annotations are checked by the existing scene fixtures.
                 LogAssert.ignoreFailingMessages = true;
-                yield return SceneManager.LoadSceneAsync(region, LoadSceneMode.Single);
+                yield return HiddenHarbours.Tests.Support.SceneSettle.Load(region, LoadSceneMode.Single);
                 for (int frame = 0; frame < 4; frame++) yield return null;
                 LogAssert.ignoreFailingMessages = false;
                 yield return Resources.UnloadUnusedAssets();

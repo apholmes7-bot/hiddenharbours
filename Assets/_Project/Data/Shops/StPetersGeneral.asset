@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0dc15eaef94948dd8e3403e5cdcbba6f, type: 3}
+  m_Name: StPetersGeneral
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.ShopDef
+  Spec:
+    Id: shop.st_peters_general
+    SellerId: seller.leblancs
+    PremisesId: premises.st_peters_general
+    Shelves:
+    - FixtureId: fixture.rod_rack
+      SlotCount: 4
+    - FixtureId: fixture.bait_shelf
+      SlotCount: 20
+    - FixtureId: fixture.ice_chest
+      SlotCount: 20
+    Stock:
+    - Id: line.rod
+      ListingId: gear.rod
+      FixtureId: fixture.rod_rack
+      FirstSlot: 0
+      MaxOnShelf: 4
+      UnitsPerItem: 1
+      DeliveryWeekdays: 9
+      ItemsPerDelivery: 4
+      Floor: 0
+    - Id: line.capelin
+      ListingId: bait.capelin
+      FixtureId: fixture.bait_shelf
+      FirstSlot: 0
+      MaxOnShelf: 20
+      UnitsPerItem: 10
+      DeliveryWeekdays: 9
+      ItemsPerDelivery: 20
+      Floor: 1
+    - Id: line.ice
+      ListingId: supply.ice
+      FixtureId: fixture.ice_chest
+      FirstSlot: 0
+      MaxOnShelf: 20
+      UnitsPerItem: 1
+      DeliveryWeekdays: 9
+      ItemsPerDelivery: 20
+      Floor: 1
+    Credit:
+      Enabled: 0
+      MinimumLifetimeSales: 0
+      Ceiling: 0

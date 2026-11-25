@@ -892,6 +892,15 @@ namespace HiddenHarbours.Art
             b.Sim.IntentState = -1;
             b.Sim.FlockBound = false;
             b.Sim.RejoinMilliseconds = 1.0;   // any positive value arms the ramp
+            // A take-off's cross-fade restarts with the ramp: re-seed its own path at where the bird is DRAWN,
+            // or the restarted blend would jump back to the path it had drifted off.
+            if (b.Sim.Departing)
+            {
+                b.Sim.FreeX = b.Sim.X;
+                b.Sim.FreeY = b.Sim.Y;
+                b.Sim.FreeAltitudeMetres = b.Sim.AltitudeMetres;
+                b.Sim.FreeHeading = b.Sim.Heading;
+            }
         }
 
         /// <summary>
@@ -1515,7 +1524,21 @@ namespace HiddenHarbours.Art
             b.Node.SetPositionAndRotation(
                 new Vector3(pivot.x, pivot.y + lift, 0f),
                 Mathf.Abs(roll) < 1e-4f ? Quaternion.identity : Quaternion.Euler(0f, 0f, roll));
-            b.Shadow.FootOffset = lift;
+            // ...with ONE exception the owner asked for (2026-11-15: "make landed birds slightly smaller as they are
+            // further from camera than a flying one"): near the surface the bird is drawn at the def's ground scale,
+            // eased up to full size over the first metre or so of altitude, so a take-off grows and a landing shrinks
+            // smoothly. The shadow is a child at localScale 1, so it scales with the silhouette it is cast from.
+            float drawScale = SeagullVisualDef.ScaleAtAltitude((float)b.Sim.AltitudeMetres, _visual.GroundScale,
+                                                               _visual.GroundScaleBlendMetres);
+            if (Mathf.Abs(b.Node.localScale.x - drawScale) > 1e-5f)
+                b.Node.localScale = new Vector3(drawScale, drawScale, 1f);
+            // The foot offset is in the scaled bird's OWN units, so the world lift is divided by the scale the node
+            // actually carries: the anchor comes back down by exactly the lift and stays on the pivot at every size.
+            b.Shadow.FootOffset = SeagullVisualDef.ShadowFootOffset(lift, b.Node.localScale.y);
+            // A bird on the wing is flat to the sun: its shadow keeps the bird's shape at every hour and fades
+            // with height, instead of taking the standing dusk stretch into a thin line. On the ground, the
+            // water or a post the altitude is 0 and the shadow is the ordinary standing one.
+            b.Shadow.HeightAboveGround = (float)b.Sim.AltitudeMetres;
 
             // Sky or world? Above the wheel's own floor the bird is sky and draws over everything;
             // below it, it is among the harbour and sorts by its pivot like anything else standing there.

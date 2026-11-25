@@ -68,7 +68,7 @@ namespace HiddenHarbours.Tests.PlayMode
             foreach (string name in new[] { EastWaterPlan.SceneName, "StPeters" })
             {
                 var scene = SceneManager.GetSceneByName(name);
-                if (scene.IsValid() && scene.isLoaded) yield return SceneManager.UnloadSceneAsync(scene);
+                if (scene.IsValid() && scene.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(scene);
             }
             GameServices.Reset();
             ShellFlow.Reset();
@@ -79,7 +79,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             ShellRestart.DestroyPersistentCore();
             yield return null;
-            yield return SceneManager.LoadSceneAsync("StPeters", LoadSceneMode.Single);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Load("StPeters", LoadSceneMode.Single);
             yield return null;
             yield return null;
             Assert.IsTrue(ShellFlow.AtTitle);
@@ -87,21 +87,46 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsNotNull(clock);
             var def = AssetDatabase.LoadAssetAtPath<ArrivalSeaDef>(ArrivalSeaAuthoring.DefPath);
             Assert.IsNotNull(def);
-            ShellFlow.StartNewGame();
-            double deadline = Time.realtimeSinceStartupAsDouble + 240d;
-            while (ArrivalOpening.SeaJourney == null)
+            // ⚠️ WHERE SHE IS LAID is read on the activation itself, not on the first frame this coroutine
+            // happens to see her. From her first fixed step the pilot has her under way toward the exit, so
+            // a read one or more frames later measures how many physics steps the (slow, uncapped) first
+            // frames of a freshly activated region ran: the 0.1024 m one CI run saw against a 0.1 m limit.
+            // Subscribed after the travel coordinator (it lives on the persistent core loaded above), so its
+            // handler has already run ReceiveSeaJourney when this one runs; OnCrossing below relies on the
+            // same order.
+            bool laid = false;
+            Vector2 laidAt = default;
+            float laidSpeed = float.NaN;
+            void OnLaid(Scene previous, Scene next)
             {
-                Assert.Less(Time.realtimeSinceStartupAsDouble, deadline, "the boot hop did not seat the player");
-                yield return null;
+                if (laid || next.name != def.SeaRegion.SceneName) return;
+                var opening = ArrivalOpening.SeaJourney;
+                if (opening == null || opening.Boat == null) return;
+                laidAt = opening.Boat.transform.position;
+                laidSpeed = opening.Boat.Velocity.magnitude;
+                laid = true;
             }
+            SceneManager.activeSceneChanged += OnLaid;
+            double deadline = Time.realtimeSinceStartupAsDouble + 240d;
+            try
+            {
+                ShellFlow.StartNewGame();
+                while (ArrivalOpening.SeaJourney == null)
+                {
+                    Assert.Less(Time.realtimeSinceStartupAsDouble, deadline, "the boot hop did not seat the player");
+                    yield return null;
+                }
+            }
+            finally { SceneManager.activeSceneChanged -= OnLaid; }
             var sea = ArrivalOpening.SeaJourney;
             Assert.IsTrue(sea.IsAtSea);
             Assert.AreEqual(def.SeaRegion.SceneName, SceneManager.GetActiveScene().name);
             Assert.AreEqual(clock.StartSeconds, clock.TotalSeconds);
             Assert.IsTrue(clock.IsHeld);
             Assert.IsFalse(sea.IsBelowDecks);
-            Assert.Less(Vector2.Distance(sea.Boat.transform.position, def.LiePosition), 0.1f);
-            Assert.Less(sea.Boat.Velocity.magnitude, 0.1f, "the cape starts lying, then gathers way");
+            Assert.IsTrue(laid, "the boot hop seated the player without the sea region's activation laying the cape");
+            Assert.Less(Vector2.Distance(laidAt, def.LiePosition), 0.1f, "the cape is laid at the authored lie");
+            Assert.Less(laidSpeed, 0.1f, "the cape starts lying, then gathers way");
             yield return null;
             AssertMesh(sea);
             var hud = Object.FindFirstObjectByType<HudController>();

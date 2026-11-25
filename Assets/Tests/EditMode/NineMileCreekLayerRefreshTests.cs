@@ -41,13 +41,20 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (Doc doc in source.Docs.Where(d => !owned.Contains(d.FileId)))
                 Assert.AreEqual(doc.Text, after.Require(doc.FileId, "protected document").Text, "&" + doc.FileId);
             var trees = source.SubtreeOf(source.RootNamed("CreekTrees").FileId);
-            Assert.AreEqual(263, source.Docs.Count(d => trees.Contains(d.FileId) &&
+            Assert.AreEqual(200, source.Docs.Count(d => trees.Contains(d.FileId) &&
                 (d.Field("m_EditorClassIdentifier") ?? "").EndsWith(".TreeTrunkAnchor", StringComparison.Ordinal)),
                 "the planting's 298 trunk anchors less the 35 tree pieces NMC H4's step 12 clears (33 on a v4 carriageway, " +
-                "1 in a hedge clearance, 1 in a ruled route's swept body; seven documents each)");
-            Assert.AreEqual(527, source.Docs.Count(d =>
+                "1 in a hedge clearance, 1 in a ruled route's swept body; seven documents each), less the 46 trees retired " +
+                "11-15 for standing below the sand line (RegionTreePlacementContentTests), less the 16 north wood trees " +
+                "retired 11-16 for standing on the dune band (the wood pulled back onto the green), less the 1 aspen " +
+                "cleared 11-16 for the fish plant footprint (NmcBuildingShells step 20)");
+            Assert.AreEqual(566, source.Docs.Count(d =>
                 (d.Field("m_EditorClassIdentifier") ?? "").EndsWith(".SpriteShadow", StringComparison.Ordinal)),
-                "the 562 sprite shadows less the 35 that step 12's cleared tree pieces carry, one each");
+                "the 562 sprite shadows less the 35 that step 12's cleared tree pieces carry, one each, less the 46 that " +
+                "the trees retired 11-15 below the sand line carried, less the 16 north wood trees retired 11-16 off the " +
+                "dune band, plus the 102 trees under CreekPlanting (the 11-15 replanting's 86, less its 12 north wood trees " +
+                "on the dune band, plus the 28 the 11-16 pull-back plants on the green; one shadow each), less the 1 the " +
+                "aspen cleared 11-16 for the fish plant footprint carried");
         }
 
         [Test]

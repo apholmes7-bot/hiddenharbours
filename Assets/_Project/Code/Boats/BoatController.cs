@@ -110,6 +110,30 @@ namespace HiddenHarbours.Boats
                  "(~40%) — enough to back off the dock without turning the dory into a reversing car.")]
         [SerializeField] private float _asternThrustFactor = DefaultAsternFactor;
 
+        [Header("Rowing stroke (the one clock the oars, the rower and the surge read)")]
+        [Tooltip("Frames/sec the 8-frame stroke cycle plays at a full-effort pull, before the rower's " +
+                 "style scales it. The tempo the oars have always rowed at.")]
+        [SerializeField] private float _strokeFramesPerSecond = DoryOarMath.DefaultStrokeFramesPerSecond;
+        [Tooltip("|oar state| at or below which an oar's stroke phase holds.")]
+        [SerializeField] private float _strokeDeadzone = DoryOarMath.DefaultOarDeadzone;
+        [Tooltip("How much a GENTLE pull slows the sweep: 0 = every stroke at full tempo; 1 = the rate " +
+                 "is proportional to effort.")]
+        [Range(0f, 1f)]
+        [SerializeField] private float _strokeEffortInfluence = DoryOarMath.DefaultEffortInfluence;
+        [Tooltip("Stroke columns per second the second oar falls into step with the leading oar while " +
+                 "both are pulled the same way. 0 = each oar keeps its own phase.")]
+        [Min(0f)]
+        [SerializeField] private float _strokePhaseLockColumnsPerSecond = DoryOarMath.DefaultPhaseLockColumnsPerSecond;
+        [Tooltip("How whoever is at the oars rows: the stroke's timing and how the hull surges on the " +
+                 "pull. Set by the rower (the player's helm input, or the game for a character it rows " +
+                 "for); empty = the plain stroke and an even push, exactly as before.")]
+        [SerializeField] private RowingStyleDef _rowingStyle;
+
+        private RowStrokeClock _strokeClock;
+        private RowingStyle _style = RowingStyle.Unstyled;
+        private RowingStyleDef _styleBuiltFrom;
+        private bool _styleBuilt;
+
         private Rigidbody2D _rb;
         private float _throttle;   // Engine: -1..1 (negative = astern)
         private float _steer;      // Engine: -1..1 (rudder)
@@ -134,10 +158,32 @@ namespace HiddenHarbours.Boats
         public float LastSailTargetKn { get; private set; }
 
         /// <summary>
+        /// The share of her full helm the wind and the sea asked of her on the last physics tick
+        /// (<see cref="SeaYawMath"/>; positive = turning her bow to port). 0 in calm or sheltered water,
+        /// with a line ashore, and on any tick that did not reach the sea-yaw pass. Read-only for tests and
+        /// dev rigs; nothing steers by it.
+        /// </summary>
+        public float LastSeaYawHelmShare { get; private set; }
+
+        // The mooring and anchor on this hull, if any. Looked up ONCE, on the first sea-yaw pass after the
+        // hull is set (a test rig or a builder may add them after Awake but composes them before it sets
+        // the hull), then cached, misses included: no per-tick component search. Read by the sea-yaw pass
+        // only: a line ashore holds her head, an anchor turns it to the wind.
+        private BoatMooring _mooringRef;
+        private BoatAnchor _anchorRef;
+        private bool _seaYawPartsResolved;
+
+        // The sea the sim is running THIS tick (SimTrains), derived once and shared by the swell force
+        // and the sea yaw. Cleared at the top of every physics tick; never saved (rule 5).
+        private bool _simTrainsThisTick;
+        private bool _simTrainsPublished;
+        private WaveTrains _simTrains;
+
+        /// <summary>
         /// ⭐ <b>Is she to be DRAWN in irons?</b> The one place anything may ask (owner ruling
         /// 2026-09-06): the picture is derived from the drive's OWN apparent wind, never from a second
         /// derivation and never from a threshold the presentation keeps for itself. A pose loop, a HUD
-        /// telltale and a test all read THIS. False for a hull with no sail plan — she has no sails to
+        /// instrument and a test all read THIS. False for a hull with no sail plan — she has no sails to
         /// flog. See <see cref="SailDrive.IsInIrons"/> for why it is a union of both frames.
         /// </summary>
         public bool DrawnInIrons => _hull != null && _hull.HasSailPlan &&
@@ -182,24 +228,101 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public float Throttle => _throttle;
 
+        // --- Autopilot (heading hold): transient, never saved, so a load starts with it off. ----
+        private HeadingHoldAutopilot _autopilotCore;
+        private bool _knockSinceLastStep;   // a hard enough collision since the last physics step
+
+        // Built on first use (a component added in an EditMode rig never runs Awake) and wired once to
+        // the Core signal, so every transition, from whichever call site, is announced exactly once.
+        private HeadingHoldAutopilot Autopilot
+        {
+            get
+            {
+                if (_autopilotCore == null)
+                {
+                    _autopilotCore = new HeadingHoldAutopilot();
+                    _autopilotCore.StateChanged += (engaged, reason) =>
+                        EventBus.Publish(new AutopilotStateChanged(this, engaged, reason));
+                }
+                return _autopilotCore;
+            }
+        }
+
+        /// <summary>Is the autopilot holding her heading? While it is, it writes <see cref="Steer"/>
+        /// from the fixed step and the helm's key read passes that value through untouched.</summary>
+        public bool AutopilotEngaged => Autopilot.Engaged;
+
+        /// <summary>The heading the autopilot is holding (degrees, counter-clockwise; meaningful while
+        /// <see cref="AutopilotEngaged"/>).</summary>
+        public float AutopilotTargetHeadingDegrees => Autopilot.TargetHeadingDegrees;
+
+        /// <summary>Why the autopilot last let go or refused to engage.</summary>
+        public AutopilotDisengage AutopilotLastDisengage => Autopilot.LastDisengage;
+
         /// <summary>Port-oar stroke state (-1 back-water .. +1 forward), for the per-oar row rig animation.</summary>
         public float LeftOar => _leftOar;
         /// <summary>Starboard-oar stroke state (-1 back-water .. +1 forward), for the per-oar row rig animation.</summary>
         public float RightOar => _rightOar;
 
+        /// <summary>The stroke clock as of the last physics step: both oars' raw phases and rates.
+        /// Read by the oar picture, which draws it at the frame's interpolation offset.</summary>
+        public RowStrokeClock StrokeClock => _strokeClock;
+
+        /// <summary>The rowing style whoever is at the oars rows (null = unstyled).</summary>
+        public RowingStyleDef RowingStyleDef => _rowingStyle;
+
+        /// <summary>The baked form of <see cref="RowingStyleDef"/>, built once per change.</summary>
+        public RowingStyle RowingStyle
+        {
+            get
+            {
+                EnsureRowingStyle();
+                return _style;
+            }
+        }
+
+        /// <summary>
+        /// Who is at the oars says how they row. Cheap to call every frame: a repeat of the same def
+        /// does nothing. Null = the plain stroke and an even push.
+        /// </summary>
+        public void SetRowingStyle(RowingStyleDef style)
+        {
+            _rowingStyle = style;
+            EnsureRowingStyle();
+        }
+
+        private void EnsureRowingStyle()
+        {
+            if (_styleBuilt && ReferenceEquals(_styleBuiltFrom, _rowingStyle)) return;
+            _style = RowingStyle.From(_rowingStyle);
+            _styleBuiltFrom = _rowingStyle;
+            _styleBuilt = true;
+        }
+
+        /// <summary>The stroke tempo from this hull's inspector.</summary>
+        public RowStrokeTempo StrokeTempo => new RowStrokeTempo(_strokeFramesPerSecond, _strokeDeadzone,
+                                                                _strokeEffortInfluence, _strokePhaseLockColumnsPerSecond);
+
+        /// <summary>
+        /// The per-oar drive multipliers for the oars at <paramref name="clock"/> rowing
+        /// <paramref name="style"/>: how hard each oar pushes the hull at its own phase. Pure.
+        /// </summary>
+        public static void OarDriveMultipliers(in RowingStyle style, in RowStrokeClock clock,
+                                               out float port, out float starboard)
+        {
+            port = style.ThrustMultiplier(RowStrokeClock.StrokePhaseOfColumns(clock.PortPhase));
+            starboard = style.ThrustMultiplier(RowStrokeClock.StrokePhaseOfColumns(clock.StarboardPhase));
+        }
+
         private void Awake()
         {
-            // THE WIND, READ OFF THE BOAT (VS-19): a masthead pennant streaming with the apparent wind,
-            // so the sea's mood is legible from the boat itself and not from a HUD line. Runtime-spawned
-            // like the hold's deck tray, so every boat rig flies one with no builder re-run; play mode
-            // only (EditMode tests build BoatControllers freely and must stay presentation-free).
-            if (Application.isPlaying && GetComponent<MastheadTelltale>() == null)
-                gameObject.AddComponent<MastheadTelltale>();
+            // No boat flies a wind pennant (owner ruling 2026-11-20): the wind is read on the helm
+            // instruments and the sea itself, so nothing is spawned for it here.
 
             // THE HELM-CONTROL SEAM (ADR 0025 S1): the Core relay the diegetic tiller/lever overlay
-            // reads and steers through. Runtime-spawned like the telltale above, so every already-built
-            // scene grows the seam on load with no builder re-run; play mode only for the same reason
-            // (EditMode tests build BoatControllers freely and must stay presentation-free).
+            // reads and steers through. Runtime-spawned like the hold's deck tray, so every already-built
+            // scene grows the seam on load with no builder re-run; play mode only, because EditMode
+            // tests build BoatControllers freely and must stay presentation-free.
             if (Application.isPlaying && GetComponent<HelmControlRelay>() == null)
                 gameObject.AddComponent<HelmControlRelay>();
 
@@ -360,6 +483,85 @@ namespace HiddenHarbours.Boats
         {
             _throttle = Mathf.Clamp(throttle, -1f, 1f);
             _steer = Mathf.Clamp(steer, -1f, 1f);
+        }
+
+        /// <summary>
+        /// Does this hull's helm carry an autopilot it can steer with? Her Def's
+        /// <see cref="BoatHullDef.AutopilotOffered"/>, and a rudder to steer on (an engine helm or a sail
+        /// plan; oars have no rudder). Pure + static.
+        /// <para>Slice 1: offered means fitted. Once the purchase step exists, fitted becomes offered by
+        /// the Def AND bought for this boat in the save, and this read gains that second half.</para>
+        /// </summary>
+        public static bool AutopilotFitted(BoatHullDef hull)
+            => hull != null && hull.AutopilotOffered && (hull.HasSailPlan || UsesEngineHelm(hull.Propulsion));
+
+        /// <summary>
+        /// The autopilot switch: hold the heading she is on, or hand the helm back. Called by the helm's
+        /// input read (<see cref="DevBoatInput"/>) on the <c>Helm/Autopilot</c> press. Engaging is
+        /// refused, silently, under the rules that would hand it straight back (see
+        /// <see cref="HeadingHoldAutopilot.HandBackReason"/>); the reason is in
+        /// <see cref="AutopilotLastDisengage"/>.
+        /// </summary>
+        public bool ToggleAutopilot()
+        {
+            if (Autopilot.Engaged)
+            {
+                Autopilot.Disengage(AutopilotDisengage.Toggled);
+                return false;
+            }
+            return Autopilot.TryEngage(ReadAutopilotSensors(collided: false), _steer, AutopilotPolicy());
+        }
+
+        /// <summary>Hand the helm back from the autopilot (a no-op while it is off). The helm's steer
+        /// read calls it on a real steer input; the wheel's drag calls it on a grab.</summary>
+        public void DisengageAutopilot(AutopilotDisengage reason) => Autopilot.Disengage(reason);
+
+        /// <summary>The autopilot tuning this hull runs (her wired GameConfig, else the shared one).</summary>
+        public HelmAutopilotSettings AutopilotSettings => AutopilotPolicy();
+
+        private HelmAutopilotSettings AutopilotPolicy()
+            => _config != null ? _config.HelmAutopilot : GameServices.HelmAutopilot;
+
+        // What the autopilot reads this instant. "Manned" is this component's own enabled flag — the
+        // "helm is manned" read the oar/motor/probe layers already rely on (ControlSwitcher disables it
+        // when the helm is left). The way is forward speed through the moving water, the rudder's own
+        // WAY term (ApplyEngineDrive).
+        private AutopilotSensors ReadAutopilotSensors(bool collided)
+        {
+            Rigidbody2D rb = _rb != null ? _rb : GetComponent<Rigidbody2D>();
+            float heading = rb != null ? rb.rotation : transform.eulerAngles.z;
+            float yawRate = rb != null ? rb.angularVelocity : 0f;
+            Vector2 vel = rb != null ? rb.linearVelocity : Vector2.zero;
+            Vector2 current = GameServices.Environment != null
+                ? GameServices.Environment.Sample().CurrentVector
+                : Vector2.zero;
+            float way = Vector2.Dot(vel - current, (Vector2)transform.up);
+            return new AutopilotSensors(AutopilotFitted(_hull), isActiveAndEnabled, IsAground, collided,
+                                        heading, yawRate, way);
+        }
+
+        // One fixed step of the autopilot, run from the manned physics pass BEFORE the drive reads the
+        // helm, so the rudder this step answers is the autopilot's. Writes _steer only while it holds.
+        private void TickAutopilot(Vector2 fwd, Vector2 vel, EnvironmentSample env)
+        {
+            bool knock = _knockSinceLastStep;
+            _knockSinceLastStep = false;
+            if (!Autopilot.Engaged) return;
+
+            float way = Vector2.Dot(vel - env.CurrentVector, fwd);
+            var sensors = new AutopilotSensors(AutopilotFitted(_hull), isActiveAndEnabled, IsAground, knock,
+                                               _rb.rotation, _rb.angularVelocity, way);
+            if (Autopilot.Tick(in sensors, Time.fixedDeltaTime, AutopilotPolicy(), out float helm))
+                _steer = Mathf.Clamp(helm, -1f, 1f);
+        }
+
+        // A knock ends the hold; a fender touch or a hull resting on a quay does not (the impact floor).
+        // Only flagged here; the fixed step reads and clears it.
+        private void OnCollisionEnter2D(Collision2D collision)
+        {
+            if (!Autopilot.Engaged) return;
+            if (HeadingHoldAutopilot.IsHazardousImpact(collision.relativeVelocity.magnitude, AutopilotPolicy()))
+                _knockSinceLastStep = true;
         }
 
         /// <summary>
@@ -531,6 +733,8 @@ namespace HiddenHarbours.Boats
         /// on her own lag instead of snapping level in one frame.</param>
         public void Stop(bool levelAtOnce)
         {
+            // A stop (teleport, mooring, arrival, the helm let go) ends any autopilot hold with the way.
+            Autopilot.Disengage(AutopilotDisengage.LeftHelm);
             _throttle = 0f; _steer = 0f;
             _leftOar = 0f; _rightOar = 0f; _brace = false;
             // Resolve the body lazily so Stop() works even before Awake has run (EditMode / on-arrival
@@ -562,11 +766,15 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public void SetHull(BoatHullDef hull)
         {
+            // A different hull is a different helm: the old one's autopilot does not carry over.
+            if (!ReferenceEquals(hull, _hull)) Autopilot.Disengage(AutopilotDisengage.HullChanged);
             _hull = hull;
             // A new hull (a swap, a load) starts level: her trim is recomputed from her own data on the
             // next physics tick, never carried over from the last hull's.
             _trimTargetDegrees = 0f;
             _trimRestSerial++;
+            // A (re)built rig looks for its mooring and anchor again on the next sea-yaw pass.
+            _seaYawPartsResolved = false;
             if (_hull == null) return;
             var rb = _rb != null ? _rb : GetComponent<Rigidbody2D>();
             if (rb != null) rb.mass = BodyMassFor(_hull.MassKg);
@@ -615,7 +823,12 @@ namespace HiddenHarbours.Boats
         // The helm is left (this component is disabled while she drifts unmanned): the trim her drive
         // asked for goes with the hand on the throttle, so the drawer eases her back to level even
         // where no drift tick runs. TickUnmannedDrift republishes it from her next drift tick.
-        private void OnDisable() => _trimTargetDegrees = 0f;
+        // Leaving the helm hands the autopilot's helm back too: it is a helmsman's tool, not a drift mode.
+        private void OnDisable()
+        {
+            _trimTargetDegrees = 0f;
+            Autopilot.Disengage(AutopilotDisengage.LeftHelm);
+        }
 
         /// <summary>
         /// One physics tick of the sea working an <b>unmanned</b> hull — the "leave the helm to haul /
@@ -649,6 +862,9 @@ namespace HiddenHarbours.Boats
             // for last tick's bow. The accumulators start empty and fill as each force is applied.
             _trimTargetDegrees = 0f;
             _trimDrive = 0f; _trimResist = 0f;
+            LastSeaYawHelmShare = 0f;
+            // The sea is derived at most once per tick (SimTrains): every reader this tick shares it.
+            _simTrainsThisTick = false;
             if (_hull == null) return;
             // Resolve the body lazily (the Stop()/SetHull precedent): the unmanned drift tick can run
             // through the disabled component in rigs where Awake hasn't cached it yet.
@@ -678,6 +894,11 @@ namespace HiddenHarbours.Boats
 
             Vector2 fwd = transform.up;            // bow direction (top-down view)
             Vector2 vel = _rb.linearVelocity;
+
+            // --- Autopilot (heading hold): sets the helm before the drive reads it. The unmanned drift
+            // tick means nobody is at the wheel, which hands the helm back. ---
+            if (unmanned) Autopilot.Disengage(AutopilotDisengage.LeftHelm);
+            else TickAutopilot(fwd, vel, env);
 
             // --- Propulsion (data-driven, ADR 0003): oars (Dory), an engine helm (Punt), or SAIL. ---
             // Always driven — drive authority is NOT gated on grounding (the helm never cuts out).
@@ -719,6 +940,12 @@ namespace HiddenHarbours.Boats
             // construction — and the whole thing is off when the policy switch is off. Gentle-to-medium
             // for M1: it makes rough/exposed water a real challenge, it does NOT capsize/swamp (M2). ---
             ApplySeakeeping(fwd, env);
+
+            // --- Sea yaw: THE WIND AND THE SEA TURN HER HEAD (P1). The wind shove above acts at her
+            // centre of mass and the seakeeping slew reads the sea at her middle, so neither has a lever;
+            // this is the turn her windage and her bow-to-stern sea give her. A share of her own helm,
+            // capped below it, so the rudder wins with way on. Zero in calm, in shelter, and tied up. ---
+            ApplySeaYaw(fwd, env, unmanned);
 
             // --- Boat-cross gate (St Peters, P1/P5): can't pass water too shallow to float the hull. ---
             // The inverse of the on-foot walkability gate, over the SAME authored terrain + tide. Forgiving:
@@ -886,10 +1113,19 @@ namespace HiddenHarbours.Boats
         /// </summary>
         private void ApplyOarDrive(Vector2 fwd, Vector2 vel, EnvironmentSample env)
         {
+            // The stroke clock runs on the physics step, so the push below and the oars drawn over the
+            // hull read one phase: she surges while the blades are in the water and eases through the
+            // release, the recovery and any rest. An idle oar's phase holds; its state is 0, so it pushes
+            // nothing whatever its phase, and the coast-down is exactly as before.
+            EnsureRowingStyle();
+            _strokeClock.Step(_leftOar, _rightOar, Time.fixedDeltaTime, StrokeTempo, _style.TempoScale);
+            OarDriveMultipliers(in _style, in _strokeClock, out float portDrive, out float starDrive);
+
             // Oar thrust + yaw always live — never killed by grounding (the player can always pull the oars).
             {
-                float thrust = OarThrust(_leftOar, _rightOar, _hull.OarPower) * ForceFeelScale;
-                float yaw    = OarYawTorque(_leftOar, _rightOar, _hull.OarPower, _hull.OarLateralOffset) * ForceFeelScale;
+                float left = _leftOar * portDrive, right = _rightOar * starDrive;
+                float thrust = OarThrust(left, right, _hull.OarPower) * ForceFeelScale;
+                float yaw    = OarYawTorque(left, right, _hull.OarPower, _hull.OarLateralOffset) * ForceFeelScale;
                 _rb.AddForce(fwd * thrust, ForceMode2D.Force);
                 _rb.AddTorque(yaw);
                 _trimDrive += thrust;
@@ -994,14 +1230,7 @@ namespace HiddenHarbours.Boats
             Vector2 pos = _rb.position;
 
             WaveFieldSettings waveField = GameServices.WaveField;
-            bool published = SharedWaveField.TryGet(out WaveTrains trains);
-            if (!published)
-            {
-                trains = GameServices.Environment is IWaveWindSource history
-                    ? WaveMemory.TrainsAt(history, now, in waveField)
-                    : WaveMath.TrainsFrom(env.WindVector, env.SeaState01, in waveField);
-                trains = GameServices.WithSwell(in trains, now, waveField.Gravity);
-            }
+            WaveTrains trains = SimTrains(env, now, in waveField, out bool published);
             // Published travel is baked; a first-frame fallback carries raw phases at the clock.
             WaveSample wave = WaveMath.Sample(pos, published ? 0.0 : now, in trains, GameServices.FetchAt(pos));
 
@@ -1067,6 +1296,119 @@ namespace HiddenHarbours.Boats
                 _rb.AddForce(-_rb.linearVelocity * damp, ForceMode2D.Force);
                 _rb.AddTorque(-_rb.angularVelocity * damp);
             }
+        }
+
+        /// <summary>
+        /// The sea the sim is running this tick: the shared published trains when the surface has
+        /// published them (their travel is baked, so they are sampled at time 0), else the trains derived
+        /// from the wind history (or the instantaneous wind) plus the swell, sampled at the clock. One
+        /// derivation for every force that reads the sea, so the swell's push and the sea yaw read one sea.
+        /// Derived once per physics tick and cached for the rest of it (the clock, the wind and the
+        /// published field cannot change inside a tick, so the second reader gets the identical value).
+        /// </summary>
+        private WaveTrains SimTrains(EnvironmentSample env, double now, in WaveFieldSettings waveField,
+                                     out bool published)
+        {
+            if (!_simTrainsThisTick)
+            {
+                _simTrains = DeriveSimTrains(env, now, in waveField, out _simTrainsPublished);
+                _simTrainsThisTick = true;
+            }
+            published = _simTrainsPublished;
+            return _simTrains;
+        }
+
+        /// <summary>The derivation <see cref="SimTrains"/> caches: published trains first, else the boot
+        /// fallbacks (the wind history, else the instantaneous wind) plus the swell.</summary>
+        private static WaveTrains DeriveSimTrains(EnvironmentSample env, double now, in WaveFieldSettings waveField,
+                                                  out bool published)
+        {
+            published = SharedWaveField.TryGet(out WaveTrains trains);
+            if (published) return trains;
+            trains = GameServices.Environment is IWaveWindSource history
+                ? WaveMemory.TrainsAt(history, now, in waveField)
+                : WaveMath.TrainsFrom(env.WindVector, env.SeaState01, in waveField);
+            return GameServices.WithSwell(in trains, now, waveField.Gravity);
+        }
+
+        /// <summary>
+        /// ⭐ <b>The wind and the sea turn her head</b> (P1; the law is <see cref="SeaYawMath"/>, the dials
+        /// <see cref="SeaYawSettings"/> on GameConfig). Two turns, each a share of her own full helm:
+        /// <list type="bullet">
+        /// <item><b>Wind:</b> above the calm threshold every gust in the weather model's wind turns her,
+        /// most with the wind on her beam. A hull blows off downwind; with her sails drawing her weather
+        /// helm brings her up into it instead; at anchor she lies head to wind. Light, high-sided hulls
+        /// are turned more (her WindExposure over her mass).</item>
+        /// <item><b>Waves:</b> the difference in the sea's beam slope under her bow and her stern, read
+        /// from the same trains the swell force reads. A quartering or following sea, met slowly, makes
+        /// her stern wander. Scaled by her seakeeping response and by the displaced sea's SEE==FEEL factor
+        /// like the swell force.</item>
+        /// </list>
+        /// Both fade with the seakeeping exposure (shelter turns nothing), the sum is capped below her
+        /// helm, and a hull with a line ashore is held by it. Deterministic: wind and waves are the sim's
+        /// own (worldSeed, gameTime) fields; nothing is drawn at random and nothing is stored.
+        /// </summary>
+        private void ApplySeaYaw(Vector2 fwd, EnvironmentSample env, bool unmanned)
+        {
+            SeaYawSettings policy = _config != null ? _config.SeaYaw : GameServices.SeaYaw;
+            if (!policy.Enabled) return;
+
+            // Tied up: the line holds her head. The dock is unchanged.
+            if (!_seaYawPartsResolved)
+            {
+                TryGetComponent(out _mooringRef);
+                TryGetComponent(out _anchorRef);
+                _seaYawPartsResolved = true;
+            }
+            if (_mooringRef != null && _mooringRef.HasLineOut) return;
+
+            float fullHelm = SeaYawMath.FullHelmTorque(_hull);
+            if (fullHelm <= 0f) return;
+
+            double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
+            Vector2 pos = _rb.position;
+
+            // The same place gate as the swell force: the shallow lee is sheltered, open water is exposed.
+            float depth = BoatCrossing.DepthAt(GameServices.TidalTerrain, GameServices.Environment, now, pos);
+            float exposure = SeakeepingForcesMath.Exposure01(
+                depth, _seakeeping.ShelterDepthMeters, _seakeeping.FullExposureDepthMeters);
+            if (exposure <= 0f) return;
+
+            // --- The wind's turn ---
+            bool anchored = _anchorRef != null && _anchorRef.IsDown;
+            bool sailPlan = _hull.HasSailPlan;
+            bool sailsDrawing = sailPlan && LastSailTargetKn > 0f;
+            float bias = SeaYawMath.WindYawBias(anchored, sailPlan, unmanned, sailsDrawing,
+                                                _hull.SailWeatherHelm, in policy);
+            float windSusceptibility = SeaYawMath.WindSusceptibility(_hull.WindExposure, _hull.MassKg, in policy);
+            float windShare = SeaYawMath.WindShare(env.WindVector, fwd, bias, windSusceptibility, in policy);
+
+            // --- The sea's turn (only while the seakeeping policy is working the hull at all) ---
+            float waveShare = 0f;
+            if (_seakeeping.Enabled && env.SeaState01 > 0f)
+            {
+                WaveFieldSettings waveField = GameServices.WaveField;
+                WaveTrains trains = SimTrains(env, now, in waveField, out bool published);
+                float halfSpan = SeaYawMath.WaveHalfSpan(_hull.LengthMeters, trains.Dominant.Wavelength, in policy);
+                if (halfSpan > 0f)
+                {
+                    double t = published ? 0.0 : now;
+                    WaveFetchSample fetch = GameServices.FetchAt(pos);
+                    Vector2 bowSlope = WaveMath.Sample(pos + fwd * halfSpan, t, in trains, fetch).Slope;
+                    Vector2 sternSlope = WaveMath.Sample(pos - fwd * halfSpan, t, in trains, fetch).Slope;
+                    float waveSusceptibility = SeaYawMath.WaveSusceptibility(ResponseFor(_hull), in policy);
+                    bool displacedActive = DisplacedSea.TryGet(out DisplacedSeaState displaced);
+                    waveShare = SeaYawMath.WaveShare(bowSlope, sternSlope, fwd, waveSusceptibility, in policy)
+                              * SeakeepingForcesMath.DisplacedForceScale(displacedActive, depth, in displaced);
+                }
+            }
+
+            float share = SeaYawMath.Combine(windShare, waveShare, exposure, in policy);
+            LastSeaYawHelmShare = share;
+            // The same feel scale her own helm torque is applied at: the rudder's for a sailing or engine
+            // hull, the oars' (the force scale) for a rowed one. A share of her helm stays a share of it.
+            float feel = sailPlan || UsesEngineHelm(_hull.Propulsion) ? RudderFeelScale : ForceFeelScale;
+            if (share != 0f) _rb.AddTorque(SeaYawMath.Torque(share, fullHelm, feel));
         }
     }
 }

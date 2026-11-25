@@ -25,3 +25,4 @@ MonoBehaviour:
   SupportsRadar: 1
   SupportsGps: 1
   MaxWind: 2
+  SupportsLoran: 1

@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88201f4f4f3247558c87e55aa4fb8ac4, type: 3}
+  m_Name: LionelFirst
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.DialogueDef
+  Id: dialogue.lionel_first
+  FirstLines:
+  - 'Cormier Marine. Electronics, mostly, and the odd bit of boat hardware when the
+    truck remembers to bring it.'
+  - 'You will want a Loran before you want anything else in here. It listens to the
+    chain stations and tells you where you are, in two numbers. Write the numbers down
+    where the fish were, and you can find that spot again in a fog.'
+  - 'Nobody believes me about the writing down. They all come back, and then they believe
+    me.'
+  RepeatLines:
+  - 'Back again. Mind the case, the glass in it is older than I am.'
+  ConditionalFlag: 
+  ConditionalLines: []
+  Options:
+  - Id: option.browse_wares
+    Label: What have you got for the boat?
+    ReplyLines: []
+    CatalogSellerId: seller.nmc_boat_gear_wholesaler
+    CatalogSection: gear
+    SellAtSellerId: 
+    NothingToSellLines: []
+  - Id: option.ask_about_loran
+    Label: 'How does a Loran work?'
+    ReplyLines:
+    - 'There are stations along the coast sending out pulses, all timed to one another.
+      The set hears the gaps between them and turns the gaps into two numbers.'
+    - 'Two numbers is one spot on the water. The same two numbers tomorrow, the same
+      spot. That is all it is, and it is a great deal.'
+    - 'It will not show you the bottom and it will not show you fish. It shows you where
+      you were when you found them.'
+    CatalogSellerId: 
+    CatalogSection: 
+    SellAtSellerId: 
+    NothingToSellLines: []

@@ -55,6 +55,19 @@ namespace HiddenHarbours.Tests.PlayMode
         /// lighting bug and is not one.</summary>
         const int PlateHeightPx = 900;
 
+        /// <summary>The lantern's bar was set as a hundred lit pixels on a plate drawn at
+        /// <see cref="BarPixelsPerMetre"/>: the density the camera chose for this plate when the fixture
+        /// was written (the pool then lit 166,484 px). #1013 settled the lens on fixed stops of the
+        /// render target's own pixels, and this plate now comes out at half that density (the same pool
+        /// lights 41,505 px, a quarter of the area). A pixel count is an AREA, so the bar follows the
+        /// square of the density the camera actually drew at, read off the camera rather than typed.</summary>
+        const float LanternBarPixels = 100f;
+        const float BarPixelsPerMetre = 64f;
+
+        /// <summary>The coarsest plate the lantern bar is trusted at: today's 32 px/m (a 25 px bar) is fine; much
+        /// coarser and the bar would shrink toward nothing.</summary>
+        const float MinPlatePixelsPerMetre = 24f;
+
         /// <summary>How much brighter than the lamps-off frame a pixel must be to count as LIT. Summed over
         /// the three channels of a 0..255 read-back, so ~4 % of one channel — above the dither and well
         /// below anything a lamp does.</summary>
@@ -106,7 +119,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 Scene s = SceneManager.GetSceneAt(i);
                 if (s.IsValid() && s != clean && s.name == SceneName)
-                    yield return SceneManager.UnloadSceneAsync(s);
+                    yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(s);
             }
         }
 
@@ -186,10 +199,19 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.Greater(litPool, noiseFloor * 4,
                 $"the BEFORE arm lit {litPool} px against a {noiseFloor} px noise floor — that is the sea " +
                 "moving, not a lamp, so neither number below means anything");
-            Assert.Greater(litFitting, Mathf.Max(noiseFloor, 100),
+            float density = _h / (2f * _cam.orthographicSize);
+            // A bar that scales with density must not scale to nothing: a plate drawn much further out than
+            // today's 32 px/m cannot judge a 0.14 m lantern at all, so it fails here instead of passing on a
+            // bar of one or two pixels.
+            Assert.GreaterOrEqual(density, MinPlatePixelsPerMetre,
+                $"the plate was drawn at {density:0.0} px/m (ortho {_cam.orthographicSize:0.000} on {_h} px); below " +
+                $"{MinPlatePixelsPerMetre:0} px/m the lantern is too few pixels to say whether it reads");
+            int lanternBar = Mathf.RoundToInt(LanternBarPixels * (density / BarPixelsPerMetre) * (density / BarPixelsPerMetre));
+            Assert.Greater(litFitting, Mathf.Max(noiseFloor, lanternBar),
                 $"the lantern lit {litFitting} px (noise floor {noiseFloor}): it does not READ. A lamp " +
                 "nobody can see is not the fix the owner asked for, and with the sea held still a floor of " +
-                "zero would let ANY number through — so the bar is a hundred pixels of actual lantern.");
+                $"zero would let ANY number through — so the bar is a hundred pixels of actual lantern at " +
+                $"{BarPixelsPerMetre:0} px/m, {lanternBar} px at the {density:0.0} px/m this plate was drawn at.");
 
             Assert.Less(litFitting, litPool * 0.25f,
                 $"the lantern covers {100f * litFitting / litPool:0.0} % of the area the pool covered. " +
@@ -337,9 +359,19 @@ namespace HiddenHarbours.Tests.PlayMode
             // OF THE DIAL. The mask below is the region where the two arms differ, which is exactly the
             // stretch of sea the full-length quad covers and the source glow does not — the pixels the
             // owner was looking at, defined by the change itself rather than by an assumption.
+            // ⚠ PRIME ONE CAPTURE FIRST AND THROW IT AWAY. When this case runs after another case in the
+            // same run, the first frame captured here comes back without the searchlight's land quad,
+            // although the quad is enabled, posed and lit. Measured: the dial "moved" 1 px. A second capture
+            // of the very same state draws the quad (39,721 px brighter), and the case run on its own moves
+            // 36,888 px. The beam is fine; the first frame is not evidence.
             SetQuadGlowScale(spot, 1f);
             yield return null; yield return null;
+            byte[] primer = Capture();
+
+            yield return null; yield return null;
             byte[] flat = Capture();
+            Debug.Log($"[{PlateDir}] beam primer: the measured full-quad frame is {Footprint(primer, flat)} px brighter " +
+                      $"than the discarded first capture ({Footprint(flat, primer)} px darker)");
             SavePlate("04-beam-0200-fullquad-BEFORE.png", flat);
 
             SetQuadGlowScale(spot, BoatSpotlight.DefaultQuadGlowScale);
@@ -396,7 +428,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             // The region logs decor-import complaints that have nothing to do with lights.
             LogAssert.ignoreFailingMessages = true;
-            yield return SceneManager.LoadSceneAsync(SceneName, LoadSceneMode.Single);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Load(SceneName, LoadSceneMode.Single);
             for (int i = 0; i < 6; i++) yield return null;   // let the self-installing components register
         }
 

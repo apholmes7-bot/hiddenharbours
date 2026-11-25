@@ -68,8 +68,10 @@ namespace HiddenHarbours.Tests.EditMode
                 HudFormat.CatchCard("Atlantic Cod", 3.4f, 48));
             Assert.AreEqual("Lobster — 1.0 kg — ₲1,200!",
                 HudFormat.CatchCard("Lobster", 1.0f, 1200), "weight is one decimal; value has thousands");
-            Assert.AreEqual("Catch — 0.5 kg — ₲0!",
-                HudFormat.CatchCard("", 0.5f, -5), "a missing name and bad value are guarded");
+            Assert.AreEqual("Catch — 500 g — ₲0!",
+                HudFormat.CatchCard("", 0.5f, -5), "a missing name and bad value are guarded; under a kilo reads in grams");
+            Assert.AreEqual("Rainbow Smelt — 40 g — ₲1!",
+                HudFormat.CatchCard("Rainbow Smelt", 0.04f, 1), "a smelt is never 0.0 kg");
         }
 
         [Test]

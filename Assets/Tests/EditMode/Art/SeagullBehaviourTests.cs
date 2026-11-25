@@ -399,10 +399,20 @@ namespace HiddenHarbours.Tests.Art.EditMode
                                "not a sprite scale");
 
             string code = CodeOf("GullFlock.cs");
-            foreach (var write in new[] { @"\blocalScale\b", @"\blossyScale\b", @"\.Scale\b" })
+            foreach (var write in new[] { @"\blossyScale\b", @"\.Scale\b" })
                 Assert.IsFalse(Regex.IsMatch(code, write),
                                "GullFlock.cs writes " + write + " — the presenter must never scale a " +
                                "bird; the wheel's per-bird Scale is produced and deliberately dropped");
+            // The ONE scale write (owner 2026-11-15: "make landed birds slightly smaller as they are further from
+            // camera than a flying one") is the ground size, and it only ever SHRINKS: a flying bird stays at strict
+            // world scale, so the 09-09 ruling ("there aren't giant gulls that fly across the camera") still holds.
+            Assert.AreEqual(1, Regex.Matches(code, @"\.localScale\s*=").Count,
+                            "GullFlock.cs may write localScale once, for the ground size alone");
+            StringAssert.Contains("SeagullVisualDef.ScaleAtAltitude(", code);
+            for (float alt = 0f; alt <= 30f; alt += 0.05f)
+                Assert.LessOrEqual(SeagullVisualDef.ScaleAtAltitude(alt, 0.88f, 1.2f), 1f,
+                                   "the ground size may shrink a bird, never grow one");
+            Assert.AreEqual(1f, SeagullVisualDef.ScaleAtAltitude(8f, 0.88f, 1.2f), 0f, "a flying bird is world scale");
 
             Assert.IsTrue(Regex.IsMatch(code, @"IsoGround\s*\.\s*HeightScale"),
                           "GullFlock.cs no longer converts altitude to a screen offset through " +

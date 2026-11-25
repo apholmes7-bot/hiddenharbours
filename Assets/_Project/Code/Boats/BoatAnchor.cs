@@ -49,7 +49,7 @@ namespace HiddenHarbours.Boats
     /// <para><b>No magic numbers</b> (rule 6): every constant comes from the owner's
     /// <see cref="GameServices.Anchor"/> policy (<c>GameConfig.Anchor</c>) or from hull data, resolved
     /// per tick so dragging a slider in play changes the next hold. The component is runtime-spawned by
-    /// <see cref="BoatController"/> (the <see cref="MastheadTelltale"/>/<see cref="HelmControlRelay"/>
+    /// <see cref="BoatController"/> (the <see cref="HelmControlRelay"/>
     /// precedent), so every already-built scene grows it with no builder re-run — which is also why it
     /// serializes no tunables of its own: fields on a component that exists in no prefab could never be
     /// edited by the owner.</para>
@@ -351,6 +351,8 @@ namespace HiddenHarbours.Boats
             // here. A rode drawn over the decor band reads as tackle laid across whatever it crosses, and
             // (unlike a decor sprite) cannot be walked in front of, which is correct for a line in the air.
             _rode.sortingOrder = SortingBands.AboveDecor;
+            // A child of the boat: escape her sorting group (ADR 0059 step 3) to keep clearing all decor.
+            HullSorting.EscapeTheBoat(go, SortingBands.AboveDecor);
             _rode.enabled = false;
         }
 

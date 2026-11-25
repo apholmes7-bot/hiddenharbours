@@ -63,7 +63,6 @@ namespace HiddenHarbours.App.Editor
         const string DataGear     = "Assets/_Project/Data/Resources/Catalog/Gear";      // the rod on the store's counter (§7.5)
         const string DataLicenses = "Assets/_Project/Data/Resources/Catalog/Licenses";  // the clam licence the store vends (§7.5)
         const string DataSupplies = "Assets/_Project/Data/Resources/Catalog/Supplies";  // the ice the store restocks (§7.3/§7.5)
-        const string DataInstruments = "Assets/_Project/Data/Resources/Catalog/Instruments"; // helm instruments the counter fits (ADR 0025 S2)
         const string ArtSprites  = "Assets/_Project/Art/Sprites";
         // Opening-cast art (greybox; final St Peters storekeeper etc. are on the owner's draw-list).
         const string ArtGinny         = "Assets/_Project/Art/Characters/Ginny.png";   // Aunt Ginny standee
@@ -1498,11 +1497,20 @@ namespace HiddenHarbours.App.Editor
             var rodOffer    = AssetDatabase.LoadAssetAtPath<GearOffer>(DataGear + "/Rod.asset");
             var clamLicence = AssetDatabase.LoadAssetAtPath<LicenseDef>(DataLicenses + "/ClamLicense.asset");
             var iceSupply   = AssetDatabase.LoadAssetAtPath<SupplyDef>(DataSupplies + "/Ice.asset");
+            // The everyday goods Marguerite stocks beside the ice (the three foods of the first food slice, then
+            // the bar of soap the shower and bath need to get fully clean): one SupplyShop each, as
+            // StoreWiringPatch.StPeters lists them.
+            var foodSupplies = new[]
+            {
+                AssetDatabase.LoadAssetAtPath<SupplyDef>(DataSupplies + "/Bread.asset"),
+                AssetDatabase.LoadAssetAtPath<SupplyDef>(DataSupplies + "/Oatcakes.asset"),
+                AssetDatabase.LoadAssetAtPath<SupplyDef>(DataSupplies + "/TinnedBeans.asset"),
+                AssetDatabase.LoadAssetAtPath<SupplyDef>(DataSupplies + "/SoapBar.asset"),
+            };
             var capelinBait = AssetDatabase.LoadAssetAtPath<BaitDef>(DataBait + "/Capelin.asset");
-            // The chandlery half of the same counter (ADR 0025 S2): the depth sounder, fitted to the boat
-            // you came in on. Same null-tolerance — an unimported Def leaves the row off with a warning.
-            var depthSounder = AssetDatabase.LoadAssetAtPath<InstrumentOffer>(
-                DataInstruments + "/DepthSounderOffer.asset");
+            // No helm instrument on this counter: the depth sounder moved to the Nine Mile Creek boat/gear
+            // wholesaler (ruling 11-23: the island store sells basic fishing gear, boat hardware is the
+            // mainland's), as the Loran did before it.
 
             // --- PERSISTENT CORE (THE FIX) --------------------------------------------------------------
             // St Peters is the START scene, so it stands up the SAME persistent rig the cove builds — a
@@ -2048,13 +2056,13 @@ namespace HiddenHarbours.App.Editor
             SetRef(iceShop, "_walletProvider", storeWallet);
             SetString(iceShop, "_sellerId", StoreSellerId);
 
-            // The DEPTH SOUNDER — the first purchasable helm instrument (ADR 0025 S2). It bolts into the
-            // dash of the boat the player arrived in, so it sells here beside the rod rather than needing
-            // its own chandlery: one counter, one screen (the §7.5 general-store pattern).
-            var sounderShop = storeCounter.AddComponent<InstrumentShop>();
-            SetRef(sounderShop, "_offer", depthSounder);
-            SetRef(sounderShop, "_walletProvider", storeWallet);
-            SetString(sounderShop, "_sellerId", StoreSellerId);
+            foreach (SupplyDef food in foodSupplies)
+            {
+                var foodShop = storeCounter.AddComponent<SupplyShop>();
+                SetRef(foodShop, "_supply", food);
+                SetRef(foodShop, "_walletProvider", storeWallet);
+                SetString(foodShop, "_sellerId", StoreSellerId);
+            }
 
             // The clam licence — the FIRST licence of the game, and the one Ginny fronts the fee for. The
             // player still buys it themselves at this counter (§7.5: the transaction stays theirs).
@@ -2090,11 +2098,12 @@ namespace HiddenHarbours.App.Editor
             // id, and the id is on the vendors above.
 
             if (rodOffer == null || clamLicence == null || iceSupply == null || capelinBait == null
-                || depthSounder == null)
+                || foodSupplies.Any(f => f == null))
                 Debug.LogWarning(
                     "[StPetersBuilder] The general store's counter is missing stock — rod=" +
                     $"{(rodOffer != null)}, clam licence={(clamLicence != null)}, ice={(iceSupply != null)}, " +
-                    $"capelin={(capelinBait != null)}, depth sounder={(depthSounder != null)}. Those rows " +
+                    $"foods={foodSupplies.Count(f => f != null)}/{foodSupplies.Length}, " +
+                    $"capelin={(capelinBait != null)}. Those rows " +
                     "won't appear on the buy screen. Re-run after the Data assets import rather than " +
                     "shipping a counter with an empty shelf.");
             else

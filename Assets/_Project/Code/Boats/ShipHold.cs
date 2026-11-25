@@ -8,11 +8,28 @@ namespace HiddenHarbours.Boats
     /// The boat's cargo hold. Capacity comes from the hull (HU). Implements <see cref="IHold"/> so
     /// Fishing fills it and the market empties it, all through the Core contract.
     /// </summary>
-    public class ShipHold : MonoBehaviour, IHold
+    public class ShipHold : MonoBehaviour, IHold, IHoldRemove, IStorageContainer
     {
         [SerializeField] private BoatHullDef _hull;
 
         private readonly List<CatchItem> _items = new();
+
+        /// <summary>The fixed id of the player's boat hold (<see cref="StorageIds.BoatHold"/>). Only the
+        /// region coordinator's persistent hold is listed in <see cref="PlayerStorage"/>; a region scene's
+        /// dev boat answers the same id and is never listed.</summary>
+        public string StorageId => StorageIds.BoatHold;
+
+        /// <summary>The boat's hold sorts first (<see cref="PlayerStorage.PriorityBoatHold"/>).</summary>
+        public int StoragePriority => PlayerStorage.PriorityBoatHold;
+
+        /// <summary>Take out the one item at <paramref name="index"/> and nothing else (IHoldRemove).</summary>
+        public bool TryRemoveAt(int index)
+        {
+            if (index < 0 || index >= _items.Count) return false;
+            _items.RemoveAt(index);
+            SyncToSave();
+            return true;
+        }
 
         /// <summary>The hull this hold reads its capacity from. Same-module read for the deck container
         /// (the tray needs the hull's container Def + deck anchor); cross-module callers keep to
@@ -50,10 +67,16 @@ namespace HiddenHarbours.Boats
             ISaveService save = GameServices.Save;
             if (save == null || save.Current == null) return;
             var restored = new List<CatchItem>();
-            int units = HoldCatchCodec.Restore(save.Current.BoatHoldCatch, GameServices.CatchFactory, restored);
+            var released = new List<CatchItem>();
+            int units = HoldCatchCodec.Restore(save.Current.BoatHoldCatch, GameServices.CatchFactory,
+                                               GameServices.FishConservation, restored, released);
             ReplaceAll(restored);   // capacity-exempt: the hold was legal when saved
+            HoldCatchCodec.PublishReleased(released);
+            if (released.Count > 0)
+                Debug.Log($"[ShipHold] Released {released.Count} protected catch on load — that species " +
+                          "is release-only now, so it went back over the side.", this);
             int saved = CountUnits(save.Current.BoatHoldCatch);
-            if (units < saved)
+            if (units + released.Count < saved)
                 Debug.LogWarning($"[ShipHold] Restored {units}/{saved} held catch — some species ids " +
                                  "no longer resolve (skipped, never a crash).", this);
         }
@@ -79,6 +102,7 @@ namespace HiddenHarbours.Boats
 
         public bool TryAdd(CatchItem item)
         {
+            if (!CatchKeep.MayKeep(in item)) return false;   // protected: release-only, never held
             if (_items.Count >= CapacityUnits) return false;
             _items.Add(item);
             SyncToSave();

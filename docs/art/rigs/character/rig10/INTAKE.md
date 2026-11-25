@@ -2,8 +2,75 @@
 
 This file records each intake of Claude Design's character rig 10 into this folder, newest first:
 
-- kit 10.3 (2026-10-05, next);
+- 10.3 dig blade (2026-11-20, next): a pose edit in this repo, not a kit drop;
+- 10.3 arm clearance (2026-11-20): a pose edit in this repo, not a kit drop;
+- kit 10.3 (2026-10-05);
 - kit 10.2 (2026-10-02, further down, as #918 wrote it).
+
+## 10.3 dig blade (2026-11-20): the shovel reaches the ground
+
+A source edit to `Art/characterIsoRig10.poses.js`, made here. The dig's shovel stopped 0.37 m above
+the ground at its lowest point (frame 1), and its keys held the shaft 35 to 80 degrees off his
+facing, so at N and W the dig read as a level jab, not a dig.
+
+Only the dig clip changed:
+
+- the `DIG` hand keys, `lean` and `yaw` are re-authored as a raised ready (frame 0), a stab
+  (frame 1), the blade held in the ground (frames 2 and 3), a lever (4 and 5), a lift and toss
+  (6 to 8) and a recovery (9);
+- a new `drop` track lowers the pelvis by `drop` times the build's leg scale, so he bends his
+  knees as well as his back;
+- the shaft runs 62 to 74 degrees down through the stab and the lever, within 15 degrees of his
+  facing until the toss.
+
+On the Fisher, the 1.05 m tool's tip (the same line the held shovel mesh is pinned to) bottoms
+out on frames 2 and 3 at 0.001 m above the ground, inside `GameConfig.HeldShovelGroundToleranceMetres`
+(0.1 m), and never goes under it. Both palms stay on the shaft on every frame (the left hand
+0.29 m up it). The worst arm clearance is 0.34 rig px, under `GameConfig.MeshArmClearancePx`.
+`HeldShovelMeshTests.TheDig_TheBladeMeetsTheGround_AtTheDigsLowPoint` now runs.
+
+The pose library's LF sha256 is now
+`f30abc9af074356041dfe43f9c8cb50b032faafb357dd31d15836a862ee1ab98`. `tools/check.cjs --write`
+regenerated the builds, sidecars, options, golden report, manifest and sums. The pin moved in the
+row-stroke and seated-helm contracts, in the nine hull walks `hull-walk.mjs` writes, and in the
+ten re-baked skins. The dory's walk (`doryIsoRig.dory_iso.walk.json`) was re-pinned after main's
+rowing change to that file was merged in; only its pose pin moved.
+
+The carried shovel moved too, in data only: `Shovel.asset` carries it at pitch -72, yaw 0 (was -35,
+20), low at his side, so the shaft no longer crosses his legs at E and W.
+
+The dig is slower, so each phase can be seen. The game draws an action through
+`ActionTimingMath.FrameFor`: frame 0 through the pre-hold, frames 1 to 9 swept evenly across the
+strike, then the last frame held. That is why the keys above give each phase as many frames as it
+should last. `Resources/ActionTiming/DigTiming.asset` (`timing.dig`) changed from pre-hold 0.1,
+strike 0.08, follow-through 0.25, settle 0.15 (0.58 s, with frames 1 to 9 inside 0.08 s) to
+pre-hold 0, strike 0.9, follow-through 0.05, settle 0.05 (1.0 s). That gives 0.1 s of stab, 0.2 s
+with the blade in the ground, 0.2 s of lever, 0.3 s of lift and toss, then the recovery. The dig's
+dirt and sound are published when the dig lands, the same instant the clip starts, so the zero
+pre-hold puts them one 0.1 s stab frame before the blade is in the ground.
+
+## 10.3 arm clearance (2026-11-20): dig, hauler and strike
+
+A source edit to `Art/characterIsoRig10.poses.js`, made here. Three clips pushed the player's left
+forearm into his own body: dig by up to 4.6 rig px (chest and belly), hauler by 2.2 px on every
+frame, strike by 2.1 px on frames 3 and 4 (chest and face). Each part was measured as a capsule along
+its bones, with the radius at the 60th percentile of its bind vertices.
+
+Only left-arm keys moved:
+
+- dig: the top hand's palm path sits 0.05 (body units) further out on every frame, and the left
+  elbow pole points out and down instead of in;
+- hauler: the left elbow pole points out to the side;
+- strike: the left elbow pole points out from u 0.45 on (the lift and hold), and the last grip key
+  sits 0.02 further out.
+
+Every palm still meets its tool socket (shovel, rod butt, line) on every frame, and no other clip's
+tracks changed in any of the 30 builds. The pose library's LF sha256 is now
+`0f95229bac56325c29b22b07bd71928edaf6b92d89ff67d2a97ad16a8e54fe8e`. `tools/check.cjs --write`
+regenerated the builds, sidecars, options, golden report, manifest and sums. The pin moved in the
+row-stroke and seated-helm contracts, in the nine hull walks `hull-walk.mjs` writes, and in the ten
+re-baked skins. `CharacterSkinArmClearanceTests` holds the player's three clips under
+`GameConfig.MeshArmClearancePx`.
 
 ## 10.3 (2026-10-05): kit 10.3 over 10.2
 

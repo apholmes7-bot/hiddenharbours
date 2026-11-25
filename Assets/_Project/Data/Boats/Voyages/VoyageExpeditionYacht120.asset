@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e08d388b6adc4b9fb12e153843e42333, type: 3}
+  m_Name: VoyageExpeditionYacht120
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.BoatVoyageDef
+  Id: voyage.expedition_yacht_120
+  HullId: boat.expedition_yacht_120
+  LongestTrip: 3
+  MinCrewDay: 1
+  MinCrewOvernight: 1
+  MinCrewWeek: 1
+  MinCrewMonth: 1
+  Work: []
+  RealWorldCrew: "Expedition yacht: 6-8 crew + guests; weeks to a month."
+  LimitedBy: her 700 L tank is small for her class

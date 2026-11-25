@@ -16,7 +16,8 @@ namespace HiddenHarbours.Fishing
     /// bite, of a species it would roll</b>, which is the owner's honesty invariant extended from the
     /// glass to the water.</para>
     ///
-    /// <para><b>Pose = f(clock, seed)</b> (rule 5). Positions come from <see cref="ShoalMath"/> and events
+    /// <para><b>Pose = f(flow, seed)</b> (rule 5; the flow is the hour except while it is held, see
+    /// <see cref="PoseSeconds"/>). Positions come from <see cref="ShoalMath"/> and events
     /// from <see cref="ShoalEventMath"/>, both closed-form in <c>(worldSeed, schoolKey, t)</c>. Nothing
     /// integrates and nothing accumulates, so a save/load or a region stream-in lands the same fish in the
     /// same place mid-stroke — and two players on one seed watch the same herring jump.</para>
@@ -91,8 +92,44 @@ namespace HiddenHarbours.Fishing
         /// <summary>How many schools the last view query returned.</summary>
         public int VisibleSchools { get; private set; }
 
+        /// <summary>
+        /// What one drawn swimmer was drawn FOR: the key and anchor of its school and the species it draws
+        /// as (null for a school that states none). Written by the paint for every slot it claims.
+        /// </summary>
+        public readonly struct DrawnFor
+        {
+            public readonly uint SchoolKey;
+            public readonly Vector2 Anchor;
+            public readonly string SpeciesId;
+
+            public DrawnFor(uint schoolKey, Vector2 anchor, string speciesId)
+            {
+                SchoolKey = schoolKey;
+                Anchor = anchor;
+                SpeciesId = speciesId;
+            }
+        }
+
+        /// <summary>
+        /// TEST SEAM (the visible-fish plate): the renderer in a drawn slot and the school it was drawn
+        /// for, so a fixture takes a fish's school from the paint itself and never infers it from where
+        /// the fish happens to be. Valid for slots below <see cref="VisibleSwimmers"/>; read-only, and
+        /// never a gameplay input.
+        /// </summary>
+        public bool TryGetDrawn(int slot, out SpriteRenderer renderer, out DrawnFor drawnFor)
+        {
+            renderer = null;
+            drawnFor = default;
+            if (slot < 0 || slot >= VisibleSwimmers || slot >= _pool.Count || slot >= _drawnFor.Length)
+                return false;
+            renderer = _pool[slot];
+            drawnFor = _drawnFor[slot];
+            return renderer != null;
+        }
+
         // ---- pooled renderers + scratch (rule 7: nothing allocates in steady state) ------------------
         private readonly List<SpriteRenderer> _pool = new List<SpriteRenderer>(64);
+        private DrawnFor[] _drawnFor = new DrawnFor[64];
         private readonly List<FishSchool> _schools = new List<FishSchool>(FishSchoolModel.ViewCells);
         private ShoalMath.Swimmer[] _swimmers = new ShoalMath.Swimmer[12];
 
@@ -194,9 +231,8 @@ namespace HiddenHarbours.Fishing
             VisibleSchools = 0;
 
             int used = 0;
-            if (TryGather(out double now, out DepthDropSettings depth, out int worldSeed,
-                          out FishSchoolSettings schools))
-                used = Paint(now, in depth, worldSeed, in schools);
+            if (TryGather(out DepthDropSettings depth, out int worldSeed, out FishSchoolSettings schools))
+                used = Paint(PoseSeconds(GameServices.Clock), in depth, worldSeed, in schools);
 
             // Everything the paint did not claim goes dark. Never destroyed — the pool is the budget.
             for (int i = used; i < _pool.Count; i++)
@@ -207,10 +243,8 @@ namespace HiddenHarbours.Fishing
 
         /// <summary>Read the world and the schools in view. False = draw nothing at all (no model, no
         /// camera, no library, or an empty sea).</summary>
-        private bool TryGather(out double now, out DepthDropSettings depth, out int worldSeed,
-                               out FishSchoolSettings schools)
+        private bool TryGather(out DepthDropSettings depth, out int worldSeed, out FishSchoolSettings schools)
         {
-            now = 0.0;
             depth = default;
             worldSeed = 0;
             schools = FishSchoolMath.Sanitized(FishSchoolSettings.Default);
@@ -224,16 +258,29 @@ namespace HiddenHarbours.Fishing
             if (_camera == null) _camera = Camera.main;
             if (_camera == null) return false;
 
-            now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
+            // WHICH schools are there is the hour's question (the model's windows are on TotalSeconds);
+            // how their fish are posed is the flow's (PoseSeconds).
+            double hour = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
             IEnvironmentService env = GameServices.Environment;
             worldSeed = env != null ? env.WorldSeed : 0;
             depth = GameServices.Config != null ? GameServices.Config.DepthDrop : DepthDropSettings.Default;
             if (GameServices.Config != null)
                 schools = FishSchoolMath.Sanitized(GameServices.Config.FishSchools);
 
-            VisibleSchools = view.SchoolsInView(ViewRect(_camera), now, _schools);
+            VisibleSchools = view.SchoolsInView(ViewRect(_camera), hour, _schools);
             return VisibleSchools > 0;
         }
+
+        /// <summary>
+        /// THE TIME THE FISH SWIM ON: the world's flow (<see cref="IGameClock.FlowSeconds"/>), not the
+        /// hour. A held hour (<see cref="IGameClock.IsHeld"/>: the opening at sea, a held-light shot)
+        /// stops <see cref="IGameClock.TotalSeconds"/> while the world keeps flowing; posed on the hour,
+        /// every fish in view stood frozen mid-stroke for the whole hold. The flow equals the hour except
+        /// across held spans and again after any seek, so ordinary play poses the same fish in the same
+        /// place as before, and the pose stays a closed form of <c>(worldSeed, schoolKey, flow)</c>
+        /// (rule 5). The splash log stamps on this same reading so a scatter and the fish agree.
+        /// </summary>
+        public static double PoseSeconds(IGameClock clock) => clock != null ? clock.FlowSeconds : 0.0;
 
         /// <summary>The camera's footprint in world metres — what "in view" means for the query.</summary>
         private static Rect ViewRect(Camera cam)
@@ -316,6 +363,8 @@ namespace HiddenHarbours.Fishing
                     if (!Place(used, school, _swimmers[i], kind, draw,
                                acting ? ev : ShoalEventKind.None, evStart, now,
                                scattering ? scatter01 : 0f, scatterFrom, spread)) continue;
+                    if (used >= _drawnFor.Length) System.Array.Resize(ref _drawnFor, _drawnFor.Length * 2);
+                    _drawnFor[used] = new DrawnFor(key, new Vector2(school.Centre.x, school.Centre.y), primary);
                     used++;
                 }
             }

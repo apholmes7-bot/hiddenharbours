@@ -102,10 +102,12 @@ namespace HiddenHarbours.World
         private void OnEnable()
         {
             VillagerRoutine.DaySource = this;
+            DugHoleSources.Register(this);
         }
 
         private void OnDisable()
         {
+            DugHoleSources.Unregister(this);
             ClearGatherings();
             UnsubscribeTalk();
             if (ReferenceEquals(VillagerRoutine.DaySource, this)) VillagerRoutine.DaySource = null;
@@ -121,6 +123,7 @@ namespace HiddenHarbours.World
         public void LoadLibrary(BeachLifeLibrary library)
         {
             _activities.Clear();
+            _outings.Clear();
             if (library != null && library.Activities != null)
                 foreach (BeachActivityDef def in library.Activities)
                     if (def != null && def.IsRunnable) _activities.Add(def);
@@ -134,6 +137,7 @@ namespace HiddenHarbours.World
                                    out BuildingInterior[] blockInteriors)
         {
             blockInteriors = null;
+            if (villager != null) _outings.Remove(villager);
             if (_activities.Count == 0 || villager == null) return null;
 
             RoutineDef routine = villager.Routine;
@@ -162,10 +166,38 @@ namespace HiddenHarbours.World
             if (!planned) return null;
             NoteGathering(outing, dayIndex);
 
-            return RoutinePlanner.BuildFromStops(routine.Id, stops, villager.Lanes,
-                                                 routine.WalkSpeedMetresPerSecond,
-                                                 routine.CatchUpSpeedMetresPerSecond,
-                                                 out blockInteriors, out string _);
+            RoutinePlan plan = RoutinePlanner.BuildFromStops(routine.Id, stops, villager.Lanes,
+                                                             routine.WalkSpeedMetresPerSecond,
+                                                             routine.CatchUpSpeedMetresPerSecond,
+                                                             out blockInteriors, out string _);
+            if (plan != null) _outings[villager] = new DayOuting { Plan = plan, Outing = outing };
+            return plan;
+        }
+
+        // The outing each villager's day plan was made with, kept beside the plan it belongs to so it is
+        // never read against another day's. Presentation reads it; nothing is saved (rule 5).
+        private struct DayOuting
+        {
+            public RoutinePlan Plan;
+            public BeachOuting Outing;
+        }
+
+        private readonly Dictionary<VillagerRoutine, DayOuting> _outings = new Dictionary<VillagerRoutine, DayOuting>();
+
+        /// <summary>
+        /// True while <paramref name="villager"/> is standing at a place of today's beach outing (not on the
+        /// walk there, not held in a conversation), with <paramref name="activity"/> the outing's activity:
+        /// what her figure works at (<see cref="BeachActivityDef.WorkState"/>). Read off her routine's pose
+        /// for the hour, so it is a function of the clock; allocation-free.
+        /// </summary>
+        public bool TryWorkAt(VillagerRoutine villager, out BeachActivityDef activity)
+        {
+            activity = null;
+            if (villager == null || !_outings.TryGetValue(villager, out DayOuting day)) return false;
+            if (!ReferenceEquals(villager.Today, day.Plan) || villager.IsTalking) return false;
+            if (!BeachPlanning.IsAtPlace(day.Outing, villager.Pose)) return false;
+            activity = day.Outing.Activity;
+            return true;
         }
 
         private bool AnyAuthoredFor(string regionId)

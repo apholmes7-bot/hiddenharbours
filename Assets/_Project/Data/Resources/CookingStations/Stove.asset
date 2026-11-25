@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd0e7032aadd4d0390d9afb84c2000ce, type: 3}
+  m_Name: Stove
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.CookingStationDef
+  Id: cooking_station.stove
+  DisplayName: Stove
+  Kind: 1
+  AcceptedStations:
+  - station.cooktop
+  - station.microwave
+  CookTimeMultiplier: 1
+  MicrowavableOnly: 0
+  ReachMeters: 1
+  VerbLabel: Cook on the stove
+  StartedLine: '{0} on the stove.'
+  ReadyLine: '{0}''s ready. Into the locker.'
+  NothingLine: 'Nothing here to cook.'
+  BusyLine: 'Something''s already on.'
+  NotMicrowavableLine: 'That won''t work here.'
+  NeedsPrepLine: 'Needs cleaning first. Over to the counter.'
+  ShowsFood: 1
+  FoodAnchorPropMeters: {x: 0, y: 0, z: 1.1}
+  BrownsAsItCooks: 1

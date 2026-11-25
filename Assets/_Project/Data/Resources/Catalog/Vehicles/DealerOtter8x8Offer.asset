@@ -17,7 +17,7 @@ MonoBehaviour:
   DisplayName: Otter 8x8
   Flavor:
   SellerId: seller.nmc_vehicle_dealer
-  Price: 9000
+  Price: 2500
   StartsDamaged: 0
   RepairCost: 0
   Catalog:

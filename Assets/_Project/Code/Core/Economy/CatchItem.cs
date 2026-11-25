@@ -62,6 +62,6 @@ namespace HiddenHarbours.Core
             => new CatchItem(SpeciesId, DisplayName, Category, WeightKg, BaseValue, SupplyElasticity,
                              SpoilPerDay, freshness);
 
-        public override string ToString() => $"{DisplayName} ({WeightKg:0.0} kg)";
+        public override string ToString() => $"{DisplayName} ({WeightFormat.Text(WeightKg)})";
     }
 }

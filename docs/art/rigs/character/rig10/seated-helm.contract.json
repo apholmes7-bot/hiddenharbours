@@ -3,7 +3,7 @@
  "rig": "docs/art/rigs/character/rig10/Art/characterIsoRig10.js",
  "poses": "docs/art/rigs/character/rig10/Art/characterIsoRig10.poses.js",
  "rigSha256": "ad563075475740cea1258de68d05c184f2fc136491357bc22988a10d810413f3",
- "posesSha256": "a28e5d92638d3cf1b26bbc49f887b23221acd3a9590bc36fd8b842ac6127c92d",
+ "posesSha256": "f30abc9af074356041dfe43f9c8cb50b032faafb357dd31d15836a862ee1ab98",
  "rows": [
   {
    "hull": "boat.go_fast",
@@ -28,7 +28,7 @@
    "wheelZ": 0.78,
    "wheelY": 0.4,
    "walk": "docs/art/rigs/gameplay/goFastIsoRig.go_fast.walk.json",
-   "walkSha256": "7bc3e970bf73e60cdd13615a7f3d213be24e3c60a480d19b297bee891c3ef1e5"
+   "walkSha256": "7a54168d3ffb7d471f671b91d779e7f31558be9c224b658e911e5c88acdfe1c2"
   },
   {
    "hull": "boat.bowrider",
@@ -53,7 +53,7 @@
    "wheelZ": 0.66,
    "wheelY": 0.38,
    "walk": "docs/art/rigs/gameplay/bowriderIsoRig.bowrider.walk.json",
-   "walkSha256": "9bb406b6df4734c2a4b2299c188fd6488b960be39eef66685b2a1bd9736bc02b"
+   "walkSha256": "f29bf692dbc67c1c7378388ee1a0c918b26acd4d524c9fa1af8b7a9f81ec81b7"
   },
   {
    "hull": "boat.express_cruiser",
@@ -78,7 +78,7 @@
    "wheelZ": 0.79,
    "wheelY": 0.4,
    "walk": "docs/art/rigs/gameplay/cruiserIsoRig.express_cruiser.walk.json",
-   "walkSha256": "905b16c2f222dcf05528da07e425d26cc640bd1ce66232d5ae43b79c6c6b0f72"
+   "walkSha256": "5e6afb7efc41701bdb8ccd7f0dc5941c24cc4ea90bf2e9d38c3ca4832ac55494"
   },
   {
    "hull": "boat.jet_ski",
@@ -131,7 +131,7 @@
     }
    },
    "walk": "docs/art/rigs/gameplay/jetSkiIsoRig.jet_ski.walk.json",
-   "walkSha256": "6737e08657641bfee3a938a74d993b40bf29b1c1981f900d21434aad20b1e1bb"
+   "walkSha256": "bebd4cfdbae693262d37d84a763a8b1727cc789986eeeaf9d3393297410cf4a3"
   }
  ]
 }

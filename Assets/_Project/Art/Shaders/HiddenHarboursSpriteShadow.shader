@@ -101,7 +101,9 @@
 // would wear its own crown at noon. So the shade arm discards on the caster's own opaque pixels — the
 // same rule HiddenHarboursLampShadow.shader states as "a shadow never darkens ITS OWN CASTER", here
 // done in uv space: this fragment's own texel is IN.uv, the CASTER's texel at the same screen point is
-// IN.uv + shearUV (the shear, converted to uv by _ShadowUVPerUnit = ppu / texture size). The
+// IN.uv + shearUV (the shear, converted to uv by _ShadowUVPerUnit = ppu / texture size), less the
+// caster's FOOT OFFSET (_ShadowUVPerUnit.z): a flying gull is drawn its altitude ABOVE its shadow's
+// anchor, and testing it as if it stood there cut its shadow down to a rim and two wingtips. The
 // GROUND-CONTACT pool takes no such exclusion, deliberately: it is shade lying flat on the ground at
 // the feet, and the trunk foot standing in it is the one place that is certainly under the crown.
 //
@@ -137,6 +139,9 @@ Shader "HiddenHarbours/SpriteShadow"
         // converts the vertex shear back into texture space so the shade arm can find the caster's own
         // texel under this fragment. The default (1,1) is the unit-square case.
         [HideInInspector] _ShadowUVPerUnit ("uv per object unit (published per renderer)", Vector) = (1, 1, 0, 0)
+        // The caster's own CELL on its sheet in uv (xMin, yMin, xMax, yMax): the self lookup only counts a
+        // texel inside it. The default is the whole sheet, the bound the lookup always had.
+        [HideInInspector] _ShadowSelfRect ("caster cell uv rect (published per renderer)", Vector) = (0, 0, 1, 1)
         // THE ARM. 0 = a dark sprite sorted under the caster (the shipped look); 1 = a multiply composited
         // over the assembled frame in the SunShade band, which is what darkens a RECEIVER. See the header.
         [HideInInspector] _ScreenShade ("Screen-space shade arm (0 = under the caster, 1 = over the frame)", Float) = 0
@@ -159,6 +164,7 @@ Shader "HiddenHarbours/SpriteShadow"
         // Per MATERIAL, not per renderer: SrcAlpha/OneMinusSrcAlpha is the legacy arm (a dark sprite laid
         // over the world), Zero/SrcColor is the shade arm (a multiply laid over the frame).
         Blend [_SrcBlend] [_DstBlend]
+        ColorMask RGB   // The calm mirror: ground cover leaves the alpha class under it alone
         Cull Off
         ZWrite Off
         ZTest LEqual
@@ -212,6 +218,7 @@ Shader "HiddenHarbours/SpriteShadow"
                 float  _EdgeSoftness;
                 float  _GroundContact;
                 float4 _ShadowUVPerUnit;
+                float4 _ShadowSelfRect;
                 float  _ScreenShade;
             CBUFFER_END
 
@@ -252,7 +259,11 @@ Shader "HiddenHarbours/SpriteShadow"
                 // Object units -> uv. dpos/duv is the sprite's texture size over its PPU whatever the
                 // slicing (FullRect or Tight), so its inverse is exact for both — the same reasoning that
                 // makes _ShadowUV exact. It is zero when the arm is off; the fragment never reads it there.
-                OUT.shearUV = shear * _ShadowUVPerUnit.xy;
+                // z = the caster's FOOT OFFSET in object units: how far above this anchor the caster is
+                // actually drawn (a gull at altitude; 0 for everything that stands on its shadow). The
+                // caster's texel under this fragment is back along the shear AND down by that offset -
+                // without it the self-test punched a flying bird's shadow with its own outline.
+                OUT.shearUV = (shear - float2(0.0, _ShadowUVPerUnit.z)) * _ShadowUVPerUnit.xy;
                 return OUT;
             }
 
@@ -288,7 +299,9 @@ Shader "HiddenHarbours/SpriteShadow"
                 if (_ScreenShade > 0.0 && _GroundContact <= 0.0)
                 {
                     float2 uvSelf = IN.uv + IN.shearUV;
-                    if (all(uvSelf >= 0.0) && all(uvSelf <= 1.0) &&
+                    // Bounded by the caster's own CELL: displaced by a gull's altitude the lookup would
+                    // otherwise land on a neighbouring frame of the sheet and punch it into this shadow.
+                    if (all(uvSelf >= _ShadowSelfRect.xy) && all(uvSelf <= _ShadowSelfRect.zw) &&
                         SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uvSelf).a > 0.5)
                         discard;   // discards the STENCIL write too, so a neighbour's shade may still land here
                 }

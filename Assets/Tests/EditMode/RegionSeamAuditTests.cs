@@ -335,11 +335,51 @@ namespace HiddenHarbours.Tests.EditMode
                     if (doc.ClassId == 1001) pending.Enqueue(GuidOf(doc.Field("m_SourcePrefab")));
                 }
             }
-            // 5, down from 13: NMC H9 retired the old Route 91 forecourt with every document under it, and with it
-            // the eight station kit prefab sources only that forecourt instanced (sign, store, store interior, canopy,
-            // island, road dispenser, two fill ports). The new forecourt is written as scene rows, not prefab
-            // instances. What remains: the nav buoy, the dock dispenser and the three bridge and culvert prefabs.
-            Assert.That(seen.Count, Is.EqualTo(5), "Audit every referenced prefab, including nested sources.");
+            // Named, not counted, so a new source shows up here by name. NMC H9 retired the old Route 91 forecourt
+            // with every document under it, and with it the eight station kit prefab sources only that forecourt
+            // instanced (sign, store, store interior, canopy, island, road dispenser, two fill ports); the new
+            // forecourt is written as scene rows, not prefab instances. That left the nav buoy, the dock dispenser
+            // and the three bridge and culvert prefabs. The first two wash stations (washrooms plan section 3) add
+            // the washstand and the wharf shower: a sprite, a collider and a WashStationPoint, no travel component.
+            // The NMC building shells add the community hall and the fish plant: seamless interiors (a
+            // BuildingInterior, sprites, YSort, wall colliders, and on the plant the outside kit's set-piece
+            // placements), no nested prefab and no travel component. The two wholesalers (ruling 11-16) are the
+            // same kind of shell: a BuildingInterior, sprites, YSort and wall colliders. Ginny's ground-floor
+            // bathroom (kitchens and bathrooms plan, R1) adds the indoor shower and the toilet (its basin is the
+            // washstand again): greybox sprites, a collider on the toilet, and a WashStationPoint or a SitPoint,
+            // no travel component. The player's storage (owner 11-17) adds Ginny's rod rack and gear locker (a
+            // sprite, a collider, a YSortSprite and a StowageRack each) and the camper's shore power lead (sprites
+            // and transforms only): no nested prefab and no travel component. The two wholesalers' staff fixtures
+            // (N1a) nest the toilet, the washstand and the kitchen microwave in their shells: the microwave adds
+            // a CookingStationFixture and its art, no travel component. The community hall's kitchen and washroom
+            // (N1b) nest the fridge (a KitchenStoreFixture, its art and a cabinet collider), the kitchen sink (a
+            // WashStationPoint, its art and a collider) and the cook stove (a CookingStationFixture and its art)
+            // beside the toilet and the washstand: no travel component. Ginny's kitchen run adds the prep counter,
+            // the stove and the microwave: sprites and a CookingStationFixture each, no collider, no travel component;
+            // its kitchen sink (a WashStationPoint) and fridge (a KitchenStoreFixture) add art and a footprint collider.
+            Assert.That(seen.Select(g => paths[g].Replace('\\', '/')).OrderBy(p => p, StringComparer.Ordinal), Is.EqualTo(new[] {
+                "Assets/_Project/Prefabs/Bridges/CampBrookBridge.prefab",
+                "Assets/_Project/Prefabs/Bridges/CampPondCulvert.prefab",
+                "Assets/_Project/Prefabs/Bridges/Route91RiverBridge.prefab",
+                "Assets/_Project/Prefabs/Buildings/NineMileCreek/NmcBoatGearWholesaler.prefab",
+                "Assets/_Project/Prefabs/Buildings/NineMileCreek/NmcCommunityHall.prefab",
+                "Assets/_Project/Prefabs/Buildings/NineMileCreek/NmcFishPlant.prefab",
+                "Assets/_Project/Prefabs/Buildings/NineMileCreek/NmcFishingGearWholesaler.prefab",
+                "Assets/_Project/Prefabs/Decor/NavBuoy.prefab",
+                "Assets/_Project/Prefabs/GasStation/dispenser_sDock.prefab",
+                "Assets/_Project/Prefabs/Props/Kitchen/Fridge.prefab",
+                "Assets/_Project/Prefabs/Props/Kitchen/KitchenSink.prefab",
+                "Assets/_Project/Prefabs/Props/Kitchen/Microwave.prefab",
+                "Assets/_Project/Prefabs/Props/Kitchen/PrepCounter.prefab",
+                "Assets/_Project/Prefabs/Props/Kitchen/Stove.prefab",
+                "Assets/_Project/Prefabs/Props/Storage/CamperShoreLead.prefab",
+                "Assets/_Project/Prefabs/Props/Storage/GinnyGearLocker.prefab",
+                "Assets/_Project/Prefabs/Props/Storage/GinnyRodRack.prefab",
+                "Assets/_Project/Prefabs/Washrooms/Shower.prefab",
+                "Assets/_Project/Prefabs/Washrooms/Toilet.prefab",
+                "Assets/_Project/Prefabs/Washrooms/WashStand.prefab",
+                "Assets/_Project/Prefabs/Washrooms/WharfShower.prefab",
+            }), "Audit every referenced prefab, including nested sources.");
         }
 
         [Test]

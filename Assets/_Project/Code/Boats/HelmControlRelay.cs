@@ -19,7 +19,7 @@ namespace HiddenHarbours.Boats
     /// hull feels, whoever moved it last.</para>
     ///
     /// <para><b>Self-installing — on EVERY hull, which is why it must not self-APPOINT.</b>
-    /// <see cref="BoatController.Awake"/> adds one at play time (the MastheadTelltale precedent), so
+    /// <see cref="BoatController.Awake"/> adds one at play time (the deck tray precedent), so
     /// every already-built scene grows the seam with no builder re-run. That means a skipper's boat, an
     /// ambient hull and a boat for sale all carry one too. So enabling REGISTERS this relay with
     /// <see cref="HelmSlot"/> against the hull it rides — a request, not a claim — and the slot is
@@ -557,6 +557,8 @@ namespace HiddenHarbours.Boats
         {
             var boat = Boat();
             if (boat == null || !HasHelm) return;
+            // A hand on the wheel takes the helm back from the autopilot (the steer keys' rule).
+            boat.DisengageAutopilot(AutopilotDisengage.SteerInput);
             _steerDrag = true;
             boat.SetControl(boat.Throttle, Mathf.Clamp(steer, -1f, 1f));
         }

@@ -33,6 +33,9 @@ namespace HiddenHarbours.Player
         public const string DriveMap = "Drive";
         public const string UiMap = "UI";
         public const string HudMap = "Hud";
+        /// <summary>The interaction chooser's own presses: the number keys (2026-11-15), and the pad's
+        /// up/down on the list (ADR 0043 PR 2, chooser slice).</summary>
+        public const string ChooserMap = "Chooser";
 
         /// <summary>The control scheme names, as the asset spells them.</summary>
         public const string KeyboardMouseScheme = "KeyboardMouse";

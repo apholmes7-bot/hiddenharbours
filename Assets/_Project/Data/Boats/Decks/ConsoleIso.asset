@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: deck.console_iso
   SourceSidecar: docs/art/rigs/gameplay/consoleIsoRig.gameplay.json
   SourceRig: docs/art/rigs/consoleIsoRig.js
-  DerivedFromRigSha256: 7fc9455043a35eb57624f78ed595e4f2ac5640c25d9cdbac7fd25dbbc398f4d1
+  DerivedFromRigSha256: 4224a59981894f536278729fca13e62680239f9660fdd5c22801d0a9ab02ff9d
   LoaMeters: 7
   Areas:
   - Id: cockpit

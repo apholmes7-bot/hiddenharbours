@@ -59,6 +59,7 @@ namespace HiddenHarbours.Boats
         public Vector3 RigLocalMetres => _rigLocalMetres;
 
         private IBoatHullPresenter _hull;
+        private BoatHullPresenterHost _host;
         private bool _resolved;
 
         /// <summary>Wire this anchor from the installer. Applies immediately, so a node is never seen at
@@ -72,13 +73,19 @@ namespace HiddenHarbours.Boats
             _azimuthCounterClockwise = azimuthCounterClockwise;
             _bakeElevationDegrees = bakeElevationDegrees;
             _resolved = false;
+            _host = null;
             Apply();
         }
+
+        /// <summary>Place the node now, exactly as its next LateUpdate would. For tests and tooling that
+        /// change what the hull presents between frames.</summary>
+        public void Reapply() => Apply();
 
         private void OnEnable()
         {
             // A hop may have re-skinned her, and the presenter is a POCO the skinner swaps out.
             _resolved = false;
+            _host = null;
             Apply();
         }
 
@@ -97,12 +104,13 @@ namespace HiddenHarbours.Boats
             transform.rotation = Quaternion.identity;
 
             Vector2 offset = Vector2.zero;
-            if (_rigLocalMetres != Vector3.zero && _hull != null)
+            IBoatHullPresenter hull = LiveHull(root);
+            if (_rigLocalMetres != Vector3.zero && hull != null)
             {
                 // CELL space from the compass, through the measured handedness: dir d depicts heading
                 // −45°·d on counter-clockwise art, so the mapping negates. This is the one number the
                 // sprite and mesh paths can both answer.
-                float heading = _hull.DrawnHeadingDegrees();
+                float heading = hull.DrawnHeadingDegrees();
                 float theta = (_azimuthCounterClockwise ? -heading : heading) * Mathf.Deg2Rad;
                 offset = MountedRockPoseMath.Project(_rigLocalMetres, theta, 0f, 0f,
                                                      _bakeElevationDegrees * Mathf.Deg2Rad);
@@ -120,6 +128,30 @@ namespace HiddenHarbours.Boats
             if (_resolved) return;
             _resolved = true;
             _hull = BoatHullPresenterHost.Resolve(root.gameObject);
+        }
+
+        /// <summary>
+        /// The presenter to read THIS frame: the host's current one whenever the skinner has published
+        /// one, else the one resolved at enable. The deck walk's and the deck containers' discipline
+        /// (<c>DeckWalkController.LiveHull</c>), for the same reason.
+        ///
+        /// <para><b>Why a cache alone is stale after a hull swap.</b> <c>OwnedFleet.ApplyHull</c> calls
+        /// <see cref="BoatController.SetHull"/> FIRST, which rebuilds the cabin through
+        /// <see cref="BoatInteriorInstaller.Rebuild"/>, and every new door and bunk anchor resolves in its
+        /// <see cref="Configure"/> while the host still holds the OLD hull's presenter. The skinner
+        /// publishes the new one on the very next line, but nothing re-enables the anchors, so a cache
+        /// read only at enable would keep the old presenter, whose component the skin swap may have
+        /// destroyed (it then answers heading 0 and every door and berth is placed as if she lay due
+        /// north) until the next region hop.</para>
+        ///
+        /// <para>No allocation: one non-allocating component lookup while no host exists, then a
+        /// reference read.</para>
+        /// </summary>
+        private IBoatHullPresenter LiveHull(Transform root)
+        {
+            if (_host == null) root.TryGetComponent(out _host);
+            if (_host != null && _host.Presenter != null) return _host.Presenter;
+            return _hull;
         }
     }
 }

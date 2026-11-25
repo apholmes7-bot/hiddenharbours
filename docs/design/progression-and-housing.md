@@ -80,7 +80,7 @@ Representative licenses (full list lives with the data; see §6):
 | License | Eligibility (typical) | Unlocks |
 |---|---|---|
 | **Clam Licence** *(St Peters opening, M2)* | none (small fee at the St Peters general store) | **Clam digging** on the bared low-water flats — the gentlest first instance of the licence gate, and the player's first earned income |
-| **Cod Fishing Licence** *(St Peters opening, M2)* | small fee at **Nine Mile Creek** | **Rod finfishing for cod** — bought after walking the sandbar to Nine Mile Creek, alongside the first **rod**; the gate that turns hand-digging into real fishing |
+| **Cod Fishing Licence** *(St Peters opening, M2)* | small fee, sold **on St Peters** *(amended 2026-11-23; where on the island is open)* | **Rod finfishing for cod** — bought in the first week on the island, after the first **rod**; the gate that turns hand-digging into real fishing |
 | **Inshore Handline** | none (granted in tutorial) | Hand-fishing in Coddle Cove |
 | **Tide-Reader's Note** | Navigation: Coaster + a Sunkers run | Safer Sunkers reef work; tide-table tool upgrade |
 | **Nine Mile Creek Trade Seal** | Story (early) | Use the auction house; rent storage |
@@ -92,6 +92,14 @@ Representative licenses (full list lives with the data; see §6):
 | **Freight Carrier's License** | Business: Manager + freighter-tier hull | Take cargo contracts on **The Shipping Lanes** |
 | **Processing / Warehouse Permits** | Business: Trader+ | Own & operate plants/warehouses (see `economy-and-business.md`) |
 | **Shellfish Lease** *(capture only, not built)* | fee + renewal — **or inherited**, if the owner rules the **lapsed lease** is the starter ruin | **A plot of water over a musselbed**: the right to set longlines on it and grow a crop ([`mussel-lease-and-longline.md`](mussel-lease-and-longline.md)) |
+
+> **Amended 2026-11-23 (canon §5.3's amendment; a direction, not a finished design).** **Every catch
+> needs a licence**, but nothing is blocked: an unlicensed catch is released automatically with a line
+> naming it. **Lobster and crab licences are not fee licences** like the rows above and are **never sold
+> over a counter**: they are a **fixed number in the world**, never created, only passed between holders,
+> and far dearer than any counter licence (lobster dearest). The player first works as a **hand on a
+> lobster or crab boat**; a possible bridge is fishing under an older St Peters fisher's licence; later he
+> buys or earns one. Which other licences exist, and all of the lobster/crab detail, is open.
 
 > **Licence *system* ownership.** This table names the *progression gates*; the **runtime licence
 > system** (the wallet of held licences, the buy interaction, the gate check) is a **real, minimal
@@ -128,7 +136,7 @@ section only describes *how the currencies move you between them*.
 
 | Stage | Identity | Boat (tier) | Region(s) opened | Primary gate to *leave* this stage |
 |---|---|---|---|---|
-| **−1. St Peters prologue** *(M2)* | "Two hands, a shovel, a tide table — **no boat yet**" | none | St Peters Island → Nine Mile Creek (on foot) | Dig clams → **clam licence** → **walk the tide-gated sandbar to Nine Mile Creek** → buy a **cod licence + rod** → **save for + buy a damaged dory and pay the shipwright to repair it** → sail it home to Coddle Cove |
+| **−1. St Peters prologue** *(M2)* | "Two hands, a shovel, a tide table — **no boat yet**" | none | St Peters Island (the first week); then Nine Mile Creek (on foot) | Dig clams → **clam licence** → **rod** at the island store → **save for + buy the broken dory from Basil Samson and mend her by hand on the island** → **cod licence** (on the island) → a fish landed from the dory, shellfish sold, day 7+ → **Ginny's word** → **walk the tide-gated sandbar to Nine Mile Creek** *(amended 2026-11-23, canon §5.8)* |
 | **0. Handline** | "By hand, in the dory you earned" | The Dory (T0) | Coddle Cove | Earn first stake + Fishing→Hauler |
 | **1. First boat & first reef** | Owning a hull, reading tide | Punt/Skiff (T1) | + The Sunkers | Money for a Cape Islander + Seamanship→Deckhand + Tide-Reader's Note |
 | **2. Town & market** | Trading, not just catching | Cape Islander (T2) *or* Lobster Boat (T3) | + Nine Mile Creek, + Drownded Lands (with Flats Permit) | Business→Trader + Offshore License eligibility |
@@ -141,11 +149,14 @@ section only describes *how the currencies move you between them*.
 greybox prototype — canon `../vision-and-pillars.md` §5.8.)* Before the cove and the dory, you start
 on **St Peters Island** with nothing but your hands and the tide. You buy a **clam licence** and
 **dig clams at low water** with a shovel — your very first earned income, the humblest job, done by
-hand (the purest P4 on-ramp). As the tide **falls**, a **sandbar to Nine Mile Creek** bares; you **walk
-it to the mainland** at low water (and learn the tide-gate the kind way — dawdle and you wait for the
-next low). At Nine Mile Creek you buy a **cod fishing licence + a rod**, sell your clams, and **save to buy a
-damaged dory at the shipwright — then pay to repair it**. The boat is *earned*, not inherited. With a
-seaworthy dory you **sail home to Coddle Cove**, where the rest of the arc begins. *(This prologue
+hand (the purest P4 on-ramp). *(Amended 2026-11-23: the **first week is lived on the island alone**, and
+it is the game's demo.)* You buy a **rod** and bait at the island store, **save to buy the broken dory
+beached on the island from Basil Samson — then mend her yourself at the slip**, get the **cod licence** on
+the island, and row and fish from her. The boat is *earned*, not inherited. The rest of the world is closed
+by weather until **Ginny's word** at the island gate; then, as the tide **falls**, the **sandbar to Nine
+Mile Creek** bares and you **walk it to the mainland** at low water (and learn the tide-gate the kind way —
+dawdle and you wait for the next low). In time you **sail home to Coddle Cove**, where the rest of the arc
+begins. *(This prologue
 **reorders and reuses** the Coddle Cove onboarding, which remains the M1 start — see §5.8; the
 existing inherited-dory onboarding beat is **flagged for rework**, not deleted.)*
 

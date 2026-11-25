@@ -155,20 +155,30 @@ namespace HiddenHarbours.Tests.PlayMode
             MeasureCost();
         }
 
+        /// <summary>
+        /// <b>The light leaves the lens</b> (owner, 2026-11-16: "make sure the light actually emits from the
+        /// lamp itself"). In every mesh clip, every frame and all eight facings: the glow's origin is the
+        /// lens point on his forehead within one screen pixel, the cone starts on the ground directly under
+        /// it, the drawn lens pixel renders there within one screen pixel on either axis in every view that
+        /// shows it, and from behind the strap is drawn with no lens. The lens sits above the head's mid
+        /// point (his eye line) in every facing — on the forehead, not over the eyes.
+        /// </summary>
         [UnityTest]
-        public IEnumerator TheWalkersLamp_RidesHerHead_EveryMeshClipEveryFacing()
+        public IEnumerator TheLightLeavesTheLens_EveryMeshClipEveryFacing()
         {
             WharfNightStage.RequireAGraphicsDevice();
             yield return SetUpStage();
             bool pixelTarget = _config.FigurePixelTarget;
-            File.WriteAllText(Path.Combine(PlateDir, "lens-config.txt"), $"FigurePixelTarget={pixelTarget}\n");
+            File.WriteAllText(Path.Combine(PlateDir, "lens-config.txt"), $"FigurePixelTarget={pixelTarget}\nlens_offset_head_local={Headlamp.LensOffsetHeadLocal():R}\n");
             TestContext.Progress.WriteLine($"FigurePixelTarget={pixelTarget}");
             Assert.IsTrue(pixelTarget, "FigurePixelTarget is false: the expected figure point is invalid; report this first");
-            float worst = 0f, fittingWorst = 0f, fittingAxisWorst = 0f;
-            string worstName = "";
-            int samples = 0, rendered = 0;
-            var csv = new StringBuilder("clip,frame,facing,origin_error_px,fitting_error_px,brightness_centroid_error_px,dx_px,dy_px,magnification,ortho_size\n");
+            Assert.IsTrue(_walker.Beam.IsWorn, "premise: lit means worn");
+            float worst = 0f, poolWorst = 0f, lensAxisWorst = 0f, lowestAboveEyes = float.PositiveInfinity, lowestUprightAboveEyes = float.PositiveInfinity;
+            string worstName = "", lensWorstName = "", lowestName = "", lowestUprightName = "";
+            int samples = 0, rendered = 0, lensViews = 0, backViews = 0;
+            var csv = new StringBuilder("clip,frame,facing,view,origin_error_px,pool_error_px,lens_dx_px,lens_dy_px,lens_above_head_px,magnification,ortho_size\n");
             var fitting = Fitting();
+            Assert.IsNotNull(fitting, "the light must emerge from a drawn lamp");
             foreach (string state in _skin.MeshStates)
             {
                 Assert.IsTrue(_skin.TryGetClip(state, out var clip), state);
@@ -177,20 +187,46 @@ namespace HiddenHarbours.Tests.PlayMode
                 {
                     Pose(state, frame, dir);
                     Step(_walker.Beam, "LateUpdate");
-                    Vector2 expected = DrawnHeadScreen();
+                    string name = state + "/" + frame + "/" + dir;
+                    Vector2 expected = DrawnLensScreen();
                     Vector2 origin = _stage.Camera.WorldToScreenPoint(BloomOrigin());
                     float error = Vector2.Distance(expected, origin);
-                    if (error > worst) { worst = error; worstName = state + "/" + frame + "/" + dir; }
-                    float fitError = -1f, brightnessError = -1f;
+                    if (error > worst) { worst = error; worstName = name; }
+                    // The cone and the pool start on the ground straight below the lens: same x, and the
+                    // lens's own height projected down.
+                    Vector3 lensRig = LensRig();
+                    Vector2 pool = _stage.Camera.WorldToScreenPoint(_walker.Beam.Light.WorldOrigin);
+                    Vector2 under = expected - Vector2.up * (float)(IsoGround.HeightScale * lensRig.z * PixelsPerWorldUnit());
+                    float poolError = Vector2.Distance(pool, under);
+                    poolWorst = Mathf.Max(poolWorst, poolError);
+                    Assert.AreEqual(lensRig.z, _walker.Beam.Light.LampHeightMeters, 1e-4f, name + ": shadows are thrown from the lens's height");
+                    float aboveHead = (expected.y - DrawnHeadScreen().y) / (float)PlanMagnification();
+                    // The lens sits a fixed 0.10 m up the head's own axis from his eyes. When he bows his
+                    // head toward the camera (bench, board, chop facing south) that axis foreshortens, so
+                    // the screen gap shrinks: the lens must never fall below the eye line, and must clear
+                    // it by a whole art pixel while his head is upright (within 30 degrees of vertical).
+                    if (aboveHead < lowestAboveEyes) { lowestAboveEyes = aboveHead; lowestName = name; }
+                    if (_figure.HeadDirectionToFigure(Vector3.forward).normalized.z >= Mathf.Cos(30f * Mathf.Deg2Rad)
+                        && aboveHead < lowestUprightAboveEyes) { lowestUprightAboveEyes = aboveHead; lowestUprightName = name; }
+                    Headlamp.View view = _walker.Beam.DrawnView;
+                    Assert.IsTrue(fitting.enabled, name + ": worn and lit, the lamp is drawn");
+                    Assert.AreSame(Headlamp.SpriteFor(view, true), fitting.sprite, name + ": the lit sprite for the drawn view");
                     Vector2 signed = Vector2.zero;
-                    if (fitting != null)
+                    if (Headlamp.LensShows(view))
                     {
-                        fitError = RenderedFittingError(fitting, expected, out brightnessError, out signed);
-                        fittingWorst = Mathf.Max(fittingWorst, fitError);
-                        fittingAxisWorst = Mathf.Max(fittingAxisWorst, Mathf.Abs(signed.x), Mathf.Abs(signed.y));
-                        rendered++;
+                        RenderedFittingError(fitting, expected, out _, out _, out signed, lensOnly: true);
+                        if (Mathf.Max(Mathf.Abs(signed.x), Mathf.Abs(signed.y)) > lensAxisWorst)
+                        { lensAxisWorst = Mathf.Max(Mathf.Abs(signed.x), Mathf.Abs(signed.y)); lensWorstName = name; }
+                        lensViews++;
                     }
-                    csv.AppendLine($"{state},{frame},{dir},{error:R},{fitError:R},{brightnessError:R},{signed.x:R},{signed.y:R},{PlanMagnification():R},{_stage.Camera.orthographicSize:R}");
+                    else
+                    {
+                        float strap = RenderedFittingError(fitting, expected, out _, out _, out _, lensOnly: false);
+                        Assert.IsFalse(float.IsInfinity(strap), name + ": from behind, the strap is drawn");
+                        backViews++;
+                    }
+                    rendered++;
+                    csv.AppendLine($"{state},{frame},{dir},{view},{error:R},{poolError:R},{signed.x:R},{signed.y:R},{aboveHead:R},{PlanMagnification():R},{_stage.Camera.orthographicSize:R}");
                     samples++;
                     if (frame == clip.FrameCount / 2 && (state == "walk" || state == "ladderDown"))
                         ContactArms(state + "-" + dir);
@@ -198,14 +234,34 @@ namespace HiddenHarbours.Tests.PlayMode
             }
             File.WriteAllText(Path.Combine(PlateDir, "mesh-anchor-errors.csv"), csv.ToString());
             File.WriteAllText(Path.Combine(PlateDir, "mesh-worst.txt"),
-                $"samples={samples}\nrendered_fittings={rendered}\nworst_origin_px={worst:R}\nworst={worstName}\nworst_rendered_fitting_px={fittingWorst:R}\nworst_rendered_fitting_axis_px={fittingAxisWorst:R}\n");
-            Assert.IsNotNull(fitting, "the light must emerge from a drawn fitting");
+                $"samples={samples}\nrendered_lamps={rendered}\nlens_views={lensViews}\nback_views={backViews}\nworst_origin_px={worst:R}\nworst={worstName}\nworst_pool_px={poolWorst:R}\nworst_rendered_lens_axis_px={lensAxisWorst:R}\nworst_lens={lensWorstName}\nlowest_lens_above_head_art_px={lowestAboveEyes:R}\nlowest={lowestName}\nlowest_upright_lens_above_head_art_px={lowestUprightAboveEyes:R}\nlowest_upright={lowestUprightName}\n");
             Assert.AreEqual(samples, rendered);
-            Assert.LessOrEqual(worst, 1f, worstName);
-            Assert.LessOrEqual(fittingAxisWorst, 1f, "worst rendered fitting, on either axis");
+            Assert.Greater(lensViews, 0, "the lens is seen from the front and the sides");
+            Assert.Greater(backViews, 0, "and the strap from behind");
+            Assert.LessOrEqual(worst, 1f, "the glow leaves the lens: " + worstName);
+            Assert.LessOrEqual(poolWorst, 1f, "the cone starts under the lens");
+            Assert.LessOrEqual(lensAxisWorst, 1f, "worst rendered lens pixel, on either axis: " + lensWorstName);
+            Assert.GreaterOrEqual(lowestAboveEyes, 0f, "the lens never drops below his eye line: " + lowestName);
+            Assert.Less(lowestUprightAboveEyes, float.PositiveInfinity, "premise: some poses hold his head upright");
+            Assert.GreaterOrEqual(lowestUprightAboveEyes, 1f, "head upright, the lens is on his forehead above his eye line: " + lowestUprightName);
+
+            // Worn but switched off: still on his head, lens unlit, nothing burning. Pocketed: gone.
+            Pose("idle", 0, 0);
+            _walker.Beam.SetOn(false);
+            Step(_walker.Beam, "LateUpdate");
+            Assert.IsTrue(fitting.enabled, "switched off, the lamp stays on his head");
+            Assert.AreSame(Headlamp.SpriteFor(_walker.Beam.DrawnView, false), fitting.sprite, "with its lens unlit");
+            Assert.IsFalse(_walker.Beam.Light.enabled, "and nothing burns");
+            _walker.Beam.TakeOff();
+            Step(_walker.Beam, "LateUpdate");
+            Assert.IsFalse(fitting.enabled, "pocketed: no lamp on his head");
+            _walker.Beam.SetOn(true);
+            Step(_walker.Beam, "LateUpdate");
             yield return CheckFarthestWalkerLens(fitting);
         }
 
+        /// <summary>The same lens rule at every whole magnification the pixel camera can pin (M = 2..6): the
+        /// origin within one screen pixel, the drawn lens within one art pixel.</summary>
         IEnumerator CheckFarthestWalkerLens(SpriteRenderer fitting)
         {
             var camera = _stage.Camera;
@@ -216,17 +272,9 @@ namespace HiddenHarbours.Tests.PlayMode
             var referenceY = pixelCamera.GetType().GetProperty("refResolutionY");
             int oldReferenceX = (int)referenceX.GetValue(pixelCamera), oldReferenceY = (int)referenceY.GetValue(pixelCamera);
             bool oldEnabled = pixelCamera.enabled;
-            Sprite native = fitting.sprite;
-            var built = native.pivot.x / native.rect.width == .6f ? native :
-                Sprite.Create(native.texture, native.rect,
-                    new Vector2(Mathf.Ceil(native.rect.width * .5f) / native.rect.width, .5f), native.pixelsPerUnit);
-            var centred = native.pivot.x / native.rect.width == .5f ? native :
-                Sprite.Create(native.texture, native.rect, new Vector2(.5f, .5f), native.pixelsPerUnit);
-            if (built != native) built.hideFlags = HideFlags.HideAndDontSave;
-            centred.hideFlags = HideFlags.HideAndDontSave;
-            var csv = new StringBuilder("M,facing,pivot,dx,dy,magnitude,actual_magnification,ortho_size,origin_error_px\n");
-            bool builtPass = true, centredPass = true, askedLens = true, centredRowsMatch = true;
-            float worstOrigin = 0f, builtWorst = 0f, centredWorst = 0f;
+            var csv = new StringBuilder("M,facing,view,dx,dy,actual_magnification,ortho_size,origin_error_px\n");
+            bool askedLens = true, lensPass = true;
+            float worstOrigin = 0f, worstLens = 0f;
             try
             {
                 foreach (int m in new[] { 2, 3, 4, 5, 6 })
@@ -237,42 +285,23 @@ namespace HiddenHarbours.Tests.PlayMode
                     yield return _stage.FrameOn((Vector2)_root.transform.position + Vector2.up * .9f);
                     for (int dir = 0; dir < 8; dir++)
                     {
-                        foreach (Sprite sprite in new[] { built, centred })
+                        yield return null;
+                        Pose("idle", 0, dir); Step(_walker.Beam, "LateUpdate");
+                        Vector2 expected = DrawnLensScreen();
+                        float origin = Vector2.Distance(expected, _stage.Camera.WorldToScreenPoint(BloomOrigin()));
+                        worstOrigin = Mathf.Max(worstOrigin, origin);
+                        double actual = PlanMagnification();
+                        askedLens &= actual == m && Mathf.Abs(camera.orthographicSize - _stage.Height / (64f * m)) <= 1e-5f;
+                        Headlamp.View view = _walker.Beam.DrawnView;
+                        Vector2 signed = Vector2.zero;
+                        if (Headlamp.LensShows(view))
                         {
-                            fitting.sprite = sprite;
-                            yield return null;
-                            Pose("idle", 0, dir); Step(_walker.Beam, "LateUpdate");
-                            Vector2 expected = DrawnHeadScreen();
-                            float origin = Vector2.Distance(expected, _stage.Camera.WorldToScreenPoint(BloomOrigin()));
-                            worstOrigin = Mathf.Max(worstOrigin, origin);
-                            float housing = RenderedFittingError(fitting, expected, out _, out var signed);
-                            double actual = PlanMagnification();
-                            askedLens &= actual == m && Mathf.Abs(camera.orthographicSize - _stage.Height / (64f * m)) <= 1e-5f;
-                            // One art pixel is M screen pixels. Record centre-pivot differences for review; suite rounding may differ.
-                            if (sprite == centred)
-                            {
-                                bool negativeFacing = dir == 0 || dir == 1 || dir == 3 || dir == 6;
-                                Vector2 recorded = m switch
-                                {
-                                    2 => new Vector2(1f, 0f),
-                                    3 => new Vector2(negativeFacing ? -2f : 1f, -1f),
-                                    4 => new Vector2(2f, 0f),
-                                    5 => new Vector2(-3f, -1f),
-                                    _ => new Vector2(negativeFacing ? -3f : 3f, 0f),
-                                };
-                                centredRowsMatch &= signed.Equals(recorded);
-                                centredPass &= housing <= m;
-                            }
-                            else builtPass &= housing <= m;
-                            if (m >= 3)
-                            {
-                                if (sprite == built) builtWorst = Mathf.Max(builtWorst, housing);
-                                else centredWorst = Mathf.Max(centredWorst, housing);
-                            }
-                            float pivot = sprite.pivot.x / sprite.rect.width;
-                            csv.AppendLine($"{m},{dir},{pivot:R},{signed.x:R},{signed.y:R},{housing:R},{actual:R},{camera.orthographicSize:R},{origin:R}");
+                            RenderedFittingError(fitting, expected, out _, out _, out signed, lensOnly: true);
+                            float axis = Mathf.Max(Mathf.Abs(signed.x), Mathf.Abs(signed.y));
+                            worstLens = Mathf.Max(worstLens, axis);
+                            lensPass &= axis <= m;   // one art pixel is M screen pixels
                         }
-                        fitting.sprite = built;
+                        csv.AppendLine($"{m},{dir},{view},{signed.x:R},{signed.y:R},{actual:R},{camera.orthographicSize:R},{origin:R}");
                     }
                 }
                 string tablePath = Path.GetFullPath(Path.Combine(Application.dataPath, "../Evidence~/lights/pr1/lens-table.csv"));
@@ -280,12 +309,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 File.WriteAllText(Path.Combine(PlateDir, "lens-table.csv"), csv.ToString());
                 Assert.IsTrue(askedLens, "a pinned lens did not render at its asked magnification and orthographic size");
                 Assert.LessOrEqual(worstOrigin, 1f, "pinned-lens origin");
-                Assert.IsTrue(centredPass, "the shipping centre pivot must meet one art pixel on every facing at M=2,3,4,5,6");
-                fitting.sprite = centredPass && (!builtPass || centredWorst < builtWorst) ? centred : built;
-                Assert.AreEqual(.5f, fitting.sprite.pivot.x / fitting.sprite.rect.width, "the measured centre pivot ships");
-                Assert.AreEqual(.5f, native.pivot.x / native.rect.width, "the product must build the chosen pivot");
-                File.WriteAllText(Path.Combine(PlateDir, "selected-pivot.txt"),
-                    $"shipping_horizontal_pivot={native.pivot.x / native.rect.width:R}\nselected_horizontal_pivot={fitting.sprite.pivot.x / fitting.sprite.rect.width:R}\nshifted_pass={builtPass}\ncentred_pass={centredPass}\nshifted_worst_px={builtWorst:R}\ncentred_worst_px={centredWorst:R}\ncentred_rows_match_retained={centredRowsMatch}\n");
+                Assert.IsTrue(lensPass, $"the drawn lens must meet one art pixel on every facing at M=2,3,4,5,6 (worst {worstLens:R} px)");
                 MeasureCost();
             }
             finally
@@ -293,9 +317,6 @@ namespace HiddenHarbours.Tests.PlayMode
                 referenceX.SetValue(pixelCamera, oldReferenceX);
                 referenceY.SetValue(pixelCamera, oldReferenceY);
                 pixelCamera.enabled = oldEnabled;
-                fitting.sprite = native;
-                if (built != native) Object.DestroyImmediate(built);
-                if (centred != native) Object.DestroyImmediate(centred);
             }
         }
 
@@ -543,7 +564,42 @@ namespace HiddenHarbours.Tests.PlayMode
                 camera.orthographicSize * 2d / camera.pixelHeight, out var plan) ? plan.Magnification : 1d;
         }
 
-        float RenderedFittingError(SpriteRenderer fitting, Vector2 expected, out float brightnessError, out Vector2 signed)
+        /// <summary>The lens in the figure's frame, through the product's own head-frame accessor and the
+        /// live offset — the point the light must leave from.</summary>
+        Vector3 LensRig() => _figure.HeadLocalToFigure(_figure.HeadMidLocal + Headlamp.LensOffsetHeadLocal());
+
+        double PixelsPerWorldUnit() => _stage.Camera.pixelHeight / (2d * _stage.Camera.orthographicSize);
+
+        /// <summary>
+        /// Where the drawn lens must be on screen: the drawn head (snapped as the facet shader snaps it)
+        /// plus the head-to-lens offset rounded to whole art pixels, so it rides the head without swimming.
+        /// </summary>
+        Vector2 DrawnLensScreen()
+        {
+            Vector4 h = _figure.HeadSnapPoint;
+            Vector3 delta = _facet.TransformPoint(LensRig()) - _facet.TransformPoint(new Vector3(h.x, h.y, h.z));
+            double perArtPixel = PixelsPerWorldUnit() / Headlamp.ArtPixelsPerMetre;
+            var camera = _stage.Camera;
+            if (FigurePixelGrid.TryPlan(camera.pixelWidth, camera.pixelHeight,
+                    camera.transform.position.x - camera.orthographicSize * camera.aspect,
+                    camera.transform.position.y - camera.orthographicSize,
+                    camera.orthographicSize * 2d / camera.pixelHeight, out var plan))
+                perArtPixel = plan.Magnification;
+            return DrawnHeadScreen() + new Vector2(
+                (float)(Math.Round(delta.x * Headlamp.ArtPixelsPerMetre, MidpointRounding.AwayFromZero) * perArtPixel),
+                (float)(Math.Round(delta.y * Headlamp.ArtPixelsPerMetre, MidpointRounding.AwayFromZero) * perArtPixel));
+        }
+
+        float RenderedFittingError(SpriteRenderer fitting, Vector2 expected, out float brightnessError, out Vector2 signed) =>
+            RenderedFittingError(fitting, expected, out brightnessError, out _, out signed, lensOnly: false);
+
+        /// <summary>
+        /// Render the drawn lamp alone on black and measure it against <paramref name="expected"/>. With
+        /// <paramref name="lensOnly"/> the shape measured is the lens — the brightest pixels — and not the
+        /// whole strap. Returns the shape centroid's distance; infinity when nothing rendered.
+        /// </summary>
+        float RenderedFittingError(SpriteRenderer fitting, Vector2 expected, out float brightnessError, out int pixelCount,
+                                   out Vector2 signed, bool lensOnly)
         {
             var camera = _stage.Camera;
             int mask = camera.cullingMask, layer = fitting.gameObject.layer;
@@ -557,8 +613,10 @@ namespace HiddenHarbours.Tests.PlayMode
                 int shapePixels = 0;
                 double magnification = PlanMagnification();
                 int margin = (int)Math.Ceiling(magnification);
-                int tileWidth = (int)Math.Ceiling(fitting.sprite.rect.width * magnification) + 2 * margin;
-                int tileHeight = (int)Math.Ceiling(fitting.sprite.rect.height * magnification) + 2 * margin;
+                // The strap reaches away from its pivot on one side, and from behind it sits on the band
+                // rather than the lens: a square twice the sprite's longer side holds all of it.
+                int span = (int)Math.Ceiling(2 * Mathf.Max(fitting.sprite.rect.width, fitting.sprite.rect.height) * magnification) + 2 * margin;
+                int tileWidth = span, tileHeight = span;
                 int x0 = Mathf.Max(0, (int)Math.Floor(expected.x - tileWidth * .5)),
                     y0 = Mathf.Max(0, (int)Math.Floor(expected.y - tileHeight * .5));
                 int width = Mathf.Min(tileWidth, _stage.Width - x0), height = Mathf.Min(tileHeight, _stage.Height - y0);
@@ -568,15 +626,21 @@ namespace HiddenHarbours.Tests.PlayMode
                 tile.ReadPixels(new Rect(x0, y0, width, height), 0, 0); tile.Apply();
                 Color[] pixels = tile.GetPixels();
                 Object.DestroyImmediate(tile); RenderTexture.active = previous;
+                // The lens is the brightest pixel of the lamp, lit or unlit: keep only the pixels within a
+                // tenth of it when the lens alone is measured.
+                double brightest = 0;
+                foreach (Color c in pixels) brightest = Math.Max(brightest, c.r + c.g + c.b);
+                double floor = lensOnly ? .9 * brightest : .01;
                 for (int y = 0; y < height; y++)
                 for (int x = 0; x < width; x++)
                 {
                     Color c = pixels[y * width + x];
                     double w = c.r + c.g + c.b;
-                    if (w <= .01) continue;
+                    if (w <= .01 || w < floor) continue;
                     mass += w; xsum += (x0 + x + .5) * w; ysum += (y0 + y + .5) * w;
                     shapePixels++; shapeX += x0 + x + .5; shapeY += y0 + y + .5;
                 }
+                pixelCount = shapePixels;
                 if (mass <= 0)
                 {
                     brightnessError = float.PositiveInfinity;

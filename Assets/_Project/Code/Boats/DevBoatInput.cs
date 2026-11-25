@@ -30,6 +30,10 @@ namespace HiddenHarbours.Boats
     ///     no throttle to step and no oar to pull, and <see cref="DriveSailHelm"/> writes the throttle
     ///     0 every frame. ⭐ Gated on the helm slot exactly as the oars are
     ///     (<see cref="RowingStationManned"/>): unmanned, the rudder is written to centre.
+    ///   • Autopilot (a hull whose Def has one) — the Helm/Autopilot press (P), read through the
+    ///     intents seam (<see cref="ReadAutopilotSwitch"/>), holds the heading; while it does, the steer
+    ///     read passes its helm through, and a real steer input takes the helm back
+    ///     (<see cref="ArbitrateAutopilotSteer"/>).
     /// The drive value lives in <see cref="BoatController"/> alone (read back through
     /// <see cref="BoatController.Throttle"/> each frame) — this component holds only repeat TIMERS,
     /// so the mouse drag path (HelmControlRelay) and these keys can never fight over a second copy.
@@ -47,7 +51,8 @@ namespace HiddenHarbours.Boats
                  "of every other binding by a project-wide Key./KeyControl/.inputactions sweep " +
                  "(WASD/arrows helm, Space brace/haul, E interact, Q mooring, " +
                  "T trap-drop, G grant, H haul, Y auto-yaw, L spotlight/ice, F fleet/freezer/bucket, " +
-                 "V variant, I icebox, O displaced-water, N tide table, R anchor/rode, X DUMP SPOILED — " +
+                 "V variant, I icebox, O displaced-water, N tide table, R anchor/rode, P autopilot, " +
+                 "X DUMP SPOILED — " +
                  "CatchDumpInput listens scene-wide, so X here would dump the catch on every chop " +
                  "to neutral).")]
         [SerializeField] private Key _neutralKey = Key.Z;
@@ -86,7 +91,7 @@ namespace HiddenHarbours.Boats
         /// not a thing you can reach from anywhere on the sole: she takes the thwart the deck def
         /// publishes as her helm station (<c>BoatDeckDef.HelmStationLocalMeters</c> - the dory's
         /// <c>STATIONS[id=helm]</c> at hull-local (0, -0.72, 0.3056), the AFTER thwart, with the thole
-        /// pins 0.135 m abaft it), and until she does, W/A/S/D and Space do nothing at all.</para>
+        /// pins 0.369 m abaft it), and until she does, W/A/S/D and Space do nothing at all.</para>
         ///
         /// <para><b>The read is the helm slot, not a second copy of the answer.</b>
         /// <see cref="HiddenHarbours.Core.HelmSlot.PilotedHull"/> is the project's arbiter of "who is
@@ -134,14 +139,73 @@ namespace HiddenHarbours.Boats
                 return;
             }
 
+            // The player rows the game's player style (GameConfig.PlayerRowingStyle): one field to
+            // switch him to another. A repeat of the same style is a reference compare.
+            _boat.SetRowingStyle(RowingStyle.ChooseForPlayer(GameServices.Config));
             _boat.SetOarInput(left, right, brace);
+        }
+
+        // ---- the autopilot switch (Helm/Autopilot, through the intents seam — ADR 0043) ----------
+
+        private IControlIntentSource<AutopilotIntents> _autopilotOverride;
+
+        /// <summary>The source the autopilot press is read from: a configured one, else the bindings
+        /// asset's (installed in Core by the device layer), else nothing.</summary>
+        public IControlIntentSource<AutopilotIntents> AutopilotInputSource
+            => _autopilotOverride ?? AutopilotInput.Device;
+
+        /// <summary>Hand the autopilot press a scripted source (a test, a journey); null restores the
+        /// bindings asset's.</summary>
+        public void ConfigureAutopilotInput(IControlIntentSource<AutopilotIntents> source)
+            => _autopilotOverride = source;
+
+        /// <summary>
+        /// Read the autopilot press once and flick the switch on it. Public for the reason
+        /// <see cref="DriveOars"/> is: a fixture can drive the one read without an input device.
+        /// This component runs only while the player is at the helm (the switcher disables it
+        /// otherwise), so the press means nothing on foot or on deck.
+        /// </summary>
+        public void ReadAutopilotSwitch()
+        {
+            if (_boat == null) return;
+            IControlIntentSource<AutopilotIntents> source = AutopilotInputSource;
+            if (source == null || !source.Read().Toggle) return;
+            if (!_boat.ToggleAutopilot()) return;
+
+            // Engaged: close any wheel steer session. A wheel left coasting under a live session writes
+            // the steer every frame, which is a hand on the wheel and would hand the helm straight back.
+            if (_relay == null) _relay = GetComponent<HelmControlRelay>();
+            if (_relay != null) _relay.EndSteerDrag();
+        }
+
+        /// <summary>
+        /// The steer the helm writes while the autopilot may hold it. Off, the read is the helm's own.
+        /// On, a real steer input (past <see cref="HelmAutopilotSettings.SteerOverrideThreshold"/>)
+        /// hands the helm back and is used at once; anything less passes the autopilot's last helm
+        /// through, so this layer never fights it. Pure + static: the truth table is a test.
+        /// </summary>
+        public static float ArbitrateAutopilotSteer(float momentarySteer, bool autopilotEngaged,
+                                                    float autopilotHelm, in HelmAutopilotSettings cfg,
+                                                    out bool takeBack)
+        {
+            takeBack = false;
+            if (!autopilotEngaged) return momentarySteer;
+            if (HeadingHoldAutopilot.IsSteerOverride(momentarySteer, in cfg))
+            {
+                takeBack = true;
+                return momentarySteer;
+            }
+            return autopilotHelm;
         }
 
         private void Update()
         {
+            if (_boat == null) return;
+            ReadAutopilotSwitch();
+
             var kb = Keyboard.current;
             var gp = Gamepad.current;
-            if ((kb == null && gp == null) || _boat == null) return;
+            if (kb == null && gp == null) return;
 
             // A text field owns the keyboard (naming a waypoint on the plotter) — the helm's KEY reads
             // go deaf for as long as it does, on the RAW momentary read, before the steer ease and
@@ -267,6 +331,17 @@ namespace HiddenHarbours.Boats
                 // it goes straight through. At rest it is indistinguishable from "no key", and falls
                 // through to the ease, which winds a partial deflection out in a fraction of a lock.
                 if (stick != 0f) { target = stick; analog = true; }
+            }
+
+            // The autopilot, when it holds the helm, comes BEFORE the wheel session and the ease: its
+            // helm is passed through untouched unless a real steer input takes the helm back, and then
+            // that input steers from this frame on, eased from the autopilot's own angle (no snap).
+            if (_boat.AutopilotEngaged)
+            {
+                float held = ArbitrateAutopilotSteer(target, true, _boat.Steer, _boat.AutopilotSettings,
+                                                     out bool takeBack);
+                if (!takeBack) return held;
+                _boat.DisengageAutopilot(AutopilotDisengage.SteerInput);
             }
 
             // Wheel steer-session arbitration (S2a, the IHelmControl contract) runs on the RAW

@@ -216,6 +216,11 @@ namespace HiddenHarbours.Tests.PlayMode
             var config = ScriptableObject.CreateInstance<GameConfig>(); _spawned.Add(config);
             config.MeshCharacter = true;          // the shipped switch: she is a mesh aboard a facet hull
             config.MeshCharacterAshore = false;   // ashore is her body sprite: the "nothing moved" control
+            // This test pins the SPRITE rod's agreement with the drawn body (its grip pins, the carried
+            // rod hidden while the fight draws its own). With the mesh rod on, the hold aboard draws the
+            // rod as its facet mesh instead (ADR 0053) and the overlay is off by design; that path has
+            // its own tests (HeldRodMeshTests). Off here, the sprite fallback is what is measured.
+            config.MeshRodInHand = false;
             GameServices.Config = config;
             GameServices.Clock = new FrozenClock();
             rig.Sea = new StillSea { Level = 0f };

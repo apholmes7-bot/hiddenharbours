@@ -111,3 +111,56 @@ pivot, drawn by the facet path in its parent's frame. A hand is a socket, as an 
 - **A rig edit means a re-bake.** A held rig that changes its faces, palette or pose reds the bake
   guards until its states are re-baked. A rig that renames a state keeps or retires the old id
   (content validation holds the ledger).
+
+## 7. Progress (2026-11-19)
+
+- **The rod in the fishing clips, PR 1 and PR 4 for the rod alone.** While the mesh body plays a
+  fishing clip (`GameConfig.MeshFishingAndDig` had already lifted D5 for the body), the cane is drawn
+  as its mesh on `tool_R`, aimed by the clip's own tool track (`HeldPropPose`), and the sprite rod is
+  off (`GameConfig.MeshRodInHand`, `ToolDef.DrawHeldMeshOnFigure`). D5 is therefore lifted for the
+  rod in those clips too: a mesh body with a sprite rod did not follow the hand.
+- **D2 stands in.** Until the line pass exists, the blank is drawn as thin square tubes along the
+  rig's own samples, in the rig's line colours (`IsoFacetHeldPropMesh`). PR 3 replaces them, and it
+  still needs art-pipeline's signature.
+- **Still a sprite:** the rod carried while walking or standing (those clips carry no tool track),
+  the rod on the rack, the bend under load, the coast and deep tiers' selection, and every other
+  held prop.
+
+## 8. Progress (2026-11-20): the carried rod and the rod on his back
+
+- **The carried rod is a mesh, at an aim from data.** On a free gait (`ToolDef.CarriedInHandClips`:
+  idle, walk, run) the cane is drawn on `tool_R` at `ToolDef.CarriedPitchDeg` / `CarriedYawDeg`. D1's
+  "the rig's own held pose" was the fishing aim (pitch 56, yaw 16), which pointed the blank down the
+  camera's line of sight from the front and read as a stub. The grip is still the palm socket on
+  the frame drawn, every frame; `GameConfig.HeldRodGripToleranceMetres` is the test's margin.
+- **The rod on his back** (`ToolDef.StowOnBack`). When he has the rod but is not using it, the mesh
+  rides the rig's `back` socket (the slung-rod mount on the chest, its +y the slung axis): on every
+  clip that aims no tool and is not a free gait (the oars, the helm, a carry, the swim, when
+  `StowWhileSwimming`), and whenever the other hand is busy or the rod is tucked away for a catch.
+  A fishing state or a clip that aims the rod always puts it in his hand. The move is a short blend
+  (`StowBlendSeconds`), since the rig bakes no draw clip. Decided from the hands and the clip each
+  frame; nothing is saved.
+- **NPC anglers** draw no rod mesh: no NPC path mounts a held prop yet.
+
+## 9. Progress (2026-11-20): the shovel and the pail
+
+- **The shovel is its mesh, by the rod's own driver.** `HeldRodMesh` takes any `ToolDef`; the carrier
+  runs a second one for the hand tool (`CarryHands`, its own overlay claim), so the dig draws the
+  baked shovel on `tool_R` aimed by the dig clip's tool track on every frame, and the sprite is held
+  out of the picture while it does (`CarriableTool.SetDrawnElsewhere`). On a free gait it is carried
+  on the hand's own socket at `ToolDef.CarriedPitchDeg` / `CarriedYawDeg`. It has no back mount.
+  `GameConfig.MeshHandToolInHand` is the switch; the shaft-through-the-left-hand and blade-to-ground
+  margins are `HeldShovelShaftHandToleranceMetres` / `HeldShovelGroundToleranceMetres`.
+- **The pail is its mesh, hung by its bail.** The carry row names the bucket rig's tier
+  (`CharacterCarryPoseDef.Row.MeshTier`, `pail`); the presenter hands out the baked state for the
+  band and catch group its sprite would show, so the fill still reads. It hangs from the carry socket
+  on the figure's facet (so his legs and the pail sort per pixel) and swings back from the hand's own
+  motion in the clip (`MeshSwingDegPerMetrePerSecond`, `MeshSwingMaxDeg`). `GameConfig.MeshPailInHand`
+  is the switch.
+- **Rig gap: the blade stops short of the ground.** The fisher's dig holds the tool 1.05 m from the right
+  hand (its tool track), but the baked shovel's blade is 0.665 m from that hand, with the left hand
+  0.26-0.31 m up the shaft. At the dig's low point the blade is 0.37 m above the ground, and no grip
+  with both hands on the shaft gets it below ~0.32 m. The dig clip (hands lower at the strike) or the
+  shovel rig (its grip) has to change; the ground test is ignored until then.
+- **Still a sprite:** the clam hod (no baked mesh state), the spoil tint on the pail (the mesh does
+  not take it yet), a second pail or a second hand tool in the other hand, and every NPC's held prop.
