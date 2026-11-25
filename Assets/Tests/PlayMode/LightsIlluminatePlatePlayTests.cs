@@ -389,10 +389,40 @@ namespace HiddenHarbours.Tests.PlayMode
                 profile.PoolsLightMeshFaces = false;
                 LampPoolSystem.Instance.PublishFrame(_stage.Camera);
                 byte[] off2 = _stage.Capture();
-                foreach (IsoFacetHullRenderer h in hulls) if (h != null) h.enabled = false;
+                // "Seen" means drawn by anything her faces could light: every hull with all of her boat's
+                // own renderers (gunwale, oars and lamps are sprites, not the hull mesh), and every mesh
+                // figure (he and the villagers are lit by their faces too). Hide all of them; what still
+                // shows is ground, dock and buildings, which the faces must never change.
+                var hidden0 = new List<(Behaviour b, bool was)>();
+                var hiddenR = new List<(Renderer r, bool was)>();
+                foreach (IsoFacetHullRenderer h in hulls)
+                {
+                    if (h == null) continue;
+                    hidden0.Add((h, h.enabled)); h.enabled = false;
+                    Transform root = BoatLamps.BoatRootOf(h.transform);
+                    if (root == null) root = h.transform;
+                    foreach (Renderer r in root.GetComponentsInChildren<Renderer>(true)) { hiddenR.Add((r, r.forceRenderingOff)); r.forceRenderingOff = true; }
+                }
+                // forceRenderingOff, not enabled: a figure's own visibility rules set its renderers' enabled
+                // every frame, and a figure left drawn in the "none" frame reads as ground. A figure's body
+                // sprite and kit hang beside it under its own root, so that root's renderers go too (unless
+                // the root is a container of many things, which would hide the dock itself).
+                foreach (IsoCharacterFigureRenderer fig in Object.FindObjectsByType<IsoCharacterFigureRenderer>(FindObjectsSortMode.None))
+                {
+                    hidden0.Add((fig, fig.enabled)); fig.enabled = false;
+                    Transform walker = fig.transform.root.GetComponentsInChildren<Renderer>(true).Length <= 64
+                                       ? fig.transform.root : fig.transform;
+                    foreach (Renderer r in walker.GetComponentsInChildren<Renderer>(true)) { hiddenR.Add((r, r.forceRenderingOff)); r.forceRenderingOff = true; }
+                }
+                // He is a figure too, drawn from his own root (measured: the counted pixels at the dock lamp
+                // were the 'Player' sprite's, standing at the lamp).
+                GameObject him = GameObject.FindWithTag("Player");
+                if (him != null)
+                    foreach (Renderer r in him.transform.root.GetComponentsInChildren<Renderer>(true)) { hiddenR.Add((r, r.forceRenderingOff)); r.forceRenderingOff = true; }
                 yield return Settle();
                 byte[] none = _stage.Capture();
-                foreach (IsoFacetHullRenderer h in hulls) if (h != null) h.enabled = true;
+                for (int j = hiddenR.Count - 1; j >= 0; j--) if (hiddenR[j].r != null) hiddenR[j].r.forceRenderingOff = hiddenR[j].was;
+                for (int j = hidden0.Count - 1; j >= 0; j--) if (hidden0[j].b != null) hidden0[j].b.enabled = hidden0[j].was;
                 profile.PoolsLightMeshFaces = true;
                 yield return Settle();
 
@@ -410,7 +440,29 @@ namespace HiddenHarbours.Tests.PlayMode
                           $"  |  pixels that moved between the two OFF renders {moving}");
                 Assert.Less(moving, on.Length / 4 / 10,
                     "a tenth of the frame moved between two OFF renders of one frame: nothing here can be read");
-                if (t > 0) _stage.SavePlate($"20-faces-through-{lamps[k].name}-ON.png", on);
+                if (t > 0)
+                {
+                    _stage.SavePlate($"20-faces-through-{lamps[k].name}-ON.png", on);
+                    var mask = (byte[])on.Clone();
+                    int firstThrough = -1;
+                    for (int i = 0; i + 3 < on.Length; i += 4)
+                        if (Diff(off, off2, i) <= 3 && Diff(off, none, i) <= 3 && Diff(on, off, i) > 3)
+                        { mask[i] = 255; mask[i + 1] = 0; mask[i + 2] = 0; if (firstThrough < 0) firstThrough = i / 4; }
+                    // Name what stands at the first counted pixel, so a failure says WHAT was lit, not only how much.
+                    Vector3 w = _stage.Camera.ScreenToWorldPoint(new Vector3(
+                        firstThrough % _stage.Width + 0.5f, firstThrough / _stage.Width + 0.5f, 10f));
+                    foreach (Renderer r in Object.FindObjectsByType<Renderer>(FindObjectsSortMode.None))
+                    {
+                        Bounds b = r.bounds;
+                        if (!r.enabled || w.x < b.min.x || w.x > b.max.x || w.y < b.min.y || w.y > b.max.y) continue;
+                        Debug.Log($"[{PlateDir}] at the first lit pixel {(Vector2)w}: {r.GetType().Name} '{r.name}' " +
+                                  $"under '{(r.transform.parent != null ? r.transform.parent.name : "-")}' " +
+                                  $"root '{r.transform.root.name}' shader " +
+                                  $"'{(r.sharedMaterial != null ? r.sharedMaterial.shader.name : "-")}'");
+                    }
+                    _stage.SavePlate($"22-faces-through-{lamps[k].name}-MASK.png", mask);
+                    _stage.SavePlate($"23-faces-{lamps[k].name}-NOHULLS.png", none);
+                }
                 _stage.SavePlate($"21-faces-{lamps[k].name}-OFF.png", off);
                 through += t; faces += f; hidden += n; framed++;
             }
