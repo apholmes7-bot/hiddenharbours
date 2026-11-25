@@ -199,7 +199,7 @@ and the first boat purchase (the **Punt**).
 slap. You arrive to your late **Uncle Ned's** cottage and his inherited dory; his dog-eared logbook (the
 *"Ned's Unfinished Lines"* framing) and **Aunt Ginny** teach the loop through a gentle, bittersweet-but-warm
 onboarding. *(M2 note: the owner has since **dropped the inherited-dory framing** — in the full arc the dory is
-**earned and repaired** at Nine Mile Creek — so this M1 onboarding's inherited-dory beat is **flagged for rework** when St
+**earned and repaired** — bought from Basil Samson and mended on St Peters, amended 2026-11-23 — so this M1 onboarding's inherited-dory beat is **flagged for rework** when St
 Peters lands; the cottage stays inherited. Canon §5.8.)* Out on the water the dory now feels like a *boat*: wind pushes you, the tide sets you, you carry way
 and you crab into a breeze — the [`boats-and-navigation.md`](design/boats-and-navigation.md) force model is live
 (at the inshore, forgiving end). The **tide table** is a readable tool and the HUD tide/wind widgets are
@@ -282,10 +282,12 @@ M1; performance pass for scene streaming at passages (`lead-architect` + `qa-tes
 
 **Owner-ratified additions folded into M2 (2026 — see [`../backlog/backlog.md`](../backlog/backlog.md) M2 epics
 and the design docs).** The **St Peters Island opening** — the tide-gated home-island prologue, **built first as a
-greybox prototype** and now a **decided arc**: dig clams by hand → **walk the tide-gated sandbar to Nine Mile Creek at low
-water** → buy a **cod licence + rod**, sell clams, **buy the damaged dory lying at the Nine Mile Creek wharf and
-have her put right** → **sail it home to Coddle Cove**. *(Owner ruling 2026-07-25: the wharf is the town's own,
-one region two zones; no shipwright stands there — seller and repairer are open.)* The start and the Ned/Ginny onboarding **relocate** here from the M1
+greybox prototype** and now a **decided arc**. *(Amended 2026-11-23 — canon §5.3/§5.8, ADR 0062: the **first
+week is lived on St Peters alone, and it is the game's demo**.)* Dig clams by hand → buy a **rod** and bait at the
+island store → **buy the broken dory beached on the island from Basil Samson and mend her by hand** → the **cod
+licence** on the island → row and fish from her → **the island gate** (Ginny's word; the other regions are closed by
+weather only until then) → **walk the tide-gated sandbar to Nine Mile Creek at low water** → later, **Coddle Cove**.
+The demo ends at Ginny's word. The start and the Ned/Ginny onboarding **relocate** here from the M1
 Coddle Cove stand-in, **reusing** the dialogue/onboarding system, not rebuilding it. **Note:** the owner has
 **dropped the "inherit Uncle Ned's dory" framing** — the dory is now *earned and repaired*, which **partly
 invalidates the built VS-21 onboarding** (the inherited-dory beat needs rework — a flagged later task), while Ned's

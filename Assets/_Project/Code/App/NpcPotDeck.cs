@@ -127,6 +127,7 @@ namespace HiddenHarbours.App
         public void Tick(in NpcPotBoatPose pose, NpcPotDay today, NpcPotDayCatch catchOfTheDay, double now,
                          NpcPotLanding landing = null)
         {
+            if (_root == null || _inHand == null) return;   // her drawn deck went with a teardown before she was unbound
             Vector2 stand = _helm;
             Vector2 velocity = Vector2.zero;
             float facing = 0f;            // degrees off the bow the hand faces

@@ -210,6 +210,7 @@ namespace HiddenHarbours.App
             for (int b = 0; b < _boats.Count; b++)
             {
                 Boat boat = _boats[b];
+                if (boat.Hull == null) continue;   // her scene went down; the next slow tick unbinds her
                 if (boat.Today == null || boat.Today.DayIndex != dayIndex || boat.Seed != seed
                     || boat.SecondsPerDay != secondsPerDay)
                 {
