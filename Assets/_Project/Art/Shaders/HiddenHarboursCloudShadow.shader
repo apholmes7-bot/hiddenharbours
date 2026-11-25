@@ -24,30 +24,25 @@ Shader "HiddenHarbours/CloudShadow"
                 float4 _CloudShadeColour;  // the multiply at full strength
             CBUFFER_END
             struct Attributes { float3 positionOS : POSITION; };
-            struct Varyings { float4 positionCS : SV_POSITION; };
+            struct Varyings { float4 positionCS : SV_POSITION; float2 world : TEXCOORD0; };
             Varyings vert(Attributes input)
             {
                 Varyings output;
-                // Clip fill is independent of the culling quad's transform and the camera's zoom step.
-                output.positionCS = float4(input.positionOS.xy * 2, 0, 1);
+                // The quad is laid in the camera plane, sized to the view (with a margin) each frame. The
+                // ground point under each corner is found along the camera's own forward ray (an orthographic
+                // camera: every ray is parallel), so the pattern is pinned to the world, not to the screen.
+                // The map is linear in the corner, so the interpolated point is exact at every pixel.
+                float3 corner = TransformObjectToWorld(input.positionOS);
+                float3 forward = -UNITY_MATRIX_V[2].xyz;
+                float along = abs(forward.z) > 1e-5 ? (_CloudShadeScale.z - corner.z) / forward.z : 0;
+                output.world = (corner + forward * along).xy;
+                output.positionCS = TransformWorldToHClip(corner);
                 return output;
             }
             half4 frag(Varyings input) : SV_Target
             {
-                // World-anchored: rebuild the ground point under this pixel from the camera's own matrices.
-                float2 uv = GetNormalizedScreenSpaceUV(input.positionCS);
-                float3 nearWorld = ComputeWorldSpacePosition(uv, UNITY_NEAR_CLIP_VALUE, UNITY_MATRIX_I_VP);
-                #if UNITY_REVERSED_Z
-                    float farDepth = 0;
-                #else
-                    float farDepth = 1;
-                #endif
-                float3 farWorld = ComputeWorldSpacePosition(uv, farDepth, UNITY_MATRIX_I_VP);
-                float3 ray = farWorld - nearWorld;
-                if (ray.z == 0) return half4(1, 1, 1, 1);
-                float2 world = (nearWorld + ray * ((_CloudShadeScale.z - nearWorld.z) / ray.z)).xy;
-                float2 primary = (world - _CloudShadeOffsets.xy) / _CloudShadeScale.x;
-                float2 secondary = (world * _CloudShadeScale.y - _CloudShadeOffsets.zw) / _CloudShadeScale.x;
+                float2 primary = (input.world - _CloudShadeOffsets.xy) / _CloudShadeScale.x;
+                float2 secondary = (input.world * _CloudShadeScale.y - _CloudShadeOffsets.zw) / _CloudShadeScale.x;
                 float noise = lerp(SAMPLE_TEXTURE2D(_CloudShadeNoise, sampler_CloudShadeNoise, primary).r,
                     SAMPLE_TEXTURE2D(_CloudShadeNoise, sampler_CloudShadeNoise, secondary).r, _CloudShadeShape.w);
                 float edge = 1 - _CloudShadeShape.x;

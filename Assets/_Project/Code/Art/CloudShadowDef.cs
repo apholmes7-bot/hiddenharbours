@@ -64,8 +64,9 @@ namespace HiddenHarbours.Art
         [Tooltip("Below this share of its range the fair-weather channel is a clear sky.")]
         [Range(0, 1)] public float FairCoverClearBelow = .4f;
 
-        [Tooltip("Ground plane used to reconstruct the camera's world XY.")]
+        [Tooltip("Ground plane the shade is laid on: the camera's forward ray meets it here.")]
         public float WorldPlaneZ;
+        [Tooltip("The shade quad's size over the camera's view (at least 1, so it always covers the screen).")]
         [Min(1)] public float CullingOversize = 1.1f;
 
         /// <summary>The darkest the multiply may go on any channel: the shade darkens, it never blacks out.</summary>

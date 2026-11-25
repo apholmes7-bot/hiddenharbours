@@ -302,7 +302,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.That(Regex.IsMatch(shader, @"(?m)^\s*Stencil\s*[\r\n{]"), Is.False);
             Assert.That(shader, Does.Not.Contain("_DayNightTint"));
             Assert.That(shader, Does.Contain("Blend DstColor Zero"));
-            Assert.That(shader, Does.Contain("UNITY_MATRIX_I_VP"));
+            // The ground point comes from the quad's own world corners, never from screen UVs (a render
+            // target's screen params flattened the pattern to vertical stripes).
+            Assert.That(shader, Does.Contain("TransformObjectToWorld"));
+            Assert.That(shader, Does.Not.Contain("GetNormalizedScreenSpaceUV"));
         }
     }
 }

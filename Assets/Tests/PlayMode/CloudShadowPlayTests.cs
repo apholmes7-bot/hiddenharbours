@@ -180,13 +180,14 @@ namespace HiddenHarbours.Tests.PlayMode
             _system.HeldFrame = new CloudShadowFrame(12, 1000, new SteadyWind { Wind = new Vector2(3, 4) }, .5f, 1);
             _system.SetCasting(false); byte[] clear = Capture(); _system.SetCasting(true);
             byte[] before = Capture(); Assert.That(Changed(clear, before), Is.GreaterThan(0), "the anchoring guard must see real shade");
-            _camera.transform.position += Vector3.right; byte[] moved = Capture();
+            var pan = new Vector3(1, 1, 0);
+            _camera.transform.position += pan; byte[] moved = Capture();
             int bad = 0;
-            for (int y = 0; y < 512; y++) for (int x = 0; x < 480; x++) for (int c = 0; c < 3; c++)
-                if (Math.Abs(moved[(y * 512 + x) * 4 + c] - before[(y * 512 + x + 32) * 4 + c]) > 1) bad++;
-            Assert.That(bad, Is.Zero, "a one-metre camera pan shifts the same world pattern exactly 32 pixels, allowing one byte for roundoff");
+            for (int y = 0; y < 480; y++) for (int x = 0; x < 480; x++) for (int c = 0; c < 3; c++)
+                if (Math.Abs(moved[(y * 512 + x) * 4 + c] - before[((y + 32) * 512 + x + 32) * 4 + c]) > 1) bad++;
+            Assert.That(bad, Is.Zero, "a one-metre pan right and up shifts the same world pattern exactly 32 pixels on both axes, allowing one byte for roundoff");
             _camera.orthographicSize *= 1.1f; Capture(); _camera.orthographicSize /= 1.1f;
-            _camera.transform.position -= Vector3.right;
+            _camera.transform.position -= pan;
             Assert.That(Changed(before, Capture()), Is.Zero, "releasing a zoom returns the same pattern, without reseeding");
             yield return null;
         }
