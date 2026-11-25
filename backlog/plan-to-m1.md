@@ -79,6 +79,11 @@ weeks.** The grind is intentional; the drip is what makes it bearable.
 | 11–13 | **Shellfish gear** | Traps/pots — catch that works while you do something else. | Verb 4 · the first taste of P4 (earn it, then automate it) |
 | 13–15 | **The used outboard** | Bought secondhand from someone at the wharf and **hung on the dory's transom**. She stops being rowed. Range and speed. | Progression that **opens map**, and the promise of more |
 
+> **Amended 2026-11-23 (canon §5.3/§5.8, ADR 0062):** the M1 ladder above is kept as the record of the
+> slice. In the game as now ruled, the first week is St Peters alone: the dory is bought on the island
+> from Basil Samson and mended there by hand, the cod licence is bought on the island, and the crossing to
+> Nine Mile Creek comes at the island gate (day 7 or later, then Ginny's word), not on days 4–5.
+
 **The outboard goes on the dory — it is not the Punt.** Worth stating plainly, because the two are easy to
 conflate: `boat.dory` is `Propulsion: Oars` (she is rowed, `OarPower: 300`), and `boat.punt_upgraded` is
 `Propulsion: Engine` with a 14-unit hold — "The Punt (**Upgraded**)", where the upgrade *is* the motor. So
