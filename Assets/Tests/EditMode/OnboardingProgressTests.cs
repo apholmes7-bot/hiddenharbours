@@ -717,7 +717,16 @@ namespace HiddenHarbours.Tests.EditMode
             CatchRecords.Install();
             StandOn("boat.dory");
             EventBus.Publish(new FishCaught(CodCatch()));
+            Assert.AreEqual(IslandWeekFact.None, progress.Read(save, 0).Held,
+                "a hold entry does not establish a fresh landing from the repaired dory");
+            EventBus.Publish(new FreshCatchKept(CodCatch(), "boat.dory", false));
+            Assert.AreEqual(IslandWeekFact.None, progress.Read(save, 0).Held,
+                "a landing before repair does not supply the historical fact");
+            EventBus.Publish(new FreshCatchKept(CodCatch(), "boat.dory", true));
+            Assert.AreEqual(IslandWeekFact.FishFromDory, progress.Read(save, 0).Held);
             EventBus.Publish(new CatchSold(10, 1, default, 1));
+            Assert.AreEqual(IslandWeekFact.FishFromDory | IslandWeekFact.ShellfishSold,
+                progress.Read(save, 0).Held, "both facts must exist before serialization");
             string json = SaveSerialization.ToJson(save);
             var restored = SaveSerialization.FromJson(json);
             Assert.AreEqual(26, restored.SchemaVersion);
