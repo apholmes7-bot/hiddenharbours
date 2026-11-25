@@ -135,10 +135,10 @@ def sign_night():
             r, g, b, a = day.getpixel((x, y))
             if a == 0:
                 continue
-            lit = 0.22
+            lit = 0.45
             for bx, by in bulbs:
                 d2 = ((x + 0.5 - bx) / 1.0) ** 2 + ((y + 0.5 - by) * 1.6) ** 2
-                lit += 0.95 / (1.0 + d2 / 90.0)
+                lit += 0.95 / (1.0 + d2 / 200.0)
             lit = min(lit, 1.1)
             warm = (1.0, 0.86, 0.62)
             img.putpixel((x, y), tuple(min(255, int(round(c * lit * k))) for c, k in zip((r, g, b), warm)) + (255,))
