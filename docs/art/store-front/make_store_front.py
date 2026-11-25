@@ -1,11 +1,11 @@
 """LeBlanc's store front: the shop sign and the three open-hours displays (store front, 2026-11-25).
 
 Drawn at the village's pixel scale (32 px a metre), point filtered, each pivoted at its bottom centre so it
-stands on the ground where the store front data puts it (Data/Resources/StoreFronts/StPetersGeneralStoreFront).
+stands on the ground (or, for the sign, hangs on the wall) where the store front data puts it (Data/Resources/StoreFronts/StPetersGeneralStoreFront).
 
     python make_store_front.py <out_dir>
 
-StoreFront_Sign          the post sign by the path: "LeBlanc's" over "GENERAL STORE", always out
+StoreFront_Sign          the name board on the wall over the door: "LeBlanc's", hidden while inside
 StoreFront_PotatoCrate   a crate of potatoes on a low stand, out while the store is open
 StoreFront_BuoyRack      a rack of painted buoys and a coil of rope, out while the store is open
 StoreFront_BucketStand   galvanised buckets, a broom and a mop, out while the store is open
@@ -47,32 +47,6 @@ P = {
     "M": (190, 186, 172),   # mop shade
 }
 
-# 5 x 7 capitals and lower case for the name, 3 x 5 capitals for the plaque. '#' is ink.
-BIG = {
-    "L": ["#....", "#....", "#....", "#....", "#....", "#....", "#####"],
-    "e": [".....", ".....", ".###.", "#...#", "#####", "#....", ".####"],
-    "B": ["####.", "#...#", "#...#", "####.", "#...#", "#...#", "####."],
-    "l": [".##..", "..#..", "..#..", "..#..", "..#..", "..#..", ".###."],
-    "a": [".....", ".....", ".###.", "....#", ".####", "#...#", ".####"],
-    "n": [".....", ".....", "####.", "#...#", "#...#", "#...#", "#...#"],
-    "c": [".....", ".....", ".####", "#....", "#....", "#....", ".####"],
-    "'": ["#", "#", ".", ".", ".", ".", "."],
-    "s": [".....", ".....", ".####", "#....", ".###.", "....#", "####."],
-}
-SMALL = {
-    "G": ["###", "#..", "#.#", "#.#", "###"],
-    "E": ["###", "#..", "##.", "#..", "###"],
-    "N": ["#..#", "##.#", "#.##", "#..#", "#..#"],
-    "R": ["##.", "#.#", "##.", "#.#", "#.#"],
-    "A": [".#.", "#.#", "###", "#.#", "#.#"],
-    "L": ["#..", "#..", "#..", "#..", "###"],
-    "S": ["###", "#..", "###", "..#", "###"],
-    "T": ["###", ".#.", ".#.", ".#.", ".#."],
-    "O": ["###", "#.#", "#.#", "#.#", "###"],
-    " ": ["..", "..", "..", "..", ".."],
-}
-
-
 def canvas(w, h):
     return Image.new("RGBA", (w, h), (0, 0, 0, 0))
 
@@ -102,38 +76,34 @@ def write(img, text, font, x, y, key, gap=1):
         x += len(glyph[0]) + gap
 
 
-def sign():
-    w, h = 72, 58
-    img = canvas(w, h)
-    # Two square posts, capped, standing in the ground.
-    for px in (3, 64):
-        rect(img, px, 2, px + 4, h - 1, "w")
-        rect(img, px, 2, px, h - 1, "D")
-        rect(img, px + 4, 2, px + 4, h - 1, "D")
-        rect(img, px + 1, 2, px + 1, h - 1, "W")
-        rect(img, px + 3, 2, px + 3, h - 1, "v")
-        rect(img, px - 1, 0, px + 5, 1, "D")
-        rect(img, px, 1, px + 4, 1, "W")
-    # The name board: red frame, cream field, the store's name in ink.
-    rect(img, 1, 6, 70, 27, "D")
-    rect(img, 2, 7, 69, 26, "r")
-    rect(img, 2, 7, 69, 7, "R")
-    rect(img, 4, 9, 67, 24, "c")
-    rect(img, 4, 24, 67, 24, "C")
-    name = "LeBlanc's"
-    tw = text_width(name, BIG, 1)
-    write(img, name, BIG, (w - tw) // 2, 13, "i")
-    # The plaque under it, hung on two short chains (the posts carry it).
-    rect(img, 7, 31, 64, 41, "D")
-    rect(img, 8, 32, 63, 40, "c")
-    rect(img, 8, 40, 63, 40, "C")
-    plaque = "GENERAL STORE"
-    pw = text_width(plaque, SMALL, 1)
-    write(img, plaque, SMALL, (w - pw) // 2, 34, "r")
-    for cx in (14, 57):
-        put(img, cx, 28, "D"); put(img, cx, 29, "s"); put(img, cx, 30, "D")
-    return img
+# 4 x 6 letters for the name on the wall board (lower case sits on the bottom four rows).
+WALL = {
+    "L": ["#...", "#...", "#...", "#...", "#...", "####"],
+    "e": ["....", "....", ".##.", "####", "#...", ".###"],
+    "B": ["###.", "#..#", "###.", "#..#", "#..#", "###."],
+    "l": ["##.", ".#.", ".#.", ".#.", ".#.", "###"],
+    "a": ["....", "....", ".###", "#..#", "#..#", ".###"],
+    "n": ["....", "....", "###.", "#..#", "#..#", "#..#"],
+    "c": ["....", "....", ".###", "#...", "#...", ".###"],
+    "'": ["#", "#", ".", ".", ".", "."],
+    "s": ["....", "....", ".###", "##..", "..##", "###."],
+}
 
+
+def sign():
+    # The name board on the wall over the door (store front look, 2026-11-25: the post sign by the path hid
+    # the left planter and stood in front of the vehicle row). It hangs over the facade's own blank red board,
+    # a little larger so none of it shows, and reads from the road: cream letters on the store's red.
+    w, h = 46, 14
+    img = canvas(w, h)
+    rect(img, 0, 0, w - 1, h - 1, "D")
+    rect(img, 1, 1, w - 2, h - 2, "r")
+    rect(img, 1, 1, w - 2, 1, "R")
+    rect(img, 1, h - 2, w - 2, h - 2, "v")
+    name = "LeBlanc's"
+    tw = text_width(name, WALL, 1)
+    write(img, name, WALL, (w - tw) // 2, 4, "c")
+    return img
 
 def potato_crate():
     w, h = 34, 24

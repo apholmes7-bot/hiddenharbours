@@ -42,7 +42,7 @@ namespace HiddenHarbours.Tests.EditMode
             def.ClosesHour = 19f;
             def.Pieces = new List<StoreFrontPiece>
             {
-                new StoreFrontPiece { Id = "front.sign", OnlyWhileOpen = false },
+                new StoreFrontPiece { Id = "front.sign", OnlyWhileOpen = false, HideWhileInside = true },
                 new StoreFrontPiece { Id = "front.crate", OnlyWhileOpen = true, Offset = new Vector2(1f, -2f) },
                 new StoreFrontPiece { Id = "front.rack", OnlyWhileOpen = true, Offset = new Vector2(-1f, -2f) },
             };
@@ -92,6 +92,24 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void TheSignOnTheWall_HidesWhileHeIsInside_AndTheDisplaysDoNot()
+        {
+            StoreFront front = BuildTestFront(out GameObject sign, out GameObject[] displays);
+            front.ApplyHour(12f);
+            Assert.That(front.ApplyInside(false), Is.True, "the first look decides the wall");
+            Assert.That(sign.activeSelf, Is.True, "outside: the sign shows");
+            Assert.That(front.ApplyInside(true), Is.True);
+            Assert.That(sign.activeSelf, Is.False, "inside: the wall is away, and the sign with it");
+            Assert.That(front.WallPiecesShown, Is.False);
+            Assert.That(displays.All(d => d.activeSelf), Is.True, "the displays stay out while the store is open");
+            Assert.That(front.ApplyInside(true), Is.False, "still inside: nothing to change");
+            front.ApplyInside(false);
+            Assert.That(sign.activeSelf, Is.True, "back outside: the sign shows again");
+            front.ApplyHour(21f);
+            Assert.That(sign.activeSelf, Is.True, "closing hours never take the sign in");
+        }
+
+        [Test]
         public void IsOpenAt_IsHalfOpen_FromOpeningUpToClosing()
         {
             Assert.That(StoreFrontDef.IsOpenAt(6.999f, 7f, 19f), Is.False);
@@ -118,6 +136,8 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(front.OpensHour, Is.EqualTo(shelves.OpensHour), "the displays go out when the store opens");
             Assert.That(front.ClosesHour, Is.EqualTo(shelves.ClosesHour), "the displays come in when it closes");
             Assert.That(front.Pieces.Count(p => !p.OnlyWhileOpen), Is.EqualTo(1), "one sign, always out");
+            Assert.That(front.Pieces.Single(p => !p.OnlyWhileOpen).HideWhileInside, Is.True, "the sign hangs on the wall");
+            Assert.That(front.Pieces.Where(p => p.OnlyWhileOpen).All(p => !p.HideWhileInside), Is.True, "the displays stand on the ground");
             int displays = front.Pieces.Count(p => p.OnlyWhileOpen);
             Assert.That(displays, Is.InRange(2, 3), "two or three displays");
             Assert.That(front.Pieces.Select(p => p.Id).Distinct().Count(), Is.EqualTo(front.Pieces.Count), "unique piece ids");
@@ -151,13 +171,38 @@ namespace HiddenHarbours.Tests.EditMode
             float walkX = walk.Points[0].x;
             Assert.That(walk.Points.All(p => Mathf.Approximately(p.x, walkX)), Is.True, "the walk runs straight to the door");
             float half = walk.WidthMetres * 0.5f;
+            float door = walk.Points.Max(p => p.y);
             foreach (StoreFrontPiece piece in front.Pieces)
             {
                 Vector2 at = ground + piece.Offset;
+                if (piece.HideWhileInside)
+                {
+                    // Hung on the wall: it may be over the walk's line, but only above the door, never on it.
+                    Assert.That(at.y, Is.GreaterThanOrEqualTo(door), piece.Id + " at " + at + " hangs below the door");
+                    continue;
+                }
                 float halfWide = piece.Sprite.bounds.extents.x;
                 float gap = Mathf.Abs(at.x - walkX) - halfWide - half;
                 Assert.That(gap, Is.GreaterThanOrEqualTo(0f), piece.Id + " at " + at + " stands on the walk");
             }
+        }
+
+        /// <summary>The sign hangs on the wall over the door (the first look: the post sign by the path hid the
+        /// left planter and stood in front of the vehicle row): its middle is over the door, its foot above it,
+        /// drawn just over the building's own picture so the facade's blank board is covered.</summary>
+        [Test]
+        public void TheShippedSign_HangsOverTheDoor_JustInFrontOfTheWall()
+        {
+            StoreFrontDef front = Shipped();
+            StoreFrontPiece sign = front.Pieces.Single(p => p.Id == "front.sign");
+            RouteDef walk = AssetDatabase.FindAssets("t:" + nameof(RouteDef))
+                .Select(g => AssetDatabase.LoadAssetAtPath<RouteDef>(AssetDatabase.GUIDToAssetPath(g)))
+                .Single(r => r != null && r.Id == WalkId);
+            Vector2 at = BuildingGroundPoint(front.BuildingName) + sign.Offset;
+            Vector2 door = walk.Points.OrderByDescending(p => p.y).First();
+            Assert.That(Mathf.Abs(at.x - door.x), Is.LessThan(sign.Sprite.bounds.extents.x), "the sign is over the door");
+            Assert.That(at.y, Is.InRange(door.y, door.y + 1f), "the sign hangs just above the door");
+            Assert.That(sign.SortingOrder, Is.InRange(1061, 1062), "just over the building's picture (1060), under anyone in front");
         }
 
         [Test]

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace HiddenHarbours.World
 {
-    /// <summary>One thing that stands outside a store: its sign, or a display put out while it is open.</summary>
+    /// <summary>One thing outside a store: its sign on the wall, or a display put out while it is open.</summary>
     [Serializable]
     public sealed class StoreFrontPiece
     {
@@ -23,6 +23,10 @@ namespace HiddenHarbours.World
 
         /// <summary>Out only while the store is open, and put away when it closes. Off for the sign.</summary>
         public bool OnlyWhileOpen;
+
+        /// <summary>Hung on the building's wall (the sign board over the door): hidden while the player is
+        /// inside, when the wall itself is taken away to show the room.</summary>
+        public bool HideWhileInside;
     }
 
     /// <summary>
