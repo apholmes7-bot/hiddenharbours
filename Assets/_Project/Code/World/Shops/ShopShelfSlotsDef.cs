@@ -42,6 +42,14 @@ namespace HiddenHarbours.World
         /// and is put away into his storage by hand (buying at the shelf, slice 2). Off for goods that go
         /// straight to the supply locker or the tackle box, and for hand tools (<see cref="NeedsFreeHand"/>).</summary>
         public bool IntoBag;
+
+        /// <summary>This slot's own sold-out card, sized to the slot (a shelf band, two bait tubs), used instead
+        /// of the store's <see cref="ShopShelfSlotsDef.SoldOutSign"/>: the store's card on a small slot covered
+        /// the goods on the band above. Optional; empty keeps the store's card.</summary>
+        public Sprite SoldOutCard;
+
+        /// <summary>The card this slot shows when its line is empty: its own, else the store's.</summary>
+        public Sprite CardOr(Sprite storeCard) => SoldOutCard != null ? SoldOutCard : storeCard;
     }
 
     /// <summary>

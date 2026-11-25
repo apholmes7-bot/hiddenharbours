@@ -252,7 +252,7 @@ namespace HiddenHarbours.Tests.EditMode
             SoldOutSigns signs = MakeStore();
             ShelfSection section = signs.Sections[0];
             Assert.That(section.Buy(2, 0.0), Is.EqualTo(ShelfBuyResult.Bought), "the last tin");
-            Assert.That(section.ActionLabel(2), Is.EqualTo("Tin of Beans: sold out"));
+            Assert.That(section.ActionLabel(2), Is.EqualTo("Tin of Beans: out"));
             Assert.IsFalse(section.ActionAvailable(2), "a sold-out row is greyed");
             Assert.IsTrue(section.ActionAvailable(0));
             Assert.IsTrue(section.ActionAvailable(1));
@@ -329,7 +329,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsTrue(InteractVerb.TryPress(actor, Arc));
             Assert.IsTrue(InteractChooser.IsOpen);
             InteractChoiceList rows = InteractChooser.Rows;
-            Assert.That(rows[1].Label, Is.EqualTo("Oatcakes: sold out"));
+            Assert.That(rows[1].Label, Is.EqualTo("Oatcakes: out"));
             Assert.IsFalse(rows[1].Enabled, "greyed");
             Assert.That(rows.Selected, Is.EqualTo(0));
             Assert.IsTrue(InteractChooser.Step(1));

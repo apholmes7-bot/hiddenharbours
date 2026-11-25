@@ -240,5 +240,90 @@ namespace HiddenHarbours.Tests.EditMode
                             bait.Id + " is taken by no fish a St Peters rod catches");
             }
         }
+
+        /// <summary>Every row a shipped section can show fits the chooser's widest line whole, its number and
+        /// the chooser's own reason on a greyed row included: the first look cut the sold-out bait row to
+        /// "sold out (not ...". Checked with the most the shelf can hold and the good's real name and price.</summary>
+        [Test]
+        public void EverySectionsRow_SoldOutOrNot_FitsTheChoosersLineWhole()
+        {
+            var supplies = IslandSupplyTestData.LoadAll<SupplyDef>();
+            var baits = IslandSupplyTestData.LoadAll<BaitDef>();
+            string reason = " " + HiddenHarbours.UI.InteractChooserStrings.ReasonOpen
+                            + HiddenHarbours.UI.InteractChooserLayout.ReasonFor(InteractChoiceBlock.Unavailable)
+                            + HiddenHarbours.UI.InteractChooserStrings.ReasonClose;
+            int widest = HiddenHarbours.UI.InteractChooserLayout.MaxRowCharacters;
+            int checkedRows = 0;
+            foreach (ShopShelfSlotsDef def in _all)
+                foreach (ShopShelfSection section in def.Sections)
+                    for (int k = 0; k < section.SlotIds.Count; k++)
+                    {
+                        ShopShelfSlot slot = def.Slots.Single(s => s.Id == section.SlotIds[k]);
+                        Assert.IsTrue(RowNameAndPrice(slot, supplies, baits, out string name, out int price),
+                                      slot.ListingId + " is neither a supply nor a bait");
+                        int most = _shelves.Where(s => s.ShopId == def.ShopId).SelectMany(s => s.Lines)
+                                           .Where(l => l.Id == slot.LineId).Select(l => l.MaxOnShelf).DefaultIfEmpty(99).Max();
+                        string number = (k + 1).ToString(System.Globalization.CultureInfo.InvariantCulture) + "  ";
+                        string open = number + string.Format(ShelfGood.ChoiceLabelFormat, name, MoneyFormat.Balance(price), most);
+                        string gone = number + string.Format(ShelfGood.ChoiceSoldOutFormat, name) + reason;
+                        Assert.That(open.Length, Is.LessThanOrEqualTo(widest), "cut: \"" + open + "\"");
+                        Assert.That(gone.Length, Is.LessThanOrEqualTo(widest), "cut: \"" + gone + "\"");
+                        checkedRows++;
+                    }
+            Assert.That(checkedRows, Is.GreaterThan(0), "no section rows found");
+        }
+
+        /// <summary>A section good's sold-out card covers its own slot only: no two section slots' cards
+        /// overlap, so a card never hides a neighbour's goods (the first look: the store's card on the sea worm
+        /// covered the tins on the band above). Read from each slot's own card, else the store's.</summary>
+        [Test]
+        public void EverySectionsSoldOutCard_CoversItsOwnSlotOnly()
+        {
+            int compared = 0;
+            foreach (ShopShelfSlotsDef def in _all)
+            {
+                var slots = def.Sections.SelectMany(s => s.SlotIds).Distinct()
+                               .Select(id => def.Slots.Single(s => s.Id == id))
+                               .Where(s => !s.HideSoldOutCard).ToList();
+                for (int a = 0; a < slots.Count; a++)
+                    for (int b = a + 1; b < slots.Count; b++)
+                    {
+                        Rect ra = CardRect(def, slots[a]), rb = CardRect(def, slots[b]);
+                        float w = Mathf.Min(ra.xMax, rb.xMax) - Mathf.Max(ra.xMin, rb.xMin);
+                        float h = Mathf.Min(ra.yMax, rb.yMax) - Mathf.Max(ra.yMin, rb.yMin);
+                        Assert.IsFalse(w > 0.01f && h > 0.01f, slots[a].Id + "'s sold-out card " + ra + " covers " +
+                                                               slots[b].Id + "'s " + rb);
+                        compared++;
+                    }
+            }
+            Assert.That(compared, Is.GreaterThan(0), "no section slots to compare");
+        }
+
+        private static Rect CardRect(ShopShelfSlotsDef def, ShopShelfSlot slot)
+        {
+            Sprite card = slot.CardOr(def.SoldOutSign);
+            Assert.IsNotNull(card, slot.Id + " has no sold-out card");
+            Bounds b = card.bounds;
+            return Rect.MinMaxRect(slot.Offset.x + b.min.x, slot.Offset.y + b.min.y,
+                                   slot.Offset.x + b.max.x, slot.Offset.y + b.max.y);
+        }
+
+        // The row's name and price as the till quotes them: a supply's own, a bait's by the lot (BuyCatalog).
+        private static bool RowNameAndPrice(ShopShelfSlot slot, List<SupplyDef> supplies, List<BaitDef> baits,
+                                            out string name, out int price)
+        {
+            SupplyDef s = supplies.FirstOrDefault(d => d.Id == slot.ListingId);
+            if (s != null) { name = s.DisplayName; price = s.Price; return true; }
+            BaitDef b = baits.FirstOrDefault(d => d.Id == slot.ListingId);
+            if (b != null)
+            {
+                int lot = BaitShop.LotSizeOf(b);
+                name = lot > 1 ? b.DisplayName + " x" + lot.ToString(System.Globalization.CultureInfo.InvariantCulture) : b.DisplayName;
+                price = BaitShop.LotPriceOf(b);
+                return true;
+            }
+            name = null; price = 0;
+            return false;
+        }
     }
 }

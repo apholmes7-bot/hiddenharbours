@@ -31,6 +31,7 @@ MonoBehaviour:
     HideSoldOutCard: 1
     NeedsFreeHand: 0
     IntoBag: 0
+    SoldOutCard: {fileID: 0}
   - Id: slot.ice
     LineId: line.ice_bag
     Offset: {x: 1.5, y: -1.1875}
@@ -40,6 +41,7 @@ MonoBehaviour:
     HideSoldOutCard: 0
     NeedsFreeHand: 0
     IntoBag: 0
+    SoldOutCard: {fileID: 0}
   - Id: slot.bait
     LineId: line.bait_box
     Offset: {x: -1.46875, y: -1.0625}
@@ -49,6 +51,7 @@ MonoBehaviour:
     HideSoldOutCard: 0
     NeedsFreeHand: 0
     IntoBag: 0
+    SoldOutCard: {fileID: 21300000, guid: f8e1447364574c5f8215b40919927a63, type: 3}
   - Id: slot.gas
     LineId: line.gas_jerry_can
     Offset: {x: 3, y: 2.9}
@@ -58,6 +61,7 @@ MonoBehaviour:
     HideSoldOutCard: 0
     NeedsFreeHand: 0
     IntoBag: 0
+    SoldOutCard: {fileID: 0}
   - Id: slot.bread
     LineId: line.bread
     Offset: {x: -1.25, y: -0.3125}
@@ -67,6 +71,7 @@ MonoBehaviour:
     HideSoldOutCard: 0
     NeedsFreeHand: 0
     IntoBag: 1
+    SoldOutCard: {fileID: 0}
   - Id: slot.oatcakes
     LineId: line.oatcakes
     Offset: {x: -0.25, y: -0.34375}
@@ -76,6 +81,7 @@ MonoBehaviour:
     HideSoldOutCard: 0
     NeedsFreeHand: 0
     IntoBag: 1
+    SoldOutCard: {fileID: 0}
   - Id: slot.beans
     LineId: line.tinned_beans
     Offset: {x: -0.75, y: -0.75}
@@ -85,6 +91,7 @@ MonoBehaviour:
     HideSoldOutCard: 0
     NeedsFreeHand: 0
     IntoBag: 1
+    SoldOutCard: {fileID: 21300000, guid: 5dc43b4a430d4e35b58c77e6e63c6618, type: 3}
   - Id: slot.sea_worm
     LineId: line.bait_sea_worm
     Offset: {x: -1, y: -1.0625}
@@ -94,6 +101,7 @@ MonoBehaviour:
     HideSoldOutCard: 0
     NeedsFreeHand: 0
     IntoBag: 0
+    SoldOutCard: {fileID: 21300000, guid: f8e1447364574c5f8215b40919927a63, type: 3}
   - Id: slot.squid_strip
     LineId: line.bait_squid_strip
     Offset: {x: -0.53125, y: -1.0625}
@@ -103,6 +111,7 @@ MonoBehaviour:
     HideSoldOutCard: 0
     NeedsFreeHand: 0
     IntoBag: 0
+    SoldOutCard: {fileID: 21300000, guid: f8e1447364574c5f8215b40919927a63, type: 3}
   - Id: slot.shucked_clam
     LineId: line.bait_shucked_clam
     Offset: {x: -0.0625, y: -1.0625}
@@ -112,6 +121,7 @@ MonoBehaviour:
     HideSoldOutCard: 0
     NeedsFreeHand: 0
     IntoBag: 0
+    SoldOutCard: {fileID: 21300000, guid: f8e1447364574c5f8215b40919927a63, type: 3}
   Sections:
   - Id: section.food
     VerbLabel: Look at the groceries

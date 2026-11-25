@@ -16,8 +16,9 @@ orders are the counter's catalogue book, not shelves.
 - Each row says the item, its price and how many are left: `Oatcakes — ₲2 · 5 left`.
 - Choosing a row buys one, exactly as a single shelf spot does today: the same money, the same paper bag or
   hand, the same purchase records the save already keeps. Nothing new is saved.
-- Each item still has its own stock. A sold-out item reads `Tin of Beans — sold out`, is greyed and cannot
-  be picked, and its sold-out card still stands on the shelf.
+- Each item still has its own stock. A sold-out item reads `Tin of Beans: out (not now)`, is greyed and
+  cannot be picked, and its sold-out card still stands on the shelf. Every row, sold out or not, fits the
+  chooser's widest line (34 characters with its number and the chooser's reason; a test holds it).
 - Sections are data (a list on the store's shelf-slots asset), so adding an item to a section is an asset
   edit, not code. A section holds at most as many items as the chooser shows rows (6 today).
 
@@ -112,6 +113,12 @@ The rod: four rods on the bottom shelf at ₲60 (owner: fine). The rod's shelf p
 the store then needs a slot `slot.rod` at (-0.75, -1.3125) with the rods picture and the slot id added to
 `section.fishing`. Rod stats and the fishing controller are another lane's and are not touched here.
 Hooks, line and sinkers are not items in the game (the rod is the gear).
+
+Sold-out cards are sized to their slot: a bait that runs out shows a small `OUT` card over its own two tubs
+(14 by 8 pixels), and the beans a one-line `SOLD OUT` card over their own band (34 by 8), so a card never
+covers the goods beside or above it (the first look: the store's 19 by 15 card on the sea worm hid the tins
+above). The bread and oatcakes keep the store's card, which fits their taller places. A test holds that no
+two section cards overlap.
 
 ### 3. Ice: the chest (unchanged)
 
