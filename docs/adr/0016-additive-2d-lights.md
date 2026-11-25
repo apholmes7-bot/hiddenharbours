@@ -1102,7 +1102,8 @@ exist. It changes how a lamp is DRAWN, never when it shows, how big its bloom is
   and the people on it. Turning it on for shore lamps needs a deck mask (a screen mask of what is drawn over the
   water, as the hulls already publish), which this change does not add.
 - **The cabin pane** (`BoatWindowGlow`). Each pane now knows its own size in pixels (UV1). It draws a dark frame
-  and centre mullions on panes wide enough to carry them, a warm gradient brighter at the sill than the head,
+  and no cross bar (a cross is a house window's, not marine glass: the owner, 2026-11-25; the bar is still there
+  as `MullionPixels` and ships 0), a warm gradient brighter at the sill than the head,
   and, when switched on, a slight breath (`Breath`) from the game clock and a seed taken from the hull's name. It ships
   steady (`Breath` 0). A navigation lamp never breathes.
 - **The house window** (`SpriteLitDecor.hlsl`). The baked emitter sheet is unchanged; the shader measures each
@@ -1129,7 +1130,7 @@ texture, no new full-screen pass, no save change.
 | Navigation streak: strength, length m, width m, drop m, row px, breakup, wobble, speed, height share | `_navStreak` | 0.42, 3.6, 0.34, 0.15, 2, 0.4, 0.35, 0, 0.45 |
 | Shore lens | `_shoreLens` | 0.22, 1, 0.8, 0.3, 0.65, 0.28, 0.18, 3, 0.5, 0.9, 0.2, 0 |
 | Shore streak (off: needs a deck mask) | `_shoreStreak` | 0, 3.2, 0.4, 0.6, 2, 0.42, 0.35, 0, 1 |
-| Panes: head, sill, centre lift, bands, frame px, mullion px, mullion min px, breath, breath speed, probe texels, across falloff, unevenness, tint variation, second room colour | `_panes` | 0.62, 1, 0.22, 3, 1, 1, 7, 0, 0.7, 6, 0.25, 0.06, 0.5, (1, 0.7, 0.4) |
+| Panes: head, sill, centre lift, bands, frame px, mullion px, mullion min px, breath, breath speed, probe texels, across falloff, unevenness, tint variation, second room colour | `_panes` | 0.62, 1, 0.22, 3, 1, 0, 7, 0, 0.7, 6, 0.25, 0.06, 0.5, (1, 0.7, 0.4) |
 | A window glow lights the ground, not a disc | `_windowSpillIsPool` | on |
 | Lamps, streaks and cabin panes sort among the world | `_sortInWorld` | on |
 

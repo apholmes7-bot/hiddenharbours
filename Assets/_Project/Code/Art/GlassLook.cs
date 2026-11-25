@@ -111,7 +111,9 @@ namespace HiddenHarbours.Art
             [Range(0, 8)] public int Bands;
             [Tooltip("Dark frame inside the pane's edge, art pixels (boat panes only; house windows carry their own).")]
             [Min(0f)] public float FramePixels;
-            [Tooltip("Mullion bar width, art pixels (boat panes only). 0 = none.")]
+            [Tooltip("Mullion bar width, art pixels (boat panes only). 0 = none, and boats ship 0: a cross bar " +
+                     "is a house window's, not marine glass. Each boat pane is already its own light between " +
+                     "the rig's posts; house windows carry their crosses in their own art.")]
             [Min(0f)] public float MullionPixels;
             [Tooltip("A pane gets a mullion across a side only when that side is at least this many art pixels.")]
             [Min(0f)] public float MullionMinPixels;
@@ -165,7 +167,7 @@ namespace HiddenHarbours.Art
         [SerializeField] private PaneLook _panes = new PaneLook
         {
             HeadLevel = 0.62f, SillLevel = 1f, CentreLift = 0.22f, Bands = 3,
-            FramePixels = 1f, MullionPixels = 1f, MullionMinPixels = 7f,
+            FramePixels = 1f, MullionPixels = 0f, MullionMinPixels = 7f,
             Breath = 0f, BreathSpeed = 0.7f, ProbeTexels = 6,
             AcrossFalloff = 0.25f, Unevenness = 0.06f, TintVariation = 0.5f,
             TintAlt = new Color(1f, 0.7f, 0.4f, 1f),
