@@ -12,8 +12,9 @@ personal Notebook credit. Ordinary licences follow the current outfit rule; limi
 licences remain scarce world rights, with explicit rules for who may work under them.
 These goods, sale and finite-holder details are recommendations, not new approvals.
 
-This is a source-based options document at `c626cea10d1cb496df41cca2f9ab2f580ad47b28`,
-save version 25. No code, saved field, content or existing tuning value changes here.
+This is a source-based options document reconciled with
+`d46bde303e6aa256d23d47a05ede5d7d6f38e51e` (2026-11-25), save version 26.
+No code, saved field, content or existing tuning value changes here.
 The comparison concerns the island-only first week and demo: arrival and lodging,
 clams, shore fishing, the broken dory at the St Peters slip, repair by hand, launch and
 fishing aboard. Other regions remain closed by weather until the islander's word
@@ -35,13 +36,14 @@ design rather than current runtime state.
 | Current source | Consequence for two players |
 |---|---|
 | [PlayerWallet](../../Assets/_Project/Code/Player/PlayerWallet.cs), [IWallet](../../Assets/_Project/Code/Core/Economy/IWallet.cs), `GameServices.Wallet`, `SaveData.Money` | One balance. Existing vendor overloads accept an `IWallet`, which is useful, but scene providers and global reads select only one today. There is no account identity, transfer or joint-approval policy. |
-| [BuyCatalog.Confirm](../../Assets/_Project/Code/Economy/BuyCatalog.cs#L344), [IslandStoreShelves](../../Assets/_Project/Code/Economy/Island/IslandStoreShelves.cs#L127) | Count is checked, the vendor spends/grants, then the shelf takes a unit. This sequential solo path is not a coordinated two-actor commit. `_draws` records purchases in memory; time/seed alone cannot restore them. Stock is one pool per shop/line, never one pool per player. |
-| [SupplyShop](../../Assets/_Project/Code/Economy/SupplyShop.cs#L81), `SupplyLocker`, `BaitShop`, `PlayerGear` | Purchases currently mutate flat stock/presence lists. The shelf/paper-bag work is pending separately; no shopping-bag type is present on this pinned main. Its integration must replace these destination assumptions, not add a competing bag implementation. |
+| [BuyCatalog.Confirm](../../Assets/_Project/Code/Economy/BuyCatalog.cs), [IslandStoreShelves](../../Assets/_Project/Code/Economy/Island/IslandStoreShelves.cs), `IslandShelvesHost` | The solo purchase rechecks stock, spends/grants, then debits the shelf inside one deferred-write scope. Version-26 `StorePurchases` rows now retain withdrawals; the host restores them and prunes to the accepted lookback. This is not an actor-attributed, idempotent two-player commit. Stock remains one pool per shop/line. |
+| [SupplyShop](../../Assets/_Project/Code/Economy/SupplyShop.cs), `IslandShelfTill`, [ShoppingBagContents](../../Assets/_Project/Code/Core/Save/ShoppingBagContents.cs), [CarriableShoppingBag](../../Assets/_Project/Code/Player/CarriableShoppingBag.cs) | Main now buys at the shelf into a physical paper bag for bagged goods. Bagged supplies remain owned but set aside until put away. Version-26 rows preserve contents, kind, held/set-down state and world location. The facade selects the first bag row and one standing bag; it has no player carrier id or multiplayer custody policy. Extend this implementation rather than adding a competing bag. |
 | [StoredContainers](../../Assets/_Project/Code/Core/Save/StoredContainers.cs), [StoredContainerDto and StoredItemDto](../../Assets/_Project/Code/Core/Save/SaveRowsV25.cs) | Existing keyed storage is the starting point: `Key`, `ContainerDefId`, `Items`, `Catch`; item rows have `ItemId`, `InstanceId`, `Count`. They do not express a player owner, bag carrier or permission. Legacy pail/boat/freezer catch lists still coexist. |
 | [LicenseService](../../Assets/_Project/Code/Economy/LicenseService.cs), `LicenseVendor`, `LicenseDef`, `ILicenseService` | One set of held class ids in `SaveData.OwnedLicenses`. The runtime has no finite-holder registry or tag ledger. `IsLicensed(id)` has no actor, water or season argument. Unlicensed catches are released, not prevented from being caught. |
 | [OwnedFleet](../../Assets/_Project/Code/Boats/OwnedFleet.cs), `Shipwright`, `RepairLedger`, [HelmSlot](../../Assets/_Project/Code/Core/Boats/HelmSlot.cs) | A roster of hull-type ids drives one active runtime hull and one piloted slot. Repair is currently a saved boolean membership, not stages of hand-work. Buying together does not by itself produce a two-person boarding or helm-claim system. |
 | [WharfSellPoint](../../Assets/_Project/Code/Economy/WharfSellPoint.cs#L142), `CarriedHold`, [SellService](../../Assets/_Project/Code/Economy/SellService.cs#L131), `Market` | A carried-pail path exists, alongside wired-hold paths. Sale takes an `IHold` and `IWallet`, removes fish, updates market supply and pays; it knows neither catcher nor owner. Price uses the current player's trait factor. |
 | [CatchItem](../../Assets/_Project/Code/Core/Economy/CatchItem.cs), `HeldCatchDto`, `CatchRecordLog`, `CatchRecords` | Catch has species, value/weight and freshness, but no owner/catcher instance identity. The one global catch log receives actorless events. Personal Notebook credit must be separated from cargo custody and sale proceeds. |
+| `SaveData.SpecialOrders`, `NextSpecialOrderNumber`, [SaveRowsV26](../../Assets/_Project/Code/Core/Save/SaveRowsV26.cs) | Main already reserves paid-order rows and their numbering; the separate order-book proposal (#1503) binds them. There is no buyer/player field or production counter host. A shared authority must preserve each prepaid obligation once and attribute requests without duplicating these rows. |
 | [SaveService](../../Assets/_Project/Code/Core/Save/SaveService.cs#L174), `SaveData` | `DeferWrites` can defer disk writes while an operation completes; it does not supply rollback, ownership checks or a two-actor transaction. Sleep is the deliberate checkpoint; existing pause/quit/mutation writes also need coherent state. |
 
 ## Purse options
@@ -71,15 +73,16 @@ four different facts.
 
 | Option | Cost in the code on main | First-week feel | What a future save step would need |
 |---|---|---|---|
-| **Outfit-owned goods, individually carried bags — lean** | Lowest ownership overhead, though physical bag integration is still required. Build on the pending shelf/bag implementation and `StoredContainers`, `CarryHands`/`HandSlots`, `IStorageContainer`, `SupplyLocker` and kitchen storage. One bag instance has one carrier or one world/storage location. Consumption checks that location and access, not merely `SupplyStock`. | One player can shop for both and hand over the bag or put its goods away. They can work separate errands if they acquire separate bags; shared ownership does not conjure another bag or another shovel. | Keep each bag/container instance and contents once. Extend location/custody records with container identity, carrier player/hand or grounded region/pose or enclosing storage. Existing `StoredContainerDto.Key` and item `InstanceId` help, but do not supply those missing location facts. Reconcile `SupplyStock`, `BaitStock` and `OwnedGear` with physical contents without duplicating totals. |
+| **Outfit-owned goods, individually carried bags — lean** | Lowest ownership overhead. Extend the existing saved solo bag, `StoredContainers`, `CarryHands`/`HandSlots`, `IStorageContainer`, `SupplyLocker` and kitchen storage for explicit actors. One physical bag has one carrier or world/storage location. Consumption checks that custody and access, not merely `SupplyStock`. | One player can shop for both and hand over the bag or put its goods away. Separate errands require actual separate bags; shared ownership conjures neither a bag nor a shovel. | Preserve existing `ShoppingBags` contents and location once. A later approved extension needs stable bag instance identity, carrier player/hand and enclosing storage or support identity; `Held` alone cannot identify a carrier. Retain current region/position/storey and set-aside accounting instead of inventing duplicate contents. Reconcile physical contents with flat goods totals exactly once. |
 | **Goods belong to the buyer, even when someone else carries them** | Higher: attach owner identity at purchase and carry it through `StoredItemDto`-style stacks, `CarryHands`, put-away, cooking, bait use, gifts and sale. A bag handoff changes carrier, not owner, unless the player explicitly gives it. Merging stacks must retain ownership or refuse the merge. | Personal snacks and tools feel protected, but helping with errands needs permission. A friend carrying the bait may be unable to use it; the distinction must be legible without routine prompts for every action. | Above custody data plus an `OwnerPlayerId` or an owner account reference per physical item/lot; bag ownership alone is insufficient after unpacking. Keep permissions only if they survive a session. Existing counted rows have no owner column. |
 | **Shared provisions, personal tools and keepsakes** | Highest policy coverage: classify item ownership/access in data and make all consumers use the same Core rule. `PlayerGear`'s presence list cannot represent two individually owned shovels. `GiftInventory`, cooking, storage and buying need consistent rules for mixed contents; moving something into a shared bag must not quietly change its owner. | A useful long-term compromise: both can cook with the groceries while a player's keepsake remains his. In the first week it needs explanation about which objects are shared and when a gift changes ownership. | Shared instance/location records plus owner ids for personal rows and stable classification in Def data. A bag may contain both kinds, so preserve item/lot ownership through transfer and save. Migration must classify existing items explicitly and conserve their counts. |
 
 Two players taking the final loaf must produce one purchase. The other player sees the
 same sold-out truth. `SoldOutSignRule` remains derived from stock, never a second saved
-flag. Shelf withdrawals and delivery/use history that depend on actions must survive
-a later save step; neither shelf fullness nor a paid bag can be regenerated from the
-clock alone. `SaveData` v25 has no shelf withdrawal history or bag carrier field.
+flag. Main already saves shelf withdrawals in `StorePurchases` and bag state in
+`ShoppingBags`; neither is regenerated from the clock alone. Deliveries, villagers'
+use and shelf fullness remain recomputed, not extra saved stock snapshots. These
+solo rows provide no buyer, carrier-player or durable retry identity for two players.
 
 ## Licences, finite rights and crewing
 
@@ -87,7 +90,8 @@ An ordinary counter licence and one of a fixed number of fishery rights are not 
 same kind of stock. The [limited-licence design, sections 8–11](limited-licences-and-crewing.md#8-determinism-and-the-save-rule-5)
 proposes `LimitedLicenceDef`, `ILimitedLicenceRegistry` and `ICatchAllowance`; these
 types are not implemented on the audited main. Its later save step is separate from
-the pending version-26 work. This document does not approve or implement either step.
+the accepted version-26 store-purchase, special-order and bag rows. This document
+does not approve or implement finite-holder persistence.
 
 | Option | Cost in the code on main | First-week feel | What a future save step would need |
 |---|---|---|---|
@@ -96,7 +100,8 @@ the pending version-26 work. This document does not approve or implement either 
 | **One named holder, partners work under explicit crew/permission rules — lean for resolving later finite-right ambiguity** | Most rule work: retain one finite right and implement an actor-aware permission view of it, using boat, water, season and story arrangement. The proposed `ICatchAllowance` must consume the holder's shared tags. `PlacedTrapService`, pot work and `CatchLicensePolicy` need the same entitlement decision through Core. Do not make proximity to the holder an accidental grant. | Two friends can work toward one scarce right and crew it together, preserving “hand first, holder later.” A partner fishing alone ashore may still release the catch unless the arrangement actually permits it. The first week needs no auction or lease system to explain this future rule. | One licence holder; durable crew/under-licence agreements if chosen; licence/season usage; transfer and lease overrides. Player identity is required even with shared money. Existing `PlacedTrapDto` lacks the acting player/licence attribution needed to enforce a shared allotment. |
 
 For all three, every catch is evaluated: an uncovered catch is let go rather than
-blocking the fishing action. Catcher credit can record that release. A right held by
+blocking the fishing action. An unlicensed release makes no personal Notebook catch
+entry. A right held by
 an NPC must not silently become the outfit's just because a friend joins. Seeded NPC
 holder history can remain computed; player-caused transfers and agreements cannot.
 
@@ -143,7 +148,8 @@ they do not authorize a schema or allocate a version number. Keep old saves read
 map existing personal state to one original player, and account for every old coin,
 licence, boat and unit of goods exactly once.
 
-- **World facts:** `Money` if shared; shelf withdrawals/delivery history; market supply
+- **World facts:** `Money` if shared; existing `StorePurchases`, paid `SpecialOrders`
+  and `ShoppingBags` retained once (delivery and routine use stay recomputed); market supply
   affected by sales; `OwnedBoats`/`RepairedBoats` mapped to physical boats; `HullFuel`,
   `HullInstruments` and instrument preferences; `PlacedTraps`; container contents,
   freshness and locations; limited-right transfers/usage when that phase is approved.
