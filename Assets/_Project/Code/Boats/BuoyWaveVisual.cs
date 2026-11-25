@@ -158,6 +158,11 @@ namespace HiddenHarbours.Boats
         private Vector4[] _paletteFrom;         // the owner's paint swap (null = the float as baked)
         private Vector4[] _paletteTo;
         private int _paletteCount;
+        private bool _ride;                     // a small float riding the surface (ConfigureRide)
+        private float _rideFollow;
+        private float _rideDraftMeters;
+        private float _rideFreeboardMeters;
+        private float _drawScale = 1f;          // the pot floats' drawn size against true size
 
         private bool _baseCached;
         private Vector3 _baseLocalPosition;
@@ -234,6 +239,45 @@ namespace HiddenHarbours.Boats
             if (sprite == null || sprite.rect.height <= 0f || sprite.pixelsPerUnit <= 0f) return;
             ConfigureFloatGeometry(sprite.rect.height / sprite.pixelsPerUnit,
                                    sprite.pivot.y / sprite.rect.height, slopeFollow: 0f);
+        }
+
+        /// <summary>True once <see cref="ConfigureRide"/> has made this a small float riding the surface.</summary>
+        public bool RidesTheSurface => _ride;
+
+        /// <summary>The drawn size against true size (1 = true size). For tests / tooling.</summary>
+        public float DrawScale => _drawScale;
+
+        /// <summary>
+        /// <b>A small float rides the surface.</b> The bob above was tuned on a 1 m cork whose waterline
+        /// climbs by the whole wave height; on a 15 cm foam float that swamps the body on every crest and
+        /// lifts it clean out, eye and all, in every trough. A float this small follows the water: it
+        /// lifts by <paramref name="follow"/> of the wave and only the rest climbs its side, and that
+        /// climb is held to its own body, from <paramref name="draftMeters"/> below the still line (a
+        /// trough shows the body's foot, never the eye) to <paramref name="freeboardMeters"/> above (only
+        /// a big crest washes over the top). All three come from data (GameConfig and the float's def,
+        /// measured off the rig). Nav marks never call this, so they ride exactly as before.
+        /// </summary>
+        public void ConfigureRide(float follow, float draftMeters, float freeboardMeters)
+        {
+            bool ok = follow > 0f && follow <= 1f && draftMeters > 0f && freeboardMeters > 0f;
+            _ride = ok;
+            if (!ok) return;
+            _rideFollow = follow;
+            _rideDraftMeters = draftMeters;
+            _rideFreeboardMeters = freeboardMeters;
+        }
+
+        /// <summary>
+        /// Draw the float <paramref name="scale"/> times its true size (the owner's
+        /// <c>GameConfig.PotFloatDrawScale</c>). Scales the visual child about its pivot, which is the
+        /// still waterline, so the float stays seated; the wave's climb is measured against the drawn
+        /// body. 1 = true size.
+        /// </summary>
+        public void ConfigureDrawScale(float scale)
+        {
+            _drawScale = float.IsNaN(scale) ? 1f : Mathf.Max(0.01f, scale);
+            Transform t = _visual != null ? _visual : (_renderer != null ? _renderer.transform : null);
+            if (t != null) t.localScale = new Vector3(_drawScale, _drawScale, 1f);
         }
 
         /// <summary>
@@ -408,8 +452,18 @@ namespace HiddenHarbours.Boats
         private void ApplyHeight(float height, float totalAmplitude)
         {
             // --- Turn the one Height read into bob + waterline + vanish (the pure math) ------------
-            float bob = BuoyWaveMath.BobOffset(height, _bobPerMeter, _maxBob);
-            float waterline = BuoyWaveMath.WaterlineFraction(height, _floatLineFrac, _restOffsetMeters, _buoyHeightMeters);
+            float bob, waterline;
+            if (_ride)
+            {
+                bob = BuoyWaveMath.BobOffset(height, _rideFollow, _maxBob);
+                waterline = BuoyWaveMath.RideWaterlineFraction(height, _floatLineFrac, _buoyHeightMeters, _rideFollow,
+                                                               _rideDraftMeters, _rideFreeboardMeters, _drawScale);
+            }
+            else
+            {
+                bob = BuoyWaveMath.BobOffset(height, _bobPerMeter, _maxBob);
+                waterline = BuoyWaveMath.WaterlineFraction(height, _floatLineFrac, _restOffsetMeters, _buoyHeightMeters);
+            }
             float swampThreshold = BuoyWaveMath.SwampThreshold(totalAmplitude, _swampThresholdFraction, _swampMinThresholdMeters);
             float alpha = BuoyWaveMath.VanishAlpha(height, swampThreshold, _swampFadeBandMeters);
 

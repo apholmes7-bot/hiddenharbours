@@ -118,7 +118,12 @@ namespace HiddenHarbours.Boats
                 GameConfig cfg = GameServices.Config;
                 buoy.ConfigureFloatFromSprite(art);
                 buoy.ConfigureWaterlineArc(cfg != null ? cfg.LobsterFloatRadiusMeters : 0f);
-                if (cfg != null) buoy.ConfigurePaint(cfg.PlayerPotFloatColour, cfg.PlayerPotFloatBandColour);
+                if (cfg != null)
+                {
+                    buoy.ConfigurePaint(cfg.PlayerPotFloatColour, cfg.PlayerPotFloatBandColour);
+                    buoy.ConfigureRide(cfg.PotFloatSurfaceFollow, cfg.LobsterFloatDraftMeters, cfg.LobsterFloatFreeboardMeters);
+                    buoy.ConfigureDrawScale(cfg.PotFloatDrawScale);
+                }
             }
 
             _buoys[e.InstanceId] = go;

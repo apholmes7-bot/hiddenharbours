@@ -196,6 +196,10 @@ MonoBehaviour:
   PlayerPotFloatColour: {r: 0.8784314, g: 0.69411767, b: 0.22745098, a: 1}
   PlayerPotFloatBandColour: {r: 0.6117647, g: 0.2901961, b: 0.23529412, a: 1}
   PotFloatBandColour: {r: 0.16470589, g: 0.23137255, b: 0.32156864, a: 1}
+  LobsterFloatDraftMeters: 0.08
+  LobsterFloatFreeboardMeters: 0.17
+  PotFloatSurfaceFollow: 0.75
+  PotFloatDrawScale: 1
   MarketDemandCove: 1
   MarketDemandNineMileCreek: 1.4
   MarketDemandStPetersStore: 0.7

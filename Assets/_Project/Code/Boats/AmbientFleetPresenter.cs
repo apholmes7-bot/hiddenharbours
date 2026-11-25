@@ -383,6 +383,12 @@ namespace HiddenHarbours.Boats
                     wave.ConfigureFloatFromSprite(buoySprite);
                     wave.ConfigureWaterlineArc(def.BuoyFloatRadiusMeters);
                     wave.ConfigurePaint(tint, band);
+                    if (GameServices.Config != null)
+                    {
+                        wave.ConfigureRide(GameServices.Config.PotFloatSurfaceFollow,
+                                           def.BuoyDraftMeters, def.BuoyFreeboardMeters);
+                        wave.ConfigureDrawScale(GameServices.Config.PotFloatDrawScale);
+                    }
                 }
 
                 fleet.Boats[b] = fisher;

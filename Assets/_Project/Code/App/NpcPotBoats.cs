@@ -514,6 +514,14 @@ namespace HiddenHarbours.App
             pot.Wave.ConfigurePaint(def.BuoyColour,
                                     GameServices.Config != null ? GameServices.Config.PotFloatBandColour
                                                                 : (Color)PotFloatPaint.BakedBand);
+            // It rides the surface like the small float it is (its body's draft and freeboard from its trap
+            // kind, how much of the wave it follows from GameConfig), at the owner's drawn size.
+            if (GameServices.Config != null)
+            {
+                pot.Wave.ConfigureRide(GameServices.Config.PotFloatSurfaceFollow,
+                                       def.Trap.BuoyDraftMeters, def.Trap.BuoyFreeboardMeters);
+                pot.Wave.ConfigureDrawScale(GameServices.Config.PotFloatDrawScale);
+            }
             pot.Wave.enabled = false;
             pot.BuoyRoot.SetActive(false);
 

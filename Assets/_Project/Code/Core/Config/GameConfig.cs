@@ -656,6 +656,22 @@ namespace HiddenHarbours.Core
                  "matches the player's rust band.")]
         public Color PotFloatBandColour = new Color32(0x2a, 0x3b, 0x52, 0xff);
 
+        [Header("Pot floats on the water (the ride and the drawn size)")]
+        [Tooltip("How far a trough may lower the player's spindle float's waterline, in metres (META.bullet.draft): " +
+                 "down toward its foot, never so far that its rope eye shows.")]
+        [Min(0f)] public float LobsterFloatDraftMeters = 0.08f;
+        [Tooltip("How far a crest may raise the player's spindle float's waterline, in metres (META.bullet.freeboard): " +
+                 "up to its shoulder band, so a crest washes over the body but never swamps the whole float.")]
+        [Min(0f)] public float LobsterFloatFreeboardMeters = 0.17f;
+        [Tooltip("How much of the wave a small foam float follows (0..1). It lifts by this share of the wave " +
+                 "height and only the rest climbs its side, held within its own reach (draft below, freeboard above). " +
+                 "Every pot and marker float rides this way; the navigation marks keep their own bob.")]
+        [Range(0.05f, 1f)] public float PotFloatSurfaceFollow = 0.75f;
+        [Tooltip("The pot and marker floats' drawn size against their true size (1 = true size: a spindle " +
+                 "float ~6 px wide at 32 px a metre). One number for every float; the waterline arc and the " +
+                 "ride scale with it.")]
+        [Range(0.5f, 3f)] public float PotFloatDrawScale = 1f;
+
         [Header("Market (VS-16)")]
         [Tooltip("Demand D at the home cove (Coddle Cove) in priceMult = 1/(1+e·S/D). 1 = neutral baseline.")]
         [Min(0.01f)] public float MarketDemandCove = 1f;

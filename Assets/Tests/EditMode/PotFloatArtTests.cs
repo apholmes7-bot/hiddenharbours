@@ -154,7 +154,7 @@ namespace HiddenHarbours.Tests.EditMode
             PotFloatPaint.PaintRamp(PotFloatPaint.BakedBand, cs); paint.AddRange(cs);
 
             var known = new HashSet<string>(paint.Select(ToHex));
-            foreach (string k in new[] { "STICK", "ROPE", "GROW", "DARK" })
+            foreach (string k in new[] { "STICK", "ROPE", "GROW", "DARK", "SHADE" })
                 foreach (Color32 c in RigRamp($"PotFloat.FIXED.{k}")) known.Add(ToHex(c));
 
             Color32[] png = CommittedSheet(out _, out _);
@@ -208,6 +208,47 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual("PotFloats_bullet", lobster.BuoySprite != null ? lobster.BuoySprite.name : null);
             Assert.AreEqual("PotFloats_ball", crab.BuoySprite != null ? crab.BuoySprite.name : null);
             Assert.AreEqual("PotFloats_spar", fleet.BuoySprite != null ? fleet.BuoySprite.name : null);
+        }
+
+        static double MetaOf(string shape, string key) =>
+            _host.EvaluateNumber($"PotFloat.META['{shape}'].{key}");
+
+        [Test]
+        public void TheRideBoundsInDataAreTheRigsOwn()
+        {
+            var cfg = AssetDatabase.LoadAssetAtPath<GameConfig>(ConfigPath);
+            var lobster = AssetDatabase.LoadAssetAtPath<TrapDef>(LobsterPath);
+            var crab = AssetDatabase.LoadAssetAtPath<TrapDef>(CrabPath);
+            var fleet = AssetDatabase.LoadAssetAtPath<AmbientFleetDef>(FleetPath);
+
+            Assert.AreEqual(MetaOf("bullet", "draft"), cfg.LobsterFloatDraftMeters, 1e-4, "GameConfig draft");
+            Assert.AreEqual(MetaOf("bullet", "freeboard"), cfg.LobsterFloatFreeboardMeters, 1e-4, "GameConfig freeboard");
+            Assert.AreEqual(MetaOf("bullet", "draft"), lobster.BuoyDraftMeters, 1e-4, "lobster draft");
+            Assert.AreEqual(MetaOf("bullet", "freeboard"), lobster.BuoyFreeboardMeters, 1e-4, "lobster freeboard");
+            Assert.AreEqual(MetaOf("ball", "draft"), crab.BuoyDraftMeters, 1e-4, "crab draft");
+            Assert.AreEqual(MetaOf("ball", "freeboard"), crab.BuoyFreeboardMeters, 1e-4, "crab freeboard");
+            Assert.AreEqual(MetaOf("spar", "draft"), fleet.BuoyDraftMeters, 1e-4, "fleet draft");
+            Assert.AreEqual(MetaOf("spar", "freeboard"), fleet.BuoyFreeboardMeters, 1e-4, "fleet freeboard");
+            Assert.AreEqual(1f, cfg.PotFloatDrawScale, 1e-6, "the drawn size stays true until the owner picks");
+        }
+
+        [Test]
+        public void NoFishersFloatIsMistakenForThePlayersGold()
+        {
+            var cfg = AssetDatabase.LoadAssetAtPath<GameConfig>(ConfigPath);
+            Vector4 gold = PotFloatPaint.Linear((Color32)cfg.PlayerPotFloatColour);
+            string[] guids = AssetDatabase.FindAssets("t:NpcPotDayDef");
+            Assert.IsNotEmpty(guids, "no pot-day defs found");
+            foreach (string g in guids)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(g);
+                var so = new SerializedObject(AssetDatabase.LoadMainAssetAtPath(path));
+                SerializedProperty p = so.FindProperty("BuoyColour");
+                if (p == null) continue;
+                Vector4 c = PotFloatPaint.Linear((Color32)p.colorValue);
+                float d = Mathf.Sqrt((c.x - gold.x) * (c.x - gold.x) + (c.y - gold.y) * (c.y - gold.y) + (c.z - gold.z) * (c.z - gold.z));
+                Assert.Greater(d, 0.25f, $"{path}: its float colour reads as the player's gold");
+            }
         }
     }
 }

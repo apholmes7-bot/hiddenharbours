@@ -128,6 +128,10 @@ namespace HiddenHarbours.Boats
         [Tooltip("That float's radius where it meets still water, in metres (the rig's META.<shape>." +
                  "waterRadius): the curved waterline wraps the body at this width. Unused by the greybox.")]
         [Min(0f)] public float BuoyFloatRadiusMeters;
+        [Tooltip("How far a trough / a crest may move that float's waterline, in metres (META.<shape>.draft and " +
+                 ".freeboard): how far a trough and a crest may move its waterline. 0 = the old cork bob.")]
+        [Min(0f)] public float BuoyDraftMeters;
+        [Min(0f)] public float BuoyFreeboardMeters;
         [Tooltip("NO LONGER READ (ADR 0059 step 2): a buoy sorts by the decor band's Y-sort where it floats, " +
                  "like the player's trap buoys (Core EffectSorting). Kept so existing assets load unchanged.")]
         public int BuoySortingOrder = 3;

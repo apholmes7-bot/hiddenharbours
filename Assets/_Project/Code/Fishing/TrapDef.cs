@@ -38,6 +38,11 @@ namespace HiddenHarbours.Fishing
                  "body at this width. Read off the pot-float rig (META.<shape>.waterRadius; a test holds them " +
                  "together): spindle 0.084, round 0.1149, spar collar 0.104. 0 = the straight cut.")]
         [Min(0f)] public float BuoyFloatRadiusMeters;
+        [Tooltip("How far a trough / a crest may move that float's waterline, in metres (META.<shape>.draft and " +
+                 ".freeboard): how far a trough and a crest may move its waterline (GameConfig." +
+                 "PotFloatSurfaceFollow sets how much of the wave it rides). 0 = the old cork bob.")]
+        [Min(0f)] public float BuoyDraftMeters;
+        [Min(0f)] public float BuoyFreeboardMeters;
         [Tooltip("The pot WET — hauled up dripping, rockweed and barnacles still on her (shown on the deck " +
                  "while she still holds animals). Empty = the dry TrapSprite stands in. Append-only art slot " +
                  "for the owner's *Wet.png states.")]

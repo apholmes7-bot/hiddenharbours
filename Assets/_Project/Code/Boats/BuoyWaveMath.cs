@@ -67,6 +67,26 @@ namespace HiddenHarbours.Boats
         }
 
         /// <summary>
+        /// The waterline of a <b>small float riding the surface</b> (0 base .. 1 top of its sprite). The
+        /// float lifts by <paramref name="follow"/> of the wave, so only <c>(1 - follow)</c> of the
+        /// <paramref name="height"/> climbs its side; that climb is measured against the DRAWN body
+        /// (<paramref name="drawScale"/>) and held to the body itself: no lower than
+        /// <paramref name="draftMeters"/> under the still line, no higher than
+        /// <paramref name="freeboardMeters"/> over it (both in the art's true-size metres). Pure,
+        /// deterministic, allocation-free; NaN or a degenerate float gives the still line.
+        /// </summary>
+        public static float RideWaterlineFraction(float height, float floatLineFrac, float buoyHeightMeters,
+                                                  float follow, float draftMeters, float freeboardMeters,
+                                                  float drawScale)
+        {
+            float baseFrac = Mathf.Clamp01(floatLineFrac);
+            if (float.IsNaN(height) || buoyHeightMeters <= 1e-4f || drawScale <= 1e-4f) return baseFrac;
+            float climb = height * (1f - Mathf.Clamp01(follow)) / drawScale;
+            climb = Mathf.Clamp(climb, -Mathf.Max(0f, draftMeters), Mathf.Max(0f, freeboardMeters));
+            return Mathf.Clamp01(baseFrac + climb / buoyHeightMeters);
+        }
+
+        /// <summary>
         /// The <b>swamp threshold</b> (metres of wave height) at/above which the buoy is under enough
         /// water to VANISH — scaled off the field's <paramref name="totalAmplitude"/> (the sum of the
         /// live trains' amplitudes, <c>WaveTrains.TotalAmplitude</c>) so it stays meaningful across sea

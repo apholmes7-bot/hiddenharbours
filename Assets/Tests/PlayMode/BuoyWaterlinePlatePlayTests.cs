@@ -12,23 +12,29 @@ using HiddenHarbours.Core;
 namespace HiddenHarbours.Tests.PlayMode
 {
     /// <summary>
-    /// <b>The waterline wraps the float: the plate.</b> The real floats, wired the way the game wires
-    /// them (a nav mark through <see cref="NavBuoyVisual"/> from her shipped def; the three pot floats off
-    /// <c>PotFloats.png</c> with their shipped radii and the owner's paint), drawn by the real shader over
-    /// a plain sea, at rest, in a trough and on a crest (with the bob), BEFORE (arc 0, the straight cut)
-    /// and AFTER.
+    /// <b>The waterline wraps the float, and the small floats ride the surface: the plates.</b> The real
+    /// floats, wired the way the game wires them (a nav mark through <see cref="NavBuoyVisual"/> from her
+    /// shipped def; the three pot floats off <c>PotFloats.png</c> with their shipped radii, ride reach and
+    /// the owner's paint), drawn by the real shader over a plain sea, at rest, in a trough and on a crest
+    /// (with the bob), BEFORE (arc 0, the straight cut) and AFTER.
     ///
     /// <para><b>What it proves in pixels, not just numbers.</b> The arc can only ever take water OFF the
     /// near side: every pixel that differs between before and after must lie BELOW the float line, and
     /// the centre column must differ. A difference above the line would mean the arc moved something it
     /// has no business touching; no difference at the centre would mean it never reached the screen.</para>
     ///
-    /// <para><b>Two more plates for the eye.</b> The scale line-up puts each float beside a nav mark, a
-    /// standing fisher and the dory (all at true size, 32 px a metre), with the old painted float for
-    /// comparison; the colour plate paints every shape in every owner's colours from data.</para>
+    /// <para><b>The ride.</b> A pot float lifts with most of the wave and only the rest climbs its side,
+    /// held to its reach in data: a trough never lowers its line past its draft (so the rope eye never
+    /// shows) and a crest never raises it past its freeboard (so the whole float is never swamped). The
+    /// nav marks never opt in and keep the cork bob they had.</para>
     ///
-    /// <para>Pictures land in <c>HH_WATERLINE_PLATES</c> (or the project's own <c>Temp/WaterlinePlates</c>,
-    /// never the shared cache dir): 1 texel = 3 px (the on-foot framing on a 1080p screen) and 4x that.</para>
+    /// <para><b>More plates for the eye.</b> The scale line-up puts each float beside a nav mark, a
+    /// standing fisher and the dory (all at true size, 32 px a metre); the colour plate paints every shape
+    /// in every owner's colours from data; the size comparison draws the floats at 1x, 1.5x and 2x
+    /// (<see cref="GameConfig.PotFloatDrawScale"/>) at the on-foot framing and at sea around the dory.</para>
+    ///
+    /// <para>Pictures land in <c>HH_WATERLINE_PLATES</c> (the size sheets in <c>HH_SIZE_PLATES</c>; both
+    /// default to the project's own <c>Temp/</c>, never the shared cache dir).</para>
     /// </summary>
     public class BuoyWaterlinePlatePlayTests
     {
@@ -36,13 +42,21 @@ namespace HiddenHarbours.Tests.PlayMode
         private const int W = 384, H = 192;            // the plate in TEXELS (1 texel = 1 px)
         private const int GameZoom = 3;                // 1080 / (11.25 m x 32) = the shipped on-foot framing
         private const int CloseZoom = GameZoom * 4;
+        private const int BigBoatZoom = 2;             // the 17-19.5 m boats' framing (16.875 m tall)
+        private const int ScreenW = 1920, ScreenH = 1080;
         private const string SheetPath = "Assets/_Project/Art/Fishing/PotFloats.png";
         private const string OldSheetPath = "Assets/_Project/Art/Fishing/LobsterBuoys.png";
         private const string ConfigPath = "Assets/_Project/Data/Config/GameConfig.asset";
+        private const string FisherPath = "Assets/_Project/Art/Characters/Iso/Fisher_idle.png";
+        private const string FisherSprite = "Fisher_idle_d0_f0";
+        private const string DoryPath = "Assets/_Project/Art/Boats/DoryIso.png";
+        private const string DorySprite = "DoryIso_0";
+        private const string NunPath = "Assets/_Project/Data/NavBuoys/StbdNun.asset";
 
         private readonly List<Object> _made = new List<Object>();
         private Camera _cam;
         private RenderTexture _rt;
+        private int _w = W, _h = H;
 
         private sealed class Float
         {
@@ -50,6 +64,7 @@ namespace HiddenHarbours.Tests.PlayMode
             public BuoyWaveVisual Wave;
             public SpriteRenderer Renderer;
             public float Radius;
+            public float Draft, Freeboard, Scale = 1f;
         }
 
         [TearDown]
@@ -97,9 +112,13 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         /// <summary>A pot float off the sheet, wired as the presenters wire it: geometry off the art,
-        /// the arc at the radius in data, the owner's paint by ramp swap.</summary>
-        private Float PotFloat(string shape, float x, float y, float radius, Color body, Color band)
+        /// the arc at the radius in data, the owner's paint by ramp swap, the ride reach from its def
+        /// and the drawn size.</summary>
+        private Float PotFloat(string shape, float x, float y, Color body, Color band, float scale = 1f)
         {
+            string defPath = DefFor(shape);
+            float radius = Field(defPath, "BuoyFloatRadiusMeters");
+            float draft = Field(defPath, "BuoyDraftMeters"), freeboard = Field(defPath, "BuoyFreeboardMeters");
             Sprite art = SpriteAt(SheetPath, "PotFloats_" + shape);
             var root = Make("PotFloat_" + shape);
             root.transform.position = new Vector3(x, y, 0f);
@@ -113,7 +132,13 @@ namespace HiddenHarbours.Tests.PlayMode
             wave.ConfigureFloatFromSprite(art);
             wave.ConfigureWaterlineArc(radius);
             wave.ConfigurePaint(body, band);
-            return new Float { Name = "PotFloat_" + shape, Wave = wave, Renderer = sr, Radius = radius };
+            wave.ConfigureRide(Config().PotFloatSurfaceFollow, draft, freeboard);
+            wave.ConfigureDrawScale(scale);
+            return new Float
+            {
+                Name = "PotFloat_" + shape, Wave = wave, Renderer = sr, Radius = radius,
+                Draft = draft, Freeboard = freeboard, Scale = scale,
+            };
         }
 
         /// <summary>The OLD painted float (LobsterBuoys_4, tinted yellow as the game drew it), for the
@@ -145,17 +170,18 @@ namespace HiddenHarbours.Tests.PlayMode
             sr.sortingOrder = 5;
         }
 
-        private void BuildStage()
+        private void BuildStage(int w = W, int h = H)
         {
+            _w = w; _h = h;
             var camGo = Make("PlateCamera");
             _cam = camGo.AddComponent<Camera>();
             _cam.orthographic = true;
-            _cam.orthographicSize = H / (2f * Ppu);
-            _cam.transform.position = new Vector3(W / (2f * Ppu), H / (2f * Ppu), -10f);
+            _cam.orthographicSize = h / (2f * Ppu);
+            _cam.transform.position = new Vector3(w / (2f * Ppu), h / (2f * Ppu), -10f);
             _cam.clearFlags = CameraClearFlags.SolidColor;
             _cam.backgroundColor = new Color(0.16f, 0.32f, 0.40f, 1f);   // a plain sea
             _cam.enabled = false;
-            _rt = new RenderTexture(W, H, 0, RenderTextureFormat.ARGB32) { filterMode = FilterMode.Point };
+            _rt = new RenderTexture(w, h, 0, RenderTextureFormat.ARGB32) { filterMode = FilterMode.Point };
             _rt.Create();
             _cam.targetTexture = _rt;
         }
@@ -166,8 +192,8 @@ namespace HiddenHarbours.Tests.PlayMode
             _cam.Render();
             var prev = RenderTexture.active;
             RenderTexture.active = _rt;
-            var img = new Texture2D(W, H, TextureFormat.RGBA32, false);
-            img.ReadPixels(new Rect(0, 0, W, H), 0, 0);
+            var img = new Texture2D(_w, _h, TextureFormat.RGBA32, false);
+            img.ReadPixels(new Rect(0, 0, _w, _h), 0, 0);
             img.Apply();
             RenderTexture.active = prev;
             Color32[] px = img.GetPixels32();
@@ -175,25 +201,28 @@ namespace HiddenHarbours.Tests.PlayMode
             return px;
         }
 
-        private static string Folder()
+        private static string Folder(string envName = "HH_WATERLINE_PLATES", string fallback = "WaterlinePlates")
         {
-            string env = System.Environment.GetEnvironmentVariable("HH_WATERLINE_PLATES");
+            string env = System.Environment.GetEnvironmentVariable(envName);
             string dir = string.IsNullOrEmpty(env)
-                ? Path.GetFullPath(Path.Combine(Application.dataPath, "..", "Temp", "WaterlinePlates"))
+                ? Path.GetFullPath(Path.Combine(Application.dataPath, "..", "Temp", fallback))
                 : env;
             Directory.CreateDirectory(dir);
             return dir;
         }
 
-        private static void Save(Color32[] px, string dir, string name)
+        private static void Save(Color32[] px, string dir, string name) => Save(px, W, H, dir, name, GameZoom, CloseZoom);
+
+        /// <summary>Writes the plate (w x h texels) nearest-neighbour upscaled at each zoom.</summary>
+        private static void Save(Color32[] px, int w, int h, string dir, string name, params int[] zooms)
         {
-            foreach (int z in new[] { GameZoom, CloseZoom })
+            foreach (int z in zooms)
             {
-                var big = new Texture2D(W * z, H * z, TextureFormat.RGBA32, false);
-                var outPx = new Color32[W * z * H * z];
-                for (int y = 0; y < H * z; y++)
-                    for (int x = 0; x < W * z; x++)
-                        outPx[y * W * z + x] = px[(y / z) * W + (x / z)];
+                var big = new Texture2D(w * z, h * z, TextureFormat.RGBA32, false);
+                var outPx = new Color32[w * z * h * z];
+                for (int y = 0; y < h * z; y++)
+                    for (int x = 0; x < w * z; x++)
+                        outPx[y * w * z + x] = px[(y / z) * w + (x / z)];
                 big.SetPixels32(outPx);
                 big.Apply();
                 File.WriteAllBytes(Path.Combine(dir, $"{name}_x{z}.png"), big.EncodeToPNG());
@@ -201,12 +230,43 @@ namespace HiddenHarbours.Tests.PlayMode
             }
         }
 
+        /// <summary>What a 1920x1080 screen shows at a framing zoom, centred on (cx, cy) texels: the crop
+        /// upscaled by the zoom, exactly the player's view.</summary>
+        private static void SaveScreen(Color32[] px, int w, int h, int cx, int cy, int zoom, string dir, string name)
+        {
+            int cw = ScreenW / zoom, ch = ScreenH / zoom;
+            int x0 = Mathf.Clamp(cx - cw / 2, 0, w - cw), y0 = Mathf.Clamp(cy - ch / 2, 0, h - ch);
+            var crop = new Color32[cw * ch];
+            for (int y = 0; y < ch; y++)
+                for (int x = 0; x < cw; x++)
+                    crop[y * cw + x] = px[(y0 + y) * w + (x0 + x)];
+            Save(crop, cw, ch, dir, name, zoom);
+        }
+
+        private static void Outline(Color32[] px, int w, int h, int cx, int cy, int rw, int rh, Color32 c)
+        {
+            int x0 = cx - rw / 2, y0 = cy - rh / 2, x1 = x0 + rw - 1, y1 = y0 + rh - 1;
+            for (int x = x0; x <= x1; x++)
+            {
+                if (x < 0 || x >= w) continue;
+                if (y0 >= 0 && y0 < h) px[y0 * w + x] = c;
+                if (y1 >= 0 && y1 < h) px[y1 * w + x] = c;
+            }
+            for (int y = y0; y <= y1; y++)
+            {
+                if (y < 0 || y >= h) continue;
+                if (x0 >= 0 && x0 < w) px[y * w + x0] = c;
+                if (x1 >= 0 && x1 < w) px[y * w + x1] = c;
+            }
+        }
+
         /// <summary>The float line's screen row and the body's centre column, in plate texels.</summary>
         private void LineAndCentre(Float f, out int row, out int col)
         {
             Sprite s = f.Renderer.sprite;
+            float scale = f.Renderer.transform.lossyScale.y;
             float lineWorldY = f.Renderer.transform.position.y
-                             + (f.Wave.WaterlineFrac * s.rect.height - s.pivot.y) / s.pixelsPerUnit;
+                             + (f.Wave.WaterlineFrac * s.rect.height - s.pivot.y) * scale / s.pixelsPerUnit;
             Vector3 p = _cam.WorldToScreenPoint(new Vector3(f.Renderer.transform.position.x, lineWorldY, 0f));
             row = Mathf.FloorToInt(p.y);
             col = Mathf.FloorToInt(p.x);
@@ -227,6 +287,9 @@ namespace HiddenHarbours.Tests.PlayMode
             { ("rest", 0f), ("trough", -0.35f), ("crest", 0.35f) };
         private const float Amplitude = 2f;   // swamp threshold 1.4 m: none of these crests vanish a float
 
+        private static readonly float[] Sizes = { 1f, 1.5f, 2f };
+        private static string SizeName(float s) => s == 1f ? "1x" : s == 1.5f ? "1_5x" : "2x";
+
         private static GameConfig Config()
         {
             var cfg = AssetDatabase.LoadAssetAtPath<GameConfig>(ConfigPath);
@@ -234,17 +297,34 @@ namespace HiddenHarbours.Tests.PlayMode
             return cfg;
         }
 
-        private static float Radius(string trapOrFleetPath)
+        private static float Field(string path, string field)
         {
-            var so = new SerializedObject(AssetDatabase.LoadMainAssetAtPath(trapOrFleetPath));
-            SerializedProperty p = so.FindProperty("BuoyFloatRadiusMeters");
-            Assert.IsNotNull(p, trapOrFleetPath);
+            var so = new SerializedObject(AssetDatabase.LoadMainAssetAtPath(path));
+            SerializedProperty p = so.FindProperty(field);
+            Assert.IsNotNull(p, $"{path}: {field}");
             return p.floatValue;
         }
 
         private const string LobsterPath = "Assets/_Project/Data/Traps/LobsterTrap.asset";
         private const string CrabPath = "Assets/_Project/Data/Traps/CrabTrap.asset";
         private const string FleetPath = "Assets/_Project/Data/Boats/StPetersAmbientFleet.asset";
+
+        private static string DefFor(string shape) =>
+            shape == "bullet" ? LobsterPath : shape == "ball" ? CrabPath : FleetPath;
+
+        /// <summary>The ride's promise, in the float's own sprite pixels: the line moved by the wave but
+        /// stayed inside the reach in data (never below the draft, so the eye stays under; never above
+        /// the freeboard, so the float is never swamped whole).</summary>
+        private static void AssertRideHeld(Float f, string state, float rest)
+        {
+            Assert.IsTrue(f.Wave.RidesTheSurface, $"{f.Name}: never opted into the ride");
+            Sprite s = f.Renderer.sprite;
+            float line = f.Wave.WaterlineFrac * s.rect.height, pivot = s.pivot.y;
+            float lo = pivot - f.Draft * Ppu - 0.51f, hi = pivot + f.Freeboard * Ppu + 0.51f;
+            Assert.That(line, Is.InRange(lo, hi), $"{f.Name} ({state}, {f.Scale}x): line {line:F2} px outside its reach");
+            if (state == "crest") Assert.Greater(f.Wave.WaterlineFrac, rest, $"{f.Name}: a crest did not climb");
+            if (state == "trough") Assert.Less(f.Wave.WaterlineFrac, rest, $"{f.Name}: a trough did not lower the line");
+        }
 
         [UnityTest]
         public IEnumerator TheWaterlineWrapsEveryFloatAtRestInATroughAndOnACrest()
@@ -259,14 +339,19 @@ namespace HiddenHarbours.Tests.PlayMode
                 NavMark("Assets/_Project/Data/NavBuoys/PortCan.asset", 3.4f, 1.6f),
                 NavMark("Assets/_Project/Data/NavBuoys/Mooring.asset", 5.4f, 1.6f),
                 NavMark("Assets/_Project/Data/NavBuoys/CardinalN.asset", 7.4f, 1.4f),
-                PotFloat("bullet", 9.0f, 1.6f, cfg.LobsterFloatRadiusMeters, gold, rust),
-                PotFloat("ball", 9.8f, 1.6f, Radius(CrabPath), gold, rust),
-                PotFloat("spar", 10.6f, 1.6f, Radius(FleetPath), gold, rust),
+                PotFloat("bullet", 9.0f, 1.6f, gold, rust),
+                PotFloat("ball", 9.8f, 1.6f, gold, rust),
+                PotFloat("spar", 10.6f, 1.6f, gold, rust),
             };
             yield return null;   // Awake/LateUpdate settle; every shot below overrides the wave by hand
 
             foreach (var f in floats)
                 Assert.Greater(f.Radius, 0f, $"{f.Name} never opted into the arc");
+            for (int i = 0; i < 4; i++)
+                Assert.IsFalse(floats[i].Wave.RidesTheSurface, $"{floats[i].Name}: a nav mark must keep its own bob");
+
+            var rest = new Dictionary<Float, float>();
+            foreach (var f in floats) { f.Wave.ApplyWaveHeight(0f, Amplitude); rest[f] = f.Wave.WaterlineFrac; }
 
             string dir = Folder();
             foreach (var st in States)
@@ -281,6 +366,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
                 foreach (var f in floats)
                 {
+                    if (f.Wave.RidesTheSurface) AssertRideHeld(f, st.name, rest[f]);
                     Assert.AreNotEqual(Vector4.zero, f.Wave.WaterlineArc, $"{f.Name}: no arc pushed");
                     LineAndCentre(f, out int row, out int col);
                     Sprite s = f.Renderer.sprite;
@@ -322,15 +408,15 @@ namespace HiddenHarbours.Tests.PlayMode
             BuildStage();
             Color gold = cfg.PlayerPotFloatColour, rust = cfg.PlayerPotFloatBandColour;
 
-            Prop("Assets/_Project/Art/Characters/Iso/Fisher_idle.png", "Fisher_idle_d0_f0", 2.9f, 2.4f);
-            Prop("Assets/_Project/Art/Boats/DoryIso.png", "DoryIso_0", 5.2f, 2.2f);
+            Prop(FisherPath, FisherSprite, 2.9f, 2.4f);
+            Prop(DoryPath, DorySprite, 5.2f, 2.2f);
             var floats = new List<Float>
             {
-                NavMark("Assets/_Project/Data/NavBuoys/StbdNun.asset", 1.1f, 1.8f),
+                NavMark(NunPath, 1.1f, 1.8f),
                 OldFloat(7.6f, 1.8f, cfg.LobsterFloatRadiusMeters),
-                PotFloat("bullet", 8.7f, 1.8f, Radius(LobsterPath), gold, rust),
-                PotFloat("ball", 9.6f, 1.8f, Radius(CrabPath), gold, rust),
-                PotFloat("spar", 10.6f, 1.8f, Radius(FleetPath), gold, rust),
+                PotFloat("bullet", 8.7f, 1.8f, gold, rust),
+                PotFloat("ball", 9.6f, 1.8f, gold, rust),
+                PotFloat("spar", 10.6f, 1.8f, gold, rust),
             };
             yield return null;
 
@@ -346,6 +432,7 @@ namespace HiddenHarbours.Tests.PlayMode
             // taller than the fisher (a 1.8 m man is ~58 px)
             Sprite bullet = floats[2].Renderer.sprite;
             Assert.AreEqual(Ppu, bullet.pixelsPerUnit, 0.01f, "true scale: 32 px a metre");
+            Assert.AreEqual(1f, cfg.PotFloatDrawScale, 1e-6f, "the shipped size stays true until the owner picks");
             Debug.Log($"[BuoyWaterlinePlate] line-up in {dir}");
         }
 
@@ -374,13 +461,12 @@ namespace HiddenHarbours.Tests.PlayMode
 
             string[] shapes = { "bullet", "ball", "spar" };
             float[] rowY = { 0.8f, 2.5f, 4.2f };
-            float[] radius = { Radius(LobsterPath), Radius(CrabPath), Radius(FleetPath) };
             float step = Mathf.Min(0.75f, (W / (float)Ppu - 0.8f) / owners.Count);
             var floats = new List<Float>();
             for (int s = 0; s < shapes.Length; s++)
                 for (int o = 0; o < owners.Count; o++)
                 {
-                    Float f = PotFloat(shapes[s], 0.6f + o * step, rowY[s], radius[s], owners[o].body, owners[o].band);
+                    Float f = PotFloat(shapes[s], 0.6f + o * step, rowY[s], owners[o].body, owners[o].band);
                     bool bodyBaked = (Color32)owners[o].body is var b && b.r == 0xe0 && b.g == 0xb1 && b.b == 0x3a;
                     bool bandBaked = (Color32)owners[o].band is var n && n.r == 0x9c && n.g == 0x4a && n.b == 0x3c;
                     int want = (bodyBaked ? 0 : 5) + (bandBaked ? 0 : 5);
@@ -393,6 +479,91 @@ namespace HiddenHarbours.Tests.PlayMode
             Color32[] shot = Shoot(floats, 0f, Amplitude);
             Save(shot, dir, "colours_rest");
             Debug.Log($"[BuoyWaterlinePlate] colours ({string.Join(", ", owners.ConvertAll(x => x.name))}) in {dir}");
+        }
+
+        /// <summary>
+        /// <b>The size question, for the owner's eye (no size ships from this).</b> The same line-up (a
+        /// nav mark, a standing fisher, the dory, the three floats) with the floats drawn at 1x, 1.5x and
+        /// 2x through the one data value (<see cref="GameConfig.PotFloatDrawScale"/>), at rest, in a
+        /// trough and on a crest:
+        /// <list type="bullet">
+        /// <item>on foot: one row per size, at the on-foot framing (1 texel = 3 px);</item>
+        /// <item>at sea: the dory alone on a 54 m strip with floats 10 m and 25 m off, cut to what a
+        /// 1920x1080 screen shows at the dory's framing (x3, 20 m x 11.25 m) and the big boats' (x2,
+        /// 30 m x 16.875 m), plus the whole strip with both screens outlined (a float 25 m off is off
+        /// both screens: the camera never shows that far).</item>
+        /// </list>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator TheSizeComparisonDrawsTheFloatsAtOneOneAndAHalfAndTwoTimes()
+        {
+            GameConfig cfg = Config();
+            Color gold = cfg.PlayerPotFloatColour, rust = cfg.PlayerPotFloatBandColour;
+            string dir = Folder("HH_SIZE_PLATES", "SizePlates");
+            string[] shapes = { "bullet", "ball", "spar" };
+
+            // ---- on foot: one row per size ---------------------------------------------------------
+            const int footW = 416, footH = 352;     // 13 m x 11 m: 1x at the bottom, 2x at the top
+            float[] rowY = { 0.8f, 3.7f, 7.1f };    // the spar's pole grows with the size, so the rows do too
+            BuildStage(footW, footH);
+            var foot = new List<Float>();
+            for (int r = 0; r < Sizes.Length; r++)
+            {
+                float y = rowY[r];
+                foot.Add(NavMark(NunPath, 1.1f, y));
+                Prop(FisherPath, FisherSprite, 2.9f, y + 0.6f);
+                Prop(DoryPath, DorySprite, 5.2f, y + 0.4f);
+                for (int s = 0; s < shapes.Length; s++)
+                    foot.Add(PotFloat(shapes[s], 7.6f + s * 1.1f * Sizes[r], y, gold, rust, Sizes[r]));
+            }
+            yield return null;
+            foreach (var st in States)
+            {
+                yield return null;
+                Color32[] shot = Shoot(foot, st.height, Amplitude);
+                Save(shot, footW, footH, dir, $"size_onfoot_{st.name}_bottom1x-mid1_5x-top2x", GameZoom);
+                foreach (var f in foot) if (f.Wave.RidesTheSurface) Assert.AreEqual(f.Scale, f.Wave.DrawScale, 1e-6f);
+            }
+
+            // ---- at sea: around the dory, floats 10 m and 25 m off --------------------------------
+            foreach (float size in Sizes)
+            {
+                foreach (var o in _made) if (o != null) Object.DestroyImmediate(o);
+                _made.Clear();
+                if (_rt != null) { _rt.Release(); Object.DestroyImmediate(_rt); _rt = null; }
+
+                const int seaW = 1728, seaH = 540;  // 54 m x 16.875 m
+                BuildStage(seaW, seaH);
+                float cx = seaW / (2f * Ppu), cy = seaH / (2f * Ppu);
+                Prop(DoryPath, DorySprite, cx, cy);
+                Prop(FisherPath, FisherSprite, cx, cy + 0.2f);
+                var sea = new List<Float> { NavMark(NunPath, cx - 6f, cy + 2f) };
+                foreach (float off in new[] { 10f, 25f })
+                    for (int s = 0; s < shapes.Length; s++)
+                    {
+                        sea.Add(PotFloat(shapes[s], cx + off + (s - 1) * 0.7f * size, cy - 1f, gold, rust, size));
+                        sea.Add(PotFloat(shapes[s], cx - off + (s - 1) * 0.7f * size, cy + 1f, gold, rust, size));
+                    }
+                // and one group about 10 m off on the diagonal (8.6 m across, 4.4 m down: 9.7 m), the
+                // whole group inside the dory's screen at every size
+                for (int s = 0; s < shapes.Length; s++)
+                    sea.Add(PotFloat(shapes[s], cx + 8.6f - (2 - s) * 0.7f * size, cy - 4.4f, gold, rust, size));
+                yield return null;
+
+                foreach (var st in States)
+                {
+                    yield return null;
+                    Color32[] shot = Shoot(sea, st.height, Amplitude);
+                    int pcx = seaW / 2, pcy = seaH / 2;
+                    string n = $"size_atsea_{SizeName(size)}_{st.name}";
+                    SaveScreen(shot, seaW, seaH, pcx, pcy, GameZoom, dir, n + "_dory-screen");
+                    SaveScreen(shot, seaW, seaH, pcx, pcy, BigBoatZoom, dir, n + "_bigboat-screen");
+                    Outline(shot, seaW, seaH, pcx, pcy, ScreenW / GameZoom, ScreenH / GameZoom, new Color32(255, 255, 255, 255));
+                    Outline(shot, seaW, seaH, pcx, pcy, ScreenW / BigBoatZoom, ScreenH / BigBoatZoom, new Color32(255, 200, 0, 255));
+                    Save(shot, seaW, seaH, dir, n + "_wide", 1, 2);
+                }
+            }
+            Debug.Log($"[BuoyWaterlinePlate] size sheets in {dir}");
         }
     }
 }

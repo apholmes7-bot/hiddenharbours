@@ -62,7 +62,15 @@
     ROPE:  ['#4f3b22', '#735b3a', '#9c845d', '#c3b28a', '#dcd0ad'],   // manila, wet below
     GROW:  rampOf('#38492f'),                                          // the nav kit's growth
     DARK:  ['#0d1114', '#161b1f', '#222a2f', '#313b41', '#455158'],   // the nav kit's DARK
+    SHADE: rampOf('#1f3a47'),                                          // the float's own shadow on the water
   };
+
+  // The painted coats sit a little UNDER the turntable's mid-tone, so a small lathed body reads its
+  // form (shadow side, base, one lit column) instead of resting on its highlight. Same ramps, a
+  // lower start on them; the cap and shoulder biases below still lift what faces the key.
+  const TONE = -0.55;
+  const tone = (o) => Object.assign({}, o || {}, { b: ((o && o.b) || 0) + TONE,
+    capB: (o && o.capB != null) ? o.capB + TONE : undefined });
 
   // ---- geometry (metres, z up from the still waterline) ------------------------------------------
   const push = (F, a) => { for (const f of a) F.push(f); };
@@ -91,12 +99,22 @@
   // Marine growth and the wet line, the nav kit's band: a hair proud of the hull at the waterline.
   const growth = (F, r) => push(F, tube(-0.035, 0.008, r * 1.03, r * 1.03, 'GROW', { b: -0.35, db: -0.02 }));
 
+  // The float's shadow on the water, the small cousin of the nav marks' dark wet mass: a thin dark
+  // disc at the surface, a little wider than the body and set toward the camera, so it reads below and
+  // around the float. Kept tight (a wet ring, not a skirt): it is painted on the sprite, so when a trough
+  // lowers the line a little it shows as the float's wet foot rather than a dark brim in the air.
+  const SHADOW_SPREAD = 1.2, SHADOW_TOWARD = 0.3;
+  const shadow = (F, r) => push(F, K.tube(0, -r * SHADOW_TOWARD, -0.006, -0.002, r * SHADOW_SPREAD,
+                                            r * SHADOW_SPREAD, SEG, 'SHADE', { caps: 'top', b: -0.2, capB: -0.2 }));
+
   const META = {
     // waterRadius = the body's radius where it meets still water (the engine's curved waterline);
-    // height/width are the painted extents in metres, for the scale line-up.
-    bullet: { name: 'Spindle pot float with stick', waterRadius: 0.084, bodyLength: 0.40, bodyDiameter: 0.17 },
-    ball:   { name: 'Round hard float',             waterRadius: 0.1149, bodyLength: 0.28, bodyDiameter: 0.28 },
-    spar:   { name: 'High-flyer spar marker',       waterRadius: 0.104, bodyLength: 0.44, bodyDiameter: 0.21 },
+    // height/width are the painted extents in metres, for the scale line-up; draft/freeboard are the
+    // most a wave may move the engine's waterline below/above still water: down toward the foot but never
+    // to the rope eye, up to the shoulder band but never over the crown (a crest washes, never swamps).
+    bullet: { name: 'Spindle pot float with stick', waterRadius: 0.084, bodyLength: 0.40, bodyDiameter: 0.17, draft: 0.08, freeboard: 0.17 },
+    ball:   { name: 'Round hard float',             waterRadius: 0.1149, bodyLength: 0.28, bodyDiameter: 0.28, draft: 0.05, freeboard: 0.12 },
+    spar:   { name: 'High-flyer spar marker',       waterRadius: 0.104, bodyLength: 0.44, bodyDiameter: 0.21, draft: 0.09, freeboard: 0.20 },
   };
 
   // Foam floats ride HIGH: about a quarter of the body is under still water.
@@ -104,16 +122,17 @@
     const F = [];
     // the stick: through the float, a painted tip, the eye at its foot
     push(F, tube(-0.22, 0.62, 0.017, 0.016, 'STICK', { seg: 8, b: 0.2 }));
-    push(F, tube(0.62, 0.70, 0.017, 0.015, 'BAND', { seg: 8, caps: 'top', b: 0.35, capB: 0.6 }));
+    push(F, tube(0.62, 0.70, 0.017, 0.015, 'BAND', tone({ seg: 8, caps: 'top', b: 0.35, capB: 0.6 })));
     eye(F, -0.22, 0.035);
     // the spindle body: tapered foot, straight barrel in the body coat, a band on the shoulder
-    push(F, tube(-0.10, -0.06, 0.030, 0.070, 'BODY', { caps: 'bottom', b: -0.1 }));
-    push(F, tube(-0.06, 0.00, 0.070, 0.084, 'BODY'));
-    push(F, tube(0.00, 0.17, 0.084, 0.085, 'BODY'));
-    push(F, tube(0.17, 0.215, 0.085, 0.079, 'BAND', { b: 0.1 }));
-    push(F, tube(0.215, 0.265, 0.079, 0.055, 'BODY', { b: 0.2 }));
-    push(F, tube(0.265, 0.30, 0.055, 0.020, 'BODY', { caps: 'top', b: 0.3, capB: 0.6 }));
+    push(F, tube(-0.10, -0.06, 0.030, 0.070, 'BODY', tone({ caps: 'bottom', b: -0.1 })));
+    push(F, tube(-0.06, 0.00, 0.070, 0.084, 'BODY', tone()));
+    push(F, tube(0.00, 0.17, 0.084, 0.085, 'BODY', tone()));
+    push(F, tube(0.17, 0.215, 0.085, 0.079, 'BAND', tone({ b: 0.1 })));
+    push(F, tube(0.215, 0.265, 0.079, 0.055, 'BODY', tone({ b: 0.2 })));
+    push(F, tube(0.265, 0.30, 0.055, 0.020, 'BODY', tone({ caps: 'top', b: 0.3, capB: 0.6 })));
     growth(F, 0.084);
+    shadow(F, 0.084);
     return F;
   }
 
@@ -121,12 +140,13 @@
     const F = [];
     const R = 0.14, zc = 0.08;
     // one band of the band coat just under the crown: a two-tone hard float
-    sphere(F, zc, R, 10, (i, n) => (i === n - 3 ? 'BAND' : 'BODY'), 0);
+    sphere(F, zc, R, 10, (i, n) => (i === n - 3 ? 'BAND' : 'BODY'), TONE);
     // the moulded ear on the crown and the eye the warp ties to, under water
-    push(F, tube(zc + R - 0.01, zc + R + 0.03, 0.030, 0.026, 'BODY', { seg: 10, caps: 'top', b: 0.3, capB: 0.6 }));
+    push(F, tube(zc + R - 0.01, zc + R + 0.03, 0.030, 0.026, 'BODY', tone({ seg: 10, caps: 'top', b: 0.3, capB: 0.6 })));
     push(F, tube(zc - R - 0.02, zc - R + 0.01, 0.024, 0.028, 'DARK', { seg: 10, caps: 'bottom', b: 0.2 }));
     eye(F, zc - R - 0.02, 0.035);
     growth(F, Math.sqrt(R * R - zc * zc));
+    shadow(F, Math.sqrt(R * R - zc * zc));
     return F;
   }
 
@@ -135,19 +155,20 @@
     // the pole, a counterweight at its foot, and the flag at its head
     push(F, tube(-0.50, 1.52, 0.020, 0.016, 'STICK', { seg: 8, b: 0.2 }));
     push(F, tube(-0.54, -0.44, 0.034, 0.034, 'DARK', { seg: 10, caps: 'both', b: 0.1 }));
-    push(F, tube(1.52, 1.56, 0.016, 0.010, 'BODY', { seg: 8, caps: 'top', b: 0.4, capB: 0.6 }));
+    push(F, tube(1.52, 1.56, 0.016, 0.010, 'BODY', tone({ seg: 8, caps: 'top', b: 0.4, capB: 0.6 })));
     // the flag: a thin panel off the pole, body coat with a band stripe
-    push(F, K.box([0.15, 0, 1.43], [0.13, 0.006, 0.045], 'BODY', 0.35, 0.01));
-    push(F, K.box([0.15, 0, 1.36], [0.13, 0.006, 0.025], 'BAND', 0.35, 0.01));
+    push(F, K.box([0.15, 0, 1.43], [0.13, 0.006, 0.045], 'BODY', 0.35 + TONE, 0.01));
+    push(F, K.box([0.15, 0, 1.36], [0.13, 0.006, 0.025], 'BAND', 0.35 + TONE, 0.01));
     // the collar float on the pole: spindle, band on the shoulder
-    push(F, tube(-0.11, -0.06, 0.035, 0.085, 'BODY', { caps: 'bottom', b: -0.1 }));
-    push(F, tube(-0.06, 0.00, 0.085, 0.104, 'BODY'));
-    push(F, tube(0.00, 0.20, 0.104, 0.105, 'BODY'));
-    push(F, tube(0.20, 0.25, 0.105, 0.097, 'BAND', { b: 0.1 }));
-    push(F, tube(0.25, 0.30, 0.097, 0.060, 'BODY', { b: 0.2 }));
-    push(F, tube(0.30, 0.33, 0.060, 0.022, 'BODY', { caps: 'top', b: 0.3, capB: 0.6 }));
+    push(F, tube(-0.11, -0.06, 0.035, 0.085, 'BODY', tone({ caps: 'bottom', b: -0.1 })));
+    push(F, tube(-0.06, 0.00, 0.085, 0.104, 'BODY', tone()));
+    push(F, tube(0.00, 0.20, 0.104, 0.105, 'BODY', tone()));
+    push(F, tube(0.20, 0.25, 0.105, 0.097, 'BAND', tone({ b: 0.1 })));
+    push(F, tube(0.25, 0.30, 0.097, 0.060, 'BODY', tone({ b: 0.2 })));
+    push(F, tube(0.30, 0.33, 0.060, 0.022, 'BODY', tone({ caps: 'top', b: 0.3, capB: 0.6 })));
     eye(F, -0.54, 0.035);
     growth(F, 0.104);
+    shadow(F, 0.104);
     return F;
   }
   const BUILD = { bullet, ball, spar };
@@ -161,7 +182,7 @@
       BODY: { ramp: paintRamp(opts.body || BAKED.body) },
       BAND: { ramp: paintRamp(opts.band || BAKED.band) },
       STICK: { ramp: FIXED.STICK }, ROPE: { ramp: FIXED.ROPE },
-      GROW: { ramp: FIXED.GROW }, DARK: { ramp: FIXED.DARK },
+      GROW: { ramp: FIXED.GROW }, DARK: { ramp: FIXED.DARK }, SHADE: { ramp: FIXED.SHADE },
     };
     const keyline = opts.keyline != null ? opts.keyline : (opts.outline != null ? opts.outline : undefined);
     return K.paint(F, { W, H, cx, cy, dir: dir || 0, elev: opts.elev, keyline, MATS });
