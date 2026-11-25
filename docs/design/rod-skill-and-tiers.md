@@ -180,19 +180,14 @@ When no line puts anything off, the catch goes through the existing catch roll u
 Example, the new heavy braid (`ShyBelowKg` 2, `ShyDamp01` 0.35): smelt bites at 0.38 of its usual
 rate, tomcod 0.45, cunner 0.55, mackerel 0.84, flounder and everything bigger 1.
 
-### The fight: skill first, gear a little (PROPOSAL, for the owner to confirm)
+### The fight: skill first, gear a little (decided)
 
-The owner leans to the fight being skill only, with better gear making it somewhat easier. The
-split proposed:
-- Most of the fight help comes from the skill (up to +0.30 at level 10 today).
+Owner, 2026-11-25, "Yes, raise skill":
+- Most of the fight help comes from the skill: +0.06 a level, +0.60 at level 10, more than the
+  best rod's own lift (+0.5 on the deep rod).
 - The line and the reel each carry a small fight ease, from 0 on the starter parts to about +0.03
   on the best ones, so the gear's part stays clearly smaller than the skill's.
-- The rod's own lift stays as shipped: 1.0, 1.2 and 1.5 on the three rods.
-
-One thing to decide: the shipped deep rod already lifts +0.5, more than the skill's top +0.30. To
-make the skill the bigger part, either raise the skill's top fight help (for example to +0.60,
-data only, nothing shipped changes) or lower the upper rods' lift (this changes the shipped rods).
-This change does neither; the first is the recommendation.
+- The rod's own lift stays as shipped: 1.0, 1.2 and 1.5 on the three rods; it is not lowered.
 
 ### Today's rods are pre-fitted sets
 
