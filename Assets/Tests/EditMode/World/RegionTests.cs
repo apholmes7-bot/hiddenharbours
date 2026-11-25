@@ -68,15 +68,15 @@ namespace HiddenHarbours.Tests.World.EditMode
         }
 
         [Test]
-        public void BuildAvailability_EnabledBuildScenesAreAvailable()
+        public void BuildAvailability_EnabledEditorEntriesAreAvailable()
         {
-            int count = UnityEngine.SceneManagement.SceneManager.sceneCountInBuildSettings;
-            Assert.Greater(count, 0);
-            for (int i = 0; i < count; i++)
+            var scenes = System.Array.FindAll(UnityEditor.EditorBuildSettings.scenes, entry => entry.enabled);
+            Assert.Greater(scenes.Length, 0);
+            foreach (var entry in scenes)
             {
-                string path = UnityEngine.SceneManagement.SceneUtility.GetScenePathByBuildIndex(i);
-                Assert.IsTrue(RegionBuildAvailability.IsAvailable("", path), path);
-                Assert.IsTrue(RegionBuildAvailability.IsAvailable("", System.IO.Path.GetFileNameWithoutExtension(path)), path);
+                Assert.IsFalse(string.IsNullOrWhiteSpace(entry.path));
+                Assert.IsTrue(RegionBuildAvailability.IsAvailable("", entry.path), entry.path);
+                Assert.IsTrue(RegionBuildAvailability.IsAvailable("", System.IO.Path.GetFileNameWithoutExtension(entry.path)), entry.path);
             }
         }
 
