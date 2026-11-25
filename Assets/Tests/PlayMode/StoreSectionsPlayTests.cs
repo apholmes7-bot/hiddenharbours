@@ -252,8 +252,8 @@ namespace HiddenHarbours.Tests.PlayMode
             for (int r = 0; r < rows.Count; r++) if (ReferenceEquals(rows[r].Candidate, section)) foodRows.Add(r);
             Assert.That(foodRows.Count, Is.EqualTo(3), "a row for each food");
             for (int k = 0; k < 3; k++)
-                Assert.That(rows[foodRows[k]].Label, Is.EqualTo(foods[k].DisplayName + " — " + MoneyFormat.Balance(foods[k].Price)
-                                                                + " · " + before[k] + " left"), "row " + k);
+                Assert.That(rows[foodRows[k]].Label, Is.EqualTo(foods[k].DisplayName + ": " + MoneyFormat.Balance(foods[k].Price)
+                                                                + ", " + before[k] + " left"), "row " + k);
 
             // He picks the second row: the oatcakes.
             Assert.IsTrue(InteractChooser.Pick(foodRows[1]));
@@ -266,8 +266,8 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(shelves.CountAt(lines[0], now), Is.EqualTo(before[0]), "the bread is its own stock");
             Assert.That(shelves.CountAt(lines[2], now), Is.EqualTo(before[2]), "the beans are their own stock");
             Assert.That(StorePurchaseRows.CountFor(save.StorePurchases, slots.ShopId), Is.EqualTo(1), "the purchase is in the game");
-            Assert.That(section.ActionLabel(1), Is.EqualTo(foods[1].DisplayName + " — " + MoneyFormat.Balance(foods[1].Price)
-                                                          + " · " + (before[1] - 1) + " left"), "the row counts down");
+            Assert.That(section.ActionLabel(1), Is.EqualTo(foods[1].DisplayName + ": " + MoneyFormat.Balance(foods[1].Price)
+                                                          + ", " + (before[1] - 1) + " left"), "the row counts down");
         }
     }
 }

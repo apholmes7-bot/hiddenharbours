@@ -35,8 +35,13 @@ namespace HiddenHarbours.World
         public const string SoldOutLabelFormat = "{0} — sold out";
 
         /// <summary>A chooser row in a shelf section while there is stock: name, price, then how many are
-        /// left on the shelf. Loc seam.</summary>
-        public const string ChoiceLabelFormat = "{0} — {1} · {2} left";
+        /// left on the shelf. Only glyphs the chooser's pixel face draws (no dash, no dot: a missing glyph
+        /// draws nothing). Loc seam.</summary>
+        public const string ChoiceLabelFormat = "{0}: {1}, {2} left";
+
+        /// <summary>A chooser row in a shelf section with nothing left. The chooser adds its own reason to a
+        /// row that cannot be picked. Loc seam.</summary>
+        public const string ChoiceSoldOutFormat = "{0}: sold out";
 
         private string _id = "";
         private string _shopId = "";
@@ -172,7 +177,7 @@ namespace HiddenHarbours.World
         /// <summary>The words on a section's chooser row for a quote: name, price and how many are left, or
         /// the sold-out words.</summary>
         public static string ChoiceLabelFor(in ShelfQuote q)
-            => q.SoldOut ? string.Format(SoldOutLabelFormat, q.DisplayName)
+            => q.SoldOut ? string.Format(ChoiceSoldOutFormat, q.DisplayName)
                          : string.Format(ChoiceLabelFormat, q.DisplayName, MoneyFormat.Balance(q.Price), q.OnShelf);
 
         /// <summary>

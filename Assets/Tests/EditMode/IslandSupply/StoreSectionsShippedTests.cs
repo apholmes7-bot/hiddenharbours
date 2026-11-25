@@ -129,5 +129,41 @@ namespace HiddenHarbours.Tests.EditMode
                     }
             }
         }
+
+        /// <summary>The chooser draws its rows in the game's pixel face, and a glyph it lacks draws nothing
+        /// (the first in-game look lost the dash and the dot between price and count). The section's words,
+        /// the row formats and the names of the goods it lists use only glyphs the face has. The currency
+        /// sign is the game's own money format, shared with every price, and is left to that format.</summary>
+        [Test]
+        public void TheChoosersWords_UseOnlyGlyphsThePixelFaceDraws()
+        {
+            var face = Resources.Load<Font>(HarbourType.ResourceKey);
+            Assert.IsNotNull(face, HarbourType.ResourceKey);
+            var glyphs = new HashSet<char>(face.characterInfo.Select(c => (char)c.index));
+            void Check(string words, string what)
+            {
+                string bare = System.Text.RegularExpressions.Regex.Replace(words ?? "", "\\{\\d\\}", "")
+                                     .Replace(MoneyFormat.Currency, "");
+                foreach (char ch in bare)
+                    Assert.IsTrue(glyphs.Contains(ch), what + ": '" + ch + "' (U+" + ((int)ch).ToString("X4") +
+                                                       ") is not in the chooser's face, so it draws nothing: \"" + words + "\"");
+            }
+            Check(ShelfGood.ChoiceLabelFormat, "the row format");
+            Check(ShelfGood.ChoiceSoldOutFormat, "the sold-out row format");
+            var supplies = AssetDatabase.FindAssets("t:SupplyDef")
+                .Select(g => AssetDatabase.LoadAssetAtPath<SupplyDef>(AssetDatabase.GUIDToAssetPath(g)))
+                .Where(s => s != null).ToList();
+            foreach (ShopShelfSlotsDef def in _all)
+                foreach (ShopShelfSection section in def.Sections)
+                {
+                    Check(section.VerbLabel, section.Id + "'s words");
+                    foreach (string slotId in section.SlotIds)
+                    {
+                        string listing = def.Slots.Single(s => s.Id == slotId).ListingId;
+                        foreach (SupplyDef s in supplies.Where(s => s.Id == listing))
+                            Check(s.DisplayName, listing + "'s name");
+                    }
+                }
+        }
     }
 }
