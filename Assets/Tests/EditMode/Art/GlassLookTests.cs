@@ -159,6 +159,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Assert.AreEqual(0f, lens.ReachMetres, "with no pool of its own: the beam lights the ground");
                 Assert.IsFalse(lens.CastsShadows);
                 Assert.AreEqual(lamp.Light.BloomLiftMetres, lens.BloomLiftMetres, 1e-5f, "on the same point as the beam");
+                Assert.AreEqual(GlassLook.Current.HeadlampLensRadiusMetres, lens.Range, 1e-5f,
+                    "the lens is sized by its own number in the glass look, not by the headlamp preset's bloom");
                 lamp.TakeOff();
                 Assert.IsFalse(lens.enabled, "pocketed, the lens is dark");
                 lamp.PutOn();
@@ -265,6 +267,14 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     "the streak lies on the sea: over it, under every other deck row, every hull and every stander");
                 Assert.Greater(light.StreakSortingOrder, SortingBands.Sea);
                 Assert.Less(light.StreakSortingOrder, SortingBands.DecorFloor);
+                Transform streakQuad = light.transform.Find("SceneLightStreak");
+                Assert.IsNotNull(streakQuad, "a navigation lamp builds its streak");
+                Material streakMat = streakQuad.GetComponent<MeshRenderer>().sharedMaterial;
+                Assert.IsNotNull(streakMat);
+                Assert.AreEqual(SceneLight.StreakRenderQueue, streakMat.renderQueue);
+                Assert.Less(streakMat.renderQueue, (int)UnityEngine.Rendering.RenderQueue.Transparent,
+                    "the north deck row shares the streak's order: the lower queue draws first, so the row " +
+                    "draws over the streak instead of tying with it");
 
                 group.sortingOrder += 7;   // she moved: her one writer re-sorts her
                 Assert.AreEqual(group.sortingOrder, light.BloomWorldOrder,

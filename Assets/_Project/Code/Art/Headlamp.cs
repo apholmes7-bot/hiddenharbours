@@ -128,6 +128,7 @@ namespace HiddenHarbours.Art
             _lens.Shape = SceneLight.LightShape.Radial;
             _lens.ReachMetres = 0f;                                  // the beam lights the ground, not the lens
             _lens.CastsShadows = false;
+            _lens.Range = GlassLook.Current.HeadlampLensRadiusMetres;   // its own size, not the preset's bloom
             _lens.BloomLiftMetres = browHeightMetres;
             _lens.LampHeightMeters = browHeightMetres;
         }

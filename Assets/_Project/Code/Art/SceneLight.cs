@@ -267,8 +267,32 @@ namespace HiddenHarbours.Art
         public const int RungsOverCarrier = 1;
 
         /// <summary>Where a lamp's streak sorts when it sorts among the world: the north row of the
-        /// wharf deck, over the sea and under every other deck row, every hull and everything standing.</summary>
+        /// wharf deck, over the sea and under every other deck row, every hull and everything standing.
+        /// No whole order lies between the sea (-5) and that row (-4), so the tie with the row itself is
+        /// broken by <see cref="StreakRenderQueue"/>.</summary>
         public const int StreakWorldOrder = SortingBands.WharfDeckMin;
+
+        /// <summary>The streak's render queue: one under the transparent queue every sprite and deck row
+        /// draws in. Among renderers at the same layer and order the 2D renderer draws the lower queue
+        /// first, so the north deck row (order -4, queue 3000) draws over a streak at -4 instead of tying
+        /// with it.</summary>
+        public const int StreakRenderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent - 1;
+        private static Material _streakMaterial;
+
+        /// <summary>The streak's shared material: the light material at <see cref="StreakRenderQueue"/>,
+        /// one instance for every streak (made once, never per lamp).</summary>
+        public static Material SharedStreakMaterial()
+        {
+            Material light = SharedLightMaterial();
+            if (light == null) return null;
+            if (_streakMaterial == null || _streakMaterial.shader != light.shader)
+                _streakMaterial = new Material(light)
+                {
+                    name = "AdditiveLight streak (runtime shared)", hideFlags = HideFlags.DontSave,
+                    renderQueue = StreakRenderQueue,
+                };
+            return _streakMaterial;
+        }
 
         /// <summary>The highest order a lamp sorting among the world may take: under the day/night tint,
         /// whose darkening the shader then undoes for the light alone.</summary>
@@ -873,7 +897,7 @@ namespace HiddenHarbours.Art
             _streakSorting = go.AddComponent<UnityEngine.Rendering.SortingGroup>();
             _streakSorting.sortingOrder = SafeSortingOrder;
             _streakSorting.sortAtRoot = true;
-            Material mat = SharedLightMaterial();
+            Material mat = SharedStreakMaterial();
             if (mat != null) _streakRenderer.sharedMaterial = mat;
             _streakRenderer.enabled = false;
             _streakMpb = new MaterialPropertyBlock();

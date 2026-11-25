@@ -172,6 +172,9 @@ namespace HiddenHarbours.Art
         };
         [Tooltip("A house window glow stops painting a disc over the wall; its light lands on the ground as a pool.")]
         [SerializeField] private bool _windowSpillIsPool = true;
+        [Tooltip("The worn headlamp's glass lens: its glow radius, metres. Its own number, not the headlamp " +
+                 "preset's bloom (0.18 m), which drew the lens wider than the lamp on his brow.")]
+        [Min(0.01f)] [SerializeField] private float _headlampLensRadiusMetres = 0.10f;
 
         [Header("Occlusion")]
         [Tooltip("Lamps, their streaks on the water, a cabin's wash on deck and its lit panes sort AMONG the " +
@@ -189,6 +192,8 @@ namespace HiddenHarbours.Art
         public Streak ShoreStreak => _shoreStreak;
         public PaneLook Panes => _panes;
         public bool WindowSpillIsPool => _windowSpillIsPool;
+        /// <summary>The worn headlamp's lens glow radius, metres (its own number, not the preset's bloom).</summary>
+        public float HeadlampLensRadiusMetres => _headlampLensRadiusMetres;
 
         // -------------------------------------------------------------------------------------------
         //  the profile in force
