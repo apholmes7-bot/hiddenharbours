@@ -1,6 +1,6 @@
 # Supply-run tide source audit
 
-At base `c626cea10d1cb496df41cca2f9ab2f580ad47b28`, the shipped St Peters sea and the
+At base `d46bde303e6aa256d23d47a05ede5d7d6f38e51e`, the shipped St Peters sea and the
 ledger tests agree: mean **0 m**, amplitude **2.2 m**, phase **1 game hour**, using the
 same shipped clock and tide configuration. There is no tide-source correction to park
 for this start scene. This is a source and arithmetic finding; the new EditMode test
@@ -14,11 +14,14 @@ Their shipped tests independently derive feasibility from the region profile thr
 `IslandSupplyTestData.Water`. The guard compares those two water sources; it does not
 exercise the host's bootstrap, purchase flow or store presentation.
 
-The changed St Peters scene retains the same core-to-environment binding, config
-reference, seed and tide profile. All tide/clock settings used by the guard are unchanged;
-the config additions concern shore presentation. A text comparison also finds 26
-unchanged source/data inputs, including tide and crossing math, the run calendar,
-ledger, route, quad runner and carrier assets. No expectation needs migration.
+The current St Peters scene retains the same core-to-environment binding, config
+reference, seed and tide profile. The tide model, crossing math, run calendar and
+shared test water helper have no intervening source changes. Main has since saved
+shelf purchases and shopping-bag contents in version 26; the host and shelf model
+therefore changed, while their injected tide source and the guard's equality rule did
+not. The route gained its foot-weather crossing flag and the ledger clarified its
+demand comment. These changes are not a claim that all supply inputs are unchanged.
+No expectation needs migration.
 
 ## Read inventory
 
@@ -98,8 +101,8 @@ by one hour changes window edges, confirming the comparison is sensitive to phas
 
 That historical calculation was not rerun during this refresh and did not instantiate
 the environment service or load a scene in Unity. Current text checks confirm that its
-relevant inputs and algorithm sources are unchanged; they do not prove native imports
+tide inputs and crossing algorithms are unchanged; they do not prove native imports
 or scene preview behavior. No Unity/EditMode/PlayMode run, project compilation, player
-build or rendering was performed locally. CI must establish that the guard actually
+build or rendering was performed locally. The prior CI run passed. The refreshed head still needs CI to establish that the guard
 ran once and `IslandLedgerShippedTests` reports four cases. No game code, asset, scene,
 configuration value, save format or existing expectation is changed by this PR.
