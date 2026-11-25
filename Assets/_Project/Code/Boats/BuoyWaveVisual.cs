@@ -49,6 +49,12 @@ namespace HiddenHarbours.Boats
     /// and the Art-side <c>WaveFieldBridge</c> use, so the buoy rides the same waves the player sees.
     /// Until GameConfig unifies them, keep the field's shape identical across all three (or tune all
     /// three together); only the RESPONSE tunables here are buoy-specific.</para>
+    ///
+    /// <para><b>The waterline wraps the body.</b> A round float meets the water in a circle, which the
+    /// 3/4 camera draws as an ellipse: the sides on the float line, the near side lower. With a radius set
+    /// (<see cref="ConfigureWaterlineArc"/>) the cut, the underwater tint and the pale line all follow that
+    /// arc (<see cref="BuoyWaveMath.WaterlineArc"/>); 0 keeps the straight row. One extra vector in the
+    /// same property block, rebuilt only when the sprite changes: no new material, texture or keyword.</para>
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class BuoyWaveVisual : MonoBehaviour
@@ -73,6 +79,7 @@ namespace HiddenHarbours.Boats
         private static readonly int IdWaterlineFoam      = Shader.PropertyToID("_WaterlineFoam");
         private static readonly int IdWaterlineFoamWidth = Shader.PropertyToID("_WaterlineFoamWidth");
         private static readonly int IdSpriteHeightPx     = Shader.PropertyToID("_SpriteHeightPx");
+        private static readonly int IdWaterlineArc       = Shader.PropertyToID("_WaterlineArc");
 
         [Header("Bob (the crest lifts the buoy)")]
         [Tooltip("Screen-vertical lift (world units) per metre of wave height under the buoy. The buoy floats HIGH on the water, so it reads a bigger bob than the heavy boat (BoatWaveMotion uses ~0.12) — a cork on the swell.")]
@@ -110,6 +117,10 @@ namespace HiddenHarbours.Boats
         [Tooltip("Half-height (uv.y) of the foam band around the waterline — how thick the ripple reads.")]
         [Range(0.001f, 0.2f)] [SerializeField] private float _waterlineFoamWidth = 0.05f;
 
+        [Header("The waterline wraps the body (0 = a straight cut)")]
+        [Tooltip("The float's radius at the waterline (m). A round body meets the water in a circle the 3/4 camera draws as an ellipse: the sides on the float line, the near side lower. 0 = the straight row. The placer sets it from data (the nav mark's DiameterMeters, GameConfig.LobsterFloatRadiusMeters for the painted pot float).")]
+        [Min(0f)] [SerializeField] private float _waterlineRadiusMeters;
+
         [Header("Wiring (the spawner/builder sets these)")]
         [Tooltip("The buoy's SpriteRenderer — the material instance + the vanish alpha drive this. Null → the component finds one in its children on Awake.")]
         [SerializeField] private SpriteRenderer _renderer;
@@ -128,6 +139,9 @@ namespace HiddenHarbours.Boats
         private Material _originalMaterial;     // the renderer's original sharedMaterial (restored on teardown)
         private float _spriteHeightPx = 32f;
         private Texture _lastTexture;
+        private Sprite _arcSprite;              // the sprite the cached arc was read off
+        private float _arcRadius = -1f;         // the radius the cached arc was built for
+        private Vector4 _arc;                   // the packed _WaterlineArc for the current sprite
 
         private bool _baseCached;
         private Vector3 _baseLocalPosition;
@@ -139,6 +153,41 @@ namespace HiddenHarbours.Boats
 
         /// <summary>The last-computed sprite alpha (0 vanished .. 1 visible). Exposed for tests / tooling.</summary>
         public float VanishAlpha { get; private set; } = 1f;
+
+        /// <summary>The packed <c>_WaterlineArc</c> last pushed (zero = the straight row). For tests / tooling.</summary>
+        public Vector4 WaterlineArc => _arc;
+
+        /// <summary>The float's radius at the waterline (m) the arc is built from; 0 = straight.</summary>
+        public float WaterlineRadiusMeters => _waterlineRadiusMeters;
+
+        /// <summary>
+        /// Opt this float into a waterline that wraps its body: the radius (m) of the hull where it meets
+        /// the water. 0 keeps the straight cut. The arc itself is derived from the live sprite (rect, pivot,
+        /// pixels per unit) and the camera's ground squash, and is rebuilt whenever the sprite changes.
+        /// </summary>
+        public void ConfigureWaterlineArc(float radiusMeters)
+        {
+            _waterlineRadiusMeters = float.IsNaN(radiusMeters) ? 0f : Mathf.Max(0f, radiusMeters);
+            _arcRadius = -1f;   // force a rebuild on the next push
+        }
+
+        /// <summary>
+        /// Drive the float from a given wave height instead of the live field (bob, waterline, vanish),
+        /// for plates and tools that must photograph a crest or a trough on demand. The live
+        /// <c>LateUpdate</c> overwrites it on the next frame unless the component is disabled.
+        /// </summary>
+        public void ApplyWaveHeight(float waveHeight, float totalAmplitude)
+        {
+            if (_renderer == null) return;
+            if (!_baseCached)
+            {
+                _baseLocalPosition = _visual != null ? _visual.localPosition : Vector3.zero;
+                _baseColor = _renderer.color;
+                _baseCached = true;
+            }
+            if (_mpb == null) _mpb = new MaterialPropertyBlock();
+            ApplyHeight(waveHeight, totalAmplitude);
+        }
 
         /// <summary>Wire the buoy from code (the spawner's path — mirrors <see cref="BoatWaveMotion.Configure"/>).</summary>
         public void Configure(SpriteRenderer renderer, Transform visual)
@@ -285,11 +334,16 @@ namespace HiddenHarbours.Boats
                 totalAmplitude = 0f;
             }
 
+            ApplyHeight(wave.Height, totalAmplitude);
+        }
+
+        private void ApplyHeight(float height, float totalAmplitude)
+        {
             // --- Turn the one Height read into bob + waterline + vanish (the pure math) ------------
-            float bob = BuoyWaveMath.BobOffset(wave.Height, _bobPerMeter, _maxBob);
-            float waterline = BuoyWaveMath.WaterlineFraction(wave.Height, _floatLineFrac, _restOffsetMeters, _buoyHeightMeters);
+            float bob = BuoyWaveMath.BobOffset(height, _bobPerMeter, _maxBob);
+            float waterline = BuoyWaveMath.WaterlineFraction(height, _floatLineFrac, _restOffsetMeters, _buoyHeightMeters);
             float swampThreshold = BuoyWaveMath.SwampThreshold(totalAmplitude, _swampThresholdFraction, _swampMinThresholdMeters);
-            float alpha = BuoyWaveMath.VanishAlpha(wave.Height, swampThreshold, _swampFadeBandMeters);
+            float alpha = BuoyWaveMath.VanishAlpha(height, swampThreshold, _swampFadeBandMeters);
 
             if (_swampMode == SwampMode.StayAwash)
             {
@@ -323,10 +377,31 @@ namespace HiddenHarbours.Boats
                 _lastTexture = tex;
             }
 
+            // THE ARC: rebuilt only when the sprite (facing, frame) or the radius changes — the rect,
+            // pivot and texture size are read once per sprite, never per frame (rule 7).
+            if (spr != _arcSprite || _arcRadius != _waterlineRadiusMeters)
+            {
+                _arcSprite = spr;
+                _arcRadius = _waterlineRadiusMeters;
+                // A tightly packed atlas sprite has no rect to read (Unity throws): it keeps the straight row.
+                bool readable = spr != null && tex != null && _waterlineRadiusMeters > 0f &&
+                                !(spr.packed && spr.packingMode == SpritePackingMode.Tight);
+                if (readable)
+                {
+                    Rect rect = spr.textureRect;
+                    rect.x -= spr.textureRectOffset.x;   // the pivot is measured from the untrimmed rect
+                    _arc = BuoyWaveMath.WaterlineArc(_waterlineRadiusMeters, spr.pixelsPerUnit, rect,
+                                                     spr.pivot, new Vector2(tex.width, tex.height),
+                                                     IsoGround.GroundDepthScale);
+                }
+                else _arc = Vector4.zero;
+            }
+
             _renderer.GetPropertyBlock(_mpb);
             if (tex != null) _mpb.SetTexture(IdMainTex, tex);
             _mpb.SetFloat(IdWaterlineFrac, waterline);
             _mpb.SetFloat(IdSpriteHeightPx, _spriteHeightPx);
+            _mpb.SetVector(IdWaterlineArc, _arc);
             _renderer.SetPropertyBlock(_mpb);
 
             // VANISH: fade the sprite's own alpha (folded into the shader via IN.color) — the full

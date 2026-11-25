@@ -192,6 +192,7 @@ MonoBehaviour:
     RunUpCoefficient: 1
     RunUpCapMeters: 0.35
   SurfSprayIntensityOffset: 0
+  LobsterFloatRadiusMeters: 0.3
   MarketDemandCove: 1
   MarketDemandNineMileCreek: 1.4
   MarketDemandStPetersStore: 0.7

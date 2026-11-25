@@ -111,5 +111,56 @@ namespace HiddenHarbours.Boats
         /// Sugar for tests / tooling; the shell drives the sprite off the continuous alpha, not this.</summary>
         public static bool IsSwamped(float height, float swampThreshold, float fadeBandMeters)
             => VanishAlpha(height, swampThreshold, fadeBandMeters) <= 0f;
+
+        /// <summary>
+        /// <b>The waterline wraps a round body.</b> A float of radius <paramref name="radiusMeters"/>
+        /// floating upright meets the water in a horizontal circle; the 3/4 camera squashes the ground
+        /// plane by <paramref name="groundDepthScale"/> (<c>IsoGround.GroundDepthScale</c>), so the circle
+        /// draws as an ellipse whose SIDES sit on the float line and whose NEAR point sits
+        /// <c>groundDepthScale · radius</c> lower. This packs that ellipse into the shader's
+        /// <c>_WaterlineArc</c> in the sprite's own texture space:
+        /// <c>(drop in uv.y, centre u, 1 / half-width in u, texture width px)</c>.
+        ///
+        /// <para>Everything is read off the sprite (its texture rect, pivot and pixels-per-unit) and the
+        /// hull's own radius, so an atlas cell of an 8-facing sheet works the same as a lone sprite. The
+        /// body is centred on the sprite's pivot column. A radius of 0 (or any degenerate input) returns
+        /// <see cref="Vector4.zero"/>, which the shader reads as the straight row, bit for bit.</para>
+        /// </summary>
+        /// <param name="radiusMeters">The body's radius at the waterline (m). 0 = straight.</param>
+        /// <param name="pixelsPerUnit">The sprite's pixels per unit.</param>
+        /// <param name="textureRectPx">The sprite's rect inside its texture (px).</param>
+        /// <param name="pivotPx">The sprite's pivot, px from the rect's bottom-left.</param>
+        /// <param name="textureSizePx">The texture's width and height (px).</param>
+        /// <param name="groundDepthScale">How far up the screen a metre of northward ground draws.</param>
+        public static Vector4 WaterlineArc(float radiusMeters, float pixelsPerUnit, Rect textureRectPx,
+                                           Vector2 pivotPx, Vector2 textureSizePx, float groundDepthScale)
+        {
+            if (!(radiusMeters > 0f) || !(pixelsPerUnit > 0f) || !(groundDepthScale > 0f)) return Vector4.zero;
+            if (!(textureSizePx.x >= 1f) || !(textureSizePx.y >= 1f)) return Vector4.zero;
+            if (float.IsInfinity(radiusMeters) || float.IsInfinity(pixelsPerUnit)) return Vector4.zero;
+
+            float radiusPx = radiusMeters * pixelsPerUnit;
+            float dropV = groundDepthScale * radiusPx / textureSizePx.y;
+            float centreU = (textureRectPx.x + pivotPx.x) / textureSizePx.x;
+            float invHalfU = textureSizePx.x / radiusPx;
+            return new Vector4(dropV, centreU, invHalfU, textureSizePx.x);
+        }
+
+        /// <summary>
+        /// The shader's <c>WaterlineCut</c>, line for line: where the water meets the body at texture
+        /// column <paramref name="u"/>, as a uv.y, given the straight float line
+        /// <paramref name="waterlineFrac"/> and the packed <paramref name="arc"/>. The column is snapped
+        /// to its texel centre; the drop is the near half of the ellipse, zero beyond the body, and
+        /// never more than what is left above the line (so a buoy awash still goes fully under).
+        /// A zero arc returns <paramref name="waterlineFrac"/> unchanged.
+        /// </summary>
+        public static float WaterlineCut(float u, float waterlineFrac, Vector4 arc)
+        {
+            float texW = Mathf.Max(arc.w, 1f);
+            float uSnap = (Mathf.Floor(u * texW) + 0.5f) / texW;
+            float t = (uSnap - arc.y) * arc.z;
+            float drop = arc.x * Mathf.Sqrt(Mathf.Clamp01(1f - t * t));
+            return waterlineFrac - Mathf.Min(drop, Mathf.Max(0f, 1f - waterlineFrac));
+        }
     }
 }

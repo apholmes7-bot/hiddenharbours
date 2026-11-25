@@ -45,6 +45,11 @@ namespace HiddenHarbours.Boats
 
         private static TrapBuoyPresenter _instance;
 
+        /// <summary>The greybox float's widest half-width (px) and its pixels per unit: the shape the
+        /// fallback sprite is drawn with, and so the radius its waterline arc wraps.</summary>
+        private const int GreyboxFloatRadiusPx = 5;
+        private const int GreyboxPixelsPerUnit = 32;
+
         private readonly Dictionary<string, GameObject> _buoys = new();
         private Sprite _sprite;
 
@@ -101,6 +106,11 @@ namespace HiddenHarbours.Boats
 
             var buoy = go.AddComponent<BuoyWaveVisual>();
             buoy.Configure(sr, visualGo.transform);
+            // The waterline wraps the float: the painted float's radius is data (GameConfig); the
+            // greybox fallback's is the half-width it is drawn with below.
+            buoy.ConfigureWaterlineArc(art == _sprite
+                ? GreyboxFloatRadiusPx / (float)GreyboxPixelsPerUnit
+                : (GameServices.Config != null ? GameServices.Config.LobsterFloatRadiusMeters : 0f));
 
             _buoys[e.InstanceId] = go;
         }
@@ -123,7 +133,7 @@ namespace HiddenHarbours.Boats
         /// </summary>
         private static Sprite BuildGreyboxBuoySprite()
         {
-            const int W = 16, H = 32, ppu = 32;
+            const int W = 16, H = 32, ppu = GreyboxPixelsPerUnit;
             var tex = new Texture2D(W, H, TextureFormat.RGBA32, false, true)
             {
                 name = "TrapBuoyGreybox",
@@ -146,8 +156,8 @@ namespace HiddenHarbours.Boats
             for (int y = 14; y <= 30; y++)
             {
                 float t = Mathf.InverseLerp(14f, 30f, y);
-                int half = Mathf.RoundToInt(Mathf.Lerp(5f, 2f, Mathf.Abs(t - 0.45f) * 1.8f));
-                half = Mathf.Clamp(half, 1, 5);
+                int half = Mathf.RoundToInt(Mathf.Lerp(GreyboxFloatRadiusPx, 2f, Mathf.Abs(t - 0.45f) * 1.8f));
+                half = Mathf.Clamp(half, 1, GreyboxFloatRadiusPx);
                 Color32 c = (y >= 21 && y <= 23) ? floatBand : floatTop;
                 for (int x = cx - half; x < cx + half; x++) Plot(x, y, c);
             }

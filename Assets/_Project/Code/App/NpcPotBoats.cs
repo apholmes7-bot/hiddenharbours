@@ -507,6 +507,8 @@ namespace HiddenHarbours.App
             pot.BuoyRenderer = buoyRenderer;   // re-sorted where it floats each time it is shown (ShowBuoy)
             pot.Wave = pot.BuoyRoot.AddComponent<BuoyWaveVisual>();   // the proven wave rider, reused unchanged
             pot.Wave.Configure(buoyRenderer, visual.transform);
+            // The pot float is the painted lobster float, so its waterline wraps at that float's radius.
+            pot.Wave.ConfigureWaterlineArc(GameServices.Config != null ? GameServices.Config.LobsterFloatRadiusMeters : 0f);
             pot.Wave.enabled = false;
             pot.BuoyRoot.SetActive(false);
 

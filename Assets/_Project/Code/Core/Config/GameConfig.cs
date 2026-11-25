@@ -636,6 +636,15 @@ namespace HiddenHarbours.Core
         /// </summary>
         public float SurfSprayIntensity => Mathf.Clamp(1f + SurfSprayIntensityOffset, 0f, 2f);
 
+        [Header("Round floats (the waterline wraps the body)")]
+        [Tooltip("The painted lobster-pot float's radius at its waterline, in metres (the player's float " +
+                 "and the NPC pots both wear it). A round float meets the water in a circle the 3/4 camera " +
+                 "draws as an ellipse, so its waterline bows down across the near side and wraps up to the " +
+                 "sides; this is how wide that ellipse is. 0.30 is the float's widest painted row (19 px at " +
+                 "32 PPU). 0 = the old straight cut. The navigation marks take theirs from their own " +
+                 "DiameterMeters instead.")]
+        [Min(0f)] public float LobsterFloatRadiusMeters = 0.30f;
+
         [Header("Market (VS-16)")]
         [Tooltip("Demand D at the home cove (Coddle Cove) in priceMult = 1/(1+e·S/D). 1 = neutral baseline.")]
         [Min(0.01f)] public float MarketDemandCove = 1f;
