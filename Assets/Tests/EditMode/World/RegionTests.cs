@@ -68,18 +68,6 @@ namespace HiddenHarbours.Tests.World.EditMode
         }
 
         [Test]
-        public void BuildAvailability_EnabledBuildScenesAreAvailable()
-        {
-            int count = UnityEngine.SceneManagement.SceneManager.sceneCountInBuildSettings;
-            Assert.Greater(count, 0);
-            for (int i = 0; i < count; i++)
-            {
-                string path = UnityEngine.SceneManagement.SceneUtility.GetScenePathByBuildIndex(i);
-                Assert.IsTrue(RegionBuildAvailability.IsAvailable("", path), path);
-            }
-        }
-
-        [Test]
         public void Preload_AbsentNeighbourDoesNotStartOrAnnounceTravel()
         {
             var host = new GameObject("AvailabilityLoader");

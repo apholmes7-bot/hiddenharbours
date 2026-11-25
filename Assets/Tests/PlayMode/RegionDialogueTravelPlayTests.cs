@@ -255,6 +255,24 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
         }
 
+        [Test]
+        public void BuildAvailability_EnabledBuildScenesAreAvailable()
+        {
+            // Scene streaming availability is a runtime query, including in the editor.
+            Assert.IsTrue(Application.isPlaying);
+            RegionBuildAvailability.Override = null;
+            int count = SceneManager.sceneCountInBuildSettings;
+            Assert.Greater(count, 0);
+            for (int i = 0; i < count; i++)
+            {
+                string path = SceneUtility.GetScenePathByBuildIndex(i);
+                Assert.IsFalse(string.IsNullOrWhiteSpace(path), "each build index must name a scene");
+                Assert.IsTrue(RegionBuildAvailability.IsAvailable("", path), path);
+                string sceneName = System.IO.Path.GetFileNameWithoutExtension(path);
+                Assert.IsTrue(RegionBuildAvailability.IsAvailable("", sceneName), sceneName);
+            }
+        }
+
         [UnityTest]
         public IEnumerator AnExcludedNeighbour_RefusesThePassageThenAcceptsItWhenIncluded()
         {
