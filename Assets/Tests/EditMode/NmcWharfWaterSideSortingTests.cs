@@ -34,6 +34,42 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void TheMooringFaceRunsFromTheFleetWallsWestEnd_SoTheWallShowsAboveTheWaterTheWholeWay()
+        {
+            // Under the sea, the fleet crib's own face no longer shows; the tidal quay face is the wall.
+            // H5 drew the basin west to the crib's west end, past the old apron corner the run began at.
+            float west = NineMileCreekDressing.FleetWallFaceWest.x;
+            float corner = NineMileCreekDressing.FleetWallFaceEast.x;
+            Assert.That(west, Is.LessThan(corner), "the fleet wall no longer reaches west of the old apron corner");
+            var pieces = NineMileCreekDressing.FleetWallFacePieces();
+            Assert.That(pieces.Count, Is.GreaterThan(0), "no course covers the fleet wall west of the old corner");
+            float pitch = pieces.Count > 1 ? pieces[1].Lip.x - pieces[0].Lip.x : corner - west;
+            Assert.That(pieces.First().Lip.x - west, Is.EqualTo(pitch * 0.5f).Within(1e-3f), "the first course reaches the crib's west end");
+            Assert.That(corner - pieces.Last().Lip.x, Is.EqualTo(pitch * 0.5f).Within(1e-3f), "the last course reaches the old corner");
+
+            // In the scene: the same courses, on the north run's lip and rung, each cut at the waterline.
+            SceneYaml scene = SceneYaml.Parse(File.ReadAllText(NineMileCreekLayerRefresh.ScenePath));
+            Doc dressing = scene.RootNamed(NineMileCreekDressing.RootName);
+            Doc face = scene.ChildNamed(scene.TransformOf(dressing), NineMileCreekDressing.FaceRootName);
+            var byName = scene.TransformOf(face).FieldRefs("m_Children")
+                .Select(tr => scene.Require(scene.Require(tr, "a course").FieldRef("m_GameObject"), "a course object"))
+                .ToDictionary(go => go.Field("m_Name"));
+            Doc firstNorth = byName[NineMileCreekDressing.NorthWallRun + "_" + pieces[0].Key + "_0"];
+            float northLip = ParseFloat(scene.ComponentsOf(firstNorth).Single(d => d.IsScript("HiddenHarbours.Art.TidalFaceWaterline")).Field("_lipWorldY"));
+            for (int i = 0; i < pieces.Count; i++)
+            {
+                string name = NineMileCreekLayerRefresh.FleetWallCourseName(pieces[i], i);
+                Assert.That(byName.ContainsKey(name), $"{name} is not in the scene: run Apply the fleet wall face");
+                var components = scene.ComponentsOf(byName[name]);
+                Doc tide = components.Single(d => d.IsScript("HiddenHarbours.Art.TidalFaceWaterline"));
+                Assert.That(ParseFloat(tide.Field("_lipWorldY")), Is.EqualTo(northLip).Within(1e-4f), name + " stands on the north courses' lip");
+                Assert.AreEqual(NineMileCreekDressing.FaceSortingOrder(NineMileCreekDressing.NorthWallRun),
+                    ParseInt(components.Single(d => d.ClassId == 212).Field("m_SortingOrder")), name + " draws on the north run's rung");
+                Assert.AreEqual("1", byName[name].Field("m_IsActive"), name + " is live");
+            }
+        }
+
+        [Test]
         public void EveryFixedPictureInTheSceneSortsUnderTheSea_AndTheRidingOnesKeepTheirRungs()
         {
             SceneYaml scene = SceneYaml.Parse(File.ReadAllText(NineMileCreekLayerRefresh.ScenePath));

@@ -166,6 +166,94 @@ namespace HiddenHarbours.App.Editor
             return patch.Seal(scene);
         }
 
+        public const string FleetWallFaceStep = "13-fleet-wall-face";
+        /// <summary>The fleet wall's face courses are named after the north run, so G3's face step
+        /// (which keeps every <c>NorthWall_</c> course on its lip) keeps them too.</summary>
+        public static string FleetWallCourseName(NineMileCreekDressing.FacePiece piece, int index) =>
+            $"{piece.Wall}_{piece.Key}_fleet{index}";
+
+        /// <summary>Places <see cref="NineMileCreekDressing.FleetWallFacePieces"/> beside the scene's
+        /// north courses: their picture, their material, their rung and their tidal cut, cloned from
+        /// a live north course. Touches only those courses and the QuayFace children list, and
+        /// replanning the result gives the same text.</summary>
+        public static LayerPatch FleetWallFace(SceneYaml scene, ITidalTerrain terrain, IFaceAssets assets)
+        {
+            if (terrain == null || assets == null) throw new ArgumentNullException();
+            Doc dressing = scene.RootNamed(NineMileCreekDressing.RootName);
+            Doc root = scene.ChildNamed(scene.TransformOf(dressing), NineMileCreekDressing.FaceRootName);
+            Doc rootTr = scene.TransformOf(root);
+            RequireIdentity(rootTr);
+            var patch = new LayerPatch(FleetWallFaceStep, "NineMileCreekDressing/QuayFace", root.FileId);
+            var courses = new Dictionary<string, Course>(StringComparer.Ordinal);
+            var children = rootTr.FieldRefs("m_Children").ToList();
+            foreach (long childTr in children)
+            {
+                Doc tr = scene.Require(childTr, "face child");
+                Doc go = scene.Require(tr.FieldRef("m_GameObject"), "face course");
+                var components = scene.ComponentsOf(go);
+                courses[go.Field("m_Name")] = new Course { Go = go, Tr = tr,
+                    Sr = components.Single(c => c.ClassId == 212),
+                    Tide = components.SingleOrDefault(c => IsScript(c, "TidalFaceWaterline")), Components = components };
+            }
+            Course template = courses.Where(p => p.Key.StartsWith(NineMileCreekDressing.NorthWallRun + "_", StringComparison.Ordinal)
+                                                 && p.Value.Tide != null && p.Value.Go.Field("m_IsActive") == "1")
+                                     .Select(p => p.Value).FirstOrDefault()
+                ?? throw new Refusal($"{FleetWallFaceStep}: no live north course with a waterline to copy.");
+            var ids = new IdAllocator(scene);
+            var pieces = NineMileCreekDressing.FleetWallFacePieces();
+            for (int i = 0; i < pieces.Count; i++)
+            {
+                var piece = pieces[i];
+                string name = FleetWallCourseName(piece, i);
+                courses.TryGetValue(name, out Course current);
+                if (!NineMileCreekQuayFace.DrawsAFaceAtThisCamera(NineMileCreekDressing.PlanDirectionOf(piece.Heading)))
+                    throw new Refusal($"{FleetWallFaceStep}: '{name}' faces away from the camera; the north run never does.");
+                SpriteRef sprite = assets.SpriteFor(piece);
+                long goId = current?.Go.FileId ?? ids.Next(FleetWallFaceStep + "/" + name + "/go");
+                long trId = current?.Tr.FileId ?? ids.Next(FleetWallFaceStep + "/" + name + "/transform");
+                long srId = current?.Sr.FileId ?? ids.Next(FleetWallFaceStep + "/" + name + "/sprite");
+                long tideId = current?.Tide?.FileId ?? ids.Next(FleetWallFaceStep + "/" + name + "/waterline");
+                if (current == null) children.Add(trId);
+                string go = Header((current ?? template).Go.Text, goId);
+                go = Field(go, "m_Name", name);
+                go = Field(go, "m_IsActive", "1");
+                go = List(go, "m_Component", new[] { trId, srId, tideId }, "component: ");
+                string tr = Header((current ?? template).Tr.Text, trId);
+                tr = Field(tr, "m_GameObject", Ref(goId));
+                tr = Field(tr, "m_LocalPosition", $"{{x: {F(piece.Position.x)}, y: {F(piece.Position.y)}, z: 0}}");
+                tr = Field(tr, "m_Father", Ref(rootTr.FileId));
+                tr = List(tr, "m_Children", Array.Empty<long>());
+                string sr = Header((current ?? template).Sr.Text, srId);
+                sr = Field(sr, "m_GameObject", Ref(goId));
+                sr = Field(sr, "m_Sprite", sprite.Sprite.Yaml);
+                sr = Field(sr, "m_Size", $"{{x: {F(sprite.Size.x)}, y: {F(sprite.Size.y)}}}");
+                sr = Field(sr, "m_SortingOrder", piece.SortingOrder.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                sr = Regex.Replace(sr, @"(?m)^  m_Materials:\n(?:  - .*\n)*", "  m_Materials:\n  - " + assets.TideMaterial.Yaml + "\n");
+                Put(patch, current?.Go, go, name);
+                Put(patch, current?.Tr, tr, name + "/Transform");
+                Put(patch, current?.Sr, sr, name + "/SpriteRenderer");
+                Put(patch, current?.Tide, TideDoc(tideId, goId, assets.TideScript, piece.Lip.y,
+                    NineMileCreekDressing.FaceLipElevation(piece, terrain)), name + "/TidalFaceWaterline");
+            }
+            patch.Edit(rootTr, List(rootTr.Text, "m_Children", children), "QuayFace/Transform children");
+            patch.Note("QuayFace", "fleet wall face", $"{pieces.Count} courses from the fleet crib's west end to the old apron corner");
+            return patch.Seal(scene);
+        }
+
+        [MenuItem("Hidden Harbours/Nine Mile Creek Layers/Apply the fleet wall face")]
+        public static void ApplyFleetWallFace()
+        {
+            for (int i = 0; i < SceneManager.sceneCount; i++)
+                if (SceneManager.GetSceneAt(i).path == ScenePath)
+                    throw new Refusal("NineMileCreek is open. Close it before applying text patches.");
+            string before = File.ReadAllText(ScenePath);
+            SceneYaml scene = SceneYaml.Parse(before);
+            LayerPatch patch = WithPlanGround(t => FleetWallFace(scene, t, new EditorFaceAssets()));
+            string after = patch.Apply(scene).Render();
+            if (after != before) File.WriteAllText(ScenePath, after, new UTF8Encoding(false));
+            Debug.Log($"[NineMileCreekLayerRefresh] {FleetWallFaceStep}: {(after != before ? "applied" : "already in the scene")}.");
+        }
+
         public static T WithPlanGround<T>(Func<ITidalTerrain, T> body)
         {
             // The G3 ground (NMC H2), decoded from its committed height: never publishes

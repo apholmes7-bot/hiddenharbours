@@ -62,12 +62,16 @@ namespace HiddenHarbours.App.Editor
             return Rect.MinMaxRect(F(x[0]), F(y[0]), F(x[1]), F(y[1]));
         }
         /// <summary>Where the rig's bake drew the working float: its own walk polygon. The register moves her.</summary>
-        public static Rect BakedWorkingFloat()
+        public static Rect BakedWorkingFloat() => BakedDeck("west_float");
+        /// <summary>Where the rig's bake drew a part's deck: the bounds of its own walk polygon.</summary>
+        public static Rect BakedDeck(string partKey)
         {
-            object part = A(M(ReadToday(), "parts")).Single(p => DeckSidecarJson.String(M(p, "key")) == "west_float");
+            object part = A(M(ReadToday(), "parts")).Single(p => DeckSidecarJson.String(M(p, "key")) == partKey);
             var poly = A(M(part, "walkPolygon")).Select(q => { var xy = A(q); return new Vector2(F(xy[0]), F(xy[1])); }).ToArray();
             return Rect.MinMaxRect(poly.Min(q => q.x), poly.Min(q => q.y), poly.Max(q => q.x), poly.Max(q => q.y));
         }
+        /// <summary>The fleet wall's cribbed stretch, the west end of the mooring face.</summary>
+        public const string FleetCribPart = "fleet_crib";
         public static KeyScenePiece[] FloatBoatRows() => Scene().Pieces.Where(p =>
             p.Kind == KeySceneDef.KindBoat && p.StandsOn == "water").OrderBy(p => p.At.x).ToArray();
         public static Vector2 FloatBerth(int index)
