@@ -40,8 +40,9 @@ namespace HiddenHarbours.World
         public const string ChoiceLabelFormat = "{0}: {1}, {2} left";
 
         /// <summary>A chooser row in a shelf section with nothing left. The chooser adds its own reason to a
-        /// row that cannot be picked. Loc seam.</summary>
-        public const string ChoiceSoldOutFormat = "{0}: sold out";
+        /// row that cannot be picked ("(not now)"), so the row says only "out": the longer "sold out" ran past
+        /// the chooser's widest line and was cut (store sections look, 2026-11-25). Loc seam.</summary>
+        public const string ChoiceSoldOutFormat = "{0}: out";
 
         private string _id = "";
         private string _shopId = "";
