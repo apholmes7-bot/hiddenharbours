@@ -688,6 +688,14 @@ namespace HiddenHarbours.Tests.RigBaking
                 var r = go.AddComponent<IsoFacetHullRenderer>();
                 IsoFacetHullSetup setup = IsoFacetHullPresentationService.ToSetup(def);
                 setup.Mesh = mesh;
+                // ONLY the spike's own mesh. Since #856 the lobster's door leaf is split out of her
+                // mesh and mounted as a child from the def, carrying the RIG's house tag, not this
+                // spike's BoatInteriorDef level ids. Left in, it drew 11 px (one leaf edge) in the
+                // "house faces at the gate" shot that must be empty. The game's own leaf-cuts-with-
+                // the-room rule is held on the real tags in HullLevelTagBakeTests.
+                setup.DoorLeafClosed = null;
+                setup.DoorLeafOpen = null;
+                setup.DoorLeaves = new HullMeshDef.DoorLeafPair[0];
                 r.Configure(setup);
                 // WHICH level, through the shipped seam. It used to be Shader.SetGlobalFloat, and
                 // that stopped working the day the cutaway shipped: _HHLevelShown is now written

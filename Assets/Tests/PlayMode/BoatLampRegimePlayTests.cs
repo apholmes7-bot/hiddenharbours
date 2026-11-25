@@ -427,6 +427,11 @@ namespace HiddenHarbours.Tests.PlayMode
                 cam.allowHDR = false;
                 cam.allowMSAA = false;
                 cam.targetTexture = rt;
+                // Framed NOW, before the first pose. Created at the origin and framed only inside the
+                // first Capture, everything posed against the camera's depth in that first Pose was
+                // posed against the origin camera, so the first render differed from its own copy a
+                // frame later (242 px at the first heading). Same fault and cure as #1519.
+                FrameTheCell(cam, def);
 
                 var arm = Build(def, "CapeUnderWay");           // no IVesselWay: she is under way
                 Assert.IsNotNull(arm.Beam, "she declares a searchlight");
@@ -507,10 +512,7 @@ namespace HiddenHarbours.Tests.PlayMode
         /// <summary>Frame the cell over the origin and render NOW — no frame passes.</summary>
         static byte[] Capture(Camera cam, RenderTexture rt, HullMeshDef def)
         {
-            float ppu = def.PxPerMetre;
-            float ox = (def.PivotPx.x - def.CellW / 2f) / ppu;
-            float oy = (def.CellH / 2f - def.PivotPx.y) / ppu;
-            cam.transform.position = new Vector3(-ox, -oy, -100f);
+            FrameTheCell(cam, def);
             cam.Render();
 
             RenderTexture prev = RenderTexture.active;
@@ -524,6 +526,15 @@ namespace HiddenHarbours.Tests.PlayMode
             System.Array.Copy(bytes, copy, bytes.Length);
             Object.Destroy(tex);
             return copy;
+        }
+
+        /// <summary>Put the camera over the cell: the pivot's offset from the cell centre, 100 m back.</summary>
+        static void FrameTheCell(Camera cam, HullMeshDef def)
+        {
+            float ppu = def.PxPerMetre;
+            float ox = (def.PivotPx.x - def.CellW / 2f) / ppu;
+            float oy = (def.CellH / 2f - def.PivotPx.y) / ppu;
+            cam.transform.position = new Vector3(-ox, -oy, -100f);
         }
 
         static int CountInked(byte[] rgba)
