@@ -479,6 +479,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(code.ShadowColor, asset.ShadowColor, "ShadowColor");
             Assert.AreEqual(code.MaxShadows, asset.MaxShadows, "MaxShadows");
             Assert.AreEqual(code.RefreshHz, asset.RefreshHz, 1e-6f, "RefreshHz");
+            Assert.AreEqual(code.GroundArtBelowFootFraction, asset.GroundArtBelowFootFraction, 1e-6f, "GroundArtBelowFootFraction");
             Assert.AreEqual(code.LengthAtNoon, asset.LengthAtNoon, 1e-6f, "LengthAtNoon");
             Assert.AreEqual(code.LengthAtHorizon, asset.LengthAtHorizon, 1e-6f, "LengthAtHorizon");
             Assert.AreEqual(code.MaxLength, asset.MaxLength, 1e-6f, "MaxLength");
@@ -512,6 +513,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(0.8f, p.Strength, 1e-6f);
             Assert.AreEqual(24, p.MaxShadows);
             Assert.AreEqual(10f, p.RefreshHz, 1e-6f);
+            Assert.AreEqual(0.5f, p.GroundArtBelowFootFraction, 1e-6f);
             Assert.AreEqual(0.35f, p.LengthAtNoon, 1e-6f);
             Assert.AreEqual(5f, p.LengthAtHorizon, 1e-6f);
             Assert.AreEqual(7f, p.MaxLength, 1e-6f);
