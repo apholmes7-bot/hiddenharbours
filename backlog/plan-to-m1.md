@@ -79,6 +79,11 @@ weeks.** The grind is intentional; the drip is what makes it bearable.
 | 11–13 | **Shellfish gear** | Traps/pots — catch that works while you do something else. | Verb 4 · the first taste of P4 (earn it, then automate it) |
 | 13–15 | **The used outboard** | Bought secondhand from someone at the wharf and **hung on the dory's transom**. She stops being rowed. Range and speed. | Progression that **opens map**, and the promise of more |
 
+> **Amended 2026-11-23 (canon §5.3/§5.8, ADR 0062):** the M1 ladder above is kept as the record of the
+> slice. In the game as now ruled, the first week is St Peters alone: the dory is bought on the island
+> from Basil Samson and mended there by hand, the cod licence is bought on the island, and the crossing to
+> Nine Mile Creek comes at the island gate (day 7 or later, then Ginny's word), not on days 4–5.
+
 **The outboard goes on the dory — it is not the Punt.** Worth stating plainly, because the two are easy to
 conflate: `boat.dory` is `Propulsion: Oars` (she is rowed, `OarPower: 300`), and `boat.punt_upgraded` is
 `Propulsion: Engine` with a 14-unit hold — "The Punt (**Upgraded**)", where the upgrade *is* the motor. So
@@ -491,7 +496,7 @@ Unchanged from the previous audit and still real:
 | **D4** | Where does audio come from — commissioned, licensed, or procedural-only? | **License or commission the music bed and the wind tell; keep procedural ambience.** Longest lead time in the milestone — decide it now even though it lands last. A world game with no music will read as a tech demo no matter how good the water looks. |
 | **D5** | Wire Unity Localization now, or ship English-only against the seams? | **Now.** The seams were built for it, so no call site changes. A day today; weeks after M2 triples the string count. |
 | **D6** | Freeze later-milestone work? | **Freeze M3+ only** — the offshore hulls, trawlers, tanker, and the eleven-hull fleet are genuine drift. The St Peters batch is **not** drift; it is this M1, and the last audit was wrong to call it scope creep. Keep building it. |
-| **D7** | Do pollock and blue-mussel come back? | **Pollock: already landed** (`Pollock.asset`, on `main` via #291). **Blue-mussel: no** — M3-16 aquaculture owns mussels. The species that matter now are the island shellfish (dig), the shore fish (rod), 2–3 **offshore** species that reward the dory, and the trap shellfish. Species earn their place by which **rung** they unlock, not by filling a list of six. |
+| **D7** | Do pollock and blue-mussel come back? | **Pollock: already landed** (`Pollock.asset`, on `main` via #291). **Blue-mussel: ~~no — M3-16 aquaculture owns mussels~~ yes, since 2026-11-13.** The owner pulled shellfish forward (*"Lets keep doing work on the village ... i want to add more shellfish harvesting, mussell leases, oysters, scallops ..."*; *"Yes, your leans"* to the seat's leans): wild blue mussels and oysters are picked by hand at low water at St Peters now, on the clam-dig pattern (backlog M3-16a). The lease (M3-16) still owns the *farmed* crop and comes next. The species that matter now are the island shellfish (dig), the shore fish (rod), 2–3 **offshore** species that reward the dory, and the trap shellfish. Species earn their place by which **rung** they unlock, not by filling a list of six. |
 | **D8** | How does the outboard land on the dory — a **hull variant asset** or a **real component swap**? | **Variant asset for M1; component split in M2-17.** `BoatHullDef.Propulsion` is a fixed field on the hull, so the cheap route is a second asset — `boat.dory_outboard`, `Propulsion: Engine` — that the purchase swaps the active hull to. Zero code, and it is exactly the pattern the repo already uses (`boat.punt_upgraded` *is* the Punt-with-a-motor variant). The cost is two assets to keep in sync for one boat, which is fine at one upgrade and bad at ten. **M2-17 (component swaps at the shipwright) is the item that should do the proper Hull/Engine/Hold split** — with a save migration, when there are many upgrades to justify it. Do not refactor `BoatHullDef` for M1. **The visual half is §7.7** — the motor does not exist as a prop mesh yet. |
 
 ---

@@ -31,13 +31,17 @@ namespace HiddenHarbours.Core
         /// </summary>
         public static void Run(MonoBehaviour host, Action action)
         {
-            if (action == null) return;
+            if (host == null || action == null) return;
 
             // Already in the world: the blob is final, so there is nothing to wait for.
             if (!ShellFlow.AtTitle) { action(); return; }
 
+            bool completed = false;
             void OnGameLoaded(GameLoaded _)
             {
+                // A nested publish may reach this registration before the outer snapshot does.
+                if (completed) return;
+                completed = true;
                 // Same closure instance on both sides, so the delegate compares equal and unsubscribes.
                 EventBus.Unsubscribe<GameLoaded>(OnGameLoaded);
                 if (host == null) return;   // the component went away while the player sat at the title

@@ -159,9 +159,11 @@ Rules:
 - Tests reference the modules they test.
 
 **Recorded exception — `Fishing → Economy`** (since #65, 2026-06-23: the clam-dig licence and gear
-gates). It predates the seam discipline and has been reviewed in place; the clean fix is a Core
-seam for licences and gear offers (`ILicenseService`-shaped), logged for `lead-architect`. Do not
-add a second feature-to-feature edge on its precedent.
+gates). The current concrete dependencies are `BaitDef`, `LicenseDef` and `CatchLicensePolicy`;
+held licences already travel through Core's `ILicenseService`. Removing the remaining edge needs
+a separate migration of the bait and licence data contracts, preserving authored asset identity.
+Do not add a second feature-to-feature edge on its precedent. `ModuleBoundaryTests` checks this
+exception, Core's independence, the editor boundary and the absence of assembly cycles.
 
 When a PR adds a cross-module dependency that isn't through Core, `lead-architect` reviews it.
 

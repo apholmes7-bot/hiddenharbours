@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e08d388b6adc4b9fb12e153843e42333, type: 3}
+  m_Name: VoyageSportFisherConvertible
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.BoatVoyageDef
+  Id: voyage.sport_fisher_convertible
+  HullId: boat.sport_fisher_convertible
+  LongestTrip: 1
+  MinCrewDay: 1
+  MinCrewOvernight: 1
+  MinCrewWeek: 1
+  MinCrewMonth: 1
+  Work:
+  - WorkId: work.rod_and_jig
+    MinCrew: 1
+    RequiredRoleIds:
+    - role.skipper
+  - WorkId: work.bluefin_rod
+    MinCrew: 2
+    RequiredRoleIds:
+    - role.skipper
+    - role.mate
+  RealWorldCrew: "Charter convertible: captain + mate + 2-4 anglers; canyon tuna or swordfish 1-3 nights."
+  LimitedBy: "fuel 705 L, about 3.5 game days"

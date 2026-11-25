@@ -1,0 +1,238 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee76649f87a8cfd4890261ca9a64ffa3, type: 3}
+  m_Name: SternTrawlerIso_Wrecked
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullPaintSchemeDef
+  Id: paint.stern_trawler_wrecked
+  Label: Wrecked
+  Note: 'beached and abandoned: chalked grey-green topsides rusting from the rail,
+    the cove line and the freeing ports down, red-lead primer showing, weed and a
+    pale tide line on the bottom, blind grey-green glass, a faded house, rusted gantry,
+    gallows and winch'
+  HullMeshId: hullmesh.stern_trawler_iso
+  SourceRigPath: docs/art/rigs/sternTrawlerIsoRig.js
+  RigPaintId: wrecked
+  Ramps:
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4278855180
+    - serializedVersion: 2
+      rgba: 4279513111
+    - serializedVersion: 2
+      rgba: 4279974179
+    - serializedVersion: 2
+      rgba: 4280764473
+    - serializedVersion: 2
+      rgba: 4285501830
+    - serializedVersion: 2
+      rgba: 4285633677
+    - serializedVersion: 2
+      rgba: 4288460217
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0.5
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4278782803
+    - serializedVersion: 2
+      rgba: 4279575400
+    - serializedVersion: 2
+      rgba: 4280235641
+    - serializedVersion: 2
+      rgba: 4284902496
+    - serializedVersion: 2
+      rgba: 4285692270
+    - serializedVersion: 2
+      rgba: 4287008130
+    - serializedVersion: 2
+      rgba: 4285825961
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0.45
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4278782803
+    - serializedVersion: 2
+      rgba: 4279575400
+    - serializedVersion: 2
+      rgba: 4280235641
+    - serializedVersion: 2
+      rgba: 4280895625
+    - serializedVersion: 2
+      rgba: 4283000995
+    - serializedVersion: 2
+      rgba: 4285369023
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0.45
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280231219
+    - serializedVersion: 2
+      rgba: 4280955199
+    - serializedVersion: 2
+      rgba: 4281547849
+    - serializedVersion: 2
+      rgba: 4282205779
+    - serializedVersion: 2
+      rgba: 4282798172
+    - serializedVersion: 2
+      rgba: 4284114288
+    - serializedVersion: 2
+      rgba: 4287140765
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0.35
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279506737
+    - serializedVersion: 2
+      rgba: 4280099645
+    - serializedVersion: 2
+      rgba: 4280561478
+    - serializedVersion: 2
+      rgba: 4285299088
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0.25
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4278782803
+    - serializedVersion: 2
+      rgba: 4279575400
+    - serializedVersion: 2
+      rgba: 4280235641
+    - serializedVersion: 2
+      rgba: 4280895625
+    - serializedVersion: 2
+      rgba: 4283000995
+    - serializedVersion: 2
+      rgba: 4285369023
+    Offset: -1
+    _hasDitherWeight: 1
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279575400
+    - serializedVersion: 2
+      rgba: 4280895625
+    - serializedVersion: 2
+      rgba: 4285891973
+    - serializedVersion: 2
+      rgba: 4287404958
+    - serializedVersion: 2
+      rgba: 4288917941
+    - serializedVersion: 2
+      rgba: 4290430923
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0.35
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280165956
+    - serializedVersion: 2
+      rgba: 4281351258
+    - serializedVersion: 2
+      rgba: 4282339180
+    - serializedVersion: 2
+      rgba: 4283787395
+    - serializedVersion: 2
+      rgba: 4287010991
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0.3
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279110666
+    - serializedVersion: 2
+      rgba: 4279702545
+    - serializedVersion: 2
+      rgba: 4280294424
+    - serializedVersion: 2
+      rgba: 4280689181
+    - serializedVersion: 2
+      rgba: 4281215782
+    Offset: -2
+    _hasDitherWeight: 1
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280295523
+    - serializedVersion: 2
+      rgba: 4281614210
+    - serializedVersion: 2
+      rgba: 4282735260
+    - serializedVersion: 2
+      rgba: 4284512694
+    - serializedVersion: 2
+      rgba: 4286881234
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0.25
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4281481283
+    - serializedVersion: 2
+      rgba: 4283060571
+    - serializedVersion: 2
+      rgba: 4284442737
+    - serializedVersion: 2
+      rgba: 4286087817
+    - serializedVersion: 2
+      rgba: 4288785072
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0.3
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4278716747
+    - serializedVersion: 2
+      rgba: 4279378014
+    - serializedVersion: 2
+      rgba: 4280037741
+    - serializedVersion: 2
+      rgba: 4280631676
+    - serializedVersion: 2
+      rgba: 4282802840
+    - serializedVersion: 2
+      rgba: 4285171126
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0.4
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4283323461
+    - serializedVersion: 2
+      rgba: 4283850062
+    - serializedVersion: 2
+      rgba: 4284245078
+    - serializedVersion: 2
+      rgba: 4284574302
+    - serializedVersion: 2
+      rgba: 4285561198
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4281081625
+    - serializedVersion: 2
+      rgba: 4281936677
+    - serializedVersion: 2
+      rgba: 4282660400
+    - serializedVersion: 2
+      rgba: 4283318330
+    - serializedVersion: 2
+      rgba: 4287858045
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0.5

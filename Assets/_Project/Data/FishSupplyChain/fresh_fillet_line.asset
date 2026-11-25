@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 849cedbd84fb48b3a0a0d9f19bc1fa9e, type: 3}
+  m_Name: fresh_fillet_line
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.SupplyChain.FishLineDef
+  Spec:
+    Id: fishline.nmc_fresh_fillet
+    SpeciesId: fish.atlantic_cod
+    OutputStorageId: fishstore.plant_cold
+    Product: 1
+    YieldPpm: 450000
+    BatchFish: 30
+    ProcessSeconds: 15
+    RequiredWorkers: 3
+    LabourSecondsPerFish: 2
+    WorkMassCapacityGrams: 150000
+    WorkVolumeCapacityMl: 200000

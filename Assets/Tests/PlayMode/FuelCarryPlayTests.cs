@@ -182,7 +182,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 "the can registered itself; the hull's own filler cap is registered too since #936");
 
             // PRESS ONE — pick it up.
-            Assert.IsTrue(_switcher.BeginInteract(), "the press was spent on the can");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher), "the press was spent on the can");
             Assert.IsTrue(can.IsCarried);
             Assert.AreSame(_hands.transform, can.transform.parent, "it rides her");
             Assert.AreEqual(1, _performed.Count);
@@ -195,7 +195,7 @@ namespace HiddenHarbours.Tests.PlayMode
             // PRESS TWO — set it down. Compared against where she ACTUALLY stands, not the constant she
             // was sent to: her body is a Rigidbody2D and a physics step may have settled it a hair.
             Vector2 feet = _hands.transform.position;
-            Assert.IsTrue(_switcher.BeginInteract(), "the same key puts it down");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher), "the same key puts it down");
             Assert.IsFalse(can.IsCarried);
             Assert.IsNull(can.transform.parent, "back on the ground");
             Assert.AreEqual(feet.x, can.transform.position.x, 1e-3f, "at her feet");
@@ -211,7 +211,7 @@ namespace HiddenHarbours.Tests.PlayMode
             CarriableFuelContainer can = RealContainer(AshorePos + new Vector3(0.6f, 0f, 0f));
             yield return null;
 
-            _switcher.BeginInteract();
+            HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher);
             Assert.IsTrue(can.IsCarried, "one press picked it up and stopped there");
             Assert.AreEqual(1, _performed.Count);
 
@@ -230,14 +230,14 @@ namespace HiddenHarbours.Tests.PlayMode
             presenter.Fill = 0.75f;
             yield return null;
 
-            _switcher.BeginInteract();
+            HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher);
             // Assert the carry HAPPENED, or this test passes just as well when nothing happens at all —
             // an untouched can also still reads 0.75.
             Assert.IsTrue(can.IsCarried, "she picked it up");
 
             StandAt(AshorePos + new Vector3(12f, -5f, 0f));
             yield return null;
-            _switcher.BeginInteract();
+            HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher);
             yield return null;
             Assert.IsFalse(can.IsCarried, "and put it down again");
 
@@ -252,7 +252,7 @@ namespace HiddenHarbours.Tests.PlayMode
             CarriableFuelContainer can = RealContainer(AshorePos + new Vector3(0.6f, 0f, 0f));
             var presenter = can.GetComponent<FuelLevelPresenter>();
             yield return null;
-            _switcher.BeginInteract();
+            HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher);
 
             // Clockwise from north, eight cells. The skin's LateUpdate settles the held heading and
             // CarryHands (execution order 100) reads it in the SAME frame, after it.
@@ -278,12 +278,12 @@ namespace HiddenHarbours.Tests.PlayMode
             var presenter = can.GetComponent<FuelLevelPresenter>();
             yield return null;
 
-            _switcher.BeginInteract();
+            HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher);
             _skin.HoldHeading(90f);
             yield return null;
             Assert.AreEqual(2, presenter.Facing, "carried, it faces east with her");
 
-            _switcher.BeginInteract();          // set it down
+            HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher);          // set it down
             _skin.HoldHeading(270f);            // she turns right round
             yield return null;
             yield return null;
@@ -299,7 +299,7 @@ namespace HiddenHarbours.Tests.PlayMode
             CarriableFuelContainer can = RealContainer(AshorePos + new Vector3(0.6f, 0f, 0f));
             var canRenderer = can.GetComponent<SpriteRenderer>();
             yield return null;
-            _switcher.BeginInteract();
+            HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher);
 
             // Facing the camera: the can is between her and the lens.
             _skin.HoldHeading(180f);
@@ -331,7 +331,7 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
             int orderWhereItStood = canRenderer.sortingOrder;
 
-            _switcher.BeginInteract();
+            HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher);
             yield return null;
             // ⚠️ IsCarried first. A static YSortSprite parks its OWN dispatch on enable, so `enabled` is
             // false in play mode whether or not the hands ever took it — on its own that assertion passes
@@ -343,7 +343,7 @@ namespace HiddenHarbours.Tests.PlayMode
             // the order it already had.
             StandAt(AshorePos + new Vector3(0f, -8f, 0f));
             yield return null;
-            _switcher.BeginInteract();
+            HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher);
             yield return null;
             Assert.IsFalse(can.IsCarried, "and set it down there");
 
@@ -369,7 +369,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsNotNull(tank, "BoatController.Awake mounts the hull's own filler cap");
             CollectionAssert.AreEquivalent(new IInteractable[] { tank }, Interactables.Active,
                 "nothing registered; the hull's own filler cap is registered too since #936");
-            Assert.IsFalse(_switcher.BeginInteract(), "the press falls through untouched");
+            Assert.IsFalse(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher), "the press falls through untouched");
             Assert.IsFalse(_hands.IsCarrying);
             Assert.AreEqual(0, _performed.Count);
         }
@@ -386,7 +386,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsNotNull(tank, "BoatController.Awake mounts the hull's own filler cap");
             CollectionAssert.AreEquivalent(new IInteractable[] { tank }, Interactables.Active,
                 "no portable fixture is registered; the hull's own filler cap is registered too since #936");
-            Assert.IsFalse(_switcher.BeginInteract());
+            Assert.IsFalse(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher));
             Assert.IsFalse(_hands.IsCarrying);
             Assert.AreEqual(0, _performed.Count);
         }
@@ -413,7 +413,7 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
             CollectionAssert.AreEquivalent(new IInteractable[] { tank }, Interactables.Active,
                 "a disabled component must not be actable; the hull's own filler cap is registered too since #936");
-            Assert.IsFalse(_switcher.BeginInteract(), "and the press finds nothing");
+            Assert.IsFalse(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher), "and the press finds nothing");
 
             can.enabled = true;
             yield return null;
@@ -427,7 +427,7 @@ namespace HiddenHarbours.Tests.PlayMode
             RealContainer(AshorePos + new Vector3(6f, 0f, 0f));   // well past the 1.5 m reach
             yield return null;
 
-            Assert.IsFalse(_switcher.BeginInteract());
+            Assert.IsFalse(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher));
             Assert.IsFalse(_hands.IsCarrying);
         }
 
@@ -453,7 +453,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsNotNull(tank, "BoatController.Awake mounts the hull's own filler cap");
             CollectionAssert.AreEquivalent(new IInteractable[] { tank, can }, Interactables.Active,
                 "the can IS registered — it simply does not get asked; the hull's own filler cap is registered too since #936");
-            Assert.IsTrue(_switcher.BeginInteract(), "the press boarded");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher), "the press boarded");
             Assert.AreEqual(ControlMode.OnDeck, _switcher.Mode);
             Assert.IsFalse(can.IsCarried, "and the can is still on the wharf");
         }
@@ -465,12 +465,12 @@ namespace HiddenHarbours.Tests.PlayMode
             // separate work — it would have to ride the hull, which is the deck-occupant seam's job.
             CarriableFuelContainer can = RealContainer(AshorePos + new Vector3(0.6f, 0f, 0f));
             yield return null;
-            _switcher.BeginInteract();
+            HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher);
             Assert.IsTrue(can.IsCarried);
 
             StandAt(BoatPos + new Vector3(0.5f, 0f, 0f));
             yield return null;
-            Assert.IsTrue(_switcher.BeginInteract(), "she boards");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher), "she boards");
             Assert.AreEqual(ControlMode.OnDeck, _switcher.Mode);
 
             yield return null;

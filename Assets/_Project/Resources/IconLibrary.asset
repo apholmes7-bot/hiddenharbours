@@ -14,25 +14,99 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.IconLibrary
   Entries:
   - Id: fish.atlantic_cod
-    Icon: {fileID: -3536239991035090404, guid: 2ebb3cba674a7834fbbfd59fb79f0b83, type: 3}
+    Icon: {fileID: 21300000, guid: 4bd247b5cbbe4ca3a9869c1fed00f1d6, type: 3}
   - Id: fish.haddock
-    Icon: {fileID: -247080572403776488, guid: c8834f13f90c30742a141b17ecfa4d46, type: 3}
+    Icon: {fileID: 21300000, guid: 06c43067ca4642eaa1f47b12de0a3060, type: 3}
   - Id: fish.mackerel
-    Icon: {fileID: -8407166883477379423, guid: e9ea28cbd0a514a408c7c9cc278ef42d, type: 3}
+    Icon: {fileID: 21300000, guid: 9b6b73bbbbab404e839983bbcf9956ce, type: 3}
+  - Id: fish.pollock
+    Icon: {fileID: 21300000, guid: 04601a139cfc40e69ed95aece263955d, type: 3}
+  - Id: fish.striped_bass
+    Icon: {fileID: 21300000, guid: 61c5bee84ee24beb87df63cbc510ddf6, type: 3}
+  - Id: fish.winter_flounder
+    Icon: {fileID: 21300000, guid: 5887767b296c4e23a1181791e60b8c51, type: 3}
+  - Id: fish.atlantic_herring
+    Icon: {fileID: 21300000, guid: 227f9b7e232546298196aa6f7e2cd53a, type: 3}
   - Id: fish.lobster
-    Icon: {fileID: 21300000, guid: 555eeebc25e370ae12601d4252236302, type: 3}
+    Icon: {fileID: 21300000, guid: a61ea63717dd4ba892fffb56daec78dc, type: 3}
   - Id: fish.rock_crab
-    Icon: {fileID: 21300000, guid: b6bc2c66344a71e4b46243ea685d1ae0, type: 3}
+    Icon: {fileID: 21300000, guid: bd2c04b7649d49dd8ba7bcd7b9ea803f, type: 3}
+  - Id: fish.green_crab
+    Icon: {fileID: 21300000, guid: 0fc7756f5141430f8d81f593a8104362, type: 3}
   - Id: fish.soft_shell_clam
-    Icon: {fileID: -8350118145691459604, guid: bae98caad6f379308446110bc6a39b4f, type: 3}
+    Icon: {fileID: 21300000, guid: 10fa059778c54b17b496859a6746bea9, type: 3}
+  - Id: fish.rainbow_smelt
+    Icon: {fileID: 21300000, guid: 0cdc1e5ef0e85a9438c44d97b5fe4a43, type: 3}
+  - Id: fish.atlantic_tomcod
+    Icon: {fileID: 21300000, guid: a3909035b82b6124daa0f035f9a2d955, type: 3}
+  - Id: fish.cunner
+    Icon: {fileID: 21300000, guid: 8545d65f026202543a3e65af6a6d7b97, type: 3}
+  - Id: fish.northern_quahog
+    Icon: {fileID: 21300000, guid: a86ade1ba7af42cf84760c71fa0191bd, type: 3}
+  - Id: fish.atlantic_surf_clam
+    Icon: {fileID: 21300000, guid: 56de6e713e664a7682de3dace757d992, type: 3}
   - Id: gear.rod
-    Icon: {fileID: 3043605626722657392, guid: a237e0b5e9c386cad0782dd33e12953a, type: 3}
+    Icon: {fileID: 21300000, guid: c9a64a230eaa44148c43164495c78ce8, type: 3}
   - Id: gear.shovel
     Icon: {fileID: 5797802837027575224, guid: db7f83f9d8ade533c1a7bb065ed12d82, type: 3}
   - Id: gear.bucket
     Icon: {fileID: 1180958333410743825, guid: 9c457a82e4864b81a738e262fb058047, type: 3}
+  - Id: gear.oyster_tongs
+    Icon: {fileID: 21300000, guid: eb55194188594e508ba730861393dcad, type: 3}
+  - Id: gear.shellfish_rake
+    Icon: {fileID: 21300000, guid: 8ab67cee7fc2489dbc802e1e504f2703, type: 3}
+  - Id: gear.mussel_sack
+    Icon: {fileID: 21300000, guid: de1d65fba5794074804ba3a408debc18, type: 3}
+  - Id: gear.shellfish_basket
+    Icon: {fileID: 21300000, guid: ad3dc49305a14300b9edb837d90bba8e, type: 3}
+  - Id: tackle.cod_jig
+    Icon: {fileID: 21300000, guid: 536f0c28a86f42f2a7585fec019396cf, type: 3}
+  - Id: tackle.mackerel_feathers
+    Icon: {fileID: 21300000, guid: d4da7d05773c4691970b730116dba419, type: 3}
+  - Id: tackle.soft_bait
+    Icon: {fileID: 21300000, guid: acec4110af004a64aab568c84156d132, type: 3}
+  - Id: tackle.spinner
+    Icon: {fileID: 21300000, guid: 35e4a7cdde904a81b9ef42a0070ac526, type: 3}
+  - Id: tackle.spoon
+    Icon: {fileID: 21300000, guid: 5bf94cf839d441309a397049379746a8, type: 3}
+  - Id: longline.groundfish_tub
+    Icon: {fileID: 21300000, guid: 469a80da096841fb8212867232c6d76d, type: 3}
+  - Id: trawl_gear.bottom_otter_prototype
+    Icon: {fileID: 21300000, guid: a5c07fc21641433994a0d9d697e36ea8, type: 3}
+  - Id: watch.harbour_digital
+    Icon: {fileID: 21300000, guid: b269511ab9c741b3a4921dfa48694f01, type: 3}
+  - Id: gear.rod_rack
+    Icon: {fileID: 21300000, guid: a225f8e144f54afea4c5aa852f37711c, type: 3}
+  - Id: trap.lobster
+    Icon: {fileID: 21300000, guid: ec14806cacc74b488446d6717b27901f, type: 3}
+  - Id: trap.crab
+    Icon: {fileID: 21300000, guid: fc0647e59a0f42f8ab634401f66bf15e, type: 3}
+  - Id: bait.herring
+    Icon: {fileID: 21300000, guid: 60eed87278e64c02b2b3412676cb3cdf, type: 3}
+  - Id: bait.mackerel
+    Icon: {fileID: 21300000, guid: 39b365bb87594804b163f166ed31dba7, type: 3}
+  - Id: bait.capelin
+    Icon: {fileID: 21300000, guid: facc55fd06be4a9aa5ffa7b920319a54, type: 3}
+  - Id: bait.squid_strip
+    Icon: {fileID: 21300000, guid: 8779afd983c64836a33ba4d7974d2948, type: 3}
+  - Id: bait.sea_worm
+    Icon: {fileID: 21300000, guid: 030ba989a0da44668fe6f4d9dcff7cc0, type: 3}
+  - Id: bait.shucked_clam
+    Icon: {fileID: 21300000, guid: a3205ea595844a2c830ffcdbabbc58d2, type: 3}
+  - Id: bait.fish_scrap
+    Icon: {fileID: 21300000, guid: 90c60c61eab14d32817b28b58497f052, type: 3}
+  - Id: instrument.depth_sounder
+    Icon: {fileID: 21300000, guid: 50ff9fbe07d8467790cec52425ea8e9f, type: 3}
+  - Id: instrument.fish_finder
+    Icon: {fileID: 21300000, guid: 180f9c554f394294b5cb8ee349a75639, type: 3}
+  - Id: instrument.loran
+    Icon: {fileID: 21300000, guid: 50c83f151b744e859c136692ce548004, type: 3}
+  - Id: instrument.gps
+    Icon: {fileID: 21300000, guid: 62ca54007eb94bfabad97aad1e6cf563, type: 3}
+  - Id: gear.headlamp
+    Icon: {fileID: 21300000, guid: dca91309e97748b78e73ba7a3921abde, type: 3}
   - Id: license.cod
-    Icon: {fileID: -3536239991035090404, guid: 2ebb3cba674a7834fbbfd59fb79f0b83, type: 3}
+    Icon: {fileID: 21300000, guid: 4bd247b5cbbe4ca3a9869c1fed00f1d6, type: 3}
   - Id: boat.dory
     Icon: {fileID: -4273363844485199502, guid: 98bbb7aa1db20694e80169b89245b8c7, type: 3}
   - Id: boat.punt
@@ -43,3 +117,9 @@ MonoBehaviour:
     Icon: {fileID: 8828844319154872306, guid: 1c7cd2647a21e114a9b2fbe5d8bba682, type: 3}
   - Id: buoy.player
     Icon: {fileID: -4432373148397089404, guid: a52401dfeb41d2813e5d0d41635fd612, type: 3}
+  - Id: fish.american_oyster
+    Icon: {fileID: 21300000, guid: e0b69d4f31394b01a3cd284614d92d16, type: 3}
+  - Id: fish.blue_mussel
+    Icon: {fileID: 21300000, guid: 14ed8d0305e045feaa8d2564c5250cd5, type: 3}
+  - Id: fish.sea_scallop
+    Icon: {fileID: 21300000, guid: d8b8c80a20aa498ba5b671d9cf59fbf7, type: 3}

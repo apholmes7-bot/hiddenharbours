@@ -13,10 +13,15 @@ namespace HiddenHarbours.UI
         public readonly float Alarm;     // shallow set-point, metres
         public readonly float TempC;     // water temperature
         public readonly bool Blink;      // blink phase — flashes the SHALLOW flag when triggered
+        public readonly bool ShowTemp;   // print the temperature line (off while TempC is a constant)
 
+        /// <summary><paramref name="showTemp"/> defaults ON because that is the rig as drawn, which the
+        /// golden tests compare against; the live glass passes
+        /// <c>DepthSounderSettings.ShowWaterTemp</c>.</summary>
         public DepthRigState(float depth, bool feet, bool night, bool armed, float alarm, float tempC,
-                             bool blink)
+                             bool blink, bool showTemp = true)
         {
+            ShowTemp = showTemp;
             Depth = depth; Feet = feet; Night = night; Armed = armed; Alarm = alarm; TempC = tempC;
             Blink = blink;
         }
@@ -214,7 +219,7 @@ namespace HiddenHarbours.UI
                 }
                 else Text(s, "SHALLOW", bx + 4, by + 3, ts, RED[2], 1f);
             }
-            else
+            else if (o.ShowTemp)
             {
                 string tv = fs >= 2
                     ? DepthRigGeometry.FixedOne(o.TempC)

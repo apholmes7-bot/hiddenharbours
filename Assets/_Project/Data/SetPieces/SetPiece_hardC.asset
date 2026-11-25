@@ -1,0 +1,156 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b51978faec4dbb8e54e23107a97ef5, type: 3}
+  m_Name: SetPiece_hardC
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: structure.nmc_yard_hard_c
+  DisplayName: 'Wharf boat yard: hardC'
+  RigKey: hardC
+  SceneId: keyscene.nmc_wharf
+  BakedOptionsJson: '{}'
+  Layer: raised
+  Walk: solid
+  Mount: ground
+  BoundsMin: {x: -3.075, y: -1.226077, z: -0.020097}
+  BoundsMax: {x: 3.405, y: 1.236348, z: 2.57}
+  Frames:
+  - Sprite: {fileID: 2819012214592421360, guid: 414846316b656984c92fb57f5e1d1a7f, type: 3}
+    RigDir: 0
+    ShowFaces: 0
+    BearingDeg: 0
+    CameraSees: yard part
+    NativeSize: {x: 217, y: 98}
+    NativePivot: {x: 103, y: 68}
+    Crop: {x: 5, y: 4}
+    Pivot: {x: 98, y: 64}
+  - Sprite: {fileID: -7544633161657229567, guid: 414846316b656984c92fb57f5e1d1a7f, type: 3}
+    RigDir: 7
+    ShowFaces: 7
+    BearingDeg: 315
+    CameraSees: yard part
+    NativeSize: {x: 167, y: 161}
+    NativePivot: {x: 78, y: 97}
+    Crop: {x: 5, y: 4}
+    Pivot: {x: 73, y: 93}
+  - Sprite: {fileID: -5525882237525457377, guid: 414846316b656984c92fb57f5e1d1a7f, type: 3}
+    RigDir: 6
+    ShowFaces: 6
+    BearingDeg: 270
+    CameraSees: yard part
+    NativeSize: {x: 88, y: 189}
+    NativePivot: {x: 44, y: 114}
+    Crop: {x: 5, y: 4}
+    Pivot: {x: 39, y: 110}
+  - Sprite: {fileID: -6561514675172509740, guid: 414846316b656984c92fb57f5e1d1a7f, type: 3}
+    RigDir: 5
+    ShowFaces: 5
+    BearingDeg: 225
+    CameraSees: yard part
+    NativeSize: {x: 175, y: 154}
+    NativePivot: {x: 96, y: 97}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 92, y: 93}
+  - Sprite: {fileID: 1725208693575425374, guid: 414846316b656984c92fb57f5e1d1a7f, type: 3}
+    RigDir: 4
+    ShowFaces: 4
+    BearingDeg: 180
+    CameraSees: yard part
+    NativeSize: {x: 217, y: 111}
+    NativePivot: {x: 113, y: 81}
+    Crop: {x: 4, y: 5}
+    Pivot: {x: 109, y: 76}
+  - Sprite: {fileID: 6302604700045717103, guid: 414846316b656984c92fb57f5e1d1a7f, type: 3}
+    RigDir: 3
+    ShowFaces: 3
+    BearingDeg: 135
+    CameraSees: yard part
+    NativeSize: {x: 167, y: 163}
+    NativePivot: {x: 88, y: 126}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 84, y: 122}
+  - Sprite: {fileID: 4672721159144884546, guid: 414846316b656984c92fb57f5e1d1a7f, type: 3}
+    RigDir: 2
+    ShowFaces: 2
+    BearingDeg: 90
+    CameraSees: yard part
+    NativeSize: {x: 88, y: 179}
+    NativePivot: {x: 44, y: 138}
+    Crop: {x: 4, y: 5}
+    Pivot: {x: 40, y: 133}
+  - Sprite: {fileID: 3803364564092870277, guid: 414846316b656984c92fb57f5e1d1a7f, type: 3}
+    RigDir: 1
+    ShowFaces: 1
+    BearingDeg: 45
+    CameraSees: yard part
+    NativeSize: {x: 175, y: 152}
+    NativePivot: {x: 78, y: 115}
+    Crop: {x: 5, y: 5}
+    Pivot: {x: 73, y: 110}
+  CellSize: {x: 207, y: 180}
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders:
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: 3.475, y: -1.844}
+    - {x: 3.475, y: 1.844}
+    - {x: -3.075, y: 1.844}
+    - {x: -3.075, y: -1.844}
+  Anchors: []
+  Path: []
+  TideMarks: []
+  Words: []
+  HasLight: 0
+  Light:
+    Emitters: []
+    When: 
+  IsAnimated: 0
+  Animated:
+    Part: 
+    Input: 
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []
+  GameplayJson: '{"schema":"hidden-harbours/nmc-shipyard-part@1","generatedBy":"NmcShipyard
+    1.0.0","key":"hardC","id":"structure.nmc_yard_hard_c","name":"Wharf boat yard:
+    hardC","defType":"SetPieceDef","scene":"keyscene.nmc_wharf","units":"metres in
+    the part frame, deck datum zero","bounds":{"x":[-3.075,3.405],"y":[-1.226077,1.236348],"z":[-0.020097,2.57]},"layer":"raised","walk":"solid","mount":"ground","colliders":[{"type":"polygon","blocks":"walk","pts":[[3.475,-1.844],[3.475,1.844],[-3.075,1.844],[-3.075,-1.844]]}],"facings":[{"dir":0,"showFaces":"0","bearingDeg":0,"cameraSees":"yard
+    part"},{"dir":1,"showFaces":"1","bearingDeg":45,"cameraSees":"yard part"},{"dir":2,"showFaces":"2","bearingDeg":90,"cameraSees":"yard
+    part"},{"dir":3,"showFaces":"3","bearingDeg":135,"cameraSees":"yard part"},{"dir":4,"showFaces":"4","bearingDeg":180,"cameraSees":"yard
+    part"},{"dir":5,"showFaces":"5","bearingDeg":225,"cameraSees":"yard part"},{"dir":6,"showFaces":"6","bearingDeg":270,"cameraSees":"yard
+    part"},{"dir":7,"showFaces":"7","bearingDeg":315,"cameraSees":"yard part"}],"cells":[{"dir":0,"w":217,"h":98,"pivot":[103,68]},{"dir":1,"w":175,"h":152,"pivot":[78,115]},{"dir":2,"w":88,"h":179,"pivot":[44,138]},{"dir":3,"w":167,"h":163,"pivot":[88,126]},{"dir":4,"w":217,"h":111,"pivot":[113,81]},{"dir":5,"w":175,"h":154,"pivot":[96,97]},{"dir":6,"w":88,"h":189,"pivot":[44,114]},{"dir":7,"w":167,"h":161,"pivot":[78,97]}],"anchors":{},"options":{},"placement":{"row":"harbour.yard","at":[208.2,121.8],"elevation":3.4,"dir":0},"walkSurfaces":[],"records":[{"verb":"climbUp","id":"hardC.ladder.up","fixture":"boat
+    ladder at the stern","stand":[3.65,-0.4,0],"yaw":-90,"note":"aboard over the
+    transom of the bowrider","rungs":[0.24,0.48,0.72,0.96,1.2],"landingZ":1.57,"seq":[{"join":true,"ms":300,"request":"ladderOn","note":"idle
+    at the foot to ladderDown u 0"},{"clip":"ladderDown","loop":true,"reverse":true,"opts":{"rung":0.24},"rootMotion":[0,0,0.436],"until":"the
+    top station, 0.85 m"},{"clip":"board","once":true,"opts":{"railZ":0.72},"advance":{"m":0.6,"t":[0.28,0.88]},"note":"onto
+    the landing at 1.57 m"}],"fits":[{"param":"rung","value":0.24,"range":[0.211,0.273],"ok":true},{"param":"rail","value":0.72,"range":[0.549,0.724],"ok":true}],"anim":{"clip":"ladderDown","reverse":true,"at":[3.65,-0.4,0.1],"move":{"d":[0,0,1],"len":0.75,"rate":0.436}},"k":"verb","fitsCreatorBodies":true},{"verb":"climbDown","id":"hardC.ladder.down","fixture":"boat
+    ladder at the stern","stand":[3.65,-0.4,0.85],"yaw":-90,"seq":[{"join":true,"ms":300,"request":"ladderOn","note":"from
+    idle on the landing, back to the ladder, to ladderDown u 0 at the top station"},{"clip":"ladderDown","loop":true,"opts":{"rung":0.24},"rootMotion":[0,0,-0.436],"until":"the
+    foot"},{"join":true,"ms":300,"request":"ladderOff"}],"fits":[{"param":"rung","value":0.24,"range":[0.211,0.273],"ok":true},{"param":"rail","value":0.72,"range":[0.549,0.724],"ok":true}],"k":"verb","fitsCreatorBodies":true},{"verb":"sandBottom","also":["antifoul"],"id":"hardC.sand0","fixture":"hull
+    bottom","stand":[1.107,1.508,0],"yaw":-180,"show":true,"seq":[{"clip":"reach","loop":true,"opts":{"lift":0.95},"note":"the
+    sander or the roller on the skin at 1.05 m"}],"fits":[{"param":"rest","value":0.95,"range":[0,1.012],"ok":true}],"anim":{"clip":"reach","opts":{"lift":0.95}},"k":"verb","fitsCreatorBodies":true},{"verb":"sandBottom","also":["antifoul"],"id":"hardC.sand1","fixture":"hull
+    bottom","stand":[-1.107,1.393,0],"yaw":-180,"show":false,"seq":[{"clip":"reach","loop":true,"opts":{"lift":0.95},"note":"the
+    sander or the roller on the skin at 1.05 m"}],"fits":[{"param":"rest","value":0.95,"range":[0,1.012],"ok":true}],"anim":{"clip":"reach","opts":{"lift":0.95}},"k":"verb","fitsCreatorBodies":true},{"verb":"setStand","id":"hardC.stand0","fixture":"jack
+    stand screw","stand":[0,-1.378,0],"yaw":0,"seq":[{"clip":"reach","loop":true,"opts":{"lift":0.494},"note":"the
+    bar through the screw at 0.49 m"}],"fits":[{"param":"rest","value":0.494,"range":[0,1.012],"ok":true}],"k":"verb","fitsCreatorBodies":true},{"verb":"setStand","id":"hardC.stand1","fixture":"jack
+    stand screw","stand":[0,1.378,0],"yaw":-180,"seq":[{"clip":"reach","loop":true,"opts":{"lift":0.494},"note":"the
+    bar through the screw at 0.49 m"}],"fits":[{"param":"rest","value":0.494,"range":[0,1.012],"ok":true}],"k":"verb","fitsCreatorBodies":true},{"k":"hull","id":"hardC","type":"bowrider","label":"bowrider","paint":"harbour-white","rig":"BowriderIso","loa":5.64,"beam":2.29,"draft":0.4,"t":1.4,"store":"hard","keelZ":0.55,"ground":0,"heading":-90,"foot":[[3.075,-1.144],[3.075,1.144],[-3.075,1.144],[-3.075,-1.144]],"deckZ":0.97,"topZ":2.042,"faces":1246,"mastUnstepped":false,"wrap":null,"blocks":[{"at":[2.775,0],"top":0.55},{"at":[-1.438,0],"top":0.55}],"stands":[{"at":[0,-0.778],"padZ":0.89,"nutZ":0.494},{"at":[0,0.778],"padZ":0.89,"nutZ":0.494}],"ladder":{"at":[3.375,-0.4],"landingZ":1.57,"rungs":5}},{"k":"block","kind":"hull
+    on the hard","poly":[[3.475,-1.844],[3.475,1.844],[-3.075,1.844],[-3.075,-1.844]],"z0":0,"z1":2.042}]}'
+  State: 
+  Variants: []
+  HasVendor: 0
+  Vendor:
+    Seller: 
+    At: {x: 0, y: 0, z: 0}

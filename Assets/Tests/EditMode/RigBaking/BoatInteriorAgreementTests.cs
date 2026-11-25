@@ -82,6 +82,21 @@ namespace HiddenHarbours.Tests.RigBaking
             return visual != null && visual.HullMesh != null && visual.HullMesh.HasMeshInterior();
         }
 
+        [TestCase("SportFisherConvertibleIso")]
+        [TestCase("SportFisherSkybridgeIso")]
+        [TestCase("ExpeditionYacht120Iso")]
+        [TestCase("MotorYacht84Iso")]
+        [TestCase("SternTrawlerIso")]
+        [TestCase("SternTrawlerMk2Iso")]
+        [TestCase("SideDraggerIso")]
+        public void IntakeRoom_IsGeometryAndShipsNoSheetContract(string stem)
+        {
+            string path = InteriorDefFolder + "/" + stem + ".asset";
+            Assert.That(RoomIsGeometry(path), Is.True, stem);
+            var def = Def(path);
+            Assert.That(Contract().sheets.Any(s => s.defId == def.Id), Is.False, stem);
+        }
+
         [Test]
         public void GeometryRoomDefs_ShipNoSheetPageOrCells()
         {

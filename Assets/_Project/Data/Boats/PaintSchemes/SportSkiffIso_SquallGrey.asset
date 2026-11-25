@@ -1,0 +1,147 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee76649f87a8cfd4890261ca9a64ffa3, type: 3}
+  m_Name: SportSkiffIso_SquallGrey
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullPaintSchemeDef
+  Id: paint.sport_skiff_squall_grey
+  Label: SQUALL GREY
+  Note: Grey topsides, a signal-orange stripe, slate canvas.
+  HullMeshId: hullmesh.sport_skiff_iso
+  SourceRigPath: docs/art/rigs/sportSkiffIsoRig.js
+  RigPaintId: squall-grey
+  Ramps:
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282991420
+    - serializedVersion: 2
+      rgba: 4284372815
+    - serializedVersion: 2
+      rgba: 4285820260
+    - serializedVersion: 2
+      rgba: 4287333498
+    - serializedVersion: 2
+      rgba: 4288781201
+    - serializedVersion: 2
+      rgba: 4290163369
+    - serializedVersion: 2
+      rgba: 4291545538
+    Offset: 0
+    _hasDitherWeight: 0
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280036986
+    - serializedVersion: 2
+      rgba: 4280564886
+    - serializedVersion: 2
+      rgba: 4281224370
+    - serializedVersion: 2
+      rgba: 4282409676
+    - serializedVersion: 2
+      rgba: 4284515038
+    Offset: -1
+    _hasDitherWeight: 0
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4285557341
+    - serializedVersion: 2
+      rgba: 4287663230
+    - serializedVersion: 2
+      rgba: 4289835171
+    - serializedVersion: 2
+      rgba: 4291481026
+    - serializedVersion: 2
+      rgba: 4292863453
+    - serializedVersion: 2
+      rgba: 4293587182
+    - serializedVersion: 2
+      rgba: 4294179063
+    Offset: 0
+    _hasDitherWeight: 0
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282925370
+    - serializedVersion: 2
+      rgba: 4284899158
+    - serializedVersion: 2
+      rgba: 4287399290
+    - serializedVersion: 2
+      rgba: 4289833887
+    - serializedVersion: 2
+      rgba: 4292005571
+    - serializedVersion: 2
+      rgba: 4293848550
+    Offset: 0
+    _hasDitherWeight: 0
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4285100138
+    - serializedVersion: 2
+      rgba: 4286745220
+    - serializedVersion: 2
+      rgba: 4288324252
+    - serializedVersion: 2
+      rgba: 4289772212
+    - serializedVersion: 2
+      rgba: 4291154122
+    Offset: 0
+    _hasDitherWeight: 0
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282135318
+    - serializedVersion: 2
+      rgba: 4284108836
+    - serializedVersion: 2
+      rgba: 4286608954
+    - serializedVersion: 2
+      rgba: 4289110879
+    - serializedVersion: 2
+      rgba: 4291086735
+    Offset: 0
+    _hasDitherWeight: 0
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702288
+    - serializedVersion: 2
+      rgba: 4280754461
+    - serializedVersion: 2
+      rgba: 4282004011
+    - serializedVersion: 2
+      rgba: 4283319613
+    - serializedVersion: 2
+      rgba: 4284701778
+    - serializedVersion: 2
+      rgba: 4286281323
+    - serializedVersion: 2
+      rgba: 4288255114
+    Offset: -2
+    _hasDitherWeight: 0
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4281807148
+    - serializedVersion: 2
+      rgba: 4282991163
+    - serializedVersion: 2
+      rgba: 4284240972
+    - serializedVersion: 2
+      rgba: 4285622367
+    - serializedVersion: 2
+      rgba: 4287069812
+    Offset: 0
+    _hasDitherWeight: 0
+    _ditherWeight: 0

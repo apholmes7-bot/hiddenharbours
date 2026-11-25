@@ -274,8 +274,9 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             yield return At(2f);
             Assert.That(DriveSeats.IsOccupied(_parked.Door), Is.False,
-                "parked and empty overnight — anybody may take her.");
-            Assert.That(_parked.Door.IsAvailable, Is.True);
+                "parked and empty overnight — her wheel is unclaimed.");
+            Assert.That(_parked.Door.IsAvailable, Is.False,
+                "parked and empty, she is still the trip's, so her door is not offered.");
 
             yield return At(OutboundHour + 0.0005f);
             Assert.That(DriveSeats.IsOccupied(_parked.Door), Is.True,
@@ -286,8 +287,9 @@ namespace HiddenHarbours.Tests.PlayMode
 
             yield return At(12f);
             Assert.That(DriveSeats.IsOccupied(_parked.Door), Is.False,
-                "she is parked at the wharf with nobody in her — the player may drive her.");
-            Assert.That(_parked.Door.IsAvailable, Is.True);
+                "she is parked at the wharf with nobody in her — her wheel is unclaimed.");
+            Assert.That(_parked.Door.IsAvailable, Is.False,
+                "parked and empty, she is still the trip's, so her door is not offered.");
         }
 
         [UnityTest]

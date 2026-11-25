@@ -122,6 +122,40 @@ namespace HiddenHarbours.Art
                  "1 = soft-edged). The shape is always the caster's own sprite alpha.")]
         [Range(0f, 1f)] [SerializeField] private float _edgeSoftness = 0f;
 
+        [Header("A floating hull's shadow on open water")]
+        [Tooltip("How much of its cast-shadow darkness a hull AFLOAT keeps with the sun at the horizon " +
+                 "(1 = the full shadow, as on land). Water scatters a low sun's shade, so a long hard box " +
+                 "trailing off the stern at dusk reads wrong; this fades it to a faint tint. Only hulls over " +
+                 "water: a hull or vehicle on land or a wharf keeps its full shadow.")]
+        [Range(0f, 1f)] [SerializeField] private float _hullWaterLowSunAlpha = 0.25f;
+
+        [Tooltip("Sun elevation (0 horizon .. 1 overhead) at and above which a floating hull's shadow is " +
+                 "its full self. Below it the darkness eases (smoothly) down to 'Low sun alpha' at the " +
+                 "horizon, so the midday shadow is untouched.")]
+        [Range(0.01f, 1f)] [SerializeField] private float _hullWaterFullSunElevation = 0.6f;
+
+        [Header("A caster in the air (a flying bird)")]
+        [Tooltip("The longest a caster IN THE AIR may rake, as a multiple of its height. A flying bird is " +
+                 "flat to the sun, not an upright standee, so its shadow keeps roughly its own shape at " +
+                 "every hour: at the dusk stretch (up to 'Max length') its few-pixel-tall outline became a " +
+                 "thin dark line across the water. 0.35 = the noon stub, so a bird's shadow looks the same " +
+                 "at 20:30 as at noon. A caster on the ground or a post keeps the normal standing shadow.")]
+        [Min(0f)] [SerializeField] private float _aloftMaxLength = 0.35f;
+
+        [Tooltip("Height above the ground (metres) over which a caster goes from STANDING to FLAT: a gull " +
+                 "taking off or landing eases between the two over this much climb, so the shadow never " +
+                 "jumps. 0 = flat the moment it leaves the ground.")]
+        [Min(0f)] [SerializeField] private float _aloftBlendMetres = 0.5f;
+
+        [Tooltip("Height (metres) at which a flying caster's shadow has faded to 'Far alpha'. Between the " +
+                 "ground and this height the shadow fades evenly; above it, it stays at 'Far alpha'. The " +
+                 "default is the top of the gulls' wheel.")]
+        [Min(0f)] [SerializeField] private float _aloftFadeMetres = 14f;
+
+        [Tooltip("How much of its darkness a flying caster's shadow keeps at 'Fade height' (1 = no fade, " +
+                 "0 = gone). A high bird's shadow is fainter and softer than a low one's.")]
+        [Range(0f, 1f)] [SerializeField] private float _aloftFarAlpha = 0.5f;
+
         public float MaxAlpha { get => _maxAlpha; set => _maxAlpha = Mathf.Clamp01(value); }
         public Color ShadowColor { get => _shadowColor; set => _shadowColor = value; }
         public float LengthAtNoon { get => _lengthAtNoon; set => _lengthAtNoon = Mathf.Max(0f, value); }
@@ -153,6 +187,12 @@ namespace HiddenHarbours.Art
         /// </summary>
         public bool ScreenSpaceShade { get => _screenSpaceShade; set => _screenSpaceShade = value; }
         public float EdgeSoftness { get => _edgeSoftness; set => _edgeSoftness = Mathf.Clamp01(value); }
+        public float HullWaterLowSunAlpha { get => _hullWaterLowSunAlpha; set => _hullWaterLowSunAlpha = Mathf.Clamp01(value); }
+        public float HullWaterFullSunElevation { get => _hullWaterFullSunElevation; set => _hullWaterFullSunElevation = Mathf.Clamp(value, 0.01f, 1f); }
+        public float AloftMaxLength { get => _aloftMaxLength; set => _aloftMaxLength = Mathf.Max(0f, value); }
+        public float AloftBlendMetres { get => _aloftBlendMetres; set => _aloftBlendMetres = Mathf.Max(0f, value); }
+        public float AloftFadeMetres { get => _aloftFadeMetres; set => _aloftFadeMetres = Mathf.Max(0f, value); }
+        public float AloftFarAlpha { get => _aloftFarAlpha; set => _aloftFarAlpha = Mathf.Clamp01(value); }
 
         /// <summary>
         /// The COMPONENT'S OWN historical defaults as an in-memory profile — what every
@@ -182,6 +222,7 @@ namespace HiddenHarbours.Art
             p._groundContactRadius = 0f;    // no ground pool: the pre-PR frame
             p._sortByFarEnd = false;        // shadows paint over what they cross, as they always did
             p._screenSpaceShade = true;     // owner ruling 2026-09-06: the shade is ON, fallback included
+            p._hullWaterLowSunAlpha = 1f;   // no water fade: a floating hull's shadow as it always was
             return p;
         }
     }

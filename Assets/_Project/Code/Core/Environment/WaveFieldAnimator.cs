@@ -21,7 +21,7 @@ namespace HiddenHarbours.Core
     }
 
     /// <summary>Adapter from wind memory to phase-baked trains. Current is an output, never an input:
-    /// any tick, reset or cold start at the same world time returns the same sea (ADR 0018).
+    /// any tick, reset or cold start at the same hour and flow returns the same sea (ADR 0018).
     /// Sample the returned trains at time zero, since travel is already in PhaseOffset.</summary>
     public sealed class WaveFieldAnimator
     {
@@ -36,29 +36,40 @@ namespace HiddenHarbours.Core
         public WaveTrains Tick(float deltaSeconds, double gameTimeSeconds,
                                Vector2 windVector, float seaState01,
                                in WaveFieldSettings fieldSettings, in WaveFieldAnimatorSettings animatorSettings)
+            => Tick(deltaSeconds, gameTimeSeconds, gameTimeSeconds, windVector, seaState01,
+                    in fieldSettings, in animatorSettings);
+
+        /// <summary>Wind memory and swell shape read the hour; phase travel reads the world's flow.</summary>
+        public WaveTrains Tick(float deltaSeconds, double hourSeconds, double flowSeconds,
+                               Vector2 windVector, float seaState01,
+                               in WaveFieldSettings fieldSettings, in WaveFieldAnimatorSettings animatorSettings)
         {
             var source = GameServices.Environment as IWaveWindSource;
             var trains = source != null
-                ? WaveMemory.TrainsAt(source, gameTimeSeconds, in fieldSettings)
+                ? WaveMemory.TrainsAt(source, hourSeconds, in fieldSettings)
                 : WaveMath.TrainsFrom(windVector, seaState01, in fieldSettings);
-            return Bake(in trains, gameTimeSeconds, fieldSettings.Gravity);
+            return Bake(in trains, hourSeconds, flowSeconds, fieldSettings.Gravity);
         }
 
         public WaveTrains Tick(double gameTimeSeconds, IWaveWindSource source,
                                in WaveFieldSettings fieldSettings)
+            => Tick(gameTimeSeconds, gameTimeSeconds, source, in fieldSettings);
+
+        public WaveTrains Tick(double hourSeconds, double flowSeconds, IWaveWindSource source,
+                               in WaveFieldSettings fieldSettings)
         {
-            var trains = WaveMemory.TrainsAt(source, gameTimeSeconds, in fieldSettings);
-            return Bake(in trains, gameTimeSeconds, fieldSettings.Gravity);
+            var trains = WaveMemory.TrainsAt(source, hourSeconds, in fieldSettings);
+            return Bake(in trains, hourSeconds, flowSeconds, fieldSettings.Gravity);
         }
 
-        private WaveTrains Bake(in WaveTrains targets, double time, float gravity)
+        private WaveTrains Bake(in WaveTrains targets, double hourSeconds, double flowSeconds, float gravity)
         {
-            var combined = GameServices.WithSwell(in targets, time, gravity);
+            var combined = GameServices.WithSwell(in targets, hourSeconds, gravity);
             Span<WaveTrain> trains = stackalloc WaveTrain[WaveTrains.MaxTrains];
             for (int i = 0; i < combined.Count; i++)
             {
                 var train = combined[i];
-                double travel = Wrap(TwoPi / train.Wavelength * train.PhaseSpeed * time);
+                double travel = Wrap(TwoPi / train.Wavelength * train.PhaseSpeed * flowSeconds);
                 trains[i] = new WaveTrain(train.Direction, train.Wavelength, train.Amplitude,
                     (float)Wrap(train.PhaseOffset - travel), gravity);
             }
@@ -92,8 +103,12 @@ namespace HiddenHarbours.Core
         public static float Smooth(float current, float target, float deltaSeconds, float timeConstantSeconds)
             => current + (target - current) * SmoothingAlpha(deltaSeconds, timeConstantSeconds);
 
-        /// <summary>World clock; bare presentation scenes use the engine clock.</summary>
+        /// <summary>World motion; bare presentation scenes use the engine clock.</summary>
         public static double GameTimeSeconds =>
+            GameServices.Clock != null ? GameServices.Clock.FlowSeconds : Time.timeAsDouble;
+
+        /// <summary>Wind history, swell shape and all environmental levels use the hour.</summary>
+        public static double HourTimeSeconds =>
             GameServices.Clock != null ? GameServices.Clock.TotalSeconds : Time.timeAsDouble;
 
         private static double Wrap(double radians)

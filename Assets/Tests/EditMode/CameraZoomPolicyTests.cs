@@ -204,7 +204,7 @@ namespace HiddenHarbours.Tests.EditMode
                 follow.OnControlModeChanged(new ControlModeChanged(ControlMode.Aboard));
                 follow.TickZoom(20.0);
 
-                Assert.AreEqual(CameraFollow.OrthoSizeForWorldHeight(17f), cam.orthographicSize, 1e-4f,
+                Assert.AreEqual(8.4375f, cam.orthographicSize, 1e-4f,
                     "at the helm the camera frames the hull's data-driven height — deck zoom released");
             }
             finally { Object.DestroyImmediate(go); }
@@ -225,7 +225,7 @@ namespace HiddenHarbours.Tests.EditMode
                 follow.OnControlModeChanged(new ControlModeChanged(ControlMode.OnFoot));
                 follow.TickZoom(20.0);
 
-                Assert.AreEqual(CameraFollow.OrthoSizeForWorldHeight(CameraFollow.OnFootWorldHeightMeters),
+                Assert.AreEqual(5.625f,
                     cam.orthographicSize, 1e-4f, "ashore keeps today's on-foot framing — unchanged");
             }
             finally { Object.DestroyImmediate(go); }

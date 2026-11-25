@@ -20,14 +20,17 @@ MonoBehaviour:
   RegionIds:
   - region.coddle_cove
   - region.st_peters
+  - region.east_water
   - region.nine_mile_creek
+  - region.south_water
+  - region.rice_point
   AllowedGear: 4
   Seasons: 5
   MinTide: -10
   MaxTide: 10
   StartHour: 0
   EndHour: 24
-  DepthBands: 8
+  DepthBands: 12
   BehaviorFlags: 2
   FavoredLures: 0
   MinSchoolMarks: 12
@@ -41,6 +44,6 @@ MonoBehaviour:
   SpoilPerDay: 1.5
   SupplyElasticity: 0.6
   SpawnWeight: 1.2
-  Sprite: {fileID: 0}
+  Sprite: {fileID: 21300000, guid: 227f9b7e232546298196aa6f7e2cd53a, type: 3}
   Bite: {fileID: 0}
   RodFight: {fileID: 0}

@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: SkipperBuild
   m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.CharacterBuildDef
   Id: char_build.skipper
+  PlayerDisplayName: Build C
   Preset: skipper
   Visual: {fileID: 11400000, guid: d9524c99b3334ef45b8fddc702972736, type: 2}
   Skin: 

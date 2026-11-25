@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b8d1bcc64f84d2a99ef4aca419438a0, type: 3}
+  m_Name: bay_hotel
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.SupplyChain.FishOutletDef
+  Spec:
+    Id: fishoutlet.bay_hotel
+    StorageId: fishstore.bay_hotel_stock
+    SpeciesId: fish.atlantic_cod
+    Kind: 2
+    Product: 2
+    PricePerFish: 24
+    DemandByWeekday: 1e0000001e0000001e0000001e0000001e0000002800000028000000
+    SeasonalDemandPpm: 40420f0060e3160040420f0010eb0900

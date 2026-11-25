@@ -242,21 +242,85 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void TheBoatyardStandsOnMadeGround_ClearOfTheRoadAndTheQuay()
         {
-            Rect yard = NineMileCreekMainland.ShipyardFootprint();
-            Rect spit = RectOfZone(NineMileCreekMainland.SpitFill);
+            // Rulings 28–30 move the retired square's premise to the delivered parts, without changing the bars.
+            var parts = NineMileCreekWharfYard.Footprints();
+            Assert.That(parts.Count, Is.EqualTo(13));
+            var supported = new Dictionary<string, (string key, string deliveredKey)>
+            {
+                ["structure.nmc_yard_yard_front"] = ("yardFront", "concreteQuay"),
+                ["structure.nmc_yard_pier_w"] = ("pierW", "steelPier"),
+                ["structure.nmc_yard_pier_e"] = ("pierE", "steelPier"),
+                ["structure.nmc_yard_lift"] = ("lift", "syPart/lift"),
+            };
+            // Ruling 29 and Ruling 30: the shed's rear edge is owed to the key-scene kit.
+            // Both points stand 1.93 m beyond its yard outline; neither ground nor the building is moved here.
+            var gaps = new Dictionary<string, (Vector2 point, float measured)>
+            {
+                ["structure.nmc_yard_shed/solid7.vertex2"] = (new Vector2(204.33f, 139.93f), 2.1135983f),
+                ["structure.nmc_yard_shed/solid7.vertex3"] = (new Vector2(203.77f, 139.93f), 2.1149168f),
+            };
+            var seen = new HashSet<string>();
+            var terrain = NineMileCreekGround.Load();
+            Rect quay = NineMileCreekWharf.DeckFootprint();
+            Vector2[] road = NineMileCreekMainland.WharfRoad;
+            foreach (var part in parts)
+            {
+                bool exempt = supported.TryGetValue(part.Id, out var delivered);
+                if (exempt) Assert.That(part.Key, Is.EqualTo(delivered.key), delivered.deliveredKey);
+                float low = float.PositiveInfinity, clearance = float.PositiveInfinity;
+                foreach (var shape in part.Shapes)
+                {
+                    Vector2[] polygon = shape.points;
+                    Assert.That(polygon.Length, Is.GreaterThanOrEqualTo(3), part.Id + "/" + shape.label);
+                    Vector2 centre = polygon.Aggregate(Vector2.zero, (a, b) => a + b) / polygon.Length;
+                    for (int i = 0; i <= polygon.Length; i++)
+                    {
+                        Vector2 point = i == polygon.Length ? centre : polygon[i];
+                        string sample = part.Id + "/" + shape.label + (i == polygon.Length ? ".centre" : ".vertex" + i);
+                        float elevation = terrain.ElevationAt(point);
+                        low = Mathf.Min(low, elevation);
+                        if (exempt) continue;
+                        if (gaps.TryGetValue(sample, out var gap))
+                        {
+                            seen.Add(sample);
+                            Assert.That(Vector2.Distance(point, gap.point), Is.LessThan(0.0001f), sample + " keeps its named point");
+                            Assert.That(elevation, Is.GreaterThanOrEqualTo(gap.measured - 0.001f), sample + " must not worsen");
+                            Assert.That(elevation, Is.LessThanOrEqualTo(NineMileCreekMainland.SpringHighWater),
+                                sample + " is no longer a gap: remove the known-gap entry");
+                        }
+                        else Assert.That(elevation, Is.GreaterThan(NineMileCreekMainland.SpringHighWater), sample);
+                    }
+                    Assert.That(YardTouchesQuay(polygon, quay), Is.False, part.Id + " stays off the quay deck");
+                    for (int i = 0; i < polygon.Length; i++)
+                    for (int j = 1; j < road.Length; j++)
+                        clearance = Mathf.Min(clearance, YardSegmentDistance(polygon[i], polygon[(i + 1) % polygon.Length], road[j - 1], road[j]));
+                    if (road.Any(p => NineMileCreekLiveGround.Inside(polygon, p))) clearance = 0;
+                }
+                Assert.That(clearance, Is.GreaterThan(NineMileCreekMainland.RoadHalfWidth),
+                    part.Id + " stays clear of Wharf Road's corridor");
+                TestContext.WriteLine($"{part.Id}: lowest G3 {low:0.######}, Wharf Road clearance {clearance:0.######}" +
+                    (exempt ? ", supported " + delivered.deliveredKey : ""));
+            }
+            CollectionAssert.AreEquivalent(gaps.Keys, seen, "exactly the two named rear-edge samples remain");
+        }
 
-            Assert.That(spit.Contains(new Vector2(yard.xMin, yard.yMin)) &&
-                        spit.Contains(new Vector2(yard.xMax, yard.yMax)), Is.True,
-                $"Harris & Sons ({yard}) must stand entirely on the spit ({spit}) — the whole reason the " +
-                "made ground grew east is that a smallYard needs 27 m and there was not 27 m free");
-
-            Assert.IsFalse(yard.Overlaps(NineMileCreekWharf.DeckFootprint()),
-                "the yard must not stand on the quay deck");
-
-            float toRoad = NineMileCreekMainland.DistanceToRoute(
-                NineMileCreekMainland.WharfRoad, new Vector2(yard.center.x, yard.center.y));
-            Assert.That(toRoad, Is.GreaterThan(NineMileCreekMainland.RoadHalfWidth + yard.height * 0.5f),
-                "Wharf Road's cleared corridor runs through the yard");
+        static bool YardSegmentsCross(Vector2 a, Vector2 b, Vector2 c, Vector2 d)
+        {
+            float Area(Vector2 p, Vector2 q, Vector2 r) => (q.x - p.x) * (r.y - p.y) - (q.y - p.y) * (r.x - p.x);
+            return Mathf.Max(Mathf.Min(a.x, b.x), Mathf.Min(c.x, d.x)) <= Mathf.Min(Mathf.Max(a.x, b.x), Mathf.Max(c.x, d.x)) &&
+                   Mathf.Max(Mathf.Min(a.y, b.y), Mathf.Min(c.y, d.y)) <= Mathf.Min(Mathf.Max(a.y, b.y), Mathf.Max(c.y, d.y)) &&
+                   Area(a, b, c) * Area(a, b, d) <= 0 && Area(c, d, a) * Area(c, d, b) <= 0;
+        }
+        static float YardSegmentDistance(Vector2 a, Vector2 b, Vector2 c, Vector2 d) => YardSegmentsCross(a, b, c, d) ? 0 :
+            Mathf.Min(Mathf.Min(NineMileCreekLiveGround.DistanceToSegment(a, c, d), NineMileCreekLiveGround.DistanceToSegment(b, c, d)),
+                      Mathf.Min(NineMileCreekLiveGround.DistanceToSegment(c, a, b), NineMileCreekLiveGround.DistanceToSegment(d, a, b)));
+        static bool YardTouchesQuay(Vector2[] polygon, Rect quay)
+        {
+            Vector2[] q = { new Vector2(quay.xMin, quay.yMin), new Vector2(quay.xMax, quay.yMin),
+                            new Vector2(quay.xMax, quay.yMax), new Vector2(quay.xMin, quay.yMax) };
+            return polygon.Any(quay.Contains) || q.Any(p => NineMileCreekLiveGround.Inside(polygon, p)) ||
+                Enumerable.Range(0, polygon.Length).Any(i => Enumerable.Range(0, 4).Any(j =>
+                    YardSegmentsCross(polygon[i], polygon[(i + 1) % polygon.Length], q[j], q[(j + 1) % 4])));
         }
 
         [Test]

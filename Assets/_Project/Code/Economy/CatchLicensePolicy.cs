@@ -12,13 +12,40 @@ namespace HiddenHarbours.Economy
     /// <para><b>One source of truth, kept in lane.</b> The mapping "cod → license.cod" is derived from the
     /// licence data, not duplicated — so authoring a licence is the only place the gate is declared, and
     /// it can't drift from the species. This is a pure helper over the Core <see cref="ILicenseService"/>
-    /// contract: Fishing (gameplay-systems) calls <see cref="MayLand"/> at land-time WITHOUT referencing
+    /// contract: Fishing (gameplay-systems) calls <see cref="MayLand"/> at land-time (through its one
+    /// shared rule for the rod, the dig and the trap haul alike) WITHOUT referencing
     /// the Economy concrete classes (it passes the species id + reads <see cref="GameServices.Licenses"/>),
     /// and it's fully EditMode-testable. We deliberately do NOT add a RequiredLicenseId field to the
     /// Fishing <c>FishSpeciesDef</c> (that's gameplay-systems' schema) — the gate is keyed by id.</para>
     /// </summary>
     public static class CatchLicensePolicy
     {
+        /// <summary>Explicit decisions for the future Core permission adapter. Missing configuration
+        /// is distinct from an available catalog that intentionally declares no restrictions.</summary>
+        public enum LandingDecision
+        {
+            Ungated,
+            Licensed,
+            MissingCatalog,
+            MissingLicense,
+            InvalidSpecies,
+        }
+
+        /// <summary>Read-only strict policy for adapter migration; does not replace the legacy
+        /// <see cref="MayLand"/> call sites yet. A null catalog is unavailable; an empty catalog is
+        /// available and explicitly ungated. Matching and first-authored-licence precedence are
+        /// identical to <see cref="RequiredLicenseFor"/>.</summary>
+        public static LandingDecision Evaluate(string speciesId, IReadOnlyList<LicenseDef> allLicenses,
+                                               ILicenseService licenses)
+        {
+            if (string.IsNullOrEmpty(speciesId)) return LandingDecision.InvalidSpecies;
+            if (allLicenses == null) return LandingDecision.MissingCatalog;
+            string required = RequiredLicenseFor(speciesId, allLicenses);
+            if (string.IsNullOrEmpty(required)) return LandingDecision.Ungated;
+            return licenses != null && licenses.IsLicensed(required)
+                ? LandingDecision.Licensed : LandingDecision.MissingLicense;
+        }
+
         /// <summary>
         /// True iff <paramref name="speciesId"/> may be landed given the player's <paramref name="licenses"/>
         /// and the authored <paramref name="allLicenses"/>. An ungated species (no licence lists it) is

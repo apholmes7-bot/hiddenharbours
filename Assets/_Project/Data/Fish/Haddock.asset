@@ -17,18 +17,16 @@ MonoBehaviour:
   Category: 0
   Rarity: 0
   Flavor:
-  Sprite: {fileID: -247080572403776488, guid: c8834f13f90c30742a141b17ecfa4d46, type: 3}
+  Sprite: {fileID: 21300000, guid: 06c43067ca4642eaa1f47b12de0a3060, type: 3}
   RegionIds:
-  - region.coddle_cove
-  - region.st_peters
-  - region.east_water
-  - region.nine_mile_creek
+  - region.south_water
   AllowedGear: 3
   Seasons: 15
   MinTide: -10
   MaxTide: 10
   StartHour: 0
   EndHour: 24
+  DepthBands: 24
   MinSchoolMarks: 2
   MaxSchoolMarks: 5
   ShoalSpreadMetres: 1.5

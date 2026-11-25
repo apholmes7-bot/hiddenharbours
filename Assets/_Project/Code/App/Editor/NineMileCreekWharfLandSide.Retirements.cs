@@ -14,14 +14,14 @@ namespace HiddenHarbours.App.Editor
         public static LayerPatch RetireShopSites(SceneYaml scene) => RemoveChildren(scene, NineMileCreekShops.RootName,
             name => name == "fishMarket" || name == "restaurant", 2);
 
-        static LayerPatch RemoveChildren(SceneYaml scene, string rootName, Func<string, bool> selected, int expected)
+        static LayerPatch RemoveChildren(SceneYaml scene, string rootName, Func<string, bool> selected, int expected, string step = PlacementStep)
         {
             Doc root = scene.RootNamed(rootName);
             HashSet<long> mine = scene.SubtreeOf(root.FileId);
             var children = scene.Docs.Where(d => mine.Contains(d.FileId) && d.ClassId == 1 && !d.Stripped && selected(d.Field("m_Name"))).ToArray();
             if (children.Length != 0 && children.Length != expected)
                 throw new Refusal(PlacementStep + ": " + rootName + " has an unexpected retirement count: " + children.Length);
-            var patch = new LayerPatch(PlacementStep, rootName, root.FileId);
+            var patch = new LayerPatch(step, rootName, root.FileId);
             var deleted = new HashSet<long>();
             var parents = new Dictionary<long, List<long>>();
             foreach (Doc child in children)

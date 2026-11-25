@@ -16,10 +16,7 @@ namespace HiddenHarbours.Art
         [SerializeField] private Sprite _daySprite;
         [SerializeField] private Sprite _nightSprite;
 
-        [Tooltip("Hour the windows light up (evening).")]
-        [SerializeField, Range(0f, 24f)] private float _duskHour = 19f;
-        [Tooltip("Hour the windows go dark (morning).")]
-        [SerializeField, Range(0f, 24f)] private float _dawnHour = 6f;
+        // The shared sky owns dawn and dusk. Legacy per-cottage hours are no longer deserialized.
 
         private void Reset() => _renderer = GetComponent<SpriteRenderer>();
 
@@ -27,7 +24,7 @@ namespace HiddenHarbours.Art
         {
             if (_renderer == null || GameServices.Clock == null) return;
 
-            Sprite want = IsNight(GameServices.Clock.HourOfDay, _dawnHour, _duskHour) ? _nightSprite : _daySprite;
+            Sprite want = WatchFaceState.NightAt(GameServices.Clock.HourOfDay) ? _nightSprite : _daySprite;
             if (want != null && _renderer.sprite != want) _renderer.sprite = want;
         }
 

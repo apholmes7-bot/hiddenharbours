@@ -107,6 +107,7 @@ namespace HiddenHarbours.Art
         private Material _runtimeMaterial;
         private float _timer;
         private bool _relightMisfitWarned;
+        private TerrainShoreLineBinding _shoreLines;
 
         private static readonly int IdHeightTex = Shader.PropertyToID("_HeightTex");
         private static readonly int IdHeightMin = Shader.PropertyToID("_HeightMin");
@@ -366,14 +367,28 @@ namespace HiddenHarbours.Art
         {
             _mpb ??= new MaterialPropertyBlock();
             EnsureBuilt();
+            _shoreLines?.Dispose();
+            _shoreLines = null;
             PushAll();
             if (!s_Live.Contains(this)) s_Live.Add(this);
             LiveVersion++;
         }
 
+        private void Start()
+        {
+            // seat ruling s12, 11-07: all wall meshes must exist before the load-only footprint
+            // qualifies the cliff coast. Start follows every scene component's OnEnable.
+            if (_shoreLines == null)
+                _shoreLines = TerrainShoreLineBinding.Create(_heightTexture, _heightMin, _heightMax, _worldCenter, _worldSize,
+                    gameObject.scene, _splatA, _splatB, _splatC, _splatD, _splatE, _splatF);
+            PushAll();
+        }
+
         private void OnDisable()
         {
             if (_meshGo != null) _meshGo.SetActive(false);
+            _shoreLines?.Dispose();
+            _shoreLines = null;
             s_Live.Remove(this);
             LiveVersion++;
         }
@@ -483,6 +498,8 @@ namespace HiddenHarbours.Art
             }
 
             WriteLook(_mpb);
+            TerrainShoreLineBinding.Disable(_mpb);
+            _shoreLines?.Bind(_mpb);
 
             // Terrain pass 9: the relight, only when all four maps fit the detail array. A map given
             // but refused is a stale or partial build: say so once, and keep the albedo.

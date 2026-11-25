@@ -271,6 +271,10 @@
   const FORE_U = 0.80;                                      // foredeck bulkhead station
   const fz=(u)=>{ const st=station(u); return st.kz+st.dep-0.012; };            // foredeck: flush at the sheer
   const fw=(u)=>{ const st=station(u); return Math.max(0.02, st.ws-TH*1.5-0.014); }; // …cut inboard of the rail cap
+  // the liner, stopped LINER_AFT short of the transom's plane: run onto that plane, its aft edge lay on the outside of
+  // the boat and the sea saw it there, then drew on it inside
+  const LINER_AFT = 0.006, INNER_TRANSOM = 0.010;          // m (both over the classifier's 4 mm tie)
+  function liner(side,u,frac){ const p=skin(side,u,frac,1); if(u===0) p[1]+=LINER_AFT; return p; }
   (function build(){
     for(const side of [-1,1]){
       for(let i=0;i<NSEG;i++){
@@ -290,7 +294,7 @@
         for(let k=0;k<2;k++){
           const g0a=fa+(1-fa)*k/2, g1a=fa+(1-fa)*(k+1)/2;
           const g0b=fb+(1-fb)*k/2, g1b=fb+(1-fb)*(k+1)/2;
-          face([skin(side,u1,g0b,1),skin(side,u0,g0a,1),skin(side,u0,g1a,1),skin(side,u1,g1b,1)],'liner',-1.6);
+          face([liner(side,u1,g0b),liner(side,u0,g0a),liner(side,u0,g1a),liner(side,u1,g1b)],'liner',-1.6);
         }
         // bottom (anti-foul, own colour slot)
         face([skin(-1,u0,0),skin(-1,u1,0),skin(1,u1,0),skin(1,u0,0)],'bottom',-1.0);
@@ -302,7 +306,9 @@
     }
     // deck sole (wood or painted), transom to foredeck bulkhead
     const DSEG=16;
-    const dw=(u)=>{ const st=station(u); return (lerp(st.wb,st.ws,dfrac(st))-TH)*0.96; };
+    // the sole runs 3 mm into the liner at its own height, so no slot is left beside it. It used to stop 4 % short, and the
+    // slot showed the inside of the outer skin below the sole, under the waterline, where the sea drew on it in a swell
+    const dw=(u)=>{ const st=station(u); return lerp(st.wb-TH*0.6,st.ws-TH,(DECK-st.kz)/(st.dep-0.02))+0.003; };
     for(let i=0;i<DSEG;i++){
       const u0=FORE_U*i/DSEG, u1=FORE_U*(i+1)/DSEG;
       face([[-dw(u0),station(u0).y,DECK],[dw(u0),station(u0).y,DECK],[dw(u1),station(u1).y,DECK],[-dw(u1),station(u1).y,DECK]],'sole',-0.35);
@@ -408,6 +414,13 @@
       // contact shadow: the canopy footprint dropped on the sole, offset off the key light
       SHADOWS.push({ steps:2, v:[[-X*0.92-0.12,Ya+0.06,DECK+0.002],[X*0.92-0.12,Ya+0.06,DECK+0.002],
                                  [X*0.92-0.12,Yf-0.02,DECK+0.002],[-X*0.92-0.12,Yf-0.02,DECK+0.002]] });
+    })();
+    // inner transom panel, just forward of the transom, sole to the liner's top. The transom is one face per band, so
+    // its inside was a wet side the sea drew on; this panel covers it from inside. Appended last so every face before
+    // it keeps its index.
+    (function(){ const y=-L/2+INNER_TRANSOM, u=INNER_TRANSOM/L, st=station(u);
+      const z0=DECK, z1=st.kz+st.dep-0.02, h0=innerHalf(u,z0)-0.004, h1=innerHalf(u,z1)-0.004;
+      face([[-h1,y,z1],[h1,y,z1],[h0,y,z0],[-h0,y,z0]],'liner',-1.6);
     })();
   })();
 

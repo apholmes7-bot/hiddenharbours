@@ -1,0 +1,125 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b51978faec4dbb8e54e23107a97ef5, type: 3}
+  m_Name: SetPiece_landingTraps
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: prop.stp_landing_traps
+  DisplayName: landingTraps
+  RigKey: landingTraps
+  SceneId: keyscene.stp_landing
+  BakedOptionsJson: '{"variant":0,"len":0.5,"weather":0.35}'
+  Layer: raised
+  Walk: behind
+  Mount: ground
+  BoundsMin: {x: -0.486, y: -0.31478184, z: -0.01}
+  BoundsMax: {x: 0.486, y: 0.32346046, z: 1.42}
+  Frames:
+  - Sprite: {fileID: -166605374390948570, guid: 7f6972f9542be664bbb7d9a3f903c3ea, type: 3}
+    RigDir: 0
+    ShowFaces: recipe facing
+    BearingDeg: 0
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 520}
+    NativePivot: {x: 210, y: 420}
+    Crop: {x: 192, y: 374}
+    Pivot: {x: 18, y: 46}
+  - Sprite: {fileID: -1283142842135912237, guid: 7f6972f9542be664bbb7d9a3f903c3ea, type: 3}
+    RigDir: 7
+    ShowFaces: recipe facing
+    BearingDeg: 45
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 520}
+    NativePivot: {x: 210, y: 420}
+    Crop: {x: 192, y: 374}
+    Pivot: {x: 18, y: 46}
+  - Sprite: {fileID: -7291602427365537489, guid: 7f6972f9542be664bbb7d9a3f903c3ea, type: 3}
+    RigDir: 6
+    ShowFaces: recipe facing
+    BearingDeg: 90
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 520}
+    NativePivot: {x: 210, y: 420}
+    Crop: {x: 192, y: 374}
+    Pivot: {x: 18, y: 46}
+  - Sprite: {fileID: 1263153348483517723, guid: 7f6972f9542be664bbb7d9a3f903c3ea, type: 3}
+    RigDir: 5
+    ShowFaces: recipe facing
+    BearingDeg: 135
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 520}
+    NativePivot: {x: 210, y: 420}
+    Crop: {x: 192, y: 374}
+    Pivot: {x: 18, y: 46}
+  - Sprite: {fileID: 1304309875592819659, guid: 7f6972f9542be664bbb7d9a3f903c3ea, type: 3}
+    RigDir: 4
+    ShowFaces: recipe facing
+    BearingDeg: 180
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 520}
+    NativePivot: {x: 210, y: 420}
+    Crop: {x: 192, y: 374}
+    Pivot: {x: 18, y: 46}
+  - Sprite: {fileID: 7372630562053931170, guid: 7f6972f9542be664bbb7d9a3f903c3ea, type: 3}
+    RigDir: 3
+    ShowFaces: recipe facing
+    BearingDeg: 225
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 520}
+    NativePivot: {x: 210, y: 420}
+    Crop: {x: 192, y: 374}
+    Pivot: {x: 18, y: 46}
+  - Sprite: {fileID: 1995573705869733354, guid: 7f6972f9542be664bbb7d9a3f903c3ea, type: 3}
+    RigDir: 2
+    ShowFaces: recipe facing
+    BearingDeg: 270
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 520}
+    NativePivot: {x: 210, y: 420}
+    Crop: {x: 192, y: 374}
+    Pivot: {x: 18, y: 46}
+  - Sprite: {fileID: -84467067180897080, guid: 7f6972f9542be664bbb7d9a3f903c3ea, type: 3}
+    RigDir: 1
+    ShowFaces: recipe facing
+    BearingDeg: 315
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 520}
+    NativePivot: {x: 210, y: 420}
+    Crop: {x: 192, y: 374}
+    Pivot: {x: 18, y: 46}
+  CellSize: {x: 36, y: 57}
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders: []
+  Anchors: []
+  Path: []
+  TideMarks: []
+  Words: []
+  HasLight: 0
+  Light:
+    Emitters: []
+    When: 
+  IsAnimated: 0
+  Animated:
+    Part: 
+    Input: 
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []
+  GameplayJson: '{"id":"prop.stp_landing_traps","options":{"variant":0,"len":0.5,"weather":0.35},"bounds":{"x":[-0.48600000000000004,0.48600000000000004],"y":[-0.31478185333078734,0.32346045892918485],"z":[-0.009999999999999998,1.4200000000000002]}}'
+  State: 
+  Variants: []
+  HasVendor: 0
+  Vendor:
+    Seller: 
+    At: {x: 0, y: 0, z: 0}

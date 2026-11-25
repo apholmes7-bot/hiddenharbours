@@ -19,3 +19,19 @@ MonoBehaviour:
   HandPropKey: 
   HeldMeshes:
   - {fileID: 11400000, guid: 0c552481041f20f47b91f48ad16a4023, type: 2}
+  DrawHeldMeshOnFigure: 1
+  DrawCarriedMeshOnFigure: 1
+  HeldMeshVariant: 
+  HeldMeshMountBone: tool_R
+  CarriedPitchDeg: -72
+  CarriedYawDeg: 0
+  StowOnBack: 0
+  StowWhileSwimming: 0
+  StowMountBone: back
+  StowGripAlongMetres: -0.4
+  StowStandOffMetres: 0
+  CarriedInHandClips:
+  - idle
+  - walk
+  - run
+  StowBlendSeconds: 0.2

@@ -114,7 +114,7 @@ namespace HiddenHarbours.Economy
         /// </summary>
         public int NextUnitPrice(FishCategory category, int baseValue, float elasticity)
             => SellPricing.UnitPrice(baseValue, elasticity, SupplyOf(category), DemandFor(category),
-                                     valueMultiplier01: 1f, priceLevel: PriceLevel);
+                                     valueMultiplier01: 1f, priceLevel: SellService.SellerPriceLevel(this));
 
         public void RegisterSale(FishCategory category, int count = 1)
             => _supply[category] = SupplyOf(category) + _supplyPerSale * count;

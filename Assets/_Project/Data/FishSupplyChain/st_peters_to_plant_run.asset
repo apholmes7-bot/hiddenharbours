@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a28f185d474c4fe7a8e741fbe5d7c82f, type: 3}
+  m_Name: st_peters_to_plant_run
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.SupplyChain.FishTruckRunDef
+  Spec:
+    Id: fishrun.st_peters_to_plant
+    VehicleId: vehicle.dually_3500
+    ExistingTripId: ''
+    ExistingRouteId: ''
+    OriginRegionId: region.st_peters
+    DestinationRegionId: region.nine_mile_creek
+    LeavesIsland: 0
+    SourceStorageId: fishstore.st_peters_wharf
+    CargoStorageId: fishstore.st_peters_to_plant_cargo
+    DestinationStorageId: fishstore.plant_intake
+    HandFishPerStep: 12
+    HandSecondsPerFish: 1
+    TravelSeconds: 30

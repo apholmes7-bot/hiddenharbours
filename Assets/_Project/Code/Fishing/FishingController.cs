@@ -1,6 +1,6 @@
 using UnityEngine;
 using HiddenHarbours.Core;
-using HiddenHarbours.Economy;   // CatchLicensePolicy + LicenseDef: the catch-side licence gate (St Peters)
+using HiddenHarbours.Economy;   // LicenseDef: the scene-wired licences the landing rule (UnlicensedCatch) reads
 
 namespace HiddenHarbours.Fishing
 {
@@ -43,8 +43,9 @@ namespace HiddenHarbours.Fishing
         [SerializeField] private FishSpeciesDef[] _regionFish;
         [Tooltip("The authored licences in play (e.g. the cod licence) — supplied by the region/world the " +
                  "same way the region fish are. Used ONLY to look up which licence (if any) a species " +
-                 "requires at land-time (CatchLicensePolicy); the player's held licences come from the " +
-                 "Core ILicenseService. Null/empty = nothing is licence-gated (all species land freely).")]
+                 "requires at land-time (UnlicensedCatch); the player's held licences come from the " +
+                 "Core ILicenseService. In a live game the shipped licence catalog gates as well, so " +
+                 "this list only ADDS gates; with no licence wallet and an empty list nothing is gated.")]
         [SerializeField] private LicenseDef[] _licenses;
         [Tooltip("A GameObject carrying an IHold (the boat's ShipHold).")]
         [SerializeField] private GameObject _holdProvider;
@@ -68,7 +69,7 @@ namespace HiddenHarbours.Fishing
         [Tooltip("Every tackle the player can tie on (the dev cycle walks this list).")]
         [SerializeField] private TackleDef[] _tackleBox;
 
-        [Tooltip("0 = time-seeded RNG; set non-zero for reproducible bites/fights in testing.")]
+        [Tooltip("0 = world seed + game time per cast/drop; non-zero keeps an explicit RNG stream for testing.")]
         [SerializeField] private int _rngSeed = 0;
         [Tooltip("Shared GameConfig for the owner's flick-cast tuning (GameConfig.FlickCast — no magic " +
                  "numbers, rule 6). Left unset, the code falls back to FlickCastSettings.Default, so a " +
@@ -172,7 +173,7 @@ namespace HiddenHarbours.Fishing
 
         private void Awake()
         {
-            _rng = _rngSeed == 0 ? new System.Random() : new System.Random(_rngSeed);
+            ResetCatchRandom();
             EnsureHold();
             if (_hold == null)
                 Debug.LogWarning("[FishingController] No IHold found on the hold provider.", this);
@@ -194,6 +195,7 @@ namespace HiddenHarbours.Fishing
         {
             InstallSchoolModel();
             EventBus.Subscribe<ControlModeChanged>(OnControlModeChanged);
+            EventBus.Subscribe<InnerVoiceCueSpoken>(OnInnerVoiceCueSpoken);
         }
 
         /// <summary>Public so a test can drive the mode through the same path the bus uses (the
@@ -211,6 +213,7 @@ namespace HiddenHarbours.Fishing
         private void OnDisable()
         {
             EventBus.Unsubscribe<ControlModeChanged>(OnControlModeChanged);
+            EventBus.Unsubscribe<InnerVoiceCueSpoken>(OnInnerVoiceCueSpoken);
 
             // Only clear what we still own — a later producer may already have taken over (the
             // GameServices.CurrentRegionBounds discipline). Assigning null is what turns the accessor back
@@ -328,7 +331,8 @@ namespace HiddenHarbours.Fishing
             }
         }
 
-        /// <summary>Wire the controller without the scene lifecycle (tests / editor). Seed 0 = time-seeded.
+        /// <summary>Wire the controller without the scene lifecycle (tests / editor). Seed 0 derives
+        /// each cast/drop from the world seed, region and in-game start time.
         /// Licences default to none (nothing gated); use the overload to supply the licence data.</summary>
         public void Configure(IHold hold, FishSpeciesDef[] regionFish, string regionId, Gear gear, int seed)
             => Configure(hold, regionFish, regionId, gear, seed, null);
@@ -344,7 +348,8 @@ namespace HiddenHarbours.Fishing
             _regionId = regionId;
             _gear = gear;
             _licenses = licenses;
-            _rng = seed == 0 ? new System.Random() : new System.Random(seed);
+            _rngSeed = seed;
+            ResetCatchRandom();
             _phase = FishingPhase.Idle;
             _state = FishingState.Idle;
             _actionWasHeld = false;
@@ -378,17 +383,30 @@ namespace HiddenHarbours.Fishing
 
         // ---- phase transitions --------------------------------------------------------------
 
+        private void ResetCatchRandom()
+        {
+            int seed = _rngSeed != 0 ? _rngSeed : StableHash.CatchSeed(
+                GameServices.Environment?.WorldSeed ?? 0, "rod:" + EffectiveRegionId,
+                GameServices.Clock?.TotalSeconds ?? 0.0);
+            _rng = new System.Random(seed);
+        }
+
         #region The flick-cast (WindBack → Cast → touchdown; the maths is FlickCastMath)
 
         /// <summary>The press edge: start winding the rod back and sampling the drag. The hold-full
-        /// refusal lives here (same UX as the retired press-to-cast: a full hold never starts a cast).</summary>
+        /// refusal lives here (same UX as the retired press-to-cast: a full hold never starts a cast),
+        /// and it is SAID: this runs once per press, so the refusal earns one sentence per attempt
+        /// rather than a silent dead rod.</summary>
         private void BeginWindBack(Vector2 pointerWorld)
         {
             EnsureHold();
             if (_hold == null) { Debug.LogWarning("[Fishing] No hold to land into.", this); return; }
             if (_hold.UsedUnits >= _hold.CapacityUnits)
             {
-                Debug.Log("[Fishing] Hold is full — head in and sell.");
+                // Refused BEFORE the line is wet: nothing is hooked, fought and then lost for want of
+                // room. Told to the player on the one feedback channel, not only to the console.
+                Debug.Log($"[Fishing] {FishingStrings.HoldFull}");
+                EventBus.Publish(new DevNotice(FishingStrings.HoldFull));
                 return; // stay Idle; nothing to cast into
             }
 
@@ -404,6 +422,10 @@ namespace HiddenHarbours.Fishing
 
             _pendingFish = null;
             _pendingWeight = 0f;
+
+            // Read live services at the action boundary: Awake can precede the persistent core.
+            // Explicit seeds retain their continuous stream, including across successive casts.
+            if (_rngSeed == 0) ResetCatchRandom();
 
             // Gear decides the branch (v2 §2.1): a weighted rig DROPS and reads the column — no cast,
             // no gesture, no bobber (rebase resolution: the depth branch moved here from the retired
@@ -498,6 +520,7 @@ namespace HiddenHarbours.Fishing
             // THE CAST ENTRY (juice charter §4.3, §4.5): the line touches down — the rings and the audio
             // slot key off this one beat.
             EventBus.Publish(new JuiceMomentCue(JuiceMoment.CastEntry, _lastCast.LandingPoint, 0f));
+            PromiseAFeedingSea();
             Emit(FishingPhase.Waiting, 0f, 0f);
         }
 
@@ -556,15 +579,14 @@ namespace HiddenHarbours.Fishing
             {
                 _phaseTimer = _resultDisplay;
                 Debug.Log("[Fishing] Nothing biting here, now.");
+                EventBus.Publish(new DevNotice(FishingStrings.NothingBiting));   // say why the line came back empty
                 Emit(FishingPhase.NoBite, 0f, 0f);
                 return;
             }
 
-            // Something ate it — the bait is gone whether or not this fish is landed (owner's ruling
-            // 2026-07-25). Spent HERE rather than at the cast so water nothing looked at costs nothing.
-            // ⚠ TENTATIVE §10.2 reversal behind a flag: with BaitSpentOnCatchOnly the spend moves to
-            // the LANDED catch instead ("perhaps bait is only lost after catching a fish") — teases,
-            // missed strikes and lost fights then cost time only. Defaults OFF = today's behaviour.
+            // OFF preserves bite-time spending, once for the whole sequence. The shipped config is
+            // ON: teases, misses and lost fights cost time only; spend after the licence gate at landing.
+            // A missing config keeps the legacy OFF behaviour. No fish resolved means no spend in either mode.
             if (!(_config != null && _config.BaitSpentOnCatchOnly)) SpendBait();
 
             _pendingFish = fish;
@@ -615,7 +637,17 @@ namespace HiddenHarbours.Fishing
                           && strike.PullBackStrikes;
             bool struck = (strike.PressStrikes && strikePressed) || yanked;
 
+            int passesBefore = _biteSim.PassIndex;
             _biteSim.Tick(dt, struck);
+
+            // A pass that ended in a miss says WHY, whether she circles back or is gone for good: a
+            // strike at a tease ("too soon") or a take slept through ("she spat it"). One constant
+            // line per miss, on the pass edge only — nothing is published while the sequence runs.
+            if (_biteSim.PassIndex != passesBefore)
+            {
+                string why = FishingStrings.MissedStrike(_biteSim.LastMiss);
+                if (why != null) EventBus.Publish(new DevNotice(why));
+            }
 
             if (_biteSim.Phase == BitePhase.Hooked)
             {
@@ -646,6 +678,7 @@ namespace HiddenHarbours.Fishing
         private void BeginFight()
         {
             bool tend = FishFightTuning.IsHandGathered(_pendingFish.Category);
+            if (!tend) AnnounceBigOne();
             if (_pendingFish.RodFight != null && !tend)
             {
                 _rodFight = new RodFightSim(_pendingFish.RodFight, _rng);
@@ -673,7 +706,7 @@ namespace HiddenHarbours.Fishing
         /// <summary>One tick of the v2 deep→surface fight: read the lean (live in both phases — she runs
         /// from the hookup and the rod answers to it), advance the sim (which
         /// integrates <see cref="RodFightMath"/>'s rates), and publish through the SAME cozy results the
-        /// legacy fight uses — a snap is "threw the hook", catch + bait time, never gear (§7). The
+        /// legacy fight uses — a snap is "threw the hook", losing the catch and time, never gear (§7). The
         /// published phase follows the sim's landing progress, so the FightDeep→FightSurface crossing
         /// emits the moment she breaks the surface.</summary>
         private void TickRodFight(float dt, bool actionHeld, Vector2 pointerWorld, bool pointerValid)
@@ -705,24 +738,29 @@ namespace HiddenHarbours.Fishing
             _fight = null;
             EndRodFight();
 
-            // --- Licence gate (St Peters, P5 cozy): some species may only be LANDED with the right
-            // licence (the rod takes cod only once you hold the cod licence). The mapping species→licence
-            // is the authored licence data (CatchLicensePolicy); the player's held licences come from the
-            // Core ILicenseService — Fishing never references Economy's concrete service. Unlicensed is
-            // cozy: the fish slips back (the existing no-penalty "released" result), nudging you to the
-            // harbourmaster. Ungated species are unaffected; a null licence service fails closed only for
-            // gated species, so unlicensed cod can't be taken before you can hold a licence.
-            if (!CatchLicensePolicy.MayLand(fish.Id, _licenses, GameServices.Licenses))
+            // --- Licence (owner ruling 2026-11-23): the bite and the fight were never blocked, but a
+            // species he holds no licence for goes straight back at the landing, he says so in his own
+            // voice, and nothing is recorded. Asked FIRST, ahead of the protected rule: an unlicensed
+            // protected fish is not documented either (the licence line wins). Which species need which
+            // licence is the licence data, read by the one shared rule (UnlicensedCatch); the held
+            // licences come from the Core ILicenseService. Ungated species are unaffected.
+            if (UnlicensedCatch.MustRelease(fish.Id, _licenses))
             {
-                _phaseTimer = _resultDisplay;
-                Debug.Log($"[Fishing] {fish.DisplayName} — you need the licence to land that. (Slipped it back, no harm done.)");
-                Emit(FishingPhase.Snapped, tension, 1f);   // reuse the cozy "it got away" result; nothing added
+                ReleaseUnlicensed(fish, tension);
                 return;
             }
 
-            // The TENTATIVE §10.2 bait economy: under the flag, bait is spent only NOW — the fish is
-            // truly caught (an unlicensed release above spends nothing; neither did her teases or a
-            // lost fight). Flag off (the default) = the spend already happened at the bite.
+            // --- Protected species (owner ruling 2026-11-15): "documented but must be released": a
+            // protected fish he may land is landed and documented, and then it goes back. The verdict is
+            // data (FishSpeciesDef.Protected) read through the one pure rule, never a species list here.
+            if (CatchReleaseRule.MustRelease(fish, GameServices.FishConservation))
+            {
+                ReleaseProtected(fish, tension);
+                return;
+            }
+
+            // ON (the shipped asset) spends once here, before either hand/hold destination. Unlicensed
+            // releases above, teases and lost fights spend nothing. OFF already spent at the bite.
             if (_config != null && _config.BaitSpentOnCatchOnly) SpendBait();
 
             // Stamp the freshness clock at landing (M1 §7.3): the moment it leaves the water it is on
@@ -758,7 +796,69 @@ namespace HiddenHarbours.Fishing
             }
             else
             {
-                Debug.Log("[Fishing] Landed it, but the hold's full — nowhere to stow it.");
+                // The cast gate refuses a full hold, so this is only reached when the hold filled (or
+                // went away) between the cast and the landing. The fish has nowhere to go; say so, so a
+                // lost fish is never a silent one.
+                Debug.Log($"[Fishing] {FishingStrings.LandedNoRoom}");
+                EventBus.Publish(new DevNotice(FishingStrings.LandedNoRoom));
+            }
+
+            _phaseTimer = _resultDisplay;
+            Emit(FishingPhase.Landed, tension, 1f);
+        }
+
+        /// <summary>
+        /// A won fight on a protected species: documented exactly as a kept fish is at the landing (the
+        /// same item, the same landing cue, the Landed phase), then released. Nothing is offered to a hand
+        /// or a hold, so <see cref="FishCaught"/> and <see cref="CatchLanded"/> are never raised; instead
+        /// <see cref="CatchReleased"/> carries the documented catch, and one spoken line says why she went
+        /// back. Bait follows the same rule as a kept catch: the fish took it.
+        /// </summary>
+        private void ReleaseProtected(FishSpeciesDef fish, float tension)
+        {
+            ReleaseAtLanding(fish, tension, unlicensed: false);
+        }
+
+        /// <summary>
+        /// A won fight on a species he holds no licence for (owner ruling 2026-11-23): the same release
+        /// presentation as a protected fish (the landing beat, the Landed phase, nothing offered to a hand
+        /// or a hold), but nothing is documented: <see cref="UnlicensedCatchReleased"/> goes out instead of
+        /// <see cref="CatchReleased"/>, and he says "I don't have a licence for this &lt;species&gt; yet"
+        /// through the inner-voice line. The shipped bait rule is unchanged: an unlicensed release spends
+        /// no bait.
+        /// </summary>
+        private void ReleaseUnlicensed(FishSpeciesDef fish, float tension)
+        {
+            ReleaseAtLanding(fish, tension, unlicensed: true);
+        }
+
+        /// <summary>The one release presentation at the landing (the landing beat, the Landed phase, the
+        /// fish to no hand and no hold). What differs is only what is said and recorded: a protected fish
+        /// is documented (<see cref="CatchReleased"/>) and spends bait as a kept catch would; an
+        /// unlicensed one records nothing, spends nothing, and he says the licence line.</summary>
+        private void ReleaseAtLanding(FishSpeciesDef fish, float tension, bool unlicensed)
+        {
+            if (!unlicensed && _config != null && _config.BaitSpentOnCatchOnly) SpendBait();
+
+            double landedAt = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
+            var item = new CatchItem(fish.Id, fish.DisplayName, fish.Category,
+                                     _pendingWeight, fish.BaseValue, fish.SupplyElasticity,
+                                     fish.SpoilPerDay, Freshness.Landed(landedAt));
+
+            Vector2 exit = !_depthGame && _lastCast.IsCast ? _lastCast.LandingPoint : AnglerPosition;
+            EventBus.Publish(new JuiceMomentCue(JuiceMoment.Landing, exit, _pendingWeight));
+
+            if (unlicensed)
+            {
+                UnlicensedCatch.ReleaseAndSay(in item, _licenses);
+                Debug.Log($"[Fishing] {fish.DisplayName}: no licence for it yet, so it went back. Nothing recorded.");
+            }
+            else
+            {
+                EventBus.Publish(new CatchReleased(item));
+                string line = FishingStrings.ProtectedReleased(fish.DisplayName, _pendingWeight);
+                Debug.Log($"[Fishing] {line}");
+                EventBus.Publish(new DevNotice(line));
             }
 
             _phaseTimer = _resultDisplay;
@@ -772,6 +872,7 @@ namespace HiddenHarbours.Fishing
             EndRodFight();
             _phaseTimer = _resultDisplay;
             Debug.Log("[Fishing] The line ran slack — it threw the hook. (No harm done.)");
+            EventBus.Publish(new DevNotice(FishingStrings.ThrewTheHook));
             Emit(FishingPhase.Snapped, 1f, landing);
         }
 
@@ -852,7 +953,60 @@ namespace HiddenHarbours.Fishing
         private float SeaState01()
             => GameServices.Environment != null ? GameServices.Environment.Sample().SeaState01 : 0f;
 
+        /// <summary>One promise per blow (see <see cref="SeaPromise"/>): which weather was last announced.</summary>
+        private readonly SeaPromise _seaPromise = new SeaPromise();
+
+        /// <summary>The gear that puts a LINE in the water. The feeding-sea thought belongs to a cast
+        /// line; a fork in the sand in a blow is not a cast and must not raise it.</summary>
+        private const Gear LineGear = Gear.Handline | Gear.Jig | Gear.Longline;
+
+        /// <summary>A line has just gone in the water. If the sea is up past the point where it fishes
+        /// better, and this blow's line has not been SAID yet, raise the Core cue her inner voice
+        /// answers ("They'll be feeding in this."). Fishing only says WHEN; the words are a World line
+        /// asset keyed on the cue id, and neither module names the other (rule 4).
+        ///
+        /// <para>Raising the cue does not spend the blow. Whoever speaks the line answers with
+        /// <see cref="InnerVoiceCueSpoken"/> (<see cref="OnInnerVoiceCueSpoken"/>); a refused cue gets
+        /// no answer, and the next cast in the same blow asks again.</para></summary>
+        private void PromiseAFeedingSea()
+        {
+            if ((_gear & LineGear) == 0) return;   // hand-gathering gear: not a cast line
+            SeaFishingSettings sea = _config != null ? _config.SeaFishing : SeaFishingSettings.Default;
+            if (_seaPromise.OnCast(SeaState01(), in sea))
+                EventBus.Publish(new InnerVoiceCue(InnerVoiceCues.FeedingSea));
+        }
+
+        /// <summary>The feeding-sea line really played: this blow is spent. Public so a test can drive
+        /// it through the same path the bus uses (the <see cref="OnControlModeChanged"/> convention).</summary>
+        public void OnInnerVoiceCueSpoken(InnerVoiceCueSpoken e)
+        {
+            if (e.CueId == InnerVoiceCues.FeedingSea) _seaPromise.Kept();
+        }
+
         // ---- helpers ------------------------------------------------------------------------
+
+        /// <summary>How big the hooked fish is FOR HER KIND, 0..1 of her species' authored weight range
+        /// (Core <c>FishingState.Size01</c>) — the read the rod, line, camera and strain voice scale to.
+        /// 0 with nothing on the line. Presentation only: no fight rule reads it.</summary>
+        private float PendingSize01()
+            => _pendingFish != null
+                ? FishFeelMath.Size01(_pendingWeight, _pendingFish.MinWeightKg, _pendingFish.MaxWeightKg)
+                : 0f;
+
+        /// <summary>
+        /// "WOAH — THAT'S A BIG ONE!" (owner's ask 2026-11-13). When the fish just hooked is in the top
+        /// band of her species (<c>GameConfig.FishFeel.BigOneThreshold01</c>), the rod loop raises the
+        /// Core cue her inner voice answers, once at the hook-set. Fishing only says WHEN: the words,
+        /// the voice and how often they may come back are a World line asset keyed on the cue id
+        /// (<see cref="InnerVoiceCues.BigOneHooked"/>), and neither module names the other (rule 4).
+        /// Says nothing about the fight's rules and changes none of them.
+        /// </summary>
+        private void AnnounceBigOne()
+        {
+            FishFeelSettings feel = _config != null ? _config.FishFeel : FishFeelSettings.Default;
+            if (!FishFeelMath.IsBigOne(PendingSize01(), in feel)) return;
+            EventBus.Publish(new InnerVoiceCue(InnerVoiceCues.BigOneHooked));
+        }
 
         private void Emit(FishingPhase phase, float tension, float landing)
         {
@@ -871,7 +1025,8 @@ namespace HiddenHarbours.Fishing
                                       castCharge01: CastChargeRead(phase),
                                       castAimX: castAim.x, castAimY: castAim.y,
                                       rigDepthM: RigDepthRead(phase),
-                                      fishRunDirX: runDir.x, fishRunDirY: runDir.y);
+                                      fishRunDirX: runDir.x, fishRunDirY: runDir.y,
+                                      size01: PendingSize01());
             EventBus.Publish(new FishingStateChanged(_state));
         }
 
@@ -1029,9 +1184,19 @@ namespace HiddenHarbours.Fishing
             float delay = lo + (float)(_rng?.NextDouble() ?? 0.0) * (hi - lo);
 
             SeaFishingSettings s = _config != null ? _config.SeaFishing : SeaFishingSettings.Default;
-            return delay * SeaFightMath.BiteDelayScale(SeaState01(), s.SeaBoldness01)
-                         * CurrentSchoolInfluence().BiteDelayScale;
+            return WithBiteWaitTrait(delay * SeaFightMath.BiteDelayScale(SeaState01(), s.SeaBoldness01)
+                                           * CurrentSchoolInfluence().BiteDelayScale);
         }
+
+        /// <summary>
+        /// <paramref name="delay"/> (seconds to the next bite) with the player's
+        /// <see cref="TraitStat.BiteWait"/> factor applied (traits slice 1, Patient Angler), read through
+        /// the Core seam <see cref="GameServices.Traits"/>. Applied last, after the sea and the school, and it
+        /// never touches the RNG draw, so a seeded rig replays the same bite sequence, only sooner. With no
+        /// traits the factor is exactly 1 and the delay comes back untouched (bit-for-bit the old wait).
+        /// </summary>
+        public static float WithBiteWaitTrait(float delay)
+            => TraitMath.Apply(delay, GameServices.Traits.PlayerMultiplier(TraitStat.BiteWait));
 
         #region Depth drop (Rod Fishing v2 Wave 2 — design §2.1/§2.3; maths in DepthDropMath)
         // The weighted-rig branch: no cast — the rig DROPS (Sinking), the player counts the fall
@@ -1097,6 +1262,7 @@ namespace HiddenHarbours.Fishing
             _depthM = 0f;
             _bottomed = false;
             _floorM = DepthDropMath.FloorMeters(columnM, DepthSettings.MaxLineMeters);
+            PromiseAFeedingSea();
             Emit(FishingPhase.Sinking, 0f, 0f);
         }
 
@@ -1330,10 +1496,9 @@ namespace HiddenHarbours.Fishing
             || (_bait != null && TackleBox.HasBait(GameServices.Save?.Current, _bait.Id));
 
         /// <summary>
-        /// Spend one bait. WHEN it is called is the economy ruling: at the BITE by default (a cast
-        /// nothing looked at costs nothing; bait is gone once something has eaten it — owner 2026-07-25),
-        /// or at the LANDED CATCH under <c>GameConfig.BaitSpentOnCatchOnly</c> (the TENTATIVE §10.2
-        /// reversal: "perhaps bait is only lost after catching a fish"). Silent no-op on a bare lure.
+        /// Spend one bait: at the LANDED CATCH with the shipped <c>GameConfig.BaitSpentOnCatchOnly</c>
+        /// enabled, or at the BITE with the flag OFF (also the missing-config fallback). A cast with
+        /// no bite costs nothing in either mode. Silent no-op on a bare lure or an unconfigured rig.
         /// </summary>
         private void SpendBait()
         {

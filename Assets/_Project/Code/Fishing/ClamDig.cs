@@ -35,17 +35,27 @@ namespace HiddenHarbours.Fishing
     /// <c>FishFight</c> FSM — it's the lightest hand-gather: bend down, lift one out.</para>
     ///
     /// <para><b>Clam reveal.</b> While exposed, the "two little squirt holes give the clam away" tell's
-    /// <see cref="ShowingSquirt"/> follows the rig's 2.6–7.8 s period and 420 ms spurt
+    /// <see cref="ShowingSquirt"/> follows the clam show settings (<see cref="ClamShowSettings"/>: the rig's
+    /// 2.6–7.8 s period, a squirt held a little longer than the rig's 420 ms so it reads at the game lens,
+    /// and a squirt at once when the player steps close; the holes are small, the squirt is the giveaway)
     /// to render a hint. It's cosmetic only (real-time, not sim state) and never gates the dig — digging
     /// works whenever the spot is exposed. Determinism is unaffected (the reveal isn't world-sim state).</para>
     ///
-    /// <para><b>Yields once, then it's spent.</b> A hole gives up its clam <em>once</em>: a successful
-    /// <see cref="TryDig"/> flips <see cref="Consumed"/> on, after which the hole no longer yields — the
-    /// clam's been lifted out, there's nothing left to dig. The "skittish clam" escape (a player who loiters
-    /// too close) also spends the hole via <see cref="MarkConsumed"/>. <see cref="ClamHoleVisual"/> reads
-    /// <see cref="Consumed"/> to hide/animate the spent hole. This is a <b>real-time, play-session</b> state,
-    /// NOT world-sim — it isn't saved, so a reload reconstructs the deterministic hole field afresh (same as
-    /// the cosmetic squirt cue); determinism (the dig YIELD + tidal EXPOSURE) is untouched (rule 5).</para>
+    /// <para><b>Yields once per tide.</b> A hole gives up its clam <em>once</em>: a successful
+    /// <see cref="TryDig"/> spends it, after which the hole no longer yields — the clam's been lifted out,
+    /// there's nothing left to dig. The "skittish clam" escape (a player who loiters too close) also spends
+    /// the hole via <see cref="MarkConsumed"/>. <see cref="ClamHoleVisual"/> reads <see cref="Consumed"/>
+    /// to hide/animate the spent hole. <b>It stays spent until the tide has come in over the flat
+    /// again</b>: <see cref="Consumed"/> asks the deterministic tide, through Core
+    /// (<see cref="IEnvironmentService.TideCycleIndexAt"/>), whether the moment the hole was spent and
+    /// now are the same tide. After the next high water the hole is fresh.</para>
+    ///
+    /// <para><b>What is saved, and what is not.</b> The one fact that cannot be recomputed is WHEN a hole
+    /// was spent. A hole with an authored <see cref="_id"/> writes that through to the save
+    /// (<see cref="SaveData.SpentClamHoles"/>, via <see cref="ClamHoleLedger"/>) and reads it back on
+    /// enable and on <see cref="GameLoaded"/>, so a reload in the same tide finds the hole still dug
+    /// instead of a refilled flat. Nothing about the tide is saved: which tide a moment belongs to is
+    /// recomputed from the clock (rule 5). The dig YIELD and tidal EXPOSURE are untouched.</para>
     ///
     /// <para><b>Seam discipline.</b> Reads the world terrain + tide through the Core
     /// <see cref="GameServices"/> accessors and the bucket through the Core <see cref="IHold"/> contract;
@@ -82,7 +92,7 @@ namespace HiddenHarbours.Fishing
                  "must be unique among live holes. The builder gives each hole a readable one derived " +
                  "from its cell; left empty an instance-scoped fallback keeps it unique but unreadable.")]
         [SerializeField] private string _id;
-        [Tooltip("0 = time-seeded weight roll; non-zero for reproducible clam weights in testing.")]
+        [Tooltip("0 = world seed + hole id + game time per dig; non-zero keeps an explicit RNG stream for testing.")]
         [SerializeField] private int _rngSeed = 0;
         [Tooltip("Land the dug clam IN THE FISHER'S HAND rather than straight into the pail (the owner's " +
                  "ruling, 2026-08-13: 'a clam can be in hand but needs to be placed in a container to " +
@@ -107,13 +117,25 @@ namespace HiddenHarbours.Fishing
         // only — never serialized, never saved (rule 5).
         private bool _saidNoProvider;
         private float _spurtRise, _spurtU;
-        private bool _consumed;
+        // The interval span this hole's timing was rolled over (a retune re-rolls it).
+        private float _minPeriodUsed, _maxPeriodUsed, _phaseSpanUsed;
+        // The startle squirt (a clam feeling footsteps): when it opened on the spurt clock (negative =
+        // none running), when this hole may startle again, and whether the player was inside the
+        // startle radius last tick (it fires on stepping IN, not on standing there). Runtime only.
+        private double _startleOpenedMs = -1.0;
+        private double _startleReadyAtMs;
+        private bool _playerWasNear;
+        private bool _squirtIsStartle;
+        // Spent: has this hole given up (or lost) its clam, and at what game time. Whether that is STILL
+        // true is not kept here — Consumed asks the tide whether that moment and now are the same tide.
+        private bool _spent;
+        private double _spentAtSeconds;
         private string _resolvedId;
 
         /// <summary>True while this hole is squirting — the dig's TELL (cosmetic, never gates).</summary>
         public bool ShowingSquirt => _showingSquirt;
 
-        /// <summary>How high the jet stands, 0..1 (<c>sin(π·u)</c> across the 420 ms window). Zero
+        /// <summary>How high the jet stands, 0..1 (<c>sin(π·u)</c> across the squirt window). Zero
         /// whenever <see cref="ShowingSquirt"/> is false, so a reader that forgets to check draws
         /// nothing rather than a stuck jet.</summary>
         public float SpurtRise => _spurtRise;
@@ -130,10 +152,23 @@ namespace HiddenHarbours.Fishing
         /// <c>(t + phase) % period ≤ dur</c>. See <see cref="ClamSpurtMath"/>.</summary>
         public float SpurtPhaseMs => _phaseMs;
 
-        /// <summary>True once this hole has been spent — either dug (it yielded its clam) or escaped (the
-        /// skittish clam burrowed away). A consumed hole no longer yields; the visual hides/animates it.
-        /// Real-time play-session state, never saved (determinism unaffected — rule 5).</summary>
-        public bool Consumed => _consumed;
+        /// <summary>True while the jet showing is a STARTLE squirt (the player just stepped within
+        /// <see cref="ClamShowSettings.StartleRadiusMetres"/>) rather than the clam's own periodic one.</summary>
+        public bool SquirtIsStartle => _squirtIsStartle;
+
+        /// <summary>True while this hole is spent — either dug (it yielded its clam) or escaped (the
+        /// skittish clam burrowed away) — <b>on the tide that is running now</b>. A consumed hole no
+        /// longer yields; the visual hides/animates it. Once the tide has come in over the flat again
+        /// (the tide cycle has turned since the hole was spent) this reads false and the hole is fresh.
+        ///
+        /// <para>Derived, never cached: one flag, one timestamp and two pure tide reads, no allocation.
+        /// With no environment service there is no tide to turn and a spent hole stays spent.</para></summary>
+        public bool Consumed
+            => _spent && ClamHoleLedger.SameTide(GameServices.Environment, _spentAtSeconds, NowSeconds());
+
+        /// <summary>The game time this hole was last spent at. Meaningful only while it has been spent;
+        /// exposed for tests and the save round trip.</summary>
+        public double SpentAtSeconds => _spentAtSeconds;
 
         /// <summary>How close the player must stand to dig this hole (m) — the shovel's reach.</summary>
         public float ReachRadius => _reachRadius;
@@ -143,9 +178,17 @@ namespace HiddenHarbours.Fishing
 
         private void Awake()
         {
-            _rng = _rngSeed == 0 ? new System.Random() : new System.Random(_rngSeed);
+            ResetCatchRandom();
             if (_bucketProvider != null) _bucket = _bucketProvider.GetComponent<IHold>();
             ResolveSpurtTiming();
+        }
+
+        private void ResetCatchRandom()
+        {
+            int seed = _rngSeed != 0 ? _rngSeed : StableHash.CatchSeed(
+                GameServices.Environment?.WorldSeed ?? 0, "clam:" + _id,
+                GameServices.Clock?.TotalSeconds ?? 0.0);
+            _rng = new System.Random(seed);
         }
 
         /// <summary>
@@ -169,12 +212,25 @@ namespace HiddenHarbours.Fishing
         /// Roll this hole's phase and period from <c>(worldSeed, its own position)</c>. The position IS
         /// the hole's identity, so a hole that moves is a different hole and must re-roll.
         /// </summary>
-        private void ResolveSpurtTiming()
+        private void ResolveSpurtTiming() => ResolveSpurtTiming(ClamShowSettings.Current);
+
+        // The span comes from the clam show settings (GameConfig > ClamShow), shipped at the rig's own
+        // 2.6 to 7.8 s. The span used is remembered so a live retune re-rolls the hole on its next tick.
+        private void ResolveSpurtTiming(in ClamShowSettings show)
         {
             _seedUsed = SpurtWorldSeed();
+            _minPeriodUsed = show.MinIntervalMilliseconds;
+            _maxPeriodUsed = show.MaxIntervalMilliseconds;
+            _phaseSpanUsed = show.PhaseSpanMilliseconds;
             Vector2 p = SpotPos;
-            ClamSpurtMath.TimingFor(_seedUsed, p.x, p.y, out _phaseMs, out _periodMs);
+            ClamSpurtMath.TimingFor(_seedUsed, p.x, p.y, _minPeriodUsed, _maxPeriodUsed, _phaseSpanUsed,
+                                    out _phaseMs, out _periodMs);
         }
+
+        private bool SpanChanged(in ClamShowSettings show)
+            => show.MinIntervalMilliseconds != _minPeriodUsed
+               || show.MaxIntervalMilliseconds != _maxPeriodUsed
+               || show.PhaseSpanMilliseconds != _phaseSpanUsed;
 
         private void Update()
         {
@@ -190,14 +246,15 @@ namespace HiddenHarbours.Fishing
 
         /// <summary>
         /// Attempt one dig. Lands a single clam into the bucket and raises <see cref="FishCaught"/> iff all
-        /// three gates pass (exposed, shovel owned, bucket has room). Returns true iff a clam was dug.
+        /// three gates pass (exposed, shovel owned, bucket has room). Returns true iff a clam was dug AND
+        /// kept: a clam he holds no licence for is dug, put back with his line, and returns false.
         /// Public so EditMode tests can drive it without the scene lifecycle / input.
         /// </summary>
         public bool TryDig()
         {
             if (_clamSpecies == null) { Debug.LogWarning("[ClamDig] No clam species wired.", this); return false; }
 
-            if (_consumed)
+            if (Consumed)
             {
                 Say("This hole's already given up its clam.");
                 return false;
@@ -246,17 +303,44 @@ namespace HiddenHarbours.Fishing
                 if (_bucket == null) { Say("Nowhere to put a clam — you need a bucket."); return false; }
                 if (_bucket.UsedUnits >= _bucket.CapacityUnits)
                 {
-                    Say("The bucket's full — head to Nine Mile Creek and sell.");
+                    // Refused BEFORE the clam is lifted, so nothing is dug and lost, and the hole is not
+                    // spent. The sentence names a buyer that buys (FishingStrings on why that matters).
+                    Say(FishingStrings.PailFull);
                     return false;
                 }
             }
 
+            // TOO TIRED / TOO HUNGRY (owner ask 2026-11-15): digging is heavy work, so it asks the one Core
+            // gate last, after every "can this dig land?" gate, so a flooded flat or a missing shovel still
+            // says its own sentence. A refusal spends nothing (the hole keeps its clam) and the player says
+            // the line herself; one press is one dig, so no dig under way is ever cut short.
+            if (!EffortGate.TryBegin(EffortClass.Heavy, EffortGate.ClamDigId)) return false;
+
+            // A recreated hole at the same game instant yields the same weight. Use the authored id,
+            // never the registry's process-local fallback, and pick up services installed after Awake.
+            if (_rngSeed == 0) ResetCatchRandom();
             float weight = CatchResolver.RollWeight(_clamSpecies, _rng);
             // Stamp the freshness clock at the dig (M1 §7.3) — a clam in the pail is on the clock too.
             double dugAt = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
             var clam = new CatchItem(_clamSpecies.Id, _clamSpecies.DisplayName, _clamSpecies.Category,
                                      weight, _clamSpecies.BaseValue, _clamSpecies.SupplyElasticity,
                                      _clamSpecies.SpoilPerDay, Freshness.Landed(dugAt));
+
+            // NO LICENCE, AND IT GOES BACK (owner ruling 2026-11-23). The dig itself is never blocked:
+            // every gate above still decides whether he CAN dig, and the press digs (the strike beat
+            // plays, the hole is spent for this tide). But a species he holds no licence for is put
+            // straight back: nothing enters a hand or the pail, nothing is recorded, and he says "I don't
+            // have a licence for this <species> yet". Which species need a licence is the licence data,
+            // read by the one shared rule (UnlicensedCatch), never a list here.
+            if (UnlicensedCatch.MustRelease(_clamSpecies.Id))
+            {
+                EventBus.Publish(new JuiceMomentCue(JuiceMoment.DigStrike, SpotPos, weight));
+                Spend(dugAt);
+                UnlicensedCatch.ReleaseAndSay(in clam);
+                Debug.Log($"[ClamDig] Dug a {clam.DisplayName}, but no licence for it yet: put it back.");
+                return false;
+            }
+
             // INTO HER HAND if the hands are there to take it; into the pail if they are not.
             //
             // The fallback is not a nicety — it is what keeps every context that has no CarryHands working
@@ -273,8 +357,7 @@ namespace HiddenHarbours.Fishing
                 // THE STRIKE is one published beat (juice charter §4.3, §4.5): the sand chunks, the audio
                 // slot and the notebook all key off THIS cue, never off the hole (rule 4). Strength = kg.
                 EventBus.Publish(new JuiceMomentCue(JuiceMoment.DigStrike, SpotPos, weight));
-                _showingSquirt = false;
-                _consumed = true;
+                Spend(dugAt);
                 Debug.Log($"[ClamDig] Lifted out a {clam} — it's in your hand.");
                 return true;
             }
@@ -284,20 +367,82 @@ namespace HiddenHarbours.Fishing
 
             EventBus.Publish(new FishCaught(clam));     // same land path the rod uses
             EventBus.Publish(new JuiceMomentCue(JuiceMoment.DigStrike, SpotPos, weight));   // the same beat, pail path
-            _showingSquirt = false;                     // dug it — the tell's gone
-            _consumed = true;                           // a hole yields ONCE, then it's spent (the clam's gone)
+            Spend(dugAt);                               // a hole yields ONCE a tide; the tell goes with it
             Debug.Log($"[ClamDig] Dug a {clam}. ({_bucket.UsedUnits}/{_bucket.CapacityUnits} in the bucket.)");
             return true;
         }
 
         /// <summary>Spend this hole without yielding a clam — the "skittish clam" escape: a player who
         /// loitered too close let the clam burrow away. After this the hole no longer yields (the visual
-        /// plays the sink-away animation then hides). Idempotent. Real-time cosmetic state — not saved
-        /// (determinism unaffected, rule 5).</summary>
+        /// plays the sink-away animation then hides) until the tide has covered the flat again.
+        /// Idempotent: a hole already spent on this tide keeps the time it was first spent at. Recorded
+        /// exactly as a dig is (see <see cref="Spend"/>), so a frightened clam does not come back on a
+        /// reload either.</summary>
         public void MarkConsumed()
         {
-            _consumed = true;
             _showingSquirt = false;
+            if (Consumed) return;
+            Spend(NowSeconds());
+        }
+
+        /// <summary>
+        /// The one place a hole becomes spent. Stamps the game time, and for a hole with an authored id
+        /// writes that through to the save so the spent state survives a reload in the same tide.
+        ///
+        /// <para><b>Only an authored id is written.</b> The fallback id is built from this instance's
+        /// entity id, which is different on every load; a row keyed by it could never be read back and
+        /// would only be litter in the save. Such a hole (a test, a tool-spawned hole) is still spent for
+        /// the tide, in memory.</para>
+        ///
+        /// <para>The save is written in place, the pattern the pail and the pot locker use: the blob is
+        /// the truth in memory and the file follows it on the next save.</para>
+        /// </summary>
+        private void Spend(double atSeconds)
+        {
+            _spent = true;
+            _spentAtSeconds = atSeconds;
+            _showingSquirt = false;
+
+            if (string.IsNullOrEmpty(_id)) return;
+            SaveData save = GameServices.Save?.Current;
+            if (save != null) ClamHoleLedger.MarkSpent(save, _id, atSeconds, GameServices.Environment);
+        }
+
+        /// <summary>
+        /// Take this hole's spent state from the save (the public handler for <see cref="GameLoaded"/>;
+        /// public so EditMode can drive it, where the scene lifecycle does not run). A hole the loaded
+        /// game has no row for is FRESH — the loaded game is the truth, whatever this instance remembered.
+        /// </summary>
+        public void OnGameLoaded(GameLoaded _) => AdoptSavedState(freshIfAbsent: true);
+
+        /// <summary>
+        /// Read this hole's row from the save, if it has an authored id and there is a save.
+        /// <paramref name="freshIfAbsent"/> is true on a load (no row means not spent) and false on a
+        /// plain enable, where a hole spent a moment ago with no save to write to must not be handed
+        /// back its clam just because its GameObject was toggled.
+        /// </summary>
+        private void AdoptSavedState(bool freshIfAbsent)
+        {
+            if (string.IsNullOrEmpty(_id)) return;
+            SaveData save = GameServices.Save?.Current;
+            if (save == null) return;
+
+            if (ClamHoleLedger.TryGetSpentAt(save, _id, out double spentAt))
+            {
+                _spent = true;
+                _spentAtSeconds = spentAt;
+                _showingSquirt = false;
+            }
+            else if (freshIfAbsent)
+            {
+                _spent = false;
+            }
+        }
+
+        private static double NowSeconds()
+        {
+            IGameClock clock = GameServices.Clock;
+            return clock != null ? clock.TotalSeconds : 0.0;
         }
 
         /// <summary>Is the dig spot bared by the tide right now? A null terrain (open water) or null
@@ -414,7 +559,7 @@ namespace HiddenHarbours.Fishing
         /// refusals — press and the game tells you (P5) — not reasons to vanish from the resolver and
         /// leave the press silent. Exposure and the tool decide whether this is a work-site at all.</para>
         /// </summary>
-        public bool IsAvailable => !_consumed && ShovelInHand() && IsExposedNow();
+        public bool IsAvailable => !Consumed && ShovelInHand() && IsExposedNow();
 
         /// <summary>One word, because it is one action and the shovel in your hands has already said the
         /// rest. Only reachable with the shovel held and the flat bared — see <see cref="IsAvailable"/> —
@@ -425,9 +570,20 @@ namespace HiddenHarbours.Fishing
         /// hole, which is what <c>ClamDigger.NearestDiggable</c> used to do by hand.</summary>
         public void Interact(in InteractActor actor) => TryDig();
 
-        private void OnEnable() => Interactables.Register(this);
+        private void OnEnable()
+        {
+            Interactables.Register(this);
+            // A hole that wakes after the game was loaded (its region arrived later) reads its own row
+            // here; one already awake when a game loads hears GameLoaded. Either way the save decides.
+            EventBus.Subscribe<GameLoaded>(OnGameLoaded);
+            AdoptSavedState(freshIfAbsent: false);
+        }
 
-        private void OnDisable() => Interactables.Unregister(this);
+        private void OnDisable()
+        {
+            EventBus.Unsubscribe<GameLoaded>(OnGameLoaded);
+            Interactables.Unregister(this);
+        }
 
         private string ResolveId()
         {
@@ -491,11 +647,16 @@ namespace HiddenHarbours.Fishing
         /// the only thing dt does now is advance a clock — the answer is a pure function of that
         /// clock, so two holes at the same instant cannot disagree and nothing drifts. It replaced a
         /// stateful 10–20 s / 1.5 s greybox cadence that was invented rather than measured; the rig
-        /// says 2.6–7.8 s apart and 420 ms long.</para>
+        /// says 2.6–7.8 s apart and 420 ms long, and those spans are now the shipped defaults of
+        /// <see cref="ClamShowSettings"/>.</para>
+        ///
+        /// <para>On top of the periodic squirt, a clam squirts once when the player steps within
+        /// <see cref="ClamShowSettings.StartleRadiusMetres"/> (cooldown permitting), as real clams do
+        /// when they feel footsteps. Both jets are shaped by the one <see cref="ClamSpurtMath.TryWindow"/>.</para>
         /// </summary>
         private void UpdateReveal(float dt, bool exposed)
         {
-            if (_consumed) { ClearSpurt(); return; }   // a spent hole gives no more tells
+            if (Consumed) { ClearSpurt(); return; }    // a spent hole gives no tells until the tide turns
             if (!exposed) { ClearSpurt(); return; }
 
             // A hole that has never resolved its timing (a test that skipped Awake, an editor-time
@@ -505,16 +666,57 @@ namespace HiddenHarbours.Fishing
             // environment service is frequently absent at Awake and arrives with the persistent core
             // a moment later, so a hole woken early would otherwise keep the fallback seed for the
             // rest of the session and quietly disagree with every hole woken after it.
-            if (!(_periodMs > 0f) || SpurtWorldSeed() != _seedUsed) ResolveSpurtTiming();
+            ClamShowSettings show = ClamShowSettings.Current;
+            if (!(_periodMs > 0f) || SpurtWorldSeed() != _seedUsed || SpanChanged(show))
+                ResolveSpurtTiming(show);
 
             _spurtClockMs += Mathf.Max(0f, dt) * 1000.0;
-            _showingSquirt = ClamSpurtMath.TrySpurt(_spurtClockMs, _phaseMs, _periodMs,
-                                                    out _spurtRise, out _spurtU);
+            float durationMs = show.SquirtMilliseconds;
+            bool periodic = ClamSpurtMath.TrySpurt(_spurtClockMs, _phaseMs, _periodMs, durationMs,
+                                                   out float rise, out float u);
+
+            // THE STARTLE: stepping within the radius squirts the clam at once (cooldown permitting).
+            // Read off the same in-lane player beacon the skittish-escape timer uses; cosmetic only.
+            bool near = PlayerWithin(show.StartleRadiusMetres);
+            if (near && !_playerWasNear && _spurtClockMs >= _startleReadyAtMs)
+            {
+                _startleOpenedMs = _spurtClockMs;
+                _startleReadyAtMs = _spurtClockMs + Mathf.Max(0f, show.StartleCooldownSeconds) * 1000.0;
+            }
+            _playerWasNear = near;
+
+            _squirtIsStartle = false;
+            if (_startleOpenedMs >= 0.0)
+            {
+                if (ClamSpurtMath.TryWindow(_spurtClockMs - _startleOpenedMs, durationMs,
+                                            out float sRise, out float sU))
+                {
+                    // The taller of the two jets wins, so a startle that lands on a periodic squirt
+                    // never shortens it.
+                    if (!periodic || sRise > rise) { rise = sRise; u = sU; _squirtIsStartle = true; }
+                    periodic = true;
+                }
+                else _startleOpenedMs = -1.0;
+            }
+
+            _showingSquirt = periodic;
+            _spurtRise = periodic ? rise : 0f;
+            _spurtU = periodic ? u : 0f;
+        }
+
+        // Is the on-foot player within radius of this hole? False with the startle off (radius 0) or
+        // no player beacon (EditMode, a scene with no digger).
+        private bool PlayerWithin(float radius)
+        {
+            if (!(radius > 0f) || !ClamDigger.TryGetPlayerPosition(out Vector2 p)) return false;
+            return (p - SpotPos).sqrMagnitude <= radius * radius;
         }
 
         private void ClearSpurt()
         {
             _showingSquirt = false;
+            _squirtIsStartle = false;
+            _startleOpenedMs = -1.0;
             _spurtRise = 0f;
             _spurtU = 0f;
         }
@@ -528,14 +730,14 @@ namespace HiddenHarbours.Fishing
             _bucket = bucket;
             _spot = spot;
             _shovelGearId = shovelGearId;
-            _rng = seed == 0 ? new System.Random() : new System.Random(seed);
+            _rngSeed = seed;
+            ResetCatchRandom();
             if (reachRadius >= 0f) _reachRadius = reachRadius;
 
             // The hole's position may have just moved, and the spot IS its identity — so re-roll
             // rather than keep a timing that belonged to a different hole. The seed recorded here
             // only reaches the spurt in a scene with no environment service (see SpurtWorldSeed);
             // in play the world's seed wins, which is what the charter asks for.
-            _rngSeed = seed;
             ResolveSpurtTiming();
         }
 

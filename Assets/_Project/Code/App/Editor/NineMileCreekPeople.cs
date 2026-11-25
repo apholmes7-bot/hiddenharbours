@@ -108,10 +108,10 @@ namespace HiddenHarbours.App.Editor
                        "man on a wharf, not a market, and he is standing between you and everything else"),
 
             new Person("HectorBernard", "Hector",
-                       Toward(NineMileCreekBuilder.DoryYardPos, NineMileCreekWharf.DeckFootprint().center,
+                       Toward(NineMileCreekWharfYard.QuayPost, NineMileCreekWharfYard.QuayFace,
                               OutboardStallMetres),
                        new Color(0.52f, 0.56f, 0.60f),
-                       "down the yard beside the old dory, with three tired outboards on a barrel — the " +
+                       "on the boat yard's quay, with three tired outboards on a barrel — the " +
                        "man who sells you the hull is the man who sells you what pushes her"),
 
             new Person("ClaudetteBoudreau", "Claudette",

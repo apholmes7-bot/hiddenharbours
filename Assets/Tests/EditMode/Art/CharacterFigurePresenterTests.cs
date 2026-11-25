@@ -641,6 +641,29 @@ namespace HiddenHarbours.Tests.Art.EditMode
             AssertRefusedAtExhaustion(presenter, figures);
         }
 
+        /// <summary>
+        /// ADR 0056: the cast's ashore figure is a CAST figure. At a full harbour with the players'
+        /// reserve untouched she is refused, and the reserve is still whole for the player and her
+        /// friend — a villager on the reserve would refuse the player in her place.
+        /// </summary>
+        [Test]
+        public void AtExhaustionSheNeverTakesAPlayersReservedId()
+        {
+            var pool = new IsoFacetIdPool(GameConfig.DefaultPlayerFigureIdReserve);
+            while (pool.TakeId() != IsoFacetIdPool.MaxId) { }
+            UseFreshIdPool(pool);
+            _config.MeshCastAshore = true;
+            FakeAshoreStand stand = AshoreStand(_character, KeyA);
+            CharacterFigurePresenter presenter = Attach(_characterGo, stand);
+            int figures = IsoFacetHullRegistry.FigureCount;
+
+            LogAssert.Expect(LogType.Warning, FigureExhausted);
+            presenter.PoseFigure(stand, aboard: false);
+            AssertRefusedAtExhaustion(presenter, figures);
+            Assert.AreEqual(GameConfig.DefaultPlayerFigureIdReserve, pool.FreePlayerIds,
+                "a villager's ashore figure took a player's reserved id");
+        }
+
         [Test]
         public void ShelterHidesHerFigureAndKeepsHerIdAndSheComesOutWithTheSameOne()
         {

@@ -189,9 +189,13 @@ P4 beat and already has a hook (stamina is spent on the manual bilge pump and fi
 (b) **where the shipwright's yard lives instead**, since boat purchase and upgrades for the whole
 rest of the game hang off it (`Data/Shipwright/` is built and shipping today).
 
-**The opening, end to end, as it now stands:** dig clams at St Peters → cross the bar on foot →
+**The opening, end to end, as it stood on 2026-07-25:** dig clams at St Peters → cross the bar on foot →
 find the damaged dory at the Nine Mile Creek wharf → earn her, buy her, put her right → **row**
 her home to St Peters → Aunt Ginny hands over Ned's old motor → your first errand is buying gas.
+
+> **Amended 2026-11-23 (canon §5.8, ADR 0062):** the first dory is now bought on St Peters from Basil
+> Samson and mended there by hand, and the first week is island-only; the bar opens at the island gate.
+> Where the motor and the first gas errand fall in that order is not re-decided here.
 
 ---
 
@@ -558,6 +562,8 @@ will not pour into a diesel boat — in words, not silently.
 
 ### 9.5 The burn model
 
+> **2026-11-13, the owner's 11-12 ruling: the live meter burns by speed.** The throttle term below is no longer what a tank is charged for a hull with a calibrated fuel speed profile (all 45 fuelled hulls): her throttle is turned into the speed it drives her at and priced on her hull's curve, with the load and sea terms below unchanged on top. Idle and the 0.7 reference cruise cost what this section says. This formula remains the calibration source and the fallback for a hull with no profile. See `fuel-burn-by-speed-logic.md`, "Live wiring".
+
 Canon fixes the shape: **burn = `f(throttle, engineLoad, seaState)`**
 ([`boats-and-navigation.md`](boats-and-navigation.md) §2.6). This is a concrete proposal for that `f`.
 
@@ -706,6 +712,8 @@ running** — about 40% of the 30-minute game day under power, the rest fishing,
 | `boat.stern_trawler_mk2` | diesel | 750 | 575 | 417.3 | 108 min | 15.7 km | 9.0 | 1,050 ₲ |
 | `boat.coastal_packet` | diesel | **2,000** | 1,250 | 907.1 | 132 min | 17.7 km | 11.0 | 2,800 ₲ |
 | `boat.tanker` | diesel | **9,000** | 4,425 | 3,211.1 | 168 min | 18.4 km | 14.0 | 12,600 ₲ |
+
+> **2026-11-13, the owner's ruling: bigger tanks on the fast hulls.** The Tank column above is no longer what these rows carry: console skiff 144 L, sport skiff 148, sport skiff Mk2 145, sport skiff twin 164, Zodiac FRC 124, Zodiac Hurricane 160, sport fisher convertible 705, sport fisher skybridge 2,068 (and, not in this table, bowrider 157, express cruiser 280, go-fast 208, yacht tender 163, motor yacht 84 1,219). They are sized so a tank lasts flat out what it did before the meter burned by speed. Those rows' Endurance, Range, Days/tank and Fill are superseded; the arithmetic and the per-hull table are in `fuel-burn-by-speed-logic.md`, "The fast hulls' tanks". Every other row is unchanged.
 
 **Bold tanks are canon's** ([`boats-and-navigation.md`](boats-and-navigation.md) §1.1) read as litres
 per §9.1 — unchanged, not re-tuned. The rest are placed by size within the family.

@@ -151,7 +151,7 @@ namespace HiddenHarbours.Art
         [Range(0f, 1f)] [SerializeField] private float _edgeSoftness = 0.7f;
 
         [Tooltip("Subtle deterministic flicker (a lamp's living wobble). 0 = rock-steady searchlight.")]
-        [Range(0f, 1f)] [SerializeField] private float _flickerAmount = 0.06f;
+        [Range(0f, 1f)] [SerializeField] private float _flickerAmount = 0f;
 
         [Header("Behaviour")]
         [Tooltip("Dim the beam toward off when the boat is barely moving (moored / aground / drifting), so the " +
@@ -498,6 +498,8 @@ namespace HiddenHarbours.Art
         /// <summary>Stamp the boat-spotlight feel onto the carried <see cref="SceneLight"/> (a forward warm cone at the bow).</summary>
         private void ConfigureLight()
         {
+            _color = LightPresets.ColorFor(LightPresets.Kind.Worklight);
+            _flickerAmount = 0f;
             if (_light == null) return;
             _light.Shape = SceneLight.LightShape.Cone;
             _light.ConeHalfAngle = _coneHalfAngle;
@@ -525,6 +527,8 @@ namespace HiddenHarbours.Art
 
         private void Update()
         {
+            _color = LightPresets.ColorFor(LightPresets.Kind.Worklight);
+            _flickerAmount = 0f;
             if (_light == null) return;
 
             // --- WHOSE BEAM IS THIS, THIS FRAME? The answer changes underfoot — the player steps aboard a
@@ -670,10 +674,13 @@ namespace HiddenHarbours.Art
             // unreachable there. It is named here because "the sea is lit exactly as before" is a claim
             // about a shader two files away, and claims like that rot silently.
             if (!WalkerLights.OwnsDecorLight)
+            {
                 DecorLampGlobals.Publish(
                     new Vector2(lampWorld.x, lampWorld.y), lampHeight, beamDir, _color,
                     intensity, _range, cosHalf, cosInner,
                     _edgeSoftness, _gateThreshold, _gateSoftness, _gateFallback);
+                Headlamp.DecorPublishedByBoat();
+            }
 
             // ...and the SAME numbers as one array-slot candidate, so the two publishing routes can never
             // disagree about where this lamp is or how hard it is burning.

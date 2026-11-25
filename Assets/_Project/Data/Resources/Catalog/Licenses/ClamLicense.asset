@@ -13,14 +13,16 @@ MonoBehaviour:
   m_Name: ClamLicense
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.LicenseDef
   Id: license.clam
-  DisplayName: Clam Digging Licence
-  Flavor: 'A shellfish licence for the St Peters flats, signed over the counter at the
+  DisplayName: Shellfish Licence
+  Flavor: 'A shellfish licence for the St Peters shore - clams off the flats, mussels and oysters picked by hand at low water - signed over the counter at the
     general store. The fee is small and the paperwork is one line, but no buyer on the
     island will weigh a bucket without it. The first licence of your life - and not the
     one you pay for yourself.'
   Price: 15
   PermittedSpeciesIds:
   - fish.soft_shell_clam
+  - fish.blue_mussel
+  - fish.american_oyster
   Catalog:
     Listed: 1
     Section: 5

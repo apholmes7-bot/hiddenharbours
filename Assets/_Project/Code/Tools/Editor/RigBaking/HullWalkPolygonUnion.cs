@@ -19,6 +19,15 @@ namespace HiddenHarbours.Tools.RigBaking
             return Boundary(rings, p => rings.Any(r => DeckAreaMath.Contains(r, p)));
         }
 
+        public static bool TryUnion(IEnumerable<Vector2[]> polygons, out Vector2[][] result, out int floors)
+        {
+            Vector2[][] rings = polygons.ToArray();
+            if (rings.Length == 0) throw new FormatException("walk polygons: empty union");
+            result = Boundary(rings, p => rings.Any(r => DeckAreaMath.Contains(r, p)), true);
+            floors = result.Count(r => Area(r) > 0);
+            return floors == 1;
+        }
+
         public static Vector2[][] Union(IEnumerable<HullWalkArea> areas)
         {
             var surfaces = areas.ToArray();
@@ -27,7 +36,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 !a.Holes.Any(h => DeckAreaMath.Contains(h, p))));
         }
 
-        static Vector2[][] Boundary(Vector2[][] rings, Func<Vector2, bool> contains)
+        static Vector2[][] Boundary(Vector2[][] rings, Func<Vector2, bool> contains, bool allowDisconnected = false)
         {
             var edges = new List<Edge>();
             foreach (var ring in rings)
@@ -86,7 +95,8 @@ namespace HiddenHarbours.Tools.RigBaking
                 }
                 output.Add(ring.ToArray());
             }
-            if (output.Count(r => Area(r) > 0) != 1)
+            int floors = output.Count(r => Area(r) > 0);
+            if (floors != 1 && (!allowDisconnected || floors < 2))
                 throw new FormatException("walk polygons: disconnected floor requires separate levels");
             return output.OrderByDescending(Area).ToArray();
         }

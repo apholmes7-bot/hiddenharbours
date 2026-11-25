@@ -69,6 +69,11 @@ namespace HiddenHarbours.Boats
         /// <summary>Seconds BOTH oars must be idle before they ship rather than trail.</summary>
         public const float DefaultRestGraceSeconds = 1.2f;
 
+        /// <summary>Stroke columns per second the second oar is pulled into step with the leading oar while
+        /// both are pulled the same way: one rower, two hands, one stroke. 0 = each oar keeps its own
+        /// phase. At 6 the worst case (half a stroke apart, 4 columns) is back in step in about 0.7 s.</summary>
+        public const float DefaultPhaseLockColumnsPerSecond = 6f;
+
         /// <summary>The rock-free/level pose sentinel: <see cref="DirectionalBoatSprite.RockFrame"/> is −1 when
         /// the hull draws its static facing (calm sea, or no rock grid) — the oars must then sit level too.</summary>
         public const int LevelRockFrame = -1;
@@ -120,6 +125,24 @@ namespace HiddenHarbours.Boats
             phase %= columns;
             if (phase < 0f) phase += columns;
             return phase;
+        }
+
+        /// <summary>
+        /// Move <paramref name="phase"/> toward <paramref name="leader"/> by at most
+        /// <paramref name="maxStep"/> columns, the SHORT way round the
+        /// <paramref name="strokeColumns"/>-column cycle, and wrap the result into [0, columns). Both oars
+        /// are in one rower's hands, so while both pull the same way the second follows the first rather
+        /// than keeping a phase of its own (left alone, a turn leaves the two oars out of step for good,
+        /// up to half a stroke apart, which no pair of hands can hold).
+        /// </summary>
+        public static float LockPhaseToward(float phase, float leader, float maxStep, int strokeColumns)
+        {
+            int columns = Mathf.Max(1, strokeColumns);
+            float half = columns * 0.5f;
+            float d = Mathf.Repeat(leader - phase + half, columns) - half;
+            float limit = Mathf.Max(0f, maxStep);
+            float next = Mathf.Repeat(phase + Mathf.Clamp(d, -limit, limit), columns);
+            return next >= columns ? 0f : next;
         }
 
         /// <summary>The stroke column a phase is drawing: the floor of the phase, clamped into

@@ -264,6 +264,27 @@ namespace HiddenHarbours.Boats
             => Mathf.Max(0f, hullLengthMeters) * Mathf.Max(0f, c.ChurnHalfWidthFraction);
 
         /// <summary>
+        /// The trail a hull of this <paramref name="style"/> lays, from the shared trail config.
+        /// <see cref="WakeStyle.Propeller"/> returns the config untouched, bit for bit. A
+        /// <see cref="WakeStyle.Jet"/> hull has no propeller churning a wide strip under her transom: one
+        /// nozzle throws a narrow, hard stream astern. So her churn strip narrows, every deposit lays the
+        /// centre lane, the wash is thrown astern at a larger share of her speed, and the white lasts
+        /// longer along the lane. The V arms are the hull's and are left alone. Per-deposit particle
+        /// counts are unchanged, so the pool budget is too.
+        /// </summary>
+        public static WakeTrailConfig ForStyle(in WakeTrailConfig c, WakeStyle style)
+        {
+            if (style != WakeStyle.Jet) return c;
+            JetWashConfig j = c.JetWash.IsSet ? c.JetWash : JetWashConfig.Default;
+            WakeTrailConfig t = c;
+            t.ChurnHalfWidthFraction = Mathf.Max(0f, c.ChurnHalfWidthFraction) * Mathf.Clamp01(j.ChurnWidthScale);
+            t.CenterChurnFraction = Mathf.Max(c.CenterChurnFraction, Mathf.Clamp01(j.CentreLaneFraction));
+            t.AsternDriftFraction = Mathf.Max(c.AsternDriftFraction, Mathf.Clamp01(j.AsternThrowFraction));
+            t.ChurnLifetimeScale = Mathf.Max(0.01f, c.ChurnLifetimeScale) * Mathf.Max(1f, j.ChurnLifetimeScale);
+            return t;
+        }
+
+        /// <summary>
         /// 🔴 <b>ROW 29 — the centre churn, from the ONE width.</b> The churn strip is NARROWER than the
         /// shoulders and stays so: its share of the wake is the ratio the two shipped fractions already
         /// express (0.10 / 0.14), so the SHAPE is unchanged and only the SCALE moves onto the hull's beam.
@@ -605,6 +626,11 @@ namespace HiddenHarbours.Boats
         [Tooltip("Turn-rate range (deg/s) over which the plume fades from full to gone past the onset.")]
         public float PlumeTurnFadeRangeDegPerSec;
 
+        [Header("Jet wash (hulls whose WakeStyle is Jet)")]
+        [Tooltip("How a jet-driven hull's stern wash differs from a propeller's. Read only for hulls " +
+                 "whose BoatHullDef.WakeStyle is Jet; every other hull's trail is untouched.")]
+        public JetWashConfig JetWash;
+
         /// <summary>The greybox default trail — visible, curving, pool-safe. The owner tunes from here.</summary>
         public static WakeTrailConfig Default => new WakeTrailConfig
         {
@@ -653,6 +679,43 @@ namespace HiddenHarbours.Boats
             PlumePulseAlphaAmount      = 0.20f,
             PlumeTurnFadeOnsetDegPerSec = 20f,
             PlumeTurnFadeRangeDegPerSec = 45f,
+
+            JetWash                    = JetWashConfig.Default,
+        };
+    }
+
+    /// <summary>How a hull drives the water astern, which shapes the wash she leaves. Per hull, in data.</summary>
+    public enum WakeStyle
+    {
+        /// <summary>A propeller or oars: the wide churn strip under the transom. Every hull before the jetski.</summary>
+        Propeller = 0,
+        /// <summary>A jet pump: one narrow stream thrown hard astern from a nozzle on the centreline.</summary>
+        Jet = 1,
+    }
+
+    /// <summary>The tunables of a jet wash, applied over the shared trail by <see cref="WakeTrailMath.ForStyle"/>.</summary>
+    [System.Serializable]
+    public struct JetWashConfig
+    {
+        [Tooltip("The jet's churn strip as a share of a propeller hull's. A nozzle is narrow: well under 1.")]
+        [Range(0.05f, 1f)] public float ChurnWidthScale;
+        [Tooltip("Share (0..1) of deposits that lay the centre lane. A jet stream is continuous: 1.")]
+        [Range(0f, 1f)] public float CentreLaneFraction;
+        [Tooltip("How hard the wash is thrown astern, as a share (0..1) of her speed. A propeller hull's " +
+                 "is the trail's own AsternDriftFraction; a jet's is several times that.")]
+        [Range(0f, 1f)] public float AsternThrowFraction;
+        [Tooltip("How much longer the jet's white lasts than a propeller's churn band (a multiple, 1 or more).")]
+        [Range(1f, 4f)] public float ChurnLifetimeScale;
+
+        /// <summary>False for an emitter serialized before this block existed: the defaults are used.</summary>
+        public bool IsSet => ChurnWidthScale > 0f;
+
+        public static JetWashConfig Default => new JetWashConfig
+        {
+            ChurnWidthScale     = 0.45f,
+            CentreLaneFraction  = 1f,
+            AsternThrowFraction = 0.55f,
+            ChurnLifetimeScale  = 1.8f,
         };
     }
 

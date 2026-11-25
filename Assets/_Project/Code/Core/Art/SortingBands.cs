@@ -35,6 +35,16 @@ namespace HiddenHarbours.Core
         /// (<c>ShorePlantDef.SubmergedSortingOrder</c>; the plant returns to the decor band when emergent.)</summary>
         public const int SubmergedShorePlant = -8;
 
+        /// <summary>
+        /// Growth that must draw UNDER every hull (whose picture sorts at <c>BoatVisualDef.SortingOrder</c>,
+        /// 1, below the decor band): ground cover and intertidal weed lying on the foreshore, and a taller
+        /// plant while it stands behind a hull's waterline. Over the seabed and a submerged plant, under
+        /// the sea plane, which draws nothing on dry ground and reads over the weed where the tide does
+        /// reach it. (The owner, 2026-11-16: "sprites appear above the boat when they should be
+        /// below/behind".)
+        /// </summary>
+        public const int UnderHulls = -6;
+
         /// <summary>The sea plane itself.</summary>
         public const int Sea = -5;
 
@@ -47,6 +57,17 @@ namespace HiddenHarbours.Core
         /// <summary>An interior room sheet: one below the decor band, so no occupant can end up behind
         /// the floor they stand on.</summary>
         public const int InteriorFloor = 1;
+
+        /// <summary>
+        /// Rungs above its room sheet for a flat layer that replaces part of the sheet's own picture (a
+        /// store's empty-shelf cover). Carried: added to the room renderer's order, never an order of its
+        /// own, so it stays over the floor it lies on and under everyone and everything standing in the room.
+        /// </summary>
+        public const int RoomSheetCoverRungs = 1;
+
+        /// <summary>Rungs above its room sheet for what lies on such a cover (the goods on a store shelf):
+        /// one over <see cref="RoomSheetCoverRungs"/>. Carried, as the cover is.</summary>
+        public const int RoomSheetGoodsRungs = RoomSheetCoverRungs + 1;
 
         // --- THE DECOR BAND (YSortSprite's) -----------------------------------------------------------
 
@@ -84,6 +105,13 @@ namespace HiddenHarbours.Core
         /// (2402.) Nothing that must draw over all decor may sit at or below this — see
         /// <see cref="AboveDecor"/>.</summary>
         public const int DecorCeiling = DecorBase + (int)(DecorHalfExtentMetres * OrdersPerMetre);
+
+        /// <summary>
+        /// How many rungs a hull sorts BEHIND the decor band's Y-sort at her waterline pivot (ADR 0059,
+        /// <see cref="HullSorting.OrderAt"/>). One, the mesh vehicle's rule: whoever stands on her root
+        /// would otherwise tie with her, and the hull must yield so he draws over the deck he stands on.
+        /// </summary>
+        public const int HullYieldRungs = 1;
 
         // --- ABOVE THE DECOR BAND ---------------------------------------------------------------------
 

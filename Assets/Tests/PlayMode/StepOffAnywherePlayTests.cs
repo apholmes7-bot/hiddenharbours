@@ -167,6 +167,15 @@ namespace HiddenHarbours.Tests.PlayMode
             return new Vector3(StPetersBuilder.DoryMooredPos.x, deck.yMax - 0.5f, 0f);
         }
 
+        private void ServeTheFixtureBerth()
+        {
+            // Traversal fixture only. The banked north-face fitting waits for the pier's own move.
+            var ladder = Spawn("Fixture berth ladder");
+            ladder.transform.position = PlanksBesideHer();
+            ladder.AddComponent<WharfLadder>().Configure("wharf.test.dory_ladder",
+                StPetersWharf.DeckElevationFrom(GameServices.TidalTerrain), 0f);
+        }
+
         /// <summary>📏 What the probe actually sees. Logged, not asserted — when a geometric predicate
         /// says no, the number it said no about is the finding.</summary>
         [UnityTest]
@@ -228,6 +237,7 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator TheStarterDoryAtHerBerth_IsBoardableFromThePlanks_AndLeaveableOntoThem()
         {
+            ServeTheFixtureBerth();
             _playerGo.transform.position = PlanksBesideHer();
             yield return null;
 
@@ -241,7 +251,8 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsTrue(_switcher.WithinBoardReach(),
                 "she lies 0.40 m off the planks and the player is standing on them — that is within " +
                 $"{_switcher.BoardReachMetres:F2} m of her outline by any honest measure");
-            Assert.IsTrue(_switcher.BeginInteract(), "E on the planks beside her must board her");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher),
+                "E boards through the fixture's ladder");
             yield return SettleTheMove();
 
             Assert.AreEqual(ControlMode.OnDeck, _switcher.Mode, "…and boarding means being on her deck");
@@ -267,10 +278,11 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator SheCanBeBoardedAndLeft_ThroughTheInteractVerb()
         {
+            ServeTheFixtureBerth();
             _playerGo.transform.position = PlanksBesideHer();
             yield return null;
 
-            Assert.IsTrue(_switcher.BeginInteract(), "board");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher), "board");
             yield return SettleTheMove();
             Assert.AreEqual(ControlMode.OnDeck, _switcher.Mode);
 
@@ -279,7 +291,8 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsFalse(_switcher.WithinHelmReach(),
                 "premise: she is not standing at the tiller, or E would take the helm instead");
 
-            Assert.IsTrue(_switcher.BeginInteract(), "E on her deck, away from the helm, must step ashore");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(_switcher),
+                "E on her deck, away from the helm, must use the fixture ladder ashore");
             yield return SettleTheMove();
 
             Assert.AreEqual(ControlMode.OnFoot, _switcher.Mode,

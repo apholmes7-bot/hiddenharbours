@@ -287,6 +287,7 @@ namespace HiddenHarbours.UI
                 int sw = HudScreen.Width, sh = HudScreen.Height;
                 _bandCtl.Layout(fit.Rig, sw, sh);
                 HelmBandGlance glance = HelmDashGeometry.IsPilothouse(fit.Rig) ? Glance() : HelmBandGlance.None;
+                glance = WithFuel(in glance, GameServices.HelmInstruments);
                 _bandCtl.UpdateAndPaint(helm, in fit, SampleHeadingDegrees(), Time.deltaTime, in glance);
                 ApplyBand(sw, sh);
 
@@ -336,6 +337,17 @@ namespace HiddenHarbours.UI
             bool lit = DepthSounder.ShallowAlarm(depth, in prefs)
                        && DepthSounder.BlinkPhase(Time.time, GameServices.DepthSounder.AlarmBlinkHz);
             return new HelmBandGlance(true, depth, prefs.Feet, lit);
+        }
+
+        /// <summary>Lay the hull's tank over the band's glance: the fuel gauge on every dash reads the
+        /// real tank through the Core instrument seam (<see cref="IHelmInstruments.TryReadFuel"/>), and
+        /// shows the unread face when there is no seam or no tank. Public and static so the reading can
+        /// be proven without a canvas.</summary>
+        public static HelmBandGlance WithFuel(in HelmBandGlance glance, IHelmInstruments instruments)
+        {
+            if (instruments == null || !instruments.TryReadFuel(out float fuel01))
+                return glance.WithFuel(false, 0f);
+            return glance.WithFuel(true, fuel01);
         }
 
         // ---- layout -------------------------------------------------------------------------------

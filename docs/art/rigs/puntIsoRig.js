@@ -46,6 +46,13 @@
     return { roll: ROCK.rollA*Math.sin(a), pitch: ROCK.pitchA*Math.sin(a+Math.PI/2), heave: ROCK.heaveA*Math.sin(a) };
   }
   const L = 5.2, TH = 0.035, FLOOR = 0.06, SEAT = 0.30;
+  // the inside planking stands on the floorboards: its foot a little under the floor's height, never down on the
+  // bottom's outer plane. Run down to the bottom, its lower edge lay ON the outside of the boat, so the sea saw it from
+  // underneath and the whole lower strake was baked wettable on both sides: the sea drew over it inside the punt,
+  // in the band between the floorboards and the waterline (owner, 2026-11-19; the dory had the same fault).
+  const LINING_FOOT = 0.048;             // m above the keel bottom: 12 mm under the floorboards (FLOOR)
+  const LINING_AFT = 0.006;              // m the inner skin stops short of the transom (over the classifier's 4 mm tie)
+  const INNER_TRANSOM = 0.010;           // m the inner transom board stands forward of the stern board
   const OARLOCK_U = 0.42;                // rowlock station — 0.31 m aft of the mid thwart, so a rower on it has the looms in hand
   const NSEG = 18;
 
@@ -213,7 +220,17 @@
     const ws=st.ws-(inset?TH:0), wb=st.wb-(inset?TH*0.6:0), dep=st.dep-(inset?0.02:0);
     return [ side*lerp(wb,ws,frac), st.y, st.kz+lerp(0,dep,frac) ];
   }
-  function floorPt(side,u){ const st=station(u); return [ side*(st.wb-TH*0.6)*0.94, st.y, st.kz+FLOOR ]; }
+  // the floorboards run out to the inner skin at their own height (4 mm shy), so no slot beside them shows the
+  // outside planking below the floor, under the waterline
+  function floorPt(side,u){ const st=station(u), wb=st.wb-TH*0.6, ws=st.ws-TH, fr=FLOOR/(st.dep-0.02);
+    return [ side*(lerp(wb,ws,fr)-0.004), st.y, st.kz+FLOOR ]; }
+  // the inner skin's height fraction at LINING_FOOT over the keel (the inner skin spans dep-0.02 m)
+  const liningFoot = (u) => LINING_FOOT/(station(u).dep-0.02);
+  // the inner skin, stopped LINING_AFT short of the transom's plane: run onto that plane, its aft edge lay on the
+  // outside of the boat and the sea saw it there (the same fault as the foot on the bottom plane)
+  function lining(side,u,frac){ const p=skin(side,u,frac,1); if(u===0) p[1]+=LINING_AFT; return p; }
+  // the inner skin's half-width at height z over the keel
+  const innerHalf = (u,z) => { const st=station(u); return lerp(st.wb-TH*0.6, st.ws-TH, (z-st.kz)/(st.dep-0.02)); };
 
   // ---- hull face list ----
   const F = [];
@@ -234,7 +251,8 @@
           face([skin(side,u0,fs),skin(side,u1,fs),skin(side,u1,f1),skin(side,u0,f1)],'paint',-2.2,0.02); }
         // inner skin (bare wood interior, 3 strakes)
         for(let k=0;k<3;k++){ const f0=k/3, f1=(k+1)/3;
-          face([skin(side,u1,f0,1),skin(side,u0,f0,1),skin(side,u0,f1,1),skin(side,u1,f1,1)],'wood',-1.1); }
+          const g0=k===0?liningFoot(u0):f0, g1=k===0?liningFoot(u1):f0;   // the lowest strake stands on the floorboards
+          face([lining(side,u1,g1),lining(side,u0,g0),lining(side,u0,f1),lining(side,u1,f1)],'wood',-1.1); }
         // bottom (anti-foul, own colour slot) + interior floor (wood)
         face([floorPt(-1,u0),floorPt(1,u0),floorPt(1,u1),floorPt(-1,u1)],'wood',-0.4);
         face([skin(-1,u0,0),skin(-1,u1,0),skin(1,u1,0),skin(1,u0,0)],'bottom',-1.0);
@@ -255,8 +273,11 @@
     })();
     // thwarts: stern bench (operator, tiller reach) + mid + forward
     for(const [u,bd] of [[0.15,0.34],[0.48,0.20],[0.74,0.20]]){
-      const st=station(u), hx=st.ws*0.90-TH, zTop=st.kz+SEAT, zBot=zTop-0.05;
+      const st=station(u), zTop=st.kz+SEAT, zBot=zTop-0.05;
       const y0=st.y-bd/2, y1=st.y+bd/2;
+      // the ends stop inside the inner skin at both edges (the forward thwart's ends used to poke out through the
+      // planking where the bow narrows, so the sea could see them from outside and drew on them inside too)
+      const hx=Math.min(st.ws*0.90-TH, innerHalf((y0+L/2)/L,zBot)-0.004, innerHalf((y1+L/2)/L,zBot)-0.004);
       face([[-hx,y0,zTop],[hx,y0,zTop],[hx,y1,zTop],[-hx,y1,zTop]],'wood',0.6);
       face([[-hx,y1,zTop],[hx,y1,zTop],[hx,y1,zBot],[-hx,y1,zBot]],'wood',-1.2);
       face([[hx,y0,zTop],[-hx,y0,zTop],[-hx,y0,zBot],[hx,y0,zBot]],'wood',-0.4);
@@ -296,6 +317,16 @@
       F.push(...box([x, st.y, zt+0.014],[0.030,0.055,0.014],'iron',0.35,-0.03,ID));
       F.push(...box([x, st.y, zt+0.075],[0.019,0.019,0.050],'iron',0.55,-0.05,ID));
     }
+    // inner transom board, just forward of the stern board, from the inner skin's foot to its top. The stern board is
+    // one face, so its inside was a wet side drawn below the waterline; this board covers it from inside, like the
+    // dory's. Appended last so every face before it keeps its index.
+    (function(){ const y=-L/2+INNER_TRANSOM, u=INNER_TRANSOM/L, st=station(u);
+      const z0=st.kz+LINING_FOOT, z1=st.kz+st.dep-0.02, h0=innerHalf(u,z0)-0.004, h1=innerHalf(u,z1)-0.004;
+      face([[-h1,y,z1],[h1,y,z1],[h0,y,z0],[-h0,y,z0]],'wood',-1.1);
+    })();
+    // stem face closing the bow: the two sides' skins end 6-12 cm apart at the stem, and through that slot the sea saw
+    // the inner skins' forward ends from outside and drew on them inside
+    face([skin(-1,1,1),skin(1,1,1),skin(1,1,0),skin(-1,1,0)],'paint',-0.8,0.005);
   })();
 
   // ---- rasterizer (shared recipe; G overrides cell geometry for the motor layer) ----

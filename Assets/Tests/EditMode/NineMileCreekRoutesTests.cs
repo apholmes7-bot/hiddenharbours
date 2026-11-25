@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using HiddenHarbours.Core;
@@ -134,6 +135,8 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 int adrift = 0;
                 Vector2 firstAdrift = Vector2.zero;
+                Vector2 worstAt = Vector2.zero;
+                string worstRoad = null;
                 float firstHour = 0f, worst = 0f;
 
                 foreach (float hour in EveryMinute())
@@ -141,12 +144,13 @@ namespace HiddenHarbours.Tests.EditMode
                     Vector2 at = plan.SampleAt(hour).MachinePosition;
                     if (_paving.Paved.Contains(NineMileCreekRoads.CellOf(at))) continue;
 
-                    float toRoad = ToNearestRoad(at);
-                    if (toRoad > worst) worst = toRoad;
+                    float toRoad = ToNearestRoad(at, out string nearest);
+                    if (toRoad > worst) { worst = toRoad; worstAt = at; worstRoad = nearest; }
                     if (toRoad <= reach) continue;
                     if (adrift++ == 0) { firstAdrift = at; firstHour = hour; }
                 }
 
+                TestContext.WriteLine($"{who}: worst unpaved sample {worstAt}, nearest {worstRoad}, {worst:0.######} m");
                 Assert.That(adrift, Is.Zero,
                     $"{who}: {adrift} sampled minutes are neither paved nor within {reach:0.#} m of a " +
                     $"published road (worst {worst:0.##} m), the first at {firstAdrift} " +
@@ -213,6 +217,7 @@ namespace HiddenHarbours.Tests.EditMode
             foreach ((string what, Vector2 bay, Vector2[] road) in Bays())
             {
                 float offCentre = RouteFollowMath.OffCentreLineMetres(road, 0, road.Length, bay);
+                TestContext.WriteLine($"{what} at {bay}: {offCentre:0.######} m from its road");
                 float nearFlank = offCentre - NineMileCreekRoads.ParkedVehicleWidthMetres * 0.5f;
 
                 Assert.That(nearFlank, Is.GreaterThanOrEqualTo(
@@ -412,7 +417,7 @@ namespace HiddenHarbours.Tests.EditMode
             yield return ("the chandler's van", NineMileCreekTrips.ChandleryBay(),
                           NineMileCreekTrips.ThroughRoad);
             yield return ("the outboard man's box", NineMileCreekTrips.DoryYardBay(),
-                          NineMileCreekTrips.WharfRoad);
+                          YardRoad);
             yield return ("a machine at the pumps", NineMileCreekTrips.ForecourtBay(),
                           NineMileCreekTrips.ThroughRoad);
         }
@@ -423,20 +428,32 @@ namespace HiddenHarbours.Tests.EditMode
             for (int m = 0; m < 24 * 60; m++) yield return m / 60f;
         }
 
-        /// <summary>How far a point is from the nearest published carriageway, in metres. The three the
+        // PR 3's road readers also read yard.main_road, by the kept way the scene paints.
+        private static Vector2[] YardRoad => NineMileCreekGroundPlan.KeptV3Ways()
+            .Single(w => w.Name == NineMileCreekGroundPlan.YardRoadName).Route;
+
+        /// <summary>How far a point is from the nearest published carriageway, in metres. The roads the
         /// region actually publishes — a footpath is not a road a truck may be beside — on the lines the
         /// scene paves (NMC H2), and Wharf Road's turning circle, all of it carriageway: measured from its
         /// rim as if that were a carriageway's edge.</summary>
-        private static float ToNearestRoad(Vector2 at)
+        private static float ToNearestRoad(Vector2 at, out string nearest)
         {
             float best = float.MaxValue;
-            foreach (Vector2[] road in new[] { NineMileCreekTrips.WharfRoad,
-                                               NineMileCreekTrips.ThroughRoad,
-                                               NineMileCreekMainland.BarRoad })
-                best = Mathf.Min(best, RouteFollowMath.OffCentreLineMetres(road, 0, road.Length, at));
+            nearest = null;
+            foreach (var (name, road) in new[] {
+                         (NineMileCreekRoads.WharfRoadName, NineMileCreekTrips.WharfRoad),
+                         (NineMileCreekRoads.ThroughRoadName, NineMileCreekTrips.ThroughRoad),
+                         (NineMileCreekRoads.BarRoadName, NineMileCreekMainland.BarRoad),
+                         (NineMileCreekGroundPlan.YardRoadName, YardRoad) })
+            {
+                float distance = RouteFollowMath.OffCentreLineMetres(road, 0, road.Length, at);
+                if (distance < best) { best = distance; nearest = name; }
+            }
             float toPadRim = Vector2.Distance(at, NineMileCreekGroundPlan.TurningPadCentre)
                              - NineMileCreekGroundPlan.TurningPadRadius;
-            return Mathf.Min(best, Mathf.Max(0f, toPadRim) + NineMileCreekRoads.CarriagewayHalfWidthMetres);
+            float toPad = Mathf.Max(0f, toPadRim) + NineMileCreekRoads.CarriagewayHalfWidthMetres;
+            if (toPad < best) { best = toPad; nearest = NineMileCreekGroundPlan.TurningPadName; }
+            return best;
         }
 
         /// <summary>

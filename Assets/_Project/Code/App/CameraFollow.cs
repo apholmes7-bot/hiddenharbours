@@ -51,14 +51,13 @@ namespace HiddenHarbours.App
     {
         // ---- framing (single source of truth; PC-first landscape) ---------------------------
 
-        /// <summary>Intimate default zoom: ~14 m of world HEIGHT visible (the Dory's default).</summary>
+        /// <summary>Default dory framing request; the lens selects the nearest stop.</summary>
         public const float DefaultWorldHeightMeters = 14f;
 
-        /// <summary>Tighter on-foot framing: ~9 m of world height so the ~1.8 m walking fisher reads
-        /// large. Uses the same data-driven, pixel-perfect mapping as the boat tiers.</summary>
-        public const float OnFootWorldHeightMeters = 9f;
+        /// <summary>Shipped walking default. Live cameras read the owner's GameConfig value.</summary>
+        public const float OnFootWorldHeightMeters = PlayerZoomSettings.ShippedDefaultWorldHeightMeters;
 
-        /// <summary>Default ON-DECK framing: exactly the next pixel-perfect step inside on-foot (×5 at
+        /// <summary>Default ON-DECK framing: the ruled fifth pixel-perfect step (×5 at
         /// the design screen = 1080 / (5 × 32) = 6.75 m), so deck work reads in detail. Default for the
         /// serialized owner-tunable <c>_deckWorldHeightMeters</c>.</summary>
         public const float DeckWorldHeightMeters = DesignScreenHeightPx / (5f * AssetsPPU);
@@ -221,6 +220,12 @@ namespace HiddenHarbours.App
         private Vector2 _lookahead;   // current (smoothed) look-ahead offset
         private bool _hasLast;
 
+        // The speed the boat lead reads while the followed hull is rowed (stroke-averaged), and which
+        // target was last asked whether it carries oars (so the answer is looked up once per target).
+        private Vector2 _leadVelocity;
+        private Transform _rowedProbeTarget;
+        private bool _targetIsRowed;
+
         // THE FOLLOW FILTER'S OWN CONTINUOUS POSITION. The transform is a rounded COPY of this once
         // the pixel snap is on (see ApplyPixelGrid); the smoothing must never read the rounded value
         // back, or the rounding enters the filter and a slow pan stalls on a pixel until the error
@@ -270,7 +275,7 @@ namespace HiddenHarbours.App
         private float _tweenElapsed;
         private float _tweenSeconds;             // duration of the ACTIVE tween (upgrade vs deck step use different dials)
         private float _tweenFromOrtho, _tweenToOrtho;
-        private int _pendingRefW, _pendingRefH;
+
 
         // zoom-policy state — the POCO decides WHICH discrete framing shows; this component only applies it
         private readonly CameraZoomPolicy _zoomPolicy = new CameraZoomPolicy();
@@ -285,8 +290,7 @@ namespace HiddenHarbours.App
         private float _vehicleWorldHeightMeters = OnFootWorldHeightMeters;
 
         // PLAYER ZOOM (the wheel, owner ruling 2026-08-19) — the walker's chosen rung on the SAME
-        // ladder every other framing lands on. Seeded lazily from the authored on-foot height so a
-        // camera nobody ever scrolls behaves byte-for-byte as it did before this existed. Not saved
+        // ladder every other framing lands on. Seeded lazily from the configured walking default. Not saved
         // and never read by the sim: this is presentation (rule 5), the same as the deck step above.
         private int _playerZoomStep;
         private bool _playerZoomStepKnown;
@@ -303,6 +307,12 @@ namespace HiddenHarbours.App
             _cam = GetComponent<Camera>();
             _ppc = GetComponent<PixelPerfectCamera>();
             ApplyFramingHard(_worldHeightMeters); // initial framing from the active (Dory) hull
+        }
+
+        private void Start()
+        {
+            if (!_modeKnown && _onFootTarget != null)
+                SetFraming(PlayerZoomWorldHeightMeters, 0f);
         }
 
         private void OnEnable()
@@ -610,17 +620,9 @@ namespace HiddenHarbours.App
                 return;
             }
 
-            // Ease the orthographic zoom for the beat, then snap the Pixel-Perfect reference to the new
-            // tier so the endpoint is crisp. PPC is paused during the ease so the lerp is actually
-            // visible (it would otherwise re-impose its integer zoom each frame); the few non-snapped
-            // frames are an acceptable trade for a smooth zoom beat.
-            ReferenceResolutionForWorldHeight(_worldHeightMeters, out _pendingRefW, out _pendingRefH, CurrentPpu());
-            // From the FRAMING's own ortho, not the camera's: with a feel effect live the camera holds
-            // the multiplied value, and a tween that started from it would bake the push-in into the
-            // new tier. Byte-identical when nothing is live (the camera then IS the framing).
             _tweenFromOrtho = _feelApplied ? _framingOrtho : _cam.orthographicSize;
             _framingOrtho = _tweenFromOrtho;
-            _tweenToOrtho = OrthoSizeForWorldHeight(_worldHeightMeters);
+            _tweenToOrtho = OrthoSizeForWorldHeight(FramingHeightOnStop(_worldHeightMeters));
             _tweenSeconds = tweenSeconds;
             _tweenElapsed = 0f;
             _tweening = true;
@@ -634,28 +636,17 @@ namespace HiddenHarbours.App
             if (_cam == null) _cam = GetComponent<Camera>();
             if (_ppc == null) _ppc = GetComponent<PixelPerfectCamera>();
 
-            // Land on a LADDER STEP — never an arbitrary ortho size (the ruling's standing constraint).
             int ppu = CurrentPpu();
-            int step = CameraZoomPolicy.StepForWorldHeight(worldHeightMeters, ppu, DesignScreenHeightPx);
-            float stepHeight = CameraZoomPolicy.WorldHeightForStep(step, ppu, DesignScreenHeightPx);
+            int height = FramingScreenHeightPx;
+            int step = CameraZoomPolicy.StepForWorldHeight(worldHeightMeters, ppu, height);
+            bool upscale = CameraZoomPolicy.StepIsPixelPerfectUpscale(step);
 
-            if (CameraZoomPolicy.StepIsPixelPerfectUpscale(step))
+            // Road framing retains its authored reference and size.
+            if (_zoomPolicy.HasCommitted && _zoomPolicy.Committed == CameraFraming.Vehicle)
             {
-                // ⚠️ UNCHANGED PATH, deliberately byte-for-byte. Every framing that fits inside the
-                // 1:1 pivot — on foot, on deck, hauling, and every hull up to the dragger — goes
-                // through exactly the code it always did, including setting the ortho from the RAW
-                // request rather than the snapped step (PixelPerfectCamera re-imposes the step at
-                // runtime anyway). The ruling is the HELM only; snapping the ortho here as well
-                // looked tidier and moved the on-foot and deck framings, which two existing tests
-                // caught immediately.
                 ReferenceResolutionForWorldHeight(worldHeightMeters, out int rw, out int rh, ppu);
-                if (_ppc != null)
-                {
-                    _ppc.refResolutionX = rw;
-                    _ppc.refResolutionY = rh;
-                    _ppc.enabled = true;
-                }
-                _framingOrtho = OrthoSizeForWorldHeight(worldHeightMeters);   // what the feel multiplies
+                if (_ppc != null) { _ppc.refResolutionX = rw; _ppc.refResolutionY = rh; _ppc.enabled = true; }
+                _framingOrtho = OrthoSizeForWorldHeight(worldHeightMeters);
                 _ppcWantedByFraming = true;
                 if (_cam != null) _cam.orthographicSize = _framingOrtho;
                 return;
@@ -663,17 +654,41 @@ namespace HiddenHarbours.App
 
             if (_ppc != null)
             {
-                // ⚠️ A DOWNSCALE step cannot go through PixelPerfectCamera: its zoom is
-                // max(1, min(screen/ref)), so a reference LARGER than the screen still renders 1:1 and
-                // the framing would silently snap back to 33.75 m — the exact cap this work exists to
-                // remove. Drive the ortho directly instead; the ratio is still a clean integer (2x2
-                // asset px to one screen px), shrinking rather than magnifying.
-                _ppc.enabled = false;
+                if (upscale)
+                {
+                    Vector2Int pixels = FramingScreenPixels;
+                    _ppc.refResolutionX = Mathf.Max(1, pixels.x / step);
+                    _ppc.refResolutionY = Mathf.Max(1, pixels.y / step);
+                }
+                _ppc.enabled = upscale;
             }
-
-            _framingOrtho = OrthoSizeForWorldHeight(stepHeight);
-            _ppcWantedByFraming = false;
+            _framingOrtho = OrthoSizeForWorldHeight(CameraZoomPolicy.WorldHeightForStep(step, ppu, height));
+            _ppcWantedByFraming = upscale;
             if (_cam != null) _cam.orthographicSize = _framingOrtho;
+        }
+
+        private Vector2Int FramingScreenPixels
+        {
+            get
+            {
+                if (ScreenPixelsOverride.x > 0 && ScreenPixelsOverride.y > 0) return ScreenPixelsOverride;
+                if (Application.isPlaying && _cam != null && _cam.targetTexture != null)
+                    return new Vector2Int(_cam.targetTexture.width, _cam.targetTexture.height);
+                if (Application.isPlaying && Screen.width > 0 && Screen.height > 0)
+                    return new Vector2Int(Screen.width, Screen.height);
+                return new Vector2Int(1920, DesignScreenHeightPx);
+            }
+        }
+
+        private int FramingScreenHeightPx => _zoomPolicy.HasCommitted && _zoomPolicy.Committed == CameraFraming.Vehicle
+            ? DesignScreenHeightPx : FramingScreenPixels.y;
+
+        private float FramingHeightOnStop(float requested)
+        {
+            if (_zoomPolicy.HasCommitted && _zoomPolicy.Committed == CameraFraming.Vehicle) return requested;
+            int ppu = CurrentPpu();
+            int height = FramingScreenHeightPx;
+            return CameraZoomPolicy.WorldHeightForStep(CameraZoomPolicy.StepForWorldHeight(requested, ppu, height), ppu, height);
         }
 
         private int CurrentPpu() => (_ppc != null && _ppc.assetsPPU > 0) ? _ppc.assetsPPU : AssetsPPU;
@@ -784,12 +799,37 @@ namespace HiddenHarbours.App
         }
 
         /// <summary>
+        /// ⭐ <b>Carry the view across a world-frame crossing</b> (ADR 0057), under the seam fade: the mover
+        /// was moved into the neighbour's local frame by <paramref name="localShift"/>, so the camera and
+        /// every piece of its follow state move by the same translation (no re-seed, no velocity spike from
+        /// the target's 400 m local jump), and then the view is SETTLED into the new region's clamp at once.
+        ///
+        /// <para>Why it settles here (owner ruling on PR 1223: "the camera should stop as the player runs
+        /// towards the edge"). The view is clamped at every region edge, seams included, so before the hop
+        /// it stood a half-view inside the region being left, which is a half-view OUTSIDE the region
+        /// arrived in. Left to the follow, it would glide that half-view back in after the fade cleared,
+        /// a visible pan. Clamped now, while the screen is black, the first clear frame is already where
+        /// the follow would rest: the mover just inside the near edge, the view stopped at it. The filter
+        /// and the teleport tripwire take the settled position, so the next LateUpdate sees no jump.</para>
+        /// </summary>
+        public void CarryAcross(Vector2 localShift)
+        {
+            var d = new Vector3(localShift.x, localShift.y, 0f);
+            transform.position += d;
+            _smoothPos += d;
+            _lastAppliedPos += d;
+            _lastTargetPos += d;
+            ApplyBounds();                          // the arrived region's bounds are already published
+            _lastAppliedPos = transform.position;   // the tripwire takes the settled view, not a teleport
+        }
+
+        /// <summary>
         /// <b>How much world ONE RENDERED SCREEN PIXEL covers right now</b> — the grid
         /// <see cref="PixelGrid"/> rounds onto, and what this camera publishes to
         /// <see cref="GameServices.WorldUnitsPerRenderedPixel"/> for the mesh vehicles that cannot
         /// reference App (rule 4).
         ///
-        /// <para><b>Derived from the LADDER, not measured off the live viewport.</b> The tempting
+        /// <para><b>Derived from the selected stop rather than the current effect.</b> The tempting
         /// version is <c>orthographicSize·2 / cam.pixelHeight</c> — the physical screen pixel. It is
         /// rejected for one reason that outranks its directness: <b>the grid must stay compatible
         /// with the ASSET lattice</b>, and only the ladder guarantees that. Every step resolves to
@@ -799,18 +839,16 @@ namespace HiddenHarbours.App
         /// not a relative of anything, and snapping to it would trade one sub-pixel offset for
         /// another while looking like a fix.</para>
         ///
-        /// <para>It is also deterministic and screen-independent, which is what lets an EditMode
-        /// fixture and a headless test rig reason about the grid at all — the live viewport reports
-        /// whatever batchmode happened to allocate, and a snap that changed with the runner's window
-        /// would make every position assertion in the suite a coin toss.</para>
+        /// <para>Fixtures pin their viewport through ScreenPixelsOverride; the live view reads its
+        /// render target or display size. A short effect keeps the framing stop's grid.</para>
         /// </summary>
         public float WorldUnitsPerRenderedPixel
         {
             get
             {
                 int ppu = CurrentPpu();
-                int step = CameraZoomPolicy.StepForWorldHeight(_worldHeightMeters, ppu, DesignScreenHeightPx);
-                return CameraZoomPolicy.WorldUnitsPerRenderedPixel(step, ppu, DesignScreenHeightPx);
+                int step = CameraZoomPolicy.StepForWorldHeight(_worldHeightMeters, ppu, FramingScreenHeightPx);
+                return CameraZoomPolicy.WorldUnitsPerRenderedPixel(step, ppu, FramingScreenHeightPx);
             }
         }
 
@@ -942,7 +980,7 @@ namespace HiddenHarbours.App
         private float BandedHeight(float ruledWorldHeightMeters)
             => CameraZoomPolicy.BandWorldHeightMeters(ruledWorldHeightMeters, _playerBandOffset,
                                                      BandStopsCloser, BandStopsWider,
-                                                     CurrentPpu(), DesignScreenHeightPx);
+                                                     CurrentPpu(), FramingScreenHeightPx);
 
         /// <summary>The RULED height a banded framing is measured from — the hull's or the deck's own
         /// number, before the player's offset. A framing with no band answers whatever
@@ -957,9 +995,7 @@ namespace HiddenHarbours.App
             }
         }
 
-        /// <summary>The ladder step the walking view sits on. Seeded from the authored on-foot framing
-        /// the first time it is asked for, so a camera nobody scrolls frames exactly as it always
-        /// did.</summary>
+        /// <summary>The walking step, seeded from the configured default on the current viewport.</summary>
         public int PlayerZoomStep
         {
             get
@@ -967,43 +1003,16 @@ namespace HiddenHarbours.App
                 if (!_playerZoomStepKnown)
                 {
                     _playerZoomStep = CameraZoomPolicy.StepForWorldHeight(
-                        OnFootWorldHeightMeters, CurrentPpu(), DesignScreenHeightPx);
+                        ZoomSettings.DefaultWorldHeightMeters, CurrentPpu(), FramingScreenHeightPx);
                     _playerZoomStepKnown = true;
                 }
                 return CameraZoomPolicy.ClampPlayerStep(_playerZoomStep, ClosestStep, FarthestStep);
             }
         }
 
-        /// <summary>The rung the walking view sits on with the wheel untouched — the ladder step the
-        /// AUTHORED on-foot framing quantises to. The wheel's home, and the rung a fresh camera
-        /// starts on.</summary>
-        private int DefaultPlayerZoomStep => CameraZoomPolicy.StepForWorldHeight(
-            OnFootWorldHeightMeters, CurrentPpu(), DesignScreenHeightPx);
-
-        /// <summary>
-        /// World height (m) the walking view currently frames — the player's rung of the ladder. This
-        /// IS the on-foot framing; there is no second, unzoomed one behind it.
-        ///
-        /// <para>⚠️ <b>At the home rung it answers the AUTHORED height, not the rung's height.</b> The
-        /// two frame identically (both quantise to the same pixel-perfect step, and
-        /// <c>PixelPerfectCamera</c> re-imposes it every frame), but <see cref="ApplyFramingHard"/>
-        /// deliberately drives the raw orthographic size from the REQUEST rather than the snapped step
-        /// — its own comment records that snapping it "moved the on-foot and deck framings, which two
-        /// existing tests caught immediately". Returning 8.4375 where the camera has always asked for
-        /// 9 would move the standing view for every player who never touches the wheel. So the wheel
-        /// at home is byte-for-byte the camera that shipped, and only a player who actually scrolls
-        /// leaves the authored number behind.</para>
-        /// </summary>
+        /// <summary>The selected walking stop on the current viewport's pixel grid.</summary>
         public float PlayerZoomWorldHeightMeters
-        {
-            get
-            {
-                int step = PlayerZoomStep;
-                return step == DefaultPlayerZoomStep
-                    ? OnFootWorldHeightMeters
-                    : CameraZoomPolicy.WorldHeightForStep(step, CurrentPpu(), DesignScreenHeightPx);
-            }
-        }
+            => CameraZoomPolicy.WorldHeightForStep(PlayerZoomStep, CurrentPpu(), FramingScreenHeightPx);
 
         /// <summary>How much raw scroll earns one tier (owner-tunable). Read by the wheel reader so
         /// there is one config lookup for the whole rig, not one per component.</summary>
@@ -1053,8 +1062,6 @@ namespace HiddenHarbours.App
             if (to == from) return false;       // saturated at a clamp — no re-frame, no tween
 
             _playerZoomStep = to;
-            // Through WorldHeightFor, not the ladder directly: scrolling back to the home rung must
-            // land on the AUTHORED on-foot height, exactly where a player who never scrolled sits.
             SetFraming(WorldHeightFor(CameraFraming.OnFoot), Mathf.Max(0f, ZoomSettings.StepSeconds));
             return true;
         }
@@ -1069,7 +1076,7 @@ namespace HiddenHarbours.App
         {
             int to = CameraZoomPolicy.StepBandOffset(
                 _playerBandOffset, notches, RuledHeightFor(framing),
-                BandStopsCloser, BandStopsWider, CurrentPpu(), DesignScreenHeightPx, out bool moved);
+                BandStopsCloser, BandStopsWider, CurrentPpu(), FramingScreenHeightPx, out bool moved);
             if (!moved) return false;
 
             _playerBandOffset = to;
@@ -1081,11 +1088,11 @@ namespace HiddenHarbours.App
         /// conversion is the ladder's own nearest-step search, so a hand-typed height can only ever
         /// pick a neighbouring crisp stop, never a blurry framing.</summary>
         private int ClosestStep => CameraZoomPolicy.StepForWorldHeight(
-            ZoomSettings.ClosestWorldHeightMeters, CurrentPpu(), DesignScreenHeightPx);
+            ZoomSettings.ClosestWorldHeightMeters, CurrentPpu(), FramingScreenHeightPx);
 
         /// <inheritdoc cref="ClosestStep"/>
         private int FarthestStep => CameraZoomPolicy.StepForWorldHeight(
-            ZoomSettings.FarthestWorldHeightMeters, CurrentPpu(), DesignScreenHeightPx);
+            ZoomSettings.FarthestWorldHeightMeters, CurrentPpu(), FramingScreenHeightPx);
 
         /// <summary>One frame of the follow alone, on an explicit (scaled) delta — what
         /// <c>LateUpdate</c> runs on <c>Time.deltaTime</c> before <see cref="TickFrame"/>. Public so an
@@ -1102,7 +1109,7 @@ namespace HiddenHarbours.App
         /// <summary>Half the view's height (m) at the rung the framing sits on — the boat lead's cap is a
         /// fraction of it. The rung, not the live ortho: the PixelPerfectCamera re-imposes the rung, and a
         /// cap read off a pull-back or a tween would breathe with it.</summary>
-        private float HalfViewAtRungMeters => 0.5f * WorldUnitsPerRenderedPixel * DesignScreenHeightPx;
+        private float HalfViewAtRungMeters => 0.5f * WorldUnitsPerRenderedPixel * FramingScreenHeightPx;
 
         /// <summary>
         /// Seconds of her travel the follow filter trails a target moving at a steady speed, at a frame
@@ -1131,6 +1138,32 @@ namespace HiddenHarbours.App
             Vector2 net = Vector2.ClampMagnitude(velocity * seconds, capMeters);
             if (lagCompensation <= 0f) return net;
             return net + velocity * (Mathf.Clamp01(lagCompensation) * FollowLagSeconds(smooth, dt));
+        }
+
+        /// <summary>
+        /// One step of the rowed hull's lead speed: <paramref name="smoothed"/> eased toward
+        /// <paramref name="raw"/> with a time constant of <paramref name="seconds"/>, frame-rate
+        /// independent. A steady speed passes through unchanged; a stroke's surge is averaged out. 0 or
+        /// less seconds (or no time) = the raw speed. Pure, no allocation.
+        /// </summary>
+        public static Vector2 SmoothLeadVelocity(Vector2 smoothed, Vector2 raw, float dt, float seconds)
+        {
+            if (!(seconds > 0f) || !(dt > 0f)) return raw;
+            return Vector2.Lerp(smoothed, raw, 1f - Mathf.Exp(-dt / seconds));
+        }
+
+        /// <summary>True when the follow target is a hull with oars (a Core <see cref="IOarStroke"/> on it,
+        /// above it or below it). Looked up once per target, so no per-frame search.</summary>
+        private bool TargetIsRowed()
+        {
+            if (!ReferenceEquals(_rowedProbeTarget, Target))
+            {
+                _rowedProbeTarget = Target;
+                _targetIsRowed = Target != null
+                                 && (Target.GetComponentInParent<IOarStroke>() != null
+                                     || Target.GetComponentInChildren<IOarStroke>() != null);
+            }
+            return _targetIsRowed;
         }
 
         // ---- the helm's footprint: the band offset (ADR 0050) --------------------------------------
@@ -1230,14 +1263,21 @@ namespace HiddenHarbours.App
             // boat, the owner's dials (boat feel PR 1) stand in for the scene's look-ahead; each one at 0
             // hands the scene's own number back, so a zero config is the old follow exactly.
             float leadSeconds = _lookaheadSeconds, leadCap = _lookaheadMaxMeters, lagPayBack = 0f;
+            Vector2 leadVelocity = velocity;
             if (BoatLeadIsLive)
             {
                 JuiceSettings s = FeelSettings;
                 if (s.BoatLeadSeconds > 0f) leadSeconds = s.BoatLeadSeconds;
                 if (s.BoatLeadMaxViewFraction > 0f) leadCap = s.BoatLeadMaxViewFraction * HalfViewAtRungMeters;
                 lagPayBack = s.BoatLeadLagCompensation;
+                // A rowed hull surges on every stroke; the lead reads her stroke-averaged speed so the
+                // view does not lunge forward on each pull and fall back in each rest. Her own surge
+                // still shows: the follow tracks her position, only the lead is averaged.
+                if (s.BoatLeadRowedSpeedSmoothSeconds > 0f && TargetIsRowed())
+                    leadVelocity = SmoothLeadVelocity(_leadVelocity, velocity, dt, s.BoatLeadRowedSpeedSmoothSeconds);
             }
-            Vector2 desiredLookahead = LeadOffset(velocity, leadSeconds, leadCap, lagPayBack, Smooth, dt);
+            _leadVelocity = leadVelocity;
+            Vector2 desiredLookahead = LeadOffset(leadVelocity, leadSeconds, leadCap, lagPayBack, Smooth, dt);
             _lookahead = Vector2.Lerp(_lookahead, desiredLookahead,
                                       1f - Mathf.Exp(-_lookaheadSmooth * dt));
 
@@ -1269,19 +1309,7 @@ namespace HiddenHarbours.App
             _framingOrtho = Mathf.Lerp(_tweenFromOrtho, _tweenToOrtho, Mathf.SmoothStep(0f, 1f, t));
             if (_cam != null) _cam.orthographicSize = _framingOrtho;
 
-            if (t >= 1f)
-            {
-                _tweening = false;
-                if (_ppc != null)
-                {
-                    _ppc.refResolutionX = _pendingRefW;
-                    _ppc.refResolutionY = _pendingRefH;
-                    _ppc.enabled = true; // snap to the crisp, pixel-perfect new tier
-                }
-                _framingOrtho = _tweenToOrtho;
-                _ppcWantedByFraming = true;
-                if (_cam != null) _cam.orthographicSize = _tweenToOrtho;
-            }
+            if (t >= 1f) ApplyFramingHard(_worldHeightMeters);
         }
     }
 }

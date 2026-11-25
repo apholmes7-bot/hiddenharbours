@@ -111,8 +111,9 @@ namespace HiddenHarbours.Art
                  "through the water, over the floor (W4-4c). −8 leaves room either side.")]
         public int SubmergedSortingOrder = -8;
 
-        [Tooltip("Pre-sort order while EMERGENT. YSortSprite OWNS the order above water — this is " +
-                 "only the value before it first runs.")]
+        [Tooltip("NO LONGER READ (ADR 0059 step 2): while EMERGENT the plant takes the decor band's Y-sort at " +
+                 "its root (Core EffectSorting), and YSortSprite owns it from there. Kept so existing assets " +
+                 "load unchanged.")]
         public int EmergentSortingOrder = 3;
 
         /// <summary>The sprite for a baked column, or null when the Def is half-built.</summary>

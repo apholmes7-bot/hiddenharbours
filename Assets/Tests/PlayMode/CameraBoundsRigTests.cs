@@ -172,14 +172,11 @@ namespace HiddenHarbours.Tests.PlayMode
             // A pocket cove, or any region seen at a wide zoom. The camera must sit still in the
             // middle instead of flipping between edges as the target crosses.
             //
-            // ⚠️ The region must be smaller than the view on BOTH axes for BOTH to centre, and the
-            // view is not square: at the default 14 m framing it is 14 m tall but ~24.9 m wide (16:9).
-            // This fixture first used 20 × 16 m — narrower than the view across, but TALLER than it up
-            // — so y correctly CLAMPED (to 47) instead of centring, and the test failed on its own
-            // arithmetic rather than on the code. 20 × 10 m is inside the view on both axes.
-            GameServices.CurrentRegionBounds = new Rect(new Vector2(90f, 43f), new Vector2(20f, 10f)); // centre (100, 48)
-            Assert.Less(20f, HalfW * 2f, "fixture: the region is narrower than the view");
-            Assert.Less(10f, HalfH * 2f, "fixture: …and shorter than it");
+            // The 11.25 m stop is 20 m wide at 16:9. An explicit 18 x 8 m region
+            // is strictly smaller on both axes; keep the original centre (100, 48).
+            GameServices.CurrentRegionBounds = new Rect(new Vector2(91f, 44f), new Vector2(18f, 8f));
+            Assert.Less(18f, HalfW * 2f, "fixture: the region is narrower than the view");
+            Assert.Less(8f, HalfH * 2f, "fixture: and shorter than it");
             _follow.Target = _targetGo.transform;
 
             var seen = new Vector2[6];

@@ -141,20 +141,34 @@ namespace HiddenHarbours.Tests.EditMode
         {
             // Not every hull, but the spine of the progression — the boats a player actually steps
             // through. A rung that shrank would be an upgrade that cost you range.
-            string[] spine =
+            //
+            // Moved by the owner's 11-13 ruling ("bigger tanks on the fast hulls, so flat-out minutes
+            // per tank stay as today"): the meter now burns by speed, so a planing hull at the speed
+            // table's speed carries more litres than the slower workboat on the rung above her (a sport
+            // skiff's 148 L against a Cape Islander's 90). Litres no longer rank across the two kinds
+            // of hull, so the one spine is held as two: the working boats, and the fast boats.
+            string[] workingSpine =
             {
-                "boat.dory_outboard", "boat.punt", "boat.console_skiff", "boat.sport_skiff",
-                "boat.cape_islander", "boat.lobster_offshore_open_fundy",
-                "boat.sport_fisher_convertible", "boat.stern_trawler", "boat.coastal_packet", "boat.tanker",
+                "boat.dory_outboard", "boat.punt", "boat.cape_islander", "boat.lobster_offshore_open_fundy",
+                "boat.stern_trawler", "boat.coastal_packet", "boat.tanker",
+            };
+            string[] fastSpine =
+            {
+                "boat.console_skiff", "boat.sport_skiff", "boat.sport_fisher_convertible",
             };
 
-            float previous = 0f;
-            foreach (string id in spine)
+            foreach (string[] spine in new[] { workingSpine, fastSpine })
             {
-                float tank = ById(id).FuelCapacityLitres;
-                Assert.Greater(tank, previous, $"{id} carries no more fuel than the rung below her");
-                previous = tank;
+                float previous = 0f;
+                foreach (string id in spine)
+                {
+                    float tank = ById(id).FuelCapacityLitres;
+                    Assert.Greater(tank, previous, $"{id} carries no more fuel than the rung below her");
+                    previous = tank;
+                }
             }
+            Assert.Greater(ById(fastSpine[0]).FuelCapacityLitres, ById("boat.punt").FuelCapacityLitres,
+                "the first fast boat still carries more than the punt she replaces");
         }
 
         [Test]

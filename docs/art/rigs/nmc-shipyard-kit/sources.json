@@ -1,0 +1,75 @@
+{
+  "schema": "hidden-harbours/nmc-shipyard-sources@1",
+  "files": [
+    {
+      "file": "wharfRig2.geo.js",
+      "bytes": 47724,
+      "sha256": "cc295e419ea54e83bb47035cbb668a7bacda2fed0cc420466bf219f00da4a9d1"
+    },
+    {
+      "file": "wharfRig2.fam.js",
+      "bytes": 46201,
+      "sha256": "d6933679ddca834c92043f595ad13958c3e512445ba46065e63bbbf1332c299c"
+    },
+    {
+      "file": "wharfRig2.verbs.js",
+      "bytes": 25920,
+      "sha256": "e4f6cb4cc3277aa222b7e09ed9379464eb022646c8507fb4600f4ad91e6b4709"
+    },
+    {
+      "file": "wharfRig2.js",
+      "bytes": 39457,
+      "sha256": "c29219aeb9e3f36698a4a47715069343f3491922baafd5d410a2fc5fd032b4a6"
+    },
+    {
+      "file": "wharfRig2.kit.js",
+      "bytes": 34737,
+      "sha256": "e896eeeb84567c0790a6fdf5d64ff27d2e5f9fbeb2e0d5bdc17c0e4a7185fbc1"
+    },
+    {
+      "file": "marinaRig.js",
+      "bytes": 56016,
+      "sha256": "7c4733acd839b831d36cc18040b9f02de4b8236f2e96647e040a8133cde48602"
+    },
+    {
+      "file": "marinaBoats.js",
+      "bytes": 8588,
+      "sha256": "888ed44486475890354e41502a6685cbc87f193392c0554838382435beb08229"
+    },
+    {
+      "file": "bowriderIsoRig.js",
+      "bytes": 63498,
+      "sha256": "6ee22200da1cdd33154e54a0ff6a9dff7996a4c1896b5e4c46ad4dcaceff4043"
+    },
+    {
+      "file": "sportSkiffIsoRig.js",
+      "bytes": 66522,
+      "sha256": "843624c728c7019e4a3528b329be90be1eff6ca03f2eaa86f965d247c520f802"
+    },
+    {
+      "file": "lobsterBoatVariantsIsoRig.js",
+      "bytes": 67212,
+      "sha256": "ed8d0e7a43c9e8ee68f4dfc0d48919e1e162b749252a86d193d86cdaa4772795"
+    },
+    {
+      "file": "capeIslanderIsoRig.js",
+      "bytes": 43706,
+      "sha256": "009775b481758f9802515fb205af2716c7f12ba87d46f392d50804d7cd3257db"
+    },
+    {
+      "file": "shipyardRig2.js",
+      "bytes": 61024,
+      "sha256": "f228320e85e8045d73a56058aa1ff82723320ff33d62a04c99e7986228eb3fb3"
+    },
+    {
+      "file": "nmcWharf.js",
+      "bytes": 60356,
+      "sha256": "2e42f3877fcc22ff1e433c409b3642a19c8d2f50db50af6302d5b336de8138cd"
+    },
+    {
+      "file": "nmcKinds.js",
+      "bytes": 7542,
+      "sha256": "6d3f777a56dbab7b0c9f1a704360ee6d3cdf5f5482750021edcb800916290ab4"
+    }
+  ]
+}

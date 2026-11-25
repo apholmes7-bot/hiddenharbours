@@ -1,3 +1,4 @@
+using HiddenHarbours.Core;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -19,8 +20,10 @@ namespace HiddenHarbours.Fishing
     /// early-outs when nothing is live and allocates nothing.</para>
     ///
     /// <para><b>Sorting.</b> A SortingGroup ("sort as 2D") + a small camera-ward z nudge so the sprites
-    /// reliably clear the water MeshRenderer (the #134 quirk the wade splashes solved); order sits just
-    /// above the trap buoy (order 3) so the burst wraps the buoy it breaks around.</para>
+    /// reliably clear the water MeshRenderer (the #134 quirk the wade splashes solved). Each burst carries
+    /// its own group, sorted where it breaks one rung in front of the band's Y-sort there, and the buoy
+    /// sorts on that rung's anchor, so the burst wraps the buoy it breaks around (<see cref="EffectSorting"/>,
+    /// ADR 0059 step 2).</para>
     ///
     /// <para><b>Determinism (rule 5).</b> Purely cosmetic: frame stepping uses render time via the pure
     /// <see cref="FlipbookMath"/>, and nothing here reads or writes sim/saved state.</para>
@@ -30,8 +33,6 @@ namespace HiddenHarbours.Fishing
         // How many bursts can be airborne at once (round-robin; the oldest is stolen past this). A pool
         // bound, not a balance number — haul-end and a re-set are seconds apart, so 4 is generous.
         private const int PoolSize = 4;
-        // Draw just ABOVE the trap buoy (TrapBuoyPresenter draws at 3) so the burst breaks around it.
-        private const int SplashSortingOrder = 4;
         // Metres toward the camera (−z) so the sprite clears the water plane's MeshRenderer — kept small,
         // the WadeSplashEmitter convention. A render-layering constant, not a balance number.
         private const float CameraZOffset = 0.25f;
@@ -48,6 +49,7 @@ namespace HiddenHarbours.Fishing
 
         private readonly Burst[] _pool = new Burst[PoolSize];
         private SpriteRenderer[] _renderers;
+        private SortingGroup[] _groups;   // one per burst: its order is set where it breaks
         private int _cursor;
         private int _liveCount;
 
@@ -80,18 +82,17 @@ namespace HiddenHarbours.Fishing
             if (_instance != null && _instance != this) { Destroy(gameObject); return; }
             _instance = this;
 
-            // "Sort as 2D" so the pool sorts by sortingOrder against sprite content instead of world-z —
-            // without it a MeshRenderer water plane wins (the URP-2D quirk the wade splashes document).
-            var group = gameObject.AddComponent<SortingGroup>();
-            group.sortingOrder = SplashSortingOrder;
-
             _renderers = new SpriteRenderer[PoolSize];
+            _groups = new SortingGroup[PoolSize];
             for (int i = 0; i < PoolSize; i++)
             {
                 var go = new GameObject("splash");
                 go.transform.SetParent(transform, false);
                 var sr = go.AddComponent<SpriteRenderer>();
-                sr.sortingOrder = SplashSortingOrder;
+                // "Sort as 2D" so the burst sorts by order against sprite content instead of world-z —
+                // without it a MeshRenderer water plane wins (the URP-2D quirk the wade splashes document).
+                // Its order is set where it breaks (Emit).
+                _groups[i] = go.AddComponent<SortingGroup>();
                 sr.enabled = false;
                 _renderers[i] = sr;
             }
@@ -111,6 +112,7 @@ namespace HiddenHarbours.Fishing
             _pool[slot] = new Burst { Alive = true, Frames = frames, Fps = fps, Age = 0f };
 
             SpriteRenderer sr = _renderers[slot];
+            _groups[slot].sortingOrder = EffectSorting.OrderAt(SortedEffect.TrapSplash, at.y);   // ADR 0059 step 2
             sr.transform.position = new Vector3(at.x, at.y, -CameraZOffset);
             sr.sprite = frames[0];
             sr.enabled = true;

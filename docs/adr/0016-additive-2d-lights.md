@@ -622,8 +622,8 @@ PICTURE decision made on purpose — a wharf of seven working boats showing noth
 in the middle of the harbour at two in the morning — and the lie it tells is the opposite of the dangerous
 one.
 
-**What it prevents, concretely.** Nine Mile Creek moors seven owned boats against the wharf wall and the
-review anchorage holds every hull that has art. Without the regime, `MakeLit`/`MakeSearchlit` as written
+**What it prevents, concretely.** Nine Mile Creek moors seven owned boats against the wharf wall.
+Without the regime, `MakeLit`/`MakeSearchlit` as written
 would have lit every one of them with sidelights, mastheads and a burning searchlight, all night.
 
 ### The searchlight's owner — asked of the helm slot, answered by the BOAT

@@ -17,6 +17,15 @@ namespace HiddenHarbours.World
         public const string ReadLogbookKey = "read_logbook";
         public const string OnboardedKey   = "onboarded";
 
+        // Two steps of the opening are things that HAPPENED and leave nothing behind to read: the
+        // first catch is sold and gone, and SaveData.OwnedBoats cannot say "bought" (it also takes
+        // every hull the player has had the helm of, the free St Peters dory among them). Without a
+        // record the note after Continue would send her back to dig clams she has already sold, or to
+        // buy a dory she has already paid for. So each is a key in this same flag list, written when
+        // the Core signal arrives. Keys in the existing list only: the save's shape is untouched.
+        public const string LandedCatchKey = "landed_first_catch";
+        public const string BoughtDoryKey  = "bought_damaged_dory";
+
         // ⭐ A FOURTH FLAG LIVES IN THIS SAME STORE AND IS NOT DECLARED HERE:
         // HiddenHarbours.App.ArrivalOpening.ArrivedFlagKey ("arrived_st_peters"), which says the player
         // has been piloted in (owner's ruling, 2026-08-19 — the opening's step ZERO, the one before
@@ -35,6 +44,8 @@ namespace HiddenHarbours.World
         public bool MetGinny    { get => _store.Get(MetGinnyKey);    set => _store.Set(MetGinnyKey, value); }
         public bool ReadLogbook { get => _store.Get(ReadLogbookKey); set => _store.Set(ReadLogbookKey, value); }
         public bool Onboarded   { get => _store.Get(OnboardedKey);   set => _store.Set(OnboardedKey, value); }
+        public bool LandedCatch { get => _store.Get(LandedCatchKey); set => _store.Set(LandedCatchKey, value); }
+        public bool BoughtDory  { get => _store.Get(BoughtDoryKey);  set => _store.Set(BoughtDoryKey, value); }
 
         /// <summary>Read a flag by its stable key (e.g. an Interactable's completion flag).</summary>
         public bool Get(string key) => !string.IsNullOrEmpty(key) && _store.Get(key);

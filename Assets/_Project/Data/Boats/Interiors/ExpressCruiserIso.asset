@@ -48,6 +48,8 @@ MonoBehaviour:
       - {x: -0.37, y: -0.76}
       HeightMetres: 1.17
       RouteId: companionway
+    OpeningMode: 0
+    OpeningReason: 
     Id: companionway
     Side: aft
     ClearWidthMeters: 0.64
@@ -73,6 +75,7 @@ MonoBehaviour:
     CueMillisecondsPerFrame: 0
     CueReversedOnExit: 1
   AdditionalDoors: []
+  InternalPassages: []
   Anchors:
   - Id: helm
     Action: enter_helm

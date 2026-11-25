@@ -1,4 +1,5 @@
 using UnityEngine;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Art
 {
@@ -28,26 +29,54 @@ namespace HiddenHarbours.Art
     /// nothing here is saved or randomised.</para>
     /// </summary>
     [CreateAssetMenu(menuName = "Hidden Harbours/Lighting/Day-Night Profile", fileName = "DayNightProfile")]
-    public sealed class DayNightProfile : ScriptableObject
+    public sealed class DayNightProfile : DaylightHours
     {
+        // Preserve the old 17:00 solar position: a 16-hour day leaves 16 * (3/14) hours to sunset.
+        public const float DefaultWarmKeyBeforeSunsetHours = 24f / 7f;
+
+        [Tooltip("Hours before the published sunset when the warm tint key (solar phase 0.75) peaks. " +
+                 "Moves colour timing without moving the sun's sunrise or sunset.")]
+        [SerializeField, Min(0f)] private float _warmKeyBeforeSunsetHours = DefaultWarmKeyBeforeSunsetHours;
+
+        // The warm key holds through the summer evening and only sinks into night blue over the last hour
+        // before NightHour; a blend spanning the whole warm-to-night stretch made 19:00-21:00 a dark red.
+        public const float DefaultNightBlendHours = 1f;
+
+        [Tooltip("Hours before NightHour over which the day tint sinks from the warm sunset key into the " +
+                 "night blue. Before that the warm key holds. A value at or above the gap between the warm " +
+                 "key and NightHour gives the old behaviour (one long blend from the warm key to night).")]
+        [SerializeField, Min(0f)] private float _nightBlendHours = DefaultNightBlendHours;
+
+        // The sunset glow (owner, 2026-11-21: a clear evening must read as a SUNSET). The golden hold above keeps
+        // 18:00-20:00 a golden evening; the glow then warms the light toward red-rose as the sun meets the sea and
+        // lets it go again by NightHour, so the last hour before dark is the sunset and not a khaki haze.
+        public static readonly Color DefaultSunsetGlowTint = new Color(1.00f, 0.50f, 0.45f, 1f);
+        public const float DefaultSunsetGlowStrength = 1f;
+        public const float DefaultSunsetGlowLeadHours = 2f;
+
+        [Header("Sunset glow (the light reddens as the sun meets the sea)")]
+        [Tooltip("The colour the day tint is pulled toward at the published sunset: the red-rose of a clear " +
+                 "North-Atlantic sunset. Keep its luminance at or below the warm key so the evening only ever darkens.")]
+        [SerializeField] private Color _sunsetGlowTint = DefaultSunsetGlowTint;
+        [Tooltip("How far the tint reaches the glow colour at the sunset hour (0 = no glow, the golden hold alone).")]
+        [Range(0f, 1f)] [SerializeField] private float _sunsetGlowStrength = DefaultSunsetGlowStrength;
+        [Tooltip("Hours before sunset over which the glow rises (smoothly) from nothing to its strength. After " +
+                 "sunset it falls away again by NightHour while the night blend takes the light to blue.")]
+        [SerializeField, Min(0f)] private float _sunsetGlowLeadHours = DefaultSunsetGlowLeadHours;
+
         [Header("Day tint (the whole-screen multiply colour over 24h)")]
-        [Tooltip("The global MULTIPLY colour across the day fraction (0 = midnight, 0.5 = noon, 1 = " +
+        [Tooltip("The global MULTIPLY colour across the solar phase (0 = midnight, 0.5 = solar noon, 1 = " +
                  "midnight). Warm + low at dawn, bright neutral/cool at noon, orange-red at dusk, dark " +
                  "BLUE + low at night. The whole scene (sprites, water, grass) is multiplied by this, so " +
                  "a dark night swatch genuinely darkens everything — boat lights will matter (P1).")]
         [SerializeField] private Gradient _skyTint = new Gradient();
 
-        [Tooltip("Overall brightness across the day fraction (0..1), multiplied into the tint above. Lets " +
+        [Tooltip("Overall brightness across the solar phase (0..1), multiplied into the tint above. Lets " +
                  "you dim the night HARD (toward 0) without changing the tint hue. Leave flat at 1 to let " +
                  "the gradient carry all the brightness, or pull the night down here for a darker night.")]
         [SerializeField] private AnimationCurve _intensity = AnimationCurve.Linear(0f, 1f, 1f, 1f);
 
         [Header("Sun arc (drives specular now, shadows in PR 2)")]
-        [Tooltip("Hour the sun crosses the horizon at dawn (0..24). Before this it is night.")]
-        [Range(0f, 24f)] [SerializeField] private float _sunriseHour = 6f;
-        [Tooltip("Hour the sun crosses the horizon at dusk (0..24). After this it is night. Keep " +
-                 "sunrise < sunset; solar noon sits halfway between.")]
-        [Range(0f, 24f)] [SerializeField] private float _sunsetHour = 20f;
         [Tooltip("How far north (up the screen) every shadow leans even at a low sun — the sun sits in " +
                  "the SOUTH, so shadows always have a slight northward tilt. 0 = shadows run dead E↔W at " +
                  "dawn/dusk.")]
@@ -90,11 +119,27 @@ namespace HiddenHarbours.Art
                  "steer by; the 0.05 it replaces was a lift you had to be told about.")]
         [Range(0f, 1f)] [SerializeField] private float _moonlightLiftMax = 0.45f;
 
+        [Header("Lamps (the shared night gate every lamp, window and neon glow passes through)")]
+        [Tooltip("Frame darkness (1 - the day tint's luminance) at or below which EVERY gated lamp is fully " +
+                 "OFF, whatever its own threshold. Clear noon is ~0.20, an overcast noon ~0.35, so 0.40 keeps " +
+                 "every lamp dark through any daylight.\n\nOWNER RULING 2026-11-14: \"Lamps should not glow at noon.\"")]
+        [Range(0f, 1f)] [SerializeField] private float _lampsOffDarkness = DefaultLampsOffDarkness;
+        [Tooltip("Frame darkness from which every gated lamp may reach full. Late dusk (21:25) is ~0.63 and a " +
+                 "moonlit night ~0.62, so 0.60 has every lamp full by late dusk. A lamp whose own ramp is darker " +
+                 "than this keeps it.")]
+        [Range(0f, 1f)] [SerializeField] private float _lampsOnDarkness = DefaultLampsOnDarkness;
+
+        public const float DefaultLampsOffDarkness = 0.40f;
+        public const float DefaultLampsOnDarkness = 0.60f;
+
         // ---- read-only accessors (the controller + DayNightMath read these) ----
+        public float WarmKeyBeforeSunsetHours => _warmKeyBeforeSunsetHours;
+        public float NightBlendHours => _nightBlendHours;
+        public Color SunsetGlowTint => _sunsetGlowTint;
+        public float SunsetGlowStrength => _sunsetGlowStrength;
+        public float SunsetGlowLeadHours => _sunsetGlowLeadHours;
         public Gradient SkyTint => _skyTint;
         public AnimationCurve Intensity => _intensity;
-        public float SunriseHour => _sunriseHour;
-        public float SunsetHour => _sunsetHour;
         public float ShadowSouthBias => _shadowSouthBias;
         public float ShadowNoonLift => _shadowNoonLift;
         public float FogVisibilityForFullDim => _fogVisibilityForFullDim;
@@ -104,6 +149,8 @@ namespace HiddenHarbours.Art
         public float OvercastFadesShadow => _overcastFadesShadow;
         public Color MoonlightTint => _moonlightTint;
         public float MoonlightLiftMax => _moonlightLiftMax;
+        public float LampsOffDarkness => _lampsOffDarkness;
+        public float LampsOnDarkness => _lampsOnDarkness;
 
         /// <summary>
         /// Author the shipped defaults onto a fresh asset (called from <see cref="Reset"/> in the editor and
@@ -113,7 +160,7 @@ namespace HiddenHarbours.Art
         /// </summary>
         public void ApplyDefaults()
         {
-            // Day fraction keys: 0 = midnight, 0.25 = dawn, 0.5 = noon, 0.75 = dusk, 1 = midnight.
+            // Solar keys: .20 first light, .32 full morning, .50 solar noon, .75 warm peak before sunset, .80 night.
             _skyTint = new Gradient
             {
                 // NOTE: Unity Gradient allows a MAXIMUM of 8 colour keys. Keep this at <= 8.
@@ -121,11 +168,11 @@ namespace HiddenHarbours.Art
                 {
                     new GradientColorKey(new Color(0.12f, 0.16f, 0.34f), 0.00f), // deep night blue
                     new GradientColorKey(new Color(0.18f, 0.22f, 0.40f), 0.20f), // pre-dawn
-                    new GradientColorKey(new Color(0.95f, 0.66f, 0.45f), 0.27f), // warm low sunrise
-                    new GradientColorKey(new Color(1.00f, 0.98f, 0.95f), 0.45f), // bright neutral morning
-                    new GradientColorKey(new Color(0.98f, 1.00f, 1.00f), 0.50f), // cool bright noon
-                    new GradientColorKey(new Color(1.00f, 0.55f, 0.32f), 0.74f), // orange-red sunset
-                    new GradientColorKey(new Color(0.30f, 0.24f, 0.40f), 0.80f), // dusk purple
+                    new GradientColorKey(new Color(0.95f, 0.66f, 0.45f), 0.25f), // warm low sunrise
+                    new GradientColorKey(new Color(1.00f, 0.98f, 0.95f), 0.32f), // bright neutral morning
+                    new GradientColorKey(new Color(0.98f, 1.00f, 1.00f), 0.70f), // cool bright noon
+                    new GradientColorKey(new Color(1.00f, 0.75f, 0.56f), 0.75f), // golden-rose sunset
+                    new GradientColorKey(new Color(0.12f, 0.16f, 0.34f), 0.80f), // dusk purple
                     new GradientColorKey(new Color(0.12f, 0.16f, 0.34f), 1.00f), // back to night blue
                 },
                 alphaKeys = new[]
@@ -138,18 +185,20 @@ namespace HiddenHarbours.Art
             // around dawn to 1 across the day and back down by dusk.
             _intensity = new AnimationCurve(
                 new Keyframe(0.00f, 0.18f),
-                new Keyframe(0.22f, 0.20f),
-                new Keyframe(0.30f, 0.85f),
-                new Keyframe(0.50f, 1.00f),
-                new Keyframe(0.70f, 0.90f),
-                new Keyframe(0.80f, 0.30f),
-                new Keyframe(0.88f, 0.18f),
+                new Keyframe(0.20f, 0.20f),
+                new Keyframe(0.25f, 0.65f),
+                new Keyframe(0.32f, 1.00f),
+                new Keyframe(0.70f, 1.00f),
+                new Keyframe(0.75f, 0.55f),
+                new Keyframe(0.80f, 0.18f),
                 new Keyframe(1.00f, 0.18f));
-            for (int i = 0; i < _intensity.length; i++)
-                _intensity.SmoothTangents(i, 0f);
 
-            _sunriseHour = 6f;
-            _sunsetHour = 20f;
+            ApplyHourDefaults();
+            _warmKeyBeforeSunsetHours = DefaultWarmKeyBeforeSunsetHours;
+            _nightBlendHours = DefaultNightBlendHours;
+            _sunsetGlowTint = DefaultSunsetGlowTint;
+            _sunsetGlowStrength = DefaultSunsetGlowStrength;
+            _sunsetGlowLeadHours = DefaultSunsetGlowLeadHours;
             _shadowSouthBias = 0.2f;
             _shadowNoonLift = 0.9f;
             _fogVisibilityForFullDim = 0.15f;
@@ -164,6 +213,8 @@ namespace HiddenHarbours.Art
             // which used to lift the 02:00 tint by 5 % and now lifts it by 45 %: a silver-blue sea whose
             // crests and shore you can steer by.
             _moonlightLiftMax = 0.45f;
+            _lampsOffDarkness = DefaultLampsOffDarkness;
+            _lampsOnDarkness = DefaultLampsOnDarkness;
         }
 
         /// <summary>

@@ -45,9 +45,12 @@ namespace HiddenHarbours.Art
             Shader.SetGlobalColor(IdColor, color);
             Shader.SetGlobalVector(IdParams,
                 new Vector4(Mathf.Max(0f, intensity), Mathf.Max(0.01f, range), cosHalfAngle, cosInnerAngle));
+            // The shared lamp band rides in the ramp: the water reads these too and is hash-pinned
+            // (LightMath.BandedGateRamp); SpriteLitDecor's banded gate is idempotent over it.
+            Vector2 ramp = LightMath.BandedGateRamp(gateThreshold, gateSoftness);
             Shader.SetGlobalVector(IdParams2,
-                new Vector4(Mathf.Clamp01(edgeSoftness), Mathf.Clamp01(gateThreshold),
-                            Mathf.Clamp01(gateSoftness), Mathf.Clamp01(gateFallback)));
+                new Vector4(Mathf.Clamp01(edgeSoftness), Mathf.Clamp01(ramp.x),
+                            Mathf.Clamp01(ramp.y), Mathf.Clamp01(gateFallback)));
         }
 
         /// <summary>Publish a lamp straight off a <see cref="WaterLightState"/> — the packing the water

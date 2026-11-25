@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b51978faec4dbb8e54e23107a97ef5, type: 3}
+  m_Name: SetPiece_nmc_wallStairs
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: structure.nmc_wall_stairs
+  DisplayName: 'Stairs up the river wall'
+  RigKey: wallStairs
+  SceneId: keyscene.nmc_town_bridge
+  BakedOptionsJson: '{}'
+  Layer: raised
+  Walk: stairs
+  Mount: wall
+  BoundsMin: {x: -1.05, y: -5.04, z: 0}
+  BoundsMax: {x: 1.05, y: 0.05, z: 4.269}
+  Frames: []
+  CellSize: {x: 0, y: 0}
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders: []
+  Anchors:
+  - Name: foot
+    Position: {x: 0, y: -5.040000000000001, z: 0}
+  - Name: head
+    Position: {x: 0, y: 0, z: 3.3}
+  Path: []
+  TideMarks: []
+  Words: []
+  HasLight: 0
+  Light:
+    Emitters: []
+    When: ''
+  IsAnimated: 0
+  GameplayJson: '{"schema":"hidden-harbours/nmc-set-piece@1","generatedBy":"NmcSetPieces 1.2.0","key":"wallStairs","id":"structure.nmc_wall_stairs","name":"Stairs up the river wall","defType":"SetPieceDef","scene":"keyscene.nmc_town_bridge","units":"metres, the piece\u2019s own frame: +x right, +y the show face, +z up from its ground point (the pivot)","bounds":{"x":[-1.05,1.05],"y":[-5.04,0.05],"z":[0,4.269]},"layer":"raised","walk":"stairs","mount":"wall","colliders":[],"facings":[{"dir":0,"showFaces":"N","bearingDeg":0,"cameraSees":"its back"},{"dir":1,"showFaces":"NW","bearingDeg":315,"cameraSees":"its back"},{"dir":2,"showFaces":"W","bearingDeg":270,"cameraSees":"the show face, edge-on or at a diagonal"},{"dir":3,"showFaces":"SW","bearingDeg":225,"cameraSees":"the show face"},{"dir":4,"showFaces":"S","bearingDeg":180,"cameraSees":"the show face"},{"dir":5,"showFaces":"SE","bearingDeg":135,"cameraSees":"the show face"},{"dir":6,"showFaces":"E","bearingDeg":90,"cameraSees":"the show face, edge-on or at a diagonal"},{"dir":7,"showFaces":"NE","bearingDeg":45,"cameraSees":"its back"}],"cells":[{"dir":0,"w":75,"h":218,"pivot":[37,107]},{"dir":1,"w":170,"h":214,"pivot":[28,118]},{"dir":2,"w":170,"h":152,"pivot":[5,123]},{"dir":3,"w":170,"h":143,"pivot":[28,119]},{"dir":4,"w":75,"h":138,"pivot":[37,129]},{"dir":5,"w":170,"h":143,"pivot":[141,119]},{"dir":6,"w":170,"h":152,"pivot":[165,123]},{"dir":7,"w":170,"h":214,"pivot":[141,118]}],"anchors":{"foot":[0,-5.040000000000001,0],"head":[0,0,3.3],"steps":18,"riser":0.183,"going":0.28,"px":{"foot":[37,25.3],"head":[37,48.1]}},"options":{"rise":3.3,"width":1.5,"going":0.28,"yaw":0},"light":null,"notes":"Stand it on the bench at the wall\u2019s face (z = the bench). Walkable as stairs from foot to head."}'
+  State: ''
+  Variants: []
+  HasVendor: 0

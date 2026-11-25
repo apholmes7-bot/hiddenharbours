@@ -85,6 +85,16 @@ namespace HiddenHarbours.Tests.UI.EditMode
             Assert.IsNotEmpty(BuildInfo.StampLine);
         }
 
+        // ---- the wordmark -------------------------------------------------------------------
+
+        [Test]
+        public void TheWordmark_IsTheGamesTitle()
+        {
+            Assert.AreEqual("Red Skies At Night", ShellStrings.GameTitle,
+                "the title page's heading is the game's title, the same words the built player " +
+                "ships under");
+        }
+
         // ---- the promise the wash makes ------------------------------------------------------
 
         [Test]

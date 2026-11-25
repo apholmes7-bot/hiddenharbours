@@ -37,30 +37,13 @@ namespace HiddenHarbours.Tests.PlayMode
                 cam.targetTexture = rt;
                 cam.aspect = 1280f / 720f;
                 cam.orthographicSize = 25;
-                cam.transform.position = new Vector3(132, 85, oldPosition.z);
                 foreach (double time in Tides)
                 {
-                    yield return Seek(time, 120);
-                    Time.timeScale = 0;
-                    // Same camera, same frame. Removing only wake foam identifies the offending layer;
-                    // white hull paint, reflections and sky highlights cancel rather than counting as foam.
-                    Color[] on = Capture(cam, rt);
+                    yield return Seek(time, 8);
                     var renderers = Resources.FindObjectsOfTypeAll<Renderer>().Where(r =>
                         r.gameObject.scene == Loaded && r.sharedMaterial != null &&
                         r.sharedMaterial.HasProperty("_WakeFoamStrength")).ToArray();
                     Assert.Greater(renderers.Length, 1, "Include the hidden displaced-water chunks, not just disabled Sea.");
-                    var oldBlocks = renderers.Select(r => { var b = new MaterialPropertyBlock(); r.GetPropertyBlock(b); return b; }).ToArray();
-                    Color[] off;
-                    try
-                    {
-                        foreach (Renderer r in renderers)
-                        {
-                            var b = new MaterialPropertyBlock(); r.GetPropertyBlock(b);
-                            b.SetFloat("_WakeFoamStrength", 0); r.SetPropertyBlock(b);
-                        }
-                        off = Capture(cam, rt);
-                    }
-                    finally { for (int i = 0; i < renderers.Length; i++) renderers[i].SetPropertyBlock(oldBlocks[i]); }
                     var failures = new List<string>();
                     foreach (var boat in Fleet)
                     {
@@ -69,22 +52,49 @@ namespace HiddenHarbours.Tests.PlayMode
                         Assert.IsNotNull(injector, boat.Owner.Id + " has no foam source to inspect");
                         Assert.IsTrue(source != null && source.TryGetWakePose(out _), boat.Owner.Id + " has no drawn stern");
                         source.TryGetWakePose(out HullWakePose pose);
+                        // The resident fleet lies along the whole wall (14 berths) and at the float (8): wider
+                        // than one 1280x720 frame at this scale, so one fixed framing left the outer berths out
+                        // of frame. Each hull is framed on its own drawn stern at the same scale. The foam
+                        // buffer's window follows the camera, so the creek runs the same 120 frames after each
+                        // move (game clock still held at the tide) before the frozen capture.
+                        cam.transform.position = new Vector3(pose.DrawnStern.x, pose.DrawnStern.y, oldPosition.z);
+                        Time.timeScale = 1;
+                        for (int f = 0; f < 120; f++) yield return null;
+                        Time.timeScale = 0;
+                        source.TryGetWakePose(out pose);
+                        // Same camera, same frame. Removing only wake foam identifies the offending layer;
+                        // white hull paint, reflections and sky highlights cancel rather than counting as foam.
+                        Color[] on = Capture(cam, rt);
+                        var oldBlocks = renderers.Select(r => { var b = new MaterialPropertyBlock(); r.GetPropertyBlock(b); return b; }).ToArray();
+                        Color[] off;
+                        try
+                        {
+                            foreach (Renderer r in renderers)
+                            {
+                                var b = new MaterialPropertyBlock(); r.GetPropertyBlock(b);
+                                b.SetFloat("_WakeFoamStrength", 0); r.SetPropertyBlock(b);
+                            }
+                            off = Capture(cam, rt);
+                        }
+                        finally { for (int i = 0; i < renderers.Length; i++) renderers[i].SetPropertyBlock(oldBlocks[i]); }
                         Vector3 centre = cam.WorldToViewportPoint(pose.DrawnStern);
                         Assert.That(centre.x, Is.InRange(0f, 1f), boat.Owner.Id + " is out of frame");
                         Assert.That(centre.y, Is.InRange(0f, 1f), boat.Owner.Id + " is out of frame");
                         float cx = centre.x * rt.width, cy = centre.y * rt.height;
                         float radius = injector.RadiusMeters * rt.height / (2 * cam.orthographicSize);
-                        int pale = 0;
+                        int pale = 0, foamed = 0;
                         for (int y = Mathf.Max(0, Mathf.FloorToInt(cy-radius)); y <= Mathf.Min(rt.height-1, Mathf.CeilToInt(cy+radius)); y++)
                         for (int x = Mathf.Max(0, Mathf.FloorToInt(cx-radius)); x <= Mathf.Min(rt.width-1, Mathf.CeilToInt(cx+radius)); x++)
                         {
                             if ((x-cx)*(x-cx)+(y-cy)*(y-cy) > radius*radius) continue;
                             Color a = on[y*rt.width+x], b = off[y*rt.width+x];
+                            if (Mathf.Abs(a.r-b.r) + Mathf.Abs(a.g-b.g) + Mathf.Abs(a.b-b.b) > .02f) foamed++;
                             // Linear RGB > .5 is a visibly pale patch; > .15 contribution separates
                             // an actual foam disc from readback rounding at a shared edge.
                             if (a.r > .5f && a.g > .5f && a.b > .5f &&
                                 a.r-b.r > .15f && a.g-b.g > .15f && a.b-b.b > .15f) pale++;
                         }
+                        TestContext.WriteLine($"t={time} {boat.Owner.Id}: {foamed} px carry wake foam, {pale} pale");
                         if (pale > 0) failures.Add(boat.Owner.Id + ": " + pale + " pale wake pixels");
                     }
                     Assert.IsEmpty(failures, "Pale discs at t=" + time + ": " + string.Join("; ", failures));

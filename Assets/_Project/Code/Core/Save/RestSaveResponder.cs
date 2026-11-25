@@ -27,6 +27,27 @@ namespace HiddenHarbours.Core
     /// them there instead of at the authored spawn. A rest in a context with no region reported records
     /// nothing and still saves the day — see <see cref="AnchorFor"/>.</para>
     ///
+    /// <para><b>It brings the morning first, and THEN writes.</b> A rest is fulfilled in one fixed order:
+    /// the clock is fast-forwarded to the next wake hour (<see cref="RestMorning"/>; the day rollover
+    /// fires on the way, so the market has recovered and the tide has moved), the rest anchor is
+    /// stamped, and only then is the save written. The order is the feature: the write snapshots the
+    /// clock, so a save taken before the morning would reload into last night, and a reload must wake
+    /// on the same morning the player just saw. This type still moves no clock itself. It asks the
+    /// <see cref="IGameClock"/> contract, and a clock that refuses (the hour is held, or there is no
+    /// clock) leaves the rest exactly the save-only beat it was before.</para>
+    ///
+    /// <para><b>The light changes under a dark screen.</b> The night is hours of light gone in one
+    /// call, and seen bare it reads as a fault. So the same order is wrapped in the screen cover the
+    /// game already has: <see cref="RegionTravelCover"/> is raised held (the screen is black from that
+    /// instant), the clock moves and the save is written under it, and the cover is released, which
+    /// is what starts its fade back to clear over the cover's own duration. All of it is one
+    /// synchronous call inside the frame of the press, so there is no wait to bound and nothing to
+    /// time out: no frame is ever drawn with the clock half moved, and the release sits in a
+    /// <c>finally</c> so a throwing save cannot leave the screen black. Nobody listening (a test rig,
+    /// a scene with no cover) is a legal outcome and leaves the rest exactly as it was. The dark
+    /// arrives as a cut, as it does on a region crossing; the cover has no fade TO black, and this
+    /// type does not grow one.</para>
+    ///
     /// <para><b>Refusal is a normal outcome, not a fault.</b> A save asked for at the title is refused by
     /// the service's own write gate, and a context with no save service at all (EditMode, a bare region
     /// scene opened for review) has nothing to write to. Both answer with an <c>Ok:false</c>
@@ -38,6 +59,11 @@ namespace HiddenHarbours.Core
         /// <summary>What the player is told when the save landed. Public so the test asserts on the
         /// contract rather than on a re-typed string literal.</summary>
         public const string SavedText = "You turn in. The day is kept.";
+
+        /// <summary>What the player is told when the rest brought the morning AND the save landed: the
+        /// ordinary outcome in play. <see cref="SavedText"/> remains the answer when the clock did not
+        /// move (a held hour, a context with no clock).</summary>
+        public const string WokeText = "You sleep through to morning. The day is kept.";
 
         /// <summary>What the player is told when there is no save service to write to.</summary>
         public const string NoServiceText = "You lie down a while, but nothing here keeps the day.";
@@ -64,7 +90,16 @@ namespace HiddenHarbours.Core
             Installed = false;
         }
 
-        static void OnRestRequested(RestSaveRequested request) => Fulfil(request);
+        /// <summary>
+        /// With a chooser present the player picks how long to sleep (<see cref="SleepFlow"/>, owner ruling
+        /// 2026-11-15); without one (a test rig, a scene with no chooser) the rest is the instant night,
+        /// which sleeps the same default length and leaves the same world behind.
+        /// </summary>
+        static void OnRestRequested(RestSaveRequested request)
+        {
+            if (SleepFlow.ChooserPresent) SleepFlow.Begin(request);
+            else Fulfil(request);
+        }
 
         /// <summary>
         /// Do the write and report it. Public so a test can drive the whole contract as a pure call,
@@ -77,11 +112,42 @@ namespace HiddenHarbours.Core
         /// </summary>
         public static GameSaved Fulfil(RestSaveRequested request)
         {
-            ISaveService save = GameServices.Save;
+            IGameClock clock = GameServices.Clock;
+            GameConfig config = GameServices.Config;
 
-            GameSaved outcome = save == null
-                ? new GameSaved(false, NoServiceText)
-                : Write(save, request);
+            // Dark BEFORE the clock moves. The cover is asked for only when the morning is actually
+            // coming: a held hour or a clockless context changes no light and so hides nothing.
+            bool covered = RestMorning.WillBring(clock, config);
+            if (covered) EventBus.Publish(new RegionTravelCover(true));
+
+            GameSaved outcome;
+            try
+            {
+                // The morning comes FIRST: the write below snapshots the clock, and a reload must wake
+                // on the morning the player just saw. It comes whether or not anything here can keep
+                // the day, because sleeping and saving are two things and only one of them needs a disk.
+                // Owner ruling 2026-11-15: never more than eight hours. Turned in at night this is the
+                // morning, exactly as before; turned in at noon it is eight hours on (SleepPlan).
+                double bedtime = ClockSeconds(clock);
+                bool woke = SleepPlan.SleepDefault(clock, config);
+                // The sleep need is relieved here, and ONLY here: after the clock has moved (so a night
+                // slept is a night, whatever the hour you lay down) and before the write below (so the
+                // reload wakes rested, the same morning the player just saw). Gated on `woke`: a held
+                // hour saves the day but sleeps no night. Both the bed ashore and the bunk aboard
+                // (owner 2026-11-14: "bunks on boats sleepable to replenish fatigue") arrive here as the
+                // same RestSaveRequested, so neither has its own call and the rule cannot drift apart.
+                // Relief in proportion to the hours actually slept (owner ruling 2026-11-15).
+                if (woke) GameServices.Needs.SleepSince(bedtime);
+
+                bool morning = woke && ClockSeconds(clock) == RestMorning.WakeSeconds(bedtime, config);
+                outcome = Keep(request, woke, morning ? WokeText : SleepFlow.RestedText);
+            }
+            finally
+            {
+                // Released on EVERY path out, a throwing save included: a cover that is held and never
+                // let go is a black screen the player cannot leave.
+                if (covered) EventBus.Publish(new RegionTravelCover(false));
+            }
 
             EventBus.Publish(outcome);
             return outcome;
@@ -104,9 +170,63 @@ namespace HiddenHarbours.Core
         /// public so the whole rule is assertable without a scene.</para>
         /// </summary>
         public static RestAnchor AnchorFor(in RestSaveRequested request, string currentRegionId) =>
-            string.IsNullOrEmpty(currentRegionId)
+            request.WakesAtSpawn || string.IsNullOrEmpty(currentRegionId)
                 ? RestAnchor.None
                 : new RestAnchor(currentRegionId, request.WakePosition, request.WakeLevel);
+
+        /// <summary>
+        /// Put this request's answer to "where do I wake?" into <paramref name="save"/>: the anchor it
+        /// names, or — for a rest that records none (<see cref="RestSaveRequested.WakesAtSpawn"/>, the
+        /// bunk aboard) — NO anchor at all.
+        ///
+        /// <para><b>Why the bunk forgets rather than stamps <see cref="RestAnchor.None"/>.</b>
+        /// <see cref="RestLocker.Stamp"/> refuses an unset anchor on purpose (a bed that could not name
+        /// its region must not erase a good one), so stamping None would leave LAST night's bed in the
+        /// file and the reload would wake the player in a bed they never lay down in. The bunk's rest
+        /// genuinely means "wake at the spawn", which is exactly what <see cref="RestLocker.Forget"/>
+        /// exists to say. Public so the rule is assertable without a write.</para>
+        /// </summary>
+        public static void RecordWake(SaveData save, in RestSaveRequested request, string currentRegionId)
+            => RecordWake(save, request, currentRegionId, ClockSeconds(GameServices.Clock));
+
+        /// <summary>
+        /// <see cref="RecordWake(SaveData, in RestSaveRequested, string)"/> with the wake instant given:
+        /// the whole <see cref="SleepPlace"/> (anchor, bed id, wake time, and the boat's pose for a bunk
+        /// aboard) is stamped as one, or the place is forgotten for a <see cref="RestSaveRequested.WakesAtSpawn"/>
+        /// rest. Owner ruling 2026-11-15: "a sleep is a save" — the save records where and when.
+        /// </summary>
+        public static void RecordWake(SaveData save, in RestSaveRequested request, string currentRegionId,
+                                      double wokeAtSeconds)
+        {
+            if (request.WakesAtSpawn)
+            {
+                RestLocker.Forget(save);
+                return;
+            }
+            RestLocker.StampPlace(save, PlaceFor(request, currentRegionId, wokeAtSeconds));
+        }
+
+        /// <summary>
+        /// The full place this request names: <see cref="AnchorFor"/>'s anchor plus the bed id, the wake
+        /// instant and, aboard, the boat's pose in the same region. <see cref="SleepPlace.None"/> exactly
+        /// when the anchor is (no region reported, or a rest that wakes at the spawn). Pure.
+        /// </summary>
+        public static SleepPlace PlaceFor(in RestSaveRequested request, string currentRegionId, double wokeAtSeconds)
+        {
+            RestAnchor anchor = AnchorFor(request, currentRegionId);
+            if (!anchor.IsSet) return SleepPlace.None;
+            return new SleepPlace(anchor, request.BedId, wokeAtSeconds, request.Aboard, request.BoatHullId,
+                                  anchor.Region, request.BoatPosition, request.BoatRotationDegrees);
+        }
+
+        /// <summary>The clock's reading, or 0 with no living clock. Explicit Unity null check: a destroyed
+        /// clock behind the interface is not C#-null.</summary>
+        internal static double ClockSeconds(IGameClock clock)
+        {
+            if (clock == null) return 0d;
+            if (clock is UnityEngine.Object unityObject && unityObject == null) return 0d;
+            return clock.TotalSeconds;
+        }
 
         /// <summary>
         /// Ask the service to write, and read back whether it did.
@@ -121,17 +241,31 @@ namespace HiddenHarbours.Core
         /// <c>Save</c>) and this PR is not the place for it — the failure it hides is "the player pressed
         /// rest while at the title", which they cannot do from inside a bedroom.</para>
         /// </summary>
-        static GameSaved Write(ISaveService save, in RestSaveRequested request)
+        /// <summary>
+        /// Stamp the place and write, or say there is nowhere to keep the day. <paramref name="wokeText"/>
+        /// is the line for a sleep that moved the clock; one that did not is <see cref="SavedText"/>.
+        /// Shared by the instant night (<see cref="Fulfil"/>) and the chosen one (<see cref="SleepFlow.Wake"/>)
+        /// so the write cannot drift between them. Publishes nothing: the caller does.
+        /// </summary>
+        internal static GameSaved Keep(in RestSaveRequested request, bool woke, string wokeText)
+        {
+            ISaveService save = GameServices.Save;
+            return save == null
+                ? new GameSaved(false, NoServiceText)
+                : Write(save, request, woke ? wokeText : SavedText);
+        }
+
+        static GameSaved Write(ISaveService save, in RestSaveRequested request, string keptText)
         {
             // Where you slept goes in BEFORE the write, because the write is what makes it durable —
             // stamping after it would keep the anchor only until the next save happened to run, and the
             // next save is an autosave on quit, which is the exact moment the player expects this to
             // have worked.
-            RestLocker.Stamp(save.Current, AnchorFor(request, GameServices.CurrentRegionId));
+            RecordWake(save.Current, request, GameServices.CurrentRegionId);
 
             save.Save();
             return save.LoadedExistingSave
-                ? new GameSaved(true, SavedText)
+                ? new GameSaved(true, keptText)
                 : new GameSaved(false, NoServiceText);
         }
     }

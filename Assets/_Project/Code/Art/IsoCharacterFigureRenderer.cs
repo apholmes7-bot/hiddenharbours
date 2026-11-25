@@ -28,10 +28,12 @@ namespace HiddenHarbours.Art
     /// never moves for her. There is a test that says so.</para>
     ///
     /// <para><b>ASHORE — and only through <see cref="EnterAshore"/> — she takes ONE figure id</b>
-    /// (<see cref="IsoFacetHullRegistry.RegisterFigure"/>). A single, from the singles stack only, so
-    /// it can never be a recycled fore block nor become one; never the shared overflow id 255; and
-    /// REFUSED at exhaustion, in which case <see cref="EnterAshore"/> returns false and the caller
-    /// keeps her sprite. Holding it raises <see cref="IsoFacetHullRegistry.FigureCount"/>, which is
+    /// (<see cref="IsoFacetHullRegistry.RegisterPlayerFigure"/> for a player,
+    /// <see cref="IsoFacetHullRegistry.RegisterFigure"/> for the cast: <see cref="IsCastFigure"/>,
+    /// ADR 0056). A single, never from the fore-block stack, so it can never be a recycled fore block
+    /// nor become one; never the shared overflow id 255. A player's comes from the player reserve no
+    /// hull can take; a cast figure's is REFUSED at exhaustion, in which case
+    /// <see cref="EnterAshore"/> returns false and the caller keeps her sprite. Holding it raises <see cref="IsoFacetHullRegistry.FigureCount"/>, which is
     /// what opens the facet gate with no hull in the frame. With her id she carries what a hull
     /// carries for herself: a frame that stands in for the posed mesh child (the iso rotation and the
     /// mirror scale), the depth bias and shear at her own root, and a cell-sized overlay quad at the
@@ -67,6 +69,11 @@ namespace HiddenHarbours.Art
         private SortingGroup _overlaySortingGroup;
         private Mesh _overlayQuad;
         private Material _overlayMaterial;
+        private readonly Vector3[] _overlayCorners = new Vector3[4];
+        private float _heldReachMetres;   // the held prop's pad on every side of the overlay (ADR 0053)
+        // Each holder's own claim on that pad (a carried rod and a fish in the other hand), so one
+        // giving its room back never takes the other's: the pad is the largest claim.
+        private readonly float[] _heldReachClaims = new float[HeldReachClaimants];
 
         // Bind-mesh sources, read once. The posed mesh is written into every frame the pose changes.
         private Vector3[] _srcVerts, _srcNorms, _outVerts, _outNorms;
@@ -93,6 +100,27 @@ namespace HiddenHarbours.Art
         private readonly List<string> _fenceReport = new List<string>();
 
         public bool IsConfigured => _def != null && _posedMesh != null;
+
+        // Every submesh's triangle list, joined once at Configure (topology never moves under skinning),
+        // and a counter bumped on every re-skin: what a cast silhouette reads (MeshFigureCastSilhouette).
+        private int[] _triangles;
+        private int _poseVersion;
+
+        /// <summary>Bumped every time the posed mesh is re-skinned (and at Configure). A reader that
+        /// traced the pose at one version need not trace it again until this moves.</summary>
+        public int PoseVersion => _poseVersion;
+
+        /// <summary>
+        /// The pose as it is drawn: the posed vertices in <see cref="FacetTransform"/>'s local space and
+        /// the joined triangle list. ⚠ The arrays are this renderer's own buffers, handed out to avoid a
+        /// copy per frame (rule 7): READ ONLY. False before Configure.
+        /// </summary>
+        public bool TryGetPosedGeometry(out Vector3[] vertices, out int[] triangles)
+        {
+            vertices = _outVerts;
+            triangles = _triangles;
+            return IsConfigured && _outVerts != null && _triangles != null && _meshChild != null;
+        }
 
         /// <summary>The clip key drawn on the last <see cref="SetPose"/>, or null.</summary>
         public string DrawnStateKey { get; private set; }
@@ -137,6 +165,20 @@ namespace HiddenHarbours.Art
         /// <summary>Her facet id ashore, in [1, 254]; 0 when not ashore.</summary>
         public int FigureId => _figureId;
 
+        /// <summary>
+        /// <b>Whose ashore id she asks for</b> (ADR 0056). A member of the CAST (set by
+        /// <see cref="CharacterFigurePresenter"/>, the only presenter that builds cast figures) queues
+        /// for a general single with the fleet, and can be refused when the harbour has spent the pool.
+        /// Anything else — the player's own presenter, and a co-op friend's — asks the PLAYER RESERVE
+        /// first, which no hull or cast figure can ever be handed, so a player ashore is never refused.
+        ///
+        /// <para>The default is the player's on purpose: the player's presenter lives in the Player
+        /// module and calls only the public <see cref="EnterAshore"/>, whose signature and behaviour
+        /// for it are unchanged; the cast's lives here and says so. Read only at the ask, never per
+        /// frame. Changing it while ashore changes nothing until her next arrival.</para>
+        /// </summary>
+        internal bool IsCastFigure { get; set; }
+
         /// <summary>Her overlay quad ashore — the renderer that competes with sprites — or null.</summary>
         public MeshRenderer AshoreOverlay => _overlayRenderer;
 
@@ -165,7 +207,61 @@ namespace HiddenHarbours.Art
             /// <summary>The blink's eyes group at this moment (<see cref="CharacterFigureBlink.EyesAt"/>),
             /// or <see cref="CharacterSkinDef.NoFaceGroup"/> between blinks.</summary>
             public int BlinkEyes;
+
+            /// <summary>True when the figure is at the oars and <see cref="Row"/> holds where his hands,
+            /// hips and feet must be: the frame is solved onto them after the clip and the look
+            /// (<see cref="RowingPoseSolver"/>).</summary>
+            public bool Rowing;
+
+            /// <summary>The rowing targets, in the figure's own frame (see <see cref="Target"/>).</summary>
+            public RowingPoseSolver.Targets Row;
+
+            /// <summary>True while the pose is blended FROM the pose captured by
+            /// <see cref="CaptureBlendSource"/> (a helm taken or left, <see cref="HelmTransition"/>): the
+            /// finished frame, solve included, is drawn at <see cref="BlendWeight"/> of the way from it.</summary>
+            public bool Blend;
+
+            /// <summary>0 draws the captured pose, 1 the frame asked for (<see cref="FigurePoseBlend"/>).</summary>
+            public float BlendWeight;
         }
+
+        /// <summary>
+        /// Keep the pose drawn RIGHT NOW as the source of a blend (<see cref="Life.Blend"/>). False before
+        /// the figure has drawn anything, when there is nothing to blend from.
+        /// </summary>
+        public bool CaptureBlendSource()
+        {
+            if (!_hasDrawnPose || _drawnWorld == null || _blendFrom == null) return false;
+            System.Array.Copy(_drawnWorld, _blendFrom, _drawnWorld.Length);
+            return true;
+        }
+
+        /// <summary>True on a re-skin that was blended (the last <see cref="SetPose(string, int, in Life)"/>
+        /// that re-posed the mesh drew a blend).</summary>
+        public bool DrawnBlending => _drawnBlending;
+
+        /// <summary>The weight the drawn blend was posed at (1 when not blending).</summary>
+        public float DrawnBlendWeight => _drawnBlendWeight;
+
+        /// <summary>A bone's figure-space matrix as last DRAWN (after the solve and any blend). False before
+        /// the first pose or for a bone out of range. Tests read it for continuity.</summary>
+        public bool TryDrawnBone(int bone, out Matrix4x4 world)
+        {
+            world = default;
+            if (!_hasDrawnPose || _drawnWorld == null || bone < 0 || bone >= _drawnWorld.Length) return false;
+            world = _drawnWorld[bone];
+            return true;
+        }
+
+        // The pose last drawn, the captured blend source, and the blend's output (all bone-count long,
+        // allocated with _world in Configure, so a blend costs no allocation).
+        private Matrix4x4[] _drawnWorld, _blendFrom, _blendOut;
+        private bool _hasDrawnPose;
+        private bool _drawnBlending;
+        private float _drawnBlendWeight = 1f;
+
+        /// <summary>The last rowing solve's result (default when the figure is not rowing).</summary>
+        public RowingPoseSolver.Result DrawnRowing => _drawnRowResult;
 
         /// <summary>The face drawn by the last <see cref="SetPose(string, int, in Life)"/>: the group id
         /// (1-based into <see cref="CharacterSkinDef.FaceGroups"/>) per slot — x eyes, y brows, z mouth.
@@ -185,6 +281,63 @@ namespace HiddenHarbours.Art
         /// <summary>The head's mid point the snap rounds, in the figure's frame, and whether it snaps
         /// (w = 1): what the facet shader's head snap reads.</summary>
         public Vector4 HeadSnapPoint { get; private set; }
+
+        /// <summary>The head bone's local frame for things worn on the head (+y forward out of the face,
+        /// +z up through the crown, measured on the fisher rig): <see cref="HeadMidLocal"/> plus an offset
+        /// gives a point on the head in that frame, and these place it in the figure's frame from the same
+        /// pose <see cref="HeadSnapPoint"/> was taken from. Valid while <see cref="HeadSnapPoint"/>'s w is 1.</summary>
+        public Vector3 HeadMidLocal => _def != null ? _def.HeadMid : Vector3.zero;
+
+        /// <summary>A head-local point (see <see cref="HeadMidLocal"/>) in the figure's frame.</summary>
+        public Vector3 HeadLocalToFigure(Vector3 headLocal) =>
+            _def != null && _world != null ? _world[_def.LookHeadBone].MultiplyPoint3x4(headLocal) : Vector3.zero;
+
+        /// <summary>A head-local direction in the figure's frame (look turns included).</summary>
+        public Vector3 HeadDirectionToFigure(Vector3 headLocal) =>
+            _def != null && _world != null ? _world[_def.LookHeadBone].MultiplyVector(headLocal) : Vector3.zero;
+
+        // ---- held props (ADR 0053): what a prop mounted on her socket needs, read-only ----------------
+
+        /// <summary>The skin this figure draws, or null before <see cref="Configure"/>.</summary>
+        public CharacterSkinDef SkinDef => _def;
+
+        /// <summary>Her posed facet child: the frame her posed vertices and every bone point are in
+        /// (aboard under the hull's posed mesh, ashore under her own frame). A held prop is parented
+        /// here. Null before <see cref="Configure"/>.</summary>
+        public Transform FacetTransform => _meshChild;
+
+        /// <summary>Her facet renderer, whose per-frame property block (the dither origin, the depth
+        /// shear and the id) a held prop copies. Null before <see cref="Configure"/>.</summary>
+        public MeshRenderer FacetRenderer => _meshRenderer;
+
+        /// <summary>
+        /// A bone's point in her facet frame on the frame drawn by the last <see cref="SetPose"/> (look
+        /// turn included): for a mount bone, the socket. False before any pose or for a bone out of range.
+        /// Allocation-free.
+        /// </summary>
+        public bool TryBonePoint(int bone, out Vector3 point)
+        {
+            point = Vector3.zero;
+            if (_def == null || _world == null || DrawnFrame < 0 || bone < 0 || bone >= _world.Length) return false;
+            point = _world[bone].MultiplyPoint3x4(Vector3.zero);
+            return true;
+        }
+
+        /// <summary>
+        /// A bone's point and attitude in her facet frame on the frame drawn (see <see cref="TryBonePoint"/>):
+        /// for a mount that carries its own attitude, such as the rig's slung-rod <c>back</c> socket, whose
+        /// +y is the rod's axis. False before any pose or for a bone out of range. Allocation-free.
+        /// </summary>
+        public bool TryBoneFrame(int bone, out Vector3 point, out Quaternion rotation)
+        {
+            rotation = Quaternion.identity;
+            if (!TryBonePoint(bone, out point)) return false;
+            Matrix4x4 m = _world[bone];
+            Vector3 up = m.MultiplyVector(Vector3.up), forward = m.MultiplyVector(Vector3.forward);
+            if (up.sqrMagnitude < 1e-12f || forward.sqrMagnitude < 1e-12f) return false;
+            rotation = Quaternion.LookRotation(forward, up);
+            return true;
+        }
 
         /// <summary>True while this figure is inked by the rig's own rules
         /// (<see cref="GameConfig.MeshFigureKeyline"/> on and a def that <see cref="CharacterSkinDef.HasInk"/>).</summary>
@@ -289,10 +442,19 @@ namespace HiddenHarbours.Art
                     $"CharacterSkinDef '{def.Id}' has {bones} bones and " +
                     $"{(_bindposes == null ? 0 : _bindposes.Length)} bindposes on its bind mesh.");
 
-            _outVerts = new Vector3[_srcVerts.Length];
+            _outVerts = (Vector3[])_srcVerts.Clone();   // the bind pose until the first SetPose
             _outNorms = new Vector3[_srcVerts.Length];
             _world = new Matrix4x4[bones];
+            _drawnWorld = new Matrix4x4[bones];
+            _blendFrom = new Matrix4x4[bones];
+            _blendOut = new Matrix4x4[bones];
+            _hasDrawnPose = false;
+            _drawnBlending = false;
+            _drawnBlendWeight = 1f;
             _skin = new Matrix4x4[bones];
+            // The skin's own torso, measured once from its bind mesh: the arms are kept out of it.
+            _rowSolver = new RowingPoseSolver(def.Bones, RowingBodyVolume.Of(def));
+            _drawnRowing = false;
 
             // ONE mesh, written into every frame — MarkDynamic so the driver keeps it in a buffer it
             // expects to be rewritten. The topology and every UV channel are copied once, here: only
@@ -309,8 +471,18 @@ namespace HiddenHarbours.Art
             _posedMesh.normals = _srcNorms;
             CopyUv(bind, 0); CopyUv(bind, 1); CopyUv(bind, 2); CopyUv(bind, 3);
             _posedMesh.subMeshCount = bind.subMeshCount;
+            int triCount = 0;
+            for (int s = 0; s < bind.subMeshCount; s++) triCount += (int)bind.GetIndexCount(s);
+            _triangles = new int[triCount];
+            triCount = 0;
             for (int s = 0; s < bind.subMeshCount; s++)
-                _posedMesh.SetTriangles(bind.GetTriangles(s), s, false);
+            {
+                int[] tris = bind.GetTriangles(s);
+                _posedMesh.SetTriangles(tris, s, false);
+                System.Array.Copy(tris, 0, _triangles, triCount, tris.Length);
+                triCount += tris.Length;
+            }
+            _poseVersion++;
             _posedMesh.bounds = bind.bounds;
 
             ReadFaceRuns(def, bind);
@@ -624,6 +796,54 @@ namespace HiddenHarbours.Art
             _facetMaterial.SetVector(IsoFacetFigureShaderIds.FigureHead, HeadSnapPoint);
             _facetMaterial.SetFloat(IsoFacetFigureShaderIds.FigureInkOn, 0f);
             _inkApplied = false;
+            _waterOn = false;
+            _waterLine = 0f;
+            _waterVector = _waterTint = _waterLook = Vector4.zero;
+            _facetMaterial.SetVector(IsoFacetFigureShaderIds.FigureWater, Vector4.zero);
+            _facetMaterial.SetVector(IsoFacetFigureShaderIds.FigureWaterTint, Vector4.zero);
+            _facetMaterial.SetVector(IsoFacetFigureShaderIds.FigureWaterLook, Vector4.zero);
+        }
+
+        private bool _waterOn;
+        private float _waterLine;
+        private Vector4 _waterVector, _waterTint, _waterLook;
+
+        /// <summary>True while the sea cuts this figure (<see cref="SetWaterline"/>).</summary>
+        public bool WaterlineOn => _waterOn;
+
+        /// <summary>The live waterline's height in the figure's frame (m), or 0 while there is none.</summary>
+        public float WaterlineMetres => _waterLine;
+
+        /// <summary>
+        /// <b>The sea on him</b> (ADR 0061): hide every part of the figure below
+        /// <paramref name="metres"/>, measured up from the figure's ground plane in its own frame.
+        /// Off draws him whole. Written to the material only when it changes, so a figure standing in
+        /// still water costs nothing per frame. Only a v9 figure (the <c>HH_FIGURE</c> variant) reads it.
+        /// This overload is the hard cut: no foam, nothing drawn under the line.
+        /// </summary>
+        public void SetWaterline(bool on, float metres) => SetWaterline(on, metres, default);
+
+        /// <summary>
+        /// <see cref="SetWaterline(bool, float)"/> with its look: <paramref name="look"/> says whether
+        /// the part under the line is drawn tinted and dimmed toward the sea or hidden, and how tall
+        /// and pale the foam band over the line is. The default look is the hard cut.
+        /// </summary>
+        public void SetWaterline(bool on, float metres, in FigureWaterLook look)
+        {
+            if (_facetMaterial == null) return;
+            if (!on || float.IsNaN(metres) || float.IsInfinity(metres)) { on = false; metres = 0f; }
+            Vector4 water = on ? new Vector4(1f, metres, Mathf.Max(0f, look.FoamMetres), Mathf.Clamp01(look.Foam)) : Vector4.zero;
+            Vector4 tint = on ? new Vector4(look.Tint.r, look.Tint.g, look.Tint.b, Mathf.Clamp01(look.TintAmount)) : Vector4.zero;
+            Vector4 shown = on ? new Vector4(Mathf.Clamp01(look.Dim), look.ShowsUnderwater ? 1f : 0f, 0f, 0f) : Vector4.zero;
+            if (on == _waterOn && metres == _waterLine && water == _waterVector && tint == _waterTint && shown == _waterLook) return;
+            _waterOn = on;
+            _waterLine = metres;
+            _waterVector = water;
+            _waterTint = tint;
+            _waterLook = shown;
+            _facetMaterial.SetVector(IsoFacetFigureShaderIds.FigureWater, water);
+            _facetMaterial.SetVector(IsoFacetFigureShaderIds.FigureWaterTint, tint);
+            _facetMaterial.SetVector(IsoFacetFigureShaderIds.FigureWaterLook, shown);
         }
 
         private void BuildChild()
@@ -689,7 +909,13 @@ namespace HiddenHarbours.Art
             bool composed = false;
             if (!sameClip || RequestedFrame != frame) composed = SampleLook(clip, drawn, life);
 
-            if (!sameClip || DrawnFrame != drawn || _lookYaw != _drawnYaw || _lookPitch != _drawnPitch)
+            bool rowing = life.Rowing && _rowSolver != null && _rowSolver.IsUsable;
+            bool rowMoved = rowing != _drawnRowing || (rowing && RowTargetsMoved(in life.Row, in _drawnRow));
+            // A helm blend re-poses every call it runs, and once more on the call it ends, so the last
+            // blended frame is never left standing.
+            bool blending = life.Blend && life.BlendWeight < 1f && _blendFrom != null;
+            if (!sameClip || DrawnFrame != drawn || _lookYaw != _drawnYaw || _lookPitch != _drawnPitch || rowMoved
+                || blending || _drawnBlending)
             {
                 if (!composed) CharacterSkinPose.ComposeWorld(clip, drawn, _def.Bones, _world);
                 if (_lookYaw != 0d || _lookPitch != 0d)
@@ -700,6 +926,23 @@ namespace HiddenHarbours.Art
                         _def.LookNeckBone, CharacterFigureLook.TurnOf(_lookYaw, _lookPitch, _def.LookSplitNeck, limits),
                         _def.LookHeadBone, CharacterFigureLook.TurnOf(_lookYaw, _lookPitch, _def.LookSplitHead, limits));
                 }
+                // At the oars: sat on the thwart, feet braced, hands on the handles. After the clip and
+                // the look, before the skin; the composition the skin reads is the solved one.
+                _drawnRowResult = rowing ? _rowSolver.Solve(_world, in life.Row) : default;
+                _drawnRowing = rowing;
+                _drawnRow = rowing ? life.Row : default;
+                // Taking or leaving a helm: the finished frame, solve and all, drawn part of the way from
+                // the pose captured when the hop came (HelmTransition). Last, so the blend sees exactly
+                // what would otherwise be drawn.
+                if (blending)
+                {
+                    FigurePoseBlend.BlendLocal(_blendFrom, _world, _def.Bones, life.BlendWeight, _blendOut);
+                    System.Array.Copy(_blendOut, _world, _world.Length);
+                }
+                _drawnBlending = blending;
+                _drawnBlendWeight = blending ? life.BlendWeight : 1f;
+                System.Array.Copy(_world, _drawnWorld, _world.Length);
+                _hasDrawnPose = true;
                 CharacterSkinPose.FinishSkin(_world, _bindposes, _skin);
                 CharacterSkinPose.Skin(_skin, _weights, _srcVerts, _srcNorms, _outVerts, _outNorms);
                 if (_faceStarts != null)
@@ -713,6 +956,7 @@ namespace HiddenHarbours.Art
                 _posedMesh.vertices = _outVerts;
                 _posedMesh.normals = _outNorms;
                 _posedMesh.RecalculateBounds();
+                _poseVersion++;
 
                 if (_def.HasHeadSnap)
                 {
@@ -739,6 +983,38 @@ namespace HiddenHarbours.Art
                 }
             }
             return true;
+        }
+
+        // The rowing solve (RowingPoseSolver), bound to the skin's bones in ReadBindMesh, and the
+        // targets the drawn mesh was solved onto.
+        private RowingPoseSolver _rowSolver;
+        private bool _drawnRowing;
+        private RowingPoseSolver.Targets _drawnRow;
+        private RowingPoseSolver.Result _drawnRowResult;
+
+        /// <summary>
+        /// True when the rowing targets moved far enough since the drawn solve to show: any point by more
+        /// than half a pixel, or the layback by more than half a pixel's arc at a metre (the shoulders sit
+        /// well inside that), or a hand taking hold or letting go. Below that the mesh is not re-skinned
+        /// (rule 7): the oars move every frame, the picture only when a pixel would.
+        /// </summary>
+        private bool RowTargetsMoved(in RowingPoseSolver.Targets now, in RowingPoseSolver.Targets drawn)
+        {
+            float half = 0.5f / Mathf.Max(1f, _def.PxPerMetre);
+            float halfSqr = half * half;
+            if (now.HasGripLeft != drawn.HasGripLeft || now.HasGripRight != drawn.HasGripRight) return true;
+            if ((now.GripLeft - drawn.GripLeft).sqrMagnitude > halfSqr) return true;
+            if ((now.GripRight - drawn.GripRight).sqrMagnitude > halfSqr) return true;
+            if ((now.Pelvis - drawn.Pelvis).sqrMagnitude > halfSqr) return true;
+            if ((now.BraceLeft - drawn.BraceLeft).sqrMagnitude > halfSqr) return true;
+            if ((now.BraceRight - drawn.BraceRight).sqrMagnitude > halfSqr) return true;
+            if (Mathf.Abs(now.LaybackDegrees - drawn.LaybackDegrees) * Mathf.Deg2Rad > half) return true;
+            if (Mathf.Abs(now.RestLeanDegrees - drawn.RestLeanDegrees) * Mathf.Deg2Rad > half) return true;
+            if (now.ThighRest != drawn.ThighRest) return true;
+            return now.ReachLeanMaxDegrees != drawn.ReachLeanMaxDegrees
+                   || now.BodyClearanceMeters != drawn.BodyClearanceMeters
+                   || now.BodyClearLeanMaxDegrees != drawn.BodyClearLeanMaxDegrees
+                   || now.BodyClearTwistMaxDegrees != drawn.BodyClearTwistMaxDegrees;
         }
 
         /// <summary>
@@ -869,7 +1145,10 @@ namespace HiddenHarbours.Art
                 throw new InvalidOperationException(
                     "IsoFacetOverlay shader not found — see the shader compile-guard test.");
 
-            int id = IsoFacetHullRegistry.RegisterFigure();
+            // ADR 0056: a player's figure takes a reserved id the fleet can never spend; the cast
+            // queues with the fleet for a general one.
+            int id = IsCastFigure ? IsoFacetHullRegistry.RegisterFigure()
+                                  : IsoFacetHullRegistry.RegisterPlayerFigure();
             if (id == 0) return false;
 
             _figureId = id;
@@ -968,19 +1247,8 @@ namespace HiddenHarbours.Art
         {
             _overlayMaterial = new Material(overlayShader) { hideFlags = HideFlags.HideAndDontSave };
 
-            float ppu = _def.PxPerMetre;
-            Vector4 reach = _def.ReachPx;
-            float left = -_def.PivotPx.x / ppu - OverlayPad(reach.x, ppu);
-            float right = (_def.CellW - _def.PivotPx.x) / ppu + OverlayPad(reach.z, ppu);
-            float top = _def.PivotPx.y / ppu + OverlayPad(reach.y, ppu);
-            float bottom = -(_def.CellH - _def.PivotPx.y) / ppu - OverlayPad(reach.w, ppu);
-
             _overlayQuad = new Mesh { name = "HHFigureOverlayQuad", hideFlags = HideFlags.HideAndDontSave };
-            _overlayQuad.SetVertices(new[]
-            {
-                new Vector3(left, bottom, 0f), new Vector3(right, bottom, 0f),
-                new Vector3(right, top, 0f), new Vector3(left, top, 0f),
-            });
+            WriteOverlayCorners();
             _overlayQuad.SetTriangles(new[] { 0, 1, 2, 0, 2, 3 }, 0);
 
             var go = new GameObject("FigureOverlay") { hideFlags = HideFlags.DontSave, layer = gameObject.layer };
@@ -1001,6 +1269,75 @@ namespace HiddenHarbours.Art
         /// inside).</summary>
         private static float OverlayPad(float reachPx, float ppu) =>
             (1f + (reachPx > 0f ? Mathf.Ceil(reachPx) : 0f)) / ppu;
+
+        /// <summary>The overlay's four corners: the cell, its pads (<see cref="OverlayPad"/>) and the held
+        /// prop's reach (<see cref="SetHeldReachMetres"/>) on every side. Into a kept array, so a reach
+        /// change re-writes the quad without allocating.</summary>
+        private void WriteOverlayCorners()
+        {
+            if (_overlayQuad == null || _def == null) return;
+            float ppu = _def.PxPerMetre;
+            Vector4 reach = _def.ReachPx;
+            float held = _heldReachMetres;
+            float left = -_def.PivotPx.x / ppu - OverlayPad(reach.x, ppu) - held;
+            float right = (_def.CellW - _def.PivotPx.x) / ppu + OverlayPad(reach.z, ppu) + held;
+            float top = _def.PivotPx.y / ppu + OverlayPad(reach.y, ppu) + held;
+            float bottom = -(_def.CellH - _def.PivotPx.y) / ppu - OverlayPad(reach.w, ppu) - held;
+            _overlayCorners[0] = new Vector3(left, bottom, 0f);
+            _overlayCorners[1] = new Vector3(right, bottom, 0f);
+            _overlayCorners[2] = new Vector3(right, top, 0f);
+            _overlayCorners[3] = new Vector3(left, top, 0f);
+            _overlayQuad.SetVertices(_overlayCorners);
+            _overlayQuad.RecalculateBounds();
+        }
+
+        /// <summary>
+        /// <b>Room in the ashore overlay for what she holds</b> (ADR 0053). The overlay is the cell the
+        /// facet pass composites through, and a held prop drawn under her facet child (a rod) reaches past
+        /// the body's cell; outside the overlay it would be clipped. Pads every side by
+        /// <paramref name="metres"/> (the prop's grip-to-tip length; 0 gives the cell back). Re-writes
+        /// the quad only when the value changes. Aboard the window is the hull's overlay, so the pad is
+        /// asked of the hull (<see cref="IsoFacetHullRenderer.EnsureHeldReachMetres"/>) and recorded here
+        /// for the next time she goes ashore.
+        /// </summary>
+        public void SetHeldReachMetres(float metres) => SetHeldReachMetres(HeldReachTool, metres);
+
+        /// <summary>How many holders may claim room in the overlay at once.</summary>
+        public const int HeldReachClaimants = 4;
+
+        /// <summary>The claim of the tool in his hand (the rod).</summary>
+        public const int HeldReachTool = 0;
+
+        /// <summary>The claim of the catch in his hand.</summary>
+        public const int HeldReachCatch = 1;
+
+        /// <summary>The claim of a hand tool that is not the rod (the clam shovel).</summary>
+        public const int HeldReachHandTool = 2;
+
+        /// <summary>The claim of a container hung from his hand (the pail).</summary>
+        public const int HeldReachCarry = 3;
+
+        /// <summary>
+        /// <see cref="SetHeldReachMetres(float)"/> for one holder (<see cref="HeldReachTool"/>,
+        /// <see cref="HeldReachCatch"/>): the overlay is padded by the largest claim, so a fish and a rod
+        /// held together each keep their room, and either one giving it back leaves the other's.
+        /// </summary>
+        public void SetHeldReachMetres(int claimant, float metres)
+        {
+            if (claimant < 0 || claimant >= HeldReachClaimants) return;
+            _heldReachClaims[claimant] = Mathf.Max(0f, metres);
+            metres = 0f;
+            for (int i = 0; i < HeldReachClaimants; i++) metres = Mathf.Max(metres, _heldReachClaims[i]);
+
+            // Aboard she is composited through the hull's overlay: ask it for the room (it only grows).
+            if (!IsAshore && _hull != null) _hull.EnsureHeldReachMetres(metres);
+            if (Mathf.Approximately(metres, _heldReachMetres)) return;
+            _heldReachMetres = metres;
+            WriteOverlayCorners();
+        }
+
+        /// <summary>The held-prop pad the overlay carries (<see cref="SetHeldReachMetres"/>).</summary>
+        public float HeldReachMetres => _heldReachMetres;
 
         /// <summary>
         /// <b>Ashore, what a hull writes for itself</b> — for her own root, with her own id: the
@@ -1085,6 +1422,8 @@ namespace HiddenHarbours.Art
 
         internal MeshRenderer ReflectionRenderer => _meshRenderer;
         internal Mesh ReflectionMesh => _posedMesh;
+        /// <summary>The rig's camera elevation, for the calm mirror's plane under a figure ashore.</summary>
+        internal float ReflectionElevationDeg => _def != null ? _def.ElevationDeg : 30f;
         internal void PrepareReflection()
         {
             if (_figureId != 0) return;
@@ -1189,6 +1528,19 @@ namespace HiddenHarbours.Art
         /// figure's pixels with 1 minus it in the dark target's alpha: 0 the figure's rules with its
         /// keyline ring, 0.25 its rules without the ring, 1 the hull's.</summary>
         public static readonly int FigureInkOn = Shader.PropertyToID("_HHFigureInkOn");
+
+        /// <summary><c>float4</c>, per material: <c>(on, lineZ, 0, 0)</c>. While <c>on</c> is 1 every
+        /// fragment of the figure below <c>lineZ</c> (metres, the figure's own frame, z up) is
+        /// discarded: the sea on a wading or swimming figure (ADR 0061). 0 draws the whole figure.</summary>
+        public static readonly int FigureWater = Shader.PropertyToID("_HHFigureWater");
+
+        /// <summary><c>float4</c>, per material: the sea colour the part under <see cref="FigureWater"/>'s
+        /// line tints toward (rgb) and how far (a). Read only while that part is drawn.</summary>
+        public static readonly int FigureWaterTint = Shader.PropertyToID("_HHFigureWaterTint");
+
+        /// <summary><c>float4</c>, per material: <c>(dim, drawn, 0, 0)</c>. <c>drawn</c> 1 draws the part
+        /// under the line tinted and dimmed by <c>dim</c>; 0 discards it (the hard cut).</summary>
+        public static readonly int FigureWaterLook = Shader.PropertyToID("_HHFigureWaterLook");
 
         /// <summary><see cref="FigureInkOn"/> for a figure inked by its rig's rules, keyline ring and all
         /// (rig 9).</summary>

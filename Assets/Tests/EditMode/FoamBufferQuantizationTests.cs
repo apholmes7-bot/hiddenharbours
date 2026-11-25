@@ -113,23 +113,23 @@ namespace HiddenHarbours.Tests.EditMode
             // fixes, against the water material's _WakeFoamThreshold.
             float amplitude = FoamBuffer.DispersingShare(r0, wMax)
                             * FoamBuffer.ShippedFoamPerMetre(rate, r0, speed)
-                            / FoamBuffer.EnvelopeIntegral(r0, wMax);
+                            / FoamBuffer.LaidEnvelopeIntegral(r0, wMax);
             float rim = r0;
             for (float d = r0; d <= wMax; d += FoamBuffer.CellSize)
-                if (amplitude * FoamBuffer.EnvelopeShape(d, r0, wMax) >= 0.12f) rim = d;
+                if (amplitude * FoamBuffer.LaidEnvelope(d, r0, wMax) >= 0.12f) rim = d;
 
             foreach (float fps in new[] { 30f, 60f, 120f, 144f })
             {
                 float dt = 1f / fps;
-                float edgeWidth = FoamBuffer.EdgeWidth(slope * speed, dt);
+                float edgeWidth = FoamBuffer.EdgeWidth(FoamBuffer.EdgeSlope(kelvin, r0, wMax) * speed, dt);
                 float gain = FoamBuffer.EdgeGain(rate, r0, wMax, kelvin, dt, edgeWidth);
-                float edgeWrite = gain * FoamBuffer.EnvelopeShape(rim, r0, wMax);
+                float edgeWrite = gain * FoamBuffer.LaidEnvelope(rim, r0, wMax);
 
                 // The sabotage arm: the SAME conserved foam, spread over the deposit's whole life
                 // instead of laid once at the sweeping rim. Same total, same envelope, same physics —
                 // only the stamping strategy differs, which is the point.
                 float life = reach / speed;
-                float reStamped = amplitude * FoamBuffer.EnvelopeShape(rim, r0, wMax) * dt / life;
+                float reStamped = amplitude * FoamBuffer.LaidEnvelope(rim, r0, wMax) * dt / life;
 
                 TestContext.WriteLine(
                     $"{fps,3:0} fps  rim {rim:0.00} m  edge writes {edgeWrite * 255f:0.00} codes/frame, " +

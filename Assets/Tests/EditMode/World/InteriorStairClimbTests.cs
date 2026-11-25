@@ -432,6 +432,56 @@ namespace HiddenHarbours.Tests.World.EditMode
         }
 
         [Test]
+        public void AStairWithALandingCarriesHimAlongTheFlight_ToTheLandingAndBackToTheFoot()
+        {
+            BuildingInterior interior = StandTwoStorey(out SpriteRenderer _);
+            Transform occupant = WalkInside(interior);
+            Vector3 foot = occupant.position;
+
+            // A flight along a wall: the head is somewhere else on the footprint than the foot.
+            var upGo = new GameObject("stair up"); _spawned.Add(upGo);
+            var downGo = new GameObject("stair down"); _spawned.Add(downGo);
+            upGo.transform.position = foot;
+            downGo.transform.position = foot + new Vector3(2.5f, interior.UpperLevelY + 0.4f, 0f);
+            var up = upGo.AddComponent<InteriorStair>();
+            var down = downGo.AddComponent<InteriorStair>();
+            up.Configure(interior, "fixture.test.stair_up", 0, 1, 1.2f, "");
+            down.Configure(interior, "fixture.test.stair_down", 1, 0, 1.2f, "");
+            up.SetLanding(downGo.transform);
+            down.SetLanding(upGo.transform);
+
+            Assert.IsTrue(up.Climb());
+            Assert.AreEqual(1, interior.Level);
+            Assert.IsTrue(interior.IsClimbing);
+            Assert.AreEqual((Vector2)downGo.transform.position, interior.Climb.Head,
+                "going up ends on the landing at the head of the flight, not straight above the foot");
+            Assert.IsFalse(interior.AdvanceClimb(GameServices.StairClimbSeconds + 1f), "the climb finishes");
+            Assert.AreEqual(downGo.transform.position.x, occupant.position.x, 1e-4f);
+            Assert.AreEqual(downGo.transform.position.y, occupant.position.y, 1e-4f);
+
+            Assert.IsTrue(down.Climb());
+            Assert.AreEqual(0, interior.Level);
+            Assert.AreEqual((Vector2)upGo.transform.position, interior.Climb.Head,
+                "and going down ends back at the foot");
+        }
+
+        [Test]
+        public void AStairWithNoLandingStillArrivesStraightAbove()
+        {
+            BuildingInterior interior = StandTwoStorey(out SpriteRenderer _);
+            Transform occupant = WalkInside(interior);
+            Vector3 foot = occupant.position;
+            var upGo = new GameObject("stair up"); _spawned.Add(upGo);
+            var up = upGo.AddComponent<InteriorStair>();
+            up.Configure(interior, "fixture.test.stair_up", 0, 1, 1.2f, "");
+
+            Assert.IsNull(up.Landing);
+            Assert.IsTrue(up.Climb());
+            Assert.AreEqual(foot.x, interior.Climb.Head.x, 1e-5f);
+            Assert.AreEqual(foot.y + interior.UpperLevelY, interior.Climb.Head.y, 1e-5f);
+        }
+
+        [Test]
         public void SomethingElseMovingTheOccupantEndsTheClimbRatherThanDraggingThemBack()
         {
             BuildingInterior interior = StandTwoStorey(out _);
@@ -474,6 +524,61 @@ namespace HiddenHarbours.Tests.World.EditMode
                 "landing exactly on the floor above");
             Assert.IsFalse(skin.IsSpeedHeld, "the gait goes back to measurement");
             Assert.IsFalse(MoveActionClaim.IsClaimed, "and the player gets their legs back");
+        }
+
+        [Test]
+        public void AClimbHoldsADynamicBodyKinematic_AndGivesItBackOnArrival()
+        {
+            BuildingInterior interior = StandTwoStorey(out _);
+            Transform occupant = WalkInside(interior);
+            var body = occupant.gameObject.AddComponent<Rigidbody2D>();
+            body.bodyType = RigidbodyType2D.Dynamic;
+            body.gravityScale = 0f;
+
+            interior.TryGoToLevel(InteriorLevelLayout.UpperLevel);
+            Assert.AreEqual(RigidbodyType2D.Kinematic, body.bodyType,
+                "⭐ furniture can never cancel a climb: for the walk the physics solver cannot push the " +
+                "body, so a chair on the path cannot shove it off the climb's own track");
+
+            Assert.IsTrue(interior.AdvanceClimb(0.1f));
+            Assert.AreEqual(RigidbodyType2D.Kinematic, body.bodyType, "and it stays held mid-climb");
+
+            Assert.IsFalse(interior.AdvanceClimb(GameServices.StairClimbSeconds), "the climb finishes");
+            Assert.AreEqual(RigidbodyType2D.Dynamic, body.bodyType, "the body's own type comes back");
+            Assert.AreEqual(Vector2.zero, body.linearVelocity, "with no velocity left over");
+        }
+
+        [Test]
+        public void AnInterruptedClimbGivesTheBodyBackToo()
+        {
+            BuildingInterior interior = StandTwoStorey(out _);
+            Transform occupant = WalkInside(interior);
+            var body = occupant.gameObject.AddComponent<Rigidbody2D>();
+            body.bodyType = RigidbodyType2D.Dynamic;
+            body.gravityScale = 0f;
+
+            interior.TryGoToLevel(InteriorLevelLayout.UpperLevel);
+            Assert.IsTrue(interior.IsClimbing, "precondition: mid-climb");
+
+            occupant.position = interior.transform.position + new Vector3(0f, -40f, 0f);
+            Tick(interior);
+
+            Assert.IsFalse(interior.IsClimbing, "a teleport ends the climb");
+            Assert.AreEqual(RigidbodyType2D.Dynamic, body.bodyType, "and restores the body it was holding");
+        }
+
+        [Test]
+        public void AClimbNeverChangesABodyThatWasAlreadyKinematic()
+        {
+            BuildingInterior interior = StandTwoStorey(out _);
+            Transform occupant = WalkInside(interior);
+            var body = occupant.gameObject.AddComponent<Rigidbody2D>();
+            body.bodyType = RigidbodyType2D.Kinematic;
+
+            interior.TryGoToLevel(InteriorLevelLayout.UpperLevel);
+            Assert.IsFalse(interior.AdvanceClimb(GameServices.StairClimbSeconds));
+            Assert.AreEqual(RigidbodyType2D.Kinematic, body.bodyType,
+                "restore is exact: a body that came in kinematic leaves kinematic");
         }
 
         [Test]

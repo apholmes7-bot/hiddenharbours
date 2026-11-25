@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: DeckBossBuild
   m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.CharacterBuildDef
   Id: char_build.deckboss
+  PlayerDisplayName: Build E
   Preset: deckboss
   Visual: {fileID: 11400000, guid: b20094509ca991840b8df1a2519c731f, type: 2}
   Skin: 

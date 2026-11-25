@@ -95,15 +95,7 @@ namespace HiddenHarbours.App.Editor
                            HouseYardSize, YardFence.None,
                            "a house on Mill Road, on the lot the tavern gave up for the plaza's parking"),
 
-                    // ---- the boat shed -------------------------------------------------------------
-                    // ⚠ Whose shed this IS remains the coordinator's open question (the 2026-07-25 ruling
-                    // says there is no shipwright in this region). The yard makes no claim about that: it
-                    // says the ground round it is worked, which is true whoever ends up owning it. Its wire
-                    // goes up when the shed reaches its landing.
-                    Facing(BoatShedYard, NineMileCreekMainland.TownLots[4], lot,
-                           new Vector2(22f, 20f), YardFence.None,
-                           "a working yard on the river landing, wide enough to turn a trailer in, and no " +
-                           "lawn to it"),
+                    // H6 PR 3 retires the old BoatShed yard; its trades now stand in harbour.yard.
                 };
 
                 _yards = rows.ToArray();

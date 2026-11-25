@@ -214,9 +214,62 @@ namespace HiddenHarbours.App.Editor
         // ---- the fish -----------------------------------------------------------------------------
 
         /// <summary>
+        /// Does the species id <paramref name="speciesId"/> name the fish rig's species
+        /// <paramref name="rigKey"/>? True when the id's leaf, or the leaf's last word, IS the key
+        /// (<c>fish.atlantic_cod</c> is 'cod', <c>fish.striped_bass</c> is 'bass'); a key that only
+        /// appears INSIDE a word (<c>fish.atlantic_tomcod</c>) is not a match.
+        /// </summary>
+        public static bool RigKeyMatches(string speciesId, string rigKey)
+        {
+            if (string.IsNullOrEmpty(speciesId) || string.IsNullOrEmpty(rigKey)) return false;
+            string leaf = speciesId.Substring(speciesId.LastIndexOf('.') + 1);
+            if (leaf == rigKey) return true;
+            int under = leaf.LastIndexOf('_');
+            return under >= 0 && leaf.Substring(under + 1) == rigKey;
+        }
+
+        /// <summary>
+        /// The rig scale each rung of <paramref name="rigKey"/> was drawn at, by suffix ("" for the middle
+        /// rung), read off the same sidecar as <see cref="RungWeights"/>. Empty when the species publishes
+        /// no ladder; a rung that names no scale is left out, never guessed.
+        /// </summary>
+        public static Dictionary<string, float> RungScales(string rigKey)
+        {
+            var result = new Dictionary<string, float>(System.StringComparer.Ordinal);
+            var species = MiniJson.Dict(ParseJson(FishAnchorsPath), "species");
+            if (species == null || !species.TryGetValue(rigKey, out object node)) return result;
+            var ladder = MiniJson.List(node, "rungs");
+            if (ladder == null) return result;
+            foreach (object r in ladder)
+                if (r is Dictionary<string, object> d && d.ContainsKey("scale"))
+                    result[MiniJson.String(d, "suffix") ?? ""] = (float)MiniJson.Float(d, "scale");
+            return result;
+        }
+
+        /// <summary>
+        /// The fish rig's size ladder for one species as (suffix, kg) pairs, ascending, read from the
+        /// published sidecar: the weights each rung was DRAWN at. Empty when the sidecar or species is
+        /// absent, or it predates the ladder.
+        /// </summary>
+        public static List<(string suffix, float kg)> RungWeights(string rigKey)
+        {
+            var result = new List<(string suffix, float kg)>();
+            var species = MiniJson.Dict(ParseJson(FishAnchorsPath), "species");
+            if (species == null || !species.TryGetValue(rigKey, out object node)) return result;
+            var ladder = MiniJson.List(node, "rungs");
+            if (ladder == null) return result;
+            foreach (object r in ladder)
+                if (r is Dictionary<string, object> d)
+                    result.Add((MiniJson.String(d, "suffix") ?? "", (float)MiniJson.Float(d, "kg")));
+            result.Sort((a, b) => a.kg.CompareTo(b.kg));
+            return result;
+        }
+
+        /// <summary>
         /// One entry per baked species whose id can be found among <paramref name="regionFish"/> (the
-        /// sheet key must appear in the def id, 'cod' in 'fish.atlantic_cod'; the ids are the defs',
-        /// never invented here), each carrying its whole SIZE LADDER.
+        /// def id's last word must be the sheet key, 'cod' for 'fish.atlantic_cod', see
+        /// <see cref="RigKeyMatches"/>; the ids are the defs', never invented here), each carrying its
+        /// whole SIZE LADDER.
         ///
         /// <para><b>The ladder is read, not derived.</b> Which weights the three rungs draw, and how
         /// many hands each takes, are facts about the rig that the bake measured and published; this
@@ -240,8 +293,10 @@ namespace HiddenHarbours.App.Editor
             foreach (KeyValuePair<string, object> kv in species)
             {
                 string key = kv.Key;
+                // By the id's LAST WORD, never a substring: 'cod' is fish.atlantic_cod, and must not
+                // be fish.atlantic_tomcod just because that Def happens to sort first in a roster.
                 FishSpeciesDef def = regionFish.FirstOrDefault(
-                    d => d != null && !string.IsNullOrEmpty(d.Id) && d.Id.Contains(key));
+                    d => d != null && RigKeyMatches(d.Id, key));
                 if (def == null)
                 {
                     Debug.Log($"[RodKitImporter] Baked fish '{key}' has no matching FishSpeciesDef in " +

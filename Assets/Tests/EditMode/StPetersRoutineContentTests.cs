@@ -237,7 +237,9 @@ namespace HiddenHarbours.Tests.EditMode
             StPetersRoutines.LaneTable t = StPetersRoutines.BuildLaneTable();
 
             AssertPaintedEdge(t, StPetersRoutines.LaneSlipHead,
-                              StPetersStarterSplat.VillageToSlipPath());
+                              StPetersStarterSplat.VillageToSlipPath().Take(4).Concat(new[] {
+                                  new Vector2(181, 3), new Vector2(182, 4), new Vector2(183, 4.4f),
+                                  new Vector2(183.5f, 4.39282715f) }).ToArray());
             AssertPaintedEdge(t, StPetersRoutines.LaneFlatsHead,
                               StPetersStarterSplat.VillageToBarHeadPath());
         }

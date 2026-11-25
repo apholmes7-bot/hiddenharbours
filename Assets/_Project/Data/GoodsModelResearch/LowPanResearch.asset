@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c674d767b67f40f698c9b954139c7253, type: 3}
+  m_Name: LowPanResearch
+  m_EditorClassIdentifier: HiddenHarbours.Tools.GoodsModel::HiddenHarbours.Tools.GoodsModel.GoodsContainerDef
+  Spec:
+    Id: container.research_low_pan
+    Outside: {LengthMm: 650, WidthMm: 450, HeightMm: 160}
+    Inside: {LengthMm: 600, WidthMm: 400, HeightMm: 120}
+    Opening: {LengthMm: 600, WidthMm: 400, HeightMm: 120}
+    UsableVolumeMl: 28800
+    CountLimit: 2
+    AcceptedProfiles:
+    - goods.raw_fish
+    - goods.small_shellfish
+    Slots:
+    - Xmm: 0
+      Ymm: 0
+      Zmm: 0
+      Size: {LengthMm: 300, WidthMm: 400, HeightMm: 120}
+    - Xmm: 300
+      Ymm: 0
+      Zmm: 0
+      Size: {LengthMm: 300, WidthMm: 400, HeightMm: 120}
+    EmptyMassG: 1000
+    LidMassG: 0
+    MaxGrossMassG: 16000
+    RequiredHands: 2
+    MaxHandGrossMassG: 16000
+    HasLid: 0
+    StackGroup: "research_low_pan"
+    MaxStackCount: 3
+    MaxStackHeightMm: 480
+    MaxSupportedMassG: 32000
+    StackRequiresLid: 0
+    AllowHandCarriedStack: 0
+  DimensionSource: Goods-handling design proposal, model table
+  Provenance: "Game proposal. Local pan dimensions, empty mass and limits require confirmation. Two fixed short-fish slots are conservative layouts, not a general packing or certified load rating."

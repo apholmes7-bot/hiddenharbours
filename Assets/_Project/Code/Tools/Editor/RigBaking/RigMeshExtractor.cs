@@ -497,6 +497,9 @@ namespace HiddenHarbours.Tools.RigBaking
             Reconstructions = new Dictionary<string, IReadOnlyDictionary<string, string>>(
                 StringComparer.OrdinalIgnoreCase)
             {
+                // Since the dory's redraw (#1166) her HULL reads its materials through her published scope and
+                // no longer uses this entry. Her two oar fittings still read `DoryIso.MATS`, which the rig does
+                // not export, so the entry stays for them.
                 ["doryIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
                 {
                     ["MATS"] = "{wood:{ramp:RAMP,off:0},iron:{ramp:IRON,off:-2}}",
@@ -582,16 +585,13 @@ namespace HiddenHarbours.Tools.RigBaking
                     ["F"] = "F.concat(doorFaces({doorOpen:0}))",
                 },
 
-                // ---- the cutaway kit's pass-3 tie pair (2026-08-26) ------------------------------
-                // Same posed-leaf rule as the lobster above: pass 3 gave both ships a hinged door
-                // whose leaf lives in doorFaces(opts), composed by their own render() as
-                // `F.concat(doorFaces(opts))`. Bare `F` was correct for their pass-1 rigs and stops
-                // being the drawn boat at pass 3. doorOpen 0 = closed = the fleet default.
-                ["sternTrawlerIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
-                {
-                    ["F"] = "F.concat(doorFaces({doorOpen:0}))",
-                },
-
+                // ---- the cutaway kit's pass-3 packet (2026-08-26) ---------------------------------
+                // Same posed-leaf rule as the lobster above: pass 3 gave her a hinged door whose leaf
+                // lives in doorFaces(opts), composed by her own render() as
+                // `F.concat(doorFaces(opts))`. Bare `F` was correct for her pass-1 rig and stops
+                // being the drawn boat at pass 3. doorOpen 0 = closed = the fleet default. (The stern
+                // trawler shared this rule until she moved to the hull layout, whose extraction reads
+                // her published scope and never reaches this table.)
                 ["coastalPacketIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
                 {
                     ["F"] = "F.concat(doorFaces({doorOpen:0}))",
@@ -618,16 +618,10 @@ namespace HiddenHarbours.Tools.RigBaking
                 //     tanker               1,932 + 16
                 // Every leaf face carries lv:'house' on all three, so a cutaway takes the door with
                 // the room it closes rather than leaving it hanging over an opened wheelhouse.
-                ["sideDraggerIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
-                {
-                    ["F"] = "F.concat(doorFaces({doorOpen:0}))",
-                },
-
-                ["sternTrawlerMk2IsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
-                {
-                    ["F"] = "F.concat(doorFaces({doorOpen:0}))",
-                },
-
+                // (The stern trawler Mk II was the middle one of the three until she followed the Mk1
+                // to the hull layout, whose extraction reads her published scope and never reaches
+                // this table; her measured line above is kept as the record. The dragger, the first
+                // of the three, followed them and left the table the same way; her line is kept too.)
                 ["tankerIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
                 {
                     ["F"] = "F.concat(doorFaces({doorOpen:0}))",
@@ -846,29 +840,6 @@ namespace HiddenHarbours.Tools.RigBaking
                 // TheDoorLeaf_IsTaggedWithTheRoomItCloses asserts `leaf > 0` against the ROOT rig,
                 // which is the one the mesh bakes from. A root rig that stopped publishing
                 // doorFaces goes red there, loudly, on the hull it matters for.
-                ["sportFisherIsoRig2.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
-                {
-                    ["variantFaces"] =
-                        "function(id){var h=null;for(var i=0;i<HULLS.length;i++)" +
-                        "if(HULLS[i].id===id)h=HULLS[i];" +
-                        "if(!h)throw new Error('sportFisherIsoRig2.js: no hull \"'+id+'\". " +
-                        "byId() would have returned the DEFAULT hull silently.');" +
-                        "var fl=h.faceList('stowed');" +
-                        "return typeof h.doorFaces==='function' " +
-                        "? fl.concat(h.doorFaces({doorOpen:0})) : fl;}",
-                    // Her paint is an axis, like the lobster's and the small craft's, and
-                    // `defaultPaint` is 'gelcoat' on both hulls — so this reads the table the rig
-                    // itself would use rather than transcribing one. Her twelve entries are
-                    // hull,boot,cream,stripe,teak,deck,grip,glas,steel,iron,blk,dark; order is
-                    // load-bearing because the face packer resolves an unknown material to index 0.
-                    ["MATS"] = "matsFor('gelcoat').MATS",
-                    // ⚠️ NO `defaultElev` entry, deliberately. It is not one of Required, so it is
-                    // never shimmed — it is read directly, and for this rig it is read from the HULL
-                    // (RigHullExtraction.HullScope), which is where she publishes it. A module-level
-                    // reconstruction would bind the same 40 by a second mechanism and hide the fact
-                    // that elevation is a per-hull fact on this rig.
-                },
-
                 // ---- the RESHAPED sport skiff (fleet rig pack, 2026-08-12; baked 2026-08-16) -----
                 // The FIFTH hull to lose her `MATS` const to a paint axis, and she takes the small
                 // craft's API for the same reason the Cape Islander does: she IS one of them, and
@@ -1380,7 +1351,10 @@ namespace HiddenHarbours.Tools.RigBaking
                         "for(i=0;i<=NSEG;i++){var p=[0,0,0];for(k=0;k<NR;k++){" +
                         "var q=i<NSEG?F[i*NR+k].v[0]:F[(NSEG-1)*NR+k].v[3];p[0]+=q[0]/NR;p[1]+=q[1]/NR;p[2]+=q[2]/NR;}" +
                         "c.push(p);}return c;}" +
-                        "return {edge:EDGE,variants:ORDER.slice()," +
+                        // The rig's ORDER, then any species a kit registered into SPECIES after load
+                        // (the coast species kit's smelt, tomcod, cunner), read when asked, not at load.
+                        "return {edge:EDGE,get variants(){return ORDER.concat(Object.keys(SPECIES)" +
+                        ".filter(function(k){return ORDER.indexOf(k)<0;}));}," +
                         "faces:function(v){return facesOf(R(v)).F;}," +
                         "mats:function(v){R(v);return matsFor(v).MATS;}," +
                         "keyline:function(v){return R(v).outline;}," +
@@ -1392,6 +1366,77 @@ namespace HiddenHarbours.Tools.RigBaking
                         "lines:function(v){var e=facesOf(R(v)).eyes;" +
                         "return {ramps:[matsFor(v).MATS.fin.ramp],lines:[{name:'eyes',bias:0.05,dots:true," +
                         "pts:e.map(function(p){return [p[0],p[1],p[2],0,0,-1];})}]};}" +
+                        "};})()",
+                },
+                // The shellfish family: everything that comes out of a pot, a rake or a flat, in a hand.
+                // Hosted by the crustacean rig because it is the one catch rig with a 3D light; the
+                // shellfish rig is a flat 2D stamper with no camera, gain or light of its own.
+                //   · lobster, crab — the rig's OWN builder at its OWN held pose, exactly the call its
+                //     render() makes for a held cell (crustaceanRig2.js:406: frame 0, scale 1, sway
+                //     -0.10, plus HELD_ROLL for the crab), the faces and plots moved so the grip the
+                //     builder returns is the origin (the bucket's pattern);
+                //   · green_crab — the crab, its ramps passed through the coast kit's OWN crabMap
+                //     (coastSpeciesRig.js:262-264, widened in by RigMeshSymbols.AddOnWidenings), the same
+                //     exact-then-nearest rule its recolour() applies to the crab's pixels (:266-272). The
+                //     kit's yellow mottle and five teeth are pixel passes a mesh cannot carry;
+                //   · mussel, clam, scallop, oyster, periwinkle (Shellfish2.KINDS) and the coast kit's
+                //     SHELLS (quahog, surfclam) — THE HANDFUL the game hands over: one catch item is a
+                //     clutch in one hand, as renderHandful draws it (shellfishRig2.js:96-100): five shells
+                //     for a TINY kind, three otherwise, at its spots around hpivot (the grip), each turned
+                //     by the stamp's angle (:83), each an ellipsoid of the kind's own SIZES len x wid. The
+                //     spots are screen pixels; their depth is unsquashed by the rig's own elevation
+                //     (sin DEFAULT_ELEV, the 0.64 the stamper squashes by). ⚠️ A shell's THICKNESS is the
+                //     one number no rig gives (THICK, a fraction of its width): a reconstruction constant.
+                ["crustaceanRig2.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["PX"] = "S",
+                    ["held"] =
+                        "(function(){" +
+                        "var SPOTS_TINY=[[2,3],[4,3],[3,5],[5,5],[3,2]],SPOTS=[[2,3],[5,3],[3,5]],ANG=[0,0.7,-0.5,1.2]," +
+                        "THICK={periwinkle:0.9,scallop:0.3},THICK_DEFAULT=0.5;" +
+                        "function CS(){return typeof CoastSpecies==='object'&&CoastSpecies?CoastSpecies:null;}" +
+                        "function SF(){return typeof Shellfish2==='object'&&Shellfish2?Shellfish2:null;}" +
+                        "function V(){var v=KINDS.slice(),c=CS(),s=SF();" +
+                        "if(c&&c.crabMap)v.push('green_crab');" +
+                        "if(s)v=v.concat(s.KINDS);" +
+                        "if(s&&c&&c.SHELLS)v=v.concat(Object.keys(c.SHELLS));return v;}" +
+                        "function R(v){if(V().indexOf(v)<0)throw new Error('Crustacean2.held: unknown state '+v);" +
+                        "if(v==='green_crab')return {crust:'crab',green:true};" +
+                        "if(KINDS.indexOf(v)>=0)return {crust:v,green:false};" +
+                        "var s=SF(),c=CS();" +
+                        "if(s.KINDS.indexOf(v)>=0)return {shell:v,len:s.SIZES[v].len,wid:s.SIZES[v].wid,ramp:s.PAL[v],tiny:!!s.TINY[v]};" +
+                        "var q=c.SHELLS[v];return {shell:v,len:q.len,wid:q.wid,ramp:q.ramp,tiny:false};}" +
+                        "function GEO(r){var cr=r.crust==='crab';" +
+                        "var g=(cr?crab:lobster)('held',0,1,{sway:-0.10+(cr?HELD_ROLL:0)});" +
+                        "var o=[-g.grip[0],-g.grip[1],-g.grip[2]],M=function(p){return [p[0]+o[0],p[1]+o[1],p[2]+o[2]];};" +
+                        "return {F:g.F.map(function(f){var c={};for(var k in f)c[k]=f[k];c.v=f.v.map(M);return c;})," +
+                        "Pl:g.Pl.map(function(L){return {a:M(L.a),b:M(L.b),mat:L.mat,k:L.k};}),grip:M(g.grip)};}" +
+                        "function SHELLF(r){var s=SF(),hp=s.hpivot,sq=Math.sin(DEFAULT_ELEV*DEG),sp=r.tiny?SPOTS_TINY:SPOTS,F=[]," +
+                        "t=(THICK[r.shell]||THICK_DEFAULT)*r.wid;" +
+                        "sp.forEach(function(q,i){var x=(q[0]+0.5-hp.x)/S,y=-(q[1]+0.5-hp.y)/(S*sq);" +
+                        "ellipsoid(F,[0,0,0],[r.wid/2,r.len/2,t/2],8,'SHELL',0,chain(rotZ(Math.PI/2-ANG[i%4]),mv(x,y,0)),5);});" +
+                        "return F;}" +
+                        "function MAP(ramp){var m=CS().crabMap,keys=Object.keys(m);return ramp.map(function(h){" +
+                        "if(m[h])return m[h];var c=hex2rgb(h),best=1e9,to=h;keys.forEach(function(k){var d=hex2rgb(k)," +
+                        "e=(d[0]-c[0])*(d[0]-c[0])+(d[1]-c[1])*(d[1]-c[1])+(d[2]-c[2])*(d[2]-c[2]);if(e<best){best=e;to=m[k];}});return to;});}" +
+                        "function MT(r){if(r.shell)return {SHELL:{ramp:r.ramp.slice(),off:0}};var T=MATS[r.crust];" +
+                        "if(!r.green)return T;var o={};for(var k in T)o[k]={ramp:MAP(T[k].ramp),off:T[k].off};return o;}" +
+                        "return {edge:EDGE,get variants(){return V();}," +
+                        "faces:function(v){var r=R(v);return r.shell?SHELLF(r):GEO(r).F;}," +
+                        "mats:function(v){return MT(R(v));}," +
+                        "grip:function(v){var r=R(v);return r.shell?[0,0,0]:GEO(r).grip;}," +
+                        "keyline:function(v){var r=R(v);return r.shell?false:KEYLINE_DEFAULT;}," +
+                        "pose:function(v){var r=R(v);return r.shell" +
+                        "?'handful: '+(r.tiny?SPOTS_TINY:SPOTS).length+' shells at the handful spots, variant 0, thickness '+(THICK[r.shell]||THICK_DEFAULT)+' x width'" +
+                        ":'held: frame 0, scale 1, sway '+(-0.10+(r.crust==='crab'?HELD_ROLL:0)).toFixed(4)+(r.green?', crabMap ramps':'');}," +
+                        "lines:function(v){var r=R(v);if(r.shell)return {ramps:[],lines:[]};" +
+                        "var g=GEO(r),M=MT(r),ramps=[],lines=[],dots=[];" +
+                        "function slot(a){var i=ramps.indexOf(a);if(i<0){ramps.push(a);i=ramps.length-1;}return i;}" +
+                        "g.Pl.forEach(function(L,n){var s=slot((M[L.mat]||M.LEG).ramp),k=Math.max(0,Math.min(4,L.k));" +
+                        "if(L.a[0]===L.b[0]&&L.a[1]===L.b[1]&&L.a[2]===L.b[2])dots.push([L.a[0],L.a[1],L.a[2],s,k,-1]);" +
+                        "else lines.push({name:'plot'+n,bias:0.03,dots:false,pts:[[L.a[0],L.a[1],L.a[2],s,k,-1],[L.b[0],L.b[1],L.b[2],s,k,-1]]});});" +
+                        "if(dots.length)lines.push({name:'dots',bias:0.05,dots:true,pts:dots});" +
+                        "return {ramps:ramps,lines:lines};}" +
                         "};})()",
                 },
             };
@@ -1441,38 +1486,6 @@ namespace HiddenHarbours.Tools.RigBaking
             InnerWidenings = new Dictionary<string, IReadOnlyList<InnerWidening>>(
                 StringComparer.OrdinalIgnoreCase)
             {
-                ["sportFisherIsoRig2.js"] = new[]
-                {
-                    new InnerWidening
-                    {
-                        // makeRig's own first property. Deliberately NOT a bare literal opener: this
-                        // rig has several (proj's `{x,y}`, DOORS, NAV), and an anchor that matched
-                        // one of those would expose nothing and fail far away.
-                        //
-                        // ⚠️ WIDENED TO TWO SHAPES 2026-09-02 (cutaway batch 5), and it has to
-                        // recognise BOTH for as long as both vintages are in the tree.
-                        //
-                        // Pass 2 gave makeRig a NAMED return — `const RIG = {…}; … return RIG;` —
-                        // because her render() now hands the object to BoatCutaway.filter and needs
-                        // a name for it. The old anchor was `return\s*\{\s*\n\s*id:spec\.id,`, which
-                        // matched exactly once on the pass-1 rig and ZERO times on batch 5's. That
-                        // is the good failure mode — the shim refuses rather than widening the wrong
-                        // literal — but re-aiming it at the new form alone then broke the OTHER
-                        // copy: this table is keyed by FILE NAME, and TWO vintages of
-                        // sportFisherIsoRig2.js live in this repo on purpose. Root is batch 5's pass
-                        // 3; docs/art/rigs/boat-interiors-kit/hull-rigs/ still holds the pass-2 loft
-                        // the 27 interior sidecars pin, and BoatInteriorDefShapeTests extracts from
-                        // THAT one. Measured on all three committed copies — root, the interiors
-                        // kit, and boat-cutaway-kit-5 — this union matches EXACTLY ONCE in each,
-                        // and neither branch of it matches anything in the other's file.
-                        AnchorPattern = @"(?:return|const\s+RIG\s*=)\s*\{\s*\n\s*id:spec\.id,",
-                        Insert = " faceList, F, RIGF,",
-                        Why = "makeRig() keeps this hull's face list in its own closure; the mesh " +
-                              "bake reads faceList('stowed') and concats the posed salon leaf, " +
-                              "which is exactly what her render() draws.",
-                    },
-                },
-
                 // ---- the pass-6 CHARACTER body (ADR 0044, mesh characters, 2026-09-09) -----------
                 // The character rig exports its geometry surface ALREADY: facesOf, pose, makeMats,
                 // GAIN, BIAS, LN, BAYER, ANIMS, BUILDS, CAST and propsOf are all on the API. So it
@@ -1556,6 +1569,29 @@ namespace HiddenHarbours.Tools.RigBaking
         /// reported separately because the two are very different claims.</summary>
         public static bool IsReconstructed(string scriptPath, string symbol) =>
             ExpressionFor(scriptPath, symbol) != symbol;
+
+        /// <summary>
+        /// <b>Closure-private symbols an ADD-ON kit has widened into its exported literal</b> when
+        /// <see cref="RigMeshExtractor.InstallAddOns"/> installs it, keyed by file name, for a held
+        /// reconstruction in ANOTHER rig that reads them off the kit's global at bake time.
+        ///
+        /// <para>Today: the coast species kit's <c>crabMap</c>, the hex-for-hex map it repaints the
+        /// rock crab's pixels green with (coastSpeciesRig.js:262-264). The crustacean rig's held
+        /// reconstruction applies the SAME map to the rock crab's material ramps, so the green crab
+        /// mesh is the kit's own recolour, read rather than retyped. Plain widenings (the kit's own
+        /// names), so they retire the day the kit exports them.</para>
+        /// </summary>
+        public static readonly IReadOnlyDictionary<string, string[]> AddOnWidenings =
+            new Dictionary<string, string[]>(StringComparer.Ordinal)
+            {
+                ["coastSpeciesRig.js"] = new[] { "crabMap" },
+            };
+
+        /// <summary>This kit's <see cref="AddOnWidenings"/>; empty for every other file.</summary>
+        public static string[] AddOnWideningsFor(string scriptPath) =>
+            AddOnWidenings.TryGetValue(Path.GetFileName(scriptPath ?? string.Empty), out string[] syms)
+                ? syms
+                : Array.Empty<string>();
     }
 
     /// <summary>
@@ -1640,6 +1676,24 @@ namespace HiddenHarbours.Tools.RigBaking
         public string[] ExtraSymbols = Array.Empty<string>();
 
         /// <summary>
+        /// <see cref="RigCatalog"/> keys of kits installed into the host AFTER the rig (and after its
+        /// widening), for a kit that adds to the rig's own tables at load: the coast species kit
+        /// registers smelt, tomcod and cunner into <c>FishIso2.SPECIES</c>, so the fish rig's own
+        /// builders draw them. They must run after pass 2, because pass 2 re-runs the rig and replaces
+        /// its tables. Empty for every rig that stands alone.
+        /// </summary>
+        public string[] AddOnRigKeys = Array.Empty<string>();
+
+        /// <summary>
+        /// <see cref="RigCatalog"/> keys installed into the host BEFORE the rig's first run: the rig's
+        /// own declared prerequisites (<see cref="RigEntry.Prerequisites"/>), which a rig that captures
+        /// a library global when its IIFE runs needs present by then — the crustacean rig binds
+        /// <c>root.IsoSolid</c> at load and calls its <c>box</c> and <c>bar</c> from its builders.
+        /// Already-present globals are skipped. Empty for a rig that stands alone.
+        /// </summary>
+        public string[] PrerequisiteRigKeys = Array.Empty<string>();
+
+        /// <summary>
         /// JS returning this fitting's material table, relative to the global — e.g.
         /// <c>held.mats('cane')</c>. <b>Null = the rig's own <c>MATS</c></b>, which is every hull and
         /// every boat fitting: they set nothing and take the identical road they always have.
@@ -1655,6 +1709,10 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <summary>Optional JS for the fitting's articulation limits and mounts; null when it does
         /// not steer, tilt, or carry more than one instance.</summary>
         public string MaxSteerCall, MaxTiltCall, LateralMountsCall;
+
+        /// <summary>Optional JS for the axis a steered fitting turns about, as [x,y,z] in rig space;
+        /// null for a fitting that swivels straight up (every outboard).</summary>
+        public string SteerAxisCall;
 
         /// <summary>The rig's backface rule for THIS fitting — see
         /// <see cref="RigMeshData.BackfaceRescueNeedsOptIn"/>.</summary>
@@ -1833,6 +1891,38 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         /// <summary>
+        /// Install each kit in <paramref name="keys"/> (<see cref="RigCatalog"/> keys) into a host that
+        /// already carries the rig they extend. A kit already installed is skipped, so a host read twice
+        /// does not register its additions twice. The kit files are only ever READ.
+        /// </summary>
+        public static void InstallAddOns(IRigScriptHost host, string[] keys)
+        {
+            if (host == null || keys == null) return;
+            foreach (string key in keys)
+            {
+                var entry = RigCatalog.Get(key);
+                string g = entry.GlobalName;
+                if (!host.EvaluateBool($"typeof {g} === 'object' && {g} !== null"))
+                    RigCatalog.InstallModule(host, entry);
+
+                // A kit with closure-private symbols another rig's held reconstruction reads
+                // (RigMeshSymbols.AddOnWidenings) is re-run once with them widened in. The kit's load
+                // is idempotent by assignment (it sets keys, it does not push), so the second run
+                // registers the same additions over the first.
+                string[] widen = RigMeshSymbols.AddOnWideningsFor(entry.ScriptPath);
+                if (widen.Length == 0 || widen.All(s => HasSymbol(host, g, s))) continue;
+                string source = File.ReadAllText(Path.Combine(RigCatalog.RepoRoot, entry.ScriptPath));
+                host.Execute(WidenExportedLiteral(source, g, widen, entry.ScriptPath));
+                string[] still = widen.Where(s => !HasSymbol(host, g, s)).ToArray();
+                if (still.Length > 0)
+                    throw new InvalidOperationException(
+                        $"Add-on widening of '{entry.ScriptPath}' did not take: {g}." +
+                        $"{{{string.Join(",", still)}}} is still missing. The kit changed shape; re-aim " +
+                        "RigMeshSymbols.AddOnWidenings. ⚠️ Do NOT edit docs/art/rigs/**.");
+            }
+        }
+
+        /// <summary>
         /// Extracts from a rig that is not in <see cref="RigCatalog"/>. The catalog deliberately
         /// lists only the rigs the sprite baker actually bakes (CLAUDE.md rule 8 — importing source
         /// is not a licence to wire content), and adding the side dragger there would offer the
@@ -1868,6 +1958,10 @@ namespace HiddenHarbours.Tools.RigBaking
             // READ ONLY. Nothing below ever writes this path. See the class doc.
             string source = File.ReadAllText(full);
             string g = globalName;
+
+            // A rig that binds a library global when its IIFE runs needs that library in first, for
+            // both passes. See RigPropExtraction.PrerequisiteRigKeys.
+            if (prop != null) InstallAddOns(host, prop.PrerequisiteRigKeys);
 
             // ---- pass 1: run the rig UNMODIFIED and see what it already gives us -------------
             host.Execute(source);
@@ -1948,6 +2042,10 @@ namespace HiddenHarbours.Tools.RigBaking
                           "_paint does — it is adjudicated in pixels by the acceptance fixture, never " +
                           "trusted on its face."));
             }
+
+            // Kits that add to the rig's own tables go in last, onto the rig as it now stands (pass 2
+            // replaced it). See RigPropExtraction.AddOnRigKeys.
+            if (prop != null) InstallAddOns(host, prop.AddOnRigKeys);
 
             // A fitting may ship its OWN cell — the skiff outboard's 272×216 against a 244×216 hull,
             // because the engine swings outboard of the transom. Reading the hull's cell for it would

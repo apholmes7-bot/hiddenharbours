@@ -16,6 +16,7 @@ MonoBehaviour:
   DisplayName: Celeste Bernard
   Boat: {fileID: 11400000, guid: 3f1c86b0d5a24e14ab97e2f0c4d81b63, type: 2}
   BuoyScheme: Tanker
+  HullPaint: {fileID: 11400000, guid: d1034e960674dea4d974383193f36915, type: 2}
   Prosperity: 1
   ShedFootprintMetres: 6.0
   LotIndex: 5

@@ -1,0 +1,149 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee76649f87a8cfd4890261ca9a64ffa3, type: 3}
+  m_Name: DoryIso_SquallGrey
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullPaintSchemeDef
+  Id: paint.dory_squall_grey
+  Label: SQUALL GREY
+  Note: Workboat grey topsides, a white rail and stem, tarred inside.
+  HullMeshId: hullmesh.dory_iso
+  SourceRigPath: docs/art/rigs/doryIsoRig.js
+  RigPaintId: squall-grey
+  Ramps:
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282333491
+    - serializedVersion: 2
+      rgba: 4283649092
+    - serializedVersion: 2
+      rgba: 4285096280
+    - serializedVersion: 2
+      rgba: 4286543725
+    - serializedVersion: 2
+      rgba: 4287991428
+    - serializedVersion: 2
+      rgba: 4289373596
+    - serializedVersion: 2
+      rgba: 4290755765
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279244317
+    - serializedVersion: 2
+      rgba: 4279639848
+    - serializedVersion: 2
+      rgba: 4280035380
+    - serializedVersion: 2
+      rgba: 4280496705
+    - serializedVersion: 2
+      rgba: 4281023822
+    - serializedVersion: 2
+      rgba: 4281485403
+    - serializedVersion: 2
+      rgba: 4282012520
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0.2
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4285493350
+    - serializedVersion: 2
+      rgba: 4287664262
+    - serializedVersion: 2
+      rgba: 4289573031
+    - serializedVersion: 2
+      rgba: 4291218628
+    - serializedVersion: 2
+      rgba: 4292535004
+    - serializedVersion: 2
+      rgba: 4293390317
+    - serializedVersion: 2
+      rgba: 4293981942
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279179296
+    - serializedVersion: 2
+      rgba: 4279509034
+    - serializedVersion: 2
+      rgba: 4280036410
+    Offset: -2
+    _hasDitherWeight: 1
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279969587
+    - serializedVersion: 2
+      rgba: 4280759879
+    - serializedVersion: 2
+      rgba: 4281353822
+    - serializedVersion: 2
+      rgba: 4281683819
+    - serializedVersion: 2
+      rgba: 4282935946
+    - serializedVersion: 2
+      rgba: 4283660442
+    - serializedVersion: 2
+      rgba: 4283597737
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0.25
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4281352527
+    - serializedVersion: 2
+      rgba: 4282406246
+    - serializedVersion: 2
+      rgba: 4283459965
+    - serializedVersion: 2
+      rgba: 4284513683
+    - serializedVersion: 2
+      rgba: 4285698472
+    - serializedVersion: 2
+      rgba: 4286882745
+    - serializedVersion: 2
+      rgba: 4288066760
+    Offset: 0
+    _hasDitherWeight: 1
+    _ditherWeight: 0.25
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282409071
+    - serializedVersion: 2
+      rgba: 4283661197
+    - serializedVersion: 2
+      rgba: 4284978601
+    - serializedVersion: 2
+      rgba: 4286558147
+    - serializedVersion: 2
+      rgba: 4288267991
+    Offset: -1
+    _hasDitherWeight: 1
+    _ditherWeight: 0.3
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282071347
+    - serializedVersion: 2
+      rgba: 4283649863
+    - serializedVersion: 2
+      rgba: 4285294430
+    - serializedVersion: 2
+      rgba: 4287267448
+    - serializedVersion: 2
+      rgba: 4288912788
+    Offset: -1
+    _hasDitherWeight: 1
+    _ditherWeight: 0

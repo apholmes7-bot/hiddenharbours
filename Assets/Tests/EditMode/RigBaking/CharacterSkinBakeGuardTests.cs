@@ -517,6 +517,12 @@ namespace HiddenHarbours.Tests.RigBaking
         /// file from the character intake's Phase B (2026-09-26); rig 10 over its own since the rig 10
         /// intake's Phase B (2026-10-02). <c>ComposeV9</c> pins the script and the poses of the kit it
         /// bakes (<see cref="CharacterSkinAssetBaker.LiveKit"/>).</para>
+        ///
+        /// <para><b>A proposal skin pins the kit it names</b> (the next-iteration art pass, 2026-11-11):
+        /// a def under <see cref="CharacterSkinAssetBaker.VariantFolder"/> is read against the kit its
+        /// own <c>SourceRigPath</c> names, which must be a kit the reader knows, must not be the live
+        /// one, and must be the one its file name says. Every def anywhere else is held to the live kit
+        /// exactly as before, so a proposal can never stand in for a shipped skin.</para>
         /// </summary>
         [Test]
         public void EveryCommittedSkinDef_PinsTheRigsAsTheyAreToday()
@@ -535,11 +541,37 @@ namespace HiddenHarbours.Tests.RigBaking
                 "broken, and every check below would pass on nothing.");
 
             var stale = new List<string>();
+            int shipped = 0, proposals = 0;
             foreach (string guid in guids)
             {
                 string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
                 var committed = UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterSkinDef>(path);
                 Assert.IsNotNull(committed, $"{path} is indexed as a CharacterSkinDef and does not load as one.");
+
+                if (path.StartsWith(CharacterSkinAssetBaker.VariantFolder + "/", StringComparison.Ordinal))
+                {
+                    proposals++;
+                    CharacterRigKit named = CharacterRigKit.ForScriptPath(committed.SourceRigPath);
+                    Assert.IsNotNull(named,
+                        $"{path} names '{committed.SourceRigPath}', which is no character kit the reader knows.");
+                    Assert.AreNotSame(kit, named,
+                        $"{path} is a proposal skin baked from the live kit; that is the shipped skin's job.");
+                    Assert.AreEqual(CharacterSkinAssetBaker.VariantPathFor(named, committed.Preset), path,
+                        $"{path} is not where a '{committed.Preset}' proposal from {named.Name} is written.");
+                    Assert.AreEqual(CharacterSkinAssetBaker.VariantIdFor(named, committed.Preset), committed.Id,
+                        $"{path} does not carry its own id.");
+                    Assert.AreEqual(named.PosesPath, committed.BaseRigPath,
+                        $"{path} was baked from different poses than {named.Name}'s");
+                    string namedSource = CharacterSkinExtractor.SourceSha256V9(named);
+                    string namedBase = CharacterSkinExtractor.PosesSha256V9(named);
+                    if (!string.Equals(namedSource, committed.SourceRigSha256, StringComparison.Ordinal))
+                        stale.Add($"{path}: {named.Name} {Head(committed.SourceRigSha256)} baked, {Head(namedSource)} live");
+                    if (!string.Equals(namedBase, committed.BaseRigSha256, StringComparison.Ordinal))
+                        stale.Add($"{path}: {named.Name}'s poses {Head(committed.BaseRigSha256)} baked, {Head(namedBase)} live");
+                    continue;
+                }
+
+                shipped++;
                 Assert.AreEqual(sourcePath, committed.SourceRigPath,
                     $"{path} was baked from a different skinned export than {sourceName}");
                 Assert.AreEqual(basePath, committed.BaseRigPath,
@@ -556,7 +588,10 @@ namespace HiddenHarbours.Tests.RigBaking
                 string.Join("\n  ", stale) + "\nThe skin the game draws is not the rig's. Re-bake it " +
                 "(the player: \"Bake character SKIN (the player, ADR 0044 d)\") and commit the asset with " +
                 "the rig change. Never edit the hash.");
-            Debug.Log($"[char-skin guard] {guids.Length} committed def(s) pin the live rigs: " +
+            Assert.Greater(shipped, 0,
+                "every CharacterSkinDef found is a proposal, and the cast's are committed: the search is broken.");
+            Debug.Log($"[char-skin guard] {proposals} proposal def(s) pin the kits they name. " +
+                      $"{shipped} of {guids.Length} committed def(s) pin the live rigs: " +
                       $"{sourceName} {Head(liveSource)} / {baseName} {Head(liveBase)}");
         }
 

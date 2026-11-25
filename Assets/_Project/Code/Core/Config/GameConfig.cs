@@ -16,6 +16,86 @@ namespace HiddenHarbours.Core
         [Tooltip("Maximum name length after trimming surrounding spaces.")]
         [Min(1)] public int PlayerNameMaxLength = DefaultPlayerNameMaxLength;
 
+        public const int DefaultTraitPicksPerCharacter = 2;
+
+        [Header("Character traits")]
+        [Tooltip("How many named traits a character picks (owner ruling 2026-11-14: two). The bonuses " +
+                 "themselves live on each TraitDef under Data/Resources/Traits.")]
+        [Min(0)] public int TraitPicksPerCharacter = DefaultTraitPicksPerCharacter;
+
+        [Header("Needs (hunger and tiredness)")]
+        [Tooltip("Hunger and tiredness (owner ruling 2026-11-14). They only slow the walk a little and " +
+                 "shave a little off an in-person sale; they never stop the character and are never shown " +
+                 "as a bar. Rates are per IN-GAME hour. Read through GameServices.NeedsSettings.")]
+        public NeedsSettings Needs = NeedsSettings.Default;
+
+        [Header("Body (frame, weight, metabolism, overeating)")]
+        [Tooltip("The player's body (owner ask 2026-11-15). Frame and height set a lean and a max mass; " +
+                 "a bigger body gets hungry sooner (Mifflin-St Jeor), a heavier one walks slower, a taller " +
+                 "one faster; eating past a full stomach makes the player sick. Never shown as a number. " +
+                 "The default frame at height scale 1 and lean mass is exactly today's player. Read " +
+                 "through GameServices.BodySettings.")]
+        public BodySettings Body = BodySettings.Default;
+
+        [Tooltip("Body slice 2 (owner ask 2026-11-15): strength and cardio. Training grows grip, back, legs " +
+                 "and cardio slowly; keeping them up is cheap; muscle memory regains a lost level faster. " +
+                 "Strength and mass set what the player can carry and how much a load slows the walk; cardio " +
+                 "makes moving a little faster and cheaper. Untrained and empty-handed is exactly today's " +
+                 "player. Read through GameServices.StrengthSettings.")]
+        public StrengthSettings Strength = StrengthSettings.Default;
+
+        [Header("Crew and trip limits")]
+        [Tooltip("Crew slice R2: how many nights each trip kind plans for, whether hired hands may share a " +
+                 "bunk in two watches (owner ruling: yes, shipped ON) and whether month trips need a hired " +
+                 "skipper. Players never share a bunk (owner ruling 2026-11-15). Read through " +
+                 "GameServices.CrewPolicy. The per-hull numbers live on each BoatVoyageDef.")]
+        public CrewPolicy Crew = CrewPolicy.Default;
+
+        [Header("Rowing styles (how a rower pulls: timing and the hull's surge)")]
+        [Tooltip("The style the PLAYER rows. rowstyle.steady is the stroke he has always rowed (plus a " +
+                 "subtle surge on the pull); point it at rowstyle.casual to give him the unhurried pull " +
+                 "with a rest. Empty = the plain stroke with an even push.")]
+        public RowingStyleDef PlayerRowingStyle;
+        [Tooltip("The style a character the game rows for uses when their CharacterVisualDef names " +
+                 "none (rowstyle.casual: nobody else rows like a racer).")]
+        public RowingStyleDef NpcRowingStyle;
+
+        [Header("Helm sit and stand (the mesh figure takes and leaves a helm)")]
+        [Tooltip("How long the player's figure takes to sit down at a tiller seat, a seated helm or the oars, " +
+                 "or to step up and take a standing wheel, and to leave again; and how the move splits " +
+                 "between going to the spot and settling into the pose. Visual only: the helm goes live on " +
+                 "the press. 0 seconds (or Enabled off) is the old one-frame snap.")]
+        public HelmTransitionSettings HelmSitStand = HelmTransitionSettings.Default;
+
+        [Header("Cleanliness (the third need)")]
+        [Tooltip("Dirt (owner ask 2026-11-15): rises slowly with game time and faster with dirty work, the " +
+                 "gym and the sea; washing at a station clears it, each station only to its own ceiling (sea " +
+                 "< sink < shower). Stinky is the curve's StrongAt: villagers notice. Never shown as a bar. " +
+                 "The wash rates and ceilings live on the WashStationDef assets. Read through " +
+                 "GameServices.CleanlinessSettings.")]
+        public CleanlinessSettings Cleanliness = CleanlinessSettings.Default;
+
+        [Header("Kitchens (dining and seated rest)")]
+        [Tooltip("Kitchens (owner ask 2026-11-15): the food boost of eating seated or at a table, and how " +
+                 "far sitting can rest you (never as far as a bed). Shared by galleys aboard, homes, shops " +
+                 "and player-built kitchens. Read through GameServices.KitchenSettings.")]
+        public KitchenSettings Kitchen = KitchenSettings.Default;
+
+        public const float DefaultCreatorFigureHeightFraction = 0.6f;
+
+        [Header("Character creator view")]
+        public Color CreatorBackdropColor = NotebookInk.Paper;
+        [Range(0.1f, 0.7f)] public float CreatorFigureHeightFraction = DefaultCreatorFigureHeightFraction;
+
+        public const float DefaultMeshArmClearancePx = 1f;
+
+        [Header("Character mesh clearance (QA)")]
+        [Tooltip("The deepest an arm vertex (forearm or hand) of the player's mesh may sit inside his " +
+                 "torso or head on any frame of the dig, hauler and strike clips, in rig pixels " +
+                 "(CharacterSkinDef.PxPerMetre to the metre). Each body part is measured as a capsule " +
+                 "along its bones. Read by the EditMode clearance test, never at runtime.")]
+        [Range(0f, 4f)] public float MeshArmClearancePx = DefaultMeshArmClearancePx;
+
         [Header("Curling breakers")]
         public CurlingBreakerSettings CurlingBreakers = CurlingBreakerSettings.Default;
 
@@ -69,6 +149,25 @@ namespace HiddenHarbours.Core
         /// it reproduces to within 4 %. See <see cref="CatchSize"/> for why the law is a cube root.</summary>
         public const float DefaultFishLengthPerKgCubeRootMeters = 0.477f;
 
+        /// <summary>The default for <see cref="MinDrawnFishLengthPx"/>: 12 px, a little under two hand
+        /// widths of the 64 px figure. Measured against the catch pass 2 held sheets it lifts only the
+        /// drawings shorter than that (the small mackerel and flounder, the small and middle herring) and
+        /// leaves every other rung alone.</summary>
+        public const float DefaultMinDrawnFishLengthPx = 12f;
+
+        /// <summary>The default for <see cref="HeldFishKeylineMaxLengthPx"/>: 16 px. Measured against the
+        /// catch pass 2 held sheets it lines every herring and mackerel drawing, the small haddock, bass and
+        /// pollock and the small and middle flounder, and leaves every cod and every larger drawing alone.</summary>
+        public const float DefaultHeldFishKeylineMaxLengthPx = 16f;
+
+        /// <summary>The default for <see cref="HeldFishKeylineShade"/>: the line is the fish's own colours at
+        /// 40% brightness, a step down its own ramp rather than a colour of its own.</summary>
+        public const float DefaultHeldFishKeylineShade = 0.4f;
+
+        /// <summary>The default for <see cref="HeldFishKeylineOffsetsPx"/>: one sprite pixel to either side,
+        /// so a fish hanging by its tail gets a dark line down both long edges and none across its ends.</summary>
+        public static Vector2[] DefaultHeldFishKeylineOffsetsPx() => new[] { new Vector2(-1f, 0f), new Vector2(1f, 0f) };
+
         /// <summary>
         /// The default for <see cref="VehicleDoorSweepSeconds"/> — how long a vehicle door takes to
         /// travel from shut to fully open.
@@ -117,10 +216,150 @@ namespace HiddenHarbours.Core
                  "ruling; was 1200 = 20 min). Raising this slows EVERY real-time pace in the game — tide, " +
                  "rot, routines, the moon — because they are all clocked in in-game hours.")]
         public float SecondsPerDay = DefaultSecondsPerDay;
+        [Tooltip("Hour a fresh game opens at. Scene-local start hours are obsolete and ignored.")]
+        [Range(0f, 24f)] public float StartHour = 7.5f;
+
+        /// <summary>The hour a night's rest wakes at when no config is wired (EditMode, a bare test
+        /// rig): the design's 06:00 (time-tides-weather §1.3). The sibling of
+        /// <see cref="DefaultSecondsPerDay"/>, read by <see cref="RestMorning"/>.</summary>
+        public const float DefaultWakeHour = 6f;
+
+        [Tooltip("Hour of the morning your own bed wakes you at. Lying down brings the NEXT time the " +
+                 "clock reads this hour: tomorrow's when you turn in during the day or the evening, " +
+                 "this morning's when you turn in after midnight. 6 = 06:00, the design's wake time. " +
+                 "The day rollover (market recovery, snow cover) fires for every midnight slept through.")]
+        [Range(0f, 24f)] public float WakeHour = DefaultWakeHour;
+
+        /// <summary>The shortest sleep the chooser offers, when no config is wired (owner ruling
+        /// 2026-11-15: "Player chooses sleep duration").</summary>
+        public const float DefaultSleepMinHours = 1f;
+
+        /// <summary>The longest sleep, when no config is wired: the ruling's own cap ("Maximum 8 hours
+        /// sleep before auto waking"). <see cref="SleepPlan.RulingMaxHours"/> holds the field to it.</summary>
+        public const float DefaultSleepMaxHours = 8f;
+
+        /// <summary>How far one press of the chooser moves the hours, when no config is wired.</summary>
+        public const float DefaultSleepStepHours = 1f;
+
+        /// <summary>How many in-game hours pass per real second while asleep, when no config is wired:
+        /// a full eight-hour night goes by in eight seconds.</summary>
+        public const float DefaultSleepGameHoursPerRealSecond = 1f;
+
+        [Tooltip("The shortest sleep you can choose, in in-game hours.")]
+        [Range(0.25f, 8f)] public float SleepMinHours = DefaultSleepMinHours;
+
+        [Tooltip("The longest sleep you can choose, in in-game hours. You wake on your own when it is up. " +
+                 "Never more than 8: the owner's ruling caps a sleep at eight hours, whatever this says.")]
+        [Range(0.25f, 8f)] public float SleepMaxHours = DefaultSleepMaxHours;
+
+        [Tooltip("How many hours one press left or right changes the chosen sleep by.")]
+        [Range(0.25f, 4f)] public float SleepStepHours = DefaultSleepStepHours;
+
+        [Tooltip("How fast time runs while you sleep: in-game hours per real second. 1 = an eight-hour " +
+                 "night goes by in eight seconds. The world is exactly what it would be had the same " +
+                 "hours passed at the normal pace; only the wait changes. You can wake early with a press.")]
+        [Min(0.05f)] public float SleepGameHoursPerRealSecond = DefaultSleepGameHoursPerRealSecond;
+
+        /// <summary>Whether a bunk aboard refuses while she is neither made fast nor holding at anchor,
+        /// when no config is wired. TRUE: the owner's safe default ("it's not safe to turn in out
+        /// here").</summary>
+        public const bool DefaultBunkRequiresMooredOrAnchored = true;
+
+        /// <summary>How close (m) to a bunk's reach point the player must stand, when no config is
+        /// wired.</summary>
+        public const float DefaultBunkReachMetres = 1f;
+
+        [Tooltip("Sleeping aboard (owner 2026-11-14): when ON, a bunk on your boat only lets you turn in " +
+                 "while she is made fast to a cleat, berthed, or holding at anchor. Adrift or under way it " +
+                 "answers \"It's not safe to turn in out here.\" Turn OFF to let the player sleep anywhere.")]
+        public bool BunkRequiresMooredOrAnchored = DefaultBunkRequiresMooredOrAnchored;
+
+        [Tooltip("How close (m) you must stand to a bunk's own reach point, which is already the spot the " +
+                 "rig says you stand on to use it — so this is a forgiving step, not a precise one.")]
+        [Min(0.1f)] public float BunkReachMetres = DefaultBunkReachMetres;
+        [Tooltip("Season at elapsed day zero. Its offset uses DaysPerSeason, never a separate day count.")]
+        public Season StartSeason = Season.HighSummer;
+        [Tooltip("One-based day within the starting season. Changes labels, never simulation seconds.")]
+        [Min(1)] public int StartDayOfSeason = 1;
+        public int StartDayOfYear => (int)StartSeason * System.Math.Max(1, DaysPerSeason)
+                                 + Mathf.Clamp(StartDayOfSeason, 1, System.Math.Max(1, DaysPerSeason)) - 1;
         [Min(1)] public int DaysPerWeek = 7;
         [Min(1)] public int DaysPerSeason = DefaultDaysPerSeason;
         [Tooltip("Which weekday is Market Day at Nine Mile Creek (0 = Monday).")]
         public int MarketDayIndex = 4; // Friday
+
+        /// <summary>The chooser's switch when no config is wired: ON (owner ask 2026-11-15).</summary>
+        public const bool DefaultInteractChooserEnabled = true;
+
+        /// <summary>The highest candidate rung that becomes a chooser row when no config is wired: the
+        /// fixture rung (<see cref="InteractPriority.Fixture"/>).</summary>
+        public const int DefaultInteractChooserMaxPriority = InteractPriority.Fixture;
+
+        /// <summary>The most rows the chooser shows when no config is wired.</summary>
+        public const int DefaultInteractChooserMaxRows = 6;
+
+        /// <summary>The heavy-work needs bar when no config is wired: refused only when worn out or hungry
+        /// (the Strong stage of each).</summary>
+        public static readonly NeedsRequirement DefaultHeavyWorkNeeds =
+            new NeedsRequirement(NeedStage.Strong, NeedStage.Strong);
+
+        [Header("Interaction chooser (owner 2026-11-15)")]
+        [Tooltip("When ON, pressing interact where two or more actions are in reach opens a small list to " +
+                 "pick from (arrows/W-S + E or Enter, number keys, the mouse, or a pad's stick/d-pad + " +
+                 "south to confirm, east to cancel). OFF: the press acts on the " +
+                 "nearest, most specific thing, as before.")]
+        public bool InteractChooserEnabled = DefaultInteractChooserEnabled;
+
+        [Tooltip("The highest interaction rung that joins the list. 0 = fixtures and below (beds, doors, " +
+                 "lids, counters). Things in your hands (20), at your feet (10) and tool targets (30) keep " +
+                 "acting at once, because what you hold is what you meant.")]
+        public int InteractChooserMaxPriority = DefaultInteractChooserMaxPriority;
+
+        [Tooltip("The most rows the list shows (at most 9, one per number key).")]
+        [Range(2, InteractChoiceList.HardCap)] public int InteractChooserMaxRows = DefaultInteractChooserMaxRows;
+
+        /// <summary>How far the list's up/down axis must travel to count as a push when no config is
+        /// wired. 0.5 is the latch the keyboard has always used, so W/S and the arrows are unchanged.</summary>
+        public const float DefaultInteractChooserPushThreshold = 0.5f;
+
+        /// <summary>How long a held stick or d-pad waits before the highlight starts running on, when no
+        /// config is wired.</summary>
+        public const float DefaultInteractChooserRepeatDelaySeconds = 0.4f;
+
+        /// <summary>The gap between steps once the highlight is running on, when no config is wired.</summary>
+        public const float DefaultInteractChooserRepeatIntervalSeconds = 0.12f;
+
+        [Tooltip("How far the up/down axis must travel to move the highlight, and fall back before the next " +
+                 "push counts (0..1 of full tilt). Sits on top of the stick's own dead zone, so drift never " +
+                 "steps a row. Keys are always full tilt.")]
+        [Range(0.2f, 0.9f)] public float InteractChooserPushThreshold = DefaultInteractChooserPushThreshold;
+
+        [Tooltip("Gamepad only: seconds a held stick or d-pad waits before the highlight runs on, one row " +
+                 "at a time. The keyboard keeps one row per press.")]
+        [Range(0.1f, 1.5f)] public float InteractChooserRepeatDelaySeconds = DefaultInteractChooserRepeatDelaySeconds;
+
+        [Tooltip("Gamepad only: seconds between rows once a held stick or d-pad is running on.")]
+        [Range(0.05f, 0.5f)] public float InteractChooserRepeatIntervalSeconds = DefaultInteractChooserRepeatIntervalSeconds;
+
+        /// <summary>How long the folded TASKS chip signals a new or finished task, when no config is
+        /// wired (owner ask 2026-11-16).</summary>
+        public const float DefaultTasksChipSignalSeconds = 2.4f;
+
+        /// <summary>How long each on/off beat of that signal lasts, when no config is wired.</summary>
+        public const float DefaultTasksChipBlinkSeconds = 0.3f;
+
+        [Tooltip("Folded TASKS note: seconds its chip flashes gold when a task is added or finished. The " +
+                 "note never re-opens itself; this is the whole of the nudge.")]
+        [Range(0.5f, 8f)] public float TasksChipSignalSeconds = DefaultTasksChipSignalSeconds;
+
+        [Tooltip("Folded TASKS note: seconds per on/off beat of the chip's flash.")]
+        [Range(0.1f, 1f)] public float TasksChipBlinkSeconds = DefaultTasksChipBlinkSeconds;
+
+        [Tooltip("The bar for heavy work, for an action that opts in: refused at this tiredness / hunger " +
+                 "stage or worse, and the player says \"I'm too tired\" / \"I'm too hungry\" / both. None = " +
+                 "never refused for that need. No action opts in yet (the needs ruling: a need never stops " +
+                 "the character); this is the dial for when one does.")]
+        public NeedsRequirement HeavyWorkNeeds = DefaultHeavyWorkNeeds;
 
         [Header("Tide")]
         [Tooltip("Principal lunar semidiurnal period in hours (~12.42 = two highs per tidal day).")]
@@ -149,11 +388,6 @@ namespace HiddenHarbours.Core
                  "step sizes the HUD gauge and the editor tool already used, so the shipped page reads " +
                  "exactly as before.")]
         public TideTableSettings TideTable = TideTableSettings.Default;
-
-        [Tooltip("The masthead pennant (VS-19) — the boat's own wind instrument. Where the burgee gives " +
-                 "up and hangs, the apparent wind at which it flies board-stiff, and how quickly it " +
-                 "chases a veering gust. This is the read that replaces squinting at a HUD line.")]
-        public TelltaleSettings Telltale = TelltaleSettings.Default;
 
         [Header("Weather")]
         [Tooltip("Baseline wind strength (m/s) before regional/temporal variation.")]
@@ -185,6 +419,10 @@ namespace HiddenHarbours.Core
         [Range(0f, 1f)] public float SwimSlowFactor = 0.25f;
 
         [Header("Getting aboard and ashore")]
+        [Tooltip("Require owned boats to be repaired before boarding. Off while damage and repairs are " +
+                 "deferred; enable to enforce the repair ledger.")]
+        public bool RequireBoatRepairsBeforeBoarding = false;
+
         [Tooltip("How close you must be to a hull to climb aboard, in metres — measured to her OUTLINE, " +
                  "not to her root, so a long hull is boardable from her own stern. Ships at the 3.5 m " +
                  "the switcher carried as a serialized field until 2026-09-03.")]
@@ -234,6 +472,20 @@ namespace HiddenHarbours.Core
                  "between two berths, so it never joins one boat's water to the next one's.")]
         [Min(0f)] public float SwimBoardReachMetres = 6.0f;
 
+        [Tooltip("The highest freeboard (top of the hull side above the water, metres) a hull may have " +
+                 "and still be climbed anywhere from the water. At or under this she behaves as every " +
+                 "boat did before 2026-11-13 (the dory, the punt, the skiffs). Over it — or railed, or " +
+                 "flagged ladder-only on her deck Def — she is climbed from the water only at one of her " +
+                 "boarding points (BoatDeckDef.BoardingPoints); with none, only from a wharf or gangway. " +
+                 "Going over the side is governed by her rails, not by this number. Owner, 2026-11-13: " +
+                 "'player can easily climb up massive walls which is wrong, should only be ladders'.")]
+        [Min(0f)] public float ClimbAnywhereMaxFreeboardMetres = 1.0f;
+
+        [Tooltip("How close (m) you must be to a hull's ladder, swim platform or rail gate to use it, " +
+                 "when that point does not author its own reach. Measured in the hull's own deck frame, " +
+                 "from the swimmer in the water or from the rider at the rail.")]
+        [Min(0.1f)] public float BoardingPointReachMetres = 2.0f;
+
         [Header("Seakeeping forces (ADR 0018 B3 — the sea pushes the boat)")]
         [Tooltip("World-wide seakeeping FORCE policy (the sea fighting back): the master switch + bite " +
                  "strength, how the bite grows with sea state, how exposure falls off with depth (open water " +
@@ -242,6 +494,16 @@ namespace HiddenHarbours.Core
                  "construction (force scales by SeaState01 × exposure). Dial Strength to taste; set Enabled " +
                  "off to restore today's flat-water handling. Per-hull response lives on each BoatHullDef.")]
         public SeakeepingSettings Seakeeping = SeakeepingSettings.Default;
+
+        [Header("Sea yaw (the wind and the sea turn her head)")]
+        [Tooltip("World-wide policy for how much the wind and the waves TURN a hull (P1): gusts and a beam " +
+                 "wind nudge the heading, a quartering or following sea makes the stern wander, light hulls " +
+                 "are turned more than heavy ones (scaled by each hull's mass, windage and seakeeping " +
+                 "response), drawing sails add weather helm (BoatHullDef.SailWeatherHelm). Quoted as a share " +
+                 "of the hull's own full helm and capped by MaxHelmShare, so the rudder wins with way on. " +
+                 "Calm water, sheltered water and a hull tied to the shore are UNCHANGED by construction. " +
+                 "Enabled off restores the handling from before.")]
+        public SeaYawSettings SeaYaw = SeaYawSettings.Default;
 
         [Header("Storm seakeeping read (ADR 0018 B2.5 — the hull answers the storm)")]
         [Tooltip("World-wide STORM policy for the VISUAL rock (the owner's 'the boat seemed to not be " +
@@ -279,6 +541,16 @@ namespace HiddenHarbours.Core
                  "exactly as before trim existed; that is the A/B.")]
         public HullTrimSettings HullTrim = HullTrimSettings.Default;
 
+        [Header("Fleet speed (the go-fast stays the fastest boat — owner 2026-11-13)")]
+        [Tooltip("How far under the go-fast's own top speed every other planing hull is held, in m/s. " +
+                 "The owner ruled (2026-11-13) that no planing hull may out-run the go-fast: a hull whose " +
+                 "0.45 x real-world speed would pass her is authored at (the go-fast's still-water top " +
+                 "speed minus this margin) instead. Nothing reads this at run time; a hull's speed is her " +
+                 "own BoatHullDef.EnginePower, and FleetSpeedTableTests holds every hull Def to this cap. " +
+                 "Move it, then re-solve EnginePower on the capped hulls " +
+                 "(docs/design/fleet-speed-and-fuel-audit.md).")]
+        [Min(0f)] public float PlaningTopSpeedMarginUnderGoFastMps = 0.1f;
+
         [Header("Ground tackle (dropping the hook)")]
         [Tooltip("World-wide ANCHORING policy: the dinghy-class rode a hull carries when her own Def " +
                  "does not say (BoatHullDef.RodeMeters = 0), the swing-circle floor, the firm-limit trio " +
@@ -312,6 +584,28 @@ namespace HiddenHarbours.Core
                  "behind a headland and feels open-water swell in it. Raising Strength changes boat " +
                  "feel and wants a feel verdict, like the spectrum did.")]
         public WaveFetchSettings WaveFetch = WaveFetchSettings.Default;
+
+        [Tooltip("THE WHOLE HULL MAKES FOAM: where a hull churns the water besides her trail. Her trail is " +
+                 "shed from the bow when she goes astern; the end she drives into the water and the side " +
+                 "she pushes through it foam too. Drawn only: no boat feels it. Weights at 0 = the trail alone.")]
+        public HullFoamSettings HullFoam = HullFoamSettings.Default;
+
+        [Tooltip("REAL WAVES FROM HULLS: a hull making way lays wave sources at her stern and her bow; each "+
+                 "sends a ring of waves out across the water, and together they make the V-shaped wake with "+
+                 "transverse waves behind her, sized by her length and speed. The water draws them (lift, "+
+                 "light, crest foam) and other hulls' drawn ride bobs on them. Drawn only: no force.")]
+        public HullWaveSettings HullWaves = HullWaveSettings.Default;
+
+        [Tooltip("ONE FOAM SHEET: every foam on the water (wake, shore foam line, whitecaps, surf, storm " +
+                 "streaks, convergence foam) is drawn as the same substance in different amounts: the same " +
+                 "lace, bands and ageing colour. These dials say how each source joins it; 0 on a source's " +
+                 "join dial brings back its older separate look. Drawn only.")]
+        public FoamSheetSettings FoamSheet = FoamSheetSettings.Default;
+
+        [Tooltip("STILL POOLS: water the falling tide has cut off from the open sea draws still: no swell, " +
+                 "no pulsing edge, no surf or shore foam. The rising tide reconnects it and the swell eases " +
+                 "back in over the blend. Recomputed from the seabed and the tide, never saved.")]
+        public SeaReachSettings SeaReach = SeaReachSettings.Default;
 
         [Tooltip("BREAKING WAVES (ADR 0040): where the sea gives out and how — the breaker index γ, " +
                  "the Iribarren thresholds that separate a spilling crumble from a plunging barrel, and " +
@@ -424,6 +718,32 @@ namespace HiddenHarbours.Core
                  "⚠️ Not a feel dial — move it only if the fish rig's proportions move.")]
         [Min(0f)] public float FishLengthPerKgCubeRootMeters = DefaultFishLengthPerKgCubeRootMeters;
 
+        [Tooltip("The shortest a fish may be DRAWN, in sprite pixels, wherever it is drawn: on the " +
+                 "line, in his hands, in the tote. A catch whose size rung is drawn shorter than this " +
+                 "is shown with the smallest rung of its species that is at least this long (or the " +
+                 "largest, if none is). One rule for all three places, so the fish on the line, in the " +
+                 "hands and in the tote is always the same drawing. The catch's weight, value and " +
+                 "one-hand rule are untouched: only the picture is chosen. 0 turns the floor off. " +
+                 "Default 12 lifts only the tiniest drawings; 16 lifts every mackerel and flounder " +
+                 "to the large rung, and higher starts to erase the size ladder.")]
+        [Min(0f)] public float MinDrawnFishLengthPx = DefaultMinDrawnFishLengthPx;
+
+        [Tooltip("The contrast line on a small fish in his hands: a held fish DRAWN this long or shorter " +
+                 "(sprite px, the length measured off its held sheet) gets a dark line along its edges so " +
+                 "it reads against his clothes and the deck. Not the interact outline: no lift, no glow, " +
+                 "just the fish's own colours a step darker. 0 turns the line off. Default 16 lines every " +
+                 "herring and mackerel and the small haddock, bass, pollock and flounder.")]
+        [Min(0f)] public float HeldFishKeylineMaxLengthPx = DefaultHeldFishKeylineMaxLengthPx;
+
+        [Tooltip("How dark the contrast line is: the fish's own colours multiplied by this (0 black, 1 no " +
+                 "line at all). Default 0.4.")]
+        [Range(0f, 1f)] public float HeldFishKeylineShade = DefaultHeldFishKeylineShade;
+
+        [Tooltip("Where the contrast line is drawn: one darker copy of the held fish behind it per entry, " +
+                 "moved this many SPRITE PIXELS. The default (-1,0) and (1,0) lines both long edges of a fish " +
+                 "hanging by its tail; a single entry gives a line down one side only.")]
+        public Vector2[] HeldFishKeylineOffsetsPx = DefaultHeldFishKeylineOffsetsPx();
+
         [Header("Helm throttle (the notched single-lever throttle)")]
         [Tooltip("Feel of the diegetic notched throttle on engine hulls: how many detents from neutral to " +
                  "full AHEAD and to full ASTERN (reverse usually shorter), and an optional hold-to-repeat " +
@@ -448,7 +768,7 @@ namespace HiddenHarbours.Core
         [Header("Fish finder (the sonar upgrade — ADR 0025 S3)")]
         [Tooltip("The colour sonar that replaces the plain depth sounder in the same cutout: the vertical " +
                  "RANGE (metres) a freshly fitted unit starts at, how often the scan repaints, where its " +
-                 "card sits on screen, how fish marks are sized and scattered, and the four PLACEHOLDER " +
+                 "card sits on screen, how fish marks are sized and scattered, and the two PLACEHOLDER " +
                  "status-strip values. The shallow alarm is NOT here: the finder keeps the depth sounder's " +
                  "alarm and reads its settings, so there is only ever one alarm rule.")]
         public FishFinderSettings FishFinder = FishFinderSettings.Default;
@@ -475,6 +795,13 @@ namespace HiddenHarbours.Core
                  "owner-tunable, no code (rule 6).")]
         public HelmWheelSettings HelmWheel = HelmWheelSettings.Default;
 
+        [Header("Helm autopilot (heading hold — only on hulls whose Def says AutopilotOffered)")]
+        [Tooltip("How the autopilot holds a heading on the rudder the hull already has: the three " +
+                 "gains, how much helm it may use and how fast it may wind the wheel, and the limits " +
+                 "that hand the helm back (too little way, a knock, a steer input). Owner-tunable, no " +
+                 "code (rule 6).")]
+        public HelmAutopilotSettings HelmAutopilot = HelmAutopilotSettings.Default;
+
         [Header("Helm footprint (the camera answers a full-width helm band — ADR 0050)")]
         [Tooltip("How the camera answers a helm band that spans the whole width of the screen: the " +
                  "share of the band's height the boat's place on screen rises by (0.5 = half, the " +
@@ -490,13 +817,12 @@ namespace HiddenHarbours.Core
                  "dials only decide what counts as the player striking.")]
         public StrikeSettings Strike = StrikeSettings.Default;
 
-        [Header("Bait economy (owner drop §10.2 — a TENTATIVE ruling behind a flag)")]
-        [Tooltip("OFF (default): bait is spent at the BITE — something ate it, landed or not (the " +
-                 "2026-07-25 ruling; today's live behaviour). ON: bait is spent only on a LANDED " +
-                 "catch — the owner's tentative §10.2 reversal ('perhaps bait is only lost after " +
-                 "catching a fish'): teases, missed strikes, lost fights and unlicensed releases " +
-                 "cost time only. ⚠ Flagged to economy-sim — flipping this changes bait's real cost " +
-                 "per fish, which is a pacing dial (§7.4/§7.5).")]
+        [Header("Bait economy (switchable fishing-feel ruling)")]
+        [Tooltip("ON in the shipped GameConfig asset: spend one bait only on a LANDED catch. " +
+                 "Teases, missed strikes, lost fights and unlicensed releases cost time only. " +
+                 "OFF restores spending at the BITE, landed or not; new C# configs still default OFF. " +
+                 "Approved for now on 2026-11-13; keep switchable for play review. Changes bait's " +
+                 "real cost per fish (economy-sim pacing §7); does not change prices or lot sizes.")]
         public bool BaitSpentOnCatchOnly = false;
 
         [Header("Rod fight (Rod Fishing v2 — the deep→surface fight, cove defaults)")]
@@ -543,6 +869,23 @@ namespace HiddenHarbours.Core
                  "reads (surface lift now; hull heave, buoys and wake in phase 3) — tune it here " +
                  "and boat and sea stay on the same water, never retuned apart.")]
         public DisplacedWaterSettings DisplacedWater = DisplacedWaterSettings.Default;
+
+        [Header("Light from the water on hull sides")]
+        [HideInInspector] public float HullCausticBandMeters = 0.8f; // Serialized legacy width; live reach uses the two terms below.
+        [Min(0f)] public float HullCausticBandBaseMeters = 0.35f;
+        [Min(0f)] public float HullCausticBandPerChopMeters = 0.9f;
+        [Range(0f, 1f)] public float HullCausticFresnelF0 = 0.02f;
+        [Range(0.01f, 90f)] public float HullCausticReferenceElevationDegrees = 15f;
+        [Min(1f)] public float HullCausticFresnelPower = 5f;
+        [Range(0f, 1f)] public float HullCausticChopDimming = 0.5f;
+        [Range(0f, 1f)] public float HullCausticAwayFloor = 0.15f;
+        [Min(0.01f)] public float HullCausticIrradiancePower = 1f;
+        [Range(0f, 1f)] public float HullCausticIrradianceFloor = 0.05f;
+        [Range(0f, 45f)] public float HullCausticFacetTiltDegrees = 12f;
+        [Min(0f)] public float HullCausticStrength = 0.18f;
+        [Tooltip("Visible vein gain inside the existing hull band; does not widen its mask.")]
+        [Min(0f)] public float HullCausticVeinGain = 1f;
+        [Range(0f, 1f)] public float HullCausticMaxUpwardNormal = 0.5f;
 
         // -----------------------------------------------------------------------------------------
         //  The floor in the shallows (W4-4; ruling 7 of 2026-10-10, "Shallows: 2B")
@@ -606,6 +949,27 @@ namespace HiddenHarbours.Core
                  "Read per camera per frame, and by each plant on the tide tick.")]
         public bool ShallowsSubmergedProps = DefaultShallowsSubmergedProps;
 
+        /// <summary>The weed's clarity by default: <b>0</b>, the floor's own law, so a config written before
+        /// this existed and an unwired sea draw the weed exactly as before. The shipped asset carries the
+        /// look's value (2026-11-17, the kelp beds).</summary>
+        public const float DefaultUnderWaterWeedClarity = 0f;
+
+        /// <summary>The most clarity the sea takes: some of the column is always read, so even the clearest
+        /// weed darkens and blues a little with depth. The water shader clamps with the same value.</summary>
+        public const float MaxUnderWaterWeedClarity = 0.9f;
+
+        [Tooltip("How much less water the weed under the tide (kelp, wrack, eelgrass, the shore plants) is " +
+                 "seen through than the floor it grows from. 0: the floor's own darkening and blueing with " +
+                 "depth. 0.5: the weed reads as if it stood half as deep, so a kelp bed still shows as a dark " +
+                 "mass at 3 to 6 m when the sand beside it has gone blue. Up to 0.9. Needs " +
+                 "ShallowsSubmergedProps on. Read every water tick (~8 Hz).")]
+        [Range(0f, MaxUnderWaterWeedClarity)]
+        public float UnderWaterWeedClarity = DefaultUnderWaterWeedClarity;
+
+        /// <summary>The clarity the sea is handed: within 0..<see cref="MaxUnderWaterWeedClarity"/>.</summary>
+        public static float ClampUnderWaterWeedClarity(float clarity) =>
+            Mathf.Clamp(clarity, 0f, MaxUnderWaterWeedClarity);
+
         /// <summary>The keyline gate's ship default — <b>OFF</b> (ADR 0031: the 1 px outline is retired
         /// from the world-art style, and the mesh fleet is the first family to go without it). A const so
         /// consumers with no config wired (EditMode, a bare test rig) resolve the SAME style the shipped
@@ -623,22 +987,143 @@ namespace HiddenHarbours.Core
                  "families are naturally redone; that mixed period is accepted (ADR 0031, Half B skipped).")]
         public bool HullKeylineFlood = DefaultHullKeylineFlood;
 
+        /// <summary>The player reserve's ship default (ADR 0056, the owner's ruling on the facet-id budget): two
+        /// facet ids — the player and one co-op friend. A const so a consumer with no config wired
+        /// resolves the SHIPPED reserve, because <c>GameConfig.asset</c> lags the code.</summary>
+        public const int DefaultPlayerFigureIdReserve = 2;
+        /// <summary>The inspector's ceiling for <see cref="PlayerFigureIdReserve"/>: every id reserved is
+        /// one the harbour's boats and the cast can never have.</summary>
+        public const int MaxPlayerFigureIdReserve = 8;
+
+        [Header("Facet ids (ADR 0056 — the id space is a budget)")]
+        [Tooltip("How many of the 255 facet ids are held back for the PLAYERS' figures ashore (the player " +
+                 "and each co-op friend). No boat, truck or villager can ever take one, so a player standing " +
+                 "ashore is never left as her old sprite because the harbour's boats used the ids up. Each one " +
+                 "reserved is one fewer for boats and the cast. Read once, when the first facet id of the " +
+                 "session is handed out: a change applies from the next play session.")]
+        [Range(0, MaxPlayerFigureIdReserve)]
+        public int PlayerFigureIdReserve = DefaultPlayerFigureIdReserve;
+
         public const int DefaultHullReflectionMaxHulls = 64;
         public const int DefaultHullReflectionMaxPackets = 1024;
         public const int DefaultHullReflectionMaxTriangles = 1000000;
+        public const float DefaultHullReflectionFadeStartMeters = 0.1f;
+        public const float DefaultHullReflectionFadeMeters = 0.6f;
+        public const float DefaultHullReflectionStreakPixels = 6f;
+        public const float DefaultHullReflectionEndCutPixels = 3f;
+        public const float DefaultHullReflectionEndThinPixels = 3f;
+        public const float DefaultHullReflectionEndMinRunPixels = 12f;
 
-        [Header("Hull mesh reflection (experimental, requires GPU plates)")]
-        public bool HullMeshReflections = false;
+        /// <summary>The boat-reflection path's ship default: <b>ON</b> (2026-11-21). The mesh path is the
+        /// only one that can draw: the older overlay path records its reflection BEFORE the same frame's
+        /// hull keyline resolve, and the render graph rebinds <c>_HHHullScreenTex</c> to black at the end of
+        /// every graph, so that path always reads an empty picture and draws nothing.</summary>
+        public const bool DefaultHullMeshReflections = true;
+
+        [Header("Boat reflections in the water (hull, fittings and the figure aboard)")]
+        [Tooltip("Draw each boat's reflection from her own posed meshes (hull, door leaf, fittings and the " +
+                 "figure aboard). Off = no boat reflection at all: the older overlay path cannot draw.")]
+        public bool HullMeshReflections = DefaultHullMeshReflections;
         [Range(1, 2)] public int HullReflectionResolutionDivisor = 1;
         [Min(1)] public int HullReflectionMaxHulls = DefaultHullReflectionMaxHulls;
         [Min(1)] public int HullReflectionMaxPackets = DefaultHullReflectionMaxPackets;
         [Min(1)] public int HullReflectionMaxTriangles = DefaultHullReflectionMaxTriangles;
+        [Tooltip("How far below the waterline a boat's reflection runs whole before it starts to thin, metres " +
+                 "(its source's height above the line). The thinning is the hull's own pixel dither, so the " +
+                 "reflection stays crisp and fades with distance from the hull instead of sitting as one block.")]
+        [Min(0f)] public float HullReflectionFadeStartMeters = DefaultHullReflectionFadeStartMeters;
+        [Tooltip("Over how many metres below that the reflection thins to nothing. 0 = no fade (the look " +
+                 "before the sunset rowing clip of 11-22: the whole mirrored hull at one strength).")]
+        [Min(0f)] public float HullReflectionFadeMeters = DefaultHullReflectionFadeMeters;
+        [Tooltip("How long the streaks a boat's reflection thins in are, in the hull's own pixels: each pixel " +
+                 "row breaks into runs that go together, the way a reflection breaks on moving water. Under 1 = " +
+                 "the hull's 4x4 ordered dither instead.")]
+        [Min(0f)] public float HullReflectionStreakPixels = DefaultHullReflectionStreakPixels;
+        [Tooltip("How many of the hull's own pixels each streak row of a boat's reflection may stop short at " +
+                 "either end: every row draws its own amount from 0 up to this, fixed to the hull, so the " +
+                 "reflection under a square stern or bow ends ragged instead of on one straight column. 0 = " +
+                 "every row runs to the hull's outline.")]
+        [Min(0f)] public float HullReflectionEndCutPixels = DefaultHullReflectionEndCutPixels;
+        [Tooltip("Over how many of the hull's pixels inside that each streak row's end thins out (some pixels " +
+                 "kept, more of them further in), so the end frays rather than stops. 0 = a clean end.")]
+        [Min(0f)] public float HullReflectionEndThinPixels = DefaultHullReflectionEndThinPixels;
+        [Tooltip("A reflection row shorter than this many of the hull's pixels keeps its ends, so a thin oar, " +
+                 "rod or mast still reflects; only the long rows under the hull itself fray.")]
+        [Min(0f)] public float HullReflectionEndMinRunPixels = DefaultHullReflectionEndMinRunPixels;
+
+        /// <summary>The calm mirror's ship default: <b>0, off</b>. The owner liked 0.6 on the prototype
+        /// (2026-11-23) and asked for it behind a dial, off until he has seen it in game.</summary>
+        public const float DefaultWaterMirrorStrength = 0f;
+
+        [Tooltip("THE CALM MIRROR: how strongly calm water mirrors what stands on it (0..1). Boats, their " +
+                 "fittings, the crew aboard and figures ashore show their true reflection, the view from " +
+                 "below the water; wharves, sheds, piles and cliffs are flipped about where they meet the " +
+                 "water. Fades out as the sea gets up. 0 = off, the water exactly as before. The owner's " +
+                 "liked value is 0.6.")]
+        [Range(0f, 1f)] public float WaterMirrorStrength = DefaultWaterMirrorStrength;
+
+        [Tooltip("The calm mirror's shaping dials: sea-state fade, reach, ripple and darkening. Read only " +
+                 "while WaterMirrorStrength is above 0.")]
+        public WaterMirrorSettings WaterMirror = WaterMirrorSettings.Default;
 
         /// <summary>The cabin-glow passthrough's ship default — <b>OFF</b>, which is the owner's ruling
         /// of 2026-09-03: a glow is confined to its space, and an interior's reaches the outside only
         /// through the windows. A const for exactly the reason the keyline's is: a consumer with no
         /// config wired must resolve the SHIPPED look, and <c>GameConfig.asset</c> lags the code.</summary>
         public const bool DefaultBoatLegacyCabinGlow = false;
+
+        /// <summary>The carried automatic lantern's explicit, default-off way back.</summary>
+        public const bool DefaultWalkerAutoLantern = false;
+        [Tooltip("Restore the walker's automatic lantern while on foot. The headlamp still answers L.")]
+        public bool WalkerAutoLantern = DefaultWalkerAutoLantern;
+
+        /// <summary>How long L is held, seconds, before the worn headlamp goes back into his pocket.
+        /// A shorter press switches the beam.</summary>
+        public const float DefaultWalkerHeadlampHoldSeconds = 0.4f;
+        [Tooltip("Hold L this long (seconds) to take the headlamp off into the pocket. A tap switches the beam; " +
+                 "a press with the lamp in the pocket puts it on, lit.")]
+        [Min(0.05f)] public float WalkerHeadlampHoldSeconds = DefaultWalkerHeadlampHoldSeconds;
+
+        /// <summary>Where the headlamp's lens sits on his head, metres from the rig's head mid point
+        /// (<c>CharacterSkinDef.HeadMid</c>): forward out of the face, then up. The light's glow and
+        /// cone both start here, and the drawn lens is pinned to it.</summary>
+        public const float DefaultWalkerHeadlampLensForwardMetres = 0.01f;
+        public const float DefaultWalkerHeadlampLensUpMetres = 0.10f;
+        [Tooltip("Headlamp lens, metres FORWARD of the head mid point (out of the face).")]
+        public float WalkerHeadlampLensForwardMetres = DefaultWalkerHeadlampLensForwardMetres;
+        [Tooltip("Headlamp lens, metres UP from the head mid point (the forehead, above the eyes).")]
+        public float WalkerHeadlampLensUpMetres = DefaultWalkerHeadlampLensUpMetres;
+        /// <summary>How far behind the lens the strap crosses the back of his head, metres. Seen from
+        /// behind, the strap is drawn there (the lens itself is hidden by his head).</summary>
+        public const float DefaultWalkerHeadlampStrapBackMetres = 0.18f;
+        [Tooltip("Headlamp strap, metres BEHIND the lens where it crosses the back of the head (drawn when he faces away).")]
+        [Min(0f)] public float WalkerHeadlampStrapBackMetres = DefaultWalkerHeadlampStrapBackMetres;
+
+        /// <summary>Gear every game has from the very start (owner ruling 2026-11-22: the headlamp,
+        /// "From the start"). Owned by DERIVATION, like a watch that starts owned: never written into
+        /// <c>SaveData.OwnedGear</c>, so a new game and a continued old save both hold it without a
+        /// save write or a format change.</summary>
+        public static readonly string[] DefaultCarriedFromStartGearIds = { "gear.headlamp" };
+        [Tooltip("Gear ids the player owns from the start of every game without them being written to the " +
+                 "save (the headlamp in his pocket). Ownership checks and the Notebook's KIT page read this.")]
+        public string[] CarriedFromStartGearIds = (string[])DefaultCarriedFromStartGearIds.Clone();
+
+        /// <summary>The carried-from-the-start ids of <paramref name="config"/>, or the defaults when
+        /// no config is wired (EditMode, pre-boot).</summary>
+        public static System.Collections.Generic.IReadOnlyList<string> CarriedFromStart(GameConfig config)
+            => config != null ? (config.CarriedFromStartGearIds ?? System.Array.Empty<string>())
+                              : DefaultCarriedFromStartGearIds;
+
+        /// <summary>True when <paramref name="gearId"/> is carried from the start under
+        /// <paramref name="config"/> (null config: the defaults).</summary>
+        public static bool CarriesFromStart(GameConfig config, string gearId)
+        {
+            if (string.IsNullOrEmpty(gearId)) return false;
+            System.Collections.Generic.IReadOnlyList<string> ids = CarriedFromStart(config);
+            for (int i = 0; i < ids.Count; i++)
+                if (ids[i] == gearId) return true;
+            return false;
+        }
 
         [Tooltip("Restore YESTERDAY'S boat glows for an A/B (owner's ruling, 2026-09-03)? OFF is the " +
                  "shipped look: a lit wheelhouse is drawn as its own WINDOWS, with a wash of spill " +
@@ -988,6 +1473,13 @@ namespace HiddenHarbours.Core
                  "flat calm.")]
         public SeaFishingSettings SeaFishing = SeaFishingSettings.Default;
 
+        [Header("How big she feels (the rod, the line, the camera and the strain voice by fish size)")]
+        [Tooltip("How the SIZE of the hooked fish — her weight within her own species' range — reaches the " +
+                 "player: how deep the rod bows, how the tip pulses to her head-shakes and swings to her " +
+                 "runs, how tight and humming the line is, how hard the hook-set lands, and which fish " +
+                 "count as 'a big one'. Pure feedback: nothing here changes how hard a fish is to land.")]
+        public FishFeelSettings FishFeel = FishFeelSettings.Default;
+
         [Header("Fish schools (ADR 0025 S3 — WHERE the fish are, the thing the finder draws)")]
         [Tooltip("The deterministic school sim: how often a patch of water holds fish, how long they " +
                  "hang about, how big the patch is, how deep they sit, how many show — and how much all " +
@@ -996,6 +1488,13 @@ namespace HiddenHarbours.Core
                  "Recomputed from (worldSeed, gameTime, place, weather, season) like the tide — never " +
                  "saved, so tuning these moves the whole sea at once with no save surgery.")]
         public FishSchoolSettings FishSchools = FishSchoolSettings.Default;
+
+        [Header("Bar clam show (the squirt that gives a buried clam away)")]
+        [Tooltip("Owner ask 2026-11-22: a clam's holes are small and sit in the sand; its squirt is the " +
+                 "main giveaway. How often and how long a clam squirts, how tall the jet is drawn, and how " +
+                 "it squirts when the player walks up. Cosmetic only, never saved. Read through " +
+                 "ClamShowSettings.Current.")]
+        public ClamShowSettings ClamShow = ClamShowSettings.Default;
 
         [Header("Freshness & rot (M1 §7.3 — the clock on every catch)")]
         [Tooltip("How fast each storage mode rots a landed catch, and how far gone a catch can be " +
@@ -1045,6 +1544,18 @@ namespace HiddenHarbours.Core
                  "proposal 3), so the two poses are never on screen together to disagree.")]
         [Range(0f, 1f)] public float InteriorRockScale = DefaultInteriorRockScale;
 
+        /// <summary>The ruled default for <see cref="CutTheHelmRoomAtTheWheel"/> (2026-11-14), read by
+        /// the boat cutaway when no config is wired.</summary>
+        public const bool DefaultCutTheHelmRoomAtTheWheel = true;
+
+        [Header("Boat cutaway at the wheel (owner ruling 2026-11-14)")]
+        [Tooltip("ON (the default): while you steer a boat whose wheel stands inside an enclosed room, " +
+                 "that one room is cut open so you see the skipper and the instruments. No other level " +
+                 "opens, and a wheel on an open deck or a flybridge cuts nothing. OFF: the house stays " +
+                 "closed at every wheel, as it was before 2026-11-14. Walking inside a cabin cuts it " +
+                 "open either way. Picture only: nothing about handling or the save changes.")]
+        public bool CutTheHelmRoomAtTheWheel = DefaultCutTheHelmRoomAtTheWheel;
+
         [Header("Interior stairs (ADR 0036 — the climb between storeys)")]
         [Tooltip("How long the player takes to walk up (or down) one storey, in seconds. The storey " +
                  "above is drawn at its true height, so the two floors are a real distance apart and " +
@@ -1061,6 +1572,12 @@ namespace HiddenHarbours.Core
                  "the camera feel and the moment timings. Every field must exist in GameConfig.asset.")]
         public JuiceSettings Juice = JuiceSettings.Default;
 
+        [Header("Dev: all instruments at the helm")]
+        [Tooltip("In the editor and development builds, start each console at its best supported fit. " +
+                 "K and Shift+K still cycle the instruments. Turn off to rehearse the real owned fit. " +
+                 "Ignored in release builds; never buys instruments or changes the save.")]
+        public bool DevAllHelmInstruments = true;
+
         // Convenience
         /// <summary>
         /// THE shared displacement exaggeration (ADR 0023 §(2)) — the accessor every water-riding
@@ -1072,10 +1589,391 @@ namespace HiddenHarbours.Core
         /// </summary>
         public float WaveExaggeration => DisplacedWater.WaveExaggeration;
 
+        [Header("Fishing and clam digging body presentation")]
+        [Tooltip("Use the baked mesh body for rod fishing and clam digging when the skin carries " +
+                 "the clip and enables it in MeshStates. Off restores the previous sprite fishing " +
+                 "and unanimated dig. Held tools and catch keep their sprite presenters.")]
+        public bool MeshFishingAndDig = true;
+
+        /// <summary>
+        /// Code default for <see cref="PlayerLegacySpriteFallback"/>: ON, so a config built fresh in
+        /// code (every PlayMode rig that tests the old hand-over) keeps the old behaviour. The shipped
+        /// <c>GameConfig.asset</c> turns it OFF: in the game the player is always the mesh (ADR 0061),
+        /// the same code-default/shipped split as <see cref="MeshCharacterAshore"/>.
+        /// </summary>
+        public const bool DefaultPlayerLegacySpriteFallback = true;
+
+        [Header("The player is always the mesh (ADR 0061)")]
+        [Tooltip("OFF (the shipped game): the player never switches to an old sprite sheet. A swim, a " +
+                 "tread, a sleep, a drive, a reach or a carry the mesh did not list yet plays its baked " +
+                 "mesh clip, and a state the skin has no clip for plays the nearest one from Player Mesh " +
+                 "Fallbacks. ON: the old behaviour, where those moves, wading and swimming hand the picture " +
+                 "back to the sprite sheet. Only the player reads this; the cast keeps its own switches.")]
+        public bool PlayerLegacySpriteFallback = DefaultPlayerLegacySpriteFallback;
+
+        [Tooltip("When the player's skin has no clip for a state, the state to try instead (From to To), " +
+                 "followed row by row until the skin has one; idle ends every chain. Both are baked clip " +
+                 "names. Read only while Player Legacy Sprite Fallback is OFF.")]
+        public MeshStateFallback[] PlayerMeshFallbacks = PlayerMeshRule.DefaultFallbacks();
+
+        [Tooltip("Swimming, the waterline on the mesh figure sits this far (m) above its pelvis. Rig 10's " +
+                 "own swim pose puts the sea 0.09 m over the pelvis.")]
+        [Min(0f)] public float FigureSwimWaterAbovePelvisMetres = 0.09f;
+
+        [Tooltip("Treading water, the waterline sits this far (m) below the mean of the shoulders (rig 10: " +
+                 "0.05 m). It is also the highest a wade may ever reach on the figure.")]
+        [Min(0f)] public float FigureTreadWaterBelowShouldersMetres = 0.05f;
+
+        [Tooltip("ON: the part of the player's mesh under the waterline still draws, tinted and dimmed " +
+                 "toward the sea, as the old sprite's submerged body did. OFF: it is hidden (a hard cut).")]
+        public bool FigureShowsUnderwater = true;
+
+        [Tooltip("The sea colour the submerged part of the player's mesh tints toward.")]
+        public Color FigureUnderwaterTint = new Color(0.16f, 0.34f, 0.44f, 1f);
+
+        [Tooltip("How far the submerged part takes the sea colour (0: its own colours, 1: all sea).")]
+        [Range(0f, 1f)] public float FigureUnderwaterTintAmount = 0.55f;
+
+        [Tooltip("How much darker the submerged part draws (0: as lit, 1: black).")]
+        [Range(0f, 1f)] public float FigureUnderwaterDim = 0.35f;
+
+        [Tooltip("Height (m) of the pale foam band on the mesh just above the waterline. 0: a hard edge.")]
+        [Min(0f)] public float FigureWaterlineFoamMetres = 0.03f;
+
+        [Tooltip("How pale that foam band is right at the waterline (0: none, 1: white).")]
+        [Range(0f, 1f)] public float FigureWaterlineFoam = 0.5f;
+
+        [Tooltip("WADING, the height (m) of the pale foam band just above the waterline. He stands " +
+                 "upright, so the band is seen edge-on: the figure draws at its def's pixels per metre, " +
+                 "foreshortened by the view's elevation, and the swim band's few centimetres come to under " +
+                 "one pixel there, so the line at the surface vanished. Keep it at two pixels or more.")]
+        [Min(0f)] public float FigureWadeWaterlineFoamMetres = 0.1f;
+
+        [Tooltip("WADING, how pale that foam band is right at the waterline (0: none, 1: white).")]
+        [Range(0f, 1f)] public float FigureWadeWaterlineFoam = 0.8f;
+
+        [Tooltip("ON: while the player swims or treads water his sun shadow is not drawn. The shadow is " +
+                 "the hidden body sprite's, standing upright, and on open water it read as a ghost " +
+                 "beside him. Wading keeps it.")]
+        public bool FigureSwimHidesSunShadow = true;
+
+        [Tooltip("ON: while the player swims or treads water the tools he carries (the rod) are stowed: " +
+                 "neither the rod mesh on the figure nor the carried sprite is drawn, and they are drawn " +
+                 "again the moment he finds his footing. The rod mesh has no waterline cut, so held on the " +
+                 "swim pose it stood out of the water at full strength. Wading keeps them in his hands.")]
+        public bool SwimStowsCarriedTools = true;
+
+        /// <summary>Code default for <see cref="HeldPropLineWidthPx"/>.</summary>
+        public const float DefaultHeldPropLineWidthPx = 1.5f;
+
+        [Header("Held props on the mesh figure (ADR 0053)")]
+        [Tooltip("While the mesh body plays the fishing performance, draw the rod as its baked facet mesh " +
+                 "in his hand, aimed by the clip's own tool track, instead of the rod sprite overlay. Only " +
+                 "for a tool whose ToolDef asks for it (DrawHeldMeshOnFigure). Off, or whenever the mesh " +
+                 "cannot draw, the sprite rod is drawn exactly as before.")]
+        public bool MeshRodInHand = true;
+
+        [Tooltip("How wide (art pixels) a held prop's thin parts are drawn — the rod blank, until the facet " +
+                 "shader's own line pass exists (ADR 0053 D2). 1 to 2 is the ruled look.")]
+        [Range(0.5f, 3f)] public float HeldPropLineWidthPx = DefaultHeldPropLineWidthPx;
+        [Tooltip("Draw a fish in his hand (carried, and held up at the landing) as the rig's facet mesh on " +
+                 "his hand's socket, at its size rung, instead of the held fish sprite. Only for a species " +
+                 "the held-prop bake makes a mesh for (CatchItemLibrary.HeldMeshFor); every other catch, " +
+                 "and any frame the mesh figure is not drawing him, keeps its sprite.")]
+        public bool MeshCatchInHand = true;
+
+        [Tooltip("How wide (art pixels) the thin line along a held fish's fins and tail is drawn, so a fin " +
+                 "that is a sliver at a pixel still reads (ADR 0053 D2). 0 = no fin line.")]
+        [Range(0f, 3f)] public float HeldFishFinLineWidthPx = 1f;
+
+        [Tooltip("How wide (art pixels) a held fish's eye is drawn. 0 = no eye.")]
+        [Range(0f, 3f)] public float HeldFishEyeSizePx = 1f;
+
+        [Tooltip("A held fish mesh's shade gain, as a multiple of its bake's (more contrast between the lit " +
+                 "belly and the shaded back, as the held sheet draws it). 1 = the bake's own.")]
+        [Range(0.5f, 3f)] public float HeldFishToneGain = 1.5f;
+
+        [Tooltip("Added to a held fish mesh's shade, in ramp steps: a brighter fish. 0 = the bake's own.")]
+        [Range(-2f, 2f)] public float HeldFishToneLift = 1f;
+
+        [Tooltip("A held fish mesh's dither, as a multiple of its bake's: 1 = as baked, 0 = clean bands of " +
+                 "the ramp's own colours (the held sheet's look at hand size).")]
+        [Range(0f, 1f)] public float HeldFishDitherScale = 0f;
+
+        [Tooltip("How far a held fish mesh is drawn toward the camera, in metres, so his body or legs never " +
+                 "hide it (the held sheet is always drawn in front). 0 = where the hand is.")]
+        [Min(0f)] public float HeldFishFrontBiasMeters = 0.4f;
+
+        [Tooltip("The shortest a held fish MESH is drawn, art pixels along its longest side: a smaller fish " +
+                 "is scaled up about its grip to this, so a herring still reads in his hand. The mesh can " +
+                 "grow where a sprite can only pick a bigger rung (MinDrawnFishLengthPx). 0 = no floor. " +
+                 "16 = the length a held sheet stops needing its keyline (HeldFishKeylineMaxLengthPx), the " +
+                 "shortest an unoutlined mesh still reads; 20 drew a smelt two thirds the length of a cod.")]
+        [Min(0f)] public float HeldFishMinLengthPx = 16f;
+
+        [Tooltip("At the landing the fish hangs from whichever hand is nearer the camera, so it is never " +
+                 "hidden behind him (the rig's own fish prop swaps hands the same way). It changes hands " +
+                 "only when the other hand is nearer by more than this (m), so it does not flicker.")]
+        [Min(0f)] public float HeldFishHandSwapDepthMeters = 0.05f;
+
+        /// <summary>Code default for <see cref="HeldRodGripToleranceMetres"/>.</summary>
+        public const float DefaultHeldRodGripToleranceMetres = 0.02f;
+
+        [Tooltip("How far (m) the held rod's grip may sit from his hand's tool socket on the frame drawn, in " +
+                 "every rod state and heading, before the grip test calls it out of his hand. The grip is " +
+                 "put on the socket every frame, so this only absorbs float error; raise it only with a reason.")]
+        [Min(0f)] public float HeldRodGripToleranceMetres = DefaultHeldRodGripToleranceMetres;
+
+        [Tooltip("Draw a hand tool that is not the rod (the clam shovel) as its baked facet mesh in the mesh " +
+                 "figure's hand: aimed by the clip's own tool track while he digs, at the tool's carried aim on " +
+                 "a free gait. Only for a tool whose ToolDef asks for it (DrawHeldMeshOnFigure). Off, or " +
+                 "whenever the mesh cannot draw, the tool's sprite is drawn exactly as before.")]
+        public bool MeshHandToolInHand = true;
+
+        [Tooltip("Draw a carried pail as its baked facet mesh hung by the bail from the mesh figure's carry " +
+                 "socket, at the fill and catch the pail holds, so it sorts with his legs pixel by pixel. Only " +
+                 "for a carry-pose row that names a mesh tier (CharacterCarryPoseDef.Row.MeshTier) and a pail " +
+                 "that shows its fill as baked states. Off, or whenever the mesh cannot draw (the clam hod, the " +
+                 "sprite body), the pail sprite is drawn exactly as before.")]
+        public bool MeshPailInHand = true;
+
+        /// <summary>Code default for <see cref="HeldShovelShaftHandToleranceMetres"/>.</summary>
+        public const float DefaultHeldShovelShaftHandToleranceMetres = 0.06f;
+
+        [Tooltip("QA: how far (m) the dig clip's LEFT hand socket may sit off the drawn shovel's shaft on any " +
+                 "frame before the shovel test calls the shaft out of his hand. The right hand holds the grip " +
+                 "exactly; the left slides on the shaft as the rig poses it. Read by the EditMode test only.")]
+        [Min(0f)] public float HeldShovelShaftHandToleranceMetres = DefaultHeldShovelShaftHandToleranceMetres;
+
+        /// <summary>Code default for <see cref="HeldShovelGroundToleranceMetres"/>.</summary>
+        public const float DefaultHeldShovelGroundToleranceMetres = 0.1f;
+
+        [Tooltip("QA: how far (m) the drawn shovel's blade may sit off the ground at the dig's low point (the " +
+                 "frame the blade is lowest), above or below, and how far below the ground the blade of a " +
+                 "CARRIED shovel may reach on any idle, walk or run frame. Read by the EditMode test only.")]
+        [Min(0f)] public float HeldShovelGroundToleranceMetres = DefaultHeldShovelGroundToleranceMetres;
+
+        [Header("Fish at the stove and in the freezer")]
+        [Tooltip("The cooked colour ramp: the fish on a browning station is tinted along these stops as its job " +
+                 "runs, first stop at the start, last when it is done. One ramp for every species (no sheet " +
+                 "per species). Empty = no browning.")]
+        public Color[] CookedFishRamp =
+        {
+            new Color(1f, 1f, 1f, 1f), new Color(1f, 0.86f, 0.64f, 1f), new Color(0.84f, 0.6f, 0.34f, 1f),
+        };
+
+        [Tooltip("A fillet on a station (a recipe whose input is a fillet, not a whole fish) is drawn as a fillet " +
+                 "shape this long against the whole fish as drawn (its size rung's measured held length), never as the whole fish.")]
+        [Range(0.2f, 1f)] public float FilletLengthOfFish = 0.6f;
+
+        [Tooltip("A drawn fillet's height against its own length.")]
+        [Range(0.2f, 0.8f)] public float FilletHeightOfLength = 0.4f;
+
+        [Tooltip("A raw fillet's flesh. The cooked ramp tints it as it browns.")]
+        public Color FilletFleshColor = new Color(0.98f, 0.9f, 0.86f, 1f);
+
+        [Tooltip("A drawn fillet's 1 px outline.")]
+        public Color FilletEdgeColor = new Color(0.62f, 0.5f, 0.46f, 1f);
+        [Tooltip("The tint of a frozen fish lying in the freezer (a frost look).")]
+        public Color FrozenFishTint = new Color(0.8f, 0.9f, 1f, 1f);
+
+        [Tooltip("The freezer's contents are drawn only while the player stands this close (m), as if the lid " +
+                 "were open: no draw calls for a freezer nobody is at.")]
+        [Min(0f)] public float FreezerFishShowRangeMeters = 1.6f;
+
+        [Tooltip("The freezer's fish slots: columns across the chest (a fish lies across, so few and wide).")]
+        [Min(1)] public int FreezerFishColumns = 2;
+
+        [Tooltip("The freezer's fish slots: rows from the back to the front.")]
+        [Min(1)] public int FreezerFishRows = 4;
+
+        [Tooltip("The back-left slot, metres from the freezer's pivot (x right, y up on screen).")]
+        public Vector2 FreezerFishOriginMeters = new Vector2(-0.26f, 0.3f);
+
+        [Tooltip("Metres from one slot to the next: x across a row, y down to the next row (towards the front).")]
+        public Vector2 FreezerFishPitchMeters = new Vector2(0.52f, 0.2f);
+
+        /// <summary>Shipped crossing hysteresis (m), also the fallback for a rig with no GameConfig.</summary>
+        public const float DefaultRegionCrossingHysteresisMetres = 0.25f;
+
+        [Header("Region crossings (ADR 0057: the whole wall is a door)")]
+        [Tooltip("How far (m) past a region's edge the player or boat must go before the crossing into the " +
+                 "neighbour fires, and so also how far they must " +
+                 "come back to cross again: it stops a mover on the seam bouncing between scenes without " +
+                 "ever moving them. Small: it is a stretch of the old scene's empty margin you travel " +
+                 "through before the new scene appears.")]
+        [Min(0f)] public float RegionCrossingHysteresisMetres = DefaultRegionCrossingHysteresisMetres;
+
+        /// <summary>Shipped preload distance (m), also the fallback for a rig with no GameConfig.</summary>
+        public const float DefaultRegionPreloadDistanceMetres = 40f;
+
+        [Tooltip("How near (m) a shared edge the player or boat must come before the neighbouring region's " +
+                 "scene is loaded in the background and parked out of sight, so the crossing only has to " +
+                 "switch it on instead of loading it. Bigger = the load's one heavy frame lands further from " +
+                 "the seam, and more neighbours are kept loaded. 0 = no preload (the scene loads when the " +
+                 "crossing fires, as before).")]
+        [Min(0f)] public float RegionPreloadDistanceMetres = DefaultRegionPreloadDistanceMetres;
+
+        /// <summary>Shipped preload heading gate, release delay and teleport cap, also the fallbacks for a rig
+        /// with no GameConfig (PR 1223, the warm-neighbour fix).</summary>
+        public const float DefaultRegionPreloadMinHeadingSpeed = 0.5f;
+        public const float DefaultRegionPreloadHeadingSeconds = 0.25f;
+        public const float DefaultRegionPreloadReleaseSeconds = 15f;
+        public const float DefaultRegionMoverMaxPlausibleSpeed = 40f;
+
+        [Tooltip("The slowest (m/s) the player or boat must be heading for a shared edge before its neighbour is " +
+                 "loaded in the background. Above the settling jitter of a mover standing still, so only a real " +
+                 "approach warms a neighbour.")]
+        [Min(0f)] public float RegionPreloadMinHeadingSpeed = DefaultRegionPreloadMinHeadingSpeed;
+        [Tooltip("How long (s) the mover must keep heading for the same neighbour before it is loaded, so one odd " +
+                 "physics step never loads a whole region.")]
+        [Min(0f)] public float RegionPreloadHeadingSeconds = DefaultRegionPreloadHeadingSeconds;
+        [Tooltip("How long (s) after the approach ends (the mover turned away, stopped or left the preload " +
+                 "distance) a neighbour loaded ahead of a crossing that never came is unloaded again. A region " +
+                 "the player has been in is never unloaded by this.")]
+        [Min(0f)] public float RegionPreloadReleaseSeconds = DefaultRegionPreloadReleaseSeconds;
+        [Tooltip("The fastest (m/s) the player or boat can really move. A step faster than this is a teleport " +
+                 "(a test staging, a placement on arrival), not speed, and counts as standing still for the seam " +
+                 "fade and the preload.")]
+        [Min(0f)] public float RegionMoverMaxPlausibleSpeed = DefaultRegionMoverMaxPlausibleSpeed;
+
+        /// <summary>Shipped seam-fade timings (s) and distances (m), also the fallbacks for a rig with no
+        /// GameConfig (owner ruling on PR 1223: "a momentary fade out and screen change").</summary>
+        public const float DefaultRegionSeamFadeOutSeconds = 0.15f;
+        public const float DefaultRegionSeamFadeInSeconds = 0.2f;
+        public const float DefaultRegionSeamMaxBlackSeconds = 1.5f;
+        public const float DefaultRegionSeamFootFadeDistanceMetres = 0.45f;
+        public const float DefaultRegionSeamBoatFadeDistanceMetres = 1.5f;
+        public const float DefaultRegionSeamFootDrawnMarginMetres = 0.1f;
+        public const float DefaultRegionSeamBoatDrawnMarginMetres = 0.3f;
+        public const float DefaultRegionSeamMinApproachSpeed = 0.1f;
+
+        [Tooltip("The QUICKEST (s) the screen may go black at a seam. The fade follows how near the mover's " +
+                 "leading edge is to the edge of the screen; this only stops a very fast (or teleported) mover " +
+                 "getting a cut instead of a fade.")]
+        [Min(0f)] public float RegionSeamFadeOutSeconds = DefaultRegionSeamFadeOutSeconds;
+        [Tooltip("How long (s) the screen takes to clear again: on the far side of a seam, or when the mover " +
+                 "stops or turns back before it.")]
+        [Min(0f)] public float RegionSeamFadeInSeconds = DefaultRegionSeamFadeInSeconds;
+        [Tooltip("The longest (s) the screen may stay black without the crossing being made. Past it the fade " +
+                 "gives up and clears.")]
+        [Min(0f)] public float RegionSeamMaxBlackSeconds = DefaultRegionSeamMaxBlackSeconds;
+        [Tooltip("How far (m) from the edge of the screen a walker's leading edge is when the fade starts. The " +
+                 "screen is black as he reaches the edge, whatever his speed (a mover too fast to cover it in the quickest " +
+                 "fade starts further out, by that much). 0.45 m is the quickest fade at a 3 m/s walk. Bigger = gentler.")]
+        [Min(0f)] public float RegionSeamFootFadeDistanceMetres = DefaultRegionSeamFootFadeDistanceMetres;
+        [Tooltip("The same fade distance (m) for a boat, measured from her bow.")]
+        [Min(0f)] public float RegionSeamBoatFadeDistanceMetres = DefaultRegionSeamBoatFadeDistanceMetres;
+        [Tooltip("How far (m) a walker's drawn figure reaches beyond his collider, added to his extent so the " +
+                 "screen is black before any of the drawing meets the screen edge.")]
+        [Min(0f)] public float RegionSeamFootDrawnMarginMetres = DefaultRegionSeamFootDrawnMarginMetres;
+        [Tooltip("How far (m) a boat's drawn hull reaches beyond her collider (bow, stern, oars), for the same " +
+                 "purpose.")]
+        [Min(0f)] public float RegionSeamBoatDrawnMarginMetres = DefaultRegionSeamBoatDrawnMarginMetres;
+        [Tooltip("The slowest (m/s) a mover can head out of a region and still drive a seam fade. Below it the " +
+                 "mover is standing at the edge, and the fade clears.")]
+        [Min(0f)] public float RegionSeamMinApproachSpeed = DefaultRegionSeamMinApproachSpeed;
+
+        /// <summary>Shipped seam re-arm distances, PR 1223 play look: an arrived mover does not fade at the edge it
+        /// came in by until it is this far inside it.</summary>
+        public const float DefaultRegionSeamRearmMoverLengths = 1.5f;
+        public const float DefaultRegionSeamRearmMinMetres = 0.5f;
+
+        [Tooltip("After a crossing, how far inside the edge the mover came in by (in her own lengths: a dory " +
+                 "about 5 m, a walker under 1 m) she must come before that edge fades again. A boat idling or " +
+                 "drifting just past a seam is never under a part-black screen.")]
+        [Min(0f)] public float RegionSeamRearmMoverLengths = DefaultRegionSeamRearmMoverLengths;
+        [Tooltip("The least re-arm distance (m) whatever the mover's length.")]
+        [Min(0f)] public float RegionSeamRearmMinMetres = DefaultRegionSeamRearmMinMetres;
+
+        /// <summary>Shipped return allowance, PR 1223 second play look: how far back out past the edge it came in
+        /// by an arrived mover may be carried (a current, a wind) before that is a crossing back.</summary>
+        public const float DefaultRegionSeamReturnMoverLengths = 0.5f;
+
+        [Tooltip("After a crossing, how far back out past the edge she came in by (in her own lengths) a drift, " +
+                 "a current or a wind may carry her before she crosses back. Stops a boat that stops rowing " +
+                 "just past a seam being carried straight back over it. A real turn back crosses once past it, " +
+                 "under a full fade.")]
+        [Min(0f)] public float RegionSeamReturnMoverLengths = DefaultRegionSeamReturnMoverLengths;
+
+        [Header("Ground prints (footprints and tyre marks)")]
+        [Tooltip("Footprints and tyre marks on grass, sand, mud and dirt (owner ask 2026-11-15: \"the print " +
+                 "lasts 24/h with a gradual fade\"). Lifetime is in IN-GAME hours; sizes are real metres; which " +
+                 "ground takes a print is the Zones list. Read through GroundPrintSettings.Current.")]
+        public GroundPrintSettings GroundPrints = GroundPrintSettings.Default;
+
+        [Header("Dug holes (the shovel's hole on the flats)")]
+        [Tooltip("Owner ask 2026-11-22: every dig, the player's or a working villager's, leaves a dark hole " +
+                 "that stays for the rest of that game day or until the tide covers it, whichever is first. " +
+                 "The villagers' holes follow from their day; the player's are remembered for the session " +
+                 "only. Read through DugHoleSettings.Current.")]
+        public DugHoleSettings DugHoles = DugHoleSettings.Default;
+
+        [Header("Effort (too tired / too hungry)")]
+        [Tooltip("Owner ask 2026-11-15: 'when a player is too tired to do an action they will say im too " +
+                 "tired or im too hungry or both'. Which work may be refused (shipped: heavy work only), the " +
+                 "need levels that refuse (tiredness is the main gate; hunger alone only at the very top), " +
+                 "the three lines the player says, and how much sitting rests (a quarter of sleep, never " +
+                 "below a floor only sleep clears). Work already under way is never interrupted. Read " +
+                 "through EffortGate.Settings.")]
+        public EffortSettings Effort = EffortSettings.Default;
+
+        [Header("Stink lines (cleanliness, the look)")]
+        [Tooltip("Cleanliness slice 2 (owner ask 2026-11-15): small wavy lines rise from the player's head " +
+                 "while he is dirty, more of them as he gets dirtier, gone once he washes. A gentle joke: " +
+                 "they change nothing but the picture. Derived from the saved dirt, never saved. Read " +
+                 "through StinkLinesSettings.Current.")]
+        public StinkLinesSettings StinkLines = StinkLinesSettings.Default;
+
+        [Header("Wash fixtures (cleanliness, the look)")]
+        [Tooltip("Owner ask 2026-11-17: baths and basins fill and drain, the shower runs, the water closet " +
+                 "flushes, the player climbs into the bath, and suds froth while a soaped wash runs. The " +
+                 "picture only; nothing here is saved. Read through WashVisualsSettings.Current.")]
+        public WashVisualsSettings WashVisuals = WashVisualsSettings.Default;
+
         public float SecondsPerHour => SecondsPerDay / 24f;
         public float SecondsPerWeek => SecondsPerDay * DaysPerWeek;
         public float SecondsPerSeason => SecondsPerDay * DaysPerSeason;
         public float SecondsPerYear => SecondsPerSeason * 4f;
+    }
+
+    /// <summary>A calendar label; elapsed days and saved seconds retain their own epoch.</summary>
+    public readonly struct CalendarDate
+    {
+        public readonly Season Season;
+        public readonly int DayOfSeason;
+        public readonly int Year;
+
+        public CalendarDate(Season season, int dayOfSeason, int year)
+        {
+            Season = season;
+            DayOfSeason = dayOfSeason;
+            Year = year;
+        }
+    }
+
+    /// <summary>The one conversion from elapsed days to the four-season calendar.</summary>
+    public static class GameCalendar
+    {
+        public static CalendarDate AtDay(long elapsedDay, int daysPerSeason, int startDayOfYear)
+        {
+            int length = System.Math.Max(1, daysPerSeason);
+            long yearLength = 4L * length;
+            long calendarDay = elapsedDay + startDayOfYear;
+            long dayOfYear = ((calendarDay % yearLength) + yearLength) % yearLength;
+            return new CalendarDate((Season)(dayOfYear / length), (int)(dayOfYear % length) + 1,
+                                    (int)((calendarDay - dayOfYear) / yearLength) + 1);
+        }
+
+        /// <summary>Read an absolute simulation instant without seeking or modifying its seconds.</summary>
+        public static CalendarDate AtSeconds(double seconds, GameConfig config)
+        {
+            double dayLength = config != null ? config.SecondsPerDay : GameConfig.DefaultSecondsPerDay;
+            long elapsedDay = dayLength > 0d ? (long)System.Math.Floor(System.Math.Max(0d, seconds) / dayLength) : 0L;
+            int seasonLength = config != null ? config.DaysPerSeason : GameConfig.DefaultDaysPerSeason;
+            int offset = config != null ? config.StartDayOfYear : GameConfig.DefaultDaysPerSeason;
+            return AtDay(elapsedDay, seasonLength, offset);
+        }
     }
 
     /// <summary>
@@ -1298,6 +2196,71 @@ namespace HiddenHarbours.Core
     }
 
     /// <summary>
+    /// Owner tuning for the <b>autopilot's heading hold</b> (<see cref="GameConfig.HelmAutopilot"/>).
+    /// A plain PID on the heading error that writes the helm the player would have written; the
+    /// hull's own rudder authority (which scales with way) does the turning, so there is no new
+    /// physics. Run on the fixed physics step; transient, never saved (it is off after a load).
+    ///
+    /// <para>Sign: heading is the body's rotation in degrees, counter-clockwise positive; a positive
+    /// helm turns the bow to starboard (clockwise), so a heading left of the target (positive error)
+    /// asks for positive helm.</para>
+    /// </summary>
+    [System.Serializable]
+    public struct HelmAutopilotSettings
+    {
+        [Tooltip("Proportional gain: helm (−1..1) per degree off the held heading. 0.04 = the most " +
+                 "helm it may use (MaxHelm) at 15° off.")]
+        [Min(0f)] public float HeadingGainPerDegree;
+
+        [Tooltip("Damping gain: helm per degree/second the bow is swinging. Checks the swing before " +
+                 "she overshoots. 0 = no damping term.")]
+        [Min(0f)] public float YawRateGainPerDegreePerSecond;
+
+        [Tooltip("Integral gain: helm added per degree-second of error, which is what takes out a " +
+                 "steady offset (a beam wind, a sea on the quarter). 0 = no integral term.")]
+        [Min(0f)] public float IntegralGainPerDegreeSecond;
+
+        [Tooltip("The most helm the integral term may carry, either way (anti-windup).")]
+        [Min(0f)] public float IntegralLimitHelm;
+
+        [Tooltip("The most helm the autopilot may use, either way (0..1). A real autopilot holds a " +
+                 "course with small corrections and never puts the wheel hard over.")]
+        [Range(0f, 1f)] public float MaxHelm;
+
+        [Tooltip("How fast the autopilot may wind the helm, in helm units per second (2 = centre to " +
+                 "full lock in half a second). 0 = no limit.")]
+        [Min(0f)] public float HelmSlewPerSecond;
+
+        [Tooltip("The least way through the water (m/s, ahead) the autopilot will steer with. Below " +
+                 "it the rudder has little bite and the autopilot hands the helm back (and will not " +
+                 "engage). Going astern counts as below it.")]
+        [Min(0f)] public float MinWayMetresPerSecond;
+
+        [Tooltip("How hard a steer input must be (0..1 of full lock) to take the helm back from the " +
+                 "autopilot. Keeps a resting stick's jitter from switching it off.")]
+        [Range(0f, 1f)] public float SteerOverrideThreshold;
+
+        [Tooltip("How hard a knock must be (relative speed, m/s) to switch the autopilot off. A hull " +
+                 "resting against a fender or a quay is not a collision.")]
+        [Min(0f)] public float CollisionMinImpactMetresPerSecond;
+
+        /// <summary>The shipped tuning. Checked in a simulated step loop against a 40x spread of yaw
+        /// inertia (<c>HeadingHoldAutopilotTests</c>); feel is the owner's to set.</summary>
+        public static HelmAutopilotSettings Default => new HelmAutopilotSettings
+        {
+            HeadingGainPerDegree = 0.04f,
+            YawRateGainPerDegreePerSecond = 0.03f,
+            IntegralGainPerDegreeSecond = 0.004f,
+            IntegralLimitHelm = 0.3f,
+            MaxHelm = 0.6f,
+            HelmSlewPerSecond = 2f,
+            MinWayMetresPerSecond = 0.5f,
+            SteerOverrideThreshold = 0.2f,
+            CollisionMinImpactMetresPerSecond = 0.5f,
+        };
+    }
+
+    /// <summary>
     /// Owner tuning for how the <b>camera answers the helm's footprint</b>
     /// (<see cref="GameConfig.HelmFootprint"/> — ADR 0050). While the helm's UI covers a band across the
     /// whole width of the screen (<see cref="HelmFootprint"/>), the boat's place on screen eases up by
@@ -1378,6 +2341,12 @@ namespace HiddenHarbours.Core
                  "the PR that shipped it.")]
         public float PlaceholderWaterTempC;
 
+        [Tooltip("Do the depth sounder and the fish finder print the water temperature? OFF while the " +
+                 "temperature is the constant above, so no glass shows a reading the game does not " +
+                 "simulate (the owner's 2026-11-13 ruling: temperature is shown only when it is real). " +
+                 "Turn it ON only once a real water-temperature model feeds the line.")]
+        public bool ShowWaterTemp;
+
         /// <summary>A 4 Hz sounding, armed at 3 m with ±0.5 m pushers (the rig's own defaults), a 2 Hz
         /// flash, and metres.</summary>
         public static DepthSounderSettings Default => new DepthSounderSettings
@@ -1391,6 +2360,7 @@ namespace HiddenHarbours.Core
             MaxAlarmMetres = 20f,
             AlarmBlinkHz = 2f,
             PlaceholderWaterTempC = 12f,
+            ShowWaterTemp = false,
         };
     }
 
@@ -1413,12 +2383,13 @@ namespace HiddenHarbours.Core
     /// rate and folds the bucket into its change key, so the instrument's cost is data the owner can dial
     /// rather than a frame counter.</para>
     ///
-    /// <para><b>Four fields are ⚠ PLACEHOLDERS</b> (<see cref="PlaceholderSens01"/>,
-    /// <see cref="PlaceholderLink"/>, <see cref="PlaceholderBatt01"/>, <see cref="PlaceholderVolts"/>) —
-    /// the rig's status strip shows a sensitivity, a transducer link, a battery and a supply voltage, and
-    /// the simulation models none of those. Following the shipped precedent
+    /// <para><b>Two fields are ⚠ PLACEHOLDERS</b> (<see cref="PlaceholderSens01"/>,
+    /// <see cref="PlaceholderLink"/>) — the rig's status strip shows a sensitivity and a transducer
+    /// link, and the simulation models neither. Following the shipped precedent
     /// (<see cref="DepthSounderSettings.PlaceholderWaterTempC"/>) they are constants with a tooltip that
-    /// says what they are and why, rather than an invented electrical model (rule 8).</para>
+    /// says what they are and why (rule 8). The strip's battery cell and supply volts were placeholders
+    /// too and are GONE from the live glass (the owner's 2026-11-13 ruling: no boat has an electrical
+    /// model, so there is nothing true to print); the rig can still draw them, the game never asks.</para>
     ///
     /// <para>The alarm, its set-point, units and night backlight are deliberately NOT here: the finder
     /// keeps the depth sounder's shallow alarm unchanged, reading the same
@@ -1487,20 +2458,10 @@ namespace HiddenHarbours.Core
                  "exists; a fitted finder is simply linked. Flagged in the PR that shipped it.")]
         public bool PlaceholderLink;
 
-        [Tooltip("⚠ PLACEHOLDER. Battery fill (0..1) on the status strip. There is NO electrical model on " +
-                 "any boat and this slice does not build one (rule 8). Below 0.2 the rig draws the cell " +
-                 "red, so leave it above that unless you want a permanent low-battery warning. Flagged in " +
-                 "the PR that shipped it.")]
-        [Range(0f, 1f)] public float PlaceholderBatt01;
-
-        [Tooltip("⚠ PLACEHOLDER. Supply volts printed on the status strip. No electrical model exists. " +
-                 "Flagged in the PR that shipped it.")]
-        [Min(0f)] public float PlaceholderVolts;
-
         /// <summary>The rig's own defaults where it has them — 20 m scale (the second of its four RANGE
-        /// steps, <c>fishRig.js:131</c>/<c>:317</c>), fish-ID on (<c>:319</c>), and the four status-strip
-        /// placeholders exactly as <c>fishRig.js:320-321</c> states them (sens 0.75, link on, batt 0.8,
-        /// 4.0 V) — so the shipped glass looks like the art director's preview until real models exist.
+        /// steps, <c>fishRig.js:131</c>/<c>:317</c>), fish-ID on (<c>:319</c>), and the two status-strip
+        /// placeholders exactly as <c>fishRig.js:320-321</c> states them (sens 0.75, link on) — so
+        /// that part of the shipped glass looks like the art director's preview until real models exist.
         /// A 4 Hz scan (measured at ~4.8 ms a repaint, so ~19 ms of every second — and a multiple of
         /// 2× the 2 Hz alarm blink, so the flash costs nothing extra).</summary>
         public static FishFinderSettings Default => new FishFinderSettings
@@ -1516,8 +2477,6 @@ namespace HiddenHarbours.Core
             MaxMarksPerSchool = 8,
             PlaceholderSens01 = 0.75f,
             PlaceholderLink = true,
-            PlaceholderBatt01 = 0.8f,
-            PlaceholderVolts = 4f,
         };
     }
 
@@ -2365,6 +3324,11 @@ namespace HiddenHarbours.Core
     [System.Serializable]
     public struct PlayerZoomSettings
     {
+        public const float ShippedDefaultWorldHeightMeters = 11.25f;
+
+        [Tooltip("Walking world height before the wheel moves. It lands on the nearest crisp stop.")]
+        [Min(0.5f)] public float DefaultWorldHeightMeters;
+
         [Tooltip("Let the mouse wheel (and the gamepad's shoulder buttons) change the walking view at " +
                  "all. Off = the on-foot framing is fixed, exactly as it was before this existed.")]
         public bool WheelEnabled;
@@ -2375,7 +3339,7 @@ namespace HiddenHarbours.Core
         [Min(0.5f)] public float ClosestWorldHeightMeters;
 
         [Tooltip("FARTHEST the wheel may take the walking view, in metres of world height. Larger = " +
-                 "further out. 11.25 is one crisp stop wider than the standing on-foot framing — enough " +
+                 "further out. 16.875 is one crisp stop wider than the default walking view — enough " +
                  "to see where you are going outdoors without the fisher shrinking to a speck.")]
         [Min(0.5f)] public float FarthestWorldHeightMeters;
 
@@ -2412,21 +3376,22 @@ namespace HiddenHarbours.Core
         [Min(0)] public int AboardStopsWider;
 
         /// <summary>
-        /// The shipping range: 11.25 m out (one stop wider than standing on foot) to 5.625 m in (the
-        /// live-haul step, the closest framing already in the game), 120 units of scroll to the tier,
+        /// The shipping range: 16.875 m out (one stop wider than the 11.25 m walking default) to 5.625 m in (the
+        /// live-haul step, the closest framing already in the game), one input unit per tier,
         /// a short ease so a step reads as a move rather than a cut, and an aboard band of two stops
         /// either way around whatever the helm or the deck ruled.
         ///
-        /// <para>⚠️ The two heights are the ×3 and ×6 PPU-32 stops at 1080p written out as literals,
+        /// <para>⚠️ The range ends are the ×2 and ×6 PPU-32 stops at 1080p written out as literals,
         /// because the ladder that derives them lives in the App camera and Core may not reach it.
         /// <c>PlayerZoomTierTests</c> is the tripwire that fires if the ladder and these defaults ever
         /// drift apart.</para>
         /// </summary>
         public static PlayerZoomSettings Default => new PlayerZoomSettings
         {
+            DefaultWorldHeightMeters = ShippedDefaultWorldHeightMeters,
             WheelEnabled = true,
             ClosestWorldHeightMeters = 5.625f,   // 1080 / (6 x 32)
-            FarthestWorldHeightMeters = 11.25f,  // 1080 / (3 x 32)
+            FarthestWorldHeightMeters = 16.875f, // 1080 / (2 x 32)
             WheelUnitsPerNotch = 1f,             // one detent, in Input System units — MEASURED, not Win32's 120
             StepSeconds = 0.18f,
             AboardStopsCloser = 2,               // two stops in from the hull's ruled framing…
@@ -2451,7 +3416,7 @@ namespace HiddenHarbours.Core
         /// first.</para>
         /// </summary>
         public bool IsUnauthored =>
-            !WheelEnabled && ClosestWorldHeightMeters <= 0f && FarthestWorldHeightMeters <= 0f
+            DefaultWorldHeightMeters <= 0f && !WheelEnabled && ClosestWorldHeightMeters <= 0f && FarthestWorldHeightMeters <= 0f
             && WheelUnitsPerNotch <= 0f && StepSeconds <= 0f
             && AboardStopsCloser == 0 && AboardStopsWider == 0;
 
@@ -2472,6 +3437,7 @@ namespace HiddenHarbours.Core
 
             PlayerZoomSettings d = Default;
             PlayerZoomSettings s = this;
+            if (s.DefaultWorldHeightMeters <= 0f) s.DefaultWorldHeightMeters = d.DefaultWorldHeightMeters;
             if (s.ClosestWorldHeightMeters <= 0f) s.ClosestWorldHeightMeters = d.ClosestWorldHeightMeters;
             if (s.FarthestWorldHeightMeters <= 0f) s.FarthestWorldHeightMeters = d.FarthestWorldHeightMeters;
             if (s.WheelUnitsPerNotch <= 0f) s.WheelUnitsPerNotch = d.WheelUnitsPerNotch;
@@ -2645,6 +3611,182 @@ namespace HiddenHarbours.Core
             SeaFightFactor = 0.35f,
             SeaBoldness01 = 0.35f,
             SeaBigFishBias01 = 0.5f,
+        };
+    }
+
+    /// <summary>
+    /// HOW BIG SHE FEELS (<see cref="GameConfig.FishFeel"/> — owner's ask 2026-11-13: "rods should bend
+    /// and react to fish, size … woah its something big!!"). The dials behind <see cref="FishFeelMath"/>,
+    /// which the rod presenter, the fight camera and the fishing audio read. "Size" everywhere below is
+    /// the hooked fish's weight as a 0..1 place in HER OWN species' range (a 9 kg cod is big; a 0.9 kg
+    /// mackerel is big too).
+    ///
+    /// <para><b>Feedback, never balance.</b> No dial here is read by the fight's rules.</para>
+    /// </summary>
+    [System.Serializable]
+    public struct FishFeelSettings
+    {
+        [Tooltip("THE BIG ONE. Size (0..1 of her species' range) at or above which a hooked fish is 'a " +
+                 "big one': the hook-set slams harder, the camera kicks harder, the strain voice screams, " +
+                 "she says 'Woah', and the landing line calls it a heavy one. 0.8 = the top fifth.")]
+        [Range(0f, 1f)] public float BigOneThreshold01;
+        [Tooltip("Landing line: below this size she is 'a small one'.")]
+        [Range(0f, 1f)] public float SizeSmallBelow01;
+        [Tooltip("Landing line: from this size she is 'a good one' (below it, 'a fair one').")]
+        [Range(0f, 1f)] public float SizeGoodFrom01;
+        [Tooltip("Landing line: from this size she is 'a real monster' (never below the big-one line).")]
+        [Range(0f, 1f)] public float SizeTrophyFrom01;
+
+        [Tooltip("ROD BEND. How much of the fight's load the SMALLEST fish puts on the rod (her biggest " +
+                 "sister puts all of it). Lower = small fish only nod the tip.")]
+        [Range(0f, 1f)] public float BendSmallScale01;
+        [Tooltip("ROD BEND. How bowed the rod STAYS for the heaviest fish even between her runs, 0..1 of " +
+                 "full load (scaled by size). Higher = a big fish holds the rod down.")]
+        [Range(0f, 1f)] public float BendHeavyFloor01;
+        [Tooltip("ROD BEND. How much of that held bow remains while she is slack (the 'reel now' tell). " +
+                 "Lower = the rod springs up more when she gives.")]
+        [Range(0f, 1f)] public float BendSlackKeep01;
+        [Tooltip("ROD BEND. The rod's maximum lean for the heaviest fish, as a multiple of the presenter's " +
+                 "base lean (1 = size does not deepen the lean).")]
+        [Min(1f)] public float BendHeavyLeanScale;
+        [Tooltip("ROD BEND. The most the rod may rotate in total (lean + pulses + slam), degrees.")]
+        [Range(0f, 90f)] public float MaxTotalLeanDegrees;
+
+        [Tooltip("HEAD-SHAKES. Tip pulses per second for the smallest fish (quick rattle).")]
+        [Min(0f)] public float ShakeHzSmall;
+        [Tooltip("HEAD-SHAKES. Tip pulses per second for the heaviest fish (slow thumps).")]
+        [Min(0f)] public float ShakeHzHeavy;
+        [Tooltip("HEAD-SHAKES. Depth of each tip pulse for the smallest fish, degrees.")]
+        [Min(0f)] public float ShakeDegreesSmall;
+        [Tooltip("HEAD-SHAKES. Depth of each tip pulse for the heaviest fish, degrees.")]
+        [Min(0f)] public float ShakeDegreesHeavy;
+        [Tooltip("HEAD-SHAKES. How sharp each pulse is (1 = a soft nod, higher = a hard jab then rest).")]
+        [Min(1f)] public float ShakeSharpness;
+
+        [Tooltip("RUNS. How far her run drags the point the rod leans toward, world metres, for the " +
+                 "heaviest fish — the tip follows her run direction.")]
+        [Min(0f)] public float RunPullMetres;
+        [Tooltip("RUNS. The fraction of the run pull and the turn kick the SMALLEST fish gets.")]
+        [Range(0f, 1f)] public float RunPullSmall01;
+        [Tooltip("RUNS. How quickly the rod follows a change in her run direction, per second. Higher = " +
+                 "snappier swing.")]
+        [Min(0.1f)] public float RunSwingPerSec;
+        [Tooltip("TURNS. Two run directions whose cosine is below this count as a turn (0.3 = more than " +
+                 "about 70 degrees apart).")]
+        [Range(-1f, 1f)] public float TurnCosine;
+        [Tooltip("TURNS. The tip kick a turn throws for the heaviest fish, degrees.")]
+        [Min(0f)] public float TurnKickDegrees;
+        [Tooltip("TURNS. How long the turn kick takes to settle, seconds.")]
+        [Min(0f)] public float TurnKickSeconds;
+
+        [Tooltip("HOOK-SET. The rod slam the instant she is hooked, for the heaviest ordinary fish, degrees.")]
+        [Min(0f)] public float HookSlamDegrees;
+        [Tooltip("HOOK-SET. The fraction of the slam the SMALLEST fish gets.")]
+        [Range(0f, 1f)] public float HookSlamSmall01;
+        [Tooltip("HOOK-SET. How long the slam takes to spring back, seconds.")]
+        [Min(0f)] public float HookSlamSeconds;
+        [Tooltip("HOOK-SET. A big one slams this many times harder.")]
+        [Min(1f)] public float BigOneSlamScale;
+        [Tooltip("HOOK-SET. Camera kick multiplier for the smallest fish.")]
+        [Min(0f)] public float HookKickSmallScale;
+        [Tooltip("HOOK-SET. Camera kick multiplier for the heaviest fish.")]
+        [Min(0f)] public float HookKickHeavyScale;
+        [Tooltip("HOOK-SET. A big one multiplies the camera kick by this again.")]
+        [Min(1f)] public float BigOneKickScale;
+
+        [Tooltip("LINE. How tight the line stays for the heaviest fish while she is not slack, 0..1.")]
+        [Range(0f, 1f)] public float LineHeavyTautFloor01;
+        [Tooltip("LINE. Extra shudder (0..1 of full) the heaviest fish hums through the line at full effort.")]
+        [Range(0f, 1f)] public float LineHumHeavy01;
+        [Tooltip("LINE. The fraction of that hum left between her runs.")]
+        [Range(0f, 1f)] public float LineHumIdle01;
+        [Tooltip("LINE. How far the heaviest fish lifts the resting line toward white, 0..1 of the " +
+                 "headroom. Keep it low: white still means 'ease off'.")]
+        [Range(0f, 1f)] public float LineWhitenHeavy01;
+
+        [Tooltip("SOUND. Strain-voice gain the heaviest fish keeps humming while she is on and not slack.")]
+        [Range(0f, 1f)] public float StrainHumHeavyGain;
+        [Tooltip("SOUND. How much deeper the strain voice is for the heaviest fish (0.2 = 20% lower).")]
+        [Range(0f, 0.9f)] public float StrainPitchHeavyDrop01;
+        [Tooltip("SOUND. The big one's hook-set scream: extra strain-voice gain at the instant she is hooked.")]
+        [Range(0f, 1f)] public float HookScreamGain;
+        [Tooltip("SOUND. Strain-voice pitch multiplier at the start of the scream (falls back to normal).")]
+        [Min(1f)] public float HookScreamPitchScale;
+        [Tooltip("SOUND. How long the scream lasts, seconds.")]
+        [Min(0f)] public float HookScreamSeconds;
+
+        [Tooltip("THE BIG ONE, ON THE FIGURE (owner's ask 2026-11-13: 'the player sprite should have an " +
+                 "exclamation for a big fish too'). ONE SWITCH: on = an exclamation mark pops over the " +
+                 "fisher the instant a big one is hooked, and the figure holds its hook-set pose a beat " +
+                 "longer. Off = neither happens (her 'Woah' line is unaffected).")]
+        public bool BigOneReactionEnabled;
+        [Tooltip("EXCLAMATION. How long the mark stays up, seconds (pop-in and fade-out included).")]
+        [Min(0f)] public float BigOneMarkSeconds;
+        [Tooltip("EXCLAMATION. Where the mark's FOOT sits, metres from the figure's feet (x right, y up).")]
+        public Vector2 BigOneMarkOffsetMetres;
+        [Tooltip("EXCLAMATION. How tall the mark is once settled, metres.")]
+        [Min(0f)] public float BigOneMarkHeightMetres;
+        [Tooltip("EXCLAMATION. The pop: it grows from nothing to its overshoot over this many seconds, " +
+                 "then settles to its real size over the same again.")]
+        [Min(0f)] public float BigOneMarkPopSeconds;
+        [Tooltip("EXCLAMATION. The pop's overshoot, as a multiple of the settled size (1 = no overshoot).")]
+        [Min(1f)] public float BigOneMarkPopScale;
+        [Tooltip("EXCLAMATION. How long the mark takes to fade out at the end of its time, seconds.")]
+        [Min(0f)] public float BigOneMarkFadeSeconds;
+        [Tooltip("EXCLAMATION. The mark's colour (its one-pixel outline stays dark).")]
+        public Color BigOneMarkColor;
+        [Tooltip("FIGURE. Extra seconds the fisher holds the hook-set (strike) pose for a big one before " +
+                 "the reel cycle takes over. 0 = the ordinary strike.")]
+        [Min(0f)] public float BigOneStrikeHoldSeconds;
+
+        /// <summary>The reference feel — a first pass for the owner's plate, not a measured tuning.</summary>
+        public static FishFeelSettings Default => new FishFeelSettings
+        {
+            BigOneThreshold01 = 0.8f,
+            SizeSmallBelow01 = 0.25f,
+            SizeGoodFrom01 = 0.55f,
+            SizeTrophyFrom01 = 0.95f,
+            BendSmallScale01 = 0.55f,
+            BendHeavyFloor01 = 0.6f,
+            BendSlackKeep01 = 0.4f,
+            BendHeavyLeanScale = 1.6f,
+            MaxTotalLeanDegrees = 40f,
+            ShakeHzSmall = 7f,
+            ShakeHzHeavy = 2.2f,
+            ShakeDegreesSmall = 1.5f,
+            ShakeDegreesHeavy = 7f,
+            ShakeSharpness = 3f,
+            RunPullMetres = 0.9f,
+            RunPullSmall01 = 0.35f,
+            RunSwingPerSec = 9f,
+            TurnCosine = 0.3f,
+            TurnKickDegrees = 5f,
+            TurnKickSeconds = 0.25f,
+            HookSlamDegrees = 10f,
+            HookSlamSmall01 = 0.35f,
+            HookSlamSeconds = 0.45f,
+            BigOneSlamScale = 1.6f,
+            HookKickSmallScale = 0.7f,
+            HookKickHeavyScale = 1.5f,
+            BigOneKickScale = 1.4f,
+            LineHeavyTautFloor01 = 0.85f,
+            LineHumHeavy01 = 0.35f,
+            LineHumIdle01 = 0.5f,
+            LineWhitenHeavy01 = 0.2f,
+            StrainHumHeavyGain = 0.15f,
+            StrainPitchHeavyDrop01 = 0.18f,
+            HookScreamGain = 0.9f,
+            HookScreamPitchScale = 1.6f,
+            HookScreamSeconds = 0.8f,
+            BigOneReactionEnabled = true,
+            BigOneMarkSeconds = 1.2f,
+            BigOneMarkOffsetMetres = new Vector2(0f, 1.7f),
+            BigOneMarkHeightMetres = 0.38f,
+            BigOneMarkPopSeconds = 0.09f,
+            BigOneMarkPopScale = 1.4f,
+            BigOneMarkFadeSeconds = 0.25f,
+            BigOneMarkColor = new Color(1f, 0.85f, 0.2f, 1f),
+            BigOneStrikeHoldSeconds = 0.35f,
         };
     }
 
@@ -3018,9 +4160,8 @@ namespace HiddenHarbours.Core
                  "nothing this many hours either side. 0 = no golden hour.")]
         [Min(0f)] public float GradeGoldenHourWidthHours;
 
-        [Tooltip("How many hours after sunset the Night look takes to reach full weight (and how many " +
-                 "before sunrise it starts letting go). 0 = a hard step at the horizon.")]
-        [Min(0f)] public float GradeNightBlendHours;
+        [Tooltip("Legacy pure-math fixture input. The live grade reads the sky's sunset-to-night interval.")]
+        [HideInInspector, Min(0f)] public float GradeNightBlendHours;
 
         [Tooltip("Visibility (EnvironmentSample.Visibility, 0 fog .. 1 clear) at or above which the Fog " +
                  "look has NO weight.")]
@@ -3117,6 +4258,13 @@ namespace HiddenHarbours.Core
                  "0 = the scene's metres cap (CameraFollow, 2.5 m) at every rung, as before.")]
         [Range(0f, 1f)] public float BoatLeadMaxViewFraction;
 
+        [Tooltip("Seconds the boat lead's speed is smoothed over while the followed hull is ROWED. A rowed " +
+                 "hull surges on every stroke (RowingStyleDef), and a lead read off the raw speed pushed the " +
+                 "view forward on each pull and dropped it back in each rest, so the world lurched about twice " +
+                 "as much as the boat. About one slow stroke. 0 = the raw speed, as before. Engine and sail " +
+                 "hulls never read it.")]
+        [Min(0f)] public float BoatLeadRowedSpeedSmoothSeconds;
+
         [Tooltip("Whether the speed pull-back also runs while she RIDES someone else's deck as a passenger " +
                  "(the intro). Off = open water is the helm's alone, as before. The deck gate still holds: " +
                  "it needs FeelOnDeckEnabled as well.")]
@@ -3174,6 +4322,39 @@ namespace HiddenHarbours.Core
         [Tooltip("Seconds a sand chunk lives.")]
         [Min(0f)] public float SandChunkSeconds;
 
+        [Tooltip("Wet clods thrown off the blade tip at the dig's lift-and-toss phase (0 = no toss).")]
+        [Min(0)] public int DigTossChunkCount;
+
+        [Tooltip("Seconds after the blade enters the ground (the impact) that the toss leaves the blade tip: " +
+                 "the dig clip's in-ground and lever phases and the lift, up to where the blade is out at his side.")]
+        [Min(0f)] public float DigTossDelaySeconds;
+
+        [Tooltip("Seconds a tossed clod lives: its flight off the blade, then lying where it landed until it fades.")]
+        [Min(0f)] public float DigTossChunkSeconds;
+
+        [Tooltip("How big a tossed clod is (× the first toss's clod size). The owner asked for a bigger toss " +
+                 "(2026-11-22): a real shovelful of separate clods.")]
+        [Range(0.5f, 4f)] public float DigTossScale;
+
+        [Tooltip("How far the toss is thrown across the ground (× the first toss's throw speed).")]
+        [Range(0.5f, 4f)] public float DigTossReachScale;
+
+        [Tooltip("How high the toss arcs (× the first toss's up-throw, which barely left the blade).")]
+        [Range(0.5f, 6f)] public float DigTossUpScale;
+
+        [Tooltip("How far apart the clods of one toss fly, square to the throw (× the first toss's spread), so " +
+                 "they read as several clods in the air and land as a small spoil pile, not one lump.")]
+        [Range(0f, 4f)] public float DigTossSpreadScale;
+
+        [Tooltip("Seconds over which the clods of one toss leave the blade, the farthest-thrown first, so they " +
+                 "stream off it one after another and fly as separate clods (0 = all at once, as one lump).")]
+        [Range(0f, 0.4f)] public float DigTossReleaseSeconds;
+
+        [Tooltip("When the dig faces within this many degrees of straight away from the camera (north, his back " +
+                 "to the viewer), the mesh body turns to this many degrees off north instead, toward the side he " +
+                 "already leans to (his right when dead on), so the shovel and the toss show past his body. 0 = off.")]
+        [Range(0f, 45f)] public float DigAwayTurnDegrees;
+
         [Tooltip("Rings spread from the point the cast line touches down.")]
         [Min(0)] public int CastRingCount;
 
@@ -3217,6 +4398,7 @@ namespace HiddenHarbours.Core
             BoatLeadSeconds = 0f,
             BoatLeadLagCompensation = 0f,
             BoatLeadMaxViewFraction = 0f,
+            BoatLeadRowedSpeedSmoothSeconds = 0f,
             SpeedPullBackWhenCarriedAboard = false,
 
             // Moments (PR 3)
@@ -3237,6 +4419,15 @@ namespace HiddenHarbours.Core
             SaleCountUpSeconds = 0.7f,
             SandChunkCount = 7,
             SandChunkSeconds = 0.45f,
+            DigTossChunkCount = 8,
+            DigTossDelaySeconds = 0.6f,
+            DigTossChunkSeconds = 3.5f,
+            DigTossScale = 1.3f,
+            DigTossReachScale = 1.8f,
+            DigTossUpScale = 3.4f,
+            DigTossSpreadScale = 3f,
+            DigTossReleaseSeconds = 0.3f,
+            DigAwayTurnDegrees = 25f,
             CastRingCount = 3,
             CastRingSeconds = 0.6f,
             MomentTickHz = 30f,

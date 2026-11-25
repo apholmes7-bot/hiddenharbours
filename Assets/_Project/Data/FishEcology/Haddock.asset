@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51d5aaf6c73f47f1b2335fa4906c6153, type: 3}
+  m_Name: Haddock
+  m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.FishEcologyDef
+  Id: "ecology.haddock"
+  SpeciesId: "fish.haddock"
+  ScientificName: "Melanogrammus aeglefinus"
+  LifeStageAndScope: "Post-larval fishable coastal animals; typical reference habitat only. Adults unless the notes explicitly distinguish juveniles."
+  TypicalMinDepthMetres: 40
+  TypicalMaxDepthMetres: 150
+  DepthEvidence: "Rounded common adult range from NOAA: approximately 130-500 feet. Juveniles occupy shallower banks; this band is not a whole-life exclusion."
+  Layer: 2
+  Habitats: 14
+  PreferredVegetation: 0
+  VegetationEvidence: "The cited profile does not establish a species-wide eelgrass or kelp preference; zero means no preference inferred, not avoidance."
+  Grouping: 2
+  DayHabit: 1
+  TideHabit: 1
+  HabitEvidence: "Daily activity varies with size, season and locality. No hard daylight or tide exclusion is inferred from this reference."
+  BiologyNotes: "Bottom feeding over firm sand, gravel, pebbles and clay; loose aggregation is an authoring simplification, not a fixed school size."
+  SourceUrls:
+  - "https://www.fisheries.noaa.gov/species/haddock"

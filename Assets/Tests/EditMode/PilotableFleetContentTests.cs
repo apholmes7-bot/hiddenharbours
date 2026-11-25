@@ -213,12 +213,16 @@ namespace HiddenHarbours.Tests.EditMode
         {
             // The owner's targets. Console = a workboat; sport = its faster glass sister; twin = the second
             // engine's worth. Tuned via EnginePower on the assets — no code needed to move these.
-            Assert.AreEqual(3.9f, TerminalSpeed(Hull("ConsoleSkiff")), 0.1f,
-                "the console is a WORKBOAT: 3.8–4.0 m/s");
-            Assert.AreEqual(4.64f, TerminalSpeed(Hull("SportSkiff")), 0.1f,
-                "the sport skiff is the fast sister: ≈4.6 m/s");
-            Assert.AreEqual(5.63f, TerminalSpeed(Hull("SportSkiffTwin")), 0.1f,
-                "the twin is the fastest thing afloat here: ≈5.6 m/s");
+            //
+            // Moved by the owner's 11-12 speed ruling: planing hulls run at 0.45 x the real-world top
+            // speed. The audit gives all three one real figure (36.9 kn), so all three are 8.54 m/s.
+            // Were 3.9 / 4.64 / 5.63.
+            Assert.AreEqual(8.54f, TerminalSpeed(Hull("ConsoleSkiff")), 0.1f,
+                "the console skiff: 0.45 x 36.9 kn = 8.54 m/s");
+            Assert.AreEqual(8.54f, TerminalSpeed(Hull("SportSkiff")), 0.1f,
+                "the sport skiff: 0.45 x 36.9 kn = 8.54 m/s");
+            Assert.AreEqual(8.54f, TerminalSpeed(Hull("SportSkiffTwin")), 0.1f,
+                "the twin: 0.45 x 36.9 kn = 8.54 m/s");
         }
 
         [Test]
@@ -237,8 +241,11 @@ namespace HiddenHarbours.Tests.EditMode
             float twin = TerminalSpeed(Hull("SportSkiffTwin"));
 
             Assert.Less(kicker, console, "the dory's kicker is the slowest powered boat");
-            Assert.Less(console, sport, "the workboat gives way to its glass sister");
-            Assert.Less(sport, twin, "…and the second engine is worth something, or why fit it");
+            // Moved by the owner's 11-12 speed ruling: the three skiffs share one ruled top speed, so the
+            // ladder between them is flat at the top end (it used to climb 3.90 < 4.64 < 5.63). What still
+            // separates them is mass, hold, seakeeping and pickup, which the tests below hold.
+            Assert.AreEqual(console, sport, 0.01f, "the three skiffs share the ruled skiff speed");
+            Assert.AreEqual(sport, twin, 0.01f, "the three skiffs share the ruled skiff speed");
 
             // BowSprayGrading frames speed over 1.7 → 6 m/s. The dory could never reach the top of that
             // sheet; these hulls are the reason that art was drawn, so they must live inside the frame —
@@ -250,12 +257,14 @@ namespace HiddenHarbours.Tests.EditMode
             // choice; she had simply never been measured against this frame, because the hull that used
             // to hold this rung (the retired fishing skiff, 2.50 m/s) sat comfortably inside it. She is
             // 640 now and derives 2.17, so the frame holds for every powered hull again.
+            //
+            // Moved by the owner's 11-12 speed ruling: the three skiffs now run 8.54 m/s, PAST the sheet's
+            // 6 m/s ceiling, so the ceiling is held only for the kicker. Their spray reads flat out from
+            // 6 m/s up; re-framing the sheet is art's follow-up.
             foreach (var (name, v) in new[] { ("kicker", kicker), ("console", console), ("sport", sport), ("twin", twin) })
-            {
                 Assert.Greater(v, 1.7f, $"{name}: below the spray sheet's floor — it would never throw spray");
-                Assert.LessOrEqual(v, 6f, $"{name}: past the spray sheet's 6 m/s ceiling — the spray would " +
-                                          "clip flat and the hull would outrun its own art");
-            }
+            Assert.LessOrEqual(kicker, 6f, "kicker: past the spray sheet's 6 m/s ceiling — the spray would " +
+                                           "clip flat and the hull would outrun its own art");
         }
 
         [Test]

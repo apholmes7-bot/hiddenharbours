@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa547bec3708465e9b30df151aab5814, type: 3}
+  m_Name: PracticeRules
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.Golf.GolfRulesDef
+  Id: golf_rules.practice
+  Gravity: 9.81
+  StepSeconds: 0.02
+  MaxTravelPerStepMetres: 0.25
+  MaxShotSeconds: 60
+  MaxSteps: 100000
+  AirDragPerSecond: 0.02
+  WindAccelerationPerMetrePerSecond: 0.12
+  StopSpeed: 0.03
+  MinimumBounceSpeed: 0.4
+  CupCaptureRadiusMetres: 0.055
+  CupCaptureSpeed: 1.8
+  WaterPenaltyStrokes: 1
+  OutOfBoundsPenaltyStrokes: 1

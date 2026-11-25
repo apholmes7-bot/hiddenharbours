@@ -97,6 +97,16 @@ namespace HiddenHarbours.Art
         public float[] At;
         /// <summary>False: one column per station, laid and triangulated exactly as an uncut wall always was.</summary>
         public bool Sliced;
+        /// <summary>Per whole column: how much of the face is drawn, 0..1 of its surface from the brow. Null draws it
+        /// all. Below 1 only near an open run end, where the face tapers into the ground
+        /// (<see cref="CliffWallGeometry.RunEndKeepAt"/>).</summary>
+        public float[] Keep;
+        /// <summary>Per whole column: the vertex alpha. Null writes no colours. Set only on a seam feather.</summary>
+        public float[] Alpha;
+        /// <summary>Per whole column: how much of the face shows past the clifftops in front of it, 0..1 of its surface
+        /// from the brow (<see cref="CliffWallGeometry.OcclusionKeepAt"/>). Null shows it all. Cut, never faded: the
+        /// clifftop in front is a hard edge.</summary>
+        public float[] Clip;
     }
 
     /// <summary>One generated mesh's arrays, before they are a <see cref="Mesh"/>, so a test can read the exact floats.</summary>
@@ -107,6 +117,8 @@ namespace HiddenHarbours.Art
         public Vector2[] ElevationUv;
         public Vector2[] SeaPlanUv;
         public int[] Tris;
+        /// <summary>Vertex colours (white, alpha = the column's <see cref="CliffWallColumns.Alpha"/>), or null.</summary>
+        public Color[] Colors;
     }
 
     /// <summary>
@@ -167,10 +179,23 @@ namespace HiddenHarbours.Art
     /// station is laid and triangulated exactly as it always was, to the bit. Where a top was moved out, the texture
     /// can keep running along where it was (<c>_textureBrowPlan</c>), and the run's offsets downstream with it.</para>
     ///
-    /// <para><b>Pure look.</b> Drives no sim and saves nothing (rule 5). Walkability at a cliff belongs to
-    /// the terrain's own slope, not to this component — a wall is a picture OF the height field, and the
-    /// height field remains the single source of truth for where a player may stand. The waterline is
-    /// colour on rock and changes nothing about that.</para>
+    /// <para><b>A look, and the one wall the look implies.</b> Drives no sim and saves nothing (rule 5). Where a
+    /// player may stand is still the height field's to say, with one exception the picture forces: <b>a cliff face
+    /// drawn over the sea is a wall</b> (ruling t10, 2026-11-08). The face is drawn down-screen of its plan toe by
+    /// its drop (<see cref="CliffWallGeometry.ToeScreen"/>), so at St Peters' West Ledges it covers 5.9 m of sea
+    /// inside the walker's swim band, and she swam in and vanished behind it. So each chunk carries a BLOCKER
+    /// along its DRAWN toe (<see cref="BlockerChildName"/>): the quay wall's collider kind and layer (one
+    /// <see cref="PolygonCollider2D"/> quad per segment, <see cref="CliffWallGeometry.BlockerThicknessMetres"/>
+    /// thick, each run half a thickness past both ends, on Default, as <c>PropertyBoundary</c> builds them), built
+    /// from the stations alone, so it stands whether or not the face's channels are baked, and where the drawn toe
+    /// lies over dry ground too. It is derived on every build like the meshes and never saved. The waterline is
+    /// colour on rock and changes nothing about any of this.</para>
+    ///
+    /// <para><b>The face is a wall from above too (St Peters cliffs walk fix).</b> The toe blocker held the sea side
+    /// only: from every clifftop he walked over the brow and down the plunge to it, hidden under the face, and where
+    /// a run ended he came up the face's open side and over the brow. So each chunk also fills its whole drawn face,
+    /// brow to drawn toe (<see cref="FaceBlockerChildName"/>, <see cref="CliffWallGeometry.FacePieces"/>): he stops at
+    /// the brow from above and at the foot from below. Same layer, same derivation, never saved.</para>
     /// </summary>
     [ExecuteAlways]
     [DisallowMultipleComponent]
@@ -279,6 +304,17 @@ namespace HiddenHarbours.Art
         public const string BrowChildName = "CliffWallBrowDecal";
         public const string ToeChildName = "CliffWallToeDecal";
 
+        /// <summary>The generated child carrying the drawn toe's blocker (see the class note).</summary>
+        public const string BlockerChildName = "CliffWallToeBlocker";
+
+        /// <summary>The generated child carrying the face's own blocker: the whole drawn face, brow to drawn toe, as
+        /// solid ground nobody stands on (see <see cref="BuildFaceBlocker"/>).</summary>
+        public const string FaceBlockerChildName = "CliffWallFaceBlocker";
+
+        /// <summary>The blocker's layer: Default, the layer the quay wall's colliders stand on and the walker's
+        /// foot (and every hull) collides with.</summary>
+        public const int BlockerLayer = 0;
+
         /// <summary>How many stations this chunk carries — read by the builder's own idempotence check
         /// and by the tests, so neither has to reach into a serialized field by name.</summary>
         public int StationCount => _browPlan != null ? _browPlan.Length : 0;
@@ -294,6 +330,24 @@ namespace HiddenHarbours.Art
         /// <summary>How many renderers this chunk actually built — face bands plus whichever decals had a
         /// texture. Pinned rather than inferred, because "the strata are on" is otherwise invisible.</summary>
         public int RendererCount { get; private set; }
+
+        /// <summary>How many blocker quads this chunk built: one per drawn-toe segment, 0 before it has built.
+        /// The collider count the cost line reads.</summary>
+        public int BlockerColliderCount { get; private set; }
+
+        /// <summary>How many colliders the face blocker built: one per segment (two where a segment's face folds over
+        /// itself), 0 before it has built.</summary>
+        public int FaceBlockerColliderCount { get; private set; }
+
+        /// <summary>The chunk's toe in PLAN, one per station, world XY: the Def's line as the builder pushed it.</summary>
+        public IReadOnlyList<Vector2> ToePlan => _toePlan;
+
+        /// <summary>The ground height at each station's toe, metres (empty for a scene saved before the waterline).</summary>
+        public IReadOnlyList<float> ToeElevations => _toeElevations;
+
+        /// <summary>The chunk's DRAWN toe, one point per station, world XY: the line its blocker stands on.</summary>
+        public Vector2[] DrawnToe() =>
+            CliffWallGeometry.DrawnToe(BuildSamples(_browPlan, _toePlan, _dropMetres, _toeElevations));
 
         /// <summary>Metres of shore spent before this chunk, within its run. See the class note.</summary>
         public float AlongOffsetMetres => _alongOffsetMetres;
@@ -401,12 +455,15 @@ namespace HiddenHarbours.Art
             for (int i = transform.childCount - 1; i >= 0; i--)
             {
                 Transform child = transform.GetChild(i);
-                if (child.name.StartsWith(BandChildPrefix) ||
-                    child.name == BrowChildName || child.name == ToeChildName)
+                if (child.name.StartsWith(BandChildPrefix) || child.name.StartsWith(JoinChildPrefix) ||
+                    child.name == BrowChildName || child.name == ToeChildName || child.name == BlockerChildName ||
+                    child.name == FaceBlockerChildName)
                     DestroyGo(child.gameObject);
             }
 
             RendererCount = 0;
+            BlockerColliderCount = 0;
+            FaceBlockerColliderCount = 0;
         }
 
         private void Rebuild()
@@ -414,6 +471,12 @@ namespace HiddenHarbours.Art
             Teardown();
             int stations = StationCount;
             if (stations < 2 || _toePlan.Length < stations || _dropMetres.Length < stations) return;
+
+            // The wall the face implies, from the stations alone: before the channel and material checks, so a
+            // checkout that has never baked the kit's PNGs walks the same coast as one that has.
+            Vector2[] drawnToe = CliffWallGeometry.DrawnToe(BuildSamples(_browPlan, _toePlan, _dropMetres, _toeElevations));
+            BuildBlocker(drawnToe);
+            BuildFaceBlocker(_browPlan, drawnToe);
 
             bool anyBand = false;
             for (int i = 0; i < _bands.Length; i++) if (_bands[i].HasChannels) { anyBand = true; break; }
@@ -464,6 +527,39 @@ namespace HiddenHarbours.Art
                 columns = Unsliced(samples);
             }
 
+            // ⭐ THE RUN. A chunk reads its siblings' stations to learn whether its run ends nearby (the face then
+            // tapers into the ground instead of stopping in a square cut), whether a slit follows it (the face is
+            // drawn on across it), and whether the chunk beside it wears other rock (the front one feathers its rock
+            // over the seam). Only the picture changes: both blockers above stand on the full stations.
+            List<CliffWallSurface> run = RunOf(out int me, out List<Vector2[]> brows, out List<float[]> drops);
+            CliffWallGeometry.RunReach reach = default;
+            if (run != null)
+            {
+                reach = CliffWallGeometry.RunReachOf(brows, drops, me);
+                columns.Keep = KeepFor(columns, reach);
+            }
+
+            // Where a clifftop nearer the camera stands over part of the face, that part is not drawn: a face pushed
+            // across its own clifftop, or across the next one, would paint rock over the grass in front.
+            List<CliffWallGeometry.BrowEdge> occluders;
+            if (run == null)
+            {
+                occluders = new List<CliffWallGeometry.BrowEdge>();
+                CliffWallGeometry.AddBrowEdges(occluders, samples, HasToeElevations);
+                columns.Clip = ClipFor(columns, occluders, HasToeElevations, false, default, false, default);
+            }
+            else
+            {
+                var runSamples = new List<CliffWallSample[]>(run.Count);
+                var known = new List<bool>(run.Count);
+                foreach (CliffWallSurface s in run)
+                {
+                    runSamples.Add(s == this ? samples : BuildSamples(s._browPlan, s._toePlan, s._dropMetres, s._toeElevations));
+                    known.Add(s.HasToeElevations);
+                }
+                columns.Clip = RunClipFor(columns, runSamples, known, me, reach, out occluders);
+            }
+
             for (int b = 0; b < _bands.Length; b++)
             {
                 if (!_bands[b].HasChannels) continue;
@@ -474,6 +570,358 @@ namespace HiddenHarbours.Art
             // The decals ride ONE row band above the face so they composite over the rock they finish.
             if (_browDecal != null) BuildDecal(columns, _browDecal, brow: true, BrowChildName);
             if (_toeDecal != null) BuildDecal(columns, _toeDecal, brow: false, ToeChildName);
+
+            if (run != null) BuildJoins(run, reach, samples, columns, rows, occluders);
+        }
+
+        /// <summary>
+        /// The brow edges that may stand in front of this chunk's face: its own, and those of every chunk of its run
+        /// whose brow comes within reach of the face (with room for a bridge or feather drawn past its ends).
+        /// </summary>
+        public static List<CliffWallGeometry.BrowEdge> OccludersFor(IReadOnlyList<CliffWallSample[]> run,
+                                                                     IReadOnlyList<bool> known, int me)
+        {
+            var edges = new List<CliffWallGeometry.BrowEdge>();
+            CliffWallSample[] mine = run[me];
+            float margin = CliffWallGeometry.RunSeamFeatherMetres + CliffWallGeometry.RunBridgeMetres;
+            Vector2 min = new Vector2(float.MaxValue, float.MaxValue), max = -min;
+            foreach (CliffWallSample s in mine)
+            {
+                Vector2 toe = CliffWallGeometry.ToeScreen(in s);
+                min = Vector2.Min(min, Vector2.Min(s.BrowPlan, toe));
+                max = Vector2.Max(max, Vector2.Max(s.BrowPlan, toe));
+            }
+            min -= Vector2.one * margin;
+            max += Vector2.one * margin;
+            for (int k = 0; k < run.Count; k++)
+            {
+                CliffWallSample[] b = run[k];
+                if (b == null || b.Length < 2) continue;
+                Vector2 bmin = new Vector2(float.MaxValue, float.MaxValue), bmax = -bmin;
+                for (int i = 0; i < b.Length; i++)
+                {
+                    bmin = Vector2.Min(bmin, b[i].BrowPlan);
+                    bmax = Vector2.Max(bmax, b[i].BrowPlan);
+                }
+                if (bmax.x < min.x || bmin.x > max.x || bmax.y < min.y || bmin.y > max.y) continue;
+                CliffWallGeometry.AddBrowEdges(edges, b, known[k]);
+            }
+            return edges;
+        }
+
+        /// <summary>
+        /// ⭐ <b>What of a run chunk's face shows</b>, per whole column (null where all of it does): cut where a clifftop
+        /// in front stands over it (<see cref="ClipFor"/>, against <see cref="OccludersFor"/> with the joined chunks' edges
+        /// past its ends), and none at all on a step (<see cref="CliffWallGeometry.IsStep"/>). Public so a test reads the
+        /// same cut a scene's chunks draw.
+        /// </summary>
+        public static float[] RunClipFor(CliffWallColumns columns, IReadOnlyList<CliffWallSample[]> run,
+                                         IReadOnlyList<bool> known, int me, CliffWallGeometry.RunReach reach,
+                                         out List<CliffWallGeometry.BrowEdge> occluders)
+        {
+            occluders = OccludersFor(run, known, me);
+            if (CliffWallGeometry.IsStep(run[me])) return new float[columns.Whole.Length];
+            bool hasBefore = false, hasAfter = false;
+            CliffWallGeometry.BrowEdge before = default, after = default;
+            if (!columns.Sliced)
+            {
+                if (reach.JoinedBefore >= 0)
+                {
+                    CliffWallSample[] ps = run[reach.JoinedBefore];
+                    hasBefore = ps.Length >= 2 &&
+                                CliffWallGeometry.TryBrowEdge(in ps[ps.Length - 2], in ps[ps.Length - 1],
+                                                              known[reach.JoinedBefore], out before);
+                }
+                if (reach.JoinedAfter >= 0)
+                {
+                    CliffWallSample[] qs = run[reach.JoinedAfter];
+                    hasAfter = qs.Length >= 2 &&
+                               CliffWallGeometry.TryBrowEdge(in qs[0], in qs[1], known[reach.JoinedAfter], out after);
+                }
+            }
+            return ClipFor(columns, occluders, known[me], hasBefore, in before, hasAfter, in after);
+        }
+
+        /// <summary>
+        /// Per whole column, how much of the face shows past the clifftops in front of it
+        /// (<see cref="CliffWallGeometry.OcclusionKeepAt"/>), or null where every column shows whole. A column's own
+        /// brow edges are the segments to the columns either side; past the first and last, the joined chunks' edges
+        /// when given.
+        /// </summary>
+        public static float[] ClipFor(CliffWallColumns columns, IReadOnlyList<CliffWallGeometry.BrowEdge> occluders,
+                                      bool elevationsKnown, bool hasBefore, in CliffWallGeometry.BrowEdge before,
+                                      bool hasAfter, in CliffWallGeometry.BrowEdge after)
+        {
+            CliffWallSample[] w = columns.Whole;
+            float[] clip = null;
+            for (int c = 0; c < w.Length; c++)
+            {
+                CliffWallGeometry.BrowEdge eb = before, ea = after;
+                bool hb = c > 0
+                    ? CliffWallGeometry.TryBrowEdge(in w[c - 1], in w[c], elevationsKnown, out eb)
+                    : hasBefore;
+                bool ha = c + 1 < w.Length
+                    ? CliffWallGeometry.TryBrowEdge(in w[c], in w[c + 1], elevationsKnown, out ea)
+                    : hasAfter;
+                float k = CliffWallGeometry.OcclusionKeepAt(
+                    w[c].BrowPlan, CliffWallGeometry.ToeScreen(in w[c]),
+                    elevationsKnown ? w[c].ToeElevation + w[c].DropMetres : float.NaN, w[c].DropMetres,
+                    hb, in eb, ha, in ea, occluders);
+                if (k >= 1f) continue;
+                if (clip == null)
+                {
+                    clip = new float[w.Length];
+                    for (int i = 0; i < clip.Length; i++) clip[i] = 1f;
+                }
+                clip[c] = k;
+            }
+            if (clip == null || w.Length < 2) return clip;
+            // A lone cut column between two whole ones is a brow wiggle (a hook, a jog), not a clifftop in front: cutting
+            // it would open a slot down the face to the sea. Only a cut that spans at least two columns is kept.
+            var kept = (float[])clip.Clone();
+            bool any = false;
+            for (int c = 0; c < w.Length; c++)
+            {
+                if (clip[c] >= 1f) continue;
+                bool leftWhole = c == 0 || clip[c - 1] >= 1f;
+                bool rightWhole = c + 1 >= w.Length || clip[c + 1] >= 1f;
+                if (leftWhole && rightWhole) kept[c] = 1f;
+                else any = true;
+            }
+            return any ? kept : null;
+        }
+
+        // ── The run: tapered ends, bridged slits, feathered seams ───────────────────────────────────
+
+        /// <summary>The generated children that draw past this chunk's own stations: a bridge over a slit, or a
+        /// feather over the next chunk's face where the rock swaps. Prefixed so a rebuild sweeps them.</summary>
+        public const string JoinChildPrefix = "CliffWallJoin_";
+
+        /// <summary>
+        /// This chunk's run: every sibling chunk under the same parent, with their brow lines and drops, and this
+        /// chunk's index among them. Null for a chunk with no siblings (a test's lone chunk), which draws exactly as
+        /// before: with nothing beside it, nothing says where its run ends.
+        /// </summary>
+        private List<CliffWallSurface> RunOf(out int me, out List<Vector2[]> brows, out List<float[]> drops)
+        {
+            me = -1;
+            brows = null;
+            drops = null;
+            Transform parent = transform.parent;
+            if (parent == null) return null;
+            var run = new List<CliffWallSurface>(parent.childCount);
+            for (int i = 0; i < parent.childCount; i++)
+            {
+                CliffWallSurface s = parent.GetChild(i).GetComponent<CliffWallSurface>();
+                if (s == null || s.StationCount < 2) continue;
+                if (s == this) me = run.Count;
+                run.Add(s);
+            }
+            if (me < 0 || run.Count < 2) return null;
+            brows = new List<Vector2[]>(run.Count);
+            drops = new List<float[]>(run.Count);
+            foreach (CliffWallSurface s in run)
+            {
+                brows.Add(s._browPlan);
+                drops.Add(s._dropMetres);
+            }
+            return run;
+        }
+
+        /// <summary>How much of the face each whole column draws, from the run ends' distances. Null where no open end
+        /// is near, so the mesh is laid exactly as before.</summary>
+        public static float[] KeepFor(CliffWallColumns columns, CliffWallGeometry.RunReach reach)
+        {
+            if (float.IsPositiveInfinity(reach.StartDistance) && float.IsPositiveInfinity(reach.EndDistance)) return null;
+            float[] arc = ArcOf(columns.Whole, null);
+            float first = StationArc(columns, arc, 0);
+            float last = StationArc(columns, arc, columns.Gap.Length - 1);
+            float startTaper = reach.StartTaperMetres, endTaper = reach.EndTaperMetres;
+            if (!float.IsPositiveInfinity(reach.StartDistance) && !float.IsPositiveInfinity(reach.EndDistance))
+            {
+                // A short run with both ends near: each taper takes at most its share, so the middle of the run
+                // still stands at full height instead of the whole cliff fading away.
+                float runMetres = reach.StartDistance + (last - first) + reach.EndDistance;
+                float cap = runMetres * CliffWallGeometry.RunEndTaperMaxShareOfRun;
+                startTaper = Mathf.Min(startTaper, cap);
+                endTaper = Mathf.Min(endTaper, cap);
+            }
+            var keep = new float[arc.Length];
+            for (int c = 0; c < arc.Length; c++)
+            {
+                float fromStart = reach.StartDistance + Mathf.Max(0f, arc[c] - first);
+                float fromEnd = reach.EndDistance + Mathf.Max(0f, last - arc[c]);
+                keep[c] = Mathf.Min(CliffWallGeometry.RunEndKeepAt(fromStart, startTaper),
+                                    CliffWallGeometry.RunEndKeepAt(fromEnd, endTaper));
+            }
+            return keep;
+        }
+
+        /// <summary>Cumulative distance (m) along whole columns: along the brows, or along <paramref name="along"/>.</summary>
+        private static float[] ArcOf(CliffWallSample[] whole, Vector2[] along)
+        {
+            var arc = new float[whole.Length];
+            for (int c = 1; c < whole.Length; c++)
+                arc[c] = arc[c - 1] + (along != null
+                    ? Vector2.Distance(along[c - 1], along[c])
+                    : Vector2.Distance(whole[c - 1].BrowPlan, whole[c].BrowPlan));
+            return arc;
+        }
+
+        private static float StationArc(CliffWallColumns columns, float[] arc, int station)
+        {
+            int g = columns.Gap[station];
+            float f = columns.At[station];
+            return f > 0f && g + 1 < arc.Length ? Mathf.LerpUnclamped(arc[g], arc[g + 1], f) : arc[g];
+        }
+
+        private void BuildJoins(List<CliffWallSurface> run, CliffWallGeometry.RunReach reach,
+                                CliffWallSample[] samples, CliffWallColumns columns, int rows,
+                                List<CliffWallGeometry.BrowEdge> occluders)
+        {
+            float alongArcLast = StationArc(columns, ArcOf(columns.Whole, columns.AlongBrow), columns.Gap.Length - 1);
+            CliffWallSample last = samples[samples.Length - 1];
+
+            // A slit: draw the face on across it, as this chunk's rock, to the next run's first station.
+            if (reach.BridgeTo >= 0)
+            {
+                CliffWallSurface next = run[reach.BridgeTo];
+                CliffWallSample[] ns = BuildSamples(next._browPlan, next._toePlan, next._dropMetres, next._toeElevations);
+                if (ns.Length > 0)
+                    BuildExtension(Unsliced(new[] { last, ns[0] }), _alongOffsetMetres + alongArcLast, rows, "Bridge", occluders);
+            }
+
+            // A rock swap at a join: the chunk drawn in front carries its rock over the other's face, fading out.
+            // Not inside a taper: the neighbour's face is shortened there and a full-height feather would show.
+            bool tapering = !float.IsPositiveInfinity(reach.StartDistance) || !float.IsPositiveInfinity(reach.EndDistance);
+            if (tapering) return;
+            if (reach.JoinedAfter >= 0)
+            {
+                CliffWallSurface next = run[reach.JoinedAfter];
+                CliffWallSample[] ns = BuildSamples(next._browPlan, next._toePlan, next._dropMetres, next._toeElevations);
+                if (WearsOtherRock(next) && DrawsInFrontOf(ns, ahead: true))
+                {
+                    CliffWallColumns feather = FeatherColumns(ns, fromFirst: true, out _);
+                    if (feather != null) BuildExtension(feather, _alongOffsetMetres + alongArcLast, rows, "FeatherAfter", occluders);
+                }
+            }
+            if (reach.JoinedBefore >= 0)
+            {
+                CliffWallSurface prev = run[reach.JoinedBefore];
+                CliffWallSample[] ps = BuildSamples(prev._browPlan, prev._toePlan, prev._dropMetres, prev._toeElevations);
+                if (WearsOtherRock(prev) && DrawsInFrontOf(ps, ahead: false))
+                {
+                    CliffWallColumns feather = FeatherColumns(ps, fromFirst: false, out float length);
+                    if (feather != null) BuildExtension(feather, _alongOffsetMetres - length, rows, "FeatherBefore", occluders);
+                }
+            }
+        }
+
+        /// <summary>Whether the neighbour draws with other rock textures or another landform profile.</summary>
+        private bool WearsOtherRock(CliffWallSurface other)
+        {
+            if (other._profile != _profile || other._bands.Length != _bands.Length) return true;
+            for (int i = 0; i < _bands.Length; i++)
+                if (other._bands[i].Unlit != _bands[i].Unlit || other._bands[i].Normal != _bands[i].Normal ||
+                    other._bands[i].Mask != _bands[i].Mask)
+                    return true;
+            return false;
+        }
+
+        /// <summary>Whether this chunk sorts in front of a neighbour with these stations. On a tie the earlier chunk
+        /// of the pair (the one the seam is ahead of) carries the feather, so exactly one side does.</summary>
+        private bool DrawsInFrontOf(CliffWallSample[] other, bool ahead)
+        {
+            int theirs = YSortSprite.OrderFor(CliffWallGeometry.SortY(other), SortingBands.DecorBase,
+                                              SortingBands.OrdersPerMetre, SortingBands.DecorFloor,
+                                              SortingBands.DecorCeiling);
+            return SortingOrder > theirs || (SortingOrder == theirs && ahead);
+        }
+
+        /// <summary>
+        /// The neighbour's stations within <see cref="CliffWallGeometry.RunSeamFeatherMetres"/> of the join, as
+        /// unsliced columns in run order, with alpha 1 at the join falling to 0 at the far end. From the neighbour's
+        /// first station when it follows this chunk, else up to its last. Null where it has no length.
+        /// </summary>
+        public static CliffWallColumns FeatherColumns(CliffWallSample[] neighbour, bool fromFirst, out float length)
+        {
+            length = 0f;
+            int n = neighbour == null ? 0 : neighbour.Length;
+            if (n < 2) return null;
+            var picked = new List<CliffWallSample>();
+            var dist = new List<float>();
+            float reachMetres = CliffWallGeometry.RunSeamFeatherMetres;
+            float arc = 0f;
+            for (int k = 0; k < n; k++)
+            {
+                int i = fromFirst ? k : n - 1 - k;
+                if (k > 0)
+                {
+                    int j = fromFirst ? i - 1 : i + 1;
+                    float step = Vector2.Distance(neighbour[j].BrowPlan, neighbour[i].BrowPlan);
+                    if (arc + step >= reachMetres)
+                    {
+                        float f = step > 1e-6f ? (reachMetres - arc) / step : 1f;
+                        picked.Add(LerpSample(neighbour[j], neighbour[i], f));
+                        dist.Add(reachMetres);
+                        arc = reachMetres;
+                        break;
+                    }
+                    arc += step;
+                }
+                picked.Add(neighbour[i]);
+                dist.Add(arc);
+            }
+            length = arc;
+            if (!(length > 1e-4f)) return null;
+            if (!fromFirst)
+            {
+                picked.Reverse();
+                dist.Reverse();
+            }
+            CliffWallColumns columns = Unsliced(picked.ToArray());
+            columns.Alpha = new float[picked.Count];
+            for (int c = 0; c < picked.Count; c++)
+            {
+                float x = Mathf.Clamp01(dist[c] / length);
+                columns.Alpha[c] = 1f - x * x * (3f - 2f * x);
+            }
+            return columns;
+        }
+
+        private static CliffWallSample LerpSample(in CliffWallSample a, in CliffWallSample b, float f) =>
+            new CliffWallSample(Vector2.LerpUnclamped(a.BrowPlan, b.BrowPlan, f),
+                                Vector2.LerpUnclamped(a.ToePlan, b.ToePlan, f),
+                                Mathf.LerpUnclamped(a.DropMetres, b.DropMetres, f),
+                                Mathf.LerpUnclamped(a.ToeElevation, b.ToeElevation, f));
+
+        /// <summary>Draw this chunk's bands and decals on columns past its own stations (a bridge or a feather).</summary>
+        private void BuildExtension(CliffWallColumns ext, float alongOffsetMetres, int rows, string what,
+                                    List<CliffWallGeometry.BrowEdge> occluders)
+        {
+            float elevationValid = HasToeElevations ? 1f : 0f;
+            if (occluders != null)
+                ext.Clip = ClipFor(ext, occluders, HasToeElevations, false, default, false, default);
+            for (int b = 0; b < _bands.Length; b++)
+            {
+                if (!_bands[b].HasChannels) continue;
+                string label = string.IsNullOrEmpty(_bands[b].Label) ? b.ToString() : _bands[b].Label;
+                CliffWallMeshData m = FaceMesh(ext, _bands[b].StartSurfaceMetres, _bands[b].EndSurfaceMetres, rows,
+                                               alongOffsetMetres, _faceMetresS, _faceMetresT, DisplacementAt,
+                                               elevationValid, transform.position);
+                Emit(JoinChildPrefix + what + "_" + label, m.Verts, m.Uvs, m.Tris, _bands[b].Unlit, _bands[b].Normal,
+                     _bands[b].Mask, localOrder: 0, m.ElevationUv, m.SeaPlanUv, decal: false, m.Colors);
+            }
+            for (int d = 0; d < 2; d++)
+            {
+                Texture2D strip = d == 0 ? _browDecal : _toeDecal;
+                if (strip == null) continue;
+                CliffWallMeshData m = DecalMesh(ext, d == 0, _stripMetresT, _browLineAt, _subdivideMetres,
+                                                alongOffsetMetres, _faceMetresS, DisplacementAt, elevationValid,
+                                                transform.position);
+                Emit(JoinChildPrefix + what + (d == 0 ? "_Brow" : "_Toe"), m.Verts, m.Uvs, m.Tris, strip, null, null,
+                     localOrder: 1, m.ElevationUv, m.SeaPlanUv, decal: true, m.Colors);
+            }
         }
 
         /// <summary>A chunk's stations as samples, the way <see cref="Rebuild"/> reads its serialized lines. Public so a
@@ -529,6 +977,88 @@ namespace HiddenHarbours.Art
             return CliffWallGeometry.ProfileMetresFromGrey(grey, _profileMetres);
         }
 
+        /// <summary>
+        /// Stand the blocker on the drawn toe: one solid <see cref="PolygonCollider2D"/> quad per segment, centred
+        /// on the line, <see cref="CliffWallGeometry.BlockerThicknessMetres"/> thick and run half a thickness past
+        /// both ends, on a DontSave child at <see cref="BlockerLayer"/>. The quad is <c>PropertyBoundary</c>'s, for
+        /// its reasons: one collider per segment, because several paths on one collider turn their overlaps (every
+        /// corner) into holes; the ends overlapped, because butt-ended quads leave a pinhole on the outside of each
+        /// turn. A chunk's last point is the next chunk's first, so the run's blocker is closed across the join.
+        /// </summary>
+        private void BuildBlocker(Vector2[] drawnToe)
+        {
+            if (drawnToe == null || drawnToe.Length < 2) return;
+
+            var go = new GameObject(BlockerChildName) { hideFlags = HideFlags.DontSave, layer = BlockerLayer };
+            go.transform.SetParent(transform, false);
+            go.transform.localPosition = Vector3.zero;
+            go.transform.localRotation = Quaternion.identity;
+            go.transform.localScale = Vector3.one;
+
+            float half = CliffWallGeometry.BlockerThicknessMetres * 0.5f;
+            int built = 0;
+            for (int s = 0; s + 1 < drawnToe.Length; s++)
+            {
+                Vector2 a = go.transform.InverseTransformPoint(drawnToe[s]);
+                Vector2 b = go.transform.InverseTransformPoint(drawnToe[s + 1]);
+                Vector2 along = b - a;
+                float len = along.magnitude;
+                if (len <= 1e-4f) continue;                       // a repeated station is not a wall
+                along /= len;
+                Vector2 side = new Vector2(-along.y, along.x) * half;
+                Vector2 ext = along * half;
+
+                var quad = go.AddComponent<PolygonCollider2D>();
+                quad.pathCount = 1;
+                quad.SetPath(0, new[] { a - ext + side, b + ext + side, b + ext - side, a - ext - side });
+                built++;
+            }
+
+            _generated.Add(go);
+            BlockerColliderCount = built;
+        }
+
+        /// <summary>
+        /// Fill the face itself: for each segment, the ground from its brow down to its drawn toe
+        /// (<see cref="CliffWallGeometry.FacePieces"/>), one solid <see cref="PolygonCollider2D"/> per piece on a DontSave
+        /// child at <see cref="BlockerLayer"/>. One path per collider for the toe blocker's reason (several paths on one
+        /// collider turn their overlaps into holes). The brow edge stops the walker at the clifftop, the drawn toe edge
+        /// stops him from the sea, and the end edges close the run's open sides, so the face he would vanish behind can
+        /// be entered from nowhere. Built from the stations alone, like the toe blocker, so it stands with or without
+        /// the baked face. A joined chunk shares its join station, so the fill is continuous along a run.
+        /// </summary>
+        private void BuildFaceBlocker(Vector2[] brow, Vector2[] drawnToe)
+        {
+            if (brow == null || drawnToe == null) return;
+            int n = Mathf.Min(brow.Length, drawnToe.Length);
+            if (n < 2) return;
+
+            var go = new GameObject(FaceBlockerChildName) { hideFlags = HideFlags.DontSave, layer = BlockerLayer };
+            go.transform.SetParent(transform, false);
+            go.transform.localPosition = Vector3.zero;
+            go.transform.localRotation = Quaternion.identity;
+            go.transform.localScale = Vector3.one;
+
+            int built = 0;
+            for (int s = 0; s + 1 < n; s++)
+            {
+                Vector2 b0 = go.transform.InverseTransformPoint(brow[s]);
+                Vector2 b1 = go.transform.InverseTransformPoint(brow[s + 1]);
+                Vector2 t0 = go.transform.InverseTransformPoint(drawnToe[s]);
+                Vector2 t1 = go.transform.InverseTransformPoint(drawnToe[s + 1]);
+                foreach (Vector2[] piece in CliffWallGeometry.FacePieces(b0, b1, t1, t0))
+                {
+                    var poly = go.AddComponent<PolygonCollider2D>();
+                    poly.pathCount = 1;
+                    poly.SetPath(0, piece);
+                    built++;
+                }
+            }
+
+            _generated.Add(go);
+            FaceBlockerColliderCount = built;
+        }
+
         private void BuildBand(CliffWallColumns columns, in CliffFaceBand band, int rows,
                                string childName, int localOrder)
         {
@@ -537,7 +1067,7 @@ namespace HiddenHarbours.Art
                                            _alongOffsetMetres, _faceMetresS, _faceMetresT, DisplacementAt,
                                            elevationValid, transform.position);
             Emit(childName, m.Verts, m.Uvs, m.Tris, band.Unlit, band.Normal, band.Mask, localOrder,
-                 m.ElevationUv, m.SeaPlanUv);
+                 m.ElevationUv, m.SeaPlanUv, decal: false, m.Colors);
         }
 
         /// <summary>
@@ -561,7 +1091,7 @@ namespace HiddenHarbours.Art
             // ⭐ localOrder 1: INSIDE the sorting group, so a decal composites over the rock it finishes
             // without spending an order of the region's decor band.
             Emit(childName, m.Verts, m.Uvs, m.Tris, strip, null, null, localOrder: 1,
-                 m.ElevationUv, m.SeaPlanUv, decal: true);
+                 m.ElevationUv, m.SeaPlanUv, decal: true, m.Colors);
         }
 
         // ── The mesh as data ────────────────────────────────────────────────────────────────────────
@@ -715,6 +1245,8 @@ namespace HiddenHarbours.Art
             var uvs = new Vector2[verts.Length];
             var elevationUv = new Vector2[verts.Length];
             var seaPlanUv = new Vector2[verts.Length];
+            Color[] colors = columns.Alpha != null || columns.Keep != null || columns.Clip != null
+                ? new Color[verts.Length] : null;
 
             float along = 0f;                       // plan arc length down the shore, metres
 
@@ -739,6 +1271,13 @@ namespace HiddenHarbours.Art
                          ? Mathf.Clamp01(endSurfaceMetres / surface)
                          : 1f;
                 if (t1 < t0) t1 = t0;
+                // Near an open run end the face is drawn only part way down, so it tapers into the ground. The
+                // texture is cut, never squeezed: v still counts surface metres from the band's top.
+                float keep = KeepAt(columns, c);
+                // A clifftop in front hides the rest of the column: cut there, with no fade.
+                float shown = Mathf.Min(keep, ClipAt(columns, c));
+                t0 = Mathf.Min(t0, shown);
+                t1 = Mathf.Min(t1, shown);
 
                 for (int r = 0; r <= rows; r++)
                 {
@@ -759,11 +1298,23 @@ namespace HiddenHarbours.Art
                         CliffWaterlineMath.ElevationAt(s.ToeElevation + s.DropMetres, s.DropMetres, t),
                         elevationValid);
                     seaPlanUv[idx] = s.ToePlan;
+                    if (colors != null)
+                        colors[idx] = new Color(1f, 1f, 1f,
+                            AlphaAt(columns, c) * CliffWallGeometry.RunEndAlphaAt(t, keep, surface));
                 }
             }
 
-            return Laid(columns, rows, verts, uvs, elevationUv, seaPlanUv);
+            return Laid(columns, rows, verts, uvs, elevationUv, seaPlanUv, colors);
         }
+
+        private static float AlphaAt(CliffWallColumns columns, int c) =>
+            columns.Alpha != null && c < columns.Alpha.Length ? columns.Alpha[c] : 1f;
+
+        private static float KeepAt(CliffWallColumns columns, int c) =>
+            columns.Keep != null && c < columns.Keep.Length ? Mathf.Clamp01(columns.Keep[c]) : 1f;
+
+        private static float ClipAt(CliffWallColumns columns, int c) =>
+            columns.Clip != null && c < columns.Clip.Length ? Mathf.Clamp01(columns.Clip[c]) : 1f;
 
         /// <summary>
         /// A brow (<paramref name="brow"/> true) or toe strip's mesh, laid on <paramref name="columns"/> the way
@@ -787,6 +1338,8 @@ namespace HiddenHarbours.Art
             var uvs = new Vector2[verts.Length];
             var elevationUv = new Vector2[verts.Length];
             var seaPlanUv = new Vector2[verts.Length];
+            Color[] colors = columns.Alpha != null || columns.Keep != null || columns.Clip != null
+                ? new Color[verts.Length] : null;
 
             float along = 0f;
 
@@ -801,6 +1354,10 @@ namespace HiddenHarbours.Art
                 float surface = Mathf.Max(1e-4f, CliffWallGeometry.SurfaceLengthMetres(in s));
                 float u = CliffWallGeometry.TileU(alongOffsetMetres + along, faceMetresS);
                 float atBrow = displacement(u, 0f);
+                // Where the face tapers into the ground the toe strip seats on the face's shortened foot. Where a
+                // clifftop in front hides the lower face, both strips are cut there like the rock.
+                float keep = KeepAt(columns, c);
+                float clip = ClipAt(columns, c);
 
                 for (int r = 0; r <= rows; r++)
                 {
@@ -819,8 +1376,8 @@ namespace HiddenHarbours.Art
                     {
                         float depth = brow
                             ? (v - line) / (1f - line) * browFace          // metres below the brow
-                            : surface - (1f - v) * toeFace;                // ...up from the toe
-                        faceT = Mathf.Clamp01(depth / surface);
+                            : keep * surface - (1f - v) * toeFace;         // ...up from the (kept) toe
+                        faceT = Mathf.Min(Mathf.Clamp01(depth / surface), Mathf.Min(keep, clip));
                         p = Vector2.Lerp(browP, toeP, faceT) + outward * displacement(u, faceT);
                     }
 
@@ -836,18 +1393,37 @@ namespace HiddenHarbours.Art
                         CliffWaterlineMath.ElevationAt(s.ToeElevation + s.DropMetres, s.DropMetres, faceT),
                         elevationValid);
                     seaPlanUv[idx] = s.ToePlan;
+                    if (colors != null)
+                    {
+                        // A tapered column's toe strip fades with the taper. The brow strip (the sod lip) fades only in
+                        // the last stretch before the open end, so the lip does not run on past the rock as a spike,
+                        // and its face part also fades above a shortened foot like the rock under it.
+                        // A strip squeezed onto a shortened foot would draw a pale line along the taper, so the face part
+                        // of either strip goes quickly.
+                        float a = AlphaAt(columns, c);
+                        float strength = CliffWallGeometry.RunEndFadeStrength(keep);
+                        float faceFade = (1f - strength) * (1f - strength);
+                        // A face cut short (by a taper or by the clifftop in front) has no foot on the ground, so its toe
+                        // strip goes before the cut is deep: squeezed onto the cut it draws a pale line down the face
+                        // (the West Ledges streak at wall 057).
+                        if (!brow) a *= faceFade * CliffWallGeometry.ToeStripShownAt(Mathf.Min(keep, clip));
+                        else if (faceT > 0f) a *= faceFade;
+                        else a *= 1f - strength * strength;
+                        if (brow) a *= Mathf.SmoothStep(0f, 1f, clip / CliffWallGeometry.OcclusionLipFadeKeep);
+                        colors[idx] = new Color(1f, 1f, 1f, a);
+                    }
                 }
             }
 
-            return Laid(columns, rows, verts, uvs, elevationUv, seaPlanUv);
+            return Laid(columns, rows, verts, uvs, elevationUv, seaPlanUv, colors);
         }
 
         private static CliffWallMeshData Laid(CliffWallColumns columns, int rows, Vector3[] verts, Vector2[] uvs,
-                                              Vector2[] elevationUv, Vector2[] seaPlanUv)
+                                              Vector2[] elevationUv, Vector2[] seaPlanUv, Color[] colors = null)
         {
             var laid = new CliffWallMeshData
             {
-                Verts = verts, Uvs = uvs, ElevationUv = elevationUv, SeaPlanUv = seaPlanUv,
+                Verts = verts, Uvs = uvs, ElevationUv = elevationUv, SeaPlanUv = seaPlanUv, Colors = colors,
             };
             if (columns.Sliced) return Slice(columns, rows, laid);
 
@@ -926,9 +1502,27 @@ namespace HiddenHarbours.Art
                 }
             }
 
+            Color[] colors = null;
+            if (laid.Colors != null)
+            {
+                // A feather is laid unsliced; this keeps a sliced wall honest if one ever carries colours.
+                colors = new Color[count];
+                for (int j = 0; j < n; j++)
+                {
+                    int left = columns.Gap[j] * rowVerts;
+                    int right = Mathf.Min(left + rowVerts, laid.Colors.Length - rowVerts);
+                    for (int r = 0; r <= rows; r++)
+                        colors[j * rowVerts + r] = Color.LerpUnclamped(laid.Colors[left + r], laid.Colors[right + r], columns.At[j]);
+                    if (columns.At[j] > 0f)
+                        for (int r = 0; r < rows; r++)
+                            colors[diagonals + ordinal[j] * rows + r] =
+                                Color.LerpUnclamped(laid.Colors[left + r + 1], laid.Colors[right + r], columns.At[j]);
+                }
+            }
+
             return new CliffWallMeshData
             {
-                Verts = verts, Uvs = uvs, ElevationUv = elevation, SeaPlanUv = sea, Tris = tris.ToArray(),
+                Verts = verts, Uvs = uvs, ElevationUv = elevation, SeaPlanUv = sea, Tris = tris.ToArray(), Colors = colors,
             };
         }
 
@@ -962,11 +1556,14 @@ namespace HiddenHarbours.Art
 
         private void Emit(string childName, Vector3[] verts, Vector2[] uvs, int[] tris,
                           Texture2D unlit, Texture2D normal, Texture2D mask, int localOrder,
-                          Vector2[] elevationUv = null, Vector2[] seaPlanUv = null, bool decal = false)
+                          Vector2[] elevationUv = null, Vector2[] seaPlanUv = null, bool decal = false,
+                          Color[] colors = null)
         {
             var mesh = new Mesh { name = "HH" + childName, hideFlags = HideFlags.HideAndDontSave };
             mesh.SetVertices(verts);
             mesh.SetUVs(0, uvs);
+            // The shader multiplies by the vertex colour, alpha included: a seam feather fades out this way.
+            if (colors != null) mesh.SetColors(colors);
             // ⭐ THE WATERLINE CHANNELS (2026-08-06). uv1 = (this vertex's ELEVATION in metres, 1 if that
             // elevation is REAL); uv2 = the station's TOE PLAN, which is where the sea actually is — the
             // DRAWN toe has already been pushed down-screen by the drop, so sampling the wave field at it

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wind dial plates</title>
+<!-- Plate maker for the wind dial rig (docs/art/rigs/ui/wind-dial). Open over any static server
+     rooted at the repo (file:// works for viewing). With ?save=1 it POSTs each plate to /save on the
+     serving origin, which is how the PNGs beside this file were written. Every wind number comes from
+     resolveWind() below: SailDrive.ResolveWind's own steps, transcribed, for a boat heading north. -->
+<script src="../../docs/art/rigs/ui/wind-dial/Art/windRig.js"></script>
+<script src="../../docs/art/rigs/ui/compass/Art/compassRig.js"></script>
+<style>
+  body{margin:0;padding:16px;background:#0b1216;color:#aeb9bb;font:12px ui-monospace,monospace;}
+  canvas{image-rendering:pixelated;display:block;margin:6px 0 18px;border:1px solid #243137;max-width:100%;}
+  h2{font-size:13px;color:#e7eceb;margin:10px 0 0;}
+  pre{color:#c4cdcd;}
+</style>
+</head>
+<body>
+<div id="out"></div>
+<pre id="checks"></pre>
+<script>
+(function(){
+  const R = window.WindRig, C = window.CompassRig, KN = 0.5144444, DEG = Math.PI/180;
+
+  // ---- SailDrive.ResolveWind, transcribed (Core/Boats/SailDrive.cs:69-80) ----
+  const bearing = (x, y)=>{ if (x*x+y*y < 1e-12) return 0; let b = Math.atan2(x, y)/DEG; if (b < 0) b += 360; return b; };
+  const rel = (ref, tgt)=>{ const v = tgt - ref + 180; return ((v % 360) + 360) % 360 - 180; };
+  // true wind FROM `twa` off the bow at `tws` kn; the boat makes `boatKn` along her bow; bow = north
+  function resolveWind(twa, tws, boatKn){
+    const bow = [0, 1], from = twa * DEG;
+    const wind = [-Math.sin(from) * tws * KN, -Math.cos(from) * tws * KN];      // points DOWNWIND
+    const vel  = [0, boatKn * KN];
+    const app  = [wind[0] - vel[0], wind[1] - vel[1]];                            // TelltaleMath.ApparentWind
+    const b = bearing(bow[0], bow[1]);
+    return { twa: rel(b, bearing(-wind[0], -wind[1])), tws: Math.hypot(wind[0], wind[1]) / KN,
+             awa: rel(b, bearing(-app[0], -app[1])),   aws: Math.hypot(app[0], app[1]) / KN };
+  }
+  const CASES = [
+    { name:'beat stbd',   twa:  45, tws: 14, boat: 6 },
+    { name:'reach port',  twa: -90, tws: 10, boat: 7 },
+    { name:'broad stbd',  twa: 140, tws: 22, boat: 8 },
+    { name:'motor, head', twa: -10, tws:  4, boat: 12 },
+    { name:'calm',        twa:   0, tws: 0.4, boat: 0 },
+  ].map(c=> Object.assign(c, resolveWind(c.twa, c.tws, c.boat)));
+
+  const out = document.getElementById('out'), plates = [];
+  function sheet(name, title, cols, rows, cw, ch, k, cell){
+    const c = document.createElement('canvas'); c.width = cols*cw*k; c.height = rows*ch*k;
+    const g = c.getContext('2d'); g.imageSmoothingEnabled = false; g.fillStyle = '#0e181d'; g.fillRect(0,0,c.width,c.height);
+    for (let r=0;r<rows;r++) for (let q=0;q<cols;q++){
+      const s = cell(q, r); if (!s) continue;
+      g.drawImage(s, q*cw*k + Math.round((cw - s.width)/2)*k, r*ch*k + Math.round((ch - s.height)/2)*k, s.width*k, s.height*k);
+    }
+    const h = document.createElement('h2'); h.textContent = name + ' — ' + title; out.appendChild(h); out.appendChild(c);
+    plates.push({ name, c });
+  }
+  const opt = (grade, size, night, w, follow)=>({ grade, size, night, awa:w.awa, aws:w.aws, twa:w.twa, tws:w.tws, follow: follow||'apparent' });
+  const ROWS = [['dial',false],['dial',true],['display',false],['display',true]];
+
+  // 1. raised cards: 4 rows (dial day/night, display day/night) × 5 winds
+  sheet('wind-dial_card-states.png', 'raised card, rows dial-day / dial-night / display-day / display-night, cols '+CASES.map(c=>c.name).join(' | '),
+        CASES.length, 4, R.W, R.H, 1, (q,r)=> R.render(opt(ROWS[r][0], 'card', ROWS[r][1], CASES[q])));
+  // 2. band pieces, shown at 3x nearest
+  sheet('wind-dial_piece-states.png', 'band piece 112x144 at 3x, same rows and cols',
+        CASES.length, 4, R.PW, R.PH, 3, (q,r)=> R.render(opt(ROWS[r][0], 'piece', ROWS[r][1], CASES[q])));
+  // 3. the display's one button: pointer follows apparent vs true (beat stbd, broad stbd), day and night
+  sheet('wind-dial_display-follow.png', 'display card: pointer follows APP (left pair) vs TRUE (right pair), beat stbd then broad stbd',
+        4, 2, R.W, R.H, 1, (q,r)=> R.render(opt('display', 'card', r===1, CASES[q%2===0?0:2], q<2?'apparent':'true')));
+  // 4. needle sweep on the analog card: awa -180..180 every 45, 12 kn
+  const sweep = [-180,-135,-90,-45,0,45,90,135,180];
+  sheet('wind-dial_needle-sweep.png', 'dial card, awa = '+sweep.join(', ')+' (12 kn); + is starboard (green)',
+        sweep.length, 1, R.W, R.H, 1, (q)=> R.render({ grade:'dial', size:'card', awa: sweep[q], aws: 12 }));
+  // 5. in the band: compass flush piece beside both wind pieces, day and night, at 1x and 2x
+  function bandStrip(night){
+    const c = document.createElement('canvas'); c.width = 3*R.PW + 8; c.height = R.PH;
+    const g = c.getContext('2d'); g.imageSmoothingEnabled = false;
+    g.fillStyle = night ? '#14181c' : '#282e34'; g.fillRect(0,0,c.width,c.height);      // HelmBandPlateRender.Panel
+    // the compass piece as HelmBandController paints a flush mount: Blank plate, unit in (16,32,80,80)
+    const cp = document.createElement('canvas'); cp.width = R.PW; cp.height = R.PH; const cg = cp.getContext('2d');
+    cg.drawImage(R.render({ grade:'dial', size:'piece', night }), 0, 0);              // borrow the plate...
+    cg.clearRect(10, 24, 92, 96);                                                      // ...and clear its dial
+    const blank = night ? '#1e1e1e' : '#3e464e'; cg.fillStyle = blank; cg.fillRect(10, 24, 92, 96);
+    C.paintFlush(cg, 16, 32, 80, 80, { heading: 52, night });
+    g.drawImage(cp, 0, 0);
+    const w = CASES[0];
+    g.drawImage(R.render(opt('dial', 'piece', night, w)), R.PW + 4, 0);
+    g.drawImage(R.render(opt('display', 'piece', night, w)), 2*R.PW + 8, 0);
+    return c;
+  }
+  const strips = [bandStrip(false), bandStrip(true)];
+  sheet('wind-dial_band-context-1x.png', 'band at 1x: compass flush | wind dial | wind display (beat stbd), day over night',
+        1, 2, strips[0].width, R.PH, 1, (q,r)=> strips[r]);
+  sheet('wind-dial_band-context-2x.png', 'the same at 2x (k=2, a 4K screen)',
+        1, 2, strips[0].width, R.PH, 2, (q,r)=> strips[r]);
+
+  // ---- self-checks: the picture agrees with the numbers --------------------------
+  const lines = [], ok = (b, msg)=>{ lines.push((b ? 'PASS ' : 'FAIL ') + msg); return b; };
+  function px(c, x, y){ const d = c.getContext('2d').getImageData(Math.round(x), Math.round(y), 1, 1).data; return [d[0],d[1],d[2],d[3]]; }
+  const near = (a, b, t)=> Math.abs(a[0]-b[0])<=t && Math.abs(a[1]-b[1])<=t && Math.abs(a[2]-b[2])<=t;
+  const hex = (h)=>[parseInt(h.substr(1,2),16),parseInt(h.substr(3,2),16),parseInt(h.substr(5,2),16)];
+  // a) needle lands where awa says, both sizes: probe 70% out along the angle for the needle's light flank
+  ['card','piece'].forEach(size=>{
+    [-135,-40,0,40,90,180].forEach(a=>{
+      const c = R.render({ grade:'dial', size, awa:a, aws:10 }), L = R.layout('dial', size), o = R.dir(a);
+      const r = L.needle.tipR * 0.7, p = px(c, L.needle.pivotX + o.x*r, L.needle.pivotY + o.y*r);
+      ok(near(p, hex('#f4f1e6'), 2) || near(p, hex('#a7b0b2'), 2), 'dial '+size+' needle at awa '+a+' (probe '+p.slice(0,3)+')');
+    });
+  });
+  // b) port is red and starboard green on the ring, both sizes, day
+  ['card','piece'].forEach(size=>{
+    const c = R.render({ grade:'dial', size, awa:0, aws:0 }), L = R.layout('dial', size), G = size==='card' ? [122,130] : [32,35];
+    const rr = (G[0]+G[1])/2, s = R.dir(100), p = R.dir(-100);
+    const ps = px(c, L.face.cx + s.x*rr, L.face.cy + s.y*rr), pp = px(c, L.face.cx + p.x*rr, L.face.cy + p.y*rr);
+    ok(ps[1] > ps[0] && pp[0] > pp[1], 'dial '+size+' starboard ring green '+ps.slice(0,3)+', port ring red '+pp.slice(0,3));
+  });
+  // c) the analog drum shows the rounded apparent knots
+  ok(R.fmtDrum(CASES[0].aws) === String(Math.round(CASES[0].aws)).padStart(2,'0'), 'drum text '+R.fmtDrum(CASES[0].aws)+' for aws '+CASES[0].aws.toFixed(2));
+  // d) LCD formatting: side letters, calm dashes, Beaufort against WindReadout's table
+  ok(R.side(42, 10) === 'S' && R.side(-42, 10) === 'P' && R.side(42, 0.2) === ' ', 'side letters S/P, blank in a calm');
+  ok(R.fmtAng(-7.4, 10) === '007' && R.fmtAng(30, 0.5) === '---', 'angle "007", calm "---"');
+  // knots chosen inside each WMO band: kn x 0.5144 m/s against 0.5 1.5 3.3 5.5 7.9 10.7 13.8 17.1 20.7 24.4 28.4 32.6
+  const bftCases = [[0.5,0],[2,1],[5,2],[9,3],[13,4],[19,5],[24,6],[30,7],[36,8],[44,9],[50,10],[60,11],[64,12]];
+  ok(bftCases.every(([k,f])=> R.beaufort(k) === f), 'Beaufort of '+bftCases.map(x=>x[0]+'kn').join(',')+' = '+bftCases.map(x=>R.beaufort(x[0])).join(','));
+  // e) the transcribed resolve: at rest apparent = true; a beat with way on pulls apparent forward and up
+  const rest = resolveWind(60, 12, 0), beat = CASES[0];
+  ok(Math.abs(rest.awa - 60) < 1e-3 && Math.abs(rest.aws - 12) < 1e-3, 'at rest awa = twa (60), aws = tws (12)');
+  ok(beat.awa > 0 && beat.awa < beat.twa && beat.aws > beat.tws, 'beat stbd: awa '+beat.awa.toFixed(1)+' < twa 45, aws '+beat.aws.toFixed(1)+' > tws 14');
+  // f) the grade 1 face never prints true wind: hasTrue is false for the dial whatever is passed
+  ok(R.layout('dial','card').needle.source === 'awa' && !Object.keys(R.layout('dial','card').boxes).some(k=>k[0]==='t'), 'dial reads apparent only');
+  document.getElementById('checks').textContent = 'CASES\n' + CASES.map(c=>c.name.padEnd(12)+' twa '+c.twa.toFixed(1)+' tws '+c.tws.toFixed(1)+' boat '+c.boat+'  ->  awa '+c.awa.toFixed(1)+' aws '+c.aws.toFixed(1)).join('\n')
+    + '\n\nCHECKS\n' + lines.join('\n');
+  window.__plates = plates; window.__checks = lines;
+
+  if (/[?&]save=1/.test(location.search)){
+    Promise.all(plates.map(p=> new Promise(res=> p.c.toBlob(b=> fetch('/save?name='+encodeURIComponent(p.name), { method:'POST', body:b }).then(r=>r.text()).then(res)))))
+      .then(r=>{ document.title = 'SAVED ' + r.length; });
+  }
+})();
+</script>
+</body>
+</html>

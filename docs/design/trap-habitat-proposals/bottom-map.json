@@ -1,0 +1,11 @@
+{
+  "Id": "bottom_map.home_bay_proposal",
+  "Settings": {
+    "Origin": { "x": 0, "y": 0 },
+    "CellMetres": 64,
+    "Salt": 7801,
+    "RockWeight": 1,
+    "MudWeight": 1,
+    "SandWeight": 1
+  }
+}

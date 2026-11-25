@@ -14,9 +14,12 @@ namespace HiddenHarbours.Audio
     ///   <see cref="IBirdPresence"/>), each panned to its bird, and silence when none is near,</item>
     ///   <item>moderate and rough water beds following continuous sea state,</item>
     ///   <item>a sparse, game-clock-scheduled foghorn when visibility falls,</item>
-    ///   <item>a propulsion-aware BOAT BED while aboard — the hand-rowed dory gets an oar-stroke/water
-    ///   bed, an engine boat gets a looping outboard bed; the two crossfade on a swap, and the engine
-    ///   rides the boat's speed over ground,</item>
+    ///   <item>the OARS ON THE STROKE: a catch sound on the frame a rowing blade goes in and a light drip
+    ///   on the frame it comes out, for the player's boat and any rower within earshot, heard through
+    ///   the Core <see cref="OarBladeWater"/> the oar splash publishes (<see cref="OarStrokePlayer"/>);
+    ///   silent while nobody rows,</item>
+    ///   <item>an engine boat's looping outboard BED while aboard, riding the boat's speed over
+    ///   ground,</item>
     ///   <item>a CATCH STING on <see cref="FishCaught"/>,</item>
     ///   <item>"made it home" WARMTH on <see cref="CatchSold"/>, and on coming ashore — but the ashore
     ///   exhale is EARNED: it fires only when the sea had become a worry that trip (the rising-wind tell
@@ -71,8 +74,6 @@ namespace HiddenHarbours.Audio
         [Header("Tuning")]
         [Tooltip("Wind/environment poll cadence (Hz). Matches the HUD's 4 Hz sampling — not per frame.")]
         [SerializeField] private float _envSampleHz = 4f;
-        [Tooltip("Loudness of the aboard oar-stroke/water bed (the rowed dory) relative to the ambience bus.")]
-        [SerializeField, Range(0f, 1f)] private float _oarLayerGain = 0.8f;
         [Tooltip("Loudness of the aboard outboard-engine bed (engine boats) relative to the ambience bus.")]
         [SerializeField, Range(0f, 1f)] private float _engineLayerGain = 0.8f;
 
@@ -82,7 +83,7 @@ namespace HiddenHarbours.Audio
         [Header("Clips (placeholders generated if empty; slot owner SFX here later)")]
         [SerializeField] private AudioClip _calmBed;
         [SerializeField] private AudioClip _gulls;
-        [SerializeField] private AudioClip _hullRow;          // oar-stroke / water bed (rowed dory)
+        [SerializeField] private AudioClip _hullRow;          // oar stroke: the catch and release are cut from it
         [SerializeField] private AudioClip _outboardEngine;   // looping outboard-engine bed (engine boats)
         [SerializeField] private AudioClip _windTell;
         [SerializeField] private AudioClip _catchSting;
@@ -91,7 +92,7 @@ namespace HiddenHarbours.Audio
         [Header("Moment cues (juice charter §4.5; NO placeholders — an empty slot is silent until the owner's file lands)")]
         [SerializeField] private AudioClip _landingHit;   // JuiceMomentCue(Landing)
         [SerializeField] private AudioClip _saleChime;    // CatchSold (plays _homeWarmth while empty)
-        [SerializeField] private AudioClip _digStrike;    // JuiceMomentCue(DigStrike)
+        [SerializeField] private AudioClip _digStrike;    // JuiceMomentCue(DigImpact)
         [SerializeField] private AudioClip _castEntry;    // JuiceMomentCue(CastEntry)
 
         [Header("Sea state and visibility")]
@@ -102,7 +103,10 @@ namespace HiddenHarbours.Audio
         // ---- runtime sources ----------------------------------------------------------------
         private AudioSource _bed;     // calm-sea bed (ambience)
         private GullCallPlayer _gullPlayer;   // gull calls (ambience): one-shot voices, one call each
-        private AudioSource _oar;     // oar-stroke/water bed (ambience, aboard a rowed hull)
+        private OarStrokePlayer _oarPlayer;   // the oars on the stroke (ambience): pooled one-shot voices
+        private OarStrokeAudioTuning _oarTuning;
+        private AudioListener _listener;      // where the stroke sounds are heard from (found on demand)
+        private float _nextListenerSearch;    // unscaled time before which a missing listener is not searched for again
         private AudioSource _engine;  // outboard-engine bed (ambience, aboard an engine hull)
         private AudioSource _tell;    // rising-wind tell (ambience, wind-driven)
         private AudioSource _cue;     // one-shot stings/warmth (sfx)
@@ -114,7 +118,6 @@ namespace HiddenHarbours.Audio
         // ---- state --------------------------------------------------------------------------
         private ControlMode _mode = ControlMode.OnFoot;
         private string _boatId;       // last active hull id (from ActiveBoatChanged) — picks the boat bed
-        private float _oarLevel;      // 0..1 crossfade level for the oar bed
         private float _engineLevel;   // 0..1 crossfade level for the engine bed
         private float _engineThrottle01; // 0..1 from the active boat's speed over ground (4 Hz poll)
         private bool _tellActive;
@@ -184,6 +187,9 @@ namespace HiddenHarbours.Audio
 
             // The music bus plays the set's songs in turn; the public set has none, so it stays silent.
             _songCycle = MusicCycle.For(set);
+
+            // How the oars are heard (levels, variation, earshot, where the sounds are cut).
+            if (set.OarStrokes != null) _oarTuning = set.OarStrokes;
         }
 
         private void OnEnable()  => Subscribe();
@@ -203,6 +209,7 @@ namespace HiddenHarbours.Audio
             EventBus.Subscribe<ControlModeChanged>(OnControlModeChanged);
             EventBus.Subscribe<ActiveBoatChanged>(OnActiveBoatChanged);
             EventBus.Subscribe<JuiceMomentCue>(OnMoment);
+            EventBus.Subscribe<OarBladeWater>(OnOarBladeWater);
             _subscribed = true;
         }
 
@@ -214,6 +221,7 @@ namespace HiddenHarbours.Audio
             EventBus.Unsubscribe<ControlModeChanged>(OnControlModeChanged);
             EventBus.Unsubscribe<ActiveBoatChanged>(OnActiveBoatChanged);
             EventBus.Unsubscribe<JuiceMomentCue>(OnMoment);
+            EventBus.Unsubscribe<OarBladeWater>(OnOarBladeWater);
             _subscribed = false;
         }
 
@@ -230,10 +238,10 @@ namespace HiddenHarbours.Audio
             // The music bus: one song through, the set's gap, then the next.
             TickMusic(dt);
 
-            // Crossfade the aboard propulsion beds toward the active layer (smooth swap, no pop).
+            // Fade the engine bed toward the active layer (smooth swap, no pop). A rowed hull has no bed:
+            // its oars are heard on the stroke (OnOarBladeWater).
             BoatAudioLayer layer = AudioDirectorLogic.BoatLayerFor(_mode, _boatId);
             float rate = AudioDirectorLogic.BoatLayerCrossfadePerSec * dt;
-            _oarLevel    = Mathf.MoveTowards(_oarLevel,    layer == BoatAudioLayer.Oars   ? 1f : 0f, rate);
             _engineLevel = Mathf.MoveTowards(_engineLevel, layer == BoatAudioLayer.Engine ? 1f : 0f, rate);
 
             // Poll the sea's wind AND the boat's speed at a low cadence (the HUD's 4 Hz) — not per frame.
@@ -263,7 +271,7 @@ namespace HiddenHarbours.Audio
                 return;
             }
 
-            var sample = env.Sample();
+            var sample = LocalWeather.Shade(env.Sample());   // the ear hears an authored local storm
             float wind = sample.WindVector.magnitude;
             _tellActive = AudioDirectorLogic.TellActive(wind, _tellActive);
             _tell01 = _tellActive ? AudioDirectorLogic.WindTell01(wind) : 0f;
@@ -319,9 +327,9 @@ namespace HiddenHarbours.Audio
             if (_roughSea != null) _roughSea.volume = ambDucked * AudioDirectorLogic.RoughSeaGain(_seaState01);
             if (_fogHorn != null) _fogHorn.volume = amb * AudioDirectorLogic.FoghornAmbienceGain;
 
-            // Aboard propulsion beds ride the ambience bus and are NOT ducked (you're on the water);
-            // they crossfade by level, and the engine swells + lifts pitch with speed over ground.
-            if (_oar != null) _oar.volume = amb * _oarLayerGain * _oarLevel;
+            // The oars and the engine ride the ambience bus and are NOT ducked (you're on the water); the
+            // engine fades by level and swells + lifts pitch with speed over ground.
+            if (_oarPlayer != null) _oarPlayer.BusGain = amb;
             if (_engine != null)
             {
                 _engine.volume = AudioDirectorLogic.EngineGain(amb * _engineLayerGain, _engineThrottle01) * _engineLevel;
@@ -369,6 +377,31 @@ namespace HiddenHarbours.Audio
         // oar vs engine. Carries no propulsion type (that lives in Boats); see AudioDirectorLogic.
         private void OnActiveBoatChanged(ActiveBoatChanged e) => _boatId = e.BoatId;
 
+        // A rowing blade went in or came out (the oar splash's own frame): voice it, once a stroke per
+        // boat, if it is within earshot. The clock is the frame clock (unscaled), so an offline capture
+        // locked to the frame clock hears it on the frame the picture shows it.
+        private void OnOarBladeWater(OarBladeWater e)
+        {
+            if (_oarPlayer == null) return;
+            _oarPlayer.Hear(in e, Time.unscaledTimeAsDouble, ListenerPosition(e.Position));
+        }
+
+        private Vector2 ListenerPosition(Vector2 fallback)
+        {
+            // A region scene keeps its own review camera's listener, switched OFF; the one that hears is
+            // the enabled one. Searched only when the cached one is gone or off, and at most once a
+            // second, so a scene with no enabled listener does not search on every stroke. With none,
+            // the stroke is heard where it happens (the rower is the player).
+            if ((_listener == null || !_listener.isActiveAndEnabled) && Time.unscaledTime >= _nextListenerSearch)
+            {
+                _nextListenerSearch = Time.unscaledTime + 1f;
+                _listener = null;
+                foreach (var l in FindObjectsByType<AudioListener>(FindObjectsSortMode.None))
+                    if (l.isActiveAndEnabled) { _listener = l; break; }
+            }
+            return _listener != null && _listener.isActiveAndEnabled ? (Vector2)_listener.transform.position : fallback;
+        }
+
         private void PlayCue(AudioCue cue)
         {
             if (_cue == null) return;
@@ -396,8 +429,8 @@ namespace HiddenHarbours.Audio
             EnsurePlaceholderClips();
             _bed    = MakeSource("Bed",      _calmBed,        loop: true,  play: true);
             BuildGullVoices(gullSlotEmpty);
-            // Both propulsion beds loop from boot at zero volume and crossfade in — no Play/Stop pops on a swap.
-            _oar    = MakeSource("OarRow",   _hullRow,        loop: true,  play: true);
+            // The oars are one-shots on the stroke; the engine bed loops from boot at zero volume and fades in.
+            BuildOarVoices();
             _engine = MakeSource("Outboard", _outboardEngine, loop: true,  play: true);
             _tell   = MakeSource("WindTell", _windTell,       loop: true,  play: true);
             _cue    = MakeSource("Cue",      null,            loop: false, play: false);
@@ -415,6 +448,20 @@ namespace HiddenHarbours.Audio
                 voices[i] = MakeSource(GullCallPlayer.VoiceName(i), _gulls, loop: false, play: false);
             _gullPlayer = new GullCallPlayer(_gullCalls, voices, _gulls,
                                              gullSlotEmpty ? ProceduralAudio.GullCallPhrases : null);
+        }
+
+        /// <summary>A few one-shot voices for the stroke sounds, and the catch and release cut from the
+        /// oar-stroke clip once, here at boot.</summary>
+        private void BuildOarVoices()
+        {
+            if (_oarTuning == null) _oarTuning = new OarStrokeAudioTuning();
+            var voices = new AudioSource[Mathf.Clamp(_oarTuning.Voices, 1, 8)];
+            for (int i = 0; i < voices.Length; i++)
+                voices[i] = MakeSource(OarStrokePlayer.VoiceName(i), null, loop: false, play: false);
+            _oarPlayer = new OarStrokePlayer(_oarTuning, voices, _hullRow);
+            if (_oarPlayer.CatchClip == null)
+                Debug.LogWarning("[Audio] the oar-stroke clip could not be cut (a compressed recording must be " +
+                                 "imported Decompress On Load); the oars are silent.");
         }
 
         private AudioSource MakeSource(string name, AudioClip clip, bool loop, bool play)

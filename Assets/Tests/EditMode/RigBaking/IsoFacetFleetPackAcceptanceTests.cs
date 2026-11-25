@@ -126,7 +126,7 @@ namespace HiddenHarbours.Tests.RigBaking
 
         static IEnumerable<Subject> Photographed()
         {
-            foreach (string key in new[] { "goFast", "bowrider", "expressCruiser" })
+            foreach (string key in new[] { "goFast", "bowrider", "expressCruiser", "expeditionYacht120", "yachtTender", "motorYacht84" })
             {
                 var h = HullMeshFleet.Get(key);
                 string asset = Path.GetFileName(h.MeshAssetPath).Replace("HullMesh.asset", "");
@@ -150,6 +150,9 @@ namespace HiddenHarbours.Tests.RigBaking
             // of this HARNESS and not of the bake — which is the only way to tell those two apart
             // without guessing. She is also the Mk2's sister at the identical cell, so she costs
             // nothing extra to photograph.
+            // Since then she has been rebuilt to the hull layout (same hull, same default render). She
+            // is no longer untouched, but she is still outside CarryUnmodelledDither and still meets
+            // the strict floor, which is what the control is for.
             yield return new Subject("sportSkiff", "shipped v1 sport skiff (CONTROL)",
                                      "docs/art/rigs/sportSkiffIsoRig.js", "SportSkiffIso",
                                      "SportSkiffIso", null);
@@ -311,6 +314,18 @@ namespace HiddenHarbours.Tests.RigBaking
                 string source = System.IO.File.ReadAllText(
                     System.IO.Path.Combine(RigCatalog.RepoRoot, s.ScriptPath));
                 bool declaresDither = source.Contains("dith:");
+                // The sport skiff joined these when she was rebuilt to the hull layout: her paints now declare
+                // dith, every one at full scale, and she is still held to the strict floor below.
+                if (s.Key == "expeditionYacht120" || s.Key == "yachtTender" || s.Key == "motorYacht84"
+                    || s.Key == "sportSkiff")
+                {
+                    using var host = RigScriptHostFactory.Create();
+                    host.Execute(source);
+                    string mats = s.RenderScope + ".matsFor().MATS";
+                    declaresDither = host.EvaluateBool("(function(){var m=" + mats +
+                        ";return Object.keys(m).some(function(k){return typeof m[k].dith==='number' && m[k].dith!==1;});})()");
+                    Assert.IsFalse(declaresDither, s.Label + ": the public materials use full-scale Bayer dither");
+                }
                 bool exempted = Array.IndexOf(CarryUnmodelledDither, s.Key) >= 0;
 
                 Assert.AreEqual(exempted, declaresDither,

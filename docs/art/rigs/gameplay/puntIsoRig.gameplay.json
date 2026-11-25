@@ -2,7 +2,7 @@
   "schema": "hidden-harbours/boat-gameplay-geometry@1",
   "rig": "puntIsoRig.js",
   "exportSymbol": "PuntIso",
-  "derivedFromRigSha256": "7ca7928fc4acb3c5bb4f1e01e5e9295050f95f02a8b1acbb7fe419e3e7f4962a",
+  "derivedFromRigSha256": "f668badd568cb61dcf2af872a8823deb963426695ab0b1de365c18986eb3783d",
   "units": "metres",
   "frame": {
     "origin": "amidships / keel-bottom / centreline",

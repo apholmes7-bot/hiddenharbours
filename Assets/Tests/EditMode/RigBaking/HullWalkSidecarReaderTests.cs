@@ -2,6 +2,8 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using HiddenHarbours.Boats;
+using HiddenHarbours.Core;
 using HiddenHarbours.Tools.RigBaking;
 using NUnit.Framework;
 using UnityEngine;
@@ -118,6 +120,45 @@ namespace HiddenHarbours.Tests.RigBaking
             Assert.That(door["sillZ"], Is.EqualTo(2d));
             Assert.That(door["x0"], Is.EqualTo(-.5d));
             Assert.That(door.Count, Is.EqualTo(11));
+        }
+
+        [Test]
+        public void AbsentWashboards_WithExclusion_ReadsAndImportsNoWashboardArea()
+        {
+            var walk = HullWalkFixture.Read(HullWalkFixture.Json.Replace("\"washboards\": [],", ""));
+            Assert.That(walk.Ok, Is.True, string.Join(";", walk.Errors));
+            Assert.That(walk.Fields.ContainsKey("washboards"), Is.False);
+            using var host = RigScriptHostFactory.Create();
+            var rig = HullWalkFixture.Extract(host);
+            var deck = ScriptableObject.CreateInstance<BoatDeckDef>();
+            var room = ScriptableObject.CreateInstance<BoatInteriorDef>();
+            try
+            {
+                var result = HullWalkSidecarImporter.Populate(walk, rig, "boxWalkRig", deck, room);
+                Assert.That(result.Ok, Is.True, string.Join(";", result.Refusals));
+                Assert.That(deck.Areas.Any(a => a.Kind == DeckAreaKind.Washboard), Is.False);
+                Assert.That(deck.Areas.Any(a => a.Kind == DeckAreaKind.Deck), Is.True);
+            }
+            finally { UnityEngine.Object.DestroyImmediate(deck); UnityEngine.Object.DestroyImmediate(room); }
+        }
+
+        [Test]
+        public void AbsentWashboards_WithoutExclusion_RefusesEmptyWithoutExclusion()
+        {
+            string json = Regex.Replace(HullWalkFixture.Json, @"""_excluded"":\s*\[[^\]]*\]", "\"_excluded\": []")
+                .Replace("\"washboards\": [],", "");
+            var read = HullWalkFixture.Read(json);
+            Assert.That(read.Ok, Is.False);
+            Assert.That(read.Errors.Single(), Is.EqualTo("box_walk: washboards: empty without _excluded entry"));
+        }
+
+        [Test]
+        public void EmptyWashboards_WithoutExclusion_StillRefusesEmptyWithoutExclusion()
+        {
+            string json = Regex.Replace(HullWalkFixture.Json, @"""_excluded"":\s*\[[^\]]*\]", "\"_excluded\": []");
+            var read = HullWalkFixture.Read(json);
+            Assert.That(read.Ok, Is.False);
+            Assert.That(read.Errors.Single(), Is.EqualTo("box_walk: washboards: empty without _excluded entry"));
         }
     }
 }

@@ -67,13 +67,26 @@ namespace HiddenHarbours.Art
 
         [Header("Surface schools")]
         [Tooltip("Birds over one surface school at the peak of the day.")]
-        [Min(0f)] public float SchoolBirds = 6f;
+        [Min(0f)] public float SchoolBirds = 2f;
         [Tooltip("The season's share of SchoolBirds, in the clock's order: Early Spring, High Summer, The Turn, Hard Winter.")]
         public float[] SchoolSeason = { 0.9f, 1f, 1f, 0.5f };
         [Tooltip("The quiet middle of the day over a school, as a share of the morning.")]
         [Range(0f, 1f)] public float SchoolMiddayLevel = 0.7f;
         [Tooltip("The afternoon over a school, as a share of the morning.")]
         [Range(0f, 1f)] public float SchoolAfternoonLevel = 0.8f;
+        [Tooltip("The most school gulls in view at once, over every surface school together. Raise it for " +
+                 "busier open water, lower it for a quieter sea; 0 = no gulls over schools. The gulls at the " +
+                 "authored haunts and roosts are not counted against it. (Up to 8 schools are followed at " +
+                 "once, each with SchoolBirds gulls at most.)")]
+        [Min(0)] public int MaxSchoolGullsInView = 8;
+
+        [Header("How many are drawn")]
+        [Tooltip("The most birds drawn at once, everywhere: the size of the pool. Today every bird is a gull, " +
+                 "so this is the most gulls on screen. The birds nearest the middle of the view are drawn " +
+                 "first; any more are counted (and heard) but not drawn. Raise it freely for a busier sky; " +
+                 "it is read once, when the game starts. A roost with more Room than this is drawn short " +
+                 "when it is full.")]
+        [Min(0)] public int MaxBirdsDrawn = 40;
 
         /// <summary>The shipped defaults (a fresh instance: the caller may change it).</summary>
         public static GullScheduleTuning Default => new GullScheduleTuning();
@@ -113,6 +126,7 @@ namespace HiddenHarbours.Art
                     : new GullSeasons(At(school, 0), At(school, 1), At(school, 2), At(school, 3)),
                 SchoolMiddayLevel = SchoolMiddayLevel,
                 SchoolAfternoonLevel = SchoolAfternoonLevel,
+                MaxSchoolGullsInView = Math.Max(0, MaxSchoolGullsInView),
             };
         }
 

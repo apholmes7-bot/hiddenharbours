@@ -11,8 +11,8 @@ namespace HiddenHarbours.App.Editor
     /// drivable in every test and reachable in no scene. One drivable
     /// <see cref="ParkedVehicle"/> now stands on the truck park, placed by the region builder.
     ///
-    /// <para><b>Places, does NOT draw</b> — the moorage law (<c>FleetReviewMoorage</c>,
-    /// <c>NineMileCreekMooredFleet</c>): the mesh path is runtime-owned, so she skins herself at
+    /// <para><b>Places, does NOT draw</b> — the moorage law
+    /// (<c>NineMileCreekMooredFleet</c>): the mesh path is runtime-owned, so she skins herself at
     /// play and a builder that skinned her here would bake the sprite fallback into the committed
     /// scene (memory <c>mesh-hulls-must-skin-at-runtime</c>).</para>
     ///

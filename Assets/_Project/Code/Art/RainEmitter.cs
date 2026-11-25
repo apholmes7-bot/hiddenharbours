@@ -154,7 +154,7 @@ namespace HiddenHarbours.Art
             var env = GameServices.Environment;
             if (env != null)
             {
-                EnvironmentSample s = env.Sample();
+                EnvironmentSample s = LocalWeather.Shade(env.Sample());   // and an authored local storm
                 windMs = s.WindVector;
                 visibility = s.Visibility;
                 seaState01 = s.SeaState01;
@@ -163,6 +163,10 @@ namespace HiddenHarbours.Art
             float intensity = AmbientParticleMath.RainIntensity(
                 visibility, seaState01, _config.BaselineIntensity, _config.SeaStateWeight,
                 _config.VisOnset, _config.VisFull, _config.SeaOnset);
+            // An authored local squall brings rain of its own, and heavier streaks with it (Core's
+            // LocalWeather; the surface rings ask the same question, so drops and rings stay one rain).
+            intensity = LocalWeather.Rain(intensity);
+            Vector2 streak = LocalWeather.RainStreakScale;
 
             // --- spawn (rate ∝ intensity, integrated with a carry; recycle round-robin) ---
             float targetRate = _config.MaxDrops / Mathf.Max(0.1f, _config.Lifetime) * Mathf.Clamp01(intensity);
@@ -201,7 +205,7 @@ namespace HiddenHarbours.Art
                 var t = sr.transform;
                 // Nudge toward the camera (−z) so the streak draws in front of the water plane / boats.
                 t.position = new Vector3(d.Pos.x, d.Pos.y, -_cameraZOffset);
-                t.localScale = new Vector3(_config.Size, d.Size, 1f);
+                t.localScale = new Vector3(_config.Size * streak.x, d.Size * streak.y, 1f);
                 t.rotation = Quaternion.Euler(0f, 0f, slantDeg);
                 Color col = _config.Color * tint;        // dim/warm with the day/night look
                 col.a = alpha;

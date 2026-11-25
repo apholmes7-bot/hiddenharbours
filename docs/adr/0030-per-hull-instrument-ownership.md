@@ -133,3 +133,20 @@ a brow, and the sounder is the smallest instrument in the set — the flag would
 console would ever set false (rule 6: don't add a dial that never moves). `SupportsFishFinder` earns its
 existence because a small brow genuinely may not take the bigger colour unit. Adding the flag later, if a
 console ever needs to refuse the basic unit, is additive.
+
+## Amendment — 2026-11-13: the wind instrument (two ids, one graded slot, no schema change)
+
+Helm instruments plan, slice 3. Two ids join the append-only set: `instrument.wind_dial` (apparent wind
+only) and `instrument.wind_display` (apparent and true wind). They are owned per hull in the SAME
+`HullInstruments` rows (`InstrumentLocker`) as every other instrument, so **the save schema does not change and there is no
+version bump**.
+
+"Can this helm take it?" is answered by one graded field instead of two booleans, because the two units
+are tiers of one mount: `HelmConsoleDef.MaxWind` (`None` / `Dial` / `Display`) is the best grade the
+console takes, and `HelmConsoleDef.DefaultWind` is what it ships with (capped by `MaxWind`). Both default
+to `None`, so no existing console or hull changes. `BoatEquipment.EffectiveFit` resolves
+`HelmFit.Wind`; an owned unit only ever raises the grade.
+
+The reading is `IHelmInstruments.TryReadWind` (a default interface method answering "nothing fitted"),
+implemented by the Boats relay through Core's `HelmWind.TryRead`, which is `SailDrive.ResolveWind`
+behind the grade gate: one wind, recomputed, never saved. Nothing draws it yet.

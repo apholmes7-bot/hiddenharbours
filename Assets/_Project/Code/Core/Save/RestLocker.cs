@@ -89,7 +89,70 @@ namespace HiddenHarbours.Core
             save.RestPosX = 0f;
             save.RestPosY = 0f;
             save.RestLevel = 0;
+            ClearPlaceDetail(save);
             return true;
+        }
+
+        // ---- the whole sleep place (owner ruling 2026-11-15, save v20) ---------------------------
+
+        /// <summary>
+        /// Where and when the player last slept, in full (<see cref="SleepPlace"/>): the anchor plus the
+        /// bed id, the wake instant and, for a bunk aboard, the boat's pose. <see cref="SleepPlace.None"/>
+        /// exactly when <see cref="Anchor(SaveData)"/> is unset, so the two can never disagree about
+        /// whether the player has slept.
+        /// </summary>
+        public static SleepPlace Place(SaveData save)
+        {
+            RestAnchor anchor = Anchor(save);
+            if (!anchor.IsSet) return SleepPlace.None;
+            return new SleepPlace(anchor, save.RestBedId, save.RestWokeAtSeconds, save.RestAboard,
+                                  save.RestBoatHullId, save.RestBoatRegion,
+                                  new Vector2(save.RestBoatPosX, save.RestBoatPosY), save.RestBoatRotation);
+        }
+
+        /// <summary>The live save's sleep place; <see cref="SleepPlace.None"/> with no save service.</summary>
+        public static SleepPlace Place() => Place(GameServices.Save?.Current);
+
+        /// <summary>
+        /// Record where and when the player has just slept: all of it or none of it. Refuses an unset
+        /// place for exactly the reason <see cref="Stamp"/> refuses an unset anchor (a caller that could
+        /// not name the region must not erase a good bed). Returns true iff anything changed.
+        /// </summary>
+        public static bool StampPlace(SaveData save, in SleepPlace place)
+        {
+            if (save == null || !place.IsSet) return false;
+
+            bool changed = Stamp(save, place.Anchor);
+            changed |= !string.Equals(save.RestBedId, place.BedId, System.StringComparison.Ordinal)
+                    || save.RestWokeAtSeconds != place.WokeAtSeconds
+                    || save.RestAboard != place.Aboard
+                    || !string.Equals(save.RestBoatHullId, place.BoatHullId, System.StringComparison.Ordinal)
+                    || !string.Equals(save.RestBoatRegion, place.BoatRegion, System.StringComparison.Ordinal)
+                    || save.RestBoatPosX != place.BoatPosition.x
+                    || save.RestBoatPosY != place.BoatPosition.y
+                    || save.RestBoatRotation != place.BoatRotationDegrees;
+
+            save.RestBedId = place.BedId;
+            save.RestWokeAtSeconds = place.WokeAtSeconds;
+            save.RestAboard = place.Aboard;
+            save.RestBoatHullId = place.BoatHullId;
+            save.RestBoatRegion = place.BoatRegion;
+            save.RestBoatPosX = place.BoatPosition.x;
+            save.RestBoatPosY = place.BoatPosition.y;
+            save.RestBoatRotation = place.BoatRotationDegrees;
+            return changed;
+        }
+
+        private static void ClearPlaceDetail(SaveData save)
+        {
+            save.RestBedId = "";
+            save.RestWokeAtSeconds = 0d;
+            save.RestAboard = false;
+            save.RestBoatHullId = "";
+            save.RestBoatRegion = "";
+            save.RestBoatPosX = 0f;
+            save.RestBoatPosY = 0f;
+            save.RestBoatRotation = 0f;
         }
     }
 }

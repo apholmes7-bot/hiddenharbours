@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2794216af134af8a37690830c8d2064, type: 3}
+  m_Name: DougieMacNeil
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.NpcDef
+  Id: npc.dougie_macneil
+  DisplayName: Dougie MacNeil
+  Kind: 0
+  Dialogue: {fileID: 11400000, guid: 7b5112291b0f4c1b85247fc41b194103, type: 2}
+  CompletionFlag: met_dougie
+  Build: {fileID: 11400000, guid: 0b7b08407b6e3e248a7565666848676e, type: 2}
+  Gifts:
+    LovedItemIds:
+    - fish.winter_flounder
+    LikedItemIds: []
+    DislikedItemIds: []
+    LovedTags: []
+    LikedTags:
+    - inshore_groundfish
+    DislikedTags:
+    - pelagic
+    Lines:
+      Loved:
+      - 'A flounder! Nobody tins a flounder. That one''s going in a pan, whole, the way it should.'
+      Liked:
+      - 'Fresh off the bottom. That''s a treat for a cannery man.'
+      Neutral:
+      - 'Thanks. Rene will want half, but he can ask.'
+      Disliked:
+      - 'I put that kind in tins all day long, and now here it is at home. Thanks, though.'
+      NotGiftable: []
+      AlreadyGiftedToday: []

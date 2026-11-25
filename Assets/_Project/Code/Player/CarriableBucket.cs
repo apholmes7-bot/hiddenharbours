@@ -88,6 +88,7 @@ namespace HiddenHarbours.Player
         /// <inheritdoc/>
         public bool TryAdd(CatchItem item)
         {
+            if (!CatchKeep.MayKeep(in item)) return false;   // protected: release-only, never held
             if (_items.Count >= CapacityUnits) return false;
             _items.Add(item);
             return true;
@@ -173,7 +174,42 @@ namespace HiddenHarbours.Player
         {
             ResolveYSort();
             if (_ySort != null) _ySort.enabled = true;
+            SetDrawnElsewhere(false);   // a pail on the ground is drawn: nothing else is drawing it
         }
+
+        // ---- the pail as a mesh in his hand (ADR 0053) ---------------------------------------------------
+
+        /// <summary>
+        /// The bucket rig's held mesh for this pail at its fill and catch, as tier <paramref name="tierId"/>
+        /// ('pail'), or null: a container that does not show its fill as baked bucket states (the clam hod
+        /// stacks a heap between two sprites) has no mesh and keeps its sprite.
+        /// </summary>
+        public HeldPropMeshDef HeldMeshFor(string tierId)
+        {
+            ResolvePresenter();
+            return _presenter != null ? _presenter.HeldMeshFor(tierId) : null;
+        }
+
+        /// <summary>
+        /// <b>Held out of the picture while the mesh figure draws this pail in his hand</b>, as
+        /// <see cref="CarriableTool.SetDrawnElsewhere"/> is for a tool: the carrier states it every frame and
+        /// never latches it. By <see cref="Renderer.forceRenderingOff"/>, never <c>enabled</c>, and the sprite's
+        /// sun shadow goes quiet with it; given back on <see cref="OnPlaced"/>.
+        /// </summary>
+        public void SetDrawnElsewhere(bool drawnElsewhere)
+        {
+            ResolveRenderer();
+            if (_renderer == null) return;
+            if (_renderer.forceRenderingOff != drawnElsewhere)
+                _renderer.forceRenderingOff = drawnElsewhere;
+            if (_shadow == null) _shadow = _renderer.GetComponent<SpriteShadow>();
+            if (_shadow != null && _shadow.Quiet != drawnElsewhere) _shadow.Quiet = drawnElsewhere;
+        }
+
+        /// <summary>True while the sprite is held out of the picture (<see cref="SetDrawnElsewhere"/>).</summary>
+        public bool DrawnElsewhere => _renderer != null && _renderer.forceRenderingOff;
+
+        private SpriteShadow _shadow;
 
         // ---- IInteractable -----------------------------------------------------------------------------
 
@@ -258,7 +294,7 @@ namespace HiddenHarbours.Player
 
             if (!_hands.TryGiveCatchTo(this))
             {
-                EventBus.Publish(new DevNotice("The bucket's full — head to Nine Mile Creek and sell."));
+                EventBus.Publish(new DevNotice(BucketStrings.Full));
                 return;
             }
 

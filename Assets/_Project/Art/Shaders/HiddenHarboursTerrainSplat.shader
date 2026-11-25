@@ -45,9 +45,8 @@
 // when Path's tiles joined the array (slice 60).
 //
 // The kit's five EDGE STRIPS (the sod lip, scarp, wrack line, weed line, reef margin) are imported
-// under Terrain/Edges but not sampled here — they are decals laid along a spline by signed
-// distance, which is a different addressing scheme than this world-XZ tiling
-// (docs/design/terrain-edge-strips.md).
+// under Terrain/Edges, sampled by load-derived distance and along-shore phase, separately from
+// world-XZ material tiling (Include/TerrainShoreLines.hlsl). A region Def opts in; no splat slot.
 //
 // The band constants are NOT owned here: the builder pushes StPetersShoreMap's numbers through
 // TerrainSplatSurface at build time, and TerrainSplatBandPinTests holds this shader's DEFAULTS to
@@ -176,6 +175,12 @@ Shader "HiddenHarbours/TerrainSplat"
         _MacroStrength  ("Macro strength", Range(0, 1)) = 0.22
         _MacroTint      ("Macro tint", Color) = (0.72, 0.66, 0.55, 1)
 
+        [Header(Pixel true blends. Zero on the first line is the soft blend as it was)]
+        _BlendPixelTrue   ("Pixel true blends on", Float) = 1.0
+        _BlendFringe      ("Fringe. Share of a blend that breaks into pixels", Range(0, 1)) = 0.75
+        _BlendRagged      ("Ragged. Clumps over the ordered pattern", Range(0, 1)) = 0.9
+        _BlendClumpMetres ("Clump scale in metres", Float) = 0.4
+
         [Header(Wet band above the waterline)]
         _WetBandMetres ("Wet band in metres", Float) = 0.45
         _WetStrength   ("Wet strength", Range(0, 1)) = 0.45
@@ -206,6 +211,7 @@ Shader "HiddenHarbours/TerrainSplat"
             Tags { "LightMode" = "Universal2D" }
 
             Blend SrcAlpha OneMinusSrcAlpha
+            ColorMask RGB   // The calm mirror: ground cover leaves the alpha class under it alone
             ZWrite Off
             Cull Off
 
@@ -232,6 +238,15 @@ Shader "HiddenHarbours/TerrainSplat"
                 float  _WaterLevel;
 
                 float _DetailLoaded, _DetailOffsetCellMetres;
+                float _ShoreLoaded, _ShoreStep4, _ShoreBlendMetres, _ShoreSourceBlendMetres;
+                float4 _ShoreSteps0123;
+                float4 _ShoreGrid;
+                float4 _ShoreRange01, _ShoreRange23, _ShoreRange4;
+                int _ShoreSeed;
+                float4 _ShoreWrack, _ShorePattern, _ShoreLip, _ShoreLipShadow;
+                float _ShoreWallsLoaded;
+                float4 _ShoreWallGrid;
+                float _ShoreProofKind;
 
                 float  _RelightLoaded;
                 float4 _TLSunF;
@@ -255,12 +270,15 @@ Shader "HiddenHarbours/TerrainSplat"
 
                 float  _PixelsPerMetre, _GrainScale, _MacroScale, _MacroStrength;
                 float4 _MacroTint;
+                float  _BlendPixelTrue, _BlendFringe, _BlendRagged, _BlendClumpMetres;
                 float  _WetBandMetres, _WetStrength;
                 float4 _WetTint;
 
                 float4 _GrassColA, _GrassColB, _MarramColA, _MarramColB, _SandColA, _SandColB;
                 float4 _ShingleColA, _ShingleColB, _RippleColA, _RippleColB, _ShelfColA, _ShelfColB;
             CBUFFER_END
+
+            #include "Include/TerrainShoreLines.hlsl"
 
             // The day/night cycle's sun, DayNightController's globals (set per frame, never material
             // properties, so they live outside UnityPerMaterial, as in CliffFace and SpriteLitDecor):
@@ -350,6 +368,8 @@ Shader "HiddenHarbours/TerrainSplat"
             #define TSA_SAMPLE_SPLAT(tex, smp, uv) SAMPLE_TEXTURE2D(tex, smp, uv)
             #define TSA_SAMPLE_KIT(uv, slice, duvx, duvy) SAMPLE_TEXTURE2D_ARRAY_GRAD(_DetailArr256, sampler_DetailArr256, uv, slice, duvx, duvy)
             #include "Assets/_Project/Art/Shaders/Include/TerrainSplatAlbedo.hlsl"
+            // The blends drawn: one material per art texel where the weights are fractions (terrain blends).
+            #include "Assets/_Project/Art/Shaders/Include/TerrainPixelTrueBlend.hlsl"
 
             // The same material RELIT (terrain pass 9): TSA_SampleMat's ladder bracket, each step's texel
             // relit by TerrainLight6 from the kit's maps, and the two steps lerped by the same k. The
@@ -438,9 +458,54 @@ Shader "HiddenHarbours/TerrainSplat"
                 // The ground's weights and ladder intensities: the height bands under the painted
                 // splats (Include/TerrainSplatAlbedo.hlsl, the sea's floor reads the same).
                 float w[HH_MAT_COUNT], intensity[HH_MAT_COUNT];
-                TSA_GroundWeights(wp, wpx, uv, e, w, intensity);
+                float2 suv = TSA_WarpUV(wpx, uv);
+                TSA_GroundWeights(wp, wpx, suv, e, w, intensity);
+                float4 shoreAddresses[5];
+                // seat ruling s15, 11-07: physical protection on a wall's strand;
+                // the S11 procedural foot exclusion elsewhere, including fixtures without walls.
+                float protectedFoot = SL_FootGuard(uv, max(w[5], max(w[11], w[12])));
+                float2 weightWP = SL_Prepare(wp, uv, protectedFoot, w[0] + w[7] + w[18] + w[19],
+                    max(w[2], w[3]), shoreAddresses);
+                float2 weightUV = (weightWP - _HeightWorldMin.xy) / max(_HeightWorldSize.xy, float2(1e-3, 1e-3));
+                float weightE = e;
+                [branch] if (any(weightWP != wp))
+                {
+                    float weightHeight01 = SAMPLE_TEXTURE2D_LOD(_HeightTex, sampler_HeightTex, weightUV, 0).r;
+                    weightE = lerp(_HeightMin, _HeightMax, weightHeight01);
+                    // The re-read takes the same warp at its own point (one law): the weights stay continuous
+                    // where the shore offset fades to zero at its band's edge.
+                    float2 weightWPX = floor(weightWP * ppm) / ppm;
+                    TSA_GroundWeights(weightWP, weightWPX, TSA_WarpUV(weightWPX, weightUV), weightE, w, intensity);
+                }
+
+                // THE BLENDS, DRAWN (terrain blends; Include/TerrainPixelTrueBlend.hlsl). Where the weights
+                // above are fractions, the ground is read once more at the centre of the art texel this pixel
+                // lies in (the same law at its own point, as the shore re-read is) and one material takes the
+                // texel: every screen pixel of a texel reaches the same answer, so a blend edge lands on the
+                // sprites' pixel grid at any zoom and stays put under the camera. The reads above are left as
+                // they were: the shore lines take the soft weights they always have, and with _BlendPixelTrue
+                // at 0 this block never runs and the ground is the soft blend, bit for bit.
+                [branch] if (_BlendPixelTrue > 0.5 && TPB_Blended(w))
+                {
+                    float2 texel = floor(weightWP * ppm);
+                    float2 texelWPX = texel / ppm;
+                    float2 texelWP = (texel + 0.5) / ppm;
+                    float2 texelUV = (texelWP - _HeightWorldMin.xy) / max(_HeightWorldSize.xy, float2(1e-3, 1e-3));
+                    float texelHeight01 = SAMPLE_TEXTURE2D_LOD(_HeightTex, sampler_HeightTex, texelUV, 0).r;
+                    float texelE = lerp(_HeightMin, _HeightMax, texelHeight01);
+                    TSA_GroundWeights(texelWP, texelWPX, TSA_WarpUV(texelWPX, texelUV), texelE, w, intensity);
+                    TPB_Pick(TPB_Fringe(TPB_Threshold(texel, texelWPX, _BlendRagged, _BlendClumpMetres), _BlendFringe), w);
+                }
 
                 // --- SHADE ------------------------------------------------------------------------
+                // Tool-only float target: the same layer and distance used below, before lighting.
+                [branch] if (_ShoreProofKind > 0.5)
+                {
+                    int proofKind = clamp((int)round(_ShoreProofKind) - 1, 0, 4);
+                    float3 proofColour;
+                    float opacity = SL_Layer(shoreAddresses[proofKind], proofKind, float3(1, 1, 1), proofColour);
+                    return float4(opacity, shoreAddresses[proofKind].r, protectedFoot, 1);
+                }
                 float3 col = float3(0, 0, 0);
                 if (_DetailLoaded > 0.5)
                 {
@@ -530,6 +595,8 @@ Shader "HiddenHarbours/TerrainSplat"
                 [branch]
                 if (_RoadLoaded > 0.5)
                     col = RF4Over(col, wp, TerrainSky());
+
+                col = SL_Over(col, shoreAddresses);
 
                 // The wet band: ground just above the live waterline darkens — the tide line
                 // breathes with the SAME _WaterLevel the sea clips by. (Live water/wet effects are

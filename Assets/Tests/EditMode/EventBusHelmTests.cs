@@ -63,7 +63,7 @@ namespace HiddenHarbours.Tests.EditMode
             var exit = Go("Exit", new Vector3(0, -10.5f, 0));
             var sw = Go("Switcher", Vector3.zero).AddComponent<ControlSwitcher>();
             sw.Configure(walk, boat, input, dock.transform, 3f, exit.transform);
-            Assert.That(sw.TryInteract(), Is.True, "fixture boards through the public interaction");
+            Assert.That(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw), Is.True, "fixture boards through the public interaction");
             Assert.That(sw.Mode, Is.EqualTo(ControlMode.OnDeck));
 
             // Subscribe the failure before the camera and recorder. EditMode wiring is explicit.
@@ -87,7 +87,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(sw.WithinHelmReach(), Is.True);
 
             LogAssert.Expect(LogType.Exception, new Regex("^IOException: helm-save(?:\\r?\\n|$)"));
-            bool returned = sw.TryInteract();
+            bool returned = HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw);
 
             Assert.That(returned, Is.True);
             Assert.That(sw.Mode, Is.EqualTo(ControlMode.Aboard));

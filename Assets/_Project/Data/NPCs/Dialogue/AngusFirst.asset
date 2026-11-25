@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88201f4f4f3247558c87e55aa4fb8ac4, type: 3}
+  m_Name: AngusFirst
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.DialogueDef
+  Id: dialogue.angus_first
+  FirstLines:
+  - 'Angus Gillis. If she''s low water I''m down on the mussel bed with a sack, so talk quick.'
+  - 'You pick them by hand. Twist, don''t pull, and leave the small ones where they are.'
+  - 'Theresa says I come home smelling of mud. She cans fish all day, so I let that go by.'
+  RepeatLines:
+  - 'Tide''s what I watch. You should too.'

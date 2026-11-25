@@ -179,7 +179,7 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
             boat.SetHull(hull);
 
-            Assert.IsTrue(sw.TryInteract(), "boarding within reach must land the player on the deck");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw), "boarding within reach must land the player on the deck");
             Assert.AreEqual(ControlMode.OnDeck, sw.Mode);
 
             yield return null;                       // one Update: the deck-walk steps, clamps, publishes

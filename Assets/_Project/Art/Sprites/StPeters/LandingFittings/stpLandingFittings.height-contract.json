@@ -1,0 +1,24 @@
+{
+    "schema": "hidden-harbours/st-peters-landing-fittings-height@1",
+    "recipeSha256Lf": "178de9c6f6a17116d815a496ee249a1617d0d9bbded4a4b80550e7a0c2c99fb6",
+    "maps": [
+        {
+            "key": "landingTyreWest",
+            "path": "Assets/_Project/Art/Sprites/StPeters/LandingFittings/SetPiece_landingTyreWest_height.png",
+            "minimumLocalZ": -0.6200000047683716,
+            "maximumLocalZ": -0.0006120741600170732
+        },
+        {
+            "key": "landingTyreEast",
+            "path": "Assets/_Project/Art/Sprites/StPeters/LandingFittings/SetPiece_landingTyreEast_height.png",
+            "minimumLocalZ": -0.6200000047683716,
+            "maximumLocalZ": -0.0006120741600170732
+        },
+        {
+            "key": "landingRope",
+            "path": "Assets/_Project/Art/Sprites/StPeters/LandingFittings/SetPiece_landingRope_height.png",
+            "minimumLocalZ": 0.0,
+            "maximumLocalZ": 0.07308527827262879
+        }
+    ]
+}

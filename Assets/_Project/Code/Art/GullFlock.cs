@@ -17,7 +17,7 @@ namespace HiddenHarbours.Art
     /// game time from the schedule alone (<see cref="GullSchedule"/>: the hour, the season, the wind,
     /// the fog, the tide, the working hours and market day): at its haunt, at its roost, in the air
     /// between the two, or away. The view only chooses WHICH birds are drawn: the ones near it, nearest
-    /// first, bound to a fixed pool of <see cref="GullConfig.Count"/> renderers. Pan away and come back
+    /// first, bound to a fixed pool of <see cref="GullScheduleTuning.MaxBirdsDrawn"/> renderers. Pan away and come back
     /// and the same birds are on the same spots, unless the clock has moved them on.</para>
     ///
     /// <para><b>Materialising.</b> A pool bird takes up its slot already in the state the roster gives:
@@ -110,9 +110,9 @@ namespace HiddenHarbours.Art
         /// <summary>The schedule's shipped knobs, for a library without its own (built once).</summary>
         private static readonly GullScheduleTuning DefaultTuning = GullScheduleTuning.Default;
 
-        [Tooltip("Staging for the flock — the pool, how the birds fly between places, how many sit, and the " +
-                 "day/night look. How many birds use a place, and when, live on its BirdHauntDef and the " +
-                 "library's tuning; the rig's own numbers (frame times, speeds, altitude bands, the landing " +
+        [Tooltip("Staging for the flock — how the birds fly between places, how many sit, and the " +
+                 "day/night look. How many birds use a place, and when, live on its BirdHauntDef; how many " +
+                 "are drawn at once and how many follow the schools live on the library's tuning; the rig's own numbers (frame times, speeds, altitude bands, the landing " +
                  "box) live on the SeagullVisualDef.")]
         [SerializeField] private GullConfig _config = GullConfig.Default;
 
@@ -258,6 +258,11 @@ namespace HiddenHarbours.Art
             _behaviour = _visual.Behaviour;
             if (_behaviour == null) { enabled = false; return; }
 
+            // Every bird's caster asks "is this cell excluded art?" on each swap, and the first ask for a
+            // cell reads Sprite.name, which allocates. Ask for the whole page here, once, so no tick
+            // ever meets a cell the cache has not seen (rule 7: nothing per tick).
+            SpriteShadow.PrewarmExcludedArt(_visual.Cells);
+
             // No library is no places: an empty sky, except for a fixture's pinned place.
             if (_library == null) _library = Resources.Load<BirdHauntLibrary>(BirdHauntLibrary.ResourcesPath);
             ReadSunHours();
@@ -301,14 +306,26 @@ namespace HiddenHarbours.Art
             else DestroyImmediate(profile);
         }
 
+        /// <summary>
+        /// The pool's size: the library's <see cref="GullScheduleTuning.MaxBirdsDrawn"/>, whatever the
+        /// owner authored (the shipped default with no library). Nothing in code caps it.
+        /// </summary>
+        public static int PoolSize(BirdHauntLibrary library)
+        {
+            GullScheduleTuning knobs = library != null && library.Tuning != null ? library.Tuning : DefaultTuning;
+            return Mathf.Max(0, knobs.MaxBirdsDrawn);
+        }
+
         private void BuildFlock()
         {
-            int n = Mathf.Max(0, _config.Count);
+            // Allocated once, here: the pool does not follow the number while the game runs.
+            int n = PoolSize(_library);
             _birds = new Bird[n];
             _wheel = new SeagullFlockMath.SeagullFlockBird[n];
             _fresh = new int[n];
             _decisions = SeagullFlockMath.Mulberry32.ForFlockSeed(_config.Seed);
-            _roster = new GullRoster(_places.Length, MaxNearBirds, n);
+            // Every pool bird needs a near entry to draw, so a pool above the list's size grows the list.
+            _roster = new GullRoster(_places.Length, Mathf.Max(MaxNearBirds, n), n);
 
             _fly = _behaviour.IndexOf(SeagullStates.Fly);
             _stand = _behaviour.IndexOf(SeagullStates.Stand);
@@ -386,7 +403,7 @@ namespace HiddenHarbours.Art
 
             _simMilliseconds += deltaMilliseconds;
 
-            double now = _pinned || clock == null ? 0.0 : clock.TotalSeconds;
+            double now = _pinned || clock == null ? 0.0 : clock.FlowSeconds;
 
             // The schedule a few times a second: where every bird is, and which of them are drawn.
             _refreshInMilliseconds -= deltaMilliseconds;
@@ -553,7 +570,7 @@ namespace HiddenHarbours.Art
             return new GullCalendar
             {
                 Seed = env != null ? env.WorldSeed : 0,
-                Seconds = clock.TotalSeconds,
+                Seconds = clock.FlowSeconds,
                 SecondsPerHour = GameServices.SecondsPerDay / DaySchedule.HoursPerDay,
                 Hour = clock.HourOfDay,
                 Day = clock.DayIndex,
@@ -875,6 +892,15 @@ namespace HiddenHarbours.Art
             b.Sim.IntentState = -1;
             b.Sim.FlockBound = false;
             b.Sim.RejoinMilliseconds = 1.0;   // any positive value arms the ramp
+            // A take-off's cross-fade restarts with the ramp: re-seed its own path at where the bird is DRAWN,
+            // or the restarted blend would jump back to the path it had drifted off.
+            if (b.Sim.Departing)
+            {
+                b.Sim.FreeX = b.Sim.X;
+                b.Sim.FreeY = b.Sim.Y;
+                b.Sim.FreeAltitudeMetres = b.Sim.AltitudeMetres;
+                b.Sim.FreeHeading = b.Sim.Heading;
+            }
         }
 
         /// <summary>
@@ -1337,7 +1363,7 @@ namespace HiddenHarbours.Art
             if (!(reach > 0f)) return spot;
 
             var clock = GameServices.Clock;
-            double now = clock != null ? clock.TotalSeconds : 0.0;
+            double now = clock != null ? clock.FlowSeconds : 0.0;
             int n = view.SchoolsInView(
                 new Rect(spot.x - reach, spot.y - reach, reach * 2f, reach * 2f), now, _shoals);
             if (n <= 0) return spot;
@@ -1498,7 +1524,21 @@ namespace HiddenHarbours.Art
             b.Node.SetPositionAndRotation(
                 new Vector3(pivot.x, pivot.y + lift, 0f),
                 Mathf.Abs(roll) < 1e-4f ? Quaternion.identity : Quaternion.Euler(0f, 0f, roll));
-            b.Shadow.FootOffset = lift;
+            // ...with ONE exception the owner asked for (2026-11-15: "make landed birds slightly smaller as they are
+            // further from camera than a flying one"): near the surface the bird is drawn at the def's ground scale,
+            // eased up to full size over the first metre or so of altitude, so a take-off grows and a landing shrinks
+            // smoothly. The shadow is a child at localScale 1, so it scales with the silhouette it is cast from.
+            float drawScale = SeagullVisualDef.ScaleAtAltitude((float)b.Sim.AltitudeMetres, _visual.GroundScale,
+                                                               _visual.GroundScaleBlendMetres);
+            if (Mathf.Abs(b.Node.localScale.x - drawScale) > 1e-5f)
+                b.Node.localScale = new Vector3(drawScale, drawScale, 1f);
+            // The foot offset is in the scaled bird's OWN units, so the world lift is divided by the scale the node
+            // actually carries: the anchor comes back down by exactly the lift and stays on the pivot at every size.
+            b.Shadow.FootOffset = SeagullVisualDef.ShadowFootOffset(lift, b.Node.localScale.y);
+            // A bird on the wing is flat to the sun: its shadow keeps the bird's shape at every hour and fades
+            // with height, instead of taking the standing dusk stretch into a thin line. On the ground, the
+            // water or a post the altitude is 0 and the shadow is the ordinary standing one.
+            b.Shadow.HeightAboveGround = (float)b.Sim.AltitudeMetres;
 
             // Sky or world? Above the wheel's own floor the bird is sky and draws over everything;
             // below it, it is among the harbour and sorts by its pivot like anything else standing there.

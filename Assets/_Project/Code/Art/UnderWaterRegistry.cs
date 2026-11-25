@@ -16,7 +16,8 @@ namespace HiddenHarbours.Art
     /// With the switch off (the ship default) or nothing under the water, nothing is recorded, the sea's
     /// read stays lowered and the sea draws today's pixels.</item>
     /// <item><b>Membership is EXPLICIT.</b> A renderer joins the list only by carrying
-    /// <see cref="RenderingLayer"/>, which only <see cref="ShorePlantTideView"/> sets, through
+    /// <see cref="RenderingLayer"/>, which only <see cref="ShorePlantTideView"/> and (for its tidal weed
+    /// under the sea plane) <see cref="PlantField"/> set, through
     /// <see cref="ShorePlantTideMath.UnderWaterMask"/>. The <c>HHUnderWater</c> LightMode tag alone is
     /// not enough: every lit sprite carries that pass, the shrubs and the houses too.</item>
     /// <item><b>One waterline.</b> The bit follows the plant's own submerged test (the tide over its own

@@ -416,9 +416,9 @@ namespace HiddenHarbours.Tests.EditMode
 
             var (sw, walk, _, mooring, boatGo) = BuildSwitcher(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f),
                                                                Hull("boat.dory", PropulsionType.Oars));
-            sw.TryInteract();                                  // board (within reach of the boat)
+            HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw);                                  // board (within reach of the boat)
             boatGo.transform.position = new Vector3(40f, 40f, 0f);   // sailed up onto an exposed flat
-            Assert.IsTrue(sw.TryInteract(), "disembark onto land succeeds");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw), "disembark onto land succeeds");
 
             Assert.AreEqual(ControlMode.OnFoot, sw.Mode);
             Assert.AreEqual(MooringState.HeldByPlayer, mooring.State,
@@ -434,9 +434,9 @@ namespace HiddenHarbours.Tests.EditMode
 
             var (sw, walk, _, mooring, boatGo) = BuildSwitcher(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f),
                                                                Hull("boat.dory", PropulsionType.Oars));
-            sw.TryInteract();                                  // board
+            HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw);                                  // board
             boatGo.transform.position = new Vector3(40f, 40f, 0f);
-            sw.TryInteract();                                  // disembark → held, player at the boat
+            HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw);                                  // disembark → held, player at the boat
             walk.transform.position = boatGo.transform.position;   // standing right by her
 
             Assert.IsTrue(sw.CanToggleMooring(), "on foot beside a moored boat, the rope is in reach");
@@ -455,9 +455,9 @@ namespace HiddenHarbours.Tests.EditMode
 
             var (sw, walk, _, mooring, boatGo) = BuildSwitcher(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f),
                                                                Hull("boat.dory", PropulsionType.Oars));
-            sw.TryInteract();
+            HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw);
             boatGo.transform.position = new Vector3(40f, 40f, 0f);
-            sw.TryInteract();                                  // held
+            HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw);                                  // held
             sw.ToggleMooring();                                // root it so it stays put when the player leaves
             walk.transform.position = new Vector3(80f, 80f, 0f);   // walked well away (the rope is rooted)
 
@@ -473,12 +473,12 @@ namespace HiddenHarbours.Tests.EditMode
 
             var (sw, walk, _, mooring, boatGo) = BuildSwitcher(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f),
                                                                Hull("boat.dory", PropulsionType.Oars));
-            sw.TryInteract(); boatGo.transform.position = new Vector3(40f, 40f, 0f); sw.TryInteract();   // held
+            HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw); boatGo.transform.position = new Vector3(40f, 40f, 0f); HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw);   // held
             Assert.AreEqual(MooringState.HeldByPlayer, mooring.State);
 
             // Walk back to the boat and re-board (board from anywhere within reach of the boat).
             walk.transform.position = boatGo.transform.position;
-            Assert.IsTrue(sw.TryInteract(), "re-board");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw), "re-board");
             Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "boarding lands on the deck (Build 5)");
             Assert.AreEqual(MooringState.Stowed, mooring.State, "boarding stows the rope (you're aboard her now)");
         }

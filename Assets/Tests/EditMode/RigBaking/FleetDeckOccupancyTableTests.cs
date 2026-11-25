@@ -105,6 +105,9 @@ namespace HiddenHarbours.Tests.RigBaking
             var t = new Dictionary<string, Occupancy>();
             // One active pilot; passenger stands are published enter_ride points waiting on sit.
             // Furniture is already in the full mesh and consumes no deck-occupant slot.
+            t["hullmesh.expedition_yacht120_iso"] = new Occupancy("expedition_yacht_120", 1, 0, 0, 0, 0, "expeditionYacht120IsoRig.js");
+            t["hullmesh.yacht_tender_iso"] = new Occupancy("yacht_tender", 1, 0, 0, 0, 1, "yachtTenderIsoRig.js");
+            t["hullmesh.motor_yacht84_iso"] = new Occupancy("motor_yacht_84", 1, 0, 0, 0, 0, "motorYacht84IsoRig.js");
             t["hullmesh.go_fast_iso"] = new Occupancy("go_fast", 1, 0, 0, 0, 4, "goFastIsoRig.js");
             t["hullmesh.bowrider_iso"] = new Occupancy("bowrider", 1, 0, 0, 0, 7, "bowriderIsoRig.js");
             t["hullmesh.express_cruiser_iso"] = new Occupancy("express_cruiser", 1, 0, 0, 0, 6, "cruiserIsoRig.js");
@@ -134,9 +137,9 @@ namespace HiddenHarbours.Tests.RigBaking
             // ---- sport fisher, 2 builds. FOUR crew stations at four heights — HELM, TOWER_STATION,
             // CHAIR, MEZZ — which is the sportfisher scene, not an inflated count. She runs no lobster
             // loop, so furniture/stacks/items are 0 by hull type, NOT unmeasured (doc §6).
-            // Dressable = tubs + rod mounts: 4+9 and 5+13. Both ceilings overflow — doc §5.
-            t["hullmesh.sport_fisher_convertible_iso"] = new Occupancy("53' convertible", 4, 0, 0, 0, 13, FisherRig);
-            t["hullmesh.sport_fisher_skybridge_iso"] = new Occupancy("90' skybridge", 4, 0, 0, 0, 18, FisherRig);
+            // Dressable = tubs + rod mounts: 2+10 and 2+13 (kit 4). Both ceilings overflow — doc §5.
+            t["hullmesh.sport_fisher_convertible_iso"] = new Occupancy("53' convertible", 4, 0, 0, 0, 12, FisherRig);
+            t["hullmesh.sport_fisher_skybridge_iso"] = new Occupancy("90' skybridge", 4, 0, 0, 0, 15, FisherRig);
 
             return t;
         }
@@ -243,7 +246,7 @@ namespace HiddenHarbours.Tests.RigBaking
         /// <summary>
         /// <b>The §5 finding, pinned in both directions.</b> Twenty of the twenty-three overflow if
         /// every anchor their own rig defines gets dressed — the 18 lobster variants by 3 (five
-        /// cockpit crate anchors), and the two sport fishers by 5 and 10 (tubs plus rod mounts).
+        /// cockpit crate anchors), and the two sport fishers by 4 and 7 (tubs plus rod mounts).
         ///
         /// <para>Pinned <i>in both directions</i> on purpose: a new overflow appearing is a warning,
         /// and an existing one disappearing means somebody fixed it and the doc's §5 recommendation
@@ -274,8 +277,8 @@ namespace HiddenHarbours.Tests.RigBaking
                 "The lobster ceiling is 10 committed + 5 crate anchors. It matching #481's own " +
                 "prediction for a DIFFERENT decision (per-pot stack depths also land on 15) is the " +
                 "signal in §5 that 12 has no room for a second dressing pass.");
-            Assert.AreEqual(22, Authored["hullmesh.sport_fisher_skybridge_iso"].Ceiling,
-                "The skybridge is the worst case in the fleet: 4 crew + 5 tubs + 13 rod mounts.");
+            Assert.AreEqual(19, Authored["hullmesh.sport_fisher_skybridge_iso"].Ceiling,
+                "The skybridge is the worst case in the fleet: 4 crew + 2 tubs + 13 rod mounts.");
         }
 
         // ---- 4. properties every row must hold ---------------------------------------------------
@@ -316,9 +319,8 @@ namespace HiddenHarbours.Tests.RigBaking
         [Test]
         public void EveryAuthoredId_FollowsTheProjectConvention()
         {
-            Assert.AreEqual(26, Authored.Count,
-                "The table is 26 hulls (18 lobster + 2 zodiac + sport skiff v2 + 2 sport fisher + 3 recreation) — " +
-                "the same set docs/design/fleet-flotation.md floats.");
+            Assert.AreEqual(29, Authored.Count,
+                "The 26 documented flotation hulls plus the expedition yacht 120, her tender and the motor yacht 84.");
 
             foreach (string id in Authored.Keys)
                 Assert.That(id, Does.Match(@"^hullmesh\.[a-z0-9]+(_[a-z0-9]+)*$"),
@@ -428,12 +430,13 @@ namespace HiddenHarbours.Tests.RigBaking
 
         /// <summary>
         /// <b>The sport fisher's census — the worst case in the fleet.</b> Four crew stations, and
-        /// tubs plus rod mounts that take her ceiling to 17 and 22.
+        /// tubs plus rod mounts that take her ceiling to 16 and 19 (kit 4's rig).
         ///
-        /// <para>Also pins the geometric fact §5 records as measured-and-not-claimed: her
-        /// rocket-launcher rods sit BELOW her tower station, so tower structure can occlude them and
-        /// they cannot be dismissed as "too high to need a slot". That was the obvious way to shrink
-        /// her ceiling; the geometry refuses it, and the refusal is worth keeping true.</para>
+        /// <para>Also pins, in both directions, the geometric fact §5 records as
+        /// measured-and-not-claimed: the convertible's rocket-launcher rods sit BELOW her tower
+        /// station, and the skybridge's sit ABOVE her upper station, on her hardtop's roof. Either
+        /// change makes §5's note on whether they are "too high to need a slot" stale. The
+        /// ceiling counts them either way.</para>
         /// </summary>
         [Test]
         public void TheSportFishersCensus_IsStillHerRigsOwn()
@@ -444,9 +447,9 @@ namespace HiddenHarbours.Tests.RigBaking
                 host.EvaluateString("SportFisherIso2.HULLS.map(h=>h.id).join(',')"),
                 "The sport fisher's builds are no longer the two this table measured.");
 
-            foreach ((string id, string key) in new[]
-                     { ("convertible", "hullmesh.sport_fisher_convertible_iso"),
-                       ("skybridge", "hullmesh.sport_fisher_skybridge_iso") })
+            foreach ((string id, string key, bool rocketBelowTower) in new[]
+                     { ("convertible", "hullmesh.sport_fisher_convertible_iso", true),
+                       ("skybridge", "hullmesh.sport_fisher_skybridge_iso", false) })
             {
                 Occupancy o = Authored[key];
 
@@ -462,15 +465,16 @@ namespace HiddenHarbours.Tests.RigBaking
                     $"{o.Variant}: her rig no longer defines the four crew stations (helm, tower, " +
                     "fighting chair, mezzanine) her crew term counts.");
 
-                Assert.IsTrue(host.EvaluateBool(
+                string where = rocketBelowTower ? "BELOW her tower station"
+                                                : "ABOVE her upper station, on her hardtop's roof";
+                Assert.AreEqual(rocketBelowTower, host.EvaluateBool(
                         $"(function(){{var h=SportFisherIso2.byId('{id}');" +
                         "var rocket=h.RODS.filter(function(r){return r.z>h.DECK+3;});" +
                         "return rocket.length>0 && rocket.every(function(r){" +
                         "return r.z < h.TOWER_STATION.z;});})()"),
-                    $"{o.Variant}: her rocket-launcher rods no longer sit BELOW the tower station. " +
-                    "docs/design/fleet-deck-occupancy.md §5 records that they do, as the reason they " +
-                    "cannot be written off as too high to need a slot. If they now stand clear of " +
-                    "every piece of tower structure, that argument is back on and her ceiling drops.");
+                    $"{o.Variant}: docs/design/fleet-deck-occupancy.md §5 records her rocket-launcher " +
+                    $"rods {where}, and that moved. Re-measure §5's note on whether they are too high " +
+                    "to need a slot; the ceiling counts them until a ruling says otherwise.");
             }
         }
 

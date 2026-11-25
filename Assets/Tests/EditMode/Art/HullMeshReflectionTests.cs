@@ -309,7 +309,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.That(person.Mesh.vertices, Is.EqualTo(saved), "A later camera must not re-skin a pending packet");
         }
 
-        [TestCase("Dory", 800, 1, 0.11f, 0.308f)]
+        [TestCase("Dory", 1199, 1, 0.11f, 0.263f)]
         [TestCase("CapeIslander", 681, 4, 0.53f, 0.72f)]
         [TestCase("LobsterBoat", 784, 5, 0.4f, 0.5f)]
         public void HullMeshReflection_RealHullFirstHitsHideDeckAndRooms(string name, int deck, int wall, float w, float deckZ)
@@ -324,11 +324,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 var packet = snapshot.Packets.Take(snapshot.Count).Single(p => p.Source == hull.ReflectionHull);
                 int[] indices = packet.Mesh.triangles;
                 Vector3[] vertices = packet.Mesh.vertices;
-                // Semantic witnesses: doryIsoRig.js thwarts u=.60; Cape cockpit DECK=.72;
+                // Semantic witnesses: doryIsoRig.js thwarts u=.60 (triangle 1199 since her redraw, 800
+                // before; the same forward thwart, now a slab, read at its underside 0.263); Cape cockpit DECK=.72;
                 // lobster cockpit DECK=.50. These pinned triangles must retain their source identity.
                 for (int i = 0; i < 3; i++) Assert.That(vertices[indices[deck * 3 + i]].z, Is.EqualTo(deckZ).Within(0.000001));
                 Vector3 deckCenter = Center(vertices, indices, deck);
-                Vector3 expected = name == "Dory" ? new Vector3(0.15791369f, 0.41666667f, 0.308f)
+                Vector3 expected = name == "Dory" ? new Vector3(-0.17749852f, 0.41333334f, 0.263f)
                     : name == "CapeIslander" ? new Vector3(-0.39520001f, -6.08426682f, 0.72f)
                     : new Vector3(0.51862637f, -5.84f, 0.5f);
                 Near(deckCenter, expected);
@@ -521,7 +522,101 @@ namespace HiddenHarbours.Tests.Art.EditMode
             using var graph = Record(camera, 320, 180, hulls: false, water: false, reflections: false);
             Assert.That(graph.Passes, Is.Empty);
             Assert.That(Shader.GetGlobalTexture(ReflectionShaderIds.ReflectTex).name, Is.EqualTo("HHReflectTexFallback"));
-            Assert.That(GameServices.HullMeshReflections, Is.False, "Ship default stays off");
+            Assert.That(GameServices.HullMeshReflections, Is.True, "Ship default is the mesh path (2026-11-21)");
+        }
+
+        // 2026-11-21: WHY the mesh path is the ship default. The overlay ("legacy") hull reflection is a
+        // member of the HH Object Reflections list and samples _HHHullScreenTex, which only the hull keyline
+        // resolve publishes, and that resolve records AFTER both the reflection list and the water that
+        // reads it. Core's RenderGraph rebinds every global it published to black at the end of each graph
+        // (ClearGlobalBindings), so the overlay pass reads black every frame: measured on the GPU as 0
+        // changed pixels. The mesh path renders and resolves its own picture before the water reads it.
+        [Test]
+        public void HullReflection_OverlayPathRecordsBeforeTheHullPictureItSamples()
+        {
+            Hull();
+            var camera = Camera(1920, 1080, new Vector3(0, 0, -50));
+            using var graph = Record(camera, 1920, 1080, hulls: true, water: true, reflections: true, guard: true, mesh: false);
+            var overlay = graph.Find("HH Object Reflections");
+            var hullPicture = graph.Find("HH Hull Keyline Resolve");
+            var water = graph.Find("HH Displaced Water");
+            Assert.That(overlay, Is.Not.Null); Assert.That(hullPicture, Is.Not.Null); Assert.That(water, Is.Not.Null);
+            Assert.That(hullPicture.Globals.Values, Does.Contain(IsoFacetShaderIds.HullScreenTex),
+                "the hull keyline resolve is the only publisher of the hull picture");
+            Assert.That(graph.Passes.Where(p => p != hullPicture).SelectMany(p => p.Globals.Values),
+                Has.No.Member(IsoFacetShaderIds.HullScreenTex));
+            Assert.That(overlay.Order, Is.LessThan(hullPicture.Order),
+                "the overlay reflection records before this frame's hull picture exists");
+            Assert.That(water.Order, Is.LessThan(hullPicture.Order),
+                "the water composites its reflection before this frame's hull picture exists");
+            Assert.That(overlay.ExplicitReads, Is.Empty, "the overlay pass cannot declare a read of the hull picture");
+
+            using var mesh = Record(camera, 1920, 1080, hulls: true, water: true, reflections: false, guard: true, mesh: true);
+            var resolve = mesh.Find("HH Hull Mesh Reflection Resolve");
+            mesh.AssertReadsLatest(mesh.Find("HH Displaced Water"), resolve, resolve.Colours.Single(),
+                "the water reads this frame's mesh reflection");
+        }
+
+        [Test]
+        public void HullReflection_ShipDefaultIsTheMeshPath()
+        {
+            Assert.That(GameConfig.DefaultHullMeshReflections, Is.True);
+            Assert.That(GameServices.Config.HullMeshReflections, Is.True, "a fresh GameConfig starts on");
+            var shipped = AssetDatabase.LoadAssetAtPath<GameConfig>("Assets/_Project/Data/Config/GameConfig.asset");
+            Assert.That(shipped, Is.Not.Null);
+            Assert.That(shipped.HullMeshReflections, Is.True, "the shipped GameConfig.asset draws boat reflections");
+            GameServices.Config = null;
+            Assert.That(GameServices.HullMeshReflections, Is.True, "no config wired resolves the shipped default");
+        }
+
+        // The boat reflection is composited by the water's object-reflection block, which inherits the
+        // sea-state curve: strong on glass, weaker on a gentle sea, gone in a blow. Pinned on the SHIPPED
+        // Water.mat values through the shader's C# twin, at the sea states the looks were shot at.
+        [Test]
+        public void HullReflection_FadesWithChopOnTheShippedWater()
+        {
+            var water = AssetDatabase.LoadAssetAtPath<Material>("Assets/_Project/Art/Materials/Water.mat");
+            Assert.That(water, Is.Not.Null);
+            float master = water.GetFloat("_ReflectionStrength"), fade = water.GetFloat("_ReflectionFadeChop");
+            float windFade = water.GetFloat("_ReflectionWindFade"), objects = water.GetFloat("_ObjectReflectStrength");
+            float objFade = water.GetFloat("_ObjectReflectFadeChop"), lift = water.GetFloat("_ObjectReflectLowLight");
+            Assert.That(objects, Is.GreaterThan(0f), "the water must composite object reflections at all");
+            float Weight(float sea, Color tint) => WaterReflection.ObjectReflectionWeight(
+                WaterSurface.Choppiness(sea), 0f, fade, windFade, master, objects, objFade, lift, tint);
+            float glass = Weight(0.05f, Noon), gentle = Weight(0.32f, Noon), blow = Weight(0.75f, Noon);
+            Assert.That(glass, Is.GreaterThan(gentle));
+            Assert.That(gentle, Is.GreaterThan(0.1f * glass), "a gentle sea still shows the reflection");
+            Assert.That(blow, Is.EqualTo(0f), "a blow shows none");
+            Assert.That(Weight(0.75f, Dusk), Is.EqualTo(0f), "a blow at dusk shows none either: the lift multiplies, it never adds");
+        }
+
+        // The day/night tints measured on the GPU at Rice Point (11-21): noon 13:00 and dusk 20:30.
+        static readonly Color Noon = new Color(0.991f, 0.989f, 0.972f), Dusk = new Color(0.858f, 0.536f, 0.433f);
+
+        // The owner's look at the first pass (11-21): the dusk reflection on a gentle sea was too faint to see
+        // (max 12/255). The object block gains its own chop fade and a low-light lift; both 0 reproduce the
+        // first pass exactly, the noon glass case stays within a few percent, dusk on a gentle sea reads.
+        [Test]
+        public void HullReflection_ShowsAtDuskWithoutHardeningNoonGlass()
+        {
+            var water = AssetDatabase.LoadAssetAtPath<Material>("Assets/_Project/Art/Materials/Water.mat");
+            float master = water.GetFloat("_ReflectionStrength"), fade = water.GetFloat("_ReflectionFadeChop");
+            float windFade = water.GetFloat("_ReflectionWindFade"), objects = water.GetFloat("_ObjectReflectStrength");
+            float objFade = water.GetFloat("_ObjectReflectFadeChop"), lift = water.GetFloat("_ObjectReflectLowLight");
+            float Shipped(float sea, Color tint) => WaterReflection.ObjectReflectionWeight(
+                WaterSurface.Choppiness(sea), 0f, fade, windFade, master, objects, objFade, lift, tint);
+            float Pass1(float sea, Color tint) => WaterReflection.ObjectReflectionWeight(
+                WaterSurface.Choppiness(sea), 0f, fade, windFade, master, objects, 0f, 0f, tint);
+
+            for (float sea = 0f; sea <= 1f; sea += 0.05f)
+                Assert.That(Pass1(sea, Dusk), Is.EqualTo(objects * WaterReflection.ReflectionStrength(
+                    WaterSurface.Choppiness(sea), 0f, fade, windFade, master)).Within(1e-6f), "both dials 0 = the first pass, sea " + sea);
+            Assert.That(objFade, Is.GreaterThanOrEqualTo(fade), "the object fade only ever lengthens the sky mirror's");
+            Assert.That(objFade, Is.LessThanOrEqualTo(0.75f), "a blow (sea 0.75) must still clear the reflection");
+            Assert.That(Shipped(0.32f, Dusk), Is.GreaterThan(2.5f * Pass1(0.32f, Dusk)), "dusk on a gentle sea reads");
+            Assert.That(Shipped(0f, Noon), Is.LessThan(1.06f * Pass1(0f, Noon)), "noon glass is not hardened");
+            Assert.That(Shipped(0f, Dusk), Is.LessThanOrEqualTo(1f), "the weight stays a coverage");
+            Assert.That(WaterReflection.TintDarkness(Color.black), Is.EqualTo(0f), "cycle off = day, no lift");
         }
 
         [TestCase(1)] [TestCase(2)]

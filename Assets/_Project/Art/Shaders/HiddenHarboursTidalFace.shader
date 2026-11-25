@@ -69,6 +69,8 @@ Shader "HiddenHarbours/TidalFace"
         // Written per renderer by TidalFaceWaterline. See the header for the packing; w is 0 until a
         // publisher has configured this face, and at 0 nothing is clipped.
         [HideInInspector] _HHFaceTide ("Face lip y and elevation and height scale and on", Vector) = (0,0,0,0)
+        [HideInInspector] _HHFaceHeight ("Retained rig height", 2D) = "black" {}
+        [HideInInspector] _HHFaceHeightDecode ("Rig height minimum range datum and on", Vector) = (0,0,0,0)
 
         // Legacy properties, kept exactly as URP's own sprite shader keeps them, so a material using
         // this can gracefully fall back to the legacy sprite shader.
@@ -142,6 +144,9 @@ Shader "HiddenHarbours/TidalFace"
             // draws six runs of face off one material and each run stands on its own lip, so folding
             // this into the batched block would cut every wall at one wall's waterline.
             float4 _HHFaceTide;
+            TEXTURE2D(_HHFaceHeight);
+            SAMPLER(sampler_HHFaceHeight);
+            float4 _HHFaceHeightDecode;
 
             Varyings UnlitVertex(Attributes input)
             {
@@ -165,9 +170,19 @@ Shader "HiddenHarbours/TidalFace"
                     // The water over this pixel is max(tide, still) — the level the water shader
                     // draws beneath it (ADR 0046). No still water: -1e30, and sea IS the tide.
                     float sea = max(_HHSeaLevelWorld.x, StillLevelAt(input.faceWorldXY));
-                    float waterlineWorldY =
-                        _HHFaceTide.x + (sea - _HHFaceTide.y) * _HHFaceTide.z;
-                    if (input.faceWorldXY.y < waterlineWorldY) discard;
+                    if (_HHFaceHeightDecode.w > 0.5)
+                    {
+                        float height = _HHFaceHeightDecode.x +
+                            SAMPLE_TEXTURE2D(_HHFaceHeight, sampler_HHFaceHeight, input.uv).r * _HHFaceHeightDecode.y -
+                            _HHFaceHeightDecode.z;
+                        if (height < sea) discard;
+                    }
+                    else
+                    {
+                        float waterlineWorldY =
+                            _HHFaceTide.x + (sea - _HHFaceTide.y) * _HHFaceTide.z;
+                        if (input.faceWorldXY.y < waterlineWorldY) discard;
+                    }
                 }
 
                 return CommonUnlitFragment(input, input.color);

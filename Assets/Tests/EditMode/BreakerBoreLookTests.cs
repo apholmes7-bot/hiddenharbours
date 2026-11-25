@@ -221,6 +221,10 @@ namespace HiddenHarbours.Tests.EditMode
             RequireAGraphicsDevice();
             BuildTheShore();
             AimAtTheSurf(NineMileCreekMainland.SpringLowWater);
+            // A MECHANISM arm, so ONE train: the bore is born full every period. On the refracted clock
+            // (BreakerSettings.BoreRefraction) the whole beach shares one birth, so the eight-train sea can sit
+            // in a set lull across the entire frame for longer than the four moments below span.
+            _singleTrain = true;
             float period = DominantPeriod();
 
             // The cosmetic swash is OFF in every shot here (see Shoot), so the ONLY thing that can move the
@@ -235,8 +239,8 @@ namespace HiddenHarbours.Tests.EditMode
             for (int k = 0; k < 4; k++)
             {
                 float t = period * k * 0.25f;
-                bool[] dry = Wet(Shoot($"runup-off-{k}", t, new Dials()), land);
-                bool[] wet = Wet(Shoot($"runup-on-{k}", t, new Dials { RunUp = 1f }), land);
+                bool[] dry = Wet(Shoot($"runup-off-{k}", t, new Dials { HardEdge = true }), land);
+                bool[] wet = Wet(Shoot($"runup-on-{k}", t, new Dials { RunUp = 1f, HardEdge = true }), land);
                 int added = 0, removed = 0;
                 for (int i = 0; i < dry.Length; i++)
                 {
@@ -571,11 +575,20 @@ namespace HiddenHarbours.Tests.EditMode
             public bool LiveChurn;         // the shipped evolve/drift (the check-in strip); else frozen
             public float FaceShade;        // >= 0 overrides _SwellFaceShade; -1 leaves the material's
             public Color? Surf;            // the debug colour; null = the shipped white
+            public bool HardEdge;          // the wet film off: the drawn edge as a hard cut (geometry metrics)
         }
 
         Color32[] Shoot(string name, float seconds, Dials d)
         {
             PublishTheSea(seconds);
+            // The wet film thins the last centimetres inside the drawn edge to clear on purpose, so a pixel
+            // there can match a land-only render though the edge has not moved. A metric of WHERE the edge is
+            // asks for the hard cut; the steady edge (x) is left as published.
+            if (d.HardEdge)
+            {
+                Vector4 thin = Shader.GetGlobalVector("_ShoreThinEdge");
+                Shader.SetGlobalVector("_ShoreThinEdge", new Vector4(thin.x, 0f, 0f, 0f));
+            }
 
             var surface = _seaGo.GetComponent<WaterSurface>();
             if (surface != null)
@@ -634,6 +647,15 @@ namespace HiddenHarbours.Tests.EditMode
             // alive * beat as a NUMBER, so they shoot at boost 1 and smooth bands.
             block.SetFloat("_SurfCrestBoost", d.Unsaturated ? 1f : ShippedFloat("_SurfCrestBoost"));
             block.SetFloat("_SurfBands", d.Unsaturated ? 0f : ShippedFloat("_SurfBands"));
+            // The run-up wash (fix/shore-runup-foam) at its passthrough on the measurement arms, like the
+            // age walk above: sheet opacity 1 passes the cover through, and line opacity 0 keeps the fringe
+            // as the edge. The surf-off base shot has no wash, so a wash that hid the fringe or drew its
+            // line only in the red shot would be scored as cover. The LOOK shots keep the shipped wash.
+            block.SetFloat("_WashSheetOpacity", d.Surf.HasValue ? 1f : ShippedFloat("_WashSheetOpacity"));
+            block.SetFloat("_WashLineOpacity", d.Surf.HasValue ? 0f : ShippedFloat("_WashLineOpacity"));
+            // v4: the wash's look on the lee of a breaking beach is off on the measurement arms too, so the
+            // wash is present only where the bore's run-up draws the edge, as the arms were scored.
+            block.SetFloat("_WashLeeShare", d.Surf.HasValue ? 0f : ShippedFloat("_WashLeeShare"));
             block.SetFloat("_SurfThreshold", d.SolidSheet ? 0f : ShippedFloat("_SurfThreshold"));
             block.SetFloat("_SurfThresholdSoft", d.SolidSheet ? 0.001f : ShippedFloat("_SurfThresholdSoft"));
             block.SetFloat("_SwellFaceShade", d.FaceShade >= 0f ? d.FaceShade : ShippedFloat("_SwellFaceShade"));

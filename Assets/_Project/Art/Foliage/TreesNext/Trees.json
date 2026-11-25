@@ -1,0 +1,254 @@
+{
+    "note": "A PROPOSAL, not the kit the game draws. Written by TreePass4Baker.ExportContract from docs/art/rigs/treeIsoRig5.js (standing in rig 4's seat) and treeMaps4.js through the HHTreePass4 glue (version 1), stage mature, seasons summer. REGENERATE rather than hand-edit (Hidden Harbours > Art > Export Acadian Tree Contract, then Bake Acadian Trees); the bake obeys this file and refuses a rig that drifted from it. pivotX/pivotY are the TRUNK FOOT in cell px from the top-left; nearFlarePad rows of near-root flare sit BELOW it. unityPivot is the same point normalised bottom-origin, and trunkAnchor is that height as a fraction of the cell. audit is empty: rig 4 reports no rule audit.",
+    "rig": "docs/art/rigs/treeIsoRig5.js",
+    "global": "TreeRig5",
+    "ppu": 32,
+    "camera": {
+        "name": "ADR-0006/0022",
+        "view": "3/4 from S, orthographic",
+        "elevDeg": 40.0,
+        "heightScale": 0.7660444378852844,
+        "depthScale": 0.6427876353263855
+    },
+    "light": {
+        "key": [
+            -0.5476772785186768,
+            -0.6572127342224121,
+            0.517803966999054
+        ],
+        "rim": [
+            0.48055294156074526,
+            -0.2803225517272949,
+            -0.8309561610221863
+        ],
+        "note": "the MASK's fixed upper-left key + back rim, screen space (art bible section 1): rig 3's LIGHT, which rig 4 keeps as its own. The albedo is relit once under TreeRig4.REF_SKY; the game's light comes from the mask and normal, as in pass 3"
+    },
+    "rules": {
+        "rimPx": 2,
+        "minBodyPx": 6,
+        "minClumpRadiusPx": 5,
+        "note": "a 2 px rim must leave 6 px of interior; nothing is emitted under a 5 px clump radius; the rim is gated on local mass thickness"
+    },
+    "sheet": {
+        "cols": 4,
+        "rows": 1,
+        "colAxis": "variant",
+        "rowAxis": "sway frame",
+        "rigSwayRows": 4,
+        "swayNote": "ONE row is baked: the four variants at REST. The rig's 16-frame wind loop is not baked as frames; HiddenHarboursTreeWind.shader replays the rig's own response from the wind and phase maps, off the shared deterministic wind (_WindWorld) the grass and the water read, so one gust moves all three together."
+    },
+    "channels": {
+        "albedo": "RGBA: TreeRig4.relight at rest under REF_SKY, binary alpha, no AA, no keyline (ADR 0031)",
+        "mask": "R=key light, G=back rim, B=depth, A=coverage: pass 3's order, by rig 3's formulas on the rest frame",
+        "normal": "view-space normal, R=x, G=y-up, B=toward camera",
+        "coverageNote": "albedo, mask, normal and snow cover the same pixels at rest. The wind and phase sheets are DATA: wind.B, wind.A and phase.A carry the packed word W, never alpha, so they import with alphaIsTransparency OFF. A leaf the wind moves is gathered from its rest pixel by the shader, so every channel is sampled at the one source texel it finds."
+    },
+    "trees": [
+        {
+            "species": "RedMaple",
+            "name": "Red Maple",
+            "latin": "Acer rubrum",
+            "form": "round",
+            "stage": "mature",
+            "seasons": [
+                "summer"
+            ],
+            "metres": 12.0,
+            "cellW": 308,
+            "cellH": 314,
+            "pivotX": 155,
+            "pivotY": 302,
+            "nearFlarePad": 11,
+            "trunkAnchor": 0.03503184765577316,
+            "unityPivotX": 0.5032467246055603,
+            "unityPivotY": 0.03503184765577316,
+            "sheetW": 1232,
+            "sheetH": 314,
+            "rigSheetW": 1232,
+            "rigSheetH": 1256,
+            "rigFitsUnity2048": true,
+            "audit": {
+                "thinPct": 0.0,
+                "bodyRatio": 0,
+                "despeckled": 0,
+                "pass": false,
+                "underFloor": false
+            },
+            "wind": {
+                "H": 384.0,
+                "bendPx": 17.280000686645509,
+                "limbPx": 3.8399999141693117,
+                "bob": 0.699999988079071,
+                "flutter": 0.4000000059604645,
+                "shimmer": [
+                    0.6000000238418579,
+                    0.05999999865889549
+                ],
+                "conifer": false,
+                "windReach": 47
+            },
+            "seasonRows": [
+                {
+                    "season": "summer",
+                    "maps": "summer",
+                    "albedo": "summer",
+                    "gapRow": [
+                        "1c2f2c",
+                        "263f30",
+                        "2d4435",
+                        "395c33",
+                        "44653c",
+                        "6d8750",
+                        "9ba06a",
+                        "9ba06a"
+                    ],
+                    "paletteRow": 1
+                }
+            ]
+        },
+        {
+            "species": "RedSpruce",
+            "name": "Red Spruce",
+            "latin": "Picea rubens",
+            "form": "spire",
+            "stage": "mature",
+            "seasons": [
+                "summer"
+            ],
+            "metres": 12.600000381469727,
+            "cellW": 271,
+            "cellH": 331,
+            "pivotX": 134,
+            "pivotY": 320,
+            "nearFlarePad": 10,
+            "trunkAnchor": 0.03021148033440113,
+            "unityPivotX": 0.4944649338722229,
+            "unityPivotY": 0.03021148033440113,
+            "sheetW": 1084,
+            "sheetH": 331,
+            "rigSheetW": 1084,
+            "rigSheetH": 1324,
+            "rigFitsUnity2048": true,
+            "audit": {
+                "thinPct": 0.0,
+                "bodyRatio": 0,
+                "despeckled": 0,
+                "pass": false,
+                "underFloor": false
+            },
+            "wind": {
+                "H": 403.20001220703127,
+                "bendPx": 16.128000259399415,
+                "limbPx": 3.225600004196167,
+                "bob": 1.0,
+                "flutter": 0.11999999731779099,
+                "shimmer": [],
+                "conifer": true,
+                "windReach": 44
+            },
+            "seasonRows": [
+                {
+                    "season": "summer",
+                    "maps": "summer",
+                    "albedo": "summer",
+                    "gapRow": [
+                        "1b2d2f",
+                        "233c38",
+                        "29413d",
+                        "325344",
+                        "3e5c4c",
+                        "677f62",
+                        "969a76",
+                        "969a76"
+                    ],
+                    "paletteRow": 2
+                }
+            ]
+        },
+        {
+            "species": "WhiteCedar",
+            "name": "E. White Cedar",
+            "latin": "Thuja occidentalis",
+            "form": "cedar",
+            "stage": "mature",
+            "seasons": [
+                "summer"
+            ],
+            "metres": 7.800000190734863,
+            "cellW": 160,
+            "cellH": 226,
+            "pivotX": 80,
+            "pivotY": 205,
+            "nearFlarePad": 20,
+            "trunkAnchor": 0.08849557489156723,
+            "unityPivotX": 0.5,
+            "unityPivotY": 0.08849557489156723,
+            "sheetW": 640,
+            "sheetH": 226,
+            "rigSheetW": 640,
+            "rigSheetH": 904,
+            "rigFitsUnity2048": true,
+            "audit": {
+                "thinPct": 0.0,
+                "bodyRatio": 0,
+                "despeckled": 0,
+                "pass": false,
+                "underFloor": false
+            },
+            "wind": {
+                "H": 249.60000610351563,
+                "bendPx": 7.48799991607666,
+                "limbPx": 1.1648000478744507,
+                "bob": 0.5,
+                "flutter": 0.11999999731779099,
+                "shimmer": [],
+                "conifer": true,
+                "windReach": 22
+            },
+            "seasonRows": [
+                {
+                    "season": "summer",
+                    "maps": "summer",
+                    "albedo": "summer",
+                    "gapRow": [
+                        "1e2f2c",
+                        "2a3f33",
+                        "304437",
+                        "415b37",
+                        "4c6440",
+                        "768754",
+                        "a1a06c",
+                        "a1a06c"
+                    ],
+                    "paletteRow": 3
+                }
+            ]
+        }
+    ],
+    "maps": {
+        "script": "docs/art/rigs/treeMaps4.js",
+        "global": "TreeMaps4",
+        "glue": "HHTreePass4",
+        "glueVersion": 1,
+        "loop": 16,
+        "windNote": "wind: R=lean, G=sway as TreeMaps4 writes them. phase: R=wave, G=play, B=depth. Per species the response is the tree's wind block (bendPx, limbPx, bob, flutter, shimmer, conifer), read by the shader per renderer the way _TrunkAnchor is.",
+        "snowNote": "snow: R=G=B = the cover x 254 at which the pixel turns to snow; 255 never snows, 0 is outside. The shader thresholds it by the global _FoliageSnow; a snowed pixel takes its colour from the palette's snow row.",
+        "packNote": "W, 24 bits = wind.B << 16 | wind.A << 8 | phase.A, high to low: class 2 (0 outside, 1 wood, 2 between leaves, 3 leaf) | gapSnow 3 | gap 3 | snow 3 | stamp id + 1 13. snow and gapSnow index the palette's snow row, gap indexes the season's gap row. Read the class from W, never wind.B > 127."
+    },
+    "snowRow": [
+        "728894",
+        "768b96",
+        "9db1b7",
+        "a3b4b9",
+        "c8d5d8",
+        "cdd8d7",
+        "eff4f2",
+        "f1f3ee"
+    ],
+    "palette": {
+        "file": "TreePalette.png",
+        "width": 8,
+        "rows": 4,
+        "note": "sRGB colours, point-sampled. Row 0 (the bottom texel row, as Texture2D.GetPixel and the shader's Load number it) is the snow row; each season row's paletteRow names its gap row. Rows are sorted by packed RGB and padded by repeating the last colour."
+    }
+}

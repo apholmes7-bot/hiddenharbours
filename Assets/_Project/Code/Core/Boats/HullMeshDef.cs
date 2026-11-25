@@ -176,6 +176,16 @@ namespace HiddenHarbours.Core
         [Tooltip("The cabin door's leaf at doorOpen 1: the same faces as DoorLeafClosed, swung open.")]
         public Mesh DoorLeafOpen;
 
+        /// <summary>One declared door's own leaf meshes, including both panels of a paired slider.</summary>
+        [Serializable]
+        public struct DoorLeafPair
+        {
+            public string Id;
+            public Mesh Closed, Open;
+        }
+
+        public DoorLeafPair[] DoorLeaves = Array.Empty<DoorLeafPair>();
+
         /// <summary>True when the bake split her door leaf out in both poses, so a renderer can draw
         /// the door open. See <see cref="DoorLeafClosed"/>.</summary>
         public bool HasDoorLeaf() => DoorLeafClosed != null && DoorLeafOpen != null;

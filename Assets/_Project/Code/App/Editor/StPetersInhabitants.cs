@@ -161,8 +161,7 @@ namespace HiddenHarbours.App.Editor
                        "the sand with a bucket, which is where the man who digs for a living would be"),
 
             new Person("BasilSamson", "Basil",
-                       new Vector2(StPetersWharf.HeadCellX - 5.5f,
-                                   StPetersWharf.MaxCellY - 0.5f), Footing.Deck,
+                       StPetersLandingLayout.Basil, Footing.Deck,
                        new Color(0.58f, 0.62f, 0.58f),
                        "up the wharf from the slip head, watching the water — the dock is the east end " +
                        "(§5.1a), so he is who is there when you come home under power",

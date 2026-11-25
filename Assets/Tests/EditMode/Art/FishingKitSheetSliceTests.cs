@@ -50,9 +50,13 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// (33,547 px differ at scale 1, across every one of 280 cells) and grows swim 4f→6f and
         /// dart 2f→3f. The cell and pivot ARE identical, which is the only reason these ride the
         /// existing <c>Fish_</c> spec with no slicer change at all.
+        ///
+        /// <para>Then the coast species kit's three (smelt, tomcod, cunner): registered into the same
+        /// rig, baked by the same baker, same cell, pivot and states.</para>
         /// </summary>
         private static readonly string[] FishSpecies =
-            { "cod", "haddock", "pollock", "mackerel", "bass", "flounder", "herring" };
+            { "cod", "haddock", "pollock", "mackerel", "bass", "flounder", "herring",
+              "smelt", "tomcod", "cunner" };
 
         /// <summary>
         /// The SIZE LADDER's stem suffixes. Each species is baked at three rungs spanning the weight
@@ -183,7 +187,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
             Assert.AreEqual(FishSpecies.Length * FishRungs.Length * FishStates.Length,
                             Sheets.Keys.Count(k => k.StartsWith("Fish_", StringComparison.Ordinal)),
-                            "7 species × 3 rungs × 10 states");
+                            "10 species × 3 rungs × 10 states");
         }
 
         /// <summary>
@@ -275,7 +279,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // Shovel_dig (the one anim CharacterIso.ANIM_MOUNT mounts the spade on) and the rig's
             // two still rests, Shovel_ground and Shovel_stored. There is deliberately no carry
             // sheet — see ShovelStates above.
-            Assert.AreEqual(7 * 3 * 10 + 4 + 3 * 10 + ShovelStates.Length, Sheets.Count);
+            Assert.AreEqual((7 + 3) * 3 * 10 + 4 + 3 * 10 + ShovelStates.Length, Sheets.Count,
+                            "seven pass-2 species and the three coast species");
             Assert.AreEqual(Sheets.Count, ExpectedFrames.Count);
             CollectionAssert.AreEquivalent(
                 new[] { "Shovel_dig", "Shovel_ground", "Shovel_stored" },

@@ -1,0 +1,153 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b51978faec4dbb8e54e23107a97ef5, type: 3}
+  m_Name: SetPiece_props
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: structure.nmc_yard_props
+  DisplayName: 'Wharf boat yard: props'
+  RigKey: props
+  SceneId: keyscene.nmc_wharf
+  BakedOptionsJson: '{}'
+  Layer: raised
+  Walk: solid
+  Mount: ground
+  BoundsMin: {x: -10.896, y: -12.123586, z: -0.01167}
+  BoundsMax: {x: 14.513946, y: 12.516, z: 2.1}
+  Frames:
+  - Sprite: {fileID: -5193791244210497385, guid: 60e13cc4e5f674c43b36c05898e26c8a, type: 3}
+    RigDir: 0
+    ShowFaces: 0
+    BearingDeg: 0
+    CameraSees: yard part
+    NativeSize: {x: 823, y: 537}
+    NativePivot: {x: 353, y: 283}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 349, y: 279}
+  - Sprite: {fileID: 3932442244421539891, guid: 60e13cc4e5f674c43b36c05898e26c8a, type: 3}
+    RigDir: 7
+    ShowFaces: 7
+    BearingDeg: 315
+    CameraSees: yard part
+    NativeSize: {x: 364, y: 749}
+    NativePivot: {x: 39, y: 364}
+    Crop: {x: 4, y: 5}
+    Pivot: {x: 35, y: 359}
+  - Sprite: {fileID: 7938069950297820351, guid: 60e13cc4e5f674c43b36c05898e26c8a, type: 3}
+    RigDir: 6
+    ShowFaces: 6
+    BearingDeg: 270
+    CameraSees: yard part
+    NativeSize: {x: 798, y: 553}
+    NativePivot: {x: 392, y: 250}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 388, y: 246}
+  - Sprite: {fileID: 8389659996570598891, guid: 60e13cc4e5f674c43b36c05898e26c8a, type: 3}
+    RigDir: 5
+    ShowFaces: 5
+    BearingDeg: 225
+    CameraSees: yard part
+    NativeSize: {x: 1127, y: 286}
+    NativePivot: {x: 597, y: 75}
+    Crop: {x: 5, y: 4}
+    Pivot: {x: 592, y: 71}
+  - Sprite: {fileID: -3098765949368470274, guid: 60e13cc4e5f674c43b36c05898e26c8a, type: 3}
+    RigDir: 4
+    ShowFaces: 4
+    BearingDeg: 180
+    CameraSees: yard part
+    NativeSize: {x: 823, y: 560}
+    NativePivot: {x: 469, y: 298}
+    Crop: {x: 5, y: 5}
+    Pivot: {x: 464, y: 293}
+  - Sprite: {fileID: 7020508566505837437, guid: 60e13cc4e5f674c43b36c05898e26c8a, type: 3}
+    RigDir: 3
+    ShowFaces: 3
+    BearingDeg: 135
+    CameraSees: yard part
+    NativeSize: {x: 364, y: 776}
+    NativePivot: {x: 324, y: 434}
+    Crop: {x: 4, y: 5}
+    Pivot: {x: 320, y: 429}
+  - Sprite: {fileID: 4847519049028131242, guid: 60e13cc4e5f674c43b36c05898e26c8a, type: 3}
+    RigDir: 2
+    ShowFaces: 2
+    BearingDeg: 90
+    CameraSees: yard part
+    NativeSize: {x: 798, y: 577}
+    NativePivot: {x: 405, y: 348}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 401, y: 344}
+  - Sprite: {fileID: -2653635721734074730, guid: 60e13cc4e5f674c43b36c05898e26c8a, type: 3}
+    RigDir: 1
+    ShowFaces: 1
+    BearingDeg: 45
+    CameraSees: yard part
+    NativeSize: {x: 1127, y: 262}
+    NativePivot: {x: 530, y: 235}
+    Crop: {x: 4, y: 5}
+    Pivot: {x: 526, y: 230}
+  CellSize: {x: 1118, y: 767}
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders:
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: 9.9, y: -12.3}
+    - {x: 15.9, y: -12.3}
+    - {x: 15.9, y: -10.9}
+    - {x: 9.9, y: -10.9}
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: 9.4, y: 2.2}
+    - {x: 11.4, y: 2.2}
+    - {x: 11.4, y: 3.6}
+    - {x: 9.4, y: 3.6}
+  - Type: polygon
+    Blocks: walk
+    Points:
+    - {x: -11.3, y: 10.9}
+    - {x: -9.3, y: 10.9}
+    - {x: -9.3, y: 12.3}
+    - {x: -11.3, y: 12.3}
+  Anchors: []
+  Path: []
+  TideMarks: []
+  Words: []
+  HasLight: 0
+  Light:
+    Emitters: []
+    When: 
+  IsAnimated: 0
+  Animated:
+    Part: 
+    Input: 
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []
+  GameplayJson: '{"schema":"hidden-harbours/nmc-shipyard-part@1","generatedBy":"NmcShipyard
+    1.0.0","key":"props","id":"structure.nmc_yard_props","name":"Wharf boat yard:
+    props","defType":"SetPieceDef","scene":"keyscene.nmc_wharf","units":"metres in
+    the part frame, deck datum zero","bounds":{"x":[-10.896,14.513946],"y":[-12.123586,12.516],"z":[-0.01167,2.1]},"layer":"raised","walk":"solid","mount":"ground","colliders":[{"type":"polygon","blocks":"walk","pts":[[9.9,-12.3],[15.9,-12.3],[15.9,-10.9],[9.9,-10.9]]},{"type":"polygon","blocks":"walk","pts":[[9.4,2.2],[11.4,2.2],[11.4,3.6],[9.4,3.6]]},{"type":"polygon","blocks":"walk","pts":[[-11.3,10.9],[-9.3,10.9],[-9.3,12.3],[-11.3,12.3]]}],"facings":[{"dir":0,"showFaces":"0","bearingDeg":0,"cameraSees":"yard
+    part"},{"dir":1,"showFaces":"1","bearingDeg":45,"cameraSees":"yard part"},{"dir":2,"showFaces":"2","bearingDeg":90,"cameraSees":"yard
+    part"},{"dir":3,"showFaces":"3","bearingDeg":135,"cameraSees":"yard part"},{"dir":4,"showFaces":"4","bearingDeg":180,"cameraSees":"yard
+    part"},{"dir":5,"showFaces":"5","bearingDeg":225,"cameraSees":"yard part"},{"dir":6,"showFaces":"6","bearingDeg":270,"cameraSees":"yard
+    part"},{"dir":7,"showFaces":"7","bearingDeg":315,"cameraSees":"yard part"}],"cells":[{"dir":0,"w":823,"h":537,"pivot":[353,283]},{"dir":1,"w":1127,"h":262,"pivot":[530,235]},{"dir":2,"w":798,"h":577,"pivot":[405,348]},{"dir":3,"w":364,"h":776,"pivot":[324,434]},{"dir":4,"w":823,"h":560,"pivot":[469,298]},{"dir":5,"w":1127,"h":286,"pivot":[597,75]},{"dir":6,"w":798,"h":553,"pivot":[392,250]},{"dir":7,"w":364,"h":749,"pivot":[39,364]}],"anchors":{},"options":{},"placement":{"row":"harbour.yard","at":[197.4,115.6],"elevation":3.4,"dir":0},"walkSurfaces":[],"records":[{"k":"block","kind":"stands","poly":[[9.899999999999995,-12.299999999999994],[15.899999999999993,-12.299999999999994],[15.899999999999993,-10.899999999999995],[9.899999999999995,-10.899999999999995]],"z0":0,"z1":1.2},{"k":"block","kind":"blocking","poly":[[9.399999999999995,2.2000000000000055],[11.399999999999993,2.2000000000000055],[11.399999999999993,3.600000000000006],[9.399999999999995,3.600000000000006]],"z0":0,"z1":1.2},{"k":"block","kind":"drums","poly":[[-11.299999999999994,10.90000000000001],[-9.299999999999995,10.90000000000001],[-9.299999999999995,12.300000000000008],[-11.299999999999994,12.300000000000008]],"z0":0,"z1":1.2}]}'
+  State: 
+  Variants: []
+  HasVendor: 0
+  Vendor:
+    Seller: 
+    At: {x: 0, y: 0, z: 0}

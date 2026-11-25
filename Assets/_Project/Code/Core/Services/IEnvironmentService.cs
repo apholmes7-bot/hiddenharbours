@@ -62,5 +62,25 @@ namespace HiddenHarbours.Core
         /// FLAG lead-architect: additive Core contract (the weather-at-a-time read the S3 school sim needs).
         /// </summary>
         float SeaState01At(double totalSeconds) => Sample().SeaState01;
+
+        /// <summary>
+        /// Which <b>tide</b> the given moment belongs to, for the active region: an index that steps by
+        /// exactly one at each high water and is constant between two of them. Two moments with the same
+        /// index have had no high water between them; two with different indices have had the flood come
+        /// in and cover the flats at least once.
+        ///
+        /// <para><b>Who needed it.</b> A dug clam hole stays dug "until the tide has covered the flat
+        /// again". The hole keeps the one fact that cannot be recomputed — WHEN it was dug — and asks this
+        /// whether that moment and now are the same tide. Nothing about the tide is stored: like
+        /// <see cref="TideHeightAt"/> this is a pure function of the clock and the region's tide profile
+        /// (rule 5), so it reads the same after a save and load as it did before.</para>
+        ///
+        /// <para><b>Additive &amp; non-breaking</b>, as <see cref="WaterLevelAt"/> is: a <i>default
+        /// interface method</i> returning <c>0</c>, which reads as "one endless tide" — every existing
+        /// implementer and test fake compiles unchanged and keeps the behaviour it had (a spent thing
+        /// stays spent). The real <c>EnvironmentService</c> overrides it with the pure tide model.</para>
+        /// FLAG lead-architect: additive Core contract (the tide-cycle read the clam flats need).
+        /// </summary>
+        long TideCycleIndexAt(double totalSeconds) => 0L;
     }
 }

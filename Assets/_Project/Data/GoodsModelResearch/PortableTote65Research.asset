@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c674d767b67f40f698c9b954139c7253, type: 3}
+  m_Name: PortableTote65Research
+  m_EditorClassIdentifier: HiddenHarbours.Tools.GoodsModel::HiddenHarbours.Tools.GoodsModel.GoodsContainerDef
+  Spec:
+    Id: container.research_portable_tote_65
+    Outside: {LengthMm: 750, WidthMm: 400, HeightMm: 410}
+    Inside: {LengthMm: 680, WidthMm: 320, HeightMm: 300}
+    Opening: {LengthMm: 660, WidthMm: 300, HeightMm: 300}
+    UsableVolumeMl: 65000
+    CountLimit: 2
+    AcceptedProfiles:
+    - goods.raw_fish
+    - goods.small_shellfish
+    Slots:
+    - Xmm: 0
+      Ymm: 0
+      Zmm: 0
+      Size: {LengthMm: 330, WidthMm: 300, HeightMm: 300}
+    - Xmm: 330
+      Ymm: 0
+      Zmm: 0
+      Size: {LengthMm: 330, WidthMm: 300, HeightMm: 300}
+    EmptyMassG: 11000
+    LidMassG: 0
+    MaxGrossMassG: 30000
+    RequiredHands: 2
+    MaxHandGrossMassG: 16000
+    HasLid: 1
+    StackGroup: "research_tote_65"
+    MaxStackCount: 2
+    MaxStackHeightMm: 820
+    MaxSupportedMassG: 30000
+    StackRequiresLid: 1
+    AllowHandCarriedStack: 0
+  DimensionSource: https://www.saeplast.com/wp-content/uploads/2025/09/Containing-Quality-2023.pdf
+  Provenance: "Catalogue page 2: 65 L, external 750x400x410 mm, internal 660-680x300-320x300 mm, 11 kg, comes with lid. Mouth uses minimum clear dimensions. Mass includes supplied lid; no separate mass invented. Upper internal envelope and volume are separate. Stack and gross limits are game proposals; no nesting assumed."

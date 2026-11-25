@@ -5,7 +5,8 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "HiddenHarbours.Core",
-        "HiddenHarbours.Audio"
+        "HiddenHarbours.Audio",
+        "HiddenHarbours.Boats"
     ],
     "includePlatforms": ["Editor"],
     "precompiledReferences": ["nunit.framework.dll"],

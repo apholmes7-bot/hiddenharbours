@@ -15,7 +15,7 @@ namespace HiddenHarbours.Tools.Editor
     /// EDITOR-ONLY and read-only: it computes everything by calling the existing pure functions
     /// directly — <see cref="TideModel"/> for height/rate, <see cref="TideReadout"/> (the HUD's own
     /// derivation) for rising/falling + time-to-next-turn — and mirrors <c>GameClock</c>'s tiny
-    /// calendar formulae for the day/hour breakdown (there is no pure calendar helper to call).
+    /// Core calendar helper for the season, year and day-of-season breakdown.
     /// Nothing here is referenced by runtime code and it never ships in a build.
     ///
     /// Menu: <b>Hidden Harbours ▸ Tools ▸ Tide Scrubber</b>.
@@ -374,21 +374,21 @@ namespace HiddenHarbours.Tools.Editor
         }
 
         /// <summary>
-        /// Calendar breakdown for a master-clock value. Mirrors <c>GameClock</c>'s formulae exactly
-        /// (the source of truth) — kept here because that breakdown lives on the runtime MonoBehaviour
-        /// and there is no pure helper to call. If GameClock's derivation changes, update this with it.
+        /// Calendar breakdown for a master-clock value, through the same Core calendar as the clock.
+        /// Weekdays and market days retain the elapsed-day epoch.
         /// </summary>
         private Cal Breakdown(double t)
         {
             int totalDays = (int)(t / _config.SecondsPerDay);
+            CalendarDate calendar = GameCalendar.AtSeconds(t, _config);
             float dayFraction = (float)(t % _config.SecondsPerDay / _config.SecondsPerDay);
             return new Cal
             {
                 TotalDays   = totalDays,
                 HourOfDay   = dayFraction * 24f,
-                Season      = (Season)(totalDays / _config.DaysPerSeason % 4),
-                Year        = totalDays / _config.DaysPerSeason / 4 + 1,
-                DayOfSeason = totalDays % _config.DaysPerSeason + 1,
+                Season      = calendar.Season,
+                Year        = calendar.Year,
+                DayOfSeason = calendar.DayOfSeason,
                 Weekday     = (Weekday)(totalDays % _config.DaysPerWeek),
                 IsMarketDay = totalDays % _config.DaysPerWeek == _config.MarketDayIndex
             };

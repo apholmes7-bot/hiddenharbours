@@ -1,0 +1,1586 @@
+fileFormatVersion: 2
+guid: 679ad0778926b76448c43ce452e2feb6
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2633152569441140593
+    second: Appliance_chestFreezerLarge_0
+  - first:
+      213: 1235024395190979205
+    second: Appliance_chestFreezerLarge_1
+  - first:
+      213: 6963518273498838667
+    second: Appliance_chestFreezerLarge_2
+  - first:
+      213: -4408524208992199853
+    second: Appliance_chestFreezerLarge_3
+  - first:
+      213: 681025093736500205
+    second: Appliance_chestFreezerLarge_4
+  - first:
+      213: -5141804044034100173
+    second: Appliance_chestFreezerLarge_5
+  - first:
+      213: -6948017478606499377
+    second: Appliance_chestFreezerLarge_6
+  - first:
+      213: 2713312267573891954
+    second: Appliance_chestFreezerLarge_7
+  - first:
+      213: 676366653382241604
+    second: Appliance_chestFreezerLarge_8
+  - first:
+      213: -7896150514990528995
+    second: Appliance_chestFreezerLarge_9
+  - first:
+      213: -3002628307901571939
+    second: Appliance_chestFreezerLarge_10
+  - first:
+      213: -8682333766941860296
+    second: Appliance_chestFreezerLarge_11
+  - first:
+      213: -2530572118320402509
+    second: Appliance_chestFreezerLarge_12
+  - first:
+      213: -7006967122083316939
+    second: Appliance_chestFreezerLarge_13
+  - first:
+      213: 2233196345202715181
+    second: Appliance_chestFreezerLarge_14
+  - first:
+      213: -2528453706672354293
+    second: Appliance_chestFreezerLarge_15
+  - first:
+      213: 3281612276633988884
+    second: Appliance_chestFreezerLarge_16
+  - first:
+      213: 2634958287759784341
+    second: Appliance_chestFreezerLarge_17
+  - first:
+      213: -5667068934786342293
+    second: Appliance_chestFreezerLarge_18
+  - first:
+      213: -272819963921699078
+    second: Appliance_chestFreezerLarge_19
+  - first:
+      213: 1900044196093640098
+    second: Appliance_chestFreezerLarge_20
+  - first:
+      213: -1792214066262932142
+    second: Appliance_chestFreezerLarge_21
+  - first:
+      213: -5792865024971472045
+    second: Appliance_chestFreezerLarge_22
+  - first:
+      213: 7930587134205611888
+    second: Appliance_chestFreezerLarge_23
+  - first:
+      213: -8048781611899694970
+    second: Appliance_chestFreezerLarge_24
+  - first:
+      213: 7081199739054522841
+    second: Appliance_chestFreezerLarge_25
+  - first:
+      213: 2708099765297744279
+    second: Appliance_chestFreezerLarge_26
+  - first:
+      213: -3370716315460016265
+    second: Appliance_chestFreezerLarge_27
+  - first:
+      213: 7660246982299827882
+    second: Appliance_chestFreezerLarge_28
+  - first:
+      213: -2784778180636400525
+    second: Appliance_chestFreezerLarge_29
+  - first:
+      213: 9036355520464230631
+    second: Appliance_chestFreezerLarge_30
+  - first:
+      213: 8329343179035752232
+    second: Appliance_chestFreezerLarge_31
+  - first:
+      213: -3901261522456227930
+    second: Appliance_chestFreezerLarge_32
+  - first:
+      213: 7435620048227661214
+    second: Appliance_chestFreezerLarge_33
+  - first:
+      213: 2824204200076577427
+    second: Appliance_chestFreezerLarge_34
+  - first:
+      213: -3295100331156802112
+    second: Appliance_chestFreezerLarge_35
+  - first:
+      213: -3387922607147422282
+    second: Appliance_chestFreezerLarge_36
+  - first:
+      213: 4197278739905140602
+    second: Appliance_chestFreezerLarge_37
+  - first:
+      213: -8961137327779325551
+    second: Appliance_chestFreezerLarge_38
+  - first:
+      213: -6139184373521378509
+    second: Appliance_chestFreezerLarge_39
+  - first:
+      213: 5231618754927659272
+    second: Appliance_chestFreezerLarge_40
+  - first:
+      213: 1227240020527696052
+    second: Appliance_chestFreezerLarge_41
+  - first:
+      213: 4675083667993548645
+    second: Appliance_chestFreezerLarge_42
+  - first:
+      213: 6412250779367740121
+    second: Appliance_chestFreezerLarge_43
+  - first:
+      213: 7304273243513139517
+    second: Appliance_chestFreezerLarge_44
+  - first:
+      213: -3844104783921769122
+    second: Appliance_chestFreezerLarge_45
+  - first:
+      213: -7600597024260857215
+    second: Appliance_chestFreezerLarge_46
+  - first:
+      213: 1771313737056502847
+    second: Appliance_chestFreezerLarge_47
+  - first:
+      213: -3536785387374973692
+    second: Appliance_chestFreezerLarge_48
+  - first:
+      213: 7677877015197513206
+    second: Appliance_chestFreezerLarge_49
+  - first:
+      213: 8260714908100830055
+    second: Appliance_chestFreezerLarge_50
+  - first:
+      213: -4805080973782327307
+    second: Appliance_chestFreezerLarge_51
+  - first:
+      213: -2938935748276701832
+    second: Appliance_chestFreezerLarge_52
+  - first:
+      213: 8316982954556329308
+    second: Appliance_chestFreezerLarge_53
+  - first:
+      213: -7266482150910133637
+    second: Appliance_chestFreezerLarge_54
+  - first:
+      213: -2949079291117049983
+    second: Appliance_chestFreezerLarge_55
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s0_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 510
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a5dcfc9bd4603e8429aae65a53330294
+      internalID: -2142311688
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s0_d1
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 510
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1243b61dce8a1fa4d92122e146f55621
+      internalID: 1341948404
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s0_d2
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 510
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b995ee6dfc00b3348a8dffc4ac7e17cd
+      internalID: 1485836114
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s0_d3
+      rect:
+        serializedVersion: 2
+        x: 228
+        y: 510
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8b29a72205d8ddd43a1f96fdd19153eb
+      internalID: 1421423826
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s0_d4
+      rect:
+        serializedVersion: 2
+        x: 304
+        y: 510
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 543068fabf37ab64f960b3eb73a69d4e
+      internalID: 162638334
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s0_d5
+      rect:
+        serializedVersion: 2
+        x: 380
+        y: 510
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 03994223aaf98f249aa16eebb35bddee
+      internalID: -180269884
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s0_d6
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 510
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec0a57875792c584daf5240d4cbe123f
+      internalID: 1828365126
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s0_d7
+      rect:
+        serializedVersion: 2
+        x: 532
+        y: 510
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b95001eee9423f24caea816f93cd4c3d
+      internalID: -1067312428
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s1_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 425
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1ad4fc4abc3dd734fa106ec5ede8e572
+      internalID: -757426989
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s1_d1
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 425
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c308ec91011d54247be835ff9e2e0de2
+      internalID: -640259466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s1_d2
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 425
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d7eac5d081445d04f98a8e244791c8c7
+      internalID: -605184290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s1_d3
+      rect:
+        serializedVersion: 2
+        x: 228
+        y: 425
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0ddd32ca39f5595428be8cfd6870c923
+      internalID: -955590681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s1_d4
+      rect:
+        serializedVersion: 2
+        x: 304
+        y: 425
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ad4fe8ffd74459e4187ef878e2943073
+      internalID: 1057755412
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s1_d5
+      rect:
+        serializedVersion: 2
+        x: 380
+        y: 425
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4cf56613e94d11f419d4a6d6923d9813
+      internalID: 1248798974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s1_d6
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 425
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5a009dde2617cd1479238bd6456b9d2d
+      internalID: -1136946780
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s1_d7
+      rect:
+        serializedVersion: 2
+        x: 532
+        y: 425
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc4eccbce1215b24dbc4a56e67ee52b1
+      internalID: -1352143795
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s2_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 340
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b861c6e604e9ac84ca9135c1730edec2
+      internalID: -327859116
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s2_d1
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 340
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 548522f2ff225a34e89fa7e702b477da
+      internalID: 1748356968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s2_d2
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 340
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5352ffad8a673f14c819ff5729c0e6a3
+      internalID: 1439737383
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s2_d3
+      rect:
+        serializedVersion: 2
+        x: 228
+        y: 340
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4a5ae02785d35ca44b2929d751d2301c
+      internalID: -2052396771
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s2_d4
+      rect:
+        serializedVersion: 2
+        x: 304
+        y: 340
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 82e6d6610d3f2ea41804c43f33f57e99
+      internalID: -1550553194
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s2_d5
+      rect:
+        serializedVersion: 2
+        x: 380
+        y: 340
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d9ef4b1f7573c684687389508cdff8bf
+      internalID: 2052282712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s2_d6
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 340
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f4f1fbc309d60b5489ff3d6942721fac
+      internalID: 375991175
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s2_d7
+      rect:
+        serializedVersion: 2
+        x: 532
+        y: 340
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c9771a0f78ad0824c923815544de8f80
+      internalID: -1807535597
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s3_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 255
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 10043a10285c8844b8dd359a279216d2
+      internalID: 261455194
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s3_d1
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 255
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 561b8925326d7c147ba486f6309c11b8
+      internalID: 2106645194
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s3_d2
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 255
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a1a86932f1f20e947874d3ca40629162
+      internalID: 660226578
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s3_d3
+      rect:
+        serializedVersion: 2
+        x: 228
+        y: 255
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7bf4b99b82935fb428a27e9b26475e39
+      internalID: -313163997
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s3_d4
+      rect:
+        serializedVersion: 2
+        x: 304
+        y: 255
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2269ce739d7230848a03f6c20822bb26
+      internalID: -626812829
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s3_d5
+      rect:
+        serializedVersion: 2
+        x: 380
+        y: 255
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 369fe74113e929941bb6284edcd09295
+      internalID: -488900850
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s3_d6
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 255
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e17c757b682c874f879ee10e0a78e01
+      internalID: -199604058
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s3_d7
+      rect:
+        serializedVersion: 2
+        x: 532
+        y: 255
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d8dc572f7e23a5545880528826235bbe
+      internalID: 252475701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s4_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 170
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f636a8e54514ec2438a4be246a6283d2
+      internalID: -1952574770
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s4_d1
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 170
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c6568bca969c10942968bec212be3aaa
+      internalID: -637020026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s4_d2
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 170
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7e383c33d6556ac4885724183cca0f82
+      internalID: -1959321827
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s4_d3
+      rect:
+        serializedVersion: 2
+        x: 228
+        y: 170
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 14eaa9268b5af7a4da5ed38b9b9c7dc4
+      internalID: 638539669
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s4_d4
+      rect:
+        serializedVersion: 2
+        x: 304
+        y: 170
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: db59399deeb6b104e8e340f637ff2136
+      internalID: 164586290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s4_d5
+      rect:
+        serializedVersion: 2
+        x: 380
+        y: 170
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b41d7934b868f5040b7a8a08460b69af
+      internalID: -78056944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s4_d6
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 170
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fd8be62802801024c8714108328c2893
+      internalID: 745965372
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s4_d7
+      rect:
+        serializedVersion: 2
+        x: 532
+        y: 170
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 94041c95b0bc3c44cbac2aebf4d9ebb6
+      internalID: -998638691
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s5_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 85
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 739a7c55950998542b0bd34788fb5dbc
+      internalID: -1898586384
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s5_d1
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 85
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 35d58f58b19f7b64ca4ec7f4623fbbf9
+      internalID: 1713839606
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s5_d2
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 85
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc15db206e162b64593736523bc0689b
+      internalID: 1858845363
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s5_d3
+      rect:
+        serializedVersion: 2
+        x: 228
+        y: 85
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 81516e1aacbb7fb4e822ebf58c12e88b
+      internalID: 1496377404
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s5_d4
+      rect:
+        serializedVersion: 2
+        x: 304
+        y: 85
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7e37787ccffc8bc4db76e3258da9055d
+      internalID: 56288566
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s5_d5
+      rect:
+        serializedVersion: 2
+        x: 380
+        y: 85
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3d09894d886440e4b88b8b5d5041c1a6
+      internalID: 467821149
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s5_d6
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 85
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f5f96a07c6c52c24bbe8f38b8c9fee50
+      internalID: 1701248160
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s5_d7
+      rect:
+        serializedVersion: 2
+        x: 532
+        y: 85
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6385216e26c5b534697b58173c9eae42
+      internalID: -654474575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s6_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 39b1c16cd05ca2540b47899bbcde9292
+      internalID: -144127791
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s6_d1
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 0
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d43619afdd715ca43b05c20e98c09b72
+      internalID: -1247806814
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s6_d2
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 0
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 27d01ec0b2203424ab2a908f69011fc0
+      internalID: 91528061
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s6_d3
+      rect:
+        serializedVersion: 2
+        x: 228
+        y: 0
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1e82e0238f1c316409fb27a309f280de
+      internalID: 190482461
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s6_d4
+      rect:
+        serializedVersion: 2
+        x: 304
+        y: 0
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d287cd72a84de194981334b7093e1389
+      internalID: -77410298
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s6_d5
+      rect:
+        serializedVersion: 2
+        x: 380
+        y: 0
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a3559be8fdddd404e9e4996a5aa6018b
+      internalID: 224486990
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s6_d6
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 0
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 82dfd52b2fa219b4fa4fefe28f8cc94e
+      internalID: -1722434559
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_chestFreezerLarge_s6_d7
+      rect:
+        serializedVersion: 2
+        x: 532
+        y: 0
+        width: 76
+        height: 85
+      alignment: 9
+      pivot: {x: 0.5, y: 0.23529412}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a6448371acfbfca42aee80b80354d8a1
+      internalID: 2095307538
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 3ef9067724c38b34cac9956ba4169ed0
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Appliance_chestFreezerLarge_s0_d0: -2142311688
+      Appliance_chestFreezerLarge_s0_d1: 1341948404
+      Appliance_chestFreezerLarge_s0_d2: 1485836114
+      Appliance_chestFreezerLarge_s0_d3: 1421423826
+      Appliance_chestFreezerLarge_s0_d4: 162638334
+      Appliance_chestFreezerLarge_s0_d5: -180269884
+      Appliance_chestFreezerLarge_s0_d6: 1828365126
+      Appliance_chestFreezerLarge_s0_d7: -1067312428
+      Appliance_chestFreezerLarge_s1_d0: -757426989
+      Appliance_chestFreezerLarge_s1_d1: -640259466
+      Appliance_chestFreezerLarge_s1_d2: -605184290
+      Appliance_chestFreezerLarge_s1_d3: -955590681
+      Appliance_chestFreezerLarge_s1_d4: 1057755412
+      Appliance_chestFreezerLarge_s1_d5: 1248798974
+      Appliance_chestFreezerLarge_s1_d6: -1136946780
+      Appliance_chestFreezerLarge_s1_d7: -1352143795
+      Appliance_chestFreezerLarge_s2_d0: -327859116
+      Appliance_chestFreezerLarge_s2_d1: 1748356968
+      Appliance_chestFreezerLarge_s2_d2: 1439737383
+      Appliance_chestFreezerLarge_s2_d3: -2052396771
+      Appliance_chestFreezerLarge_s2_d4: -1550553194
+      Appliance_chestFreezerLarge_s2_d5: 2052282712
+      Appliance_chestFreezerLarge_s2_d6: 375991175
+      Appliance_chestFreezerLarge_s2_d7: -1807535597
+      Appliance_chestFreezerLarge_s3_d0: 261455194
+      Appliance_chestFreezerLarge_s3_d1: 2106645194
+      Appliance_chestFreezerLarge_s3_d2: 660226578
+      Appliance_chestFreezerLarge_s3_d3: -313163997
+      Appliance_chestFreezerLarge_s3_d4: -626812829
+      Appliance_chestFreezerLarge_s3_d5: -488900850
+      Appliance_chestFreezerLarge_s3_d6: -199604058
+      Appliance_chestFreezerLarge_s3_d7: 252475701
+      Appliance_chestFreezerLarge_s4_d0: -1952574770
+      Appliance_chestFreezerLarge_s4_d1: -637020026
+      Appliance_chestFreezerLarge_s4_d2: -1959321827
+      Appliance_chestFreezerLarge_s4_d3: 638539669
+      Appliance_chestFreezerLarge_s4_d4: 164586290
+      Appliance_chestFreezerLarge_s4_d5: -78056944
+      Appliance_chestFreezerLarge_s4_d6: 745965372
+      Appliance_chestFreezerLarge_s4_d7: -998638691
+      Appliance_chestFreezerLarge_s5_d0: -1898586384
+      Appliance_chestFreezerLarge_s5_d1: 1713839606
+      Appliance_chestFreezerLarge_s5_d2: 1858845363
+      Appliance_chestFreezerLarge_s5_d3: 1496377404
+      Appliance_chestFreezerLarge_s5_d4: 56288566
+      Appliance_chestFreezerLarge_s5_d5: 467821149
+      Appliance_chestFreezerLarge_s5_d6: 1701248160
+      Appliance_chestFreezerLarge_s5_d7: -654474575
+      Appliance_chestFreezerLarge_s6_d0: -144127791
+      Appliance_chestFreezerLarge_s6_d1: -1247806814
+      Appliance_chestFreezerLarge_s6_d2: 91528061
+      Appliance_chestFreezerLarge_s6_d3: 190482461
+      Appliance_chestFreezerLarge_s6_d4: -77410298
+      Appliance_chestFreezerLarge_s6_d5: 224486990
+      Appliance_chestFreezerLarge_s6_d6: -1722434559
+      Appliance_chestFreezerLarge_s6_d7: 2095307538
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

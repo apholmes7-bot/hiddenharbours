@@ -4,7 +4,12 @@ One file per **hull**. Authored by **art-director** (this folder is that role's 
 `agents/art-director.md`); consumed by the deck sidecar importer and the deck-boarding/mooring
 work (M2-37..39).
 
-**Switched hulls (`hull-walk@1`).** The recreation boats use one generated
+**Switched hulls (`hull-walk@1`).** The recreation boats, and since 2026-11-12 both stern trawlers
+(`sternTrawlerIsoRig.stern_trawler.walk.json`, the first of the working ships, and
+`sternTrawlerMk2IsoRig.stern_trawler_mk2.walk.json`), the side dragger
+(`sideDraggerIsoRig.side_dragger.walk.json`), the sport skiff
+(`sportSkiffIsoRig.sport_skiff_iso.walk.json`) and the dory
+(`doryIsoRig.dory_iso.walk.json`), use one generated
 `<rig stem>.<hull id>.walk.json` per hull. `HullWalkSidecarReader` reads it and
 `HullWalkSidecarImporter` creates its deck and, when authored, room Defs; the mesh bake reads the
 same hull through its global's `byId`. `LayoutSchema` and `NoHullReadsBothLayoutsTests` keep this
@@ -71,13 +76,13 @@ error). Never invent a section to fill a gap.
   (art-director charter rule 2). The importer enforces this: a mismatch is a loud refusal
   and that hull keeps the greybox rectangle — it never silently imports polygons cut from a
   different boat.
-  - ⚠️ **Eight of the eleven SHAs below are CRLF hashes** (cape, packet, lobster, sideDragger,
-    sportSkiff, both sternTrawlers, tanker) — they were derived from working copies with
+  - ⚠️ **Four of the six SHAs below are CRLF hashes** (cape, packet, lobster,
+    tanker) — they were derived from working copies with
     Windows line endings, and the repo stores the rigs with LF. The importer accepts a match
     on either convention and says so on every run, because a line ending cannot move a
     vertex; every cited line number and constant in those files still reads exactly as
     written. **art-director: please re-stamp those eight from the committed files** so the
-    check goes back to exact. dory / punt / console already hash exactly.
+    check goes back to exact. punt / console already hash exactly.
   - ⚠️ **That re-stamp is blocked on the IMPORTER, not on the art — measured 2026-08-14, and the
     ask above stands.** It is not a one-file edit: the SHA is recorded in **two** places. Each
     committed deck asset carries its own `DerivedFromRigSha256`
@@ -130,9 +135,8 @@ Every coordinate in these files is **computed from the rig's own math** (station
 stay known:
 
 - lobsterBoat & capeIslander foredeck `DROP = 0.05` (capeIslanderIsoRig.js:198 — verified,
-  previously flagged); sportSkiff foredeck `DROP = 0.07` (sportSkiffIsoRig.js:147) — **not**
-  0.05. The `DROP = 0.045` at sportSkiffIsoRig.js:222 is the bimini canvas skirt, a canvas
-  detail — ignore it. **The console skiff's `DROP = 0.07` trap is RETIRED** (2026-07-25):
+  previously flagged). The sport skiff's `DROP` traps left this folder with her sidecar: her
+  walk is generated from her rig now. **The console skiff's `DROP = 0.07` trap is RETIRED** (2026-07-25):
   her pass-2 rig has no `DROP` at all — the foredeck is flush at the sheer,
   `fz(u) = station(u).kz + station(u).dep − 0.012` (consoleIsoRig.js:272). Her bow cleat `z`
   moved 0.989 → 1.047 in the same pass.
@@ -141,19 +145,14 @@ stay known:
 - coastalPacket, sternTrawlerMk2 and tanker apply `flareExp` inside their deck-width
   functions; sternTrawler (mk1) and sideDragger do not.
 
-## Current set (11 single-hull rigs + the lobster generator's 18)
+## Current set (6 single-hull rigs + the lobster generator's 18)
 
 | hull | LOA | DECK | WASHBOARD | CLEATS |
 |---|---|---|---|---|
-| dory | 4.5 m | bilge floor (3d) | — open boat | stem-head ring bolt + port-quarter ring (modelled, 2026-07-25) |
 | punt | 5.2 m | bilge floor (3d) | — open boat | stem-head ring bolt + port-quarter ring (modelled, 2026-07-25) |
 | console | 7.0 m | cockpit sole | — open skiff | bow cleat |
-| sportSkiff | 7.0 m | cockpit sole | — open skiff | bow cleat |
 | capeIslander | 12.8 m | cockpit + whaleback foredeck (3d) | both sides, 0.42 m (full run to the foredeck; narrows past the house) | bow bitt + 2 stern |
 | lobsterBoat | 12.0 m | cockpit + foredeck (3d) | both sides, 0.44 m (full length) | bow samson + 2 stern |
-| sideDragger | 25 m | aft deck, house alleys, working deck, foc'sle (3d) | — bulwarks | samson + 2 bow + 2 quarter bollards |
-| sternTrawler | 38 m | ramp strips, trawl deck, house alleys, foc'sle (3d) | — bulwarks | samson + 2 bow + 2 quarter bollards |
-| sternTrawlerMk2 | 38 m | ramp strips, trawl deck, house alleys, foc'sle (3d) | — bulwarks | samson + 2 bow + 2 quarter bollards |
 | coastalPacket | 60 m | aft deck, house alleys, hold walkways, gaps, foc'sle (3d) | — merchant rails | 2 bow + 2 quarter bollards |
 | tanker | 110 m | poop, alleys, tank lanes, fore deck, catwalk, foc'sle (3d) | — bulwarks | centre bitt + 2 bow + 2 quarter + 2 stern bollards |
 
@@ -214,3 +213,48 @@ visible iron ring bolt at that point on **both** hulls, plus a second port-quart
 moves the tie-point itself (dory `station(1.0)` → `station(0.965)`, punt `station(1.0)` →
 `station(0.962)`). The original judgment text is kept verbatim in both sidecars' `_ruled`
 with the reversal appended — provenance, not deletion. **Owner: re-rule.**
+
+## The boarding ladders — `boatLadderRig.ladders.json` (2026-11-14)
+
+A third kind of sidecar: **where the shared ladder fitting hangs on each hull.** The rig is
+`docs/art/rigs/boatLadderRig.js` (`BoatLadder`): one fitting, two kinds (`rigid`, a stainless stern
+or side ladder for the working boats; `pilot`, a rope-and-rung pilot ladder for a ship's side). It
+is hung on a hull by this file and **never by editing that hull's rig**, so a ladder moves no hull
+digest and no baked hull mesh.
+
+**Generated, not authored** — `node tools/rig-recipes/boat-ladders.mjs` writes it, `--check` fails
+if it has drifted, `--plates <dir>` renders one before/after preview per hull class with no Unity,
+`--table` prints the hull table. Each entry authors only a hull, a `BoardingPoint` id, a kind and
+the outward direction of the skin there (`[0,-1]` transom, `[1,0]` / `[-1,0]` her side).
+Everything else is read:
+
+- `boardingPoint` from `BoardingPoints[id].DeckLocalMeters` in the hull's deck asset (the same
+  frame as this folder: +x starboard, +y bow).
+- `ladderAt`, the hull skin straight out from that point: the transom (`loft.station(0)`) or her
+  side at the sheer (`loft.halfAtZ`). The generator **refuses** a ladder further from the point
+  than the point's reach (`ReachMetres`, or `GameConfig.BoardingPointReachMetres`), so a swimmer at
+  the foot of the ladder is always inside the rule.
+- `zTop` from `loft.sheerZ`, `zWater` from `RestingDraftMeters` in her hull-mesh asset, and
+  `head` / `foot` / `grabTop` from `BoatLadder.anchors(spec)`.
+
+**So the ladder you see and the point the boarding rule tests are one number, stored once, in the
+Def.** Move the point and `--check` goes red until the file is regenerated.
+
+- `status` is derived. `matches_def`: the deck Def has this point. `proposed`: it does not, and
+  the entry's `proposedPoint` is this file's suggestion for the owner. The day the Def gains the
+  id, the next run flips the entry to `matches_def` and follows the Def's number.
+- `derivedFromRigSha256` is a map: the ladder rig plus every hull rig a side was read from, all
+  LF digests (CRLF folded), the `tools/rig-recipes` convention.
+- Three hull shapes are read: a plain hull global, a hull inside a family global
+  (`SportFisherIso2.CONVERTIBLE`), and one variant of a generator (`variant: {size, style, region}`
+  through `LobsterBoatVariantsIso.loftOf`).
+
+**Who is NOT in it, on purpose.** The bowrider, the express cruiser, the motor yacht 84 and the
+expedition yacht 120 already draw a swim ladder in their own rig (each exports `LADDER`) at the
+same place their Def point sits. The dory, punts, skiffs, zodiacs, jet ski, tender and go-fast are
+climb-anywhere under the rule. The two sloops have no deck Def, so the rule cannot hold a point
+for them yet.
+
+**Not in the game yet.** Nothing imports this file and the fitting has no baked mesh: that is one
+`HullPropFleet` entry per hull (builder `BoatLadder.faces(spec)`, pivot `BoatLadder.pivot(spec)`,
+no shim needed) and an in-editor bake, owed by tools-editor / art-pipeline.

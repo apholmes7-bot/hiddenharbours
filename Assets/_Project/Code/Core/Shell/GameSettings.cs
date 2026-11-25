@@ -26,6 +26,11 @@ namespace HiddenHarbours.Core
         public const string MusicKey      = "hh.audio.music";
         public const string FullscreenKey = "hh.display.fullscreen";
 
+        /// <summary>How the TASKS note stands: shown, chip or hidden (<see cref="TasksNoteMode"/>, stored as
+        /// its number; 2026-11-16). A preference about the screen, not a fact about the harbour, so it
+        /// lives here and not in the save. Read and written through <see cref="TasksNoteFold"/>.</summary>
+        public const string TasksNoteModeKey = "hh.hud.tasks_note";
+
         /// <summary>Has the player ever set a volume? If not, the director's authored defaults stand.</summary>
         public static bool HasStoredMix => PlayerPrefs.HasKey(MasterKey);
 
@@ -77,6 +82,23 @@ namespace HiddenHarbours.Core
                 PlayerPrefs.SetInt(FullscreenKey, value ? 1 : 0);
                 PlayerPrefs.Save();
             }
+        }
+
+        /// <summary>The stored TASKS note mode, or false (and shown) when the player has never changed it.
+        /// An unknown number reads as shown (<see cref="TasksNoteFold.Sanitize"/>).</summary>
+        public static bool TryReadTasksNoteMode(out TasksNoteMode mode)
+        {
+            mode = TasksNoteMode.Shown;
+            if (!PlayerPrefs.HasKey(TasksNoteModeKey)) return false;
+            mode = TasksNoteFold.Sanitize(PlayerPrefs.GetInt(TasksNoteModeKey, (int)TasksNoteMode.Shown));
+            return true;
+        }
+
+        /// <summary>Remember the TASKS note mode. Written only when the player changes it.</summary>
+        public static void StoreTasksNoteMode(TasksNoteMode mode)
+        {
+            PlayerPrefs.SetInt(TasksNoteModeKey, (int)mode);
+            PlayerPrefs.Save();
         }
 
         /// <summary>

@@ -1,0 +1,2 @@
+# Delivered source sums are byte contracts, including their line endings.
+*.js -text

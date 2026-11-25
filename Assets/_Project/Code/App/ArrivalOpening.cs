@@ -2,6 +2,7 @@ using UnityEngine;
 using HiddenHarbours.Core;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Player;
+using HiddenHarbours.World;
 
 namespace HiddenHarbours.App
 {
@@ -74,7 +75,7 @@ namespace HiddenHarbours.App
     /// that does not run: rule 10, leave a working build.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class ArrivalOpening : MonoBehaviour
+    public sealed partial class ArrivalOpening : MonoBehaviour
     {
         /// <summary>
         /// The save flag that says this player has already been brought in. Lives here rather than in
@@ -108,6 +109,8 @@ namespace HiddenHarbours.App
         [Tooltip("The skipper and his boat, as ONE asset — his hull, his paint and his own figure on the " +
                  "deck all come off it, exactly as the ambient fleets' do. Content, not code (rule 2).")]
         [SerializeField] private BoatOwnerDef _skipper;
+        [SerializeField] private ArrivalSeaDef _seaOpening;
+        [SerializeField] private RegionSceneLoader _loader;
 
         [Header("The route (authored by the region, on its own channel's line)")]
         [Tooltip("The run in, seaward FIRST. Pushed by the region builder off its dredged channel rather " +
@@ -127,6 +130,8 @@ namespace HiddenHarbours.App
                  "grounding is a flat per-hull depth, and its 3 m default against a −2.2 m spring low " +
                  "leaves 0.8 m under a hull that draws 1.4.")]
         [SerializeField] private float _channelBedElevation = -4f;
+        [SerializeField] private float _hullPictureDatum;
+        public void ConfigureHullPictureDatum(float value) => _hullPictureDatum = value;
 
         [Header("The skipper's hand on the helm")]
         [SerializeField] private ArrivalPilot.Settings _pilot = ArrivalPilot.Settings.Default;
@@ -328,6 +333,17 @@ namespace HiddenHarbours.App
         private bool _stepping;
         private float _stepElapsed;
         private Vector3 _stepFrom;
+        private IBoardingLadder _stepLadder;
+        private Vector3 _stepLadderSeat;
+        private Vector3 _stepRungsStart;
+        private float _stepGap;
+        private float _stepApproachSeconds;
+        private float _stepMountSeconds;
+        private float _stepClimbSeconds;
+        private float _stepOffSeconds;
+        private double _stepEndPhase;
+        private bool _stepMesh;
+        private CharacterClip _stepClipAsked;
         private CharacterClipPlayer _clipPlayer;
         private bool _clipResolved;
         private bool _clipPlaying;
@@ -340,7 +356,7 @@ namespace HiddenHarbours.App
         /// <see cref="GameServices.OpeningCinematicRunning"/>, which the mood grade reads so the intro
         /// can carry its own strength (rule 4 — through Core, never a scene name).
         /// </summary>
-        public bool IsRunning => RunningIn(_phase);
+        public bool IsRunning => _waitingForSea || RunningIn(_phase);
 
         /// <summary>The predicate itself, so the law can be asserted without standing a scene up:
         /// an opening is running in <see cref="Phase.Approaching"/>, <see cref="Phase.Docking"/> and
@@ -599,7 +615,12 @@ namespace HiddenHarbours.App
             WithdrawTheCabinDoor();
             StopTheStepClip();
             _stepping = false;
-            ReleaseThePlayer();
+            if (!_transferring && !_waitingForSea)
+            {
+                CloseCharacterCreator();
+                ReleaseThePlayer();
+                ReleaseTheHour();
+            }
 
             // ⚠ AND THE CABIN IS DELIBERATELY NOT CLOSED HERE. Root-toggling IS how a region hop works,
             // and BoatInterior's state survives OnDisable by design for exactly that reason — a cabin
@@ -644,8 +665,13 @@ namespace HiddenHarbours.App
                 return false;
             }
 
-            if (!Spawn()) return false;
+            if (_seaOpening != null && !_seaJourney) return BeginSeaHop();
+            return BeginLocalArrival();
+        }
 
+        private bool BeginLocalArrival()
+        {
+            if (!Spawn()) return false;
             SetPhase(Phase.Approaching);
             _dockingTimer = 0f;
             Debug.Log($"[ArrivalOpening] making the approach — {_route.Length} marks, " +
@@ -698,7 +724,8 @@ namespace HiddenHarbours.App
             // below turns the root from here on, which both presentation paths read off transform.up.
             var go = new GameObject($"ArrivalBoat_{_skipper.Id}");
             go.transform.SetParent(transform, worldPositionStays: false);
-            go.transform.position = new Vector3(_route[0].x, _route[0].y, 0f);
+            Vector2 spawn = _incoming != null ? _incoming.ArrivalPosition : _route[0];
+            go.transform.position = new Vector3(spawn.x, spawn.y, 0f);
             go.SetActive(false);                                  // configure BEFORE anything wakes
 
             var rb = go.AddComponent<Rigidbody2D>();
@@ -711,6 +738,8 @@ namespace HiddenHarbours.App
 
             _boat = go.AddComponent<BoatController>();
             _boat.SetHull(_skipper.Boat);
+            var pictureRide = _boat.GetComponent<HullTideRide>() ?? _boat.gameObject.AddComponent<HullTideRide>();
+            pictureRide.Configure(_hullPictureDatum);
 
             // 🔴 THE PASSENGER IS NOT AT THE HELM — and this hull now offers her none BY CONSTRUCTION.
             // She used to need a workaround here (a HelmControlRelay added disabled, pre-empting the one
@@ -751,6 +780,7 @@ namespace HiddenHarbours.App
             float inbound = _route.Length > 1
                 ? ArrivalPilot.CompassOf(_route[1] - _route[0])
                 : _berthHeadingDegrees;
+            if (_incoming != null) inbound = _incoming.Heading;
 
             // ⚠ SET HERE, not left to MooredBoat. It sets the same rotation when it draws her, but
             // it returns EARLY when the hull art has not baked — and where she points is not a
@@ -789,23 +819,31 @@ namespace HiddenHarbours.App
             var berth = BerthPilot.Berth.FromShorePoint(_berth, _berthHeadingDegrees, _stepAshore,
                                                         _skipper.Boat.LengthMeters);
             _helm = new HelmedBoat(_boat, _boatRoot);
-            _pilotage = new BerthingPilot(_route, berth, _pilot, _alongside);
+            _pilotage = new BerthingPilot(_incoming != null ? ContinuationRoute(_route, spawn) : _route,
+                                          berth, _pilot, _alongside);
 
             // ⭐ SHE IS ALREADY RUNNING WHEN THE GAME OPENS, and that is both true and necessary.
             // True: a boat bringing you in has been at sea for an hour, not sitting stopped on the
             // horizon waiting for a new game. Necessary: this hull takes twenty seconds to reach
             // 63% of her speed, so a standing start would open the game on a minute of a boat
             // slowly gathering way. She enters at the cruise the pilot is about to hold her at.
-            rb.linearVelocity = new Vector2(go.transform.up.x, go.transform.up.y)
-                                * _pilot.CruiseSpeedMetresPerSecond;
+            rb.linearVelocity = _incoming != null ? _incoming.Velocity : _seaLeg ? Vector2.zero
+                : new Vector2(go.transform.up.x, go.transform.up.y) * _pilot.CruiseSpeedMetresPerSecond;
+            if (_incoming != null) rb.angularVelocity = _incoming.AngularVelocity;
 
             // ⭐ AND THE GAME OPENS BELOW. Before the player is held, because HoldThePlayer seats and poses
             // her on the very first frame and one frame of a passenger standing on deck when the opening
             // says she is in the cabin is one frame too many — the same reasoning that put the seat and
             // the pose inside the hold rather than after it.
             GoBelowDecks();
+            RestorePassengerAcrossSeam();
 
             HoldThePlayer();
+            if (_incoming != null)
+            {
+                _playerWasSimulated = _incoming.PlayerWasSimulated;
+                _incoming = null;
+            }
             return true;
         }
 
@@ -825,12 +863,13 @@ namespace HiddenHarbours.App
         /// </summary>
         private void GoBelowDecks()
         {
-            if (!_startBelowDecks) return;
+            if (!_startBelowDecks && !_seaJourney) return;
 
             _cabin = ArrivalCabinWalk.TryOpen(_boat, _cabinWalkSpeed);
             if (_cabin == null) return;
 
-            if (!_cabin.GoBelow())
+            bool below = _incoming != null ? _incoming.Below : _startBelowDecks;
+            if (below && !_cabin.GoBelow())
             {
                 Debug.LogWarning("[ArrivalOpening] her cabin refused the entry, so the opening stays " +
                                  "topside. Nothing else about the arrival changes.");
@@ -838,7 +877,7 @@ namespace HiddenHarbours.App
                 return;
             }
 
-            _wasBelow = true;
+            _wasBelow = below;
 
             // ⭐ AND HIS AFT DOOR IS STANDING OPEN. The owner's 2026-08-28 door ruling paints exactly this
             // picture in its own words — "they might leave the door open when they are aboard and the
@@ -1241,6 +1280,14 @@ namespace HiddenHarbours.App
             if (_pilotage == null || _helm == null || !_helm.IsAlive) return;
             if (_phase != Phase.Approaching && _phase != Phase.Docking) return;
 
+            if (_seaLeg)
+            {
+                var command = ArrivalPilot.Command(_boatRoot.position, ArrivalPilot.HeadingOf(_boatRoot),
+                    _boat.Velocity, _seaOpening.ExitTarget, float.PositiveInfinity, _pilot);
+                _boat.SetControl(command.Throttle, command.Steer);
+                return;
+            }
+
             _pilotage.Step(_helm);
             FollowThePilotagePhase();
         }
@@ -1279,6 +1326,7 @@ namespace HiddenHarbours.App
             // the door and pressed them (playtest 2026-09-04). Below the arrival ran a walk and above it
             // ran none, and that asymmetry was the whole of "going outside locks them in place".
             Vector2 move = CabinInputSource.Read().Move;
+            if (MoveActionClaim.IsClaimed) move = Vector2.zero;
             if (IsBelowDecks) WalkTheCabin(move, Time.deltaTime);
             else              WalkTheDeck(move, Time.deltaTime);
 
@@ -1629,6 +1677,37 @@ namespace HiddenHarbours.App
             if (_passengerFigure != null) _passengerFigure.Release();
             _stepElapsed = 0f;
             _stepFrom = _player.position;
+            _stepLadder = null;
+            _stepClipAsked = CharacterClip.None;
+            var cfg = GameServices.LadderBoarding;
+            if (BoardingLadders.TryFindNearestNow(_stepAshore, cfg.LadderReachMetres, out IBoardingLadder ladder))
+            {
+                _stepLadder = ladder;
+                var config = GameServices.Config;
+                _stepMesh = config != null && config.MeshCharacter && config.MeshCharacterAshore
+                    && _player.GetComponent<DeckRiderMeshPresenter>() != null;
+                var env = GameServices.Environment;
+                float water = env != null ? env.WaterLevelAt(GameServices.Clock?.TotalSeconds ?? 0.0) : 0f;
+                var ride = _boatRoot != null ? _boatRoot.GetComponent<IHullTideRide>() : null;
+                float waterline = ride != null ? ride.WaterlineNow() : water;
+                float freeboard = _deckWalk != null && _deckWalk.IsSeated
+                    ? MooringLineMath.CleatHeightAboveWaterline(_deckWalk.HeightMetres,
+                        _skipper != null && _skipper.Boat != null ? _skipper.Boat.DraughtMeters : 0f)
+                    : DeckFreeboardMetres;
+                _stepGap = Mathf.Max(0f, ladder.TopElevationMeters - waterline - freeboard);
+                _stepEndPhase = LadderBoardingMath.PhaseForTravel(_stepGap, ladder.RungMetres, _stepMesh);
+                _stepClimbSeconds = (float)_stepEndPhase * ArrivalClimbLoopSeconds();
+                Vector2 seat = ladder.WorldPosition + Vector2.up * ladder.ClimbTopScreenOffset
+                    + LadderBoardingMath.ProjectedSeatOffset(
+                    ladder.FaceHeadingDegrees, ladder.StandoffMetres, IsoGround.CameraElevationDegrees);
+                _stepLadderSeat = new Vector3(seat.x, seat.y, _player.position.z);
+                _stepRungsStart = _stepLadderSeat - new Vector3(0f,
+                    LadderBoardingMath.ProjectHeight(_stepGap, IsoGround.CameraElevationDegrees), 0f);
+                _stepApproachSeconds = Vector3.Distance(_stepFrom, _stepRungsStart) / Mathf.Max(.1f, _deckWalkSpeed);
+                _stepMountSeconds = Mathf.Max(0f, cfg.TransitionSeconds);
+                _stepOffSeconds = Mathf.Max(_stepAshoreSeconds, LadderBoardingMath.StepSeconds(
+                    Vector2.Distance(_stepLadderSeat, _stepAshore), _deckWalkSpeed));
+            }
             return true;
         }
 
@@ -1648,18 +1727,60 @@ namespace HiddenHarbours.App
         {
             if (_player == null) { _stepping = false; StopTheStepClip(); HandOver(); return; }
 
-            float seconds = Mathf.Max(0.05f, _stepAshoreSeconds);
             _stepElapsed += Time.deltaTime;
-            float v = Mathf.Clamp01(_stepElapsed / seconds);
-
             var landing = new Vector3(_stepAshore.x, _stepAshore.y, _player.position.z);
-            Vector3 pos = Vector3.Lerp(_stepFrom, landing, Mathf.SmoothStep(0f, 1f, v));
-            pos.y += 4f * Mathf.Max(0f, _stepAshoreHopMetres) * v * (1f - v);
-            _player.position = pos;
-
-            PlayTheStepClip(ArrivalPilot.CompassOf(landing - _stepFrom), seconds);
-
-            if (v < 1f) return;
+            if (_stepLadder != null)
+            {
+                float heading = LadderBoardingMath.ClimberHeadingFor(_stepLadder.FaceHeadingDegrees);
+                if (_stepElapsed < _stepApproachSeconds)
+                {
+                    _player.position = Vector3.Lerp(_stepFrom, _stepRungsStart,
+                        _stepElapsed / _stepApproachSeconds);
+                    return;
+                }
+                float on = _stepElapsed - _stepApproachSeconds;
+                if (on < _stepMountSeconds)
+                {
+                    _player.position = _stepRungsStart;
+                    PlayArrivalMove(CharacterClip.Board, heading, _stepMountSeconds);
+                    return;
+                }
+                float climbing = on - _stepMountSeconds;
+                if (climbing < _stepClimbSeconds)
+                {
+                    double phase = LadderBoardingMath.PhaseAt(climbing, ArrivalClimbLoopSeconds());
+                    double posePhase = System.Math.Max(0.0, _stepEndPhase - phase);
+                    if (_stepMesh)
+                    {
+                        ResolveArrivalClip();
+                        int frames = _clipPlayer != null && _clipPlayer.ResolvedVisual() != null
+                            ? Mathf.Max(1, _clipPlayer.ResolvedVisual().ClipFrameCount(CharacterClip.LadderDown)) : 10;
+                        posePhase = System.Math.Floor(posePhase * frames + 1e-5) / frames;
+                        phase = _stepEndPhase - posePhase;
+                    }
+                    float travel = LadderBoardingMath.TravelForFigure(phase, _stepEndPhase,
+                        _stepGap, _stepLadder.RungMetres, true, _stepMesh);
+                    _player.position = _stepRungsStart + new Vector3(0f,
+                        LadderBoardingMath.ProjectHeight(travel, IsoGround.CameraElevationDegrees), 0f);
+                    PlayArrivalMove(CharacterClip.LadderDown, heading, 0f, posePhase);
+                    return;
+                }
+                float v = Mathf.Clamp01((climbing - _stepClimbSeconds) / Mathf.Max(.01f, _stepOffSeconds));
+                _player.position = Vector3.Lerp(_stepLadderSeat, landing, Mathf.SmoothStep(0f, 1f, v));
+                PlayTheStepClip(ArrivalPilot.CompassOf(landing - _stepLadderSeat), _stepOffSeconds);
+                if (v < 1f) return;
+            }
+            else
+            {
+                float seconds = Mathf.Max(.05f, _stepAshoreSeconds, LadderBoardingMath.StepSeconds(
+                    Vector3.Distance(_stepFrom, landing), _deckWalkSpeed, _stepAshoreHopMetres));
+                float v = Mathf.Clamp01(_stepElapsed / seconds);
+                Vector3 pos = Vector3.Lerp(_stepFrom, landing, Mathf.SmoothStep(0f, 1f, v));
+                pos.y += 4f * Mathf.Max(0f, _stepAshoreHopMetres) * v * (1f - v);
+                _player.position = pos;
+                PlayTheStepClip(ArrivalPilot.CompassOf(landing - _stepFrom), seconds);
+                if (v < 1f) return;
+            }
 
             _stepping = false;
             StopTheStepClip();
@@ -1671,20 +1792,34 @@ namespace HiddenHarbours.App
         /// <see cref="CharacterClipPlayer.Play"/> returns false and changes nothing, and the move is the
         /// arc either way.</summary>
         private void PlayTheStepClip(float headingDegrees, float seconds)
-        {
-            if (!_clipResolved)
-            {
-                _clipResolved = true;
-                _clipPlayer = _player != null
-                    ? _player.GetComponentInParent<CharacterClipPlayer>()
-                    : null;
-                if (_clipPlayer != null && _clipPlayer.Play(CharacterClip.BoardDown, headingDegrees,
-                                                            seconds, holdOnFinish: true))
-                    _clipPlaying = true;
-                return;
-            }
+            => PlayArrivalMove(CharacterClip.BoardDown, headingDegrees, seconds);
 
-            if (_clipPlaying && _clipPlayer != null) _clipPlayer.SetHeading(headingDegrees);
+        private static float ArrivalClimbLoopSeconds()
+            => GameServices.LadderBoarding.ClimbLoopSeconds > 1e-4f
+                ? GameServices.LadderBoarding.ClimbLoopSeconds : LadderBoardingMath.RigLoopSeconds;
+
+        private void ResolveArrivalClip()
+        {
+            if (_clipResolved) return;
+            _clipResolved = true;
+            _clipPlayer = _player != null ? _player.GetComponentInParent<CharacterClipPlayer>() : null;
+        }
+
+        private void PlayArrivalMove(CharacterClip clip, float heading, float seconds, double phase = 0.0)
+        {
+            ResolveArrivalClip();
+            if (_clipPlayer == null) return;
+            if (_stepClipAsked != clip)
+            {
+                _stepClipAsked = clip;
+                bool played = clip == CharacterClip.LadderDown
+                    ? _clipPlayer.PlayDriven(clip, heading)
+                    : _clipPlayer.Play(clip, heading, seconds, holdOnFinish: true);
+                _clipPlaying |= played;
+            }
+            _clipPlayer.SetHeading(heading);
+            if (clip == CharacterClip.LadderDown && _clipPlayer.IsDriven)
+                _clipPlayer.SeekFrame((float)phase * _clipPlayer.ResolvedVisual().ClipFrameCount(clip));
         }
 
         /// <summary>Hand the renderer back (idempotent) — the held last frame has to come off, or she
@@ -1692,6 +1827,7 @@ namespace HiddenHarbours.App
         private void StopTheStepClip()
         {
             _clipResolved = false;
+            _stepClipAsked = CharacterClip.None;
             if (!_clipPlaying) return;
             _clipPlaying = false;
             if (_clipPlayer != null) _clipPlayer.Stop();
@@ -1710,7 +1846,10 @@ namespace HiddenHarbours.App
         /// </summary>
         private void HandOver()
         {
+            // The close acknowledgement precedes releasing the hour or the captain's line.
+            if (HoldHandoverForCharacterCreator()) return;
             ReleaseThePlayer();
+            ReleaseTheHour();
 
             var save = GameServices.Save;
             if (save != null)

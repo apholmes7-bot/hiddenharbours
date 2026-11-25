@@ -153,7 +153,8 @@ namespace HiddenHarbours.Tools.RigBaking
                     HullLayoutJson.Text(e, "of", "_excluded");
                     HullLayoutJson.Text(e, "reason", "_excluded");
                 }
-                var washboards = HullLayoutJson.Array(root, "washboards");
+                var washboards = root.ContainsKey("washboards")
+                    ? HullLayoutJson.Array(root, "washboards") : new List<object>();
                 if (washboards.Count == 0 && !excluded.Any(e => (string)DeckSidecarJson.Member(e, "of") == "washboards"))
                     throw new FormatException("washboards: empty without _excluded entry");
                 foreach (object item in washboards)

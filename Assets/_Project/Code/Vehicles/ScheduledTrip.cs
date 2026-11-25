@@ -20,8 +20,8 @@ namespace HiddenHarbours.Vehicles
     /// <para><b>The seat is CLAIMED for the whole trip, not just the driving.</b> From the moment her
     /// driver sets off for the door to the moment he is back on his feet at the far end, the wheel is his
     /// (<see cref="DriveSeats"/>) — so the player standing at her door is not offered "Climb in" on a
-    /// truck that is about to pull away, and the switcher refuses the press if one gets through. She goes
-    /// back to being a truck anybody may drive the moment she is parked and empty.</para>
+    /// truck that is about to pull away, and the switcher refuses the press if one gets through. Her
+    /// door remains unavailable while this trip is enabled, including when parked and empty.</para>
     ///
     /// <para>⭐⭐ <b>A RUN THAT TOWS COUPLES UP IN FRONT OF YOU.</b> Give the timetable a
     /// <c>TowedBodyId</c> and wire the trailer the region placed, and the plan grows two beats: her

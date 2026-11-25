@@ -42,6 +42,56 @@ namespace HiddenHarbours.Core
             [Tooltip("The rig's carry stance ('buckets', 'tray', 'pot'), exactly as a skin clip's " +
                      "Carry field spells it.")]
             public string Carry;
+
+            [Tooltip("The mesh figure's socket the thing hangs from when it is in the LEFT hand " +
+                     "('carry_L' for a pail: the rig's own grip pin for the bail). Empty = the thing " +
+                     "is not hung from the mesh figure and keeps the carrier's fallback pose.")]
+            public string SocketLeft;
+
+            [Tooltip("The mesh figure's socket the thing hangs from when it is in the RIGHT hand " +
+                     "('carry_R' for a pail).")]
+            public string SocketRight;
+
+            [Tooltip("The bone the hand's depth is measured against to decide near side or far side " +
+                     "('pelvis'). A socket nearer the camera than this bone draws in front of the " +
+                     "figure; one farther away draws behind it.")]
+            public string BodyBone;
+
+            [Tooltip("How far (in the sprite's world units) the thing's GRIP sits above its sprite " +
+                     "pivot, before the object's own scale, so the grip lands on the socket. For the " +
+                     "steel pail: the bail lies 12 px above the baked base pivot at 32 px per unit, " +
+                     "0.375.")]
+            public float GripAbovePivotMeters;
+
+            [Tooltip("Within this many metres of the body bone's depth the socket counts as BESIDE " +
+                     "the body (facing straight toward or away from the camera), and the facing " +
+                     "decides: in front facing the camera, behind facing away. Keeps the order " +
+                     "from flickering as a hanging hand swings through the hip line.")]
+            [Min(0f)] public float DepthDeadbandMeters;
+
+            [Tooltip("The bucket rig's tier the thing is drawn as when the MESH figure carries it ('pail'): " +
+                     "its baked held mesh at the fill and catch it holds, hung by the bail (the mesh's grip) " +
+                     "from the socket above, so it sorts with his legs pixel by pixel. Empty = no mesh; the " +
+                     "sprite keeps it. A carriable that does not show its fill as baked bucket states (the " +
+                     "clam hod) keeps its sprite whatever this says.")]
+            public string MeshTier;
+
+            [Tooltip("How far the hung mesh swings back from the way his hand is moving, in degrees per metre " +
+                     "per second of the hand's speed against his body (read off the clip on either side of the " +
+                     "frame drawn, so it is the same every time the frame is drawn). 0 = it hangs plumb.")]
+            [Min(0f)] public float MeshSwingDegPerMetrePerSecond;
+
+            [Tooltip("The most the hung mesh swings off plumb, degrees, so a fast stride never throws it into " +
+                     "his leg.")]
+            [Range(0f, 45f)] public float MeshSwingMaxDeg;
+
+            /// <summary>The socket for one hand, or null when this row hangs nothing from the
+            /// figure. <see cref="CarryHandSide.None"/> reads as the right hand, the slots' default.</summary>
+            public string SocketFor(CarryHandSide hand)
+            {
+                string socket = hand == CarryHandSide.Left ? SocketLeft : SocketRight;
+                return string.IsNullOrEmpty(socket) ? null : socket;
+            }
         }
 
         [Header("Identity")]
@@ -61,6 +111,21 @@ namespace HiddenHarbours.Core
                 if (string.Equals(r.CarriableDefId, carriableDefId, StringComparison.Ordinal))
                     return string.IsNullOrEmpty(r.Carry) ? null : r.Carry;
             return null;
+        }
+
+        /// <summary>The whole row for a carriable kind. False when the kind has no row. Ordinal;
+        /// allocation-free.</summary>
+        public bool TryRow(string carriableDefId, out Row row)
+        {
+            row = default;
+            if (Rows == null || string.IsNullOrEmpty(carriableDefId)) return false;
+            foreach (Row r in Rows)
+            {
+                if (!string.Equals(r.CarriableDefId, carriableDefId, StringComparison.Ordinal)) continue;
+                row = r;
+                return true;
+            }
+            return false;
         }
 
         /// <summary>

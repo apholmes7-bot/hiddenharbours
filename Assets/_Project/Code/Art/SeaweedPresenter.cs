@@ -218,7 +218,7 @@ namespace HiddenHarbours.Art
             if (!AnyBedActive()) { _hasLastTime = false; return; }
 
             // Game-time delta (the BoatWaveMotion pattern): a paused clock freezes the sea and the weed.
-            double now = clock.TotalSeconds;
+            double now = clock.FlowSeconds;
             float dt = _hasLastTime ? Mathf.Max(0f, (float)(now - _lastTimeSeconds)) : 0f;
             _lastTimeSeconds = now;
             _hasLastTime = true;
@@ -248,14 +248,14 @@ namespace HiddenHarbours.Art
             if (slowTick)
             {
                 _tickTerrain = GameServices.TidalTerrain;
-                _tickWaterLevel = env.WaterLevelAt(now);
+                _tickWaterLevel = env.WaterLevelAt(WaveFieldAnimator.HourTimeSeconds);
                 if (SnagTargets.Version != _targetsSeenVersion) RebuildTargetBuffer();   // the fleet moved its gear
             }
 
             EnvironmentSample sample = env.Sample();
             WaveFieldSettings field = GameServices.WaveField;
             WaveFieldAnimatorSettings smoothing = GameServices.WaveFieldAnimator;
-            WaveTrains trains = _animator.Tick(dt, WaveFieldAnimator.GameTimeSeconds,
+            WaveTrains trains = _animator.Tick(dt, WaveFieldAnimator.HourTimeSeconds, WaveFieldAnimator.GameTimeSeconds,
                                                sample.WindVector, sample.SeaState01,
                                                in field, in smoothing);
 
@@ -383,8 +383,8 @@ namespace HiddenHarbours.Art
             _hasLastTime = false;
 
             bed.Seed = SeaweedMath.BedSeed(env.WorldSeed, bed.Def.Id);
-            double now = clock.TotalSeconds;
-            float waterLevel = env.WaterLevelAt(now);
+            double now = clock.FlowSeconds;
+            float waterLevel = env.WaterLevelAt(clock.TotalSeconds);
 
             for (int i = 0; i < bed.Pos.Length; i++)
             {
@@ -816,7 +816,7 @@ namespace HiddenHarbours.Art
 
         /// <summary>One <see cref="Update"/> worth of work at an explicit <paramref name="dt"/> (game
         /// seconds) with the slow tick forced on or off: the gate first, exactly as play does, then the
-        /// drive. The clock's <c>TotalSeconds</c> is still read for "now" — advance the test clock by the
+        /// drive. The clock's <c>FlowSeconds</c> is read for "now" — advance the test clock by the
         /// same dt before each call.</summary>
         internal void StepForTests(float dt, bool slowTick)
         {
@@ -824,7 +824,7 @@ namespace HiddenHarbours.Art
             var clock = GameServices.Clock;
             var env = GameServices.Environment;
             if (clock == null || env == null || !AnyBedActive()) return;
-            Drive(env, clock.TotalSeconds, dt, slowTick);
+            Drive(env, clock.FlowSeconds, dt, slowTick);
         }
 
         /// <summary>The live beds, read-only, for a fixture asserting on positions and states.</summary>

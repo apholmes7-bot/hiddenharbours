@@ -1,3 +1,4 @@
+using HiddenHarbours.Tests.Support;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -95,8 +96,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
         {
             using var stage=new DeckStage();HullSunShadowRenderTests.SetSun(17);
             for(int i=0;i<32;i++)stage.Caster.Tick();
-            long before=GC.GetAllocatedBytesForCurrentThread();for(int i=0;i<256;i++)stage.Caster.Tick();
-            Assert.That(GC.GetAllocatedBytesForCurrentThread()-before,Is.Zero);
+            using var allocation=new ManagedAllocationProbe();allocation.Begin();for(int i=0;i<256;i++)stage.Caster.Tick();
+            Assert.That(allocation.End(),Is.Zero);
         }
         [Test] public void Disable_ReleasesOwnedResources()
         {

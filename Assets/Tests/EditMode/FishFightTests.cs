@@ -18,6 +18,33 @@ namespace HiddenHarbours.Tests.EditMode
             return new FishFight(in tuning, new System.Random(seed));
         }
 
+        [TestCase(FishCategory.InshoreGroundfish)]
+        [TestCase(FishCategory.Shellfish)]
+        public void NullRng_IsRejectedEvenWithoutSurges(FishCategory category)
+        {
+            var tuning = FishFightTuning.For(category, 3f, 1f, 8f);
+            var error = Assert.Throws<System.ArgumentNullException>(
+                () => new FishFight(tuning, null));
+            Assert.AreEqual("rng", error.ParamName);
+        }
+
+        [Test]
+        public void SameSeed_SameInputs_ReplaysSurgesAndMetersBitForBit()
+        {
+            var a = MakeFight(seed: 1234);
+            var b = MakeFight(seed: 1234);
+            for (int i = 0; i < 3000; i++)
+            {
+                bool reeling = i % 5 == 0;
+                a.Tick(0.02f, reeling);
+                b.Tick(0.02f, reeling);
+                Assert.AreEqual(a.IsSurging, b.IsSurging);
+                Assert.AreEqual(a.Tension01, b.Tension01);
+                Assert.AreEqual(a.Landing01, b.Landing01);
+                Assert.AreEqual(a.Result, b.Result);
+            }
+        }
+
         [Test]
         public void Holding_RaisesTension()
         {

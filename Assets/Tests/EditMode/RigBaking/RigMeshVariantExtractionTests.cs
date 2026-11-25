@@ -115,7 +115,12 @@ namespace HiddenHarbours.Tests.RigBaking
             var report = new StringBuilder();
             // Added after generators: one hull per rig through the rig's published scope.
             var scopedSingles = new Dictionary<string, string>
-                { ["goFast"] = "go_fast", ["bowrider"] = "bowrider", ["expressCruiser"] = "express_cruiser" };
+                { ["goFast"] = "go_fast", ["bowrider"] = "bowrider", ["expressCruiser"] = "express_cruiser",
+                  ["expeditionYacht120"] = "expedition_yacht_120", ["yachtTender"] = "yacht_tender",
+                  ["motorYacht84"] = "motor_yacht_84", ["jetSki"] = "jet_ski",
+                  ["sternTrawler"] = "stern_trawler", ["sternTrawlerMk2"] = "stern_trawler_mk2",
+                  ["sideDragger"] = "side_dragger", ["sportSkiff"] = "sport_skiff_iso",
+                  ["dory"] = "dory_iso" };
             foreach (FleetHull hull in HullMeshFleet.OneHullPerRig)
             {
                 if (scopedSingles.TryGetValue(hull.Key, out string id))
@@ -215,9 +220,11 @@ namespace HiddenHarbours.Tests.RigBaking
         [Test]
         public void AStaticHull_RecordsNoVariantProvenance()
         {
-            FleetHull dory = HullMeshFleet.Get("dory");
+            // The punt, since the dory moved to the hull layout and extracts through her published
+            // scope. The punt still takes the static F array.
+            FleetHull punt = HullMeshFleet.Get("punt");
             using IRigScriptHost host = RigScriptHostFactory.Create();
-            var data = RigMeshExtractor.ExtractFrom(host, dory.ScriptPath, dory.GlobalName);
+            var data = RigMeshExtractor.ExtractFrom(host, punt.ScriptPath, punt.GlobalName);
 
             Assert.IsEmpty(data.SourceFaceExpression,
                 "A static-F hull must record an empty face expression. HullMeshDef.SourceFaceBuilder " +

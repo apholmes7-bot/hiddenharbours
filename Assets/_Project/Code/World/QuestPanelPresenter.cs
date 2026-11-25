@@ -6,15 +6,24 @@ using HiddenHarbours.Core;
 namespace HiddenHarbours.World
 {
     /// <summary>
-    /// <b>The current quest, as a leaf off her notebook, pinned lower-right</b> — the owner's 2026-08-22
+    /// <b>The current quest, as a leaf off his notebook, pinned lower-right</b> — the owner's 2026-08-22
     /// diegetic ruling.
     ///
     /// <para>What it replaced: a bottom-centre banner of plain white outlined text
     /// (<see cref="OnboardingDirector"/>'s old hint). The words are unchanged and the source is
     /// unchanged — the director still decides which beat the player is on, and this only draws it. What
     /// changed is the voice: the same sentence in the notebook's stock, ink and face reads as something
-    /// she wrote down, and a game whose main UI is a book (the 2026-08-20 ruling) should not also be
+    /// he wrote down, and a game whose main UI is a book (the 2026-08-20 ruling) should not also be
     /// shouting at the player in a system font.</para>
+    ///
+    /// <para><b>It folds, and it hides</b> (owner asks 2026-11-16: "a way to minimize hide the current
+    /// tasks ui", then "hide it entirely"). Three modes (<see cref="TasksNoteMode"/>, Core's
+    /// <see cref="TasksNoteFold"/>): shown; a chip in the same corner reading "TASKS 1"; or hidden, with
+    /// nothing drawn at all. T or the pad's west button cycles them; a click on the head folds to the
+    /// chip and a click on the chip opens it; the settings sheet sets any of the three. As a chip, a new or
+    /// finished task flashes it gold for a moment (<see cref="QuestChipSignal"/>) and never opens the note
+    /// by itself. Hidden, a task change is silent: no chip, no flash, no box stated, and the Notebook's
+    /// TASKS page is where it is read. The mode is remembered as a setting, not in the save.</para>
     ///
     /// <para><b>The corner is chosen, not merely free.</b> Bottom-centre belongs to the nav cluster and
     /// the helm dash; the note must never be the thing sitting on the compass. Lower-right is clear of
@@ -51,11 +60,34 @@ namespace HiddenHarbours.World
         // rebuilds it — the note's size does not depend on where it stands.
         private HelmFootprintArea _placedFor;
 
+        // The mode, as last DRAWN (the live one is TasksNoteFold.Mode; a difference is a rebuild).
+        private TasksNoteMode _drawnMode;
+        private bool _drawing;
+        private readonly QuestChipSignal _signal = new QuestChipSignal();
+        private Text _chipLabel;
+        private Image _chipMark;
+        private bool _chipLit;
+
         /// <summary>The line currently on the note, or null when nothing is showing.</summary>
         public string Text => _text;
 
-        /// <summary>True when there is a note on screen. The readable half of "did the banner go".</summary>
+        /// <summary>True when there is a current task (open note or folded chip).</summary>
         public bool IsShowing => !string.IsNullOrEmpty(_text);
+
+        /// <summary>The current tasks the chip counts. The note carries one step at a time.</summary>
+        public int TaskCount => IsShowing ? 1 : 0;
+
+        /// <summary>True when the folded chip is on screen rather than the open note.</summary>
+        public bool IsChipShowing => _drawing && _drawnMode == TasksNoteMode.Chip;
+
+        /// <summary>True when the open note is on screen.</summary>
+        public bool IsNoteShowing => _drawing && _drawnMode == TasksNoteMode.Shown;
+
+        /// <summary>True when anything at all is drawn (note or chip). False while hidden.</summary>
+        public bool IsDrawing => _drawing;
+
+        /// <summary>The chip's flash, readable by a test or a proof.</summary>
+        public QuestChipSignal Signal => _signal;
 
         /// <summary>The size the note was last laid out at — worth reading in a test or a proof.</summary>
         public QuestPanelFit Fit { get; private set; }
@@ -68,6 +100,7 @@ namespace HiddenHarbours.World
         {
             string next = string.IsNullOrEmpty(text) ? null : text;
             if (next == _text) return;
+            if (QuestChipSignal.Calls(TasksNoteFold.Mode, _text, next)) _signal.Start(SignalSeconds);
             _text = next;
             Rebuild();
         }
@@ -75,12 +108,40 @@ namespace HiddenHarbours.World
         /// <summary>Take the note down.</summary>
         public void Hide() => Show(null);
 
+        /// <summary>Re-read the mode and redraw if it changed — what LateUpdate does each frame, callable
+        /// from a test or a proof without waiting for a frame.</summary>
+        public void SyncFold()
+        {
+            TasksNoteMode mode = TasksNoteFold.Mode;
+            if (mode == _drawnMode) return;
+            // Opened, the note itself says what changed; hidden, nothing flashes. Only the chip flashes.
+            if (mode != TasksNoteMode.Chip) _signal.Stop();
+            Rebuild();
+        }
+
+        private static float SignalSeconds => GameServices.Config != null
+            ? GameServices.Config.TasksChipSignalSeconds : GameConfig.DefaultTasksChipSignalSeconds;
+
+        private static float BlinkSeconds => GameServices.Config != null
+            ? GameServices.Config.TasksChipBlinkSeconds : GameConfig.DefaultTasksChipBlinkSeconds;
+
         private void LateUpdate()
         {
+            // The mode first: one compare a frame, a rebuild only on the press.
+            if (TasksNoteFold.Mode != _drawnMode) { SyncFold(); return; }
+
+            // The chip's flash: a tint each frame it is lit or unlit, set only when that flips.
+            if (_signal.Active)
+            {
+                _signal.Tick(Time.unscaledDeltaTime);
+                if (!_signal.Active && !IsShowing) { Rebuild(); return; }   // the last task done: chip goes
+                TintChip(false);
+            }
+
             // A window resize re-fits the note. Read here rather than off a resize callback because
             // the screen (HudScreen: the player's own, unless a plate hands it another) is the only
             // honest source and this is two int compares.
-            if (!IsShowing) return;
+            if (!_drawing) return;
             if (HudScreen.Width == _builtScreenW && HudScreen.Height == _builtScreenH)
             {
                 // What the helm covers is read off the Core seam, never the helm's classes (rule 4).
@@ -96,9 +157,42 @@ namespace HiddenHarbours.World
         {
             HelmFootprintArea covered = HelmFootprint.Current;
             QuestPanelFit fit = Fit;
+            _placedFor = covered;
+
+            if (_drawnMode == TasksNoteMode.Chip)
+            {
+                // The chip: the note's own corner, the note's own scale. It states its box like the note
+                // does, so the interaction prompt keeps off it too, and it is what a click opens.
+                _noteRect.anchoredPosition = QuestPanelLayout.ChipAnchoredPosition(fit.Scale, in covered,
+                                                                                   _builtScreenW, _builtScreenH);
+                Rect chip = QuestPanelLayout.ChipScreenRect(fit.Scale, in covered, _builtScreenW, _builtScreenH);
+                QuestNoteFootprint.Publish(chip);
+                TasksNoteFold.SetClickTarget(chip);
+                return;
+            }
+
             _noteRect.anchoredPosition = QuestPanelLayout.AnchoredPosition(in fit, in covered,
                                                                            _builtScreenW, _builtScreenH);
-            _placedFor = covered;
+
+            // Say where the note stands (Core seam), so the interaction prompt keeps off it without
+            // UI and World knowing each other. Only reached on a change; a re-statement is dropped.
+            QuestNoteFootprint.Publish(QuestPanelLayout.NoteScreenRect(in fit, in covered,
+                                                                       _builtScreenW, _builtScreenH));
+            // ...and where a click folds it: its head, never the step's words.
+            TasksNoteFold.SetClickTarget(QuestPanelLayout.HeadScreenRect(in fit, in covered,
+                                                                         _builtScreenW, _builtScreenH));
+        }
+
+        private void OnEnable()
+        {
+            if (_drawing && _noteRect != null) Place();
+        }
+
+        // The canvas hangs off this object, so a disabled or destroyed presenter draws no note.
+        private void OnDisable()
+        {
+            QuestNoteFootprint.Clear();
+            TasksNoteFold.SetClickTarget(default);
         }
 
         private void OnDestroy()
@@ -110,15 +204,26 @@ namespace HiddenHarbours.World
 
         private void Rebuild()
         {
-            if (!IsShowing)
+            // Hidden draws nothing: no chip, no flash, no footprint, nothing to click.
+            _drawnMode = TasksNoteFold.Mode;
+            bool chip = _drawnMode == TasksNoteMode.Chip && (IsShowing || _signal.Active);
+            bool note = _drawnMode == TasksNoteMode.Shown && IsShowing;
+            _chipLabel = null;
+            _chipMark = null;
+
+            if (!chip && !note)
             {
+                _drawing = false;
                 if (_canvas != null) _canvas.gameObject.SetActive(false);
+                QuestNoteFootprint.Clear();
+                TasksNoteFold.SetClickTarget(default);
                 return;
             }
 
             EnsureArt();
             EnsureCanvas();
             _canvas.gameObject.SetActive(true);
+            _drawing = true;
 
             List<string> rows = QuestPanelLayout.Rows(_text);
             QuestPanelFit fit = QuestPanelLayout.Fit(rows.Count, HudScreen.Width, HudScreen.Height);
@@ -127,14 +232,22 @@ namespace HiddenHarbours.World
             _builtScreenW = HudScreen.Width;
             _builtScreenH = HudScreen.Height;
 
-            ReportOverflow(fit);
             ClearNote();
+            _noteRect.localScale = Vector3.one * fit.Scale;
+
+            if (chip)
+            {
+                BuildChip();
+                Place();
+                return;
+            }
+
+            ReportOverflow(fit);
 
             _noteRect.sizeDelta = new Vector2(fit.WidthPx, fit.HeightPx);
-            _noteRect.localScale = Vector3.one * fit.Scale;
             Place();
 
-            // The leaf itself, then its printed furniture, then her hand on top of it.
+            // The leaf itself, then its printed furniture, then his hand on top of it.
             AddPiece(_noteRect, "Leaf", _stock, 0, 0, fit.WidthPx, fit.HeightPx, NotebookInk.Paper);
 
             int textX = NotebookKit.PadL + NotebookKit.CursorLane;
@@ -143,6 +256,10 @@ namespace HiddenHarbours.World
             // The head letters which page this came off — the same stub the book's fore-edge shows, so
             // the note reads as torn from TASKS rather than as a second, separate thing.
             AddText(_noteRect, NotebookContent.LabelQuests, textX, 2, textW, NotebookInk.InkFaint);
+
+            // The fold mark at the head's far end: the head is what a click folds, and this says so.
+            AddText(_noteRect, WorldStrings.TasksFoldMark, textX + textW - NotebookKit.CellWidth, 2,
+                    NotebookKit.CellWidth, NotebookInk.InkFaint);
 
             for (int r = 0; r < fit.Lines; r++)
             {
@@ -165,6 +282,52 @@ namespace HiddenHarbours.World
 
                 AddText(_noteRect, rows[r], textX, rowY, textW, NotebookInk.Ink);
             }
+        }
+
+        /// <summary>
+        /// The note folded up to its head: the same leaf, the same TASKS lettering, with the count of
+        /// current tasks after it, the current-step arrow in its lane, and the open mark at the far end.
+        /// </summary>
+        private void BuildChip()
+        {
+            int w = QuestPanelLayout.ChipWidthPx;
+            int h = QuestPanelLayout.ChipHeightPx;
+            _noteRect.sizeDelta = new Vector2(w, h);
+
+            AddPiece(_noteRect, "Leaf", _stock, 0, 0, w, h, NotebookInk.Paper);
+
+            int textX = NotebookKit.PadL + NotebookKit.CursorLane;
+            int count = Mathf.Min(TaskCount, MaxChipCount);
+
+            // Built on a rebuild only (a fold, a task change), never per frame.
+            _chipMark = AddPiece(_noteRect, "Current", _currentMark, NotebookKit.PadL + 2, 2, 8, 8,
+                                 NotebookInk.Gold).GetComponent<Image>();
+            _chipLabel = AddText(_noteRect, NotebookContent.LabelQuests + " " + count, textX, 2,
+                                 NotebookKit.CellWidth * (QuestPanelLayout.ChipCols - 2), NotebookInk.Ink);
+            AddText(_noteRect, WorldStrings.TasksUnfoldMark,
+                    textX + NotebookKit.CellWidth * (QuestPanelLayout.ChipCols - 1), 2, NotebookKit.CellWidth,
+                    NotebookInk.InkFaint);
+
+            TintChip(true);
+        }
+
+        /// <summary>The count is one digit on the chip (<see cref="QuestPanelLayout.ChipCols"/>).</summary>
+        private const int MaxChipCount = 9;
+
+        /// <summary>
+        /// The flash: while the signal runs, the TASKS lettering goes gold and the arrow blinks with it,
+        /// on and off; after it, plain ink. Touches the graphics only when lit/unlit flips, so a quiet
+        /// frame costs a compare.
+        /// </summary>
+        private void TintChip(bool force)
+        {
+            if (_chipLabel == null) return;
+            bool lit = _signal.Active && QuestPanelLayout.SignalLit(_signal.Elapsed, BlinkSeconds);
+            bool markOn = !_signal.Active || lit;
+            if (!force && lit == _chipLit && (_chipMark == null || _chipMark.enabled == markOn)) return;
+            _chipLit = lit;
+            _chipLabel.color = lit ? NotebookInk.Gold : NotebookInk.Ink;
+            if (_chipMark != null) _chipMark.enabled = markOn;
         }
 
         /// <summary>
@@ -260,9 +423,9 @@ namespace HiddenHarbours.World
             return rect;
         }
 
-        private void AddText(RectTransform parent, string content, int x, int y, int w, Color ink)
+        private Text AddText(RectTransform parent, string content, int x, int y, int w, Color ink)
         {
-            if (string.IsNullOrEmpty(content)) return;
+            if (string.IsNullOrEmpty(content)) return null;
 
             var go = new GameObject("Text", typeof(RectTransform), typeof(Text));
             var rect = go.GetComponent<RectTransform>();
@@ -285,6 +448,7 @@ namespace HiddenHarbours.World
             // Only meaningful on the FALLBACK — a bitmap font ignores fontSize entirely. The kit's face
             // sets at its baked pixel size and the whole note is scaled by Fit.Scale instead.
             text.fontSize = NotebookKit.GlyphHeight;
+            return text;
         }
 
         private static Font FallbackFont()

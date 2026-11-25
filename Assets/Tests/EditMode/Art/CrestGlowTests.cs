@@ -26,6 +26,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// </summary>
     public class CrestGlowTests
     {
+        // The old 06:00-20:00 sun put 17:30 and 19:30 at these daylight fractions.
+        const float FirstLowSunPhase = 23f / 28f, LastLowSunPhase = 27f / 28f;
+        static float LowHour(DayNightProfile profile, float phase)
+            => Mathf.Lerp(profile.SunriseHour, profile.SunsetHour, phase);
         private const string ShaderPath = "Assets/_Project/Art/Shaders/HiddenHarboursWater.shader";
         private const string FogAnchorPath = "Assets/_Project/Art/Materials/WaterPresets/Water_FoggySmother.mat";
         private const string Dial = "_CrestGlowStrength";
@@ -250,12 +254,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 }
         }
 
-        [TestCase("Faint", 19.5f, 0.342f)]
-        [TestCase("Readable", 17.5f, 0.444f)]
-        [TestCase("Readable", 19.5f, 0.342f)]
-        [TestCase("Strong", 17.5f, 0.444f)]
-        [TestCase("Strong", 19.5f, 0.342f)]
-        public void ReviewArm_LightsSomeCrests_AndNoTrough(string name, float hour, float seaState)
+        [TestCase("Faint", LastLowSunPhase, 0.342f)]
+        [TestCase("Readable", FirstLowSunPhase, 0.444f)]
+        [TestCase("Readable", LastLowSunPhase, 0.342f)]
+        [TestCase("Strong", FirstLowSunPhase, 0.444f)]
+        [TestCase("Strong", LastLowSunPhase, 0.342f)]
+        public void ReviewArm_LightsSomeCrests_AndNoTrough(string name, float phase, float seaState)
         {
             CrestGlowDef arm = ReviewArm(name);
             var config = AssetDatabase.LoadAssetAtPath<GameConfig>("Assets/_Project/Data/Config/GameConfig.asset");
@@ -265,6 +269,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Vector2 wind = new Vector2(6f, -5.3f).normalized * WindForSeaState(seaState);
             WaveTrains trains = WaveMath.TrainsFrom(wind, seaState, config.WaveField);
             PackedWaveField packed = WaveFieldBridge.Pack(trains);
+            float hour = LowHour(profile, phase);
             float e = DayNightMath.SunElevation(hour, profile.SunriseHour, profile.SunsetHour);
             int lit = 0, troughs = 0, cells = 0;
             float peak = 0f;
@@ -293,7 +298,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
-        public void ReviewArms_AreValidUniqueData_AndBothWaterTypesShipStrong()
+        public void ReviewArms_AreValidUniqueData_AndThreeWaterTypesShipStrong()
         {
             var ids = new HashSet<string>();
             foreach (string name in new[] { "Faint", "Readable", "Strong" })
@@ -302,13 +307,13 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Assert.IsTrue(arm.IsValid(), name);
                 Assert.IsTrue(ids.Add(arm.Id), "each review arm needs its own stable id");
             }
-            string[] types = { "NineMileCreek", "StPetersOpenAtlantic" };
+            string[] types = { "NineMileCreek", "StPetersOpenAtlantic", "EastWater" };
             foreach (string name in types)
             {
                 var type = AssetDatabase.LoadAssetAtPath<WaterTypeDef>(
                     $"Assets/_Project/Data/Water/Types/WaterType_{name}.asset");
                 Assert.IsNotNull(type, name);
-                Assert.AreSame(ReviewArm("Strong"), type.CrestGlow, "both typed regions ship Strong");
+                Assert.AreSame(ReviewArm("Strong"), type.CrestGlow, "all three typed regions ship Strong");
             }
         }
 
@@ -384,7 +389,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     { -0.6324d, 0.7746d, 0.1939d, 0.05644d, 2.2011d },
                 }
             };
-            float[] hours = { 17.5f, 19.5f };
+            var profile = AssetDatabase.LoadAssetAtPath<DayNightProfile>("Assets/_Project/Resources/DayNightProfile.asset");
+            float[] hours = { LowHour(profile, FirstLowSunPhase), LowHour(profile, LastLowSunPhase) };
             double[] envelopes = { 0.40997d, 0.40002d };
             int[] expectedLit = { 3095, 1003 };
             const int CellsPerMetre = 24, WidthCells = 384, HeightCells = 216;
@@ -393,7 +399,6 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // of the rounded-input Python table; this is not a GPU-visibility tolerance.
             const int RoundingCells = 4;
             CrestGlowDef arm = ReviewArm("Strong");
-            var profile = AssetDatabase.LoadAssetAtPath<DayNightProfile>("Assets/_Project/Resources/DayNightProfile.asset");
             for (int hour = 0; hour < hours.Length; hour++)
             {
                 int lit = 0;
@@ -421,6 +426,40 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     $"{hours[hour]}: rounded printed-train reference");
                 TestContext.WriteLine($"Real sea {hours[hour]}: {lit}/{WidthCells * HeightCells} lit cells");
             }
+        }
+
+        [TestCase("NineMileCreek", "NineMileCreek")]
+        [TestCase("StPeters", "StPetersOpenAtlantic")]
+        [TestCase("EastWater", "EastWater")]
+        public void TypedWaterScenes_NameTheirOwnDefinitions(string scene, string typeName)
+        {
+            string typePath = $"Assets/_Project/Data/Water/Types/WaterType_{typeName}.asset";
+            var type = AssetDatabase.LoadAssetAtPath<WaterTypeDef>(typePath);
+            Assert.IsNotNull(type, typePath);
+            string guid = AssetDatabase.AssetPathToGUID(typePath);
+            Assert.IsNotEmpty(guid);
+            string reference = $"_waterType: {{fileID: 11400000, guid: {guid}, type: 2}}";
+            string yaml = File.ReadAllText($"Assets/_Project/Scenes/{scene}.unity");
+            Assert.AreEqual(1, Regex.Matches(yaml, Regex.Escape(reference)).Count,
+                "the committed scene must name its region's independent water definition");
+        }
+
+        [Test]
+        public void EastWater_StartsWithAtlanticValues_InItsOwnDefinition()
+        {
+            var east = AssetDatabase.LoadAssetAtPath<WaterTypeDef>(
+                "Assets/_Project/Data/Water/Types/WaterType_EastWater.asset");
+            var atlantic = AssetDatabase.LoadAssetAtPath<WaterTypeDef>(
+                "Assets/_Project/Data/Water/Types/WaterType_StPetersOpenAtlantic.asset");
+            Assert.IsNotNull(east);
+            Assert.IsNotNull(atlantic);
+            Assert.AreNotSame(atlantic, east, "the opening sea must remain independently tunable");
+            Assert.AreEqual("water.east_water", east.Id);
+            Assert.IsTrue(east.IsValid());
+            foreach (FieldInfo field in typeof(WaterTypeValues).GetFields(BindingFlags.Public | BindingFlags.Instance))
+                Assert.AreEqual(field.GetValue(atlantic.Water), field.GetValue(east.Water), field.Name);
+            Assert.AreSame(atlantic.CrestGlow, east.CrestGlow, "no crest-light step at the region hop");
+            Assert.AreSame(ReviewArm("Strong"), east.CrestGlow);
         }
 
         private static CrestGlowDef ReviewArm(string name)

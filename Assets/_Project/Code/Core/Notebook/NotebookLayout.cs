@@ -50,14 +50,24 @@ namespace HiddenHarbours.Core
         /// the first line, and the continuation is indented under it rather than re-boxed.</summary>
         public readonly bool Continuation;
 
-        public NotebookRow(string text, bool wide, bool hasBox, NotebookStepState state, bool continuation)
+        /// <summary>The content id whose picture sits beside this line (a gear id on the Gear page), or
+        /// empty for a plain line. Set on EVERY line of a pictured block, so all of them are indented past
+        /// the picture; the picture itself is drawn once, beside the first (non-continuation) line.</summary>
+        public readonly string IconId;
+
+        public NotebookRow(string text, bool wide, bool hasBox, NotebookStepState state, bool continuation,
+                           string iconId = null)
         {
             Text = text ?? "";
             Wide = wide;
             HasBox = hasBox;
             State = state;
             Continuation = continuation;
+            IconId = iconId ?? "";
         }
+
+        /// <summary>True when this line carries a picture lane (see <see cref="IconId"/>).</summary>
+        public bool HasIcon => !string.IsNullOrEmpty(IconId);
     }
 
     /// <summary>
@@ -282,6 +292,80 @@ namespace HiddenHarbours.Core
             return lines;
         }
 
+        /// <summary>The cut a line takes when it is shortened to fit: three stops.</summary>
+        public const string FitMark = "...";
+
+        /// <summary>
+        /// The cells the LEFT head gives the register line: the head's width in cells, less the weight
+        /// readout's room (its reading as <see cref="WeightFormat"/> letters it, "40 g" or "12.3 kg", and
+        /// one cell of air) when a weight is lettered. The reserve is taken from the weight the readout
+        /// LANDS on, in whole grams, so the line does not shift while it counts up.
+        /// </summary>
+        public static int RegisterCols(int headWidthPx, int weightGrams)
+        {
+            int cells = (headWidthPx + NotebookKit.Slack) / NotebookKit.CellWidth;
+            if (weightGrams > 0) cells -= WeightFormat.Chars(weightGrams) + 1;   // the reading, then air
+            return cells < 0 ? 0 : cells;
+        }
+
+        /// <summary>
+        /// Fit ONE line into <paramref name="cols"/> cells, for a strip with room for one line only (the
+        /// leaf's head, where the register sits above the first rule and cannot wrap onto it).
+        ///
+        /// <para>A line that fits is returned whole. One that does not first drops its trailing
+        /// " — clause" (the lift line's size word or "it's in your hand"), ending the sentence with a
+        /// stop; one that still does not fit keeps the longest whole-word TAIL of what is left, capitalised
+        /// and stopped ("Atlantic cod."), because the end of the sentence is where it names the catch.
+        /// When not even the last word fits, the line is hard-cut and marked <see cref="FitMark"/>.
+        /// Never wider than <paramref name="cols"/>.</para>
+        /// </summary>
+        public static string FitLine(string text, int cols)
+        {
+            if (string.IsNullOrEmpty(text) || cols <= 0) return "";
+            if (text.Length <= cols) return text;
+
+            const string clause = " — ";
+            for (int at = text.LastIndexOf(clause, StringComparison.Ordinal); at > 0;
+                 at = text.LastIndexOf(clause, at - 1, StringComparison.Ordinal))
+            {
+                string lead = text.Substring(0, at).TrimEnd();
+                if (lead.Length > 0 && lead.Length + 1 <= cols) return lead + ".";
+            }
+
+            // Still too long: keep the lead's TAIL, whole words, where the sentence names the thing — a
+            // register reads "Atlantic cod." beside its weight, not "Landed a..." beside it.
+            string body = text;
+            int dash = text.IndexOf(clause, StringComparison.Ordinal);
+            if (dash > 0) body = text.Substring(0, dash);
+            body = body.TrimEnd().TrimEnd('.');
+            int start = -1;
+            for (int k = body.Length - 1; k > 0; k--)
+            {
+                if (body[k] != ' ') continue;
+                if (body.Length - (k + 1) + 1 > cols) break;     // the words after this space, and a stop
+                if (!FollowsANumber(body, k)) start = k + 1;    // never "Kg winter flounder."
+            }
+            if (start > 0)
+            {
+                string tail = body.Substring(start);
+                return char.ToUpperInvariant(tail[0]) + tail.Substring(1) + ".";
+            }
+
+            // Not even the last word fits: cut it at the room and mark the cut.
+            int room = cols - FitMark.Length;
+            if (room <= 0) return text.Substring(0, cols);
+            return text.Substring(0, room).TrimEnd() + FitMark;
+        }
+
+        /// <summary>Whether the word ending just before the space at <paramref name="space"/> holds a
+        /// digit — a tail starting there would open on the number's unit.</summary>
+        private static bool FollowsANumber(string s, int space)
+        {
+            for (int k = space - 1; k >= 0 && s[k] != ' '; k--)
+                if (char.IsDigit(s[k])) return true;
+            return false;
+        }
+
         /// <summary>
         /// Build a quest's block: title (wide lane), optional context line (wide lane), then one boxed
         /// row per step with wrapped continuations indented under the box.
@@ -317,6 +401,26 @@ namespace HiddenHarbours.Core
 
             return new NotebookBlock(NotebookBlockKind.Quest, rows, sourceId, archived);
         }
+
+        /// <summary>
+        /// The picture lane beside a pictured block, in cells from the title lane's left edge: the
+        /// picture is two ruled lines tall and square (<see cref="IconSize"/>), then one cell of air.
+        /// A pictured block's text wraps at <see cref="IconTextColsFor"/>.
+        /// </summary>
+        public const int IconLaneCells = 4;
+
+        /// <summary>The picture's side, kit pixels: two ruled lines, less the air above the second rule.</summary>
+        public const int IconSize = 2 * NotebookKit.Pitch - 2;
+
+        /// <summary>The fewest lines a pictured block takes, so the picture never overhangs the next block.</summary>
+        public const int IconRows = 2;
+
+        /// <summary>
+        /// Cells left for a pictured block's text: the title lane less the picture lane, less one cell,
+        /// because the lettered run's last glyph carries its full advance and the lane is drawn one pixel
+        /// short of whole cells (a full lane measured 75 px into 74).
+        /// </summary>
+        public static int IconTextColsFor(int cols) => NotebookKit.TitleColsFor(cols) - IconLaneCells - 1;
 
         /// <summary>A knowledge section: running head on the wide lane, body on the text lane.</summary>
         public static NotebookBlock Section(string head, IReadOnlyList<string> body, int cols,

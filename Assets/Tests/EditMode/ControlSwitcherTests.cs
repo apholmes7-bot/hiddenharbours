@@ -128,7 +128,7 @@ namespace HiddenHarbours.Tests.EditMode
             var (sw, walk, boat, input, playerGo, boatGo) = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f));
             Assert.AreEqual(ControlMode.OnFoot, sw.Mode);
 
-            bool ok = sw.TryInteract();
+            bool ok = HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw);
 
             Assert.IsTrue(ok, "boarding in reach should succeed");
             Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "boarding lands ON THE DECK (Build 5), not the helm");
@@ -152,7 +152,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var (sw, walk, boat, _, _, _) = Build(new Vector3(-4.5f, 2.5f, 0f), new Vector3(0f, -13.8f, 0f)); // up by the cottage
 
-            bool ok = sw.TryInteract();
+            bool ok = HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw);
 
             Assert.IsFalse(ok, "can't board from far away — boarding needs you within reach of the boat");
             Assert.AreEqual(ControlMode.OnFoot, sw.Mode);
@@ -168,12 +168,12 @@ namespace HiddenHarbours.Tests.EditMode
         public void TakeHelm_AtTheHelmSpot_EnablesSteering_AndHandsCameraToBoat()
         {
             var (sw, walk, boat, input, playerGo, _) = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f));
-            sw.TryInteract(); // board → deck
+            HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw); // board → deck
             _modeEvents.Clear(); _boatEvents.Clear();
 
             playerGo.transform.position = sw.HelmWorldPosition;   // walk to the tiller
             Assert.IsTrue(sw.WithinHelmReach(), "standing at the helm spot");
-            bool ok = sw.TryInteract();
+            bool ok = HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw);
 
             Assert.IsTrue(ok, "taking the helm at the spot should succeed");
             Assert.AreEqual(ControlMode.Aboard, sw.Mode, "Aboard now means AT THE HELM");
@@ -196,11 +196,11 @@ namespace HiddenHarbours.Tests.EditMode
             // Boat far from the dock over open water (no terrain wired → not land), so the only deck action
             // in reach would be the helm — and the player isn't at it.
             var (sw, _, boat, _, _, _) = Build(new Vector3(50f, 50f, 0f), new Vector3(51f, 50f, 0f));
-            sw.TryInteract(); // board → deck (lands amidships, a step away from the helm)
+            HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw); // board → deck (lands amidships, a step away from the helm)
             _modeEvents.Clear();
 
             Assert.IsFalse(sw.WithinHelmReach(), "the board spot is NOT within helm reach — you must walk to it");
-            bool ok = sw.TryInteract();
+            bool ok = HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw);
 
             Assert.IsFalse(ok, "E away from the helm (and with no step-off) does nothing");
             Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "still on deck");
@@ -212,13 +212,13 @@ namespace HiddenHarbours.Tests.EditMode
         public void LeaveHelm_StepsBackOntoTheDeck()
         {
             var (sw, walk, boat, input, playerGo, boatGo) = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f));
-            sw.TryInteract();                                       // board → deck
+            HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw);                                       // board → deck
             playerGo.transform.position = sw.HelmWorldPosition;
-            sw.TryInteract();                                       // take the helm
+            HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw);                                       // take the helm
             Assert.AreEqual(ControlMode.Aboard, sw.Mode);
             _modeEvents.Clear(); _boatEvents.Clear();
 
-            bool ok = sw.TryInteract();                             // step back from the tiller
+            bool ok = HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw);                             // step back from the tiller
 
             Assert.IsTrue(ok, "stepping back from the helm is always allowed");
             Assert.AreEqual(ControlMode.OnDeck, sw.Mode);
@@ -238,9 +238,9 @@ namespace HiddenHarbours.Tests.EditMode
             // Her drawn bow is MeshHullDriver's; it snaps level only when her rest serial moves
             // (boats-and-navigation.md §2.7.3). Letting go of the tiller must park her without moving it.
             var (sw, _, boat, _, playerGo, boatGo) = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f));
-            sw.TryInteract();                                       // board → deck
+            HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw);                                       // board → deck
             playerGo.transform.position = sw.HelmWorldPosition;
-            sw.TryInteract();                                       // take the helm
+            HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw);                                       // take the helm
             Assert.AreEqual(ControlMode.Aboard, sw.Mode);
             var rb = boatGo.GetComponent<Rigidbody2D>();
             boat.SetControl(1f, 0.5f);
@@ -248,7 +248,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(new Vector2(0f, 3f), rb.linearVelocity, "precondition: she has way on");
             int serial = boat.TrimRestSerial;
 
-            bool ok = sw.TryInteract();                             // step back from the tiller
+            bool ok = HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw);                             // step back from the tiller
 
             Assert.IsTrue(ok);
             Assert.AreEqual(ControlMode.OnDeck, sw.Mode);
@@ -270,11 +270,11 @@ namespace HiddenHarbours.Tests.EditMode
         {
             WireExposedLand();   // the dock sits on standable land so stepping off is allowed
             var (sw, walk, boat, input, playerGo, _) = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f));
-            sw.TryInteract(); // board → deck (lands amidships, away from the helm spot)
+            HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw); // board → deck (lands amidships, away from the helm spot)
             _modeEvents.Clear(); _boatEvents.Clear();
 
             Assert.IsFalse(sw.WithinHelmReach(), "not at the helm, so E means 'step ashore' here");
-            bool ok = sw.TryInteract(); // boat is at (0,-13.8), within r=3 of the dock (0,-12) and over land
+            bool ok = HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw); // boat is at (0,-13.8), within r=3 of the dock (0,-12) and over land
 
             Assert.IsTrue(ok, "disembarking from the deck with the boat in the dock zone should succeed");
             Assert.AreEqual(ControlMode.OnFoot, sw.Mode);
@@ -293,11 +293,11 @@ namespace HiddenHarbours.Tests.EditMode
         public void Disembark_OverOpenWater_Refused_StaysOnDeck()
         {
             var (sw, _, boat, _, _, boatGo) = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f));
-            sw.TryInteract(); // board → deck
+            HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw); // board → deck
             _modeEvents.Clear(); _boatEvents.Clear();
 
             boatGo.transform.position = new Vector3(0f, -30f, 0f); // drifted far out (open water, no land wired)
-            bool ok = sw.TryInteract();
+            bool ok = HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw);
 
             Assert.IsFalse(ok, "can't step off over open water");
             Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "still on deck");
@@ -312,12 +312,12 @@ namespace HiddenHarbours.Tests.EditMode
             WireExposedLand();
             var (sw, _, _, _, playerGo, boatGo) = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f));
 
-            sw.TryInteract();                                       // board → OnDeck
+            HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw);                                       // board → OnDeck
             playerGo.transform.position = sw.HelmWorldPosition;
-            sw.TryInteract();                                       // deck → helm
-            sw.TryInteract();                                       // helm → deck
+            HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw);                                       // deck → helm
+            HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw);                                       // helm → deck
             playerGo.transform.position = boatGo.transform.position + new Vector3(0f, 1.2f, 0f); // walk clear
-            sw.TryInteract();                                       // deck → ashore
+            HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw);                                       // deck → ashore
 
             Assert.AreEqual(ControlMode.OnFoot, sw.Mode, "the loop lands back on foot");
             Assert.AreEqual(4, _modeEvents.Count, "one ControlModeChanged per hop");
@@ -384,7 +384,7 @@ namespace HiddenHarbours.Tests.EditMode
         /// away from the tiller, which is the only place on the deck where this ladder is decided.</summary>
         private static Vector3 BoardAndStandAwayFromTheHelm(ControlSwitcher sw, GameObject playerGo)
         {
-            Assert.IsTrue(sw.TryInteract(), "harness: she has to actually get aboard");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw), "harness: she has to actually get aboard");
             Assert.AreEqual(ControlMode.OnDeck, sw.Mode);
             Assert.IsFalse(sw.WithinHelmReach(), "harness: the board spot is away from the tiller");
             return playerGo.transform.position;
@@ -426,7 +426,7 @@ namespace HiddenHarbours.Tests.EditMode
             _modeEvents.Clear();
 
             Assert.AreEqual(0, Interactables.Count, "nothing registered, as a region with no fixtures has");
-            Assert.IsTrue(sw.BeginInteract(), "E steps her ashore");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(sw), "E steps her ashore");
 
             Assert.AreEqual(ControlMode.OnFoot, sw.Mode);
             Assert.IsTrue(walk.enabled, "walking is re-enabled on foot");
@@ -443,7 +443,7 @@ namespace HiddenHarbours.Tests.EditMode
             WireExposedLand();
             var (sw, _, boat, input, playerGo, _) = Build(new Vector3(0f, -11.5f, 0f), new Vector3(0f, -13.8f, 0f));
             NoBoardingMove(sw);
-            sw.TryInteract();                                      // board → deck
+            HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw);                                      // board → deck
             playerGo.transform.position = sw.HelmWorldPosition;    // walk to the tiller
             Assert.IsTrue(sw.WithinHelmReach());
             Fake fixture = Candidate(sw.HelmWorldPosition);
@@ -469,7 +469,7 @@ namespace HiddenHarbours.Tests.EditMode
             NoBoardingMove(sw);
             Fake fixture = Candidate(playerGo.transform.position, where: InteractContext.OnFoot);
 
-            Assert.IsTrue(sw.BeginInteract());
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(sw));
 
             Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "boarding took the press, exactly as it always has");
             Assert.AreEqual(0, fixture.Calls, "…and the candidate did not also fire");
@@ -487,7 +487,7 @@ namespace HiddenHarbours.Tests.EditMode
             sw.ConfigureInteractVerb(false, InteractResolver.DefaultFacingArcDegrees);
             Fake fixture = Candidate(onDeck);
 
-            Assert.IsTrue(sw.BeginInteract());
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.BeginInteract(sw));
 
             Assert.AreEqual(ControlMode.OnFoot, sw.Mode, "she stepped ashore, as she did before the seam existed");
             Assert.AreEqual(0, fixture.Calls);
@@ -620,7 +620,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var (sw, _, boat, _, playerGo, _) = Build(new Vector3(50f, 50f, 0f), new Vector3(51f, 50f, 0f));
             NoBoardingMove(sw);
-            Assert.IsTrue(sw.TryInteract(), "harness: she has to actually get aboard");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw), "harness: she has to actually get aboard");
             Assert.AreEqual(ControlMode.OnDeck, sw.Mode);
             Assert.IsFalse(sw.CanStepAshore(), "harness: open water, nothing to step onto");
 
@@ -641,7 +641,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             playerGo.transform.position = helm + new Vector3(OwnersHelmRadius + 0.01f, 0f, 0f);
             Assert.IsFalse(sw.WithinHelmReach(), "just outside it, it is not");
-            Assert.IsFalse(sw.TryInteract(), "and E there takes nothing");
+            Assert.IsFalse(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw), "and E there takes nothing");
             Assert.AreEqual(ControlMode.OnDeck, sw.Mode);
             Assert.AreEqual(0, _boatEvents.Count, "the camera never went to the boat");
         }

@@ -72,12 +72,13 @@ namespace HiddenHarbours.Economy
                     "stands on that seller's counter. Either the seller id is not wired onto this " +
                     "counter's vendors yet (the region scene may predate the builder that wires it), or " +
                     "the sell row belongs on a different person.");
-                EventBus.Publish(new CounterSellReported(request.SellerId, 0, 0));
+                EventBus.Publish(new CounterSellReported(request.SellerId, 0, 0, SellerDirectory.Resolve(request.SellerId)));
                 return;
             }
 
             int paid = counter.SellOverTheCounter();
-            EventBus.Publish(new CounterSellReported(request.SellerId, paid, counter.LastUnitsSold));
+            EventBus.Publish(new CounterSellReported(request.SellerId, paid, counter.LastUnitsSold,
+                SellerDirectory.Resolve(request.SellerId)));
         }
 
         /// <summary>
@@ -95,7 +96,21 @@ namespace HiddenHarbours.Economy
 
             BuyCatalog.SellerArms arms = BuyCatalog.ArmsFor(sellerId);
             return On(arms.Gear) ?? On(arms.Bait) ?? On(arms.Supply) ?? On(arms.Instrument)
-                   ?? On(arms.License) ?? On(arms.Pot) ?? On(arms.Shipwright);
+                   ?? On(arms.License) ?? On(arms.Pot) ?? On(arms.Shipwright) ?? BuyOnly(sellerId);
+        }
+
+        /// <summary>
+        /// A buy-only counter: no vendor stands on it, so its <see cref="WharfSellPoint"/> carries the seller id
+        /// itself (Nine Mile Creek's wharf counter, where Wendell buys and sells nothing). Asked only after
+        /// every vendor arm has answered no, so a counter that vendors already name resolves exactly as it
+        /// always has, and the one authored fact for it stays the vendors' <c>_sellerId</c>.
+        /// </summary>
+        private static WharfSellPoint BuyOnly(string sellerId)
+        {
+            WharfSellPoint[] all = Object.FindObjectsByType<WharfSellPoint>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            for (int i = 0; i < all.Length; i++)
+                if (all[i] != null && string.Equals(all[i].BuyOnlySellerId, sellerId, System.StringComparison.Ordinal)) return all[i];
+            return null;
         }
 
         /// <summary>⚠ Explicit <c>!= null</c> against Unity's overloaded <c>==</c>: a destroyed component

@@ -1,0 +1,17 @@
+# St Peters landing fittings
+
+Phase D source art for exactly two tyre fenders and the existing coiled-line row. Metres, PPU 32, eight facings and the established 40-degree dock-props projection. The new standalone source retains the immutable dock kit's palette, faceted primitives, ordered dither, interior depth edges and weather law. The older rigs and all shared sheets remain unchanged.
+
+Each tyre has a true 0.60 m outside diameter, 0.32 m opening and 0.20 m axial section. The section is authored geometry, including sidewalls, beads, tread grooves and the short line suspension. The pivot is the existing top hanger; the complete assembly is approximately 0.619 m high and 0.205 m deep. Its rubber body remains exactly the specified size.
+
+The coil uses 25 mm line, also on the retained loose tail. Three layers, four concentric turns per layer, retain the original 0.404 m outer centreline radius and 0.32 m loose tail reach. The previous rig hardcodes 60 mm coil tubes and a 56 mm tail; its options cannot correct the line section. This is consequently a new drawing, not an edit to that rig. Isolated painted pixels are preserved on the new thin coil so subpixel line sections do not lose their diagonal tail to the old cleanup pass.
+
+The two tyre rows are the existing scene anchors at x=190 and x=208, y=2.533452. The older audit labelled them 190.5 and 208.5; the scene's anchors win, and no placement changes. The coil keeps `prop.stp_landing_rope` at its existing (206.5, 3.283452) anchor. New tyre art IDs are `prop.stp_landing_tyre_west` and `prop.stp_landing_tyre_east`. All three recipes use the existing SetPieceDef type.
+
+Wet rubber and weed are split geometrically at the high-water and weed-band elevations. They read the same regional envelope as the ladder and tide board: mean zero, amplitude 2.20 m. Every frame also publishes per-pixel local height for the existing TidalFaceWaterline consumer. No water pixels are painted. At the unchanged deck hangers, top elevation 5.354004, the tyre bottoms remain above +2.20 m: these particular fenders are dry at the authored high-water bound. The source does not invent wet growth above that line. Lowering a suspension or changing a berth is outside this drawing's placement contract.
+
+`retiredByName` in recipes.json retires the legacy `WharfOverlays_tyre` appearances only for these two St Peters instances, and `ropeCoil_4` only for the landing coil. Neither legacy asset is deleted; both shared sheets remain available to other regions. Permanent scene application is outside this source-only delivery. The baker writes dedicated sheets, local-height contracts and Def assets, and never writes a scene or a shared sheet. The proof harness makes temporary sprite changes and restores them.
+
+Run from the repository root: `node docs/art/rigs/st-peters-landing-fittings-kit/check.cjs`. An optional output directory receives kit-check.json. The named checks cover three stable rows, metric tyre section, 20–30 mm line and retained tail, tide-derived bands, all native facings and finite local heights, determinism, source hashes and file sums.
+
+The later lease owes both exact board frames, before and after, with the game's rig-10.3 figure beside each piece. The 14:31 frame uses +2.18 m; the 06:00 frame uses -0.85 m. Close pairs supplement each off-frame piece without moving either board camera. The 06:00 lighting is left to the day/light lane. This headless phase writes no scene, bake, save or shared consumer route.

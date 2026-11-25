@@ -13,7 +13,7 @@ namespace HiddenHarbours.Core
     public static class SaveMigration
     {
         /// <summary>The schema version this build writes. Bump when you add a field + a migration step.</summary>
-        public const int CurrentVersion = 17;
+        public const int CurrentVersion = 26;
 
         /// <summary>
         /// The region id Port Greywick was saved under before it was renamed Nine Mile Creek, and the id
@@ -334,6 +334,97 @@ namespace HiddenHarbours.Core
                 data.SchemaVersion = 17;
             }
 
+            // v17 -> v18: character traits. Older games picked none; nothing else is touched.
+            if (data.SchemaVersion < 18)
+            {
+                data.PlayerTraits ??= new System.Collections.Generic.List<string>();
+                data.SchemaVersion = 18;
+            }
+
+            // v18 -> v19: hunger and tiredness. Older games start fed and rested at their own saved time.
+            if (data.SchemaVersion < 19)
+            {
+                data.PlayerNeeds = PlayerNeedsDto.FedAndRestedAt(data.GameTimeSeconds);
+                data.SchemaVersion = 19;
+            }
+
+            // v19 -> v20: THE REST OF THE SLEEP PLACE (owner ruling 2026-11-15: "a sleep is a save"). Which
+            // bed, when the sleep ended, and for a bunk aboard the boat's own pose. Nothing existing is
+            // reinterpreted: a v13..v19 bed anchor stays exactly where it was and still wakes the player
+            // there, and a save with no anchor still wakes at the authored spawn. The new fields take their
+            // honest empties: no bed id (unknown), woke-at 0 (unknown, never invented from the autosave's
+            // clock, which may be hours after the sleep), and not aboard (a pre-v20 bunk recorded nothing).
+            if (data.SchemaVersion < 20)
+            {
+                data.RestBedId ??= "";
+                data.RestBoatHullId ??= "";
+                data.RestBoatRegion ??= "";
+                data.RestAboard = false;
+                data.SchemaVersion = 20;
+            }
+
+            // v20 -> v21: THE BODY (owner ask 2026-11-15: frame, weight, metabolism, overeating). An older
+            // game gets the unset body, which reads as the default frame and height at its lean mass: the
+            // reference body, so the player keeps exactly today's hunger rate and walk speed. No messes yet.
+            if (data.SchemaVersion < 21)
+            {
+                data.PlayerBody = new PlayerBodyDto();
+                data.Messes ??= new System.Collections.Generic.List<MessRecordDto>();
+                data.NextMessSerial = 0;
+                data.SchemaVersion = 21;
+            }
+
+            // v21 -> v22: CLEANLINESS, the third need (owner ask 2026-11-15). An older game starts clean,
+            // idle and anchored at its own saved time, so nothing changes until the player gets dirty.
+            if (data.SchemaVersion < 22)
+            {
+                data.PlayerCleanliness = PlayerCleanlinessDto.CleanAt(data.GameTimeSeconds);
+                data.SchemaVersion = 22;
+            }
+
+            // v22 -> v23: THE FOOD STORES (kitchens slice 1, owner ask 2026-11-15). An older game had no
+            // pantry, cooler or fridge, so it starts with every store empty: no food invented, no ice packed.
+            if (data.SchemaVersion < 23)
+            {
+                data.KitchenStores = new System.Collections.Generic.List<KitchenStorageStateDto>();
+                data.SchemaVersion = 23;
+            }
+
+            // v23 -> v24: THE CATCH RECORD, GIFT DAYS, COOK JOBS AND LORAN NUMBERS (owner: "Save v24 yes").
+            // An older game never recorded any of them, so each starts empty: no catch invented, every person
+            // takes a gift today, nothing on the stove, no numbers in any set.
+            if (data.SchemaVersion < 24)
+            {
+                data.CaughtSpecies = new System.Collections.Generic.List<CaughtSpeciesDto>();
+                data.NpcGiftDays = new System.Collections.Generic.List<NpcGiftDayDto>();
+                data.CookJobs = new System.Collections.Generic.List<CookJobDto>();
+                data.HullLoranWaypoints = new System.Collections.Generic.List<LoranWaypointDto>();
+                data.SchemaVersion = 24;
+            }
+
+            // v24 -> v25: STORAGE WITH MEMORY (owner 2026-11-17: "give them storage with memory at ginnys").
+            // No container remembered anything before v25, so every one starts empty. Nothing is invented: the
+            // first rod and the shovel lie where the world places them, which is where an older game left them
+            // on every load anyway.
+            if (data.SchemaVersion < 25)
+            {
+                data.StoredContainers = new System.Collections.Generic.List<StoredContainerDto>();
+                data.SchemaVersion = 25;
+            }
+
+            // v25 -> v26: STORE PURCHASES, PAID SPECIAL ORDERS AND THE SHOPPING BAG (one bump for the three).
+            // An older game recorded none of them, so each starts empty: its shelves are what the calendar
+            // says, there is no order and no bag, and whatever he bought is simply in his supplies. Nothing
+            // is transformed and nothing else in the save moves.
+            if (data.SchemaVersion < 26)
+            {
+                data.StorePurchases = new System.Collections.Generic.List<StorePurchaseRowDto>();
+                data.SpecialOrders = new System.Collections.Generic.List<SpecialOrderDto>();
+                data.NextSpecialOrderNumber = 1;
+                data.ShoppingBags = new System.Collections.Generic.List<ShoppingBagDto>();
+                data.SchemaVersion = 26;
+            }
+
             // ---- future steps go here, each guarded by `if (data.SchemaVersion < N)` and bumping to N.
 
             // Defensive null-repair (a hand-edited or partial JSON can omit reference-typed fields).
@@ -361,9 +452,32 @@ namespace HiddenHarbours.Core
             data.ActiveHullId ??= "";
             data.WornOutfitId ??= "";
             data.RestRegion ??= "";
+            data.RestBedId ??= "";
+            data.RestBoatHullId ??= "";
+            data.RestBoatRegion ??= "";
             data.PlayerRecipe ??= new CharacterRecipe();
             data.PlayerRecipe.Heal();    // a field JsonUtility left null reads as "the preset's own"
             data.PlayerName ??= "";
+            data.SpentClamHoles ??= new System.Collections.Generic.List<SpentClamHoleDto>();
+            data.PlayerTraits ??= new System.Collections.Generic.List<string>();
+            data.PlayerNeeds ??= new PlayerNeedsDto();
+            data.PlayerBody ??= new PlayerBodyDto();
+            data.Messes ??= new System.Collections.Generic.List<MessRecordDto>();
+            data.PlayerCleanliness ??= new PlayerCleanlinessDto();
+            data.PlayerCleanliness.WashStationId ??= "";
+            data.KitchenStores ??= new System.Collections.Generic.List<KitchenStorageStateDto>();
+            HealKitchenStores(data.KitchenStores);
+            data.CaughtSpecies ??= new System.Collections.Generic.List<CaughtSpeciesDto>();
+            data.NpcGiftDays ??= new System.Collections.Generic.List<NpcGiftDayDto>();
+            data.CookJobs ??= new System.Collections.Generic.List<CookJobDto>();
+            data.HullLoranWaypoints ??= new System.Collections.Generic.List<LoranWaypointDto>();
+            HealV24Rows(data);
+            data.StoredContainers ??= new System.Collections.Generic.List<StoredContainerDto>();
+            HealStoredContainers(data.StoredContainers);
+            data.StorePurchases ??= new System.Collections.Generic.List<StorePurchaseRowDto>();
+            data.SpecialOrders ??= new System.Collections.Generic.List<SpecialOrderDto>();
+            data.ShoppingBags ??= new System.Collections.Generic.List<ShoppingBagDto>();
+            HealV26Rows(data);   // after SupplyStock's null-repair: a bag is held to what he owns
             // Same defensive spirit as the null-repair above, for the one field where a zero is not a
             // value but a crash: a hand-edited JSON, or a row written by a build between the field landing
             // and this heal, would otherwise divide by it. Idempotent — after the v9 step there is nothing
@@ -422,6 +536,372 @@ namespace HiddenHarbours.Core
         /// save never depends on a <c>ScriptableObject</c> being wired first — and so this is testable
         /// with no scene.</para>
         /// </summary>
+        /// <summary>
+        /// Null-repair the food stores (kitchens slice 1): drop a null row or one with no key (it can
+        /// never be found again), give a missing stack list or def id their empties, and drop a stack with
+        /// no item or no count. A stack whose count is real is never touched: food is not invented or
+        /// thrown away by a load. Idempotent.
+        /// </summary>
+        private static void HealKitchenStores(System.Collections.Generic.List<KitchenStorageStateDto> stores)
+        {
+            for (int i = stores.Count - 1; i >= 0; i--)
+            {
+                KitchenStorageStateDto s = stores[i];
+                if (s == null || string.IsNullOrEmpty(s.Key)) { stores.RemoveAt(i); continue; }
+                s.StorageDefId ??= "";
+                s.Stacks ??= new System.Collections.Generic.List<KitchenStackDto>();
+                for (int k = s.Stacks.Count - 1; k >= 0; k--)
+                    if (string.IsNullOrEmpty(s.Stacks[k].ItemId) || s.Stacks[k].Count <= 0) s.Stacks.RemoveAt(k);
+            }
+        }
+
+        /// <summary>
+        /// Null-repair the v25 storage rows. A container with no key is dropped (nothing could find it again);
+        /// a second row for a key already kept is folded into the first, so no item is lost and the key stays
+        /// one row. An item with no kind, or a counted lot of zero or fewer, is dropped, and so is a catch record
+        /// with no species or no quantity; a container left with nothing in it is dropped. One object, one
+        /// place: an instance id that repeats (in two containers, or twice in one) keeps its FIRST occurrence in
+        /// list order and every later one is dropped. Kept rows are never changed. Idempotent.
+        /// </summary>
+        private static void HealStoredContainers(System.Collections.Generic.List<StoredContainerDto> containers)
+        {
+            var kept = new System.Collections.Generic.Dictionary<string, StoredContainerDto>(System.StringComparer.Ordinal);
+            var instances = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
+            for (int i = 0; i < containers.Count; i++)
+            {
+                StoredContainerDto c = containers[i];
+                if (c == null || string.IsNullOrEmpty(c.Key))
+                {
+                    containers.RemoveAt(i--);
+                    continue;
+                }
+                c.ContainerDefId ??= "";
+                c.Items ??= new System.Collections.Generic.List<StoredItemDto>();
+                for (int k = 0; k < c.Items.Count; k++)   // forward: the first occurrence is the one kept
+                {
+                    StoredItemDto item = c.Items[k];
+                    if (item == null || string.IsNullOrEmpty(item.ItemId) || (!item.IsInstance && item.Count <= 0)
+                        || (item.IsInstance && !instances.Add(item.InstanceId)))
+                    {
+                        c.Items.RemoveAt(k--);
+                        continue;
+                    }
+                    item.InstanceId ??= "";
+                }
+                c.Catch ??= new System.Collections.Generic.List<HeldCatchDto>();
+                c.Catch.RemoveAll(r => string.IsNullOrEmpty(r.SpeciesId) || r.Quantity <= 0);
+                if (kept.TryGetValue(c.Key, out StoredContainerDto first))
+                {
+                    first.Items.AddRange(c.Items);
+                    first.Catch.AddRange(c.Catch);
+                    containers.RemoveAt(i--);
+                    continue;
+                }
+                kept.Add(c.Key, c);
+            }
+            for (int i = containers.Count - 1; i >= 0; i--)
+                if (StoredContainers.IsEmpty(containers[i])) containers.RemoveAt(i);
+        }
+
+        /// <summary>
+        /// Null-repair the v24 rows. A row that can never be found or used again is dropped: a catch row with
+        /// no species or no count (or a second row for a species already kept, so the record stays one row
+        /// per species), a gift row with no person or no count, a cook job with no station, no recipe or no
+        /// finite ready time, a Loran row with no hull or one that is not a usable waypoint. A kept row's
+        /// counts and numbers are never changed, except that a catch row's released count is held inside
+        /// 0..count and an unreadable record weight reads as unknown (0). Idempotent.
+        /// </summary>
+        private static void HealV24Rows(SaveData data)
+        {
+            var seen = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
+            var caught = data.CaughtSpecies;
+            for (int i = 0; i < caught.Count; i++)
+            {
+                CaughtSpeciesDto c = caught[i];
+                if (c == null || string.IsNullOrEmpty(c.SpeciesId) || c.Count <= 0 || !seen.Add(c.SpeciesId))
+                {
+                    caught.RemoveAt(i--);
+                    continue;
+                }
+                c.DisplayName ??= "";
+                if (c.ReleasedCount < 0) c.ReleasedCount = 0;
+                if (c.ReleasedCount > c.Count) c.ReleasedCount = c.Count;
+                if (float.IsNaN(c.RecordWeightKg) || float.IsInfinity(c.RecordWeightKg) || c.RecordWeightKg < 0f)
+                    c.RecordWeightKg = 0f;
+            }
+
+            var gifts = data.NpcGiftDays;
+            for (int i = gifts.Count - 1; i >= 0; i--)
+                if (gifts[i] == null || string.IsNullOrEmpty(gifts[i].NpcId) || gifts[i].Count <= 0) gifts.RemoveAt(i);
+
+            var jobs = data.CookJobs;
+            for (int i = jobs.Count - 1; i >= 0; i--)
+            {
+                CookJobDto j = jobs[i];
+                if (j == null || string.IsNullOrEmpty(j.StationKey) || string.IsNullOrEmpty(j.RecipeId)
+                    || double.IsNaN(j.ReadyAtGameSeconds) || double.IsInfinity(j.ReadyAtGameSeconds))
+                {
+                    jobs.RemoveAt(i);
+                    continue;
+                }
+                j.StationId ??= "";
+            }
+
+            var loran = data.HullLoranWaypoints;
+            for (int i = loran.Count - 1; i >= 0; i--)
+            {
+                LoranWaypointDto w = loran[i];
+                if (w == null || string.IsNullOrEmpty(w.HullId) || !w.ToWaypoint().IsValid) loran.RemoveAt(i);
+            }
+        }
+
+        /// <summary>
+        /// Repair the v26 rows: store purchases, special orders and shopping bags. Asset-free (no Def, no
+        /// config, no service) and idempotent. The one rule over all three: <b>a load never destroys
+        /// something the player paid for or owns</b>. A purchase row is only a note of what left a shelf, so a
+        /// bad one can go (the shelf reads a little fuller). A paid order is money, so it is kept. A bag row
+        /// only sets goods aside that are already counted in his supplies, so dropping one loses nothing.
+        /// </summary>
+        private static void HealV26Rows(SaveData data)
+        {
+            HealStorePurchases(data.StorePurchases);
+            HealSpecialOrders(data);
+            HealShoppingBags(data);
+        }
+
+        private static readonly System.Comparison<StorePurchaseRowDto> PurchaseOrder = ComparePurchases;
+
+        /// <summary>The one order purchase rows are kept and replayed in: day, seconds, shop, line.</summary>
+        private static int ComparePurchases(StorePurchaseRowDto a, StorePurchaseRowDto b)
+        {
+            int c = a.Day.CompareTo(b.Day);
+            if (c != 0) return c;
+            c = a.Seconds.CompareTo(b.Seconds);
+            if (c != 0) return c;
+            c = string.CompareOrdinal(a.ShopId, b.ShopId);
+            if (c != 0) return c;
+            return string.CompareOrdinal(a.ShelfLineId, b.ShelfLineId);
+        }
+
+        /// <summary>
+        /// Store purchases: drop a row with no shop or no line, a negative day or time, a time that is not a
+        /// finite number, or units that are zero, negative or not finite. Sort into the replay order, then
+        /// fold rows equal in shop, line, day and seconds into one (their units added, so nothing bought is
+        /// forgotten). Kept rows are not otherwise changed.
+        /// </summary>
+        private static void HealStorePurchases(System.Collections.Generic.List<StorePurchaseRowDto> rows)
+        {
+            for (int i = rows.Count - 1; i >= 0; i--)
+            {
+                StorePurchaseRowDto r = rows[i];
+                if (r == null || string.IsNullOrEmpty(r.ShopId) || string.IsNullOrEmpty(r.ShelfLineId)
+                    || r.Day < 0 || !IsFiniteNumber(r.Seconds) || r.Seconds < 0d
+                    || !IsFiniteNumber(r.Units) || r.Units <= 0d)
+                    rows.RemoveAt(i);
+            }
+            rows.Sort(PurchaseOrder);
+            for (int i = rows.Count - 1; i > 0; i--)
+            {
+                if (ComparePurchases(rows[i - 1], rows[i]) != 0) continue;
+                double sum = rows[i - 1].Units + rows[i].Units;
+                if (IsFiniteNumber(sum)) rows[i - 1].Units = sum;
+                rows.RemoveAt(i);
+            }
+        }
+
+        /// <summary>
+        /// Special orders (reserved at v26). <b>A row is dropped only when it carries nothing</b>: no money
+        /// paid on the order and no line left. Every other row is kept, whatever else is wrong with it,
+        /// because the repair cannot refund: an order with a missing id, an unknown state or no lines left
+        /// still holds what he paid, and the feature's own start-up decides what it becomes.
+        ///
+        /// <para><b>Money on a line counts as something too.</b> A line is dropped only when it is unusable
+        /// (no listing, or a count under 1) AND has no price above zero; a line he paid for stays, so it
+        /// keeps its order alive even when the order's own total reads 0. Lines for the same listing fold
+        /// into the first, counts added and prices added, so folding never changes what the lines sum to.
+        /// <b>The repair never rewrites money</b>: when the lines' prices do not add up to the order's total,
+        /// both are left exactly as they are (the total is the figure that stands; reconciling them is the
+        /// feature's work). The one exception is a negative price, on the order or on a line, which reads 0:
+        /// it would otherwise be a refund that takes money.</para>
+        ///
+        /// <para>Also inside a kept row: an unreadable or negative order time, a negative ordered day and a
+        /// negative due day read 0 (due at once, never later; the due day is never changed to fit the
+        /// ordered day); a negative count on a kept line reads 0; a state outside the
+        /// known ones reads as waiting, the one reading that can never cost him the goods. Ids are never
+        /// rewritten. The counter is held at 1 or more and above every number on any row, dropped rows
+        /// included, so no number is used twice.</para>
+        /// </summary>
+        private static void HealSpecialOrders(SaveData data)
+        {
+            System.Collections.Generic.List<SpecialOrderDto> orders = data.SpecialOrders;
+            int next = data.NextSpecialOrderNumber < 1 ? 1 : data.NextSpecialOrderNumber;
+            for (int i = 0; i < orders.Count; i++)
+            {
+                SpecialOrderDto o = orders[i];
+                if (o == null)
+                {
+                    orders.RemoveAt(i--);
+                    continue;
+                }
+                o.OrderId ??= "";
+                o.SellerId ??= "";
+                o.DeliverToId ??= "";
+                o.Lines ??= new System.Collections.Generic.List<SpecialOrderLineDto>();
+                for (int k = 0; k < o.Lines.Count; k++)
+                {
+                    SpecialOrderLineDto line = o.Lines[k];
+                    if (line != null && line.PaidPrice < 0) line.PaidPrice = 0;
+                    // A line goes only when it is unusable AND holds no money. A paid line stays, whatever
+                    // else is wrong with it: its price is the exact refund for that line.
+                    if (line == null
+                        || ((string.IsNullOrEmpty(line.ListingId) || line.Count < 1) && line.PaidPrice <= 0))
+                    {
+                        o.Lines.RemoveAt(k--);
+                        continue;
+                    }
+                    line.ListingId ??= "";
+                    if (line.Count < 0) line.Count = 0;
+                    for (int first = 0; first < k; first++)
+                    {
+                        if (!string.Equals(o.Lines[first].ListingId, line.ListingId, System.StringComparison.Ordinal))
+                            continue;
+                        o.Lines[first].Count = AddClamped(o.Lines[first].Count, line.Count);
+                        o.Lines[first].PaidPrice = AddClamped(o.Lines[first].PaidPrice, line.PaidPrice);
+                        o.Lines.RemoveAt(k--);
+                        break;
+                    }
+                }
+                if (o.PaidPrice < 0) o.PaidPrice = 0;
+                if (!IsFiniteNumber(o.OrderedAtSeconds) || o.OrderedAtSeconds < 0d) o.OrderedAtSeconds = 0d;
+                if (o.OrderedDay < 0) o.OrderedDay = 0;
+                if (o.DueDay < 0) o.DueDay = 0;
+                if (o.State < SpecialOrderDto.StateWaiting || o.State > SpecialOrderDto.StateCollected)
+                    o.State = SpecialOrderDto.StateWaiting;
+
+                int used = OrderNumberOf(o.OrderId);
+                if (used >= next && used < int.MaxValue) next = used + 1;
+
+                if (o.PaidPrice <= 0 && o.Lines.Count == 0) orders.RemoveAt(i--);
+            }
+            data.NextSpecialOrderNumber = next;
+        }
+
+        /// <summary>The n of an <c>order.&lt;seller&gt;.&lt;n&gt;</c> id: the digits after the last dot.
+        /// 0 when the id has no such number.</summary>
+        private static int OrderNumberOf(string orderId)
+        {
+            if (string.IsNullOrEmpty(orderId)) return 0;
+            int dot = orderId.LastIndexOf('.');
+            if (dot < 0 || dot == orderId.Length - 1) return 0;
+            long n = 0;
+            for (int i = dot + 1; i < orderId.Length; i++)
+            {
+                char c = orderId[i];
+                if (c < '0' || c > '9') return 0;
+                n = n * 10 + (c - '0');
+                if (n > int.MaxValue) return 0;
+            }
+            return (int)n;
+        }
+
+        /// <summary>
+        /// Shopping bags. The goods in a bag are counted in <see cref="SaveData.SupplyStock"/>, which this
+        /// never touches; a row only sets some of them aside. So every repair here errs toward "found put
+        /// away" and none can lose goods.
+        ///
+        /// <para>A bag is dropped when it has no kind, or when it was set down somewhere that is not a place
+        /// (no region, a position that is not a finite number, a storey below the ground): it could never be
+        /// found again and its goods would stay set aside for good. A bag in his hand needs no place, so its
+        /// unreadable place fields just read 0. A region no scene claims is kept: that is a content question,
+        /// and it may load later. Inside a kept bag: an item with no id or a count under 1 is dropped, items
+        /// of one kind fold into the first, and each is held to what he owns of it, less what earlier bags in
+        /// the list already hold; a bag left with nothing in it is dropped.</para>
+        /// </summary>
+        private static void HealShoppingBags(SaveData data)
+        {
+            System.Collections.Generic.List<ShoppingBagDto> bags = data.ShoppingBags;
+            var claimed = new System.Collections.Generic.Dictionary<string, int>(System.StringComparer.Ordinal);
+            for (int i = 0; i < bags.Count; i++)
+            {
+                ShoppingBagDto b = bags[i];
+                if (b == null)
+                {
+                    bags.RemoveAt(i--);
+                    continue;
+                }
+                b.BagDefId ??= "";
+                b.Region ??= "";
+                b.HullId ??= "";
+                b.Items ??= new System.Collections.Generic.List<BagItemDto>();
+
+                bool finite = IsFiniteNumber(b.PosX) && IsFiniteNumber(b.PosY);
+                if (b.Held)
+                {
+                    if (!finite) { b.PosX = 0f; b.PosY = 0f; }
+                    if (b.Level < 0) b.Level = 0;
+                }
+                bool isSomewhere = b.Held || (finite && b.Level >= 0 && b.Region.Length > 0);
+                if (b.BagDefId.Length == 0 || !isSomewhere)
+                {
+                    bags.RemoveAt(i--);
+                    continue;
+                }
+
+                for (int k = 0; k < b.Items.Count; k++)
+                {
+                    BagItemDto item = b.Items[k];
+                    if (item == null || string.IsNullOrEmpty(item.SupplyId) || item.Count < 1)
+                    {
+                        b.Items.RemoveAt(k--);
+                        continue;
+                    }
+                    for (int first = 0; first < k; first++)
+                    {
+                        if (!string.Equals(b.Items[first].SupplyId, item.SupplyId, System.StringComparison.Ordinal))
+                            continue;
+                        b.Items[first].Count = AddClamped(b.Items[first].Count, item.Count);
+                        b.Items.RemoveAt(k--);
+                        break;
+                    }
+                }
+                for (int k = 0; k < b.Items.Count; k++)
+                {
+                    BagItemDto item = b.Items[k];
+                    claimed.TryGetValue(item.SupplyId, out int taken);
+                    int free = OwnedSupply(data, item.SupplyId) - taken;
+                    if (item.Count > free) item.Count = free;
+                    if (item.Count < 1)
+                    {
+                        b.Items.RemoveAt(k--);
+                        continue;
+                    }
+                    claimed[item.SupplyId] = taken + item.Count;
+                }
+                if (b.Items.Count == 0) bags.RemoveAt(i--);
+            }
+        }
+
+        /// <summary>How many of a supply the save holds (the first row for the id, the way the supply locker
+        /// reads it). Read straight from the list on purpose: the repair must see what he OWNS, whatever a
+        /// bag sets aside.</summary>
+        private static int OwnedSupply(SaveData data, string supplyId)
+        {
+            System.Collections.Generic.List<SupplyStock> stock = data.SupplyStock;
+            for (int i = 0; i < stock.Count; i++)
+                if (stock[i].SupplyId == supplyId) return stock[i].Count > 0 ? stock[i].Count : 0;
+            return 0;
+        }
+
+        private static int AddClamped(int a, int b)
+        {
+            long sum = (long)a + b;
+            return sum > int.MaxValue ? int.MaxValue : (int)sum;
+        }
+
+        private static bool IsFiniteNumber(double v) => !double.IsNaN(v) && !double.IsInfinity(v);
+
+        private static bool IsFiniteNumber(float v) => !float.IsNaN(v) && !float.IsInfinity(v);
+
         /// <summary>
         /// DROP a rest anchor that cannot be a position — a NaN or infinite coordinate, or a storey below
         /// the ground — by clearing the region, which is the field that means "there is an anchor at

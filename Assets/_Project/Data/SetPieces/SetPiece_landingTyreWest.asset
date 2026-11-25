@@ -1,0 +1,127 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b51978faec4dbb8e54e23107a97ef5, type: 3}
+  m_Name: SetPiece_landingTyreWest
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: prop.stp_landing_tyre_west
+  DisplayName: landingTyreWest
+  RigKey: landingTyreWest
+  SceneId: keyscene.stp_landing
+  BakedOptionsJson: '{"top":5.354004,"lowWater":-2.2,"highWater":2.2,"weather":0.35,"diameter":0.6,"sectionDepth":0.2}'
+  Layer: raised
+  Walk: behind
+  Mount: wall
+  BoundsMin: {x: -0.3, y: -0.0038635759, z: -0.62}
+  BoundsMax: {x: 0.3, y: 0.2014641, z: -0.00061207416}
+  Frames:
+  - Sprite: {fileID: -6729394615346557847, guid: bd2489a4797c0f442b39ef02a85d647f, type: 3}
+    RigDir: 0
+    ShowFaces: recipe facing
+    BearingDeg: 0
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 200, y: 157}
+    Pivot: {x: 10, y: 3}
+  - Sprite: {fileID: 97355261795409526, guid: bd2489a4797c0f442b39ef02a85d647f, type: 3}
+    RigDir: 7
+    ShowFaces: recipe facing
+    BearingDeg: 45
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 200, y: 157}
+    Pivot: {x: 10, y: 3}
+  - Sprite: {fileID: -6635487448764696512, guid: bd2489a4797c0f442b39ef02a85d647f, type: 3}
+    RigDir: 6
+    ShowFaces: recipe facing
+    BearingDeg: 90
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 200, y: 157}
+    Pivot: {x: 10, y: 3}
+  - Sprite: {fileID: 3940195941899028499, guid: bd2489a4797c0f442b39ef02a85d647f, type: 3}
+    RigDir: 5
+    ShowFaces: recipe facing
+    BearingDeg: 135
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 200, y: 157}
+    Pivot: {x: 10, y: 3}
+  - Sprite: {fileID: -3680305265627481725, guid: bd2489a4797c0f442b39ef02a85d647f, type: 3}
+    RigDir: 4
+    ShowFaces: recipe facing
+    BearingDeg: 180
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 200, y: 157}
+    Pivot: {x: 10, y: 3}
+  - Sprite: {fileID: -2593209994740627992, guid: bd2489a4797c0f442b39ef02a85d647f, type: 3}
+    RigDir: 3
+    ShowFaces: recipe facing
+    BearingDeg: 225
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 200, y: 157}
+    Pivot: {x: 10, y: 3}
+  - Sprite: {fileID: 672642416, guid: bd2489a4797c0f442b39ef02a85d647f, type: 3}
+    RigDir: 2
+    ShowFaces: recipe facing
+    BearingDeg: 270
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 200, y: 157}
+    Pivot: {x: 10, y: 3}
+  - Sprite: {fileID: 91515460, guid: bd2489a4797c0f442b39ef02a85d647f, type: 3}
+    RigDir: 1
+    ShowFaces: recipe facing
+    BearingDeg: 315
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 200, y: 157}
+    Pivot: {x: 10, y: 3}
+  CellSize: {x: 20, y: 21}
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders: []
+  Anchors:
+  - Name: hanger
+    Position: {x: 0, y: 0, z: 0}
+  Path: []
+  TideMarks: []
+  Words: []
+  HasLight: 0
+  Light:
+    Emitters: []
+    When: 
+  IsAnimated: 0
+  Animated:
+    Part: 
+    Input: 
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []
+  GameplayJson: '{"id":"prop.stp_landing_tyre_west","kind":"hung tyre fender","outsideDiameter":0.6,"openingDiameter":0.32,"sectionDepth":0.2,"hangerPivot":[0,0,0],"bodyCentre":[0,0.1,-0.32],"top":5.354004,"lowWater":-2.2,"highWater":2.2,"wetBelow":2.2,"weedBelow":-1.5000000000000002,"bounds":{"x":[-0.30000000000000004,0.30000000000000004],"y":[-0.003863575904219477,0.20146410161513775],"z":[-0.6200000000000001,-0.0006120741408631482]}}'
+  State: 
+  Variants: []
+  HasVendor: 0
+  Vendor:
+    Seller: 
+    At: {x: 0, y: 0, z: 0}

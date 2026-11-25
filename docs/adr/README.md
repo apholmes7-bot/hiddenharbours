@@ -59,6 +59,12 @@ When you add an ADR, add its row here in the same PR.
 | 0052 | A failing event handler cannot cut its publisher short | **Proposed** (option A RULED 2026-10-08; ADR awaits owner approval in its PR) |
 | 0053 | Held props are facet meshes on the figure's sockets | **Proposed** (D1–D10 ruled by the owner 2026-10-08; lands with held props PR 2, the bake; the owner approves it in its PR) |
 | 0054 | [Bathymetric wave data](0054-bathymetric-wave-data.md) | **Proposed** (Stage D: W4-6a imported bake; W4-6b runtime consumers) |
+| 0055 | [Goods are carried](0055-goods-are-carried.md) | **Proposed** (manual delivery, persistent goods and phased carrier design; no runtime change) |
+| 0056 | [The facet-id space is a budget: lazy fore blocks and a reserved player figure](0056-facet-id-space-is-a-budget.md) | Accepted (owner ruled "Yes, fix it" on PR 877, 2026-11-12; implemented in its PR; supersedes the PR 877 note) |
+| 0057 | [One world frame: the whole wall is a door, and doors do not teleport](0057-shared-world-frame-edge-crossings.md) | **Proposed** (owner ruling 2026-11-15; layout in `docs/architecture/world-frame.md`) |
+| 0059 | [Hulls sort among the scenery by where they lie](0059-hulls-sort-among-the-scenery.md) | Accepted (owner took all three recommendations 2026-11-17: option A, covered weed under the sea, the waterline pivot; rollout in `docs/architecture/hull-vs-decor-sorting.md` §7) |
+| 0061 | [The player is always the mesh: no sprite-sheet fallback](0061-the-player-is-always-the-mesh.md) | **Proposed** (owner ask 2026-11-19; one GameConfig switch, shipped off) |
+| 0062 | [The first week is closed by weather: St Peters alone until the island gate](0062-the-first-week-is-closed-by-weather.md) | **Proposed** (owner rulings 2026-11-23; canon amended in the same PR; the owner accepts it by merging) |
 
 **Conventions.** `Proposed` = awaiting the named decider; `Accepted` = ratified (by the owner where
 the ADR says so, otherwise by `lead-architect` on merge); `Implemented` = accepted and the code

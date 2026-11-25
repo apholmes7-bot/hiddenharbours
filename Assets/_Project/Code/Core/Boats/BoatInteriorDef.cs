@@ -3,6 +3,29 @@ using UnityEngine;
 
 namespace HiddenHarbours.Core
 {
+    /// <summary>Whether an external threshold has a movable leaf. Zero preserves existing assets.</summary>
+    public enum BoatInteriorDoorOpeningMode
+    {
+        Leafed = 0,
+        AlwaysOpen = 1,
+    }
+
+    /// <summary>An open connection within one sole. It has no cabin transition or interaction.</summary>
+    [Serializable]
+    public sealed class BoatInteriorPassage
+    {
+        public string Id = "";
+        public string LevelId = "";
+        public string RigLevelId = "";
+        public float SoleZMeters;
+        public string WallAxis = "";
+        public float WallAtMeters;
+        public Vector2 ApertureMeters;
+        public float ClearWidthMeters;
+        public float ClearHeightMeters;
+        public string Reason = "";
+    }
+
     /// <summary>How a cabin door actually opens — the sidecars' <c>THRESHOLD.mechanism</c>.</summary>
     public enum BoatInteriorDoorMechanism
     {
@@ -90,6 +113,9 @@ namespace HiddenHarbours.Core
     {
         [Tooltip("Optional authored entry surface at the head of this door's stair. Empty means legacy.")]
         public BoatInteriorEntryLanding EntryLanding;
+        [Tooltip("Leafed keeps the existing shut-on-load door; AlwaysOpen is an external opening with no leaf.")]
+        public BoatInteriorDoorOpeningMode OpeningMode = BoatInteriorDoorOpeningMode.Leafed;
+        public string OpeningReason = "";
 
         [Tooltip("The sidecar's threshold id — 'entry', 'sky_entry'.")]
         public string Id = "";
@@ -182,6 +208,84 @@ namespace HiddenHarbours.Core
 
         [Tooltip("The facings this reads from — the kit's own 8-facing names. Empty means every facing.")]
         public string[] VisibleFacings = Array.Empty<string>();
+
+        // ---- appended 2026-11-14: prep stations and bunk geometry (all optional) ----------------
+
+        /// <summary>The verb a cooktop carries. The trawlers' single <c>galley</c> anchor and the kit's
+        /// <c>stove</c> both bake as this, so runtime finds a cooktop by its action, never by its id.</summary>
+        public const string ActionCook = "cook";
+
+        /// <summary>The verb a prep station carries: raw food is cut/prepared here, then cooked at an
+        /// <see cref="ActionCook"/> anchor (owner ruling 2026-11-14: two steps).</summary>
+        public const string ActionPrep = "prep";
+
+        /// <summary>The verb a bunk carries.</summary>
+        public const string ActionSleep = "sleep";
+
+        /// <summary>How far (m, hull frame, same level) a prep station may stand from the cooktop it
+        /// serves: the stations share one counter, so this is a whole small galley at most.</summary>
+        public const float PrepToCookMaxMetres = 1.5f;
+
+        /// <summary>How close (m, hull frame) two sleeping places aboard one hull may come: one
+        /// shoulder width. Two sleepers' heads (pillow ends) are never nearer than this, and two bunk
+        /// reach points on one level are never nearer either, so the nearest-wins press always tells
+        /// the two berths apart (owner ruling 2026-11-15: two players never share one bed).</summary>
+        public const float BunkMinSeparationMetres = 0.45f;
+
+        [Tooltip("For a bunk: the interior level its mattress is on. EMPTY means no bunk geometry was " +
+                 "given, and the two points below mean nothing.")]
+        public string BunkLevel = "";
+
+        [Tooltip("For a bunk: the obstruction (on BunkLevel) its mattress was measured from.")]
+        public string BunkObstruction = "";
+
+        [Tooltip("For a bunk: the centre of the mattress top, hull-local metres (z = mattress top).")]
+        public Vector3 MattressCentre = Vector3.zero;
+
+        [Tooltip("For a bunk: the middle of the mattress's head edge, hull-local metres. The pillow is " +
+                 "on this end; MattressCentre → PillowEnd is the way the sleeper's head points.")]
+        public Vector3 PillowEnd = Vector3.zero;
+
+        /// <summary>True when the sidecar gave where this bunk's mattress is and which end the pillow
+        /// is on.</summary>
+        public bool HasBunkGeometry => !string.IsNullOrEmpty(BunkLevel);
+
+        // ---- appended 2026-11-15: kitchen pieces — food stores, seats, tables (all optional) ----------
+
+        /// <summary>The verb a seat carries: the player sits here (rest short of a bed, and the meal boost
+        /// when it is by a table or counter — owner ask 2026-11-15).</summary>
+        public const string ActionSit = "sit";
+
+        /// <summary>The verb a table carries. Nobody presses a table; it is here so a seat beside it reads
+        /// as a DINING seat (<see cref="KitchenLayout.IsDiningSeat"/>).</summary>
+        public const string ActionTable = "table";
+
+        /// <summary>The verb a food store carries (pantry, cooler, fridge); <see cref="KitchenStorageId"/>
+        /// names which.</summary>
+        public const string ActionFoodStorage = "food_storage";
+
+        /// <summary>How close (m, hull frame, same level) two kitchen reach points (prep, cook, store,
+        /// seat) may come. Tighter than a bunk's: the kit's prep and cooktop reaches already stand 0.18 m
+        /// apart on the small hulls, along one counter, and the nearest-wins press still tells them apart.</summary>
+        public const float KitchenAnchorMinSeparationMetres = 0.15f;
+
+        [Tooltip("For a food store: the KitchenStorageDef id it is ('kitchen_storage.cooler'). Empty otherwise.")]
+        public string KitchenStorageId = "";
+
+        [Tooltip("For a seat or a table: the interior level the furniture stands on. EMPTY means no " +
+                 "furniture geometry was given, and the two fields below mean nothing.")]
+        public string FurnitureLevel = "";
+
+        [Tooltip("For a seat or a table: the drawn obstruction (on FurnitureLevel) it is — the helm seat, " +
+                 "the bench, the table.")]
+        public string FurnitureObstruction = "";
+
+        [Tooltip("For a seat: where the sitter's hips rest, hull-local metres (z = the cushion or bench " +
+                 "top). For a table: the centre of the table top (z = the top).")]
+        public Vector3 FurniturePoint = Vector3.zero;
+
+        /// <summary>True when the sidecar gave the furniture this seat or table is drawn as.</summary>
+        public bool HasFurnitureGeometry => !string.IsNullOrEmpty(FurnitureLevel);
     }
 
     /// <summary>
@@ -317,6 +421,9 @@ namespace HiddenHarbours.Core
         [Tooltip("Additional doors beyond the main threshold — the 90's skylounge slider onto the aft " +
                  "deck. Empty on every hull with one way in.")]
         public BoatInteriorDoor[] AdditionalDoors = Array.Empty<BoatInteriorDoor>();
+
+        [Tooltip("Open passages within their own sole. These never enter or exit the cabin.")]
+        public BoatInteriorPassage[] InternalPassages = Array.Empty<BoatInteriorPassage>();
 
         [Tooltip("What you can use inside. Ids append-only from the kit forward.")]
         public BoatInteriorAnchor[] Anchors = Array.Empty<BoatInteriorAnchor>();

@@ -139,6 +139,26 @@ float3 TSA_SampleMat(int i, float2 wp, float intensity, float2 dwx, float2 dwy)
     return lerp(cA, cB, k);
 }
 
+// THE SPLAT WARP (terrain-fidelity 3b, seat ruling t16): the splats' half-metre texels stair-step every
+// painted edge. The sample point of the six splat reads moves by the meander, the band ladder's own two
+// octaves (16 m and 6 m, the same noise, scales and salts as TSA_GroundWeights below, so the edges and the
+// bands wander together), by at most TSA_SPLAT_WARP_TEXELS of one splat texel. The two octaves mix into
+// the two axes as (a + b, a - b) / 2, so the shift is at most that many texels in length, never a whole
+// texel: an edge moves inside its own texel, never across a category. wpx is the ground's pixel grid, so
+// one pixel reads one point. Only the splat reads take the warped uv; the height, the hem, the wet band,
+// the macro drift and the relight stay on the true point. Both frags pass it in (the floor follows).
+static const float TSA_SPLAT_WARP_TEXELS = 0.9;
+float2 TSA_WarpUV(float2 wpx, float2 uv)
+{
+    uint sw, sh;
+    _SplatA.GetDimensions(sw, sh);
+    [branch] if (sw <= 1u || sh <= 1u) return uv;   // a one-texel stand-in: no region's maps bound
+    float wig  = TSA_VNoise(wpx / max(_BandWiggleScale, 1e-3), 3.0) * 2.0 - 1.0;
+    float wigD = TSA_VNoise(wpx / max(_BandDetailScale, 1e-3), 7.0) * 2.0 - 1.0;
+    float2 shift = (0.5 * TSA_SPLAT_WARP_TEXELS) * float2(wig + wigD, wig - wigD);
+    return uv + shift / float2((float)sw, (float)sh);
+}
+
 // The ground's material weights and ladder intensities at a world position: the height-derived bands
 // (the CPU ladders as soft gates) under the painted splat overrides. wp is the world position, wpx the
 // same on the ground's pixel grid (the noise domain), uv the height map's (and the splats') coordinate

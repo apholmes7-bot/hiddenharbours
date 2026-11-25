@@ -139,3 +139,11 @@ MonoBehaviour:
   HelmStationSource: ANCHORS.helm
   WalkCenter: {x: 0, y: -0.057500124}
   WalkHalfExtents: {x: 1.451, y: 4.2425003}
+  BoardingFreeboardMetres: 0.73
+  RailsBlockTheSide: 0
+  ClimbAboardOnlyAtBoardingPoints: 1
+  BoardingPoints:
+  - Id: stern_ladder
+    Kind: 0
+    DeckLocalMeters: {x: 0, y: -4.3}
+    ReachMetres: 0

@@ -28,10 +28,8 @@ namespace HiddenHarbours.Tests.RigBaking
     ///   baked nor explicitly excluded fails, so the answer cannot be "nobody noticed".</item>
     ///   <item><b>Is the wiring honest?</b> A mesh-only hull must have no sprite compass and a
     ///   sheeted one must keep hers — that difference is what the owner's V key reads.</item>
-    ///   <item><b>Is the dory's RECONSTRUCTED material table right?</b> The one place we transcribe
-    ///   what a rig means rather than reading what it exports, and therefore the one place that has
-    ///   to be proved in pixels. See <see cref="DoryReconstructedMaterials_ReproduceHerOwnRenderer"/>
-    ///   and its sabotage.</item>
+    ///   <item><b>(Retired with the dory's redraw, #1166.)</b> The dory's material table was once
+    ///   reconstructed and proved here in pixels; her rig exports it now.</item>
     /// </list>
     /// </summary>
     public class HullMeshFleetTests
@@ -220,8 +218,30 @@ namespace HiddenHarbours.Tests.RigBaking
                                 stale.Add($"{hull.Key}.{pose}.bounds: committed {committed.bounds}, rig says {rig.bounds}");
                         }
 
-                        SameLeaf(nameof(HullMeshDef.DoorLeafClosed), def.DoorLeafClosed, leafShut.Mesh);
-                        SameLeaf(nameof(HullMeshDef.DoorLeafOpen), def.DoorLeafOpen, leafOpen.Mesh);
+                        if (fresh.Walk == null || def.DoorLeaves == null || def.DoorLeaves.Length == 0)
+                        {
+                            SameLeaf(nameof(HullMeshDef.DoorLeafClosed), def.DoorLeafClosed, leafShut.Mesh);
+                            SameLeaf(nameof(HullMeshDef.DoorLeafOpen), def.DoorLeafOpen, leafOpen.Mesh);
+                        }
+                        else
+                        {
+                            string scope = hull.Extraction != null ? hull.Extraction.ScopeOr(hull.GlobalName) : hull.GlobalName;
+                            var ids = HullWalkRigExtractor.DeclaredDoors(fresh.Walk).Select(d => HullLayoutJson.Text(d, "id")).ToArray();
+                            CollectionAssert.AreEqual(ids, def.DoorLeaves.Select(p => p.Id), hull.Key);
+                            Same("primary closed alias", def.DoorLeafClosed, def.DoorLeaves[0].Closed);
+                            Same("primary open alias", def.DoorLeafOpen, def.DoorLeaves[0].Open);
+                            foreach (var pair in def.DoorLeaves)
+                            {
+                                var shut = RigMeshBuilder.Build(HullWalkRigExtractor.Door(host, scope, fresh, pair.Id, 0), pair.Id + "ClosedCheck");
+                                var open = RigMeshBuilder.Build(HullWalkRigExtractor.Door(host, scope, fresh, pair.Id, 1), pair.Id + "OpenCheck");
+                                try
+                                {
+                                    SameLeaf(pair.Id + ".Closed", pair.Closed, shut.Mesh);
+                                    SameLeaf(pair.Id + ".Open", pair.Open, open.Mesh);
+                                }
+                                finally { UnityEngine.Object.DestroyImmediate(shut.Mesh); UnityEngine.Object.DestroyImmediate(open.Mesh); }
+                            }
+                        }
                     }
                     Same("CellW", def.CellW, fresh.W);
                     Same("CellH", def.CellH, fresh.H);
@@ -381,6 +401,8 @@ namespace HiddenHarbours.Tests.RigBaking
         // Walk rooms enter the mask at code 0 after classification, so this scan never sees their soles.
         static readonly (string Key, float LowestInterior, string Whence)[] CabinSoleHulls =
         {
+            ("motorYacht84", 1.94f, "foot of the transom strip under the garage sole, faces 1910 and 1911, GARAGE_SOLE = 2.15"),
+            ("expeditionYacht120", 3.40f, "ZP = 3.40, the swim platform's stern-step walls; main deck ZM = 4.30"),
             ("sloop30", 0.35f, "cabin sole (sloopIsoRig.js CAB_SOLE = 0.35; DWL 0.55, cockpit SOLE 1.15)"),
             ("sloop88", 1.10f, "foot of the lower-accommodation bulkheads (sloop88IsoRig.js LOW - 0.1 " +
                                "= 1.10, they land on the hull below the sole; DWL 1.35, cockpit SOLE 2.55)"),
@@ -423,6 +445,71 @@ namespace HiddenHarbours.Tests.RigBaking
         /// made the comparison self-fulfilling — and would have put sloop30's boarding line 0.20 m
         /// UNDER her waterline, rebuilding the "riding high" defect the clamp exists to cure.</para>
         /// </summary>
+        static float RasterPixelArea => 1f /
+            (RigMeshInteriorClassifier.PixelsPerMetre * RigMeshInteriorClassifier.PixelsPerMetre);
+
+        // Faces share no vertices. Rejoin each fan through its triangle indices, then measure area.
+        static bool TryInteriorFaceLowest(Vector3[] vertices, List<Vector4> attrs, int[] triangles,
+            HashSet<int> driveVertices, out float lowest, out float smallerArea)
+        {
+            var parent = Enumerable.Range(0, vertices.Length).ToArray();
+            int Root(int i)
+            {
+                while (parent[i] != i) { parent[i] = parent[parent[i]]; i = parent[i]; }
+                return i;
+            }
+            for (int i = 0; i < triangles.Length; i += 3)
+            {
+                parent[Root(triangles[i + 1])] = Root(triangles[i]);
+                parent[Root(triangles[i + 2])] = Root(triangles[i]);
+            }
+            var faces = new Dictionary<int, HashSet<int>>();
+            var areas = new Dictionary<int, float>();
+            for (int i = 0; i < triangles.Length; i += 3)
+            {
+                int a = triangles[i], b = triangles[i + 1], c = triangles[i + 2], key = Root(a);
+                if (!faces.TryGetValue(key, out var points)) faces[key] = points = new HashSet<int>();
+                points.Add(a); points.Add(b); points.Add(c);
+                areas.TryGetValue(key, out float area);
+                areas[key] = area + Vector3.Cross(vertices[b] - vertices[a], vertices[c] - vertices[a]).magnitude * 0.5f;
+            }
+            var interior = faces.Where(f => f.Value.All(i => !driveVertices.Contains(i) &&
+                i < attrs.Count && attrs[i].w > 0.5f && attrs[i].w < 1.5f))
+                .Select(f => (Area: areas[f.Key], Z: f.Value.Min(i => vertices[i].z))).ToArray();
+            lowest = interior.Where(f => f.Area >= RasterPixelArea).Select(f => f.Z)
+                .DefaultIfEmpty(float.MaxValue).Min();
+            float line = lowest;
+            smallerArea = interior.Where(f => f.Area < RasterPixelArea && f.Z < line).Sum(f => f.Area);
+            return lowest < float.MaxValue && smallerArea < RasterPixelArea;
+        }
+
+        [Test]
+        public void InteriorFaceMeasurement_IgnoresOneSliverButRefusesAPixelOfSlivers()
+        {
+            float pixel = 1f / RigMeshInteriorClassifier.PixelsPerMetre;
+            var vertices = new List<Vector3>();
+            var attrs = new List<Vector4>();
+            var triangles = new List<int>();
+            void Face(float size, float z)
+            {
+                int n = vertices.Count;
+                vertices.AddRange(new[] { new Vector3(0, 0, z), new Vector3(size, 0, z), new Vector3(0, size, z) });
+                attrs.AddRange(Enumerable.Repeat(new Vector4(0, 0, 0, 1), 3));
+                triangles.AddRange(new[] { n, n + 1, n + 2 });
+            }
+            Face(1f, 2f); Face(pixel, 0f);
+            Assert.IsTrue(TryInteriorFaceLowest(vertices.ToArray(), attrs, triangles.ToArray(),
+                new HashSet<int>(), out float lowest, out float smaller));
+            Assert.AreEqual(2f, lowest);
+            Assert.AreEqual(RasterPixelArea * 0.5f, smaller);
+            Face(pixel, 0f); Face(pixel, 0f);
+            Assert.IsFalse(TryInteriorFaceLowest(vertices.ToArray(), attrs, triangles.ToArray(),
+                new HashSet<int>(), out lowest, out smaller));
+            Assert.AreEqual(2f, lowest);
+            Assert.Greater(smaller, RasterPixelArea);
+        }
+
+        // Moved by the measured face-area ruling; the classifier and its sampling constants stay.
         [Test]
         public void EveryCommittedHullMesh_CarriesTheInteriorMaskAndAgreesWithItsDeckLine()
         {
@@ -448,7 +535,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 // below carries across the per-side change without re-measurement. One-sided faces
                 // (codes 2/3) are policed by their own test.
                 int interior = 0;
-                float lowest = float.MaxValue;
+                float previousLowest = float.MaxValue;
                 // The authored drive part is metadata beside the mesh, not a height cut.
                 var driveVertices = new HashSet<int>(def.DriveFaceVertexRanges
                     .SelectMany(range => Enumerable.Range(range.x, range.y)));
@@ -457,8 +544,20 @@ namespace HiddenHarbours.Tests.RigBaking
                     if (driveVertices.Contains(i)) continue;
                     if (attrs[i].w <= 0.5f || attrs[i].w >= 1.5f) continue;
                     interior++;
-                    if (verts[i].z < lowest) lowest = verts[i].z;
+                    if (verts[i].z < previousLowest) previousLowest = verts[i].z;
                 }
+
+                bool measured = TryInteriorFaceLowest(verts, attrs, def.Mesh.triangles, driveVertices,
+                    out float lowest, out float smallerArea);
+                if (!measured)
+                    drifted.Add($"{hull.Key}: fully interior faces below the measured line total " +
+                                $"{smallerArea:R} m2, against one raster pixel {RasterPixelArea:R} m2");
+                // The jetski too: with her handlebars baked as a fitting, a sliver under the column (smaller than
+                // one raster pixel) is her lowest interior vertex, and the area measure rightly skips it.
+                if (hull.Key != "motorYacht84" && hull.Key != "expeditionYacht120" && hull.Key != "jetSki" &&
+                    interior > 0 && lowest != previousLowest)
+                    drifted.Add($"{hull.Key}: the face-area measurement moved the old line " +
+                                $"{previousLowest:R} to {lowest:R}");
 
                 if (interior == 0)
                 {
@@ -743,76 +842,8 @@ namespace HiddenHarbours.Tests.RigBaking
 
         // ---- 5. the dory's reconstructed material table, proved in pixels ---------------------
 
-        /// <summary>
-        /// <b>The one transcription in the whole pipeline, and therefore the one thing here that could
-        /// be confidently wrong.</b>
-        ///
-        /// <para>The dory predates the <c>MATS</c> convention and selects her ramps inline, so the
-        /// shim REBUILDS her material table from her own <c>RAMP</c>/<c>IRON</c> consts
-        /// (<see cref="RigMeshSymbols.Reconstructions"/>). Reading a rig and declaring what it means
-        /// is precisely how this project has shipped mirrored boats five times, so the claim is
-        /// settled the only way that counts: the truth side of this compare is HER OWN
-        /// <c>render()</c>, which never touches the reconstruction, against a reference rasterisation
-        /// that is nothing but the reconstruction. A wrong ramp or a wrong offset does not shift a
-        /// boundary pixel — it recolours the entire boat.</para>
-        /// </summary>
-        [Test]
-        public void DoryReconstructedMaterials_ReproduceHerOwnRenderer()
-        {
-            FleetHull dory = HullMeshFleet.Get("dory");
-            using IRigScriptHost host = RigScriptHostFactory.Create();
-            RigMeshData data = RigMeshExtractor.ExtractFrom(host, dory.ScriptPath, dory.GlobalName);
-
-            CollectionAssert.Contains(data.ReconstructedSymbols, "MATS",
-                "This test exists because the dory's MATS is reconstructed. If it is now EXPORTED by " +
-                "the rig, that is good news: delete the RigMeshSymbols.Reconstructions entry and this " +
-                "test with it.");
-
-            double worst = WorstFaceDiffPercent(host, data, dory.GlobalName);
-
-            // The bar is the same one RigMeshMenu applies to every hull. What matters is the ORDER OF
-            // MAGNITUDE: a correct table lands in tenths of a percent (residual last-ULP shade steps
-            // at facet boundaries), and the sabotage below shows what a wrong one looks like.
-            Assert.Less(worst, 0.5,
-                $"The dory's reconstructed material table does not reproduce her own renderer " +
-                $"(worst {worst:F4}% of cell pixels differ across 8 headings).");
-        }
-
-        [Test]
-        public void DoryReconstruction_Sabotage_AWrongRampOffsetIsCaught()
-        {
-            FleetHull dory = HullMeshFleet.Get("dory");
-            using IRigScriptHost host = RigScriptHostFactory.Create();
-            RigMeshData data = RigMeshExtractor.ExtractFrom(host, dory.ScriptPath, dory.GlobalName);
-
-            double honest = WorstFaceDiffPercent(host, data, dory.GlobalName);
-
-            // Shift the wood ramp one shade step — the smallest lie the reconstruction could tell.
-            // (Getting `off` wrong is far likelier than getting the ramp wrong: the dory's clamp
-            // bounds are what encode it, and they are easy to misread.)
-            data.Materials[0].Off += 1;
-            double sabotaged = WorstFaceDiffPercent(host, data, dory.GlobalName);
-
-            Assert.Greater(sabotaged, honest * 20.0,
-                $"A one-step error in the reconstructed ramp offset moved the image from {honest:F4}% " +
-                $"to only {sabotaged:F4}%. That means the check above is not actually reading the " +
-                "material table, so it would pass with a wrong one — fix the check, not the number.");
-        }
-
-        /// <summary>Worst whole-cell divergence between the rig's own render and a reference
-        /// rasterisation of the extracted faces, over the 8 cardinal headings.</summary>
-        static double WorstFaceDiffPercent(IRigScriptHost host, RigMeshData data, string global)
-        {
-            double worst = 0;
-            for (int dir = 0; dir < 8; dir++)
-            {
-                var view = new RigViewOptions(dir, data.DefaultElev);
-                byte[] truth = host.EvaluateBytes($"{global}.render({view.ToJsArgs()})");
-                var diff = RigMeshReferenceRasterizer.Compare(
-                    truth, RigMeshReferenceRasterizer.RenderFromFaces(data, view), data.W, data.H);
-                worst = Math.Max(worst, diff.PercentDiffering);
-            }
-            return worst;
-        }
+        // Retired with the dory's redraw (#1166): DoryReconstructedMaterials_ReproduceHerOwnRenderer and
+        // DoryReconstruction_Sabotage_AWrongRampOffsetIsCaught. Her materials are now her own drawn deck,
+        // exported by her rig, not a reconstruction of the old renderer, as the first test asked.
     }
 }

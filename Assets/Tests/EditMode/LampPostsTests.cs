@@ -398,16 +398,16 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheLampRow_FollowsThePresetsReach_RatherThanBeingChosen()
         {
             float reach = LightPresets.ReachMetres(LightPresets.Kind.Lightpost);
-            float fittingRow = StPetersWharf.MinCellY + 0.5f;
+            float fittingRow = 2.53345215f + 0.5f;
 
             Assert.LessOrEqual(StPetersWharf.LampRowY, fittingRow + reach,
                 "the row must be inside the pool's reach of the fitting row");
             Assert.Greater(StPetersWharf.LampRowY + 1f, fittingRow + reach,
                 "and it must be the FURTHEST BACK row that is — one row further north would be outside");
 
-            Assert.AreEqual(0.5f, StPetersWharf.LampRowY, 1e-6f,
-                "the row the 02:00 plates were shot on — the fitting ruling must move what is DRAWN and " +
-                "nothing about where anything STANDS");
+            Assert.AreEqual(5.75220215f, StPetersWharf.LampRowY, 1e-6f,
+                "the measured north-lip inset after the owner moved the standing surface; " +
+                "the 3.6 m reach still controls the row");
         }
 
         /// <summary>

@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: birdhaunt.stp_wharf
   RegionId: region.st_peters
   Kind: 1
-  Centre: {x: 206, y: 3}
+  Centre: {x: 206, y: 6.25220215}
   HalfSize: {x: 12, y: 8}
   RoostId: birdroost.stp_whelps
   Sheltered: 1

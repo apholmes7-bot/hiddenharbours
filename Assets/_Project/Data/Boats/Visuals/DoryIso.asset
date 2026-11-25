@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: visual.dory_iso
   Variant: 1
   HullMesh: {fileID: 11400000, guid: 3a28801b29546ea439d52cf586830271, type: 2}
+  DesignWaterlineMeters: 0
   Deck: {fileID: 11400000, guid: acb8466f7d0024b08aa1544b4b7e8339, type: 2}
   Facings:
   - {fileID: -4090857515788694173, guid: 8556d842d3fbf8d4bb8befd79470e780, type: 3}
@@ -260,6 +261,99 @@ MonoBehaviour:
   OarColumnCount: 10
   OarPortMesh: {fileID: 11400000, guid: 74d5735d5d182604eb0619e2d099a326, type: 2}
   OarStarMesh: {fileID: 11400000, guid: 7d24bfd4e93adb64e82011b3861e96df, type: 2}
+  OarSplash:
+    Enabled: 1
+    BladeReachMeters: 1.45
+    SplashReachMeters: 1.2
+    MinStrength: 0.35
+    SpeedShare: 0.35
+    SpeedForFullSplash: 2
+    CatchDropsMin: 3
+    CatchDropsMax: 8
+    DropletSpeed: 1.1
+    DropletLifetime: 0.4
+    DropletSize: 0.09
+    DropletVelocityRetain: 0.05
+    CatchFoamPuffs: 2
+    FoamPuffsPerSecond: 9
+    FoamLifetime: 1.6
+    FoamSize: 0.32
+    FoamStartAlpha: 0.75
+    FoamFadePower: 1.4
+    FoamSpreadFactor: 1.7
+    FoamScatterMeters: 0.12
+    FoamPushSpeed: 0.25
+    FoamVelocityRetain: 0.2
+    ReleaseDropsMin: 1
+    ReleaseDropsMax: 4
+    ReleaseDropletSpeed: 0.6
+    SwirlPuffs: 6
+    SwirlRadiusMeters: 0.13
+    SwirlSpinSpeed: 0.3
+    SwirlOpenShare: 0.35
+    SwirlLifetimeScale: 1.4
+    SwirlSizeScale: 0.55
+    RipplesAtCatch: 2
+    RipplesAtRelease: 1
+    RippleStaggerSeconds: 0.16
+    RippleEchoFade: 0.55
+    RippleStartRadius: 0.1
+    RippleEndRadius: 0.8
+    RippleLifetime: 1.4
+    RippleGentleSizeShare: 0.6
+    RippleStartAlpha: 0.5
+    RippleFadePower: 0.9
+    RippleSpreadEase: 2
+    RippleBandCentre: 0.82
+    RippleBandHalfWidth: 0.12
+    RippleColor: {r: 0.9, g: 0.95, b: 1, a: 1}
+    DripsPerSecond: 20
+    DripDecaySeconds: 0.4
+    DripSize: 0.05
+    DripScatterMeters: 0.12
+    DripRingScale: 0.3
+    DripRingLifetimeScale: 0.5
+    DripRingAlphaScale: 0.6
+    LifetimeJitter: 0.2
+    SizeJitter: 0.25
+    FoamPoolSize: 48
+    DropletPoolSize: 24
+    RipplePoolSize: 24
+    DripPoolSize: 16
+    FoamColor: {r: 0.92, g: 0.96, b: 1, a: 1}
+    DropletColor: {r: 0.95, g: 0.98, b: 1, a: 1}
+    SortingOrder: -1
+  Rowing:
+    Enabled: 1
+    GripInboardMeters: 0.55
+    LoomInboardMeters: 0.65
+    SeatLocalMeters: {x: 0, y: -0.76, z: 0.3056}
+    FootBraceLocalMeters: {x: 0.16, y: -1.48, z: 0.115}
+    LaybackDegrees: 6
+    ReachLeanMaxDegrees: 40
+    KneeClearanceMeters: 0.11
+    BodyClearanceMeters: 0.02
+    BodyClearLeanMaxDegrees: 12
+    BodyClearTwistMaxDegrees: 15
+    HandAboveKneeMeters: 0.2
+    HandAboveHipLineShareFromAhead: 0.13
+    LoomHalfThicknessMeters: 0.055
+    LoomClearanceMeters: 0.02
+    RestBladeDipDegrees: 17
+    RestSlumpDegrees: 8
+    RestBreathDegrees: 1.5
+    RestBreathSeconds: 4
+    RestHandAlongThigh: 0.86
+    RestHandAboveThighMeters: 0.07
+    RockLevelling: 1
+    RockLevelReachMeters: 1.45
+    BladeFloorMeters: 0.2
+  OarStow:
+    Enabled: 1
+    SweepDegrees: -95
+    DipDegrees: 0
+    PortLockLocalMeters: {x: -0.38, y: -0.33, z: 0.363}
+    CameraLiftMeters: 0.15
   MotorLower: []
   MotorUpper: []
   MotorColumnCount: 9
@@ -268,7 +362,35 @@ MonoBehaviour:
   MotorFit: 0
   MotorMesh: {fileID: 11400000, guid: ef94ad121c781a84db3911aab73718e0, type: 2}
   MotorMeshFitmentOffsetMeters: {x: 0, y: 0.28, z: 0.055}
+  MotorFitMesh: {fileID: 11400000, guid: 2524d3e0a1dc8b24e8edce81c4272fa6, type: 2}
+  Tiller:
+    Enabled: 1
+    SeatLocalMeters: {x: -0.1, y: -1.64, z: 0.3584}
+    PortFootBraceLocalMeters: {x: -0.0234, y: -1.1682, z: 0.115}
+    StarboardFootBraceLocalMeters: {x: 0.2122, y: -1.278, z: 0.115}
+    SeatedState: idle_oars
+    FloorOriginLocalMeters: {x: -0.1, y: -1.54, z: 0.13}
+    FacingDeckBearingDegrees: 25
+    TillerGripAtRestLocalMeters: {x: 0, y: -1.975, z: 0.627}
+    IdleLeanDegrees: 4
+    SitUpPerThrottleDegrees: 4
+    BreathDegrees: 1
+    BreathSeconds: 4.5
+    RestHandAlongThigh: 0.7
+    RestHandAboveThighMeters: 0.06
+    ReachLeanMaxDegrees: 30
+    BodyClearanceMeters: 0.02
+    BodyClearLeanMaxDegrees: 12
+    BodyClearTwistMaxDegrees: 20
+    LookIntoTurnDegrees: 6
+    HeadLookIntoTurnDegrees: 16
+  HelmBarMesh: {fileID: 0}
   MotorRockRollDegrees: 3.4
   MotorRockPitchDegrees: 1.9
   MotorRockHeavePixels: 1.3
   MotorMountLocalMeters: {x: 0, y: -2.35, z: 0.8}
+  PilotStance: 0
+  OarsPilotDeckBearingDegrees: 180
+  SeatedHelmState: 
+  SeatedHelmFloorOrigin: {x: 0, y: 0, z: 0}
+  Interior: {fileID: 0}

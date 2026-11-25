@@ -1,0 +1,224 @@
+{
+  "schema": "hh.ui-rig-sidecar/1",
+  "rig": "Art/windRig.js",
+  "global": "WindRig",
+  "derivedFromRigSha256": "6bacee87455f99a21389ccd95685a053b6254124d59eaf0b867923784118e170",
+  "units": {
+    "space": "native sprite px, origin top-left, y down",
+    "angle": "degrees",
+    "speed": "knots"
+  },
+  "angle": {
+    "convention": "SailWind / HelmWindReading: signed, off the bow, positive = wind over the STARBOARD bow",
+    "range": [
+      -180,
+      180
+    ],
+    "zeroAt": "up (the bow)",
+    "positiveTurn": "clockwise on screen (starboard)",
+    "screenDirection": "(sin a, -cos a) from the pivot"
+  },
+  "sources": {
+    "awa": "HelmWindReading.ApparentAngleDeg",
+    "aws": "HelmWindReading.ApparentKn",
+    "twa": "HelmWindReading.TrueAngleDeg (grade 2 only; HasTrue)",
+    "tws": "HelmWindReading.TrueKn (grade 2 only; HasTrue)",
+    "bft": "WindReadout.Beaufort(SailDrive.ToMetresPerSecond(TrueKn)) - the game table; the rig keeps a preview copy only",
+    "follow": "grade 2 only: 'apparent' | 'true' - which pair the pointer and the piece's speed read (the unit's one button)",
+    "producer": "HelmWind.TryRead(grade, ...) -> SailDrive.ResolveWind; the rig computes no wind"
+  },
+  "printing": {
+    "closeHauledDeg": [
+      25,
+      50
+    ],
+    "calmKn": 1,
+    "drumMaxKn": 99,
+    "lcdKnMax": 99.9
+  },
+  "calm": "below calmKn the LCD shows --- for that angle and hides the pointer; the analog needle has no off state, so the host holds the last angle it drew above calmKn",
+  "repaint": {
+    "angleStepDeg": 2,
+    "speedStepKn": 0.5,
+    "note": "helm instruments plan 3: redraw only on a visible step; faces are cached per size x night"
+  },
+  "nightFollows": "the helm NIGHT PANEL flag (as every helm instrument)",
+  "layouts": {
+    "dial.card": {
+      "grade": "dial",
+      "size": "card",
+      "w": 340,
+      "h": 366,
+      "boxes": {
+        "aws": {
+          "x": 149,
+          "y": 224,
+          "w": 42,
+          "h": 23,
+          "format": "drum2",
+          "glyphScale": 3
+        }
+      },
+      "needle": {
+        "pivotX": 170,
+        "pivotY": 168,
+        "tipR": 118,
+        "tailR": 30,
+        "hubR": 9,
+        "source": "awa"
+      },
+      "face": {
+        "cx": 170,
+        "cy": 168,
+        "r": 133
+      }
+    },
+    "dial.piece": {
+      "grade": "dial",
+      "size": "piece",
+      "w": 112,
+      "h": 144,
+      "boxes": {
+        "aws": {
+          "x": 48,
+          "y": 85,
+          "w": 17,
+          "h": 12,
+          "format": "drum2",
+          "glyphScale": 2
+        }
+      },
+      "needle": {
+        "pivotX": 56,
+        "pivotY": 72,
+        "tipR": 31,
+        "tailR": 9,
+        "hubR": 3,
+        "source": "awa"
+      },
+      "face": {
+        "cx": 56,
+        "cy": 72,
+        "r": 36
+      }
+    },
+    "display.card": {
+      "grade": "display",
+      "size": "card",
+      "w": 340,
+      "h": 366,
+      "boxes": {
+        "awa": {
+          "x": 52,
+          "y": 222,
+          "w": 68,
+          "h": 33,
+          "format": "side+ang3",
+          "digitH": 24
+        },
+        "aws": {
+          "x": 178,
+          "y": 222,
+          "w": 58,
+          "h": 33,
+          "format": "kn4",
+          "digitH": 24
+        },
+        "twa": {
+          "x": 52,
+          "y": 268,
+          "w": 68,
+          "h": 33,
+          "format": "side+ang3",
+          "digitH": 24
+        },
+        "tws": {
+          "x": 178,
+          "y": 268,
+          "w": 58,
+          "h": 33,
+          "format": "kn4",
+          "digitH": 24
+        },
+        "bft": {
+          "x": 248,
+          "y": 46,
+          "w": 42,
+          "h": 33,
+          "format": "F+int",
+          "digitH": 24
+        },
+        "mode": {
+          "x": 50,
+          "y": 46,
+          "w": 34,
+          "h": 14,
+          "format": "APP|TRUE"
+        }
+      },
+      "needle": {
+        "pivotX": 170,
+        "pivotY": 126,
+        "tipR": 66,
+        "tailR": 0,
+        "hubR": 20,
+        "ringR": [
+          68,
+          76
+        ],
+        "cellDeg": 10,
+        "source": "follow"
+      },
+      "face": {
+        "x": 42,
+        "y": 38,
+        "w": 256,
+        "h": 274
+      },
+      "hits": {
+        "follow": {
+          "x": 42,
+          "y": 38,
+          "w": 256,
+          "h": 200
+        }
+      }
+    },
+    "display.piece": {
+      "grade": "display",
+      "size": "piece",
+      "w": 112,
+      "h": 144,
+      "boxes": {
+        "speed": {
+          "x": 37,
+          "y": 92,
+          "w": 29,
+          "h": 13,
+          "format": "kn4",
+          "digitH": 13,
+          "source": "follow"
+        }
+      },
+      "needle": {
+        "pivotX": 56,
+        "pivotY": 58,
+        "tipR": 24,
+        "tailR": 0,
+        "hubR": 7,
+        "ringR": [
+          25,
+          29
+        ],
+        "cellDeg": 30,
+        "source": "follow"
+      },
+      "face": {
+        "x": 13,
+        "y": 19,
+        "w": 86,
+        "h": 106
+      }
+    }
+  }
+}

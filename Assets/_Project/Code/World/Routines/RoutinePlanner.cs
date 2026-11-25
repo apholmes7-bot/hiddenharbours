@@ -34,6 +34,26 @@ namespace HiddenHarbours.World
                                         out string problem)
         {
             blockInteriors = System.Array.Empty<BuildingInterior>();
+            RoutineStop[] stops = ResolveStops(routine, stations, lanes, worldSeed, out problem);
+            if (stops == null) return null;
+            return BuildFromStops(routine.Id, stops, lanes, routine.WalkSpeedMetresPerSecond,
+                                  routine.CatchUpSpeedMetresPerSecond, out blockInteriors, out problem);
+        }
+
+        /// <summary>
+        /// The first half of <see cref="Build"/>: every block of the authored day resolved to a
+        /// <see cref="RoutineStop"/> (its station found in the region's table, its departure hour
+        /// jittered by this person's own seed). Returns null and a sentence naming the offender when the
+        /// content cannot be walked.
+        ///
+        /// <para>Split out so a day can be VARIED without re-deriving it: a conditional day (the beach on
+        /// a fine evening) is these same stops with one block replaced, handed to
+        /// <see cref="BuildFromStops"/>. The untouched blocks keep the very hours they have on an
+        /// ordinary day, because their jitter was computed here, once, from the authored table.</para>
+        /// </summary>
+        public static RoutineStop[] ResolveStops(RoutineDef routine, RoutineStations stations,
+                                                 RoutineLanes lanes, int worldSeed, out string problem)
+        {
             problem = string.Empty;
 
             if (routine == null) { problem = "no routine asset"; return null; }
@@ -58,24 +78,24 @@ namespace HiddenHarbours.World
 
             // ---- resolve every block's station and lane node up front, so a bad id fails before any
             //      geometry is built and the message names the block that is wrong.
-            var station = new RoutineStationEntry[n];
-            var node = new int[n];
+            var stops = new RoutineStop[n];
             for (int i = 0; i < n; i++)
             {
                 string id = routine.Entries[i].StationId;
-                if (!stations.TryFind(id, out station[i]))
+                if (!stations.TryFind(id, out stops[i].Station))
                 {
                     problem = $"'{routine.Id}' block {i} sends them to station '{id}', which this region " +
                               $"does not declare ({stations.Count} station(s) available)";
                     return null;
                 }
-                node[i] = lanes.IndexOfNode(station[i].LaneNodeName);
-                if (node[i] < 0)
+                if (lanes.IndexOfNode(stops[i].Station.LaneNodeName) < 0)
                 {
                     problem = $"'{routine.Id}' block {i}: station '{id}' hangs off lane node " +
-                              $"'{station[i].LaneNodeName}', which the lane network does not have";
+                              $"'{stops[i].Station.LaneNodeName}', which the lane network does not have";
                     return null;
                 }
+                stops[i].Activity = routine.Entries[i].Activity;
+                stops[i].Interruptible = routine.Entries[i].Interruptible;
             }
 
             // ---- the day's departure hours (authored, then jittered by this person's own seed).
@@ -83,10 +103,54 @@ namespace HiddenHarbours.World
             for (int i = 0; i < n; i++) authored[i] = RoutineSchedule.Wrap24(routine.Entries[i].StartHour);
 
             uint seed = RoutineSchedule.RoutineSeed(worldSeed, routine.Id);
+            for (int i = 0; i < n; i++)
+                stops[i].DepartureHour = RoutineSchedule.DepartureHour(authored, i, seed,
+                                                                       routine.ScheduleJitterMinutes);
+            return stops;
+        }
+
+        /// <summary>
+        /// The second half of <see cref="Build"/>: the geometry. Stop <c>i</c>'s route runs from stop
+        /// <c>i − 1</c>'s station to its own, so the day closes on itself.
+        ///
+        /// <para>A stop may carry an <see cref="RoutineStop.Approach"/> (the ground between its lane node
+        /// and the station, for a place the lanes do not reach) and a <see cref="RoutineStop.Strand"/>
+        /// (two consecutive stops on one strand are walked straight between, never back through the
+        /// lanes). A stop with neither is exactly a block of the authored day, and a day made only of
+        /// those comes out exactly as it always has.</para>
+        /// </summary>
+        public static RoutinePlan BuildFromStops(string routineId, RoutineStop[] stops, RoutineLanes lanes,
+                                                 float walkSpeedMetresPerSecond,
+                                                 float catchUpSpeedMetresPerSecond,
+                                                 out BuildingInterior[] blockInteriors, out string problem)
+        {
+            blockInteriors = System.Array.Empty<BuildingInterior>();
+            problem = string.Empty;
+
+            if (stops == null || stops.Length < 2)
+            {
+                problem = $"'{routineId}' has {(stops == null ? 0 : stops.Length)} stop(s); a day needs at " +
+                          "least two";
+                return null;
+            }
+            if (lanes == null) { problem = $"'{routineId}': the region has no lane network"; return null; }
+
+            int n = stops.Length;
+            var station = new RoutineStationEntry[n];
+            var node = new int[n];
             var departures = new float[n];
             for (int i = 0; i < n; i++)
-                departures[i] = RoutineSchedule.DepartureHour(authored, i, seed,
-                                                              routine.ScheduleJitterMinutes);
+            {
+                station[i] = stops[i].Station;
+                departures[i] = stops[i].DepartureHour;
+                node[i] = lanes.IndexOfNode(station[i].LaneNodeName);
+                if (node[i] < 0)
+                {
+                    problem = $"'{routineId}' block {i}: station '{station[i].Id}' hangs off lane node " +
+                              $"'{station[i].LaneNodeName}', which the lane network does not have";
+                    return null;
+                }
+            }
 
             // ---- the routes. Block i runs from block (i−1)'s station to block i's, so the day closes:
             //      the last block's destination is where the first block sets off from.
@@ -110,15 +174,30 @@ namespace HiddenHarbours.World
             {
                 int from = (i - 1 + n) % n;
                 hidden[i] = station[i].OutOfSight;
+                activities[i] = stops[i].Activity;
+                interruptible[i] = stops[i].Interruptible;
+                standHeading[i] = station[i].StandHeadingDegrees;
+                interiors[i] = station[i].Interior;
+
                 if (station[from].OutOfSight && station[i].OutOfSight)
                 {
                     routeStart[i] = waypoints.Count;
                     waypoints.Add(station[i].Position);
                     routeCount[i] = 1;
-                    activities[i] = routine.Entries[i].Activity;
-                    interruptible[i] = routine.Entries[i].Interruptible;
-                    standHeading[i] = station[i].StandHeadingDegrees;
-                    interiors[i] = station[i].Interior;
+                    continue;
+                }
+
+                // ALONG ONE STRAND: two places on the same stretch of beach are walked straight between.
+                // Going back up to the lane and down again to move ten metres along the sand would be the
+                // lane tree answering a question nobody asked it.
+                if (!string.IsNullOrEmpty(stops[i].Strand) &&
+                    string.Equals(stops[from].Strand, stops[i].Strand, System.StringComparison.Ordinal))
+                {
+                    int strandSlice = waypoints.Count;
+                    routeStart[i] = strandSlice;
+                    Append(waypoints, strandSlice, station[from].Position);
+                    Append(waypoints, strandSlice, station[i].Position);
+                    routeCount[i] = waypoints.Count - strandSlice;
                     continue;
                 }
 
@@ -126,7 +205,7 @@ namespace HiddenHarbours.World
                                                               nodePathBuffer);
                 if (pathCount < 0)
                 {
-                    problem = $"'{routine.Id}' block {i}: no lane path from '{station[from].LaneNodeName}' " +
+                    problem = $"'{routineId}' block {i}: no lane path from '{station[from].LaneNodeName}' " +
                               $"to '{station[i].LaneNodeName}'";
                     return null;
                 }
@@ -136,7 +215,7 @@ namespace HiddenHarbours.World
                     nodePathBuffer, pathCount, polylineBuffer);
                 if (polyCount < 0)
                 {
-                    problem = $"'{routine.Id}' block {i}: the lane polyline from " +
+                    problem = $"'{routineId}' block {i}: the lane polyline from " +
                               $"'{station[from].LaneNodeName}' to '{station[i].LaneNodeName}' overran its " +
                               "buffer — the lane table's via slices are inconsistent";
                     return null;
@@ -164,8 +243,18 @@ namespace HiddenHarbours.World
                     Append(waypoints, slice, station[from].Position);
                 }
 
+                // BACK UP an approach, station end first (it is authored lane node → station).
+                Vector2[] leave = stops[from].Approach;
+                if (leave != null)
+                    for (int k = leave.Length - 1; k >= 0; k--) Append(waypoints, slice, leave[k]);
+
                 // ALONG the lanes.
                 for (int k = 0; k < polyCount; k++) Append(waypoints, slice, polylineBuffer[k]);
+
+                // DOWN an approach, lane end first.
+                Vector2[] arrive = stops[i].Approach;
+                if (arrive != null)
+                    for (int k = 0; k < arrive.Length; k++) Append(waypoints, slice, arrive[k]);
 
                 // IN to wherever they are going — through the real drawn door, never the wall centre.
                 if (station[i].Indoors && !station[i].OutOfSight)
@@ -179,10 +268,6 @@ namespace HiddenHarbours.World
                 }
 
                 routeCount[i] = waypoints.Count - routeStart[i];
-                activities[i] = routine.Entries[i].Activity;
-                interruptible[i] = routine.Entries[i].Interruptible;
-                standHeading[i] = station[i].StandHeadingDegrees;
-                interiors[i] = station[i].Interior;
                 exitAt[i] = exitDistance;
             }
 
@@ -220,8 +305,8 @@ namespace HiddenHarbours.World
 
             blockInteriors = interiors;
             return new RoutinePlan(departures, flat, routeStart, routeCount, routeLength, activities,
-                                   standHeading, exitAt, enterAt, routine.WalkSpeedMetresPerSecond,
-                                   interruptible, routine.CatchUpSpeedMetresPerSecond, hidden);
+                                   standHeading, exitAt, enterAt, walkSpeedMetresPerSecond,
+                                   interruptible, catchUpSpeedMetresPerSecond, hidden);
         }
 
         /// <summary>

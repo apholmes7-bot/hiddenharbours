@@ -75,7 +75,7 @@ namespace HiddenHarbours.Tests.EditMode
         private BaitDef _herring;
 
         private const double PlaceTime = 5000.0;
-        private static readonly double LobsterSoakSpan = 12.0 * 3600.0;   // TrapDef.SoakHours = 12
+        private static readonly double LobsterSoakSpan = 12.0 * 75.0;   // TrapDef.SoakHours = 12
 
         [SetUp]
         public void SetUp()
@@ -175,6 +175,64 @@ namespace HiddenHarbours.Tests.EditMode
 
         // ---- tests -----------------------------------------------------------------------------
 
+        [TestCase(null)]
+        [TestCase("")]
+        public void SavedBait_EmptyId_IsExplicitlyUnbaited_EvenWithoutCatalog(string id)
+        {
+            var svc = MakeService();
+            svc.Configure(new[] { _lobsterTrap }, null, svc.transform);
+            Assert.AreEqual(PlacedTrapService.SavedBaitResolution.Unbaited,
+                svc.ResolveSavedBait(id, out var bait));
+            Assert.IsNull(bait);
+        }
+
+        [Test]
+        public void SavedBait_MissingCatalog_AndUnknownId_AreDifferentFailures()
+        {
+            var svc = MakeService();
+            Assert.AreEqual(PlacedTrapService.SavedBaitResolution.UnknownId,
+                svc.ResolveSavedBait("bait.absent", out var unknown));
+            Assert.IsNull(unknown);
+            svc.Configure(new[] { _lobsterTrap }, null, svc.transform);
+            Assert.AreEqual(PlacedTrapService.SavedBaitResolution.MissingCatalog,
+                svc.ResolveSavedBait(_herring.Id, out var missing));
+            Assert.IsNull(missing);
+        }
+
+        [Test]
+        public void SavedBait_Preflight_PreservesProfileLiveTrapSaveAndStock()
+        {
+            var svc = MakeService();
+            _save.BaitStock.Add(new BaitStock(_herring.Id, 2));
+            var live = svc.PlaceTrap(_lobsterTrap, _herring, new Vector2(3f, -4f), "region.coddle_cove");
+            var dto = _save.PlacedTraps[0];
+            for (int i = 0; i < 2; i++)
+            {
+                Assert.AreEqual(PlacedTrapService.SavedBaitResolution.Resolved,
+                    svc.ResolveSavedBait(dto.BaitId, out var bait));
+                Assert.AreSame(_herring, bait);
+                CollectionAssert.AreEqual(new[] { "fish.lobster" }, bait.FavorsSpeciesIds);
+                Assert.AreEqual(PlacedTrapService.SavedBaitResolution.UnknownId,
+                    svc.ResolveSavedBait("BAIT.HERRING", out var wrongCase));
+                Assert.IsNull(wrongCase, "saved ids are exact; do not rewrite or normalize them");
+            }
+            Assert.AreEqual(1, svc.Live.Count);
+            Assert.AreSame(live, svc.Live[0]);
+            Assert.AreEqual(1, _save.PlacedTraps.Count);
+            // PlacedTrapDto is a value type; preserve every saved field, not boxed identity.
+            var savedDto = _save.PlacedTraps[0];
+            Assert.AreEqual(dto.InstanceId, savedDto.InstanceId);
+            Assert.AreEqual(dto.TrapDefId, savedDto.TrapDefId);
+            Assert.AreEqual(dto.PosX, savedDto.PosX);
+            Assert.AreEqual(dto.PosY, savedDto.PosY);
+            Assert.AreEqual(dto.BaitId, savedDto.BaitId);
+            Assert.AreEqual(dto.PlacementGameTimeSeconds, savedDto.PlacementGameTimeSeconds);
+            Assert.AreEqual(dto.Region, savedDto.Region);
+            Assert.AreEqual("bait.herring", dto.BaitId);
+            Assert.AreEqual(1, _save.BaitStock.Count);
+            Assert.AreEqual(1, _save.BaitStock[0].Count);
+        }
+
         [Test]
         public void Registry_ResolvesFishIdsToDefs()
         {
@@ -217,7 +275,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             // Half-way up the fill curve (12h ready → 36h full ⇒ 24h is fill 0.5): the count itself is a
             // seed-varied roll here, which is exactly what must reproduce across the reload.
-            double midFill = live.PlacementGameTimeSeconds + 24.0 * 3600.0;
+            double midFill = live.PlacementGameTimeSeconds + 24.0 * 75.0;
             var ctx = TrapContext();
             var before = new List<CatchItem>();
             int beforeCount = live.ResolveCatches(midFill, in ctx, before);
@@ -287,7 +345,7 @@ namespace HiddenHarbours.Tests.EditMode
             var svc = MakeService();
             PlacedTrap live = svc.PlaceTrap(_lobsterTrap, _herring, new Vector2(2f, 2f), "region.coddle_cove");
 
-            _clock.Seconds = live.PlacementGameTimeSeconds + _lobsterTrap.HoursToFullPot * 3600.0;
+            _clock.Seconds = live.PlacementGameTimeSeconds + _lobsterTrap.HoursToFullPot * 75.0;
 
             int caught = 0;
             void OnCaught(FishCaught _) => caught++;
@@ -313,7 +371,7 @@ namespace HiddenHarbours.Tests.EditMode
             var svc = MakeService();
             PlacedTrap live = svc.PlaceTrap(_lobsterTrap, _herring, new Vector2(2f, 2f), "region.coddle_cove");
 
-            _clock.Seconds = live.PlacementGameTimeSeconds + _lobsterTrap.HoursToFullPot * 3600.0;   // full pot: 4
+            _clock.Seconds = live.PlacementGameTimeSeconds + _lobsterTrap.HoursToFullPot * 75.0;   // full pot: 4
 
             var hold = new FakeHold { Capacity = 2 };   // room for 2 of the 4
             Assert.IsFalse(svc.HaulTrap(live, hold, TrapContext()), "not enough room for the whole catch → refused");

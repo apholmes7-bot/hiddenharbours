@@ -20,7 +20,8 @@ namespace HiddenHarbours.App.Editor
         {
             var camera = WaterSceneTemplate.BuildRegion(
                 EastWaterPlan.Plan, EastWaterPlan.DefaultArrivalPos, EastWaterPlan.DefaultArrivalPos,
-                new[] { (EastWaterPlan.FromStPetersArrivalKey, EastWaterPlan.FromStPetersArrivalPos) },
+                new[] { (EastWaterPlan.FromStPetersArrivalKey, EastWaterPlan.FromStPetersArrivalPos),
+                        (EastWaterPlan.OpeningArrivalKey, EastWaterPlan.OpeningLiePos) },
                 ("PassageToStPeters", EastWaterPlan.ToStPetersPassagePos,
                  WaterSceneTemplate.DataRegions + "/StPeters.asset", StPetersBuilder.FromEastWaterArrivalKey));
 

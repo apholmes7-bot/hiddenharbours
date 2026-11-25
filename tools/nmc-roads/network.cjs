@@ -298,6 +298,48 @@ function fitDeck(G, high, b, line, hw, opts = {}) {
 }
 
 // ---------------------------------------------------------------------------------------------------------------
+//  The fuel stop's lot (NMC H9, the owner's ruling of 11-14)
+// ---------------------------------------------------------------------------------------------------------------
+// FORECOURT's routes, checked against the kit (a class it has, a surface it has, an id of their own), and its paint with
+// the bays expanded into their stall lines: bay k's west line at from.x + k * each.w, from.y to from.y + each.d, and
+// with head, the line across their far end. The bake lays the routes after the network's routes and flares, so no
+// existing route's index (and with it its seed) moves; the lot is its own section so step 12 and the route tests never
+// read it as a road
+const FORECOURT = 'tools/nmc-roads/forecourt.json';
+const FORECOURT_SCHEMA = 'hidden-harbours/nmc-forecourt@1';
+const FORECOURT_ID = /^(lot|pad|apron|island|walk)\.nmc_fuel_[a-z0-9_]+$/;
+function layForecourt(RK) {
+  const file = path.join(ROOT, FORECOURT);
+  if (!fs.existsSync(file)) return null;
+  const buf = fs.readFileSync(file), src = JSON.parse(buf.toString('utf8'));
+  if (src.schema !== FORECOURT_SCHEMA) throw new Error(`${FORECOURT}: not ${FORECOURT_SCHEMA}`);
+  const ids = new Set();
+  const routes = src.routes.map((r, i) => {
+    if (!FORECOURT_ID.test(r.id) || ids.has(r.id)) throw new Error(`${FORECOURT} routes[${i}]: ${r.id} is not a forecourt id of its own`);
+    ids.add(r.id);
+    if (!RK.CLASSES[r.cls]) throw new Error(`${r.id}: the kit has no class ${r.cls}`);
+    if (r.surf && !RK.SURF[r.surf]) throw new Error(`${r.id}: the kit has no surface ${r.surf}`);
+    if (!(r.w > 0) || !Array.isArray(r.pts) || r.pts.length < 2) throw new Error(`${r.id}: a route needs a width and two points`);
+    return Object.assign({}, r, { pts: r.pts.map((p) => [r3(p[0]), r3(p[1])]) });
+  });
+  const P = src.paint, lines = [];
+  const colour = (o) => { if (!P.colours[o.colour]) throw new Error(`${o.id}: no paint colour ${o.colour}`); return o.colour; };
+  for (const b of P.bays) {
+    const [x0, y0] = b.from, [bw, bd] = b.each, c = colour(b);
+    for (let k = 0; k <= b.n; k++) lines.push({ id: `${b.id}.${k}`, of: b.id, colour: c, w: P.lineWidth, pts: [[r3(x0 + k * bw), r3(y0)], [r3(x0 + k * bw), r3(y0 + bd)]] });
+    if (b.head) lines.push({ id: `${b.id}.head`, of: b.id, colour: c, w: P.lineWidth, pts: [[r3(x0), r3(y0 + bd)], [r3(x0 + b.n * bw), r3(y0 + bd)]] });
+  }
+  for (const l of P.lines) lines.push({ id: l.id, of: l.id, colour: colour(l), w: l.w || P.lineWidth, pts: l.pts.map((p) => [r3(p[0]), r3(p[1])]) });
+  for (const a of P.arrows) colour(a);
+  return {
+    source: { file: FORECOURT, sha256: lfSha(FORECOURT) },
+    what: src.what, area: src.area, entrySouthOverlap: src.entrySouthOverlap, canopySeeThrough: src.canopySeeThrough,
+    routes,
+    paint: { colours: P.colours, lineWidth: P.lineWidth, wear: P.wear, bays: P.bays, lines, arrow: P.arrow, arrows: P.arrows },
+  };
+}
+
+// ---------------------------------------------------------------------------------------------------------------
 //  The measured corner flares (the owner's Q4, 10-24)
 // ---------------------------------------------------------------------------------------------------------------
 // G3's building lots (the 43 of NineMileCreekGroundMasks.BuildingLots: a lot facing east or west stands its size
@@ -629,6 +671,8 @@ function build(opts = {}) {
     westEdge,
     fords,
   };
+  const forecourt = layForecourt(RK);
+  if (forecourt) doc.forecourt = forecourt;
   if (opts.collect) Object.defineProperty(doc, 'flaresRefused', { value: flaresRefused });
   return doc;
 }
@@ -648,6 +692,7 @@ function summary(doc) {
   lines.push('ends: ' + Object.entries(k).map(([a, n]) => `${a} ${n}`).join(', '));
   const w = doc.westEdge;
   lines.push(`west edge: ${w.route} leaves at ${JSON.stringify(w.at)} from ${JSON.stringify(w.from)}, bearing ${w.bearing} deg, ${w.cls} ${w.w} m ${w.surf} +${w.lift}, ground ${w.ground} m`);
+  if (doc.forecourt) lines.push(`forecourt: ${doc.forecourt.routes.length} lot routes, ${doc.forecourt.paint.lines.length} painted lines, ${doc.forecourt.paint.arrows.length} arrows`);
   lines.push(doc.fords.length ? `FORDS ${doc.fords.length}: ` + doc.fords.map((f) => `${f.id}${f.part ? ' (' + f.part + ')' : ''} at ${JSON.stringify(f.at)} ${f.length} m`).join('; ') : 'no ford');
   return lines.join('\n');
 }

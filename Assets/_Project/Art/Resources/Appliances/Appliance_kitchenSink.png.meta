@@ -1,0 +1,1586 @@
+fileFormatVersion: 2
+guid: a616c073d0077744a9a77c74b3c5cfcf
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -953869263583923876
+    second: Appliance_kitchenSink_0
+  - first:
+      213: 3382797584553798595
+    second: Appliance_kitchenSink_1
+  - first:
+      213: 8419888618301244587
+    second: Appliance_kitchenSink_2
+  - first:
+      213: 7230003537416269540
+    second: Appliance_kitchenSink_3
+  - first:
+      213: 6079749050137349597
+    second: Appliance_kitchenSink_4
+  - first:
+      213: -66458289095674375
+    second: Appliance_kitchenSink_5
+  - first:
+      213: 1167803721297460106
+    second: Appliance_kitchenSink_6
+  - first:
+      213: -5413404536088055450
+    second: Appliance_kitchenSink_7
+  - first:
+      213: -307719557023249227
+    second: Appliance_kitchenSink_8
+  - first:
+      213: -4834699691768175610
+    second: Appliance_kitchenSink_9
+  - first:
+      213: -5007352674099007848
+    second: Appliance_kitchenSink_10
+  - first:
+      213: -1624858629980657740
+    second: Appliance_kitchenSink_11
+  - first:
+      213: 4853066718478236302
+    second: Appliance_kitchenSink_12
+  - first:
+      213: 6899342854275200705
+    second: Appliance_kitchenSink_13
+  - first:
+      213: -6855743912302663751
+    second: Appliance_kitchenSink_14
+  - first:
+      213: 5007400362524807279
+    second: Appliance_kitchenSink_15
+  - first:
+      213: -7938743244304411938
+    second: Appliance_kitchenSink_16
+  - first:
+      213: 3285282758898630340
+    second: Appliance_kitchenSink_17
+  - first:
+      213: 3613930508688806151
+    second: Appliance_kitchenSink_18
+  - first:
+      213: 2865639364901334708
+    second: Appliance_kitchenSink_19
+  - first:
+      213: -524910793390540389
+    second: Appliance_kitchenSink_20
+  - first:
+      213: -3057663978200308603
+    second: Appliance_kitchenSink_21
+  - first:
+      213: 4636448146154073996
+    second: Appliance_kitchenSink_22
+  - first:
+      213: -7758553476336133678
+    second: Appliance_kitchenSink_23
+  - first:
+      213: 1984679323466184317
+    second: Appliance_kitchenSink_24
+  - first:
+      213: -6352381872935952245
+    second: Appliance_kitchenSink_25
+  - first:
+      213: -1874210806409061361
+    second: Appliance_kitchenSink_26
+  - first:
+      213: 3964251125170319753
+    second: Appliance_kitchenSink_27
+  - first:
+      213: 3725418948721697910
+    second: Appliance_kitchenSink_28
+  - first:
+      213: -6721740953036884395
+    second: Appliance_kitchenSink_29
+  - first:
+      213: -1085385800091218497
+    second: Appliance_kitchenSink_30
+  - first:
+      213: -1097772675275275341
+    second: Appliance_kitchenSink_31
+  - first:
+      213: 4111823926280566096
+    second: Appliance_kitchenSink_32
+  - first:
+      213: 1892826259217147914
+    second: Appliance_kitchenSink_33
+  - first:
+      213: 4805393902119366274
+    second: Appliance_kitchenSink_34
+  - first:
+      213: 1859323726670162519
+    second: Appliance_kitchenSink_35
+  - first:
+      213: -3937097134704085327
+    second: Appliance_kitchenSink_36
+  - first:
+      213: 5298449199836967595
+    second: Appliance_kitchenSink_37
+  - first:
+      213: 8560398156050399849
+    second: Appliance_kitchenSink_38
+  - first:
+      213: 8006650764620471343
+    second: Appliance_kitchenSink_39
+  - first:
+      213: -8299768782186698076
+    second: Appliance_kitchenSink_40
+  - first:
+      213: -6990813071956427976
+    second: Appliance_kitchenSink_41
+  - first:
+      213: -98990616367766425
+    second: Appliance_kitchenSink_42
+  - first:
+      213: 6268921454977477060
+    second: Appliance_kitchenSink_43
+  - first:
+      213: -8144290826700142529
+    second: Appliance_kitchenSink_44
+  - first:
+      213: 3604594471729005054
+    second: Appliance_kitchenSink_45
+  - first:
+      213: 1840123887331656141
+    second: Appliance_kitchenSink_46
+  - first:
+      213: 4034261351140758456
+    second: Appliance_kitchenSink_47
+  - first:
+      213: -2336959156182171704
+    second: Appliance_kitchenSink_48
+  - first:
+      213: -167167496723629351
+    second: Appliance_kitchenSink_49
+  - first:
+      213: -4390068927630261078
+    second: Appliance_kitchenSink_50
+  - first:
+      213: 8666448953020437174
+    second: Appliance_kitchenSink_51
+  - first:
+      213: 3732706107356436590
+    second: Appliance_kitchenSink_52
+  - first:
+      213: -4575587116155118818
+    second: Appliance_kitchenSink_53
+  - first:
+      213: -1678293007069636625
+    second: Appliance_kitchenSink_54
+  - first:
+      213: 498662929913276137
+    second: Appliance_kitchenSink_55
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s0_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 342
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 23a296db9eccf954183a79b690833c37
+      internalID: 848054343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s0_d1
+      rect:
+        serializedVersion: 2
+        x: 44
+        y: 342
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b7fe35c07032ec34381efc591110eaa2
+      internalID: -1104940914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s0_d2
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 342
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3136975e354991f408d058d19559e634
+      internalID: 539406621
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s0_d3
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 342
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6bd66393ffb16c24eb55aab6120697b2
+      internalID: -1874610442
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s0_d4
+      rect:
+        serializedVersion: 2
+        x: 176
+        y: 342
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6a695c8ca1e6ce041bc02dc159389495
+      internalID: -988328892
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s0_d5
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 342
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 77485c3896bb23e458ba1b9b428a221e
+      internalID: 1969892695
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s0_d6
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 342
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bf780f6042d95364caed42dd174618da
+      internalID: -1351894490
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s0_d7
+      rect:
+        serializedVersion: 2
+        x: 308
+        y: 342
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e2358de0805860d4598e29495af74024
+      internalID: -152262894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s1_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 285
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 54ea98db33a3d154eacac9d9048d962f
+      internalID: -1651208300
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s1_d1
+      rect:
+        serializedVersion: 2
+        x: 44
+        y: 285
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1914bed5e83363c4bab210323ff65e25
+      internalID: -2075714657
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s1_d2
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 285
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7e37c69b4bbd04a4b82966deb99b8706
+      internalID: -1053225677
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s1_d3
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 285
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0b314b7634d778643b6f1f57193cb310
+      internalID: 1435236165
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s1_d4
+      rect:
+        serializedVersion: 2
+        x: 176
+        y: 285
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 98db97a8bd5899c43be3aad0c4600231
+      internalID: -1805808147
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s1_d5
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 285
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 121a8aa08379d164bbf0383fc34d0c34
+      internalID: -625393378
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s1_d6
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 285
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: df7b0185ade6ce14cb7373a9d4422fdb
+      internalID: -556629230
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s1_d7
+      rect:
+        serializedVersion: 2
+        x: 308
+        y: 285
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7b7e7dd416102984ea8313cbe8b5d2f1
+      internalID: -6680814
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s2_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 228
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fa182c69e09992844ad5e8626ef07b62
+      internalID: 391501999
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s2_d1
+      rect:
+        serializedVersion: 2
+        x: 44
+        y: 228
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7499e9db2b88ad746b6f38ddc84153d9
+      internalID: 1531463499
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s2_d2
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 228
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d0e01014cbf166346abfa1dbb9a144d1
+      internalID: -388720560
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s2_d3
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 228
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e1417fecc9f96774391a473cfd5dc5ee
+      internalID: 566455954
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s2_d4
+      rect:
+        serializedVersion: 2
+        x: 176
+        y: 228
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 31a79313b3847cc409a87d50f23f897b
+      internalID: -1056344845
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s2_d5
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 228
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37c89ec1fa253664abd2baa275e6a81c
+      internalID: 955936749
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s2_d6
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 228
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64fe5ff1193d0f54e809fce0e3335e91
+      internalID: -1849787321
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s2_d7
+      rect:
+        serializedVersion: 2
+        x: 308
+        y: 228
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 787b9b95aab1f5a499bb5512187d53a8
+      internalID: 1220211029
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s3_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 171
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 32fe3b53f095d994a828d21e27e37bab
+      internalID: -1328348216
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s3_d1
+      rect:
+        serializedVersion: 2
+        x: 44
+        y: 171
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ad8c2b90ace6965469fa75a849675120
+      internalID: 392787202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s3_d2
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 171
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4efdc6374f0a6d0408c65752054c6b68
+      internalID: 1555348656
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s3_d3
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 171
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0cb46228d8739ed42bf8e41410ad025b
+      internalID: -463462754
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s3_d4
+      rect:
+        serializedVersion: 2
+        x: 176
+        y: 171
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7b13113d064300941b157cb03c345c94
+      internalID: -1669678395
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s3_d5
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 171
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 94d02b38b6d936b4fb6cfceac9d26b88
+      internalID: -1644072903
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s3_d6
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 171
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c84fe319f8049b4393ae5add8926d4a
+      internalID: -97499122
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s3_d7
+      rect:
+        serializedVersion: 2
+        x: 308
+        y: 171
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 891f9c5f60601344aa1c2b8f02b26811
+      internalID: 1888387260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s4_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 114
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7c37168501516274c964870f5e20f8ef
+      internalID: 1222672018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s4_d1
+      rect:
+        serializedVersion: 2
+        x: 44
+        y: 114
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: de63ca03b764cc44d8c649967687a5ea
+      internalID: -1355886852
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s4_d2
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 114
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37ce688979466ad4a8ba7fbcb40e89ff
+      internalID: -1762536823
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s4_d3
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 114
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0cb054fa534903f48a984933cf38c800
+      internalID: -1068583943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s4_d4
+      rect:
+        serializedVersion: 2
+        x: 176
+        y: 114
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e9d9fed2e33f32a41ba66da874aec6d2
+      internalID: 891382162
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s4_d5
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 114
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 590eb39d4d8a1c34e87fdd0b913ab58e
+      internalID: -1271530150
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s4_d6
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 114
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a4182af71723594198d9b901a8fe6b5
+      internalID: -1794420263
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s4_d7
+      rect:
+        serializedVersion: 2
+        x: 308
+        y: 114
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1098ddfd62058fb43904dd4596c2f930
+      internalID: -1379482907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s5_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 57
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b7e087ec61f3e4a468f19848638650ad
+      internalID: -426062399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s5_d1
+      rect:
+        serializedVersion: 2
+        x: 44
+        y: 57
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 66f0ba76d0fabd34ca7190747378575f
+      internalID: -1880200104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s5_d2
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 57
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 972404dc3f23bd24c8139e1396537c2b
+      internalID: 48920515
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s5_d3
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 57
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 345c823d6379d234e9d15dede576cf94
+      internalID: 799574649
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s5_d4
+      rect:
+        serializedVersion: 2
+        x: 176
+        y: 57
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 59f648a1debaa0f45ac55f7fbf121f2e
+      internalID: 525263918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s5_d5
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 57
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68bd3ca2d310f5548ba63186cfdd01bc
+      internalID: -38751009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s5_d6
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 57
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1721d493f97817f419a46e69387fcd16
+      internalID: -1871695956
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s5_d7
+      rect:
+        serializedVersion: 2
+        x: 308
+        y: 57
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 09aa682b5ab59974dbd689f70375ffe1
+      internalID: 397312748
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s6_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ab6644049e713804292f16c1a2d3b5d4
+      internalID: -1773132349
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s6_d1
+      rect:
+        serializedVersion: 2
+        x: 44
+        y: 0
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bef778492f0188b43970be239ffd1a56
+      internalID: -842106853
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s6_d2
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 0
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ea24fa6a01703ba4e9f9729586f5892b
+      internalID: 1088267320
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s6_d3
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 0
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f15f4a57e5439cc46877c68906471074
+      internalID: 1070141891
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s6_d4
+      rect:
+        serializedVersion: 2
+        x: 176
+        y: 0
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 639badc65c6dcd84e9cb7b36ed69041f
+      internalID: -246747661
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s6_d5
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 0
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6019f24798619a54ea6672d5af97bcf7
+      internalID: 469243339
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s6_d6
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 0
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 10fc20f9f55843e42b1a11e9c492336e
+      internalID: 182637940
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_kitchenSink_s6_d7
+      rect:
+        serializedVersion: 2
+        x: 308
+        y: 0
+        width: 44
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24561404}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b23b3fd1a62f49a448c072694cd175c1
+      internalID: -370336251
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 476d5e10a50113540a54592f8f59abed
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Appliance_kitchenSink_s0_d0: 848054343
+      Appliance_kitchenSink_s0_d1: -1104940914
+      Appliance_kitchenSink_s0_d2: 539406621
+      Appliance_kitchenSink_s0_d3: -1874610442
+      Appliance_kitchenSink_s0_d4: -988328892
+      Appliance_kitchenSink_s0_d5: 1969892695
+      Appliance_kitchenSink_s0_d6: -1351894490
+      Appliance_kitchenSink_s0_d7: -152262894
+      Appliance_kitchenSink_s1_d0: -1651208300
+      Appliance_kitchenSink_s1_d1: -2075714657
+      Appliance_kitchenSink_s1_d2: -1053225677
+      Appliance_kitchenSink_s1_d3: 1435236165
+      Appliance_kitchenSink_s1_d4: -1805808147
+      Appliance_kitchenSink_s1_d5: -625393378
+      Appliance_kitchenSink_s1_d6: -556629230
+      Appliance_kitchenSink_s1_d7: -6680814
+      Appliance_kitchenSink_s2_d0: 391501999
+      Appliance_kitchenSink_s2_d1: 1531463499
+      Appliance_kitchenSink_s2_d2: -388720560
+      Appliance_kitchenSink_s2_d3: 566455954
+      Appliance_kitchenSink_s2_d4: -1056344845
+      Appliance_kitchenSink_s2_d5: 955936749
+      Appliance_kitchenSink_s2_d6: -1849787321
+      Appliance_kitchenSink_s2_d7: 1220211029
+      Appliance_kitchenSink_s3_d0: -1328348216
+      Appliance_kitchenSink_s3_d1: 392787202
+      Appliance_kitchenSink_s3_d2: 1555348656
+      Appliance_kitchenSink_s3_d3: -463462754
+      Appliance_kitchenSink_s3_d4: -1669678395
+      Appliance_kitchenSink_s3_d5: -1644072903
+      Appliance_kitchenSink_s3_d6: -97499122
+      Appliance_kitchenSink_s3_d7: 1888387260
+      Appliance_kitchenSink_s4_d0: 1222672018
+      Appliance_kitchenSink_s4_d1: -1355886852
+      Appliance_kitchenSink_s4_d2: -1762536823
+      Appliance_kitchenSink_s4_d3: -1068583943
+      Appliance_kitchenSink_s4_d4: 891382162
+      Appliance_kitchenSink_s4_d5: -1271530150
+      Appliance_kitchenSink_s4_d6: -1794420263
+      Appliance_kitchenSink_s4_d7: -1379482907
+      Appliance_kitchenSink_s5_d0: -426062399
+      Appliance_kitchenSink_s5_d1: -1880200104
+      Appliance_kitchenSink_s5_d2: 48920515
+      Appliance_kitchenSink_s5_d3: 799574649
+      Appliance_kitchenSink_s5_d4: 525263918
+      Appliance_kitchenSink_s5_d5: -38751009
+      Appliance_kitchenSink_s5_d6: -1871695956
+      Appliance_kitchenSink_s5_d7: 397312748
+      Appliance_kitchenSink_s6_d0: -1773132349
+      Appliance_kitchenSink_s6_d1: -842106853
+      Appliance_kitchenSink_s6_d2: 1088267320
+      Appliance_kitchenSink_s6_d3: 1070141891
+      Appliance_kitchenSink_s6_d4: -246747661
+      Appliance_kitchenSink_s6_d5: 469243339
+      Appliance_kitchenSink_s6_d6: 182637940
+      Appliance_kitchenSink_s6_d7: -370336251
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

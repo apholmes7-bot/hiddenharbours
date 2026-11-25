@@ -20,7 +20,7 @@ namespace HiddenHarbours.Player
     /// size, the gameplay-systems mechanic the GearOffer flavour defers to us), editable in the inspector,
     /// not a literal buried in logic.</para>
     /// </summary>
-    public class ClamBucket : MonoBehaviour, IHold, IInteractable
+    public class ClamBucket : MonoBehaviour, IHold, IHoldRemove, IInteractable
     {
         [Tooltip("How many clams the pail holds (the design's 20-clam bucket). The gameplay-systems hold " +
                  "mechanic the gear.bucket GearOffer defers to — a tunable, not a hard-coded number.")]
@@ -51,6 +51,7 @@ namespace HiddenHarbours.Player
 
         public bool TryAdd(CatchItem item)
         {
+            if (!CatchKeep.MayKeep(in item)) return false;   // protected: release-only, never held
             if (_items.Count >= CapacityUnits) return false;
             _items.Add(item);
             SyncToSave();
@@ -61,6 +62,15 @@ namespace HiddenHarbours.Player
         {
             _items.Clear();
             SyncToSave();
+        }
+
+        /// <summary>Take out the one item at <paramref name="index"/> and nothing else (IHoldRemove).</summary>
+        public bool TryRemoveAt(int index)
+        {
+            if (index < 0 || index >= _items.Count) return false;
+            _items.RemoveAt(index);
+            SyncToSave();
+            return true;
         }
 
         // The pail's catch persists (M1 §7.3, SaveData v5) — the ShipHold pattern: mutations push a
@@ -217,7 +227,7 @@ namespace HiddenHarbours.Player
             string what = held.Item.DisplayName;
             if (!hands.TryGiveCatchTo(this))
             {
-                EventBus.Publish(new DevNotice("The bucket's full — head to Nine Mile Creek and sell."));
+                EventBus.Publish(new DevNotice(BucketStrings.Full));
                 return;
             }
 

@@ -147,6 +147,20 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsNull(installer.Cutaway);
         }
 
+        [TestCase("SportFisherConvertibleIso")]
+        [TestCase("SportFisherSkybridgeIso")]
+        [TestCase("ExpeditionYacht120Iso")]
+        [TestCase("MotorYacht84Iso")]
+        [TestCase("SternTrawlerIso")]
+        [TestCase("SternTrawlerMk2Iso")]
+        [TestCase("SideDraggerIso")]
+        public void IntakeRoom_KeepsItsWalkAndAuthoredDoorLanding(string stem)
+        {
+            Assert.That(IsWalkBuiltRoom(stem), Is.True, stem);
+            AssertWalkDoorHasItsAuthoredLanding(stem,
+                AssetDatabase.LoadAssetAtPath<BoatInteriorDef>(InteriorFolder + "/" + stem + ".asset"));
+        }
+
         private void AssertWalkDoorHasItsAuthoredLanding(string stem, BoatInteriorDef def)
         {
             HullWalkRead walk = CommittedHullWalk.Read(def.SourceSidecar,

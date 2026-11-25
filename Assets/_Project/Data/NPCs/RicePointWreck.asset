@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2794216af134af8a37690830c8d2064, type: 3}
+  m_Name: RicePointWreck
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.NpcDef
+  Id: npc.rpt_wreck
+  DisplayName: Wrecked trawler
+  Kind: 1
+  Dialogue: {fileID: 11400000, guid: 2b52cbe6fc9c440ea7c5395d2b8da622, type: 2}
+  CompletionFlag: 
+  Voice: {fileID: 0}
+  Build: {fileID: 0}

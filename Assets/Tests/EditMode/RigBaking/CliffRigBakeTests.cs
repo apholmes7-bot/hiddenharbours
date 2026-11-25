@@ -9,7 +9,11 @@ namespace HiddenHarbours.Tests.RigBaking
     /// <summary>
     /// The cliff kit's contract, held against the RIG — every run, on CI, with no committed pixels.
     ///
-    /// <para><b>⭐ WHY THERE ARE NO COMMITTED SHEETS TO PIN AGAINST.</b> Every sibling kit bakes its
+    /// <para><b>⭐ 11-07: THE SHEETS ARE NOW COMMITTED</b> (terrain-fidelity P1, under LFS, ~9.6 MB for three
+    /// rocks), because a clone's walls name their faces by GUID; <see cref="CliffFaceGuidTests"/> holds those
+    /// GUIDs. This suite still pins the RIG, not the pixels, for the reason below.</para>
+    ///
+    /// <para><b>⭐ WHY THERE WERE NO COMMITTED SHEETS TO PIN AGAINST.</b> Every sibling kit bakes its
     /// PNGs into the repository and pins those. This one cannot: the kit is parametric (180 face sets ×
     /// 4 channels; the rig's README puts the full bake at ~90 MB) and even the narrow St Peters subset
     /// measured <b>16.0 MB across 63 PNGs</b>. Committing that would pin the PNG encoder, not the art,

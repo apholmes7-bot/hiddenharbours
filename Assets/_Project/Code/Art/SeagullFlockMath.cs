@@ -257,6 +257,13 @@ namespace HiddenHarbours.Art
             public readonly double GlideDuty;
             public readonly int FlyFrames, GlideFrames, SwoopFrames;
             public readonly double FlyMilliseconds, GlideMilliseconds, SwoopMilliseconds;
+            /// <summary>The game's eased swoop (<see cref="SeagullVisualDef"/>): its steepest sink, m/s. 0 = the
+            /// rig's V-shaped swoop, draw for draw (what a tuning built from the sidecar alone gets).</summary>
+            public readonly double SwoopMaxSinkMetresPerSecond;
+            /// <summary>The eased swoop's share of each swoop interval (the rig's is <see cref="SwoopDuty"/>).</summary>
+            public readonly double SwoopDutyEased;
+            /// <summary>The eased swoop's dip as a fraction of the cruise height, before the sink cap.</summary>
+            public readonly double SwoopDepth01;
 
             public SeagullFlockTuning(double radiusMetres,
                                       double periodMinSeconds, double periodMaxSeconds,
@@ -265,8 +272,14 @@ namespace HiddenHarbours.Art
                                       double glideDuty,
                                       int flyFrames, double flyMilliseconds,
                                       int glideFrames, double glideMilliseconds,
-                                      int swoopFrames, double swoopMilliseconds)
+                                      int swoopFrames, double swoopMilliseconds,
+                                      double swoopMaxSinkMetresPerSecond = 0.0,
+                                      double swoopDutyEased = SwoopDuty,
+                                      double swoopDepth01 = SwoopRiseFraction)
             {
+                SwoopMaxSinkMetresPerSecond = swoopMaxSinkMetresPerSecond;
+                SwoopDutyEased = swoopDutyEased > 0.0 && swoopDutyEased < 1.0 ? swoopDutyEased : SwoopDuty;
+                SwoopDepth01 = swoopDepth01 < 0.0 ? 0.0 : (swoopDepth01 > 1.0 ? 1.0 : swoopDepth01);
                 RadiusMetres = radiusMetres;
                 PeriodMinSeconds = periodMinSeconds; PeriodMaxSeconds = periodMaxSeconds;
                 AltitudeMinMetres = altitudeMinMetres; AltitudeMaxMetres = altitudeMaxMetres;
@@ -348,17 +361,38 @@ namespace HiddenHarbours.Art
                 double heading = Math.Atan2(vx, vy);
 
                 double sw = ((tt + ph) % swEvery) / swEvery;
-                bool swooping = i == 0 && sw < SwoopDuty;
+                bool eased = tuning.SwoopMaxSinkMetresPerSecond > 0.0;
+                double duty = eased ? tuning.SwoopDutyEased : SwoopDuty;
+                bool swooping = i == 0 && sw < duty;
                 bool gliding = Math.Sin(tt / GlideOscillatorSeconds + gph) > 1.0 - 2.0 * tuning.GlideDuty;
 
                 SeagullFlockAnim anim = swooping ? SeagullFlockAnim.Swoop
                                       : gliding ? SeagullFlockAnim.Glide
                                                 : SeagullFlockAnim.Fly;
 
-                double zed = swooping
-                    ? alt * (SwoopFloorFraction
-                             + SwoopRiseFraction * Math.Abs(sw / SwoopDuty - 0.5) * 2.0)
-                    : alt + Math.Sin(tt * BreatheRadPerSecond + gph) * BreatheMetres;
+                double zed;
+                if (eased)
+                {
+                    // THE EASED SWOOP (owner 2026-11-15: "the seagull swoops and dives appear too fast compared to
+                    // the gliding seagulls"). The rig's swoop is a V: it starts and ends at the bare cruise height
+                    // while every other moment carries the 0.6 m breathe - a step of up to 0.6 m in ONE frame at both
+                    // ends (35 m/s on the v5 clip's table) - and reverses at the bottom in one frame. Here the dip is
+                    // laid UNDER the breathe as a cosine, so its height and its rate are zero at both ends and it turns
+                    // smoothly at the bottom, and the dip is capped so its steepest sink is the tuned rate.
+                    double breathe = alt + Math.Sin(tt * BreatheRadPerSecond + gph) * BreatheMetres;
+                    double seconds = duty * swEvery;
+                    double dip = alt * tuning.SwoopDepth01;
+                    double cap = tuning.SwoopMaxSinkMetresPerSecond * seconds / Math.PI;
+                    if (dip > cap) dip = cap;
+                    zed = swooping ? breathe - dip * 0.5 * (1.0 - Math.Cos(2.0 * Math.PI * sw / duty)) : breathe;
+                }
+                else
+                {
+                    zed = swooping
+                        ? alt * (SwoopFloorFraction
+                                 + SwoopRiseFraction * Math.Abs(sw / SwoopDuty - 0.5) * 2.0)
+                        : alt + Math.Sin(tt * BreatheRadPerSecond + gph) * BreatheMetres;
+                }
 
                 int frames = tuning.FramesOf(anim);
                 int frame = (int)Mod(

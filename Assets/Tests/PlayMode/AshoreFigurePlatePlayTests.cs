@@ -290,7 +290,7 @@ namespace HiddenHarbours.Tests.PlayMode
             if (_loadedConfig != null) GameServices.Config = _loadedConfig;
             if (_switchOff != null) Object.Destroy(_switchOff);
             if (_switchOn != null) Object.Destroy(_switchOn);
-            if (_headlampTurnedOn != null) _headlampTurnedOn.SetOn(false);
+            if (_headlampTurnedOn != null) _headlampTurnedOn.TakeOff();
             if (_plateWalkerLights != null)
             {
                 if (_plateWalkerLights.Beam != null) Object.Destroy(_plateWalkerLights.Beam.gameObject);
@@ -314,6 +314,10 @@ namespace HiddenHarbours.Tests.PlayMode
             }
 
             if (!_loadedAny) yield break;
+
+            Scene additiveDestination = SceneManager.GetSceneByName(NineMileCreekScene);
+            if (additiveDestination.IsValid() && additiveDestination.isLoaded)
+                yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(additiveDestination);
 
             foreach (GameObject go in PersistentRoots())
                 if (go != null && !_residentBefore.Contains(go)) Object.DestroyImmediate(go);
@@ -422,10 +426,12 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return Arrive(StPetersScene, Night);
             yield return EnsureThePierLamps();
 
+            // No live boat moors at the new south face; its deck is above the hull picture, so stage the old coordinates.
+            const float StagedMainMooringFaceY = -3f;
+            const float StagedMainLadderX = 211.5f;
             float halfBeam = HalfBeamOf(owner);
-            Vector2 ladder = StPetersWharf.LadderPosition();
-            var boatAt = new Vector2(ladder.x,
-                                     StPetersWharf.MooringFaceY - StPetersBuilder.AlongsideFenderGapMetres - halfBeam);
+            var boatAt = new Vector2(StagedMainLadderX,
+                                     StagedMainMooringFaceY - StPetersBuilder.AlongsideFenderGapMetres - halfBeam);
             yield return Moor(owner, boatAt, StPetersBuilder.DoryMooredHeadingDegrees);
 
             IsoFacetHullRenderer hull = _boat.GetComponentInChildren<IsoFacetHullRenderer>(true);
@@ -434,7 +440,7 @@ namespace HiddenHarbours.Tests.PlayMode
                             "it is not drawn as a mesh hull, so claim 3's hull frame does not exist.");
             yield return LightTheHull(hull);
 
-            var at = new Vector2(_skipper.position.x, StPetersWharf.MooringFaceY + 0.2f);
+            var at = new Vector2(_skipper.position.x, StagedMainMooringFaceY + 0.2f);
             NoteNeighbours(at, 12f);
 
             yield return StandHer(at, new Vector2(boatAt.x, 0.5f * (at.y + boatAt.y) + FrameLiftMetres),
@@ -445,7 +451,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 Key = "4-south-hull-lamp-stpeters-night",
                 Frame = $"{StPetersScene} 02:00, {owner.Id} ({owner.Boat.name}, {owner.Boat.LengthMeters:0.0} m) " +
-                        $"moored at the south face at {Fmt(boatAt)} heading {StPetersBuilder.DoryMooredHeadingDegrees:0}; " +
+                        $"staged on main's old face numbers at {Fmt(boatAt)} heading {StPetersBuilder.DoryMooredHeadingDegrees:0}; " +
                         $"her on the deck at {Fmt(at)}, BEHIND the skipper on screen",
             });
         }
@@ -656,7 +662,24 @@ namespace HiddenHarbours.Tests.PlayMode
         public IEnumerator Switch_BesideTheDually_RefusalShownHonestly_NineMileCreekNoon()
         {
             WharfNightStage.RequireAGraphicsDevice();
-            yield return Arrive(NineMileCreekScene, Noon);
+            // This switch belongs to the persistent player, built on St Peters. Travel with that
+            // player rather than opening the editor-only Nine Mile Creek rig in isolation.
+            yield return Arrive(StPetersScene, Noon);
+            Transform carriedPlayer = GameServices.PlayerTransform;
+            Assert.IsNotNull(carriedPlayer, "St Peters did not publish its persistent player.");
+            var loader = Object.FindFirstObjectByType<HiddenHarbours.World.RegionSceneLoader>();
+            Assert.IsNotNull(loader);
+            Assert.IsTrue(loader.Registry.TryGet("region.nine_mile_creek", out var destination));
+            Assert.IsTrue(loader.Travel(destination), "The fixture must take the game's additive travel path.");
+            float arrivalDeadline = Time.realtimeSinceStartup + 30f;
+            while (SceneManager.GetActiveScene().name != NineMileCreekScene && Time.realtimeSinceStartup < arrivalDeadline)
+                yield return null;
+            Assert.AreEqual(NineMileCreekScene, SceneManager.GetActiveScene().name, "The destination never became active.");
+            Assert.AreSame(carriedPlayer, GameServices.PlayerTransform, "Travel replaced the persistent player.");
+            Assert.IsTrue(SceneManager.GetSceneByName(StPetersScene).isLoaded, "Travel must retain the origin scene.");
+            _scene = NineMileCreekScene;
+            yield return _stage.SetNight(Noon);
+            yield return HoldTheSwitchOff();
             int hullsAtArrival = IsoFacetHullRegistry.Count, figuresAtArrival = IsoFacetHullRegistry.FigureCount;
 
             GameObject truck = TheDually(out Bounds tb, out Vector2 at);
@@ -1973,8 +1996,8 @@ namespace HiddenHarbours.Tests.PlayMode
 
             bool lit = lamp.IsOn && lamp.Light != null && lamp.Light.enabled;
             if (!lit)
-                _lampUnlitWhy = $"her headlamp is ON but not LIVE: WalkerLights.WalksHerOwnBeam " +
-                                $"{WalkerLights.WalksHerOwnBeam} (InteractActorProbe.Has {InteractActorProbe.Has}" +
+                _lampUnlitWhy = $"his headlamp is ON but not LIVE: WalkerLights.WalksHisOwnBeam " +
+                                $"{WalkerLights.WalksHisOwnBeam} (InteractActorProbe.Has {InteractActorProbe.Has}" +
                                 (InteractActorProbe.Has ? $", context {InteractActorProbe.Current.Context}" : "") +
                                 $"), SceneLight {(lamp.Light == null ? "missing" : lamp.Light.enabled ? "enabled" : "disabled")}";
 

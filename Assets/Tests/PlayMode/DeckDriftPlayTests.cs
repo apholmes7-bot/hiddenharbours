@@ -98,7 +98,7 @@ namespace HiddenHarbours.Tests.PlayMode
             boat.SetHull(hull);
 
             // ---- board: OnFoot → OnDeck (the helm is never taken) -------------------------------
-            Assert.IsTrue(sw.TryInteract(), "boarding within reach must land the player on the deck");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw), "boarding within reach must land the player on the deck");
             Assert.AreEqual(ControlMode.OnDeck, sw.Mode);
             Assert.IsFalse(boat.enabled, "the helm stays UNMANNED on deck — enabled == manned is a contract");
 
@@ -136,7 +136,7 @@ namespace HiddenHarbours.Tests.PlayMode
             // Take the helm instead of disembarking (no land under us out here): the deck-walk
             // disables → the published stance must clear with it.
             sw.ConfigureHelm(Vector2.zero, 99f);                        // the whole deck counts as the helm spot
-            Assert.IsTrue(sw.TryInteract(), "taking the helm from the deck");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw), "taking the helm from the deck");
             Assert.AreEqual(ControlMode.Aboard, sw.Mode);
             yield return null;
             Assert.IsFalse(DeckStance.IsActive,

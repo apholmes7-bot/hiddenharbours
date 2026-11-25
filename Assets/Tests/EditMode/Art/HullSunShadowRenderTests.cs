@@ -1,3 +1,4 @@
+using HiddenHarbours.Tests.Support;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -339,6 +340,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 if(_counterFrame==10){_offDraws=_draws.LastValue;_offBatches=_batches.LastValue;_counterCaster.ShadowRenderer.forceRenderingOff=false;}
                 if(_counterFrame<15)return;
                 if(!_draws.Valid||!_batches.Valid)throw new InvalidOperationException("The rendering counters are unavailable in PlayMode.");
+                ManagedAllocationProbe.RequireWorkingThreadByteCounter();
                 long before=GC.GetAllocatedBytesForCurrentThread();
                 for(int i=0;i<256;i++)_counterCaster.Tick();
                 long allocated=GC.GetAllocatedBytesForCurrentThread()-before;
@@ -375,7 +377,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Camera=Own(new GameObject("SunShadowCamera")).AddComponent<Camera>();
                 Camera.orthographic=true;Camera.orthographicSize=metres/2;Camera.transform.position=new Vector3(0,0,-20);
                 Camera.nearClipPlane=0.1f;Camera.farClipPlane=100;Camera.clearFlags=CameraClearFlags.SolidColor;
-                Camera.backgroundColor=Color.gray;Camera.allowHDR=false;Camera.allowMSAA=false;Camera.cullingMask=1<<31;
+                // HDR on like the scene camera: the frame goes through an intermediate target whose depth and
+                // stencil are cleared every render. Drawn straight into this texture, the stencil the shade
+                // writes survives into the next Render() and the second capture shows no shade at all.
+                Camera.backgroundColor=Color.gray;Camera.allowHDR=true;Camera.allowMSAA=false;Camera.cullingMask=1<<31;
                 _target=new RenderTexture(size,size,24,RenderTextureFormat.ARGB32){filterMode=FilterMode.Point};Camera.targetTexture=_target;
                 _read=new Texture2D(size,size,TextureFormat.RGBA32,false);
                 Mesh=Own(new Mesh());Mesh.vertices=new[]{new Vector3(-2,-1,1),new Vector3(2,-1,1),new Vector3(2,1,1),new Vector3(-2,1,1)};

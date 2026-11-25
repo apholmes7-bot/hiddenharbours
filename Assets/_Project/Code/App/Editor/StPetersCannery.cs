@@ -77,7 +77,7 @@ namespace HiddenHarbours.App.Editor
         /// so a re-bake at a different facing count re-derives the nearest cell instead of turning the
         /// building's blank gable to the sea.
         /// </summary>
-        public static Vector2 Approach => new Vector2(StPetersWharf.RootCellX + 0.5f, 0f);
+        public static Vector2 Approach => StPetersLandingLayout.Entry;
 
         /// <summary>
         /// The ground the cannery reserves at any facing, from the bake contract — the half-diagonal

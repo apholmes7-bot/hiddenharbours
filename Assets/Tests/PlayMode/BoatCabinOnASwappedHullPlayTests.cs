@@ -42,6 +42,32 @@ namespace HiddenHarbours.Tests.PlayMode
         private const string DoryName = "Dory";
         private const string LeafChildName = "DoorLeaf";
 
+        // A stated looser bar for the sailing intake; the doors follow-up takes these rows back.
+        private static readonly IReadOnlyDictionary<(string Test, string Hull), string> DoorWaits =
+            new Dictionary<(string Test, string Hull), string>
+            {
+                [(nameof(ASwapWhileSheIsBelow_LetsHerOut_AndLeavesOnlyTheNewHullsCabinStanding), "SportFisherConvertible")] =
+                    "Waits for the doors follow-up: IOException in SaveStore.Write at File.Replace before the press.",
+                [(nameof(ASwapWhileSheIsBelow_LetsHerOut_AndLeavesOnlyTheNewHullsCabinStanding), "ExpeditionYacht120")] =
+                    "Waits for the doors follow-up: E aimed at salon_aft performs skylounge_aft, 0.6967 m away.",
+                [(nameof(ASwapWhileSheIsBelow_LetsHerOut_AndLeavesOnlyTheNewHullsCabinStanding), "MotorYacht84")] =
+                    "Waits for the doors follow-up: E aimed at saloon_aft performs guest, 0.7031 m away.",
+                [(nameof(SwappedOnUnderHer_EOpensHerDoor_AndHerHouseIsCutOpenOnlyWhileSheIsBelow), "SportFisherConvertible")] =
+                    "Waits for the doors follow-up: salon reach 1.4200 m is shorter than her stand 1.5439 m away; E takes the washboard.",
+                [(nameof(SwappedOnUnderHer_EOpensHerDoor_AndHerHouseIsCutOpenOnlyWhileSheIsBelow), "ExpeditionYacht120")] =
+                    "Waits for the doors follow-up: E aimed at salon_aft performs skylounge_aft, 0.6967 m away.",
+                [(nameof(SwappedOnUnderHer_EOpensHerDoor_AndHerHouseIsCutOpenOnlyWhileSheIsBelow), "MotorYacht84")] =
+                    "Waits for the doors follow-up: E aimed at saloon_aft performs guest, 0.7031 m away.",
+                [(nameof(SwappedOnUnderHer_HerDoorLeafIsDrawnInThePoseHerDoorIsIn), "SportFisherConvertible")] =
+                    "Waits for the doors follow-up: salon reach 1.4200 m is shorter than her stand 1.5439 m away; E takes the washboard.",
+                [(nameof(SwappedOnUnderHer_HerDoorLeafIsDrawnInThePoseHerDoorIsIn), "ExpeditionYacht120")] =
+                    "Waits for the doors follow-up: E aimed at salon_aft performs skylounge_aft, 0.6967 m away.",
+                [(nameof(SwappedOnUnderHer_HerDoorLeafIsDrawnInThePoseHerDoorIsIn), "MotorYacht84")] =
+                    "Waits for the doors follow-up: E aimed at saloon_aft performs guest, 0.7031 m away.",
+                [(nameof(SwappedOnUnderHer_SheWalksFromTheHelmThroughHerDoor), "SportFisherConvertible")] =
+                    "Waits for the doors follow-up: STUCK onto flyhatch at (0.94, -2.43), height 3.92 m, aiming for (-0.94, -4.38).",
+            };
+
         private readonly List<UnityEngine.Object> _spawned = new();
         private readonly List<CabinEntered> _entered = new();
         private readonly List<CabinLeft> _left = new();
@@ -267,8 +293,16 @@ namespace HiddenHarbours.Tests.PlayMode
 
         [UnityTest]
         public IEnumerator SwappedOnUnderHer_EOpensHerDoor_AndHerHouseIsCutOpenOnlyWhileSheIsBelow(
-            [Values("CapeIslander", "LobsterBoat")] string subjectName)
+            [Values("CapeIslander", "LobsterBoat", "SportFisherConvertible", "SportFisherSkybridge", "SternTrawler", "SternTrawlerMk2", "SideDragger", "ExpeditionYacht120", "MotorYacht84",
+                    // 2026-11-14, the fleet audit's slice 5: the packet, and one lobster variant of each size
+                    // (all eighteen are in the EditMode cabin census). The express cruiser's door is an entry
+                    // landing with its own case, RecreationSwap_CruiserWalksHerLandingAndStair_...
+                    "CoastalPacket", "LobsterInshoreOpenNorthumberland", "LobsterStandardHardtopNorthumberland",
+                    "LobsterOffshoreOpenNorthumberland")] string subjectName)
         {
+            if (DoorWaits.TryGetValue((nameof(SwappedOnUnderHer_EOpensHerDoor_AndHerHouseIsCutOpenOnlyWhileSheIsBelow), subjectName), out string wait))
+                Assert.Ignore(wait);
+
             Rig rig = NewDoryRig();
             BoatHullDef subject = LoadHull(subjectName);
             if (rig.Boat == null || subject == null) yield break;   // editor-only; LoadCommitted Ignored
@@ -299,7 +333,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsTrue(rig.Switcher.BeginInteract(), "E at her door is spent on her door");
             Assert.AreEqual(ControlMode.OnDeck, rig.Switcher.Mode,
                             "…and never on her helm: at a cabin door E only opens the door (owner, 2026-09-17)");
-            Assert.IsTrue(door.IsCueing, "the press starts the leaf moving");
+            Assert.AreEqual(door.CueSeconds > 0f, door.IsCueing, "the press starts the leaf moving when she has a cue");
             yield return WaitForCue(door);
 
             Assert.IsTrue(door.IsOpen, "the cue ends on a leaf standing open");
@@ -333,8 +367,11 @@ namespace HiddenHarbours.Tests.PlayMode
 
         [UnityTest]
         public IEnumerator SwappedOnUnderHer_HerDoorLeafIsDrawnInThePoseHerDoorIsIn(
-            [Values("CapeIslander", "LobsterBoat")] string subjectName)
+            [Values("CapeIslander", "LobsterBoat", "SportFisherConvertible", "SportFisherSkybridge", "ExpeditionYacht120", "MotorYacht84")] string subjectName)
         {
+            if (DoorWaits.TryGetValue((nameof(SwappedOnUnderHer_HerDoorLeafIsDrawnInThePoseHerDoorIsIn), subjectName), out string wait))
+                Assert.Ignore(wait);
+
             Rig rig = NewDoryRig();
             BoatHullDef subject = LoadHull(subjectName);
             if (rig.Boat == null || subject == null) yield break;
@@ -355,8 +392,9 @@ namespace HiddenHarbours.Tests.PlayMode
 
             yield return WalkToTheDoor(rig, door);
             Assert.IsTrue(rig.Switcher.BeginInteract(), "E at her door is spent on her door");
-            Assert.AreSame(mesh.DoorLeafClosed, LeafMeshOf(HullOf(rig)),
-                           "the leaf lands at the END of the cue, not at the press");
+            if (door.CueSeconds > 0f)
+                Assert.AreSame(mesh.DoorLeafClosed, LeafMeshOf(HullOf(rig)),
+                               "the leaf lands at the END of the cue, not at the press");
             yield return WaitForCue(door);
 
             Assert.IsTrue(door.IsOpen, "precondition: the cue ended on a door standing open");
@@ -369,6 +407,24 @@ namespace HiddenHarbours.Tests.PlayMode
 
             Assert.IsFalse(door.IsOpen, "precondition: the cue ended on a door shut again");
             Assert.AreSame(mesh.DoorLeafClosed, LeafMeshOf(HullOf(rig)), "…and her leaf is drawn shut again");
+
+            if (mesh.DoorLeaves != null && mesh.DoorLeaves.Length > 0)
+            {
+                var renderer = HullOf(rig);
+                foreach (var extra in rig.Installer.Interior.GetComponentsInChildren<BoatCabinDoor>())
+                {
+                    if (extra == door || !renderer.HasDoorLeaf(extra.Door.Id)) continue;
+                    Assert.IsTrue(extra.TryUse(), extra.Door.Id);
+                    yield return WaitForCue(extra);
+                    Assert.IsTrue(renderer.DoorLeafShownOpenFor(extra.Door.Id), extra.Door.Id);
+                    Assert.IsFalse(renderer.DoorLeafShownOpenFor(door.Door.Id), "opening another door leaves the primary shut");
+                    foreach (var pair in mesh.DoorLeaves)
+                        if (pair.Id != extra.Door.Id) Assert.IsFalse(renderer.DoorLeafShownOpenFor(pair.Id), pair.Id);
+                    Assert.IsTrue(extra.TryUse(), extra.Door.Id);
+                    yield return WaitForCue(extra);
+                    Assert.IsFalse(renderer.DoorLeafShownOpenFor(extra.Door.Id), extra.Door.Id);
+                }
+            }
         }
 
         // =====================================================================================
@@ -376,10 +432,14 @@ namespace HiddenHarbours.Tests.PlayMode
         // =====================================================================================
 
         [UnityTest]
-        public IEnumerator ASwapWhileSheIsBelow_LetsHerOut_AndLeavesOnlyTheNewHullsCabinStanding()
+        public IEnumerator ASwapWhileSheIsBelow_LetsHerOut_AndLeavesOnlyTheNewHullsCabinStanding(
+            [Values("CapeIslander", "SportFisherConvertible", "SportFisherSkybridge", "ExpeditionYacht120", "MotorYacht84")] string firstHullName)
         {
+            if (DoorWaits.TryGetValue((nameof(ASwapWhileSheIsBelow_LetsHerOut_AndLeavesOnlyTheNewHullsCabinStanding), firstHullName), out string wait))
+                Assert.Ignore(wait);
+
             Rig rig = NewDoryRig();
-            BoatHullDef cape = LoadHull("CapeIslander");
+            BoatHullDef cape = LoadHull(firstHullName);
             BoatHullDef lobster = LoadHull("LobsterBoat");
             BoatHullDef dory = LoadHull(DoryName);
             if (rig.Boat == null || cape == null || lobster == null || dory == null) yield break;
@@ -450,8 +510,11 @@ namespace HiddenHarbours.Tests.PlayMode
             [Values("CapeIslander", "LobsterBoat", "LobsterInshoreOpenNorthumberland",
                     "LobsterStandardHardtopNorthumberland", "LobsterOffshoreOpenNorthumberland",
                     "SportFisherConvertible", "SideDragger", "SportFisherSkybridge", "SternTrawler",
-                    "SternTrawlerMk2", "CoastalPacket", "Tanker")] string subjectName)
+                    "SternTrawlerMk2", "CoastalPacket", "Tanker", "ExpeditionYacht120", "MotorYacht84")] string subjectName)
         {
+            if (DoorWaits.TryGetValue((nameof(SwappedOnUnderHer_SheWalksFromTheHelmThroughHerDoor), subjectName), out string wait))
+                Assert.Ignore(wait);
+
             Rig rig = NewDoryRig();
             BoatHullDef subject = LoadHull(subjectName);
             if (rig.Boat == null || subject == null) yield break;   // editor-only; LoadCommitted Ignored
@@ -490,6 +553,97 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         /// <summary>
+        /// ⭐ <b>2026-11-13, the fleet audit's R2 — swapped on under her AT THE WHEEL, she steps back into
+        /// a wheelhouse that knows she is in it.</b> The dev picker changes hulls only at the helm, so
+        /// this is how a playtest gets a cabin hull: she never walks through the door. The wheel of the
+        /// cape and of every lobster variant stands in the wheelhouse, on the cockpit's own deck area,
+        /// and nothing but a door or a stair ever said "inside"; she let go of the wheel in a house that
+        /// stayed shut around her (<c>EveryHelmStandKnowsTheRoomItIsInTests</c> is the census).
+        ///
+        /// <para>While she steers, her wheelhouse is cut open around her though nothing has entered her
+        /// (owner, 2026-11-14: a wheel that stands in a room opens that one room). Stepping back, her
+        /// cabin is entered once, on the wheelhouse level, and the cut stays as it was. With the owner's
+        /// switch off (<c>GameConfig.CutTheHelmRoomAtTheWheel</c>) the house is closed at the wheel, as
+        /// ruled on 2026-08-26, and opens when she steps back.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator SwappedOnUnderHerAtTheWheel_HerWheelhouseIsOpen_AndSteppingBackStandsHerInsideIt(
+            [Values("CapeIslander", "LobsterInshoreOpenNorthumberland")] string subjectName)
+        {
+            yield return SwappedOnAtTheWheel(subjectName, wheelRoomOpens: true);
+        }
+
+        [UnityTest]
+        public IEnumerator SwappedOnUnderHerAtTheWheel_WithTheOwnersSwitchOff_HerHouseIsClosedUntilSheStepsBack(
+            [Values("CapeIslander", "LobsterInshoreOpenNorthumberland")] string subjectName)
+        {
+            GameServices.Config.CutTheHelmRoomAtTheWheel = false;
+            yield return SwappedOnAtTheWheel(subjectName, wheelRoomOpens: false);
+        }
+
+        private IEnumerator SwappedOnAtTheWheel(string subjectName, bool wheelRoomOpens)
+        {
+            Rig rig = NewDoryRig();
+            BoatHullDef subject = LoadHull(subjectName);
+            if (rig.Boat == null || subject == null) yield break;   // editor-only; LoadCommitted Ignored
+            yield return null;
+
+            yield return Board(rig);
+            ControlSwitcher sw = rig.Switcher;
+
+            // Set and pressed in ONE frame, before the deck walk's next frame writes her back (FromTheHelm).
+            rig.Player.transform.position = sw.HelmWorldPosition;
+            Assert.IsTrue(sw.TakesTheHelmOnThisPress(), "premise: standing on the dory's helm, E takes it");
+            Assert.IsTrue(sw.BeginInteract(), "E at the dory's helm");
+            Assert.AreEqual(ControlMode.Aboard, sw.Mode, "premise: she is steering the dory");
+            yield return null;
+
+            rig.Picker.Show(subject);
+            yield return null;   // the outgoing skin's leftovers go at the end of the swap's frame
+
+            SwappedCabinDoor(rig, subject);
+            BoatInterior cabin = rig.Installer.Interior;
+            BoatCutaway cutaway = rig.Installer.Cutaway;
+            Assert.IsNotNull(cutaway, $"{subject.Id} is a mesh hull, so her cutaway comes with her cabin");
+            Assert.AreEqual(ControlMode.Aboard, sw.Mode, "the swap happened under her at the wheel");
+            yield return null;   // the cut is said again to the new skin once the outgoing one is gone
+
+            HullMeshDef.Cut wheelhouse = subject.Visual.HullMesh.CutawayForDeck("house_sole");
+            Assert.IsTrue(wheelhouse.Opens, $"premise: {subject.Id}'s mesh keys a cut for her wheelhouse");
+            Assert.AreEqual(wheelhouse.Level, cutaway.HelmRoomCut.Level,
+                            $"{subject.Id}'s wheel stands in her wheelhouse, by her own station and level table");
+            if (wheelRoomOpens)
+            {
+                Assert.AreEqual(wheelhouse.Level, cutaway.RequestedCut.Level,
+                                "while she steers, the room her wheel stands in is cut (owner, 2026-11-14)");
+                Assert.AreEqual(wheelhouse.LiftLevels, cutaway.RequestedCut.LiftLevels, "…that room and no other level");
+                Assert.AreEqual(wheelhouse.Level, HullOf(rig).CutawayShown.Level,
+                                "…and the hull the swap skinned on draws it, though she never saw a door");
+            }
+            else
+            {
+                Assert.IsFalse(cutaway.RequestedCut.Opens, "switch off: while she steers, her house is closed (owner, 2026-08-26)");
+                Assert.IsFalse(HullOf(rig).CutawayShown.Opens, "…and the hull the swap skinned on draws it whole");
+            }
+            Assert.IsFalse(cabin.IsInside, "the cut at the wheel entered nobody");
+            Assert.AreEqual(0, _entered.Count, "nothing has been entered: she never saw a door");
+
+            // ---- she lets go of the wheel ------------------------------------------------------
+            Assert.IsTrue(sw.BeginInteract(), "E at the wheel steps back from it");
+            Assert.AreEqual(ControlMode.OnDeck, sw.Mode, "she is standing where the wheel left her");
+
+            Assert.IsTrue(cabin.IsInside,
+                          $"{subject.Id}'s wheel stands in her wheelhouse: stepping back from it, she is inside " +
+                          "(before 2026-11-13 the house stayed shut around her until she walked out and in again)");
+            Assert.AreEqual("house_sole", cabin.Def.Levels[cabin.Level].Id, "…on the wheelhouse level, by the def's own id");
+            Assert.AreEqual(1, _entered.Count, "CabinEntered is published, once");
+            Assert.AreEqual(0, _left.Count, "…and nothing was left");
+            Assert.AreEqual(wheelhouse.Level, cutaway.RequestedCut.Level, "off the wheel and inside, her cutaway asks for the wheelhouse cut");
+            yield return null;
+            Assert.AreEqual(wheelhouse.Level, HullOf(rig).CutawayShown.Level, "…and the hull the swap skinned on draws it");
+        }
+
+        /// <summary>
         /// ⭐ <b>Phase B, 2026-09-19, C6 — every door her def names is built, where she can work it.</b>
         /// The Skybridge's skylounge slider was in her def and nothing built it (Phase A, C5). Swapped on
         /// under her, each hull's root carries one <see cref="BoatCabinDoor"/> per door the def names, in
@@ -502,7 +656,7 @@ namespace HiddenHarbours.Tests.PlayMode
             [Values("CapeIslander", "LobsterBoat", "LobsterInshoreOpenNorthumberland",
                     "LobsterStandardHardtopNorthumberland", "LobsterOffshoreOpenNorthumberland",
                     "SportFisherConvertible", "SideDragger", "SportFisherSkybridge", "SternTrawler",
-                    "SternTrawlerMk2", "CoastalPacket", "Tanker")] string subjectName)
+                    "SternTrawlerMk2", "CoastalPacket", "Tanker", "ExpeditionYacht120", "MotorYacht84")] string subjectName)
         {
             Rig rig = NewDoryRig();
             BoatHullDef subject = LoadHull(subjectName);
@@ -770,6 +924,18 @@ namespace HiddenHarbours.Tests.PlayMode
             walk.ConfigureDeckInput(held);
             try
             {
+                // She stands, key released, until the doorway has settled since it last took her. A walk
+                // back begun on the tick after a crossing is a reversal inside the settle, not a walk: on
+                // a room walked on the deck areas nothing holds her at the wall meanwhile, and through the
+                // fleet's narrowest door (the inshore open lobster boat, 0.529 m) she has left the band
+                // one tick before the settle would take her.
+                int settleFrames = Mathf.CeilToInt(door.Door.CrossingSettle / FrameSeconds) + 2;
+                for (int f = 0; f < settleFrames && !door.PassageIsSettled; f++)
+                    yield return null;
+                Assert.IsTrue(door.PassageIsSettled,
+                              $"her doorway settles in {door.Door.CrossingSettle:F3} s while she stands in it " +
+                              $"(waited {settleFrames} frames)");
+
                 DoorwayWalkRead read = readOnHull != null
                     ? new DoorwayWalkRead(walk, door, onLine, outward, key, boat, readOnHull) : null;
                 walk.SnapToDeckLocal(onLine);
@@ -1218,7 +1384,7 @@ namespace HiddenHarbours.Tests.PlayMode
                            $", not '{OpenTheDoor}' on her door");
                     yield break;
                 }
-                if (!w.Rig.Switcher.BeginInteract() || !door.IsCueing)
+                if (!w.Rig.Switcher.BeginInteract() || (!door.IsCueing && !door.IsOpen))
                 {
                     w.Fail($"E under the offer '{offer.Label}' did not move the leaf of {door.Id} " +
                            $"(she is {w.Rig.Switcher.Mode})");

@@ -46,7 +46,10 @@ namespace HiddenHarbours.Art
     /// <para><b>Budget (rule 7).</b> <see cref="LampShadowProfile.MaxPools"/> quads, one shared mesh, one
     /// shared material, one property block, no per-frame allocation; the nearest lamps to the camera win the
     /// slots. A lamp with no <see cref="SceneLight.ReachMetres"/> — every boat lamp, by default — is not a
-    /// candidate at all, so a wharf full of moored hulls costs nothing.</para>
+    /// candidate at all, so a wharf full of moored hulls costs nothing. The one boat lamp that DOES claim a reach
+    /// is a lit cabin's wall spill (<see cref="BoatLampPresets.ApplyWallSpill"/>, 2026-11-13): it moves and
+    /// turns with the hull, which costs nothing extra here because every pool is posed from its lamp's live
+    /// origin and beam direction each frame. A dark cabin's spills are disabled, so they are not candidates.</para>
     ///
     /// <para><b>Determinism (rule 5).</b> Visual only: it reads the registry, the published day/night tint
     /// and the camera, drives no sim and saves nothing.</para>

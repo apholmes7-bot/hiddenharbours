@@ -38,6 +38,17 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
+        [TestCase(0, 0)]
+        [TestCase(0, 3)]
+        public void NullRng_IsRejectedEvenWithFixedTiming(int minNibbles, int maxNibbles)
+        {
+            var profile = new BiteProfile(minNibbles, maxNibbles, 1f, 1f, 0.3f, 0.8f,
+                                          0f, 1f, 1f, 1);
+            var error = Assert.Throws<System.ArgumentNullException>(
+                () => new BiteSequenceSim(profile, null));
+            Assert.AreEqual("rng", error.ParamName);
+        }
+
         // ---- the hook ---------------------------------------------------------------------------
 
         [Test]

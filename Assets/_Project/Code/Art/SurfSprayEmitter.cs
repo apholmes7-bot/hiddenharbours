@@ -32,8 +32,8 @@ namespace HiddenHarbours.Art
         [Tooltip("Every knob of the lip spray — pool, probe lattice, the three bore gates, launch, look.")]
         [SerializeField] private SurfSprayConfig _config = SurfSprayConfig.Default;
 
-        [Tooltip("Sorting order — just above the water, below the rain's, around the boats (the SprayEmitter law).")]
-        [SerializeField] private int _sortingOrder = 5;
+        // ADR 0059 step 2: no fixed order. Each puff carries its own SortingGroup (the SprayEmitter law, #134)
+        // sorted at its spawn point by the decor band's Y-sort (EffectSorting, SortedEffect.SurfSpray).
 
         [Tooltip("Metres toward the camera (−z) each puff is nudged so it clears the water plane.")]
         [SerializeField] private float _cameraZOffset = 0.25f;
@@ -54,6 +54,7 @@ namespace HiddenHarbours.Art
 
         private Wisp[] _pool;
         private SpriteRenderer[] _renderers;
+        private SortingGroup[] _groups;   // one per puff: its order is set once, at spawn
         private Sprite _sprite;
         private float _tickTimer, _probeTimer;
         private int _spawnCursor, _spawnCounter;
@@ -80,8 +81,6 @@ namespace HiddenHarbours.Art
         private void Awake()
         {
             _sprite = AmbientGlobals.BuildSoftPuff("SurfSpray.Puff", 16, 48, 0.85f);
-            var group = gameObject.AddComponent<SortingGroup>();
-            group.sortingOrder = _sortingOrder;
             BuildPool();
             BuildLattice();
         }
@@ -93,13 +92,14 @@ namespace HiddenHarbours.Art
             int n = Mathf.Max(1, _config.MaxWisps);
             _pool = new Wisp[n];
             _renderers = new SpriteRenderer[n];
+            _groups = new SortingGroup[n];
             for (int i = 0; i < n; i++)
             {
                 var go = new GameObject("lip-spray");
                 go.transform.SetParent(transform, false);
                 var sr = go.AddComponent<SpriteRenderer>();
                 sr.sprite = _sprite;
-                sr.sortingOrder = _sortingOrder;
+                _groups[i] = go.AddComponent<SortingGroup>();   // "sort as 2D" (#134); ordered at spawn
                 go.SetActive(false);
                 _renderers[i] = sr;
             }
@@ -252,6 +252,7 @@ namespace HiddenHarbours.Art
             Vector2 vel = SurfSprayMath.Launch(_cellShoreward[cell], _cellDepth[cell], GameServices.WaveField.Gravity,
                                                _config.LaunchSpeedPerBoreSpeed * (0.7f + 0.6f * hs),
                                                _config.SpreadDegrees, hspread);
+            _groups[i].sortingOrder = EffectSorting.OrderAt(SortedEffect.SurfSpray, pos.y);   // ADR 0059 step 2
             _pool[i] = new Wisp
             {
                 Alive = true,

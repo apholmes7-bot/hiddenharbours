@@ -10,17 +10,19 @@ namespace HiddenHarbours.Tools.RigBaking
     /// The owner-facing entry point for the cliff kit: one menu item, ~30 s, and the wall textures
     /// exist.
     ///
-    /// <para><b>⭐ THE CLIFF PNGs ARE DELIBERATELY NOT IN THE REPOSITORY.</b> Every sibling kit commits
-    /// its sheets; this one measured 16.0 MB for even the narrow St Peters subset (and ~90 MB for the
-    /// full parametric set), all of it regenerable in seconds and all of it stale the moment a rig
-    /// coefficient moves — so the rig is committed and the pixels are baked locally.</para>
+    /// <para><b>⭐ THE CLIFF PNGs ARE IN THE REPOSITORY (terrain-fidelity P1, 11-07).</b> They were baked
+    /// locally until then, and the self-heal below could not close the hole that left: the committed
+    /// scenes name each face by its <c>.meta</c> GUID, and a bake from nothing minted new ones, so a clone
+    /// drew its walls with no face. The kit (9.6 MB, LFS) and its metas are committed now, and
+    /// <see cref="CliffBaker.StableGuid"/> makes a bake from nothing write the GUIDs the scenes hold.</para>
     ///
-    /// <para><b>⭐ …WHICH IS WHY THIS MENU IS A CONVENIENCE AND NEVER A REQUIREMENT.</b> The coordinator
-    /// made that binding when the rig-not-sheets trade was accepted (PR #427): <i>"a fresh clone
-    /// self-heals — a checkout that renders pink until someone finds a menu item is not shipped."</i> So
-    /// the region builder calls <see cref="EnsureBaked"/> and bakes on missing, and this menu exists for
-    /// re-baking after a rig edit. Both go through <see cref="Bake(string, bool)"/>, so there is exactly
-    /// one bake path and the automatic one cannot drift from the one a human has been running.</para>
+    /// <para><b>⭐ …SO THIS MENU IS FOR RE-BAKING AFTER A RIG EDIT.</b> The coordinator's binding from the
+    /// rig-not-sheets trade (PR #427) still stands: <i>"a fresh clone self-heals — a checkout that renders
+    /// pink until someone finds a menu item is not shipped."</i> The region builder still calls
+    /// <see cref="EnsureBaked"/>, which bakes only on missing. Both go through
+    /// <see cref="Bake(string, bool)"/>, so there is exactly one bake path and the automatic one cannot
+    /// drift from the one a human has been running. A bake that changes bytes is a PR that re-commits
+    /// them.</para>
     ///
     /// <para><b>⭐ TWO LOOKS, AND THE SWITCH IS PULLED AT BAKE TIME</b> (owner, 09-18: "bake switch").
     /// <see cref="KitPxItem"/> re-bakes every rock this checkout carries in the px kit's skin, writes the
@@ -141,8 +143,8 @@ namespace HiddenHarbours.Tools.RigBaking
             Debug.Log(rock != null
                 ? $"[cliff-bake] baking {rock} ({Look(px)}) into {CliffCatalog.BakeRoot} on request."
                 : $"[cliff-bake] {CliffCatalog.BakeRoot} is missing a rock the wall needs in the " +
-                  $"{Look(px)} look — baking {string.Join(", ", plan)} now (the kit ships as the rig; " +
-                  "the PNGs are gitignored and regenerate in seconds).");
+                  $"{Look(px)} look — baking {string.Join(", ", plan)} now (the PNGs are committed, so a " +
+                  "checkout without them is missing files; the bake writes the GUIDs the scenes hold).");
             foreach (string r in plan) Bake(r, px);
             return true;
         }
@@ -415,7 +417,15 @@ namespace HiddenHarbours.Tools.RigBaking
                 $"{retuned} import settings applied. " +
                 $"Render {result.RenderMilliseconds / 1000.0:F1} s of " +
                 $"{result.TotalMilliseconds / 1000.0:F1} s.\n" +
-                $"Written under {CliffCatalog.BakeRoot} (gitignored — the rig is the committed source).");
+                $"Written under {CliffCatalog.BakeRoot} with {result.MetasWritten} new metas at their stable " +
+                "GUIDs — committed files: a re-bake that changed bytes is a PR that re-commits them.");
+
+            if (result.ForeignGuids.Count > 0)
+                Debug.LogWarning(
+                    $"[cliff-bake] {rock} ({skin}): {result.ForeignGuids.Count} kit file(s) carry a GUID other " +
+                    "than the one their place in the kit hashes to (CliffBaker.StableGuid) — left as they are, " +
+                    "because a scene on this box may name them. A checkout of main carries the hashed ones:\n  " +
+                    string.Join("\n  ", result.ForeignGuids));
         }
 
         /// <summary>A menu path the way a person reads it off the menu bar.</summary>

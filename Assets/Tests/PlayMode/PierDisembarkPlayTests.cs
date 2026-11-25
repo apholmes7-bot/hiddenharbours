@@ -253,9 +253,14 @@ namespace HiddenHarbours.Tests.PlayMode
 
             // Board (→ the deck), then step ashore. The boat is inside the dock radius, so this is the tidy
             // dock landing: the ratified disembark point, on the planks.
-            Assert.IsTrue(_switcher.TryInteract(), "boarding from beside the boat succeeds");
+            _waterEvents.Clear();
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(_switcher), "boarding from beside the boat succeeds");
             Assert.AreEqual(ControlMode.OnDeck, _switcher.Mode, "boarding lands on the deck");
-            Assert.IsTrue(_switcher.TryInteract(), "and E from the deck steps ashore at the dock");
+            Assert.AreEqual(OnFootWaterState.Dry, _walk.WaterState,
+                "climbing out of the sea onto the deck ends the swim — the sea rinse must not run on deck");
+            Assert.IsTrue(_waterEvents.Count > 0 && _waterEvents[^1].State == OnFootWaterState.Dry,
+                "and the swim's end is announced the moment the player is aboard, not when he next walks");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(_switcher), "and E from the deck steps ashore at the dock");
             Assert.AreEqual(ControlMode.OnFoot, _switcher.Mode);
             Assert.Less(Vector3.Distance(_walk.transform.position, DisembarkPos), 0.01f,
                 $"the tidy dock landing puts her on the ratified disembark point, not at " +
@@ -267,9 +272,8 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual(OnFootWaterState.Dry, _walk.WaterState,
                 "standing on the wharf at spring high water, the fisher's own controller must call her DRY — " +
                 "this is the whole fix. Before the standable-surface seam she read Swim on the planks.");
-            Assert.IsTrue(_waterEvents.Count > 0 && _waterEvents[^1].State == OnFootWaterState.Dry,
-                "and the on-foot water-state signal announced the transition out of the water, so the HUD/VFX " +
-                "stop treating the pier as sea");
+            Assert.IsTrue(_waterEvents.Count == 0 || _waterEvents[^1].State == OnFootWaterState.Dry,
+                "and the on-foot water-state signal (already Dry since boarding) never called the pier sea");
             Assert.Less(TidalWalkability.DepthNow(DisembarkPos), 0f,
                 "the LIVE depth probe (the registry, in a running scene) reads dry over the planks");
         }

@@ -32,7 +32,14 @@ Wait a few seconds after each. The Console (Window ▸ General ▸ Console) repo
 **Intro-at-sea PR 1 adds a committed open-water scene, `EastWater.unity`.** Its 760 × 520 m
 rectangle has a flat −4 m analytic bed, no painted seabed, and a west door to St Peters. It is
 enabled in the build list. `Hidden Harbours ▸ Build East Water Scene` rebuilds this generated
-water scene; review it through its camera. Its final name remains the owner's.
+water scene; review it through its camera. Its merged name is East Water.
+
+**Intro-at-sea PR 2 authors the opening's `opening` arrival separately from ordinary
+`st_peters` boat arrivals.** `ArrivalSeaAuthoring.Prepare` writes its Def and regenerates
+only the East Water. St Peters remains boot index zero; its opening has two added references
+to the Def and existing loader. This PR never rebuilds or saves St Peters through Unity.
+Under the transition cover, the opening places the existing follow lens on its final passenger
+pose once at each hop. Its normal follow filter then adopts that position; physical poses stay put.
 
 > **Decided (ADR 0011): Coddle Cove is now a real, committed, hand-paintable scene.** The cove
 > (`Greybox.unity`) splits into two layers with one author each: a **LOGIC layer** the builder bakes

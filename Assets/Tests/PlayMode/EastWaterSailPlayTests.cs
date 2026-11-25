@@ -106,8 +106,8 @@ namespace HiddenHarbours.Tests.PlayMode
             if (_boatGo != null) Object.DestroyImmediate(_boatGo);
             if (_fixtureDefs != null) foreach (var def in _fixtureDefs) Object.DestroyImmediate(def);
             if (_origin.IsValid() && _origin.isLoaded) SceneManager.SetActiveScene(_origin);
-            if (_water.IsValid() && _water.isLoaded) yield return SceneManager.UnloadSceneAsync(_water);
-            if (_island.IsValid() && _island.isLoaded) yield return SceneManager.UnloadSceneAsync(_island);
+            if (_water.IsValid() && _water.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(_water);
+            if (_island.IsValid() && _island.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(_island);
             GameServices.Reset();
         }
 
@@ -124,6 +124,28 @@ namespace HiddenHarbours.Tests.PlayMode
             GameServices.HelmControl.DragDrive(0.6f);
             Assert.AreEqual(0.6f, _boat.Throttle, 1e-5f, "the arrived helm still drives this boat");
             Assert.IsNull(GameServices.PendingArrivalKey);
+        }
+
+        [UnityTest]
+        public IEnumerator TheSameLoaderGoesOutAgain_AfterAnotherLoaderBroughtItHome()
+        {
+            var sourceLoader = _outward.GetComponent<RegionSceneLoader>();
+            var destinationLoader = _homeward.GetComponent<RegionSceneLoader>();
+
+            Assert.IsTrue(sourceLoader.Travel(_fixtureDefs[0]));
+            Assert.AreEqual(_water, SceneManager.GetActiveScene());
+            yield return null;
+
+            Assert.IsTrue(destinationLoader.Travel(_fixtureDefs[1]));
+            Assert.AreEqual(_island, SceneManager.GetActiveScene());
+            yield return null;
+
+            Assert.AreSame(sourceLoader, _outward.GetComponent<RegionSceneLoader>());
+            Assert.AreSame(destinationLoader, _homeward.GetComponent<RegionSceneLoader>());
+            Assert.IsTrue(sourceLoader.Travel(_fixtureDefs[0]));
+            Assert.AreEqual(_water, SceneManager.GetActiveScene());
+            Assert.IsFalse(sourceLoader.Travel(_fixtureDefs[0]), "the active destination is already here");
+            yield return null;
         }
 
         [UnityTest]

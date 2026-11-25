@@ -133,6 +133,81 @@ namespace HiddenHarbours.Tests.World.EditMode
 
         // ---- determinism -------------------------------------------------------------------------
 
+        [TestCase(60f)]
+        [TestCase(75f)]
+        public void LoadAtEveryHour_MatchesMeasuredWalkWithoutEarlierTicks(float secondsPerHour)
+        {
+            var hours = new List<float> { -0.25f, 24f, 48.375f };
+            for (int hour = 0; hour < 24; hour++)
+            {
+                hours.Add(hour);
+                hours.Add(hour + 0.375f);
+            }
+            foreach (float departure in new[] { 6f, 18f })
+                foreach (float offset in new[] { -1f / 4096f, 0f, 0.5f, 1f, 1f + 1f / 4096f })
+                    hours.Add(departure + offset * (60f / secondsPerHour));
+            hours.Reverse();
+            foreach (float hour in hours)
+            {
+                // A fresh plan has never sampled another hour. A 120 m walk at 2 m/s takes 60 s.
+                var loaded = new RoutinePlan(new[] { 6f, 18f },
+                    new[] { Vector2.zero, new Vector2(120f, 0f), new Vector2(120f, 0f), Vector2.zero },
+                    new[] { 0, 2 }, new[] { 2, 2 }, new[] { 120f, 120f },
+                    new[] { RoutineActivity.Work, RoutineActivity.Home }, new[] { 90f, 270f },
+                    new[] { 0f, 0f }, new[] { float.PositiveInfinity, float.PositiveInfinity }, 2f);
+                RoutinePose pose = loaded.SampleAt(hour, secondsPerHour);
+                float wrapped = hour % 24f;
+                if (wrapped < 0f) wrapped += 24f;
+                bool outward = wrapped >= 6f && wrapped < 18f;
+                float elapsed = outward ? wrapped - 6f : wrapped >= 18f ? wrapped - 18f : wrapped + 6f;
+                float metres = System.Math.Min(120f, elapsed * secondsPerHour * 2f);
+                bool walking = elapsed * secondsPerHour < 60f;
+                Assert.That(pose.Position.x, Is.EqualTo(outward ? metres : 120f - metres).Within(0.0001f));
+                Assert.That(pose.Position.y, Is.EqualTo(0f));
+                Assert.That(pose.BlockIndex, Is.EqualTo(outward ? 0 : 1));
+                Assert.That(pose.Walking, Is.EqualTo(walking));
+                Assert.That(pose.Activity, Is.EqualTo(outward ? RoutineActivity.Work : RoutineActivity.Home));
+                Assert.That(pose.HeadingDegrees, Is.EqualTo(outward ? 90f : walking ? -90f : 270f));
+                Assert.That(pose.Shelter, Is.EqualTo(RoutineShelter.Outdoors));
+            }
+        }
+
+        [TestCase(0)]
+        [TestCase(4242)]
+        [TestCase(-17)]
+        public void ReloadAtEveryHourAndBlockTransition_MatchesTheClockWithoutReplay(int worldSeed)
+        {
+            RoutinePlan live = SimpleDay(worldSeed);
+            var hours = new List<float>();
+            for (int hour = 0; hour < 24; hour++)
+            {
+                hours.Add(hour);
+                hours.Add(hour + 0.375f);
+            }
+            const float edge = 1f / 4096f;
+            for (int block = 0; block < live.BlockCount; block++)
+            {
+                float departure = live.DepartureHours[block];
+                float travel = live.TravelHours(block, SecondsPerGameHour);
+                hours.Add(departure - edge);
+                hours.Add(departure);
+                hours.Add(departure + travel * 0.5f);
+                hours.Add(departure + travel - edge);
+                hours.Add(departure + travel);
+                hours.Add(departure + travel + edge);
+            }
+            hours.Reverse(); // Deliberately seek backwards as well as forwards, including midnight.
+            foreach (float hour in hours)
+            {
+                live.SampleAt(RoutineSchedule.Wrap24(hour + 11f), SecondsPerGameHour);
+                RoutinePlan loaded = SimpleDay(worldSeed); // No preceding ticks in the loaded plan.
+                Assert.That(loaded.DepartureHours, Is.EqualTo(live.DepartureHours));
+                // Value equality covers position, heading, activity, block, walking, and shelter.
+                Assert.That(loaded.SampleAt(hour, SecondsPerGameHour),
+                    Is.EqualTo(live.SampleAt(hour, SecondsPerGameHour)), $"seed={worldSeed}, hour={hour:R}");
+            }
+        }
+
         [Test]
         public void SameSeedSameHour_IsTheSamePose_BitForBit()
         {

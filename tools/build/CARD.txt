@@ -1,0 +1,20 @@
+RED SKIES AT NIGHT - PRIVATE INSTALL TEST
+
+Private install test: record where the route stops and what happened.
+
+[ ] Unzip the game and double-click Red Skies At Night.exe.
+[ ] Choose New game, select Ready, then Keep these choices; play the opening at sea.
+[ ] Try WASD/arrows and E to leave the cabin. When the boat ties up at St Peters, step ashore with E.
+[ ] Reach Nine Mile Creek and make one sale; record the route and any blocker below.
+[ ] Close the game and find Player.log using README.txt.
+
+How far did you get, and where did you stop?
+
+Was anything pink, missing, slow or stuck? What were you doing when it happened?
+
+How did it feel to play?
+
+In your own words: Windows version, processor, graphics card, memory and screen size?
+
+Return this card and Player.log privately to the person who gave you the game.
+Multiplayer is outside this install test and has not been verified in this package.

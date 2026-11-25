@@ -19,3 +19,11 @@ MonoBehaviour:
   - 'And when you''ve got her floating, come back. I''ve three outboards on that barrel and every one of them ran last summer for somebody.'
   RepeatLines:
   - 'She''s still there. Nobody else is fool enough, and I mean that kindly.'
+  Options:
+  - Id: option.browse_outboards
+    Label: 'Show me those outboards.'
+    ReplyLines: []
+    CatalogSellerId: seller.hectors_barrel
+    CatalogSection: boats
+    SellAtSellerId:
+    NothingToSellLines: []

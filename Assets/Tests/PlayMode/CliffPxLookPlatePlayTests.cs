@@ -181,6 +181,7 @@ namespace HiddenHarbours.Tests.PlayMode
         float _followSmoothOnEntry;
         GameObject _anchor;
         float _askedHeight;
+        int _askedGridPx;
         string _eased = "(not framed)";
         RenderTexture _rt;
         int _w, _h;
@@ -191,6 +192,10 @@ namespace HiddenHarbours.Tests.PlayMode
         bool _px;
         string _look = "(not read)";
         string _lookEvidence = "(not read)";
+
+        /// <summary>Set only by the clone check: a take's failures are collected here instead of stopping the
+        /// case, so a faceless BEFORE run still writes every plate before it goes red.</summary>
+        List<string> _deferredFailures;
         string _pinned = "(not pinned)";
         double _pinnedSeconds;
 
@@ -217,6 +222,12 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTearDown]
         public IEnumerator TearDownRegion()
         {
+            // A region boot can leave static shell/gate state behind the discarded core.
+            if (_loadedAny)
+            {
+                ShellFlow.Reset();
+                InteractionGate.Reset();
+            }
             LogAssert.ignoreFailingMessages = false;
             Time.timeScale = 1f;   // ⚠ a STATIC: left at 0 it stops every test that follows
 
@@ -257,7 +268,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 Scene s = SceneManager.GetSceneAt(i);
                 if (s.IsValid() && s != clean && (s.name == StPeters || s.name == NineMileCreek))
-                    yield return SceneManager.UnloadSceneAsync(s);
+                    yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(s);
             }
 
             // ⚠ #764: a Single load of a region promotes the persistent core's roots into
@@ -266,6 +277,8 @@ namespace HiddenHarbours.Tests.PlayMode
             foreach (GameObject go in PersistentRoots())
                 if (go != null && !_residentBefore.Contains(go)) Object.DestroyImmediate(go);
             GameServices.Reset();
+            ShellFlow.Reset();
+            InteractionGate.Reset();
             _loadedAny = false;
             yield return null;
         }
@@ -341,6 +354,90 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         // =============================================================================================
+        //  The clone check (terrain-fidelity P1, 11-07): do the walls find their faces on a checkout?
+        // =============================================================================================
+
+        /// <summary><b>Clone check, St Peters.</b> S3 + S6 (the steep east and south-east faces) and S5 (the
+        /// south-west wall) in the day (09:00) and at noon (13:00), shot WHETHER OR NOT the faces resolve. On a
+        /// checkout without them this is the BEFORE plate (look <c>clone-faceless</c>) and the case goes red
+        /// after every plate is on disk; on the committed faces it is the AFTER plate (<c>clone-faced</c>). It
+        /// reads neither the v10 nor the px look, so it writes no run token and composes against nothing.</summary>
+        [UnityTest]
+        public IEnumerator TheCloneCheck_StPeters_TheEastSouthEastAndSouthWestFaces_DayAndNoon()
+        {
+            RequireAGraphicsDevice();
+            yield return LoadRegion(StPeters);
+            yield return ShootTheCloneCheck(S3, S6, S5);
+        }
+
+        /// <summary><b>Clone check, Nine Mile Creek.</b> The creek's tallest east wall (N1) and its east ramp
+        /// (N3), day and noon, as above.</summary>
+        [UnityTest]
+        public IEnumerator TheCloneCheck_NineMileCreek_TheCreekWalls_DayAndNoon()
+        {
+            RequireAGraphicsDevice();
+            yield return LoadRegion(StPeters);   // reached the way play reaches it (see LoadRegion)
+            yield return LoadRegion(NineMileCreek);
+            yield return ShootTheCloneCheck(N1, N3);
+        }
+
+        IEnumerator ShootTheCloneCheck(params Station[] stations)
+        {
+            int missing = ReadTheCloneFaces(stations);
+            _deferredFailures = new List<string>();
+            try
+            {
+                foreach (float hours in new[] { 9f, 13f })
+                {
+                    yield return PinTheHour(hours);
+                    foreach (Station s in stations) yield return ShootTheTake(At(s), hours);
+                }
+                Debug.Log($"[{PlateDir}] clone check: {stations.Length * 2} captures in the {_look} look — {_lookEvidence}");
+                Assert.That(missing, Is.EqualTo(0),
+                    $"the walls do not find their faces on this checkout: {_lookEvidence}. A clone would draw these " +
+                    "cliffs with no face (the plates of this run show it).");
+                Assert.That(_deferredFailures, Is.Empty, string.Join("; ", _deferredFailures));
+            }
+            finally
+            {
+                _deferredFailures = null;
+            }
+        }
+
+        /// <summary>Count the face bands that sample no colour, at the stations (a missing band counts) and on
+        /// every wall in the region, and name the look by it. Never skips: no faces is the finding.</summary>
+        int ReadTheCloneFaces(Station[] stations)
+        {
+            _walls = Object.FindObjectsByType<CliffWallSurface>().Where(w => w != null && w.isActiveAndEnabled).ToList();
+            Assert.Greater(_walls.Count, 0, $"{SceneManager.GetActiveScene().name} has no cliff wall at all.");
+            _cliffRenderers = _walls.SelectMany(w => w.GetComponentsInChildren<Renderer>(true)).ToList();
+
+            var atStations = new List<string>();
+            int missingAtStations = 0;
+            foreach (Station s in stations)
+            {
+                int faced = 0;
+                foreach (string band in new[] { "Overburden", "Rock" })
+                {
+                    Renderer r = BandRenderer(FindWall(s), band);
+                    if (r != null && ColourOf(r) != null) faced++;
+                }
+                missingAtStations += 2 - faced;
+                atStations.Add($"{s.Wall} {faced}/2");
+            }
+            List<Renderer> bands = _walls.SelectMany(BandRenderers).ToList();
+            int faceless = bands.Count(r => ColourOf(r) == null);
+
+            _px = false;
+            int missing = missingAtStations + faceless + (bands.Count == 0 ? 1 : 0);
+            _look = missing == 0 ? "clone-faced" : "clone-faceless";
+            _lookEvidence = $"{_walls.Count} walls, {bands.Count} band renderers, {faceless} sample no colour; " +
+                            $"at the stations {string.Join(", ", atStations)}";
+            Debug.Log($"[{PlateDir}] the clone check's faces: {_look} — {_lookEvidence}");
+            return missing;
+        }
+
+        // =============================================================================================
         //  The schedule: the look once, then every hour in order and every station due at it
         // =============================================================================================
 
@@ -388,13 +485,32 @@ namespace HiddenHarbours.Tests.PlayMode
                 : "not in this frame";
 
             // --- one frame: the picture, its subject-removed control and, in px, the −1 arm (no yield) ---
+            // Prime the index-control frame and prove that the original is stable before any arm.
+            if (take.Arm && _px) Capture();
             byte[] picture = Capture();
-            byte[] control = CaptureWithoutTheCliffs();
+            if (take.Arm && _px)
+            {
+                byte[] repeated = Capture();
+                if (Fnv1a(picture) != Fnv1a(repeated))
+                    failures.Add("the original frame changed before any index control was applied");
+            }
             SavePlate($"{plate}.png", picture, _w);
-            if (_controlsSaved.Add($"{s.Shot}-{_look}")) SavePlate($"{s.Shot}-control-{_look}.png", control, _w);
             byte[] same = null, shifted = null;
             string armNote = null;
-            if (take.Arm && _px) CaptureTheAspectShift(failures, out same, out shifted, out armNote);
+            if (take.Arm && _px)
+            {
+                CaptureTheAspectShift(failures, out same, out shifted, out armNote);
+                if (same != null) SavePlate($"{s.Shot}-{hhmm}-px-unshifted-control.png", same, _w);
+                byte[] restored = Capture();
+                SavePlate($"{s.Shot}-{hhmm}-px-restored-control.png", restored, _w);
+                if (Fnv1a(restored) != Fnv1a(picture))
+                    failures.Add("the original frame changed after its index textures were restored");
+            }
+
+            // Renderer-disable controls alter camera-dependent state. Take that destructive arm
+            // after the texture identity comparisons, so it cannot contaminate their original frame.
+            byte[] control = CaptureWithoutTheCliffs();
+            if (_controlsSaved.Add($"{s.Shot}-{_look}")) SavePlate($"{s.Shot}-control-{_look}.png", control, _w);
 
             ulong hPicture = Fnv1a(picture), hControl = Fnv1a(control);
             double share = ChangedShare(picture, control);
@@ -432,7 +548,8 @@ namespace HiddenHarbours.Tests.PlayMode
             Debug.Log($"[{PlateDir}] {plate}: look {_look}; {_pinned}; centre ({s.Centre.x:0.#}, {s.Centre.y:0.#}); " +
                       $"{share:P1} changed without the cliffs; {Path.Combine(PlatePath(), plate + ".png")}");
 
-            Assert.That(failures, Is.Empty, $"{plate}: {string.Join("; ", failures)}");
+            if (_deferredFailures != null) _deferredFailures.AddRange(failures.Select(f => $"{plate}: {f}"));
+            else Assert.That(failures, Is.Empty, $"{plate}: {string.Join("; ", failures)}");
         }
 
         void RefreshTheCliffRenderers()
@@ -460,8 +577,8 @@ namespace HiddenHarbours.Tests.PlayMode
                     Renderer r = BandRenderer(wall, band);
                     if (r == null || ColourOf(r) == null)
                         Assert.Ignore($"SKIPPED, NOT VERIFIED: {s.Wall} has no baked {band} band on this box — the " +
-                                      "cliff faces are gitignored and this checkout has not baked them (Hidden " +
-                                      "Harbours ▸ Dev ▸ Bake Cliff Kit — v10), so there is no cliff to photograph.");
+                                      "cliff faces are committed under LFS since 11-07 and this checkout lacks " +
+                                      "them (git lfs pull), so there is no cliff to plate.");
                 }
             }
 
@@ -1002,7 +1119,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
             LogAssert.ignoreFailingMessages = true;   // the regions log decor complaints of their own
             _loadedAny = true;
-            yield return SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Load(sceneName, LoadSceneMode.Single);
             for (int i = 0; i < 8; i++) yield return null;   // let the self-installing components register
 
             var healed = new List<string>();
@@ -1129,12 +1246,8 @@ namespace HiddenHarbours.Tests.PlayMode
                 _anchor = new GameObject("CliffPxLookPlateAnchor");
                 _spawned.Add(_anchor);
             }
-            _anchor.transform.position = new Vector3(at.x, at.y, 0f);
             _follow.Target = _anchor.transform;
             _follow.Smooth = 1000f;   // any residue arrives in a frame, not over a second of easing
-            _cam.transform.position = new Vector3(at.x, at.y, _cam.transform.position.z);
-            _askedHeight = _follow.WorldHeightFor(CameraFraming.OnFoot);
-            _follow.SetFraming(_askedHeight, 0f);
 
             if (_rt == null)
             {
@@ -1144,6 +1257,14 @@ namespace HiddenHarbours.Tests.PlayMode
                 _rt.Create();
             }
             _cam.targetTexture = _rt;
+            _askedGridPx = _cam.targetTexture.height;   // the follow frames on its camera's render texture
+            _askedHeight = _follow.WorldHeightFor(CameraFraming.OnFoot);
+            _follow.SetFraming(_askedHeight, 0f);
+            // Ask for a representable station on the camera's selected grid. The ledge's nominal
+            // y = -58.1 lies between pixels; the position tolerance still applies to the exact anchor.
+            if (GameServices.PixelGridSnap) at = PixelGrid.Snap(at, _follow.WorldUnitsPerRenderedPixel);
+            _anchor.transform.position = new Vector3(at.x, at.y, 0f);
+            _cam.transform.position = new Vector3(at.x, at.y, _cam.transform.position.z);
             for (int i = 0; i < 2; i++) yield return null;   // the follow reads the anchor while nothing can move
 
             Time.timeScale = 1f;
@@ -1157,11 +1278,12 @@ namespace HiddenHarbours.Tests.PlayMode
             Vector3 p = _cam.transform.position;
             float worldHeight = _cam.orthographicSize * 2f;
             Assert.LessOrEqual(Vector2.Distance(new Vector2(p.x, p.y), at), OnTheCentreMetres,
-                $"the camera sits at ({p.x:0.####}, {p.y:0.####}), not on the station ({at.x:0.###}, {at.y:0.###}), " +
+                $"the camera sits at ({p.x:0.####}, {p.y:0.####}), not on the pixel-aligned station ({at.x:0.###}, {at.y:0.###}), " +
                 $"after {_eased}: something else drives it (a region-bounds clamp, a cinematic), so the plate would " +
                 "show another stretch of coast and the two runs would not line up.");
-            Assert.That(worldHeight, Is.InRange(8f, 9.5f),
-                $"the camera frames {worldHeight:0.###} m tall, not the on-foot view (8.4375 m at 1080 px).");
+            Assert.That(worldHeight, Is.EqualTo(_askedHeight).Within(0.5f),
+                $"the camera frames {worldHeight:0.###} m tall, not the on-foot stop its own follow was asked for " +
+                $"({_askedHeight:0.###} m, WorldHeightFor OnFoot).");
         }
 
         IEnumerator EaseOntoTheCentre(Vector2 at)
@@ -1289,7 +1411,7 @@ namespace HiddenHarbours.Tests.PlayMode
             sb.AppendLine($"asked centre ({s.Centre.x:0.###}, {s.Centre.y:0.###}); camera at ({p.x:0.####}, {p.y:0.####}, {p.z:0.###}); {_eased}");
             sb.AppendLine($"ortho {_cam.orthographicSize:0.#####} -> {worldHeight * _cam.aspect:0.###} x {worldHeight:0.####} m, " +
                           $"render texture {_w}x{_h} px, {_follow.WorldUnitsPerRenderedPixel:0.#####} m per rendered pixel");
-            sb.AppendLine($"framing: asked {_askedHeight:0.###} m (WorldHeightFor OnFoot); committed {_follow.Framing} (known {_follow.FramingKnown})");
+            sb.AppendLine($"framing: asked {_askedHeight:0.###} m (WorldHeightFor OnFoot on a {_askedGridPx} px grid), framed {worldHeight:0.###} m; committed {_follow.Framing} (known {_follow.FramingKnown})");
             sb.AppendLine(DescribePixelPerfect());
             sb.AppendLine($"hour, sun and tide: {_pinned}");
             sb.AppendLine(s.Figure.HasValue

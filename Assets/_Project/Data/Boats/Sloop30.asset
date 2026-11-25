@@ -22,6 +22,7 @@ MonoBehaviour:
   HoldUnits: 8
   CrewSlots: 2
   Propulsion: 2
+  AutopilotOffered: 1
   EnginePower: 3325
   RudderAuthority: 3200
   OarPower: 0
@@ -58,3 +59,4 @@ MonoBehaviour:
   SailYawReferenceWindKn: 10
   UnmannedRoundUpTorque: 2400
   RoundUpReferenceDriveKn: 6
+  SailWeatherHelm: 2.5

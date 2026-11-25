@@ -238,7 +238,7 @@ namespace HiddenHarbours.App.Editor
         /// a neutral name so nothing breaks. WHERE the shipwright's yard really lives is the
         /// coordinator's question — flagged, not settled (plan §10).</para>
         /// </summary>
-        public static Vector3 ShipwrightShedPos => NineMileCreekMainland.BoatShedPos;
+        public static Vector3 ShipwrightShedPos => NineMileCreekWharfYard.Door;
 
         /// <summary>The hard the damaged dory is bought off — and where the used-outboard man stands. On
         /// the spit beside the derelict herself, because the boat you are shown and the boat you are sold
@@ -246,14 +246,14 @@ namespace HiddenHarbours.App.Editor
         public static Vector3 DoryYardPos => NineMileCreekMainland.DoryYardPos;
 
         /// <summary>Hector's barrel — the used-outboard till. DERIVED from where he actually stands
-        /// (<see cref="NineMileCreekPeople.OutboardStallMetres"/> out from the yard toward the water), so
+        /// (<see cref="NineMileCreekPeople.OutboardStallMetres"/> from the yard quay's centre toward its face), so
         /// the man and the counter cannot come apart: a player who can talk to him but not buy from him
         /// has met a decoration.</summary>
         public static Vector3 HectorsBarrelPos
         {
             get
             {
-                Vector2 p = NineMileCreekPeople.Toward(DoryYardPos, NineMileCreekWharf.DeckFootprint().center,
+                Vector2 p = NineMileCreekPeople.Toward(NineMileCreekWharfYard.QuayPost, NineMileCreekWharfYard.QuayFace,
                                                        NineMileCreekPeople.OutboardStallMetres);
                 return new Vector3(p.x, p.y, 0f);
             }
@@ -675,7 +675,8 @@ namespace HiddenHarbours.App.Editor
             NineMileCreekWharf.Place(premise);
 
             // --- BUILDINGS (services + a couple of flavour houses), on the WEST land ---------
-            var shipwrightShed = MakeBuilding("ShipwrightShed",   LoadSpriteAny(ArtShipwright), ShipwrightShedPos, waterSprite, new Color(0.50f, 0.42f, 0.34f));
+            var shipwrightShed = new GameObject(NineMileCreekWharfYard.CatalogueName);
+            shipwrightShed.transform.position = ShipwrightShedPos;
             // The buyer's truck stands on the SPIT among the parked trucks, which is where a buyer stands
             // on a working wharf. See FishBuyerPos for why this is no longer "four metres off the planks"
             // and what the test measures instead.
@@ -704,12 +705,8 @@ namespace HiddenHarbours.App.Editor
             NineMileCreekDressing.Place(premise);
 
             // --- THE PHOTOGRAPH PASS: the lots along Wharf Road, and the fleet at the berths -----------
-            // ⭐ THE LOTS. The owner's satellite view (2026-08-10) shows a cluster of buildings behind the
-            // basin, not one shed: bait sheds, a boatyard, a restaurant, and a shed per boat-owner. Harris
-            // & Sons is DRAWN from the baked shipyard kit at the smallYard tier he ruled; everything else
-            // is a NAMED RESERVED LOT, because no rig bakes a bait shed or a restaurant and a kit building
-            // standing in for one would look finished while being wrong. NineMileCreekLots reports the
-            // gap on every build so the art-director's ask cannot go quiet.
+            // The legacy reservation table no longer draws the old smallYard (H6 PR 3, Ruling 26).
+            // The delivered harbour.yard and its trades are placed through the named layer refresh.
             var creekOwners = NineMileCreekMooredFleet.LoadOwners();
             NineMileCreekLots.Place(premise, creekOwners);
 
@@ -719,13 +716,6 @@ namespace HiddenHarbours.App.Editor
             // scene and the fleet would never be mesh. The berth the player docks in is derived and left
             // clear.
             NineMileCreekMooredFleet.Place(premise);
-
-            // ⭐ THE REVIEW ANCHORAGE — the owner's "every boat model must be VISIBLE in game" ruling
-            // (2026-08-14). Twenty-three fleet-pack hulls lying at anchor in the −6 m water east of the
-            // basin, so he can go and look at them. NOT the working fleet above and not content: no
-            // owner, no skipper, no paint, no BoatHullDef, so nothing here is pilotable or purchasable.
-            // It places and does NOT draw, for the same reason the fleet above does not.
-            FleetReviewMoorage.Place();
 
             // ⭐ THE DUALLY, PARKED AT THE PARK — closing the reachability gap #560 left ("the
             // dev-picker path only", and there is no picker). Places and does NOT draw, per the
@@ -853,7 +843,8 @@ namespace HiddenHarbours.App.Editor
             // the damaged-dory offer (buy → owned-but-unusable; pay TryRepair → usable). Its own GO so it
             // doesn't fight the Punt shipwright's offer; west land, beside the shed. Buy/repair screens are
             // ui-ux's, so no dev-input is added here (P already buys the Punt next door).
-            var doryYard = MakeBuilding("ShipwrightDoryYard", LoadSpriteAny(ArtShipwright), DoryYardPos, waterSprite, new Color(0.46f, 0.40f, 0.32f));
+            var doryYard = new GameObject(NineMileCreekWharfYard.DoryTradeName);
+            doryYard.transform.position = DoryYardPos;
             var doryShipwright = doryYard.AddComponent<Shipwright>();
             SetRef(doryShipwright, "_offer", damagedDoryOffer);
             SetString(doryShipwright, "_sellerId", SellerYard);
@@ -881,7 +872,7 @@ namespace HiddenHarbours.App.Editor
             // at the counter, through a dialogue row (design/shop-catalog-and-dialogue-choices.md §3.2).
             // Hector's own conversation is where his outboards will be browsed when he gets a row; until
             // then his till is reachable by the same seams it always was.
-            var outboardStall = new GameObject("UsedOutboardSeller");
+            var outboardStall = new GameObject(NineMileCreekWharfYard.OutboardTradeName);
             // At Hector's own spot rather than an offset off the yard's corner: NineMileCreekPeople
             // already derives where he stands (out from the yard toward the water), and the man and his
             // till coming apart is the exact failure NineMileCreekDoryTests measures.
@@ -1193,9 +1184,10 @@ namespace HiddenHarbours.App.Editor
             // band either way round. It runs second only so its log line is the last thing about the
             // ground the owner reads.
             //
-            // ⚠ EnsureBaked FIRST: the Cliff Face kit's pixels are gitignored by design (the rig is the
-            // committed source), so a fresh checkout has no faces and the coast would stand up untextured
-            // without a word. St Peters' builder makes the same call for the same reason.
+            // ⚠ EnsureBaked FIRST: the Cliff Face kit's pixels were gitignored until terrain-fidelity P1
+            // (11-07) and are committed under LFS since; the call stays for a checkout whose LFS objects
+            // never landed, so the coast never stands up untextured without a word. St Peters' builder
+            // makes the same call for the same reason.
             //
             // ⚠ THE WALLS COME FROM THEIR DEFS (NMC H3), never the premise: the premise is the coast plan
             // before G3, and walking it would stand the old walls back up. The Defs are what N1 step

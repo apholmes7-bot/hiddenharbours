@@ -120,8 +120,10 @@ namespace HiddenHarbours.Boats
         /// <summary>
         /// <b>Seconds since this doorway last took her</b> — the settle (owner ruling D1, 2026-09-30,
         /// which retired the latch this replaces). A crossing sets it to zero and her walker's own ticks
-        /// run it up; the doorway will not take her again until it reaches the door's
-        /// <see cref="BoatInteriorDoor.CrossingSettleSeconds"/>.
+        /// run it up; within the band the doorway will not take her again until it reaches the door's
+        /// <see cref="BoatInteriorDoor.CrossingSettleSeconds"/>. Leaving the band instead resolves her
+        /// actual side of the wall immediately when her key points through, so a quick turn back
+        /// cannot leave her counted inside and an idle sample cannot undo her entry.
         ///
         /// <para><b>⚠ It lives HERE, on the door, and not on either walker — that is the point.</b> The
         /// sole and the deck are two frames either side of ONE hole in ONE wall: a walker who crosses in
@@ -133,7 +135,7 @@ namespace HiddenHarbours.Boats
         /// one key and held it met a doorway that would not have her. The key now says which way she means
         /// to go (<see cref="BoatCabinThreshold.IsHeldThrough"/>), so standing in the doorway crosses
         /// nobody, and the only strobe left to stop is a key rocked back and forth on the sill — which a
-        /// sixth of a second stops, and a player walking back through on purpose never meets.</para>
+        /// sixth of a second stops while she remains in the doorway.</para>
         ///
         /// <para>Starts SETTLED (infinite): nothing about a freshly wired door says it has just taken
         /// anybody. The arrival opens with her standing in Armand's doorway, and it is her key, not a
@@ -173,6 +175,7 @@ namespace HiddenHarbours.Boats
         /// dropped when Unity destroys it (see <see cref="LeafIsLive"/>).
         /// </summary>
         private IHullDoorLeaf _leaf;
+        private IHullDoorLeaves _leaves;
 
         /// <summary>Unscaled seconds until the next search for <see cref="_leaf"/> while none is
         /// held.</summary>
@@ -206,6 +209,8 @@ namespace HiddenHarbours.Boats
 
         /// <summary>The cabin this door opens. Read by tests and by whoever places her.</summary>
         public BoatInterior Interior => _interior;
+
+        public bool IsAlwaysOpen => Door != null && Door.OpeningMode == BoatInteriorDoorOpeningMode.AlwaysOpen;
 
         /// <summary>
         /// <b>Is the leaf standing open?</b> The ruling's first sentence — <i>"a door is closed until its
@@ -370,7 +375,7 @@ namespace HiddenHarbours.Boats
         /// switch, no migration, and no window in which a half-built cabin is enterable.</para>
         /// </summary>
         public bool IsAvailable =>
-            BoatInteriorEntryPolicy.MayOffer(_interior) && Door != null && !IsCueing;
+            !IsAlwaysOpen && BoatInteriorEntryPolicy.MayOffer(_interior) && Door != null && !IsCueing;
 
         /// <inheritdoc/>
         public void Interact(in InteractActor actor) => TryUse();
@@ -415,11 +420,12 @@ namespace HiddenHarbours.Boats
             _openLabel = openLabel ?? "";
             _closeLabel = closeLabel ?? "";
             _cueElapsed = -1f;
-            IsOpen = false;             // the ruling's first sentence, restated at every wiring
+            IsOpen = IsAlwaysOpen;
             _sinceCrossingSeconds = float.PositiveInfinity;   // see the field: nothing has crossed yet
             _pastTheLineBefore = float.NaN;
             _wallMeasured = false;      // a re-wired door may open a different room
             _leaf = null;               // a re-wired door may stand on a different hull
+            _leaves = null;
             ShowLeafNow();
         }
 
@@ -438,7 +444,7 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public void SetOpen(bool open)
         {
-            IsOpen = open;
+            IsOpen = IsAlwaysOpen || open;
             _cueElapsed = -1f;
             ShowLeafNow();
         }
@@ -542,16 +548,13 @@ namespace HiddenHarbours.Boats
         /// Put the drawn leaf on <see cref="IsOpen"/> now, searching for the renderer if none is held.
         /// Called at every change of state; changes are presses and wirings, never frames.
         ///
-        /// <para><b>Only the main threshold draws.</b> A hull's bake stores ALL her leaves as one pair
-        /// (the sport fisher skybridge's lounge slider is in it with her saloon door), and the pair
-        /// follows the door that is her way in. An additional door keeps its state and draws
-        /// nothing; two doors pushing one pair would fight over it.</para>
+        /// <para>Named leaves follow their own door. A legacy hull keeps primary-only drawing.</para>
         /// </summary>
         private void ShowLeafNow()
         {
-            if (_additionalDoorIndex >= 0) return;
+            if (IsAlwaysOpen) return;
             if (!LeafIsLive() && !FindLeaf()) return;
-            if (_leaf.DoorLeafShownOpen != IsOpen) _leaf.ShowDoorLeaf(IsOpen);
+            ApplyLeafState();
         }
 
         /// <summary>
@@ -561,7 +564,7 @@ namespace HiddenHarbours.Boats
         /// </summary>
         private void KeepLeafInStep(float unscaledDeltaSeconds)
         {
-            if (_additionalDoorIndex >= 0) return;
+            if (IsAlwaysOpen) return;
             if (!LeafIsLive())
             {
                 _leafSearchIn -= unscaledDeltaSeconds;
@@ -569,14 +572,26 @@ namespace HiddenHarbours.Boats
                 _leafSearchIn = LeafSearchIntervalSeconds;
                 if (!FindLeaf()) return;
             }
-            if (_leaf.DoorLeafShownOpen != IsOpen) _leaf.ShowDoorLeaf(IsOpen);
+            ApplyLeafState();
+        }
+
+        private void ApplyLeafState()
+        {
+            string id = Door?.Id;
+            if (_leaves != null && _leaves.HasDoorLeaf(id))
+            {
+                if (_leaves.DoorLeafShownOpenFor(id) != IsOpen) _leaves.ShowDoorLeaf(id, IsOpen);
+            }
+            else if (_additionalDoorIndex < 0 && _leaf != null && _leaf.DoorLeafShownOpen != IsOpen)
+                _leaf.ShowDoorLeaf(IsOpen);
         }
 
         /// <summary>
         /// ⚠️ Through <c>UnityEngine.Object</c>'s own <c>==</c>, as <c>BoatCutaway</c> does: an interface
         /// reference compared with <c>== null</c> is satisfied by a destroyed component's fake-null.
         /// </summary>
-        private bool LeafIsLive() => _leaf is UnityEngine.Object live && live != null;
+        private bool LeafIsLive() => (_leaves is UnityEngine.Object named && named != null)
+            || (_leaf is UnityEngine.Object live && live != null);
 
         /// <summary>
         /// Look for the leaf renderer under the boat ROOT: the cabin's own node (the installer puts
@@ -585,9 +600,11 @@ namespace HiddenHarbours.Boats
         private bool FindLeaf()
         {
             Transform root = _interior != null ? _interior.transform : transform.parent;
+            _leaves = root != null ? root.GetComponentInChildren<IHullDoorLeaves>(includeInactive: true) : null;
             _leaf = root != null ? root.GetComponentInChildren<IHullDoorLeaf>(includeInactive: true) : null;
             if (LeafIsLive()) return true;
             _leaf = null;
+            _leaves = null;
             return false;
         }
 
@@ -616,11 +633,11 @@ namespace HiddenHarbours.Boats
         ///
         /// <para><b>The gates, in the order they are asked</b> (owner ruling D1, 2026-09-30: <i>"in the
         /// band with the key pointing through, she goes"</i>). The leaf must be standing open and still;
-        /// she must be IN the band, or have stepped out of it this tick; the doorway must have settled since
-        /// it last took her; she must be
+        /// she must be IN the band, or have stepped out of it this tick; she must be
         /// standing on the sill's own floor, when the walker says which floor that is
         /// (<see cref="TryWalkThroughAt"/>); her key must point through it — out of the room, or into it
-        /// from the deck (<see cref="BoatCabinThreshold.IsHeldThrough"/>); she must have reached the wall
+        /// from the deck (<see cref="BoatCabinThreshold.IsHeldThrough"/>). Leaving the band then resolves
+        /// her actual side of the wall. Otherwise the doorway must have settled and she must have reached the wall
         /// line from her side (<see cref="BoatCabinThreshold.HasReachedTheWallLine"/>), or stand pressed
         /// against her floor's edge short of it (<see cref="BoatCabinThreshold.IsPressedShort"/>); and going IN she
         /// must be allowed in at all. <b>Coming OUT is never gated on the entry policy</b> — a cabin that
@@ -690,41 +707,32 @@ namespace HiddenHarbours.Boats
             // The settle runs on her walker's own ticks, whatever else this tick decides.
             _sinceCrossingSeconds += Mathf.Max(0f, deltaSeconds);
 
-            float pastBefore = _pastTheLineBefore;
-            _pastTheLineBefore = float.NaN;
-            if (!IsOpen || IsCueing) return false;
-
-            // In the band, or out of it by this one tick's step: her floor's clamp slides her along the
-            // wall in the same tick she meets it, so a key whose straight line meets the wall line inside
-            // the band can end that tick just past its edge — and whether the doorway took her would hang on
-            // the frame rate (the fleet's lobster boats, a key 42° off: through at 144 Hz, never at 60).
-            // One tick and no more: the record below is kept only while she stands in the band.
-            bool inBand = BoatCabinThreshold.IsInBand(door, hullLocalMetres);
-            if (!inBand && float.IsNaN(pastBefore)) return false;
-            if (!MeasureTheWall()) return false;
-
-            // Where she stands along the axis, kept on every tick she is in the doorway — the settle
-            // included — so the tick it lets her go already knows whether her floor has stopped her.
-            float pastNow = BoatCabinThreshold.PastTheWallLine(_wallPoint, _outward, hullLocalMetres);
-            if (inBand) _pastTheLineBefore = pastNow;
-            if (_sinceCrossingSeconds < door.CrossingSettle) return false;
+            if (!IsOpen || IsCueing || !MeasureTheWall())
+            {
+                _pastTheLineBefore = float.NaN;
+                return false;
+            }
 
             // Standing over the doorway on another floor is not standing in it (the Phase A finding —
             // see ICabinThresholdAtHeight).
             if (floorKnown && !BoatCabinThreshold.IsOnTheSill(door, floorZMetres, _interior.Def.FloorTolerance))
+            {
+                _pastTheLineBefore = float.NaN;
                 return false;
+            }
 
             bool goingIn = WouldEnter;
             if (!goingIn && _entryKind == BoatCabinEntryKind.Landing && _interior.EntryLandingDoor != door)
+            {
+                _pastTheLineBefore = float.NaN;
                 return false;
-            if (!BoatCabinThreshold.IsHeldThrough(door, _outward, goingIn, heldHullLocal)) return false;
-            if (!BoatCabinThreshold.HasReachedTheWallLine(_wallPoint, _outward, goingIn, hullLocalMetres)
-                && !BoatCabinThreshold.IsPressedShort(pastBefore, pastNow, goingIn))
+            }
+            if (!BoatCabinThreshold.ShouldPass(door, _wallPoint, _outward, goingIn, hullLocalMetres,
+                                              heldHullLocal, _sinceCrossingSeconds, ref _pastTheLineBefore))
                 return false;
             if (goingIn && !BoatInteriorEntryPolicy.MayOffer(_interior)) return false;
 
             _sinceCrossingSeconds = 0f;
-            _pastTheLineBefore = float.NaN;
 
             if (!goingIn) return _interior.TryExit();
 

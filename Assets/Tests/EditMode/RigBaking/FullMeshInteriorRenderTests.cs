@@ -79,9 +79,6 @@ namespace HiddenHarbours.Tests.RigBaking
                 ["lobsterBoat"] = "lobster",
                 ["capeIslander"] = "cape",
                 // The four working ships (rollout PR 2) — the interior rig's own keys for them.
-                ["sideDragger"] = "dragger",
-                ["sternTrawler"] = "trawler",
-                ["sternTrawlerMk2"] = "trawler2",
                 ["coastalPacket"] = "packet",
             };
             foreach (LobsterVariant v in LobsterVariantFleet.All)
@@ -106,9 +103,6 @@ namespace HiddenHarbours.Tests.RigBaking
             // The four working ships: all four, because unlike the eighteen they are four SEPARATE
             // rig files making four different boats, so there is no family for a sample to stand in
             // for — and each is the first hull of her size the room has ever been cut out of.
-            "sideDragger",
-            "sternTrawler",
-            "sternTrawlerMk2",
             "coastalPacket",
         };
 

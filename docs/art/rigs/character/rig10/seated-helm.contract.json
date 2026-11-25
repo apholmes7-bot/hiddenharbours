@@ -1,0 +1,137 @@
+{
+ "schema": "hidden-harbours/seated-helm@1",
+ "rig": "docs/art/rigs/character/rig10/Art/characterIsoRig10.js",
+ "poses": "docs/art/rigs/character/rig10/Art/characterIsoRig10.poses.js",
+ "rigSha256": "ad563075475740cea1258de68d05c184f2fc136491357bc22988a10d810413f3",
+ "posesSha256": "f30abc9af074356041dfe43f9c8cb50b032faafb357dd31d15836a862ee1ab98",
+ "rows": [
+  {
+   "hull": "boat.go_fast",
+   "visual": "Assets/_Project/Data/Boats/Visuals/GoFastIso.asset",
+   "state": "drive_helm_go_fast",
+   "floorOrigin": {
+    "x": 0.42,
+    "y": -2.18,
+    "z": 0.62
+   },
+   "seat": {
+    "x": 0.42,
+    "y": -2.2,
+    "z": 1.18
+   },
+   "wheel": {
+    "x": 0.42,
+    "y": -1.78,
+    "z": 1.4
+   },
+   "seatZ": 0.56,
+   "wheelZ": 0.78,
+   "wheelY": 0.4,
+   "walk": "docs/art/rigs/gameplay/goFastIsoRig.go_fast.walk.json",
+   "walkSha256": "7a54168d3ffb7d471f671b91d779e7f31558be9c224b658e911e5c88acdfe1c2"
+  },
+  {
+   "hull": "boat.bowrider",
+   "visual": "Assets/_Project/Data/Boats/Visuals/BowriderIso.asset",
+   "state": "drive_helm_bowrider",
+   "floorOrigin": {
+    "x": 0.5,
+    "y": -0.36,
+    "z": 0.34
+   },
+   "seat": {
+    "x": 0.5,
+    "y": -0.38,
+    "z": 0.7
+   },
+   "wheel": {
+    "x": 0.5,
+    "y": 0.02,
+    "z": 1
+   },
+   "seatZ": 0.36,
+   "wheelZ": 0.66,
+   "wheelY": 0.38,
+   "walk": "docs/art/rigs/gameplay/bowriderIsoRig.bowrider.walk.json",
+   "walkSha256": "f29bf692dbc67c1c7378388ee1a0c918b26acd4d524c9fa1af8b7a9f81ec81b7"
+  },
+  {
+   "hull": "boat.express_cruiser",
+   "visual": "Assets/_Project/Data/Boats/Visuals/ExpressCruiserIso.asset",
+   "state": "drive_helm_express_cruiser",
+   "floorOrigin": {
+    "x": 0.52,
+    "y": -1.54,
+    "z": 1.17
+   },
+   "seat": {
+    "x": 0.52,
+    "y": -1.56,
+    "z": 1.68
+   },
+   "wheel": {
+    "x": 0.52,
+    "y": -1.14,
+    "z": 1.96
+   },
+   "seatZ": 0.51,
+   "wheelZ": 0.79,
+   "wheelY": 0.4,
+   "walk": "docs/art/rigs/gameplay/cruiserIsoRig.express_cruiser.walk.json",
+   "walkSha256": "5e6afb7efc41701bdb8ccd7f0dc5941c24cc4ea90bf2e9d38c3ca4832ac55494"
+  },
+  {
+   "hull": "boat.jet_ski",
+   "visual": "Assets/_Project/Data/Boats/Visuals/JetSkiIso.asset",
+   "state": "astride_helm_jet_ski",
+   "clip": "astride",
+   "floorOrigin": {
+    "x": 0,
+    "y": -0.13,
+    "z": 0.3
+   },
+   "seat": {
+    "x": 0,
+    "y": -0.15,
+    "z": 0.76
+   },
+   "wheel": {
+    "x": 0,
+    "y": 0.262,
+    "z": 0.988
+   },
+   "seatZ": 0.46,
+   "wheelZ": 0.688,
+   "wheelY": 0.392,
+   "saddle": {
+    "seat": {
+     "x": 0,
+     "y": -0.02,
+     "z": 0.46
+    },
+    "gripL": {
+     "x": -0.27,
+     "y": 0.392,
+     "z": 0.688
+    },
+    "gripR": {
+     "x": 0.27,
+     "y": 0.392,
+     "z": 0.688
+    },
+    "pegL": {
+     "x": -0.34,
+     "y": 0.23,
+     "z": 0
+    },
+    "pegR": {
+     "x": 0.34,
+     "y": 0.23,
+     "z": 0
+    }
+   },
+   "walk": "docs/art/rigs/gameplay/jetSkiIsoRig.jet_ski.walk.json",
+   "walkSha256": "bebd4cfdbae693262d37d84a763a8b1727cc789986eeeaf9d3393297410cf4a3"
+  }
+ ]
+}

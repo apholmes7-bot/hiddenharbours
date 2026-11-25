@@ -22,7 +22,7 @@ MonoBehaviour:
   HoldUnits: 8
   CrewSlots: 2
   Propulsion: 1
-  EnginePower: 2210
+  EnginePower: 3712
   RudderAuthority: 1000
   OarPower: 0
   OarLateralOffset: 0
@@ -50,6 +50,6 @@ MonoBehaviour:
   Helm: {fileID: 11400000, guid: 3f8a1c2e9b674d0f8a51c7e2d4b90a11, type: 2}
   HelmAheadNotches: 0
   HelmAsternNotches: 0
-  FuelCapacityLitres: 75
+  FuelCapacityLitres: 160
   FuelGrade: gas
   FullThrottleLitresPerHour: 130

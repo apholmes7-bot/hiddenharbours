@@ -262,7 +262,8 @@ namespace HiddenHarbours.Economy
             LastLitresDelivered = quote.Litres;
 
             string stationId = _station != null ? _station.Id : "";
-            EventBus.Publish(new FuelPurchased(stationId, _grade, quote.Litres, quote.Price));
+            EventBus.Publish(new FuelPurchased(stationId, _grade, quote.Litres, quote.Price,
+                _station != null ? _station.Counterparty : default));
             EventBus.Publish(new DevNotice(FillNotice(quote)));
 
             Debug.Log($"[FuelPump] {quote.Litres:0.0} L of {_grade} at {stationId} for {quote.Price}.");

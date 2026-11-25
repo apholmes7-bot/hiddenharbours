@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d92d49d62624537bf0b4697c8a6b94e, type: 3}
+  m_Name: GrassThinning
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.GrassThinningDef
+  Id: grassthin.nine_mile_creek
+  Anchors:
+  - Name: tree
+    Material: {fileID: 2100000, guid: c2d3e4f5a6b7283940516a7b8c9d0e1f, type: 2}
+    RadiusMetres: 3
+  - Name: shrub
+    Material: {fileID: 2100000, guid: 26ca5ed9dc6d4ea187263d70c88b53f1, type: 2}
+    RadiusMetres: 1.5
+  KeepFraction: 0.35
+  _ground: {fileID: 11400000, guid: d561223fdbba4fe4a0ebf14c7c328d4f, type: 2}
+  MinElevationMetres: 1.6

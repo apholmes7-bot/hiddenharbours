@@ -77,6 +77,82 @@ namespace HiddenHarbours.Tests.RigBaking
             finally { Object.DestroyImmediate(deck); Object.DestroyImmediate(room); }
         }
 
+        [TestCase("sportFisherConvertible", 13)]
+        [TestCase("sportFisherSkybridge", 14)]
+        [TestCase("expeditionYacht120", 66)]
+        [TestCase("yachtTender", 1)]
+        [TestCase("motorYacht84", 51)]
+        public void SwitchedHull_EqualsDeliveredWalk(string key, int walkAreas)
+        {
+            var hull = HullMeshFleet.Get(key);
+            using var host = RigScriptHostFactory.Create();
+            var rig = RigMeshExtractor.ExtractFrom(host, hull.ScriptPath, hull.GlobalName, hull: hull.Extraction);
+            Assert.That(rig.Walk.Areas.Count, Is.EqualTo(walkAreas));
+            string stem = Path.GetFileName(hull.MeshAssetPath).Replace("HullMesh.asset", "");
+            var deck = ScriptableObject.CreateInstance<BoatDeckDef>();
+            var room = ScriptableObject.CreateInstance<BoatInteriorDef>();
+            try
+            {
+                var result = HullWalkSidecarImporter.Populate(rig.Walk, rig, stem, deck, room);
+                Assert.That(result.Ok, Is.True, string.Join(";", result.Refusals));
+                var savedDeck = AssetDatabase.LoadAssetAtPath<BoatDeckDef>(DeckSidecarImporter.DeckAssetPath(stem));
+                Assert.That(savedDeck, Is.Not.Null, key);
+                // The boarding block is AUTHORED on the saved asset, not delivered by the walk, and the
+                // importer carries it across exactly like this before it saves. Every imported field is
+                // still compared whole below.
+                deck.CopyAuthoredBoardingRuleFrom(savedDeck);
+                Assert.That(JsonUtility.ToJson(savedDeck), Is.EqualTo(JsonUtility.ToJson(deck)), key + ": complete imported deck, helm and cleats");
+                var savedRoom = AssetDatabase.LoadAssetAtPath<BoatInteriorDef>("Assets/_Project/Data/Boats/Interiors/" + stem + ".asset");
+                if (rig.Walk.House == null) Assert.That(savedRoom, Is.Null, key + ": an open tender has no room");
+                else
+                {
+                    Assert.That(savedRoom, Is.Not.Null, key);
+                    Assert.That(JsonUtility.ToJson(savedRoom), Is.EqualTo(JsonUtility.ToJson(room)), key + ": complete imported room, doors and routes");
+                }
+                var mesh = AssetDatabase.LoadAssetAtPath<HullMeshDef>(hull.MeshAssetPath);
+                Assert.That(mesh, Is.Not.Null, key);
+                Assert.That(mesh.LayoutSchema, Is.EqualTo(HullWalkSidecarReader.Schema));
+            }
+            finally { Object.DestroyImmediate(deck); Object.DestroyImmediate(room); }
+        }
+
+        [Test]
+        public void AuthoredBoardingRule_IsCarriedOntoAFreshImport_AndNothingElseIs()
+        {
+            var authored = ScriptableObject.CreateInstance<BoatDeckDef>();
+            var fresh = ScriptableObject.CreateInstance<BoatDeckDef>();
+            var untouched = ScriptableObject.CreateInstance<BoatDeckDef>();
+            try
+            {
+                authored.Id = "deck.authored";
+                authored.LoaMeters = 9f;
+                authored.BoardingFreeboardMetres = 1.36f;
+                authored.RailsBlockTheSide = true;
+                authored.ClimbAboardOnlyAtBoardingPoints = true;
+                authored.BoardingPoints = new[] { new BoardingPoint { Id = "stern_ladder",
+                    Kind = BoardingPointKind.Ladder, DeckLocalMeters = new Vector2(0f, -7.75f), ReachMetres = 1.5f } };
+                fresh.Id = untouched.Id = "deck.fresh";
+                fresh.LoaMeters = untouched.LoaMeters = 12f;
+
+                fresh.CopyAuthoredBoardingRuleFrom(authored);
+
+                Assert.That(fresh.BoardingFreeboardMetres, Is.EqualTo(1.36f));
+                Assert.That(fresh.RailsBlockTheSide, Is.True);
+                Assert.That(fresh.ClimbAboardOnlyAtBoardingPoints, Is.True);
+                Assert.That(fresh.BoardingPoints, Is.EqualTo(authored.BoardingPoints));
+                Assert.That(fresh.BoardingPoints, Is.Not.SameAs(authored.BoardingPoints), "a copy, not a shared array");
+
+                // Undo the carry: what is left must be the untouched import, field for field.
+                fresh.CopyAuthoredBoardingRuleFrom(untouched);
+                Assert.That(JsonUtility.ToJson(fresh), Is.EqualTo(JsonUtility.ToJson(untouched)),
+                    "the carry touches the boarding block only");
+            }
+            finally
+            {
+                Object.DestroyImmediate(authored); Object.DestroyImmediate(fresh); Object.DestroyImmediate(untouched);
+            }
+        }
+
         [Test]
         public void BoxWalk_EqualsHandBuiltDeckRoomHelmAndStair()
         {
@@ -124,7 +200,7 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         [Test]
-        public void LeaflessDoorway_RefusesByHullAndDoorAndBuildsNoDoor()
+        public void LeaflessDoorway_ImportsAlwaysOpenPassageWithoutLeaf()
         {
             using var host = RigScriptHostFactory.Create();
             var rig = HullWalkFixture.Extract(host);
@@ -134,10 +210,60 @@ namespace HiddenHarbours.Tests.RigBaking
             try
             {
                 var result = HullWalkSidecarImporter.Populate(walk, rig, "boxWalkRig", deck, room);
-                Assert.That(result.Refusals.Single(), Is.EqualTo("box_walk: house.doors.open_arch: leafless doorway: not imported until batch 1 (needs #916's door runtime)"));
-                Assert.That(result.Ok, Is.False);
-                Assert.That(room.AdditionalDoors, Is.Empty);
+                Assert.That(result.Refusals, Is.Empty);
+                Assert.That(result.Ok, Is.True);
+                var arch = room.AdditionalDoors.Single();
+                Assert.That(arch.Id, Is.EqualTo("open_arch"));
+                Assert.That(arch.OpeningMode, Is.EqualTo(BoatInteriorDoorOpeningMode.AlwaysOpen));
+                Assert.That(arch.OpeningReason, Is.EqualTo("No leaf on this arch"));
+                Assert.That(arch.ThresholdPoint, Is.EqualTo(new Vector3(0, 2, 2)));
+                Assert.That(arch.ClearWidthMeters, Is.EqualTo(1));
+                Assert.That(arch.ClearHeightMeters, Is.EqualTo(1));
+                Assert.That(arch.CueFrames, Is.Zero);
+                Assert.That(HullWalkRigExtractor.DeclaredDoors(walk).Select(d => HullLayoutJson.Text(d, "id")),
+                    Does.Not.Contain("open_arch"), "an always-open arch contributes no leaf faces");
                 Assert.That(room.Door.Id, Is.EqualTo("entry"));
+            }
+            finally { Object.DestroyImmediate(deck); Object.DestroyImmediate(room); }
+        }
+
+        [Test]
+        public void ShipLeaflessPassages_AllDeliveredIdsAndLevelsSurviveImport()
+        {
+            var hull = HullMeshFleet.Get("expeditionYacht120");
+            using var host = RigScriptHostFactory.Create();
+            var rig = RigMeshExtractor.ExtractFrom(host, hull.ScriptPath, hull.GlobalName, hull: hull.Extraction);
+            var deck = ScriptableObject.CreateInstance<BoatDeckDef>();
+            var room = ScriptableObject.CreateInstance<BoatInteriorDef>();
+            try
+            {
+                Assert.That(HullWalkSidecarImporter.Populate(rig.Walk, rig, "ExpeditionYacht120Iso", deck, room).Ok, Is.True);
+                string[] below = { "lazarette", "guest_aft_port", "laundry", "guest_aft_stbd", "linen", "ensuite_aft_port",
+                    "ensuite_aft_stbd", "vip_port", "vip_stbd", "ensuite_vip_port", "ensuite_vip_stbd", "crew", "crew_passage",
+                    "crew_port", "crew_stbd", "crew_head" };
+                string[] house = { "galley", "day_head", "master", "ensuite_master" };
+                string[] bridge = { "captain", "captain_head" };
+                CollectionAssert.AreEquivalent(below.Concat(house).Concat(bridge), room.InternalPassages.Select(p => p.Id));
+                var authored = HullLayoutJson.Array(rig.Walk.House, "doorways").Select(v => HullLayoutJson.Object(v, "house.doorways"))
+                    .ToDictionary(d => HullLayoutJson.Text(d, "id"));
+                foreach (var passage in room.InternalPassages)
+                {
+                    string lv = below.Contains(passage.Id) ? "below" : house.Contains(passage.Id) ? "house" : "bridge";
+                    float z = lv == "below" ? 1.9f : lv == "house" ? 4.3f : 7f;
+                    Assert.That(passage.RigLevelId, Is.EqualTo(lv), passage.Id);
+                    Assert.That(passage.LevelId, Is.EqualTo(lv + "_sole"), passage.Id);
+                    Assert.That(passage.SoleZMeters, Is.EqualTo(z).Within(.00001f), passage.Id);
+                    var d = authored[passage.Id];
+                    Assert.That(passage.WallAxis, Is.EqualTo(HullLayoutJson.Text(d, "wall")), passage.Id);
+                    Assert.That(passage.WallAtMeters, Is.EqualTo(HullLayoutJson.Number(d, "at")), passage.Id);
+                    var u = HullLayoutJson.Array(d, "u");
+                    Assert.That(passage.ApertureMeters, Is.EqualTo(new Vector2((float)(double)u[0], (float)(double)u[1])), passage.Id);
+                    Assert.That(passage.ClearWidthMeters, Is.EqualTo(HullLayoutJson.Number(HullLayoutJson.Child(d, "clear"), "width")), passage.Id);
+                    Assert.That(passage.ClearHeightMeters, Is.EqualTo(HullLayoutJson.Number(HullLayoutJson.Child(d, "clear"), "height")), passage.Id);
+                    Assert.That(passage.Reason, Is.EqualTo("an open doorway, no leaf: walked through, never shut"));
+                    Assert.That(room.AdditionalDoors.Select(door => door.Id), Does.Not.Contain(passage.Id));
+                    Assert.That(HullWalkRigExtractor.DeclaredDoors(rig.Walk).Select(door => HullLayoutJson.Text(door, "id")), Does.Not.Contain(passage.Id));
+                }
             }
             finally { Object.DestroyImmediate(deck); Object.DestroyImmediate(room); }
         }

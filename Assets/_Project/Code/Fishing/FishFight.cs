@@ -111,10 +111,12 @@ namespace HiddenHarbours.Fishing
         public bool IsSurging => _surgeRemaining > 0f;
         public bool IsOver => Result != FishFightResult.None;
 
+        /// <summary>Start a fight with a required caller RNG, even for the hand-gather variant.</summary>
+        /// <exception cref="System.ArgumentNullException"><paramref name="rng"/> is null.</exception>
         public FishFight(in FishFightTuning tuning, System.Random rng)
         {
             _t = tuning;
-            _rng = rng ?? new System.Random();
+            _rng = rng ?? throw new System.ArgumentNullException(nameof(rng));
             _surgeCooldown = NextSurgeDelay();
         }
 

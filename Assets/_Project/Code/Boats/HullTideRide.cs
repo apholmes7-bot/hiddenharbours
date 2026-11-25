@@ -47,7 +47,7 @@ namespace HiddenHarbours.Boats
     /// accumulate every rounding error the tide ever made.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class HullTideRide : MonoBehaviour
+    public sealed class HullTideRide : MonoBehaviour, IHullTideRide
     {
         [Tooltip("The water level (m above chart datum) this hull's picture is CORRECT at — where her " +
                  "plan point puts her. 0 is the game's datum, which is mean water: a builder that " +
@@ -82,6 +82,14 @@ namespace HiddenHarbours.Boats
 
         /// <inheritdoc cref="_bakedWaterlineElevation"/>
         public float BakedWaterlineElevation => _bakedWaterlineElevation;
+
+        /// <summary>A ride can arrive after her <see cref="HullPresence"/> has already looked for one and
+        /// cached "none": tell it to look again, so the foam meets her picture from the first capture.</summary>
+        private void OnEnable()
+        {
+            var presence = GetComponent<HullPresence>();
+            if (presence != null) presence.LookForRide();
+        }
 
         /// <summary>
         /// Wire her from a builder or the skinner. <paramref name="draughtMetres"/> negative leaves the

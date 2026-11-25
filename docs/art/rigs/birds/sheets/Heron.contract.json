@@ -1,0 +1,191 @@
+{
+  "sheet": "docs/art/rigs/birds/sheets/Heron.png",
+  "rig": "docs/art/rigs/heronIsoRig.js",
+  "global": "HeronIso",
+  "derivedFromRigSha256": "bf9f8ef8c998102be63208db775664fe9dcf5d10a7f2ce82121abb1cb1773785",
+  "engine": "V8 (Node, docs/art/rigs/birds/tools/build.cjs)",
+  "sheetRgbaSha256": "44ccd1bbdf204fd96edfc5ec47ee65eccbc5bf686ea1fe77541cd02f60c98d52",
+  "cell": {
+    "w": 96,
+    "h": 96
+  },
+  "pivotTopLeft": {
+    "x": 48,
+    "y": 72
+  },
+  "pivotNormalisedBottomLeft": {
+    "x": 0.5,
+    "y": 0.25
+  },
+  "rows": 8,
+  "columns": 32,
+  "pixelsPerUnit": 32,
+  "requiredMaxTextureSize": 4096,
+  "rigConvention": "Clockwise",
+  "facingsAreCounterClockwise": false,
+  "spriteName": "heron_<anim>_<frame>_d<row>",
+  "order": [
+    {
+      "col": 0,
+      "anim": "fly",
+      "frame": 0
+    },
+    {
+      "col": 1,
+      "anim": "fly",
+      "frame": 1
+    },
+    {
+      "col": 2,
+      "anim": "fly",
+      "frame": 2
+    },
+    {
+      "col": 3,
+      "anim": "fly",
+      "frame": 3
+    },
+    {
+      "col": 4,
+      "anim": "fly",
+      "frame": 4
+    },
+    {
+      "col": 5,
+      "anim": "fly",
+      "frame": 5
+    },
+    {
+      "col": 6,
+      "anim": "glide",
+      "frame": 0
+    },
+    {
+      "col": 7,
+      "anim": "glide",
+      "frame": 1
+    },
+    {
+      "col": 8,
+      "anim": "takeoff",
+      "frame": 0
+    },
+    {
+      "col": 9,
+      "anim": "takeoff",
+      "frame": 1
+    },
+    {
+      "col": 10,
+      "anim": "takeoff",
+      "frame": 2
+    },
+    {
+      "col": 11,
+      "anim": "takeoff",
+      "frame": 3
+    },
+    {
+      "col": 12,
+      "anim": "land",
+      "frame": 0
+    },
+    {
+      "col": 13,
+      "anim": "land",
+      "frame": 1
+    },
+    {
+      "col": 14,
+      "anim": "land",
+      "frame": 2
+    },
+    {
+      "col": 15,
+      "anim": "land",
+      "frame": 3
+    },
+    {
+      "col": 16,
+      "anim": "stand",
+      "frame": 0
+    },
+    {
+      "col": 17,
+      "anim": "stand",
+      "frame": 1
+    },
+    {
+      "col": 18,
+      "anim": "stalk",
+      "frame": 0
+    },
+    {
+      "col": 19,
+      "anim": "stalk",
+      "frame": 1
+    },
+    {
+      "col": 20,
+      "anim": "stalk",
+      "frame": 2
+    },
+    {
+      "col": 21,
+      "anim": "stalk",
+      "frame": 3
+    },
+    {
+      "col": 22,
+      "anim": "stalk",
+      "frame": 4
+    },
+    {
+      "col": 23,
+      "anim": "stalk",
+      "frame": 5
+    },
+    {
+      "col": 24,
+      "anim": "poise",
+      "frame": 0
+    },
+    {
+      "col": 25,
+      "anim": "poise",
+      "frame": 1
+    },
+    {
+      "col": 26,
+      "anim": "strike",
+      "frame": 0
+    },
+    {
+      "col": 27,
+      "anim": "strike",
+      "frame": 1
+    },
+    {
+      "col": 28,
+      "anim": "strike",
+      "frame": 2
+    },
+    {
+      "col": 29,
+      "anim": "strike",
+      "frame": 3
+    },
+    {
+      "col": 30,
+      "anim": "roost",
+      "frame": 0
+    },
+    {
+      "col": 31,
+      "anim": "roost",
+      "frame": 1
+    }
+  ],
+  "note": "Row r is facing r (dir 0 = bill toward north, +45 deg per row, CLOCKWISE: the herring gull's convention, declared by the rig and not yet measured in-engine). The pivot is a CONTACT POINT: rock or perch top when standing, the water surface when swimming, the point directly below the bird when airborne. Altitude is a screen offset, never a scale.",
+  "wetStates": "stand, stalk, poise, strike carry waterZ:0 in their own pose and are baked WET."
+}

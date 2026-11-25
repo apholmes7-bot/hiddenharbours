@@ -44,10 +44,17 @@ namespace HiddenHarbours.Tests.EditMode
 
         // ---- the shipped clamp, MEASURED off DoryIso.asset and restated (a def read back against
         // ---- itself would agree with any shape at all) -----------------------------------------------
-        private const int FloorOutlinePoints = 22;
-        private const float FloorHalfBeam = 0.225f;      // amidships-ish, y = −0.72 … −1.08
-        private const float FloorHalfLength = 1.8f;
-        private static readonly Vector3 FloorHeightPlane = new Vector3(0f, 0.020075757f, 0.10363636f);
+        // Re-measured at her redraw (fleet art review). Her walk is written by the layout now, and
+        // the owner ruled it stays the 0.45 m lane (2026-11-13), so the half beam is unchanged; the
+        // ends follow where a walker fits in the redrawn hull. Old values: 22 points, ends −1.8 and
+        // +1.8, height plane (0, 0.020075757, 0.10363636).
+        private const int FloorOutlinePoints = 30;
+        private const float FloorHalfBeam = 0.225f;      // the owner's lane, capped in her rig
+        private const float FloorAftEnd = -1.864f;
+        private const float FloorStemEnd = 1.614f;
+        private const float FloorHalfLength = (FloorStemEnd - FloorAftEnd) * 0.5f;   // 1.739
+        private const float FloorMidLength = (FloorStemEnd + FloorAftEnd) * 0.5f;    // −0.125
+        private static readonly Vector3 FloorHeightPlane = new Vector3(0f, 0f, 0.09f);
 
         /// <summary>Her AFTER THWART in hull metres — <c>STATIONS[id=helm]</c>, evaluated from her rig.</summary>
         private static readonly Vector3 DoryThwart = new Vector3(0f, -0.72f, 0.3056f);
@@ -142,7 +149,8 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>
         /// ⭐ <b>"her narrow deck" — the walk clamp as this PR found it, and did not touch.</b> One
-        /// polygon, 0.45 m across and 3.6 m long, tapering to a hand's width at the stem.
+        /// polygon, 0.45 m across and 3.48 m long, tapering to a hand's width at the stem. (3.6 m long
+        /// until her redraw; the 0.45 m width is the owner's, kept.)
         ///
         /// <para><b>Why restate a shape nobody changed.</b> Two reasons. #806: the arrival deck was once
         /// a WORLD-AXIS SQUARE 6.95× her real deck, and the lesson banked from it is that a standable
@@ -174,18 +182,19 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual("floor", floor.Id, "the sidecar's own area id");
             Assert.AreEqual(DeckAreaKind.Deck, floor.Kind, "a DECK area: walked freely, not climbed onto");
             Assert.AreEqual(FloorOutlinePoints, floor.Outline.Length,
-                "the imported outline is 22 points — 11 stations a side. A different count is a re-import, " +
+                "the imported outline is 30 points — 15 rows a side. A different count is a re-import, " +
                 "and every number below was measured against this one.");
 
-            // The measured extents, hull-local: 0.45 m across, 3.6 m along.
+            // The measured extents, hull-local: 0.45 m across, 3.478 m along.
             Assert.AreEqual(-FloorHalfBeam, floor.Bounds.x, Tol, "port edge");
-            Assert.AreEqual(-FloorHalfLength, floor.Bounds.y, Tol, "the transom end of the floor");
+            Assert.AreEqual(FloorAftEnd, floor.Bounds.y, Tol, "the transom end of the floor");
             Assert.AreEqual(FloorHalfBeam, floor.Bounds.z, Tol, "starboard edge");
-            Assert.AreEqual(FloorHalfLength, floor.Bounds.w, Tol, "the stem end of the floor");
+            Assert.AreEqual(FloorStemEnd, floor.Bounds.w, Tol, "the stem end of the floor");
 
             // #806: the coarse box and the polygon are ONE shape.
             Assert.AreEqual(0f, dory.WalkCenter.x, Tol, "her floor is centred on the keel");
-            Assert.AreEqual(0f, dory.WalkCenter.y, Tol, "…and on amidships");
+            Assert.AreEqual(FloorMidLength, dory.WalkCenter.y, Tol,
+                "…and on the middle of her own floor, which the raked stem leaves 0.125 m abaft amidships");
             Assert.AreEqual(FloorHalfBeam, dory.WalkHalfExtents.x, Tol,
                 "the coarse box is WIDER than the polygon it summarises — TryDeckBox callers would place " +
                 "her outside the floor her own feet are clamped to (#806)");
@@ -199,8 +208,9 @@ namespace HiddenHarbours.Tests.EditMode
             // She TAPERS. Probed at the polygon, which is the only thing that can show it.
             Assert.IsTrue(DeckAreaMath.Contains(floor.Outline, floor.Bounds, new Vector2(0.2f, 0f)),
                 "0.20 m abeam amidships is aboard — that is where her floor is at its widest");
-            Assert.IsFalse(DeckAreaMath.Contains(floor.Outline, floor.Bounds, new Vector2(0.2f, 1.7f)),
-                "0.20 m abeam at the STEM is over the water: her floor closes to 0.14 m across up there. " +
+            Assert.IsFalse(DeckAreaMath.Contains(floor.Outline, floor.Bounds, new Vector2(0.2f, 1.5f)),
+                "0.20 m abeam at the STEM is over the water: her floor closes to 0.15 m across up there " +
+                "(probed at y = 1.5, inside the floor's bounding box, so only the polygon can refuse it). " +
                 "If this reads inside, the clamp has become the bounding box and she can walk out over " +
                 "her own bow — the shape of #806 all over again.");
 
@@ -208,7 +218,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(FloorHeightPlane.x, floor.HeightPlane.x, Tol,
                 "her sole has no athwartships tilt — she is symmetric about the keel");
             Assert.AreEqual(FloorHeightPlane.y, floor.HeightPlane.y, Tol,
-                "the fitted rise toward the bow (m per m of hull)");
+                "no rise toward the bow: her bottom boards are a level sole since her redraw");
             Assert.AreEqual(FloorHeightPlane.z, floor.HeightPlane.z, Tol,
                 "…and the sole's height above the keel at amidships");
             Assert.Less(floor.HeightResidualMax, 0.1f,

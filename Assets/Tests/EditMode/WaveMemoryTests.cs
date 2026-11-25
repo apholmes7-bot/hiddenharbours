@@ -1,3 +1,4 @@
+using HiddenHarbours.Tests.Support;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -49,6 +50,24 @@ namespace HiddenHarbours.Tests.EditMode
 
         private static void Bits(float a, float b)
             => Assert.AreEqual(BitConverter.SingleToInt32Bits(a), BitConverter.SingleToInt32Bits(b));
+
+        /// <summary>The source of one method, from its signature to its matching closing brace, so a
+        /// source pin is scoped to the method it names and cannot pass on a match elsewhere.</summary>
+        private static string MethodBody(string text, string signature)
+        {
+            int start = text.IndexOf(signature, StringComparison.Ordinal);
+            Assert.GreaterOrEqual(start, 0, $"premise: '{signature}' exists in the source");
+            int open = text.IndexOf('{', start);
+            Assert.GreaterOrEqual(open, 0, $"premise: '{signature}' has a body");
+            int depth = 0;
+            for (int i = open; i < text.Length; i++)
+            {
+                if (text[i] == '{') depth++;
+                else if (text[i] == '}' && --depth == 0) return text.Substring(start, i + 1 - start);
+            }
+            Assert.Fail($"'{signature}' body never closes");
+            return null;
+        }
 
         [Test]
         public void SameSeedSameTime_SameSea_NoHistory()
@@ -126,14 +145,35 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheBoatReadsThePublishedTrains()
         {
             // Pin the production consumer, including its time convention and both boot fallbacks.
+            // The derivation lives in one place (DeriveSimTrains, cached per tick by SimTrains), and every
+            // force that reads the sea goes through it: the swell push and the sea yaw ride ONE sea.
             string text = File.ReadAllText("Assets/_Project/Code/Boats/BoatController.cs");
-            int start = text.IndexOf("private void ApplySeakeeping(", StringComparison.Ordinal);
-            string body = text.Substring(start, text.IndexOf("SeakeepingResponse response", start,
-                StringComparison.Ordinal) - start);
-            StringAssert.Contains("SharedWaveField.TryGet(out WaveTrains trains)", body);
-            StringAssert.Contains("if (!published)", body);
-            StringAssert.Contains("WaveMemory.TrainsAt(history, now, in waveField)", body);
-            StringAssert.Contains("WaveMath.Sample(pos, published ? 0.0 : now, in trains", body);
+            string derive = MethodBody(text, "private static WaveTrains DeriveSimTrains(");
+            StringAssert.Contains("published = SharedWaveField.TryGet(out WaveTrains trains);", derive);
+            StringAssert.Contains("if (published) return trains;", derive);
+            StringAssert.Contains("WaveMemory.TrainsAt(history, now, in waveField)", derive);
+            StringAssert.Contains("WaveMath.TrainsFrom(env.WindVector, env.SeaState01, in waveField)", derive);
+            StringAssert.Contains("GameServices.WithSwell(in trains, now, waveField.Gravity)", derive);
+            Assert.Less(derive.IndexOf("if (published) return trains;", StringComparison.Ordinal),
+                        derive.IndexOf("WaveMemory.TrainsAt(", StringComparison.Ordinal),
+                        "the published trains must win; the history derivation is the boot fallback only");
+
+            string cache = MethodBody(text, "private WaveTrains SimTrains(");
+            StringAssert.Contains("DeriveSimTrains(env, now, in waveField, out _simTrainsPublished)", cache);
+            StringAssert.Contains("published = _simTrainsPublished;", cache);
+            StringAssert.Contains("_simTrainsThisTick = false;", MethodBody(text, "private void StepPhysicsForHelm("),
+                "the per-tick cache must be cleared at the top of every physics tick");
+
+            foreach (string consumer in new[] { "private void ApplySeakeeping(", "private void ApplySeaYaw(" })
+            {
+                string body = MethodBody(text, consumer);
+                StringAssert.Contains("SimTrains(env, now, in waveField, out bool published)", body, consumer);
+                StringAssert.Contains("published ? 0.0 : now", body, consumer);
+                StringAssert.DoesNotContain("SharedWaveField.TryGet(", body,
+                    $"{consumer} must read the sea through SimTrains, not a private derivation");
+            }
+            StringAssert.Contains("WaveMath.Sample(pos, published ? 0.0 : now, in trains",
+                MethodBody(text, "private void ApplySeakeeping("));
             string bridge = File.ReadAllText("Assets/_Project/Code/Art/WaveFieldBridge.cs");
             StringAssert.Contains("PublishGlobals(Pack(in trains));", bridge);
             StringAssert.Contains("SharedWaveField.Publish(this, in trains);", bridge);
@@ -214,10 +254,11 @@ namespace HiddenHarbours.Tests.EditMode
             var wind = new RegionWind { Seed = 4242, Profile = WindProfile.CoddleCove };
             var animator = new WaveFieldAnimator();
             for (int i = 0; i < 1000; i++) animator.Tick(i * 0.1, wind, in field);
-            long before = GC.GetAllocatedBytesForCurrentThread();
+            using var allocation = new ManagedAllocationProbe();
+            allocation.Begin();
             for (int i = 0; i < 10000; i++) animator.Tick(i * 0.1, wind, in field);
-            long bytes = GC.GetAllocatedBytesForCurrentThread() - before;
-            Assert.AreEqual(0, bytes);
+            long allocationEvents = allocation.End();
+            Assert.AreEqual(0, allocationEvents);
         }
     }
 }

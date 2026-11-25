@@ -215,16 +215,30 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void ArrivingByTheBar_PutsTheFisherOnTheBar_AndTheBoatAtTheWharf()
+        public void ArrivingByTheBar_PutsTheFisherOnTheBar_AndLeavesTheBoatExactlyWhereSheWasLeft()
         {
+            // ⭐ REWRITTEN DELIBERATELY (owner ruling 2026-11-15, "doors do not teleport"; ADR 0057, fault
+            // D1). This test used to pin "the boat, which they did not bring, is where the region parks
+            // boats" — and with ONE persistent boat that meant the walker's own boat was carried across
+            // the world to the far wharf (930 m, St Peters to the creek, free). The rule now: a walk-in
+            // never moves the boat. She stays where she was left, pose and all.
             var switcher = MakeRig(out Transform player, out Transform boat, out RegionAnchor anchor);
+            var leftAt = new Vector3(-212f, 37f, 0f);
+            var leftHeading = Quaternion.Euler(0f, 0f, 63f);
+            boat.SetPositionAndRotation(leftAt, leftHeading);
 
             RegionTravelCoordinator.ApplyArrival(player, boat, switcher, anchor, "bar");
 
             Assert.AreEqual(BarLanding, player.position,
                 "the fisher walked in over the bar — they arrive standing on it");
-            Assert.AreEqual(BoatBerth, boat.position,
-                "and the boat, which they did not bring, is where the region parks boats");
+            Assert.AreEqual(leftAt, boat.position,
+                "and the boat, which they did not bring, has not moved a centimetre");
+            Assert.That(Quaternion.Angle(leftHeading, boat.rotation), Is.LessThan(1e-3f),
+                "nor turned: a walk-in leaves her whole pose alone");
+            Assert.IsFalse(RegionTravelCoordinator.ArrivalMovesBoat(anchor, "bar"),
+                "a named way in with no boat point is a walk-in");
+            Assert.IsTrue(RegionTravelCoordinator.ArrivalMovesBoat(anchor, null),
+                "while the region's own arrival still places her");
         }
 
         [Test]
@@ -260,13 +274,15 @@ namespace HiddenHarbours.Tests.EditMode
             // the per-passage point into SetDock would break this silently: every disembark for the rest
             // of the visit would fire you 400 m south onto the bar.
             var switcher = MakeRig(out Transform player, out Transform boat, out RegionAnchor anchor);
+            boat.position = BoatBerth;   // she was left lying at the wharf; the walk-in leaves her there
 
             RegionTravelCoordinator.ApplyArrival(player, boat, switcher, anchor, "bar");
             Assert.AreEqual(BarLanding, player.position, "precondition: we arrived on the bar");
+            Assert.AreEqual(BoatBerth, boat.position, "precondition: she is still at the wharf");
 
             // Walk to the boat at her berth and board her.
             player.position = boat.position;
-            Assert.IsTrue(switcher.TryInteract(), "board the boat at her berth");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(switcher), "board the boat at her berth");
             Assert.AreEqual(ControlMode.OnDeck, switcher.Mode);
 
             // Stand away from the tiller so E is a step ashore rather than taking the helm, and confirm
@@ -275,7 +291,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsFalse(switcher.WithinHelmReach(), "…standing on deck, not at the helm");
             Assert.IsTrue(switcher.InDockZone(), "…and she is lying at the wharf");
 
-            Assert.IsTrue(switcher.TryInteract(), "step ashore");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(switcher), "step ashore");
             Assert.AreEqual(ControlMode.OnFoot, switcher.Mode);
             Assert.AreEqual(WharfDeck, player.position,
                 "stepping off the boat at the wharf must land on the WHARF. Landing back at the bar " +

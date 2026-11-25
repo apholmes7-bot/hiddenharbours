@@ -23,6 +23,16 @@ namespace HiddenHarbours.Tests.EditMode
             return trace;
         }
 
+        [TestCase(0f)]
+        [TestCase(0.5f)]
+        public void NullRng_IsRejectedEvenWithoutJitter(float jitter)
+        {
+            var cadence = Cadence(2f, 1.4f, jitter);
+            var error = Assert.Throws<System.ArgumentNullException>(
+                () => new RodFightRhythm(cadence, null));
+            Assert.AreEqual("rng", error.ParamName);
+        }
+
         [Test]
         public void SameSeed_ReplaysTheRhythmBitForBit()
         {

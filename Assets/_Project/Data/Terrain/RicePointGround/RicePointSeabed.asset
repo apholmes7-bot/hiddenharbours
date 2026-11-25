@@ -15,6 +15,6 @@ MonoBehaviour:
   _heightTexture: {fileID: 2800000, guid: 01590abc852a49e89f547ddc4fa1e0ab, type: 3}
   _worldCenter: {x: 0, y: 0}
   _worldSize: {x: 760, y: 360}
-  _minElevation: -6
+  _minElevation: -10
   _maxElevation: 6
   _stillLevelTexture: {fileID: 2800000, guid: 5ccc4d899c394f0b9c1f665320e588f8, type: 3}

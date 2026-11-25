@@ -151,10 +151,9 @@ namespace HiddenHarbours.Art
     [System.Serializable]
     public struct GullConfig
     {
+        // How many gulls are drawn at once is not here: it is the bird haunt library's
+        // Tuning.MaxBirdsDrawn, with the other bird numbers the owner tunes.
         [Header("Flock")]
-        [Tooltip("The pool: the most gulls drawn at once. The birds the schedule puts near the view are " +
-                 "drawn nearest first; any more are counted (and heard) but not drawn.")]
-        [Min(0)] public int Count;
         [Tooltip("Radius (m) of the wheel the flying birds turn. 0 = the rig's own FLOCK.radius_m (6 m), " +
                  "which is what the art director tuned the wheel against.")]
         [Min(0f)] public float WheelRadiusMetres;
@@ -204,7 +203,6 @@ namespace HiddenHarbours.Art
 
         public static GullConfig Default => new GullConfig
         {
-            Count                       = 40,
             WheelRadiusMetres           = 0f,
             Seed                        = 7,
             SpeciesId                   = "bird.herring_gull",

@@ -74,6 +74,27 @@ namespace HiddenHarbours.World
         /// <summary>The popup's verb for a thing you read — a letter, a logbook.</summary>
         public const string ReadVerb = "Read";
 
+        /// <summary>The chooser row's verb when he has something giftable and faces a person he has met
+        /// (gifting). ⚑ OWNER TASTE — one const, one edit.</summary>
+        public const string GiveVerb = "Give";
+
+        /// <summary>"Give Atlantic Cod": the chooser's gift row, beneath "Talk" (see
+        /// <see cref="ConversationChoice"/>). Names the thing, never the person — the list stands in front of
+        /// her already. Allocates; built once per press, never per frame.</summary>
+        public static string GiveRowLabel(string item)
+            => string.IsNullOrEmpty(item) ? GiveVerb : GiveVerb + GiveRowSeparator + item;
+
+        /// <summary>"Give Atlantic Cod (3)": the gift row for a type he has more than one of, anywhere he
+        /// keeps things. One of them goes per pick. A count of one or less shows no count.</summary>
+        public static string GiveRowLabel(string item, int count)
+            => count > 1 ? string.Format(GiveRowCountFormat, GiveRowLabel(item), count) : GiveRowLabel(item);
+
+        /// <summary>What sits between "Give" and the thing given on the chooser row.</summary>
+        public const string GiveRowSeparator = " ";
+
+        /// <summary>How a gift row shows how many he has: {0} is the row, {1} the count. ⚑ OWNER TASTE.</summary>
+        public const string GiveRowCountFormat = "{0} ({1})";
+
         /// <summary>What sits between the verb and who/what it is about.</summary>
         public const string LabelSeparator = " — ";
 
@@ -131,7 +152,12 @@ namespace HiddenHarbours.World
         // Coddle Cove. The dory is EARNED, never inherited. Each line points at the next beat; the director
         // (OnboardingDirector) picks which one to show from the opening flags + Core signals.
         public const string OnboardTalkGinny = "Find Aunt Ginny on the island and press E — she'll set you straight.";
-        public const string OnboardDigClams  = "Wait for the tide to drop, then dig clams on the bared flats (E by a hole).";
+        // The tide table's key is named where the player first needs it. World may not see the UI
+        // module that owns the binding (rule 4), so the letter is written here and a test holds it to
+        // TidePanelInput's shipped key: rebind the table and that test says this line is stale.
+        // The shore is licensed (license.clam): an unlicensed clam goes straight back, so the line sends
+        // him to LeBlanc's for the Shellfish Licence first — Ginny fronted the fee — and then to the flats.
+        public const string OnboardDigClams  = "Tab shows the tide table. First buy the Shellfish Licence at LeBlanc's (Ginny fronted the fee), then dig clams on the bared flats at low water (E by a hole).";
         public const string OnboardCrossBar  = "Walk the bared sandbar east to Nine Mile Creek before the tide floods it back.";
         public const string OnboardBuyLicence= "At Nine Mile Creek: sell your clams, then buy a COD LICENCE to fish.";
         public const string OnboardBuyRod    = "Buy a fishing ROD from the shop — then you can hand-line cod.";
@@ -139,5 +165,37 @@ namespace HiddenHarbours.World
         public const string OnboardRepairDory= "She's yours but broken — pay the shipwright to REPAIR her.";
         public const string OnboardSailHome  = "Seaworthy at last — sail your dory home to Coddle Cove.";
         public const string OnboardDone      = "You earned her, plank and rope. Fair winds, skipper!";
+
+        // ---- wash stations (washrooms plan: the first placed basins and showers) --------------------
+        // The popup offers (present tense, never the key) and the short lines a wash starts and ends with.
+        public const string WashAtBasin     = "Wash up at the basin";
+        public const string WashBeginBasin  = "He splashes his face and scrubs his hands.";
+        public const string WashDoneBasin   = "As clean as a basin gets him.";
+        public const string WashAtShower    = "Rinse off under the shower";
+        public const string WashBeginShower = "Cold water off the wharf hose. Bracing.";
+        public const string WashDoneShower  = "Rinsed clean.";
+        public const string WashStop        = "Stop washing";
+        public const string WashStopped     = "He leaves off washing.";
+        public const string WashWalkedOff   = "He walks off, still dripping.";
+        // A shower or bath that stopped short because he had no soap (owner ask 2026-11-17).
+        public const string WashDoneNoSoap  = "As clean as he gets without soap.";
+
+        // ---- bathrooms (kitchens and bathrooms placement plan, R1) ---------------------------------
+        // The indoor shower and the bath, and the seat that only seats (a toilet, an outhouse).
+        public const string WashAtIndoorShower    = "Take a shower";
+        public const string WashBeginIndoorShower = "He turns the tap and steps under the water.";
+        public const string WashAtBath            = "Have a bath";
+        public const string WashBeginBath         = "He runs the bath and sinks into it.";
+        public const string WashDoneBath          = "Clean and pink from the bath.";
+        public const string SitDown               = "Sit down";
+        public const string SitGetUp              = "Get up";
+        public const string SitBegin              = "He sits a moment.";
+        public const string SitStood              = "He gets up.";
+
+        // ---- the TASKS note's fold (owner ask 2026-11-16) ----
+        // The marks on the note's head (fold it down) and on its folded chip (open it again). One
+        // character each: the head and the chip are a glance, not a sentence.
+        public const string TasksFoldMark   = "-";
+        public const string TasksUnfoldMark = "+";
     }
 }

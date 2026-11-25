@@ -16,8 +16,31 @@ MonoBehaviour:
   DisplayName: Rod
   GearId: gear.rod
   Flavor: A cane rod. You cannot cast one you are not holding.
+  Stowage: 1
   HandPropKey: rodTrail
   HeldMeshes:
   - {fileID: 11400000, guid: e9cfe427da07811429bac3875d8f46b8, type: 2}
   - {fileID: 11400000, guid: 478a885704f088a44bdacec507f3ea5a, type: 2}
   - {fileID: 11400000, guid: a0a1b43000d697949b8f279ab6262823, type: 2}
+  DrawHeldMeshOnFigure: 1
+  DrawCarriedMeshOnFigure: 1
+  HeldMeshVariant: cane
+  HeldMeshMountBone: tool_R
+  CarriedPitchDeg: 65
+  CarriedYawDeg: 35
+  CarryInNearerHand: 1
+  CarriedOffHandMountBone: tool_L
+  CarriedHandSwapDepthMetres: 0.05
+  CarriedSideBone: shoulder_R
+  CarriedOffSideBone: shoulder_L
+  CarriedOffHandFacingAwayMin: -0.1
+  StowOnBack: 1
+  StowWhileSwimming: 1
+  StowMountBone: back
+  StowGripAlongMetres: -0.4
+  StowStandOffMetres: 0.03
+  CarriedInHandClips:
+  - idle
+  - walk
+  - run
+  StowBlendSeconds: 0.2

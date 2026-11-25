@@ -16,3 +16,21 @@ MonoBehaviour:
   Rows:
   - CarriableDefId: container.bucket
     Carry: buckets
+    SocketLeft: carry_L
+    SocketRight: carry_R
+    BodyBone: pelvis
+    GripAbovePivotMeters: 0.375
+    DepthDeadbandMeters: 0.03
+    MeshTier: pail
+    MeshSwingDegPerMetrePerSecond: 12
+    MeshSwingMaxDeg: 10
+  - CarriableDefId: shoppingbag.paper
+    Carry: buckets
+    SocketLeft: carry_L
+    SocketRight: carry_R
+    BodyBone: pelvis
+    GripAbovePivotMeters: 0.34375
+    DepthDeadbandMeters: 0.03
+    MeshTier: 
+    MeshSwingDegPerMetrePerSecond: 0
+    MeshSwingMaxDeg: 0

@@ -1,0 +1,774 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject:
+    fileID: 0
+  m_PrefabInstance:
+    fileID: 0
+  m_PrefabAsset:
+    fileID: 0
+  m_GameObject:
+    fileID: 0
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script:
+    fileID: 11500000
+    guid: 01b51978faec4dbb8e54e23107a97ef5
+    type: 3
+  m_Name: SetPiece_nmc_arm_e
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: harbour.arm_e
+  DisplayName: Wharf water side arm_e
+  RigKey: nmc_armE
+  SceneId: keyscene.nmc_wharf
+  BakedOptionsJson: '{}'
+  Layer: floor
+  Walk: 'on'
+  Mount: ground
+  BoundsMin:
+    x: -33.702663
+    y: -9.572383
+    z: -5.022115000000001
+  BoundsMax:
+    x: 26.489097
+    y: 86.440872
+    z: 4.178728
+  Frames:
+  - Sprite:
+      fileID: 1597061778386967851
+      guid: ae8645de4b0b20d00312dcf23c12c6ab
+      type: 3
+    RigDir: 0
+    ShowFaces: '0'
+    BearingDeg: 0
+    CameraSees: delivered harbour module
+    NativeSize:
+      x: 295
+      y: 899
+    NativePivot:
+      x: 149
+      y: 349
+    Crop:
+      x: 5
+      y: 5
+    Pivot:
+      x: 144
+      y: 344
+  - Sprite:
+      fileID: 2925426337875698797
+      guid: ae8645de4b0b20d00312dcf23c12c6ab
+      type: 3
+    RigDir: 7
+    ShowFaces: '7'
+    BearingDeg: 315
+    CameraSees: delivered harbour module
+    NativeSize:
+      x: 935
+      y: 759
+    NativePivot:
+      x: 469
+      y: 249
+    Crop:
+      x: 5
+      y: 4
+    Pivot:
+      x: 464
+      y: 245
+  - Sprite:
+      fileID: 90505795912382182
+      guid: ae8645de4b0b20d00312dcf23c12c6ab
+      type: 3
+    RigDir: 6
+    ShowFaces: '6'
+    BearingDeg: 270
+    CameraSees: delivered harbour module
+    NativeSize:
+      x: 1086
+      y: 323
+    NativePivot:
+      x: 539
+      y: 23
+    Crop:
+      x: 4
+      y: 5
+    Pivot:
+      x: 535
+      y: 18
+  - Sprite:
+      fileID: 6720385895149566086
+      guid: ae8645de4b0b20d00312dcf23c12c6ab
+      type: 3
+    RigDir: 5
+    ShowFaces: '5'
+    BearingDeg: 225
+    CameraSees: delivered harbour module
+    NativeSize:
+      x: 933
+      y: 755
+    NativePivot:
+      x: 467
+      y: 247
+    Crop:
+      x: 4
+      y: 5
+    Pivot:
+      x: 463
+      y: 242
+  - Sprite:
+      fileID: 6760022173518715825
+      guid: ae8645de4b0b20d00312dcf23c12c6ab
+      type: 3
+    RigDir: 4
+    ShowFaces: '4'
+    BearingDeg: 180
+    CameraSees: delivered harbour module
+    NativeSize:
+      x: 295
+      y: 892
+    NativePivot:
+      x: 146
+      y: 343
+    Crop:
+      x: 5
+      y: 5
+    Pivot:
+      x: 141
+      y: 338
+  - Sprite:
+      fileID: 969708083438196198
+      guid: ae8645de4b0b20d00312dcf23c12c6ab
+      type: 3
+    RigDir: 3
+    ShowFaces: '3'
+    BearingDeg: 135
+    CameraSees: delivered harbour module
+    NativeSize:
+      x: 935
+      y: 758
+    NativePivot:
+      x: 465
+      y: 253
+    Crop:
+      x: 4
+      y: 5
+    Pivot:
+      x: 461
+      y: 248
+  - Sprite:
+      fileID: 8195036510787915325
+      guid: ae8645de4b0b20d00312dcf23c12c6ab
+      type: 3
+    RigDir: 2
+    ShowFaces: '2'
+    BearingDeg: 90
+    CameraSees: delivered harbour module
+    NativeSize:
+      x: 1086
+      y: 326
+    NativePivot:
+      x: 547
+      y: 26
+    Crop:
+      x: 5
+      y: 4
+    Pivot:
+      x: 542
+      y: 22
+  - Sprite:
+      fileID: 6311058893571151135
+      guid: ae8645de4b0b20d00312dcf23c12c6ab
+      type: 3
+    RigDir: 1
+    ShowFaces: '1'
+    BearingDeg: 45
+    CameraSees: delivered harbour module
+    NativeSize:
+      x: 933
+      y: 757
+    NativePivot:
+      x: 465
+      y: 251
+    Crop:
+      x: 5
+      y: 4
+    Pivot:
+      x: 460
+      y: 247
+  CellSize:
+    x: 1077
+    y: 889
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders: []
+  Anchors:
+  - Name: structure.nmc_light_east
+    Position:
+      x: -31.400000000000006
+      y: -5.6
+      z: 3.6
+  Path: []
+  TideMarks:
+  - Z: -2.2
+    OverDatum: 0.0
+    At:
+      x: 0
+      y: 0
+      z: -2.2
+    Label: '0.0'
+    Kind: spring low
+  - Z: 2.2
+    OverDatum: 4.4
+    At:
+      x: 0
+      y: 0
+      z: 2.2
+    Label: '4.4'
+    Kind: spring high
+  Words: []
+  HasLight: 0
+  Light:
+    Emitters: []
+    When: ''
+  IsAnimated: 0
+  Animated:
+    Part: ''
+    Input: ''
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []
+  GameplayJson: '{"schema":"hidden-harbours/nmc-water-side@1","id":"harbour.arm_e","origin":[190,0],"parts":[{"key":"arm_e_e0","harbour":"arm_e","name":"e0","at":[212,69.5],"elevation":3.6,"floating":false,"freeboard":0,"draught":0,"bounds":{"min":[-4.507946,-16.706657,-8.574683],"max":[4.41211,16.940872,0.578728]},"walkPolygon":[[208.003364,86.015814],[207.996636,52.985815],[215.996636,52.984186],[216.003364,86.014185]],"fittings":{"ladders":[],"tyres":[],"foams":[],"panels":[],"fenderPiles":[],"cleats":[],"bollards":[],"rings":[],"rails":[],"berths":{},"gaps":{"water":[],"shore":[]},"top":0,"hx":16.515,"hy":4,"L":33.03,"tyreRecs":[],"fixtures":[]},"module":{"id":"e0","key":"breakwater","at":[22,69.5],"rot":-1.571,"o":{"bays":9,"bayLen":3.667,"width":8,"deckZ":5.800000000000001,"tideRange":4.4,"variant":1,"ends":{"nx":"free","px":"join"}}},"frames":[{"frame":0,"dir":0,"file":"WaterSide_arm_e_e0_0.png","rect":[0,1778,1077,889],"native":[295,899],"nativePivot":[149,349],"crop":[5,5],"pivot":[144,344]},{"frame":1,"dir":7,"file":"WaterSide_arm_e_e0_0.png","rect":[1077,1778,1077,889],"native":[935,759],"nativePivot":[469,249],"crop":[5,4],"pivot":[464,245]},{"frame":2,"dir":6,"file":"WaterSide_arm_e_e0_0.png","rect":[2154,1778,1077,889],"native":[1086,323],"nativePivot":[539,23],"crop":[4,5],"pivot":[535,18]},{"frame":3,"dir":5,"file":"WaterSide_arm_e_e0_0.png","rect":[0,889,1077,889],"native":[933,755],"nativePivot":[467,247],"crop":[4,5],"pivot":[463,242]},{"frame":4,"dir":4,"file":"WaterSide_arm_e_e0_0.png","rect":[1077,889,1077,889],"native":[295,892],"nativePivot":[146,343],"crop":[5,5],"pivot":[141,338]},{"frame":5,"dir":3,"file":"WaterSide_arm_e_e0_0.png","rect":[2154,889,1077,889],"native":[935,758],"nativePivot":[465,253],"crop":[4,5],"pivot":[461,248]},{"frame":6,"dir":2,"file":"WaterSide_arm_e_e0_0.png","rect":[0,0,1077,889],"native":[1086,326],"nativePivot":[547,26],"crop":[5,4],"pivot":[542,22]},{"frame":7,"dir":1,"file":"WaterSide_arm_e_e0_0.png","rect":[1077,0,1077,889],"native":[933,757],"nativePivot":[465,251],"crop":[5,4],"pivot":[460,247]}],"sheets":[{"file":"WaterSide_arm_e_e0_0.png","width":3231,"height":2667,"rgbaSha256":"9e13337d32c3179c586eb9ccc1e123e7cab313b13cde1568ddd41e89f5fe9c46"}],"modelKey":"harbour:h5_arm_e_e0","cellSize":[1077,889]},{"key":"arm_e_e1","harbour":"arm_e","name":"e1","at":[212,36.5],"elevation":3.6,"floating":false,"freeboard":0,"draught":0,"bounds":{"min":[-4.407588,-16.863687,-8.622115],"max":[4.489097,16.963952,0.422166]},"walkPolygon":[[208.003364,53.015814],[207.996636,19.985815],[215.996636,19.984186],[216.003364,53.014185]],"fittings":{"ladders":[],"tyres":[],"foams":[],"panels":[],"fenderPiles":[],"cleats":[],"bollards":[],"rings":[],"rails":[],"berths":{},"gaps":{"water":[],"shore":[]},"top":0,"hx":16.515,"hy":4,"L":33.03,"tyreRecs":[],"fixtures":[]},"module":{"id":"e1","key":"breakwater","at":[22,36.5],"rot":-1.571,"o":{"bays":9,"bayLen":3.667,"width":8,"deckZ":5.800000000000001,"tideRange":4.4,"variant":2,"ends":{"nx":"join","px":"join"}}},"frames":[{"frame":0,"dir":0,"file":"WaterSide_arm_e_e1_0.png","rect":[0,1772,1083,886],"native":[294,896],"nativePivot":[146,344],"crop":[5,5],"pivot":[141,339]},{"frame":1,"dir":7,"file":"WaterSide_arm_e_e1_0.png","rect":[1083,1772,1083,886],"native":[938,754],"nativePivot":[470,245],"crop":[5,4],"pivot":[465,241]},{"frame":2,"dir":6,"file":"WaterSide_arm_e_e1_0.png","rect":[2166,1772,1083,886],"native":[1092,323],"nativePivot":[544,21],"crop":[4,4],"pivot":[540,17]},{"frame":3,"dir":5,"file":"WaterSide_arm_e_e1_0.png","rect":[0,886,1083,886],"native":[935,753],"nativePivot":[468,246],"crop":[4,4],"pivot":[464,242]},{"frame":4,"dir":4,"file":"WaterSide_arm_e_e1_0.png","rect":[1083,886,1083,886],"native":[294,894],"nativePivot":[148,343],"crop":[4,4],"pivot":[144,339]},{"frame":5,"dir":3,"file":"WaterSide_arm_e_e1_0.png","rect":[2166,886,1083,886],"native":[938,752],"nativePivot":[468,244],"crop":[5,5],"pivot":[463,239]},{"frame":6,"dir":2,"file":"WaterSide_arm_e_e1_0.png","rect":[0,0,1083,886],"native":[1092,324],"nativePivot":[547,23],"crop":[4,4],"pivot":[543,19]},{"frame":7,"dir":1,"file":"WaterSide_arm_e_e1_0.png","rect":[1083,0,1083,886],"native":[935,753],"nativePivot":[466,244],"crop":[4,5],"pivot":[462,239]}],"sheets":[{"file":"WaterSide_arm_e_e1_0.png","width":3249,"height":2658,"rgbaSha256":"4fce328213e9646a53f08e1216ad027a2baaf34319a0bb1ee98a0ad4e6ce2c85"}],"modelKey":"harbour:h5_arm_e_e1","cellSize":[1083,886]},{"key":"arm_e_e2","harbour":"arm_e","name":"e2","at":[198.5,13.5],"elevation":3.6,"floating":false,"freeboard":0,"draught":0,"bounds":{"min":[-15.185612,-10.308176,-8.612461],"max":[15.372829,10.184943,0.438258]},"walkPolygon":[[210.281084,23.609701],[183.249333,10.598765],[186.718916,3.390299],[213.750667,16.401235]],"fittings":{"ladders":[],"tyres":[],"foams":[],"panels":[],"fenderPiles":[],"cleats":[],"bollards":[],"rings":[],"rails":[],"berths":{},"gaps":{"water":[],"shore":[]},"top":0,"hx":15,"hy":4,"L":30,"tyreRecs":[],"fixtures":[]},"module":{"id":"e2","key":"breakwater","at":[8.5,13.5],"rot":-2.693,"o":{"bays":8,"bayLen":3.746,"width":8,"deckZ":5.800000000000001,"tideRange":4.4,"variant":3,"ends":{"nx":"join","px":"join"}}},"frames":[{"frame":0,"dir":0,"file":"WaterSide_arm_e_e2_0.png","rect":[0,827,999,827],"native":[987,554],"nativePivot":[490,138],"crop":[4,4],"pivot":[486,134]},{"frame":1,"dir":7,"file":"WaterSide_arm_e_e2_0.png","rect":[999,827,999,827],"native":[1008,509],"nativePivot":[509,114],"crop":[4,5],"pivot":[505,109]},{"frame":2,"dir":6,"file":"WaterSide_arm_e_e2_0.png","rect":[1998,827,999,827],"native":[665,816],"nativePivot":[334,290],"crop":[4,4],"pivot":[330,286]},{"frame":3,"dir":5,"file":"WaterSide_arm_e_e2_0.png","rect":[2997,827,999,827],"native":[574,837],"nativePivot":[293,305],"crop":[4,5],"pivot":[289,300]},{"frame":4,"dir":4,"file":"WaterSide_arm_e_e2_0.png","rect":[0,0,999,827],"native":[987,577],"nativePivot":[496,151],"crop":[4,5],"pivot":[492,146]},{"frame":5,"dir":3,"file":"WaterSide_arm_e_e2_0.png","rect":[999,0,999,827],"native":[1008,501],"nativePivot":[498,112],"crop":[4,4],"pivot":[494,108]},{"frame":6,"dir":2,"file":"WaterSide_arm_e_e2_0.png","rect":[1998,0,999,827],"native":[665,806],"nativePivot":[330,283],"crop":[4,5],"pivot":[326,278]},{"frame":7,"dir":1,"file":"WaterSide_arm_e_e2_0.png","rect":[2997,0,999,827],"native":[574,822],"nativePivot":[280,294],"crop":[5,5],"pivot":[275,289]}],"sheets":[{"file":"WaterSide_arm_e_e2_0.png","width":3996,"height":1654,"rgbaSha256":"d06ff097094090fd38410f8700bf58e5f65f94e03152559d4960e48fa2779e9a"}],"modelKey":"harbour:h5_arm_e_e2","cellSize":[999,827]},{"key":"arm_e_e3","harbour":"arm_e","name":"e3","at":[171.5,0.5],"elevation":3.6,"floating":false,"freeboard":0,"draught":0,"bounds":{"min":[-15.202663,-10.072383,-8.590964],"max":[15.401477,10.084288,0.489758]},"walkPolygon":[[183.281084,10.609701],[156.249333,-2.401235],[159.718916,-9.609701],[186.750667,3.401235]],"fittings":{"ladders":[],"tyres":[],"foams":[],"panels":[],"fenderPiles":[],"cleats":[],"bollards":[],"rings":[],"rails":[],"berths":{},"gaps":{"water":[],"shore":[]},"top":0,"hx":15,"hy":4,"L":30,"tyreRecs":[],"fixtures":[]},"module":{"id":"e3","key":"breakwater","at":[-18.5,0.5],"rot":-2.693,"o":{"bays":8,"bayLen":3.746,"width":8,"deckZ":5.800000000000001,"tideRange":4.4,"variant":0,"ends":{"nx":"join","px":"free"}}},"frames":[{"frame":0,"dir":0,"file":"WaterSide_arm_e_e3_0.png","rect":[0,822,991,822],"native":[989,570],"nativePivot":[491,151],"crop":[5,5],"pivot":[486,146]},{"frame":1,"dir":7,"file":"WaterSide_arm_e_e3_0.png","rect":[991,822,991,822],"native":[1001,506],"nativePivot":[501,119],"crop":[5,4],"pivot":[496,115]},{"frame":2,"dir":6,"file":"WaterSide_arm_e_e3_0.png","rect":[1982,822,991,822],"native":[655,812],"nativePivot":[327,290],"crop":[5,4],"pivot":[322,286]},{"frame":3,"dir":5,"file":"WaterSide_arm_e_e3_0.png","rect":[2973,822,991,822],"native":[573,824],"nativePivot":[289,297],"crop":[5,5],"pivot":[284,292]},{"frame":4,"dir":4,"file":"WaterSide_arm_e_e3_0.png","rect":[0,0,991,822],"native":[989,556],"nativePivot":[497,141],"crop":[4,5],"pivot":[493,136]},{"frame":5,"dir":3,"file":"WaterSide_arm_e_e3_0.png","rect":[991,0,991,822],"native":[1001,502],"nativePivot":[500,112],"crop":[5,4],"pivot":[495,108]},{"frame":6,"dir":2,"file":"WaterSide_arm_e_e3_0.png","rect":[1982,0,991,822],"native":[655,813],"nativePivot":[327,291],"crop":[5,5],"pivot":[322,286]},{"frame":7,"dir":1,"file":"WaterSide_arm_e_e3_0.png","rect":[2973,0,991,822],"native":[573,832],"nativePivot":[284,305],"crop":[5,5],"pivot":[279,300]}],"sheets":[{"file":"WaterSide_arm_e_e3_0.png","width":3964,"height":1644,"rgbaSha256":"a99f3e3fb84c4b4b23729539b3f0c589c4636136943464448d93bb1428c0d2bd"}],"modelKey":"harbour:h5_arm_e_e3","cellSize":[991,822]}],"register":{"fingers":[{"id":"float.nmc_finger_a","x":109.7,"y":[43.9,71.1],"width":2.4,"gangway":{"from":[109.7,86],"length":16}},{"id":"float.nmc_finger_b","x":142.3,"y":[43.9,71.1],"width":2.4,"gangway":{"from":[142.3,86],"length":16}}],"berths":[{"id":"berth.nmc_wall_0","owner":"the player","slot":[78.6,93.8],"face":86,"hull":null,"note":"kept for the player"},{"id":"berth.nmc_wall_1","owner":"Leo Arsenault","slot":[93.8,108.2],"face":86,"hull":"lobStdHardtopNth"},{"id":"berth.nmc_wall_2","owner":"Marie Gallant","slot":[111.2,126.4],"face":86,"hull":"capeIslander"},{"id":"berth.nmc_wall_3","owner":"Yvette Doiron","slot":[126.4,140.8],"face":86,"hull":"lobStdOpenFundy"},{"id":"berth.nmc_wall_4","owner":"Ross MacDonald","slot":[143.8,154.8],"face":86,"hull":"lobInHardtopNfld"},{"id":"berth.nmc_wall_5","owner":"Hughie Campbell","slot":[154.8,165.8],"face":86,"hull":"lobInOpenNth"}],"fingerBerths":[{"id":"berth.nmc_finger_a_w0","hull":"lobInHardtopNfld","x":106.552,"y":[61.821,70.435],"heading":"N","who":"the ambient fleet (a shed lot each when the register grows)"},{"id":"berth.nmc_finger_a_w1","hull":"capeIslander","x":106.26,"y":[47.621,60.421],"heading":"N","who":"the ambient fleet (a shed lot each when the register grows)"},{"id":"berth.nmc_finger_a_e2","hull":"lobStdHardtopNth","x":113.26,"y":[58.31,70.435],"heading":"N","who":"the ambient fleet (a shed lot each when the register grows)"},{"id":"berth.nmc_finger_a_e3","hull":"lobInOpenNth","x":112.816,"y":[48.22,56.91],"heading":"N","who":"the ambient fleet (a shed lot each when the register grows)"},{"id":"berth.nmc_finger_b_w4","hull":"lobStdOpenFundy","x":138.8,"y":[58.375,70.435],"heading":"N","who":"the ambient fleet (a shed lot each when the register grows)"},{"id":"berth.nmc_finger_b_w5","hull":"lobInHardtopNfld","x":139.152,"y":[48.361,56.975],"heading":"N","who":"the ambient fleet (a shed lot each when the register grows)"},{"id":"berth.nmc_finger_b_e6","hull":"lobStdHardtopFundy","x":145.8,"y":[58.375,70.435],"heading":"N","who":"the ambient fleet (a shed lot each when the register grows)"},{"id":"berth.nmc_finger_b_e7","hull":"capeIslander","x":145.74,"y":[44.175,56.975],"heading":"N","who":"the ambient fleet (a shed lot each when the register grows)"}],"crane":{"berth":[52,78],"face":76,"boat":"Yvette Doiron, bow west, her cockpit under the hook"},"workingFloat":{"x":[48,72],"y":[58.635,61.035],"note":"where WharfRig2Kit.gangwayFrom puts it off the apron (the bake logs it)"},"recFloat":"three rec boats off the east quay\u2019s gate","ladders":[{"id":"ladder.nmc_berth0","x":86.19999999999999,"face":86},{"id":"ladder.nmc_berth1","x":101,"face":86},{"id":"ladder.nmc_berth2","x":118.80000000000001,"face":86},{"id":"ladder.nmc_berth3","x":133.60000000000002,"face":86},{"id":"ladder.nmc_berth4","x":149.3,"face":86},{"id":"ladder.nmc_berth5","x":160.3,"face":86},{"id":"ladder.nmc_east","x":180.2,"face":86},{"id":"ladder.nmc_unload_w","x":55.5,"face":76},{"id":"ladder.nmc_unload_e","x":76.6,"face":76}],"clearance":{"min":30,"over":[96,156],"need":-4.1,"designBoat":{"type":"capeIslander","loa":12.8,"beam":4.4,"draught":1.4,"berth":"fingerA west, the south berth","at":[106.26,54.02],"heading":"north"}},"tracks":{"in":[[137,-45],[137,-10],[136.2,5],[131,16.5],[121,23.5],[108,27],[98.5,31.5],[94.5,38],[96.5,44],[100.8,47.6],[104.6,50.6],[106.26,54.02]],"outAstern":[[106.26,54.02],[106.1,46],[104.477118,38.5]],"out":[[104.477118,38.5],[108.2,31.5],[115,25.5],[126,21],[133.5,13],[136.6,2],[137,-10],[137,-45]]},"lights":{"west":[115.2,2,"green"],"east":[158.6,-5.6,"red"]},"roads":{"main":{"pts":[[76,120],[190,120]],"w":7.5,"gate":[184.4,115,124]},"parking":[{"id":"yard.parking_w","box":[96.5,106,124.1,133.1]},{"id":"yard.parking_e","box":[141.2,146.8,123.5,132.5]}],"truckTurn":{"id":"yard.restaurant_turn","box":[160.5,176.5,118,131]},"cars":[{"id":"vehicle.nmc_buyer_truck","rig":"VehicleIso","at":[98.2,128.4],"dir":4},{"id":"vehicle.nmc_lot_e","rig":"VehicleIso","at":[101,128.4],"dir":4},{"id":"vehicle.nmc_lot_a","rig":"VehicleIso","at":[103.8,128.4],"dir":4},{"id":"vehicle.nmc_lot_b","rig":"VanIso","at":[142.6,128],"dir":4},{"id":"vehicle.nmc_lot_c","rig":"VehicleIso","at":[145.4,128],"dir":4},{"id":"vehicle.nmc_delivery","rig":"VanIso","at":[171.2,127.8],"dir":6}]}}}'
+  State: ''
+  Variants:
+  - Name: e1
+    BakedOptionsJson: '{"module": "arm_e_e1"}'
+    GameplayJson: '{"key":"arm_e_e1","harbour":"arm_e","name":"e1","at":[212,36.5],"elevation":3.6,"floating":false,"freeboard":0,"draught":0,"bounds":{"min":[-4.407588,-16.863687,-8.622115],"max":[4.489097,16.963952,0.422166]},"walkPolygon":[[208.003364,53.015814],[207.996636,19.985815],[215.996636,19.984186],[216.003364,53.014185]],"fittings":{"ladders":[],"tyres":[],"foams":[],"panels":[],"fenderPiles":[],"cleats":[],"bollards":[],"rings":[],"rails":[],"berths":{},"gaps":{"water":[],"shore":[]},"top":0,"hx":16.515,"hy":4,"L":33.03,"tyreRecs":[],"fixtures":[]},"module":{"id":"e1","key":"breakwater","at":[22,36.5],"rot":-1.571,"o":{"bays":9,"bayLen":3.667,"width":8,"deckZ":5.800000000000001,"tideRange":4.4,"variant":2,"ends":{"nx":"join","px":"join"}}},"frames":[{"frame":0,"dir":0,"file":"WaterSide_arm_e_e1_0.png","rect":[0,1772,1083,886],"native":[294,896],"nativePivot":[146,344],"crop":[5,5],"pivot":[141,339]},{"frame":1,"dir":7,"file":"WaterSide_arm_e_e1_0.png","rect":[1083,1772,1083,886],"native":[938,754],"nativePivot":[470,245],"crop":[5,4],"pivot":[465,241]},{"frame":2,"dir":6,"file":"WaterSide_arm_e_e1_0.png","rect":[2166,1772,1083,886],"native":[1092,323],"nativePivot":[544,21],"crop":[4,4],"pivot":[540,17]},{"frame":3,"dir":5,"file":"WaterSide_arm_e_e1_0.png","rect":[0,886,1083,886],"native":[935,753],"nativePivot":[468,246],"crop":[4,4],"pivot":[464,242]},{"frame":4,"dir":4,"file":"WaterSide_arm_e_e1_0.png","rect":[1083,886,1083,886],"native":[294,894],"nativePivot":[148,343],"crop":[4,4],"pivot":[144,339]},{"frame":5,"dir":3,"file":"WaterSide_arm_e_e1_0.png","rect":[2166,886,1083,886],"native":[938,752],"nativePivot":[468,244],"crop":[5,5],"pivot":[463,239]},{"frame":6,"dir":2,"file":"WaterSide_arm_e_e1_0.png","rect":[0,0,1083,886],"native":[1092,324],"nativePivot":[547,23],"crop":[4,4],"pivot":[543,19]},{"frame":7,"dir":1,"file":"WaterSide_arm_e_e1_0.png","rect":[1083,0,1083,886],"native":[935,753],"nativePivot":[466,244],"crop":[4,5],"pivot":[462,239]}],"sheets":[{"file":"WaterSide_arm_e_e1_0.png","width":3249,"height":2658,"rgbaSha256":"4fce328213e9646a53f08e1216ad027a2baaf34319a0bb1ee98a0ad4e6ce2c85"}],"modelKey":"harbour:h5_arm_e_e1","cellSize":[1083,886]}'
+    BoundsMin:
+      x: -4.407588
+      y: -16.863687
+      z: -8.622115
+    BoundsMax:
+      x: 4.489097
+      y: 16.963952
+      z: 0.422166
+    Frames:
+    - Sprite:
+        fileID: 7372815473369995444
+        guid: 71612b594bce10b8222e8319b4a59182
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 294
+        y: 896
+      NativePivot:
+        x: 146
+        y: 344
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 141
+        y: 339
+    - Sprite:
+        fileID: 107580201434059069
+        guid: 71612b594bce10b8222e8319b4a59182
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 938
+        y: 754
+      NativePivot:
+        x: 470
+        y: 245
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 465
+        y: 241
+    - Sprite:
+        fileID: 5411500420113332215
+        guid: 71612b594bce10b8222e8319b4a59182
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 1092
+        y: 323
+      NativePivot:
+        x: 544
+        y: 21
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 540
+        y: 17
+    - Sprite:
+        fileID: 479948014927244167
+        guid: 71612b594bce10b8222e8319b4a59182
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 935
+        y: 753
+      NativePivot:
+        x: 468
+        y: 246
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 464
+        y: 242
+    - Sprite:
+        fileID: 1533439633793089831
+        guid: 71612b594bce10b8222e8319b4a59182
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 294
+        y: 894
+      NativePivot:
+        x: 148
+        y: 343
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 144
+        y: 339
+    - Sprite:
+        fileID: 3968231784846321678
+        guid: 71612b594bce10b8222e8319b4a59182
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 938
+        y: 752
+      NativePivot:
+        x: 468
+        y: 244
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 463
+        y: 239
+    - Sprite:
+        fileID: 5919313628861331894
+        guid: 71612b594bce10b8222e8319b4a59182
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 1092
+        y: 324
+      NativePivot:
+        x: 547
+        y: 23
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 543
+        y: 19
+    - Sprite:
+        fileID: 6602282282164196355
+        guid: 71612b594bce10b8222e8319b4a59182
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 935
+        y: 753
+      NativePivot:
+        x: 466
+        y: 244
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 462
+        y: 239
+    Anchors: []
+    Colliders: []
+  - Name: e2
+    BakedOptionsJson: '{"module": "arm_e_e2"}'
+    GameplayJson: '{"key":"arm_e_e2","harbour":"arm_e","name":"e2","at":[198.5,13.5],"elevation":3.6,"floating":false,"freeboard":0,"draught":0,"bounds":{"min":[-15.185612,-10.308176,-8.612461],"max":[15.372829,10.184943,0.438258]},"walkPolygon":[[210.281084,23.609701],[183.249333,10.598765],[186.718916,3.390299],[213.750667,16.401235]],"fittings":{"ladders":[],"tyres":[],"foams":[],"panels":[],"fenderPiles":[],"cleats":[],"bollards":[],"rings":[],"rails":[],"berths":{},"gaps":{"water":[],"shore":[]},"top":0,"hx":15,"hy":4,"L":30,"tyreRecs":[],"fixtures":[]},"module":{"id":"e2","key":"breakwater","at":[8.5,13.5],"rot":-2.693,"o":{"bays":8,"bayLen":3.746,"width":8,"deckZ":5.800000000000001,"tideRange":4.4,"variant":3,"ends":{"nx":"join","px":"join"}}},"frames":[{"frame":0,"dir":0,"file":"WaterSide_arm_e_e2_0.png","rect":[0,827,999,827],"native":[987,554],"nativePivot":[490,138],"crop":[4,4],"pivot":[486,134]},{"frame":1,"dir":7,"file":"WaterSide_arm_e_e2_0.png","rect":[999,827,999,827],"native":[1008,509],"nativePivot":[509,114],"crop":[4,5],"pivot":[505,109]},{"frame":2,"dir":6,"file":"WaterSide_arm_e_e2_0.png","rect":[1998,827,999,827],"native":[665,816],"nativePivot":[334,290],"crop":[4,4],"pivot":[330,286]},{"frame":3,"dir":5,"file":"WaterSide_arm_e_e2_0.png","rect":[2997,827,999,827],"native":[574,837],"nativePivot":[293,305],"crop":[4,5],"pivot":[289,300]},{"frame":4,"dir":4,"file":"WaterSide_arm_e_e2_0.png","rect":[0,0,999,827],"native":[987,577],"nativePivot":[496,151],"crop":[4,5],"pivot":[492,146]},{"frame":5,"dir":3,"file":"WaterSide_arm_e_e2_0.png","rect":[999,0,999,827],"native":[1008,501],"nativePivot":[498,112],"crop":[4,4],"pivot":[494,108]},{"frame":6,"dir":2,"file":"WaterSide_arm_e_e2_0.png","rect":[1998,0,999,827],"native":[665,806],"nativePivot":[330,283],"crop":[4,5],"pivot":[326,278]},{"frame":7,"dir":1,"file":"WaterSide_arm_e_e2_0.png","rect":[2997,0,999,827],"native":[574,822],"nativePivot":[280,294],"crop":[5,5],"pivot":[275,289]}],"sheets":[{"file":"WaterSide_arm_e_e2_0.png","width":3996,"height":1654,"rgbaSha256":"d06ff097094090fd38410f8700bf58e5f65f94e03152559d4960e48fa2779e9a"}],"modelKey":"harbour:h5_arm_e_e2","cellSize":[999,827]}'
+    BoundsMin:
+      x: -15.185612
+      y: -10.308176
+      z: -8.612461
+    BoundsMax:
+      x: 15.372829
+      y: 10.184943
+      z: 0.438258
+    Frames:
+    - Sprite:
+        fileID: 6903893106114162150
+        guid: c525977e0c123d68a8624a5bd93b854e
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 987
+        y: 554
+      NativePivot:
+        x: 490
+        y: 138
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 486
+        y: 134
+    - Sprite:
+        fileID: 13972016086566905
+        guid: c525977e0c123d68a8624a5bd93b854e
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 1008
+        y: 509
+      NativePivot:
+        x: 509
+        y: 114
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 505
+        y: 109
+    - Sprite:
+        fileID: 2487354620017398162
+        guid: c525977e0c123d68a8624a5bd93b854e
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 665
+        y: 816
+      NativePivot:
+        x: 334
+        y: 290
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 330
+        y: 286
+    - Sprite:
+        fileID: 262763240228544254
+        guid: c525977e0c123d68a8624a5bd93b854e
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 574
+        y: 837
+      NativePivot:
+        x: 293
+        y: 305
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 289
+        y: 300
+    - Sprite:
+        fileID: 6694646940379912830
+        guid: c525977e0c123d68a8624a5bd93b854e
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 987
+        y: 577
+      NativePivot:
+        x: 496
+        y: 151
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 492
+        y: 146
+    - Sprite:
+        fileID: 4063661782181318518
+        guid: c525977e0c123d68a8624a5bd93b854e
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 1008
+        y: 501
+      NativePivot:
+        x: 498
+        y: 112
+      Crop:
+        x: 4
+        y: 4
+      Pivot:
+        x: 494
+        y: 108
+    - Sprite:
+        fileID: 5464953662936172765
+        guid: c525977e0c123d68a8624a5bd93b854e
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 665
+        y: 806
+      NativePivot:
+        x: 330
+        y: 283
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 326
+        y: 278
+    - Sprite:
+        fileID: 7825542201584185290
+        guid: c525977e0c123d68a8624a5bd93b854e
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 574
+        y: 822
+      NativePivot:
+        x: 280
+        y: 294
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 275
+        y: 289
+    Anchors: []
+    Colliders: []
+  - Name: e3
+    BakedOptionsJson: '{"module": "arm_e_e3"}'
+    GameplayJson: '{"key":"arm_e_e3","harbour":"arm_e","name":"e3","at":[171.5,0.5],"elevation":3.6,"floating":false,"freeboard":0,"draught":0,"bounds":{"min":[-15.202663,-10.072383,-8.590964],"max":[15.401477,10.084288,0.489758]},"walkPolygon":[[183.281084,10.609701],[156.249333,-2.401235],[159.718916,-9.609701],[186.750667,3.401235]],"fittings":{"ladders":[],"tyres":[],"foams":[],"panels":[],"fenderPiles":[],"cleats":[],"bollards":[],"rings":[],"rails":[],"berths":{},"gaps":{"water":[],"shore":[]},"top":0,"hx":15,"hy":4,"L":30,"tyreRecs":[],"fixtures":[]},"module":{"id":"e3","key":"breakwater","at":[-18.5,0.5],"rot":-2.693,"o":{"bays":8,"bayLen":3.746,"width":8,"deckZ":5.800000000000001,"tideRange":4.4,"variant":0,"ends":{"nx":"join","px":"free"}}},"frames":[{"frame":0,"dir":0,"file":"WaterSide_arm_e_e3_0.png","rect":[0,822,991,822],"native":[989,570],"nativePivot":[491,151],"crop":[5,5],"pivot":[486,146]},{"frame":1,"dir":7,"file":"WaterSide_arm_e_e3_0.png","rect":[991,822,991,822],"native":[1001,506],"nativePivot":[501,119],"crop":[5,4],"pivot":[496,115]},{"frame":2,"dir":6,"file":"WaterSide_arm_e_e3_0.png","rect":[1982,822,991,822],"native":[655,812],"nativePivot":[327,290],"crop":[5,4],"pivot":[322,286]},{"frame":3,"dir":5,"file":"WaterSide_arm_e_e3_0.png","rect":[2973,822,991,822],"native":[573,824],"nativePivot":[289,297],"crop":[5,5],"pivot":[284,292]},{"frame":4,"dir":4,"file":"WaterSide_arm_e_e3_0.png","rect":[0,0,991,822],"native":[989,556],"nativePivot":[497,141],"crop":[4,5],"pivot":[493,136]},{"frame":5,"dir":3,"file":"WaterSide_arm_e_e3_0.png","rect":[991,0,991,822],"native":[1001,502],"nativePivot":[500,112],"crop":[5,4],"pivot":[495,108]},{"frame":6,"dir":2,"file":"WaterSide_arm_e_e3_0.png","rect":[1982,0,991,822],"native":[655,813],"nativePivot":[327,291],"crop":[5,5],"pivot":[322,286]},{"frame":7,"dir":1,"file":"WaterSide_arm_e_e3_0.png","rect":[2973,0,991,822],"native":[573,832],"nativePivot":[284,305],"crop":[5,5],"pivot":[279,300]}],"sheets":[{"file":"WaterSide_arm_e_e3_0.png","width":3964,"height":1644,"rgbaSha256":"a99f3e3fb84c4b4b23729539b3f0c589c4636136943464448d93bb1428c0d2bd"}],"modelKey":"harbour:h5_arm_e_e3","cellSize":[991,822]}'
+    BoundsMin:
+      x: -15.202663
+      y: -10.072383
+      z: -8.590964
+    BoundsMax:
+      x: 15.401477
+      y: 10.084288
+      z: 0.489758
+    Frames:
+    - Sprite:
+        fileID: 1768591743551200393
+        guid: 771ba1e316c455b98fd9f243949eba1a
+        type: 3
+      RigDir: 0
+      ShowFaces: '0'
+      BearingDeg: 0
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 989
+        y: 570
+      NativePivot:
+        x: 491
+        y: 151
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 486
+        y: 146
+    - Sprite:
+        fileID: 9221969935785220480
+        guid: 771ba1e316c455b98fd9f243949eba1a
+        type: 3
+      RigDir: 7
+      ShowFaces: '7'
+      BearingDeg: 315
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 1001
+        y: 506
+      NativePivot:
+        x: 501
+        y: 119
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 496
+        y: 115
+    - Sprite:
+        fileID: 9114024315264581431
+        guid: 771ba1e316c455b98fd9f243949eba1a
+        type: 3
+      RigDir: 6
+      ShowFaces: '6'
+      BearingDeg: 270
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 655
+        y: 812
+      NativePivot:
+        x: 327
+        y: 290
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 322
+        y: 286
+    - Sprite:
+        fileID: 1257861422451012219
+        guid: 771ba1e316c455b98fd9f243949eba1a
+        type: 3
+      RigDir: 5
+      ShowFaces: '5'
+      BearingDeg: 225
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 573
+        y: 824
+      NativePivot:
+        x: 289
+        y: 297
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 284
+        y: 292
+    - Sprite:
+        fileID: 4504347158505157314
+        guid: 771ba1e316c455b98fd9f243949eba1a
+        type: 3
+      RigDir: 4
+      ShowFaces: '4'
+      BearingDeg: 180
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 989
+        y: 556
+      NativePivot:
+        x: 497
+        y: 141
+      Crop:
+        x: 4
+        y: 5
+      Pivot:
+        x: 493
+        y: 136
+    - Sprite:
+        fileID: 370491669382903518
+        guid: 771ba1e316c455b98fd9f243949eba1a
+        type: 3
+      RigDir: 3
+      ShowFaces: '3'
+      BearingDeg: 135
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 1001
+        y: 502
+      NativePivot:
+        x: 500
+        y: 112
+      Crop:
+        x: 5
+        y: 4
+      Pivot:
+        x: 495
+        y: 108
+    - Sprite:
+        fileID: 8072769378517941914
+        guid: 771ba1e316c455b98fd9f243949eba1a
+        type: 3
+      RigDir: 2
+      ShowFaces: '2'
+      BearingDeg: 90
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 655
+        y: 813
+      NativePivot:
+        x: 327
+        y: 291
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 322
+        y: 286
+    - Sprite:
+        fileID: 7223874717985813966
+        guid: 771ba1e316c455b98fd9f243949eba1a
+        type: 3
+      RigDir: 1
+      ShowFaces: '1'
+      BearingDeg: 45
+      CameraSees: delivered harbour module
+      NativeSize:
+        x: 573
+        y: 832
+      NativePivot:
+        x: 284
+        y: 305
+      Crop:
+        x: 5
+        y: 5
+      Pivot:
+        x: 279
+        y: 300
+    Anchors: []
+    Colliders: []
+  HasVendor: 0
+  Vendor:
+    Seller: ''
+    At:
+      x: 0
+      y: 0
+      z: 0

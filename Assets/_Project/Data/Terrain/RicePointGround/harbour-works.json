@@ -1,0 +1,51 @@
+{
+  "schema": "hidden-harbours/harbour-works@3",
+  "id": "harbour_works.rice_point",
+  "region": "region.rice_point",
+  "why": "The wharf takes the trawlers. The deepest of them draws 4.3 m and the lowest tide of the year is 2.2 m below the mean, so a bed 7.0 m below the mean leaves 4.8 m of water at that tide: her draught and half a metre under the keel. The ground is the second issue (kept as issued in Issue2Base) with these cuts applied.",
+  "range": [-10, 6],
+  "keepAbove": 2.0,
+  "blend": "Where a cut's side slope meets the old ground the two are rounded together over blendRun metres (measured along the ground, as the slope runs). Without it the slope stops at a crease, and wherever the tide's edge falls on that crease the shore is the stepped outline of the cut: the mud flat east of the basin showed it at spring low.",
+  "faces": {
+    "what": "the crib faces drawn true: each texel near a face takes its height from its distance to the crib outline, the outer ground out to reach metres outside the face rising straight to the deck over run metres",
+    "why": "The issued ground holds each crib as a hard step at half a metre a texel. A face at a slant is then a staircase, and the water edge showed it as the same notch every 1.1 m down the face. Drawn from the outline, every contour of the step lies along the face, so the waterline runs straight down it. A face meeting the land (outer ground and deck less than minStep apart) is left as issued.",
+    "grading": "cribs.rpt_wharf",
+    "blocks": [
+      { "id": "crib.rpt_approach", "edges": [0, 2, 3] },
+      { "id": "crib.rpt_head", "edges": [3] }
+    ],
+    "left": "The head crib's trawler face and its two ends (edges 0, 1 and 2) stay as issued: the trawler berth's side lies 0.79 m off that wall over a bed with 5 cm to spare at the lowest tide, and the player starts 0.57 m in from its edge, so there is no room there for a drawn face.",
+    "reach": 0.25,
+    "run": 1.5,
+    "minStep": 1.0
+  },
+  "cuts": [
+    {
+      "id": "cut.rpt_trawler_basin",
+      "what": "the basin off the wharf face: two trawlers lie in it, one alongside and one outside her",
+      "bed": -7.0,
+      "halfWidth": 11.45,
+      "sideRun": 3,
+      "blendRun": 3,
+      "line": [[-56.32, -134.25], [-34.79, -93.60]]
+    },
+    {
+      "id": "cut.rpt_south_channel",
+      "what": "the way in from the open water to the south, as deep as the basin the whole way to the region's edge",
+      "bed": -7.0,
+      "halfWidth": 14,
+      "sideRun": 3,
+      "blendRun": 3,
+      "line": [[-50, -128], [-46, -150], [-40, -185]]
+    },
+    {
+      "id": "cut.rpt_channel_east_toe",
+      "what": "the toe of the mud flat on the east bank of the way in, taken down below the lowest tide: what the channel left of it was a tongue a hand above that tide, too flat to hold a shoreline",
+      "bed": -3.0,
+      "halfWidth": 3,
+      "sideRun": 3,
+      "blendRun": 3,
+      "line": [[-26, -147.5], [-10, -143]]
+    }
+  ]
+}

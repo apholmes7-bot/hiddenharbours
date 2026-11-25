@@ -149,6 +149,8 @@ namespace HiddenHarbours.Audio
 
         // ---- the event drives the target; Update smooths and applies (no allocation) --------
 
+        private float _hookTime;   // unscaled time the live fight opened (the scream's clock)
+
         private void OnFishingState(FishingStateChanged e)
         {
             FishingState next = e.State;
@@ -161,7 +163,12 @@ namespace HiddenHarbours.Audio
             float landingPerSec = FishingAudioLogic.LandingPerSec(_prev.Landing01, next.Landing01, dt);
             float dart = FishingAudioLogic.DartSpeed01(
                 next.FishOffsetX - _prev.FishOffsetX, next.FishOffsetY - _prev.FishOffsetY, dt);
-            _target = FishingAudioLogic.MixFor(in next, landingPerSec, dart);
+            // Her size in the strain voice (GameConfig.FishFeel): the hook-set is the frame the fight
+            // opens, and the big one's scream is timed from it.
+            if (next.IsFightPhase && !_prev.IsFightPhase) _hookTime = now;
+            FishFeelSettings feel = GameServices.Config != null
+                ? GameServices.Config.FishFeel : FishFeelSettings.Default;
+            _target = FishingAudioLogic.MixFor(in next, landingPerSec, dart, now - _hookTime, in feel);
 
             _prev = next;
             _lastEventTime = now;

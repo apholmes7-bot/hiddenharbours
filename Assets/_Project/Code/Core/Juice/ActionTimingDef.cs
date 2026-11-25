@@ -36,6 +36,12 @@ namespace HiddenHarbours.Core
                  "is done and the walk skin may come back.")]
         [Min(0f)] public float SettleSeconds;
 
+        [Tooltip("Seconds from the start of the action to its CONTACT frame (the dig: the blade entering " +
+                 "the ground). The moment's presentation cues (the dirt, the sound) wait this long after the " +
+                 "press; the gameplay result never does. Keep it on the first key of the contact frame. " +
+                 "0 = the cues land on the press.")]
+        [Min(0f)] public float ImpactDelaySeconds;
+
         /// <summary>The value copy the maths reads — a presenter can hold this and never touch the asset again.</summary>
         public ActionTiming Timing => new ActionTiming(PreHoldSeconds, StrikeSeconds, FollowThroughSeconds, SettleSeconds);
     }

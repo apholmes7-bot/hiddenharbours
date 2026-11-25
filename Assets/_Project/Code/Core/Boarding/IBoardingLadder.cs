@@ -18,6 +18,9 @@ namespace HiddenHarbours.Core
     /// builders from the same fittings table that positions the ladder sprite. When the wharf rig grows
     /// real mount symbols, only the PLACEMENT changes: this interface and everything reading it stay as
     /// they are.</para>
+    ///
+    /// <para>A ladder a HULL carries (climbing her out of the water) is <see cref="BoardingPoint"/>, ruled by
+    /// <see cref="BoardingRuleMath"/>.</para>
     /// </summary>
     public interface IBoardingLadder
     {
@@ -28,6 +31,10 @@ namespace HiddenHarbours.Core
         /// <summary>Where the ladder meets the wall, in world metres (plan). The climber does not stand
         /// HERE — they sit <see cref="StandoffMetres"/> out along <see cref="FaceHeadingDegrees"/>.</summary>
         Vector2 WorldPosition { get; }
+
+        /// <summary>Screen-space rise from the fitting's plan point to the cap where the climb starts.
+        /// Does not change reach, mooring or berth geometry. Older fittings sit at their own top.</summary>
+        float ClimbTopScreenOffset => 0f;
 
         /// <summary>The height of the ladder's TOP above chart datum (m) — the deck it serves. Fixed: the
         /// wall does not float.</summary>

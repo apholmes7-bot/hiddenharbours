@@ -1,0 +1,79 @@
+namespace HiddenHarbours.Fishing
+{
+    /// <summary>
+    /// The home for the player-facing sentences the catch loop says when it has nowhere to put a catch,
+    /// and when a fish gets away.
+    /// Same convention as <c>ControlStrings</c>, <c>HudStrings</c> and <c>WorldStrings</c>: there is no
+    /// runtime localization system wired yet, so centralising the copy here is the seam. When loc tables
+    /// land these become lookups and no call site changes.
+    ///
+    /// <para><b>A sentence may only name a buyer that buys.</b> The pail sentence used to send the player
+    /// to a place with no working buyer. It now names the one counter that takes a pail today. The hold
+    /// sentences name no buyer at all, because nothing buys a boat's hold yet: when a hold buyer exists,
+    /// this is the one place to say where it is.</para>
+    ///
+    /// <para><b>None of these names a key</b>, and every constant is an interned literal: no composed
+    /// string, no garbage. The one composed sentence is <see cref="ProtectedReleased"/>, built once at
+    /// the moment a protected fish is let go, never per frame. (The licence line is not here: it is the
+    /// player's own voice, an inner-voice line asset, see <c>UnlicensedCatch</c>.)</para>
+    /// </summary>
+    public static class FishingStrings
+    {
+        /// <summary>The dig is refused because the pail has no room. Points at the store counter that
+        /// buys a pail. <c>BucketStrings.Full</c> in the Player module says the same sentence at the pail
+        /// itself; a test holds the two equal, because the modules cannot see each other.</summary>
+        public const string PailFull = "The bucket's full — Marguerite at LeBlanc's store will buy them.";
+
+        /// <summary>The cast is refused because the hold has no room. Said BEFORE a fish is hooked, so
+        /// nothing is landed and lost. Names no buyer (see the class note).</summary>
+        public const string HoldFull = "The hold's full — there's no room to stow another fish.";
+
+        /// <summary>The rare case the cast gate cannot see: the hold filled between the cast and the
+        /// landing, so the fish had nowhere to go. Said so the loss is never silent.</summary>
+        public const string LandedNoRoom = "The hold's full — nowhere to stow it, so it went back over the side.";
+
+        // ---- why she got away ---------------------------------------------------------------------
+        // One short line per failure, so the line never comes back empty without a reason. Each names
+        // what the PLAYER did (or what the water did), which is the thing they can change next cast.
+
+        /// <summary>The strike came outside the take: at nothing, or on a teasing nibble.</summary>
+        public const string StruckTooSoon = "Struck too soon.";
+
+        /// <summary>The true take opened and closed with no strike.</summary>
+        public const string SpatIt = "She spat it.";
+
+        /// <summary>The fight was lost: the reel was held against her until the strain peaked and the
+        /// hook pulled. Says the cause, because the cure (ease off on her runs) is in it.</summary>
+        public const string ThrewTheHook = "Held her too hard — she threw the hook.";
+
+        /// <summary>The wait ran out over water that holds nothing for this rig, here, now.</summary>
+        public const string NothingBiting = "Nothing biting here.";
+
+        /// <summary>The line for a mistimed strike, or null when there was no miss to explain.</summary>
+        public static string MissedStrike(BiteMiss miss)
+        {
+            switch (miss)
+            {
+                case BiteMiss.Early: return StruckTooSoon;
+                case BiteMiss.Late:  return SpatIt;
+                default:             return null;
+            }
+        }
+
+        // ---- protected species (owner ruling 2026-11-15: documented, then released) ---------------
+
+        /// <summary>Said when the name of a released protected catch is missing.</summary>
+        public const string ProtectedReleasedUnnamed = "That one's protected — noted, and back she goes.";
+
+        /// <summary>"Atlantic Wolffish, 4.2 kg — protected, so noted and back she goes." Built once at the
+        /// moment the fish is released, never per frame. The weight is said when there is one, by the shared
+        /// rule (grams under a kilogram: "Rainbow Smelt, 40 g — …").</summary>
+        public static string ProtectedReleased(string speciesName, float weightKg)
+        {
+            if (string.IsNullOrWhiteSpace(speciesName)) return ProtectedReleasedUnnamed;
+            if (!(weightKg > 0f)) return speciesName + " — protected, so noted and back she goes.";
+            return speciesName + ", " + HiddenHarbours.Core.WeightFormat.Text(weightKg)
+                   + " — protected, so noted and back she goes.";
+        }
+    }
+}

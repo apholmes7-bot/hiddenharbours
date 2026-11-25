@@ -37,6 +37,37 @@ namespace HiddenHarbours.Player
     /// </summary>
     public static class PlayerFishingAnimMath
     {
+        public const string DigStateKey = "dig";
+
+        /// <summary>
+        /// The dig's drawn heading (compass degrees, 0 = North = straight away from the camera, clockwise)
+        /// with the away turn applied: a heading within <paramref name="turnDegrees"/> of North becomes
+        /// exactly <paramref name="turnDegrees"/> off it, on the side it already leans to (East, his right,
+        /// when dead on), so his body no longer hides the shovel and the toss. Any other heading, or a turn
+        /// of 0, is returned as given (normalised to [0, 360)).
+        /// </summary>
+        public static float DigHeadingAwayTurn(float headingDegrees, float turnDegrees)
+        {
+            float h = Mathf.Repeat(headingDegrees, 360f);
+            if (turnDegrees <= 0f) return h;
+            float off = Mathf.DeltaAngle(0f, h);   // signed, (-180, 180]
+            if (Mathf.Abs(off) >= turnDegrees) return h;
+            return off < 0f ? 360f - turnDegrees : turnDegrees;
+        }
+
+        /// <summary>The existing sprite pose's baked skin clip. No independent phase mapping.</summary>
+        public static string StateKeyFor(FishingPose pose) => pose switch
+        {
+            FishingPose.Hold => "hold",
+            FishingPose.CastBack => "castBack",
+            FishingPose.CastRelease => "castRelease",
+            FishingPose.Bite => "bite",
+            FishingPose.Strike => "strike",
+            FishingPose.Reel => "reel",
+            FishingPose.Land => "land",
+            _ => null,
+        };
+
         /// <summary>
         /// The pose for a published phase: <see cref="FishingPhase.WindBack"/> scrubs the castBack
         /// sheet, <see cref="FishingPhase.Cast"/> plays the release once,
@@ -167,7 +198,7 @@ namespace HiddenHarbours.Player
     /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(SpriteRenderer))]
-    public sealed class PlayerFishingAnimator : MonoBehaviour
+    public sealed partial class PlayerFishingAnimator : MonoBehaviour
     {
         /// <summary>The bake's direction-row count — the character iso kit contract (8 compass rows).</summary>
         public const int Directions = 8;
@@ -231,6 +262,7 @@ namespace HiddenHarbours.Player
         private FishingPhase _phase = FishingPhase.Idle;
         private float _poseElapsed;       // seconds in the current pose (drives the frame)
         private float _fightElapsed;      // seconds since a fight phase was entered (strike → reel)
+        private bool _bigOneHooked;       // this hook raised the big-one cue: the strike pose holds longer
         private int _row;                 // current direction row (held when the offset vanishes)
         private int _frame;               // the per-direction frame currently shown (for the rod overlay)
         private FishingPose _pose = FishingPose.None;
@@ -241,7 +273,8 @@ namespace HiddenHarbours.Player
 
         // Movement read for the HOLD yield (transform delta — works for the rb-driven walk AND the
         // transform-driven deck walk alike). Tracked only while a rod phase is live (rule 7).
-        private Vector3 _lastPos;
+        private Vector3 _lastPos;         // in the parent's frame (the boat aboard, the world ashore)
+        private Transform _lastParent;
         private float _speed;
 
         // One-shot diagnostics: the old failure mode here was SILENT by design (null-safe greybox), and
@@ -268,12 +301,30 @@ namespace HiddenHarbours.Player
         {
             _row = Directions / 2;   // South — facing the camera until the state says otherwise
             EventBus.Subscribe<FishingStateChanged>(OnFishingStateChanged);
+            EventBus.Subscribe<InnerVoiceCue>(OnInnerVoiceCue);
+            EventBus.Subscribe<JuiceMomentCue>(OnDigStrike);
         }
 
         private void OnDisable()
         {
             EventBus.Unsubscribe<FishingStateChanged>(OnFishingStateChanged);
+            EventBus.Unsubscribe<InnerVoiceCue>(OnInnerVoiceCue);
+            EventBus.Unsubscribe<JuiceMomentCue>(OnDigStrike);
+            _digElapsed = -1f;
+            _bigOneHooked = false;
             EndPose();   // disabling mid-fight hands the renderer back (never a stuck frame)
+        }
+
+        /// <summary>True from the big-one cue until that fight ends (the strike pose holds longer). For tests.</summary>
+        public bool BigOneHooked => _bigOneHooked;
+
+        /// <summary>The rod loop named the moment "a big one is on" (Core <see cref="InnerVoiceCues.BigOneHooked"/>,
+        /// raised once at the hook-set, just BEFORE the first fight state). The figure answers by holding
+        /// its hook-set pose <c>GameConfig.FishFeel.BigOneStrikeHoldSeconds</c> longer. Public so tests
+        /// drive the same path the bus does.</summary>
+        public void OnInnerVoiceCue(InnerVoiceCue e)
+        {
+            if (e.CueId == InnerVoiceCues.BigOneHooked) _bigOneHooked = true;
         }
 
         /// <summary>Public so tests can drive the mapping through the same path the bus uses.</summary>
@@ -282,6 +333,9 @@ namespace HiddenHarbours.Player
             bool wasFight = IsFight(_phase);
             _phase = e.State.Phase;
             if (IsFight(_phase) && !wasFight) _fightElapsed = 0f;   // the strike beat starts here
+            // The big-one flag belongs to ONE hook: it arrives before the fight opens and dies when that
+            // fight ends (landed, lost) or the rod goes idle, so the next fish starts ordinary.
+            if ((wasFight && !IsFight(_phase)) || _phase == FishingPhase.Idle) _bigOneHooked = false;
             _castCharge = e.State.CastCharge01;
 
             // Face the line's far end: the fight offset when one is live, else the cast-path far end
@@ -300,7 +354,18 @@ namespace HiddenHarbours.Player
 
         private void Update()
         {
-            Vector3 pos = transform.position;
+            AdvanceDig(Time.unscaledDeltaTime);
+            // Measured in the PARENT's frame: aboard he is parented to the boat (ControlSwitcher), so a
+            // drifting or rocking dory carries him without "moving" him, and he keeps the hold pose with
+            // the line out. Only his own steps across the deck yield it. Ashore the parent is null and
+            // this is the world position, as before. A parent change (boarding) re-arms the read.
+            Vector3 pos = transform.localPosition;
+            Transform parent = transform.parent;
+            if (parent != _lastParent)
+            {
+                _lastParent = parent;
+                _lastPos = pos;
+            }
             if (_pose == FishingPose.None && !IsPosed(_phase))
             {
                 _lastPos = pos;   // keep the movement read warm so a fresh pose never sees a stale delta
@@ -334,6 +399,13 @@ namespace HiddenHarbours.Player
         private void Apply()
         {
             float strikeSeconds = FrameCount(_strikeFrames) / Mathf.Max(0.1f, _strikeFps);
+            if (_bigOneHooked)
+            {
+                // A big one: she rears back and STAYS back a beat (the sheet's last strike frame holds).
+                FishFeelSettings feel = GameServices.Config != null
+                    ? GameServices.Config.FishFeel : FishFeelSettings.Default;
+                strikeSeconds += BigOneReactionMath.StrikeHoldSeconds(in feel);
+            }
             FishingPose pose = PlayerFishingAnimMath.PoseFor(_phase, _fightElapsed, strikeSeconds, IsStationary);
 
             // A pose only counts if its sheet is actually wired — otherwise fall through to None so a

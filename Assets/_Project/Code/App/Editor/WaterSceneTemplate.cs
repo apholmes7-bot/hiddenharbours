@@ -51,6 +51,14 @@ namespace HiddenHarbours.App.Editor
         public static Camera BuildRegion(WaterScenePlan plan, Vector3 reviewPosition, Vector3 defaultArrival,
             (string Key, Vector3 Position)[] arrivals,
             params (string Name, Vector3 Position, string RegionAssetPath, string ArrivalKey)[] passages)
+            => BuildRegion(plan, reviewPosition, defaultArrival, arrivals, plan.EdgeBandSize, passages);
+
+        /// <summary>As above, with the passage band stated by the caller: a door on a north or south
+        /// edge lies along x, which <see cref="WaterScenePlan.EdgeBandSize"/> (an east or west wall)
+        /// cannot say.</summary>
+        public static Camera BuildRegion(WaterScenePlan plan, Vector3 reviewPosition, Vector3 defaultArrival,
+            (string Key, Vector3 Position)[] arrivals, Vector2 passageBandSize,
+            params (string Name, Vector3 Position, string RegionAssetPath, string ArrivalKey)[] passages)
         {
             EnsureFolders();
             LoadOrCreateRegion(plan);
@@ -71,7 +79,7 @@ namespace HiddenHarbours.App.Editor
             var known = new[] { region }.Concat(neighbours).Distinct().ToArray();
             var loader = AddSceneLoader(plan.SceneName, known);
             for (int i = 0; i < passages.Length; i++)
-                AddPassage(passages[i].Name, passages[i].Position, plan.EdgeBandSize,
+                AddPassage(passages[i].Name, passages[i].Position, passageBandSize,
                            neighbours[i], loader, passages[i].ArrivalKey);
             AddAnchor(plan, defaultArrival, arrivals);
             AddDisplayNames(known);

@@ -151,6 +151,26 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.IsFalse(p.SortByFarEnd,
                 "The built-in default must sort a shadow at its caster's feet, as main does — otherwise a " +
                 "project with no asset gets this PR's sorting without anyone choosing it.");
+            Assert.AreEqual(1f, p.HullWaterLowSunAlpha, 1e-6f,
+                "The built-in default must not fade a floating hull's shadow: a project with no asset keeps main's frame.");
+        }
+
+        /// <summary>The sunset fix (11-21): the shipped asset fades a FLOATING hull's low-sun shadow to a faint
+        /// tint on open water, and the code's field defaults are the shipped numbers.</summary>
+        [Test]
+        public void TheShippedAsset_FadesAFloatingHullsLowSunShadow()
+        {
+            var asset = Resources.Load<SpriteShadowProfile>(SpriteShadow.ProfileResourcePath);
+            Assert.IsNotNull(asset);
+            var fresh = ScriptableObject.CreateInstance<SpriteShadowProfile>();
+            try
+            {
+                Assert.AreEqual(0.25f, asset.HullWaterLowSunAlpha, 1e-6f, "the shipped low-sun alpha on water");
+                Assert.AreEqual(0.6f, asset.HullWaterFullSunElevation, 1e-6f, "the shipped full-sun elevation");
+                Assert.AreEqual(fresh.HullWaterLowSunAlpha, asset.HullWaterLowSunAlpha, 1e-6f, "field default == asset");
+                Assert.AreEqual(fresh.HullWaterFullSunElevation, asset.HullWaterFullSunElevation, 1e-6f, "field default == asset");
+            }
+            finally { Object.DestroyImmediate(fresh); }
         }
 
         // =========================================================================================

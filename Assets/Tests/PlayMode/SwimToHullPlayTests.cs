@@ -238,6 +238,8 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
             Assert.AreEqual(ControlMode.OnDeck, _switcher.Mode,
                 "she swam up to a hull and climbed aboard — the owner's sentence, end to end");
+            Assert.AreEqual(OnFootWaterState.Dry, _walk.WaterState,
+                "and the swim ended when the player climbed out: aboard he is dry, so the sea rinse stops");
         }
 
         /// <summary>
@@ -252,6 +254,9 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator OutOfReachOfHer_TheWallStillRefusesHer()
         {
+            // Move this fixture's only live hull beyond reach so the unchanged sweep can test boat-only water.
+            _boat.transform.position += Vector3.right * 100f;
+            _boat.GetComponent<Rigidbody2D>().position = _boat.transform.position;
             yield return null;
 
             float reach = _walk.SwimBoardReach;

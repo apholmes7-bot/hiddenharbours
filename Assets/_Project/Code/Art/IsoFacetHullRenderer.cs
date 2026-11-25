@@ -14,10 +14,12 @@ namespace HiddenHarbours.Art
         /// <summary>The extracted hull mesh (RigMeshBuilder layout: flat per-face normals, UV0 =
         /// (materialId, faceBias b, depthBias db, 0)).</summary>
         public Mesh Mesh;
+        public bool ReceivesWaterCaustics;
         /// <summary>Her door leaf shut and open, in <see cref="Mesh"/>'s layout
         /// (<see cref="HiddenHarbours.Core.HullMeshDef.DoorLeafClosed"/>). Both null on a hull with no
         /// split leaf, and then nothing is drawn beside the hull mesh.</summary>
         public Mesh DoorLeafClosed, DoorLeafOpen;
+        public HullMeshDef.DoorLeafPair[] DoorLeaves = Array.Empty<HullMeshDef.DoorLeafPair>();
         /// <summary>Palette ramp per rig material, in rig MATS order.</summary>
         public Color32[][] Ramps;
         /// <summary>Per-material constant ramp-index offset (the rig's <c>off</c>).</summary>
@@ -100,7 +102,7 @@ namespace HiddenHarbours.Art
     [DisallowMultipleComponent]
     public sealed class IsoFacetHullRenderer : MonoBehaviour,
         HiddenHarbours.Core.IHullMeshRenderer, HiddenHarbours.Core.IHullCutaway,
-        HiddenHarbours.Core.IHullDoorLeaf
+        HiddenHarbours.Core.IHullDoorLeaf, HiddenHarbours.Core.IHullDoorLeaves
     {
         [Tooltip("Heading in RIG dir units (1 unit = 45°, CCW, fractional allowed).")]
         [SerializeField] private float _headingDirUnits;
@@ -125,14 +127,22 @@ namespace HiddenHarbours.Art
         private MeshRenderer _overlayRenderer;
         private SortingGroup _sortingGroup;
         private MaterialPropertyBlock _props;
+        private Vector3[] _causticVertices;
+        private Vector4 _causticPlane, _causticSettings;
         private int _hullId;
         // THE DECK-OCCUPANT SPLIT (owner playtest 2026-08-07: sprites showing through closed
-        // cabins). A contiguous BLOCK of registry ids — one per occupancy band — held for this
-        // hull's whole registered life so it is stable across the frames a figure boards and leaves,
-        // plus a fixed array of who is standing where in rig metres. Nobody aboard ⇒ no active slot
-        // ⇒ the facet shader's loop never runs and every pixel carries _hullId, exactly as before
-        // this existed.
+        // cabins). A contiguous BLOCK of registry ids — one per occupancy band — held while ANY deck
+        // slot is claimed (ADR 0056: taken on the first claim, given back on the last release), so it
+        // is stable for as long as anybody stands on her and costs nothing while nobody does; plus a
+        // fixed array of who is standing where in rig metres. Nobody aboard ⇒ no active slot ⇒ the
+        // facet shader's loop never runs and every pixel carries _hullId, exactly as before this
+        // existed.
         private int _foreHullId;
+        // The pool refused her a block at a claim and said so once. Later claims retry QUIETLY (one
+        // cheap ask of the pool, no log) until a block frees — the "a hull refused once never asks
+        // again" finding of the budget note, fixed by construction. Cleared when a block is granted
+        // and when she unregisters.
+        private bool _foreBlockRefused;
         private readonly DeckSlot[] _deckSlots = new DeckSlot[DeckOccupantSlots];
         // Reused every frame — a fresh array per LateUpdate would allocate on every hull in the
         // scene (rule 7). Always sent whole, so a released slot's stale depth cannot survive on the
@@ -174,6 +184,9 @@ namespace HiddenHarbours.Art
         // re-Configure; the child does not (it dies with FacetMesh).
         private MeshFilter _leafFilter;
         private MeshRenderer _leafRenderer;
+        private readonly List<MeshFilter> _doorLeafFilters = new();
+        private readonly List<MeshRenderer> _doorLeafRenderers = new();
+        private readonly Dictionary<string, bool> _doorLeafStates = new(StringComparer.Ordinal);
         private bool _doorLeafOpen;
 
         /// <summary>
@@ -259,7 +272,7 @@ namespace HiddenHarbours.Art
         }
 
         /// <inheritdoc/>
-        public bool CarriesDoorLeaf => _leafFilter != null;
+        public bool CarriesDoorLeaf => _leafFilter != null || _doorLeafFilters.Count > 0;
 
         /// <inheritdoc/>
         public bool DoorLeafShownOpen => _doorLeafOpen;
@@ -269,8 +282,8 @@ namespace HiddenHarbours.Art
         /// <see cref="HiddenHarbours.Core.IHullDoorLeaf"/> seam, driven by <c>BoatCabinDoor</c> from its
         /// own <c>IsOpen</c> (owner playtest 2026-09-17: "i dont see the doors open").
         ///
-        /// <para>A mesh swap on the "DoorLeaf" child and nothing else. Both poses are the same faces in
-        /// the same vertex layout, and the child shares FacetMesh's material and property block, so the
+        /// <para>A mesh swap on the "DoorLeaf" child and nothing else. Both poses keep the shut faces'
+        /// vertex layout; a walk hull's open pose may add what it uncovers. The child shares FacetMesh's material and property block, so the
         /// leaf shades, dithers, composites and cuts away with the house exactly as it did while it was
         /// baked into the hull mesh.</para>
         ///
@@ -279,9 +292,38 @@ namespace HiddenHarbours.Art
         /// </summary>
         public void ShowDoorLeaf(bool open)
         {
+            if (_setup?.DoorLeaves != null && _setup.DoorLeaves.Length > 0)
+            {
+                ShowDoorLeaf(_setup.DoorLeaves[0].Id, open);
+                _doorLeafOpen = open;
+                return;
+            }
             if (open == _doorLeafOpen) return;
             _doorLeafOpen = open;
             ApplyDoorLeafMesh();
+        }
+
+        public bool HasDoorLeaf(string doorId) => NamedDoorIndex(doorId) >= 0;
+
+        public bool DoorLeafShownOpenFor(string doorId) => doorId != null &&
+            _doorLeafStates.TryGetValue(doorId, out bool open) && open;
+
+        public void ShowDoorLeaf(string doorId, bool open)
+        {
+            int index = NamedDoorIndex(doorId);
+            if (index < 0) return;
+            _doorLeafStates[doorId] = open;
+            if (index == 0) _doorLeafOpen = open;
+            var pair = _setup.DoorLeaves[index];
+            _doorLeafFilters[index].sharedMesh = open ? pair.Open : pair.Closed;
+        }
+
+        private int NamedDoorIndex(string doorId)
+        {
+            if (doorId == null || _setup?.DoorLeaves == null) return -1;
+            for (int i = 0; i < _doorLeafFilters.Count; i++)
+                if (string.Equals(_setup.DoorLeaves[i].Id, doorId, StringComparison.Ordinal)) return i;
+            return -1;
         }
 
         private void ApplyDoorLeafMesh()
@@ -390,10 +432,12 @@ namespace HiddenHarbours.Art
         ///
         /// <para><b>What the number costs</b> is the id budget, not the per-pixel loop (which is one
         /// compare per slot behind a single early-out that is false on every hull with nobody
-        /// aboard). Each hull reserves 1 + this many of the 255 ids the facet alpha can carry, so
-        /// twelve leaves <b>19</b> simultaneous mesh hulls against a roadmap whose largest scene is a
-        /// harbour of a dozen. Raise it and that headroom shrinks; lower it and the surplus occupants
-        /// are refused, loudly, and draw un-occluded.</para>
+        /// aboard). A hull holds 1 of the 255 ids the facet alpha can carry, and this many more only
+        /// while somebody stands on her deck (ADR 0056, lazy fore blocks), so the price is paid per
+        /// CREWED hull: 255 / 13 = 19 crewed hulls at once, against any number of empty ones at 1 id
+        /// each. Raise it and that headroom shrinks; lower it and the surplus occupants are refused,
+        /// loudly, and draw un-occluded. Measured counts per region:
+        /// <c>docs/architecture/facet-id-budget.md</c>.</para>
         ///
         /// <para>⚠️ <b>The facet shader holds this same number as a literal</b>
         /// (<c>HH_DECK_OCCUPANT_SLOTS</c>) because HLSL needs a compile-time array bound.
@@ -410,9 +454,10 @@ namespace HiddenHarbours.Art
         /// <para>Band <i>m</i> (a pixel in front of <i>m</i> occupants) is written as
         /// <c>ForeHullId + m - 1</c>, so the sprite that must be hidden behind her wheelhouse discards
         /// across a RANGE of this block (<c>HiddenHarbours/DeckOccludedSprite</c>). The block is
-        /// handed out once at registration and held for life, not per boarding: a figure stepping
-        /// aboard must not be able to change what the boat is drawing with, and a per-frame id would
-        /// make the split a race between two components' execution order.</para>
+        /// handed out at her FIRST deck-slot claim and held until her LAST release (ADR 0056), never
+        /// per frame: while anybody holds a slot it cannot change under them, and a per-frame id would
+        /// make the split a race between two components' execution order. Nobody aboard — nearly
+        /// every hull, nearly always — means no block, and 0 here.</para>
         /// </summary>
         public int ForeHullId => _foreHullId;
 
@@ -546,6 +591,7 @@ namespace HiddenHarbours.Art
 
             ReleaseOwned();
             _setup = setup;
+            _causticVertices = setup.ReceivesWaterCaustics ? setup.Mesh.vertices : null;
             _footprintRadiusMeters = DisplacedWaterMath.FootprintRadiusMeters(
                 setup.CellW, setup.PxPerMetre);
             _hasInteriorFaces = MeshCarriesInteriorFaces(setup.Mesh);
@@ -740,7 +786,28 @@ namespace HiddenHarbours.Art
             // renderer on the same material, so the facet feature draws it in every pass (facet,
             // deck, guard) the hull mesh is drawn in. Its faces keep their 'house' level tag, so the
             // cutaway takes the leaf with the wall it hangs in.
-            if (setup.DoorLeafClosed != null && setup.DoorLeafOpen != null)
+            if (setup.DoorLeaves != null && setup.DoorLeaves.Length > 0)
+            {
+                foreach (var pair in setup.DoorLeaves)
+                {
+                    if (string.IsNullOrEmpty(pair.Id) || pair.Closed == null || pair.Open == null)
+                        throw new ArgumentException("A named door requires its id and both leaf poses.");
+                    var leafGo = new GameObject(_doorLeafFilters.Count == 0 ? "DoorLeaf" : "DoorLeaf." + pair.Id)
+                        { hideFlags = HideFlags.DontSave, layer = meshGo.layer };
+                    leafGo.transform.SetParent(_meshChild, false);
+                    var filter = leafGo.AddComponent<MeshFilter>();
+                    var renderer = leafGo.AddComponent<MeshRenderer>();
+                    renderer.sharedMaterial = _facetMaterial;
+                    renderer.shadowCastingMode = ShadowCastingMode.Off;
+                    renderer.receiveShadows = false;
+                    renderer.lightProbeUsage = LightProbeUsage.Off;
+                    renderer.allowOcclusionWhenDynamic = false;
+                    _doorLeafFilters.Add(filter);
+                    _doorLeafRenderers.Add(renderer);
+                    ShowDoorLeaf(pair.Id, DoorLeafShownOpenFor(pair.Id));
+                }
+            }
+            else if (setup.DoorLeafClosed != null && setup.DoorLeafOpen != null)
             {
                 var leafGo = new GameObject("DoorLeaf") { hideFlags = HideFlags.DontSave, layer = meshGo.layer };
                 leafGo.transform.SetParent(_meshChild, false);
@@ -754,22 +821,9 @@ namespace HiddenHarbours.Art
                 ApplyDoorLeafMesh();
             }
 
-            // The overlay quad: the cell rectangle in world metres around the pivot, padded 1 px
-            // on every side so the keyline (which floods 1 px OUTSIDE the silhouette) is inside it
-            // even when the silhouette touches the cell edge.
-            float ppu = setup.PxPerMetre;
-            float pad = 1f / ppu;
-            float left = -setup.PivotPx.x / ppu - pad;
-            float right = (setup.CellW - setup.PivotPx.x) / ppu + pad;
-            float top = setup.PivotPx.y / ppu + pad;
-            float bottom = -(setup.CellH - setup.PivotPx.y) / ppu - pad;
-
+            // The overlay quad (WriteOverlayCorners says what it covers).
             _overlayQuad = new Mesh { name = "HHHullOverlayQuad", hideFlags = HideFlags.HideAndDontSave };
-            _overlayQuad.SetVertices(new[]
-            {
-                new Vector3(left, bottom, 0f), new Vector3(right, bottom, 0f),
-                new Vector3(right, top, 0f), new Vector3(left, top, 0f),
-            });
+            WriteOverlayCorners(setup);
             _overlayQuad.SetTriangles(new[] { 0, 1, 2, 0, 2, 3 }, 0);
 
             var overlayGo = new GameObject("HullOverlay") { hideFlags = HideFlags.DontSave };
@@ -789,17 +843,91 @@ namespace HiddenHarbours.Art
                 _sortingGroup = gameObject.AddComponent<SortingGroup>();
         }
 
+        // The overlay's held-prop pad (ADR 0053), in metres on every side; grows, never shrinks, so
+        // two holders aboard cannot fight over it. Kept corners: a re-write allocates nothing.
+        private float _heldReachMetres;
+        private readonly Vector3[] _overlayCorners = new Vector3[4];
+
+        /// <summary>The overlay's pad for a prop a deck rider holds (<see cref="EnsureHeldReachMetres"/>).</summary>
+        public float HeldReachMetres => _heldReachMetres;
+
+        /// <summary>
+        /// <b>Room in the composite window for what a rider holds</b> (ADR 0053). Aboard, a figure is
+        /// composited through THIS overlay, the hull's cell; a held rod drawn under her facet child can
+        /// reach past the cell and would be clipped there. Pads every side by at least
+        /// <paramref name="metres"/>. It only ever grows (a wider window composites the same ids and
+        /// costs a few fragments), so riders never undo each other's pad.
+        /// </summary>
+        public void EnsureHeldReachMetres(float metres)
+        {
+            if (!(metres > _heldReachMetres) || _setup == null || _overlayQuad == null) return;
+            _heldReachMetres = metres;
+            WriteOverlayCorners(_setup);
+        }
+
+        // The union of every bolted fitting's cell (left, right, top, bottom), in metres from the
+        // pivot; grows, never shrinks, for the same reason as the held-prop pad.
+        private Vector4 _fittingCell;
+
+        /// <summary>The fittings' cell union the window covers, metres from the pivot (x left, y right,
+        /// z top, w bottom). Zero on a hull with nothing bolted on.</summary>
+        public Vector4 FittingCellMetres => _fittingCell;
+
+        /// <summary>
+        /// <b>Room in the composite window for a fitting's own cell</b> (ADR 0022 phase 7). An outboard
+        /// or an oar is drawn into the same off-screen target as this hull and reaches the screen only
+        /// through THIS overlay, which was sized from the hull's cell alone. A fitting's cell is often
+        /// wider than its hull's (the skiff outboard is 272 px against a 244 px hull) because the
+        /// engine hangs off the transom and swings outboard of it, so on east and west headings, where
+        /// the boat's length lies across the screen, the cowl was cut off square at the window's edge.
+        /// The window now covers the union: the fitting's cell, measured from the same rig origin (a
+        /// fitting is baked in its hull's rig space), grown by <paramref name="slackMetres"/> for any
+        /// translation the fitting carries on top (a twin's clamp offset, a borrowed fitting's shift).
+        /// Grows only; costs a few fragments of window, never a clipped engine.
+        /// </summary>
+        public void EnsureFittingCell(Vector2 pivotPx, int cellW, int cellH, int pxPerMetre, float slackMetres)
+        {
+            if (_setup == null || _overlayQuad == null || pxPerMetre <= 0) return;
+            float ppu = pxPerMetre, slack = Mathf.Max(0f, slackMetres);
+            var want = new Vector4(pivotPx.x / ppu + slack, (cellW - pivotPx.x) / ppu + slack,
+                                   pivotPx.y / ppu + slack, (cellH - pivotPx.y) / ppu + slack);
+            Vector4 grown = Vector4.Max(_fittingCell, want);
+            if (grown == _fittingCell) return;
+            _fittingCell = grown;
+            WriteOverlayCorners(_setup);
+        }
+
+        // The overlay quad: the cell rectangle in world metres around the pivot, grown to cover any
+        // bolted fitting's cell, padded 1 px on every side so the keyline (which floods 1 px OUTSIDE
+        // the silhouette) is inside it even when the silhouette touches the cell edge, plus any
+        // held-prop pad.
+        private void WriteOverlayCorners(IsoFacetHullSetup setup)
+        {
+            float ppu = setup.PxPerMetre;
+            float pad = 1f / ppu + _heldReachMetres;
+            float left = -Mathf.Max(setup.PivotPx.x / ppu, _fittingCell.x) - pad;
+            float right = Mathf.Max((setup.CellW - setup.PivotPx.x) / ppu, _fittingCell.y) + pad;
+            float top = Mathf.Max(setup.PivotPx.y / ppu, _fittingCell.z) + pad;
+            float bottom = -Mathf.Max((setup.CellH - setup.PivotPx.y) / ppu, _fittingCell.w) - pad;
+            _overlayCorners[0] = new Vector3(left, bottom, 0f);
+            _overlayCorners[1] = new Vector3(right, bottom, 0f);
+            _overlayCorners[2] = new Vector3(right, top, 0f);
+            _overlayCorners[3] = new Vector3(left, top, 0f);
+            _overlayQuad.SetVertices(_overlayCorners);
+            _overlayQuad.RecalculateBounds();
+        }
+
         private void OnEnable()
         {
             HullMeshReflection.Register(this);
             if (_hullId == 0)
             {
                 _hullId = IsoFacetHullRegistry.Register(this);
-                // …and her FORE BLOCK, taken in the same breath so the two live and die together.
-                // The block is what costs the id budget (1 + DeckOccupantSlots per hull, so 19
-                // simultaneous hulls out of 255) — the registry says so itself when they run out,
-                // and hands back 0, which simply means she splits for nobody.
-                _foreHullId = IsoFacetHullRegistry.RegisterForeBlock(DeckOccupantSlots);
+                // Her FORE BLOCK is NOT taken here (ADR 0056): it is taken at her first deck-slot
+                // claim, because the block is what costs the id budget and a boat nobody stands on
+                // has nobody to hide. The one claim that can predate this line is a holder enabled
+                // before her (a moored skipper whose OnEnable ran first): honour it now.
+                if (AnyDeckSlotClaimed()) EnsureForeBlock();
             }
             _poseDirty = true;
         }
@@ -813,14 +941,58 @@ namespace HiddenHarbours.Art
                 IsoFacetHullRegistry.Unregister(this, _hullId);
                 _hullId = 0;
             }
+            ReleaseForeBlock();
+            // A hull going away carries her occupants with her: nothing may keep discarding against
+            // ids that are now free for another boat to be issued.
+            ClearDeckSlots();
+        }
+
+        /// <summary>
+        /// <b>Take her fore block if she has none</b> (ADR 0056). Called on every deck-slot claim —
+        /// including the idempotent re-claim a rider makes every frame — so it costs ONE compare while
+        /// she holds a block, and, after a refusal, one quiet ask of the pool (no log) until a block
+        /// frees. Never takes a block for a hull that is not registered: an unregistered hull would
+        /// have nothing to give it back from.
+        /// </summary>
+        private void EnsureForeBlock()
+        {
+            if (_foreHullId != 0 || _hullId == 0) return;
+            if (_foreBlockRefused && !IsoFacetHullRegistry.CanSpareForeBlock(DeckOccupantSlots)) return;
+            _foreHullId = IsoFacetHullRegistry.RegisterForeBlock(DeckOccupantSlots);
+            _foreBlockRefused = _foreHullId == 0;
+        }
+
+        /// <summary>Give her fore block back, if she holds one: her last deck slot was released, or
+        /// she is unregistering.</summary>
+        private void ReleaseForeBlock()
+        {
             if (_foreHullId != 0)
             {
                 IsoFacetHullRegistry.UnregisterForeBlock(_foreHullId, DeckOccupantSlots);
                 _foreHullId = 0;
             }
-            // A hull going away carries her occupants with her: nothing may keep discarding against
-            // ids that are now free for another boat to be issued.
-            ClearDeckSlots();
+            _foreBlockRefused = false;
+        }
+
+        /// <summary>Does anybody hold a deck slot (claimed, standing or not)? Twelve reference
+        /// compares; asked only at a release and at registration, never per frame.</summary>
+        private bool AnyDeckSlotClaimed()
+        {
+            for (int i = 0; i < DeckOccupantSlots; i++)
+                if (_deckSlots[i].Owner != null) return true;
+            return false;
+        }
+
+        /// <summary>How many deck slots are claimed, standing or not — the number that decides whether
+        /// she holds a fore block. For tests and the budget measurement.</summary>
+        internal int ClaimedDeckSlots
+        {
+            get
+            {
+                int n = 0;
+                for (int i = 0; i < DeckOccupantSlots; i++) if (_deckSlots[i].Owner != null) n++;
+                return n;
+            }
         }
 
         private void OnDestroy() => ReleaseOwned();
@@ -830,6 +1002,9 @@ namespace HiddenHarbours.Art
         internal MeshRenderer ReflectionLeaf => _leafRenderer;
         internal Mesh ReflectionMesh => _setup != null ? _setup.Mesh : null;
         internal Mesh ReflectionLeafMesh => _leafFilter != null ? _leafFilter.sharedMesh : null;
+        internal int ReflectionDoorLeafCount => _doorLeafFilters.Count;
+        internal MeshRenderer ReflectionDoorLeaf(int index) => _doorLeafRenderers[index];
+        internal Mesh ReflectionDoorLeafMesh(int index) => _doorLeafFilters[index].sharedMesh;
         internal float ReflectionElevation => _setup != null ? _setup.ElevationDeg : 0;
         internal float ReflectionHeave => _setup != null ? _heavePixels / (float)_setup.PxPerMetre : 0;
         internal void SetLegacyReflection(bool enabled)
@@ -964,12 +1139,16 @@ namespace HiddenHarbours.Art
             }
 
             int activeDeckSlots = UpdateDeckSlots();
+            HullCausticLighting.Prepare(this, _setup.ReceivesWaterCaustics && _hasInteriorFaces,
+                _causticVertices, out _causticPlane, out _causticSettings);
             _props ??= new MaterialPropertyBlock();
             Vector3 p = transform.position;
             var origin = new Vector4(p.x, p.y, 0f, 0f);
             PublishDrawProperties(_meshRenderer, origin, depthShear, activeDeckSlots);
             if (_leafRenderer != null)
                 PublishDrawProperties(_leafRenderer, origin, depthShear, activeDeckSlots);
+            for (int i = 0; i < _doorLeafRenderers.Count; i++)
+                PublishDrawProperties(_doorLeafRenderers[i], origin, depthShear, activeDeckSlots);
             PublishDrawProperties(_overlayRenderer, origin, depthShear, activeDeckSlots);
         }
 
@@ -980,6 +1159,7 @@ namespace HiddenHarbours.Art
             // lit flag). Get replaces the scratch block, including clearing it for a bare renderer,
             // so none of those values can leak from the mesh to the leaf or overlay next frame.
             target.GetPropertyBlock(_props);
+            HullCausticLighting.Apply(_props, _causticPlane, _causticSettings, _setup.ElevationDeg);
             // The hull ORIGIN the dither grid is phased against is this root — NOT the heaved
             // child: the rig subtracts heave from screen y AFTER projecting, so its dither stays
             // indexed by the final screen pixel, which the world-derived cell coordinate
@@ -1088,17 +1268,27 @@ namespace HiddenHarbours.Art
         /// <para><b>Idempotent.</b> An owner that already holds a slot gets the same index back
         /// rather than a second one, so a consumer that lost its index (a domain reload, a re-wire)
         /// recovers instead of leaking slots one boarding at a time.</para>
+        ///
+        /// <para><b>The first claim takes her fore block</b> (ADR 0056), and every claim — the
+        /// idempotent re-claim included — retries it if the pool refused her earlier. A refusal is a
+        /// refused BLOCK, not a refused slot: the claimant keeps its slot, its occluder ids read 0 and
+        /// it draws un-occluded, loudly, exactly as a refused slot does.</para>
         /// </summary>
         private int ClaimSlot(object owner)
         {
             if (owner == null) return -1;
             for (int i = 0; i < DeckOccupantSlots; i++)
-                if (ReferenceEquals(_deckSlots[i].Owner, owner)) return i;
+            {
+                if (!ReferenceEquals(_deckSlots[i].Owner, owner)) continue;
+                EnsureForeBlock();
+                return i;
+            }
 
             for (int i = 0; i < DeckOccupantSlots; i++)
             {
                 if (_deckSlots[i].Owner != null) continue;
                 _deckSlots[i] = new DeckSlot { Owner = owner };
+                EnsureForeBlock();
                 return i;
             }
 
@@ -1112,13 +1302,15 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>Give a slot back. Ignored unless <paramref name="owner"/> is the token it was
-        /// claimed with, so a stale holder cannot evict a live one.</summary>
+        /// claimed with, so a stale holder cannot evict a live one. <b>The last release gives her
+        /// fore block back</b> (ADR 0056): an empty deck costs one id.</summary>
         private void ReleaseSlot(int slot, object owner)
         {
             if (slot < 0 || slot >= DeckOccupantSlots) return;
             if (!ReferenceEquals(_deckSlots[slot].Owner, owner)) return;
             _deckSlots[slot] = default;
             if (slot == _legacySlot && ReferenceEquals(owner, s_LegacyOccupant)) _legacySlot = -1;
+            if (!AnyDeckSlotClaimed()) ReleaseForeBlock();
         }
 
         /// <summary>Publish where this occupant stands. Cheap and idempotent, safe every LateUpdate:
@@ -1221,6 +1413,8 @@ namespace HiddenHarbours.Art
             // The leaf's GameObject is a child of FacetMesh and dies with it above.
             _leafFilter = null;
             _leafRenderer = null;
+            _doorLeafFilters.Clear();
+            _doorLeafRenderers.Clear();
             _overlayRenderer = null;
             _facetMaterial = null;
             _overlayMaterial = null;
@@ -1228,6 +1422,8 @@ namespace HiddenHarbours.Art
             _darkRampTex = null;
             _overlayQuad = null;
             _setup = null;
+            _heldReachMetres = 0f;   // a rider still holding asks again on her next frame
+            _fittingCell = default;  // and a fitting still bolted on asks again on its next frame
         }
     }
 

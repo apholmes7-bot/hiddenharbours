@@ -39,7 +39,7 @@ namespace HiddenHarbours.Tests.EditMode
 
         [Test]
         // NmcKeyScenes_Exist_AsUnplacedData_WithUniqueIdsAndResolvedRegion: premise moved in H6 PR 2, ruling 12.
-        public void NmcKeyScenes_Exist_AsData_OnlyTheWharfPlaced_WithUniqueIdsAndResolvedRegion()
+        public void NmcKeyScenes_Exist_AsData_OnlyTheWharfAndTheFuelStopPlaced_WithUniqueIdsAndResolvedRegion()
         {
             var regions = LoadAll<RegionDef>();
             var scenes = LoadAll<KeySceneDef>().FindAll(s => s.RegionId == "region.nine_mile_creek");
@@ -50,7 +50,8 @@ namespace HiddenHarbours.Tests.EditMode
                 string path = AssetDatabase.GetAssetPath(scene);
                 RegisterUniqueId(seen, scene.Id, path, nameof(KeySceneDef));
                 Assert.That(regions.Exists(r => r.Id == scene.RegionId), Is.True, scene.Id + " region");
-                Assert.That(scene.Placed, Is.EqualTo(scene.Id == "keyscene.nmc_wharf"), scene.Id);
+                // H9 Phase B moved this premise: the fuel stop's thirty rows are placed beside the wharf's.
+                Assert.That(scene.Placed, Is.EqualTo(scene.Id == "keyscene.nmc_wharf" || scene.Id == "keyscene.nmc_fuel_stop"), scene.Id);
                 Assert.That(scene.Source, Does.Contain("sha256"), scene.Id);
                 foreach (var piece in scene.Pieces)
                 {
@@ -717,6 +718,13 @@ namespace HiddenHarbours.Tests.EditMode
             "heldprop.bucket_tray_half_fish", "heldprop.bucket_tray_half_shell", "heldprop.bucket_tray_half_crust",
             "heldprop.bucket_tray_full_fish", "heldprop.bucket_tray_full_shell", "heldprop.bucket_tray_full_crust",
             "heldprop.bucket_tray_brim_fish", "heldprop.bucket_tray_brim_shell", "heldprop.bucket_tray_brim_crust",
+            // The coast species kit's three fish, held by the tail (appended 2026-11-20).
+            "heldprop.fish_smelt", "heldprop.fish_tomcod", "heldprop.fish_cunner",
+            // Crustaceans by the back and shellfish by the handful (appended 2026-11-20).
+            "heldprop.shellfish_lobster", "heldprop.shellfish_crab", "heldprop.shellfish_green_crab",
+            "heldprop.shellfish_mussel", "heldprop.shellfish_clam", "heldprop.shellfish_scallop",
+            "heldprop.shellfish_oyster", "heldprop.shellfish_periwinkle",
+            "heldprop.shellfish_quahog", "heldprop.shellfish_surfclam",
         };
 
         /// <summary>

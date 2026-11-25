@@ -361,5 +361,148 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreNotEqual(FishingPhase.Waiting, fishing.Phase,
                 "the in-flight cast advanced (bite fired) instead of stranding in Waiting");
         }
+
+        // ---- (d) a refused cast SAYS WHY — once per press, never on the frames the key stays down ----
+        //
+        // The player was never told the cast keys, nor why a press did nothing: at the helm with the rod
+        // in her hands, or on her feet without it, Space and the mouse were simply dead. Each of those
+        // presses now puts one line on the notice channel. The count is the bar: one per PRESS.
+
+        private List<string> ListenForNotices()
+        {
+            var heard = new List<string>();
+            EventBus.Subscribe<DevNotice>(n => heard.Add(n.Text));   // cleared in TearDown (Clear<DevNotice>)
+            return heard;
+        }
+
+        private (DevFishingInput dev, FishingController fishing, TrapHaulController haul) RigWithNoPotInReach()
+        {
+            var svc = MakeServiceWithPotAt(new Vector2(50f, 50f));
+            var rail = NewGo("Rail");
+            return BuildRig(svc, rail.transform, new FakeHold());
+        }
+
+        [Test]
+        public void CastPressedAtTheHelm_WithTheRodInHand_SaysSo_OncePerPress()
+        {
+            var (dev, fishing, _) = RigWithNoPotInReach();
+            dev.OnControlModeChanged(new ControlModeChanged(ControlMode.Aboard));
+            List<string> heard = ListenForNotices();
+
+            dev.TickFishing(0.02f, rawHeld: true);                          // the press
+            Assert.AreEqual(new[] { DevFishingInput.NoticeCastAtHelm }, heard.ToArray(),
+                "one press at the helm, one line saying where the rod works");
+
+            for (int i = 0; i < 30; i++) dev.TickFishing(0.02f, rawHeld: true);   // the key stays down
+            Assert.AreEqual(1, heard.Count, "the frames after the press say nothing");
+
+            dev.TickFishing(0.02f, rawHeld: false);
+            Assert.AreEqual(1, heard.Count, "nor does the release");
+
+            dev.TickFishing(0.02f, rawHeld: true);                          // a second press
+            Assert.AreEqual(2, heard.Count, "a second press is a second attempt, and a second line");
+            Assert.AreEqual(DevFishingInput.NoticeCastAtHelm, heard[1]);
+            Assert.AreEqual(FishingPhase.Idle, fishing.Phase, "and still nothing is cast from the helm");
+        }
+
+        [Test]
+        public void CastPressedWithoutTheRod_SaysToPickItUp_OncePerPress([Values(ControlMode.OnFoot, ControlMode.OnDeck)] ControlMode mode)
+        {
+            ToolInHand.Empty(_spawned);                                     // she put the rod down
+            var (dev, fishing, _) = RigWithNoPotInReach();
+            dev.OnControlModeChanged(new ControlModeChanged(mode));
+            Assert.IsFalse(dev.FishingLive, "no rod in hand, no live cast");
+            List<string> heard = ListenForNotices();
+
+            dev.TickFishing(0.02f, true, new Vector2(0f, -1f), true);       // the press
+            Assert.AreEqual(new[] { DevFishingInput.NoticeCastNeedsRod }, heard.ToArray(),
+                "one press without the rod, one line saying to pick it up");
+
+            for (int i = 0; i < 30; i++) dev.TickFishing(0.02f, true, new Vector2(0f, -1f), true);
+            Assert.AreEqual(1, heard.Count, "the frames after the press say nothing");
+
+            dev.TickFishing(0.02f, rawHeld: false);
+            dev.TickFishing(0.02f, true, new Vector2(0f, -1f), true);       // a second press
+            Assert.AreEqual(2, heard.Count, "a second press is a second line");
+            Assert.AreEqual(FishingPhase.Idle, fishing.Phase, "and nothing was cast");
+        }
+
+        [Test]
+        public void ALiveCast_SaysNothing()
+        {
+            var (dev, fishing, _) = RigWithNoPotInReach();
+            dev.OnControlModeChanged(new ControlModeChanged(ControlMode.OnDeck));
+            List<string> heard = ListenForNotices();
+
+            FlickGestures.CastLine(dev, fishing);
+
+            Assert.AreEqual(FishingPhase.Waiting, fishing.Phase, "the rod is in hand on deck: the line is out");
+            Assert.IsEmpty(CastRefusals(heard), "a cast that works has nothing to explain");
+        }
+
+        [Test]
+        public void AtTheHelm_WithEmptyHands_ThePressIsTheOars_AndSaysNothing()
+        {
+            // Space is the oar brace at the helm and the mouse drags the helm's own controls. A rower
+            // who is not holding a rod is not trying to fish, and must not be told about one per stroke.
+            ToolInHand.Empty(_spawned);
+            var (dev, _, _) = RigWithNoPotInReach();
+            dev.OnControlModeChanged(new ControlModeChanged(ControlMode.Aboard));
+            List<string> heard = ListenForNotices();
+
+            for (int i = 0; i < 5; i++)
+            {
+                dev.TickFishing(0.02f, rawHeld: true);
+                dev.TickFishing(0.02f, rawHeld: false);
+            }
+
+            Assert.IsEmpty(heard);
+        }
+
+        [Test]
+        public void APressThatBelongsToSomethingElse_SaysNothing()
+        {
+            ToolInHand.Empty(_spawned);
+            var svc = MakeServiceWithPotAt(new Vector2(1f, 1f));
+            var rail = NewGo("Rail"); rail.transform.position = new Vector2(1f, 1f);
+            var (dev, _, haul) = BuildRig(svc, rail.transform, new FakeHold());
+            dev.OnControlModeChanged(new ControlModeChanged(ControlMode.OnDeck));
+            haul.OnControlModeChanged(new ControlModeChanged(ControlMode.OnDeck));
+            List<string> heard = ListenForNotices();
+
+            // A modal page owns the keys.
+            InteractionGate.IsBlocked = true;
+            dev.TickFishing(0.02f, rawHeld: true);
+            dev.TickFishing(0.02f, rawHeld: false);
+            InteractionGate.IsBlocked = false;
+            Assert.IsEmpty(heard, "a press under a modal page is the page's");
+
+            // A rope at a cleat owns the flick.
+            CastActionClaim.IsClaimed = true;
+            try
+            {
+                dev.TickFishing(0.02f, rawHeld: true);
+                dev.TickFishing(0.02f, rawHeld: false);
+            }
+            finally { CastActionClaim.IsClaimed = false; }
+            Assert.IsEmpty(heard, "a press at a cleat throws a rope");
+
+            // A live haul owns Space — and the key carried out of it is still the haul's until released.
+            // (The haul speaks for itself on this channel, so from here only the cast's two lines count.)
+            Assert.IsTrue(haul.TryStartHaul(), "a pot alongside starts a haul from the deck");
+            dev.TickFishing(0.02f, rawHeld: true);
+            haul.CancelHaul();
+            dev.TickFishing(0.02f, rawHeld: true);
+            Assert.IsEmpty(CastRefusals(heard), "a press during a haul pulls the rope");
+
+            // Released, the next press is hers again: no rod in hand, so now it speaks.
+            dev.TickFishing(0.02f, rawHeld: false);
+            dev.TickFishing(0.02f, rawHeld: true);
+            Assert.AreEqual(new[] { DevFishingInput.NoticeCastNeedsRod }, CastRefusals(heard).ToArray(),
+                "the gate that stayed quiet was the other owner's, not a broken notice");
+        }
+
+        private static List<string> CastRefusals(List<string> heard) => heard.FindAll(
+            t => t == DevFishingInput.NoticeCastAtHelm || t == DevFishingInput.NoticeCastNeedsRod);
     }
 }

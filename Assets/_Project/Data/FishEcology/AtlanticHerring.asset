@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51d5aaf6c73f47f1b2335fa4906c6153, type: 3}
+  m_Name: AtlanticHerring
+  m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.FishEcologyDef
+  Id: "ecology.atlantic_herring"
+  SpeciesId: "fish.atlantic_herring"
+  ScientificName: "Clupea harengus"
+  LifeStageAndScope: "Post-larval fishable coastal animals; typical reference habitat only. Adults unless the notes explicitly distinguish juveniles."
+  TypicalMinDepthMetres: 0
+  TypicalMaxDepthMetres: 200
+  DepthEvidence: "Authored coastal water-column reference band, not a full distribution or diel migration limit. Source distinguishes pelagic schools from deposited bottom eggs."
+  Layer: 1
+  Habitats: 1
+  PreferredVegetation: 0
+  VegetationEvidence: "The cited profile does not establish a species-wide eelgrass or kelp preference; zero means no preference inferred, not avoidance."
+  Grouping: 1
+  DayHabit: 1
+  TideHabit: 1
+  HabitEvidence: "Daily activity varies with size, season and locality. No hard daylight or tide exclusion is inferred from this reference."
+  BiologyNotes: "Schooling swimmers. Rock, gravel and sand used for eggs are not substituted for the post-larval school habitat."
+  SourceUrls:
+  - "https://www.fisheries.noaa.gov/species/atlantic-herring"

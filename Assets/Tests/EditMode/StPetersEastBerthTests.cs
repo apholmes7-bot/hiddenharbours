@@ -342,14 +342,11 @@ namespace HiddenHarbours.Tests.EditMode
                     ("the pier root's north edge", new Vector2(StPetersWharf.RootCellX, StPetersWharf.MaxCellY)),
                     ("the pier root's south edge", new Vector2(StPetersWharf.RootCellX, StPetersWharf.MinCellY)),
                     ("the beach slip's head",    StPetersBuilder.BerthTo),
-                    // ⚠ The TIGHTEST of these by a long way. The deck's north and south lips sit
-                    // 8.5 m from the dredged centre-line against a half-width of 8 — half a metre of
-                    // margin — and StPetersWharfWalkabilityTests reads them as the +1.09 m shoal
-                    // beside the berth. Move ApproachTo six metres shoreward and they become −4 m
-                    // water, with nothing but that test to say so.
-                    ("the deck's north lip",     new Vector2(StPetersWharf.DeckFootprint().center.x,
+                    // The moved lips lie inside the approach half-width; only west of its
+                    // shoulder must the channel leave their bed untouched.
+                    ("the deck's north lip",     new Vector2(StPetersWharf.DeckFootprint().center.x - 1f,
                                                              StPetersWharf.DeckFootprint().yMax + 1f)),
-                    ("the deck's south lip",     new Vector2(StPetersWharf.DeckFootprint().center.x,
+                    ("the deck's south lip",     new Vector2(StPetersWharf.DeckFootprint().center.x - 1f,
                                                              StPetersWharf.DeckFootprint().yMin - 1f)),
                     ("the beach above the slip", new Vector2(StPetersBuilder.BerthTo.x - 4f, 0f)),
                     ("the slip's own bed",       new Vector2(StPetersBuilder.BerthTo.x + 5f, 0f)),

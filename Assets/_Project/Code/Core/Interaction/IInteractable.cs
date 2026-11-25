@@ -45,9 +45,23 @@ namespace HiddenHarbours.Core
     /// </summary>
     public static class InteractPriority
     {
+        /// <summary>
+        /// Something that takes the press only when nothing else in reach wants it: setting down the
+        /// shopping bag in his hand. Every other rung outranks it, so at a shelf the press buys and at a
+        /// bed the press sleeps. A thing on this rung is also never a row of the chooser beside something
+        /// else (<see cref="InteractChoiceList"/>): a list at every fixture because a bag is in hand would
+        /// be a tax on carrying it.
+        /// </summary>
+        public const int LastResort = -100;
+
         /// <summary>A deck container's lid: yields to doors, fuel work and every other fixture.
         /// Helm stations are resolved before this candidate ladder.</summary>
         public const int DeckStorage = -10;
+
+        /// <summary>A berth aboard (<c>BoatBunk</c>, 2026-11-14): yields to her doors and every other
+        /// fixture, so a bunk beside a cabin door can never take the press meant for the door; outranks
+        /// a deck container's lid, because standing at a bunk you meant the bunk.</summary>
+        public const int Berth = -5;
 
         /// <summary>A thing bolted to the world that you walk up to and work — the seawater spot, Ginny's
         /// freezer, a shop counter. The default rung.</summary>

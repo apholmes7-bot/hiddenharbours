@@ -22,8 +22,22 @@ namespace HiddenHarbours.Art
         public BiomeRecipeDef[] Recipes = Array.Empty<BiomeRecipeDef>();
         public PlantSpeciesDef[] Species = Array.Empty<PlantSpeciesDef>();
         public Material Material;
+        // The clump law the recipe scatter grows under (PlantClumpLaw). Taken from the Definition at
+        // Rebuild; none, or strength 0, is the scatter exactly as it shipped. Authored sites never read it.
+        [NonSerialized] public PlantClumpDef Clump;
+        // Where plants sort against a hull (PlantHullSorting); taken from the Definition at Rebuild.
+        [Min(0)] public float GroundCoverMaxHeightM = 0.5f;
+        public string[] LyingHabitats = { "fringe", "mid" };
+        [Min(0)] public float HullPictureRiseM = 6f;
+        // The weed under the water (JoinsUnderWater); taken from the Definition at Rebuild.
+        public bool UnderWater = true;
+        [Min(0)] public float UnderWaterSwayM = PlantFieldDefinition.DefaultUnderWaterSwayM;
+        [Min(PlantFieldDefinition.MinUnderWaterSwaySpan)] public float UnderWaterSwayPeriodS = PlantFieldDefinition.DefaultUnderWaterSwayPeriodS;
+        [Min(PlantFieldDefinition.MinUnderWaterSwaySpan)] public float UnderWaterSwayWavelengthM = PlantFieldDefinition.DefaultUnderWaterSwayWavelengthM;
 
         public int PlantCount => _sites.Count;
+        /// <summary>How many of this field's chunks are in the sea's under-water list now.</summary>
+        public int UnderWaterChunkCount => _underWater.Count;
         public int ChunkCount => _chunks.Count;
         public GameObject ShadowRoot => _shadowRoot;
         public int ShadowDrawCount
@@ -40,6 +54,11 @@ namespace HiddenHarbours.Art
         public int DormantCells { get; private set; }
         public int AuthoredPlantCount => Definition != null ? Definition.Authored.Length : 0;
         public int CurrentSeason => _season;
+        /// <summary>Every built site's root, grass or not, scattered or authored.</summary>
+        public void CopyRootsTo(List<Vector2> destination)
+        {
+            foreach (var site in _sites) destination.Add(new Vector2(site.X, site.Y));
+        }
         public void CopyGrassRootsTo(List<Vector2> destination)
         {
             foreach (var site in _sites)
@@ -60,6 +79,20 @@ namespace HiddenHarbours.Art
         static readonly int ShadowLengthId = Shader.PropertyToID("_ShadowLen"), ShadowColorId = Shader.PropertyToID("_ShadowColor");
         static readonly int MainTextureId = Shader.PropertyToID("_MainTex"), ShadowUvPerUnitId = Shader.PropertyToID("_ShadowUVPerUnit");
         static readonly int SwayId = Shader.PropertyToID("_Sway");
+        static readonly int ToneTableId = Shader.PropertyToID("_PlantTone");
+        static readonly int UnderWaterSwayId = Shader.PropertyToID("_UnderWaterSway");
+        static readonly int UnderWaterSwayPeriodId = Shader.PropertyToID("_UnderWaterSwayPeriod");
+        static readonly int UnderWaterSwayWavelengthId = Shader.PropertyToID("_UnderWaterSwayWavelength");
+        static readonly int UnderWaterTintId = Shader.PropertyToID("_UnderWaterTint");
+        static readonly int UnderWaterTintAmountId = Shader.PropertyToID("_UnderWaterTintAmount");
+        static readonly int UnderWaterShadeId = Shader.PropertyToID("_UnderWaterShade");
+        // The chunks in the sea's under-water list, so a chunk cleared after its object died still leaves it.
+        readonly Dictionary<(int, int, int, int), MeshRenderer> _underWater = new Dictionary<(int, int, int, int), MeshRenderer>();
+        // GameConfig.ShallowsSubmergedProps as the chunks were last built against; a flip re-applies.
+        bool _propsOn;
+        // The shader's tone table: entry 0 is "no step" and is never read, 1..7 are the law's steps.
+        readonly Vector4[] _toneTable = new Vector4[PlantClumpDef.MaxToneSteps + 1];
+        bool _toned;
         GameObject _shadowRoot;
         Material _shadowMaterial;
         bool _shadowMeshes;
@@ -71,6 +104,7 @@ namespace HiddenHarbours.Art
         {
             public float X, Y, Z;
             public int Stage, Variant, Tide, Order;
+            public int Tone; // 0 = as drawn; n = the clump law's tone step n - 1
             public PlantSpeciesDef Def;
             public PlantCell Cell;
             public bool CastsSun;
@@ -109,7 +143,14 @@ namespace HiddenHarbours.Art
                 SunShadowStrength = Definition.SunShadowStrength;
                 SubmergedOrder = Definition.SubmergedOrder; Recipes = Definition.Recipes;
                 Species = Definition.Species; Material = Definition.Material;
+                Clump = Definition.Clump;
+                GroundCoverMaxHeightM = Definition.GroundCoverMaxHeightM;
+                LyingHabitats = Definition.LyingHabitats; HullPictureRiseM = Definition.HullPictureRiseM;
+                UnderWater = Definition.UnderWater; UnderWaterSwayM = Definition.UnderWaterSwayM;
+                UnderWaterSwayPeriodS = Definition.UnderWaterSwayPeriodS;
+                UnderWaterSwayWavelengthM = Definition.UnderWaterSwayWavelengthM;
             }
+            _propsOn = GameServices.ShallowsSubmergedProps;
             _ground = GroundSource as IPlantFieldGround;
             if (_ground == null) throw new InvalidOperationException("Plant field needs IPlantFieldGround");
             if (Width < 1 || Height < 1 || (long)Width * Height > PlantFieldCodec.MaxCells || CellSize <= 0 || GroundMetresPerY <= 0 || ChunkWidth < 1)
@@ -125,6 +166,12 @@ namespace HiddenHarbours.Art
             }
             _sites.Clear(); _plane = new byte[Width * Height];
             _season = _ground.PlantSeason; MissingCells = 0; DormantCells = 0;
+            // The clump law acts here, where the scatter is derived, and nowhere else: it scales a cell's
+            // density, steps its growth stage and names its tone. Nothing baked or authored is read or moved.
+            bool clumped = PlantClumpLaw.IsOn(Clump);
+            _toned = clumped && Clump.ToneSteps != null && Clump.ToneSteps.Length > 0;
+            for (int i = 0; i < _toneTable.Length; i++)
+                _toneTable[i] = _toned && i > 0 ? (Vector4)PlantClumpLaw.ToneColor(i - 1, Clump) : Vector4.one;
             for (int y = 0; y < Height; y++) for (int x = 0; x < Width; x++)
             {
                 float px = Origin.x + (x + 0.5f) * CellSize + PlantFieldScatter.Offset(x, y, Seed, false, CellSize);
@@ -133,13 +180,20 @@ namespace HiddenHarbours.Art
                 if (g.Excluded || g.Recipe < 0) continue;
                 if (g.Recipe >= Recipes.Length || Recipes[g.Recipe] == null) throw new InvalidOperationException("Unknown biome recipe");
                 var recipe = Recipes[g.Recipe];
-                byte code = PlantFieldScatter.Choose(recipe.ForMaterial(g.Material), g.Elevation,
-                    CellSize * CellSize * GroundMetresPerY, x, y, Seed, recipe.YoungChance);
+                var row = recipe.ForMaterial(g.Material);
+                double clump = clumped && row != null ? PlantClumpLaw.Field(px, py, Seed, Clump) : 0;
+                byte code = PlantFieldScatter.Choose(row, g.Elevation,
+                    CellSize * CellSize * GroundMetresPerY, x, y, Seed, recipe.YoungChance,
+                    clumped && row != null ? PlantClumpLaw.DensityGain(clump, Clump) : 1.0);
+                if (code != 0 && clumped)
+                    code = PlantFieldScatter.Pack(PlantFieldScatter.Species(code),
+                        PlantClumpLaw.StageFor(PlantFieldScatter.Stage(code), clump, x, y, Seed, Clump));
                 _plane[y * Width + x] = code; if (code == 0) continue;
                 var def = _codes[PlantFieldScatter.Species(code)];
                 if (def == null) throw new InvalidOperationException("Unbound plant code");
                 var s = new Site { X = px, Y = py, Z = g.Elevation, Def = def,
-                    Stage = PlantFieldScatter.Stage(code), Variant = PlantFieldScatter.Variant(x, y, Seed) };
+                    Stage = PlantFieldScatter.Stage(code), Variant = PlantFieldScatter.Variant(x, y, Seed),
+                    Tone = _toned ? PlantClumpLaw.ToneFor(clump, px, py, x, y, Seed, Clump) + 1 : 0 };
                 RefreshSite(s); _sites.Add(s);
             }
             if (Definition != null)
@@ -192,6 +246,13 @@ namespace HiddenHarbours.Art
                 }
             }
             if (_dirty.Count > 0) BuildChunks(_dirty);
+            bool propsOn = GameServices.ShallowsSubmergedProps;
+            if (propsOn != _propsOn)
+            {
+                _propsOn = propsOn;
+                foreach (var chunk in _chunks)
+                    if (chunk.Value.go != null) ApplyUnderWater(chunk.Key, chunk.Value.go.GetComponent<MeshRenderer>());
+            }
             foreach (var key in _shadowDirty)
                 if (_shadowChunks.TryGetValue(key, out var chunk)) RebuildShadowChunk(chunk);
             FeedShadowSun();
@@ -202,8 +263,11 @@ namespace HiddenHarbours.Art
             int tide = s.Def.TideLadder.Length == 0 ? 0 : ShorePlantTideMath.StateFor(over, s.Def.TideLadder);
             _cells.TryGetValue((s.Def.Code, s.Stage, _season, s.Variant, tide), out var cell);
             bool under = s.Def.TideLadder.Length != 0 && ShorePlantTideMath.IsSubmerged(over, cell != null ? cell.HeightM : s.Def.StandingHeightM);
-            int order = under ? SubmergedOrder : YSortSprite.OrderFor(s.Y, SortingBands.DecorBase,
-                SortingBands.OrdersPerMetre, SortingBands.DecorFloor, SortingBands.DecorCeiling);
+            // Under every hull if it lies flat; under a hull it stands behind (PlantHullSorting).
+            bool flat = PlantHullSorting.LiesFlat(s.Def, GroundCoverMaxHeightM, LyingHabitats);
+            bool behind = !under && !flat &&
+                PlantHullSorting.BehindAHull(new Vector2(s.X, s.Y), HullPresences.Active, HullPictureRiseM);
+            int order = PlantHullSorting.OrderFor(s.Y, under, SubmergedOrder, flat, behind);
             bool changed = s.Cell != cell || s.Order != order;
             s.CastsSun = CanCastSun(cell, over);
             s.Cell = cell; s.Tide = tide; s.Order = order; return changed;
@@ -229,6 +293,9 @@ namespace HiddenHarbours.Art
         }
         void BuildChunk((int, int, int, int) key, List<Site> sites)
         {
+            // Growth under the hulls shares ONE order, so within its chunk it is drawn far rows first and
+            // the nearer row covers the one behind it, as the band's Y-sort would have.
+            if (sites[0].Order == SortingBands.UnderHulls) sites.Sort((a, b) => b.Y.CompareTo(a.Y));
             var first = sites[0]; var page = first.Def.Pages[first.Cell.Page];
             if (Material == null || page.Albedo == null || page.Normal == null || page.Light == null || page.Detail == null)
                 throw new InvalidOperationException("Plant bake maps are incomplete");
@@ -244,7 +311,8 @@ namespace HiddenHarbours.Art
                     float cx = col * c.Rect.width, cy = row * c.Rect.height / strips;
                     verts.Add(new Vector3(s.X + (cx - c.Pivot.x) / 32, rootY + (cy - c.Pivot.y) / 32, 0));
                     uv.Add(new Vector2((c.Rect.x + cx) / page.Albedo.width, (c.Rect.y + cy) / page.Albedo.height));
-                    roots.Add(new Vector4(s.X, rootY, Mathf.Max(0, (cy - c.Pivot.y) / Math.Max(1, c.Rect.height - c.Pivot.y)), s.Def.Family == "shrub" ? 0 : 1));
+                    // w: the foot-bend flag in the unit, the tone step in twos above it (HiddenHarboursPlant.shader).
+                    roots.Add(new Vector4(s.X, rootY, Mathf.Max(0, (cy - c.Pivot.y) / Math.Max(1, c.Rect.height - c.Pivot.y)), (s.Def.Family == "shrub" ? 0 : 1) + 2 * s.Tone));
                 }
                 for (int row = 0; row < strips; row++)
                 {
@@ -265,10 +333,73 @@ namespace HiddenHarbours.Art
             go.AddComponent<SortingGroup>().sortingOrder = first.Order;
             var props = new MaterialPropertyBlock(); props.SetTexture("_MainTex", page.Albedo);
             props.SetTexture("_NormalTex", page.Normal); props.SetTexture("_LightTex", page.Light); props.SetTexture("_DetailTex", page.Detail);
+            if (_toned) props.SetVectorArray(ToneTableId, _toneTable);
+            // The under-water pass's rows (HHPlantUnderWater): read only while the chunk is in the sea's list.
+            props.SetFloat(UnderWaterSwayId, UnderWaterSwayM);
+            props.SetFloat(UnderWaterSwayPeriodId, Mathf.Max(PlantFieldDefinition.MinUnderWaterSwaySpan, UnderWaterSwayPeriodS));
+            props.SetFloat(UnderWaterSwayWavelengthId, Mathf.Max(PlantFieldDefinition.MinUnderWaterSwaySpan, UnderWaterSwayWavelengthM));
+            props.SetColor(UnderWaterTintId, first.Def.UnderWaterTint);
+            props.SetFloat(UnderWaterTintAmountId, Mathf.Clamp01(first.Def.UnderWaterTintAmount));
+            props.SetFloat(UnderWaterShadeId, Mathf.Clamp01(first.Def.UnderWaterShade));
             mr.SetPropertyBlock(props); _chunks.Add(key, (go, mesh));
+            ApplyUnderWater(key, mr);
         }
+
+        /// <summary>
+        /// Whether a chunk is drawn by the sea's own under-water pass (<see cref="UnderWaterRegistry"/>), so the
+        /// sea reads it through its column over the floor, as it reads a placed shore plant. A chunk joins when
+        /// it sorts under the sea plane (<paramref name="order"/> is the field's submerged order, or the lying
+        /// order <see cref="SortingBands.UnderHulls"/>, which also sits under the Sea), its species follows the
+        /// tide (has a tide ladder; dry-land ground cover lies at the same order and never joins), and both
+        /// switches are on: the field's own (<see cref="PlantFieldDefinition.UnderWater"/>) and
+        /// <c>GameConfig.ShallowsSubmergedProps</c>, which also gates the pass itself. A lying chunk on dry mud
+        /// costs one draw into the pass's target and changes no pixel: the sea draws nothing there.
+        /// </summary>
+        public static bool JoinsUnderWater(int order, int submergedOrder, bool tidal, bool fieldOn, bool propsOn) =>
+            fieldOn && propsOn && tidal && (order == submergedOrder || order == SortingBands.UnderHulls);
+
+        /// <summary>The C# twin of the Plant shader's <c>PlantUnderWaterSurge</c>: how far a frond tip at
+        /// <paramref name="root"/> is rocked at <paramref name="time"/>, along the wind (east when it is calm),
+        /// one sine of the swell's period travelling one wavelength across the bed. The shader multiplies it by
+        /// the height bend (0 at the holdfast). Change one, change the other in the same commit.</summary>
+        public static Vector2 UnderWaterSurge(Vector2 root, float time, Vector2 windWorld, float sway, float period, float wavelength)
+        {
+            Vector2 dir = windWorld.sqrMagnitude > 1e-8f ? windWorld.normalized : Vector2.right;
+            float span = PlantFieldDefinition.MinUnderWaterSwaySpan;
+            float phase = 2f * Mathf.PI * (time / Mathf.Max(period, span) - Vector2.Dot(root, dir) / Mathf.Max(wavelength, span));
+            return dir * (sway * Mathf.Sin(phase));
+        }
+
+        /// <summary>The C# twin of the Plant shader's <c>PlantUnderWaterTint</c>: the species' hue at the
+        /// pixel's own brightness (Rec. 601 weights), <paramref name="amount"/> of the way from the baked colour,
+        /// then times its <paramref name="shade"/> (1 as bright as the sheet; less toward a dark silhouette, so a
+        /// kelp bed reads as a dark mass over the lighter floor). Change one, change the other in the same commit.</summary>
+        public static Color UnderWaterTint(Color albedo, Color tint, float amount, float shade = 1f)
+        {
+            const float r = 0.299f, g = 0.587f, b = 0.114f;
+            float luma = albedo.r * r + albedo.g * g + albedo.b * b;
+            float scale = luma / Mathf.Max(tint.r * r + tint.g * g + tint.b * b, 1e-3f);
+            var hue = new Color(Mathf.Clamp01(tint.r * scale), Mathf.Clamp01(tint.g * scale), Mathf.Clamp01(tint.b * scale), albedo.a);
+            Color tinted = Color.Lerp(albedo, hue, Mathf.Clamp01(amount));
+            float k = Mathf.Clamp01(shade);
+            return new Color(tinted.r * k, tinted.g * k, tinted.b * k, albedo.a);
+        }
+
+        void ApplyUnderWater((int, int, int, int) key, MeshRenderer mr)
+        {
+            if (mr == null) return;
+            var species = key.Item3 > 0 && key.Item3 < _codes.Length ? _codes[key.Item3] : null;
+            bool tidal = species != null && species.TideLadder != null && species.TideLadder.Length > 0;
+            bool under = JoinsUnderWater(key.Item2, SubmergedOrder, tidal, UnderWater, _propsOn);
+            uint mask = ShorePlantTideMath.UnderWaterMask(mr.renderingLayerMask, under, true);
+            if (mask != mr.renderingLayerMask) mr.renderingLayerMask = mask;
+            if (under) { UnderWaterRegistry.Register(mr); _underWater[key] = mr; }
+            else if (_underWater.Remove(key)) UnderWaterRegistry.Unregister(mr);
+        }
+
         void ClearChunk((int, int, int, int) key)
         {
+            if (_underWater.TryGetValue(key, out var listed)) { UnderWaterRegistry.Unregister(listed); _underWater.Remove(key); }
             if (!_chunks.TryGetValue(key, out var chunk)) return;
             if (chunk.go != null) { chunk.go.SetActive(false); if (Application.isPlaying) Destroy(chunk.go); else DestroyImmediate(chunk.go); }
             if (chunk.mesh != null) { if (Application.isPlaying) Destroy(chunk.mesh); else DestroyImmediate(chunk.mesh); }

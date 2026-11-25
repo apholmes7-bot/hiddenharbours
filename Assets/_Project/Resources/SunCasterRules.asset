@@ -16,6 +16,7 @@ MonoBehaviour:
   Bands: 0000000001000000
   MinimumHeightMetres: 0.15
   ExcludedNames:
+  - WharfPass2Deck
   - '*Decal*'
   - '*Splat*'
   - '*Seabed*'
@@ -27,6 +28,7 @@ MonoBehaviour:
   - 'Sea_*'
   - 'UI_*'
   - 'Interior*'
+  - StationFood
   - '*Floor*'
   - '*GroundPatch*'
   - '*ClamHole*'

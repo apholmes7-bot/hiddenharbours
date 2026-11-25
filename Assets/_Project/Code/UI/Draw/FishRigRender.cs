@@ -46,11 +46,19 @@ namespace HiddenHarbours.UI
         public readonly bool Link;            // ⚠ placeholder — transducer link
         public readonly float Batt;           // ⚠ placeholder — battery fill, 0..1
         public readonly float Volts;          // ⚠ placeholder — supply volts
+        public readonly bool ShowTemp;        // print the temperature line (off while TempC is a constant)
+        public readonly bool ShowPower;       // draw the battery cell and the volts (off in play: no
+                                              // electrical model exists, so the live glass never shows them)
 
+        /// <summary>The two <c>show</c> flags default ON because that is the art director's rig as
+        /// drawn, which the golden tests compare against. The live glass passes its own
+        /// (<c>FishFinderOverlayHost.LiveState</c>).</summary>
         public FishRigState(float depth, float tempC, float range, float alarmMetres, bool feet, bool night,
                             bool fishId, bool armed, bool triggered, bool blink, double phase,
-                            FishRigAdjust adjust, float sens, bool link, float batt, float volts)
+                            FishRigAdjust adjust, float sens, bool link, float batt, float volts,
+                            bool showTemp = true, bool showPower = true)
         {
+            ShowTemp = showTemp; ShowPower = showPower;
             Depth = depth; TempC = tempC; Range = range; AlarmMetres = alarmMetres;
             Feet = feet; Night = night; FishId = fishId; Armed = armed; Triggered = triggered;
             Blink = blink; Phase = phase; Adjust = adjust;
@@ -62,7 +70,8 @@ namespace HiddenHarbours.UI
                && AlarmMetres.Equals(o.AlarmMetres) && Feet == o.Feet && Night == o.Night
                && FishId == o.FishId && Armed == o.Armed && Triggered == o.Triggered && Blink == o.Blink
                && Phase.Equals(o.Phase) && Adjust == o.Adjust && Sens.Equals(o.Sens) && Link == o.Link
-               && Batt.Equals(o.Batt) && Volts.Equals(o.Volts);
+               && Batt.Equals(o.Batt) && Volts.Equals(o.Volts)
+               && ShowTemp == o.ShowTemp && ShowPower == o.ShowPower;
 
         public override bool Equals(object obj) => obj is FishRigState o && Equals(o);
 
@@ -290,7 +299,8 @@ namespace HiddenHarbours.UI
                 s.FillRect(x + i * (unit + 1), barBase - bh, unit, bh, i < lBars ? p.StripFg : p.StripDim);
             }
 
-            // battery + volts (right)
+            // battery + volts (right): only when the state carries a real supply to show
+            if (!o.ShowPower) return;
             string volts = RigNumberFormat.FixedOne(o.Volts) + "V";
             int vw = RigDrawUtil.TextW(volts, fs);
             RigDrawUtil.Text(s, volts, DrawSurface.JsRound(S.X + S.W - 4 - vw), midY, fs, p.StripFg);
@@ -513,7 +523,9 @@ namespace HiddenHarbours.UI
             int ny = S.Y + Max(4, DrawSurface.JsRound(S.W * 0.045));
 
             int uW = RigDrawUtil.TextW(unit, us);
-            int plW = total + uW + us + 8, plH = dh + 5 * us + 10;
+            // The plate backs the digits and the temperature row; with no temperature row it is the
+            // digits and the same 4px margin under them that it has above them.
+            int plW = total + uW + us + 8, plH = o.ShowTemp ? dh + 5 * us + 10 : dh + 8;
             RigDrawUtil.RRect(s, nx - 4, ny - 4, plW + 6, plH, 3, p.Plate, p.PlateAlpha);
 
             // Ruling E: a sounding alarm flashes the big readout in the rig's OWN red (fishRig.js:18) —
@@ -523,7 +535,8 @@ namespace HiddenHarbours.UI
             DrawNum(s, str, nx, ny, dw, dh, gap, dpW, numCol);
             RigDrawUtil.Text(s, unit, nx + total + us, ny + 2, us, p.DepthFg);   // the WORD never flashes
 
-            // temp under it
+            // temp under it: only when the temperature is a real reading
+            if (!o.ShowTemp) return;
             string tv = RigNumberFormat.FixedOne(o.TempC);
             int ts = us;
             int tRow = ny + dh + 5;

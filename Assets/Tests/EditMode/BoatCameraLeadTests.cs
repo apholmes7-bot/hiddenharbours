@@ -94,7 +94,8 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(RuledLeadSeconds, j.BoatLeadSeconds, 1e-6f, "BoatLeadSeconds" + retune);
             Assert.AreEqual(RuledLagCompensation, j.BoatLeadLagCompensation, 1e-6f, "BoatLeadLagCompensation" + retune);
             Assert.AreEqual(RuledMaxViewFraction, j.BoatLeadMaxViewFraction, 1e-6f, "BoatLeadMaxViewFraction" + retune);
-            Assert.AreEqual(RuledPullBackFraction, j.SpeedPullBackFraction, 1e-6f, "SpeedPullBackFraction" + retune);
+            Assert.AreEqual(0f, j.SpeedPullBackFraction, 1e-6f, "SpeedPullBackFraction" + retune);
+            Assert.AreEqual(0f, j.SpeedPullBackSeaStateFraction, 1e-6f, "SpeedPullBackSeaStateFraction" + retune);
             Assert.AreEqual(RuledPullBackStartMps, j.SpeedPullBackStartMps, 1e-6f, "SpeedPullBackStartMps" + retune);
             Assert.AreEqual(RuledPullBackFullMps, j.SpeedPullBackFullMps, 1e-6f, "SpeedPullBackFullMps" + retune);
             Assert.IsTrue(j.SpeedPullBackWhenCarriedAboard, "SpeedPullBackWhenCarriedAboard" + retune);
@@ -107,7 +108,7 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void TheShippedPullBack_StartsWhereTheHullsCruise()
         {
-            JuiceSettings s = Shipped().Juice;
+            JuiceSettings s = HistoricalPullBack();
             Assert.AreEqual(0f, CameraFeel.PullBackTarget(RuledPullBackStartMps, 0f, s), "at 1 m/s: nothing yet");
             Assert.AreEqual(0.075f, CameraFeel.PullBackTarget(2.75f, 0f, s), 1e-6f,
                 "half way between 1 and 4.5 m/s: half of 15 %");
@@ -259,28 +260,117 @@ namespace HiddenHarbours.Tests.EditMode
             finally { Object.DestroyImmediate(go); Object.DestroyImmediate(boat); }
         }
 
+        // ===== a rowed hull's surge (rowing styles: the hull speeds up on each pull) ==============
+
+        /// <summary>The shipped smoothing of a rowed hull's lead speed: about one slow (casual) stroke.</summary>
+        private const float RuledRowedSpeedSmoothSeconds = 1.5f;
+        /// <summary>A casual stroke as measured in the game on the dory: 1.78 s, 1.74 m/s on average,
+        /// swinging about 0.46 m/s either side over the stroke.</summary>
+        private const float CasualStrokeSeconds = 1.7778f;
+        private const float CasualMeanMps = 1.74f;
+        private const float CasualSwingMps = 0.46f;
+        /// <summary>The camera may move at most this much more unevenly than the boat it follows.</summary>
+        private const float WorldNoMoreUnevenThanTheBoat = 1.15f;
+        /// <summary>Premise: before the smoothing the raw lead made the view move about twice as unevenly.</summary>
+        private const float RawLeadAmplifiesAtLeast = 1.5f;
+
+        [Test]
+        public void TheRowedLeadSmoothing_IsOffInCode_AndShippedInTheAsset()
+        {
+            Assert.AreEqual(0f, JuiceSettings.Default.BoatLeadRowedSpeedSmoothSeconds,
+                "the CODE default stays 0: the raw speed, the old lead");
+            Assert.AreEqual(RuledRowedSpeedSmoothSeconds, Shipped().Juice.BoatLeadRowedSpeedSmoothSeconds, 1e-6f,
+                "the shipped asset smooths a rowed hull's lead over one slow stroke");
+            Vector2 raw = new Vector2(1.2f, -0.4f), prev = new Vector2(3f, 1f);
+            Assert.AreEqual(raw, CameraFollow.SmoothLeadVelocity(prev, raw, Dt60, 0f), "0 seconds = the raw speed");
+            Assert.AreEqual(raw, CameraFollow.SmoothLeadVelocity(prev, raw, 0f, 1.5f), "no time = the raw speed");
+            Assert.AreEqual(raw, CameraFollow.SmoothLeadVelocity(raw, raw, Dt60, 1.5f), "a steady speed passes through");
+        }
+
+        [Test]
+        public void ARowedHull_SurgingOnEachStroke_DoesNotMakeTheViewLunge()
+        {
+            float boatSwing = 0f, rawRatio = 0f, rowedRatio = 0f;
+            foreach (bool oars in new[] { false, true })
+            {
+                var go = new GameObject("Cam");
+                var boat = new GameObject("Boat");
+                try
+                {
+                    GameServices.Config = Shipped();
+                    if (oars) boat.AddComponent<FakeOarStroke>();
+                    CameraFollow follow = AtTheHelm(go, boat);
+                    float camMin = float.MaxValue, camMax = float.MinValue, boatMin = float.MaxValue, boatMax = float.MinValue;
+                    int frames = Mathf.RoundToInt(16f / Dt60), measureFrom = frames - Mathf.RoundToInt(2f * CasualStrokeSeconds / Dt60);
+                    float x = 0f, lastCam = follow.transform.position.x, lastX = 0f;
+                    for (int i = 1; i <= frames; i++)
+                    {
+                        float t = i * Dt60;
+                        x += (CasualMeanMps + CasualSwingMps * Mathf.Sin(2f * Mathf.PI * t / CasualStrokeSeconds)) * Dt60;
+                        boat.transform.position = new Vector3(x, 0f, 0f);
+                        follow.TickFollow(Dt60);
+                        float cam = follow.transform.position.x;
+                        if (i > measureFrom)
+                        {
+                            float cv = (cam - lastCam) / Dt60, bv = (x - lastX) / Dt60;
+                            camMin = Mathf.Min(camMin, cv); camMax = Mathf.Max(camMax, cv);
+                            boatMin = Mathf.Min(boatMin, bv); boatMax = Mathf.Max(boatMax, bv);
+                        }
+                        lastCam = cam; lastX = x;
+                    }
+                    boatSwing = boatMax - boatMin;
+                    if (oars) rowedRatio = (camMax - camMin) / boatSwing;
+                    else rawRatio = (camMax - camMin) / boatSwing;
+                }
+                finally { Object.DestroyImmediate(go); Object.DestroyImmediate(boat); }
+            }
+            Assert.Greater(boatSwing, 1.5f * CasualSwingMps, "premise: the boat's speed swings over the stroke");
+            Assert.Greater(rawRatio, RawLeadAmplifiesAtLeast,
+                $"premise: a hull with no oars keeps the raw lead, and it swings the view {rawRatio:F2}x the boat");
+            Assert.LessOrEqual(rowedRatio, WorldNoMoreUnevenThanTheBoat,
+                $"a rowed hull's lead reads her stroke-averaged speed: the view swings {rowedRatio:F2}x the boat");
+        }
+
+        [Test]
+        public void ARowedHull_StillGetsTheRuledLead_AtASteadySpeed()
+        {
+            var go = new GameObject("Cam");
+            var boat = new GameObject("Boat");
+            try
+            {
+                GameServices.Config = Shipped();
+                boat.AddComponent<FakeOarStroke>();
+                CameraFollow follow = AtTheHelm(go, boat);
+                Assert.AreEqual(RuledLeadSeconds * 2.03f, SteadyLeadAlongX(follow, boat.transform, 2.03f, Dt60), LeadTol,
+                    "the smoothing averages the stroke; it never eats the lead");
+            }
+            finally { Object.DestroyImmediate(go); Object.DestroyImmediate(boat); }
+        }
+
         // ===== the passenger's pull-back ===========================================================
 
         [Test]
         public void APassengersDeck_PullsBackAtSpeed_WithTheOwnersFlag()
         {
             var go = new GameObject("Cam");
+            var config = ScriptableObject.CreateInstance<GameConfig>();
+            config.Juice = HistoricalPullBack();
             try
             {
-                GameServices.Config = Shipped();
+                GameServices.Config = config;
                 CameraFollow follow = OnTheDeck(go, carried: true);
                 Camera cam = go.GetComponent<Camera>();
-                float baseOrtho = cam.orthographicSize;
+                Assert.AreEqual(8.4375f, cam.orthographicSize, 1e-4f);
 
                 SettleFeel(follow, 480, speed: 6f);
-                Assert.AreEqual(baseOrtho * (1f + RuledPullBackFraction), cam.orthographicSize, 1e-4f,
+                Assert.AreEqual(9.703125f, cam.orthographicSize, 1e-4f,
                     "4 s past 4.5 m/s as a passenger in a flat sea: framing × 1.15");
 
                 SettleFeel(follow, 480, speed: 0f);
-                Assert.AreEqual(baseOrtho, cam.orthographicSize, "stopped: the framing's number, exactly");
+                Assert.AreEqual(8.4375f, cam.orthographicSize, "stopped: the framing's number, exactly");
                 Assert.IsFalse(follow.FeelApplied);
             }
-            finally { Object.DestroyImmediate(go); }
+            finally { Object.DestroyImmediate(go); Object.DestroyImmediate(config); }
         }
 
         [Test]
@@ -309,6 +399,14 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // ===== rigs ================================================================================
+
+        private static JuiceSettings HistoricalPullBack()
+        {
+            var settings = Shipped().Juice;
+            settings.SpeedPullBackFraction = 0.15f;
+            settings.SpeedPullBackSeaStateFraction = 0.05f;
+            return settings;
+        }
 
         private static GameConfig Shipped()
         {

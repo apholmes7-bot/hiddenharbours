@@ -128,6 +128,28 @@ namespace HiddenHarbours.UI
 
         public static double FuelPhiDeg(double v01) => -FuelSweepDeg / 2.0 + FuelSweepDeg * Clamp01(v01);
 
+        /// <summary>How many steps the fuel needle moves in from empty to full: one per percent of the
+        /// tank, two degrees of the sweep, which is the smallest move the needle shows. The band
+        /// repaints the fuel piece only when the tank crosses a step (rule 7), and draws the step, so
+        /// what is on the glass depends on the level alone and never on when it was painted.</summary>
+        public const int FuelKeySteps = 100;
+
+        /// <summary>What an UNREAD gauge draws (no instrument seam, or a hull with no tank): the full
+        /// face the dash had before the tank was read. Every hull that carries a console carries a tank,
+        /// so in play this is only what a fixture with no boat behind it shows.</summary>
+        public const float FuelUnread01 = 1f;
+
+        /// <summary>The fuel piece's repaint key: the tank fraction on <see cref="FuelKeySteps"/>.</summary>
+        public static int FuelKey(float v01) => DrawSurface.JsRound(Clamp01(v01) * FuelKeySteps);
+
+        /// <summary>The fraction a fuel key draws (the inverse of <see cref="FuelKey"/>).</summary>
+        public static float FuelFromKey(int key) => key / (float)FuelKeySteps;
+
+        /// <summary>What the needle shows for a reading: the tank fraction snapped to its step, or
+        /// <see cref="FuelUnread01"/> when there is no reading.</summary>
+        public static float FuelNeedle01(bool hasReading, float fraction01)
+            => hasReading ? FuelFromKey(FuelKey(fraction01)) : FuelUnread01;
+
         // ---- which family a rig belongs to --------------------------------------------------------
 
         /// <summary>True for the wheelhouse hulls (Novi, Cape) — the taller canvas and the

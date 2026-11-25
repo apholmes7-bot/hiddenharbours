@@ -19,7 +19,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         private const float Eps = 1e-4f;
 
         [Test]
-        public void HungLantern_PreservesSerializedKindsAndTheCarriedFlame()
+        public void HungLantern_PreservesSerializedKindsAndUsesTheFixtureTable()
         {
             Assert.AreEqual(0, (int)LightPresets.Kind.WindowGlow);
             Assert.AreEqual(1, (int)LightPresets.Kind.Lightpost);
@@ -28,21 +28,23 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(4, (int)LightPresets.Kind.Lantern);
             Assert.AreEqual(5, (int)LightPresets.Kind.Headlamp);
             Assert.AreEqual(6, (int)LightPresets.Kind.HungLantern);
-            Assert.AreEqual(0.09f, LightPresets.For(LightPresets.Kind.Lantern).FlickerAmount, Eps);
+            Assert.AreEqual(0.28f, LightPresets.For(LightPresets.Kind.Lantern).FlickerAmount, Eps);
             Assert.AreEqual(3f, LightPresets.ReachMetres(LightPresets.Kind.Lantern), Eps);
         }
 
         [Test]
-        public void HungLantern_IsAWarmSmallPoolWithAStrongerFlicker()
+        public void HungLantern_IsASmallFlameWithReadableFlicker()
         {
             var c = LightPresets.For(LightPresets.Kind.HungLantern);
             Assert.AreEqual(SceneLight.LightShape.Radial, c.Shape);
             Assert.IsFalse(LightPresets.IsDirected(LightPresets.Kind.HungLantern));
-            Assert.AreEqual(new Color(1f, 0.79f, 0.46f, 1f), c.Color);
+            Assert.AreEqual(1f, c.Color.r, Eps);
+            Assert.AreEqual(.49564f, c.Color.g, Eps);
+            Assert.AreEqual(0f, c.Color.b, Eps);
             Assert.AreEqual(1.05f, c.Intensity, Eps);
             Assert.AreEqual(0.26f, c.Range, Eps);
             Assert.AreEqual(0.9f, c.EdgeSoftness, Eps);
-            Assert.AreEqual(0.15f, c.FlickerAmount, Eps);
+            Assert.AreEqual(0.34f, c.FlickerAmount, Eps);
             Assert.AreEqual(Vector2.zero, c.OriginOffset);
             Assert.AreEqual(3.6f, LightPresets.ReachMetres(LightPresets.Kind.HungLantern), Eps,
                 "the 10-27 ruling A: a hung lantern's default is a post's reach");
@@ -137,7 +139,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Assert.GreaterOrEqual(c.EdgeSoftness, 0.5f, $"{kind} placed glow should be soft, not a hard disc");
                 Assert.LessOrEqual(c.EdgeSoftness, 1f);
                 Assert.GreaterOrEqual(c.FlickerAmount, 0f);
-                Assert.LessOrEqual(c.FlickerAmount, 0.2f, $"{kind} flicker should be subtle, not strobing");
+                bool flame = kind == LightPresets.Kind.Lantern || kind == LightPresets.Kind.HungLantern;
+                Assert.LessOrEqual(c.FlickerAmount, flame ? 0.34f : 0.2f,
+                    $"{kind} flicker stays within its fixture's band; tick changes are measured separately");
             }
         }
 
@@ -211,14 +215,13 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
-        public void Worklight_IsSteady_WindowFlickers()
+        public void ElectricFixturesAreSteady_IncludingDomesticWindows()
         {
-            // The worklight is electric work light — dead steady (no flicker). The window has a living hearth/lamp
-            // within, so a tiny deterministic flicker; the lamppost barely hums.
+            // Electric work and domestic bulbs are steady. A hearth is explicit fixture data.
             Assert.AreEqual(0f, LightPresets.For(LightPresets.Kind.Worklight).FlickerAmount, Eps,
                 "a work lamp should not flicker");
-            Assert.Greater(LightPresets.For(LightPresets.Kind.WindowGlow).FlickerAmount, 0f,
-                "a window glow should have a subtle living flicker");
+            Assert.AreEqual(0f, LightPresets.For(LightPresets.Kind.WindowGlow).FlickerAmount, Eps,
+                "a domestic electric window is steady; a hearth is explicit fixture data");
         }
 
         // ---- Apply stamps the config onto a SceneLight (the ONE mapping the component + menu share) ---------

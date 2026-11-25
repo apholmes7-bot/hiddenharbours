@@ -1,0 +1,392 @@
+fileFormatVersion: 2
+guid: ae8645de4b0b20d00312dcf23c12c6ab
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1597061778386967851
+    second: WaterSide_arm_e_e0_0
+  - first:
+      213: 2925426337875698797
+    second: WaterSide_arm_e_e0_1
+  - first:
+      213: 90505795912382182
+    second: WaterSide_arm_e_e0_2
+  - first:
+      213: 6720385895149566086
+    second: WaterSide_arm_e_e0_3
+  - first:
+      213: 6760022173518715825
+    second: WaterSide_arm_e_e0_4
+  - first:
+      213: 969708083438196198
+    second: WaterSide_arm_e_e0_5
+  - first:
+      213: 8195036510787915325
+    second: WaterSide_arm_e_e0_6
+  - first:
+      213: 6311058893571151135
+    second: WaterSide_arm_e_e0_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot:
+    x: 0.5
+    y: 0.5
+  spritePixelsToUnits: 32
+  spriteBorder:
+    x: 0
+    y: 0
+    z: 0
+    w: 0
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: WaterSide_arm_e_e0_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1778
+        width: 1077
+        height: 889
+      alignment: 9
+      pivot:
+        x: 0.13370473537604458
+        y: 0.6130483689538808
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 826d64e38ffa6915ec479cfe8c74b692
+      internalID: 1597061778386967851
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_arm_e_e0_1
+      rect:
+        serializedVersion: 2
+        x: 1077
+        y: 1778
+        width: 1077
+        height: 889
+      alignment: 9
+      pivot:
+        x: 0.4308263695450325
+        y: 0.7244094488188977
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 389cdc3213882f151cb2934db6a3717b
+      internalID: 2925426337875698797
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_arm_e_e0_2
+      rect:
+        serializedVersion: 2
+        x: 2154
+        y: 1778
+        width: 1077
+        height: 889
+      alignment: 9
+      pivot:
+        x: 0.49675023212627667
+        y: 0.9797525309336333
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9de90320a3fa3915d4fed97b38d6739c
+      internalID: 90505795912382182
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_arm_e_e0_3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 889
+        width: 1077
+        height: 889
+      alignment: 9
+      pivot:
+        x: 0.4298978644382544
+        y: 0.7277840269966254
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97f029b755bbf03b044a9aa6827b0dc4
+      internalID: 6720385895149566086
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_arm_e_e0_4
+      rect:
+        serializedVersion: 2
+        x: 1077
+        y: 889
+        width: 1077
+        height: 889
+      alignment: 9
+      pivot:
+        x: 0.1309192200557103
+        y: 0.6197975253093364
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4dd9f0890a4de70b2507b18f019a5659
+      internalID: 6760022173518715825
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_arm_e_e0_5
+      rect:
+        serializedVersion: 2
+        x: 2154
+        y: 889
+        width: 1077
+        height: 889
+      alignment: 9
+      pivot:
+        x: 0.42804085422469823
+        y: 0.7210348706411698
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b726dcff8d15a6e49b20d17bccb1179c
+      internalID: 969708083438196198
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_arm_e_e0_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1077
+        height: 889
+      alignment: 9
+      pivot:
+        x: 0.5032497678737233
+        y: 0.9752530933633295
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: feac5fb448020efac7bf2b4b089bfa7f
+      internalID: 8195036510787915325
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_arm_e_e0_7
+      rect:
+        serializedVersion: 2
+        x: 1077
+        y: 0
+        width: 1077
+        height: 889
+      alignment: 9
+      pivot:
+        x: 0.4271123491179202
+        y: 0.7221597300337458
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82472024f0c8e00492d661dd6928e23d
+      internalID: 6311058893571151135
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    outline: []
+    customData: ''
+    physicsShape: []
+    bones: []
+    spriteID: 3f431f8f57144e742b087f55e61507bc
+    internalID: 0
+    vertices: []
+    indices: ''
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      WaterSide_arm_e_e0_0: 1597061778386967851
+      WaterSide_arm_e_e0_1: 2925426337875698797
+      WaterSide_arm_e_e0_2: 90505795912382182
+      WaterSide_arm_e_e0_3: 6720385895149566086
+      WaterSide_arm_e_e0_4: 6760022173518715825
+      WaterSide_arm_e_e0_5: 969708083438196198
+      WaterSide_arm_e_e0_6: 8195036510787915325
+      WaterSide_arm_e_e0_7: 6311058893571151135
+  mipmapLimitGroupName: ''
+  pSDRemoveMatte: 0
+  userData: ''
+  assetBundleName: ''
+  assetBundleVariant: ''

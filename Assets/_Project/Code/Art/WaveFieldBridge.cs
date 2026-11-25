@@ -135,6 +135,23 @@ namespace HiddenHarbours.Art
         /// <summary>(pulse sharpness, set strength, run-up coefficient, run-up cap) — the bore's dials,
         /// ADR 0040 revision 3. Read by the water shader's <c>SurfBore*</c> twins.</summary>
         private static readonly int IdBreakerBore = Shader.PropertyToID("_BreakerBore");
+        /// <summary>(refraction, jitter degrees, jitter metres, 0) — the bore clock's refraction
+        /// (BreakerMath.BoreClockPoint / BorePhaseJitterDegrees). Read by the water shader's and the foam
+        /// buffer's <c>SurfBoreClock*</c> twins. All-zero = the offshore heading, as before.</summary>
+        private static readonly int IdBreakerRefract = Shader.PropertyToID("_BreakerRefract");
+        /// <summary>(lee soften metres, edge fade depth metres, 0, 0): how the drawn wash fades into a lee
+        /// (BreakerSettings.BoreLeeSoftenMeters / BoreEdgeFadeDepthMeters, BreakerMath.BoreLeeLattice /
+        /// BoreEdgeLeeFade01). All-zero = unpublished = the previous hard lee edge.</summary>
+        private static readonly int IdBoreLeeFade = Shader.PropertyToID("_BoreLeeFade");
+        /// <summary>(steady edge slope m/m, wet film metres, 0, 0): the drawn edge on flat beds
+        /// (BreakerSettings.SwashSteadyEdgeSlope / EdgeWetFilmMeters, BreakerMath.SwashDesyncKeep01 /
+        /// EdgeWetFilm01). All-zero = unpublished = the previous edge.</summary>
+        private static readonly int IdShoreThinEdge = Shader.PropertyToID("_ShoreThinEdge");
+        /// <summary>(lip film share, lip resting age, lip backwash age, lip width vary): the wash's white lip
+        /// (BreakerSettings.WashLipFilmShare / WashLipAgeFloor / WashLipBackwashAge / WashLipWidthVary,
+        /// BreakerMath.WashLipInsetMeters / WashLipAge01 / WashLipWidthMeters). All-zero = the solid line at
+        /// the drawn edge.</summary>
+        private static readonly int IdShoreWashLip = Shader.PropertyToID("_ShoreWashLip");
 
         private const double TwoPi = Math.PI * 2.0;
 
@@ -210,20 +227,21 @@ namespace HiddenHarbours.Art
                 return;
             }
 
-            // Game-time delta for this presentation tick (the BoatWaveMotion pattern): the clock
-            // advances smoothly per frame; a paused clock yields dt 0 and the sea freezes with it.
-            double time = clock.TotalSeconds;
+            // Flow advances while the hour is held; the pause menu still stops both readings.
+            double time = clock.FlowSeconds;
             float dt = _hasLastTime ? Mathf.Max(0f, (float)(time - _lastTimeSeconds)) : Time.deltaTime;
             _lastTimeSeconds = time;
             _hasLastTime = true;
 
             // Derive once, bake at the clock, then share the identical field with both readers.
-            EnvironmentSample sample = env.Sample();
+            // An authored local storm (Core's LocalWeather) is laid over the wind here, once, so the
+            // sea the player sees and the sea the hull rides stay one field.
+            EnvironmentSample sample = LocalWeather.Shade(env.Sample());
             WaveFieldSettings field = GameServices.WaveField;
             WaveFieldAnimatorSettings smoothing = GameServices.WaveFieldAnimator;
             WaveTrains trains = env is IWaveWindSource history
-                ? _animator.Tick(time, history, in field)
-                : _animator.Tick(dt, time, sample.WindVector, sample.SeaState01, in field, in smoothing);
+                ? _animator.Tick(clock.TotalSeconds, time, LocalWeather.Shade(history), in field)
+                : _animator.Tick(dt, clock.TotalSeconds, time, sample.WindVector, sample.SeaState01, in field, in smoothing);
             PublishGlobals(Pack(in trains));
             SharedWaveField.Publish(this, in trains);
 
@@ -383,6 +401,40 @@ namespace HiddenHarbours.Art
                 Mathf.Clamp01(breakers.BoreSetStrength),
                 Mathf.Max(0f, breakers.RunUpCoefficient),
                 Mathf.Max(0f, breakers.RunUpCapMeters)));
+
+            // The bore clock's REFRACTION: the crest turned to the shore before it runs in, and its small
+            // static alongshore offset. Physics constants from GameConfig, so the hull's shove (BreakerMath.
+            // SurfAt) and the drawn wash ride the same clock. w = how far seaward the drawn wash reads the
+            // fetch envelope (BreakerSettings.BoreFetchProbeMeters; 0 = at the pixel).
+            Shader.SetGlobalVector(IdBreakerRefract, new Vector4(
+                Mathf.Clamp01(breakers.BoreRefraction),
+                Mathf.Max(0f, breakers.BorePhaseJitterDegrees),
+                Mathf.Max(0f, breakers.BorePhaseJitterMeters),
+                Mathf.Max(0f, breakers.BoreFetchProbeMeters)));
+
+            // The wash's LEE EDGE: the envelope read across the land's shadow over x metres, and the run-up's
+            // share of the drawn edge growing over y metres of break depth, so the wash fades into a lee; the bore keeps
+            // its own hard read only where the two lee reads step by more than z.
+            Shader.SetGlobalVector(IdBoreLeeFade, new Vector4(
+                Mathf.Max(0f, breakers.BoreLeeSoftenMeters),
+                Mathf.Max(0f, breakers.BoreEdgeFadeDepthMeters),
+                Mathf.Max(0f, breakers.BoreHardReadStep), 0f));
+
+            // The drawn edge on FLAT beds: the swash's along-shore offset fades out below x m/m of slope, and
+            // the water thins to a film over the last y metres of level inside the edge; the wash lip reads z of
+            // its age younger where it lies past that film on a shore no bore runs up.
+            Shader.SetGlobalVector(IdShoreThinEdge, new Vector4(
+                Mathf.Max(0f, breakers.SwashSteadyEdgeSlope),
+                Mathf.Max(0f, breakers.EdgeWetFilmMeters),
+                Mathf.Clamp01(breakers.WashLipStillFresh), 0f));
+
+            // The wash's LIP: where it sits in the film, its resting and backwash age in the one foam sheet,
+            // and how much its width follows the sheet's lace.
+            Shader.SetGlobalVector(IdShoreWashLip, new Vector4(
+                Mathf.Clamp01(breakers.WashLipFilmShare),
+                Mathf.Clamp01(breakers.WashLipAgeFloor),
+                Mathf.Clamp01(breakers.WashLipBackwashAge),
+                Mathf.Clamp01(breakers.WashLipWidthVary)));
         }
 
         /// <summary>The breaker model SILENT — nothing breaks anywhere — so a stopped play session or a

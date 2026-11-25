@@ -32,9 +32,11 @@ namespace HiddenHarbours.Tests.EditMode
             ["boat.sport_skiff"] = Form.Planing,
             ["boat.sport_skiff_mk2"] = Form.Planing,
             ["boat.sport_skiff_twin"] = Form.Planing,
+            ["boat.yacht_tender"] = Form.Planing,
             ["boat.zodiac_frc"] = Form.Planing,
             ["boat.zodiac_hurricane"] = Form.Planing,
             ["boat.bowrider"] = Form.Planing, // Def authors a 3.5-degree planing drop.
+            ["boat.jet_ski"] = Form.Planing, // A planing hull by nature; the drop is authored.
             // Semi-displacement: she rises and holds it.
             ["boat.console_skiff"] = Form.SemiDisplacement,
             ["boat.go_fast"] = Form.SemiDisplacement, // Current Def rises 3 degrees and authors no drop.
@@ -61,6 +63,7 @@ namespace HiddenHarbours.Tests.EditMode
             ["boat.lobster_offshore_open_northumberland"] = Form.SemiDisplacement,
             ["boat.sport_fisher_convertible"] = Form.SemiDisplacement,
             ["boat.sport_fisher_skybridge"] = Form.SemiDisplacement,
+            ["boat.motor_yacht_84"] = Form.SemiDisplacement,
             // Small open boats: a small rise she holds.
             ["boat.dory"] = Form.SmallOpen,
             ["boat.dory_outboard"] = Form.SmallOpen,
@@ -70,6 +73,7 @@ namespace HiddenHarbours.Tests.EditMode
             ["boat.sloop_30"] = Form.Sail,
             ["boat.sloop_88"] = Form.Sail,
             // Ships: level.
+            ["boat.expedition_yacht_120"] = Form.Ship,
             ["boat.side_dragger"] = Form.Ship,
             ["boat.stern_trawler"] = Form.Ship,
             ["boat.stern_trawler_mk2"] = Form.Ship,

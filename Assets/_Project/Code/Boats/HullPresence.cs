@@ -57,6 +57,48 @@ namespace HiddenHarbours.Boats
             HullFootprint.FromBowDirection(transform.position, transform.up,
                                            _lengthMetres, _halfBeamMetres);
 
+        [Tooltip("How her picture foreshortens a north-south metre (sin of her art's bake elevation; 1 = " +
+                 "plan view). Set from her visual by Install; read by what draws against her waterline.")]
+        [SerializeField, Range(0.01f, 1f)] private float _pictureForeshortenY = 1f;
+
+        /// <inheritdoc cref="IHullPresence.PictureForeshortenY"/>
+        public float PictureForeshortenY => _pictureForeshortenY;
+
+        /// <summary>Tell her how her picture is projected: the bake elevation of the art she wears, in
+        /// degrees (90 or more, or not a number, = plan view).</summary>
+        public void ConfigurePicture(float bakeElevationDegrees) =>
+            _pictureForeshortenY = Mathf.Clamp(WakeRootMath.ForeshortenY(bakeElevationDegrees), 0.01f, 1f);
+
+        /// <summary>
+        /// How far up-screen her picture rides from <see cref="Footprint"/> right now: the sibling
+        /// <see cref="IHullTideRide"/>'s <see cref="IHullTideRide.ScreenRiseNow"/> (the same number
+        /// <see cref="BoatWaveMotion"/> lowers her visual by), or 0 when nothing carries her. Looked up
+        /// once (on enable, or on first read for a component that was never enabled) and cached, "none"
+        /// included, so a hull with no ride does not search on every foam capture. A ride added later
+        /// tells its sibling to look again (<see cref="HullTideRide"/>'s OnEnable), and a destroyed ride
+        /// reads as none.
+        /// </summary>
+        public float PictureRise
+        {
+            get
+            {
+                if (!_rideLooked) LookForRide();
+                return _rideComponent != null ? _ride.ScreenRiseNow() : 0f;   // Unity null: destroyed = none
+            }
+        }
+
+        private IHullTideRide _ride;
+        private Object _rideComponent;   // the same ride as a Unity object, so a destroyed one compares null
+        private bool _rideLooked;
+
+        /// <summary>Find (or fail to find) the sibling tide ride and cache the answer.</summary>
+        internal void LookForRide()
+        {
+            _ride = GetComponent<IHullTideRide>();
+            _rideComponent = _ride as Object;
+            _rideLooked = true;
+        }
+
         /// <summary>Her length overall (m) as configured; 0 = not configured, i.e. not registered.</summary>
         public float LengthMetres => _lengthMetres;
 
@@ -91,6 +133,8 @@ namespace HiddenHarbours.Boats
             var presence = host.GetComponent<HullPresence>();
             if (presence == null) presence = host.AddComponent<HullPresence>();
             presence.Configure(hull.LengthMeters, HalfBeamOf(hull, visual));
+            BoatVisualDef skin = visual != null ? visual : hull.Visual;
+            presence.ConfigurePicture(skin != null ? skin.ResolveWaterlineElevationDegrees() : float.NaN);
             return presence;
         }
 
@@ -111,6 +155,7 @@ namespace HiddenHarbours.Boats
             // Only a hull somebody has sized: an unconfigured one is a point, and a point must not open
             // the boat-only wall around itself. Configure() registers her the moment she has a size.
             if (_lengthMetres > 0f) HullPresences.Register(this);
+            LookForRide();
         }
 
         private void OnDisable() => HullPresences.Unregister(this);

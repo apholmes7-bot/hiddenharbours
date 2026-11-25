@@ -663,3 +663,4 @@ MonoBehaviour:
     Loops: 0
     FacingCount: 0
   Skin: {fileID: 11400000, guid: abddef260cb7b47438de3621b317c2fc, type: 2}
+  RowingStyle: {fileID: 11400000, guid: ca108a37b5f94da282e01117a5da0828, type: 2}

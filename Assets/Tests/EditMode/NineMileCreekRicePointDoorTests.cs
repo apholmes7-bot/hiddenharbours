@@ -46,7 +46,7 @@ namespace HiddenHarbours.Tests.EditMode
         const string OverlaySource = "Assets/_Project/Code/UI/RegionFadeOverlay.cs";
         const string AnchorSource = "Assets/_Project/Code/App/RegionAnchor.cs";
         const string RestSaveSource = "Assets/_Project/Code/Core/Save/RestSaveResponder.cs";
-        const string SeaId = "door.rpt_sea", StrandId = "door.rpt_strand", Route91Id = "door.rpt_route_91";
+        const string SeaId = "door.rpt_sea", StrandId = "door.rpt_strand", Route91Id = "door.rpt_route_91", SouthWaterId = "door.rpt_south_water";
         const string RicePointId = "region.rice_point";
 
         /// <summary>The hulls that cross by the sea door: the dory rowed, the sloop sailed, the Cape Islander motored.</summary>
@@ -63,7 +63,8 @@ namespace HiddenHarbours.Tests.EditMode
                 "premise: Rice Point's east edge, carried into the creek's frame, is the creek's west edge, the seam both halves meet on");
             List<PlanDoor> theirs = PlanDoors();
             string creekGuid = GuidOf(CreekRegionPath);
-            Assert.That(theirs.Where(d => d.TargetGuid != creekGuid).Select(d => d.Id), Is.Empty, "every Rice Point door leads to the creek");
+            Assert.That(theirs.Where(d => d.TargetGuid != creekGuid).Select(d => d.Id), Is.EqualTo(new[] { SouthWaterId }),
+                "every Rice Point door leads to the creek but the channel mouth, which leads south");
             Assert.That(Doors.Halves.Select(h => h.Name), Is.EqualTo(new[] { Doors.SeaDoorName, Doors.StrandDoorName }));
 
             foreach (Doors.CreekHalf half in Doors.Halves)
@@ -181,7 +182,8 @@ namespace HiddenHarbours.Tests.EditMode
         public void RicePointsPlan_KeepsRoute91Shut_UntilNR1b_TheSeaAndStrandOpen()
         {
             List<PlanDoor> doors = PlanDoors();
-            Assert.That(doors.Select(d => d.Id), Is.EqualTo(new[] { SeaId, StrandId, Route91Id }), "Rice Point's three doors");
+            Assert.That(doors.Select(d => d.Id), Is.EqualTo(new[] { SeaId, StrandId, Route91Id, SouthWaterId }),
+                "Rice Point's three doors to the creek, and the channel mouth to the South Water");
             Assert.That(doors.Where(d => d.Shut).Select(d => d.Id), Is.EqualTo(new[] { Route91Id }),
                 "Route 91 waits shut for H4's road and NR1b's half; the sea and the strand open now");
             PlanDoor road = doors.Single(d => d.Id == Route91Id);
@@ -292,8 +294,14 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(anchors[0].Field("_regionId"), Is.EqualTo(id), "its anchor reports Rice Point's id as the current region");
             Assert.That(Code(AnchorSource), Does.Match(@"GameServices\.CurrentRegionId\s*=\s*_regionId\s*;"),
                 "an enabled anchor publishes its id");
-            Assert.That(Code(RestSaveSource), Does.Match(@"AnchorFor\(\s*request\s*,\s*GameServices\.CurrentRegionId\s*\)"),
-                "and a rest save stamps that id");
+            // The id reaches the anchor through RecordWake since the bunk aboard (2026-11-14) taught the
+            // responder to forget the anchor for a rest that records none: Write hands it the current
+            // region, and RecordWake passes it straight to AnchorFor.
+            string restSave = Code(RestSaveSource);
+            Assert.That(restSave, Does.Match(@"RecordWake\(\s*save\.Current\s*,\s*request\s*,\s*GameServices\.CurrentRegionId\s*\)"),
+                "and a rest save hands that id to the wake record");
+            Assert.That(restSave, Does.Match(@"AnchorFor\(\s*request\s*,\s*currentRegionId\s*\)"),
+                "which stamps it as the anchor's region");
             Doors.PlanAll(File.ReadAllText(NineMileCreekLayerRefresh.ScenePath), Doors.StepAssets.Read(), out string after);
             SceneYaml creek = SceneYaml.Parse(after);
             Doc loader = creek.ComponentsOf(creek.RootNamed(Doors.LoaderName)).Single(d => d.IsScript("HiddenHarbours.World.RegionSceneLoader"));
@@ -419,10 +427,10 @@ namespace HiddenHarbours.Tests.EditMode
                 Holds("a walker again", ControlMode.OnFoot, true);
             }
             player.transform.position = new Vector3(0, -11.5f, 0);
-            Assert.That(sw.TryInteract(), Is.True, "the walker boards through the public interaction");
+            Assert.That(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw), Is.True, "the walker boards through the public interaction");
             Holds("a hand on the dory's deck", ControlMode.OnDeck, false);
             player.transform.position = sw.HelmWorldPosition;
-            Assert.That(sw.TryInteract(), Is.True, "and takes the oars");
+            Assert.That(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw), Is.True, "and takes the oars");
             Holds("the dory's oarsman", ControlMode.Aboard, false);
         }
 

@@ -1,0 +1,1598 @@
+fileFormatVersion: 2
+guid: ed45cb567ddb21a40b7991eeb6ac6f94
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -5908973987731148521
+    second: Appliance_shower_0
+  - first:
+      213: 2628433364871738203
+    second: Appliance_shower_1
+  - first:
+      213: -4611105857952547708
+    second: Appliance_shower_2
+  - first:
+      213: -7481079476889408040
+    second: Appliance_shower_3
+  - first:
+      213: 5533783845317164665
+    second: Appliance_shower_4
+  - first:
+      213: -2877687177873074824
+    second: Appliance_shower_5
+  - first:
+      213: -3627969292597619763
+    second: Appliance_shower_6
+  - first:
+      213: -6874835808675827305
+    second: Appliance_shower_7
+  - first:
+      213: -2600820279361467910
+    second: Appliance_shower_8
+  - first:
+      213: -533137493354494072
+    second: Appliance_shower_9
+  - first:
+      213: -1623491413172343948
+    second: Appliance_shower_10
+  - first:
+      213: -7780472154749918657
+    second: Appliance_shower_11
+  - first:
+      213: -6613252465413573826
+    second: Appliance_shower_12
+  - first:
+      213: -5981748220147220324
+    second: Appliance_shower_13
+  - first:
+      213: 9058675876120404195
+    second: Appliance_shower_14
+  - first:
+      213: 6107238352974848128
+    second: Appliance_shower_15
+  - first:
+      213: 6969478219078330769
+    second: Appliance_shower_16
+  - first:
+      213: -6195230154440882061
+    second: Appliance_shower_17
+  - first:
+      213: 2315201267715914493
+    second: Appliance_shower_18
+  - first:
+      213: -29827397687772518
+    second: Appliance_shower_19
+  - first:
+      213: 8423300268120953429
+    second: Appliance_shower_20
+  - first:
+      213: -2158460757844645337
+    second: Appliance_shower_21
+  - first:
+      213: -7953928726440356941
+    second: Appliance_shower_22
+  - first:
+      213: 22865109790396385
+    second: Appliance_shower_23
+  - first:
+      213: -4291143137865688897
+    second: Appliance_shower_24
+  - first:
+      213: 7525097944418752527
+    second: Appliance_shower_25
+  - first:
+      213: 7025944683345579618
+    second: Appliance_shower_26
+  - first:
+      213: 7192641966783161906
+    second: Appliance_shower_27
+  - first:
+      213: 5187745931864448296
+    second: Appliance_shower_28
+  - first:
+      213: -8702424543144984116
+    second: Appliance_shower_29
+  - first:
+      213: 1330471152175712234
+    second: Appliance_shower_30
+  - first:
+      213: 5816649729218324305
+    second: Appliance_shower_31
+  - first:
+      213: 1024871728943579821
+    second: Appliance_shower_32
+  - first:
+      213: -2725724836486445411
+    second: Appliance_shower_33
+  - first:
+      213: -7709202461900297302
+    second: Appliance_shower_34
+  - first:
+      213: -1036679964145237485
+    second: Appliance_shower_35
+  - first:
+      213: 1935020626645487743
+    second: Appliance_shower_36
+  - first:
+      213: 7251157438697004745
+    second: Appliance_shower_37
+  - first:
+      213: 4359478390482417871
+    second: Appliance_shower_38
+  - first:
+      213: -6146169851971499430
+    second: Appliance_shower_39
+  - first:
+      213: -6094137586031752453
+    second: Appliance_shower_40
+  - first:
+      213: -8410800598823197006
+    second: Appliance_shower_41
+  - first:
+      213: 2339032562284374091
+    second: Appliance_shower_42
+  - first:
+      213: -8801888154809885215
+    second: Appliance_shower_43
+  - first:
+      213: -8849970217784872264
+    second: Appliance_shower_44
+  - first:
+      213: 4141009142481224933
+    second: Appliance_shower_45
+  - first:
+      213: 6278484861053469537
+    second: Appliance_shower_46
+  - first:
+      213: 2329619699963088135
+    second: Appliance_shower_47
+  - first:
+      213: -5361105700200690844
+    second: Appliance_shower_48
+  - first:
+      213: 6833119761466463778
+    second: Appliance_shower_49
+  - first:
+      213: -7059318837790986776
+    second: Appliance_shower_50
+  - first:
+      213: 5840500230266263464
+    second: Appliance_shower_51
+  - first:
+      213: -1343818547708459372
+    second: Appliance_shower_52
+  - first:
+      213: -5519855698417647278
+    second: Appliance_shower_53
+  - first:
+      213: -735435303937416089
+    second: Appliance_shower_54
+  - first:
+      213: 4007967928305566915
+    second: Appliance_shower_55
+  - first:
+      213: -6739318107424214996
+    second: Appliance_shower_56
+  - first:
+      213: 251231472457448950
+    second: Appliance_shower_57
+  - first:
+      213: 4387647657715696648
+    second: Appliance_shower_58
+  - first:
+      213: -9085770715182545628
+    second: Appliance_shower_59
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Appliance_shower_s0_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 486
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 69c8522264c89114d8a9ec6786d81f66
+      internalID: -759497703
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s0_d1
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 486
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37d6c64f4022ddf4aae0777596c94719
+      internalID: -1158649968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s0_d2
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 486
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 86adcb36d02f1fc4abcc8eecf8444416
+      internalID: -622870160
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s0_d3
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 486
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c4efdcb726807d428201332c804b8c2
+      internalID: -882043117
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s0_d4
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 486
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: da26c735ee480dd438830236be92d868
+      internalID: 1225992179
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s0_d5
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 486
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64ee3595aebb64c4ab7d72a45b9edb46
+      internalID: 717984099
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s0_d6
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 486
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9f37b301da910dd4d947b06ac237f08d
+      internalID: -1429794723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s0_d7
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 486
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1763779ed13e784488b1f71b5d4fd5f8
+      internalID: 154304221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s1_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 405
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0b2a31e96d7db1a439d448e299c89805
+      internalID: 389294912
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s1_d1
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 405
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 34a4445b8a0ec134caecd766e537195c
+      internalID: 1548633789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s1_d2
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 405
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7391babd764eed64583d815adfe58aea
+      internalID: -2041766632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s1_d3
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 405
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c943ce7331763b948bb34dbc1496bbb1
+      internalID: -1664140914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s1_d4
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 405
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b956eeabc276184ca41ddb4b6e7e43c
+      internalID: 964666475
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s1_d5
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 405
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d5823813b89788d43a02a2d4bf893fa2
+      internalID: 552512494
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s1_d6
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 405
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ecb220dbfb75a34081f945774d5d7fd
+      internalID: 1008259609
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s1_d7
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 405
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3d0eb4a9467d7fb4fa07a39fc814d71e
+      internalID: -566352716
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s2_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 324
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 52d4e6463e52ee74c893da5002b919f3
+      internalID: 847282238
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s2_d1
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 324
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4b480b6872a29664282a717a9f46cc97
+      internalID: 604476568
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s2_d2
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 324
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: be22851423500bb44a72281812c2373f
+      internalID: 1642598232
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s2_d3
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 324
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 925d96b109b2ae448a6e93e0ba6abb5f
+      internalID: -1782209410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s2_d4
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 324
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d510116457fa5b4aa475bd35769f51f
+      internalID: 1076726451
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s2_d5
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 324
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3bf18db4cfd6d70418be9c2a57634611
+      internalID: 297936355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s2_d6
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 324
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b2a20943e6dd77848b4cc7c45c0d47c5
+      internalID: 1897983796
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s2_d7
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 324
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 80ce960516083f342868d99b59412d13
+      internalID: 1154751262
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s3_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 243
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3c95136fdc791c6479c8e7ac432c836c
+      internalID: 775388933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s3_d1
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 243
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d55a730d5d194274c9a891e7360856bd
+      internalID: -1443287165
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s3_d2
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 243
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bac8d65dc36567d4fa7f8ff2d1dcc561
+      internalID: -1021855515
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s3_d3
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 243
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1a48279c55695104885dfa53b62f8dbd
+      internalID: -6371141
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s3_d4
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 243
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9d7940c194097274daff5671922ce600
+      internalID: -1588757612
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s3_d5
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 243
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4a15ef8f6ed50144eacb657264ec6261
+      internalID: 2076887570
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s3_d6
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 243
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 63d228ae665b9f24e96ee553a3c675ed
+      internalID: -965758188
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s3_d7
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 243
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 30e8b32d03ac3354e9500f8a22c60b90
+      internalID: -1389738093
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s4_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 162
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ce68e238a653744d9ed99f05cb8df4d
+      internalID: 1956964305
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s4_d1
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 162
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 183a4e144fce6aa438a28673af64acc3
+      internalID: 363269780
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s4_d2
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 162
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6179fc1e376bebb46a51c4e1b9932db8
+      internalID: -1007988232
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s4_d3
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 162
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d1f708c3a48c2240b6bd223771af263
+      internalID: 1440807820
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s4_d4
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 162
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f5ada1798e2b30e47b9e1325a2f64d3a
+      internalID: -2124693630
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s4_d5
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 162
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 299d3fcdd9681794ab43ec06ed08a578
+      internalID: -2054681949
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s4_d6
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 162
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d51b3521bf6cf374db4f0e054376cfa2
+      internalID: -1148222065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s4_d7
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 162
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 850db4c5fb4ab9248bb88d231975bbdb
+      internalID: -1032138026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s5_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 81
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a04d54f587dfde648ab177f4cabfbe5e
+      internalID: 209189374
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s5_d1
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 81
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 44c53abebd350fa4897249d1fa129afe
+      internalID: 705549968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s5_d2
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 81
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 482914e68b59745478220f2dc8bfbec0
+      internalID: -394554541
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s5_d3
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 81
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4983fd0a2af8fa54092f81944c90bedb
+      internalID: -1390835550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s5_d4
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 81
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1f03ac418493f284589d5214ce4d4ba7
+      internalID: 801230088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s5_d5
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 81
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0712bb2cd6d89eb4bbff425a35b5dca4
+      internalID: 1023472201
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s5_d6
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 81
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d8734010bcfa89f4a9cc7c648df11fe9
+      internalID: 1605270072
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s5_d7
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 81
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d9123eeb7041ee246bfea7ed5dd0ffff
+      internalID: -801953979
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s6_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: df6e60e65b8c32146a6b606cd727c38c
+      internalID: 1349508847
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s6_d1
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 0
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1b45a21877d09754dab3dbc86efed18f
+      internalID: 910767621
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s6_d2
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 0
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 250abd68c1c4f1045bc8a5a07812f895
+      internalID: -252346744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s6_d3
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 0
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 75d562c3b000e614db7e50018119fe46
+      internalID: 1990179489
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s6_d4
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 0
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 66159a0f2e9578342b1dfaa4be562b1f
+      internalID: -1857828355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s6_d5
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 0
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dc94cdca883102f468fb04d8013937d2
+      internalID: -1886491777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s6_d6
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 0
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c068cef0ec0309d4bad727da8de8de45
+      internalID: 1886133461
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_shower_s6_d7
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 0
+        width: 54
+        height: 81
+      alignment: 9
+      pivot: {x: 0.5, y: 0.22222222}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a50916936dc86a64f9c2f031ba89bcac
+      internalID: -568189756
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: f0f6cf6f3de53c44b8613471df71c207
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Appliance_shower_s0_d0: -759497703
+      Appliance_shower_s0_d1: -1158649968
+      Appliance_shower_s0_d2: -622870160
+      Appliance_shower_s0_d3: -882043117
+      Appliance_shower_s0_d4: 1225992179
+      Appliance_shower_s0_d5: 717984099
+      Appliance_shower_s0_d6: -1429794723
+      Appliance_shower_s0_d7: 154304221
+      Appliance_shower_s1_d0: 389294912
+      Appliance_shower_s1_d1: 1548633789
+      Appliance_shower_s1_d2: -2041766632
+      Appliance_shower_s1_d3: -1664140914
+      Appliance_shower_s1_d4: 964666475
+      Appliance_shower_s1_d5: 552512494
+      Appliance_shower_s1_d6: 1008259609
+      Appliance_shower_s1_d7: -566352716
+      Appliance_shower_s2_d0: 847282238
+      Appliance_shower_s2_d1: 604476568
+      Appliance_shower_s2_d2: 1642598232
+      Appliance_shower_s2_d3: -1782209410
+      Appliance_shower_s2_d4: 1076726451
+      Appliance_shower_s2_d5: 297936355
+      Appliance_shower_s2_d6: 1897983796
+      Appliance_shower_s2_d7: 1154751262
+      Appliance_shower_s3_d0: 775388933
+      Appliance_shower_s3_d1: -1443287165
+      Appliance_shower_s3_d2: -1021855515
+      Appliance_shower_s3_d3: -6371141
+      Appliance_shower_s3_d4: -1588757612
+      Appliance_shower_s3_d5: 2076887570
+      Appliance_shower_s3_d6: -965758188
+      Appliance_shower_s3_d7: -1389738093
+      Appliance_shower_s4_d0: 1956964305
+      Appliance_shower_s4_d1: 363269780
+      Appliance_shower_s4_d2: -1007988232
+      Appliance_shower_s4_d3: 1440807820
+      Appliance_shower_s4_d4: -2124693630
+      Appliance_shower_s4_d5: -2054681949
+      Appliance_shower_s4_d6: -1148222065
+      Appliance_shower_s4_d7: -1032138026
+      Appliance_shower_s5_d0: 209189374
+      Appliance_shower_s5_d1: 705549968
+      Appliance_shower_s5_d2: -394554541
+      Appliance_shower_s5_d3: -1390835550
+      Appliance_shower_s5_d4: 801230088
+      Appliance_shower_s5_d5: 1023472201
+      Appliance_shower_s5_d6: 1605270072
+      Appliance_shower_s5_d7: -801953979
+      Appliance_shower_s6_d0: 1349508847
+      Appliance_shower_s6_d1: 910767621
+      Appliance_shower_s6_d2: -252346744
+      Appliance_shower_s6_d3: 1990179489
+      Appliance_shower_s6_d4: -1857828355
+      Appliance_shower_s6_d5: -1886491777
+      Appliance_shower_s6_d6: 1886133461
+      Appliance_shower_s6_d7: -568189756
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

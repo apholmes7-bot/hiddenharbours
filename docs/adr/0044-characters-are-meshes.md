@@ -727,6 +727,9 @@ moored skipper is wired as §7.4 says, and the arrival keeps its staging (§8.4)
 - **Held, not churned.** She takes one figure id at her first draw with both switches on, and keeps it
   while she is sheltered or suspended, so a door costs nothing. A switch turned off, the presenter
   disabled or destroyed, or a re-configure gives it back.
+- *(Amended by [ADR 0056](0056-facet-id-space-is-a-budget.md), 2026-11-12: the PLAYER's figure now
+  takes a reserved id the fleet and the cast can never have, and hulls hold their fore block only while
+  someone stands on their deck. The villagers' policy below is unchanged.)*
 - **No release by region and no reserve.** Hulls register in `OnEnable`, before `SetActiveScene`, so a
   release on region change would free nothing for Nine Mile Creek's hulls. It would also leave St
   Peters' villagers as sprites after a round trip. The #877 note rejected release by view (its

@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88201f4f4f3247558c87e55aa4fb8ac4, type: 3}
+  m_Name: NmcHarbourmasterFirst
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.DialogueDef
+  Id: dialogue.nmc_harbourmaster_first
+  FirstLines:
+  - 'Harbour office. If it floats and it ties up at this wharf, it''s on my book sooner or later.'
+  - 'You''ll want a licence before you take cod on rod and line off this side. I sign them, and I sign them gladly. It''s the paperwork I mind.'
+  RepeatLines:
+  - 'Still here. The book''s open if you''re after a licence.'
+  Options:
+  - Id: option.browse_licences
+    Label: 'What licences are going?'
+    ReplyLines: []
+    CatalogSellerId: seller.nmc_harbourmaster
+    CatalogSection: gear
+    SellAtSellerId:
+    NothingToSellLines: []
+  - Id: option.ask_about_harbour
+    Label: 'Who keeps the harbour?'
+    ReplyLines:
+    - 'The office does, which this week is me. Berths, licences, who owes what on the fuel.'
+    - 'Mind the tide at the ladder. The wharf doesn''t move and the water does, and every summer somebody learns that the wet way.'
+    CatalogSellerId:
+    CatalogSection:
+    SellAtSellerId:
+    NothingToSellLines: []

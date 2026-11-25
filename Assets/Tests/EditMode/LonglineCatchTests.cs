@@ -8,6 +8,10 @@ namespace HiddenHarbours.Tests.EditMode
 {
     public class LonglineCatchTests
     {
+        private const double Hour = 75d;
+
+        [SetUp] public void SetUp() => GameServices.Reset();
+        [TearDown] public void TearDown() => GameServices.Reset();
         [Test]
         public void SameLineAndPerHookHaulMoments_AreBitIdentical()
         {
@@ -16,13 +20,13 @@ namespace HiddenHarbours.Tests.EditMode
             var line = rig.Line();
             for (int i = 0; i < 30; i++)
             {
-                double haul = 21600d + i * 60d;
+                double haul = (6d * Hour) + i * (Hour / 60d);
                 var first = LonglineCatch.ResolveHook(rig.Def, in line, i, haul, 4242, pool, null,
                     rig.Environment, rig.Terrain, (p, t) => new CatchContext(line.Region, 0f,
-                        (float)(t / 3600d), Season.HighSummer, Gear.Handline), in rig.Depth);
+                        (float)(t / Hour), Season.HighSummer, Gear.Handline), in rig.Depth);
                 var second = LonglineCatch.ResolveHook(rig.Def, in line, i, haul, 4242, pool, null,
                     rig.Environment, rig.Terrain, (p, t) => new CatchContext(line.Region, 0f,
-                        (float)(t / 3600d), Season.HighSummer, Gear.Handline), in rig.Depth);
+                        (float)(t / Hour), Season.HighSummer, Gear.Handline), in rig.Depth);
                 Same(first, second);
             }
         }
@@ -41,8 +45,8 @@ namespace HiddenHarbours.Tests.EditMode
             var restored = SaveSerialization.FromJson(SaveSerialization.ToJson(save));
             Assert.AreEqual(2, restored.PlacedLonglines[0].HooksHauledFromA);
             Assert.AreEqual(3, restored.PlacedLonglines[0].HooksHauledFromB);
-            var before = rig.Haul(line, 30000d, pool);
-            var after = rig.Haul(restored.PlacedLonglines[0], 30000d, pool);
+            var before = rig.Haul(line, line.SetGameTimeSeconds + 8d * Hour, pool);
+            var after = rig.Haul(restored.PlacedLonglines[0], line.SetGameTimeSeconds + 8d * Hour, pool);
             for (int i = 0; i < 30; i++) Same(before[i], after[i]);
         }
 
@@ -52,10 +56,10 @@ namespace HiddenHarbours.Tests.EditMode
             using var rig = new LonglineTestRig();
             var pool = new[] { rig.Fish("fish.fixture") };
             var line = rig.Line();
-            var early = rig.Haul(line, 7200d, pool);
-            var peak = rig.Haul(line, 21600d, pool);
-            var oldestStillSafe = rig.Haul(line, 43200d, pool);
-            var late = rig.Haul(line, 64800d, pool);
+            var early = rig.Haul(line, (2d * Hour), pool);
+            var peak = rig.Haul(line, (6d * Hour), pool);
+            var oldestStillSafe = rig.Haul(line, (12d * Hour), pool);
+            var late = rig.Haul(line, (18d * Hour), pool);
             Assert.AreEqual(0, FishCount(rig.Haul(line, 0d, pool)));
             Assert.Greater(FishCount(early), 0);
             Assert.Less(FishCount(early), 30);
@@ -66,7 +70,7 @@ namespace HiddenHarbours.Tests.EditMode
             for (int i = 0; i < 30; i++)
             {
                 Assert.AreEqual(peak[i].BiteGameTimeSeconds, late[i].BiteGameTimeSeconds);
-                Assert.Greater(64800d - late[i].BiteGameTimeSeconds, 43200d);
+                Assert.Greater((18d * Hour) - late[i].BiteGameTimeSeconds, (12d * Hour));
                 if (early[i].State == LonglineHookState.Fish)
                     Assert.AreEqual(early[i].BiteGameTimeSeconds, peak[i].BiteGameTimeSeconds);
             }
@@ -82,8 +86,8 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 var line = rig.Line();
                 line.InstanceId = "line.fixture_" + set;
-                var neutral = rig.Haul(line, 21600d, pool);
-                var baited = rig.Haul(line, 21600d, pool, new[] { "fish.fixture_a" });
+                var neutral = rig.Haul(line, (6d * Hour), pool);
+                var baited = rig.Haul(line, (6d * Hour), pool, new[] { "fish.fixture_a" });
                 Assert.AreEqual(30, FishCount(neutral));
                 Assert.AreEqual(30, FishCount(baited));
                 neutralA += neutral.Count(x => x.Catch.Value.SpeciesId == "fish.fixture_a");
@@ -99,9 +103,9 @@ namespace HiddenHarbours.Tests.EditMode
             using var rig = new LonglineTestRig();
             var deep = rig.Fish("fish.deep_fixture", FishDepthBand.Deep);
             var inshore = rig.Fish("fish.inshore_fixture", FishDepthBand.Inshore);
-            rig.Environment.LevelAt = time => time >= 21600d ? 100f : 0f;
-            Assert.AreEqual(0, FishCount(rig.Haul(rig.Line(), 21600d, new[] { deep })));
-            var caught = rig.Haul(rig.Line(), 21600d, new[] { deep, inshore });
+            rig.Environment.LevelAt = time => time >= (6d * Hour) ? 100f : 0f;
+            Assert.AreEqual(0, FishCount(rig.Haul(rig.Line(), (6d * Hour), new[] { deep })));
+            var caught = rig.Haul(rig.Line(), (6d * Hour), new[] { deep, inshore });
             Assert.AreEqual(30, FishCount(caught), "all bite in 10 m before the haul's water level changes");
             Assert.IsTrue(caught.All(x => x.Catch.Value.SpeciesId == "fish.inshore_fixture"));
         }
@@ -113,14 +117,14 @@ namespace HiddenHarbours.Tests.EditMode
             var fish = rig.Fish("fish.dawn_fixture");
             fish.StartHour = 6f;
             fish.EndHour = 7f;
-            var across = rig.Haul(rig.Line(18000d), 39600d, new[] { fish });
+            var across = rig.Haul(rig.Line((5d * Hour)), (11d * Hour), new[] { fish });
             Assert.Greater(FishCount(across), 0);
             foreach (var hook in across.Where(x => x.State == LonglineHookState.Fish))
             {
-                Assert.GreaterOrEqual(hook.BiteGameTimeSeconds, 21600d);
-                Assert.LessOrEqual(hook.BiteGameTimeSeconds, 25200d);
+                Assert.GreaterOrEqual(hook.BiteGameTimeSeconds, (6d * Hour));
+                Assert.LessOrEqual(hook.BiteGameTimeSeconds, (7d * Hour));
             }
-            Assert.IsTrue(rig.Haul(rig.Line(68400d), 86400d, new[] { fish })
+            Assert.IsTrue(rig.Haul(rig.Line((19d * Hour)), (24d * Hour), new[] { fish })
                 .All(x => x.State == LonglineHookState.Empty));
         }
 
@@ -136,9 +140,9 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.IsFalse(fish.GearAllowed(Gear.Longline));
                 Assert.IsTrue(fish.GearAllowed(Gear.Handline));
             }
-            var line = rig.Line(21600d);
+            var line = rig.Line((6d * Hour));
             line.Region = "region.st_peters";
-            Assert.IsTrue(rig.Haul(line, 43200d, pool).All(x => x.State == LonglineHookState.Empty));
+            Assert.IsTrue(rig.Haul(line, (12d * Hour), pool).All(x => x.State == LonglineHookState.Empty));
         }
 
         private static int FishCount(LonglineHookResult[] hooks) => hooks.Count(x => x.State == LonglineHookState.Fish);

@@ -169,6 +169,38 @@ namespace HiddenHarbours.Art
             _dirty = true;
         }
 
+        /// <summary>
+        /// The bucket rig's held MESH for this pail as it is drawn now (ADR 0053): <paramref name="tierId"/>
+        /// ('pail') at the band and catch group the sprite shows, from the same catch art table. Settles a
+        /// pending change first, so the mesh never shows a fill the sprite has not. Null when the table has
+        /// no such state, so the caller keeps the sprite. Allocation-free; the carrier asks every frame, so
+        /// the table is scanned only when the tier, band or group changes.
+        /// </summary>
+        public HiddenHarbours.Core.HeldPropMeshDef HeldMeshFor(string tierId)
+        {
+            if (_library == null || string.IsNullOrEmpty(tierId)) return null;
+            if (_dirty) RebuildNow();
+            if (!_meshKnown || !ReferenceEquals(_meshLibrary, _library) || _meshBand != Band
+                || !string.Equals(_meshTier, tierId, System.StringComparison.Ordinal)
+                || !string.Equals(_meshGroup, Group, System.StringComparison.Ordinal))
+            {
+                _meshKnown = true;
+                _meshLibrary = _library;
+                _meshTier = tierId;
+                _meshBand = Band;
+                _meshGroup = Group;
+                _mesh = _library.BucketMesh(tierId, Band, Group);
+            }
+            return _mesh;
+        }
+
+        private bool _meshKnown;
+        private CatchItemLibrary _meshLibrary;
+        private string _meshTier;
+        private CatchFillBand _meshBand;
+        private string _meshGroup;
+        private HiddenHarbours.Core.HeldPropMeshDef _mesh;
+
         private void Resolve()
         {
             if (_renderer == null) _renderer = GetComponent<SpriteRenderer>();

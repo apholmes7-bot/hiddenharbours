@@ -223,7 +223,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 Scene s = SceneManager.GetSceneAt(i);
                 if (s.IsValid() && s != clean && s.name == StPeters)
-                    yield return SceneManager.UnloadSceneAsync(s);
+                    yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(s);
             }
 
             // ⚠ #764: a Single load of a region promotes the persistent core's roots into
@@ -641,7 +641,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
             LogAssert.ignoreFailingMessages = true;   // the regions log decor complaints of their own
             _loadedAny = true;
-            yield return SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Load(sceneName, LoadSceneMode.Single);
             for (int i = 0; i < 8; i++) yield return null;   // let the self-installing components register
 
             var healed = new List<string>();
@@ -893,7 +893,8 @@ namespace HiddenHarbours.Tests.PlayMode
 
         string PlatePath()
         {
-            string dir = Path.Combine(Application.temporaryCachePath, PlateDir, _look);
+            string dir = _look == "k0-dock" ? Path.GetFullPath("Evidence~/stp-kits/k0/ruling-5/plates") :
+                Path.Combine(Application.temporaryCachePath, PlateDir, _look);
             Directory.CreateDirectory(dir);
             return dir;
         }

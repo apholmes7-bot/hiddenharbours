@@ -56,6 +56,12 @@ namespace HiddenHarbours.World
                  "the inspector.")]
         public HiddenHarbours.Core.CharacterBuildDef Build;
 
+        [Header("Gifts (optional — append-only, 2026-11-15)")]
+        [Tooltip("What this person loves, likes and dislikes being given, by item id and by item tag, and " +
+                 "their own words for each reaction. LEAVE IT EMPTY and they take any gift politely, in " +
+                 "the shared words on GiftConfig. An id beats a tag.")]
+        public NpcGiftPreferences Gifts = new NpcGiftPreferences();
+
         /// <summary>True when this NPC has dialogue authored to speak.</summary>
         public bool HasDialogue => Dialogue != null;
 

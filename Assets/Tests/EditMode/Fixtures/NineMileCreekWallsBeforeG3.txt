@@ -101,22 +101,22 @@ MonoBehaviour:
   _alongOffsetMetres: 50.28342
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 103.49573
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -227,22 +227,22 @@ MonoBehaviour:
   _alongOffsetMetres: 16.283306
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 103.49575
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -353,22 +353,22 @@ MonoBehaviour:
   _alongOffsetMetres: 40.283363
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 103.49575
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -479,22 +479,22 @@ MonoBehaviour:
   _alongOffsetMetres: 52.283432
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 103.49573
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -597,22 +597,22 @@ MonoBehaviour:
   _alongOffsetMetres: 64.28349
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 103.49573
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -723,22 +723,22 @@ MonoBehaviour:
   _alongOffsetMetres: 65.70333
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 109.29005
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -849,22 +849,22 @@ MonoBehaviour:
   _alongOffsetMetres: 24.500023
   _rowsBasisSurfaceMetres: 8.217208
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 75.068596
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -971,22 +971,22 @@ MonoBehaviour:
   _alongOffsetMetres: 47.096718
   _rowsBasisSurfaceMetres: 8.217208
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 88.090836
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -1097,22 +1097,22 @@ MonoBehaviour:
   _alongOffsetMetres: 56.28345
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 103.49573
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -1223,22 +1223,22 @@ MonoBehaviour:
   _alongOffsetMetres: 14.283305
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 103.49573
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -1349,22 +1349,22 @@ MonoBehaviour:
   _alongOffsetMetres: 54.283443
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 103.49575
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -1475,22 +1475,22 @@ MonoBehaviour:
   _alongOffsetMetres: 43.096703
   _rowsBasisSurfaceMetres: 8.217208
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 88.090836
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -1601,22 +1601,22 @@ MonoBehaviour:
   _alongOffsetMetres: 60.283474
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 103.49575
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -1727,22 +1727,22 @@ MonoBehaviour:
   _alongOffsetMetres: 44.283386
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 103.49573
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -1853,22 +1853,22 @@ MonoBehaviour:
   _alongOffsetMetres: 12.5
   _rowsBasisSurfaceMetres: 8.217208
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 75.068596
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -1979,22 +1979,22 @@ MonoBehaviour:
   _alongOffsetMetres: 28.50003
   _rowsBasisSurfaceMetres: 8.217208
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 75.068596
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -2085,22 +2085,22 @@ MonoBehaviour:
   _alongOffsetMetres: 54.096714
   _rowsBasisSurfaceMetres: 8.217208
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 88.090836
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -2199,22 +2199,22 @@ MonoBehaviour:
   _alongOffsetMetres: 104.703705
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 109.29005
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -2325,22 +2325,22 @@ MonoBehaviour:
   _alongOffsetMetres: 6.499999
   _rowsBasisSurfaceMetres: 8.217208
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 75.068596
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -2439,22 +2439,22 @@ MonoBehaviour:
   _alongOffsetMetres: 52.846714
   _rowsBasisSurfaceMetres: 8.217208
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 88.090836
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -2565,22 +2565,22 @@ MonoBehaviour:
   _alongOffsetMetres: 67.70337
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 109.29005
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -2691,22 +2691,22 @@ MonoBehaviour:
   _alongOffsetMetres: 42.283375
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 103.49575
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -2817,22 +2817,22 @@ MonoBehaviour:
   _alongOffsetMetres: 18.283306
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 103.49573
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -2959,22 +2959,22 @@ MonoBehaviour:
   _alongOffsetMetres: 6.5000005
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 88.09086
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -3093,22 +3093,22 @@ MonoBehaviour:
   _alongOffsetMetres: 78.70347
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 109.29005
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -3219,22 +3219,22 @@ MonoBehaviour:
   _alongOffsetMetres: 20.500008
   _rowsBasisSurfaceMetres: 8.217208
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 75.068596
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -3345,22 +3345,22 @@ MonoBehaviour:
   _alongOffsetMetres: 46.283398
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 103.49575
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -3471,22 +3471,22 @@ MonoBehaviour:
   _alongOffsetMetres: 62.28349
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 103.49575
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -3597,22 +3597,22 @@ MonoBehaviour:
   _alongOffsetMetres: 30.500038
   _rowsBasisSurfaceMetres: 8.217208
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 75.068596
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -3715,22 +3715,22 @@ MonoBehaviour:
   _alongOffsetMetres: 48.846718
   _rowsBasisSurfaceMetres: 8.217208
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 88.090836
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -3841,22 +3841,22 @@ MonoBehaviour:
   _alongOffsetMetres: 28.283312
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 103.49575
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -3951,22 +3951,22 @@ MonoBehaviour:
   _alongOffsetMetres: 101.95369
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 109.29005
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -4061,22 +4061,22 @@ MonoBehaviour:
   _alongOffsetMetres: 100.95368
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 109.29005
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -4167,22 +4167,22 @@ MonoBehaviour:
   _alongOffsetMetres: 34.50005
   _rowsBasisSurfaceMetres: 8.217208
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 75.068596
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -4293,22 +4293,22 @@ MonoBehaviour:
   _alongOffsetMetres: 76.703445
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 109.29005
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -4427,22 +4427,22 @@ MonoBehaviour:
   _alongOffsetMetres: 71.953415
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 109.29005
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -4553,22 +4553,22 @@ MonoBehaviour:
   _alongOffsetMetres: 24.28331
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 103.49575
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -4679,22 +4679,22 @@ MonoBehaviour:
   _alongOffsetMetres: 85.95353
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 109.29005
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -4777,22 +4777,22 @@ MonoBehaviour:
   _alongOffsetMetres: 6.250001
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 88.09086
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -4903,22 +4903,22 @@ MonoBehaviour:
   _alongOffsetMetres: 39.096725
   _rowsBasisSurfaceMetres: 8.217208
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 88.090836
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -5029,22 +5029,22 @@ MonoBehaviour:
   _alongOffsetMetres: 89.953575
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 109.29005
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -5155,22 +5155,22 @@ MonoBehaviour:
   _alongOffsetMetres: 41.096714
   _rowsBasisSurfaceMetres: 8.217208
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 88.090836
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -5281,22 +5281,22 @@ MonoBehaviour:
   _alongOffsetMetres: 36.28334
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 103.49575
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -5407,22 +5407,22 @@ MonoBehaviour:
   _alongOffsetMetres: 11.499998
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 88.090836
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -5533,22 +5533,22 @@ MonoBehaviour:
   _alongOffsetMetres: 14.500002
   _rowsBasisSurfaceMetres: 8.217208
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 75.068596
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -5659,22 +5659,22 @@ MonoBehaviour:
   _alongOffsetMetres: 18.500008
   _rowsBasisSurfaceMetres: 8.217208
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 75.068596
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -5890,22 +5890,22 @@ MonoBehaviour:
   _alongOffsetMetres: 51.596718
   _rowsBasisSurfaceMetres: 8.217208
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 88.090836
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -6016,22 +6016,22 @@ MonoBehaviour:
   _alongOffsetMetres: 37.096737
   _rowsBasisSurfaceMetres: 8.217208
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 88.090836
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -6146,22 +6146,22 @@ MonoBehaviour:
   _alongOffsetMetres: 83.70351
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 109.29005
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -6268,22 +6268,22 @@ MonoBehaviour:
   _alongOffsetMetres: 105.95372
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 109.29005
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -6394,22 +6394,22 @@ MonoBehaviour:
   _alongOffsetMetres: 34.28333
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 103.49575
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -6504,22 +6504,22 @@ MonoBehaviour:
   _alongOffsetMetres: 103.7037
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 109.29005
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -6614,22 +6614,22 @@ MonoBehaviour:
   _alongOffsetMetres: 13.499996
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 88.090836
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -6740,22 +6740,22 @@ MonoBehaviour:
   _alongOffsetMetres: 8.500002
   _rowsBasisSurfaceMetres: 8.217208
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 75.068596
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -6842,22 +6842,22 @@ MonoBehaviour:
   _alongOffsetMetres: 107.703735
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 109.29005
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -6968,22 +6968,22 @@ MonoBehaviour:
   _alongOffsetMetres: 22.28331
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 103.49575
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -7098,22 +7098,22 @@ MonoBehaviour:
   _alongOffsetMetres: 74.45344
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 109.29005
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -7224,22 +7224,22 @@ MonoBehaviour:
   _alongOffsetMetres: 95.953636
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 109.29005
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -7338,22 +7338,22 @@ MonoBehaviour:
   _alongOffsetMetres: 99.70368
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 109.29005
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -7464,22 +7464,22 @@ MonoBehaviour:
   _alongOffsetMetres: 32.500042
   _rowsBasisSurfaceMetres: 8.217208
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 75.068596
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -7590,22 +7590,22 @@ MonoBehaviour:
   _alongOffsetMetres: 20.283308
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 103.49573
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -7716,22 +7716,22 @@ MonoBehaviour:
   _alongOffsetMetres: 38.28335
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 103.49573
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -7850,22 +7850,22 @@ MonoBehaviour:
   _alongOffsetMetres: 4.0000043
   _rowsBasisSurfaceMetres: 8.217208
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 75.068596
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -7976,22 +7976,22 @@ MonoBehaviour:
   _alongOffsetMetres: 87.95355
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 109.29005
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -8134,22 +8134,22 @@ MonoBehaviour:
   _alongOffsetMetres: 0
   _rowsBasisSurfaceMetres: 8.217208
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 75.068596
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -8260,22 +8260,22 @@ MonoBehaviour:
   _alongOffsetMetres: 48.28341
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 103.49575
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -8386,22 +8386,22 @@ MonoBehaviour:
   _alongOffsetMetres: 16.5
   _rowsBasisSurfaceMetres: 8.217208
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 75.068596
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -8512,22 +8512,22 @@ MonoBehaviour:
   _alongOffsetMetres: 30.283314
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 103.49575
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -8638,22 +8638,22 @@ MonoBehaviour:
   _alongOffsetMetres: 22.500015
   _rowsBasisSurfaceMetres: 8.217208
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 75.068596
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -8764,22 +8764,22 @@ MonoBehaviour:
   _alongOffsetMetres: 35.096745
   _rowsBasisSurfaceMetres: 8.217208
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 88.090836
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -8890,22 +8890,22 @@ MonoBehaviour:
   _alongOffsetMetres: 10.500003
   _rowsBasisSurfaceMetres: 8.217208
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 75.068596
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -9020,22 +9020,22 @@ MonoBehaviour:
   _alongOffsetMetres: 0
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 88.09084
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -9146,22 +9146,22 @@ MonoBehaviour:
   _alongOffsetMetres: 32.283318
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 103.49573
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -9304,22 +9304,22 @@ MonoBehaviour:
   _alongOffsetMetres: 2.2499988
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 88.09086
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -9438,22 +9438,22 @@ MonoBehaviour:
   _alongOffsetMetres: 81.20349
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 109.29005
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -9560,22 +9560,22 @@ MonoBehaviour:
   _alongOffsetMetres: 97.95366
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 109.29005
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -9686,22 +9686,22 @@ MonoBehaviour:
   _alongOffsetMetres: 93.95361
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 109.29005
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -9812,22 +9812,22 @@ MonoBehaviour:
   _alongOffsetMetres: 9.499999
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 88.090836
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -9926,22 +9926,22 @@ MonoBehaviour:
   _alongOffsetMetres: 50.346718
   _rowsBasisSurfaceMetres: 8.217208
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 88.090836
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -10052,22 +10052,22 @@ MonoBehaviour:
   _alongOffsetMetres: 26.500027
   _rowsBasisSurfaceMetres: 8.217208
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 75.068596
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -10178,22 +10178,22 @@ MonoBehaviour:
   _alongOffsetMetres: 58.283463
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 103.49573
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -10284,22 +10284,22 @@ MonoBehaviour:
   _alongOffsetMetres: 102.9537
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 109.29005
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -10410,22 +10410,22 @@ MonoBehaviour:
   _alongOffsetMetres: 91.9536
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 109.29005
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -10536,22 +10536,22 @@ MonoBehaviour:
   _alongOffsetMetres: 26.283312
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 103.49573
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -10666,22 +10666,22 @@ MonoBehaviour:
   _alongOffsetMetres: 69.70339
   _rowsBasisSurfaceMetres: 12.369316
   _bands:
-  - Unlit: {fileID: 2800000, guid: 85f8ccaf9d99535489a44fa27b458dce, type: 3}
-    Normal: {fileID: 2800000, guid: b42aa7e3c40d7b148afe006986ef84dd, type: 3}
-    Mask: {fileID: 2800000, guid: c98efcb418e1efc43bbd616272889fe6, type: 3}
+  - Unlit: {fileID: 2800000, guid: ec5666b88a2c6f8e98e8f7950fca8ac6, type: 3}
+    Normal: {fileID: 2800000, guid: ff04af314f840666ae47639a3570da7c, type: 3}
+    Mask: {fileID: 2800000, guid: ac0179656d88a03197ac40fd54efa1b2, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 1.8551047
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 53c66ccd9a9e0eb4585a222b2a8bbb2f, type: 3}
-    Normal: {fileID: 2800000, guid: 7e6234ac9e7aae24e9d4aa0cabeadf78, type: 3}
-    Mask: {fileID: 2800000, guid: ff6ff4771c6fb8b45bdf31cf41a89166, type: 3}
+  - Unlit: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Normal: {fileID: 2800000, guid: df79714172751d8ecd7e08e3bd6aa6e5, type: 3}
+    Mask: {fileID: 2800000, guid: adb1f8b3783ff41ff3c9b6b6d11c07e6, type: 3}
     StartSurfaceMetres: 1.8551047
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 7cec1e83f490df8428c9780ba20e16db, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: bb92fc423c091ac4f81d937abe5e0469, type: 3}
+  _profile: {fileID: 2800000, guid: 2d3af1de754b858dddeb48e584581e1d, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: 9c400cfc89ca4ee09de06b628c83768b, type: 3}
   _wallAzimuth: 109.29005
   _batter: 76
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}
@@ -10792,22 +10792,22 @@ MonoBehaviour:
   _alongOffsetMetres: 45.096718
   _rowsBasisSurfaceMetres: 8.217208
   _bands:
-  - Unlit: {fileID: 2800000, guid: 7e156750a9222f241b5f977cae720ca6, type: 3}
-    Normal: {fileID: 2800000, guid: 7ed049457d467c149a330cfb4939a173, type: 3}
-    Mask: {fileID: 2800000, guid: 03fb379b5a6836148941e3fd33e2cd49, type: 3}
+  - Unlit: {fileID: 2800000, guid: dabc68845083e093d915dfb27502839a, type: 3}
+    Normal: {fileID: 2800000, guid: 197fbdc5c57ac736abde40520f27d1da, type: 3}
+    Mask: {fileID: 2800000, guid: c6002fc4c6ab2db81d5bf3299466fd2e, type: 3}
     StartSurfaceMetres: 0
     EndSurfaceMetres: 2.0386264
     Label: Overburden
-  - Unlit: {fileID: 2800000, guid: 2afeacab209703348a55b320393e7af0, type: 3}
-    Normal: {fileID: 2800000, guid: 70cc3ea5ae8ccd840a5fcbfa98a86be6, type: 3}
-    Mask: {fileID: 2800000, guid: e8f3ea18a56bc8e44a4826dbe596c1ce, type: 3}
+  - Unlit: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Normal: {fileID: 2800000, guid: 8c4c95c9c73862f7eaa56c0e78d47fa6, type: 3}
+    Mask: {fileID: 2800000, guid: f880c8e06066e0ac04ee6f18df520188, type: 3}
     StartSurfaceMetres: 2.0386264
     EndSurfaceMetres: 0
     Label: Rock
   _material: {fileID: 2100000, guid: c11ff0ace5ba1000000000000000d002, type: 2}
-  _profile: {fileID: 2800000, guid: 71760420a0bdc3941b4b78de95950cd6, type: 3}
-  _browDecal: {fileID: 2800000, guid: 8f1fd16b454a99a4a955643b69b1e91e, type: 3}
-  _toeDecal: {fileID: 2800000, guid: 4be08932b343bc745a87980006d6ffd5, type: 3}
+  _profile: {fileID: 2800000, guid: 3e3a2c0fd6d006c48e996f009314e6c2, type: 3}
+  _browDecal: {fileID: 2800000, guid: 849fc7abfb3483a9f74f554eec2cbbde, type: 3}
+  _toeDecal: {fileID: 2800000, guid: df66e79a1441840bd44462641216a1ca, type: 3}
   _wallAzimuth: 88.090836
   _batter: 62
   _bakeLight: {x: -0.1, y: -0.82, z: 0.56}

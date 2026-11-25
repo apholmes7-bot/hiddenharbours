@@ -29,7 +29,7 @@ namespace HiddenHarbours.Tests.RigBaking
         const string SidecarPath = "docs/art/rigs/gameplay/seagullIsoRig.gameplay.json";
 
         /// <summary>A boat sidecar, used to prove the reader refuses a schema it does not read.</summary>
-        const string BoatSidecarPath = "docs/art/rigs/gameplay/doryIsoRig.gameplay.json";
+        const string BoatSidecarPath = "docs/art/rigs/gameplay/puntIsoRig.gameplay.json";
 
         /// <summary>
         /// From the drop's own <c>SHA256SUMS.txt</c> (<c>C:/hh-drops/2026-09-10-seagull-rig-kit</c>),

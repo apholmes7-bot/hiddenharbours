@@ -95,11 +95,13 @@ namespace HiddenHarbours.Tests.RigBaking
                 // ──────────────────────────────────────────────────────────────────────────────
 
                 double worstPaired = 100.0, bestPaired = 0.0, bestNaive = 0.0;
+                var pairedPercent = new double[Facings];
                 for (int k = 0; k < Facings; k++)
                 {
                     int shippedCell = (Facings - k) % Facings;
                     var paired = CompareCellPair(a, b, baked.width, k, shippedCell);
                     var naive  = CompareCellPair(a, b, baked.width, k, k);
+                    pairedPercent[k] = paired.MatchPercent;
 
                     Debug.Log($"[golden-master] baked cell {k} vs shipped cell {shippedCell}: " +
                               $"{paired.MatchPercent:F2}% match, mean delta {paired.MeanDelta:F3}" +
@@ -131,13 +133,23 @@ namespace HiddenHarbours.Tests.RigBaking
                 // permutation puts one cell near the off-axis figure (~70-85%) and blows the
                 // spread open by ~28 pp; a uniform art revision cannot.
                 //
-                // The absolute floor stays as a guard with real bite (0.58 pp of headroom over
-                // the measured worst cell), so a bake that degrades further still goes red.
+                // ⚠️ AND A SECOND REVISION, 2026-11-19: the rig sealed the punt's inside so the sea
+                // is not drawn in her (inner skin stood on the floorboards, floor run out to it,
+                // thwart ends kept inside, an inner transom board and a stem face appended). That
+                // work sits at her BOW and STERN, so it shows most in the end-on headings. MEASURED
+                // in CI: cell 0 (bow on) 97.46%, cell 4 (stern on) 96.68%, and the mirror pairs
+                // 1/7 97.64/97.63, 2/6 97.75/97.77, 3/5 97.15/97.21 — spread 1.10 pp, every mirror
+                // pair within 0.06 pp of its twin. Uneven by heading, but uneven SYMMETRICALLY,
+                // which is what a change to the boat looks like and a bad cell does not.
+                //
+                // So the floor sits at 96.0 (0.68 pp under the measured worst cell), the spread
+                // allowance at 1.5 pp, and the mirror-pair check below carries the "one cell is
+                // wrong" discrimination for the six off-axis headings.
                 //
                 // To get the STRONG form back, the art director re-exports PuntIso.png from the
-                // v2 rig — it must stay a hand export from his browser, because re-baking it in
-                // engine would make this test compare the baker against itself.
-                Assert.Greater(worstPaired, 97.5,
+                // current rig — it must stay a hand export from his browser, because re-baking it
+                // in engine would make this test compare the baker against itself.
+                Assert.Greater(worstPaired, 96.0,
                     $"Worst paired cell is only {worstPaired:F2}%, below the floor a known rig " +
                     "revision explains. The baked art does not reproduce the shipped art under " +
                     "the counter-clockwise permutation.\n" +
@@ -147,7 +159,20 @@ namespace HiddenHarbours.Tests.RigBaking
                     "that rig revision is the explanation, not a bug. If ONE cell is wrong, the " +
                     "correction is.");
 
-                Assert.Less(spread, 0.75,
+                // The boat is mirror-symmetric about her centreline, so baked heading k and its
+                // mirror 8−k must drift from the shipped sheet by the same amount. One mis-baked or
+                // mis-permuted off-axis cell breaks its pair.
+                for (int k = 1; k < Facings / 2; k++)
+                {
+                    double gap = Math.Abs(pairedPercent[k] - pairedPercent[Facings - k]);
+                    Assert.Less(gap, 0.4,
+                        $"Baked cells {k} and {Facings - k} are mirror headings but match the shipped " +
+                        $"sheet by different amounts ({pairedPercent[k]:F2}% vs " +
+                        $"{pairedPercent[Facings - k]:F2}%). A change to the boat moves both alike; " +
+                        "one of these two cells is baked or permuted wrong.");
+                }
+
+                Assert.Less(spread, 1.5,
                     $"The paired cells disagree with the shipped sheet by UNEVEN amounts " +
                     $"({worstPaired:F2}%..{bestPaired:F2}%, spread {spread:F2} pp). A rig revision " +
                     "moves every heading by about the same amount; a single bad cell means the " +

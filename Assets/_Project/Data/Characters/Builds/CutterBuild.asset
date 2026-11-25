@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: CutterBuild
   m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.CharacterBuildDef
   Id: char_build.cutter
+  PlayerDisplayName: Build G
   Preset: cutter
   Visual: {fileID: 11400000, guid: 6613f1354213bb5488acab6f36b4fabd, type: 2}
   Skin: 

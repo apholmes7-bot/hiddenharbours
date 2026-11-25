@@ -9,7 +9,7 @@
 | 5 | Ice fishing for smelt | Cut a hole in the Lock, jig at night | On foot | M2-47 | Nothing | SECOND |
 | 6 | Nets | Set a gillnet; tow a trawl | Dragger, trawler | M3-04 | The flag only | At M3 |
 | 7 | Dredge | Tow a scallop bed, cull on deck | A specialist mount | Late, no row | The flag only | Nothing owed |
-| 8 | Mussel lease | Grow a lease, haul its lines | Any boat alongside | M3-16 | Design only | Four leans pending the owner's word |
+| 8 | Mussel lease | Grow a lease, haul its lines | Any boat alongside | M3-16, re-phased 2026-11-13: next after wild picking (M3-16a) | Design only | Four leans pending the owner's word |
 
 ## Build order
 
@@ -81,13 +81,14 @@ Method sources: [rod fishing v2](rod-fishing-v2-brainstorm.md) and
   when she runs; land her. To jig, work the lure up and down at the depth the fish hold.
 - **Skill:** reading the bite, timing the strike, the fight's rhythm, lure choice for the species,
   depth (stop the drop in midwater), tide and hour.
-- **Teeth:** an ordinary failure loses the catch, the bait and the time; a bad enough sea may cost
+- **Teeth:** an ordinary failure loses the catch and time; a bad enough sea may cost
   terminal tackle. The old absolute never-lose-gear bullet at
   `docs/design/rod-fishing-v2-brainstorm.md:279` is superseded by the owner's amendment of 2026-07-25,
   `docs/design/rod-fishing-v2-brainstorm.md:282-297`: gear loss is permitted in a blow. **Bait and
-  tackle consumption and restocking are NOT BUILT today (the rod consumes neither) and stay deferred
-  to the brainstorm's section 8.** These are the planned costs; current ordinary failure loses the
-  fish and time without consuming bait or tackle.
+  tackle selection in the world and terminal-tackle loss remain deferred to the brainstorm's
+  section 8.** Configured rod bait spends one unit on a landed catch with the shipped
+  `BaitSpentOnCatchOnly` flag ON; teases, missed strikes, lost fights and unlicensed releases spend
+  none. OFF restores spending at the bite. Unconfigured rods still spend no bait; tackle is not consumed.
 - **Gear and boat:** the rod, five pieces of tackle, bait (capelin, herring). Ashore or any boat.
 - **Grounds and time:** anywhere with water, inside each species' windows.
 - **Catch:** cod, haddock, pollock, mackerel, winter flounder and striped bass on main.
@@ -99,7 +100,7 @@ Method sources: [rod fishing v2](rod-fishing-v2-brainstorm.md) and
 - **Next:** both owner items are ruled: world interactions with ui-ux, no menu, for bait and lure
   choosing (the owner, 2026-10-29; `docs/design/rod-fishing-v2-brainstorm.md:404`); "portion" is the
   bait portion (the owner, 2026-10-27 14:15:47Z; `docs/design/rod-fishing-v2-brainstorm.md:407`),
-  planned by the angler's kit, not this plan. Consumables remain deferred as above.
+  planned by the angler's kit, not this plan. Physical supplies remain deferred as above.
 
 **On main:** the rod fishes as Handline (`Code/Fishing/FishingController.cs:41`). The bite
 (`Code/Fishing/BiteSequenceSim.cs:57`), fight (`Code/Fishing/RodFightSim.cs:25`), jig
@@ -107,8 +108,9 @@ Method sources: [rod fishing v2](rod-fishing-v2-brainstorm.md) and
 (`Code/Fishing/FishSchoolMath.cs:43`) are built, with five tackle assets in `Data/Tackle/` and
 `gear.rod` (`Data/Tools/Rod.asset:17`). `license.cod` costs 120 and permits only `fish.atlantic_cod`
 (`Data/Resources/Catalog/Licenses/CodLicense.asset:15-20`); species-based landing enforcement
-(`Code/Economy/CatchLicensePolicy.cs:29`) gates cod on every gear. The rod consumes neither bait
-nor tackle; the rough-weather terminal-tackle cost is not built.
+(`Code/Economy/CatchLicensePolicy.cs:29`) gates cod on every gear. Bait timing is the switchable
+catch-only rule above; scene rods without bait configured still spend none. The rough-weather
+terminal-tackle cost is not built.
 
 ## 3. Traps and pots
 
@@ -129,7 +131,11 @@ Method sources: [fish and content, section 3.5](fish-and-content.md#35-phased-ge
 - **Grounds and time:** inshore, all year on main. The canon's seasonal trap moves remain owed
   under their separate charter.
 - **Catch:** lobster and rock crab.
-- **Licence:** none on main; lobster is ungated.
+- **Licence:** none on main; lobster is ungated. *(Superseded as design 2026-11-23, canon §5.3's
+  amendment: lobster and crab need a licence; those licences are a fixed number in the world, passed
+  between holders and never sold over a counter, and the player first works as a hand on a lobster or
+  crab boat. Until he holds one, a lobster or crab he traps goes back automatically with a line naming
+  it. A direction, not a finished design.)*
 - **NPC fleet:** other boats' strings of buoys on the grounds, in their own colours, with seasonal
   pot moves still owed. Their landings move prices (M2-19).
 - **Automated later:** M2-33's powered winch takes the haul (P4); a sternman works the deck
@@ -155,6 +161,49 @@ exist. Swell haul math (`Code/Fishing/TrapHaulMath.cs:32`), haul and deck contro
 (`Code/Boats/DeckGearKitDef.cs:23`, `Data/Boats/DeckGear/CapeIslanderDeckGear.asset:18`,
 `Data/Boats/DeckGear/LobsterBoatDeckGear.asset:18`). M2-33's powered winch remains unbuilt
 (`backlog/backlog.md:250`).
+
+### NPC pot boats (the same job, on the clock)
+
+A resident lobster boat works a string of pots off her home harbour as a pure function of
+`(worldSeed, gameTime)`; nothing about her or her gear is saved. One `NpcPotDayDef` per boat
+(`potday.*`, in `Data/Traps`, listed in `Resources/NpcPotDayLibrary`) holds the berth, the passage out
+and home, the string, the times of each part of the job, and the rope and buoy. `NpcPotDay` (Fishing)
+builds the whole day from it once; the boat and every pot at any clock second are then lookups, so a
+game loaded mid-day finds them where the clock says. A pot lies where the latest set put it:
+today's once today's set is done, yesterday's until today's haul.
+
+- The pot is always worked at the starboard rail: she lies to it, gaffs the buoy, hauls the pot up
+  the rope, works it aboard, eases to the new mark and sets it again, buoy last.
+- `PotRopeMath` gives the buoy: the rope is a fixed length, so the buoy streams off the pot by a
+  share of the spare scope, one way on the flood and the other on the ebb, and closes up over the pot
+  as the tide rises.
+- `NpcPotBoats` (App) moves the scene's own `MooredBoat` and draws buoy, rope and pot. NPC gear
+  never enters the player's pot service, pot locker or save.
+- A content test holds every authored day to the real ground: afloat the whole way at spring low,
+  pots in fishable water, every rope reaching the surface at spring high.
+- `NpcPotDayCatch` (Fishing) resolves what each pot holds from the same tables and seeded streams as a
+  player's pot (`TrapFill`, `PlacedTrapCatch`, `DeckPot`): soaked since yesterday's set, hauled at
+  today's haul, read against the Def's `CatchRegionId`. Each animal then takes a fixed share of the
+  deck time in order: picked and gauged at the rail; a keeper banded at the bench and carried to the
+  crate for its size grade; a short or berried one put back over the side; last, the pot baited. The
+  crates at any clock second are a count over the day's plan.
+- `NpcPotDeck` (App) shows it: the skipper stands at the helm, the rail, the bench or a crate as the
+  clock says, the animal is drawn at her hand until it is stowed or let go, and the crates fill one
+  animal at a time. Nothing appears in a crate that did not pass through her hands.
+- `NpcPotLanding` (Fishing) is the landing: once she is fast, each crate that holds a keeper is picked
+  up off the deck, carried over the rail, up the ladder and along the Def's `LandingRoute` to the
+  buyer's counter, and put down; she walks back for the next. When the last crate is down the buyer
+  weighs the lot and she walks home aboard. `NpcPotLandingWalk` (App) draws her ashore with the
+  crate in her hands and the crates at the counter. The landing moves no money and does not touch
+  the market: whether NPC landings should move the price the player is paid is an open owner ruling.
+- **The fleet** is one `NpcPotDayDef` per boat, all listed in the library: three lobster boats work
+  off Nine Mile Creek. A new boat is a new Def with her own berth, departure hour, passage, string,
+  buoy colour, ladder and patch of the buyer's counter; no code. The fleet tests hold the Defs to
+  it: no two hulls ever overlap (they cast off at different hours and pass abeam), no two owners'
+  pots share ground, every skipper has her own ladder and counter patch. The side trawlers at the
+  wall are not pot boats and stay at their berths. One frame of the whole fleet is timed in
+  `NpcPotFleetTests` (clock lookups) and `NpcPotFleetPlayTests` (the presenter's own frame) and
+  must allocate nothing.
 
 ## 4. Longline (first)
 
@@ -324,8 +373,10 @@ Method sources: [mussel lease and growing longline](mussel-lease-and-longline.md
 - **Licence:** the lease itself.
 - **NPC fleet:** neighbours' leases.
 - **Automated later:** owned production (P4); staff harvest at M3.
-- **Phase and row:** lean, pending the owner's word: retain M3-16 (`backlog/backlog.md:347`)
-  until the owner rephases the starter-ruin fork (`docs/design/mussel-lease-and-longline.md:267`).
+- **Phase and row:** re-phased by the owner on 2026-11-13 ("Yes, your leans"): wild blue mussels
+  and oysters are picked by hand at St Peters now (backlog M3-16a); the first lease (M3-16) is
+  the next step, once the method doc's section 8 items 2 to 4 are ruled (owed). The starter-ruin
+  fork is still owed and no longer sets the phase.
 - **Next:** the method doc's four owner rulings, with all four leans below. This plan settles
   none of that doc's open rulings.
 
@@ -364,7 +415,7 @@ The linked method docs are unchanged; the angler's kit plans the bait portion.
 |---|---|---|
 | Rod: bait and lure choosing | How does choosing bait and tackle work in the world? (`docs/design/rod-fishing-v2-brainstorm.md:404`) | 2026-10-29: world interactions with ui-ux; no menu. |
 | Rod: "portion" | What did the owner mean by "portion"? (`docs/design/rod-fishing-v2-brainstorm.md:407`) | 2026-10-27: the bait portion, planned by the angler's kit, not this plan. |
-| Mussels 1: starter ruin | Is the lapsed lease the starter ruin? (`docs/design/mussel-lease-and-longline.md:314`) | Retain M3-16 until the owner rephases it. |
+| Mussels 1: starter ruin | Is the lapsed lease the starter ruin? (`docs/design/mussel-lease-and-longline.md:314`) | Still owed. The phase no longer waits on it: the owner re-phased the lease on 2026-11-13 (next after wild picking). |
 | Mussels 2: water and window | What tide window and spots make water leaseable? (`docs/design/mussel-lease-and-longline.md:316`) | Leave leaseable water undecided until the owner names the tide window and spots. |
 | Mussels 3: storm damage | Foul and lose yield, or part and lose the line? (`docs/design/mussel-lease-and-longline.md:319`) | Foul and lose yield; no permanent gear loss. |
 | Mussels 4: season shape | Seasonal calendar or rolling cycle? (`docs/design/mussel-lease-and-longline.md:321-323`) | A rolling cycle, no duration chosen. |

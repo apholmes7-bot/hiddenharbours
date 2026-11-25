@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6000b72d0329cc04ebb9f483ec968d7f, type: 3}
+  m_Name: AtlanticTomcod
+  m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.FishSpeciesDef
+  Id: fish.atlantic_tomcod
+  DisplayName: Atlantic Tomcod
+  Category: 0
+  Rarity: 0
+  Flavor: 'A small brown cod of the creek and the estuary, the ''frostfish''. Runs in on the winter cold to spawn and bites a baited hook through the ice. BALANCE NOTE: placeholder value, weight and elasticity set beside its neighbours - flagged for economy-sim to tune.'
+  RegionIds:
+  - region.nine_mile_creek
+  AllowedGear: 33
+  Seasons: 12
+  MinTide: -10
+  MaxTide: 10
+  StartHour: 0
+  EndHour: 24
+  DepthBands: 6
+  BehaviorFlags: 1
+  FavoredLures: 0
+  MinSchoolMarks: 2
+  MaxSchoolMarks: 6
+  ShoalSpreadMetres: 1.5
+  SchoolsPerSquareKilometre: 900.0
+  MinWeightKg: 0.05
+  MaxWeightKg: 0.3
+  BaseValue: 2
+  SpoilPerDay: 0.9
+  SupplyElasticity: 0.5
+  SpawnWeight: 0.9
+  Sprite: {fileID: 21300000, guid: a3909035b82b6124daa0f035f9a2d955, type: 3}
+  Bite: {fileID: 0}
+  RodFight: {fileID: 0}

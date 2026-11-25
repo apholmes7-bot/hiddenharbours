@@ -101,7 +101,7 @@ namespace HiddenHarbours.App.Editor
                 {
                     if (!_hostScene.Docs.Any(d => d.ClassId == GameObjectClass && d.Field("m_Name") == StPetersWharf.RootName)) return false;
                     // The pilehead belongs to the committed wharf; only its relative rise is drawn.
-                    var root = new Vector2(StPetersWharf.RootCellX + 0.5f, 0f);
+                    var root = StPetersLandingLayout.Datum;
                     baseZ = KeySceneGroundAt(root);
                     sortY = piece.At.y;
                 }

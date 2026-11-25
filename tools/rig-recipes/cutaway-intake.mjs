@@ -58,13 +58,6 @@ export const HULLS = [
     tie: null,                                   // no shared sole on this hull
   },
   {
-    key: 'trawler', file: 'sternTrawlerIsoRig.js', global: 'SternTrawlerIso',
-    merged: false,
-    rooms: ['house', 'bridge', 'below', 'main_deck'],
-    open: ['main_deck'],
-    tie: { open: 'main_deck', closed: 'house' },  // both publish soleZ 3.50 — the ceilings break it
-  },
-  {
     key: 'packet', file: 'coastalPacketIsoRig.js', global: 'CoastalPacketIso',
     merged: false,
     rooms: ['house', 'bridge', 'below', 'main_deck'],

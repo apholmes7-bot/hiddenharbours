@@ -203,7 +203,7 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <see cref="CharacterCarryPoseDef"/> asks for <c>buckets</c>. The rig bakes no run at the wheel
         /// or the oars, so there is none to switch on.</para>
         /// </summary>
-        public static readonly string[] CastMeshStates =
+        public static readonly string[] CastMeshStates = WithFishingAndDigStates(WithSeatedHelmStates(new[]
         {
             CharacterSkinStateMap.Idle, CharacterSkinStateMap.Walk,
             CharacterSkinStateMap.Run, CharacterSkinStateMap.Balance,
@@ -216,7 +216,16 @@ namespace HiddenHarbours.Tools.RigBaking
             "hauler", "bench", "chop", "lift",
             "place", "toss", "board_buckets", "board_tray",
             "board_pot", "boardDown_buckets", "boardDown_tray", "boardDown_pot",
-        };
+        }));
+
+        private static string[] WithFishingAndDigStates(string[] existing)
+        {
+            var states = new List<string>(existing);
+            states.AddRange(new[] { "hold", "cast", "bite", "strike", "reel", "land", "castBack", "castRelease", "dig" });
+            // The one-stroke rowing clip (row-stroke.md), switched on by BakeRowStrokeCli.
+            states.Add("row_oars");
+            return states.ToArray();
+        }
 
         /// <summary>Where the characters' art defs live, one <c>{stem}Iso.asset</c> each. The
         /// visual-library builder that writes them refreshes in place, so it keeps the
@@ -670,6 +679,11 @@ namespace HiddenHarbours.Tools.RigBaking
                 if (LiveRigIsV9) CharacterSkinExtractor.Load9(host, LiveKit);
                 bake = LiveRigIsV9 ? ComposeV9(host, preset, existing, progress)
                                    : Compose(host, preset, existing, progress);
+                if (LiveKit == CharacterRigKit.Rig10)
+                {
+                    AppendSeatedHelms(host, bake.Def, bake.Bones, enable: false);
+                    AppendRowStroke(host, bake.Def, bake.Bones, enable: false);
+                }
             }
 
             CharacterSkinDef def = bake.Def;

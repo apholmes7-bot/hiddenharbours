@@ -116,6 +116,10 @@ namespace HiddenHarbours.Tests.PlayMode
 
         [UnityTearDown] public IEnumerator TearDown()
         {
+            // A scene operation a region started (a neighbour warming, a release) is not cancelled by destroying
+            // its requester: let it finish, within a bound that names itself, before sprites are destroyed.
+            yield return HiddenHarbours.Tests.Support.SceneSettle.WaitForPendingSceneOperations(
+                "the caster audit's teardown destroys its arrivals");
             Time.timeScale = 1f;
             if (_host != null) { _host.SetCasting(true); _host.enabled = true; }
             if (_camera != null) _camera.targetTexture = null;
@@ -147,7 +151,7 @@ namespace HiddenHarbours.Tests.PlayMode
             for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
             {
                 var scene = SceneManager.GetSceneAt(i);
-                if (scene != clean && scene.isLoaded) yield return SceneManager.UnloadSceneAsync(scene);
+                if (scene != clean && scene.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(scene);
             }
             if (_clockOnEntry != null && !(_clockOnEntry is Object clockObject && clockObject == null))
             {
@@ -187,7 +191,7 @@ namespace HiddenHarbours.Tests.PlayMode
             _host.SetCasting(false);
             LogAssert.ignoreFailingMessages = true; // Existing region import/decor diagnostics are unrelated.
             Time.timeScale = 1f;
-            yield return SceneManager.LoadSceneAsync(scene, LoadSceneMode.Single);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Load(scene, LoadSceneMode.Single);
             for (int i = 0; i < 12; i++) yield return null;
             if (GameServices.Config == null && config != null) GameServices.Config = config;
             if (GameServices.Clock == null && clock != null) GameServices.Clock = clock;
@@ -212,11 +216,13 @@ namespace HiddenHarbours.Tests.PlayMode
             while (population == null && Time.realtimeSinceStartup < deadline) yield return null;
             _host.enabled = false;
             _host.ScanCompleted -= Complete;
-            Assert.That(population, Is.Not.Null, "Wait for the installer's complete loaded-and-persistent scan.");
+            Assert.That(population, Is.Not.Null, scene + ": the installer's complete loaded-and-persistent scan " +
+                "did not report within 10 s of real time.");
             _host.SetCasting(true);
             var rules = Resources.Load<SunCasterRules>(nameof(SunCasterRules));
             int total = 0, villagers = 0, houses = 0, piers = 0, excluded = 0;
             var rows = new List<string>();
+            List<string> forbiddenCasters = null;
             foreach (var renderer in population)
             {
                 if (renderer == null) continue;
@@ -235,18 +241,74 @@ namespace HiddenHarbours.Tests.PlayMode
                 bool forbidden = renderer.sortingOrder >= SortingBands.SunShadePool ||
                     SunCasterRules.Matches(renderer.name, "*Seabed*") ||
                     SunCasterRules.Matches(renderer.name, "Sea") ||
-                    SunCasterRules.Matches(renderer.name, "*Shadow*") || rules.IsExcludedArt(renderer);
-                if (forbidden) excluded++;
+                    SunCasterRules.Matches(renderer.name, "*Shadow*") || CastsExcludedArt(renderer, shadow, rules);
+                if (forbidden)
+                {
+                    excluded++;
+                    forbiddenCasters ??= new List<string>();
+                    forbiddenCasters.Add(DescribeForbiddenCaster(renderer, rules));
+                }
                 rows.Add($"{renderer.name}\t{kind}\t{renderer.sortingOrder}\t{renderer.transform.position}");
             }
+            Directory.CreateDirectory(Output);
+            File.WriteAllLines(Path.Combine(Output, "census-" + scene + ".tsv"),
+                new[] { $"before\t{before}\nafter\t{total}\nvillagers\t{villagers}\nhouses\t{houses}\npier\t{piers}", "name\tclass\torder\tposition" }.Concat(rows));
             Assert.That(total, Is.GreaterThanOrEqualTo(totalFloor), scene + ": total standing-caster floor");
             Assert.That(villagers, Is.GreaterThanOrEqualTo(villagerFloor), scene + ": villager floor");
             Assert.That(houses, Is.GreaterThanOrEqualTo(houseFloor), scene + ": house floor");
             Assert.That(piers, Is.GreaterThanOrEqualTo(pierFloor), scene + ": pier face/deck floor");
-            Assert.That(excluded, Is.Zero, scene + ": water, seabed and shade must have no caster");
-            Directory.CreateDirectory(Output);
-            File.WriteAllLines(Path.Combine(Output, "census-" + scene + ".tsv"),
-                new[] { $"before\t{before}\nafter\t{total}\nvillagers\t{villagers}\nhouses\t{houses}\npier\t{piers}", "name\tclass\torder\tposition" }.Concat(rows));
+            Assert.That(excluded, Is.Zero, scene + ": water, seabed and shade must have no caster" +
+                (forbiddenCasters == null ? string.Empty : "\nForbidden casters:\n" + string.Join("\n", forbiddenCasters)));
+        }
+
+        /// <summary>
+        /// Excluded art must cast nothing. An excluded OBJECT (name, UI canvas) holds no caster at all, as
+        /// it always had to. An excluded CELL is a frame an animated caster passes through (a gull's
+        /// splash row): the bird keeps its caster for the frames either side, and on the excluded cell the
+        /// caster must have stood down and be drawing nothing, sun silhouette, ground pool or lamp shadow.
+        /// Read off what the caster is actually drawing, so a caster that only claims to stand down fails.
+        /// </summary>
+        static bool CastsExcludedArt(SpriteRenderer renderer, SpriteShadow shadow, SunCasterRules rules)
+        {
+            if (!rules.IsExcludedArt(renderer)) return false;
+            if (shadow == null) return false;
+            if (rules.IsExcludedObject(renderer)) return true;
+            return !shadow.StandsDownForExcludedArt || shadow.IsDrawing || shadow.TryGetLampShadowCaster(out _);
+        }
+
+        static string DescribeForbiddenCaster(SpriteRenderer renderer, SunCasterRules rules)
+        {
+            var predicates = new List<string>();
+            if (renderer.sortingOrder >= SortingBands.SunShadePool)
+                predicates.Add($"sortingOrder >= SortingBands.SunShadePool ({SortingBands.SunShadePool})");
+            foreach (string pattern in new[] { "*Seabed*", "Sea", "*Shadow*" })
+                if (SunCasterRules.Matches(renderer.name, pattern))
+                    predicates.Add($"name matches '{pattern}'");
+            if (rules.IsExcludedArt(renderer))
+            {
+                predicates.Add("rules.IsExcludedArt");
+                if (renderer.GetComponentInParent<Canvas>() != null)
+                    predicates.Add("ancestor Canvas");
+                foreach (string pattern in rules.ExcludedNames ?? Array.Empty<string>())
+                {
+                    if (SunCasterRules.Matches(renderer.name, pattern))
+                        predicates.Add($"excluded name matches '{pattern}'");
+                    if (renderer.sprite != null && SunCasterRules.Matches(renderer.sprite.name, pattern))
+                        predicates.Add($"excluded sprite matches '{pattern}'");
+                }
+                var caster = renderer.GetComponent<SpriteShadow>();
+                if (caster != null)
+                    predicates.Add($"standsDown={caster.StandsDownForExcludedArt}; drawing={caster.IsDrawing}; " +
+                        $"lampCaster={caster.TryGetLampShadowCaster(out _)}");
+            }
+            string hierarchyPath = renderer.name;
+            for (var parent = renderer.transform.parent; parent != null; parent = parent.parent)
+                hierarchyPath = parent.name + "/" + hierarchyPath;
+            string sceneName = renderer.gameObject.scene.name;
+            string spriteName = renderer.sprite != null ? renderer.sprite.name : "<null>";
+            return $"scene='{sceneName}'; path='{hierarchyPath}'; sprite='{spriteName}'; " +
+                $"sortingLayer='{renderer.sortingLayerName}' ({renderer.sortingLayerID}); order={renderer.sortingOrder}; " +
+                $"excludedBy=[{string.Join(", ", predicates)}]; DontDestroyOnLoad={sceneName == "DontDestroyOnLoad"}";
         }
 
         static string ClassOf(SpriteRenderer renderer, SunCasterRules rules)
@@ -324,7 +386,7 @@ namespace HiddenHarbours.Tests.PlayMode
             PlayerShadowInstaller.Attach(playerGo);
             _host.Consider(_fisher);
             yield return null;
-            Assert.That(_switcher.TryInteract(), Is.True, "Board the real Cape Islander deck.");
+            Assert.That(HiddenHarbours.Tests.Support.TimedBoarding.Interact(_switcher), Is.True, "Board the real Cape Islander deck.");
             Assert.That(_switcher.Mode, Is.EqualTo(ControlMode.OnDeck));
             _deckWalk.SnapTo(new Vector2(-0.5f, -3f));
             for (int i = 0; i < 3; i++) yield return null;
@@ -343,11 +405,11 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(shadow.TryGetLampShadowCaster(out _), Is.True, "The caster has a live sprite silhouette.");
             _fisher.transform.position = _switcher.HelmWorldPosition;
             Assert.That(_switcher.WithinHelmReach(), Is.True, "Arrange the fisher at the hull's measured helm.");
-            Assert.That(_switcher.TryInteract(), Is.True, "Take the helm from the configured deck station.");
+            Assert.That(HiddenHarbours.Tests.Support.TimedBoarding.Interact(_switcher), Is.True, "Take the helm from the configured deck station.");
             Assert.That(_switcher.Mode, Is.EqualTo(ControlMode.Aboard));
             Assert.That(_fisher.enabled, Is.False, "Taking the helm disables the body's sprite renderer.");
             Assert.That(shadow.TryGetLampShadowCaster(out _), Is.False);
-            Assert.That(_switcher.TryInteract(), Is.True, "Release the helm back onto the deck.");
+            Assert.That(HiddenHarbours.Tests.Support.TimedBoarding.Interact(_switcher), Is.True, "Release the helm back onto the deck.");
             Assert.That(_switcher.Mode, Is.EqualTo(ControlMode.OnDeck));
             Assert.That(_deckWalk.enabled, Is.True);
             _deckWalk.SnapTo(new Vector2(-0.5f, -3f));
@@ -479,7 +541,7 @@ namespace HiddenHarbours.Tests.PlayMode
             var visible = Renderers().Where(r => r.enabled && r.gameObject.activeInHierarchy && frame.Intersects(r.bounds));
             var rules = Resources.Load<SunCasterRules>(nameof(SunCasterRules));
             foreach (var renderer in visible)
-                Assert.That(renderer.GetComponent<SpriteShadow>() != null && rules.IsExcludedArt(renderer), Is.False,
+                Assert.That(CastsExcludedArt(renderer, renderer.GetComponent<SpriteShadow>(), rules), Is.False,
                     name + ": excluded water, seabed, shade, lamp glow, UI, fish or effects must not cast: " + renderer.name);
             if (name.StartsWith("stp-", StringComparison.Ordinal) || name.StartsWith("cape-", StringComparison.Ordinal) ||
                 name == "nmc-quay-1700" || name == "cumberland-1700")

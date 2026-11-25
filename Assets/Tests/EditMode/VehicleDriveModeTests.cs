@@ -250,7 +250,7 @@ namespace HiddenHarbours.Tests.EditMode
             Rig rig = BuildRig(Vector3.zero);
             Assert.IsTrue(rig.Switcher.TryEnterDriving(rig.Door), "fixture: she must be drivable");
 
-            Assert.IsTrue(rig.Switcher.TryInteract(), "the press is always answered in the cab");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(rig.Switcher), "the press is always answered in the cab");
             Assert.That(rig.Switcher.Mode, Is.EqualTo(ControlMode.OnFoot),
                         "getting out puts you on your feet — NOT onto a boat's deck (the default-arm trap)");
             Assert.IsNull(rig.Switcher.DrivenSeat, "the seat is given up on the way out");
@@ -594,7 +594,7 @@ namespace HiddenHarbours.Tests.EditMode
             GameServices.TidalTerrain = new FlatTerrain { Elevation = -6f };
             GameServices.Environment = new FlatEnv { Level = 0f };
 
-            Assert.IsTrue(rig.Switcher.TryInteract(),
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(rig.Switcher),
                 "the verb answered the player (with a reason); it must not also fall through to the registry");
             Assert.That(rig.Switcher.Mode, Is.EqualTo(ControlMode.Driving), "and nothing moved");
         }

@@ -1,3 +1,4 @@
+using HiddenHarbours.Tests.Support;
 using System;
 using System.Collections.Generic;
 using HiddenHarbours.Art;
@@ -130,10 +131,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
             _host.Consider(standing);
             _host.Consider(decal);
             for (int i = 0; i < 16; i++) { _host.Consider(standing); _host.Consider(decal); }
-            long before = GC.GetAllocatedBytesForCurrentThread();
+            using var allocation = new ManagedAllocationProbe();
+            allocation.Begin();
             for (int i = 0; i < 256; i++) { _host.Consider(standing); _host.Consider(decal); }
-            long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
-            Assert.That(allocated, Is.Zero);
+            long allocationEvents = allocation.End();
+            Assert.That(allocationEvents, Is.Zero);
         }
 
         [Test] public void SettledSceneScan_AllocatesZeroManagedBytes()
@@ -141,10 +143,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Sprite("Crate");
             Sprite("GroundDecal");
             for (int i = 0; i < 16; i++) _host.ScanLoadedScenes();
-            long before = GC.GetAllocatedBytesForCurrentThread();
+            using var allocation = new ManagedAllocationProbe();
+            allocation.Begin();
             for (int i = 0; i < 16; i++) _host.ScanLoadedScenes();
-            long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
-            Assert.That(allocated, Is.Zero);
+            long allocationEvents = allocation.End();
+            Assert.That(allocationEvents, Is.Zero);
         }
 
         [Test] public void DistanceCullAndProofToggle_OnlyDisableOwnedCasters()

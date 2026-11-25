@@ -1,0 +1,10 @@
+{
+  "name": "HiddenHarbours.Tests.GoodsModel.EditMode",
+  "rootNamespace": "HiddenHarbours.Tests.GoodsModel",
+  "references": ["HiddenHarbours.Tools.GoodsModel", "UnityEngine.TestRunner", "UnityEditor.TestRunner"],
+  "includePlatforms": ["Editor"],
+  "precompiledReferences": ["nunit.framework.dll"],
+  "defineConstraints": ["UNITY_INCLUDE_TESTS"],
+  "overrideReferences": true,
+  "autoReferenced": false
+}

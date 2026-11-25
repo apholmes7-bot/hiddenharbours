@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88201f4f4f3247558c87e55aa4fb8ac4, type: 3}
+  m_Name: NmcYardFirst
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.DialogueDef
+  Id: dialogue.nmc_yard_first
+  FirstLines:
+  - 'Yard''s not building any more, if that''s what you came for. We sell off what''s on the blocks and the pots out of the shed.'
+  - 'There''s a punt that wants nothing but a painter, and an old dory that wants a good deal more than that.'
+  RepeatLines:
+  - 'Same boats on the same blocks. Have a look if you like.'
+  Options:
+  - Id: option.browse_yard
+    Label: 'What''s for sale in the yard?'
+    ReplyLines: []
+    CatalogSellerId: seller.nmc_yard
+    CatalogSection: boats
+    SellAtSellerId:
+    NothingToSellLines: []
+  - Id: option.ask_about_yard
+    Label: 'What happened to the yard?'
+    ReplyLines:
+    - 'Same as every yard. The big boats went to the mainland to be built and the little ones stopped being worth the timber.'
+    - 'We still haul and we still sell. Building''s a word we use about the old days.'
+    CatalogSellerId:
+    CatalogSection:
+    SellAtSellerId:
+    NothingToSellLines: []

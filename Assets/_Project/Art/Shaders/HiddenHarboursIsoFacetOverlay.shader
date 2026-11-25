@@ -30,7 +30,7 @@ Shader "HiddenHarbours/IsoFacetOverlay"
             Name "HHHullOverlay"
             Tags { "LightMode" = "Universal2D" }
 
-            Blend SrcAlpha OneMinusSrcAlpha
+            Blend One Zero   // the same colour as SrcAlpha OneMinusSrcAlpha at alpha 1; the alpha carries the calm mirror's mesh tag
             ZWrite Off
             Cull Off
 
@@ -45,6 +45,10 @@ Shader "HiddenHarbours/IsoFacetOverlay"
             // has ever run, IsoFacetHullRegistry binds a 1x1 CLEAR fallback so this discards
             // everywhere instead of sampling the grey unbound placeholder.
             Texture2D<float4> _HHHullScreenTex;
+            Texture2D<float4> _HHHullCausticTex;
+            float4 _HHHullCausticSettings;
+            float _HHHullCausticGain;
+            float4 _CausticColor;
 
             // Per draw via MaterialPropertyBlock: this hull's ids, already divided by 255.
             // _HullIdFore is the BASE of her reserved FORE BLOCK — the deck-occupant split (see the
@@ -53,6 +57,7 @@ Shader "HiddenHarbours/IsoFacetOverlay"
             float _HullId;
             float _HullIdFore;
             float _HullIdForeSpan;
+            float _HHCalmMirrorMeshTag;   // global: 1 while the calm mirror runs (CalmMirror), else unset = 0
 
             // The figure pixel look (route 1, GameConfig.FigurePixelTarget; IsoFacetFigureTarget): the
             // figures at one texel per art pixel, and the map from a screen pixel to its texel,
@@ -109,11 +114,20 @@ Shader "HiddenHarbours/IsoFacetOverlay"
 
             float4 frag (Varyings i) : SV_Target
             {
-                float4 c = HHFigureOver(_HHHullScreenTex.Load(int3(int2(i.positionCS.xy), 0)), i.positionCS.xy);
+                int2 p = int2(i.positionCS.xy);
+                float4 hull = _HHHullScreenTex.Load(int3(p, 0));
+                if (_HHHullCausticSettings.z > 0.5 && HHIsThisHull(hull.a))
+                {
+                    float encoded = _HHHullCausticTex.Load(int3(p, 0)).a;
+                    if (encoded >= 0.5 && encoded < 1.0)
+                        hull.rgb += _CausticColor.rgb * ((1.0 - encoded) * 2.0 * _HHHullCausticGain);
+                }
+                float4 c = HHFigureOver(hull, i.positionCS.xy);
                 // Only THIS hull's pixels — either of her ids.
                 clip(HHIsThisHull(c.a) ? 1.0 : -1.0);
                 clip(c.a - 0.5 / 255.0);
-                return float4(c.rgb, 1.0);
+                // While the calm mirror runs, a mesh pixel carries alpha 0.875 so the mirror leaves it to the mesh mirror pass.
+                return float4(c.rgb, _HHCalmMirrorMeshTag > 0.5 ? 0.875 : 1.0);
             }
             ENDHLSL
         }

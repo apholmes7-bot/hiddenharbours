@@ -432,18 +432,21 @@ namespace HiddenHarbours.Tests.EditMode
 
             // The ratified disembark point lands ON the planks: that is the reason the pier is this long.
             Vector2 disembark = StPetersBuilder.DisembarkPos;
-            Assert.GreaterOrEqual(disembark.x, StPetersWharf.RootCellX,
+            Assert.GreaterOrEqual(disembark.x, LandingDockEvidence.WalkingTop.xMin,
                 "the ratified disembark must fall inside the deck's footprint");
-            Assert.LessOrEqual(disembark.x, StPetersWharf.HeadCellX + 1,
+            Assert.LessOrEqual(disembark.x, LandingDockEvidence.WalkingTop.xMax,
                 "the ratified disembark must fall inside the deck's footprint");
-            Assert.GreaterOrEqual(disembark.y, StPetersWharf.MinCellY,
+            Assert.GreaterOrEqual(disembark.y, LandingDockEvidence.WalkingTop.yMin,
                 "the ratified disembark must fall inside the deck's width");
-            Assert.LessOrEqual(disembark.y, StPetersWharf.MaxCellY + 1,
+            Assert.LessOrEqual(disembark.y, LandingDockEvidence.WalkingTop.yMax,
                 "the ratified disembark must fall inside the deck's width");
 
-            // And the mooring is just off the head, not under it.
-            Assert.Greater(StPetersBuilder.DoryMooredPos.x, StPetersWharf.HeadCellX,
-                "the boat lies off the pier head — a mooring under the planks is a mooring you cannot see");
+            // The dory is alongside the north face. Measure her whole outline, not the old x-only proxy.
+            var dory = HullFootprint.FromHeading(StPetersBuilder.DoryMooredPos,
+                StPetersBuilder.DoryMooredHeadingDegrees, StPetersBuilder.DoryLengthMetres, StPetersBuilder.DoryHalfBeamMetres);
+            Rect top = LandingDockEvidence.WalkingTop;
+            var planks = HullFootprint.FromHeading(top.center, 90f, top.width, top.height * .5f);
+            Assert.That(dory.SignedGapTo(planks), Is.InRange(.3f, .5f), "her whole hull is fendered clear of the planks");
         }
 
         [Test]
@@ -579,10 +582,10 @@ namespace HiddenHarbours.Tests.EditMode
 
                 // On or immediately at the deck's footprint — a bollard floating beside the pier is worse
                 // than no bollard.
-                Assert.GreaterOrEqual(f.Position.x, StPetersWharf.RootCellX - 0.5f, $"{f.Name} is west of the pier");
-                Assert.LessOrEqual(f.Position.x, StPetersWharf.HeadCellX + 1.5f, $"{f.Name} is east of the pier");
-                Assert.GreaterOrEqual(f.Position.y, StPetersWharf.MinCellY - 0.5f, $"{f.Name} is south of the pier");
-                Assert.LessOrEqual(f.Position.y, StPetersWharf.MaxCellY + 1f, $"{f.Name} is north of the pier");
+                Assert.GreaterOrEqual(f.Position.x, LandingDockEvidence.WalkingTop.xMin, $"{f.Name} is west of the pier");
+                Assert.LessOrEqual(f.Position.x, LandingDockEvidence.WalkingTop.xMax, $"{f.Name} is east of the pier");
+                Assert.GreaterOrEqual(f.Position.y, LandingDockEvidence.WalkingTop.yMin, $"{f.Name} is south of the pier");
+                Assert.LessOrEqual(f.Position.y, LandingDockEvidence.WalkingTop.yMax, $"{f.Name} is north of the pier");
             }
 
             // Nothing commercial: this is a modest island wharf, not a freight berth.
@@ -888,7 +891,8 @@ namespace HiddenHarbours.Tests.EditMode
         /// </summary>
         static float DoorErrorDegrees(VillageBuildingCatalog.Placement p, Vector2 from, Vector2 target,
                                       int facing) =>
-            BuildingFacing.DoorErrorDegrees(p.Entry.doorY, p.Entry.pivotY, p.Entry.facings,
+            // The wall is read off the baked anchors too: the harbour gable's door is on its +X eave.
+            BuildingFacing.DoorErrorDegrees(StPetersVillage.DoorWall(p.Entry), p.Entry.facings,
                                             SpriteLightMath.GroundDepthScale, from, target, facing);
 
         [Test]
@@ -953,6 +957,40 @@ namespace HiddenHarbours.Tests.EditMode
                 $"the village's two furthest buildings are {widest:0.0} m apart — that is a hamlet strung " +
                 "along a road, not a low-tide walk");
             Debug.Log($"[stpeters-village] widest span between two buildings: {widest:0.0} m.");
+        }
+
+        /// <summary>
+        /// No scatter plant grows on the harbour gable or on its doorstep. The plant field reads only
+        /// the painted ground, so the cells under the house (half a metre past its walls) and the strip
+        /// in front of its door down to y 42.5 are excluded there; a fern rooted on that strip used to
+        /// stand in front of the facade.
+        /// </summary>
+        [Test]
+        public void TheHarbourGableGrowsNoScatterPlantsOnTheHouseOrItsDoorstep()
+        {
+            const string Lots = "Assets/_Project/Data/Regions/StPetersVillage/";
+            var lot = UnityEditor.AssetDatabase.LoadAssetAtPath<LotDef>(Lots + "lot.st_peters.harbour_gable.asset");
+            var plan = UnityEditor.AssetDatabase.LoadAssetAtPath<VillagePlanDef>(Lots + "village_plan.st_peters.asset");
+            var ground = UnityEditor.AssetDatabase.LoadAssetAtPath<PlantFieldGroundData>(
+                "Assets/_Project/Data/Plants5/StPetersPlantGround.asset");
+            Assert.That(lot, Is.Not.Null); Assert.That(plan, Is.Not.Null); Assert.That(ground, Is.Not.Null);
+            Vector4 f = plan.Footprints.Single(x => x.Id == lot.FootprintId).LocalBounds;
+            const float margin = 0.5f, doorstepFront = 42.5f;
+            float x0 = lot.Position.x + f.x - margin, x1 = lot.Position.x + f.z + margin;
+            float y1 = lot.Position.y + f.w + margin;
+            Assert.That(doorstepFront, Is.LessThan(lot.Position.y + f.y), "the doorstep strip is in front of the wall");
+
+            byte[] cells = ground.Decode();
+            int checkedCells = 0;
+            for (int y = 0; y < ground.Height; y++)
+            for (int x = 0; x < ground.Width; x++)
+            {
+                Vector2 at = ground.Origin + new Vector2(x + .5f, y + .5f) * ground.CellSize;
+                if (at.x < x0 || at.x > x1 || at.y < doorstepFront || at.y > y1) continue;
+                Assert.That(cells[y * ground.Width + x], Is.EqualTo(255), at.ToString());
+                checkedCells++;
+            }
+            Assert.That(checkedCells, Is.EqualTo(247));
         }
     }
 }

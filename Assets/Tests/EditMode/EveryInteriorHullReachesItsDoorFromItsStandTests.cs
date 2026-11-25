@@ -53,7 +53,7 @@ namespace HiddenHarbours.Tests.EditMode
             "CapeIslander", "LobsterBoat", "LobsterInshoreOpenNorthumberland",
             "LobsterStandardHardtopNorthumberland", "LobsterOffshoreOpenNorthumberland",
             "SportFisherConvertible", "SideDragger", "SportFisherSkybridge", "SternTrawler",
-            "SternTrawlerMk2", "CoastalPacket", "Tanker",
+            "SternTrawlerMk2", "CoastalPacket", "Tanker", "ExpeditionYacht120", "MotorYacht84",
         };
 
         /// <summary>Every Interior-linked hull on 2026-09-19: the eighteen lobster variants, the lobster

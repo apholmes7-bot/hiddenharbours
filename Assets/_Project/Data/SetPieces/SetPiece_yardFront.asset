@@ -1,0 +1,132 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b51978faec4dbb8e54e23107a97ef5, type: 3}
+  m_Name: SetPiece_yardFront
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: structure.nmc_yard_yard_front
+  DisplayName: 'Wharf boat yard: yardFront'
+  RigKey: yardFront
+  SceneId: keyscene.nmc_wharf
+  BakedOptionsJson: '{}'
+  Layer: floor
+  Walk: on
+  Mount: ground
+  BoundsMin: {x: -14.06, y: -5.297873, z: -9.066359}
+  BoundsMax: {x: 14.06, y: 5.06, z: 2.69}
+  Frames:
+  - Sprite: {fileID: -3725909412291345393, guid: 7d3b40b3b5e6484489eff711e97e2ab9, type: 3}
+    RigDir: 0
+    ShowFaces: 0
+    BearingDeg: 0
+    CameraSees: yard part
+    NativeSize: {x: 909, y: 439}
+    NativePivot: {x: 454, y: 109}
+    Crop: {x: 4, y: 5}
+    Pivot: {x: 450, y: 104}
+  - Sprite: {fileID: 5434962306652107299, guid: 7d3b40b3b5e6484489eff711e97e2ab9, type: 3}
+    RigDir: 7
+    ShowFaces: 7
+    BearingDeg: 315
+    CameraSees: yard part
+    NativeSize: {x: 875, y: 786}
+    NativePivot: {x: 438, y: 283}
+    Crop: {x: 5, y: 5}
+    Pivot: {x: 433, y: 278}
+  - Sprite: {fileID: -1811475569859425008, guid: 7d3b40b3b5e6484489eff711e97e2ab9, type: 3}
+    RigDir: 6
+    ShowFaces: 6
+    BearingDeg: 270
+    CameraSees: yard part
+    NativeSize: {x: 341, y: 834}
+    NativePivot: {x: 174, y: 319}
+    Crop: {x: 5, y: 29}
+    Pivot: {x: 169, y: 290}
+  - Sprite: {fileID: -2790358512675991181, guid: 7d3b40b3b5e6484489eff711e97e2ab9, type: 3}
+    RigDir: 5
+    ShowFaces: 5
+    BearingDeg: 225
+    CameraSees: yard part
+    NativeSize: {x: 875, y: 823}
+    NativePivot: {x: 438, y: 319}
+    Crop: {x: 5, y: 5}
+    Pivot: {x: 433, y: 314}
+  - Sprite: {fileID: 1793258838631839399, guid: 7d3b40b3b5e6484489eff711e97e2ab9, type: 3}
+    RigDir: 4
+    ShowFaces: 4
+    BearingDeg: 180
+    CameraSees: yard part
+    NativeSize: {x: 909, y: 504}
+    NativePivot: {x: 454, y: 174}
+    Crop: {x: 4, y: 5}
+    Pivot: {x: 450, y: 169}
+  - Sprite: {fileID: 5519537145236893124, guid: 7d3b40b3b5e6484489eff711e97e2ab9, type: 3}
+    RigDir: 3
+    ShowFaces: 3
+    BearingDeg: 135
+    CameraSees: yard part
+    NativeSize: {x: 875, y: 823}
+    NativePivot: {x: 437, y: 319}
+    Crop: {x: 4, y: 5}
+    Pivot: {x: 433, y: 314}
+  - Sprite: {fileID: -2041842524403013070, guid: 7d3b40b3b5e6484489eff711e97e2ab9, type: 3}
+    RigDir: 2
+    ShowFaces: 2
+    BearingDeg: 90
+    CameraSees: yard part
+    NativeSize: {x: 341, y: 834}
+    NativePivot: {x: 166, y: 319}
+    Crop: {x: 4, y: 29}
+    Pivot: {x: 162, y: 290}
+  - Sprite: {fileID: 8143681123459455933, guid: 7d3b40b3b5e6484489eff711e97e2ab9, type: 3}
+    RigDir: 1
+    ShowFaces: 1
+    BearingDeg: 45
+    CameraSees: yard part
+    NativeSize: {x: 875, y: 786}
+    NativePivot: {x: 437, y: 283}
+    Crop: {x: 4, y: 5}
+    Pivot: {x: 433, y: 278}
+  CellSize: {x: 901, y: 813}
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders: []
+  Anchors: []
+  Path: []
+  TideMarks: []
+  Words: []
+  HasLight: 0
+  Light:
+    Emitters: []
+    When: 
+  IsAnimated: 0
+  Animated:
+    Part: 
+    Input: 
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []
+  GameplayJson: '{"schema":"hidden-harbours/nmc-shipyard-part@1","generatedBy":"NmcShipyard
+    1.0.0","key":"yardFront","id":"structure.nmc_yard_yard_front","name":"Wharf boat
+    yard: yardFront","defType":"SetPieceDef","scene":"keyscene.nmc_wharf","units":"metres
+    in the part frame, deck datum zero","bounds":{"x":[-14.06,14.06],"y":[-5.297873,5.06],"z":[-9.066359,2.69]},"layer":"floor","walk":"on","mount":"ground","colliders":[],"facings":[{"dir":0,"showFaces":"0","bearingDeg":0,"cameraSees":"yard
+    part"},{"dir":1,"showFaces":"1","bearingDeg":45,"cameraSees":"yard part"},{"dir":2,"showFaces":"2","bearingDeg":90,"cameraSees":"yard
+    part"},{"dir":3,"showFaces":"3","bearingDeg":135,"cameraSees":"yard part"},{"dir":4,"showFaces":"4","bearingDeg":180,"cameraSees":"yard
+    part"},{"dir":5,"showFaces":"5","bearingDeg":225,"cameraSees":"yard part"},{"dir":6,"showFaces":"6","bearingDeg":270,"cameraSees":"yard
+    part"},{"dir":7,"showFaces":"7","bearingDeg":315,"cameraSees":"yard part"}],"cells":[{"dir":0,"w":909,"h":439,"pivot":[454,109]},{"dir":1,"w":875,"h":786,"pivot":[437,283]},{"dir":2,"w":341,"h":834,"pivot":[166,319]},{"dir":3,"w":875,"h":823,"pivot":[437,319]},{"dir":4,"w":909,"h":504,"pivot":[454,174]},{"dir":5,"w":875,"h":823,"pivot":[438,319]},{"dir":6,"w":341,"h":834,"pivot":[174,319]},{"dir":7,"w":875,"h":786,"pivot":[438,283]}],"anchors":{},"options":{},"placement":{"row":"harbour.yard","at":[198,91],"elevation":3.4,"dir":0},"walkSurfaces":[{"poly":[[14,5],[-14,5],[-14,-5],[14,-5]],"z":0,"surface":"concrete"}],"records":[]}'
+  State: 
+  Variants: []
+  HasVendor: 0
+  Vendor:
+    Seller: 
+    At: {x: 0, y: 0, z: 0}

@@ -120,13 +120,13 @@ namespace HiddenHarbours.Tests.UI.EditMode
         public void PanelLight_LightsAtDusk_AndGoesOutAtDayStart()
         {
             var clock = new FakeClock();
-            // The canon thresholds (WatchFaceState 06:00 / 19:00), pinned at both edges so a moved
+            // The canon thresholds (WatchFaceState 05:30 / 21:30), pinned at both edges so a moved
             // boundary is a visible test change and never a silent one.
-            clock.HourOfDay = 5.99f; Assert.That(HelmPanelLight.IsNight(clock), Is.True, "before dawn");
-            clock.HourOfDay = 6f; Assert.That(HelmPanelLight.IsNight(clock), Is.False, "day starts AT 06:00");
+            clock.HourOfDay = 5.49f; Assert.That(HelmPanelLight.IsNight(clock), Is.True, "before dawn");
+            clock.HourOfDay = 5.5f; Assert.That(HelmPanelLight.IsNight(clock), Is.False, "day starts AT 05:30");
             clock.HourOfDay = 12f; Assert.That(HelmPanelLight.IsNight(clock), Is.False, "noon");
-            clock.HourOfDay = 18.99f; Assert.That(HelmPanelLight.IsNight(clock), Is.False, "before dusk");
-            clock.HourOfDay = 19f; Assert.That(HelmPanelLight.IsNight(clock), Is.True, "night starts AT 19:00");
+            clock.HourOfDay = 21.49f; Assert.That(HelmPanelLight.IsNight(clock), Is.False, "before dusk");
+            clock.HourOfDay = 21.5f; Assert.That(HelmPanelLight.IsNight(clock), Is.True, "night starts AT 21:30");
             clock.HourOfDay = 23.5f; Assert.That(HelmPanelLight.IsNight(clock), Is.True, "late");
         }
 

@@ -422,6 +422,7 @@ namespace HiddenHarbours.Art
             DisplacedSea.Publish(this, new DisplacedSeaState(exaggeration, band, EffectiveFreqScale()));
 
             PublishIsoDepthFrame(exaggeration);
+            HullCausticLighting.Publish(this, _displacedMaterial, _mpb, envelope);
         }
 
         /// <summary>

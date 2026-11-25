@@ -91,7 +91,7 @@ namespace HiddenHarbours.Tests.EditMode
             // RegionTravelCoordinator does on the hop (which re-asserts the aboard mode).
             switcher.Configure(player, boat, input, null, NineMileCreekBuilder.DockZoneRadius, null);
             playerGo.transform.position = boatGo.transform.position;        // step aboard from beside the boat
-            Assert.IsTrue(switcher.TryInteract(), "board before travelling");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(switcher), "board before travelling");
             Assert.IsTrue(RegionTravelCoordinator.ApplyArrival(player.transform, boatGo.transform, switcher, anchor, null),
                 "the region's own arrival is an alongside berth, so she is laid alongside it");
 

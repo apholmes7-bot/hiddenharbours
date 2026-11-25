@@ -300,13 +300,17 @@ namespace HiddenHarbours.Tests.Art.EditMode
         public void TheLampsThatDidNotNeedToShrinkDidNotMove()
         {
             // The sidelights were ALREADY bounded, by the gap between them rather than by taste (see
-            // TheTwoSidelightGlowsNeverOverlap) — a harder constraint than the ruling's, and already
-            // being met. So they are the same object in both arms, and a future edit that quietly
-            // retunes them under cover of this ruling has to answer this test.
+            // TheTwoSidelightGlowsNeverOverlap), so the 2026-09-03 ruling left them alone.
+            //
+            // RE-PINNED 2026-11-13: today's look is read from data (BoatLampLook) and every lamp,
+            // the sidelights included, became a hard core in a banded halo. So today's sidelight is
+            // SMALLER than the passthrough's, never bigger (the overlap bound still holds), and the
+            // signal itself, colour and brightness, is the same in both arms. The passthrough's own
+            // numbers are pinned in BoatLampLookTests.
             foreach (HullLampKind k in new[] { HullLampKind.PortSidelight, HullLampKind.StarboardSidelight })
             {
                 LightPresets.Config now = BoatLampPresets.For(k), then = BoatLampPresets.Legacy(k);
-                Assert.AreEqual(then.Range, now.Range, 1e-6f, $"{k} reach");
+                Assert.LessOrEqual(now.Range, then.Range, $"{k} reach");
                 Assert.AreEqual(then.Intensity, now.Intensity, 1e-6f, $"{k} intensity");
                 Assert.AreEqual(then.Color, now.Color, $"{k} colour");
             }

@@ -502,8 +502,7 @@ namespace HiddenHarbours.Tests.EditMode
             Fairway("entrance fairway", StPetersNavMarks.Entrance);
 
             // The wharf deck: cells RootCellX..HeadCellX by MinCellY..MaxCellY.
-            Box("wharf", Rect.MinMaxRect(StPetersWharf.RootCellX, StPetersWharf.MinCellY,
-                                         StPetersWharf.HeadCellX + 1, StPetersWharf.MaxCellY + 1));
+            Box("wharf", LandingDockEvidence.WalkingTop);
 
             // The sandbar, the gut cut through it, and the gut's buoyed fairway.
             Segment("sandbar", StPetersBuilder.SandbarFrom, StPetersBuilder.SandbarTo, StPetersBuilder.SandbarHalfWidth);

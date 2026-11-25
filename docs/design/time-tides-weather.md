@@ -38,7 +38,7 @@ The world must feel like a place with **moods that you learn to read**, never a 
   // at D_real = 30 min = 1800 s  ->  timeScale = 48
   ```
 
-- **`gameTime`** is the single source of truth: a `double` count of **in-game seconds since world epoch** (day 0, 00:00, Year 1, first day of Early Spring). All derived systems (tide, sun, moon, weather phase) are pure functions of `gameTime`. Store as `double`, not `float` — across a multi-year save, `float` (≈7 sig digits) loses sub-minute precision; `double` does not.
+- **`gameTime`** is the single source of truth: a `double` count of **in-game seconds since world epoch** (elapsed day 0, 00:00; the calendar labels it Year 1, High Summer day 1). All derived systems (tide, sun, moon, weather phase) are pure functions of `gameTime`. Store as `double`, not `float` — across a multi-year save, `float` (≈7 sig digits) loses sub-minute precision; `double` does not.
 
 ```
 gameTime += Time.deltaTime * timeScale * timeFlowMultiplier;
@@ -65,16 +65,37 @@ The player ends a day (or skips ahead) in three sanctioned ways. All three are j
 
 **Implementation:** sleeping never simulates intervening ticks step-by-step. Because the whole environment is deterministic from `gameTime`, we just set `gameTime = targetTime` and re-sample. (Economy/NPC systems that *do* need discrete daily ticks subscribe to an `OnDayRollover(dayIndex)` event and run their resupply once per crossed midnight — see §9.4.)
 
+**As built — Sleep (the player's own bed).** Lying down runs one fixed order: the clock is fast-forwarded to
+the wake hour (`IGameClock.FastForwardTo`, target from `RestMorning`), `DayStarted` is published once per
+midnight slept through (and `SeasonChanged` where a season turns), and only then is the save written, so a
+reload wakes on the same morning. The wake hour is `GameConfig.WakeHour` (6). The edges:
+
+| Lying down at | Wakes at | Day rollover |
+|---|---|---|
+| Evening or daytime (22:00, noon) | **tomorrow's** wake hour | fires once |
+| After midnight, before the wake hour (02:00, 05:50) | **this morning's** wake hour — a short lie-down, not a lost day | none: the day already started at midnight |
+| Exactly at the wake hour (a second rest straight after the first) | tomorrow's wake hour | fires once |
+| While the hour is held (the opening) | the clock does not move; the rest only saves | none |
+
+A bunk aboard follows the same rule as a bed ashore: nothing is simulated through the night, so the hull is
+where she was left, on the new tide. Stamina, the Nap/wait verb and Pass out are not built yet.
+
+The light changes under a dark screen. The rest raises the existing screen cover (`RegionTravelCover`, held)
+before the clock moves, and releases it after the save is written; the release is what starts the cover's own
+fade back to clear. It is one call inside the frame of the press, so nothing waits on the fade and no frame is
+drawn with the clock half moved. The dark arrives as a cut, as on a region crossing: the cover has no fade *to*
+black yet. A rest that will not move the clock (a held hour) raises no cover.
+
 ### 1.4 Reading the clock
 
 - HUD shows a **24h clock** (canon) with an analog sun/moon dial and digital `HH:MM`. Skipper vernacular for time-of-day flavor is fine in ambient text ("first light", "the turn of the tide") but the HUD is literal.
-- **Daylight** is driven by §2.3 (sunrise/sunset shift by season). Lighting/colour grading is owned by the art bible (`art-and-audio-bible.md`); this doc supplies the **sun altitude** value it reads.
+- **Daylight** is driven by §2.3 (one sun schedule in every season). Lighting/colour grading is owned by the art bible (`art-and-audio-bible.md`); this doc supplies the **sun altitude** value it reads.
 
 ---
 
 ## 2. The four seasons
 
-North Atlantic / Sablewick Banks flavor: cold, fog-prone, big weather. Seasons change **daylight length, water temperature, fish availability, and weather odds** — never just a palette swap (P1).
+North Atlantic / Sablewick Banks flavor: cold, fog-prone, big weather. Seasons change **fish availability and tree snow**, with seasonal water temperature and weather odds remaining design targets — never just a palette swap (P1).
 
 ### 2.1 Calendar structure
 
@@ -94,39 +115,23 @@ North Atlantic / Sablewick Banks flavor: cold, fog-prone, big weather. Seasons c
 
 ```
 dayIndex      = floor(gameTime / SECONDS_PER_DAY)            // 0-based, since epoch
-dayOfYear     = dayIndex mod 112                             // 0..111
-seasonIndex   = floor(dayOfYear / 28)                        // 0..3
-dayOfSeason   = dayOfYear mod 28                             // 0..27
-yearIndex     = floor(dayIndex / 112)                        // Year 1 = 0
+calendarDay   = dayIndex + GameConfig.StartDayOfYear          // ships at +28
+dayOfYear     = calendarDay mod 112                          // 0..111
+seasonIndex   = floor(dayOfYear / 28)                         // 0..3
+dayOfSeason   = dayOfYear mod 28 + 1                          // 1..28
+yearIndex     = floor(calendarDay / 112)                      // Year 1 = 0
 hourOfDay     = (gameTime / 3600) mod 24                     // 0..24 float
 ```
 
-### 2.3 Daylight changes (sun model)
+### 2.3 One sun all year
 
-We don't need real astronomy — we need a **believable, smoothly-varying daylight curve** that lengthens toward High Summer and shortens toward Hard Winter, with a North-Atlantic-ish swing.
+The shipping schedule is the same in all four seasons: **first light / sunrise 05:30**, **sunset horizon 21:30**, **full night by 22:00**. The owner can change these three hours on `Resources/DayNightProfile`. `DaylightHours` is its Core contract; the watch, cottage windows and Art consumers read the same asset, including its fallback defaults. Seasons do not change day length.
 
-- Define per-season **sunrise/sunset anchors** in `SeasonConfig` (interpolated *across* the season so transitions are gradual, not stepped at season boundaries):
+`DayNightMath` derives sun direction, elevation and shadow strength from sunrise and sunset. The tint gradient uses **solar phase**, rather than an unrelated clock fraction: 0.20 first light, 0.32 full morning, 0.50 solar noon, 0.75 the authored warm peak and 0.80 full night. `WarmKeyBeforeSunsetHours` places that peak before the horizon without changing the sun arc; it ships at 24/7 hours before sunset, preserving the former 17:00 solar elevation. Dawn, full morning, solar noon, full night and midnight retain their phase-anchor hours. The intensity curve keeps all its existing solar key hours, including phase 0.75 at the published sunset; the lead moves colour only. `DawnBlendHours` sets the morning transition. The neutral day keys hold through the afternoon. The mood grade reaches its night key over the profile's sunset-to-night interval; automatic lamp gates continue to read the published tint. Gulls retain their authored offsets around the shared sunrise and sunset.
 
-| Season midpoint | Sunrise | Sunset | Daylight |
-|---|---|---|---|
-| Early Spring | 06:10 | 19:00 | ~12h50 |
-| High Summer | 04:50 | 21:10 | ~16h20 |
-| The Turn | 06:40 | 18:20 | ~11h40 |
-| Hard Winter | 08:00 | 16:30 | ~8h30 |
+A fresh game opens at **07:30**, from `GameConfig.StartHour`, on **High Summer day 1**, from `GameConfig.StartSeason` and `StartDayOfSeason`. The derived `StartDayOfYear` uses `DaysPerSeason`, so a later season-length change carries the starting offset with it. Legacy scene `_startHour` YAML has no receiving field and is ignored; the Inspector exposes only the shared config control. No scene needs reserialization for this change.
 
-- Compute a continuous **`yearPhase` ∈ [0,1)** = `dayOfYear / 112`, and interpolate sunrise/sunset with a smooth (Catmull-Rom or cosine) curve through the four anchors so the longest day sits mid-High-Summer and the shortest mid-Hard-Winter.
-- **Sun altitude** for lighting:
-
-  ```
-  // 0 at horizon, 1 at local noon, negative at night (for dusk/dawn blending)
-  dayLen   = sunset - sunrise                     // hours
-  noon     = (sunrise + sunset) / 2
-  // smooth bump peaking at noon, zero at sunrise/sunset:
-  sunAltitude01 = clamp( sin( PI * (hourOfDay - sunrise) / dayLen ), 0, 1 )
-  isDaytime     = (hourOfDay > sunrise) && (hourOfDay < sunset)
-  ```
-
-- Art reads `sunAltitude01` + `isDaytime` + current weather (§4) to drive ambient colour/intensity. **Twilight bands** (civil dusk/dawn) are a fixed ±0.5h around sunrise/sunset for the colour ramp.
+`GameCalendar.AtDay` is the only day-to-season conversion. The clock, tide scrubber, historical fish-school queries and nearby-time gull queries share it. It changes labels, never elapsed seconds: tide, moon, weather, weekday, market-day and saved timestamps retain their existing epoch. Year 1 has 84 elapsed days before Early Spring starts Year 2. The four seasons remain 28 days each; months are not introduced.
 
 ### 2.4 Seasonal effects (gameplay)
 
@@ -135,7 +140,7 @@ We don't need real astronomy — we need a **believable, smoothly-varying daylig
 | **Water temperature** | `waterTemp` curve per region, coldest mid-Hard-Winter, warmest mid-High-Summer. Feeds fish spawn tables (`fish-and-content.md`) and a few "cold shock" flavor events. |
 | **Fish availability** | Each species' `SpeciesData` declares seasonal weighting (e.g. the **fall run** in The Turn, capelin in Early Spring). This doc only *provides* `seasonIndex`, `dayOfSeason`, `waterTemp`; the tables live in `fish-and-content.md`. |
 | **Weather odds** | `WeatherConfig` has a per-season profile: Hard Winter biases storm frequency & severity up and fog down (cold dry gales); High Summer biases settled weather but **afternoon advection fog** up; The Turn brings the first big gales. See §4.6. |
-| **Daylight / work window** | Short Hard-Winter days compress the safe working window — you can do less per day, raising the stakes of each trip (P5). |
+| **Daylight / work window** | The same 05:30–21:30 sun applies all year; seasonal danger comes from the other systems. |
 | **Region access** | Some outer grounds (Ironbound, parts of The Banks) are *more often weathered-out* in Hard Winter — not hard-locked, but the forecast will tell you to stay in. Ice is *flavor/atmosphere only* at launch (no ice-physics); revisit in Open Questions. |
 
 ---
@@ -303,7 +308,9 @@ This single rule produces *every* tidal gameplay consequence:
 > mechanic from minute one: as the deterministic tide **falls**, **exposed seabed becomes walkable**,
 > and a **tide-gated sandbar between St Peters and Nine Mile Creek bares as a walking path at low water**
 > (with **boat-crossable channels that narrow as the tide falls**) — the **first way to reach the
-> mainland, on foot**. St Peters runs a **deliberately big amplitude** (~3–4 m) against the **Cove's
+> mainland, on foot** (from the end of the first week; until the island gate, wind-driven surf over the
+> bar turns a walker back — a look and a push only, a pure function of seed, game time and saved flags,
+> never a change to this sim; amended 2026-11-23, ADR 0062). St Peters runs a **deliberately big amplitude** (~3–4 m) against the **Cove's
 > gentle tide**, so the same falling tide that bares the **clam flats** (the by-hand first catch) also
 > **opens the sandbar** and, at the flood, **seals the island off** (`world-and-regions.md` §6.0,
 > §7). **One source of truth:** terrain (world) and the walkability sim (gameplay) both decide
@@ -323,6 +330,15 @@ This single rule produces *every* tidal gameplay consequence:
 > `WaterLevel`) that gates the dig, so the picture can never disagree with the gate (the discipline the
 > St Peters tide-reveal overlay follows). On a bared hole a single Interact lands one clam into the
 > on-foot bucket (the by-hand first catch, P4).
+>
+> **A dug hole is spent for one tide (implementation note).** A hole yields one clam a tide. Dug, or
+> frightened by a player who loitered, it stays spent until the next high water has covered the flat;
+> on the ebb after that it is fresh. "Which tide" is `IEnvironmentService.TideCycleIndexAt(t)`: a pure
+> function of the clock and the region's tide profile that steps by one at each high water
+> (`TideModel.CycleIndex`, the same carrier the height uses). The save keeps only **when** each hole was
+> spent (`SaveData.SpentClamHoles`, one row per authored hole id, pruned to the running tide). The
+> cycle itself is recomputed, never stored, so a reload in the same tide finds the hole still dug and a
+> reload after the flood finds it fresh.
 
 ### 3.6 The tide table (the player's core tool)
 

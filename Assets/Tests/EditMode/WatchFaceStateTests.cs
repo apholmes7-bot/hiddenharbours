@@ -6,8 +6,8 @@ namespace HiddenHarbours.Tests.EditMode
     /// <summary>
     /// The diegetic watch mapper (<see cref="WatchFaceState.FromClock"/>) — binds the game clock to the
     /// art director's <c>WatchRig</c> params. Verifies the time canon anchors against a fake clock (new
-    /// game = Early Spring · Day 1 · 06:00), that hour/minute TRUNCATE (a watch shows elapsed time, not
-    /// rounded), and that the night backlight flips at the documented 06:00 / 19:00 thresholds. No Unity
+    /// game = High Summer · Day 1 · 07:30), that hour/minute TRUNCATE (a watch shows elapsed time, not
+    /// rounded), and that the night backlight flips at the documented 05:30 / 21:30 thresholds. No Unity
     /// runtime — a pure mapper over the <see cref="IGameClock"/> contract, tested with the fake-clock
     /// pattern the EditMode suite already uses.
     /// </summary>
@@ -19,13 +19,13 @@ namespace HiddenHarbours.Tests.EditMode
             public double Seconds;
             public double TotalSeconds => Seconds;
             public GameTime Now => default;
-            public Season Season { get; set; } = Season.EarlySpring;
+            public Season Season { get; set; } = Season.HighSummer;
             public int Year { get; set; } = 1;
             public int DayIndex { get; set; }
             public int DayOfSeason { get; set; } = 1;
             public Weekday Weekday { get; set; } = Weekday.Monday;
             public bool IsMarketDay { get; set; }
-            public float HourOfDay { get; set; } = 6f;
+            public float HourOfDay { get; set; } = 7.5f;
             public float DayFraction => HourOfDay / 24f;
             public bool IsPaused { get; set; }
             public float TimeScale { get; set; } = 1f;
@@ -36,14 +36,14 @@ namespace HiddenHarbours.Tests.EditMode
         public void NewGameAnchor_EarlySpringDay1_0600()
         {
             var w = WatchFaceState.FromClock(new FakeClock());   // defaults = the new-game start
-            Assert.AreEqual(6, w.Hour);
-            Assert.AreEqual(0, w.Minute);
+            Assert.AreEqual(7, w.Hour);
+            Assert.AreEqual(30, w.Minute);
             Assert.AreEqual(0, w.Second);
             Assert.AreEqual(Weekday.Monday, w.Weekday);
             Assert.AreEqual(1, w.DayOfSeason);
-            Assert.AreEqual(Season.EarlySpring, w.Season);
+            Assert.AreEqual(Season.HighSummer, w.Season);
             Assert.AreEqual(1, w.Year);
-            Assert.IsFalse(w.IsNight, "06:00 is day (night ends at day-start)");
+            Assert.IsFalse(w.IsNight, "07:30 is morning");
         }
 
         [Test]
@@ -60,19 +60,19 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void Night_FlipsAt_DuskAndDawn()
         {
-            Assert.IsTrue (WatchFaceState.NightAt(5.99f), "before 06:00 is night");
-            Assert.IsFalse(WatchFaceState.NightAt(6.00f), "06:00 is day");
-            Assert.IsFalse(WatchFaceState.NightAt(18.99f), "just before 19:00 is day");
-            Assert.IsTrue (WatchFaceState.NightAt(19.00f), "19:00 is night");
+            Assert.IsTrue (WatchFaceState.NightAt(5.49f), "before 05:30 is night");
+            Assert.IsFalse(WatchFaceState.NightAt(5.50f), "05:30 is day");
+            Assert.IsFalse(WatchFaceState.NightAt(21.49f), "just before 21:30 is day");
+            Assert.IsTrue (WatchFaceState.NightAt(21.50f), "21:30 is night");
             Assert.IsTrue (WatchFaceState.NightAt(23.5f), "late is night");
         }
 
         [Test]
         public void Night_ThresholdsAreTunable()
         {
-            // Push dusk out to 21:00 — 20:00 is now still day.
-            Assert.IsFalse(WatchFaceState.NightAt(20f, nightStartHour: 21f));
-            Assert.IsTrue (WatchFaceState.NightAt(20f), "default dusk (19:00) still calls 20:00 night");
+            // An explicit fixture can move dusk independently of the shipping profile.
+            Assert.IsTrue(WatchFaceState.NightAt(20f, nightStartHour: 19f));
+            Assert.IsFalse(WatchFaceState.NightAt(20f), "the shipped sun is still up at 20:00");
         }
 
         [Test]

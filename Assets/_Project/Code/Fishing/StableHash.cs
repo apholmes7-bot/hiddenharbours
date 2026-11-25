@@ -2,8 +2,8 @@ namespace HiddenHarbours.Fishing
 {
     /// <summary>
     /// A tiny <b>process-stable</b> hash (FNV-1a with an avalanche finalizer) for deriving a deterministic
-    /// seed from content facts — currently the placed-trap catch seed, folded from
-    /// <c>(worldSeed, instanceId, placementGameTimeSeconds)</c>.
+    /// seed from content facts: placed traps, rod casts/drops and clam digs, folded from
+    /// <c>(worldSeed, sourceId, gameTimeSeconds)</c>.
     ///
     /// <para><b>Why not <c>string.GetHashCode()</c>.</b> On modern .NET (and Unity's runtime)
     /// <c>string.GetHashCode()</c> is <b>randomized per process</b> (a security default), so the same string
@@ -91,13 +91,18 @@ namespace HiddenHarbours.Fishing
         /// its exact IEEE-754 bits so two traps placed a fraction of a second apart get different streams.
         /// </summary>
         public static int TrapCatchSeed(int worldSeed, string instanceId, double placementGameTimeSeconds)
+            => CatchSeed(worldSeed, instanceId, placementGameTimeSeconds);
+
+        /// <summary>Derive a catch stream from the world, a stable content source id and the exact
+        /// in-game action time. No process identity or wall clock enters the seed.</summary>
+        public static int CatchSeed(int worldSeed, string sourceId, double gameTimeSeconds)
         {
             unchecked
             {
                 uint h = FnvOffsetBasis;
                 h = Fold(h, worldSeed);
-                h = Fold(h, instanceId);
-                h = Fold(h, System.BitConverter.DoubleToInt64Bits(placementGameTimeSeconds));
+                h = Fold(h, sourceId);
+                h = Fold(h, System.BitConverter.DoubleToInt64Bits(gameTimeSeconds));
                 return (int)Finalize(h);
             }
         }

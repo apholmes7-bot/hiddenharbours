@@ -515,6 +515,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsNotNull(cycle, "the cycle self-installs from BoatController's Awake");
 
             relay.DevIgnoreEquipmentGating = true;
+            relay.DevPilotStep = DevInstrumentCycle.DevPilotFit.Owned; // choose this ring's origin
             cycle.StepPilot();                                    // → gps
             cycle.StepPilot();                                    // → gps + radar
             yield return null; yield return null;
@@ -546,7 +547,7 @@ namespace HiddenHarbours.Tests.PlayMode
             var cycle = relay.GetComponent<DevInstrumentCycle>();
             relay.DevIgnoreEquipmentGating = true;
 
-            cycle.Step();                                         // brow → fish finder (from Depth)
+            cycle.Step();                                         // brow → bare (from Fish)
             SounderKind brow = relay.DevBrowStep;
             cycle.StepPilot();
             cycle.StepPilot();

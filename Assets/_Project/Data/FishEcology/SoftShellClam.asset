@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51d5aaf6c73f47f1b2335fa4906c6153, type: 3}
+  m_Name: SoftShellClam
+  m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.FishEcologyDef
+  Id: "ecology.soft_shell_clam"
+  SpeciesId: "fish.soft_shell_clam"
+  ScientificName: "Mya arenaria"
+  LifeStageAndScope: "Post-larval fishable coastal animals; typical reference habitat only. Adults unless the notes explicitly distinguish juveniles."
+  TypicalMinDepthMetres: 0
+  TypicalMaxDepthMetres: 15
+  DepthEvidence: "Authored intertidal and shallow-subtidal reference band. Zero denotes the inundated surface datum, not clam burial depth; 15 m is a provisional authoring endpoint."
+  Layer: 3
+  Habitats: 46
+  PreferredVegetation: 0
+  VegetationEvidence: "The cited profile does not establish a species-wide eelgrass or kelp preference; zero means no preference inferred, not avoidance."
+  Grouping: 4
+  DayHabit: 5
+  TideHabit: 3
+  HabitEvidence: "Filter feeding needs inundation. Exposure may allow digging but does not create, move or erase an adult clam; no daylight presence gate is inferred."
+  BiologyNotes: "Post-settlement clam beds are stationary for this movement reference. Larval dispersal and limited juvenile relocation are outside its scope."
+  SourceUrls:
+  - "https://www1.maine.gov/dmr/sites/maine.gov.dmr/files/docs/MaineShellfishHandbook-AccessibleVersion.pdf"

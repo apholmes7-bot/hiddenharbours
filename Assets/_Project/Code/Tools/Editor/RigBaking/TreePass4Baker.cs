@@ -244,8 +244,8 @@ namespace HiddenHarbours.Tools.RigBaking
             return new TreeKitCatalog.Contract
             {
                 note = GeneratedNote(stage, seasons),
-                rig = TreeKitCatalog.Pass4RigScriptPath,
-                global = R4,
+                rig = RigScriptInUse,
+                global = s_proposalGlobal ?? R4,
                 ppu = (int)host.EvaluateNumber($"{R4}.PPU"),
                 camera = new TreeKitCatalog.CameraBlock
                 {
@@ -339,7 +339,10 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <summary>The contract's provenance. Deterministic: no clock, no machine name, so a
         /// re-export of an unchanged rig is a zero diff.</summary>
         public static string GeneratedNote(string stage, IReadOnlyList<string> seasons) =>
-            "Written by TreePass4Baker.ExportContract from docs/art/rigs/treeIsoRig4.js and " +
+            (s_proposalScript == null
+                ? "Written by TreePass4Baker.ExportContract from docs/art/rigs/treeIsoRig4.js and "
+                : $"A PROPOSAL, not the kit the game draws. Written by TreePass4Baker.ExportContract " +
+                  $"from {s_proposalScript} (standing in rig 4's seat) and ") +
             $"treeMaps4.js through the {G} glue (version {TreePass4Glue.Version}), stage {stage}, " +
             $"seasons {string.Join(", ", seasons)}. REGENERATE rather than hand-edit (Hidden " +
             "Harbours > Art > Export Acadian Tree Contract, then Bake Acadian Trees); the bake " +
@@ -473,11 +476,11 @@ namespace HiddenHarbours.Tools.RigBaking
                     "the pass-4 contract before baking pass 4.");
             if (contract.maps.glueVersion != TreePass4Glue.Version ||
                 !string.Equals(contract.maps.script, TreeKitCatalog.Pass4MapsScriptPath, StringComparison.Ordinal) ||
-                !string.Equals(contract.rig, TreeKitCatalog.Pass4RigScriptPath, StringComparison.Ordinal))
+                !string.Equals(contract.rig, RigScriptInUse, StringComparison.Ordinal))
                 throw new InvalidOperationException(
                     $"{contractPath} was written from {contract.rig} + {contract.maps.script} by glue " +
                     $"version {contract.maps.glueVersion}; this baker reads " +
-                    $"{TreeKitCatalog.Pass4RigScriptPath} + {TreeKitCatalog.Pass4MapsScriptPath} with " +
+                    $"{RigScriptInUse} + {TreeKitCatalog.Pass4MapsScriptPath} with " +
                     $"glue version {TreePass4Glue.Version}. Export the contract again.");
             if (contract.trees == null || contract.trees.Length == 0)
                 throw new InvalidOperationException($"{contractPath} carries no trees.");
@@ -602,6 +605,43 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         // =====================================================================================
+        // a proposal rig (the next-iteration art pass, 2026-11-11)
+        // =====================================================================================
+
+        // Null everywhere except inside WithProposalRig: every line that reads these then reads rig 4,
+        // and the kit's contract and sheets come out byte for byte as before (TreePass4BakeTests).
+        static string s_proposalScript, s_proposalGlobal;
+
+        /// <summary>The rig source this baker runs and writes into a contract: rig 4's, or the proposal's
+        /// inside <see cref="WithProposalRig"/>.</summary>
+        public static string RigScriptInUse => s_proposalScript ?? TreeKitCatalog.Pass4RigScriptPath;
+
+        /// <summary>
+        /// Until the returned scope is disposed, <see cref="ExportContract"/> and <see cref="Bake"/> run
+        /// <paramref name="scriptPath"/> (a rig that keeps rig 4's API under <paramref name="globalName"/>)
+        /// in rig 4's place, through the same maps and glue, and refuse to write anywhere inside the kit
+        /// the game draws. For baking a proposal beside the shipped trees; nothing switches the game to it.
+        /// </summary>
+        public static IDisposable WithProposalRig(string scriptPath, string globalName)
+        {
+            if (string.IsNullOrEmpty(scriptPath)) throw new ArgumentNullException(nameof(scriptPath));
+            if (string.IsNullOrEmpty(globalName)) throw new ArgumentNullException(nameof(globalName));
+            if (s_proposalScript != null)
+                throw new InvalidOperationException($"A proposal rig is already in use: {s_proposalScript}.");
+            if (string.Equals(scriptPath, TreeKitCatalog.Pass4RigScriptPath, StringComparison.Ordinal) ||
+                string.Equals(globalName, R4, StringComparison.Ordinal))
+                throw new ArgumentException("Rig 4 is the kit's own rig, not a proposal.");
+            s_proposalScript = scriptPath;
+            s_proposalGlobal = globalName;
+            return new ProposalScope();
+        }
+
+        sealed class ProposalScope : IDisposable
+        {
+            public void Dispose() { s_proposalScript = null; s_proposalGlobal = null; }
+        }
+
+        // =====================================================================================
         // the rig
         // =====================================================================================
 
@@ -612,7 +652,18 @@ namespace HiddenHarbours.Tools.RigBaking
         /// </summary>
         public static void InstallRig(IRigScriptHost host)
         {
-            Run(host, TreeKitCatalog.Pass4RigScriptPath);
+            Run(host, RigScriptInUse);
+            if (s_proposalScript != null)
+            {
+                // The proposal rig keeps rig 4's API under its own global. The maps and the glue name
+                // TreeRig4, so on THIS host, which never loaded rig 4, the proposal takes that seat.
+                AssertApi(host, s_proposalGlobal, "sheetSpec", "relight", "view", "cellOf", "clearCache");
+                if (host.EvaluateBool($"typeof globalThis.{R4} !== 'undefined'"))
+                    throw new InvalidOperationException(
+                        $"{s_proposalScript} installed {R4} as well as {s_proposalGlobal}: it would " +
+                        "overwrite the rig it is proposed beside.");
+                host.Execute($"globalThis.{R4} = globalThis.{s_proposalGlobal};");
+            }
             AssertApi(host, R4, "sheetSpec", "relight", "view", "cellOf", "clearCache");
             Run(host, TreeKitCatalog.Pass4MapsScriptPath);
             AssertApi(host, M4, "rest", "snowMap", "windMaps", "constants", "shade");
@@ -778,6 +829,10 @@ namespace HiddenHarbours.Tools.RigBaking
         /// </summary>
         public static void RefuseTheLiveKitWhilePass3(string path, string what)
         {
+            if (s_proposalScript != null && IsInsideTheLiveKit(path))
+                throw new InvalidOperationException(
+                    $"A proposal rig ({s_proposalScript}) will not {what} under " +
+                    $"{TreeKitCatalog.TreesRoot}: that is the kit the game draws. Name a folder outside it.");
             if (TreeKitCatalog.IsPass4Live) return;
             if (!IsInsideTheLiveKit(path)) return;
             throw new InvalidOperationException(

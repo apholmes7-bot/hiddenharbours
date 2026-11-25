@@ -47,6 +47,9 @@ namespace HiddenHarbours.Fishing
             // may not reference this module (the fight drawer lives in Player) can still ask what a
             // hooked fish does — rule 4's named contract rather than an asmdef reference.
             GameServices.FishBehaviour = Facts;
+            GameServices.FishSizes = SizeFacts;
+            GameServices.FishConservation = ConservationFacts;
+            GameServices.GiftableFacts = GiftFacts;
         }
 
         /// <summary>
@@ -57,8 +60,42 @@ namespace HiddenHarbours.Fishing
         /// </summary>
         public static IFishBehaviourFacts Facts { get; } = new RegistryFacts();
 
-        private sealed class RegistryFacts : IFishBehaviourFacts
+        /// <summary>This registry through the Core <see cref="IFishSizeFacts"/> seam — a species'
+        /// authored weight range, for copy that names a catch's size.</summary>
+        public static IFishSizeFacts SizeFacts => (IFishSizeFacts)Facts;
+
+        /// <summary>This registry through the Core <see cref="IFishConservationFacts"/> seam — whether a
+        /// species is protected (release-only), read by <see cref="CatchKeep"/>.</summary>
+        public static IFishConservationFacts ConservationFacts => (IFishConservationFacts)Facts;
+
+        /// <summary>This registry through the Core <see cref="IGiftableFacts"/> seam — whether a catch of a
+        /// species may be given to a person (<see cref="FishSpeciesDef.Giftable"/>), for the gift act.</summary>
+        public static IGiftableFacts GiftFacts => (IGiftableFacts)Facts;
+
+        private sealed class RegistryFacts : IFishBehaviourFacts, IFishSizeFacts, IFishConservationFacts,
+                                             IGiftableFacts
         {
+            public bool IsProtected(string fishId)
+            {
+                FishSpeciesDef d = Get(fishId);
+                return d != null && d.Protected;
+            }
+
+            public bool TryIsGiftable(string itemId, out bool giftable)
+            {
+                FishSpeciesDef d = Get(itemId);
+                giftable = d != null && d.Giftable;
+                return d != null;
+            }
+
+            public bool TryWeightRangeKg(string fishId, out float minKg, out float maxKg)
+            {
+                FishSpeciesDef d = Get(fishId);
+                minKg = d != null ? d.MinWeightKg : 0f;
+                maxKg = d != null ? d.MaxWeightKg : 0f;
+                return d != null;
+            }
+
             public bool Jumps(string fishId)
             {
                 FishSpeciesDef d = Get(fishId);

@@ -21,7 +21,7 @@ namespace HiddenHarbours.App.Editor
             return patch.Seal(scene);
         }
 
-        // Ruling 13 withdraws the run; the original machine stays drivable in its row's bay.
+        // The Dually stays drivable in its row; the buyer's run belongs to the Modern 2500.
         public static LayerPatch PlaceBuyerTruck(SceneYaml scene)
         {
             Doc go = scene.RootNamed(NineMileCreekTruckPark.TruckName);

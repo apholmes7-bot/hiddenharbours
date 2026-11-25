@@ -1,0 +1,15 @@
+{
+  "Id": "trap_habitat.lobster_home_bay_proposal",
+  "Settings": {
+    "SpeciesId": "fish.lobster",
+    "RockAffinity01": 1,
+    "MudAffinity01": 0.15,
+    "SandAffinity01": 0.35,
+    "Centre": { "x": 0, "y": 0 },
+    "MigrationVector": { "x": 120, "y": 40 },
+    "RadiusMetres": 160,
+    "OffCentreDensity01": 0.1,
+    "PeriodGameSeconds": 201600,
+    "Phase01": 0
+  }
+}

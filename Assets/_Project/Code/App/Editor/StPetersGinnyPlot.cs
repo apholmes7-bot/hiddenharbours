@@ -110,6 +110,19 @@ namespace HiddenHarbours.App.Editor
         public const string CottageKey = "sageCottage";
 
         /// <summary>
+        /// Where her chimney smoke object stands on the cottage, in the cottage's local metres. Her shell's
+        /// bake records a chimney-top anchor per facing (<c>Village_ginnyCottage.json</c>); for the facing
+        /// the scene draws (6) it is cell px (309.5, 59.8) against the pivot (228, 313) at 32 px/m, so
+        /// (2.55, 7.91) m. <see cref="ChimneySmoke"/> lifts its flue 0.5 m above its own transform, so the
+        /// object stands 0.5 m below the top and the plume leaves the chimney mouth.
+        /// <c>GinnyCottageRoomsTests</c> re-reads the anchor, so a re-bake that moves the chimney fails there.
+        /// </summary>
+        public static readonly Vector2 SmokeLocal = new Vector2(2.548f, 7.413f);
+
+        /// <summary>The facing of her shell the scene draws, whose chimney anchor <see cref="SmokeLocal"/> is.</summary>
+        public const int SmokeFacing = 6;
+
+        /// <summary>
         /// Where her door looks: back down the island toward the village green, which is the direction you
         /// arrive from. The village turns every door toward <see cref="StPetersBuilder.VillageGreen"/> for
         /// this reason and the plot keeps the rule — a door is turned toward the ground people walk up
@@ -341,6 +354,11 @@ namespace HiddenHarbours.App.Editor
                 if (reach > worst) worst = reach;
             }
 
+            // the camper lot's own small shed (reserved 2026-11-17)
+            float lotShed = Vector2.Distance(StPetersCamperLot.ShedPos, CottagePos) +
+                            StPetersCamperLot.ShedFootprintRadiusMetres;
+            if (lotShed > worst) worst = lotShed;
+
             float camper = StPetersCamperLot.ClearingReachMetres;
             return camper > worst ? camper : worst;
         }
@@ -410,12 +428,20 @@ namespace HiddenHarbours.App.Editor
                     // the same build (see CottageKey), so a plan hung off 'sageCottage' would have put the
                     // player's bed — and a save point — inside a stranger's house on the green as well.
                     // Ginny's is the one with a lodger in it.
-                    bool enterable = StPetersInteriors.Stand(go, shell, CottageKey, facing, occupant,
+                    // Her ROOM is her own (7.2 x 9.1 m, the ginnyCottage bake), larger than the sage
+                    // cottage's; the room is found by that key, while the building keeps its name.
+                    bool enterable = StPetersInteriors.Stand(go, shell, StPetersInteriors.GinnyCottagePlanKey,
+                                                             facing, occupant,
                                                              StPetersInteriors.GinnyCottagePlanKey);
                     if (!enterable)
                         Debug.LogWarning(
                             $"[StPetersGinnyPlot] {CottageKey} has no baked room, so Ginny's door does not " +
                             "open. The owner ruled this cottage enterable — re-bake the interior kit.");
+                    else
+                        // The room fixtures: the washstand in the player's room (washrooms plan section 3)
+                        // and the ground-floor bathroom (kitchens and bathrooms plan, R1). The same rows the
+                        // scene's text patch placed, so a rebuild keeps them.
+                        InteriorFixturePlacement.StandInterior(go, RootName);
 
                     // The cosy night read. ⚠ The greybox standee this replaces carried THREE night
                     // pieces; only two survive the move to a kit building. CottageDayNight is a SPRITE
@@ -430,7 +456,7 @@ namespace HiddenHarbours.App.Editor
 
                     var chimneyGo = new GameObject("ChimneySmoke");
                     chimneyGo.transform.SetParent(go.transform, worldPositionStays: false);
-                    chimneyGo.transform.localPosition = new Vector3(0.6f, 1.6f, 0f);   // roofline, flue side
+                    chimneyGo.transform.localPosition = new Vector3(SmokeLocal.x, SmokeLocal.y, 0f);   // her chimney top
                     chimneyGo.AddComponent<ChimneySmoke>();
 
                     placed++;
@@ -452,7 +478,16 @@ namespace HiddenHarbours.App.Editor
             freezerSr.color = new Color(0.85f, 0.92f, 0.95f);   // chest-freezer white, reads icy
             freezerSr.sortingOrder = 3;   // pre-Play default only; the YSortSprite below OWNS the order
             freezerGo.transform.localScale = new Vector3(1.2f, 1.0f, 1f);
-            freezerGo.AddComponent<GinnyFreezer>();
+            var freezer = freezerGo.AddComponent<GinnyFreezer>();
+            // Its Def (capacity 20 and the baked chest): at Play the square gives way to the chest art.
+            var freezerDef = UnityEditor.AssetDatabase.LoadAssetAtPath<FreezerDef>(ChestFreezerAssets.GinnyDefPath);
+            if (freezerDef != null)
+            {
+                var freezerSo = new UnityEditor.SerializedObject(freezer);
+                freezerSo.FindProperty("_def").objectReferenceValue = freezerDef;
+                freezerSo.ApplyModifiedPropertiesWithoutUndo();
+            }
+            freezerGo.AddComponent<FreezerContentsPresenter>();   // what is in it, while he stands at it
             // A thing you walk up to layers by world Y like everything else you can stand in front of
             // (ADR 0032 re-based the band; a fixed order would be buried by the meadow around it).
             freezerGo.AddComponent<YSortSprite>();

@@ -43,6 +43,19 @@ namespace HiddenHarbours.Tests.UI.EditMode
                 "owner ruling 2026-08-20: the tide table lives on Tab");
         }
 
+        /// <summary>
+        /// The page's own closing hint must name the key that closes it. It read "Esc or N" for months
+        /// after the table moved to Tab: N opens the notebook, so the hint sent the player to the
+        /// wrong page. Held to the DEFAULT binding, the one that ships.
+        /// </summary>
+        [Test]
+        public void TheCloseHint_NamesTheKeyThatClosesTheTable()
+        {
+            string key = DefaultToggleKey().ToString();
+            StringAssert.Contains("Esc or " + key + " ", HudStrings.TideTableCloseHint,
+                "the tide table's closing hint names its own toggle key");
+        }
+
         [Test]
         public void TheTideTableDoesNotSitOnTheNotebooksKey()
         {

@@ -254,7 +254,7 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator AtHighWater_TheSameWharfIsStillAStepAcross()
+        public IEnumerator AtHighWater_TheSameWharfStillUsesItsLadder()
         {
             // The deck rides up to just under the planks: the gap closes inside the clamp.
             var r = Build(waterLevel: WharfDeck - 0.25f);
@@ -264,26 +264,26 @@ namespace HiddenHarbours.Tests.PlayMode
             r.Switcher.BeginInteract();
 
             Assert.IsTrue(r.Switcher.IsBoardingMove, "the move still starts");
-            Assert.IsFalse(r.Switcher.IsLadderBoarding,
-                "at high water the boat's deck is within a step of the planks — sending the fisher down " +
-                "a ladder there would be absurd");
+            Assert.IsTrue(r.Switcher.IsLadderBoarding,
+                "the berth's ladder also serves the short high-water climb");
         }
 
         /// <summary>A wharf with no ladder is a valid wharf: the fisher steps across a gap too big for it,
         /// exactly as they do on main today. The feature must not strand anyone.</summary>
         [UnityTest]
-        public IEnumerator WithNoLadderOnTheWharf_TheMoveIsUnchanged()
+        public IEnumerator WithNoLadderInReach_ThePlayerUsesTheOneFurtherAlongTheWharf()
         {
             var r = Build(waterLevel: 0f, withLadder: false);
             r.ClipPlayer.Configure(ClipSkin());
+            NewGo("Fixture quay", Vector3.zero).AddComponent<HiddenHarbours.World.StandablePlatform>()
+                .Configure("wharf.test.refusal", new Rect(2f, -1f, 2f, 3f), WharfDeck);
+            NewGo("Ladder further along the quay", new Vector3(30f, 0f, 0f))
+                .AddComponent<WharfLadder>().Configure("wharf.test.distant_ladder", WharfDeck, 180f);
             yield return null;
 
-            r.Switcher.BeginInteract();
+            Assert.IsFalse(r.Switcher.BeginInteract());
             Assert.IsFalse(r.Switcher.IsLadderBoarding, "there is no ladder to take");
-
-            yield return RunTheMoveOut(r);
-            Assert.AreEqual(ControlMode.OnDeck, r.Switcher.Mode,
-                "and she still gets aboard — a missing ladder must never leave the fisher on the wharf");
+            Assert.AreEqual(ControlMode.OnFoot, r.Switcher.Mode, "walk along the quay to its ladder");
         }
 
         // =============================================================================================
@@ -317,7 +317,8 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.Greater(gap, 1.2f, "the fixture must actually produce a climb worth measuring");
 
             float loop = r.Config.ClimbLoopSeconds;
-            float rate = LadderBoardingMath.StepZFor(r.Config.RungMetres) / loop;  // the ruled-out shortcut
+            float rate = LadderBoardingMath.ProjectHeight(LadderBoardingMath.StepZFor(r.Config.RungMetres),
+                IsoGround.CameraElevationDegrees) / loop; // average projected speed, not the stair
 
             var times = new List<float>();
             var heights = new List<float>();
@@ -368,7 +369,8 @@ namespace HiddenHarbours.Tests.PlayMode
 
             // …and the whole climb still crosses exactly the gap the tide opened, whatever shape it took.
             float travelled = heights[0] - heights[heights.Count - 1];
-            Assert.Less(Mathf.Abs(travelled - gap) * PixelsPerMetre, 8f,
+            Assert.Less(Mathf.Abs(travelled - LadderBoardingMath.ProjectHeight(gap,
+                IsoGround.CameraElevationDegrees)) * PixelsPerMetre, 8f,
                 $"the climb covered {travelled:0.00} m of a {gap:0.00} m gap — the stair must still land " +
                 "her on the deck, not somewhere near it");
         }
@@ -428,8 +430,8 @@ namespace HiddenHarbours.Tests.PlayMode
                 if (!(r.ClipPlayer.IsPlaying && r.ClipPlayer.Clip == CharacterClip.LadderDown)) continue;
 
                 Vector2 expected = r.Ladder.WorldPosition
-                                 + LadderBoardingMath.SeatOffset(r.Ladder.FaceHeadingDegrees,
-                                                                 r.Ladder.StandoffMetres);
+                                 + LadderBoardingMath.ProjectedSeatOffset(r.Ladder.FaceHeadingDegrees,
+                                     r.Ladder.StandoffMetres, IsoGround.CameraElevationDegrees);
                 Assert.AreEqual(expected.x, r.PlayerGo.transform.position.x, 1e-3f,
                     "on the rungs the fisher must stand at the ladder's own x — she does not travel " +
                     "across while she is on it");
@@ -542,8 +544,8 @@ namespace HiddenHarbours.Tests.PlayMode
         // =============================================================================================
 
         /// <summary>
-        /// The climb lands the fisher exactly where boarding has always landed her, through the very same
-        /// <c>BoardDeck()</c> behind the very same gates. A new route must not become a new transition.
+        /// The climb lands at its foot through <c>BoardDeck()</c> behind the same gates and mode signal.
+        /// A different landing point must not become a different ownership transition.
         /// </summary>
         [UnityTest]
         public IEnumerator TheClimbLands_ThroughTheOrdinaryBoardingTransition()

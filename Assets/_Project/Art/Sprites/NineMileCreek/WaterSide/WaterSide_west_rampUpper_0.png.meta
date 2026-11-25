@@ -1,0 +1,392 @@
+fileFormatVersion: 2
+guid: b65b41fe91dc41554452fb4d2acbe392
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2369311796284908352
+    second: WaterSide_west_rampUpper_0
+  - first:
+      213: 3091694793133825002
+    second: WaterSide_west_rampUpper_1
+  - first:
+      213: 8254415780839318953
+    second: WaterSide_west_rampUpper_2
+  - first:
+      213: 5859170416400134231
+    second: WaterSide_west_rampUpper_3
+  - first:
+      213: 6492636233124033581
+    second: WaterSide_west_rampUpper_4
+  - first:
+      213: 4795210311671060905
+    second: WaterSide_west_rampUpper_5
+  - first:
+      213: 4413312173007104979
+    second: WaterSide_west_rampUpper_6
+  - first:
+      213: 1723441254155856759
+    second: WaterSide_west_rampUpper_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot:
+    x: 0.5
+    y: 0.5
+  spritePixelsToUnits: 32
+  spriteBorder:
+    x: 0
+    y: 0
+    z: 0
+    w: 0
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: WaterSide_west_rampUpper_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 493
+        width: 649
+        height: 493
+      alignment: 9
+      pivot:
+        x: 0.12326656394453005
+        y: 0.565922920892495
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fbf3946b51562e666c7ba59a9ad3076c
+      internalID: 2369311796284908352
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_west_rampUpper_1
+      rect:
+        serializedVersion: 2
+        x: 649
+        y: 493
+        width: 649
+        height: 493
+      alignment: 9
+      pivot:
+        x: 0.43605546995377503
+        y: 0.6186612576064909
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22e2bf293f52f8a33930606ade0fe832
+      internalID: 3091694793133825002
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_west_rampUpper_2
+      rect:
+        serializedVersion: 2
+        x: 1298
+        y: 493
+        width: 649
+        height: 493
+      alignment: 9
+      pivot:
+        x: 0.4930662557781202
+        y: 0.8843813387423936
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 502456e0a439ad8d798c881f0193bb3d
+      internalID: 8254415780839318953
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_west_rampUpper_3
+      rect:
+        serializedVersion: 2
+        x: 1947
+        y: 493
+        width: 649
+        height: 493
+      alignment: 9
+      pivot:
+        x: 0.43605546995377503
+        y: 0.768762677484787
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eba09d40da2dfc785ce7f7150d2a3b01
+      internalID: 5859170416400134231
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_west_rampUpper_4
+      rect:
+        serializedVersion: 2
+        x: 2596
+        y: 493
+        width: 649
+        height: 493
+      alignment: 9
+      pivot:
+        x: 0.12326656394453005
+        y: 0.7200811359026369
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f0b90b3a204efb7bac50ed11463913e
+      internalID: 6492636233124033581
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_west_rampUpper_5
+      rect:
+        serializedVersion: 2
+        x: 3245
+        y: 493
+        width: 649
+        height: 493
+      alignment: 9
+      pivot:
+        x: 0.4453004622496148
+        y: 0.768762677484787
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5bc91c15602b72469e559aba1c642ce1
+      internalID: 4795210311671060905
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_west_rampUpper_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 649
+        height: 493
+      alignment: 9
+      pivot:
+        x: 0.5069337442218799
+        y: 0.8843813387423936
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 00bc7788fd13a8caf1074303d38a5517
+      internalID: 4413312173007104979
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterSide_west_rampUpper_7
+      rect:
+        serializedVersion: 2
+        x: 649
+        y: 0
+        width: 649
+        height: 493
+      alignment: 9
+      pivot:
+        x: 0.4453004622496148
+        y: 0.6186612576064909
+      border:
+        x: 0
+        y: 0
+        z: 0
+        w: 0
+      customData: ''
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 933c9a581d4db7a20aab92e7508b260c
+      internalID: 1723441254155856759
+      vertices: []
+      indices: ''
+      edges: []
+      weights: []
+    outline: []
+    customData: ''
+    physicsShape: []
+    bones: []
+    spriteID: 3f431f8f57144e742b087f55e61507bc
+    internalID: 0
+    vertices: []
+    indices: ''
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      WaterSide_west_rampUpper_0: 2369311796284908352
+      WaterSide_west_rampUpper_1: 3091694793133825002
+      WaterSide_west_rampUpper_2: 8254415780839318953
+      WaterSide_west_rampUpper_3: 5859170416400134231
+      WaterSide_west_rampUpper_4: 6492636233124033581
+      WaterSide_west_rampUpper_5: 4795210311671060905
+      WaterSide_west_rampUpper_6: 4413312173007104979
+      WaterSide_west_rampUpper_7: 1723441254155856759
+  mipmapLimitGroupName: ''
+  pSDRemoveMatte: 0
+  userData: ''
+  assetBundleName: ''
+  assetBundleVariant: ''

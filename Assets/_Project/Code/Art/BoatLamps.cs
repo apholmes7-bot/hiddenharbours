@@ -95,6 +95,7 @@ namespace HiddenHarbours.Art
         /// </summary>
         public static bool ShowsWhen(HullLampKind kind, VesselWay way, bool cabinOccupied)
         {
+            if (way == VesselWay.Derelict) return false;   // a wreck has no power: nothing shows
             if (kind == HullLampKind.CabinGlow) return way == VesselWay.UnderWay || cabinOccupied;
             if (kind == HullLampKind.AnchorLight) return way == VesselWay.Moored;
             return way == VesselWay.UnderWay;

@@ -26,8 +26,8 @@ namespace HiddenHarbours.Tests.EditMode
         const string WaterPath = "Assets/_Project/Art/Shaders/HiddenHarboursWater.shader";
         const string AdvectPath = "Assets/_Project/Art/Shaders/HiddenHarboursFoamBufferAdvect.shader";
         const string Dial = "_SurfFringeSequenceStrength";
-        const string BaseWaterHash = "136e2aa815dfa81f393f26d7e13b434bb9a34d6224f5a2b8273bc84854fffd83";
-        // Approved b5825e1f; re-approved at W1 Phase D (#932, owner d20) and C2a Phase D (owner, clarity 1) and at water gains B7 (#992, the seat's lean under the standing word of 10-29) and at crest glow L1 (#1004, the owner's ruling of 11-01). UTF-8 without BOM, LF. These are scope guards, not copies of physics.
+        const string BaseWaterHash = "8d8729bdffa4dbc03d7bc51236ba724fb6785f58eb2f792289ec14b2453b6270";
+        // Approved b5825e1f; re-approved at W1 Phase D (#932, owner d20) and C2a Phase D (owner, clarity 1) and at water gains B7 (#992, the seat's lean under the standing word of 10-29) and at crest glow L1 (#1004, the owner's ruling of 11-01) and at the foam lattice hash (the open-sea repeat fix, a named moved premise) and at the run-up wash (fix/shore-runup-foam, the owner's shore clip review of 11-15) and at the run-up wash v4 (fix/shore-runup-foam, the owner's v3 clip review of 11-15) and at the shore-normal pulse (fix/shore-runup-foam, the owner's v4 clip review of 11-15) and at the wash v7 (fix/shore-runup-foam, the PR 1225 editor look of 11-15) and at the wash v8 (the f07a839 editor look of 11-15) and at the wash v9 (the 7e16896 editor look of 11-15) and at the kelp under the water (feat/kelp-reads-under-water, the weed's clarity in the seabed composite, outside the surf paths) and at real hull waves (feat/real-wake-waves, the owner's ask of 11-17) and at the hull waves' soft look (feat/real-wake-waves, the owner's look of 11-19) and at the one foam sheet (feat/one-foam-everywhere, the owner's rulings of 11-19: the shore line, then the caps and surf, then the storm streaks, then the convergence foam, then the caps' and streaks' amounts tuned from the looks, then main merged in under the same ruling, then the wash in the run-up through the sheet under the owner's ruling of 11-19, "Yes, unify surf": its join, amount and backwash age, join 0 the older smooth sheet bit-exact, then the wash's amount tuned from the looks, then the owner's oar look of 11-19: the open-water foam read soft and torn through _FoamSheetEdge, both dials 0 the older point read bit-exact, and the hull waves' low-light share laid after the palette grade, 0 at noon, then the owner's oar look of 11-19 again: the one sheet's band edges broken by a fixed torn world noise through _FoamSheetDither (x 0 the Bayer cell, bit-exact), and a short hull's rings packed with a negative width drawn as broken arcs through _HHHullWaveArcs, every other ring bit-exact; no surf, bore or wash term moved) and at the cut-off pools (fix/cut-off-pools-stay-still-impl, the owner's ask of 11-19 that a pool the falling tide has cut off stays still: the sea's reach multiplies the swell, the surf's outputs, the drawn edge's swash, the wash and the shore line; exactly 1, so bit-exact, wherever no reach map is bound or the water is joined to the sea) and at the shore-wave turn (feat/waves-follow-the-seabed: each train cross-faded toward a copy along the shoreline contours inside the shore band, bend 0 or no field the straight sum bit-exact; no surf, bore or wash term moved) and at the shore whitecaps (feat/whitecaps-meet-the-shore, the owner's ruling of 11-20 that the whitecaps turn and fade near shore: inside the same shore band the wind caps and storm streaks thin out by area and swing blob by blob onto the turned crest line, both dials 0 or no field the caps and streaks bit-exact; no surf, bore or wash term moved) and at the dusk lighting pass (fix/dusk-lighting-pass, the owner's ruling of 11-20 that dusk may be fixed with game lighting changes: NightFactor gains a sun-elevation cutoff through _NightSunCutoff so the moon and stars stay off while the sun is up, 0 the older darkness-only gate bit-exact; no surf, bore, wash or foam term moved) and at main merged into the shore whitecaps (the dusk lighting pass, the shore-wave turn and the shore whitecaps together, each as approved; no term of any moved) and at the motor V wake (feat/motor-v-wake, the owner's ask of 11-21 to make motored boats a V wake: a hull wave ring packed with its hull's travel keeps only the arcs on the arms of her V through _HHHullWaveV, the reach slot now carries that travel and the reach is worked out of the band radius and width, the same number; a ring with no travel, the rowed dory's and every splash's, bit-exact; no surf, bore, wash or foam term moved) and at the smooth V arms (feat/motor-v-wake, the owner's look of 11-21 to smooth the arms and drop the repeating half circles: a V ring draws the straight piece of her arm it touches, its crests locked to its front, its arm span in the width slot and its width from k and its least length from that span through _HHHullWaveV2; a ring with no travel bit-exact; no surf, bore, wash or foam term moved) and at the V's dusk lift (feat/motor-v-wake, the owner's look of 11-22 that the V's waves read too hard at sunset: the low-light share is lerped toward its own gain in _HHHullWaveLowLight.w by the V's share of the wave, summed by height in the loop; where only rowed rings reach, bit-exact; noon untouched; no surf, bore, wash or foam term moved) and at main merged into the motor V wake (the boat reflection and the motor V wake together, each as approved; no term of either moved) and at the low-sun sea (fix/sunset-row-water-and-foam, the owner's ask of 11-21 to fix the sunset water colour and the foam on it: inside one window over the sun's elevation the sky's glow is added with the sky mirror through _LowSunSheen, the finished sea keeps a share of its own hue through _LowSunHueHold, the hull waves' low-light share is scaled by the sheen's lift, and the sun path may be drawn as sparkles through _SunGlitterForm; every default the older arithmetic, and the window's weight exactly 0 at high sun and at night; no surf, bore, wash or foam term moved) and at the rejoin pale band (fix/pool-rejoin-no-pale-band, under the owner's ask of 11-20 that cut-off pools stay still: the fringe's hand-back to the wash reads the open sea's presence, so a reconnecting pool's shallows are no longer handed back to the fringe at part strength while the reach blends; exactly the older arithmetic wherever the reach is 1, so the open sea is bit-exact; no surf, bore or wash amount moved) and at the young ring's tear (fix/pale-block-ahead-of-bow, the sunset rowing clip's pale block ahead of the bow: a short hull's ring is torn into arcs only as it opens, over _HHHullWaveArcs.z band widths of its front, HullWaveMath.ArcTearShare's twin; z 0 tears from birth bit-exact, a whole ring and every V ring untouched; no surf, bore, wash or foam term moved) and at main merged into the young ring's tear (the shore wash lee fade of fix/shore-wash-hard-edge, _BoreLeeFade growing the lee lattice and the run-up's share of the edge and its left foam with the break depth, and the young ring's tear together, each as approved; no term of either moved) and at the thin edge (fix/thin-edge-marbling, under the owner's ask of 11-20 for a shore that reads natural: the swash's along-shore desync fades out on near-flat beds and the drawn edge ends in a thin film, both dials 0 bit-exact; the caustic include takes its full path; no surf, bore or wash amount moved) and at the wash lip (fix/thin-edge-marbling, the second pass: the wash's white line sat on clear film past the water, so it moves inside the film and is drawn through the one foam sheet, and the bore keeps the probe's own envelope while only the wash reads the lee lattice's ramp; the lip dials 0 are bit-exact, and with the lee width 0 the bore and the wash read one envelope as before) and at main merged into the wash lip (the young ring's tear of fix/pale-block-ahead-of-bow and the thin edge and wash lip together, each as approved; the shore wash lee fade was already on both sides, so it is taken once; no term of either moved) and at the still-water lip and the envelope read (fix/thin-edge-marbling, the final pass: under the owner's word of 11-23 that the wash lip may read stronger, the lip reads younger through _ShoreThinEdge.z where its width reaches past the film onto full water on a shore no bore runs up, a flat and a bore's run-up keeping their age, 0 bit-exact; and the shore zone and the gate's depth are worked out before the fetch reads, which are taken only where the break gate can open or a shore consumer of the envelope can be non-zero, past which no pixel reads them, so the picture is unchanged; no surf, bore or wash amount moved) and at the calm mirror (feat/water-true-mirror, under the owner's ruling of 11-23 that the calm mirror is a true reflection: the water's blend writes its own alpha with Zero OneMinusSrcAlpha so the mirror can find the water's pixels, the colour blend unchanged, and the object reflection's strength is multiplied by 1 - _HHCalmMirrorHandover, a global that stays 0 while the mirror dial is 0, as it ships, so the share is x1 exactly; no surf, bore, wash or foam term moved). UTF-8 without BOM, LF. These are scope guards, not copies of physics.
         const string LegacyDepth =
             "                float foamDepth  = depthC - lerp(BeachSwash(worldXY, depthC, t) * swashSlope * swashGate,  // local, foam-only\n" +
             "                                                 surfRunUpM, boreFoamBlend);   // …and the foam rides the bore's wash too\n";
@@ -121,7 +121,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(a.RunUpMeters, Is.EqualTo(b.RunUpMeters).Within(.0001f));
             string deposit = Code(Read(AdvectPath));
             foreach (string expression in new[] {
-                "floatphase=SurfBorePhaseDeg(breakLinePt,travelS,fs);",
+                "floatphase=SurfBoreClockPhaseDeg(breakLinePt,travelS,fs);",
                 "floatbore=SurfBorePulse01(phase,_BreakerBore.x)*birth;",
                 "floatfront=breaking*alive*bore;",
                 "foam+=front*depositStrength*SURF_DEPOSIT_RATE*max(_HHSurfDeposit.z,0.0);" })
@@ -151,7 +151,8 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(CorrectConsumers(mutation), Is.False, "the wiring guard must reject disconnected/wrong-clock consumers");
             string code = Code(src);
             StringAssert.Contains("surfBore=SurfBorePulse01(borePhase,_BreakerBore.x)*birth;", code);
-            StringAssert.Contains("col.rgb=lerp(col.rgb,_FoamColor.rgb,foamCoverage*_FoamColor.a);", code);
+            StringAssert.Contains("float3fringeFoam=FoamAgedColor(fringeAge01,_FoamColor.rgb,_FoamSheetShore.x,col.rgb);", code);
+            StringAssert.Contains("col.rgb=lerp(col.rgb,fringeFoam,foamCoverage*_FoamColor.a);", code);
             StringAssert.Contains("col.a=max(col.a,foamCoverage*_FoamColor.a);", code);
             MainSource(src); // Also rules out additional hidden consumers, time reads, samples or loops.
         }
@@ -164,16 +165,24 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(Code(Section(src, "UNIFORM")), Is.EqualTo("float_SurfFringeSequenceStrength;"));
             var files = new[] { "Assets/_Project/Art/Materials/Water.mat" }.Concat(
                 Directory.GetFiles("Assets/_Project/Art/Materials/WaterPresets", "*.mat").OrderBy(p => p, StringComparer.Ordinal)).ToArray();
+            // Re-pinned at the run-up wash (fix/shore-runup-foam): each file gains exactly the four
+            // _Wash* keys at the shader defaults (ShoreRunUpWashTests reads them); nothing else moved. Again at v4:
+            // three more keys (_WashLeeShare, _WashResidueSoften, _WashLineSlopeCap) and _WashSheetOpacity 0.4 -> 0.2.
+            // Again at the shore-normal pulse: two more keys (_SurfSwellYield 1, _SwellShoalDepth 1.5).
+            // Again at the snap-back fix (owner v5 clip review 11-15): two more keys (_WashLeftFoamOpacity 0.6, _WashLeftFoamSeconds 2).
+            // Again at the wash v7 (the PR 1225 editor look 11-15): _WashLineSlopeCap leaves with the screen-gradient line; two keys join (_WashAnatomyFade 0.05, _WashMaxCover 0.6).
+            // Again at the wash v8 (the f07a839 editor look 11-15): two keys join (_WashSurfLift 0, _WashSurfReach 10).
+            // Again at the wash v9 (the 7e16896 editor look 11-15): three keys join (_WashGroundScale 1.5, _WashSurfDetail 3, _WashSurfSmooth 1.5).
             string[] originalHashes = {
-                "74b4ed98a5c1fbe01c0a31f1f141bf2cb64f88bfb7b5d2af8858f2d718aa0827",
-                "46ff1a8bb7fe875d2f639f9ec123f11f74c1db3845222d2cd03b1802e788f7f4",
-                "ee83ebce68046314ad6adf9b2dcbaa52ab1c60380cec5354cd46075c89d2a600",
-                "305d6e0e2dfbfca1d456a5187f3a6e87bc55b5b3eb3afb41d25801304bb5ba27",
-                "8e68a0f9d164553f3ce4c71e272e5cdad8e7a821fb98966f7fb2bec0ef868127",
-                "2f6bf26ee760ff4c056dcb9f30d6690ba671520ae24aa0f2565aff49d73b094b",
-                "beb40b2652b8f5bb7d8b2ced8702b08325f932839ab660fbb6719cb2cb6323a9",
-                "2aa37d8b73b9bbed9fb6f2f222c516d4cb36ec9b84b9349fa4a21819ff54a50c",
-                "feb04726462ea48dd09b4cf9dde70eb6da7060f5de6fbcfa40258cce4ac50392" };
+                "5dd039cd8a55c67e318e045fccebc8fee692051cc85e8aedc54b6cb51a222308",
+                "ac4483c482ea5eb691b8c27eb4e14e15c6859c89577f7625060edaa6aa18a02e",
+                "39c178b1a846e124e371240b2626f2632979b821b56d77f1efeea520b37d9133",
+                "7b99b0cdd901c7b6ed250b9706c1df838e9ea42d92d27a6284aeb6bc5c934fc5",
+                "128bbd72d5a9239308a2e8faa1058702eba4accd984b34ba5af617219466a50c",
+                "9d725267a945bb41485f1006f04637fded71477b9fe426111f3dee0444151db0",
+                "bcb666a283cdc1636ef072814d1f862e2290f570e69a1d6e2a7ef8ddd4ba0226",
+                "6e5db5c75dca1fbc78d0bc1e5096763e0a5fce6c2f631aa92a013718e99d42bb",
+                "8c19476dc3284362fc6fee40e08b27acc9c59bc280b068bf1254f8d9b26e9b44" };
             Assert.That(files.Length, Is.EqualTo(9));
             for (int i = 0; i < files.Length; i++)
             {
@@ -183,6 +192,43 @@ namespace HiddenHarbours.Tests.EditMode
                 {
                     Assert.That(Regex.Matches(yaml, @"(?m)^    - " + key + @": 0$").Count, Is.EqualTo(1), files[i] + ": " + key);
                     yaml = yaml.Replace("    - " + key + ": 0\n", "");
+                }
+                // Owner pick (f+e) of 11-20, the sea too dark in a blow: every sea material gains
+                // _SwellReadRelative 1 and Water_StormGrey's _PaletteValueFloor goes 0.07 -> 0.16.
+                // Exactly those two values are authorized; they are stripped back before the hash.
+                Assert.That(Regex.Matches(yaml, @"(?m)^    - _SwellReadRelative: 1$").Count, Is.EqualTo(1), files[i] + ": f+e relative read");
+                yaml = yaml.Replace("    - _SwellReadRelative: 1\n", "");
+                if (files[i].EndsWith("Water_StormGrey.mat", StringComparison.Ordinal))
+                {
+                    Assert.That(Regex.Matches(yaml, @"(?m)^    - _PaletteValueFloor: 0\.16$").Count, Is.EqualTo(1), files[i] + ": f+e floor");
+                    yaml = yaml.Replace("    - _PaletteValueFloor: 0.16\n", "    - _PaletteValueFloor: 0.07\n");
+                }
+                // Sunset water fix (11-21): the base Water.mat's ripple band 0.45 -> 0.25 (the diagonal
+                // grating it ruled across the sea) and its sun-glitter column 0.6 -> 0.25 (the orange
+                // worms at dusk). Exactly those two values are authorized; they are mapped back before the hash.
+                if (files[i].EndsWith("Materials/Water.mat", StringComparison.Ordinal))
+                {
+                    Assert.That(Regex.Matches(yaml, @"(?m)^    - _RippleStrength: 0\.25$").Count, Is.EqualTo(1), files[i] + ": sunset ripple");
+                    Assert.That(Regex.Matches(yaml, @"(?m)^    - _SunGlitterStrength: 0\.25$").Count, Is.EqualTo(1), files[i] + ": sunset glitter");
+                    yaml = yaml.Replace("    - _RippleStrength: 0.25\n", "    - _RippleStrength: 0.45\n")
+                               .Replace("    - _SunGlitterStrength: 0.25\n", "    - _SunGlitterStrength: 0.6\n");
+                    // Boat reflections show at dusk (11-21, the owner's look at PR 1370): the base Water.mat
+                    // gains the object reflection's own chop fade 0.75 and its low-light lift 4. Exactly
+                    // those two new keys are authorized; they are stripped before the hash.
+                    Assert.That(Regex.Matches(yaml, @"(?m)^    - _ObjectReflectFadeChop: 0\.75$").Count, Is.EqualTo(1), files[i] + ": object reflection chop fade");
+                    Assert.That(Regex.Matches(yaml, @"(?m)^    - _ObjectReflectLowLight: 4$").Count, Is.EqualTo(1), files[i] + ": object reflection low-light lift");
+                    yaml = yaml.Replace("    - _ObjectReflectFadeChop: 0.75\n", "").Replace("    - _ObjectReflectLowLight: 4\n", "");
+                    // The sea at sunset (11-22, the rowing clip): the base Water.mat gains the low-sun sheen,
+                    // the hue hold and the sun sparkles. Exactly these ten new keys are authorized; they are
+                    // stripped before the hash. WaterLowSunTests pins what the look-bearing ones hold.
+                    foreach (string lowSunKey in new[] { "_SunGlitterForm", "_SunGlitterSpark", "_LowSunHueHold", "_LowSunWakeHold",
+                                 "_SunGlitterCell", "_SunGlitterDash", "_LowSunWindow", "_LowSunSheen",
+                                 "_LowSunSkyNear", "_LowSunSkyFar" })
+                    {
+                        string line = @"(?m)^    - " + lowSunKey + @": [^\n]*\n";
+                        Assert.That(Regex.Matches(yaml, line).Count, Is.EqualTo(1), files[i] + ": " + lowSunKey);
+                        yaml = Regex.Replace(yaml, line, "");
+                    }
                 }
                 Assert.That(Hash(yaml.Replace("    - " + Dial + ": 0\n", "")), Is.EqualTo(originalHashes[i]),
                     files[i] + ": only the new zero key is authorized");
@@ -197,12 +243,40 @@ namespace HiddenHarbours.Tests.EditMode
             // ADR 0040 B2 adds the curl handoff under the lip and barrel and the nearest-crest birth read; the pinned source includes them.
             // Water gains 2 and 3 (#992, ADR 0027 number 7) add the water type, its plumes and the crest glow outside the surf paths; the pinned source includes them.
             // Crest glow L1 (#1004, ADR 0027) lights the thin top on either facing and ships through the water type, outside the surf paths; the pinned source includes it.
+            // The shore-normal pulse (fix/shore-runup-foam, owner clip review 11-15) reads the bore's phase and birth on the refracted bore clock (BoreClockPoint, a static jitter) and the fetch seaward of the pixel; the pinned sources include it.
+            // The snap-back fix (fix/shore-runup-foam, owner v5 clip review 11-15) keeps the bore's run-in exactly and drains the DRAWN pulse from the reach the run-in got, easing to the new crest's birth by half a period (SurfDrawnBoreBirth01, twin WaterSurface.DrawnPulseBirth01; BreakerMath and SurfAt unchanged) so the run-up no longer jumps at a lull's front, and leaves the last crest's foam on the sand to fade in place (WaterSurface.LeftFoamDrawn / LeftFoamFade01); the pinned sources include it.
+            // The wash v10 copies TWIN A (its new GroundFrame) verbatim into the advect pass, which never calls it, so the bore it deposits is unchanged; the pinned sources include it.
+            // The wash v9 (fix/shore-runup-foam, the 7e16896 editor look 11-15) breaks the shore lip with a finer churn, boxes the break gate along the shore, reads the bore's deposited foam smooth beside a beach and steps the beach projection back onto the still line (_WashSurfDetail, _WashSurfSmooth, _WashGroundScale); the pinned source includes it.
+            // The wash v8 (fix/shore-runup-foam, the f07a839 editor look 11-15) projects the beach's surf read from the warped point, so one shore normal reads one bore, and draws the surf beside a beach as churn thresholded against the break gate, smooth and capped like the wash (_WashSurfReach, _WashSurfLift); the pinned source includes it.
+            // The wash v7 (fix/shore-runup-foam, the PR 1225 editor look 11-15) measures the leading line on the ground up the shore normal instead of the screen gradient (no ddx/ddy in the wash), hands the breaker's lip and barrel to the wash above the still line, and caps what the surf's layers hide of the sand (_WashMaxCover); the pinned source includes it.
+            // The wake seam fix (fix/bow-foam-and-hull-sorting, owner 11-16 "the two lines that persist ... behind the stern") changes only the HULL dispersal block of the advect pass: its edge starts at half the band's radius and lays (1 - FoamProfile01) of the envelope. That block runs only for a hull injector (disp.x > 0) and adds to foam independently of the bore's deposit, which reads neither foam nor fresh, so the bore it deposits is unchanged; the pinned source includes it.
+            // The kelp under the water (feat/kelp-reads-under-water) adds the global _HHUnderWaterClarity, a cover out-parameter on ShallowsPropsBed and UnderWaterPropTransmission, which raises the seabed column's banded transmission (bedT, local to the absorption block) only where a prop under the water covers the bed. It sits in the seabed composite, reads no surf, bore, foam, wash or clock term, and nothing in the surf paths reads it; the B1 blocks are byte-identical; the pinned source includes it.
+            // The cut-off pools (fix/cut-off-pools-stay-still-impl, the owner's ask of 11-19) multiply the bore's deposit front by the sea's reach after the front line: exactly 1 wherever the water is joined to the sea, so the bore deposited on every open shore is unchanged, and a pool the tide has cut off takes no new surf residue; the pinned source includes it.
+            // Boat reflections at dusk (fix/hull-reflection-shows, the owner's look at PR 1370, 11-21) give the object-reflection block in ObjectReflection() its own chop fade and a low-light lift (_ObjectReflectFadeChop, _ObjectReflectLowLight, both 0 = today's weight exactly) and clamp its final weight to 1. It composites col.rgb only, after the sky mirror, and reads no surf, bore, foam, wash or clock term; the pinned source includes it.
+            // The shore wash lee fade (fix/shore-wash-hard-edge) adds _BoreLeeFade: the lee lattice in the surf probe and the run-up's share of the edge and its left foam growing with the break depth (BreakerMath.BoreEdgeLeeFade01 and BoreLeeLattice). With both settings at 0 the older arithmetic is bit-exact; no B1 block moved; the pinned sources include it.
+            // The thin edge (fix/thin-edge-marbling) adds _ShoreThinEdge: on beds flatter than its slope the beach swash's along-shore desync fades out (BreakerMath.SwashDesyncKeep01, in BeachSwash and its rate twin alike), and the water's alpha thins to a film over the last centimetres of level inside the drawn edge (BreakerMath.EdgeWetFilm01). It also includes the caustic pattern by its full path, so the shader compiles in memory. With both settings at 0 the older arithmetic is bit-exact; no B1 block moved; the pinned sources include it.
+            // The wash lip (fix/thin-edge-marbling, second pass) adds _ShoreWashLip: the leading line sits a share of the film inside the drawn edge, its width follows the one foam's lace, and it is drawn through the one sheet's tear, cover and colour walk, older on the backwash (BreakerMath.WashLipInsetMeters, WashLipDrawn, WashLipWidthMeters, WashLipAge01). The bore's break gate, march and births read the probe's own envelope (surfBoreEnv) where the two lee reads step by more than _BoreLeeFade.z (BreakerMath.BoreTakesHardRead), and only the wash reads the lee lattice's ramp. With the lip dials at 0 the line is bit-exact; no B1 block moved; the pinned sources include it.
+            // The final pass (fix/thin-edge-marbling) reads the lip younger over full water where no bore runs up (_ShoreThinEdge.z, BreakerMath.WashLipOverWater01 and WashLipStillAge01; 0 bit-exact), and takes the surf probe's fetch reads only where the gate can open or a shore consumer of the envelope can be non-zero (surfEnvRead), the shore zone and the gate's depth worked out first; no B1 block moved; the pinned sources include it.
             MainSource(Read(WaterPath)); // Pins the edge, clip, sheet and both twins to approved main.
-            Assert.That(Hash(Read(AdvectPath)), Is.EqualTo("5c33ae63e18cb7848ae313d9ffcabfc050128c2739d56cf1126ee7520701790a"));
+            Assert.That(Hash(Read(AdvectPath)), Is.EqualTo("c44e6f51d9260d92c832e7c4e4d319fa848475710ba64aaad57a9bc9f5bc0dfa"));
             Assert.That(Hash(Read("Assets/_Project/Code/Core/Environment/BreakerMath.cs")),
-                Is.EqualTo("69e32d51219de35a79b8f20fc6f5c2da92cec815594a4bfd886efacf66baf61c"));
+                Is.EqualTo("b5be496cd26c821c89fa594e3fcd75b4593758d1c1b6036b4170d664fd4cdc45"));
             Assert.That(Hash(Read("Assets/_Project/Code/Art/WaterSurface.cs")),
-                Is.EqualTo("cfdb7474d00a3ac1be4cc47c7747758c1072734d166ea280a40155240ec72e1b"));
+            // Intro at sea PR 2 moves the wind-shape lookup to the hour clock; the pinned source includes it.
+            // The shore-normal pulse adds SwellShoreKeep, the CPU twin of the shader's swell yield; the pinned source includes it.
+            // The snap-back fix adds DrawnPulseBirth01, LeftFoamDrawn and LeftFoamFade01, the CPU twins of the shader's drawn pulse birth and left foam; the pinned source includes them.
+            // The wash v7 adds WashLineDrawn, WashBeachShare01 and WashCapScale, the CPU twins of the shader's ground-measured line, the anatomy's hand-over on the sand and the wash's cover cap; the pinned source includes them.
+            // The wash v8 adds BeachSurfEvalPoint, ShoreSurfShare01, ShoreSurfCover01 and OpenSurfCover01, the CPU twins of the shader's beach projection and its shore surf; the pinned source includes them.
+            // The wash v9 adds BeachSurfEvalPointRefined, AlongShoreGateDepth and ShoreLip01, the CPU twins of the shader's correcting step onto the still line, the break gate's along-shore box and the lip broken by the churn; the pinned source includes them.
+            // The kelp under the water pushes _HHUnderWaterClarity (GameConfig.UnderWaterWeedClarity) beside the shallows floor's switch in PushShallowsFloor; no surf twin moved; the pinned source includes it.
+            // The one foam sheet (feat/one-foam-everywhere, the owner's rulings of 11-19) adds PushFoamSheet, the GameConfig.FoamSheet dials pushed beside the shallows floor (the shore line, then the caps and surf, then the storm streaks, then the convergence foam, then the wash under the 11-19 ruling "Yes, unify surf"); the pinned source includes it.
+            // The owner's oar look of 11-19 adds IdFoamSheetEdge and pushes GameConfig.FoamSheet.EdgeVector in PushFoamSheet; no surf twin moved; the pinned source includes it.
+            // The owner's oar look of 11-19 (the band edges) adds IdFoamSheetDither and pushes GameConfig.FoamSheet.DitherVector in PushFoamSheet; no surf twin moved; the pinned source includes it.
+            // The cut-off pools publish the sea's reach from the seabed the water draws (SeaReachGlobals.PublishPainted / PublishElevations, released in OnDisable, its blend refreshed in PushUniforms); no surf twin moved; the pinned source includes it.
+            // The shore-wave turn (feat/waves-follow-the-seabed) adds FeedShoreWaveField, built once from the seabed beside the height texture and bound as _ShoreWaveTex; no surf twin moved; the pinned source includes it.
+            // The weather walls (feat/st-peters-weather-walls) pass the sampled weather through LocalWeather.Shade in SampleSimTargets and the rain strength through LocalWeather.Rain in PushUniforms: two lines, no surf twin moved, BreakerMath and both shaders untouched. With no local weather set, Shade returns the sample it was given and Rain returns the strength it was given (StPetersWeatherWallsTests.WithNoLocalWeather_TheWaterSurfaceIsFedExactlyWhatTheSimGave), so every value the surface pushes, the bore's inputs included, is bit-exact; the pinned source includes it.
+            // The weather walls, second pass: the surface now asks LocalWeather.ShadeSurface, which shades only for an effect that asked for the water surface as data (CampaignBarrierDef.StormShadesWaterSurface, on for the four St Peters walls, off by default and off for the storm authored before them), and it reads the sim again at once when LocalWeather.SurfaceEdition changes, so a shade that lifts is not drawn on from a kept sample. No surf twin moved, BreakerMath and both shaders untouched. With no local weather, or with the earlier storm standing at full strength, ShadeSurface returns the sample it was given, Rain the strength it was given, and the edition never moves (StPetersWeatherWallsTests.WithNoLocalWeather_TheWaterSurfaceIsFedExactlyWhatTheSimGave and WithTheEarlierStormStandingAtFull_TheWaterSurfaceIsStillFedExactlyWhatTheSimGave); the pinned source includes it.
+                Is.EqualTo("14ae6ac0a6ac5f185ac97e6c97352b2b4132a338bcddf1f4f22f3d02c2633dcb"));
         }
 
         static void RequireGpu()
@@ -353,8 +427,8 @@ namespace HiddenHarbours.Tests.EditMode
                     "float4 _B1Time; float4 _B1Fringe; float4 _B1Event;\nCBUFFER_START(UnityPerMaterial)");
                 // Only the fringe's RGB target changes. _FoamColor also colours other layers: setting
                 // that shared material colour would NOT isolate the fringe.
-                source = source.Replace("col.rgb = lerp(col.rgb, _FoamColor.rgb, foamCoverage * _FoamColor.a);",
-                    "col.rgb = lerp(col.rgb, lerp(_FoamColor.rgb, _B1Fringe.rgb, _B1Fringe.a), foamCoverage * _FoamColor.a);");
+                source = source.Replace("col.rgb = lerp(col.rgb, fringeFoam, foamCoverage * _FoamColor.a);",
+                    "col.rgb = lerp(col.rgb, lerp(fringeFoam, _B1Fringe.rgb, _B1Fringe.a), foamCoverage * _FoamColor.a);");
                 source = source.Replace("col.rgb = lerp(col.rgb, surfFoam, cover * _SurfColor.a);",
                     "col.rgb = lerp(col.rgb, lerp(surfFoam, _B1Event.rgb, _B1Event.a), cover * _SurfColor.a);");
                 source = source.Replace("col.rgb = lerp(col.rgb, lipFoam, lip * _SurfLipColor.a);",

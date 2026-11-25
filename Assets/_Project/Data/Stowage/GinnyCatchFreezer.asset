@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f9ce63eac49466badaad127f62043a9, type: 3}
+  m_Name: GinnyCatchFreezer
+  m_EditorClassIdentifier: HiddenHarbours.Player::HiddenHarbours.Player.FreezerDef
+  Id: freezer.ginny_freezer
+  DisplayName: Ginny's freezer
+  CapacityUnits: 20
+  DeedHomeId: 
+  SheetStem: Appliance_chestFreezer
+  ContentsOpeningMetres:
+    serializedVersion: 2
+    x: -0.595
+    y: 0.4499
+    width: 1.19
+    height: 0.4178
+  FullFromFraction: 0.6
+  FishDrawScale: 1
+  FishLaySlotOverHeldLength: 1.5
+  FishHeightOfLength: 0.3
+  FishRowPitchMetres: 0.13
+  FishSideOnLays: 2
+  FishGapMetres: -0.02
+  LidFrameSeconds: 0.08

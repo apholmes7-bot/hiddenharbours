@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51d5aaf6c73f47f1b2335fa4906c6153, type: 3}
+  m_Name: StripedBass
+  m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.FishEcologyDef
+  Id: "ecology.striped_bass"
+  SpeciesId: "fish.striped_bass"
+  ScientificName: "Morone saxatilis"
+  LifeStageAndScope: "Post-larval fishable coastal animals; typical reference habitat only. Adults unless the notes explicitly distinguish juveniles."
+  TypicalMinDepthMetres: 0
+  TypicalMaxDepthMetres: 30
+  DepthEvidence: "Authored shallow coastal and estuarine reference band, not a physiological depth ceiling. The source documents anadromy and distinct juvenile estuary use."
+  Layer: 1
+  Habitats: 33
+  PreferredVegetation: 0
+  VegetationEvidence: "The cited profile does not establish a species-wide eelgrass or kelp preference; zero means no preference inferred, not avoidance."
+  Grouping: 2
+  DayHabit: 1
+  TideHabit: 1
+  HabitEvidence: "Daily activity varies with size, season and locality. No hard daylight or tide exclusion is inferred from this reference."
+  BiologyNotes: "Loose groups are a reference simplification. Existing dawn/dusk and moving-water bite gates remain gameplay tuning; this profile does not turn them into absence outside those windows."
+  SourceUrls:
+  - "https://www.fisheries.noaa.gov/species/atlantic-striped-bass"

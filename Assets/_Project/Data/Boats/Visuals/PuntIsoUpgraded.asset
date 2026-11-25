@@ -255,3 +255,24 @@ MonoBehaviour:
   MotorRockPitchDegrees: 2.4
   MotorRockHeavePixels: 1.5
   MotorMountLocalMeters: {x: 0, y: -2.63, z: 0.56}
+  Tiller:
+    Enabled: 1
+    SeatLocalMeters: {x: -0.1, y: -1.92, z: 0.316}
+    PortFootBraceLocalMeters: {x: -0.0234, y: -1.4482, z: 0.07}
+    StarboardFootBraceLocalMeters: {x: 0.2122, y: -1.558, z: 0.07}
+    SeatedState: idle_oars
+    FloorOriginLocalMeters: {x: -0.1, y: -1.82, z: 0.076}
+    FacingDeckBearingDegrees: 25
+    TillerGripAtRestLocalMeters: {x: 0, y: -1.975, z: 0.627}
+    IdleLeanDegrees: 4
+    SitUpPerThrottleDegrees: 4
+    BreathDegrees: 1
+    BreathSeconds: 4.5
+    RestHandAlongThigh: 0.7
+    RestHandAboveThighMeters: 0.06
+    ReachLeanMaxDegrees: 30
+    BodyClearanceMeters: 0.02
+    BodyClearLeanMaxDegrees: 12
+    BodyClearTwistMaxDegrees: 20
+    LookIntoTurnDegrees: 6
+    HeadLookIntoTurnDegrees: 16

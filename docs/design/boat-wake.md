@@ -257,3 +257,26 @@ V. (It is `spriteMode: Multiple`, so a runtime load needs `LoadAllAssetsAtPath`/
 `LoadAssetAtPath<Sprite>`.) A bow-wave / quarter-wave layer and rudder turbulence are natural additions on
 the same particle system. Larger hulls up the ladder could scale `WakeConfig` by `BoatHullDef` (a wider,
 heavier, longer-armed wake for the dragger) — data-driven, no new mechanic.
+
+## The oar splash (owner ruling 2026-11-13)
+
+A rowed hull's oars splash and leave foam. It is a sibling of the wake, not part of it, and it reuses
+the wake's pieces rather than adding a particle system.
+
+- **When.** `DoryOarSplashEmitter` reads the pose `DoryOarMeshLayer` drew this frame. A blade is in the
+  water when `lock height above the waterline - reach x sin(dip) <= 0` (`DoryOarSplashMath`); the lock
+  is the oar fitting's own pivot and the waterline is the hull's resting draught, so the catch lands on
+  the frame the drawn blade touches down. There is no second stroke clock.
+- **What.** On the entry frame of a rowing blade: a fan of droplets thrown outboard, and a couple of
+  foam puffs. While the blade stays in: foam puffs at the blade, shoved the way it sweeps, which then
+  drift with the tide and fade (`WakeParticleSystem`, the wake's own pool and life curves, drawn with
+  the wake host's foam rafts in the wake's sorting band).
+- **How hard.** Strength blends the pull's effort with the boat's speed; stroke rate needs no dial
+  because every stroke catches once.
+- **When not.** Shipped or trailing oars, a dory under her outboard (oars stowed), an empty helm, a boat
+  aground. None of them are "rowing", and only a rowing blade splashes.
+- **Dials.** `BoatVisualDef.OarSplash` (`OarSplashConfig`) on the hull's visual asset. `Enabled` off
+  rows dry.
+- **Owed.** The sprite oar path (`DoryOarLayer`) does not splash; the dory ships on the mesh path. No
+  oar-dip sound yet: there is no audio cue for it, and adding one is the audio lane's (a Core cue plus
+  a clip slot).

@@ -39,7 +39,7 @@ namespace HiddenHarbours.Tests.EditMode
         // The five ships trim by a deliberate zero: at full ahead they make Fn 0.08–0.2, nowhere near
         // a hump, and a nod they could not make would be a lie (§2.7.3).
         static readonly string[] DeliberatelyLevel =
-            { "SideDragger", "SternTrawler", "SternTrawlerMk2", "CoastalPacket", "Tanker" };
+            { "SideDragger", "SternTrawler", "SternTrawlerMk2", "CoastalPacket", "Tanker", "ExpeditionYacht120" };
 
         sealed class ScriptedSea : IEnvironmentService
         {

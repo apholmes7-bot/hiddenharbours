@@ -1,0 +1,8 @@
+{
+    "name": "HiddenHarbours.Tools.LandedCatch.Editor",
+    "rootNamespace": "HiddenHarbours.Tools.LandedCatch",
+    "references": ["HiddenHarbours.Core"],
+    "includePlatforms": ["Editor"],
+    "autoReferenced": false,
+    "noEngineReferences": true
+}

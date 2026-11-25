@@ -166,17 +166,17 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     double At(double hour) => E(t, place, GullPlaceFiles.Inputs(HighSummer, hour, GullSky.Calm));
 
                     string id = region.IdOf(p);
-                    double dawn = At(6.5), morning = At(9.0), midday = At(13.0), evening = At(19.0);
-                    if (!(dawn < morning)) failures.Add(id + ": 06:30 " + dawn + " is not under 09:00 " + morning);
+                    double dawn = At(t.SunriseHour + 0.5), morning = At(9.0), midday = At(13.0), evening = At(t.SunsetHour - 1.0);
+                    if (!(dawn < morning)) failures.Add(id + ": half an hour after sunrise " + dawn + " is not under 09:00 " + morning);
                     bool works = place.Kind == BirdHauntKind.FishPlant || place.Kind == BirdHauntKind.Wharf;
                     if (works && !(midday < morning)) failures.Add(id + ": 13:00 " + midday + " is not under 09:00 " + morning);
-                    if (!(evening < midday)) failures.Add(id + ": 19:00 " + evening + " is not under 13:00 " + midday);
+                    if (!(evening < midday)) failures.Add(id + ": an hour before sunset " + evening + " is not under 13:00 " + midday);
                     if (At(23.0) != 0.0 || At(3.0) != 0.0) failures.Add(id + ": birds at night");
 
                     double last = -1.0;
                     for (int i = 0; i <= 30; i++)
                     {
-                        double hour = 5.5 + 0.05 * i;
+                        double hour = t.SunriseHour - 0.5 + 0.05 * i;
                         double e = At(hour);
                         if (e < last) failures.Add(id + ": the dawn count falls at " + hour.ToString("0.00"));
                         last = e;
@@ -573,9 +573,13 @@ namespace HiddenHarbours.Tests.Art.EditMode
             GullHauntSpec school = GullPlaceFiles.School(t, 120.0, -60.0, 6.0, now - 1000.0, now + 1000.0);
 
             GullScheduleInputs nine = GullPlaceFiles.Inputs(HighSummer, 9.0, GullSky.Calm);
-            Assert.That(E(t, school, nine), Is.EqualTo(6.0).Within(1e-6), "a school's birds at 09:00");
-            Assert.That(E(t, school, GullPlaceFiles.Inputs(HighSummer, 13.0, GullSky.Calm)), Is.EqualTo(4.2).Within(1e-6),
-                        "a school's birds at 13:00");
+            // The library's SchoolBirds, at High Summer's share: all of them in the morning, the midday level at 13:00.
+            double summer = t.SchoolBirds * t.SchoolSeason[HighSummer];
+            int slots = Math.Max(0, Math.Min(GullRoster.MaxSchoolSlots, (int)Math.Ceiling(t.SchoolBirds * t.SchoolSeason.Max)));
+            Assert.That(summer, Is.GreaterThan(0.0), "the library puts no birds over a school: nothing to check");
+            Assert.That(E(t, school, nine), Is.EqualTo(summer).Within(1e-6), "a school's birds at 09:00");
+            Assert.That(E(t, school, GullPlaceFiles.Inputs(HighSummer, 13.0, GullSky.Calm)),
+                        Is.EqualTo(summer * t.SchoolMiddayLevel).Within(1e-6), "a school's birds at 13:00");
             Assert.That(E(t, school, GullPlaceFiles.Inputs(HighSummer, 9.0, GullSky.Gale)), Is.EqualTo(0.0), "in a gale");
             GullScheduleInputs late = nine;
             late.Seconds = now + 1000.0;
@@ -589,7 +593,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             GullRegionPlaces stp = GullPlaceFiles.Region(GullPlaceFiles.StPeters);
             int n = stp.Count;
             GullHauntSpec[] places = stp.Places.Concat(new[] { school }).ToArray();
-            var roster = new GullRoster(places.Length, GullFlock.MaxNearBirds, GullConfig.Default.Count);
+            var roster = new GullRoster(places.Length, GullFlock.MaxNearBirds, GullPlaceFiles.PoolSize());
             roster.Refresh(places, n, n + 1, t, GullPlaceFiles.Settings(stp.Bounds),
                            GullPlaceFiles.Calendar(3, 9.0, HighSummer),
                            GullTestWeather.Steady(GullSky.Calm.Storm, GullPlaceFiles.LowWater),
@@ -597,7 +601,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
             var failures = new List<string>();
             roster.SlotRange(n, out int first, out int end);
-            Assert.That(end - first, Is.EqualTo(6), "the school's slots");
+            Assert.That(end - first, Is.EqualTo(slots), "the school's slots");
             int over = 0;
             for (int slot = first; slot < end; slot++)
             {
@@ -615,7 +619,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             for (int i = 0; i < roster.StoredCount; i++)
                 if (!keys.Add(roster.Near[i].Key)) failures.Add("key " + roster.Near[i].Key + " is listed twice");
 
-            Assert.That(over, Is.EqualTo(6), "every bird over the school");
+            Assert.That(over, Is.EqualTo(slots), "every bird over the school");
             GullAssert.None(failures, "the school's birds are wrong");
         }
 
@@ -820,6 +824,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// The owner's table (DESIGN section 6), at the day's jitter set to 1: thirteen moments the
         /// birds were checked against by hand. A cell that moves is a change in the data or the rules,
         /// and the owner hears about it.
+        /// The dawn cell is read half an hour after sunrise, which was 06:30 when the owner's table was written.
         /// </summary>
         [Test]
         public void TheOwnerTableHolds()
@@ -835,7 +840,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 new HauntCell("birdhaunt.stp_wharf", HighSummer, 9.0, GullSky.Calm, high, true, 0.5, 12.48),
                 new HauntCell("birdhaunt.stp_crossing_mussels", TheTurn, 13.0, GullSky.Calm, low, false, 0.5, 6.44),
                 new HauntCell("birdhaunt.stp_crossing_mussels", TheTurn, 13.0, GullSky.Calm, high, false, 0.5, 2.254),
-                new HauntCell("birdhaunt.nmc_landing_flats", EarlySpring, 6.5, GullSky.Windy, low, false, 0.5, 2.625),
+                new HauntCell("birdhaunt.nmc_landing_flats", EarlySpring, t.SunriseHour + 0.5, GullSky.Windy, low, false, 0.5, 2.625),
                 new HauntCell(FlakeYard, HighSummer, 13.0, GullSky.Calm, 0.0, false, 0.5, 3.9),
                 new HauntCell(FlakeYard, HighSummer, 13.0, GullSky.Fog, 0.0, false, 0.5, 1.425),
             };
@@ -1297,7 +1302,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                                            IGullWeather weather, in GullRect view)
         {
             GullHauntSpec[] places = region.Places;
-            var roster = new GullRoster(places.Length, GullFlock.MaxNearBirds, GullConfig.Default.Count);
+            var roster = new GullRoster(places.Length, GullFlock.MaxNearBirds, GullPlaceFiles.PoolSize());
             roster.Refresh(places, places.Length, places.Length, t, Settings(region.Bounds), cal, weather, view);
             return roster;
         }
@@ -1445,6 +1450,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 FieldInfo f = typeof(GullScheduleTuning).GetField(kv.Key, BindingFlags.Public | BindingFlags.Instance);
                 Assert.IsNotNull(f, "the library's Tuning block has a field the code does not: " + kv.Key);
                 if (f.FieldType == typeof(float)) f.SetValue(knobs, kv.Value.AsFloat);
+                else if (f.FieldType == typeof(int)) f.SetValue(knobs, kv.Value.AsInt);
                 else if (f.FieldType == typeof(float[])) f.SetValue(knobs, kv.Value.AsFloats);
                 else Assert.Fail("a tuning field of an unread type: " + f.Name);
             }
@@ -1453,6 +1459,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
             string sky = File.ReadAllText(SkyPath).Replace("\r\n", "\n");
             return knobs.ToSpec(Hour(sky, "_sunriseHour"), Hour(sky, "_sunsetHour"));
         }
+
+        /// <summary>The flock's pool as the library's file gives it: Tuning.MaxBirdsDrawn.</summary>
+        public static int PoolSize() => GullYaml.ReadAsset(LibraryPath)["Tuning"]["MaxBirdsDrawn"].AsInt;
 
         private static double Hour(string sky, string field)
             => float.Parse(Field(sky, field), NumberStyles.Float, CultureInfo.InvariantCulture);

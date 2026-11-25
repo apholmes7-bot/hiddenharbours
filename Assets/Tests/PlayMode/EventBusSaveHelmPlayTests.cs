@@ -96,7 +96,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 var camera = cameraGo.AddComponent<CameraFollow>();
                 typeof(CameraFollow).GetField("_onFootTarget", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(camera, player.transform);
                 typeof(CameraFollow).GetField("_boatTarget", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(camera, boatGo.transform);
-                Assert.That(sw.TryInteract(), Is.True);
+                Assert.That(HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw), Is.True);
                 Assert.That(sw.Mode, Is.EqualTo(ControlMode.OnDeck));
                 Assert.That(camera.Target, Is.SameAs(player.transform));
                 // Establish the failure premise AFTER setup. Open an absent TEST path so a failed
@@ -125,7 +125,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 player.transform.position = sw.HelmWorldPosition;
                 LogAssert.Expect(LogType.Exception, new Regex("^IOException: eventbus-replace-denied(?:\\r?\\n|$)"));
 
-                bool returned = sw.TryInteract();
+                bool returned = HiddenHarbours.Tests.Support.TimedBoarding.Interact(sw);
 
                 Assert.That(attempts, Is.EqualTo(1), "the real SaveService reached the replacement boundary");
                 Assert.That(tempWasComplete, Is.True, "serialization and temp write preceded the injected failure");

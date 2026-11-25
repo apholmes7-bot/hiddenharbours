@@ -11,10 +11,11 @@ namespace HiddenHarbours.Environment
     public class GameClock : MonoBehaviour, IGameClock
     {
         [SerializeField] private GameConfig _config;
-        [Tooltip("Hour of day a new game starts at (0..24).")]
-        [Range(0f, 24f)] [SerializeField] private float _startHour = 6f;
+        // Legacy scene YAML may still contain _startHour. There is no field to deserialize it into;
+        // GameConfig.StartHour is the only Inspector control and the only value read.
 
         private double _t;
+        private double _flow;
         private int _lastTotalDays = -1;
         private Season _lastSeason;
 
@@ -23,6 +24,10 @@ namespace HiddenHarbours.Environment
         public GameConfig Config => _config;
 
         public double TotalSeconds => _t;
+        public double FlowSeconds => _flow;
+        public bool IsHeld { get; set; }
+        /// <summary>The authored new-game instant, also used by the opening's hour hold.</summary>
+        public double StartSeconds => _config != null ? _config.SecondsPerDay * (_config.StartHour / 24d) : 0d;
         public GameTime Now => new GameTime(_t);
         public bool IsPaused { get; set; }
         public float TimeScale { get; set; } = 1f;
@@ -33,9 +38,10 @@ namespace HiddenHarbours.Environment
         /// <see cref="IGameClock.DayIndex"/>.</summary>
         public int DayIndex => TotalDays;
 
-        public Season Season => _config != null ? (Season)(TotalDays / _config.DaysPerSeason % 4) : Season.EarlySpring;
-        public int Year => _config != null ? TotalDays / _config.DaysPerSeason / 4 + 1 : 1;
-        public int DayOfSeason => _config != null ? TotalDays % _config.DaysPerSeason + 1 : 1;
+        private CalendarDate Calendar => GameCalendar.AtSeconds(_t, _config);
+        public Season Season => Calendar.Season;
+        public int Year => Calendar.Year;
+        public int DayOfSeason => Calendar.DayOfSeason;
         public Weekday Weekday => _config != null ? (Weekday)(TotalDays % _config.DaysPerWeek) : Weekday.Monday;
         public bool IsMarketDay => _config != null && (int)Weekday == _config.MarketDayIndex;
 
@@ -50,10 +56,15 @@ namespace HiddenHarbours.Environment
                 enabled = false;
                 return;
             }
-            _t = _config.SecondsPerDay * (_startHour / 24f);
+            _t = StartSeconds;
+            _flow = _t;
             _lastTotalDays = TotalDays;
             _lastSeason = Season;
+            // Body slice 2: the work the game announces (fights, hauls, deck work, driving) counts as effort.
+            ActivitySignalListener.Install();
         }
+
+        private void OnDestroy() => ActivitySignalListener.Uninstall();
 
         /// <summary>
         /// Seek the master clock to an absolute game-time (<see cref="IGameClock.SeekTo"/>): how a loaded
@@ -65,12 +76,65 @@ namespace HiddenHarbours.Environment
         public void SeekTo(double totalSeconds)
         {
             _t = totalSeconds < 0d ? 0d : totalSeconds;
+            _flow = _t;
+            // A seek is a restore, not time passing: hunger and tiredness hold (needs slice 1).
+            NeedsMath.Rebase(GameServices.Save?.Current?.PlayerNeeds, _t);
+            BodyMath.Rebase(GameServices.Save?.Current?.PlayerBody, _t);   // body slice 1: mass and stomach hold too
+            CleanlinessMath.Rebase(GameServices.Save?.Current?.PlayerCleanliness, _t);   // and the dirt
+            _needsTickAccum = 0d;
             // Keep the rollover guards in step with where we landed (only meaningful once configured).
             if (_config != null)
             {
                 _lastTotalDays = TotalDays;
                 _lastSeason = Season;
             }
+        }
+
+        /// <summary>
+        /// Fast-forward to a later game-time as time PASSING (<see cref="IGameClock.FastForwardTo"/>): how
+        /// a night's rest brings the morning. Unlike <see cref="SeekTo"/>, every midnight crossed
+        /// publishes <see cref="DayStarted"/> once, in order, and <see cref="SeasonChanged"/> where a
+        /// season turns, exactly as <see cref="Advance"/> would have had the hours been waited out.
+        ///
+        /// <para><b>Each day is announced from its own first instant.</b> The clock stands at that
+        /// day's midnight while its <see cref="DayStarted"/> is out, so a subscriber that reads the clock
+        /// inside its handler sees the day it is being told about, as it does on a waited rollover. The
+        /// payload is taken from the day's index, not re-derived from seconds, so it cannot be off by a
+        /// rounding of the very boundary it stands on.</para>
+        ///
+        /// <para><b>Flow moves with the hour.</b> <see cref="FlowSeconds"/> advances by the same span:
+        /// the world ran through the night too, and whatever a held span had put between the two
+        /// readings stays between them.</para>
+        ///
+        /// <para>Refused (false, nothing changed, nothing published) with no config, while the hour is
+        /// held (<see cref="IsHeld"/>: the holder owns the hour), or for a target that is not later than
+        /// now. <see cref="IsPaused"/> does not refuse: a pause stops the flow of frames, and this is
+        /// not a frame.</para>
+        /// </summary>
+        public bool FastForwardTo(double totalSeconds)
+        {
+            if (_config == null || IsHeld) return false;
+            double dayLength = _config.SecondsPerDay;
+            if (!(dayLength > 0d) || !(totalSeconds > _t)) return false;
+
+            double span = totalSeconds - _t;
+            int lastDay = (int)(totalSeconds / dayLength);
+            for (int day = _lastTotalDays + 1; day <= lastDay; day++)
+            {
+                _t = day * dayLength;
+                _lastTotalDays = day;
+                CalendarDate date = GameCalendar.AtDay(day, _config.DaysPerSeason, _config.StartDayOfYear);
+                EventBus.Publish(new DayStarted(date.DayOfSeason, date.Season, date.Year));
+                if (date.Season != _lastSeason)
+                {
+                    _lastSeason = date.Season;
+                    EventBus.Publish(new SeasonChanged(date.Season, date.Year));
+                }
+            }
+
+            _t = totalSeconds;
+            _flow += span;
+            return true;
         }
 
         /// <summary>
@@ -89,7 +153,13 @@ namespace HiddenHarbours.Environment
         public void Advance(float wallSeconds)
         {
             if (_config == null || IsPaused) return;
-            _t += wallSeconds * Mathf.Max(0f, TimeScale);
+            double step = wallSeconds * Mathf.Max(0f, TimeScale);
+            _flow += step;
+            if (!IsHeld)
+            {
+                _t += step;
+                TickNeeds(step);
+            }
 
             int today = TotalDays;
             if (today != _lastTotalDays)
@@ -103,5 +173,26 @@ namespace HiddenHarbours.Environment
                 }
             }
         }
+
+        /// <summary>
+        /// The needs' slow tick (needs slice 1): every <see cref="GameServices.NeedsTickGameSeconds"/> of
+        /// game time that actually passed, ask <see cref="INeedsService.Tick"/> whether hunger or tiredness
+        /// crossed a stage. Never per frame (rule 7), and only a stage announcement waits on it: the levels
+        /// themselves are read off this clock on demand, so the cadence cannot change them (rule 5). A held
+        /// hour passes no game time and so ticks nothing.
+        /// </summary>
+        private void TickNeeds(double gameStep)
+        {
+            _needsTickAccum += gameStep;
+            if (_needsTickAccum < GameServices.NeedsTickGameSeconds) return;
+            _needsTickAccum = 0d;
+            GameServices.Needs.Tick();
+            // The food stores share the needs' slow cadence (kitchens slice 1): it only notices a cooler's
+            // ice running out and a fridge's power changing; contents settle on read, so a sleep straight
+            // past the melt lands on the same numbers as these ticks would.
+            KitchenStores.Tick();
+        }
+
+        private double _needsTickAccum;
     }
 }

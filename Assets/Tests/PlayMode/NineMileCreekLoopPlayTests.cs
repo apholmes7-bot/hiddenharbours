@@ -60,14 +60,15 @@ namespace HiddenHarbours.Tests.PlayMode
         static readonly Vector2 LicenceSpeaker = new Vector2(83.6f, 110.566f); // the office trailer's counter
         static readonly Vector2 RodSpeaker = new Vector2(-206f, 112.5f);       // the general store's chandlery
         static readonly Vector2 ClamSpeaker = new Vector2(93f, 123.45f);      // the market's counter
-        static readonly Vector2 DorySpeaker = new Vector2(68.182f, 111.25f);   // the dory yard and Hector's barrel
+        static readonly Vector2 DorySpeaker = new Vector2(197.8f, 123.9f);     // the delivered yard shed door
+        static readonly Vector2 OutboardSpeaker = new Vector2(198f, 89.5f);   // a pace north of the quay seller
         const float SpeakerArriveMetres = 1.5f;
         const float StepOffArriveMetres = 0.4f;
 
         const string HarbourmasterSellerId = "seller.nmc_harbourmaster";
         const string ChandlerySellerId = "seller.nmc_chandlery";
         const string DoryYardSellerId = "seller.nmc_yard";
-        const string DoryYardName = "ShipwrightDoryYard";        // the yard's id is shared with the shed; the yard is this one
+        const string DoryYardName = "NmcWharfYardDoryTrade";       // the repair counter at the new yard shed
         const string OutboardSellerId = "seller.hectors_barrel";
         const string FishBuyerStallName = "NmcWharfMarketCounter";
         const string WharfGasPumpId = "fixture.nmc.wharf_pump_gas";
@@ -83,10 +84,12 @@ namespace HiddenHarbours.Tests.PlayMode
         const float HighWaterPushSeconds = 20f;                   // game seconds of swimming: long enough to read the crawl
 
         // ---- the wharf ------------------------------------------------------------------------------------------
-        // On the wharf deck in line with the gangway, and on the float 0.8 m past the gangway's foot (the float's
-        // footprint is x 104..152, y 68.8..71.2).
-        static readonly Vector2 GangwayFromBody = new Vector2(105f, 87.7f);
-        static readonly Vector2 GangwayToBody = new Vector2(105f, 70.4f);
+        // The brow she walks is a registered one, read off the scene: the west finger's, the nearest to where the
+        // one brow of the old wharf hinged before the wharf's water side (NMC H5) retired it and walled its mouth.
+        // She starts on the wharf deck in line with it, 1.7 m behind its hinge, and ends on the float 0.8 m past
+        // its foot: the two distances the old brow was walked with.
+        const string WalkedGangwayId = "gangway.nmc_fleet_gangway0";
+        const float GangwayStartBehindHingeMetres = 1.7f, GangwayEndPastFootMetres = 0.8f;
         const float GangwayArriveMetres = 0.3f;
 
         // ---- the drive: Wharf Road from x -40 down the final ramp to the turning pad, round inside it, and back up -
@@ -148,7 +151,7 @@ namespace HiddenHarbours.Tests.PlayMode
             InteractionGate.Reset();
             BoardingLadders.Clear();
 
-            yield return SceneManager.LoadSceneAsync(SceneName, LoadSceneMode.Single);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Load(SceneName, LoadSceneMode.Single);
             for (int i = 0; i < 8; i++) yield return null;
 
             GameRoot[] roots = Object.FindObjectsByType<GameRoot>();
@@ -231,7 +234,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 Scene s = SceneManager.GetSceneAt(i);
                 if (s.IsValid() && s != clean && s.name == SceneName)
-                    yield return SceneManager.UnloadSceneAsync(s);
+                    yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(s);
             }
             LogAssert.ignoreFailingMessages = false;
         }
@@ -456,11 +459,15 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             Tide tide = ScanTheTide(daylightOnly: false);
             for (var e = PinTheTide(low ? tide.LowAt : tide.HighAt); e.MoveNext();) yield return e.Current;
-            StandHerAt(GangwayFromBody);
+            HiddenHarbours.World.GangwayPlatform brow = Object.FindObjectsByType<HiddenHarbours.World.GangwayPlatform>().SingleOrDefault(g => g.Id == WalkedGangwayId);
+            Assert.That(brow, Is.Not.Null, $"the creek carries no brow '{WalkedGangwayId}': there is no gangway to walk down.");
+            Vector2 down = (brow.FloatEnd - brow.ShoreEnd).normalized;
+            Vector2 fromBody = brow.ShoreEnd - down * GangwayStartBehindHingeMetres, toBody = brow.FloatEnd + down * GangwayEndPastFootMetres;
+            StandHerAt(fromBody);
             for (int i = 0; i < 4; i++) yield return null;
 
             var walk = new Walk();
-            for (var e = WalkTo(GangwayToBody, GangwayArriveMetres, "down the gangway", walk); e.MoveNext();)
+            for (var e = WalkTo(toBody, GangwayArriveMetres, "down the gangway", walk); e.MoveNext();)
                 yield return e.Current;
             bool onADeck = StandableSurfaces.TryGetDeckElevationNow(Body(), out float deck);
             TestContext.WriteLine($"{(low ? "low" : "high")} water {Water():0.###} m; {walk}; on a deck {onADeck} at {deck:0.###} m");
@@ -566,6 +573,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
             // ---- a purchase: the used outboard ------------------------------------------------------------------------
             var hector = Only<Shipwright>(s => s.SellerId == OutboardSellerId, "Hector's barrel");
+            for (var e = WalkLeg(OutboardSpeaker, SpeakerArriveMetres, "from the shed to the outboard on the quay"); e.MoveNext();) yield return e.Current;
             Assert.That(Vector2.Distance(Body(), hector.transform.position), Is.LessThan(6f), "she is not at Hector's barrel.");
             ShipwrightOffer outboard = hector.Offer;
             Afford(outboard.Price, "the outboard");
@@ -621,15 +629,18 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         // =============================================================================================
-        //  5. THE WHARF'S PUMPS — stood down on their ids
+        //  5. THE WHARF'S PUMPS — live again on their ids, re-sited by H5
         // =============================================================================================
 
         /// <summary>The wharf's two fuel pedestals stood on the old west apron, which G3 dredged: they stood in 2.2 m of
-        /// water at the month's lowest. Both stand down with their ids kept (the owner's ruling) until H5's drawn wharf
-        /// re-sites them, and boats fuel by can from Route 91. Each id must still name one pump in the creek, and
-        /// neither that pump nor its pedestal may be live.</summary>
+        /// water at the month's lowest, so both stood down with their ids kept (the owner's ruling) until H5's drawn
+        /// wharf re-sited them. H5 has re-sited them onto the drawn wharf with the ids kept, so boats fuel at the wharf
+        /// again. Each id must still name exactly one pump in the creek, and that pump and its pedestal must both be
+        /// live. That each pedestal SELLS through its retained wallet binding is proved in
+        /// <c>NmcWharfWaterSidePlayTests</c> (<c>TheExistingWharfGasPedestal_SellsIntoTheHeldCan</c>,
+        /// <c>TheExistingWharfDieselPedestal_SellsIntoTheHeldCan</c>); this guard does not repeat the purchase.</summary>
         [UnityTest, Timeout(300000)]
-        public IEnumerator TheWharfPumps_StandDown_OnTheirIds()
+        public IEnumerator TheWharfPumps_AreLive_OnTheirIds_AfterH5()
         {
             yield return null;
             FuelPump[] pumps = Object.FindObjectsByType<FuelPump>(FindObjectsInactive.Include);
@@ -638,12 +649,12 @@ namespace HiddenHarbours.Tests.PlayMode
                 var named = new List<FuelPump>();
                 foreach (FuelPump p in pumps)
                     if (p.Id == id) named.Add(p);
-                Assert.That(named.Count, Is.EqualTo(1), $"{id} names {named.Count} pumps in the creek; the stand-down keeps it on one.");
+                Assert.That(named.Count, Is.EqualTo(1), $"{id} names {named.Count} pumps in the creek; the re-siting keeps it on one.");
                 GameObject hose = named[0].gameObject, pedestal = hose.transform.parent.gameObject;
                 TestContext.WriteLine($"{id}: '{hose.name}' on '{pedestal.name}', live {hose.activeInHierarchy}, " +
                                       $"pedestal live {pedestal.activeInHierarchy}");
-                Assert.That(hose.activeInHierarchy, Is.False, $"{id} is live; the wharf pumps stand down until H5 re-sites them.");
-                Assert.That(pedestal.activeInHierarchy, Is.False, $"{id}'s pedestal '{pedestal.name}' still draws.");
+                Assert.That(hose.activeInHierarchy, Is.True, $"{id} is not live; H5 re-sited the wharf pumps and they sell again.");
+                Assert.That(pedestal.activeInHierarchy, Is.True, $"{id}'s pedestal '{pedestal.name}' does not draw.");
             }
         }
 

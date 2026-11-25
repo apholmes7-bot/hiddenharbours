@@ -317,7 +317,8 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>Every live, enabled, non-trigger collider the scene loads, as world segments: polygons by their
         /// closed paths, edges by their points, boxes by their four corners, circles as a point with a radius. That is
         /// the scene's own colliders and the ones its prefab instances bring (the Route 91 station's, the wharf
-        /// pumps'), each placed through its instance's overrides. A collider this cannot draw or place throws rather
+        /// pumps', the wholesalers' nested fixtures), each placed through its instance's overrides. A collider this
+        /// cannot draw or place throws rather
         /// than being skipped, so the test that asked fails.</summary>
         public static List<(Vector2 a, Vector2 b, float radius, string who)> SolidOutlines(
             out List<(Vector2[] path, string who)> polygons)
@@ -393,33 +394,92 @@ namespace HiddenHarbours.Tests.EditMode
         /// hung from the instance's parent. Nothing is drawn under a parent that is not live.</summary>
         static void InstanceSolids(Doc instance, List<(Vector2, Vector2, float, string)> outlines, List<(Vector2[], string)> polygons)
         {
-            Dictionary<(long, string), string> overrides = Overrides(instance);
-            string Over(long target, string path) => overrides.TryGetValue((target, path), out string v) ? v : null;
             long parent = ParseRef(InstanceLine(instance, "m_TransformParent"));
             Doc parentTr = parent == 0 ? null : Scene.Require(parent, "a prefab instance's parent transform");
             if (parentTr != null && !Live(Scene.Require(parentTr.FieldRef("m_GameObject"), "a GameObject"))) return;
+            PlacedSolids(instance, p => parentTr == null ? p : Up(parentTr, p), "", false, outlines, polygons);
+        }
 
+        /// <summary>The colliders one placed prefab instance brings, wherever it is placed: <paramref name="hang"/>
+        /// carries a point in the instance's parent's space out to the world. A prefab instance nested in the prefab
+        /// (a building's fixture) is drawn the same way, its own overrides on its own prefab, hung through the outer
+        /// prefab's transforms with the outer instance's overrides on them, and skipped under an outer GameObject that
+        /// is not live. Nesting one deep is read; deeper nesting, or an outer override or removal aimed into the
+        /// nested instance (which only the editor's merged ids can resolve), throws rather than guessing.</summary>
+        static void PlacedSolids(Doc instance, Func<Vector3, Vector3> hang, string where, bool nested,
+                                 List<(Vector2, Vector2, float, string)> outlines, List<(Vector2[], string)> polygons)
+        {
+            Dictionary<(long, string), string> overrides = Overrides(instance);
+            string Over(long target, string path) => overrides.TryGetValue((target, path), out string v) ? v : null;
             SceneYaml prefab = Prefab(RefGuid(instance.Field("m_SourcePrefab")));
-            if (prefab.Docs.Any(x => x.ClassId == PrefabInstanceClass))
-                throw new NotSupportedException($"&{instance.FileId}'s prefab nests another prefab, which a live test cannot place.");
             var removed = new HashSet<long>(Listed(instance, "m_RemovedComponents").Concat(Listed(instance, "m_RemovedGameObjects")));
             Doc root = prefab.Docs.Single(x => (x.ClassId == TransformClass || x.ClassId == RectTransformClass) && !x.Stripped &&
                                                x.FieldRef("m_Father") == 0);
             long rootGo = root.FieldRef("m_GameObject");
-            string name = Over(rootGo, "m_Name") ?? prefab.Require(rootGo, "a prefab's root").Field("m_Name");
+            string name = where + (Over(rootGo, "m_Name") ?? prefab.Require(rootGo, "a prefab's root").Field("m_Name"));
+
+            // A point in the space of the prefab's transform tr, carried up its chain to the instance's root and hung.
+            Vector3 Through(Doc from, Vector3 p)
+            {
+                for (Doc tr = from; tr != null;)
+                {
+                    long t = tr.FileId;
+                    Vector3 Field3(string key)
+                    {
+                        Vector3 v = ParseVec3(tr.Field(key));
+                        return new Vector3(Over(t, key + ".x") is string x ? ParseFloat(x) : v.x,
+                                           Over(t, key + ".y") is string y ? ParseFloat(y) : v.y,
+                                           Over(t, key + ".z") is string z ? ParseFloat(z) : v.z);
+                    }
+                    Quaternion q = Turn(tr);
+                    q = new Quaternion(Over(t, "m_LocalRotation.x") is string qx ? ParseFloat(qx) : q.x,
+                                       Over(t, "m_LocalRotation.y") is string qy ? ParseFloat(qy) : q.y,
+                                       Over(t, "m_LocalRotation.z") is string qz ? ParseFloat(qz) : q.z,
+                                       Over(t, "m_LocalRotation.w") is string qw ? ParseFloat(qw) : q.w);
+                    p = q * Vector3.Scale(p, Field3("m_LocalScale")) + Field3("m_LocalPosition");
+                    long father = tr.FieldRef("m_Father");
+                    tr = father == 0 ? null : prefab.Require(father, "a prefab transform");
+                }
+                return hang(p);
+            }
+
+            // Whether the prefab's transform tr is active in the hierarchy, as this instance has it.
+            bool LiveFrom(Doc from)
+            {
+                for (Doc tr = from; tr != null;)
+                {
+                    long g = tr.FieldRef("m_GameObject");
+                    if (removed.Contains(g) || (Over(g, "m_IsActive") ?? prefab.Require(g, "a prefab GameObject").Field("m_IsActive")) != "1")
+                        return false;
+                    long father = tr.FieldRef("m_Father");
+                    tr = father == 0 ? null : prefab.Require(father, "a prefab transform");
+                }
+                return true;
+            }
+
+            List<Doc> inner = prefab.Docs.Where(x => x.ClassId == PrefabInstanceClass && !x.Stripped).ToList();
+            if (inner.Count > 0)
+            {
+                if (nested)
+                    throw new NotSupportedException($"{name} &{instance.FileId}'s prefab nests another prefab two deep, which a live test cannot place.");
+                foreach (long t in overrides.Keys.Select(k => k.Item1).Concat(removed).Distinct())
+                    if (prefab.Get(t) is not Doc d || d.Stripped)
+                        throw new NotSupportedException($"&{instance.FileId} overrides or removes &{t}, inside a prefab its prefab nests, which a live test cannot place.");
+                foreach (Doc n in inner)
+                {
+                    Doc nParent = prefab.Require(ParseRef(InstanceLine(n, "m_TransformParent")), "a nested prefab's parent transform");
+                    if (nParent.Stripped)
+                        throw new NotSupportedException($"&{n.FileId} hangs from another nested prefab, which a live test cannot place.");
+                    if (!LiveFrom(nParent)) continue;
+                    PlacedSolids(n, p => Through(nParent, p), name + "/", true, outlines, polygons);
+                }
+            }
 
             foreach (Doc c in prefab.Docs)
             {
                 if (c.Stripped || !ColliderClasses.Contains(c.ClassId) || removed.Contains(c.FileId)) continue;
                 Doc go = prefab.Require(c.FieldRef("m_GameObject"), "a prefab GameObject");
-                bool live = true;
-                for (Doc tr = prefab.TransformOf(go); tr != null && live;)
-                {
-                    long g = tr.FieldRef("m_GameObject");
-                    live = !removed.Contains(g) && (Over(g, "m_IsActive") ?? prefab.Require(g, "a prefab GameObject").Field("m_IsActive")) == "1";
-                    long father = tr.FieldRef("m_Father");
-                    tr = father == 0 ? null : prefab.Require(father, "a prefab transform");
-                }
+                bool live = LiveFrom(prefab.TransformOf(go));
                 if (!live || (Over(c.FileId, "m_Enabled") ?? c.Field("m_Enabled")) != "1" ||
                     (Over(c.FileId, "m_IsTrigger") ?? c.Field("m_IsTrigger")) == "1") continue;
                 string who = $"{name}/{go.Field("m_Name")} &{instance.FileId}:{c.FileId}";
@@ -432,31 +492,8 @@ namespace HiddenHarbours.Tests.EditMode
                     return new Vector2(Over(c.FileId, key + ".x") is string x ? ParseFloat(x) : v.x,
                                        Over(c.FileId, key + ".y") is string y ? ParseFloat(y) : v.y);
                 }
-                Vector2 ToWorldThrough(Vector2 local)
-                {
-                    Vector3 p = local;
-                    for (Doc tr = prefab.TransformOf(go); tr != null;)
-                    {
-                        long t = tr.FileId;
-                        Vector3 Field3(string key)
-                        {
-                            Vector3 v = ParseVec3(tr.Field(key));
-                            return new Vector3(Over(t, key + ".x") is string x ? ParseFloat(x) : v.x,
-                                               Over(t, key + ".y") is string y ? ParseFloat(y) : v.y,
-                                               Over(t, key + ".z") is string z ? ParseFloat(z) : v.z);
-                        }
-                        Quaternion q = Turn(tr);
-                        q = new Quaternion(Over(t, "m_LocalRotation.x") is string qx ? ParseFloat(qx) : q.x,
-                                           Over(t, "m_LocalRotation.y") is string qy ? ParseFloat(qy) : q.y,
-                                           Over(t, "m_LocalRotation.z") is string qz ? ParseFloat(qz) : q.z,
-                                           Over(t, "m_LocalRotation.w") is string qw ? ParseFloat(qw) : q.w);
-                        p = q * Vector3.Scale(p, Field3("m_LocalScale")) + Field3("m_LocalPosition");
-                        long father = tr.FieldRef("m_Father");
-                        tr = father == 0 ? null : prefab.Require(father, "a prefab transform");
-                    }
-                    return parentTr == null ? (Vector2)p : (Vector2)Up(parentTr, p);
-                }
-                Draw(c, who, NumberOf, VectorOf, ToWorldThrough, outlines, polygons);
+                Doc goTr = prefab.TransformOf(go);
+                Draw(c, who, NumberOf, VectorOf, local => (Vector2)Through(goTr, local), outlines, polygons);
             }
         }
 

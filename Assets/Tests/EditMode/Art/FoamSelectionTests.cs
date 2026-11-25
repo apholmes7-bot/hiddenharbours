@@ -1,3 +1,4 @@
+using HiddenHarbours.Tests.Support;
 using System;
 using NUnit.Framework;
 using UnityEngine;
@@ -91,10 +92,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(0, FoamSelection.Select(candidates, 128, window, Array.Empty<FoamSelectionSlot>(), out _));
             // Warm the exact overflowing path, then measure only selection (no NUnit/array allocations).
             FoamSelection.Select(candidates, 128, window, slots, out _);
-            long before = GC.GetAllocatedBytesForCurrentThread();
+            using var allocation = new ManagedAllocationProbe();
+            allocation.Begin();
             for (int i = 0; i < 100; i++) FoamSelection.Select(candidates, 128, window, slots, out _);
-            long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
-            Assert.AreEqual(0, allocated);
+            long allocationEvents = allocation.End();
+            Assert.AreEqual(0, allocationEvents);
         }
 
         [Test]

@@ -1,0 +1,196 @@
+# StPetersLayerRefresh: one step's patch to one root. Whole Unity YAML documents.
+step: "13-wharf-land-side"
+root: "NmcWharfOfficeVendor"
+rootGameObject: 1023890145
+addAfter: 1240423985
+differences: []
+deletions: []
+edits:
+- fileID: 1023890145
+  name: "NmcWharfOfficeVendor/go"
+  before: |-
+    --- !u!1 &1023890145
+    GameObject:
+      m_ObjectHideFlags: 0
+      m_CorrespondingSourceObject: {fileID: 0}
+      m_PrefabInstance: {fileID: 0}
+      m_PrefabAsset: {fileID: 0}
+      serializedVersion: 6
+      m_Component:
+      - component: {fileID: 305855482}
+      - component: {fileID: 1240423985}
+      m_Layer: 0
+      m_Name: NmcWharfOfficeVendor
+      m_TagString: Untagged
+      m_Icon: {fileID: 0}
+      m_NavMeshLayer: 0
+      m_StaticEditorFlags: 0
+      m_IsActive: 1
+  after: |-
+    --- !u!1 &1023890145
+    GameObject:
+      m_ObjectHideFlags: 0
+      m_CorrespondingSourceObject: {fileID: 0}
+      m_PrefabInstance: {fileID: 0}
+      m_PrefabAsset: {fileID: 0}
+      serializedVersion: 6
+      m_Component:
+      - component: {fileID: 305855482}
+      - component: {fileID: 1240423985}
+      - component: {fileID: 1340358786}
+      m_Layer: 0
+      m_Name: NmcWharfOfficeVendor
+      m_TagString: Untagged
+      m_Icon: {fileID: 0}
+      m_NavMeshLayer: 0
+      m_StaticEditorFlags: 0
+      m_IsActive: 1
+additions:
+- fileID: 1340358786
+  name: "NmcWharfOfficeVendor/talk"
+  after: |-
+    --- !u!114 &1340358786
+    MonoBehaviour:
+      m_ObjectHideFlags: 0
+      m_CorrespondingSourceObject: {fileID: 0}
+      m_PrefabInstance: {fileID: 0}
+      m_PrefabAsset: {fileID: 0}
+      m_GameObject: {fileID: 1023890145}
+      m_Enabled: 1
+      m_EditorHideFlags: 0
+      m_Script: {fileID: 11500000, guid: 4a24425962914e759250d447c6d94771, type: 3}
+      m_Name: 
+      m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.Interactable
+      _npc: {fileID: 11400000, guid: 7b6b6a02fe474a608bf512334a461d35, type: 2}
+      _bubbleAnchor: {fileID: 0}
+      _kind: 0
+      _speaker: 
+      _conversationId: 
+      _completionFlag: 
+
+# StPetersLayerRefresh: one step's patch to one root. Whole Unity YAML documents.
+step: "16-wharf-boat-yard"
+root: "NmcWharfYardCatalogue"
+rootGameObject: 813580451
+addAfter: 846461072
+differences: []
+deletions: []
+edits:
+- fileID: 813580451
+  name: "NmcWharfYardCatalogue/go"
+  before: |-
+    --- !u!1 &813580451
+    GameObject:
+      m_ObjectHideFlags: 0
+      m_CorrespondingSourceObject: {fileID: 0}
+      m_PrefabInstance: {fileID: 0}
+      m_PrefabAsset: {fileID: 0}
+      serializedVersion: 6
+      m_Component:
+      - component: {fileID: 560614108}
+      - component: {fileID: 922550797}
+      - component: {fileID: 1979513581}
+      - component: {fileID: 846461072}
+      m_Layer: 0
+      m_Name: NmcWharfYardCatalogue
+      m_TagString: Untagged
+      m_Icon: {fileID: 0}
+      m_NavMeshLayer: 0
+      m_StaticEditorFlags: 0
+      m_IsActive: 1
+  after: |-
+    --- !u!1 &813580451
+    GameObject:
+      m_ObjectHideFlags: 0
+      m_CorrespondingSourceObject: {fileID: 0}
+      m_PrefabInstance: {fileID: 0}
+      m_PrefabAsset: {fileID: 0}
+      serializedVersion: 6
+      m_Component:
+      - component: {fileID: 560614108}
+      - component: {fileID: 922550797}
+      - component: {fileID: 1979513581}
+      - component: {fileID: 846461072}
+      - component: {fileID: 1107880298}
+      m_Layer: 0
+      m_Name: NmcWharfYardCatalogue
+      m_TagString: Untagged
+      m_Icon: {fileID: 0}
+      m_NavMeshLayer: 0
+      m_StaticEditorFlags: 0
+      m_IsActive: 1
+additions:
+- fileID: 1107880298
+  name: "NmcWharfYardCatalogue/talk"
+  after: |-
+    --- !u!114 &1107880298
+    MonoBehaviour:
+      m_ObjectHideFlags: 0
+      m_CorrespondingSourceObject: {fileID: 0}
+      m_PrefabInstance: {fileID: 0}
+      m_PrefabAsset: {fileID: 0}
+      m_GameObject: {fileID: 813580451}
+      m_Enabled: 1
+      m_EditorHideFlags: 0
+      m_Script: {fileID: 11500000, guid: 4a24425962914e759250d447c6d94771, type: 3}
+      m_Name: 
+      m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.Interactable
+      _npc: {fileID: 11400000, guid: 007c0c1931c642f48c317b313d2648c0, type: 2}
+      _bubbleAnchor: {fileID: 0}
+      _kind: 0
+      _speaker: 
+      _conversationId: 
+      _completionFlag: 
+
+# StPetersLayerRefresh: one step's patch to one root. Whole Unity YAML documents.
+step: "18-vendor-anchors"
+root: "WorldInteractor"
+rootGameObject: 1912614190
+differences: []
+deletions: []
+edits:
+- fileID: 1912614191
+  name: "WorldInteractor/talks to the vendor anchors"
+  before: |-
+    --- !u!114 &1912614191
+    MonoBehaviour:
+      m_ObjectHideFlags: 0
+      m_CorrespondingSourceObject: {fileID: 0}
+      m_PrefabInstance: {fileID: 0}
+      m_PrefabAsset: {fileID: 0}
+      m_GameObject: {fileID: 1912614190}
+      m_Enabled: 1
+      m_EditorHideFlags: 0
+      m_Script: {fileID: 11500000, guid: 6f0e0ef66ad54d0694700eb0351c9e3a, type: 3}
+      m_Name: 
+      m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.WorldInteractor
+      _player: {fileID: 992535033}
+      _presenter: {fileID: 1341719453}
+      _interactables:
+      - {fileID: 413417731}
+      - {fileID: 1871746042}
+      _radius: 1.8
+      _facingArcDegrees: 120
+  after: |-
+    --- !u!114 &1912614191
+    MonoBehaviour:
+      m_ObjectHideFlags: 0
+      m_CorrespondingSourceObject: {fileID: 0}
+      m_PrefabInstance: {fileID: 0}
+      m_PrefabAsset: {fileID: 0}
+      m_GameObject: {fileID: 1912614190}
+      m_Enabled: 1
+      m_EditorHideFlags: 0
+      m_Script: {fileID: 11500000, guid: 6f0e0ef66ad54d0694700eb0351c9e3a, type: 3}
+      m_Name: 
+      m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.WorldInteractor
+      _player: {fileID: 992535033}
+      _presenter: {fileID: 1341719453}
+      _interactables:
+      - {fileID: 413417731}
+      - {fileID: 1871746042}
+      - {fileID: 1340358786}
+      - {fileID: 1107880298}
+      _radius: 1.8
+      _facingArcDegrees: 120
+additions: []

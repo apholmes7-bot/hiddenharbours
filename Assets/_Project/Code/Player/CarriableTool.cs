@@ -41,7 +41,9 @@ namespace HiddenHarbours.Player
     ///
     /// <para><b>No persistence.</b> A tool set down is SESSION-LOCAL, the same honest half-measure the
     /// fuel can ships with — world-placed persistence is net-new save schema and its own ADR
-    /// (<c>diegetic-ui-and-inventory.md</c> §4.3). A tool put down therefore lives until the scene does.</para>
+    /// (<c>diegetic-ui-and-inventory.md</c> §4.3). A tool put down therefore lives until the scene does.
+    /// The one exception is a rack with memory (save v25, <see cref="StowageRack"/>): a tool with an
+    /// authored id put away in one is kept there across saves, as the same object.</para>
     /// </summary>
     [DisallowMultipleComponent]
     [AddComponentMenu("Hidden Harbours/Carriable Tool")]
@@ -132,6 +134,8 @@ namespace HiddenHarbours.Player
             _hands = carrier as CarryHands;
             ResolveYSort();
             if (_ySort != null) _ySort.enabled = false;
+            // In his hands = in no container: the save row goes on ANY lift, not only a rack's TryTake.
+            StowageRack.ForgetStored(this);
         }
 
         /// <summary>Back on the ground at its final position: hand Y-sorting back, which is what re-sorts
@@ -140,7 +144,30 @@ namespace HiddenHarbours.Player
         {
             ResolveYSort();
             if (_ySort != null) _ySort.enabled = true;
+            SetDrawnElsewhere(false);   // a tool on the ground is drawn: nothing else is drawing it
         }
+
+        /// <summary>
+        /// <b>Held out of the picture while something else draws this very tool in her hands.</b> The fight
+        /// draws its own rod for the cast and the fight (ADR 0053 D5); the gear rod left drawn at her hip
+        /// beside it was a second, floating rod. The carrier states it every frame and never latches it.
+        /// By <see cref="Renderer.forceRenderingOff"/>, never <c>enabled</c>, so no other writer's enable is
+        /// overwritten; given back on <see cref="OnPlaced"/>.
+        /// </summary>
+        public void SetDrawnElsewhere(bool drawnElsewhere)
+        {
+            ResolveRenderer();
+            if (_renderer == null) return;
+            if (_renderer.forceRenderingOff != drawnElsewhere)
+                _renderer.forceRenderingOff = drawnElsewhere;
+            // ⚠️ forceRenderingOff hides the sprite but not its sun shadow: SpriteShadow keys off the
+            // caster's ENABLED, so a hidden gear rod kept throwing its silhouette on the ground and the
+            // water beside the figure that is really holding it. Quiet goes with the hide, both ways.
+            if (_shadow == null) _shadow = _renderer.GetComponent<SpriteShadow>();
+            if (_shadow != null && _shadow.Quiet != drawnElsewhere) _shadow.Quiet = drawnElsewhere;
+        }
+
+        private SpriteShadow _shadow;   // the hidden sprite's sun caster, if the installer gave it one
 
         // ---- IInteractable --------------------------------------------------------------------------
 
@@ -238,6 +265,14 @@ namespace HiddenHarbours.Player
         private void OnEnable() => RefreshRegistration();
 
         private void OnDisable() => Interactables.Unregister(this);
+
+        // A remembered tool whose scene loads after its rack bound walks back into that rack (save v25):
+        // on Start, not OnEnable, so it is never switched off in the middle of its own activation.
+        private void Start() => StowageRack.ReturnIfStored(this);
+
+        /// <summary>True when the id is authored (the builder's stable <c>tool.st_peters.rod</c>), not the
+        /// per-instance fallback: only such a tool can be remembered in a rack on the save.</summary>
+        public bool HasAuthoredId => !string.IsNullOrEmpty(_id);
 
         /// <summary>
         /// Register or relinquish according to what the Def now says. <b>Call this if the Def arrives

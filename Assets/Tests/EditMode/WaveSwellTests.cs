@@ -1,3 +1,4 @@
+using HiddenHarbours.Tests.Support;
 using System;
 using HiddenHarbours.Core;
 using NUnit.Framework;
@@ -225,16 +226,23 @@ namespace HiddenHarbours.Tests.EditMode
             var settings = Field(); var climate = SwellClimateSettings.Default; var bed = new Wall();
             var wind = WaveMath.TrainsFrom(Vector2.right * 8f, 0.6f, in settings);
             float sum = 0f;
-            for (int i = 0; i < 1000; i++) SwellMath.Compose(in wind, in climate, 12345, i, 1800f, settings.Gravity);
-            long start = GC.GetAllocatedBytesForCurrentThread();
+            // Warm the complete measured path, including shelter and sampling, before the scope.
+            for (int i = 0; i < 1000; i++)
+            {
+                var sea = SwellMath.Compose(in wind, in climate, 12345, i, 1800f, settings.Gravity);
+                float shelter = SwellMath.ShelterAt(new Vector2(12f, 0f), sea[6].Direction, 0f, bed, in climate);
+                WaveMath.Sample(Vector2.zero, i, in sea, WaveFetchSample.Open.WithSwell(shelter));
+            }
+            using var allocation = new ManagedAllocationProbe();
+            allocation.Begin();
             for (int i = 0; i < 10000; i++)
             {
                 var sea = SwellMath.Compose(in wind, in climate, 12345, i, 1800f, settings.Gravity);
                 float shelter = SwellMath.ShelterAt(new Vector2(12f, 0f), sea[6].Direction, 0f, bed, in climate);
                 sum += WaveMath.Sample(Vector2.zero, i, in sea, WaveFetchSample.Open.WithSwell(shelter)).Height;
             }
-            long allocated = GC.GetAllocatedBytesForCurrentThread() - start;
-            Assert.AreEqual(0, allocated); Assert.IsFalse(float.IsNaN(sum));
+            long allocationEvents = allocation.End();
+            Assert.AreEqual(0, allocationEvents); Assert.IsFalse(float.IsNaN(sum));
         }
     }
 }

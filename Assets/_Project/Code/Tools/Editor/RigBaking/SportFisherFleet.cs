@@ -51,31 +51,11 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <summary>The suffix <see cref="Snake"/> carries and <see cref="PaintIdPrefix"/> drops.</summary>
         const string IsoSuffix = "_iso";
 
-        /// <summary>
-        /// How the extractor reaches THIS hull — and it needs all three fields, which no previous
-        /// family did.
-        ///
-        /// <list type="bullet">
-        ///   <item><see cref="RigHullExtraction.FaceExpression"/> — the shimmed <c>variantFaces(id)</c>,
-        ///   which finds the hull by EXACT id and returns her own <c>faceList('stowed')</c>. It
-        ///   throws on an unknown id rather than falling back, unlike the rig's own <c>byId</c>.</item>
-        ///   <item><see cref="RigHullExtraction.ViewOptions"/> — <c>{}</c>, because on this rig the
-        ///   hull is chosen by WHICH OBJECT you call, not by a descriptor argument. Her
-        ///   <c>render(dir, opts)</c> takes riggers and paint, never a hull id.</item>
-        ///   <item><see cref="RigHullExtraction.HullScope"/> — the object itself. This is the one
-        ///   that does the work here.</item>
-        /// </list>
-        ///
-        /// <para>⚠️ <c>byId</c> is used for the SCOPE and cannot be used for the FACES. Reading a
-        /// cell off the wrong hull is caught instantly — the mesh would be the wrong size — but
-        /// reading the wrong FACE LIST under the right id is invisible except to a geometry hash,
-        /// which is why the two reach the hull by different routes and why the hash test exists.
-        /// Measured: <c>byId('NONSENSE')</c> returns the convertible, silently.</para>
-        /// </summary>
+        /// <summary>The published hull object supplies its geometry and its own cell.</summary>
         public RigHullExtraction Extraction => new RigHullExtraction
         {
-            FaceExpression = $"{SportFisherFleet.ShimSymbol}('{Hull}')",
-            ExtraSymbols = new[] { SportFisherFleet.ShimSymbol },
+            FaceExpression = $"byId('{Hull}').faceList({{}})",
+            ExtraSymbols = new[] { "variantFaces" },
             ViewOptions = "{}",
             HullScope = $"byId('{Hull}')",
         };
@@ -106,11 +86,6 @@ namespace HiddenHarbours.Tools.RigBaking
     {
         public const string ScriptPath = "docs/art/rigs/sportFisherIsoRig2.js";
         public const string GlobalName = "SportFisherIso2";
-
-        /// <summary>The name <see cref="RigMeshSymbols.Reconstructions"/> binds her per-hull face
-        /// composer to. Same name, same concept, per-file expression — see
-        /// <see cref="ZodiacFleet.ShimSymbol"/>.</summary>
-        public const string ShimSymbol = "variantFaces";
 
         /// <summary>Her <c>HULLS</c>, in the rig's own order. Checked against the rig by
         /// <c>SportFisherFleetTests</c>.</summary>

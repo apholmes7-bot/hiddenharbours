@@ -291,10 +291,10 @@ Everything else is tuning existing weights, not new systems.
 > 2. **Gear loss is now permitted in a blow** — the owner explicitly chose "it can cost you the
 >    fish AND your rig", with the note that it breaks the never-lose-gear rule in view. So the
 >    bullet above is **no longer absolute**: a bad enough sea may cost terminal tackle.
->    ⚠️ **NOT BUILT.** The rod consumes no bait and no tackle today (bait exists only for traps),
->    so there is nothing for a lost rig to cost. It needs a consumable on the rod and a way to
->    restock it before it can be anything but a punishment with no economy behind it. Flagged to
->    the owner, deliberately deferred — see §8.
+>    ⚠️ **Terminal-tackle loss is NOT BUILT.** Configured rod bait already uses counted stock;
+>    the shipped policy now spends one on a landed catch (§10.2). Unconfigured scene rods still
+>    spend none. Tackle is not consumed; physical bait choosing and tackle restocking remain
+>    separate work. A lost-rig penalty stays deferred — see §8.
 
 ---
 
@@ -371,10 +371,13 @@ hands. Not a spec yet; a feel decision to be made live.
 
 > **"perhaps bait is only lost after catching a fish."**
 
-Tentative ruling, and it **reverses today's code**: the shipped controller spends bait at the
-*bite* (`SpendBaitOnBite`). Under this ruling bait is spent only on a **landed catch** — false
-nibbles, missed strikes and lost fights never eat bait; time is their only cost (P5's cozy
-default).
+**Enabled for now after the 2026-11-13 fishing-feel ruling.** The shipped GameConfig asset sets
+`BaitSpentOnCatchOnly` **ON**: configured rod bait is spent once on a **landed catch**, after the
+licence gate. False nibbles, missed strikes, lost fights and unlicensed releases cost time only
+(P5). Keep the switch: **OFF** restores one bait at the bite for the whole sequence, and remains
+the C# / missing-config fallback. Casts with no bite cost nothing in either mode. Rods with no
+bait configured keep their existing no-bait behaviour; this does not add bait selection or change
+trap re-baiting. Economy assumptions and costs: `m1-progression-pacing.md` §7.9.
 
 **The cost of a miss (the fish).** Structured pin-down; he chose:
 
@@ -422,3 +425,26 @@ drop supersedes it for the bite/hook specifically.)
   resolver must never compute the same quantity two ways.
 - Moving bait-spend from bite-time to catch-time touches the catch path → run the exact-payout
   PlayMode tests; any new landing path still stamps `Freshness.Landed` (#322).
+
+### 10.6 Rod and clam-dig mesh body adoption
+
+`GameConfig.MeshFishingAndDig` defaults on in code and data. The mesh presenter reads the
+existing `PlayerFishingAnimator` pose, clock, cast charge and facing; the sprite performance
+continues underneath so a missing skin, clip, adoption entry or competing animation claim
+immediately restores the sprite. Turning the switch off restores the previous rod performance
+and the unanimated dig. The existing character and ashore mesh switches still apply.
+
+The dig body starts from the existing Core `DigStrike` success cue, for both catch destinations,
+and follows `Resources/ActionTiming/DigTiming`. It changes no catch, input, transport or save
+timing. Held rods, shovels, buckets and catch retain their sprite presenters in this change.
+
+All ten rig 10.3 skins already carry the clips. Their `MeshStates` adoption lists add `hold`,
+`cast`, `bite`, `strike`, `reel`, `land`, `castBack`, `castRelease` and `dig`. These lists are
+authored data: the skin baker preserves them on refresh; no art bake is required. Fresh cast
+skins receive the same adopted states. The exact state-count guard moves from 27 to 36 ordinary
+states, plus the four seated-helm states, to pin this newly adopted set.
+
+`FishingMeshStateTests` checks every phase and all ten committed skins. `FishingMeshPlayTests`
+checks one active body through the rod sequence ashore and aboard, a complete dig, live switch
+changes, missing clips, unusable skins and competing claims. These tests assert renderer state
+without a graphics device; they do not judge pixel appearance.

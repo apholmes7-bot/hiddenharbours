@@ -104,7 +104,7 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (float heading in Headings)
             {
                 Rig rig = Build(heading);
-                Assert.IsTrue(rig.Switcher.TryInteract(), $"at {heading}° she boards");
+                Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(rig.Switcher), $"at {heading}° she boards");
 
                 // ⭐ Where the WALK says she is standing, in her own frame — the deck-local the snap
                 // settled on, clamp and all. Read, not derived: no un-projection here to get wrong.
@@ -148,7 +148,7 @@ namespace HiddenHarbours.Tests.EditMode
                 "harness: at 180° the old seat was on her floor, so nothing clamped it…");
             Assert.Less(oldSeat.y, 0f, "…but ABAFT amidships, which on this hull is her tiller");
 
-            Assert.IsTrue(rig.Switcher.TryInteract(), "she boards");
+            Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(rig.Switcher), "she boards");
             Vector2 seat = rig.Walk.DeckLocalPosition;
             Assert.Greater(seat.y, 0f, "the fix puts her forward, where the seat is authored");
 
@@ -192,7 +192,7 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (float heading in Headings)
             {
                 Rig rig = Build(heading);
-                Assert.IsTrue(rig.Switcher.TryInteract(), $"at {heading}° she boards");
+                Assert.IsTrue(HiddenHarbours.Tests.Support.TimedBoarding.Interact(rig.Switcher), $"at {heading}° she boards");
 
                 Vector2 aimed = ProjectedSeat(rig);
                 Vector2 wanted = Settle(rig, aimed, heading);                 // through the artwork's own bake

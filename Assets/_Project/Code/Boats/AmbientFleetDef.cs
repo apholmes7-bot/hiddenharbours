@@ -37,7 +37,8 @@ namespace HiddenHarbours.Boats
         [Tooltip("Hull sprite (drawn bow-up, like the Dory/Punt — the root rotates to heading). Null = a " +
                  "small greybox wedge is generated in code so the fleet still reads before art is wired.")]
         public Sprite HullSprite;
-        [Tooltip("SpriteRenderer sortingOrder for the hulls. 0 matches the player's hull (Sea plane is -5).")]
+        [Tooltip("The hull picture's order INSIDE its boat's sorting group (ADR 0059): what it draws over on " +
+                 "its own deck. Against other boats and the scenery each boat sorts by where she lies.")]
         public int HullSortingOrder = 0;
         [Tooltip("Slowest cruise speed in the fleet (world m per clock second). Each boat picks a seeded " +
                  "speed between Min and Max so the fleet doesn't move in lockstep.")]
@@ -121,8 +122,8 @@ namespace HiddenHarbours.Boats
             new Color(0.20f, 0.65f, 0.30f),   // green
             new Color(0.95f, 0.55f, 0.15f),   // orange
         };
-        [Tooltip("SpriteRenderer sortingOrder for the buoys. 3 matches the player's trap buoys (above the " +
-                 "Sea plane at -5).")]
+        [Tooltip("NO LONGER READ (ADR 0059 step 2): a buoy sorts by the decor band's Y-sort where it floats, " +
+                 "like the player's trap buoys (Core EffectSorting). Kept so existing assets load unchanged.")]
         public int BuoySortingOrder = 3;
 
         // Appended after BuoySortingOrder (owner feedback on #189 — "spinning in circles"). Fields are

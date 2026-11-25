@@ -151,7 +151,32 @@ namespace HiddenHarbours.Core
         /// <summary>World-space Y of her run direction — see <see cref="FishRunDirX"/>.</summary>
         public readonly float FishRunDirY;
 
-        /// <summary>Full constructor — sets every field, including her published run direction.</summary>
+        /// <summary>
+        /// HOW BIG SHE IS FOR HER KIND — the hooked fish's weight as a 0..1 place in her species' own
+        /// weight range (0 = her smallest, 1 = her heaviest; <c>FishFeelMath.Size01</c>). Published so
+        /// the rod, the line, the camera and the strain voice can scale to her size without knowing what
+        /// a species Def is (rule 4). Fixed for the whole fight. 0 before a bite and for a species with
+        /// no usable range. APPENDED 2026-11-13 (owner's "woah its something big" ask) — presentation
+        /// only; no fight rule reads it.
+        /// </summary>
+        public readonly float Size01;
+
+        /// <summary>Full constructor — sets every field, including her size within her species' range.</summary>
+        public FishingState(FishingPhase phase, float tension01, float landing01,
+                            string fishId, string displayName, FishCategory category, float weightKg,
+                            float depth01, bool slackWindowOpen, float rodBend01,
+                            float fishOffsetX, float fishOffsetY,
+                            float castCharge01, float castAimX, float castAimY, float rigDepthM,
+                            float fishRunDirX, float fishRunDirY, float size01)
+            : this(phase, tension01, landing01, fishId, displayName, category, weightKg,
+                   depth01, slackWindowOpen, rodBend01, fishOffsetX, fishOffsetY,
+                   castCharge01, castAimX, castAimY, rigDepthM, fishRunDirX, fishRunDirY)
+        {
+            Size01 = size01;
+        }
+
+        /// <summary>Run-direction constructor (preserved) — her size defaults to neutral (0), so every
+        /// earlier caller compiles and behaves unchanged.</summary>
         public FishingState(FishingPhase phase, float tension01, float landing01,
                             string fishId, string displayName, FishCategory category, float weightKg,
                             float depth01, bool slackWindowOpen, float rodBend01,
@@ -176,6 +201,7 @@ namespace HiddenHarbours.Core
         {
             FishRunDirX = 0f;
             FishRunDirY = 0f;
+            Size01 = 0f;
             Phase = phase;
             Tension01 = tension01;
             Landing01 = landing01;

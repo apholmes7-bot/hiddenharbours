@@ -20,6 +20,11 @@
 [`CW-01–04: character creator, wardrobe and purchases`](character-creator-and-wardrobe.md)
 tracks the complete loop, its explicit fit contracts, production integration and acceptance.
 
+**Owner-directed additions (2026-11-14): character traits and hunger.** Traits slice 1 (`TraitDef`,
+`ITraitService`, save v18, Speedwalker / Charismatic / Patient Angler on existing seams) is the first
+build; the creator traits page (a TRAITS step: pick exactly the allowance, read from the catalog) follows it;
+change-at-bed, more traits and hunger are later slices (`roadmap.md` §0.5).
+
 - **Pull the top unblocked item for your role.** Items are roughly ordered within a milestone; an item is
   workable once its noted dependencies are Done. Prefer earlier milestones — **honor milestone order** (the
   roadmap is the gate; later-phase work that jumps the queue gets redirected there).
@@ -255,6 +260,14 @@ tracks the complete loop, its explicit fit contracts, production integration and
 | M2-39 ◐ | Diegetic interact highlight (shader, no UI) | art-pipeline + gameplay-systems | Facing-aware `IInteractable` candidate gets a subtle outline/rim shader; one bound input acts (pick up / place / grab) | **GAMEPLAY HALF DONE 2026-08-12** — `IInteractable` + `Interactables` registry + the pure `InteractResolver` (context → availability → reach → arc, then priority → distance → id) + `InteractVerb` dispatch, all in Core. **No new key**: the verb generalises E and is consulted *after* board/helm/step-ashore, so an empty registry is bit-for-bit the old behaviour. Exactly one candidate resolves, order-independently (all-permutations test). `WetBucketPoint` migrated off `F`. **STILL OPEN — art-pipeline:** the outline/rim shader itself; it rides the `InteractCandidateChanged` id and there is **no screen-space UI**, per (`deck-boarding-cleats-and-interact-capture` §3, `art/outline-interaction-language` §4.3) |
 | M2-37 | Deck & washboard boarding (Space to climb) | gameplay-systems + art-pipeline | Walkable `DECK`/`WASHBOARD` polygons come from the **rig export** (ADR 0022 mechanism); Space climbs on/off where the hull supports it | Rig-data → Def, no hand transcription; deck rides the wave field under the player; no prompt on hulls without washboards (`deck-boarding-cleats-and-interact-capture` §2–3) |
 | M2-38 ✅ | Cleats, ropes & toss-a-line mooring | gameplay-systems + world-content | Per-hull named `CLEATS` (rig data) + shore cleats; grab a line and **toss it with the fishing-cast verb**; made fast = the boat holds | **DONE 2026-08-06.** Toss reuses the cast verb — the pure `FlickCastMath` moved to Core so rope and rod share ONE function. A made-fast line constrains tide/wind drift (sim keeps computing; the rope restrains the result). **The tide law:** scope must cover the 3-D cleat-to-cleat gap and only the shore end holds still, so a falling tide eats a short line's reach until the loop slips — cozy fail, coil and retry. Canon: `boats-and-navigation` §9.6 |
+> **Amended 2026-11-23 (canon §5.3/§5.8, ADR 0062) — M2-31, M2-31b and M2-31c.** The first week is
+> lived on St Peters alone, and it is the game's demo. The broken dory lies **beached on St Peters**, is
+> sold by **Basil Samson**, and is **mended by hand** at the island slip; the rod, bait and the cod licence
+> are bought on the island; the other regions are closed by **weather only** (and wind-driven surf over the
+> bar) until the island gate — dory mended, cod licence, a fish landed from the dory, shellfish sold, day 7
+> or later, then Ginny's word. M2-31b's "at Nine Mile Creek … buy the damaged dory lying at the wharf" and
+> its two blocked owner calls are superseded by this; the "walk the sandbar" beat in M2-31 now comes at
+> the gate. New slices for the week are planned separately.
 
 ### Epic M2-J — Wharf buildings & the built waterfront (P2/P4) (`art-pipeline` / `gameplay-systems` / `economy-sim`)
 > The owner's 2026 directive: **the wharf-building rig's elements become gameplay**, and industrial
@@ -341,11 +354,18 @@ tracks the complete loop, its explicit fit contracts, production integration and
 | M3-15 | Fleet/abstraction perf + save scaling | lead-architect + qa-test | Abstract off-screen fleet; batched shift sim; bigger saves | A multi-boat empire stays cheap; save persists staff/facilities/freight |
 
 ### Epic M3-E — Owner-ratified 2026 additions (aquaculture · advanced rendering)
-> New design captured 2026 (the "St Peters batch"). All **M3-phased** (advanced/late); design in the design docs.
+> New design captured 2026 (the "St Peters batch"). All **M3-phased** (advanced/late); design in the design docs,
+> **except M3-16a and M3-16, re-phased by the owner on 2026-11-13.** He wrote: *"Lets keep doing work on the village ... i want to add more shellfish harvesting, mussell leases, oysters, scallops ..."*
+> (the village is St Peters, which he confirmed), and answered *"Yes, your leans"* to the seat's leans: wild mussels and
+> oysters by hand **now** (M3-16a); the first mussel lease **next** (M3-16), once
+> [`mussel-lease-and-longline.md`](../docs/design/mussel-lease-and-longline.md) §8 items 2 to 4 are ruled (owed);
+> **sea scallops are not in this epic**: they wait for the player trawl loop (the trawl arc out of Rice Point;
+> net/trawl gear is M3-04), not the village.
 
 | ID | Title | Owner | One-liner | Key AC (seed) |
 |---|---|---|---|---|
-| M3-16 | Mussel/oyster aquaculture leasing | economy-sim + world-content | Lease water, set buoys-in-series + grow-ropes, season-grow the crop, harvest at maturity | Lease cost + grow-timer + seasonal yield; **harvested from a lease** (not a wild catch roll); P4 owned-production (`fish-and-content` §3.5c + economy/progression docs) |
+| M3-16a | Wild shellfish by hand at St Peters (blue mussel + oyster) — **NOW (owner ruling 2026-11-13)** | gameplay-systems + world-content | Pick wild blue mussels and oysters by hand at low water at St Peters, on the clam-dig pattern (M2-32) | Split out of M3-16 and pulled forward by the 2026-11-13 ruling; a **wild hand-gather**, not a lease and not a grown crop; low-water gated like the clam dig; species are data (rule 2) |
+| M3-16 | Mussel/oyster aquaculture leasing — **NEXT, after M3-16a (owner ruling 2026-11-13); gated** | economy-sim + world-content | Lease water, set buoys-in-series + grow-ropes, season-grow the crop, harvest at maturity | **Gate:** `mussel-lease-and-longline.md` §8 items 2 to 4 (window + spots, storm damage, season shape) are **owed** and are ruled first. Lease cost + grow-timer + seasonal yield; **harvested from a lease** (not a wild catch roll); P4 owned-production (`fish-and-content` §3.5c + economy/progression docs) |
 | M3-17 | Advanced rendering pass (3D-water→2D bake · dynamic + cloud shadows · parallax-underwater) | art-pipeline + lead-architect | Bake 3D water to the 2D surface; sun-driven dynamic shadows; drifting cloud shadows; shallow-water underwater preview | Holds one-perspective + PPU=32 + desktop budget; baked sculpt-light unchanged; shallow preview telegraphs hazards/forage (`art-and-audio-bible` §6.1) |
 
 #### The realness pass (ADR 0027) — ten techniques taken from Unity's HDRP water, every one pixelized

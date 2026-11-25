@@ -9,7 +9,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void Version16WithoutRecipeOrName_LoadsAsBakedWithNoName()
         {
             SaveData save = SaveSerialization.FromJson("{\"SchemaVersion\":16}");
-            Assert.AreEqual(17, save.SchemaVersion);
+            Assert.AreEqual(SaveMigration.CurrentVersion, save.SchemaVersion);
             Assert.IsTrue(save.PlayerRecipe.IsEmpty);
             Assert.AreEqual("", save.PlayerName);
         }
@@ -20,7 +20,7 @@ namespace HiddenHarbours.Tests.EditMode
             var recipe = new CharacterRecipe { BuildId = "char_build.fisher", Hair = "black" };
             var old = new SaveData { SchemaVersion = 16, PlayerRecipe = recipe, WornOutfitId = "outfit.fixture" };
             SaveData save = SaveMigration.Migrate(old);
-            Assert.AreEqual(17, save.SchemaVersion);
+            Assert.AreEqual(SaveMigration.CurrentVersion, save.SchemaVersion);
             Assert.IsTrue(save.PlayerRecipe.SameAs(recipe));
             Assert.AreEqual("outfit.fixture", save.WornOutfitId);
             Assert.AreEqual("", save.PlayerName);

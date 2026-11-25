@@ -422,6 +422,8 @@ Suggested phasing, each independently verifiable:
    `_HHKeylineFlood`, default OFF; the keyline is retired from the world style. The depth-edge darkening
    half of this resolve is untouched, and the GPU oracle fixtures force the gate ON so this phase's
    verbatim claim stays pinned.)*
+   *(The hull id is one of 255 shared by hulls, their deck-occupant fore blocks and figures ashore:
+   [ADR 0056](0056-facet-id-space-is-a-budget.md) rules how that space is spent.)*
    Phase 3 also honours the owner's deck-walking decision (2026-07-21): a second renderer list (LightMode
    `HHHullDeck`) draws **between** the facet pass and the resolve against the **same private z-buffer**, so a
    future character-on-deck billboard is per-pixel occluded by nearer hull geometry — probed in-repo

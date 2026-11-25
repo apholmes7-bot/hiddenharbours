@@ -221,7 +221,7 @@ namespace HiddenHarbours.Art
             var env = GameServices.Environment;
             if (env != null)
             {
-                var s = env.Sample();
+                var s = LocalWeather.Shade(env.Sample());   // the look includes an authored local storm
                 visibility = s.Visibility;
                 seaState01 = s.SeaState01;
             }
@@ -230,6 +230,8 @@ namespace HiddenHarbours.Art
             MoodGradeRegionOverride region = null;
             if (!string.IsNullOrEmpty(regionId)) _regions.TryGetValue(regionId, out region);
 
+            // Full night is the sky's end of dusk, rather than a second authored hour.
+            juice.GradeNightBlendHours = Mathf.Max(0f, _dayNight.NightHour - _dayNight.SunsetHour);
             float strength = StrengthFor(juice);
             var grade = MoodGradeMath.Evaluate(_profile, region, hour,
                                                _dayNight.SunriseHour, _dayNight.SunsetHour,

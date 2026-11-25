@@ -155,10 +155,10 @@ namespace HiddenHarbours.Tests.EditMode
         // ---- on-foot framing (tighter than the boat; same pixel-perfect mapping) -------------
 
         [Test]
-        public void OnFootFraming_OrthoSize_MapsToAbout9mTall()
+        public void OnFootFraming_OrthoSize_MapsToTheElevenAndAQuarterMetreStop()
         {
             float ortho = CameraFollow.OrthoSizeForWorldHeight(CameraFollow.OnFootWorldHeightMeters);
-            Assert.AreEqual(9f, CameraFollow.WorldHeightForOrthoSize(ortho), 0.5f, "on-foot frames ~9 m of world height");
+            Assert.AreEqual(11.25f, CameraFollow.WorldHeightForOrthoSize(ortho), 1e-4f, "on-foot frames 11.25 m of world height");
         }
 
         [Test]
@@ -168,32 +168,37 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(16f / 9f, w / (float)h, 1e-2f, "on-foot reference is 16:9 landscape");
 
             int zoom = CameraFollow.PixelPerfectZoom(1920, 1080, w, h);
-            Assert.AreEqual(4, zoom, "9 m on-foot resolves to an exact ×4 pixel-perfect zoom at 1080p");
+            Assert.AreEqual(3, zoom, "11.25 m on-foot resolves to an exact ×3 pixel-perfect zoom at 1080p");
         }
 
         [Test]
-        public void OnFoot_IsTighter_ThanTheBoat()
+        public void WalkingAndDory_ShareElevenAndAQuarterMetresAt1080p()
         {
-            Assert.Less(CameraFollow.OnFootWorldHeightMeters, CameraFollow.DefaultWorldHeightMeters,
-                "on foot the camera is tighter than in the dory");
-
             CameraFollow.ReferenceResolutionForWorldHeight(CameraFollow.OnFootWorldHeightMeters, out int fw, out int fh);
             CameraFollow.ReferenceResolutionForWorldHeight(CameraFollow.DefaultWorldHeightMeters, out int bw, out int bh);
             float footLive = CameraFollow.WorldHeightAtZoom(1080, CameraFollow.PixelPerfectZoom(1920, 1080, fw, fh), LockedPPU);
             float boatLive = CameraFollow.WorldHeightAtZoom(1080, CameraFollow.PixelPerfectZoom(1920, 1080, bw, bh), LockedPPU);
-            Assert.Less(footLive, boatLive, "the on-foot live framing shows less water than the dory");
+            Assert.AreEqual(11.25f, footLive, 1e-4f);
+            Assert.AreEqual(11.25f, boatLive, 1e-4f);
         }
 
-        // ---- on-deck zoom steps (owner playtest 2026-07-08: step in close on the deck) --------
+        [Test]
+        public void Walking_RemainsTighterThanAnExplicitLargerHullFixture()
+        {
+            CameraFollow.ReferenceResolutionForWorldHeight(40f, out int rw, out int rh);
+            float hullLive = CameraFollow.WorldHeightAtZoom(1080, CameraFollow.PixelPerfectZoom(1920, 1080, rw, rh), LockedPPU);
+            Assert.AreEqual(33.75f, hullLive, 1e-4f);
+            Assert.Greater(hullLive, 11.25f);
+        }
 
         [Test]
-        public void DeckFraming_IsExactlyTheNextPixelPerfectStep_InsideOnFoot()
+        public void DeckFraming_KeepsItsRuledFifthStop_InsideOnFoot()
         {
             CameraFollow.ReferenceResolutionForWorldHeight(CameraFollow.DeckWorldHeightMeters, out int w, out int h);
             Assert.AreEqual(16f / 9f, w / (float)h, 1e-2f, "the deck reference is 16:9 landscape");
 
             int zoom = CameraFollow.PixelPerfectZoom(1920, 1080, w, h);
-            Assert.AreEqual(5, zoom, "the deck step is the exact ×5 integer zoom at 1080p — one step in from on-foot's ×4");
+            Assert.AreEqual(5, zoom, "the deck step is the exact ×5 integer zoom at 1080p — the deck keeps its ruled fifth stop inside the walking view");
 
             float live = CameraFollow.WorldHeightAtZoom(1080, zoom, LockedPPU);
             Assert.AreEqual(CameraFollow.DeckWorldHeightMeters, live, 1e-4f,

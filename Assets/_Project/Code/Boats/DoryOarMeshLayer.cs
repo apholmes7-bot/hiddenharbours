@@ -33,28 +33,25 @@ namespace HiddenHarbours.Boats
     /// POWER</b> (§7.7). The dory is the first hull to carry oars and an outboard at once — a mesh
     /// fitting is posed by rotation rather than indexed by facing, so it can share a hull with the
     /// oars where the sprite sheets' sorting bands cannot — and a boat with a running prop stows her
-    /// oars rather than trailing them beside it. That is the existing SHIPPED state, wired to the
-    /// engine (see <see cref="ColumnForOar"/>), not a fourth pose; cut the motor and the rowing
-    /// machine takes over again, unchanged, from where it left off.</para>
+    /// oars rather than trailing them beside it. The state is the existing SHIPPED one, wired to the
+    /// engine (see <see cref="ColumnForOar"/>); where a shipped oar is DRAWN under power is the hull's
+    /// <see cref="OarStowConfig"/> (owner 2026-11-22: stowed fore and aft in the boat, out of the
+    /// tholes; see <see cref="Placement"/>). Cut the motor and the rowing machine takes over again,
+    /// unchanged, from where it left off.</para>
     ///
     /// <para>Visual-only, allocation-free per frame, and it never writes to the sim (rule 5): it READS
     /// the per-oar state <see cref="BoatController"/> already computed.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public class DoryOarMeshLayer : MonoBehaviour
+    public class DoryOarMeshLayer : MonoBehaviour, IOarStroke, IRowingStation, IRowedHull
     {
-        [Header("Stroke feel (tunable — defaults shared with the sprite oars)")]
-        [Tooltip("Frames/sec the 8-frame stroke cycle plays at a full-effort pull. Same default as " +
-                 "DoryOarLayer's: the two representations must row at the same tempo.")]
-        [SerializeField] private float _strokeFramesPerSecond = DoryOarMath.DefaultStrokeFramesPerSecond;
-
+        // The stroke's TEMPO (frames per second, effort curve, the phase lock) moved to the boat's own
+        // stroke clock (BoatController, advanced on the physics step) so the hull's surge and these
+        // oars read one phase. What stays here is the state rule: when an oar counts as rowed, and how
+        // long both must rest before they ship.
+        [Header("Oar state (tunable — defaults shared with the sprite oars)")]
         [Tooltip("|oar state| at or below which the oar is idle (trailing/shipped) rather than stroking.")]
         [SerializeField] private float _oarDeadzone = DoryOarMath.DefaultOarDeadzone;
-
-        [Tooltip("How much a GENTLE pull slows the sweep: 0 = every stroke runs at the full tempo; " +
-                 "1 = the rate is proportional to effort.")]
-        [Range(0f, 1f)]
-        [SerializeField] private float _effortInfluence = DoryOarMath.DefaultEffortInfluence;
 
         [Tooltip("Seconds BOTH oars must be idle before they ship. Below this they trail, so a brief " +
                  "pause between strokes doesn't stow them.")]
@@ -86,6 +83,66 @@ namespace HiddenHarbours.Boats
         /// <summary>The starboard oar's live pose.</summary>
         public DoryOarMeshPose.Pose StarboardPose { get; private set; } = DoryOarMeshPose.Resting;
 
+        /// <summary>True while the port oar is drawn ROWING — a stroke pose, not trailing, not
+        /// shipped, not stowed under power. The oar splash's gate.</summary>
+        public bool PortStroking { get; private set; }
+
+        /// <summary>True while the starboard oar is drawn rowing.</summary>
+        public bool StarboardStroking { get; private set; }
+
+        /// <summary>The port oar's signed state while it is rowing (+ ahead, − backing), else 0.</summary>
+        public float PortOarState { get; private set; }
+
+        /// <summary>The starboard oar's signed state while it is rowing, else 0.</summary>
+        public float StarboardOarState { get; private set; }
+
+        /// <summary>True while either oar is drawn rowing on a live, wired layer: what the rower's
+        /// body follows (<see cref="IOarStroke"/>).</summary>
+        public bool IsStroking => _stroking && isActiveAndEnabled && IsWired;
+
+        /// <summary>The leading oar's stroke phase in [0, 1), 0 = catch, 0.5 = release; 0 while not
+        /// stroking. Read from the SAME phase the oar was just posed from, so the body cannot drift
+        /// from the blade.</summary>
+        public float StrokePhase => IsStroking ? _strokePhase : 0f;
+
+        /// <summary>The part of the stroke <see cref="StrokePhase"/> is in.</summary>
+        public OarStrokePart StrokePart => OarStrokeMath.PartOf(IsStroking, _strokePhase);
+
+        private bool _stroking;
+        private float _strokePhase;
+
+        /// <summary>
+        /// The phase (in stroke columns) of the oar the rower's body should follow, or false when
+        /// neither is rowing. One body, two oars: it follows the one pulling HARDER (a turn on one oar
+        /// is rowed with that oar), and port on a tie, so a straight pull reads one oar consistently.
+        /// </summary>
+        public static bool LeadingOarPhase(bool portStroking, float portPhase, float portState,
+                                           bool starStroking, float starPhase, float starState,
+                                           out float phase)
+        {
+            if (portStroking && (!starStroking || Mathf.Abs(portState) >= Mathf.Abs(starState)))
+            {
+                phase = portPhase;
+                return true;
+            }
+            if (starStroking)
+            {
+                phase = starPhase;
+                return true;
+            }
+            phase = 0f;
+            return false;
+        }
+
+        /// <summary>The <see cref="IOarStroke"/> phase of an oar at <paramref name="phaseColumns"/> of
+        /// its <see cref="DoryOarMath.StrokeColumns"/>-column cycle.</summary>
+        public static float StrokePhaseOf(float phaseColumns) =>
+            OarStrokeMath.PhaseFromOarTurns(phaseColumns / DoryOarMath.StrokeColumns, DoryOarMeshPose.RowCatchTurns);
+
+        /// <summary>True when <paramref name="column"/> is one of the stroke cycle's own columns
+        /// rather than the trailing or shipped pose.</summary>
+        public static bool IsStrokeColumn(int column) => column >= 0 && column < DoryOarMath.StrokeColumns;
+
         /// <summary>Wire the layer from the skinner. Idempotent — a re-skin re-points it rather than
         /// stacking a second layer (the component is <see cref="DisallowMultipleComponent"/>).
         ///
@@ -100,9 +157,171 @@ namespace HiddenHarbours.Boats
             _star = star;
             _boat = boat;
             _motor = motor;
+            _driverLooked = false;
             _portPhase = 0f;
             _starPhase = 0f;
             _bothIdleSeconds = 0f;
+        }
+
+        // Where the oars lie under power (owner 2026-11-22), and each oar's own oarlock (its fitting's
+        // pivot) the stowed placement is measured from. Set through ConfigureStow; unset = shipped in
+        // the tholes under power, as before.
+        private OarStowConfig _stow;
+        private Vector3 _portPivot, _starPivot;
+        private bool _hasStow;
+        // This frame's shift of each whole oar fitting: zero unless stowed.
+        private Vector3 _portShift, _starShift;
+
+        /// <summary>True while both oars are drawn STOWED: out of the tholes, lying fore and aft in the
+        /// boat because her outboard is driving her.</summary>
+        public bool OarsStowed { get; private set; }
+
+        /// <summary>
+        /// Wire where the oars lie under power from the skinner: the hull's <see cref="OarStowConfig"/>
+        /// and each oar fitting's pivot (<c>PivotLocalMeters</c>, the oarlock it turns about), so the
+        /// stowed placement can be written as a shift of the whole fitting. A disabled config leaves the
+        /// oars shipped in their tholes under power.
+        /// </summary>
+        public void ConfigureStow(in OarStowConfig stow, Vector3 portPivot, Vector3 starboardPivot)
+        {
+            _stow = stow;
+            _portPivot = portPivot;
+            _starPivot = starboardPivot;
+            _hasStow = stow.Enabled;
+        }
+
+        /// <summary>
+        /// <b>How one oar is drawn: its pose and the shift of its whole fitting.</b> Rowed (no motor
+        /// running) the answer is exactly what it always was: <see cref="PoseFor"/> and no shift, so the
+        /// rowed dory is untouched. Under power with a stow configured, the oar is STOWED: the stow's
+        /// pose, and the shift that carries its oarlock from the tholes (<paramref name="pivot"/>) to
+        /// where the stow lays it, plus <see cref="OarStowConfig.CameraLiftMeters"/> along
+        /// <paramref name="towardCamera"/> (the unit view axis in the fitting's frame; zero where there
+        /// is no camera to face), which moves only its depth. Under power without one, shipped in the
+        /// tholes as before. Pure, so the rule is provable without a scene.
+        /// </summary>
+        public static DoryOarMeshPose.Pose Placement(bool motorRunning, bool hasStow, in OarStowConfig stow,
+                                                     int side, Vector3 pivot, int column, float phase,
+                                                     out Vector3 fitmentOffset, Vector3 towardCamera = default)
+        {
+            if (motorRunning && hasStow)
+            {
+                fitmentOffset = stow.LockLocalMeters(side) - pivot + towardCamera * stow.CameraLiftMeters;
+                return stow.Pose;
+            }
+            fitmentOffset = Vector3.zero;
+            return PoseFor(column, phase);
+        }
+
+        // The rowing station: where the oarlocks are (the fittings' pivots, hull rig metres) and the
+        // hull's station data. Set through ConfigureStation; unset = no station, the rower plays his clip.
+        private bool _hasStation;
+        private Vector3 _portLock, _starLock;
+        private float _waterlineZ;
+        private RowingStationConfig _station;
+
+        /// <summary>
+        /// Wire the rowing station from the skinner: the two oarlocks (the fittings'
+        /// <c>PivotLocalMeters</c>, the point each oar turns about) and the hull's
+        /// <see cref="RowingStationConfig"/>. A disabled config leaves no station.
+        /// <paramref name="designWaterlineMeters"/> is the hull's design waterline in the same rig
+        /// metres, the height the drawn blades are held clear of.
+        /// </summary>
+        public void ConfigureStation(Vector3 portOarlock, Vector3 starboardOarlock, in RowingStationConfig station,
+                                     float designWaterlineMeters = 0f)
+        {
+            _waterlineZ = designWaterlineMeters;
+            _portLock = portOarlock;
+            _starLock = starboardOarlock;
+            _station = station;
+            _hasStation = station.Enabled;
+        }
+
+        /// <summary>
+        /// <see cref="IRowingStation"/>: the grips where the oars were posed this frame, the seat and the
+        /// braces, all in the hull's rig frame. Answers whenever the station is wired, rowed or not: a
+        /// rower resting on his oars stays sat on his thwart instead of standing up between strokes. A
+        /// trailing or shipped oar's grip is marked invalid: that hand lets go rather than chase a
+        /// handle out of reach.
+        /// </summary>
+        public bool TryGetRowingTargets(out RowingTargets targets)
+        {
+            targets = default;
+            if (!_hasStation || !IsWired || !isActiveAndEnabled) return false;
+            // A stowed oar's lock point is where the stow laid it, not the tholes: the handle ends the
+            // station reports are then where the handles are drawn. The hands take the DRAWN oars.
+            targets = StationTargets(_portLock + _portShift, _starLock + _starShift, in _station,
+                                     DrawnPortPose, PortStroking, DrawnStarboardPose, StarboardStroking);
+            targets.LaybackDegrees *= _laybackScale;
+            targets.RestWeight = _restWeight;
+            targets.RestBreath = _restBreath;
+            return true;
+        }
+
+        // The rower's style's rest this frame (RowingStyle.RestWeight / RestBreath), taken with the pose.
+        private float _restWeight, _restBreath;
+
+        /// <summary>
+        /// A rowing oar's pose with the style's rest folded in: through a rest the blade settles from the
+        /// stroke's own dip to <paramref name="restBladeDipDegrees"/> (feathered just over the water) by
+        /// <paramref name="restWeight"/>, so the hands sit relaxed instead of holding the stroke's highest
+        /// blade still. The sweep is the stroke's. Weight 0 is the stroke exactly.
+        /// </summary>
+        public static DoryOarMeshPose.Pose Rested(in DoryOarMeshPose.Pose rowing, float restWeight, float restBladeDipDegrees)
+        {
+            if (restWeight <= 0f) return rowing;
+            return new DoryOarMeshPose.Pose(rowing.SweepDegrees,
+                                            Mathf.Lerp(rowing.DipDegrees, restBladeDipDegrees, Mathf.Clamp01(restWeight)));
+        }
+
+        // The rower's style's lean-back scale, taken with the pose each frame (1 = the station's own).
+        private float _laybackScale = 1f;
+
+        /// <summary>
+        /// The phase (stroke columns) an oar is DRAWN at when the stroke clock reads
+        /// <paramref name="rawColumns"/> and the rower rows <paramref name="style"/>: the style's timing
+        /// warp, applied in the stroke's own phase (0 = catch) and handed back in columns. The plain
+        /// stroke returns <paramref name="rawColumns"/> itself, untouched.
+        /// </summary>
+        public static float StyledColumns(in RowingStyle style, float rawColumns)
+        {
+            if (style.IdentityTiming) return rawColumns;
+            float warped = style.WarpStrokePhase(RowStrokeClock.StrokePhaseOfColumns(rawColumns));
+            float columns = Mathf.Repeat((warped + DoryOarMeshPose.RowCatchTurns) * DoryOarMath.StrokeColumns,
+                                         DoryOarMath.StrokeColumns);
+            return columns >= DoryOarMath.StrokeColumns ? 0f : columns;
+        }
+
+        /// <summary>The station's targets for two oar poses. Pure, so the arithmetic is provable without
+        /// a scene.</summary>
+        public static RowingTargets StationTargets(Vector3 portLock, Vector3 starLock, in RowingStationConfig station,
+                                                   DoryOarMeshPose.Pose portPose, bool portRowing,
+                                                   DoryOarMeshPose.Pose starPose, bool starRowing)
+        {
+            Vector3 portDir = DoryOarMeshPose.Direction(PortSide, portPose.SweepDegrees, portPose.DipDegrees);
+            Vector3 starDir = DoryOarMeshPose.Direction(StarboardSide, starPose.SweepDegrees, starPose.DipDegrees);
+            return new RowingTargets
+            {
+                PortGripValid = portRowing,
+                StarboardGripValid = starRowing,
+                PortGrip = RowingStationMath.Grip(portLock, portDir, station.GripInboardMeters),
+                StarboardGrip = RowingStationMath.Grip(starLock, starDir, station.GripInboardMeters),
+                PortHandleEnd = RowingStationMath.Grip(portLock, portDir, station.LoomInboardMeters),
+                StarboardHandleEnd = RowingStationMath.Grip(starLock, starDir, station.LoomInboardMeters),
+                Seat = station.SeatLocalMeters,
+                StarboardBrace = station.FootBraceLocalMeters,
+                PortBrace = RowingStationMath.MirrorAcrossCentreline(station.FootBraceLocalMeters),
+                LaybackDegrees = station.LaybackDegrees,
+                ReachLeanMaxDegrees = station.ReachLeanMaxDegrees,
+                BodyClearanceMeters = station.BodyClearanceMeters,
+                BodyClearLeanMaxDegrees = station.BodyClearLeanMaxDegrees,
+                BodyClearTwistMaxDegrees = station.BodyClearTwistMaxDegrees,
+                RestSlumpDegrees = station.RestSlumpDegrees,
+                RestBreathDegrees = station.RestBreathDegrees,
+                RestBreathSeconds = station.RestBreathSeconds,
+                RestHandAlongThigh = station.RestHandAlongThigh,
+                RestHandAboveThighMeters = station.RestHandAboveThighMeters,
+            };
         }
 
         /// <summary>
@@ -118,9 +337,17 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public bool MotorIsRunning => _motor != null && _motor.isActiveAndEnabled && _motor.IsWired;
 
+        /// <summary>Rowed while her oars are wired and her outboard is not running: the water draws her
+        /// waves as the owner's approved soft arcs; under motor, as the clean V (owner 11-21).</summary>
+        public bool IsRowed => isActiveAndEnabled && IsWired && !MotorIsRunning;
+
         private void LateUpdate()
         {
-            if (!IsWired) return;
+            if (!IsWired)
+            {
+                _stroking = false;
+                return;
+            }
 
             float dt = Time.deltaTime;
             bool underPower = MotorIsRunning;
@@ -143,26 +370,124 @@ namespace HiddenHarbours.Boats
             {
                 _bothIdleSeconds = (portWorking || starWorking) ? 0f : _bothIdleSeconds + dt;
 
-                _portPhase = DoryOarMath.AdvanceStrokePhase(
-                    _portPhase, DoryOarMath.StrokeDirection(portState, _oarDeadzone),
-                    DoryOarMath.StrokeFramesPerSecond(_strokeFramesPerSecond, portState, _effortInfluence),
-                    dt, DoryOarMath.StrokeColumns);
-                _starPhase = DoryOarMath.AdvanceStrokePhase(
-                    _starPhase, DoryOarMath.StrokeDirection(starState, _oarDeadzone),
-                    DoryOarMath.StrokeFramesPerSecond(_strokeFramesPerSecond, starState, _effortInfluence),
-                    dt, DoryOarMath.StrokeColumns);
+                // THE BOAT'S STROKE CLOCK, drawn where the hull is drawn. The phase is advanced on the
+                // physics step (BoatController), the same phase her thrust reads, so the surge lines up
+                // with the blades; an interpolated hull is drawn up to one step behind its body, and the
+                // oars are read at that same offset so they sit on it. Nobody at the helm: the phases
+                // hold where the oars left them, as they always did.
+                if (helmManned)
+                {
+                    RowStrokeClock clock = _boat.StrokeClock;
+                    float behind = RowStrokeClock.InterpolationLag(Time.time, Time.fixedTime, Time.fixedDeltaTime);
+                    _portPhase = clock.PortAt(-behind);
+                    _starPhase = clock.StarboardAt(-behind);
+                }
             }
 
-            PortPose = PoseFor(ColumnForOar(underPower, portWorking, _portPhase, starWorking,
-                                            _bothIdleSeconds, _restGraceSeconds,
-                                            DoryOarMath.StrokeColumns), _portPhase);
-            StarboardPose = PoseFor(ColumnForOar(underPower, starWorking, _starPhase, portWorking,
-                                                 _bothIdleSeconds, _restGraceSeconds,
-                                                 DoryOarMath.StrokeColumns), _starPhase);
+            // The rower's style shapes WHEN the oar is where (a slower pull, a rest with the blades
+            // out); the angles are the rig's own. The plain stroke passes the phase through unchanged.
+            RowingStyle style = _boat != null ? _boat.RowingStyle : RowingStyle.Unstyled;
+            _laybackScale = style.LaybackScale;
+            float portStyled = StyledColumns(in style, _portPhase);
+            float starStyled = StyledColumns(in style, _starPhase);
 
-            _port.LocalRotation = DoryOarMeshPose.Rotation(PortSide, PortPose);
-            _star.LocalRotation = DoryOarMeshPose.Rotation(StarboardSide, StarboardPose);
+            int portColumn = ColumnForOar(underPower, portWorking, _portPhase, starWorking,
+                                          _bothIdleSeconds, _restGraceSeconds, DoryOarMath.StrokeColumns);
+            int starColumn = ColumnForOar(underPower, starWorking, _starPhase, portWorking,
+                                          _bothIdleSeconds, _restGraceSeconds, DoryOarMath.StrokeColumns);
+            PortPose = PoseFor(portColumn, portStyled);
+            StarboardPose = PoseFor(starColumn, starStyled);
+
+            // The style's rest: the blades settle feathered over the water and the rower relaxes, by the
+            // same weight, read off the same raw phase the warp held still.
+            float portRest = IsStrokeColumn(portColumn) ? style.RestWeight(RowStrokeClock.StrokePhaseOfColumns(_portPhase)) : 0f;
+            float starRest = IsStrokeColumn(starColumn) ? style.RestWeight(RowStrokeClock.StrokePhaseOfColumns(_starPhase)) : 0f;
+            if (_hasStation)
+            {
+                PortPose = Rested(PortPose, portRest, _station.RestBladeDipDegrees);
+                StarboardPose = Rested(StarboardPose, starRest, _station.RestBladeDipDegrees);
+            }
+            bool portLeads = portRest >= starRest;
+            _restWeight = Mathf.Max(portRest, starRest);
+            _restBreath = _restWeight > 0f
+                ? style.RestBreath(RowStrokeClock.StrokePhaseOfColumns(portLeads ? _portPhase : _starPhase))
+                : 0f;
+
+            // What the oar splash reads: the SAME decision the pose was just made from, so a blade
+            // can only splash on a frame it was drawn rowing.
+            PortStroking = IsStrokeColumn(portColumn);
+            StarboardStroking = IsStrokeColumn(starColumn);
+            PortOarState = PortStroking ? portState : 0f;
+            StarboardOarState = StarboardStroking ? starState : 0f;
+
+            // What the rower's body reads: the same decision, the same phase.
+            _stroking = LeadingOarPhase(PortStroking, portStyled, PortOarState,
+                                        StarboardStroking, starStyled, StarboardOarState, out float leading);
+            _strokePhase = _stroking ? StrokePhaseOf(leading) : 0f;
+
+            // UNDER POWER THE OARS ARE STOWED (owner 2026-11-22): out of the tholes and laid fore and
+            // aft in the boat. Under power both columns are already the shipped one (never stroking,
+            // never splashing), so only where they are drawn changes; rowed, no shift, as before.
+            OarsStowed = underPower && _hasStow;
+            if (OarsStowed)
+            {
+                PortPose = Placement(true, true, in _stow, PortSide, _portPivot, portColumn, portStyled,
+                                     out _portShift, TowardCamera(_port));
+                StarboardPose = Placement(true, true, in _stow, StarboardSide, _starPivot, starColumn, starStyled,
+                                          out _starShift, TowardCamera(_star));
+            }
+            else
+            {
+                _portShift = Vector3.zero;
+                _starShift = Vector3.zero;
+            }
+
+            // DRAWN against the hull's roll: each blade holds its height over the water (the station's
+            // RockLevelling), and is held off the sea (BladeFloorMeters).
+            // The stroke's own poses above stay as they were, so the splash, the body's phase and the
+            // timing read exactly what they read before; the hands take the drawn oars. A stowed oar
+            // lies in the boat and is drawn as the stow laid it, not levelled.
+            float roll = DrawnRollDegrees();
+            bool level = _hasStation && !OarsStowed;
+            DrawnPortPose = level ? DoryOarMeshPose.Levelled(PortSide, PortPose, _portLock, roll,
+                                        _station.RockLevelReachMeters, _station.RockLevelling, _waterlineZ,
+                                        _station.BladeFloorMeters) : PortPose;
+            DrawnStarboardPose = level ? DoryOarMeshPose.Levelled(StarboardSide, StarboardPose, _starLock, roll,
+                                             _station.RockLevelReachMeters, _station.RockLevelling, _waterlineZ,
+                                             _station.BladeFloorMeters) : StarboardPose;
+            _port.LocalRotation = DoryOarMeshPose.Rotation(PortSide, DrawnPortPose);
+            _star.LocalRotation = DoryOarMeshPose.Rotation(StarboardSide, DrawnStarboardPose);
+            _port.FitmentOffsetMeters = _portShift;
+            _star.FitmentOffsetMeters = _starShift;
         }
+
+        /// <summary>The port oar as DRAWN: <see cref="PortPose"/> turned in its oarlock against the
+        /// hull's roll (<see cref="DoryOarMeshPose.Levelled"/>). The hands follow this one.</summary>
+        public DoryOarMeshPose.Pose DrawnPortPose { get; private set; } = DoryOarMeshPose.Resting;
+
+        /// <summary>The starboard oar as drawn.</summary>
+        public DoryOarMeshPose.Pose DrawnStarboardPose { get; private set; } = DoryOarMeshPose.Resting;
+
+        private MeshHullDriver _driver;
+        private bool _driverLooked;
+
+        // The roll the hull's mesh is drawn at this frame, the rotation the oars inherit. The driver
+        // runs its pose in its own LateUpdate; a frame's order between the two at most lags this by
+        // one frame of a slow rock.
+        private float DrawnRollDegrees()
+        {
+            if (!_driverLooked) { _driver = GetComponent<MeshHullDriver>(); _driverLooked = true; }
+            return _driver != null && _driver.isActiveAndEnabled ? _driver.AppliedRollDegrees : 0f;
+        }
+
+        /// <summary>
+        /// The unit vector toward the camera in the frame a fitting's shift is written in (its own
+        /// transform's: the hull's posed mesh frame, heading, rock and heave included), or zero for a
+        /// renderer that is not a scene object. The scene camera looks along world +Z, so world −Z is
+        /// toward it; a shift along this moves the fitting's depth and nothing on screen.
+        /// </summary>
+        static Vector3 TowardCamera(IHullPropRenderer fitting) =>
+            fitting is Component c && c != null ? c.transform.InverseTransformDirection(Vector3.back) : Vector3.zero;
 
         /// <summary>The rig's side factor: port is −1 on the beam axis, starboard +1.</summary>
         public const int PortSide = -1;

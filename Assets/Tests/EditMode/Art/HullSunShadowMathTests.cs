@@ -23,6 +23,39 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
+        public void WaterFade_LandAndMiddayAreUntouched()
+        {
+            foreach (float e in new[] { 0f, 0.05f, 0.2f, 0.6f, 1f })
+                Assert.That(HullSunShadowMath.WaterAlphaScale(e, false, 0.25f, 0.6f), Is.EqualTo(1f), $"on land at elevation {e}");
+            foreach (float e in new[] { 0.6f, 0.8f, 1f })
+                Assert.That(HullSunShadowMath.WaterAlphaScale(e, true, 0.25f, 0.6f), Is.EqualTo(1f), $"afloat, high sun {e}");
+            Assert.That(HullSunShadowMath.WaterAlphaScale(0.2f, true, 1f, 0.6f), Is.EqualTo(1f), "low-sun alpha 1 = no fade");
+        }
+
+        [Test]
+        public void WaterFade_EasesToTheLowSunAlphaAtTheHorizon()
+        {
+            Assert.That(HullSunShadowMath.WaterAlphaScale(0f, true, 0.25f, 0.6f), Is.EqualTo(0.25f).Within(1e-6f));
+            float last = 0f;
+            for (float e = 0f; e <= 1f; e += 0.02f)
+            {
+                float s = HullSunShadowMath.WaterAlphaScale(e, true, 0.25f, 0.6f);
+                Assert.That(s, Is.GreaterThanOrEqualTo(last - 1e-6f), $"monotonic at {e:0.00}");
+                Assert.That(s, Is.InRange(0.25f, 1f));
+                last = s;
+            }
+            // the shipped dusk hour (20.5) sits low: the shadow keeps under half its darkness
+            var day = Resources.Load<DayNightProfile>("DayNightProfile");
+            var look = Resources.Load<SpriteShadowProfile>("SpriteShadowProfile");
+            float dusk = DayNightMath.SunElevation(20.5f, day.SunriseHour, day.SunsetHour);
+            Assert.That(HullSunShadowMath.WaterAlphaScale(dusk, true, look.HullWaterLowSunAlpha, look.HullWaterFullSunElevation),
+                Is.LessThan(0.5f), "20:30 afloat");
+            float noon = DayNightMath.SunElevation(13.5f, day.SunriseHour, day.SunsetHour);
+            Assert.That(HullSunShadowMath.WaterAlphaScale(noon, true, look.HullWaterLowSunAlpha, look.HullWaterFullSunElevation),
+                Is.EqualTo(1f), "noon afloat");
+        }
+
+        [Test]
         public void Waterline_IsFixed()
         {
             Vector4 p = HullSunShadowMath.Projection(Vector2.right, 3, 40, 0, 0, 32);
@@ -53,7 +86,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.That(actual.y, Is.EqualTo(r.y * s + 2f / ppu + d.y * 2 * c * h).Within(1e-5f));
         }
 
-        [TestCase(6f)] [TestCase(20f)] [TestCase(20.5f)] [TestCase(22.5f)]
+        [TestCase(5.5f)] [TestCase(21.5f)] [TestCase(22f)] [TestCase(22.5f)]
         public void SunAtOrBelowHorizon_IsDisabled(float hour)
         {
             var day = Resources.Load<DayNightProfile>("DayNightProfile");

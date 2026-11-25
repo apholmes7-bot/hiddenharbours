@@ -20,6 +20,7 @@ namespace HiddenHarbours.Tests.PlayMode
         AshoreFigurePlatePlayTests _plate;
 
         [UnityTest]
+        [Timeout(420000)]
         public IEnumerator VaultAndLowWaterLadder_BothWays()
         {
             if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)
@@ -113,10 +114,20 @@ namespace HiddenHarbours.Tests.PlayMode
                 FitTheFrame(low ? 20f : 10f, low ? "the full low-water climb" : "the beach vault");
                 _plateOrtho = _stage.Camera.orthographicSize;
                 _movePlateCameraPosition = _stage.Camera.transform.position;
+                Vector3 frozenLens = _movePlateCameraPosition;
                 foreach (string direction in new[] { "Boarding", "Disembarking" })
                 {
                     Assert.IsTrue((bool)begin.Invoke(controls, new[] { Enum.Parse(kind, direction) }));
                     Assert.AreEqual(low, controls.IsLadderBoarding, "the tide must choose the route pictured");
+                    if (low)
+                    {
+                        // The world has stood frozen since StandHer, so FrameOn's anchor cannot move the lens here;
+                        // the low-water climb centres it on the rungs this move just measured.
+                        _movePlateCameraPosition.y = ladder.WorldPosition.y - 0.5f * (float)typeof(ControlSwitcher)
+                            .GetField("_moveGapMetres", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(controls);
+                        _stage.Camera.transform.position = _movePlateCameraPosition;
+                        yield return null; // the overlay fits to the lens in LateUpdate: it sees this one before the first shutter
+                    }
                     int shot = 0; float elapsed = 0f;
                     while (controls.IsBoardingMove && elapsed < 40f)
                     {
@@ -134,7 +145,9 @@ namespace HiddenHarbours.Tests.PlayMode
                     Debug.Log($"[mesh-move-plate] {direction}, {(low ? "low water wharf" : "mean water beach")}, " +
                         $"water {sea.Water:0.000} m, shore {from}, boat {mooring}, {shot} frames; " +
                         "actual ControlSwitcher transition entry and tick");
+                    NoteMoveRenderers($"m1-{(low ? "ladder" : "vault")}-{direction.ToLowerInvariant()}-last");
                 }
+                _stage.Camera.transform.position = frozenLens;
             }
             // D8 compares the old sprite cells with the mesh chop; the tool key alone proves no knife.
             sea.Water = StPetersBuilder.TideMean;
@@ -167,6 +180,7 @@ namespace HiddenHarbours.Tests.PlayMode
             _stage.Camera.transform.position = _movePlateCameraPosition;
             _stage.Camera.orthographicSize = _plateOrtho;
             AssertTheSubjectIsInFrame(_player.transform, name);
+            if (name.EndsWith("f000", StringComparison.Ordinal)) NoteMoveRenderers(name);
             foreach (bool pixels in new[] { false, true })
             {
                 _switchOn.FigurePixelTarget = pixels;
@@ -178,11 +192,26 @@ namespace HiddenHarbours.Tests.PlayMode
                 byte[] subject = _stage.Capture();
                 figure.Visible = false;
                 byte[] absent = _stage.Capture();
-                Assert.Greater(WharfNightStage.Footprint(subject, absent), 5,
+                int differs = WharfNightStage.Footprint(subject, absent) + WharfNightStage.Footprint(absent, subject);
+                if (differs <= 5)
+                {
+                    _stage.SavePlate(name + (pixels ? "-on" : "-off") + "-stop-subject.png", subject);
+                    _stage.SavePlate(name + (pixels ? "-on" : "-off") + "-stop-absent.png", absent);
+                }
+                Assert.Greater(differs, 5,
                     "a visible/in-frame actor can still be painted over; the removed control must differ");
                 figure.Visible = true;
                 _stage.SavePlate(name + (pixels ? "-on.png" : "-off.png"), subject);
             }
+        }
+
+        void NoteMoveRenderers(string name)
+        {
+            var renderers = _player.GetComponentsInChildren<Renderer>(true);
+            var labels = new string[renderers.Length];
+            for (int i = 0; i < renderers.Length; i++)
+                labels[i] = renderers[i].GetType().Name + ":" + renderers[i].name + "#" + renderers[i].GetEntityId();
+            Debug.Log($"[mesh-move-renderers] {name}: {renderers.Length}: " + string.Join(" | ", labels));
         }
 
         static Vector2 FindMoveBeach(Vector2 near, float draught, out Vector2 boatAt)

@@ -251,8 +251,25 @@ namespace HiddenHarbours.Boats
             host.AddComponent<BoatWakeEmitter>();
         }
 
+        // The live host, so a sibling Boats presenter (the oar splash) can draw with the SAME foam
+        // rafts instead of building a second set. Null outside play and before the host installs.
+        private static BoatWakeEmitter _shared;
+
+        /// <summary>
+        /// The wake's own foam raft sprites, <c>[variant][age rung]</c> — built once by the wake host
+        /// and shared, so foam laid by an oar is the same pixel foam the hull trails. Null when no
+        /// wake host is alive (EditMode, or before the first scene); a caller then draws nothing.
+        /// </summary>
+        internal static Sprite[][] SharedFoamRafts => _shared != null ? _shared._foamSprites : null;
+
+        private void OnDestroy()
+        {
+            if (_shared == this) _shared = null;
+        }
+
         private void Awake()
         {
+            _shared = this;
             _foamSprites = BuildFoamSprites(_trail.FoamAeration, _trail.FoamAgeErosion);
             _lineSprite = BuildLineSprite();
             _waveSprite = BuildWaveSprite(_wave.CrestUndulation);
@@ -395,7 +412,7 @@ namespace HiddenHarbours.Boats
             {
                 WaveFieldSettings waveField = GameServices.WaveField;
                 WaveFieldAnimatorSettings waveSmoothing = GameServices.WaveFieldAnimator;
-                _seaAnimator.Tick(dt, WaveFieldAnimator.GameTimeSeconds,
+                _seaAnimator.Tick(dt, WaveFieldAnimator.HourTimeSeconds, WaveFieldAnimator.GameTimeSeconds,
                                   s.WindVector, s.SeaState01, in waveField, in waveSmoothing);
                 // Not displaced: no animator, so every lift stays exactly 0 — but the context still answers
                 // DEPTH, which the age ramp needs to end each element on the water under it (W4-1, 3A).
@@ -531,14 +548,34 @@ namespace HiddenHarbours.Boats
                 // The crest stream draws the WAKE WAVE when it is enabled and the flat white crest LINES
                 // when it is not — chosen ONCE here, so a rig never writes a sprite reference per frame.
                 Sprite crest = _wave.Enabled && _waveSprite != null ? _waveSprite : _lineSprite;
-                _rigs.Add(new WakeRig(boat, _poolPerBoat, _linePoolPerBoat, _dropletPoolPerBoat,
-                                      _wave.TransomCrest ? _transomPoolPerBoat : 0,
-                                      _bubbles.Enabled ? _bubblePoolPerBoat : 0, _foamSprites,
+                // While the water draws real hull waves (HullWaveSettings), the painted crests and the
+                // painted stern roll are not built: they were drawn lines standing in for those waves.
+                bool painted = !PaintedCrestsRetired(GameServices.HullWaves);
+                _rigs.Add(new WakeRig(boat, _poolPerBoat, painted ? _linePoolPerBoat : 0, _dropletPoolPerBoat,
+                                      painted && _wave.TransomCrest ? _transomPoolPerBoat : 0,
+                                      BubblesDrawn(in _bubbles, GameServices.HullWaves) ? _bubblePoolPerBoat : 0,
+                                      _foamSprites,
                                       crest, _bubbleSprites, _tierSprites, _spraySprites, transform,
                                       _sortingLayer, _sortingOrder, _lineSortingOrder, _plumeSortingOrder,
                                       _spraySortingOrder, _bubbleSortingOrder));
             }
         }
+
+        /// <summary>True when the water's real hull waves replace the painted crest and stern-roll
+        /// sprites: hull waves on, and the owner's retire switch on.</summary>
+        public static bool PaintedCrestsRetired(in HullWaveSettings hullWaves) =>
+            hullWaves.Enabled && hullWaves.RetirePaintedCrests;
+
+        /// <summary>True when the wake's drawn foam puffs give way to the water's own foam (its buffer
+        /// and the hull waves' breaking crests): hull waves on, and the owner's retire switch on.</summary>
+        public static bool DrawnFoamRetired(in HullWaveSettings hullWaves) =>
+            HullWaveMath.DrawnFoamRetired(in hullWaves);
+
+        /// <summary>True when the wake's bubble films are drawn. They are drawn foam blobs beside the sea's
+        /// one foam sheet (the owner, 2026-11-19: "wake foam should be the same as any foam"), so they
+        /// retire with the drawn puffs under the same switch.</summary>
+        public static bool BubblesDrawn(in WakeBubbleConfig bubbles, in HullWaveSettings hullWaves) =>
+            bubbles.Enabled && !DrawnFoamRetired(in hullWaves);
 
         private bool HasRigFor(BoatController boat)
         {
@@ -1190,11 +1227,14 @@ namespace HiddenHarbours.Boats
             public void Tick(Vector2 current, Vector2 wind, float roughness, float time, float dt,
                              in WakeConfig cfg, Color foamColor, in WakeLineConfig lineCfg, Color lineColor,
                              in WakeGradeConfig grade, in BowSprayGradeConfig spray, Color sprayColor,
-                             in WakeTrailConfig trail, in BowWaveConfig bowWave,
+                             in WakeTrailConfig sharedTrail, in BowWaveConfig bowWave,
                              in WakeWaveConfig wave, Color waveColor, in SeaLift lift,
                              in WakeAgeRamp ramp, in SeaPaletteState palette, in WakeBubbleConfig bubbles,
                              in BowImpactConfig impact, float waterLevel)
             {
+                // The trail this hull lays: a jet-driven hull throws a narrow hard stream, not a churn strip.
+                WakeTrailConfig trail = WakeTrailMath.ForStyle(
+                    in sharedTrail, Boat != null && Boat.Hull != null ? Boat.Hull.WakeStyle : WakeStyle.Propeller);
                 if (Boat == null) return;
 
                 Vector2 pos = Boat.transform.position;
@@ -1558,11 +1598,15 @@ namespace HiddenHarbours.Boats
                                            waveAmplitude * Mathf.Max(0f, wave.TransomAmplitudeScale));
                     }
 
+                    // While the water draws her real waves, her churn is the water's own foam buffer (the same
+                    // foam path as every other foam on the sea): the drawn puffs below are not laid. Deterministic
+                    // either way (rule 5): the switch only decides whether the hashed stream is laid.
+                    bool drawnFoam = !DrawnFoamRetired(GameServices.HullWaves);
                     // The centre lane (foam pool) for a deterministic fraction of deposits — the long white
                     // wash down the middle of the trail, fading astern.
                     float dice = WakeParticleSystem.Hash01(_depositCounter * 0x9E3779B1u + 0x2Fu);
                     _depositCounter++;
-                    if (dice < Mathf.Clamp01(trail.CenterChurnFraction))
+                    if (drawnFoam && dice < Mathf.Clamp01(trail.CenterChurnFraction))
                     {
                         Vector2 v = -trackDir * (speed * Mathf.Clamp01(trail.AsternDriftFraction));
                         _sys.EmitAt(basePos, v, in fcfg, lifeScale, sizeScale, foamBirth);
@@ -1573,7 +1617,7 @@ namespace HiddenHarbours.Boats
                     // they die before the boat gets far, so the dense bubbling white band exists only
                     // right behind the transom and hands the read to the long pattern. Count hard-clamped
                     // per deposit (rule 7); lateral dice deterministic (rule 5).
-                    for (int cpuff = 0; cpuff < churnPuffs; cpuff++)
+                    for (int cpuff = 0; drawnFoam && cpuff < churnPuffs; cpuff++)
                     {
                         float lat = WakeParticleSystem.Hash01(_depositCounter * 0x165667B1u + 0x51u) * 2f - 1f;
                         _depositCounter++;

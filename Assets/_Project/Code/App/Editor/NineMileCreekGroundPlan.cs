@@ -31,6 +31,10 @@ namespace HiddenHarbours.App.Editor
         /// the cap's brow is read a quarter metre landward and its toe a quarter metre seaward.</summary>
         public const float NorthFaceY = 86f;
 
+        /// <summary>Measured screen rise from the north wall fitting at y86 to its drawn cap at y87.
+        /// Distinct from the plan cap's quarter-metre footprint.</summary>
+        public const float LadderClimbTopScreenOffset = 1f;
+
         /// <summary>The crane apron's face, west of the step.</summary>
         public const float CraneFaceY = 76f;
 
@@ -43,6 +47,8 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>Half a quay blocker's thickness, as the builder lays them.</summary>
         public const float BlockerHalfThickness = 0.175f;
+        // Foot radius 0.35 + scan allowance 0.05 + margin 0.1 clears the quay at either pier edge.
+        public const float RunwayClearance = 0.5f;
 
         /// <summary>The north cap: the whole north face, step to breakwater root.</summary>
         public static Rect NorthCap => new Rect(FaceStepX, NorthFaceY, NorthFaceEastX - FaceStepX, CapDepthMetres);
@@ -106,7 +112,8 @@ namespace HiddenHarbours.App.Editor
         public static Vector2 BerthLadderPos => new Vector2(BerthX, NorthFaceY);
 
         public const string BerthLadderName = "Ladder_Berth0";
-        public const string BerthLadderId = "wharf.nine_mile_creek.ladder_berth_0";
+        /// <summary>The player's berth ladder's stable id: the one the wharf's register gives it (NMC H5).</summary>
+        public const string BerthLadderId = "ladder.nmc_berth0";
 
         // =====================================================================================
         //  the Otter, parked safe for now (owner ruling)
@@ -160,13 +167,13 @@ namespace HiddenHarbours.App.Editor
         public const string TurningPadName = "WharfTurningPad";
 
         /// <summary>The yard's own road (the wharf key scene's yard.main_road) runs straight along this y from the
-        /// turning pad's east side to the boat yard's gate. H6 PR 2 paves its first 30 m to the west lot.</summary>
+        /// turning pad's east side to the boat yard's gate. H6 PR 3 carries the same way beyond the west lot.</summary>
         public const float YardRoadY = 120f;
         public const string YardRoadName = "WharfYardRoad";
         public const float YardRoadHalfWidth = 3.75f;
         public static Vector2 YardRoadStart => new Vector2(76f, YardRoadY);
-        // PR 3 carries this same way on to the record's (190, 120).
-        public static Vector2 YardRoadEnd => new Vector2(106f, YardRoadY);
+        // The record's yard.main_road carries the same way through the gate to (190, 120).
+        public static Vector2 YardRoadEnd => new Vector2(190f, YardRoadY);
 
         /// <summary>Where the yard road's line leaves the turning circle on its east side, (76.14, 120): where a
         /// truck leaves the pad for the buyers' gravel.</summary>
@@ -206,7 +213,7 @@ namespace HiddenHarbours.App.Editor
                         false, "the turning circle at the head of Wharf Road's ramp: a truck that came up it turns here"));
                     list.Add(new NineMileCreekRoads.Way(YardRoadName, NineMileCreekRoads.GravelSurface,
                         new[] { YardRoadStart, YardRoadEnd }, YardRoadHalfWidth, NineMileCreekRoads.RankWharfRoad, true,
-                        "the wharf key scene's yard.main_road: the pad's east side to the west lot (H6 PR 2); PR 3 runs it on to the gate"));
+                        "the wharf key scene's yard.main_road: the pad's east side through the boat yard gate (H6 PR 3)"));
                 }
                 else if (way.Name.StartsWith(NineMileCreekRoads.TownWalkNamePrefix, System.StringComparison.Ordinal))
                     continue;   // re-derived below, joining the final lines
@@ -258,11 +265,14 @@ namespace HiddenHarbours.App.Editor
             };
         }
 
-        /// <summary>The pads kit v3 still paints: the winch apron and the buyers' parking (the wharf's) and the
-        /// station's forecourt (the gas bar's). The truck park and the laydown are lots on kit v4's network.</summary>
+        /// <summary>The pads kit v3 still paints: the winch apron and the buyers' parking (the wharf's). The truck park
+        /// and the laydown are lots on kit v4's network, and the station's forecourt is the fuel stop's lot on it (the
+        /// network's forecourt section, NMC H9, the owner's 11-14): its pad stays in <see cref="NineMileCreekRoads.Pads"/>
+        /// only to keep the meadow off the lot.</summary>
         public static IReadOnlyList<NineMileCreekRoads.Pad> KeptV3Pads() =>
             NineMileCreekRoads.Pads().Where(p => p.Name != NineMileCreekRoads.TruckParkName &&
-                                                 p.Name != NineMileCreekRoads.LaydownName).ToList();
+                                                 p.Name != NineMileCreekRoads.LaydownName &&
+                                                 p.Name != NineMileCreekRoads.StationForecourtName).ToList();
 
         /// <summary>What step 06 and the road painter paint in kit v3: <see cref="KeptV3Ways"/> and
         /// <see cref="KeptV3Pads"/> under the dry-ground rule. None of it crosses water, so no deck is exempted.</summary>

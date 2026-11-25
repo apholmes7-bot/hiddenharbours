@@ -1,0 +1,415 @@
+{
+  "schema": "hidden-harbours/stp-landing-props-node@1",
+  "node": "v24.19.0",
+  "frames": [
+    {
+      "key": "landingCart",
+      "cell": 0,
+      "dir": 0,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "27e67aaa234cd8f0227a9cd47022f9f4c2c6c1165d166ec987fb4c5ad07ec50b",
+      "heightSha256": "0cfc5047dc8fe9c8acb7d9579de9d502948d766b52714489b6636bc037c0e31a"
+    },
+    {
+      "key": "landingCart",
+      "cell": 1,
+      "dir": 7,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "2838c6325ecea5dbc3e233bf893ddd3aea35e4d6fb0d17c1aa4ee6b0c7bc8fc0",
+      "heightSha256": "348bb668482892b91f1e94a01a83b7e80fc1e16930f696d4d8bc1cec60c3d2e3"
+    },
+    {
+      "key": "landingCart",
+      "cell": 2,
+      "dir": 6,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "25b97cc15fb5d1596b0f86992f7298fae3b32456656eac873ff9cfe17c54378e",
+      "heightSha256": "cb8518f642a1c2ceb09ddcae39f6944b50a6a2e75ee8cac2f7c0932e433cdae0"
+    },
+    {
+      "key": "landingCart",
+      "cell": 3,
+      "dir": 5,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "ce300700ff1c9e5bfe0ff0ec14d0051972112313082d082ed33c47e10fed063e",
+      "heightSha256": "dfa345e2cbb1ec46dcf572c8548b9fb4e70ed89a09d0f5386e93ec27fbd0ecf2"
+    },
+    {
+      "key": "landingCart",
+      "cell": 4,
+      "dir": 4,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "cd77dfbe797d4a86188b4886d8513bd0ecae86c534eccc803e6ec0ef88e1d37f",
+      "heightSha256": "cf71bd72413f47f1157b630a87a1df9b46cdc010e8d821f5546bbafb92ca4c95"
+    },
+    {
+      "key": "landingCart",
+      "cell": 5,
+      "dir": 3,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "0bd7b0d8baa067aa2e127bbbd6431c8fe1f28e87467295656bb23688b0377107",
+      "heightSha256": "b1831d3999e4019c89f4b76069ae67a4a3690bef5cc9d4d779f1ab354d981780"
+    },
+    {
+      "key": "landingCart",
+      "cell": 6,
+      "dir": 2,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "85fbf3a15ad38a7a76969a031c9d2ff6ca0045e0d56fb83c78bc25b1cc438dfe",
+      "heightSha256": "1cab194a5e4682197f23cc7a7142dea27105ba3dbce4e8073e0cddd1d0c8ce0a"
+    },
+    {
+      "key": "landingCart",
+      "cell": 7,
+      "dir": 1,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "70cc078f7e3f5e31dfa1015520709683b9791057ebd2ba0981f073fdcfd4f265",
+      "heightSha256": "e7312f805639b5dc4baed659850673fdec201b8de2c24ef86d75681c615060bf"
+    },
+    {
+      "key": "landingTraps",
+      "cell": 0,
+      "dir": 0,
+      "width": 420,
+      "height": 520,
+      "pivotX": 210,
+      "pivotY": 420,
+      "rgbaSha256": "4f0f57ec859f29765de078e349c548083a29790b6bb1a76784a7ea4d424960c4",
+      "heightSha256": ""
+    },
+    {
+      "key": "landingTraps",
+      "cell": 1,
+      "dir": 7,
+      "width": 420,
+      "height": 520,
+      "pivotX": 210,
+      "pivotY": 420,
+      "rgbaSha256": "eeef7a2c781ec360c049836e3d21f5c19219c4a8327aaafb27da213ff28f3ea2",
+      "heightSha256": ""
+    },
+    {
+      "key": "landingTraps",
+      "cell": 2,
+      "dir": 6,
+      "width": 420,
+      "height": 520,
+      "pivotX": 210,
+      "pivotY": 420,
+      "rgbaSha256": "f7ab049f4f6238df6f09ee2c27dd5effa38346c28dc392797268160a304c8051",
+      "heightSha256": ""
+    },
+    {
+      "key": "landingTraps",
+      "cell": 3,
+      "dir": 5,
+      "width": 420,
+      "height": 520,
+      "pivotX": 210,
+      "pivotY": 420,
+      "rgbaSha256": "4d0100dabeb86927b86d8c042a69ddffa206dcfcef89492867d919beb2c8f775",
+      "heightSha256": ""
+    },
+    {
+      "key": "landingTraps",
+      "cell": 4,
+      "dir": 4,
+      "width": 420,
+      "height": 520,
+      "pivotX": 210,
+      "pivotY": 420,
+      "rgbaSha256": "467e0d85c2c8746d72874015e448b5392d84e67d654496290224ad8c5c0afd0f",
+      "heightSha256": ""
+    },
+    {
+      "key": "landingTraps",
+      "cell": 5,
+      "dir": 3,
+      "width": 420,
+      "height": 520,
+      "pivotX": 210,
+      "pivotY": 420,
+      "rgbaSha256": "fc1a2a6c046d45eeb24a69aa2725974c6cd0d56da08b1d387615b530ee4e1de5",
+      "heightSha256": ""
+    },
+    {
+      "key": "landingTraps",
+      "cell": 6,
+      "dir": 2,
+      "width": 420,
+      "height": 520,
+      "pivotX": 210,
+      "pivotY": 420,
+      "rgbaSha256": "cef0f1901bfd65d8879a4b28469b0cf792b5f11802b3171f0af816d9f77bc077",
+      "heightSha256": ""
+    },
+    {
+      "key": "landingTraps",
+      "cell": 7,
+      "dir": 1,
+      "width": 420,
+      "height": 520,
+      "pivotX": 210,
+      "pivotY": 420,
+      "rgbaSha256": "cb8dd9c2d53da76ca677462e25733a5ddf52086c1397cb5fa1a8814bbe97cdc0",
+      "heightSha256": ""
+    },
+    {
+      "key": "landingTotes",
+      "cell": 0,
+      "dir": 0,
+      "width": 420,
+      "height": 520,
+      "pivotX": 210,
+      "pivotY": 420,
+      "rgbaSha256": "c8c42548dd65850769a73db97a8b3f0a61309f1b07d9f150610d02d952f57cc9",
+      "heightSha256": ""
+    },
+    {
+      "key": "landingTotes",
+      "cell": 1,
+      "dir": 7,
+      "width": 420,
+      "height": 520,
+      "pivotX": 210,
+      "pivotY": 420,
+      "rgbaSha256": "6c12cb4b7f730157eac1510bd453611b30a100c568985afe9aca8760d4b204f5",
+      "heightSha256": ""
+    },
+    {
+      "key": "landingTotes",
+      "cell": 2,
+      "dir": 6,
+      "width": 420,
+      "height": 520,
+      "pivotX": 210,
+      "pivotY": 420,
+      "rgbaSha256": "9151433638ba38c95bf824bfe256d3f51ca8c04de3f35df2925608c357ed9ace",
+      "heightSha256": ""
+    },
+    {
+      "key": "landingTotes",
+      "cell": 3,
+      "dir": 5,
+      "width": 420,
+      "height": 520,
+      "pivotX": 210,
+      "pivotY": 420,
+      "rgbaSha256": "fea418c47b26c22f2116692697c5569fdbe91b240304d287b15c4a32ea53b807",
+      "heightSha256": ""
+    },
+    {
+      "key": "landingTotes",
+      "cell": 4,
+      "dir": 4,
+      "width": 420,
+      "height": 520,
+      "pivotX": 210,
+      "pivotY": 420,
+      "rgbaSha256": "42bb5a6b35b444f83925ae7187f8f13ebbbfcf38f3e51a39bd91b534d7b21112",
+      "heightSha256": ""
+    },
+    {
+      "key": "landingTotes",
+      "cell": 5,
+      "dir": 3,
+      "width": 420,
+      "height": 520,
+      "pivotX": 210,
+      "pivotY": 420,
+      "rgbaSha256": "bbb64e104207ad99729f2ecdcccfa7b325fb6ed569b5e105009ddd85de15dcfb",
+      "heightSha256": ""
+    },
+    {
+      "key": "landingTotes",
+      "cell": 6,
+      "dir": 2,
+      "width": 420,
+      "height": 520,
+      "pivotX": 210,
+      "pivotY": 420,
+      "rgbaSha256": "1b9c533f37b50b598911fcc58090a5179aa91402023310873b5af965f400f1ad",
+      "heightSha256": ""
+    },
+    {
+      "key": "landingTotes",
+      "cell": 7,
+      "dir": 1,
+      "width": 420,
+      "height": 520,
+      "pivotX": 210,
+      "pivotY": 420,
+      "rgbaSha256": "7c913f8a7e48e81e786785ab05f5f537cb2cc934b73480c4ecf2980b374936b0",
+      "heightSha256": ""
+    },
+    {
+      "key": "landingLadder",
+      "cell": 0,
+      "dir": 0,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "b8905ecfb99461b61d4e3b0f4bd7d6742d43b494de2cf7362c5b2a295c137a2d",
+      "heightSha256": "e9d445382e9df8fcec04bbe9b7cc74131fff504ae722b5604d7dab94c0e4c30c"
+    },
+    {
+      "key": "landingLadder",
+      "cell": 1,
+      "dir": 7,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "4fb8af13236ac577569222668ed8ba2c9d44f4a53d9ec2e983eaa6facf9416db",
+      "heightSha256": "82f45a8be315fb279838f560f122b2fe6246237f8b7a29329cbf24c8d277f8a4"
+    },
+    {
+      "key": "landingLadder",
+      "cell": 2,
+      "dir": 6,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "5e70eef5ac8cf1e87e2dd207e188851c1914715e0ee1d8494e14636554000a99",
+      "heightSha256": "c390115212533fe42a40c807713e9c349f4d2de6ac0e71a3f4924652bb0e326d"
+    },
+    {
+      "key": "landingLadder",
+      "cell": 3,
+      "dir": 5,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "7c8137236e4f0d45902ca5bb6056bd26940ba1cbd7b65485dbe4ac59020f113e",
+      "heightSha256": "38ef1664a41835a62e3edc24519609f7ac04dfa90d4da864fe0eddc6219a574a"
+    },
+    {
+      "key": "landingLadder",
+      "cell": 4,
+      "dir": 4,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "26cbb89d08e819140a7ddac904c0e9879a1afd034e7d55982e5411c6c6f57c2c",
+      "heightSha256": "1d5cd2c46d4249c15443e1167dcfb2637986a68f426bf76139650d190c16dbcd"
+    },
+    {
+      "key": "landingLadder",
+      "cell": 5,
+      "dir": 3,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "b394d14499e73f3dd97ab25972ac463ca8528ac978371248d801c93397f033d5",
+      "heightSha256": "37465f7a19ec9700a52f43ef9cd9f1d2b7a080a3e84cce9af2fe514075deebfa"
+    },
+    {
+      "key": "landingLadder",
+      "cell": 6,
+      "dir": 2,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "b8f67a372f6245c8c2c643b03664d465d3ef6e2fb1193df4c3fa59b76ea6a3f9",
+      "heightSha256": "eb4ffbf2873f1b822df4507d4d0c363b2b906cfa71b5b7b95c4bbed0fbd84e7b"
+    },
+    {
+      "key": "landingLadder",
+      "cell": 7,
+      "dir": 1,
+      "width": 420,
+      "height": 760,
+      "pivotX": 210,
+      "pivotY": 160,
+      "rgbaSha256": "c6ff232850c966f799bc66d68f8be3a4628e094aa236a1af3e60633180121d87",
+      "heightSha256": "869be24d720959919f0a80e4f883bbe04f6ccbace1f6e5c3e66b498af7b3ab1c"
+    }
+  ],
+  "protectedFiles": [
+    {
+      "path": "Assets/_Project/Code/App/Editor/NineMileCreekDressing.cs",
+      "lf": true,
+      "sha256": "4c254f27d5528c1dff06d0090a287cbf766ede730aee81fc615f225894b47b60"
+    },
+    {
+      "path": "Assets/_Project/Art/Editor/WharfKitCatalog.cs",
+      "lf": true,
+      "sha256": "a467b81619da6bcf3c0b3814473f282dcd8a6b34f64b9cbed65b8f9caf73204a"
+    },
+    {
+      "path": "Assets/_Project/Code/Tools/Editor/RigBaking/IsoPropSheetBaker.cs",
+      "lf": true,
+      "sha256": "3fe9f2e9fb93d0bdef02cc655baf1cca821b3688713fb015665f0419821e579b"
+    },
+    {
+      "path": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
+      "lf": true,
+      "sha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a"
+    },
+    {
+      "path": "Assets/_Project/Art/Tilesets/Wharf/WharfAtlas.png",
+      "lf": false,
+      "sha256": "b0cf5948d28605fc6f0804c3feba7729498bcb55d1adb6cf4e12792b58aab336"
+    },
+    {
+      "path": "Assets/_Project/Art/Sprites/Wharf/Decor/dockCart.png",
+      "lf": false,
+      "sha256": "fb5a9518ddfa3a010a6e0ea075c6f914d311066398fb655546fb48a523dcd42c"
+    },
+    {
+      "path": "Assets/_Project/Art/Sprites/Wharf/Decor/dockCart.recipe.json",
+      "lf": true,
+      "sha256": "c08daf6a43cd81e0eec5bfb93f830ec3358a27a699f395fee4d672c5a81b1c54"
+    },
+    {
+      "path": "Assets/_Project/Art/Sprites/Wharf/Decor/trapStack.png",
+      "lf": false,
+      "sha256": "e418abaf437d51f4bcc5adaf568d0287895a3884501e5de9fd6f4bfcb41c1445"
+    },
+    {
+      "path": "Assets/_Project/Art/Sprites/Wharf/Decor/trapStack.recipe.json",
+      "lf": true,
+      "sha256": "7315d0f9a1485436569352c0b8a3de28b2a307cc95fb02fdb9e5496ed0628fe0"
+    },
+    {
+      "path": "Assets/_Project/Art/Sprites/Wharf/Decor/toteStack.png",
+      "lf": false,
+      "sha256": "372b181543daedd9846c5f9d3d9f0cb32ad8a56f99b54f639d6047f08c2f5c4e"
+    },
+    {
+      "path": "Assets/_Project/Art/Sprites/Wharf/Decor/toteStack.recipe.json",
+      "lf": true,
+      "sha256": "04a69bcd412d10209b0b2d7f4dc300d6e1a62086b6522af440d02da661b3aaea"
+    }
+  ]
+}

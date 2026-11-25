@@ -239,6 +239,7 @@ namespace HiddenHarbours.Player
         private BoatWaveMotion _wave;
         private BoatController _boat;
         private IBoatHullPresenter _hull;
+        private IHullTideRide _tide;
         private bool _boatResolved;
 
         private Vector3 _riderBaseLocalPosition;
@@ -386,6 +387,25 @@ namespace HiddenHarbours.Player
         /// <see cref="Renderer.forceRenderingOff"/> instead, publishes that itself, and this reads
         /// false. False on every frame of the sprite path.</summary>
         public bool SpriteSuppressed { get; private set; }
+
+        /// <summary>
+        /// <b>Where her body is DRAWN, against the gameplay root</b>, in world metres, this frame. Aboard,
+        /// the root stays on the hull's LEVEL deck (no tide, no rock) while the body she is drawn with
+        /// rides the hull's picture: the mesh figure stands under the posed mesh, and the rider sprite
+        /// sits at its ride pose plus the tide. Whatever is drawn IN HER HANDS is posed off the root and
+        /// adds this (<c>CarryHands</c>, the fight's rod and held fish), so it is drawn where her hands
+        /// are drawn. The rod the owner saw floating (2026-11-13) was posed off the root alone.
+        ///
+        /// <para>Stated every <see cref="Apply"/>, never accumulated, and zero whenever she is not
+        /// aboard: ashore her figure, mesh or sprite, stands at the root's own pivot.</para>
+        /// </summary>
+        public Vector2 DrawnBodyOffset { get; private set; }
+
+        /// <summary>The tide's screen rise the rider sprite was drawn with this frame, in metres
+        /// (<see cref="IHullTideRide.ScreenRiseNow"/>): the drop the hull's picture takes at low water,
+        /// applied by <see cref="BoatWaveMotion"/>. 0 while not aboard, on a hull that does not ride the
+        /// tide, and at the level her picture was struck at.</summary>
+        public float TideRiseMeters { get; private set; }
 
         /// <summary>The root's own sprite: the body she is drawn with whenever the rider is not.
         /// Published for the ashore mesh, which hides it by <see cref="Renderer.forceRenderingOff"/>
@@ -696,15 +716,72 @@ namespace HiddenHarbours.Player
             => _carried || _mode == ControlMode.OnDeck || (_mode == ControlMode.Aboard && _drawPilot);
 
         /// <summary>Where she is standing, in the hull's rig metres: the carrier's stated point while
-        /// carried, else the deck walk's point at its deck height. The ONE read the occupant slot, the
-        /// mesh figure's placement and the ride's lever arm all take.</summary>
+        /// carried, an interior helm anchor when the published helm has no reachable deck, otherwise
+        /// the deck walk's point at its deck height. The ONE read the occupant slot, the mesh figure's
+        /// placement and the ride's lever arm all take.</summary>
         private Vector3 StandPointRigLocal()
         {
             if (_carried) return _carriedStand;
+            if (TrySeatedHelm(out _, out Vector3 seatedFloor)) return seatedFloor;
+            if (_mode == ControlMode.Aboard && _boat != null && _boat.Hull != null)
+            {
+                var visual = _boat.Hull.Visual;
+                var deck = visual != null ? visual.Deck : null;
+                if (deck != null && deck.HasHelmStation)
+                {
+                    var station = new Vector2(deck.HelmStationLocalMeters.x, deck.HelmStationLocalMeters.y);
+                    bool stationOnDeck = false;
+                    if (deck.Areas != null)
+                    {
+                        foreach (DeckArea area in deck.Areas)
+                        {
+                            if (area != null && area.Kind == DeckAreaKind.Deck && DeckAreaMath.Contains(area, station))
+                            {
+                                stationOnDeck = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (!stationOnDeck && visual.Interior != null && visual.Interior.Anchors != null)
+                    {
+                        foreach (var anchor in visual.Interior.Anchors)
+                            if (anchor != null && anchor.Id == "helm") return anchor.ReachPoint;
+                    }
+                }
+            }
             if (_deckWalk == null) return Vector3.zero;
             Vector2 stand = _deckWalk.DeckLocalPosition;
             return new Vector3(stand.x, stand.y, _deckWalk.DeckHeightMeters);
         }
+
+        /// <summary>The same choice drives the floor origin and mesh clip; missing art keeps both
+        /// on the standing route rather than putting a standing body on the seated origin.</summary>
+        /// <para>A hull steered from a TILLER seat (<see cref="BoatVisualDef.SeatsAtTiller"/>: the dory
+        /// with her motor) takes its clip and floor origin from her tiller station instead of her
+        /// seated-helm fields; the same art gate applies to both.</para>
+        private bool TrySeatedHelm(out string state, out Vector3 floorOrigin)
+        {
+            state = null;
+            floorOrigin = default;
+            if (_carried || _mode != ControlMode.Aboard || _boat == null || _boat.Hull == null) return false;
+            var visual = _boat.Hull.Visual;
+            if (visual == null) return false;
+            bool tiller = visual.SeatsAtTiller(_boat.Hull.Propulsion);
+            string key = tiller ? visual.Tiller.SeatedState : visual.SeatedHelmState;
+            var config = GameServices.Config;
+            var presenter = _figure as DeckRiderMeshPresenter;
+            var skin = presenter != null ? presenter.EffectiveSkin : _character?.Visual?.Skin;
+            if (string.IsNullOrEmpty(key) ||
+                config == null || !config.MeshCharacter || skin == null ||
+                _character == null || _character.IsSuspended ||
+                !skin.DrawsAsMesh(key) || !skin.TryGetClip(key, out _))
+                return false;
+            state = key;
+            floorOrigin = tiller ? visual.Tiller.FloorOriginLocalMeters : visual.SeatedHelmFloorOrigin;
+            return true;
+        }
+
+        public string SeatedHelmStateKey => TrySeatedHelm(out string state, out _) ? state : null;
 
         /// <summary>Present the character for the current mode. Idempotent and cheap — safe to call from
         /// the mode switch and from every LateUpdate.</summary>
@@ -761,14 +838,31 @@ namespace HiddenHarbours.Player
             // swing an off-centre deck point SIDEWAYS, and a vertical-only offset cannot follow it —
             // 5.5 px of it at the cape's foredeck in a flat calm. 0 on the sprite path, so that write
             // is byte-identical to what it was.
+            //
+            // (3) THE TIDE. The hull's picture rides it — BoatWaveMotion applies HullTideRide's screen rise
+            //     to her visual, even with the sea's master strength at 0 — and this root does not, so a
+            //     rider drawn without it stood on the deck the hull had at the level her picture was
+            //     struck at: 1.5 m above it at a spring low. It is not part of the ride POSE: the tide is
+            //     where the hull IS drawn, not a cosmetic motion, so no ride strength scales it.
+            //     (Read through UnityEngine.Object, so a destroyed boat's ride reads as no tide, not a throw.)
+            float tide = (_tide as Object) != null ? _tide.ScreenRiseNow() : 0f;
+            TideRiseMeters = tide;
             _riderRenderer.transform.localPosition =
-                _riderBaseLocalPosition + new Vector3(pose.SwayMeters, pose.LiftMeters, 0f);
+                _riderBaseLocalPosition + new Vector3(pose.SwayMeters, pose.LiftMeters + tide, 0f);
             // WORLD rotation, not local: the drawn figure's screen orientation IS the pose and nothing else.
             // A local write would compose the lean onto whatever the player root happens to be carrying, and
             // aboard that root is a child of the hull's ROTATING physics body — which is how the pilot came
             // to lie over further with every degree she turned. See the class doc's ORIENTATION note.
             _riderRenderer.transform.rotation = Quaternion.Euler(0f, 0f, pose.RollDegrees);
             _riding = true;
+
+            // (4) WHERE SHE IS DRAWN, for whatever is in her hands: the mesh figure's feet while it has the
+            //     draw, otherwise the rider sprite's pivot, just written.
+            Transform drawnFeet = suppress && _figure.PresentationRoot != null
+                ? _figure.PresentationRoot
+                : _riderRenderer.transform;
+            Vector3 offset = drawnFeet.position - transform.position;
+            DrawnBodyOffset = new Vector2(offset.x, offset.y);
         }
 
         /// <summary>
@@ -948,9 +1042,10 @@ namespace HiddenHarbours.Player
         /// still turns with the boat, and one walking the deck faces their walk — and because both terms are
         /// re-read from the authority every frame there is no delta anywhere for drift to accumulate in.</para>
         ///
-        /// <para><b>At the helm</b> the bearing is the bow: a pilot is at their station, facing forward, and
-        /// the deck walk is disabled so there is no step to read anyway. This is exactly the pinned
-        /// <c>DrawnHeadingDegrees()</c> that shipped, restated through the one composition.</para>
+        /// <para><b>At the helm</b> the bearing is the station's, read off the hull's visual asset
+        /// (<see cref="BoatVisualDef.PilotDeckBearingDegrees"/>): the bow at a wheel or tiller, the stern
+        /// at the oars (a rower sits facing aft). The deck walk is disabled there, so there is no step to
+        /// read anyway.</para>
         ///
         /// <para><b>Ashore</b> nothing is held and the presenter's own motion read stands untouched.</para>
         ///
@@ -990,8 +1085,9 @@ namespace HiddenHarbours.Player
             }
             else
             {
-                // At the helm: the station's own facing, and a body that is not travelling.
-                _deckBearingDegrees = 0f;
+                // At the helm: the station's own facing (the hull's answer: the bow at a wheel, the
+                // stern at the oars), and a body that is not travelling.
+                _deckBearingDegrees = PilotDeckBearingForMode();
                 _deckTracked = false;
             }
 
@@ -1162,6 +1258,8 @@ namespace HiddenHarbours.Player
             // disagreeing about one fact. Nothing in production branches on it, which is exactly why it
             // has to be right: it is read by plates and guards, and a wrong readout reads as evidence.
             SpriteSuppressed = false;
+            DrawnBodyOffset = Vector2.zero;   // ashore she is drawn at the root's own pivot
+            TideRiseMeters = 0f;
 
             // The body draws again — EXCEPT where the character is INSIDE something. At the helm that is
             // the pre-existing "taking the helm hides you" rule (ControlSwitcher's own drawn-on-root test)
@@ -1183,6 +1281,15 @@ namespace HiddenHarbours.Player
             }
         }
 
+        /// <summary>Which way the pilot faces at this hull's station, as a deck bearing: the HULL's own
+        /// answer, read off her visual asset (the stern for a rower, the bow at a wheel). A boat with
+        /// no visual def wired (greybox, tests) faces the bow, as it always did.</summary>
+        private float PilotDeckBearingForMode()
+        {
+            BoatVisualDef visual = _boat != null && _boat.Hull != null ? _boat.Hull.Visual : null;
+            return visual != null ? visual.PilotDeckBearingDegrees(_boat.Hull.Propulsion) : BoatVisualDef.HelmPilotDeckBearingDegrees;
+        }
+
         /// <summary>Which stance this mode asks for. On deck it is the deck brace; at the helm it is the
         /// HULL's own answer, read off her visual asset — never a rule here (rule 2). A boat with no
         /// visual def wired (greybox, tests) reads Free and simply stands there.</summary>
@@ -1192,7 +1299,7 @@ namespace HiddenHarbours.Player
             if (_mode == ControlMode.OnDeck) return CharacterStance.Balance;
 
             BoatVisualDef visual = _boat != null && _boat.Hull != null ? _boat.Hull.Visual : null;
-            return visual != null ? visual.PilotStanceFor() : CharacterStance.Free;
+            return visual != null ? visual.PilotStanceFor(_boat.Hull.Propulsion) : CharacterStance.Free;
         }
 
         /// <summary>
@@ -1291,8 +1398,10 @@ namespace HiddenHarbours.Player
                 _wave = null;
                 _boat = null;
                 _hull = null;
+                _tide = null;
                 return;
             }
+            _tide = _boatRoot.GetComponent<IHullTideRide>();
             _wave = _boatRoot.GetComponent<BoatWaveMotion>();
             _boat = _boatRoot.GetComponent<BoatController>();
             _hull = BoatHullPresenterHost.Resolve(_boatRoot.gameObject);

@@ -36,6 +36,8 @@
 # would hand the test CRLF and fail it for line endings alone. (Not `unity-json`, which is a merge
 # macro for files Unity itself serialises.)
 *.recipe.json           text eol=lf linguist-language=json linguist-generated
+# This bake input is outside the rig ledger; its contract compares it byte for byte.
+Assets/_Project/Art/Sprites/StPeters/SetPieces/stpLandingDeck.bake.json text eol=lf
 
 # St Peters' terrain plan (terrain PR 5; T12). Both are compared byte for byte: the frozen sources must write back to
 # themselves, and the manifest records the sources' file sha256. A CRLF checkout would red both for line endings alone.
@@ -216,6 +218,12 @@ docs/art/rigs/gameplay/sail/**              text eol=lf
 # above; pin the working-tree form so the kit's own checksum file is verifiable anywhere.
 docs/art/rigs/seagullIsoRig.js              text eol=lf
 docs/art/rigs/gameplay/seagullIsoRig.gameplay.json text eol=lf
+# The heron rig (docs/art/rigs/birds/): its sidecar and sheet contract stamp derivedFromRigSha256 over
+# the WORKING-TREE bytes of the rig, as the seagull kit does. Pin the working-tree form.
+docs/art/rigs/heronIsoRig.js                         text eol=lf
+docs/art/rigs/gameplay/heronIsoRig.gameplay.json     text eol=lf
+docs/art/rigs/birds/heron.bird.json                  text eol=lf
+docs/art/rigs/birds/sheets/Heron.contract.json       text eol=lf
 
 # The Modern 3500 truck kit (Codex drop of 2026-09-13) ships SHA256SUMS.txt, and its contract and
 # gameplay sidecar both stamp the rig's LF sha256. DeckSidecarReader.MatchRigHash ACCEPTS the
@@ -234,6 +242,13 @@ docs/art/rigs/modern3500-kit/preview.html             text eol=lf
 docs/art/rigs/modern3500-kit/README.md                text eol=lf
 docs/art/rigs/modern3500-kit/reference/SHA256SUMS.txt text eol=lf
 docs/art/rigs/gameplay/vehicles/modern3500.rig.gameplay.json text eol=lf
+
+# The wind dial rig (docs/art/rigs/ui/wind-dial/) stamps derivedFromRigSha256 in its sidecar over the
+# rig as LF bytes, and Evidence~/wind-dial/check-sidecar.js compares the sidecar byte for byte. Same
+# reasoning as the kits above. Named files: the folder ships no binaries today, but a rule by name
+# cannot catch one tomorrow.
+docs/art/rigs/ui/wind-dial/Art/windRig.js          text eol=lf
+docs/art/rigs/ui/wind-dial/windRig.sidecar.json    text eol=lf
 
 # Shell scripts run under bash, which chokes on CR. The gauntlet in tools/gauntlet is the seat's
 # merge battery; a checkout with autocrlf on would otherwise hand it back with CRLF and it would not start.
@@ -347,6 +362,11 @@ docs/art/rigs/cruiserIsoRig.js text eol=lf
 docs/art/rigs/gameplay/goFastIsoRig.go_fast.walk.json text eol=lf
 docs/art/rigs/gameplay/bowriderIsoRig.bowrider.walk.json text eol=lf
 docs/art/rigs/gameplay/cruiserIsoRig.express_cruiser.walk.json text eol=lf
+docs/art/rigs/gameplay/sternTrawlerIsoRig.stern_trawler.walk.json text eol=lf
+docs/art/rigs/gameplay/sternTrawlerMk2IsoRig.stern_trawler_mk2.walk.json text eol=lf
+docs/art/rigs/gameplay/sideDraggerIsoRig.side_dragger.walk.json text eol=lf
+docs/art/rigs/gameplay/sportSkiffIsoRig.sport_skiff_iso.walk.json text eol=lf
+docs/art/rigs/gameplay/doryIsoRig.dory_iso.walk.json text eol=lf
 tools/rig-recipes/hull-walk.mjs text eol=lf
 tools/rig-recipes/hull-layout-check.mjs text eol=lf
 docs/art/rigs/gameplay/vehicles/modern2500.rig.gameplay.json text eol=lf
@@ -362,3 +382,39 @@ docs/art/rigs/road-path-kit-v4/**/*.cjs               text eol=lf
 docs/art/rigs/road-path-kit-v4/**/*.json              text eol=lf
 docs/art/rigs/road-path-kit-v4/**/*.md                text eol=lf
 docs/art/rigs/road-path-kit-v4/**/*.txt               text eol=lf
+
+# These seven rig and walk files stamp their exact LF bytes.
+docs/art/rigs/gameplay/sportFisherIsoRig2.convertible.walk.json text eol=lf
+docs/art/rigs/gameplay/sportFisherIsoRig2.skybridge.walk.json text eol=lf
+docs/art/rigs/sportFisherIsoRig2.js text eol=lf
+docs/art/rigs/expeditionYacht120IsoRig.js text eol=lf
+docs/art/rigs/gameplay/expeditionYacht120IsoRig.expedition_yacht_120.walk.json text eol=lf
+docs/art/rigs/gameplay/yachtTenderIsoRig.yacht_tender.walk.json text eol=lf
+docs/art/rigs/yachtTenderIsoRig.js text eol=lf
+docs/art/rigs/motorYacht84IsoRig.js text eol=lf
+docs/art/rigs/gameplay/motorYacht84IsoRig.motor_yacht_84.walk.json text eol=lf
+
+# Next-iteration rig sources (proposals beside the shipped rigs; hashed as written, LF)
+docs/art/rigs/treeIsoRig5.js                          text eol=lf
+docs/art/rigs/character/rig11/**/*.js                 text eol=lf
+docs/art/rigs/character/rig11/**/*.txt                text eol=lf
+docs/art/rigs/character/rig11/**/*.md                 text eol=lf
+docs/art/rigs/character/rig11/**/*.json               text eol=lf
+
+# The bird rig kit (docs/art/rigs/birds/): each sidecar and sheet contract stamps derivedFromRigSha256
+# over the WORKING-TREE bytes of its rig, and birds/tools/build.cjs refuses a rig with CR in it. Same
+# reasoning as the seagull kit above: pin the working-tree form.
+docs/art/rigs/cormorantIsoRig.js                     text eol=lf
+docs/art/rigs/gameplay/cormorantIsoRig.gameplay.json text eol=lf
+docs/art/rigs/birds/**/*.json                        text eol=lf
+docs/art/rigs/birds/**/*.cjs                         text eol=lf
+
+# The camper room rig and its sidecar. The sidecar stamps the rig's LF sha256 and the generator compares the
+# committed file byte for byte, so a CRLF checkout would drift both for line endings alone.
+docs/art/rigs/camper-iso-kit/camperInteriorRig.js                    text eol=lf
+docs/art/rigs/camper-iso-kit/camperInteriorRig.clipper.interior.json  text eol=lf linguist-language=json linguist-generated
+
+# The camper lot's small shed rig and its sidecar: the sidecar stamps the rig's LF sha256 and the generator
+# compares the committed file byte for byte, so a CRLF checkout would drift both for line endings alone.
+docs/art/rigs/small-shed-kit/smallShedRig.js                        text eol=lf
+docs/art/rigs/small-shed-kit/smallShedRig.lot_shed.gameplay.json    text eol=lf linguist-language=json linguist-generated

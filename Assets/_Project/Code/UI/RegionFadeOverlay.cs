@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.UI
 {
@@ -42,6 +43,8 @@ namespace HiddenHarbours.UI
         private float _elapsed;
         private bool _fading;
         private bool _subscribed;
+        private bool _loading;
+        private float _applied = -1f;   // the alpha last written, so an idle cover writes nothing per frame
 
         private void Awake()
         {
@@ -64,6 +67,7 @@ namespace HiddenHarbours.UI
         {
             if (_subscribed) return;
             SceneManager.activeSceneChanged += OnActiveSceneChanged;
+            EventBus.Subscribe<RegionTravelCover>(OnTravelCover);
             _subscribed = true;
         }
 
@@ -71,6 +75,7 @@ namespace HiddenHarbours.UI
         {
             if (!_subscribed) return;
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
+            EventBus.Unsubscribe<RegionTravelCover>(OnTravelCover);
             _subscribed = false;
         }
 
@@ -79,6 +84,10 @@ namespace HiddenHarbours.UI
         private void OnActiveSceneChanged(Scene previous, Scene next)
         {
             if (!RegionFade.ShouldCover(previous.name, next.name)) return;
+            // A SEAM crossing (ADR 0057) brings its own momentary cover, already black at this instant
+            // (GameServices.SeamCoverAlpha, owner ruling on PR 1223): no flash, no slow clear and no
+            // arrival card on top of it. Door and passage hops never set it, so they are unchanged.
+            if (GameServices.SeamCoverAlpha > 0f) return;
 
             _elapsed = 0f;
             _fading = true; // restart the single fade — a re-trigger never stacks (no double-fade)
@@ -94,22 +103,37 @@ namespace HiddenHarbours.UI
 
         private void Update()
         {
-            if (!_fading) return;
-
-            // Unscaled so the cover still clears if the world is paused (a menu/dialogue) during a hop.
-            _elapsed += Time.unscaledDeltaTime;
-            float alpha = RegionFade.AlphaAfter(_elapsed, _fadeSeconds);
-            Apply(alpha);
-
-            if (alpha <= 0f)
+            float alpha = 0f;
+            if (_loading) alpha = 1f;
+            else if (_fading)
             {
-                _fading = false; // fade always completes → no stuck-black
-                if (_arrivalLabel != null) _arrivalLabel.enabled = false;
+                // Unscaled so the cover still clears if the world is paused (a menu/dialogue) during a hop.
+                _elapsed += Time.unscaledDeltaTime;
+                alpha = RegionFade.AlphaAfter(_elapsed, _fadeSeconds);
+                if (alpha <= 0f)
+                {
+                    _fading = false; // fade always completes → no stuck-black
+                    if (_arrivalLabel != null) _arrivalLabel.enabled = false;
+                }
             }
+
+            // The seam crossing's momentary fade rides this same cover (one fade system): whichever wants
+            // more black wins, and the seam's own ramp always ends at 0, so it can never stick either.
+            alpha = Mathf.Max(alpha, Mathf.Clamp01(GameServices.SeamCoverAlpha));
+            if (alpha != _applied) Apply(alpha);
+        }
+
+        private void OnTravelCover(RegionTravelCover cover)
+        {
+            _loading = cover.IsLoading;
+            _elapsed = 0f;
+            _fading = true;
+            Apply(1f);
         }
 
         private void Apply(float alpha)
         {
+            _applied = alpha;
             if (_black != null)
             {
                 var c = _black.color; c.a = alpha; _black.color = c;

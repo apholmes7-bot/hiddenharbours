@@ -62,6 +62,16 @@ namespace HiddenHarbours.World
         [SerializeField] private SpriteRenderer _renderer;
 
         private RoutinePlan _plan;
+        private RoutineStop[] _stops = System.Array.Empty<RoutineStop>();
+
+        // ---- today, when today differs from the authored day (see IRoutineDaySource) --------------
+        private RoutinePlan _dayPlan;
+        private BuildingInterior[] _dayInteriors = System.Array.Empty<BuildingInterior>();
+        private IRoutineDaySource _dayAskedOf;
+        private int _dayAskedFor;
+        private int _dayAskedVersion;
+        private float _dayAskedSecondsPerHour;
+        private bool _dayAsked;
         private readonly ConversationHold _hold = new ConversationHold();
         private Transform _talkingTo;
         private BuildingInterior[] _blockInteriors = System.Array.Empty<BuildingInterior>();
@@ -73,11 +83,69 @@ namespace HiddenHarbours.World
         private float _nextShelterCheck;
         private bool _headingHeld;
 
+        // ---- days that leave this region (cross-region routines, owner ask 2026-11-15) -------------
+        // Null for every routine that never leaves its region: those villagers run exactly the code
+        // they always did, and none of the fields below is ever touched for them.
+        private RoutineItinerary _itinerary;
+        private RoutinePlan _legPlan;
+        private BuildingInterior[] _legInteriors = System.Array.Empty<BuildingInterior>();
+        private int _legPlanFor = int.MinValue;
+        private bool _legDayLeaves;
+        private bool _legsToday;
+        private bool _away;
+        private bool _onCrossing;
+        private bool _legReported;
+
         /// <summary>The routine this villager keeps. For tests and tooling.</summary>
         public RoutineDef Routine => _routine;
 
         /// <summary>The resolved plan, or null while inert. For tests and tooling.</summary>
         public RoutinePlan Plan => _plan;
+
+        /// <summary>
+        /// The one source of varied days, or null (every day is the authored one). Set by whoever owns
+        /// conditional days; a villager asks it once per game day. Static because it is a question about
+        /// the world, not about one villager, and the villagers are baked into scenes that must not be
+        /// re-saved to learn a new reference.
+        /// </summary>
+        public static IRoutineDaySource DaySource { get; set; }
+
+        /// <summary>The plan she is living TODAY: on a day her routine leaves this region, the plan of its
+        /// blocks in this region; else the day source's answer when it gave one; otherwise
+        /// <see cref="Plan"/>. Null until she has planned.</summary>
+        public RoutinePlan Today => _legsToday && _legPlan != null ? _legPlan : (_dayPlan ?? _plan);
+
+        /// <summary>Where the cross-region resolver last put her (meaningful only when
+        /// <see cref="LeavesRegion"/>). For tests and tooling.</summary>
+        public RoutineWhereabouts Whereabouts { get; private set; }
+
+        /// <summary>True when her routine ever leaves this region (some day of it names another).</summary>
+        public bool LeavesRegion => _itinerary != null;
+
+        /// <summary>
+        /// True while the resolver puts her in ANOTHER region: she is not drawn and cannot be talked to
+        /// here, because she is somewhere else (owner ask 2026-11-15 — someone who has gone over the bar
+        /// to Nine Mile Creek is not also standing in St Peters).
+        /// </summary>
+        public bool IsAway => _away;
+
+        /// <summary>
+        /// Whether a person whose whereabouts are <paramref name="w"/> is present in
+        /// <paramref name="regionId"/>. The whole presence rule, pure: present exactly where the resolver
+        /// says, so one person can never be shown in two regions or vanish from all of them.
+        /// </summary>
+        public static bool IsPresentIn(in RoutineWhereabouts w, string regionId) =>
+            !string.IsNullOrEmpty(regionId) && w.RegionId == regionId;
+
+        /// <summary>True on a day the day source changed.</summary>
+        public bool IsVariedToday => _dayPlan != null;
+
+        /// <summary>Her authored day as resolved stops (jittered hours, real stations). What a day source
+        /// varies. Empty until she has planned. Do not write to it.</summary>
+        public RoutineStop[] AuthoredStops => _stops;
+
+        /// <summary>The lane network her walks are routed on.</summary>
+        public RoutineLanes Lanes => _lanes;
 
         /// <summary>The pose last written onto the transform. For tests and tooling.</summary>
         public RoutinePose Pose { get; private set; }
@@ -110,11 +178,13 @@ namespace HiddenHarbours.World
         public bool TryHoldForConversation(Transform player)
         {
             if (_plan == null) return false;
+            // Away, or out on a crossing: there is nobody here to stop, or they keep going over the bar.
+            if (_away || _onCrossing) return false;
 
             RoutinePose pose = Pose;
             Vector2 here = transform.position;   // where she VISIBLY is, which is the spot she must keep
             if (!_hold.TryBegin(here, player != null ? (Vector2)player.position : here,
-                                _plan.InterruptibleAt(pose.BlockIndex), pose.Shelter, pose.BlockIndex))
+                                Today.InterruptibleAt(pose.BlockIndex), pose.Shelter, pose.BlockIndex))
                 return false;
 
             _talkingTo = player;
@@ -146,6 +216,8 @@ namespace HiddenHarbours.World
             if (_renderer == null) _renderer = GetComponent<SpriteRenderer>();
         }
 
+        private readonly FootPrintTrail _footPrints = new FootPrintTrail();
+
         void OnEnable()
         {
             // Re-plan on every enable rather than caching across one: a region that unloads and comes back
@@ -163,6 +235,7 @@ namespace HiddenHarbours.World
             // overlay is per-conversation state and the conversation is over the moment she is gone.
             _hold.Cancel();
             _talkingTo = null;
+            _footPrints.Reset();
 
             // Hand the facing back, so a villager who is disabled mid-stand does not come back pinned to a
             // stance nobody asked for (IsoCharacterSprite keeps the held direction, which is what we want).
@@ -185,8 +258,18 @@ namespace HiddenHarbours.World
             if (_plan == null) return;
 
             float secondsPerGameHour = GameServices.SecondsPerDay / RoutineSchedule.HoursPerDay;
-            RoutinePose pose = _plan.SampleAt(clock.HourOfDay, secondsPerGameHour);
+
+            // A day that leaves this region is planned from its blocks HERE; the day source (the beach on
+            // a fine evening) is not asked on it, because the day is already a different day.
+            _legsToday = _itinerary != null && RefreshLegDay(clock.DayIndex);
+            if (_legsToday) { _dayPlan = null; _dayInteriors = System.Array.Empty<BuildingInterior>(); _dayAsked = false; }
+            else RefreshDay(clock.DayIndex, secondsPerGameHour);
+
+            RoutinePlan today = Today;
+            RoutinePose pose = today.SampleAt(clock.HourOfDay, secondsPerGameHour);
             Pose = pose;
+
+            if (_itinerary != null && UpdateLegs(clock, secondsPerGameHour)) return;
 
             // ⭐ THE OVERLAY, AND WHERE IT SITS. The pose above is the clock's answer and is computed
             // identically whether or not anybody is talking to her — that is rule 5 kept intact. What a
@@ -196,11 +279,17 @@ namespace HiddenHarbours.World
             // SCALED delta, deliberately — a paused game stops the whole village, and a villager
             // hurrying back onto her day while the world is frozen would be the one thing on screen
             // still moving. (The BUBBLE fills on UNSCALED time, because reading is not simulation.)
-            Vector2 drawn = _hold.Step(pose.Position, Time.deltaTime, _plan.CatchUpSpeedMetresPerSecond);
+            Vector2 drawn = _hold.Step(pose.Position, Time.deltaTime, today.CatchUpSpeedMetresPerSecond);
 
             // The position. Z is left alone — the Y-sort owns the draw order and nothing here is 3D.
             Vector3 p = transform.position;
             transform.position = new Vector3(drawn.x, drawn.y, p.z);
+
+            // Boot prints (GroundPrintMade) only while she is OUTDOORS by the clock (or held in a talk
+            // outdoors); indoors or away she lays none and her trail restarts at the door.
+            RoutineShelter printShelter = _hold.IsActive ? _hold.Shelter : pose.Shelter;
+            if (printShelter == RoutineShelter.Outdoors) _footPrints.Track(drawn);
+            else _footPrints.Reset();
 
             ApplyFacing(pose);
 
@@ -232,8 +321,36 @@ namespace HiddenHarbours.World
 
             _planned = true;
             _plannedSeed = env.WorldSeed;
-            _plan = RoutinePlanner.Build(_routine, _stations, _lanes, _plannedSeed,
-                                         out _blockInteriors, out string problem);
+            _dayPlan = null;
+            _dayInteriors = System.Array.Empty<BuildingInterior>();
+            _dayAsked = false;
+            _plan = null;
+            _blockInteriors = System.Array.Empty<BuildingInterior>();
+
+            // Resolve, then build — the two halves of RoutinePlanner.Build, kept apart here so the
+            // resolved stops are on hand for a day source to vary (the hours in them are already this
+            // person's own, so a varied day keeps every untouched block exactly where it was).
+            _stops = RoutinePlanner.ResolveStops(_routine, _stations, _lanes, _plannedSeed,
+                                                 out string problem);
+            if (_stops != null)
+                _plan = RoutinePlanner.BuildFromStops(_routine.Id, _stops, _lanes,
+                                                      _routine.WalkSpeedMetresPerSecond,
+                                                      _routine.CatchUpSpeedMetresPerSecond,
+                                                      out _blockInteriors, out problem);
+            else
+                _stops = System.Array.Empty<RoutineStop>();
+
+            // A routine that ever leaves this region gets the cross-region resolver; one that never does
+            // gets nothing new at all.
+            _itinerary = _plan != null && _routine.SpansRegions ? new RoutineItinerary(_routine) : null;
+            _legPlan = null;
+            _legInteriors = System.Array.Empty<BuildingInterior>();
+            _legPlanFor = int.MinValue;
+            _legDayLeaves = false;
+            _legsToday = false;
+            _away = false;
+            _onCrossing = false;
+            _legReported = false;
 
             // The skin and the talk point are looked up HERE rather than in Awake: a builder (or a test) may
             // add either after this component, and Awake would have cached the null forever. This is the
@@ -250,6 +367,150 @@ namespace HiddenHarbours.World
                     "builder placed them on, which is what an islander without a routine already does — " +
                     "fix the content rather than the placement.", this);
             }
+        }
+
+        /// <summary>
+        /// Ask the day source for today, once per game day. Four compares on every other frame.
+        ///
+        /// <para>Asked from <c>Update</c> rather than on an event so the answer is there on the first
+        /// frame of the day: the pose at 00:00 is sampled from the new day's plan, never from
+        /// yesterday's for a tick. A varied day is expected to END where the authored one does (its last
+        /// block is never the one varied), which is what makes the midnight change of plan invisible.</para>
+        /// </summary>
+        void RefreshDay(int dayIndex, float secondsPerGameHour)
+        {
+            IRoutineDaySource source = DaySource;
+            int version = source != null ? source.Version : 0;
+            if (_dayAsked && dayIndex == _dayAskedFor && version == _dayAskedVersion &&
+                secondsPerGameHour == _dayAskedSecondsPerHour && ReferenceEquals(source, _dayAskedOf))
+                return;
+
+            _dayAsked = true;
+            _dayAskedFor = dayIndex;
+            _dayAskedVersion = version;
+            _dayAskedSecondsPerHour = secondsPerGameHour;
+            _dayAskedOf = source;
+
+            _dayPlan = null;
+            _dayInteriors = System.Array.Empty<BuildingInterior>();
+            if (source == null) return;
+
+            RoutinePlan plan = source.PlanDay(this, dayIndex, secondsPerGameHour,
+                                              out BuildingInterior[] interiors);
+            if (plan == null) return;
+            _dayPlan = plan;
+            _dayInteriors = interiors ?? System.Array.Empty<BuildingInterior>();
+        }
+
+        /// <summary>The clock's days per week, as <c>GameClock.Weekday</c> counts them.</summary>
+        static int DaysPerWeek() =>
+            GameServices.Config != null ? GameServices.Config.DaysPerWeek : (int)Weekday.Sunday + 1;
+
+        /// <summary>
+        /// Once per game day: does today's day (the ordinary one, or this weekday's) leave this region, and
+        /// if so, the plan of its blocks that are HERE. Departures come from
+        /// <see cref="RoutineLegs.DepartureHours"/>, the same hours the resolver uses, so the two agree on
+        /// when every in-region walk begins. Blocks elsewhere are left out: while she is in another region
+        /// she is not drawn, and while she is on a crossing the resolver places her. Because a crossing
+        /// leaves from and arrives at a station of this region, the plan without them still reads straight.
+        /// </summary>
+        bool RefreshLegDay(int dayIndex)
+        {
+            if (dayIndex == _legPlanFor) return _legDayLeaves;
+            _legPlanFor = dayIndex;
+            _legPlan = null;
+            _legInteriors = System.Array.Empty<BuildingInterior>();
+
+            RoutineEntry[] entries = RoutineLegs.EntriesFor(_routine, dayIndex, DaysPerWeek(), out int weekly);
+            _legDayLeaves = _routine.SpansRegionsIn(entries);
+            if (!_legDayLeaves) return false;
+
+            var deps = new float[entries.Length];
+            RoutineLegs.DepartureHours(_routine, entries, weekly, dayIndex, _plannedSeed, deps);
+
+            var stops = new System.Collections.Generic.List<RoutineStop>(entries.Length);
+            string problem = null;
+            for (int k = 0; k < entries.Length && problem == null; k++)
+            {
+                if (_routine.RegionOf(entries[k]) != _routine.RegionId) continue;
+                if (!_stations.TryFind(entries[k].StationId, out RoutineStationEntry station))
+                {
+                    problem = $"block {k} names station '{entries[k].StationId}', which this region does not declare";
+                    break;
+                }
+                stops.Add(new RoutineStop
+                {
+                    DepartureHour = RoutineSchedule.Wrap24(deps[k]),
+                    Station = station,
+                    Activity = entries[k].Activity,
+                    Interruptible = entries[k].Interruptible,
+                });
+            }
+
+            if (problem == null)
+                _legPlan = RoutinePlanner.BuildFromStops(_routine.Id, stops.ToArray(), _lanes,
+                                                         _routine.WalkSpeedMetresPerSecond,
+                                                         _routine.CatchUpSpeedMetresPerSecond,
+                                                         out _legInteriors, out problem);
+
+            if (_legPlan == null && !_legReported)
+            {
+                _legReported = true;
+                Debug.LogWarning($"[VillagerRoutine] {name}: day {dayIndex} leaves the region but its blocks " +
+                                 $"here cannot be walked ({problem}). She keeps her ordinary day's plan here " +
+                                 "and is still hidden while the resolver puts her elsewhere.", this);
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// The cross-region half of a frame. Asks the resolver where she is; hides her while that is another
+        /// region, and places her itself while she is on a crossing (or waiting at its near end). Returns
+        /// true when it has handled the whole frame, false to let the region plan draw her as always.
+        /// </summary>
+        bool UpdateLegs(IGameClock clock, float secondsPerGameHour)
+        {
+            var ctx = new RoutineLegContext
+            {
+                WorldSeed = _plannedSeed,
+                SecondsPerGameHour = secondsPerGameHour,
+                DaysPerWeek = DaysPerWeek(),
+                Gate = GameServices.CrossingGate,
+            };
+            double now = clock.DayIndex * (double)RoutineSchedule.HoursPerDay + clock.HourOfDay;
+            RoutineWhereabouts w = _itinerary.Resolve(now, ctx);
+            Whereabouts = w;
+
+            bool away = !IsPresentIn(w, _routine.RegionId);
+            bool onCrossing = !away && w.HasPosition;
+            if (away != _away || onCrossing != _onCrossing)
+            {
+                _away = away;
+                _onCrossing = onCrossing;
+                _nextShelterCheck = 0f;          // show or hide on THIS frame, not a quarter second late
+                if (away || onCrossing) ReleaseFromConversation();
+                if (_hold.IsActive) _hold.Cancel();
+            }
+            if (!away && !onCrossing) return false;
+
+            if (onCrossing)
+            {
+                Vector3 p = transform.position;
+                transform.position = new Vector3(w.Position.x, w.Position.y, p.z);
+                if (_iso != null) { _iso.HoldHeading(w.HeadingDegrees); _headingHeld = true; }
+            }
+
+            if (Time.unscaledTime >= _nextShelterCheck)
+            {
+                _nextShelterCheck = Time.unscaledTime + ShelterCheckSeconds;
+                bool visible = !away;
+                if (_renderer != null && _renderer.enabled != visible) _renderer.enabled = visible;
+                if (_talkable != null && _talkable.enabled != visible) _talkable.enabled = visible;
+
+                IEnvironmentService env = GameServices.Environment;
+                if (env != null && env.WorldSeed != _plannedSeed) _planned = false;
+            }
+            return true;
         }
 
         /// <summary>
@@ -342,15 +603,17 @@ namespace HiddenHarbours.World
         /// <see cref="ApplyShelter"/>.</summary>
         BuildingInterior InteriorFor(RoutineShelter shelter, int blockIndex)
         {
-            int n = _blockInteriors.Length;
+            BuildingInterior[] interiors = _legsToday && _legPlan != null ? _legInteriors
+                : _dayPlan != null ? _dayInteriors : _blockInteriors;
+            int n = interiors.Length;
             if (n == 0 || blockIndex < 0) return null;
 
             switch (shelter)
             {
                 case RoutineShelter.InsideDestination:
-                    return _blockInteriors[blockIndex % n];
+                    return interiors[blockIndex % n];
                 case RoutineShelter.InsideOrigin:
-                    return _blockInteriors[(blockIndex - 1 + n) % n];
+                    return interiors[(blockIndex - 1 + n) % n];
                 default:
                     return null;
             }

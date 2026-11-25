@@ -1456,10 +1456,11 @@ namespace HiddenHarbours.Tools.RigBaking
         /// stores indices.
         /// </summary>
         public static RigSkinClip ReadClip9(IRigScriptHost host, string preset, string clipName,
-                                            RigBone[] bones, out string stateKey)
+                                            RigBone[] bones, out string stateKey, string optionsJson = null)
         {
             AssertPreset9(host, preset);
-            host.Execute($"globalThis.__hhClip={KitOf(host).GlobalName}.clip({Js(clipName)},{Js(preset)});");
+            host.Execute($"globalThis.__hhClip={KitOf(host).GlobalName}.clip({Js(clipName)},{Js(preset)}," +
+                         (optionsJson ?? "undefined") + ");");
             string anim = host.EvaluateString("String(globalThis.__hhClip.anim||'')");
             if (anim.Length == 0)
                 throw new InvalidOperationException($"{KitOf(host).Title} clip '{clipName}' names no anim.");
@@ -1473,6 +1474,61 @@ namespace HiddenHarbours.Tools.RigBaking
                         "The def stores INDICES, so a permuted clip would animate the right skeleton " +
                         "with the wrong limbs and never throw.");
             stateKey = string.IsNullOrEmpty(rc.Carry) ? rc.Anim : new CharacterState(rc.Anim, null, rc.Carry).Key;
+            rc.Face = ReadFaceTrack9(host, label, rc.Frames);
+            rc.Tool = ReadToolTrack9(host, label, rc.Frames);
+            return rc;
+        }
+
+        /// <summary>
+        /// <b>One rig clip, sampled more finely, without touching the rig.</b> <paramref name="frames"/>
+        /// frames spread evenly over the first 1/<paramref name="cyclesInSource"/> of
+        /// <paramref name="clipName"/>'s loop (frame k at <c>u = k / (frames x cyclesInSource)</c>),
+        /// each one the rig's own <c>evalClip</c> pose exported by the rig's own <c>exportLocals</c>, the
+        /// two calls the rig's <c>clip()</c> makes per frame. The result is the same
+        /// <see cref="RigSkinClip"/> <see cref="ReadClip9"/> returns, looping, at <paramref name="ms"/> a
+        /// frame, with its face and tool tracks.
+        ///
+        /// <para>For a clip whose loop holds several identical cycles (the rig's <c>oars_row</c> holds two
+        /// strokes), one cycle at more frames is a finer clip of the same motion, and it loops
+        /// seamlessly exactly when the source's cycles are identical, which the caller checks.</para>
+        /// </summary>
+        public static RigSkinClip ReadSubLoopClip9(IRigScriptHost host, string preset, string clipName,
+                                                   RigBone[] bones, int frames, int cyclesInSource, double ms)
+        {
+            if (frames < 2) throw new ArgumentOutOfRangeException(nameof(frames), frames, "at least two frames");
+            if (cyclesInSource < 1) throw new ArgumentOutOfRangeException(nameof(cyclesInSource), cyclesInSource, "at least one cycle");
+            if (!(ms > 0)) throw new ArgumentOutOfRangeException(nameof(ms), ms, "a positive frame time");
+            AssertPreset9(host, preset);
+            string g = KitOf(host).GlobalName;
+            int denominator = frames * cyclesInSource;
+            // The rig's clip() loop, verbatim but for its frame count and u; toolTrack is not exported, so
+            // it is transcribed here field for field.
+            host.Execute(
+                "globalThis.__hhClip=(function(C,name,preset,n,den,ms){" +
+                "var cd=C.clipDef(name);if(!cd)return null;" +
+                "var B=C.buildOf(preset),tracks=[],prev=null;" +
+                "var tt=function(I){return I.tool?{held:!!I.tool.held,kind:I.tool.kind||null," +
+                "pitch:+(+I.tool.pitch||0).toFixed(3),yaw:+(+I.tool.yaw||0).toFixed(3)," +
+                "bend:+(+I.tool.bend||0).toFixed(4),len:I.tool.len||null,advisory:!!I.tool.advisory}:{held:false};};" +
+                "for(var k=0;k<n;k++){var u=k/den,S=C.evalClip(name,u,B),bones=C.exportLocals(S.loc,B.sk,prev);prev=bones;" +
+                "tracks.push({frame:k,u:+u.toFixed(6),ms:k*ms,bones:bones,face:Object.assign({},S.I.face),tool:tt(S.I)});}" +
+                "return{name:name,anim:cd.anim,carry:cd.carry||null,stance:cd.stance||null,build:B.key," +
+                "frames:n,ms:ms,duration:n*ms,loop:true,settle:false,mount:C.ANIM_MOUNT[cd.anim]," +
+                "pin:cd.carry?C.CARRIES[cd.carry].pin:null,bones:B.sk.bones.map(function(b){return b.id;}),tracks:tracks};" +
+                "})(" + g + "," + Js(clipName) + "," + Js(preset) + "," +
+                frames.ToString(CultureInfo.InvariantCulture) + "," +
+                denominator.ToString(CultureInfo.InvariantCulture) + "," +
+                ms.ToString("R", CultureInfo.InvariantCulture) + ");");
+            if (!host.EvaluateBool("globalThis.__hhClip !== null && globalThis.__hhClip !== undefined"))
+                throw new InvalidOperationException($"{KitOf(host).Title} has no clip '{clipName}'.");
+            string anim = host.EvaluateString("String(globalThis.__hhClip.anim||'')");
+            string label = $"{KitOf(host).Name} clip '{clipName}' ({preset}), {frames} frames over 1/{cyclesInSource} of its loop";
+            RigSkinClip rc = ReadLoadedClip(host, label, anim, bones.Length);
+            string[] order = SplitList(host.EvaluateString("globalThis.__hhClip.bones.join(',')"));
+            for (int b = 0; b < order.Length; b++)
+                if (!string.Equals(order[b], bones[b].Id, StringComparison.Ordinal))
+                    throw new InvalidOperationException(
+                        $"{label} packs bone {b} as '{order[b]}' and the skeleton has '{bones[b].Id}'.");
             rc.Face = ReadFaceTrack9(host, label, rc.Frames);
             rc.Tool = ReadToolTrack9(host, label, rc.Frames);
             return rc;

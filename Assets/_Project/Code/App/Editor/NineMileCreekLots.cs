@@ -141,7 +141,8 @@ namespace HiddenHarbours.App.Editor
                                 IReadOnlyList<HiddenHarbours.Boats.BoatOwnerDef> owners)
         {
             var root = new GameObject(RootName);
-            int placed = PlaceShipyard(root, terrain);
+            // H6 PR 3, Ruling 26: the delivered yard is placed only by the layer refresh.
+            int placed = 0;
 
             var reserved = new List<ReservedLot>(ReservedLots());
             reserved.AddRange(OwnerLots(owners));
@@ -149,74 +150,6 @@ namespace HiddenHarbours.App.Editor
 
             ReportTheGaps(reserved);
             return placed;
-        }
-
-        /// <summary>
-        /// Draw Harris &amp; Sons. One sprite: the shipyard kit's site presets are whole-yard composites
-        /// (the contract's own <c>sites</c> list), so a yard is one picture rather than a set of parts —
-        /// which is why the tier the owner picked decides how much ground it takes.
-        ///
-        /// <para>⚠ The kit is registered COUNTER-CLOCKWISE, measured against <c>wharfIsoRig</c> by the
-        /// contract's own calibration note — so the facing is resolved through
-        /// <see cref="IsoPackSprites.FacingForHeading"/> with the family's declared convention and never
-        /// by reading the sheet's <c>N NE E SE…</c> label order as a compass.</para>
-        /// </summary>
-        static int PlaceShipyard(GameObject root, ITidalTerrain terrain)
-        {
-            Vector2 at = new Vector2(NineMileCreekMainland.ShipyardPos.x,
-                                     NineMileCreekMainland.ShipyardPos.y);
-
-            if (terrain != null)
-            {
-                float ground = terrain.ElevationAt(at);
-                if (ground <= NineMileCreekMainland.SpringHighWater)
-                {
-                    Debug.LogError(
-                        $"[NineMileCreekLots] {ShipyardName} is sited at {at} where the ground is " +
-                        $"{ground:0.00} m — at or below spring high water " +
-                        $"({NineMileCreekMainland.SpringHighWater:0.0} m). A boatyard floods at its slip, " +
-                        "not through its office. Move the site; do not lower the tide.");
-                    return 0;
-                }
-            }
-
-            // The yard turns its slip to the water it launches into — the basin, south of it. Derived from
-            // the quay rather than typed, so re-siting either turns the yard with it.
-            float heading = IsoPackSprites.HeadingOf(
-                NineMileCreekWharf.DeckFootprint().center - at);
-            int facing = IsoPackSprites.FacingForHeading(ShipyardFamily, heading);
-            Sprite sprite = IsoPackSprites.Facing(ShipyardFamily, ShipyardTier, facing);
-
-            if (sprite == null)
-            {
-                Debug.LogWarning(
-                    $"[NineMileCreekLots] {ShipyardName} ('{ShipyardTier}' facing {facing}) has no sprite " +
-                    $"at {IsoPackSprites.SheetPath(ShipyardFamily, ShipyardTier)} — the boatyard's LOT is " +
-                    "still reserved and correct, but the yard is undrawn. Re-run after the shipyard pack " +
-                    "slices.");
-                return 0;
-            }
-
-            var go = new GameObject($"Shipyard_{ShipyardTier}");
-            go.transform.SetParent(root.transform, worldPositionStays: false);
-            go.transform.position = new Vector3(at.x, at.y, 0f);
-            var sr = go.AddComponent<SpriteRenderer>();
-            sr.sprite = sprite;
-            go.AddComponent<YSortSprite>();
-
-            // Solid, like every other building in this region (the creek's standing rule after the owner's
-            // "boat sails through the buildings" note). The size is the yard's own ground square, not the
-            // drawn cell — the drawn size is the iso projection of it and is half again as wide.
-            var box = go.AddComponent<BoxCollider2D>();
-            box.size = new Vector2(NineMileCreekMainland.ShipyardSideMetres,
-                                   NineMileCreekMainland.ShipyardSideMetres);
-            box.offset = Vector2.zero;
-
-            Debug.Log(
-                $"[NineMileCreekLots] {ShipyardName} stands at {at} — the shipyard kit's '{ShipyardTier}' " +
-                $"tier (the owner's ruling), facing {facing} toward the basin it launches into, on a " +
-                $"{NineMileCreekMainland.ShipyardSideMetres:0.#} m ground square.");
-            return 1;
         }
 
         /// <summary>

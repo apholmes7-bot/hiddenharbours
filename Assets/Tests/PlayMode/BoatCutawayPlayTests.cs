@@ -223,10 +223,15 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         /// <summary>
-        /// <b>At the helm, exterior only</b> — the ruling's second sentence, and the one that needs a
-        /// second input. Taking the wheel moves nobody: the cabin publishes nothing, so a gate driven
-        /// by <c>CabinSignals</c> alone would leave the house standing open around a player at the
-        /// helm.
+        /// <b>At the helm of a hull whose art names no helm station, exterior only</b> — the 2026-08-26
+        /// ruling's second sentence, and the one that needs a second input. Taking the wheel moves
+        /// nobody: the cabin publishes nothing, so a gate driven by <c>CabinSignals</c> alone would
+        /// leave the house standing open around a player at the helm.
+        ///
+        /// <para>Since 2026-11-14 a wheel that stands in a room opens that one room instead
+        /// (<c>BoatHelmRoomTests</c>, EditMode). This rig hands the cutaway no deck def, so it has no
+        /// station to place and keeps the closed house: the case every hull without a measured station
+        /// is in.</para>
         /// </summary>
         [Test]
         public void TakingThisHullsHelmWhileBelow_ClosesHerUp_AndGivingItUpOpensHerAgain()

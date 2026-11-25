@@ -69,6 +69,10 @@ namespace HiddenHarbours.Tests.PlayMode
         /// letting a leg quietly go short and redden the assertion after it.</summary>
         private const int FrameSafetyCap = 20000;
 
+        /// <summary>The outward normal of her starboard forward taper, (0.225, 1.117) to (0.139, 1.366)
+        /// in her walk file: mostly abeam, a little toward the bow.</summary>
+        private static readonly Vector2 ShoveIntoHerForwardQuarter = new Vector2(0.945f, 0.326f);
+
         private const string DoryDeckPath = "Assets/_Project/Data/Boats/Decks/DoryIso.asset";
 
         private sealed class FixedTide : IEnvironmentService
@@ -262,7 +266,12 @@ namespace HiddenHarbours.Tests.PlayMode
 
             // Now shove him at the rail, up where the planking has closed in.
             Vector2 beforeAbeam = _walk.DeckLocalPosition;
-            yield return WalkFor(held, new Vector2(1f, 0f), 1f, "hard to starboard");
+            // Square INTO her forward quarter, not straight abeam. Her lane runs parallel at 0.225 m
+            // to 1.117 m forward and closes over the next quarter metre; a shove straight abeam slides
+            // him aft along that short taper to the shoulder, where her box and her planking are the
+            // same line and the harness below (rightly) refuses to judge. Pushed along the taper's own
+            // normal he stays at the station where her planking met him.
+            yield return WalkFor(held, ShoveIntoHerForwardQuarter, 1f, "hard to starboard");
 
             Vector2 at = _walk.DeckLocalPosition;
             Assert.Greater(at.x - beforeAbeam.x, 0.02f,

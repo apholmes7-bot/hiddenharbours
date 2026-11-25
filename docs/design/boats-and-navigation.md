@@ -61,6 +61,7 @@ Eight tiers, **a branching tree near the top** (canon): the **Lobster Boat** (sh
 ### 1.2 Per-tier feel & role (prose, for the agents writing them)
 
 - **Tier 0 — The Dory.** Uncle's. Oars + a cranky small outboard. Tiny hold, inshore only, *tender* (rolls easily), spray comes aboard in a Popple. Every trip in the dory is intimate and a little precarious — this is where P1+P5 are taught at low stakes. Sentimental; never sold outright (kept as a keepsake/tender even after you move up).
+  - *At her tiller.* Once her motor is fitted (the `DoryOutboard` hull) she gains a stern bench and a transom motor board, and the skipper sits on that bench to port of the tiller, one hand on its grip. The tiller and his arm follow the steering; he sits up a little as the throttle opens. Rowed, she has no bench and he rows from the thwart as before. Seat, braces, grip and lean are data on her visual (`BoatVisualDef.Tiller`). Under power her oars are stowed (owner 2026-11-22): out of the tholes, lying fore and aft inside the boat on the two rowing thwarts, blades forward, handles ending forward of the tiller seat. Cut the motor and they are back in the tholes. Where they lie is data on her visual (`BoatVisualDef.OarStow`).
 - **Tier 1 — Punt / Skiff.** First *purchase*; the "I'm a real fisher now" beat. A bit more hold and reach, a real (if small) outboard, slightly drier. Still inshore. The proof you can earn and spend (P2 onramp).
 - **Tier 2 — Cape Islander.** The iconic Maritime workboat and the **hub of the tree**. Real range, a proper hold, can mount lines *and* traps, a wheelhouse out of the weather. The first boat that feels like a *career*. From here you choose a lane.
 - **Tier 3 — Lobster Boat (specialist).** Wide working deck, trap-hauler mount, stable. Optimized for shellfish grounds (the Sunkers, inshore reefs). A *complete life* if you want it — and a cash engine for the commerce climb. Parallel to, not above, the Dragger.
@@ -154,6 +155,35 @@ Concrete skill expressions the model produces *for free*:
 - **Using the tide:** ride a fair tide (current with you) to save fuel/time; **time the slack** to cross Fundy Rips (the 3 m/s rip from [`time-tides-weather.md`](time-tides-weather.md) §3.7 will overpower a small boat at mid-tide — you *must* go near slack).
 - **Lee shores & docking:** wind pins you onto or off a wharf; docking a big boat in a cross-wind/cross-tide is a genuine skill moment (and why the Tanker gets tug assist). A **gentle docking assist** (auto-fender / snap when slow & close) keeps it cozy for small boats; big boats stay manual-ish for the satisfaction.
 - **Windage matters by size:** the high-sided Packet/Tanker get blown around far more than a low dory for the same wind — different boats, different problems (P2).
+
+#### 2.5.1 The wind and the sea turn her head (owner ask 2026-11-17)
+
+Before this, the wind shove acted at the centre of mass (no lever, so no turn) and the seakeeping
+slew read the sea at the hull's middle only (a passing wave swung her both ways and averaged out),
+so on a rough day the heading barely moved. The **sea yaw** (`SeaYawMath`, dials on
+`GameConfig.SeaYaw`) adds the two turns a real hull feels:
+
+- **Wind:** above `CalmWindMetresPerSecond` every gust in the weather model's wind turns her, most
+  with the wind on her beam, none dead ahead or astern. An unsailed hull's bow **blows off
+  downwind** (`HullWindYawBias`); with her sails drawing, `BoatHullDef.SailWeatherHelm` brings her
+  **up into the wind** instead (weather helm, the sloops ship 2.5); at anchor she lies **head to
+  wind** (`AnchoredWindYawBias`). An unmanned sailing hull is left to the sail drive's own round-up.
+- **Waves:** the difference in the sea's beam slope under her **bow and her stern**, read from the
+  same trains as the swell force (SEE==FEEL applies). A beam sea shoves her bodily; a quartering or
+  **following sea** turns her, and running before it she meets the waves slowly, so each swing lasts
+  long enough for the **stern to wander**.
+
+**Every strength is a share of her own full helm** (rudder at full authority; one oar at full pull
+for a rowed hull), scaled per hull from existing data: wind by `WindExposure` over `MassKg` (to the
+`MassExponent`), waves by the seakeeping response (liveliness over mass factor). The dory is the
+reference hull; a cape islander feels about a quarter of the dory's wind turn, a tanker under
+a twentieth. This is the TURN, as a share of her helm; the high-sided hulls above still DRIFT more
+in absolute terms (the shove at the centre is unchanged). The sum is capped at `MaxHelmShare`
+(0.45, under the autopilot's 0.6 `MaxHelm`), so with way on **the rudder always wins** and the
+autopilot holds. Both turns fade with the seakeeping exposure ramp (sheltered water turns nothing),
+calm air and a glass sea turn nothing, and a hull with a **mooring line out** is held by it: the
+dock is unchanged. Deterministic: the wind and waves are the sim's own (worldSeed, gameTime)
+fields, nothing is random and nothing is saved. `Enabled` off restores the previous handling.
 
 ### 2.6 Speed, range & fuel
 
@@ -537,6 +567,7 @@ When stability fully fails (sustained broachRisk → knockdown → capsize) or t
 | **Compass** | Reliable heading even with no landmarks (fog/night). | Basic fog/night nav; baseline for The Smother. |
 | **Depth sounder** | Live **under-keel clearance** + shoaling alarm. | **Grounding warning** (§3.1) — read the bottom before you hit it. |
 | **Radar** | Detects **terrain & other boats through fog** (a sweep overlay). | **Collisions in fog** (§3.4); makes **The Smother** navigable (canon: navigate by instrument). Huge P5→P2 payoff. |
+| **Loran-C receiver** | Two **time differences** and a blink lamp; stored "numbers" with bearing/distance to them. Repeatable, not exact. ([`loran-navigation.md`](loran-navigation.md)) | Finding a ground again in fog before GPS; the 1982 wheelhouse's position fix. Feeds a later autopilot. |
 | **GPS / chartplotter** | Your **position + course-over-ground** on a chart even blind; waypoints/routes. | Confident navigation in zero visibility; supports the Smother and long Shipping-Lane runs; enables **route automation** for crewed/fleet boats (P4). |
 | **Marine radio** | Live **weather warnings at sea** ([`time-tides-weather.md`](time-tides-weather.md) §4.7) **and** the **tow call** (§3.7). | Early storm warning offshore; the paid rescue net. |
 | **Barometer (boat-mounted)** | On-boat pressure trend. | Early weather telegraph without returning to the cottage instrument. |
@@ -888,6 +919,37 @@ The on-foot ⇄ aboard control loop is the `ControlSwitcher` (Player lane); seve
 - **Board from anywhere** within reach of the boat (`WithinBoardReach()` — a pure proximity radius), not only
   at a dock zone (owner playtest). So you can step aboard a boat nudged up to a beach, not just one at the
   wharf. (The damaged-dory repair gate still applies on top, P5.)
+- **Only ladders, and rails stop you jumping in** (owner, 2026-11-13: *"boarding the tanker player can
+  easily climb up massive walls which is wrong, should only be ladders, railings should stop players from
+  jumping in, maybe different on the fishing vessels"*). The rule is Core's pure `BoardingRuleMath`, and
+  every input is data. There are **two verbs with two rules**. **Climbing aboard from the water** is
+  restricted when her `BoatDeckDef.BoardingFreeboardMetres` (the top of her side above the water at the
+  lowest point of the sheer — her lowest gunwale cleat minus her hull mesh's resting draft) is over
+  `GameConfig.ClimbAnywhereMaxFreeboardMetres` (1.0 m), **or** her `BoatDeckDef.RailsBlockTheSide` is set,
+  **or** her `BoatDeckDef.ClimbAboardOnlyAtBoardingPoints` is set (owner, same day: *"Side dragger and
+  stern trawler, cape islander and lobster boats should have stern or side ladders. They would definitely
+  be too tall to climb"* — the dragger and the trawlers are over the limit by measurement; the cape
+  islander and the lobster boats carry the flag). **Going over the side** is restricted by
+  `RailsBlockTheSide` alone (tanker, packet, both yachts): on the fishing hulls you still jump in anywhere.
+  A restricted verb happens only within reach of one of her `BoatDeckDef.BoardingPoints` (ladder /
+  platform / gate; reach per point, else `GameConfig.BoardingPointReachMetres`); with no points it is
+  refused and she is boarded from a wharf or gangway. The dory, the punt, the skiffs and the zodiacs are
+  climb-anywhere exactly as before. The working boats' ladder points are data only so far — the ladder
+  art is owed and is drawn at the authored point. **No hull is dock-only** (owner, 2026-11-13:
+  *"Boardinnf some boats from dock only is too hard maybe all boats need a ladder"*): every hull whose
+  side is over the limit carries at least one boarding point in its deck asset, stern by default — the
+  coastal packet got hers at the transom on that ruling. The tanker was the last exception and is one no
+  longer (seat ruling, 2026-11-14): she carries two points amidships, `pilot_ladder_starboard` and
+  `pilot_ladder_port`, and no stern ladder (a ten metre climb). No hull is dock-only now. It stays
+  per-hull data, never a code rule;
+  `BoardingRuleTests.EveryHull_CanBeBoardedFromTheWater` holds it. The rule is
+  asked only when the walker's water state is not `Dry`, so the boarding move from a wharf or beach and the
+  step ashore are untouched; a hull with no deck Def (the two sloops) is unmeasured and keeps the old
+  behaviour. Refused, the popup and the press say **"Find the ladder"** on a hull that has one, and
+  *"Too high to climb — board her from a wharf"* from the water under a hull that has none (no shipped
+  hull today); at a railed edge "Go over the side" is not offered. The four
+  fields are the **authored** block of the otherwise-imported `BoatDeckDef` — the importer never assigns
+  them — and `BoardingRuleTests` holds the per-hull table.
 - **Swim up to a hull and climb aboard** (owner, 2026-09-02). The boarding gate above was never the thing
   stopping you doing this from the water — `WithinBoardReach()` is pure proximity with no swim check — the
   **boat-only soft wall** was: a hull lies in exactly the water a person may not enter, so the rule that
@@ -914,8 +976,8 @@ The on-foot ⇄ aboard control loop is the `ControlSwitcher` (Player lane); seve
 - **Hold / root the mooring line** — the **rope / mooring mechanic** (`BoatMooring`, Boats lane; P1 + P5).
   This *replaces* the earlier auto-tie-on-disembark with the owner's refinement:
   - **On disembark the player HOLDS the rope** (`Hold(player)`): the line is made fast to the **player's own
-    position**, so the boat is tethered to the player and trails them on the leash as they move. A quick
-    hop-off never loses the boat (P5 cozy).
+    position**. At the painter's length the player's walk stops; walking inland cannot drag the hull
+    up the shore. Drop the line or make fast to a fitting before walking away (P5 cozy).
   - **Press `Q` to ROOT the line to the ground** at the player's feet (`ToggleMooring` → `Root`): the boat
     now tethers to that **fixed spot** and the player is free to roam. **`Q` again** takes the line back in
     hand (`Hold`). Re-boarding (`E`) **stows** the rope (the helm takes over).
@@ -930,8 +992,9 @@ The on-foot ⇄ aboard control loop is the `ControlSwitcher` (Player lane); seve
     (`ConstrainToRope`) guarantees she can never sit more than the tiny `give` past rope-length (the
     "inextensible" part). The greybox `LineRenderer` draws the **slack rope as a drooping catenary** that
     straightens and goes taut only at the limit (`Slack01` / `SampleRopeCurve`).
-  - **Tunables are owner-editable serialized fields, no magic numbers**: rope length, the firm-limit give /
-    stiffness / damping, and the slack-sag amount on `BoatMooring`. Drift uses only the deterministic
+  - **Tunables are data**: painter length is `BoatHullDef.PainterLengthMeters` (authored on the dory;
+    existing component length remains the fallback for older hull data). Firm-limit give / stiffness /
+    damping and slack sag remain on `BoatMooring`. Drift uses only the deterministic
     `EnvironmentSample`; the tether is a pure physics constraint (firm limit + damping + positional clamp) —
     nothing saved, no RNG (CLAUDE.md rule 5). The constraint + drift + curve math are pure static helpers,
     EditMode-tested (slack-inside vs firm-limit; held-at-the-rope's-end vs untethered-runs-away;
@@ -982,6 +1045,11 @@ interface the tether reads a live `Position` from each tick:
 | `HeldByPlayer` | the player's hand (`TransformAnchor`) | no |
 | `RootedToGround` | a fixed ground spot (`FixedAnchor`) | no |
 | `MadeFastToCleat` | a shore cleat, with the other end on one of the hull's own cleats (`CleatAnchor`) | **yes** |
+
+The held painter restrains on-foot movement through Core's `IWalkMovementConstraint`, so the walk
+motor never depends on Boats. After each physics step an unmanned, tethered hull is checked against
+the existing terrain depth law: afloat she cannot enter water shallower than her draught; an ebb
+may leave her aground in place, but she cannot move onto higher bottom. No terrain or art changes.
 
 #### The cleat moor (M2-38, built 2026-08-06)
 
@@ -1429,6 +1497,57 @@ ask, 2026-08-06.) Built as **one rule the player can read off the water**, not a
   the switch and the key landing on the same hook).
 
 ---
+
+### 9.12 Cabin doorway reversals
+
+The door's authored crossing settle prevents repeated inside/outside changes while the player
+remains in its measured doorway band. On the first step out of that band, with the key held through
+the door, an unambiguous position on either side of the wall decides the cabin state immediately,
+even before the settle expires. A quick step in and turn back must leave a player standing on deck
+counted outside. The crossing tick retains its band contact so a next-tick reversal also works.
+An idle sample or a key pointing away cannot cross her, inside or outside the band: leaving the
+doorway's disc alone does not undo an entry or consume the next intended crossing.
+
+At the wall line itself the settle and held-key rules still apply. Door-open, floor-height, entry
+policy and entry-landing checks remain required. The same hull-local decision uses every door's
+measured width; no additional tuning is needed. `BoatCabinPassageDecisionTests` covers the pure
+decision for the 0.529 m opening and a wide opening, in both directions, and
+`BoatCabinDoorWalkthroughTests` pins its connection to the cabin state.
+
+### 9.13 Autopilot, slice 1: heading hold (2026-11-16)
+
+The owner ruled (2026-11-15) that set-a-course becomes an **autopilot, a purchased tool offered on
+recommended hulls** (P4: earn it, then automate it). Slice 1 holds a heading; it does not follow a
+route.
+
+- **Who has one:** a hull whose `BoatHullDef.AutopilotOffered` is true and that has a rudder (an engine
+  helm or a sail plan). The owner ruled (2026-11-16): *available on anything without an outboard,
+  an expensive upgrade.* So it is offered on every inboard, sterndrive (bowrider, express cruiser,
+  go-fast), jet (the jet ski) and sailing hull, and on no outboard hull (punts, skiffs, Zodiacs, the
+  outboard dory, the yacht tender) and not on the rowed dory (no rudder). No hull field names the
+  drive, so each hull's rig source decides it; `HeadingHoldAutopilotTests` holds the fleet to the
+  rule. The purchase, a high-priced upgrade sold at the NMC boat and gear wholesaler, is slice 2
+  (with the save step). The flag says **offered**, not fitted: once the purchase exists, a helm has the autopilot when
+  her Def offers it AND the save says it was bought for that boat.
+- **The switch:** at the helm, `Helm/Autopilot` (P, or Y on a pad) holds the heading she is on
+  (`BoatController.ToggleAutopilot`). Engaging is refused under the same rules that end a hold.
+- **The controller:** `HeadingHoldAutopilot`, a PID on the wrapped heading error with a yaw-rate
+  damping term and a clamped integral, writing the same helm (−1..1) a steer key writes, on the fixed
+  step before the drive reads it. The hull's own way-scaled rudder does the turning: no new physics.
+  Tuning: `GameConfig.HelmAutopilot`.
+- **It hands the helm back on:** a steer key or stick past `SteerOverrideThreshold`, a grab of the
+  wheel, the switch again, leaving the helm (or any `Stop`), a hull swap, going aground, a knock
+  harder than `CollisionMinImpactMetresPerSecond`, or way ahead below `MinWayMetresPerSecond`
+  (astern counts as below).
+- **What the player sees:** the dash wheel, which mirrors the helm, turns by itself while it holds.
+  There is no lamp or text yet: the helm band has no generic switch lamp to reuse.
+- **The signal:** each engage and each hand-back publishes the Core `AutopilotStateChanged`
+  (`Engaged`, and the Core `AutopilotDisengage` reason, append-only), so a lamp, a click or a chime
+  can answer it without reading the boat's controller. A refused press publishes nothing.
+- **Saved:** never. A loaded game starts with it off.
+- **Owed by slice 2 (route following):** the hold must survive leaving the helm, the unmanned tick
+  and region crossings (`RegionTravelCoordinator` calls `Stop()` at every crossing), so its state
+  must live outside a manned `BoatController`. Saving a route is a later save step.
 
 ## 10. Open questions
 

@@ -108,7 +108,7 @@ MonoBehaviour:
     Kit: wharfDecor
     Piece: lanternPost
     State: 
-    At: {x: 184.5, y: 0.5}
+    At: {x: 184.5, y: 5.75220215}
     Z: 5.35
     StandsOn: deck
     MountHost: 
@@ -117,7 +117,7 @@ MonoBehaviour:
     Foot: {x: 0, y: 0}
     Dir: 4
     HasSortY: 1
-    SortY: 0.5
+    SortY: 5.75220215
     Layer: 
     Walk: 
     Collider: 
@@ -132,7 +132,7 @@ MonoBehaviour:
     Kit: wharfDecor
     Piece: lanternPost
     State: 
-    At: {x: 211.5, y: 0.5}
+    At: {x: 211, y: 5.75220215}
     Z: 5.35
     StandsOn: deck
     MountHost: 
@@ -141,7 +141,7 @@ MonoBehaviour:
     Foot: {x: 0, y: 0}
     Dir: 4
     HasSortY: 1
-    SortY: 0.5
+    SortY: 5.75220215
     Layer: 
     Walk: 
     Collider: 
@@ -156,7 +156,7 @@ MonoBehaviour:
     Kit: wharfDecor
     Piece: trapStack
     State: 
-    At: {x: 187.3, y: 2.05}
+    At: {x: 187.3, y: 5.50220215}
     Z: 5.35
     StandsOn: deck
     MountHost: 
@@ -186,7 +186,7 @@ MonoBehaviour:
     Kit: wharfDecor
     Piece: toteStack
     State: 
-    At: {x: 190.1, y: 2.2}
+    At: {x: 190.1, y: 5.45220215}
     Z: 5.35
     StandsOn: deck
     MountHost: 
@@ -212,7 +212,7 @@ MonoBehaviour:
     Kit: wharfDecor
     Piece: dockCart
     State: 
-    At: {x: 193.2, y: 1.5}
+    At: {x: 193.2, y: 5.50220215}
     Z: 5.35
     StandsOn: deck
     MountHost: 
@@ -238,7 +238,7 @@ MonoBehaviour:
     Kit: wharfDecor
     Piece: baitBarrel
     State: 
-    At: {x: 205.9, y: 2}
+    At: {x: 205.9, y: 5.50220215}
     Z: 5.35
     StandsOn: deck
     MountHost: 
@@ -262,7 +262,7 @@ MonoBehaviour:
     Kit: wharfDecor
     Piece: ropeCoil
     State: 
-    At: {x: 206.5, y: -2}
+    At: {x: 206.5, y: 3.28345215}
     Z: 5.35
     StandsOn: deck
     MountHost: 
@@ -286,7 +286,7 @@ MonoBehaviour:
     Kit: seagull
     Piece: perch
     State: 
-    At: {x: 213.5, y: 2.5}
+    At: {x: 213, y: 5.75220215}
     Z: 5.72
     StandsOn: mount
     MountHost: context.wharf
@@ -295,7 +295,7 @@ MonoBehaviour:
     Foot: {x: 0, y: 0}
     Dir: 5
     HasSortY: 1
-    SortY: 2.4
+    SortY: 5.65220215
     Layer: 
     Walk: 
     Collider: 

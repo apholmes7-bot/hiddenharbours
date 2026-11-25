@@ -492,6 +492,8 @@ The prototype also framed each gate at the default on-foot rung: 15 × 8.44 unit
 - **The cream saltbox:** two of the cannery's four hands.
 - **The harbour gable:** the other two. Housing all four answers Q8 with "on the island". That is yours to rule (decision 4).
 - **The white gable:** a family with two school-age children, so the school gets its pupils. The children need Q6 (`:645-646`): do children exist as NPCs? (`BoyBuild` and `GirlBuild` are baked and unused.) If Q6 is no, the white gable is a couple's home.
+- **Q6: RULED 2026-11-13.** Children live in St Peters (the owner answered *"Yes, your leans"* to the seat's leans).
+- **Q8: RULED 2026-11-13.** The cannery hands live on the island (the same answer).
 
 **Their Defs, proposed (names only; NPC content is V2).**
 - The ids follow `npc.first_last` and `routine.first_last`.

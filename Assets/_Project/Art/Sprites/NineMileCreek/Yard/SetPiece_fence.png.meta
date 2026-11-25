@@ -1,0 +1,344 @@
+fileFormatVersion: 2
+guid: 5638671eb558c944fa3db91a6ed9ae4b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5977864100619124752
+    second: SetPiece_fence_0
+  - first:
+      213: 5793648431571753199
+    second: SetPiece_fence_1
+  - first:
+      213: 1223731664253906837
+    second: SetPiece_fence_2
+  - first:
+      213: -6361346135485346950
+    second: SetPiece_fence_3
+  - first:
+      213: 6054924863687883781
+    second: SetPiece_fence_4
+  - first:
+      213: 5708353964876637649
+    second: SetPiece_fence_5
+  - first:
+      213: -430464508940048519
+    second: SetPiece_fence_6
+  - first:
+      213: -3517382984920624959
+    second: SetPiece_fence_7
+  - first:
+      213: -4333877486727300390
+    second: SetPiece_fence_8
+  - first:
+      213: -7607941830999997015
+    second: SetPiece_fence_9
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SetPiece_fence_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2505
+        width: 1218
+        height: 835
+      alignment: 9
+      pivot: {x: 0.00082101807, y: 0.46946108}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 01086f83ab3a5f250800000000000000
+      internalID: 5977864100619124752
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_fence_1
+      rect:
+        serializedVersion: 2
+        x: 1218
+        y: 2505
+        width: 1218
+        height: 835
+      alignment: 9
+      pivot: {x: 0.3538588, y: 0.605988}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe8555d6d8c276050800000000000000
+      internalID: 5793648431571753199
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_fence_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1670
+        width: 1218
+        height: 835
+      alignment: 9
+      pivot: {x: 0.5, y: 0.93772453}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59f604c07719bf010800000000000000
+      internalID: 1223731664253906837
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_fence_3
+      rect:
+        serializedVersion: 2
+        x: 1218
+        y: 1670
+        width: 1218
+        height: 835
+      alignment: 9
+      pivot: {x: 0.3538588, y: 0.605988}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7b8715c465f7b7a0800000000000000
+      internalID: -6361346135485346950
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_fence_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 835
+        width: 1218
+        height: 835
+      alignment: 9
+      pivot: {x: 0.00082101807, y: 0.46946108}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 50cfbc9451a670450800000000000000
+      internalID: 6054924863687883781
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_fence_5
+      rect:
+        serializedVersion: 2
+        x: 1218
+        y: 835
+        width: 1218
+        height: 835
+      alignment: 9
+      pivot: {x: 0.3538588, y: 0.605988}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d52aa8dfa5283f40800000000000000
+      internalID: 5708353964876637649
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_fence_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1218
+        height: 835
+      alignment: 9
+      pivot: {x: 0.5, y: 0.93772453}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97727305fcea60af0800000000000000
+      internalID: -430464508940048519
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SetPiece_fence_7
+      rect:
+        serializedVersion: 2
+        x: 1218
+        y: 0
+        width: 1218
+        height: 835
+      alignment: 9
+      pivot: {x: 0.3538588, y: 0.605988}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1c09dc4afcebf2fc0800000000000000
+      internalID: -3517382984920624959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 3fd0fd5dc124d374eba3cb163e41b5e8
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SetPiece_fence_0: 5977864100619124752
+      SetPiece_fence_1: 5793648431571753199
+      SetPiece_fence_2: 1223731664253906837
+      SetPiece_fence_3: -6361346135485346950
+      SetPiece_fence_4: 6054924863687883781
+      SetPiece_fence_5: 5708353964876637649
+      SetPiece_fence_6: -430464508940048519
+      SetPiece_fence_7: -3517382984920624959
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

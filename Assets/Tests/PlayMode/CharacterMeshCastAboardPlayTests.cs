@@ -219,8 +219,9 @@ namespace HiddenHarbours.Tests.PlayMode
                 "a skipper whose art def links no skin was given a figure presenter; they stand exactly as before " +
                 "the cast, as a sprite and nothing else");
             System.Reflection.Assembly art = typeof(CharacterFigurePresenter).Assembly;
+            // The sun caster's shadow is not a figure.
             string[] artComponents = skipper.GetComponents<Component>()
-                .Where(c => c != null && c.GetType().Assembly == art)
+                .Where(c => c != null && c.GetType().Assembly == art && !(c is SpriteShadow))
                 .Select(c => c.GetType().Name).ToArray();
             Assert.IsEmpty(artComponents,
                 $"a skipper with no skin carries Art's [{string.Join(", ", artComponents)}]");

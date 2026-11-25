@@ -1,4 +1,5 @@
 using UnityEngine;
+using HiddenHarbours.Core;   // DwellingMeshRules: the one definition of a floor outline that closes
 
 namespace HiddenHarbours.World
 {
@@ -77,6 +78,24 @@ namespace HiddenHarbours.World
         /// <c>+x</c> to the right. 0 for a centred door, which is every house.</summary>
         public readonly float DoorAcrossMetres;
 
+        /// <summary>
+        /// <b>The floor as an outline</b> (ADR 0060 section 3), model-frame metres, in order round the edge
+        /// with the closing edge implied — or null for the rectangle every sprite room uses. Held by
+        /// reference, never copied: the footprint is rebuilt every frame and must not allocate (rule 7). A
+        /// mesh dwelling's outline is its <c>DwellingMeshDef</c> level floor, never retyped.
+        ///
+        /// <para>With an outline, <see cref="Contains"/> tests the outline and <see cref="DoorWorld"/> is the
+        /// published threshold point. The rectangle helpers (<see cref="Corners"/>, <see cref="WallQuads"/>,
+        /// <see cref="DoorwayPlugQuad"/>, <see cref="PropQuad"/>) still describe the centred rectangle that
+        /// encloses the outline; a dwelling's walls come from its outline in the prefab builder, not from
+        /// here.</para>
+        /// </summary>
+        public readonly Vector2[] FloorOutline;
+
+        /// <summary>The doorway in model-frame metres when the footprint has a <see cref="FloorOutline"/>
+        /// (the dwelling's published threshold point). Unused by a rectangle.</summary>
+        public readonly Vector2 DoorModelMetres;
+
         public InteriorFootprint(Vector2 centre, float widthMetres, float lengthMetres,
                                  int facing, int facings, float depthScale,
                                  float doorSign = -1f, float doorAcrossMetres = 0f)
@@ -93,7 +112,50 @@ namespace HiddenHarbours.World
             // leave the room sealed — the one failure here that would look like a physics bug.
             float halfWidth = Mathf.Max(0f, widthMetres * 0.5f);
             DoorAcrossMetres = Mathf.Clamp(doorAcrossMetres, -halfWidth, halfWidth);
+
+            FloorOutline = null;
+            DoorModelMetres = default;
         }
+
+        /// <summary>
+        /// <b>A footprint whose floor is an outline</b> (ADR 0060 section 3): the camper's shell floor with
+        /// its tumblehome, which no rectangle describes. The rectangle is this outline's four-point case: a
+        /// four-point outline on the rectangle's corners answers <see cref="Contains"/> the same way.
+        ///
+        /// <para><paramref name="floorOutline"/> is in model-frame metres about <paramref name="centre"/> and
+        /// must close (<see cref="DwellingMeshRules.FloorCloses"/>); an outline that does not is refused
+        /// with an exception, because a footprint that silently fell back to some rectangle would put the
+        /// walls of the inside test somewhere other than the drawn floor. The array is held, not copied.</para>
+        /// </summary>
+        public InteriorFootprint(Vector2 centre, Vector2[] floorOutline, Vector2 doorModelMetres,
+                                 int facing, int facings, float depthScale)
+        {
+            if (!DwellingMeshRules.FloorCloses(floorOutline))
+                throw new System.ArgumentException(
+                    "[InteriorFootprint] a floor outline must close: three or more finite points enclosing " +
+                    "a non-zero area (DwellingMeshRules.FloorCloses).", nameof(floorOutline));
+
+            float maxX = 0f, maxY = 0f;
+            for (int i = 0; i < floorOutline.Length; i++)
+            {
+                maxX = Mathf.Max(maxX, Mathf.Abs(floorOutline[i].x));
+                maxY = Mathf.Max(maxY, Mathf.Abs(floorOutline[i].y));
+            }
+
+            Centre = centre;
+            WidthMetres = maxX * 2f;
+            LengthMetres = maxY * 2f;
+            Facing = facing;
+            Facings = Mathf.Max(1, facings);
+            DepthScale = depthScale;
+            DoorSign = doorModelMetres.y >= 0f ? 1f : -1f;
+            DoorAcrossMetres = Mathf.Clamp(doorModelMetres.x, -maxX, maxX);
+            FloorOutline = floorOutline;
+            DoorModelMetres = doorModelMetres;
+        }
+
+        /// <summary>True when the floor is an outline rather than the rectangle.</summary>
+        public bool HasFloorOutline => FloorOutline != null;
 
         /// <summary>
         /// The building's yaw on the GROUND, in degrees, for the facing it is showing.
@@ -140,6 +202,7 @@ namespace HiddenHarbours.World
         public bool Contains(Vector2 world, float inset)
         {
             Vector2 m = WorldToModel(world);
+            if (FloorOutline != null) return OutlineContains(FloorOutline, m, inset);
             float hw = WidthMetres * 0.5f - inset;
             float hl = LengthMetres * 0.5f - inset;
             if (hw <= 0f || hl <= 0f) return false;
@@ -151,7 +214,42 @@ namespace HiddenHarbours.World
         /// <see cref="DoorAcrossMetres"/> for where along it, so it is the DRAWN door and not the
         /// centre of a wall that happens to have one.</summary>
         public Vector2 DoorWorld =>
-            ModelToWorld(new Vector2(DoorAcrossMetres, DoorSign * LengthMetres * 0.5f));
+            FloorOutline != null
+                ? ModelToWorld(DoorModelMetres)
+                : ModelToWorld(new Vector2(DoorAcrossMetres, DoorSign * LengthMetres * 0.5f));
+
+        /// <summary>
+        /// Is model-frame point <paramref name="m"/> on the floor <paramref name="outline"/> encloses, with
+        /// the same <paramref name="inset"/> meaning as the rectangle's: a positive inset requires the point
+        /// to be at least that far inside every edge (past the wall), a negative one admits points up to
+        /// that far outside (the hysteresis on the way out). For a positive inset this is exactly the
+        /// rectangle's answer on a four-point outline; for a negative one the corners are rounded rather than
+        /// square, which only matters within the hysteresis of a corner, where there is no door. Pure and
+        /// allocation-free.
+        /// </summary>
+        public static bool OutlineContains(Vector2[] outline, Vector2 m, float inset)
+        {
+            if (outline == null || outline.Length < DwellingMeshRules.MinPolygonPoints) return false;
+
+            bool inside = false;
+            for (int i = 0, j = outline.Length - 1; i < outline.Length; j = i++)
+            {
+                Vector2 a = outline[i], b = outline[j];
+                if ((a.y > m.y) == (b.y > m.y)) continue;   // the edge does not straddle the ray
+                float t = (m.y - a.y) / (b.y - a.y);
+                if (m.x < a.x + t * (b.x - a.x)) inside = !inside;
+            }
+
+            if (inset == 0f) return inside;
+            if (inset > 0f && !inside) return false;
+            if (inset < 0f && inside) return true;
+
+            float nearest = float.MaxValue;
+            for (int i = 0, j = outline.Length - 1; i < outline.Length; j = i++)
+                nearest = Mathf.Min(nearest, GroundPolygon.DistanceToSegment(m, outline[j], outline[i]));
+
+            return inset > 0f ? nearest >= inset : nearest <= -inset;
+        }
 
         /// <summary>The room's four corners in world units, front-left first, going round. A
         /// parallelogram at every facing except the four orthogonal ones.</summary>

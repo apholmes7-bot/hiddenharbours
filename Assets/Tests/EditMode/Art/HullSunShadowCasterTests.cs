@@ -1,3 +1,4 @@
+using HiddenHarbours.Tests.Support;
 using System;
 using System.Collections.Generic;
 using HiddenHarbours.Art;
@@ -57,10 +58,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
         public void WarmUpdates_AllocateZeroManagedBytes()
         {
             for (int i = 0; i < 32; i++) _caster.Tick();
-            long before = GC.GetAllocatedBytesForCurrentThread();
+            using var allocation = new ManagedAllocationProbe();
+            allocation.Begin();
             for (int i = 0; i < 256; i++) _caster.Tick();
-            long bytes = GC.GetAllocatedBytesForCurrentThread() - before;
-            Assert.That(bytes, Is.Zero, "Warm cached projection updates must not allocate managed memory.");
+            long allocationEvents = allocation.End();
+            Assert.That(allocationEvents, Is.Zero, "Warm cached projection updates must not allocate managed memory.");
         }
 
         [Test]
@@ -71,6 +73,16 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.That(_caster.Proxy == null, Is.True);
             Assert.That(_caster.ShadowRenderer == null, Is.True);
             Assert.That(source != null, Is.True, "Borrowed hull geometry is never destroyed.");
+        }
+
+        [Test]
+        public void DestroyedDraw_LetsGoQuietly_ThenRebuilds()
+        {
+            Object.DestroyImmediate(_caster.ShadowRenderer.gameObject);
+            Assert.DoesNotThrow(_caster.Tick, "A draw destroyed by a teardown must not throw every frame.");
+            Assert.That(_caster.Proxy == null, Is.True, "The orphaned proxy is released with the lost draw.");
+            _caster.Tick();
+            Assert.That(_caster.ShadowRenderer != null, Is.True, "A host that is still here gets a fresh draw.");
         }
 
         [Test]

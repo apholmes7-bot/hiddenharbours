@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -51,6 +51,8 @@ namespace HiddenHarbours.Tests.PlayMode
         [Serializable] public sealed class Buildings { public Building[] buildings; }
 
         [Serializable] public sealed class Building { public string key; public string rig; }
+        [Serializable] public sealed class OwnShell { public string build; public string rig; }
+        const string OwnShellContractsDir = "_Project/Art/Sprites/Buildings";
 
         /// <summary>The fields of the interiors contract these tests read: the registration, and each
         /// room's floor centre and door anchor per facing, in cropped-cell px from the cell's top-left.</summary>
@@ -66,6 +68,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             public string key;
             public float pivotX, pivotY;
+            public float footprintWidthMetres, footprintLengthMetres;
             public float[] doorX, doorY;
         }
 
@@ -111,7 +114,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 Scene s = SceneManager.GetSceneAt(i);
                 if (s.IsValid() && s != clean && s.name == _loaded)
-                    yield return SceneManager.UnloadSceneAsync(s);
+                    yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(s);
             }
 
             foreach (GameObject go in PersistentRoots())
@@ -127,7 +130,7 @@ namespace HiddenHarbours.Tests.PlayMode
             // A region logs unrelated decor complaints; a stray one must not fail a claim about its houses.
             LogAssert.ignoreFailingMessages = true;
             _loaded = sceneName;
-            yield return SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Load(sceneName, LoadSceneMode.Single);
             for (int i = 0; i < 4; i++) yield return null;
             LogAssert.ignoreFailingMessages = false;
         }
@@ -146,6 +149,16 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             Dictionary<string, string> rigOf = ReadContract<Buildings>(BuildingsContractPath).buildings
                 .ToDictionary(e => e.key, e => e.rig);
+            // A building with a shell bake of its own (Ginny's cottage) carries its own one-building
+            // contract beside its sheet, rather than a row in the village's.
+            foreach (string own in Directory.GetFiles(Path.Combine(Application.dataPath, OwnShellContractsDir),
+                                                      "Village_*.json", SearchOption.AllDirectories))
+            {
+                if (Path.GetFileName(Path.GetDirectoryName(own)) == "Village") continue;   // the village's own kit
+                var shell = JsonUtility.FromJson<OwnShell>(File.ReadAllText(own));
+                if (shell != null && !string.IsNullOrEmpty(shell.build) && !rigOf.ContainsKey(shell.build))
+                    rigOf.Add(shell.build, shell.rig);
+            }
             yield return Load(sceneName);
 
             var failures = new List<string>();
@@ -235,6 +248,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
             var failures = new List<string>();
             int rooms = 0;
+            var counted = new List<string>();
             foreach (BuildingInterior interior in Object.FindObjectsByType<BuildingInterior>(
                          FindObjectsInactive.Include))
             {
@@ -244,6 +258,7 @@ namespace HiddenHarbours.Tests.PlayMode
                     continue;   // a shop: its own kit, whose registration did not move
                 rooms++;
                 string who = interior.gameObject.name;
+                counted.Add($"{who} ({room.sprite.name})");
 
                 // ⭐ The cell: the shell's facing plus the offset the bake MEASURED — one number, carried
                 // in the contract, the same one the stander turns every room by.
@@ -267,7 +282,24 @@ namespace HiddenHarbours.Tests.PlayMode
                 // The storey above, where there is one, is drawn from a room sheet too, and has to turn
                 // with the storey below it.
                 var upper = upperField.GetValue(interior) as SpriteRenderer;
-                if (upper != null && upper.sprite != null)
+                if (upper != null && upper.sprite != null &&
+                    !upper.sprite.texture.name.StartsWith(RoomSheetPrefix, StringComparison.Ordinal))
+                {
+                    // A PAINTED storey (UpperLevelPlan.UpperSheetPath): the room below's own cell, repainted.
+                    // It has no contract entry of its own, so it must be that cell exactly — same pixels,
+                    // same pivot — and then the room below's door anchor is where it draws its doorway.
+                    Sprite below = room.sprite, painted = upper.sprite;
+                    if (painted.rect.size != below.rect.size ||
+                        (painted.pivot - below.pivot).sqrMagnitude > 0.25f ||
+                        !Mathf.Approximately(painted.pixelsPerUnit, below.pixelsPerUnit))
+                        failures.Add($"{who}: the painted storey above '{painted.name}' " +
+                                     $"({painted.rect.size}, pivot {painted.pivot}) is not drawn on the grid of " +
+                                     $"the room below '{below.name}' ({below.rect.size}, pivot {below.pivot})");
+                    else
+                        CheckDoorway(contract, room.sprite, upper.transform.position, interior.FootprintFor(1),
+                                     halfDoorway, who + " (painted upstairs)", failures);
+                }
+                else if (upper != null && upper.sprite != null)
                 {
                     if (CellOf(upper.sprite) != roomCell)
                         failures.Add($"{who}: the storey above is cell {CellOf(upper.sprite)}, the room " +
@@ -280,19 +312,31 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsEmpty(failures, "a placed room is not drawn where its walls stand:\n  " +
                                      string.Join("\n  ", failures));
             Assert.AreEqual(expectedRooms, rooms,
-                            $"St Peters places {rooms} village room(s); this test was written against {expectedRooms}");
+                            $"St Peters places {rooms} village room(s); this test was written against {expectedRooms}: " +
+                            string.Join(", ", counted));
         }
 
         /// <summary>The doorway the room is DRAWN with — its bake's own door anchor for the cell it shows,
         /// from the floor centre it pivots on — must land inside the gap its walls leave, which is
         /// <see cref="InteriorFootprint.DoorWorld"/> give or take half a doorway. A room shown half a turn
-        /// out draws its doorway a whole room's length from the gap, on the back wall.</summary>
+        /// out draws its doorway a whole room's length from the gap, on the back wall.
+        /// The anchor sits on the room's +Y wall. A room entered through a side wall (the harbour gable,
+        /// whose door is in its cross gable on +X) stands its walls on a frame turned a quarter: the
+        /// frame's width is the room's length and its length the room's width. Its doorway is on the
+        /// room's +X wall, which in the cell it shows is where the +Y anchor of the cell a quarter turn
+        /// on falls, pulled in from half the room's length to half its width.</summary>
         static void CheckDoorway(Interiors contract, SpriteRenderer room, InteriorFootprint walls,
+                                 float halfDoorway, string who, List<string> failures) =>
+            CheckDoorway(contract, room.sprite, room.transform.position, walls, halfDoorway, who, failures);
+
+        /// <summary>The same check for a sheet drawn at <paramref name="drawnAt"/> on <paramref name="sheet"/>'s
+        /// own grid: a painted storey is checked with the room below's anchor at its own lift.</summary>
+        static void CheckDoorway(Interiors contract, Sprite sheet, Vector3 drawnAt, InteriorFootprint walls,
                                  float halfDoorway, string who, List<string> failures)
         {
-            string key = room.sprite.texture.name.Substring(RoomSheetPrefix.Length);
+            string key = sheet.texture.name.Substring(RoomSheetPrefix.Length);
             Room entry = contract.rooms?.FirstOrDefault(r => r.key == key);
-            int cell = CellOf(room.sprite);
+            int cell = CellOf(sheet);
             if (entry == null || entry.doorX == null || entry.doorY == null ||
                 cell < 0 || cell >= entry.doorX.Length || cell >= entry.doorY.Length)
             {
@@ -300,13 +344,27 @@ namespace HiddenHarbours.Tests.PlayMode
                 return;
             }
 
-            var drawnOffset = new Vector2(entry.doorX[cell] - entry.pivotX,
-                                          entry.pivotY - entry.doorY[cell]) / contract.ppu;
-            Vector2 drawn = (Vector2)room.transform.position + drawnOffset;
+            const float SameMetres = 0.01f;
+            int anchorCell = cell;
+            float pull = 1f;
+            bool turnedFrame = entry.footprintWidthMetres > 0f && entry.footprintLengthMetres > 0f &&
+                               Mathf.Abs(entry.footprintWidthMetres - entry.footprintLengthMetres) > SameMetres &&
+                               Mathf.Abs(walls.WidthMetres - entry.footprintLengthMetres) < SameMetres &&
+                               Mathf.Abs(walls.LengthMetres - entry.footprintWidthMetres) < SameMetres;
+            if (turnedFrame)
+            {
+                int facings = entry.doorX.Length;
+                anchorCell = (cell + facings / 4) % facings;
+                pull = entry.footprintWidthMetres / entry.footprintLengthMetres;
+            }
+
+            var drawnOffset = new Vector2(entry.doorX[anchorCell] - entry.pivotX,
+                                          entry.pivotY - entry.doorY[anchorCell]) * pull / contract.ppu;
+            Vector2 drawn = (Vector2)drawnAt + drawnOffset;
             Vector2 gap = walls.DoorWorld;
             float apart = Vector2.Distance(drawn, gap);
             if (apart > halfDoorway)
-                failures.Add($"{who}: '{room.sprite.name}' draws its doorway at {drawn:F2}, but the walls " +
+                failures.Add($"{who}: '{sheet.name}' draws its doorway at {drawn:F2}, but the walls " +
                              $"leave their gap at {gap:F2} — {apart:F2} units apart");
         }
 

@@ -5,73 +5,42 @@ using HiddenHarbours.Core;
 namespace HiddenHarbours.Art
 {
     /// <summary>
-    /// <b>A LIGHT IN HER HAND</b> — the walker's own two lamps (world-lighting PR 3).
-    ///
-    /// <para>The owner, 2026-09-03: <i>"the player has no spotlight which reaches the trees"</i> ·
-    /// <i>"a latern and a spotlight, and yes i want lights on land"</i>. The land lamps (PR 2) lit the
-    /// places somebody built a lamp post; everywhere else — the woods, the shore, the road between the
-    /// two — she still walked in the dark carrying nothing.</para>
-    ///
-    /// <para><b>Two lamps, and the difference between them is the point.</b>
-    /// <list type="bullet">
-    ///   <item><b>The LANTERN</b> is ambient, automatic and costs her nothing: slung on her back, alight
-    ///   after dusk without a keypress, a warm pool at her feet. It is the light you walk home by.</item>
-    ///   <item><b>The HEADLAMP</b> is directed and switched: a narrow cone that goes where she looks,
-    ///   thrown far enough to pick a trunk out of a wood. It is the light you look for something
-    ///   with.</item>
-    /// </list></para>
-    ///
-    /// <para><b>Neither takes a new key</b> — the dev key ledger is exhausted. The headlamp answers the
-    /// SAME key the boat's searchlight does, and the two can never both hear it: see
-    /// <see cref="WalksHerOwnBeam"/>, where the partition is proved rather than arranged.</para>
-    ///
-    /// <para><b>Why a self-installing host rather than a component on the player prefab.</b> The same
-    /// reason <see cref="PlayerShadowInstaller"/> is one: the player is spawned by the shell, not placed
-    /// in a scene, so there is no prefab in a builder to hang this off — and a light that needed one
-    /// would be a light the owner's next Build could lose. It installs itself, finds her through Core,
-    /// and parents its two lamps under her.</para>
-    ///
-    /// <para><b>⭐ And the parenting is load-bearing, not tidiness.</b> Her own <c>SpriteShadow</c> lives
-    /// on the player root (<see cref="PlayerShadowInstaller"/> puts it there), so hanging the lamps
-    /// beneath her is what lets <see cref="LampShadowSystem"/>'s carrier rule recognise her as the thing
-    /// they are MOUNTED ON and decline to throw her own silhouette down her own beam. Free-standing
-    /// objects tracking her position would light identically and shadow her absurdly.</para>
-    ///
-    /// <para><b>Rule 4.</b> Art may not name a Player type. Everything this needs about her — where she
-    /// is, which way she faces, and whether she is on her own two feet — arrives through Core's
-    /// <see cref="InteractActorProbe"/>, which <c>ControlSwitcher</c> publishes every frame for exactly
-    /// this kind of reader, and through <see cref="GameServices.PlayerTransform"/>.</para>
-    ///
-    /// <para><b>Determinism (rule 5).</b> Nothing is saved and nothing is random: the lantern's flicker is
-    /// <see cref="SceneLight"/>'s own deterministic hash of (seed, time), the night gate is in the shader
-    /// off the published tint, and the beam's on/off is a transient the player sets.</para>
+    /// The walker's headlamp and optional legacy lantern. The headlamp starts in his pocket, dark, and
+    /// L answers it only while he is on foot: a press with it in the pocket puts it on, lit; a tap while
+    /// it is worn switches the beam; holding L (<see cref="GameConfig.WalkerHeadlampHoldSeconds"/>) takes
+    /// it off into the pocket. The headlamp follows the visible mesh head after the figure poses,
+    /// holds its last root-relative point through sprite poses, and retains the legacy lift until
+    /// a first head point exists. Both lamps remain children of the player for the shadow carrier rule.
+    /// The default-off config switch restores automatic lantern behaviour without changing the key.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class WalkerLights : MonoBehaviour
     {
-        // ---- the mounting, in metres up her body ------------------------------------------------
+        // ---- the mounting, in metres up his body ------------------------------------------------
         // Both are BLOOM LIFTS (SceneLight.BloomLiftMetres): the height the lit fitting itself hangs at,
-        // which is what #733 made the glow's home. The POOL each throws still lands on the ground at her
+        // which is what #733 made the glow's home. The POOL each throws still lands on the ground at his
         // feet, which is where a pool belongs and where LampPoolSystem draws it.
 
-        /// <summary>Height of the lantern on her back-sling, metres. The rod-sling anchor
+        /// <summary>Height of the lantern on his back-sling, metres. The rod-sling anchor
         /// (<c>CarryMountKind.Back</c>) sits about here on a 1.7 m character.</summary>
         public const float LanternLiftMetres = 1.05f;
 
-        /// <summary>Height of the headlamp on her brow, metres.</summary>
+        /// <summary>Legacy lift before a visible mesh publishes its first head point, metres.</summary>
         public const float HeadlampLiftMetres = 1.55f;
 
         /// <summary>The key the beam answers — the SAME one the boat's searchlight uses, deliberately.
-        /// See <see cref="WalksHerOwnBeam"/> for why that is safe.</summary>
+        /// See <see cref="WalksHisOwnBeam"/> for why that is safe.</summary>
         public const Key ToggleKey = Key.L;
 
         private SceneLight _lantern;
         private Headlamp _headlamp;
+        private float _pressedAt;
+        private bool _pressAnswered = true;
 
         /// <summary>The carried lantern (null before wake).</summary>
         public SceneLight Lantern => _lantern;
 
-        /// <summary>The worn headlamp (null before wake).</summary>
+        /// <summary>The headlamp, worn or pocketed (null before wake).</summary>
         public Headlamp Beam => _headlamp;
 
         // =============================================================================================
@@ -79,8 +48,8 @@ namespace HiddenHarbours.Art
         // =============================================================================================
 
         /// <summary>
-        /// <b>Is the walker the one whose beam answers the switch right now?</b> True exactly when she is
-        /// on her own two feet ashore.
+        /// <b>Is the walker the one whose beam answers the switch right now?</b> True exactly when he is
+        /// on his own two feet ashore.
         ///
         /// <para><b>⭐ The charter asked that "only ONE of the two beams may answer the key at a time", and
         /// this delivers it BY CONSTRUCTION rather than by arbitrating.</b> The boat's searchlight answers
@@ -90,35 +59,76 @@ namespace HiddenHarbours.Art
         /// underlying mode through Core's actor probe and answers for <c>OnFoot</c>. The two predicates
         /// therefore partition <see cref="ControlMode"/> and cannot both hold — not because anything
         /// negotiates, but because they are two halves of one enum. <c>Driving</c> belongs to neither: a
-        /// road vehicle's headlights are the road fleet's, not hers.</para>
+        /// road vehicle's headlights are the road fleet's, not his.</para>
         ///
         /// <para>The partition is asserted over every member of <c>ControlMode</c> rather than trusted to
         /// this paragraph — the enum is append-only Core contract, and the next mode added to it would
         /// otherwise silently belong to nobody or to both.</para>
         /// </summary>
-        public static bool WalksHerOwnBeam =>
+        public static bool WalksHisOwnBeam =>
             InteractActorProbe.Has && InteractActorProbe.Current.Context == InteractContext.OnFoot;
 
         /// <summary>
-        /// <b>Does the walker own the decor light singleton this frame?</b> True when she is walking her
+        /// <b>Does the walker own the decor light singleton this frame?</b> True when he is walking his
         /// own beam AND that beam is lit.
         ///
         /// <para><b>⚠️ This one DOES need a guard, and the charter's "one publisher" is why.</b> The lit
         /// decor path (<c>SpriteLitDecor.hlsl</c>) lights trees, shrubs and shore plants from ONE global
         /// lamp — <c>_BoatLightPos</c>/<c>_BoatLightDir</c> — and every <see cref="BoatSpotlight"/> in the
         /// scene writes it every frame, INCLUDING a boat whose beam is off, which writes zeros. So a
-        /// moored dory forty metres away would blank her headlamp's contribution on whichever frames its
-        /// Update ran last: no error, no warning, and the trees in front of her flickering unlit by script
+        /// moored dory forty metres away would blank his headlamp's contribution on whichever frames its
+        /// Update ran last: no error, no warning, and the trees in front of him flickering unlit by script
         /// order. <see cref="BoatSpotlight"/> therefore stands off the singleton while this is true — and
         /// <see cref="Headlamp"/>'s <c>LateUpdate</c> writes it in their place. Those two are ONE change and
-        /// neither is correct alone: standing the boats off without putting her lamp there would freeze the
+        /// neither is correct alone: standing the boats off without putting his lamp there would freeze the
         /// trees under whatever a boat wrote last, which reads as woods lit by a lamp that is not there.</para>
         ///
         /// <para>It is the narrowest guard that closes it: the boat's own water-light array slot is
-        /// untouched, so the sea is lit exactly as before, and at the helm — where she cannot be on foot —
+        /// untouched, so the sea is lit exactly as before, and at the helm — where he cannot be on foot —
         /// this is false and the searchlight's every byte is unchanged.</para>
         /// </summary>
         public static bool OwnsDecorLight { get; private set; }
+
+        // =============================================================================================
+        //  THE KEY — one input, two gestures
+        // =============================================================================================
+
+        /// <summary>What one frame of the lamp key asks of the headlamp.</summary>
+        public enum LampKeyAction { None, PutOn, Toggle, Pocket }
+
+        /// <summary>
+        /// <b>One key, read as a press, a tap and a hold.</b> With the lamp in his pocket the PRESS puts it
+        /// on, lit, at once. With it worn, a press released before <paramref name="holdSeconds"/> is a TAP
+        /// and switches the beam; held that long it goes back in the POCKET (and out), and the release that
+        /// follows does nothing. <paramref name="answered"/> carries one press's state between frames.
+        ///
+        /// <para>Pure, so the rule is asserted in EditMode; <c>Update</c> only feeds it the keyboard.</para>
+        /// </summary>
+        public static LampKeyAction ReadLampKey(bool pressedThisFrame, bool isPressed, bool releasedThisFrame,
+                                                float heldSeconds, float holdSeconds, bool worn, ref bool answered)
+        {
+            if (pressedThisFrame)
+            {
+                answered = false;
+                if (!worn) { answered = true; return LampKeyAction.PutOn; }
+            }
+            if (answered) return LampKeyAction.None;
+            if (isPressed && heldSeconds >= holdSeconds) { answered = true; return LampKeyAction.Pocket; }
+            if (releasedThisFrame) { answered = true; return LampKeyAction.Toggle; }
+            return LampKeyAction.None;
+        }
+
+        /// <summary>Apply one <see cref="LampKeyAction"/> to a headlamp.</summary>
+        public static void Apply(Headlamp lamp, LampKeyAction action)
+        {
+            if (lamp == null) return;
+            switch (action)
+            {
+                case LampKeyAction.PutOn: lamp.PutOn(); break;
+                case LampKeyAction.Toggle: lamp.Toggle(); break;
+                case LampKeyAction.Pocket: lamp.TakeOff(); break;
+            }
+        }
 
         // =============================================================================================
         //  INSTALL
@@ -129,7 +139,7 @@ namespace HiddenHarbours.Art
         /// <summary>
         /// Self-install after the first scene loads, the shape every ambient Art system in this project
         /// uses (<see cref="PlayerShadowInstaller"/>, <c>DayNightController</c>). The player may not exist
-        /// yet — the host waits for her rather than giving up.
+        /// yet — the host waits for him rather than giving up.
         /// </summary>
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Install()
@@ -162,33 +172,41 @@ namespace HiddenHarbours.Art
 
         private void Update()
         {
-            Transform her = FindWalker();
-            if (her == null) { OwnsDecorLight = false; return; }
-            if (_lantern == null || _headlamp == null) Build(her);
+            Transform him = FindWalker();
+            if (him == null) { OwnsDecorLight = false; return; }
+            if (_lantern == null || _headlamp == null) Build(him);
 
-            bool onFoot = WalksHerOwnBeam;
+            bool onFoot = WalksHisOwnBeam;
 
             // The SWITCH, read the way BoatSpotlight reads it — New Input System only (Keyboard.current);
             // legacy UnityEngine.Input compiles in this project and then throws at runtime.
             //
             // ⭐ ONE PLACE, so the input-intents lane (ADR 0043) can lift it. When WalkIntents grows a lamp
-            // toggle this is the only line that changes; nothing else here knows a key exists.
-            if (onFoot && _headlamp != null)
+            // press this is the only block that changes; ReadLampKey already holds the rule.
+            var kb = Keyboard.current;
+            if (onFoot && _headlamp != null && kb != null)
             {
-                var kb = Keyboard.current;
-                if (kb != null && kb[ToggleKey].wasPressedThisFrame) _headlamp.Toggle();
+                var key = kb[ToggleKey];
+                if (key.wasPressedThisFrame) _pressedAt = Time.unscaledTime;
+                float hold = GameServices.Config != null
+                    ? GameServices.Config.WalkerHeadlampHoldSeconds : GameConfig.DefaultWalkerHeadlampHoldSeconds;
+                Apply(_headlamp, ReadLampKey(key.wasPressedThisFrame, key.isPressed, key.wasReleasedThisFrame,
+                                             Time.unscaledTime - _pressedAt, hold, _headlamp.IsWorn, ref _pressAnswered));
             }
+            else _pressAnswered = true;   // a press that leaves his feet is spent, not carried aboard
 
-            // Both lamps are hers only while she is on her own two feet ashore. On a deck or at a wheel
+            // Both lamps are his only while he is on his own two feet ashore. On a deck or at a wheel
             // the boat's own lights are the picture (boat-lights PR 2a-2c), and a carried pool on a lit
             // deck is noise; it is also the one rule that keeps the key partition and the lamps agreeing
             // about what "on foot" means.
-            if (_lantern != null) _lantern.enabled = onFoot;
+            bool automaticLantern = GameServices.Config != null
+                ? GameServices.Config.WalkerAutoLantern : GameConfig.DefaultWalkerAutoLantern;
+            if (_lantern != null) _lantern.enabled = onFoot && automaticLantern;
             if (_headlamp != null) _headlamp.SetLive(onFoot);
 
             OwnsDecorLight = onFoot && _headlamp != null && _headlamp.IsOn;
 
-            // Aim: she is the actor, so the probe's facing IS the beam's axis. SceneLight throws its cone
+            // Aim: he is the actor, so the probe's facing IS the beam's axis. SceneLight throws its cone
             // along transform.up, which is the same contract BoatSpotlight aims by.
             if (_headlamp != null && onFoot)
             {
@@ -199,7 +217,7 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
-        /// Her transform, through Core. <see cref="GameServices.PlayerTransform"/> is the published seam;
+        /// His transform, through Core. <see cref="GameServices.PlayerTransform"/> is the published seam;
         /// the name lookup is the same fallback the sibling installers keep, for a bare art scene where
         /// nothing has claimed the slot.
         ///
@@ -215,15 +233,15 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
-        /// Hang the two lamps under her. Parenting is what makes the carrier rule work — see the class
-        /// note — so this is never a free-standing object tracking her position.
+        /// Hang the two lamps under him. Parenting is what makes the carrier rule work — see the class
+        /// note — so this is never a free-standing object tracking his position.
         /// </summary>
-        private void Build(Transform her)
+        private void Build(Transform him)
         {
             if (_lantern == null)
             {
                 var go = new GameObject("WalkerLantern");
-                go.transform.SetParent(her, worldPositionStays: false);
+                go.transform.SetParent(him, worldPositionStays: false);
                 _lantern = go.AddComponent<SceneLight>();
                 LightPresets.Apply(_lantern, LightPresets.Kind.Lantern);
                 _lantern.ReachMetres = LightPresets.ReachMetres(LightPresets.Kind.Lantern);
@@ -235,7 +253,7 @@ namespace HiddenHarbours.Art
             if (_headlamp == null)
             {
                 var go = new GameObject("WalkerHeadlamp");
-                go.transform.SetParent(her, worldPositionStays: false);
+                go.transform.SetParent(him, worldPositionStays: false);
                 _headlamp = go.AddComponent<Headlamp>();
                 _headlamp.Configure(HeadlampLiftMetres);
             }

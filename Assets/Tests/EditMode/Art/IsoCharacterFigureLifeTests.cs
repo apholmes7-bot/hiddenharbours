@@ -405,6 +405,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
             for (int i = 0; i < 240; i++) Tick();
             Assert.Greater(spy.Asked, 0, "harness: the look seam was never asked");
+            Assert.That(() => { System.GC.KeepAlive(new byte[1024]); },
+                        UnityEngine.TestTools.Constraints.Is.AllocatingGCMemory(),
+                        "A known allocation must be detected before accepting zero allocation.");
             Assert.That(() => { for (int i = 0; i < 240; i++) Tick(); },
                         UnityEngine.TestTools.Constraints.Is.Not.AllocatingGCMemory(),
                         "Four seconds of blinking and looking allocated.");

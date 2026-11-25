@@ -28,6 +28,7 @@ namespace HiddenHarbours.Tests.UI.EditMode
         private bool _refuse;
         private readonly List<string> _events = new List<string>();
         private readonly List<string> _outfitPreviews = new List<string>();
+        private readonly List<TraitDef> _traitDefs = new List<TraitDef>();
 
         [SetUp]
         public void SetUp()
@@ -54,6 +55,9 @@ namespace HiddenHarbours.Tests.UI.EditMode
             GameServices.Appearance = new PlayerAppearance(() => _save, recipe => _refuse
                 ? "Recipe refused: the selected body is unavailable."
                 : CharacterBuilder.Refuse(_builder, recipe, CharacterAudience.Player));
+            // The appearance tests run with no traits on offer (nothing owed); the trait tests below
+            // install their own catalog through UseTraits.
+            GameServices.Traits = new TraitService(() => _save, () => new TraitDef[0]);
             _writeHook = typeof(SaveStore).GetField("BeforeReplaceForTests", BindingFlags.Static | BindingFlags.NonPublic);
             _previousHook = _writeHook.GetValue(null);
             _writeHook.SetValue(null, (Action<string>)(path => { if (path == _path) _writes++; }));
@@ -74,6 +78,8 @@ namespace HiddenHarbours.Tests.UI.EditMode
             EventBus.Unsubscribe<OutfitPreviewRequested>(OnPreview);
             if (_writeHook != null) _writeHook.SetValue(null, _previousHook);
             if (_host != null) Object.DestroyImmediate(_host);
+            foreach (TraitDef def in _traitDefs) if (def != null) Object.DestroyImmediate(def);
+            _traitDefs.Clear();
             GameServices.Reset();
             ShellFlow.Reset();
             Environment.SetEnvironmentVariable(SaveStore.TestRunSaveVariable, _previousPath);
@@ -227,6 +233,36 @@ namespace HiddenHarbours.Tests.UI.EditMode
         }
 
         [Test]
+        public void EveryCreatableBodyHasNeutralEditableDisplayName()
+        {
+            foreach (string id in _model.Bodies)
+            {
+                string label = _builder.Build(id).PlayerDisplayName;
+                Assert.IsFalse(string.IsNullOrWhiteSpace(label), id);
+                Assert.AreNotEqual(id.Substring(id.LastIndexOf('.') + 1), label, id);
+            }
+        }
+
+        [Test]
+        public void RandomizeHundredTimes_AllColourAxesAccepted_NameAndSaveUnchanged()
+        {
+            _model.SetName("My name");
+            var random = new System.Random(4129);
+            foreach (CharacterField field in _builder.Contract.Fields)
+                if (field.Kind == CharacterFieldKind.Colour) CollectionAssert.Contains(_model.ColourFields, field.Name);
+            for (int i = 0; i < 100; i++)
+            {
+                Assert.IsTrue(_model.Randomize(random), _model.Refusal);
+                Assert.IsNull(CharacterBuilder.Refuse(_builder, _model.Recipe, CharacterAudience.Player));
+                foreach (string field in _model.ColourFields) Assert.IsNotEmpty(_model.Recipe.Get(field), field);
+                CollectionAssert.Contains(_model.Outfits, _model.OutfitId);
+                Assert.AreEqual("My name", _model.Name);
+            }
+            Assert.AreEqual(0, _writes);
+            Assert.AreEqual(0, _save.Requests.Count);
+        }
+
+        [Test]
         public void DrawnKeyboardTypesChangesCaseBackspacesAndFinishes()
         {
             _model.Focus(_model.NameRow);
@@ -254,6 +290,98 @@ namespace HiddenHarbours.Tests.UI.EditMode
             _model.Input(0f, 0f, false, false);
             _model.Input(0f, -1f, false, false);
             Assert.AreEqual(2, _model.FocusRow);
+        }
+
+        [Test]
+        public void ConfirmWaitsForTheTraitPicks_ThenWritesThemInTheSameFileWrite()
+        {
+            UseTraits("trait.a", "trait.b", "trait.c");
+            Choose();
+            byte[] before = File.ReadAllBytes(_path);
+            Assert.IsFalse(_model.Commit());
+            Assert.AreEqual("Pick 2 traits to continue.", _model.Refusal);
+            StringAssert.Contains("Pick 2 traits to continue.", _model.RowLabel(_model.ConfirmRow));
+            Assert.IsTrue(_model.IsOpen);
+            Assert.AreEqual(0, _writes, "a refused confirm writes nothing");
+            CollectionAssert.AreEqual(before, File.ReadAllBytes(_path));
+
+            Assert.IsTrue(_model.ToggleTrait("trait.c"), _model.Refusal);
+            Assert.IsFalse(_model.Commit());
+            Assert.AreEqual("Pick 1 more trait to continue.", _model.Refusal);
+            Assert.IsTrue(_model.ToggleTrait("trait.a"), _model.Refusal);
+            Assert.AreEqual(CharacterCreatorConfirmCopy, _model.RowLabel(_model.ConfirmRow));
+            Assert.AreEqual(0, _writes, "picking is a preview");
+
+            Assert.IsTrue(_model.Commit(), _model.Refusal);
+            Assert.AreEqual(1, _writes);
+            SaveData written = SaveStore.Read(_path);
+            CollectionAssert.AreEqual(new[] { "trait.c", "trait.a" }, written.PlayerTraits);
+            Assert.AreEqual("Skipper", written.PlayerName);
+        }
+
+        [Test]
+        public void TraitRowsFollowTheName_OnePerOfferedTrait_AndActivateToggles()
+        {
+            UseTraits("trait.a", "trait.b", "trait.c", "trait.d");
+            Assert.AreEqual(_model.NameRow + 1, _model.TraitRow);
+            Assert.AreEqual(4, _model.TraitRowCount);
+            Assert.AreEqual(_model.TraitRow + 4, _model.ResetRow);
+            Assert.AreEqual("Name trait.b", _model.RowLabel(_model.TraitRow + 1));
+            Assert.AreEqual("Plain words for trait.b", _model.TraitDescription(_model.TraitRow + 1));
+            _model.Focus(_model.TraitRow + 1);
+            _model.Activate();
+            Assert.IsTrue(_model.IsTraitPicked(_model.TraitRow + 1));
+            _model.Focus(_model.TraitRow + 2);
+            _model.Activate();
+            _model.Focus(_model.TraitRow + 3);
+            _model.Activate();
+            Assert.IsFalse(_model.IsTraitPicked(_model.TraitRow + 3), "a full hand refuses a third pick");
+            Assert.IsNotNull(_model.Refusal);
+            _model.Focus(_model.TraitRow + 1);
+            _model.Activate();
+            Assert.IsFalse(_model.IsTraitPicked(_model.TraitRow + 1), "activating a picked trait lets it go");
+            Assert.IsNull(_model.Refusal);
+            StringAssert.Contains("Name trait.c", _model.TraitSummary());
+            Assert.AreEqual(0, _writes);
+        }
+
+        [Test]
+        public void ACharacterFromBeforeTraits_ReopensWithNonePicked_AndReopeningKeepsSavedPicks()
+        {
+            UseTraits("trait.a", "trait.b", "trait.c");
+            Assert.AreEqual(0, _save.Current.PlayerTraits.Count);
+            Assert.AreEqual(0, _model.TraitPicks.Picked.Count);
+            _model.Cancel();
+            Assert.AreEqual(0, _writes, "leaving without traits writes nothing");
+
+            _model = new CharacterCreatorModel(_builder, _wardrobe);
+            Choose();
+            _model.ToggleTrait("trait.b");
+            _model.ToggleTrait("trait.a");
+            Assert.IsTrue(_model.Commit(), _model.Refusal);
+            var reopened = new CharacterCreatorModel(_builder, _wardrobe);
+            CollectionAssert.AreEqual(new[] { "trait.b", "trait.a" }, reopened.TraitPicks.Picked);
+            Assert.IsTrue(reopened.TraitPicks.IsComplete);
+            reopened.Cancel();
+        }
+
+        private const string CharacterCreatorConfirmCopy = "Keep these choices";
+
+        private void UseTraits(params string[] ids)
+        {
+            var defs = new List<TraitDef>();
+            foreach (string id in ids)
+            {
+                var def = ScriptableObject.CreateInstance<TraitDef>();
+                def.Id = id;
+                def.DisplayName = "Name " + id;
+                def.Description = "Plain words for " + id;
+                _traitDefs.Add(def);
+                defs.Add(def);
+            }
+            GameServices.Traits = new TraitService(() => _save, () => defs);
+            _model.Cancel();
+            _model = new CharacterCreatorModel(_builder, _wardrobe);
         }
 
         private void Choose()

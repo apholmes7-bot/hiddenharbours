@@ -53,7 +53,7 @@ namespace HiddenHarbours.Tests.EditMode
         private static readonly Vector2 ShippedHelmOffset = new Vector2(0f, -1.3f);
 
         /// <summary>The starter dory's AFTER THWART in hull metres, exactly as
-        /// <c>docs/art/rigs/gameplay/doryIsoRig.gameplay.json</c> publishes it (<c>STATIONS[id=helm]</c>,
+        /// her walk file publishes it (<c>anchors.helm</c>; <c>STATIONS[id=helm]</c> in her old sidecar,
         /// evaluated from her rig rather than transcribed): y = −L/2 + 0.34·L on a 4.5 m boat, and
         /// z = the keel line at that station plus the rig's own SEAT height. Restated here because a bar
         /// the asset supplies to itself is a mirror.</summary>
@@ -109,8 +109,10 @@ namespace HiddenHarbours.Tests.EditMode
                 "the starter dory's helm station has gone away. She is the boat the owner ruled on: she " +
                 "sits at her after thwart on E and rows only from it, so a dory with no station is a dory " +
                 "steered from a tuned screen offset 0.58 m abaft her seat, over bare bottom boards.");
-            Assert.AreEqual("STATIONS[id=helm]", dory.HelmStationSource,
-                "her station must come from the sidecar's STATIONS array by id — the provenance is the " +
+            // Moved at her redraw: she is on the hull layout, whose walk file names the helm under
+            // anchors. Was "STATIONS[id=helm]". The seat itself, below, has not moved.
+            Assert.AreEqual("anchors.helm", dory.HelmStationSource,
+                "her station must come from her walk file's anchors by id — the provenance is the " +
                 "difference between an imported measurement and a number somebody typed into the asset");
 
             Assert.AreEqual(DoryThwart.x, dory.HelmStationLocalMeters.x, Tol,

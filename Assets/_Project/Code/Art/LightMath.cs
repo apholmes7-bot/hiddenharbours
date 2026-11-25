@@ -51,11 +51,58 @@ namespace HiddenHarbours.Art
         /// <param name="softness">Width of the fade-in band above the threshold (small ⇒ a hard switch at dusk).</param>
         /// </summary>
         public static float NightGate(float tintLuminance, float threshold, float softness)
+            => NightGate(tintLuminance, threshold, softness, LampOffDarkness, LampOnDarkness);
+
+        /// <summary>
+        /// <see cref="NightGate(float, float, float)"/> under the SHARED lamp band (the owner's ruling of 11-14,
+        /// "Lamps should not glow at noon"): whatever a light's own threshold, it is fully OFF while the frame's
+        /// darkness is at or below <paramref name="offDarkness"/> and reaches full no earlier than
+        /// <paramref name="onDarkness"/> — <c>lo = max(threshold, off)</c>, <c>hi = max(threshold + softness, on)</c>.
+        /// A light whose own ramp already sits darker than the band is untouched; 0 and 0 is no band (the old
+        /// gate exactly). The band is the day/night profile's (<see cref="DayNightProfile.LampsOffDarkness"/>,
+        /// <see cref="DayNightProfile.LampsOnDarkness"/>), published by <see cref="DayNightController"/> to the
+        /// shaders as <c>_HHLampGate</c> and here through <see cref="SetLampBand"/>; every HLSL copy of the gate
+        /// applies the same two maxes.
+        /// </summary>
+        public static float NightGate(float tintLuminance, float threshold, float softness, float offDarkness, float onDarkness)
         {
             float darkness = Mathf.Clamp01(1f - Mathf.Max(0f, tintLuminance));
-            float lo = Mathf.Clamp01(threshold);
-            float hi = Mathf.Clamp01(threshold + Mathf.Max(softness, 1e-4f));
+            float lo = Mathf.Max(Mathf.Clamp01(threshold), Mathf.Clamp01(offDarkness));
+            float hi = Mathf.Max(Mathf.Clamp01(threshold + Mathf.Max(softness, 1e-4f)), Mathf.Clamp01(onDarkness));
+            hi = Mathf.Max(hi, lo + 1e-4f);
             return SmoothStep01(lo, hi, darkness);
+        }
+
+        /// <summary>The shared lamp band's frame darkness at/below which every gated light is off (0 = no band:
+        /// EditMode, a bare art scene, before the day/night controller's first tick).</summary>
+        public static float LampOffDarkness { get; private set; }
+
+        /// <summary>The shared lamp band's frame darkness from which every gated light may be full.</summary>
+        public static float LampOnDarkness { get; private set; }
+
+        /// <summary>Set the shared lamp band the C# gate applies (the controller's push; tests reset it to 0, 0).</summary>
+        public static void SetLampBand(float offDarkness, float onDarkness)
+        {
+            LampOffDarkness = Mathf.Clamp01(offDarkness);
+            LampOnDarkness = Mathf.Clamp01(onDarkness);
+        }
+
+        /// <summary>
+        /// A light's gate ramp with the published lamp band folded in, as the (threshold, softness) pair a shader
+        /// that does NOT read <c>_HHLampGate</c> itself is handed: the water's cone gate (HiddenHarboursWater is
+        /// hash-pinned by SurfSequenceTests, so its gate stays the plain ramp and the band arrives in the data).
+        /// The shader's <c>smoothstep(t, t + max(s, 1e-4), darkness)</c> on the result is
+        /// <see cref="NightGate(float, float, float)"/>. Idempotent (a shader that also applies the band gets the
+        /// same ramp); no band published returns the inputs untouched.
+        /// </summary>
+        public static Vector2 BandedGateRamp(float threshold, float softness)
+        {
+            if (LampOffDarkness <= 0f && LampOnDarkness <= 0f)
+                return new Vector2(threshold, softness);
+            float lo = Mathf.Max(Mathf.Clamp01(threshold), LampOffDarkness);
+            float hi = Mathf.Max(Mathf.Clamp01(threshold + Mathf.Max(softness, 1e-4f)), LampOnDarkness);
+            hi = Mathf.Max(hi, lo + 1e-4f);
+            return new Vector2(lo, hi - lo);
         }
 
         /// <summary>
@@ -568,6 +615,25 @@ namespace HiddenHarbours.Art
         /// flattening the additive disc was refused for arriving through the other door.
         /// </summary>
         public const float MaxPoolGain = 8f;
+
+        /// <summary>
+        /// <b>The LAMP look's shape at one point</b> — the headless mirror of the additive shader's
+        /// core-and-halo branch, so the picture can be pinned without a GPU.
+        ///
+        /// <para>Inside <paramref name="coreRadius01"/> (a fraction of the throw) the answer is 1: a
+        /// flat hot core. From the core's edge out to the throw it is the halo: a linear fade cut into
+        /// <paramref name="bandSteps"/> flat bands and scaled by <paramref name="haloStrength"/>. Past
+        /// the throw it is 0. With no bands the halo is the plain linear fade.</para>
+        /// </summary>
+        public static float LampShape(float dist01, float coreRadius01, float haloStrength, int bandSteps)
+        {
+            float d = Mathf.Max(dist01, 0f);
+            float core = Mathf.Clamp01(coreRadius01);
+            if (d <= core) return 1f;
+            float lin = Mathf.Clamp01(1f - (d - core) / Mathf.Max(1f - core, 1e-4f));
+            float halo = bandSteps >= 1 ? Mathf.Ceil(lin * bandSteps) / bandSteps : lin;
+            return halo * Mathf.Clamp01(haloStrength);
+        }
 
         /// <summary>The floor under the night's ambient luminance in <see cref="PoolBaseGain"/>. A tint of
         /// zero is a frame with no cycle running, not an infinitely dark one.</summary>

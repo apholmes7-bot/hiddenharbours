@@ -1,0 +1,127 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee76649f87a8cfd4890261ca9a64ffa3, type: 3}
+  m_Name: YachtTenderIso_Navy
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullPaintSchemeDef
+  Id: paint.yacht_tender_navy
+  Label: NAVY
+  Note: Navy tubes to match a navy mother ship.
+  HullMeshId: hullmesh.yacht_tender_iso
+  SourceRigPath: docs/art/rigs/yachtTenderIsoRig.js
+  RigPaintId: navy
+  Ramps:
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4288123530
+    - serializedVersion: 2
+      rgba: 4289900455
+    - serializedVersion: 2
+      rgba: 4291480516
+    - serializedVersion: 2
+      rgba: 4292665563
+    - serializedVersion: 2
+      rgba: 4293521388
+    - serializedVersion: 2
+      rgba: 4294113526
+    - serializedVersion: 2
+      rgba: 4294573821
+    Offset: 0
+    _hasDitherWeight: 0
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4281997319
+    - serializedVersion: 2
+      rgba: 4283050005
+    - serializedVersion: 2
+      rgba: 4284102436
+    - serializedVersion: 2
+      rgba: 4285220660
+    - serializedVersion: 2
+      rgba: 4286339141
+    - serializedVersion: 2
+      rgba: 4287457621
+    Offset: 0
+    _hasDitherWeight: 0
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279307273
+    - serializedVersion: 2
+      rgba: 4279898895
+    - serializedVersion: 2
+      rgba: 4280622102
+    - serializedVersion: 2
+      rgba: 4281607968
+    - serializedVersion: 2
+      rgba: 4282463019
+    Offset: -2
+    _hasDitherWeight: 0
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4284375908
+    - serializedVersion: 2
+      rgba: 4285757561
+    - serializedVersion: 2
+      rgba: 4287139215
+    - serializedVersion: 2
+      rgba: 4288586661
+    - serializedVersion: 2
+      rgba: 4290099899
+    - serializedVersion: 2
+      rgba: 4291613138
+    Offset: 0
+    _hasDitherWeight: 0
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4278978821
+    - serializedVersion: 2
+      rgba: 4279767562
+    - serializedVersion: 2
+      rgba: 4280424976
+    - serializedVersion: 2
+      rgba: 4281213975
+    - serializedVersion: 2
+      rgba: 4282331680
+    Offset: 0
+    _hasDitherWeight: 0
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282925370
+    - serializedVersion: 2
+      rgba: 4284899158
+    - serializedVersion: 2
+      rgba: 4287399290
+    - serializedVersion: 2
+      rgba: 4289833887
+    - serializedVersion: 2
+      rgba: 4292005571
+    - serializedVersion: 2
+      rgba: 4293848550
+    Offset: 0
+    _hasDitherWeight: 0
+    _ditherWeight: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279439373
+    - serializedVersion: 2
+      rgba: 4280293910
+    - serializedVersion: 2
+      rgba: 4281411874
+    - serializedVersion: 2
+      rgba: 4282727218
+    Offset: 0
+    _hasDitherWeight: 0
+    _ditherWeight: 0

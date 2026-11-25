@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -15,6 +16,11 @@ namespace HiddenHarbours.Tools.RigBaking
     /// geometry, walks and paints still go through their production bakers and importers.</summary>
     public static class RecreationBoatsIntakeBake
     {
+        /// <summary>Optional plan field: which of the hull's visuals this boat wears, by asset
+        /// name. A hull with one visual leaves it out; one hull under two (the sport skiff's single
+        /// and twin outboards) takes one plan row per boat, each naming its own.</summary>
+        const string VisualField = "visual";
+
         public static void Cli()
         {
             try
@@ -54,7 +60,7 @@ namespace HiddenHarbours.Tools.RigBaking
                             source.StartsWith("BoatHullDef.cs initializer / ", StringComparison.Ordinal)) continue;
                         Set(boat, value.Key, proposed["value"]);
                     }
-                    boat.Visual = AssetDatabase.LoadAssetAtPath<BoatVisualDef>(fleet.VisualAssetPaths.Single());
+                    boat.Visual = AssetDatabase.LoadAssetAtPath<BoatVisualDef>(VisualPath(fleet, row, key));
                     if (boat.Visual == null) throw new IOException(key + ": visual missing after bake");
                     if (fresh) AssetDatabase.CreateAsset(boat, boatPath);
                     EditorUtility.SetDirty(boat);
@@ -82,13 +88,45 @@ namespace HiddenHarbours.Tools.RigBaking
             }
         }
 
+        static string VisualPath(FleetHull fleet, Dictionary<string, object> row, string key)
+        {
+            if (!row.ContainsKey(VisualField)) return fleet.VisualAssetPaths.Single();
+            string name = HullLayoutJson.Text(row, VisualField);
+            string path = fleet.VisualAssetPaths.SingleOrDefault(p => Path.GetFileNameWithoutExtension(p) == name);
+            if (path == null) throw new ArgumentException(key + ": " + name + " is not one of this hull's visuals");
+            return path;
+        }
+
         static void Set(object target, string name, object value)
         {
             FieldInfo field = target.GetType().GetField(name, BindingFlags.Instance | BindingFlags.Public);
             if (field == null) throw new ArgumentException(target.GetType().Name + "." + name + ": field missing");
+            if (typeof(UnityEngine.Object).IsAssignableFrom(field.FieldType))
+            {
+                field.SetValue(target, ReadReference(field, value));
+                return;
+            }
             field.SetValue(target, value == null ? null : field.FieldType.IsEnum
                 ? Enum.ToObject(field.FieldType, Convert.ToInt32(value, CultureInfo.InvariantCulture))
                 : Convert.ChangeType(value, field.FieldType, CultureInfo.InvariantCulture));
+        }
+
+        static UnityEngine.Object ReadReference(FieldInfo field, object value)
+        {
+            if (value == null || value is string text && text == "null") return null;
+            if (value is string reference)
+            {
+                var match = System.Text.RegularExpressions.Regex.Match(reference,
+                    @"^\{\s*fileID:\s*11400000,\s*guid:\s*([0-9a-fA-F]{32}),\s*type:\s*2\s*\}$");
+                if (match.Success)
+                {
+                    string guid = match.Groups[1].Value;
+                    var asset = AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guid), field.FieldType);
+                    if (asset == null) throw new FormatException(field.Name + ": reference " + guid + " did not load as " + field.FieldType.Name);
+                    return asset;
+                }
+            }
+            throw new FormatException(field.Name + ": unsupported reference value " + value);
         }
     }
 }

@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0ffa31db2a442cd8afd6f6bace0ce83, type: 3}
+  m_Name: GearPage
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.NotebookGearPageDef
+  Id: notebook_page.gear
+  Groups:
+  - Heading: Rods and tackle
+    Entries:
+    - Id: gear.rod
+      Name: Fishing Rod
+    - Id: gear.rod_rack
+      Name: Rod Rack
+    - Id: tackle.cod_jig
+      Name: Cod Jig
+    - Id: tackle.mackerel_feathers
+      Name: Mackerel Feathers
+    - Id: tackle.spinner
+      Name: Spinner
+    - Id: tackle.spoon
+      Name: Spoon
+    - Id: tackle.soft_bait
+      Name: Soft Bait
+  - Heading: Pots and lines
+    Entries:
+    - Id: trap.lobster
+      Name: Lobster Pot
+    - Id: trap.crab
+      Name: Crab Pot
+    - Id: longline.groundfish_tub
+      Name: Longline Tub
+  - Heading: Bait
+    Entries:
+    - Id: bait.herring
+      Name: Herring
+    - Id: bait.mackerel
+      Name: Mackerel
+    - Id: bait.capelin
+      Name: Capelin
+    - Id: bait.squid_strip
+      Name: Squid Strip
+    - Id: bait.sea_worm
+      Name: Sea Worm
+    - Id: bait.shucked_clam
+      Name: Shucked Clam
+    - Id: bait.fish_scrap
+      Name: Fish Scrap
+  - Heading: Shore tools
+    Entries:
+    - Id: gear.shovel
+      Name: Clam Shovel
+    - Id: gear.bucket
+      Name: Clam Bucket
+    - Id: gear.shellfish_rake
+      Name: Shellfish Rake
+    - Id: gear.oyster_tongs
+      Name: Oyster Tongs
+    - Id: gear.mussel_sack
+      Name: Mussel Sack
+    - Id: gear.shellfish_basket
+      Name: Peck Basket
+  - Heading: Boat electronics
+    Entries:
+    - Id: instrument.depth_sounder
+      Name: Depth Sounder
+    - Id: instrument.fish_finder
+      Name: Fish Finder
+    - Id: instrument.loran
+      Name: Loran-C Receiver
+    - Id: instrument.gps
+      Name: Chartplotter
+  - Heading: Carried
+    Entries:
+    - Id: watch.harbour_digital
+      Name: Harbour Digital Watch
+    - Id: gear.headlamp
+      Name: Headlamp
+  OtherHeading: Other gear
+  ListUnowned: 0

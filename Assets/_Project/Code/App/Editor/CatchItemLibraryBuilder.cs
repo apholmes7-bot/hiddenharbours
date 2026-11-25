@@ -138,22 +138,61 @@ namespace HiddenHarbours.App.Editor
             // The held MESHES (ADR 0053), read off the held-prop bake's own folder and matched by the
             // state names the defs carry — the rig's own species and fills, never typed here.
             HeldPropMeshDef[] heldMeshes = HeldMeshes();
-            int meshed = 0;
+            int meshed = 0, sizedKinds = 0, faceOn = 0;
+            // The flatfish, read off the species defs (FishSpeciesDef.HeldBroadSideOn): every rung of these
+            // kinds is held showing its broad side, never its edge.
+            HashSet<string> broadSideOn = BroadSideOnKinds(finfish);
             foreach (string kind in finfish)
             {
                 Sprite[] variants = DeckLayVariants($"{FishIso}/Fish_{kind}_deck.png", kind, ref missing);
                 var entry = new CatchItemLibrary.KindEntry { Kind = kind, Variants = variants };
-                // A carried fish hangs from one hand by the TAIL. The two-arm cradle is the fight's
-                // to choose, because only the fight knows the fish's weight (RodFightPresenter picks
-                // a size rung, and the rung's own hand count decides gill vs tail). A container's
-                // catch has no weight to ask about.
+                // A carried fish hangs from one hand by the TAIL. The two-arm cradle of the land pose
+                // is the fight's to draw (RodFightPresenter picks a size rung, and the rung's own hand
+                // count decides gill vs tail); carried, every rung hangs by the tail.
                 if (WireHeld(entry, $"{FishIso}/Fish_{kind}_tail.png", Directions)) held++;
-                // The same fish by the same tail, as a mesh. Nothing draws it yet (PR 4).
+                // How long that held fish is drawn, measured off the sheet: the readability floor
+                // (GameConfig.MinDrawnFishLengthPx) reads it to skip a rung too small to see.
+                entry.HeldLengthPx = FishSheetPixels.HeldLengthPx($"{FishIso}/Fish_{kind}_tail.png");
+                if (broadSideOn.Contains(kind) &&
+                    WireFaceOn(entry, $"{FishIso}/Fish_{kind}_tail.png")) faceOn++;
+                // The same fish by the same tail, as a mesh, baked at the rig's scale 1. Each rung draws
+                // it at the scale the rig drew that rung's sheets at (FishIsoAnchors.json), so the mesh
+                // and the sprite of one rung are the same fish at the same size.
                 entry.HeldMesh = heldMeshes.FirstOrDefault(
                     d => d.Family == HeldPropMeshDef.FishFamily && d.Variant == kind);
                 if (entry.HeldMesh != null) meshed++;
+                Dictionary<string, float> rungScales = RodKitImporter.RungScales(kind);
+                entry.HeldMeshScale = rungScales.TryGetValue("", out float midScale) ? midScale : 1f;
                 kinds.Add(entry);
                 if (variants.Length > 0) wired++;
+
+                // THE SIZE LADDER. The unsuffixed stem is the middle rung; its _sm/_lg siblings are the
+                // same fish drawn at the other two weights the rig published. Each becomes a sized
+                // kind ('cod_sm' SizeOf 'cod'), so a catch held in the hands or laid in a tote is
+                // drawn at its own size (CatchItemLibrary.SizedKindFor) rather than always the middle.
+                foreach ((string suffix, float kg) in RodKitImporter.RungWeights(kind))
+                {
+                    if (suffix.Length == 0) { entry.SizeKg = kg; continue; }
+                    string sized = kind + suffix;
+                    Sprite[] lays = DeckLayVariants($"{FishIso}/Fish_{sized}_deck.png", sized, ref missing);
+                    var rung = new CatchItemLibrary.KindEntry
+                    {
+                        Kind = sized, Variants = lays, SizeOf = kind, SizeKg = kg,
+                        // One held mesh per species, baked at scale 1; each rung draws it at its own scale.
+                        HeldMesh = entry.HeldMesh,
+                        HeldMeshScale = rungScales.TryGetValue(suffix, out float rungScale) ? rungScale : 1f,
+                    };
+                    if (WireHeld(rung, $"{FishIso}/Fish_{sized}_tail.png", Directions)) held++;
+                    rung.HeldLengthPx = FishSheetPixels.HeldLengthPx($"{FishIso}/Fish_{sized}_tail.png");
+                    if (broadSideOn.Contains(kind) &&
+                        WireFaceOn(rung, $"{FishIso}/Fish_{sized}_tail.png")) faceOn++;
+                    kinds.Add(rung);
+                    sizedKinds++;
+                }
+                if (entry.SizeKg <= 0f)
+                    Debug.LogWarning($"[CatchItemLibraryBuilder] '{kind}' has no size ladder in " +
+                                     $"'{RodKitImporter.FishAnchorsPath}', so it is drawn at one size whatever " +
+                                     "it weighs. Re-run the catch pass 2 fish anchors rewrite.");
             }
             foreach (HeldPropMeshDef d in heldMeshes)
                 if (d.Family == HeldPropMeshDef.FishFamily && !finfish.Contains(d.Variant))
@@ -169,6 +208,11 @@ namespace HiddenHarbours.App.Editor
                 // is a clutch the rig draws with no camera at all (one facing, two variants).
                 if (WireHeld(entry, $"{Storage}/Crust2Held_{kind}.png", Directions)
                     || WireHeld(entry, $"{Storage}/Shell2Hand_{kind}.png", 1)) held++;
+                // The same animal as a mesh (the shellfish family: a crustacean by the back, a shell kind
+                // as the handful the sheet draws), baked at the rig's scale 1; no size ladder.
+                entry.HeldMesh = heldMeshes.FirstOrDefault(
+                    d => d.Family == HeldPropMeshDef.ShellfishFamily && d.Variant == kind);
+                if (entry.HeldMesh != null) meshed++;
                 kinds.Add(entry);
                 if (variants.Length > 0) wired++;
             }
@@ -176,6 +220,7 @@ namespace HiddenHarbours.App.Editor
             RefusePass1(strips);
 
             var species = SpeciesRows(finfish, strips, out int unmapped);
+            int ownMeshes = WireSpeciesMeshes(species, strips, heldMeshes);
 
             CatchItemLibrary.BucketMeshEntry[] bucketMeshes = BucketMeshes(heldMeshes);
 
@@ -188,8 +233,10 @@ namespace HiddenHarbours.App.Editor
             AssetDatabase.Refresh();
 
             summary = $"{(created ? "Created" : "Refreshed")} '{LibraryPath}': " +
-                      $"{wired}/{kinds.Count} kinds with art, {held} with HELD art, " +
-                      $"{meshed} with a HELD MESH, {bucketMeshes.Length} bucket states as meshes, " +
+                      $"{wired}/{kinds.Count - sizedKinds} kinds with art (+{sizedKinds} size rungs), " +
+                      $"{held} with HELD art ({faceOn} held face-on), " +
+                      $"{meshed} with a HELD MESH (+{ownMeshes} species with their own), " +
+                      $"{bucketMeshes.Length} bucket states as meshes, " +
                       $"{species.Count} species mapped" +
                       (missing > 0 ? $", {missing} sheet(s) MISSING (see the warnings above)" : "") +
                       (unmapped > 0 ? $", {unmapped} species left on the fallback kind" : "") +
@@ -281,6 +328,38 @@ namespace HiddenHarbours.App.Editor
             entry.HeldFacings = facings;
             entry.HeldFramesPerFacing = cells.Length / facings;
             return true;
+        }
+
+        /// <summary>
+        /// The face-on pick for one held kind (<see cref="CatchItemLibrary.KindEntry.HeldFacingMap"/>): each
+        /// facing draws whichever of itself and its two neighbours shows the most of the fish, measured off
+        /// the held sheet (<see cref="FishSheetPixels.BroadSideFacingMap"/>). False, leaving the map empty,
+        /// when the kind has no held art or the sheet cannot be read.
+        /// </summary>
+        public static bool WireFaceOn(CatchItemLibrary.KindEntry entry, string heldSheetPath)
+        {
+            if (entry == null || entry.Held == null || entry.HeldFacings <= 1) return false;
+            int[] areas = FishSheetPixels.HeldFacingAreas(heldSheetPath, entry.Held, entry.HeldFacings);
+            int[] map = FishSheetPixels.BroadSideFacingMap(areas);
+            if (map == null) return false;
+            entry.HeldFacingMap = map;
+            return true;
+        }
+
+        /// <summary>The finfish kinds a species def asks to be held face-on
+        /// (<see cref="FishSpeciesDef.HeldBroadSideOn"/>), by the same species → kind rule the table uses.</summary>
+        public static HashSet<string> BroadSideOnKinds(string[] finfish)
+        {
+            var set = new HashSet<string>(System.StringComparer.Ordinal);
+            var known = new HashSet<string>(finfish, System.StringComparer.Ordinal);
+            foreach (string guid in AssetDatabase.FindAssets("t:FishSpeciesDef", new[] { DataFish }))
+            {
+                var def = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(AssetDatabase.GUIDToAssetPath(guid));
+                if (def == null || !def.HeldBroadSideOn || string.IsNullOrEmpty(def.Id)) continue;
+                string kind = KindFor(def, known);
+                if (kind != null) set.Add(kind);
+            }
+            return set;
         }
 
         /// <summary>The four deck lays of one finfish kind: direction row <c>DeckLayRows[v]</c>, frame
@@ -378,11 +457,56 @@ namespace HiddenHarbours.App.Editor
 
                 string kind = KindFor(def, known);
                 if (kind == null) { unmapped++; continue; }
-                rows.Add(new CatchItemLibrary.SpeciesEntry { SpeciesId = def.Id, Kind = kind });
+                rows.Add(new CatchItemLibrary.SpeciesEntry
+                {
+                    SpeciesId = def.Id, Kind = kind, BorrowsKind = !IsOwnKind(def.Id, kind),
+                });
             }
 
             rows.Sort((a, b) => System.StringComparer.Ordinal.Compare(a.SpeciesId, b.SpeciesId));
             return rows;
+        }
+
+        /// <summary>
+        /// The shellfish states that are no strip kind (the coast kit's green crab, quahog and surf clam:
+        /// a species of its own drawn as another kind's sheet) go on the ONE species they name, as that
+        /// species' own held mesh. Matched by the species id's leaf, underscores dropped, ending with the
+        /// state's (<c>fish.atlantic_surf_clam</c> ends <c>surfclam</c>), so no table is typed here; a state
+        /// that names no species, or more than one, is left off with an error naming it.
+        /// </summary>
+        static int WireSpeciesMeshes(List<CatchItemLibrary.SpeciesEntry> species, string[] strips,
+                                     HeldPropMeshDef[] meshes)
+        {
+            int wired = 0;
+            foreach (HeldPropMeshDef d in meshes)
+            {
+                if (d.Family != HeldPropMeshDef.ShellfishFamily || strips.Contains(d.Variant)) continue;
+                string want = d.Variant.Replace("_", "");
+                var hits = species.Where(s =>
+                    s.SpeciesId.Substring(s.SpeciesId.LastIndexOf('.') + 1).Replace("_", "")
+                     .EndsWith(want, System.StringComparison.Ordinal)).ToList();
+                if (hits.Count != 1)
+                {
+                    Debug.LogError($"[CatchItemLibraryBuilder] {d.Id} names {hits.Count} species " +
+                                   $"({string.Join(", ", hits.Select(h => h.SpeciesId))}), not one, so " +
+                                   "no species is held as it.");
+                    continue;
+                }
+                hits[0].HeldMesh = d;
+                wired++;
+            }
+            return wired;
+        }
+
+        /// <summary>True when <paramref name="kind"/> IS the species (the id's leaf, or its last word:
+        /// fish.atlantic_cod is cod), false when the species only borrows it (fish.atlantic_tomcod draws
+        /// as cod because its name contains it). The first two rules of <see cref="KindFor"/>.</summary>
+        static bool IsOwnKind(string speciesId, string kind)
+        {
+            string leaf = speciesId.Substring(speciesId.LastIndexOf('.') + 1);
+            if (leaf == kind) return true;
+            int under = leaf.LastIndexOf('_');
+            return under >= 0 && leaf.Substring(under + 1) == kind;
         }
 
         /// <summary>Which baked kind a species draws as, or null when nothing fits and the library's own

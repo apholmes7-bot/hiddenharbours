@@ -42,6 +42,9 @@ namespace HiddenHarbours.Core
                  "Content-validated for uniqueness and shape.")]
         public string Id = "char_build.example";
 
+        [Tooltip("Neutral label shown when the player chooses this body.")]
+        public string PlayerDisplayName = "";
+
         [Header("Structure — a BAKED body, not a set of dials (ADR 0029)")]
         [Tooltip("A key of the rig's own BUILDS/CAST table: ginny, skipper, nan, deckboss, packer, " +
                  "cutter, hand, boy, girl (fisher is the player). This names the baked sheet set.")]

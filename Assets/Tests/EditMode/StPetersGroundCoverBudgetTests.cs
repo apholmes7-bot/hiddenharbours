@@ -57,10 +57,8 @@ namespace HiddenHarbours.Tests.EditMode
             if (_go != null) Object.DestroyImmediate(_go);
         }
 
-        /// <summary>The camera at ON-FOOT framing, in metres — the tightest gameplay view, which is
-        /// where the grass is densest on screen. Width is the design 16:9.</summary>
+        /// <summary>The walking default view, in metres. Width is the design 16:9.</summary>
         const float ViewHeightM = HiddenHarbours.App.CameraFollow.OnFootWorldHeightMeters;
-        const float ViewWidthM = ViewHeightM * 16f / 9f;
 
         /// <summary>Renderers the ground cover may put inside the camera at once. The 2026-08-05 retune
         /// measured 395 on its worst screen; a few hundred sprites is nothing for the target GPU, so
@@ -69,9 +67,13 @@ namespace HiddenHarbours.Tests.EditMode
         const int OnScreenTuftBudget = 900;
 
         /// <summary>Upper bound on the grass batches in one screen — measured as distinct
-        /// (texture, sorting order) pairs, which is what the 2D renderer cannot merge across. The
-        /// retune measured ≤114.</summary>
-        const int OnScreenBatchBudget = 260;
+        /// (texture, sorting order) pairs, which is what the 2D renderer cannot merge across.
+        /// The old 260 is scaled by view area when the walking default went from 9 to 11.25 m:
+        /// 260 * (11.25 / 9)^2 = 406.25, rounded down to 406, the same batches per square metre.
+        /// At 9 m, the worst 16.0 x 9.0 m screen at (104.00, 49.50) had 391 renderers and at most
+        /// 246 grass batches. At 11.25 m, the worst 20.0 x 11.3 m screen at (30.00, -50.63) had
+        /// 607 renderers and at most 357 grass batches.</summary>
+        const int OnScreenBatchBudget = 406;
 
         [Test]
         public void AScreenOfMeadow_StaysInsideItsRendererAndBatchBudget()
@@ -88,69 +90,78 @@ namespace HiddenHarbours.Tests.EditMode
             var sites = StPetersGrass.Scatter(_terrain);
             Assert.Greater(sites.Count, 0, "sanity: the meadow scattered nothing");
 
-            // Slide the camera over the island and take the WORST screen — a mean would hide the one
-            // view that stutters, and the worst screen is the one the owner will find.
-            int worstTufts = 0, worstBatches = 0;
-            Vector2 worstAt = Vector2.zero;
-
-            // Bucket by view-sized cells so each window only tests its own neighbourhood.
-            var buckets = new Dictionary<(int, int), List<int>>();
-            for (int i = 0; i < sites.Count; i++)
+            (int Tufts, int Batches, Vector2 At) Measure(float viewHeightM)
             {
-                var key = (Mathf.FloorToInt(sites[i].Position.x / ViewWidthM),
-                           Mathf.FloorToInt(sites[i].Position.y / ViewHeightM));
-                if (!buckets.TryGetValue(key, out var list)) buckets[key] = list = new List<int>();
-                list.Add(i);
-            }
+                float viewWidthM = viewHeightM * 16f / 9f;
+                // Slide the camera over the island and take the WORST screen — a mean would hide the one
+                // view that stutters, and the worst screen is the one the owner will find.
+                int worstTufts = 0, worstBatches = 0;
+                Vector2 worstAt = Vector2.zero;
 
-            var pairs = new HashSet<(string, int)>();
-            var candidates = new List<int>();
-            foreach (var kv in buckets)
-            {
-                // The window anchored on this bucket, plus the eight around it (a tuft in a neighbour
-                // can still fall inside the window).
-                var centre = new Vector2((kv.Key.Item1 + 0.5f) * ViewWidthM,
-                                         (kv.Key.Item2 + 0.5f) * ViewHeightM);
-                candidates.Clear();
-                for (int dx = -1; dx <= 1; dx++)
-                for (int dy = -1; dy <= 1; dy++)
-                    if (buckets.TryGetValue((kv.Key.Item1 + dx, kv.Key.Item2 + dy), out var near))
-                        candidates.AddRange(near);
-
-                pairs.Clear();
-                int inView = 0;
-                foreach (int i in candidates)
+                // Bucket by view-sized cells so each window only tests its own neighbourhood.
+                var buckets = new Dictionary<(int, int), List<int>>();
+                for (int i = 0; i < sites.Count; i++)
                 {
-                    var s = sites[i];
-                    if (Mathf.Abs(s.Position.x - centre.x) > ViewWidthM * 0.5f) continue;
-                    if (Mathf.Abs(s.Position.y - centre.y) > ViewHeightM * 0.5f) continue;
-                    inView++;
-
-                    var entry = chooser.Choose(s);
-                    if (entry == null) continue;
-                    // The planter's own defaults for a static tuft — asked of SortingBands rather than
-                    // copied, so this counts the batches the grass ACTUALLY gets (ADR 0032 re-based them).
-                    int order = YSortSprite.OrderFor(s.Position.y, SortingBands.DecorBase,
-                                                     SortingBands.OrdersPerMetre,
-                                                     SortingBands.DecorFloor, SortingBands.DecorCeiling);
-                    pairs.Add((entry.Path, order));
+                    var key = (Mathf.FloorToInt(sites[i].Position.x / viewWidthM),
+                               Mathf.FloorToInt(sites[i].Position.y / viewHeightM));
+                    if (!buckets.TryGetValue(key, out var list)) buckets[key] = list = new List<int>();
+                    list.Add(i);
                 }
 
-                if (inView > worstTufts) { worstTufts = inView; worstAt = centre; }
-                if (pairs.Count > worstBatches) worstBatches = pairs.Count;
+                var pairs = new HashSet<(string, int)>();
+                var candidates = new List<int>();
+                foreach (var kv in buckets)
+                {
+                    // The window anchored on this bucket, plus the eight around it (a tuft in a neighbour
+                    // can still fall inside the window).
+                    var centre = new Vector2((kv.Key.Item1 + 0.5f) * viewWidthM,
+                                             (kv.Key.Item2 + 0.5f) * viewHeightM);
+                    candidates.Clear();
+                    for (int dx = -1; dx <= 1; dx++)
+                    for (int dy = -1; dy <= 1; dy++)
+                        if (buckets.TryGetValue((kv.Key.Item1 + dx, kv.Key.Item2 + dy), out var near))
+                            candidates.AddRange(near);
+
+                    pairs.Clear();
+                    int inView = 0;
+                    foreach (int i in candidates)
+                    {
+                        var s = sites[i];
+                        if (Mathf.Abs(s.Position.x - centre.x) > viewWidthM * 0.5f) continue;
+                        if (Mathf.Abs(s.Position.y - centre.y) > viewHeightM * 0.5f) continue;
+                        inView++;
+
+                        var entry = chooser.Choose(s);
+                        if (entry == null) continue;
+                        // The planter's own defaults for a static tuft — asked of SortingBands rather than
+                        // copied, so this counts the batches the grass ACTUALLY gets (ADR 0032 re-based them).
+                        int order = YSortSprite.OrderFor(s.Position.y, SortingBands.DecorBase,
+                                                         SortingBands.OrdersPerMetre,
+                                                         SortingBands.DecorFloor, SortingBands.DecorCeiling);
+                        pairs.Add((entry.Path, order));
+                    }
+
+                    if (inView > worstTufts) { worstTufts = inView; worstAt = centre; }
+                    if (pairs.Count > worstBatches) worstBatches = pairs.Count;
+                }
+
+                Debug.Log($"[GroundCoverBudget] {sites.Count} tufts island-wide · worst screen " +
+                          $"({viewWidthM:F1} × {viewHeightM:F3} m at {worstAt}): {worstTufts} renderers, " +
+                          $"≤{worstBatches} grass batches.");
+                return (worstTufts, worstBatches, worstAt);
             }
 
-            Debug.Log($"[GroundCoverBudget] {sites.Count} tufts island-wide · worst screen " +
-                      $"({ViewWidthM:F1} × {ViewHeightM:F1} m at {worstAt}): {worstTufts} renderers, " +
-                      $"≤{worstBatches} grass batches.");
+            var walkingDefault = Measure(ViewHeightM);
+            // The widest walking view is measured and logged for the ruling, without a budget assertion.
+            Measure(PlayerZoomSettings.Default.FarthestWorldHeightMeters);
 
-            Assert.Less(worstTufts, OnScreenTuftBudget,
-                $"{worstTufts} tufts inside one on-foot screen. That is the number the GPU actually " +
+            Assert.Less(walkingDefault.Tufts, OnScreenTuftBudget,
+                $"{walkingDefault.Tufts} tufts inside one on-foot screen. That is the number the GPU actually " +
                 "draws, and it has moved a long way — check StPetersGrass.GrassStep before raising " +
                 "this bound.");
 
-            Assert.Less(worstBatches, OnScreenBatchBudget,
-                $"≤{worstBatches} grass batches in one screen (distinct texture × sorting order). The " +
+            Assert.Less(walkingDefault.Batches, OnScreenBatchBudget,
+                $"≤{walkingDefault.Batches} grass batches in one screen (distinct texture × sorting order). The " +
                 "levers are fewer distinct textures per sorting band or merged static chunks — NOT a " +
                 "SpriteAtlas, which would break the shader's uv.y bend (see this class's remarks).");
         }

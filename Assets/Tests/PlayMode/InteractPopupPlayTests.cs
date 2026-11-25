@@ -63,6 +63,7 @@ namespace HiddenHarbours.Tests.PlayMode
             InteractVerb.Reset();
             Interactables.Clear();
             GameServices.Reset();
+            QuestNoteFootprint.Reset();   // no note in this scene: the popup's home is its corner
 
             _popup = InteractPopup.Instance;
             if (_popup == null)
@@ -104,12 +105,13 @@ namespace HiddenHarbours.Tests.PlayMode
             InteractVerb.Reset();
             Interactables.Clear();
             GameServices.Reset();
+            QuestNoteFootprint.Reset();   // no note in this scene: the popup's home is its corner
 
             foreach (var o in _spawned) if (o != null) Object.Destroy(o);
             _spawned.Clear();
             if (_popupHost != null) { Object.Destroy(_popupHost); _popupHost = null; }
 
-            if (_scene.IsValid() && _scene.isLoaded) yield return SceneManager.UnloadSceneAsync(_scene);
+            if (_scene.IsValid() && _scene.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(_scene);
         }
 
         GameObject Spawn(string name)

@@ -3,7 +3,7 @@
  "rig": "characterIsoRig10.js",
  "exportSymbol": "CharacterIso10",
  "derivedFromRigSha256": "ad563075475740cea1258de68d05c184f2fc136491357bc22988a10d810413f3",
- "posesDerivedFromRigSha256": "a28e5d92638d3cf1b26bbc49f887b23221acd3a9590bc36fd8b842ac6127c92d",
+ "posesDerivedFromRigSha256": "f30abc9af074356041dfe43f9c8cb50b032faafb357dd31d15836a862ee1ab98",
  "revision": "10.3",
  "authoring": "Generated from the rig's tables. Do not hand-edit.",
  "options": {

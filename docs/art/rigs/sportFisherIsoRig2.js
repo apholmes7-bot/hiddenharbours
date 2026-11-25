@@ -1,63 +1,67 @@
-/* Hidden Harbours — parametric ISO Sport Fishers, CLEAN-SHEET REBUILD (ADR-0006 bake recipe).
-   The first sportfisher rig reused the lobster-boat approach — one continuous loft from foredeck to
-   tower — and the proportions were wrong from the first pass. This rig starts over. Two hulls off one
-   core: a 16.2 m convertible ("53", open flybridge + pipe tower) and a 27.4 m Viking-style skybridge
-   ("90", enclosed skylounge with the tuna tower standing ON its roof).
+/* Hidden Harbours — ISO Sport Fishers, PASS 4: the re-lofted hulls (ADR-0006 bake recipe).
+   Two hulls off one core, same ids, same cells, same pivots, same global as every pass before:
+     convertible  16.2 m "53"  820 x 770,  pivot (410,475)   flybridge convertible: hardtop, tuna tower optional
+     skybridge    27.4 m "90" 1200 x 1170, pivot (600,730)   salon, enclosed skylounge, open top station
 
-   What was learned, held as rules:
-   1. HULL FIRST. The sheer leaves the transom LOW, accelerates through midships, crests SHORT of the
-      stem (u .945) and eases back down to the stem head. The transom is the NARROWEST station above
-      water — max beam sits at u .56, abreast the house nose — and the cockpit sole sits deep, so the
-      aft third of the boat reads low and tight while the bow stands tall over a fine, flared entry.
-   2. STACKED VOLUMES, not one wedge. The salon deckhouse and the skylounge (or flybridge coaming) are
-      SEPARATE rounded-plan lofts, each with its own raked front, its own roof, its own glass. The
-      visible step between them is the point.
-   3. The house is SMALL against the hull. >40% of LOA is clean foredeck; the salon roof sits about a
-      bow-freeboard above the sheer, not two.
-   4. GLASS is a level-edged ribbon: header held level bow-to-stern, sill rising aft, band wrapping the
-      rounded nose as one clean dark sheet (no mullions) and pinching shut on an ellipse well forward
-      of the house aft end. Curved corners are inherent — the band lies on the rounded plan.
-   5. AFT WALLS RAKE BACKWARDS. Every house volume's aft face leans toward the cockpit as it rises —
-      fAft(z) moves aft with z — never a vertical slab.
-   6. The 90's tuna tower is PIPEWORK standing on the skylounge roof: the roof is the tower floor. Four
-      near-vertical legs on low pads, an open rail platform, a crowned buggy top on posts, whips aft.
-      No moulded columns, nothing raked down past the bridge glass.
+   What pass 4 changes. The hulls are lofted again, low and long. Pass 3 stood about 1.7x too
+   tall, with a near-vertical stem and windshields metres above the foredeck. Here the sheer runs low
+   (53: 1.95 -> 2.83 m, 90: 2.11 -> 4.00 m over the keel), one straight stem is raked 44 deg / 47 deg, and
+   each windshield starts just above the deck it rises from. The shell is 46 cosine-spaced sections with
+   the boot, boot-top and cove stripe cut by waterline height; the house tiers are ring lofts on the sheer.
+   The 53's house stands in behind 0.45 m side decks; the 90's house sides stand on the sheer.
 
-   Fixed 3/4 turntable camera (elev 40deg default), 45deg steps, flat-facet shading, ordered dither,
-   1px depth keyline, NO AA. Each hull owns its cell + pivot (projection of boat origin = amidships,
-   keel bottom, centreline), pinned for every heading AND both rigger states:
-     CONVERTIBLE  820 x 770,  pivot (410,475)
-     SKYBRIDGE   1200 x 1170, pivot (600,730)
-   OUTRIGGERS are a flag: render(dir,{riggers:'stowed'|'out'}). PAINT swaps ramps only — one
-   silhouette, one face list, one anchor table per hull.
+   What pass 4 keeps. File name, global, hull ids and both hulls in one file. makeRig's return is still
+   `const RIG = {` with `id:spec.id,` first on the next line, and faceList / F / RIGF are in scope there.
+   paintTable('gelcoat').MATS is still the twelve-material table in the same order (hull, boot, cream,
+   stripe, teak, deck, grip, glas, steel, iron, blk, dark). The four colourways, defaultElev 40, the posed
+   salon slider (doorFaces) and the pass-3 cutaway hooks (cullLevels, cutaway:true -> BoatCutaway) are
+   unchanged. Closed, stowed and uncut, the rasteriser draws the pass-3 bytes.
 
-   Deck anchors (cell coords, per heading): helmSeat, towerStation, chairMount, mezzSeat, rodMounts[],
-   doorMounts{transom,tuna}, tubMounts[], navMounts{port,star,stern,mast}.
+   hull-layout-1 (the lane's pass B, under ADR 0048). Every face carries lv and ro as NUMBERS and it as a
+   boolean:
+     lv  hull 0 · main_deck 1 · house 2 · bridge 3 · below 4 · rigging 5 · foredeck 6 · top 7
+         (the 53's flybridge is bridge; the 90's skylounge is bridge and her open top station is top)
+     ro  shell 0 · wall 1 · roof 2 · lining 3 · part 4 · floor 5 · fit 6 · tall 7 · trim 8 · rig 9
+         ghost roles: shell, wall, roof, lining, part, tall, trim
+   geometry() (§4.7) publishes rig, exportSymbol, hull, ids, roles, ghostRoles, dwlZ, the levels (id, deck,
+   sole, ceil, kind, soleZ, ceilingZ, ceiling), cutaway (ghost, gate, shows, note), the door (the salon
+   slider), doors (the 90 adds her skylounge leaf), parts and states. The cut keys: deck (nothing), house,
+   bridge (the 90), fly (the 53), below. Both lists are in one vocabulary (a whole level, or level:role); the
+   gate is ADR 0048 §6.4's lift-set form: the ghost's levels plus the shown level's walls and roof.
+   renderCut(dir, key, opts) draws the gate (§4.8): what the key lifts is dropped, and the shown level's room
+   is drawn over the rest, front faces only. render(dir,{cutaway:{mode:'ghost'|'gate', key, player:{x,y,z}}})
+   is the lane's ghost: the rooms in true depth, and with a player the near ghost-role faces open round her;
+   view(dir) is the same cut for a moving player (base + region).
+   On each hull (§4.1): faceList(state, tower) (or faceList({riggers, tower})), partFaces(id, state),
+   interiorFaces(), doorFaces(t, id) (the salon leaf; the 90's 'skylounge' by name), geometry(),
+   matsFor(scheme) ({scheme, MATS, ramps, M, roomMats}, §5), paintTable(id) and cutTable(id) (the
+   rasteriser's tables), schemeIds, defaultScheme, fitCheck(tol), leakPx(), WALK (the walk's areas and
+   spawn), walk() and walkSidecar(), GAIN, BIAS, LN, BAYER, PX, W, H, pivot, defaultElev and cell.
 
-   Exposes globalThis.SportFisherIso2 = { CONVERTIBLE, SKYBRIDGE, HULLS, byId(id), PAINTS, paintRamps,
-     PX, DIRS, order, TEAK,DECKF,GRIP,GLAS,STEEL,IRON,KEY,HULL,BOOT,CREAM,BLUE }.
+   The ways down from the upper helm (owner's rulings of 2026-09-19): R2, the Convertible leaves her
+   flybridge by the companionway, whose hatch is cut through the bridge deck over the salon; R3, the
+   Skybridge stands her in the skylounge and takes her down the interior stair. The walk climbs them as
+   flyhatch (a near-upright ship's ladder under the 0.55 m hatch) and upstair (one stair, in the well).
+   HOUSE publishes both (HOUSE.wayDown) for boatInteriorRig.js; the deck plan the gameplay extractor reads
+   is deckPlan().
 
-   PASS 2 — THE SALON SLIDER AND THE PUBLISHED LOFT (tranche 4 of the interiors program). The salon
-   aft glass is now a REAL two-panel slider: a fixed starboard pane and a glass leaf that
-   opts.doorOpen 0..1 rides to starboard along its track, parking over the fixed pane (0 = closed,
-   fleet default; no swept arc — the collider is the leaf itself, riding the raked aft wall). The
-   sill sits at mezzanine height, so a character walks in level off the mezzanine deck.
-   doorMount(dir,opts) -> threshold + leading edge + clear state. Each hull publishes DOOR + HOUSE
-   (salon + below levels; the open flybridge — and the 90's skylounge — stay the EXTRACTOR's
-   surfaces: decks.bridge is external) + loft so boatInteriorRig.js builds the rooms from these
-   exact numbers. The extractor shim anchors (return block head, export line) are untouched.
+   Fixed 3/4 turntable camera (elev 40 deg default), 45 deg steps, flat-facet shading, ordered dither,
+   1 px depth keyline, no AA. OUTRIGGERS are a flag: render(dir,{riggers:'stowed'|'out'}). The 53's tuna
+   tower is opt-in: render(dir,{tower:true}) / faceList(riggers, true); her default is the hardtop.
+   PAINT swaps ramps only — one silhouette, one face list, one anchor table per hull.
 
-   PASS 3 — CUTAWAY DATA (the fleet's batch-2 mechanism, brought to the sport fishers). Every face
-   DECLARES its level in `lv` (an authoring cursor per build section: hull / main_deck / house /
-   bridge / below / foredeck / rigging); geometry() publishes soleZ + ceilingZ (or an explicit open
-   ceiling) per level plus the 53's flybridge PLAN so the section knows it stands over the salon;
-   the below flat's lid is the FOREDECK. render(dir,{cullLevels}) is the reference cut and
-   render(dir,{cutaway}) the depth-correct section (boatCutawayRig.js owns the rule set); rgba.dep
-   rides out of _paint. Outside those fields the mesh and pixels are byte-identical to pass 2. */
+   Exposes globalThis.SportFisherIso2 = { CONVERTIBLE, SKYBRIDGE, HULLS, hullIds, defaultHull, byId(id) (null
+     for an id she does not have), PAINTS, paintRamps, schemeIds, defaultScheme, PX, DIRS, order,
+     TEAK,DECKF,GRIP,GLAS,STEEL,IRON,KEY,HULL,BOOT,CREAM,BLUE, the room ramps, matsFor, GAIN, BIAS, LN, BAYER,
+     LV, RO, GHOST_ROLES, tagMats, the default hull's (the convertible's) members under their own names, cell
+     (the default hull's) and cells (by id) }. Plain script, no DOM: runs in a browser, in node (vm or
+     require), or in the baker's V8. */
 (function (root) {
   const PX = 32, S = 32;
   const DEG = Math.PI / 180;
   const DEFAULT_ELEV = 40;
+  const RIG_FILE = 'sportFisherIsoRig2.js', EXPORT_SYMBOL = 'SportFisherIso2';
+  const FRAME = 'metres; +x starboard, +y bow, +z up; origin amidships, keel bottom, centreline; polygons counter-clockwise seen from above'; // geometry() and the walk share it: the bake compares the two exactly
 
   // ---- ramps dark->light --------------------------------------------------------------------------
   const HULL  = ['#7f878c','#9ea6a9','#bcc3c2','#d5dbd7','#e9ede7','#f4f7f1','#fcfdf8'];
@@ -71,6 +75,13 @@
   const STEEL = ['#3a4148','#565f66','#7a858c','#9fabb1','#c3ced2','#e6edee'];
   const IRON  = ['#0d1013','#161a20','#222931','#323b45'];
   const KEY   = '#0d1418';
+  // the rooms' own ramps (v3's): carpet, upholstery, joinery, counter stone, linings, tinted glass
+  const CARPET= ['#6f685d','#847c70','#999183','#ada596','#c0b9a9','#d1cbbc'];
+  const LEATH = ['#6e5f4c','#8a7a62','#a69378','#c0ac8d','#d6c4a4','#e8d9bd'];
+  const TEAKG = ['#2e1d10','#432b16','#5a3a1e','#714a27','#8a5c31','#a4703c'];
+  const STONE = ['#8d8d86','#a5a59d','#bcbcb3','#d0d0c7','#e1e1d8','#eeeee6'];
+  const WHITEG= ['#9aa09c','#b4b9b3','#ccd0c9','#dee1da','#eceee8','#f7f8f3'];
+  const GLASSD= ['#7d9ea6','#a1c2c6','#c2dcdd','#d8ebec','#e8f4f4','#f4fafa'];
 
   // ---- PAINT: 4 schemes over the same hulls (ramps only) -------------------------------------------
   function oklchHex(Lp, C, h){
@@ -95,7 +106,7 @@
   const PAINTS = [
     { id:'gelcoat',  label:'WHITE GELCOAT', note:'The canonical slice — white topsides, near-black boot, one blue cove line.',
       literal:{ top:HULL, boot:BOOT, stripe:BLUE, house:CREAM } },
-    { id:'navy',     label:'AWLGRIP NAVY',  note:'Tournament navy topsides, white house, a gold cove and boot stripe.',
+    { id:'navy',     label:'NAVY',          note:'Tournament navy topsides, white house, a gold cove and boot stripe.',
       top:[0.22,0.50,0.086,264], boot:[0.14,0.27,0.042,264], stripe:[0.52,0.80,0.105,85], house:[0.62,0.97,0.006,250] },
     { id:'gunmetal', label:'GUNMETAL',      note:'Cool grey metallic topsides, black boot, a white cove — the modern battlewagon.',
       top:[0.34,0.62,0.014,242], boot:[0.13,0.26,0.010,250], stripe:[0.66,0.94,0.005,240], house:[0.60,0.95,0.006,240] },
@@ -115,8 +126,10 @@
     };
     return (_rampCache[p.id] = r);
   }
+  // the painter's tables. paintTable(id): the exterior's twelve (MATS), its colour index (RINDEX) and the rooms'
+  // table (ROOM); cutTable(id): both together for the cut views. matsFor() below is the spec's form (§5).
   const _matCache = {};
-  function matsFor(id){
+  function paintTable(id){
     const key = PAINT_BY[id] ? id : 'gelcoat';
     if(_matCache[key]) return _matCache[key];
     const R = paintRamps(key);
@@ -126,12 +139,63 @@
                    iron:{ramp:IRON,off:0}, blk:{ramp:R.boot,off:-1}, dark:{ramp:R.boot,off:-2} };
     const RINDEX = {};
     [R.top,R.boot,R.house,R.stripe,TEAK,DECKF,GRIP,GLAS,STEEL,IRON].forEach(r=>r.forEach((c,i)=>{ RINDEX[c]={r,i}; }));
-    return (_matCache[key] = { MATS, RINDEX });
+    // ROOM: the rooms' table, MATS-shaped (name -> {ramp, off}); every interior face's mat names one of its keys
+    const ROOM = { carpet:{ramp:CARPET,off:0}, leath:{ramp:LEATH,off:0}, teakg:{ramp:TEAKG,off:0}, stone:{ramp:STONE,off:0},
+                   whiteg:{ramp:WHITEG,off:0}, glassd:{ramp:GLASSD,off:0}, teak:MATS.teak, cream:MATS.cream, glas:MATS.glas,
+                   steel:MATS.steel, iron:MATS.iron };
+    return (_matCache[key] = { MATS, RINDEX, ROOM });
+  }
+  // the cut views paint the exterior and the rooms together: MATS + ROOM, and a colour index in which the
+  // exterior's ramps win a shared colour (so an exterior pixel darkens at a depth step as it does uncut)
+  const _roomCache = {};
+  function cutTable(id){
+    const key = PAINT_BY[id] ? id : 'gelcoat';
+    if(_roomCache[key]) return _roomCache[key];
+    const X = paintTable(key), MATS = Object.assign({}, X.MATS, X.ROOM), RINDEX = {};
+    [CARPET,LEATH,TEAKG,STONE,WHITEG,GLASSD].forEach(r=>r.forEach((c,i)=>{ RINDEX[c]={r,i}; }));
+    Object.assign(RINDEX, X.RINDEX);
+    return (_roomCache[key] = { MATS, RINDEX });
+  }
+  // hull-layout-1 §5: matsFor(scheme | { scheme } | nothing) -> { scheme, MATS, ramps, M, roomMats }. MATS is the
+  // exterior's twelve in their order with the rooms' own six appended (the rooms' teak, cream, glass, steel and iron
+  // are the exterior's); ramps lists each distinct ramp once and M names a paint's ramp by its index there.
+  const SCHEME_IDS = PAINTS.map(p=>p.id), DEFAULT_SCHEME = 'gelcoat';
+  const ROOM_MATS = ['carpet','leath','teakg','stone','whiteg','glassd'];
+  const _specCache = {};
+  function matsFor(s){
+    const id = (s && typeof s==='object') ? s.scheme : s, key = PAINT_BY[id] ? id : DEFAULT_SCHEME;
+    if(_specCache[key]) return _specCache[key];
+    const X = paintTable(key), MATS = {}, ramps = [], at = {}, M = {};
+    for(const k of Object.keys(X.MATS)) MATS[k] = { ramp:X.MATS[k].ramp.slice(), off:X.MATS[k].off };
+    for(const k of ROOM_MATS) MATS[k] = { ramp:X.ROOM[k].ramp.slice(), off:X.ROOM[k].off };
+    for(const k of Object.keys(MATS)){ const kk = MATS[k].ramp.join(',');
+      if(at[kk]==null){ at[kk] = ramps.length; ramps.push(MATS[k].ramp.slice()); }
+      M[k] = { ramp:at[kk], off:MATS[k].off }; }
+    return (_specCache[key] = { scheme:key, MATS, ramps, M, roomMats:ROOM_MATS.slice() });
   }
 
   const GAIN = 3.0, BIAS = 2.7;
   const LN = (() => { const v=[-0.42,0.72,0.52]; const m=Math.hypot(...v); return v.map(c=>c/m); })();
   const BAYER = [[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]].map(r=>r.map(v=>(v+0.5)/16));
+
+  // ---- ADR 0048 tags (hull-layout-1 §4.2–4.3). Faces carry lv and ro as these NUMBERS; geometry() publishes the
+  // maps as ids and roles; LVN and RON name a number back ----
+  const LV = { hull:0, main_deck:1, house:2, bridge:3, below:4, rigging:5, foredeck:6, top:7 };
+  const RO = { shell:0, wall:1, roof:2, lining:3, part:4, floor:5, fit:6, tall:7, trim:8, rig:9 };
+  const LVN = {}, RON = {}; Object.keys(LV).forEach(k=>{ LVN[LV[k]]=k; }); Object.keys(RO).forEach(k=>{ RON[RO[k]]=k; });
+  const GHOST_ROLES = ['shell','wall','roof','lining','part','tall','trim'];
+  const GHOSTS = {}; GHOST_ROLES.forEach(r=>{ GHOSTS[RO[r]]=true; });
+  // review only: render(dir,{tags:'lv'|'ro'|'it'}) paints each face by its tag, one hue per value, shaded as usual
+  const _tagCache = {};
+  function tagMats(kind){
+    if(_tagCache[kind]) return _tagCache[kind];
+    const names = kind==='ro' ? Object.keys(RO) : (kind==='it' ? ['false','true'] : Object.keys(LV));
+    const MATS = {}, RINDEX = {}, swatch = {};
+    names.forEach((n,k)=>{ const h=20+360*k/names.length, r=[]; for(let i=0;i<7;i++) r.push(oklchHex(0.40+0.08*i, 0.12, h));
+      MATS[n]={ ramp:r, off:0 }; swatch[n]=r[4]; r.forEach((c,i)=>{ RINDEX[c]={r,i}; }); });
+    MATS.hull = MATS[names[0]];
+    return (_tagCache[kind] = { MATS, RINDEX, names, swatch });
+  }
 
   // ---- monotone cubic fairing (Fritsch–Carlson) — smooth, cannot overshoot ------------------------
   function mono(pts){
@@ -220,10 +284,16 @@
     const xr=x1*B.ct - y2*B.stt, yr=x1*B.stt + y2*B.ct, zr=z2;
     return { xr,yr,zr, sx:G.cx+xr*S, sy:G.cy-(yr*B.se+zr*B.ce)*S - B.heave, d:(yr*B.ce-zr*B.se) };
   }
+  // Three optional inputs, all absent on the uncut path (which then draws the pass-3 bytes):
+  //   opts._clip {x0,y0,x1,y1}  raster inside this rect only (view().region);
+  //   opts._post {x0,y0,x1,y1}  run the depth step and the keyline over this rect (default: _clip);
+  //   opts._ghost               ghostParams(): a fragment of a ghost-role face nearer than the player and inside the
+  //                             reveal ellipse is discarded (solid inside the core, Bayer-dithered out to the rim).
   function _paint(faces, opts, G, MAT){
     const PW=G.W, PH=G.H;
     const MATS=MAT.MATS, RINDEX=MAT.RINDEX;
     const B=camBasis(opts);
+    const RC=opts._clip||{ x0:0, y0:0, x1:PW-1, y1:PH-1 }, PR=opts._post||RC, GP=opts._ghost||null;
     const zbuf=new Float32Array(PW*PH).fill(Infinity);
     const col=new Array(PW*PH).fill(null);
     const dep=new Float32Array(PW*PH);
@@ -232,13 +302,13 @@
       let n=normal(rv[0],rv[1],rv[2]);
       let sh=shadeOf(n, B.se, B.ce); if(sh<0 && ((f.b||0)<=-1)) sh=shadeOf([-n[0],-n[1],-n[2]], B.se, B.ce)*0.9;
       const fidx = sh*GAIN + BIAS + (f.b||0);
-      const M = MATS[f.mat] || MATS.hull;
+      const M = MATS[f.mat] || MATS.hull, g = (GP && GHOSTS[f.ro]) ? GP : null;
       for(let t=1;t+1<rv.length;t++) fillTri(rv[0],rv[t],rv[t+1]);
       function fillTri(a,b,c){
-        const minX=Math.max(0,Math.floor(Math.min(a.sx,b.sx,c.sx)));
-        const maxX=Math.min(PW-1,Math.ceil(Math.max(a.sx,b.sx,c.sx)));
-        const minY=Math.max(0,Math.floor(Math.min(a.sy,b.sy,c.sy)));
-        const maxY=Math.min(PH-1,Math.ceil(Math.max(a.sy,b.sy,c.sy)));
+        const minX=Math.max(RC.x0,Math.floor(Math.min(a.sx,b.sx,c.sx)));
+        const maxX=Math.min(RC.x1,Math.ceil(Math.max(a.sx,b.sx,c.sx)));
+        const minY=Math.max(RC.y0,Math.floor(Math.min(a.sy,b.sy,c.sy)));
+        const maxY=Math.min(RC.y1,Math.ceil(Math.max(a.sy,b.sy,c.sy)));
         const area=(b.sx-a.sx)*(c.sy-a.sy)-(c.sx-a.sx)*(b.sy-a.sy);
         if(Math.abs(area)<1e-6) return;
         for(let y=minY;y<=maxY;y++) for(let x=minX;x<=maxX;x++){
@@ -250,6 +320,8 @@
           const d=w0*a.d+w1*b.d+w2*c.d, deff=d-(f.db||0);
           const i=y*PW+x;
           if(deff<zbuf[i]){
+            if(g && d<g.dP){ const ex=(px-g.cx)*g.irx, ey=(py-g.cy)*g.iry, e=ex*ex+ey*ey;
+              if(e<1){ const r=Math.sqrt(e); if(r<g.core || (r-g.core)*g.icore<BAYER[x&3][y&3]) continue; } }
             zbuf[i]=deff; dep[i]=d;
             let base=Math.floor(fidx);
             let idx=base+((fidx-base)>BAYER[x&3][y&3]?1:0)+M.off;
@@ -259,10 +331,10 @@
       }
     }
     const out=col.slice();
-    for(let y=0;y<PH;y++) for(let x=0;x<PW;x++){
+    for(let y=PR.y0;y<=PR.y1;y++) for(let x=PR.x0;x<=PR.x1;x++){
       const i=y*PW+x; if(!col[i]) continue;
       for(const [dx,dy] of [[1,0],[0,1]]){
-        const nx=x+dx, ny=y+dy; if(nx>=PW||ny>=PH) continue;
+        const nx=x+dx, ny=y+dy; if(nx>RC.x1||ny>RC.y1) continue;
         const j=ny*PW+nx; if(!col[j]) continue;
         if(Math.abs(dep[i]-dep[j])>0.30){
           const far=dep[i]>dep[j]?i:j, e=RINDEX[col[far]];
@@ -270,12 +342,12 @@
         }
       }
     }
-    for(let y=0;y<PH;y++) for(let x=0;x<PW;x++){
+    for(let y=PR.y0;y<=PR.y1;y++) for(let x=PR.x0;x<=PR.x1;x++){
       const i=y*PW+x; if(out[i]) continue;
       let touch=false;
       for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
         const nx=x+dx, ny=y+dy;
-        if(nx>=0&&nx<PW&&ny>=0&&ny<PH&&col[ny*PW+nx]){ touch=true; break; }
+        if(nx>=RC.x0&&nx<=RC.x1&&ny>=RC.y0&&ny<=RC.y1&&col[ny*PW+nx]){ touch=true; break; }
       }
       if(touch){ out[i]=KEY; dep[i]=Infinity; }
     }
@@ -292,666 +364,841 @@
     return rgba;
   }
 
+  // ---- v3 loft helpers ----
+  const clamp = (v,a,b)=>v<a?a:(v>b?b:v);
+  const smooth = (t)=>{ t=clamp01(t); return t*t*(3-2*t); };
+  function newell(v){ let nx=0,ny=0,nz=0; for(let i=0;i<v.length;i++){ const a=v[i], b=v[(i+1)%v.length];
+    nx+=(a[1]-b[1])*(a[2]+b[2]); ny+=(a[2]-b[2])*(a[0]+b[0]); nz+=(a[0]-b[0])*(a[1]+b[1]); } return [nx,ny,nz]; }
+  // split a polygon by a linear function g: [part g<=0, part g>0]
+  function splitBy(v, g){
+    const neg=[], pos=[], n=v.length;
+    for(let i=0;i<n;i++){ const a=v[i], b=v[(i+1)%n], ga=g(a), gb=g(b);
+      if(ga<=0) neg.push(a); else pos.push(a);
+      if((ga<=0&&gb>0)||(ga>0&&gb<=0)){ const t=ga/(ga-gb); const p=[a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t, a[2]+(b[2]-a[2])*t]; neg.push(p); pos.push(p); } }
+    return [neg.length>=3?neg:null, pos.length>=3?pos:null];
+  }
+  // plan polygons for the walk: point in polygon (even-odd), and an axis-aligned rect
+  const pinPoly = (pt, poly)=>{ let c=false; for(let i=0,j=poly.length-1;i<poly.length;j=i++){ const a=poly[i], b=poly[j];
+    if(((a[1]>pt[1])!==(b[1]>pt[1])) && (pt[0] < (b[0]-a[0])*(pt[1]-a[1])/(b[1]-a[1])+a[0])) c=!c; } return c; };
+  const rectPoly = (x0,y0,x1,y1)=>[[x0,y0],[x1,y0],[x1,y1],[x0,y1]];
+
   // ===================================================================================================
   // ONE builder, two hulls.
   // ===================================================================================================
   function makeRig(spec){
-    const L=spec.L, DECK=spec.DECK, RAKE=spec.RAKE, TH=spec.TH;
+    const L=spec.L, yT=-L/2, yB=L/2, DWL=spec.DWL, LZ=spec.loftZ!=null?spec.loftZ:DWL;   // DWL: the painted waterline. LZ: the datum the stem rake and transom teak are lofted from
     const G={ W:spec.W, H:spec.H, cx:spec.cx, cy:spec.cy };
-    const NSEG=spec.NSEG||30;
-
-    // ---- hull lines: sheer master arc, plan, flare ----
-    const fWs=mono(colOf(spec.T,1)), fWb=mono(colOf(spec.T,2)), fKz=mono(colOf(spec.T,3));
-    const fSheer=mono(spec.sheer), fFlare=mono(spec.flare);
-    const uOf=(y)=>(y+L/2)/L;
-    const yOf=(u)=>-L/2+u*L;
-    const sheerZ=(u)=>fSheer(clamp01(u));
-    const _stC={};
-    function station(u){
-      u=clamp01(u);
-      const k=u.toFixed(5); if(_stC[k]) return _stC[k];
-      const ws=Math.max(0.04,fWs(u)), wb=Math.max(0.03,Math.min(fWb(u),ws)), kz=fKz(u), z=sheerZ(u);
-      return (_stC[k]={ws,wb,kz,dep:Math.max(0.22,z-kz),y:yOf(u),sheer:z});
+    const stemY=(z)=>spec.stem.y0+(z-LZ)*spec.stem.k;
+    const KEND=stemY(spec.keelEndZ), CEND=stemY(spec.chineEndZ);
+    const fSz=mono(spec.sheer), fSx0=mono(spec.beam), fKz=mono(spec.keel.concat([[KEND,spec.keelEndZ]])),
+          fCz=mono(spec.chineZ.concat([[CEND,spec.chineEndZ]])), fCx0=mono(spec.chineX.concat([[CEND,0]])), fP=mono(spec.flare), fCam=mono(spec.camber);
+    const fSx=(y)=>Math.max(0,fSx0(Math.min(y,yB))), fCx=(y)=>Math.max(0,fCx0(Math.min(y,CEND)));
+    const yK=(s)=>yT+s*(KEND-yT), yC=(s)=>yT+s*(CEND-yT), yS=(s)=>yT+s*(yB-yT);
+    function section(s){
+      const yk=yK(s), yc=yC(s), ys=yS(s), zk=fKz(yk), zc=fCz(yc), xc=fCx(yc), zs=fSz(ys), xs=Math.max(fSx(ys), xc);
+      const P=[]; for(const u of [0,1/3,2/3]) P.push([u*xc, lerp(yk,yc,u), lerp(zk,zc,u)]);
+      P.push([xc,yc,zc]);
+      const dz=Math.max(0.3,zs-zc), tc0=clamp(1-0.34/dz,0.64,0.95), tc1=clamp(1-0.27/dz,tc0+0.01,0.975), p=fP((yc+ys)/2);
+      for(const t of [0.2,0.42,Math.min(0.62,tc0-0.03),tc0,tc1,1]) P.push([xc+(xs-xc)*Math.pow(t,p), lerp(yc,ys,t), lerp(zc,zs,t)]);
+      return P;
     }
-    function hbOf(u,frac){ const st=station(u); return st.wb + (st.ws-st.wb)*Math.pow(clamp01(frac), fFlare(clamp01(u))); }
-    function bowRake(u,frac){ const t=Math.max(0,(u-0.50)/0.50), s=t*t*(3-2*t); return RAKE*s*(0.18+0.82*frac); }
-    function skin(side,u,frac,inset){
-      const st=station(u);
-      const w=hbOf(u,frac) - (inset ? TH*(0.55+0.45*clamp01(frac)) : 0);
-      return [ side*Math.max(0.012,w), st.y+bowRake(u,frac), st.kz + clamp01(frac)*st.dep - (inset?0.02:0) ];
-    }
-    const dfrac=(st)=>Math.max(0.04, Math.min(0.98, (DECK-st.kz)/st.dep));
-    const zdl=(y)=>sheerZ(clamp01(uOf(y)))-spec.drop;   // deck line (covering board top)
-    // house side limit: hull half-width just below the deck line, less skin + full cap + clearance,
-    // so the covering board runs stem to transom as ONE unbroken line
-    const clampHW=(y)=>{ const u=clamp01(uOf(y)), st=station(u);
-      const z=st.sheer-spec.drop-0.10, frac=clamp01((z-st.kz)/st.dep);
-      return st.wb+(st.ws-st.wb)*Math.pow(frac,fFlare(u)) - TH - spec.capW - 0.04; };
-
-    const F=[], RIGF={ stowed:[], out:[] };
-    /* PASS 3 — every face DECLARES its level (the fleet's ASK B). LV is an authoring cursor: each build
-       section states its level before emitting; the stamp rides push, so every emission path carries it. */
-    let LV='hull';
-    const lv=(id)=>{ LV=id; };
-    const tagged=(arr)=>{ arr.push=function(){ for(let i=0;i<arguments.length;i++) arguments[i].lv=LV; return Array.prototype.push.apply(this,arguments); }; return arr; };
-    tagged(F); tagged(RIGF.stowed); tagged(RIGF.out);
-    let TARGET=F;
-    const face=(v,mat,b,db)=>TARGET.push({v,mat:mat||'hull',b:b||0,db:db||0});
-    const pushO=(v,outw,mat,b,db)=>TARGET.push(faceO(v,outw,mat,b,db));
-    const boxF=(c,h,mat,b,db)=>{ TARGET.push.apply(TARGET, box(c,h,mat,b,db)); };
-    const tubeF=(A,B2,rad,mat,b)=>{ TARGET.push.apply(TARGET, tube(A,B2,rad,mat,b)); };
-    const taperF=(A,B2,r0,r1,mat,b)=>{ TARGET.push.apply(TARGET, taper(A,B2,r0,r1,mat,b)); };
-    const OB=[ [0,0.300,'boot',-0.2,0], [0.300,0.340,'stripe',0.2,0.01], [0.340,0.905,'hull',0,0],
-               [0.905,0.940,'stripe',0.28,0.01], [0.940,1,'dark',-0.25,0.006] ];
-
-    // ============ HOUSE VOLUME: a rounded-plan loft with raked front AND raked aft wall ============
-    // o = { z0,z1, nose:[[z,y]..], aft:[[z,y]..], hw:[[y,halfw]..], nr, ar, aw, inset, cam,
-    //       ns, nz, mat, clamp, open:{rim,sole} }
-    function volume(o){
-      const fN=mono(o.nose), fA=mono(o.aft), fHw=mono(o.hw);
-      const NS=o.ns||18, AW=(o.aw==null?0.60:o.aw);
-      const ins=(z)=>(o.inset||0)*clamp01((z-o.z0)/(o.z1-o.z0));
-      function xAt(y,z){
-        const yF=fN(z), yA=fA(z);
-        let x=Math.max(0.02, Math.min(fHw(y), o.clamp?o.clamp(y):1e9) - ins(z));
-        const nr=Math.min(o.nr||0.8,(yF-yA)*0.45);
-        if(y>yF-nr){ const q=clamp01((y-(yF-nr))/nr); x*=Math.sqrt(Math.max(0,1-q*q)); }
-        const ar=Math.min(o.ar||0.6,(yF-yA)*0.30);
-        if(y<yA+ar){ const q=clamp01((yA+ar-y)/ar); x*=AW+(1-AW)*Math.sqrt(Math.max(0,1-q*q)); }
-        return Math.max(0.015,x);
-      }
-      const TS=[]; for(let i=0;i<=NS;i++) TS.push(i/NS); TS.push(1.35,1.7,2.0);
-      function P(t,z){
-        const yF=fN(z), yA=fA(z);
-        if(t>1){ const e=xAt(yA+1e-4,z); return {x:Math.max(0.012,e*(2-t)), y:yA, nx:0, ny:-1}; }
-        const g=(1-Math.cos(Math.PI*t))/2, y=yF-(yF-yA)*g;
-        const x=xAt(y,z);
-        const d=0.014, t0=Math.max(0,t-d), t1=Math.min(1,t+d);
-        const g0=(1-Math.cos(Math.PI*t0))/2, g1=(1-Math.cos(Math.PI*t1))/2;
-        const ya_=yF-(yF-yA)*g0, yb_=yF-(yF-yA)*g1;
-        const xa_=xAt(ya_,z), xb_=xAt(yb_,z);
-        let nx=-(yb_-ya_), ny=(xb_-xa_);
-        const m=Math.hypot(nx,ny)||1;
-        return {x,y,nx:nx/m,ny:ny/m};
-      }
-      // walls
-      const NZ=o.nz||10;
-      const zs=[]; for(let k=0;k<=NZ;k++) zs.push(o.z0+(o.z1-o.z0)*k/NZ);
-      for(let k=0;k<NZ;k++) for(let j=0;j+1<TS.length;j++) for(const sd of [-1,1]){
-        const a0=P(TS[j],zs[k]), a1=P(TS[j+1],zs[k]), b1=P(TS[j+1],zs[k+1]), b0=P(TS[j],zs[k+1]);
-        const ny=(a0.ny+a1.ny)/2, nx=(a0.nx+a1.nx)/2;
-        const bias=(o.b||0)+0.02+0.40*Math.max(0,ny)-0.50*Math.max(0,-ny)+0.16*(k/NZ);
-        pushO([[sd*a0.x,a0.y,zs[k]],[sd*a1.x,a1.y,zs[k]],[sd*b1.x,b1.y,zs[k+1]],[sd*b0.x,b0.y,zs[k+1]]],
-              [sd*nx,ny,0.06], o.mat||'cream', bias, DBP);
-      }
-      if(!o.open){
-        // crowned roof: strips along y over the top ring plan; crown falls to the wall top at the edge,
-        // reading as a rolled shoulder — no square roof edge anywhere
-        const cam=(o.cam==null?0.15:o.cam), XS=[0,0.45,0.8,1];
-        const cz=(f)=>o.z1+cam*(1-Math.pow(f,2.2));
-        for(let j=0;j+1<TS.length;j++){
-          const t0=TS[j], t1=TS[j+1]; if(t1>1) break;
-          const A=P(t0,o.z1), B=P(t1,o.z1);
-          for(let k=0;k+1<XS.length;k++) for(const sd of [-1,1])
-            pushO([[sd*A.x*XS[k],A.y,cz(XS[k])],[sd*A.x*XS[k+1],A.y,cz(XS[k+1])],
-                   [sd*B.x*XS[k+1],B.y,cz(XS[k+1])],[sd*B.x*XS[k],B.y,cz(XS[k])]],
-                  [sd*XS[k]*0.35,0,1], o.mat||'cream', 0.55-0.13*k, -0.01);
-        }
-      } else {
-        const rim=o.open.rim, sole=o.open.sole;
-        for(let j=0;j+1<TS.length;j++) for(const sd of [-1,1]){
-          const A=P(TS[j],o.z1), B=P(TS[j+1],o.z1);
-          const iA={x:Math.max(0.02,A.x-rim*Math.abs(A.nx)-0.02*Math.abs(A.ny)), y:A.y-rim*A.ny};
-          const iB={x:Math.max(0.02,B.x-rim*Math.abs(B.nx)-0.02*Math.abs(B.ny)), y:B.y-rim*B.ny};
-          pushO([[sd*A.x,A.y,o.z1],[sd*B.x,B.y,o.z1],[sd*iB.x,iB.y,o.z1],[sd*iA.x,iA.y,o.z1]],
-                [0,0,1], o.mat||'cream', 0.55, -0.01);
-          pushO([[sd*iA.x,iA.y,o.z1],[sd*iB.x,iB.y,o.z1],[sd*iB.x,iB.y,sole],[sd*iA.x,iA.y,sole]],
-                [-sd*A.nx,-A.ny,0.25], o.mat||'cream', -1.3, -0.02);
-        }
-        for(let j=0;j+1<TS.length;j++){
-          const t0=TS[j], t1=TS[j+1]; if(t1>1) break;
-          const A=P(t0,o.z1), B=P(t1,o.z1);
-          const ax=Math.max(0.03,A.x-rim), bx=Math.max(0.03,B.x-rim);
-          face([[-ax,A.y,sole],[ax,A.y,sole],[bx,B.y,sole],[-bx,B.y,sole]], o.mat||'cream', -0.2, -0.01);
-        }
-      }
-      return { P, TS, xAt, fN, fA, z0:o.z0, z1:o.z1, cam:(o.cam==null?0.15:o.cam) };
+    // shell sections (cosine-spaced) — the mesh the hull is built from
+    const NS=46, SS=[]; for(let i=0;i<=NS;i++) SS.push(0.5-0.5*Math.cos(Math.PI*i/NS));
+    const SEC=SS.map(section);
+    // MESH-TRUE half-breadth: the shell quads sliced at y = const and tabulated x(z), so interior fit and
+    // topside details follow the skin that is actually drawn (keel, chine and sheer run on different y per
+    // section, so a planar reading of the three curves drifts off the mesh near the bow).
+    const HDY=0.05, HDZ=0.04, HNY=Math.ceil(L/HDY)+1, HNZ=Math.ceil((Math.max(...spec.sheer.map(p=>p[1]))+0.3)/HDZ)+1, HX=new Float32Array(HNY*HNZ);
+    for(let iy=0;iy<HNY;iy++){ const yc=Math.min(yB-1e-4,Math.max(yT+1e-4,yT+iy*HDY)), sg=[];
+      for(let i=0;i<NS;i++){ const A=SEC[i], B2=SEC[i+1]; let y0=1e9, y1=-1e9; for(let k=0;k<10;k++){ y0=Math.min(y0,A[k][1],B2[k][1]); y1=Math.max(y1,A[k][1],B2[k][1]); } if(y0>yc||y1<yc) continue;
+        for(let k=0;k<9;k++){ const q=[A[k],B2[k],B2[k+1],A[k+1]], pts=[];
+          for(let e=0;e<4;e++){ const a=q[e], b=q[(e+1)%4], da=a[1]-yc, db=b[1]-yc;
+            if((da<=0&&db>0)||(da>0&&db<=0)){ const t=da/(da-db); pts.push([a[0]+(b[0]-a[0])*t, a[2]+(b[2]-a[2])*t]); } }
+          if(pts.length>=2) sg.push(pts[0],pts[1]); } }
+      let lo=-1, hi=-1;
+      for(let iz=0;iz<HNZ;iz++){ const zc=iz*HDZ; let best=-1;
+        for(let s=0;s<sg.length;s+=2){ const p=sg[s], r=sg[s+1]; if((p[1]-zc)*(r[1]-zc)>0) continue; const dz=r[1]-p[1];
+          const x=Math.abs(dz)<1e-9?Math.min(p[0],r[0]):p[0]+(r[0]-p[0])*(zc-p[1])/dz; if(best<0||x<best) best=x; }
+        HX[iy*HNZ+iz]=best; if(best>=0){ if(lo<0) lo=iz; hi=iz; } }
+      for(let iz=0;iz<HNZ;iz++){ const k=iy*HNZ+iz; if(lo<0||iz<lo) HX[k]=0; else if(iz>hi) HX[k]=HX[iy*HNZ+hi]; else if(HX[k]<0) HX[k]=HX[k-1]; } }
+    function halfAtZ(y, z){
+      if(y<yT||y>yB) return 0;
+      const fy=(y-yT)/HDY, iy=Math.min(HNY-2,Math.max(0,Math.floor(fy))), ty=clamp01(fy-iy), fz=clamp(z/HDZ,0,HNZ-1.001), iz=Math.floor(fz), tz=fz-iz;
+      const a=HX[iy*HNZ+iz], b=HX[iy*HNZ+iz+1], c=HX[(iy+1)*HNZ+iz], d=HX[(iy+1)*HNZ+iz+1];
+      return Math.max(0, Math.min(lerp(a,b,tz), lerp(c,d,tz)));   // the narrower neighbour slice: conservative for fit
     }
 
-    // ============ GLASS: a level-edged ribbon wrapped on a volume's skin ============
-    // bd = { lo:[[y,z]..], hi:[[y,z]..], yEnd, ease, zRef } — header/sill are WORLD heights, the band
-    // wraps the nose as one sheet (no mullions) and pinches shut on an ellipse at yEnd.
-    function volBand(V,bd){
-      const fLo=mono(bd.lo), fHi=mono(bd.hi);
-      const easeK=(q)=> q<=0?0:(q>=1?1:Math.sqrt(1-(1-q)*(1-q)));
-      const zRef=bd.zRef!=null?bd.zRef:(V.z0+V.z1)/2;
-      const E=(t)=>{
-        const p=V.P(t,zRef), y=p.y;
-        const k=easeK((y-bd.yEnd)/(bd.ease||1));
-        if(k<0.05) return null;
-        const zl=fLo(y), zh=fHi(y);
-        const zc=(zl+zh)/2, half=(zh-zl)/2*k;
-        if(half<0.05) return null;
-        return {zb:zc-half, zt:zc+half};
-      };
-      for(let j=0;j+1<V.TS.length;j++){
-        const t0=V.TS[j], t1=V.TS[j+1]; if(t1>1) break;
-        const A=E(t0), B=E(t1); if(!A||!B) continue;
-        for(const sd of [-1,1]) for(const [off,ex,mat,b] of [[0.028,0.07,'iron',-0.15],[0.062,0,'glas',-0.62]]){
-          const q=(t,z)=>{ const p=V.P(t,z); return [sd*(p.x+off*Math.abs(p.nx)), p.y+off*p.ny, z]; };
-          const n=V.P((t0+t1)/2, zRef);
-          pushO([q(t0,A.zb-ex),q(t0,A.zt+ex),q(t1,B.zt+ex),q(t1,B.zb-ex)],
-                [sd*n.nx,n.ny,0.10], mat, b, DBP+(mat==='glas'?0.02:0));
+    const F=[], IF=[], RIGF={ stowed:[], out:[] }, TWF=[], HTP=[];
+    // ---- face emission (ADR 0048 §3, hull-layout-1 §4.2): the builder names a level and a role (at), and every
+    // face carries them as the NUMBERS geometry().ids / .roles map them to, and it (true only for the rooms, IF).
+    // The 90's open top station is its own level, top. Exterior upholstery is drawn in the house white one ramp
+    // step down, so the exterior stays at the fleet's twelve materials; the rooms keep their leather.
+    let TG=F, cLV='hull', cRO='shell';
+    const MATMAP={ leath:['cream',-0.2] };
+    const at=(lv, ro)=>{ cLV=lv; cRO=ro; };
+    const put=(f)=>{ const it=(TG===IF); if(!it){ const m=MATMAP[f.mat]; if(m){ f.mat=m[0]; f.b=(f.b||0)+m[1]; } }
+      f.lv=LV[cLV]; f.ro=RO[cRO]; f.it=it; TG.push(f); };
+    function Q(v,out,mat,b,db){ const n=newell(v); if(Math.hypot(n[0],n[1],n[2])<1e-7) return;
+      if(n[0]*out[0]+n[1]*out[1]+n[2]*out[2]<0) v=v.slice().reverse(); put({ v, mat, b:b||0, db:db||0 }); }
+    function boxQ(x0,x1,y0,y1,z0,z1,mat,b,db,topMat){
+      Q([[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]],[0,0,1],topMat||mat,b,db);
+      Q([[x0,y0,z0],[x1,y0,z0],[x1,y1,z0],[x0,y1,z0]],[0,0,-1],mat,(b||0)-1.2,db);
+      Q([[x0,y1,z0],[x1,y1,z0],[x1,y1,z1],[x0,y1,z1]],[0,1,0],mat,b,db);
+      Q([[x0,y0,z0],[x1,y0,z0],[x1,y0,z1],[x0,y0,z1]],[0,-1,0],mat,b,db);
+      Q([[x1,y0,z0],[x1,y1,z0],[x1,y1,z1],[x1,y0,z1]],[1,0,0],mat,b,db);
+      Q([[x0,y0,z0],[x0,y1,z0],[x0,y1,z1],[x0,y0,z1]],[-1,0,0],mat,b,db);
+    }
+    function tubeQ(A,B2,r0,r1,mat,b){
+      const ax=v_norm(v_sub(B2,A)); let up=[0,0,1]; if(Math.abs(ax[2])>0.9) up=[0,1,0];
+      const u=v_norm(v_cross(ax,up)), w=v_cross(u,ax);
+      const ring=(P,r)=>[0,1,2,3].map(k=>{ const a=k*Math.PI/2+Math.PI/4; return v_add(P, v_add(v_mul(u,Math.cos(a)*r), v_mul(w,Math.sin(a)*r))); });
+      const R0=ring(A,r0), R1=ring(B2,r1==null?r0:r1), mid=v_mul(v_add(A,B2),0.5);
+      for(let k=0;k<4;k++){ const k2=(k+1)%4, q=[R0[k],R0[k2],R1[k2],R1[k]], c=v_mul(v_add(v_add(q[0],q[1]),v_add(q[2],q[3])),0.25);
+        Q(q, v_sub(c,mid), mat, b, -0.15); }
+    }
+    function bands(v, out, BD, bb){ let rest=v;
+      for(const [zt,mat,b,db] of BD){ if(!rest) break;
+        if(zt===Infinity){ Q(rest,out,mat,(b||0)+(bb||0),db); break; }
+        const [lo,hi]=splitBy(rest,(p)=>p[2]-zt); if(lo) Q(lo,out,mat,(b||0)+(bb||0),db); rest=hi; } }
+
+    // ---- plan outlines + ring lofts (house tiers, coamings, slabs) ----
+    const NN=14, NSD=18, NCR=5, NAF=4, NC=NN+1+NSD+NCR;   // columns nose tip → aft corner end; aft segment follows
+    function outline(R, o){
+      const e=o.e||2.2, rA=Math.min(o.rA||0.5, R.W*0.5), P=[];
+      const yS1=R.yA+rA, yN=Math.max(R.yF-R.N, yS1+0.02), N=R.yF-yN;
+      for(let i=0;i<=NN;i++){ const th=(i/NN)*Math.PI/2; P.push([R.W*Math.pow(Math.sin(th),2/e), yN+N*Math.pow(Math.cos(th),2/e)]); }
+      for(let i=1;i<=NSD;i++) P.push([R.W, lerp(yN,yS1,i/NSD)]);
+      for(let i=1;i<=NCR;i++){ const a=(i/NCR)*Math.PI/2; P.push([R.W-rA+rA*Math.cos(a), R.yA+rA-rA*Math.sin(a)]); }
+      for(let i=1;i<=NAF;i++) P.push([(R.W-rA)*(1-i/NAF), R.yA]);
+      if(o.clamp) for(const p of P) p[0]=Math.min(p[0], Math.max(0.02, o.clamp(p[1])));
+      return P;
+    }
+    const pnorm=(P,j)=>{ const a=P[Math.max(0,j-1)], b=P[Math.min(P.length-1,j+1)]; const tx=b[0]-a[0], ty=b[1]-a[1], m=Math.hypot(tx,ty)||1; return [-ty/m, tx/m]; };
+    function ringTable(tbl){ const fs=[1,2,3,4].map(c=>mono(tbl.map(r=>[r[0],r[c]]))); return (z)=>({ z, yF:fs[0](z), yA:fs[1](z), W:fs[2](z), N:fs[3](z) }); }
+    function ringsFrom(tbl, zs, o){ const f=ringTable(tbl); return zs.map(z=>({ z, P:outline(f(z),o) })); }
+    function ringAt(RG, z){ let k=0; while(k<RG.length-2 && z>RG[k+1].z) k++; const A=RG[k], B2=RG[k+1], t=clamp01((z-A.z)/(B2.z-A.z));
+      return { z, P:A.P.map((p,j)=>[lerp(p[0],B2.P[j][0],t), lerp(p[1],B2.P[j][1],t)]) }; }
+    function hwAt(P, y){ if(y>P[0][1]) return 0; for(let j=0;j+1<NC;j++){ const a=P[j], b=P[j+1]; if((a[1]-y)*(b[1]-y)<=0){ const t=a[1]===b[1]?0:(a[1]-y)/(a[1]-b[1]); return lerp(a[0],b[0],t); } } return 0; }
+    function loftWalls(RG, mat, b){
+      for(let k=0;k+1<RG.length;k++){ const A=RG[k], B2=RG[k+1], zf=k/(RG.length-1);
+        for(let j=0;j+1<NC;j++) for(const sd of [-1,1]){
+          const a0=A.P[j], a1=A.P[j+1], b0=B2.P[j], b1=B2.P[j+1], n0=pnorm(A.P,j), n1=pnorm(A.P,j+1), nx=(n0[0]+n1[0])/2, ny=(n0[1]+n1[1])/2;
+          Q([[sd*a0[0],a0[1],A.z],[sd*a1[0],a1[1],A.z],[sd*b1[0],b1[1],B2.z],[sd*b0[0],b0[1],B2.z]],[sd*nx,ny,0.04],mat,
+            (b||0)+0.02+0.40*Math.max(0,ny)-0.45*Math.max(0,-ny)+0.12*zf, 0);
         }
       }
     }
-    // glass laid on a raked AFT wall (sliders, skylounge door)
-    function aftGlass(V,x0,x1,z0,z1,b){
-      const q=(x,z)=>[x, V.fA(z)-0.05, z];
-      pushO([q(x0,z0),q(x1,z0),q(x1,z1),q(x0,z1)],[0,-1,0.05],'glas',b==null?-0.55:b,DBP+0.02);
-    }
-
-    // ---- crowned, plan-rounded slab with a rolled outboard edge (platforms, buggy top) ----
-    function crownSlab(o){
-      const n=o.n||10, r=o.r, hx=o.hx, th=o.th||0.07, cam=(o.cam==null?0.07:o.cam), b=o.b||0;
-      const rf=(o.rf==null?0.22:o.rf);
-      const hwf=(y)=>{ const d=Math.min(y-o.ya, o.yf-y);
-        if(d>=r) return hx;
-        const t=clamp01((r-d)/r); return Math.max(0.012, hx*Math.sqrt(Math.max(0,1-t*t))); };
-      const SEC=(w)=>{
-        const P=[], xe=w*(1-rf), re=w*rf, dz=Math.min(re, th*0.85);
-        const cz=(x)=>o.z + cam*(1-(x/Math.max(w,1e-4))*(x/Math.max(w,1e-4)));
-        for(let i=0;i<=3;i++){ const x=xe*i/3; P.push([x,cz(x)]); }
-        const z0=cz(xe);
-        for(let i=1;i<=3;i++){ const a=(Math.PI/2)*i/3;
-          P.push([xe+re*Math.sin(a), z0-dz*(1-Math.cos(a))]); }
-        P.push([w, o.z-th]);
-        return P;
-      };
-      for(let i=0;i<n;i++){
-        const y0=o.ya+(o.yf-o.ya)*i/n, y1=o.ya+(o.yf-o.ya)*(i+1)/n;
-        const A=SEC(hwf(y0)), B=SEC(hwf(y1));
-        for(let k=0;k+1<A.length;k++) for(const sd of [-1,1]){
-          const p0=[sd*A[k][0],y0,A[k][1]], p1=[sd*A[k+1][0],y0,A[k+1][1]];
-          const q1=[sd*B[k+1][0],y1,B[k+1][1]], q0=[sd*B[k][0],y1,B[k][1]];
-          const mx=(Math.abs(p0[0])+Math.abs(p1[0]))/2/Math.max(hx,1e-4);
-          pushO([p0,p1,q1,q0],[sd*mx,0,k<4?1:0.22], o.mat, b+0.44-0.15*k, -0.01);
-        }
-        pushO([[-hwf(y0),y0,o.z-th],[hwf(y0),y0,o.z-th],[hwf(y1),y1,o.z-th],[-hwf(y1),y1,o.z-th]],
-              [0,0,-1],o.mat,b-1.5,-0.01);
-      }
-    }
-    // rounded lofted pod (helm consoles)
-    function pod(o){
-      const ny=o.ny||9, cam=(o.cam==null?0.08:o.cam), cx=o.cx||0, b=o.b||0;
-      const rp=(o.rp==null?Math.min(o.hx*0.58,(o.yf-o.ya)*0.34):o.rp);
-      const sh=(o.sh==null?Math.min(o.hx*0.52,(o.z1-o.z0)*0.34):o.sh);
-      const hwf=(y)=>{ const d=Math.min(y-o.ya,o.yf-y);
-        if(d>=rp) return o.hx;
-        const t=clamp01((rp-d)/rp); return Math.max(0.014,o.hx*Math.sqrt(Math.max(0,1-t*t))); };
-      const SEC=(w)=>{
-        const f=w/Math.max(o.hx,1e-4), s=sh*f, P=[[w,o.z0],[w,o.z0+(o.z1-o.z0-s)*0.55],[w,o.z1-s]];
-        for(let i=1;i<=3;i++){ const a=(Math.PI/2)*i/3;
-          P.push([w-s*(1-Math.cos(a))*0.92, o.z1-s+s*Math.sin(a)]); }
-        const xk=P[P.length-1][0];
-        P.push([xk*0.55, o.z1+cam*0.64]); P.push([0, o.z1+cam]);
-        return P;
-      };
-      const zc=(o.z0+o.z1)/2;
-      for(let i=0;i<ny;i++){
-        const y0=o.ya+(o.yf-o.ya)*i/ny, y1=o.ya+(o.yf-o.ya)*(i+1)/ny;
-        const A=SEC(hwf(y0)), B=SEC(hwf(y1));
-        for(let k=0;k+1<A.length;k++) for(const sd of [-1,1]){
-          const p0=[cx+sd*A[k][0],y0,A[k][1]], p1=[cx+sd*A[k+1][0],y0,A[k+1][1]];
-          const q1=[cx+sd*B[k+1][0],y1,B[k+1][1]], q0=[cx+sd*B[k][0],y1,B[k][1]];
-          const mz=(A[k][1]+A[k+1][1])/2;
-          pushO([p0,p1,q1,q0],[sd*(A[k][0]+A[k+1][0])/2,0,mz-zc],o.mat,
-                b+(k<3?-0.10-0.12*k:0.34+0.10*(k-3)),DBP);
+    // straight aft segment as a full-width grid: openings skipped, glazing painted glass
+    function aftGrid(RG, o, mat, b){
+      const brk=new Set([0]); (o.open||[]).concat(o.glaze||[]).forEach(r=>{ brk.add(r.x0); brk.add(r.x1); });
+      for(let k=0;k+1<RG.length;k++){ const A=RG[k], B2=RG[k+1], EA=A.P[NC-1][0], EB=B2.P[NC-1][0], yA=A.P[NC][1], yB2=B2.P[NC][1];
+        const xs=[...brk].filter(x=>Math.abs(x)<Math.min(EA,EB)-0.02).concat([-1e9,1e9]).sort((a,b)=>a-b);
+        for(let i=0;i+1<xs.length;i++){ const xa=xs[i], xb=xs[i+1];
+          const ca=(x,E)=>clamp(x,-E,E), xm=(ca(xa,EA)+ca(xb,EA))/2, zm=(A.z+B2.z)/2;
+          if((o.open||[]).some(r=>xm>r.x0&&xm<r.x1&&zm>r.z0&&zm<r.z1)) continue;
+          const gl=(o.glaze||[]).some(r=>xm>r.x0&&xm<r.x1&&zm>r.z0&&zm<r.z1);
+          Q([[ca(xa,EA),yA,A.z],[ca(xb,EA),yA,A.z],[ca(xb,EB),yB2,B2.z],[ca(xa,EB),yB2,B2.z]],[0,-1,0.05], gl?'glas':mat, gl?-0.55:(b||0)-0.45, gl?0.02:0);
         }
       }
-      const wa=hwf(o.ya+1e-3), wf=hwf(o.yf-1e-3);
-      pushO([[cx-wa,o.ya,o.z0],[cx+wa,o.ya,o.z0],[cx+wf,o.yf,o.z0],[cx-wf,o.yf,o.z0]],
-            [0,0,-1],o.mat,b-1.6,-0.01);
-      return hwf;
     }
-    function podGlass(o, hwf, zA, zB){
-      const ny=o.ny||9, cx=o.cx||0;
-      for(let i=0;i<ny;i++){
-        const y0=o.ya+(o.yf-o.ya)*i/ny, y1=o.ya+(o.yf-o.ya)*(i+1)/ny;
-        const w0=hwf(y0), w1=hwf(y1);
-        if(Math.min(w0,w1) < o.hx*0.34) continue;
-        for(const sd of [-1,1])
-          for(const [off,ex,mat,bb] of [[0.020,0.070,'iron',-0.15],[0.052,0,'glas',-0.62]])
-            pushO([[cx+sd*(w0+off),y0,zA-ex],[cx+sd*(w0+off),y0,zB+ex],
-                   [cx+sd*(w1+off),y1,zB+ex],[cx+sd*(w1+off),y1,zA-ex]],
-                  [sd,0,0],mat,bb,DBP+(mat==='glas'?0.02:0));
+    // holes in lids (stairwells, hatches): keep the parts of a polygon outside a plan rect
+    function punch(v, r){ const out=[]; let rest=v;
+      for(const g of [(p)=>p[0]-r.x0, (p)=>r.x1-p[0], (p)=>p[1]-r.y0, (p)=>r.y1-p[1]]){ if(!rest) break; const s=splitBy(rest,g); if(s[0]) out.push(s[0]); rest=s[1]; }
+      return out; }
+    function putH(v,out,mat,b,db,holes){ let parts=[v]; if(holes&&holes.length) for(const r of holes){ const nx=[]; parts.forEach(p=>punch(p,r).forEach(q=>nx.push(q))); parts=nx; } parts.forEach(p=>Q(p,out,mat,b,db)); }
+    function crown(P, n, z, cam, mat, b, db, down, holes){
+      const XS=[0,0.5,0.82,1], cz=(f)=>z+(down?0:cam*(1-Math.pow(f,2.2)));
+      for(let j=0;j+1<n;j++){ const A=P[j], B2=P[j+1];
+        for(let k=0;k+1<XS.length;k++) for(const sd of [-1,1])
+          putH([[sd*A[0]*XS[k],A[1],cz(XS[k])],[sd*A[0]*XS[k+1],A[1],cz(XS[k+1])],[sd*B2[0]*XS[k+1],B2[1],cz(XS[k+1])],[sd*B2[0]*XS[k],B2[1],cz(XS[k])]],
+            down?[0,0,-1]:[sd*XS[k]*0.35,0,1], mat, down?(b||0)-1.5:(b||0)+0.55-0.13*k, db||0, holes);
       }
     }
-    const ladder=(x0,y0,z0,x1,y1,z1,N,r)=>{
-      const a=[-x0,y0,z0], b=[-x1,y1,z1], c=[x0,y0,z0], d=[x1,y1,z1];
-      tubeF(a,b,r*0.62,'steel',0.2); tubeF(c,d,r*0.62,'steel',-0.3);
-      for(let k=1;k<N;k++){ const t=k/N;
-        tubeF([lerp(a[0],b[0],t),lerp(a[1],b[1],t),lerp(a[2],b[2],t)],
-              [lerp(c[0],d[0],t),lerp(c[1],d[1],t),lerp(c[2],d[2],t)],r*0.42,'steel',0.3); }
-    };
-
-    let VOLS={};
-    (function build(){
-      lv('hull');                                   // shell, liner, bottom, covering board, transom, topside fittings
-      // ---- hull shell, cockpit liner, bottom ----
-      for(const side of [-1,1]){
-        for(let i=0;i<NSEG;i++){
-          const u0=i/NSEG, u1=(i+1)/NSEG;
-          for(const [f0,f1,mat,b,db] of OB)
-            face([skin(side,u0,f0),skin(side,u1,f0),skin(side,u1,f1),skin(side,u0,f1)],mat,b,db);
-          const sa=station(u0), sb=station(u1), fa=dfrac(sa), fb=dfrac(sb);
-          if(sa.y <= spec.cockpitTo+0.25){
-            const LT=0.94;
-            for(let k=0;k<2;k++){
-              const g0a=fa+(LT-fa)*k/2, g1a=fa+(LT-fa)*(k+1)/2;
-              const g0b=fb+(LT-fb)*k/2, g1b=fb+(LT-fb)*(k+1)/2;
-              face([skin(side,u1,g0b,1),skin(side,u0,g0a,1),skin(side,u0,g1a,1),skin(side,u1,g1b,1)],'cream',-1.5,-0.03);
+    // dark glass band laid on a ring loft (frame + glass, two offset layers)
+    function bandOn(RG, bd){
+      const lo=mono(bd.lo), hi=mono(bd.hi), cols=[];
+      const colAt=(j,z)=>{ const R=ringAt(RG,z); return R.P[j]; };
+      const colN=(j,z)=>{ const R=ringAt(RG,z); return pnorm(R.P,j); };
+      for(let j=0;j<NN+1+NSD;j++){
+        let zb=bd.z0, zt=bd.z1;
+        for(let it=0;it<3;it++){ zb=lo(colAt(j,zb)[1]); zt=hi(colAt(j,zt)[1]); }
+        const ym=colAt(j,(zb+zt)/2)[1];
+        if(zt<zb){ const m=(zb+zt)/2; zb=m; zt=m; }
+        cols.push({ ok: ym>=bd.yTip-0.05, zb, zt });
+      }
+      for(let j=0;j+1<cols.length;j++){ const c0=cols[j], c1=cols[j+1]; if(!c0.ok||!c1.ok) continue; if(c0.zt-c0.zb<0.01 && c1.zt-c1.zb<0.01) continue;
+        for(const [off,ex,mat,b,db] of [[0.024,0.045,'iron',-0.2,0.05],[0.048,0,'glas',-0.62,0.07]])
+          for(let r=0;r<3;r++){ const f0=r/3, f1=(r+1)/3;
+            const z0a=lerp(c0.zb-ex*(c0.zt>c0.zb+0.01?1:0),c0.zt+ex*(c0.zt>c0.zb+0.01?1:0),f0), z1a=lerp(c0.zb-ex*(c0.zt>c0.zb+0.01?1:0),c0.zt+ex*(c0.zt>c0.zb+0.01?1:0),f1);
+            const z0b=lerp(c1.zb-ex*(c1.zt>c1.zb+0.01?1:0),c1.zt+ex*(c1.zt>c1.zb+0.01?1:0),f0), z1b=lerp(c1.zb-ex*(c1.zt>c1.zb+0.01?1:0),c1.zt+ex*(c1.zt>c1.zb+0.01?1:0),f1);
+            for(const sd of [-1,1]){
+              const P=(jj,z)=>{ const p=colAt(jj,z), n=colN(jj,z); return [sd*(p[0]+off*n[0]), p[1]+off*n[1], z]; };
+              const n=colN(j,(c0.zb+c0.zt)/2);
+              Q([P(j,z0a),P(j+1,z0b),P(j+1,z1b),P(j,z1a)],[sd*n[0],n[1],0.1],mat,b,db);
             }
           }
-          face([skin(-1,u0,0),skin(-1,u1,0),skin(1,u1,0),skin(1,u0,0)],'boot',-1.0);
-        }
       }
-      // ---- covering board: ONE rolled cap, flat washboard aft, lifting into a low bulwark forward ----
-      const toeOf=(u)=>{ const t=clamp01((u-spec.toe[0])/(1-spec.toe[0])); return spec.toe[1]*t*t*(3-2*t); };
-      const CAPN=5, CAPMAT='teak';
-      for(const side of [-1,1]) for(let i=0;i<NSEG;i++){
-        const u0=i/NSEG, u1=(i+1)/NSEG;
-        const rail=(u)=>{
-          const st=station(u), o=skin(side,u,1), toe=toeOf(u);
-          const xo=o[0], xi=side*(st.ws-TH-spec.capW), P=[];
-          for(let k=0;k<=CAPN;k++){
-            const t=k/CAPN;
-            const bell=Math.sin(Math.PI*Math.min(1,t*1.32));
-            P.push([lerp(xo,xi,t), o[1], o[2]-0.004-spec.drop*t*t + toe*bell]);
-          }
-          return P;
-        };
-        const A=rail(u0), B=rail(u1);
-        for(let k=0;k+1<A.length;k++)
-          pushO([A[k],A[k+1],B[k+1],B[k]],[side*(1-k/CAPN)*0.62,0,1],CAPMAT,-0.80-0.22*(k/CAPN),0.03);
-      }
-      lv('main_deck');                              // the cockpit: sole, planks, hatches, chair, mezzanine, stern fittings
-      // ---- cockpit sole + teak planks ----
-      const SOLE_U=uOf(spec.cockpitTo);
-      const DSEG=18, BORD=spec.capW*0.9;
-      const dw=(u)=>Math.max(0.05,(hbOf(u,dfrac(station(u)))-TH)*0.965);
-      for(let i=0;i<DSEG;i++){
-        const u0=SOLE_U*i/DSEG, u1=SOLE_U*(i+1)/DSEG;
-        face([[-dw(u0),station(u0).y,DECK],[dw(u0),station(u0).y,DECK],
-              [dw(u1),station(u1).y,DECK],[-dw(u1),station(u1).y,DECK]],'cream',-0.3);
-      }
-      const gA=station(0).y+0.30, gF=spec.cockpitTo-0.05, PLANKS=9;
-      for(let i=0;i<DSEG;i++){
-        const u0=SOLE_U*i/DSEG, u1=SOLE_U*(i+1)/DSEG, y0=station(u0).y, y1=station(u1).y;
-        if(y1<gA || y0>gF) continue;
-        const w0=Math.max(0,dw(u0)-BORD), w1=Math.max(0,dw(u1)-BORD);
-        for(let k=0;k<PLANKS;k++){
-          const t0=k/PLANKS, t1=(k+1)/PLANKS;
-          face([[-w0+2*w0*t0,y0,DECK+0.006],[-w0+2*w0*t1,y0,DECK+0.006],
-                [-w1+2*w1*t1,y1,DECK+0.006],[-w1+2*w1*t0,y1,DECK+0.006]],'teak',k%2?-0.55:-0.15,0.02);
-        }
-      }
-      const hatch=(x,y,w,l,handle)=>{
-        const z=DECK;
-        face([[x-w,y-l,z+0.008],[x+w,y-l,z+0.008],[x+w,y+l,z+0.008],[x-w,y+l,z+0.008]],'iron',0.0,0.03);
-        const iw=w-0.05, il=l-0.05;
-        face([[x-iw,y-il,z+0.014],[x,y-il,z+0.014],[x,y+il,z+0.014],[x-iw,y+il,z+0.014]],'steel',-3.5,0.05);
-        face([[x,y-il,z+0.014],[x+iw,y-il,z+0.014],[x+iw,y+il,z+0.014],[x,y+il,z+0.014]],'steel',-2.7,0.05);
-        if(handle) boxF([x, y-il+0.07, z+0.03],[0.12,0.022,0.022],'steel',-1.7,0.07);
-      };
-      spec.hatches.forEach(h=>hatch(h[0],h[1],h[2],h[3],h[4]!==false));
-      // fighting chair
-      (function(){ const y=spec.chair.y, r=spec.chair.r;
-        face([[-r,y-r,DECK+0.012],[r,y-r,DECK+0.012],[r,y+r,DECK+0.012],[-r,y+r,DECK+0.012]],'steel',-2.2,0.05);
-        boxF([0,y,DECK+0.10],[r*0.55,r*0.55,0.10],'iron',0.1,-0.02);
-        const fy=y+r+spec.chair.foot;
-        tubeF([-r*0.9,fy,DECK+0.30],[r*0.9,fy,DECK+0.30],0.05,'steel',0.2);
-        for(const s of [-1,1]) tubeF([s*r*0.85,fy,DECK+0.02],[s*r*0.85,fy,DECK+0.30],0.045,'steel',0.0);
-      })();
+    }
+    // slab: plan outline, crowned top (floor), fascia sweeping down to zf(y) (wall), underside (wall)
+    function slab(o){
+      const P=outline({ z:o.zTop, yF:o.yF, yA:o.yA, W:o.W, N:o.N }, { e:o.e||2.0, rA:o.rA }), zf=mono(o.zf), n=P.length;
+      at(o.lv, o.rWall||'wall');
+      for(let j=0;j+1<n;j++){ const a=P[j], b=P[j+1], nn=pnorm(P,j);
+        for(const sd of [-1,1]) Q([[sd*a[0],a[1],zf(a[1])],[sd*b[0],b[1],zf(b[1])],[sd*b[0],b[1],o.zTop],[sd*a[0],a[1],o.zTop]],[sd*nn[0],nn[1],0],'cream',(o.bF||0.15)+0.35*Math.max(0,nn[1])-0.4*Math.max(0,-nn[1]),0); }
+      at(o.lv, o.rTop||'floor'); crown(P, n, o.zTop, o.cam||0.03, 'cream', o.bT||0, 0, false, o.holes);
+      at(o.lv, o.rWall||'wall');
+      for(let j=0;j+1<n;j++){ const A=P[j], B2=P[j+1];
+        for(const sd of [-1,1]) putH([[0,A[1],zf(A[1])+0.002],[sd*A[0],A[1],zf(A[1])],[sd*B2[0],B2[1],zf(B2[1])],[0,B2[1],zf(B2[1])+0.002]],[0,0,-1],'cream',-1.6,0,o.holes); }
+      return P;
+    }
 
-      // ---- house volumes ----
-      spec.volumes.forEach(vs=>{
-        lv(vs.id==='salon' ? 'house' : 'bridge');   // the salon (roof included) is house; skylounge + open coaming are the bridge deck
-        const o=Object.assign({}, vs, { clamp: vs.clampHull!==false ? clampHW : null, mat:'cream' });
-        const V=volume(o);
-        VOLS[vs.id]=V;
-        (vs.bands||[]).forEach(bd=>volBand(V,bd));
-        (vs.aftGlass||[]).forEach(gl=>aftGlass(V,gl[0],gl[1],gl[2],gl[3]));
-      });
-      const SAL=VOLS.salon;
-
-      lv('hull');                                   // the side-deck margin rides the shell — the section bites it with the topsides
-      // ---- deck margin: washboards + the strip alongside the house down to the covering board ----
-      const MSEG=26, mU0=uOf(spec.foredeckTo+0.10);
-      for(const side of [-1,1]) for(let i=0;i<MSEG;i++){
-        const u0=mU0*i/MSEG, u1=mU0*(i+1)/MSEG;
-        const sa=station(u0), sb=station(u1);
-        const inner=(st)=>{ const y=st.y;
-          return (y>=spec.cockpitTo-0.05 && y<=spec.foredeckTo+0.12)
-            ? Math.min(st.ws-TH-spec.capW, SAL.xAt(y, zdl(y))+0.02) : st.ws-TH-spec.capW; };
-        const xo0=side*(sa.ws-TH-spec.capW), xi0=side*inner(sa), z0=sa.sheer-spec.drop;
-        const xo1=side*(sb.ws-TH-spec.capW), xi1=side*inner(sb), z1=sb.sheer-spec.drop;
-        const q = side>0 ? [[xi0,sa.y,z0],[xo0,sa.y,z0],[xo1,sb.y,z1],[xi1,sb.y,z1]]
-                         : [[xo0,sa.y,z0],[xi0,sa.y,z0],[xi1,sb.y,z1],[xo1,sb.y,z1]];
-        face(q,'cream',-0.6);
+    // ==================================== EXTERIOR ====================================
+    // ---- hull shell: 46 cosine-spaced sections; boot + boot-top by z-clip; cove row on the topsides ----
+    at('hull','shell');
+    const mx=(p,sd)=>[sd*p[0],p[1],p[2]];
+    const HB=[[DWL-0.03,'boot',-0.3,0],[DWL+0.08,'stripe',0.1,0.004],[Infinity,'hull',0,0]];
+    for(let i=0;i<NS;i++){ const A=SEC[i], B2=SEC[i+1];
+      for(let k=0;k<9;k++) for(const sd of [-1,1]){
+        const q=[mx(A[k],sd),mx(B2[k],sd),mx(B2[k+1],sd),mx(A[k+1],sd)], out=k<3?[sd*0.45,0,-1]:[sd,0,0.08];
+        if(k===7) Q(q,out,'stripe',0.18,0.006); else bands(q,out,HB,k<3?-0.15:0);
       }
-      // ---- transom + doors ----
-      const tp=(s,f)=>skin(s,0,f);
-      for(const [f0,f1,mat,b] of OB)
-        face([tp(-1,f1),tp(1,f1),tp(1,f0),tp(-1,f0)], mat, (b||0)-0.8, 0.005);
-      (function(){ const s0=station(0), zt=s0.sheer, wsx=s0.ws-TH;
-        face([[-wsx,s0.y,zt],[wsx,s0.y,zt],[wsx,s0.y+spec.capW,zt-0.004],[-wsx,s0.y+spec.capW,zt-0.004]],'teak',-0.9,0.03);
-        const D=spec.doors, y=s0.y-0.02;
-        const panel=(xa,xb,za,zb,mat,b)=>face([[xb,y,zb],[xa,y,zb],[xa,y,za],[xb,y,za]],mat,b,DBP);
-        panel(D.tr[0], D.tr[1], DECK+0.05, DECK+D.trH, 'dark', -0.5);
-        panel(D.tr[0]-0.06, D.tr[0]-0.02, DECK+0.05, DECK+D.trH, 'steel', -1.0);
-        panel(D.tu[0], D.tu[1], DECK+0.04, DECK+D.tuH, 'dark', -0.7);
-        panel(D.tu[1]+0.02, D.tu[1]+0.06, DECK+0.04, DECK+D.tuH, 'steel', -1.2);
-      })();
-      // topside vents (louvre slit, high in the topsides)
-      if(spec.vent) for(const s of [-1,1]){
-        const u=uOf(spec.vent.y), st=station(u), z=st.kz+st.dep*0.80;
-        boxF([s*(hbOf(u,0.80)-0.02), spec.vent.y, z],[0.05, spec.vent.len/2, 0.13],'iron',0.05,0.04);
+    }
+    { const s0=SEC[0], poly=[]; for(let k=9;k>=0;k--) poly.push([s0[k][0],yT,s0[k][2]]); for(let k=1;k<=9;k++) poly.push([-s0[k][0],yT,s0[k][2]]);
+      bands(poly,[0,-1,0],[[DWL-0.03,'boot',-0.9,0],[DWL+0.08,'stripe',-0.5,0.004],[LZ+0.40,'hull',-0.7,0],[Infinity,'teak',-0.55,0.004]],0); }
+    // ---- teak cap: wide covering board in the cockpit, a slim rail stem to transom ----
+    const CF=spec.cockpitFwd, CZ=spec.cockpitZ;
+    const capW=(y)=>{ if(y<CF-0.1) return spec.capW; if(y>CF+0.9) return spec.railW; return lerp(spec.capW,spec.railW,smooth((y-CF+0.1)/1.0)); };
+    const xin=(y)=>Math.max(0.05,fSx(y)-capW(y));
+    at('hull','trim');
+    for(let i=0;i<NS;i++) for(const sd of [-1,1]){
+      const c=(s)=>{ const y=yS(s), z=fSz(y), x=fSx(y); return { y, z, x, w:Math.min(capW(y),x) }; }, a=c(SS[i]), b=c(SS[i+1]);
+      Q([[sd*(a.x+0.015),a.y,a.z+0.004],[sd*(b.x+0.015),b.y,b.z+0.004],[sd*(b.x-b.w),b.y,b.z+0.012],[sd*(a.x-a.w),a.y,a.z+0.012]],[sd*0.2,0,1],'teak',-0.35,0.012);
+      Q([[sd*(a.x+0.015),a.y,a.z-0.07],[sd*(b.x+0.015),b.y,b.z-0.07],[sd*(b.x+0.015),b.y,b.z+0.004],[sd*(a.x+0.015),a.y,a.z+0.004]],[sd,0,0],'teak',-0.25,0.014);
+    }
+    { const z=fSz(yT), x=fSx(yT)+0.015, w=spec.capW;
+      Q([[-x,yT-0.015,z+0.004],[x,yT-0.015,z+0.004],[x,yT+w,z+0.012],[-x,yT+w,z+0.012]],[0,0,1],'teak',-0.35,0.012);
+      Q([[-x,yT-0.015,z-0.07],[x,yT-0.015,z-0.07],[x,yT-0.015,z+0.004],[-x,yT-0.015,z+0.004]],[0,-1,0],'teak',-0.6,0.014); }
+    // ---- topside details: hull side light (slanted lozenge) + engine-room intake ----
+    function hullPatch(y0,y1,z0,z1,mat,b,off,slant,ends){
+      const N=12, e=(t)=>{ const k=Math.min(1,Math.min(t,1-t)/(ends||0.16)); return Math.sqrt(Math.max(0,1-(1-k)*(1-k))); };
+      for(let i=0;i<N;i++){ const ta=i/N, tb=(i+1)/N, ya=lerp(y0,y1,ta), yb=lerp(y0,y1,tb), zm=(z0+z1)/2;
+        const ha=(z1-z0)/2*e(ta), hb=(z1-z0)/2*e(tb), sa=slant*(ta-0.5), sb=slant*(tb-0.5);
+        for(const sd of [-1,1]){ const P=(y,z)=>[sd*(halfAtZ(y,z)+off),y,z];
+          Q([P(ya,zm-ha+sa),P(yb,zm-hb+sb),P(yb,zm+hb+sb),P(ya,zm+ha+sa)],[sd,0,0],mat,b,DBP); } }
+    }
+    at('hull','shell');
+    if(spec.hullWin){ hullPatch(spec.hullWin.y0,spec.hullWin.y1,spec.hullWin.z0,spec.hullWin.z1,'iron',-0.2,0.012,spec.hullWin.slant,0.12);
+      hullPatch(spec.hullWin.y0+0.05,spec.hullWin.y1-0.05,spec.hullWin.z0+0.04,spec.hullWin.z1-0.04,'glas',-0.5,0.03,spec.hullWin.slant,0.12); }
+    { const V=spec.vent, sl=V.slant||0; hullPatch(V.y0,V.y1,V.z0,V.z1,'iron',0.35,0.012,sl,V.ends||0.05);
+      for(let k=1;k<V.n;k++){ const z=lerp(V.z0,V.z1,k/V.n), ins=V.ends?0.10+0.05*Math.abs(k-V.n/2):0.06; hullPatch(V.y0+ins,V.y1-ins,z-0.012,z+0.012,'steel',0.4,0.03,sl,0.02); } }
+
+    // ---- cockpit: planked sole, liner, fighting chair, side stairs, mezzanine ----
+    at('main_deck','floor');
+    const CS=14;
+    for(let i=0;i<CS;i++){ const y0=lerp(yT+0.06,CF,i/CS), y1=lerp(yT+0.06,CF,(i+1)/CS), w0=xin(y0)-0.01, w1=xin(y1)-0.01, PL=10;
+      for(let k=0;k<PL;k++){ const t0=k/PL, t1=(k+1)/PL;
+        Q([[lerp(-w0,w0,t0),y0,CZ],[lerp(-w0,w0,t1),y0,CZ],[lerp(-w1,w1,t1),y1,CZ],[lerp(-w1,w1,t0),y1,CZ]],[0,0,1],'teak',k%2?-0.5:-0.1,0); } }
+    at('hull','shell');
+    for(let i=0;i<CS;i++) for(const sd of [-1,1]){ const y0=lerp(yT+0.06,CF,i/CS), y1=lerp(yT+0.06,CF,(i+1)/CS);
+      Q([[sd*xin(y0),y0,CZ],[sd*xin(y1),y1,CZ],[sd*xin(y1),y1,fSz(y1)-0.003],[sd*xin(y0),y0,fSz(y0)-0.003]],[-sd,0,0.05],'cream',-0.9,0); }
+    { const w=xin(yT+0.06); Q([[-w,yT+0.06,CZ],[w,yT+0.06,CZ],[w,yT+0.06,fSz(yT)-0.003],[-w,yT+0.06,fSz(yT)-0.003]],[0,1,0],'cream',-0.6,0); }
+    at('hull','trim');
+    { const D=spec.doors; const y=yT-0.02; for(const [x0,x1,h] of [[D.tr[0],D.tr[1],D.trH],[D.tu[0],D.tu[1],D.tuH]]){
+      const zb=CZ+0.04, zt=CZ+h; Q([[x0,y,zb],[x1,y,zb],[x1,y,zb+0.03],[x0,y,zb+0.03]],[0,-1,0],'iron',-0.3,0.02);
+      Q([[x0,y,zb],[x0+0.03,y,zb],[x0+0.03,y,zt],[x0,y,zt]],[0,-1,0],'iron',-0.3,0.02); Q([[x1-0.03,y,zb],[x1,y,zb],[x1,y,zt],[x1-0.03,y,zt]],[0,-1,0],'iron',-0.3,0.02); } }
+    for(const sd of [-1,1]) spec.capRods.forEach(y=>{ const z=fSz(y), x=sd*(xin(y)+capW(y)*0.45); tubeQ([x,y,z-0.03],[x*1.02,y-0.12,z+0.24],0.035,0.035,'steel',0.1); });
+    at('main_deck','fit');
+    { const y=spec.chair.y;
+      boxQ(-0.15,0.15,y-0.15,y+0.15,CZ,CZ+0.44,'steel',-0.2);
+      boxQ(-0.42,0.42,y-0.40,y+0.36,CZ+0.44,CZ+0.58,'leath',0.1);
+      boxQ(-0.40,0.40,y+0.28,y+0.42,CZ+0.58,CZ+1.08,'leath',-0.1);
+      for(const sd of [-1,1]) boxQ(sd*0.36,sd*0.46,y-0.30,y+0.36,CZ+0.58,CZ+0.78,'teak',0.0);
+      tubeQ([-0.34,y-0.82,CZ+0.30],[0.34,y-0.82,CZ+0.30],0.04,0.04,'steel',0.2);
+      for(const sd of [-1,1]) tubeQ([sd*0.30,y-0.82,CZ+0.30],[sd*0.10,y-0.20,CZ+0.36],0.03,0.03,'steel',0.1); }
+    spec.tubs.forEach(t=>boxQ(t[0]-0.28,t[0]+0.28,t[1]-0.22,t[1]+0.22,CZ,CZ+0.52,'cream',0.1,0,'iron'));
+    const ST=spec.sideStair, MZ=spec.mezz;
+    for(const sd of [-1,1]){ const xa=sd>0?ST.x0:-ST.x1, xb=sd>0?ST.x1:-ST.x0, run=(CF-ST.y0)/ST.n;
+      for(let k=0;k<ST.n;k++){ const ya=ST.y0+k*run, zt=lerp(CZ,MZ.z,(k+1)/(ST.n+1));
+        boxQ(xa,xb,ya,CF,CZ,zt-0.03,'cream',-0.25); boxQ(xa,xb,ya,ya+run+0.01,zt-0.03,zt,'teak',-0.1); } }
+    at('main_deck','floor');
+    const mzw=(y)=>spec.wings?spec.wings.x0-0.01:xin(y)-0.13;
+    for(let i=0;i<4;i++){ const y0=lerp(MZ.y0,MZ.y1,i/4), y1=lerp(MZ.y0,MZ.y1,(i+1)/4);
+      Q([[-mzw(y0),y0,MZ.z],[mzw(y0),y0,MZ.z],[mzw(y1),y1,MZ.z],[-mzw(y1),y1,MZ.z]],[0,0,1],'teak',i%2?-0.35:-0.15,0); }
+    at('main_deck','wall');
+    Q([[-xin(MZ.y0),MZ.y0,CZ],[xin(MZ.y0),MZ.y0,CZ],[xin(MZ.y0),MZ.y0,MZ.z],[-xin(MZ.y0),MZ.y0,MZ.z]],[0,-1,0],'cream',-0.35,0);
+    for(const x of MZ.drawers) boxQ(x-MZ.dw,x+MZ.dw,MZ.y0-0.012,MZ.y0,CZ+0.28,Math.min(CZ+0.92,MZ.z-0.08),'cream',-0.6,0.01);
+    for(const sd of [-1,1]){ if(spec.wings) break; const P=(y,x,z)=>[sd*x,y,z], a=MZ.y0, b=MZ.y1, za=fSz(MZ.y0)-0.05, zb=MZ.z+0.52, ia=mzw(a)-0.02, ib=mzw(b)-0.02, oa=xin(a), ob=xin(b);
+      Q([P(a,ia,zb),P(b,ib,zb),P(b,ob,zb),P(a,oa,zb)],[0,0,1],'cream',0.05,0); Q([P(a,ia,za),P(b,ib,za),P(b,ib,zb),P(a,ia,zb)],[-sd,0,0],'cream',0.05,0);
+      Q([P(a,oa,za),P(b,ob,za),P(b,ob,zb),P(a,oa,zb)],[sd,0,0],'cream',0.05,0); Q([P(a,ia,za),P(a,oa,za),P(a,oa,zb),P(a,ia,zb)],[0,-1,0],'cream',0.05,0);
+      Q([P(b,ib,za),P(b,ob,za),P(b,ob,zb),P(b,ib,zb)],[0,1,0],'cream',0.05,0); }
+    // mezzanine forward riser: closes the gap outboard of the house corner, down to the side-deck line
+    if(MZ.z>fSz(MZ.y1)-0.06) Q([[-mzw(MZ.y1),MZ.y1,fSz(MZ.y1)-0.06],[mzw(MZ.y1),MZ.y1,fSz(MZ.y1)-0.06],[mzw(MZ.y1),MZ.y1,MZ.z],[-mzw(MZ.y1),MZ.y1,MZ.z]],[0,1,0],'cream',-0.2,0);
+    // the 53: the house sides run aft past the salon bulkhead as raked wings flanking the mezzanine
+    if(spec.wings){ const Wg=spec.wings, N=8; at('house','wall');
+      const edge=(t)=>[lerp(Wg.yA,Wg.yF,t), lerp(Wg.zA,Wg.zF,Math.pow(t,Wg.p||1))];
+      for(const sd of [-1,1]){ const P=(x,y,z)=>[sd*x,y,z];
+        for(let i=0;i<N;i++){ const [ya,za]=edge(i/N), [yb,zb]=edge((i+1)/N);
+          Q([P(Wg.x1,ya,za),P(Wg.x1,yb,zb),P(Wg.x0,yb,zb),P(Wg.x0,ya,za)],[0,-0.6,1],'cream',0.25,0);
+          Q([P(Wg.x1,ya,CZ),P(Wg.x1,yb,CZ),P(Wg.x1,yb,zb),P(Wg.x1,ya,za)],[sd,0,0],'cream',0.05,0);
+          Q([P(Wg.x0,ya,CZ),P(Wg.x0,yb,CZ),P(Wg.x0,yb,zb),P(Wg.x0,ya,za)],[-sd,0,0],'cream',-0.25,0); }
+        Q([P(Wg.x0,Wg.yA,CZ),P(Wg.x1,Wg.yA,CZ),P(Wg.x1,Wg.yA,Wg.zA),P(Wg.x0,Wg.yA,Wg.zA)],[0,-1,0],'cream',-0.3,0);
+        for(let i=0;i<4;i++){ const y0=lerp(Wg.yA,Wg.yF,i/4), y1=lerp(Wg.yA,Wg.yF,(i+1)/4);   // side deck outboard of the wing
+          Q([P(Wg.x1,y0,fSz(y0)+0.013),P(xin(y0),y0,fSz(y0)+0.012),P(xin(y1),y1,fSz(y1)+0.012),P(Wg.x1,y1,fSz(y1)+0.013)],[0,0,1],'cream',0.2,0); } } }
+    at('main_deck','fit');
+    { const s=MZ.seat, z=MZ.z; boxQ(s.x0,s.x1,s.y0,s.y1,z,z+0.34,'cream',-0.1); boxQ(s.x0+0.05,s.x1-0.05,s.y0+0.02,s.y1-0.02,z+0.34,z+0.44,'leath',0.15);
+      if(s.back==='-y') boxQ(s.x0+0.05,s.x1-0.05,s.y0,s.y0+0.16,z+0.44,z+0.92,'leath',-0.05); else boxQ(s.x0+0.05,s.x1-0.05,s.y1-0.16,s.y1,z+0.44,z+0.92,'leath',-0.05); }
+
+    // ---- SALON: ring loft on the sheer, raked front, band, aft wall with slider, roof ----
+    const SA=spec.salon, SO={ e:2.2, rA:SA.rA!=null?SA.rA:0.55, clamp:(y)=>fSx(y)-0.20 };
+    at('house','wall');
+    const SAL=ringsFrom(SA.rings, SA.zs, SO);
+    loftWalls(SAL,'cream',0);
+    aftGrid(SAL, { open:[SA.door], glaze:[SA.fixed] }, 'cream', 0);
+    bandOn(SAL, SA.band);
+    at('house','roof'); crown(SAL[SAL.length-1].P, NC+NAF, SAL[SAL.length-1].z, SA.cam, 'cream', 0, 0, false, [].concat(spec.sky?[spec.sky.well]:[], spec.flyComp?[spec.flyComp]:[]));
+    const salonAft=(z)=>ringAt(SAL,z).P[NC][1];
+    // ---- side decks + foredeck (the below flat's lid) ----
+    at('foredeck','floor');
+    // TUCK: the deck's outer chord and the cap rail's inner chord are sampled at different stations, so they
+    // part by a few mm between samples and the salon/berth linings speckled through. A 35 mm strip dipping
+    // under the cap (4 mm below its face, which also carries the 12 mm decal bias) closes the seam unseen.
+    const tuck=(sd,y0,y1,x0,x1,b,n)=>{ const t0=Math.max(x0,Math.min(x0+0.035,fSx(y0)-0.012)), t1=Math.max(x1,Math.min(x1+0.035,fSx(y1)-0.012));
+      Q([[sd*x0,y0,fSz(y0)+0.012],[sd*t0,y0,fSz(y0)+0.005],[sd*t1,y1,fSz(y1)+0.005],[sd*x1,y1,fSz(y1)+0.012]],n,'cream',b,0); };
+    { const R3=ringAt(SAL,3.40).P, N=26;
+      for(let i=0;i<N;i++){ const y0=lerp(SA.aftY,spec.foreFrom,i/N), y1=lerp(SA.aftY,spec.foreFrom,(i+1)/N);
+        for(const sd of [-1,1]){ const xh=(y)=>hwAt(ringAt(SAL,fSz(y)+0.013).P,y)-0.03, xi0=Math.min(xh(y0),fSx(y0)-spec.railW-0.02), xi1=Math.min(xh(y1),fSx(y1)-spec.railW-0.02);
+          const xo0=fSx(y0)-spec.railW, xo1=fSx(y1)-spec.railW;
+          Q([[sd*xi0,y0,fSz(y0)+0.013],[sd*xo0,y0,fSz(y0)+0.012],[sd*xo1,y1,fSz(y1)+0.012],[sd*xi1,y1,fSz(y1)+0.013]],[0,0,1],'cream',0.2,0);
+          tuck(sd,y0,y1,xo0,xo1,0.2,[0,0,1]); } } }
+    { const FD=20, XF=[0,0.35,0.62,0.85,1];
+      for(let i=0;i<FD;i++){ const y0=lerp(spec.foreFrom,yB-0.02,i/FD), y1=lerp(spec.foreFrom,yB-0.02,(i+1)/FD);
+        const w0=Math.max(0.01,fSx(y0)-spec.railW), w1=Math.max(0.01,fSx(y1)-spec.railW), z=(y,t)=>fSz(y)+0.012+fCam(y)*(1-t*t);
+        for(let k=0;k+1<XF.length;k++) for(const sd of [-1,1])
+          Q([[sd*w0*XF[k],y0,z(y0,XF[k])],[sd*w0*XF[k+1],y0,z(y0,XF[k+1])],[sd*w1*XF[k+1],y1,z(y1,XF[k+1])],[sd*w1*XF[k],y1,z(y1,XF[k])]],[sd*XF[k]*0.3,0,1],'cream',0.45-0.08*k,0);
+        for(const sd of [-1,1]) tuck(sd,y0,y1,w0,w1,0.21,[sd*0.3,0,1]); }
+      // riser where the cambered foredeck meets the flat side decks: closes the step at foreFrom
+      const yf=spec.foreFrom, wf=Math.max(0.01,fSx(yf)-spec.railW), zc=(t)=>fSz(yf)+0.012+fCam(yf)*(1-t*t);
+      for(let k=0;k+1<XF.length;k++) for(const sd of [-1,1]) Q([[sd*wf*XF[k],yf,fSz(yf)-0.03],[sd*wf*XF[k+1],yf,fSz(yf)-0.03],[sd*wf*XF[k+1],yf,zc(XF[k+1])],[sd*wf*XF[k],yf,zc(XF[k])]],[0,-1,0],'cream',-0.4,0); }
+    at('foredeck','trim');
+    { const RY=spec.railY, pt=(y,sd)=>[sd*(fSx(y)-spec.railW*0.6), y, fSz(y)+0.01];
+      for(const sd of [-1,1]){ let prev=null;
+        for(const y of RY){ const p=pt(y,sd), t=[p[0],p[1],p[2]+spec.railH]; tubeQ(p,t,0.028,0.028,'steel',0.1); if(prev) tubeQ(prev,t,0.026,0.026,'steel',0.3); prev=t; }
+        const tip=[sd*0.12, yB-0.10, fSz(yB-0.1)+spec.railH*0.85]; tubeQ(prev,tip,0.026,0.026,'steel',0.3); }
+      at('foredeck','fit');
+      boxQ(-0.20,0.20,yB-1.45,yB-1.05,fSz(yB-1.2)+fCam(yB-1.2),fSz(yB-1.2)+fCam(yB-1.2)+0.22,'steel',-0.8);
+      boxQ(-0.06,0.06,yB-0.50,yB+0.10,fSz(yB)+0.02,fSz(yB)+0.09,'steel',-0.4);
+      const hz=fSz(spec.hatchY)+fCam(spec.hatchY); boxQ(-0.42,0.42,spec.hatchY-0.38,spec.hatchY+0.38,hz-0.01,hz+0.04,'iron',-0.1,0,'glas'); }
+
+    // ---- BRIDGE DECK SLAB (salon lid; skybridge floor on the 90, flybridge deck on the 53): fascia sweeps down aft ----
+    const BR=spec.bridgeSlab, SK=spec.sky||null, STN=spec.station;
+    slab(Object.assign({ lv:'bridge', holes:[].concat(SK?[SK.well]:[], STN.hatch?[STN.hatch]:[], spec.flyComp?[spec.flyComp]:[]) }, BR));
+    let SKY=null;
+    if(SK){
+      // ---- SKYBRIDGE (enclosed, the 90) ----
+      at('bridge','wall');
+      SKY=ringsFrom(SK.rings, SK.zs, { e:2.2, rA:0.6 });
+      loftWalls(SKY,'cream',0.04);
+      aftGrid(SKY, { open:[SK.door], glaze:[SK.fixed] }, 'cream', 0.04);
+      bandOn(SKY, SK.band);
+      at('bridge','roof'); crown(SKY[SKY.length-1].P, NC+NAF, SKY[SKY.length-1].z, SK.cam, 'cream', 0.02, 0, false);
+      // bridge aft deck (on the slab): rail + settee facing aft
+      at('bridge','trim');
+      { const y0=BR.yA+0.22, y1=SK.aftY-0.05, xr=BR.W-0.20, z=BR.zTop;
+        for(const sd of [-1,1]){ for(const y of [y0,(y0+y1)/2,y1]) tubeQ([sd*xr,y,z],[sd*xr,y,z+0.90],0.026,0.026,'steel',0.1);
+          tubeQ([sd*xr,y0,z+0.90],[sd*xr,y1,z+0.90],0.026,0.026,'steel',0.3); tubeQ([sd*xr,y0,z+0.48],[sd*xr,y1,z+0.48],0.02,0.02,'steel',0.3); }
+        for(const x of [-1.6,0,1.6]) tubeQ([x,y0,z],[x,y0,z+0.90],0.026,0.026,'steel',0.1);
+        tubeQ([-xr,y0,z+0.90],[xr,y0,z+0.90],0.026,0.026,'steel',0.3); tubeQ([-xr,y0,z+0.48],[xr,y0,z+0.48],0.02,0.02,'steel',0.3); }
+      at('bridge','fit');
+      { const z=BR.zTop, y1=SK.aftY-0.02, xa=-1.5, xb=SK.door.x0-0.25; boxQ(xa,xb,y1-0.60,y1,z,z+0.36,'cream',-0.1); boxQ(xa+0.05,xb-0.05,y1-0.58,y1-0.02,z+0.36,z+0.45,'leath',0.15); boxQ(xa+0.05,xb-0.05,y1-0.14,y1-0.02,z+0.45,z+0.92,'leath',-0.05); }
+    }
+    // ---- OPEN STATION: the 90's top station on its own slab / the 53's flybridge on the bridge slab ----
+    const TP={ zTop: STN.slab ? STN.slab.zTop : BR.zTop }, SLV=STN.lv;
+    if(STN.slab) slab(Object.assign({ lv:SLV }, STN.slab));
+    at(SLV,'wall');
+    const COAM=ringsFrom(STN.coaming.rings, STN.coaming.zs, { e:2.0, rA:0.6 });
+    { const RG=COAM; loftWalls(RG,'cream',0.1);
+      const T=RG[RG.length-1].P, Ti=T.map((p,j)=>{ const n=pnorm(T,j); return [Math.max(0.02,p[0]-0.13*n[0]), p[1]-0.13*n[1]]; }), zt=RG[RG.length-1].z;
+      if(STN.coaming.lens){
+        // lens brow: rings shrink both ways, so the top edge slopes down to the nose and down aft. Inner skin
+        // 0.11 in, a lip on the top ring, and a cap along each sloping aft edge between the skins.
+        const IN=RG.map(r=>({ z:r.z, P:r.P.map((p,j)=>{ const n=pnorm(r.P,j); return [Math.max(0.02,p[0]-0.11*n[0]), p[1]-0.11*n[1]]; }) }));
+        for(let k=0;k+1<IN.length;k++){ const A=IN[k], B2=IN[k+1];
+          for(let j=0;j+1<NC;j++) for(const sd of [-1,1]){ const n=pnorm(A.P,j);
+            Q([[sd*A.P[j][0],A.P[j][1],A.z],[sd*A.P[j+1][0],A.P[j+1][1],A.z],[sd*B2.P[j+1][0],B2.P[j+1][1],B2.z],[sd*B2.P[j][0],B2.P[j][1],B2.z]],[-sd*n[0],-n[1],0.15],'cream',-1.0,0); }
+          const j=NC-1; for(const sd of [-1,1]) Q([[sd*RG[k].P[j][0],RG[k].P[j][1],RG[k].z],[sd*RG[k+1].P[j][0],RG[k+1].P[j][1],RG[k+1].z],[sd*B2.P[j][0],B2.P[j][1],B2.z],[sd*A.P[j][0],A.P[j][1],A.z]],[0,-0.7,0.7],'cream',0.35,0); }
+        const TI=IN[IN.length-1].P;
+        for(let j=0;j+1<NC;j++) for(const sd of [-1,1]) Q([[sd*T[j][0],T[j][1],zt],[sd*T[j+1][0],T[j+1][1],zt],[sd*TI[j+1][0],TI[j+1][1],zt],[sd*TI[j][0],TI[j][1],zt]],[0,0,1],'cream',0.5,0);
+      } else
+      for(let j=0;j+1<NC;j++) for(const sd of [-1,1]){
+        Q([[sd*T[j][0],T[j][1],zt],[sd*T[j+1][0],T[j+1][1],zt],[sd*Ti[j+1][0],Ti[j+1][1],zt],[sd*Ti[j][0],Ti[j][1],zt]],[0,0,1],'cream',0.5,0);
+        const n=pnorm(T,j); Q([[sd*Ti[j][0],Ti[j][1],zt],[sd*Ti[j+1][0],Ti[j+1][1],zt],[sd*Ti[j+1][0],Ti[j+1][1],TP.zTop+0.01],[sd*Ti[j][0],Ti[j][1],TP.zTop+0.01]],[-sd*n[0],-n[1],0.2],'cream',-1.1,0); }
+      if(STN.deckRail){ at(SLV,'trim'); const Rr=STN.deckRail, P=outline({ z:BR.zTop, yF:BR.yF, yA:BR.yA, W:BR.W, N:BR.N }, { e:BR.e||2.0, rA:BR.rA }), zr=TP.zTop;
+        const pts=[]; P.forEach((p,j)=>{ if(p[1]<=Rr.y0){ const n=pnorm(P,j); pts.push([Math.max(0,p[0]-0.12*n[0]), p[1]-0.12*n[1]]); } });
+        for(const sd of [-1,1]){ for(let i=0;i+1<pts.length;i++){ const a=pts[i], b=pts[i+1];
+            tubeQ([sd*a[0],a[1],zr+Rr.h],[sd*b[0],b[1],zr+Rr.h],0.026,0.026,'steel',0.3); tubeQ([sd*a[0],a[1],zr+Rr.h*0.5],[sd*b[0],b[1],zr+Rr.h*0.5],0.02,0.02,'steel',0.3); }
+          pts.forEach((p,i)=>{ if(i%4===0||i===pts.length-1) tubeQ([sd*p[0],p[1],zr],[sd*p[0],p[1],zr+Rr.h],0.024,0.024,'steel',0.1); }); } } }
+    at(SLV,'fit');
+    { const C=STN.console, z=TP.zTop; boxQ(-C.hx,C.hx,C.y0,C.y1,z,z+0.86,'cream',0.1);
+      Q([[-C.hx+0.08,C.y0+0.05,z+0.87],[C.hx-0.08,C.y0+0.05,z+0.87],[C.hx-0.08,C.y1-0.12,z+0.95],[-C.hx+0.08,C.y1-0.12,z+0.95]],[0,-0.3,1],'glas',-0.4,0.02);
+      for(const x of STN.seats) { boxQ(x-0.08,x+0.08,C.y0-0.95,C.y0-0.79,z,z+0.46,'steel',-0.2); boxQ(x-0.27,x+0.27,C.y0-1.10,C.y0-0.62,z+0.46,z+0.58,'leath',0.1); boxQ(x-0.26,x+0.26,C.y0-1.12,C.y0-0.98,z+0.58,z+1.02,'leath',-0.1); }
+      (STN.settees||[]).forEach(s=>{ boxQ(s.x0,s.x1,s.y0,s.y1,z,z+0.36,'cream',-0.1); boxQ(s.x0+0.02,s.x1-0.02,s.y0+0.02,s.y1-0.02,z+0.36,z+0.45,'leath',0.15);
+        if(s.back==='-x') boxQ(s.x0,s.x0+0.14,s.y0,s.y1,z+0.45,z+0.88,'leath',-0.05); if(s.back==='+x') boxQ(s.x1-0.14,s.x1,s.y0,s.y1,z+0.45,z+0.88,'leath',-0.05); }); }
+    function ladder(Lg){ for(const sd of [-1,1]) tubeQ([Lg.x+sd*0.22,Lg.y0,Lg.z0],[Lg.x+sd*0.22,Lg.y1,Lg.z1],0.026,0.026,'steel',sd>0?-0.3:0.2);
+      for(let k=1;k<Lg.n;k++){ const t=k/Lg.n; tubeQ([Lg.x-0.22,lerp(Lg.y0,Lg.y1,t),lerp(Lg.z0,Lg.z1,t)],[Lg.x+0.22,lerp(Lg.y0,Lg.y1,t),lerp(Lg.z0,Lg.z1,t)],0.018,0.018,'steel',0.3); } }
+    if(STN.ladder){ at(SLV,'trim'); ladder(STN.ladder); }
+    // the 53: exterior ladder from the mezzanine up through the overhang hatch onto the flybridge
+    if(spec.flyLadder){ at('bridge','trim'); ladder(spec.flyLadder);
+      const Hh=STN.hatch, z=BR.zTop; at('bridge','wall');
+      for(const [x0,x1,y0,y1] of [[Hh.x0-0.05,Hh.x1+0.05,Hh.y0-0.05,Hh.y0],[Hh.x0-0.05,Hh.x1+0.05,Hh.y1,Hh.y1+0.05],[Hh.x0-0.05,Hh.x0,Hh.y0,Hh.y1],[Hh.x1,Hh.x1+0.05,Hh.y0,Hh.y1]])
+        boxQ(x0,x1,y0,y1,z-0.12,z+0.05,'cream',0.1); }
+
+    // ---- RIGGING: hardtop on posts, radar, domes, whips, rocket launcher, outriggers ----
+    at('rigging','rig');
+    { const HT=spec.hardtop;
+      slab({ lv:'rigging', rWall:'rig', rTop:'rig', yF:HT.yF, yA:HT.yA, W:HT.W, N:HT.N, rA:HT.rA, zTop:HT.z, zf:[[HT.yA,HT.z-0.10],[HT.yF,HT.z-0.07]], cam:0.08, bF:0.3 });
+      at('rigging','rig');
+      TG=HTP; (HT.posts||[]).forEach(p=>{ for(const sd of [-1,1]) tubeQ([sd*p[0],p[1],TP.zTop+0.02],[sd*p[0]*0.95,p[1]+p[2],HT.z-0.09],0.045,0.04,'steel',0.1); }); TG=F;
+      const RD=spec.radar; tubeQ([0,RD.y,HT.z+0.05],[0,RD.y,HT.z+0.26],0.05,0.05,'steel',0.1); boxQ(-RD.len,RD.len,RD.y-0.08,RD.y+0.08,HT.z+0.26,HT.z+0.38,'cream',0.35);
+      spec.domes.forEach(D=>{ tubeQ([D.x,D.y,HT.z+0.05],[D.x,D.y,HT.z+0.14],0.06,0.06,'steel',0); tubeQ([D.x,D.y,HT.z+0.12],[D.x,D.y,HT.z+0.12+D.r*1.2],D.r,D.r,'cream',0.25); tubeQ([D.x,D.y,HT.z+0.12+D.r*1.2],[D.x,D.y,HT.z+0.14+D.r*1.9],D.r,D.r*0.35,'cream',0.4); });
+      spec.whips.forEach(w=>tubeQ(w[0],w[1],0.03,0.009,'steel',0.3));
+      const RL=spec.rocket; boxQ(-RL.x-0.06,RL.x+0.06,RL.y-0.05,RL.y+0.05,HT.z-0.05,HT.z+0.02,'steel',-0.5);
+      for(let k=0;k<RL.n;k++){ const x=-RL.x+2*RL.x*k/(RL.n-1); tubeQ([x,RL.y,HT.z],[x*1.06,RL.y-0.30,HT.z+0.42],0.045,0.045,'iron',0.1); }
+      // the 53: tuna tower — four legs from the flybridge deck through the hardtop to a railed platform
+      const TW=spec.tower; if(TW){ const T=TW.top; TG=TWF;
+        for(const sd of [-1,1]){ tubeQ([sd*TW.feet[0][0],TW.feet[0][1],TP.zTop+0.02],[sd*T.hx,T.y1,T.z-0.04],0.05,0.042,'steel',sd>0?-0.2:0.2);
+          tubeQ([sd*TW.feet[1][0],TW.feet[1][1],TP.zTop+0.02],[sd*T.hx,T.y0,T.z-0.04],0.05,0.042,'steel',sd>0?-0.2:0.2);
+          tubeQ([sd*T.hx,T.y0,T.z],[sd*T.hx,T.y0,T.z+TW.rail],0.03,0.03,'steel',0.1); tubeQ([sd*T.hx,T.y1,T.z],[sd*T.hx,T.y1,T.z+TW.rail],0.03,0.03,'steel',0.1);
+          tubeQ([sd*T.hx,T.y0,T.z+TW.rail],[sd*T.hx,T.y1,T.z+TW.rail],0.028,0.028,'steel',0.3); }
+        tubeQ([-T.hx,T.y1,T.z+TW.rail],[T.hx,T.y1,T.z+TW.rail],0.028,0.028,'steel',0.3); tubeQ([-T.hx,T.y0,T.z+TW.rail],[T.hx,T.y0,T.z+TW.rail],0.028,0.028,'steel',0.3);
+        boxQ(-T.hx-0.04,T.hx+0.04,T.y0-0.04,T.y1+0.04,T.z-0.07,T.z,'cream',0.2,0,'teak');
+        const Pd=TW.pod; boxQ(-Pd.hx,Pd.hx,Pd.y0,Pd.y1,T.z,T.z+0.84,'cream',0.1);
+        Q([[-Pd.hx+0.05,Pd.y0+0.04,T.z+0.85],[Pd.hx-0.05,Pd.y0+0.04,T.z+0.85],[Pd.hx-0.05,Pd.y1-0.06,T.z+0.92],[-Pd.hx+0.05,Pd.y1-0.06,T.z+0.92]],[0,-0.3,1],'glas',-0.4,0.02);
+        ladder(TW.ladder); TG=F; } }
+    { const OR=spec.rig, A=52*DEG, EL=12*DEG, STW=OR.stowed*DEG;
+      for(const sd of [-1,1]){ boxQ(sd*OR.x-0.08,sd*OR.x+0.08,OR.y-0.14,OR.y+0.14,OR.z-0.12,OR.z+0.02,'iron',0.15); }
+      for(const [name,dirv] of [['out',(s)=>[s*Math.sin(A)*Math.cos(EL), -Math.cos(A)*Math.cos(EL), Math.sin(EL)]],['stowed',(s)=>[s*0.10, -Math.sin(STW), Math.cos(STW)]]]){
+        TG=RIGF[name];
+        for(const sd of [-1,1]){ const P0=[sd*(OR.x+0.06),OR.y,OR.z], d=v_norm(dirv(sd)), P1=v_add(P0,v_mul(d,OR.len)), PM=v_add(P0,v_mul(d,OR.len*0.42));
+          tubeQ(P0,PM,0.065,0.040,'steel',sd>0?-0.3:0.3); tubeQ(PM,P1,0.040,0.012,'steel',sd>0?-0.3:0.3); }
+        TG=F;
+      } }
+
+    TG=F;
+    const r3=(v)=>+(+v).toFixed(3);
+    // ==================================== CABIN CONSTANTS (published as HOUSE + loft) ====================================
+    const ZS=SA.soleZ, ZC=SA.ceilZ, YDASH=SA.dashY, YAIN=SA.aftY+0.10;
+    const BZ=SK?SK.soleZ:BR.zTop, BC=SK?SK.ceilZ:null, YSD=SK?SK.dashY:null, YSA=SK?SK.aftY+0.10:null;
+    const BLW=spec.below, CAB=spec.cabin;
+    const salIn=(y)=>Math.max(0.05, hwAt(ringAt(SAL,ZS+0.05).P,y)-0.10);
+    const skyIn=SK?((y)=>Math.max(0.05, hwAt(ringAt(SKY,BZ+0.05).P,y)-0.10)):null;
+    const houseHx=r3(Math.min(salIn(lerp(YAIN,YDASH,0.3)), salIn(lerp(YAIN,YDASH,0.7))));
+    const skyHx=SK?r3(Math.min(skyIn(lerp(YSA,YSD,0.3)), skyIn(lerp(YSA,YSD,0.7)))):null;
+
+    // ==================================== INTERIOR (mesh) ====================================
+    TG=IF;
+    // ZS, ZC, YDASH, YAIN, BZ, BC, YSD, YSA, BLW, salIn and skyIn are the CABIN CONSTANTS above
+    const OB={ house:[], bridge:[], below:[], deck:[] };   // walk obstacles (plan rects, already padded)
+    const block=(lvl,x0,x1,y0,y1,pad)=>{ const p=pad==null?0.22:pad; OB[lvl].push(rectPoly(x0-p,y0-p,x1+p,y1+p)); };
+    // FITTED BOX: |x| is held inside env(y,z) at every height, so an outboard face follows the shell (hull
+    // lining, house lining, coaming) instead of cutting through it. Empty levels top and bottom drop out.
+    let ENV=null;
+    function fitBox(env,x0,x1,y0,y1,z0,z1,mat,b,topMat,nz){
+      if(!env){ boxQ(x0,x1,y0,y1,z0,z1,mat,b,0,topMat); return true; }
+      nz=nz||8; const Z=[], Lx=[], Rx=[]; let cl=false;
+      for(let i=0;i<=nz;i++){ const z=lerp(z0,z1,i/nz), w=Math.min(env(y0,z),env(y1,z),env((y0+y1)/2,z)), l=Math.max(x0,-w), r=Math.min(x1,w);
+        if(l>x0+1e-4||r<x1-1e-4) cl=true; Z.push(z); Lx.push(l); Rx.push(r); }
+      if(!cl){ boxQ(x0,x1,y0,y1,z0,z1,mat,b,0,topMat); return true; }
+      let i0=0, i1=nz; while(i0<=nz && Rx[i0]-Lx[i0]<0.03) i0++; while(i1>=i0 && Rx[i1]-Lx[i1]<0.03) i1--;
+      if(i1-i0<1) return false;
+      const zb=Z[i0], zt=Z[i1];
+      Q([[Lx[i1],y0,zt],[Rx[i1],y0,zt],[Rx[i1],y1,zt],[Lx[i1],y1,zt]],[0,0,1],topMat||mat,b,0);
+      Q([[Lx[i0],y0,zb],[Rx[i0],y0,zb],[Rx[i0],y1,zb],[Lx[i0],y1,zb]],[0,0,-1],mat,(b||0)-1.2,0);
+      for(const [yy,ny] of [[y0,-1],[y1,1]]){ const P=[]; for(let i=i0;i<=i1;i++) P.push([Rx[i],yy,Z[i]]); for(let i=i1;i>=i0;i--) P.push([Lx[i],yy,Z[i]]); Q(P,[0,ny,0],mat,b,0); }
+      for(let i=i0;i<i1;i++){ Q([[Rx[i],y0,Z[i]],[Rx[i],y1,Z[i]],[Rx[i+1],y1,Z[i+1]],[Rx[i+1],y0,Z[i+1]]],[1,0,0],mat,b,0);
+        Q([[Lx[i],y0,Z[i]],[Lx[i],y1,Z[i]],[Lx[i+1],y1,Z[i+1]],[Lx[i+1],y0,Z[i+1]]],[-1,0,0],mat,b,0); }
+      return true;
+    }
+    const fb=(x0,x1,y0,y1,z0,z1,mat,b,db,topMat)=>fitBox(ENV,x0,x1,y0,y1,z0,z1,mat,b,topMat);
+    // lining loft: inset rings, clipped at the dash plane, split by the band edges → panelling / glass / liner
+    function lining(RG, z0, z1, yFront, bd, lowMat){
+      const zs=RG.map(r=>r.z).filter(z=>z>z0+0.02&&z<z1-0.02); const Z=[z0].concat(zs,[z1]);
+      const RR=Z.map(z=>{ const R=ringAt(RG,z); return { z, P:R.P.map((p,j)=>{ const n=pnorm(R.P,j); return [Math.max(0.02,p[0]-0.10*n[0]), p[1]-0.10*n[1]]; }) }; });
+      const lo=bd?mono(bd.lo):null, hi=bd?mono(bd.hi):null;
+      for(let k=0;k+1<RR.length;k++){ const A=RR[k], B2=RR[k+1];
+        for(let j=0;j+1<NC;j++) for(const sd of [-1,1]){
+          let q=[[sd*A.P[j][0],A.P[j][1],A.z],[sd*A.P[j+1][0],A.P[j+1][1],A.z],[sd*B2.P[j+1][0],B2.P[j+1][1],B2.z],[sd*B2.P[j][0],B2.P[j][1],B2.z]];
+          if(Math.min(q[0][1],q[1][1],q[2][1],q[3][1])>yFront) continue;
+          q=splitBy(q,(p)=>p[1]-yFront)[0]; if(!q) continue;
+          const n=pnorm(A.P,j), inw=[-sd*n[0],-n[1],0];
+          if(!bd){ bands(q,inw,[[z0+0.92,lowMat,-0.1,0],[Infinity,'whiteg',0.1,0]],0); continue; }
+          const ya=Math.min(A.P[j][1],A.P[j+1][1]), yb=Math.max(A.P[j][1],A.P[j+1][1])+1e-3;
+          const lin=(f)=>{ const fa=f(ya), fb=f(yb); return (p)=>p[2]-(fa+(fb-fa)*(p[1]-ya)/(yb-ya)); };
+          const glassHere = bd && (hi((ya+yb)/2)-lo((ya+yb)/2) > 0.05) && (ya+yb)/2 > bd.yTip;
+          if(!glassHere){ bands(q,inw,[[z0+0.92,lowMat,-0.1,0],[Infinity,'whiteg',0.1,0]],0); continue; }
+          const [below,rest]=splitBy(q,lin(lo)); if(below) Q(below,inw,lowMat,-0.1,0);
+          if(rest){ const [win,above]=splitBy(rest,lin(hi)); if(win) Q(win,inw,'glassd',0.3,0); if(above) Q(above,inw,'whiteg',0.1,0); }
+        }
       }
-      // hull side lights (slim lozenge let into the topsides)
-      (spec.hullWins||[]).forEach(w=>{
-        const n=w.n||16, yA=w.y-w.len/2, yB=w.y+w.len/2, e=w.ease||0.30;
-        const pin=(p)=> p>=e?1:Math.sqrt(Math.max(0,1-(1-p/e)*(1-p/e)));
-        for(const side of [-1,1])
-        for(const [off,ex,mat,b] of [[0.014,0.055,'iron',-0.10],[0.034,0,'glas',side<0?-0.30:-0.95]]){
-          for(let i=0;i<n;i++){
-            const E=(t)=>{ const y=lerp(yA,yB,t), u=uOf(y), st=station(u);
-              const k=Math.min(pin(t),pin(1-t)), half=(w.f1-w.f0)/2*k;
-              if(half<0.004) return null;
-              const dz=ex/Math.max(0.5,st.dep)*k, mid=(w.f0+w.f1)/2;
-              return {u, lo:Math.max(0.36,mid-half-dz), hi:Math.min(0.90,mid+half+dz)}; };
-            const A=E(i/n), B=E((i+1)/n); if(!A||!B) continue;
-            const P=(uu,f)=>{ const q=skin(side,uu,f); return [q[0]+side*off, q[1], q[2]]; };
-            pushO([P(A.u,A.lo),P(A.u,A.hi),P(B.u,B.hi),P(B.u,B.lo)],[side,0,0],mat,b,DBP+(mat==='glas'?0.02:0));
-          }
-        }
-      });
-
-      lv('foredeck');                               // the below flat's LID — clipped to the flat's footprint by the section; rail, pulpit, nav housings ride it
-      // ---- cambered foredeck, edge landing on the covering board ----
-      const FSEG=12, FCAP=0.988;
-      const fzE=(u)=>sheerZ(u)-spec.drop;
-      const fw=(u)=>Math.max(0.02, station(u).ws-TH-spec.capW);
-      const fyr=(u)=>station(u).y + bowRake(u,1);
-      const FU0=uOf(spec.foredeckTo-0.30);
-      const FX=[0,0.55,0.85,1.0];
-      const fzc=(u,t)=>fzE(u)+spec.fcam*(1-t*t);
-      for(let i=0;i<FSEG;i++){
-        const u0=FU0+(FCAP-FU0)*i/FSEG, u1=FU0+(FCAP-FU0)*(i+1)/FSEG;
-        for(let k=0;k+1<FX.length;k++) for(const sd of [-1,1])
-          pushO([[sd*fw(u0)*FX[k],fyr(u0),fzc(u0,FX[k])],[sd*fw(u0)*FX[k+1],fyr(u0),fzc(u0,FX[k+1])],
-                 [sd*fw(u1)*FX[k+1],fyr(u1),fzc(u1,FX[k+1])],[sd*fw(u1)*FX[k],fyr(u1),fzc(u1,FX[k])]],
-                [sd*FX[k]*0.4,0,1],'cream',0.55-0.1*k,-0.02);
+    }
+    function aftLining(RG, z0, z1, open, lowMat){
+      const zs=[z0,z0+0.92,open.z1,z1].sort((a,b)=>a-b);
+      for(let k=0;k+1<zs.length;k++){ const za=zs[k], zb=zs[k+1]; if(zb-za<0.01) continue;
+        const ya=ringAt(RG,za).P[NC][1]+0.10, yb2=ringAt(RG,zb).P[NC][1]+0.10, Ea=ringAt(RG,za).P[NC-1][0]-0.10, Eb=ringAt(RG,zb).P[NC-1][0]-0.10;
+        const xs=[-1e9,open.x0,open.x1,1e9];
+        for(let i=0;i<3;i++){ const xm=(clamp(xs[i],-Ea,Ea)+clamp(xs[i+1],-Ea,Ea))/2; if(i===1 && (za+zb)/2<open.z1) continue;
+          Q([[clamp(xs[i],-Ea,Ea),ya,za],[clamp(xs[i+1],-Ea,Ea),ya,za],[clamp(xs[i+1],-Eb,Eb),yb2,zb],[clamp(xs[i],-Eb,Eb),yb2,zb]],[0,1,0],za<z0+0.9?lowMat:'whiteg',za<z0+0.9?-0.2:0.0,0); } }
+    }
+    function soleStrips(xw, y0, y1, z, mat, holes, n){
+      const br=new Set(); for(let i=0;i<=n;i++) br.add(lerp(y0,y1,i/n)); (holes||[]).forEach(h=>{ if(h.y0>y0&&h.y0<y1) br.add(h.y0); if(h.y1>y0&&h.y1<y1) br.add(h.y1); });
+      const ys=[...br].sort((a,b)=>a-b);
+      for(let i=0;i+1<ys.length;i++){ const ya=ys[i], yb=ys[i+1], ym=(ya+yb)/2, wa=xw(ya), wb=xw(yb); if(wa<0.05&&wb<0.05) continue;
+        let segs=[[-1,1]]; (holes||[]).forEach(h=>{ if(ym>h.y0&&ym<h.y1){ const nx=[]; for(const [a,b] of segs){ const wm=(wa+wb)/2, ha=h.x0/wm, hb=h.x1/wm;
+          if(hb<=a||ha>=b){ nx.push([a,b]); continue; } if(ha>a) nx.push([a,ha]); if(hb<b) nx.push([hb,b]); } segs=nx; } });
+        for(const [a,b] of segs) Q([[a*wa,ya,z],[b*wa,ya,z],[b*wb,yb,z],[a*wb,yb,z]],[0,0,1],mat,i%2?-0.08:0.02,0);
       }
-      // ---- bow rail, pulpit, windlass, nav housings ----
-      (function(){
-        const us=spec.railU;
-        const pt=(u,s)=>{ const st=station(u); return [s*(st.ws-TH-spec.capW*0.45), fyr(u), fzE(u)]; };
-        for(const s of [-1,1]){
-          let prev=null;
-          for(const u of us){
-            const p=pt(u,s), top=[p[0],p[1],p[2]+spec.railH];
-            tubeF(p, top, 0.034, 'steel', 0.1);
-            if(prev) tubeF(prev, top, 0.032, 'steel', 0.28);
-            prev=top;
-          }
-          const pf=pt(FCAP,s); tubeF(prev,[pf[0]*0.55,pf[1],pf[2]+spec.railH*0.84],0.032,'steel',0.28);
-        }
-        const u=0.985, y=fyr(u), z=fzE(u);
-        boxF([0, y+spec.pulpit*0.8, z+0.04],[spec.capW*0.55, spec.pulpit, 0.04],'cream',0.6,-0.02);
-        boxF([0, y-spec.pulpit*1.8, z+0.12],[0.19,0.22,0.12],'steel',-1.4,-0.02);
-        boxF([0, y-spec.pulpit*4.0, z+0.09],[0.06,0.07,0.09],'iron',0.15,-0.02);
-      })();
-      for(const s of [-1,1]){
-        const u=spec.navU, st=station(u);
-        boxF([s*(st.ws-TH-spec.capW*0.6), fyr(u), fzE(u)+0.09],[0.07,0.10,0.09],'iron',0.1,-0.02);
+    }
+    // furniture kit
+    function settee(lvl,x0,x1,y0,y1,z,backSide){ fb(x0,x1,y0,y1,z,z+0.30,'leath',-0.35); fb(x0+0.02,x1-0.02,y0+0.02,y1-0.02,z+0.30,z+0.42,'leath',0.2);
+      const t=0.16; if(backSide==='-x') fb(x0,x0+t,y0,y1,z+0.42,z+0.86,'leath',-0.05); if(backSide==='+x') fb(x1-t,x1,y0,y1,z+0.42,z+0.86,'leath',-0.05);
+      if(backSide==='-y') fb(x0,x1,y0,y0+t,z+0.42,z+0.86,'leath',-0.05); if(backSide==='+y') fb(x0,x1,y1-t,y1,z+0.42,z+0.86,'leath',-0.05); block(lvl,x0,x1,y0,y1); }
+    function table(lvl,x0,x1,y0,y1,z,h,mat){ fb(x0,x1,y0,y1,z+h-0.05,z+h,mat||'teakg',0.25); const cx=(x0+x1)/2, cy=(y0+y1)/2; boxQ(cx-0.10,cx+0.10,cy-0.10,cy+0.10,z,z+h-0.05,'teakg',-0.3); block(lvl,x0,x1,y0,y1,0.18); }
+    function stool(lvl,x,y,z){ boxQ(x-0.04,x+0.04,y-0.04,y+0.04,z,z+0.62,'teakg',-0.2); boxQ(x-0.19,x+0.19,y-0.19,y+0.19,z+0.62,z+0.74,'leath',0.2); block(lvl,x-0.19,x+0.19,y-0.19,y+0.19,0.12); }
+    function bed(lvl,x0,x1,y0,y1,z,headY){ fb(x0,x1,y0,y1,z,z+0.36,'teakg',-0.2); fb(x0+0.03,x1-0.03,y0+0.03,y1-0.03,z+0.36,z+0.56,'whiteg',0.35);
+      const hy=headY>0?y1:y0, sgn=headY>0?-1:1; fb(x0+0.10,(x0+x1)/2-0.05,Math.min(hy,hy+sgn*0.40),Math.max(hy,hy+sgn*0.40),z+0.56,z+0.66,'stone',0.4);
+      fb((x0+x1)/2+0.05,x1-0.10,Math.min(hy,hy+sgn*0.40),Math.max(hy,hy+sgn*0.40),z+0.56,z+0.66,'stone',0.4);
+      fb(x0,x1,Math.min(hy,hy+sgn*0.08),Math.max(hy,hy+sgn*0.08),z+0.36,z+1.10,'teakg',-0.1); block(lvl,x0,x1,y0,y1,0.18); }
+    function wall(lvl,x0,x1,y0,y1,z0,z1,mat){ fb(x0,x1,y0,y1,z0,z1,mat||'whiteg',0.0); block(lvl,x0,x1,y0,y1,0.20); }
+    function stairF(x0,x1,y0,y1,z0,z1,n,role){ const run=(y1-y0)/n, up=z1>z0;
+      for(let k=0;k<n;k++){ const zt=lerp(z0,z1,(k+1)/n), ya=up?y0+k*run:y0+k*run, yb=up?y1:y0+(k+1)*run;
+        at(cLVname, (role&&Math.max(zt,z0)>Math.min(z0,z1)+1.3)?'tall':'fit');
+        if(up){ boxQ(x0,x1,ya,yb,Math.min(z0,z1),zt-0.03,'cream',-0.3); boxQ(x0,x1,ya,ya+run+0.01,zt-0.03,zt,'teak',-0.05); }
+        else { const zz=lerp(z0,z1,(k+1)/n); boxQ(x0,x1,ya,yb,zz-0.03,zz,'teak',-0.05); boxQ(x0,x1,yb-0.02,yb,zz,lerp(z0,z1,k/n),'cream',-0.3); } } }
+    let cLVname='house';
+
+    // generic fit-out list: [kind, ...] — settee x0 x1 y0 y1 back · table x0 x1 y0 y1 h · counter x0 x1 y0 y1 h · tall x0 x1 y0 y1 h
+    // upper x0 x1 y0 y1 z0 z1 · stool x y · tv x0 x1 y0 y1 z0 z1 · bed x0 x1 y0 y1 head · stand x0 x1 y0 y1 h · wall x0 x1 y0 y1 h
+    function furnish(lvl, list, zAt){
+      (list||[]).forEach(it=>{ const k=it[0], a=it, z=zAt(a[3]);
+        if(k==='settee'){ at(lvl,'fit'); settee(lvl,a[1],a[2],a[3],a[4],z,a[5]); }
+        else if(k==='table'){ at(lvl,'fit'); table(lvl,a[1],a[2],a[3],a[4],z,a[5]); }
+        else if(k==='counter'){ at(lvl,'fit'); fb(a[1],a[2],a[3],a[4],z,z+a[5],'teakg',-0.15,0,'stone'); block(lvl,a[1],a[2],a[3],a[4]); }
+        else if(k==='stand'){ at(lvl,'fit'); fb(a[1],a[2],a[3],a[4],z,z+a[5],'teakg',0.0,0,'stone'); block(lvl,a[1],a[2],a[3],a[4],0.15); }
+        else if(k==='tall'){ at(lvl,'tall'); fb(a[1],a[2],a[3],a[4],z,z+a[5],'teakg',0.0); block(lvl,a[1],a[2],a[3],a[4]); }
+        else if(k==='upper'){ at(lvl,'tall'); fb(a[1],a[2],a[3],a[4],z+a[5],z+a[6],'teakg',0.1); }
+        else if(k==='stool'){ at(lvl,'fit'); stool(lvl,a[1],a[2],zAt(a[2])); }
+        else if(k==='tv'){ at(lvl,'fit'); fb(a[1],a[2],a[3],a[4],z+a[5],z+a[6],'iron',0.1); }
+        else if(k==='bed'){ at(lvl,'fit'); bed(lvl,a[1],a[2],a[3],a[4],z,a[5]); }
+        else if(k==='wall'){ at(lvl,'part'); wall(lvl,a[1],a[2],a[3],a[4],z,z+a[5]); } });
+    }
+
+    // ---- SALON interior (lv house) ----
+    cLVname='house';
+    const envS=(y,z)=>hwAt(ringAt(SAL,clamp(z,SAL[0].z,SAL[SAL.length-1].z)).P,y)-0.12;
+    at('house','floor'); soleStrips(salIn, YAIN, YDASH, ZS, 'carpet', [SA.comp], 30);
+    at('house','lining'); lining(SAL, ZS, ZC, YDASH, SA.band, 'teakg'); aftLining(SAL, ZS, ZC, SA.door, 'teakg');
+    ENV=envS;
+    at('house','part');
+    { const w=salIn(YDASH)-0.02; fb(-w,w,YDASH-0.34,YDASH,ZS,ZS+(SA.dashH||0.97),'teakg',-0.15,0,'stone'); block('house',-w,w,YDASH-0.34,YDASH,0.25); }
+    furnish('house', SA.fit, ()=>ZS);
+    if(SA.head){ const H=SA.head; at('house','part');
+      wall('house',H.x1-0.08,H.x1,H.y0,H.y1,ZS,ZS+2.05); wall('house',H.x0,H.doorX0,H.y1-0.08,H.y1,ZS,ZS+2.05); wall('house',H.doorX1,H.x1,H.y1-0.08,H.y1,ZS,ZS+2.05);
+      boxQ(H.doorX0,H.doorX1,H.y1-0.08,H.y1,ZS+1.95,ZS+2.05,'whiteg',0.0); block('house',H.x0,H.x1,H.y0,H.y1,0.2);
+      at('house','fit'); fb(H.x0+0.05,H.x0+0.50,H.y0+0.10,H.y0+0.55,ZS,ZS+0.44,'whiteg',0.3); fb(H.x0+0.05,H.x0+0.55,H.y0+0.65,H.y1-0.20,ZS,ZS+0.85,'teakg',-0.1,0,'stone'); }
+    ENV=null;
+    at('house','part');
+    { const C=SA.comp; for(const sd of [-1,1]) boxQ(sd>0?C.x1:C.x0-0.06,sd>0?C.x1+0.06:C.x0,C.y0,YDASH-0.34,ZS,ZS+0.92,'teakg',-0.1,0,'stone');
+      OB.house.push(rectPoly(C.x0-0.26,C.y0-0.26,C.x0+0.10,YDASH)); OB.house.push(rectPoly(C.x1-0.10,C.y0-0.26,C.x1+0.26,YDASH)); OB.house.push(rectPoly(C.x0+0.05,C.y0+0.30,C.x1-0.05,YDASH)); }
+    // companionway down (lv house above, below half)
+    cLVname='house'; stairF(SA.comp.x0+0.02,SA.comp.x1-0.02,SA.comp.y0+0.05,SA.comp.y1,ZS,spec.below.soleZ,SA.comp.n||9,false);
+    // the 90: stair up to the skybridge + its balustrade wall with the TV
+    if(SA.up){ const U=SA.up; cLVname='house'; stairF(U.x0,U.x1,U.y0,U.y1,ZS,BZ,12,true); OB.house.push(rectPoly(U.x0-0.20,U.y0+0.35,U.x1+0.30,U.y1+0.3));
+      at('house','part'); wall('house',U.x0-0.10,U.x0,U.y0+0.90,U.y1,ZS,ZS+2.15); at('house','fit');
+      boxQ(U.x0-0.14,U.x0-0.10,U.tv0,U.tv1,ZS+0.95,ZS+1.72,'iron',0.1); }
+    // the 53 (R2): the ship's ladder from the salon sole up to the flybridge hatch, rails and treads, drawn to the
+    // well's lid (ZC − 0.45, the bridge's: above it the well draws the rest, so nothing of the room shows through the
+    // closed hatch). It takes the place of the L-settee's aft leg; she climbs it facing aft and steps off aft onto
+    // the flybridge (the walk's flyhatch)
+    if(spec.flyComp && spec.flyComp.ladder){ const L=spec.flyComp.ladder, zt=ZC-0.46, yAt=(z)=>lerp(L.yFoot,L.yTop,(z-ZS)/(BZ-ZS));
+      cLVname='house'; at('house','tall');
+      for(const x of [L.x0,L.x1]) tubeQ([x,L.yFoot,ZS],[x,yAt(zt),zt],0.024,0.024,'steel',x<-0.9?0.2:-0.3);
+      for(let k=1;k<L.n;k++){ const z=lerp(ZS,BZ,k/L.n); if(z>zt-0.05) break; const y=yAt(z); boxQ(L.x0+0.02,L.x1-0.02,y-0.05,y+0.07,z-0.03,z,'teakg',0.25); }
+      OB.house.push(rectPoly(L.x0-0.22,L.yTop-0.22,L.x1+0.22,L.yFoot+0.22)); }
+
+    // ---- SKYBRIDGE interior (lv bridge, the 90) ----
+    if(SK){ cLVname='bridge';
+      const envK=(y,z)=>hwAt(ringAt(SKY,clamp(z,SKY[0].z,SKY[SKY.length-1].z)).P,y)-0.12;
+      at('bridge','floor'); soleStrips(skyIn, YSA, YSD, BZ, 'carpet', [SK.well], 22);
+      at('bridge','lining'); lining(SKY, BZ, BC, YSD, SK.band, 'teakg'); aftLining(SKY, BZ, BC, SK.door, 'teakg');
+      const J=SK.items; ENV=envK;
+      at('bridge','part');
+      { const w=skyIn(YSD)-0.02; fb(-w,w,YSD-0.30,YSD,BZ,BZ+0.80,'teakg',-0.15,0,'stone'); block('bridge',-w,w,YSD-0.30,YSD,0.25);
+        const Wl=SK.well; fb(Wl.x0-0.06,Wl.x0,Wl.y0,Wl.y1,BZ,BZ+0.92,'teakg',-0.1,0,'stone'); fb(Wl.x0-0.06,Wl.x1,Wl.y0-0.06,Wl.y0,BZ,BZ+0.92,'teakg',-0.1,0,'stone');
+        OB.bridge.push(rectPoly(Wl.x0-0.26,Wl.y0-0.26,Wl.x1+0.3,Wl.y1-0.15)); }
+      at('bridge','fit');
+      { const C=J.console; fb(C.x0,C.x1,C.y0,C.y1,BZ,BZ+0.98,'teakg',-0.1); Q([[C.x0+0.08,C.y0+0.05,BZ+0.99],[C.x1-0.08,C.y0+0.05,BZ+0.99],[C.x1-0.08,C.y1-0.10,BZ+1.08],[C.x0+0.08,C.y1-0.10,BZ+1.08]],[0,-0.3,1],'glas',-0.4,0.02);
+        block('bridge',C.x0,C.x1,C.y0,C.y1);
+        J.chairs.forEach(x=>{ const y=J.chairY; boxQ(x-0.08,x+0.08,y-0.08,y+0.08,BZ,BZ+0.50,'steel',-0.2); boxQ(x-0.28,x+0.28,y-0.26,y+0.26,BZ+0.50,BZ+0.64,'leath',0.15); boxQ(x-0.27,x+0.27,y-0.30,y-0.14,BZ+0.64,BZ+1.20,'leath',-0.05); block('bridge',x-0.28,x+0.28,y-0.30,y+0.26,0.12); });
+        settee('bridge',J.lset.x0,J.lset.x1,J.lset.y0,J.lset.y1,BZ,'-x'); table('bridge',J.tab.x0,J.tab.x1,J.tab.y0,J.tab.y1,BZ,0.70);
+        settee('bridge',J.sset.x0,J.sset.x1,J.sset.y0,J.sset.y1,BZ,'+x'); }
+      ENV=null; }
+
+    // ---- BELOW (lv below): cabins forward of the engine bulkhead; hull lining; engine room aft ----
+    // every piece is held inside the MESH-TRUE hull (halfAtZ) at its own height: soles at their own z,
+    // partitions and berths fitted to the lining, the bulkhead to the skin.
+    cLVname='below';
+    const ZB=BLW.soleZ, ZBF=BLW.fwdZ;
+    const belowCeil=(y)=>y<YDASH?ZS-0.12:fSz(y)+fCam(y)-0.12;
+    const bIn=(y,z)=>Math.max(0.05, halfAtZ(y,z)-0.14);
+    // the lid over the cabins is cambered: near the hull side the foredeck is lower than on the centreline, so
+    // every fitted piece is also held under the lid's underside at its own |x| (it used to poke through there)
+    const deckHalf=(y,z,m)=>{ m=m==null?0.10:m; if(y<YDASH) return z<=ZS-0.12?9:-1; const zs=fSz(y), c=fCam(y), w=Math.max(0.05,fSx(y)-spec.railW);
+      if(z<=zs+0.012-m) return 9; const q=1-(z-zs-0.012+m)/Math.max(0.01,c); return q<=0?-1:w*Math.sqrt(q); };
+    const envB=(y,z)=>Math.min(halfAtZ(y,z)-0.16, deckHalf(y,z)), envW=(y,z)=>Math.min(halfAtZ(y,z)-0.14, deckHalf(y,z)), envE=(y,z)=>Math.min(halfAtZ(y,z)-0.03, deckHalf(y,z,0.06));
+    const zSole=(y)=>y>=BLW.stepY1-0.01?ZBF:ZB;
+    at('below','floor');
+    soleStrips((y)=>bIn(y,ZB), BLW.y0, BLW.stepY0, ZB, 'carpet', null, 18);
+    soleStrips((y)=>bIn(y,ZBF), BLW.stepY1, BLW.y1, ZBF, 'carpet', null, 10);
+    at('below','fit'); ENV=envB;
+    fb(-0.55,0.55,BLW.stepY0,BLW.stepY1,ZB,ZBF,'teak',-0.1); fb(-9,-0.55,BLW.stepY0,BLW.stepY1,ZB,ZBF,'teakg',-0.2); fb(0.55,9,BLW.stepY0,BLW.stepY1,ZB,ZBF,'teakg',-0.2);
+    at('below','lining');
+    { const N=34;
+      for(let i=0;i<N;i++){ const y0=lerp(BLW.y0,BLW.y1,i/N), y1=lerp(BLW.y0,BLW.y1,(i+1)/N);
+        for(const sd of [-1,1]){ const top0=Math.min(belowCeil(y0),fSz(y0)-0.15), top1=Math.min(belowCeil(y1),fSz(y1)-0.15);
+          const P=(y,z)=>[sd*bIn(y,z),y,z], z00=zSole(y0), z10=zSole(y1), zm0=z00+0.90, zm1=z10+0.90;
+          Q([P(y0,z00),P(y1,z10),P(y1,zm1),P(y0,zm0)],[-sd,0,0],'teakg',-0.1,0); Q([P(y0,zm0),P(y1,zm1),P(y1,top1),P(y0,top0)],[-sd,0,0.1],'whiteg',0.1,0); } }
+      const hw=spec.hullWin; if(hw) for(const sd of [-1,1]){ const P=(y,z)=>[sd*(bIn(y,z)-0.02),y,z]; Q([P(hw.y0+0.2,hw.z0+0.06),P(hw.y1-0.2,hw.z0+0.06+hw.slant*0.5),P(hw.y1-0.2,hw.z1-0.06+hw.slant*0.5),P(hw.y0+0.2,hw.z1-0.06)],[-sd,0,0],'glassd',0.4,0.02); } }
+    at('below','part');
+    { const eb=BLW.y0; fitBox(envE,-9,9,eb-0.10,eb,Math.min(BLW.engZ,ZB),ZS-0.12,'whiteg',-0.1,null,10); OB.below.push(rectPoly(-4,eb-1,4,eb+0.22));
+      BLW.walls.forEach(W2=>{ const z0=zSole(W2[2]), top=Math.min(belowCeil((W2[2]+W2[3])/2), z0+2.05); fitBox(envW,W2[0],W2[1],W2[2],W2[3],z0,top,'whiteg',0.0,null,10); OB.below.push(rectPoly(W2[0]-0.20,W2[2]-0.20,W2[1]+0.20,W2[3]+0.20)); }); }
+    // engine room (opened by the below cut: the salon lifts off it)
+    at('below','floor'); { const ez=BLW.engZ; soleStrips((y)=>Math.max(0.05,halfAtZ(y,ez)-0.05), MZ.y0+0.1, BLW.y0-0.1, ez, 'iron', null, 8); }
+    at('below','fit'); { const E=BLW.eng, ez=BLW.engZ;
+      for(const sd of [-1,1]){ const xc=sd*E.xc;
+        fb(xc-E.hw,xc+E.hw,E.y0,E.y1,ez,ez+E.h,'steel',-0.1,0,'iron'); fb(xc-E.hw*0.62,xc+E.hw*0.62,E.y0+0.3,E.y1-0.3,ez+E.h,ez+E.h+E.ht,'steel',0.25);
+        fb(xc-0.20,xc+0.20,E.gear[0],E.gear[1],ez+0.20,ez+E.h*0.8,'iron',-0.2); }
+      (E.gens||[]).forEach(g=>fb(g[0],g[1],g[2],g[3],ez,ez+g[4],'cream',-0.2));
+      if(E.box) fb(E.box[0],E.box[1],E.box[2],E.box[3],ez,ez+E.box[4],'steel',-0.2); }
+    BLW.beds.forEach(b2=>{ at('below','fit'); bed('below',b2[0],b2[1],b2[2],b2[3],zSole(b2[2]),b2[4]); });
+    BLW.stands.forEach(s2=>{ at('below','fit'); fb(s2[0],s2[1],s2[2],s2[3],ZB,ZB+0.55,'teakg',0.0,0,'stone'); block('below',s2[0],s2[1],s2[2],s2[3],0.15); });
+    furnish('below', BLW.fit, zSole);
+    ENV=null;
+    { const C=SA.comp; OB.below.push(rectPoly(C.x0-0.05,C.y0-0.25,C.x1+0.05,C.y1-0.15)); }
+    TG=F;
+
+    // ==================================== WALK DATA ====================================
+    // areas: plan polygons (player centre, already shrunk/padded), z constant or a ramp; cut = which cutaway applies
+    // walkCut (a hull's mezz, salon and below) and vipCut (below's, for the vip): walk-only holes [x0,x1,y0,y1] over a
+    // pocket the walker can never stand in, so its sliver of floor is cut away (the floors ruling 10-26, F2.1; the vip's
+    // bow, the desk's ruling 10-27). Nothing drawn changes
+    const WALK=(function(){
+      const A=[], side=(fn,y0,y1,n,shr)=>{ const P=[], Pm=[]; for(let i=0;i<=n;i++){ const y=lerp(y0,y1,i/n), w=Math.max(0.05,fn(y)-shr); P.push([w,y]); Pm.unshift([-w,y]); } return P.concat(Pm); },
+        cutH=(L)=>(L||[]).map(c=>rectPoly(c[0],c[2],c[1],c[3]));
+      A.push({ id:'cockpit', cut:'deck', z:CZ, poly:side((y)=>xin(y)-0.02,yT+0.35,CF-0.02,8,0.25),
+        holes:[rectPoly(-0.62,spec.chair.y-0.95,0.62,spec.chair.y+0.62), rectPoly(ST.x0-0.25,ST.y0+0.22,ST.x1+0.4,CF+0.1), rectPoly(-ST.x1-0.4,ST.y0+0.22,-ST.x0+0.25,CF+0.1)].concat(spec.tubs.map(t=>rectPoly(t[0]-0.50,t[1]-0.45,t[0]+0.50,t[1]+0.45))) });
+      for(const sd of [-1,1]) A.push({ id:'sidestair'+(sd>0?'S':'P'), cut:'deck', ramp:{ ax:1, a0:ST.y0, a1:CF, z0:CZ, z1:MZ.z }, poly:rectPoly(sd>0?ST.x0+0.04:-ST.x1+0.04, ST.y0-0.10, sd>0?ST.x1-0.04:-ST.x0-0.04, CF+0.12), holes:[] });
+      const FL=spec.flyLadder, sHole=(s,p)=>rectPoly(s.x0-p,s.y0-p,s.x1+p,s.y1+p);
+      A.push({ id:'mezzanine', cut:'deck', z:MZ.z, poly:side((y)=>mzw(y),MZ.y0+0.02,MZ.y1-0.22,3,0.25),
+        holes:[sHole(MZ.seat,0.25)].concat(FL?[rectPoly(FL.x-0.45,FL.y0,FL.x+0.45,MZ.y1+0.2)]:[], cutH(MZ.walkCut)) });
+      A.push({ id:'door', cut:'house', z:ZS, poly:rectPoly(SA.door.x0+0.26,MZ.y1-0.30,SA.door.x1-0.26,YAIN+0.30), holes:[] });
+      A.push({ id:'salon', cut:'house', z:ZS, poly:side(salIn,YAIN+0.24,YDASH-0.30,24,0.26), holes:OB.house.concat(cutH(SA.walkCut)) });
+      if(SA.up) A.push({ id:'upstair', kind:'stair', cut:'house', cutHi:'bridge', zMid:ZS+(BZ-ZS)*0.52, ramp:{ ax:1, a0:SA.up.y0, a1:SA.up.y1, z0:ZS, z1:BZ }, poly:rectPoly(SA.up.x0+0.12,SA.up.y0-0.25,SA.up.x1-0.10,SA.up.y1+0.25), holes:[] });
+      A.push({ id:'companionway', kind:'stair', cut:'house', cutLo:'below', zMid:(ZS+ZB)/2, ramp:{ ax:1, a0:SA.comp.y0+0.05, a1:SA.comp.y1, z0:ZS, z1:ZB }, poly:rectPoly(SA.comp.x0+0.14,SA.comp.y0-0.20,SA.comp.x1-0.14,SA.comp.y1+0.35), holes:[] });
+      if(SK){
+        A.push({ id:'skybridge', cut:'bridge', z:BZ, poly:side(skyIn,YSA+0.24,YSD-0.28,18,0.26), holes:OB.bridge.slice() });
+        A.push({ id:'skydoor', cut:'bridge', z:BZ, poly:rectPoly(SK.door.x0+0.24,SK.aftY-0.40,SK.door.x1-0.24,YSA+0.30), holes:[] });
+        A.push({ id:'aftdeck', cut:'deck', z:BR.zTop, poly:rectPoly(-(BR.W-0.50),BR.yA+0.48,BR.W-0.50,SK.aftY-0.05), holes:[rectPoly(-1.75,SK.aftY-0.85,SK.door.x0,SK.aftY+0.5)] });
       }
-      lv('main_deck');
-      boxF([0, station(0).y+spec.capW*0.5, sheerZ(0)+0.08],[0.06,0.05,0.08],'iron',0.1,-0.02);
-      for(const s of [-1,1]) boxF([s*(station(0).ws-spec.capW), station(0).y+spec.capW*1.4,
-        sheerZ(0)+0.05],[0.055,0.10,0.055],'iron',0.15,-0.02);
-
-      // ---- mezzanine against the raked house aft wall ----
-      (function(){ const MZ=spec.mezz;
-        const st=station(uOf(MZ.y1)), hw=Math.min(SAL.xAt(MZ.y1, zdl(MZ.y1))+0.24, st.ws-TH-0.10);
-        const z=DECK+MZ.z;
-        face([[-hw,MZ.y0,z],[hw,MZ.y0,z],[hw,MZ.y1,z],[-hw,MZ.y1,z]],'teak',0.35,-0.01);
-        face([[-hw,MZ.y0,DECK],[hw,MZ.y0,DECK],[hw,MZ.y0,z],[-hw,MZ.y0,z]],'cream',-0.2,DBP);
-        boxF([0,(MZ.y0+MZ.y1)/2+MZ.bench, z+MZ.seat/2],[hw*0.64,MZ.seat*0.7,MZ.seat/2],'cream',0.15,-0.02);
-        boxF([0,MZ.y1-0.10, z+MZ.seat+MZ.back/2],[hw*0.64,0.07,MZ.back/2],'cream',0.45,-0.02);
-      })();
-
-      lv('house');                                  // the aft deck is the salon roof carried aft — it lifts with the salon
-      // ---- aft deck at upper level (90: behind the skylounge, over the mezzanine) ----
-      if(spec.aftDeck){
-        const AD=spec.aftDeck, rr=Math.min(0.62,(AD.yf-AD.ya)*0.34), N=8;
-        const adw=(y)=>{ const d=Math.min(y-AD.ya, AD.yf-y);
-          if(d>=rr) return AD.hx;
-          const t=clamp01((rr-d)/rr); return Math.max(0.012, AD.hx*Math.sqrt(Math.max(0,1-t*t))); };
-        crownSlab({ya:AD.ya, yf:AD.yf, hx:AD.hx, z:AD.z, th:AD.th||0.14, cam:0.05,
-                   r:rr, rf:0.24, mat:'cream', n:N});
-        const RH=AD.railH||0, ya=AD.ya+0.13, yf=AD.yf-0.16;
-        const rx=(y)=>Math.max(0.10, adw(y)-0.16);
-        if(RH>0){ for(const s2 of [-1,1]){
-          for(const y of [ya,(ya+yf)/2,yf])
-            tubeF([s2*rx(y),y,AD.z+0.05],[s2*rx(y),y,AD.z+RH],0.034,'steel',0.1);
-          for(const f of [1,0.55])
-            tubeF([s2*rx(ya),ya,AD.z+RH*f],[s2*rx(yf),yf,AD.z+RH*f],f>0.9?0.032:0.026,'steel',0.26);
-        }
-        for(const f of [1,0.55])
-          tubeF([-rx(ya),ya,AD.z+RH*f],[rx(ya),ya,AD.z+RH*f],f>0.9?0.032:0.026,'steel',0.26); }
+      if(FL){
+        // the 53: mezzanine → flybridge ladder (steep ramp) and the open flybridge deck (the rigging lifts off)
+        A.push({ id:'flyladder', kind:'ladder', cut:'deck', cutHi:'fly', zMid:MZ.z+(BZ-MZ.z)*0.55, ramp:{ ax:1, a0:FL.y0, a1:FL.y1, z0:MZ.z, z1:BZ }, poly:rectPoly(FL.x-0.16,FL.y0-0.18,FL.x+0.16,FL.y1+0.22), holes:[] });
+        // R2, her way down: the ship's ladder through the hatch over the salon. Her centre keeps the walk's radius
+        // inside the hatch's sides (0.55 m less 2 x 0.25: 0.05 m across); the ramp lifts her from the sole, in front of
+        // the ladder's foot, to the bridge deck, where she steps off aft of the hatch
+        const FC=spec.flyComp, WR=0.25;
+        if(FC && FC.ladder) A.push({ id:'flyhatch', kind:'ladder', cut:'house', cutHi:'fly', zMid:ZS+(BZ-ZS)*0.55,
+          ramp:{ ax:1, a0:FC.y1-WR, a1:FC.y0+WR, z0:ZS, z1:BZ }, poly:rectPoly(FC.x0+WR,FC.y0-0.25,FC.x1-WR,FC.y1-WR+0.20), holes:[] });
+        const C=STN.console, R0=COAM[0].P, Hh=STN.hatch, SP=outline({ z:BR.zTop, yF:BR.yF, yA:BR.yA, W:BR.W, N:BR.N }, { e:BR.e||2.0, rA:BR.rA });
+        const flyIn=(y)=>Math.max(0.05, y>R0[NC][1]+0.05 ? hwAt(R0,y)-0.15 : hwAt(SP,y)-0.20);
+        const holes=[rectPoly(-C.hx-0.24,C.y0-1.36,C.hx+0.24,C.y1+0.24), rectPoly(Hh.x0-0.30,Hh.y0-0.30,Hh.x1+0.30,Hh.y1+0.02)].concat((STN.settees||[]).map(s=>sHole(s,0.24)));
+        if(FC) holes.push(rectPoly(FC.x0-0.10,FC.y0-0.10,FC.x1+0.10,FC.y1+0.10));
+        if(spec.tower) spec.tower.feet.forEach(f=>{ for(const sd of [-1,1]) holes.push(rectPoly(sd*f[0]-0.26,f[1]-0.26,sd*f[0]+0.26,f[1]+0.26)); });
+        A.push({ id:'flybridge', cut:'fly', z:BZ, poly:side(flyIn,BR.yA+0.36,C.y1+0.30,22,0.26), holes });
       }
-
-      lv('bridge');                                 // helm pod + seats stand on the bridge deck
-      // ---- bridge furniture (helm console + seats on the open bridge / in nothing visible when enclosed) ----
-      if(spec.helmPod){
-        const HP=spec.helmPod;
-        const o={ya:HP.y-0.32, yf:HP.y+0.32, hx:HP.hx||0.72, z0:HP.z, z1:HP.z+0.78, cx:HP.x||0,
-                 cam:0.05, rp:0.22, sh:0.18, mat:'cream', b:0.25, ny:8};
-        const hw=pod(o);
-        podGlass(o, hw, HP.z+0.48, HP.z+0.72);
-        boxF([HP.x||0,HP.y-0.08,HP.z+0.86],[0.55,0.12,0.04],'iron',-0.2,-0.04);
-        (HP.seats||[]).forEach(st=>boxF([st[0],st[1],HP.z+0.30],[0.28,0.24,0.30],'cream',0.1,-0.02));
-      }
-
-      lv('rigging');                                // DEDICATED class — the tower stands on the salon roof; the section drops it with that roof
-      // ---- TUNA TOWER (optional — the 90 gets height for free and carries an open coaming instead) ----
-      if(spec.tower)(function(){ const TW=spec.tower;
-        // pads + near-vertical legs
-        TW.feet.forEach((p,i)=>{ for(const s of [-1,1]){
-          boxF([s*p[0],p[1],p[2]+0.025],[0.15,0.19,0.05],'cream',0.35,-0.02);
-          tubeF([s*p[0],p[1],p[2]],[s*TW.top[i][0],TW.top[i][1],TW.z],TW.r,'steel',s>0?-0.3:0.15);
-        }});
-        // one aft-raking diagonal per side
-        for(const s of [-1,1]) tubeF([s*TW.feet[0][0],TW.feet[0][1],TW.feet[0][2]+0.04],
-                                     [s*TW.top[1][0],TW.top[1][1],TW.z-0.05],TW.r*0.62,'steel',0.25);
-        crownSlab({ya:TW.ty[0], yf:TW.ty[1], hx:TW.tx, z:TW.z, th:0.09, cam:0.07,
-                   r:Math.min(0.5,(TW.ty[1]-TW.ty[0])*0.32), rf:0.28, mat:'cream'});
-        // rail
-        const RH=TW.railH||0.62, RX=TW.tx-0.06;
-        for(const s of [-1,1]){
-          for(const y of [TW.ty[0]+0.06, TW.ty[1]-0.06])
-            tubeF([s*RX, y, TW.z+0.06],[s*RX, y, TW.z+RH],0.032,'steel',0.1);
-          tubeF([s*RX, TW.ty[0]+0.06, TW.z+RH],[s*RX, TW.ty[1]-0.06, TW.z+RH],0.030,'steel',0.26);
-          tubeF([s*RX, TW.ty[0]+0.06, TW.z+RH*0.52],[s*RX, TW.ty[1]-0.06, TW.z+RH*0.52],0.024,'steel',0.26);
-        }
-        tubeF([-RX, TW.ty[0]+0.06, TW.z+RH],[RX, TW.ty[0]+0.06, TW.z+RH],0.030,'steel',0.26);
-        // control head
-        (function(){
-          const cs=TW.consoleW||0.40, cy0=TW.ty[1]-0.30-cs*0.5;
-          const o={ya:cy0, yf:cy0+cs*0.80, hx:cs, cam:0.05, rp:cs*0.34, sh:0.14, mat:'cream', ny:8};
-          const chw=pod(Object.assign({z0:TW.z+0.08, z1:TW.z+0.08+cs*1.05}, o));
-          podGlass(o, chw, TW.z+0.08+cs*0.52, TW.z+0.08+cs*0.98);
-        })();
-        if(TW.seats) for(const s of [-1,1])
-          boxF([s*TW.seats, TW.ty[0]+0.42, TW.z+0.26],[0.26,0.22,0.20],'cream',0.15,-0.02);
-        // crowned buggy top on slim posts, radome + whips above
-        const yc=(TW.ty[0]+TW.ty[1])/2;
-        if(TW.btop){
-          const HT=TW.btop;
-          crownSlab({ya:HT.ya, yf:HT.yf, hx:HT.x, z:HT.z, th:0.08, cam:0.11,
-                     r:Math.min(0.55,(HT.yf-HT.ya)*0.30), rf:0.28, mat:'cream'});
-          for(const s of [-1,1]) for(const y of [HT.ya+0.24, HT.yf-0.26])
-            tubeF([s*(HT.x-0.18), y, TW.z+0.08],[s*(HT.x-0.18), y, HT.z],0.042,'steel',0.1);
-          for(const s of [-1,1]) taperF([s*0.55, yc-0.15, HT.z+0.08],[s*0.85, yc-0.75, TW.antZ],0.040,0.011,'steel',0.3);
-          taperF([0.25, yc-0.30, HT.z+0.08],[0.35, yc-0.95, TW.antZ-0.35],0.030,0.009,'steel',0.3);
-        } else {
-          tubeF([0, yc+0.10, TW.z+0.10],[0, yc+0.10, TW.z+0.30],0.22,'cream',0.15);
-          for(const s of [-1,1]) taperF([s*0.45, yc-0.10, TW.z+0.10],[s*0.66, yc-0.55, TW.antZ],0.034,0.010,'steel',0.3);
-        }
-        // ladders
-        (TW.lads||[]).forEach(Ld=>ladder(Ld[0],Ld[1],Ld[2],Ld[3],Ld[4],Ld[5],Ld[6],TW.r));
-      })();
-      lv('bridge');                                 // the coaming ladder climbs the skylounge — bridge deck
-      (spec.lads||[]).forEach(Ld=>ladder(Ld[0],Ld[1],Ld[2],Ld[3],Ld[4],Ld[5],Ld[6],0.05));
-      lv('house');                                  // the exterior ladders hang on the salon aft wall
-      // off-centre exterior ladders (pass 2): the routes UP to the helms
-      (spec.extLadders||[]).forEach(Ld=>{
-        const a=[Ld.cx-Ld.hw,Ld.y0,Ld.z0], b=[Ld.cx-Ld.hw,Ld.y1,Ld.z1], c=[Ld.cx+Ld.hw,Ld.y0,Ld.z0], d=[Ld.cx+Ld.hw,Ld.y1,Ld.z1];
-        tubeF(a,b,0.032,'steel',0.2); tubeF(c,d,0.032,'steel',-0.3);
-        for(let k=1;k<Ld.rungs;k++){ const tt=k/Ld.rungs;
-          tubeF([a[0],lerp(a[1],b[1],tt),lerp(a[2],b[2],tt)],[c[0],lerp(c[1],d[1],tt),lerp(c[2],d[2],tt)],0.022,'steel',0.3); }
-      });
-      lv('rigging');                                // whips + radome mast
-      (spec.whips||[]).forEach(w=>taperF(w[0],w[1],w[2],w[3],'steel',0.3));
-      if(spec.radome){ const RD=spec.radome;
-        tubeF([RD.x||0,RD.y,RD.z],[RD.x||0,RD.y,RD.z+RD.h],0.055,'steel',0.1);
-        tubeF([RD.x||0,RD.y,RD.z+RD.h],[RD.x||0,RD.y,RD.z+RD.h+0.30],0.26,'cream',0.2); }
-      lv('bridge');                                 // the hardtop stands on the coaming — bridge deck
-      // ---- sleek hardtop over the top station ----
-      if(spec.hardtop){ const HT=spec.hardtop;
-        crownSlab({ya:HT.ya, yf:HT.yf, hx:HT.x, z:HT.z, th:0.10, cam:HT.cam==null?0.10:HT.cam,
-                   r:Math.min(0.60,(HT.yf-HT.ya)*0.30), rf:0.26, mat:'cream'});
-        (HT.posts||[]).forEach(p=>{ for(const s of [-1,1])
-          tubeF([s*p[0],p[1],p[2]],[s*p[0]*0.96,p[1],HT.z],0.042,'steel',0.12); });
-      }
-      lv('rigging');
-      // ---- electronics: open-array radar + satellite radomes ----
-      (spec.domes||[]).forEach(D=>{
-        const z0=D.z, r=D.r||0.26, h=D.h||0.40;
-        if(D.type==='array'){
-          tubeF([D.x,D.y,z0],[D.x,D.y,z0+0.20],0.045,'steel',0.1);
-          boxF([D.x,D.y,z0+0.26],[D.len||0.55,0.085,0.055],'cream',0.35,-0.02);
-        } else {
-          tubeF([D.x,D.y,z0],[D.x,D.y,z0+0.10],0.06,'steel',0.0);
-          tubeF([D.x,D.y,z0+0.08],[D.x,D.y,z0+0.08+h*0.62],r,'cream',0.25);
-          taperF([D.x,D.y,z0+0.08+h*0.62],[D.x,D.y,z0+0.08+h],r,r*0.45,'cream',0.35);
-          boxF([D.x,D.y,z0+0.08+h],[r*0.42,r*0.42,0.02],'cream',0.5,-0.02);
-        }
-      });
-
-      // ---- rocket launcher + covering-board rod holders ----
-      (function(){
-        const RL=spec.rocket;
-        lv(spec.aftDeck && RL.y < spec.aftDeck.yf ? 'house' : 'bridge');   // 53: on the flybridge coaming rim · 90: on the salon-roof aft deck
-        boxF([RL.cx||0,RL.y,RL.z],[RL.x+0.08,0.07,0.07],'steel',-0.6,-0.02);
-        for(let k=0;k<RL.n;k++){
-          const x=(RL.cx||0)-RL.x + 2*RL.x*(RL.n===1?0.5:k/(RL.n-1));
-          tubeF([x,RL.y,RL.z],[x*1.10, RL.y-0.28, RL.z+0.44],0.052,'iron',0.1);
-        }
-        lv('main_deck');                            // covering-board rod holders are cockpit fittings
-        for(const s of [-1,1]) spec.capRods.forEach(y=>{
-          const st=station(uOf(y)), z=st.sheer;
-          tubeF([s*(st.ws-TH-spec.capW*0.55), y, z-0.02],[s*(st.ws-TH-spec.capW*0.18), y, z+0.30],0.042,'steel',-1.4);
-        });
-      })();
-
-      lv('rigging');                                // outriggers stand on the roof — they drop with it
-      // ---- outriggers: one cell, two states ----
-      (function(){ const OR=spec.rig;
-        for(const s of [-1,1]){
-          boxF([s*OR.x, OR.y, OR.z-0.05],[0.09,0.15,0.08],'iron',0.15,-0.03);
-          tubeF([s*OR.x, OR.y, OR.z],[s*(OR.x+0.09), OR.y, OR.z+0.24],0.055,'steel',0.2);
-        }
-        const A=52*DEG, EL=12*DEG, ST=21*DEG;
-        for(const [name,dirv] of [['out',(s)=>[s*Math.sin(A)*Math.cos(EL), -Math.cos(A)*Math.cos(EL), Math.sin(EL)]],
-                                  ['stowed',(s)=>[s*0.10, -Math.sin(ST), Math.cos(ST)]]]){
-          TARGET=RIGF[name];
-          for(const s of [-1,1]){
-            const P0=[s*(OR.x+0.09), OR.y, OR.z+0.24], d=v_norm(dirv(s));
-            const P1=v_add(P0, v_mul(d, OR.len)), PM=v_add(P0, v_mul(d, OR.len*0.42));
-            taperF(P0,PM,0.070,0.042,'steel', s>0?-0.3:0.3);
-            taperF(PM,P1,0.042,0.013,'steel', s>0?-0.3:0.3);
-          }
-          TARGET=F;
-        }
-      })();
+      A.push({ id:'below', cut:'below', z:ZB, poly:side((y)=>bIn(y,ZB+0.10),BLW.walkY0!=null?BLW.walkY0:BLW.y0+0.24,BLW.stepY0+0.05,16,0.24), holes:OB.below.concat(cutH(BLW.walkCut)) });
+      // the step between the cabins' two soles is a climb (the floors ruling 10-26, F2.2): main refuses an indoor ramp
+      // without a climb kind, and only a climb's route joins two floors on one key
+      A.push({ id:'belowstep', kind:'stair', cut:'below', cutHi:'below', cutLo:'below', zMid:(ZB+ZBF)/2, ramp:{ ax:1, a0:BLW.stepY0, a1:BLW.stepY1, z0:ZB, z1:ZBF }, poly:rectPoly(-0.42,BLW.stepY0-0.1,0.42,BLW.stepY1+0.1), holes:[] });
+      A.push({ id:'vip', cut:'below', z:ZBF, poly:side((y)=>bIn(y,ZBF+0.10),BLW.stepY1-0.05,BLW.y1-0.30,10,0.24), holes:OB.below.concat(cutH(BLW.vipCut)) });
+      A.forEach(a=>{ a.zAt=a.ramp?((x,y)=>{ const c=a.ramp.ax?y:x; return lerp(a.ramp.z0,a.ramp.z1,clamp01((c-a.ramp.a0)/(a.ramp.a1-a.ramp.a0))); }):(()=>a.z);
+        a.cutAt=(z)=> a.cutHi&&z>a.zMid ? a.cutHi : (a.cutLo&&z<a.zMid ? a.cutLo : a.cut);
+        a.contains=(x,y)=>pinPoly([x,y],a.poly) && !a.holes.some(h=>pinPoly([x,y],h)); });
+      return { areas:A, spawn:{ x:spec.spawn[0], y:spec.spawn[1], area:'salon' }, radius:0.25, stepTol:0.34 };
     })();
 
-    // ---- bake ----
-    const _fl={};
-    function faceList(riggers){
-      const k=RIGF[riggers]?riggers:'stowed';
-      return _fl[k] || (_fl[k]=F.concat(RIGF[k]));
+    // ==================================== THE FLYBRIDGE COMPANIONWAY (the 53, ruling R2) ====================================
+    // Her way down from the flybridge: a hatch through the bridge deck and the salon overhead, over the stair the
+    // interiors kit builds (HOUSE.stairs.up). From above it reads as a framed dark well with the top treads.
+    if(spec.flyComp){ const C=spec.flyComp, z=BR.zTop, zw=ZC-0.45;
+      at('bridge','wall');
+      for(const [x0,x1,y0,y1] of [[C.x0-0.05,C.x1+0.05,C.y0-0.05,C.y0],[C.x0-0.05,C.x1+0.05,C.y1,C.y1+0.05],[C.x0-0.05,C.x0,C.y0,C.y1],[C.x1,C.x1+0.05,C.y0,C.y1]])
+        boxQ(x0,x1,y0,y1,z-0.10,z+0.07,'cream',0.1);
+      Q([[C.x0,C.y0,zw],[C.x1,C.y0,zw],[C.x1,C.y0,z-0.10],[C.x0,C.y0,z-0.10]],[0,1,0],'cream',-1.0,0);
+      Q([[C.x0,C.y1,zw],[C.x1,C.y1,zw],[C.x1,C.y1,z-0.10],[C.x0,C.y1,z-0.10]],[0,-1,0],'cream',-1.2,0);
+      Q([[C.x0,C.y0,zw],[C.x0,C.y1,zw],[C.x0,C.y1,z-0.10],[C.x0,C.y0,z-0.10]],[1,0,0],'cream',-1.1,0);
+      Q([[C.x1,C.y0,zw],[C.x1,C.y1,zw],[C.x1,C.y1,z-0.10],[C.x1,C.y0,z-0.10]],[-1,0,0],'cream',-1.3,0);
+      Q([[C.x0,C.y0,zw],[C.x1,C.y0,zw],[C.x1,C.y1,zw],[C.x0,C.y1,zw]],[0,0,1],'dark',-0.4,0);
+      for(let k=1;k<=2;k++){ const zt=z-0.12-k*0.24, y=lerp(C.y0,C.y1,k/3); boxQ(C.x0+0.03,C.x1-0.03,y-0.06,y+0.06,zt-0.03,zt,'teak',-0.3); }
     }
-    // ---- the salon slider — built per render so opts.doorOpen (0..1) can pose it ----
-    const DS=spec.door||null;
-    let DOOR=null, HOUSE=null, DOOR2=null;
-    if(DS){
-      const wD=DS.x1-DS.x0, mid=+(DS.x0+wD*0.5).toFixed(3);
-      DOOR={ kind:'slide', face:'aft', y:DS.y, x0:DS.x0, x1:mid, z0:DS.z0, z1:DS.z1,
-             travel:+(wD*0.5).toFixed(3), clearAt:0.55, sillZ:spec.interior.soleZ,
-             leaf:{ x0:DS.x0, x1:mid } };
-      if(spec.door2){ const d2=spec.door2, w2=d2.x1-d2.x0;
-        DOOR2={ kind:'slide', face:'aft', y:d2.y, x0:d2.x0, x1:d2.x1, z0:d2.z0, z1:d2.z1,
-                travel:+(w2*0.98).toFixed(3), clearAt:0.60, sillZ:d2.sill,
-                leaf:{ x0:d2.x0, x1:d2.x1 } }; }
-      const IT=spec.interior;
-      HOUSE={ kind:'sport', soleZ:IT.soleZ, door:DOOR, door2:DOOR2||undefined,
-        levels:IT.bridge?['bridge','house','below']:['house','below'],
-        decks:{ house:Object.assign({ soleZ:IT.soleZ }, IT.house, { hxAt:(z)=>IT.house.hx }),
-                bridge:IT.bridge ? Object.assign({}, IT.bridge, { hxAt:(z)=>IT.bridge.hx })
-                                 : { soleZ:IT.bridgeSole, external:true },
-                below:Object.assign({}, IT.below) },
-        block:{ hx:IT.house.hx, y0:IT.house.y0, y1:IT.house.y1, topZ:IT.house.ceilZ },
-        helms:IT.helms||[], ladders:IT.ladders||[],
-        mainDeckExternal:true, excluded:IT.excluded||{} };
+
+    // ==================================== CLEATS (drawn, and published for the sidecar) ====================================
+    at('hull','trim');
+    const CLEAT_AT=[];
+    function cleat(id, x, y, z, along){ const a=along==='y', hx=a?0.035:0.11, hy=a?0.11:0.035;
+      boxQ(x-hx*0.45,x+hx*0.45,y-hy*0.45,y+hy*0.45,z,z+0.04,'steel',-0.1);
+      boxQ(x-hx,x+hx,y-hy,y+hy,z+0.04,z+0.065,'steel',0.25);
+      CLEAT_AT.push({ id, type:'cleat', pos:[r3(x),r3(y),r3(z+0.065)] }); }
+    { const yq=yT+0.45, ys=CF-0.40, yb=yB-1.85;
+      for(const [nm,sd] of [['port',-1],['star',1]]){
+        cleat('stern_'+nm, sd*(fSx(yq)-capW(yq)*0.5), yq, fSz(yq)+0.012, 'y');
+        cleat('spring_'+nm, sd*(fSx(ys)-capW(ys)*0.5), ys, fSz(ys)+0.012, 'y'); }
+      cleat('bow_1', 0, yb, fSz(yb)+fCam(yb)+0.012, 'y'); }
+
+    // ==================================== DOORS: posed leaves, built per call ====================================
+    // Salon slider on both hulls; the 90 also has the skylounge slider onto her bridge aft deck. Each leaf rides
+    // its own raked aft wall toward its fixed pane; behind the opening a dim quad stands in for the room.
+    // doorFacesFn(t, which): both leaves at t (render's picture), or one by its door id ('salon', 'skylounge').
+    const DS=SA.door, DK=SK?SK.door:null;
+    function doorFacesFn(t, which){
+      t=clamp01(t==null?0:+t); const saveTG=TG, saveLV=cLV, saveRO=cRO, out=[]; TG=out;
+      const leaf=(ds, yAt, fixed, lv)=>{ at(lv, 'wall');
+        const sl=ds.slide||1, span=(ds.x1-ds.x0)*0.98, z0=ds.z0-0.04, z1=ds.z1+0.04;
+        const n0=out.length;
+        Q([[ds.x0,yAt(ds.z0)+0.16,ds.z0],[ds.x1,yAt(ds.z0)+0.16,ds.z0],[ds.x1,yAt(ds.z1)+0.16,ds.z1],[ds.x0,yAt(ds.z1)+0.16,ds.z1]],[0,-1,0.05],'dark',-1.3,-0.02);
+        if(out.length>n0) out[n0].standIn=true;   // the dim quad that stands in for the room: dropped whenever the rooms draw
+        const lx0=ds.x0-0.06+sl*t*span, lx1=ds.x1+0.06+sl*t*span;
+        Q([[lx0,yAt(z0)-0.012,z0],[lx1,yAt(z0)-0.012,z0],[lx1,yAt(z1)-0.012,z1],[lx0,yAt(z1)-0.012,z1]],[0,-1,0.05],'iron',-0.1,0.03);
+        Q([[lx0+0.08,yAt(z0)-0.03,z0+0.08],[lx1-0.08,yAt(z0)-0.03,z0+0.08],[lx1-0.08,yAt(z1)-0.03,z1-0.08],[lx0+0.08,yAt(z1)-0.03,z1-0.08]],[0,-1,0.05],'glas',-0.45,0.04);
+        const zt=ds.z1+0.07, xa=Math.min(ds.x0,fixed.x0)-0.06, xb=Math.max(ds.x1,fixed.x1)+0.06;
+        tubeQ([xa,yAt(zt)-0.05,zt],[xb,yAt(zt)-0.05,zt],0.022,0.022,'steel',0.25); };
+      if(which!=='skylounge') leaf(DS, (z)=>salonAft(z)-0.012, SA.fixed, 'house');
+      if(DK && which!=='salon') leaf(DK, (z)=>ringAt(SKY,Math.min(z,SKY[SKY.length-1].z)).P[NC][1]-0.012, SK.fixed, 'bridge');
+      TG=saveTG; cLV=saveLV; cRO=saveRO; return out;
     }
-    function doorFacesFn(t){
-      if(!DS) return [];
-      t=Math.max(0,Math.min(1, t!=null ? +t : 0));
-      const out=[];
-      const one=(ds, V, twoPanel)=>{
-        const q=(x0,x1,z0,z1,off,mat,b,db)=>out.push(faceO(
-          [[x0,V.fA(z0)-off,z0],[x1,V.fA(z0)-off,z0],[x1,V.fA(z1)-off,z1],[x0,V.fA(z1)-off,z1]],
-          [0,-1,0.10], mat, b, db==null?DBP+0.02:db));
-        q(ds.x0,ds.x1,ds.z0,ds.z1,-0.16,'dark',-1.3,-0.02);                         // through the opening: dim room
-        let lx0, lx1;
-        if(twoPanel){ const mid=ds.x0+(ds.x1-ds.x0)*0.5;
-          q(mid,ds.x1,ds.z0,ds.z1,0.02,'iron',-0.20,DBP+0.02);                      // fixed pane frame
-          q(mid+0.05,ds.x1-0.05,ds.z0+0.06,ds.z1-0.06,0.045,'glas',-0.55,DBP+0.03); // fixed pane
-          const sft=t*(mid-ds.x0); lx0=ds.x0+sft; lx1=mid+sft;
-        } else { const sft=t*(ds.x1-ds.x0)*0.98; lx0=ds.x0+sft; lx1=ds.x1+sft; }
-        q(lx0,lx1,ds.z0,ds.z1,0.085,'iron',-0.05,DBP+0.03);                         // leaf frame
-        q(lx0+0.05,lx1-0.05,ds.z0+0.06,ds.z1-0.06,0.11,'glas',-0.45,DBP+0.04);      // leaf glass
-        const zt=ds.z1+0.05, zm=(ds.z0+ds.z1)/2, trkEnd=twoPanel?ds.x1:ds.x1+(ds.x1-ds.x0);
-        out.push.apply(out,tube([ds.x0-0.06,V.fA(zt)-0.10,zt],[trkEnd+0.06,V.fA(zt)-0.10,zt],0.028,'steel',0.25));   // track
-        out.push.apply(out,tube([lx1-0.09,V.fA(zm)-0.13,ds.z0+0.70],[lx1-0.09,V.fA(zm)-0.13,ds.z0+1.12],0.020,'steel',0.35)); // pull
-      };
-      one(spec.door, VOLS.salon, true);
-      for(const f of out) f.lv='house';                                    // the salon leaf is house enclosure — it cuts with the room
-      const n1=out.length;
-      if(spec.door2 && VOLS.sky) one(spec.door2, VOLS.sky, false);
-      for(let i=n1;i<out.length;i++) out[i].lv='bridge';                   // the skylounge slider cuts with the bridge deck
-      return out;
+    const mkDoor=(ds, y, sill, fixed)=>({ kind:'slide', face:'aft', y:r3(y), x0:ds.x0, x1:ds.x1, z0:ds.z0, z1:ds.z1,
+      travel:r3((ds.x1-ds.x0)*0.98), slide:(ds.slide||1), clearAt:0.55, sillZ:sill, leaf:{ x0:ds.x0, x1:ds.x1 }, fixed:{ x0:fixed.x0, x1:fixed.x1 } });
+    const DOOR=mkDoor(DS, SA.aftY, ZS, SA.fixed), DOOR2=DK?mkDoor(DK, SK.aftY, BZ, SK.fixed):null;
+
+    // ==================================== FACE LISTS + RENDER ====================================
+    const _fl={}, TWR=!!spec.tower && spec.towerDefault!==false;
+    // F + the outriggers in their pose + EITHER the tuna tower (53, opt-in) or the bare hardtop posts.
+    // faceList(riggers, tower) as before, or faceList(state) (hull-layout-1 §4.4): { riggers: 'out' | 'stowed' | true
+    // (out) | false (stowed), tower: true | false (the 53) }; a scheme in the state changes no face
+    function faceList(riggers, tower){
+      if(riggers && typeof riggers==='object'){ const s=riggers; if(s.tower!=null) tower=s.tower; riggers=s.riggers; }
+      if(riggers===true) riggers='out'; else if(riggers===false) riggers='stowed';
+      const k=RIGF[riggers]?riggers:'stowed', tw=(tower==null?TWR:!!tower)&&TWF.length>0, kk=k+(tw?'+tower':'');
+      return _fl[kk]||(_fl[kk]=F.concat(RIGF[k], tw?TWF:HTP)); }
+    // ---- THE CUT (ADR 0048 §6.4, hull-layout-1 §4.8) — geometry().cutaway, per hull. A key is where the player
+    // stands (every walk area names one). An entry lifts a whole level ('bridge') or one role of a level
+    // ('house:roof'). The ghost lifts the levels over the room and its roof (its walls stay and are ghosted near
+    // the player); the gate is the lift-set form: the ghost's levels and the shown level's walls and roof. shows
+    // names the level whose room renderCut draws at that key.
+    const CUTAWAY = SK ? {
+      ghost:{ deck:[], house:['bridge','top','rigging','house:roof'], bridge:['top','rigging','bridge:roof'], below:['foredeck','house','bridge','top','rigging'] },
+      gate: { deck:[], house:['bridge','top','rigging','house:wall','house:roof'], bridge:['top','rigging','bridge:wall','bridge:roof'], below:['foredeck','house','bridge','top','rigging'] },
+      shows:{ deck:null, house:'house', bridge:'bridge', below:'below' } } : {
+      ghost:{ deck:[], house:['bridge','rigging','house:roof'], fly:['rigging'], below:['foredeck','house','bridge','rigging'] },
+      gate: { deck:[], house:['bridge','rigging','house:wall','house:roof'], fly:['rigging'], below:['foredeck','house','bridge','rigging'] },
+      shows:{ deck:null, house:'house', fly:null, below:'below' } };
+    const CUT_NOTE='Keys: deck (cockpit, mezzanine, side stairs'+(SK?', the aft deck':', the fly ladder')+'), house (the salon), '+(SK?'bridge (the skylounge)':'fly (the open flybridge)')+
+      ', below (the cabins). The gate lists are complete lift sets in the ghost’s vocabulary (whole levels, and level:role): the ghost’s levels, and the shown level’s walls and roof (ADR 0048 §6.4). '+
+      'The ghost lifts the levels and the shown level’s roof; its walls stay and come back as ghost round the player. '+(SK?'':'This hull has no top level. ')+
+      'renderCut draws the gate: the lifted faces dropped, the shown level’s room on top, front faces only.';
+    const GHOST_RULE='role ∈ ghostRoles && depth < playerDepth − 0.20 m && inside the reveal ellipse (rx 1.25 m, ry 1.10 m of screen at 32 px/m, centred 0.95 m above the feet) → discard; solid < 0.60 R, Bayer 4×4 dither 0.60–1.0 R';
+    function cutTest(list){
+      if(!list || !list.length) return null;
+      const whole=new Set(), part=new Set();
+      list.forEach(s=>{ const k=s.indexOf(':'); if(k<0) whole.add(LV[s]); else part.add(LV[s.slice(0,k)]+':'+RO[s.slice(k+1)]); });
+      return (f)=>whole.has(f.lv) || part.has(f.lv+':'+f.ro);
+    }
+    const _cut={};
+    function cutOf(mode, key){ const k=mode+'|'+key; if(!(k in _cut)) _cut[k]=cutTest((CUTAWAY[mode]||CUTAWAY.ghost)[key]); return _cut[k]; }
+    // what a cut view draws: the exterior, the posed leaves (less the stand-in, when the rooms draw) and the rooms
+    function allFaces(opts){ opts=opts||{}; const room=opts.interior!==false, door=doorFacesFn(opts.doorOpen);
+      return faceList(opts.riggers||'stowed', opts.tower).concat(room?door.filter(f=>!f.standIn):door, room?IF:[]); }
+    function ghostParams(B, p, g){ g=g||{}; const c=projVert(p.x,p.y,p.z+0.95,B,G), rx=(g.rx||1.25)*S, ry=(g.ry||1.10)*S, core=g.core!=null?g.core:0.60;
+      return { cx:c.sx, cy:c.sy, irx:1/rx, iry:1/ry, dP:c.d-(g.margin!=null?g.margin:0.20), core, icore:1/(1-core), rx, ry }; }
+    // one cut (or tag) view: cw = { mode:'ghost'|'gate', key (v3: level), player:{x,y,z}, ghost:{rx,ry,core,margin} }.
+    // The gate is gatePaint (renderCut's picture); the ghost draws the exterior, the leaves and every room not
+    // lifted in true depth, and with a player opens the near ghost-role faces round her.
+    function cutPaint(dir, opts, cw, gp, clip, post){
+      if(cw && cw.mode==='gate' && !opts.tags) return gatePaint(dir, cw.key||cw.level||'deck', opts, clip, post);
+      const o=Object.assign({}, opts, { dir }), B=camBasis(o);
+      let faces=cw ? allFaces(opts) : faceList(opts.riggers||'stowed', opts.tower).concat(doorFacesFn(opts.doorOpen));
+      const cut=cw ? cutOf(cw.mode||'ghost', cw.key||cw.level||'deck') : null; if(cut) faces=faces.filter(f=>!cut(f));
+      o._ghost=gp || (cw && cw.player ? ghostParams(B, cw.player, cw.ghost) : null);
+      if(clip){ o._clip=clip; o._post=post||clip; }
+      let MT=cw ? cutTable(opts.scheme||opts.paint) : paintTable(opts.scheme||opts.paint);
+      if(opts.tags){ const k=opts.tags; MT=tagMats(k);
+        faces=faces.map(f=>({ v:f.v, mat:String(k==='ro'?RON[f.ro]:(k==='it'?!!f.it:LVN[f.lv])), b:f.b, db:f.db, ro:f.ro })); }
+      return _paint(faces, o, G, MT);
+    }
+    // THE GATE (hull-layout-1 §4.8): every face the key's gate list lifts is dropped; the shown level's room is drawn,
+    // its front faces only, moved toward the camera by the hull's bounding diagonal (its own db kept on top);
+    // everything else is painted as render paints it. The shown level's stand-in goes whenever a level is shown;
+    // opts.interior false leaves the room's faces out and nothing else (the room-pixel count: the pixels that change).
+    let _diag=null;
+    function hullDiag(){ if(_diag!=null) return _diag; let x0=Infinity, y0=Infinity, z0=Infinity, x1=-Infinity, y1=-Infinity, z1=-Infinity;
+      for(const f of faceList('stowed', TWF.length>0)) for(const p of f.v){ if(p[0]<x0) x0=p[0]; if(p[0]>x1) x1=p[0]; if(p[1]<y0) y0=p[1]; if(p[1]>y1) y1=p[1]; if(p[2]<z0) z0=p[2]; if(p[2]>z1) z1=p[2]; }
+      return (_diag=Math.hypot(x1-x0, y1-y0, z1-z0)); }
+    function gatePaint(dir, key, opts, clip, post){
+      opts=opts||{};
+      if(!Object.prototype.hasOwnProperty.call(CUTAWAY.gate, key)) throw new Error('renderCut: no cut key '+key);
+      const o=Object.assign({}, opts, { dir }), B=camBasis(o), lifted=cutOf('gate', key);
+      const shownLv=CUTAWAY.shows[key]!=null ? LV[CUTAWAY.shows[key]] : null, shown=opts.interior!==false ? shownLv : null;
+      let ext=faceList(opts.riggers||'stowed', opts.tower).concat(doorFacesFn(opts.doorOpen));
+      if(lifted) ext=ext.filter(f=>!lifted(f));
+      const room=[];
+      if(shownLv!=null) ext=ext.filter(f=>!(f.standIn && f.lv===shownLv));
+      if(shown!=null){
+        const shift=hullDiag();
+        for(const f of IF){ if(f.lv!==shown) continue;
+          const rv=f.v.map(p=>projVert(p[0],p[1],p[2],B,G)); let ny=0, nz=0;
+          for(let i=0;i<rv.length;i++){ const a=rv[i], b=rv[(i+1)%rv.length]; ny+=(a.zr-b.zr)*(a.xr+b.xr); nz+=(a.xr-b.xr)*(a.yr+b.yr); }
+          if(-ny*B.ce+nz*B.se<0) continue;   // turned away from the camera
+          room.push(Object.assign({}, f, { db:(f.db||0)+shift })); }
+      }
+      if(clip){ o._clip=clip; o._post=post||clip; }
+      const sch=opts.scheme||opts.paint;
+      return _paint(ext.concat(room), o, G, shownLv!=null ? cutTable(sch) : paintTable(sch));
+    }
+    function renderCut(dir, key, opts){ return _toRGBA(gatePaint(dir, key, typeof opts==='number'?{ elev:opts }:(opts||{})), G.W, G.H); }
+    // VIEW (v3's): one heading's camera; base(mode,key) is the whole cut view, cached; region(mode,key,rc,ghost,out)
+    // repaints rect rc of an RGBA buffer with the ghost from ghost(p) (it rasters rc+2 and posts rc+1, writes rc)
+    function view(dir, opts){
+      opts=Object.assign({ doorOpen:1 }, typeof opts==='number'?{ elev:opts }:(opts||{}));
+      const B=camBasis(Object.assign({}, opts, { dir })), bases={}, W=G.W, H=G.H;
+      const grow=(r,g)=>({ x0:Math.max(0,r.x0-g), y0:Math.max(0,r.y0-g), x1:Math.min(W-1,r.x1+g), y1:Math.min(H-1,r.y1+g) });
+      return { dir, W, H, faceCount:allFaces(opts).length,
+        project:(x,y,z)=>{ const q=projVert(x,y,z,B,G); return [q.sx,q.sy,q.d]; },
+        ghost:(p,g)=>ghostParams(B,p,g),
+        base(mode, key){ const k=mode+'|'+key; return bases[k]||(bases[k]=_toRGBA(cutPaint(dir, opts, { mode, key }), W, H)); },
+        region(mode, key, rc, ghost, out){
+          const r={ x0:Math.max(0,Math.floor(rc.x0)), y0:Math.max(0,Math.floor(rc.y0)), x1:Math.min(W-1,Math.ceil(rc.x1)), y1:Math.min(H-1,Math.ceil(rc.y1)) };
+          const col=cutPaint(dir, opts, { mode, key }, ghost||null, grow(r,2), grow(r,1));
+          for(let y=r.y0;y<=r.y1;y++) for(let x=r.x0;x<=r.x1;x++){ const i=y*W+x, c=col[i], q=i*4;
+            if(!c){ out[q]=out[q+1]=out[q+2]=out[q+3]=0; continue; }
+            out[q]=parseInt(c.slice(1,3),16); out[q+1]=parseInt(c.slice(3,5),16); out[q+2]=parseInt(c.slice(5,7),16); out[q+3]=255; }
+          return out; } };
     }
     function render(dir, opts){
       opts=(typeof opts==='number')?{elev:opts}:(opts||{});
-      const fl=faceList(opts.riggers||'stowed');
-      let faces = DS ? fl.concat(doorFacesFn(opts.doorOpen)) : fl;
-      if(opts.cullLevels && opts.cullLevels.length){ const cut=new Set(opts.cullLevels); faces=faces.filter(f=>!cut.has(f.lv)); }   // pass-3 reference cut; absent → byte-identical
-      if(opts.cutaway && root.BoatCutaway) faces=root.BoatCutaway.filter(faces, RIG, Object.assign({}, opts, {dir}));            // the depth-correct section — boatCutawayRig.js owns the rule set
-      return _toRGBA(_paint(faces, Object.assign({},opts,{dir}), G, matsFor(opts.paint)), G.W, G.H);
+      const cw=(opts.cutaway && typeof opts.cutaway==='object') ? opts.cutaway : null;
+      if(cw || opts.tags) return _toRGBA(cutPaint(dir, opts, cw), G.W, G.H);   // the rig's own cut; the tag review
+      let faces=faceList(opts.riggers||'stowed', opts.tower).concat(doorFacesFn(opts.doorOpen));
+      if(opts.cullLevels && opts.cullLevels.length){ const cut=new Set(opts.cullLevels.map(l=>typeof l==='number'?l:LV[l])); faces=faces.filter(f=>!cut.has(f.lv)); }   // reference cut (level names or numbers); absent → byte-identical
+      if(opts.cutaway && root.BoatCutaway) faces=root.BoatCutaway.filter(faces, RIG, Object.assign({}, opts, {dir}));            // cutaway:true — pass 3's hook (boatCutawayRig.js owns that rule set)
+      return _toRGBA(_paint(faces, Object.assign({},opts,{dir}), G, paintTable(opts.scheme||opts.paint)), G.W, G.H);
     }
     const ROCK=spec.ROCK;
     function rockMotion(i, frames){
@@ -960,95 +1207,420 @@
       return { roll:ROCK.rollA*Math.sin(a), pitch:ROCK.pitchA*Math.sin(a+Math.PI/2), heave:ROCK.heaveA*Math.sin(a) };
     }
 
-    // ---- anchors ----
+    // ==================================== ANCHORS ====================================
     const norm=(opts)=>Object.assign({}, (typeof opts==='number'?{elev:opts}:opts||{}));
-    function proj(p, dir, opts){
-      const o=norm(opts); o.dir=dir;
-      const B=camBasis(o), q=projVert(p.x,p.y,p.z,B,G);
-      return { x:q.sx, y:q.sy };
-    }
+    function proj(p, dir, opts){ const o=norm(opts); o.dir=dir; const q=projVert(p.x,p.y,p.z,camBasis(o),G); return { x:q.sx, y:q.sy }; }
     const A=spec.anchors;
-    const RODS=(function(){
-      const out=[]; const RL=spec.rocket;
-      for(let k=0;k<RL.n;k++){ const x=(RL.cx||0)-RL.x + 2*RL.x*(RL.n===1?0.5:k/(RL.n-1));
-        out.push({x:x*1.10, y:RL.y-0.28, z:RL.z+0.44}); }
-      for(const s of [-1,1]) spec.capRods.forEach(y=>{
-        const st=station(uOf(y)); out.push({x:s*(st.ws-TH-spec.capW*0.15), y, z:st.sheer+0.34}); });
-      return out;
-    })();
-    const DOORS=(function(){ const s0=station(0), D=spec.doors;
-      return { transom:{x:(D.tr[0]+D.tr[1])/2, y:s0.y, z:DECK+D.trH*0.5},
-               tuna:   {x:(D.tu[0]+D.tu[1])/2, y:s0.y, z:DECK+D.tuH*0.5} }; })();
-    const TUBS=spec.tubs.map(t=>({x:t[0],y:t[1],z:DECK+(t[2]||0)}));
-    const NAV=(function(){ const st=station(spec.navU), s0=station(0);
-      return { port:{x:-(st.ws-TH-spec.capW*0.6), y:st.y+bowRake(spec.navU,1), z:st.sheer+0.05},
-               star:{x: (st.ws-TH-spec.capW*0.6), y:st.y+bowRake(spec.navU,1), z:st.sheer+0.05},
-               stern:{x:0, y:s0.y+spec.capW*0.5, z:s0.sheer+0.14},
-               mast: spec.mast ? spec.mast
-                 : {x:0, y:(spec.tower.ty[0]+spec.tower.ty[1])/2, z:spec.tower.antZ-0.10} }; })();
-    const MEZZ={x:0, y:(spec.mezz.y0+spec.mezz.y1)/2+spec.mezz.bench, z:DECK+spec.mezz.z+spec.mezz.seat};
-    const CHAIR={x:0, y:spec.chair.y, z:DECK+0.20};
-    // door threshold anchor + open-state report for the enter cue
+    const RODS=[]; { const RL=spec.rocket, HT=spec.hardtop; for(let k=0;k<RL.n;k++){ const x=-RL.x+2*RL.x*k/(RL.n-1); RODS.push({ x:r3(x*1.06), y:r3(RL.y-0.30), z:r3(HT.z+0.42) }); }
+      for(const sd of [-1,1]) spec.capRods.forEach(y=>RODS.push({ x:r3(sd*(xin(y)+capW(y)*0.45)), y:r3(y-0.12), z:r3(fSz(y)+0.24) })); }
+    const DOORS={ transom:{ x:(spec.doors.tr[0]+spec.doors.tr[1])/2, y:yT, z:r3(CZ+spec.doors.trH*0.5) }, tuna:{ x:(spec.doors.tu[0]+spec.doors.tu[1])/2, y:yT, z:r3(CZ+spec.doors.tuH*0.5) } };
+    const TUBS=spec.tubs.map(t=>({ x:t[0], y:t[1], z:CZ }));
+    const NAV={ port:{ x:r3(-(fSx(spec.railY[0])-0.06)), y:spec.railY[0], z:r3(fSz(spec.railY[0])+0.08) }, star:{ x:r3(fSx(spec.railY[0])-0.06), y:spec.railY[0], z:r3(fSz(spec.railY[0])+0.08) },
+      stern:{ x:0, y:r3(yT+0.1), z:r3(fSz(yT)+0.12) }, mast:{ x:0, y:spec.radar.y, z:r3(spec.hardtop.z+0.45) } };
+    const MEZZ={ x:0, y:r3(MZ.y0+0.30), z:r3(MZ.z+0.44) }, CHAIR={ x:0, y:spec.chair.y, z:r3(CZ+0.58) };
     function doorMount(dir, opts){
-      if(!DOOR) return null;
       const o=norm(opts); o.dir=dir;
-      const B=camBasis(o), t=Math.max(0,Math.min(1, o.doorOpen!=null ? +o.doorOpen : 0));
+      const B=camBasis(o), t=clamp01(o.doorOpen!=null?+o.doorOpen:0);
       const q=projVert((DOOR.x0+DOOR.x1)/2, DOOR.y, DOOR.sillZ, B, G);
-      const le=projVert(DOOR.leaf.x1+t*DOOR.travel, DOOR.y, DOOR.sillZ, B, G);
+      const le=projVert((DOOR.slide<0?DOOR.x1:DOOR.x0)+DOOR.slide*t*DOOR.travel, DOOR.y, DOOR.sillZ, B, G);
       return { x:q.sx, y:q.sy, lead:{x:le.sx,y:le.sy}, open:t, clear:t>=DOOR.clearAt };
     }
-    // hull half-width at (y, z) — the flare law included — and sheer height at y (metres in/out)
-    function halfAtZ(y, z){ const u=clamp01(uOf(y)), st=station(u);
-      const fr=clamp01((z-st.kz)/st.dep); return hbOf(u,fr)-TH; }
-    const loft = DS ? { station, skin, bowRake, halfAtZ, sheerZ:(y)=>sheerZ(clamp01(uOf(y))),
-      L, TH, DECK, SOLE_U:uOf(spec.cockpitTo), NSEG, house:HOUSE,
-      shade:{ GAIN, BIAS, LN, BAYER, KEY, EDGE:0.30 }, cell:{ W:G.W, H:G.H, cx:G.cx, cy:G.cy, S } } : null;
 
-    /* PASS 3 — the cutaway data (the fleet's ASK A): soleZ + ceilingZ (or an EXPLICIT open-above) per
-       level, from the constants the mesh is built from. The salon roof is tagged house and goes with
-       the room; the below flat's lid is the FOREDECK (the section clips it to the flat's footprint).
-       The 53's flybridge is the extractor's open coaming — a level here so cullAbove lifts it with
-       the salon roof it stands on. */
-    const LEVEL_IDS = { hull:0, main_deck:1, house:2, bridge:3, below:4, rigging:5, foredeck:6 };
+    // ==================================== HOUSE + LOFT (what boatInteriorRig.js builds the rooms from) ====================================
+    const HOUSE={ kind:'sport', soleZ:ZS, door:DOOR, door2:DOOR2||undefined,
+      levels:SK?['bridge','house','below']:['house','below'],
+      decks:{ house:{ soleZ:ZS, ceilZ:ZC, hx:houseHx, y0:r3(YAIN), y1:r3(CAB.houseY1!=null?CAB.houseY1:YDASH), portholes:CAB.portholes, hxAt:()=>houseHx },
+              bridge:SK ? { deckId:'bridge_sole', soleZ:BZ, ceilZ:BC, hx:skyHx, y0:r3(YSA), front:CAB.skyFront, frontGlass:CAB.skyFrontGlass,
+                            sideGlass:CAB.skySideGlass, aftGlass:CAB.skyAftGlass, hxAt:()=>skyHx }
+                        : { soleZ:BZ, external:true },
+              below:{ soleZ:BLW.soleZ, ceilZ:CAB.below.ceilZ, y0:CAB.below.y0, y1:CAB.below.y1, hxCap:CAB.below.hxCap } },
+      block:{ hx:houseHx, y0:r3(YAIN), y1:r3(CAB.houseY1!=null?CAB.houseY1:YDASH), topZ:ZC },
+      helms:CAB.helms, ladders:CAB.ladders, wayDown:CAB.wayDown, mainDeckExternal:true, excluded:CAB.excluded };
+    const loft={ station:section, halfAtZ, sheerZ:fSz, sheerX:fSx, camber:fCam, L, DWL, TH:0.06, DECK:CZ, house:HOUSE,
+      shade:{ GAIN, BIAS, LN, BAYER, KEY, EDGE:0.30 }, cell:{ W:G.W, H:G.H, cx:G.cx, cy:G.cy, S } };
+
+    // ==================================== LEVELS (cutaway data) ====================================
+    const LEVEL_IDS = LV;
+    // a level as §8.A names it (sole, ceil — null when open — and kind) beside the fields today's baker reads
+    const LVL=(o)=>Object.assign(o, { sole:o.soleZ, ceil:o.ceilingZ, kind:o.ceiling.kind });
     function geometry(){
-      if(!HOUSE) return null;
-      const D=HOUSE.decks, IT=spec.interior, fdZ=+zdl((D.below.y0+D.below.y1)/2).toFixed(3);
-      const bridge = IT.bridge
-        ? { id:'bridge', deck:'bridge_sole', soleZ:D.bridge.soleZ, ceilingZ:D.bridge.ceilZ,
-            ceiling:{ kind:'hard', lid:null, z:D.bridge.ceilZ, of:'skylounge deckhead (HOUSE.decks.bridge.ceilZ) — the coaming, hardtop and helm pod above are tagged bridge: they stand on this roof' } }
-        : (function(){ const BV=spec.volumes.filter(v=>v.id==='bridge')[0];
-            return { id:'bridge', deck:'bridge_sole', soleZ:D.bridge.soleZ, ceilingZ:null, external:true,
-              y0:+Math.min.apply(null, BV.aft.map(p=>p[1])).toFixed(3), y1:+Math.max.apply(null, BV.nose.map(p=>p[1])).toFixed(3),   // the coaming's plan: it is OVER the salon, not over the flat
-              ceiling:{ kind:'open', lid:null, note:'the open flybridge coaming is sky — the tower over it is rigging' } }; })();
+      const fdY=spec.foreFrom+1, fdZ=r3(fSz(fdY)+fCam(fdY));
+      const bridge = SK
+        ? { id:'bridge', deck:'bridge_sole', soleZ:BZ, ceilingZ:BC,
+            ceiling:{ kind:'hard', lid:null, z:BC, of:'skylounge deckhead (HOUSE.decks.bridge.ceilZ) — the top station on this roof is its own level, top; the hardtop over it is rigging' } }
+        : { id:'bridge', deck:'bridge_sole', soleZ:BZ, ceilingZ:null, external:true, y0:r3(COAM[0].P[NC][1]), y1:r3(COAM[0].P[0][1]),
+            ceiling:{ kind:'open', lid:null, note:'the open flybridge under the hardtop (rigging); its deck is the salon lid' } };
+      const top = SLV==='top'
+        ? [{ id:'top', deck:'helm_coaming', soleZ:r3(TP.zTop), ceilingZ:null, ceiling:{ kind:'open', lid:null, note:'the open top station on the skylounge roof, under the hardtop (rigging)' } }]
+        : [];
       return {
-        schema:'hidden-harbours/hull-geometry@1', hull:'sportFisherIsoRig2.'+spec.id, units:'m',
-        frame:'+x stbd, +y bow, +z up; origin amidships, keel bottom, centreline',
-        ids:Object.assign({}, LEVEL_IDS),
-        riggingClass:'rigging — tuna tower, outriggers, whips, radar + domes: tagged by CLASS; the section drops what stood on a lifted roof',
+        schema:'hidden-harbours/hull-geometry@1', rig:RIG_FILE, exportSymbol:EXPORT_SYMBOL, hull:spec.id, units:'m',
+        frame:FRAME,
+        ids:Object.assign({}, LEVEL_IDS), roles:Object.assign({}, RO), ghostRoles:GHOST_ROLES.slice(), dwlZ:DWL,
+        riggingClass:'rigging — hardtop, radar, domes, whips, rocket launcher, outriggers'+(spec.tower?', tuna tower (opt-in)':'')+': tagged by CLASS; the section drops what stood on a lifted roof',
         levels:[
-          { id:'house', deck:'house_sole', soleZ:D.house.soleZ, ceilingZ:D.house.ceilZ,
-            ceiling:{ kind:'hard', lid:null, z:D.house.ceilZ, of:'salon overhead (HOUSE.decks.house.ceilZ) — the crowned roof is tagged house and goes with the room' } },
+          { id:'house', deck:'house_sole', soleZ:ZS, ceilingZ:ZC,
+            ceiling:{ kind:'hard', lid:null, z:ZC, of:'salon overhead (HOUSE.decks.house.ceilZ) — the crowned roof is tagged house and goes with the room; the bridge deck slab above it is bridge' } },
           bridge,
-          { id:'below', deck:'below_sole', soleZ:D.below.soleZ, ceilingZ:D.below.ceilZ,
-            ceiling:{ kind:'hard', lid:'foredeck', z:D.below.ceilZ, of:'foredeck underside (HOUSE.decks.below.ceilZ) — the foredeck lifts over the flat only' } },
-          { id:'main_deck', deck:'cockpit', soleZ:DECK, ceilingZ:null,
-            ceiling:{ kind:'open', lid:null, note:'the cockpit and mezzanine are sky' } },
+          { id:'below', deck:'below_sole', soleZ:BLW.soleZ, ceilingZ:CAB.below.ceilZ,
+            ceiling:{ kind:'hard', lid:'foredeck', z:CAB.below.ceilZ, of:'salon sole aft of the dash, foredeck forward — the foredeck lifts over the flat only' } },
+          { id:'main_deck', deck:'cockpit', soleZ:CZ, ceilingZ:null,
+            ceiling:{ kind:'open', lid:null, note:'the cockpit and mezzanine are sky (the bridge deck overhangs the mezzanine)' } },
           { id:'foredeck', deck:'foredeck', soleZ:fdZ, ceilingZ:null,
-            ceiling:{ kind:'open', lid:null, note:'the foredeck is sky; soleZ is the deck line over the below flat' } },
-        ],
+            ceiling:{ kind:'open', lid:null, note:'the foredeck and side decks are sky; soleZ is the crown one metre forward of foreFrom' } },
+        ].concat(top).map(LVL),
+        cutaway:{ ghost:JSON.parse(JSON.stringify(CUTAWAY.ghost)), gate:JSON.parse(JSON.stringify(CUTAWAY.gate)),
+                  shows:Object.assign({}, CUTAWAY.shows), note:CUT_NOTE, ghostRule:GHOST_RULE },
+        door:geoDoor(DOOR, 'salon', 'house'),
+        doors:[geoDoor(DOOR, 'salon', 'house')].concat(DOOR2 ? [geoDoor(DOOR2, 'skylounge', 'bridge')] : []),
+        parts:[
+          { id:'door', group:'doorFaces', door:'salon', lv:'house', ro:'wall', kind:'slide', opensTo:'aft', note:'doorFaces(t): the salon slider, the default door (see door)' },
+        ].concat(DOOR2 ? [
+          { id:'skydoor', group:'doorFaces', door:'skylounge', lv:'bridge', ro:'wall', kind:'slide', opensTo:'aft',
+            note:'doorFaces(t, \'skylounge\'), partFaces(\'skydoor\', t): the skylounge slider onto the aft deck. NEW: a second leaf (doors[1])' },
+        ] : []).concat([
+          { id:'riggers', group:'state', state:'riggers', lv:'rigging', ro:'rig', note:'riggers true swings the outriggers out; false (the default) stows them' },
+        ], TWF.length ? [
+          { id:'tower', group:'state', state:'tower', lv:'rigging', ro:'rig', note:'tower true stands the tuna tower on the hardtop; false (the default) draws the bare hardtop posts' },
+        ] : []),
+        states:Object.assign({ riggers:'true|false (out | stowed, the default; faceList also takes the names)' },
+          TWF.length ? { tower:'true|false (the tuna tower, opt-in; the default is the hardtop)' } : {},
+          { doorOpen:'0..1 (render option; the leaf is doorFaces(t))' }),
       };
     }
+    // a door as geometry() and the walk's house.door give it (hull-layout-1 §6.7): the slider's opening, its leaf
+    // (doorFaces), its level and its clear width and height when open
+    function geoDoor(D, id, lv){
+      const w=r3(D.x1-D.x0), clearW=r3(D.travel-0.06);
+      return { id, kind:'slide', face:D.face, y:D.y, x0:D.x0, x1:D.x1, z0:D.z0, z1:D.z1, sillZ:D.sillZ, travel:D.travel, slide:D.slide,
+        leaf:id==='salon' ? 'doorFaces(t)' : 'doorFaces(t, \''+id+'\')', lv, ro:'wall', clear:{ width:clearW, height:r3(D.z1-D.z0) }, opensTo:'aft', clearAt:D.clearAt,
+        note:'shut until opened; E opens it; t 0..1 slides the leaf '+(D.slide<0?'to port':'to starboard')+' over its fixed pane. The opening is '+w+' m wide; open, '+clearW+' m stands clear.' };
+    }
+
+    // ==================================== QA: FIT CHECK, LEAK ====================================
+    // FIT CHECK (v3's): every room vertex must sit inside the boat's own shell — the mesh-true hull under the decks,
+    // or the salon / skylounge ring lofts above them. Returns the room faces that break out.
+    // { tol, faces, vertices, outside, worst, worstAt, list } (hull-layout-1 §4.5, §6.11): worst over the faces out
+    // by more than tol, worstAt the first corner of the worst one; list the faces out (lv / ro by name)
+    function fitCheck(tol){
+      tol=tol==null?0.01:tol; const bad=[]; let worst=0, worstAt=null, nv=0;
+      const rooms=[SAL].concat(SKY?[SKY]:[]).map(RG=>({ RG, z0:RG[0].z, z1:RG[RG.length-1].z }));
+      const outBy=(p)=>{ const x=Math.abs(p[0]), y=p[1], z=p[2]; let best=Infinity;
+        if(y>=yT-1e-3&&y<=yB+1e-3&&z<=fSz(clamp(y,yT,yB))+(y>spec.foreFrom?fCam(y):0)+0.02) best=x-halfAtZ(clamp(y,yT,yB),z);
+        for(const R of rooms){ if(z<R.z0-0.02||z>R.z1+0.02) continue; const w=hwAt(ringAt(R.RG,clamp(z,R.z0,R.z1)).P,y); if(w>0) best=Math.min(best,x-w); }
+        return best; };
+      IF.forEach((f,i)=>{ let m=-Infinity; nv+=f.v.length; f.v.forEach(p=>{ m=Math.max(m,outBy(p)); });
+        if(f.lv===LV.below) f.v.forEach(p=>{ const dh=deckHalf(p[1],p[2],0); if(dh<9) m=Math.max(m, dh<0?Infinity:Math.abs(p[0])-dh); });
+        if(m>tol){ bad.push({ i, lv:LVN[f.lv], ro:RON[f.ro], mat:f.mat, by:m===Infinity?'no room':+m.toFixed(3), at:f.v[0].map(c=>+c.toFixed(2)) });
+          if(m!==Infinity && m>worst){ worst=m; worstAt=f.v[0].map(r3); } } });
+      return { tol, faces:IF.length, vertices:nv, outside:bad.length, worst:+worst.toFixed(3), worstAt, list:bad };
+    }
+    // LEAK: room pixels that show through the closed, uncut exterior — each heading drawn with and without the
+    // rooms (door closed, stand-in kept), pixels that differ counted
+    function leakPx(opts){
+      opts=Object.assign({}, opts||{}, { doorOpen:0 }); const per=[];
+      for(let d=0; d<8; d++){ const o=Object.assign({}, opts, { dir:d }), ext=faceList(opts.riggers||'stowed', opts.tower).concat(doorFacesFn(0));
+        const a=_paint(ext, o, G, cutTable(opts.scheme||opts.paint)), b=_paint(ext.concat(IF), o, G, cutTable(opts.scheme||opts.paint));
+        let n=0; for(let i=0;i<a.length;i++) if(a[i]!==b[i]) n++; per.push(n); }
+      return per;
+    }
+
+    // ==================================== DECK PLAN (the gameplay extractor reads this, nothing else) ====================================
+    // Every polygon below is computed from the constants the mesh above is built from. CCW from +Z.
+    function deckPlan(){
+      const pp=(x,y)=>[r3(x),r3(y)], NP=16;
+      const strip=(fx, y0, y1)=>{ const out=[]; for(let i=0;i<=NP;i++){ const y=lerp(y1,y0,i/NP); out.push(pp(-fx(y),y)); } for(let i=0;i<=NP;i++){ const y=lerp(y0,y1,i/NP); out.push(pp(fx(y),y)); } return out; };
+      const ringOf=(P, inset)=>{ const Q2=P.slice(0,NC+NAF+1).map((p,j)=>{ const n=pnorm(P,j); return [Math.max(0,p[0]-inset*n[0]), p[1]-inset*n[1]]; });
+        const port=Q2.map(p=>pp(-p[0],p[1])), star=Q2.slice().reverse().map(p=>pp(p[0],p[1])); return port.concat(star); };
+      const box=(x0,x1,y0,y1)=>({ x:[r3(x0),r3(x1)], y:[r3(y0),r3(y1)] });
+      const D=[];
+      // cockpit sole: transom liner to the mezzanine face
+      const cw=(y)=>xin(y)-0.01, ST2=spec.sideStair, rise=(MZ.z-CZ)/(ST2.n+1), run=(CF-ST2.y0)/ST2.n;
+      D.push({ id:'cockpit', z:CZ, polygon:strip(cw, yT+0.06, CF), notes:{
+        chair:{ fp:box(-0.42,0.42,spec.chair.y-0.82,spec.chair.y+0.42), top:1.08 },
+        tubs:spec.tubs.map(t=>({ fp:box(t[0]-0.28,t[0]+0.28,t[1]-0.22,t[1]+0.22), top:0.52 })),
+        steps:{ x:[[-ST2.x1,-ST2.x0],[ST2.x0,ST2.x1]], y:[r3(ST2.y0),r3(CF)], treads:ST2.n, rise:r3(rise), run:r3(run), to:r3(MZ.z),
+          tread_z:Array.from({length:ST2.n},(_,k)=>r3(lerp(CZ,MZ.z,(k+1)/(ST2.n+1)))) },
+        riser:{ y:r3(CF), x:[-r3(xin(CF)),r3(xin(CF))], top:r3(MZ.z-CZ) },
+        doors:{ transom:{ x:spec.doors.tr, h:spec.doors.trH }, tuna:{ x:spec.doors.tu, h:spec.doors.tuH } } } });
+      // mezzanine
+      const mw=(y)=>(spec.wings?spec.wings.x0-0.01:xin(y)-0.13);
+      D.push({ id:'mezzanine', z:MZ.z, polygon:strip(mw, MZ.y0, MZ.y1), notes:{
+        seat:{ fp:box(MZ.seat.x0,MZ.seat.x1,MZ.seat.y0,MZ.seat.y1), top:0.92 },
+        wings:spec.wings?{ x:[spec.wings.x0,spec.wings.x1], y:[spec.wings.yA,spec.wings.yF], z:[spec.wings.zA,spec.wings.zF] }:null,
+        door:{ x:[DS.x0,DS.x1], y:r3(SA.aftY), sill:ZS } } });
+      // side decks (walkable only where the reveal clears 0.35 m)
+      const xh=(y)=>Math.min(hwAt(ringAt(SAL,fSz(y)+0.013).P,y)-0.03, fSx(y)-spec.railW-0.02), xo=(y)=>fSx(y)-spec.railW;
+      let wmin=9, wmax=0; for(let i=0;i<=24;i++){ const y=lerp(SA.aftY+0.05,spec.foreFrom-0.05,i/24), w=xo(y)-xh(y); wmin=Math.min(wmin,w); wmax=Math.max(wmax,w); }
+      const sideOK=wmin>=0.35;
+      if(sideOK) for(const [nm,sd] of [['port',-1],['star',1]]){ const out=[], N=12;
+        const ya=SA.aftY, yf=spec.foreFrom, z=(y)=>r3(fSz(y)+0.013);
+        const inner=[], outer=[]; for(let i=0;i<=N;i++){ const y=lerp(ya,yf,i/N); inner.push([r3(sd*xh(y)),r3(y),z(y)]); outer.push([r3(sd*xo(y)),r3(y),z(y)]); }
+        const ring=sd<0 ? outer.slice().reverse().concat(inner) : inner.slice().reverse().concat(outer);
+        D.push({ id:'side_deck_'+nm, polygon3d:ring, notes:{ width:[r3(wmin),r3(wmax)] } }); }
+      // foredeck: outboard edge on the rail line, crown fCam(y)
+      { const L3=[], R3=[], N=18; let yEnd=yB-0.02; while(xo(yEnd)<0.07) yEnd-=0.02;
+        for(let i=0;i<=N;i++){ const y=lerp(yEnd,spec.foreFrom,i/N); L3.push([r3(-xo(y)),r3(y),r3(fSz(y)+0.012)]); }
+        for(let i=0;i<=N;i++){ const y=lerp(spec.foreFrom,yEnd,i/N); R3.push([r3(xo(y)),r3(y),r3(fSz(y)+0.012)]); }
+        const nose=[]; for(let j=0;j<=NN;j++){ const p=ringAt(SAL,fSz(spec.foreFrom)+0.02).P[j]; if(p[1]>=spec.foreFrom) nose.push(p); }
+        const noseFp=nose.map(p=>pp(-p[0],p[1])).concat(nose.slice().reverse().map(p=>pp(p[0],p[1])));
+        D.push({ id:'foredeck', polygon3d:L3.concat(R3), notes:{ crown:[r3(fCam(spec.foreFrom)),r3(fCam(yEnd))], from:spec.foreFrom, to:r3(yEnd),
+          rail:{ y:spec.railY, h:spec.railH }, windlass:{ fp:box(-0.20,0.20,yB-1.45,yB-1.05), top:0.22 }, hatch:{ fp:box(-0.42,0.42,spec.hatchY-0.38,spec.hatchY+0.38), top:0.05 },
+          house_nose:noseFp.length>2?noseFp:null } }); }
+      // upper decks
+      if(SK){
+        const P=outline({ z:BR.zTop, yF:BR.yF, yA:BR.yA, W:BR.W, N:BR.N }, { e:BR.e||2.0, rA:BR.rA });
+        const y1=SK.aftY-0.02, ring=[]; const pts=P.slice(0,NC+NAF+1).filter(p=>p[1]<=y1); const wAt=(y)=>hwAt(P,y);
+        const port=[[-wAt(y1)+0.20,y1]].concat(pts.map(p=>[-(Math.max(0,p[0]-0.20)),Math.max(p[1],BR.yA+0.22)]));
+        const star=port.slice().reverse().map(p=>[-p[0],p[1]]);
+        port.concat(star).forEach(p=>ring.push(pp(p[0],p[1])));
+        D.push({ id:'aft_deck', z:BR.zTop, polygon:ring, notes:{ rail:{ x:r3(BR.W-0.20), y0:r3(BR.yA+0.22), h:0.90 },
+          settee:{ fp:box(-1.5,SK.door.x0-0.25,y1-0.60,y1), top:0.92 }, door:{ x:[DK.x0,DK.x1], y:r3(SK.aftY), sill:BZ },
+          ladder:STN.ladder?{ x:STN.ladder.x, y:[STN.ladder.y0,STN.ladder.y1], z:[STN.ladder.z0,STN.ladder.z1], rungs:STN.ladder.n }:null } });
+        const C=STN.console;
+        D.push({ id:'helm_coaming', z:TP.zTop, polygon:ringOf(COAM[0].P,0.13), notes:{ console:{ fp:box(-C.hx,C.hx,C.y0,C.y1), top:0.95 },
+          seats:STN.seats.map(x=>({ fp:box(x-0.27,x+0.27,C.y0-1.12,C.y0-0.62), top:1.02 })), coaming_top:r3(COAM[COAM.length-1].z) } });
+      } else {
+        const C=STN.console;
+        D.push({ id:'bridge_sole', z:BR.zTop, polygon:ringOf(COAM[0].P,0.13), notes:{ console:{ fp:box(-C.hx,C.hx,C.y0,C.y1), top:0.95 },
+          seats:STN.seats.map(x=>({ fp:box(x-0.27,x+0.27,C.y0-1.12,C.y0-0.62), top:1.02 })),
+          settees:(STN.settees||[]).map(s=>({ fp:box(s.x0,s.x1,s.y0,s.y1), top:0.88 })),
+          companionway:spec.flyComp?{ fp:box(spec.flyComp.x0,spec.flyComp.x1,spec.flyComp.y0,spec.flyComp.y1), down_to:ZS }:null,
+          ladder_hatch:STN.hatch?{ fp:box(STN.hatch.x0,STN.hatch.x1,STN.hatch.y0,STN.hatch.y1), ladder:spec.flyLadder }:null,
+          rail:STN.deckRail?{ y0:STN.deckRail.y0, h:STN.deckRail.h }:null, brow_peak:r3(COAM[COAM.length-1].z) } });
+      }
+      return { hull:{ loa:L, beam:r3(2*Math.max(...spec.beam.map(p=>p[1]))), transomBeam:r3(2*fSx(yT)), dwl:DWL, sole:CZ,
+                      sheerAft:r3(fSz(yT)), sheerStem:r3(fSz(yB)), coveringBoard:spec.capW, rail:spec.railW, cockpitTo:CF, foredeckFrom:spec.foreFrom,
+                      mezzanine:MZ.z, salonSole:ZS, salonCeiling:ZC, bridgeDeck:BR.zTop, skylounge:SK?BZ:null, topStation:SK?TP.zTop:null, belowSole:BLW.soleZ },
+               decks:D, sideReveal:[r3(wmin),r3(wmax)], sideDecksWalkable:sideOK, cleats:CLEAT_AT.slice() };
+    }
     function faces(){ return F; }                                  // the static TAGGED mesh (+ RIGF per rigger state); the posed leaves are doorFaces(opts)
-    const doorFaces=(opts)=>doorFacesFn(opts && opts.doorOpen);
+    // hull-layout-1 §4.6: doorFaces(t) and doorFaces({ doorOpen }) are the salon slider's leaf, the default door;
+    // a second door by its id: doorFaces(t, 'skylounge') (the 90). render() draws every leaf at doorOpen.
+    const DOOR_IDS=['salon'].concat(DK?['skylounge']:[]);
+    function doorFaces(t, id){
+      if(t!=null && typeof t==='object'){ if(id==null && t.door!=null && typeof t.door==='string') id=t.door; t=t.doorOpen; }
+      id=id==null?'salon':id; if(DOOR_IDS.indexOf(id)<0) return [];
+      return doorFacesFn(t, id);
+    }
+    // hull-layout-1 §4.4: one separable part's faces. door / skydoor: a leaf at t; riggers: the outriggers in the
+    // state's pose; tower: the 53's tuna tower
+    function partFaces(id, state){
+      if(id==='door') return doorFaces(state);
+      if(id==='skydoor') return DK ? doorFaces(state, 'skylounge') : [];
+      const s=(state && typeof state==='object') ? state : {};
+      if(id==='riggers'){ let r=s.riggers; if(r===true) r='out'; else if(r===false||r==null) r='stowed'; return (RIGF[r]||RIGF.stowed).slice(); }
+      if(id==='tower') return TWF.slice();
+      return [];
+    }
+
+    // ==================================== THE WALK (hull-layout-1 §6, hull-walk@1), written by the rig ====================================
+    // walk() is the walk file's own fields, in the spec's order; the kit writer (hull-walk.mjs --write) stamps
+    // derivedFromRigSha256 and authoring on it and adds qa.character from the character kit. An area's headroom is its
+    // clear height to the lowest surface over it, sampled every 0.05 m: the hardtop, the overhangs of the bridge deck and
+    // of the top station, the salon and skylounge deckheads, the dash, and the lid over the cabins (the salon sole aft of
+    // the dash, the foredeck forward of it). A climb sees up through the opening it runs through.
+    const STAND_CLEAR=1.885;   // character 10.3's tallest crown (1.864 m) and 0.02 m: an area with less headroom waits on duck. Re-check at kit 10.4
+    function walkSidecar(){
+      const g=geometry(), dp=deckPlan(), HT=spec.hardtop, FC=spec.flyComp||null, Hh=STN.hatch||null, WL=SK?SK.well:null, C0=SA.comp;
+      const pt=(p)=>[r3(p[0]),r3(p[1])], P3=(x,y,z)=>({ x:r3(x), y:r3(y), z:r3(z) }), mid=(a,b)=>(a+b)/2, ft=(v)=>String(r3(v));
+      // ---- over a point: the lowest surface above z (Infinity under the sky) ----
+      const plan=(o)=>({ P:outline({ z:o.zTop, yF:o.yF, yA:o.yA, W:o.W, N:o.N }, { e:o.e||2.0, rA:o.rA }), yA:o.yA, yF:o.yF, uf:mono(o.zf) });
+      const pHT=plan({ zTop:HT.z, yF:HT.yF, yA:HT.yA, W:HT.W, N:HT.N, rA:HT.rA, zf:[[HT.yA,HT.z-0.10],[HT.yF,HT.z-0.07]] }), pBR=plan(BR), pTP=STN.slab?plan(STN.slab):null;
+      const inP=(S,x,y)=>y>=S.yA && y<=S.yF && Math.abs(x)<=hwAt(S.P,y), inR=(R,x,y)=>x>=R.x0 && x<=R.x1 && y>=R.y0 && y<=R.y1, dashW=salIn(YDASH)-0.02;
+      function over(x,y,z,op){
+        const ax=Math.abs(x), shut=(k)=>!((op&&op[k])||[]).some(R=>inR(R,x,y)), c=[], inSal=y>=SA.aftY && y<=YDASH && ax<=salIn(y)+0.10;
+        if(inP(pHT,x,y)) c.push(pHT.uf(y));                                                  // the hardtop
+        if(!inSal && inP(pBR,x,y) && shut('slab')) c.push(pBR.uf(y));                         // the bridge deck's overhang, outside the salon (its aft corners too)
+        if(pTP && y<SK.aftY && inP(pTP,x,y)) c.push(pTP.uf(y));                               // the top station's overhang (the 90)
+        if(inSal && shut('ceil')) c.push(ZC);                                                  // the salon deckhead
+        if(SK && y>=SK.aftY && y<=YSD && ax<=skyIn(y)+0.10) c.push(BC);                       // the skylounge deckhead
+        if(y>=YDASH-0.34 && y<=YDASH && ax<=dashW) c.push(ZS);                                 // the dash
+        if(y>=YDASH){ const t=Math.min(1, ax/Math.max(0.05, fSx(y)-spec.railW)); c.push(fSz(y)+fCam(y)*(1-t*t)-0.12); }   // the foredeck over the cabins
+        else if(y>=BLW.y0-0.10 && shut('lid')) c.push(ZS-0.12);                                // the salon sole over the cabins
+        let m=Infinity; for(const v of c) if(v>z+0.05 && v<m) m=v; return m;
+      }
+      const OPEN={ companionway:{ lid:[C0] } };
+      if(FC) OPEN.flyhatch={ ceil:[FC] }; if(Hh) OPEN.flyladder={ slab:[Hh] }; if(WL) OPEN.upstair={ ceil:[WL] };
+      const EDGE=[YDASH-0.34, YDASH, SA.aftY, C0.y0, C0.y1, BR.yA, HT.yA, HT.yF].concat(SK?[SK.aftY, WL.y0, WL.y1]:[], STN.slab?[STN.slab.yA]:[], FC?[FC.y0, FC.y1]:[], Hh?[Hh.y0, Hh.y1]:[]);
+      function clear(a){
+        const xs=a.poly.map(p=>p[0]), ys=a.poly.map(p=>p[1]), x0=Math.min(...xs), x1=Math.max(...xs), y0=Math.min(...ys), y1=Math.max(...ys), X=[], Y=[];
+        for(let x=x0; x<x1; x+=0.05) X.push(x); X.push(x1);
+        for(let y=y0; y<y1; y+=0.05) Y.push(y); Y.push(y1);
+        EDGE.forEach(e=>{ for(const v of [e-0.005, e+0.005]) if(v>y0 && v<y1) Y.push(v); });
+        let lo=Infinity, hi=-Infinity, sky=false, loAt=null;
+        for(const y of Y) for(const x of X){ if(!a.contains(x,y)) continue; const z=a.zAt(x,y), o=over(x,y,z,OPEN[a.id]);
+          if(o===Infinity){ sky=true; continue; } if(o-z<lo){ lo=o-z; loAt=[x,y]; } hi=Math.max(hi,o-z); }
+        return { lo, hi, sky, loAt };
+      }
+
+      // ---- the areas: the rig's WALK as published, with each one's headroom, waits and note ----
+      const HEAD={ door:DOOR.z1-DOOR.sillZ }; if(DOOR2) HEAD.skydoor=DOOR2.z1-DOOR2.sillZ;
+      const span=(o)=>o.headroom==null?'open overhead':(o.headroomMax!=null?ft(o.headroom)+'–'+ft(o.headroomMax):ft(o.headroom))+' m clear';
+      const duckS=(o)=>o.headroom!=null && o.headroom<STAND_CLEAR?'; under '+ft(STAND_CLEAR)+' m the taller builds wait on duck':'';
+      const NOTE={
+        cockpit:(o)=>'the open cockpit at '+ft(CZ)+' m'+(o.headroom!=null?'; the bridge deck overhangs its forward end ('+ft(o.headroom)+' m clear)':''),
+        sidestairP:()=>'the port steps from the cockpit ('+ft(CZ)+' m) up to the mezzanine ('+ft(MZ.z)+' m): '+ST.n+' treads',
+        sidestairS:()=>'the starboard steps from the cockpit ('+ft(CZ)+' m) up to the mezzanine ('+ft(MZ.z)+' m): '+ST.n+' treads',
+        mezzanine:(o,h)=>'the mezzanine at '+ft(MZ.z)+' m under the bridge deck’s overhang ('+span(o)+(h.sky?'; open at its aft edge':'')+')'+duckS(o),
+        door:(o)=>'the salon doorway: a wall while the slider is shut, passable from doorOpen '+DOOR.clearAt+' (interact salon). Its head is '+ft(HEAD.door)+' m over the sill ('+span(o)+')'+duckS(o),
+        salon:(o)=>'the salon at '+ft(ZS)+' m, '+span(o)+' under its deckhead'+duckS(o),
+        upstair:(o)=>'the stair in the well from the salon ('+ft(ZS)+' m) up to the skylounge ('+ft(BZ)+' m), 12 treads: going up waits on stairUp, coming down on stairDown ('+span(o)+')'+duckS(o),
+        companionway:(o,h)=>'the companionway stair from the salon sole ('+ft(ZS)+' m) down to the cabins ('+ft(ZB)+' m), '+(C0.n||9)+' treads: going down waits on stairDown, coming up on stairUp. The least clear over it is '+ft(o.headroom)+' m, at y '+ft(h.loAt[1])+duckS(o),
+        skybridge:(o)=>'the skylounge at '+ft(BZ)+' m, '+span(o)+' under its deckhead'+duckS(o),
+        skydoor:(o)=>'the skylounge doorway onto the aft deck: a wall while the slider is shut, passable from its own doorOpen '+(DOOR2?DOOR2.clearAt:'')+' (interact skylounge). Its head is '+ft(HEAD.skydoor||0)+' m over the sill ('+span(o)+')'+duckS(o),
+        aftdeck:(o,h)=>'the aft deck on the bridge deck ('+ft(BR.zTop)+' m) under the top station’s overhang ('+span(o)+(h.sky?'; open at its edges':'')+')'+duckS(o),
+        flyladder:(o)=>'the outside ladder from the mezzanine ('+ft(MZ.z)+' m) up through the overhang’s hatch to the flybridge ('+ft(BZ)+' m), '+(spec.flyLadder?spec.flyLadder.n:0)+' rungs: it waits on ladderOn ('+span(o)+')'+duckS(o),
+        flyhatch:(o)=>'the ship’s ladder from the salon sole ('+ft(ZS)+' m) up through the '+ft(FC?FC.x1-FC.x0:0)+' m hatch to the flybridge ('+ft(BZ)+' m): the walker’s centre has '+ft(FC?FC.x1-FC.x0-2*WALK.radius:0)+' m across between the hatch’s sides; it waits on ladderOn ('+span(o)+')'+duckS(o),
+        flybridge:(o,h)=>'the open flybridge on the bridge deck ('+ft(BZ)+' m) under the hardtop ('+span(o)+(h.sky?'; open at its edges':'')+')'+duckS(o),
+        below:(o)=>'the cabins’ sole at '+ft(ZB)+' m ('+span(o)+')'+duckS(o),
+        belowstep:(o)=>'the step up from the cabins’ sole ('+ft(ZB)+' m) to the forward cabin ('+ft(ZBF)+' m), a stair between the two floors: going up waits on stairUp, coming down on stairDown ('+span(o)+')'+duckS(o),
+        vip:(o)=>'the forward cabin at '+ft(ZBF)+' m ('+span(o)+')'+duckS(o),
+      };
+      const areas=WALK.areas.map(a=>{
+        const o={ id:a.id }; if(a.kind) o.kind=a.kind; o.cut=a.cut;
+        if(a.cutHi) o.cutHi=a.cutHi; if(a.cutLo) o.cutLo=a.cutLo; if(a.zMid!=null) o.zMid=r3(a.zMid);
+        if(a.ramp) o.ramp={ axis:a.ramp.ax?'y':'x', a0:r3(a.ramp.a0), a1:r3(a.ramp.a1), z0:r3(a.ramp.z0), z1:r3(a.ramp.z1) }; else o.z=r3(a.z);
+        o.poly=a.poly.map(pt); o.holes=a.holes.map(h=>h.map(pt));
+        if(HEAD[a.id]!=null) o.door=a.id;                                                       // the part it runs through (geometry().parts)
+        const h=clear(a);
+        if(h.lo<Infinity){ const lo=HEAD[a.id]!=null?Math.min(h.lo,HEAD[a.id]):h.lo; o.headroom=r3(lo); if(h.hi>lo+0.005) o.headroomMax=r3(h.hi); }
+        const w=[].concat(a.kind==='stair'||/^sidestair/.test(a.id)?['stairDown','stairUp']:[], a.kind==='ladder'?['ladderOn']:[], o.headroom!=null && o.headroom<STAND_CLEAR?['duck']:[]);
+        if(w.length) o.waitsOn=w;
+        if(NOTE[a.id]) o.note=NOTE[a.id](o,h);
+        return o; });
+
+      // ---- the house: the door (doors on the 90), the hard levels, and every level's deck ----
+      const decks={}; g.levels.forEach(l=>{ decks[l.id]=Object.assign({ deck:l.deck, kind:l.kind, soleZ:l.sole, ceilZ:l.ceil }, l.kind==='open'?{ open:true }:{}); });
+      const house=Object.assign({ door:g.door }, DOOR2?{ doors:g.doors }:{}, { levels:g.levels.filter(l=>l.kind==='hard').map(l=>l.id), decks });
+
+      // ---- the berths: each mattress's top as bed() fits it (inside the lining at its own height), its deckhead over it ----
+      const fwdY=BLW.beds.reduce((m,b)=>Math.max(m,mid(b[2],b[3])), -Infinity);
+      const berths=BLW.beds.map(b=>{
+        const zt=r3(zSole(b[2])+0.56), y0=b[2]+0.03, y1=b[3]-0.03, ym=mid(y0,y1);
+        const w=Math.min(envB(y0,zt), envB(y1,zt), envB(ym,zt)), x0=Math.max(b[0]+0.03,-w), x1=Math.min(b[1]-0.03,w);
+        const vip=mid(b[2],b[3])===fwdY, wide=x1-x0>=1.2, sd=mid(b[0],b[1])<0?'port':'starboard';
+        let dh=Infinity; for(let y=y0; y<=y1+1e-9; y+=0.05) for(let x=x0; x<=x1+1e-9; x+=0.05) dh=Math.min(dh, over(x,y,zt));
+        return { id:vip?'vip_berth':(wide?'master':'single_'+sd), interact:vip?'bunk_vip':(wide?'bunk':'bunk_'+sd), kind:wide?'double':'single',
+                 topZ:zt, head:b[4]>0?'fwd':'aft', deckheadZ:r3(dh), poly:rectPoly(r3(x0),r3(y0),r3(x1),r3(y1)) }; });
+      const anchors={ helm:A.helm, towerStation:A.towerStation, chair:CHAIR, mezzSeat:MEZZ, rods:RODS, doors:DOORS, tubs:TUBS, nav:NAV, berths };
+
+      // ---- the interact points: at is the thing; reach stands on the floor of area, at the nearest point 0.02 m inside it ----
+      const AR={}; areas.forEach(o=>{ AR[o.id]=o; });
+      const zOn=(o,x,y)=>{ if(o.z!=null) return o.z; const R=o.ramp, c=R.axis==='y'?y:x; return r3(lerp(R.z0,R.z1,clamp01((c-R.a0)/(R.a1-R.a0)))); };
+      const segD=(p,a,b)=>{ const dx=b[0]-a[0], dy=b[1]-a[1], q=dx*dx+dy*dy, t=q?clamp01(((p[0]-a[0])*dx+(p[1]-a[1])*dy)/q):0; return Math.hypot(p[0]-a[0]-t*dx, p[1]-a[1]-t*dy); };
+      const edgeD=(p,P)=>{ let m=Infinity; for(let i=0;i<P.length;i++) m=Math.min(m, segD(p,P[i],P[(i+1)%P.length])); return m; };
+      const OFS=[]; for(let j=-80;j<=80;j++) for(let i=-80;i<=80;i++){ const d=Math.hypot(i,j)*0.02; if(d<=1.6) OFS.push([i,j,d]); }
+      OFS.sort((a,b)=>a[2]-b[2] || a[1]-b[1] || a[0]-b[0]);
+      function reachOn(ids,tx,ty){ let best=null;
+        for(const id of ids){ const o=AR[id]; if(!o) continue;
+          for(const f of OFS){ if(best && f[2]>=best.d) break; const p=[r3(tx+f[0]*0.02), r3(ty+f[1]*0.02)];
+            if(!pinPoly(p,o.poly) || edgeD(p,o.poly)<0.02 || o.holes.some(hl=>pinPoly(p,hl) || edgeD(p,hl)<0.02)) continue;
+            best={ d:f[2], reach:{ x:p[0], y:p[1], z:zOn(o,p[0],p[1]) }, area:id }; break; } }
+        if(!best) throw new Error('walk '+spec.id+': no reach on '+ids.join('|')+' within 1.6 m of '+r3(tx)+', '+r3(ty));
+        return best; }
+      const KEYS=['id','action','label','prompt','state','clearAt','at','seat','stand','reach','area','offWalk','waitsOn','note'], I=[], SEATS=[];
+      const put=(o)=>{ const r={}; KEYS.forEach(k=>{ if(o[k]!==undefined) r[k]=o[k]; }); I.push(r); return r; };
+      const on=(ids,tx,ty,o)=>{ const b=reachOn(ids,tx,ty); return put(Object.assign(o, { reach:b.reach, area:b.area })); };
+      const seat=(ids,id,label,at)=>{ SEATS.push({ id, label, at }); on(ids, at.x, at.y, { id, action:'enter_ride', label, prompt:'Sit', at, waitsOn:['sit'] }); };
+      // a reach stands on a floor, and the step between the cabins' soles is a climb (pass E), so none stands on it
+      const ROOM=['salon'], DOWN=['below','vip'], UP=SK?'skybridge':'flybridge', SC=STN.console;
+      const helm=on([UP], A.helm.x, A.helm.y, { id:'helm', action:'enter_helm', label:'Helm', prompt:'Take the helm',
+        at:SK?P3(0, SK.items.console.y0, BZ+0.98):P3(0, SC.y0, TP.zTop+0.86), seat:A.helm, stand:null,
+        note:'taken seated at the '+(SK?'skylounge':'flybridge')+' console, from behind the helm seat. No wheel is drawn (the global has no WHEEL_GEO), so the kit fits no hands to a rim and writes no helm fixture' });
+      if(spec.tower){ const T=spec.tower.top;
+        put({ id:'helm_tower', action:'enter_helm', label:'Tower helm', prompt:'Take the tower helm', at:A.towerStation, seat:A.towerStation, stand:null,
+          reach:P3(0, T.y0+0.35, T.z), area:null, offWalk:'tower_top', waitsOn:['ladderOn'],
+          note:'only with the tower up (state tower; the default is the bare hardtop): its top is reached by the tower ladder, which waits on ladderOn' }); }
+      if(SLV==='top') put({ id:'helm_top', action:'enter_helm', label:'Top station helm', prompt:'Take the top helm', at:P3(0, SC.y0, TP.zTop+0.86), seat:A.towerStation, stand:null,
+          reach:P3(0, SC.y0-1.30, TP.zTop), area:null, offWalk:'top_station', waitsOn:['ladderOn'],
+          note:'the open top station, reached by its ladder from the aft deck, which waits on ladderOn; the reach stands behind the station seats' });
+      const dAt=(D)=>P3(mid(D.x0,D.x1), D.y, mid(D.z0,D.z1));
+      on(['door'], mid(DOOR.x0,DOOR.x1), DOOR.y-0.30, { id:'salon', action:'open_close', label:'Salon door', prompt:'Open · shut', state:'doorOpen', clearAt:DOOR.clearAt, at:dAt(DOOR),
+        note:'E opens and shuts it (doorOpen 0..1, doorFaces(t)); the doorway (area door) is passable from doorOpen '+DOOR.clearAt });
+      if(DOOR2) on(['skydoor'], mid(DOOR2.x0,DOOR2.x1), DOOR2.y-0.30, { id:'skylounge', action:'open_close', label:'Skylounge door', prompt:'Open · shut', state:'skyDoorOpen', clearAt:DOOR2.clearAt, at:dAt(DOOR2),
+        note:'E opens and shuts it (its leaf is doorFaces(t, \'skylounge\'); render() draws both leaves at doorOpen); the doorway (area skydoor) is passable from '+DOOR2.clearAt });
+      const fitC=(f)=>[mid(f[1],f[2]), mid(f[3],f[4])], counters=SA.fit.filter(f=>f[0]==='counter'), gal=counters.reduce((m,f)=>f[5]>m[5]?f:m, counters[0]);
+      on(ROOM, fitC(gal)[0], fitC(gal)[1], { id:'stove', action:'cook', label:'Galley', prompt:'Cook · brew up', at:P3(fitC(gal)[0], fitC(gal)[1], ZS+gal[5]),
+        note:'the galley: the salon’s tallest counter (its worktop at '+ft(gal[5])+' m)' });
+      SA.fit.filter(f=>f[0]==='tall').forEach((f,i)=>on(ROOM, fitC(f)[0], fitC(f)[1], { id:i?'locker_'+(i+1):'locker', action:'storage', label:'Hanging locker', prompt:'Store · retrieve', at:P3(fitC(f)[0], fitC(f)[1], ZS+f[5]/2) }));
+      (BLW.fit||[]).filter(f=>f[0]==='tall').forEach((f,i)=>on(DOWN, fitC(f)[0], fitC(f)[1], { id:i?'locker_below_'+(i+1):'locker_below', action:'storage', label:'Hanging locker', prompt:'Store · retrieve', at:P3(fitC(f)[0], fitC(f)[1], zSole(f[3])+f[5]/2) }));
+      const BL={ vip_berth:'VIP berth', master:'Master berth', single_port:'Port berth', single_starboard:'Starboard berth' };
+      berths.forEach(b=>{ const cx=mid(b.poly[0][0],b.poly[2][0]), cy=mid(b.poly[0][1],b.poly[2][1]);
+        on(DOWN, cx, cy, { id:b.interact, action:'sleep', label:BL[b.id], prompt:'Sleep · save', at:P3(cx,cy,b.topZ) }); });
+      if(SA.head){ const Hd=SA.head; on(ROOM, mid(Hd.doorX0,Hd.doorX1), Hd.y1+0.30, { id:'head', action:'toilet', label:'Head', prompt:'Use the head', at:P3(Hd.x0+0.275, Hd.y0+0.325, ZS+0.44), waitsOn:['sit'],
+        note:'the day head: its door faces the settees’ aft ends, so the reach is the nearest free floor' }); }
+      on(['cockpit'], CHAIR.x, spec.chair.y-0.95, { id:'fighting_chair', action:'enter_ride', label:'Fighting chair', prompt:'Sit', at:CHAIR, waitsOn:['sit'] }); SEATS.push({ id:'fighting_chair', label:'the fighting chair', at:CHAIR });
+      seat(['mezzanine'], 'seat_mezzanine', 'Mezzanine seat', MEZZ);
+      const CX=SK?SK.items.chairs.filter(x=>x):STN.seats.filter(x=>x), CY=SK?SK.items.chairY:A.helm.y;
+      CX.forEach(x=>seat([UP], 'seat_helm_'+(x<0?'port':'starboard'), 'Helm companion seat', P3(x, CY, A.helm.z)));
+      SA.fit.filter(f=>f[0]==='settee').forEach((f,i)=>seat(ROOM, 'seat_salon_'+(i+1), 'Salon settee', P3(fitC(f)[0], fitC(f)[1], ZS+0.42)));
+      SA.fit.filter(f=>f[0]==='stool').forEach((f,i)=>seat(ROOM, 'seat_stool_'+(i+1), 'Bar stool', P3(f[1], f[2], ZS+0.74)));
+      if(SK){ const J=SK.items; [J.lset, J.sset].forEach((s,i)=>seat(['skybridge'], 'seat_skylounge_'+(i+1), 'Skylounge settee', P3(mid(s.x0,s.x1), mid(s.y0,s.y1), BZ+0.42)));
+        seat(['aftdeck'], 'seat_aftdeck', 'Aft deck settee', P3(mid(-1.5, SK.door.x0-0.25), SK.aftY-0.32, BR.zTop+0.45)); }
+      else (STN.settees||[]).forEach((s,i)=>seat(['flybridge'], 'seat_flybridge'+(i?'_'+(i+1):''), 'Flybridge settee', P3(mid(s.x0,s.x1), mid(s.y0,s.y1), TP.zTop+0.45)));
+      spec.tubs.forEach(t=>on(['cockpit'], t[0], t[1], { id:'tub_'+(t[0]<0?'port':'starboard'), action:'storage', label:'Cockpit tub', prompt:'Store · retrieve', at:P3(t[0], t[1], CZ+0.52) }));
+      [['port',spec.rocket.n+1],['starboard',spec.rocket.n+4]].forEach(([s,k])=>{ const r=RODS[k]; on(['cockpit'], r.x, r.y, { id:'rods_'+s, action:'storage', label:'Rod holders', prompt:'Take · stow a rod', at:r,
+        note:'the middle of the three rod holders in the '+s+' covering board' }); });
+      { const yw=yB-1.25; put({ id:'windlass', action:'anchor', label:'Windlass', prompt:'Let go / weigh anchor', at:P3(0, yw, fSz(yw)+fCam(yw)+0.22), reach:helm.reach, area:helm.area,
+        note:'on the foredeck, which is no walk on this hull (see _excluded foredeck): worked from the helm' }); }
+
+      // ---- what is not walked: every other standing surface, seat, berth, climb and door, with its reason ----
+      const X=[], ex=(o)=>{ const r={}; ['id','of','kind','z','at','poly','headroom','reason','waitsOn'].forEach(k=>{ if(o[k]!==undefined) r[k]=o[k]; }); X.push(r); };
+      const fd=g.levels.find(l=>l.id==='foredeck'), WB=(!SK && dp.sideDecksWalkable)?['port','starboard']:null;
+      ex({ id:'foredeck', of:'area', z:fd.sole, reason:'the foredeck forward of the house, its crown at '+ft(fd.sole)+' m: '+(WB?'reached only along the side decks, which are narrower than the walker (side_decks)':'no way there outside, since the house sides stand on the sheer behind the '+ft(spec.railW)+' m rail ('+dp.sideReveal[0]+'–'+dp.sideReveal[1]+' m reveal)')+', and no hatch from below, so no walk area. The windlass is worked from the helm.' });
+      if(WB) ex({ id:'side_decks', of:'area', reason:'the side decks beside the house, from the salon door forward: '+dp.sideReveal[0]+'–'+dp.sideReveal[1]+' m between the house and the rail, under the walker’s 2 × '+WALK.radius+' m, so no walk area. They are the washboards (washboards[]).' });
+      if(spec.tower){ const T=spec.tower.top;
+        ex({ id:'tower_top', of:'area', z:T.z, reason:'the tuna tower’s top, '+ft(2*T.hx)+' × '+ft(T.y1-T.y0)+' m at '+ft(T.z)+' m: opt-in (state tower; the default is the bare hardtop) and reached only by the tower ladder (tower_ladder), so no walk area. Its helm is the helm_tower interact.' }); }
+      if(SLV==='top'){ const R0=COAM[0].P; let lo=Infinity;
+        for(let y=R0[NC][1]+0.25; y<=R0[0][1]-0.25; y+=0.05){ const w=hwAt(R0,y)-0.25; for(let x=-w; x<=w; x+=0.05){
+          if(Math.abs(x)<=SC.hx+0.05 && y>=SC.y0-0.05 && y<=SC.y1+0.05) continue; const o=over(x,y,TP.zTop); if(o<Infinity) lo=Math.min(lo,o-TP.zTop); } }
+        ex({ id:'top_station', of:'area', z:r3(TP.zTop), headroom:r3(lo), reason:'the open top station on the skylounge roof ('+ft(TP.zTop)+' m), '+ft(lo)+' m under the hardtop: reached only by the station ladder from the aft deck (top_station_ladder), so no walk area. Its helm is the helm_top interact.', waitsOn:['duck'] }); }
+      ex({ id:'hardtop', of:'area', z:HT.z, reason:'the hardtop’s roof at '+ft(HT.z)+' m carries the radar and the rod launcher: no rail and no way up, so no standing surface.' });
+      ex({ id:'engine_room', of:'area', z:BLW.engZ, reason:'the engine room aft of the cabins’ bulkhead (y '+ft(BLW.y0)+'), its floor at '+ft(BLW.engZ)+' m: the engines fill it and it opens only with the below cut, so no walk area.' });
+      if(SA.head){ const Hd=SA.head, gap=Math.min(...SA.fit.filter(f=>f[0]==='settee' && f[3]>Hd.y1).map(f=>f[3]-Hd.y1));
+        ex({ id:'head', of:'area', z:ZS, reason:'the day head, '+ft(Hd.x1-Hd.x0)+' × '+ft(Hd.y1-Hd.y0)+' m inside its walls on the salon sole: a seated space entered by its interact, not walked. Its door faces the settees’ aft ends '+ft(gap)+' m away.', waitsOn:['sit'] }); }
+      if(spec.tower){ const Lt=spec.tower.ladder;
+        ex({ id:'tower_ladder', of:'climb', kind:'ladder', at:P3(Lt.x, mid(Lt.y0,Lt.y1), mid(Lt.z0,Lt.z1)), reason:'the tower ladder from the flybridge ('+ft(Lt.z0)+' m) to the tower top ('+ft(Lt.z1)+' m), '+Lt.n+' rungs and near upright: drawn with the tower only, and climbing it waits on ladderOn.', waitsOn:['ladderOn'] }); }
+      if(STN.ladder && SLV==='top'){ const Lt=STN.ladder;
+        ex({ id:'top_station_ladder', of:'climb', kind:'ladder', at:P3(Lt.x, mid(Lt.y0,Lt.y1), mid(Lt.z0,Lt.z1)), reason:'the station ladder at the aft rail, from the aft deck ('+ft(Lt.z0)+' m) to the top station ('+ft(Lt.z1)+' m), '+Lt.n+' rungs and near upright: its foot is outside the aft deck’s walk, and climbing it waits on ladderOn.', waitsOn:['ladderOn'] }); }
+      ex({ id:'swim_ladder', of:'climb', kind:'ladder', z:CZ, at:P3(DOORS.transom.x, yT, CZ), reason:'no swim ladder or boarding platform is drawn on this hull, and the transom door is drawn shut: coming aboard from the water waits on ladderOn and a ladder.', waitsOn:['ladderOn'] });
+      ex({ id:'transom_door', of:'door', at:DOORS.transom, reason:'the transom door, '+ft(spec.doors.tr[1]-spec.doors.tr[0])+' m wide and '+ft(spec.doors.trH)+' m high, is drawn shut and no state opens it yet, so the transom stays a wall.' });
+      ex({ id:'tuna_door', of:'door', at:DOORS.tuna, reason:'the tuna door, '+ft(spec.doors.tu[1]-spec.doors.tu[0])+' m wide and '+ft(spec.doors.tuH)+' m high, is drawn shut and no state opens it yet, so the transom stays a wall.' });
+      if(!WB) ex({ id:'washboards', of:'washboards', reason:'no washboards: the house sides stand on the sheer behind the '+ft(spec.railW)+' m rail, '+dp.sideReveal[0]+'–'+dp.sideReveal[1]+' m from it, so there is no side deck to climb onto.' });
+      ex({ id:'seat_helm', of:'seat', at:A.helm, reason:'the helm seat: taken by the helm interact (drive).' });
+      SEATS.forEach(s=>ex({ id:s.id, of:'seat', at:s.at, reason:s.label.charAt(0).toUpperCase()+s.label.slice(1)+': sitting waits on sit.', waitsOn:['sit'] }));
+      if(SLV==='top') STN.seats.forEach(x=>ex({ id:'seat_top_'+(x<0?'port':'starboard'), of:'seat', at:P3(x, SC.y0-0.86, TP.zTop+0.58), reason:'a top station seat, off the walk (top_station): sitting waits on sit.', waitsOn:['sit'] }));
+      berths.forEach(b=>ex({ id:b.id, of:'berth', z:b.topZ, reason:BL[b.id]+': '+ft(b.deckheadZ-b.topZ)+' m from its top to the deckhead. Getting onto it waits on crawl; sleeping is the '+b.interact+' interact.', waitsOn:['crawl'] }));
+
+      // ---- the walk file ----
+      const xo=(y)=>fSx(y)-spec.railW;
+      const w={ schema:'hidden-harbours/hull-walk@1', rig:RIG_FILE, exportSymbol:EXPORT_SYMBOL, hull:spec.id, label:spec.label, kind:'cabin',
+        units:'metres', frame:FRAME,
+        loa_m:L, loh_m:r3(yB-yT), beam_m:dp.hull.beam, DWL, cockpitZ:CZ,
+        cell:{ W:G.W, H:G.H, pivot:{ x:G.cx, y:G.cy }, pxPerM:PX, defaultElev:DEFAULT_ELEV, order:['N','NE','E','SE','S','SW','W','NW'] },
+        tags:{ lv:Object.assign({}, LV), ro:Object.assign({}, RO), ghostRoles:GHOST_ROLES.slice() },
+        walk:{ radius:WALK.radius, stepTol:WALK.stepTol,
+          rule:'A step is legal when the target point is inside an area polygon and outside its holes, and |area z − player z| < stepTol. Ramps interpolate z along their axis between a0 and a1, and hold z0 / z1 beyond them. cut is the cutaway key while standing there; cutHi / cutLo replace it above / below zMid. Polygons are player-centre: already inset by the radius, so the reader never insets them again.',
+          spawn:Object.assign({}, WALK.spawn, { note:'in the salon' }), areas },
+        house, anchors, interact:I, cleats:CLEAT_AT.map(c=>({ id:c.id, type:c.type, pos:c.pos.slice() })) };
+      if(WB) w.washboards=WB.map(s=>{ const sd=s==='port'?-1:1, E=[]; for(let i=0;i<=12;i++){ const y=lerp(SA.aftY,spec.foreFrom,i/12); E.push([r3(sd*xo(y)), r3(y), r3(fSz(y)+0.013)]); }
+        return { side:s, width_m:dp.sideReveal[1], pinch_m:dp.sideReveal[0], outer_edge:E,
+          note:'the flat side deck between the house and the '+ft(spec.railW)+' m rail, from the salon door (y '+ft(SA.aftY)+') to the foredeck (y '+ft(spec.foreFrom)+'): '+dp.sideReveal[0]+'–'+dp.sideReveal[1]+' m wide, walked by the washboard’s own rule' }; });
+      w._excluded=X;
+      w.rock={ frames:ROCK.frames, rollA:ROCK.rollA, pitchA:ROCK.pitchA, heaveA:ROCK.heaveA, period:ROCK.period };
+      w.qa={ fitCheck:fitCheck() };
+      return w;
+    }
 
     const RIG = {
-      id:spec.id, label:spec.label, note:spec.note, loa:spec.loa, L, DECK,
-      doorMount, DOOR, HOUSE, loft, geometry, faces, doorFaces, LEVEL_IDS, KEY, capMat:'cream',
+      id:spec.id, label:spec.label, note:spec.note, loa:L, loaLabel:spec.loa, L, DECK:CZ, DWL,
+      doorMount, DOOR, DOOR2, HOUSE, loft, geometry, deckPlan, faces, doorFaces, LEVEL_IDS, KEY, capMat:'cream',
       W:G.W, H:G.H, PX, DIRS:8, pivot:{x:G.cx,y:G.cy}, defaultElev:DEFAULT_ELEV,
       order:['N','NE','E','SE','S','SW','W','NW'],
       RIGGERS:['stowed','out'], PAINTS, paintRamps, defaultPaint:'gelcoat',
-      faceCount:F.length + RIGF.stowed.length,
-      sheerZ, station, render, ROCK, rock:rockMotion,
+      faceCount:faceList('stowed').length, hasTower:TWF.length>0, towerDefault:TWR, hasSky:!!SK,
+      sheerZ:fSz, station:section, halfAtZ, render, ROCK, rock:rockMotion, CLEATS:CLEAT_AT,
       HELM:A.helm, helmSeat:(d,o)=>proj(A.helm,d,o),
       TOWER_STATION:A.towerStation, towerStation:(d,o)=>proj(A.towerStation,d,o),
       CHAIR, chairMount:(d,o)=>proj(CHAIR,d,o),
@@ -1059,192 +1631,212 @@
       NAV, navMounts:(d,o)=>({port:proj(NAV.port,d,o), star:proj(NAV.star,d,o),
                               stern:proj(NAV.stern,d,o), mast:proj(NAV.mast,d,o)}),
     };
+    RIG.faceList=faceList;                                         // riggers + the 53's opt-in tower; the extractor's widening reaches the same function
+    // ADR 0048 §8.A and hull-layout-1 §4.1 by name, on each hull: the rooms, the tags, the shade, the paints, the
+    // cut, the walk. walk() is the walk file's fields (§6; the kit writer adds the sha, authoring and qa.character); WALK is the walk's own data
+    // (areas with zAt / cutAt / contains, the spawn) for the review page.
+    Object.assign(RIG, { kind:'cabin', cockpitZ:CZ, interiorFaces:()=>IF, interiorFaceCount:IF.length, partFaces, allFaces, ROLES:RO, GHOST_ROLES,
+      stationLevel:SLV, doorIds:DOOR_IDS.slice(), schemeIds:SCHEME_IDS.slice(), defaultScheme:DEFAULT_SCHEME, matsFor, paintTable, cutTable,
+      GAIN, BIAS, LN, BAYER, fitCheck, leakPx, view, renderCut, cutKeys:Object.keys(CUTAWAY.gate), WALK, walk:()=>walkSidecar(), walkSidecar,
+      cell:{ W:G.W, H:G.H, PX, pivot:{ x:G.cx, y:G.cy }, defaultElev:DEFAULT_ELEV } });
     return RIG;
   }
 
-  // flare exponent: 1.0 amidships-aft, rising to ~1.7 at the stem
-  const FLARE = [[0,1.00],[0.38,1.02],[0.60,1.16],[0.78,1.40],[0.90,1.62],[1,1.70]];
-
   // ===================================================================================================
-  // HULL 1 — 16.2 m convertible ("53"): open flybridge in a coaming on the salon roof, pipe tower over.
-  // ===================================================================================================
-  const CONVERTIBLE = makeRig({
-    id:'convertible', label:'53\u2032 CONVERTIBLE', loa:'16.2 m \u00b7 53\u2032',
-    note:'Salon deckhouse + open flybridge coaming; pipe tower straddling the bridge; dark wrapped salon glass, moulded WHITE venturi on the bridge; aft wall tucks forward under the overhanging bridge deck.',
-    L:16.2, TH:0.06, DECK:1.25, RAKE:0.85, NSEG:30, capW:0.34,
-    drop:0.07, fcam:0.14, toe:[0.55,0.15],
-    W:820, H:770, cx:410, cy:475,
-    ROCK:{ frames:8, rollA:2.1, pitchA:1.25, heaveA:0.95, period:3.0 },
-    // plan: NARROWEST at the transom, max beam at u .56 abreast the house nose, fine entry
-    T:[ [0.00,2.05,1.72,0.10],[0.12,2.22,1.94,0.03],[0.24,2.38,2.10,0.00],[0.36,2.50,2.16,0.00],
-        [0.48,2.56,2.10,0.01],[0.56,2.58,1.92,0.04],[0.66,2.52,1.60,0.11],[0.75,2.38,1.18,0.24],
-        [0.83,2.14,0.78,0.40],[0.89,1.82,0.48,0.52],[0.94,1.40,0.26,0.62],[0.97,0.95,0.13,0.68],
-        [1.00,0.10,0.03,0.74] ],
-    // sheer: low transom, accelerates through midships, crest at u .945, eases DOWN to the stem head
-    sheer:[ [0.00,2.30],[0.16,2.42],[0.34,2.62],[0.50,2.90],[0.64,3.24],[0.76,3.62],
-            [0.86,3.96],[0.915,4.14],[0.945,4.20],[1.00,4.12] ],
-    flare:FLARE,
-    cockpitTo:-4.90, foredeckTo:1.70,
-    volumes:[
-      { id:'salon', z0:1.75, z1:4.65, ns:24, nz:10, nr:0.95, ar:0.70, aw:0.62, inset:0.16, cam:0.16,
-        nose:[[1.75,1.72],[2.6,1.62],[3.4,1.38],[4.1,1.05],[4.65,0.72]],
-        aft: [[1.75,-5.30],[3.2,-5.16],[4.65,-4.88]],
-        hw:  [[1.7,1.75],[0.8,2.05],[0,2.15],[-2,2.20],[-4.9,2.10]],
-        bands:[ { yEnd:-3.30, ease:1.0, zRef:4.05,
-                  lo:[[-3.5,4.02],[-1.5,3.76],[1.6,3.52]],
-                  hi:[[-3.5,4.34],[1.6,4.40]] } ],
-        aftGlass:[] },
-      // open flybridge: a low coaming ring with a venturi screen, sunk sole, its own raked front
-      { id:'bridge', z0:4.63, z1:5.42, ns:20, nz:4, nr:0.75, ar:0.60, aw:0.65, inset:0.06, cam:0,
-        clampHull:false, open:{rim:0.15, sole:4.86},
-        nose:[[4.63,-0.30],[5.42,-0.72]],
-        aft: [[4.63,-4.72],[5.42,-4.56]],
-        hw:  [[-0.3,1.35],[-1.5,1.75],[-3.0,1.85],[-4.95,1.62]] },
-    ],
-    helmPod:{ x:0, y:-1.85, z:4.86, hx:0.68, seats:[[-0.6,-4.2],[0.6,-4.2]] },
-    // the salon slider (pass 2): sill at mezzanine height — walk in level off the mezz deck
-    door:{ x0:-0.85, x1:0.75, y:-5.26, z0:1.80, z1:3.55 },
-    extLadders:[ { cx:1.30, hw:0.22, y0:-5.52, z0:1.82, y1:-4.98, z1:4.72, rungs:9 } ],
-    interior:{ soleZ:1.78, bridgeSole:4.86,
-      ladders:[ { id:'flybridge_ladder', face:'aft', x:1.30, y:-5.30, z0:1.78, z1:4.86,
-                  connects:['mezzanine','bridge_sole'],
-                  note:'Mezzanine to the flybridge, salon aft wall stbd of the slider — the EXTERIOR route to the upper helm (the interior companionway is the other).' } ],
-      helms:[
-        { id:'helm_bridge', deck:'bridge_sole', pos:[0,-1.85,4.86], reach:[0,-2.50,4.86],
-          note:'flybridge helm pod — the boat is worked from here; reached by the interior companionway (STAIRS.house_to_bridge)' },
-        { id:'helm_tower', deck:'tower_platform', pos:[0,-2.95,7.10], reach:[0,-3.55,7.00],
-          note:'tuna tower control head — reached by the tower ladder (extractor tower_platform._notes.tower_ladder)' } ],
-      house:{ ceilZ:4.42, hx:1.95, y0:-5.18, y1:1.55,
-              portholes:{ ys:[-2.6,-1.5,-0.4,0.7], z0:3.62, z1:4.26 } },
-      below:{ soleZ:0.55, ceilZ:2.45, y0:0.45, y1:4.50, hxCap:1.85 },
-      excluded:{
-        bridge_route_closed:'THE FINDING CLOSED: the interior companionway salon→bridge_sole is modelled (STAIRS.house_to_bridge) — the flybridge is reachable without a game-side teleport',
-        foredeck_route:'no exterior route cockpit→foredeck — the extractor finding stands (no washboards by design)',
-        below_aft:'the below flat’s aft end tucks under the raised salon — full headroom holds only forward of the trunk (authored abstraction, flagged)' } },
-    aftDeck:{ ya:-5.62, yf:-4.78, hx:1.94, z:4.66, th:0.12, railH:0 },
-    tower:{ feet:[[1.82,-1.35,4.70],[1.82,-4.30,4.68]], top:[[0.85,-2.05],[0.85,-3.85]],
-            tx:0.95, ty:[-4.00,-1.85], z:7.00, r:0.048, railH:0.58, consoleW:0.36, antZ:9.60,
-            btop:{ x:0.85, ya:-3.70, yf:-2.10, z:8.30 },
-            lads:[[0.40,-4.55,5.40, 0.34,-4.05,7.00, 5]] },
-    domes:[ {type:'array', x:0, y:-2.55, z:8.42, len:0.44},
-            {x:0.02, y:-3.30, z:8.40, r:0.21, h:0.34} ],
-    mezz:{ y0:-5.90, y1:-5.26, z:0.52, bench:0.06, seat:0.40, back:0.38 },
-    chair:{ y:-6.55, r:0.42, foot:0.46 },
-    hatches:[[0,-7.30,0.42,0.26],[-1.25,-6.35,0.25,0.26,false],[1.25,-6.35,0.25,0.26,false]],
-    doors:{ tr:[0.70,1.50], trH:1.00, tu:[-1.35,-0.65], tuH:0.60 },
-    vent:{ y:-5.9, len:1.10 },
-    hullWins:[{ y:0.55, len:1.90, f0:0.55, f1:0.67 }],
-    railU:[0.845,0.895,0.940], railH:0.58, pulpit:0.30, navU:0.885,
-    capRods:[-5.45,-6.85], rocket:{ n:5, x:1.00, y:-4.62, z:5.55 },
-    tubs:[[-1.55,-7.30,0],[1.55,-7.30,0],[-1.62,-6.10,0],[1.62,-6.10,0]],
-    rig:{ x:1.58, y:-4.30, z:4.90, len:7.5 },
-    anchors:{ helm:{x:0,y:-1.85,z:4.80}, towerStation:{x:0,y:-2.95,z:7.10} },
-  });
-
-  // ===================================================================================================
-  // HULL 2 — 27.4 m skybridge ("90"): salon + enclosed skylounge as stacked volumes, tuna tower
-  // standing ON the skylounge roof (the roof is the tower floor), aft deck over the mezzanine.
+  // 27.4 m SKYBRIDGE ("90"): salon, enclosed skylounge and an open top station stacked on one gentle ascent
   // ===================================================================================================
   const SKYBRIDGE = makeRig({
     id:'skybridge', label:'90\u2032 SKYBRIDGE', loa:'27.4 m \u00b7 90\u2032',
-    note:'Salon, full-height skylounge and an open white control coaming stacked in ONE gradual raked ascent — the coaming IS the tower, the height comes free; aft walls tuck forward so each deck floats out over the one below; teak caps and planked sole.',
-    L:27.4, TH:0.08, DECK:2.05, RAKE:1.35, NSEG:34, capW:0.42,
-    drop:0.12, fcam:0.19, toe:[0.55,0.20],
-    W:1200, H:1170, cx:600, cy:730,
+    note:'Low sheer and a 47° raked stem; salon, skybridge and open top station stacked on one gentle ascent; every windshield starts just above the deck it rises from; the fascias sweep down aft.',
+    L:27.4, DWL:1.13, W:1200, H:1170, cx:600, cy:730,
     ROCK:{ frames:8, rollA:1.35, pitchA:0.80, heaveA:0.70, period:4.2 },
-    T:[ [0.00,2.72,2.30,0.14],[0.10,2.98,2.62,0.05],[0.20,3.20,2.86,0.00],[0.30,3.38,3.00,0.00],
-        [0.42,3.56,3.04,0.00],[0.50,3.63,2.92,0.02],[0.56,3.66,2.72,0.06],[0.64,3.62,2.34,0.14],
-        [0.72,3.50,1.86,0.28],[0.79,3.30,1.38,0.44],[0.85,3.02,0.94,0.60],[0.90,2.64,0.60,0.74],
-        [0.94,2.14,0.36,0.86],[0.97,1.46,0.18,0.95],[1.00,0.14,0.04,1.04] ],
-    sheer:[ [0.00,3.15],[0.15,3.28],[0.32,3.52],[0.48,3.86],[0.62,4.30],[0.74,4.82],
-            [0.84,5.38],[0.91,5.78],[0.945,5.92],[1.00,5.80] ],
-    flare:FLARE,
-    cockpitTo:-9.60, foredeckTo:2.40,
-    volumes:[
-      // SALON — huge foredeck ahead of it (>40% LOA), smoothly raked front, level dark ribbon
-      { id:'salon', z0:2.60, z1:7.25, ns:26, nz:12, nr:1.30, ar:0.90, aw:0.60, inset:0.22, cam:0.18,
-        nose:[[2.6,2.42],[3.6,2.28],[4.8,1.90],[5.8,1.48],[6.6,1.12],[7.25,0.82]],
-        aft: [[2.6,-10.35],[4.6,-10.12],[6.0,-9.82],[7.25,-9.55]],
-        hw:  [[2.4,2.60],[1.4,3.00],[0,3.20],[-2,3.30],[-6,3.30],[-10.5,3.12]],
-        bands:[ { yEnd:-6.30, ease:1.3, zRef:6.40,
-                  lo:[[-6.6,6.45],[-4,6.10],[-1,5.85],[2.4,5.62]],
-                  hi:[[-6.6,6.92],[2.4,6.98]] } ],
-        aftGlass:[[-2.35,-1.55,3.30,4.35]] },
-      // SKYLOUNGE — set well back on the salon roof, steeper rake, its own ribbon, raked aft wall
-      { id:'sky', z0:7.22, z1:9.55, ns:22, nz:8, nr:1.15, ar:0.80, aw:0.62, inset:0.14, cam:0.15,
-        clampHull:false,
-        nose:[[7.22,0.25],[8.4,-0.15],[9.55,-0.55]],
-        aft: [[7.22,-9.60],[9.55,-9.05]],
-        hw:  [[0.3,1.60],[-1,2.10],[-3,2.42],[-5,2.45],[-9.6,2.20]],
-        bands:[ { yEnd:-7.30, ease:1.1, zRef:8.90,
-                  lo:[[-7.5,8.80],[-4,8.45],[0.2,8.15]],
-                  hi:[[-7.5,9.22],[0.2,9.30]] } ],
-        aftGlass:[] },
-      // open control coaming ON the skylounge roof — the 53's upper station verbatim; this IS the tower
-      { id:'bridge', z0:9.53, z1:10.36, ns:20, nz:4, nr:0.80, ar:0.60, aw:0.65, inset:0.06, cam:0,
-        clampHull:false, open:{rim:0.16, sole:9.74},
-        nose:[[9.53,-1.10],[10.36,-1.52]],
-        aft: [[9.53,-8.75],[10.36,-8.48]],
-        hw:  [[-1.1,1.20],[-2.5,1.70],[-4.5,1.80],[-8.75,1.52]] },
-    ],
-    // open aft deck at skylounge level over the mezzanine — floats past the tucked-forward wall below
-    aftDeck:{ ya:-11.55, yf:-9.45, hx:2.55, z:7.28, th:0.15, railH:0.66 },
-    helmPod:{ x:0, y:-3.30, z:9.74, hx:0.70, seats:[[-0.62,-5.9],[0.62,-5.9]] },
-    // the salon slider (pass 2): sill at mezzanine height
-    door:{ x0:-1.30, x1:1.50, y:-10.24, z0:2.90, z1:4.65 },
-    // second-level skylounge slider onto the aft deck (pass 2) — replaces the fixed sky aft pane
-    door2:{ x0:0.35, x1:1.30, y:-9.36, z0:7.45, z1:9.10, sill:7.28 },
-    extLadders:[ { cx:2.05, hw:0.24, y0:-11.30, z0:2.90, y1:-10.85, z1:7.24, rungs:13 } ],
-    interior:{ soleZ:2.83, bridgeSole:9.74,
-      // the FULL DECK dedicated to the helm: the skylounge, baked as a real interior level
-      bridge:{ deckId:'bridge_sole', soleZ:7.30, ceilZ:9.35, hx:2.28, y0:-9.50,
-               front:{ yBot:0.05, yTop:-0.50 },
-               frontGlass:{ z0:8.20, z1:9.18, panes:[[-1.45,-0.10],[0.10,1.45]] },
-               sideGlass:{ z0:8.45, z1:9.15, runs:[[-7.2,-5.8],[-5.4,-4.0],[-3.6,-2.2]] },
-               aftGlass:{ z0:7.62, z1:8.88, panes:[[-2.05,-0.45]] } },
-      ladders:[ { id:'aft_deck_ladder', face:'aft', x:2.05, y:-11.00, z0:2.83, z1:7.28,
-                  connects:['mezzanine','aft_deck'],
-                  note:'Mezzanine to the skylounge aft deck, starboard quarter — first leg of the exterior route up.' },
-                { id:'bridge_ladder', face:'aft', x:0, y:-9.40, z0:7.32, z1:9.55,
-                  connects:['aft_deck','bridge_sole'],
-                  note:'Aft deck to the open coaming — the rig’s own raked ladder, declared as a route (second leg to the upper helm).' } ],
-      helms:[
-        { id:'helm_bridge', deck:'bridge_sole', pos:[0,-3.30,9.74], reach:[0,-3.95,9.74],
-          note:'open control coaming helm pod — reached by the aft-deck ladder (extractor bridge_sole._notes.bridge_ladder)' } ],
-      house:{ ceilZ:7.00, hx:3.02, y0:-10.05, y1:1.20,
-              portholes:{ ys:[-5.4,-4.0,-2.6,-1.2,0.2], z0:5.72, z1:6.86 } },
-      below:{ soleZ:0.60, ceilZ:2.58, y0:0.20, y1:6.80, hxCap:2.60 },
-      excluded:{
-        foredeck_route:'no exterior route cockpit→foredeck — the extractor finding stands',
-        below_aft:'the below flat’s aft end tucks under the raised salon — full headroom holds only forward of the trunk (authored abstraction, flagged)' } },
-    lads:[[0.45,-9.70,7.32, 0.40,-9.08,9.55, 6]],
-    whips:[[[1.02,-7.95,11.18],[1.42,-9.15,14.20],0.038,0.010],
-           [[-1.02,-7.95,11.18],[-1.42,-9.15,14.20],0.038,0.010]],
-    hardtop:{ x:1.55, ya:-8.20, yf:-2.60, z:11.15, cam:0.10,
-              posts:[[1.62,-3.15,10.30],[1.55,-7.50,10.30]] },
-    domes:[ {type:'array', x:0, y:-5.10, z:11.26, len:0.62},
-            {x:0.58, y:-6.55, z:11.23, r:0.33, h:0.50},
-            {x:-0.55, y:-6.60, z:11.22, r:0.23, h:0.38} ],
-    mast:{ x:0, y:-5.10, z:11.95 },
-    mezz:{ y0:-11.40, y1:-10.32, z:0.78, bench:0.12, seat:0.46, back:0.48 },
-    chair:{ y:-12.35, r:0.58, foot:0.66 },
-    hatches:[[0,-12.90,0.64,0.42],[0,-11.55,0.50,0.28],[-2.25,-12.05,0.30,0.32,false],[2.25,-12.05,0.30,0.32,false]],
-    doors:{ tr:[1.05,2.20], trH:1.35, tu:[-2.00,-1.00], tuH:0.80 },
-    vent:{ y:-8.6, len:1.90 },
-    hullWins:[{ y:1.00, len:3.20, f0:0.548, f1:0.685 }],
-    railU:[0.845,0.895,0.940], railH:0.70, pulpit:0.42, navU:0.885,
-    capRods:[-10.20,-11.60,-12.90], rocket:{ n:7, x:1.45, y:-11.30, z:7.98 },
-    tubs:[[-2.30,-13.05,0],[2.30,-13.05,0],[-2.50,-11.30,0],[2.50,-11.30,0],[0,-13.25,0]],
-    rig:{ x:2.02, y:-7.60, z:9.66, len:9.5 },
-    anchors:{ helm:{x:0.65,y:-3.60,z:7.45}, towerStation:{x:0,y:-3.30,z:9.85} },
+    stem:{ y0:10.675, k:1.054 }, keelEndZ:0.60, chineEndZ:2.00,
+    sheer:[[-13.7,2.11],[-11.5,2.14],[-10,2.17],[-9,2.25],[-8,2.34],[-6,2.56],[-4,2.79],[-2,3.02],[0,3.24],[2,3.45],[3.5,3.57],[5,3.655],[7,3.74],[9,3.82],[11,3.90],[13.7,4.00]],
+    beam:[[-13.7,3.08],[-13.43,3.16],[-13.02,3.22],[-12.33,3.28],[-10.96,3.34],[-8.22,3.43],[-5.48,3.495],[-2.19,3.52],[0.55,3.52],[2.74,3.47],[4.93,3.36],[7.12,3.045],[8.49,2.675],[9.86,2.235],[10.96,1.795],[12.06,1.23],[12.74,0.70],[13.29,0.32],[13.7,0]],
+    keel:[[-13.7,0.42],[-10,0.24],[-6,0.09],[-2,0.01],[1,0],[4,0.03],[6.5,0.12],[8.5,0.30],[9.6,0.48]],
+    chineZ:[[-13.7,1.06],[-8,1.12],[-3,1.20],[1,1.28],[4,1.40],[6.5,1.56],[8.5,1.74],[10,1.90]],
+    chineX:[[-13.7,2.95],[-11,3.14],[-7,3.26],[-3,3.30],[0,3.24],[2.5,3.05],[5,2.62],[7,2.05],[9,1.30],[10.6,0.62]],
+    flare:[[-13.7,1.0],[0,1.05],[4,1.2],[7,1.45],[9.5,1.7],[11.6,1.9]],
+    camber:[[2.9,0.25],[4.4,0.24],[8,0.18],[12,0.10],[13.7,0.05]],
+    capW:0.34, railW:0.09, cockpitZ:1.45, cockpitFwd:-9.9, foreFrom:2.90,
+    hullWin:{ y0:-0.8, y1:1.0, z0:2.14, z1:2.52, slant:0.14 }, vent:{ y0:-6.6, y1:-3.2, z0:2.03, z1:2.29, n:5 },
+    doors:{ tr:[1.05,2.10], trH:0.72, tu:[-2.10,-1.10], tuH:0.62 },
+    capRods:[-13.0,-12.1,-11.2], tubs:[[-2.55,-13.05],[2.55,-13.05]],
+    chair:{ y:-11.85 }, sideStair:{ x0:2.40, x1:3.00, y0:-11.75, n:6 },
+    mezz:{ y0:-9.9, y1:-8.30, z:2.88, seat:{ x0:-2.05, x1:2.05, y0:-9.88, y1:-9.24, back:'+y' }, drawers:[-1.55,-0.55,0.55,1.55], dw:0.44 },
+    railY:[8.2,9.6,11.0,12.3], railH:0.62, hatchY:8.6,
+    salon:{ aftY:-8.30, soleZ:2.88, ceilZ:5.08, dashY:2.90, cam:0.12,
+      zs:[2.30,2.88,3.40,3.65,3.85,4.00,4.15,4.30,4.48,4.65,4.82,4.93,5.08,5.20,5.33],
+      rings:[[2.30,5.90,-8.30,3.24,4.90],[3.40,5.40,-8.27,3.23,4.85],[3.85,4.50,-8.25,3.22,4.60],[4.00,3.50,-8.24,3.21,4.20],[4.22,2.62,-8.23,3.20,3.90],
+             [4.48,2.00,-8.21,3.19,3.70],[4.74,1.45,-8.19,3.18,3.55],[4.99,0.90,-8.17,3.17,3.45],[5.19,0.50,-8.16,3.16,3.35],[5.33,0.20,-8.15,3.15,3.25]],
+      band:{ yTip:-6.55, z0:3.9, z1:4.7,
+        hi:[[-6.55,3.80],[-5.78,4.19],[-5.17,4.34],[-4.57,4.49],[-3.96,4.58],[-2.75,4.70],[-1.54,4.79],[-0.33,4.88],[0.88,5.00],[1.48,5.06],[2.6,5.10],[4.5,5.12]],
+        lo:[[-6.55,3.80],[-5.8,3.76],[-4.57,3.76],[-3.96,3.79],[-3.0,3.82],[-1.54,3.88],[-0.33,3.94],[0.88,4.00],[1.48,4.07],[2.09,4.18],[2.45,4.27],[3.0,4.40],[4.5,4.70]] },
+      door:{ x0:-1.80, x1:-0.20, z0:2.88, z1:4.93 }, fixed:{ x0:-0.20, x1:1.40, z0:2.95, z1:4.88 },
+      comp:{ x0:-0.55, x1:0.55, y0:0.50, y1:2.85 },
+      up:{ x0:2.10, x1:2.78, y0:-6.90, y1:-4.00, tv0:-6.00, tv1:-4.60 },   // R3: one stair, in drop 15's well (y −6.90 … −4.00)
+      fit:[ ['settee',-2.95,-2.30,-6.30,-3.10,'-x'], ['settee',-2.30,-1.60,-6.30,-5.70,'-y'], ['table',-2.05,-1.25,-5.20,-3.80,0.46],
+        ['counter',0.70,1.60,-2.50,0.30,0.90], ['stool',0.25,-1.9], ['stool',0.25,-1.0], ['stool',0.25,-0.1], ['counter',2.40,3.00,-2.50,0.60,0.92],
+        ['settee',-3.00,-2.40,-1.90,1.20,'-x'], ['settee',-2.40,-1.40,-1.90,-1.40,'-y'], ['settee',-2.40,-1.40,0.70,1.20,'+y'], ['table',-2.30,-1.50,-1.20,0.50,0.72],
+        ['tall',2.40,3.00,-3.30,-2.50,2.0], ['upper',2.64,3.00,-3.30,-1.20,1.45,2.05] ],
+      head:{ x0:-2.95, x1:-1.95, y0:-8.05, y1:-6.75, doorX0:-2.75, doorX1:-2.15 } },
+    bridgeSlab:{ yF:1.05, yA:-9.55, W:3.24, N:3.0, e:2.0, rA:0.9, zTop:5.52, cam:0.03, zf:[[1.05,5.40],[-1,5.31],[-4,5.15],[-7,4.97],[-9.55,4.80]] },
+    sky:{ aftY:-7.40, soleZ:5.56, ceilZ:7.62, dashY:-1.70, cam:0.13,
+      zs:[5.46,5.52,5.56,5.85,6.10,6.30,6.45,6.60,6.75,6.95,7.10,7.30,7.45,7.56,7.62,7.72],
+      rings:[[5.46,1.00,-7.40,2.98,3.70],[5.52,0.70,-7.40,2.98,3.60],[5.85,0.10,-7.38,2.97,3.45],[6.45,-0.94,-7.35,2.95,3.25],[6.95,-1.90,-7.32,2.93,3.05],
+             [7.30,-2.75,-7.29,2.91,2.85],[7.55,-3.30,-7.27,2.90,2.70],[7.72,-3.70,-7.25,2.89,2.60]],
+      band:{ yTip:-6.62, z0:6.2, z1:7.0,
+        lo:[[-6.62,6.20],[-5.5,6.15],[-4,6.19],[-2.75,6.26],[-1.54,6.37],[-0.94,6.45],[0,6.50],[1.2,6.6]],
+        hi:[[-6.62,6.20],[-6.38,6.51],[-5.78,6.69],[-5.17,6.90],[-4.57,6.99],[-3.96,7.02],[-3.36,7.08],[-2.75,7.17],[0,7.30],[1.2,7.35]] },
+      door:{ x0:0.35, x1:1.45, z0:5.56, z1:7.56, slide:-1 }, fixed:{ x0:-1.55, x1:0.35, z0:6.0, z1:7.40 },
+      well:{ x0:2.02, x1:2.82, y0:-6.90, y1:-4.00 },
+      items:{ console:{ x0:-1.20, x1:1.20, y0:-2.70, y1:-2.00 }, chairs:[-0.80,0,0.80], chairY:-3.30,
+        lset:{ x0:-2.80, x1:-2.20, y0:-6.90, y1:-3.40 }, tab:{ x0:-1.95, x1:-1.25, y0:-6.0, y1:-4.3 }, sset:{ x0:1.95, x1:2.50, y0:-3.20, y1:-2.50 } } },
+    station:{ lv:'top', slab:{ yF:-2.30, yA:-9.10, W:2.72, N:2.4, e:2.0, rA:0.8, zTop:7.97, cam:0.02, zf:[[-2.3,7.88],[-4.5,7.70],[-7,7.50],[-9.1,7.35]] },
+      coaming:{ zs:[7.95,8.25,8.55], rings:[[7.95,-2.40,-8.80,2.62,2.30],[8.55,-3.35,-8.80,2.55,2.00]] },
+      console:{ hx:0.70, y0:-4.30, y1:-3.60 }, seats:[-0.55,0.55], ladder:{ x:1.35, y0:-9.30, z0:5.52, y1:-8.95, z1:7.97, n:9 } },
+    hardtop:{ yF:-4.40, yA:-8.80, W:1.95, N:1.2, rA:0.7, z:9.55, posts:[[1.90,-4.85,0.1],[1.90,-8.35,-0.1]] },
+    radar:{ y:-6.30, len:0.72 }, domes:[{ x:0.55, y:-7.90, r:0.30 },{ x:-0.50, y:-7.95, r:0.24 }],
+    whips:[[[1.35,-8.55,9.60],[1.75,-9.60,12.40]],[[-1.35,-8.55,9.60],[-1.75,-9.60,12.40]]],
+    rocket:{ n:7, x:1.30, y:-8.55 },
+    rig:{ x:2.42, y:-7.60, z:8.30, len:11.0, stowed:38 },
+    below:{ soleZ:0.82, fwdZ:1.12, engZ:0.70, y0:-3.00, y1:9.00, stepY0:4.60, stepY1:5.00,
+      eng:{ xc:1.05, hw:0.48, y0:-7.9, y1:-4.2, h:1.05, ht:0.27, gear:[-4.2,-3.7], gens:[[1.8,2.4,-3.9,-3.3,1.1],[-2.4,-1.8,-3.9,-3.3,1.1]], box:[-0.35,0.35,-9.4,-8.7,0.9] },
+      // pass E (the owner, 10-27): the starboard room's doorway moved aft of the stair (y -0.15 to 0.50, 0.65 m, against
+      // the aft bulkhead), and a 0.75 m doorway in each forward cabin's inboard wall (y 3.475 to 4.225), onto the 0.82 floor
+      walls:[[-2.6,-1.10,-0.25,-0.15],[0.55,2.6,-0.25,-0.15],[-1.15,-1.05,-0.15,0.95],[-1.15,-1.05,1.70,3.0],[0.50,0.60,0.50,3.0],
+             [-2.6,-0.55,3.0,3.1],[0.55,2.6,3.0,3.1],[-0.60,-0.50,3.1,3.475],[-0.60,-0.50,4.225,4.6],[0.50,0.60,3.1,3.475],[0.50,0.60,4.225,4.6],
+             [-2.2,-0.45,5.0,5.1],[0.45,2.2,5.0,5.1]],
+      beds:[[-0.90,0.90,-2.92,-0.95,-1],[-2.30,-1.35,0.15,2.35,-1],[1.05,1.75,0.10,2.20,-1],[-0.85,0.85,5.75,7.85,1]],
+      stands:[[-1.45,-1.02,-2.92,-2.50],[1.02,1.45,-2.92,-2.50]],
+      // pass E: the port room's floor at its berth's foot (0.20 m between the berth and the corridor wall) and the
+      // starboard room's strip outboard of its berth (0.19 m of sole)
+      walkCut:[[-2.6,-1.15,2.35,3.0],[1.75,2.6,-0.15,2.20]],
+      // pass E (the desk, 10-27): the vip's bow past the berth's head, across the berth's width; the berth leaves 0.19 m
+      // to the lining and meets it by y 7.6, so no doorway reaches it
+      vipCut:[[-0.85,0.85,7.85,9.00]] },
+    spawn:[-1.1,-7.30],   // v3's: where the walk puts her (area salon)
+    cabin:{ portholes:{ ys:[-5.5,-4.1,-2.7,-1.3,0.1,1.5], z0:3.95, z1:4.85 },
+      skyFront:{ yBot:-1.70, yTop:-3.40 }, skyFrontGlass:{ z0:6.25, z1:7.30, panes:[[-1.45,-0.10],[0.10,1.45]] },
+      skySideGlass:{ z0:6.25, z1:7.00, runs:[[-6.4,-5.1],[-4.8,-3.5],[-3.2,-2.2]] }, skyAftGlass:{ z0:6.00, z1:7.40, panes:[[-1.55,0.25]] },
+      below:{ ceilZ:2.76, y0:-2.90, y1:8.90, hxCap:2.90 },
+      helms:[ { id:'helm_bridge', deck:'bridge_sole', pos:[0,-3.30,5.56], reach:[0,-2.70,5.56],
+                note:'the skylounge helm — the full deck dedicated to the helm; her way down is the interior stair to the salon (R3)' },
+              { id:'helm_top', deck:'helm_coaming', pos:[0,-5.05,7.97], reach:[0,-4.30,7.97],
+                note:'open top station on the skylounge roof — reached from the aft deck by the station ladder' } ],
+      ladders:[ { id:'top_station_ladder', face:'aft', x:1.35, y:-9.10, z0:5.52, z1:7.97, connects:['aft_deck','helm_coaming'],
+                  note:'Aft deck to the open top station — the rig’s own raked ladder.' } ],
+      wayDown:{ id:'house_to_bridge', kind:'interior_stair', from:'bridge_sole', to:'house_sole', well:{ x0:2.02, x1:2.82, y0:-6.90, y1:-4.00 },
+                note:'R3 (2026-09-19): she stands in the skylounge and goes down the interior stair to the salon, then out the salon slider to the mezzanine and cockpit.' },
+      excluded:{ foredeck_route:'no exterior route cockpit→foredeck — the house sides stand on the sheer behind the cap rail',
+                 below_aft:'aft of the dash the staterooms sit under the salon sole (1.94 m clear) — the foredeck is the lid only forward of y 2.90' } },
+    anchors:{ helm:{ x:0, y:-3.30, z:6.20 }, towerStation:{ x:0, y:-5.05, z:8.55 } },
   });
 
+  // ===================================================================================================
+  // 16.2 m CONVERTIBLE ("53") — id kept as 'convertible' so SportFisherFleet's key still resolves.
+  // Her lines: a low sheer
+  // 1.95 → 2.83 m over the keel (bow freeboard 1.83 m) under a dead-level foredeck crown, 44° straight stem,
+  // house set in behind 0.45 m side decks, one long wedge of glass running up to the brow, and the flybridge
+  // brow as a lens (peak 4.77 m) that slopes down to its nose over the windshield and down aft over the
+  // mezzanine. Hardtop by default; the tuna tower is an option (opts.tower).
+  // ===================================================================================================
+  const CONVERTIBLE = makeRig({
+    id:'convertible', label:'53\u2032 CONVERTIBLE', loa:'16.2 m \u00b7 53\u2032',
+    note:'Low sheer to 2.83 m, a 44° stem, a level foredeck crown, one wedge of glass under a lens-shaped flybridge brow; hardtop, optional tuna tower.',
+    L:16.2, DWL:0.67, loftZ:1.00, W:820, H:770, cx:410, cy:475,   // DWL = the fleet draft, 4% of LOA (was 1.00); her lines stay lofted from 1.00
+    ROCK:{ frames:8, rollA:2.1, pitchA:1.25, heaveA:0.95, period:3.0 },
+    stem:{ y0:6.37, k:0.964 }, keelEndZ:0.55, chineEndZ:1.55,
+    sheer:[[-8.1,1.95],[-7.0,1.95],[-6.0,1.97],[-5.0,2.01],[-4.0,2.09],[-3.0,2.20],[-2.0,2.29],[-1.0,2.39],[0,2.49],[1.0,2.565],[2.0,2.62],[3.0,2.68],[4.0,2.735],[5.0,2.77],[6.0,2.80],[7.0,2.82],[8.1,2.83]],
+    beam:[[-8.1,2.20],[-7.38,2.24],[-6.74,2.28],[-5.15,2.37],[-3.55,2.43],[-1.95,2.50],[-0.36,2.55],[1.24,2.61],[1.88,2.61],[2.83,2.58],[3.79,2.49],[4.43,2.39],[5.39,2.19],[6.03,1.91],[6.66,1.50],[7.30,0.93],[7.62,0.60],[7.94,0.22],[8.1,0]],
+    keel:[[-8.1,0.36],[-6.0,0.22],[-3.6,0.09],[-1.2,0.02],[0.6,0],[2.4,0.03],[3.9,0.12],[4.9,0.26],[5.5,0.40]],
+    chineZ:[[-8.1,0.92],[-4.7,0.97],[-1.8,1.04],[0.6,1.12],[2.4,1.22],[3.9,1.33],[5.0,1.42],[6.2,1.50]],
+    chineX:[[-8.1,2.08],[-6.5,2.20],[-4.0,2.30],[-1.8,2.36],[0,2.34],[1.5,2.25],[3.0,1.98],[4.2,1.62],[5.3,1.12],[6.2,0.55]],
+    flare:[[-8.1,1.0],[0,1.05],[2.4,1.2],[4.1,1.45],[5.6,1.7],[6.9,1.9]],
+    camber:[[0.0,0.42],[1.0,0.40],[2.0,0.36],[3.0,0.30],[4.0,0.245],[5.0,0.21],[6.0,0.18],[7.0,0.155],[8.1,0.10]],
+    capW:0.30, railW:0.08, cockpitZ:1.30, cockpitFwd:-5.05, foreFrom:0.0,
+    hullWin:null, vent:{ y0:-3.43, y1:-0.43, z0:1.88, z1:2.27, n:4, slant:0.22, ends:0.10 },
+    doors:{ tr:[0.70,1.40], trH:0.62, tu:[-1.35,-0.75], tuH:0.48 },
+    capRods:[-7.65,-7.05,-6.45], tubs:[[-1.55,-7.60],[1.55,-7.60]],
+    chair:{ y:-6.75 }, sideStair:{ x0:1.35, x1:1.80, y0:-5.85, n:3 },
+    mezz:{ y0:-5.05, y1:-4.36, z:1.72, seat:{ x0:-1.20, x1:0.38, y0:-4.92, y1:-4.38, back:'+y' }, drawers:[], dw:0.30,
+      walkCut:[[-2.10,-1.20,-5.10,-4.90]] },   // pass E: her port corner aft of the fly ladder's foot, 0.12 m deep beside the seat's end
+    wings:{ x0:1.85, x1:1.97, yA:-5.57, yF:-4.28, zA:2.02, zF:3.66, p:1.15 },
+    railY:[1.9,3.0,4.1,5.2,6.3,7.4], railH:0.55, hatchY:4.9,
+    salon:{ aftY:-4.36, soleZ:1.72, ceilZ:3.74, dashY:0.0, dashH:1.02, cam:0.03, rA:0.12,
+      zs:[1.60,1.72,1.95,2.20,2.45,2.70,2.90,3.00,3.09,3.20,3.35,3.45,3.58,3.66,3.74],
+      rings:[[1.60,2.75,-4.36,1.97,2.9],[2.50,2.40,-4.36,1.97,2.8],[2.98,1.97,-4.36,1.96,2.6],[3.09,1.50,-4.36,1.95,2.35],[3.35,1.20,-4.35,1.94,2.2],[3.58,0.95,-4.35,1.93,2.05],[3.74,0.62,-4.34,1.92,1.9]],
+      band:{ yTip:-4.21, z0:2.9, z1:3.6,
+        lo:[[-4.21,2.84],[-3.5,2.87],[-2.7,2.90],[-1.11,2.96],[0.47,3.04],[1.50,3.09],[2.2,3.20]],
+        hi:[[-4.21,2.84],[-3.95,3.10],[-3.81,3.22],[-3.26,3.46],[-2.46,3.58],[-1.11,3.66],[0.0,3.70],[1.5,3.72]] },
+      door:{ x0:0.45, x1:1.45, z0:1.72, z1:3.55, slide:-1 }, fixed:{ x0:-1.75, x1:0.45, z0:2.70, z1:3.50 },
+      comp:{ x0:-0.05, x1:0.60, y0:-1.15, y1:-0.10, n:7 },
+      fit:[ ['settee',-1.82,-1.25,-4.20,-2.30,'-x'], ['table',-0.85,0.10,-3.25,-2.60,0.46],
+        ['counter',1.40,1.84,-4.20,-2.55,0.78], ['tv',1.58,1.62,-3.85,-2.90,0.82,1.45],
+        // pass E (the owner, 10-27): the galley counter's inboard end at -0.59, 0.48 m from the companionway's port panel
+        // (-0.11), the galley's way in
+        ['counter',-1.84,-0.59,-2.12,-1.45,0.92], ['tall',-1.84,-1.35,-1.45,-0.95,1.85],
+        ['settee',1.28,1.84,-2.35,-0.45,'+x'], ['table',0.78,1.22,-2.05,-0.85,0.72] ],
+      walkCut:[[0.66,1.28,-0.85,-0.34]] },   // pass E: the nook at the dinette table's forward end, 0.12 m past the table by the rail, 0.06 m by the settee
+    bridgeSlab:{ yF:0.71, yA:-5.36, W:2.05, N:2.6, e:2.2, rA:0.85, zTop:3.92, cam:0.02, zf:[[0.71,3.82],[0.47,3.78],[-0.5,3.72],[-1.11,3.68],[-2.7,3.66],[-4.29,3.64],[-5.0,3.70],[-5.36,3.79]] },
+    station:{ lv:'bridge', slab:null,
+      coaming:{ lens:true, zs:[3.92,4.05,4.22,4.45,4.62,4.77],
+        rings:[[3.92,0.50,-5.20,2.02,2.5],[4.05,0.20,-4.85,2.00,2.3],[4.22,-0.12,-4.30,1.98,2.1],[4.45,-0.55,-3.50,1.95,1.9],[4.62,-0.85,-2.95,1.93,1.7],[4.77,-1.13,-2.48,1.90,0.6]] },
+      console:{ hx:0.70, y0:-2.00, y1:-1.45 }, seats:[-0.62,0,0.62], deckRail:{ y0:-4.30, h:0.80 },
+      settees:[{ x0:-1.85, x1:-1.30, y0:-3.90, y1:-3.05, back:'-x' }],
+      hatch:{ x0:-1.82, x1:-1.34, y0:-5.02, y1:-4.47 } },
+    flyLadder:{ x:-1.58, y0:-4.93, z0:1.72, y1:-4.47, z1:3.92, n:8 },
+    hardtop:{ yF:-1.10, yA:-5.00, W:1.80, N:1.0, rA:0.6, z:5.95, posts:[[1.72,-1.60,0.10],[1.78,-4.80,-0.05]] },
+    tower:{ feet:[[1.55,-1.75],[1.65,-4.70]], top:{ hx:0.58, y0:-3.95, y1:-2.55, z:7.85 }, rail:0.62,
+      pod:{ hx:0.30, y0:-2.92, y1:-2.60 }, ladder:{ x:0, y0:-5.05, z0:3.94, y1:-4.05, z1:7.85, n:11 } }, towerDefault:false,
+    radar:{ y:-1.75, len:0.52 }, domes:[{ x:0.62, y:-4.25, r:0.22 },{ x:-0.58, y:-4.40, r:0.18 }],
+    whips:[[[0.95,-4.60,6.00],[1.25,-5.25,8.40]],[[-0.95,-4.60,6.00],[-1.25,-5.25,8.40]]],
+    rocket:{ n:4, x:1.05, y:-4.80 },
+    rig:{ x:1.62, y:-4.30, z:5.55, len:7.0, stowed:36 },
+    below:{ soleZ:0.55, fwdZ:0.98, engZ:0.42, y0:-1.30, y1:6.05, stepY0:4.10, stepY1:4.40, walkY0:-0.25,
+      eng:{ xc:0.78, hw:0.40, y0:-4.20, y1:-2.60, h:0.85, ht:0.20, gear:[-4.55,-4.20], gens:[[1.30,1.75,-2.35,-1.90,0.70]], box:null },
+      walls:[[-2.4,-0.30,-0.05,0.01],[-0.36,-0.30,0.01,0.40],[-0.36,-0.30,1.00,2.02],[-2.4,-0.30,2.02,2.08],[-0.36,-0.30,2.60,3.55],[-2.2,-0.30,3.55,3.61],
+             [0.55,2.4,0.55,0.61],[0.55,0.61,1.25,2.35],[0.55,2.4,2.35,2.41],[0.55,0.61,2.95,3.60],[0.55,2.2,3.60,3.66],[-2.0,-0.35,4.10,4.16],[0.35,2.0,4.10,4.16]],
+      beds:[[-1.95,-0.50,0.15,1.90,-1],[1.05,1.95,0.75,2.25,-1],[-0.75,0.75,4.70,5.85,-1]],
+      stands:[],
+      fit:[['counter',-1.95,-1.50,3.00,3.45,0.42],['counter',-1.40,-0.45,2.15,2.55,0.85],['counter',0.75,1.15,3.05,3.50,0.42],['counter',1.30,2.00,2.50,2.95,0.85],['tall',-0.90,-0.40,4.20,4.55,1.60]],
+      walkCut:[[-2.2,-0.36,2.55,3.55]] },   // pass E: the forward-port head past its vanity, under 0.30 m of sole, the vanity 0.05 m short of the door's jamb
+    spawn:[0.9,-3.3],     // v3's: where the walk puts her (area salon)
+    // R2's hatch (drop 15's) and the ship's ladder under it: the hatch is 0.65 m long and the salon 2.02 m high, so
+    // the ladder stands near upright against the hatch's aft edge (pass B)
+    flyComp:{ x0:-1.20, x1:-0.65, y0:-4.10, y1:-3.45, ladder:{ x0:-1.10, x1:-0.75, yFoot:-3.90, yTop:-4.06, n:8 } },
+    cabin:{ portholes:{ ys:[-3.3,-2.2,-1.1], z0:2.96, z1:3.58 }, houseY1:0.70,   // the salon floor runs 0.70 m under the windshield wedge, to the stair down
+      below:{ ceilZ:2.60, y0:0.10, y1:5.85, hxCap:1.85 },
+      helms:[ { id:'helm_bridge', deck:'bridge_sole', pos:[0,-2.86,3.92], reach:[0,-2.00,3.92],
+                note:'flybridge helm console — the boat is worked from here; her way down is the companionway to the salon (R2)' } ],
+      ladders:[ { id:'flybridge_ladder', face:'aft', x:-1.58, y:-4.70, z0:1.72, z1:3.92, connects:['mezzanine','bridge_sole'],
+                  note:'Exterior ladder from the mezzanine up through the overhang hatch, port quarter — a way up; R2 makes the companionway her way down.' } ],
+      wayDown:{ id:'house_to_bridge', kind:'companionway', from:'bridge_sole', to:'house_sole', hatch:{ x0:-1.20, x1:-0.65, y0:-4.10, y1:-3.45 },
+                note:'R2 (2026-09-19): from the flybridge she goes down the companionway into the salon, then out the salon slider to the mezzanine and cockpit.' },
+      excluded:{ foredeck_route:'the side decks run the length of the house (0.45 m clear) — cockpit→foredeck is walkable outside on this hull, over the low aft end of the house wings',
+                 below_aft:'aft of the dash the staterooms sit under the salon sole (1.05 m clear) — full headroom holds forward of y 0.0' } },
+    anchors:{ helm:{ x:0, y:-2.86, z:4.40 }, towerStation:{ x:0, y:-3.25, z:8.00 } },
+  });
+
+
   const HULLS = [CONVERTIBLE, SKYBRIDGE];
+  // the global (hull-layout-1 §4.1): byId(id) one hull, or null for an id it does not have; hullIds; and the
+  // default hull's (the convertible's) members under the same names. Each hull keeps its own cell (byId(id).cell, and
+  // cells by id): cell is the default hull's.
+  const DEFAULT_HULL = CONVERTIBLE, D0 = DEFAULT_HULL;
   root.SportFisherIso2 = {
-    CONVERTIBLE, SKYBRIDGE, HULLS,
-    byId:(id)=>HULLS.filter(h=>h.id===id)[0] || CONVERTIBLE,
+    CONVERTIBLE, SKYBRIDGE, HULLS, hullIds:HULLS.map(h=>h.id), defaultHull:D0.id,
+    byId:(id)=>HULLS.filter(h=>h.id===id)[0] || null,
     PX, DIRS:8, order:['N','NE','E','SE','S','SW','W','NW'],
-    PAINTS, paintRamps, defaultPaint:'gelcoat',
+    PAINTS, paintRamps, defaultPaint:'gelcoat', schemeIds:SCHEME_IDS.slice(), defaultScheme:DEFAULT_SCHEME,
     HULL, BOOT, CREAM, BLUE, TEAK, DECKF, GRIP, GLAS, STEEL, IRON, KEY,
+    CARPET, LEATH, TEAKG, STONE, WHITEG, GLASSD,
+    matsFor, GAIN, BIAS, LN, BAYER, LV, RO, GHOST_ROLES, tagMats,
+    id:D0.id, label:D0.label, kind:D0.kind, loa:D0.loa, DWL:D0.DWL, cockpitZ:D0.cockpitZ,
+    faceList:D0.faceList, partFaces:D0.partFaces, interiorFaces:D0.interiorFaces, doorFaces:D0.doorFaces, geometry:D0.geometry,
+    walk:D0.walk, fitCheck:D0.fitCheck, render:D0.render, renderCut:D0.renderCut,
+    W:D0.W, H:D0.H, pivot:Object.assign({}, D0.pivot), defaultElev:D0.defaultElev,
+    cell:{ W:D0.W, H:D0.H, PX, pivot:Object.assign({}, D0.pivot), defaultElev:D0.defaultElev },
+    cells:HULLS.reduce((o,h)=>{ o[h.id]={ W:h.W, H:h.H, PX, pivot:Object.assign({}, h.pivot), defaultElev:h.defaultElev }; return o; }, {}),
   };
 })(typeof globalThis!=='undefined'?globalThis:window);

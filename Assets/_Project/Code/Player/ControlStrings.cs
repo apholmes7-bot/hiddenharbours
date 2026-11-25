@@ -71,6 +71,9 @@ namespace HiddenHarbours.Player
         public const string IdWashboard  = "transit.washboard";
         public const string IdOverTheSide = "transit.over_the_side";
         public const string IdBackOnDeck = "transit.back_on_deck";
+        /// <summary>The boarding rule's pointer (2026-11-13): shown where a climb from the water or an
+        /// exit over the side is refused. Not a transit the press performs — a direction to one.</summary>
+        public const string IdFindLadder = "transit.find_ladder";
 
         // ---- refusals -----------------------------------------------------------------------
 
@@ -85,5 +88,17 @@ namespace HiddenHarbours.Player
         /// table argues for the fisher's own voice in the dialogue surface).</para>
         /// </summary>
         public const string BoatNeedsRepairs = "She needs repairs before she'll sail";
+
+        /// <summary>
+        /// At a railed or high-sided hull, away from her ladder, platform or gate — in the water under
+        /// her side, or on her deck at the rail (owner, 2026-11-13: <i>"should only be ladders, railings
+        /// should stop players from jumping in"</i>). Shown only on a hull that HAS such a point.
+        /// </summary>
+        public const string FindTheLadder = "Find the ladder";
+
+        /// <summary>In the water under a railed or high-sided hull that has NO ladder, platform or gate
+        /// reaching the water (the tanker, until her pilot ladder is authored): the honest line, since
+        /// "find the ladder" would send the player looking for one that is not there.</summary>
+        public const string NoWayUpFromTheWater = "Too high to climb — board her from a wharf";
     }
 }

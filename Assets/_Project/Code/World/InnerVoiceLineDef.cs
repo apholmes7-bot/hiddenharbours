@@ -17,6 +17,11 @@ namespace HiddenHarbours.World
         /// an authored region. For the things there is nothing to press ON — a hull on the hard with a
         /// price on it, a fallen fence, a light that is out.</summary>
         Proximity = 1,
+
+        /// <summary>A gameplay moment asked for it over Core (<c>InnerVoiceCue</c>): the line
+        /// whose <c>SubjectId</c> is the cue id speaks. The publisher decides WHEN; this asset
+        /// is still the words, the voice and the cooldown.</summary>
+        Cue = 2,
     }
 
     /// <summary>
@@ -68,9 +73,11 @@ namespace HiddenHarbours.World
         [Tooltip("What sets it off.")]
         public InnerVoiceTrigger Trigger = InnerVoiceTrigger.InteractOffered;
 
-        [Tooltip("InteractOffered only: the offered thing's stable id — an IInteractable.Id, an NPC id " +
+        [Tooltip("InteractOffered: the offered thing's stable id — an IInteractable.Id, an NPC id " +
                  "or a transit key, exactly as InteractOfferChanged carries it (e.g. " +
-                 "tool.st_peters.rod). Case-sensitive and matched whole.")]
+                 "tool.st_peters.rod). Cue: the cue id this line answers, exactly as the Core " +
+                 "InnerVoiceCue carries it (e.g. cue.fishing.feeding_sea). Case-sensitive and " +
+                 "matched whole either way.")]
         public string SubjectId = "";
 
         [Tooltip("Proximity only: which region the point below is in (region.snake_case). Positions are " +
@@ -107,6 +114,20 @@ namespace HiddenHarbours.World
         /// see <see cref="DialogueVoiceCatalog"/>.</summary>
         public string VoiceId => Voice != null ? Voice.Id : null;
 
+        /// <summary>
+        /// The words to say, with <paramref name="name"/> put where the line writes
+        /// <see cref="HiddenHarbours.Core.InnerVoiceCues.NameToken"/>. A line without the token is returned
+        /// as authored (no new string); a missing name leaves the line as authored too, so a cue that
+        /// forgot its name shows the placeholder rather than a sentence with a hole in it.
+        /// </summary>
+        public string TextFor(string name)
+        {
+            string token = HiddenHarbours.Core.InnerVoiceCues.NameToken;
+            if (string.IsNullOrEmpty(Line) || string.IsNullOrEmpty(name) || Line.IndexOf(token, System.StringComparison.Ordinal) < 0)
+                return Line;
+            return Line.Replace(token, name);
+        }
+
         /// <summary>Is this line waiting on <paramref name="offerId"/>? False for a proximity line, for
         /// an empty subject, and for a null offer (the offer channel publishes those to say "nothing is
         /// offered", and nothing is not a thing to have a thought about).</summary>
@@ -114,6 +135,13 @@ namespace HiddenHarbours.World
             => Trigger == InnerVoiceTrigger.InteractOffered
                && !string.IsNullOrEmpty(SubjectId)
                && string.Equals(SubjectId, offerId, System.StringComparison.Ordinal);
+
+        /// <summary>Does this line answer the Core cue <paramref name="cueId"/>
+        /// (<c>InnerVoiceCue</c>)? Whole and case-sensitive, like the offer match; nothing is not a cue.</summary>
+        public bool WantsCue(string cueId)
+            => Trigger == InnerVoiceTrigger.Cue
+               && !string.IsNullOrEmpty(SubjectId)
+               && string.Equals(SubjectId, cueId, System.StringComparison.Ordinal);
 
         /// <summary>
         /// Is <paramref name="playerPosition"/> inside this line's circle, in <paramref name="regionId"/>?

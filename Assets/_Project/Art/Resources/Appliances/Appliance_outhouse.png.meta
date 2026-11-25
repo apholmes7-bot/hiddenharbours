@@ -1,0 +1,778 @@
+fileFormatVersion: 2
+guid: 299db75bb9e5fb54f97dd246200bcfef
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3995250885891187780
+    second: Appliance_outhouse_0
+  - first:
+      213: 937227111799489110
+    second: Appliance_outhouse_1
+  - first:
+      213: 3012743231133717648
+    second: Appliance_outhouse_2
+  - first:
+      213: 8574629015447897195
+    second: Appliance_outhouse_3
+  - first:
+      213: -3673566709176562903
+    second: Appliance_outhouse_4
+  - first:
+      213: -6090622598542729433
+    second: Appliance_outhouse_5
+  - first:
+      213: -6445829056686390158
+    second: Appliance_outhouse_6
+  - first:
+      213: -3702743962161600942
+    second: Appliance_outhouse_7
+  - first:
+      213: 485475465252029670
+    second: Appliance_outhouse_8
+  - first:
+      213: 8462699655255965488
+    second: Appliance_outhouse_9
+  - first:
+      213: -633113989326222794
+    second: Appliance_outhouse_10
+  - first:
+      213: -3250582179472565269
+    second: Appliance_outhouse_11
+  - first:
+      213: -2375732554062608522
+    second: Appliance_outhouse_12
+  - first:
+      213: 5097678636901088250
+    second: Appliance_outhouse_13
+  - first:
+      213: -8619686618199117020
+    second: Appliance_outhouse_14
+  - first:
+      213: 3266194297473846635
+    second: Appliance_outhouse_15
+  - first:
+      213: -7223607510623501185
+    second: Appliance_outhouse_16
+  - first:
+      213: 1648439333462029871
+    second: Appliance_outhouse_17
+  - first:
+      213: -1115146821505094576
+    second: Appliance_outhouse_18
+  - first:
+      213: 5793569038641110878
+    second: Appliance_outhouse_19
+  - first:
+      213: 6222310584569894643
+    second: Appliance_outhouse_20
+  - first:
+      213: -8676593928029612183
+    second: Appliance_outhouse_21
+  - first:
+      213: -1566302278221201782
+    second: Appliance_outhouse_22
+  - first:
+      213: -2791090667336862571
+    second: Appliance_outhouse_23
+  - first:
+      213: 180222271909082157
+    second: Appliance_outhouse_24
+  - first:
+      213: -84005197916547564
+    second: Appliance_outhouse_25
+  - first:
+      213: -7504246984883874753
+    second: Appliance_outhouse_26
+  - first:
+      213: 8824385495306643614
+    second: Appliance_outhouse_27
+  - first:
+      213: -6739526090729037790
+    second: Appliance_outhouse_28
+  - first:
+      213: 8512912347712474219
+    second: Appliance_outhouse_29
+  - first:
+      213: -4932288014596129980
+    second: Appliance_outhouse_30
+  - first:
+      213: 6578731442882591611
+    second: Appliance_outhouse_31
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Appliance_outhouse_s0_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 212
+        width: 82
+        height: 106
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24528302}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d3cc8939a339872439f9ed0385e4b261
+      internalID: 295400988
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_outhouse_s0_d1
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 212
+        width: 82
+        height: 106
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24528302}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3f068db6df6d37e4e9cf134d6c6f784c
+      internalID: 1418413130
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_outhouse_s0_d2
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 212
+        width: 82
+        height: 106
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24528302}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 565a83079064bb44d817413f4027b14a
+      internalID: 1939416005
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_outhouse_s0_d3
+      rect:
+        serializedVersion: 2
+        x: 246
+        y: 212
+        width: 82
+        height: 106
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24528302}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 799086d8bf981544aaf210dbea31ba52
+      internalID: -1005252772
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_outhouse_s0_d4
+      rect:
+        serializedVersion: 2
+        x: 328
+        y: 212
+        width: 82
+        height: 106
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24528302}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2b3f5d0adb5f1d04b8edec40f1774d4a
+      internalID: 1196499295
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_outhouse_s0_d5
+      rect:
+        serializedVersion: 2
+        x: 410
+        y: 212
+        width: 82
+        height: 106
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24528302}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a29f8ead840e964eb417f2fd180b747
+      internalID: -522564259
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_outhouse_s0_d6
+      rect:
+        serializedVersion: 2
+        x: 492
+        y: 212
+        width: 82
+        height: 106
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24528302}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: deb8d44c3ee187d4a981d6309e02aaef
+      internalID: -1253913487
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_outhouse_s0_d7
+      rect:
+        serializedVersion: 2
+        x: 574
+        y: 212
+        width: 82
+        height: 106
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24528302}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: df39399958959a9419bc914e3121347c
+      internalID: -1816453366
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_outhouse_s1_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 106
+        width: 82
+        height: 106
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24528302}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4b66773a63079974e8f11aaaf9edaea6
+      internalID: -1463579509
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_outhouse_s1_d1
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 106
+        width: 82
+        height: 106
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24528302}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f47373f7f03ceb4438c78d41a29acba0
+      internalID: -1131758407
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_outhouse_s1_d2
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 106
+        width: 82
+        height: 106
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24528302}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4103b11bb70860c498923b732073716d
+      internalID: 971449392
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_outhouse_s1_d3
+      rect:
+        serializedVersion: 2
+        x: 246
+        y: 106
+        width: 82
+        height: 106
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24528302}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d7a7e9593f020a844a3e2d245e93437a
+      internalID: 1902712619
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_outhouse_s1_d4
+      rect:
+        serializedVersion: 2
+        x: 328
+        y: 106
+        width: 82
+        height: 106
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24528302}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5c88d126c117bb144a9ac5fbfe38d842
+      internalID: 1025655638
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_outhouse_s1_d5
+      rect:
+        serializedVersion: 2
+        x: 410
+        y: 106
+        width: 82
+        height: 106
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24528302}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 731b7318896291e408bc3eb12a7f1274
+      internalID: 1544555625
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_outhouse_s1_d6
+      rect:
+        serializedVersion: 2
+        x: 492
+        y: 106
+        width: 82
+        height: 106
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24528302}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eb00b0c62e8b0644a9ecd0c4c5ab6b73
+      internalID: -550132662
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_outhouse_s1_d7
+      rect:
+        serializedVersion: 2
+        x: 574
+        y: 106
+        width: 82
+        height: 106
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24528302}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e8b74e2a42b54d4458ddd330a17c3a2d
+      internalID: 21839161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_outhouse_s2_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 82
+        height: 106
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24528302}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1cbe5d24256a72346a684a9b7dc0ebf7
+      internalID: -1143896474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_outhouse_s2_d1
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 0
+        width: 82
+        height: 106
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24528302}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 14df0d500e5b53f49b937fadca0227ad
+      internalID: 886182172
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_outhouse_s2_d2
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 0
+        width: 82
+        height: 106
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24528302}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 42e85de446ac08a45b81bff9c0d1d2a5
+      internalID: 460783373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_outhouse_s2_d3
+      rect:
+        serializedVersion: 2
+        x: 246
+        y: 0
+        width: 82
+        height: 106
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24528302}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: acae6229ecfa6a440a6b468cd034bf05
+      internalID: -701812351
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_outhouse_s2_d4
+      rect:
+        serializedVersion: 2
+        x: 328
+        y: 0
+        width: 82
+        height: 106
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24528302}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e117df56553daef4ca510ab10ec69eb2
+      internalID: 491232959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_outhouse_s2_d5
+      rect:
+        serializedVersion: 2
+        x: 410
+        y: 0
+        width: 82
+        height: 106
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24528302}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1872c7627bdba1542bc6960c8b86b388
+      internalID: 2033181560
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_outhouse_s2_d6
+      rect:
+        serializedVersion: 2
+        x: 492
+        y: 0
+        width: 82
+        height: 106
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24528302}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d4188c0827866e044aff53330a5deb37
+      internalID: -108460769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Appliance_outhouse_s2_d7
+      rect:
+        serializedVersion: 2
+        x: 574
+        y: 0
+        width: 82
+        height: 106
+      alignment: 9
+      pivot: {x: 0.5, y: 0.24528302}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6bd8627b1268bca469508e85ed17d951
+      internalID: 298255263
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 6b2a425a922e3dd4e8a344a8db500fa1
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Appliance_outhouse_s0_d0: 295400988
+      Appliance_outhouse_s0_d1: 1418413130
+      Appliance_outhouse_s0_d2: 1939416005
+      Appliance_outhouse_s0_d3: -1005252772
+      Appliance_outhouse_s0_d4: 1196499295
+      Appliance_outhouse_s0_d5: -522564259
+      Appliance_outhouse_s0_d6: -1253913487
+      Appliance_outhouse_s0_d7: -1816453366
+      Appliance_outhouse_s1_d0: -1463579509
+      Appliance_outhouse_s1_d1: -1131758407
+      Appliance_outhouse_s1_d2: 971449392
+      Appliance_outhouse_s1_d3: 1902712619
+      Appliance_outhouse_s1_d4: 1025655638
+      Appliance_outhouse_s1_d5: 1544555625
+      Appliance_outhouse_s1_d6: -550132662
+      Appliance_outhouse_s1_d7: 21839161
+      Appliance_outhouse_s2_d0: -1143896474
+      Appliance_outhouse_s2_d1: 886182172
+      Appliance_outhouse_s2_d2: 460783373
+      Appliance_outhouse_s2_d3: -701812351
+      Appliance_outhouse_s2_d4: 491232959
+      Appliance_outhouse_s2_d5: 2033181560
+      Appliance_outhouse_s2_d6: -108460769
+      Appliance_outhouse_s2_d7: 298255263
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

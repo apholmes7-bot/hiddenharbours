@@ -49,6 +49,25 @@ The first change establishes the art/fit contract; completion requires creation 
 ownership in normal play, with production rendering and safe save migration. The old sprite-layer
 restriction in ADR 0029 is revisited through a measured mesh proof, not treated as a scope deferral.
 
+**Owner-directed addition, 2026-11-14: character traits and hunger.** Players pick two named traits
+with small, owner-tunable bonuses and no drawbacks (each co-op player has their own; deterministic),
+changeable later by sleeping in your own bed once a season; and a light hunger. Neither was in the
+milestone plan. Traits slice 1 (the `TraitDef` contract, the Core trait service, the save field and
+three traits on existing seams: Speedwalker, Charismatic, Patient Angler) is the first build; the
+creator page, the change-at-bed rule, more traits and hunger follow as their own slices.
+
+**Owner-directed addition, 2026-11-13: birds and photography.** More bird species as data, starting
+with diving birds (the cormorant, then the tern) and herons, then ducks and eagles; a bird list per
+region; flock and solitary behaviour, habitat and perches; birds hunting the right fish; a camera
+tool; a Photograph page in the notebook with one holder slot per species; and a new photo keeper
+with a new home at the Whelps lookout, outside the St Peters village, who gifts the camera on the first
+visit, keeps the photos and gives unique items and clothing. Sequenced as
+[BP-00 to BP-16](../backlog/birds-and-photography.md). It sits in M2 under P3. The owner approved the
+plan's leans the same day (*"Ok i go with those leans."*): bird numbers are high **across the
+world**, while about 32 birds are drawn on screen at once (hard ceiling 48, gulls 16); photos are
+kept per player in co-op and saved as "recipe" photos, not pixels; item rewards ship first and
+clothing rewards wait on CW-04. It moves nothing else.
+
 ---
 
 ## 0. Scope reality — read this first (a blunt, kind note to the owner)
@@ -180,7 +199,7 @@ and the first boat purchase (the **Punt**).
 slap. You arrive to your late **Uncle Ned's** cottage and his inherited dory; his dog-eared logbook (the
 *"Ned's Unfinished Lines"* framing) and **Aunt Ginny** teach the loop through a gentle, bittersweet-but-warm
 onboarding. *(M2 note: the owner has since **dropped the inherited-dory framing** — in the full arc the dory is
-**earned and repaired** at Nine Mile Creek — so this M1 onboarding's inherited-dory beat is **flagged for rework** when St
+**earned and repaired** — bought from Basil Samson and mended on St Peters, amended 2026-11-23 — so this M1 onboarding's inherited-dory beat is **flagged for rework** when St
 Peters lands; the cottage stays inherited. Canon §5.8.)* Out on the water the dory now feels like a *boat*: wind pushes you, the tide sets you, you carry way
 and you crab into a breeze — the [`boats-and-navigation.md`](design/boats-and-navigation.md) force model is live
 (at the inshore, forgiving end). The **tide table** is a readable tool and the HUD tide/wind widgets are
@@ -263,10 +282,12 @@ M1; performance pass for scene streaming at passages (`lead-architect` + `qa-tes
 
 **Owner-ratified additions folded into M2 (2026 — see [`../backlog/backlog.md`](../backlog/backlog.md) M2 epics
 and the design docs).** The **St Peters Island opening** — the tide-gated home-island prologue, **built first as a
-greybox prototype** and now a **decided arc**: dig clams by hand → **walk the tide-gated sandbar to Nine Mile Creek at low
-water** → buy a **cod licence + rod**, sell clams, **buy the damaged dory lying at the Nine Mile Creek wharf and
-have her put right** → **sail it home to Coddle Cove**. *(Owner ruling 2026-07-25: the wharf is the town's own,
-one region two zones; no shipwright stands there — seller and repairer are open.)* The start and the Ned/Ginny onboarding **relocate** here from the M1
+greybox prototype** and now a **decided arc**. *(Amended 2026-11-23 — canon §5.3/§5.8, ADR 0062: the **first
+week is lived on St Peters alone, and it is the game's demo**.)* Dig clams by hand → buy a **rod** and bait at the
+island store → **buy the broken dory beached on the island from Basil Samson and mend her by hand** → the **cod
+licence** on the island → row and fish from her → **the island gate** (Ginny's word; the other regions are closed by
+weather only until then) → **walk the tide-gated sandbar to Nine Mile Creek at low water** → later, **Coddle Cove**.
+The demo ends at Ginny's word. The start and the Ned/Ginny onboarding **relocate** here from the M1
 Coddle Cove stand-in, **reusing** the dialogue/onboarding system, not rebuilding it. **Note:** the owner has
 **dropped the "inherit Uncle Ned's dory" framing** — the dory is now *earned and repaired*, which **partly
 invalidates the built VS-21 onboarding** (the inherited-dory beat needs rework — a flagged later task), while Ned's
@@ -330,13 +351,24 @@ automation layer as another P4 "earn it, then automate it" engine (`economy-sim`
 [`design/fish-and-content.md`](design/fish-and-content.md) §3.5(c)). **The full loop is captured in
 [`design/mussel-lease-and-longline.md`](design/mussel-lease-and-longline.md)** (owner drop 2026-08-18:
 *"large sections of buoys with individual ropes"* — PEI longline culture, and the crop's readiness read
-**diegetically** off the float run riding lower). *Capture only — nothing built.* **This M3 slot stands**;
-the one thing that could move it is the open **starter-ruin ruling** (is the *lapsed shellfish lease* the
+**diegetically** off the float run riding lower). *Capture only — nothing built.* **The M3 slot no longer stands: the owner
+re-phased it on 2026-11-13 (ruling note under this paragraph).** Still owed is the **starter-ruin ruling** (is the *lapsed shellfish lease* the
 game's first ownable ruin, or is it the camper lot / Ginny's sheds?) — if the lease wins, a first slice
 (lease + one line + harvest) pulls into **M1** and the coordinator re-scopes. The **advanced rendering pass**
 ([`design/art-and-audio-bible.md`](design/art-and-audio-bible.md) §6.1) — **3D water baked to a 2D surface**,
 **dynamic shadows on the 24-h clock**, **cloud shadows**, and the **parallax underwater / shallow-water preview** —
 deepens the look as the world scales offshore, held to the desktop perf budget (`art-pipeline` + `lead-architect`).
+
+> **Owner ruling 2026-11-13: shellfish is pulled forward.** The owner wrote: *"Lets keep doing work on the village ... i want to add more shellfish harvesting, mussell leases, oysters, scallops ..."*
+> (the village is St Peters, which he confirmed), and answered *"Yes, your leans"* to the seat's leans:
+> 1. **Now:** wild blue mussels and oysters are picked by hand at low water at St Peters, on the clam-dig
+>    pattern (backlog **M3-16a**; the clam dig is M2-32).
+> 2. **Next:** the first mussel lease (backlog **M3-16**). It still needs
+>    [`design/mussel-lease-and-longline.md`](design/mussel-lease-and-longline.md) §8 items 2 to 4 ruled first; all
+>    three are **owed**.
+> 3. **Later:** sea scallops wait for the player trawl loop (the trawl arc out of Rice Point), not the village.
+>
+> The ruling moves nothing else in M3.
 
 **Explicitly deferred.** Ironbound and The Smother (M4 capstones); the freighter/tanker tier and full freight
 empire (M4); the complete 100-fish fill (M4 — M3 fills what the Banks needs); multi-platform port (M4).

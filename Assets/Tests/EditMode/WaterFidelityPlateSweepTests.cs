@@ -1549,7 +1549,10 @@ namespace HiddenHarbours.Tests.EditMode
         Color[] ShootFoam(Stage stage, Weather w, Tide t, float surfAge, float capAge, bool freezeTheClocks,
                           string path)
         {
-            Publish(stage, w, t, Hour.Noon, out _, out Color tint, out _, out _, out _);
+            _publishAtASet = true;
+            Color tint;
+            try { Publish(stage, w, t, Hour.Noon, out _, out tint, out _, out _, out _); }
+            finally { _publishAtASet = false; }
 
             var sr = stage.SeaGo.GetComponent<SpriteRenderer>();
             Material mat = sr.sharedMaterial;
@@ -2313,6 +2316,9 @@ namespace HiddenHarbours.Tests.EditMode
         /// breaker globals the bridge publishes in Play, the hour's day/night globals, the lamp, and then the
         /// shipped <see cref="WaterSurface"/> push that turns the environment into uniforms.
         /// </summary>
+        /// <summary>Set only around the foam shot's publish: wait for a set (SurfSetMoment).</summary>
+        bool _publishAtASet;
+
         void Publish(Stage stage, Weather w, Tide t, Hour h,
                      out BreakerContour contour, out Color tint, out Vector2 sunDir, out float sunElevation,
                      out float hourOfDay)
@@ -2324,6 +2330,10 @@ namespace HiddenHarbours.Tests.EditMode
             // The sea, published by hand the way the bridge publishes it (it only ticks in Play): the same
             // trains, the same packing, the same fetch and breaker calls, the same GameConfig instance.
             WaveTrains trains = WaveMath.TrainsFrom(_env.Wind, _env.SeaState01, GameServices.WaveField);
+            // The foam shot asks "does the surf draw": on the refracted bore clock the whole beach can sit in a
+            // set lull at an arbitrary instant, so that shot (and only it) waits for the set. Every other plate
+            // keeps its moment.
+            if (_publishAtASet) trains = SurfSetMoment.AtASet(trains);
             WaveFieldBridge.PublishGlobals(WaveFieldBridge.Pack(in trains));
             WaveFieldBridge.PublishFetchGlobals(GameServices.WaveFetch, _env.Wind);
             WaveFieldBridge.PublishBreakerGlobals(trains.Dominant, GameServices.WaveFetch, GameServices.Breakers);

@@ -223,6 +223,22 @@ def's id in its own `deck` field and the baker carries it to `HullMeshDef.LevelT
 nothing re-derives the map from a `_sole` suffix at runtime. This is the same defect class that
 already shipped once on this fleet (the tanker's `house_sole` resolving to the sheet row `below`).
 
+### The wheel can stand in the house: leaving it counts her inside (2026-11-13)
+
+The owner was asked on 2026-11-13 whether the house should open while she is at the wheel, and
+re-confirmed the 2026-08-26 ruling: **closed at the wheel, on every hull.** Nothing here changes that.
+
+What changed is the state she is in when she lets GO of the wheel. "Inside" was only ever set by a
+door or a stair. On the cape islander and all eighteen lobster variants the helm station stands in
+the wheelhouse, on the cockpit's own deck area (it runs in under the house at the house sole's
+height), so a wheel taken from the cockpit, or a hull swapped on under her while she steered, left
+her standing in a house that stayed shut until she walked out of the door and in again (the fleet
+audit's R2). `ControlSwitcher.LeaveHelm` now asks `DeckWalkController.EnterTheRoomSheStandsIn`: a
+deck spot inside the outline of a level the hull draws as a room, at that room's sole within the
+def's `FloorTolerance`, enters that level through the cabin's own `TryEnter`. The census is
+`EveryHelmStandKnowsTheRoomItIsInTests`; it runs every hull with an Interior link and fails, naming
+the hull, if a helm stand inside an enclosed level is not counted inside.
+
 ### A cut takes its DECLARED ceiling (coordinator, 2026-08-27)
 
 Building the tag surfaced one thing the presentation ruling did not anticipate: **three enclosed

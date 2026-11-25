@@ -293,6 +293,11 @@ namespace HiddenHarbours.Fishing
                 EventBus.Publish(new DevNotice(NoticeNoPot));
                 return false;
             }
+            // TOO TIRED / TOO HUNGRY (owner ask 2026-11-15): hauling a pot is heavy work, so the START asks
+            // the one Core gate (after "is there a pot?", which keeps its own sentence). A refusal leaves the
+            // pot down and says the line through the player's own bubble; a haul already under way never
+            // asks again, so it is never cut short.
+            if (!EffortGate.TryBegin(EffortClass.Heavy, EffortGate.TrapHaulId)) return false;
 
             _hauling = best;
             _line01 = 0f;
@@ -489,7 +494,7 @@ namespace HiddenHarbours.Fishing
             EnvironmentSample sample = env.Sample();
             WaveFieldSettings field = GameServices.WaveField;
             WaveFieldAnimatorSettings smoothing = GameServices.WaveFieldAnimator;
-            WaveTrains trains = _animator.Tick(gameDt, WaveFieldAnimator.GameTimeSeconds,
+            WaveTrains trains = _animator.Tick(gameDt, WaveFieldAnimator.HourTimeSeconds, WaveFieldAnimator.GameTimeSeconds,
                                                sample.WindVector, sample.SeaState01, in field, in smoothing);
             // The wind-fetch envelope at the pot (ADR 0027 #1): a haul in the lee of a headland rides
             // the calm water the player can see there. Exactly 1 while the model is off.
@@ -597,6 +602,8 @@ namespace HiddenHarbours.Fishing
             // Was a literal 50, which cleared the decor band's old ceiling of 40; the band now reaches 2402
             // (it used to resolve 9.5 m of a 520 m region — ADR 0032), so this follows the band by name.
             _rope.sortingOrder = SortingBands.AboveDecor;
+            // Built on the boat, so a child of her: escape her sorting group (ADR 0059 step 3).
+            HullSorting.EscapeTheBoat(go, SortingBands.AboveDecor);
             _rope.positionCount = 0;
             _rope.enabled = false;
         }

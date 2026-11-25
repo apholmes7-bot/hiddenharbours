@@ -1,5 +1,12 @@
 # Hidden Harbours — The Mussel Lease & the Longline (DESIGN CAPTURE)
 
+> **STATUS 2026-11-13 (owner ruling).** The owner wrote: *"Lets keep doing work on the village ... i want to add more shellfish harvesting, mussell leases, oysters, scallops ..."*
+> and answered *"Yes, your leans"* to the seat's leans. Wild blue mussels and oysters are picked by hand at low water
+> at St Peters **now**; **the first lease is the next step after that wild picking**, no longer an M3 slot
+> ([`../roadmap.md`](../roadmap.md), M3 ruling note; backlog M3-16a then M3-16). **§8 items 2 to 4 are still owed**
+> and are ruled before the lease is built. §8 item 1 (the starter ruin) is also still owed. Where the text below says
+> M3 stands, this note supersedes it; nothing else here is changed.
+
 > **CAPTURE ONLY — nothing here is built, and nothing here is a licence to build it.** This doc
 > exists so that when the mussel fishery *is* scheduled, the build starts from **canon written down
 > on the day the owner said it** rather than from a stale design memory. Phasing:

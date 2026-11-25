@@ -88,7 +88,10 @@ namespace HiddenHarbours.UI
         public const string TideTableTitle        = "Tide Table";
         public const string TideTableNowLabel     = "Now";
         public const string TideTableClose        = "Close";
-        public const string TideTableCloseHint    = "Esc or N to put the table away. Time is stopped while you read.";
+        // Names TidePanelInput's key. It said N until now, which has been the notebook's key since
+        // 2026-08-20 (the table moved to Tab that day and this line was left behind). Pinned to the
+        // shipped binding by TidePanelKeyTests, so a rebind cannot leave it stale again unnoticed.
+        public const string TideTableCloseHint    = "Esc or Tab to put the table away. Time is stopped while you read.";
         public const string TideTableNoTurnsToday = "(no turn this day)";
         public const string TideTableNoTurn       = "No turn found within a tidal period.";
         public const string TideTableUnavailable  = "No tide to read here yet.";
