@@ -4,8 +4,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using HiddenHarbours.App.Editor;
+using HiddenHarbours.Art;
 using HiddenHarbours.Core;
+using HiddenHarbours.Tools.RigBaking;
 using NUnit.Framework;
+using UnityEngine;
 using static HiddenHarbours.App.Editor.StPetersLayerRefresh;
 
 namespace HiddenHarbours.Tests.EditMode
@@ -13,67 +16,52 @@ namespace HiddenHarbours.Tests.EditMode
     /// <summary>
     /// The wall berths at Nine Mile Creek must have sea under them. The fixed water-side pictures
     /// (the cribbed wall, the concrete wharf, the apron, the ramps, the breakwater arms) are drawn
-    /// with faces about 9 m deep below the lip; when they sorted at the deck band (over the sea
-    /// plane) those faces covered the water south of the wall at every tide, and the boats moored
-    /// there sat on a dark face with no sea beneath them. Sorted under the sea, the plane covers the
-    /// part of each face that stands where the painted bed is below the water, and dry deck still
-    /// shows. The floats and the brow are not fixed: they ride, and keep their deck rungs.
+    /// with faces about 9 m deep below the lip. They sort on the float's rung (over the sea, under
+    /// every hull), and each one with a single straight seaward lip is cut at the waterline by a
+    /// <see cref="TidalFaceWaterline"/>, so its face shows above the water and the sea shows below.
+    /// A cut face must not throw a sun shadow: the shadow is the UNCUT silhouette, and it boxes the
+    /// water the face was cut from.
     /// </summary>
     public class NmcWharfWaterSideSortingTests
     {
         const string FloatingVisual = "HiddenHarbours.World.FloatingPlatformVisual";
         const string GangwayVisual = "HiddenHarbours.World.GangwayVisual";
+        const string Waterline = "HiddenHarbours.Art.TidalFaceWaterline";
+        // The parts of today's bake with one straight seaward lip; the ramps and the turned east arm have none.
+        static readonly string[] CutParts = { "apron", "crib", "conc", "east", "w0", "w1", "w2" };
 
         [Test]
-        public void TheFixedWaterSidePicturesSortUnderTheSea()
+        public void TheFixedWaterSidePicturesSortOverTheSea_AndUnderEveryHull()
         {
-            Assert.That(NineMileCreekWharf.FixedWaterSideSortingOrder, Is.LessThan(SortingBands.Sea),
-                "a fixed water-side picture over the sea plane hides the water the wall berths lie in");
-            Assert.That(NineMileCreekWharf.FixedWaterSideSortingOrder, Is.GreaterThan(SortingBands.SubmergedShorePlant),
-                "and it stays over the submerged shore planting and the painted bed");
+            Assert.That(NineMileCreekWharf.FixedWaterSideSortingOrder, Is.GreaterThan(SortingBands.Sea),
+                "under the translucent sea the drowned face shows through it as a boxed tone");
+            Assert.AreEqual(NineMileCreekWharf.FloatSortingOrder, NineMileCreekWharf.FixedWaterSideSortingOrder,
+                "the float's rung is the top of the deck band still under a hull (a moored boat composites at 1)");
         }
 
         [Test]
-        public void TheMooringFaceRunsFromTheFleetWallsWestEnd_SoTheWallShowsAboveTheWaterTheWholeWay()
+        public void ALipIsOneStraightEastWestEdgeOfAFlatDeck()
         {
-            // Under the sea, the fleet crib's own face no longer shows; the tidal quay face is the wall.
-            // H5 drew the basin west to the crib's west end, past the old apron corner the run began at.
-            float west = NineMileCreekDressing.FleetWallFaceWest.x;
-            float corner = NineMileCreekDressing.FleetWallFaceEast.x;
-            Assert.That(west, Is.LessThan(corner), "the fleet wall no longer reaches west of the old apron corner");
-            var pieces = NineMileCreekDressing.FleetWallFacePieces();
-            Assert.That(pieces.Count, Is.GreaterThan(0), "no course covers the fleet wall west of the old corner");
-            float pitch = pieces.Count > 1 ? pieces[1].Lip.x - pieces[0].Lip.x : corner - west;
-            Assert.That(pieces.First().Lip.x - west, Is.EqualTo(pitch * 0.5f).Within(1e-3f), "the first course reaches the crib's west end");
-            Assert.That(corner - pieces.Last().Lip.x, Is.EqualTo(pitch * 0.5f).Within(1e-3f), "the last course reaches the old corner");
-
-            // In the scene: the same courses, on the north run's lip and rung, each cut at the waterline.
-            SceneYaml scene = SceneYaml.Parse(File.ReadAllText(NineMileCreekLayerRefresh.ScenePath));
-            Doc dressing = scene.RootNamed(NineMileCreekDressing.RootName);
-            Doc face = scene.ChildNamed(scene.TransformOf(dressing), NineMileCreekDressing.FaceRootName);
-            var byName = scene.TransformOf(face).FieldRefs("m_Children")
-                .Select(tr => scene.Require(scene.Require(tr, "a course").FieldRef("m_GameObject"), "a course object"))
-                .ToDictionary(go => go.Field("m_Name"));
-            Doc firstNorth = byName[NineMileCreekDressing.NorthWallRun + "_" + pieces[0].Key + "_0"];
-            float northLip = ParseFloat(scene.ComponentsOf(firstNorth).Single(d => d.IsScript("HiddenHarbours.Art.TidalFaceWaterline")).Field("_lipWorldY"));
-            for (int i = 0; i < pieces.Count; i++)
-            {
-                string name = NineMileCreekLayerRefresh.FleetWallCourseName(pieces[i], i);
-                Assert.That(byName.ContainsKey(name), $"{name} is not in the scene: run Apply the fleet wall face");
-                var components = scene.ComponentsOf(byName[name]);
-                Doc tide = components.Single(d => d.IsScript("HiddenHarbours.Art.TidalFaceWaterline"));
-                Assert.That(ParseFloat(tide.Field("_lipWorldY")), Is.EqualTo(northLip).Within(1e-4f), name + " stands on the north courses' lip");
-                Assert.AreEqual(NineMileCreekDressing.FaceSortingOrder(NineMileCreekDressing.NorthWallRun),
-                    ParseInt(components.Single(d => d.ClassId == 212).Field("m_SortingOrder")), name + " draws on the north run's rung");
-                Assert.AreEqual("1", byName[name].Field("m_IsActive"), name + " is live");
-            }
+            var rect = new[] { new Vector2(78f, 86f), new Vector2(111.6f, 86f), new Vector2(111.6f, 96f), new Vector2(78f, 96f) };
+            Assert.IsTrue(NineMileCreekWharf.TryWaterlineLip(rect, true, null, out float lip));
+            Assert.AreEqual(86f, lip, 1e-5f);
+            Assert.IsFalse(NineMileCreekWharf.TryWaterlineLip(rect, false, null, out _), "a ramp has no single lip");
+            var diagonal = new[] { new Vector2(183f, 10f), new Vector2(210f, 3f), new Vector2(214f, 17f), new Vector2(187f, 24f) };
+            Assert.IsFalse(NineMileCreekWharf.TryWaterlineLip(diagonal, true, null, out _), "a diagonal arm has no single east-west lip");
+            var joint = new[] { Rect.MinMaxRect(208f, 20f, 216f, 53.016f) };
+            var upper = new[] { new Vector2(208f, 52.984f), new Vector2(216f, 52.984f), new Vector2(216f, 86f), new Vector2(208f, 86f) };
+            Assert.IsFalse(NineMileCreekWharf.TryWaterlineLip(upper, true, joint, out _), "a south edge with the next piece in front of it is a joint, not a face");
         }
 
         [Test]
-        public void EveryFixedPictureInTheSceneSortsUnderTheSea_AndTheRidingOnesKeepTheirRungs()
+        public void EveryFixedPictureInTheScene_IsOnItsRung_AndTheStraightLippedOnesAreCutAtTheWaterline()
         {
             SceneYaml scene = SceneYaml.Parse(File.ReadAllText(NineMileCreekLayerRefresh.ScenePath));
+            string tideMaterial = File.ReadAllLines(NineMileCreekWharfLandSide.TidalFaceMaterialPath + ".meta")
+                .Single(l => l.StartsWith("guid: ", StringComparison.Ordinal)).Substring("guid: ".Length).Trim();
+            var lips = Lips();
             Doc root = scene.RootNamed(NineMileCreekWharfWaterSide.RootName);
+            var cut = new List<string>();
             int fixedCount = 0;
             var harbours = new List<string>();
             foreach (long harbourTr in scene.TransformOf(root).FieldRefs("m_Children"))
@@ -96,20 +84,57 @@ namespace HiddenHarbours.Tests.EditMode
                     bool rides = components.Any(d => d.IsScript(FloatingVisual) || d.IsScript(GangwayVisual)) ||
                                  floats.Any(f => name.StartsWith(f + "_", StringComparison.Ordinal));
                     int order = ParseInt(renderer.Field("m_SortingOrder"));
-                    string what = harbourName + "/" + part.Field("m_Name");
+                    string what = harbourName + "/" + name;
+                    Doc tide = components.SingleOrDefault(d => d.IsScript(Waterline));
                     if (rides)
                     {
                         Assert.That(order, Is.GreaterThan(SortingBands.Sea), what + " rides the tide and draws over the sea");
+                        Assert.IsNull(tide, what + " rides the tide: it is never cut");
                         continue;
                     }
                     fixedCount++;
-                    Assert.AreEqual(NineMileCreekWharf.FixedWaterSideSortingOrder, order,
-                        what + " is fixed: its face reaches below the lip, so over the sea it hides the berths' water");
+                    Assert.AreEqual(NineMileCreekWharf.FixedWaterSideSortingOrder, order, what + " is fixed");
+                    if (tide == null) continue;
+                    cut.Add(name);
+                    Assert.IsTrue(lips.TryGetValue(harbourName.Substring("harbour.".Length) + "_" + name, out var expected), what + " is a sidecar part");
+                    Assert.AreEqual(expected.lip, ParseFloat(tide.Field("_lipWorldY")), 1e-3f, what + " is cut from its walk's seaward lip");
+                    Assert.AreEqual(expected.elevation, ParseFloat(tide.Field("_lipElevation")), 1e-3f, what + " is cut at its deck's elevation");
+                    Assert.AreEqual("1", tide.Field("_configured"), what + " is told its lip");
+                    StringAssert.Contains(tideMaterial, renderer.Text, what + " draws through the tidal-face material");
                 }
             }
             CollectionAssert.IsSubsetOf(new[] { "harbour.west", "harbour.fleet", "harbour.east", "harbour.arm_w", "harbour.arm_e" }, harbours);
-            Assert.That(fixedCount, Is.GreaterThan(0), "the scene places fixed water-side pictures");
+            Assert.That(fixedCount, Is.GreaterThan(CutParts.Length), "the scene places fixed water-side pictures");
+            CollectionAssert.AreEquivalent(CutParts, cut, "the parts with one straight seaward lip are the ones cut");
         }
+
+        [Test]
+        public void ACutFaceThrowsNoSunShadow_NorDoTheQuayCoursesUnderIt()
+        {
+            var rules = Resources.Load<SunCasterRules>("SunCasterRules");
+            Assert.IsNotNull(rules, "Resources/SunCasterRules");
+            foreach (string sprite in new[] { "WaterSide_west_apron_0", "WaterSide_fleet_crib_0", "WaterSide_fleet_conc_0",
+                         "WaterSide_fleet_conc_1", "WaterSide_east_east_0", "WaterSide_arm_w_w0_0", "WaterSide_arm_w_w2_0", "NorthWall_logCrib_0" })
+                Assert.IsTrue(rules.ExcludedNames.Any(p => SunCasterRules.Matches(sprite, p)),
+                    sprite + " is cut at the waterline; its shadow is the uncut picture and would box the water");
+            foreach (string sprite in new[] { "WaterSide_west_float_0", "WaterSide_fleet_fingerA_body_0", "WaterSide_fleet_gangway0_s1_0" })
+                Assert.IsFalse(rules.ExcludedNames.Any(p => SunCasterRules.Matches(sprite, p)), sprite + " is not cut and keeps its shadow");
+        }
+
+        static Dictionary<string, (float lip, float elevation)> Lips()
+        {
+            var lips = new Dictionary<string, (float, float)>();
+            foreach (object part in DeckSidecarJson.AsArray(DeckSidecarJson.Member(NineMileCreekWharfWaterSide.ReadToday(), "parts")))
+            {
+                object walk = DeckSidecarJson.Member(part, "walkPolygon");
+                if (walk == null) continue;
+                float lip = DeckSidecarJson.AsArray(walk).Select(q => DeckSidecarJson.Float(DeckSidecarJson.AsArray(q)[1])).Min();
+                lips[DeckSidecarJson.String(DeckSidecarJson.Member(part, "key"))] = (lip, DeckSidecarJson.Float(DeckSidecarJson.Member(part, "elevation")));
+            }
+            return lips;
+        }
+
+        static float ParseFloat(string s) => float.Parse(s, System.Globalization.CultureInfo.InvariantCulture);
     }
 }
 #endif

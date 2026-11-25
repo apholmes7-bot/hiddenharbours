@@ -669,23 +669,8 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheNorthCoursesDrawTheFaceAtY86_TheGhostsStandDown()
         {
             List<Doc> courses = Children(At(NineMileCreekDressing.RootName + "/" + NineMileCreekDressing.FaceRootName));
-            var allNorth = courses.Where(c => Name(c).StartsWith(NineMileCreekDressing.NorthWallRun + "_", StringComparison.Ordinal)).ToList();
-            // The fleet wall's own courses (west of the old corner, over H5's basin) stand on the same lip.
-            var fleetNames = NineMileCreekDressing.FleetWallFacePieces().Select(NineMileCreekLayerRefresh.FleetWallCourseName).ToList();
-            var fleet = allNorth.Where(c => fleetNames.Contains(Name(c))).ToList();
-            Assert.That(fleet.Select(Name), Is.EquivalentTo(fleetNames), "the fleet wall's face courses are in the scene");
-            var north = allNorth.Except(fleet).ToList();
+            var north = courses.Where(c => Name(c).StartsWith(NineMileCreekDressing.NorthWallRun + "_", StringComparison.Ordinal)).ToList();
             Assert.That(north.Count, Is.EqualTo(9));
-            foreach (Doc go in fleet)
-            {
-                Doc tide = Script(go, "HiddenHarbours.Art.TidalFaceWaterline");
-                Assert.That(Live(go) && Enabled(tide), Is.True, Name(go));
-                Assert.That(Number(tide, "_lipWorldY"), Is.EqualTo(G.NorthFaceY), $"{Name(go)} draws its lip on the face");
-                Assert.That(Number(tide, "_lipElevation"),
-                    Is.EqualTo(Ground(WorldPosition(go).x, G.NorthFaceY + NineMileCreekQuayFace.FaceCourseWidthMetres * 0.5f)).Within(1e-5f),
-                    $"{Name(go)}'s lip is G3 half a course inboard");
-                Assert.That(Number(tide, "_lipElevation"), Is.GreaterThan(High));
-            }
             var waterlines = new List<long>();
             foreach (Doc go in north)
             {
@@ -701,7 +686,7 @@ namespace HiddenHarbours.Tests.EditMode
             }
             Assert.That(waterlines, Is.EquivalentTo(FaceWaterlines), "the nine courses keep their waterline ids");
 
-            var ghosts = courses.Except(allNorth).ToList();
+            var ghosts = courses.Except(north).ToList();
             Assert.That(ghosts.Count, Is.EqualTo(29));
             Assert.That(ghosts.Where(Active).Select(Name), Is.Empty, "the west, apron, head and breakwater courses stand down");
 

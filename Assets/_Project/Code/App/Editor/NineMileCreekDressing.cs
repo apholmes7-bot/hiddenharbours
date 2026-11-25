@@ -789,34 +789,6 @@ namespace HiddenHarbours.App.Editor
         public static Vector2 NorthFaceWest =>
             new Vector2(Mathf.Max(Quay.xMin, Apron.xMax), NineMileCreekWharf.MooringEdgeY);
 
-        /// <summary>
-        /// Where the mooring face begins TODAY: the west end of the fleet wall's cribbed deck as the
-        /// water side (H5, #1039) baked it, on the G3 lip (<see cref="NineMileCreekGroundPlan.NorthFaceY"/>)
-        /// the scene's north courses stand on. H5 drew the basin west to that end, so the stretch from
-        /// there to the old apron corner is a wall over water with no face course of its own; its
-        /// picture sorts under the sea, so without one the sea met the deck edge at low water.
-        /// </summary>
-        public static Vector2 FleetWallFaceWest =>
-            new Vector2(NineMileCreekWharfWaterSide.BakedDeck(NineMileCreekWharfWaterSide.FleetCribPart).xMin,
-                        NineMileCreekGroundPlan.NorthFaceY);
-
-        /// <summary>...and where that stretch ends: the old apron corner, where the scene's first north
-        /// course (<c>NorthWall_logCrib_0</c>) already begins, on the same G3 lip.</summary>
-        public static Vector2 FleetWallFaceEast => new Vector2(NorthFaceWest.x, NineMileCreekGroundPlan.NorthFaceY);
-
-        /// <summary>
-        /// The fleet wall's own face courses: the north run's picture, facing and rung, laid from
-        /// <see cref="FleetWallFaceWest"/> to <see cref="FleetWallFaceEast"/> by the same
-        /// <see cref="FaceRun"/> spacing. Kept OUT of <see cref="FacePieces"/> (the pre-G3 table, whose
-        /// north lip is still y 87 and whose courses G3 moved or retired in the scene) so that table and
-        /// its names stay what they were; <see cref="NineMileCreekLayerRefresh.FleetWallFace"/> places
-        /// these in the scene.
-        /// </summary>
-        public static List<FacePiece> FleetWallFacePieces() =>
-            FaceRun(NorthWallRun, FleetWallFaceWest, FleetWallFaceEast, SeawardHeading,
-                "the mooring face west of the old apron's corner — the fleet wall's crib as the water " +
-                "side built it, over water the whole way, and the wall berth 0 lies against");
-
         /// <summary>…and where it ends — the wharf head, which is a real corner.</summary>
         public static Vector2 NorthFaceEast =>
             new Vector2(Quay.xMax, NineMileCreekWharf.MooringEdgeY);

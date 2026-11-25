@@ -17,6 +17,8 @@ namespace HiddenHarbours.App.Editor
     public static partial class NineMileCreekWharfLandSide
     {
         const string WaterStep = "18-wharf-water-side";
+        /// <summary>The material a <see cref="TidalFaceWaterline"/> draws its face through.</summary>
+        public const string TidalFaceMaterialPath = "Assets/_Project/Resources/TidalFace.mat";
         static object WM(object value, string key) => DeckSidecarJson.Member(value, key);
         static IReadOnlyList<object> WA(object value) => DeckSidecarJson.AsArray(value);
         static float WN(object value) => DeckSidecarJson.Float(value);
@@ -63,10 +65,10 @@ namespace HiddenHarbours.App.Editor
                 long id=Id(node.Key+"/"+key);node.Components.Add(id);
                 Docs.Add((node.Name+"/"+key,MonoBehaviourYaml(id,node.Go,WaterScript(path,assembly,type),fields)));return id;
             }
-            public void Picture(WaterNode n, Sprite sprite, int order)
+            public void Picture(WaterNode n, Sprite sprite, int order, ObjRef? pictureMaterial = null)
             {
                 long id=Id(n.Key+"/sprite");n.Components.Add(id);
-                Docs.Add((n.Name+"/sprite",SpriteRendererYaml(id,n.Go,material,SpriteAsset(sprite),order)));
+                Docs.Add((n.Name+"/sprite",SpriteRendererYaml(id,n.Go,pictureMaterial??material,SpriteAsset(sprite),order)));
             }
             public void Source(WaterNode node, SetPieceDef def, string path, string row, int dir) => Mono(node,"source",
                 "Assets/_Project/Code/Art/SetPiecePlacement.cs","HiddenHarbours.Art","HiddenHarbours.Art.SetPiecePlacement",
@@ -150,7 +152,14 @@ namespace HiddenHarbours.App.Editor
                         // Fixed: not a float, not one of a float's back/front motion layers, not a brow rung.
                         bool fixedPart=!WB(WM(p,"floating"))&&gang==null&&layer!="back"&&layer!="front";
                         int order=fixedPart?NineMileCreekWharf.FixedWaterSideSortingOrder:NineMileCreekWharf.FloatSortingOrder+(layer=="back"?-1:layer=="front"?1:0);
-                        writer.Picture(node,sprite,order);
+                        // A fixed part with one straight seaward lip is cut at the waterline: its face shows above the sea, the sea below it.
+                        object walkRaw=WM(p,"walkPolygon");float lip=0f;
+                        var neighbours=parts.Where(q=>q!=p&&WS(WM(q,"harbour"))==key&&!WB(WM(q,"floating"))&&WM(q,"walkPolygon")!=null)
+                            .Select(q=>{var w=WA(WM(q,"walkPolygon")).Select(WP).ToArray();return Rect.MinMaxRect(w.Min(v=>v.x),w.Min(v=>v.y),w.Max(v=>v.x),w.Max(v=>v.y));}).ToArray();
+                        bool cut=fixedPart&&walkRaw!=null&&NineMileCreekWharf.TryWaterlineLip(WA(walkRaw).Select(WP).ToArray(),WM(WM(WM(p,"module"),"o"),"toeZ")==null,neighbours,out lip);
+                        writer.Picture(node,sprite,order,cut?WaterAsset(TidalFaceMaterialPath,2100000,2):(ObjRef?)null);
+                        if(cut)writer.Mono(node,"waterline","Assets/_Project/Code/Art/TidalFaceWaterline.cs","HiddenHarbours.Art","HiddenHarbours.Art.TidalFaceWaterline",
+                            new[]{"  _lipWorldY: "+F(lip),"  _lipElevation: "+F(elevation),"  _ridesTheTide: 1","  _configured: 1"});
                         if(WB(WM(p,"floating")))writer.Mono(node,"ride","Assets/_Project/Code/World/FloatingPlatformVisual.cs","HiddenHarbours.World","HiddenHarbours.World.FloatingPlatformVisual",
                             new[]{"  _platform: {fileID: "+floats[name]+"}","  _bakedDeckElevation: "+F(WN(WM(p,"freeboard"))*node.PictureScaleY),"  _planY: "+F(at.y)});
                         else if(gang!=null)

@@ -54,6 +54,12 @@ MonoBehaviour:
   - '*Smoke*'
   - DeckRider
   - 'DeckGear_*'
+  - 'NorthWall_*'
+  - 'WaterSide_west_apron*'
+  - 'WaterSide_fleet_crib*'
+  - 'WaterSide_fleet_conc*'
+  - 'WaterSide_east_east*'
+  - 'WaterSide_arm_w_*'
   ExcludedScenes:
   - 'InitTestScene*'
   Classes:
