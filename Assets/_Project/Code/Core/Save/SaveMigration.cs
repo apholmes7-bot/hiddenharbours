@@ -428,7 +428,8 @@ namespace HiddenHarbours.Core
             // v26 -> v27: CLOTHES, THE CLOTHING RACK'S SALES AND SKILLS (owner 2026-11-25: "Yes, plan v27";
             // ADR 0064). An older game recorded none of them, so each starts empty: he owns no garment and
             // wears only his own outfit colours, every rack is full, every skill is at zero. Nothing is
-            // transformed and nothing else in the save moves.
+            // transformed and nothing else in the save moves. Until this step has shipped, a further v27 list
+            // (fitted rod parts are to come) is set empty here too; after it ships, anything new is v28.
             if (data.SchemaVersion < 27)
             {
                 data.PlayerClothing = new System.Collections.Generic.List<PlayerClothingDto>();
