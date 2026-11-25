@@ -314,9 +314,19 @@ namespace HiddenHarbours.Tests.World.EditMode
             Assert.That(page, Is.Not.Null, "Resources/" + NotebookContentSource.GearPageKey + " must ship");
             Assert.That(page.ListUnowned, Is.False, "owned gear only, by the seat's lean");
 
-            var defs = Directory.EnumerateFiles("Assets/_Project/Data", "*.asset", SearchOption.AllDirectories)
-                                .Where(p => !p.Replace('\\', '/').Contains("/NotebookPages/"))
-                                .Select(File.ReadAllText).ToArray();
+            // One pass over the data root, indexing every declared id to the first file that declares it.
+            // The data root is about 100 MB of text (hull meshes and skins are megabytes each); scanning all
+            // of it again for every entry on the page ran this one test to the 180 s timeout on CI.
+            var idLine = new Regex(@"^\s+Id: (.+?)\r?$", RegexOptions.Multiline);
+            var declaringById = new Dictionary<string, string>();
+            foreach (string path in Directory.EnumerateFiles("Assets/_Project/Data", "*.asset", SearchOption.AllDirectories)
+                                             .Where(p => !p.Replace('\\', '/').Contains("/NotebookPages/")))
+            {
+                string text = File.ReadAllText(path);
+                if (text.IndexOf("Id: ", System.StringComparison.Ordinal) < 0) continue;
+                foreach (Match m in idLine.Matches(text))
+                    if (!declaringById.ContainsKey(m.Groups[1].Value)) declaringById.Add(m.Groups[1].Value, text);
+            }
             var seen = new HashSet<string>();
 
             foreach (NotebookGearPageDef.Group g in page.Groups)
@@ -325,8 +335,7 @@ namespace HiddenHarbours.Tests.World.EditMode
                 foreach (NotebookGearPageDef.Entry e in g.Entries)
                 {
                     Assert.That(seen.Add(e.Id), Is.True, $"{e.Id}: listed twice");
-                    var idLine = new Regex(@"^\s+Id: " + Regex.Escape(e.Id) + @"\r?$", RegexOptions.Multiline);
-                    string declaring = defs.FirstOrDefault(t => idLine.IsMatch(t));
+                    declaringById.TryGetValue(e.Id, out string declaring);
                     Assert.That(declaring, Is.Not.Null, $"{e.Id}: no Def declares this id");
 
                     Match name = Regex.Match(declaring, @"^  DisplayName: (.+?)\r?$", RegexOptions.Multiline);
