@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb3d9522c2d74a8292429186e36078ac, type: 3}
+  m_Name: CaulkSeam
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.DoryMendingJobDef
+  Id: mendjob.caulk_seam
+  DisplayName: Caulk the seam
+  Order: 1
+  CompletedFlag: st_peters.dory_mend.caulk_seam
+  Materials:
+  - ItemId: supply.oakum
+    Count: 1
+  WorkGameMinutes: 25
+  NeedsLowWater: 0

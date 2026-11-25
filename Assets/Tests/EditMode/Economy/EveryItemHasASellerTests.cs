@@ -30,6 +30,16 @@ namespace HiddenHarbours.Tests.Economy
     {
         const string DataRoot = "Assets/_Project/Data";
 
+        // Known missing sellers: these unplaced repair supplies need four separate counted store
+        // slots, goods pictures and empty-stock cards. Remove each exception when its offer exists.
+        static readonly Dictionary<string, string> KnownMendingSellerExceptions = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["supply.patch_plank"] = "needs shop: St Peters general store; patch-plank slot, goods picture and empty-stock card are not placed",
+            ["supply.copper_nails"] = "needs shop: St Peters general store; copper-nails slot, goods picture and empty-stock card are not placed",
+            ["supply.oakum"] = "needs shop: St Peters general store; oakum slot, goods picture and empty-stock card are not placed",
+            ["supply.linseed_paint"] = "needs shop: St Peters general store; linseed-paint slot, goods picture and empty-stock card are not placed",
+        };
+
         // Disposable proof copies some fixtures leave beside real Defs (DefIdentityContractTests' rule).
         static readonly Regex DisposableProof = new Regex("_[0-9a-f]{32}(/|\\.|$)");
 
@@ -141,13 +151,34 @@ namespace HiddenHarbours.Tests.Economy
         public void EveryExemption_NamesARealItem()
         {
             var ids = new HashSet<string>(Items().Select(i => i.Id).Where(i => !string.IsNullOrEmpty(i)), StringComparer.Ordinal);
-            foreach (KeyValuePair<string, string> e in Exempt)
+            foreach (KeyValuePair<string, string> e in Exempt.Concat(KnownMendingSellerExceptions))
             {
                 Assert.IsNotEmpty(e.Value, e.Key + " is exempt with no reason");
                 bool hit = e.Key.EndsWith("*", StringComparison.Ordinal)
                     ? ids.Any(i => i.StartsWith(e.Key.Substring(0, e.Key.Length - 1), StringComparison.Ordinal))
                     : ids.Contains(e.Key);
                 Assert.IsTrue(hit, "the exemption " + e.Key + " names no item Def: a typo, or the item is gone");
+            }
+        }
+
+        [Test]
+        public void KnownMendingExceptionsAreExactlyTheUnstockedRecipeSupplies()
+        {
+            var def = AssetDatabase.LoadAssetAtPath<DoryMendingDef>(
+                DataRoot + "/Resources/DoryMending/StPetersDory.asset");
+            Assert.IsNotNull(def);
+            var materials = new HashSet<string>(def.Jobs.SelectMany(j => j.Materials).Select(m => m.ItemId));
+            Assert.That(KnownMendingSellerExceptions.Count, Is.EqualTo(4));
+            CollectionAssert.AreEquivalent(materials, KnownMendingSellerExceptions.Keys);
+            var offered = OfferedItems(SellerIds());
+            var supplies = Load<SupplyDef>().ToDictionary(s => s.Id);
+            foreach (var entry in KnownMendingSellerExceptions)
+            {
+                Assert.That(Exempt.ContainsKey(entry.Key), Is.False, "one exception list per supply");
+                Assert.That(offered.ContainsKey(entry.Key), Is.False, "remove the exception once a seller exists");
+                Assert.That(supplies[entry.Key].Catalog.Listed, Is.False, "unplaced supplies must stay unlisted");
+                Assert.That(supplies[entry.Key].Catalog.Sellers, Is.Empty);
+                StringAssert.Contains("slot, goods picture and empty-stock card", entry.Value);
             }
         }
 
@@ -202,6 +233,7 @@ namespace HiddenHarbours.Tests.Economy
 
         static string ExemptionFor(string id)
         {
+            if (KnownMendingSellerExceptions.TryGetValue(id, out string pending)) return pending;
             if (Exempt.TryGetValue(id, out string why)) return why;
             if (CarriedFromStart().Contains(id))
                 return "starting item: carried from the start of every game (GameConfig.CarriedFromStartGearIds), never bought";
