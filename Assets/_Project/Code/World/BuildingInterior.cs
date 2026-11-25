@@ -530,6 +530,7 @@ namespace HiddenHarbours.World
         {
             RoomFixtureReach.Unregister(this);
             EventBus.Unsubscribe<PlayerWokeAt>(OnPlayerWokeAt);
+            PlayerStorey.Report(this, false, 0);
 
             // A house torn down mid-climb must not take the player's legs and the move keys with it. The
             // walk is presentation and the storey is already true, so dropping it costs nothing.
@@ -1015,6 +1016,9 @@ namespace HiddenHarbours.World
             // The mesh reveal, when this building is a mesh dwelling. A component lookup on a transition, not
             // a poll; TryGetComponent does not allocate when nothing is there, which is every sprite house.
             if (TryGetComponent(out IInteriorReveal meshReveal)) meshReveal.Reveal(inside, Level);
+
+            // Core is told which storey he is on, for things in other modules that stand on a floor.
+            PlayerStorey.Report(this, inside, Level);
         }
 
         SpriteSwapReveal _spriteSwap;
