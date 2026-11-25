@@ -73,10 +73,10 @@ Every feature must serve at least one pillar. If it serves none, cut it.
 ### 5.3 Regions (LOCKED names — a prologue home-island + 7 core + commerce layer). Detail in `design/world-and-regions.md`.
 | Order | Region | Identity | Gate / why locked |
 |-------|--------|----------|-------------------|
-| 0 | **St Peters Island** *(prologue; owner-ratified, phased **M2**)* | Your **home island**, cut off from the mainland **except at low tide** (a pure P1 tide-gate). A village of 6 homes + a school + a general store. Dig clams at low water on the island flats; at low water a **tide-gated sandbar** to **Nine Mile Creek** bares as a walking path; there you buy a **cod licence** + a **rod**, sell clams, and **save to buy the damaged dory lying at the Nine Mile Creek wharf — then have her put right** (owner ruling 2026-07-25: that wharf *is* the town's own — one region, two zones — and **no shipwright stands in the region**; seller and repairer are open). **Prepends** Coddle Cove; does not replace it. | The new opening (built **M2**); see §5.8 |
+| 0 | **St Peters Island** *(prologue; owner-ratified, phased **M2**)* | Your **home island**, cut off from the mainland **except at low tide** (a pure P1 tide-gate). A village of 6 homes + a school + a general store. **The first week is lived here, and it is the game's demo** *(amended 2026-11-23)*: dig clams at low water on the island flats, buy a **rod** and bait at the store, **buy the broken dory beached on the island from Basil Samson and mend her yourself**, then row and learn fishing basics in island water. **Nine Mile Creek is closed by weather** until the island gate is met (§5.8); then the **tide-gated sandbar** bares as a walking path to it. **Prepends** Coddle Cove; does not replace it. | The new opening (built **M2**); the first week and the demo; see §5.8 |
 | 1 | **Coddle Cove** | **Home base you sail to after repairing the dory** — uncle's cottage + wharf. Sheltered tutorial waters, inshore beginner fish. | Start zone for the **M1 vertical-slice**; in the full arc it is the **home you arrive at** once the dory is yours (see §5.8) |
 | 2 | **The Sunkers** | Tidal reef field of submerged rocks; rich tide pools & shellfish; grounding hazard at low water. | Basic boat + reading tide |
-| 3 | **Nine Mile Creek** | The market town: auction house, shops, housing, most named NPCs. *(No shipwright in this region — owner ruling 2026-07-25; where the shipwright's yard lives instead is **open**, see `design/nine-mile-creek-wharf.md` §1.)* | Story unlock (early) |
+| 3 | **Nine Mile Creek** | The market town: auction house, shops, housing, most named NPCs. *(No shipwright in this region — owner ruling 2026-07-25; where the shipwright's yard lives instead is **open**, see `design/nine-mile-creek-wharf.md` §1.)* | Story unlock (early): opens at the end of the first week on St Peters (§5.8, amended 2026-11-23) |
 | 4 | **The Drownded Lands** | Vast tidal flats that become *walkable seabed* at low tide (clams, wrecks, secrets); flood at high. | Tide mastery + tide table |
 | 5 | **Fundy Rips** | Narrows with ferocious tidal currents; must time the tide to transit; fast pelagic fish. | Capable hull + navigation skill |
 | 6 | **The Banks** | Open offshore grounds; deepwater groundfish & big pelagics. | Seaworthy offshore boat (dragger-class) |
@@ -104,7 +104,9 @@ Every feature must serve at least one pillar. If it serves none, cut it.
 > damaged dory is sold from, and repaired at, the town's small yard business (still never called
 > "a shipwright" in-world; the *put-her-right-by-hand* flavour survives as what the yard offers a
 > broke newcomer, not as the absence of a yard). Geography detail and the build order:
-> [`design/world-map-plan.md`](design/world-map-plan.md).
+> [`design/world-map-plan.md`](design/world-map-plan.md). *(Superseded for the **first** dory on
+> 2026-11-23 — see the amendment below. The NMC yard keeps selling and repairing boats, for the
+> player's **later** boats.)*
 
 > **Canon amendment — owner-ratified 2026-10-06 (NMC household origins).** Nine Mile Creek's eleven
 > households (four on the creek, seven at the camp) may come from real places beyond the home bay,
@@ -116,12 +118,62 @@ Every feature must serve at least one pillar. If it serves none, cut it.
 > its lot or piece, outside Words and player-facing lines. H13 supplies NPCs, routines and lines
 > after the single names slate required by decision 3.
 
+> **Canon amendment — owner-ratified 2026-11-23 (the first week on St Peters, and the demo).** The
+> owner ruled: "we will make the first week just on st peters island this will also be the demo of
+> the game. we will block NMC until the player progresses within a certain point at st peters." This
+> supersedes, **for the first dory only**, the 2026-07-25 (wharf) and 2026-08-09 (NMC yard) readings
+> above. Ruled the same day:
+> - **The first dory lies beached on St Peters**, broken, and is **sold by Basil Samson**. She is
+>   her own hull, not the working dory at the island pier that is used to test boats in development.
+> - **He mends her himself at the slip:** materials bought at the St Peters store, then two or three
+>   jobs by hand. Each finished step is remembered as a saved progress flag.
+> - **The St Peters store** sells rods (a couple of tiers), bait, a rod rack, and what basic dory
+>   fishing and shellfish work need. **Boat hardware is sold in Nine Mile Creek only.** The NMC yard
+>   keeps selling and repairing boats, for **later** boats.
+> - **The week is island-only, blocked by weather only — never a drawn wall** (as the 2026-11-12
+>   ruling already said of the intro storm). A boat pushing for another region meets rising wind and
+>   sea and is **turned back gently — never damaged or capsized**. The sandbar on foot is blocked by
+>   **strong wind raising surf over the bar**; once the surf clears he **walks across** to Nine Mile Creek.
+> - **The gate to Nine Mile Creek:** the dory mended, the cod licence held, a fish landed from the
+>   dory, shellfish sold, and day 7 or later; **then Ginny gives her word**. The next morning the
+>   weather has turned.
+> - **Every catch needs a licence** *(ruled later the same day)*. Ginny still buys the shellfish (clam)
+>   licence. Finfish such as smelt, winter flounder, mackerel and striped bass need a licence, and so
+>   do the trap species (crabs and lobster). Which licences exist, what each covers and where each is
+>   sold is **open**; since the first week is on the island, the first ones must be buyable there.
+> - **Nothing is ever blocked from digging, catching or trapping** *(ruled later the same day)*. A
+>   catch he holds no licence for is **released automatically**; he says "I don't have a license for
+>   this <named catch> yet", naming it, and no Notebook entry is made. This covers the shovel, the rod
+>   and line, and traps alike.
+> - **Lobster and crab licences are a higher tier** *(a direction, ruled later the same day; not a
+>   finished design)*. The owner: "on pei these licesnes can worth millions for lobster and perhaps
+>   100k for crab … thers a fixes amount of licenses on pei. they are only sold and not created." In
+>   the game they are a **fixed number in the world**, never created, only passed between holders,
+>   and **far dearer than any counter licence** (lobster dearest). They are **never sold over a
+>   counter**. The player first **works as a hand on a lobster or crab boat**; a possible bridge is
+>   fishing under the licence of an **older St Peters fisher who refuses to sell**; later he **buys or
+>   earns** one. This comes **after the first week**; in the first week a lobster or crab he traps on
+>   his own goes back with the spoken line.
+> - **The calendar** already starts the game on day 1 of **High Summer** (§5.8 seasons), which is the
+>   early summer the owner wants for the first week. No change needed.
+> - **The demo ends at Ginny's word** with a closing beat; he can keep fishing from the dory after.
+>   The camper trailer on Ginny's lot stays locked to him until he buys it.
+> - **The simulation rule holds:** the block is a pure function of world seed + game time + saved
+>   progress flags. It never changes or saves the world's wind, tide or sea
+>   ([`adr/0062-the-first-week-is-closed-by-weather.md`](adr/0062-the-first-week-is-closed-by-weather.md)).
+>
+> **Open (not ruled):** which licences exist beyond the clam and cod licences, what each covers, and
+> where each is sold (the first ones on the island; proposal for the counter: Rose's post office); the
+> exact repair materials and jobs; the prices. For lobster and crab: the number of licences, their
+> prices, who holds them, and how one comes up for sale; and recording who holds which licence is
+> **saved data that needs the owner's approval before it is built**.
+
 ### 5.4 Boat ladder (LOCKED — "Dory to Dynasty"). Detail + stats in `design/boats-and-navigation.md`.
 Every tier defines: **length (m)**, **draught (m)** *(how shallow it can go before grounding — ties to tide!)*, **hold capacity**, **crew slots**, **range**, **seaworthiness** *(weather tolerance)*, **handling** *(wind/current vulnerability)*.
 
 | Tier | Boat | ~Length | Role |
 |------|------|---------|------|
-| 0 | **The Dory** (bought damaged at the Nine Mile Creek wharf, then repaired) | ~4.5 m | Starter. Oars + small outboard. Tiny hold, inshore only, very tide/wind-vulnerable. *Earned with clam money and put right — no longer inherited (§5.8); who repairs her is open, since no shipwright stands in that region.* |
+| 0 | **The Dory** (bought broken on St Peters from Basil Samson, then mended by hand — amended 2026-11-23) | ~4.5 m | Starter. Oars + small outboard. Tiny hold, inshore only, very tide/wind-vulnerable. *Earned with clam money and mended with his own hands at the island slip — no longer inherited (§5.8).* |
 | 1 | **Punt / Skiff** | ~6 m | First purchase. A little more capacity and reach. |
 | 2 | **Cape Islander** (inshore longliner) | ~13 m | The iconic Maritime workboat. Real range, lines & traps, mid capacity. |
 | 3 | **Lobster Boat** (specialist) | ~12 m | Shellfish/trap specialist branch. |
@@ -157,11 +209,11 @@ Every tier defines: **length (m)**, **draught (m)** *(how shallow it can go befo
 
 These resolve questions raised while writing the system docs. They are now canon.
 
-- **Uncle Ned is the departed figure who anchors the opening — but the dory is now EARNED, not inherited (owner-ratified 2026).** Ned remains the game's emotional origin: you inherit his **cottage** in Coddle Cove and carry his memory, and the tone stays **bittersweet and hopeful, not grim**. **What changed:** the owner has **dropped the "inherit Uncle Ned's dory" framing.** Your first boat is now a **plain damaged dory you buy with clam money and put right** — you *earn* the boat (a stronger P4 "do it by hand first" beat), and only the cottage + the memory are handed down. **Owner ruling 2026-07-25:** she lies at the **Nine Mile Creek wharf** (the town's own waterfront), and **there is no shipwright in that region** — so who sells her and who repairs her are open, with *you repair her yourself* the recommended reading. Ned is still present at the very start (a remembered moment / his letter); his dog-eared logbook — the **"Ned's Unfinished Lines"** framing questline — together with **Aunt Ginny** still teaches the loop and introduces the town. His memory is carried by the cast (P3). **Reconciliation flag (do not lose this):** the already-built M1 onboarding (`M1-08` / `VS-21`: Ned's logbook + "inherit the dory" at Coddle Cove) is now **partly invalidated** — the inherited-dory beat must be **reworked into a buy-and-repair beat** when St Peters is built. That rework is a **later task**, explicitly logged here and in `design/npcs-and-routines.md` §3.1 so the change is not silently dropped. Full treatment: `design/npcs-and-routines.md` §3.1.
-- **The opening arc (owner-ratified 2026, now DECIDED): St Peters Island → [walk the tide-gated sandbar] → Nine Mile Creek → [buy + repair the dory] → Coddle Cove (home base).** *(**Phased to M2**, built as a **greybox prototype** — a deliberate pull-forward of the M2 opening, **not** scope-creep — see `roadmap.md`. It is an onboarding/structure addition that *serves* the pillars, not a change to any pillar or system.)* The decided sequence:
-  1. **St Peters Island** — a small **home island cut off from the mainland except at low tide** (a pure P1 tide-gate): six homes, a one-room **school**, a **general store**, and your late uncle's broken-down dory on the slip *(see the rework note below)*. An **aunt** teaches the basics (compass + hand skills). You **dig CLAMS at low water** on the bared island flats with a **shovel** (the tell: "two squirting holes" in the wet sand) — the first "catch," **before any rod**. *(Clams are licence-gated — the clam licence is owned by `economy-and-business.md`'s licence system, not here.)*
-  2. **The tide-gated sandbar to Nine Mile Creek** — as the deterministic tide **falls**, exposed seabed becomes **walkable**, and a **sandbar between St Peters and Nine Mile Creek bares as a walking path at low water** (with boat-crossable channels that **narrow as the tide falls**). This is the **first way to reach the mainland — on foot at low tide** (see `design/time-tides-weather.md` §3.5 and `design/world-and-regions.md` §7). Dawdle past the turn of the tide and the flood seals you out until the next low — P5 at its kindest.
-  3. **Nine Mile Creek** — buy a **cod fishing LICENCE** (a real, minimal licence — owned by `economy-and-business.md`) and a fishing **ROD**; **sell your clams** and **save to buy the DAMAGED DORY lying at the NINE MILE CREEK WHARF** (the town's own working waterfront, one region two zones — owner ruling 2026-07-25), **then have her PUT RIGHT** before she will swim. ⚠️ **No shipwright stands in this region**, so *who sells her* and *who repairs her* are open — see [`design/nine-mile-creek-wharf.md`](design/nine-mile-creek-wharf.md) §1. The dory is a **plain bought-and-repaired boat** — *not* inherited (see the Ned bullet above).
+- **Uncle Ned is the departed figure who anchors the opening — but the dory is now EARNED, not inherited (owner-ratified 2026).** Ned remains the game's emotional origin: you inherit his **cottage** in Coddle Cove and carry his memory, and the tone stays **bittersweet and hopeful, not grim**. **What changed:** the owner has **dropped the "inherit Uncle Ned's dory" framing.** Your first boat is now a **plain damaged dory you buy with clam money and put right** — you *earn* the boat (a stronger P4 "do it by hand first" beat), and only the cottage + the memory are handed down. **Amended 2026-11-23:** she lies **beached on St Peters**, is **sold by Basil Samson**, and **you mend her yourself** at the island slip (this supersedes the 2026-07-25 Nine Mile Creek wharf and the 2026-08-09 NMC yard readings; see the 2026-11-23 amendment under §5.3). Ned is still present at the very start (a remembered moment / his letter); his dog-eared logbook — the **"Ned's Unfinished Lines"** framing questline — together with **Aunt Ginny** still teaches the loop and introduces the town. His memory is carried by the cast (P3). **Reconciliation flag (do not lose this):** the already-built M1 onboarding (`M1-08` / `VS-21`: Ned's logbook + "inherit the dory" at Coddle Cove) is now **partly invalidated** — the inherited-dory beat must be **reworked into a buy-and-repair beat** when St Peters is built. That rework is a **later task**, explicitly logged here and in `design/npcs-and-routines.md` §3.1 so the change is not silently dropped. Full treatment: `design/npcs-and-routines.md` §3.1.
+- **The opening arc (owner-ratified 2026, now DECIDED; amended 2026-11-23): St Peters Island, the first week → [buy + mend the dory, row, learn fishing] → [the island gate; walk the tide-gated sandbar] → Nine Mile Creek → Coddle Cove (home base).** *(**Phased to M2**, built as a **greybox prototype** — a deliberate pull-forward of the M2 opening, **not** scope-creep — see `roadmap.md`. It is an onboarding/structure addition that *serves* the pillars, not a change to any pillar or system.)* The decided sequence:
+  1. **St Peters Island** — a small **home island cut off from the mainland except at low tide** (a pure P1 tide-gate): six homes, a one-room **school**, a **general store**, and a broken dory beached on the island *(not the uncle's; amended 2026-11-23)*. An **aunt** teaches the basics (compass + hand skills). You **dig CLAMS at low water** on the bared island flats with a **shovel** (the tell: "two squirting holes" in the wet sand) — the first "catch," **before any rod**. *(Clams are licence-gated — the clam licence is owned by `economy-and-business.md`'s licence system, not here.)* **The first week is lived here, and it is the game's demo** *(amended 2026-11-23)*: buy a **rod** and bait at the store, **buy the broken dory from Basil Samson and mend her yourself at the slip** (store-bought materials, two or three jobs by hand), then row and fish from her in island water. The **cod licence** is bought on the island (where is open). The rest of the world is **closed by weather only**, and opens at the **island gate**: the dory mended, the cod licence held, a fish landed from the dory, shellfish sold, day 7 or later, then **Ginny's word**; the next morning the weather has turned. The demo ends at Ginny's word. Full list under §5.3's 2026-11-23 amendment.
+  2. **The tide-gated sandbar to Nine Mile Creek** — as the deterministic tide **falls**, exposed seabed becomes **walkable**, and a **sandbar between St Peters and Nine Mile Creek bares as a walking path at low water** (with boat-crossable channels that **narrow as the tide falls**). This is the **first way to reach the mainland — on foot at low tide, once the island gate has opened and the wind-driven surf over the bar has cleared** (amended 2026-11-23; see `design/time-tides-weather.md` §3.5 and `design/world-and-regions.md` §7). Dawdle past the turn of the tide and the flood seals you out until the next low — P5 at its kindest.
+  3. **Nine Mile Creek** — the market town, reached on foot after the first week. Boat hardware is sold here (and only here), and the town's yard sells and repairs the player's **later** boats. *(Amended 2026-11-23: the cod licence, the rod and the first dory moved to St Peters — step 1. The dory is still a **plain bought-and-mended boat**, *not* inherited — see the Ned bullet above.)*
   4. **Coddle Cove** — once the dory is yours and seaworthy, you **sail it home to the cove** (the uncle's cottage + wharf), which becomes the **home base** for the rest of the game.
 
   St Peters **prepends** the Coddle Cove opening; it does **not** delete it — Coddle Cove stays central and **everything built for it is reused** (it is just **reordered** later in the arc). **The current M1 opening — Aunt Ginny + Ned's logbook at Coddle Cove (backlog `M1-08` / `VS-21`) — remains the M1 stand-in:** when St Peters is built (M2) the *start and onboarding relocate* to the island and the **dialogue/onboarding system is reused, not rebuilt**. **Reconciliation flagged for the M2 pass (do not silently resolve here):** (a) the inherited-dory beat in VS-21 must be **reworked to a buy-and-repair beat** *(the Ned bullet above)*; (b) where **Aunt Ginny** lives across the arc (St Peters school vs Coddle Cove hearth) is settled with `design/npcs-and-routines.md` when M2 is scheduled — intent is **one teaching-aunt** placed to serve the arc.

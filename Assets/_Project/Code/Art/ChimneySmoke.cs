@@ -111,9 +111,19 @@ namespace HiddenHarbours.Art
             Tick(step);
         }
 
+        /// <summary>
+        /// Whether the plume draws at all. It rises from a building's roof, so it shows only while that
+        /// building's own picture does: when a building interior cuts the shell away to show the rooms
+        /// (BuildingInterior disables the shell renderer), smoke drawn over the open room reads as smoke
+        /// INSIDE the house (pass 4 at Ginny's: it hung in the upstairs bedroom). With no building above
+        /// it (the atmosphere demo's bare chimney) it always shows.
+        /// </summary>
+        public static bool PlumeShows(SpriteRenderer building) => building == null || building.enabled;
+
         private void Tick(float dt)
         {
             SyncSortingOrder();
+            bool shows = PlumeShows(_reference);
             Vector2 flue = (Vector2)transform.position + _chimneyOffset;
             Vector2 wind = AmbientGlobals.Wind;
             Color tint = AmbientGlobals.DayNightTint;
@@ -154,7 +164,7 @@ namespace HiddenHarbours.Art
                 Color col = _config.Color * tint;
                 col.a = alpha;
                 sr.color = col;
-                if (!sr.gameObject.activeSelf) sr.gameObject.SetActive(true);
+                if (sr.gameObject.activeSelf != shows) sr.gameObject.SetActive(shows);
             }
         }
 

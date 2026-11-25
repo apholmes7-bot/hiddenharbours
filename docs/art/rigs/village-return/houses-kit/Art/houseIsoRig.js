@@ -17,6 +17,9 @@
      bay:bool (sunroom projection)      porch:'none'|'front'|'wrap'
      era:    style preset (plain / colonial / gothic / modern) — seeds the axes above
      weather:0..1 (paint fade + shingle greying + roof moss + patchy)   night:bool (warm-lit)
+   A HOME LIVED IN (return 3, 2026-09-28; live look only, every one off unless dialled, see HOME below):
+     windowBoxes:bool  wallBench:bool  stovepipe:bool  roofPatches:0..6  roofLadder:bool
+     upperWindows:bool (default true; false keeps a tall eave wall to one row of windows, the storey above lit from its gables)
    ANIM: houses are static; chimney smoke + lit windows are runtime overlays — anchors(dir,opts)
    -> { chimneys:[{x,y}], door:{x,y}, ridge:{x,y} } in cell px for the smoke / glow / label layers.
    Exposes globalThis.HouseIso = { W,H,PX,DIRS,pivot,order,defaultElev, SHAPES,SIDINGS,ROOFS,
@@ -289,6 +292,9 @@
     b.mirror = !!opts.mirror && b.live;                               // phase 2b: the same house flipped across its ridge
     b.shutters = b.live && PAINTS.concat(['none']).includes(opts.shutters) ? opts.shutters : null;
     b.doorPaint = b.live && PAINTS.includes(opts.doorPaint) ? opts.doorPaint : null;
+    if(b.live){ if(opts.windowBoxes) b.windowBoxes=true; if(opts.wallBench) b.wallBench=true; if(opts.stovepipe) b.stovepipe=true;   // return 3: a home lived in
+      if(opts.roofPatches) b.roofPatches=Math.max(0,Math.min(6,opts.roofPatches|0)); if(opts.roofLadder) b.roofLadder=true;
+      if(opts.upperWindows===false) b.upperWindows=false; }   // Ginny's enlarged cottage keeps the old one-row front (owner 2026-11-22)
     return b;
   }
 
@@ -316,6 +322,7 @@
       dark:  { ramp:[KEY] },
       ...(b.live ? { iron:{ ramp:['#1d2427','#2a3337','#3a4549','#4d595d','#627074'] }, lamp:{ ramp:['#6d5a33','#8f7640','#b39552','#cfb46c','#e6d08d'] },
         lite:{ ramp: glass, off: night?1:0 }, pot:{ ramp: wthRoof(['#4a281c','#653624','#80452e','#99573b','#b06c4c']) } } : {}),
+      ...(b.live && homeOn(b) ? homeMats(b) : {}),
     };
   }
 
@@ -846,6 +853,122 @@
     boxSolid(out, -0.04,0.04, yc-0.04,yc+0.04, z3-0.1, z3+0.55, 'iron', null, 0.2);
   }
 
+  // ======================= RETURN 3 · A HOME LIVED IN (2026-09-28, live look only; every detail off unless dialled) =======================
+  /* Aunt Ginny's cottage (ginnyCottage): what a house lived in for a long time carries on the side the camera sees, the dooryard
+     wall (where the woodpile and the rain barrel stand: -X on a front-porch gable, south at Ginny's facing) and the roof slope
+     above it. Each detail is its own option, read by resolve(), and draws nothing unless dialled; with none dialled build() and
+     makeMats() emit exactly what they did before, face for face and material for material.
+       windowBoxes:bool  a planted box under every ground-floor window of the dooryard wall: geraniums, ivy over the front board
+       wallBench:bool    a plank bench against the dooryard wall, centred on it, seat 0.46 m
+       stovepipe:bool    a galvanised stovepipe through the dooryard slope, with a rain cap; a second smoke point, anchors().stovepipe
+       roofPatches:0..6  patches of new cedar where the roof has been mended, the first round the stovepipe's flashing
+       roofLadder:bool   a roof ladder up the dooryard slope beside the chimney
+     Wall details need an eave-wall dooryard (+X or -X); roof details a gable, ell or cape roof. Sizes in metres, in HOME. */
+  const HOME = {
+    box:    { off:0.02, out:0.26, half:0.55, z0:1.16, z1:1.40, grow:0.22 },
+    bench:  { off:0.08, out:0.48, half:0.75, seat:0.46, plank:0.06 },
+    pipe:   { x:1.20, y:1.90, half:0.085, above:0.55, cap:0.20, gap:0.08, capH:0.15 },
+    ladder: { y:-1.35, half:0.21, rail:0.035, rungEvery:0.30, foot:0.30, head:0.22 },
+    // [y0, y1, first course, last course, age], in 0.22 m courses up the slope from the eave; age 0 this year's, 1 a few summers old;
+    // the sixth is on the far slope
+    patches:[ [1.40,2.40,12,15,0], [-3.60,-2.50,1,2,1], [-0.20,0.75,8,9,0], [-2.95,-1.75,19,20,1], [2.90,3.90,2,3,1], [-1.00,0.25,5,7,1] ],
+    COURSE: 0.22,
+  };
+  const FRESH_CEDAR=['#3f2f22','#55402e','#6d533b','#866849','#9e7d59','#b5936c'];
+  const homeOn=(b)=>!!(b.windowBoxes||b.wallBench||b.stovepipe||b.roofPatches||b.roofLadder);
+  const homeRoofOK=(b)=> b.shape==='gable'||b.shape==='ell'||b.shape==='cape';
+  function homeSide(b){ const Y=dooryardOf(b), w=Y?Y.wall:'-X'; return { wall:w, eave:w==='+X'||w==='-X', s:w==='+X'?1:-1 }; }
+  function homeMats(b){
+    const M={};
+    if(b.roofPatches){ const CPP=root.CoastalPass&&root.CoastalPass.PALETTE, old=b.roof==='asphaltBrown'&&CPP&&CPP.cedar?CPP.cedar:(ROOFS[b.roof]||ROOFS.asphaltGrey);
+      const fresh=b.roof==='asphaltBrown'?FRESH_CEDAR:old.map(c=>mix(c,'#c9c2b0',0.18));
+      M.shingleNew={ ramp:fresh }; M.shingleMid={ ramp:fresh.map((c,i)=>mix(c,old[Math.min(i,old.length-1)],0.5)) }; }   // this year's cedar, and some a few summers old
+    if(b.windowBoxes){ M.leaves={ ramp:['#1c3024','#27402e','#335339','#406646','#507a53','#638d62'] };
+      M.bloom={ ramp:['#5a1714','#7c201b','#9e2b23','#bd3a2d','#d64f3c','#e86b52'] }; }
+    if(b.stovepipe) M.galv={ ramp:['#3b4246','#4f575b','#666e72','#7f878a','#9aa1a3','#b6bbbc'] };
+    return M;
+  }
+  // the ground-floor window centres (model y) build() draws on the eave wall x = s*hw, by build()'s own rules
+  function homeWindows(b, s){
+    const y0=-b.Ln/2, L=layoutOf(b), sideDoor=L.door, nLong=Math.max(1, Math.round((b.Ln/2.4)*(0.5+b.winDensity)));
+    const eaveDoorDraw=L.eaveDoor && !sideDoor, ncg=Math.min(3,b.crossGable|0), cgYs=[];
+    if(ncg===1) cgYs.push(0); else for(let i=0;i<ncg;i++) cgYs.push(-b.Ln*0.3+b.Ln*0.6*(i/Math.max(1,ncg-1)));
+    const cgDoorIdx=(eaveDoorDraw && ncg%2===1)?(ncg-1)/2:-1, inCG=(c)=>cgYs.some(cy=>Math.abs(c-cy)<1.6);
+    const wrapSide=(b.porch==='wrap') && ncg===0 && !L.bayFrontOn && !L.isCape;
+    const garageOn=(b.garage==='single'||b.garage==='double') && b.shape!=='ell', gyf=b.Ln/2+0.2, gyb=gyf-5.4, out=[];
+    for(let i=0;i<nLong;i++){ const c=y0+b.Ln*((i+0.5)/nLong);
+      if(s>0 && inCG(c)) continue;
+      if(s>0 && eaveDoorDraw && cgDoorIdx<0 && Math.abs(c)<1.1) continue;
+      if(s<0 && garageOn && c>gyb-0.3 && c<gyf) continue;
+      if(s>0 && wrapSide && c>(b.Ln/2-b.Ln*0.6)) continue;
+      if(sideDoor && sideDoor.axis==='x' && s===sideDoor.nrm && Math.abs(c-sideDoor.y)<1.2) continue;
+      out.push(c); }
+    return out;
+  }
+  // the gable roof's slope on side s: (y along the ridge, v up the slope from the eave edge, h off the slope) -> model metres
+  function homeSlope(b, s){
+    const hw=b.Wd/2, run=hw+b.ov, rise=b.ridgeZ-b.eaveZ, L=Math.hypot(run,rise), tv=[-s*run/L,rise/L], nn=[s*rise/L,run/L];
+    return { run, rise, L, s, yA:-b.Ln/2-b.ov, yB:b.Ln/2+b.ov,
+      P:(y,v,h)=>[s*run+tv[0]*v+nn[0]*h, y, b.eaveZ+tv[1]*v+nn[1]*h], u:(y)=> s<0 ? y-(-b.Ln/2-b.ov) : (b.Ln/2+b.ov)-y };
+  }
+  function homeStovepipe(b){ if(!b.stovepipe||!homeRoofOK(b)) return null; const Q=HOME.pipe, s=homeSide(b).s;
+    return [s*Q.x, Q.y, b.ridgeZ+Q.above+Q.gap+Q.capH]; }
+  // new cedar: the roof's own courses (so they run on across a patch) with other joints, fewer dark shingles and more pale ones
+  function cedarNew(u,v){ const CO=0.22, row=Math.floor(v/CO), f=v-row*CO, rr=row+577; let x=u+hash2(rr,7)*0.3, k=0, w=0;
+    for(;;){ w=0.12+hash2(rr,k)*0.16; if(x<w) break; x-=w; k++; if(k>400) break; }
+    if(f<0.04) return -2; if(x<0.025) return -1; const h=hash2(rr*31+k,3); return h<0.1?-1:(h>0.8?1:0); }
+  function homeDetails(out, b, blk){
+    const hw=b.Wd/2, H=homeSide(b), s=H.s, X=(o)=>s*(hw+o), rnd=(i,k)=>hash2(i*7+3,k*13+5);
+    const lo=(a,c)=>Math.min(a,c), hi=(a,c)=>Math.max(a,c);
+    if(H.eave && b.windowBoxes){ const t0=out.length, B=HOME.box;
+      for(const c of homeWindows(b,s)){ const key=Math.round(c*100);
+        boxSolid(out, lo(X(B.off),X(B.out)),hi(X(B.off),X(B.out)), c-B.half,c+B.half, B.z0,B.z1, 'trim', null, 0.2);
+        for(const k of [-1,1]) boxSolid(out, lo(X(B.off),X(0.17)),hi(X(B.off),X(0.17)), c+k*0.38-0.03,c+k*0.38+0.03, B.z0-0.15,B.z0, 'trim', null, 0);
+        // five geraniums along the box: leaves in a four-sided mound, a head of bloom on most
+        const xm=X((B.off+B.out)/2), n=5, z=B.z1, r=0.125;
+        for(let i=0;i<n;i++){ const yc=c-B.half+0.12+i*(2*B.half-0.24)/(n-1), h=B.grow*(0.78+0.44*rnd(i,key)), top=[xm,yc,z+h];
+          out.push(F([[xm-r,yc,z],[xm,yc-r,z],top],'leaves',-0.2,0.02,null,null), F([[xm,yc-r,z],[xm+r,yc,z],top],'leaves',0.3,0.02,null,null),
+                   F([[xm+r,yc,z],[xm,yc+r,z],top],'leaves',0.1,0.02,null,null), F([[xm,yc+r,z],[xm-r,yc,z],top],'leaves',-0.3,0.02,null,null));
+          if(rnd(i,key+7)<0.82){ const q=0.07, bz=z+h-0.05; boxSolid(out, xm-q,xm+q, yc-q,yc+q, bz,bz+0.09, 'bloom', null, 0.2); } }
+        // ivy trailing over the front board
+        for(let i=0;i<3;i++){ const yt=c-B.half+0.2+i*0.35+rnd(i,key+3)*0.08, len=0.12+rnd(i,key+5)*0.2;
+          decalX(out, X(B.out), s, yt-0.05, yt+0.05, B.z1-len, B.z1+0.02, 'leaves', 0.1, null, true, 0.08); } }
+      tagFrom(out,t0,'show.windowBoxes'); }
+    if(H.eave && b.wallBench){ const t0=out.length, Q=HOME.bench;
+      boxSolid(out, lo(X(Q.off),X(Q.out)),hi(X(Q.off),X(Q.out)), -Q.half,Q.half, Q.seat-Q.plank,Q.seat, 'wood', null, 0.25);
+      for(const ly of [-Q.half+0.08, Q.half-0.14]) for(const lx of [Q.off+0.05, Q.out-0.11])
+        boxSolid(out, lo(X(lx),X(lx+0.06)),hi(X(lx),X(lx+0.06)), ly,ly+0.06, 0,Q.seat-Q.plank, 'wood', null, -0.1);
+      boxSolid(out, lo(X(Q.out-0.11),X(Q.out-0.06)),hi(X(Q.out-0.11),X(Q.out-0.06)), -Q.half+0.14,Q.half-0.14, 0.12,0.17, 'wood', null, 0);
+      tagFrom(out,t0,'yard.wallBench'); }
+    if(!homeRoofOK(b)) return;
+    const S=homeSlope(b,s);
+    if(b.roofPatches){ const t0=out.length, CO=HOME.COURSE;
+      for(let k=0;k<Math.min(6,b.roofPatches);k++){ const [py0,py1,r0,r1,age]=HOME.patches[k], G=k===5?homeSlope(b,-s):S, pm=age?'shingleMid':'shingleNew';
+        for(let r=r0;r<=r1;r++){ const j0=(hash2(k*31+r,11)-0.5)*0.3, j1=(hash2(k*31+r,17)-0.5)*0.3;
+          const ya=Math.max(G.yA+0.05,py0+j0), yb=Math.min(G.yB-0.05,py1+j1), v0=r*CO, v1=Math.min(G.L-0.1,(r+1)*CO);
+          if(yb-ya<0.12||v1<=v0) continue;
+          out.push(F([G.P(ya,v0,0.012),G.P(yb,v0,0.012),G.P(yb,v1,0.012),G.P(ya,v1,0.012)],pm,0,0.03,
+            [[G.u(ya),v0],[G.u(yb),v0],[G.u(yb),v1],[G.u(ya),v1]],(u,v)=>cedarNew(u,v)*0.9)); } }
+      tagFrom(out,t0,'show.roofPatches'); }
+    if(b.stovepipe){ const t0=out.length, Q=HOME.pipe, xp=s*Q.x, yp=Q.y, vp=S.L*(1-Q.x/S.run), zr=b.eaveZ+(S.run-Q.x)*S.rise/S.run, top=b.ridgeZ+Q.above;
+      out.push(F([S.P(yp-0.26,vp-0.30,0.016),S.P(yp+0.26,vp-0.30,0.016),S.P(yp+0.26,vp+0.34,0.016),S.P(yp-0.26,vp+0.34,0.016)],'galv',-0.3,0.04,null,null));   // flashing
+      boxSolid(out, xp-Q.half,xp+Q.half, yp-Q.half,yp+Q.half, zr-0.3, top, 'galv', null, 0);
+      const cz=top+Q.gap, c=Q.cap, ap=[xp,yp,cz+Q.capH];
+      boxSolid(out, xp-0.02,xp+0.02, yp-0.02,yp+0.02, top, cz, 'galv', null, 0);   // the cap's stem
+      out.push(F([[xp-c,yp-c,cz],[xp+c,yp-c,cz],ap],'galv',0.1,0,null,null), F([[xp+c,yp-c,cz],[xp+c,yp+c,cz],ap],'galv',0.3,0,null,null),
+               F([[xp+c,yp+c,cz],[xp-c,yp+c,cz],ap],'galv',0.2,0,null,null), F([[xp-c,yp+c,cz],[xp-c,yp-c,cz],ap],'galv',-0.2,0,null,null),
+               F([[xp-c,yp-c,cz],[xp-c,yp+c,cz],[xp+c,yp+c,cz],[xp+c,yp-c,cz]],'galv',-0.6,0,null,null));
+      tagFrom(out,t0,'show.stovepipe'); }
+    if(b.roofLadder){ const t0=out.length, Q=HOME.ladder, v0=Q.foot, v1=S.L-Q.head, h0=0.05;
+      const obox=(y0,y1,va,vb,ha,hb,bb)=>{ const c=S.P, q=(p,bias)=>out.push(F(p,'wood',bias,0.02,null,null));
+        q([c(y0,va,hb),c(y1,va,hb),c(y1,vb,hb),c(y0,vb,hb)],bb+0.2); q([c(y0,va,ha),c(y1,va,ha),c(y1,va,hb),c(y0,va,hb)],bb);
+        q([c(y0,vb,ha),c(y1,vb,ha),c(y1,vb,hb),c(y0,vb,hb)],bb); q([c(y0,va,ha),c(y0,vb,ha),c(y0,vb,hb),c(y0,va,hb)],bb-0.15);
+        q([c(y1,va,ha),c(y1,vb,ha),c(y1,vb,hb),c(y1,va,hb)],bb+0.1); };
+      for(const k of [-1,1]){ const yc=Q.y+k*Q.half; obox(yc-Q.rail,yc+Q.rail, v0,v1, h0,h0+0.055, -0.8); }
+      for(let v=v0+0.18; v<v1-0.08; v+=Q.rungEvery) obox(Q.y-Q.half+Q.rail,Q.y+Q.half-Q.rail, v,v+0.05, h0+0.055,h0+0.09, -0.4);
+      tagFrom(out,t0,'show.roofLadder'); }
+  }
+
   function build(b){
     LIVE=!!b.live; CUR=b;
     const out=[];
@@ -968,7 +1091,7 @@
         if(!underWrap && !nearSide) windowOn(out,'x', xv,nx, c, sillG, ww,wh, b);
         if(LIVE && isCape){ if(b.wallH>4.2) windowOn(out,'x', xv,nx, c, b.eaveZ-1.08, ww*1.1, 0.56, {windows:'knee'}); }    // phase 2: a storey-and-a-half's knee windows under the frieze
         else if(LIVE && b.shape==='saltbox'){ if(nx>0 && b.wallH>4.1) windowOn(out,'x', xv,nx, c, sillU, ww,wh*0.92, b); }  // the saltbox front is two full storeys, its back one
-        else if(b.wallH>4.4) windowOn(out,'x', xv,nx, c, sillU, ww,wh*0.92, b);   // 2nd storey
+        else if(b.wallH>4.4 && b.upperWindows!==false) windowOn(out,'x', xv,nx, c, sillU, ww,wh*0.92, b);   // 2nd storey (upperWindows:false leaves the eave walls one row)
       }
     }
     if(eaveDoorDraw && cgDoorIdx<0){ doorOn(out,'x', hw,1, 0, b.fH, 1.0, 2.1); if(LIVE) portico(out, b, 'x', hw, 1, 0); else stoop(out,'x', hw,1, 0, b.fH); }
@@ -1036,6 +1159,8 @@
 
     // BARGEBOARD gingerbread
     if(b.bargeboard){ const t0=out.length; bargeboard(out, b); if(LIVE) bargeboard(out, b, -1); tagFrom(out,t0,'show.bargeboard'); }   // live: both gables, so every listed facing shows one
+
+    if(LIVE && homeOn(b)) homeDetails(out, b, blk);   // return 3: a home lived in
 
     return out;
   }
@@ -1134,6 +1259,7 @@
     // camera-first anchors: model metres (m), world metres at this facing ([east, north] from the pivot, w) and screen px
     const LY=layoutOf(b), ap=approachOf(b,e0), path=entryPathOf(b,e0,ap), n=WALLN[e.facing];
     const at=(p0)=>{ const p=mp(p0), s=pj(p[0],p[1],0), w=worldOf(p,dir); return { x:s.x, y:s.y, m:[p[0],p[1]], w:[+w[0].toFixed(3),+w[1].toFixed(3)] }; };
+    if(b.stovepipe){ const sp=homeStovepipe(b); if(sp) base.stovepipe=pj(mx?-sp[0]:sp[0], sp[1], sp[2]); }   // return 3: the stovepipe's smoke point
     return Object.assign(base, { show:mx?FLIPW[LY.show]:LY.show, doorWall:e.facing, doorFaces:compass(worldOf(n,dir)), approach:at(ap), entryPath:path.map(at), mirror:mx });
   }
   function project(dir, p, elev){ const v=projVert(p[0],p[1],p[2],camBasis({dir,elev})); return {x:v.sx,y:v.sy}; }
@@ -1198,6 +1324,9 @@
     if(L.side){ const d=L.door, c=d.axis==='x'?d.y:d.x; if(d.axis==='x') add('portico',d.plane,d.plane+d.nrm*1.95,c-0.82,c+0.82,true); else add('portico',c-0.82,c+0.82,d.plane,d.plane+d.nrm*1.95,true);
       if(d.axis==='x') add('lampPost',d.plane+d.nrm*2.57,d.plane+d.nrm*2.89,c+1.08,c+1.40); else add('lampPost',c+1.08,c+1.40,d.plane+d.nrm*2.57,d.plane+d.nrm*2.89); }
     const Y=dooryardOf(b); if(Y){ const w=Y.woodpile; add('woodpile',w.x0,w.x1,w.y0,w.y1); add('barrel',Y.barrel.x-0.34,Y.barrel.x+0.34,Y.barrel.y-0.34,Y.barrel.y+0.34); }
+    if(b.live && homeOn(b)){ const H=homeSide(b), X=(o)=>H.s*(hw+o);   // return 3: the window boxes (off the ground, kept clear all the same) and the bench
+      if(H.eave && b.windowBoxes) for(const c of homeWindows(b,H.s)) add('windowBox', X(HOME.box.off), X(HOME.box.out), c-HOME.box.half, c+HOME.box.half);
+      if(H.eave && b.wallBench) add('wallBench', X(0), X(HOME.bench.out), -HOME.bench.half, HOME.bench.half); }
     return R;
   }
   const inRect=(q,x,y,r)=> x+r>q.x0 && x-r<q.x1 && y+r>q.y0 && y-r<q.y1;

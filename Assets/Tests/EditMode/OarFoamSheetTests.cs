@@ -70,6 +70,7 @@ namespace HiddenHarbours.Tests.EditMode
             OarSplashConfig cfg = OarSplashConfig.Default;
             FoamSheetSettings sheet = FoamSheetSettings.Default;
             Assert.IsTrue(sheet.OarJoinsSheet, "the shipped dials join the oars to the sheet");
+            sheet.OarCatchGrowSeconds = 0f;   // the catch all at once, so its frame carries the burst's size
             var sys = NewSystem(in cfg);
             int pull = 0, release = 0, catches = 0, lastCatch = 0, lastRelease = 0;
             float biggest = 0f;
@@ -175,6 +176,7 @@ namespace HiddenHarbours.Tests.EditMode
                 config.FoamSheet.OarRadius = 0.41f;
                 config.FoamSheet.OarCatchRadius = 0.53f;
                 config.FoamSheet.OarCatch = 0.9f;
+                config.FoamSheet.OarCatchGrowSeconds = 0f;   // no grow-in: every size is one of the two dials
                 OarSplashConfig cfg = OarSplashConfig.Default;
                 var sys = NewSystem(in cfg);
                 bool smear = false, burst = false;
@@ -193,6 +195,83 @@ namespace HiddenHarbours.Tests.EditMode
 
             string src = File.ReadAllText(EmitterPath, Encoding.UTF8);
             StringAssert.Contains("GameServices.FoamSheet", src, "the emitter reads the live config's dials");
+        }
+
+        // The sunset rowing clip: each catch's white popped on as a flat disc on the one frame the blade went
+        // in. With OarCatchGrowSeconds it comes up over a few frames, widening from the pull's smear to the
+        // burst's size and drawn out from where the blade went in, and lays the same foam in all.
+        private static DoryOarSplashSystem.OarFrame Held(float height, Vector2 blade) => new DoryOarSplashSystem.OarFrame
+        {
+            Stroking = true, BladeHeightMeters = height, BladeWorld = blade, TipOnWaterWorld = blade,
+            Outboard = Vector2.right, Aft = Vector2.down, Effort01 = 1f, StrokeDirection = 1f,
+            GroundSquash = 0.87f, HeightToScreen = 0.5f,
+        };
+
+        [Test]
+        public void TheCatch_ComesUpOverTheGrowTime_WideningAndDrawnOut_WithTheSameFoamInAll()
+        {
+            OarSplashConfig cfg = OarSplashConfig.Default;
+            FoamSheetSettings sheet = FoamSheetSettings.Default;
+            Assert.Greater(sheet.OarCatchGrowSeconds, 0f, "the shipped catch grows in");
+            Assert.Less(sheet.OarCatchGrowSeconds, 0.25f, "a short grow: still a splash, not a slow bloom");
+            float strength = DoryOarSplashMath.Strength01(1f, 2f, in cfg);
+            float smear = sheet.OarPerSecond * strength * Dt;
+            int growFrames = Mathf.CeilToInt(sheet.OarCatchGrowSeconds / Dt - 1e-4f);
+
+            var sys = NewSystem(in cfg);
+            Vector2 entry = new Vector2(1.2f, 0f), aft = Vector2.down * 0.03f;
+            var star = Held(1f, Vector2.zero);
+            var p0 = Held(0.2f, entry);
+            sys.Step(in p0, in star, 2f, Vector2.zero, Dt, in cfg, in sheet);   // primed, blade in the air
+            float laid = 0f, lastRadius = 0f;
+            for (int k = 0; k < growFrames + 3; k++)
+            {
+                var p = Held(-0.05f, entry + aft * k);
+                sys.Step(in p, in star, 2f, Vector2.zero, Dt, in cfg, in sheet);
+                Assert.IsTrue(sys.TryGetSheetDeposit(DoryOarSplashSystem.Port, out var d), "frame " + k + " lays foam");
+                if (k < growFrames)
+                {
+                    Assert.Greater(d.Radius, lastRadius - 1e-6f, "the catch widens as it comes up");
+                    Assert.AreEqual(entry.x, d.From.x, 1e-5f, "drawn out from where the blade went in");
+                    Assert.AreEqual(entry.y, d.From.y, 1e-5f, "drawn out from where the blade went in");
+                    if (k == 0)
+                    {
+                        Assert.Less(d.Amount, sheet.OarCatch * strength * 0.5f, "no flat disc popping on at the catch");
+                        Assert.Less(d.Radius, sheet.OarCatchRadius, "the first frame is smaller than the burst");
+                    }
+                    laid += d.Amount - smear;
+                    lastRadius = d.Radius;
+                }
+                else
+                {
+                    Assert.AreEqual(sheet.OarRadius, d.Radius, 1e-6f, "after the grow the pull's smear goes on");
+                    Assert.AreEqual(smear, d.Amount, 1e-6f);
+                }
+            }
+            Assert.AreEqual(sheet.OarCatchRadius, lastRadius, 1e-5f, "the catch ends at the burst's size");
+            Assert.AreEqual(sheet.OarCatch * strength, laid, 1e-4f, "the same catch foam in all");
+
+            // A blade out before the catch has come up lays what is left at once, with its release.
+            var sys2 = NewSystem(in cfg);
+            sheet.OarCatchGrowSeconds = 0.5f;
+            sys2.Step(in p0, in star, 2f, Vector2.zero, Dt, in cfg, in sheet);
+            var pin = Held(-0.05f, entry);
+            sys2.Step(in pin, in star, 2f, Vector2.zero, Dt, in cfg, in sheet);
+            Assert.IsTrue(sys2.TryGetSheetDeposit(DoryOarSplashSystem.Port, out var first));
+            var pout = Held(0.2f, entry);
+            sys2.Step(in pout, in star, 2f, Vector2.zero, Dt, in cfg, in sheet);
+            Assert.IsTrue(sys2.TryGetSheetDeposit(DoryOarSplashSystem.Port, out var rel));
+            Assert.AreEqual(Mathf.Clamp01(sheet.OarRelease * strength + sheet.OarCatch * strength - (first.Amount - smear)),
+                rel.Amount, 1e-4f, "the release carries the rest of the catch");
+
+            // 0 is the older catch, all at once at the burst's size.
+            var sys3 = NewSystem(in cfg);
+            sheet.OarCatchGrowSeconds = 0f;
+            sys3.Step(in p0, in star, 2f, Vector2.zero, Dt, in cfg, in sheet);
+            sys3.Step(in pin, in star, 2f, Vector2.zero, Dt, in cfg, in sheet);
+            Assert.IsTrue(sys3.TryGetSheetDeposit(DoryOarSplashSystem.Port, out var once));
+            Assert.AreEqual(sheet.OarCatchRadius, once.Radius, 1e-6f);
+            Assert.AreEqual(Mathf.Clamp01(smear + sheet.OarCatch * strength), once.Amount, 1e-6f);
         }
 
         [Test]

@@ -1,6 +1,6 @@
 # Content validation coverage and gaps
 
-Audit of `f1b4ab2f59f417eda06f2239f7dee25d4c52ad23`. This is a source audit, not an EditMode execution report. Existing assets, appearance, configuration and save formats are unchanged. The aim is to protect the working coast (P3) from broken content additions.
+Audit of `d46bde303e6aa256d23d47a05ede5d7d6f38e51e`. This is a source audit, not an EditMode execution report. Existing assets, appearance, configuration and save formats are unchanged. The aim is to protect the working coast (P3) from broken content additions.
 
 ## Candidate rules
 
@@ -8,7 +8,7 @@ Test paths below are relative to `Assets/Tests/EditMode/`. “Covered” describ
 
 | Rule | What main checks today | Remaining gap / safe next step |
 |---|---|---|
-| ID format | `DefIdentityContractTests` requires nonblank `Id` or `Spec.Id`. Individual suites enforce shapes for recipes, foods, crops, produce, plots, deck gear, held props, water, breaker sites, traits and others; some only check a prefix. | No common strict `type.snake_case` rule for every discovered identity. Baseline plus additions contain 2,412 rows across 173 declared types; 66 IDs fail a single-dot, lower-case snake-case rule. Preserve those stable IDs in an exact named exception list; reject new departures. |
+| ID format | `DefIdentityContractTests` requires nonblank `Id` or `Spec.Id`. Individual suites enforce shapes for recipes, foods, crops, produce, plots, deck gear, held props, water, breaker sites, traits and others; some only check a prefix. | No common strict `type.snake_case` rule for every discovered identity. Baseline plus additions contain 2,436 rows across 177 declared types; 66 IDs fail a single-dot, lower-case snake-case rule. Preserve those stable IDs in an exact named exception list; reject new departures. |
 | Unique IDs across all Defs | `DefIdentityContractTests` reflects concrete project ScriptableObjects whose names end in `Def`, plus `InstrumentOffer`; requires uniqueness within type and exactly 16 cross-type shared plant IDs, each belonging only to `PlantSpeciesDef` and `ShorePlantDef`. `ContentValidationTests.DefIds_AreGloballyUnique_AcrossAllDefTypes` itself covers only fish, hull, region, trap, bait, water and plume. | Already covered within the reflected inventory. Do not introduce a competing blanket uniqueness rule that rejects the approved plant pairs. Non-Def offers other than `InstrumentOffer` are outside that reflection selector. |
 | Prefix matches class | Domain suites pin some prefixes, e.g. `fish` is the semantic prefix of `FishSpeciesDef`, not its lower-cased class name; both plant classes intentionally use `shoreplant`. `BirdHauntContentTests` distinguishes roost and haunt prefixes by kind. | No common type-to-prefix policy. Record explicit established prefixes, including semantic aliases; fail unclassified new types. Do not derive permission from newly appended ledger rows at test time. |
 | Every Def reference resolves | `ContentValidationTests` resolves fish regions, region fish, bait fish, trap bait/catches, village links, key-scene regions/pieces, breaker regions and plume water types. Dedicated bite, NPC, conversation, quest, farming, food, relationship, deck-work and supply suites add their own typed edges. | No universal scan of serialized object references or string-reference schema. A GUID existing alone does not prove its local file ID or expected type. Extend the loaded-asset harness for typed object links and explicit uncovered string edges; do not treat all `*Id` fields as Def references (flags, anchors, station tokens and instance IDs are different domains). |
@@ -51,8 +51,12 @@ The following table accounts for all 31 test methods in `ContentValidationTests.
 
 ## Implementation boundaries
 
-Extend existing test suites rather than replacing them. Reuse the public type selector in `DefIdentityContractTests`; that file is also touched by open PR 1232, so additions should live in the available `ContentValidationTests` harness. Recipe changes belong in `Food/RecipeContentValidationTests`. Keep all exception lists test-only and exact (type, GUID and ID where applicable); fail stale entries so a fix removes its exception. Never normalize IDs in assets or modify the frozen identity ledger.
+Extend existing test suites rather than replacing them. Reuse the public type selector in `DefIdentityContractTests`; additions should live in the existing `ContentValidationTests` harness so its reflected inventory stays authoritative. Recipe changes belong in `Food/RecipeContentValidationTests`. Keep all exception lists test-only and exact (type, GUID and ID where applicable); fail stale entries so a fix removes its exception. Never normalize IDs in assets or modify the frozen identity ledger.
 
 The 66 format departures are: 23 route IDs, 16 light IDs, nine lot IDs, nine yard IDs, three commons IDs, three relationship IDs, two conversation IDs and one beach ID. This count comes from the committed ledger plus additions, not a Unity import. The related identity suite remains responsible for proving the inventory matches loaded assets.
 
-No editor lease was granted for this audit. Native type discovery, imports, scene wiring and the EditMode pass remain unverified here. Text and source inspection cannot establish buyer reachability or visual correctness.
+No local EditMode execution was performed for this audit. Native type discovery, imports, scene wiring and the EditMode pass remain unverified here. Text and source inspection cannot establish buyer reachability or visual correctness.
+
+## Refresh boundary
+
+The current inventory includes the shopping bag, island ledger, island shelf list and shelf slot definitions introduced since the original audit. The 66 exact legacy format exceptions are unchanged. The general content and recipe harnesses have no intervening source changes; the gaps above remain open on this main. The separate proposed identity and reference checks in PR 1452 also carry this document, so those overlapping additions need reconciliation if both are retained. No identity registration or asset was changed for this audit.

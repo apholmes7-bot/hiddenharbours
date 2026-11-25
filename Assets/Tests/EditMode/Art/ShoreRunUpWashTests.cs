@@ -271,10 +271,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // normal, with the run-up held, so it is _WashLineWidth metres of ground on a flat or a slope alike.
             // v8: up the LOCAL shore normal (groundDir), not the waterline point's: on the sand the line's tap was
             // aimed by a point that moves with the warp, so its ground step wandered at peak (the shredded line).
-            int open = IndexOf(src, "if (washOnSand > 0.001 && washEdgeQ >= -1e-4 && dot(groundDir, groundDir) > 1e-6)");
+            // The lip (the wet film's look): the same test, washLipInset metres of level inside the edge (0 with the
+            // lip dials off), and one line-width of ground that may follow the one foam's lace (ShoreThinEdgeTests).
+            int open = IndexOf(src, "if (washOnSand > 0.001 && washEdgeQ >= washLipInset - 1e-4 && dot(groundDir, groundDir) > 1e-6)");
             int land = IndexOf(src,
-                "float washLandDepth = _WaterLevel - SeabedElevation(worldXY + warp + groundDir * max(_WashLineWidth, 0.0));");
-            int past = IndexOf(src, "if (washLandDepth + edgeSwash < 0.0)");
+                "float washLandDepth = _WaterLevel - SeabedElevation(worldXY + warp + groundDir * washLipWidth);");
+            int past = IndexOf(src, "if (washLandDepth + edgeSwash < washLipInset)");
             int line = IndexOf(src, "washLine = washOnSand * saturate(_WashLineOpacity);");
             Assert.That(edgeQ < clip && clip < gate && gate < open && open < land && land < past && past < line,
                 "the wash must read the SAME edgeSwash the clip draws, after it: the leading line is then " +
@@ -394,7 +396,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             int heaviest = IndexOf(src,
                 "float washHeaviest = max(cover * _SurfColor.a, max(lip * _SurfLipColor.a, barrel * _SurfBarrelColor.a));");
             int cap = IndexOf(src, "col.rgb = lerp(washUnder, col.rgb, lerp(1.0, washCapScale, max(washBeach, shoreSurf)));");
-            int washLine = IndexOf(src, "col.rgb = lerp(col.rgb, _FoamColor.rgb, washLine);");
+            int washLine = IndexOf(src, "col.rgb = lerp(col.rgb, washLineColor, washLine);");
             Assert.That(beach < barrelYield && barrelYield < lipYield && lipYield < under && under < barrel &&
                         barrel < lip && lip < heaviest && heaviest < cap && cap < washLine,
                 "the anatomy yields before it is banded, the cap follows every surf layer, and the line is laid last");
@@ -408,12 +410,31 @@ namespace HiddenHarbours.Tests.Art.EditMode
         {
             string src = Src();
             int supersede = IndexOf(src, "foamCoverage *= (1.0 - surfSupersede);");
-            int yield = IndexOf(src, "foamCoverage *= 1.0 - washPresence * step(0.001, _WashLineOpacity);");
+            int yield = IndexOf(src, "foamCoverage *= 1.0 - washPresenceSea * step(0.001, _WashLineOpacity);");
             int compose = IndexOf(src, "col.rgb = lerp(col.rgb, fringeFoam, foamCoverage * _FoamColor.a);");
             Assert.That(supersede < yield && yield < compose,
                 "the fringe's hand-back to the wash must sit between the surf supersede and the fringe compose");
             // The fence the one-piece edge fix set stays: the fringe's DEPTH still rides boreFoamBlend.
             StringAssert.Contains("surfRunUpM, boreFoamBlend)", src);
+        }
+
+        [Test]
+        public void TheFringeHandBack_ReadsTheOpenSeasPresence_NotTheReachScaledOne()
+        {
+            // The rejoin pale band (2026-11-22): a reconnecting pool's reach fades the wash's amounts, never
+            // the choice of which language (wash or fringe) the shore wears. The lee share is reach-gated for
+            // the wash itself (washSeaBreaks) but the fringe's hand-back reads it ungated (washSeaBreaksOpen),
+            // so wherever the reach is 1 the two presences are the same expression.
+            string src = Src();
+            int open = IndexOf(src, "float washSeaBreaksOpen = (_BreakerOuter.w > 0.5 && depth > -surfBeachReach)");
+            int gated = IndexOf(src, "float washSeaBreaks = washSeaBreaksOpen * seaReach;");
+            int presence = IndexOf(src,
+                "float washPresence = max(smoothstep(0.0, max(_WashPresenceRamp, 1e-3), boreEdgeBlend), washSeaBreaks);");
+            int sea = IndexOf(src,
+                "float washPresenceSea = max(smoothstep(0.0, max(_WashPresenceRamp, 1e-3), boreEdgeBlend), washSeaBreaksOpen);");
+            int yield = IndexOf(src, "foamCoverage *= 1.0 - washPresenceSea * step(0.001, _WashLineOpacity);");
+            Assert.That(open < gated && gated < presence && presence < sea && sea < yield,
+                "the open lee share, its reach-gated copy, both presences, then the fringe hand-back");
         }
 
         [Test]
@@ -432,7 +453,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             StringAssert.Contains("washAge01, washTorn, surfSheetBay, _FoamSheetWash.x);", src);
             StringAssert.Contains("* lerp(1.0, saturate(_WashSheetOpacity), saturate(washOnSand));", src);
             int lip = IndexOf(src, "col.a   = max(col.a, lip * _SurfLipColor.a);");
-            int washLine = IndexOf(src, "col.rgb = lerp(col.rgb, _FoamColor.rgb, washLine);");
+            int washLine = IndexOf(src, "col.rgb = lerp(col.rgb, washLineColor, washLine);");
             Assert.Greater(washLine, lip, "the leading line is laid over the surf, last");
         }
 
@@ -521,7 +542,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             int share = IndexOf(src, "surfShore = saturate(-shoreTapDepth / max(surfBeachReach, 1e-3));");
             // The box is floored at 1e-3 so a tap on a dry plateau never dries a wet pixel (twin AlongShoreGateDepth).
             int box = IndexOf(src, "surfGateDepth = max(lerp(surfEvalDepth, boxDepth, surfShore), 1e-3);");
-            int breaking = IndexOf(src, "surfBreaking = SurfBreaking01(surfGateDepth, surfFetchEnv);");
+            int breaking = IndexOf(src, "surfBreaking = SurfBreaking01(surfGateDepth, surfBoreEnv);");
             int pocket = IndexOf(src, "surfCover = saturate(surfCover * lerp(1.0, max(_SurfPocketBoost, 1.0), pocket));");
             int fine = IndexOf(src, "max(_SurfNoiseScale, 1e-3) * max(_WashSurfDetail, 1.0),");
             int brk = IndexOf(src, "surfShoreBreak = smoothstep(thr - soft, thr + soft, churnShore);");

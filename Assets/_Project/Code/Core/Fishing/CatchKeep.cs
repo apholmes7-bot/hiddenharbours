@@ -50,4 +50,31 @@ namespace HiddenHarbours.Core
 
         public CatchReleased(in CatchItem item) => Item = item;
     }
+
+    /// <summary>
+    /// <b>A catch went back because the player holds no licence for its species.</b> Owner ruling
+    /// 2026-11-23: nothing stops him digging, catching or trapping, but a species he is not licensed for
+    /// is released at once, he says so, and it is NOT written in the Notebook. Published by every landing
+    /// choke point (the rod, the dig, the trap haul) at the moment it lets such a catch go.
+    ///
+    /// <para>Deliberately a different signal from <see cref="CatchReleased"/>: that one is "documented,
+    /// then put back" and the catch record counts it. Nothing that keeps a record listens to this one; it
+    /// exists so other systems (a hint, a sound, a later licence nudge) can react. It never implies the
+    /// catch entered a hold, a hand or a pail.</para>
+    /// </summary>
+    public readonly struct UnlicensedCatchReleased
+    {
+        /// <summary>The catch exactly as it would have been kept (species, name, weight).</summary>
+        public readonly CatchItem Item;
+
+        /// <summary>The stable id of the licence that would have let him keep it (<c>license.*</c>), or
+        /// empty when the data could not name one.</summary>
+        public readonly string RequiredLicenceId;
+
+        public UnlicensedCatchReleased(in CatchItem item, string requiredLicenceId)
+        {
+            Item = item;
+            RequiredLicenceId = requiredLicenceId ?? "";
+        }
+    }
 }
