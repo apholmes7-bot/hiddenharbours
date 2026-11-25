@@ -1,0 +1,273 @@
+using UnityEngine;
+using HiddenHarbours.Core;
+
+namespace HiddenHarbours.Player
+{
+    /// <summary>
+    /// <b>The fish on the line once she is up</b>: which species and size rung is drawn (resolved once
+    /// per fish, never per frame), her dart or thrash at the published offset facing her travel, the
+    /// line's attach at the baked mouth anchor, and a hooked jumper clearing the water on
+    /// <see cref="FishJumpArc"/>'s schedule. Shared by every presenter that draws a rod fight.
+    ///
+    /// <para><b>Reads no clock and keeps none.</b> The frame step, the seconds in the phase and the
+    /// seconds she has been up are handed in by the caller each frame; a jump's re-entry is handed back
+    /// as a splash for the caller's <see cref="RodSplashFlourish"/>. Deterministic (rule 5): the jump
+    /// schedule is seeded from the species and the weight (<see cref="FightSeed"/>), never drawn.</para>
+    /// </summary>
+    public sealed class SurfacedFishDrawer
+    {
+        private const int Directions = 8;
+
+        private readonly SpriteRenderer _sr;
+
+        private string _resolvedFishId;
+        private int _speciesIndex = -1;
+        private FishSpeciesVisual _resolvedSpecies;
+        private float _resolvedWeightKg = float.NaN;
+        private FishRungVisual _rung;
+
+        private bool _fishJumps;          // does THIS species clear the water (the Core behaviour seam)
+        private float _fightJumpPeriod;   // seconds between her attempts, from the Def or the fallback
+        private int _fightJumpSeed;       // this fight's own seed: species + weight, never Random
+        private double _jumpStart = double.NegativeInfinity;   // when the live jump began
+        private bool _jumpSplashed = true;                     // has this jump's re-entry splash played
+
+        private Vector2 _lastFishPos;
+        private Vector2 _lastFishHeading;                      // her travel, so a jump goes somewhere
+        private float _fishSpeed;
+        private int _fishRow = Directions / 2;
+
+        /// <param name="renderer">The renderer she is drawn on (its owner may share it with the deep
+        /// shadow; this drawer only writes it from <see cref="Render"/>).</param>
+        public SurfacedFishDrawer(SpriteRenderer renderer) { _sr = renderer; }
+
+        /// <summary>The species entry drawn for the current hook in the owner's table, or −1.</summary>
+        public int SpeciesIndex => _speciesIndex;
+
+        /// <summary>The size rung drawn for the current hook, or null.</summary>
+        public FishRungVisual Rung => _rung;
+
+        /// <summary>Is she out of the water right now.</summary>
+        public bool FishAirborne { get; private set; }
+
+        /// <summary>How many jumps this fight has drawn; reset when the species on the line changes.</summary>
+        public int JumpsDrawn { get; private set; }
+
+        /// <summary>
+        /// Take a published state: re-resolve the species (and ask <paramref name="facts"/> what she
+        /// does on the line) only when the fish id changes, and the rung only when the species or the
+        /// weight moves. True when the rung was re-picked, so the owner can re-pick what follows from it.
+        /// </summary>
+        public bool Resolve(in FishingState next, FishSpeciesVisual[] species, FishArtLibrary fishArt,
+                            IFishBehaviourFacts facts, float fallbackJumpPeriodSeconds)
+        {
+            // Species lookup only when the id actually changes (no per-publish string work), and the
+            // RUNG only when the species or the weight moves. Both are sticky for the whole fight.
+            bool speciesMoved =
+                !string.Equals(next.FishId, _resolvedFishId, System.StringComparison.Ordinal);
+            if (speciesMoved)
+            {
+                _resolvedFishId = next.FishId;
+                _speciesIndex = FindSpecies(species, next.FishId);
+                // The scene's own ladder when it has rungs, else the shared fish art table's.
+                _resolvedSpecies = string.IsNullOrEmpty(next.FishId)
+                    ? null
+                    : FishArtLibrary.Resolve(
+                        species != null && _speciesIndex >= 0 ? species[_speciesIndex] : null,
+                        fishArt != null ? fishArt : FishArtLibrary.Shared, next.FishId);
+
+                // WHAT SHE DOES ON THE LINE, asked once per species through the Core seam (rule 4).
+                _fishJumps = facts.Jumps(next.FishId);
+                float stated = facts.FightJumpPeriodSeconds(next.FishId);
+                _fightJumpPeriod = stated > 0f ? stated : fallbackJumpPeriodSeconds;
+
+                // The fight's own seed: fixed for the whole fight, so the same fish jumps at the same
+                // moments twice running (rule 5).
+                _fightJumpSeed = FightSeed(next.FishId, next.WeightKg);
+                _jumpStart = double.NegativeInfinity;
+                _jumpSplashed = true;
+                JumpsDrawn = 0;
+                FishAirborne = false;
+            }
+            // NaN != NaN, so the first publish after a bite always resolves — 'no weight yet' and 'a
+            // weight of zero' are different states.
+            if (speciesMoved || next.WeightKg != _resolvedWeightKg)
+            {
+                _resolvedWeightKg = next.WeightKg;
+                // Picked at the weight the fish is DRAWN at (the readability floor), the same rule the
+                // hands and the tote use, so the fish he lands is the fish he then holds.
+                FishArtLibrary table = fishArt != null ? fishArt : FishArtLibrary.Shared;
+                _rung = FishArtLibrary.LineRungFor(_resolvedSpecies, table != null ? table.CatchArt : null,
+                                                   next.FishId, next.WeightKg);
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>She has just come up: a jump is scheduled from this moment, so the first cannot land
+        /// in the instant the surface phase opens.</summary>
+        public void OnSurfaced()
+        {
+            _jumpStart = double.NegativeInfinity;
+            _jumpSplashed = true;
+        }
+
+        /// <summary>
+        /// Draw her at <paramref name="angler"/> + the published offset and return the line's far end
+        /// (the mouth, or her position when the species has no art). <paramref name="dt"/> is this
+        /// frame's step, <paramref name="stateSeconds"/> the seconds in the phase (the flipbook),
+        /// <paramref name="surfaceSeconds"/> the seconds she has been up (the jump schedule).
+        /// <paramref name="speedSmoothing01"/> eases her drawn speed (dart or thrash) toward this frame's. A jump
+        /// that has just come down hands back <paramref name="splashDue"/> at <paramref name="splashAt"/>.
+        /// </summary>
+        public Vector2 Render(Vector2 angler, in FishingState s, float dt, float stateSeconds,
+                              float surfaceSeconds, float secondsPerFrame, float dartSpeedMps,
+                              float speedSmoothing01, int sortingOrder, out bool splashDue, out Vector2 splashAt)
+        {
+            splashDue = false;
+            splashAt = default;
+            Vector2 pos = angler + new Vector2(s.FishOffsetX, s.FishOffsetY);
+
+            // Her speed picks dart vs thrash; her travel picks the row (held when she pauses).
+            if (dt > 1e-5f)
+            {
+                float instant = (pos - _lastFishPos).magnitude / dt;
+                _fishSpeed = Mathf.Lerp(_fishSpeed, instant, speedSmoothing01);   // light smoothing, no state pop
+                Vector2 vel = pos - _lastFishPos;
+                if (vel.sqrMagnitude > 1e-6f)
+                {
+                    _lastFishHeading = vel;             // the way she is already going — a jump carries on it
+                    _fishRow = IsoFacing.HeadingToFacingIndex(
+                        RodPresenterMath.HeadingDegrees(vel.x, vel.y), Directions, 0f, false);
+                }
+            }
+            _lastFishPos = pos;
+
+            FishRungVisual sp = _rung;
+            if (sp == null) { _sr.enabled = false; return pos; }
+
+            // SHE CLEARS THE WATER (owner's ruling 2026-09-06), on the same half-sine arc a free fish
+            // leaves the water on (FishJumpArc). A cod cannot get here: _fishJumps is her own flag.
+            bool jumping = UpdateJump(angler, in s, surfaceSeconds, out float lift, out float travel01,
+                                      out splashDue, out splashAt);
+
+            bool dart = RodPresenterMath.IsDarting(_fishSpeed, dartSpeedMps);
+            Sprite[] frames = jumping ? sp.JumpFrames : (dart ? sp.DartFrames : sp.ThrashFrames);
+            int perDir = jumping ? sp.JumpFramesPerDir : (dart ? sp.DartFramesPerDir : sp.ThrashFramesPerDir);
+            Vector2[] mouths = jumping ? sp.JumpMouthOffsets
+                                       : (dart ? sp.DartMouthOffsets : sp.ThrashMouthOffsets);
+
+            // No jump art baked for this rung? She fights on as she always did rather than vanishing.
+            if (jumping && (frames == null || frames.Length == 0 || perDir <= 0))
+            {
+                jumping = false;
+                lift = 0f;
+                frames = dart ? sp.DartFrames : sp.ThrashFrames;
+                perDir = dart ? sp.DartFramesPerDir : sp.ThrashFramesPerDir;
+                mouths = dart ? sp.DartMouthOffsets : sp.ThrashMouthOffsets;
+            }
+            if (frames == null || frames.Length == 0) { _sr.enabled = false; return pos; }
+
+            // ⚠ The jump strip is played ACROSS its own travel, never on the spot (the rig's
+            // MOTION.jump.travel). She carries on the way she was already going.
+            if (jumping)
+            {
+                Vector2 heading = _lastFishHeading;
+                if (heading.sqrMagnitude > 1e-6f)
+                    pos += heading.normalized * (FishJumpArc.TravelMetres * travel01);
+            }
+
+            int frame = jumping
+                ? FishJumpArc.FrameAt(_jumpStart, surfaceSeconds)
+                : RodPresenterMath.FlipFrame(stateSeconds, secondsPerFrame, perDir);
+            int idx = RodPresenterMath.SheetIndex(_fishRow, frame, perDir, frames.Length);
+            if (idx < 0 || frames[idx] == null) { _sr.enabled = false; return pos; }
+
+            _sr.transform.position = new Vector3(pos.x, pos.y + lift, 0f);
+            _sr.sprite = frames[idx];
+            _sr.sortingOrder = sortingOrder;
+            _sr.enabled = true;
+
+            // The line follows her UP — the mouth anchor rides the same lift the sprite does.
+            Vector2 mouth = pos + new Vector2(0f, lift);
+            if (mouths != null && idx < mouths.Length) mouth += mouths[idx];
+            return mouth;
+        }
+
+        /// <summary>
+        /// THE HOOKED JUMPER'S SCHEDULE: one jump per period, its moment inside the period hashed off the
+        /// fight's own seed (<see cref="FishJumpArc.TryNextJump"/>). The re-entry splash is handed back
+        /// exactly once per jump.
+        /// </summary>
+        private bool UpdateJump(Vector2 angler, in FishingState s, float surfaceSeconds,
+                                out float lift, out float travel01, out bool splashDue, out Vector2 splashAt)
+        {
+            lift = 0f;
+            travel01 = 0f;
+            splashDue = false;
+            splashAt = default;
+
+            if (!_fishJumps || _fightJumpPeriod <= 0f) { FishAirborne = false; return false; }
+
+            double now = surfaceSeconds;
+            if (!FishJumpArc.TryNextJump(_fightJumpSeed, surfaceSeconds, _fightJumpPeriod, out double start))
+            {
+                FishAirborne = false;
+                return false;
+            }
+
+            if (start > _jumpStart)                       // a new period's jump has come due
+            {
+                _jumpStart = start;
+                _jumpSplashed = false;
+            }
+
+            if (FishJumpArc.InAir(_jumpStart, now))
+            {
+                // Counted on the EDGE, so one jump is one count however many frames it spans.
+                if (!FishAirborne) JumpsDrawn++;
+                FishAirborne = true;
+                lift = FishJumpArc.Arc01(_jumpStart, now) * FishJumpArc.TravelMetres;
+                travel01 = FishJumpArc.Travel01(_jumpStart, now);
+                return true;
+            }
+            FishAirborne = false;
+
+            // She has come down: one splash where she went back in, then nothing until the next period.
+            if (!_jumpSplashed && now >= _jumpStart)
+            {
+                _jumpSplashed = true;
+                splashDue = true;
+                splashAt = angler + new Vector2(s.FishOffsetX, s.FishOffsetY);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// A fight's own seed, from the two things the sim fixes at the bite and never changes: which
+        /// species and how heavy. Stable for the whole fight, different between fights, and computed —
+        /// never drawn — so the jumps replay (rule 5).
+        /// </summary>
+        public static int FightSeed(string fishId, float weightKg)
+        {
+            unchecked
+            {
+                uint h = 2166136261u;
+                if (!string.IsNullOrEmpty(fishId))
+                    for (int i = 0; i < fishId.Length; i++) h = (h ^ fishId[i]) * 16777619u;
+                // The weight enters as its bit pattern so two fish a gram apart seed differently.
+                h = (h ^ (uint)System.BitConverter.SingleToInt32Bits(weightKg)) * 16777619u;
+                return (int)(h & 0x7FFFFFFF);
+            }
+        }
+
+        private static int FindSpecies(FishSpeciesVisual[] species, string fishId)
+        {
+            if (string.IsNullOrEmpty(fishId) || species == null) return -1;
+            for (int i = 0; i < species.Length; i++)
+                if (species[i] != null && string.Equals(species[i].FishId, fishId, System.StringComparison.Ordinal))
+                    return i;
+            return -1;
+        }
+    }
+}
