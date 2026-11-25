@@ -21,7 +21,7 @@ namespace HiddenHarbours.Boats
     /// is. Everything read on the interaction query path is a field or a constant: no allocation.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class CabinLightSwitch : MonoBehaviour, IInteractable
+    public sealed class CabinLightSwitch : MonoBehaviour, IInteractable, IHelmFixture
     {
         /// <summary>The chooser's verb when the press will turn the cabin lights on.</summary>
         public const string VerbOn = "Cabin lights on";
@@ -86,6 +86,11 @@ namespace HiddenHarbours.Boats
                 return level < 0 || level == _cabin.Level;
             }
         }
+
+        /// <summary>The helm switch is worked from the wheel (the switcher offers it beside "Leave the
+        /// helm"); the door switch is not at a helm, so it answers null.</summary>
+        public GameObject HelmBoat
+            => _role == CabinLightSwitchRole.Helm && _board != null ? _board.gameObject : null;
 
         public void Configure(CabinLightSwitchboard board, BoatInterior cabin, string id,
                               CabinLightSwitchRole role, Vector3 localMetres)

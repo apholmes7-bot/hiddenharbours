@@ -1562,8 +1562,15 @@ route.
   publishes `CabinLightSwitchThrown` once. The state reaches the lights through `ICabinLightsOutlet`,
   which joins the lights' own Core contract when that lands.
 - **Saved:** never (no save row fits). A loaded game starts every boat on Auto.
-- **Owed:** at the helm station E takes the helm before any registered fixture, so the helm switch is
-  only pressable once the helm press offers the chooser (helm + fixtures at the helm). Switch art.
+- **At the wheel:** the helm switch is a Core `IHelmFixture`. With one in reach, the helm press opens
+  the interaction chooser instead of acting at once: at the helm its rows are "Leave the helm" then the
+  switch, so he throws it without leaving the wheel; next to the helm on deck they are "Take the
+  helm" then the switch. Row 0 is always the station and is selected first, and the fixtures follow
+  by id (a stable gamepad order). With no helm fixture, the press is unchanged (`ControlSwitcher`,
+  `Player/HelmStationChoices`).
+- **Co-op:** the state is the boat's, not a player's: any player aboard may throw either switch, and
+  nothing records who did.
+- **Owed:** switch art.
 
 ## 10. Open questions
 
