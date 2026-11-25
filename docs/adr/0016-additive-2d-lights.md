@@ -1125,11 +1125,11 @@ texture, no new full-screen pass, no save change.
 |---|---|---|
 | The whole look on or off | `GlassLook._enabled` | **on** (off = the frame before this amendment) |
 | Pixels per metre the glass snaps to | `_pixelsPerMetre` | 32 |
-| Navigation lens: core, rim px, whiten, coloured whiten, rim level, tail, tail scale, bands | `_navLens` | 0.17, 1, 0.85, 0.3, 1, 0.32, 0.22, 3 |
+| Navigation lens: core, rim px, whiten, coloured whiten, rim level, tail, tail scale, bands, hot fraction, body level, body whiten, rim fade | `_navLens` | 0.17, 1, 0.85, 0.3, 0.7, 0.3, 0.17, 3, 0.5, 0.92, 0.2, 0 |
 | Navigation streak: strength, length m, width m, drop m, row px, breakup, wobble, speed, height share | `_navStreak` | 0.42, 3.6, 0.34, 0.15, 2, 0.4, 0.35, 0, 0.45 |
-| Shore lens | `_shoreLens` | 0.22, 1, 0.8, 0.3, 0.95, 0.3, 0.24, 3 |
+| Shore lens | `_shoreLens` | 0.22, 1, 0.8, 0.3, 0.65, 0.28, 0.18, 3, 0.5, 0.9, 0.2, 0 |
 | Shore streak (off: needs a deck mask) | `_shoreStreak` | 0, 3.2, 0.4, 0.6, 2, 0.42, 0.35, 0, 1 |
-| Panes: head, sill, centre lift, bands, frame px, mullion px, mullion min px, breath, breath speed, probe texels | `_panes` | 0.62, 1, 0.22, 3, 0, 1, 7, 0, 0.7, 6 |
+| Panes: head, sill, centre lift, bands, frame px, mullion px, mullion min px, breath, breath speed, probe texels, across falloff, unevenness, tint variation, second room colour | `_panes` | 0.62, 1, 0.22, 3, 1, 1, 7, 0, 0.7, 6, 0.25, 0.06, 0.5, (1, 0.7, 0.4) |
 | A window glow lights the ground, not a disc | `_windowSpillIsPool` | on |
 | Lamps, streaks and cabin panes sort among the world | `_sortInWorld` | on |
 
@@ -1166,3 +1166,20 @@ the ceiling: they multiply whatever is in the pixel by design, and their ladder 
 depth) is pinned by `LightsIlluminatePlatePlayTests`. The north wharf deck row ties with the streak's order.
 The sun's shade (32763) now lands on a sorted lamp; its strength follows the sun, so it should be near nothing
 once the lamps are lit (not measured at dusk).
+
+### The lens and the pane, second look; the collapsed cabin panes (2026-11-25)
+
+**The collapsed panes were culled, not collapsed.** A moored boat's cabin panes were switched on, lit and
+posed at the right world points, but `Mesh.SetVertices` does not grow a mesh's bounds, so the pane mesh kept
+the zero box of its first upload at the origin and the camera culled it. `BoatWindowGlow` now sets the box
+from the posed corners every frame it draws (`PaneBounds`, a thin `PaneBoundsDepth` in z). Pinned by
+`BoatWindowPaneBoundsPlayTests` (every lit cabin at the Nine Mile Creek berths has a box around its own
+windows) and two EditMode cases on the arithmetic.
+
+**The lens** is now three parts inside the same quad: a hot centre (`HotFraction` of the core, whitened), a
+coloured body (`BodyLevel`, whitened only by `BodyWhiten`), and a softer rim (`RimLevel`, faded across its
+width by `RimFade`), with the shorter tail above. **The pane** gains a frame (`FramePixels` 1), a dimming toward
+its sides (`AcrossFalloff`), a slight per-cell unevenness (`Unevenness`), and a room colour that differs per
+window: each window gets a fixed shade from a hash of its hull's seed and index (UV2 on the cabin mesh; the
+hashed centre texel of its run on a house), blended toward `TintAlt` by `TintVariation`. Every number is in
+`GlassLook.asset`; the occlusion above is unchanged. No draw, texture, pass or save field is added.

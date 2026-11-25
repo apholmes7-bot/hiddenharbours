@@ -55,11 +55,17 @@ Shader "HiddenHarbours/AdditiveLight"
         _GlassTail          ("Glow tail brightness beside the glass (0..1)", Range(0, 1)) = 0
         _GlassTailScale     ("Glow tail half distance (fraction of throw)", Range(0.01, 1)) = 0.25
         _GlassBands         ("Glow tail bands (0 is smooth)", Float) = 0
+        _GlassHot           ("Share of the core that is white hot (1 is all of it)", Range(0, 1)) = 1
+        _GlassBody          ("Coloured body brightness round the hot centre (0..1)", Range(0, 1)) = 1
+        _GlassBodyWhiten    ("Share of the core's whiten the body keeps (0..1)", Range(0, 1)) = 1
+        _GlassRimFade       ("How far the rim fades across its width (0 is flat)", Range(0, 1)) = 0
 
         [Header(Lit window pane. Mode zero is off)]
         _PaneMode           ("Window pane mode (0 off, 1 on)", Float) = 0
         _PaneLook           ("Pane x head level, y sill level, z centre lift, w bands", Vector) = (0.62, 1, 0.22, 3)
         _PaneFrame          ("Pane x frame px, y mullion px, z mullion min px", Vector) = (0, 1, 7, 0)
+        _PaneLook2          ("Pane x across falloff, y unevenness, z tint variation", Vector) = (0, 0, 0, 0)
+        _PaneTint           ("Pane second warm interior colour", Color) = (1, 0.72, 0.42, 1)
 
         [Header(Reflection streak. Mode zero is off)]
         _StreakMode         ("Reflection streak mode (0 off, 1 on)", Float) = 0
@@ -105,6 +111,7 @@ Shader "HiddenHarbours/AdditiveLight"
                 float3 positionOS : POSITION;
                 float2 uv         : TEXCOORD0;
                 float2 uv1        : TEXCOORD1;   // window panes only: the pane's drawn size in art pixels
+                float2 uv2        : TEXCOORD2;   // window panes only: x = this window's own 0..1 (stable)
             };
 
             struct Varyings
@@ -113,6 +120,7 @@ Shader "HiddenHarbours/AdditiveLight"
                 float2 uv         : TEXCOORD0;
                 float2 uv1        : TEXCOORD1;
                 float2 positionWS : TEXCOORD2;   // the streak's water test
+                float2 uv2        : TEXCOORD3;
             };
 
             // Global published by DayNightController (read-only here): the whole-frame multiply tint.
@@ -158,9 +166,15 @@ Shader "HiddenHarbours/AdditiveLight"
                 float  _GlassTail;
                 float  _GlassTailScale;
                 float  _GlassBands;
+                float  _GlassHot;
+                float  _GlassBody;
+                float  _GlassBodyWhiten;
+                float  _GlassRimFade;
                 float  _PaneMode;
                 float4 _PaneLook;
                 float4 _PaneFrame;
+                float4 _PaneLook2;
+                float4 _PaneTint;
                 float  _StreakMode;
                 float4 _StreakLook;
                 float  _StreakTime;
@@ -237,8 +251,10 @@ Shader "HiddenHarbours/AdditiveLight"
 
             // THE LIT PANE: brightness at one point of a window, 0 on its frame and mullions. 'uv' is the
             // pane's own 0..1 (v = 0 at the sill), 'sizePx' its drawn size in art pixels. Brighter low and
-            // in the middle, because the lamp inside stands on a table, not on the ceiling.
-            float PaneShape(float2 uv, float2 sizePx)
+            // in the middle, because the lamp inside stands on a table, not on the ceiling. Dimmer toward
+            // the sides (_PaneLook2.x), and a little uneven pixel to pixel (_PaneLook2.y), as old glass is;
+            // 'id' is this window's own stable 0..1, so two windows of one cabin are not one stamp.
+            float PaneShape(float2 uv, float2 sizePx, float id)
             {
                 float2 sz = max(sizePx, float2(1.0, 1.0));
                 float2 cell = floor(saturate(uv) * sz - 1e-3);    // which art pixel of the pane
@@ -258,6 +274,9 @@ Shader "HiddenHarbours/AdditiveLight"
                 float level = lerp(_PaneLook.y, _PaneLook.x, v);
                 float2 c = (p / sz - float2(0.5, 0.4)) * float2(2.0, 2.0);
                 level += _PaneLook.z * saturate(1.0 - dot(c, c));
+                float across = abs(saturate(p.x / sz.x) - 0.5) * 2.0;     // 0 mid-pane, 1 at a side
+                level *= 1.0 - saturate(_PaneLook2.x) * across * across;
+                level *= 1.0 + saturate(_PaneLook2.y) * (Hash21(cell + id * 97.0) * 2.0 - 1.0);
                 float bands = floor(max(_PaneLook.w, 0.0));
                 if (bands >= 1.0) level = ceil(level * bands) / bands;
                 return level * inside * mull;
@@ -289,6 +308,7 @@ Shader "HiddenHarbours/AdditiveLight"
                 OUT.positionWS = pos.positionWS.xy;
                 OUT.uv = IN.uv;
                 OUT.uv1 = IN.uv1;
+                OUT.uv2 = IN.uv2;
                 return OUT;
             }
 
@@ -297,10 +317,13 @@ Shader "HiddenHarbours/AdditiveLight"
                 // ---- the lit window pane (BoatWindowGlow) ----------------------------------------------
                 if (_PaneMode > 0.5)
                 {
-                    float pk = max(_Intensity, 0.0) * PaneShape(IN.uv, IN.uv1) * NightGate();
+                    float id = IN.uv2.x;
+                    float pk = max(_Intensity, 0.0) * PaneShape(IN.uv, IN.uv1, id) * NightGate();
                     if (pk <= 0.0) discard;
-                    // Deep amber at the head, toward a warm white where the pane is hottest.
-                    float3 prgb = lerp(_LightColor.rgb, lerp(_LightColor.rgb, float3(1.0, 1.0, 1.0), 0.5), saturate(pk - 0.6));
+                    // This window's own warm colour (the room behind it is not one stamp), then deep
+                    // amber at the head, toward a warm white where the pane is hottest.
+                    float3 room = lerp(_LightColor.rgb, _PaneTint.rgb, saturate(_PaneLook2.z) * id);
+                    float3 prgb = lerp(room, lerp(room, float3(1.0, 1.0, 1.0), 0.5), saturate(pk - 0.6));
                     return half4(InWorld(prgb * pk), pk);
                 }
 
@@ -357,22 +380,27 @@ Shader "HiddenHarbours/AdditiveLight"
                 float whiten = 0.0;
                 if (_GlassCore > 0.0)
                 {
-                    // GLOWING GLASS (GlassLook): a near-white hot core, a ring of the lamp's own colour
-                    // round it (the glass), then a glow that falls off the way light does, an
-                    // inverse-square tail windowed to reach zero at the bloom's edge, cut into bands.
+                    // GLOWING GLASS (GlassLook): a white-hot centre, a body of the lamp's own colour
+                    // round it, a soft rim (the glass), then a glow that falls off the way light does,
+                    // an inverse-square tail windowed to reach zero at the bloom's edge, cut into bands.
                     float d = length(rel) / max(_Throw, 1e-4);
                     float coreR = _GlassCore;
                     float rimR = coreR + max(_GlassRim, 0.0);
                     float coreMask = step(d, coreR);
+                    float hotMask = step(d, coreR * saturate(_GlassHot));
+                    float bodyMask = coreMask * (1.0 - hotMask);
                     float rimMask = step(d, rimR) * (1.0 - coreMask);
+                    float rimT = saturate((d - coreR) / max(rimR - coreR, 1e-4));
+                    float rimLevel = saturate(_GlassRimLevel) * (1.0 - saturate(_GlassRimFade) * rimT);
                     float x = max(d - rimR, 0.0) / max(_GlassTailScale, 1e-3);
                     float fall = 1.0 / (1.0 + x * x);
                     float edge = saturate(1.0 - (d - rimR) / max(1.0 - rimR, 1e-4));
                     float glow = saturate(_GlassTail) * fall * edge * edge;
                     float gb = floor(max(_GlassBands, 0.0));
                     if (gb >= 1.0) glow = floor(glow / max(saturate(_GlassTail), 1e-4) * gb + 0.5) / gb * saturate(_GlassTail);
-                    shape = max(coreMask, max(rimMask * saturate(_GlassRimLevel), glow)) * cone;
-                    whiten = coreMask * saturate(_GlassWhiten);
+                    float core = hotMask + bodyMask * saturate(_GlassBody);
+                    shape = max(core, max(rimMask * rimLevel, glow)) * cone;
+                    whiten = (hotMask + bodyMask * saturate(_GlassBodyWhiten)) * saturate(_GlassWhiten);
                 }
                 else if (_CoreRadius > 0.0)
                 {

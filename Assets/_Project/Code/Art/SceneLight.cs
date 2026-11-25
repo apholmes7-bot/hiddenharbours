@@ -61,6 +61,10 @@ namespace HiddenHarbours.Art
         private static readonly int IdGlassTail      = Shader.PropertyToID("_GlassTail");
         private static readonly int IdGlassTailScale = Shader.PropertyToID("_GlassTailScale");
         private static readonly int IdGlassBands     = Shader.PropertyToID("_GlassBands");
+        private static readonly int IdGlassHot       = Shader.PropertyToID("_GlassHot");
+        private static readonly int IdGlassBody      = Shader.PropertyToID("_GlassBody");
+        private static readonly int IdGlassBodyWhiten = Shader.PropertyToID("_GlassBodyWhiten");
+        private static readonly int IdGlassRimFade   = Shader.PropertyToID("_GlassRimFade");
         private static readonly int IdStreakMode     = Shader.PropertyToID("_StreakMode");
         private static readonly int IdStreakLook     = Shader.PropertyToID("_StreakLook");
         private static readonly int IdStreakTime     = Shader.PropertyToID("_StreakTime");
@@ -730,6 +734,10 @@ namespace HiddenHarbours.Art
             _mpb.SetFloat(IdGlassTail, glass ? _glass.Tail : 0f);
             _mpb.SetFloat(IdGlassTailScale, glass ? Mathf.Max(_glass.TailScale, 0.01f) : 1f);
             _mpb.SetFloat(IdGlassBands, glass ? _glass.Bands : 0f);
+            _mpb.SetFloat(IdGlassHot, glass ? Mathf.Clamp01(_glass.HotFraction) : 1f);
+            _mpb.SetFloat(IdGlassBody, glass ? Mathf.Clamp01(_glass.BodyLevel) : 1f);
+            _mpb.SetFloat(IdGlassBodyWhiten, glass ? Mathf.Clamp01(_glass.BodyWhiten) : 1f);
+            _mpb.SetFloat(IdGlassRimFade, glass ? Mathf.Clamp01(_glass.RimFade) : 0f);
             if (glass && grid == Vector4.zero && glassPpm > 0f)
             {
                 float halfX = radial ? r : ConeWorldWidth(r) * 0.5f;

@@ -98,6 +98,42 @@ namespace HiddenHarbours.Art
         /// </summary>
         public static bool FacesCamera(Vector3 outwardInDrawnFrame) => outwardInDrawnFrame.z < 0f;
 
+        /// <summary>
+        /// <b>The box the pane mesh really occupies</b>, from the vertices just written: the first
+        /// <paramref name="count"/> entries, with a small depth so the box is never flat in z.
+        ///
+        /// <para>⚠️ WHY THIS IS SET BY HAND. <c>Mesh.SetVertices</c> does not refresh the bounds on
+        /// this mesh: they stay where the first upload left them, and that upload was the all-zero
+        /// placeholder. A zero box at the node's origin is outside every camera that is not looking
+        /// at the world origin, so the renderer was culled and a lit cabin drew no panes at all,
+        /// while every flag said it was on. The bounds are therefore written every frame from the
+        /// same loop that writes the vertices: no allocation, no second pass over the mesh.</para>
+        ///
+        /// <para>Pure and static so a test pins it with no scene. An empty input gives a zero box,
+        /// which is honest: there is nothing to draw.</para>
+        /// </summary>
+        public static Bounds PaneBounds(Vector3[] verts, int count)
+        {
+            if (verts == null || count <= 0) return new Bounds(Vector3.zero, Vector3.zero);
+            count = Mathf.Min(count, verts.Length);
+            Vector3 min = verts[0], max = verts[0];
+            for (int i = 1; i < count; i++)
+            {
+                min = Vector3.Min(min, verts[i]);
+                max = Vector3.Max(max, verts[i]);
+            }
+            var b = new Bounds();
+            b.SetMinMax(min, max);
+            Vector3 size = b.size;
+            size.z = Mathf.Max(size.z, PaneBoundsDepth);
+            b.size = size;
+            return b;
+        }
+
+        /// <summary>The depth given to the pane box: the vertices are flat (z = 0), and a box with no
+        /// depth is one some culling paths treat as empty. Not a tunable: it changes nothing seen.</summary>
+        public const float PaneBoundsDepth = 0.01f;
+
         static readonly int IdLightColor    = Shader.PropertyToID("_LightColor");
         static readonly int IdIntensity     = Shader.PropertyToID("_Intensity");
         static readonly int IdConeHalfAngle = Shader.PropertyToID("_ConeHalfAngle");
@@ -110,6 +146,8 @@ namespace HiddenHarbours.Art
         static readonly int IdPaneMode      = Shader.PropertyToID("_PaneMode");
         static readonly int IdPaneLook      = Shader.PropertyToID("_PaneLook");
         static readonly int IdPaneFrame     = Shader.PropertyToID("_PaneFrame");
+        static readonly int IdPaneLook2     = Shader.PropertyToID("_PaneLook2");
+        static readonly int IdPaneTint      = Shader.PropertyToID("_PaneTint");
         static readonly int IdStreakMode    = Shader.PropertyToID("_StreakMode");
 
         private IsoFacetHullRenderer _hull;
@@ -210,7 +248,7 @@ namespace HiddenHarbours.Art
             var lamps = GetComponent<BoatLamps>();
             if (lamps != null)
             {
-                _lit = BoatLamps.ShowsWhen(HullLampKind.CabinGlow, lamps.Way, lamps.CabinOccupied);
+                _lit = lamps.CabinLightsLit;
                 _boost = lamps.CabinGlowScale;
                 return;
             }
@@ -348,7 +386,37 @@ namespace HiddenHarbours.Art
             _mesh.vertices = _verts;      // placeholder; PoseAndDraw writes the real ones this frame
             _mesh.uv = uvs;
             _mesh.SetUVs(1, _paneSizes);
+            _mesh.SetUVs(2, WindowIds(n, _breathSeed));
             _mesh.triangles = tris;
+        }
+
+        /// <summary>
+        /// Each window's own fixed 0..1, written once into the mesh's third uv channel (all four corners
+        /// of a pane carry the same value). The shader reads it to give each window of a cabin its own
+        /// warm colour and its own grain of unevenness (<see cref="GlassLook.PaneLook.TintVariation"/>), so
+        /// two windows of one cabin are not one stamp. Pure function of the boat's stable seed and the
+        /// pane's index: the same boat looks the same every night (rule 5). Built once, at build time.
+        /// </summary>
+        public static Vector2[] WindowIds(int paneCount, int seed)
+        {
+            var ids = new Vector2[Mathf.Max(0, paneCount) * 4];
+            for (int i = 0; i < paneCount; i++)
+            {
+                var id = new Vector2(WindowId(seed, i), 0f);
+                ids[i * 4 + 0] = ids[i * 4 + 1] = ids[i * 4 + 2] = ids[i * 4 + 3] = id;
+            }
+            return ids;
+        }
+
+        /// <summary>One window's fixed 0..1 (an integer hash of seed and index; no Random).</summary>
+        public static float WindowId(int seed, int index)
+        {
+            unchecked
+            {
+                uint h = (uint)seed * 0x9E3779B1u ^ (uint)(index + 1) * 0x85EBCA77u;
+                h ^= h >> 15; h *= 0x2C1B3C6Du; h ^= h >> 12; h *= 0x297A2D39u; h ^= h >> 15;
+                return (h & 0xFFFFFF) / (float)0x1000000;
+            }
         }
 
         /// <summary>A name hash that is the same on every run and platform (FNV-1a), for the cabin
@@ -519,7 +587,7 @@ namespace HiddenHarbours.Art
                     // keeps a pane's slot stable across the frame she turns through edge-on.
                     //
                     // Collapsed onto its OWN projected centre rather than onto the origin, because
-                    // SetVertices recomputes the mesh bounds: a dark pane parked at (0,0) would
+                    // PaneBounds is taken over every vertex: a dark pane parked at (0,0) would
                     // stretch this hull's bounds from the world origin out to wherever she is, and a
                     // boat two kilometres offshore would carry a two-kilometre bounding box.
                     var at = new Vector3(c.x, c.y, 0f);
@@ -532,6 +600,7 @@ namespace HiddenHarbours.Art
             // allocates, and using the pair invites somebody to read it back in this same loop.
             _mesh.SetVertices(_verts);
             _mesh.SetUVs(1, _paneSizes);
+            _mesh.bounds = PaneBounds(_verts, v);   // see PaneBounds: SetVertices leaves them at zero
 
             if (_paneRenderer != null)
             {
@@ -564,6 +633,8 @@ namespace HiddenHarbours.Art
             _mpb.SetFloat(IdPaneMode, panes ? 1f : 0f);
             _mpb.SetVector(IdPaneLook, new Vector4(p.HeadLevel, p.SillLevel, p.CentreLift, p.Bands));
             _mpb.SetVector(IdPaneFrame, new Vector4(p.FramePixels, p.MullionPixels, p.MullionMinPixels, 0f));
+            _mpb.SetVector(IdPaneLook2, new Vector4(p.AcrossFalloff, p.Unevenness, p.TintVariation, 0f));
+            _mpb.SetColor(IdPaneTint, p.TintAlt);
             _mpb.SetFloat(IdGlassCore, 0f);
             _mpb.SetFloat(IdCoreRadius, 0f);
             _mpb.SetFloat(IdStreakMode, 0f);

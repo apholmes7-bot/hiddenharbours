@@ -9,14 +9,15 @@ namespace HiddenHarbours.Art
     /// <para>A lamp at night is three things, and each is drawn as a cheap layer over what is already
     /// there (ADR 0016's additive quad, the house emitter sheet, the boat pane mesh):</para>
     /// <list type="number">
-    /// <item><b>The glass itself</b> (<see cref="Lens"/>): a near-white hot core, a ring of the lamp's own
-    /// colour round it, then a glow that falls off the way light does (an inverse-square tail windowed to
+    /// <item><b>The glass itself</b> (<see cref="Lens"/>): a white-hot centre, a body of the lamp's own
+    /// colour round it, a soft rim, then a glow that falls off the way light does (an inverse-square tail windowed to
     /// the bloom) instead of a flat disc. Pixel-snapped and banded so it stays pixel art.</item>
     /// <item><b>The light on the water</b> (<see cref="Streak"/>): a short vertical streak in the lamp's
     /// colour under a lamp that stands over the sea, broken into rows that drift with the waves. It only
     /// draws on water (the published seabed below the published sea level) and never over a hull.</item>
     /// <item><b>The lit window</b> (<see cref="PaneLook"/>): a pane that is brighter low and in the middle
-    /// (the lamp is on a table inside, not on the ceiling), with a dark frame and mullions, and a slow
+    /// (the lamp is on a table inside, not on the ceiling) and dimmer at its sides, a little uneven, with
+    /// a dark frame and mullions, a warm colour that differs a little from window to window, and a slow
     /// oil-lamp breath on a boat's cabin. House windows take the same gradient off their baked emitter
     /// sheet.</item>
     /// </list>
@@ -57,6 +58,14 @@ namespace HiddenHarbours.Art
             [Range(0.01f, 1f)] public float TailScale;
             [Tooltip("Flat bands the glow is cut into (0 = smooth).")]
             [Range(0, 8)] public int Bands;
+            [Tooltip("Share of the core that is white hot, 0..1. The rest of the core is the coloured body. 1 = all of it hot.")]
+            [Range(0f, 1f)] public float HotFraction;
+            [Tooltip("Brightness of the coloured body round the hot centre, 0..1 of the centre.")]
+            [Range(0f, 1f)] public float BodyLevel;
+            [Tooltip("Share of the core's pull to white that the body keeps, 0..1. Low = the body shows the lamp's colour.")]
+            [Range(0f, 1f)] public float BodyWhiten;
+            [Tooltip("How far the rim fades across its width, 0..1. 0 = a flat ring, 1 = fades to nothing at its outer edge.")]
+            [Range(0f, 1f)] public float RimFade;
 
             public bool IsOn => CoreFraction > 0f;
         }
@@ -112,6 +121,14 @@ namespace HiddenHarbours.Art
             [Min(0f)] public float BreathSpeed;
             [Tooltip("House windows: how many texels the gradient looks along to find a pane's edges.")]
             [Range(1, 8)] public int ProbeTexels;
+            [Tooltip("How much dimmer a pane is at its sides than in its middle, 0..1.")]
+            [Range(0f, 1f)] public float AcrossFalloff;
+            [Tooltip("Pixel-to-pixel unevenness of the glass, 0..0.5 of its brightness. Stable, not a flicker.")]
+            [Range(0f, 0.5f)] public float Unevenness;
+            [Tooltip("How far each window's warm colour drifts toward the second colour, 0..1. Each window gets its own fixed share.")]
+            [Range(0f, 1f)] public float TintVariation;
+            [Tooltip("The second warm interior colour a window may drift toward.")]
+            public Color TintAlt;
         }
 
         [Tooltip("Master switch. Off = every lamp and window draws exactly as before this look existed.")]
@@ -122,7 +139,8 @@ namespace HiddenHarbours.Art
         [SerializeField] private Lens _navLens = new Lens
         {
             CoreFraction = 0.17f, RimPixels = 1f, Whiten = 0.85f, ColouredWhiten = 0.3f,
-            RimLevel = 1f, Tail = 0.32f, TailScale = 0.22f, Bands = 3,
+            RimLevel = 0.7f, Tail = 0.3f, TailScale = 0.17f, Bands = 3,
+            HotFraction = 0.5f, BodyLevel = 0.92f, BodyWhiten = 0.2f, RimFade = 0f,
         };
         [SerializeField] private Streak _navStreak = new Streak
         {
@@ -134,7 +152,8 @@ namespace HiddenHarbours.Art
         [SerializeField] private Lens _shoreLens = new Lens
         {
             CoreFraction = 0.22f, RimPixels = 1f, Whiten = 0.8f, ColouredWhiten = 0.3f,
-            RimLevel = 0.95f, Tail = 0.3f, TailScale = 0.24f, Bands = 3,
+            RimLevel = 0.65f, Tail = 0.28f, TailScale = 0.18f, Bands = 3,
+            HotFraction = 0.5f, BodyLevel = 0.9f, BodyWhiten = 0.2f, RimFade = 0f,
         };
         [SerializeField] private Streak _shoreStreak = new Streak
         {
@@ -146,8 +165,10 @@ namespace HiddenHarbours.Art
         [SerializeField] private PaneLook _panes = new PaneLook
         {
             HeadLevel = 0.62f, SillLevel = 1f, CentreLift = 0.22f, Bands = 3,
-            FramePixels = 0f, MullionPixels = 1f, MullionMinPixels = 7f,
+            FramePixels = 1f, MullionPixels = 1f, MullionMinPixels = 7f,
             Breath = 0f, BreathSpeed = 0.7f, ProbeTexels = 6,
+            AcrossFalloff = 0.25f, Unevenness = 0.06f, TintVariation = 0.5f,
+            TintAlt = new Color(1f, 0.7f, 0.4f, 1f),
         };
         [Tooltip("A house window glow stops painting a disc over the wall; its light lands on the ground as a pool.")]
         [SerializeField] private bool _windowSpillIsPool = true;
@@ -255,11 +276,15 @@ namespace HiddenHarbours.Art
 
         static readonly int IdWindowGlassA = Shader.PropertyToID("_HHWindowGlassA");
         static readonly int IdWindowGlassB = Shader.PropertyToID("_HHWindowGlassB");
+        static readonly int IdWindowGlassC = Shader.PropertyToID("_HHWindowGlassC");
+        static readonly int IdWindowGlassTint = Shader.PropertyToID("_HHWindowGlassTint");
 
         /// <summary>
         /// Publish the house-window gradient to the lit-sprite shader: <c>_HHWindowGlassA</c> = (on,
-        /// head level, sill level, centre lift), <c>_HHWindowGlassB</c> = (probe texels, bands). Off (x 0)
-        /// leaves every house window exactly as its bake draws it.
+        /// head level, sill level, centre lift), <c>_HHWindowGlassB</c> = (probe texels, bands),
+        /// <c>_HHWindowGlassC</c> = (across falloff, unevenness, tint variation) and
+        /// <c>_HHWindowGlassTint</c> = the second warm colour. Off (x 0) leaves every house window exactly
+        /// as its bake draws it.
         /// </summary>
         public static void Publish()
         {
@@ -269,6 +294,8 @@ namespace HiddenHarbours.Art
                 ? new Vector4(1f, p.HeadLevel, p.SillLevel, p.CentreLift)
                 : Vector4.zero);
             Shader.SetGlobalVector(IdWindowGlassB, new Vector4(Mathf.Max(1, p.ProbeTexels), Mathf.Max(0, p.Bands), 0f, 0f));
+            Shader.SetGlobalVector(IdWindowGlassC, new Vector4(p.AcrossFalloff, p.Unevenness, p.TintVariation, 0f));
+            Shader.SetGlobalColor(IdWindowGlassTint, p.TintAlt);
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]

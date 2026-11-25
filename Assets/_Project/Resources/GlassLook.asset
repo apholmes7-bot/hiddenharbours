@@ -19,10 +19,14 @@ MonoBehaviour:
     RimPixels: 1
     Whiten: 0.85
     ColouredWhiten: 0.3
-    RimLevel: 1
-    Tail: 0.32
-    TailScale: 0.22
+    RimLevel: 0.7
+    Tail: 0.3
+    TailScale: 0.17
     Bands: 3
+    HotFraction: 0.5
+    BodyLevel: 0.92
+    BodyWhiten: 0.2
+    RimFade: 0
   _navStreak:
     Strength: 0.42
     LengthMetres: 3.6
@@ -38,10 +42,14 @@ MonoBehaviour:
     RimPixels: 1
     Whiten: 0.8
     ColouredWhiten: 0.3
-    RimLevel: 0.95
-    Tail: 0.3
-    TailScale: 0.24
+    RimLevel: 0.65
+    Tail: 0.28
+    TailScale: 0.18
     Bands: 3
+    HotFraction: 0.5
+    BodyLevel: 0.9
+    BodyWhiten: 0.2
+    RimFade: 0
   _shoreStreak:
     Strength: 0
     LengthMetres: 3.2
@@ -57,11 +65,15 @@ MonoBehaviour:
     SillLevel: 1
     CentreLift: 0.22
     Bands: 3
-    FramePixels: 0
+    FramePixels: 1
     MullionPixels: 1
     MullionMinPixels: 7
     Breath: 0
     BreathSpeed: 0.7
     ProbeTexels: 6
+    AcrossFalloff: 0.25
+    Unevenness: 0.06
+    TintVariation: 0.5
+    TintAlt: {r: 1, g: 0.7, b: 0.4, a: 1}
   _windowSpillIsPool: 1
   _sortInWorld: 1

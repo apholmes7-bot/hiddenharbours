@@ -347,5 +347,32 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.Greater(p.SillLevel, p.HeadLevel, "the lamp inside stands low: the sill is brighter than the head");
             Assert.Greater(p.HeadLevel, 0f, "the head of a lit pane is still lit");
         }
+
+        [Test]
+        public void ALampsGlassIsAHotCentre_AColouredBody_AndASofterRim()
+        {
+            foreach (GlassLook.Lens lens in new[] { GlassLook.Current.NavLens, GlassLook.Current.ShoreLens })
+            {
+                Assert.Greater(lens.HotFraction, 0f, "there is a white-hot centre");
+                Assert.Less(lens.HotFraction, 1f, "only the centre is white: the rest of the core is the body");
+                Assert.Less(lens.BodyWhiten, 0.5f, "the body keeps the lamp's own colour");
+                Assert.Greater(lens.BodyLevel, lens.RimLevel, "the rim is softer than the body it rings");
+                Assert.Greater(lens.RimLevel, 0f, "the rim is still drawn");
+                Assert.Less(lens.Tail, lens.RimLevel, "the tail outside the glass is fainter than the glass");
+            }
+        }
+
+        [Test]
+        public void ALitPaneHasAFrame_DimsAtItsSides_AndEachWindowIsItsOwnWarmColour()
+        {
+            GlassLook.PaneLook p = GlassLook.Current.Panes;
+            Assert.GreaterOrEqual(p.FramePixels, 1f, "a boat pane draws a frame");
+            Assert.Greater(p.AcrossFalloff, 0f, "a pane is dimmer at its sides than in its middle");
+            Assert.Less(p.AcrossFalloff, 0.5f, "subtle: the sides are still lit");
+            Assert.Greater(p.Unevenness, 0f, "the glass is a little uneven");
+            Assert.Less(p.Unevenness, 0.15f, "subtle: unevenness, not noise");
+            Assert.Greater(p.TintVariation, 0f, "windows differ a little in colour");
+            Assert.Greater(p.TintAlt.r, p.TintAlt.b, "the second interior colour is warm");
+        }
     }
 }

@@ -289,10 +289,19 @@ struct SpriteLitDecorEmitParams
     e.gateNoCycle   = _EmitGateNoCycle;
 
 // GLOWING GLASS on a house window (GlassLook, published as globals so every house reads one look):
-// _HHWindowGlassA = (on, head level, sill level, centre lift), _HHWindowGlassB = (probe texels, bands).
+// _HHWindowGlassA = (on, head level, sill level, centre lift), _HHWindowGlassB = (probe texels, bands),
+// _HHWindowGlassC = (across falloff, unevenness, tint variation), _HHWindowGlassTint = the second warm colour.
 // x 0 (unpublished, or the look switched off) = the bake's own flat glow, exactly as before.
 float4 _HHWindowGlassA;
 float4 _HHWindowGlassB;
+float4 _HHWindowGlassC;
+float4 _HHWindowGlassTint;
+
+// A cheap stable hash, 0..1 (visual only).
+float WindowGlassHash(float2 p)
+{
+    return frac(sin(dot(p, float2(12.9898, 78.233))) * 43758.5453);
+}
 
 // Is the emitter texel 'k' texels away along 'stepUv' still glass? 1 or 0.
 #define HH_GLASS_LIT(uv0, stepUv, k) step(0.5 / 255.0, SAMPLE_TEXTURE2D_LOD(_LightEmit, sampler_LightEmit, (uv0) + (stepUv) * (k), 0).r)
@@ -317,7 +326,9 @@ float WindowGlassRun(float2 uv, float2 stepUv, float probe)
 // is warmest. Where it sits in its own light of glass is found from the sheet itself, by how far the
 // glass runs up, down, left and right before a mullion or the frame stops it, so every light of a
 // four-light sash gets its own gradient and the art needs no new data.
-float WindowGlassLevel(float2 uv)
+// 'id' returns this light of glass's own 0..1, hashed from its centre texel (exact for a light up to
+// twice the probe wide, which every window in the sheets is), so each window gets its own warm colour.
+float WindowGlassLevel(float2 uv, out float id)
 {
     float w, h;
     _LightEmit.GetDimensions(w, h);
@@ -331,6 +342,11 @@ float WindowGlassLevel(float2 uv)
     float across = abs(right - left) / (right + left + 1.0);      // 0 in the middle, 1 at a side
     float level = lerp(_HHWindowGlassA.z, _HHWindowGlassA.y, v);
     level += _HHWindowGlassA.w * saturate(1.0 - across) * saturate(1.0 - abs(v - 0.4) * 1.6);
+    level *= 1.0 - saturate(_HHWindowGlassC.x) * across * across;
+    float2 cellTexel = floor(uv / texel);
+    float2 centre = cellTexel + float2(right - left, up - down) * 0.5;
+    id = WindowGlassHash(floor(centre + 0.5));
+    level *= 1.0 + saturate(_HHWindowGlassC.y) * (WindowGlassHash(cellTexel + id * 97.0) * 2.0 - 1.0);
     float bands = floor(max(_HHWindowGlassB.y, 0.0));
     if (bands >= 1.0) level = ceil(level * bands) / bands;
     return level;
@@ -347,17 +363,22 @@ float3 SpriteLitDecorEmit(float2 uv, SpriteLitDecorEmitParams e)
     return SpriteLightCompensateForDayNight(glow, _DayNightTint.rgb);
 }
 
-// Glowing glass: the scalar that shapes the flat bake into a lit pane, applied by the caller to the
-// glow above. A scalar factor commutes with the day/night compensation (a per-channel divide), so the
-// glow term itself stays exactly the pinned law. 1 (no change) off glass, with the look off, or by day
-// (a dark texel or a day frame never pays for the taps).
-float WindowGlassShape(float2 uv, SpriteLitDecorEmitParams e)
+// Glowing glass: the per-channel factor that shapes the flat bake into a lit pane, applied by the
+// caller to the glow above. A per-channel factor commutes with the day/night compensation (also a
+// per-channel divide), so the glow term itself stays exactly the pinned law. The colour part moves this
+// window's warm colour a fixed share of the way toward the second warm colour. 1 (no change) off glass,
+// with the look off, or by day (a dark texel or a day frame never pays for the taps).
+float3 WindowGlassShape(float2 uv, SpriteLitDecorEmitParams e)
 {
-    if (_HHWindowGlassA.x < 0.5) return 1.0;
+    if (_HHWindowGlassA.x < 0.5) return float3(1.0, 1.0, 1.0);
     float texel = SAMPLE_TEXTURE2D(_LightEmit, sampler_LightEmit, uv).r;
     float gate = SpriteLightNightGate(_DayNightTint.rgb, e.gateThreshold, e.gateSoftness, e.gateNoCycle);
-    if (texel <= 0.5 / 255.0 || gate <= 0.0) return 1.0;
-    return WindowGlassLevel(uv);
+    if (texel <= 0.5 / 255.0 || gate <= 0.0) return float3(1.0, 1.0, 1.0);
+    float id;
+    float level = WindowGlassLevel(uv, id);
+    float3 toward = _HHWindowGlassTint.rgb / max(e.color, float3(0.05, 0.05, 0.05));
+    float3 tint = lerp(float3(1.0, 1.0, 1.0), toward, saturate(_HHWindowGlassC.z) * id);
+    return level * tint;
 }
 
 // ================================================================================================

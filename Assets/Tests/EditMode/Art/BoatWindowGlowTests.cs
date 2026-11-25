@@ -200,5 +200,65 @@ namespace HiddenHarbours.Tests.Art
             var flat = new HullPane(HullWall.Front, Vector3.zero, new Vector3(0.3f, 0, 0), Vector3.zero);
             Assert.IsFalse(flat.IsUsable, "a pane with no height is not a window");
         }
+
+        /// <summary>
+        /// <b>A lit pane has a box the camera can see.</b> The moored fleet's cabins drew nothing at
+        /// night because the pane mesh kept a zero box at the world origin (the bounds were never
+        /// refreshed after the first, all-zero upload), so the renderer was culled. The box is now
+        /// taken from the vertices themselves; this pins that it covers every one of them, is never
+        /// zero-size for a real pane far from the origin, and has some depth.
+        /// </summary>
+        [Test]
+        public void APaneFarFromTheOriginHasABoxAroundItNotAZeroBoxAtTheOrigin()
+        {
+            // One upright pane at the Nine Mile Creek berths, plus one collapsed pane on its own centre.
+            var verts = new[]
+            {
+                new Vector3(135.40f, 84.80f, 0f), new Vector3(135.90f, 84.80f, 0f),
+                new Vector3(135.90f, 85.20f, 0f), new Vector3(135.40f, 85.20f, 0f),
+                new Vector3(137.54f, 86.12f, 0f), new Vector3(137.54f, 86.12f, 0f),
+                new Vector3(137.54f, 86.12f, 0f), new Vector3(137.54f, 86.12f, 0f),
+            };
+            Bounds b = BoatWindowGlow.PaneBounds(verts, verts.Length);
+
+            Assert.Greater(b.size.x, 0.4f, "a lit pane's box must have width");
+            Assert.Greater(b.size.y, 0.3f, "a lit pane's box must have height");
+            Assert.GreaterOrEqual(b.size.z, BoatWindowGlow.PaneBoundsDepth, "the box must not be flat in depth");
+            foreach (var v in verts)
+                Assert.IsTrue(b.Contains(v), $"the box must hold every vertex; {v} is outside {b}");
+            Assert.IsFalse(b.Contains(Vector3.zero), "the box must not reach back to the world origin");
+        }
+
+        /// <summary>Only the vertices written this frame count, and no vertices means nothing to draw.</summary>
+        [Test]
+        public void ThePaneBoxReadsOnlyTheVerticesItIsGiven()
+        {
+            var verts = new[] { new Vector3(10f, 10f, 0f), new Vector3(11f, 10.5f, 0f), new Vector3(500f, 500f, 0f) };
+            Bounds b = BoatWindowGlow.PaneBounds(verts, 2);
+            Assert.AreEqual(1f, b.size.x, 1e-5f);
+            Assert.AreEqual(0.5f, b.size.y, 1e-5f);
+            Assert.AreEqual(Vector3.zero, BoatWindowGlow.PaneBounds(verts, 0).size);
+            Assert.AreEqual(Vector3.zero, BoatWindowGlow.PaneBounds(null, 4).size);
+        }
+
+        /// <summary>Each window's own 0..1 (its warm colour share) is fixed by boat and index: the same
+        /// every night, the same on all four corners of the pane, and not the same for every window.</summary>
+        [Test]
+        public void EachWindowHasItsOwnFixedShade()
+        {
+            Vector2[] a = BoatWindowGlow.WindowIds(6, 1234);
+            Vector2[] b = BoatWindowGlow.WindowIds(6, 1234);
+            CollectionAssert.AreEqual(a, b, "the same boat must look the same every night");
+            var seen = new HashSet<float>();
+            for (int i = 0; i < 6; i++)
+            {
+                float id = a[i * 4].x;
+                Assert.That(id, Is.InRange(0f, 1f));
+                for (int k = 1; k < 4; k++) Assert.AreEqual(id, a[i * 4 + k].x, "one shade per pane");
+                seen.Add(id);
+            }
+            Assert.GreaterOrEqual(seen.Count, 5, "windows of one cabin are not one stamp");
+            Assert.AreNotEqual(BoatWindowGlow.WindowId(1234, 0), BoatWindowGlow.WindowId(4321, 0), "two boats differ");
+        }
     }
 }
