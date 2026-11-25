@@ -75,6 +75,9 @@ namespace HiddenHarbours.Art
             HullSunShadowState state = _hull.SunShadowState;
             if (_proxy == null || _source != state.Hull || _closed != state.ClosedLeaf || _open != state.OpenLeaf)
                 Rebuild(state);
+            // The draw lives in the host's scene, so a teardown can destroy it before the host: let go quietly
+            // and build a fresh one next frame if the host is still here.
+            if (_renderer == null) { Release(); return; }
             SpriteShadowProfile look = Profile;
             Material material = look.ScreenSpaceShade ? (_multiply != null ? _multiply : _multiply = Resources.Load<Material>(MaterialPath))
                 : (_legacy != null ? _legacy : _legacy = Resources.Load<Material>(LegacyMaterialPath));

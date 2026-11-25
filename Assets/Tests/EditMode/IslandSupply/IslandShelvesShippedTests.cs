@@ -56,14 +56,17 @@ namespace HiddenHarbours.Tests.EditMode
 
             Assert.That(_def.Lines.Count, Is.GreaterThan(0));
             var ids = new HashSet<string>();
-            var goods = new HashSet<string>();
+            var shown = new Dictionary<string, double>();
             foreach (IslandShelfLine line in _def.Lines)
             {
                 Assert.That(line.Id, Does.Match("^line\\.[a-z0-9_]+$"), line.Id);
                 Assert.IsTrue(ids.Add(line.Id), "duplicate line " + line.Id);
                 Assert.IsFalse(shopLineIds.Contains(line.Id), line.Id + " reuses one of the store's weekday lines");
                 Assert.That(line.Good, Is.Not.Null, line.Id);
-                Assert.IsTrue(goods.Add(line.Good.Id), "two shelves for " + line.Good.Id);
+                // Several lines may share a good (bread, oatcakes, beans off the groceries), never more than all of it.
+                shown.TryGetValue(line.Good.Id, out double had);
+                shown[line.Good.Id] = had + IslandStoreShelves.ShareOf(line);
+                Assert.That(shown[line.Good.Id], Is.LessThanOrEqualTo(1.0 + 1e-6), "the shelves show more than all of " + line.Good.Id);
                 Assert.That(line.Good.Source, Is.EqualTo(GoodSource.MainlandOverBar), line.Id);
                 Assert.IsTrue(_def.Ledger.Goods.Contains(line.Good), line.Id + " shows a good the back room does not hold");
                 Assert.That(line.ItemName, Is.Not.Empty, line.Id);
@@ -75,7 +78,8 @@ namespace HiddenHarbours.Tests.EditMode
         {
             foreach (IslandShelfLine line in _def.Lines)
             {
-                double target = _route.BufferDays * line.Good.DailyUnits * (1.0 + line.Good.PlayerAllowanceFraction);
+                double target = _route.BufferDays * line.Good.DailyUnits * (1.0 + line.Good.PlayerAllowanceFraction)
+                                * IslandStoreShelves.ShareOf(line);
                 Assert.That(line.MaxOnShelf * (double)line.UnitsPerItem, Is.EqualTo(target).Within(line.UnitsPerItem),
                             line.Id + ": a full back room should read as a full shelf, and a thinning one as thinning");
             }

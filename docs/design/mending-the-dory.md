@@ -1,18 +1,19 @@
 # Mending the dory
 
-The player buys the broken dory on the St Peters slip, carries her materials there,
-and patches, caulks and paints her himself while the water is low. The proposed
-materials cost **60 coin** and the three jobs take **75 game minutes**. When the last
-job is done she becomes repaired through the existing boat repair record. He then
-waits for high water to launch. The tide can interrupt a job without taking away
-the work already done during that session.
+The proposed route has the player buy the broken dory on the St Peters slip,
+carry her materials there, and patch, caulk and paint her himself. The proposed
+materials cost **60 coin** and the three jobs take **75 game minutes**. The current
+mending draft describes a hull supported on dry ground above high water: these
+three jobs do not wait for low tide. Completing them records a repaired boat but
+does not move or float her. A supported route from the slip to the water remains
+separate unfinished work.
 
 This is a proposed days 4–5 beat within the island-only first week. The repair
 materials are affordable from a week of clams; **buying and repairing the boat by
 day 4–5 is not established by main's economy**. The arithmetic below identifies the
 gap before anyone places a promise the player cannot afford.
 
-The [first-week direction](https://github.com/apholmes7-bot/hiddenharbours/pull/1492)
+The [first-week direction](../adr/0062-the-first-week-is-closed-by-weather.md)
 keeps him on St Peters until an islander's word and suitable weather open the way
 around day 7. Every retained catch needs its licence. This beat does not send him
 to the mainland for materials, licences or paid repairs.
@@ -20,8 +21,8 @@ to the mainland for materials, licences or paid repairs.
 ## The three jobs as he lives them
 
 The sequence below gives him time for ordinary island life between jobs. It is an
-example, not a forced calendar gate: all three jobs may fit in one sufficiently long
-low water if he brings everything and chooses to stay. Nobody performs a job for
+example, not a forced calendar gate: all three jobs may fit in one daytime visit
+if he brings everything and chooses to stay. Nobody performs a job for
 him, and nothing arrives from a remote inventory.
 
 | Job | What he carries to the slip | Hand work | Material cost |
@@ -40,58 +41,54 @@ shop listing. A hammer, caulking iron and brush are proposed reusable implements
 at the slip, with their ownership and placement still to settle; they are not
 silently added as consumable costs.
 
-**Day 4, first useful low water: the patch.** Having bought the dory, he collects the
+**Day 4, the patch.** Having bought the dory, he collects the
 materials and carries them down himself. The plank is a carried object; the small
 items can travel in the paper bag. He stands on dry ground beside the damaged
-plank, outside the supported hull. He lays the materials onto this job by hand as
-he begins; that is when the plank and nail packet leave his carry. He works from
-that position while the tide remains below the work height. An unfinished patch remains an unfinished patch
-if he stops; a finished patch should be visibly fitted and fastened. That visible
+plank, outside the supported hull. Starting reserves the plank and nail packet
+against other use; they remain owned until the job completes, when the whole
+reservation is consumed once. The physical hand-work adapter still needs to
+connect that reservation to the goods he actually carried. An unfinished patch
+keeps its partial work while paused in the same session; a finished patch should
+be visibly fitted and fastened. That visible
 change is a brief for later art and placement, not an accepted appearance.
 
-**Day 4, while the same low water lasts: the seam.** He brings the oakum within reach
+**Day 4, the seam.** He brings the oakum within reach
 and works along the patched seam from the dry side of the hull. The earlier patch
-must be finished. The seam should read as packed when this job is done. If errands,
-the walk or a late start use up the window, he goes home with this job partly done
-and resumes at the next low. The rules also support spreading the sequence over
-three separate low waters; they do not require him to work at night.
+must be finished. The seam should read as packed when this job is done. He can
+pause for errands and resume during the same session, or end the session and
+restart the unfinished job with its materials still owned. The rules support
+separate visits without requiring high-water waits or night work.
 
-**Day 5, the next daytime low water: paint.** He brings the tin back to the same
+**Day 5, paint.** He brings the tin back to the same
 supported boat, opens it at the work position and coats the repaired area. The
 completed patch should visibly read as cared for; colour, finish, wetness and the
 exact hull changes belong to the art work. Twenty minutes completes the job and
 marks `boat.dory` repaired. There is no extra 300-coin repair bill on this path.
 
-The proposed heights are **strictly below −0.2 m to work** and **strictly above
-0.8 m to launch**, relative to the tide service's datum. They are not measured
-clearances for an already placed hull. Placement must reconcile them with the
-slip's ground and the boat's support. She rests on the slip or on water throughout;
-finishing a job does not lift or move her.
+The mending draft keeps **−0.2 m work** and **0.8 m launch** thresholds for wet-slip
+rules, but its three island job assets set `NeedsLowWater` false and its island
+sequence sets `RequiresSupportedLaunch` true. Those heights are not a way to
+float a hull standing above high water. The generic wet-job rule still stops work
+at the first flood and uses strict threshold comparisons; it is not the rule for
+these three dry jobs.
 
-For a concrete timing example, main's St Peters profile has mean 0 m, amplitude
-2.2 m and phase 1 hour. With its 12.4206-hour tide period, 28-day lunar cycle and
-0.45 neap fraction, sampling the proposed thresholds once per game minute gives:
-
-| Calendar day | Daytime work window | Afternoon launch window |
-| --- | --- | --- |
-| Day 4, absolute day index 3 | Approximately 07:59–13:42 | Approximately 15:01–19:04 |
-| Day 5, absolute day index 4 | Approximately 08:52–14:29 | Approximately 16:07–19:38 |
-
-Thus he could patch at 08:30–09:00 and caulk at 09:10–09:35 on day 4, then paint at
-09:00–09:20 on day 5. He has most of day 5 for clams, food and visiting before the
-afternoon water floats her. These minute-rounded forecasts are arithmetic, not a
-playtest or a fixed appointment. The current tide curve is independent of the
-world seed; queries still use the service and current game time. The actual
-interaction must ask the tide again. No paint-curing timer is implemented.
+He could patch at 08:30–09:00 and caulk at 09:10–09:35 on day 4, then paint at
+09:00–09:20 on day 5. These are example appointments, not measured play pacing.
+He can use the rest of the day for clams, food and visiting, but no afternoon tide
+automatically launches the boat. The separate launch work must maintain support
+through movement, establish flotation, and only then enable sailing and clear
+the slip state. No physical launch or paint-curing timer is implemented by the
+logic draft. The [dry-slip placement draft](https://github.com/apholmes7-bot/hiddenharbours/pull/1539)
+and the mending draft are still separate, unmerged work.
 
 ## What the first-week purse can actually pay
 
-These figures were read from pinned main `37586ae43d2ed0eef2648a642c300a6926ac8bf1`.
+These figures were rechecked against pinned main `d46bde303e6aa256d23d47a05ede5d7d6f38e51e`.
 No price or existing configuration value is changed by this proposal.
 
 | Existing main data | Coin | Consequence |
 | --- | ---: | --- |
-| Damaged dory offer | 400 | Buying her remains a substantial goal |
+| Damaged dory offer | 400 | Main's existing yard offer supplies this price; the island sale is a separate draft |
 | Existing paid repair option | 300 | The hand-work path replaces this charge when placed; do not charge both |
 | Rod | 60 | Budgeted as a purchase |
 | Cod licence | 120 | Required before keeping the cod used in the example |
@@ -173,11 +170,12 @@ cod income is possible. The arithmetic prices that licence but does not move it.
 
 ## When something goes wrong gently
 
-**The tide comes in halfway through.** Work stops at the first closing edge. The
-clock advances only by the work actually completed. Applied materials are not
-charged again when he resumes in the same session. He can see the unfinished job,
-carry his remaining goods away, read the next low water and return. Work does not
-continue while he is visiting, fishing or waiting through high water.
+**He stops halfway through.** Pausing keeps the unfinished work and its material
+reservation together. Resuming in the same session does not charge or reserve
+again. Ending the session releases unconsumed materials and discards partial
+time; the unfinished job then starts afresh. Work does not continue while he is
+visiting or fishing. On a future wet-slip job, rising water also stops work at
+the first closing edge; the three dry island jobs are not tide-interrupted.
 
 **He has no oakum.** The next job says to bring the missing material. Starting
 consumes nothing if any required item is missing, and advances no time. The fitted
@@ -186,32 +184,46 @@ unheld bag. He must bring the material back himself.
 
 **He tries to paint first or launch too early.** Earlier jobs must be finished;
 completed jobs cannot be purchased or worked twice. The boat becomes repaired at
-the last job, but launch permission still waits for high water. The placing work
-must keep the repaired boat supported and enforce the launch permission when she
-is actually moved or boarded.
+the last job, but the dry-slip sequence still refuses launch with
+`SupportedLaunchRequired`. High water alone never clears that refusal. The
+placing work must provide the supported journey into water before sailing or
+boarding can treat her as afloat.
 
 **He saves during unfinished work.** Finished jobs already use the existing saved
 flag list, with keys `st_peters.dory_mend.patch_plank`,
 `st_peters.dory_mend.caulk_seam` and `st_peters.dory_mend.paint`. The current rules
-draft exposes partial elapsed work and applied materials as a session snapshot
-only. Reloading loses that partial progress and does not refund applied materials.
-That is a known implementation limit, not the intended gentle player experience.
-Before releasing the interaction, a save step must atomically preserve the active
-job, elapsed work and committed-material state with the physical carry contents,
-or the design must explicitly choose another safe checkpoint rule. Save version
-25 and its fields are unchanged in these drafts.
+draft exposes partial elapsed work and `MaterialsReserved` as a session snapshot
+only; the snapshot cannot restore work. Materials are consumed only on completion.
+Disposing the session, including when the same save is reloaded, releases any
+unfinished reservation. The completed flags, final repaired entry and material
+debit are grouped before a deferred save write. That groups writes without
+providing rollback if the final write fails.
+
+Main is now **save version 26**: store purchase rows and shopping-bag contents
+survive reload, and special-order rows are reserved in the schema. The mending
+draft adds no saved field or migration. Its live carrier adapter and a temporary
+disk-save integration test are still missing, so current bag persistence is not
+proof that mending is connected to it. The adapter must lock physically held
+goods, release unfinished reservations on exit, and debit completion without an
+independent save write or callback.
+
+Keeping partial work across restart would need a separately authorized save
+step: atomically store boat/place and loaded-save identity, active job, elapsed
+work, reservation quantities and physical carrier identity alongside the carried
+contents. This proposal uses completed jobs as checkpoints and retains no such
+new saved fields.
 
 ## Choices for the owner
 
 | Question | Lean and reason |
 | --- | --- |
-| Where do the repair materials come from when the island store sells no boat hardware? | Keep that store rule. Let the boat seller hand over or sell a finite parcel at the slip, carried and unpacked by the player. If store purchase is essential, explicitly approve a small material exception first; oakum and copper nails should not be disguised as basic fishing gear. No supplier is wired yet. |
+| Which counted shelf positions supply the four materials? | Follow the canon's store-bought repair consumables: four separate counted lines at the island general store, collected and carried by hand. The mainland boat-hardware range stays separate. Seller wiring, physical goods, capacity and delivery shares remain unfinished; do not substitute a remote parcel or unlimited stock. |
 | Is day 4–5 a firm promise or a likely outcome for a practiced player? | Make it a likely outcome with a measured purse target. Keep the 60-coin labour-material proposal, then measure low-water yields and cash before deciding whether the 400-coin purchase price, a credit arrangement or island sale terms should change. The current numbers do not prove the promised day. |
 | Can he borrow the hammer, caulking iron and brush at the slip? | Yes, as physically present reusable implements. It gives the hand work a clear place without an extra first-week shopping bill. |
-| Does paint need a separate drying wait? | Let the ordinary wait for high water supply the pause for this first slice. Do not add an unseen curing timer. Revisit only if the chosen finish or the final hull presentation needs it. |
-| Must the jobs span separate low waters? | No. Keep order and the tide as real constraints, and let his errands create the two-day rhythm. Forced visits would punish a player who planned and carried everything well. |
-| What happens to unfinished work across a save? | Preserve the exact work and applied materials before release. The current session-only snapshot is the boundary for the logic draft, not an excuse to lose the player's labour. |
-| What confirms the work and launch heights? | Confirm the hull's support and the slip's datum during placement, then tune the two Def values. Keep the present −0.2/0.8 m values provisional until that check. |
+| Does paint need a separate drying wait? | No additional timer in this proposal. A later finish or launch design may justify one, but high water is not a drying or launch gate for the dry hull. |
+| Must the jobs span separate visits? | No. Keep their order and physical materials, and let errands create the two-day rhythm. All three dry jobs can fit into one 75-minute work visit. |
+| What happens to unfinished work across a save? | Keep the existing draft's completion-only checkpoints: release unfinished reservations on exit and restart partial time. If exact partial-work persistence is later required, authorize the atomic save step described above first. |
+| How does the repaired hull reach the water? | Require a continuous supported movement and confirmed flotation before sailing. The exact manual launch interaction and its checks remain separate work; a height threshold or repaired flag cannot move the boat. |
 
 ## Source trail and handoff
 
@@ -246,4 +258,4 @@ the new route is placed.
 
 This document adds no scene, supplier, prompt, artwork, licence placement, price
 change or save field. The arithmetic was independently evaluated from the listed
-values; Unity, the player journey and the visual changes were not run or verified.
+values; the editor, player journey and visual changes were not run or verified.

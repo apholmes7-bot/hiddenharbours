@@ -42,7 +42,7 @@ namespace HiddenHarbours.World
     /// case.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class FloatingPlatform : MonoBehaviour, IStandableSurface
+    public sealed class FloatingPlatform : MonoBehaviour, IStandableSurface, IStandableOutline
     {
         [Header("Identity")]
         [Tooltip("Stable id of the float (e.g. 'wharf.nine_mile_creek.float') — diagnostics only; never " +
@@ -118,6 +118,15 @@ namespace HiddenHarbours.World
             // a float's edge and a quay's edge must be inclusive in the same way or the seam between them
             // (the gangway lands on one and hinges off the other) reports water for half a texel.
             return StandablePlatform.Contains(_footprint, worldPos);
+        }
+
+        /// <inheritdoc/>
+        /// <remarks>The float's picture rides the tide (<see cref="FloatingPlatformVisual"/>), so her deck is
+        /// drawn on the kit's convention: the footprint lifted by her live deck elevation.</remarks>
+        public int GetDrawnOutline(Vector2[] drawn, float[] deckElevation)
+        {
+            float deck = DeckElevationNow();
+            return StandableOutline.Rect(_footprint, StandableOutline.Lift(deck), deck, drawn, deckElevation);
         }
 
         /// <summary>Her deck height (m above chart datum) at an arbitrary water level — the pure form, for

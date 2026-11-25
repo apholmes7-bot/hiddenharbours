@@ -64,6 +64,7 @@ When you add an ADR, add its row here in the same PR.
 | 0057 | [One world frame: the whole wall is a door, and doors do not teleport](0057-shared-world-frame-edge-crossings.md) | **Proposed** (owner ruling 2026-11-15; layout in `docs/architecture/world-frame.md`) |
 | 0059 | [Hulls sort among the scenery by where they lie](0059-hulls-sort-among-the-scenery.md) | Accepted (owner took all three recommendations 2026-11-17: option A, covered weed under the sea, the waterline pivot; rollout in `docs/architecture/hull-vs-decor-sorting.md` §7) |
 | 0061 | [The player is always the mesh: no sprite-sheet fallback](0061-the-player-is-always-the-mesh.md) | **Proposed** (owner ask 2026-11-19; one GameConfig switch, shipped off) |
+| 0062 | [The first week is closed by weather: St Peters alone until the island gate](0062-the-first-week-is-closed-by-weather.md) | **Proposed** (owner rulings 2026-11-23; canon amended in the same PR; the owner accepts it by merging) |
 
 **Conventions.** `Proposed` = awaiting the named decider; `Accepted` = ratified (by the owner where
 the ADR says so, otherwise by `lead-architect` on merge); `Implemented` = accepted and the code

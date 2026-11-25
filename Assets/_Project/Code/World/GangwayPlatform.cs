@@ -36,7 +36,7 @@ namespace HiddenHarbours.World
     /// abutment height: that would draw a walkable bridge over open water out of a missing reference.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class GangwayPlatform : MonoBehaviour, IStandableSurface
+    public sealed class GangwayPlatform : MonoBehaviour, IStandableSurface, IStandableOutline
     {
         [Header("Identity")]
         [Tooltip("Stable id of the brow (e.g. 'wharf.nine_mile_creek.gangway') — diagnostics only.")]
@@ -110,6 +110,16 @@ namespace HiddenHarbours.World
             if (!TryProject(_shoreEnd, _floatEnd, worldPos, _halfWidthMetres, out float along)) return false;
             deckElevation = Mathf.Lerp(_abutmentElevation, _landing.DeckElevationNow(), along);
             return true;
+        }
+
+        /// <inheritdoc/>
+        /// <remarks>Drawn on the kit's convention, each end lifted by its own deck height (the brow's
+        /// picture spans from the abutment to the float's live deck).</remarks>
+        public int GetDrawnOutline(Vector2[] drawn, float[] deckElevation)
+        {
+            if (_landing == null) return 0;
+            return StandableOutline.Segment(_shoreEnd, _abutmentElevation, _floatEnd, _landing.DeckElevationNow(),
+                                            _halfWidthMetres, drawn, deckElevation);
         }
 
         /// <summary>How far the brow falls from hinge to landing (m) at a water level: positive going
