@@ -25,6 +25,7 @@ MonoBehaviour:
   BunkReachMetres: 1
   CabinLightSwitchDoorDistanceMetres: 2.5
   CabinLightSwitchReachMetres: 1
+  CabinLightSwitchHelmClearanceMetres: 0.75
   StartSeason: 1
   StartDayOfSeason: 1
   DaysPerWeek: 7

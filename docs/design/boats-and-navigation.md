@@ -1568,6 +1568,15 @@ route.
   keeps E and no list opens. The switch answers E only where it is the one thing in reach. (A first
   draft offered it on a chooser at the helm; that put a list in front of every helm and door press,
   and was withdrawn.)
+- **So it stands on a clear wall spot:** a rule-placed switch is moved to the nearest point on a cabin
+  level's outline (the foot of a bulkhead), not inside furniture, that is more than
+  `GameConfig.CabinLightSwitchHelmClearanceMetres` (0.75 m, above the 0.5 m helm radius) from her helm
+  and outside every door's reach, measured on screen at every heading. The helm switch stays the one
+  nearest the helm, the door switch the one nearest the door. A switch with no such spot keeps its
+  rule point; an authored list is never moved. An EditMode test holds every shipped cabin hull to at
+  least one switch on a clear spot, except a named list: today only the Express Cruiser, whose helm
+  is 1.4 m from her door in a small cabin. No spot clears both, so her switch stays at the helm point
+  and needs the dash switch or new cabin data.
 - **Not yet reachable at the wheel itself:** at the helm E always steps him back. Throwing the
   switch without leaving the wheel needs its own control there (a dash switch, like the anchor's),
   which is the seat's call.

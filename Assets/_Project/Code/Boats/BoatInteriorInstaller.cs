@@ -315,6 +315,9 @@ namespace HiddenHarbours.Boats
                                        : GameConfig.DefaultCabinLightSwitchDoorDistanceMetres;
             int n = CabinLightSwitchRule.PlanFor(visual, far, _switchSpots);
             if (n == 0) return;
+            float helmClear = config != null ? config.CabinLightSwitchHelmClearanceMetres
+                                             : GameConfig.DefaultCabinLightSwitchHelmClearanceMetres;
+            CabinLightSwitchRule.PlaceClear(visual, helmClear, _switchSpots, n);
 
             var board = GetComponent<CabinLightSwitchboard>();
             if (board == null) board = gameObject.AddComponent<CabinLightSwitchboard>();
@@ -429,7 +432,7 @@ namespace HiddenHarbours.Boats
         /// to line up on to the pixel is not cozy (the doorway-gap reasoning <c>BuildingInterior</c>
         /// already carries). Floored so a hull whose sidecar omits the width is still reachable.
         /// </summary>
-        private static float ReachMetres(BoatInteriorDoor door)
+        public static float ReachMetres(BoatInteriorDoor door)
             => Mathf.Max(1.2f, door.ClearWidthMeters + 0.5f);
 
         /// <summary>The elevation this hull's art is presented at, off her own def — 40° for the iso

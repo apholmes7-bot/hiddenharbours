@@ -158,6 +158,151 @@ namespace HiddenHarbours.Boats
             return true;
         }
 
+        // ---- a spot nothing else takes the press at (2026-11-25) ---------------------------------------
+
+        /// <summary>How finely a cabin wall is walked looking for a spot. Structural sampling, not feel:
+        /// finer only costs build time.</summary>
+        public const float SpotSampleStepMetres = 0.25f;
+
+        /// <summary>How many headings the on-screen clearance is checked at. Reach is measured on screen,
+        /// and the drawn hull foreshortens with her heading, so a spot must be clear at all of them.</summary>
+        public const int ClearanceHeadingSamples = 24;
+
+        /// <summary>
+        /// <b>Move each rule-placed switch to a spot on her cabin wall where it is alone in reach</b>: on a
+        /// cabin level's outline (the foot of a bulkhead), not inside anything standing on that sole, at
+        /// least <paramref name="helmClearMetres"/> from her helm station and outside every door's reach,
+        /// at every heading. The nearest such spot to the switch's rule point wins (her helm's or her
+        /// door's), so each switch stays by what it is named for. A switch with no clear spot keeps its
+        /// rule point. An authored list is never moved.
+        ///
+        /// <para>Why: the switch is on the last rung of the press, so where the helm or a door is in reach
+        /// it never answers. Standing at a clear spot, it is the one thing E can mean.</para>
+        /// </summary>
+        /// <returns>How many of the first <paramref name="count"/> switches stand on a clear spot.</returns>
+        public static int PlaceClear(BoatVisualDef visual, float helmClearMetres, CabinLightSwitchSpot[] spots,
+                                     int count)
+        {
+            if (visual == null || spots == null || visual.Interior == null) return 0;
+            BoatInteriorDef interior = visual.Interior;
+            bool hasHelm = TryHelmPoint(visual, out Vector3 helm);
+            float elevation = BoatInteriorInstaller.BakeElevationDegrees(visual);
+            bool authored = HasUsableAuthoredEntry(visual.CabinLightSwitches);
+
+            int clear = 0;
+            for (int i = 0; i < count && i < spots.Length; i++)
+            {
+                CabinLightSwitchSpot s = spots[i];
+                if (authored)
+                {
+                    if (IsClear(interior, s.LocalMetres, hasHelm, helm, helmClearMetres, elevation)) clear++;
+                    continue;
+                }
+                if (!TryClearSpot(interior, s.LocalMetres, hasHelm, helm, helmClearMetres, elevation,
+                                  out Vector3 spot))
+                    continue;
+                spots[i] = new CabinLightSwitchSpot(s.Id, s.Role, spot);
+                clear++;
+            }
+            return clear;
+        }
+
+        /// <summary>The nearest clear wall spot to <paramref name="near"/>, hull-local metres (z = that
+        /// level's sole). False when no cabin wall has one.</summary>
+        public static bool TryClearSpot(BoatInteriorDef interior, Vector3 near, bool hasHelm, Vector3 helm,
+                                        float helmClearMetres, float elevationDegrees, out Vector3 spot)
+        {
+            spot = near;
+            if (interior == null || interior.Levels == null) return false;
+            bool found = false;
+            float best = float.MaxValue;
+            for (int l = 0; l < interior.Levels.Length; l++)
+            {
+                BoatInteriorLevel level = interior.Levels[l];
+                if (level == null || !level.IsUsable()) continue;
+                Vector2[] outline = level.Outline;
+                for (int e = 0; e < outline.Length; e++)
+                {
+                    Vector2 a = outline[e];
+                    Vector2 b = outline[(e + 1) % outline.Length];
+                    int steps = Mathf.Max(1, Mathf.CeilToInt(Vector2.Distance(a, b) / SpotSampleStepMetres));
+                    for (int k = 0; k < steps; k++)
+                    {
+                        Vector2 q = Vector2.Lerp(a, b, (float)k / steps);
+                        var p = new Vector3(q.x, q.y, level.SoleZMeters);
+                        float d = (p - near).sqrMagnitude;
+                        if (d >= best) continue;
+                        if (InsideAnObstruction(level, q)) continue;
+                        if (!IsClear(interior, p, hasHelm, helm, helmClearMetres, elevationDegrees)) continue;
+                        best = d;
+                        spot = p;
+                        found = true;
+                    }
+                }
+            }
+            return found;
+        }
+
+        /// <summary>Is <paramref name="p"/> (hull-local) out of the helm's clearance and every door's reach,
+        /// on screen, at every sampled heading?</summary>
+        public static bool IsClear(BoatInteriorDef interior, Vector3 p, bool hasHelm, Vector3 helm,
+                                   float helmClearMetres, float elevationDegrees)
+        {
+            float helmClear = Mathf.Max(0f, helmClearMetres);
+            for (int k = 0; k < ClearanceHeadingSamples; k++)
+            {
+                float heading = k * 360f / ClearanceHeadingSamples;
+                Vector2 at = OnScreen(p, heading, elevationDegrees);
+                if (hasHelm && (at - OnScreen(helm, heading, elevationDegrees)).sqrMagnitude <= helmClear * helmClear)
+                    return false;
+                if (interior == null) continue;
+                if (InADoorsReach(interior.Door, at, heading, elevationDegrees)) return false;
+                BoatInteriorDoor[] more = interior.AdditionalDoors;
+                if (more == null) continue;
+                for (int i = 0; i < more.Length; i++)
+                    if (InADoorsReach(more[i], at, heading, elevationDegrees)) return false;
+            }
+            return true;
+        }
+
+        private static bool InADoorsReach(BoatInteriorDoor door, Vector2 at, float heading, float elevation)
+        {
+            if (door == null || string.IsNullOrEmpty(door.Id)) return false;
+            float reach = BoatInteriorInstaller.ReachMetres(door);
+            return (at - OnScreen(door.ThresholdPoint, heading, elevation)).sqrMagnitude <= reach * reach;
+        }
+
+        private static Vector2 OnScreen(Vector3 local, float heading, float elevation)
+            => DeckAreaMath.DeckToWorld(new Vector2(local.x, local.y), local.z, heading, elevation);
+
+        private static bool InsideAnObstruction(BoatInteriorLevel level, Vector2 q)
+        {
+            BoatInteriorObstruction[] obs = level.Obstructions;
+            if (obs == null) return false;
+            for (int i = 0; i < obs.Length; i++)
+            {
+                Vector2[] f = obs[i] != null ? obs[i].Footprint : null;
+                if (f == null || f.Length < 3) continue;
+                bool inside = false;
+                for (int a = 0, b = f.Length - 1; a < f.Length; b = a++)
+                {
+                    if ((f[a].y > q.y) != (f[b].y > q.y)
+                        && q.x < (f[b].x - f[a].x) * (q.y - f[a].y) / (f[b].y - f[a].y) + f[a].x)
+                        inside = !inside;
+                }
+                if (inside) return true;
+            }
+            return false;
+        }
+
+        private static bool HasUsableAuthoredEntry(CabinLightSwitchPlacement[] authored)
+        {
+            if (authored == null) return false;
+            for (int i = 0; i < authored.Length; i++)
+                if (authored[i] != null && !string.IsNullOrEmpty(authored[i].Id)) return true;
+            return false;
+        }
+
         /// <summary>
         /// The setting a press leaves behind. On and Off swap; Auto flips what is showing now, and reads
         /// as dark when nobody can say (no lights fitted), so the first press on an unknown cabin turns

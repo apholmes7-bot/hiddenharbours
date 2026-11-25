@@ -295,6 +295,16 @@ namespace HiddenHarbours.Core
 
         [Tooltip("How close (m) you must stand to a cabin-light switch to press it.")]
         [Min(0.1f)] public float CabinLightSwitchReachMetres = DefaultCabinLightSwitchReachMetres;
+
+        /// <summary>How far (m, on screen) a cabin-light switch's spot must stand from the helm station, when
+        /// no config is wired. Over the switcher's helm radius (0.5 m) with a margin, so a player standing at
+        /// the switch is never also at the helm.</summary>
+        public const float DefaultCabinLightSwitchHelmClearanceMetres = 0.75f;
+
+        [Tooltip("A cabin-light switch is moved to a spot on her cabin wall where nothing else takes the " +
+                 "press: at least this far (m, on screen, at every heading) from her helm station, and out of " +
+                 "every door's reach. Keep it above the helm radius (0.5 m).")]
+        [Min(0f)] public float CabinLightSwitchHelmClearanceMetres = DefaultCabinLightSwitchHelmClearanceMetres;
         [Tooltip("Season at elapsed day zero. Its offset uses DaysPerSeason, never a separate day count.")]
         public Season StartSeason = Season.HighSummer;
         [Tooltip("One-based day within the starting season. Changes labels, never simulation seconds.")]
