@@ -531,6 +531,13 @@ namespace HiddenHarbours.Tests.PlayMode
             InteractionGate.Reset();
 
             _installed.enabled = true;   // the game's own flock draws the plates
+            // The title page paused the clock and ShellFlow.Reset() leaves it so; the game's pause holds the
+            // flock where it was first laid out (#957), so the birds were never listed for the cannery view.
+            // The plates are of the world in play: run the clock for them, and hand it back paused after.
+            IGameClock playClock = GameServices.Clock;
+            Assert.IsNotNull(playClock, "harness: St Peters loaded with no clock");
+            bool clockWasPaused = playClock.IsPaused;
+            playClock.IsPaused = false;
 
             var counts = new List<string>();
             int noon = -1, night = -1;
@@ -559,7 +566,9 @@ namespace HiddenHarbours.Tests.PlayMode
                 if (Mathf.Approximately(hour, NightHour)) night = here;
                 _stage.SavePlate("gulls-" + label + "h-cannery.png", _stage.Capture());
             }
-            Debug.Log("[" + PlateDir + "] " + string.Join("; ", counts));
+            playClock.IsPaused = clockWasPaused;
+            Debug.Log("[" + PlateDir + "] " + string.Join("; ", counts) + " (the clock was paused on arrival: " +
+                      clockWasPaused + ")");
             Assert.Greater(noon, 0, "no gulls at the cannery at noon in the plates");
             Assert.AreEqual(0, night, "gulls at the cannery at 23:00 in the plates");
         }

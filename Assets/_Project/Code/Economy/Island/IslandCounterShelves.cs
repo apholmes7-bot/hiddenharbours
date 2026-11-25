@@ -17,8 +17,12 @@ namespace HiddenHarbours.Economy
         {
             public readonly IIslandShelves Shelves;
             public readonly string LineId;
+            public readonly bool AtShelf;
 
-            public Binding(IIslandShelves shelves, string lineId) { Shelves = shelves; LineId = lineId; }
+            public Binding(IIslandShelves shelves, string lineId, bool atShelf)
+            {
+                Shelves = shelves; LineId = lineId; AtShelf = atShelf;
+            }
         }
 
         private static readonly Dictionary<(string seller, string listing), Binding> _bindings =
@@ -33,17 +37,25 @@ namespace HiddenHarbours.Economy
             {
                 if (line?.CounterListingIds == null || !shelves.HasLine(line.Id)) continue;
                 foreach (string listing in line.CounterListingIds)
-                    Bind(def.SellerId, listing, shelves, line.Id);
+                    Bind(def.SellerId, listing, shelves, line.Id, line.SoldAtShelf);
             }
         }
 
-        /// <summary>Binds one listing sold by one seller to one shelf line.</summary>
-        public static void Bind(string sellerId, string listingId, IIslandShelves shelves, string lineId)
+        /// <summary>Binds one listing sold by one seller to one shelf line. <paramref name="atShelf"/>: the
+        /// player takes it off the shelf himself and the counter's book does not list it (buying at the
+        /// shelf); otherwise the book sells it, counted against the shelf.</summary>
+        public static void Bind(string sellerId, string listingId, IIslandShelves shelves, string lineId,
+                                bool atShelf = false)
         {
             if (string.IsNullOrEmpty(sellerId) || string.IsNullOrEmpty(listingId) || shelves == null) return;
             if (!shelves.HasLine(lineId)) throw new ArgumentException("No such shelf line: " + lineId);
-            _bindings[(sellerId, listingId)] = new Binding(shelves, lineId);
+            _bindings[(sellerId, listingId)] = new Binding(shelves, lineId, atShelf);
         }
+
+        /// <summary>True when the player buys this seller's listing at the shelf, not from the book.</summary>
+        public static bool IsSoldAtShelf(string sellerId, string listingId)
+            => !string.IsNullOrEmpty(sellerId) && !string.IsNullOrEmpty(listingId)
+               && _bindings.TryGetValue((sellerId, listingId), out Binding b) && b.AtShelf;
 
         /// <summary>Drops every binding to <paramref name="shelves"/>.</summary>
         public static void Unbind(IIslandShelves shelves)
