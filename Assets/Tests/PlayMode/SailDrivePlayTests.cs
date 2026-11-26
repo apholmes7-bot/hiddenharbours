@@ -49,6 +49,21 @@ namespace HiddenHarbours.Tests.PlayMode
         const float CloseHauledTwa = 45f, CloseHauledKn = 4.97f;
         const float BroadReachTwa = 135f, BroadReachKn = 6.18f;
 
+        /// <summary>
+        /// How far outside the no-go the close-hauled legs are actually sailed. The polar's 45° row is
+        /// EXACTLY the hull's <c>NoGoTrueWindDeg</c> (45), and <see cref="SailDrive.TargetSpeedKn"/>
+        /// gates on <c>twa &lt; noGo</c>. The true angle she reads is re-derived every tick from
+        /// <c>transform.up</c> and the wind vector through two float atan2 calls, so sailing at a
+        /// nominal 45° lands on 45 ± a few float ulps: on the + side she sails, on the − side the
+        /// drive returns 0 kn and reports in irons, with the heading still printing 47.0 and the angle
+        /// 45.0. Which side she lands on depends on the exact pose path the body took before the hold,
+        /// so the leg was intermittent. A tenth of a degree is thousands of ulps clear of the gate and
+        /// moves the polar's answer by about 0.006 kn (the 45→52 slope at 12 kn is 0.063 kn/°), far
+        /// inside the 5 % the speed assertion allows. The expected speed stays the polar's 45° number.
+        /// </summary>
+        const float NoGoEdgeMarginDeg = 0.1f;
+        const float CloseHauledSailedTwa = CloseHauledTwa + NoGoEdgeMarginDeg;
+
         GameObject _root;
 
         sealed class GlassSea : IEnvironmentService
@@ -332,7 +347,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.Ignore("Needs the AssetDatabase: this asserts the REAL committed sloop.");
             yield break;
 #else
-            foreach (var leg in new[] { (CloseHauledTwa, CloseHauledKn, "close-hauled"),
+            foreach (var leg in new[] { (CloseHauledSailedTwa, CloseHauledKn, "close-hauled"),
                                         (BroadReachTwa, BroadReachKn, "on a broad reach") })
             {
                 BoatController boat = null;
@@ -382,7 +397,7 @@ namespace HiddenHarbours.Tests.PlayMode
 #else
             BoatController boat = null;
             GlassSea sea = null;
-            yield return BuildSloop(CloseHauledTwa, headingDeg: 47f, twsKn: TwsKn,
+            yield return BuildSloop(CloseHauledSailedTwa, headingDeg: 47f, twsKn: TwsKn,
                                     ready: (b, s) => { boat = b; sea = s; });
             // The cos(45°) below is only her course if she is held on it against her weather helm.
             HoldHeading(boat, 47f);
@@ -404,7 +419,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
             // And the ground made good must be the speed's own upwind component, not a drift: at 45° off
             // the true wind that is cos(45°) of it, within the wind shove's contribution.
-            float expected = SailDrive.ToMetresPerSecond(settled) * Mathf.Cos(CloseHauledTwa * Mathf.Deg2Rad)
+            float expected = SailDrive.ToMetresPerSecond(settled) * Mathf.Cos(CloseHauledSailedTwa * Mathf.Deg2Rad)
                              * (300f * Time.fixedDeltaTime);
             Assert.AreEqual(expected, madeGood, Mathf.Max(1f, expected * 0.15f),
                 "the ground she makes to windward must be her own speed resolved onto the wind, so this " +

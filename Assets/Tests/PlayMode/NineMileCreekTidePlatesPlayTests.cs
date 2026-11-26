@@ -75,6 +75,8 @@ namespace HiddenHarbours.Tests.PlayMode
             new Place("ladder-east", 139.25f, 86f, Water.Low),
             new Place("berth-0", 86.2f, 83.1f, LowHigh),
             new Place("float-berths", 128f, 70f, LowHigh),
+            // The fleet wall's west stretch (the crib from the basin's west edge to the old apron corner).
+            new Place("fleet-wall-west", 85f, 84f, Water.Low | Water.Mean | Water.High),
         };
 
         GameObject _core, _anchor;

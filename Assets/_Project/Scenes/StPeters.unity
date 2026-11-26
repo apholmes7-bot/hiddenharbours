@@ -69631,6 +69631,7 @@ GameObject:
   - component: {fileID: 1384401482}
   - component: {fileID: 1384401481}
   - component: {fileID: 1384401479}
+  - component: {fileID: 1384401480}
   - component: {fileID: 1384401478}
   - component: {fileID: 1384401477}
   - component: {fileID: 1384401476}
@@ -69705,6 +69706,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.LicenseVendor
   _license: {fileID: 11400000, guid: ff1692a5736e4c9f947eccb90b32c27d, type: 2}
+  _sellerId: seller.leblancs
+  _walletProvider: {fileID: 1773492499}
+  _onPurchased:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &1384401480
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1384401473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 403a4bfe777b47ef96c3b4e7339c180e, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.LicenseVendor
+  _license: {fileID: 11400000, guid: bf2da650c6644993819279c1b573877e, type: 2}
   _sellerId: seller.leblancs
   _walletProvider: {fileID: 1773492499}
   _onPurchased:

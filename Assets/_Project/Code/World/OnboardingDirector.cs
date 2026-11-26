@@ -49,7 +49,9 @@ namespace HiddenHarbours.World
 
         // VS-08: persisted via the save file, not PlayerPrefs. Lazy, because an EditMode AddComponent
         // does not run Awake and the step must still be askable there.
-        private OnboardingFlags Flags => _flags ??= new OnboardingFlags(new SaveFlagStore());
+        private OnboardingFlags Flags => _flags ??= new OnboardingFlags(FlagStore);
+        private IFlagStore FlagStore => _flagStore ??= new SaveFlagStore();
+        private IFlagStore _flagStore;
 
         // The note the nudge is written on. Made here rather than found, so the opening works in any
         // scene that has a director — the same reasoning that had this file build its own canvas before.
@@ -65,6 +67,13 @@ namespace HiddenHarbours.World
         private bool _boughtDory;
         private float _doneTimer;
         private bool _subscribed;
+
+        // The story gate's note, once the opening has gone quiet. Reading the facts allocates, so the
+        // note is kept and read again only when something that could change it has happened: a catch,
+        // a sale, a licence, a repair, a load, or a new day.
+        private string _gateNote;
+        private bool _gateNoteStale = true;
+        private int _gateNoteDay = int.MinValue;
 
         private void Awake()
         {
@@ -85,6 +94,8 @@ namespace HiddenHarbours.World
             EventBus.Subscribe<BoatPurchased>(OnBoatBought);
             EventBus.Subscribe<BoatRepaired>(OnBoatRepaired);
             EventBus.Subscribe<GameLoaded>(OnGameLoaded);
+            EventBus.Subscribe<CatchLanded>(OnCatchLanded);
+            EventBus.Subscribe<CatchSold>(OnCatchSold);
             _subscribed = true;
         }
 
@@ -97,6 +108,8 @@ namespace HiddenHarbours.World
             EventBus.Unsubscribe<BoatPurchased>(OnBoatBought);
             EventBus.Unsubscribe<BoatRepaired>(OnBoatRepaired);
             EventBus.Unsubscribe<GameLoaded>(OnGameLoaded);
+            EventBus.Unsubscribe<CatchLanded>(OnCatchLanded);
+            EventBus.Unsubscribe<CatchSold>(OnCatchSold);
             _subscribed = false;
         }
 
@@ -114,7 +127,7 @@ namespace HiddenHarbours.World
                     // First the warm close, then the practical "sail home" nudge as it lingers.
                     SetHint(_doneTimer > _doneSeconds * 0.5f ? WorldStrings.OnboardDone : WorldStrings.OnboardSailHome);
                 }
-                else SetHint(null);
+                else SetHint(GateNote());
                 return;
             }
 
@@ -162,13 +175,18 @@ namespace HiddenHarbours.World
         public void OnCaught(FishCaught e)
         {
             _landedCatch = true;
+            _gateNoteStale = true;
             if (!Flags.LandedCatch) Flags.LandedCatch = true;
         }
+
+        public void OnCatchLanded(CatchLanded e) => _gateNoteStale = true;
+        public void OnCatchSold(CatchSold e) => _gateNoteStale = true;
 
         /// <summary>Only the COD licence moves the note on. A licence is the one named by its Def id:
         /// the clam licence Ginny fronts is a different licence and must not count as this one.</summary>
         public void OnLicence(LicensePurchased e)
         {
+            _gateNoteStale = true;
             if (e.LicenseId == OnboardingProgress.CodLicenceId) _hasCodLicence = true;
         }
 
@@ -188,6 +206,7 @@ namespace HiddenHarbours.World
 
         public void OnBoatRepaired(BoatRepaired e)
         {
+            _gateNoteStale = true;
             if (Flags.Onboarded) return;
             if (e.BoatId != OnboardingProgress.DoryBoatId) return;
             Flags.Onboarded = true;      // the dory is earned + seaworthy — persist so the opening never re-triggers
@@ -202,6 +221,30 @@ namespace HiddenHarbours.World
             _hasCodLicence = false;
             _hasRod = false;
             _boughtDory = false;
+            _gateNoteStale = true;
+        }
+
+        // ---- the story gate's note ----------------------------------------------------------
+
+        /// <summary>
+        /// What the Tasks note says once the opening is done: the first thing still to do before a live
+        /// story gate's islander will give the word, in the gate's own words (<see cref="StoryGateDef"/>),
+        /// or null. With no live gate this is two flag reads and nothing else; with one, the facts are
+        /// read only when the note has gone stale.
+        /// </summary>
+        public string GateNote()
+        {
+            if (StoryGates.FirstLive(FlagStore) == null) return null;
+
+            IGameClock clock = GameServices.Clock;
+            int day = clock != null ? clock.DayIndex : 0;
+            if (_gateNoteStale || day != _gateNoteDay)
+            {
+                _gateNote = StoryGates.TaskNote(FlagStore);
+                _gateNoteStale = false;
+                _gateNoteDay = day;
+            }
+            return _gateNote;
         }
 
         // ---- the nudge ----------------------------------------------------------------------

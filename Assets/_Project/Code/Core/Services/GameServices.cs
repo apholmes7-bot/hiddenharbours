@@ -477,6 +477,30 @@ namespace HiddenHarbours.Core
         private static IRelationshipService _relationships;
 
         /// <summary>
+        /// The reader of the island week's facts: the seam a story gate asks "does his week hold?" through,
+        /// so the world never references the catch record or the sale that wrote those facts (rule 4).
+        /// Never null: on first read it is built from the shipped rules asset
+        /// (<see cref="CatchRecords.IslandWeekResourcesPath"/>); with no asset, or an invalid one, it is
+        /// <see cref="NullIslandWeekProgress"/>, under which no fact ever holds. A test assigns its own.
+        /// Cleared by <see cref="Reset"/>. It only reads: nothing is saved by it.
+        /// FLAG lead-architect: new Core seam (island week).
+        /// </summary>
+        public static IIslandWeekProgress IslandWeek
+        {
+            get => _islandWeek ??= LoadIslandWeek();
+            set => _islandWeek = value;
+        }
+
+        private static IIslandWeekProgress _islandWeek;
+
+        private static IIslandWeekProgress LoadIslandWeek()
+        {
+            var rules = UnityEngine.Resources.Load<IslandWeekRulesDef>(CatchRecords.IslandWeekResourcesPath);
+            if (rules == null || rules.ValidationError() != null) return NullIslandWeekProgress.Instance;
+            return new IslandWeekProgress(rules);
+        }
+
+        /// <summary>
         /// Who is aboard which boat, in which role (crew slice R2): players and hired hands alike. Boarding
         /// enforces the hull's crew slots; <see cref="ICrewRoster.CanSail"/> answers the night and trip
         /// rules through <see cref="VoyageLimits"/>. Never null: a default <see cref="CrewRoster"/> over
@@ -1662,6 +1686,7 @@ namespace HiddenHarbours.Core
             Cooking = null;              // drops the runner; the save's cook rows stay with the save
             Food = null;                 // → a fresh default on next read; drops its loaded food book
             Relationships = null;        // → a fresh default on next read; reseeds from the shipped ties
+            IslandWeek = null;           // → rebuilt from the shipped rules on next read
             Crew = null;                 // → a fresh, empty roster on next read
             Voyages = null;              // → EmptyVoyageCatalog.Instance; this property is never null
             CrossingGate = null;         // → AlwaysOpenCrossingGate.Instance; this property is never null
