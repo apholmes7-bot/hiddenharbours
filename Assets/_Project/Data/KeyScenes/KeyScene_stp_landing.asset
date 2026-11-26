@@ -186,7 +186,7 @@ MonoBehaviour:
     Kit: wharfDecor
     Piece: toteStack
     State: 
-    At: {x: 190.1, y: 5.45220215}
+    At: {x: 188.5, y: 5.45220215}
     Z: 5.35
     StandsOn: deck
     MountHost: 

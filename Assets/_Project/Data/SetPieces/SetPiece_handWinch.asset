@@ -16,86 +16,86 @@ MonoBehaviour:
   DisplayName: Hand winch
   RigKey: handWinch
   SceneId: keyscene.stp_cannery
-  BakedOptionsJson: '{"deck":0.1,"lead":0.8,"scale":1.2,"arm":0.34}'
+  BakedOptionsJson: '{"deck":0.1,"lead":0.8,"scale":1.2,"arm":0.42}'
   Layer: raised
   Walk: behind
   Mount: ground
-  BoundsMin: {x: -0.727, y: -0.912, z: 0}
-  BoundsMax: {x: 0.96, y: 0.912, z: 1.344}
+  BoundsMin: {x: -0.825, y: -0.96, z: 0}
+  BoundsMax: {x: 0.96, y: 0.96, z: 1.407}
   Frames:
   - Sprite: {fileID: -5428211261790110996, guid: 54ea3462f8b95724e870447283355aaa, type: 3}
     RigDir: 0
     ShowFaces: N
     BearingDeg: 0
     CameraSees: its back
-    NativeSize: {x: 61, y: 57}
-    NativePivot: {x: 27, y: 45}
+    NativeSize: {x: 65, y: 57}
+    NativePivot: {x: 30, y: 45}
     Crop: {x: 4, y: 3}
-    Pivot: {x: 23, y: 42}
+    Pivot: {x: 26, y: 42}
   - Sprite: {fileID: -565329062839479129, guid: 54ea3462f8b95724e870447283355aaa, type: 3}
     RigDir: 7
     ShowFaces: NE
     BearingDeg: 45
     CameraSees: its back
-    NativeSize: {x: 52, y: 66}
-    NativePivot: {x: 26, y: 50}
-    Crop: {x: 4, y: 3}
-    Pivot: {x: 22, y: 47}
+    NativeSize: {x: 52, y: 67}
+    NativePivot: {x: 26, y: 52}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 22, y: 48}
   - Sprite: {fileID: 2704381792712851267, guid: 54ea3462f8b95724e870447283355aaa, type: 3}
     RigDir: 6
     ShowFaces: E
     BearingDeg: 90
     CameraSees: the show face, edge-on or at a diagonal
-    NativeSize: {x: 66, y: 63}
-    NativePivot: {x: 33, y: 41}
-    Crop: {x: 4, y: 3}
-    Pivot: {x: 29, y: 38}
+    NativeSize: {x: 69, y: 64}
+    NativePivot: {x: 34, y: 43}
+    Crop: {x: 3, y: 4}
+    Pivot: {x: 31, y: 39}
   - Sprite: {fileID: 5184855016044798971, guid: 54ea3462f8b95724e870447283355aaa, type: 3}
     RigDir: 5
     ShowFaces: SE
     BearingDeg: 135
     CameraSees: the show face
-    NativeSize: {x: 67, y: 66}
-    NativePivot: {x: 26, y: 50}
-    Crop: {x: 4, y: 4}
-    Pivot: {x: 22, y: 46}
+    NativeSize: {x: 73, y: 67}
+    NativePivot: {x: 29, y: 51}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 26, y: 48}
   - Sprite: {fileID: -332039653899350816, guid: 54ea3462f8b95724e870447283355aaa, type: 3}
     RigDir: 4
     ShowFaces: S
     BearingDeg: 180
     CameraSees: the show face
-    NativeSize: {x: 61, y: 67}
-    NativePivot: {x: 34, y: 55}
-    Crop: {x: 3, y: 3}
-    Pivot: {x: 31, y: 52}
+    NativeSize: {x: 65, y: 70}
+    NativePivot: {x: 34, y: 58}
+    Crop: {x: 3, y: 4}
+    Pivot: {x: 31, y: 54}
   - Sprite: {fileID: -6973224747414106300, guid: 54ea3462f8b95724e870447283355aaa, type: 3}
     RigDir: 3
     ShowFaces: SW
     BearingDeg: 225
     CameraSees: the show face
-    NativeSize: {x: 52, y: 67}
-    NativePivot: {x: 26, y: 51}
-    Crop: {x: 4, y: 4}
-    Pivot: {x: 22, y: 47}
+    NativeSize: {x: 52, y: 70}
+    NativePivot: {x: 26, y: 54}
+    Crop: {x: 4, y: 3}
+    Pivot: {x: 22, y: 51}
   - Sprite: {fileID: -6410489497974904146, guid: 54ea3462f8b95724e870447283355aaa, type: 3}
     RigDir: 2
     ShowFaces: W
     BearingDeg: 270
     CameraSees: the show face, edge-on or at a diagonal
-    NativeSize: {x: 66, y: 49}
-    NativePivot: {x: 33, y: 38}
-    Crop: {x: 4, y: 4}
-    Pivot: {x: 29, y: 34}
+    NativeSize: {x: 69, y: 53}
+    NativePivot: {x: 34, y: 41}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 31, y: 38}
   - Sprite: {fileID: -6133907924168593699, guid: 54ea3462f8b95724e870447283355aaa, type: 3}
     RigDir: 1
     ShowFaces: NW
     BearingDeg: 315
     CameraSees: its back
-    NativeSize: {x: 67, y: 52}
-    NativePivot: {x: 41, y: 36}
+    NativeSize: {x: 73, y: 52}
+    NativePivot: {x: 44, y: 36}
     Crop: {x: 4, y: 3}
-    Pivot: {x: 37, y: 33}
-  CellSize: {x: 59, y: 60}
+    Pivot: {x: 40, y: 33}
+  CellSize: {x: 66, y: 63}
   PixelsPerMetre: 32
   ElevationDeg: 40
   BakedLit: 0
@@ -109,13 +109,13 @@ MonoBehaviour:
     - {x: -0.48, y: 0.5}
   Anchors:
   - Name: crank
-    Position: {x: -0.6815118, y: 0.744, z: 0.89137024}
+    Position: {x: -0.7646502, y: 0.78, z: 0.8433702}
   - Name: drum
     Position: {x: 0, y: 0, z: 0.82}
   - Name: ropeEnd
     Position: {x: 0.96, y: 0, z: 0.124}
   - Name: stand
-    Position: {x: -0.6815118, y: 1.02, z: 0.1}
+    Position: {x: -0.7646502, y: 1.14, z: 0.1}
   Path: []
   TideMarks: []
   Words: []
@@ -134,13 +134,13 @@ MonoBehaviour:
   GameplayJson: '{"schema":"hidden-harbours/st-peters-set-piece@1","generatedBy":"StPetersSetPieces
     1.0.0","key":"handWinch","id":"prop.stp_cannery_hand_winch","name":"Hand winch","defType":"SetPieceDef","scene":"keyscene.stp_cannery","units":"metres,
     the piece''s own frame: +x right, +y the show face, +z up from its ground point
-    (the pivot)","bounds":{"x":[-0.727,0.96],"y":[-0.912,0.912],"z":[0,1.344]},"layer":"raised","walk":"behind","mount":"ground","colliders":[{"type":"polygon","blocks":"walk","pts":[[-0.48,-0.5],[0.48,-0.5],[0.48,0.5],[-0.48,0.5]]}],"facings":[{"dir":0,"showFaces":"N","bearingDeg":0,"cameraSees":"its
+    (the pivot)","bounds":{"x":[-0.825,0.96],"y":[-0.96,0.96],"z":[0,1.407]},"layer":"raised","walk":"behind","mount":"ground","colliders":[{"type":"polygon","blocks":"walk","pts":[[-0.48,-0.5],[0.48,-0.5],[0.48,0.5],[-0.48,0.5]]}],"facings":[{"dir":0,"showFaces":"N","bearingDeg":0,"cameraSees":"its
     back"},{"dir":1,"showFaces":"NW","bearingDeg":315,"cameraSees":"its back"},{"dir":2,"showFaces":"W","bearingDeg":270,"cameraSees":"the
     show face, edge-on or at a diagonal"},{"dir":3,"showFaces":"SW","bearingDeg":225,"cameraSees":"the
     show face"},{"dir":4,"showFaces":"S","bearingDeg":180,"cameraSees":"the show
     face"},{"dir":5,"showFaces":"SE","bearingDeg":135,"cameraSees":"the show face"},{"dir":6,"showFaces":"E","bearingDeg":90,"cameraSees":"the
     show face, edge-on or at a diagonal"},{"dir":7,"showFaces":"NE","bearingDeg":45,"cameraSees":"its
-    back"}],"cells":[{"dir":0,"w":61,"h":57,"pivot":[27,45]},{"dir":1,"w":67,"h":52,"pivot":[41,36]},{"dir":2,"w":66,"h":49,"pivot":[33,38]},{"dir":3,"w":52,"h":67,"pivot":[26,51]},{"dir":4,"w":61,"h":67,"pivot":[34,55]},{"dir":5,"w":67,"h":66,"pivot":[26,50]},{"dir":6,"w":66,"h":63,"pivot":[33,41]},{"dir":7,"w":52,"h":66,"pivot":[26,50]}],"anchors":{"crank":[-0.6815118041762213,0.744,0.8913702119897133],"ropeEnd":[0.96,0,0.12400000000000001],"drum":[0,0,0.82],"stand":[-0.6815118041762213,1.02,0.1],"words":[],"px":{"crank":[55.8,48.5],"ropeEnd":[3.3,52],"drum":[34,34.9],"stand":[55.8,73.5]}},"options":{"deck":0.1,"lead":0.8,"scale":1.2,"arm":0.34},"light":null,"animated":null,"notes":"Raised.
+    back"}],"cells":[{"dir":0,"w":65,"h":57,"pivot":[30,45]},{"dir":1,"w":73,"h":52,"pivot":[44,36]},{"dir":2,"w":69,"h":53,"pivot":[34,41]},{"dir":3,"w":52,"h":70,"pivot":[26,54]},{"dir":4,"w":65,"h":70,"pivot":[34,58]},{"dir":5,"w":73,"h":67,"pivot":[29,51]},{"dir":6,"w":69,"h":64,"pivot":[34,43]},{"dir":7,"w":52,"h":67,"pivot":[26,52]}],"anchors":{"crank":[-0.7646502429395273,0.78,0.8433702119897133],"ropeEnd":[0.96,0,0.12400000000000001],"drum":[0,0,0.82],"stand":[-0.7646502429395273,1.14,0.1],"words":[],"px":{"crank":[58.5,53.4],"ropeEnd":[3.3,55],"drum":[34,37.9],"stand":[58.5,79]}},"options":{"deck":0.1,"lead":0.8,"scale":1.2,"arm":0.42},"light":null,"animated":null,"notes":"Raised.
     Stands on the trolley stage beyond the buffer, rope lead (+x) toward the cart.
     stand is where a cranker stands; crank is the grip."}'
   State: 

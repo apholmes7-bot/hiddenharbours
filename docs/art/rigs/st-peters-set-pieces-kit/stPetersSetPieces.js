@@ -283,11 +283,12 @@
         F(out, [[x0, -0.5, zAt(x0)], [x1, -0.5, zAt(x1)], [x1, 0.5, zAt(x1)], [x0, 0.5, zAt(x0)]], 'plank', k % 2 ? 0.05 : -0.05, 'deck');
         F(out, [[x0, -0.5, zAt(x0) - 0.05], [x1, -0.5, zAt(x1) - 0.05], [x1, -0.5, zAt(x1)], [x0, -0.5, zAt(x0)]], 'plank', -0.2, 'deck'); }
       // the load: a slatted fish box, split
+      // (painted white, a season old, so it stands off the oak of the cart and of the stage it rides on)
       if (o.load === 'box') { const bx = 0.18, bz = zAt(0.18);
-        box(out, bx - 0.36, bx + 0.36, -0.26, 0.26, bz, bz + 0.3, 'wood', 'load');
+        box(out, bx - 0.36, bx + 0.36, -0.26, 0.26, bz, bz + 0.3, 'trim', 'load');
         if (der) { F(out, [[bx - 0.1, -0.265, bz + 0.05], [bx + 0.05, -0.265, bz + 0.3], [bx - 0.02, -0.265, bz + 0.3], [bx - 0.16, -0.265, bz + 0.09]], 'soot', -0.1, 'load.split'); }
-        for (const yy of [-0.12, 0.12]) box(out, bx - 0.37, bx + 0.37, yy - 0.01, yy + 0.01, bz + 0.3, bz + 0.32, 'wood', 'load'); }
-      return { faces: out, mats: mats(['iron', 'rust', 'plank', 'wood', 'soot']), anchors: { words: [] } };
+        for (const yy of [-0.12, 0.12]) box(out, bx - 0.37, bx + 0.37, yy - 0.01, yy + 0.01, bz + 0.3, bz + 0.32, 'trim', 'load'); }
+      return { faces: out, mats: mats(['iron', 'rust', 'plank', 'wood', 'soot', 'trim']), anchors: { words: [] } };
     },
     notes: 'Sits on the trolley line; its long axis runs along the rails.',
   };
@@ -436,7 +437,7 @@
   PIECES.handWinch = {
     id: 'prop.stp_cannery_hand_winch', name: 'Hand winch', defType: 'SetPieceDef', scene: 'keyscene.stp_cannery',
     layer: 'raised', walk: 'behind', footprint: [[-0.48, -0.5], [0.48, -0.5], [0.48, 0.5], [-0.48, 0.5]],   // the skid at scale
-    defaults: { deck: 0.1, lead: 0.8, scale: 1.2, arm: 0.34 },
+    defaults: { deck: 0.1, lead: 0.8, scale: 1.2, arm: 0.42 },
     build(o) {
       const out = [], z0 = o.deck, fy = 0.33, zd = z0 + 0.6, gr = 0.27, pr = 0.075, cd = gr + pr + 0.012;
       const xc = -cd * Math.cos(40 * D2R), zc = zd + cd * Math.sin(40 * D2R);
@@ -468,24 +469,78 @@
       prismY(out, ring(0, zd, 0.12, 24, true, 0.02), 0.39, 0.42, 'rust', 'ratchet');
       stick(out, [-0.2, 0.41, zd + 0.12], [-0.06, 0.41, zd + 0.1], 0.03, 'iron', 'pawl');
       // the crank shaft and its two cranks, set opposite: the show-face crank reaches out past the frame, away from the
-      // cart and a little down, with a turned wooden grip toward the camera; the back one points the other way
+      // cart and a little down, with a turned grip toward the camera, its paint worn to the cream of bare ash so the
+      // handle reads against the red frame and the grass; the back one points the other way
       prismY(out, ring(xc, zc, 0.02, 8), -0.52, 0.53, 'iron', 'crank.shaft');
       const ca = 30 * D2R, ax = -o.arm * Math.cos(ca), az = -o.arm * Math.sin(ca), grip = [xc + ax, 0.5, zc + az];
-      prismY(out, ring(xc, zc, 0.04, 10), 0.47, 0.53, 'iron', 'crank.boss', 0.1);
-      stick(out, [xc, 0.5, zc], grip, 0.05, 'iron', 'crank.arm');
-      stick(out, grip, [grip[0], 0.76, grip[2]], 0.075, 'plank', 'crank.grip');
-      stick(out, [xc, -0.5, zc], [xc - ax, -0.5, zc - az], 0.05, 'iron', 'crank.arm');
-      stick(out, [xc - ax, -0.5, zc - az], [xc - ax, -0.76, zc - az], 0.075, 'plank', 'crank.grip');
+      prismY(out, ring(xc, zc, 0.045, 10), 0.47, 0.53, 'iron', 'crank.boss', 0.1);
+      stick(out, [xc, 0.5, zc], grip, 0.065, 'iron', 'crank.arm');
+      stick(out, grip, [grip[0], 0.8, grip[2]], 0.1, 'board', 'crank.grip');
+      stick(out, [xc, -0.5, zc], [xc - ax, -0.5, zc - az], 0.065, 'iron', 'crank.arm');
+      stick(out, [xc - ax, -0.5, zc - az], [xc - ax, -0.8, zc - az], 0.1, 'board', 'crank.grip');
       // the rope off the drum's underside toward +x, down to the stage and along it to the cart's drawbar
       const r0 = [0.06, 0, zd - 0.15], r1 = [0.42, 0, z0 + 0.03], r2 = [o.lead, 0, z0 + 0.02];
       stick(out, r0, r1, 0.03, 'rope', 'rope'); stick(out, r1, r2, 0.03, 'rope', 'rope');
       // the whole machine at scale, about its foot on the deck
       const S = q => [q[0] * o.scale, q[1] * o.scale, z0 + (q[2] - z0) * o.scale];
       for (const f of out) f.v = f.v.map(S);
-      return { faces: out, mats: mats(['wood', 'iron', 'rust', 'rope', 'red', 'plank']),
-        anchors: { crank: S([grip[0], 0.62, grip[2]]), ropeEnd: S(r2), drum: S([0, 0, zd]), stand: S([grip[0], 0.85, z0]), words: [] } };
+      return { faces: out, mats: mats(['wood', 'iron', 'rust', 'rope', 'red', 'board']),
+        anchors: { crank: S([grip[0], 0.65, grip[2]]), ropeEnd: S(r2), drum: S([0, 0, zd]), stand: S([grip[0], 0.95, z0]), words: [] } };
     },
     notes: 'Raised. Stands on the trolley stage beyond the buffer, rope lead (+x) toward the cart. stand is where a cranker stands; crank is the grip.',
+  };
+
+  /* THE NET SHED LANDING (structure.stp_net_shed_landing) — the planked apron at the foot of the net shed's ramp, down to
+     the wharf. The bank in front of the doors falls away to the deck's rim; these boards bridge it, so whoever steps out of
+     the shed stands on timber and walks straight on to the wharf. Boards laid across the way (east-west), cut to the line
+     of the ramp's foot on the north and to the deck's rim on the south; a heavy oak threshold where the ramp lands, tarred
+     sills on the open sides, and an iron-shod nosing with a short tarred riser where it steps down on to the deck. A floor
+     piece: walked on, drawn under figures. Local x is east, local y north (plan); the origin is the piece's anchor. The
+     plan outline is given in metres from that anchor (o.plan): the ramp's foot runs from P1 to P2 (the shed sits at Dir 5, so its
+     foot lies on the diagonal), the deck's rim from P5 to P4; P2 to P3 squares the north-east corner off level with the
+     ramp's east corner, so the boards end in a straight edge and not a point. */
+  PIECES.shedLanding = {
+    id: 'structure.stp_net_shed_landing', name: 'Net shed landing', defType: 'SetPieceDef', scene: 'keyscene.stp_east_end',
+    layer: 'floor', walk: 'on', footprint: null,
+    defaults: { deck: 0.1, board: 0.22, sill: 0.12, riser: 0.22, seed: 23,
+      plan: [[-1.1, -0.17], [0.95, 1.88], [2.05, 1.88], [2.05, -1.15], [-1.3, -1.15]] },
+    build(o) {
+      const out = [], z = o.deck, P = o.plan, n = P.length;
+      const ys = P.map(p => p[1]), yLo = Math.min(...ys), yHi = Math.max(...ys);
+      // the outline is convex: its x-span at a height y, from every edge that crosses y
+      const span = (y) => { let lo = Infinity, hi = -Infinity;
+        for (let k = 0; k < n; k++) { const a = P[k], b = P[(k + 1) % n];
+          if ((y < Math.min(a[1], b[1]) - 1e-9) || (y > Math.max(a[1], b[1]) + 1e-9)) continue;
+          if (Math.abs(b[1] - a[1]) < 1e-9) { lo = Math.min(lo, a[0], b[0]); hi = Math.max(hi, a[0], b[0]); continue; }
+          const x = a[0] + (b[0] - a[0]) * (y - a[1]) / (b[1] - a[1]); lo = Math.min(lo, x); hi = Math.max(hi, x); }
+        return [lo, hi]; };
+      // bedded: worn earth showing past the open sides where boots have stepped off the boards
+      // (the outline runs clockwise, so outward is to the left of each edge; not under the threshold, not over the deck)
+      for (const k of [1, 2, 4]) { const a = P[k], b = P[(k + 1) % n];
+        const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy), nx = -dy / L, ny = dx / L, e = 0.1 + 0.08 * hash(k, 1, o.seed);
+        flat(out, [[a[0], a[1]], [b[0], b[1]], [b[0] + nx * e, b[1] + ny * e], [a[0] + nx * e, a[1] + ny * e]], 0.003, 'earth', 'bed', -0.8); }
+      // the boards, one strip per board width, each cut to the outline at its two edges, most of them worn pale down
+      // the middle where the traffic goes
+      const m = Math.max(1, Math.round((yHi - yLo) / o.board)), bw = (yHi - yLo) / m;
+      for (let k = 0; k < m; k++) { const y0 = yLo + k * bw + 0.008, y1 = yLo + (k + 1) * bw - 0.008;
+        const s0 = span(y0), s1 = span(y1); if (!(s0[1] > s0[0]) || !(s1[1] > s1[0])) continue;
+        const q = [[s0[0], y0], [s0[1], y0], [s1[1], y1], [s1[0], y1]];
+        F(out, q.map(p => [p[0], p[1], z]), 'plank', -0.2 + 0.12 * (hash(k, 3, o.seed) - 0.5), 'deck');
+        F(out, [[s0[0], y0, z - 0.04], [s0[1], y0, z - 0.04], [s0[1], y0, z], [s0[0], y0, z]], 'plank', -0.45, 'deck.edge');
+        const mid = (s0[0] + s0[1] + s1[0] + s1[1]) / 4, half = 0.32;
+        if (hash(k, 4, o.seed) < 0.6) flat(out, [[mid - half, y0 + 0.02], [mid + half, y0 + 0.02], [mid + half, y1 - 0.02], [mid - half, y1 - 0.02]], z + 0.001, 'board', 'deck.wear', -0.1);
+        for (const sx of [s0[0] + 0.12, s0[1] - 0.12]) box(out, sx - 0.012, sx + 0.012, (y0 + y1) / 2 - 0.012, (y0 + y1) / 2 + 0.012, z, z + 0.004, 'iron', 'deck.nail'); }
+      // the threshold: a squared oak baulk under the ramp's foot (P1 to P2), proud of the boards
+      stick(out, [P[0][0], P[0][1], z + 0.03], [P[1][0], P[1][1], z + 0.03], o.sill + 0.04, 'wood', 'threshold');
+      // the sills on the open sides, tarred
+      for (const k of [1, 2, 4]) { const a = P[k], b = P[(k + 1) % n]; stick(out, [a[0], a[1], z - 0.02], [b[0], b[1], z - 0.02], o.sill, 'tar', 'sill'); }
+      // the step down on to the deck: a tarred riser under the south edge and an iron nosing along its lip
+      const s = P[3], w = P[4];
+      box(out, w[0], s[0], s[1] - 0.04, s[1], z - o.riser, z, 'tar', 'riser');
+      stick(out, [w[0], s[1] + 0.02, z + 0.005], [s[0], s[1] + 0.02, z + 0.005], 0.05, 'iron', 'nosing');
+      return { faces: out, mats: mats(['plank', 'board', 'wood', 'tar', 'iron', 'earth']), anchors: { words: [] } };
+    },
+    notes: 'A floor piece, walked on. Lies at the foot of the net shed\'s ramp and steps down on to the landing deck; its plan outline is metres from the anchor.',
   };
 
   // ---- the smoke (fx.stp_cannery_smoke): the restored cannery's plume, a runtime overlay, not a sprite --------------------

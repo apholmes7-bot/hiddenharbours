@@ -16,7 +16,7 @@
    },
    {
     "path": "stPetersSetPieces.js",
-    "sha256Lf": "4345bdc75850be995ed02f90f99cbebf54aa1216fa054c1bb727efb42ef5b7ee"
+    "sha256Lf": "d8821755d0b0236897e826502db5ce6dedc5d6a655cc8365e3f3394212c64ca2"
    }
   ]
  },
@@ -32,6 +32,12 @@
    "file": "scenes/keyscene.stp_cannery/scene.json",
    "bytes": 16331,
    "sha256": "c8bc29eb8ab6487ef5b47305d420bfaf5c2136fba0bafc62b07f2c9cc4a0b738"
+  },
+  {
+   "id": "keyscene.stp_east_end",
+   "file": "scenes/lookpass.stp_east_end/scene.json",
+   "bytes": 12695,
+   "sha256": "ff311bcbcdad346c0b92795a5e28b38297404565015be2f1659259613738bf43"
   }
  ],
  "bake": {
@@ -2359,16 +2365,16 @@
     "units": "metres, the piece's own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
     "bounds": {
      "x": [
-      -0.727,
+      -0.825,
       0.96
      ],
      "y": [
-      -0.912,
-      0.912
+      -0.96,
+      0.96
      ],
      "z": [
       0,
-      1.344
+      1.407
      ]
     },
     "layer": "raised",
@@ -2451,82 +2457,82 @@
     "cells": [
      {
       "dir": 0,
-      "w": 61,
+      "w": 65,
       "h": 57,
       "pivot": [
-       27,
+       30,
        45
       ]
      },
      {
       "dir": 1,
-      "w": 67,
+      "w": 73,
       "h": 52,
       "pivot": [
-       41,
+       44,
        36
       ]
      },
      {
       "dir": 2,
-      "w": 66,
-      "h": 49,
+      "w": 69,
+      "h": 53,
       "pivot": [
-       33,
-       38
+       34,
+       41
       ]
      },
      {
       "dir": 3,
       "w": 52,
-      "h": 67,
+      "h": 70,
       "pivot": [
        26,
-       51
+       54
       ]
      },
      {
       "dir": 4,
-      "w": 61,
-      "h": 67,
+      "w": 65,
+      "h": 70,
       "pivot": [
        34,
-       55
+       58
       ]
      },
      {
       "dir": 5,
-      "w": 67,
-      "h": 66,
+      "w": 73,
+      "h": 67,
       "pivot": [
-       26,
-       50
+       29,
+       51
       ]
      },
      {
       "dir": 6,
-      "w": 66,
-      "h": 63,
+      "w": 69,
+      "h": 64,
       "pivot": [
-       33,
-       41
+       34,
+       43
       ]
      },
      {
       "dir": 7,
       "w": 52,
-      "h": 66,
+      "h": 67,
       "pivot": [
        26,
-       50
+       52
       ]
      }
     ],
     "anchors": {
      "crank": [
-      -0.6815118041762213,
-      0.744,
-      0.8913702119897133
+      -0.7646502429395273,
+      0.78,
+      0.8433702119897133
      ],
      "ropeEnd": [
       0.96,
@@ -2539,27 +2545,27 @@
       0.82
      ],
      "stand": [
-      -0.6815118041762213,
-      1.02,
+      -0.7646502429395273,
+      1.14,
       0.1
      ],
      "words": [],
      "px": {
       "crank": [
-       55.8,
-       48.5
+       58.5,
+       53.4
       ],
       "ropeEnd": [
        3.3,
-       52
+       55
       ],
       "drum": [
        34,
-       34.9
+       37.9
       ],
       "stand": [
-       55.8,
-       73.5
+       58.5,
+       79
       ]
      }
     },
@@ -2567,11 +2573,206 @@
      "deck": 0.1,
      "lead": 0.8,
      "scale": 1.2,
-     "arm": 0.34
+     "arm": 0.42
     },
     "light": null,
     "animated": null,
     "notes": "Raised. Stands on the trolley stage beyond the buffer, rope lead (+x) toward the cart. stand is where a cranker stands; crank is the grip."
+   }
+  },
+  {
+   "key": "shedLanding",
+   "id": "structure.stp_net_shed_landing",
+   "scene": "keyscene.stp_east_end",
+   "sceneEntry": null,
+   "options": {},
+   "gameplay": {
+    "schema": "hidden-harbours/st-peters-set-piece@1",
+    "generatedBy": "StPetersSetPieces 1.0.0",
+    "key": "shedLanding",
+    "id": "structure.stp_net_shed_landing",
+    "name": "Net shed landing",
+    "defType": "SetPieceDef",
+    "scene": "keyscene.stp_east_end",
+    "units": "metres, the piece's own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+    "bounds": {
+     "x": [
+      -1.45,
+      2.152
+     ],
+     "y": [
+      -1.19,
+      2.021
+     ],
+     "z": [
+      0,
+      0.21
+     ]
+    },
+    "layer": "floor",
+    "walk": "on",
+    "mount": "ground",
+    "colliders": [],
+    "facings": [
+     {
+      "dir": 0,
+      "showFaces": "N",
+      "bearingDeg": 0,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 1,
+      "showFaces": "NW",
+      "bearingDeg": 315,
+      "cameraSees": "its back"
+     },
+     {
+      "dir": 2,
+      "showFaces": "W",
+      "bearingDeg": 270,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 3,
+      "showFaces": "SW",
+      "bearingDeg": 225,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 4,
+      "showFaces": "S",
+      "bearingDeg": 180,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 5,
+      "showFaces": "SE",
+      "bearingDeg": 135,
+      "cameraSees": "the show face"
+     },
+     {
+      "dir": 6,
+      "showFaces": "E",
+      "bearingDeg": 90,
+      "cameraSees": "the show face, edge-on or at a diagonal"
+     },
+     {
+      "dir": 7,
+      "showFaces": "NE",
+      "bearingDeg": 45,
+      "cameraSees": "its back"
+     }
+    ],
+    "cells": [
+     {
+      "dir": 0,
+      "w": 123,
+      "h": 80,
+      "pivot": [
+       50,
+       48
+      ]
+     },
+     {
+      "dir": 1,
+      "w": 107,
+      "h": 108,
+      "pivot": [
+       29,
+       65
+      ]
+     },
+     {
+      "dir": 2,
+      "w": 110,
+      "h": 84,
+      "pivot": [
+       68,
+       50
+      ]
+     },
+     {
+      "dir": 3,
+      "w": 158,
+      "h": 74,
+      "pivot": [
+       96,
+       54
+      ]
+     },
+     {
+      "dir": 4,
+      "w": 123,
+      "h": 76,
+      "pivot": [
+       72,
+       31
+      ]
+     },
+     {
+      "dir": 5,
+      "w": 107,
+      "h": 106,
+      "pivot": [
+       78,
+       43
+      ]
+     },
+     {
+      "dir": 6,
+      "w": 110,
+      "h": 84,
+      "pivot": [
+       42,
+       35
+      ]
+     },
+     {
+      "dir": 7,
+      "w": 158,
+      "h": 78,
+      "pivot": [
+       62,
+       24
+      ]
+     }
+    ],
+    "anchors": {
+     "words": [],
+     "px": {}
+    },
+    "options": {
+     "deck": 0.1,
+     "board": 0.22,
+     "sill": 0.12,
+     "riser": 0.22,
+     "seed": 23,
+     "plan": [
+      [
+       -1.1,
+       -0.17
+      ],
+      [
+       0.95,
+       1.88
+      ],
+      [
+       2.05,
+       1.88
+      ],
+      [
+       2.05,
+       -1.15
+      ],
+      [
+       -1.3,
+       -1.15
+      ]
+     ]
+    },
+    "light": null,
+    "animated": null,
+    "notes": "A floor piece, walked on. Lies at the foot of the net shed's ramp and steps down on to the landing deck; its plan outline is metres from the anchor."
    }
   }
  ]

@@ -13,14 +13,16 @@ using UnityEngine;
 namespace HiddenHarbours.App.Editor
 {
     /// <summary>
-    /// <b>No plant grows on the trolley stage or over the line's last run.</b> The plant field draws every plant
-    /// by its root's y, and the stage and the line are floor pieces drawn under everything that stands, so a
-    /// plant rooted on the stage, or just in front of it, paints over the deck, the cart and the winch.
+    /// <b>No plant grows on the trolley stage, over the line's last run, or in the net shed's doorway.</b> The
+    /// plant field draws every plant by its root's y, and the stage, the line and the shed's landing are floor
+    /// pieces drawn under everything that stands, so a plant rooted on them, or just in front of them, paints over
+    /// the deck, the cart and the winch, or stands in the shed's doors.
     ///
     /// <para>The clearing is the stage's drawn footprint grown by <see cref="StagePadMetres"/> on every side, and
     /// a corridor <see cref="LineHalfWidthMetres"/> either side of the line's last <see cref="LineClearMetres"/>
-    /// as drawn. Both are read from the key scene and the stage's Def, so the clearing follows the pieces if
-    /// they move. The field's authored sites inside it are removed and its ground grid is closed (<c>255</c>)
+    /// as drawn, and the doorway: the shed's ramp and its landing, each drawn and grown by
+    /// <see cref="DoorwayPadMetres"/>. All are read from the key scenes, the stage's and the landing's Defs and the
+    /// shed's sidecar, so the clearing follows the pieces if they move. The field's authored sites inside it are removed and its ground grid is closed (<c>255</c>)
     /// under it, so the meadow recipe never seeds there. Idempotent: a second run changes nothing.</para>
     /// </summary>
     public static class StPetersTrolleyStageClearance
@@ -29,6 +31,12 @@ namespace HiddenHarbours.App.Editor
         public const string StageId = "structure.stp_cannery_trolley_stage";
         public const string LineId = "structure.stp_cannery_trolley_line";
         public const string StageDefPath = "Assets/_Project/Data/SetPieces/SetPiece_trolleyStage.asset";
+        public const string DoorwaySceneId = "keyscene.stp_east_end";
+        public const string ShedId = "structure.stp_net_shed";
+        public const string LandingId = "structure.stp_net_shed_landing";
+        public const string LandingDefPath = "Assets/_Project/Data/SetPieces/SetPiece_shedLanding.asset";
+        public const string ShedSidecarPath = "docs/art/rigs/wharf-building-kit-v2/gameplay/wharfBuilding2.netShed.gameplay.json";
+        public const string RampFootprintId = "ramp";
 
         /// <summary>Bare ground kept round the stage's drawn footprint, in metres: room for a man to stand at
         /// the edge, and enough that a knee-high plant rooted in front of the stage does not reach its deck.</summary>
@@ -42,16 +50,25 @@ namespace HiddenHarbours.App.Editor
         /// the sleepers' ends and a knee-high plant's reach.</summary>
         public const float LineHalfWidthMetres = 0.9f;
 
+        /// <summary>Bare ground kept round the shed's ramp and its landing as drawn, in metres: enough that a
+        /// knee-high plant rooted beside the boards does not lean into the doors or across the step.</summary>
+        public const float DoorwayPadMetres = 0.3f;
+
         /// <summary>The clearing, drawn: a box round the stage and a run of line.</summary>
         public sealed class Clearing
         {
             public Rect Stage;
             public List<Vector2> Line = new List<Vector2>();
+            /// <summary>The net shed's doorway, drawn and padded: its ramp, then its landing.</summary>
+            public List<Rect> Doorway = new List<Rect>();
+
+            static bool InRect(Rect s, Vector2 at, float pad) =>
+                at.x >= s.xMin - pad && at.x <= s.xMax + pad && at.y >= s.yMin - pad && at.y <= s.yMax + pad;
 
             public bool Contains(Vector2 at, float pad = 0f)
             {
-                Rect s = Stage;
-                if (at.x >= s.xMin - pad && at.x <= s.xMax + pad && at.y >= s.yMin - pad && at.y <= s.yMax + pad) return true;
+                if (InRect(Stage, at, pad)) return true;
+                foreach (Rect d in Doorway) if (InRect(d, at, pad)) return true;
                 for (int i = 0; i + 1 < Line.Count; i++)
                     if (DistanceToSegment(at, Line[i], Line[i + 1]) <= LineHalfWidthMetres + pad) return true;
                 return false;
@@ -64,6 +81,11 @@ namespace HiddenHarbours.App.Editor
                 {
                     xMin = Mathf.Min(xMin, p.x - LineHalfWidthMetres); xMax = Mathf.Max(xMax, p.x + LineHalfWidthMetres);
                     yMin = Mathf.Min(yMin, p.y - LineHalfWidthMetres); yMax = Mathf.Max(yMax, p.y + LineHalfWidthMetres);
+                }
+                foreach (Rect d in Doorway)
+                {
+                    xMin = Mathf.Min(xMin, d.xMin); xMax = Mathf.Max(xMax, d.xMax);
+                    yMin = Mathf.Min(yMin, d.yMin); yMax = Mathf.Max(yMax, d.yMax);
                 }
                 return Rect.MinMaxRect(xMin - pad, yMin - pad, xMax + pad, yMax + pad);
             }
@@ -111,7 +133,48 @@ namespace HiddenHarbours.App.Editor
                 if (run >= left) { clearing.Line.Add(Vector2.Lerp(drawn[i], drawn[i - 1], left / run)); left = 0f; }
                 else { clearing.Line.Add(drawn[i - 1]); left -= run; }
             }
+            clearing.Doorway.AddRange(ReadDoorway());
             return clearing;
+        }
+
+        [Serializable] sealed class ShedSidecar { public Footprint[] FOOTPRINT; }
+        [Serializable] sealed class Footprint { public string id; public float x0, x1, y0, y1; public bool walk; }
+
+        /// <summary>A local rectangle (x0..x1, y0..y1) placed at <paramref name="at"/> turned by <paramref name="dir"/>,
+        /// as drawn, grown by <paramref name="pad"/>.</summary>
+        public static Rect Drawn(Vector2 at, int dir, float x0, float x1, float y0, float y1, float pad)
+        {
+            var corners = new[] { new Vector2(x0, y0), new Vector2(x1, y0), new Vector2(x1, y1), new Vector2(x0, y1) }
+                .Select(c => { Vector2 w = SetPieceDef.ToWorld(c, dir); return at + new Vector2(w.x, w.y * Depth); }).ToArray();
+            return Rect.MinMaxRect(corners.Min(c => c.x) - pad, corners.Min(c => c.y) - pad,
+                                   corners.Max(c => c.x) + pad, corners.Max(c => c.y) + pad);
+        }
+
+        /// <summary>The shed's ramp, local, from its sidecar's footprint.</summary>
+        public static Rect ShedRampLocal()
+        {
+            string path = System.IO.Path.Combine(System.IO.Directory.GetParent(Application.dataPath).FullName, ShedSidecarPath);
+            var sidecar = JsonUtility.FromJson<ShedSidecar>(System.IO.File.ReadAllText(path));
+            Footprint ramp = sidecar.FOOTPRINT?.SingleOrDefault(f => f.id == RampFootprintId)
+                             ?? throw new InvalidOperationException(ShedSidecarPath + " has no ramp footprint.");
+            return Rect.MinMaxRect(ramp.x0, ramp.y0, ramp.x1, ramp.y1);
+        }
+
+        /// <summary>The doorway as the east end's key scene places the shed and its landing: the ramp, then the
+        /// landing, each drawn and grown by <see cref="DoorwayPadMetres"/>.</summary>
+        public static Rect[] ReadDoorway()
+        {
+            KeySceneDef scene = StPetersLayerRefresh.LoadStPetersKeyScenes().Single(s => s.Id == DoorwaySceneId);
+            KeyScenePiece shed = scene.Pieces.Single(p => p.Id == ShedId);
+            KeyScenePiece landing = scene.Pieces.Single(p => p.Id == LandingId);
+            var def = AssetDatabase.LoadAssetAtPath<SetPieceDef>(LandingDefPath);
+            if (def == null) throw new InvalidOperationException(LandingDefPath + " does not load.");
+            Rect ramp = ShedRampLocal();
+            return new[]
+            {
+                Drawn(shed.At, shed.Dir, ramp.xMin, ramp.xMax, ramp.yMin, ramp.yMax, DoorwayPadMetres),
+                Drawn(landing.At, landing.Dir, def.BoundsMin.x, def.BoundsMax.x, def.BoundsMin.y, def.BoundsMax.y, DoorwayPadMetres),
+            };
         }
 
         /// <summary>

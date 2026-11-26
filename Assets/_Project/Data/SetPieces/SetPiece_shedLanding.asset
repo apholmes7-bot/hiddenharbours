@@ -1,0 +1,137 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b51978faec4dbb8e54e23107a97ef5, type: 3}
+  m_Name: SetPiece_shedLanding
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: structure.stp_net_shed_landing
+  DisplayName: Net shed landing
+  RigKey: shedLanding
+  SceneId: keyscene.stp_east_end
+  BakedOptionsJson: '{"deck":0.1,"board":0.22,"sill":0.12,"riser":0.22,"seed":23,"plan":[[-1.1,-0.17],[0.95,1.88],[2.05,1.88],[2.05,-1.15],[-1.3,-1.15]]}'
+  Layer: floor
+  Walk: on
+  Mount: ground
+  BoundsMin: {x: -1.45, y: -1.19, z: 0}
+  BoundsMax: {x: 2.152, y: 2.021, z: 0.21}
+  Frames:
+  - Sprite: {fileID: -5425352615400527417, guid: c5f2d6667a68afe44957a4280f71b63d, type: 3}
+    RigDir: 0
+    ShowFaces: N
+    BearingDeg: 0
+    CameraSees: its back
+    NativeSize: {x: 123, y: 80}
+    NativePivot: {x: 50, y: 48}
+    Crop: {x: 4, y: 3}
+    Pivot: {x: 46, y: 45}
+  - Sprite: {fileID: 1684743754628988577, guid: c5f2d6667a68afe44957a4280f71b63d, type: 3}
+    RigDir: 7
+    ShowFaces: NE
+    BearingDeg: 45
+    CameraSees: its back
+    NativeSize: {x: 158, y: 78}
+    NativePivot: {x: 62, y: 24}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 58, y: 20}
+  - Sprite: {fileID: -4262074591677421595, guid: c5f2d6667a68afe44957a4280f71b63d, type: 3}
+    RigDir: 6
+    ShowFaces: E
+    BearingDeg: 90
+    CameraSees: the show face, edge-on or at a diagonal
+    NativeSize: {x: 110, y: 84}
+    NativePivot: {x: 42, y: 35}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 38, y: 31}
+  - Sprite: {fileID: -3618254634438363132, guid: c5f2d6667a68afe44957a4280f71b63d, type: 3}
+    RigDir: 5
+    ShowFaces: SE
+    BearingDeg: 135
+    CameraSees: the show face
+    NativeSize: {x: 107, y: 106}
+    NativePivot: {x: 78, y: 43}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 75, y: 40}
+  - Sprite: {fileID: -8372690606545256693, guid: c5f2d6667a68afe44957a4280f71b63d, type: 3}
+    RigDir: 4
+    ShowFaces: S
+    BearingDeg: 180
+    CameraSees: the show face
+    NativeSize: {x: 123, y: 76}
+    NativePivot: {x: 72, y: 31}
+    Crop: {x: 3, y: 4}
+    Pivot: {x: 69, y: 27}
+  - Sprite: {fileID: -266946329268368277, guid: c5f2d6667a68afe44957a4280f71b63d, type: 3}
+    RigDir: 3
+    ShowFaces: SW
+    BearingDeg: 225
+    CameraSees: the show face
+    NativeSize: {x: 158, y: 74}
+    NativePivot: {x: 96, y: 54}
+    Crop: {x: 4, y: 3}
+    Pivot: {x: 92, y: 51}
+  - Sprite: {fileID: -22958596833229009, guid: c5f2d6667a68afe44957a4280f71b63d, type: 3}
+    RigDir: 2
+    ShowFaces: W
+    BearingDeg: 270
+    CameraSees: the show face, edge-on or at a diagonal
+    NativeSize: {x: 110, y: 84}
+    NativePivot: {x: 68, y: 50}
+    Crop: {x: 3, y: 3}
+    Pivot: {x: 65, y: 47}
+  - Sprite: {fileID: -1709587778, guid: c5f2d6667a68afe44957a4280f71b63d, type: 3}
+    RigDir: 1
+    ShowFaces: NW
+    BearingDeg: 315
+    CameraSees: its back
+    NativeSize: {x: 107, y: 108}
+    NativePivot: {x: 29, y: 65}
+    Crop: {x: 4, y: 4}
+    Pivot: {x: 25, y: 61}
+  CellSize: {x: 150, y: 100}
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders: []
+  Anchors: []
+  Path: []
+  TideMarks: []
+  Words: []
+  HasLight: 0
+  Light:
+    Emitters: []
+    When: 
+  IsAnimated: 0
+  Animated:
+    Part: 
+    Input: 
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []
+  GameplayJson: '{"schema":"hidden-harbours/st-peters-set-piece@1","generatedBy":"StPetersSetPieces
+    1.0.0","key":"shedLanding","id":"structure.stp_net_shed_landing","name":"Net
+    shed landing","defType":"SetPieceDef","scene":"keyscene.stp_east_end","units":"metres,
+    the piece''s own frame: +x right, +y the show face, +z up from its ground point
+    (the pivot)","bounds":{"x":[-1.45,2.152],"y":[-1.19,2.021],"z":[0,0.21]},"layer":"floor","walk":"on","mount":"ground","colliders":[],"facings":[{"dir":0,"showFaces":"N","bearingDeg":0,"cameraSees":"its
+    back"},{"dir":1,"showFaces":"NW","bearingDeg":315,"cameraSees":"its back"},{"dir":2,"showFaces":"W","bearingDeg":270,"cameraSees":"the
+    show face, edge-on or at a diagonal"},{"dir":3,"showFaces":"SW","bearingDeg":225,"cameraSees":"the
+    show face"},{"dir":4,"showFaces":"S","bearingDeg":180,"cameraSees":"the show
+    face"},{"dir":5,"showFaces":"SE","bearingDeg":135,"cameraSees":"the show face"},{"dir":6,"showFaces":"E","bearingDeg":90,"cameraSees":"the
+    show face, edge-on or at a diagonal"},{"dir":7,"showFaces":"NE","bearingDeg":45,"cameraSees":"its
+    back"}],"cells":[{"dir":0,"w":123,"h":80,"pivot":[50,48]},{"dir":1,"w":107,"h":108,"pivot":[29,65]},{"dir":2,"w":110,"h":84,"pivot":[68,50]},{"dir":3,"w":158,"h":74,"pivot":[96,54]},{"dir":4,"w":123,"h":76,"pivot":[72,31]},{"dir":5,"w":107,"h":106,"pivot":[78,43]},{"dir":6,"w":110,"h":84,"pivot":[42,35]},{"dir":7,"w":158,"h":78,"pivot":[62,24]}],"anchors":{"words":[],"px":{}},"options":{"deck":0.1,"board":0.22,"sill":0.12,"riser":0.22,"seed":23,"plan":[[-1.1,-0.17],[0.95,1.88],[2.05,1.88],[2.05,-1.15],[-1.3,-1.15]]},"light":null,"animated":null,"notes":"A
+    floor piece, walked on. Lies at the foot of the net shed''s ramp and steps down
+    on to the landing deck; its plan outline is metres from the anchor."}'
+  State: 
+  Variants: []
+  HasVendor: 0
+  Vendor:
+    Seller: 
+    At: {x: 0, y: 0, z: 0}

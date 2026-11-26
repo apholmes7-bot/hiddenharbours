@@ -334,9 +334,9 @@ MonoBehaviour:
     Kit: wharfDecor
     Piece: netReel
     State: 
-    At: {x: 189.9, y: 7.3}
-    Z: 5.82554
-    StandsOn: ground
+    At: {x: 195.4, y: 5.5}
+    Z: 5.35
+    StandsOn: deck
     MountHost: 
     MountAnchor: 
     HasFoot: 0
@@ -546,6 +546,30 @@ MonoBehaviour:
     WhenTide: 
     Words: []
     Options: []
+  - Id: structure.stp_net_shed_landing
+    Kind: setPiece
+    Owner: 
+    Kit: stPetersSetPieces
+    Piece: shedLanding
+    State: 
+    At: {x: 190.45, y: 6.94}
+    Z: 5.59488
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: floor
+    Walk: on
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
   Lights: []
   RetiredIds: []
   PlacementIds:
@@ -567,3 +591,4 @@ MonoBehaviour:
   - prop.stp_bait_salt
   - prop.stp_bait_bike
   - prop.stp_bait_flag
+  - structure.stp_net_shed_landing

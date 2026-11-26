@@ -64,6 +64,7 @@ namespace HiddenHarbours.Tools.RigBaking
             new KeyValuePair<string, string>("doorNotice", "prop.stp_cannery_door_notice"),
             new KeyValuePair<string, string>("trolleyStage", "structure.stp_cannery_trolley_stage"),
             new KeyValuePair<string, string>("handWinch", "prop.stp_cannery_hand_winch"),
+            new KeyValuePair<string, string>("shedLanding", "structure.stp_net_shed_landing"),
         };
 
         public static string SidecarPath(string id) => $"{GameplayFolder}/{id}.gameplay.json";
