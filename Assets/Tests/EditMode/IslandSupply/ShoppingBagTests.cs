@@ -10,8 +10,8 @@ namespace HiddenHarbours.Tests.EditMode
     /// <summary>
     /// Buying at the shelf, slice 2, the logic under the paper bag and the separate counts (owner ruling
     /// 2026-11-23: the player fills a bag with several items and puts them into his storage by hand; every
-    /// item runs out on its own). A bagged good is bought into his supplies and set aside: it cannot be eaten
-    /// or cooked until it is put away, the bag holds no more than its capacity, a new game does not inherit
+    /// item runs out on its own). A bagged good is bought into his supplies and set aside: the supply locker
+    /// cannot spend it until it is put away, the bag holds no more than its capacity, a new game does not inherit
     /// the bag, and putting away releases everything at once. The bag can be set down with its goods inside
     /// (owner ruling 2026-11-23): they stay set aside, and the bag says which region and where it stands. The
     /// bag lives in the save's own row (save v26), so each game has its own. Shelf lines sharing one good count
@@ -65,7 +65,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void ABaggedGoodCannotBeEatenOrCooked_FromTheBag()
+        public void ABaggedGoodCannotBeSpentThroughTheSupplyLocker()
         {
             var save = new SaveData();
             SupplyLocker.Add(save, Bread, 1);

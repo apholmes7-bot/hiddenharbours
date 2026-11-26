@@ -1,0 +1,133 @@
+{
+  "schema": "light-station-sprites@1",
+  "rig": "docs/art/rigs/lighthouse-rig-kit-v2/lighthouseRig2.js",
+  "derivedFromRigSha256": {
+    "weatherSky.js": "38300697d5fe685b4800b2a5252aa3c9f0fbcb08bad40e80f6ce3aee1e9c7062",
+    "stationLight2.js": "31378ff132207b9618a61c257e7d4b35263b9e817710cc16c6e545c84760246a",
+    "lighthouseRig2.js": "b15242cf78fe1b726b6d0c8ace2198705804a6e1d1dfc5aa476b45dd8df71f60"
+  },
+  "station": {
+    "family": "pyramid",
+    "size": 1,
+    "clad": "clapboard",
+    "body": "white",
+    "mark": "red",
+    "daymark": "plain",
+    "gallery": "picket",
+    "cap": "cone",
+    "dwelling": true,
+    "oilHouse": true,
+    "shed": true,
+    "weather": 0.32,
+    "char": "Fl W 6s",
+    "occupancy": "keeper"
+  },
+  "facing": 0,
+  "pixelsPerMetre": 32,
+  "parts": [
+    {
+      "name": "tower",
+      "sprite": "LightStation_tower.png",
+      "widthPx": 182,
+      "heightPx": 444,
+      "pivot": {
+        "x": 0.5,
+        "y": 0.1329
+      },
+      "offsetMetres": {
+        "x": 0,
+        "y": 0
+      },
+      "footprints": [
+        {
+          "name": "tower",
+          "centreMetres": {
+            "x": 0,
+            "y": 0
+          },
+          "halfMetres": {
+            "x": 2.1996,
+            "y": 1.4139
+          }
+        }
+      ]
+    },
+    {
+      "name": "keepersHouse",
+      "sprite": "LightStation_keepersHouse.png",
+      "widthPx": 224,
+      "heightPx": 412,
+      "pivot": {
+        "x": 0.4996,
+        "y": 0.3508
+      },
+      "offsetMetres": {
+        "x": -6.94,
+        "y": 0.5785
+      },
+      "footprints": [
+        {
+          "name": "keepersHouse",
+          "centreMetres": {
+            "x": 0,
+            "y": 0
+          },
+          "halfMetres": {
+            "x": 3.2,
+            "y": 2.6354
+          }
+        },
+        {
+          "name": "oilHouse",
+          "centreMetres": {
+            "x": 1.9,
+            "y": -3.5353
+          },
+          "halfMetres": {
+            "x": 1.25,
+            "y": 0.932
+          }
+        }
+      ]
+    },
+    {
+      "name": "shed",
+      "sprite": "LightStation_shed.png",
+      "widthPx": 144,
+      "heightPx": 218,
+      "pivot": {
+        "x": 0.5019,
+        "y": 0.2389
+      },
+      "offsetMetres": {
+        "x": 6.54,
+        "y": -1.0285
+      },
+      "footprints": [
+        {
+          "name": "shed",
+          "centreMetres": {
+            "x": 0,
+            "y": 0
+          },
+          "halfMetres": {
+            "x": 1.95,
+            "y": 1.5748
+          }
+        }
+      ]
+    }
+  ],
+  "lantern": {
+    "focalMetres": 11.43,
+    "riseMetres": 8.7559,
+    "galleryRiseMetres": 8.0281,
+    "apexRiseMetres": 11.3706
+  },
+  "character": {
+    "name": "Fl W 6s",
+    "flashEverySeconds": 6,
+    "beams": 2,
+    "turnSeconds": 12
+  }
+}

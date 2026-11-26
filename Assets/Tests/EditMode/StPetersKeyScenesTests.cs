@@ -652,7 +652,7 @@ namespace HiddenHarbours.Tests.EditMode
             return sb.ToString();
         }
 
-        /// <summary>The slip dory's prefab instance, the root mend and launch adds after the open-air fixtures.</summary>
+        /// <summary>The slip dory's prefab instance, the root mend and launch adds after the light station's.</summary>
         const long SlipDoryInstance = 1946273810L;
 
         /// <summary>The step re-adds its root LAST: SceneRoots must be the committed list with only the key
@@ -669,8 +669,8 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(53, before.IndexOf(key), "the key root's index in the committed SceneRoots");
             // E2 ruling 8, D1/D5 and Amendment 1 point 5: commons then lights; PR 5p field; then the open-air
             // fixtures root the interior-fixtures step adds for the camper's shore power lead (storage, owner 11-17);
-            // then the slip dory's prefab instance (mend and launch Basil's dory).
-            CollectionAssert.AreEqual(new[] { 1757780506L, 866884044L, 910510002L, 1709556905L, SlipDoryInstance }, before.Skip(54).ToArray(),
+            // then the north-east light station's root; then the slip dory's prefab instance (mend and launch Basil's dory).
+            CollectionAssert.AreEqual(new[] { 1757780506L, 866884044L, 910510002L, 1709556905L, 1132627356L, SlipDoryInstance }, before.Skip(54).ToArray(),
                                       "the committed roots after the key root");
             Assert.AreEqual(1757780506L, c.TransformOf(c.RootGameObject(StPetersVillageDressing.CommonsRoot)));
             Assert.AreEqual(866884044L, c.TransformOf(c.RootGameObject(StPetersVillageLights.RootName)));
