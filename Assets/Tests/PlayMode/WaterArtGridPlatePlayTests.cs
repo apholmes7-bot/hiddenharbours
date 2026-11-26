@@ -75,7 +75,7 @@ namespace HiddenHarbours.Tests.PlayMode
             ("asset", float.NaN, float.NaN, float.NaN, float.NaN, 0f),
         };
 
-        List<Renderer> WaterRenderers() => Object.FindObjectsByType<Renderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
+        List<Renderer> WaterRenderers() => Object.FindObjectsByType<Renderer>(FindObjectsInactive.Include, FindObjectsSortMode.None)
             .Where(r => r.sharedMaterial != null && r.sharedMaterial.shader != null && r.sharedMaterial.shader.name == WaterShaderName)
             .ToList();
 
@@ -99,6 +99,16 @@ namespace HiddenHarbours.Tests.PlayMode
                 r.SetPropertyBlock(mpb);
             }
             Shader.SetGlobalFloat(CalmMirrorCentreAxisGlobal, s.MirrorCentre);
+        }
+
+        // The St Peters sea is the displaced surface: its chunks copy the flat renderer's block once a frame and
+        // the render feature draws them off-screen in the player loop, so a manual Render right after a block
+        // change photographs the previous frame's sea. Two frames at timeScale 0 (the shader's _Time does not move)
+        // let the copy and the off-screen draw both happen.
+        static IEnumerator GridLetTheSeaRedraw()
+        {
+            yield return null;
+            yield return null;
         }
 
         static float SnapToArt(float v) => Mathf.Round(v * ArtPpu) / ArtPpu;
@@ -184,6 +194,8 @@ namespace HiddenHarbours.Tests.PlayMode
                     var water = WaterRenderers();
                     Assert.IsNotEmpty(water, "no renderer draws the water shader");
                     File.AppendAllText(numbers, $"{tideId}-{seaId}: tide={level:R} wind={wind} sea01={sea01:R} hour={GameServices.Clock.HourOfDay:R} time={Time.time:R} waterRenderers={water.Count} matPPU={water[0].sharedMaterial.GetFloat("_PixelsPerUnit"):R}\n");
+                    if (tideId == "high" && seaId == "calm")
+                        File.AppendAllText(numbers, "  water renderers: " + string.Join(", ", water.Select(r => $"{r.name}[{r.GetType().Name} enabled={r.enabled} active={r.gameObject.activeInHierarchy}]")) + "\n");
                     foreach (var f in framings)
                     {
                         GridCamera(f.At, f.Scale);
@@ -191,6 +203,7 @@ namespace HiddenHarbours.Tests.PlayMode
                         foreach (var s in GridStates)
                         {
                             ApplyGridState(water, s);
+                            yield return GridLetTheSeaRedraw();
                             GridSave($"{f.Id}-{tideId}-{seaId}-{s.Name}");
                         }
                     }
@@ -202,6 +215,7 @@ namespace HiddenHarbours.Tests.PlayMode
                             for (int i = 0; i < GridPanFrames; i++)
                             {
                                 GridCamera(new Vector2(203f, 2.649f) + new Vector2(i, i) / ArtPpu, 2);
+                                yield return GridLetTheSeaRedraw();
                                 GridSave($"pan-{s.Name}-{i}");
                             }
                         }
