@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc1b061b6a464caca54ea4162759046d, type: 3}
+  m_Name: LadderOakum
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.ClueLadderDef
+  Id: clueladder.st_peters_dory_oakum
+  Gift: {fileID: 11400000, guid: b3e375a8771c48a39753cd2281e0b13c, type: 2}
+  Rungs:
+  - Flag: st_peters.dory_clue.oakum.1
+    Hints:
+    - NpcId: npc.marguerite_leblanc
+      Line: 'Oakum? Not on my shelf in years. The old wives picked their own by the stove, winters.'
+    - NpcId: npc.aunt_ginny
+      Line: 'Your uncle never bought oakum in his life. Some woman in the village always had a hank put by for him.'
+  - Flag: st_peters.dory_clue.oakum.2
+    Hints:
+    - NpcId: npc.junior_poirier
+      Line: 'Women married to fishermen keep the oakum. There''s one lives on the square, I''d say.'
+    - NpcId: npc.eileen_doiron
+      Line: 'There''s a house on the square still has a fisherman''s things in it, just as they were left.'
+  - Flag: st_peters.dory_clue.oakum.3
+    Hints:
+    - NpcId: npc.marguerite_leblanc
+      Line: 'Rose MacIsaac. The red house on the square. Her Alec fished forty years. She''s on the green of an evening.'
+    - NpcId: npc.eileen_doiron
+      Line: 'Ask Rose, at the red saltbox. Mornings she''s at her door, evenings on the green by the fire.'

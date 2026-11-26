@@ -92,6 +92,9 @@ namespace HiddenHarbours.Core
         {
             var save = GameServices.Save;
             if (save != null) save.BeginNewGame();
+            // A new game has no usable boat: the only dory lies broken on the St Peters slip. Set here, on
+            // the explicit New Game only, so a Continue and an old save keep the boat they had.
+            SlipDoryStory.BeginForNewGame(save);
             EnterWorld();
         }
 
