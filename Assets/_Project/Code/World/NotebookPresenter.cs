@@ -132,6 +132,7 @@ namespace HiddenHarbours.World
         private Func<IReadOnlyList<KnowledgePageDef>> _knowledge;
         private Func<IReadOnlyList<NotebookNote>> _notes;
         private Func<IReadOnlyList<CaughtSpeciesEntry>> _caught;
+        private Func<IReadOnlyList<NotebookPhotoEntry>> _photos;
         private IFlagStore _flags;
 
         // The Gear page: what he holds (asked fresh on every open) and the page's authored shape.
@@ -309,6 +310,14 @@ namespace HiddenHarbours.World
             _gearPage = page;
         }
 
+        /// <summary>
+        /// Tell the book where the album's pictures come from (save v28). Null puts the running game's
+        /// back (the save, worded by <see cref="NotebookPhotoPage"/>). <see cref="WireContent"/> alone
+        /// leaves the album off, so a book wired for an exact tab set keeps exactly that set.
+        /// </summary>
+        public void WirePhotos(Func<IReadOnlyList<NotebookPhotoEntry>> photos)
+            => _photos = photos ?? NotebookContentSource.Photos;
+
         /// <summary>The index of the stub with this key in <see cref="Tabs"/>, or -1.</summary>
         public int TabIndexOf(string key)
         {
@@ -385,6 +394,7 @@ namespace HiddenHarbours.World
             _caught = NotebookContentSource.Caught;
             _flags = NotebookContentSource.Flags();
             if (_gearSource == null) WireGear(null);
+            if (_photos == null) WirePhotos(null);
         }
 
         // ---- open / close ----------------------------------------------------------------------------
@@ -509,7 +519,8 @@ namespace HiddenHarbours.World
             }
             var built = NotebookContent.Build(
                 _quests?.Invoke(), _knowledge?.Invoke(), _notes?.Invoke(), _flags, Fit.Cols,
-                droppedTabs: null, caught: _caught?.Invoke(), gear: gear, gearPage: _gearPage);
+                droppedTabs: null, caught: _caught?.Invoke(), gear: gear, gearPage: _gearPage,
+                photos: _photos?.Invoke());
             _tabs.AddRange(built);
 
             if (_tabs.Count == 0)

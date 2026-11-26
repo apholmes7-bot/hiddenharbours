@@ -19,6 +19,26 @@ namespace HiddenHarbours.World
         /// <summary>The gear he owns, each with its picture, name and count. Present only once he owns
         /// something, like the catch page.</summary>
         Gear,
+
+        /// <summary>The pictures he has kept (save v28), newest first. Present only once there is one,
+        /// like the catch page.</summary>
+        Photos,
+    }
+
+    /// <summary>One kept picture, as the album page sees it: a head and its lines, already worded by
+    /// <see cref="NotebookPhotoPage"/>. World's view shape, apart from Core's save row.</summary>
+    public readonly struct NotebookPhotoEntry
+    {
+        public readonly int Number;
+        public readonly string Head;
+        public readonly IReadOnlyList<string> Lines;
+
+        public NotebookPhotoEntry(int number, string head, IReadOnlyList<string> lines)
+        {
+            Number = number;
+            Head = head ?? "";
+            Lines = lines;
+        }
     }
 
     /// <summary>One stub off the fore-edge.</summary>
@@ -83,6 +103,13 @@ namespace HiddenHarbours.World
         public const string TabGear = "tab.kit";
         public const string LabelGear = "KIT";
 
+        /// <summary>The album's stub (save v28). Lettered within the chip's five.</summary>
+        public const string TabPhotos = "tab.photos";
+        public const string LabelPhotos = "PHOTO";
+
+        /// <summary>Source-id prefix for a picture's block.</summary>
+        public const string PhotoSourcePrefix = "photo.";
+
         /// <summary>One species' lines under its name: how many caught, the record weight (the size a
         /// catch carries: whole grams under a kilogram, kilograms to one decimal from one up), and how
         /// many were protected and put back (only when any were). Each fits the narrowest page
@@ -112,7 +139,8 @@ namespace HiddenHarbours.World
             List<string> droppedTabs = null,
             IReadOnlyList<CaughtSpeciesEntry> caught = null,
             IReadOnlyList<NotebookGearHolding> gear = null,
-            NotebookGearPageDef gearPage = null)
+            NotebookGearPageDef gearPage = null,
+            IReadOnlyList<NotebookPhotoEntry> photos = null)
         {
             var tabs = new List<NotebookTab>
             {
@@ -137,6 +165,10 @@ namespace HiddenHarbours.World
                 if (gearBlocks.Count > 0)
                     tabs.Add(new NotebookTab(TabGear, LabelGear, NotebookPageKind.Gear, gearBlocks));
             }
+
+            // The album after them: his own record too, from his first kept picture, never trimmed.
+            if (photos != null && photos.Count > 0)
+                tabs.Add(new NotebookTab(TabPhotos, LabelPhotos, NotebookPageKind.Photos, PhotoBlocks(photos, cols)));
 
             tabs.Add(new NotebookTab(TabNotes, LabelNotes, NotebookPageKind.Notes, NoteBlocks(notes, cols)));
 
@@ -172,7 +204,7 @@ namespace HiddenHarbours.World
 
             foreach (var quest in quests)
             {
-                if (quest == null) continue;
+                if (quest == null || !QuestBoard.IsOpen(quest, flags)) continue;
 
                 QuestReading reading = QuestBoard.Read(quest, flags);
                 if (reading.Archived != archived) continue;
@@ -276,6 +308,26 @@ namespace HiddenHarbours.World
                 blocks.Add(NotebookLayout.Section(head, body, cols, CaughtSourcePrefix + e.SpeciesId));
             }
 
+            return blocks;
+        }
+
+        /// <summary>The album page: one section per picture, in the order given (the page builder hands
+        /// them newest first). Null or empty in, nothing out.</summary>
+        public static List<NotebookBlock> PhotoBlocks(IReadOnlyList<NotebookPhotoEntry> photos, int cols)
+        {
+            var blocks = new List<NotebookBlock>();
+            if (photos == null) return blocks;
+            for (int i = 0; i < photos.Count; i++)
+            {
+                NotebookPhotoEntry p = photos[i];
+                if (string.IsNullOrEmpty(p.Head)) continue;
+                var body = new List<string>();
+                if (p.Lines != null)
+                    for (int l = 0; l < p.Lines.Count; l++)
+                        if (!string.IsNullOrEmpty(p.Lines[l])) body.Add(p.Lines[l]);
+                blocks.Add(NotebookLayout.Section(p.Head, body, cols,
+                                                  PhotoSourcePrefix + p.Number.ToString(Invariant)));
+            }
             return blocks;
         }
 

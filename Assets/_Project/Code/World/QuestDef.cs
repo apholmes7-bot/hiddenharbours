@@ -78,5 +78,11 @@ namespace HiddenHarbours.World
         [Tooltip("The steps, IN ORDER. Order is the reading order on the page and it decides which " +
                  "step is CURRENT (the first one whose flag is still unset).")]
         public List<QuestStep> Steps = new List<QuestStep>();
+
+        [Header("When it is written down")]
+        [Tooltip("Optional. A flag that must be set before the quest is in the book at all (an islander's " +
+                 "request opens when she asks it). Empty = always in the book. Must be a settable flag, " +
+                 "like a step's. Added 2026-11-26 (append-only).")]
+        public string OpensWithFlag = "";
     }
 }

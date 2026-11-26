@@ -90,6 +90,18 @@ namespace HiddenHarbours.World
             return new QuestReading(archived, current, done, steps);
         }
 
+        /// <summary>
+        /// Is the quest in the book at all? True when it has no <see cref="QuestDef.OpensWithFlag"/>, or
+        /// that flag is set: a task the player has not been given yet is not written down (an islander's
+        /// request opens when she asks it, so the book never tells him what she will ask).
+        /// </summary>
+        public static bool IsOpen(QuestDef def, IFlagStore flags)
+        {
+            if (def == null) return false;
+            if (string.IsNullOrEmpty(def.OpensWithFlag)) return true;
+            return flags != null && flags.Get(def.OpensWithFlag);
+        }
+
         /// <summary>True iff this quest belongs on the Active tab.</summary>
         public static bool IsActive(QuestDef def, IFlagStore flags) => !Read(def, flags).Archived;
 
@@ -110,7 +122,7 @@ namespace HiddenHarbours.World
 
             foreach (var q in quests)
             {
-                if (q == null) continue;
+                if (q == null || !IsOpen(q, flags)) continue;
                 if (Read(q, flags).Archived) archived?.Add(q);
                 else active?.Add(q);
             }
