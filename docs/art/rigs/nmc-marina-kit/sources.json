@@ -20,6 +20,11 @@
       "file": "nmcWharf.js",
       "bytes": 60356,
       "sha256": "2e42f3877fcc22ff1e433c409b3642a19c8d2f50db50af6302d5b336de8138cd"
+    },
+    {
+      "file": "marinaGangway.js",
+      "bytes": 1645,
+      "sha256": "0b9b15b436f2be540d324798122355a5804a3cbdb3310dbfbaba92dccb74d6e1"
     }
   ]
 }

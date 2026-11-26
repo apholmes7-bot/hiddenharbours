@@ -48,6 +48,10 @@
   {
    "file": "nmcWharf.js",
    "sha256Lf": "2e42f3877fcc22ff1e433c409b3642a19c8d2f50db50af6302d5b336de8138cd"
+  },
+  {
+   "file": "marinaGangway.js",
+   "sha256Lf": "0b9b15b436f2be540d324798122355a5804a3cbdb3310dbfbaba92dccb74d6e1"
   }
  ],
  "register": {
@@ -3336,7 +3340,7 @@
      "file": "WaterSide_west_gangway_s0_0.png",
      "width": 3794,
      "height": 776,
-     "rgbaSha256": "cef6f638baf195cadcec01066b5a909cdfc775158e9d8c9623bdac6bad907d24"
+     "rgbaSha256": "53bcc9d7720a0cc2e9b2d1bd165c5a77173f11e4a0356d91299118e9533d7e9f"
     }
    ],
    "modelKey": "harbour:h5_west_gangway_s0",
@@ -3605,7 +3609,7 @@
      "file": "WaterSide_west_gangway_s1_0.png",
      "width": 3787,
      "height": 800,
-     "rgbaSha256": "aa9b6c3e8b0b4809d80ab3dd8ccd092fa1591eee00f773702f5ea397d8f84e19"
+     "rgbaSha256": "4c43bcc89fe162186fb433a869f994958f034af7732882d8e7560f63b7f57682"
     }
    ],
    "modelKey": "harbour:h5_west_gangway_s1",
@@ -3874,7 +3878,7 @@
      "file": "WaterSide_west_gangway_s2_0.png",
      "width": 3780,
      "height": 826,
-     "rgbaSha256": "e430d094f52b1d7f4e265a6f42c12f02958efaf762a2a4c704c3a292040d1a6f"
+     "rgbaSha256": "13d5e5aa322df9b7255663a44ec8349b2b73626cdd2ec29ad817f92849d5ecd1"
     }
    ],
    "modelKey": "harbour:h5_west_gangway_s2",
@@ -4143,7 +4147,7 @@
      "file": "WaterSide_west_gangway_s3_0.png",
      "width": 3759,
      "height": 850,
-     "rgbaSha256": "b4fac084bfcb4cb735ed821518a15096109f573c6f672fbd129bbc0b89478aee"
+     "rgbaSha256": "ab596ad48b8f307cca25cbe0baf5872efcded140a874fbefeb703079162ef82c"
     }
    ],
    "modelKey": "harbour:h5_west_gangway_s3",
@@ -4412,7 +4416,7 @@
      "file": "WaterSide_west_gangway_s4_0.png",
      "width": 3738,
      "height": 872,
-     "rgbaSha256": "a3f5303e22b7457e4f10274d4adedb240a7d5919525f5fd5b1fafec190d594f4"
+     "rgbaSha256": "4c7e8cec6c55bd010366a7cd32e2ef86debb53ca29aab2abbb3b029ab9fafb42"
     }
    ],
    "modelKey": "harbour:h5_west_gangway_s4",
@@ -4681,7 +4685,7 @@
      "file": "WaterSide_west_gangway_s5_0.png",
      "width": 3717,
      "height": 896,
-     "rgbaSha256": "80c35a1aea92e9c6374833fdc57d5f3e1e89164419a40f7b3601a8f2aff02a82"
+     "rgbaSha256": "5f8f579bad7a1959ebb39c0658a15bce350ba71dea482b43d2b8a793ada35cb1"
     }
    ],
    "modelKey": "harbour:h5_west_gangway_s5",
@@ -4950,7 +4954,7 @@
      "file": "WaterSide_west_gangway_s6_0.png",
      "width": 3689,
      "height": 916,
-     "rgbaSha256": "e64da38448e851f3765a42aa4bf90a4db7c77668268261c000ef54fbea87e2ff"
+     "rgbaSha256": "c3ac238882c286c4b31ccc3e3d5f794750359d7a3aa79cbacd038d0cc56360c9"
     }
    ],
    "modelKey": "harbour:h5_west_gangway_s6",
@@ -5219,7 +5223,7 @@
      "file": "WaterSide_west_gangway_s7_0.png",
      "width": 3654,
      "height": 938,
-     "rgbaSha256": "f093819cde35ba2338765f4e595a2cc85cc272aa3259e88c3428da662d99f878"
+     "rgbaSha256": "6f0b170b392d9712e507536370f112ebe5ea1d958047b58fc13de7f83bb3a311"
     }
    ],
    "modelKey": "harbour:h5_west_gangway_s7",
@@ -5488,7 +5492,7 @@
      "file": "WaterSide_west_gangway_s8_0.png",
      "width": 3612,
      "height": 958,
-     "rgbaSha256": "3ab963921260bd405adbf239ca63c8c617fb36bbb75bd33f8c54d2f5d58bb38a"
+     "rgbaSha256": "ca40fb970047617fe744a11cd642e944a40b51aa2080d26534111cf80c915611"
     }
    ],
    "modelKey": "harbour:h5_west_gangway_s8",
@@ -8404,7 +8408,7 @@
      "file": "WaterSide_fleet_gangway0_s0_0.png",
      "width": 3794,
      "height": 776,
-     "rgbaSha256": "b95bcd69b889585ea345bc523705b16763d32b10082c2f98249d92db7741a02d"
+     "rgbaSha256": "53bcc9d7720a0cc2e9b2d1bd165c5a77173f11e4a0356d91299118e9533d7e9f"
     }
    ],
    "modelKey": "harbour:h5_fleet_gangway0_s0",
@@ -8673,7 +8677,7 @@
      "file": "WaterSide_fleet_gangway0_s1_0.png",
      "width": 3787,
      "height": 800,
-     "rgbaSha256": "3ef4d291a133a9009a307fdf32e7b866d9616a334e74a6000d0c4bb1bffe389b"
+     "rgbaSha256": "4c43bcc89fe162186fb433a869f994958f034af7732882d8e7560f63b7f57682"
     }
    ],
    "modelKey": "harbour:h5_fleet_gangway0_s1",
@@ -8942,7 +8946,7 @@
      "file": "WaterSide_fleet_gangway0_s2_0.png",
      "width": 3780,
      "height": 826,
-     "rgbaSha256": "91330b50b836b1fbd10745edc62e435bc33c94dc67e1639329442522e550c754"
+     "rgbaSha256": "13d5e5aa322df9b7255663a44ec8349b2b73626cdd2ec29ad817f92849d5ecd1"
     }
    ],
    "modelKey": "harbour:h5_fleet_gangway0_s2",
@@ -9211,7 +9215,7 @@
      "file": "WaterSide_fleet_gangway0_s3_0.png",
      "width": 3759,
      "height": 850,
-     "rgbaSha256": "56bb5d46f2ecc9ff0657fe685b2c00f14b7a3bd6859013b10a0cd8147408f4b4"
+     "rgbaSha256": "ab596ad48b8f307cca25cbe0baf5872efcded140a874fbefeb703079162ef82c"
     }
    ],
    "modelKey": "harbour:h5_fleet_gangway0_s3",
@@ -9480,7 +9484,7 @@
      "file": "WaterSide_fleet_gangway0_s4_0.png",
      "width": 3738,
      "height": 872,
-     "rgbaSha256": "6ccaec2da480751a4834a00c118575b4b2a776333c7eb8d58b85cc9327f5e98c"
+     "rgbaSha256": "4c7e8cec6c55bd010366a7cd32e2ef86debb53ca29aab2abbb3b029ab9fafb42"
     }
    ],
    "modelKey": "harbour:h5_fleet_gangway0_s4",
@@ -9749,7 +9753,7 @@
      "file": "WaterSide_fleet_gangway0_s5_0.png",
      "width": 3717,
      "height": 896,
-     "rgbaSha256": "9a11855898d5b5227e8c5409110d73c7dc82bc40787cad63f94cf162f5aafea8"
+     "rgbaSha256": "5f8f579bad7a1959ebb39c0658a15bce350ba71dea482b43d2b8a793ada35cb1"
     }
    ],
    "modelKey": "harbour:h5_fleet_gangway0_s5",
@@ -10018,7 +10022,7 @@
      "file": "WaterSide_fleet_gangway0_s6_0.png",
      "width": 3689,
      "height": 916,
-     "rgbaSha256": "37795bb870ad82f4b3fa1e0d4c418266a9317770e44da46532b4050dcd1bf5a5"
+     "rgbaSha256": "c3ac238882c286c4b31ccc3e3d5f794750359d7a3aa79cbacd038d0cc56360c9"
     }
    ],
    "modelKey": "harbour:h5_fleet_gangway0_s6",
@@ -10287,7 +10291,7 @@
      "file": "WaterSide_fleet_gangway0_s7_0.png",
      "width": 3654,
      "height": 938,
-     "rgbaSha256": "40da60234c23eafa51d1b6667f9af3ba86d14781950bb308adff1ff6189b1c0a"
+     "rgbaSha256": "6f0b170b392d9712e507536370f112ebe5ea1d958047b58fc13de7f83bb3a311"
     }
    ],
    "modelKey": "harbour:h5_fleet_gangway0_s7",
@@ -10556,7 +10560,7 @@
      "file": "WaterSide_fleet_gangway0_s8_0.png",
      "width": 3612,
      "height": 958,
-     "rgbaSha256": "c5c5f3b400364cdbab6d7a3609ef86d732f2fd3f11bb7cd2c812bf0ab6a4eb31"
+     "rgbaSha256": "ca40fb970047617fe744a11cd642e944a40b51aa2080d26534111cf80c915611"
     }
    ],
    "modelKey": "harbour:h5_fleet_gangway0_s8",
@@ -10825,7 +10829,7 @@
      "file": "WaterSide_fleet_gangway1_s0_0.png",
      "width": 3794,
      "height": 776,
-     "rgbaSha256": "b95bcd69b889585ea345bc523705b16763d32b10082c2f98249d92db7741a02d"
+     "rgbaSha256": "53bcc9d7720a0cc2e9b2d1bd165c5a77173f11e4a0356d91299118e9533d7e9f"
     }
    ],
    "modelKey": "harbour:h5_fleet_gangway1_s0",
@@ -11094,7 +11098,7 @@
      "file": "WaterSide_fleet_gangway1_s1_0.png",
      "width": 3787,
      "height": 800,
-     "rgbaSha256": "3ef4d291a133a9009a307fdf32e7b866d9616a334e74a6000d0c4bb1bffe389b"
+     "rgbaSha256": "4c43bcc89fe162186fb433a869f994958f034af7732882d8e7560f63b7f57682"
     }
    ],
    "modelKey": "harbour:h5_fleet_gangway1_s1",
@@ -11363,7 +11367,7 @@
      "file": "WaterSide_fleet_gangway1_s2_0.png",
      "width": 3780,
      "height": 826,
-     "rgbaSha256": "91330b50b836b1fbd10745edc62e435bc33c94dc67e1639329442522e550c754"
+     "rgbaSha256": "13d5e5aa322df9b7255663a44ec8349b2b73626cdd2ec29ad817f92849d5ecd1"
     }
    ],
    "modelKey": "harbour:h5_fleet_gangway1_s2",
@@ -11632,7 +11636,7 @@
      "file": "WaterSide_fleet_gangway1_s3_0.png",
      "width": 3759,
      "height": 850,
-     "rgbaSha256": "56bb5d46f2ecc9ff0657fe685b2c00f14b7a3bd6859013b10a0cd8147408f4b4"
+     "rgbaSha256": "ab596ad48b8f307cca25cbe0baf5872efcded140a874fbefeb703079162ef82c"
     }
    ],
    "modelKey": "harbour:h5_fleet_gangway1_s3",
@@ -11901,7 +11905,7 @@
      "file": "WaterSide_fleet_gangway1_s4_0.png",
      "width": 3738,
      "height": 872,
-     "rgbaSha256": "6ccaec2da480751a4834a00c118575b4b2a776333c7eb8d58b85cc9327f5e98c"
+     "rgbaSha256": "4c7e8cec6c55bd010366a7cd32e2ef86debb53ca29aab2abbb3b029ab9fafb42"
     }
    ],
    "modelKey": "harbour:h5_fleet_gangway1_s4",
@@ -12170,7 +12174,7 @@
      "file": "WaterSide_fleet_gangway1_s5_0.png",
      "width": 3717,
      "height": 896,
-     "rgbaSha256": "9a11855898d5b5227e8c5409110d73c7dc82bc40787cad63f94cf162f5aafea8"
+     "rgbaSha256": "5f8f579bad7a1959ebb39c0658a15bce350ba71dea482b43d2b8a793ada35cb1"
     }
    ],
    "modelKey": "harbour:h5_fleet_gangway1_s5",
@@ -12439,7 +12443,7 @@
      "file": "WaterSide_fleet_gangway1_s6_0.png",
      "width": 3689,
      "height": 916,
-     "rgbaSha256": "37795bb870ad82f4b3fa1e0d4c418266a9317770e44da46532b4050dcd1bf5a5"
+     "rgbaSha256": "c3ac238882c286c4b31ccc3e3d5f794750359d7a3aa79cbacd038d0cc56360c9"
     }
    ],
    "modelKey": "harbour:h5_fleet_gangway1_s6",
@@ -12708,7 +12712,7 @@
      "file": "WaterSide_fleet_gangway1_s7_0.png",
      "width": 3654,
      "height": 938,
-     "rgbaSha256": "40da60234c23eafa51d1b6667f9af3ba86d14781950bb308adff1ff6189b1c0a"
+     "rgbaSha256": "6f0b170b392d9712e507536370f112ebe5ea1d958047b58fc13de7f83bb3a311"
     }
    ],
    "modelKey": "harbour:h5_fleet_gangway1_s7",
@@ -12977,7 +12981,7 @@
      "file": "WaterSide_fleet_gangway1_s8_0.png",
      "width": 3612,
      "height": 958,
-     "rgbaSha256": "c5c5f3b400364cdbab6d7a3609ef86d732f2fd3f11bb7cd2c812bf0ab6a4eb31"
+     "rgbaSha256": "ca40fb970047617fe744a11cd642e944a40b51aa2080d26534111cf80c915611"
     }
    ],
    "modelKey": "harbour:h5_fleet_gangway1_s8",
@@ -14278,7 +14282,7 @@
      "file": "WaterSide_east_gangway_s0_0.png",
      "width": 3773,
      "height": 770,
-     "rgbaSha256": "51a7dceb8a237022a08d929afc4f89c3bd8036b51e2d16d42ea0204acd950c32"
+     "rgbaSha256": "da398ac3c5460608bca857a481967ccb9bfce7ac67e9c9bb9ec347675257e704"
     }
    ],
    "modelKey": "harbour:h5_east_gangway_s0",
@@ -14547,7 +14551,7 @@
      "file": "WaterSide_east_gangway_s1_0.png",
      "width": 3766,
      "height": 796,
-     "rgbaSha256": "f5a074cb0e893924af0fe3bdd4c89ffa629538955969ed3931a741602da96e24"
+     "rgbaSha256": "0178b0f306f81a69ced1ab0104f361b55385d2fd3abcedb07342266485a8c805"
     }
    ],
    "modelKey": "harbour:h5_east_gangway_s1",
@@ -14816,7 +14820,7 @@
      "file": "WaterSide_east_gangway_s2_0.png",
      "width": 3759,
      "height": 820,
-     "rgbaSha256": "69240dc81c640e7461364979dc31c2e3f992b84a0a85038f22337a2f51c7cb9b"
+     "rgbaSha256": "e5d12789cc041c0b2c1b3253c315ae5ad3d0aa13a953c8ae6fcc609929f4a4d4"
     }
    ],
    "modelKey": "harbour:h5_east_gangway_s2",
@@ -15085,7 +15089,7 @@
      "file": "WaterSide_east_gangway_s3_0.png",
      "width": 3738,
      "height": 844,
-     "rgbaSha256": "0b2d1da920005094758bc07722b739ad202166d3d02e6985d39527de7461464b"
+     "rgbaSha256": "e4d7279831b768a0983817d35e2cdbe8136d5815ec273820871b2922ddb6d160"
     }
    ],
    "modelKey": "harbour:h5_east_gangway_s3",
@@ -15354,7 +15358,7 @@
      "file": "WaterSide_east_gangway_s4_0.png",
      "width": 3717,
      "height": 868,
-     "rgbaSha256": "304942849779c5833002cca1ebf0972d15dc25927f75bdef5716ac6dce9f784b"
+     "rgbaSha256": "88a366c403e44ab16f543f431de1d2fd93ef47930eed8d048f126dcd2bd379f0"
     }
    ],
    "modelKey": "harbour:h5_east_gangway_s4",
@@ -15623,7 +15627,7 @@
      "file": "WaterSide_east_gangway_s5_0.png",
      "width": 3696,
      "height": 890,
-     "rgbaSha256": "c8826e5cbc80cd28579352617f09436a904953a8560c0c1fb5950e4a0a3ef8ec"
+     "rgbaSha256": "c9d230304ed4545c7ed4b2493c4a5d7e1419786cc8eea16cb4071479243bae49"
     }
    ],
    "modelKey": "harbour:h5_east_gangway_s5",
@@ -15892,7 +15896,7 @@
      "file": "WaterSide_east_gangway_s6_0.png",
      "width": 3668,
      "height": 912,
-     "rgbaSha256": "1a71c886e523b2d1d4f0f0cbea81b067bea0479f41421b89c0240a690ab395a2"
+     "rgbaSha256": "7dabe294e26e9b35d8466be5a753f0253f0a203e8cfa360ec1151e6317143d9b"
     }
    ],
    "modelKey": "harbour:h5_east_gangway_s6",
@@ -16161,7 +16165,7 @@
      "file": "WaterSide_east_gangway_s7_0.png",
      "width": 3633,
      "height": 932,
-     "rgbaSha256": "fdce247ed9e940a66c2e885aef7ffcc165c0e768722966c07a44a46fcae073cf"
+     "rgbaSha256": "0f7160ad1ee08d0cc66bc1084f456db06ada193bf0654fcf9f9e512297afeb72"
     }
    ],
    "modelKey": "harbour:h5_east_gangway_s7",
@@ -16430,7 +16434,7 @@
      "file": "WaterSide_east_gangway_s8_0.png",
      "width": 3591,
      "height": 952,
-     "rgbaSha256": "3d26b826488cda5676666e42971b264835676f00a51d93e4b81dfdc029cd8ee5"
+     "rgbaSha256": "e67b3178a7cbe493697627b78d7293b152fdd2fabc5de4719d78d9df9b90230f"
     }
    ],
    "modelKey": "harbour:h5_east_gangway_s8",
