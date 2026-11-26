@@ -298,7 +298,13 @@ namespace HiddenHarbours.World
                     : default;
             }
 
-            if (_catchWater.IsSet && !_catchWater.Casts) return AnglerStatus.AtRest;   // no water in reach
+            if (_catchWater.IsSet && !_catchWater.Casts)
+            {
+                // No water in reach: he stands down, rod up, for the slot (which the beat still names).
+                _beat.Slot = slot;
+                _beat.SlotStartSeconds = slotStart;
+                return AnglerStatus.AtRest;
+            }
             AnglerTimeline.Evaluate(in script, in _catch, _catchHas, seed, _keyHash, heading, flow, in _catchEdge,
                                     in _catchWater, out _beat);
             return _beat.InSession ? AnglerStatus.InSession : AnglerStatus.AtRest;

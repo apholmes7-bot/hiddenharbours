@@ -70,16 +70,18 @@ namespace HiddenHarbours.Core
             if (depthAt == null || !script.IsValid(out _)) return plan;
             plan.IsSet = true;
 
-            // The reach: his usual one if it lands in water deep enough, else the shortest longer one that does.
+            // The reach: his usual one if it lands in water deep enough at touchdown, else the shortest longer one
+            // that does.
+            double touchdown = slotStartTotal + Mathf.Max(0f, script.CastBackSeconds) + Mathf.Max(0f, script.CastSeconds);
             float reach = float.NaN;
-            if (DeepEnough(in script, origin, direction, in edge, script.CastReachM, slotStartTotal, depthAt))
+            if (DeepEnough(in script, origin, direction, in edge, script.CastReachM, touchdown, depthAt))
                 reach = script.CastReachM;
             else if (script.LongCastReachM > script.CastReachM)
             {
                 for (int i = 1; i <= ReachSamples; i++)
                 {
                     float r = Mathf.Lerp(script.CastReachM, script.LongCastReachM, i / (float)ReachSamples);
-                    if (!DeepEnough(in script, origin, direction, in edge, r, slotStartTotal, depthAt)) continue;
+                    if (!DeepEnough(in script, origin, direction, in edge, r, touchdown, depthAt)) continue;
                     reach = r;
                     break;
                 }

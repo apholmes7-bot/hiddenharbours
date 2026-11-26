@@ -242,11 +242,23 @@ namespace HiddenHarbours.Tests.PlayMode
         // =============================================================================================
 
         /// <summary>Days searched for the three tides inside his wharf block.</summary>
-        private const int TideDaysSearched = 30;
+        private const int TideDaysSearched = 120;
+        /// <summary>How far out along his bearing the dead-low log looks for the water, and in what steps (m).</summary>
+        private const float WaterProfileMetres = 60f, WaterProfileStepMetres = 0.5f;
+
+        private static string WaterBeginsAlong(Vector2 at, Vector2 dir, AnglerWaterMath.DepthAt depth, double t)
+        {
+            for (float r = 0f; r <= WaterProfileMetres; r += WaterProfileStepMetres)
+                if (depth(at + dir * r, t) > 0f) return $"{r:0.0} m out";
+            return $"beyond {WaterProfileMetres:0} m";
+        }
         /// <summary>Inside his wharf block (15:00 to 19:30), clear of his walk in and out.</summary>
         private const float TideBlockFromHour = 15.75f, TideBlockToHour = 19.0f;
         /// <summary>Into the wait: the bobber is down and still.</summary>
         private const double TideShotIntoWaitSeconds = 1.5d;
+        /// <summary>Candidates tried per tide before the harness gives up (his routine or the weather may keep
+        /// him from a slot the tide alone would allow).</summary>
+        private const int TideCandidatesTried = 12;
 
         [UnityTest, Timeout(600000)]
         public IEnumerator Plate_BasilCastsIntoWater_HighWater_ALongCastAtMidWater_AndNoCastAtDeadLow()
@@ -270,8 +282,9 @@ namespace HiddenHarbours.Tests.PlayMode
             // The three tides, picked off the pure plan over his block (slot starts on the plate's clock, which the
             // seeks keep equal to the tide's).
             double spd = GameServices.Config.SecondsPerDay;
-            (long slot, double start, float level) high = (0, 0, float.NegativeInfinity), low = (0, 0, float.PositiveInfinity);
-            (long slot, double start, float level) mid = (0, double.NaN, 0f);
+            var highs = new List<(long slot, double start, float level)>();
+            var mids = new List<(long slot, double start, float level)>();
+            var lows = new List<(long slot, double start, float level)>();
             var log = new StringBuilder();
             for (int day = 1; day <= TideDaysSearched; day++)
             {
@@ -284,20 +297,38 @@ namespace HiddenHarbours.Tests.PlayMode
                     AnglerWater w = AnglerWaterMath.Plan(in script, at,
                         AnglerTimeline.CastDirection(in script, seed, key, slot, heading), in edge, start, depth);
                     float level = env.WaterLevelAt(start);
-                    if (w.Casts && !w.IsLongCast(in script) && double.IsPositiveInfinity(w.DryAtSeconds) && level > high.level)
-                        high = (slot, start, level);
-                    if (!w.Casts && level < low.level) low = (slot, start, level);
-                    if (double.IsNaN(mid.start) && w.IsLongCast(in script) && double.IsPositiveInfinity(w.DryAtSeconds))
-                        mid = (slot, start, level);
+                    bool stays = double.IsPositiveInfinity(w.DryAtSeconds);
+                    if (w.Casts && !w.IsLongCast(in script) && stays) highs.Add((slot, start, level));
+                    // A long cast the tide dries later in the session still shows its bobber down at the shot.
+                    else if (w.IsLongCast(in script) && w.DryAtSeconds > script.CastBackSeconds + script.CastSeconds
+                             + TideShotIntoWaitSeconds) mids.Add((slot, start, level));
+                    else if (!w.Casts) lows.Add((slot, start, level));
                 }
             }
-            Assert.IsFalse(float.IsNegativeInfinity(high.level), "harness: no high water in his block was found");
-            Assert.IsFalse(double.IsNaN(mid.start), "harness: no tide that needs the long cast was found");
-            Assert.IsFalse(float.IsPositiveInfinity(low.level), "harness: no tide with no water in reach was found");
+            highs.Sort((a, b) => b.level.CompareTo(a.level));   // the highest water first
+            lows.Sort((a, b) => a.level.CompareTo(b.level));    // the lowest first
+            // The mid tide: the long casts nearest the middle of their range of levels.
+            if (mids.Count > 0)
+            {
+                float lo = float.PositiveInfinity, hi = float.NegativeInfinity;
+                foreach (var m in mids) { lo = Mathf.Min(lo, m.level); hi = Mathf.Max(hi, m.level); }
+                float centre = 0.5f * (lo + hi);
+                mids.Sort((a, b) => Mathf.Abs(a.level - centre).CompareTo(Mathf.Abs(b.level - centre)));
+            }
+            log.AppendLine($"candidates over {TideDaysSearched} days: {highs.Count} usual casts, {mids.Count} long casts, " +
+                           $"{lows.Count} slots with no water in reach");
 
-            yield return ShootTheTide("tide-1-high", high.slot, high.start, at, heading, depth, script, log, casts: true);
-            yield return ShootTheTide("tide-2-mid-long-cast", mid.slot, mid.start, at, heading, depth, script, log, casts: true);
-            yield return ShootTheTide("tide-3-dead-low-no-cast", low.slot, low.start, at, heading, depth, script, log, casts: false);
+            bool shot = false;
+            foreach (var (name, list, casts) in new[] { ("tide-1-high", highs, true), ("tide-2-mid-long-cast", mids, true),
+                                                        ("tide-3-dead-low-no-cast", lows, false) })
+            {
+                shot = false;
+                for (int i = 0; i < Mathf.Min(TideCandidatesTried, list.Count) && !shot; i++)
+                    yield return ShootTheTide(name, list[i].slot, list[i].start, at, heading, depth, script, log, casts,
+                                              done => shot = done);
+                Assert.IsTrue(shot, $"harness: none of the first {TideCandidatesTried} of {list.Count} {name} slots was " +
+                                    $"played by his stand\n{log}");
+            }
 
             string dir = Path.Combine(Application.temporaryCachePath, PlateDir);
             File.WriteAllText(Path.Combine(dir, "tide-log.txt"), log.ToString(), new UTF8Encoding(false));
@@ -305,10 +336,21 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         private IEnumerator ShootTheTide(string name, long slot, double start, Vector2 at, float heading,
-                                         AnglerWaterMath.DepthAt depth, AnglerScript script, StringBuilder log, bool casts)
+                                         AnglerWaterMath.DepthAt depth, AnglerScript script, StringBuilder log, bool casts,
+                                         Action<bool> done)
         {
             double shot = start + script.CastBackSeconds + script.CastSeconds + TideShotIntoWaitSeconds;
             yield return SeekAndDraw(shot);
+            // Only a slot his stand is playing (or standing down for want of water) is a plate of the tide.
+            bool playing = _basil.Angling != null && _basil.Beat.Slot == slot
+                           && (!casts || _basil.TryGetAnglerState(out _, out _));
+            if (!playing)
+            {
+                log.AppendLine($"{name}: slot {slot} at hour {_clock.HourOfDay:0.00} skipped (angling " +
+                               $"{_basil.Angling != null}, beat slot {_basil.Beat.Slot}, in session {_basil.TryGetAnglerState(out _, out _)})");
+                done(false);
+                yield break;
+            }
             AnglerWater w = _basil.Water;
             Assert.IsTrue(w.IsSet, $"{name}: his stand read no water plan");
             Assert.AreEqual(casts, w.Casts, $"{name}: the stand's plan disagrees with the harness's pick");
@@ -325,9 +367,13 @@ namespace HiddenHarbours.Tests.PlayMode
                 float d = depth(bobber, shot);
                 log.AppendLine($"{name}: slot {slot} at {start:0.0}s (hour {(_clock.HourOfDay):0.00}), level {level:0.00} m, " +
                                $"reach {w.ReachM:0.00} m (usual {script.CastReachM}, long {w.IsLongCast(in script)}), " +
-                               $"bobber {bobber} depth {d:0.00} m, line end {lineEnd} depth {depth(lineEnd, shot):0.00} m, " +
+                               $"bobber {bobber} depth {d:0.00} m at the shot " +
+                               $"({depth(bobber, start + script.CastBackSeconds + script.CastSeconds):0.00} m at touchdown), line end {lineEnd} depth {depth(lineEnd, shot):0.00} m, " +
                                $"waterline {(w.Waterline.IsSet ? (w.Waterline.Point.magnitude.ToString("0.00") + " m out") : "none")}");
-                Assert.Greater(d, script.MinBobberDepthM, $"{name}: the bobber at {bobber} is not in water deep enough");
+                double touchdown = start + script.CastBackSeconds + script.CastSeconds;
+                Assert.Greater(depth(bobber, touchdown), script.MinBobberDepthM,
+                               $"{name}: the bobber at {bobber} landed in water too shallow");
+                Assert.Greater(d, 0f, $"{name}: the bobber at {bobber} is on dry ground at the shot");
                 Assert.Greater(depth(lineEnd, shot), 0f, $"{name}: the drawn line ends on dry ground at {lineEnd}");
                 AssertOverWater(bobber, name);
                 yield return _stage.FrameOn(at + dir * (w.ReachM * 0.5f));
@@ -341,12 +387,14 @@ namespace HiddenHarbours.Tests.PlayMode
                 Vector2 longest = at + edge(at, dir, script.LongCastReachM);
                 log.AppendLine($"{name}: slot {slot} at {start:0.0}s (hour {(_clock.HourOfDay):0.00}), level {level:0.00} m, " +
                                $"no cast: depth at the usual reach {depth(usual, shot):0.00} m, at the long reach " +
-                               $"{depth(longest, shot):0.00} m; he holds the rod");
+                               $"{depth(longest, shot):0.00} m; he holds the rod; along his bearing the water begins " +
+                               $"{WaterBeginsAlong(at, dir, depth, shot)}");
                 Assert.IsFalse(_angler.DrawsLine, $"{name}: a line is drawn with no cast");
                 yield return _stage.FrameOn(at + dir * (script.CastReachM * 0.5f));
             }
             yield return SeekAndDraw(shot);
             Shoot(name);
+            done(true);
 
             Vector2 edge(Vector2 origin, Vector2 direction, float reach)
                 => _basilAngling.TryGetStand(out ShoreStand st) ? st.Edge.RelativeTo(st.Position).Clamp(direction * reach)
