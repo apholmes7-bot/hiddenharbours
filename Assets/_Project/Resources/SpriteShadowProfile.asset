@@ -26,6 +26,10 @@ MonoBehaviour:
   _edgeSoftness: 0
   _hullWaterLowSunAlpha: 0.25
   _hullWaterFullSunElevation: 0.6
+  _waterMaxLength: 0.6
+  _waterAlpha: 0.7
+  _waterBreakup: 0.6
+  _waterBreakupGrid: {x: 32, y: 3, z: 7}
   _aloftMaxLength: 0.35
   _aloftBlendMetres: 0.5
   _aloftFadeMetres: 14
