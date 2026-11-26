@@ -17,6 +17,8 @@ namespace HiddenHarbours.App.Editor
     public static partial class NineMileCreekWharfLandSide
     {
         const string WaterStep = "18-wharf-water-side";
+        /// <summary>The material a <see cref="TidalFaceWaterline"/> draws its face through.</summary>
+        public const string TidalFaceMaterialPath = "Assets/_Project/Resources/TidalFace.mat";
         static object WM(object value, string key) => DeckSidecarJson.Member(value, key);
         static IReadOnlyList<object> WA(object value) => DeckSidecarJson.AsArray(value);
         static float WN(object value) => DeckSidecarJson.Float(value);
@@ -63,10 +65,10 @@ namespace HiddenHarbours.App.Editor
                 long id=Id(node.Key+"/"+key);node.Components.Add(id);
                 Docs.Add((node.Name+"/"+key,MonoBehaviourYaml(id,node.Go,WaterScript(path,assembly,type),fields)));return id;
             }
-            public void Picture(WaterNode n, Sprite sprite, int order)
+            public void Picture(WaterNode n, Sprite sprite, int order, ObjRef? pictureMaterial = null)
             {
                 long id=Id(n.Key+"/sprite");n.Components.Add(id);
-                Docs.Add((n.Name+"/sprite",SpriteRendererYaml(id,n.Go,material,SpriteAsset(sprite),order)));
+                Docs.Add((n.Name+"/sprite",SpriteRendererYaml(id,n.Go,pictureMaterial??material,SpriteAsset(sprite),order)));
             }
             public void Source(WaterNode node, SetPieceDef def, string path, string row, int dir) => Mono(node,"source",
                 "Assets/_Project/Code/Art/SetPiecePlacement.cs","HiddenHarbours.Art","HiddenHarbours.Art.SetPiecePlacement",
@@ -147,8 +149,25 @@ namespace HiddenHarbours.App.Editor
                         if(gang==null)node.PictureScaleY=1f/IsoGround.GroundDepthScale;
                         Sprite sprite=WaterSprite(def,partKey==keys[0]?null:name,0);
                         string layer=WS(WM(p,"motionLayer"));
-                        int order=NineMileCreekWharf.FloatSortingOrder+(layer=="back"?-1:layer=="front"?1:0);
-                        writer.Picture(node,sprite,order);
+                        // Fixed: not a float, not one of a float's back/front motion layers, not a brow rung.
+                        bool fixedPart=!WB(WM(p,"floating"))&&gang==null&&layer!="back"&&layer!="front";
+                        int order=fixedPart?NineMileCreekWharf.FixedWaterSideSortingOrder:NineMileCreekWharf.FloatSortingOrder+(layer=="back"?-1:layer=="front"?1:0);
+                        // A fixed part with one straight seaward lip is cut at the waterline: its face shows above the sea, the sea below it.
+                        object walkRaw=WM(p,"walkPolygon");float lip=0f;
+                        var neighbours=parts.Where(q=>q!=p&&WS(WM(q,"harbour"))==key&&!WB(WM(q,"floating"))&&WM(q,"walkPolygon")!=null)
+                            .Select(q=>{var w=WA(WM(q,"walkPolygon")).Select(WP).ToArray();return Rect.MinMaxRect(w.Min(v=>v.x),w.Min(v=>v.y),w.Max(v=>v.x),w.Max(v=>v.y));}).ToArray();
+                        bool cut=fixedPart&&walkRaw!=null&&NineMileCreekWharf.TryWaterlineLip(WA(walkRaw).Select(WP).ToArray(),WM(WM(WM(p,"module"),"o"),"toeZ")==null,neighbours,out lip);
+                        // A slipway runs down into the sea: its water's edge climbs the ramp with the tide, cut the same way.
+                        object slipOptions=WM(WM(p,"module"),"o");float slopeRun=0f;
+                        bool slip=!cut&&fixedPart&&walkRaw!=null&&WS(WM(WM(p,"module"),"key"))==NineMileCreekWharf.SlipwayModule&&
+                            NineMileCreekWharf.TrySlipwayWaterline(WA(walkRaw).Select(WP).ToArray(),WN(WM(slipOptions,"deckZ")),WN(WM(slipOptions,"toeZ")),WN(WM(slipOptions,"run")),out lip,out slopeRun);
+                        writer.Picture(node,sprite,order,cut||slip?WaterAsset(TidalFaceMaterialPath,2100000,2):(ObjRef?)null);
+                        if(cut)writer.Mono(node,"waterline","Assets/_Project/Code/Art/TidalFaceWaterline.cs","HiddenHarbours.Art","HiddenHarbours.Art.TidalFaceWaterline",
+                            new[]{"  _lipWorldY: "+F(lip),"  _lipElevation: "+F(elevation),"  _ridesTheTide: 1","  _configured: 1",
+                                  "  _dressing: "+(int)NineMileCreekWharf.DressingFor(WS(WM(WM(p,"module"),"key")))});
+                        if(slip)writer.Mono(node,"waterline","Assets/_Project/Code/Art/TidalFaceWaterline.cs","HiddenHarbours.Art","HiddenHarbours.Art.TidalFaceWaterline",
+                            new[]{"  _lipWorldY: "+F(lip),"  _lipElevation: "+F(elevation),"  _ridesTheTide: 1","  _configured: 1",
+                                  "  _slopeRunPerMetre: "+F(slopeRun),"  _dressing: 0"});
                         if(WB(WM(p,"floating")))writer.Mono(node,"ride","Assets/_Project/Code/World/FloatingPlatformVisual.cs","HiddenHarbours.World","HiddenHarbours.World.FloatingPlatformVisual",
                             new[]{"  _platform: {fileID: "+floats[name]+"}","  _bakedDeckElevation: "+F(WN(WM(p,"freeboard"))*node.PictureScaleY),"  _planY: "+F(at.y)});
                         else if(gang!=null)
@@ -231,8 +250,14 @@ namespace HiddenHarbours.App.Editor
                         new[]{"  _day: "+SpriteAsset(sprite).Sprite.Yaml,"  _night: "+SpriteAsset(WaterSprite(def,"stowed",SetPieceDef.FrameForRigDir(row.Dir))).Sprite.Yaml});
                     if(row.Piece=="harbourLight")
                     {
-                        bool west=row.Id.EndsWith("west");writer.Mono(rowNode,"lamp","Assets/_Project/Code/Art/SceneLight.cs","HiddenHarbours.Art","HiddenHarbours.Art.SceneLight",
-                            new[]{"  _shape: 1","  _range: 6","  _color: "+(west?"{r: 0.1, g: 1, b: 0.25, a: 1}":"{r: 1, g: 0.1, b: 0.05, a: 1}"),"  _intensity: 1.2","  _edgeSoftness: 0.6","  _gateThreshold: 0.12","  _gateSoftness: 0.35","  _gateFallback: 1","  _sortingOrder: 32767"});
+                        // A navigation marker, not a flood: a small glow on the lens (the Def's lamp anchor, drawn at the
+                        // camera's height scale), no ground pool. Its size, strength and colours are the wharf's lighting record.
+                        bool west=row.Id.EndsWith("west");var lighting=Lighting();
+                        if(!def.TryGetAnchor("lamp",out Vector3 lens))throw new Refusal(row.Id+": the harbour light has no lamp anchor.");
+                        writer.Mono(rowNode,"lamp","Assets/_Project/Code/Art/SceneLight.cs","HiddenHarbours.Art","HiddenHarbours.Art.SceneLight",
+                            new[]{"  _shape: 1","  _range: "+F(lighting.MarkerBloomMetres),"  _color: "+ColorYaml(west?lighting.WestGreen:lighting.EastRed),
+                                "  _intensity: "+F(lighting.MarkerIntensity),"  _edgeSoftness: "+F(lighting.MarkerEdgeSoftness),"  _gateThreshold: 0.12","  _gateSoftness: 0.35","  _gateFallback: 1","  _sortingOrder: 32767",
+                                "  _castsShadows: 0","  _lampHeightMeters: "+F(lens.z),"  _bloomLiftMetres: "+F(lens.z*IsoGround.HeightScale),"  _reachMetres: 0"});
                     }
                 }
             }

@@ -209,6 +209,14 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator Continue_WithOtherRegionsAbsent_StillResumesTheSavedInstant()
+        {
+            RegionBuildAvailability.Override = (_, __) => false;
+            try { yield return Continue_ResumesTheSavedInstant_AndStartsTheWorld(); }
+            finally { RegionBuildAvailability.Override = null; }
+        }
+
+        [UnityTest]
         public IEnumerator Continue_ResumesTheSavedInstant_AndStartsTheWorld()
         {
             GivenSave(existing: true);

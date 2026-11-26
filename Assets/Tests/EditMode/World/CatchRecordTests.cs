@@ -172,6 +172,69 @@ namespace HiddenHarbours.Tests.World.EditMode
         }
 
         [Test]
+        public void SameTickHandoff_RequiresBothSpeciesAndExactWeight()
+        {
+            var log = new CatchRecordLog();
+            var hand = Catch(Cod, 2f);
+            log.RecordLandedInHand(hand);
+            log.RecordTakenFromHand(hand, 7);
+            log.RecordEnteredHold(Catch(Cod, 3f), 7);
+            log.RecordEnteredHold(hand, 7);
+            Assert.AreEqual(3, log.Entries[0].Count);
+            Assert.AreEqual(3f, log.Entries[0].RecordWeightKg);
+
+            log.RecordLandedInHand(hand);
+            log.RecordTakenFromHand(hand, 8);
+            log.RecordEnteredHold(Catch(Smelt, 2f), 8);
+            log.RecordEnteredHold(hand, 8);
+            Assert.AreEqual(5, log.Entries[0].Count);
+            Assert.AreEqual(1, log.Entries[1].Count);
+        }
+
+        [Test]
+        public void EqualAndSmallerReleasedCatches_CountWithoutLoweringTheRecord()
+        {
+            var log = new CatchRecordLog();
+            log.RecordEnteredHold(Catch(Cod, 5f), 1);
+            log.RecordReleased(Catch(Cod, 5f));
+            log.RecordReleased(Catch(Cod, 2f));
+            Assert.AreEqual(1, log.SpeciesCount);
+            Assert.AreEqual(3, log.Entries[0].Count);
+            Assert.AreEqual(2, log.Entries[0].ReleasedCount);
+            Assert.AreEqual(5f, log.Entries[0].RecordWeightKg);
+        }
+
+        [Test]
+        public void MissingName_IsFilledOnce_AndSpeciesIdsRemainCaseSensitive()
+        {
+            var log = new CatchRecordLog();
+            log.RecordEnteredHold(Catch(Cod, 0f, ""), 1);
+            log.RecordEnteredHold(Catch(Cod, 2f, "Cod"), 2);
+            log.RecordEnteredHold(Catch(Cod, 1f, "Later name"), 3);
+            log.RecordEnteredHold(Catch("FISH.ATLANTIC_COD", -1f), 4);
+            Assert.AreEqual(2, log.SpeciesCount);
+            Assert.AreEqual("Cod", log.Entries[0].DisplayName);
+            Assert.AreEqual(3, log.Entries[0].Count);
+            Assert.AreEqual(0f, log.Entries[1].RecordWeightKg);
+            Assert.IsFalse(log.TryGet("fish.missing", out _));
+        }
+
+        [Test]
+        public void ChangingSession_ClearsAnArmedHandoff()
+        {
+            var log = new CatchRecordLog();
+            var hand = Catch(Cod, 2f);
+            var first = new object();
+            var second = new object();
+            log.RecordLandedInHand(hand, first);
+            log.RecordTakenFromHand(hand, 7, first);
+            log.RecordEnteredHold(hand, 7, second);
+            Assert.AreEqual(1, log.SpeciesCount);
+            Assert.AreEqual(1, log.Entries[0].Count);
+            Assert.AreEqual(2f, log.Entries[0].RecordWeightKg);
+        }
+
+        [Test]
         public void AnUninstalledRecordHearsNothing()
         {
             CatchRecords.Install();

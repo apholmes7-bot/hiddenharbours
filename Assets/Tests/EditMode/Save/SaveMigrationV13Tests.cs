@@ -59,6 +59,7 @@ namespace HiddenHarbours.Tests.EditMode
         [TearDown]
         public void TearDown()
         {
+            RegionBuildAvailability.Override = null;
             RestSaveResponder.Uninstall();
             RestWakeRestorer.Uninstall();
             GameServices.Save = null;
@@ -409,9 +410,11 @@ namespace HiddenHarbours.Tests.EditMode
         /// St Peters coordinates applied inside Nine Mile Creek put the player in the sea, and a player
         /// waking at the spawn cannot otherwise tell that from "the anchor was never written".
         /// </summary>
-        [Test]
-        public void AnAnchorInAnotherRegion_IsDeclinedOutLoud_AndTheSaveIsLeftIntact()
+        [TestCase(false)]
+        [TestCase(true)]
+        public void AnAnchorInAnotherRegion_IsDeclinedOutLoud_AndTheSaveIsLeftIntact(bool neighbourIncluded)
         {
+            RegionBuildAvailability.Override = (_, __) => neighbourIncluded;
             var fake = new FakeSaveService();
             RestLocker.Stamp(fake.Current, new RestAnchor(StP, new Vector2(-2.1f, -2.3f), 1));
             GameServices.Save = fake;
