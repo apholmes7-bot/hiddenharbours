@@ -182,7 +182,7 @@ namespace HiddenHarbours.App.Editor
                         At(15.00f, StPetersRoutines.StationWharfHead, RoutineActivity.Recreation,
                            "back out to the pier head with a rod. He is who is there when you come home " +
                            "under power", doingAsset: "WharfRodActivity"),
-                        At(18.00f, StPetersRoutines.StationHomeSageB, RoutineActivity.Home,
+                        At(19.50f, StPetersRoutines.StationHomeSageB, RoutineActivity.Home,
                            "the whole island again, in the dusk, and in"),
                     }),
 
