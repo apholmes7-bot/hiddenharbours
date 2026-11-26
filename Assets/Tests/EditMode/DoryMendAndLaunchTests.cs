@@ -247,26 +247,47 @@ namespace HiddenHarbours.Tests.EditMode
         // ---- the carry -----------------------------------------------------------------------------
 
         [Test]
-        public void TheCarry_CountsOnlyTheBagInHisHand()
+        public void TheCarry_CountsTheBagInHisHand_AndWhatIsPutAway()
         {
             var data = _save.Current;
             SupplyLocker.Add(data, "supply.oakum", 2);
             Assert.IsTrue(ShoppingBagContents.TryPut(data, "supply.oakum", BagCapacity));
             var carry = new ShoppingBagMendingCarry(_save, _hands);
-            Assert.AreEqual(1, carry.Count("supply.oakum"), "one in the bag in his hand; the other is put away");
+            Assert.AreEqual(2, carry.Count("supply.oakum"), "one in the bag in his hand, one put away");
 
             _hands.Holds = false;
-            Assert.AreEqual(0, carry.Count("supply.oakum"), "no bag in his hand, nothing carried");
+            Assert.AreEqual(1, carry.Count("supply.oakum"), "no bag in his hand: only what is put away");
             _hands.Holds = true;
 
             Assert.IsTrue(ShoppingBagContents.MarkSetDown(data, "region.st_peters", Vector2.zero, false));
-            Assert.AreEqual(0, carry.Count("supply.oakum"), "a bag set down is not carried");
+            Assert.AreEqual(1, carry.Count("supply.oakum"), "a bag set down elsewhere is not counted");
             ShoppingBagContents.MarkHeld();
-            Assert.AreEqual(1, carry.Count("supply.oakum"));
+            Assert.AreEqual(2, carry.Count("supply.oakum"));
 
             ShoppingBagContents.Release(data);
-            Assert.AreEqual(0, carry.Count("supply.oakum"), "shopping put away at home is remote storage");
-            Assert.AreEqual(0, new ShoppingBagMendingCarry(_save, null).Count("supply.oakum"), "no hands, nothing");
+            Assert.AreEqual(2, carry.Count("supply.oakum"), "shopping put away at home still counts");
+            Assert.AreEqual(2, new ShoppingBagMendingCarry(_save, null).Count("supply.oakum"),
+                "no hands: what is put away still counts");
+            Assert.AreEqual(0, new ShoppingBagMendingCarry(null, _hands).Count("supply.oakum"), "no save, nothing");
+        }
+
+        [Test]
+        public void TheCarry_StoredSuppliesAlone_MendHer()
+        {
+            // The stranded-bag case: everything given, then put away at home, and the bag left behind.
+            var data = _save.Current;
+            foreach (string id in new[] { "supply.patch_plank", "supply.copper_nails", "supply.oakum", "supply.linseed_paint" })
+                SupplyLocker.Add(data, id, 1);
+            _hands.Holds = false;
+            var carry = new ShoppingBagMendingCarry(_save, _hands);
+            var need = new[] { new MendingMaterial("supply.patch_plank", 1), new MendingMaterial("supply.copper_nails", 1) };
+
+            Assert.IsTrue(carry.TryReserve(need, out var held), "put-away supplies can be reserved");
+            Assert.IsTrue(held.IsValid);
+            Assert.IsTrue(held.TryConsume());
+            Assert.AreEqual(0, SupplyLocker.Owned(data, "supply.patch_plank"), "spent from what was put away");
+            Assert.AreEqual(0, SupplyLocker.Owned(data, "supply.copper_nails"));
+            Assert.AreEqual(1, SupplyLocker.Owned(data, "supply.oakum"), "nothing else touched");
         }
 
         [Test]
@@ -277,11 +298,12 @@ namespace HiddenHarbours.Tests.EditMode
             SupplyLocker.Add(data, "supply.copper_nails", 1);
             Assert.IsTrue(ShoppingBagContents.TryPut(data, "supply.patch_plank", BagCapacity));
             var carry = new ShoppingBagMendingCarry(_save, _hands);
-            var need = new[] { new MendingMaterial("supply.patch_plank", 1), new MendingMaterial("supply.copper_nails", 1) };
+            var need = new[] { new MendingMaterial("supply.patch_plank", 1), new MendingMaterial("supply.copper_nails", 2) };
 
-            Assert.IsFalse(carry.TryReserve(need, out var none), "the nails are at home, not in the bag");
+            Assert.IsFalse(carry.TryReserve(need, out var none), "one packet of nails, two asked for");
             Assert.IsNull(none);
             Assert.AreEqual(1, carry.Count("supply.patch_plank"), "a refused reservation holds nothing");
+            need = new[] { new MendingMaterial("supply.patch_plank", 1), new MendingMaterial("supply.copper_nails", 1) };
 
             Assert.IsTrue(ShoppingBagContents.TryPut(data, "supply.copper_nails", BagCapacity));
             Assert.IsTrue(carry.TryReserve(need, out var held));
@@ -297,13 +319,20 @@ namespace HiddenHarbours.Tests.EditMode
 
             Assert.IsTrue(carry.TryReserve(need, out held));
             ShoppingBagContents.Release(data);
-            Assert.IsFalse(held.IsValid, "putting the shopping away mid-job loses the claim");
-            Assert.IsFalse(held.TryConsume());
-            Assert.AreEqual(1, SupplyLocker.Owned(data, "supply.patch_plank"), "a failed consume changes nothing");
+            Assert.IsTrue(held.IsValid, "putting the shopping away mid-job keeps the claim: it is still his");
             held.Dispose();
 
             Assert.IsTrue(ShoppingBagContents.TryPut(data, "supply.patch_plank", BagCapacity));
             Assert.IsTrue(ShoppingBagContents.TryPut(data, "supply.copper_nails", BagCapacity));
+            Assert.IsTrue(carry.TryReserve(need, out held));
+            Assert.IsTrue(ShoppingBagContents.MarkSetDown(data, "region.st_peters", Vector2.zero, false));
+            Assert.IsFalse(held.IsValid, "setting the bag down elsewhere with the goods in it loses the claim");
+            Assert.IsFalse(held.TryConsume());
+            Assert.AreEqual(1, SupplyLocker.Owned(data, "supply.patch_plank"), "a failed consume changes nothing");
+            Assert.AreEqual(1, ShoppingBagContents.InBag(data, "supply.patch_plank"));
+            held.Dispose();
+            ShoppingBagContents.MarkHeld();
+
             Assert.IsTrue(carry.TryReserve(need, out held));
             Assert.IsTrue(held.TryConsume());
             Assert.AreEqual(0, SupplyLocker.Owned(data, "supply.patch_plank"), "consumed: spent from his supplies");
@@ -362,6 +391,56 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsFalse(string.IsNullOrWhiteSpace(station.LastLine), "he says what he lacks");
             Assert.IsFalse(station.IsWorking);
             Assert.AreEqual(0, _save.Writes);
+        }
+
+        [Test]
+        public void ThePress_BeforeBasilHasNamedTheSupplies_ThinksBasilWouldKnow()
+        {
+            Own();
+            var station = NewStation();
+            Assert.AreEqual(DoryMendingStationResult.Refused, station.Press(null, _hands));
+            Assert.AreEqual(_station.UnaskedMissingLine, station.LastLine, "he does not yet know what she wants");
+
+            _save.SetFlag(_station.UnaskedFlag, true);
+            Assert.AreEqual(DoryMendingStationResult.Refused, station.Press(null, _hands));
+            StringAssert.StartsWith("I haven't the makings to ", station.LastLine);
+            StringAssert.DoesNotContain("{job}", station.LastLine);
+        }
+
+        /// <summary>Hands that really bag into the save's shopping bag, as the player's do.</summary>
+        sealed class BaggingHands : IShoppingBagHands
+        {
+            readonly ISaveService _save;
+            public BaggingHands(ISaveService save) { _save = save; }
+            public bool HoldsBag => true;
+            public bool BagIsSetDown => false;
+            public ShoppingBagRefusal CanBag(ShoppingBagDef bag) => ShoppingBagRefusal.None;
+            public ShoppingBagRefusal TryBag(ShoppingBagDef bag, string supplyId)
+                => ShoppingBagContents.TryPut(_save.Current, supplyId, BagCapacity) ? ShoppingBagRefusal.None : ShoppingBagRefusal.BagFull;
+            public bool TryPutAway(string storageId) => false;
+        }
+
+        [Test]
+        public void SuppliesGivenByPeople_AndPutAwayAtHome_MendHer()
+        {
+            var run = AssetDatabase.LoadAssetAtPath<SupplyRunDef>(
+                "Assets/_Project/Data/Resources/NpcSupplies/SupplyRunStPetersDory.asset");
+            Assert.IsNotNull(run);
+            Own();
+            _save.SetFlag(run.NamedFlag, true);
+            var flags = new SaveFlagStore();
+            var giving = new BaggingHands(_save);
+            foreach (var gift in run.Gifts)
+                Assert.AreEqual(gift.ReplyLines, SupplyRunTalk.Give(gift, _save, flags, giving), gift.Id);
+
+            ShoppingBagContents.Release(_save.Current);   // the shopping put away at home
+            _hands.Holds = false;                          // and the bag no longer in his hand
+            var station = NewStation();
+            MendHer(station);
+            CollectionAssert.Contains(_save.Current.RepairedBoats, BoatId, "mended from what was put away");
+            foreach (var gift in run.Gifts)
+                foreach (string id in gift.ItemIds)
+                    Assert.AreEqual(0, SupplyLocker.Owned(_save.Current, id), id + " is spent");
         }
 
         // ---- the station: the held work ------------------------------------------------------------

@@ -206,7 +206,7 @@ namespace HiddenHarbours.Economy
                 LastReason = why;
                 if (why == DoryMendReason.SessionChanged) DropSession();
                 if (why == DoryMendReason.MissingMaterials)
-                    Think(Fill(_station.MissingLine, "{job}", Lower(job.DisplayName)));
+                    Think(_station.MissingLineFor(Lower(job.DisplayName), save));
                 return DoryMendingStationResult.Refused;
             }
             _working = true;
@@ -246,7 +246,7 @@ namespace HiddenHarbours.Economy
                 if (why == DoryMendReason.MissingMaterials)
                 {
                     DoryMendingJobDef job = _session?.NextJob;
-                    if (job != null) Think(Fill(_station.MissingLine, "{job}", Lower(job.DisplayName)));
+                    if (job != null) Think(_station.MissingLineFor(Lower(job.DisplayName), GameServices.Save));
                 }
                 return;
             }

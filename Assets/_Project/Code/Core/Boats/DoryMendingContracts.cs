@@ -11,9 +11,10 @@ namespace HiddenHarbours.Core
         public MendingMaterial(string itemId, int count) { ItemId = itemId; Count = count; }
     }
 
-    /// <summary>Only goods physically carried to the slip. Count excludes reservations. Reserving
+    /// <summary>The goods the player has to mend with: what he carries, plus what he has put away
+    /// (a bag set down elsewhere is the adapter's call). Count excludes reservations. Reserving
     /// locks the whole request against spending, transfer and use elsewhere without debiting saved
-    /// contents. A failed reservation changes nothing. Remote storage is excluded.</summary>
+    /// contents. A failed reservation changes nothing.</summary>
     public interface IMendingCarry
     {
         int Count(string itemId);

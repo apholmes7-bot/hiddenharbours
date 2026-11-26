@@ -47,8 +47,27 @@ namespace HiddenHarbours.Economy
         [Tooltip("When the last job is done.")]
         public string MendedLine = "She's sound. Now to get her down the slip.";
 
-        [Tooltip("When the bag in his hand lacks the job's supplies. {job} is the job, lower-cased.")]
-        public string MissingLine = "I need the makings in my bag to {job}.";
+        [Tooltip("When he has not got the job's supplies, put away or in the bag in his hand. {job} is " +
+                 "the job, lower-cased.")]
+        public string MissingLine = "I haven't the makings to {job} yet.";
+
+        [Tooltip("OPTIONAL. Spoken instead of MissingLine while UnaskedFlag is NOT set: before anybody has " +
+                 "told him what she wants, he does not know the makings to name. Empty = always MissingLine.")]
+        public string UnaskedMissingLine = "";
+
+        [Tooltip("Stable save-flag key. While it is unset, a missing-supplies press speaks UnaskedMissingLine. " +
+                 "Empty = always MissingLine.")]
+        public string UnaskedFlag = "";
+
+        /// <summary>The missing-supplies thought for <paramref name="job"/> (already lower-cased), given
+        /// whether he has been told what she wants. A null save reads as told.</summary>
+        public string MissingLineFor(string job, HiddenHarbours.Core.ISaveService save)
+        {
+            bool unasked = !string.IsNullOrEmpty(UnaskedFlag) && !string.IsNullOrEmpty(UnaskedMissingLine)
+                           && save != null && !save.GetFlag(UnaskedFlag);
+            string line = unasked ? UnaskedMissingLine : MissingLine;
+            return string.IsNullOrEmpty(line) ? string.Empty : line.Replace("{job}", job ?? string.Empty);
+        }
 
         [Tooltip("When she goes down the slip. Names where she now lies: the launch berth is out of the camera's view from the slip.")]
         public string LaunchedLine = "Down she goes. She's tied at the pier head, and she's mine to row.";

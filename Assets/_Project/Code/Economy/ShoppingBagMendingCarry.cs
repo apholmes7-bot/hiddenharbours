@@ -4,9 +4,14 @@ using HiddenHarbours.Core;
 namespace HiddenHarbours.Economy
 {
     /// <summary>
-    /// <b>What he has carried to the slip</b>, for the dory mending session: the goods in the paper
-    /// shopping bag in his hand. Nothing put away at home counts (that is remote storage, which the
-    /// <see cref="IMendingCarry"/> contract excludes), and neither does a bag he has set down.
+    /// <b>What he has to mend her with</b>, for the dory mending session: the supplies he has put away,
+    /// plus the goods in the paper shopping bag in his hand. A bag he has set down somewhere does not
+    /// count until he picks it up again, because what is in it is lying wherever he left it.
+    ///
+    /// <para><b>Why put-away supplies count.</b> The supplies are given by people, and once the paper bag
+    /// is put away at home the goods in it are ordinary owned supplies. If only the bag in his hand
+    /// counted, a player who tidied the shopping away before going to the slip would own a plank and be
+    /// told by the station that he had none. Counting both closes that.</para>
     ///
     /// <para><b>Built for one acting player.</b> It is handed his save and his hands
     /// (<see cref="IShoppingBagHands"/>) when it is made; it holds no static and reaches for no global, so a
@@ -14,10 +19,11 @@ namespace HiddenHarbours.Economy
     ///
     /// <para><b>A reservation debits nothing.</b> It only remembers what the job will use. While it stands,
     /// <see cref="Count"/> leaves those goods out, and the reservation stays valid only while the same save
-    /// is loaded, the bag is still in his hand, and the bag still holds what was reserved. Putting the
-    /// shopping away or setting the bag down mid-job makes it invalid, and the session then asks for the
-    /// goods again. <see cref="IMendingReservation.TryConsume"/> takes the goods out of the bag and spends
-    /// them from his supplies, all of them or none, with no save write.</para>
+    /// is loaded and there is still enough put away or in his hand to cover it. Setting the bag down
+    /// mid-job with the only plank in it makes it invalid, and the session then asks for the goods again.
+    /// <see cref="IMendingReservation.TryConsume"/> takes each unit from the bag in his hand first and
+    /// otherwise from what is put away, spending it from his supplies, all of them or none, with no save
+    /// write.</para>
     /// </summary>
     public sealed class ShoppingBagMendingCarry : IMendingCarry
     {
@@ -40,13 +46,19 @@ namespace HiddenHarbours.Economy
         private int InHand(SaveData data, string itemId)
             => Carried(data) ? ShoppingBagContents.InBag(data, itemId) : 0;
 
+        // Owned and not in the bag: put away. SupplyLocker.Count is exactly that.
+        private static int PutAway(SaveData data, string itemId)
+            => data != null ? SupplyLocker.Count(data, itemId) : 0;
+
+        private int Available(SaveData data, string itemId) => PutAway(data, itemId) + InHand(data, itemId);
+
         private int Reserved(string itemId)
             => itemId != null && _reserved.TryGetValue(itemId, out int n) ? n : 0;
 
         /// <inheritdoc/>
         public int Count(string itemId)
         {
-            int n = InHand(_save?.Current, itemId) - Reserved(itemId);
+            int n = Available(_save?.Current, itemId) - Reserved(itemId);
             return n > 0 ? n : 0;
         }
 
@@ -55,7 +67,7 @@ namespace HiddenHarbours.Economy
         {
             reservation = null;
             SaveData data = _save?.Current;
-            if (materials == null || materials.Count == 0 || !Carried(data)) return false;
+            if (materials == null || materials.Count == 0 || data == null) return false;
             for (int i = 0; i < materials.Count; i++)
             {
                 MendingMaterial m = materials[i];
@@ -109,13 +121,11 @@ namespace HiddenHarbours.Economy
             {
                 get
                 {
-                    if (_closed || !ReferenceEquals(_data, _owner._save?.Current) || !_owner.Carried(_data))
-                        return false;
+                    if (_closed || !ReferenceEquals(_data, _owner._save?.Current)) return false;
                     for (int i = 0; i < _materials.Length; i++)
                     {
                         string id = _materials[i].ItemId;
-                        if (ShoppingBagContents.InBag(_data, id) < _owner.Reserved(id)) return false;
-                        if (SupplyLocker.Owned(_data, id) < ShoppingBagContents.InBag(_data, id)) return false;
+                        if (_owner.Available(_data, id) < _owner.Reserved(id)) return false;
                     }
                     return true;
                 }
@@ -124,13 +134,15 @@ namespace HiddenHarbours.Economy
             public bool TryConsume()
             {
                 if (!IsValid) return false;
-                // Every check is above, so each step below succeeds: one out of the bag makes one usable,
-                // and the spend takes exactly that one.
+                // Every check is above, so each step below succeeds. A unit in the bag in his hand comes
+                // out of the bag and is spent; otherwise the spend takes one that is put away (TrySpend
+                // only ever spends goods that are not in the bag).
                 for (int i = 0; i < _materials.Length; i++)
                     for (int n = 0; n < _materials[i].Count; n++)
                     {
-                        ShoppingBagContents.TryTakeOut(_data, _materials[i].ItemId);
-                        SupplyLocker.TrySpend(_data, _materials[i].ItemId);
+                        string id = _materials[i].ItemId;
+                        if (_owner.InHand(_data, id) > 0) ShoppingBagContents.TryTakeOut(_data, id);
+                        SupplyLocker.TrySpend(_data, id);
                     }
                 Dispose();
                 return true;
