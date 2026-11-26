@@ -138,7 +138,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheIceHouseAndItsTwoPieces_WaitTogether()
         {
             var scene = StPetersLayerRefresh.LoadStPetersKeyScenes().Single(s => s.Id == "keyscene.stp_east_end");
-            Assert.AreEqual(21, scene.Pieces.Length);
+            Assert.AreEqual(22, scene.Pieces.Length, "the east end's 21 rows and the net shed's landing");
             CollectionAssert.AreEquivalent(new[] { "structure.stp_ice_house", "prop.stp_ice_wood", "prop.stp_ice_barrow" },
                 scene.Pieces.Where(p => !StPetersLayerRefresh.Places(scene, p)).Select(p => p.Id));
         }
