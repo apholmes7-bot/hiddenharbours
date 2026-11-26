@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
+using HiddenHarbours.Core;
 using UnityEditor;
 using UnityEngine;
 using HiddenHarbours.App.Editor;
@@ -311,6 +312,57 @@ namespace HiddenHarbours.Tests.EditMode
                 }
             }
             CollectionAssert.IsEmpty(fails);
+        }
+
+        static IEnumerable<TestCaseData> ReachRows() => RoomFixturePlan.Rows
+            .Where(r => RoomFixturePlan.HasInteractId(r.Kind))
+            .Select(r => new TestCaseData(r).SetName("RoomReach_" + r.Id));
+
+        static List<Vector2[]> ReachWalls(Row row)
+        {
+            (float w, float l) = Declared[row.RoomKey];
+            var fp = new InteriorFootprint(Vector2.zero, w, l, 0, 8, 1f, 1f);
+            var walls = fp.WallQuads(StPetersInteriors.WallThicknessMetres,
+                                     StPetersInteriors.DoorwayWidthMetres).ToList();
+            walls.AddRange(PartitionsOf(row).Select(p => fp.Quad(p.X0, p.X1, p.Y0, p.Y1)));
+            if (row.Level > 0)
+                walls.Add(fp.DoorwayPlugQuad(StPetersInteriors.WallThicknessMetres,
+                                            StPetersInteriors.DoorwayWidthMetres));
+            return walls;
+        }
+
+        [TestCaseSource(nameof(ReachRows))]
+        public void EachRoomFixtureAllowsItsFrontAndRefusesTheOtherSideOfItsWall(Row row)
+        {
+            List<Vector2[]> walls = ReachWalls(row);
+            Vector2 size = RoomFixturePlan.FootprintOf(row), normal = IntoRoom(row.Wall);
+            float half = Mathf.Abs(normal.x) > 0f ? size.x * 0.5f : size.y * 0.5f;
+            Vector2 inside = row.At + normal * (half + StanceClearance);
+            Vector2 behind = row.At - normal * (half + MaxBackGap + StPetersInteriors.WallThicknessMetres + StanceClearance);
+            Assert.IsTrue(walls.All(w => RoomReach.Clear(inside, row.At, w)), row.Id + " inside");
+            Assert.IsFalse(walls.All(w => RoomReach.Clear(behind, row.At, w)), row.Id + " across backing wall");
+            Assert.IsTrue(RoomReach.SameFloor(row.Level, row.Level));
+            Assert.IsFalse(RoomReach.SameFloor(row.Level + 1, row.Level), "over the fixture on another floor");
+            var outside = new Vector2(Declared[row.RoomKey].w, row.At.y);
+            Assert.IsFalse(walls.All(w => RoomReach.Clear(outside, row.At, w)), row.Id + " outside");
+            bool first = walls.All(w => RoomReach.Clear(inside, row.At, w));
+            walls.Reverse();
+            Assert.AreEqual(first, walls.All(w => RoomReach.Clear(inside, row.At, w)), "barrier ordering");
+        }
+
+        [Test]
+        public void EveryRoomKeepsItsGroundDoorwayOpenAndItsUpperDoorwayClosed()
+        {
+            foreach (var group in RoomFixturePlan.Rows.GroupBy(r => (r.BuildingKey, r.Level)))
+            {
+                Row row = group.First();
+                (float w, float l) = Declared[row.RoomKey];
+                var fp = new InteriorFootprint(Vector2.zero, w, l, 0, 8, 1f, 1f);
+                Vector2 doorway = fp.DoorWorld;
+                Vector2 justInside = doorway - Vector2.up * (StPetersInteriors.WallThicknessMetres * 2f);
+                Assert.AreEqual(row.Level == 0, ReachWalls(row).All(wall => RoomReach.Clear(doorway, justInside, wall)),
+                                row.BuildingKey + " level " + row.Level);
+            }
         }
 
         static HashSet<(int, int)> Flood(Vector2 start, float hw, float hl, List<Rect> obs)

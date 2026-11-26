@@ -47,7 +47,7 @@ namespace HiddenHarbours.World
     /// claim about a seam two files away, and the cost of proving it here is one comparison.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class InteriorBed : MonoBehaviour, IInteractable, IExclusiveInteractable
+    public sealed class InteriorBed : MonoBehaviour, IInteractable, IExclusiveInteractable, IRoomFixtureReach
     {
         [Tooltip("Stable id — unique among live interactables. Ginny's and the player's need different " +
                  "ones (…bed_player / …bed_ginny).")]
@@ -148,8 +148,11 @@ namespace HiddenHarbours.World
         /// the resolver should never route a deck-bound press here, and this is where that stops being
         /// an assumption.</para>
         /// </summary>
+        public bool CanReach(in InteractActor actor) => RoomFixtureReach.Allows(this, actor, WorldPosition);
+
         public void Interact(in InteractActor actor)
         {
+            if (!CanReach(actor)) return;
             if (actor.Context != InteractContext.OnFoot)
             {
                 // Unreachable through the resolver, and left as a quiet refusal rather than an assert:

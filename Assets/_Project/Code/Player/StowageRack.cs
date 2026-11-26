@@ -43,7 +43,7 @@ namespace HiddenHarbours.Player
     /// </summary>
     [DisallowMultipleComponent]
     [AddComponentMenu("Hidden Harbours/Stowage Rack")]
-    public sealed class StowageRack : MonoBehaviour, IInteractable, IStorageContainer
+    public sealed class StowageRack : MonoBehaviour, IInteractable, IStorageContainer, IRoomFixtureReach
     {
         [Header("What it is (content is data — rule 2)")]
         [Tooltip("What this rack takes and how many. Null makes the rack inert rather than universal.")]
@@ -392,8 +392,11 @@ namespace HiddenHarbours.Player
         }
 
         /// <summary>The press: stow the held tool if the rack takes it, else take one out.</summary>
+        public bool CanReach(in InteractActor actor) => RoomFixtureReach.Allows(this, actor, WorldPosition);
+
         public void Interact(in InteractActor actor)
         {
+            if (!CanReach(actor)) return;
             CarryHands hands = ResolveHands();
             if (hands == null)
             {
