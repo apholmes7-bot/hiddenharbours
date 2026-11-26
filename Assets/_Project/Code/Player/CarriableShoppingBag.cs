@@ -29,7 +29,8 @@ namespace HiddenHarbours.Player
     /// constants; nothing allocates.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class CarriableShoppingBag : MonoBehaviour, ICarriable, IHandLoad, IInteractable
+    public sealed class CarriableShoppingBag : MonoBehaviour, ICarriable, IHandLoad, IInteractable,
+                                              IMultiActionInteractable
     {
         /// <summary>The label near his storage. Loc seam.</summary>
         public const string PutAwayLabel = "Put the shopping away";
@@ -50,6 +51,7 @@ namespace HiddenHarbours.Player
         private YSortSprite _ySort;
         private Component _target;
         private string _targetId = "";
+        private FoodBook _foods;
 
         /// <summary>The bag's kind.</summary>
         public ShoppingBagDef Def => _def;
@@ -266,6 +268,37 @@ namespace HiddenHarbours.Player
             if (!IsCarried) PickUp();
             else if (_target != null) PutAway();
             else SetDown();
+        }
+
+        // Indices follow the food book, never the bag's changing lines. Missing foods have no row.
+        // The existing action stays first, so a confirm on the initial row keeps its old meaning.
+        private FoodBook Foods => _foods ??= GameServices.Food.Book;
+        public int ActionCount => 1 + (Foods?.All.Count ?? 0);
+
+        private FoodDef FoodAt(int index)
+            => index > 0 && index < ActionCount ? Foods.All[index - 1] : null;
+
+        public string ActionLabel(int index)
+        {
+            if (index == 0) return VerbLabel;
+            FoodDef food = FoodAt(index);
+            return food != null && ActionAvailable(index) ? food.BagEatLabel : null;
+        }
+
+        public bool ActionAvailable(int index)
+        {
+            if (index == 0) return IsAvailable;
+            FoodDef food = FoodAt(index);
+            return IsCarried && food != null && !string.IsNullOrEmpty(food.BagEatLabel)
+                   && GameServices.Food.CheckBag(food.ItemId, out _) == EatRefusal.None;
+        }
+
+        public void Interact(in InteractActor actor, int index)
+        {
+            if (!ActionAvailable(index)) return;
+            if (index == 0) { Interact(actor); return; }
+            GameServices.Food.TryEatFromBag(FoodAt(index).ItemId);
+            _hands.KeepBag();
         }
 
         /// <summary>Puts the shopping away into the storage near him, and says so. Public so a test drives

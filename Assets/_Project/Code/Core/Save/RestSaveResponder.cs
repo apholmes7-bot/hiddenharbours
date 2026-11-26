@@ -112,6 +112,8 @@ namespace HiddenHarbours.Core
         /// </summary>
         public static GameSaved Fulfil(RestSaveRequested request)
         {
+            RestDecision readiness = RestQuorum.EvaluateForRest(request.BedId);
+            if (!readiness.MayPassNight) return new GameSaved(false, readiness.ReasonKey);
             IGameClock clock = GameServices.Clock;
             GameConfig config = GameServices.Config;
 
@@ -123,6 +125,9 @@ namespace HiddenHarbours.Core
             GameSaved outcome;
             try
             {
+                // A cover listener may have changed occupancy since the first decision.
+                readiness = RestQuorum.EvaluateForRest(request.BedId);
+                if (!readiness.MayPassNight) return new GameSaved(false, readiness.ReasonKey);
                 // The morning comes FIRST: the write below snapshots the clock, and a reload must wake
                 // on the morning the player just saw. It comes whether or not anything here can keep
                 // the day, because sleeping and saving are two things and only one of them needs a disk.

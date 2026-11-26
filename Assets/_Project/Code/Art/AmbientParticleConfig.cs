@@ -44,6 +44,9 @@ namespace HiddenHarbours.Art
         public Color Color;
         [Tooltip("Peak opacity at full intensity (0..1) before the life envelope + day/night scale it. Keep low — mist is subtle.")]
         [Range(0f, 1f)] public float MaxAlpha;
+        [Tooltip("Water depth (m) over which a wisp fades in from the waterline. Sea mist is drawn over the sea only: " +
+                 "none where the ground stands at or above the water, the whole wisp from this depth out. 0 = a hard cut.")]
+        [Min(0f)] public float ShoreFadeMetres;
 
         [Header("Day / night")]
         [Tooltip("How strongly night dims the mist (0 = ignore time of day, 1 = tracks the light exactly).")]
@@ -67,6 +70,7 @@ namespace HiddenHarbours.Art
             SizeJitter        = 0.4f,
             Color             = new Color(0.86f, 0.92f, 0.97f, 1f),
             MaxAlpha          = 0.22f,
+            ShoreFadeMetres   = 0.5f,
             NightFade         = 0.55f,
             MoonlightCatch    = 0.12f,
         };

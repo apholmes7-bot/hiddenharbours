@@ -243,6 +243,7 @@ namespace HiddenHarbours.Player
             GameServices.CatchHands = this;
             GameServices.BagHands = this;
             SubscribeBagSignals();
+            RegisterFoodChoices();
         }
 
         /// <summary>
@@ -348,6 +349,7 @@ namespace HiddenHarbours.Player
             RememberParent(side, null);
             _lastTaken = catchObject;
             ApplyCarriedPose();
+            RegisterFoodChoices();
             EventBus.Publish(new CatchLanded(item));
             return true;
         }
@@ -408,6 +410,7 @@ namespace HiddenHarbours.Player
         // One cleanup path for a container handoff and a station taking the loose catch.
         private CatchItem RemoveCatchFromHand(CarriableCatch held)
         {
+            UnregisterFoodChoices();
             CatchItem item = held.Take();
             Forget(held);
             DestroyCatch(held);
@@ -974,6 +977,7 @@ namespace HiddenHarbours.Player
         /// nothing, so it must not leave a rod it hid hidden.</summary>
         private void OnDisable()
         {
+            UnregisterFoodChoices();
             UnsubscribeBagSignals();
             _catchMesh?.Hide();
             _toolMesh?.Hide();

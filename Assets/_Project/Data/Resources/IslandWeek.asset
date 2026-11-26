@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55d487d42d804da58eb51f97450a5aa2, type: 3}
+  m_Name: IslandWeek
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.IslandWeekRulesDef
+  Id: island_week.st_peters
+  DoryId: boat.dory
+  LicenceId: license.cod
+  EarliestDay: 7
+  FinfishCategories: 000000000200000004000000050000000600000007000000
+  DoryMendedTextKey: tasks.st_peters.mend_dory
+  CodLicenceTextKey: tasks.st_peters.cod_licence
+  FishFromDoryTextKey: tasks.st_peters.fish_from_dory
+  ShellfishSoldTextKey: tasks.st_peters.sell_shellfish
+  DayReachedTextKey: tasks.st_peters.first_week

@@ -9,6 +9,8 @@ Shader "HiddenHarbours/HullSunShadow"
         [HideInInspector] _StencilRef ("Shade stencil", Float) = 1
         [HideInInspector] _StencilComp ("Stencil comparison", Float) = 6
         [HideInInspector] _StencilPass ("Stencil operation", Float) = 2
+        [HideInInspector] _HHWaterBreak ("Water breakup (published per renderer)", Float) = 0
+        [HideInInspector] _HHWaterGrid ("Water breakup grid (pixels per unit, row px, dash px)", Vector) = (32, 3, 7, 0)
     }
     SubShader
     {
@@ -30,7 +32,11 @@ Shader "HiddenHarbours/HullSunShadow"
             #pragma fragment frag
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Include/HullLevelGate.hlsl"
+            #include "Include/ShadowOnWater.hlsl"
             Texture2D<float4> _HHHullScreenTex;
+            // ON OPEN WATER (ShadowOnWater, per renderer): 0 = land, the shadow exactly as it always was.
+            float _HHWaterBreak;
+            float4 _HHWaterGrid;
             float4x4 _HHSunPose, _HHSunViewPose;
             float4 _HHSunProjection, _ShadowColor, _HullIds;
             float _HHSunWaterline, _HHSunLevelGate, _HHSunDoorOpen;
@@ -38,7 +44,7 @@ Shader "HiddenHarbours/HullSunShadow"
             uint _HHLiftLevels, _HHShownRoles;
             float4 _HHRoleLiftMasks[31];
             struct Attributes { float3 positionOS:POSITION; float3 normalOS:NORMAL; float4 level:TEXCOORD0; float2 part:TEXCOORD1; };
-            struct Varyings { float4 positionCS:SV_POSITION; nointerpolation float4 level:TEXCOORD0; nointerpolation float part:TEXCOORD1; float3 rig:TEXCOORD2; };
+            struct Varyings { float4 positionCS:SV_POSITION; nointerpolation float4 level:TEXCOORD0; nointerpolation float part:TEXCOORD1; float3 rig:TEXCOORD2; float2 worldXY:TEXCOORD3; };
 #ifdef HH_DECK_SHADOW
             struct DeckTriangle { float4 a,b,c,n; };
             struct DeckNode { float4 low,high; };
@@ -86,12 +92,14 @@ Shader "HiddenHarbours/HullSunShadow"
                 Varyings o;
 #ifdef HH_DECK_SHADOW
                 o.positionCS=TransformObjectToHClip(v.positionOS);
+                o.worldXY=TransformObjectToWorld(v.positionOS).xy;
                 float3 wn=TransformObjectToWorldNormal(v.normalOS);
 #else
                 float3 p = mul(_HHSunPose,float4(v.positionOS,1)).xyz;
                 float height = max(0.0,p.z + _HHSunProjection.w);
                 float2 flat = float2(p.x,p.y*_HHSunProjection.z + _HHSunWaterline) + height*_HHSunProjection.xy;
                 o.positionCS = TransformObjectToHClip(float3(flat,0));
+                o.worldXY = TransformObjectToWorld(float3(flat,0)).xy;
                 float3 wn = TransformObjectToWorldNormal(mul((float3x3)_HHSunViewPose,v.normalOS));
 #endif
                 o.level = float4(v.level.xy,dot(wn,UNITY_MATRIX_V[2].xyz) >= 0.0 ? 1.0 : 0.0,v.level.z);
@@ -117,8 +125,16 @@ Shader "HiddenHarbours/HullSunShadow"
 #else
                 if (a > 0.5/255.0 && own) discard;
 #endif
-                if (_ScreenShade > 0.5) return half4(lerp(half3(1,1,1),_ShadowColor.rgb,_ShadowColor.a),1);
-                return _ShadowColor;
+                // The deck-shadow variant lies on the boat's own deck, never on water: no breakup there.
+#ifdef HH_DECK_SHADOW
+                half keep = 1.0;
+#else
+                half keep = HHShadowWaterKeep(i.worldXY, _HHWaterBreak, _HHWaterGrid.x, _HHWaterGrid.y, _HHWaterGrid.z);
+#endif
+                half shade = _ShadowColor.a * keep;
+                if (shade <= 0.0) discard;
+                if (_ScreenShade > 0.5) return half4(lerp(half3(1,1,1),_ShadowColor.rgb,shade),1);
+                return half4(_ShadowColor.rgb, shade);
             }
             ENDHLSL
         }
