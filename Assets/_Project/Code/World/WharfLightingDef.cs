@@ -58,6 +58,24 @@ namespace HiddenHarbours.World
         [Tooltip("The east head's light.")]
         public Color EastRed = new Color(1f, 0.22f, 0.15f, 1f);
 
+        [Header("Channel marks beside the wharf (St Peters: the entrance's inner pair)")]
+        [Tooltip("The chart ids of the lit channel marks that stand by this wharf and wear the harbour-marker look below " +
+                 "instead of the coast-wide nav preset (e.g. channel.stpeters_entrance.s3). Empty = none.")]
+        public string[] HarbourMarkIds = new string[0];
+        [Tooltip("The lantern look those marks wear (a nav light look def: small glass core, soft halo, lens colours, a " +
+                 "faint streak on the water). Typed loosely so this record does not depend on the art module; the " +
+                 "builder step refuses anything that is not a nav light look.")]
+        public Object HarbourMarkerLook;
+
+        [Header("Lantern shadows")]
+        [Tooltip("Wharf lanterns (by scene name, e.g. lanternPost_0) that throw no lamp shadows although the rest do. For a " +
+                 "lantern so close to a floating mark that the mark's silhouette would be thrown across open water.")]
+        public string[] LanternsWithoutShadows = new string[0];
+
+        /// <summary>Does the named lantern throw lamp shadows?</summary>
+        public bool LanternCastsShadows(string lanternName) =>
+            LanternsCastShadows && System.Array.IndexOf(LanternsWithoutShadows ?? new string[0], lanternName) < 0;
+
         [TextArea] public string Why = "";
     }
 }

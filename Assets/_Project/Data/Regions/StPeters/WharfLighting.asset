@@ -27,16 +27,10 @@ MonoBehaviour:
   MarkerEdgeSoftness: 0.6
   WestGreen: {r: 0.3, g: 1, b: 0.5, a: 1}
   EastRed: {r: 1, g: 0.22, b: 0.15, a: 1}
-  Why: 'St Peters'' two pier lanterns burned at the shared lantern preset, which
-    left the deck near black at night once Nine Mile Creek''s wharf was brought up
-    to a readable night. They now burn 2.5 times the preset with a 7.5 m pool, the
-    same as Nine Mile Creek''s wall lanterns, so a person and a boat at the pier can
-    be made out. The preset itself is untouched: every doorstep and lane lantern in
-    the village uses it. The sites stay where the pier''s own layout puts them
-    (StPetersWharf.LampPostSites, the landing key scene): one at the head over the
-    ladder and one at the root where the planks meet the shore, with the middle
-    left dark on purpose, as a community wharf reads at two in the morning
-    (municipal-infrastructure.md 3.4). The pier has no lamp poles and no harbour
-    lights of its own; the red and green in its approach are the channel buoys''
-    lanterns, which are drawn by the shared navigation-light preset, so the marker
-    values here are unused.'
+  HarbourMarkIds:
+  - channel.stpeters_entrance.s3
+  - channel.stpeters_entrance.p3
+  HarbourMarkerLook: {fileID: 11400000, guid: 6540e0ec029b4217a6863baec4460b19, type: 2}
+  LanternsWithoutShadows:
+  - lanternPost_0
+  Why: 'St Peters'' two pier lanterns burned at the shared lantern preset, which left the deck near black at night once Nine Mile Creek''s wharf was brought up to a readable night. They now burn 2.5 times the preset with a 7.5 m pool, the same as Nine Mile Creek''s wall lanterns. The preset itself is untouched: every doorstep and lane lantern in the village uses it. The sites stay where the pier''s own layout puts them (StPetersWharf.LampPostSites): one at the head and one at the root, with the middle left dark on purpose (municipal-infrastructure.md 3.4). The red and green off the pier head are the entrance channel''s inner pair (s3, p3); they wear the harbour-marker look (a small glass core, a soft low halo, lens colours, a faint streak on the water) instead of the coast-wide nav preset, which every other mark keeps. The head lantern throws no lamp shadows: the red can stands 4 m off it and the shadow system threw her silhouette 6 m across open water as a dark spike. The root lantern still casts. The marker values above (MarkerBloom and the head colours) are for breakwater lights and are unused here.'

@@ -64,7 +64,7 @@ namespace HiddenHarbours.Tests.EditMode
                 Doc light = Component(go, SceneLightScript), preset = Component(go, PresetScript);
                 Assert.AreEqual(look.Intensity * Lighting.LanternIntensityScale, Float(light.Field("_intensity")), 1e-4f, name + " intensity");
                 Assert.AreEqual(Lighting.LanternReachMetres, Float(light.Field("_reachMetres")), 1e-5f, name + " reach");
-                Assert.AreEqual(Lighting.LanternsCastShadows ? "1" : "0", light.Field("_castsShadows"), name + " shadows");
+                Assert.AreEqual(Lighting.LanternCastsShadows(name) ? "1" : "0", light.Field("_castsShadows"), name + " shadows");
                 Assert.AreEqual(Lighting.LanternIntensityScale, Float(preset.Field("_intensityScale")), 1e-5f, name + ": the preset component carries the scale it stamps on wake");
                 Assert.AreEqual(Lighting.LanternReachMetres, Float(preset.Field("_reachOverrideMetres")), 1e-5f, name + ": and the reach");
             }
@@ -130,15 +130,129 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
+        // ---- the red and green off the pier head: the channel's inner pair wears the harbour-marker look ----
+
+        static NavLightLookDef Look => Lighting.HarbourMarkerLook as NavLightLookDef;
+
         [Test]
-        public void TheChannelMarksLanterns_AreAlreadyASmallMarkerGlow()
+        public void TheHarbourMarkerLook_IsASmallGlassCoreInASoftLowHalo()
         {
-            // The red and green off the pier are the channel buoys' lanterns (NavLight), drawn by the shared navigation
-            // preset for every mark on the coast: already the small glow Nine Mile Creek's harbour lights were brought to.
-            WharfLightingDef nmc = NineMileCreekWharfLandSide.Lighting();
-            Assert.That(NavLightPresets.LanternRangeMetres, Is.InRange(0.4f, 1.6f), "a marker reads as a point from a boat, not a flood");
-            Assert.That(NavLightPresets.LanternRangeMetres, Is.EqualTo(nmc.MarkerBloomMetres).Within(0.25f), "the same size as Nine Mile Creek's harbour lights");
-            Assert.That(NavLightPresets.LanternIntensity, Is.EqualTo(nmc.MarkerIntensity).Within(0.25f), "and the same strength");
+            Assert.That(Look, Is.Not.Null, "the record's marker look is a nav light look");
+            Assert.AreEqual("navlight_look.harbour_marker", Look.Id);
+            float disc = NavLightPresets.LanternRangeMetres;
+            Assert.That(Look.CoreRadiusMetres, Is.GreaterThan(0f).And.LessThanOrEqualTo(disc * 0.3f),
+                "the glass core is about a quarter of the coast preset's disc");
+            Assert.That(Look.HaloRangeMetres, Is.LessThanOrEqualTo(disc), "the halo does not grow past the old disc");
+            Assert.That(Look.HaloStrength, Is.GreaterThan(0f).And.LessThanOrEqualTo(0.3f), "the halo is a low haze, not a disc");
+            Assert.That(Look.EdgeSoftness, Is.GreaterThanOrEqualTo(0.8f), "and it falls off smoothly");
+        }
+
+        [Test]
+        public void TheCore_BurnsItsLensColourFull_WithoutClippingToWhite()
+        {
+            // The core is additive: colour x strength, pulled toward white by CoreWhiten. The lens's own channel must
+            // reach full (so the mark reads from a boat) while the other two stay well short (so it reads red or green,
+            // not white: a white light is a different mark).
+            foreach (var (colour, main) in new[] { (HiddenHarbours.Core.NavLightColour.Red, 0), (HiddenHarbours.Core.NavLightColour.Green, 1) })
+            {
+                Color c = Color.Lerp(Look.LensFor(colour), Color.white, Look.CoreWhiten) * Look.Intensity;
+                float[] ch = { c.r, c.g, c.b };
+                Assert.That(ch[main], Is.GreaterThanOrEqualTo(1f), colour + ": the lens channel burns full");
+                for (int i = 0; i < 3; i++)
+                    if (i != main) Assert.That(ch[i], Is.LessThan(0.8f), colour + ": channel " + i + " stays short of white");
+            }
+        }
+
+        [Test]
+        public void ItsLensColours_AreLessNeonThanTheCoastPreset_AndKeepTheirHue()
+        {
+            Color red = Look.LensFor(HiddenHarbours.Core.NavLightColour.Red), green = Look.LensFor(HiddenHarbours.Core.NavLightColour.Green);
+            Color neonRed = NavLightPresets.For(HiddenHarbours.Core.NavLightColour.Red).Color;
+            Color neonGreen = NavLightPresets.For(HiddenHarbours.Core.NavLightColour.Green).Color;
+            Assert.That(Saturation(red), Is.LessThan(Saturation(neonRed)), "the red lens is less neon than the signal red");
+            Assert.That(Saturation(green), Is.LessThan(Saturation(neonGreen)), "the green lens is less neon than the signal green");
+            Assert.That(red.r, Is.GreaterThan(Mathf.Max(red.g, red.b) * 2f), "the red stays a red");
+            Assert.That(green.g, Is.GreaterThan(Mathf.Max(green.r, green.b) * 1.3f), "the green stays a green");
+        }
+
+        [Test]
+        public void TheEntrancesInnerPair_WearsTheLook_AndNoOtherMarkDoes()
+        {
+            Assert.That(Lighting.HarbourMarkIds, Is.EquivalentTo(new[] { "channel.stpeters_entrance.s3", "channel.stpeters_entrance.p3" }));
+            string text = File.ReadAllText(ScenePath).Replace("\r\n", "\n");
+            WithHarbourMarkerLooks(text, out int changed);
+            Assert.AreEqual(0, changed, "the committed scene is the marker step's output");
+            string guid = UnityEditor.AssetDatabase.AssetPathToGUID(UnityEditor.AssetDatabase.GetAssetPath(Look));
+            var looks = Regex.Matches(text, @"propertyPath: _look\n      value: \n      objectReference: \{fileID: 11400000, guid: (\w+)");
+            Assert.That(looks.Cast<Match>().Select(m => m.Groups[1].Value), Is.EqualTo(new[] { guid, guid }), "exactly the pair carries a look");
+        }
+
+        [Test]
+        public void ANavLight_WithTheLook_BurnsACoreAndLaysAStreak_WithoutIt_TheCoastPreset()
+        {
+            var plain = new GameObject("mark (plain)");
+            var dressed = new GameObject("mark (dressed)");
+            try
+            {
+                plain.AddComponent<StubNavSource>();
+                dressed.AddComponent<StubNavSource>();
+                NavLight a = plain.AddComponent<NavLight>(), b = dressed.AddComponent<NavLight>();
+                b.Look = Look;
+                a.Rebuild(); b.Rebuild();
+
+                Assert.That(a.Lamp.CoreRadiusMetres, Is.EqualTo(0f), "a mark without a look is the coast preset's smooth glow");
+                Assert.That(a.Lamp.Range, Is.EqualTo(NavLightPresets.LanternRangeMetres));
+                Assert.That(a.Lamp.Color, Is.EqualTo(NavLightPresets.For(HiddenHarbours.Core.NavLightColour.Red).Color));
+                Assert.That(a.Streak, Is.Null, "and lays no streak");
+
+                Assert.That(b.Lamp.CoreRadiusMetres, Is.EqualTo(Look.CoreRadiusMetres));
+                Assert.That(b.Lamp.HaloStrength, Is.EqualTo(Look.HaloStrength));
+                Assert.That(b.Lamp.Range, Is.EqualTo(Look.HaloRangeMetres));
+                Assert.That(b.Lamp.Color, Is.EqualTo(Look.LensRed));
+                Assert.That(b.Lamp.CastsShadows, Is.False, "a mark's lantern still throws no shadows");
+                Assert.That(b.Streak, Is.Not.Null, "the look lays a streak on the water");
+                Assert.That(b.Streak.Shape, Is.EqualTo(SceneLight.LightShape.Cone));
+                Assert.That(b.Streak.Range, Is.EqualTo(Look.StreakLengthMetres));
+                Assert.That(b.Streak.Intensity, Is.LessThan(b.Lamp.Intensity * 0.5f), "faint beside the lamp");
+                Assert.That(b.Streak.ReachMetres, Is.EqualTo(0f), "it lights no pool");
+                Assert.That(b.Streak.CastsShadows, Is.False);
+                Assert.That(b.Streak.transform.up.y, Is.LessThan(-0.99f), "thrown down the water from the waterline");
+                Assert.That(b.Streak.enabled, Is.False, "dark until the character lights the lamp");
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(plain);
+                UnityEngine.Object.DestroyImmediate(dressed);
+            }
+        }
+
+        [Test]
+        public void TheHeadLantern_ThrowsNoShadow_BecauseTheRedCanStandsInsideItsReach()
+        {
+            Assert.That(Lighting.LanternsWithoutShadows, Is.EqualTo(new[] { "lanternPost_0" }), "only the head lantern");
+            Vector2 head = StPetersWharf.LampPostSites()[0].Position;
+            string text = File.ReadAllText(ScenePath).Replace("\r\n", "\n");
+            Vector2 can = MarkAt(text, "channel.stpeters_entrance.s3");
+            Assert.That(Vector2.Distance(head, can), Is.LessThan(Lighting.LanternReachMetres),
+                "the red can stands inside the head lantern's reach, so a cast shadow would be thrown across open water");
+            Assert.That(Lighting.LanternCastsShadows("lanternPost_1"), Is.True, "the root lantern still casts (the 11-25 ruling)");
+        }
+
+        static float Saturation(Color c)
+        {
+            float max = Mathf.Max(c.r, Mathf.Max(c.g, c.b)), min = Mathf.Min(c.r, Mathf.Min(c.g, c.b));
+            return max <= 0f ? 0f : (max - min) / max;
+        }
+
+        static Vector2 MarkAt(string text, string markId)
+        {
+            int at = text.IndexOf("      value: " + markId + "\n", StringComparison.Ordinal);
+            Assert.That(at, Is.GreaterThan(0), markId + " is in the scene");
+            int start = text.LastIndexOf("\n--- !u!1001 &", at, StringComparison.Ordinal);
+            string doc = text.Substring(start, at - start);
+            float x = Float(Regex.Match(doc, @"propertyPath: m_LocalPosition\.x\n      value: (\S+)").Groups[1].Value);
+            float y = Float(Regex.Match(doc, @"propertyPath: m_LocalPosition\.y\n      value: (\S+)").Groups[1].Value);
+            return new Vector2(x, y);
         }
 
         // ---- the scene, read ----
@@ -167,6 +281,15 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         static float Float(string s) => float.Parse(s, NumberStyles.Float, CultureInfo.InvariantCulture);
+    }
+
+    /// <summary>A lit red mark with no buoy behind it: just what a <see cref="NavLight"/> reads.</summary>
+    public sealed class StubNavSource : MonoBehaviour, HiddenHarbours.Core.INavLightSource
+    {
+        public HiddenHarbours.Core.NavLightCharacter Character => HiddenHarbours.Core.NavLightCharacter.Parse("Fl R 4s");
+        public float PhaseSeconds => 0f;
+        public float LanternHeightMetres => 1f;
+        public Transform LanternMount => transform;
     }
 }
 #endif

@@ -166,7 +166,7 @@ namespace HiddenHarbours.App.Editor
                     "  _intensity: " + F(look.Intensity * intensityScale), "  _edgeSoftness: " + F(look.EdgeSoftness),
                     "  _angularSoftness: 0.4", "  _coreBoost: 1", "  _gateThreshold: 0.12", "  _gateSoftness: 0.35", "  _gateFallback: 1",
                     "  _flickerAmount: " + F(look.FlickerAmount), "  _flickerSpeed: 1", "  _sortingOrder: " + Int(SceneLight.MaxSortingOrder),
-                    "  _cameraDepthOffset: " + F(SceneLight.DefaultCameraDepthOffset), "  _castsShadows: " + (lighting.LanternsCastShadows ? "1" : "0"),
+                    "  _cameraDepthOffset: " + F(SceneLight.DefaultCameraDepthOffset), "  _castsShadows: " + (lighting.LanternCastsShadows(name) ? "1" : "0"),
                     "  _lampHeightMeters: " + F(MiniJson.Float(cell, "heightM")), "  _bloomLiftMetres: " + F(LampPosts.LanternPostFittingHeightMetres),
                     "  _reachMetres: " + F(reach), "  _originOffset: " + Vec2Yaml(look.OriginOffset), "  _refreshHz: 20" }), name + ": SceneLight");
                 DockPut(scene, patch, MonoBehaviourYaml(preset, go, DockScript("PreconfiguredLight"), new[] {

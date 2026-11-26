@@ -35614,6 +35614,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: NavMark_channel.stpeters_entrance.s3
       objectReference: {fileID: 0}
+    - target: {fileID: 4633658143121750460, guid: 05b99877cf7fe23489361461bd5b4bb6, type: 3}
+      propertyPath: _look
+      value: 
+      objectReference: {fileID: 11400000, guid: 6540e0ec029b4217a6863baec4460b19, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -58326,7 +58330,7 @@ MonoBehaviour:
   _flickerSpeed: 1
   _sortingOrder: 32767
   _cameraDepthOffset: 0.1
-  _castsShadows: 1
+  _castsShadows: 0
   _lampHeightMeters: 2.46
   _bloomLiftMetres: 2.09
   _reachMetres: 7.5
@@ -90752,6 +90756,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: NavMark_channel.stpeters_entrance.p3
       objectReference: {fileID: 0}
+    - target: {fileID: 4633658143121750460, guid: 05b99877cf7fe23489361461bd5b4bb6, type: 3}
+      propertyPath: _look
+      value: 
+      objectReference: {fileID: 11400000, guid: 6540e0ec029b4217a6863baec4460b19, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
