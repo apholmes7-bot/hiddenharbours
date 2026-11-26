@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6a652dbff57d2749b43a55f83348ddb, type: 3}
+  m_Name: BasilBuild
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.CharacterBuildDef
+  Id: char_build.basil
+  PlayerDisplayName: 
+  Preset: basil
+  Visual: {fileID: 11400000, guid: 69732deb09c94f743874e1c29bc50e10, type: 2}
+  Skin: 
+  Hair: 
+  Outfit: 
+  Shirt: 
+  HatCol: 
+  ApronCol: 
+  Eyes: 

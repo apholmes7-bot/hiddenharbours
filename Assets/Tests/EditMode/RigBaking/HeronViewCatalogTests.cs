@@ -21,14 +21,17 @@ namespace HiddenHarbours.Tests.RigBaking
             var withoutPlayer = UnityEngine.Object.Instantiate(shipped.Contract);
             try
             {
-                Assert.That(builds.Length, Is.EqualTo(18));
+                // Ten core builds, eight visitors over core presets, and char_build.basil: a cast member's own
+                // outfit, not a creator preset, so it stays out of the shipped catalog.
+                Assert.That(builds.Length, Is.EqualTo(19));
                 string[] coreIds = {
                     "char_build.fisher", "char_build.ginny", "char_build.skipper", "char_build.nan", "char_build.deckboss",
                     "char_build.packer", "char_build.cutter", "char_build.hand", "char_build.boy", "char_build.girl"
                 };
                 Assert.That(shipped.Builds.Select(b => b.Id), Is.EqualTo(coreIds));
                 var visitors = builds.Where(b => !coreIds.Contains(b.Id)).ToArray();
-                Assert.That(visitors.Length, Is.EqualTo(8));
+                Assert.That(visitors.Length, Is.EqualTo(9));
+                Assert.That(visitors.Count(b => b.Id == "char_build.basil" && b.Preset == "basil"), Is.EqualTo(1));
                 CharacterBuilderContractBaker.Fill(fresh, shipped.Contract, shipped.Ramps, shipped.Fit, builds);
                 Assert.That(fresh.Builds.Select(b => b.Id), Is.EqualTo(coreIds));
                 Assert.That(fresh.Builds, Is.EqualTo(shipped.Builds));

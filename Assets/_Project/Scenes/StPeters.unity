@@ -105882,7 +105882,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1b17ccfdf2f57149a3a8d03c1a6e8b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.IsoCharacterSprite
-  _visual: {fileID: 11400000, guid: d9524c99b3334ef45b8fddc702972736, type: 2}
+  _visual: {fileID: 11400000, guid: 69732deb09c94f743874e1c29bc50e10, type: 2}
   _initialHeadingDegrees: 90
   _speedSmoothingSeconds: 0.08
   _headingMinSpeed: 0.05
