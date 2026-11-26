@@ -454,6 +454,24 @@ Shader "HiddenHarbours/Water"
         // v9 (the fix3 editor look): the shore surf's churn is read this many times finer than the open
         // breaker's (_SurfNoiseScale), so it breaks into foam lace, not metre-wide blobs with lattice-straight edges.
         _WashSurfDetail    ("Shore surf: churn detail over the open breaker's (1 = the same scale)", Range(1,8)) = 3
+        // THE SHORE FOAM'S MARBLING (the owner, 11-25: "the shoreline foam still exhibits marbling ... smoother and
+        // less distracting"). The shore surf's whitewater is its churn thresholded, patches with water between them,
+        // and the wash and the shore line then tear what is left with the one foam sheet's fine lace: together a
+        // veined, marbled band. These two dials calm it without moving it: where the foam is and when it comes and
+        // goes are still the bore's (its energy, its age, the swash), only the pattern inside the band evens out.
+        //   _WashSurfEven      - how far the shore surf's churn, and the breaker's own churn by the shore share beside a
+        //                        beach, is flattened toward its middle before the threshold (0 = the broken patches,
+        //                        bit-exact; 1 = an even sheet that is as dense as the bore's energy, so it thins
+        //                        smoothly shoreward as the bore ages). Behind a bar and on the open sea nothing moves.
+        //   _ShoreLaceContrast - how much of the one foam sheet's lace the shore's own foam (the wash, its leading
+        //                        line and the shore line, and the breaker beside a beach by the shore share) still
+        //                        shows (1 = the full torn lace, bit-exact; 0 = none: the sheet thins evenly with its
+        //                        age instead of breaking into veins).
+        //   _ShoreLaceSize     - how much broader that remaining lace is than the open water's (1 = the same, bit-exact;
+        //                        higher = slower, softer variation).
+        _WashSurfEven      ("Shore surf: churn flattened toward an even sheet (0 = broken patches)", Range(0,1)) = 0
+        _ShoreLaceContrast ("Shore foam: share of the one foam lace it shows (1 = full lace)", Range(0,1)) = 1
+        _ShoreLaceSize     ("Shore foam: lace size over the open water's (1 = the same)", Range(1,8)) = 1
         // The break gate beside a beach reads the depth averaged over this many metres ALONG the shore: the 8-bit
         // painted height holds one code for ~3 texels along a shore and steps 0.047 m, so its break contour stood in
         // square steps (one texel run, ~20 px of rise at 96 px/m). Averaged over a run, the contour is smooth. 0 = off.
@@ -1834,6 +1852,7 @@ Shader "HiddenHarbours/Water"
                 float  _WashLeeShare, _WashResidueSoften, _WashAnatomyFade, _WashMaxCover;
                 float  _WashSurfReach, _WashSurfLift;
                 float  _WashSurfDetail, _WashSurfSmooth, _WashGroundScale;
+                float  _WashSurfEven, _ShoreLaceContrast, _ShoreLaceSize;
                 float  _WashLeftFoamSeconds, _WashLeftFoamOpacity;
                 float  _SurfSwellYield, _SwellShoalDepth;
                 // B1 FRINGE UNIFORM BEGIN
@@ -4560,6 +4579,21 @@ Shader "HiddenHarbours/Water"
                                      _FoamEvolveSpeed, _Time.y);
             }
 
+            // THE SHORE'S LACE (the owner, 11-25, the marbling): the same lace, read _ShoreLaceSize times broader
+            // and its contrast scaled about its middle by _ShoreLaceContrast, for the shore's own foam (the wash,
+            // its leading line and the shore line). It still feeds the sheet's one tear, threshold and bands; a flat
+            // lace (0.5) tears nothing, and the age tear then thins the sheet evenly instead of into veins.
+            // Both dials at 1 return the sheet's lace, bit-exact.
+            float FoamSheetShoreLace(float2 worldXY)
+            {
+                float contrast = saturate(_ShoreLaceContrast);
+                float size = max(_ShoreLaceSize, 1.0);
+                if (contrast <= 0.001) return 0.5;
+                float lace = FoamSheetLace(worldXY / size);
+                if (contrast >= 0.999) return lace;
+                return 0.5 + (lace - 0.5) * contrast;
+            }
+
             // THE SHEET'S BAND EDGES (the owner's look of 11-19: the rowed trail's heart read as a dense mat
             // with a visible checker): the world Bayer cell repeats every 4 pixels, a 1/8 m grid across any thin
             // foam whose value sits on a step. The step's threshold is moved toward a fixed world noise of
@@ -6365,6 +6399,12 @@ Shader "HiddenHarbours/Water"
                         float2 surfDrift = surfDir * (_Flow * t * 0.5);
                         float churn = EvolvingField(worldXY, surfDrift,
                                                     max(_SurfNoiseScale, 1e-3), _SurfEvolveSpeed, t);
+                        // THE MARBLING (the owner, 11-25): beside a beach the breaker's band lies in the shallows by
+                        // the shore, and this churn thresholded there drew it as milky metre-wide patches with water
+                        // veined between them. By the shore share (surfShore: 0 behind a bar and on the open sea, so
+                        // those breakers keep their patches bit-exact) the churn is pulled toward its middle by
+                        // _WashSurfEven, so the band reads as one soft sheet that thins with the bore's own age.
+                        if (surfShore > 0.0) churn = lerp(churn, 0.5, saturate(_WashSurfEven) * surfShore);
 
                         // Metaball soft-threshold, lifted by how live the water is here: at the break the
                         // field clears the threshold almost everywhere (solid white), and as the bore ages
@@ -6436,6 +6476,11 @@ Shader "HiddenHarbours/Water"
                             float churnShore = EvolvingField(worldXY, surfDrift,
                                                              max(_SurfNoiseScale, 1e-3) * max(_WashSurfDetail, 1.0),
                                                              _SurfEvolveSpeed, t);
+                            // The marbling dial: the churn pulled toward its middle (0.5, where the field centres),
+                            // so at 1 the threshold reads one even value and the cover is the bore's energy alone.
+                            // 0 = the churn as read, bit-exact (lerp(a, b, 0) is a). The twin ShoreSurfCover01 takes
+                            // the churn as given, so it is handed this evened value.
+                            churnShore = lerp(churnShore, 0.5, saturate(_WashSurfEven));
                             surfShoreBreak = smoothstep(thr - soft, thr + soft, churnShore);
                             surfCoverShore = smoothstep(thr - soft, thr + soft,
                                                         saturate(churnShore + density * 0.75 * saturate(_WashSurfLift))
@@ -6605,7 +6650,7 @@ Shader "HiddenHarbours/Water"
                 bool washLipSheet = _ShoreWashLip.y > 0.0 || _ShoreWashLip.z > 0.0;
                 if (washOnSand > 0.001 && washEdgeQ >= washLipInset - 1e-4 && dot(groundDir, groundDir) > 1e-6)
                 {
-                    if (washLipSheet || _ShoreWashLip.w > 0.0) washLipLace = FoamSheetLace(worldXY);
+                    if (washLipSheet || _ShoreWashLip.w > 0.0) washLipLace = FoamSheetShoreLace(worldXY);
                     float washLipWidth = max(_WashLineWidth, 0.0);
                     if (_ShoreWashLip.w > 0.0) washLipWidth *= max(1.0 + _ShoreWashLip.w * (2.0 * washLipLace - 1.0), 0.0);
                     // On the tide alone, like the surf it rides (a pond has no run-up; the depth composes once).
@@ -6623,6 +6668,8 @@ Shader "HiddenHarbours/Water"
                     washLine = 0.0;                             // the line belongs to the drawn edge alone
                     float leftFade = exp(-max(leftFoamAgeS, 0.0) / max(_WashLeftFoamSeconds, 1e-3));
                     float leftChurn = EvolvingField(worldXY, float2(0.0, 0.0), max(_SurfNoiseScale, 1e-3), _SurfEvolveSpeed, t);
+                    // The same marbling dial as the shore surf it was left by: 0 = the churn as read, bit-exact.
+                    leftChurn = lerp(leftChurn, 0.5, saturate(_WashSurfEven));
                     float leftThr = saturate(_SurfThreshold);
                     float leftSoft = max(_SurfThresholdSoft, 1e-3);
                     leftFoamA = smoothstep(leftThr - leftSoft, leftThr + leftSoft, saturate(leftChurn + leftFade * 0.75))
@@ -7506,7 +7553,7 @@ Shader "HiddenHarbours/Water"
                                                     + fringeRoughness * 0.4 * foamEdge) * bandGate;
                         fringeAge01 = saturate(_FoamSheetShore.z * (1.0 - foamEdge)
                                                + _FoamSheetShore.w * BeachSwashBackwash01(worldXY, depthC, t));
-                        float lineSheet = FoamSheetCover(FoamSheetTear(lineAmount, FoamSheetLace(worldXY),
+                        float lineSheet = FoamSheetCover(FoamSheetTear(lineAmount, FoamSheetShoreLace(worldXY),
                                                                        fringeAge01, 0.0), sheetBay);
                         foamCoverage = lerp(foamCoverage, lineSheet, saturate(_FoamSheetShore.x));
                     }
@@ -7632,6 +7679,9 @@ Shader "HiddenHarbours/Water"
                     float surfBay = washThin > 0.001 ? 0.5 : bay;
                     float surfSheetBay = washThin > 0.001 ? 0.5 : sheetBay;   // the sheet's band edges
                     float surfTorn = _FoamSheetCaps.z > 0.001 ? FoamSheetLace(worldXY) : 0.5;
+                    // Beside a beach the breaker's lace reads fainter by the shore share, like the wash's
+                    // (_ShoreLaceContrast; its size is left alone so the pattern does not warp across the share).
+                    if (surfShore > 0.0) surfTorn = 0.5 + (surfTorn - 0.5) * lerp(1.0, saturate(_ShoreLaceContrast), surfShore);
                     float surfBanded = FoamSheetJoin(SurfBandValue(surfCoverDrawn, surfBay), surfCoverDrawn * _FoamSheetCaps.w,
                                                      surfAge01, surfTorn, surfSheetBay, _FoamSheetCaps.z);
                     // THE WASH JOINS THE SHEET TOO (the owner, 11-19: "Yes, unify surf"): the run-up's smooth
@@ -7643,7 +7693,7 @@ Shader "HiddenHarbours/Water"
                     if (_FoamSheetWash.x > 0.001)
                     {
                         washAge01 = saturate(surfAge01 + _FoamSheetWash.z * BeachSwashBackwash01(worldXY, depthC, t));
-                        washTorn = FoamSheetLace(worldXY);
+                        washTorn = FoamSheetShoreLace(worldXY);
                     }
                     float washSheet = FoamSheetJoin(saturate(surfCoverDrawn), surfCoverDrawn * _FoamSheetWash.y,
                                                     washAge01, washTorn, surfSheetBay, _FoamSheetWash.x);

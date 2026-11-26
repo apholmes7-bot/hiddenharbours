@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ClamBucket
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.InnerVoiceLineDef
   Id: innervoice.clam_bucket
-  Line: Take the pail. Clams don't walk to the store on their own.
+  Line: Take the bucket. Clams don't walk to the store on their own.
   Voice: {fileID: 11400000, guid: 39c5f36a05544a3ca51529354d86a52a, type: 2}
   Trigger: 0
   SubjectId: container.player.clam_bucket

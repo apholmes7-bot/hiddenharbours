@@ -20,7 +20,7 @@ namespace HiddenHarbours.Tests.EditMode
     /// one does and never touches a disk. Every hour count is the test's own config, never the shipped
     /// asset's, so the owner retuning <c>GameConfig</c> does not break it.</para>
     /// </summary>
-    public class SleepFlowTests
+    public partial class SleepFlowTests
     {
         const string Region = "region.fixture_cove";
         const string Bed = "fixture.interior.bed";
@@ -522,6 +522,24 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsTrue(RestQuorum.IsMet(2, 2));
             Assert.IsFalse(RestQuorum.IsMet(1, 2), "everyone present must be asleep");
             Assert.IsFalse(RestQuorum.IsMet(0, 0), "no players, no night");
+        }
+
+        [TestCase(Bed)]
+        [TestCase("")]
+        [TestCase(null)]
+        public void TheExistingSinglePlayerRest_KeepsTheChosenMorningAndOneSave(string bedId)
+        {
+            Rig rig = World(22d);
+            var request = new RestSaveRequested("your bed", new Vector2(3f, 4f), 1, bedId);
+            Assert.IsTrue(SleepFlow.Begin(request));
+            SleepFlow.Confirm();
+            Assert.AreEqual(SleepPhase.Asleep, SleepFlow.Phase);
+            SleepThrough(0.25f);
+            Assert.AreEqual(At(1, 6d), rig.Clock.TotalSeconds, 1e-6);
+            Assert.AreEqual(1, rig.Save.Saves);
+            Assert.AreEqual(bedId ?? "", rig.Save.Current.RestBedId);
+            Assert.AreEqual(Region, rig.Save.Current.RestRegion);
+            Assert.AreEqual(1, rig.Save.Current.RestLevel);
         }
 
         [Test]
