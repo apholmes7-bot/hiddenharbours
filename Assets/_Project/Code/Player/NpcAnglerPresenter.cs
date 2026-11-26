@@ -25,7 +25,9 @@ namespace HiddenHarbours.Player
     /// rung ladder and the landed fish's mesh table are the shared fish art table's
     /// (<see cref="FishArtLibrary.Shared"/>). His rod is the work prop his figure presenter already draws;
     /// the line leaves its tip (<see cref="CharacterFigurePresenter.WorkPropTipWorld"/>). Not drawn for a
-    /// villager: a bobber, a load lean on the rod, the deep shadow and boil.</para>
+    /// villager: a bobber, a load lean on the rod, the boil. In their place the fish herself is drawn coming to
+    /// his bait and under the water through the deep fight, with the schools' swim art
+    /// (<see cref="DrawApproach"/>).</para>
     /// </summary>
     [DefaultExecutionOrder(101)]   // after the figure presenter (100) poses him and draws his rod
     public sealed class NpcAnglerPresenter : MonoBehaviour, IAnglerFigure
@@ -36,7 +38,8 @@ namespace HiddenHarbours.Player
 
         private IAnglerStand _stand;
         private CharacterFigurePresenter _figure;
-        private SpriteRenderer _bodySr, _fishSr, _splashSr;
+        private SpriteRenderer _bodySr, _fishSr, _splashSr, _approachSr;
+        private float _approachHeading;
         private RodLineStrand _strand;
         private RodSplashFlourish _splash;
         private SurfacedFishDrawer _fish;
@@ -60,6 +63,9 @@ namespace HiddenHarbours.Player
         /// <summary>The fish at the surface, the splash, and the fish in hand. For tests and plates.</summary>
         public SpriteRenderer FishRenderer => _fishSr;
         public SpriteRenderer SplashRenderer => _splashSr;
+        /// <summary>The fish swimming in to his bait, and under the water through the deep fight. For tests and
+        /// plates.</summary>
+        public SpriteRenderer ApproachRenderer => _approachSr;
         public SurfacedFishDrawer Fish => _fish;
         public LandedCatchHold Land => _land;
 
@@ -79,6 +85,7 @@ namespace HiddenHarbours.Player
             _figure = GetComponent<CharacterFigurePresenter>();
             _fishSr = MakeChild("NpcFishOnTheLine");
             _splashSr = MakeChild("NpcSplash");
+            _approachSr = MakeChild("NpcFishComingIn");
             _splash = new RodSplashFlourish(_splashSr);
             _fish = new SurfacedFishDrawer(_fishSr);
             _land = new LandedCatchHold(transform);
@@ -144,6 +151,7 @@ namespace HiddenHarbours.Player
             }
 
             Draw(in s, seconds, look, angler, frame, now, consecutive);
+            DrawApproach(in s, in look, angler, now);
             RenderSplash(now, look);
 
             _last = s;
@@ -200,6 +208,56 @@ namespace HiddenHarbours.Player
             else _strand?.Hide();
         }
 
+        /// <summary>
+        /// The fish coming to his bait (<see cref="AnglerApproachMath"/>) over the last of his wait, held at the
+        /// bait through the bite, and under the water along the line through the deep fight; the surfaced fish
+        /// takes over at her break. Drawn with the schools' own swim art (<see cref="SwimFishArt"/>); nothing
+        /// when the look sets no approach, the stand names no fish, or the species has no swim art.
+        /// </summary>
+        private void DrawApproach(in FishingState s, in AnglerLook look, Vector2 angler, double now)
+        {
+            ISwimFishArt art = SwimFishArt.Service;
+            var bobber = new Vector2(s.CastAimX, s.CastAimY);
+            string id = null;
+            Vector2 offset = bobber;
+            float heading = _approachHeading, alpha = look.ApproachAlpha01;
+            bool show = false;
+            if (art != null && look.ApproachSeconds > 0f)
+            {
+                if (s.Phase == FishingPhase.Waiting)
+                {
+                    if (_stand is IAnglerApproach coming
+                        && coming.TryGetApproach(out id, out float kg, out float toBite))
+                        show = AnglerApproachMath.At(in look, bobber, toBite, FishFightSeed.For(id, kg),
+                                                     out offset, out heading, out alpha);
+                }
+                else if (!string.IsNullOrEmpty(s.FishId) && s.Phase == FishingPhase.Bite)
+                {
+                    id = s.FishId;
+                    heading = AnglerApproachMath.ArrivalHeading(in look, bobber, FishFightSeed.For(id, s.WeightKg));
+                    show = true;
+                }
+                else if (!string.IsNullOrEmpty(s.FishId) && s.Phase == FishingPhase.FightDeep)
+                {
+                    id = s.FishId;
+                    offset = new Vector2(s.FishOffsetX, s.FishOffsetY);
+                    heading = AnglerApproachMath.HeadingOf(new Vector2(s.FishRunDirX, s.FishRunDirY), _approachHeading);
+                    show = true;
+                }
+            }
+            if (!show || !art.TrySwimCell(id, heading, now, out Sprite cell))
+            {
+                _approachSr.enabled = false;
+                return;
+            }
+            _approachHeading = heading;
+            _approachSr.sprite = cell;
+            _approachSr.sortingOrder = look.ApproachSortingOrder;
+            _approachSr.color = new Color(1f, 1f, 1f, alpha);
+            _approachSr.transform.position = new Vector3(angler.x + offset.x, angler.y + offset.y, transform.position.z);
+            _approachSr.enabled = true;
+        }
+
         private void SplashAt(Vector2 pos, in AnglerLook look, double edgeSeconds)
         {
             if (_splash.Begin(pos, look.SplashFrames)) _splashEdgeSeconds = edgeSeconds;
@@ -223,6 +281,7 @@ namespace HiddenHarbours.Player
             DrawsLine = false;
             _strand?.Hide();
             if (_fishSr != null) _fishSr.enabled = false;
+            if (_approachSr != null) _approachSr.enabled = false;
             _land?.Hide();
         }
 

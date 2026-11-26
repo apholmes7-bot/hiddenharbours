@@ -94,6 +94,16 @@ namespace HiddenHarbours.Core
 
         public FishingState State;
 
+        /// <summary>
+        /// The fish that will take this slot's bait, while he waits for her: her species id and weight, and the
+        /// seconds left before she bites (NaN, with a null id, when no bite is coming in this wait: an empty
+        /// slot, or the tide leaving the bobber dry first). Presentation reads it to draw her swimming in; the
+        /// same slot's catch the bite already names, so nothing new is drawn from the sim (rule 5).
+        /// </summary>
+        public string ApproachFishId;
+        public float ApproachKg;
+        public float SecondsToBite;
+
         /// <summary>True while a session is under way (any phase but Idle).</summary>
         public bool InSession => Phase != FishingPhase.Idle;
     }
@@ -190,6 +200,7 @@ namespace HiddenHarbours.Core
         {
             beat = default;
             beat.Scrub01 = float.NaN;
+            beat.SecondsToBite = float.NaN;
             if (!script.IsValid(out _)) return;
 
             long slot = SlotIndex(in script, worldSeed, keyHash, now);
@@ -243,6 +254,16 @@ namespace HiddenHarbours.Core
             if (phase == FishingPhase.Idle) return;
 
             float inPhase = (float)(t - phaseStart);
+            if (fish && phase == FishingPhase.Waiting)
+            {
+                double biteAt = script.CastBackSeconds + script.CastSeconds + wait;
+                if (!(dryAt <= biteAt))
+                {
+                    beat.ApproachFishId = shoreCatch.FishId;
+                    beat.ApproachKg = shoreCatch.WeightKg;
+                    beat.SecondsToBite = (float)(biteAt - t);
+                }
+            }
             beat.PhaseStartSeconds = slotStart + phaseStart;
             beat.SecondsInPhase = inPhase;
             float progress = phaseLength > 0f ? Mathf.Clamp01(inPhase / phaseLength) : 1f;

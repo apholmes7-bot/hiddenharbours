@@ -27,6 +27,36 @@ namespace HiddenHarbours.Core
     }
 
     /// <summary>
+    /// <b>The fish coming to his bait</b>, read by pull beside <see cref="IAnglerStand"/>: while he waits, the
+    /// slot's own catch (species, weight) and the seconds before she bites. False when no bite is coming in
+    /// this wait. A function of the clock, never saved; a stand that does not implement it shows no approach.
+    /// </summary>
+    public interface IAnglerApproach
+    {
+        bool TryGetApproach(out string fishId, out float weightKg, out float secondsToBite);
+    }
+
+    /// <summary>
+    /// <b>A swimming fish's cell</b>: the art the schools in the water are drawn with, for a drawer outside
+    /// the module that owns that table. <paramref name="headingRadians"/> is a compass heading (0 = North,
+    /// clockwise); <paramref name="seconds"/> picks the swim frame. False when the species has no swim art
+    /// (a shellfish, an unmapped id): draw nothing then.
+    ///
+    /// FLAG lead-architect: new Core contract (the swim-art seam).
+    /// </summary>
+    public interface ISwimFishArt
+    {
+        bool TrySwimCell(string speciesId, float headingRadians, double seconds, out Sprite cell);
+    }
+
+    /// <summary>The locator for <see cref="ISwimFishArt"/>, the <see cref="AnglerPresentation"/> pattern:
+    /// stateless art wiring, self-registered by its owner at runtime load. Null = no swim art.</summary>
+    public static class SwimFishArt
+    {
+        public static ISwimFishArt Service { get; set; }
+    }
+
+    /// <summary>
     /// <b>How a villager's rod fight is drawn</b>: every number and sprite the shared pieces take that the
     /// player's presenter keeps in its own inspector. Plain serializable data with no defaults (rule 6): a
     /// World activity Def authors it. The fish's rung ladder is not here: it is the shared fish art table's
@@ -55,6 +85,21 @@ namespace HiddenHarbours.Core
         /// landing, and its rate.</summary>
         public Sprite[] SplashFrames;
         public float SplashFps;
+
+        /// <summary>
+        /// The fish swimming in to his bait (the same swim art the schools are drawn with): she shows this many
+        /// seconds before the bite (0 = no approach drawn), starting this far from the bobber and off the line
+        /// by this angle (degrees, either side), easing in on a lazy swing of this width (m). She holds at the
+        /// bobber through the bite and is drawn under the water at this sorting order and opacity, through the
+        /// deep fight as well, until she breaks the surface.
+        /// </summary>
+        public float ApproachSeconds;
+        public float ApproachFadeSeconds;
+        public float ApproachFromM;
+        public float ApproachOffLineDegrees;
+        public float ApproachSwingM;
+        public int ApproachSortingOrder;
+        public float ApproachAlpha01;
     }
 
     /// <summary>A villager angler's drawing, attached to his host. Hidden, never destroyed, between

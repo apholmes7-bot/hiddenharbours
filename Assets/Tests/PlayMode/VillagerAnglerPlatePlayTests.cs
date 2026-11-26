@@ -197,12 +197,34 @@ namespace HiddenHarbours.Tests.PlayMode
             AssertTheLineLeavesTheRodTip("touchdown");
             Shoot("2-touchdown");
 
+            // 2b. She comes in: over the last of his wait, one fish swims to the bait, under the water.
+            float approach = _basil.Look.ApproachSeconds;
+            if (approach > 0f)
+            {
+                yield return StepThrough(s.BiteStart - 0.4d * approach - 0.1d, s.BiteStart - 0.4d * approach);
+                AssertInSession(FishingPhase.Waiting);
+                Assert.IsTrue(_angler.ApproachRenderer.enabled, $"no fish coming in to his bait ({s.Catch.FishId})");
+                AssertOverWater(_angler.ApproachRenderer.transform.position, "the fish coming in");
+                Shoot("2b-approach");
+            }
+
             // 3. The bite.
             yield return SeekAndDraw(s.BiteStart + 0.5d);
             AssertInSession(FishingPhase.Bite);
             AssertTheLineLeavesTheRodTip("bite");
             AssertOverWater(_angler.Line.GetPosition(_angler.Line.positionCount - 1), "bite (the line's end)");
+            if (approach > 0f) Assert.IsTrue(_angler.ApproachRenderer.enabled, "she left the bait before the strike");
             Shoot("3-bite");
+
+            // 3b. The deep fight: she is drawn under the water where the line ends.
+            if (approach > 0f)
+            {
+                yield return StepThrough(s.DeepStart + 1.0d, s.DeepStart + 1.1d);
+                AssertInSession(FishingPhase.FightDeep);
+                Assert.IsTrue(_angler.ApproachRenderer.enabled, "no fish under the water in the deep fight");
+                AssertOverWater(_angler.ApproachRenderer.transform.position, "the deep fight (the drawn fish)");
+                Shoot("3b-deep");
+            }
 
             // 4. The fight at the surface: she is drawn on the line, over the water.
             yield return StepThrough(s.SurfaceStart - 0.2d, s.SurfaceStart + 1.2d);

@@ -35,7 +35,7 @@ namespace HiddenHarbours.World
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class NpcFigureStand : MonoBehaviour, ICharacterFigureWorkStand, ICharacterFigureBeatStand,
-                                         IAnglerStand
+                                         IAnglerStand, IAnglerApproach
     {
         private IsoCharacterSprite _character;
         private string _key;
@@ -127,6 +127,22 @@ namespace HiddenHarbours.World
             }
             state = FishingState.Idle;
             secondsInPhase = 0f;
+            return false;
+        }
+
+        /// <inheritdoc/>
+        public bool TryGetApproach(out string fishId, out float weightKg, out float secondsToBite)
+        {
+            if (Sample() == AnglerStatus.InSession && !string.IsNullOrEmpty(_beat.ApproachFishId))
+            {
+                fishId = _beat.ApproachFishId;
+                weightKg = _beat.ApproachKg;
+                secondsToBite = _beat.SecondsToBite;
+                return true;
+            }
+            fishId = null;
+            weightKg = 0f;
+            secondsToBite = float.NaN;
             return false;
         }
 

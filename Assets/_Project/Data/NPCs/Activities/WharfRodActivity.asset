@@ -71,5 +71,12 @@ MonoBehaviour:
     - {fileID: 8958423535173121114, guid: 14b020d426052fa8ed59edf86df76859, type: 3}
     - {fileID: -4411448151709350727, guid: 14b020d426052fa8ed59edf86df76859, type: 3}
     SplashFps: 14
+    ApproachSeconds: 3.5
+    ApproachFadeSeconds: 0.8
+    ApproachFromM: 4
+    ApproachOffLineDegrees: 35
+    ApproachSwingM: 0.8
+    ApproachSortingOrder: -3
+    ApproachAlpha01: 0.8
   CatchSpotId: spot.st_peters.wharf_head
   MaxSeaState01: 0.6
