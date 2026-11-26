@@ -204,8 +204,9 @@ namespace HiddenHarbours.Tests.EditMode
         {
             const float maxBloomMetres = 1.6f;      // LightPresets.MaxBloomRadiusMetres
             const int poolBudget = 8;               // LampShadowProfile._maxPools: the nearest eight lamps draw a pool
-            var lamps = Regex.Split(File.ReadAllText(ScenePath), @"^--- !u!", RegexOptions.Multiline)
-                             .Where(d => d.Contains("  _reachMetres:") && d.Contains("  _lampHeightMeters:")).ToList();
+            string[] docs = Regex.Split(File.ReadAllText(ScenePath), @"^--- !u!", RegexOptions.Multiline);
+            var others = LightsUnder(docs, "NmcWharfLamps", "structure.nmc_light_west", "structure.nmc_light_east");
+            var lamps = docs.Where(d => d.Contains("  _reachMetres:") && d.Contains("  _lampHeightMeters:") && !others.Contains(DocId(d))).ToList();
             float Field(string doc, string name) => float.Parse(
                 Regex.Match(doc, "^  " + Regex.Escape(name) + @": (\S+)\r?$", RegexOptions.Multiline).Groups[1].Value, CultureInfo.InvariantCulture);
             Assert.That(lamps.Count, Is.EqualTo(poolBudget), "three lot lights, three islands, the semi lane and the store's door");
@@ -216,6 +217,41 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(Field(lamp, "_castsShadows"), Is.EqualTo(0f));
             }
             Assert.That(lamps.Count(l => Field(l, "_drawsBloom") > 0f), Is.EqualTo(3), "only the lot lights have a drawn fitting to bloom at");
+        }
+
+        static string DocId(string doc) => Regex.Match(doc, @"^\d+ &(-?\d+)").Groups[1].Value;
+
+        static string Ref(string doc, string field) =>
+            Regex.Match(doc, "^  " + field + @": \{fileID: (-?\d+)", RegexOptions.Multiline).Groups[1].Value;
+
+        /// <summary>The components under the named objects: the wharf's own lamps and the harbour lights, which this
+        /// fuel-stop guard does not count.</summary>
+        static HashSet<string> LightsUnder(string[] docs, params string[] names)
+        {
+            var goOfTransform = new Dictionary<string, string>();
+            var fatherOf = new Dictionary<string, string>();
+            var nameOf = new Dictionary<string, string>();
+            var goOfComponent = new Dictionary<string, string>();
+            foreach (string d in docs)
+            {
+                string id = DocId(d);
+                if (id.Length == 0) continue;
+                if (d.StartsWith("1 &")) nameOf[id] = Regex.Match(d, @"^  m_Name: (.*?)\r?$", RegexOptions.Multiline).Groups[1].Value;
+                else if (d.StartsWith("4 &")) { goOfTransform[id] = Ref(d, "m_GameObject"); fatherOf[id] = Ref(d, "m_Father"); }
+                else goOfComponent[id] = Ref(d, "m_GameObject");
+            }
+            var transformOfGo = goOfTransform.GroupBy(p => p.Value).ToDictionary(g => g.Key, g => g.First().Key);
+            bool Under(string go)
+            {
+                for (int i = 0; i < 64 && go.Length > 0; i++)
+                {
+                    if (nameOf.TryGetValue(go, out string n) && names.Contains(n)) return true;
+                    if (!transformOfGo.TryGetValue(go, out string t) || !fatherOf.TryGetValue(t, out string f) || f == "0") return false;
+                    if (!goOfTransform.TryGetValue(f, out go)) return false;
+                }
+                return false;
+            }
+            return new HashSet<string>(goOfComponent.Where(p => Under(p.Value)).Select(p => p.Key));
         }
 
         [Test]
