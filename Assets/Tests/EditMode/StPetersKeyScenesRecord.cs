@@ -64,7 +64,7 @@ namespace HiddenHarbours.Tests.EditMode
             new Scene("keyscene.stp_ginnys_plot", false, "HH-st-peters-one-scene-package-2026-10-07, scenes/keyscene.stp_ginnys_plot/scene.json, 78803 bytes, sha256 2df4b1b9509ce006b13eaf9ef4366698a708a64b1ca51732d01d212c25ba36e1", new string[] {  }),
             new Scene("keyscene.stp_landing", true, "HH-st-peters-one-scene-package-2026-10-07, scenes/keyscene.stp_landing/scene.json, 25754 bytes, sha256 2d8bde76678511edfa188d3d5df58410dae14da69c862e1f7121a19c6778bb09", new string[] {  }),
             new Scene("keyscene.stp_main_beach", false, "HH-st-peters-one-scene-package-2026-10-07, scenes/keyscene.stp_main_beach/scene.json, 18219 bytes, sha256 b01491f3d2a018535c021bcbb77a1c83157cd9e85e56c2aea962820da53dc45e", new string[] {  }),
-            new Scene("keyscene.stp_ne_light", false, "HH-st-peters-one-scene-package-2026-10-07, scenes/keyscene.stp_ne_light/scene.json, 41882 bytes, sha256 4508886b3363e71c94b70ba481aa22d028dcf8385a8d125443c17add37d3832f", new string[] {  }),
+            new Scene("keyscene.stp_ne_light", true, "HH-st-peters-one-scene-package-2026-10-07, scenes/keyscene.stp_ne_light/scene.json, 41882 bytes, sha256 4508886b3363e71c94b70ba481aa22d028dcf8385a8d125443c17add37d3832f", new string[] { "prop.stp_ne_flagstaff", "prop.stp_ne_woodpile", "prop.stp_ne_woodpile_b", "prop.stp_ne_brow_bench", "prop.stp_ne_barrow", "prop.stp_ne_find_0", "prop.stp_ne_find_1", "prop.stp_ne_find_2", "prop.stp_ne_find_3", "prop.stp_ne_find_4", "prop.stp_ne_find_5" }),
             new Scene("keyscene.stp_whelps_lookout", true, "HH-st-peters-one-scene-package-2026-10-07, scenes/keyscene.stp_whelps_lookout/scene.json, 53824 bytes, sha256 fc8687ee9d34247dcda961fb02c94981c860685d4c495d832af9cdda915c0d4a", new string[] { "prop.stp_whelps_lookout_bench" }),
         };
 
@@ -341,11 +341,13 @@ namespace HiddenHarbours.Tests.EditMode
             new Row("keyscene.stp_ne_light", "prop.stp_ne_woodpile_b", "setPiece", "wharfDecor", "woodStack", "", 191.3f, 55.6f, 11f, "ground", 3, null, "", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ne_light", "prop.stp_ne_brow_bench", "setPiece", "wharfDecor", "bench", "", 189.6f, 45.9f, 11f, "ground", 4, null, "", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ne_light", "prop.stp_ne_barrow", "setPiece", "wharfDecor", "wheelbarrow", "", 194.2f, 57.4f, 11f, "ground", 5, null, "", "", "", new string[] { "today" }, new string[] {  }),
+            // Placed with the light's dressing, three finds take the game's ground over the package's height (more
+            // than 5 cm off): find_1 -0.49 -> -0.396, find_3 -0.32 -> -0.171, find_4 -0.05 -> 0.01.
             new Row("keyscene.stp_ne_light", "prop.stp_ne_find_0", "setPiece", "shoreFinds", "DriftBranch", "bleached", 188.19f, 37.77f, 0.55f, "ground", 0, null, "", "", "", new string[] { "today" }, new string[] {  }),
-            new Row("keyscene.stp_ne_light", "prop.stp_ne_find_1", "setPiece", "shoreFinds", "NetFloat", "dry", 192.98f, 41.01f, -0.49f, "ground", 3, null, "", "", "", new string[] { "today" }, new string[] {  }),
+            new Row("keyscene.stp_ne_light", "prop.stp_ne_find_1", "setPiece", "shoreFinds", "NetFloat", "dry", 192.98f, 41.01f, -0.396f, "ground", 3, null, "", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ne_light", "prop.stp_ne_find_2", "setPiece", "shoreFinds", "RopeScrap", "dry", 189.01f, 32.16f, 2.3f, "ground", 6, null, "", "", "", new string[] { "today" }, new string[] {  }),
-            new Row("keyscene.stp_ne_light", "prop.stp_ne_find_3", "setPiece", "shoreFinds", "TrapLath", "bleached", 191.77f, 41f, -0.32f, "ground", 1, null, "", "", "", new string[] { "today" }, new string[] {  }),
-            new Row("keyscene.stp_ne_light", "prop.stp_ne_find_4", "setPiece", "shoreFinds", "Driftwood", "bleached", 194.4f, 42.8f, -0.05f, "ground", 4, null, "", "", "", new string[] { "today" }, new string[] {  }),
+            new Row("keyscene.stp_ne_light", "prop.stp_ne_find_3", "setPiece", "shoreFinds", "TrapLath", "bleached", 191.77f, 41f, -0.171f, "ground", 1, null, "", "", "", new string[] { "today" }, new string[] {  }),
+            new Row("keyscene.stp_ne_light", "prop.stp_ne_find_4", "setPiece", "shoreFinds", "Driftwood", "bleached", 194.4f, 42.8f, 0.01f, "ground", 4, null, "", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ne_light", "prop.stp_ne_find_5", "setPiece", "shoreFinds", "GullFeather", "dry", 188.38f, 36.67f, 0.82f, "ground", 7, null, "", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ne_light", "prop.stp_ne_gull_stack_a", "gull", "seagull", "perch", "", 223.6f, 58.1f, 7.65f, "mount", 3, null, "", "form.stp_lantern_stack", "top", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ne_light", "prop.stp_ne_gull_stack_b", "gull", "seagull", "perch", "", 224.9f, 57.6f, 7.65f, "mount", 6, null, "", "form.stp_lantern_stack", "top", new string[] { "today" }, new string[] {  }),

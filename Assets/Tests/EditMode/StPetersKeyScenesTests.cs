@@ -666,9 +666,11 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(53, before.IndexOf(key), "the key root's index in the committed SceneRoots");
             // E2 ruling 8, D1/D5 and Amendment 1 point 5: commons then lights; PR 5p field; then the open-air
             // fixtures root the interior-fixtures step adds for the camper's shore power lead (storage, owner 11-17);
-            // then the north-east light station's root, then the keepers', then the Whelps' rocks.
-            CollectionAssert.AreEqual(new[] { 1757780506L, 866884044L, 910510002L, 1709556905L, 1132627356L, 527077028L, 2079165773L }, before.Skip(54).ToArray(),
+            // then the north-east light station's root, then the keepers', then the Whelps' rocks, then the
+            // footbridges' root (the plank bridge over the Gap brook).
+            CollectionAssert.AreEqual(new[] { 1757780506L, 866884044L, 910510002L, 1709556905L, 1132627356L, 527077028L, 2079165773L, 1464805096L }, before.Skip(54).ToArray(),
                                       "the committed roots after the key root");
+            Assert.AreEqual(1464805096L, c.TransformOf(c.RootGameObject(StPetersLayerRefresh.FootbridgesRootName)));
             Assert.AreEqual(1757780506L, c.TransformOf(c.RootGameObject(StPetersVillageDressing.CommonsRoot)));
             Assert.AreEqual(866884044L, c.TransformOf(c.RootGameObject(StPetersVillageLights.RootName)));
             Assert.AreEqual(1709556905L, c.TransformOf(c.RootGameObject(InteriorFixturePlacement.StPetersOpenAirRootName)));

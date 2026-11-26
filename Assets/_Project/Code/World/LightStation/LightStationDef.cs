@@ -70,5 +70,24 @@ namespace HiddenHarbours.World
 
         [Tooltip("How far the keeper's lamp reaches on the ground, metres.")]
         [Min(0.1f)] public float KeepersLampReachMetres = 3.4f;
+
+        [Header("How soft it is")]
+        [Tooltip("How gently a beam fades along its length: 0 a hard end, 1 a long fade to nothing.")]
+        [Range(0f, 1f)] public float BeamEdgeSoftness = 0.85f;
+
+        [Tooltip("How far a beam's sides feather in, as a share of its half-angle: 0 a hard edge, 1 soft all the way across.")]
+        [Range(0f, 1f)] public float BeamAngularSoftness = 0.4f;
+
+        [Tooltip("How gently the flash's halo fades to its rim.")]
+        [Range(0f, 1f)] public float FlashEdgeSoftness = 0.9f;
+
+        [Tooltip("The hot core of the lit lamp, metres across its radius. 0 draws the lantern as a plain glow.")]
+        [Min(0f)] public float LanternCoreMetres;
+
+        [Tooltip("How bright the glow is beside that core (core = 1). Read only when the core is above 0.")]
+        [Range(0f, 1f)] public float LanternHaloStrength = 0.35f;
+
+        [Tooltip("How far the core is pulled toward white.")]
+        [Range(0f, 1f)] public float LanternCoreWhiten = 0.3f;
     }
 }

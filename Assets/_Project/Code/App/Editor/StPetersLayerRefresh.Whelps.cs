@@ -108,11 +108,11 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>The patch that stands the fields' rocks under <see cref="WhelpsRootName"/>.</summary>
         public static LayerPatch Whelps(SceneYaml scene, IReadOnlyList<TidalRockField> fields,
-            RockHeightsContract contract, ITidalRockAssets assets)
+            RockHeightsContract contract, IReadOnlyList<TidalForm> forms, ITidalRockAssets assets)
         {
             var all = fields.SelectMany(f => f.Rocks).ToList();
-            if (all.Select(r => r.Id).Distinct(StringComparer.Ordinal).Count() != all.Count)
-                throw new Refusal($"{WhelpsStep}: rocks have duplicate ids.");
+            if (all.Select(r => r.Id).Concat(forms.Select(f => f.Id)).Distinct(StringComparer.Ordinal).Count() != all.Count + forms.Count)
+                throw new Refusal($"{WhelpsStep}: rocks or forms have duplicate ids.");
             const string rootName = WhelpsRootName;
             var root = scene.Docs.Any(d => d.ClassId == GameObjectClass && d.Field("m_Name") == rootName)
                 ? scene.RootNamed(rootName) : null;
@@ -125,6 +125,9 @@ namespace HiddenHarbours.App.Editor
             var wanted = new List<Wanted>();
             var rootChildren = new List<long>();
             var none = new List<long>();
+            // The forms first: the stack and the ledges the rocks sit on.
+            foreach (TidalForm form in forms.OrderBy(f => f.Id, StringComparer.Ordinal))
+                rootChildren.Add(WantTidalForm(form, Next, wanted, rootTr, assets));
             foreach (var field in fields.OrderBy(f => f.Def.Id, StringComparer.Ordinal))
             foreach (var rock in field.Rocks.OrderBy(r => r.Id, StringComparer.Ordinal))
             {
@@ -273,7 +276,8 @@ namespace HiddenHarbours.App.Editor
 
             string text = File.ReadAllText(ScenePath);
             RockHeightsContract contract = LoadRockHeightsContract();
-            LayerPatch patch = Whelps(SceneYaml.Parse(text), LoadTidalRockFields(contract), contract, new EditorTidalRockAssets());
+            LayerPatch patch = Whelps(SceneYaml.Parse(text), LoadTidalRockFields(contract), contract,
+                LoadTidalForms(LoadTidalFormsContract()), new EditorTidalRockAssets());
             Directory.CreateDirectory(PatchFolder);
             var utf8 = new UTF8Encoding(false);
             File.WriteAllText(Path.Combine(PatchFolder, patch.Step + ".patch.yaml"), patch.ToYaml(), utf8);
