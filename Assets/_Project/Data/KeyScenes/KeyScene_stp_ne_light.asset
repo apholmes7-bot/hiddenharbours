@@ -17,7 +17,7 @@ MonoBehaviour:
   RegionId: region.st_peters
   Source: HH-st-peters-one-scene-package-2026-10-07, scenes/keyscene.stp_ne_light/scene.json,
     41882 bytes, sha256 4508886b3363e71c94b70ba481aa22d028dcf8385a8d125443c17add37d3832f
-  Placed: 0
+  Placed: 1
   Pieces:
   - Id: station.stp_ne_light
     Kind: building
@@ -176,7 +176,7 @@ MonoBehaviour:
     Kit: wharfDecor
     Piece: flagpole
     State: 
-    At: {x: 199.6, y: 52.4}
+    At: {x: 199.6, y: 49.4}
     Z: 11
     StandsOn: ground
     MountHost: 
@@ -1068,4 +1068,15 @@ MonoBehaviour:
     Budget: 1
     Note: 
   RetiredIds: []
-  PlacementIds: []
+  PlacementIds:
+  - prop.stp_ne_flagstaff
+  - prop.stp_ne_woodpile
+  - prop.stp_ne_woodpile_b
+  - prop.stp_ne_brow_bench
+  - prop.stp_ne_barrow
+  - prop.stp_ne_find_0
+  - prop.stp_ne_find_1
+  - prop.stp_ne_find_2
+  - prop.stp_ne_find_3
+  - prop.stp_ne_find_4
+  - prop.stp_ne_find_5

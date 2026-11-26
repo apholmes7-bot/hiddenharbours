@@ -23,11 +23,17 @@ MonoBehaviour:
   FlashHalfAngleDegrees: 14
   BeamReachMetres: 46
   BeamHalfAngleDegrees: 11
-  BeamIntensity: 0.2
+  BeamIntensity: 0.13
   LanternGlowMetres: 1.8
   LanternIntensity: 0.7
-  FlashGlowMetres: 7
-  FlashIntensity: 1.5
+  FlashGlowMetres: 3.6
+  FlashIntensity: 1
   Colour: {r: 0.965, g: 0.839, b: 0.518, a: 1}
   KeepersLampAt: {x: -5.7, y: -3.6, z: 2}
   KeepersLampReachMetres: 3.4
+  BeamEdgeSoftness: 1
+  BeamAngularSoftness: 0.95
+  FlashEdgeSoftness: 1
+  LanternCoreMetres: 0.22
+  LanternHaloStrength: 0.35
+  LanternCoreWhiten: 0.35
