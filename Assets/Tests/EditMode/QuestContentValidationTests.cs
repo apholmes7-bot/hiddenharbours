@@ -39,6 +39,46 @@ namespace HiddenHarbours.Tests.EditMode
     {
         private const string DataRoot = "Assets/_Project/Data";
 
+        [TestCase(0, 0, 0)]
+        [TestCase(1, 1, 1)]
+        [TestCase(2, 0, 1)]
+        [TestCase(3, 2, 2)]
+        [TestCase(4, 0, 1)]
+        [TestCase(5, 1, 2)]
+        [TestCase(6, 0, 2)]
+        [TestCase(7, -1, 3)]
+        public void TheLetter_PinsItsCopyAndEverySavedFlagCombination(int mask, int current, int done)
+        {
+            var quest = AssetDatabase.LoadAssetAtPath<QuestDef>(DataRoot + "/Resources/Quests/TheLetter.asset");
+            Assert.NotNull(quest);
+            Assert.AreEqual("quest.the_letter", quest.Id);
+            Assert.AreEqual("The dory he left you", quest.Title);
+            Assert.AreEqual("Aunt Ginny, at the house", quest.Context);
+            CollectionAssert.AreEqual(new[] { "read the logbook he left", "find Ginny up at the house", "get your bearings" },
+                quest.Steps.Select(s => s.Label));
+            string[] keys = { "read_logbook", "met_ginny", "onboarded" };
+            CollectionAssert.AreEqual(keys, quest.Steps.Select(s => s.Flag));
+
+            var save = SaveMigration.NewGame();
+            for (int i = 0; i < keys.Length; i++)
+                save.OnboardingFlags.Add(new SaveFlag(keys[i], (mask & (1 << i)) != 0));
+            save.RepairedBoats.Add("boat.dory");
+            save.OnboardingFlags.Add(new SaveFlag("landed_first_catch", true));
+            save.OnboardingFlags.Add(new SaveFlag("bought_damaged_dory", true));
+            var reloaded = SaveSerialization.FromJson(SaveSerialization.ToJson(save));
+            var flags = new InMemoryFlagStore();
+            foreach (SaveFlag flag in reloaded.OnboardingFlags) flags.Set(flag.Key, flag.Value);
+
+            QuestReading reading = QuestBoard.Read(quest, flags);
+            Assert.AreEqual(3, reading.StepCount);
+            Assert.AreEqual(current, reading.CurrentStepIndex);
+            Assert.AreEqual(done, reading.DoneCount);
+            Assert.AreEqual(mask == 7, reading.Archived);
+            Assert.AreEqual(mask != 7, reading.Active);
+            for (int i = 0; i < keys.Length; i++)
+                Assert.AreEqual((mask & (1 << i)) != 0, QuestBoard.IsDone(quest.Steps[i], flags), keys[i]);
+        }
+
         private static readonly Regex QuestId = new Regex(@"^quest\.[a-z0-9]+(_[a-z0-9]+)*$");
         private static readonly Regex KnowledgeId = new Regex(@"^knowledge\.[a-z0-9]+(_[a-z0-9]+)*$");
         private static readonly Regex TabId = new Regex(@"^tab\.[a-z0-9]+(_[a-z0-9]+)*$");

@@ -139,7 +139,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
         [UnityTest]
         public IEnumerator EveryHouseInStPeters_Lights_OnItsOwnSheets() =>
-            EveryHouseLights("StPeters", expectedHouses: 8, expectedOthers: 7); // O3 adds bait store, loft and shed; ice house waits. The village pass adds creamSaltbox, harbourGable and whiteGable.
+            EveryHouseLights("StPeters", expectedHouses: 9, expectedOthers: 7); // O3 adds bait store, loft and shed; ice house waits. The village pass adds creamSaltbox, harbourGable and whiteGable. The cottage above the Whelps is the ninth house.
 
         [UnityTest]
         public IEnumerator EveryHouseInNineMileCreek_Lights_OnItsOwnSheets() =>
