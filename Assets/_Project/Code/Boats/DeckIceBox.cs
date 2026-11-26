@@ -110,17 +110,19 @@ namespace HiddenHarbours.Boats
         {
             TickProtection();
 
-            if (!_devKeys) return;
+            if (!_devKeys || !DemoBuild.DevShortcutsAllowed) return;
             var kb = Keyboard.current;   // New Input System only — legacy Input throws here
             if (kb == null) return;
             if (kb[_devAddIceKey].wasPressedThisFrame)
             {
-                if (TryAddIce(1))
+                if (TryDevAddIce())
                     EventBus.Publish(new DevNotice($"Packed a unit of ice ({DescribeRemaining()})."));
                 else
                     EventBus.Publish(new DevNotice("The tote can't take more ice."));
             }
         }
+
+        public bool TryDevAddIce() => DemoBuild.DevShortcutsAllowed && TryAddIce(1);
 
         /// <summary>
         /// The one event of the piecewise model: the ice giving out. A per-frame double compare

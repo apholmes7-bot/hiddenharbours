@@ -28,8 +28,7 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>Flags a barrier names that nothing sets yet, each with why. Empty is the goal.</summary>
         public static readonly IReadOnlyDictionary<string, string> NotYetSettable = new Dictionary<string, string>
         {
-            { "st_peters.weather_turned", "set by the first-week gate, not yet built" },
-            { "st_peters.first_week", "set by the first-week gate, not yet built" },
+            { "st_peters.weather_turned", "set the morning after her word, after a sleep, not yet built" },
         };
 
         private static List<CampaignBarrierDef> Walls() =>

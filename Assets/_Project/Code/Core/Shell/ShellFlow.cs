@@ -93,6 +93,10 @@ namespace HiddenHarbours.Core
             var save = GameServices.Save;
             if (save != null) save.BeginNewGame();
             EnterWorld();
+
+            // The island week begins here, on the explicit New Game only: a Continue and an older save
+            // never get it. After the world is entered, so the write is allowed and lands in the file.
+            IslandWeekStart.BeginForNewGame(save);
         }
 
         /// <summary>

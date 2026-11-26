@@ -92,6 +92,7 @@ namespace HiddenHarbours.Tests.EditMode
         [TearDown]
         public void TearDown()
         {
+            DemoBuild.Override = null;
             EventBus.Unsubscribe<DevNotice>(OnNotice);
             EventBus.Clear<DevNotice>();
             InteractionGate.Reset();
@@ -106,6 +107,21 @@ namespace HiddenHarbours.Tests.EditMode
             var g = new GameObject(name);
             _spawned.Add(g);
             return g;
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void DemoMode_BlocksTheFreeBaitGrant(bool demo)
+        {
+            var dev = NewGo("DevTrap").AddComponent<DevTrapInput>();
+            dev.Configure(null, null, _trap, _bait, "region.st_peters");
+            string before = JsonUtility.ToJson(GameServices.Save.Current);
+            DemoBuild.Override = demo;
+            dev.GrantDevSupply();
+            Assert.AreEqual(demo, before == JsonUtility.ToJson(GameServices.Save.Current));
+            Assert.AreEqual(demo ? 0 : 1, _notices.Count);
+            dev.OnControlModeChanged(new ControlModeChanged(ControlMode.OnDeck));
+            Assert.IsTrue(dev.GearKeysLive, "working owned pots remains ordinary gameplay");
         }
 
         // ---- the gate: gear keys live ONLY on deck --------------------------------------------
