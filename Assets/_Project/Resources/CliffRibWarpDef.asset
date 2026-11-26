@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 939002509891cb549ab10e38e907b9e5, type: 3}
+  m_Name: CliffRibWarpDef
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffRibWarpDef
+  Id: cliff_rib_warp.default
+  Enabled: 1
+  MaxSlopeAllowed: 0.45
+  ShiftWaves:
+  - WavelengthMetres: 29
+    Amplitude: 0.55
+    AngleDegrees: 0
+    PhaseTurns: 0.13
+  - WavelengthMetres: 29
+    Amplitude: 0.55
+    AngleDegrees: 60
+    PhaseTurns: 0.57
+  - WavelengthMetres: 29
+    Amplitude: 0.55
+    AngleDegrees: 120
+    PhaseTurns: 0.81
+  - WavelengthMetres: 7.3
+    Amplitude: 0.035
+    AngleDegrees: 0
+    PhaseTurns: 0.37
+  - WavelengthMetres: 7.3
+    Amplitude: 0.035
+    AngleDegrees: 60
+    PhaseTurns: 0.05
+  - WavelengthMetres: 7.3
+    Amplitude: 0.035
+    AngleDegrees: 120
+    PhaseTurns: 0.69
+  DepthWaves:
+  - WavelengthMetres: 6.7
+    Amplitude: 0.12
+    AngleDegrees: 0
+    PhaseTurns: 0.29
+  - WavelengthMetres: 6.7
+    Amplitude: 0.12
+    AngleDegrees: 60
+    PhaseTurns: 0.74
+  - WavelengthMetres: 6.7
+    Amplitude: 0.12
+    AngleDegrees: 120
+    PhaseTurns: 0.11
+  - WavelengthMetres: 15.1
+    Amplitude: 0.12
+    AngleDegrees: 0
+    PhaseTurns: 0.62
+  - WavelengthMetres: 15.1
+    Amplitude: 0.12
+    AngleDegrees: 60
+    PhaseTurns: 0.18
+  - WavelengthMetres: 15.1
+    Amplitude: 0.12
+    AngleDegrees: 120
+    PhaseTurns: 0.93
+  DepthGainMin: 0.35
+  DepthGainMax: 1.3
+  Why: The kit profile's strongest harmonic is a 4.00 m rib that comes round exactly with the 12 m tile, so a long run read as one scallop at one pitch (St Peters east bank, 11-20). The shift slides where each rib falls along the shore (two scales, three angles each, wavelengths off every fraction of 12 m); the depth gain makes neighbouring ribs stand proud or nearly flush. Both are functions of the plan position only, so chunk cuts stay closed.
