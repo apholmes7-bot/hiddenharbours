@@ -17089,11 +17089,6 @@ MonoBehaviour:
     Species: 5
     Stage: 1
     Variant: 0
-  - Id: plant.stp_gap_bridge_187
-    At: {x: 152.74, y: -41.33}
-    Species: 12
-    Stage: 0
-    Variant: 1
   - Id: plant.stp_gap_bridge_188
     At: {x: 161.04, y: -41.04}
     Species: 5
@@ -45189,6 +45184,76 @@ MonoBehaviour:
     Species: 7
     Stage: 0
     Variant: 1
+  - Id: plant.stp_whelps_yard_edge_01
+    At: {x: 157.22, y: -31.39}
+    Species: 47
+    Stage: 0
+    Variant: 1
+  - Id: plant.stp_whelps_yard_edge_02
+    At: {x: 157.29, y: -32.53}
+    Species: 48
+    Stage: 0
+    Variant: 2
+  - Id: plant.stp_whelps_yard_edge_03
+    At: {x: 158.21, y: -32.82}
+    Species: 31
+    Stage: 0
+    Variant: 0
+  - Id: plant.stp_whelps_yard_edge_04
+    At: {x: 159.13, y: -33.12}
+    Species: 47
+    Stage: 0
+    Variant: 1
+  - Id: plant.stp_whelps_yard_edge_05
+    At: {x: 159.23, y: -34.22}
+    Species: 43
+    Stage: 0
+    Variant: 2
+  - Id: plant.stp_whelps_yard_edge_06
+    At: {x: 160.15, y: -34.52}
+    Species: 48
+    Stage: 0
+    Variant: 0
+  - Id: plant.stp_whelps_yard_edge_07
+    At: {x: 160.21, y: -35.65}
+    Species: 31
+    Stage: 0
+    Variant: 1
+  - Id: plant.stp_whelps_yard_edge_08
+    At: {x: 161.28, y: -35.81}
+    Species: 47
+    Stage: 0
+    Variant: 2
+  - Id: plant.stp_whelps_yard_edge_09
+    At: {x: 162.02, y: -36.28}
+    Species: 48
+    Stage: 0
+    Variant: 0
+  - Id: plant.stp_whelps_yard_edge_10
+    At: {x: 156.22, y: -27.14}
+    Species: 43
+    Stage: 0
+    Variant: 1
+  - Id: plant.stp_whelps_yard_edge_11
+    At: {x: 157.59, y: -26.75}
+    Species: 31
+    Stage: 0
+    Variant: 2
+  - Id: plant.stp_whelps_yard_edge_12
+    At: {x: 158.15, y: -25.55}
+    Species: 47
+    Stage: 0
+    Variant: 0
+  - Id: plant.stp_whelps_yard_edge_13
+    At: {x: 159.56, y: -25.2}
+    Species: 48
+    Stage: 0
+    Variant: 1
+  - Id: plant.stp_whelps_yard_edge_14
+    At: {x: 159.98, y: -23.86}
+    Species: 31
+    Stage: 0
+    Variant: 2
   Clump: {fileID: 11400000, guid: 06a1ab00e51747379199b42dc4b1e7c1, type: 2}
   GroundCoverMaxHeightM: 0.5
   LyingHabitats:

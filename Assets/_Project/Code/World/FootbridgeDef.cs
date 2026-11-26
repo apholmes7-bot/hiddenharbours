@@ -41,15 +41,31 @@ namespace HiddenHarbours.World
         [Tooltip("How far the planks stand over that ground, metres.")]
         [Min(0f)] public float DeckRiseMetres = 0.38f;
 
-        [Header("The rail")]
-        [Tooltip("A rail along the seaward (south) edge. It is walked behind and cannot be walked through.")]
+        [Header("The rails")]
+        [Tooltip("A low rail along the seaward (south) edge. A walker on the planks is behind it; it cannot be walked through.")]
         public bool SeawardRail = true;
 
-        [Tooltip("How thick the rail's line is on the ground, metres.")]
+        [Tooltip("A low rail along the landward (north) edge. A walker on the planks is in front of it; it cannot be walked through.")]
+        public bool LandwardRail = true;
+
+        [Tooltip("How far behind its own line the landward rail sorts, metres. A walker is sorted by his body, which is " +
+                 "drawn above his feet; without this the rail behind him would be drawn over his legs.")]
+        [Min(0f)] public float LandwardRailSortsBehindMetres = 0.8f;
+
+        [Header("Standing")]
+        [Tooltip("How far landward of the planks the deck still counts as stood on, metres. The game reads a walker's " +
+                 "ground at his body, which is drawn above his feet; without this a walker whose feet are on the " +
+                 "planks would be read as standing in the brook behind them.")]
+        [Min(0f)] public float StandingReachMetres = 0.8f;
+
+        [Tooltip("How thick a rail's line is on the ground, metres.")]
         [Min(0.02f)] public float RailThicknessMetres = 0.12f;
 
-        /// <summary>The deck as ground: the rectangle that can be stood on.</summary>
+        /// <summary>The planks: the rectangle the deck is drawn on and the rails stand along.</summary>
         public Rect Footprint => new Rect(At.x - SpanMetres * 0.5f, At.y - WidthMetres * 0.5f, SpanMetres, WidthMetres);
+
+        /// <summary>The deck as ground: the planks and the reach landward of them a walker's body is read at.</summary>
+        public Rect StandingFootprint => new Rect(At.x - SpanMetres * 0.5f, At.y - WidthMetres * 0.5f, SpanMetres, WidthMetres + StandingReachMetres);
 
         /// <summary>The height stood at on the planks, metres above chart datum.</summary>
         public float DeckMetres => GroundMetres + DeckRiseMetres;

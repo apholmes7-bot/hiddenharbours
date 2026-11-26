@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.TestTools;
 using HiddenHarbours.Art;
 using HiddenHarbours.Core;
 using HiddenHarbours.Player;
+using HiddenHarbours.World;
 using Object = UnityEngine.Object;
 
 namespace HiddenHarbours.Tests.PlayMode
@@ -183,6 +185,124 @@ namespace HiddenHarbours.Tests.PlayMode
         /// tide leaves walkable, around every solid thing. Both keepers' doors are in it, at the board's tide and
         /// at low water, and at neither does it reach the edge of the sea.
         /// </summary>
+        const string GapFootbridgeId = "bridge.stp_gap_footbridge";
+        const string GapFootbridgeRoot = "StPetersFootbridges";
+        const string RailNearName = "RailNear", RailFarName = "RailFar";
+        const float BridgeApproachMetres = 1.2f;      // how far off each end the walk starts and ends, on the path
+        const float BridgeArriveMetres = 0.15f;
+        const int BridgeWalkFrames = 900;
+        const int RailPushFrames = 120;
+
+        // The footbridge over the gap stream, walked by the real player on the real ground: west to east, back
+        // again, and a push at each rail from the middle of the deck.
+        [UnityTest]
+        public IEnumerator StPeters_TheGapFootbridge_IsWalkedAcrossBothWays_BetweenItsRails()
+        {
+            yield return LoadRegion(StPeters);
+            StandablePlatform bridge = Object.FindObjectsByType<StandablePlatform>(FindObjectsInactive.Include)
+                .FirstOrDefault(p => p.Id == GapFootbridgeId);
+            Assert.That(bridge, Is.Not.Null, "the gap footbridge is in the loaded region as a deck to stand on");
+            Rect stood = bridge.Footprint;
+            Transform root = bridge.transform;
+            while (root.parent != null && root.name != GapFootbridgeRoot) root = root.parent;
+            SpriteRenderer near = root.GetComponentsInChildren<SpriteRenderer>(true).FirstOrDefault(r => r.name == RailNearName);
+            SpriteRenderer far = root.GetComponentsInChildren<SpriteRenderer>(true).FirstOrDefault(r => r.name == RailFarName);
+            Assert.That(near, Is.Not.Null, "the bridge has a rail on its near side");
+            Assert.That(far, Is.Not.Null, "the bridge has a rail on its far side");
+            Assert.That(far.sortingLayerID, Is.EqualTo(near.sortingLayerID));
+            Assert.That(far.sortingOrder, Is.LessThan(near.sortingOrder), "the far rail is drawn behind the near one");
+            // The planks lie between the two rails; the ground stood on reaches a little landward of them, because the
+            // game reads a walker's ground at his body and draws his feet below it.
+            Rect deck = Rect.MinMaxRect(stood.xMin, near.transform.position.y, stood.xMax, far.transform.position.y);
+            Assert.That(deck.height, Is.GreaterThan(0.5f)); Assert.That(stood.yMax, Is.GreaterThanOrEqualTo(deck.yMax));
+
+            var player = Object.FindAnyObjectByType<PlayerWalkController>(FindObjectsInactive.Include);
+            Assert.That(player, Is.Not.Null, "the player is in the loaded game");
+            player.gameObject.SetActive(true);
+            player.enabled = true;
+            var body = player.GetComponent<Rigidbody2D>();
+            var foot = player.GetComponent<CircleCollider2D>();
+            Assert.That(body, Is.Not.Null); Assert.That(foot, Is.Not.Null);
+            var held = new HeldWalkIntents();
+            player.ConfigureWalkInput(held);
+            Vector2 Feet() => body.position + foot.offset;
+            void Stand(Vector2 at)
+            {
+                held.Release();
+                body.position = at - foot.offset;
+                body.linearVelocity = Vector2.zero;
+                Physics2D.SyncTransforms();
+            }
+            // The figure is drawn at the order of the picture it sorts by.
+            YSortSprite sorter = player.GetComponentInChildren<YSortSprite>();
+            Assert.That(sorter, Is.Not.Null, "the walker sorts by where he stands");
+            Renderer sortedBy = sorter.GetComponent<Renderer>();
+            int FigureOrder(out int layer)
+            {
+                layer = sortedBy.sortingLayerID;
+                return sortedBy.sortingOrder;
+            }
+            string Sorting() => $"sorted by '{sorter.name}' at y {sorter.transform.position.y:0.00} pivot {sorter.SortPivotYOffset:0.00}, " +
+                                $"body y {body.position.y:0.00}, order {sortedBy.sortingOrder}, rails {far.sortingOrder} to {near.sortingOrder}";
+
+            float mid = deck.center.y;
+            Vector2 west = new Vector2(deck.xMin - BridgeApproachMetres, mid);
+            Vector2 east = new Vector2(deck.xMax + BridgeApproachMetres, mid);
+            try
+            {
+                foreach ((Vector2 from, Vector2 to, string way) in new[] { (west, east, "west to east"), (east, west, "east to west") })
+                {
+                    Stand(from);
+                    yield return new WaitForFixedUpdate();
+                    int onDeck = 0, frames = 0;
+                    float lowest = float.MaxValue, highest = float.MinValue;
+                    while ((Feet() - to).magnitude > BridgeArriveMetres && frames++ < BridgeWalkFrames)
+                    {
+                        held.Walk((to - Feet()).normalized);
+                        yield return new WaitForFixedUpdate();
+                        Vector2 at = Feet();
+                        if (at.x <= deck.xMin || at.x >= deck.xMax) continue;
+                        onDeck++;
+                        lowest = Mathf.Min(lowest, at.y); highest = Mathf.Max(highest, at.y);
+                        Assert.That(bridge.TryGetDeckElevation(body.position, out float h), Is.True,
+                            $"{way}: with his feet on the planks at {at} the game reads him as standing on the deck (body {body.position})");
+                        Assert.That(h, Is.EqualTo(bridge.DeckElevation));
+                        Assert.That(player.WaterState, Is.EqualTo(OnFootWaterState.Dry), $"{way}: he crosses dry at {at}");
+                        int order = FigureOrder(out int layer);
+                        Assert.That(layer, Is.EqualTo(near.sortingLayerID), $"{way}: he is drawn in the rails' layer");
+                        Assert.That(order, Is.GreaterThan(far.sortingOrder), $"{way}: at {at} he is in front of the far rail; {Sorting()}");
+                        Assert.That(order, Is.LessThan(near.sortingOrder), $"{way}: at {at} he is behind the near rail; {Sorting()}");
+                    }
+                    Assert.That((Feet() - to).magnitude, Is.LessThanOrEqualTo(BridgeArriveMetres),
+                        $"{way}: he reaches the far bank; he stopped at {Feet()} after {frames} steps");
+                    Assert.That(onDeck, Is.GreaterThan(0), $"{way}: the walk went over the deck");
+                    Assert.That(lowest, Is.GreaterThan(deck.yMin)); Assert.That(highest, Is.LessThan(deck.yMax));
+                }
+
+                // From the middle of the deck neither rail lets him step off into the stream.
+                foreach ((Vector2 push, string side) in new[] { (Vector2.down, "near"), (Vector2.up, "far") })
+                {
+                    Stand(deck.center);
+                    yield return new WaitForFixedUpdate();
+                    for (int i = 0; i < RailPushFrames; i++)
+                    {
+                        held.Walk(push);
+                        yield return new WaitForFixedUpdate();
+                    }
+                    Vector2 at = Feet();
+                    Assert.That(at.y, Is.InRange(deck.yMin, deck.yMax),
+                        $"the {side} rail keeps his feet on the planks; he ended at {at}, planks {deck}");
+                    Assert.That(bridge.TryGetDeckElevation(body.position, out _), Is.True,
+                        $"pushed at the {side} rail he is still read as on the deck (body {body.position}, stood {stood})");
+                }
+            }
+            finally
+            {
+                held.Release();
+                player.ConfigureWalkInput(null);
+            }
+        }
+
         [UnityTest]
         public IEnumerator StPeters_WithNoBoat_BothKeepersCanBeWalkedTo_AndTheIslandCannotBeLeft()
         {

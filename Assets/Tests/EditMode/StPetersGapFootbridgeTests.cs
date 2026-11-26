@@ -42,6 +42,9 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(deck.pixelsPerUnit, Is.EqualTo(drawn.pixelsPerMetre));
             Assert.That(deck.rect.width, Is.EqualTo(def.SpanMetres * drawn.pixelsPerMetre + 2).Within(0.5f), "the planks are as long as the span");
             Assert.That(bridge.Footprint, Is.EqualTo(def.Footprint));
+            Assert.That(bridge.Standing.yMin, Is.EqualTo(def.Footprint.yMin), "the standing ground starts at the planks' near edge");
+            Assert.That(bridge.Standing.yMax, Is.EqualTo(def.Footprint.yMax + def.StandingReachMetres).Within(0.0001f),
+                "and reaches landward as far as a walker's body is read from his feet");
             Assert.That(bridge.DeckMetres, Is.EqualTo(def.GroundMetres + def.DeckRiseMetres).Within(0.0001f));
         }
 
@@ -57,19 +60,28 @@ namespace HiddenHarbours.Tests.EditMode
             var platform = scene.Docs.Single(d => owned.Contains(d.FileId) && d.IsScript(typeof(StandablePlatform).FullName));
             Assert.That(platform.Field("_id"), Is.EqualTo(BridgeId));
             Assert.That(ParseFloat(platform.Field("_deckElevation")), Is.EqualTo(bridges[0].DeckMetres).Within(0.0001f));
-            Assert.That(scene.Docs.Count(d => owned.Contains(d.FileId) && d.ClassId == 212), Is.EqualTo(2), "the planks and the rail");
-            Assert.That(scene.Docs.Count(d => owned.Contains(d.FileId) && d.ClassId == 60), Is.EqualTo(1), "only the rail is a wall");
+            Assert.That(scene.Docs.Count(d => owned.Contains(d.FileId) && d.ClassId == 212), Is.EqualTo(3), "the planks and the two rails");
+            Assert.That(scene.Docs.Count(d => owned.Contains(d.FileId) && d.ClassId == 60), Is.EqualTo(2), "only the rails are walls");
             Assert.That(scene.Docs.Count(d => owned.Contains(d.FileId) && d.ClassId == 1 && d.Field("m_Name") == FootbridgeDeckName),
                 Is.EqualTo(1), "the planks carry the name the sun's rules leave alone");
             var rules = Resources.Load<HiddenHarbours.Art.SunCasterRules>(nameof(HiddenHarbours.Art.SunCasterRules));
             Assert.That(rules.ExcludedNames, Does.Contain("*Floor*"), "the rules no longer leave a floor alone");
 
-            // The rail is the deck's south edge: a walker on the planks is north of it, and it does not close the ends.
-            Vector2[] rail = FootbridgeRailLine(bridges[0]);
+            // The rails lie just outside the deck's two long edges: the whole width of the planks is walked, a walker
+            // on them is north of the near rail and south of the far one, and neither closes the ends.
             Rect foot = bridges[0].Footprint;
-            Assert.That(rail.Max(p => p.y) + bridges[0].At.y, Is.EqualTo(foot.yMin).Within(0.0001f));
-            Assert.That(rail.Min(p => p.x) + bridges[0].At.x, Is.GreaterThan(foot.xMin));
-            Assert.That(rail.Max(p => p.x) + bridges[0].At.x, Is.LessThan(foot.xMax));
+            Vector2[] nearRail = FootbridgeRailLine(bridges[0], near: true), farRail = FootbridgeRailLine(bridges[0], near: false);
+            Assert.That(nearRail.Max(p => p.y) + bridges[0].At.y, Is.EqualTo(foot.yMin).Within(0.0001f));
+            Assert.That(farRail.Min(p => p.y) + bridges[0].At.y, Is.EqualTo(foot.yMax).Within(0.0001f));
+            foreach (Vector2[] rail in new[] { nearRail, farRail })
+            {
+                Assert.That(rail.Min(p => p.x) + bridges[0].At.x, Is.GreaterThan(foot.xMin));
+                Assert.That(rail.Max(p => p.x) + bridges[0].At.x, Is.LessThan(foot.xMax));
+            }
+            int Order(string name) => ParseInt(scene.ComponentsOf(scene.Docs.Single(d => owned.Contains(d.FileId) && d.ClassId == 1 &&
+                d.Field("m_Name") == name)).Single(d => d.ClassId == 212).Field("m_SortingOrder"));
+            Assert.That(Order(FootbridgeDeckName), Is.LessThan(Order(FootbridgeFarRailName)), "the planks lie under the far rail");
+            Assert.That(Order(FootbridgeFarRailName), Is.LessThan(Order(FootbridgeNearRailName)), "the far rail is drawn before the near one");
         }
 
         [Test]

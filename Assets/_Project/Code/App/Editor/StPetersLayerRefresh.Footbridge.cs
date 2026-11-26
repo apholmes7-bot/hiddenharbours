@@ -17,7 +17,8 @@ namespace HiddenHarbours.App.Editor
     /// <summary>
     /// <b>The footbridges.</b> Each <see cref="FootbridgeDef"/> in the Whelps' folder is stood in the scene under
     /// <see cref="FootbridgesRootName"/>: the deck as ground that can be stood on, the planks drawn on the floor
-    /// under everything that walks, and the seaward rail standing up, sorted by its foot and not walked through.
+    /// under everything that walks, and a low rail along each long side, sorted by its foot and not walked through:
+    /// the landward one is behind a walker on the planks, the seaward one in front.
     ///
     /// <para>After it, <see cref="ApplyTroddenGround"/> takes the planting off the ground that is walked here: the
     /// paths by the cottage and the bridge's planks.</para>
@@ -30,7 +31,7 @@ namespace HiddenHarbours.App.Editor
         public const string FootbridgeContractPath = FootbridgeArt + "/Footbridge.json";
         /// <summary>The deck's picture is a floor: the sun casts nothing from a name that says so.</summary>
         public const string FootbridgeDeckName = "DeckFloor";
-        public const string FootbridgeRailName = "Rail";
+        public const string FootbridgeNearRailName = "RailNear", FootbridgeFarRailName = "RailFar";
 
         /// <summary>What the recipe drew (tools/rig-recipes/gap-footbridge.mjs).</summary>
         [Serializable]
@@ -54,9 +55,9 @@ namespace HiddenHarbours.App.Editor
         {
             public string Id;
             public Vector2 At;
-            public Rect Footprint;
-            public float DeckMetres, RailInsetMetres, RailThicknessMetres;
-            public bool Rail;
+            public Rect Footprint, Standing;
+            public float DeckMetres, RailInsetMetres, RailThicknessMetres, FarRailSortsBehindMetres;
+            public bool NearRail, FarRail;
             public SpriteRef DeckPicture, RailPicture;
         }
 
@@ -74,11 +75,13 @@ namespace HiddenHarbours.App.Editor
             public ScriptRef ScriptFor(Type type) => _scripts.ScriptFor(type);
         }
 
-        /// <summary>The rail's line on the ground: a thin strip along the deck's south edge, local to the bridge.</summary>
-        public static Vector2[] FootbridgeRailLine(Footbridge b)
+        /// <summary>A rail's line on the ground, local to the bridge: a thin strip just outside the deck's south edge
+        /// (the near rail) or its north edge (the far one), so the whole width of the planks is walked.</summary>
+        public static Vector2[] FootbridgeRailLine(Footbridge b, bool near)
         {
-            float half = b.Footprint.width * 0.5f - b.RailInsetMetres, y = -b.Footprint.height * 0.5f, t = b.RailThicknessMetres;
-            return new[] { new Vector2(-half, y - t), new Vector2(half, y - t), new Vector2(half, y), new Vector2(-half, y) };
+            float half = b.Footprint.width * 0.5f - b.RailInsetMetres, t = b.RailThicknessMetres;
+            float y0 = near ? -b.Footprint.height * 0.5f - t : b.Footprint.height * 0.5f;
+            return new[] { new Vector2(-half, y0), new Vector2(half, y0), new Vector2(half, y0 + t), new Vector2(-half, y0 + t) };
         }
 
         /// <summary>The patch that stands the bridges under <see cref="FootbridgesRootName"/>.</summary>
@@ -100,24 +103,26 @@ namespace HiddenHarbours.App.Editor
             var none = new List<long>();
             foreach (Footbridge b in bridges.OrderBy(x => x.Id, StringComparer.Ordinal))
             {
-                string name = b.Id, deck = name + "/" + FootbridgeDeckName, rail = name + "/" + FootbridgeRailName;
+                string name = b.Id, deck = name + "/" + FootbridgeDeckName;
                 long go = Next(name, "GameObject"), tr = Next(name, "Transform"), platform = Next(name, "StandablePlatform");
                 long dg = Next(deck, "GameObject"), dt = Next(deck, "Transform"), dsr = Next(deck, "SpriteRenderer");
                 var children = new List<long> { dt };
-                long rg = 0, rt = 0, rsr = 0, rsort = 0, rwall = 0;
-                if (b.Rail)
+                var rails = new List<(string Name, bool Near, long Go, long Tr, long Sr, long Sort, long Wall)>();
+                foreach (bool near in new[] { false, true })
                 {
-                    rg = Next(rail, "GameObject"); rt = Next(rail, "Transform"); rsr = Next(rail, "SpriteRenderer");
-                    rsort = Next(rail, "YSortSprite"); rwall = Next(rail, "PolygonCollider2D");
-                    children.Add(rt);
+                    if (near ? !b.NearRail : !b.FarRail) continue;
+                    string rail = name + "/" + (near ? FootbridgeNearRailName : FootbridgeFarRailName);
+                    rails.Add((rail, near, Next(rail, "GameObject"), Next(rail, "Transform"), Next(rail, "SpriteRenderer"),
+                        Next(rail, "YSortSprite"), Next(rail, "PolygonCollider2D")));
+                    children.Add(rails[rails.Count - 1].Tr);
                 }
 
                 wanted.Add(Want(GameObjectYaml(go, name, new[] { tr, platform }), name, "GameObject"));
                 wanted.Add(Want(TransformYaml(tr, go, b.At, children, rootTr), name, "Transform"));
                 wanted.Add(Want(MonoBehaviourYaml(platform, go, assets.ScriptFor(typeof(StandablePlatform)), new[]
                 {
-                    "  _id: " + Plain(b.Id), "  _footprint:", "    serializedVersion: 2", "    x: " + F(b.Footprint.x),
-                    "    y: " + F(b.Footprint.y), "    width: " + F(b.Footprint.width), "    height: " + F(b.Footprint.height),
+                    "  _id: " + Plain(b.Id), "  _footprint:", "    serializedVersion: 2", "    x: " + F(b.Standing.x),
+                    "    y: " + F(b.Standing.y), "    width: " + F(b.Standing.width), "    height: " + F(b.Standing.height),
                     "  _deckElevation: " + F(b.DeckMetres), "  _drawnLiftedByDeck: 0",
                 }), name, "StandablePlatform"));
 
@@ -126,22 +131,26 @@ namespace HiddenHarbours.App.Editor
                 wanted.Add(Want(TransformYaml(dt, dg, Vector2.zero, none, tr), deck, "Transform"));
                 wanted.Add(Want(SpriteRendererYaml(dsr, dg, assets.SpriteMaterial, b.DeckPicture, SortingBands.DecorFloor), deck, "SpriteRenderer"));
 
-                if (b.Rail)
+                foreach (var (rail, near, rg, rt, rsr, rsort, rwall) in rails)
                 {
-                    // The rail stands on the deck's south edge and takes the order that edge earns.
-                    float foot = -b.Footprint.height * 0.5f;
-                    int order = YSortSprite.OrderFor(b.At.y + foot, SortingBands.DecorBase, SortingBands.OrdersPerMetre,
+                    // A rail stands on its edge of the deck and takes the order that edge earns: the far one is drawn
+                    // before a walker on the planks, the near one after.
+                    float foot = (near ? -0.5f : 0.5f) * b.Footprint.height;
+                    string railName = near ? FootbridgeNearRailName : FootbridgeFarRailName;
+                    // A walker is sorted by his body, above his feet, so the far rail sorts that much behind its line.
+                    float behind = near ? 0f : b.FarRailSortsBehindMetres;
+                    int order = YSortSprite.OrderFor(b.At.y + foot + behind, SortingBands.DecorBase, SortingBands.OrdersPerMetre,
                         SortingBands.DecorFloor + 1, SortingBands.DecorCeiling - 1);
-                    wanted.Add(Want(GameObjectYaml(rg, FootbridgeRailName, new[] { rt, rsr, rsort, rwall }), rail, "GameObject"));
+                    wanted.Add(Want(GameObjectYaml(rg, railName, new[] { rt, rsr, rsort, rwall }), rail, "GameObject"));
                     wanted.Add(Want(TransformYaml(rt, rg, new Vector2(0f, foot), none, tr), rail, "Transform"));
                     wanted.Add(Want(SpriteRendererYaml(rsr, rg, assets.SpriteMaterial, b.RailPicture, order), rail, "SpriteRenderer"));
                     wanted.Add(Want(MonoBehaviourYaml(rsort, rg, assets.ScriptFor(typeof(YSortSprite)), new[]
                     {
                         "  _dynamic: 0", "  _baseOrder: " + F(SortingBands.DecorBase),
                         "  _orderPerUnit: " + F(SortingBands.OrdersPerMetre), "  _minOrder: " + Int(SortingBands.DecorFloor + 1),
-                        "  _maxOrder: " + Int(SortingBands.DecorCeiling - 1), "  _pivotYOffset: 0",
+                        "  _maxOrder: " + Int(SortingBands.DecorCeiling - 1), "  _pivotYOffset: " + F(behind),
                     }), rail, "YSortSprite"));
-                    Vector2[] line = FootbridgeRailLine(b);
+                    Vector2[] line = FootbridgeRailLine(b, near);
                     for (int i = 0; i < line.Length; i++) line[i] -= new Vector2(0f, foot);
                     wanted.Add(Want(PolygonColliderYaml(rwall, rg, new List<Vector2[]> { line }), rail, "PolygonCollider2D"));
                 }
@@ -184,7 +193,8 @@ namespace HiddenHarbours.App.Editor
                                       $"{F(contract.spanMetres)} by {F(contract.widthMetres)} m. Draw them again (tools/rig-recipes/gap-footbridge.mjs).");
                 bridges.Add(new Footbridge
                 {
-                    Id = def.Id, At = def.At, Footprint = def.Footprint, DeckMetres = def.DeckMetres, Rail = def.SeawardRail,
+                    Id = def.Id, At = def.At, Footprint = def.Footprint, Standing = def.StandingFootprint, DeckMetres = def.DeckMetres, NearRail = def.SeawardRail, FarRail = def.LandwardRail,
+                    FarRailSortsBehindMetres = def.LandwardRailSortsBehindMetres,
                     RailInsetMetres = contract.railInsetMetres, RailThicknessMetres = def.RailThicknessMetres,
                     DeckPicture = EditorShoreRockSprites.RefOf(Picture(contract.deck)),
                     RailPicture = EditorShoreRockSprites.RefOf(Picture(contract.rail)),

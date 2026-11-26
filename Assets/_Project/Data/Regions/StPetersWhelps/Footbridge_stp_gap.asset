@@ -22,4 +22,7 @@ MonoBehaviour:
   GroundMetres: 5.28
   DeckRiseMetres: 0.38
   SeawardRail: 1
+  LandwardRail: 1
+  LandwardRailSortsBehindMetres: 0.8
+  StandingReachMetres: 0.8
   RailThicknessMetres: 0.12

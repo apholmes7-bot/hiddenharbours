@@ -3,8 +3,9 @@
 //   node tools/rig-recipes/gap-footbridge.mjs           writes the pictures, their metas and the contract
 //   node tools/rig-recipes/gap-footbridge.mjs --check   exits 1 if the committed files are not what this draws
 //
-// Two pictures: the deck, which lies on the ground and is walked on, and the rail along its seaward edge, which
-// stands up and is walked behind. Weathered plank, the landing deck's pale boards. The span and the width are the
+// Two pictures: the deck, which lies on the ground and is walked on, with a stone sill under each end and its shade
+// on the water; and a low rail, stood along both long sides, the far one behind a walker and the near one in front.
+// Weathered grey-brown plank, laid across the walk. The span and the width are the
 // bridge Def's; the contract carries them so the scene step can refuse a Def the pictures were not drawn for.
 
 import fs from 'node:fs';
@@ -22,17 +23,20 @@ const PPM = 32;                 // pixels a metre, the game's
 const LIFT = 0.766;             // picture rise per metre of height, the camera's
 const SPAN = 3.0;               // metres along the walk, bank to bank
 const WIDTH = 1.15;             // metres across
-const RAIL_INSET = 0.2;         // the rail stops this short of each end
-const RAIL_HEIGHT = 0.98;       // metres
-const FACE = 5;                 // pixels of plank edge seen under the near side
-const SHADE = 3;                // pixels of shade under that
+const RAIL_INSET = 0.1;         // the rail stops this short of each end
+const RAIL_HEIGHT = 0.6;        // metres: a low rail
+const FACE = 4;                 // pixels of plank edge seen under the near side
+const SHADE = 8;                // pixels of shade on the water under that
+const SILL = 7;                 // pixels of stone sill under each end
+const OVER = 2;                 // pixels the sill stands out past the planks, far and near
 const PLANK = 6;                // pixels a plank
 
-const TOP = [[122, 110, 92], [142, 128, 106], [160, 144, 118], [178, 162, 132], [196, 178, 143]];
-const WARM = [150, 126, 96];
-const GAP = [84, 72, 58];
-const EDGE = [[66, 58, 48], [96, 84, 66], [118, 104, 84]];
-const NAIL = [70, 62, 52];
+const TOP = [[96, 86, 73], [111, 100, 85], [126, 114, 97], [141, 128, 109], [157, 144, 124]];
+const STONE = [[78, 78, 76], [104, 103, 99], [128, 126, 120], [150, 148, 140]];
+const WARM = [124, 104, 82];
+const GAP = [62, 54, 45];
+const EDGE = [[52, 46, 39], [76, 67, 56], [96, 86, 73]];
+const NAIL = [58, 51, 43];
 
 function hash(x, y, s) {
   let h = (x * 374761393 + y * 668265263 + s * 2147483647) | 0;
@@ -51,8 +55,14 @@ function canvas(w, h) {
 
 function deck() {
   const dw = Math.round(SPAN * PPM), dh = Math.round(WIDTH * PPM);
-  const w = dw + 2, h = dh + FACE + SHADE + 2;
+  const w = dw + 2, top = 1 + OVER, h = top + dh + FACE + SHADE + 1;
   const c = canvas(w, h);
+  // The shade on the water first, under everything: soft, longest under the middle of the span.
+  for (let x = SILL; x < dw - SILL; x++)
+  for (let y = 0; y < SHADE; y++) {
+    const a = 120 - y * 14 - (hash(x, y, 13) > 0.6 ? 10 : 0);
+    if (a > 0) c.set(1 + x, top + dh + FACE + y, [16, 22, 26], a);
+  }
   const planks = Math.ceil(dw / PLANK);
   for (let n = 0; n < planks; n++) {
     const tone = 1 + Math.floor(hash(n, 0, 11) * 3);            // each plank its own grey
@@ -67,19 +77,30 @@ function deck() {
       if (hash(x >> 1, y, 7) > 0.97) col = TOP[Math.min(4, tone + 1)];
       if (y === dh - 1) col = TOP[4];                               // the near lip catches the light
       if (seam) col = GAP;
-      c.set(1 + x, 1 + y, col);
+      c.set(1 + x, top + y, col);
     }
-    for (const y of [3, dh - 5]) c.set(1 + n * PLANK + 3, 1 + y, NAIL); // nailed to the two stringers
+    for (const y of [3, dh - 5]) c.set(1 + n * PLANK + 3, top + y, NAIL); // nailed to the two stringers
   }
   for (let x = 0; x < dw; x++)
   for (let y = 0; y < FACE; y++) {
     const seam = x % PLANK === 0;
-    c.set(1 + x, 1 + dh + y, seam ? EDGE[0] : EDGE[y === 0 ? 2 : 1]);
+    c.set(1 + x, top + dh + y, seam ? EDGE[0] : EDGE[y === 0 ? 2 : 1]);
   }
-  for (let x = 2; x < dw - 2; x++)
-  for (let y = 0; y < SHADE; y++) c.set(1 + x, 1 + dh + FACE + y, [20, 24, 26], 110 - y * 30);
+  // A stone sill under each end, a little wider than the planks: the bridge sits on the banks.
+  for (const x0 of [0, dw - SILL])
+  for (let x = 0; x < SILL; x++)
+  for (let y = -OVER; y < dh + FACE + OVER; y++) {
+    const end = x0 === 0 ? x === 0 : x === SILL - 1;
+    if (y >= 0 && y < dh && !end) continue;                         // the planks lie on it
+    let col = STONE[2];
+    if (y < 0 || y === dh) col = STONE[3];                           // its top, far and near
+    if (y > dh) col = STONE[1];                                      // its near face
+    if (y === dh + FACE + OVER - 1) col = STONE[0];
+    if (hash(x0 + x, y + 9, 17) > 0.86) col = STONE[1];
+    c.set(1 + x0 + x, top + y, col);
+  }
   // The pivot is the middle of the planks, so the picture sits on its footprint.
-  const pivot = [(1 + dw / 2) / w, (h - (1 + dh / 2)) / h];
+  const pivot = [(1 + dw / 2) / w, (h - (top + dh / 2)) / h];
   return { name: 'GapFootbridgeDeck', c, pivot };
 }
 
@@ -87,8 +108,8 @@ function rail() {
   const len = Math.round((SPAN - 2 * RAIL_INSET) * PPM), tall = Math.round(RAIL_HEIGHT * PPM * LIFT);
   const w = len + 2, h = tall + 2;
   const c = canvas(w, h);
-  const posts = [0, Math.round(len / 3), Math.round(2 * len / 3), len - 3];
-  for (const y of [1, Math.round(tall / 2)])
+  const posts = [0, Math.round(len / 2) - 1, len - 3];
+  for (const y of [1, Math.round(tall * 0.55)])
   for (let x = 0; x < len; x++) {
     c.set(1 + x, 1 + y, TOP[3]);
     c.set(1 + x, 2 + y, TOP[hash(x, y, 3) > 0.85 ? 0 : 1]);
