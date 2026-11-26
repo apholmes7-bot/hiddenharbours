@@ -6035,18 +6035,14 @@ Shader "HiddenHarbours/Water"
             {
                 UNITY_SETUP_INSTANCE_ID(IN);
                 float t = _Time.y;
-                float2 worldXY = IN.worldXY;
                 // THE ART GRID (owner ruling 2026-11-26): shade this fragment at the centre of its art cell, so
                 // every screen pixel of one art pixel gets one colour and every edge in the sea (the shore band,
                 // the foam, the swell, the depth tones) falls on an art-pixel edge. The gradients are taken from
-                // the unsnapped position first (see hhWorldDx).
+                // the unsnapped position first (see hhWorldDx). worldXY is still set exactly once.
                 hhWorldDx = ddx(IN.worldXY);
                 hhWorldDy = ddy(IN.worldXY);
-                if (_ArtGridSnap > 0.5)
-                {
-                    float artPpu = max(_PixelsPerUnit, 1.0);
-                    worldXY = (floor(IN.worldXY * artPpu) + 0.5) / artPpu;
-                }
+                float artPpu = max(_PixelsPerUnit, 1.0);
+                float2 worldXY = (_ArtGridSnap > 0.5) ? (floor(IN.worldXY * artPpu) + 0.5) / artPpu : IN.worldXY;
 
                 // The WIND-FETCH envelope (ADR 0027 #1) — marched ONCE for this pixel and handed to every
                 // WaveFieldSample below, including the finite-difference taps a few centimetres away (see the

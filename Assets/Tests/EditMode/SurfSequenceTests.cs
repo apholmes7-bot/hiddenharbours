@@ -26,7 +26,11 @@ namespace HiddenHarbours.Tests.EditMode
         const string WaterPath = "Assets/_Project/Art/Shaders/HiddenHarboursWater.shader";
         const string AdvectPath = "Assets/_Project/Art/Shaders/HiddenHarboursFoamBufferAdvect.shader";
         const string Dial = "_SurfFringeSequenceStrength";
-        const string BaseWaterHash = "b3c3b88f39d22f412a5156d52180420f5aeac265178f79d627dad138dc29a6d8";
+        const string BaseWaterHash = "2c47242da6c290714cea2a4368dd8f4737468e69174ea7cdb62ebb79d6875f2a";
+        // Re-approved at the sea on the art grid (fix/water-on-the-art-grid, the no-mixels ruling of 11-26): the fragment
+        // shades at the art cell's centre behind _ArtGridSnap, the implicit-mip reads read level 0 or explicit gradients
+        // from the true world point, the shore foam's coverage and the wet film go to _ShoreFoamBands dithered tones,
+        // and the depth ramp's bands are dithered inside _DepthBandDitherWin; the B1 blocks are byte-identical.
         // Re-approved at the foam band's ground bound (fix/stp-shoreline-repeat, the Whelps shelf sheets of 11-26): the
         // shore fringe's foamEdge reads its depth through foamBandDepth, _FoamWidth capped at _FoamBandMaxMetres x the
         // local slope already sampled (shoreSlope), floored at _FoamBandSlopeFloor; _FoamBandMaxMetres 0 is the older
