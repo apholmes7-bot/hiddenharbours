@@ -156,3 +156,9 @@ __pycache__/
 # silent. AudioClipSetsTests guards both lines below (docs/audio/private-sound-pack.md).
 /[Aa]ssets/_Project/Audio/Private/
 /[Aa]ssets/_Project/Audio/Private.meta
+
+# Local trial builds (also invisible to the asset database)
+/Builds~/
+# Written by the networking package in every editor; the trial lists its one prefab in code.
+/Assets/DefaultNetworkPrefabs.asset
+/Assets/DefaultNetworkPrefabs.asset.meta

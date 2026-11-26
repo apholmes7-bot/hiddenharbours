@@ -170,6 +170,50 @@ namespace HiddenHarbours.Tests.EditMode
         // ---- 1. THE LANDING MOVED --------------------------------------------------------------------
 
         [Test]
+        public void PailOwnership_ControlsCapacityAndNeverDeletesItsExistingCatch()
+        {
+            var pail = Pail();
+            pail.Configure(20, requireOwnedBucket: true);
+            var clam = new CatchItem("fish.soft_shell_clam", "Clam", FishCategory.Shellfish, 0.1f, 2, 0.45f);
+            Assert.AreEqual(20, pail.CapacityUnits);
+            Assert.IsTrue(pail.TryAdd(clam));
+            _save.OwnedGear.Remove("gear.bucket");
+            Assert.AreEqual(0, pail.CapacityUnits);
+            Assert.IsFalse(pail.TryAdd(clam));
+            Assert.AreEqual(1, pail.UsedUnits);
+            Assert.AreEqual(1, _save.BucketCatch.Count);
+            _save.OwnedGear.Add("gear.bucket");
+            Assert.AreEqual(20, pail.CapacityUnits);
+            Assert.IsTrue(pail.TryAdd(clam));
+            Assert.AreEqual(2, pail.UsedUnits);
+        }
+
+        [Test]
+        public void RealPail_CapsAtTwenty_AndRemovalPreservesTheOtherCatches()
+        {
+            var pail = Pail();
+            for (int i = 0; i < 20; i++)
+                Assert.IsTrue(pail.TryAdd(new CatchItem("fish.soft_shell_clam", "Clam", FishCategory.Shellfish,
+                    0.05f + i * 0.005f, 2, 0.45f, 0.5f, Freshness.Landed(1000d + i))));
+            Assert.AreEqual(20, pail.UsedUnits);
+            Assert.AreEqual(20, _save.BucketCatch.Count);
+            Assert.IsFalse(pail.TryAdd(pail.Items[0]));
+            Assert.IsFalse(pail.TryRemoveAt(-1));
+            Assert.IsFalse(pail.TryRemoveAt(20));
+            var survivor = pail.Items[1];
+            Assert.IsTrue(pail.TryRemoveAt(0));
+            Assert.AreEqual(19, pail.UsedUnits);
+            Assert.AreEqual(19, _save.BucketCatch.Count);
+            Assert.AreEqual(survivor.WeightKg, pail.Items[0].WeightKg);
+            Assert.AreEqual(survivor.Freshness.LastSettleGameSeconds, pail.Items[0].Freshness.LastSettleGameSeconds);
+            Assert.AreEqual(0, _caught);
+            Assert.AreEqual(0, _landed);
+            pail.Clear();
+            Assert.AreEqual(0, pail.UsedUnits);
+            Assert.IsEmpty(_save.BucketCatch);
+        }
+
+        [Test]
         public void A_dug_clam_goes_into_her_HAND_and_the_pail_stays_empty()
         {
             var pail = Pail();

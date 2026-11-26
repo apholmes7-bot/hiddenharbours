@@ -818,7 +818,7 @@ class PortabilityTests(unittest.TestCase):
                 with open(target, "rb") as handle:
                     body = handle.read()
                 with open(target, "wb") as handle:
-                    handle.write(body.replace(b"\n", b"\r\n"))
+                    handle.write(body.replace(b"\r\n", b"\n").replace(b"\n", b"\r\n"))
             self.assertEqual(hh_scene_export.main(["--check", "--out", out]), 0,
                              "--check failed on a CRLF working tree")
 

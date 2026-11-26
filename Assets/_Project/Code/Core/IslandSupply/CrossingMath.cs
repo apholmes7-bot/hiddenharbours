@@ -19,7 +19,7 @@ namespace HiddenHarbours.Core
     /// than the mover's wade limit (water below <c>gut bed + wade</c>). The island path and the mainland road
     /// never flood.</para>
     /// </summary>
-    public static class CrossingMath
+    public static partial class CrossingMath
     {
         private const double MinutesPerDay = 24.0 * 60.0;
         private const double HoursPerDay = 24.0;
@@ -104,13 +104,14 @@ namespace HiddenHarbours.Core
                         SearchStepSeconds(route, cfg), cfg);
 
         // Finds the crossing of `threshold` between a (one side) and b (the other side).
-        private static double Bisect(Func<double, float> waterAt, float threshold, double a, double b)
+        private static double Bisect(Func<double, float> waterAt, float threshold, double a, double b,
+                                     bool above = false)
         {
-            bool aInside = waterAt(a) < threshold;
+            bool aInside = OnWorkSide(waterAt(a), threshold, above);
             for (int i = 0; i < EdgeBisections; i++)
             {
                 double m = 0.5 * (a + b);
-                if ((waterAt(m) < threshold) == aInside) a = m; else b = m;
+                if (OnWorkSide(waterAt(m), threshold, above) == aInside) a = m; else b = m;
             }
             return 0.5 * (a + b);
         }

@@ -28,6 +28,48 @@ namespace HiddenHarbours.Tests.EditMode
         private FakeRelay _skippersRelay;
         private HelmSlot _slot;
 
+        [Test]
+        public void OccupiedHullIdWorksFromTheDeckWithoutGrantingTheHelm()
+        {
+            _slot.Register(_playersDory, _dorysRelay, _dorysRelay);
+            _slot.Register(_skippersBoat, _skippersRelay, _skippersRelay);
+            Assert.AreEqual("", _slot.PlayersBoatId);
+            _slot.SetPlayersBoat(_playersDory);
+            Assert.AreEqual("boat.dory", _slot.PlayersBoatId);
+            Assert.IsNull(_slot.Control);
+            Assert.IsNull(_slot.Instruments);
+            _slot.SetPlayersBoat(_skippersBoat);
+            Assert.AreEqual("boat.skipper", _slot.PlayersBoatId);
+            _slot.Unregister(_skippersBoat);
+            Assert.AreEqual("", _slot.PlayersBoatId);
+            _slot.SetPlayersBoat(null);
+            Assert.AreEqual("", _slot.PlayersBoatId);
+        }
+
+        [Test]
+        public void OccupiedHullIdNeverDereferencesADestroyedHullOrRelay()
+        {
+            var hull = ScriptableObject.CreateInstance<HelmSlotTestHull>();
+            var relay = ScriptableObject.CreateInstance<HelmSlotTestRelay>();
+            try
+            {
+                _slot.Register(hull, relay, relay);
+                _slot.SetPlayersBoat(hull);
+                Assert.AreEqual("boat.dead", _slot.PlayersBoatId);
+                Object.DestroyImmediate(relay);
+                Assert.AreEqual("", _slot.PlayersBoatId);
+                _slot.Register(hull, _dorysRelay, _dorysRelay);
+                Assert.AreEqual("boat.dory", _slot.PlayersBoatId);
+                Object.DestroyImmediate(hull);
+                Assert.AreEqual("", _slot.PlayersBoatId);
+            }
+            finally
+            {
+                if (relay != null) Object.DestroyImmediate(relay);
+                if (hull != null) Object.DestroyImmediate(hull);
+            }
+        }
+
         [SetUp]
         public void SetUp()
         {

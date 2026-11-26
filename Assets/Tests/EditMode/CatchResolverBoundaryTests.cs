@@ -176,5 +176,50 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(1, calm.Draws);
             Assert.AreEqual(1, rough.Draws);
         }
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public void ZeroAffinity_CannotWinTheZeroDraw(bool bait)
+        {
+            var excluded = Fish("fish.excluded");
+            var eligible = Fish("fish.eligible");
+            eligible.FavoredLures = LureTag.Feather;
+            var kit = BaitTackleSettings.Default;
+            kit.WrongBaitDamp01 = 0f;
+            kit.WrongLureDamp01 = 0f;
+            var context = new CatchContext("region.fixture", 0f, 12f, Season.HighSummer, Gear.Handline,
+                -1f, 0f, bait ? LureTag.None : LureTag.Feather, bait ? new[] { eligible.Id } : null);
+            var random = new Roll(0d);
+
+            Assert.AreEqual(0f, CatchResolver.EffectiveWeight(excluded, context, DepthDropSettings.Default, kit));
+            Assert.AreSame(eligible, CatchResolver.Resolve(new[] { excluded, eligible }, context,
+                DepthDropSettings.Default, kit, random));
+            Assert.AreEqual(1, random.Draws);
+        }
+
+        [Test]
+        public void AllZeroAffinities_ReturnNoFishWithoutDrawing()
+        {
+            var kit = BaitTackleSettings.Default;
+            kit.WrongBaitDamp01 = 0f;
+            var context = new CatchContext("region.fixture", 0f, 12f, Season.HighSummer, Gear.Handline,
+                -1f, 0f, LureTag.None, new[] { "fish.absent" });
+            var random = new Roll(0d);
+            Assert.IsNull(CatchResolver.Resolve(new[] { Fish("fish.unfavoured") }, context,
+                DepthDropSettings.Default, kit, random));
+            Assert.AreEqual(0, random.Draws);
+        }
+
+        [TestCase(0d, 0.5f, 4f)]
+        [TestCase(0.5d, 0.5f, 5f)]
+        [TestCase(0d, 1f, 6f)]
+        [TestCase(0.5d, -1f, 4f)]
+        [TestCase(0.5d, 2f, 6f)]
+        public void SeaSizeBias_ReshapesOneDrawWithinTheAuthoredRange(double roll, float bias, float expected)
+        {
+            var random = new Roll(roll);
+            Assert.AreEqual(expected, CatchResolver.RollWeight(Fish("fish.size"), random, bias));
+            Assert.AreEqual(1, random.Draws);
+        }
     }
 }

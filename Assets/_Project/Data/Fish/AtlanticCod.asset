@@ -40,7 +40,7 @@ MonoBehaviour:
   MaxWeightKg: 12
   BaseValue: 14
   SpoilPerDay: 0.75
-  SupplyElasticity: 0.2
+  SupplyElasticity: 0.04
   SpawnWeight: 1
   FavoredLures: 5
   Bite: {fileID: 11400000, guid: f6c4993985f6443997b7a95f3b1285ce, type: 2}
