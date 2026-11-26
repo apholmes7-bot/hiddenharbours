@@ -63,6 +63,10 @@ namespace HiddenHarbours.Tests.PlayMode
             new BoardFrame("whelps_lookout.stack.dusk", 181f, 201f, -45f, -27f, 19.5f, 0.63f),
             new BoardFrame("whelps_lookout.stack.2230", 181f, 201f, -45f, -27f, 22.5f, 0.63f),
             new BoardFrame("whelps_lookout.stack.low", 181f, 201f, -45f, -27f, 12f, -1.4f),
+            // The ground by the cottage and the Gap: the path past the door, the wet ground by the pond, the brook and its footbridge.
+            new BoardFrame("whelps_lookout.cottage.dusk", 154f, 176f, -43f, -24f, 19.5f, 0.63f),
+            new BoardFrame("whelps_lookout.gap.noon", 146f, 168f, -49f, -30f, 12f, 0.63f),
+            new BoardFrame("whelps_lookout.gap.dusk", 146f, 168f, -49f, -30f, 19.5f, 0.63f),
         };
 
         /// <summary>The north-east light in the loaded region: its lantern is where the clock says, at any hour.</summary>
