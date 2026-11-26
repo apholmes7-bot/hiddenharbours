@@ -32,3 +32,4 @@ MonoBehaviour:
   ScarpMinimumSlope: 0.12
   TurfMinimumSlope: 1
   BrowMinimumRunMetres: 4
+  TurfOnWallBrows: 0
