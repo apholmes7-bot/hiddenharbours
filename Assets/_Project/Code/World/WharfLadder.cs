@@ -184,7 +184,9 @@ namespace HiddenHarbours.World
         private void RefreshSpan()
         {
             _nextSpanTick = Time.unscaledTime + Mathf.Max(0.1f, _spanSlowTickSeconds);
-            if (_climbTopScreenOffset <= 0f)
+            // A ladder with a full-length picture (a drawn length) is drawn by the scene, deck to foot, and
+            // cut at the tide by its own waterline: the kit-tile span would draw a second, small ladder.
+            if (_climbTopScreenOffset <= 0f || _lengthMetres > 0f)
             {
                 if (_span != null) _span.enabled = false;
                 return;

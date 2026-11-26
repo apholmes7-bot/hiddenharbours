@@ -23,9 +23,9 @@ namespace HiddenHarbours.Tests.EditMode
         const string ScenesFolder = "Assets/_Project/Scenes";
         const string RegionsFolder = "Assets/_Project/Data/Regions";
 
-        // Nine Mile Creek's ladders are rebuilt on top of the open water-side wharf rework; until that
-        // lands they predate the kinds. Remove a region from here when its ladders are brought in.
-        static readonly string[] PendingRegions = { "NineMileCreek" };
+        // A region whose ladders predate the kinds waits here until they are brought in. Nine Mile Creek's
+        // came off when its ladders got the full-length picture, a kind and a drawn length.
+        static readonly string[] PendingRegions = { };
 
         static WharfLadderDef Kind() => AssetDatabase.LoadAssetAtPath<WharfLadderDef>(KindPath);
 
