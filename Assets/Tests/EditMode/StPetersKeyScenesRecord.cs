@@ -341,11 +341,13 @@ namespace HiddenHarbours.Tests.EditMode
             new Row("keyscene.stp_ne_light", "prop.stp_ne_woodpile_b", "setPiece", "wharfDecor", "woodStack", "", 191.3f, 55.6f, 11f, "ground", 3, null, "", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ne_light", "prop.stp_ne_brow_bench", "setPiece", "wharfDecor", "bench", "", 189.6f, 45.9f, 11f, "ground", 4, null, "", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ne_light", "prop.stp_ne_barrow", "setPiece", "wharfDecor", "wheelbarrow", "", 194.2f, 57.4f, 11f, "ground", 5, null, "", "", "", new string[] { "today" }, new string[] {  }),
+            // Placed with the light's dressing, three finds take the game's ground over the package's height (more
+            // than 5 cm off): find_1 -0.49 -> -0.396, find_3 -0.32 -> -0.171, find_4 -0.05 -> 0.01.
             new Row("keyscene.stp_ne_light", "prop.stp_ne_find_0", "setPiece", "shoreFinds", "DriftBranch", "bleached", 188.19f, 37.77f, 0.55f, "ground", 0, null, "", "", "", new string[] { "today" }, new string[] {  }),
-            new Row("keyscene.stp_ne_light", "prop.stp_ne_find_1", "setPiece", "shoreFinds", "NetFloat", "dry", 192.98f, 41.01f, -0.49f, "ground", 3, null, "", "", "", new string[] { "today" }, new string[] {  }),
+            new Row("keyscene.stp_ne_light", "prop.stp_ne_find_1", "setPiece", "shoreFinds", "NetFloat", "dry", 192.98f, 41.01f, -0.396f, "ground", 3, null, "", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ne_light", "prop.stp_ne_find_2", "setPiece", "shoreFinds", "RopeScrap", "dry", 189.01f, 32.16f, 2.3f, "ground", 6, null, "", "", "", new string[] { "today" }, new string[] {  }),
-            new Row("keyscene.stp_ne_light", "prop.stp_ne_find_3", "setPiece", "shoreFinds", "TrapLath", "bleached", 191.77f, 41f, -0.32f, "ground", 1, null, "", "", "", new string[] { "today" }, new string[] {  }),
-            new Row("keyscene.stp_ne_light", "prop.stp_ne_find_4", "setPiece", "shoreFinds", "Driftwood", "bleached", 194.4f, 42.8f, -0.05f, "ground", 4, null, "", "", "", new string[] { "today" }, new string[] {  }),
+            new Row("keyscene.stp_ne_light", "prop.stp_ne_find_3", "setPiece", "shoreFinds", "TrapLath", "bleached", 191.77f, 41f, -0.171f, "ground", 1, null, "", "", "", new string[] { "today" }, new string[] {  }),
+            new Row("keyscene.stp_ne_light", "prop.stp_ne_find_4", "setPiece", "shoreFinds", "Driftwood", "bleached", 194.4f, 42.8f, 0.01f, "ground", 4, null, "", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ne_light", "prop.stp_ne_find_5", "setPiece", "shoreFinds", "GullFeather", "dry", 188.38f, 36.67f, 0.82f, "ground", 7, null, "", "", "", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ne_light", "prop.stp_ne_gull_stack_a", "gull", "seagull", "perch", "", 223.6f, 58.1f, 7.65f, "mount", 3, null, "", "form.stp_lantern_stack", "top", new string[] { "today" }, new string[] {  }),
             new Row("keyscene.stp_ne_light", "prop.stp_ne_gull_stack_b", "gull", "seagull", "perch", "", 224.9f, 57.6f, 7.65f, "mount", 6, null, "", "form.stp_lantern_stack", "top", new string[] { "today" }, new string[] {  }),
