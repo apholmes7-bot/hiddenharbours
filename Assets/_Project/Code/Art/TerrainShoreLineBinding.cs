@@ -160,6 +160,8 @@ namespace HiddenHarbours.Art
                 {
                     var renderer = filter.GetComponent<MeshRenderer>();
                     if (renderer == null || !renderer.enabled || filter.sharedMesh == null) continue;
+                    // The turf lip overhangs the meadow by its fringe; the face under it is already counted.
+                    if (filter.name == CliffWallSurface.TurfLipChildName) continue;
                     var vertices = FaceVertices(filter, wall);
                     for (int i = 0; i < vertices.Length; i += 3)
                         footprint.AddTriangle(vertices[i], vertices[i + 1], vertices[i + 2]);

@@ -297,6 +297,7 @@ namespace HiddenHarbours.Art
         private static readonly int IdTileMetresS = Shader.PropertyToID("_TileMetresS");
         private static readonly int IdTileMetresT = Shader.PropertyToID("_TileMetresT");
         private static readonly int IdPxDecal = Shader.PropertyToID("_PxDecal");
+        private static readonly int IdBaseTexelScale = Shader.PropertyToID("_BaseTexelScale");
         private static readonly int IdPaletteVariant = Shader.PropertyToID("_PaletteVariant");
         private static readonly int IdVariantOn = Shader.PropertyToID("_VariantOn");
         private static readonly int IdVariantBlock = Shader.PropertyToID("_VariantBlock");
@@ -316,6 +317,9 @@ namespace HiddenHarbours.Art
         public const string BandChildPrefix = "CliffWallQuads_";
         public const string BrowChildName = "CliffWallBrowDecal";
         public const string ToeChildName = "CliffWallToeDecal";
+        /// <summary>The generated child carrying the turf lip (<see cref="CliffTurfLipDef"/>), where the region's mix
+        /// names one: it then stands in for the brow strip.</summary>
+        public const string TurfLipChildName = "CliffWallTurfLip";
 
         /// <summary>The generated child carrying the drawn toe's blocker (see the class note).</summary>
         public const string BlockerChildName = "CliffWallToeBlocker";
@@ -503,7 +507,7 @@ namespace HiddenHarbours.Art
             {
                 Transform child = transform.GetChild(i);
                 if (child.name.StartsWith(BandChildPrefix) || child.name.StartsWith(JoinChildPrefix) ||
-                    child.name == BrowChildName || child.name == ToeChildName || child.name == BlockerChildName ||
+                    child.name == BrowChildName || child.name == ToeChildName || child.name == TurfLipChildName || child.name == BlockerChildName ||
                     child.name == FaceBlockerChildName)
                     DestroyGo(child.gameObject);
             }
@@ -621,7 +625,11 @@ namespace HiddenHarbours.Art
             }
 
             // The decals ride ONE row band above the face so they composite over the rock they finish.
-            if (_browDecal != null) BuildDecal(columns, _browDecal, brow: true, BrowChildName);
+            // Where the region's mix names a turf lip, that generated strip is the clifftop's edge and the kit's
+            // brow strip is not drawn (owner 11 26: the brow strip stretched its grass and mixed texel sizes).
+            CliffTurfLipDef lip = _mix != null ? _mix.TurfLip : null;
+            if (lip != null && lip.IsDrawable) BuildTurfLip(columns, lip);
+            else if (_browDecal != null) BuildDecal(columns, _browDecal, brow: true, BrowChildName);
             if (_toeDecal != null) BuildDecal(columns, _toeDecal, brow: false, ToeChildName);
 
             if (run != null) BuildJoins(run, reach, samples, columns, rows, occluders);
@@ -1149,6 +1157,80 @@ namespace HiddenHarbours.Art
                  m.ElevationUv, m.SeaPlanUv, decal: true, m.Colors);
         }
 
+        private void BuildTurfLip(CliffWallColumns columns, CliffTurfLipDef lip)
+        {
+            float elevationValid = HasToeElevations ? 1f : 0f;
+            CliffWallMeshData m = TurfLipMesh(columns, lip.StripMetresS, lip.InlandMetres, lip.FaceMetres,
+                                              _alongOffsetMetres, _faceMetresS, DisplacementAt, elevationValid,
+                                              transform.position);
+            Emit(TurfLipChildName, m.Verts, m.Uvs, m.Tris, lip.Strip, null, null, localOrder: 1,
+                 m.ElevationUv, m.SeaPlanUv, decal: true, m.Colors);
+        }
+
+        /// <summary>
+        /// ⭐ The turf lip's mesh: TWO vertices a station, and the strip laid on them RIGID. A station's line point is
+        /// its displaced brow; its top vertex stands <paramref name="inlandMetres"/> up the drawn column from it and
+        /// its bottom vertex <paramref name="faceMetres"/> down it, so every station carries the same metres of strip
+        /// and a jag in the brow moves the strip's rows, never squeezes them. Where the face is cut short (a taper, a
+        /// clifftop in front) the strip is CUT there, its v with it, not squeezed onto what is left. u counts metres
+        /// along the brows over the strip's own length, so the lip repeats every <paramref name="stripMetresS"/> and
+        /// not with the face. One strip texel is one ground texel (owner 11 26: no mixels). Pure.
+        /// </summary>
+        public static CliffWallMeshData TurfLipMesh(CliffWallColumns columns, float stripMetresS, float inlandMetres,
+                                                    float faceMetres, float alongOffsetMetres, float faceMetresS,
+                                                    System.Func<float, float, float> displacement,
+                                                    float elevationValid, Vector3 origin)
+        {
+            CliffWallSample[] samples = columns.Whole;
+            int stations = samples.Length;
+            var verts = new Vector3[stations * 2];
+            var uvs = new Vector2[verts.Length];
+            var elevationUv = new Vector2[verts.Length];
+            var seaPlanUv = new Vector2[verts.Length];
+            var colors = new Color[verts.Length];
+            float stripMetresT = inlandMetres + faceMetres;
+            float along = 0f;
+
+            for (int c = 0; c < stations; c++)
+            {
+                if (c > 0) along += Vector2.Distance(columns.AlongBrow[c - 1], columns.AlongBrow[c]);
+
+                CliffWallSample s = samples[c];
+                Vector2 toeP = CliffWallGeometry.ToeScreen(in s);
+                Vector2 down = CliffWallGeometry.DrawnDown(s.BrowPlan, toeP);
+                float drawn = Vector2.Distance(s.BrowPlan, toeP);
+                float metres = alongOffsetMetres + along;
+                Vector2 line = s.BrowPlan + CliffWallGeometry.OutwardPlan(in s) *
+                               displacement(CliffWallGeometry.TileU(metres, faceMetresS), 0f);
+                float keep = KeepAt(columns, c);
+                float clip = ClipAt(columns, c);
+                float shown = Mathf.Min(faceMetres, drawn * Mathf.Min(keep, clip));
+                float faceT = drawn > 1e-4f ? Mathf.Clamp01(shown / drawn) : 0f;
+                float u = stripMetresS > 0f ? metres / stripMetresS : 0f;
+
+                // The same fades the brow strip took: out before an open run end, and under a clifftop in front.
+                float strength = CliffWallGeometry.RunEndFadeStrength(keep);
+                float a = AlphaAt(columns, c) * (1f - strength * strength) *
+                          Mathf.SmoothStep(0f, 1f, clip / CliffWallGeometry.OcclusionLipFadeKeep);
+
+                for (int r = 0; r < 2; r++)
+                {
+                    int idx = c * 2 + r;
+                    Vector2 p = r == 0 ? line - down * inlandMetres : line + down * shown;
+                    verts[idx] = new Vector3(p.x - origin.x, p.y - origin.y, 0f);
+                    // The strip's top row is v = 1 (a PNG's first row is the texture's top).
+                    uvs[idx] = new Vector2(u, r == 0 || stripMetresT <= 0f ? 1f : 1f - (inlandMetres + shown) / stripMetresT);
+                    float t = r == 0 ? 0f : faceT;
+                    elevationUv[idx] = new Vector2(
+                        CliffWaterlineMath.ElevationAt(s.ToeElevation + s.DropMetres, s.DropMetres, t), elevationValid);
+                    seaPlanUv[idx] = s.ToePlan;
+                    colors[idx] = new Color(1f, 1f, 1f, a);
+                }
+            }
+
+            return Laid(columns, 1, verts, uvs, elevationUv, seaPlanUv, colors);
+        }
+
         // ── The mesh as data ────────────────────────────────────────────────────────────────────────
         // Static and engine-light (the profile is read through a delegate, the origin is passed in), so a
         // test lays the exact floats a chunk draws with no scene, texture or renderer.
@@ -1327,25 +1409,30 @@ namespace HiddenHarbours.Art
                          : 1f;
                 if (t1 < t0) t1 = t0;
                 // Near an open run end the face is drawn only part way down, so it tapers into the ground. The
-                // texture is cut, never squeezed: v still counts surface metres from the band's top.
+                // texture is cut, never squeezed: v still counts drawn metres from the band's top.
                 float keep = KeepAt(columns, c);
                 // A clifftop in front hides the rest of the column: cut there, with no fade.
                 float shown = Mathf.Min(keep, ClipAt(columns, c));
                 t0 = Mathf.Min(t0, shown);
                 t1 = Mathf.Min(t1, shown);
 
+                float drawn = 0f;
+                Vector2 above = default;
+
                 for (int r = 0; r <= rows; r++)
                 {
                     float t = Mathf.Lerp(t0, t1, (float)r / rows);
                     Vector2 p = Vector2.Lerp(brow, toe, t) + outward * displacement(u, t);
+                    drawn = r == 0 ? 0f : CliffWallGeometry.DrawnMetres(drawn, above, p);
+                    above = p;
 
                     int idx = c * (rows + 1) + r;
                     verts[idx] = new Vector3(p.x - origin.x, p.y - origin.y, 0f);
-                    // v counts SURFACE metres from the BAND's own top, never height and never drawn
-                    // screen height — the one rule the kit states twice and the reason _TileMetresT is
-                    // not asked of the shader.
+                    // v counts DRAWN metres down the column from the BAND's own top (owner 11-26: no mixels;
+                    // CliffWallGeometry.DrawnMetres). It was surface metres, the kit's rule, which draws a
+                    // foreshortened face's texels shorter than the ground's.
                     uvs[idx] = new Vector2(
-                        u, CliffWallGeometry.TileV(surface * t - startSurfaceMetres, faceMetresT));
+                        u, CliffWallGeometry.TileV(drawn, faceMetresT));
                     // The elevation walks the SURFACE parameter, brow → toe, which is the row parameter
                     // the geometry is laid on — so the waterline crossing lands on the rows the mesh
                     // already has instead of between them.
@@ -1692,6 +1779,8 @@ namespace HiddenHarbours.Art
             if (normal != null) _mpb.SetTexture(IdNormal, normal);
             if (mask != null) _mpb.SetTexture(IdMask, mask);
             _mpb.SetFloat(IdPxDecal, decal ? 1f : 0f);
+            // A kit face is drawn two pixels a texel; a mix may ask for one kit texel per ground texel instead.
+            _mpb.SetFloat(IdBaseTexelScale, _mix != null && !decal ? Mathf.Max(1f, _mix.BaseFaceTexelScale) : 1f);
             // The mix's second palette: only on a face band (a decal is drawn as baked), only with a mix.
             bool variant = _mix != null && !decal;
             _mpb.SetFloat(IdVariantOn, variant ? 1f : 0f);

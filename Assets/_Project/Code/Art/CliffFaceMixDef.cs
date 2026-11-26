@@ -47,11 +47,20 @@ namespace HiddenHarbours.Art
         [Tooltip("How wide the change from one skin to the other is, in metres of coast. Drawn as the rock's own " +
                  "blocks giving way one by one, never a fade.")]
         [Min(0f)] public float BlendMetres = 3f;
-        [Tooltip("The block the change gives way in, in kit texels (16 a metre): along the shore, then down the " +
+        [Tooltip("The block the change gives way in, in ground texels (32 a metre): along the shore, then down the " +
                  "face. Wide and short, like the beds.")]
         public Vector2 BlendBlockTexels = new Vector2(6f, 3f);
         [Tooltip("The mix's seed. Change it to move every stretch; nothing else moves them.")]
         public int Seed = 1;
+
+        [Header("One texel size (owner 11 26: no mixels)")]
+        [Tooltip("How many times finer the base skin's kit faces are drawn. The kit paints two pixels a texel, 16 " +
+                 "texels a metre; 2 draws one kit texel per ground texel (32 a metre), so the rock's grain matches " +
+                 "the ground's and its pattern is half the size. 1 leaves the kit's size.")]
+        [Range(1f, 4f)] public float BaseFaceTexelScale = 1f;
+        [Tooltip("The clifftop's turf lip: a generated strip at the ground's texel that stands in for the kit's " +
+                 "brow strip. None leaves the brow strip.")]
+        public CliffTurfLipDef TurfLip;
 
         [Header("Rough edges: the brow and the foot broken into chips, notches, buttresses and bites (0 = off)")]
         [Tooltip("How far the clifftop's line is pushed in and out, metres. Added to the kit's plan displacement, so the " +

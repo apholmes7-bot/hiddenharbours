@@ -111,6 +111,9 @@ Shader "HiddenHarbours/CliffFace"
         // The variant skin's own FACES (a CliffFaceStyleDef: the boards' coursed rock), where the band's kit
         // face has one. Same rows and bands as the kit face, so they draw through either palette.
         [HideInInspector] _VariantFaceOn ("Px variant face on", Float) = 0
+        // Ground texels one BASE face texel covers a side: 2 for a face painted in 2 px texels that a mix
+        // wants drawn on the ground's grid, 1 as mapped. Pushed per renderer by CliffWallSurface.
+        [HideInInspector] _BaseTexelScale ("Base face texel scale", Float) = 1
         [HideInInspector][NoScaleOffset] _UnlitVariant ("Px variant face index", 2D) = "black" {}
         [HideInInspector][NoScaleOffset] _NormalVariant ("Px variant face normal", 2D) = "bump" {}
         [HideInInspector][NoScaleOffset] _MaskVariant ("Px variant face mask", 2D) = "white" {}
@@ -226,6 +229,8 @@ Shader "HiddenHarbours/CliffFace"
                 float3 waterline  : TEXCOORD1;
                 // The cliff mix's weight and flag, straight from uv3.
                 float2 mix        : TEXCOORD2;
+                // The fragment's place in the world, metres: the ground's texel grid is cut on it.
+                float2 world      : TEXCOORD3;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
@@ -314,6 +319,8 @@ Shader "HiddenHarbours/CliffFace"
                 float4 _VariantBlock;
                 float  _VariantOn;
                 float  _VariantFaceOn;
+                // How many of the ground's texels one texel of the BASE face covers a side (see the grid note).
+                float  _BaseTexelScale;
             CBUFFER_END
 
             // The shared field's HEIGHT at a plan position, transcribed from the water shader's
@@ -434,11 +441,20 @@ Shader "HiddenHarbours/CliffFace"
             }
 
             // ---- THE TEXEL GRID (owner 11 23: organic, natural, no hard cuts) ---------------------------
-            // The wet foot and the pixel dissolve are cut on the kit's own texel grid, 32 px a metre in
-            // 2 px texels, so every edge they add is a pixel step and never a gradient.
+            // The wet foot and the pixel dissolve are cut on the GROUND's texel grid, 32 texels a metre, so
+            // every edge they add is a pixel step the size of the ground's and never a gradient.
+            //
+            // THE GROUND'S GRID (owner 11 26: no mixels). A face is a sheared, foreshortened sheet, so its own
+            // texels land on screen as slanted cells of every size. The fragment stage therefore shades the
+            // GROUND's cell it falls in, once: every input (uv, elevation, mix weight, vertex alpha) is carried
+            // along the triangle's own plane to the centre of the 1/32 m world cell, and the whole cell takes
+            // that one answer. A texel on the face is then a square the size of the meadow's, a shear moves
+            // whole cells, and nothing is stretched. _BaseTexelScale 2 draws a face painted in 2 px texels one
+            // of ITS texels to a ground texel (the art keeps its pixel count and halves in metres); 1, the
+            // default, draws a face as it is mapped.
             // Twin: CliffWaterlineMath.TexelsPerMetre, TexelCell, Hash01, Bayer4.
-            #define CLIFF_TEXELS_PER_METRE 16.0
-            #define CLIFF_WET_TOP_GROUP    3.0
+            #define CLIFF_TEXELS_PER_METRE 32.0
+            #define CLIFF_WET_TOP_GROUP    6.0
 
             // A stable 0 to 1 hash of a cell, with no sine (a sine hash drifts between GPUs).
             float CliffHash(float2 cell, float salt)
@@ -480,6 +496,7 @@ Shader "HiddenHarbours/CliffFace"
                 OUT.color = IN.color * _Color;
                 OUT.uv = IN.uv;
                 OUT.mix = IN.uv3;
+                OUT.world = TransformObjectToWorld(IN.positionOS).xy;
 
                 // Resolve the sea ONCE per vertex. It varies along the shore and not down the face, so
                 // interpolating a per column value down the column is exact rather than approximate, and
@@ -495,9 +512,25 @@ Shader "HiddenHarbours/CliffFace"
             {
                 UNITY_SETUP_INSTANCE_ID(IN);
 
-                half4 unlit = SAMPLE_TEXTURE2D(_Unlit,  sampler_Unlit,  IN.uv);
-                half4 nrm   = SAMPLE_TEXTURE2D(_Normal, sampler_Normal, IN.uv);
-                half4 msk   = SAMPLE_TEXTURE2D(_Mask,   sampler_Mask,   IN.uv);
+                // THE GROUND'S GRID (see the note above). s is the screen step from this fragment to the centre
+                // of its world cell; the ortho camera makes world a plane of the screen, so the solve is exact.
+                float2 gridW  = IN.world;
+                float2 gridD  = (floor(gridW * CLIFF_TEXELS_PER_METRE) + 0.5) / CLIFF_TEXELS_PER_METRE - gridW;
+                float2 gridWx = ddx(gridW);
+                float2 gridWy = ddy(gridW);
+                float  gridDet = gridWx.x * gridWy.y - gridWx.y * gridWy.x;
+                float2 gridS  = abs(gridDet) > 1e-12
+                              ? float2(gridD.x * gridWy.y - gridD.y * gridWy.x, gridWx.x * gridD.y - gridWx.y * gridD.x) / gridDet
+                              : float2(0.0, 0.0);
+                float2 cellUv        = IN.uv + ddx(IN.uv) * gridS.x + ddy(IN.uv) * gridS.y;
+                float3 cellWaterline = IN.waterline + ddx(IN.waterline) * gridS.x + ddy(IN.waterline) * gridS.y;
+                float2 cellMix       = IN.mix + ddx(IN.mix) * gridS.x + ddy(IN.mix) * gridS.y;
+                float  cellAlpha     = saturate(IN.color.a + ddx(IN.color.a) * gridS.x + ddy(IN.color.a) * gridS.y);
+                float2 baseUv        = _PxDecal > 0.5 ? cellUv : cellUv * max(_BaseTexelScale, 1.0);
+
+                half4 unlit = SAMPLE_TEXTURE2D_LOD(_Unlit,  sampler_Unlit,  baseUv, 0);
+                half4 nrm   = SAMPLE_TEXTURE2D_LOD(_Normal, sampler_Normal, baseUv, 0);
+                half4 msk   = SAMPLE_TEXTURE2D_LOD(_Mask,   sampler_Mask,   baseUv, 0);
 
                 float3 N  = normalize(nrm.xyz * 2.0 - 1.0);
                 float  ao = saturate(nrm.w);
@@ -522,26 +555,26 @@ Shader "HiddenHarbours/CliffFace"
                 // THE TEXEL CELL this fragment falls in: texels of the tile along the shore, and texels of
                 // ELEVATION down the face where the wall has one (texels of the tile where it does not).
                 // Twin: CliffWaterlineMath.TexelCell.
-                float2 cell = float2(floor(IN.uv.x * _TileMetresS * CLIFF_TEXELS_PER_METRE),
-                                     IN.waterline.z > 0.5
-                                         ? floor(IN.waterline.x * CLIFF_TEXELS_PER_METRE)
-                                         : floor(IN.uv.y * _TileMetresT * CLIFF_TEXELS_PER_METRE));
+                float2 cell = float2(floor(cellUv.x * _TileMetresS * CLIFF_TEXELS_PER_METRE),
+                                     cellWaterline.z > 0.5
+                                         ? floor(cellWaterline.x * CLIFF_TEXELS_PER_METRE)
+                                         : floor(cellUv.y * _TileMetresT * CLIFF_TEXELS_PER_METRE));
             #if defined(_HH_CLIFF_PX)
                 // THE CLIFF MIX: whether this texel draws in the variant skin. Whole blocks of the rock's own
                 // texels give way where the weight is between 0 and 1, so a change of skin is a crumbling edge
                 // of pixel blocks, never a fade. Twin: CliffFaceMixMath.PicksVariant.
-                float  mixW    = IN.mix.x;
+                float  mixW    = cellMix.x;
                 float2 mixBlk  = max(_VariantBlock.xy, float2(1.0, 1.0));
-                bool   variant = _VariantOn > 0.5 && IN.mix.y > 0.5
+                bool   variant = _VariantOn > 0.5 && cellMix.y > 0.5
                               && (mixW >= 0.999 || (mixW > 0.0 && mixW > CliffHash(floor(cell / mixBlk), 8.0)));
                 // The variant skin's own FACE, where it has one: the same texel of the boards' coursed rock,
                 // and its normal and mask with it (so N and the AO are re-read too). Point-sampled with no mips
                 // (the kit's import law), so LOD 0 is the texel the plain sample takes.
                 if (variant && _VariantFaceOn > 0.5)
                 {
-                    unlit = SAMPLE_TEXTURE2D_LOD(_UnlitVariant,  sampler_UnlitVariant,  IN.uv, 0);
-                    nrm   = SAMPLE_TEXTURE2D_LOD(_NormalVariant, sampler_NormalVariant, IN.uv, 0);
-                    msk   = SAMPLE_TEXTURE2D_LOD(_MaskVariant,   sampler_MaskVariant,   IN.uv, 0);
+                    unlit = SAMPLE_TEXTURE2D_LOD(_UnlitVariant,  sampler_UnlitVariant,  cellUv, 0);
+                    nrm   = SAMPLE_TEXTURE2D_LOD(_NormalVariant, sampler_NormalVariant, cellUv, 0);
+                    msk   = SAMPLE_TEXTURE2D_LOD(_MaskVariant,   sampler_MaskVariant,   cellUv, 0);
                     N     = normalize(nrm.xyz * 2.0 - 1.0);
                     ao    = saturate(nrm.w);
                 }
@@ -600,11 +633,11 @@ Shader "HiddenHarbours/CliffFace"
                 // The texel cell was found above, before the px relight (the cliff mix picks by it too).
                 float keep = 1.0;   // 0 where the foot has dissolved into the sea
 
-                if (_WaterlineStrength > 0.001 && _HHSeaLevelWorld.w > 0.5 && IN.waterline.z > 0.5)
+                if (_WaterlineStrength > 0.001 && _HHSeaLevelWorld.w > 0.5 && cellWaterline.z > 0.5)
                 {
                     // Judged at the cell's centre row, so every band edge lands on a texel row.
                     // Twin: CliffWaterlineMath.CellElevation, SubmergenceMetres.
-                    float submergence = IN.waterline.y - (cell.y + 0.5) / CLIFF_TEXELS_PER_METRE;
+                    float submergence = cellWaterline.y - (cell.y + 0.5) / CLIFF_TEXELS_PER_METRE;
                     float strength = saturate(_WaterlineStrength);
                     float above = -submergence;   // metres above the line
 
@@ -679,7 +712,7 @@ Shader "HiddenHarbours/CliffFace"
                 // Coverage rides in mask.A — full on a face, meaningful on the brow and toe decals. The
                 // wall's soft edges (seam feathers, tapered run ends, the brow's fade) arrive in vertex
                 // alpha and are drawn as a PIXEL DISSOLVE, never as glass.
-                half4 col = half4(lit * IN.color.rgb, unlit.a * msk.a * CliffDissolve(IN.color.a, cell) * keep);
+                half4 col = half4(lit * IN.color.rgb, unlit.a * msk.a * CliffDissolve(cellAlpha, cell) * keep);
                 clip(col.a - _AlphaClip);
                 return col;
             }

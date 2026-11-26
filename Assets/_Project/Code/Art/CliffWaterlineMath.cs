@@ -87,16 +87,17 @@ namespace HiddenHarbours.Art
             => Mathf.Ceil(Submerged01(submergenceMeters, fullDepthMeters) * 4f) / 4f;
 
         // ==== THE WET FOOT (owner, 11-23: "make them look more organic and natural") ================
-        // The foot is drawn on the kit's own TEXEL GRID (32 px a metre, 2 px texels: 16 texels a metre),
+        // The foot is drawn on the GROUND's TEXEL GRID (32 texels a metre: owner 11-26, no mixels),
         // so every edge it adds is a pixel step and never a gradient. Along the shore the cell counts
         // texels of the tile (u times the tile's metres); down the face it counts texels of ELEVATION,
         // which is what the waterline is measured in. Every function below takes that cell.
 
-        /// <summary>Texels a metre on the px kit: 32 px a metre, cut in 2 px texels.</summary>
-        public const float TexelsPerMetre = 16f;
+        /// <summary>Texels a metre on a cliff face: the ground's own 32, so a face texel is the size of a meadow texel on
+        /// screen (owner 11-26: no mixels). It was the px kit's 16 (32 px a metre cut in 2 px texels).</summary>
+        public const float TexelsPerMetre = 32f;
 
-        /// <summary>Columns in one group of the wet band's ragged top: the top steps every 3 texels.</summary>
-        public const float WetTopGroupTexels = 3f;
+        /// <summary>Columns in one group of the wet band's ragged top: the top steps every 6 texels.</summary>
+        public const float WetTopGroupTexels = 6f;
 
         /// <summary>
         /// The texel cell a point on the face falls in. <paramref name="u"/> is the tile coordinate along

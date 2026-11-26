@@ -680,6 +680,28 @@ namespace HiddenHarbours.Art
             faceMetresT <= 0f ? 0f : surfaceMetres / faceMetresT;
 
         /// <summary>
+        /// The unit direction a column is DRAWN down, brow to drawn toe, in world XY (straight down the screen for
+        /// a column with no length). Pure.
+        /// </summary>
+        public static Vector2 DrawnDown(Vector2 browPlan, Vector2 toeScreen)
+        {
+            Vector2 d = toeScreen - browPlan;
+            float len = d.magnitude;
+            return len > 1e-5f ? d / len : Vector2.down;
+        }
+
+        /// <summary>
+        /// ⭐ <b>What a face's v counts: DRAWN metres down its column</b>, from the band's own top vertex, vertex
+        /// to vertex. The owner's ruling of 2026-11-26 (no mixels: a face texel is square and the size of the
+        /// ground's on screen) overrides the kit's "v counts SURFACE metres": a face is drawn foreshortened by the
+        /// camera's tilt and pushed about by its profile, and surface metres laid on that column are texels shorter
+        /// or longer than the meadow's beside them. Counted along the laid vertices, so it only ever grows down a
+        /// column and a displaced row keeps the texels it is drawn over. Pure.
+        /// </summary>
+        public static float DrawnMetres(float metresAbove, Vector2 vertexAbove, Vector2 vertex) =>
+            metresAbove + Vector2.Distance(vertexAbove, vertex);
+
+        /// <summary>
         /// How many rows to subdivide a face into so the profile displacement has somewhere to land.
         /// The README asks for 0.25 m along the wall (<c>CliffCatalog.ProfileSubdivideMetres</c>); at
         /// 32 px/m that is 8 texels a step, which is as fine as the displacement map can express.

@@ -693,6 +693,8 @@ namespace HiddenHarbours.Tests.EditMode
                          : 1f;
                 if (t1 < t0) t1 = t0;
 
+                float drawn = 0f;
+                Vector2 above = default;
                 for (int r = 0; r <= rows; r++)
                 {
                     float t = Mathf.Lerp(t0, t1, (float)r / rows);
@@ -700,8 +702,11 @@ namespace HiddenHarbours.Tests.EditMode
 
                     int idx = c * (rows + 1) + r;
                     verts[idx] = new Vector3(p.x - origin.x, p.y - origin.y, 0f);
-                    uvs[idx] = new Vector2(
-                        u, CliffWallGeometry.TileV(surface * t - startSurfaceMetres, faceMetresT));
+                    // v counts DRAWN metres down the column from the band's top (owner 11 26, no mixels: a face
+                    // texel is square on screen and the ground's size), no longer surface metres.
+                    drawn = r == 0 ? 0f : CliffWallGeometry.DrawnMetres(drawn, above, p);
+                    above = p;
+                    uvs[idx] = new Vector2(u, CliffWallGeometry.TileV(drawn, faceMetresT));
                     elevationUv[idx] = new Vector2(
                         CliffWaterlineMath.ElevationAt(s.ToeElevation + s.DropMetres, s.DropMetres, t),
                         elevationValid);

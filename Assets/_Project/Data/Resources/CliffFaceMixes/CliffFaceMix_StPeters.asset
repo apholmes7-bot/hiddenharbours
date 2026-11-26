@@ -19,8 +19,10 @@ MonoBehaviour:
   VariantShare: 0.5
   RunMetres: 10
   BlendMetres: 6
-  BlendBlockTexels: {x: 6, y: 3}
+  BlendBlockTexels: {x: 12, y: 6}
   Seed: 6
+  BaseFaceTexelScale: 2
+  TurfLip: {fileID: 11400000, guid: 8966ff608426408e8281a6f1a2e5712a, type: 2}
   BrowJagMetres: 0.8
   FootJagMetres: 0.6
   JagCellMetres: {x: 2.5, y: 0.75, z: 0.25}

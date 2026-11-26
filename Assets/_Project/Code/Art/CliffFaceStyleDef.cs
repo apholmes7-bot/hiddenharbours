@@ -55,7 +55,11 @@ namespace HiddenHarbours.Art
         [Tooltip("The file-name prefix of this style's faces, in place of the rock's (SandstoneCoursed_S_S76_index).")]
         public string FilePrefix = "SandstoneCoursed";
 
-        [Header("The courses (texels; the kit draws 16 a metre)")]
+        [Tooltip("Pixels a texel of this style's faces: 2 is the kit's (16 texels a metre), 1 draws at the ground's " +
+                 "texel, 32 a metre (owner 11 26: no mixels). Every size below is in THESE texels.")]
+        [Range(1, 2)] public int TexelPixels = 2;
+
+        [Header("The courses (texels)")]
         [Tooltip("A course's height on a vertical wall, min and max. A batter stretches it by 1/sin.")]
         public Vector2Int CourseTexels = new Vector2Int(8, 13);
         [Tooltip("Chance a course boundary carries a thin pale interbed (the silt row).")]
