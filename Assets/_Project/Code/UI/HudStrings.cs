@@ -42,7 +42,7 @@ namespace HiddenHarbours.UI
         public const string TrailerCaptured = "Pin's in the slot — get out and couple her";
 
         /// <summary>A control hint, not an unearned instrument readout.</summary>
-        public const string FishingAtHelm = "No fishing at the helm — E to the deck.";
+        public const string FishingAtHelm = "No fishing at the helm — " + KeyNames.Interact + " to the deck.";
 
         public const string Unknown   = "--";
         public const string Booting   = "";   // empty = HUD shows nothing until services are up
@@ -85,13 +85,13 @@ namespace HiddenHarbours.UI
         /// <summary>The mark for where "now" falls among the day's turns — a pencil line on the page.</summary>
         public const string TideTableNowMarker = "◀ now";
 
-        public const string TideTableTitle        = "Tide Table";
+        public const string TideTableTitle        = "Tide table";
         public const string TideTableNowLabel     = "Now";
         public const string TideTableClose        = "Close";
         // Names TidePanelInput's key. It said N until now, which has been the notebook's key since
         // 2026-08-20 (the table moved to Tab that day and this line was left behind). Pinned to the
         // shipped binding by TidePanelKeyTests, so a rebind cannot leave it stale again unnoticed.
-        public const string TideTableCloseHint    = "Esc or Tab to put the table away. Time is stopped while you read.";
+        public const string TideTableCloseHint    = KeyNames.Back + " or " + KeyNames.TideTable + KeyNames.Says + "close. Time is stopped.";
         public const string TideTableNoTurnsToday = "(no turn this day)";
         public const string TideTableNoTurn       = "No turn found within a tidal period.";
         public const string TideTableUnavailable  = "No tide to read here yet.";
@@ -107,11 +107,15 @@ namespace HiddenHarbours.UI
         public static string TideTableNextTurn(bool rising)
             => rising ? "Next high water in" : "Next low water in";
 
-        /// <summary>A column heading: "Today" / "Tomorrow", else the absolute day for a wider page.</summary>
+        /// <summary>A column heading: "Today" / "Tomorrow", with the day number the title page uses.
+        /// <paramref name="dayIndex"/> counts from 0 (the clock's day); the player reads days from 1,
+        /// the same as the title page's "Day N".</summary>
         public static string TideTableDayHeading(bool isToday, int dayIndex)
-            => isToday ? "Today" : "Tomorrow — day " + dayIndex.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            => isToday ? "Today" : "Tomorrow — day " + (dayIndex + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
 
-        /// <summary>Which place the page is for — a tide table is always local.</summary>
-        public static string TideTableForRegion(string regionId) => "for " + regionId;
+        /// <summary>Which place the page is for — a tide table is always local. Takes the place's
+        /// DISPLAY name; an empty name gives an empty line (never a raw region id).</summary>
+        public static string TideTableForRegion(string placeName)
+            => string.IsNullOrWhiteSpace(placeName) ? string.Empty : "for " + placeName;
     }
 }

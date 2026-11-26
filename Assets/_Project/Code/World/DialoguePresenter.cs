@@ -1172,7 +1172,7 @@ namespace HiddenHarbours.World
 
         private void BuildCanvas()
         {
-            var canvasGo = new GameObject("Dialogue_Canvas", typeof(Canvas), typeof(CanvasScaler));
+            var canvasGo = new GameObject("Dialogue_Canvas", typeof(Canvas), typeof(PixelSnappedCanvasScaler));
             canvasGo.transform.SetParent(transform, false);
             _canvas = canvasGo.GetComponent<Canvas>();
             _canvas.renderMode = RenderMode.ScreenSpaceOverlay;

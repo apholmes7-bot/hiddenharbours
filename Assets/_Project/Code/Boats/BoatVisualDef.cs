@@ -347,6 +347,12 @@ namespace HiddenHarbours.Boats
                  "builder rather than here.")]
         public HiddenHarbours.Core.BoatInteriorDef Interior = null;
 
+        [Tooltip("Cabin-light switches this boat names for herself. EMPTY (every shipped boat) = the rule: " +
+                 "one at her helm, and one by her entry door when the helm is further from it than " +
+                 "GameConfig.CabinLightSwitchDoorDistanceMetres. Any entry here replaces the rule " +
+                 "outright: list every switch she should have.")]
+        public CabinLightSwitchPlacement[] CabinLightSwitches = System.Array.Empty<CabinLightSwitchPlacement>();
+
         // ⚠ THE PIXELS ARE DELIBERATELY NOT ON THIS ASSET. A hard Sprite[] here would drag every page
         // of a hull's cabin into memory the moment SHE loads — 12.3 MB per lobster-class hull, 281 for
         // the tanker, 340 for the packet — whether or not anyone ever goes below, and today nobody can.

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CodLicense
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.LicenseDef
   Id: license.cod
-  DisplayName: Cod Fishing License
+  DisplayName: Cod Fishing Licence
   Flavor: Signs you off to take cod on rod and line. Written over the counter at LeBlanc's
     on St Peters, or by the Nine Mile Creek harbourmaster - the same paper either way.
   Price: 60

@@ -163,14 +163,14 @@ namespace HiddenHarbours.Economy
                 if (!_wallet.TrySpend(_home.Price))
                 {
                     EventBus.Publish(new DevNotice(
-                        $"{_home.DisplayName}: ₲{_home.Price}. You have ₲{_wallet.Money}."));
+                        $"{_home.DisplayName}: {MoneyFormat.Balance(_home.Price)}. You have {MoneyFormat.Balance(_wallet.Money)}."));
                     return LastOutcome = Outcome.CannotAfford;
                 }
 
                 HomeDeeds.Grant(_home.Id);
                 EventBus.Publish(new HomePurchased(_home.Id, _home.Price, _home.Counterparty));
                 EventBus.Publish(new DevNotice(
-                    $"{_home.DisplayName} is yours — ₲{_home.Price}. Somewhere of your own at last."));
+                    $"{_home.DisplayName} is yours — {MoneyFormat.Balance(_home.Price)}. Somewhere of your own at last."));
                 return LastOutcome = Outcome.Bought;
             }
 

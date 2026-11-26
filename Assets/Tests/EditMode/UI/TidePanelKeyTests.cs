@@ -52,7 +52,7 @@ namespace HiddenHarbours.Tests.UI.EditMode
         public void TheCloseHint_NamesTheKeyThatClosesTheTable()
         {
             string key = DefaultToggleKey().ToString();
-            StringAssert.Contains("Esc or " + key + " ", HudStrings.TideTableCloseHint,
+            StringAssert.Contains("Esc or " + key + ":", HudStrings.TideTableCloseHint,
                 "the tide table's closing hint names its own toggle key");
         }
 

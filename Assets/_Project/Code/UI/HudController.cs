@@ -12,7 +12,7 @@ namespace HiddenHarbours.UI
     /// were things the player must be able to read in under a second while acting.
     ///
     /// <para><b>Four of the five are no longer drawn</b> (the owner's 2026-08-22 diegetic ruling; see
-    /// the paragraph below). What is left always-on is the WATCH, which she is wearing. The other four
+    /// the paragraph below). What is left always-on is the WATCH, which he is wearing. The other four
     /// are built, wired and tested exactly as before, and shown only when
     /// <see cref="HudVisibilityPolicy"/> allows it. Pillar 1 (The Sea Has Moods) is still treated here
     /// as a UI problem — the answer just stopped being "put the number on the screen".</para>
@@ -509,13 +509,13 @@ namespace HiddenHarbours.UI
             // is optional in the same way ActiveBoat is (ashore, EditMode) — a null one is simply "no
             // dash", which leaves the cluster exactly where VS-19 put it.
             // ⚠ IsPlayerHelm, not HasHelm: the cluster yields to a dash the PLAYER is looking at.
-            // HasHelm is true of any driven motor hull — a skipper's boat carrying her in as a
-            // passenger included — and suppressing her compass for somebody else's wheelhouse would
-            // take her only heading read away at the one moment she cannot steer.
+            // HasHelm is true of any driven motor hull — a skipper's boat carrying him in as a
+            // passenger included — and suppressing his compass for somebody else's wheelhouse would
+            // take his only heading read away at the one moment he cannot steer.
             // ADR 0050: and it keeps out of whatever the helm's UI covers (the Core footprint seam) —
             // beside a card that reaches it, the tiller's included; above a full-width band. Only the
-            // helm in her hand covers anything (the host says nothing without one), so this 4 Hz read
-            // never dodges a card the host has not yet taken back in the frame she let go of it.
+            // helm in his hand covers anything (the host says nothing without one), so this 4 Hz read
+            // never dodges a card the host has not yet taken back in the frame he let go of it.
             IHelmControl helm = GameServices.HelmControl;
             bool atHelm = helm != null && helm.IsPlayerHelm;
             HelmFootprintArea covered = atHelm ? HelmFootprint.Current : HelmFootprintArea.None;
@@ -914,6 +914,7 @@ namespace HiddenHarbours.UI
             var canvas = canvasGo.GetComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = 100; // above gameplay
+            canvas.pixelPerfect = true; // the face's pixels start on whole screen pixels
 
             var scaler = canvasGo.GetComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
@@ -945,7 +946,7 @@ namespace HiddenHarbours.UI
             // size — but stays disabled unless _useTextClock is set, so the formatting path is a
             // checkbox away for debugging rather than a revert (and there are never two clocks).
             _clockLabel = MakeLabel(bandRt, "Clock", TextAnchor.UpperLeft,
-                new Vector2(0f, 1f), new Vector2(0.6f, 1f), 0f, -4f, 40);
+                new Vector2(0f, 1f), new Vector2(0.6f, 1f), 0f, -4f, 48);
             _clockLabel.enabled = _useTextClock;
 
             float watchW = 0f;
@@ -961,7 +962,7 @@ namespace HiddenHarbours.UI
                 // piece of chrome, shown only while the pointer is over it. A glyph, not a string
                 // (nothing to localize). Restored by the hide-all toggle's restore half.
                 _watchHideBtn = MakeLabel(bandRt, "WatchHide", TextAnchor.MiddleCenter,
-                    new Vector2(0f, 1f), new Vector2(0f, 1f), watchW - 26f, -6f, 22);
+                    new Vector2(0f, 1f), new Vector2(0f, 1f), watchW - 26f, -6f, 32);
                 var hideRt = (RectTransform)_watchHideBtn.transform;
                 hideRt.sizeDelta = new Vector2(24f, 24f);
                 _watchHideBtn.text = "×";
@@ -974,25 +975,25 @@ namespace HiddenHarbours.UI
             // text clock on, the indent is zero and the band is exactly as it shipped.
             float tideIndent = _useTextClock ? 0f : watchW + _watchGapRef;
             _tideLabel  = MakeLabel(bandRt, "Tide", TextAnchor.UpperLeft,
-                new Vector2(0f, 1f), new Vector2(0.7f, 1f), tideIndent, -56f, 52); // bigger: most important read
+                new Vector2(0f, 1f), new Vector2(0.7f, 1f), tideIndent, -56f, 48); // bigger: most important read
 
             // Right column: money (top), payout flash (under it), wind, sea.
             _moneyLabel  = MakeLabel(bandRt, "Money", TextAnchor.UpperRight,
-                new Vector2(0.6f, 1f), new Vector2(1f, 1f), 0f, -4f, 44);
+                new Vector2(0.6f, 1f), new Vector2(1f, 1f), 0f, -4f, 48);
             // A coin glyph just left of the money read (ui.coin), resolved by id via IconRegistry.
             // The money TEXT still carries the value (icon is reinforcement, never the only channel, §8);
             // hidden when no icon is registered (EditMode / stripped build).
             _moneyIcon = MakeIcon(bandRt, "MoneyIcon", "ui.coin", TextAnchor.UpperRight,
                 new Vector2(1f, 1f), new Vector2(1f, 1f), -150f, -6f, 36f);
             _payoutLabel = MakeLabel(bandRt, "Payout", TextAnchor.UpperRight,
-                new Vector2(0.6f, 1f), new Vector2(1f, 1f), 0f, -52f, 38);
+                new Vector2(0.6f, 1f), new Vector2(1f, 1f), 0f, -52f, 32);
             _payoutLabel.color = new Color(0.55f, 0.95f, 0.55f); // green flash — but text+sign carry it too
             _payoutLabel.enabled = false;
 
             _windLabel = MakeLabel(bandRt, "Wind", TextAnchor.UpperRight,
-                new Vector2(0.55f, 1f), new Vector2(1f, 1f), 0f, -100f, 34);
+                new Vector2(0.55f, 1f), new Vector2(1f, 1f), 0f, -100f, 32);
             _seaLabel  = MakeLabel(bandRt, "Sea", TextAnchor.UpperRight,
-                new Vector2(0.55f, 1f), new Vector2(1f, 1f), 0f, -140f, 30);
+                new Vector2(0.55f, 1f), new Vector2(1f, 1f), 0f, -140f, 32);
 
             // Catch card: a brief, centred celebration on a landed fish (VS-14). Parented to the
             // canvas root (not the top band) so it reads as a centre-screen flourish, above the
@@ -1000,7 +1001,7 @@ namespace HiddenHarbours.UI
             // and faded out by TickCatchCard. Text+content carry it (never colour alone, §8).
             var canvasRt = (RectTransform)canvasGo.transform;
             _catchCardLabel = MakeLabel(canvasRt, "CatchCard", TextAnchor.MiddleCenter,
-                new Vector2(0.1f, 0.5f), new Vector2(0.9f, 0.5f), 0f, 120f, 56);
+                new Vector2(0.1f, 0.5f), new Vector2(0.9f, 0.5f), 0f, 120f, 48);
             _catchCardLabel.color = new Color(1f, 0.92f, 0.55f); // warm gold "nice catch!" flash
             _catchCardOutline = _catchCardLabel.GetComponent<Outline>();
             _catchCardLabel.enabled = false;
@@ -1009,7 +1010,7 @@ namespace HiddenHarbours.UI
             // plainer than it — a working note, not a celebration. Same label machinery, so it
             // inherits the scrim the band uses for legibility over busy ground (§8).
             _couplingLabel = MakeLabel(canvasRt, "CouplingNotice", TextAnchor.MiddleCenter,
-                new Vector2(0.1f, 0.5f), new Vector2(0.9f, 0.5f), 0f, -140f, 34);
+                new Vector2(0.1f, 0.5f), new Vector2(0.9f, 0.5f), 0f, -140f, 32);
             _couplingLabel.text = HudStrings.TrailerCaptured;
             _couplingLabel.enabled = false;
 
@@ -1021,7 +1022,7 @@ namespace HiddenHarbours.UI
 
             // A single control hint in the quiet band's right column. It earns no new readout.
             _helmFishingHint = MakeLabel(bandRt, "HelmFishingHint", TextAnchor.UpperRight,
-                new Vector2(0.4f, 1f), new Vector2(1f, 1f), 0f, -176f, 22);
+                new Vector2(0.4f, 1f), new Vector2(1f, 1f), 0f, -176f, 16);
             _helmFishingHint.rectTransform.sizeDelta = new Vector2(0f, 28f);
             _helmFishingHint.text = HudStrings.FishingAtHelm;
             _helmFishingHint.enabled = false;
@@ -1039,16 +1040,16 @@ namespace HiddenHarbours.UI
             var navMin = new Vector2(HelmHudSuppression.HomeMinX01, 0f);
             var navMax = new Vector2(HelmHudSuppression.HomeMaxX01, 0f);
             _apparentWindLabel = MakeLabel(canvasRt, "ApparentWind", TextAnchor.LowerCenter,
-                navMin, navMax, 0f, HelmHudSuppression.ApparentWindTopRef, 28);
+                navMin, navMax, 0f, HelmHudSuppression.ApparentWindTopRef, 16);
             _setDriftLabel = MakeLabel(canvasRt, "SetDrift", TextAnchor.LowerCenter,
-                navMin, navMax, 0f, HelmHudSuppression.SetDriftTopRef, 28);
+                navMin, navMax, 0f, HelmHudSuppression.SetDriftTopRef, 16);
             _compassRibbonLabel = MakeLabel(canvasRt, "CompassRibbon", TextAnchor.LowerCenter,
-                navMin, navMax, 0f, HelmHudSuppression.RibbonTopRef, 30);
+                navMin, navMax, 0f, HelmHudSuppression.RibbonTopRef, 32);
             _compassNeedleLabel = MakeLabel(canvasRt, "CompassNeedle", TextAnchor.LowerCenter,
-                navMin, navMax, 0f, HelmHudSuppression.NeedleTopRef, 26);
+                navMin, navMax, 0f, HelmHudSuppression.NeedleTopRef, 32);
             _compassNeedleLabel.text = "▾"; // fixed needle — the ribbon's centre column (the heading) sits under it
             _compassLabel = MakeLabel(canvasRt, "Compass", TextAnchor.LowerCenter,
-                navMin, navMax, 0f, HelmHudSuppression.HeadingTopRef, 34);
+                navMin, navMax, 0f, HelmHudSuppression.HeadingTopRef, 32);
 
             // Built hidden; UpdateNavReads shows them once aboard (HasActiveBoat).
             _apparentWindLabel.enabled = false;
@@ -1110,7 +1111,7 @@ namespace HiddenHarbours.UI
 
             var text = go.GetComponent<Text>();
             text.font = DefaultFont();
-            text.fontSize = fontSize;
+            text.fontSize = HudBandLayout.FaceSize(fontSize);
             text.alignment = align;
             text.color = Color.white;
             text.horizontalOverflow = HorizontalWrapMode.Overflow;
@@ -1184,10 +1185,13 @@ namespace HiddenHarbours.UI
             return img;
         }
 
-        // Unity 6 removed Arial.ttf from Resources; LegacyRuntime.ttf is the built-in fallback.
+        // The band reads in the game's one pixel face. Sizes go through HudBandLayout.FaceSize so a
+        // face pixel stays a whole number of screen pixels at the band's common scales. The built-in
+        // font is only the fallback for a build where the face did not load.
         private static Font DefaultFont()
         {
-            var f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var f = HarbourType.Load();
+            if (f == null) f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             if (f == null) f = Resources.GetBuiltinResource<Font>("Arial.ttf"); // older editors
             return f;
         }

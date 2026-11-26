@@ -178,6 +178,9 @@ namespace HiddenHarbours.Art
             // W4-4c: so is the sea's read of the props under it, raised only by this camera's own
             // under-water pass (below), for the same reason.
             Shader.SetGlobalFloat(UnderWaterShaderIds.UnderWaterLive, 0f);
+            // So is the lamp pools' read of the hull depth, raised only by this camera's own resolve.
+            // (After the two above: ShallowsFloorTests pins those two as the body's first lines.)
+            Shader.SetGlobalFloat(IsoFacetShaderIds.HullDepthLive, 0f);
             // ADR 0040 B2: so is the sea's curl handoff, raised only by this camera's own curl mask.
             CurlingBreakerPasses.Lower();
             // The figure pixel look's map is per camera: zero (the overlays' untouched path) unless
@@ -341,6 +344,8 @@ namespace HiddenHarbours.Art
             Shader.SetGlobalFloat(IsoFacetShaderIds.TerrainUnderwaterClip, 0f);
             // W4-4c: nor the sea reading props nobody draws any more.
             Shader.SetGlobalFloat(UnderWaterShaderIds.UnderWaterLive, 0f);
+            // Nor the lamp pools reading a hull depth nobody writes any more.
+            Shader.SetGlobalFloat(IsoFacetShaderIds.HullDepthLive, 0f);
             // ADR 0040 B2: nor fading its lip under a curl nobody draws any more.
             CurlingBreakerPasses.Lower();
             CalmMirror.Release();
@@ -420,6 +425,11 @@ namespace HiddenHarbours.Art
             // Reuse the existing dark MRT slot. Retain it through the main overlay so its hull-alpha
             // band weight can be applied after reflection sampling, without another pass or MRT.
             private readonly Dictionary<EntityId, RTHandle> _causticDarkTargets = new Dictionary<EntityId, RTHandle>();
+            // The hull DEPTH, kept past the resolve and published as _HHHullDepthTex (ADR 0016, "lamps
+            // light what they can see"): the lamp pools read it to light a hull's faces by the way they
+            // face the lamp. R32 float, as the facet pass always wrote it; the transient it replaces was
+            // the same size, so this costs one screen of R32 per camera kept alive between frames.
+            private readonly Dictionary<EntityId, RTHandle> _hullDepthTargets = new Dictionary<EntityId, RTHandle>();
             // The displaced water's persistent per-camera target (same lifetime rules). HDR half
             // float on purpose: the water fragment's night light content is PRE-COMPENSATED far
             // above 1 for the day/night multiply overlay and must survive the round trip through
@@ -1244,16 +1254,10 @@ namespace HiddenHarbours.Art
                             new ImportResourceParams { clearOnFirstUse = true, clearColor = Color.clear, discardOnLastUse = false })
                         : MakeColorTarget(renderGraph, w, h, "_HHDarkTex");
                     key = MakeColorTarget(renderGraph, w, h, "_HHKeyTex");
-                    depthVal = renderGraph.CreateTexture(new TextureDesc(w, h)
-                    {
-                        name = "_HHDepthTex",
-                        format = GraphicsFormat.R32_SFloat,
-                        clearBuffer = true,
-                        clearColor = Color.clear,
-                        filterMode = FilterMode.Point,
-                        wrapMode = TextureWrapMode.Clamp,
-                        msaaSamples = MSAASamples.None,
-                    });
+                    // Kept past the frame's resolve (was a transient of the same format and clear): the
+                    // lamp pools read it as _HHHullDepthTex to light her faces by the way they face.
+                    depthVal = renderGraph.ImportTexture(GetHullDepthTarget(cameraData.camera.GetEntityId(), w, h),
+                        new ImportResourceParams { clearOnFirstUse = true, clearColor = Color.clear, discardOnLastUse = false });
                 }
 
                 if (drawHulls)
@@ -1328,8 +1332,14 @@ namespace HiddenHarbours.Art
                     builder.AllowPassCulling(false);
                     if (clearReflection.IsValid()) builder.SetGlobalTextureAfterPass(clearReflection, ReflectionShaderIds.ReflectTex);
                     builder.SetGlobalTextureAfterPass(resolved, IsoFacetShaderIds.HullScreenTex);
+                    // The lamp pools light her faces from this camera's hull depth and ids, which are
+                    // only both this frame's once this pass has run: publish the depth and raise the
+                    // flag here (AddRenderPasses lowered it for this camera).
+                    builder.SetGlobalTextureAfterPass(depthVal, IsoFacetShaderIds.HullDepthTex);
+                    builder.AllowGlobalStateModification(true);
                     builder.SetRenderFunc((ResolvePassData data, RasterGraphContext ctx) =>
                     {
+                        ctx.cmd.SetGlobalFloat(IsoFacetShaderIds.HullDepthLive, 1f);
                         data.Material.SetTexture(IsoFacetShaderIds.FacetTex, (RTHandle)data.Facet);
                         data.Material.SetTexture(IsoFacetShaderIds.DarkTex, (RTHandle)data.Dark);
                         data.Material.SetTexture(IsoFacetShaderIds.KeyTex, (RTHandle)data.Key);
@@ -1446,6 +1456,16 @@ namespace HiddenHarbours.Art
                 { sRGB = true, msaaSamples = 1 };
                 _allocateTarget(ref handle, desc, "_HHHullCausticTex");
                 _causticDarkTargets[cameraId] = handle;
+                return handle;
+            }
+
+            private RTHandle GetHullDepthTarget(EntityId cameraId, int w, int h)
+            {
+                _hullDepthTargets.TryGetValue(cameraId, out RTHandle handle);
+                var desc = new RenderTextureDescriptor(w, h, RenderTextureFormat.RFloat, 0)
+                { sRGB = false, msaaSamples = 1 };
+                _allocateTarget(ref handle, desc, "_HHHullDepthTex");
+                _hullDepthTargets[cameraId] = handle;
                 return handle;
             }
 
@@ -1601,6 +1621,8 @@ namespace HiddenHarbours.Art
                 _resolveTargets.Clear();
                 foreach (var kv in _causticDarkTargets) kv.Value?.Release();
                 _causticDarkTargets.Clear();
+                foreach (var kv in _hullDepthTargets) kv.Value?.Release();
+                _hullDepthTargets.Clear();
                 foreach (var kv in _waterTargets)
                     kv.Value?.Release();
                 _waterTargets.Clear();

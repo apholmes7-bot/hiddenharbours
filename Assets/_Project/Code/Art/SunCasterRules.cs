@@ -18,6 +18,10 @@ namespace HiddenHarbours.Art
         public bool AllowOutsideBands;
         [Tooltip("Use Core's live walking-deck stance for an existing hidden figure caster; the helm clears it.")]
         public bool CastOnWalkingDeck;
+        [Tooltip("A mark that FLOATS (a buoy, a can, anything moored on the water). It keeps its sun shadow but " +
+                 "throws no LAMP shadow: open water under a lamp takes none, and a can a few metres off a " +
+                 "pier-head lantern would otherwise lay a long dark spike across the harbour.")]
+        public bool Floats;
     }
 
     /// <summary>Eligibility and contact settings for standing sprite art. No scene or gameplay types.</summary>

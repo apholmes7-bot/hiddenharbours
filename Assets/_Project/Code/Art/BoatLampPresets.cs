@@ -382,7 +382,13 @@ namespace HiddenHarbours.Art
             LightPresets.Config c = For(kind);
             LightPresets.Stamp(light, c);
             light.Intensity = c.Intensity * Mathf.Max(0f, intensityScale);
-            if (IsNavigationLamp(kind)) ApplyLampLook(light, kind);
+            if (IsNavigationLamp(kind))
+            {
+                ApplyLampLook(light, kind);
+                // Glowing glass over the lamp look (GlassLook): the same bloom size, drawn as glass,
+                // with its broken streak on the water. Off in the profile = the lamp look alone.
+                GlassLook.Current.ApplyNav(light, kind);
+            }
         }
 
         /// <summary>Is this kind one of the round navigation lamps (the ones drawn as a hard core
