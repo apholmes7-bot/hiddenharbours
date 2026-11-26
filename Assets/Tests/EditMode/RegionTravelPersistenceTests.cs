@@ -5,6 +5,8 @@ using HiddenHarbours.Core;
 using HiddenHarbours.App;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Player;
+using HiddenHarbours.World;
+using System.Reflection;
 
 namespace HiddenHarbours.Tests.EditMode
 {
@@ -28,6 +30,7 @@ namespace HiddenHarbours.Tests.EditMode
         [TearDown]
         public void TearDown()
         {
+            RegionBuildAvailability.Override = null;
             GameServices.Reset();
             foreach (var o in _spawned)
                 if (o != null) Object.DestroyImmediate(o);
@@ -35,6 +38,40 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // ---- the coin crosses: wallet proxy → persistent wallet -----------------------------
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void AnApproachFadesOnlyWhenTheNeighbourIsIncluded(bool included)
+        {
+            var source = ScriptableObject.CreateInstance<RegionDef>();
+            var target = ScriptableObject.CreateInstance<RegionDef>();
+            var map = ScriptableObject.CreateInstance<WorldMap>();
+            _spawned.Add(source); _spawned.Add(target); _spawned.Add(map);
+            source.Id = "region.source";
+            source.WorldSizeMeters = target.WorldSizeMeters = new Vector2(10, 10);
+            target.Id = "region.target";
+            target.SceneName = "AbsentTarget";
+            target.WorldOrigin = new Vector2(10, 0);
+            map.Regions = new[] { source, target };
+            var player = At("Player", new Vector3(5, 0, 0));
+            var host = New("Coordinator");
+            host.SetActive(false);
+            var coordinator = host.AddComponent<RegionTravelCoordinator>();
+            coordinator.Configure(player, null, null, null);
+            const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
+            typeof(RegionTravelCoordinator).GetField("_map", flags).SetValue(coordinator, map);
+            RegionBuildAvailability.Override = (_, __) => included;
+            object[] args = { map.BuildFrame(), source.Id, player, Vector2.right, false, 0f, default(CrossingDecision) };
+            bool approaching = (bool)typeof(RegionTravelCoordinator).GetMethod("SteerSeamFade", flags)
+                .Invoke(coordinator, args);
+            Assert.AreEqual(included, approaching);
+            Assert.AreEqual(included ? CrossingKind.Cross : CrossingKind.Stay, ((CrossingDecision)args[6]).Kind);
+            if (!included)
+            {
+                Assert.AreEqual(SeamFadePhase.Idle, coordinator.SeamFadePhase);
+                Assert.AreEqual(0f, coordinator.SeamFadeAlpha);
+            }
+        }
 
         [Test]
         public void WalletProxy_ForwardsToThePersistentWallet()
