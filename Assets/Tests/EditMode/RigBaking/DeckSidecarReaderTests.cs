@@ -20,8 +20,8 @@ namespace HiddenHarbours.Tests.RigBaking
     {
         const string Rig = "// a rig\nconst L = 4.5;\n";
 
-        static byte[] Lf(string s) => Encoding.UTF8.GetBytes(s);
-        static byte[] Crlf(string s) => Encoding.UTF8.GetBytes(s.Replace("\n", "\r\n"));
+        static byte[] Lf(string s) => Encoding.UTF8.GetBytes(s.Replace("\r\n", "\n"));
+        static byte[] Crlf(string s) => Encoding.UTF8.GetBytes(s.Replace("\r\n", "\n").Replace("\n", "\r\n"));
 
         static string Sidecar(string sha, string body) =>
             "{\n  \"rig\": \"testRig.js\",\n" +

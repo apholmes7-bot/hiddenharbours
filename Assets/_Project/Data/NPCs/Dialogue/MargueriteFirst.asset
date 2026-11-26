@@ -32,7 +32,7 @@ MonoBehaviour:
     SellAtSellerId:
     NothingToSellLines: []
   - Id: option.sell_catch
-    Label: 'Will you take what''s in my pail?'
+    Label: 'Will you take what''s in my bucket?'
     ReplyLines:
     - '₲{payout} for the lot, and it''s on the scale there where you can see it.'
     - 'I''ll be straight with you — Wendell would give you more for that over at the
@@ -43,7 +43,7 @@ MonoBehaviour:
     CatalogSection:
     SellAtSellerId: seller.leblancs
     NothingToSellLines:
-    - 'There''s nothing in that pail but air, my dear. Bring it back with something
+    - 'There''s nothing in that bucket but air, my dear. Bring it back with something
       in it and I''ll weigh it gladly.'
   - Id: option.ask_about_store
     Label: 'How do you keep a shop going out here?'
