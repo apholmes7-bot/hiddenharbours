@@ -352,6 +352,20 @@ namespace HiddenHarbours.Core
         private static IRodSkillBook _rodSkills;
 
         /// <summary>
+        /// <b>Each player's rod fit</b> (rods from parts): which line and reel are on which of his rods.
+        /// Never null: a session-only <see cref="RodFittingBook"/> is made on first read; a test assigns its
+        /// own. Cleared by <see cref="Reset"/>.
+        /// FLAG lead-architect: new Core contract (rod fitting).
+        /// </summary>
+        public static IRodFittingBook RodFittings
+        {
+            get => _rodFittings ??= new RodFittingBook();
+            set => _rodFittings = value;
+        }
+
+        private static IRodFittingBook _rodFittings;
+
+        /// <summary>
         /// Hunger and tiredness (needs slice 1, owner ruling 2026-11-14): the local player's needs over
         /// <see cref="Save"/> and <see cref="Clock"/>. A seam reads the combined trait x needs factor through
         /// <see cref="CharacterFactors.Player"/>, never this directly. Never null: a default
@@ -1711,6 +1725,7 @@ namespace HiddenHarbours.Core
             Appearance = null;           // → a fresh default on next read; drops any open preview
             Traits = null;               // → a fresh default on next read; drops its catalog and cache
             RodSkills = null;            // → a fresh default on next read; every skill back to zero
+            RodFittings = null;          // → a fresh default on next read; every rod on its default parts
             Needs = null;                // → a fresh default on next read; drops its stage baseline
             Body = null;                 // → a fresh default on next read
             Messes = null;               // → a fresh default on next read

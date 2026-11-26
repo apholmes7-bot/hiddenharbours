@@ -136,7 +136,8 @@ namespace HiddenHarbours.Fishing
         private void CaptureRodAlone()
         {
             if (_configuredRod.HasValue) { _rod = _configuredRod.Value; return; }
-            if (CarriedRod.TryRead(GameServices.Hands, out _rod)) return;
+            // A rod made from parts is fished with this angler's own line and reel on it (rods from parts).
+            if (RodFit.TryReadHeld(GameServices.Hands, GameServices.RodFittings.For(_anglerKey), out _rod)) return;
             _rod = RodFishingProfile.Default;
             // Unwired rigs retain their authored configuration; held rods own these limits.
             if (_config == null) return;
@@ -614,7 +615,9 @@ namespace HiddenHarbours.Fishing
             // Resolve WHICH fish at bite-time via the existing resolver (we don't rewrite catch logic).
             CatchContext ctx = BuildContext();
             BaitTackleSettings kit = _config != null ? _config.BaitTackle : BaitTackleSettings.Default;
-            FishSpeciesDef fish = CatchResolver.Resolve(_regionFish, in ctx, DepthSettings, in kit, _rng);
+            // The line on the rod may put small fish off; with a line that puts nothing off this is the
+            // resolver's own roll, unchanged.
+            FishSpeciesDef fish = LineShyCatch.Resolve(_regionFish, in ctx, DepthSettings, in kit, in _rod, _rng);
             if (fish == null)
             {
                 _phaseTimer = _resultDisplay;

@@ -542,6 +542,50 @@ namespace HiddenHarbours.Tests.EditMode
             finally { GameServices.RodSkills = null; }
         }
 
+        [Test]
+        public void Cast_ReadsTheHeldRodWithThisAnglersFitAndSkill_NotAnotherPlayers()
+        {
+            var session = new object();
+            RodSkillDef def = ShippedSkill();
+            GameServices.RodSkills = new RodSkillBook(() => session, () => def);
+            GameServices.RodFittings = new RodFittingBook(() => session);
+            ICarrier handsBefore = GameServices.Hands;
+            try
+            {
+                var tool = UnityEditor.AssetDatabase.LoadAssetAtPath<HiddenHarbours.Player.ToolDef>(
+                    "Assets/_Project/Data/Tools/RodDeep.asset");
+                FishingLineDef braid = null;
+                foreach (string g in UnityEditor.AssetDatabase.FindAssets("t:FishingLineDef"))
+                {
+                    var l = UnityEditor.AssetDatabase.LoadAssetAtPath<FishingLineDef>(UnityEditor.AssetDatabase.GUIDToAssetPath(g));
+                    if (l != null && l.Id == "fishing_line.heavy_braid") braid = l;
+                }
+                Assert.NotNull(braid);
+                GameServices.Hands = new RodPartsFakeHands { Carried = RodPartsFakeRod.From(tool) };
+
+                IRodSkill skill = GameServices.RodSkills.For(RodSkillBook.LocalPlayerKey);
+                while (skill.Level < skill.MaxLevel) skill.RecordLanded(1f);
+                Assert.IsTrue(GameServices.RodFittings.For(RodSkillBook.LocalPlayerKey).Fit(tool.Id, braid, null));
+
+                var mine = MakeController(new FakeHold(), new[] { MakeFish("fish.parts_mine", null) }, 41);
+                FlickGestures.Flick(mine);
+                RodFishingProfile fitted = RodFit.Compose(tool.RodBlank, braid, tool.DefaultReel);
+                Assert.AreEqual(RodSkillMath.Apply(in fitted, RodSkillMath.BonusAt(def.MaxLevel, def)), mine.RodSnapshot,
+                    "my deep rod, my braid, my skill");
+
+                var peer = MakeController(new FakeHold(), new[] { MakeFish("fish.parts_peer", null) }, 41);
+                peer.AnglerKey = "player.peer_2";
+                FlickGestures.Flick(peer);
+                RodPartsTests.AssertBitForBit(tool.RodFishing, peer.RodSnapshot, "a peer with the same rod: its own parts, no skill");
+            }
+            finally
+            {
+                GameServices.Hands = handsBefore;
+                GameServices.RodSkills = null;
+                GameServices.RodFittings = null;
+            }
+        }
+
         private (int landed, int experience) SkillDay(bool v2, int seed)
         {
             var session = new object();
