@@ -96,7 +96,7 @@ namespace HiddenHarbours.Tests.EditMode
             CliffFaceStyleDef style = Board();
             Assert.IsNotNull(style);
             string json = style.OptionsJson();
-            foreach (string key in new[] { "course", "pale", "paleTh", "jsp", "jgate", "step", "seg", "proud", "relief", "lip", "speck", "sunk", "stain", "tick", "part", "chip" })
+            foreach (string key in new[] { "course", "pale", "paleTh", "jsp", "jgate", "step", "seg", "proud", "relief", "lip", "speck", "sunk", "stain", "tick", "part", "chip", "paleTone", "silt", "siltTh", "siltTone" })
                 StringAssert.Contains($"\"{key}\":", json, $"the painter's '{key}' is not passed from the Def");
             StringAssert.StartsWith("{", json);
             StringAssert.EndsWith("}", json);
@@ -104,6 +104,21 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.LessOrEqual(style.CourseTexels.x, style.CourseTexels.y);
             Assert.LessOrEqual(style.JointSpacingTexels.x, style.JointSpacingTexels.y);
             Assert.LessOrEqual(style.PaleTexels.x, style.PaleTexels.y);
+            Assert.LessOrEqual(style.SiltBeds.x, style.SiltBeds.y);
+            Assert.LessOrEqual(style.SiltTexels.x, style.SiltTexels.y);
+        }
+
+        [Test]
+        public void TheBoardSkin_DrawsACoolSiltBed_OnEveryFace()
+        {
+            var skin = AssetDatabase.LoadAssetAtPath<CliffFaceSkinDef>(BoardSkinPath);
+            Assert.IsNotNull(skin);
+            Assert.GreaterOrEqual(skin.FaceStyle.SiltBeds.x, 1, "the board style must draw at least one silt bed a face");
+            int si = System.Array.FindIndex(skin.Accessories, a => a.Name == "silt");
+            Assert.GreaterOrEqual(si, 0, "the board skin does not move the silt row, so its silt beds would read in the kit's grey-green");
+            CliffSkinRock silt = skin.Accessories[si];
+            Assert.IsTrue(ColorUtility.TryParseHtmlString(silt.BaseHex, out Color c), silt.BaseHex);
+            Assert.Greater(c.b, c.r, "the board's silt bed is cool blue-grey: its blue must beat its red");
         }
     }
 }

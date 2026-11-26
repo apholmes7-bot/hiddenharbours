@@ -93,6 +93,16 @@ namespace HiddenHarbours.Art
         [Tooltip("Mean spacing of small chips and sockets on the face, in texels (0 = none).")]
         [Min(0)] public int ChipPitchTexels = 9;
 
+        [Header("The interbeds' tones (pass 4: a cream sandstone bed and a cool silt bed)")]
+        [Tooltip("Band of a pale sandstone interbed, in the rock row (4 = the lightest).")]
+        [Range(1, 4)] public int PaleTone = 3;
+        [Tooltip("Cool silt beds per face, min and max, drawn in the skin's silt accessory row (0 = none).")]
+        public Vector2Int SiltBeds = new Vector2Int(0, 0);
+        [Tooltip("A silt bed's height, min and max, in texels (its top and bottom rows take the lip and the bed line).")]
+        public Vector2Int SiltTexels = new Vector2Int(1, 2);
+        [Tooltip("Band of a silt bed in the silt row.")]
+        [Range(1, 4)] public int SiltTone = 2;
+
         [Header("The baked faces (filled by CliffFaceStyleBaker)")]
         public List<CliffStyleFace> Faces = new List<CliffStyleFace>();
 
@@ -120,6 +130,10 @@ namespace HiddenHarbours.Art
             Num("tick", TickShare);
             Num("part", PartingShare);
             Num("chip", ChipPitchTexels);
+            Num("paleTone", PaleTone);
+            Pair("silt", SiltBeds);
+            Pair("siltTh", SiltTexels);
+            Num("siltTone", SiltTone);
             sb.Length--;
             return sb.Append('}').ToString();
         }

@@ -17,14 +17,14 @@ MonoBehaviour:
   PalettePath: Assets/_Project/Art/Terrain/CliffPx/CliffPx_palette_board_bedded.png
   Rocks:
   - Name: sandstone
-    BaseHex: '#bc7452'
-    Contrast: 1.3
+    BaseHex: '#e8925a'
+    Contrast: 1.15
   - Name: till
     BaseHex: '#6c4434'
     Contrast: 0.9
   Accessories:
   - Name: silt
-    BaseHex: '#8c8068'
+    BaseHex: '#788a98'
     Contrast: 1
   FaceStyle: {fileID: 11400000, guid: a2278e91a95542038d5a9b86126b3dea, type: 2}
   SourceBoards:
@@ -32,4 +32,4 @@ MonoBehaviour:
   - art-desk/drops/key-scenes-r2-parts2-3-2026-09-28/merged/hh-st-peters-key-scenes/2-st-peters-today/st-peters-terrain-pass-9-part-2/preview-east-ledges.png
   - art-desk/drops/key-scenes-r2-parts2-3-2026-09-28/merged/hh-st-peters-key-scenes/2-st-peters-today/st-peters-terrain-pass-9-part-2/preview-south-arm.png
   - art-desk/drops/key-scenes-r2-parts2-3-2026-09-28/merged/hh-st-peters-key-scenes-return/pass3/bakes/lighthouse-point_golden.png
-  Why: 'The St Peters key-scene boards'' cliffs (terrain pass 9 west and east ledges, the south arm, the lighthouse point): lighter tan-pink lit courses against dark joints (board rock modes about #b06848 to #d09068 lit, #483830 to #704838 in the joints and shade, against our #a6583b base; pass 2 raised the spread to 1.3 so the joints go as dark as the boards''), a darker brown cap where the till sits under the turf, and grey-green interbeds where our siltstone is. Read off the boards by eye and by their rock pixel counts (seat/v83/cliffs-mix/board-colours.txt) and cut into tiers and bands by the px kit''s own procedure, so the cold shadows and warm lights lean exactly as the shipped palette''s do.'
+  Why: 'The St Peters key-scene boards'' cliffs (terrain pass 9 west and east ledges, the south arm, the lighthouse point): lighter tan-pink lit courses against dark joints (board rock modes about #b06848 to #d09068 lit, #483830 to #704838 in the joints and shade, against our #a6583b base; pass 2 raised the spread to 1.3 so the joints go as dark as the boards''), a darker brown cap where the till sits under the turf, and grey-green interbeds where our siltstone is. Pass 4 (the seat: darker and less salmon than the board, too close to main) lifts the sandstone to #e8925a at contrast 1.15, the boards'' lit salmon pushed warm and light enough to survive the live light (the in-game light halves and greys albedo; #d4906a at 1.3 read only 8 levels lighter than pass 3), and turns the silt row cool blue-grey #788a98 for the boards'' thin blue-grey beds; the shade bands stay shade, the band ladder never reaches black. Read off the boards by eye and by their rock pixel counts (seat/v83/cliffs-mix/board-colours.txt) and cut into tiers and bands by the px kit''s own procedure, so the cold shadows and warm lights lean exactly as the shipped palette''s do.'

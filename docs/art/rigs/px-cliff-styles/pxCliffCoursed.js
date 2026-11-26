@@ -39,7 +39,11 @@
      part     chance a row inside a course carries a thin darker parting
      chip     mean spacing of small chips and sockets in texels (0 = none)
      jgate    chance a vertical joint is cut through its course (the rest are closed, the slab runs on)
-     lip      chance a block's top row is a lit lip (a proud block always has one) */
+     lip      chance a block's top row is a lit lip (a proud block always has one)
+     paleTone band of a pale sandstone interbed (rock row; 4 = the lightest)
+     silt     [min, max] cool silt beds per face, drawn in the silt accessory row
+     siltTh   [min, max] silt bed height in texels
+     siltTone band of a silt bed */
 (function (root) {
   'use strict';
   const P = root.PxLang, PF = root.PxCliffFace;
@@ -49,7 +53,7 @@
   const fb = (u, v, cx, cy, s) => fbmP(u, v, Math.max(1, Math.round(cx)), Math.max(1, Math.round(cy)), s, 3);
   const DEFAULTS = { course: [3, 6], pale: .18, paleTh: [1, 2], jsp: [18, 44], step: .12, seg: 48,
                      proud: .10, sunk: .05, relief: .8, speck: .06, stain: .30, tick: .05, part: .35,
-                     chip: 9, jgate: .55, lip: .35 };
+                     chip: 9, jgate: .55, lip: .35, paleTone: 3, silt: [0, 0], siltTh: [1, 2], siltTone: 2 };
 
   function painter(opts) {
     const o = Object.assign({}, DEFAULTS, opts || {});
@@ -58,16 +62,24 @@
       const S = 1 / PF.SL.sin;                                   /* courses down a batter are 1/sin apart */
       const rd = A.read > 1.2 ? 1 : 0;
 
-      /* the courses, top to bottom; a pale interbed is a course of its own */
+      /* the courses, top to bottom; an interbed (a pale sandstone bed, or a cool silt bed in the silt
+         row) is a course of its own, unjointed, never two in a row */
       const courses = [];
-      let y = 0, k = 0;
+      const nSilt = o.silt[0] + FL(hash2(1, 9, R + 700) * (o.silt[1] - o.silt[0] + 1));
+      const siltY = [];
+      for (let j = 0; j < nSilt; j++) siltY.push(FL((j + .25 + hash2(j, 10, R + 700) * .5) * m / nSilt));
+      let y = 0, k = 0, si = 0;
       while (y < m) {
-        const pale = k > 0 && hash2(k, 1, R + 700) < o.pale && courses[courses.length - 1].pale === false;
-        const rg = pale ? o.paleTh : o.course;
+        const prevBed = k > 0 && courses[courses.length - 1].pale;
+        const silt = k > 0 && !prevBed && si < siltY.length && y >= siltY[si];
+        if (silt) si++;
+        const pale = silt || (k > 0 && !prevBed && hash2(k, 1, R + 700) < o.pale);
+        const rg = silt ? o.siltTh : pale ? o.paleTh : o.course;
         let th = Math.max(1, Math.round((rg[0] + FL(hash2(k, 2, R + 700) * (rg[1] - rg[0] + 1))) * S));
         if (m - y - th < 2) th = m - y;
         const r = hash2(k, 3, R + 700);
-        courses.push({ y0: y, th, pale, tone: pale ? 3 : (r < .30 ? 3 : r > .88 ? 1 : 2), k });
+        courses.push({ y0: y, th, pale, row: silt ? pal.silt : pal.rock,
+                       tone: silt ? o.siltTone : pale ? o.paleTone : (r < .30 ? 3 : r > .88 ? 1 : 2), k });
         y += th; k++;
       }
       /* each bed line steps a texel at a time along s over long segments: near level, still wraps */
@@ -111,7 +123,7 @@
 
       for (let yy = 0; yy < m; yy++) for (let x = 0; x < n; x++) {
         const ci = courseAt[yy * n + x], cs = courses[ci], b = blockOf(ci, x), p = blockP(ci, b);
-        const pl = cs.pale ? pal.silt : pal.rock;
+        const pl = cs.row;
         let bd = blockTone(ci, b) + (p > 0 ? 1 : 0);              /* a sat-back block keeps its tone */
         if (!cs.pale && fb(x / n, yy / m, 6, 4, R + 760) > 1 - o.stain * .5) bd -= 1;   /* broad stain */
         if (hash2(x, yy, R + 740) < o.speck) bd += hash2(x, yy, R + 741) < .5 ? -1 : 1;

@@ -18,7 +18,7 @@ MonoBehaviour:
   OutputFolder: Assets/_Project/Art/Terrain/CliffStyles/Coursed
   FilePrefix: SandstoneCoursed
   CourseTexels: {x: 4, y: 7}
-  PaleShare: 0.25
+  PaleShare: 0.15
   PaleTexels: {x: 2, y: 3}
   JointSpacingTexels: {x: 28, y: 60}
   JointCut: 0.45
@@ -33,6 +33,10 @@ MonoBehaviour:
   TickShare: 0.025
   PartingShare: 0.2
   ChipPitchTexels: 12
+  PaleTone: 4
+  SiltBeds: {x: 1, y: 2}
+  SiltTexels: {x: 4, y: 5}
+  SiltTone: 2
   Faces:
   - Base: {fileID: 2800000, guid: f410956fdd6700520cd4d72973bc43f7, type: 3}
     Index: {fileID: 2800000, guid: a7a872c2b1e493d04ffe831129159321, type: 3}
