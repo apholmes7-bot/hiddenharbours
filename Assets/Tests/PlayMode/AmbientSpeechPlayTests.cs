@@ -235,7 +235,14 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             var ids = new List<int>();
             int over = AmbientSpeechPresenter.MaxConcurrent + 2;
-            for (int i = 0; i < over; i++) ids.Add(Say($"Line {i} of {over}.", _speaker));
+            // One body per line: a speaker who already has a bubble gets it re-filled rather than a
+            // second one, so the cap is only reached by DIFFERENT speakers.
+            for (int i = 0; i < over; i++)
+            {
+                Transform body = Spawn($"Speaker{i}").transform;
+                body.position = new Vector3(-4f + 2f * i, 0f, 0f);
+                ids.Add(Say($"Line {i} of {over}.", body));
+            }
 
             yield return Settle();
 

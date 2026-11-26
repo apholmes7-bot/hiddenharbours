@@ -10,6 +10,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using HiddenHarbours.Art;
 using HiddenHarbours.Core;
+using HiddenHarbours.Tests.Support;
 using Object = UnityEngine.Object;
 
 namespace HiddenHarbours.Tests.PlayMode
@@ -40,13 +41,9 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             var config = GameServices.Config;
             Assert.IsNotNull(config);
-            int daysPerYear = config.DaysPerSeason * 4;
-            for (int day = 0; day < daysPerYear; day++)
-            {
-                CalendarDate candidate = GameCalendar.AtDay(day, config.DaysPerSeason, config.StartDayOfYear);
-                if (candidate.Season == date.Season && candidate.DayOfSeason == date.DayOfSeason && candidate.Year == date.Year)
-                    return day;
-            }
+            int day = PlateCalendar.ElapsedDay(config, date.Season, date.DayOfSeason);
+            CalendarDate candidate = GameCalendar.AtDay(day, config.DaysPerSeason, config.StartDayOfYear);
+            if (candidate.Year == date.Year) return day;
             Assert.Fail($"No elapsed day in the first year names {date.Season} {date.DayOfSeason}, year {date.Year}.");
             return -1;
         }
