@@ -33,6 +33,9 @@ namespace HiddenHarbours.World
         /// <summary>May the player (or a neighbour) stop them to talk during this block.</summary>
         public bool Interruptible;
 
+        /// <summary>What they do there, as data (<see cref="RoutineEntry.Doing"/>), or null.</summary>
+        public NpcActivityDef Doing;
+
         /// <summary>
         /// The ground between the station's lane node and the station, lane end first, for a place the
         /// lanes do not reach. Null or empty: the last leg is the straight line from the node (which is

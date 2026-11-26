@@ -23,6 +23,12 @@ namespace HiddenHarbours.Core
         public float DeepMinSeconds, DeepMaxSeconds, SurfaceMinSeconds, SurfaceMaxSeconds;
         public float LandSeconds, EmptyRetrieveSeconds;
 
+        /// <summary>How long the landing's lift takes (s): the land clip is scrubbed once over this, then he
+        /// holds its last frame (the fish up) for the rest of <see cref="LandSeconds"/>. In (0, LandSeconds].
+        /// The release, the strike and the lift are each scrubbed once over their own beat, never looped, so a
+        /// skin whose clips loop still reads them as single moves.</summary>
+        public float LandLiftSeconds;
+
         /// <summary>How far he casts (m), at what bearing off his station's heading (deg, clockwise), and how
         /// far a slot may turn it either way (deg).</summary>
         public float CastReachM, CastBearingDegrees, CastBearingJitterDegrees;
@@ -47,6 +53,8 @@ namespace HiddenHarbours.Core
             else if (WaitMaxSeconds < WaitMinSeconds || DeepMaxSeconds < DeepMinSeconds
                      || SurfaceMaxSeconds < SurfaceMinSeconds)
                 why = "a max is below its min";
+            else if (!(LandLiftSeconds > 0f) || LandLiftSeconds > LandSeconds)
+                why = "the landing's lift is not inside (0, LandSeconds]";
             else if (TensionMin01 < 0f || TensionMax01 > 1f || TensionMax01 < TensionMin01)
                 why = "the tension band is not inside 0..1";
             else if (!(SlotSeconds > 0f) || SlotSeconds < LongestSessionSeconds)
@@ -202,7 +210,21 @@ namespace HiddenHarbours.Core
             beat.StateKey = FishingBeatMath.StateKeyFor(pose);
             beat.BeatStartSeconds = pose == FishingPose.Strike || pose == FishingPose.Reel
                 ? slotStart + fightStart : beat.PhaseStartSeconds;
-            if (pose == FishingPose.CastBack) beat.Scrub01 = progress;
+            // One pass of each single move, then its last frame: the wind-back by its charge, the release over
+            // the cast, the strike over its beat, the lift over its own length. Bite and reel loop by design.
+            switch (pose)
+            {
+                case FishingPose.CastBack:
+                case FishingPose.CastRelease:
+                    beat.Scrub01 = progress;
+                    break;
+                case FishingPose.Strike:
+                    beat.Scrub01 = script.StrikeSeconds > 0f ? Mathf.Clamp01(inFight / script.StrikeSeconds) : 1f;
+                    break;
+                case FishingPose.Land:
+                    beat.Scrub01 = Mathf.Clamp01(inPhase / script.LandLiftSeconds);
+                    break;
+            }
 
             // The line: the cast aim from the release on, the fish from the bite on.
             string fishId = null;

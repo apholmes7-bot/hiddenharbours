@@ -61,6 +61,11 @@ namespace HiddenHarbours.World
                  "A quad is honestly faster than a walker; a laden cart is honestly slower.")]
         [Min(0f)] public float CrossingSpeedMetresPerSecond;
 
+        [Tooltip("What they DO at the station, as data (an NPC activity Def, e.g. npc_activity.wharf_rod for " +
+                 "fishing off the wharf). LEAVE EMPTY for a block that is only its tag above, which is every " +
+                 "block authored before activities existed.")]
+        public NpcActivityDef Doing;
+
         /// <summary>True when a conversation may stop this block — the default, because the field
         /// records the EXCEPTION. A routine authored before this existed deserializes to false here and
         /// is therefore interruptible, which is what it always was.</summary>

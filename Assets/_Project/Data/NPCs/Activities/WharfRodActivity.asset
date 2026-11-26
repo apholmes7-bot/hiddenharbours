@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 157550ce5e1d4182bb3ad4c0d2f60f66, type: 3}
+  m_Name: WharfRodActivity
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.NpcAnglingActivityDef
+  Id: npc_activity.wharf_rod
+  Rod: {fileID: 11400000, guid: e9cfe427da07811429bac3875d8f46b8, type: 2}
+  Script:
+    SlotSeconds: 40
+    CastBackSeconds: 1
+    CastSeconds: 1.2
+    WaitMinSeconds: 4
+    WaitMaxSeconds: 9
+    BiteSeconds: 1
+    StrikeSeconds: 0.6
+    DeepMinSeconds: 3
+    DeepMaxSeconds: 6
+    SurfaceMinSeconds: 3
+    SurfaceMaxSeconds: 5
+    LandSeconds: 3
+    EmptyRetrieveSeconds: 3
+    LandLiftSeconds: 1
+    CastReachM: 7
+    CastBearingDegrees: 0
+    CastBearingJitterDegrees: 25
+    RunSwingM: 1.2
+    TensionMin01: 0.35
+    TensionMax01: 0.8
+    FightWaveHz: 0.45
+  Look:
+    Line:
+      MaxSagM: 0.55
+      LineColor: {r: 0.86, g: 0.89, b: 0.92, a: 0.75}
+      StrainColor: {r: 1, g: 1, b: 1, a: 1}
+      SlackColor: {r: 0.52, g: 0.57, b: 0.62, a: 0.62}
+      WhitenLateBias: 1.5
+      ShudderStart01: 0.45
+      ShudderAmpM: 0.09
+      ShudderHz: 18
+      RestTaut: 0.35
+      SinkTaut: 0.7
+      FightTautFloor: 0.4
+      SlackOvershoot01: 0.8
+      SlackSettleSeconds: 0.7
+    LineWidthM: 0.03
+    LineSegments: 12
+    FishSecondsPerFrame: 0.16
+    FishDartSpeedMps: 1.2
+    FishSpeedSmoothing01: 0.35
+    FallbackJumpPeriodSeconds: 4.5
+    WaterElementOrder: 49
+    SplashFrames:
+    - {fileID: -1164736854261958497, guid: 14b020d426052fa8ed59edf86df76859, type: 3}
+    - {fileID: 732158073382240692, guid: 14b020d426052fa8ed59edf86df76859, type: 3}
+    - {fileID: -1929976222771213117, guid: 14b020d426052fa8ed59edf86df76859, type: 3}
+    - {fileID: 7502845539170666822, guid: 14b020d426052fa8ed59edf86df76859, type: 3}
+    - {fileID: 437714781892716645, guid: 14b020d426052fa8ed59edf86df76859, type: 3}
+    - {fileID: -1280746555800692511, guid: 14b020d426052fa8ed59edf86df76859, type: 3}
+    - {fileID: 8958423535173121114, guid: 14b020d426052fa8ed59edf86df76859, type: 3}
+    - {fileID: -4411448151709350727, guid: 14b020d426052fa8ed59edf86df76859, type: 3}
+    SplashFps: 14
+  CatchSpotId: spot.st_peters.wharf_head
+  MaxSeaState01: 0.6
