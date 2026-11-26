@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 139696a8d8640153336a2cae526fdd08, type: 3}
   m_Name: TidalForm_stp_harbour_stack
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.TidalFormDef
-  Id: form.stp_harbour_stack
+  Id: tidalform.stp_harbour_stack
   DisplayName: 'The Harbour Stack'
   KeySceneId: keyscene.stp_whelps_lookout
   At: {x: 192, y: -38}

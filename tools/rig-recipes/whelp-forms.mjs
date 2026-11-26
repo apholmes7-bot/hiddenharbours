@@ -161,17 +161,17 @@ function ledgeShape(f) {
 }
 
 const FORMS = [
-  { id: 'form.stp_harbour_stack', kind: 'stack', radii: [3.2, 2.6], rot: 20, top: 6.2, block: 1.05, bed: 0.78,
+  { id: 'tidalform.stp_harbour_stack', kind: 'stack', radii: [3.2, 2.6], rot: 20, top: 6.2, block: 1.05, bed: 0.78,
     summit: [-0.2, 0.15], crown: 0.6, bare: 0.08, flare: 3.0, rough: 0.9, spires: 0.86, sward: 1.0,
     shoulders: [{ x: 1.35, y: -0.55, r: 1.3, h: 3.7 }, { x: -1.5, y: -0.2, r: 0.9, h: 2.2 }],
     fallen: { reach: 1.42, few: 0.2, tall: 0.55 },
     plinth: { radius: 5.5, z: -1.2, top: -0.3 }, range: 8.4, reach: 5.9, footAt: 0.0,
     pieces: [{ name: 'Body', stem: 'HarbourStack', from: -0.1 }, { name: 'SeabedPlinth', stem: 'HarbourStackPlinth', below: -0.1 }] },
-  { id: 'form.stp_whelp_1', pieces: [{ name: 'SeabedLedge', stem: 'Whelp1' }], kind: 'ledge', radius: 2.8, top: -1.04, block: 0.7, seed: 1, range: 2, reach: 4.7, footAt: -1.0,
+  { id: 'tidalform.stp_whelp_1', pieces: [{ name: 'SeabedLedge', stem: 'Whelp1' }], kind: 'ledge', radius: 2.8, top: -1.04, block: 0.7, seed: 1, range: 2, reach: 4.7, footAt: -1.0,
     crags: [{ x: -0.6, y: 0.9, r: 0.9, h: 0.75 }, { x: 1.5, y: 0.2, r: 0.7, h: 0.55 }, { x: -1.8, y: -0.2, r: 0.6, h: 0.4 }] },
-  { id: 'form.stp_whelp_2', pieces: [{ name: 'SeabedLedge', stem: 'Whelp2' }], kind: 'ledge', radius: 2.2, top: -1.10, block: 0.7, seed: 2, range: 2, reach: 3.8, footAt: -1.0,
+  { id: 'tidalform.stp_whelp_2', pieces: [{ name: 'SeabedLedge', stem: 'Whelp2' }], kind: 'ledge', radius: 2.2, top: -1.10, block: 0.7, seed: 2, range: 2, reach: 3.8, footAt: -1.0,
     crags: [{ x: 0.2, y: 0.5, r: 0.85, h: 0.7 }, { x: -1.2, y: 0.1, r: 0.55, h: 0.45 }] },
-  { id: 'form.stp_whelp_3', pieces: [{ name: 'SeabedLedge', stem: 'Whelp3' }], kind: 'ledge', radius: 2.0, top: -0.35, block: 0.7, seed: 3, range: 2, reach: 3.5, footAt: -1.0,
+  { id: 'tidalform.stp_whelp_3', pieces: [{ name: 'SeabedLedge', stem: 'Whelp3' }], kind: 'ledge', radius: 2.0, top: -0.35, block: 0.7, seed: 3, range: 2, reach: 3.5, footAt: -1.0,
     crags: [{ x: 0.5, y: 0.6, r: 0.7, h: 0.5 }, { x: -0.9, y: 0.7, r: 0.5, h: 0.35 }] },
 ];
 

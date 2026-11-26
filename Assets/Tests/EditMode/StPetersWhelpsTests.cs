@@ -24,7 +24,7 @@ namespace HiddenHarbours.Tests.EditMode
             "rock.stp_whelp_3", "rock.stp_whelp_3_b",
         };
 
-        static readonly string[] Forms = { "form.stp_harbour_stack", "form.stp_whelp_1", "form.stp_whelp_2", "form.stp_whelp_3" };
+        static readonly string[] Forms = { "tidalform.stp_harbour_stack", "tidalform.stp_whelp_1", "tidalform.stp_whelp_2", "tidalform.stp_whelp_3" };
 
         /// <summary>The forms are data (one asset each, the ids the key scene's ground gives them), the stack is the
         /// form the scene's gulls are mounted on, and the pictures the recipe drew are the ones the Defs name: three
@@ -70,9 +70,9 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(TidalFaceWaterline.DecodeHeight(0f, atTheWater), Is.EqualTo(drawn.floorMetres).Within(1e-4f));
                 Assert.That(TidalFaceWaterline.DecodeHeight(1f, atTheWater) - TidalFaceWaterline.DecodeHeight(1f, above),
                     Is.EqualTo(form.WetBandMetres).Within(1e-4f), form.Id + ": the dry picture is not cut a wet band above the water");
-                Assert.That(form.Foot != null, Is.EqualTo(form.Id == "form.stp_harbour_stack"), form.Id + ": only the stack stops a hull");
+                Assert.That(form.Foot != null, Is.EqualTo(form.Id == "tidalform.stp_harbour_stack"), form.Id + ": only the stack stops a hull");
             }
-            TidalForm stack = forms.Single(f => f.Id == "form.stp_harbour_stack");
+            TidalForm stack = forms.Single(f => f.Id == "tidalform.stp_harbour_stack");
             Assert.That(contract.forms.Single(f => f.id == stack.Id).tallestMetres, Is.InRange(6f, 6.8f), "the stack's top is the scene's 6.2 m and its turf");
             Assert.That(stack.At, Is.EqualTo(new Vector2(192f, -38f)), "the stack stands where the scene's ground has it");
             Assert.That(stack.Pieces.Select(q => q.Name), Is.EqualTo(new[] { "Body", "SeabedPlinth" }), "the stack is its body and the plinth under the sea");

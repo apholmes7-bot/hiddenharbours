@@ -112,9 +112,9 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsNotNull(root, "St Peters holds no " + WhelpsRoot + ".");
             var forms = new List<Transform>();
             foreach (Transform child in root.transform)
-                if (child.name.StartsWith("form.", System.StringComparison.Ordinal)) forms.Add(child);
+                if (child.name.StartsWith("tidalform.", System.StringComparison.Ordinal)) forms.Add(child);
             Assert.AreEqual(4, forms.Count, "the stack and the three ledges");
-            Transform stack = forms.Single(f => f.name == "form.stp_harbour_stack");
+            Transform stack = forms.Single(f => f.name == "tidalform.stp_harbour_stack");
             var foot = stack.GetComponent<PolygonCollider2D>();
             Assert.IsNotNull(foot, "the stack has no foot a hull would meet");
             Assert.IsFalse(foot.isTrigger, "the stack's foot is solid");

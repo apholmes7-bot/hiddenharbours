@@ -3,7 +3,7 @@
  "liftPerMetre": 0.766,
  "forms": [
   {
-   "id": "form.stp_harbour_stack",
+   "id": "tidalform.stp_harbour_stack",
    "kind": "stack",
    "floorMetres": -1.6,
    "rangeMetres": 8.4,
@@ -77,7 +77,7 @@
    ]
   },
   {
-   "id": "form.stp_whelp_1",
+   "id": "tidalform.stp_whelp_1",
    "kind": "ledge",
    "floorMetres": -1.6,
    "rangeMetres": 2,
@@ -142,7 +142,7 @@
    ]
   },
   {
-   "id": "form.stp_whelp_2",
+   "id": "tidalform.stp_whelp_2",
    "kind": "ledge",
    "floorMetres": -1.6,
    "rangeMetres": 2,
@@ -207,7 +207,7 @@
    ]
   },
   {
-   "id": "form.stp_whelp_3",
+   "id": "tidalform.stp_whelp_3",
    "kind": "ledge",
    "floorMetres": -1.6,
    "rangeMetres": 2,
