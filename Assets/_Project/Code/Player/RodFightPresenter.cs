@@ -771,7 +771,7 @@ namespace HiddenHarbours.Player
 
         /// <summary>The fight's own load read, 0..1: the WORSE of what she is doing to the rod
         /// (<c>RodBend01</c>) and what the line is taking (<c>Tension01</c>).</summary>
-        private float FightLoad01() => Mathf.Clamp01(Mathf.Max(_s.RodBend01, _s.Tension01));
+        private float FightLoad01() => RodPresenterMath.FightLoad01(_s.RodBend01, _s.Tension01);
 
         /// <summary>One frame of the big-fish feel's own state: re-read the dials (so the owner can
         /// tune <c>GameConfig.FishFeel</c> live), advance the fight clocks, and ease the run swing toward

@@ -320,6 +320,95 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(2, facts.Asked);
         }
 
+        [Test]
+        public void Prime_MidJump_DrawsHerInTheAir_CountsNoJump_AndThrowsNoSplash_ThenTheNextJumpIsSeen()
+        {
+            const float kg = 3.1f, period = 0.9f, dt = 0.02f;
+            var sr = Track(new GameObject("PrimedJumper")).AddComponent<SpriteRenderer>();
+            var drawer = new SurfacedFishDrawer(sr);
+            FishingState s = Surface(Jumper, kg, 1f, 0.5f);
+            Assert.IsTrue(drawer.Resolve(in s, new[] { Species(Jumper) }, null, new Facts(), 4.5f));
+            int seed = SurfacedFishDrawer.FightSeed(Jumper, kg);
+
+            // An instant she is in the air, a little way into her jump.
+            float t0 = -1f;
+            double primed = 0d;
+            for (int i = 1; i < 5000 && t0 < 0f; i++)
+            {
+                float t = i * 0.01f;
+                if (FishJumpArc.TryNextJump(seed, t, period, out double st) && FishJumpArc.InAir(st, t) && t - st > dt)
+                { t0 = t; primed = st; }
+            }
+            Assert.Greater(t0, 0f, "harness: the jumper is never in the air");
+
+            drawer.Prime(t0);
+            Assert.IsTrue(drawer.FishAirborne, "primed mid-jump she is drawn in the air");
+            bool sawNext = false, splashedNext = false;
+            float now = t0;
+            for (int f = 0; f < 5000 && !splashedNext; f++, now += dt)
+            {
+                drawer.Render(Vector2.zero, in s, dt, now, now, 0.1f, 1.2f, 0.35f, 30, out bool due, out _);
+                if (drawer.JumpsDrawn == 0)
+                    Assert.IsFalse(due, $"the primed jump (from {primed:F3}s) threw a re-entry splash at {now:F3}s");
+                if (drawer.JumpsDrawn == 1 && drawer.FishAirborne) sawNext = true;
+                if (sawNext && due) splashedNext = true;
+                Assert.LessOrEqual(drawer.JumpsDrawn, 1, "harness: ran past the next jump");
+            }
+            Assert.IsTrue(sawNext, "the jump after the primed one was not counted");
+            Assert.IsTrue(splashedNext, "the jump after the primed one threw no splash");
+        }
+
+        [Test]
+        public void Prime_AfterAJumpCameDown_ThrowsNoSplash_WhereAnUnprimedDrawerWould()
+        {
+            const float kg = 3.1f, period = 0.9f;
+            int seed = SurfacedFishDrawer.FightSeed(Jumper, kg);
+            float t1 = -1f;
+            for (int i = 1; i < 5000 && t1 < 0f; i++)
+            {
+                float t = i * 0.01f;
+                if (FishJumpArc.TryNextJump(seed, t, period, out double st) && t > st && !FishJumpArc.InAir(st, t)) t1 = t;
+            }
+            Assert.Greater(t1, 0f, "harness: no instant after a jump came down");
+            FishingState s = Surface(Jumper, kg, 1f, 0.5f);
+
+            var unprimed = new SurfacedFishDrawer(Track(new GameObject("Unprimed")).AddComponent<SpriteRenderer>());
+            Assert.IsTrue(unprimed.Resolve(in s, new[] { Species(Jumper) }, null, new Facts(), 4.5f));
+            unprimed.Render(Vector2.zero, in s, 0.02f, t1, t1, 0.1f, 1.2f, 0.35f, 30, out bool staleSplash, out _);
+            Assert.IsTrue(staleSplash, "harness: an unprimed drawer throws the stale splash, so this test bites");
+
+            var primed = new SurfacedFishDrawer(Track(new GameObject("Primed")).AddComponent<SpriteRenderer>());
+            Assert.IsTrue(primed.Resolve(in s, new[] { Species(Jumper) }, null, new Facts(), 4.5f));
+            primed.Prime(t1);
+            Assert.IsFalse(primed.FishAirborne);
+            primed.Render(Vector2.zero, in s, 0.02f, t1, t1, 0.1f, 1.2f, 0.35f, 30, out bool due, out _);
+            Assert.IsFalse(due, "a primed drawer threw the splash of a jump nobody saw");
+            Assert.AreEqual(0, primed.JumpsDrawn);
+        }
+
+        [Test]
+        public void ResetMotion_ForgetsTheLastPosition_SoTheFirstFrameReadsNoSpeed()
+        {
+            const float dt = 0.02f, dartMps = 1.2f;
+            FishingState s = Surface(Sitter, 3f, 1f, -1f);
+            var species = new[] { Species(Sitter) };
+
+            // Without it, her first frame reads a dash from the origin: she darts.
+            var plainSr = Track(new GameObject("NotReset")).AddComponent<SpriteRenderer>();
+            var plain = new SurfacedFishDrawer(plainSr);
+            Assert.IsTrue(plain.Resolve(in s, species, null, new Facts(), 4.5f));
+            plain.Render(Vector2.zero, in s, dt, 0f, 0f, 0.1f, dartMps, 0.35f, 30, out _, out _);
+            StringAssert.StartsWith(Sitter + "_dart", plainSr.sprite.name, "harness: the first frame should read a dash");
+
+            // Reset where she is: no dash, she thrashes in place.
+            var resetSr = Track(new GameObject("Reset")).AddComponent<SpriteRenderer>();
+            var reset = new SurfacedFishDrawer(resetSr);
+            Assert.IsTrue(reset.Resolve(in s, species, null, new Facts(), 4.5f));
+            reset.ResetMotion(new Vector2(s.FishOffsetX, s.FishOffsetY));
+            reset.Render(Vector2.zero, in s, dt, 0f, 0f, 0.1f, dartMps, 0.35f, 30, out _, out _);
+            StringAssert.StartsWith(Sitter + "_thrash", resetSr.sprite.name, "after a reset her first frame read a speed");
+        }
+
         // ---- the presenter before Awake --------------------------------------------------------------
 
         [Test]

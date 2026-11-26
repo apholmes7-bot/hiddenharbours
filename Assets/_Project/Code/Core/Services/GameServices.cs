@@ -187,6 +187,27 @@ namespace HiddenHarbours.Core
         private static IFishBehaviourFacts _fishBehaviour;
 
         /// <summary>
+        /// WHAT A VILLAGER ANGLER LANDS at a named spot (<see cref="IShoreCatchFacts"/>), for presentation
+        /// only. Published by the Fishing module; read once per session slot by an angler's stand.
+        /// <para><b>Never null</b>, like <see cref="FishBehaviour"/>: absent a publisher it reads as
+        /// <see cref="EmptyShoreCatchFacts"/>, under which nothing bites, so a villager reels in empty.</para>
+        /// FLAG lead-architect: new Core contract (the shore catch seam, ADR 0053 §11).
+        /// </summary>
+        public static IShoreCatchFacts ShoreCatch
+        {
+            get
+            {
+                IShoreCatchFacts facts = _shoreCatch;
+                if (facts is UnityEngine.Object producer && producer == null)
+                    return EmptyShoreCatchFacts.Instance;
+                return facts != null ? facts : EmptyShoreCatchFacts.Instance;
+            }
+            set => _shoreCatch = value;
+        }
+
+        private static IShoreCatchFacts _shoreCatch;
+
+        /// <summary>
         /// HOW BIG A SPECIES RUNS (<see cref="IFishSizeFacts"/>) — published by the Fishing module's
         /// species registry, read by copy that names a catch's size (<see cref="LiftLine"/>). May be
         /// null (a bare scene, an EditMode rig): readers then say nothing about size.
@@ -1641,6 +1662,7 @@ namespace HiddenHarbours.Core
             Helm.Reset();                // both faces at once — one arbiter, one grant
             FishSchools = null;          // → EmptyFishSchools.Instance; this property is never null
             FishBehaviour = null;        // → EmptyFishBehaviourFacts.Instance; likewise never null
+            ShoreCatch = null;           // → EmptyShoreCatchFacts.Instance; likewise never null
             FishSizes = null;            // nullable by contract: no size word without a registry
             FishConservation = null;     // nullable by contract: nothing refused without a registry
             GiftableFacts = null;        // nullable by contract: the giver falls back to its kind default

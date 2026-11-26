@@ -47,7 +47,10 @@ namespace HiddenHarbours.Player
         /// <summary>The size rung drawn for the current hook, or null.</summary>
         public FishRungVisual Rung => _rung;
 
-        /// <summary>Is she out of the water right now.</summary>
+        /// <summary>Is she out of the water right now. <b>Meaningful only while she is drawn at the
+        /// surface</b> (<see cref="FishingPhase.FightSurface"/>): it is written by <see cref="Render"/> and is
+        /// not cleared when the phase moves on (the golden pins that it stays true through a landing that
+        /// follows a jump), so no caller may read it as "in the air" outside FightSurface.</summary>
         public bool FishAirborne { get; private set; }
 
         /// <summary>How many jumps this fight has drawn; reset when the species on the line changes.</summary>
@@ -113,12 +116,50 @@ namespace HiddenHarbours.Player
         }
 
         /// <summary>
+        /// Pick up a surface phase already under way, with no flourish: the jump due at
+        /// <paramref name="surfaceSeconds"/> is taken as already splashed and already counted, so a drawer
+        /// that attaches, or a clock that jumps (a sleep skip, a seek), partway through her time at the
+        /// surface fires no re-entry splash and bumps no <see cref="JumpsDrawn"/> on its first frame. A
+        /// pull-fed caller (a villager angler) calls it on any frame that does not follow the last drawn one.
+        /// The player's own path never calls it.
+        /// </summary>
+        public void Prime(float surfaceSeconds)
+        {
+            _jumpStart = double.NegativeInfinity;
+            _jumpSplashed = true;
+            FishAirborne = false;
+            if (!_fishJumps || _fightJumpPeriod <= 0f) return;
+            if (!FishJumpArc.TryNextJump(_fightJumpSeed, surfaceSeconds, _fightJumpPeriod, out double start)) return;
+            _jumpStart = start;
+            // Mid-air at the prime: she is drawn in the air, but the jump was not seen to start, so the
+            // count's edge is already passed.
+            FishAirborne = FishJumpArc.InAir(start, surfaceSeconds);
+        }
+
+        /// <summary>
+        /// Forget her motion: her last position becomes <paramref name="pos"/>, her drawn speed zero and her
+        /// travel none, so the next frame reads her speed from where she really is rather than from the
+        /// origin or the last fight. For a pull-fed caller on surfacing and on any non-consecutive frame, so
+        /// its picture does not depend on the frame history. The player's own path never calls it: its
+        /// first surfaced frame reads a speed from the last position, as it always has (the golden pins it).
+        /// </summary>
+        public void ResetMotion(Vector2 pos)
+        {
+            _lastFishPos = pos;
+            _lastFishHeading = Vector2.zero;
+            _fishSpeed = 0f;
+        }
+
+        /// <summary>
         /// Draw her at <paramref name="angler"/> + the published offset and return the line's far end
         /// (the mouth, or her position when the species has no art). <paramref name="dt"/> is this
-        /// frame's step, <paramref name="stateSeconds"/> the seconds in the phase (the flipbook),
-        /// <paramref name="surfaceSeconds"/> the seconds she has been up (the jump schedule).
-        /// <paramref name="speedSmoothing01"/> eases her drawn speed (dart or thrash) toward this frame's. A jump
-        /// that has just come down hands back <paramref name="splashDue"/> at <paramref name="splashAt"/>.
+        /// frame's step. <paramref name="stateSeconds"/> is the flipbook's clock: the seconds in the current
+        /// phase. <paramref name="surfaceSeconds"/> is the jump schedule's clock: the seconds since she came
+        /// up. The player's two clocks both reset on entering FightSurface and tick together, so they are
+        /// equal while she is drawn; a villager's presenter passes its timeline's seconds in the phase for
+        /// both. <paramref name="speedSmoothing01"/> eases her drawn speed (dart or thrash) toward this
+        /// frame's. A jump that has just come down hands back <paramref name="splashDue"/> at
+        /// <paramref name="splashAt"/>.
         /// </summary>
         public Vector2 Render(Vector2 angler, in FishingState s, float dt, float stateSeconds,
                               float surfaceSeconds, float secondsPerFrame, float dartSpeedMps,
@@ -248,18 +289,7 @@ namespace HiddenHarbours.Player
         /// species and how heavy. Stable for the whole fight, different between fights, and computed —
         /// never drawn — so the jumps replay (rule 5).
         /// </summary>
-        public static int FightSeed(string fishId, float weightKg)
-        {
-            unchecked
-            {
-                uint h = 2166136261u;
-                if (!string.IsNullOrEmpty(fishId))
-                    for (int i = 0; i < fishId.Length; i++) h = (h ^ fishId[i]) * 16777619u;
-                // The weight enters as its bit pattern so two fish a gram apart seed differently.
-                h = (h ^ (uint)System.BitConverter.SingleToInt32Bits(weightKg)) * 16777619u;
-                return (int)(h & 0x7FFFFFFF);
-            }
-        }
+        public static int FightSeed(string fishId, float weightKg) => FishFightSeed.For(fishId, weightKg);
 
         private static int FindSpecies(FishSpeciesVisual[] species, string fishId)
         {

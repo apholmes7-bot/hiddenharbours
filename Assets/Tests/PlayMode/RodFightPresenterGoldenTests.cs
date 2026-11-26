@@ -29,6 +29,14 @@ namespace HiddenHarbours.Tests.PlayMode
     /// <para>Re-record (only for a deliberate change to what the player sees): set
     /// <c>HH_GOLDEN_RECORD=1</c> in the shell that launches Unity; the test writes the golden file and
     /// fails so a recording is never mistaken for a pass.</para>
+    ///
+    /// <para><b>When it may be re-recorded, and when retired.</b> It records the shared bass catch art
+    /// and the land refusal too, so an unrelated change to either turns it red. Re-record it then, and
+    /// only then, when the change is the one intended and nothing else in the diff touches the four
+    /// pieces or <see cref="RodFightPresenter"/>; say so in the PR, with the old and new file hashes. It
+    /// guards the shared-piece arc: once the villager presenter (PR 1b) has landed and merged green, or
+    /// when the player's line moves onto a shared line Def, it may be retired in favour of the pieces'
+    /// own EditMode tests (<c>RodFightPiecesTests</c>).</para>
     /// </summary>
     public class RodFightPresenterGoldenTests
     {

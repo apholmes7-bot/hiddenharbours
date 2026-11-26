@@ -4,21 +4,7 @@ using HiddenHarbours.Art;   // RodLineMath
 
 namespace HiddenHarbours.Player
 {
-    /// <summary>
-    /// How a fishing line looks: the owner-tunable numbers a <see cref="RodLineStrand"/> draws with. A
-    /// plain struct, built by its owner on every render from that owner's own serialized fields (the
-    /// player's <see cref="RodFightPresenter"/> keeps its inspector fields where they are), so a value
-    /// tuned live in the inspector is in the very next frame and nothing is cached. No defaults live
-    /// here: every number comes from the owner's data (rule 6).
-    /// </summary>
-    public struct RodLineLook
-    {
-        public float MaxSagM;
-        public Color LineColor, StrainColor, SlackColor;
-        public float WhitenLateBias, ShudderStart01, ShudderAmpM, ShudderHz;
-        public float RestTaut, SinkTaut, FightTautFloor;
-        public float SlackOvershoot01, SlackSettleSeconds;
-    }
+    // RodLineLook moved to Core in its own file (Core/Fishing/RodLineLook.cs), so a World Def can carry it.
 
     /// <summary>
     /// <b>One fishing line</b>: its <see cref="LineRenderer"/>, its sample buffer, and the drawing of it

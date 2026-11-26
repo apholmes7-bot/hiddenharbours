@@ -213,6 +213,11 @@ namespace HiddenHarbours.Player
         public static float ShadowHeadingDegrees(float thetaRad, float ySquash01)
             => HeadingDegrees(-Mathf.Sin(thetaRad), Mathf.Cos(thetaRad) * Mathf.Clamp01(ySquash01));
 
+        /// <summary>How loaded the rod is in a fight, 0..1: the larger of its bend and the line's tension.
+        /// One rule for the player's lean and line hum and a villager's line, so neither copies it.</summary>
+        public static float FightLoad01(float rodBend01, float tension01) =>
+            Mathf.Clamp01(Mathf.Max(rodBend01, tension01));
+
         /// <summary>True when the surfaced fish reads as a DART (drawn with the dart sheet, facing her
         /// travel); below the threshold she station-holds and THRASHES. Pure.</summary>
         public static bool IsDarting(float fishSpeedMps, float dartSpeedThresholdMps)
