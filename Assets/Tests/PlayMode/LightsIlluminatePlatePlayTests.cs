@@ -348,6 +348,13 @@ namespace HiddenHarbours.Tests.PlayMode
         /// the dock in front of her is ground. Where she IS seen, the faces must still change her, or the
         /// face lighting was simply switched off.</para>
         ///
+        /// <para>⭐ ONLY A PIXEL THE LAMPS BRIGHTEN IS A LEAK. The test means "lamps do not light what they cannot
+        /// see", so where no hull is seen it counts pixels the face lighting made BRIGHTER (summed rise over the
+        /// channels above 3). A pixel a lamp shadow made darker is not light through the dock: the far, unlit
+        /// faces of moored hulls at the store and the green go darker when the faces are on, by only 2 or 3 levels
+        /// against the hidden-hull frame, so they read as "not seen" and were counted as leaks (21 and 19 on
+        /// 2026-11-25). The limit (20) and the threshold (3) are unchanged.</para>
+        ///
         /// <para>Shot at 02:00 at St Peters on the scene's own lamps that have a hull within reach.</para>
         /// </summary>
         [UnityTest]
@@ -456,7 +463,8 @@ namespace HiddenHarbours.Tests.PlayMode
                     bool seen = Diff(off, none, i) > 3;
                     if (figure[p]) { setAside++; if (seen) hullInFigure++; continue; }
                     int d = Diff(on, off, i);
-                    if (!seen) { n++; if (d > 3) t++; }
+                    // A leak is light: only a pixel the faces BRIGHTENED counts (see the summary above).
+                    if (!seen) { n++; if (Brightened(on, off, i) > 3) t++; }
                     else if (d > 3) f++;
                 }
                 Debug.Log($"[{PlateDir}] faces seen: lamp {lamps[k].name} at {lamps[k].WorldOrigin}  |  pixels with " +
@@ -474,7 +482,7 @@ namespace HiddenHarbours.Tests.PlayMode
                     var mask = (byte[])on.Clone();
                     int firstThrough = -1;
                     for (int i = 0; i + 3 < on.Length; i += 4)
-                        if (!figure[i / 4] && Diff(off, off2, i) <= 3 && Diff(off, none, i) <= 3 && Diff(on, off, i) > 3)
+                        if (!figure[i / 4] && Diff(off, off2, i) <= 3 && Diff(off, none, i) <= 3 && Brightened(on, off, i) > 3)
                         { mask[i] = 255; mask[i + 1] = 0; mask[i + 2] = 0; if (firstThrough < 0) firstThrough = i / 4; }
                     // Name what stands at the first counted pixel, so a failure says WHAT was lit, not only how much.
                     Vector3 w = _stage.Camera.ScreenToWorldPoint(new Vector3(
@@ -498,7 +506,7 @@ namespace HiddenHarbours.Tests.PlayMode
             foreach (var (body, was) in bodies) if (body != null) body.simulated = was;
             Assert.Greater(hidden, 0, "every pixel was a hull: nothing was asked");
             Assert.LessOrEqual(through, 20,
-                $"{through} pixels where no hull is seen changed when her faces were lit: a lamp lit a boat " +
+                $"{through} pixels where no hull is seen were brightened when her faces were lit: a lamp lit a boat " +
                 "through the dock (or the shed, or the pile) standing in front of her");
             Assert.Greater(faces, 0, "where she is seen, lighting her faces changed nothing: the face path is off");
         }
@@ -581,6 +589,12 @@ namespace HiddenHarbours.Tests.PlayMode
 
         static int Diff(byte[] a, byte[] b, int i) =>
             System.Math.Abs(a[i] - b[i]) + System.Math.Abs(a[i + 1] - b[i + 1]) + System.Math.Abs(a[i + 2] - b[i + 2]);
+
+        /// <summary>How much brighter <paramref name="lit"/> is than <paramref name="unlit"/> at one pixel: the
+        /// summed rise over the three channels, with a channel that fell counting nothing.</summary>
+        static int Brightened(byte[] lit, byte[] unlit, int i) =>
+            System.Math.Max(0, lit[i] - unlit[i]) + System.Math.Max(0, lit[i + 1] - unlit[i + 1]) +
+            System.Math.Max(0, lit[i + 2] - unlit[i + 2]);
 
         /// <summary>
         /// <b>The searchlight lights the dock it sweeps</b> — the charter's third acceptance, and the half of
