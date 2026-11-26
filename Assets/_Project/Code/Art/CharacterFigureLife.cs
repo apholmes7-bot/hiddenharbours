@@ -23,6 +23,12 @@ namespace HiddenHarbours.Art
     /// <see cref="GameConfig.CharacterLookTargetHeightMetres"/>. A figure that must look at nothing (the
     /// player's own) passes <c>looks: false</c> and never asks.</para>
     ///
+    /// <para><b>The idle fidgets</b> (<see cref="IdleFidgetSchedule"/>): while the presenter says the figure
+    /// stands idle, the library's fidgets play on the figure's own schedule, keyed by the world seed, the def
+    /// id and the same one hash, so the player and every villager and skipper fidget by one set of rules and
+    /// never in step. A Look fidget is drawn through the look above; a Clip fidget is handed to the presenter
+    /// by <see cref="TryFidgetClip"/>.</para>
+    ///
     /// <para>Presentation only (rule 5): nothing here is saved or read by a simulation system, and it
     /// never touches <c>UnityEngine.Random</c>. No allocation per call (rule 7).</para>
     /// </summary>
@@ -55,6 +61,21 @@ namespace HiddenHarbours.Art
         /// </summary>
         public IsoCharacterFigureRenderer.Life Step(CharacterSkinDef def, string figureKey, uint keyHash, double now,
                                                     IsoCharacterFigureRenderer figure, bool looks)
+            => Step(def, figureKey, keyHash, now, figure, looks, idle: false);
+
+        /// <summary>
+        /// <see cref="Step(CharacterSkinDef, string, uint, double, IsoCharacterFigureRenderer, bool)"/> with the
+        /// figure's idle fidgets (<see cref="IdleFidgetSchedule"/>). <paramref name="idle"/> is the presenter's
+        /// word that the figure is standing idle this frame: the plain <c>idle</c> clip, not rowing, not at
+        /// work or in a beat, no performance clip, and for the player no input this frame. False cancels a
+        /// fidget at once. While a Look fidget plays it takes the look (the external target, when there is
+        /// one, comes back the beat it ends); a Clip fidget is handed over by <see cref="TryFidgetClip"/>.
+        /// The fidget's look plays whether or not the figure <paramref name="looks"/> at others, so the
+        /// player, who looks at nobody, still looks about. Behind the library's own switch and
+        /// <see cref="GameConfig.CharacterHeadLook"/>.
+        /// </summary>
+        public IsoCharacterFigureRenderer.Life Step(CharacterSkinDef def, string figureKey, uint keyHash, double now,
+                                                    IsoCharacterFigureRenderer figure, bool looks, bool idle)
         {
             _key = figureKey ?? string.Empty;
             if (!_seeded || !ReferenceEquals(def, _def) || keyHash != _keyHash)
@@ -63,12 +84,16 @@ namespace HiddenHarbours.Art
                 _keyHash = keyHash;
                 _seeded = true;
                 _blink.Reset(def, CharacterFigureBlink.SeedFor(def != null ? def.Id : string.Empty, keyHash));
+                _fidgets.Reset();
+                _fidgetKeyFor = null;
             }
 
             var life = new IsoCharacterFigureRenderer.Life { BlinkEyes = CharacterSkinDef.NoFaceGroup };
-            if (def == null) return life;
+            if (def == null) { _fidgets.Reset(); return life; }
 
             if (GameServices.CharacterBlink && def.HasBlink) life.BlinkEyes = _blink.EyesAt(now);
+
+            if (StepFidget(def, keyHash, now, idle) && TryFidgetLook(def, figure, ref life)) return life;
 
             if (!looks || figure == null || !def.HasLook) return life;
             bool head = GameServices.CharacterHeadLook, eyes = GameServices.CharacterEyeLook;
@@ -84,6 +109,82 @@ namespace HiddenHarbours.Art
             life.HeadLook = head;
             life.EyeLook = eyes;
             return life;
+        }
+
+        // ---------------------------------------------------------------- idle fidgets
+
+        private readonly IdleFidgetClock _fidgets = new IdleFidgetClock();
+        private IdleFidgetLibraryDef _library;
+        private bool _libraryAssigned;
+        private string _fidgetKeyFor;   // the skin id the key below was taken for (null: none yet)
+        private int _fidgetSeedFor;
+        private uint _fidgetKey;
+
+        /// <summary>The fidget library this figure reads: the shipped one unless a test assigns another
+        /// (null assigned = no fidgets).</summary>
+        public IdleFidgetLibraryDef Library
+        {
+            get => _libraryAssigned ? _library : IdleFidgetLibraryDef.Shipped;
+            set { _library = value; _libraryAssigned = true; }
+        }
+
+        /// <summary>The fidget playing as of the last step (tests, plates).</summary>
+        public IdleFidgetMoment Fidget => _fidgets.Current;
+
+        /// <summary>The figure's fidget schedule key (<see cref="IdleFidgetSchedule.KeyFor"/>) as last taken.</summary>
+        public uint FidgetKey => _fidgetKey;
+
+        private bool StepFidget(CharacterSkinDef def, uint keyHash, double now, bool idle)
+        {
+            int seed = GameServices.Environment != null ? GameServices.Environment.WorldSeed : 0;
+            if (!ReferenceEquals(_fidgetKeyFor, def.Id) || seed != _fidgetSeedFor)
+            {
+                _fidgetKeyFor = def.Id;
+                _fidgetSeedFor = seed;
+                _fidgetKey = IdleFidgetSchedule.KeyFor(seed, def.Id, keyHash);
+            }
+            return _fidgets.Step(idle, now, Library, def, _fidgetKey);
+        }
+
+        // A Look fidget's gaze, as the look's target: from the eye on the frame last drawn, out along the
+        // gaze to the library's distance. False (and the look decides as before) for a Clip fidget, a figure
+        // that has not drawn yet, a def with no look, or the head's turn switched off.
+        private bool TryFidgetLook(CharacterSkinDef def, IsoCharacterFigureRenderer figure,
+                                   ref IsoCharacterFigureRenderer.Life life)
+        {
+            IdleFidgetMoment m = _fidgets.Current;
+            if (!m.Active || figure == null || !def.HasLook || figure.DrawnFrame < 0) return false;
+            if (!GameServices.CharacterHeadLook) return false;
+            if (!m.Def.TrySampleGaze(m.LocalSeconds, out float yaw, out float up)) return false;
+            IdleFidgetLibraryDef library = Library;
+            float distance = library != null ? library.LookDistanceMetres : 0f;
+            if (!(distance > 0f)) return false;
+
+            Vector3 eye = figure.HeadLocalToFigure(figure.HeadMidLocal);
+            life.HasTarget = true;
+            life.Target = IdleFidgetDef.GazeTarget(eye, yaw, up, distance);
+            life.HeadLook = true;
+            life.EyeLook = GameServices.CharacterEyeLook;
+            return true;
+        }
+
+        /// <summary>
+        /// The clip a Clip fidget asks for this frame, when <paramref name="skin"/> carries it: its state key
+        /// and its frame (played once from the fidget's start, holding the last frame). False while no Clip
+        /// fidget plays. The presenter swaps it in for the idle clip after its own gates, and only where the
+        /// clip may draw as a mesh.
+        /// </summary>
+        public bool TryFidgetClip(CharacterSkinDef skin, out string stateKey, out int frame)
+        {
+            stateKey = null;
+            frame = 0;
+            IdleFidgetMoment m = _fidgets.Current;
+            if (!m.Active || skin == null || m.Def.Kind != IdleFidgetDef.Channel.Clip) return false;
+            if (!skin.TryGetClip(m.Def.ClipKey, out CharacterSkinDef.SkinClip clip) || clip.FrameCount <= 0) return false;
+            if (!clip.KeysWellFormed(skin.BoneCount)) return false;
+            stateKey = m.Def.ClipKey;
+            frame = IdleFidgetDef.ClipFrame(clip, m.LocalSeconds);
+            return true;
         }
     }
 }

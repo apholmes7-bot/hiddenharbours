@@ -483,9 +483,19 @@ namespace HiddenHarbours.Player
             // the figure's frame.
             Place(stand, skin, clipPose, moveHeading);
 
-            IsoCharacterFigureRenderer.Life life = _life.Step(skin, string.Empty, 0u, now, _figure, looks: false);
             // At the oars, rowing or resting on them: sat on the thwart (resting, his hands let go).
             bool atOars = Rowing || (!clipPose && string.IsNullOrEmpty(seatedKey) && character.Stance == CharacterStance.Oars);
+            // Idle fidgets only while he stands at the plain idle with no control touched this frame: never in
+            // a performance clip, at a helm seat or at the oars.
+            bool idle = !clipPose && !atOars && string.IsNullOrEmpty(seatedKey) && !IdleFidgetInput.ActedRecently
+                        && IdleFidgetSchedule.IsStandingIdle(stateKey);
+            IsoCharacterFigureRenderer.Life life = _life.Step(skin, string.Empty, 0u, now, _figure, looks: false, idle: idle);
+            if (idle && _life.TryFidgetClip(skin, out string fidgetKey, out int fidgetFrame)
+                && (meshOnly || skin.DrawsAsMesh(fidgetKey)))
+            {
+                stateKey = fidgetKey;
+                frame = fidgetFrame;
+            }
             if (atOars && _rowing.TryTargets(stand, FigureLocalMetres, FigureYawDegrees, out RowingPoseSolver.Targets row, now))
             {
                 life.Rowing = true;
@@ -640,7 +650,15 @@ namespace HiddenHarbours.Player
             int frame = SabotageHoldFrameZero
                         ? 0
                         : clipPose ? moveFrame : CharacterSkinPose.FrameFor(clip, seed, now, clipStart);
-            IsoCharacterFigureRenderer.Life life = _life.Step(skin, string.Empty, 0u, now, _ashoreFigure, looks: false);
+            // Idle fidgets only while he stands at the plain idle with no control touched this frame.
+            bool idle = !clipPose && !IdleFidgetInput.ActedRecently && IdleFidgetSchedule.IsStandingIdle(stateKey);
+            IsoCharacterFigureRenderer.Life life = _life.Step(skin, string.Empty, 0u, now, _ashoreFigure, looks: false, idle: idle);
+            if (idle && _life.TryFidgetClip(skin, out string fidgetKey, out int fidgetFrame)
+                && (meshOnly || skin.DrawsAsMesh(fidgetKey)) && skin.TryGetClip(fidgetKey, out clip))
+            {
+                stateKey = fidgetKey;
+                frame = fidgetFrame;
+            }
             if (!_ashoreFigure.SetPose(stateKey, frame, life)) { HoldSprite($"could not pose '{stateKey}' frame {frame}"); return; }
             ApplyAshoreWaterline(skin, clip, stateKey, water, config, body);
 

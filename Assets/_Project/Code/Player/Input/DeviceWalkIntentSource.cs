@@ -64,6 +64,8 @@ namespace HiddenHarbours.Player
             InputBindings.ReportDevice(_sprint);
             InputBindings.ReportDevice(_interact);
             InputBindings.ReportDevice(_cancel);
+            // Any control touched ends his idle this frame, so a fidget never outlasts the press.
+            if (move != Vector2.zero || sprint || interact || cancel) IdleFidgetInput.Note();
 
             return Map(move, sprint, interact, cancel,
                        ControlIntentGates.WorldStopped, ControlIntentGates.MoveClaimed);
