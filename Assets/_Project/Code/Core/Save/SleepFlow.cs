@@ -70,6 +70,9 @@ namespace HiddenHarbours.Core
 
         private static RestSaveRequested _request;
 
+        /// <summary>The last occupancy decision; a refused night exposes a text key without a new banner.</summary>
+        public static RestDecision LastReadiness { get; private set; }
+
         /// <summary>
         /// Lie down in the bed <paramref name="request"/> names, and offer a length. True if a sleep is now
         /// in hand. A second request while one is in hand is ignored (false). A bed someone else is in is
@@ -121,6 +124,8 @@ namespace HiddenHarbours.Core
         public static void Confirm()
         {
             if (Phase != SleepPhase.Choosing) return;
+            LastReadiness = RestQuorum.EvaluateForRest(_request.BedId, requireLocalClaim: true);
+            if (!LastReadiness.MayPassNight) return;
             IGameClock clock = LiveClock();
             if (clock == null || clock.IsHeld)
             {
@@ -129,8 +134,6 @@ namespace HiddenHarbours.Core
                 RestSaveResponder.Fulfil(_request);
                 return;
             }
-            if (!RestQuorum.IsMet(1)) return;   // the others are not asleep yet (no multiplayer today)
-
             StartSeconds = clock.TotalSeconds;
             WakeSeconds = SleepPlan.WakeSeconds(StartSeconds, Hours, GameServices.Config);
             Phase = SleepPhase.Asleep;
@@ -167,6 +170,18 @@ namespace HiddenHarbours.Core
                 return;
             }
             if (clock.IsPaused) return;
+
+            LastReadiness = RestQuorum.EvaluateForRest(_request.BedId, requireLocalClaim: true);
+            if (!LastReadiness.MayPassNight)
+            {
+                if (clock.TotalSeconds > StartSeconds) Wake();
+                else
+                {
+                    Release();
+                    Announce(clock);
+                }
+                return;
+            }
 
             double now = clock.TotalSeconds;
             if (now >= WakeSeconds)
@@ -230,6 +245,7 @@ namespace HiddenHarbours.Core
             StartSeconds = 0d;
             WakeSeconds = 0d;
             _request = default;
+            LastReadiness = default;
             RestQuorum.Reset();
         }
 

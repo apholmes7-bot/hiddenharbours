@@ -106,7 +106,7 @@ Method sources: [rod fishing v2](rod-fishing-v2-brainstorm.md) and
 (`Code/Fishing/BiteSequenceSim.cs:57`), fight (`Code/Fishing/RodFightSim.cs:25`), jig
 (`Code/Fishing/JigWork.cs:47`), depth drop (`Code/Fishing/DepthDropMath.cs:45`) and schools
 (`Code/Fishing/FishSchoolMath.cs:43`) are built, with five tackle assets in `Data/Tackle/` and
-`gear.rod` (`Data/Tools/Rod.asset:17`). `license.cod` costs 120 and permits only `fish.atlantic_cod`
+`gear.rod` (`Data/Tools/Rod.asset:17`). `license.cod` costs 60 and permits only `fish.atlantic_cod`
 (`Data/Resources/Catalog/Licenses/CodLicense.asset:15-20`); species-based landing enforcement
 (`Code/Economy/CatchLicensePolicy.cs:29`) gates cod on every gear. Bait timing is the switchable
 catch-only rule above; scene rods without bait configured still spend none. The rough-weather

@@ -14,6 +14,9 @@ namespace HiddenHarbours.Core
         /// <summary>The storey he is on now.</summary>
         public static int Level { get; private set; }
 
+        /// <summary>Whether a building has reported him inside it (and not yet outside): under a roof.</summary>
+        public static bool Indoors => _building != null;
+
         /// <summary>A building says whether he is inside it and on which storey. Stepping out of the
         /// building that last reported him inside puts him back on the ground; a building he was never
         /// reported inside changes nothing by saying he is outside it.</summary>

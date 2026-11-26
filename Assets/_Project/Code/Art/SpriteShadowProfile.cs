@@ -122,17 +122,35 @@ namespace HiddenHarbours.Art
                  "1 = soft-edged). The shape is always the caster's own sprite alpha.")]
         [Range(0f, 1f)] [SerializeField] private float _edgeSoftness = 0f;
 
-        [Header("A floating hull's shadow on open water")]
-        [Tooltip("How much of its cast-shadow darkness a hull AFLOAT keeps with the sun at the horizon " +
-                 "(1 = the full shadow, as on land). Water scatters a low sun's shade, so a long hard box " +
-                 "trailing off the stern at dusk reads wrong; this fades it to a faint tint. Only hulls over " +
-                 "water: a hull or vehicle on land or a wharf keeps its full shadow.")]
+        [Header("Any shadow on open water (a hull, a mast, a pile)")]
+        [Tooltip("How much of its cast-shadow darkness a caster standing OVER WATER keeps with the sun at the " +
+                 "horizon (1 = the full shadow, as on land). Water scatters a low sun's shade, so a long hard " +
+                 "box trailing off the stern at dusk reads wrong; this fades it to a faint tint. Every caster " +
+                 "whose foot is over water at the live tide - a floating hull, a pile, a post: a caster on " +
+                 "land or a wharf keeps its full shadow.")]
         [Range(0f, 1f)] [SerializeField] private float _hullWaterLowSunAlpha = 0.25f;
 
-        [Tooltip("Sun elevation (0 horizon .. 1 overhead) at and above which a floating hull's shadow is " +
-                 "its full self. Below it the darkness eases (smoothly) down to 'Low sun alpha' at the " +
-                 "horizon, so the midday shadow is untouched.")]
+        [Tooltip("Sun elevation (0 horizon .. 1 overhead) at and above which a shadow over water is its " +
+                 "full self (before 'Water alpha'). Below it the darkness eases (smoothly) down to 'Low sun " +
+                 "alpha' at the horizon.")]
         [Range(0.01f, 1f)] [SerializeField] private float _hullWaterFullSunElevation = 0.6f;
+
+        [Tooltip("The longest a shadow ON WATER may rake, as a multiple of its caster's height. The " +
+                 "surface does not hold a long thin shade: a mast's dawn shadow was a hard bar across the " +
+                 "basin. 0.35 = the noon stub.")]
+        [Min(0f)] [SerializeField] private float _waterMaxLength = 0.6f;
+
+        [Tooltip("How much of its darkness a shadow on water keeps at ANY sun height (1 = as on land). " +
+                 "Multiplies the low-sun fade above.")]
+        [Range(0f, 1f)] [SerializeField] private float _waterAlpha = 0.7f;
+
+        [Tooltip("How much the ripples break a shadow on water into dashes along the wave rows (0 = a " +
+                 "solid shade, 1 = every lit dash fully lit).")]
+        [Range(0f, 1f)] [SerializeField] private float _waterBreakup = 0.6f;
+
+        [Tooltip("The breakup's grid: x = the art's pixels per world unit (so the dashes are whole pixels), " +
+                 "y = one wave row's height and z = the mean dash length, both in art pixels.")]
+        [SerializeField] private Vector3 _waterBreakupGrid = new Vector3(32f, 3f, 7f);
 
         [Header("A caster in the air (a flying bird)")]
         [Tooltip("The longest a caster IN THE AIR may rake, as a multiple of its height. A flying bird is " +
@@ -189,7 +207,15 @@ namespace HiddenHarbours.Art
         public float EdgeSoftness { get => _edgeSoftness; set => _edgeSoftness = Mathf.Clamp01(value); }
         public float HullWaterLowSunAlpha { get => _hullWaterLowSunAlpha; set => _hullWaterLowSunAlpha = Mathf.Clamp01(value); }
         public float HullWaterFullSunElevation { get => _hullWaterFullSunElevation; set => _hullWaterFullSunElevation = Mathf.Clamp(value, 0.01f, 1f); }
-        public float AloftMaxLength { get => _aloftMaxLength; set => _aloftMaxLength = Mathf.Max(0f, value); }
+        public float WaterMaxLength { get => _waterMaxLength; set => _waterMaxLength = Mathf.Max(0f, value); }
+        public float WaterAlpha { get => _waterAlpha; set => _waterAlpha = Mathf.Clamp01(value); }
+        public float WaterBreakup { get => _waterBreakup; set => _waterBreakup = Mathf.Clamp01(value); }
+        public Vector3 WaterBreakupGrid
+        {
+            get => _waterBreakupGrid;
+            set => _waterBreakupGrid = new Vector3(Mathf.Max(1f, value.x), Mathf.Max(1f, value.y), Mathf.Max(1f, value.z));
+        }
+        public float AloftMaxLength { get => _aloftMaxLength;set => _aloftMaxLength = Mathf.Max(0f, value); }
         public float AloftBlendMetres { get => _aloftBlendMetres; set => _aloftBlendMetres = Mathf.Max(0f, value); }
         public float AloftFadeMetres { get => _aloftFadeMetres; set => _aloftFadeMetres = Mathf.Max(0f, value); }
         public float AloftFarAlpha { get => _aloftFarAlpha; set => _aloftFarAlpha = Mathf.Clamp01(value); }
@@ -223,6 +249,9 @@ namespace HiddenHarbours.Art
             p._sortByFarEnd = false;        // shadows paint over what they cross, as they always did
             p._screenSpaceShade = true;     // owner ruling 2026-09-06: the shade is ON, fallback included
             p._hullWaterLowSunAlpha = 1f;   // no water fade: a floating hull's shadow as it always was
+            p._waterMaxLength = 1e6f;       // and no water rule at all: the shadow on water as it always was
+            p._waterAlpha = 1f;
+            p._waterBreakup = 0f;
             return p;
         }
     }
