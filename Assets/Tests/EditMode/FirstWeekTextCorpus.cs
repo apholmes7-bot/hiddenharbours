@@ -237,7 +237,7 @@ namespace HiddenHarbours.Tests.EditMode
                     string key = "&" + objectId + "." + pendingField;
                     int occurrence = occurrences.TryGetValue(key, out int count) ? count : 0;
                     occurrences[key] = occurrence + 1;
-                    foreach (var field in SceneValues(path, key + "#" + occurrence, value)) yield return field;
+                    foreach (var sceneValue in SceneValues(path, key + "#" + occurrence, value)) yield return sceneValue;
                     pendingField = null;
                 }
                 if (line.StartsWith("---", StringComparison.Ordinal))

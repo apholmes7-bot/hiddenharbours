@@ -615,6 +615,46 @@
       "Token": "RestQuorum.LocalSleeper",
       "Count": 3,
       "Reason": "The local sleep facade assumes one participant; a session roster must decide the quorum."
+    },
+    {
+      "Id": "D078",
+      "Rule": "SP002",
+      "Path": "App/CoopComposition/CoopDevStart.cs",
+      "Token": "FindFirstObjectByType<PlayerWalkController>",
+      "Count": 2,
+      "Reason": "Scene-wide first/any lookup chooses an arbitrary actor; resolve the requesting player or addressed container."
+    },
+    {
+      "Id": "D079",
+      "Rule": "SP002",
+      "Path": "App/CoopComposition/CoopDevStart.cs",
+      "Token": "FindFirstObjectByType<ControlSwitcher>",
+      "Count": 1,
+      "Reason": "Scene-wide first/any lookup chooses an arbitrary actor; resolve the requesting player or addressed container."
+    },
+    {
+      "Id": "D080",
+      "Rule": "SP003",
+      "Path": "App/CoopComposition/CoopDevStart.cs",
+      "Token": "private PlayerWalkController _player",
+      "Count": 1,
+      "Reason": "One actor reference is wired here today; an additional actor needs its own instance or explicit actor input."
+    },
+    {
+      "Id": "D081",
+      "Rule": "SP003",
+      "Path": "App/CoopComposition/CoopDevStart.cs",
+      "Token": "private ControlSwitcher _switcher",
+      "Count": 1,
+      "Reason": "One actor reference is wired here today; an additional actor needs its own instance or explicit actor input."
+    },
+    {
+      "Id": "D082",
+      "Rule": "SP003",
+      "Path": "Player/CarriableShoppingBag.cs",
+      "Token": "private CarryHands _hands",
+      "Count": 1,
+      "Reason": "One actor reference is wired here today; an additional actor needs its own instance or explicit actor input."
     }
   ]
 }

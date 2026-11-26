@@ -1,6 +1,6 @@
 # The first week's purse
 
-**Known shortfalls:** the ordinary player's rod is 32 coins short on day 3. The careful player's complete week is 168 coins short on day 7. The shellfish licence is funded on day 1. All three cash ledgers stay nonnegative; the careless player leaves 88 coins of planned food unfunded.
+**Known shortfalls:** the ordinary player's rod is 0 coins short on day 3. The careful player's complete week is 0 coins short on day 7. The shellfish licence is funded on day 1. All three cash ledgers stay nonnegative; the careless player leaves 36 coins of planned food unfunded.
 
 These are conditional cash budgets for one carried pail per visited tide, not a maximum harvest or a successful playthrough. Finite shelf stock, travel and eating access can make the week harder. Proposed hull and repair prices are included; a cash milestone does not create an island seller for an unavailable item.
 
@@ -8,43 +8,43 @@ These are conditional cash budgets for one carried pail per visited tide, not a 
 
 | Day | Visits | Refused | Clams sold | Income | Food paid | Food unfunded | Purchases / earmarks | End purse |
 |---|---:|---:|---:|---:|---:|---:|---|---:|
-| 1 | 2 | 0 | 40 | 40 | 9 | 0 | Shellfish licence | 36 |
-| 2 | 2 | 0 | 40 | 40 | 14 | 0 | Rod | 2 |
-| 3 | 2 | 0 | 40 | 40 | 14 | 0 | Bait lot | 8 |
-| 4 | 2 | 0 | 40 | 40 | 14 | 0 | - | 34 |
-| 5 | 2 | 0 | 40 | 40 | 14 | 0 | - | 60 |
-| 6 | 2 | 0 | 40 | 40 | 14 | 0 | Dory (proposal) | 6 |
-| 7 | 1 | 0 | 20 | 20 | 14 | 0 | - | 12 |
+| 1 | 2 | 0 | 40 | 92 | 9 | 0 | Shellfish licence; Rod; Bait lot | 8 |
+| 2 | 2 | 0 | 40 | 80 | 14 | 0 | - | 74 |
+| 3 | 2 | 0 | 40 | 80 | 14 | 0 | Dory (proposal); Patch plank (proposal); Copper nails (proposal); Oakum (proposal); Paint (proposal) | 0 |
+| 4 | 2 | 0 | 40 | 80 | 14 | 0 | Cod licence | 6 |
+| 5 | 2 | 0 | 40 | 80 | 14 | 0 | - | 72 |
+| 6 | 2 | 0 | 40 | 80 | 14 | 0 | - | 138 |
+| 7 | 1 | 0 | 20 | 40 | 14 | 0 | - | 164 |
 
-Seven-day income: 260. Food paid: 93. Unfunded planned hunger relief: 0. Remaining cash shortfall, including missed food: 168.
+Seven-day income: 532. Food paid: 93. Unfunded planned hunger relief: 0. Remaining cash shortfall, including missed food: 0.
 
 ## Ordinary
 
 | Day | Visits | Refused | Clams sold | Income | Food paid | Food unfunded | Purchases / earmarks | End purse |
 |---|---:|---:|---:|---:|---:|---:|---|---:|
-| 1 | 1 | 0 | 20 | 20 | 9 | 0 | Shellfish licence | 16 |
-| 2 | 1 | 0 | 20 | 20 | 14 | 0 | - | 22 |
-| 3 | 1 | 0 | 20 | 20 | 14 | 0 | - | 28 |
-| 4 | 1 | 0 | 20 | 20 | 14 | 0 | - | 34 |
-| 5 | 1 | 0 | 20 | 20 | 14 | 0 | - | 40 |
-| 6 | 1 | 0 | 20 | 20 | 14 | 0 | - | 46 |
-| 7 | 1 | 0 | 20 | 20 | 14 | 0 | - | 52 |
+| 1 | 1 | 0 | 20 | 52 | 9 | 0 | Shellfish licence | 48 |
+| 2 | 1 | 0 | 20 | 40 | 14 | 0 | Rod | 14 |
+| 3 | 1 | 0 | 20 | 40 | 14 | 0 | Bait lot | 20 |
+| 4 | 1 | 0 | 20 | 40 | 14 | 0 | - | 46 |
+| 5 | 1 | 0 | 20 | 40 | 14 | 0 | - | 72 |
+| 6 | 1 | 0 | 20 | 40 | 14 | 0 | Dory (proposal) | 18 |
+| 7 | 1 | 0 | 20 | 40 | 14 | 0 | Patch plank (proposal); Copper nails (proposal); Oakum (proposal) | 0 |
 
-Seven-day income: 140. Food paid: 93. Unfunded planned hunger relief: 0. Remaining cash shortfall, including missed food: 288.
+Seven-day income: 292. Food paid: 93. Unfunded planned hunger relief: 0. Remaining cash shortfall, including missed food: 76.
 
 ## Careless
 
 | Day | Visits | Refused | Clams sold | Income | Food paid | Food unfunded | Purchases / earmarks | End purse |
 |---|---:|---:|---:|---:|---:|---:|---|---:|
-| 1 | 1 | 0 | 20 | 20 | 3 | 6 | Shellfish licence; Unneeded bait | 2 |
-| 2 | 0 | 0 | 0 | 0 | 2 | 12 | - | 0 |
-| 3 | 1 | 1 | 0 | 0 | 0 | 14 | - | 0 |
-| 4 | 1 | 1 | 0 | 0 | 0 | 14 | - | 0 |
-| 5 | 0 | 0 | 0 | 0 | 0 | 14 | - | 0 |
+| 1 | 1 | 0 | 20 | 52 | 9 | 0 | Shellfish licence; Unneeded bait | 28 |
+| 2 | 0 | 0 | 0 | 0 | 14 | 0 | - | 14 |
+| 3 | 1 | 0 | 20 | 40 | 14 | 0 | - | 40 |
+| 4 | 1 | 0 | 20 | 40 | 14 | 0 | Rod | 6 |
+| 5 | 0 | 0 | 0 | 0 | 6 | 8 | - | 0 |
 | 6 | 1 | 1 | 0 | 0 | 0 | 14 | - | 0 |
 | 7 | 1 | 1 | 0 | 0 | 0 | 14 | - | 0 |
 
-Seven-day income: 20. Food paid: 5. Unfunded planned hunger relief: 9.85. Remaining cash shortfall, including missed food: 428.
+Seven-day income: 132. Food paid: 57. Unfunded planned hunger relief: 3.95. Remaining cash shortfall, including missed food: 256.
 
 ## First affordable purchase in the spending order
 
@@ -53,16 +53,16 @@ Food is budgeted each day before progression purchases. Days below include all e
 | Purchase | Coins | Source / availability | Careful | Ordinary | Careless |
 |---|---:|---|---:|---:|---:|
 | Shellfish licence | 15 | Island counter | 1 | 1 | 1 |
-| Rod | 60 | Island counter | 2 | - | - |
-| Bait lot | 20 | Island shelf | 3 | - | - |
-| Dory (proposal) | 80 | PR 1539 | 6 | - | - |
-| Patch plank (proposal) | 24 | PR 1508 | - | - | - |
-| Copper nails (proposal) | 8 | PR 1508 | - | - | - |
-| Oakum (proposal) | 12 | PR 1508 | - | - | - |
-| Paint (proposal) | 16 | PR 1508 | - | - | - |
-| Cod licence | 120 | No island listing | - | - | - |
+| Rod | 60 | Island counter | 1 | 2 | 4 |
+| Bait lot | 20 | Island shelf | 1 | 3 | - |
+| Dory (proposal) | 80 | PR 1539 | 3 | 6 | - |
+| Patch plank (proposal) | 24 | PR 1508 | 3 | 7 | - |
+| Copper nails (proposal) | 8 | PR 1508 | 3 | 7 | - |
+| Oakum (proposal) | 12 | PR 1508 | 3 | 7 | - |
+| Paint (proposal) | 16 | PR 1508 | 3 | - | - |
+| Cod licence | 60 | Island counter | 4 | - | - |
 
-Purchase list: 355 coins. Starting purse plus the one-time fronted fee: 20. Seven-day full ration budget: 93. The careful route needs 168 more coins at day 7; at the current one-coin clam price, that is the same number of additional saleable clams. Repeated trips within a tide could change this result; this model does not claim they are impossible.
+Purchase list: 295 coins. Starting purse plus the one-time fronted fee: 20. Seven-day full ration budget: 93. The careful route needs 0 more coins at day 7; at the current one-coin clam price, that is the same number of additional saleable clams. Repeated trips within a tide could change this result; this model does not claim they are impossible.
 
 ## The three written strategies
 
@@ -74,7 +74,7 @@ All start at 07:30, then wake at 06:00 and turn in at 22:00 (the configured maxi
 
 Each visit uses the greatest exposed-hole count sampled during that awake window, capped by one pail. A hole yields one clam per tide. Tide cycle ids prevent counting a midnight tail as a fresh tide. The player carries and sells each load before the next visit; income is booked on that day. This assumes fresh, saleable catch and ordinary price factors. No fish income, gifts beyond the first fee, off-island trade, free working boat or resale windfall is credited.
 
-Hunger and tiredness advance minute by minute. Food is bought from available cash at waking and after a sale; a held food unit is eaten while awake once hunger can use its full relief. Sleep reduces tiredness but hunger keeps rising. Each visit occurs at the first minute attaining that window's greatest awake exposure. EffortGate checks the actual needs before awarding any clams. Refused visits produce no income. The careless route runs out of food money, and hunger prevents further digging after his second day.
+Hunger and tiredness advance minute by minute. Food is bought from available cash at waking and after a sale; a held food unit is eaten while awake once hunger can use its full relief. Sleep reduces tiredness but hunger keeps rising. Each visit occurs at the first minute attaining that window's greatest awake exposure. EffortGate checks the actual needs before awarding any clams. Refused visits produce no income. The careless route runs out of food money, and hunger refuses his later visits once the food money is gone.
 
 ## Tide and carry data
 
@@ -102,7 +102,7 @@ Hunger rises at 0.0625 per hour for the reference body, including sleep: 1.031 o
 | supply.oatcakes | 2 | 0.15 | line.oatcakes | 0 | 1 |
 | supply.tinned_beans | 3 | 0.35 | line.tinned_beans | 3 | 4 |
 
-The island buyer has price level 0.6 and demand 0.7. A clam has base value 2, elasticity 0.45; each sale adds 1 supply and daily recovery is 0.5. SellPricing rounds and floors each sale, with MarketMath carrying the glut across days. One bait lot contains 10 units. Digging's EffortGate refuses at hunger 0.97 or tiredness 0.9. HeavyWorkNeeds is a separate stage-based requirement, not this numeric gate. Missing meals and refused visits are both reported.
+The island buyer has price level 0.9 and demand 1. A clam has base value 8, elasticity 0.45; each sale adds 1 supply and daily recovery is 0.5. SellPricing rounds and floors each sale, with MarketMath carrying the glut across days. One bait lot contains 10 units. Digging's EffortGate refuses at hunger 0.97 or tiredness 0.9. HeavyWorkNeeds is a separate stage-based requirement, not this numeric gate. Missing meals and refused visits are both reported.
 
 ## Scope and regeneration
 

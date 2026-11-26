@@ -1408,6 +1408,20 @@
       "reason": "External render pipeline reference, first seen in Assets/DefaultVolumeProfile.asset. Registry package bytes are outside this project-source budget; package cache is not a stable source root."
     },
     {
+      "rule": "ExternalPackageGuid",
+      "source": "",
+      "objectId": "",
+      "target": "d5a57f767e5e46a458fc5d3c628d0cbb",
+      "reason": "External netcode package script (NetworkObject), first seen in Assets/_Project/Resources/CoopSpike/Boat.prefab. Registry package bytes are outside this project-source budget; package cache is not a stable source root."
+    },
+    {
+      "rule": "ExternalPackageGuid",
+      "source": "",
+      "objectId": "",
+      "target": "e96cb6065543e43c4a752faaa1468eb1",
+      "reason": "External netcode package script (NetworkTransform), first seen in Assets/_Project/Resources/CoopSpike/Boat.prefab. Registry package bytes are outside this project-source budget; package cache is not a stable source root."
+    },
+    {
       "rule": "ExternalPackageInclude",
       "target": "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl",
       "reason": "Registry shader include; retained as an external dependency, with package bytes outside the project-source budget."
@@ -1731,7 +1745,7 @@
     },
     {
       "path": "Packages/manifest.json",
-      "sha256": "04b3477996656d46470e4e36ba292dcba489d578e7938a73aead6f040bee2a76"
+      "sha256": "4efadb3d3fcb55b6367b6725be8452a03e5b68e217c7c0adad4b1b04833681d6"
     },
     {
       "path": "Assets/_Project/Art/Terrain/TerrainDetail256.hhterrain",

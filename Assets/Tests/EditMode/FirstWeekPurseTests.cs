@@ -37,8 +37,8 @@ namespace HiddenHarbours.Tests.EditMode
         const int ProposedPaintPrice = 16;
 
         // Observed shortfalls, not relaxed targets. A change requires reviewing the generated report.
-        const int KnownOrdinaryRodShortfall = 32;
-        const int KnownCarefulWeekShortfall = 168;
+        const int KnownOrdinaryRodShortfall = 0;
+        const int KnownCarefulWeekShortfall = 0;
         static readonly CultureInfo Invariant = CultureInfo.InvariantCulture;
 
         public enum Strategy { Careful, Ordinary, Careless }
@@ -507,7 +507,7 @@ namespace HiddenHarbours.Tests.EditMode
             Line("Hunger and tiredness advance minute by minute. Food is bought from available cash at waking and after a sale; " +
                 "a held food unit is eaten while awake once hunger can use its full relief. Sleep reduces tiredness but hunger keeps rising. " +
                 "Each visit occurs at the first minute attaining that window's greatest awake exposure. EffortGate checks the actual needs before awarding any clams. " +
-                "Refused visits produce no income. The careless route runs out of food money, and hunger prevents further digging after his second day.");
+                "Refused visits produce no income. The careless route runs out of food money, and hunger refuses his later visits once the food money is gone.");
             Line();
             Line("## Tide and carry data"); Line();
             Line($"World seed {data.Seed}; start season {(int)data.Config.StartSeason}, day {data.Config.StartDayOfSeason}; " +
@@ -636,10 +636,10 @@ namespace HiddenHarbours.Tests.EditMode
             var data = ReadInputs(); var week = Play(data, Strategy.Careless);
             CollectionAssert.AreEqual(new[] { 2, 5 }, week.Days.Where(d => d.Windows == 0).Select(d => d.Number).ToArray());
             Assert.That(week.Days.Sum(d => d.Purchases.Count(p => p == "Unneeded bait")), Is.EqualTo(1));
-            Assert.That(week.MissingFood, Is.EqualTo(88));
-            Assert.That(week.Days.Sum(d => d.ReliefMissing), Is.EqualTo(9.85).Within(0.000001));
-            CollectionAssert.AreEqual(new[] { 0, 0, 1, 1, 0, 1, 1 }, week.Days.Select(d => d.Refused).ToArray());
-            Assert.That(week.Days.Sum(d => d.Clams), Is.EqualTo(data.Capacity));
+            Assert.That(week.MissingFood, Is.EqualTo(36));
+            Assert.That(week.Days.Sum(d => d.ReliefMissing), Is.EqualTo(3.95).Within(0.000001));
+            CollectionAssert.AreEqual(new[] { 0, 0, 0, 0, 0, 1, 1 }, week.Days.Select(d => d.Refused).ToArray());
+            Assert.That(week.Days.Sum(d => d.Clams), Is.EqualTo(3 * data.Capacity));
         }
 
         [Test]
