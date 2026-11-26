@@ -15,7 +15,10 @@ MonoBehaviour:
   Id: trap.crab
   DisplayName: Crab Pot
   TrapSprite: {fileID: 21300000, guid: 8ab38563dcf9036b89a4348767e31563, type: 3}
-  BuoySprite: {fileID: -4432373148397089404, guid: a52401dfeb41d2813e5d0d41635fd612, type: 3}
+  BuoySprite: {fileID: 5266169631255860758, guid: 44150562fa8e43d89a07e2cfde851490, type: 3}
+  BuoyFloatRadiusMeters: 0.1149
+  BuoyDraftMeters: 0.05
+  BuoyFreeboardMeters: 0.12
   TrapSpriteWet: {fileID: 21300000, guid: e52ae3043dcb8e9fbd24f817b90e216f, type: 3}
   SplashBurstFrames:
   - {fileID: -1164736854261958497, guid: 14b020d426052fa8ed59edf86df76859, type: 3}
