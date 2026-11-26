@@ -30,8 +30,8 @@ namespace HiddenHarbours.Tests.PlayMode
             var held=GameServices.Environment;
             var tyres=Object.FindObjectsByType<SpriteRenderer>(FindObjectsSortMode.None)
                 .Where(x=>x.name=="Fitting_tyre"&&x.gameObject.scene.name==StPeters).OrderBy(x=>x.transform.position.x).ToArray();
-            Assert.AreEqual(2,tyres.Length);
-            var originals=new[]{tyres[0],tyres[1],GameObject.Find("prop.stp_landing_rope").GetComponent<SpriteRenderer>()};
+            Assert.GreaterOrEqual(tyres.Length,2,"the pier carries fender strings at both ends of its face");
+            var originals=new[]{tyres[0],tyres[tyres.Length-1],GameObject.Find("prop.stp_landing_rope").GetComponent<SpriteRenderer>()};
             var keys=new[]{"landingTyreWest","landingTyreEast","landingRope"};
             var ids=new[]{"prop.stp_landing_tyre_west","prop.stp_landing_tyre_east","prop.stp_landing_rope"};
             var positions=originals.Select(x=>x.transform.position).ToArray();

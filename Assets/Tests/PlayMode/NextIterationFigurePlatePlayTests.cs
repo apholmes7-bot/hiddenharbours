@@ -46,9 +46,9 @@ namespace HiddenHarbours.Tests.PlayMode
             var tyres = Object.FindObjectsByType<SpriteRenderer>(FindObjectsSortMode.None)
                 .Where(x => x.name == "Fitting_tyre" && x.gameObject.scene.name == StPeters)
                 .OrderBy(x => x.transform.position.x).ToArray();
-            Assert.AreEqual(2, tyres.Length);
+            Assert.GreaterOrEqual(tyres.Length, 2, "the pier carries fender strings at both ends of its face");
             float inset = HiddenHarbours.App.Editor.StPetersLandingLayout.StandingInset;
-            Vector3 mid = (tyres[0].transform.position + tyres[1].transform.position) / 2;
+            Vector3 mid = (tyres[0].transform.position + tyres[tyres.Length - 1].transform.position) / 2;
             const float spacing = 1.2f, figureHeight = 1.8f;
 
             var figures = new IsoCharacterFigureRenderer[skins.Length];

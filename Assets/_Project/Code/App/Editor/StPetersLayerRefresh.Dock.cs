@@ -293,6 +293,8 @@ namespace HiddenHarbours.App.Editor
                 operations.AddRange(patch.Ops.Select(o => new DockOperation { kind = o.Kind.ToString(), id = o.FileId, name = o.Name }));
                 scene = patch.Apply(scene);
             }
+            // The fender strings first: they replace the kit tyres the dock then places by name.
+            Apply(LandingFenders(scene));
             Apply(LandingDock(scene));
             Apply(LandingDory(scene));
             Apply(LandingPocket(scene));

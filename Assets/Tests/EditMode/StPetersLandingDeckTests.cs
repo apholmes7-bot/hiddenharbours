@@ -241,8 +241,10 @@ namespace HiddenHarbours.Tests.EditMode
             int fittings = source.IndexOf("// Fittings, on their own root", StringComparison.Ordinal);
             // Re-pinned for the full-length landing ladder: the only change to this section is the three-line
             // ladder dressing call (was ed356dc1434f6d2ab24615975bacccd1f530e038c7d093bddeb2888d46a75aa3).
+            // Re-pinned for the fender strings: the tyre loop now reads the south face's fender run (data) and
+            // a tyre fitting is dressed as its string (was 3d7db046f7989380474ec8b446f9e7b4c4a6c5931f8980cba785ca7a32e4ebfc).
             Assert.That(Sha(source.Substring(fittings, source.IndexOf("            Debug.Log($\"[StPetersWharf] Built", fittings, StringComparison.Ordinal) - fittings).TrimEnd()),
-                Is.EqualTo("3d7db046f7989380474ec8b446f9e7b4c4a6c5931f8980cba785ca7a32e4ebfc"));
+                Is.EqualTo("38d0f1cd0d2f1cb98500bf3ef2b3ff6985bf8eb8a2a52b5893c9ee7fd966a684"));
             string rows = File.ReadAllText(Path.Combine(ProjectRoot, "Assets/_Project/Data/KeyScenes/KeyScene_stp_landing.asset")).Replace("\r\n", "\n");
             string nonPlacement = Regex.Replace(rows, @"(?ms)^  - Id: (\S+)\n(.*?)(?=^  - Id:|\z)", m =>
                 evidence.placementIds.Contains(m.Groups[1].Value) ? Regex.Replace(m.Value, @"(?m)^    (At|SortY): .*\n", "") : m.Value);
@@ -279,9 +281,12 @@ namespace HiddenHarbours.Tests.EditMode
             // Re-pinned for the full-length landing ladder: 80 documents (its new waterline component), and the
             // protected hash changes only in the ladder fitting's GameObject and SpriteRenderer and the ladder's
             // climb (its kind and length). Every other protected document is byte-identical to base.
+            // Re-pinned for the fender strings: 90 documents (two kit tyres of three documents out, four strings
+            // of four in); the two retired tyres leave the protected set (39 -> 35) and the Fittings transform's
+            // child list is the only protected change.
             Assert.That(scene.SubtreeOf(wharf.FileId).Count, Is.EqualTo(proof.expectedWharfDocuments));
             string text = string.Join("\n", proof.protectedWharfIds.OrderBy(id => id).Select(id => scene.Require(id, "protected wharf document").Text));
-            Assert.That(proof.protectedWharfIds.Length, Is.EqualTo(39));
+            Assert.That(proof.protectedWharfIds.Length, Is.EqualTo(35));
             Assert.That(Sha(text), Is.EqualTo(proof.protectedWharfSha256));
         }
 
