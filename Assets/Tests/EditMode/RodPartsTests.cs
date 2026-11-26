@@ -381,14 +381,16 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void EachGame_StartsWithEveryRodOnItsOwnParts_AndTheSaveFormatIsUntouched()
         {
-            object session = new object();
+            var game = new SaveData();
+            object session = game;
             var book = new RodFittingBook(() => session);
             Assert.IsTrue(book.For("player.one").Fit("tool.rod_deep", Part<FishingLineDef>("fishing_line.heavy_braid"), null));
-            session = new object();
+            session = new SaveData();
             Assert.IsFalse(book.For("player.one").TryGetFit("tool.rod_deep", out _, out _), "a new game starts unfitted");
 
-            foreach (FieldInfo f in typeof(SaveData).GetFields(BindingFlags.Public | BindingFlags.Instance))
-                StringAssert.DoesNotContain("Fitting", f.Name, "nothing about the fit is saved yet");
+            // Save v27 has rows for fitted parts, but nothing writes them until a later change wires the
+            // book to them: fitting a rod leaves the save as it was.
+            Assert.IsEmpty(game.RodFittings, "nothing about the fit is saved yet");
         }
 
         [Test]
