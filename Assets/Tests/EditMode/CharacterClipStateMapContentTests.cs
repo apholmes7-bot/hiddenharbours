@@ -15,7 +15,8 @@ namespace HiddenHarbours.Tests.EditMode
                 "Assets/_Project/Data/Characters/FisherIso.asset");
             Assert.IsNotNull(visual);
             string[] files = Directory.GetFiles("Assets/_Project/Data/Characters/Skin", "*.asset");
-            Assert.AreEqual(10, files.Length);
+            // The ten rig presets plus one cast member's own outfit over a preset's body (charskin.basil).
+            Assert.AreEqual(11, files.Length);
             foreach (string file in files)
             {
                 var skin = AssetDatabase.LoadAssetAtPath<CharacterSkinDef>(file.Replace('\\', '/'));

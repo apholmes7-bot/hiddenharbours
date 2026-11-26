@@ -43,10 +43,23 @@ namespace HiddenHarbours.App
             // The persistent boat hold is one of the player's storage containers (what the gift rows list).
             // The region scenes' dev boats are not: only this core's hold is listed.
             if (_hold != null) PlayerStorage.Register(_hold);
+            EventBus.Subscribe<GameLoaded>(OnGameLoaded);
+            EventBus.Subscribe<SlipDoryLaunched>(OnSlipDoryLaunched);
         }
+
+        // A new game keeps the sailing boat out of the world until the slip dory is launched
+        // (SlipDoryStory). Read at the first frame and again whenever a game is loaded over this one.
+        private void Start() => ApplyBoatWithhold();
+
+        private void OnGameLoaded(GameLoaded e) => ApplyBoatWithhold();
+
+        // The mended slip dory went down the slip: the save no longer withholds his boat, so show her.
+        private void OnSlipDoryLaunched(SlipDoryLaunched e) => ApplyBoatWithhold();
 
         private void OnDisable()
         {
+            EventBus.Unsubscribe<GameLoaded>(OnGameLoaded);
+            EventBus.Unsubscribe<SlipDoryLaunched>(OnSlipDoryLaunched);
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
             // A rig switched off mid-fade must never leave the screen black: drop the fade and clear the cover.
             _seamFade.Reset();
@@ -876,8 +889,23 @@ namespace HiddenHarbours.App
             return from ?? "";
         }
 
+        // True while the save says there is no usable boat yet (SlipDoryStory): she stays hidden wherever
+        // the travel code would otherwise show her. Refreshed by ApplyBoatWithhold, never per frame.
+        bool _boatWithheld;
+
+        /// <summary>Re-read whether the save withholds the sailing boat and show or hide her to match. A
+        /// save without the story flag (every game begun before it, and every test boot) changes nothing.</summary>
+        void ApplyBoatWithhold()
+        {
+            bool withheld = SlipDoryStory.WithholdsPlayersBoat(GameServices.Save);
+            if (withheld == _boatWithheld) return;
+            _boatWithheld = withheld;
+            UpdateBoatPresence(GameServices.CurrentRegionId);
+        }
+
         void ShowBoat(bool present)
         {
+            if (_boatWithheld) present = false;
             if (_boat != null && _boat.gameObject.activeSelf != present) _boat.gameObject.SetActive(present);
         }
 

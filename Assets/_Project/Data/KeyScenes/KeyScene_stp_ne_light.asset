@@ -17,7 +17,7 @@ MonoBehaviour:
   RegionId: region.st_peters
   Source: HH-st-peters-one-scene-package-2026-10-07, scenes/keyscene.stp_ne_light/scene.json,
     41882 bytes, sha256 4508886b3363e71c94b70ba481aa22d028dcf8385a8d125443c17add37d3832f
-  Placed: 0
+  Placed: 1
   Pieces:
   - Id: station.stp_ne_light
     Kind: building
@@ -323,7 +323,7 @@ MonoBehaviour:
     Piece: NetFloat
     State: dry
     At: {x: 192.98, y: 41.01}
-    Z: -0.49
+    Z: -0.396
     StandsOn: ground
     MountHost: 
     MountAnchor: 
@@ -375,7 +375,7 @@ MonoBehaviour:
     Piece: TrapLath
     State: bleached
     At: {x: 191.77, y: 41}
-    Z: -0.32
+    Z: -0.171
     StandsOn: ground
     MountHost: 
     MountAnchor: 
@@ -401,7 +401,7 @@ MonoBehaviour:
     Piece: Driftwood
     State: bleached
     At: {x: 194.4, y: 42.8}
-    Z: -0.05
+    Z: 0.01
     StandsOn: ground
     MountHost: 
     MountAnchor: 
@@ -1068,4 +1068,15 @@ MonoBehaviour:
     Budget: 1
     Note: 
   RetiredIds: []
-  PlacementIds: []
+  PlacementIds:
+  - prop.stp_ne_flagstaff
+  - prop.stp_ne_woodpile
+  - prop.stp_ne_woodpile_b
+  - prop.stp_ne_brow_bench
+  - prop.stp_ne_barrow
+  - prop.stp_ne_find_0
+  - prop.stp_ne_find_1
+  - prop.stp_ne_find_2
+  - prop.stp_ne_find_3
+  - prop.stp_ne_find_4
+  - prop.stp_ne_find_5

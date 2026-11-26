@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a98dbbdb31d44a72af6c20b1cb274108, type: 3}
+  m_Name: TopicDoryMakings
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.ClueTopicDef
+  Id: cluetopic.st_peters_dory_makings
+  OptionId: option.ask_about_dory_makings
+  RowLabel: 'Who''d have the makings for a dory?'
+  Ladders:
+  - {fileID: 11400000, guid: 03a5006d65e247a3bd0e54ea215676bb, type: 2}
+  - {fileID: 11400000, guid: bca81a7e06f14faf84f35ff001c20656, type: 2}
+  - {fileID: 11400000, guid: 1d0010766ff54611b927121a064c78c5, type: 2}
+  Fallbacks:
+  - NpcId: npc.marguerite_leblanc
+    Line: 'That''s all I know of it. Ask round.'
+  - NpcId: npc.junior_poirier
+    Line: 'Ask somebody who stays put. I''m on the flats.'
+  - NpcId: npc.eileen_doiron
+    Line: 'I''ve told you what I know. The children may know more.'
+  - NpcId: npc.aunt_ginny
+    Line: 'That''s my lot, child. Ask about.'
+  - NpcId: npc.rose_macisaac
+    Line: 'I''ve nothing more for you, dear. Knock again if you''re short.'

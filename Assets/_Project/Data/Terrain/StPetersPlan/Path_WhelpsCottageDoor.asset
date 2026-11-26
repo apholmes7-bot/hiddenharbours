@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e4b07322d732cfe9125965394268f7, type: 3}
+  m_Name: Path_WhelpsCottageDoor
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.PathDef
+  Id: path.stp_whelps_cottage_door
+  DisplayName: Whelps cottage door path
+  Kind: 0
+  Width: 0.9
+  Points:
+  - {x: 167.7, y: -32.9}
+  - {x: 168.4, y: -33.7}
+  - {x: 169.1, y: -34.5}
+  LineSource: 
+  JoinPoints: []
+  Material: path
+  Weight: 1
+  Label: path
+  Ruts: 0
+  SourceId: path.stp_whelps_cottage_door
+  Frozen: 0
+  PaintOnly: 1
+  Why: 'From the cottage''s porch to the cliff walk, which passes in front of the house and not under it.'
