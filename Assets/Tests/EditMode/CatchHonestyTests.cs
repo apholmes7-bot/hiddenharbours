@@ -509,6 +509,72 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void Ledger_RepairsDuplicateHoleRowsWithoutDroppingOtherCurrentHoles()
+        {
+            var save = new SaveData();
+            save.SpentClamHoles = new List<SpentClamHoleDto>
+            {
+                new SpentClamHoleDto("hole.a", LowWater(0)),
+                new SpentClamHoleDto("hole.b", LowWater(0)),
+                new SpentClamHoleDto("hole.a", LowWater(0) + 1d),
+                new SpentClamHoleDto("hole.old", LowWater(-1))
+            };
+            double now = LowWater(0) + 2d;
+            ClamHoleLedger.MarkSpent(save, "hole.a", now, _env);
+            Assert.AreEqual(2, save.SpentClamHoles.Count);
+            Assert.IsTrue(ClamHoleLedger.TryGetSpentAt(save, "hole.a", out double spent));
+            Assert.AreEqual(now, spent);
+            Assert.IsTrue(ClamHoleLedger.TryGetSpentAt(save, "hole.b", out double untouched));
+            Assert.AreEqual(LowWater(0), untouched);
+            Assert.IsFalse(ClamHoleLedger.TryGetSpentAt(save, "hole.old", out _));
+            Assert.IsFalse(ClamHoleLedger.TryGetSpentAt(save, "HOLE.A", out _));
+        }
+
+        [Test]
+        public void Ledger_WithoutEnvironmentRetainsHolesAcrossElapsedTime()
+        {
+            var save = new SaveData();
+            ClamHoleLedger.MarkSpent(save, "hole.a", LowWater(0), null);
+            ClamHoleLedger.MarkSpent(save, "hole.b", LowWater(10), null);
+            Assert.IsTrue(ClamHoleLedger.SameTide(null, LowWater(0), LowWater(10)));
+            Assert.AreEqual(2, save.SpentClamHoles.Count);
+            Assert.IsFalse(ClamHoleLedger.TryGetSpentAt(save, "", out double absent));
+            Assert.AreEqual(0d, absent);
+        }
+
+        [Test]
+        public void LoadingAFreshSession_ClearsTheLiveHolesSpentState()
+        {
+            var pail = new FakeHold();
+            var hole = MakeHole(pail, HoleA);
+            Assert.IsTrue(hole.TryDig());
+            Assert.IsTrue(hole.Consumed);
+            InstallWorld(NewSave());
+            hole.OnGameLoaded(default);
+            Assert.IsFalse(hole.Consumed);
+            Assert.IsTrue(hole.TryDig());
+            Assert.AreEqual(2, pail.UsedUnits);
+            Assert.AreEqual(1, _save.SpentClamHoles.Count);
+        }
+
+        [Test]
+        public void FloodRenewsTheHole_ButExposureStillBlocksDiggingUntilItEbbs()
+        {
+            var pail = new FakeHold();
+            var hole = MakeHole(pail, HoleA);
+            Assert.IsTrue(hole.TryDig());
+            _clock.TotalSeconds = HighWater(1) + 0.001d;
+            Assert.IsFalse(hole.Consumed);
+            Assert.IsFalse(hole.IsExposedNow());
+            Assert.IsFalse(hole.TryDig());
+            Assert.AreEqual(1, pail.UsedUnits);
+            _clock.TotalSeconds = LowWater(1);
+            Assert.IsTrue(hole.TryDig());
+            Assert.AreEqual(2, pail.UsedUnits);
+            Assert.AreEqual(2, _caught);
+        }
+
+        [Test]
         public void NothingAboutTheTide_IsSaved_OnlyWhichHoleAndWhen()
         {
             var names = new List<string>();

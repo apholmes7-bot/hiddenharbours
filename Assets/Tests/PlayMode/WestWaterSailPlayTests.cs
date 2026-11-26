@@ -62,6 +62,8 @@ namespace HiddenHarbours.Tests.PlayMode
         private GameObject _coordinatorGo;
         private GameObject _player;
         private GameObject _boat;
+        private readonly System.Collections.Generic.List<RegionTravelCoordinator> _quieted =
+            new System.Collections.Generic.List<RegionTravelCoordinator>();
 
         [SetUp]
         public void SetUp()
@@ -108,6 +110,13 @@ namespace HiddenHarbours.Tests.PlayMode
             // and it is one of them), OnDisable unsubscribes, and every crossing after the first goes
             // silently unhandled — see PerPassageArrivalPlayTests.AThereAndBackAndOutAgain_EveryCrossingIsHandled,
             // which pins that hazard for both fixtures.
+            // ⚠ THE COORDINATOR UNDER TEST MUST BE THE ONLY ONE LISTENING. A persistent core an earlier
+            // class left behind (#764) brings its own coordinator, subscribed first: it took the arrival
+            // key off the crossing, and this one placed the boat at the default end. Quiet any other for
+            // the length of the case; the teardown wakes it again.
+            foreach (RegionTravelCoordinator other in Object.FindObjectsByType<RegionTravelCoordinator>(FindObjectsSortMode.None))
+                if (other != null && other.enabled) { other.enabled = false; _quieted.Add(other); }
+
             _coordinatorGo = new GameObject("RegionTravelCoordinator");
             _coordinatorGo.SetActive(false);
             SceneManager.MoveGameObjectToScene(_coordinatorGo, _origin);
@@ -131,6 +140,8 @@ namespace HiddenHarbours.Tests.PlayMode
             if (_harbour.IsValid() && _harbour.isLoaded) yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(_harbour);
 
             GameServices.Reset();
+            foreach (RegionTravelCoordinator other in _quieted) if (other != null) other.enabled = true;
+            _quieted.Clear();
         }
 
         private static Transform ChildAt(GameObject parent, string name, Vector3 position)

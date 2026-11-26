@@ -108,6 +108,22 @@ namespace HiddenHarbours.Core
         /// </summary>
         public object PlayersBoat => _playersBoat;
 
+        /// <summary>The hull under the player's feet, including deck walking; empty ashore or unknown.</summary>
+        public string PlayersBoatId
+        {
+            get
+            {
+                if (!Alive(_playersBoat)) return "";
+                for (int i = 0; i < _registered.Count; i++)
+                {
+                    Entry entry = _registered[i];
+                    if (ReferenceEquals(entry.Hull, _playersBoat) && Alive(entry.Instruments))
+                        return entry.Instruments.HullId ?? "";
+                }
+                return "";
+            }
+        }
+
         /// <summary>How many hulls are registered right now — every live one, not just the granted
         /// hull. Diagnostic: a test asserting "two hulls, one helm" reads it.</summary>
         public int RegisteredCount => _registered.Count;

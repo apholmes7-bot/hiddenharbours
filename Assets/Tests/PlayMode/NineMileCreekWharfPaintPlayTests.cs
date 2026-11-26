@@ -141,20 +141,13 @@ namespace HiddenHarbours.Tests.PlayMode
                 //     the four owners who all kept boat.lobster_boat now keep four different variants,
                 //     so every painted boat at this wharf is off a hull of her own.
                 //
-                //     ⚠️⚠️ 2026-09-04 — THE REGISTER IS AHEAD OF THIS SCENE BY ONE BOAT, ON PURPOSE.
-                //     Alma Boudreau keeps boat.console_skiff on the float fingers in
-                //     paint.console_cranberry, which makes the REGISTER's painted set SEVEN meshes —
-                //     and NineMileCreekFleetPaintTests, which reads the register, pins seven. This
-                //     fixture reads the BANKED SCENE, and the scene is banked by the owner's own
-                //     Build click in a separate `chore(scenes): bank …` commit (the repo's law: see
-                //     the scene's git history). Until that click she is not in NineMileCreek.unity,
-                //     so SIX is the honest number here and the two fixtures disagreeing is the
-                //     staleness showing rather than a bug.
-                //
-                //     ⭐ WHOEVER BANKS THE NEXT NINE MILE CREEK BUILD: add "hullmesh.console_iso"
-                //     to the array below — ordinal-sorted it goes SECOND, after the cape islander —
-                //     in the same commit as the scene. The count assertion above needs no edit; it
-                //     is derived.
+                //     2026-09-04: Alma Boudreau keeps boat.console_skiff on the float fingers in
+                //     paint.console_cranberry, which made the REGISTER's painted set SEVEN meshes
+                //     (NineMileCreekFleetPaintTests, which reads the register, pins seven) while the
+                //     banked scene still had six. #1039 (2026-11-11, the wharf's water side) banked
+                //     her boat (boat.nmc_alma) into NineMileCreek.unity, so the scene now holds the
+                //     same seven and "hullmesh.console_iso" sits second in the set below, after the
+                //     cape islander (ordinal order). The count assertion above is derived.
                 // Since the dory gained her paint axis nobody is plain: Celeste Bernard wears the
                 // dory's default scheme, paint.dory_pine_tar.
                 Assert.AreEqual(moored.Length, painted.Length,
@@ -174,6 +167,7 @@ namespace HiddenHarbours.Tests.PlayMode
                     new[]
                     {
                         "hullmesh.cape_islander_iso",
+                        "hullmesh.console_iso",
                         "hullmesh.dory_iso",
                         "hullmesh.lobster_inshore_hardtop_newfoundland_iso",
                         "hullmesh.lobster_inshore_open_northumberland_iso",
@@ -183,8 +177,8 @@ namespace HiddenHarbours.Tests.PlayMode
                     },
                     meshes,
                     "The hull meshes wearing paint at this wharf have moved — found " +
-                    $"[{string.Join(", ", meshes)}]. Four lobster variants, the punt and the Cape " +
-                    "Islander have owners and paint axes IN THIS BANKED SCENE; if one is missing, a " +
+                    $"[{string.Join(", ", meshes)}]. Four lobster variants, the punt, the console skiff, the " +
+                    "dory and the Cape Islander have owners and paint axes IN THIS BANKED SCENE; if one is missing, a " +
                     "bake or an " +
                     "assignment was lost. Pinned as a SET rather than a floor because a >= 2 would " +
                     "have gone on passing through the very drop that added the third — and, since the " +
