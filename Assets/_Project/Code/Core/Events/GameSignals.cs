@@ -46,11 +46,30 @@ namespace HiddenHarbours.Core
         public FishCaught(CatchItem item) { Item = item; }
     }
 
+    /// <summary>A fresh, licensed, non-protected catch successfully kept at the landing.
+    /// The landing producer captures the occupied hull and its repair state before delivery callbacks.
+    /// Hand/hold transfers never publish this event. This snapshot is not saved.</summary>
+    public readonly struct FreshCatchKept
+    {
+        public readonly CatchItem Item;
+        public readonly string LandingHullId;
+        public readonly bool HullWasRepaired;
+
+        public FreshCatchKept(CatchItem item, string landingHullId, bool hullWasRepaired)
+        {
+            Item = item;
+            LandingHullId = landingHullId;
+            HullWasRepaired = hullWasRepaired;
+        }
+    }
+
     /// <summary>Raised when a hold's catch is sold at market.</summary>
     public readonly struct CatchSold : ICustomSignal
     {
         public readonly int TotalPaid;   // ₲
         public readonly int Count;
+        /// <summary>Shellfish units actually sold; zero when legacy callers provide no breakdown.</summary>
+        public readonly int ShellfishCount;
         /// <summary>Data-authored keeper, vendor and trade; legacy/default signals report unknown.</summary>
         public TradeCounterparty Counterparty { get; }
         public string MerchantId => Counterparty.MerchantId;
@@ -62,9 +81,13 @@ namespace HiddenHarbours.Core
             : this(totalPaid, count, default) { }
 
         public CatchSold(int totalPaid, int count, TradeCounterparty counterparty)
+            : this(totalPaid, count, counterparty, 0) { }
+
+        public CatchSold(int totalPaid, int count, TradeCounterparty counterparty, int shellfishCount)
         {
             TotalPaid = totalPaid; Count = count;
             Counterparty = counterparty;
+            ShellfishCount = shellfishCount;
         }
     }
 

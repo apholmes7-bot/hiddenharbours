@@ -135,6 +135,14 @@ namespace HiddenHarbours.Art
             float intensity = AmbientParticleMath.MistIntensity(
                 visibility, seaState01, _config.BaselineIntensity, _config.FogWeight, _config.SeaStateWeight);
 
+            // Sea mist is drawn over the sea only. The ground and the water level come through Core (the same
+            // depth rule the foam and the spray read), so a wisp is never laid on grass, sand or a roof, and one
+            // that drifts ashore, or is bared by the ebb, fades out. No terrain registered: the old look.
+            ITidalTerrain ground = GameServices.TidalTerrain;
+            IGameClock clock = GameServices.Clock;
+            bool knowsGround = ground != null && env != null && clock != null;
+            float waterLevel = knowsGround ? env.WaterLevelAt(clock.TotalSeconds) : 0f;
+
             // --- spawn (rate ∝ intensity, integrated with a carry; recycle round-robin) ---
             // Aim to keep ~intensity fraction of the pool alive: target a spawn rate that fills the pool over
             // a lifetime, scaled by intensity. No allocation; deterministic placement via the hash.
@@ -142,7 +150,7 @@ namespace HiddenHarbours.Art
             _spawnCarry += targetRate * dt;
             int toSpawn = Mathf.FloorToInt(_spawnCarry);
             if (toSpawn > 0) _spawnCarry -= toSpawn;
-            for (int k = 0; k < toSpawn; k++) Spawn(center);
+            for (int k = 0; k < toSpawn; k++) Spawn(center, knowsGround ? ground : null, waterLevel);
 
             // --- drift + age + render ---
             float dayOpacity = AmbientParticleMath.DayNightOpacity(brightness, _config.NightFade);
@@ -164,7 +172,8 @@ namespace HiddenHarbours.Art
 
                 float life = AmbientParticleMath.Life01(w.Age, w.Lifetime);
                 float env01 = AmbientParticleMath.LifeEnvelope(life, _config.FadeIn, _config.FadeOut);
-                float alpha = Mathf.Clamp01(_config.MaxAlpha * intensity * env01 * dayOpacity + moon * env01 * 0.5f);
+                float overWater = knowsGround ? OverWater(ground, w.Pos, waterLevel) : 1f;
+                float alpha = overWater * Mathf.Clamp01(_config.MaxAlpha * intensity * env01 * dayOpacity + moon * env01 * 0.5f);
 
                 var t = sr.transform;
                 t.position = new Vector3(w.Pos.x, w.Pos.y, 0f);
@@ -176,11 +185,12 @@ namespace HiddenHarbours.Art
             }
         }
 
-        private void Spawn(Vector2 center)
-        {
-            int i = _spawnCursor;
-            _spawnCursor = (_spawnCursor + 1) % _pool.Length;
+        private float OverWater(ITidalTerrain ground, Vector2 at, float waterLevel) =>
+            AmbientParticleMath.MistOverWater01(TidalExposure.WaterDepth(waterLevel, ground.ElevationAt(at)),
+                                                _config.ShoreFadeMetres);
 
+        private void Spawn(Vector2 center, ITidalTerrain ground, float waterLevel)
+        {
             int salt = _spawnCounter++;
             float hx = AmbientParticleMath.Hash01(salt, 11);
             float hy = AmbientParticleMath.Hash01(salt, 29);
@@ -191,6 +201,11 @@ namespace HiddenHarbours.Art
             Vector2 pos = center + new Vector2(
                 (hx * 2f - 1f) * _config.AreaHalfSize.x,
                 (hy * 2f - 1f) * _config.AreaHalfSize.y);
+            // A wisp born over dry ground is not born: the slot stays free for one over the sea.
+            if (ground != null && OverWater(ground, pos, waterLevel) <= 0f) return;
+
+            int i = _spawnCursor;
+            _spawnCursor = (_spawnCursor + 1) % _pool.Length;
             float sizeJit = 1f + (hs - 0.5f) * 2f * _config.SizeJitter;
 
             _pool[i] = new Wisp

@@ -17,6 +17,7 @@ using UnityEngine.TestTools;
 using HiddenHarbours.App;
 using HiddenHarbours.Art;
 using HiddenHarbours.Core;
+using HiddenHarbours.Tests.Support;
 using Object = UnityEngine.Object;
 
 namespace HiddenHarbours.Tests.PlayMode
@@ -501,8 +502,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsNotNull(clock, "the region registered no clock, so the hour cannot be pinned.");
             Assert.IsNotNull(config, "the region registered no GameConfig, so a day has no length.");
 
-            double spd = config.SecondsPerDay;
-            double t = (config.DaysPerSeason * (int)Season.HighSummer + hours / 24.0) * spd;
+            double t = PlateCalendar.SecondsAt(config, Season.HighSummer, 1, hours);
             Time.timeScale = 1f;
             clock.SeekTo(t);
             clock.TimeScale = 0f;
