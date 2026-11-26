@@ -1,0 +1,620 @@
+{
+  "Rows": [
+    {
+      "Id": "D001",
+      "Rule": "SP001",
+      "Path": "Core/Fishing/CatchRecord.cs",
+      "Token": "public static CatchRecordLog Log",
+      "Count": 1,
+      "Reason": "One process-wide actor slot or log; bind it to an explicit player context before two players use it."
+    },
+    {
+      "Id": "D002",
+      "Rule": "SP001",
+      "Path": "Core/Services/GameServices.cs",
+      "Token": "private static IBodyService _body",
+      "Count": 1,
+      "Reason": "One process-wide actor slot or log; bind it to an explicit player context before two players use it."
+    },
+    {
+      "Id": "D003",
+      "Rule": "SP001",
+      "Path": "Core/Services/GameServices.cs",
+      "Token": "private static ICarrier _hands",
+      "Count": 1,
+      "Reason": "One process-wide actor slot or log; bind it to an explicit player context before two players use it."
+    },
+    {
+      "Id": "D004",
+      "Rule": "SP001",
+      "Path": "Core/Services/GameServices.cs",
+      "Token": "private static ICatchHands _catchHands",
+      "Count": 1,
+      "Reason": "One process-wide actor slot or log; bind it to an explicit player context before two players use it."
+    },
+    {
+      "Id": "D005",
+      "Rule": "SP001",
+      "Path": "Core/Services/GameServices.cs",
+      "Token": "private static ICleanlinessService _cleanliness",
+      "Count": 1,
+      "Reason": "One process-wide actor slot or log; bind it to an explicit player context before two players use it."
+    },
+    {
+      "Id": "D006",
+      "Rule": "SP001",
+      "Path": "Core/Services/GameServices.cs",
+      "Token": "private static INeedsService _needs",
+      "Count": 1,
+      "Reason": "One process-wide actor slot or log; bind it to an explicit player context before two players use it."
+    },
+    {
+      "Id": "D007",
+      "Rule": "SP001",
+      "Path": "Core/Services/GameServices.cs",
+      "Token": "private static IPlayerAppearance _appearance",
+      "Count": 1,
+      "Reason": "One process-wide actor slot or log; bind it to an explicit player context before two players use it."
+    },
+    {
+      "Id": "D008",
+      "Rule": "SP001",
+      "Path": "Core/Services/GameServices.cs",
+      "Token": "private static IPlayerStrength _playerStrength",
+      "Count": 1,
+      "Reason": "One process-wide actor slot or log; bind it to an explicit player context before two players use it."
+    },
+    {
+      "Id": "D009",
+      "Rule": "SP001",
+      "Path": "Core/Services/GameServices.cs",
+      "Token": "public static HelmSlot Helm",
+      "Count": 1,
+      "Reason": "One process-wide actor slot or log; bind it to an explicit player context before two players use it."
+    },
+    {
+      "Id": "D010",
+      "Rule": "SP001",
+      "Path": "Core/Services/GameServices.cs",
+      "Token": "public static IActiveBoatService ActiveBoat",
+      "Count": 1,
+      "Reason": "One process-wide actor slot or log; bind it to an explicit player context before two players use it."
+    },
+    {
+      "Id": "D011",
+      "Rule": "SP001",
+      "Path": "Core/Services/GameServices.cs",
+      "Token": "public static IBodyService Body",
+      "Count": 1,
+      "Reason": "One process-wide actor slot or log; bind it to an explicit player context before two players use it."
+    },
+    {
+      "Id": "D012",
+      "Rule": "SP001",
+      "Path": "Core/Services/GameServices.cs",
+      "Token": "public static ICarrier Hands",
+      "Count": 1,
+      "Reason": "One process-wide actor slot or log; bind it to an explicit player context before two players use it."
+    },
+    {
+      "Id": "D013",
+      "Rule": "SP001",
+      "Path": "Core/Services/GameServices.cs",
+      "Token": "public static ICatchHands CatchHands",
+      "Count": 1,
+      "Reason": "One process-wide actor slot or log; bind it to an explicit player context before two players use it."
+    },
+    {
+      "Id": "D014",
+      "Rule": "SP001",
+      "Path": "Core/Services/GameServices.cs",
+      "Token": "public static ICleanlinessService Cleanliness",
+      "Count": 1,
+      "Reason": "One process-wide actor slot or log; bind it to an explicit player context before two players use it."
+    },
+    {
+      "Id": "D015",
+      "Rule": "SP001",
+      "Path": "Core/Services/GameServices.cs",
+      "Token": "public static IHelmControl HelmControl",
+      "Count": 1,
+      "Reason": "One process-wide actor slot or log; bind it to an explicit player context before two players use it."
+    },
+    {
+      "Id": "D016",
+      "Rule": "SP001",
+      "Path": "Core/Services/GameServices.cs",
+      "Token": "public static IHelmInstruments HelmInstruments",
+      "Count": 1,
+      "Reason": "One process-wide actor slot or log; bind it to an explicit player context before two players use it."
+    },
+    {
+      "Id": "D017",
+      "Rule": "SP001",
+      "Path": "Core/Services/GameServices.cs",
+      "Token": "public static INeedsService Needs",
+      "Count": 1,
+      "Reason": "One process-wide actor slot or log; bind it to an explicit player context before two players use it."
+    },
+    {
+      "Id": "D018",
+      "Rule": "SP001",
+      "Path": "Core/Services/GameServices.cs",
+      "Token": "public static IPlayerAppearance Appearance",
+      "Count": 1,
+      "Reason": "One process-wide actor slot or log; bind it to an explicit player context before two players use it."
+    },
+    {
+      "Id": "D019",
+      "Rule": "SP001",
+      "Path": "Core/Services/GameServices.cs",
+      "Token": "public static IPlayerStrength PlayerStrength",
+      "Count": 1,
+      "Reason": "One process-wide actor slot or log; bind it to an explicit player context before two players use it."
+    },
+    {
+      "Id": "D020",
+      "Rule": "SP001",
+      "Path": "Economy/LicenseService.cs",
+      "Token": "private static LicenseService _instance",
+      "Count": 1,
+      "Reason": "One outfit licence service fits the existing shared-business ruling; personal or finite-holder policy would need explicit identity."
+    },
+    {
+      "Id": "D021",
+      "Rule": "SP001",
+      "Path": "World/Gifts/GiftLedger.cs",
+      "Token": "public static GiftLedger Shared",
+      "Count": 1,
+      "Reason": "Gift counts are keyed only by NPC and day; separate personal relationships need a giver identity and an agreed shared cap."
+    },
+    {
+      "Id": "D022",
+      "Rule": "SP002",
+      "Path": "App/LandPassageAccess.cs",
+      "Token": "FindFirstObjectByType<ControlSwitcher>",
+      "Count": 1,
+      "Reason": "Scene-wide first/any lookup chooses an arbitrary actor; resolve the requesting player or addressed container."
+    },
+    {
+      "Id": "D023",
+      "Rule": "SP002",
+      "Path": "App/PersistentHoldProxy.cs",
+      "Token": "FindAnyObjectByType<ShipHold>",
+      "Count": 1,
+      "Reason": "Scene-wide first/any lookup chooses an arbitrary actor; resolve the requesting player or addressed container."
+    },
+    {
+      "Id": "D024",
+      "Rule": "SP002",
+      "Path": "Player/CamperFreezer.cs",
+      "Token": "FindAnyObjectByType<ClamBucket>",
+      "Count": 1,
+      "Reason": "Scene-wide first/any lookup chooses an arbitrary actor; resolve the requesting player or addressed container."
+    },
+    {
+      "Id": "D025",
+      "Rule": "SP002",
+      "Path": "Player/CarriableBucket.cs",
+      "Token": "FindAnyObjectByType<CarryHands>",
+      "Count": 1,
+      "Reason": "Scene-wide first/any lookup chooses an arbitrary actor; resolve the requesting player or addressed container."
+    },
+    {
+      "Id": "D026",
+      "Rule": "SP002",
+      "Path": "Player/CarriableFuelContainer.cs",
+      "Token": "FindAnyObjectByType<CarryHands>",
+      "Count": 1,
+      "Reason": "Scene-wide first/any lookup chooses an arbitrary actor; resolve the requesting player or addressed container."
+    },
+    {
+      "Id": "D027",
+      "Rule": "SP002",
+      "Path": "Player/CarriableTool.cs",
+      "Token": "FindAnyObjectByType<CarryHands>",
+      "Count": 1,
+      "Reason": "Scene-wide first/any lookup chooses an arbitrary actor; resolve the requesting player or addressed container."
+    },
+    {
+      "Id": "D028",
+      "Rule": "SP002",
+      "Path": "Player/GinnyFreezer.cs",
+      "Token": "FindAnyObjectByType<ClamBucket>",
+      "Count": 1,
+      "Reason": "Scene-wide first/any lookup chooses an arbitrary actor; resolve the requesting player or addressed container."
+    },
+    {
+      "Id": "D029",
+      "Rule": "SP002",
+      "Path": "Player/StowageRack.cs",
+      "Token": "FindAnyObjectByType<CarryHands>",
+      "Count": 1,
+      "Reason": "Scene-wide first/any lookup chooses an arbitrary actor; resolve the requesting player or addressed container."
+    },
+    {
+      "Id": "D030",
+      "Rule": "SP002",
+      "Path": "Player/WetBucketPoint.cs",
+      "Token": "FindAnyObjectByType<ClamBucket>",
+      "Count": 1,
+      "Reason": "Scene-wide first/any lookup chooses an arbitrary actor; resolve the requesting player or addressed container."
+    },
+    {
+      "Id": "D031",
+      "Rule": "SP003",
+      "Path": "App/ArrivalOpening.cs",
+      "Token": "private PlayerWalkController _walk",
+      "Count": 1,
+      "Reason": "One actor reference is wired here today; an additional actor needs its own instance or explicit actor input."
+    },
+    {
+      "Id": "D032",
+      "Rule": "SP003",
+      "Path": "App/LandPassageAccess.cs",
+      "Token": "private ControlSwitcher _switcher",
+      "Count": 1,
+      "Reason": "One actor reference is wired here today; an additional actor needs its own instance or explicit actor input."
+    },
+    {
+      "Id": "D033",
+      "Rule": "SP003",
+      "Path": "App/RegionTravelCoordinator.cs",
+      "Token": "private ControlSwitcher _switcher",
+      "Count": 1,
+      "Reason": "One actor reference is wired here today; an additional actor needs its own instance or explicit actor input."
+    },
+    {
+      "Id": "D034",
+      "Rule": "SP003",
+      "Path": "Player/CamperFreezer.cs",
+      "Token": "private ClamBucket _bucket",
+      "Count": 1,
+      "Reason": "One actor reference is wired here today; an additional actor needs its own instance or explicit actor input."
+    },
+    {
+      "Id": "D035",
+      "Rule": "SP003",
+      "Path": "Player/CarriableBucket.cs",
+      "Token": "private CarryHands _hands",
+      "Count": 1,
+      "Reason": "One actor reference is wired here today; an additional actor needs its own instance or explicit actor input."
+    },
+    {
+      "Id": "D036",
+      "Rule": "SP003",
+      "Path": "Player/CarriableFuelContainer.cs",
+      "Token": "private CarryHands _hands",
+      "Count": 1,
+      "Reason": "One actor reference is wired here today; an additional actor needs its own instance or explicit actor input."
+    },
+    {
+      "Id": "D037",
+      "Rule": "SP003",
+      "Path": "Player/CarriableTool.cs",
+      "Token": "private CarryHands _hands",
+      "Count": 1,
+      "Reason": "One actor reference is wired here today; an additional actor needs its own instance or explicit actor input."
+    },
+    {
+      "Id": "D038",
+      "Rule": "SP003",
+      "Path": "Player/CarryHands.cs",
+      "Token": "private PlayerWalkController _walk",
+      "Count": 1,
+      "Reason": "One actor reference is wired here today; an additional actor needs its own instance or explicit actor input."
+    },
+    {
+      "Id": "D039",
+      "Rule": "SP003",
+      "Path": "Player/ControlSwitcher.cs",
+      "Token": "private PlayerWalkController _playerWalk",
+      "Count": 1,
+      "Reason": "One actor reference is wired here today; an additional actor needs its own instance or explicit actor input."
+    },
+    {
+      "Id": "D040",
+      "Rule": "SP003",
+      "Path": "Player/DeckRiderMeshPresenter.cs",
+      "Token": "private PlayerWalkController _walk",
+      "Count": 1,
+      "Reason": "One actor reference is wired here today; an additional actor needs its own instance or explicit actor input."
+    },
+    {
+      "Id": "D041",
+      "Rule": "SP003",
+      "Path": "Player/GinnyFreezer.cs",
+      "Token": "private ClamBucket _bucket",
+      "Count": 1,
+      "Reason": "One actor reference is wired here today; an additional actor needs its own instance or explicit actor input."
+    },
+    {
+      "Id": "D042",
+      "Rule": "SP003",
+      "Path": "Player/PlayerFixturePosePresenter.cs",
+      "Token": "private PlayerWalkController _walk",
+      "Count": 1,
+      "Reason": "One actor reference is wired here today; an additional actor needs its own instance or explicit actor input."
+    },
+    {
+      "Id": "D043",
+      "Rule": "SP003",
+      "Path": "Player/PlayerSleepPresenter.cs",
+      "Token": "private PlayerWalkController _walk",
+      "Count": 1,
+      "Reason": "One actor reference is wired here today; an additional actor needs its own instance or explicit actor input."
+    },
+    {
+      "Id": "D044",
+      "Rule": "SP003",
+      "Path": "Player/RodFightPresenter.cs",
+      "Token": "private CarryHands _hands",
+      "Count": 1,
+      "Reason": "One actor reference is wired here today; an additional actor needs its own instance or explicit actor input."
+    },
+    {
+      "Id": "D045",
+      "Rule": "SP003",
+      "Path": "Player/StowageRack.cs",
+      "Token": "private CarryHands _hands",
+      "Count": 1,
+      "Reason": "One actor reference is wired here today; an additional actor needs its own instance or explicit actor input."
+    },
+    {
+      "Id": "D046",
+      "Rule": "SP003",
+      "Path": "Player/WetBucketPoint.cs",
+      "Token": "private ClamBucket _bucket",
+      "Count": 1,
+      "Reason": "One actor reference is wired here today; an additional actor needs its own instance or explicit actor input."
+    },
+    {
+      "Id": "D047",
+      "Rule": "SP004",
+      "Path": "Core/Save/SaveData.cs",
+      "Token": "public CharacterRecipe PlayerRecipe",
+      "Count": 1,
+      "Reason": "The flat save has one personal record; a future migration must key it by player or physical container."
+    },
+    {
+      "Id": "D048",
+      "Rule": "SP004",
+      "Path": "Core/Save/SaveData.cs",
+      "Token": "public List<CaughtSpeciesDto> CaughtSpecies",
+      "Count": 1,
+      "Reason": "The flat save has one personal record; a future migration must key it by player or physical container."
+    },
+    {
+      "Id": "D049",
+      "Rule": "SP004",
+      "Path": "Core/Save/SaveData.cs",
+      "Token": "public List<HeldCatchDto> BucketCatch",
+      "Count": 1,
+      "Reason": "The flat save has one personal record; a future migration must key it by player or physical container."
+    },
+    {
+      "Id": "D050",
+      "Rule": "SP004",
+      "Path": "Core/Save/SaveData.cs",
+      "Token": "public List<NavRoutePointDto> NavRoute",
+      "Count": 1,
+      "Reason": "The flat save has one personal record; a future migration must key it by player or physical container."
+    },
+    {
+      "Id": "D051",
+      "Rule": "SP004",
+      "Path": "Core/Save/SaveData.cs",
+      "Token": "public List<NavTrackPointDto> NavTrack",
+      "Count": 1,
+      "Reason": "The flat save has one personal record; a future migration must key it by player or physical container."
+    },
+    {
+      "Id": "D052",
+      "Rule": "SP004",
+      "Path": "Core/Save/SaveData.cs",
+      "Token": "public List<NavWaypointDto> NavWaypoints",
+      "Count": 1,
+      "Reason": "The flat save has one personal record; a future migration must key it by player or physical container."
+    },
+    {
+      "Id": "D053",
+      "Rule": "SP004",
+      "Path": "Core/Save/SaveData.cs",
+      "Token": "public List<NpcGiftDayDto> NpcGiftDays",
+      "Count": 1,
+      "Reason": "Gift counts are keyed only by NPC and day; separate personal relationships need a giver identity and an agreed shared cap."
+    },
+    {
+      "Id": "D054",
+      "Rule": "SP004",
+      "Path": "Core/Save/SaveData.cs",
+      "Token": "public List<PlayerNoteDto> PlayerNotes",
+      "Count": 1,
+      "Reason": "The flat save has one personal record; a future migration must key it by player or physical container."
+    },
+    {
+      "Id": "D055",
+      "Rule": "SP004",
+      "Path": "Core/Save/SaveData.cs",
+      "Token": "public List<string> PlayerTraits",
+      "Count": 1,
+      "Reason": "The flat save has one personal record; a future migration must key it by player or physical container."
+    },
+    {
+      "Id": "D056",
+      "Rule": "SP004",
+      "Path": "Core/Save/SaveData.cs",
+      "Token": "public PlayerBodyDto PlayerBody",
+      "Count": 1,
+      "Reason": "The flat save has one personal record; a future migration must key it by player or physical container."
+    },
+    {
+      "Id": "D057",
+      "Rule": "SP004",
+      "Path": "Core/Save/SaveData.cs",
+      "Token": "public PlayerCleanlinessDto PlayerCleanliness",
+      "Count": 1,
+      "Reason": "The flat save has one personal record; a future migration must key it by player or physical container."
+    },
+    {
+      "Id": "D058",
+      "Rule": "SP004",
+      "Path": "Core/Save/SaveData.cs",
+      "Token": "public PlayerNeedsDto PlayerNeeds",
+      "Count": 1,
+      "Reason": "The flat save has one personal record; a future migration must key it by player or physical container."
+    },
+    {
+      "Id": "D059",
+      "Rule": "SP004",
+      "Path": "Core/Save/SaveData.cs",
+      "Token": "public bool RestAboard",
+      "Count": 1,
+      "Reason": "The flat save has one personal record; a future migration must key it by player or physical container."
+    },
+    {
+      "Id": "D060",
+      "Rule": "SP004",
+      "Path": "Core/Save/SaveData.cs",
+      "Token": "public double RestWokeAtSeconds",
+      "Count": 1,
+      "Reason": "The flat save has one personal record; a future migration must key it by player or physical container."
+    },
+    {
+      "Id": "D061",
+      "Rule": "SP004",
+      "Path": "Core/Save/SaveData.cs",
+      "Token": "public float RestBoatPosX",
+      "Count": 1,
+      "Reason": "One sleeper embeds one boat pose; future saves need per-player rest anchors and one shared pose per hull instance."
+    },
+    {
+      "Id": "D062",
+      "Rule": "SP004",
+      "Path": "Core/Save/SaveData.cs",
+      "Token": "public float RestBoatPosY",
+      "Count": 1,
+      "Reason": "One sleeper embeds one boat pose; future saves need per-player rest anchors and one shared pose per hull instance."
+    },
+    {
+      "Id": "D063",
+      "Rule": "SP004",
+      "Path": "Core/Save/SaveData.cs",
+      "Token": "public float RestBoatRotation",
+      "Count": 1,
+      "Reason": "One sleeper embeds one boat pose; future saves need per-player rest anchors and one shared pose per hull instance."
+    },
+    {
+      "Id": "D064",
+      "Rule": "SP004",
+      "Path": "Core/Save/SaveData.cs",
+      "Token": "public float RestPosX",
+      "Count": 1,
+      "Reason": "The flat save has one personal record; a future migration must key it by player or physical container."
+    },
+    {
+      "Id": "D065",
+      "Rule": "SP004",
+      "Path": "Core/Save/SaveData.cs",
+      "Token": "public float RestPosY",
+      "Count": 1,
+      "Reason": "The flat save has one personal record; a future migration must key it by player or physical container."
+    },
+    {
+      "Id": "D066",
+      "Rule": "SP004",
+      "Path": "Core/Save/SaveData.cs",
+      "Token": "public int RestLevel",
+      "Count": 1,
+      "Reason": "The flat save has one personal record; a future migration must key it by player or physical container."
+    },
+    {
+      "Id": "D067",
+      "Rule": "SP004",
+      "Path": "Core/Save/SaveData.cs",
+      "Token": "public string ActiveHullId",
+      "Count": 1,
+      "Reason": "One selected hull conflates fleet state with the player at its helm; select per player and store boats by instance."
+    },
+    {
+      "Id": "D068",
+      "Rule": "SP004",
+      "Path": "Core/Save/SaveData.cs",
+      "Token": "public string PlayerName",
+      "Count": 1,
+      "Reason": "The flat save has one personal record; a future migration must key it by player or physical container."
+    },
+    {
+      "Id": "D069",
+      "Rule": "SP004",
+      "Path": "Core/Save/SaveData.cs",
+      "Token": "public string RestBedId",
+      "Count": 1,
+      "Reason": "The flat save has one personal record; a future migration must key it by player or physical container."
+    },
+    {
+      "Id": "D070",
+      "Rule": "SP004",
+      "Path": "Core/Save/SaveData.cs",
+      "Token": "public string RestBoatHullId",
+      "Count": 1,
+      "Reason": "One sleeper embeds one boat pose; future saves need per-player rest anchors and one shared pose per hull instance."
+    },
+    {
+      "Id": "D071",
+      "Rule": "SP004",
+      "Path": "Core/Save/SaveData.cs",
+      "Token": "public string RestBoatRegion",
+      "Count": 1,
+      "Reason": "One sleeper embeds one boat pose; future saves need per-player rest anchors and one shared pose per hull instance."
+    },
+    {
+      "Id": "D072",
+      "Rule": "SP004",
+      "Path": "Core/Save/SaveData.cs",
+      "Token": "public string RestRegion",
+      "Count": 1,
+      "Reason": "The flat save has one personal record; a future migration must key it by player or physical container."
+    },
+    {
+      "Id": "D073",
+      "Rule": "SP004",
+      "Path": "Core/Save/SaveData.cs",
+      "Token": "public string WornOutfitId",
+      "Count": 1,
+      "Reason": "The flat save has one personal record; a future migration must key it by player or physical container."
+    },
+    {
+      "Id": "D074",
+      "Rule": "SP005",
+      "Path": "World/WorldInteractor.cs",
+      "Token": "RelationshipGraph.PlayerId",
+      "Count": 1,
+      "Reason": "The literal player relationship endpoint merges two people; supply the acting player identity."
+    },
+    {
+      "Id": "D075",
+      "Rule": "SP006",
+      "Path": "Core/Save/RestQuorum.cs",
+      "Token": "public static int Players => 1",
+      "Count": 1,
+      "Reason": "The local sleep facade assumes one participant; a session roster must decide the quorum."
+    },
+    {
+      "Id": "D076",
+      "Rule": "SP006",
+      "Path": "Core/Save/SleepFlow.cs",
+      "Token": "RestQuorum.IsMet(1)",
+      "Count": 1,
+      "Reason": "The local sleep facade assumes one participant; a session roster must decide the quorum."
+    },
+    {
+      "Id": "D077",
+      "Rule": "SP006",
+      "Path": "Core/Save/SleepFlow.cs",
+      "Token": "RestQuorum.LocalSleeper",
+      "Count": 3,
+      "Reason": "The local sleep facade assumes one participant; a session roster must decide the quorum."
+    }
+  ]
+}
