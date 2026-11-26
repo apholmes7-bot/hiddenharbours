@@ -18,6 +18,7 @@ namespace HiddenHarbours.Art
 
         private void Update()
         {
+            if (!HiddenHarbours.Core.DemoBuild.DevShortcutsAllowed) return;
             var kb = Keyboard.current;
             if (kb == null) return;
 
@@ -27,9 +28,14 @@ namespace HiddenHarbours.Art
             if (kb.sKey.isPressed || kb.downArrowKey.isPressed)  y -= 1f;
             if (kb.wKey.isPressed || kb.upArrowKey.isPressed)    y += 1f;
 
-            var dir = new Vector2(x, y);
+            Step(new Vector2(x, y), Time.deltaTime);
+        }
+
+        public void Step(Vector2 dir, float deltaSeconds)
+        {
+            if (!HiddenHarbours.Core.DemoBuild.DevShortcutsAllowed) return;
             if (dir.sqrMagnitude > 1e-4f)
-                transform.position += (Vector3)(dir.normalized * (_speed * Time.deltaTime));
+                transform.position += (Vector3)(dir.normalized * (_speed * deltaSeconds));
         }
     }
 }

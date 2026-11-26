@@ -244,6 +244,8 @@ namespace HiddenHarbours.Tests.EditMode
             ids.AddRange(CatalogSource.For<SupplyDef>(LeBlancs).Select(o => o.Id));
             ids.AddRange(CatalogSource.For<InstrumentOffer>(LeBlancs).Select(o => o.Id));
             ids.AddRange(CatalogSource.For<LicenseDef>(LeBlancs).Select(o => o.Id));
+            // The cod licence is sold at her counter too (CodLicenceAtTheIslandStoreTests holds it there).
+            Assert.IsTrue(ids.Remove("license.cod"), "her book also holds the cod licence, so the island week can reach it");
 
             CollectionAssert.AreEquivalent(
                 new[] { "gear.rod", "bait.capelin", "supply.ice", "license.clam",

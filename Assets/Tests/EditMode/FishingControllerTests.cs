@@ -39,6 +39,7 @@ namespace HiddenHarbours.Tests.EditMode
         [SetUp]
         public void SetUp()
         {
+            GameServices.Reset();
             _fishCaught = 0;
             EventBus.Clear<FishCaught>();
             EventBus.Clear<FishingStateChanged>();
@@ -54,6 +55,7 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (var o in _spawned)
                 if (o != null) Object.DestroyImmediate(o);
             _spawned.Clear();
+            GameServices.Reset();
         }
 
         // ---- helpers ------------------------------------------------------------------------
@@ -197,6 +199,104 @@ namespace HiddenHarbours.Tests.EditMode
             // …and a whole determined gesture gets nowhere either.
             FlickGestures.CastLine(c);
             Assert.AreEqual(FishingPhase.Idle, c.Phase, "a full gesture against a full hold still never casts");
+        }
+
+        [Test]
+        public void PointerBecomingValidWhileHeld_RequiresAFreshPress()
+        {
+            var c = MakeController(new FakeHold(), new[] { MakeFish("fish.cod", FishCategory.InshoreGroundfish, 1f, 6f) }, 9);
+            c.Tick(0.02f, true);
+            Assert.AreEqual(FishingPhase.Idle, c.Phase);
+            c.Tick(0.02f, true, Vector2.down, true);
+            Assert.AreEqual(FishingPhase.Idle, c.Phase);
+            c.Tick(0.02f, false);
+            c.Tick(0.02f, true, Vector2.down, true);
+            Assert.AreEqual(FishingPhase.WindBack, c.Phase);
+        }
+
+        [Test]
+        public void CancelGesture_ResetsOnlyAnUnflownCast()
+        {
+            var hold = new FakeHold();
+            var c = MakeController(hold, new[] { MakeFish("fish.cod", FishCategory.InshoreGroundfish, 1f, 6f) }, 9);
+            c.Tick(0.02f, true, Vector2.down, true);
+            c.CancelCastGesture();
+            Assert.AreEqual(FishingPhase.Idle, c.Phase);
+            Assert.AreEqual(0, hold.UsedUnits);
+            c.Tick(0.02f, false);
+            FlickGestures.Flick(c);
+            Assert.AreEqual(FishingPhase.Cast, c.Phase);
+            c.CancelCastGesture();
+            Assert.AreEqual(FishingPhase.Cast, c.Phase);
+            c.Tick(100f, false);
+            Assert.AreEqual(FishingPhase.Waiting, c.Phase);
+            c.CancelCastGesture();
+            Assert.AreEqual(FishingPhase.Waiting, c.Phase);
+        }
+
+        [Test]
+        public void LegacyBite_FreshPressHooksWithoutWaitingForTheAutoHook()
+        {
+            var c = MakeController(new FakeHold(), new[] { MakeFish("fish.cod", FishCategory.InshoreGroundfish, 1f, 6f) }, 9);
+            FlickGestures.CastLine(c);
+            c.Tick(100f, false);
+            Assert.AreEqual(FishingPhase.Bite, c.Phase);
+            c.Tick(0f, true);
+            Assert.AreEqual(FishingPhase.Fighting, c.Phase);
+        }
+
+        [Test]
+        public void Landing_UsesTheFishAndWeightResolvedAtTheBite()
+        {
+            var hold = new FakeHold();
+            var fish = MakeFish("fish.first", FishCategory.Shellfish, 2f, 6f);
+            var pool = new[] { fish };
+            var c = MakeController(hold, pool, 9);
+            AdvanceIntoFight(c);
+            Assert.AreEqual(FishingPhase.Tending, c.Phase);
+            float hookedWeight = c.State.WeightKg;
+            pool[0] = MakeFish("fish.replacement", FishCategory.Shellfish, 20f, 30f);
+            c.Tick(2f, true);
+            Assert.AreEqual(FishingPhase.Landed, c.Phase);
+            Assert.AreEqual(1, hold.UsedUnits);
+            Assert.AreEqual(fish.Id, hold.Items[0].SpeciesId);
+            Assert.AreEqual(hookedWeight, hold.Items[0].WeightKg);
+            Assert.AreEqual(1, _fishCaught);
+        }
+
+        [Test]
+        public void HoldFilledDuringTheFight_DoesNotAddOrCountTheLostCatch()
+        {
+            var hold = new FakeHold();
+            var c = MakeController(hold, new[] { MakeFish("fish.clam", FishCategory.Shellfish, 1f, 1f) }, 9);
+            AdvanceIntoFight(c);
+            Assert.AreEqual(FishingPhase.Tending, c.Phase);
+            hold.Capacity = 0;
+            c.Tick(2f, true);
+            Assert.AreEqual(FishingPhase.Landed, c.Phase);
+            Assert.AreEqual(0, hold.UsedUnits);
+            Assert.AreEqual(0, _fishCaught);
+        }
+
+        [Test]
+        public void HeldActionThroughResult_DoesNotStartAnotherCastOrCountAgain()
+        {
+            var hold = new FakeHold();
+            var c = MakeController(hold, new[] { MakeFish("fish.clam", FishCategory.Shellfish, 1f, 1f) }, 9);
+            AdvanceIntoFight(c);
+            c.Tick(2f, true);
+            Assert.AreEqual(FishingPhase.Landed, c.Phase);
+            c.Tick(2f, true);
+            Assert.AreEqual(FishingPhase.Idle, c.Phase);
+            Assert.IsNull(c.State.FishId);
+            Assert.AreEqual(0f, c.State.WeightKg);
+            c.Tick(1f, true, Vector2.down, true);
+            Assert.AreEqual(FishingPhase.Idle, c.Phase);
+            Assert.AreEqual(1, hold.UsedUnits);
+            Assert.AreEqual(1, _fishCaught);
+            c.Tick(0f, false);
+            c.Tick(0f, true, Vector2.down, true);
+            Assert.AreEqual(FishingPhase.WindBack, c.Phase);
         }
 
         [Test]

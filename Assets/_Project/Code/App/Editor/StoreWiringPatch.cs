@@ -113,6 +113,8 @@ namespace HiddenHarbours.App.Editor
             new Seller("GeneralStoreCounter", typeof(SupplyShop), "supply.tinned_beans", StPetersBuilder.StoreSellerId),
             new Seller("GeneralStoreCounter", typeof(SupplyShop), "supply.soap_bar", StPetersBuilder.StoreSellerId),
             new Seller("GeneralStoreCounter", typeof(LicenseVendor), "license.clam", StPetersBuilder.StoreSellerId),
+            // The cod licence is sold over her counter too (ruling 2026-11-25); the harbourmaster keeps his.
+            new Seller("GeneralStoreCounter", typeof(LicenseVendor), "license.cod", StPetersBuilder.StoreSellerId),
         }, new[]
         {
             new Seller("GeneralStoreCounter", typeof(InstrumentShop), "instrument.depth_sounder", StPetersBuilder.StoreSellerId),

@@ -24,7 +24,14 @@ namespace HiddenHarbours.Core
         public const string DefaultFileName = "savegame.json";
 
         /// <summary>The default save path for the running game.</summary>
-        public static string DefaultPath => Path.Combine(Application.persistentDataPath, DefaultFileName);
+        public static string DefaultPath => DemoBuild.Enabled
+            ? Path.Combine(Application.persistentDataPath, "demo", DefaultFileName)
+            : Path.Combine(Application.persistentDataPath, DefaultFileName);
+
+        /// <summary>Keep the demo and its replacement copies in their own directory; never import implicitly.</summary>
+        internal static string PathForMode(string fullGamePath, bool demo) => demo
+            ? Path.Combine(Path.GetDirectoryName(fullGamePath) ?? string.Empty, "demo", Path.GetFileName(fullGamePath))
+            : fullGamePath;
 
         /// <summary>
         /// The process environment variable that names a test run's own save. The PlayMode tests' run hook
@@ -51,7 +58,7 @@ namespace HiddenHarbours.Core
             {
 #if UNITY_EDITOR
                 string testRun = System.Environment.GetEnvironmentVariable(TestRunSaveVariable);
-                if (!string.IsNullOrEmpty(testRun)) return testRun;
+                if (!string.IsNullOrEmpty(testRun)) return PathForMode(testRun, DemoBuild.Enabled);
 #endif
                 return DefaultPath;
             }
