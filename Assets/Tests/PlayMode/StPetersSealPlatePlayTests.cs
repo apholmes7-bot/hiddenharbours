@@ -214,6 +214,29 @@ namespace HiddenHarbours.Tests.PlayMode
                     $"{id}: {host.Haulout.Spots[i].Id} lies on a rock at {lie} under water at {tide}");
             }
 
+            // One pixel size on screen: every drawn seal at its art's own size (no scale, no rotation) and the
+            // frame at the sprites' pixels per metre, so one sheet pixel lands on one screen pixel.
+            float screenPxPerMetre = _h / (2f * _cam.orthographicSize);
+            // The seals' own renderers are the host's direct children; the world's shadow casters hang their own
+            // quads under them, and those are the shadow system's to judge (logged, not asserted).
+            SpriteRenderer[] seals = Enumerable.Range(0, host.transform.childCount)
+                .Select(c => host.transform.GetChild(c).GetComponent<SpriteRenderer>())
+                .Where(sr => sr != null && sr.gameObject.activeInHierarchy).ToArray();
+            var others = host.GetComponentsInChildren<SpriteRenderer>(false).Where(sr => sr.enabled && !seals.Contains(sr))
+                .Select(sr => $"{sr.name}(ppu {(sr.sprite != null ? sr.sprite.pixelsPerUnit : 0f)}, scale {sr.transform.lossyScale}, " +
+                              $"filter {(sr.sprite != null ? sr.sprite.texture.filterMode.ToString() : "-")})").Distinct().ToArray();
+            if (others.Length > 0) Debug.Log($"[SealPlates] {id} other quads under the seals: {string.Join("; ", others.Take(4))}");
+            foreach (SpriteRenderer sr in seals)
+            {
+                Assert.IsTrue((sr.transform.lossyScale - Vector3.one).sqrMagnitude < 1e-8f, $"{id}: {sr.name} is scaled {sr.transform.lossyScale}");
+                Assert.IsTrue(Quaternion.Angle(sr.transform.rotation, Quaternion.identity) < 1e-3f, $"{id}: {sr.name} is rotated");
+                Assert.IsTrue(sr.drawMode == SpriteDrawMode.Simple, $"{id}: {sr.name} is not drawn simple");
+                if (sr.sprite != null)
+                    Assert.AreEqual(sr.sprite.pixelsPerUnit, screenPxPerMetre, 0.01f, $"{id}: {sr.name} sheet px a metre vs the frame's");
+            }
+            Debug.Log($"[SealPlates] {id} pixels: frame {screenPxPerMetre:0.###} px/m (board {BoardPixelsPerMetre}), " +
+                      $"host scale {host.transform.lossyScale}, seals drawn {seals.Length}");
+
             var tex = new Texture2D(_w, _h, TextureFormat.RGBA32, false);
             tex.LoadRawTextureData(Capture());
             tex.Apply();

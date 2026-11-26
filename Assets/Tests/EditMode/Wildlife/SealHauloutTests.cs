@@ -398,12 +398,15 @@ namespace HiddenHarbours.Tests.EditMode.Wildlife
             foreach (var (name, frames, count) in new[]
                      {
                          ("rest", s.RestFrames, 6), ("alert", s.AlertFrames, 4), ("slide", s.SlideFrames, 6),
-                         ("swim", s.SwimFrames, 4), ("dive", s.DiveFrames, 5),
+                         ("slide dry", s.SlideDryFrames, 6), ("swim", s.SwimFrames, 4), ("dive", s.DiveFrames, 5),
                      })
             {
                 Assert.AreEqual(count, frames?.Length ?? 0, name + " frames");
                 Assert.IsTrue(frames.All(f => f != null), name + " frames has a hole");
                 Assert.IsTrue(frames.All(f => Mathf.Approximately(f.pixelsPerUnit, 32f)), name + " frames are not PPU 32");
+                // one pixel size on screen: native-size art, point filtered, no mips to resample it
+                Assert.IsTrue(frames.All(f => f.texture.filterMode == FilterMode.Point && f.texture.mipmapCount == 1),
+                    name + " frames are not point filtered without mips");
                 Assert.IsTrue(frames.All(f => Mathf.Approximately(f.rect.width, SealContentSetup.CellW)
                                               && Mathf.Approximately(f.rect.height, SealContentSetup.CellH)), name + " frames are not one cell");
                 // the pivot is the belly's ground contact: Unity's pivot is from the cell's bottom-left

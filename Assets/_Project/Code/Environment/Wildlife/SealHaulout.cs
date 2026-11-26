@@ -77,6 +77,7 @@ namespace HiddenHarbours.Environment
         float _tickTimer;
         float _tickPending;
         int _seed;
+        float _level;
         readonly EnvironmentTide _tide = new EnvironmentTide();
 
         /// <summary>The schedule's place for each spot at the last tick (tests and plates read it).</summary>
@@ -256,6 +257,15 @@ namespace HiddenHarbours.Environment
                 _sinceTick[i] = 0f; // the frames run on from the phase time the tick just set
                 _swimAt[i] = SwimPoint(spot, i, tide.Level, terrain, out _swimWet[i]);
             }
+            _level = tide.Level;
+        }
+
+        /// <summary>Whether the ground at <paramref name="at"/> is under the sea at the last tick's level (any depth).
+        /// With no tidal terrain the slide keeps its water frames, as before.</summary>
+        bool InWater(Vector2 at)
+        {
+            ITidalTerrain terrain = GameServices.TidalTerrain;
+            return terrain == null || TidalExposure.WaterDepth(_level, terrain.ElevationAt(at)) > 0f;
         }
 
         /// <summary>The nearest intruder's distance from <paramref name="at"/>, divided by its scare scale;
@@ -368,9 +378,16 @@ namespace HiddenHarbours.Environment
                         float s = Mathf.Clamp01(t / Mathf.Max(0.1f, species.SlideSeconds));
                         float into = m.Phase == SealPhase.SlidingIn ? s : 1f - s;
                         int n = species.SlideFrames != null ? species.SlideFrames.Length : 0;
-                        sprite = Pick(species.SlideFrames, Mathf.Min(n - 1, (int)(into * n)));
                         at = Vector2.Lerp(spot.At, _swimAt[i], into * into);
-                        onLand = into < 0.5f;
+                        // The water cut is drawn only where there is water under the seal; over dry rock or sand
+                        // the same hump plays without it.
+                        bool wet = InWater(at);
+                        Sprite[] slide = !wet && species.SlideDryFrames != null && species.SlideDryFrames.Length == n
+                            ? species.SlideDryFrames : species.SlideFrames;
+                        sprite = Pick(slide, Mathf.Min(n - 1, (int)(into * n)));
+                        // Over its rock (the first half, or anywhere the ground under it is still dry) it sorts as
+                        // lying on it, so the ledge it is humping across never hides it.
+                        onLand = into < 0.5f || !wet;
                         break;
                     }
                     case SealPhase.Swimming:

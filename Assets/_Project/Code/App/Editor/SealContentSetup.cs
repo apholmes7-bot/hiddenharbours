@@ -37,6 +37,11 @@ namespace HiddenHarbours.App.Editor
         /// <summary>How many real frames each row holds (the rest of the row is blank).</summary>
         public static readonly int[] FramesPerRow = { 6, 4, 6, 4, 5 };
 
+        /// <summary>The dry slide, frame for frame with row 2, as (row, col): its first two frames are row 2's own
+        /// (still on the rock, no water drawn), the rest sit in the sheet's spare cells.</summary>
+        public static readonly Vector2Int[] SlideDryCells =
+            { new Vector2Int(2, 0), new Vector2Int(2, 1), new Vector2Int(1, 4), new Vector2Int(1, 5), new Vector2Int(3, 4), new Vector2Int(3, 5) };
+
         public const string HauloutRule = "SealIso.HAULOUT";
 
         /// <summary>Coats by the key scene's coat names (multiplied over the grey sheet).</summary>
@@ -68,6 +73,8 @@ namespace HiddenHarbours.App.Editor
                         throw new InvalidOperationException($"The seal sheet has no {SliceName(r, c)}.");
                 return row;
             }
+            Sprite Cell(int r, int c) => sprites.TryGetValue(SliceName(r, c), out Sprite s)
+                ? s : throw new InvalidOperationException($"The seal sheet has no {SliceName(r, c)}.");
 
             var species = AssetDatabase.LoadAssetAtPath<WildlifeSpeciesDef>(SpeciesPath);
             bool made = species == null;
@@ -82,6 +89,7 @@ namespace HiddenHarbours.App.Editor
             species.RestFrames = Row(0);
             species.AlertFrames = Row(1);
             species.SlideFrames = Row(2);
+            species.SlideDryFrames = SlideDryCells.Select(rc => Cell(rc.x, rc.y)).ToArray();
             species.SwimFrames = Row(3);
             species.DiveFrames = Row(4);
             EditorUtility.SetDirty(species);

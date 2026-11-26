@@ -156,6 +156,10 @@ namespace HiddenHarbours.Environment
         [Tooltip("Humping off the rock into the water (played backwards to haul out).")]
         public Sprite[] SlideFrames = new Sprite[0];
 
+        [Tooltip("The same slide with no water under it (no waterline, no splash), frame for frame with SlideFrames: " +
+                 "drawn wherever the ground under the sliding seal is dry, so the water cut shows only in water.")]
+        public Sprite[] SlideDryFrames = new Sprite[0];
+
         [Tooltip("A head in the water: bob, look one way, look the other.")]
         public Sprite[] SwimFrames = new Sprite[0];
 

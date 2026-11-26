@@ -72,6 +72,13 @@ MonoBehaviour:
   - {fileID: -1132033809, guid: 5bd19b0bec832914ba97769afbe90543, type: 3}
   - {fileID: 915282093, guid: 5bd19b0bec832914ba97769afbe90543, type: 3}
   - {fileID: 2146312146, guid: 5bd19b0bec832914ba97769afbe90543, type: 3}
+  SlideDryFrames:
+  - {fileID: 1547721043, guid: 5bd19b0bec832914ba97769afbe90543, type: 3}
+  - {fileID: 878621776, guid: 5bd19b0bec832914ba97769afbe90543, type: 3}
+  - {fileID: 2016254116, guid: 5bd19b0bec832914ba97769afbe90543, type: 3}
+  - {fileID: 1399044297, guid: 5bd19b0bec832914ba97769afbe90543, type: 3}
+  - {fileID: 424810689, guid: 5bd19b0bec832914ba97769afbe90543, type: 3}
+  - {fileID: 327857233, guid: 5bd19b0bec832914ba97769afbe90543, type: 3}
   SwimFrames:
   - {fileID: 1927815637, guid: 5bd19b0bec832914ba97769afbe90543, type: 3}
   - {fileID: -457157977, guid: 5bd19b0bec832914ba97769afbe90543, type: 3}
