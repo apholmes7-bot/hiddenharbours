@@ -5,6 +5,7 @@ using System.IO;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.TestTools;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Core;
@@ -183,13 +184,18 @@ namespace HiddenHarbours.Tests.PlayMode
             _cam.clearFlags = CameraClearFlags.SolidColor;
             _cam.backgroundColor = new Color(0.16f, 0.32f, 0.40f, 1f);   // a plain sea
             _cam.enabled = false;
+            // No GPU (CI): no target, and Shoot skips; rendering into a failed target crashes the editor.
+            if (!HasGpu) return;
             _rt = new RenderTexture(w, h, 0, RenderTextureFormat.ARGB32) { filterMode = FilterMode.Point };
             _rt.Create();
             _cam.targetTexture = _rt;
         }
 
+        private static bool HasGpu => SystemInfo.graphicsDeviceType != GraphicsDeviceType.Null;
+
         private Color32[] Shoot(IList<Float> floats, float height, float amplitude)
         {
+            if (!HasGpu) Assert.Ignore("SKIPPED: plate capture needs a GPU.");
             foreach (var f in floats) f.Wave.ApplyWaveHeight(height, amplitude);
             _cam.Render();
             var prev = RenderTexture.active;
