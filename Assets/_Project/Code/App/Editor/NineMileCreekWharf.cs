@@ -515,6 +515,12 @@ namespace HiddenHarbours.App.Editor
         /// <para><b>It ties with a moored hull</b>, which composites at the same order — stated rather
         /// than hidden. The brow runs x 92 → 104 and the first float berth begins at x 104, so the two
         /// share at most a boat's stem; <c>NineMileCreekFloatTests</c> holds that boundary.</para>
+        ///
+        /// <para>The water-side gangways (west, fleet 0 and 1, east) take this rung too. Each lies across
+        /// the face of the quay it bridges (the apron, the crib, the concrete wharf, the east wharf), and
+        /// those sit on <see cref="FixedWaterSideSortingOrder"/>: on one rung with them the tie was broken
+        /// by draw order, and the quay won, hiding the gangway wherever it crossed the face.
+        /// <c>NmcWharfWaterSideSortingTests</c> holds every gangway over every quay body it overlaps.</para>
         /// </summary>
         public static int GangwaySortingOrder => SortingBands.WharfDeckMax;
 

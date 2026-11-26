@@ -151,7 +151,8 @@ namespace HiddenHarbours.App.Editor
                         string layer=WS(WM(p,"motionLayer"));
                         // Fixed: not a float, not one of a float's back/front motion layers, not a brow rung.
                         bool fixedPart=!WB(WM(p,"floating"))&&gang==null&&layer!="back"&&layer!="front";
-                        int order=fixedPart?NineMileCreekWharf.FixedWaterSideSortingOrder:NineMileCreekWharf.FloatSortingOrder+(layer=="back"?-1:layer=="front"?1:0);
+                        // A gangway lies ON the quay it bridges, so it takes the gangway rung, one over the fixed parts: on their rung the tie is broken by draw order.
+                        int order=gang!=null?NineMileCreekWharf.GangwaySortingOrder:fixedPart?NineMileCreekWharf.FixedWaterSideSortingOrder:NineMileCreekWharf.FloatSortingOrder+(layer=="back"?-1:layer=="front"?1:0);
                         // A fixed part with one straight seaward lip is cut at the waterline: its face shows above the sea, the sea below it.
                         object walkRaw=WM(p,"walkPolygon");float lip=0f;
                         var neighbours=parts.Where(q=>q!=p&&WS(WM(q,"harbour"))==key&&!WB(WM(q,"floating"))&&WM(q,"walkPolygon")!=null)
