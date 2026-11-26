@@ -80,6 +80,18 @@ namespace HiddenHarbours.Art
         [Range(0f, 1f)] public float LipShare = 0.6f;
         [Tooltip("Chance of a one-texel tone speck inside a block.")]
         [Range(0f, 0.5f)] public float SpeckShare = 0.03f;
+        [Tooltip("Chance a block sits back (in shade, never black: its fill keeps the course tone, only its top row is shadow).")]
+        [Range(0f, 0.5f)] public float SunkShare = 0.05f;
+
+        [Header("The texture inside a block (pass 3: no large flat fills)")]
+        [Tooltip("Share of a block's area a broad stain darkens one band (0 = none).")]
+        [Range(0f, 1f)] public float StainShare = 0.3f;
+        [Tooltip("Chance per texel column of a short vertical hairline joint inside a course (1 to 3 texels long).")]
+        [Range(0f, 0.3f)] public float TickShare = 0.05f;
+        [Tooltip("Chance a row inside a course carries a darker flaggy parting (thin lamination).")]
+        [Range(0f, 1f)] public float PartingShare = 0.35f;
+        [Tooltip("Mean spacing of small chips and sockets on the face, in texels (0 = none).")]
+        [Min(0)] public int ChipPitchTexels = 9;
 
         [Header("The baked faces (filled by CliffFaceStyleBaker)")]
         public List<CliffStyleFace> Faces = new List<CliffStyleFace>();
@@ -103,6 +115,11 @@ namespace HiddenHarbours.Art
             Num("relief", ProudRelief);
             Num("lip", LipShare);
             Num("speck", SpeckShare);
+            Num("sunk", SunkShare);
+            Num("stain", StainShare);
+            Num("tick", TickShare);
+            Num("part", PartingShare);
+            Num("chip", ChipPitchTexels);
             sb.Length--;
             return sb.Append('}').ToString();
         }

@@ -18,7 +18,7 @@ MonoBehaviour:
   VariantSkin: {fileID: 11400000, guid: f3028f8aa3c24d2cb2c11afe9b18a5e1, type: 2}
   VariantShare: 0.5
   RunMetres: 10
-  BlendMetres: 3
+  BlendMetres: 6
   BlendBlockTexels: {x: 6, y: 3}
   Seed: 6
-  Why: 'Owner 11 25: a mix of our current cliffs and the boards'' cliffs, for variance. About half the coast wears the boards'' cliffs (their coursed faces and their colours), in stretches of ten to a few tens of metres, short enough that no long wall is all one skin (pass 2: run 10 m and seed 6, chosen by simulation over the live St Peters toes so each of the seven framed stretches shows at least a quarter of each skin), changing over about three metres as the rock''s own blocks give way. Presentation only: no collider, brow or walk rule reads it.'
+  Why: 'Owner 11 25: a mix of our current cliffs and the boards'' cliffs, for variance. About half the coast wears the boards'' cliffs (their coursed faces and their colours), in stretches of ten to a few tens of metres, short enough that no long wall is all one skin (pass 2: run 10 m and seed 6, chosen by simulation over the live St Peters toes so each of the seven framed stretches shows at least a quarter of each skin), changing over about six metres as the rock''s own blocks give way (pass 3: doubled so no join reads as a cut). Presentation only: no collider, brow or walk rule reads it.'

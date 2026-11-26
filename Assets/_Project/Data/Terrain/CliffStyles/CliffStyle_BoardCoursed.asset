@@ -17,17 +17,22 @@ MonoBehaviour:
   PainterScriptPath: docs/art/rigs/px-cliff-styles/pxCliffCoursed.js
   OutputFolder: Assets/_Project/Art/Terrain/CliffStyles/Coursed
   FilePrefix: SandstoneCoursed
-  CourseTexels: {x: 8, y: 13}
-  PaleShare: 0.22
-  PaleTexels: {x: 2, y: 4}
-  JointSpacingTexels: {x: 30, y: 60}
-  JointCut: 0.6
-  BedStep: 0.4
-  BedSegmentTexels: 32
-  ProudShare: 0.28
-  ProudRelief: 1.6
-  LipShare: 0.6
-  SpeckShare: 0.03
+  CourseTexels: {x: 4, y: 7}
+  PaleShare: 0.25
+  PaleTexels: {x: 2, y: 3}
+  JointSpacingTexels: {x: 28, y: 60}
+  JointCut: 0.45
+  BedStep: 0.12
+  BedSegmentTexels: 48
+  ProudShare: 0.1
+  ProudRelief: 0.8
+  LipShare: 0.35
+  SpeckShare: 0.05
+  SunkShare: 0.05
+  StainShare: 0.3
+  TickShare: 0.025
+  PartingShare: 0.2
+  ChipPitchTexels: 12
   Faces:
   - Base: {fileID: 2800000, guid: f410956fdd6700520cd4d72973bc43f7, type: 3}
     Index: {fileID: 2800000, guid: a7a872c2b1e493d04ffe831129159321, type: 3}
