@@ -24,6 +24,61 @@ namespace HiddenHarbours.Tests.EditMode
             "rock.stp_whelp_3", "rock.stp_whelp_3_b",
         };
 
+        static readonly string[] Forms = { "form.stp_harbour_stack", "form.stp_whelp_1", "form.stp_whelp_2", "form.stp_whelp_3" };
+
+        /// <summary>The forms are data (one asset each, the ids the key scene's ground gives them), the stack is the
+        /// form the scene's gulls are mounted on, and the pictures the recipe drew are the ones the Defs name: three
+        /// of one size each, with true heights the sea can cut by.</summary>
+        [Test]
+        public void TheForms_AreData_AndTheirPicturesAreTheRecipes()
+        {
+            TidalFormsContract contract = LoadTidalFormsContract();
+            var forms = LoadTidalForms(contract);
+            Assert.That(forms.Select(f => f.Id), Is.EqualTo(Forms));
+            var rules = Resources.Load<HiddenHarbours.Art.SunCasterRules>(nameof(HiddenHarbours.Art.SunCasterRules));
+            Assert.That(rules, Is.Not.Null, "the sun caster's rules");
+            Assert.That(rules.ExcludedNames, Does.Contain("*Seabed*").And.Contain("*Shade*"), "the rules no longer leave the seabed and the shade alone");
+            KeySceneDef scene = LoadStPetersKeyScenes().Single(s => s.Id == "keyscene.stp_whelps_lookout");
+            Assert.That(scene.Pieces.Count(p => p.MountHost == "form.stp_harbour_stack"), Is.GreaterThan(0),
+                "the key scene mounts nothing on the stack: the id is not the scene's");
+            foreach (TidalForm form in forms)
+            {
+                TidalFormsContract.Form drawn = contract.forms.Single(f => f.id == form.Id);
+                Assert.That(form.Pieces.Select(q => q.Name), Is.EqualTo(drawn.pieces.Select(q => q.name)), form.Id);
+                foreach (TidalFormsContract.Piece piece in drawn.pieces)
+                {
+                    string what = form.Id + " " + piece.name;
+                    var dry = AssetDatabase.LoadAssetAtPath<Sprite>(WhelpsHeights + "/" + piece.stem + ".png");
+                    var wet = AssetDatabase.LoadAssetAtPath<Sprite>(WhelpsHeights + "/" + piece.stem + "_wet.png");
+                    var height = AssetDatabase.LoadAssetAtPath<Texture2D>(WhelpsHeights + "/" + piece.stem + "_height.png");
+                    Assert.That(dry, Is.Not.Null, what); Assert.That(wet, Is.Not.Null, what); Assert.That(height, Is.Not.Null, what);
+                    Assert.That(new[] { dry.texture.width, dry.texture.height }, Is.EqualTo(drawn.pixels), what + ": the picture is not the recipe's size");
+                    Assert.That(new[] { wet.texture.width, wet.texture.height }, Is.EqualTo(drawn.pixels), what);
+                    Assert.That(new[] { height.width, height.height }, Is.EqualTo(drawn.pixels), what + ": the heights do not lie over the picture");
+                    Assert.That(dry.pixelsPerUnit, Is.EqualTo(contract.pixelsPerMetre), what);
+                    Assert.That(dry.pivot.x / dry.rect.width, Is.EqualTo(piece.pivot[0]).Within(1e-3f), what + ": the pivot is not the recipe's");
+                    Assert.That(dry.pivot.y / dry.rect.height, Is.EqualTo(piece.pivot[1]).Within(1e-3f), what);
+                    Assert.That(wet.pivot, Is.EqualTo(dry.pivot), what + ": the wet picture does not lie under the dry one");
+                    // One stone, one shadow, and none from under the sea: the sun caster's rules leave these names alone.
+                    bool seabed = piece.name.StartsWith("Seabed", StringComparison.Ordinal);
+                    Assert.That(rules.IsExcludedSprite(dry) || HiddenHarbours.Art.SunCasterRules.Matches(piece.name, "*Seabed*"), Is.EqualTo(seabed), what);
+                    Assert.That(HiddenHarbours.Art.SunCasterRules.Matches(piece.name + TidalFormWetSuffix, "*Shade*"), Is.True, what);
+                }
+                Assert.That(drawn.tallestMetres, Is.LessThanOrEqualTo(drawn.floorMetres + drawn.rangeMetres), form.Id + ": taller than its height sheet can say");
+                Vector3 atTheWater = TidalFormDecode(form.FloorMetres, form.RangeMetres, 0f);
+                Vector3 above = TidalFormDecode(form.FloorMetres, form.RangeMetres, form.WetBandMetres);
+                Assert.That(TidalFaceWaterline.DecodeHeight(0f, atTheWater), Is.EqualTo(drawn.floorMetres).Within(1e-4f));
+                Assert.That(TidalFaceWaterline.DecodeHeight(1f, atTheWater) - TidalFaceWaterline.DecodeHeight(1f, above),
+                    Is.EqualTo(form.WetBandMetres).Within(1e-4f), form.Id + ": the dry picture is not cut a wet band above the water");
+                Assert.That(form.Foot != null, Is.EqualTo(form.Id == "form.stp_harbour_stack"), form.Id + ": only the stack stops a hull");
+            }
+            TidalForm stack = forms.Single(f => f.Id == "form.stp_harbour_stack");
+            Assert.That(contract.forms.Single(f => f.id == stack.Id).tallestMetres, Is.InRange(6f, 6.8f), "the stack's top is the scene's 6.2 m and its turf");
+            Assert.That(stack.At, Is.EqualTo(new Vector2(192f, -38f)), "the stack stands where the scene's ground has it");
+            Assert.That(stack.Pieces.Select(q => q.Name), Is.EqualTo(new[] { "Body", "SeabedPlinth" }), "the stack is its body and the plinth under the sea");
+            Assert.That(stack.Pieces[0].OffsetY, Is.LessThan(0f), "the body's pivot is its own foot, in front of the centre");
+        }
+
         [Test]
         public void TheWhelps_AreTheKeyScenesRows_AndTheKitsRocks()
         {
@@ -102,15 +157,20 @@ namespace HiddenHarbours.Tests.EditMode
             var scene = SceneYaml.Parse(File.ReadAllText(ScenePath));
             RockHeightsContract contract = LoadRockHeightsContract();
             var fields = LoadTidalRockFields(contract);
-            LayerPatch patch = Whelps(scene, fields, contract, new EditorTidalRockAssets());
+            var forms = LoadTidalForms(LoadTidalFormsContract());
+            LayerPatch patch = Whelps(scene, fields, contract, forms, new EditorTidalRockAssets());
             Assert.That(patch.IsEmpty, Is.True, "StPeters.unity is not what the Whelps step writes:\n" + patch.Summary());
 
             var owned = scene.SubtreeOf(scene.RootNamed(WhelpsRootName).FileId);
-            Assert.That(scene.Docs.Count(d => owned.Contains(d.FileId) && d.ClassId == 212), Is.EqualTo(Rows.Length * 2), "two pictures a rock");
+            int pieces = forms.Sum(f => f.Pieces.Count);
+            Assert.That(pieces, Is.EqualTo(Forms.Length + 1), "a piece a ledge, and the stack's two");
+            Assert.That(scene.Docs.Count(d => owned.Contains(d.FileId) && d.ClassId == 212), Is.EqualTo((Rows.Length + pieces) * 2), "two pictures a rock, and two a form's piece");
             Assert.That(scene.Docs.Count(d => owned.Contains(d.FileId) && d.IsScript(typeof(TidalFaceWaterline).FullName)),
-                Is.EqualTo(Rows.Length * 2), "and the sea cuts both");
+                Is.EqualTo((Rows.Length + pieces) * 2), "and the sea cuts both");
             Assert.That(scene.Docs.Count(d => owned.Contains(d.FileId) && (d.ClassId == 60 || d.ClassId == 61 || d.ClassId == 58)),
-                Is.EqualTo(0), "the rocks carry no collider: what a hull meets out there is the ground's own depth");
+                Is.EqualTo(1), "only the stack carries a collider: what a hull meets on the ledges is the ground's own depth");
+            foreach (string form in Forms)
+                Assert.That(scene.Docs.Count(d => owned.Contains(d.FileId) && d.ClassId == 1 && d.Field("m_Name") == form), Is.EqualTo(1), form);
             foreach (string row in Rows)
                 Assert.That(scene.Docs.Count(d => owned.Contains(d.FileId) && d.ClassId == 1 && d.Field("m_Name") == row), Is.EqualTo(1), row);
         }

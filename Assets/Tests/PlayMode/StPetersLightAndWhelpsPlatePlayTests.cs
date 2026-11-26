@@ -58,6 +58,11 @@ namespace HiddenHarbours.Tests.PlayMode
             new BoardFrame("whelps_lookout.skerries.low.2230", 172f, 200f, -57.75f, -42f, 22.5f, -1.4f),
             new BoardFrame("whelps_lookout.rocks_close.half", 180f, 190f, -49.5f, -43.5f, 12f, -0.8f),
             new BoardFrame("whelps_lookout.rocks_close.low", 180f, 190f, -49.5f, -43.5f, 12f, -1.4f),
+            new BoardFrame("whelps_lookout.lookout.dusk", 154f, 199f, -50.893f, -26.893f, 19.5f, 0.63f),
+            new BoardFrame("whelps_lookout.stack.noon", 181f, 201f, -45f, -27f, 12f, 0.63f),
+            new BoardFrame("whelps_lookout.stack.dusk", 181f, 201f, -45f, -27f, 19.5f, 0.63f),
+            new BoardFrame("whelps_lookout.stack.2230", 181f, 201f, -45f, -27f, 22.5f, 0.63f),
+            new BoardFrame("whelps_lookout.stack.low", 181f, 201f, -45f, -27f, 12f, -1.4f),
         };
 
         /// <summary>The north-east light in the loaded region: its lantern is where the clock says, at any hour.</summary>
@@ -190,7 +195,8 @@ namespace HiddenHarbours.Tests.PlayMode
                     string path = Path.Combine(dir, frame.Id + ".png");
                     File.WriteAllBytes(path, tex.EncodeToPNG());
                     Object.DestroyImmediate(tex);
-                    Debug.Log($"[KeySceneBoards] plate written: {path} ({_w}x{_h}, hour {frame.Hour}, tide {frame.Tide})");
+                    Color tint = Shader.GetGlobalColor("_DayNightTint");
+                    Debug.Log($"[KeySceneBoards] plate written: {path} ({_w}x{_h}, hour {frame.Hour}, tide {frame.Tide}, day tint {tint.r:F3} {tint.g:F3} {tint.b:F3})");
                 }
                 Debug.Log("[KeySceneBoards] PLATES_COMPLETE " + dir);
             }

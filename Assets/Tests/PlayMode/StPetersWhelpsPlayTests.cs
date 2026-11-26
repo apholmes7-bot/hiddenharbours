@@ -61,7 +61,8 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return LoadRegion(StPeters);
             GameObject root = GameObject.Find(WhelpsRoot);
             Assert.IsNotNull(root, "St Peters holds no " + WhelpsRoot + ".");
-            var rocks = root.GetComponentsInChildren<TidalFaceWaterline>(true).Where(f => f.transform.parent == root.transform).ToArray();
+            var rocks = root.GetComponentsInChildren<TidalFaceWaterline>(true).Where(f => f.transform.parent == root.transform &&
+                f.name.StartsWith("rock.", System.StringComparison.Ordinal)).ToArray();
             Assert.AreEqual(7, rocks.Length, "the seven rocks of the Whelps");
 
             IEnvironmentService held = GameServices.Environment;
@@ -91,6 +92,77 @@ namespace HiddenHarbours.Tests.PlayMode
                     }
                 }
                 Assert.Greater(cutPartWay, 0, "on a half tide no rock stood part in and part out of the water");
+            }
+            finally
+            {
+                GameServices.Environment = held;
+            }
+        }
+
+        /// <summary>
+        /// The Harbour Stack stands out of the sea at every tide, the water cutting it along its own shape, and a
+        /// hull cannot pass through its foot. The three ledges the Whelps sit on are under at the board's tide
+        /// and stand part out at low water.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator StPeters_TheHarbourStack_StandsInEveryTide_AndTheLedgesAreCoveredAndBared()
+        {
+            yield return LoadRegion(StPeters);
+            GameObject root = GameObject.Find(WhelpsRoot);
+            Assert.IsNotNull(root, "St Peters holds no " + WhelpsRoot + ".");
+            var forms = new List<Transform>();
+            foreach (Transform child in root.transform)
+                if (child.name.StartsWith("form.", System.StringComparison.Ordinal)) forms.Add(child);
+            Assert.AreEqual(4, forms.Count, "the stack and the three ledges");
+            Transform stack = forms.Single(f => f.name == "form.stp_harbour_stack");
+            var foot = stack.GetComponent<PolygonCollider2D>();
+            Assert.IsNotNull(foot, "the stack has no foot a hull would meet");
+            Assert.IsFalse(foot.isTrigger, "the stack's foot is solid");
+            Assert.IsTrue(foot.OverlapPoint(stack.position), "the foot lies about the stack's centre");
+            Assert.AreEqual(3, forms.Count(f => f.GetComponent<Collider2D>() == null), "a ledge carries no collider: there a hull meets the ground's depth");
+            Assert.AreEqual(2, stack.childCount, "the stack is its body and the plinth under the sea");
+
+            // One stone, one shadow: of all the forms' pictures only the stack's body is left to the sun.
+            var rules = Resources.Load<HiddenHarbours.Art.SunCasterRules>(nameof(HiddenHarbours.Art.SunCasterRules));
+            Assert.IsNotNull(rules, "the sun caster's rules");
+            var left = forms.SelectMany(f => f.GetComponentsInChildren<SpriteRenderer>(true)).Where(r => !rules.IsExcludedArt(r)).ToArray();
+            Assert.AreEqual(1, left.Length, "pictures the sun may cast from: " + string.Join(", ", left.Select(r => r.transform.parent.name + "/" + r.name)));
+            Assert.AreEqual("Body", left[0].name);
+            Assert.AreEqual(stack, left[0].transform.parent);
+
+            IEnvironmentService held = GameServices.Environment;
+            try
+            {
+                foreach (float tide in new[] { WhelpsCoveredTide, WhelpsHalfTide, WhelpsBaredTide })
+                {
+                    yield return HoldTheTide(held, tide);
+                    Assert.IsTrue(TidalFaceWaterline.TryPublishedSeaLevel(out float sea), "no sea is published");
+                    foreach (Transform form in forms)
+                    {
+                        float formHigh = float.NegativeInfinity;
+                        foreach (Transform piece in form)
+                        {
+                            string what = form.name + "/" + piece.name;
+                            var upper = piece.GetComponent<SpriteRenderer>();
+                            var under = piece.GetChild(0).GetComponent<SpriteRenderer>();
+                            var face = under.GetComponent<TidalFaceWaterline>();
+                            Assert.IsTrue(face.RidesTheTide && face.IsConfigured, what + " is not cut by the sea");
+                            Assert.IsTrue(piece.GetComponent<TidalFaceWaterline>().RidesTheTide, what);
+                            Assert.AreEqual(TidalFaceWaterline.ShaderName, under.sharedMaterial.shader.name, what);
+                            Assert.AreEqual(under.sortingOrder + 1, upper.sortingOrder, what + ": the dry picture lies over the wet one");
+                            (float low, float high) = StandsBetween(under);
+                            (float upperLow, float _) = StandsBetween(upper);
+                            Assert.Less(upperLow, low, what + ": the dry picture is cut above the water, by the wet band");
+                            formHigh = Mathf.Max(formHigh, high);
+                        }
+                        if (form == stack)
+                            Assert.Greater(formHigh, sea + 5f, "the stack does not stand high out of the water at " + tide);
+                        else if (Mathf.Approximately(tide, WhelpsCoveredTide))
+                            Assert.Less(formHigh, sea, $"{form.name} shows at {tide} m, where the board has the Whelps under");
+                        else if (Mathf.Approximately(tide, WhelpsBaredTide))
+                            Assert.Greater(formHigh, sea + 0.2f, $"{form.name} is not bared at {tide} m");
+                    }
+                }
             }
             finally
             {
