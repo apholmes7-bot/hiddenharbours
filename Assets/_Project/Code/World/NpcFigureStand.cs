@@ -70,6 +70,9 @@ namespace HiddenHarbours.World
         private bool _catchHas;
         private ShoreCatch _catch;
         private ShoreEdge _catchEdge;
+        private ITidalTerrain _catchTerrain;
+        private AnglerWater _catchWater;
+        private AnglerWaterMath.DepthAt _depthProbe;
 
         /// <inheritdoc/>
         /// <remarks>At work while she stands at a place of today's beach outing whose activity names a work
@@ -270,24 +273,48 @@ namespace HiddenHarbours.World
             if (env != null && env.SeaState01At(slotStartTotal) > activity.MaxSeaState01) return AnglerStatus.AtRest;
 
             // The facts are part of the key: a Fishing module published (or replaced) mid-slot is read at once.
+            // So is the ground the tide is read over.
             IShoreCatchFacts facts = GameServices.ShoreCatch;
+            ITidalTerrain terrain = GameServices.TidalTerrain;
+            float heading = block < plan.StandHeadingDegrees.Length ? plan.StandHeadingDegrees[block] : pose.HeadingDegrees;
             if (!_catchKnown || slot != _catchSlot || seed != _catchSeed || !ReferenceEquals(activity, _catchActivity)
-                || !ReferenceEquals(facts, _catchFacts))
+                || !ReferenceEquals(facts, _catchFacts) || !ReferenceEquals(terrain, _catchTerrain))
             {
                 _catchKnown = true;
                 _catchSlot = slot;
                 _catchSeed = seed;
                 _catchActivity = activity;
                 _catchFacts = facts;
+                _catchTerrain = terrain;
                 _catchHas = facts.TryPick(activity.CatchSpotId, seed, _keyHash, slot,
                                                             slotStartTotal, out _catch);
                 // The deck edge he fishes over, measured from his stand (the frame the offsets are in).
                 _catchEdge = activity.TryGetStand(out ShoreStand stand) ? stand.Edge.RelativeTo(stand.Position) : default;
+                // Where his cast may land at the tide: read once for the slot, the re-checks included.
+                _catchWater = env != null && terrain != null
+                    ? AnglerWaterMath.Plan(in script, transform.position,
+                                           AnglerTimeline.CastDirection(in script, seed, _keyHash, slot, heading),
+                                           in _catchEdge, slotStartTotal, _depthProbe ??= DepthNow)
+                    : default;
             }
 
-            float heading = block < plan.StandHeadingDegrees.Length ? plan.StandHeadingDegrees[block] : pose.HeadingDegrees;
-            AnglerTimeline.Evaluate(in script, in _catch, _catchHas, seed, _keyHash, heading, flow, in _catchEdge, out _beat);
+            if (_catchWater.IsSet && !_catchWater.Casts) return AnglerStatus.AtRest;   // no water in reach
+            AnglerTimeline.Evaluate(in script, in _catch, _catchHas, seed, _keyHash, heading, flow, in _catchEdge,
+                                    in _catchWater, out _beat);
             return _beat.InSession ? AnglerStatus.InSession : AnglerStatus.AtRest;
         }
+
+        /// <summary>The water depth at a point at a game time: the same truth the player's cast and the water
+        /// render read, over the Core seams only (rule 4).</summary>
+        private static float DepthNow(Vector2 worldPoint, double totalSeconds)
+        {
+            IEnvironmentService env = GameServices.Environment;
+            ITidalTerrain terrain = GameServices.TidalTerrain;
+            if (env == null || terrain == null) return float.PositiveInfinity;
+            return TidalExposure.WaterDepth(env.WaterLevelAt(totalSeconds), terrain.ElevationAt(worldPoint));
+        }
+
+        /// <summary>This slot's water plan (unset when there is no tidal ground to read). For tests and plates.</summary>
+        public AnglerWater Water { get { Sample(); return _catchWater; } }
     }
 }

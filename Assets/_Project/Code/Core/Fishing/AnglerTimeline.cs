@@ -37,6 +37,12 @@ namespace HiddenHarbours.Core
         /// moves in (0..1), and the rate of her runs (Hz).</summary>
         public float RunSwingM, TensionMin01, TensionMax01, FightWaveHz;
 
+        /// <summary>Water awareness (<see cref="AnglerWaterMath"/>): the longest cast he will make along the same
+        /// bearing when his usual reach would land on dry ground at the tide (m; 0 = never longer than
+        /// <see cref="CastReachM"/>), the least water the bobber must land in (m), and how often through a
+        /// session the tide is re-read at the bobber, in game seconds (0 = never mid-session).</summary>
+        public float LongCastReachM, MinBobberDepthM, WaterRecheckSeconds;
+
         /// <summary>The longest a session can run, catch or none: the slot must hold it.</summary>
         public float LongestSessionSeconds => CastBackSeconds + CastSeconds + WaitMaxSeconds
             + Mathf.Max(BiteSeconds + DeepMaxSeconds + SurfaceMaxSeconds + LandSeconds, EmptyRetrieveSeconds);
@@ -50,6 +56,10 @@ namespace HiddenHarbours.Core
                 || StrikeSeconds < 0f || DeepMinSeconds < 0f || SurfaceMinSeconds < 0f || LandSeconds < 0f
                 || EmptyRetrieveSeconds < 0f || CastReachM < 0f || RunSwingM < 0f || FightWaveHz < 0f)
                 why = "a length, reach, swing or rate is negative";
+            else if (LongCastReachM < 0f || MinBobberDepthM < 0f || WaterRecheckSeconds < 0f)
+                why = "a long-cast reach, bobber depth or re-check cadence is negative";
+            else if (LongCastReachM > 0f && LongCastReachM < CastReachM)
+                why = $"the long cast ({LongCastReachM} m) is shorter than the usual one ({CastReachM} m)";
             else if (WaitMaxSeconds < WaitMinSeconds || DeepMaxSeconds < DeepMinSeconds
                      || SurfaceMaxSeconds < SurfaceMinSeconds)
                 why = "a max is below its min";
@@ -165,6 +175,18 @@ namespace HiddenHarbours.Core
         public static void Evaluate(in AnglerScript script, in ShoreCatch shoreCatch, bool hasCatch, int worldSeed,
                                     uint keyHash, float stationHeadingDegrees, double now, in ShoreEdge shoreEdge,
                                     out AnglerBeat beat)
+            => Evaluate(in script, in shoreCatch, hasCatch, worldSeed, keyHash, stationHeadingDegrees, now,
+                        in shoreEdge, default, out beat);
+
+        /// <summary>
+        /// As above, at the tide (<paramref name="water"/>, the slot's <see cref="AnglerWaterMath.Plan"/>): a slot
+        /// whose cast would land dry is all rest, the cast goes out to the plan's reach, the fish in the fight is
+        /// held off the bared ground too, and from the moment the tide leaves the bobber dry he reels in empty.
+        /// An unset plan changes nothing.
+        /// </summary>
+        public static void Evaluate(in AnglerScript script, in ShoreCatch shoreCatch, bool hasCatch, int worldSeed,
+                                    uint keyHash, float stationHeadingDegrees, double now, in ShoreEdge shoreEdge,
+                                    in AnglerWater water, out AnglerBeat beat)
         {
             beat = default;
             beat.Scrub01 = float.NaN;
@@ -174,13 +196,12 @@ namespace HiddenHarbours.Core
             double slotStart = SlotStartSeconds(in script, worldSeed, keyHash, slot);
             beat.Slot = slot;
             beat.SlotStartSeconds = slotStart;
+            if (water.IsSet && !water.Casts) return;   // no water in reach: he rests the slot out, rod up
 
             uint slotHash = SlotHash(worldSeed, keyHash, slot);
             float wait = Mathf.Lerp(script.WaitMinSeconds, script.WaitMaxSeconds, U01(slotHash, StreamWait));
-            float jitter = (U01(slotHash, StreamBearing) * 2f - 1f) * script.CastBearingJitterDegrees;
-            float bearingRad = (stationHeadingDegrees + script.CastBearingDegrees + jitter) * Mathf.Deg2Rad;
-            var dir = new Vector2(Mathf.Sin(bearingRad), Mathf.Cos(bearingRad));   // compass: 0 = +y, clockwise
-            Vector2 aim = shoreEdge.Clamp(dir * script.CastReachM);
+            Vector2 dir = CastDirection(in script, worldSeed, keyHash, slot, stationHeadingDegrees);
+            Vector2 aim = shoreEdge.Clamp(dir * (water.IsSet ? water.ReachM : script.CastReachM));
 
             bool fish = hasCatch && !string.IsNullOrEmpty(shoreCatch.FishId);
             uint fightHash = fish ? Mix(slotHash ^ (uint)FishFightSeed.For(shoreCatch.FishId, shoreCatch.WeightKg)) : 0u;
@@ -206,6 +227,17 @@ namespace HiddenHarbours.Core
                 { }
             }
             else Step(ref edge, script.EmptyRetrieveSeconds, t, FishingPhase.NoBite, ref phase, ref phaseStart, ref phaseLength);
+
+            // The tide left the bobber dry before the session was over: from then he reels in, empty.
+            double dryAt = water.IsSet ? water.DryAtSeconds : double.PositiveInfinity;
+            if (t >= dryAt && dryAt < SessionSeconds(in script, wait, fish, deep, surface))
+            {
+                fish = false;
+                double end = dryAt + Mathf.Max(0f, script.EmptyRetrieveSeconds);
+                phase = t < end ? FishingPhase.NoBite : FishingPhase.Idle;
+                phaseStart = dryAt;
+                phaseLength = script.EmptyRetrieveSeconds;
+            }
 
             beat.Phase = phase;
             if (phase == FishingPhase.Idle) return;
@@ -264,13 +296,10 @@ namespace HiddenHarbours.Core
                 offset = aim * (1f - p) + perp * (swing * (1f - p));
                 float pRate = span > 0f ? 1f / span : 0f;
                 run = -aim * pRate + perp * (swingRate * (1f - p) - swing * pRate);
-                if (shoreEdge.IsSet && shoreEdge.OutwardDistance(offset) < shoreEdge.MarginM)
-                {
-                    // Held at the edge: she runs along it, never in over the planks.
-                    offset = shoreEdge.Clamp(offset);
-                    float inward = Vector2.Dot(run, shoreEdge.Outward);
-                    if (inward < 0f) run -= shoreEdge.Outward * inward;
-                }
+                // Held off the bared ground, then at the deck's edge: she runs along each, never in over the mud
+                // or the planks.
+                HoldOff(in water.Waterline, ref offset, ref run);
+                HoldOff(in shoreEdge, ref offset, ref run);
                 if (run.sqrMagnitude > 0f) run.Normalize();
                 tension = Mathf.Lerp(script.TensionMin01, script.TensionMax01, 0.5f + 0.25f * (Mathf.Sin(a) - Mathf.Sin(b)));
                 landing = p;
@@ -281,6 +310,35 @@ namespace HiddenHarbours.Core
             float charge = phase == FishingPhase.WindBack ? progress : 0f;
             beat.State = new FishingState(phase, tension, landing, fishId, fishId, default, kg, depth, false, tension,
                                           offset.x, offset.y, charge, aim.x, aim.y, 0f, run.x, run.y, size);
+        }
+
+        /// <summary>The compass direction (unit) slot <paramref name="slot"/>'s cast goes out along, from his
+        /// heading, the script's bearing and the slot's jitter. Pure.</summary>
+        public static Vector2 CastDirection(in AnglerScript script, int worldSeed, uint keyHash, long slot,
+                                            float stationHeadingDegrees)
+        {
+            uint slotHash = SlotHash(worldSeed, keyHash, slot);
+            float jitter = (U01(slotHash, StreamBearing) * 2f - 1f) * script.CastBearingJitterDegrees;
+            float bearingRad = (stationHeadingDegrees + script.CastBearingDegrees + jitter) * Mathf.Deg2Rad;
+            return new Vector2(Mathf.Sin(bearingRad), Mathf.Cos(bearingRad));   // compass: 0 = +y, clockwise
+        }
+
+        /// <summary>How long this slot's session runs from the slot's start (s), catch or none.</summary>
+        private static double SessionSeconds(in AnglerScript script, float wait, bool fish, float deep, float surface)
+        {
+            double s = Mathf.Max(0f, script.CastBackSeconds) + Mathf.Max(0f, script.CastSeconds) + Mathf.Max(0f, wait);
+            return fish
+                ? s + Mathf.Max(0f, script.BiteSeconds) + Mathf.Max(0f, deep) + Mathf.Max(0f, surface)
+                  + Mathf.Max(0f, script.LandSeconds)
+                : s + Mathf.Max(0f, script.EmptyRetrieveSeconds);
+        }
+
+        private static void HoldOff(in ShoreEdge edge, ref Vector2 offset, ref Vector2 run)
+        {
+            if (!edge.IsSet || edge.OutwardDistance(offset) >= edge.MarginM) return;
+            offset = edge.Clamp(offset);
+            float inward = Vector2.Dot(run, edge.Outward);
+            if (inward < 0f) run -= edge.Outward * inward;
         }
 
         private static bool Step(ref double edge, float length, double t, FishingPhase next,

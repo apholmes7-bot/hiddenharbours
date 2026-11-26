@@ -36,6 +36,9 @@ MonoBehaviour:
     TensionMin01: 0.35
     TensionMax01: 0.8
     FightWaveHz: 0.45
+    LongCastReachM: 12
+    MinBobberDepthM: 0.2
+    WaterRecheckSeconds: 5
   Look:
     Line:
       MaxSagM: 0.55

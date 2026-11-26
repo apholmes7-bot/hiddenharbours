@@ -238,6 +238,122 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         // =============================================================================================
+        //  The tide plates: he casts into water, never onto the bared bed
+        // =============================================================================================
+
+        /// <summary>Days searched for the three tides inside his wharf block.</summary>
+        private const int TideDaysSearched = 30;
+        /// <summary>Inside his wharf block (15:00 to 19:30), clear of his walk in and out.</summary>
+        private const float TideBlockFromHour = 15.75f, TideBlockToHour = 19.0f;
+        /// <summary>Into the wait: the bobber is down and still.</summary>
+        private const double TideShotIntoWaitSeconds = 1.5d;
+
+        [UnityTest, Timeout(600000)]
+        public IEnumerator Plate_BasilCastsIntoWater_HighWater_ALongCastAtMidWater_AndNoCastAtDeadLow()
+        {
+            WharfNightStage.RequireAGraphicsDevice();
+            yield return Arrive(PlateHour);
+            yield return FindBasil();
+            Vector2 at = _basil.transform.position;
+            float heading = Heading();
+            AnglerScript script = _basilAngling.Script;
+            Assert.IsTrue(_basilAngling.TryGetStand(out ShoreStand stand), "the wharf spot publishes no stand");
+            ShoreEdge edge = stand.Edge.RelativeTo(stand.Position);
+            IEnvironmentService env = GameServices.Environment;
+            ITidalTerrain terrain = GameServices.TidalTerrain;
+            Assert.IsNotNull(env, "harness: no environment service");
+            Assert.IsNotNull(terrain, "harness: St Peters published no tidal ground");
+            int seed = env.WorldSeed;
+            uint key = FigureKeyHash.Of(BasilKey);
+            AnglerWaterMath.DepthAt depth = (p, t) => TidalExposure.WaterDepth(env.WaterLevelAt(t), terrain.ElevationAt(p));
+
+            // The three tides, picked off the pure plan over his block (slot starts on the plate's clock, which the
+            // seeks keep equal to the tide's).
+            double spd = GameServices.Config.SecondsPerDay;
+            (long slot, double start, float level) high = (0, 0, float.NegativeInfinity), low = (0, 0, float.PositiveInfinity);
+            (long slot, double start, float level) mid = (0, double.NaN, 0f);
+            var log = new StringBuilder();
+            for (int day = 1; day <= TideDaysSearched; day++)
+            {
+                double from = (day + TideBlockFromHour / 24.0) * spd, to = (day + TideBlockToHour / 24.0) * spd;
+                for (long slot = AnglerTimeline.SlotIndex(in script, seed, key, from) + 1;
+                     AnglerTimeline.SlotStartSeconds(in script, seed, key, slot) + script.SlotSeconds < to; slot++)
+                {
+                    double start = AnglerTimeline.SlotStartSeconds(in script, seed, key, slot);
+                    if (env.SeaState01At(start) > _basilAngling.MaxSeaState01) continue;
+                    AnglerWater w = AnglerWaterMath.Plan(in script, at,
+                        AnglerTimeline.CastDirection(in script, seed, key, slot, heading), in edge, start, depth);
+                    float level = env.WaterLevelAt(start);
+                    if (w.Casts && !w.IsLongCast(in script) && double.IsPositiveInfinity(w.DryAtSeconds) && level > high.level)
+                        high = (slot, start, level);
+                    if (!w.Casts && level < low.level) low = (slot, start, level);
+                    if (double.IsNaN(mid.start) && w.IsLongCast(in script) && double.IsPositiveInfinity(w.DryAtSeconds))
+                        mid = (slot, start, level);
+                }
+            }
+            Assert.IsFalse(float.IsNegativeInfinity(high.level), "harness: no high water in his block was found");
+            Assert.IsFalse(double.IsNaN(mid.start), "harness: no tide that needs the long cast was found");
+            Assert.IsFalse(float.IsPositiveInfinity(low.level), "harness: no tide with no water in reach was found");
+
+            yield return ShootTheTide("tide-1-high", high.slot, high.start, at, heading, depth, script, log, casts: true);
+            yield return ShootTheTide("tide-2-mid-long-cast", mid.slot, mid.start, at, heading, depth, script, log, casts: true);
+            yield return ShootTheTide("tide-3-dead-low-no-cast", low.slot, low.start, at, heading, depth, script, log, casts: false);
+
+            string dir = Path.Combine(Application.temporaryCachePath, PlateDir);
+            File.WriteAllText(Path.Combine(dir, "tide-log.txt"), log.ToString(), new UTF8Encoding(false));
+            Debug.Log($"[{PlateDir}] tides:\n{log}");
+        }
+
+        private IEnumerator ShootTheTide(string name, long slot, double start, Vector2 at, float heading,
+                                         AnglerWaterMath.DepthAt depth, AnglerScript script, StringBuilder log, bool casts)
+        {
+            double shot = start + script.CastBackSeconds + script.CastSeconds + TideShotIntoWaitSeconds;
+            yield return SeekAndDraw(shot);
+            AnglerWater w = _basil.Water;
+            Assert.IsTrue(w.IsSet, $"{name}: his stand read no water plan");
+            Assert.AreEqual(casts, w.Casts, $"{name}: the stand's plan disagrees with the harness's pick");
+            Vector2 dir = AnglerTimeline.CastDirection(in script, GameServices.Environment.WorldSeed,
+                                                       FigureKeyHash.Of(BasilKey), slot, heading);
+            float level = GameServices.Environment.WaterLevelAt(shot);
+            if (casts)
+            {
+                AssertInSession(FishingPhase.Waiting);
+                Assert.AreEqual(slot, _basil.Beat.Slot, $"{name}: sampled the wrong slot");
+                _basil.TryGetAnglerState(out FishingState s, out _);
+                Vector2 bobber = at + new Vector2(s.CastAimX, s.CastAimY);
+                Vector2 lineEnd = _angler.Line.GetPosition(_angler.Line.positionCount - 1);
+                float d = depth(bobber, shot);
+                log.AppendLine($"{name}: slot {slot} at {start:0.0}s (hour {(_clock.HourOfDay):0.00}), level {level:0.00} m, " +
+                               $"reach {w.ReachM:0.00} m (usual {script.CastReachM}, long {w.IsLongCast(in script)}), " +
+                               $"bobber {bobber} depth {d:0.00} m, line end {lineEnd} depth {depth(lineEnd, shot):0.00} m, " +
+                               $"waterline {(w.Waterline.IsSet ? (w.Waterline.Point.magnitude.ToString("0.00") + " m out") : "none")}");
+                Assert.Greater(d, script.MinBobberDepthM, $"{name}: the bobber at {bobber} is not in water deep enough");
+                Assert.Greater(depth(lineEnd, shot), 0f, $"{name}: the drawn line ends on dry ground at {lineEnd}");
+                AssertOverWater(bobber, name);
+                yield return _stage.FrameOn(at + dir * (w.ReachM * 0.5f));
+            }
+            else
+            {
+                Assert.IsFalse(_basil.TryGetAnglerState(out _, out _), $"{name}: he is in a session with no water in reach");
+                Assert.IsTrue(_basil.TryGetFigureBeat(out string beat, out _, out _, out _), $"{name}: he does not hold his rod");
+                Assert.AreEqual(FishingBeatMath.StateKeyFor(FishingPose.Hold), beat, $"{name}: not standing down, rod up");
+                Vector2 usual = at + edge(at, dir, script.CastReachM);
+                Vector2 longest = at + edge(at, dir, script.LongCastReachM);
+                log.AppendLine($"{name}: slot {slot} at {start:0.0}s (hour {(_clock.HourOfDay):0.00}), level {level:0.00} m, " +
+                               $"no cast: depth at the usual reach {depth(usual, shot):0.00} m, at the long reach " +
+                               $"{depth(longest, shot):0.00} m; he holds the rod");
+                Assert.IsFalse(_angler.DrawsLine, $"{name}: a line is drawn with no cast");
+                yield return _stage.FrameOn(at + dir * (script.CastReachM * 0.5f));
+            }
+            yield return SeekAndDraw(shot);
+            Shoot(name);
+
+            Vector2 edge(Vector2 origin, Vector2 direction, float reach)
+                => _basilAngling.TryGetStand(out ShoreStand st) ? st.Edge.RelativeTo(st.Position).Clamp(direction * reach)
+                                                                : direction * reach;
+        }
+
+        // =============================================================================================
         //  The clip (explicit: frames for a video, never a suite case)
         // =============================================================================================
 
