@@ -17,6 +17,7 @@ MonoBehaviour:
   Flavor: An analogue wind instrument for a compatible helm.
   Price: 140
   Catalog:
+    BoatHardware: 1
     Listed: 0
     Section: 5
     Sellers:

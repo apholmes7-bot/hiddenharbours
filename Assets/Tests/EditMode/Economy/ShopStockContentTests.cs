@@ -1,5 +1,7 @@
 using System;
 using System.Linq;
+using System.Collections.Generic;
+using HiddenHarbours.Core;
 using HiddenHarbours.Economy;
 using NUnit.Framework;
 using UnityEditor;
@@ -10,6 +12,49 @@ namespace HiddenHarbours.Tests.EditMode.Economy
     public class ShopStockContentTests
     {
         private const string PilotPath = "Assets/_Project/Data/Shops/StPetersGeneral.asset";
+
+        [Test]
+        public void EveryCountedIslandListing_HasStartingStockAndADataRestockRule()
+        {
+            var defs = Resources.LoadAll<IslandStoreShelvesDef>("IslandSupply/Shelves");
+            var route = Resources.Load<IslandSupplyConfig>(IslandSupplyConfig.ResourcesPath);
+            var carriers = Resources.LoadAll<CarrierDef>("IslandSupply").ToDictionary(c => c.Id);
+            var sellers = Resources.LoadAll<SellerDef>(SellerDirectory.ResourceFolder).Select(s => s.Id).ToArray();
+            var offers = Resources.LoadAll<ScriptableObject>("Catalog").OfType<ICatalogListing>().ToArray();
+            Assert.That(defs, Is.Not.Empty);
+            Assert.That(route, Is.Not.Null);
+            Assert.That(route.BufferDays, Is.GreaterThan(0));
+            Assert.That(carriers, Is.Not.Empty);
+            foreach (var def in defs)
+            {
+                Assert.That(sellers, Does.Contain(def.SellerId), def.Id);
+                Assert.That(def.Ledger, Is.Not.Null, def.Id);
+                Assert.That(def.Ledger.IslandRegionId, Is.EqualTo(route.IslandRegionId), def.Id);
+                Assert.That(def.Ledger.Runner, Is.Not.Null, def.Id);
+                Assert.That(def.Ledger.Runner.CadenceDays, Is.GreaterThan(0), def.Id);
+                var shelves = IslandStoreShelves.FromDef(def, route, carriers, _ => true, GameConfig.DefaultSecondsPerDay);
+                var seen = new HashSet<string>();
+                foreach (var line in def.Lines)
+                {
+                    Assert.That(line.Good, Is.Not.Null, line.Id);
+                    Assert.That(line.Good.Source, Is.EqualTo(GoodSource.MainlandOverBar), line.Id);
+                    Assert.That(def.Ledger.Goods, Does.Contain(line.Good), line.Id);
+                    Assert.That(line.Good.DailyUnits, Is.GreaterThan(0), line.Id);
+                    Assert.That(line.UnitsPerItem, Is.GreaterThan(0), line.Id);
+                    Assert.That(line.MaxOnShelf, Is.GreaterThan(0), line.Id);
+                    int expected = Math.Min(line.MaxOnShelf, (int)Math.Floor(line.Good.DailyUnits *
+                        (1.0 + line.Good.PlayerAllowanceFraction) * route.BufferDays / line.UnitsPerItem + 1e-9));
+                    Assert.That(expected, Is.GreaterThan(0), line.Id + " has no starting item");
+                    Assert.That(shelves.CountAt(line.Id, 0), Is.EqualTo(expected), line.Id + " starting count");
+                    foreach (string id in line.CounterListingIds)
+                    {
+                        Assert.That(seen.Add(id), Is.True, def.Id + " counts " + id + " twice");
+                        Assert.That(offers.Any(o => o.ListingId == id && o.Catalog.IsStockedBy(def.SellerId)),
+                            Is.True, def.Id + " counts missing seller offer " + id);
+                    }
+                }
+            }
+        }
 
         [Test]
         public void EveryShopLineNamesARealSellerListingAndUniqueDeclaredSlots()

@@ -18,6 +18,7 @@ MonoBehaviour:
   StartsDamaged: 0
   RepairCost: 0
   Catalog:
+    BoatHardware: 1
     Listed: 1
     Section: 4
     Sellers:

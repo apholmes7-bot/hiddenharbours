@@ -8,6 +8,8 @@ namespace HiddenHarbours.Economy
     public sealed class SellerDef : ScriptableObject
     {
         public string Id = "";
+        [Tooltip("RegionDef.Id of the seller's counter or planned premises; classification only.")]
+        public string RegionId = "";
         [Tooltip("NpcDef.Id of the keeper. Empty until authored; never infer a person from a shop name.")]
         public string KeeperNpcId = "";
         [Tooltip("Stable trade/kind used to compare custom between merchants of the same trade.")]

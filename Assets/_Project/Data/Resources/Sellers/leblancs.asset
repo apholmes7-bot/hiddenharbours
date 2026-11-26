@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.SellerDef
   Id: seller.leblancs
   KeeperNpcId: npc.marguerite_leblanc
+  RegionId: region.st_peters
   TradeId: trade.general_store

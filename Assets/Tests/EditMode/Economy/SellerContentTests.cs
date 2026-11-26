@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using HiddenHarbours.Core;
 using HiddenHarbours.Economy;
 using NUnit.Framework;
@@ -9,6 +10,147 @@ namespace HiddenHarbours.Tests.Economy
 {
     public class SellerContentTests
     {
+        const string IslandSeller = "seller.leblancs";
+        const string BoatGearSeller = "seller.nmc_boat_gear_wholesaler";
+        const string SounderId = "instrument.depth_sounder";
+        const string OutboardId = "boat.dory_outboard";
+
+        static ICatalogListing[] Offers() => AssetDatabase.FindAssets("t:ScriptableObject",
+                new[] { "Assets/_Project/Data" })
+            .Select(AssetDatabase.GUIDToAssetPath)
+            .Select(AssetDatabase.LoadMainAssetAtPath).OfType<ICatalogListing>().ToArray();
+
+        [Test]
+        public void EveryOffer_NamesRealSellers_AndEachSellerOffersAnItemOnce()
+        {
+            var sellers = Resources.LoadAll<SellerDef>(SellerDirectory.ResourceFolder).ToDictionary(s => s.Id);
+            var pairs = new HashSet<string>();
+            var offers = Offers();
+            Assert.That(offers, Is.Not.Empty);
+            foreach (var offer in offers)
+            {
+                // This unlisted, free identity supplies the starting kit's label, not a sale.
+                if (offer.ListingId == "gear.headlamp")
+                {
+                    Assert.That(offer.Catalog.Listed, Is.False);
+                    Assert.That(((GearOffer)offer).Price, Is.Zero);
+                    Assert.That(offer.Catalog.Sellers, Is.Empty);
+                    continue;
+                }
+                Assert.That(offer.Catalog.Sellers, Is.Not.Null.And.Not.Empty, offer.ListingId + " names no seller");
+                string item = offer is VehicleOffer vehicle ? vehicle.VehicleId :
+                    offer is PotOffer pot ? pot.TrapDefId : offer.ListingId;
+                Assert.That(item, Is.Not.Null.And.Not.Empty, offer.ListingId + " names no item");
+                foreach (string seller in offer.Catalog.Sellers)
+                {
+                    Assert.That(seller, Is.Not.Null.And.Not.Empty, offer.ListingId);
+                    Assert.That(sellers.ContainsKey(seller), Is.True, offer.ListingId + " names missing seller " + seller);
+                    Assert.That(pairs.Add(seller + "|" + item), Is.True,
+                        "Duplicate offer for item " + item + " at " + seller);
+                }
+                if (offer is VehicleOffer v)
+                    Assert.That(offer.Catalog.Sellers, Does.Contain(v.SellerId), v.Id + " purchase seller differs from catalog");
+            }
+        }
+
+        [Test]
+        public void IslandSellers_OfferNoBoatHardware_ExceptSounderBeforeItsMove()
+        {
+            var sellers = Resources.LoadAll<SellerDef>(SellerDirectory.ResourceFolder).ToDictionary(s => s.Id);
+            var regions = new HashSet<string>(AssetDatabase.FindAssets("t:RegionDef", new[] { "Assets/_Project/Data" })
+                .Select(AssetDatabase.GUIDToAssetPath).Select(AssetDatabase.LoadMainAssetAtPath)
+                .Select(a => new SerializedObject(a).FindProperty("Id").stringValue));
+            foreach (var seller in sellers.Values)
+                Assert.That(regions.Contains(seller.RegionId), Is.True, seller.Id + " needs a real region");
+            Assert.That(sellers["seller.leblancs"].RegionId, Is.EqualTo("region.st_peters"));
+            Assert.That(sellers[BoatGearSeller].RegionId, Is.EqualTo("region.nine_mile_creek"));
+            AssertHardwareSellers(Offers(), sellers);
+        }
+
+        static void AssertHardwareSellers(ICatalogListing[] offers, Dictionary<string, SellerDef> sellers)
+        {
+            var sounder = offers.Single(o => o.ListingId == SounderId);
+            // The counter relocation has exactly two supported states, never a second simultaneous seller.
+            Assert.That(sounder.Catalog.Sellers,
+                Is.EquivalentTo(new[] { IslandSeller }).Or.EquivalentTo(new[] { BoatGearSeller }),
+                "The sounder must have its single existing seller or its single mainland replacement");
+            bool beforeMove = sounder.Catalog.Sellers.Single() == IslandSeller;
+            string[] expected = beforeMove ? new[] { IslandSeller + "|" + SounderId } : new string[0];
+            var found = new HashSet<string>();
+            foreach (var offer in offers)
+            {
+                if (offer is InstrumentOffer || offer.ListingId == OutboardId)
+                    Assert.That(offer.Catalog.BoatHardware, Is.True, offer.ListingId + " boat fitting needs hardware classification");
+                if (!offer.Catalog.BoatHardware) continue;
+                foreach (string seller in offer.Catalog.Sellers ?? new string[0])
+                {
+                    Assert.That(sellers.ContainsKey(seller), Is.True, offer.ListingId + " names missing seller " + seller);
+                    if (sellers[seller].RegionId != "region.st_peters") continue;
+                    string key = seller + "|" + offer.ListingId;
+                    Assert.That(expected, Does.Contain(key),
+                        "Island seller " + seller + " offers boat hardware " + offer.ListingId + "; move the offer to a mainland seller");
+                    found.Add(key);
+                }
+            }
+            Assert.That(found, Is.EquivalentTo(expected),
+                "Only the existing sounder pair is allowed before relocation; no island hardware is allowed afterward");
+        }
+
+        [TestCase(IslandSeller)]
+        [TestCase(BoatGearSeller)]
+        public void SounderRelocation_AcceptsEitherExactSingleSeller(string seller)
+        {
+            WithSounderSellers(new[] { seller }, (offers, sellers) => AssertHardwareSellers(offers, sellers));
+        }
+
+        static IEnumerable<TestCaseData> InvalidSounderSellers()
+        {
+            yield return new TestCaseData((object)new string[0]);
+            yield return new TestCaseData((object)new[] { IslandSeller, BoatGearSeller });
+            yield return new TestCaseData((object)new[] { IslandSeller, IslandSeller });
+            yield return new TestCaseData((object)new[] { "seller.nmc_chandlery" });
+        }
+
+        [TestCaseSource(nameof(InvalidSounderSellers))]
+        public void SounderRelocation_RejectsMissingDuplicateOrUnrelatedSellers(string[] sellerIds)
+        {
+            WithSounderSellers(sellerIds, (offers, sellers) =>
+                Assert.Throws<AssertionException>(() => AssertHardwareSellers(offers, sellers)));
+        }
+
+        static void WithSounderSellers(string[] sellerIds,
+            System.Action<ICatalogListing[], Dictionary<string, SellerDef>> check)
+        {
+            var offers = Offers();
+            int index = System.Array.FindIndex(offers, o => o.ListingId == SounderId);
+            var copy = Object.Instantiate((InstrumentOffer)offers[index]);
+            try
+            {
+                copy.Catalog.Sellers = sellerIds;
+                offers[index] = copy;
+                check(offers, Resources.LoadAll<SellerDef>(SellerDirectory.ResourceFolder).ToDictionary(s => s.Id));
+            }
+            finally { Object.DestroyImmediate(copy); }
+        }
+
+        [TestCase(false, "seller.hectors_barrel")]
+        [TestCase(true, IslandSeller)]
+        public void OutboardFitting_RejectsMissingClassificationOrAnIslandSeller(bool hardware, string seller)
+        {
+            var offers = Offers();
+            int index = System.Array.FindIndex(offers, o => o.ListingId == OutboardId);
+            var copy = Object.Instantiate((ShipwrightOffer)offers[index]);
+            try
+            {
+                copy.Catalog.BoatHardware = hardware;
+                copy.Catalog.Sellers = new[] { seller };
+                offers[index] = copy;
+                var sellers = Resources.LoadAll<SellerDef>(SellerDirectory.ResourceFolder).ToDictionary(s => s.Id);
+                Assert.Throws<AssertionException>(() => AssertHardwareSellers(offers, sellers));
+            }
+            finally { Object.DestroyImmediate(copy); }
+        }
+
         [Test]
         public void EveryCatalogAndConversationSeller_HasUniqueDataAndValidKeeper()
         {

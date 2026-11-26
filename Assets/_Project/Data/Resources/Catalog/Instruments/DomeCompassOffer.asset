@@ -17,6 +17,7 @@ MonoBehaviour:
   Flavor: A mounted magnetic compass for a helm that takes a dome unit.
   Price: 70
   Catalog:
+    BoatHardware: 1
     Listed: 0
     Section: 5
     Sellers:

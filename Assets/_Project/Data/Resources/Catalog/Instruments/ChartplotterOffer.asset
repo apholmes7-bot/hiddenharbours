@@ -20,6 +20,7 @@ MonoBehaviour:
     Wants a wheelhouse: the skiffs have nowhere to mount it.'
   Price: 1800
   Catalog:
+    BoatHardware: 1
     Listed: 1
     Section: 5
     Sellers:

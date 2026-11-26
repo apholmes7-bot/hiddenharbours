@@ -19,6 +19,7 @@ MonoBehaviour:
     dash of whichever boat you bring - it does not come off again.'
   Price: 140
   Catalog:
+    BoatHardware: 1
     Listed: 1
     Section: 5
     Sellers:

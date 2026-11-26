@@ -20,6 +20,7 @@ MonoBehaviour:
     you back to the same water. Wants a wheelhouse to mount in.'
   Price: 900
   Catalog:
+    BoatHardware: 1
     Listed: 1
     Section: 5
     Sellers:
