@@ -34,6 +34,9 @@ namespace HiddenHarbours.Core
                  "food per item.")]
         public string ItemId;
 
+        [Tooltip("Eating choice in a carried shopping bag, including the item's name. Required for edible supplies.")]
+        public string BagEatLabel;
+
         [Tooltip("Can it be eaten as it is held, with no galley work? (Bread and a carrot, yes; a raw cod, no.)")]
         public bool EdibleRaw;
 

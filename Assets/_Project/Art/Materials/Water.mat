@@ -184,6 +184,8 @@ Material:
     - _RippleWavelength: 0.17
     - _Roughness: 0.14
     - _ShallowDepth: 0.15
+    - _ShoreLaceContrast: 0.35
+    - _ShoreLaceSize: 3
     - _ShoreNoise: 0.75
     - _ShoreNoiseBand: 0.8
     - _ShoreNoiseScale: 0.6
@@ -284,6 +286,7 @@ Material:
     - _WashSeawardDepth: 0.8
     - _WashSheetOpacity: 0.2
     - _WashSurfDetail: 3
+    - _WashSurfEven: 0.7
     - _WashSurfLift: 0
     - _WashSurfReach: 10
     - _WashSurfSmooth: 1.5

@@ -412,7 +412,7 @@ namespace HiddenHarbours.Tests.EditMode
                 ["Assets/Fixture/Note.txt.meta"] = NoteMeta(NoteGuid),
                 ["Assets/Fixture/Sub.meta"] = FolderMeta(SubGuid),
                 ["Assets/Fixture/Sub/Deep.txt"] = "deep\n",
-                ["Assets/Fixture/Sub/Deep.txt.meta"] = Meta(DeepGuid).Replace("\n", "\r\n"),
+                ["Assets/Fixture/Sub/Deep.txt.meta"] = Meta(DeepGuid).Replace("\r\n", "\n").Replace("\n", "\r\n"),
                 ["Assets/Fixture/Sub/Oar.txt"] = "oar\n",
                 ["Assets/Fixture/Sub/Oar.txt.meta"] = "fileFormatVersion: 2\nguid: " + OarGuid + "\r",
                 ["Packages/manifest.json"] = "{ \"dependencies\": {} }\n",
