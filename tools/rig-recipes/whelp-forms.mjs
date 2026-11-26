@@ -23,6 +23,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { encodePng } from './lib/png.mjs';
+import { withoutTemplateSprites } from './lib/unity-meta.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const OUT = 'Assets/_Project/Art/Sprites/StPeters/Whelps';
@@ -443,7 +444,7 @@ function draw(f) {
 
 function metaFor(file, template, pivot) {
   const guid = crypto.createHash('md5').update('whelp-forms/' + file).digest('hex');
-  let t = fs.readFileSync(path.join(REPO, template), 'utf8').replace(/\r\n/g, '\n').replace(/^guid: .*$/m, 'guid: ' + guid);
+  let t = withoutTemplateSprites(fs.readFileSync(path.join(REPO, template), 'utf8').replace(/\r\n/g, '\n')).replace(/^guid: .*$/m, 'guid: ' + guid);
   if (pivot) t = t.replace(/spritePivot: \{[^}]*\}/, `spritePivot: {x: ${pivot[0]}, y: ${pivot[1]}}`);
   return t;
 }

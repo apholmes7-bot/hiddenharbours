@@ -18,6 +18,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { decodePng, encodePng } from './lib/png.mjs';
+import { withoutTemplateSprites } from './lib/unity-meta.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const SHEETS = 'Assets/_Project/Art/Sprites/Shore/RockPx/tex';
@@ -66,7 +67,7 @@ function heightsOf(stem) {
 
 function metaFor(file) {
   const guid = crypto.createHash('md5').update('whelp-rock-heights/' + file).digest('hex');
-  return fs.readFileSync(path.join(REPO, META_TEMPLATE), 'utf8').replace(/\r\n/g, '\n').replace(/^guid: .*$/m, 'guid: ' + guid);
+  return withoutTemplateSprites(fs.readFileSync(path.join(REPO, META_TEMPLATE), 'utf8').replace(/\r\n/g, '\n')).replace(/^guid: .*$/m, 'guid: ' + guid);
 }
 
 const built = STEMS.map((s) => ({ stem: s, ...heightsOf(s) }));
@@ -93,6 +94,10 @@ if (process.argv[2] === '--check') {
     const p = path.join(REPO, OUT, f);
     fs.writeFileSync(p, png);
     if (!fs.existsSync(p + '.meta')) fs.writeFileSync(p + '.meta', metaFor(f));
+    else {                                                   // an older meta keeps its GUID, loses the template's sprite
+      const was = fs.readFileSync(p + '.meta', 'utf8').replace(/\r\n/g, '\n'), now = withoutTemplateSprites(was);
+      if (now !== was) fs.writeFileSync(p + '.meta', now);
+    }
   }
   fs.writeFileSync(path.join(REPO, CONTRACT), contract);
   console.log('whelp rock heights written to', OUT);
