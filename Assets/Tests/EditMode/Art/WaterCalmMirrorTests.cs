@@ -8,12 +8,12 @@ using HiddenHarbours.Core;
 namespace HiddenHarbours.Tests.Art.EditMode
 {
     /// <summary>
-    /// <b>The calm mirror ships off, and off is today's water.</b>
+    /// <b>The calm mirror ships on at the owner's 0.6, and 0 is still exactly the old water.</b>
     ///
-    /// <para>The owner's dial <see cref="GameConfig.WaterMirrorStrength"/> defaults to 0. At 0 nothing the
-    /// mirror owns is published (both globals read their unset 0), no pass is recorded and no camera is
-    /// touched. Above 0 the mirror takes over the water's object reflection share on calm water, so a hull
-    /// never reflects twice, and gives it back as the sea gets up.</para>
+    /// <para>The owner's dial <see cref="GameConfig.WaterMirrorStrength"/> defaults to 0.6 (approved
+    /// 2026-11-26). At 0 nothing the mirror owns is published (both globals read their unset 0), no pass is
+    /// recorded and no camera is touched. Above 0 the mirror takes over the water's object reflection share
+    /// on calm water, so a hull never reflects twice, and gives it back as the sea gets up.</para>
     /// </summary>
     public class WaterCalmMirrorTests
     {
@@ -22,17 +22,24 @@ namespace HiddenHarbours.Tests.Art.EditMode
         static WaterMirrorSettings S => WaterMirrorSettings.Default;
 
         [Test]
-        public void Dial_DefaultsToZero_InCodeAndInTheShippedAsset()
+        public void Dial_DefaultsToTheOwners06_InCodeAndInTheShippedAsset()
         {
-            Assert.AreEqual(0f, GameConfig.DefaultWaterMirrorStrength);
+            Assert.AreEqual(0.6f, GameConfig.DefaultWaterMirrorStrength);
             var config = ScriptableObject.CreateInstance<GameConfig>();
-            try { Assert.AreEqual(0f, config.WaterMirrorStrength, "a new config ships the mirror off"); }
+            try { Assert.AreEqual(0.6f, config.WaterMirrorStrength, "a new config ships the mirror on at 0.6"); }
             finally { Object.DestroyImmediate(config); }
+            GameConfig previous = GameServices.Config;
+            try
+            {
+                GameServices.Config = null;
+                Assert.AreEqual(0.6f, GameServices.WaterMirrorStrength, 1e-6f, "no config reads the ship default");
+            }
+            finally { GameServices.Config = previous; }
             string yaml = File.ReadAllText(ConfigAsset);
             Match m = Regex.Match(yaml, @"^\s*WaterMirrorStrength:\s*([-0-9.eE]+)\s*$", RegexOptions.Multiline);
             Assert.IsTrue(m.Success, "the shipped GameConfig carries the dial");
-            Assert.AreEqual(0f, float.Parse(m.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture),
-                "the shipped GameConfig keeps the mirror off (the owner turns it on)");
+            Assert.AreEqual(0.6f, float.Parse(m.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture),
+                "the shipped GameConfig has the mirror on at the owner's 0.6 (approved 2026-11-26)");
         }
 
         [Test]
@@ -90,22 +97,44 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(0f, CalmMirrorMath.Handover(-1f, 0f, S), "a negative dial is off");
         }
 
+        // The dial turned to 0 by hand: the default is now 0.6, so the "0 is the old water" tests install a
+        // config that says 0 rather than leaning on the default.
+        static GameConfig InstallDialZero(out GameConfig previous)
+        {
+            previous = GameServices.Config;
+            var config = ScriptableObject.CreateInstance<GameConfig>();
+            config.WaterMirrorStrength = 0f;
+            GameServices.Config = config;
+            return config;
+        }
+
+        static void Uninstall(GameConfig config, GameConfig previous)
+        {
+            GameServices.Config = previous;
+            Object.DestroyImmediate(config);
+        }
+
         [Test]
         public void StrengthZero_PublishesNothing_AndRecordsNothing()
         {
-            // No config is installed in EditMode: the dial reads its default, 0.
-            Assert.AreEqual(0f, GameServices.WaterMirrorStrength);
-            Shader.SetGlobalFloat(CalmMirror.HandoverId, 0f);
-            Shader.SetGlobalFloat(CalmMirror.MeshTagId, 0f);
-            CalmMirror.AddTo(null, null);   // a null renderer would throw if a pass were enqueued
-            Assert.IsFalse(CalmMirror.Active);
-            Assert.AreEqual(0f, Shader.GetGlobalFloat(CalmMirror.HandoverId), "the water keeps its whole share");
-            Assert.AreEqual(0f, Shader.GetGlobalFloat(CalmMirror.MeshTagId), "the overlay writes alpha 1, as before");
+            GameConfig config = InstallDialZero(out GameConfig previous);
+            try
+            {
+                Assert.AreEqual(0f, GameServices.WaterMirrorStrength);
+                Shader.SetGlobalFloat(CalmMirror.HandoverId, 0f);
+                Shader.SetGlobalFloat(CalmMirror.MeshTagId, 0f);
+                CalmMirror.AddTo(null, null);   // a null renderer would throw if a pass were enqueued
+                Assert.IsFalse(CalmMirror.Active);
+                Assert.AreEqual(0f, Shader.GetGlobalFloat(CalmMirror.HandoverId), "the water keeps its whole share");
+                Assert.AreEqual(0f, Shader.GetGlobalFloat(CalmMirror.MeshTagId), "the overlay writes alpha 1, as before");
+            }
+            finally { Uninstall(config, previous); }
         }
 
         [Test]
         public void StrengthZero_LowersAStaleValue()
         {
+            GameConfig config = InstallDialZero(out GameConfig previous);
             Shader.SetGlobalFloat(CalmMirror.HandoverId, 0.7f);
             Shader.SetGlobalFloat(CalmMirror.MeshTagId, 1f);
             try
@@ -118,6 +147,32 @@ namespace HiddenHarbours.Tests.Art.EditMode
             {
                 Shader.SetGlobalFloat(CalmMirror.HandoverId, 0f);
                 Shader.SetGlobalFloat(CalmMirror.MeshTagId, 0f);
+                Uninstall(config, previous);
+            }
+        }
+
+        [Test]
+        public void DialOn_ButNoGameCamera_StillPublishesNothing()
+        {
+            // At the shipped 0.6 the mirror only runs on an orthographic game camera with a real device;
+            // a null camera (and an editor or preview camera) is left exactly as the old water.
+            GameConfig previous = GameServices.Config;
+            GameServices.Config = null;
+            Shader.SetGlobalFloat(CalmMirror.HandoverId, 0.7f);
+            Shader.SetGlobalFloat(CalmMirror.MeshTagId, 1f);
+            try
+            {
+                Assert.AreEqual(0.6f, GameServices.WaterMirrorStrength, 1e-6f);
+                CalmMirror.AddTo(null, null);
+                Assert.IsFalse(CalmMirror.Active);
+                Assert.AreEqual(0f, Shader.GetGlobalFloat(CalmMirror.HandoverId));
+                Assert.AreEqual(0f, Shader.GetGlobalFloat(CalmMirror.MeshTagId));
+            }
+            finally
+            {
+                Shader.SetGlobalFloat(CalmMirror.HandoverId, 0f);
+                Shader.SetGlobalFloat(CalmMirror.MeshTagId, 0f);
+                GameServices.Config = previous;
             }
         }
 
@@ -129,6 +184,19 @@ namespace HiddenHarbours.Tests.Art.EditMode
             StringAssert.Contains("strength *= 1.0 - saturate(_HHCalmMirrorHandover);", src,
                 "unset reads 0, so today's strength is multiplied by exactly 1");
             Assert.AreEqual(1, Regex.Matches(src, @"_HHCalmMirrorHandover\)").Count, "one place only: no double handover");
+        }
+
+        [Test]
+        public void MirrorPass_AsksForAnIntermediateTexture_AndNeverDescribesTheBackBuffer()
+        {
+            // Without an intermediate texture the active colour is the back buffer or the camera's own target,
+            // which has no descriptor: reading one throws inside the render graph and the camera loses its frame.
+            string src = File.ReadAllText("Assets/_Project/Code/Art/CalmMirror.cs");
+            StringAssert.Contains("requiresIntermediateTexture = true", src);
+            StringAssert.Contains("resources.isActiveTargetBackBuffer) return;", src);
+            Assert.Less(src.IndexOf("isActiveTargetBackBuffer", System.StringComparison.Ordinal),
+                        src.IndexOf("graph.GetTextureDesc(target)", System.StringComparison.Ordinal),
+                        "the back buffer is turned away before its descriptor is read");
         }
 
         [Test]

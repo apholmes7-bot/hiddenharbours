@@ -87,7 +87,7 @@ namespace HiddenHarbours.Art
     /// The calm mirror (the owner, 2026-11-23: calm water shows a TRUE reflection). Driven from
     /// <see cref="IsoFacetHullFeature.AddRenderPasses"/> once per camera per frame.
     ///
-    /// <para>Dial 0 (<see cref="GameConfig.WaterMirrorStrength"/>, the shipped default): the two globals it
+    /// <para>Dial 0 (<see cref="GameConfig.WaterMirrorStrength"/>; the ship default is 0.6): the two globals it
     /// owns stay 0, which is also their unset value, the camera is never touched and no pass is recorded,
     /// so every pixel is today's.</para>
     ///
@@ -171,7 +171,10 @@ namespace HiddenHarbours.Art
                 if (shader == null || !shader.isSupported) return;
                 s_Material = CoreUtils.CreateEngineMaterial(shader);
             }
-            s_Pass ??= new Pass { renderPassEvent = RenderPassEvent.AfterRenderingTransparents };
+            // The pass copies the camera colour, so it needs a texture it can describe: without an intermediate
+            // texture the active colour is the back buffer or the camera's own target, which has no descriptor,
+            // and reading one throws inside the render graph and loses the camera's whole frame.
+            s_Pass ??= new Pass { renderPassEvent = RenderPassEvent.AfterRenderingTransparents, requiresIntermediateTexture = true };
             s_Pass.Material = s_Material;
             s_Pass.Strength = CalmMirrorMath.EffectiveStrength(dial, sea, s);
             s_Pass.Roughness = CalmMirrorMath.Roughness(sea, s);
@@ -232,7 +235,7 @@ namespace HiddenHarbours.Art
                 var resources = frameData.Get<UniversalResourceData>();
                 var cameraData = frameData.Get<UniversalCameraData>();
                 TextureHandle target = resources.activeColorTexture;
-                if (!target.IsValid() || Material == null) return;
+                if (!target.IsValid() || Material == null || resources.isActiveTargetBackBuffer) return;
                 TextureDesc desc = graph.GetTextureDesc(target);
                 // The classes ride the alpha channel; a target without one has nothing to read.
                 if (!GraphicsFormatUtility.HasAlphaChannel(desc.format) || desc.width <= 0 || desc.height <= 0) return;

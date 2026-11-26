@@ -186,7 +186,7 @@ namespace HiddenHarbours.Art
             // The figure pixel look's map is per camera: zero (the overlays' untouched path) unless
             // this camera's recording publishes its own. A no-op once zero.
             IsoFacetFigureTarget.Unpublish();
-            // The calm mirror (GameConfig.WaterMirrorStrength): at the shipped 0 it records nothing and leaves every
+            // The calm mirror (GameConfig.WaterMirrorStrength): at 0 it records nothing and leaves every
             // value it owns at its unset 0. Before the early returns, so its per-camera state is never stale.
             CalmMirror.AddTo(renderer, renderingData.cameraData.camera);
             // "Hulls" is the facet block: every subject of the HHHullFacet list. A mesh hull is one;

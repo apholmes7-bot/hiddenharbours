@@ -1079,9 +1079,10 @@ namespace HiddenHarbours.Core
                  "rod or mast still reflects; only the long rows under the hull itself fray.")]
         [Min(0f)] public float HullReflectionEndMinRunPixels = DefaultHullReflectionEndMinRunPixels;
 
-        /// <summary>The calm mirror's ship default: <b>0, off</b>. The owner liked 0.6 on the prototype
-        /// (2026-11-23) and asked for it behind a dial, off until he has seen it in game.</summary>
-        public const float DefaultWaterMirrorStrength = 0f;
+        /// <summary>The calm mirror's ship default: <b>0.6, on</b>. The owner liked 0.6 on the prototype
+        /// (2026-11-23), it merged behind the dial at 0, and he approved turning it on at 0.6 on
+        /// 2026-11-26. 0 still turns it off and gives the water exactly as before.</summary>
+        public const float DefaultWaterMirrorStrength = 0.6f;
 
         [Tooltip("THE CALM MIRROR: how strongly calm water mirrors what stands on it (0..1). Boats, their " +
                  "fittings, the crew aboard and figures ashore show their true reflection, the view from " +

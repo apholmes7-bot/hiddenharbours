@@ -388,7 +388,7 @@ MonoBehaviour:
   HullReflectionEndCutPixels: 3
   HullReflectionEndThinPixels: 3
   HullReflectionEndMinRunPixels: 12
-  WaterMirrorStrength: 0
+  WaterMirrorStrength: 0.6
   WaterMirror:
     SeaFadeStart: 0.15
     SeaFadeEnd: 0.75

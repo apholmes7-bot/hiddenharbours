@@ -1512,7 +1512,7 @@ namespace HiddenHarbours.Core
             Config != null ? UnityEngine.Mathf.Max(0f, Config.HullReflectionEndMinRunPixels)
                 : GameConfig.DefaultHullReflectionEndMinRunPixels;
         /// <summary>The calm mirror's dial, clamped to 0..1 (<see cref="GameConfig.WaterMirrorStrength"/>);
-        /// the ship default 0 with no config.</summary>
+        /// the ship default (0.6) with no config.</summary>
         public static float WaterMirrorStrength =>
             Config != null ? UnityEngine.Mathf.Clamp01(Config.WaterMirrorStrength)
                 : GameConfig.DefaultWaterMirrorStrength;
