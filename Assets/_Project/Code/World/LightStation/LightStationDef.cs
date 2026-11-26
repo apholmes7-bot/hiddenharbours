@@ -89,5 +89,29 @@ namespace HiddenHarbours.World
 
         [Tooltip("How far the core is pulled toward white.")]
         [Range(0f, 1f)] public float LanternCoreWhiten = 0.3f;
+
+        [Header("The lantern's glass")]
+        [Tooltip("The lantern room's panes as the tower picture draws them, metres from the tower's foot: x across, " +
+                 "y up the picture. Each is drawn as lit glass from dusk to dawn. None leaves the glass dark.")]
+        public Rect[] GlassPanes = new Rect[0];
+
+        [Tooltip("How brightly the lit glass burns.")]
+        [Min(0f)] public float GlassIntensity = 0.9f;
+
+        [Tooltip("The glass's brightness at the head of a pane, as a share.")]
+        [Range(0f, 1.5f)] public float GlassHeadLevel = 0.75f;
+
+        [Tooltip("The glass's brightness at the sill of a pane, as a share.")]
+        [Range(0f, 1.5f)] public float GlassSillLevel = 1f;
+
+        [Tooltip("How much brighter a pane is in its middle, where the lens stands behind it. Bright enough and the " +
+                 "middle burns toward white: the hot core.")]
+        [Range(0f, 1.5f)] public float GlassCentreLift = 0.6f;
+
+        [Tooltip("How much dimmer a pane is at its sides: 0 even across, 1 dark at the edges.")]
+        [Range(0f, 1f)] public float GlassAcrossFalloff = 0.35f;
+
+        [Tooltip("Steps of brightness across a pane, for the pixel look: 0 smooth.")]
+        [Range(0, 8)] public int GlassBands = 3;
     }
 }

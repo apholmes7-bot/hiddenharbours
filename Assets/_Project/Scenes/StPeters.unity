@@ -164529,6 +164529,7 @@ Transform:
   - {fileID: 2138672346}
   - {fileID: 406979876}
   - {fileID: 1477387340}
+  - {fileID: 640892704}
   - {fileID: 612523632}
   m_Father: {fileID: 1132627356}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -168508,7 +168509,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 124553075}
-  - component: {fileID: 1335933917}
+  - component: {fileID: 1950674028}
   m_Layer: 0
   m_Name: bridge.stp_gap_footbridge
   m_TagString: Untagged
@@ -168534,27 +168535,6 @@ Transform:
   - {fileID: 704922127}
   m_Father: {fileID: 1464805096}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1335933917
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 151238969}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 44422230a0a985e44ac4eb7c9dd04712, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.StandablePlatform
-  _id: bridge.stp_gap_footbridge
-  _footprint:
-    serializedVersion: 2
-    x: 154.95
-    y: -41.525
-    width: 3
-    height: 1.95
-  _deckElevation: 5.6600003
-  _drawnLiftedByDeck: 0
 --- !u!1 &2139047816
 GameObject:
   m_ObjectHideFlags: 0
@@ -168641,7 +168621,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 3.0625, y: 1.65625}
+  m_Size: {x: 3.4375, y: 3.15625}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -168675,7 +168655,7 @@ Transform:
   m_GameObject: {fileID: 1765723134}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.575, z: 0}
+  m_LocalPosition: {x: -0.2571478, y: 0.51429564, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -168728,14 +168708,14 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1360
+  m_SortingOrder: 1358
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 732e0399d878837f944ff9f61e3d1498, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2.875, y: 0.53125}
+  m_Size: {x: 2.75, y: 1.90625}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -168758,7 +168738,7 @@ MonoBehaviour:
   _orderPerUnit: 4
   _minOrder: 3
   _maxOrder: 2401
-  _pivotYOffset: 0.8
+  _pivotYOffset: 1.4260991
 --- !u!60 &1334725383
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -168805,10 +168785,10 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -1.4, y: 0}
-      - {x: 1.4, y: 0}
-      - {x: 1.4, y: 0.120000005}
-      - {x: -1.4, y: 0.120000005}
+    - - {x: -1.252198, y: -0.626099}
+      - {x: 1.252198, y: 0.62609905}
+      - {x: 1.1985323, y: 0.7334303}
+      - {x: -1.3058636, y: -0.5187677}
   m_UseDelaunayMesh: 1
 --- !u!1 &1699921658
 GameObject:
@@ -168838,7 +168818,7 @@ Transform:
   m_GameObject: {fileID: 1699921658}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.575, z: 0}
+  m_LocalPosition: {x: 0.2571478, y: -0.51429564, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -168891,14 +168871,14 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1368
+  m_SortingOrder: 1370
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 732e0399d878837f944ff9f61e3d1498, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2.875, y: 0.53125}
+  m_Size: {x: 2.75, y: 1.90625}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -168921,7 +168901,7 @@ MonoBehaviour:
   _orderPerUnit: 4
   _minOrder: 3
   _maxOrder: 2401
-  _pivotYOffset: 0
+  _pivotYOffset: -0.626099
 --- !u!60 &346207521
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -168968,10 +168948,10 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -1.4, y: -0.120000005}
-      - {x: 1.4, y: -0.120000005}
-      - {x: 1.4, y: 0}
-      - {x: -1.4, y: 0}
+    - - {x: -1.1985323, y: -0.7334303}
+      - {x: 1.3058636, y: 0.5187677}
+      - {x: 1.252198, y: 0.626099}
+      - {x: -1.252198, y: -0.62609905}
   m_UseDelaunayMesh: 1
 --- !u!1 &1168768309
 GameObject:
@@ -177638,6 +177618,99 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!1 &1594634399
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 640892704}
+  - component: {fileID: 1753960751}
+  m_Layer: 0
+  m_Name: LanternGlass
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &640892704
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1594634399}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 909150376}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1753960751
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1594634399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bec970c3a434f839791a3bdb8cb2022, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.LanternGlassGlow
+  _panes:
+  - serializedVersion: 2
+    x: -0.9375
+    y: 8.0625
+    width: 0.5
+    height: 0.40625
+  - serializedVersion: 2
+    x: -0.375
+    y: 8.0625
+    width: 0.75
+    height: 0.40625
+  - serializedVersion: 2
+    x: 0.4375
+    y: 8.0625
+    width: 0.5
+    height: 0.40625
+  - serializedVersion: 2
+    x: -0.375
+    y: 8.5625
+    width: 0.75
+    height: 0.1875
+  _colour: {r: 0.965, g: 0.839, b: 0.518, a: 1}
+  _intensity: 0.9
+  _headLevel: 0.75
+  _sillLevel: 1
+  _centreLift: 0.6
+  _acrossFalloff: 0.35
+  _bands: 3
+--- !u!114 &1950674028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 151238969}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7bb89c8575f43adb70fe64609074f01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.FootbridgeDeck
+  _id: bridge.stp_gap_footbridge
+  _at: {x: 156.45, y: -40.95}
+  _axisDegrees: 26.56505
+  _spanMetres: 3
+  _widthMetres: 1.15
+  _standingReachMetres: 0.8
+  _deckElevation: 5.6600003
+  _guideConeDegrees: 50
+  _guideApproachMetres: 0.8
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

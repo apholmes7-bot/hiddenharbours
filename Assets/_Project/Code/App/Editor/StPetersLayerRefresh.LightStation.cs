@@ -22,6 +22,7 @@ namespace HiddenHarbours.App.Editor
         public const string LightStationFolder = "Assets/_Project/Data/Regions/StPetersLightStation";
         public const string LightStationSprites = "Assets/_Project/Art/Sprites/StPeters/LightStation";
         public const string LightStationContractPath = LightStationSprites + "/LightStation.json";
+        public const string LanternGlassName = "LanternGlass";
 
         /// <summary>The baked station's contract (tools/rig-recipes/light-station.mjs writes it).</summary>
         [Serializable]
@@ -197,6 +198,33 @@ namespace HiddenHarbours.App.Editor
                         def.Colour, def.BeamIntensity, def.BeamEdgeSoftness, 0f, 0f, 0f, 0f, TurningLampRefreshHz,
                         def.BeamAngularSoftness));
                     beamTransforms.Add(children[children.Count - 1]);
+                }
+
+                // ---- the lantern's glass, lit from dusk to dawn: panes drawn as lit glass, not another lamp ----
+                if (def.GlassPanes != null && def.GlassPanes.Length > 0)
+                {
+                    string child = name + "/" + LanternGlassName;
+                    long gg = Next(child, "GameObject"), gt = Next(child, "Transform"), glow = Next(child, "LanternGlassGlow");
+                    var fields = new List<string> { "  _panes:" };
+                    foreach (Rect r in def.GlassPanes)
+                    {
+                        if (!(r.width > 0f) || !(r.height > 0f) || !(r.yMin > 0f))
+                            throw new Refusal($"{LightStationStep}: {name} has a glass pane with no size or below the tower's foot ({r}).");
+                        fields.Add("  - serializedVersion: 2");
+                        fields.Add("    x: " + F(r.x)); fields.Add("    y: " + F(r.y));
+                        fields.Add("    width: " + F(r.width)); fields.Add("    height: " + F(r.height));
+                    }
+                    fields.Add("  _colour: " + ColourYaml(def.Colour));
+                    fields.Add("  _intensity: " + F(def.GlassIntensity));
+                    fields.Add("  _headLevel: " + F(def.GlassHeadLevel));
+                    fields.Add("  _sillLevel: " + F(def.GlassSillLevel));
+                    fields.Add("  _centreLift: " + F(def.GlassCentreLift));
+                    fields.Add("  _acrossFalloff: " + F(def.GlassAcrossFalloff));
+                    fields.Add("  _bands: " + Int(def.GlassBands));
+                    wanted.Add(Want(GameObjectYaml(gg, LanternGlassName, new[] { gt, glow }), child, "GameObject"));
+                    wanted.Add(Want(TransformYaml(gt, gg, Vector2.zero, none, tr), child, "Transform"));
+                    wanted.Add(Want(MonoBehaviourYaml(glow, gg, assets.ScriptFor(typeof(LanternGlassGlow)), fields.ToArray()), child, "LanternGlassGlow"));
+                    children.Add(gt);
                 }
 
                 // ---- the keeper's lamp at the house door, a lantern like any doorstep's ----

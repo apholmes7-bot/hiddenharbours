@@ -37,3 +37,30 @@ MonoBehaviour:
   LanternCoreMetres: 0.22
   LanternHaloStrength: 0.35
   LanternCoreWhiten: 0.35
+  GlassPanes:
+  - serializedVersion: 2
+    x: -0.9375
+    y: 8.0625
+    width: 0.5
+    height: 0.40625
+  - serializedVersion: 2
+    x: -0.375
+    y: 8.0625
+    width: 0.75
+    height: 0.40625
+  - serializedVersion: 2
+    x: 0.4375
+    y: 8.0625
+    width: 0.5
+    height: 0.40625
+  - serializedVersion: 2
+    x: -0.375
+    y: 8.5625
+    width: 0.75
+    height: 0.1875
+  GlassIntensity: 0.9
+  GlassHeadLevel: 0.75
+  GlassSillLevel: 1
+  GlassCentreLift: 0.6
+  GlassAcrossFalloff: 0.35
+  GlassBands: 3
