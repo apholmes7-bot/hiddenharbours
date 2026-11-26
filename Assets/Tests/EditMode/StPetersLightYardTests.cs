@@ -83,6 +83,8 @@ namespace HiddenHarbours.Tests.EditMode
         {
             Assert.IsTrue(Kit().EntryFor("fogBell").Main.CastsShadow);
             Assert.IsTrue(Placed("structure.stp_ne_fog_bell").CastsShadow);
+            // The clothesline carries no baked caster; the runtime sun-caster installer gives it its shadow (the
+            // garments' rectangles on the grass north of the line at noon), as it does every standing sprite.
             Assert.IsFalse(Placed(StPetersLightPiecesDefs.ClotheslineId).CastsShadow);
         }
 
