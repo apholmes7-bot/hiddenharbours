@@ -13,8 +13,8 @@ namespace HiddenHarbours.World
     [CreateAssetMenu(menuName = "Hidden Harbours/World/Tidal Form", fileName = "TidalForm_")]
     public sealed class TidalFormDef : ScriptableObject
     {
-        [Tooltip("Stable id, form.snake_case: the id the key scene's ground gives the form. Append-only.")]
-        public string Id = "form.example";
+        [Tooltip("Stable id, tidalform.snake_case, named after the key scene's form but kept apart from its ground id. Append-only.")]
+        public string Id = "tidalform.example";
 
         [Tooltip("The name on the chart.")]
         public string DisplayName = "";
