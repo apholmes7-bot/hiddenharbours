@@ -21,5 +21,5 @@ MonoBehaviour:
   DailyVolumeLitres: 12
   PlayerAllowanceFraction: 0.25
   WinterMultiplier: 1
-  Container: pail or tote
+  Container: bucket or tote
   Basis: Capelin and herring top-up; bulk lobster bait comes by sea. Island supply plan 2026-11-15 table (h).

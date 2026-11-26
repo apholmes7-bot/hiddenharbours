@@ -142,6 +142,7 @@ namespace HiddenHarbours.Economy
 
             int total = 0;
             int sold = 0;
+            int shellfishSold = 0;
             for (int i = 0; i < items.Count; i++)
             {
                 CatchItem it = items[i];
@@ -160,13 +161,14 @@ namespace HiddenHarbours.Economy
                 total += SellPricing.MarginalPrice(it.BaseValue, it.SupplyElasticity, supply, sold,
                                                    demand, spoil.ValueMultiplier(it), priceLevel);
                 sold++;
+                if (it.Category == FishCategory.Shellfish) shellfishSold++;
             }
             if (sold == 0) return 0;
 
             Rebuild(hold, keep);
             if (market != null) market.RegisterSale(soldCategory, sold);
             wallet.Add(total);
-            EventBus.Publish(new CatchSold(total, sold));
+            EventBus.Publish(new CatchSold(total, sold, default, shellfishSold));
             return total;
         }
 
@@ -211,7 +213,8 @@ namespace HiddenHarbours.Economy
 
             Rebuild(hold, keep);
             wallet.Add(grandTotal);
-            EventBus.Publish(new CatchSold(grandTotal, soldCount));
+            soldPerCategory.TryGetValue(FishCategory.Shellfish, out int shellfishSold);
+            EventBus.Publish(new CatchSold(grandTotal, soldCount, default, shellfishSold));
             return grandTotal;
         }
 

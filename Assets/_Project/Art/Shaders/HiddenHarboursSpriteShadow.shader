@@ -155,6 +155,14 @@ Shader "HiddenHarbours/SpriteShadow"
         [HideInInspector] _StencilRef  ("Stencil ref", Int) = 1
         [HideInInspector] _StencilComp ("Stencil comparison", Int) = 6
         [HideInInspector] _StencilPass ("Stencil pass op", Int) = 2
+        // ON OPEN WATER (ShadowOnWater): how much of this caster's shade the ripples break up, published per
+        // renderer. 0 = land, and the shadow is exactly what it always was. The grid values come from the
+        // owner's SpriteShadowProfile.
+        [HideInInspector] _HHWaterBreak ("Water breakup (published per renderer)", Float) = 0
+        [HideInInspector] _HHWaterGrid ("Water breakup grid (pixels per unit, row px, dash px)", Vector) = (32, 3, 7, 0)
+        // A caster on LAND whose shade runs out over open water: (cut fraction in caster heights, water
+        // alpha, breakup, on). Only the pixels the published seabed puts under the sea are touched.
+        [HideInInspector] _HHWaterEdge ("Water edge for a land caster (cut, alpha, breakup, on)", Vector) = (0, 0, 0, 0)
     }
 
     SubShader
@@ -200,7 +208,13 @@ Shader "HiddenHarbours/SpriteShadow"
                 // fragment's screen point, which is how the shade arm refuses to darken its own caster.
                 // It interpolates correctly because the shear is affine in uv.y, exactly as uv is.
                 float2 shearUV    : TEXCOORD1;
+                // Where the shade lands in the world, for the water breakup (ShadowOnWater.hlsl).
+                float2 worldXY    : TEXCOORD2;
+                // How far along the shear this fragment is, in caster heights (0 at the feet).
+                float  upFrac     : TEXCOORD3;
             };
+
+            #include "Include/ShadowOnWater.hlsl"
 
             TEXTURE2D(_MainTex);
             SAMPLER(sampler_MainTex);
@@ -220,7 +234,28 @@ Shader "HiddenHarbours/SpriteShadow"
                 float4 _ShadowUVPerUnit;
                 float4 _ShadowSelfRect;
                 float  _ScreenShade;
+                float  _HHWaterBreak;
+                float4 _HHWaterGrid;
+                float4 _HHWaterEdge;
             CBUFFER_END
+
+            // The sea level and the seabed the water is drawing (WaterSurface / SeabedGlobals): globals, the
+            // same height map the C# side's ShadowOnWater.IsOverWater reads, so the two cannot disagree.
+            float4 _HHSeaLevelWorld;      // x = the drawn sea level (m), w = 1 when published
+            TEXTURE2D(_HHSeabedTex); SAMPLER(sampler_HHSeabedTex);
+            float4 _HHSeabedRect;         // xy = world min (m), zw = world size (m)
+            float4 _HHSeabedRange;        // x = min elevation, y = max, w = 1 when bound
+
+            // Open water under this world point: a bound seabed, inside its rect, below the published sea.
+            bool OnOpenWater(float2 worldXY)
+            {
+                if (_HHSeabedRange.w < 0.5 || _HHSeaLevelWorld.w < 0.5) return false;
+                float2 uv = (worldXY - _HHSeabedRect.xy) / max(_HHSeabedRect.zw, float2(1e-3, 1e-3));
+                if (any(uv < 0.0) || any(uv > 1.0)) return false;
+                float bed = lerp(_HHSeabedRange.x, _HHSeabedRange.y,
+                                 SAMPLE_TEXTURE2D_LOD(_HHSeabedTex, sampler_HHSeabedTex, uv, 0).r);
+                return bed < _HHSeaLevelWorld.x;
+            }
 
             Varyings vert(Attributes IN)
             {
@@ -254,7 +289,10 @@ Shader "HiddenHarbours/SpriteShadow"
                 float3 posOS = IN.positionOS;
                 posOS.xy += shear;
 
-                OUT.positionCS = GetVertexPositionInputs(posOS).positionCS;
+                VertexPositionInputs placed = GetVertexPositionInputs(posOS);
+                OUT.positionCS = placed.positionCS;
+                OUT.worldXY = placed.positionWS.xy;
+                OUT.upFrac = upFrac;
                 OUT.uv = TRANSFORM_TEX(IN.uv, _MainTex);
                 // Object units -> uv. dpos/duv is the sprite's texture size over its PPU whatever the
                 // slicing (FullRect or Tight), so its inverse is exact for both — the same reasoning that
@@ -306,7 +344,16 @@ Shader "HiddenHarbours/SpriteShadow"
                         discard;   // discards the STENCIL write too, so a neighbour's shade may still land here
                 }
 
-                half a = _ShadowColor.a * mask;
+                half a = _ShadowColor.a * mask *
+                    HHShadowWaterKeep(IN.worldXY, _HHWaterBreak, _HHWaterGrid.x, _HHWaterGrid.y, _HHWaterGrid.z);
+                // A LAND caster's shade where it runs out over open water: cut beyond the water cap, then
+                // faded and broken exactly as a water caster's whole shade is. Land pixels are untouched.
+                if (_HHWaterEdge.w > 0.5 && _GroundContact <= 0.0 && OnOpenWater(IN.worldXY))
+                {
+                    if (IN.upFrac > _HHWaterEdge.x) discard;
+                    a *= (half)_HHWaterEdge.y *
+                         HHShadowWaterKeep(IN.worldXY, _HHWaterEdge.z, _HHWaterGrid.x, _HHWaterGrid.y, _HHWaterGrid.z);
+                }
                 if (a <= 0.0) discard;   // no contribution -> skip (also the night/overcast = 0-alpha case)
 
                 // THE SHADE ARM: dst *= lerp(1, tint, a) under Blend Zero SrcColor. Every pixel under the

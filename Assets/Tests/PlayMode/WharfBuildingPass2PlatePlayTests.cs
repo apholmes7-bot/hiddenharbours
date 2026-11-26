@@ -781,12 +781,22 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.Less(frames, 400, "the camera never came to rest.");
         }
 
-        static CameraFollow FindPersistentFollow()
+        /// <summary>
+        /// The play camera this case's load brought. ⚠ A persistent camera that was already there when the
+        /// case began belongs to a core an earlier class left behind (#764), and its follow is switched off:
+        /// picking it failed five of these cases with "the play camera's CameraFollow is disabled" in a long
+        /// local run. A camera that was already there is used only when this load brought none of its own.
+        /// </summary>
+        CameraFollow FindPersistentFollow()
         {
+            CameraFollow stale = null;
             foreach (CameraFollow f in Object.FindObjectsByType<CameraFollow>())
-                if (f != null && MoodGradeDirector.IsPersistentCamera(f.GetComponent<Camera>()))
-                    return f;
-            return null;
+            {
+                if (f == null || !MoodGradeDirector.IsPersistentCamera(f.GetComponent<Camera>())) continue;
+                if (!_residentBefore.Contains(f.transform.root.gameObject)) return f;
+                if (stale == null) stale = f;
+            }
+            return stale;
         }
 
         /// <summary>⭐ THE PLATE MUST CONTAIN ITS SUBJECT, WHOLE: each subject drawn, and its sprite's bounds
@@ -822,7 +832,23 @@ namespace HiddenHarbours.Tests.PlayMode
         IEnumerator ShadersReady()
         {
 #if UNITY_EDITOR
+            // ⚠ NEVER RENDER TO THE SCREEN HERE. Some cases ask for the shaders before their own plate
+            // texture is attached (the landing props, the landing fittings, the figures): the camera then
+            // has no target, and a batch editor has no window to draw into. Camera.Render() on that empty
+            // target crashed the editor on D3D12 (access violation in D3D12RenderPass::SetupDeviceResources),
+            // taking every case of the run with it. The warm-up frame goes to a borrowed texture instead.
+            RenderTexture borrowed = null;
+            if (_cam.targetTexture == null)
+            {
+                borrowed = RenderTexture.GetTemporary(PlateWidthPx, PlateHeightPx, 24, RenderTextureFormat.ARGBHalf);
+                _cam.targetTexture = borrowed;
+            }
             _cam.Render();
+            if (borrowed != null)
+            {
+                _cam.targetTexture = null;
+                RenderTexture.ReleaseTemporary(borrowed);
+            }
             float until = Time.realtimeSinceStartup + ShaderWaitSeconds;
             int frames = 0;
             while (UnityEditor.ShaderUtil.anythingCompiling && Time.realtimeSinceStartup < until)

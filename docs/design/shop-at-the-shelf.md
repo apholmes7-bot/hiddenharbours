@@ -165,8 +165,19 @@ St Peters general store, after slice 2:
 - **Putting it away.** Near anything that is his storage (Ginny's freezer, the camper, his stowage rack
   once the house is his) the bag offers "Put the shopping away". The goods then count as his supplies,
   where the stove, the soap and the recipes already look. The bag leaves his hand.
-- **Nothing in the bag can be eaten or used** until it is put away: the stove and the soap do not see
-  bagged goods. The shopping must be carried home.
+- **The carried bag offers eating choices** for foods edible as they are. Away from another interaction,
+  the chooser keeps "Set the bag down" first, followed by a named choice for each edible purchase. Beside
+  his storage it keeps "Put the shopping away" first. Each bite removes one of the chosen food from both
+  the bag and his owned supplies, through the existing food and hunger rules. The stove, soap and recipes
+  still cannot spend bagged goods; everything he does not eat must be carried to storage.
+- **There is no bag-to-loose-hand action yet.** He eats a purchase directly from the bag he is carrying.
+  A loose edible item already in his hand offers "Eat" through the same interaction system; a raw food
+  needing cooking or an item that is not food offers no eating action. Food in distant storage is not offered.
+- **Hunger slows him and never blocks eating.** Relief and energy come from the food definition; the
+  existing body rules still handle fullness and overeating. No new animation, banner or hunger display.
+  Cancelling the chooser or confirming food that is no longer carried consumes nothing.
+- **Save v26 is unchanged.** Eating changes the existing supply, bag, hunger and body rows in memory;
+  the next ordinary save writes those rows. There is no new saved field or session-only food state.
 - **Storage on a nearby vehicle.** The rule is "anything that is his storage": every storage registered
   in the game's player-storage registry counts. On main today that is Ginny's freezer, the camper and the
   stowage rack. The boat hold is registered without a place in the world (it lives with the region, not

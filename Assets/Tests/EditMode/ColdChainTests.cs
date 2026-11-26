@@ -49,6 +49,7 @@ namespace HiddenHarbours.Tests.EditMode
         [TearDown]
         public void TearDown()
         {
+            DemoBuild.Override = null;
             GameServices.Reset();
             foreach (var o in _spawned) if (o != null) Object.DestroyImmediate(o);
             _spawned.Clear();
@@ -92,6 +93,21 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // ---- ice: protection that runs out ----------------------------------------------------
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void DemoMode_BlocksFreeIceButAllowsOrdinaryIce(bool demo)
+        {
+            var (_, box) = MakeIcedBoat();
+            DemoBuild.Override = demo;
+            Assert.AreEqual(!demo, box.TryDevAddIce());
+            Assert.AreEqual(!demo, box.ProtectionActive);
+            if (demo)
+            {
+                Assert.IsTrue(box.TryAddIce(1));
+                Assert.IsTrue(box.ProtectionActive);
+            }
+        }
 
         [Test]
         public void AddIce_MovesTheCatchOntoIce_AndArrestsIt()
