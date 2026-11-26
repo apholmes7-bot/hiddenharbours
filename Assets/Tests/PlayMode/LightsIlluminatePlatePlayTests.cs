@@ -377,19 +377,27 @@ namespace HiddenHarbours.Tests.PlayMode
             // ⭐ HE STANDS WELL OUT OF EVERY MEASURED LAMP'S REACH, for the reference frames and the measured
             // ones alike. His drawn figure cannot be hidden from a frame, he is lit on his own faces (rightly),
             // and his own headlamp is a lamp too; moved away, the count is hulls only.
-            GameObject him = GameObject.FindWithTag("Player");
-            Rigidbody2D hisBody = him != null ? him.GetComponent<Rigidbody2D>() : null;
-            bool hisBodyWas = hisBody != null && hisBody.simulated;
-            if (him != null)
+            // EVERY object tagged Player, not the first: in a full suite run earlier fixtures can leave more than
+            // one player standing in the region (four were drawn on the dock in the 2026-11-25 run, and the
+            // first FindWithTag moved only one of them).
+            List<GameObject> players = AllPlayers();
+            var bodies = new List<(Rigidbody2D body, bool was)>();
+            if (players.Count > 0)
             {
                 Vector2 away = PointAwayFromEvery(lamps, PlayerClearanceMetres);
-                if (hisBody != null) { hisBody.simulated = false; hisBody.position = away; }
-                him.transform.position = new Vector3(away.x, away.y, him.transform.position.z);
+                foreach (GameObject him in players)
+                {
+                    Rigidbody2D hisBody = him.GetComponent<Rigidbody2D>();
+                    if (hisBody != null) { bodies.Add((hisBody, hisBody.simulated)); hisBody.simulated = false; hisBody.position = away; }
+                    him.transform.position = new Vector3(away.x, away.y, him.transform.position.z);
+                }
                 for (int i = 0; i < 10; i++) yield return null;
-                foreach (SceneLight l in lamps)
-                    Assert.Greater(((Vector2)him.transform.position - l.WorldOrigin).magnitude, l.ReachMetres + PlayerClearanceMetres * 0.5f,
-                        $"premise: he stands out of {l.name}'s reach");
+                foreach (GameObject him in players)
+                    foreach (SceneLight l in lamps)
+                        Assert.Greater(((Vector2)him.transform.position - l.WorldOrigin).magnitude, l.ReachMetres + PlayerClearanceMetres * 0.5f,
+                            $"premise: {him.name} stands out of {l.name}'s reach");
             }
+            Debug.Log($"[{PlateDir}] players moved out of every measured lamp's reach: {players.Count}");
 
             yield return _stage.FrameOn(lamps[0].WorldOrigin);
             LampShadowProfile profile = PoolProfile();
@@ -487,7 +495,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 through += t; faces += f; hidden += n; framed++;
             }
 
-            if (hisBody != null) hisBody.simulated = hisBodyWas;
+            foreach (var (body, was) in bodies) if (body != null) body.simulated = was;
             Assert.Greater(hidden, 0, "every pixel was a hull: nothing was asked");
             Assert.LessOrEqual(through, 20,
                 $"{through} pixels where no hull is seen changed when her faces were lit: a lamp lit a boat " +
@@ -518,6 +526,16 @@ namespace HiddenHarbours.Tests.PlayMode
                 }
             return c + new Vector2(0f, 400f);
         }
+        /// <summary>Every player in the loaded scenes: each object tagged Player, and each root object named
+        /// Player (a player a previous fixture left behind need not keep its tag).</summary>
+        static List<GameObject> AllPlayers()
+        {
+            var list = new List<GameObject>(GameObject.FindGameObjectsWithTag("Player"));
+            foreach (Transform t in Object.FindObjectsByType<Transform>(FindObjectsSortMode.InstanceID))
+                if (t.parent == null && t.name == "Player" && !list.Contains(t.gameObject)) list.Add(t.gameObject);
+            return list;
+        }
+
         /// <summary>A standing figure's box when none of its renderers is live: width and height, metres.</summary>
         const float FigureWidthMetres = 0.8f, FigureHeightMetres = 2.0f;
 
@@ -531,8 +549,7 @@ namespace HiddenHarbours.Tests.PlayMode
             var roots = new List<Transform>();
             foreach (IsoCharacterFigureRenderer fig in Object.FindObjectsByType<IsoCharacterFigureRenderer>(FindObjectsSortMode.None))
                 roots.Add(fig.transform.root.GetComponentsInChildren<Renderer>(true).Length <= 64 ? fig.transform.root : fig.transform);
-            GameObject him = GameObject.FindWithTag("Player");
-            if (him != null) roots.Add(him.transform.root);
+            foreach (GameObject him in AllPlayers()) roots.Add(him.transform.root);
             foreach (Transform root in roots)
             {
                 bool any = false; Bounds box = default;
