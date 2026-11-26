@@ -136,10 +136,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 150
-        height: 100
+        width: 157
+        height: 104
       alignment: 9
-      pivot: {x: 0.30666667, y: 0.55}
+      pivot: {x: 0.3566879, y: 0.5673077}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -156,12 +156,12 @@ TextureImporter:
       name: SetPiece_shedLanding_1
       rect:
         serializedVersion: 2
-        x: 150
+        x: 157
         y: 0
-        width: 150
-        height: 100
+        width: 157
+        height: 104
       alignment: 9
-      pivot: {x: 0.38666666, y: 0.8}
+      pivot: {x: 0.41401273, y: 0.66346157}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -178,12 +178,12 @@ TextureImporter:
       name: SetPiece_shedLanding_2
       rect:
         serializedVersion: 2
-        x: 300
+        x: 314
         y: 0
-        width: 150
-        height: 100
+        width: 157
+        height: 104
       alignment: 9
-      pivot: {x: 0.25333333, y: 0.69}
+      pivot: {x: 0.24203822, y: 0.63461536}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -200,12 +200,12 @@ TextureImporter:
       name: SetPiece_shedLanding_3
       rect:
         serializedVersion: 2
-        x: 450
+        x: 471
         y: 0
-        width: 150
-        height: 100
+        width: 157
+        height: 104
       alignment: 9
-      pivot: {x: 0.5, y: 0.6}
+      pivot: {x: 0.4713376, y: 0.5769231}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -222,12 +222,12 @@ TextureImporter:
       name: SetPiece_shedLanding_4
       rect:
         serializedVersion: 2
-        x: 600
+        x: 628
         y: 0
-        width: 150
-        height: 100
+        width: 157
+        height: 104
       alignment: 9
-      pivot: {x: 0.46, y: 0.73}
+      pivot: {x: 0.50955415, y: 0.74038464}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -244,12 +244,12 @@ TextureImporter:
       name: SetPiece_shedLanding_5
       rect:
         serializedVersion: 2
-        x: 750
+        x: 785
         y: 0
-        width: 150
-        height: 100
+        width: 157
+        height: 104
       alignment: 9
-      pivot: {x: 0.61333334, y: 0.49}
+      pivot: {x: 0.58598727, y: 0.50961536}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -266,12 +266,12 @@ TextureImporter:
       name: SetPiece_shedLanding_6
       rect:
         serializedVersion: 2
-        x: 900
+        x: 942
         y: 0
-        width: 150
-        height: 100
+        width: 157
+        height: 104
       alignment: 9
-      pivot: {x: 0.43333334, y: 0.53}
+      pivot: {x: 0.41401273, y: 0.50961536}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -288,12 +288,12 @@ TextureImporter:
       name: SetPiece_shedLanding_7
       rect:
         serializedVersion: 2
-        x: 1050
+        x: 1099
         y: 0
-        width: 150
-        height: 100
+        width: 157
+        height: 104
       alignment: 9
-      pivot: {x: 0.16666667, y: 0.39}
+      pivot: {x: 0.32484075, y: 0.41346154}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

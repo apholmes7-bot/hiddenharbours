@@ -25,7 +25,7 @@ namespace HiddenHarbours.Tests.RigBaking
     {
         internal const string Kit = "docs/art/rigs/st-peters-set-pieces-kit/";
         internal const string TodayPath = "Assets/_Project/Art/Sprites/StPeters/SetPieces/stPetersSetPieces.today.json";
-        const string TodaySha256Lf = "4af6bf7297b3d033e452f5c3ca3e0a825821225271dcf81c3e601b862fd44880";
+        const string TodaySha256Lf = "976ace89a8c7256e646b54feb0d5405038658867985d482a0ce965e15bd0698e";
 
         /// <summary>The pieces, rig key to Def id, in the kit's KEYS order: the delivered eight, then the trolley
         /// line's loading stage and hand winch, added to the kit with the line's bedding (2026-11-25), then the net shed's
@@ -66,11 +66,11 @@ namespace HiddenHarbours.Tests.RigBaking
             ("gameplay/structure.stp_cannery_boiler_stack.gameplay.json", "1bd56390c698049db955f20ad821effaf4add4f088d460e169d3d1d3cdd2bccb"),
             ("gameplay/structure.stp_cannery_trolley_line.gameplay.json", "8cd95b8102f8af41be63c4427726c393c9b5236460d726cbec8a2b833bbbbc0a"),
             ("gameplay/structure.stp_cannery_trolley_stage.gameplay.json", "411649daac4e87da2a1d5228841d301e7f78acadde7dbff0cd2956af05ce9e98"),
-            ("gameplay/structure.stp_net_shed_landing.gameplay.json", "4598ceea2d3a0912046d9ae1ca24713f8b17b1b1c0e82c7a2e4a90820ed72d76"),
+            ("gameplay/structure.stp_net_shed_landing.gameplay.json", "aaf02307609b5bbcba25ddce8853b08050b51b0d7ca2b4b2e4ae9a7175d8a0cb"),
             ("harness.html", "a68769a55b2c4e6d8b372c44fc11257c391ae3184596a512ce28abcf9a240b90"),
             ("lib/coastalPass.js", "041b0bc32040c10a1bafc57da1d3f19e76047285c2b802861cff67caca5b166d"),
             ("lib/weatherSky.js", "38300697d5fe685b4800b2a5252aa3c9f0fbcb08bad40e80f6ce3aee1e9c7062"),
-            ("stPetersSetPieces.js", "d8821755d0b0236897e826502db5ce6dedc5d6a655cc8365e3f3394212c64ca2"),
+            ("stPetersSetPieces.js", "e32c70461cecd62a61ae021ae2308bdf9579730e3d1dcf6bcf9d771135400c8f"),
         };
 
         // ---- helpers the set-piece tests share ------------------------------------------------------------

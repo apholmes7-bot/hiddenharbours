@@ -44,6 +44,8 @@
     earth: ['#261f17', '#342a1f', '#443729', '#554534', '#67543f', '#7a644b'],      // worn earth where the bed meets the grass
     rope: ['#3f3424', '#56472f', '#6e5c3c', '#87714b', '#9e865b', '#b39b6e'],
     plank: ['#33291f', '#473829', '#5d4a35', '#745d42', '#8b7151', '#a18663'],      // the trolley's oak deck
+    silver: ['#272623', '#363431', '#4a4844', '#5f5d58', '#76736c', '#8d8a82'],     // the wharf's silvered spruce, a shade warmer
+    road: ['#2a1c17', '#38251e', '#4a3027', '#5c3c31', '#6e483b', '#815546'],       // the cart road's red dirt, trodden
     grass: ['#233a24', '#2f4a2c', '#3c5b33', '#4b6c3b', '#5c7d45', '#6f8e50'],
     lamp: ['#5c3a1a', '#93602b', '#c88b3d', '#e6b35a', '#f6d68b', '#fff0c2'],       // the lantern's glass (an emitter)
   };
@@ -490,20 +492,25 @@
     notes: 'Raised. Stands on the trolley stage beyond the buffer, rope lead (+x) toward the cart. stand is where a cranker stands; crank is the grip.',
   };
 
-  /* THE NET SHED LANDING (structure.stp_net_shed_landing) — the planked apron at the foot of the net shed's ramp, down to
+  /* THE NET SHED LANDING (structure.stp_net_shed_landing) - the planked apron at the foot of the net shed's ramp, down to
      the wharf. The bank in front of the doors falls away to the deck's rim; these boards bridge it, so whoever steps out of
-     the shed stands on timber and walks straight on to the wharf. Boards laid across the way (east-west), cut to the line
-     of the ramp's foot on the north and to the deck's rim on the south; a heavy oak threshold where the ramp lands, tarred
-     sills on the open sides, and an iron-shod nosing with a short tarred riser where it steps down on to the deck. A floor
-     piece: walked on, drawn under figures. Local x is east, local y north (plan); the origin is the piece's anchor. The
-     plan outline is given in metres from that anchor (o.plan): the ramp's foot runs from P1 to P2 (the shed sits at Dir 5, so its
-     foot lies on the diagonal), the deck's rim from P5 to P4; P2 to P3 squares the north-east corner off level with the
-     ramp's east corner, so the boards end in a straight edge and not a point. */
+     the shed stands on timber and walks straight on to the wharf. Boards laid across the way (east-west), of the same
+     silvered spruce as the wharf (a shade warmer, the bank keeps them drier), cut to the outline; a heavy oak threshold
+     where the ramp lands, tarred sills on the open sides, and an iron-shod nosing with a short tarred riser where it steps
+     down on to the deck. On the east the boards meet the red cart road: a worn lip of the road's own dirt runs ragged past
+     the sill there, with two edge stones bedded in it, so the planks end in the road and not on a ruled line. A floor
+     piece: walked on, drawn under figures. Local x is east, local y north (plan); the origin is the piece's anchor.
+     o.plan is the outline in metres from that anchor, clockwise and convex: P0 to P1 runs under the ramp (P0 on its west
+     side, P1 its east foot corner), so the boards fill the corner west of the ramp's foot and no grass shows between them;
+     P1 to P2 squares the north-east corner off level with the ramp's east corner; P2 to P3 is the east edge on the road;
+     P3 to P4 the deck's rim. o.foot is the ramp's foot (west corner, east corner), where the threshold lies. */
   PIECES.shedLanding = {
     id: 'structure.stp_net_shed_landing', name: 'Net shed landing', defType: 'SetPieceDef', scene: 'keyscene.stp_east_end',
     layer: 'floor', walk: 'on', footprint: null,
-    defaults: { deck: 0.1, board: 0.22, sill: 0.12, riser: 0.22, seed: 23,
-      plan: [[-1.1, -0.17], [0.95, 1.88], [2.05, 1.88], [2.05, -1.15], [-1.3, -1.15]] },
+    defaults: { deck: 0.1, board: 0.22, sill: 0.12, riser: 0.22, seed: 23, lip: 0.2, lipRag: 0.28, lipStep: 0.26,
+      plan: [[-1.55, 0.56], [0.95, 1.88], [2.05, 1.88], [2.05, -1.15], [-1.6, -1.15]],
+      foot: [[-0.96, -0.03], [0.95, 1.88]],
+      stones: [[0.13, 0.95, 0.22, 0.16], [0.21, -0.42, 0.18, 0.15]] },
     build(o) {
       const out = [], z = o.deck, P = o.plan, n = P.length;
       const ys = P.map(p => p[1]), yLo = Math.min(...ys), yHi = Math.max(...ys);
@@ -515,30 +522,40 @@
           const x = a[0] + (b[0] - a[0]) * (y - a[1]) / (b[1] - a[1]); lo = Math.min(lo, x); hi = Math.max(hi, x); }
         return [lo, hi]; };
       // bedded: worn earth showing past the open sides where boots have stepped off the boards
-      // (the outline runs clockwise, so outward is to the left of each edge; not under the threshold, not over the deck)
-      for (const k of [1, 2, 4]) { const a = P[k], b = P[(k + 1) % n];
+      // (the outline runs clockwise, so outward is to the left of each edge; not under the ramp, not over the deck, and not
+      // on the east, where the road's lip takes over)
+      for (const k of [1, 4]) { const a = P[k], b = P[(k + 1) % n];
         const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy), nx = -dy / L, ny = dx / L, e = 0.1 + 0.08 * hash(k, 1, o.seed);
         flat(out, [[a[0], a[1]], [b[0], b[1]], [b[0] + nx * e, b[1] + ny * e], [a[0] + nx * e, a[1] + ny * e]], 0.003, 'earth', 'bed', -0.8); }
-      // the boards, one strip per board width, each cut to the outline at its two edges, most of them worn pale down
-      // the middle where the traffic goes
+      // the road's lip on the east edge (P2 to P3): the cart road's dirt trodden out past the sill, its outer line ragged,
+      // stopping short of the deck's rim; two edge stones bedded in it
+      { const a = P[2], b = P[3], L = Math.hypot(b[0] - a[0], b[1] - a[1]), m = Math.max(2, Math.round((L - 0.15) / o.lipStep));
+        const ux = (b[0] - a[0]) / L, uy = (b[1] - a[1]) / L, nx = -uy, ny = ux, at = (s) => [a[0] + ux * s, a[1] + uy * s];
+        const w = (k) => k === 0 || k === m ? o.lip * 0.5 : o.lip + o.lipRag * hash(k, 7, o.seed);
+        for (let k = 0; k < m; k++) { const s0 = k * (L - 0.15) / m, s1 = (k + 1) * (L - 0.15) / m, p0 = at(s0), p1 = at(s1), w0 = w(k), w1 = w(k + 1);
+          flat(out, [p0, p1, [p1[0] + nx * w1, p1[1] + ny * w1], [p0[0] + nx * w0, p0[1] + ny * w0]], 0.002, 'road', 'lip', -0.35 + 0.2 * (hash(k, 8, o.seed) - 0.5)); }
+        for (const [off, cy, sw, sd] of o.stones) { const cx = a[0] + nx * off;
+          box(out, cx - sw / 2, cx + sw / 2, cy - sd / 2, cy + sd / 2, 0, 0.07, 'barnacle', 'lip.stone'); } }
+      // the boards, one strip per board width, each cut to the outline at its two edges, a few worn pale down the middle
+      // where the traffic goes
       const m = Math.max(1, Math.round((yHi - yLo) / o.board)), bw = (yHi - yLo) / m;
       for (let k = 0; k < m; k++) { const y0 = yLo + k * bw + 0.008, y1 = yLo + (k + 1) * bw - 0.008;
         const s0 = span(y0), s1 = span(y1); if (!(s0[1] > s0[0]) || !(s1[1] > s1[0])) continue;
         const q = [[s0[0], y0], [s0[1], y0], [s1[1], y1], [s1[0], y1]];
-        F(out, q.map(p => [p[0], p[1], z]), 'plank', -0.2 + 0.12 * (hash(k, 3, o.seed) - 0.5), 'deck');
-        F(out, [[s0[0], y0, z - 0.04], [s0[1], y0, z - 0.04], [s0[1], y0, z], [s0[0], y0, z]], 'plank', -0.45, 'deck.edge');
+        F(out, q.map(p => [p[0], p[1], z]), 'silver', -0.2 + 0.12 * (hash(k, 3, o.seed) - 0.5), 'deck');
+        F(out, [[s0[0], y0, z - 0.04], [s0[1], y0, z - 0.04], [s0[1], y0, z], [s0[0], y0, z]], 'silver', -0.45, 'deck.edge');
         const mid = (s0[0] + s0[1] + s1[0] + s1[1]) / 4, half = 0.32;
-        if (hash(k, 4, o.seed) < 0.6) flat(out, [[mid - half, y0 + 0.02], [mid + half, y0 + 0.02], [mid + half, y1 - 0.02], [mid - half, y1 - 0.02]], z + 0.001, 'board', 'deck.wear', -0.1);
+        if (hash(k, 4, o.seed) < 0.6) flat(out, [[mid - half, y0 + 0.02], [mid + half, y0 + 0.02], [mid + half, y1 - 0.02], [mid - half, y1 - 0.02]], z + 0.001, 'silver', 'deck.wear', 0.05);
         for (const sx of [s0[0] + 0.12, s0[1] - 0.12]) box(out, sx - 0.012, sx + 0.012, (y0 + y1) / 2 - 0.012, (y0 + y1) / 2 + 0.012, z, z + 0.004, 'iron', 'deck.nail'); }
-      // the threshold: a squared oak baulk under the ramp's foot (P1 to P2), proud of the boards
-      stick(out, [P[0][0], P[0][1], z + 0.03], [P[1][0], P[1][1], z + 0.03], o.sill + 0.04, 'wood', 'threshold');
+      // the threshold: a squared oak baulk across the ramp's foot, proud of the boards
+      stick(out, [o.foot[0][0], o.foot[0][1], z + 0.03], [o.foot[1][0], o.foot[1][1], z + 0.03], o.sill + 0.04, 'wood', 'threshold');
       // the sills on the open sides, tarred
       for (const k of [1, 2, 4]) { const a = P[k], b = P[(k + 1) % n]; stick(out, [a[0], a[1], z - 0.02], [b[0], b[1], z - 0.02], o.sill, 'tar', 'sill'); }
       // the step down on to the deck: a tarred riser under the south edge and an iron nosing along its lip
       const s = P[3], w = P[4];
       box(out, w[0], s[0], s[1] - 0.04, s[1], z - o.riser, z, 'tar', 'riser');
       stick(out, [w[0], s[1] + 0.02, z + 0.005], [s[0], s[1] + 0.02, z + 0.005], 0.05, 'iron', 'nosing');
-      return { faces: out, mats: mats(['plank', 'board', 'wood', 'tar', 'iron', 'earth']), anchors: { words: [] } };
+      return { faces: out, mats: mats(['silver', 'wood', 'tar', 'iron', 'earth', 'road', 'barnacle']), anchors: { words: [] } };
     },
     notes: 'A floor piece, walked on. Lies at the foot of the net shed\'s ramp and steps down on to the landing deck; its plan outline is metres from the anchor.',
   };

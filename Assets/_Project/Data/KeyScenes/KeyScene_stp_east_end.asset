@@ -334,7 +334,7 @@ MonoBehaviour:
     Kit: wharfDecor
     Piece: netReel
     State: 
-    At: {x: 195.4, y: 5.5}
+    At: {x: 195.4, y: 5.42}
     Z: 5.35
     StandsOn: deck
     MountHost: 
