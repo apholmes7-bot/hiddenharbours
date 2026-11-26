@@ -173,6 +173,7 @@ namespace HiddenHarbours.Art
                 next.Shadow = SpriteShadow.Attach(renderer, settings != null && settings.CastOnWalkingDeck);
                 next.Shadow.CastsGroundContact = settings != null ? settings.CastsGroundContact : _rules.DefaultGroundContact;
                 next.Shadow.FootOffset = settings != null ? settings.FootOffset : _rules.DefaultFootOffset;
+                next.Shadow.CastsLampShadow = settings == null || !settings.Floats;
                 _installed.Add(next.Shadow);
                 // A scene load must not wake every distant caster until the next arrival scan.
                 ApplyVisibility(next.Shadow, _rules.CameraDistanceMetres > 0f ? Camera.main : null,
