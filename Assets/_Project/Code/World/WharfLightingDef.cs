@@ -21,7 +21,9 @@ namespace HiddenHarbours.World
 
         [Header("Lantern posts along the wall")]
         [Tooltip("Where each lantern post stands, in world plan metres, on the deck just back from the wall's lip. Each " +
-                 "throws a warm pool on the deck that spills over the lip onto the wall face and the water below.")]
+                 "throws a warm pool on the deck that spills over the lip onto the wall face and the water below. Empty " +
+                 "where the wharf's own layout places its lanterns (St Peters' pier: StPetersWharf.LampPostSites); the " +
+                 "strength and reach below still apply to them.")]
         public Vector2[] LanternSites = new Vector2[0];
         [Tooltip("The lanterns throw lamp shadows (the owner's 11-25 ruling: lights cast shadows).")]
         public bool LanternsCastShadows = true;

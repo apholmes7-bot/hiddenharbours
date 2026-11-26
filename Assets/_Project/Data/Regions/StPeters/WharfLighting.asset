@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4080770848284654832da6e1e1aff82a, type: 3}
+  m_Name: WharfLighting
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.WharfLightingDef
+  Id: lighting.stp_wharf
+  DisplayName: St Peters wharf
+  LanternSites: []
+  LanternsCastShadows: 1
+  LanternIntensityScale: 2.5
+  LanternReachMetres: 7.5
+  LitPoleIds: []
+  PolesCastShadows: 1
+  PoleIntensityScale: 1
+  PoleReachMetres: 7
+  MarkerBloomMetres: 1
+  MarkerIntensity: 1.6
+  MarkerEdgeSoftness: 0.6
+  WestGreen: {r: 0.3, g: 1, b: 0.5, a: 1}
+  EastRed: {r: 1, g: 0.22, b: 0.15, a: 1}
+  Why: 'St Peters'' two pier lanterns burned at the shared lantern preset, which
+    left the deck near black at night once Nine Mile Creek''s wharf was brought up
+    to a readable night. They now burn 2.5 times the preset with a 7.5 m pool, the
+    same as Nine Mile Creek''s wall lanterns, so a person and a boat at the pier can
+    be made out. The preset itself is untouched: every doorstep and lane lantern in
+    the village uses it. The sites stay where the pier''s own layout puts them
+    (StPetersWharf.LampPostSites, the landing key scene): one at the head over the
+    ladder and one at the root where the planks meet the shore, with the middle
+    left dark on purpose, as a community wharf reads at two in the morning
+    (municipal-infrastructure.md 3.4). The pier has no lamp poles and no harbour
+    lights of its own; the red and green in its approach are the channel buoys''
+    lanterns, which are drawn by the shared navigation-light preset, so the marker
+    values here are unused.'

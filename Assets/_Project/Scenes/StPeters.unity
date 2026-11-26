@@ -58315,7 +58315,7 @@ MonoBehaviour:
   _coneHalfAngle: 30
   _range: 0.14
   _color: {r: 1, g: 0.49563932, b: 0, a: 1}
-  _intensity: 1.05
+  _intensity: 2.625
   _edgeSoftness: 0.9
   _angularSoftness: 0.4
   _coreBoost: 1
@@ -58329,7 +58329,7 @@ MonoBehaviour:
   _castsShadows: 1
   _lampHeightMeters: 2.46
   _bloomLiftMetres: 2.09
-  _reachMetres: 3.6
+  _reachMetres: 7.5
   _originOffset: {x: 0, y: 0}
   _refreshHz: 20
 --- !u!114 &1865686553990426927
@@ -58345,9 +58345,9 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.PreconfiguredLight
   _preset: 6
-  _intensityScale: 1
+  _intensityScale: 2.5
   _fittingWidthMetres: 0.14
-  _reachOverrideMetres: 3.6
+  _reachOverrideMetres: 7.5
 --- !u!1 &1118362066905098605
 GameObject:
   m_ObjectHideFlags: 0
@@ -58498,7 +58498,7 @@ MonoBehaviour:
   _coneHalfAngle: 30
   _range: 0.14
   _color: {r: 1, g: 0.49563932, b: 0, a: 1}
-  _intensity: 1.05
+  _intensity: 2.625
   _edgeSoftness: 0.9
   _angularSoftness: 0.4
   _coreBoost: 1
@@ -58512,7 +58512,7 @@ MonoBehaviour:
   _castsShadows: 1
   _lampHeightMeters: 2.46
   _bloomLiftMetres: 2.09
-  _reachMetres: 3.6
+  _reachMetres: 7.5
   _originOffset: {x: 0, y: 0}
   _refreshHz: 20
 --- !u!114 &4275780291988381120
@@ -58528,9 +58528,9 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.PreconfiguredLight
   _preset: 6
-  _intensityScale: 1
+  _intensityScale: 2.5
   _fittingWidthMetres: 0.14
-  _reachOverrideMetres: 3.6
+  _reachOverrideMetres: 7.5
 --- !u!1 &195874750768623137
 GameObject:
   m_ObjectHideFlags: 0
