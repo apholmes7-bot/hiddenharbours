@@ -144,7 +144,7 @@ Material:
     - _PaletteSatCap: 0.3
     - _PaletteValueCeil: 0.75
     - _PaletteValueFloor: 0.2
-    - _PixelsPerUnit: 24
+    - _PixelsPerUnit: 32
     - _RainIntensity: 0
     - _RainRingDensity: 0.35
     - _RainRingScale: 6

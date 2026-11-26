@@ -257,6 +257,10 @@ namespace HiddenHarbours.Tests.EditMode
                     Assert.That(Regex.Matches(yaml, Regex.Escape(bandKey)).Count, Is.EqualTo(1), files[i] + ": " + bandKey.Trim());
                     yaml = yaml.Replace(bandKey, "");
                 }
+                // The sea on the art grid (no-mixels ruling 11-26): every sea material's _PixelsPerUnit goes 24 -> 32,
+                // the art's 32 px a metre. Exactly that value is authorized; it is mapped back before the hash.
+                Assert.That(Regex.Matches(yaml, @"(?m)^    - _PixelsPerUnit: 32$").Count, Is.EqualTo(1), files[i] + ": art grid");
+                yaml = yaml.Replace("    - _PixelsPerUnit: 32\n", "    - _PixelsPerUnit: 24\n");
                 Assert.That(Hash(yaml.Replace("    - " + Dial + ": 0\n", "")), Is.EqualTo(originalHashes[i]),
                     files[i] + ": only the new zero key is authorized");
             }

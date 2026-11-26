@@ -94,7 +94,7 @@ Material:
     - _HeightMin: -4
     - _NoiseScale: 0.35
     - _PaintScale: 0.25
-    - _PixelsPerUnit: 24
+    - _PixelsPerUnit: 32
     - _RippleWavelength: 0.17
     - _Roughness: 0.302
     - _ShallowDepth: 0.15
