@@ -175,11 +175,12 @@ namespace HiddenHarbours.Art
             // camera without that pass (no displaced sea, a preview, the Null device) never reads a
             // flag the previous camera left raised, nor a coverage texture that is not its own.
             Shader.SetGlobalFloat(IsoFacetShaderIds.TerrainUnderwaterClip, 0f);
-            // So is the lamp pools' read of the hull depth, raised only by this camera's own resolve.
-            Shader.SetGlobalFloat(IsoFacetShaderIds.HullDepthLive, 0f);
             // W4-4c: so is the sea's read of the props under it, raised only by this camera's own
             // under-water pass (below), for the same reason.
             Shader.SetGlobalFloat(UnderWaterShaderIds.UnderWaterLive, 0f);
+            // So is the lamp pools' read of the hull depth, raised only by this camera's own resolve.
+            // (After the two above: ShallowsFloorTests pins those two as the body's first lines.)
+            Shader.SetGlobalFloat(IsoFacetShaderIds.HullDepthLive, 0f);
             // ADR 0040 B2: so is the sea's curl handoff, raised only by this camera's own curl mask.
             CurlingBreakerPasses.Lower();
             // The figure pixel look's map is per camera: zero (the overlays' untouched path) unless
@@ -341,10 +342,10 @@ namespace HiddenHarbours.Art
         {
             // W4-4a: never leave the ground clipping against a coverage nobody draws any more.
             Shader.SetGlobalFloat(IsoFacetShaderIds.TerrainUnderwaterClip, 0f);
-            // Nor the lamp pools reading a hull depth nobody writes any more.
-            Shader.SetGlobalFloat(IsoFacetShaderIds.HullDepthLive, 0f);
             // W4-4c: nor the sea reading props nobody draws any more.
             Shader.SetGlobalFloat(UnderWaterShaderIds.UnderWaterLive, 0f);
+            // Nor the lamp pools reading a hull depth nobody writes any more.
+            Shader.SetGlobalFloat(IsoFacetShaderIds.HullDepthLive, 0f);
             // ADR 0040 B2: nor fading its lip under a curl nobody draws any more.
             CurlingBreakerPasses.Lower();
             CalmMirror.Release();
