@@ -1,3 +1,4 @@
+using HiddenHarbours.Core;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
@@ -79,10 +80,14 @@ namespace HiddenHarbours.UI
         /// A full-screen overlay canvas with a TOP-LEFT-pivoted content host filling it, returned ready to
         /// lay out in (x right, y down). <paramref name="sortingOrder"/> places it in the stack above.
         /// </summary>
-        public static RectTransform MakeScreen(Transform parent, string name, int sortingOrder)
+        /// <para><paramref name="pixelFace"/>: a page set in the pixel face. Its scale is rounded down to
+        /// a whole kit pixel (<see cref="PixelSnappedCanvasScaler"/>) so every letter lands on whole
+        /// screen pixels, and its host is centred so the rounding leaves an even margin, not a lopsided one.</para>
+        public static RectTransform MakeScreen(Transform parent, string name, int sortingOrder, bool pixelFace = false)
         {
             var canvasGo = new GameObject(name,
-                typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+                typeof(Canvas), pixelFace ? typeof(PixelSnappedCanvasScaler) : typeof(CanvasScaler),
+                typeof(GraphicRaycaster));
             canvasGo.transform.SetParent(parent, false);
 
             var canvas = canvasGo.GetComponent<Canvas>();
@@ -99,9 +104,10 @@ namespace HiddenHarbours.UI
             var host = new GameObject("Content", typeof(RectTransform));
             host.transform.SetParent(canvasGo.transform, false);
             var rt = host.GetComponent<RectTransform>();
-            rt.anchorMin = new Vector2(0f, 1f);
-            rt.anchorMax = new Vector2(0f, 1f);
-            rt.pivot = new Vector2(0f, 1f);
+            Vector2 pin = pixelFace ? new Vector2(0.5f, 0.5f) : new Vector2(0f, 1f);
+            rt.anchorMin = pin;
+            rt.anchorMax = pin;
+            rt.pivot = pin;
             rt.anchoredPosition = Vector2.zero;
             rt.sizeDelta = ReferenceResolution;
             return rt;
@@ -153,7 +159,7 @@ namespace HiddenHarbours.UI
             var t = go.GetComponent<Text>();
             t.text = text;
             t.font = DefaultFont();
-            t.fontSize = fontSize;
+            t.fontSize = t.font != null && t.font.name == HarbourType.FontName ? FaceSize(fontSize) : fontSize;
             t.alignment = align;
             t.color = color;
             t.horizontalOverflow = HorizontalWrapMode.Wrap;
@@ -161,6 +167,10 @@ namespace HiddenHarbours.UI
             t.raycastTarget = false;
             return t;
         }
+
+        /// <summary>The pixel face's own size nearest to <paramref name="asked"/>: a whole multiple of the
+        /// glyph height times the kit's art scale (24, 48, 72 …), so a letter is never resampled.</summary>
+        public static int FaceSize(int asked) => HarbourType.SizeNearest(asked);
 
         /// <summary>A hairline rule — the only decoration the shell owns.</summary>
         public static void MakeRule(RectTransform parent, float x, float y, float w)
@@ -391,11 +401,12 @@ namespace HiddenHarbours.UI
             Object.DontDestroyOnLoad(es);
         }
 
-        /// <summary>Unity 6 removed Arial.ttf from Resources; LegacyRuntime.ttf is the built-in fallback.
-        /// The shell's real face arrives with the wordmark art, not before the playtest verdict.</summary>
+        /// <summary>The pixel face — one face for everything the player reads (the owner's pick). The
+        /// built-in font is only the fallback for a box where the face has not been imported.</summary>
         public static Font DefaultFont()
         {
-            var f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var f = Resources.Load<Font>(HarbourType.ResourceKey);
+            if (f == null) f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             if (f == null) f = Resources.GetBuiltinResource<Font>("Arial.ttf");
             return f;
         }

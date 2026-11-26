@@ -212,7 +212,7 @@ namespace HiddenHarbours.Tests.EditMode
             save.PlacedTraps.Add(new PlacedTrapDto { TrapDefId = "trap.lobster", InstanceId = "a" });
             save.PlacedTraps.Add(new PlacedTrapDto { TrapDefId = "trap.lobster", InstanceId = "b" });
             CatalogTestStall.BuildWired(stall, 200, save, null, rows);
-            Assert.AreEqual("You own 3 - 2 in the water.", rows[0].Note);
+            Assert.AreEqual("You own 3 — 2 in the water.", rows[0].Note);
             Assert.IsFalse(rows[0].Quote.Owned, "still re-buyable at 3 owned");
         }
 

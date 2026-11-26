@@ -110,7 +110,7 @@ namespace HiddenHarbours.Tests.World.EditMode
         }
 
         [Test]
-        public void ANamelessRowFallsBackToItsIdAndAnEmptyRowIsSkipped()
+        public void ANamelessRowFallsBackToAPlainNameAndAnEmptyRowIsSkipped()
         {
             var caught = new[]
             {
@@ -122,7 +122,7 @@ namespace HiddenHarbours.Tests.World.EditMode
             var blocks = NotebookContent.CatchBlocks(caught, Cols);
 
             Assert.That(blocks.Count, Is.EqualTo(1));
-            Assert.That(blocks[0].Rows[0].Text, Is.EqualTo("fish.atlantic_cod"));
+            Assert.That(blocks[0].Rows[0].Text, Is.EqualTo("Atlantic cod"), "a plain name made from the id, never the id");
         }
 
         [Test]

@@ -121,7 +121,7 @@ namespace HiddenHarbours.UI
 
         private void Build()
         {
-            _host = PaperUi.MakeScreen(transform, "PauseMenu_Canvas", PaperUi.PauseSortingOrder);
+            _host = PaperUi.MakeScreen(transform, "PauseMenu_Canvas", PaperUi.PauseSortingOrder, pixelFace: true);
             PaperUi.MakeScrim(_host, PaperUi.Scrim);
 
             PaperUi.MakeText(_host, ShellStrings.PauseTitle, 52, TextAnchor.UpperLeft,
@@ -169,7 +169,7 @@ namespace HiddenHarbours.UI
         /// already has for "stop and deal with something", and anything else that ever wants to open
         /// the book publishes the same signal (a desk, a bedside table) without touching this file.</para>
         ///
-        /// <para><b>The menu goes away first, and the world starts again.</b> The book is a thing she
+        /// <para><b>The menu goes away first, and the world starts again.</b> The book is a thing he
         /// holds while standing in the world, not another page of the menu — so the pause is released
         /// on the way out and the book takes the interact verb instead (via
         /// <c>InteractionGate</c>), which is how every modal in this repo says the key is its own.

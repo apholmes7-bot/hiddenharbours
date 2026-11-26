@@ -59,7 +59,7 @@ namespace HiddenHarbours.UI
     /// thing the ruling says a number should come from; suppressing them would be reading the ruling
     /// backwards. Where the nav cluster draws is still <see cref="HelmHudSuppression"/>'s answer alone.
     /// The clock/watch is likewise untouched: it is a hide-only window under the 2026-08-07 windowing
-    /// ruling, and it IS an instrument — she is wearing it.</para>
+    /// ruling, and it IS an instrument — he is wearing it.</para>
     /// </summary>
     public static class HudVisibilityPolicy
     {

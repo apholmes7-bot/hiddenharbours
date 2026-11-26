@@ -68,7 +68,7 @@ namespace HiddenHarbours.UI
         private static readonly Color Paper      = new Color(0.898f, 0.855f, 0.761f, 0.99f);
         private static readonly Color PaperEdge  = new Color(0.792f, 0.737f, 0.627f, 1f);
         private static readonly Color Ink        = new Color(0.157f, 0.133f, 0.106f, 1f);
-        private static readonly Color InkFaint   = new Color(0.157f, 0.133f, 0.106f, 0.55f);
+        private static readonly Color InkFaint   = new Color(0.157f, 0.133f, 0.106f, 0.70f); // same faint weight as the notebook's
         private static readonly Color Rule       = new Color(0.157f, 0.133f, 0.106f, 0.16f);
         private static readonly Color HighInk    = new Color(0.145f, 0.325f, 0.239f, 1f); // sea green
         private static readonly Color LowInk     = new Color(0.478f, 0.231f, 0.153f, 1f); // dried rust
@@ -170,7 +170,7 @@ namespace HiddenHarbours.UI
         private void Build()
         {
             var canvasGo = new GameObject("TidePanel_Canvas",
-                typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+                typeof(Canvas), typeof(PixelSnappedCanvasScaler), typeof(GraphicRaycaster));
             canvasGo.transform.SetParent(transform, false);
 
             var canvas = canvasGo.GetComponent<Canvas>();
@@ -255,7 +255,9 @@ namespace HiddenHarbours.UI
 
             // The region the page is FOR. A tide table is local — saying so is both flavour and truth,
             // since the heights are the active region's profile and no one else's.
-            string region = GameServices.CurrentRegionId;
+            // The page names the place as the player knows it; a region with no registered name shows
+            // nothing rather than its id.
+            string region = RegionDisplayNames.Get(GameServices.CurrentRegionId);
             if (!string.IsNullOrEmpty(region))
                 MakeText(page, HudStrings.TideTableForRegion(region), 24, TextAnchor.UpperRight,
                          PanelW - 380f - 40f, -40f, 380f, 34f, InkFaint);
@@ -271,8 +273,8 @@ namespace HiddenHarbours.UI
             TideState st = TideReadout.Derive(heightAt, now, slopeDt, scanStep, horizon);
 
             string line = HudStrings.TideTableNowLabel + "  "
-                        + HudFormat.ClockHHMM(TideAlmanac.HourOfDayAt(now, secondsPerDay)) + "   ·   "
-                        + HudFormat.HeightMeters(st.HeightMeters) + "   ·   "
+                        + HudFormat.ClockHHMM(TideAlmanac.HourOfDayAt(now, secondsPerDay)) + KeyNames.Gap
+                        + HudFormat.HeightMeters(st.HeightMeters) + KeyNames.Gap
                         + HudStrings.TideArrow(st.Rising) + " " + HudStrings.TideDirection(st.Rising);
             MakeText(page, line, 28, TextAnchor.UpperLeft, 40f, -110f, PanelW - 80f, 38f, Ink);
 
@@ -418,7 +420,7 @@ namespace HiddenHarbours.UI
             var t = go.GetComponent<Text>();
             t.text = text;                 // the whole point of the label — see the note below
             t.font = DefaultFont();
-            t.fontSize = fontSize;
+            t.fontSize = t.font != null && t.font.name == HarbourType.FontName ? HarbourType.SizeNearest(fontSize) : fontSize;
             t.alignment = align;
             t.color = color;
             t.horizontalOverflow = HorizontalWrapMode.Overflow;
@@ -481,10 +483,12 @@ namespace HiddenHarbours.UI
             DontDestroyOnLoad(es);
         }
 
-        // Unity 6 removed Arial.ttf from Resources; LegacyRuntime.ttf is the built-in fallback.
+        // The pixel face, one face for everything the player reads. The built-in font is only the
+        // fallback for a box where the face is not imported (Unity 6 removed Arial.ttf from Resources).
         private static Font DefaultFont()
         {
-            var f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var f = HarbourType.Load();
+            if (f == null) f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             if (f == null) f = Resources.GetBuiltinResource<Font>("Arial.ttf");
             return f;
         }

@@ -28,7 +28,7 @@ namespace HiddenHarbours.UI
     /// the preview (the diegetic-UI canon: no paper-doll screen, no mannequin render). A panel that
     /// covered them would be a clothes menu that hides the clothes. So the list is offset clear of the
     /// anchor rather than centred on it, and the fisher — who stands in front of and below the fixture
-    /// she is using — is left in the open.</para>
+    /// he is using — is left in the open.</para>
     ///
     /// <para><b>Right by default, left when the right would not fit.</b> Not a preference: a wardrobe
     /// sits against a wall and the free floor is whichever side the room has. Trying the preferred side
@@ -49,33 +49,46 @@ namespace HiddenHarbours.UI
         // DialoguePresenter's row height and PaperUi's rules. Nothing here is a number the owner tunes
         // to change how the game plays (rule 6) — the tunable content is the wardrobe asset's list.
 
-        /// <summary>The panel's width. Wide enough for the longest shipped label ("Rust and Cream") beside
-        /// its chip, and no wider — a narrow column reads as a card in the room rather than a screen.</summary>
-        public const float PanelWidth = 232f;
+        // Every part is a whole number of kit pixels (3 units each), so the face's pixels and the card's
+        // edges land on the same grid. The face at size 24 advances 15 units a letter.
 
-        /// <summary>One outfit row.</summary>
-        public const float RowHeight = 26f;
+        /// <summary>The panel's width. Wide enough for the longest shipped label ("Rust and Cream") and the
+        /// worn mark beside its chip, and for the first line of the controls hint ("W/S: choose   E: wear",
+        /// 21 letters); no wider — a narrow column reads as a card in the room rather than a screen.</summary>
+        public const float PanelWidth = 348f;
+
+        /// <summary>One outfit row: a face line (30) with a kit pixel of air above and below.</summary>
+        public const float RowHeight = 36f;
 
         /// <summary>The heading strip above the rows.</summary>
-        public const float TitleHeight = 30f;
+        public const float TitleHeight = 36f;
 
-        /// <summary>The controls line below them.</summary>
-        public const float HintHeight = 24f;
+        /// <summary>The controls hint below them: two face lines.</summary>
+        public const float HintHeight = 66f;
 
         /// <summary>Inset from the panel's edges to its contents.</summary>
-        public const float PadX = 10f;
+        public const float PadX = 12f;
 
         /// <summary>Inset above the heading and below the hint.</summary>
-        public const float PadY = 8f;
+        public const float PadY = 12f;
 
         /// <summary>Clear space between the wardrobe and the panel's near edge.</summary>
-        public const float Gap = 26f;
+        public const float Gap = 27f;
 
         /// <summary>How close to a screen edge the panel may come.</summary>
         public const float ScreenMargin = 12f;
 
         /// <summary>The colour chip's side.</summary>
-        public const float ChipSize = 14f;
+        public const float ChipSize = 15f;
+
+        /// <summary>The cursor's column at the row's left edge: one face letter.</summary>
+        public const float CursorWidth = 15f;
+
+        /// <summary>Where the chip starts in the row.</summary>
+        public const float ChipX = 18f;
+
+        /// <summary>Where the label starts in the row: the chip and a letter's air after it.</summary>
+        public const float LabelX = 42f;
 
         /// <summary>The full panel for a list of <paramref name="rowCount"/> outfits.</summary>
         public static Vector2 PanelSize(int rowCount) => new Vector2(

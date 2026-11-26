@@ -589,8 +589,8 @@ namespace HiddenHarbours.Tests.Economy
             Assert.AreEqual(BuyRowKind.Supply, byId["supply.ice"].Quote.Kind);
             Assert.AreEqual(BuyRowKind.Instrument, byId["instrument.depth_sounder"].Quote.Kind);
             Assert.AreEqual(BuyRowKind.License, byId["license.clam"].Quote.Kind);
-            StringAssert.Contains("boat.dory", byId["instrument.depth_sounder"].Note,
-                "the chandlery row names the boat it would be bolted into");
+            StringAssert.Contains("your boat", byId["instrument.depth_sounder"].Note,
+                "the chandlery row names the boat it would be bolted into, in words, not by its id");
 
             Assert.AreEqual(20, byId["bait.capelin"].Quote.Price, "the bait row prices the LOT, not one hook");
             StringAssert.Contains("x10", byId["bait.capelin"].DisplayName,

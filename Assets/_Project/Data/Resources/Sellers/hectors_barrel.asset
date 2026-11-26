@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: hectors_barrel
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.SellerDef
   Id: seller.hectors_barrel
+  DisplayName: Hector's Barrel
   KeeperNpcId: npc.hector_bernard
   TradeId: trade.chandlery
