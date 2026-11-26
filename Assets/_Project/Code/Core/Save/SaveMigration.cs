@@ -13,7 +13,7 @@ namespace HiddenHarbours.Core
     public static class SaveMigration
     {
         /// <summary>The schema version this build writes. Bump when you add a field + a migration step.</summary>
-        public const int CurrentVersion = 26;
+        public const int CurrentVersion = 27;
 
         /// <summary>
         /// The region id Port Greywick was saved under before it was renamed Nine Mile Creek, and the id
@@ -425,6 +425,20 @@ namespace HiddenHarbours.Core
                 data.SchemaVersion = 26;
             }
 
+            // v26 -> v27: CLOTHES, THE CLOTHING RACK'S SALES, SKILLS AND FITTED ROD PARTS (owner 2026-11-25:
+            // "Yes, plan v27"; ADR 0064). An older game recorded none of them, so each starts empty: he owns no
+            // garment and wears only his own outfit colours, every rack is full, every skill is at zero, and
+            // every rod carries its own line and reel. Nothing is transformed and nothing else in the save
+            // moves. Once this step has shipped, anything new is v28.
+            if (data.SchemaVersion < 27)
+            {
+                data.PlayerClothing = new System.Collections.Generic.List<PlayerClothingDto>();
+                data.ClothingRackSales = new System.Collections.Generic.List<ClothingRackSaleDto>();
+                data.PlayerSkills = new System.Collections.Generic.List<PlayerSkillDto>();
+                data.RodFittings = new System.Collections.Generic.List<RodFittingDto>();
+                data.SchemaVersion = 27;
+            }
+
             // ---- future steps go here, each guarded by `if (data.SchemaVersion < N)` and bumping to N.
 
             // Defensive null-repair (a hand-edited or partial JSON can omit reference-typed fields).
@@ -478,6 +492,11 @@ namespace HiddenHarbours.Core
             data.SpecialOrders ??= new System.Collections.Generic.List<SpecialOrderDto>();
             data.ShoppingBags ??= new System.Collections.Generic.List<ShoppingBagDto>();
             HealV26Rows(data);   // after SupplyStock's null-repair: a bag is held to what he owns
+            data.PlayerClothing ??= new System.Collections.Generic.List<PlayerClothingDto>();
+            data.ClothingRackSales ??= new System.Collections.Generic.List<ClothingRackSaleDto>();
+            data.PlayerSkills ??= new System.Collections.Generic.List<PlayerSkillDto>();
+            data.RodFittings ??= new System.Collections.Generic.List<RodFittingDto>();
+            HealV27Rows(data);
             // Same defensive spirit as the null-repair above, for the one field where a zero is not a
             // value but a crash: a hand-edited JSON, or a row written by a build between the field landing
             // and this heal, would otherwise divide by it. Idempotent — after the v9 step there is nothing
@@ -890,6 +909,152 @@ namespace HiddenHarbours.Core
             for (int i = 0; i < stock.Count; i++)
                 if (stock[i].SupplyId == supplyId) return stock[i].Count > 0 ? stock[i].Count : 0;
             return 0;
+        }
+
+        /// <summary>
+        /// The v27 rows' load repair: asset-free (it has no garment or skill content to ask) and idempotent.
+        /// It never takes away something he owns or has earned.
+        /// </summary>
+        private static void HealV27Rows(SaveData data)
+        {
+            HealPlayerClothing(data.PlayerClothing);
+            HealClothingRackSales(data.ClothingRackSales);
+            HealPlayerSkills(data.PlayerSkills);
+            HealRodFittings(data.RodFittings);
+        }
+
+        /// <summary>
+        /// Rod fittings: drop a null row or one with no rod; an empty player key means the local player; a null
+        /// part id reads empty (the rod's own part). Two rows for one player and rod fold into the first: it
+        /// stands, and a later one only fills a part the first leaves at default, so no part he chose is lost.
+        /// A row left with both parts at default is dropped (it means the same as no row). Part ids are never
+        /// rewritten, known or not.
+        /// </summary>
+        private static void HealRodFittings(System.Collections.Generic.List<RodFittingDto> rows)
+        {
+            for (int i = rows.Count - 1; i >= 0; i--)
+            {
+                RodFittingDto r = rows[i];
+                if (r == null || string.IsNullOrEmpty(r.RodKey)) { rows.RemoveAt(i); continue; }
+                r.PlayerKey = SavePlayerKeys.Normalise(r.PlayerKey);
+                r.LineId ??= "";
+                r.ReelId ??= "";
+            }
+            // Walk forward so a later duplicate folds into the first row, in order.
+            for (int i = 1; i < rows.Count; i++)
+            {
+                for (int j = 0; j < i; j++)
+                {
+                    if (!string.Equals(rows[j].PlayerKey, rows[i].PlayerKey, System.StringComparison.Ordinal)
+                        || !string.Equals(rows[j].RodKey, rows[i].RodKey, System.StringComparison.Ordinal))
+                        continue;
+                    if (rows[j].LineId.Length == 0) rows[j].LineId = rows[i].LineId;
+                    if (rows[j].ReelId.Length == 0) rows[j].ReelId = rows[i].ReelId;
+                    rows.RemoveAt(i);
+                    i--;
+                    break;
+                }
+            }
+            for (int i = rows.Count - 1; i >= 0; i--)
+                if (rows[i].LineId.Length == 0 && rows[i].ReelId.Length == 0) rows.RemoveAt(i);
+        }
+
+        /// <summary>
+        /// Clothes: drop a null row; an empty player key means the local player; drop empty ids and repeats
+        /// in both lists; a worn garment missing from what he owns is added to it (he was wearing it); rows
+        /// for one player fold into the first, their lists joined in order. A row with both lists empty is
+        /// kept as it is. Ids are never rewritten and no garment is dropped for being unknown: the save has
+        /// no content to know it by, and the wardrobe skips an id it cannot find.
+        /// </summary>
+        private static void HealPlayerClothing(System.Collections.Generic.List<PlayerClothingDto> rows)
+        {
+            for (int i = rows.Count - 1; i >= 0; i--)
+                if (rows[i] == null) rows.RemoveAt(i);
+            for (int i = 0; i < rows.Count; i++)
+            {
+                PlayerClothingDto row = rows[i];
+                row.PlayerKey = SavePlayerKeys.Normalise(row.PlayerKey);
+                row.OwnedClothing = Distinct(row.OwnedClothing);
+                row.WornClothing = Distinct(row.WornClothing);
+                for (int w = 0; w < row.WornClothing.Count; w++)
+                    PlayerClothingRows.AddOnce(row.OwnedClothing, row.WornClothing[w]);
+            }
+            for (int i = rows.Count - 1; i > 0; i--)
+            {
+                int first = -1;
+                for (int j = 0; j < i; j++)
+                    if (string.Equals(rows[j].PlayerKey, rows[i].PlayerKey, System.StringComparison.Ordinal)) { first = j; break; }
+                if (first < 0) continue;
+                for (int k = 0; k < rows[i].OwnedClothing.Count; k++)
+                    PlayerClothingRows.AddOnce(rows[first].OwnedClothing, rows[i].OwnedClothing[k]);
+                for (int k = 0; k < rows[i].WornClothing.Count; k++)
+                    PlayerClothingRows.AddOnce(rows[first].WornClothing, rows[i].WornClothing[k]);
+                rows.RemoveAt(i);
+            }
+        }
+
+        /// <summary>The ids of <paramref name="ids"/> in order, each once, none empty (a new list for null).</summary>
+        private static System.Collections.Generic.List<string> Distinct(System.Collections.Generic.List<string> ids)
+        {
+            var kept = new System.Collections.Generic.List<string>(ids?.Count ?? 0);
+            if (ids != null)
+                for (int i = 0; i < ids.Count; i++) PlayerClothingRows.AddOnce(kept, ids[i]);
+            return kept;
+        }
+
+        private static readonly System.Comparison<ClothingRackSaleDto> RackSaleOrder = ClothingRackSaleRows.Compare;
+
+        /// <summary>
+        /// Rack sales: drop a row with no rack or garment, units under 1 or a negative day; sort into (day,
+        /// rack, garment) order; fold rows equal in all three into one with their units added (so nothing sold
+        /// is forgotten and the rack never reads fuller than it is).
+        /// </summary>
+        private static void HealClothingRackSales(System.Collections.Generic.List<ClothingRackSaleDto> rows)
+        {
+            for (int i = rows.Count - 1; i >= 0; i--)
+            {
+                ClothingRackSaleDto r = rows[i];
+                if (r == null || string.IsNullOrEmpty(r.RackId) || string.IsNullOrEmpty(r.ClothingId)
+                    || r.Units <= 0 || r.Day < 0)
+                    rows.RemoveAt(i);
+            }
+            // List.Sort is not stable, but rows that compare equal are folded next, so the result is the same.
+            rows.Sort(RackSaleOrder);
+            for (int i = rows.Count - 1; i > 0; i--)
+            {
+                if (ClothingRackSaleRows.Compare(rows[i - 1], rows[i]) != 0) continue;
+                rows[i - 1].Units = AddClamped(rows[i - 1].Units, rows[i].Units);
+                rows.RemoveAt(i);
+            }
+        }
+
+        /// <summary>
+        /// Skills: drop a null row or one with no skill id; an empty player key means the local player; a
+        /// negative experience reads 0; two rows for one player and skill fold into the first keeping the
+        /// LARGER experience (two copies of one record are the same experience, not twice as much). Order is
+        /// otherwise kept.
+        /// </summary>
+        private static void HealPlayerSkills(System.Collections.Generic.List<PlayerSkillDto> rows)
+        {
+            for (int i = rows.Count - 1; i >= 0; i--)
+            {
+                PlayerSkillDto r = rows[i];
+                if (r == null || string.IsNullOrEmpty(r.SkillId)) { rows.RemoveAt(i); continue; }
+                r.PlayerKey = SavePlayerKeys.Normalise(r.PlayerKey);
+                if (r.Experience < 0) r.Experience = 0;
+            }
+            for (int i = rows.Count - 1; i > 0; i--)
+            {
+                for (int j = 0; j < i; j++)
+                {
+                    if (!string.Equals(rows[j].PlayerKey, rows[i].PlayerKey, System.StringComparison.Ordinal)
+                        || !string.Equals(rows[j].SkillId, rows[i].SkillId, System.StringComparison.Ordinal))
+                        continue;
+                    if (rows[i].Experience > rows[j].Experience) rows[j].Experience = rows[i].Experience;
+                    rows.RemoveAt(i);
+                    break;
+                }
+            }
         }
 
         private static int AddClamped(int a, int b)

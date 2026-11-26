@@ -118,6 +118,11 @@ namespace HiddenHarbours.Tests.EditMode
             // The goods in a shopping bag are goods he OWNS, set aside (the load repair holds a bag to his
             // supplies and drops one left empty). The generic fill names bag goods he owns none of, an
             // impossible save; put every bagged good in his supplies as well.
+            // A garment he has on is a garment he OWNS (the load repair adds a worn id missing from the owned
+            // list). The generic fill names worn ids he owns none of; own them as well, in the repair's order.
+            if (value is PlayerClothingDto clothes)
+                foreach (string worn in clothes.WornClothing)
+                    if (!clothes.OwnedClothing.Contains(worn)) clothes.OwnedClothing.Add(worn);
             if (value is SaveData whole)
                 foreach (ShoppingBagDto bag in whole.ShoppingBags)
                     foreach (BagItemDto item in bag.Items)
