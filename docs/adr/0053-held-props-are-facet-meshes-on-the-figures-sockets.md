@@ -140,7 +140,8 @@ pivot, drawn by the facet path in its parent's frame. A hand is a socket, as an 
   A fishing state or a clip that aims the rod always puts it in his hand. The move is a short blend
   (`StowBlendSeconds`), since the rig bakes no draw clip. Decided from the hands and the clip each
   frame; nothing is saved.
-- **NPC anglers** draw no rod mesh: no NPC path mounts a held prop yet.
+- **NPC anglers** draw no rod mesh: no NPC path mounts a held prop yet. *(Superseded: a villager's
+  work tool is a mesh, §10; a villager's rod and line, §11.)*
 
 ## 9. Progress (2026-11-20): the shovel and the pail
 
@@ -164,3 +165,45 @@ pivot, drawn by the facet path in its parent's frame. A hand is a socket, as an 
   shovel rig (its grip) has to change; the ground test is ignored until then.
 - **Still a sprite:** the clam hod (no baked mesh state), the spoil tint on the pail (the mesh does
   not take it yet), a second pail or a second hand tool in the other hand, and every NPC's held prop.
+  *(Corrected by §10: a villager's work tool is a mesh.)*
+
+## 10. Progress (back-filled 2026-11-25): a villager's work tool
+
+- **A villager may work with a tool in her hand.** `ICharacterFigureWorkStand`, an optional seam on an
+  ashore stand, answers a work clip's state key (data, e.g. `dig`) and an optional `HeldPropMeshDef`.
+  The figure presenter loops the clip on game time, phased by the figure's key, and draws the prop on
+  `HeldPropSockets.RightHandTool` with the player's own driver and aim. A state the skin cannot draw as a
+  mesh, a prop the figure cannot hold, or `GameConfig.MeshHandToolInHand` off is drawn as no work:
+  idle, empty-handed, a mesh. The first user is the clam dig at a beach outing
+  (`BeachActivityDef.WorkState` / `HeldProp`). Read off the routine every frame; nothing is saved.
+- This corrects §8 ("NPC anglers draw no rod mesh") and §9 ("every NPC's held prop" is a sprite): a
+  villager's work tool is a mesh; an NPC rod is not yet (§11).
+
+## 11. Amendment (2026-11-25): a villager fishes — beats, the angler feed, the angler presenter
+
+- **A beat is work with a place in time.** `ICharacterFigureBeatStand : ICharacterFigureWorkStand`
+  answers a state key, the beat's start on the figure's clock, an optional scrub (NaN = the clip's own
+  rate) and the held prop. The presenter takes the frame through the one existing frame rule
+  (`CharacterSkinPose.FrameFor`); no stand computes frames. Priority: a route-driven clip, then a beat,
+  then work. The gates are the work gates.
+- **An NPC never publishes the player's fishing event.** `FishingStateChanged` is the one player's
+  (HUD, audio, animator, presenter). A villager angler is read by pull: `IAnglerStand` answers a
+  `FishingState` and the seconds in its phase. Nothing a villager does rings the player's bell.
+- **The angler is drawn through Core.** `IAnglerPresentationService` with its static locator
+  `AnglerPresentation.Service` (not a `GameServices` member, for the reason `CharacterFigurePresentation`
+  gives). Implemented in Player, the composition layer, which shares the line, splash, surfaced fish and
+  fish-in-hand pieces with the player's own `RodFightPresenter`; one copy of each. Attached lazily, only
+  to a villager whose routine names an angling activity.
+- **Deterministic and unsaved.** `FishingBeatMath` (phase to pose to state key) lives in Core, one
+  mapping for the player and every villager. `AnglerTimeline` is a pure function of the world seed, a
+  stable hash of the NPC id, a fixed slot index and the clock the figure poses on. A slot begins only if
+  the villager stood at the station at its start and the routine keeps him there to its end. What he
+  catches comes from Fishing's stock and season data through `IShoreCatchFacts`, read once per slot,
+  presentation only: nothing enters an inventory, a market, a stock or the save.
+- **A conversation is local.** Talking ends the current slot on the talker's screen only (the
+  `ConversationHold` overlay); every peer agrees on the slot grid. Never a shared pause.
+- **Data.** The activity is a Def (`npc_activity.*`, an `NpcActivityDef`), named by a routine block's
+  optional `Doing`. Every beat time, reach, bearing, fight shape, line look and gate is in it. Gate: the
+  sim's sea state only; there is no gameplay precipitation read yet.
+- **Still not done:** a load lean on an NPC rod, a bobber on an NPC line, a villager fishing from a boat
+  (Boats cannot reach Player: that move of the shared pieces into Art gets its own ADR).

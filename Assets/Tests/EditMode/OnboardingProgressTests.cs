@@ -947,6 +947,115 @@ namespace HiddenHarbours.Tests.EditMode
             repaired.OwnedGear.Add(OnboardingProgress.RodGearId);
             repaired.RepairedBoats.Add(OnboardingProgress.DoryBoatId);
             yield return ("dory-repaired", repaired, OnboardingStep.Done);
+
+            SaveData rowed = Game(OnboardingFlags.MetGinnyKey, OnboardingFlags.BoughtDoryKey);
+            rowed.RepairedBoats.Add(OnboardingProgress.DoryBoatId);
+            rowed.OwnedBoats.Add(OnboardingProgress.DoryBoatId);
+            rowed.ActiveHullId = OnboardingProgress.DoryBoatId;
+            yield return ("first-row-after-repair", rowed, OnboardingStep.Done);
+
+            yield return ("arrival-only", Game("arrived_st_peters"), OnboardingStep.TalkGinny);
+            yield return ("logbook-only", Game(OnboardingFlags.ReadLogbookKey), OnboardingStep.TalkGinny);
+            yield return ("met-and-read", Game(OnboardingFlags.MetGinnyKey, OnboardingFlags.ReadLogbookKey),
+                          OnboardingStep.DigClams);
+            yield return ("catch-before-ginny", Game(OnboardingFlags.LandedCatchKey), OnboardingStep.TalkGinny);
+            yield return ("purchase-before-ginny", Game(OnboardingFlags.BoughtDoryKey), OnboardingStep.TalkGinny);
+            yield return ("onboarded-with-no-other-evidence", Game(OnboardingFlags.OnboardedKey), OnboardingStep.Done);
+
+            SaveData clamLicence = Game(OnboardingFlags.MetGinnyKey);
+            clamLicence.OwnedLicenses.Add(ClamLicenceId);
+            yield return ("clam-licence-before-dig", clamLicence, OnboardingStep.DigClams);
+
+            SaveData firstSaleWithoutCatch = Game(OnboardingFlags.MetGinnyKey);
+            firstSaleWithoutCatch.Money = 100;
+            yield return ("sale-money-alone-without-catch-record", firstSaleWithoutCatch, OnboardingStep.DigClams);
+
+            SaveData codBeforeCatch = Game(OnboardingFlags.MetGinnyKey);
+            codBeforeCatch.OwnedLicenses.Add(OnboardingProgress.CodLicenceId);
+            yield return ("cod-licence-implies-catch", codBeforeCatch, OnboardingStep.BuyRod);
+
+            SaveData rodBeforeCatch = Game(OnboardingFlags.MetGinnyKey);
+            rodBeforeCatch.OwnedGear.Add(OnboardingProgress.RodGearId);
+            yield return ("owned-rod-implies-catch-but-not-cod-licence", rodBeforeCatch, OnboardingStep.BuyCodLicence);
+
+            yield return ("dory-purchase-implies-catch-but-not-licence",
+                          Game(OnboardingFlags.MetGinnyKey, OnboardingFlags.BoughtDoryKey), OnboardingStep.BuyCodLicence);
+            SaveData boughtBeforeRod = Game(OnboardingFlags.MetGinnyKey, OnboardingFlags.BoughtDoryKey);
+            boughtBeforeRod.OwnedLicenses.Add(OnboardingProgress.CodLicenceId);
+            yield return ("dory-bought-before-rod", boughtBeforeRod, OnboardingStep.BuyRod);
+
+            SaveData repairOnly = Game();
+            repairOnly.RepairedBoats.Add(OnboardingProgress.DoryBoatId);
+            yield return ("repair-overrides-all-missing-earlier-steps", repairOnly, OnboardingStep.Done);
+
+            SaveData borrowed = Game(OnboardingFlags.MetGinnyKey);
+            borrowed.OwnedBoats.Add(OnboardingProgress.DoryBoatId);
+            borrowed.ActiveHullId = OnboardingProgress.DoryBoatId;
+            yield return ("first-row-in-borrowed-dory-is-not-catch-or-purchase", borrowed, OnboardingStep.DigClams);
+
+            SaveData wrongIds = Game(OnboardingFlags.MetGinnyKey);
+            wrongIds.OwnedLicenses.Add("license.clam");
+            wrongIds.OwnedGear.Add("gear.shovel");
+            wrongIds.RepairedBoats.Add("boat.punt");
+            yield return ("other-licence-gear-and-repaired-hull", wrongIds, OnboardingStep.DigClams);
+
+            SaveData storedRod = Game(OnboardingFlags.MetGinnyKey, OnboardingFlags.LandedCatchKey);
+            storedRod.OwnedLicenses.Add(OnboardingProgress.CodLicenceId);
+            storedRod.StoredContainers.Add(new StoredContainerDto
+            {
+                Key = "storage.stpeters.ginny_rod_rack",
+                Items = new List<StoredItemDto>
+                {
+                    new StoredItemDto { ItemId = "tool.rod", InstanceId = "tool.st_peters.rod" }
+                }
+            });
+            yield return ("physical-starter-rod-is-not-owned-gear", storedRod, OnboardingStep.BuyRod);
+
+            SaveData licenceBeforeGinny = Game();
+            licenceBeforeGinny.OwnedLicenses.Add(OnboardingProgress.CodLicenceId);
+            licenceBeforeGinny.OwnedGear.Add(OnboardingProgress.RodGearId);
+            yield return ("licence-and-rod-before-ginny", licenceBeforeGinny, OnboardingStep.TalkGinny);
+
+            foreach (string container in new[] { "pail", "freezer", "hold" })
+            {
+                SaveData held = Game(OnboardingFlags.MetGinnyKey);
+                var item = new HeldCatchDto { SpeciesId = "fish.atlantic_cod", Quantity = 1 };
+                if (container == "pail") held.BucketCatch.Add(item);
+                if (container == "freezer") held.FreezerCatch.Add(item);
+                if (container == "hold") held.BoatHoldCatch.Add(item);
+                yield return ("fin-fish-in-" + container + "-also-counts-as-dig", held, OnboardingStep.BuyCodLicence);
+            }
+
+            SaveData emptyCatchRow = Game(OnboardingFlags.MetGinnyKey);
+            emptyCatchRow.BucketCatch.Add(new HeldCatchDto { SpeciesId = "", Quantity = 0 });
+            yield return ("even-an-empty-catch-row-counts", emptyCatchRow, OnboardingStep.BuyCodLicence);
+
+            SaveData falseFlags = Game();
+            falseFlags.OnboardingFlags.Add(new SaveFlag(OnboardingFlags.MetGinnyKey, false));
+            falseFlags.OnboardingFlags.Add(new SaveFlag(OnboardingFlags.OnboardedKey, false));
+            yield return ("false-flag-rows-are-not-completion", falseFlags, OnboardingStep.TalkGinny);
+
+            SaveData lateDay = Game(OnboardingFlags.MetGinnyKey);
+            lateDay.DayIndex = 20;
+            lateDay.GameTimeSeconds = 100000;
+            yield return ("elapsed-days-do-not-advance-opening", lateDay, OnboardingStep.DigClams);
+
+            // Same v1 boundary as SaveMigrationV2Tests: old owned hulls become repaired.
+            yield return ("v1-owned-dory-is-migrated-to-done", SaveSerialization.FromJson(
+                "{\"SchemaVersion\":1,\"OwnedBoats\":[\"boat.dory\"]}"), OnboardingStep.Done);
+            yield return ("v1-owned-punt-does-not-finish-dory-opening", SaveSerialization.FromJson(
+                "{\"SchemaVersion\":1,\"OwnedBoats\":[\"boat.punt\"]}"), OnboardingStep.TalkGinny);
+            yield return ("v1-without-boat", SaveSerialization.FromJson(
+                "{\"SchemaVersion\":1,\"OwnedBoats\":[]}"), OnboardingStep.TalkGinny);
+            yield return ("v2-owned-dory-is-not-migrated-as-repaired", SaveSerialization.FromJson(
+                "{\"SchemaVersion\":2,\"OwnedBoats\":[\"boat.dory\"]}"), OnboardingStep.TalkGinny);
+        }
+
+        private static IEnumerable<TestCaseData> SavedStepCases()
+        {
+            foreach (var row in EveryBeatFromState())
+                yield return new TestCaseData(row.name, row.save, row.step)
+                    .SetName("SavedOpening_" + row.name);
         }
 
         // ---- the two faults ------------------------------------------------------------------------
@@ -981,15 +1090,119 @@ namespace HiddenHarbours.Tests.EditMode
                 "after Continue the note is on the step the save describes");
         }
 
-        [Test]
-        public void EachStep_IsReachedFromStateAlone_AndSurvivesTheRoundTrip()
+        [TestCaseSource(nameof(SavedStepCases))]
+        public void EachStep_IsReachedFromStateAlone_AndSurvivesTheRoundTrip(
+            string name, SaveData save, OnboardingStep step)
         {
-            foreach ((string name, SaveData save, OnboardingStep step) in EveryBeatFromState())
+            Assert.AreEqual(step, DirectorOver(save).CurrentStep, name + ": from the state");
+            Assert.AreEqual(step, DirectorOver(RoundTrip(save, name)).CurrentStep,
+                name + ": the same step after a save and a load");
+            var facts = OnboardingProgress.Read(save, new OnboardingFlags(new SaveFlagStore()));
+            Assert.AreEqual(step, OnboardingProgress.StepFor(in facts), name + ": pure reader agrees");
+            Assert.AreEqual(step == OnboardingStep.Done, facts.Onboarded || facts.DoryRepaired,
+                name + ": only onboarded or repaired finishes the opening");
+            string key = StepTextKey(step);
+            string expected = key == null ? null : (string)typeof(WorldStrings).GetField(key).GetRawConstantValue();
+            Assert.AreEqual(expected, OnboardingProgress.LineFor(step), name + ": exact text key " + key);
+        }
+
+        private static string StepTextKey(OnboardingStep step)
+        {
+            switch (step)
             {
-                Assert.AreEqual(step, DirectorOver(save).CurrentStep, name + ": from the state");
-                Assert.AreEqual(step, DirectorOver(RoundTrip(save, name)).CurrentStep,
-                    name + ": the same step after a save and a load");
+                case OnboardingStep.TalkGinny: return nameof(WorldStrings.OnboardTalkGinny);
+                case OnboardingStep.DigClams: return nameof(WorldStrings.OnboardDigClams);
+                case OnboardingStep.BuyCodLicence: return nameof(WorldStrings.OnboardBuyLicence);
+                case OnboardingStep.BuyRod: return nameof(WorldStrings.OnboardBuyRod);
+                case OnboardingStep.BuyDory: return nameof(WorldStrings.OnboardBuyDory);
+                case OnboardingStep.RepairDory: return nameof(WorldStrings.OnboardRepairDory);
+                case OnboardingStep.Done: return null;
+                default: Assert.Fail("unmapped opening step " + step); return null;
             }
+        }
+
+        [Test]
+        public void NullSaveAndNullLists_AreFreshFacts_ButFlagsStillApply()
+        {
+            foreach (SaveData save in new[] { null, new SaveData
+                     { OwnedLicenses = null, OwnedGear = null, RepairedBoats = null,
+                       BucketCatch = null, FreezerCatch = null, BoatHoldCatch = null } })
+            {
+                var facts = OnboardingProgress.Read(save, null);
+                Assert.IsFalse(facts.MetGinny);
+                Assert.IsFalse(facts.LandedCatch);
+                Assert.IsFalse(facts.HasCodLicence);
+                Assert.IsFalse(facts.HasRod);
+                Assert.IsFalse(facts.BoughtDory);
+                Assert.IsFalse(facts.DoryRepaired);
+                Assert.IsFalse(facts.Onboarded);
+                Assert.AreEqual(OnboardingStep.TalkGinny, OnboardingProgress.StepFor(in facts));
+                var flags = new OnboardingFlags(new InMemoryFlagStore()) { MetGinny = true };
+                facts = OnboardingProgress.Read(save, flags);
+                Assert.AreEqual(OnboardingStep.DigClams, OnboardingProgress.StepFor(in facts));
+                flags.Onboarded = true;
+                facts = OnboardingProgress.Read(save, flags);
+                Assert.AreEqual(OnboardingStep.Done, OnboardingProgress.StepFor(in facts));
+            }
+            Assert.IsNull(OnboardingProgress.LineFor((OnboardingStep)999));
+        }
+
+        [TestCase("clam")]
+        [TestCase("fin-fish")]
+        public void AnyCatchSignal_CompletesDig_EvenWithNoSavedCatch(string species)
+        {
+            var save = Game(OnboardingFlags.MetGinnyKey);
+            var director = DirectorOver(save);
+            director.OnCaught(new FishCaught(new CatchItem(species, species,
+                species == "clam" ? FishCategory.Shellfish : FishCategory.InshoreGroundfish, 1f, 1, 0f)));
+            Assert.IsTrue(GameServices.Save.GetFlag(OnboardingFlags.LandedCatchKey));
+            Assert.AreEqual(OnboardingStep.BuyCodLicence, director.CurrentStep);
+        }
+
+        [Test]
+        public void UnrelatedGearPurchaseAndRepair_DoNotAdvanceTheOpening()
+        {
+            var director = DirectorOver(Game(OnboardingFlags.MetGinnyKey));
+            director.OnGear(new GearPurchased("gear.shovel", 1));
+            director.OnBoatBought(new BoatPurchased("boat.punt", 1));
+            director.OnBoatRepaired(new BoatRepaired("boat.punt", 1));
+            Assert.AreEqual(OnboardingStep.DigClams, director.CurrentStep);
+            Assert.IsFalse(GameServices.Save.GetFlag(OnboardingFlags.BoughtDoryKey));
+            Assert.IsFalse(GameServices.Save.GetFlag(OnboardingFlags.OnboardedKey));
+            director.OnGear(new GearPurchased(OnboardingProgress.RodGearId, 1));
+            Assert.AreEqual(OnboardingStep.BuyCodLicence, director.CurrentStep);
+            director.OnBoatRepaired(new BoatRepaired(OnboardingProgress.DoryBoatId, 1));
+            Assert.AreEqual(OnboardingStep.Done, director.CurrentStep);
+            Assert.IsTrue(GameServices.Save.GetFlag(OnboardingFlags.OnboardedKey));
+            director.OnBoatRepaired(new BoatRepaired(OnboardingProgress.DoryBoatId, 1));
+            Assert.AreEqual(OnboardingStep.Done, director.CurrentStep);
+        }
+
+        [Test]
+        public void LoadingAnotherSave_ClearsCatchRodAndPurchaseHeardInTheSession()
+        {
+            var director = DirectorOver(Game(OnboardingFlags.MetGinnyKey));
+            director.OnCaught(default);
+            director.OnGear(new GearPurchased(OnboardingProgress.RodGearId, 1));
+            director.OnBoatBought(new BoatPurchased(OnboardingProgress.DoryBoatId, 1));
+            GameServices.Save = new BlobSave(Game(OnboardingFlags.MetGinnyKey));
+            Assert.AreEqual(OnboardingStep.BuyCodLicence, director.CurrentStep);
+            director.OnGameLoaded(new GameLoaded());
+            Assert.AreEqual(OnboardingStep.DigClams, director.CurrentStep);
+        }
+
+        [TestCase(nameof(WorldStrings.OnboardTalkGinny), "Find Aunt Ginny on the island and press E — she'll set you straight.")]
+        [TestCase(nameof(WorldStrings.OnboardDigClams), "Tab shows the tide table. First buy the Shellfish Licence at LeBlanc's (Ginny fronted the fee), then dig clams on the bared flats at low water (E by a hole).")]
+        [TestCase(nameof(WorldStrings.OnboardCrossBar), "Walk the bared sandbar east to Nine Mile Creek before the tide floods it back.")]
+        [TestCase(nameof(WorldStrings.OnboardBuyLicence), "At Nine Mile Creek: sell your clams, then buy a COD LICENCE to fish.")]
+        [TestCase(nameof(WorldStrings.OnboardBuyRod), "Buy a fishing ROD from the shop — then you can hand-line cod.")]
+        [TestCase(nameof(WorldStrings.OnboardBuyDory), "Save up, then BUY the damaged dory at the Nine Mile Creek shipwright.")]
+        [TestCase(nameof(WorldStrings.OnboardRepairDory), "She's yours but broken — pay the shipwright to REPAIR her.")]
+        [TestCase(nameof(WorldStrings.OnboardSailHome), "Seaworthy at last — sail your dory home to Coddle Cove.")]
+        [TestCase(nameof(WorldStrings.OnboardDone), "You earned her, plank and rope. Fair winds, skipper!")]
+        public void OpeningTextKeys_PinTheCurrentWording(string key, string text)
+        {
+            Assert.AreEqual(text, typeof(WorldStrings).GetField(key).GetRawConstantValue(), key);
         }
 
         [Test]

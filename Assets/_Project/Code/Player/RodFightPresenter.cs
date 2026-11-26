@@ -196,8 +196,17 @@ namespace HiddenHarbours.Player
         private SpriteRenderer _heldSr;
         private SpriteRenderer _splashSr;
         private SpriteRenderer _rippleSr;
-        private LineRenderer _line;
-        private Vector2[] _lineBuffer;
+
+        // The four pieces a villager's rod fight shares with this one (each reads no clock: this
+        // presenter keeps its clocks and hands them the seconds they need every frame).
+        private RodLineStrand _strand;
+        private RodSplashFlourish _splash;
+        private SurfacedFishDrawer _fish;
+        private LandedCatchHold _landHold;
+
+        /// <summary>How quickly her drawn speed (dart or thrash) follows this frame's, per frame. The
+        /// player's own feel, kept on the player's side of the shared fish drawer.</summary>
+        private const float FishSpeedSmoothing01 = 0.35f;
 
         private FishingState _s = FishingState.Idle;
         private float _stateClock;        // seconds in the current published phase
@@ -221,14 +230,9 @@ namespace HiddenHarbours.Player
         /// only a rotation on a child renderer.</summary>
         public float RodLeanDegrees { get; private set; }
 
-        // The hooked jumper (owner's ruling 2026-09-06). Everything here is resolved once per fight and
+        // The hooked jumper (owner's ruling 2026-09-06): resolved once per fight in SurfacedFishDrawer and
         // then read; nothing is drawn at random, so a fight replays identically (rule 5).
         private float _surfaceClock;      // seconds she has been UP — the frame the cadence is measured in
-        private bool _fishJumps;          // does THIS species clear the water (the Core behaviour seam)
-        private float _fightJumpPeriod;   // seconds between her attempts, from the Def or the fallback
-        private int _fightJumpSeed;       // this fight's own seed: species + weight, never Random
-        private double _jumpStart = double.NegativeInfinity;   // when the live jump began
-        private Vector2 _lastFishHeading;                      // her travel, so a jump goes somewhere
 
         /// <summary>
         /// IS SHE OUT OF THE WATER RIGHT NOW — the jump made observable, the same way
@@ -236,34 +240,23 @@ namespace HiddenHarbours.Player
         /// on this rather than on "the code ran"; a PlayMode guard asserts a bass leaves the water and a
         /// cod never does.
         /// </summary>
-        public bool FishAirborne { get; private set; }
+        public bool FishAirborne => _fish != null && _fish.FishAirborne;
 
         /// <summary>How many jumps THIS fight has drawn. Reset when the species on the line changes, so
         /// it counts one fight and not a session.</summary>
-        public int JumpsDrawn { get; private set; }
-        private bool _jumpSplashed = true;                     // has this jump's re-entry splash played
+        public int JumpsDrawn => _fish != null ? _fish.JumpsDrawn : 0;
         private Vector2 _lastFarEnd;      // where the line last ended (splash anchor for results)
-        private Vector2 _lastFishPos;
-        private float _fishSpeed;
-        private int _fishRow = Directions / 2;
-        private string _resolvedFishId;
-        private int _speciesIndex = -1;
-        private FishSpeciesVisual _resolvedSpecies;
-        private float _resolvedWeightKg = float.NaN;
-        private FishRungVisual _rung;
 
-        private bool _splashActive;
-        private float _splashClock;
-        private Vector2 _splashPos;
+        private float _splashClock;       // seconds since the live splash began (RodSplashFlourish)
 
         /// <summary>The species entry drawn for the current hook, or −1. For tests/tooling.</summary>
-        public int SpeciesIndex => _speciesIndex;
+        public int SpeciesIndex => _fish != null ? _fish.SpeciesIndex : -1;
 
         /// <summary>
         /// The size rung drawn for the current hook, or null. For tests/tooling — it is the answer to
         /// "which of the three baked sizes is on the line", which nothing else can be asked.
         /// </summary>
-        public FishRungVisual Rung => _rung;
+        public FishRungVisual Rung => _fish?.Rung;
 
         /// <summary>Is the fight drawing its own rod in his hands this frame, sprite or mesh? While it is,
         /// the carried rod tool is not drawn (<c>CarryHands</c>), so he holds one rod and not two.</summary>
@@ -303,8 +296,10 @@ namespace HiddenHarbours.Player
             _heldSr = MakeChild("HeldCatch", 0);
             _splashSr = MakeChild("Splash", 0);   // ordered over the fisher as it plays (RenderSplash)
             _rippleSr = MakeChild("SinkRipple", _rippleSortingOrder);
-            _line = MakeLine();
-            _lineBuffer = new Vector2[Mathf.Max(2, _lineSegments)];
+            _strand = new RodLineStrand(transform, _lineWidth, _lineSegments);
+            _splash = new RodSplashFlourish(_splashSr);
+            _fish = new SurfacedFishDrawer(_fishSr);
+            _landHold = new LandedCatchHold(transform);
             ResolveRodSwap();
             HideAll();
         }
@@ -359,10 +354,14 @@ namespace HiddenHarbours.Player
         {
             EventBus.Unsubscribe<FishingStateChanged>(OnFishingState);
             HideAll();
-            _splashActive = false;
+            _splash?.Stop();
         }
 
-        /// <summary>Public so tests can drive the presenter through the same path the bus uses.</summary>
+        /// <summary>
+        /// Public so tests can drive the presenter through the same path the bus uses. Safe before
+        /// <c>Awake</c> (edit mode, an inactive object): the state and the clocks are taken, and the
+        /// shared pieces, which Awake makes, simply catch up on the next publish after it.
+        /// </summary>
         public void OnFishingState(FishingStateChanged e)
         {
             FishingState prev = _s;
@@ -377,7 +376,7 @@ namespace HiddenHarbours.Player
                 _turnClock = float.PositiveInfinity;
                 _lastRunDir = Vector2.zero;
                 _runSwing = Vector2.zero;
-                _shakeSeed01 = (FightSeed(next.FishId, next.WeightKg) & 0xFFFF) / 65536f;
+                _shakeSeed01 = (SurfacedFishDrawer.FightSeed(next.FishId, next.WeightKg) & 0xFFFF) / 65536f;
             }
 
             // HER TURNS: a published run direction that swings far enough off the last one she ran in
@@ -403,103 +402,39 @@ namespace HiddenHarbours.Player
                 if (next.Phase == FishingPhase.FightSurface && prev.Phase != FishingPhase.FightSurface)
                 {
                     _surfaceClock = 0f;
-                    _jumpStart = double.NegativeInfinity;
-                    _jumpSplashed = true;
+                    _fish?.OnSurfaced();
                 }
 
-                // The splash flourishes — surface breaks on the beats that break the surface.
+                // The splash flourishes — surface breaks on the beats that break the surface. Which edge
+                // throws one is the pure RodPresenterMath.SplashFor (first match wins); where is ours.
                 Vector2 angler = transform.position;
-                bool prevCastPath = prev.CastAimX * prev.CastAimX + prev.CastAimY * prev.CastAimY > 1e-4f;
-                if (prev.Phase == FishingPhase.Cast && next.Phase == FishingPhase.Waiting)
-                    SplashAt(angler + new Vector2(next.CastAimX, next.CastAimY));            // touchdown
-                else if (prev.Phase == FishingPhase.Bite && IsHookSet(next.Phase) && prevCastPath)
-                    SplashAt(angler + new Vector2(prev.CastAimX, prev.CastAimY));            // pulled under
-                else if (prev.Phase == FishingPhase.FightDeep && next.Phase == FishingPhase.FightSurface)
-                    SplashAt(angler + new Vector2(next.FishOffsetX, next.FishOffsetY));      // she breaks
-                else if (next.Phase == FishingPhase.Landed || next.Phase == FishingPhase.Snapped)
-                    SplashAt(_lastFarEnd);                                                   // the result
+                switch (RodPresenterMath.SplashFor(in prev, in next))
+                {
+                    case RodSplashEdge.Touchdown:
+                        SplashAt(angler + new Vector2(next.CastAimX, next.CastAimY)); break;
+                    case RodSplashEdge.PulledUnder:
+                        SplashAt(angler + new Vector2(prev.CastAimX, prev.CastAimY)); break;
+                    case RodSplashEdge.Breaks:
+                        SplashAt(angler + new Vector2(next.FishOffsetX, next.FishOffsetY)); break;
+                    case RodSplashEdge.Result:
+                        SplashAt(_lastFarEnd); break;
+                }
             }
 
             // The slack tell's edge — the pop plays from the false→true transition (RodLineMath doc).
             if (next.SlackWindowOpen && !_slackWasOpen) _slackEdgeClock = 0f;
             _slackWasOpen = next.SlackWindowOpen;
 
-            // Species lookup only when the id actually changes (no per-publish string work), and
-            // the RUNG only when the species or the weight moves. Both are sticky for the whole
-            // fight: the sim publishes one weight with the bite and does not change its mind, so
-            // re-picking every publish would be pure work for an answer that cannot differ.
-            bool speciesMoved =
-                !string.Equals(next.FishId, _resolvedFishId, System.StringComparison.Ordinal);
-            if (speciesMoved)
+            // Species lookup only when the id actually changes, and the RUNG only when the species or
+            // the weight moves (SurfacedFishDrawer.Resolve). What she does on the line is asked once
+            // per species through the Core seam (rule 4 — Player does not reference Fishing).
+            if (_fish != null && _fish.Resolve(in next, _species, _fishArt, GameServices.FishBehaviour, _fightJumpPeriodSeconds))
             {
-                _resolvedFishId = next.FishId;
-                _speciesIndex = FindSpecies(next.FishId);
-                // The scene's own ladder when it has rungs, else the shared fish art table's: a scene
-                // carrying the pre-ladder table must still draw the new fish on the line.
-                _resolvedSpecies = string.IsNullOrEmpty(next.FishId)
-                    ? null
-                    : FishArtLibrary.Resolve(
-                        _species != null && _speciesIndex >= 0 ? _species[_speciesIndex] : null,
-                        _fishArt != null ? _fishArt : FishArtLibrary.Shared, next.FishId);
-
-                // WHAT SHE DOES ON THE LINE, asked once per species through the Core seam rather than
-                // by reaching into the Fishing module for a Def (rule 4 — Player does not reference
-                // Fishing, and an asmdef reference would not be a seam anyway).
-                IFishBehaviourFacts facts = GameServices.FishBehaviour;
-                _fishJumps = facts.Jumps(next.FishId);
-                float stated = facts.FightJumpPeriodSeconds(next.FishId);
-                _fightJumpPeriod = stated > 0f ? stated : _fightJumpPeriodSeconds;
-
-                // The fight's own seed: the species and the weight the sim published, which are fixed
-                // for the whole fight. Deterministic (rule 5) — no UnityEngine.Random anywhere here,
-                // so the same fish on the same seed jumps at the same moments twice running.
-                _fightJumpSeed = FightSeed(next.FishId, next.WeightKg);
-                _jumpStart = double.NegativeInfinity;
-                _jumpSplashed = true;
-                JumpsDrawn = 0;
-                FishAirborne = false;
-            }
-            // NaN != NaN, so the first publish after a bite always resolves — which is what we want,
-            // since 'no weight yet' and 'a weight of zero' are different states.
-            if (speciesMoved || next.WeightKg != _resolvedWeightKg)
-            {
-                _resolvedWeightKg = next.WeightKg;
-                FishSpeciesVisual sp = CurrentSpecies();
-                // Picked at the weight the fish is DRAWN at (the readability floor), the same rule the
-                // hands and the tote use, so the fish he lands is the fish he then holds.
-                FishArtLibrary table = _fishArt != null ? _fishArt : FishArtLibrary.Shared;
-                _rung = FishArtLibrary.LineRungFor(sp, table != null ? table.CatchArt : null,
-                                                   next.FishId, next.WeightKg);
                 // The same fish as a mesh for the landing, at the sized kind the hands will carry it as.
-                CatchItemLibrary catchArt = table != null ? table.CatchArt : null;
-                _landMeshDef = catchArt != null
-                    ? catchArt.HeldMeshFor(next.FishId, catchArt.SizedKindFor(next.FishId, next.WeightKg),
-                                           out _landMeshScale)
-                    : null;
-                _landSocket = HeldPropSockets.LeftHandTool;
+                FishArtLibrary table = _fishArt != null ? _fishArt : FishArtLibrary.Shared;
+                _landHold.Resolve(table != null ? table.CatchArt : null, next.FishId, next.WeightKg);
             }
         }
-
-        /// <summary>
-        /// A fight's own seed, from the two things the sim fixes at the bite and never changes: which
-        /// species and how heavy. Stable for the whole fight, different between fights, and computed —
-        /// never drawn — so the jumps replay (rule 5).
-        /// </summary>
-        private static int FightSeed(string fishId, float weightKg)
-        {
-            unchecked
-            {
-                uint h = 2166136261u;
-                if (!string.IsNullOrEmpty(fishId))
-                    for (int i = 0; i < fishId.Length; i++) h = (h ^ fishId[i]) * 16777619u;
-                // The weight enters as its bit pattern so two fish a gram apart seed differently.
-                h = (h ^ (uint)System.BitConverter.SingleToInt32Bits(weightKg)) * 16777619u;
-                return (int)(h & 0x7FFFFFFF);
-            }
-        }
-
-        private static bool IsHookSet(FishingPhase p)
-            => p == FishingPhase.Fighting || p == FishingPhase.FightDeep || p == FishingPhase.FightSurface;
 
         private void LateUpdate()
         {
@@ -508,7 +443,7 @@ namespace HiddenHarbours.Player
             if (_s.Phase == FishingPhase.FightSurface) _surfaceClock += dt;
             _bobberClock += dt;
             _slackEdgeClock += dt;
-            if (_splashActive) _splashClock += dt;
+            if (_splash.Active) _splashClock += dt;
             TickFishFeel(dt);
             if (_s.Phase == FishingPhase.FightDeep)
                 _shadowTheta += dt * (2f * Mathf.PI) / Mathf.Max(0.1f, _shadowPeriodSeconds);
@@ -626,7 +561,7 @@ namespace HiddenHarbours.Player
             if (rodDrawn && _s.IsFightPhase) tip = LeanRodUnderLoad(unloadedTip, far);
 
             if ((show & RodElements.Line) != 0 && farValid) { RenderLine(tip, far); LineAnchorWorld = tip; }
-            else { _line.enabled = false; _line.positionCount = 0; }
+            else _strand.Hide();
 
             if (farValid) _lastFarEnd = far;
         }
@@ -695,50 +630,28 @@ namespace HiddenHarbours.Player
 
         // ---- the landed fish as a mesh (ADR 0053) --------------------------------------------------
 
-        private HeldCatchMesh _landMesh;
-        private HeldPropMeshDef _landMeshDef;
-        private float _landMeshScale = 1f;
-        private string _landSocket = HeldPropSockets.LeftHandTool;
-
         /// <summary>The landed-fish mesh, once made. For tests and plates.</summary>
-        public HeldCatchMesh LandMesh => _landMesh;
+        public HeldCatchMesh LandMesh => _landHold?.Mesh;
 
         /// <summary>
         /// The fish he holds up at the landing, as its mesh hanging from his FREE hand (the land clip aims
         /// the rod in his right, so the fish hangs from the left socket), when the mesh figure plays the
-        /// landing and the species has a mesh at its size rung. False draws the sprite as before.
+        /// landing and the species has a mesh at its size rung. False draws the sprite as before. The
+        /// hand pick and the drawing are <see cref="LandedCatchHold"/>'s, on the figure drawing him now.
         /// </summary>
         private bool TryDrawLandMesh()
         {
             GameConfig config = GameServices.Config;
-            bool on = config != null && config.MeshCatchInHand && _landMeshDef != null;
-            if (!on && _landMesh == null) return false;
+            if (!_landHold.Wants(config)) return false;
             if (_meshPresenter == null) TryGetComponent(out _meshPresenter);
-            _landMesh ??= new HeldCatchMesh(transform, "LandedCatchMesh");
-            IsoCharacterFigureRenderer figure = LiveFigure();
-            // From the free (left) hand, unless that hand is behind him at this facing: then the nearer one,
-            // so the fish he shows off is never hidden by his own body.
-            string other = _landSocket == HeldPropSockets.LeftHandTool
-                ? HeldPropSockets.RightHandTool : HeldPropSockets.LeftHandTool;
-            if (config != null && HeldCatchMesh.TrySocketDepth(figure, _landSocket, out float here)
-                && HeldCatchMesh.TrySocketDepth(figure, other, out float there))
-                _landSocket = HeldCatchMesh.NearerSocket(_landSocket, other, here, there,
-                                                         config.HeldFishHandSwapDepthMeters);
-            float scale = config != null
-                ? HeldCatchMesh.ReadableScale(_landMeshDef, _landMeshScale, config.HeldFishMinLengthPx)
-                : _landMeshScale;
-            return _landMesh.TryDraw(config, _landMeshDef, scale, _landSocket, 0, figure);
+            return _landHold.TryDraw(config, LiveFigure());
         }
 
-        private void HideLandMesh()
-        {
-            if (_landMesh != null && _landMesh.Drawing) _landMesh.Hide();
-        }
+        private void HideLandMesh() => _landHold?.Hide();
 
         private void OnDestroy()
         {
-            _landMesh?.Dispose();
-            _landMesh = null;
+            _landHold?.Dispose();
             _meshRod?.Dispose();
             _meshRod = null;
         }
@@ -858,7 +771,7 @@ namespace HiddenHarbours.Player
 
         /// <summary>The fight's own load read, 0..1: the WORSE of what she is doing to the rod
         /// (<c>RodBend01</c>) and what the line is taking (<c>Tension01</c>).</summary>
-        private float FightLoad01() => Mathf.Clamp01(Mathf.Max(_s.RodBend01, _s.Tension01));
+        private float FightLoad01() => RodPresenterMath.FightLoad01(_s.RodBend01, _s.Tension01);
 
         /// <summary>One frame of the big-fish feel's own state: re-read the dials (so the owner can
         /// tune <c>GameConfig.FishFeel</c> live), advance the fight clocks, and ease the run swing toward
@@ -1015,7 +928,7 @@ namespace HiddenHarbours.Player
 
         private void RenderShadow(Vector2 entry)
         {
-            FishRungVisual sp = _rung;
+            FishRungVisual sp = _fish.Rung;
             if (sp == null || sp.ShadowFrames == null || sp.ShadowFrames.Length == 0)
             {
                 _fishSr.enabled = false;
@@ -1044,142 +957,24 @@ namespace HiddenHarbours.Player
         }
 
         /// <summary>The surfaced fight: dart/thrash at the published offset, facing her travel, the
-        /// line attached at the baked MOUTH anchor. Returns the line's far end (the mouth — or the
-        /// fish position when the species has no art, so the line still moves with her).</summary>
+        /// line attached at the baked MOUTH anchor (<see cref="SurfacedFishDrawer"/>). Returns the line's
+        /// far end. A hooked jumper's re-entry splash comes back to this presenter's own flourish, the
+        /// same surface break every other beat of this fight uses.</summary>
         private Vector2 RenderSurfaceFish(Vector2 angler, float dt)
         {
-            Vector2 pos = angler + new Vector2(_s.FishOffsetX, _s.FishOffsetY);
-
-            // Her speed picks dart vs thrash; her travel picks the row (held when she pauses).
-            if (dt > 1e-5f)
-            {
-                float instant = (pos - _lastFishPos).magnitude / dt;
-                _fishSpeed = Mathf.Lerp(_fishSpeed, instant, 0.35f);   // light smoothing, no state pop
-                Vector2 vel = pos - _lastFishPos;
-                if (vel.sqrMagnitude > 1e-6f)
-                {
-                    _lastFishHeading = vel;             // the way she is already going — a jump carries on it
-                    _fishRow = IsoFacing.HeadingToFacingIndex(
-                        RodPresenterMath.HeadingDegrees(vel.x, vel.y), Directions, 0f, false);
-                }
-            }
-            _lastFishPos = pos;
-
-            FishRungVisual sp = _rung;
-            if (sp == null) { _fishSr.enabled = false; return pos; }
-
-            // SHE CLEARS THE WATER (owner's ruling 2026-09-06). A jumper on the line breaks out on the
-            // rig's own jump strip, on the SAME half-sine arc a free fish in a shoal leaves the water
-            // on (FishJumpArc, shared through Core) — a hooked bass jumps the way a wild one does. A
-            // cod cannot get here at all: _fishJumps is the species' own flag.
-            bool jumping = UpdateJump(out float lift, out float travel01);
-
-            bool dart = RodPresenterMath.IsDarting(_fishSpeed, _fishDartSpeedMps);
-            Sprite[] frames = jumping ? sp.JumpFrames : (dart ? sp.DartFrames : sp.ThrashFrames);
-            int perDir = jumping ? sp.JumpFramesPerDir : (dart ? sp.DartFramesPerDir : sp.ThrashFramesPerDir);
-            Vector2[] mouths = jumping ? sp.JumpMouthOffsets
-                                       : (dart ? sp.DartMouthOffsets : sp.ThrashMouthOffsets);
-
-            // No jump art baked for this rung? She fights on as she always did rather than vanishing —
-            // the same degrade-don't-refuse posture the rest of this presenter takes.
-            if (jumping && (frames == null || frames.Length == 0 || perDir <= 0))
-            {
-                jumping = false;
-                lift = 0f;
-                frames = dart ? sp.DartFrames : sp.ThrashFrames;
-                perDir = dart ? sp.DartFramesPerDir : sp.ThrashFramesPerDir;
-                mouths = dart ? sp.DartMouthOffsets : sp.ThrashMouthOffsets;
-            }
-            if (frames == null || frames.Length == 0) { _fishSr.enabled = false; return pos; }
-
-            // ⚠ The jump strip is played ACROSS its own travel, never on the spot: the rig's
-            // MOTION.jump.travel says she covers 0.55 m over the six frames, and a breach that happens
-            // without going anywhere reads as a stutter. She carries on the way she was already going.
-            if (jumping)
-            {
-                Vector2 heading = _lastFishHeading;
-                if (heading.sqrMagnitude > 1e-6f)
-                    pos += heading.normalized * (FishJumpArc.TravelMetres * travel01);
-            }
-
-            int frame = jumping
-                ? FishJumpArc.FrameAt(_jumpStart, TimeNow())
-                : RodPresenterMath.FlipFrame(_stateClock, _fishSecondsPerFrame, perDir);
-            int idx = RodPresenterMath.SheetIndex(_fishRow, frame, perDir, frames.Length);
-            if (idx < 0 || frames[idx] == null) { _fishSr.enabled = false; return pos; }
-
-            _fishSr.transform.position = new Vector3(pos.x, pos.y + lift, 0f);
-            _fishSr.sprite = frames[idx];
-            _fishSr.sortingOrder = _waterElementOrder;
-            _fishSr.enabled = true;
-
-            // The line follows her UP — the mouth anchor rides the same lift the sprite does, or the
-            // line would stay pinned to the water under a fish that is in the air.
-            Vector2 mouth = pos + new Vector2(0f, lift);
-            if (mouths != null && idx < mouths.Length) mouth += mouths[idx];
+            Vector2 mouth = _fish.Render(angler, in _s, dt, _stateClock, _surfaceClock, _fishSecondsPerFrame,
+                                         _fishDartSpeedMps, FishSpeedSmoothing01, _waterElementOrder,
+                                         out bool splashDue, out Vector2 splashAt);
+            if (splashDue) SplashAt(splashAt);
             return mouth;
         }
-
-        /// <summary>
-        /// THE HOOKED JUMPER'S SCHEDULE — is she in the air this frame, how far out of the water, and
-        /// how far along her travel.
-        ///
-        /// <para>One jump per period, its moment inside the period hashed off the fight's own seed
-        /// (<see cref="FishJumpArc.TryNextJump"/>) so it is deterministic and never overlaps the next.
-        /// The re-entry splash fires exactly once per jump, through the presenter's existing splash
-        /// flourish — the same surface break every other beat of this fight uses.</para>
-        /// </summary>
-        private bool UpdateJump(out float lift, out float travel01)
-        {
-            lift = 0f;
-            travel01 = 0f;
-
-            if (!_fishJumps || _fightJumpPeriod <= 0f) { FishAirborne = false; return false; }
-
-            double now = TimeNow();
-            if (!FishJumpArc.TryNextJump(_fightJumpSeed, _surfaceClock, _fightJumpPeriod,
-                                         out double start))
-            {
-                FishAirborne = false;
-                return false;
-            }
-
-            if (start > _jumpStart)                       // a new period's jump has come due
-            {
-                _jumpStart = start;
-                _jumpSplashed = false;
-            }
-
-            if (FishJumpArc.InAir(_jumpStart, now))
-            {
-                // Counted on the EDGE, so one jump is one count however many frames it spans.
-                if (!FishAirborne) JumpsDrawn++;
-                FishAirborne = true;
-                lift = FishJumpArc.Arc01(_jumpStart, now) * FishJumpArc.TravelMetres;
-                travel01 = FishJumpArc.Travel01(_jumpStart, now);
-                return true;
-            }
-            FishAirborne = false;
-
-            // She has come down: one splash where she went back in, then nothing until the next period.
-            if (!_jumpSplashed && now >= _jumpStart)
-            {
-                _jumpSplashed = true;
-                SplashAt((Vector2)transform.position + new Vector2(_s.FishOffsetX, _s.FishOffsetY));
-            }
-            return false;
-        }
-
-        /// <summary>The clock the jump schedule runs on: seconds she has been at the surface, which is
-        /// the frame <see cref="FishJumpArc.TryNextJump"/> measures its periods in.</summary>
-        private double TimeNow() => _surfaceClock;
 
         /// <summary>The landed catch in the fisher's hands: the species' held sheet (gill or tail — a
         /// build-time pick from the rig's hold.hands) pinned to the LAND pose's baked hand anchors,
         /// riding the fisher's live row/frame. Skipped whole when the land pose isn't showing.</summary>
         private void RenderHeldFish(Vector2 angler)
         {
-            FishRungVisual sp = _rung;
+            FishRungVisual sp = _fish.Rung;
             bool landPosed = _animator != null && _animator.OwnsRenderer && _animator.Pose == FishingPose.Land;
             if (landPosed && TryDrawLandMesh()) { _heldSr.enabled = false; return; }
             if (sp == null || sp.HeldFrames == null || sp.HeldFrames.Length == 0 || !landPosed
@@ -1207,81 +1002,38 @@ namespace HiddenHarbours.Player
             _heldSr.enabled = true;
         }
 
-        private FishSpeciesVisual CurrentSpecies() => _resolvedSpecies;
-
-        private int FindSpecies(string fishId)
-        {
-            if (string.IsNullOrEmpty(fishId) || _species == null) return -1;
-            for (int i = 0; i < _species.Length; i++)
-                if (_species[i] != null && string.Equals(_species[i].FishId, fishId, System.StringComparison.Ordinal))
-                    return i;
-            return -1;
-        }
-
         // ---- the line ------------------------------------------------------------------------------
+
+        /// <summary>
+        /// How this presenter's line looks, read from its inspector fields on EVERY render (never cached
+        /// in Awake), so a value tuned live is in the very next frame.
+        /// </summary>
+        private RodLineLook LineLook() => new RodLineLook
+        {
+            MaxSagM = _maxSagM,
+            LineColor = _lineColor,
+            StrainColor = _strainColor,
+            SlackColor = _slackColor,
+            WhitenLateBias = _whitenLateBias,
+            ShudderStart01 = _shudderStart01,
+            ShudderAmpM = _shudderAmpM,
+            ShudderHz = _shudderHz,
+            RestTaut = _restTaut,
+            SinkTaut = _sinkTaut,
+            FightTautFloor = _fightTautFloor,
+            SlackOvershoot01 = _slackOvershoot01,
+            SlackSettleSeconds = _slackSettleSeconds,
+        };
 
         private void RenderLine(Vector2 tip, Vector2 far)
         {
-            if (_line == null) return;
-
-            float taut = RodPresenterMath.TautFor(_s.Phase, _s.SlackWindowOpen, _s.RodBend01,
-                                                  _s.Tension01, _restTaut, _sinkTaut, _fightTautFloor);
-            // HER WEIGHT ON THE LINE (GameConfig.FishFeel): a heavy fish keeps it tight, humming and a
-            // touch brighter. Hooked fish only — a hand-gathered catch (Tending) is untouched.
-            bool hooked = _s.IsFightPhase && _s.Phase != FishingPhase.Tending;
-            if (hooked) taut = FishFeelMath.LineTaut01(taut, _s.Size01, _s.SlackWindowOpen, in _feel);
-
-            // The hit-bottom / gone-slack POP: the belly kicks past rest and settles (RodLineMath).
-            float sag = _maxSagM;
-            if (_s.SlackWindowOpen)
-                sag *= RodLineMath.SlackOvershoot(_slackEdgeClock, _slackOvershoot01, _slackSettleSeconds);
-
-            RodLineMath.SampleLine(tip, far, taut, sag, _lineBuffer);
-
-            // Strain: whiten late, shudder near the snap (one visual language with the haul rope).
-            bool fight = _s.IsFightPhase;
-            float whiten = fight ? RodLineMath.Whiten01(_s.Tension01, _whitenLateBias) : 0f;
-            float shudder01 = fight ? RodLineMath.StrainShudder01(_s.Tension01, _shudderStart01) : 0f;
-            if (hooked)
-            {
-                whiten = FishFeelMath.LineWhiten01(whiten, _s.Size01, in _feel);
-                shudder01 = FishFeelMath.LineShudder01(shudder01, _s.Size01, FightLoad01(),
-                                                       _s.SlackWindowOpen, in _feel);
-            }
-            float shudderAmp = _shudderAmpM * shudder01;
-
-            // THE COLOUR AXIS IS THE INSTRUCTION (owner ask 2026-07-24 — readable, but no UI): the line
-            // falls dull the moment she gives (REEL) and climbs to bar-white as it loads (EASE OFF). One
-            // channel, one continuous meaning, so there is nothing to learn — the line just looks slack or
-            // looks dangerous.
-            Color c = _s.SlackWindowOpen && fight
-                ? Color.Lerp(_lineColor, _slackColor, 1f)
-                : Color.Lerp(_lineColor, _strainColor, whiten);
-            _line.startColor = c;
-            _line.endColor = c;
-
-            int n = _lineBuffer.Length;
-            Vector2 span = far - tip;
-            float len = span.magnitude;
-            Vector2 perp = len > 1e-4f ? new Vector2(-span.y, span.x) / len : Vector2.up;
-            float phase = Time.time * _shudderHz * (2f * Mathf.PI);
-
-            if (!_line.enabled) _line.enabled = true;
             // ADR 0059: the line rides the fisher's own order, behind him (Core EffectSorting.RodLineRungs),
-            // not a parked 50. One int, written only when it changes.
-            if (_playerSr != null)
-            {
-                int lineOrder = EffectSorting.OrderOver(SortedEffect.RodLine, _playerSr.sortingOrder);
-                if (_line.sortingOrder != lineOrder) _line.sortingOrder = lineOrder;
-            }
-            _line.positionCount = n;
-            for (int i = 0; i < n; i++)
-            {
-                Vector2 p = _lineBuffer[i];
-                if (shudderAmp > 1e-5f)
-                    p += perp * RodLineMath.ShudderOffset(i, n, phase, shudderAmp);
-                _line.SetPosition(i, new Vector3(p.x, p.y, 0f));
-            }
+            // not a parked 50. The shudder's phase is taken at Time.time, as it always was for the player.
+            bool sorted = _playerSr != null;
+            int lineOrder = sorted ? EffectSorting.OrderOver(SortedEffect.RodLine, _playerSr.sortingOrder) : 0;
+            RodLineLook look = LineLook();
+            _strand.Render(tip, far, in _s, in look, in _feel, FightLoad01(), _slackEdgeClock,
+                           Time.time, sorted, lineOrder);
         }
 
         // ---- ripples + splash ------------------------------------------------------------------------
@@ -1305,32 +1057,15 @@ namespace HiddenHarbours.Player
 
         private void SplashAt(Vector2 pos)
         {
-            if (_splashFrames == null || _splashFrames.Length == 0) return;
-            _splashActive = true;
-            _splashClock = 0f;
-            _splashPos = pos;
+            if (_splash != null && _splash.Begin(pos, _splashFrames)) _splashClock = 0f;
         }
 
         private void RenderSplash()
         {
-            if (!_splashActive) { _splashSr.enabled = false; return; }
-            int frame = RodPresenterMath.OnceFlipFrame(_splashClock, 1f / Mathf.Max(0.1f, _splashFps),
-                                                       _splashFrames.Length);
-            if (frame >= _splashFrames.Length || _splashFrames[frame] == null)
-            {
-                _splashActive = false;
-                _splashSr.enabled = false;
-                return;
-            }
-            _splashSr.transform.position = new Vector3(_splashPos.x, _splashPos.y, 0f);
             // ADR 0059 step 2: the splash rides the fisher's own order, one rung in front, not a parked 51.
-            if (_playerSr != null)
-            {
-                int splashOrder = EffectSorting.OrderOver(SortedEffect.RodSplash, _playerSr.sortingOrder);
-                if (_splashSr.sortingOrder != splashOrder) _splashSr.sortingOrder = splashOrder;
-            }
-            _splashSr.sprite = _splashFrames[frame];
-            _splashSr.enabled = true;
+            bool sorted = _playerSr != null;
+            int splashOrder = sorted ? EffectSorting.OrderOver(SortedEffect.RodSplash, _playerSr.sortingOrder) : 0;
+            _splash.Render(_splashClock, _splashFrames, _splashFps, sorted, splashOrder);
         }
 
         // ---- plumbing --------------------------------------------------------------------------------
@@ -1351,13 +1086,13 @@ namespace HiddenHarbours.Player
             if (_heldSr != null) _heldSr.enabled = false;
             HideLandMesh();
             if (_rippleSr != null) _rippleSr.enabled = false;
-            if (_line != null) { _line.enabled = false; _line.positionCount = 0; }
+            _strand?.Hide();
         }
 
         private void HideAll()
         {
             HideInteraction();
-            if (_splashSr != null) _splashSr.enabled = false;
+            _splash?.Hide();
         }
 
         private SpriteRenderer MakeChild(string childName, int order)
@@ -1368,22 +1103,6 @@ namespace HiddenHarbours.Player
             sr.sortingOrder = order;
             sr.enabled = false;
             return sr;
-        }
-
-        private LineRenderer MakeLine()
-        {
-            var go = new GameObject("FishingLine");
-            go.transform.SetParent(transform, false);
-            var lr = go.AddComponent<LineRenderer>();
-            lr.useWorldSpace = true;
-            lr.numCapVertices = 2;
-            lr.startWidth = _lineWidth;
-            lr.endWidth = _lineWidth;
-            var shader = Shader.Find("Sprites/Default");
-            if (shader != null) lr.material = new Material(shader);   // null headless → skip (rope precedent)
-            lr.positionCount = 0;   // ordered over the fisher as it draws (RenderLine)
-            lr.enabled = false;
-            return lr;
         }
 
         /// <summary>Wire the presenter in one call (the start builder / tests) — every table is the

@@ -1,0 +1,207 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using NUnit.Framework;
+using UnityEngine;
+using UnityEngine.TestTools;
+using HiddenHarbours.Art;
+using HiddenHarbours.Core;
+using HiddenHarbours.Player;
+using Object = UnityEngine.Object;
+
+namespace HiddenHarbours.Tests.PlayMode
+{
+    // The Whelps in the loaded region: the tide covers and bares the rocks, and a player with no boat can walk
+    // from the village to the light and to the cottage, and nowhere off the island.
+    public partial class WharfBuildingPass2PlatePlayTests
+    {
+        const string WhelpsRoot = "StPetersWhelps";
+
+        /// <summary>The boards' tides: the lookout's (the rocks are under), a falling tide that stands part way up
+        /// them, and the low water the skerries board is drawn at.</summary>
+        const float WhelpsCoveredTide = 0.63f, WhelpsHalfTide = -0.8f, WhelpsBaredTide = -1.4f;
+
+        IEnumerator HoldTheTide(IEnvironmentService held, float level)
+        {
+            GameServices.Environment = new LandingBoardTide(held, level);
+            float until = Time.realtimeSinceStartup + 20f;
+            do { yield return null; }
+            while (Time.realtimeSinceStartup < until &&
+                   (Shader.GetGlobalVector("_HHSeaLevelWorld").w < .5f ||
+                    Mathf.Abs(Shader.GetGlobalVector("_HHSeaLevelWorld").x - level) > .01f));
+            Assert.AreEqual(level, Shader.GetGlobalVector("_HHSeaLevelWorld").x, .011f, "the sea never came to the level asked for");
+        }
+
+        /// <summary>The lowest and highest a picture's pixels stand, read the way its shader reads them.</summary>
+        static (float low, float high) StandsBetween(SpriteRenderer picture)
+        {
+            var block = new MaterialPropertyBlock();
+            picture.GetPropertyBlock(block);
+            Vector4 decode = block.GetVector("_HHFaceHeightDecode");
+            Assert.Greater(decode.w, .5f, picture.name + " carries no height to be cut by");
+            var heights = block.GetTexture("_HHFaceHeight") as Texture2D;
+            Assert.IsNotNull(heights, picture.name + " has no height sheet");
+            Rect cell = picture.sprite.textureRect;
+            Color[] px = heights.GetPixels((int)cell.x, (int)cell.y, (int)cell.width, (int)cell.height);
+            Color[] ink = picture.sprite.texture.isReadable
+                ? picture.sprite.texture.GetPixels((int)cell.x, (int)cell.y, (int)cell.width, (int)cell.height) : null;
+            float low = float.MaxValue, high = float.MinValue;
+            for (int i = 0; i < px.Length; i++)
+            {
+                if (ink != null ? ink[i].a <= 0f : px[i].r <= 0f) continue;
+                float h = TidalFaceWaterline.DecodeHeight(px[i].r, new Vector3(decode.x, decode.y, decode.z));
+                low = Mathf.Min(low, h); high = Mathf.Max(high, h);
+            }
+            return (low, high);
+        }
+
+        [UnityTest]
+        public IEnumerator StPeters_TheWhelps_AreCoveredAndBaredByTheTide()
+        {
+            yield return LoadRegion(StPeters);
+            GameObject root = GameObject.Find(WhelpsRoot);
+            Assert.IsNotNull(root, "St Peters holds no " + WhelpsRoot + ".");
+            var rocks = root.GetComponentsInChildren<TidalFaceWaterline>(true).Where(f => f.transform.parent == root.transform).ToArray();
+            Assert.AreEqual(7, rocks.Length, "the seven rocks of the Whelps");
+
+            IEnvironmentService held = GameServices.Environment;
+            try
+            {
+                int cutPartWay = 0;
+                foreach (float tide in new[] { WhelpsCoveredTide, WhelpsHalfTide, WhelpsBaredTide })
+                {
+                    yield return HoldTheTide(held, tide);
+                    Assert.IsTrue(TidalFaceWaterline.TryPublishedSeaLevel(out float sea), "no sea is published");
+                    foreach (TidalFaceWaterline rock in rocks)
+                    {
+                        var under = rock.GetComponent<SpriteRenderer>();
+                        var upper = rock.transform.GetChild(0).GetComponent<SpriteRenderer>();
+                        Assert.IsTrue(rock.RidesTheTide && rock.IsConfigured, rock.name + " is not cut by the sea");
+                        Assert.AreEqual(TidalFaceWaterline.ShaderName, under.sharedMaterial.shader.name, rock.name);
+                        Assert.AreEqual(under.sortingOrder + 1, upper.sortingOrder, rock.name + ": the upper picture lies over the wet one");
+                        (float low, float high) = StandsBetween(under);
+                        (float upperLow, float upperHigh) = StandsBetween(upper);
+                        Assert.Less(upperHigh, high, rock.name + ": the upper picture is cut above the water, by the wet band");
+                        Assert.Less(upperLow, low, rock.name + ": and so is its foot");
+                        if (Mathf.Approximately(tide, WhelpsCoveredTide))
+                            Assert.Less(high, sea, $"{rock.name} shows at {tide} m, where the board has it under");
+                        if (Mathf.Approximately(tide, WhelpsBaredTide))
+                            Assert.Greater(low, sea, $"{rock.name} is still cut at {tide} m, where the board has it bare");
+                        if (Mathf.Approximately(tide, WhelpsHalfTide) && low < sea && high > sea) cutPartWay++;
+                    }
+                }
+                Assert.Greater(cutPartWay, 0, "on a half tide no rock stood part in and part out of the water");
+            }
+            finally
+            {
+                GameServices.Environment = held;
+            }
+        }
+
+        /// <summary>The village end of the cliff walk (path.stp_cliff_walk's first point), where the walks start.</summary>
+        static readonly Vector2 VillageEndOfTheCliffWalk = new Vector2(178f, -2.5f);
+
+        /// <summary>The ground searched: wider than the island on every side, so reaching its edge is leaving.</summary>
+        static readonly Rect WalkSearch = new Rect(-620f, -320f, 1060f, 640f);
+
+        const float WalkCellMetres = 0.5f, WalkerRadiusMetres = 0.3f, AnchorReachMetres = 1f;
+
+        /// <summary>
+        /// Everywhere a walker of the player's size can get to from the village with no boat: over ground the
+        /// tide leaves walkable, around every solid thing. Both keepers' doors are in it, at the board's tide and
+        /// at low water, and at neither does it reach the edge of the sea.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator StPeters_WithNoBoat_BothKeepersCanBeWalkedTo_AndTheIslandCannotBeLeft()
+        {
+            yield return LoadRegion(StPeters);
+            for (int i = 0; i < 8; i++) yield return new WaitForFixedUpdate();
+            IEnvironmentService held = GameServices.Environment;
+            var anchors = new[] { "anchor.stp_ne_light.tower_door", "anchor.stp_whelps.cottage_door" };
+            try
+            {
+                foreach (float tide in new[] { WhelpsCoveredTide, WhelpsBaredTide })
+                {
+                    yield return HoldTheTide(held, tide);
+                    yield return new WaitForFixedUpdate();
+                    Assert.IsTrue(Reached(VillageEndOfTheCliffWalk, out HashSet<Vector2Int> walked, out bool leftTheSearch, out string how), how);
+                    Debug.Log($"[KeySceneWalk] tide {tide}: {walked.Count} cells of {WalkCellMetres} m walked from the village. {how}");
+                    Assert.IsFalse(leftTheSearch, $"at tide {tide} a walker with no boat gets off the island: {how}");
+                    foreach (string id in anchors)
+                    {
+                        GameObject anchor = GameObject.Find(id);
+                        Assert.IsNotNull(anchor, "no " + id);
+                        Vector2 at = anchor.transform.position;
+                        int reach = Mathf.CeilToInt(AnchorReachMetres / WalkCellMetres);
+                        Vector2Int c = CellOf(at);
+                        bool there = false;
+                        for (int dy = -reach; dy <= reach && !there; dy++)
+                        for (int dx = -reach; dx <= reach && !there; dx++)
+                            there = walked.Contains(new Vector2Int(c.x + dx, c.y + dy));
+                        Assert.IsTrue(there, $"at tide {tide} a walker with no boat cannot reach {id} at {at} from the village");
+                    }
+                }
+            }
+            finally
+            {
+                GameServices.Environment = held;
+            }
+        }
+
+        static Vector2Int CellOf(Vector2 p) => new Vector2Int(
+            Mathf.FloorToInt((p.x - WalkSearch.xMin) / WalkCellMetres), Mathf.FloorToInt((p.y - WalkSearch.yMin) / WalkCellMetres));
+
+        static Vector2 CentreOf(Vector2Int c) => new Vector2(
+            WalkSearch.xMin + (c.x + 0.5f) * WalkCellMetres, WalkSearch.yMin + (c.y + 0.5f) * WalkCellMetres);
+
+        static bool Reached(Vector2 from, out HashSet<Vector2Int> walked, out bool leftTheSearch, out string how)
+        {
+            var walker = Object.FindAnyObjectByType<PlayerWalkController>(FindObjectsInactive.Include);
+            int layer = walker != null ? walker.gameObject.layer : 0;
+            float radius = WalkerRadiusMetres;
+            var filter = new ContactFilter2D { useTriggers = false };
+            filter.SetLayerMask(Physics2D.GetLayerCollisionMask(layer));
+            var hits = new Collider2D[8];
+            bool Free(Vector2Int c)
+            {
+                Vector2 p = CentreOf(c);
+                if (!TidalWalkability.IsWalkableNow(p)) return false;
+                int n = Physics2D.OverlapCircle(p, radius, filter, hits);
+                for (int i = 0; i < n; i++)
+                    if (hits[i] != null && hits[i].attachedRigidbody == null) return false;   // solid and standing still
+                return true;
+            }
+
+            int w = Mathf.CeilToInt(WalkSearch.width / WalkCellMetres), h = Mathf.CeilToInt(WalkSearch.height / WalkCellMetres);
+            walked = new HashSet<Vector2Int>();
+            leftTheSearch = false;
+            Vector2Int start = CellOf(from);
+            if (!Free(start))
+            {
+                how = $"the walk's start at {from} is not ground a walker can stand on";
+                return false;
+            }
+            var queue = new Queue<Vector2Int>();
+            queue.Enqueue(start); walked.Add(start);
+            Vector2Int edge = default;
+            var steps = new[] { Vector2Int.right, Vector2Int.left, Vector2Int.up, Vector2Int.down };
+            while (queue.Count > 0)
+            {
+                Vector2Int c = queue.Dequeue();
+                foreach (Vector2Int s in steps)
+                {
+                    Vector2Int n = c + s;
+                    if (n.x < 0 || n.y < 0 || n.x >= w || n.y >= h) { leftTheSearch = true; edge = c; continue; }
+                    if (walked.Contains(n) || !Free(n)) continue;
+                    walked.Add(n); queue.Enqueue(n);
+                }
+            }
+            int minX = walked.Min(c => c.x), maxX = walked.Max(c => c.x), minY = walked.Min(c => c.y), maxY = walked.Max(c => c.y);
+            how = $"walked ground spans x {CentreOf(new Vector2Int(minX, 0)).x:0.0} to {CentreOf(new Vector2Int(maxX, 0)).x:0.0}, " +
+                  $"y {CentreOf(new Vector2Int(0, minY)).y:0.0} to {CentreOf(new Vector2Int(0, maxY)).y:0.0}" +
+                  (leftTheSearch ? $"; it runs off the searched ground at {CentreOf(edge)}" : "; the sea closes it on every side") +
+                  $"; walker radius {radius} m on layer {LayerMask.LayerToName(layer)}";
+            return true;
+        }
+    }
+}

@@ -207,6 +207,17 @@ Two additive Core pieces, both deterministic (recomputed from `(worldSeed, gameT
   `OnFootDepthNow`, `TidalWalkability`), and the water shader's fragment depth and the tidal faces
   (through `Art.StillWaterGlobals` and `Art/Shaders/Include/StillWater.hlsl`). ⚠ **Boats, clams, traps, fishing,
   vehicles and the sea's presenters stay on the tide** — ADR 0046 §6.2 gives the reason for each.
+- **Villager anglers** (ADR 0053 §10–§11) — `Core.ICharacterFigureBeatStand` (a work clip with a place in
+  time: state key, beat start on the figure's clock, optional scrub, held prop; priority driven > beat >
+  work, the work gates); `Core.IAnglerStand` + `AnglerLook` (an NPC's `FishingState` read by pull, never
+  the player's `FishingStateChanged`); `Core.IAnglerPresentationService` behind the static locator
+  `AnglerPresentation.Service` (implemented in Player, which shares the line, splash, surfaced fish and
+  fish-in-hand pieces with the player's presenter); `Core.IShoreCatchFacts` + `GameServices.ShoreCatch`
+  (what a villager lands, presentation only, never null: `EmptyShoreCatchFacts.Instance`).
+  `Core.FishingBeatMath` is the one phase → pose → state-key mapping for the player and every villager;
+  `Core.AnglerTimeline` is a pure function of `(worldSeed, npc key hash, slot index, clock)` over an
+  authored `AnglerScript`, O(1) at any game time, never saved (rule 5). `Core.FigureKeyHash` is the one
+  stable key hash. FLAG lead-architect: new contracts.
 
 ### 4.2 Region display-name seam (UI reads names without referencing World) — ADR 0009
 

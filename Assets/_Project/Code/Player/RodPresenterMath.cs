@@ -19,6 +19,17 @@ namespace HiddenHarbours.Player
         SinkRipples = 1 << 6,   // the count-the-fall rings at the entry point (Sinking)
     }
 
+    /// <summary>Which surface-breaking beat a published phase edge is (<see cref="RodPresenterMath.SplashFor"/>);
+    /// each owner decides where its splash lands.</summary>
+    public enum RodSplashEdge
+    {
+        None = 0,
+        Touchdown,     // Cast → Waiting: the float lands at the cast aim
+        PulledUnder,   // Bite → a hook-set phase, on the cast path: the float goes under at the old aim
+        Breaks,        // FightDeep → FightSurface: she breaks the surface at her offset
+        Result,        // → Landed or Snapped: at the line's last far end
+    }
+
     /// <summary>
     /// The PURE maths of the rod-fight presenter (<see cref="RodFightPresenter"/>): phase → drawn
     /// elements, pose → rod sheet, the shadow's circling choreography, the cast arc, and the taut-line
@@ -28,6 +39,30 @@ namespace HiddenHarbours.Player
     /// </summary>
     public static class RodPresenterMath
     {
+        /// <summary>
+        /// The splash a published edge throws, or <see cref="RodSplashEdge.None"/>. Only a phase CHANGE
+        /// splashes, and the first matching rule wins, in this order: touchdown, pulled under, she
+        /// breaks, the result. Pure, so a villager's fight splashes on exactly the player's beats.
+        /// </summary>
+        public static RodSplashEdge SplashFor(in FishingState prev, in FishingState next)
+        {
+            if (next.Phase == prev.Phase) return RodSplashEdge.None;
+            bool prevCastPath = prev.CastAimX * prev.CastAimX + prev.CastAimY * prev.CastAimY > 1e-4f;
+            if (prev.Phase == FishingPhase.Cast && next.Phase == FishingPhase.Waiting)
+                return RodSplashEdge.Touchdown;
+            if (prev.Phase == FishingPhase.Bite && IsHookSet(next.Phase) && prevCastPath)
+                return RodSplashEdge.PulledUnder;
+            if (prev.Phase == FishingPhase.FightDeep && next.Phase == FishingPhase.FightSurface)
+                return RodSplashEdge.Breaks;
+            if (next.Phase == FishingPhase.Landed || next.Phase == FishingPhase.Snapped)
+                return RodSplashEdge.Result;
+            return RodSplashEdge.None;
+        }
+
+        /// <summary>Is this a hook-set phase (the fish is on: a fight phase a bite can open into).</summary>
+        public static bool IsHookSet(FishingPhase p)
+            => p == FishingPhase.Fighting || p == FishingPhase.FightDeep || p == FishingPhase.FightSurface;
+
         /// <summary>
         /// The elements drawn for a published phase. <paramref name="castPath"/> = the interaction has a
         /// cast-path far end (a non-neutral <c>CastAim</c> — the bobber path); a weighted/depth drop and
@@ -177,6 +212,11 @@ namespace HiddenHarbours.Player
         /// <see cref="ShadowOffset"/>'s ellipse at <paramref name="thetaRad"/>. Pure.</summary>
         public static float ShadowHeadingDegrees(float thetaRad, float ySquash01)
             => HeadingDegrees(-Mathf.Sin(thetaRad), Mathf.Cos(thetaRad) * Mathf.Clamp01(ySquash01));
+
+        /// <summary>How loaded the rod is in a fight, 0..1: the larger of its bend and the line's tension.
+        /// One rule for the player's lean and line hum and a villager's line, so neither copies it.</summary>
+        public static float FightLoad01(float rodBend01, float tension01) =>
+            Mathf.Clamp01(Mathf.Max(rodBend01, tension01));
 
         /// <summary>True when the surfaced fish reads as a DART (drawn with the dart sheet, facing her
         /// travel); below the threshold she station-holds and THRASHES. Pure.</summary>
