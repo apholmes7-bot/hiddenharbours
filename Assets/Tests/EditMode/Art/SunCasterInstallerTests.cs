@@ -125,6 +125,32 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.That(state.IsValid, Is.True);
         }
 
+        /// <summary>
+        /// The figure's silhouette-mask child draws his own sprite, so a lamp shadow from it is his shadow
+        /// twice (the budget plate counted four for one figure between two lamps). It never throws a lamp
+        /// shadow, whether the installer adds its caster or finds one already there; the figure still does.
+        /// </summary>
+        [Test] public void SilhouetteMaskChild_NeverCastsALampShadow_TheFigureStillDoes()
+        {
+            var figure = Sprite("Player");
+            var mask = Sprite(SilhouetteMaskSource.MaskChildName);
+            mask.transform.SetParent(figure.transform, worldPositionStays: false);
+
+            var figureShadow = _host.Consider(figure);
+            var maskShadow = _host.Consider(mask);
+            Assert.That(figureShadow, Is.Not.Null);
+            Assert.That(maskShadow, Is.Not.Null, "the mask's sun casting is not this rule's business");
+            Assert.That(maskShadow.CastsLampShadow, Is.False);
+            Assert.That(maskShadow.TryGetLampShadowCaster(out _), Is.False, "the mask is never a lamp-shadow candidate");
+            Assert.That(figureShadow.CastsLampShadow, Is.True);
+            Assert.That(figureShadow.TryGetLampShadowCaster(out _), Is.True, "the figure himself still throws");
+
+            var premade = Sprite(SilhouetteMaskSource.MaskChildName);
+            var premadeShadow = premade.gameObject.AddComponent<SpriteShadow>();
+            Assert.That(_host.Consider(premade), Is.SameAs(premadeShadow));
+            Assert.That(premadeShadow.CastsLampShadow, Is.False, "a caster that was already on the mask is lowered too");
+        }
+
         [Test] public void ShadowChildrenAndCanvas_NeverGainCasters()
         {
             var renderer = Sprite("Crate");
