@@ -106,6 +106,20 @@ namespace HiddenHarbours.Art
             return Mathf.Clamp01(Mathf.Clamp01(baseline) + extra);
         }
 
+        /// <summary>
+        /// The share of a sea-mist wisp's opacity it keeps where the water is <paramref name="depthMetres"/>
+        /// deep (water level minus the ground there, <c>TidalExposure.WaterDepth</c>): none at or above the
+        /// waterline, rising linearly to all of it at <paramref name="shoreFadeMetres"/> deep. Sea mist is drawn
+        /// over the sea, never over grass, sand or roofs. A NaN depth reads as dry; +infinity (no ground known)
+        /// keeps the whole wisp. Pure + static.
+        /// </summary>
+        public static float MistOverWater01(float depthMetres, float shoreFadeMetres)
+        {
+            if (float.IsNaN(depthMetres) || depthMetres <= 0f) return 0f;
+            if (shoreFadeMetres <= 0f) return 1f;
+            return Mathf.Clamp01(depthMetres / shoreFadeMetres);
+        }
+
         // ==== rain intensity (a squall = chop kicked up AND the light gone murky) ==========================
 
         /// <summary>

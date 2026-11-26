@@ -27,8 +27,9 @@ namespace HiddenHarbours.Tests.EditMode
         const string FloatingVisual = "HiddenHarbours.World.FloatingPlatformVisual";
         const string GangwayVisual = "HiddenHarbours.World.GangwayVisual";
         const string Waterline = "HiddenHarbours.Art.TidalFaceWaterline";
-        // The parts of today's bake with one straight seaward lip; the ramps and the turned east arm have none.
-        static readonly string[] CutParts = { "apron", "crib", "conc", "east", "w0", "w1", "w2" };
+        // The parts of today's bake with one straight seaward lip, and the slipway's two ramps, whose water's edge climbs
+        // them with the tide; the turned east arm has neither.
+        static readonly string[] CutParts = { "apron", "crib", "conc", "east", "w0", "w1", "w2", "rampUpper", "rampLower" };
 
         [Test]
         public void TheFixedWaterSidePicturesSortOverTheSea_AndUnderEveryHull()
@@ -97,6 +98,15 @@ namespace HiddenHarbours.Tests.EditMode
                     if (tide == null) continue;
                     cut.Add(name);
                     Assert.IsTrue(lips.TryGetValue(harbourName.Substring("harbour.".Length) + "_" + name, out var expected), what + " is a sidecar part");
+                    if (expected.module == NineMileCreekWharf.SlipwayModule)
+                    {
+                        // A ramp is cut from its top edge, and its cut row climbs the ramp at its run per metre of fall.
+                        Assert.AreEqual(expected.top, ParseFloat(tide.Field("_lipWorldY")), 1e-3f, what + " is cut from its ramp's top edge");
+                        Assert.AreEqual(expected.elevation, ParseFloat(tide.Field("_lipElevation")), 1e-3f, what + " is cut at its top's elevation");
+                        Assert.That(ParseFloat(tide.Field("_slopeRunPerMetre")), Is.GreaterThan(0f), what + " is told its slope");
+                        StringAssert.Contains(tideMaterial, renderer.Text, what + " draws through the tidal-face material");
+                        continue;
+                    }
                     Assert.AreEqual(expected.lip, ParseFloat(tide.Field("_lipWorldY")), 1e-3f, what + " is cut from its walk's seaward lip");
                     Assert.AreEqual(expected.elevation, ParseFloat(tide.Field("_lipElevation")), 1e-3f, what + " is cut at its deck's elevation");
                     Assert.AreEqual("1", tide.Field("_configured"), what + " is told its lip");
@@ -117,7 +127,8 @@ namespace HiddenHarbours.Tests.EditMode
             var rules = Resources.Load<SunCasterRules>("SunCasterRules");
             Assert.IsNotNull(rules, "Resources/SunCasterRules");
             foreach (string sprite in new[] { "WaterSide_west_apron_0", "WaterSide_fleet_crib_0", "WaterSide_fleet_conc_0",
-                         "WaterSide_fleet_conc_1", "WaterSide_east_east_0", "WaterSide_arm_w_w0_0", "WaterSide_arm_w_w2_0", "NorthWall_logCrib_0" })
+                         "WaterSide_fleet_conc_1", "WaterSide_east_east_0", "WaterSide_arm_w_w0_0", "WaterSide_arm_w_w2_0", "NorthWall_logCrib_0",
+                         "WaterSide_west_rampUpper_0", "WaterSide_west_rampLower_0" })
                 Assert.IsTrue(rules.ExcludedNames.Any(p => SunCasterRules.Matches(sprite, p)),
                     sprite + " is cut at the waterline; its shadow is the uncut picture and would box the water");
             foreach (string sprite in new[] { "WaterSide_west_float_0", "WaterSide_fleet_fingerA_body_0", "WaterSide_fleet_gangway0_s1_0" })
@@ -229,15 +240,16 @@ namespace HiddenHarbours.Tests.EditMode
             return rect.Value;
         }
 
-        static Dictionary<string, (float lip, float elevation, string module)> Lips()
+        static Dictionary<string, (float lip, float top, float elevation, string module)> Lips()
         {
-            var lips = new Dictionary<string, (float, float, string)>();
+            var lips = new Dictionary<string, (float, float, float, string)>();
             foreach (object part in DeckSidecarJson.AsArray(DeckSidecarJson.Member(NineMileCreekWharfWaterSide.ReadToday(), "parts")))
             {
                 object walk = DeckSidecarJson.Member(part, "walkPolygon");
                 if (walk == null) continue;
                 float lip = DeckSidecarJson.AsArray(walk).Select(q => DeckSidecarJson.Float(DeckSidecarJson.AsArray(q)[1])).Min();
-                lips[DeckSidecarJson.String(DeckSidecarJson.Member(part, "key"))] = (lip, DeckSidecarJson.Float(DeckSidecarJson.Member(part, "elevation")),
+                float top = DeckSidecarJson.AsArray(walk).Select(q => DeckSidecarJson.Float(DeckSidecarJson.AsArray(q)[1])).Max();
+                lips[DeckSidecarJson.String(DeckSidecarJson.Member(part, "key"))] = (lip, top, DeckSidecarJson.Float(DeckSidecarJson.Member(part, "elevation")),
                     DeckSidecarJson.String(DeckSidecarJson.Member(DeckSidecarJson.Member(part, "module"), "key")));
             }
             return lips;

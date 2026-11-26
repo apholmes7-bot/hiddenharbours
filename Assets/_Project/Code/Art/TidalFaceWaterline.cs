@@ -106,6 +106,12 @@ namespace HiddenHarbours.Art
                  "predates this must draw.")]
         [SerializeField] private bool _configured;
 
+        [Tooltip("0 for a face that hangs straight down from its lip (every wall). For a SLOPE that runs down into the " +
+                 "sea, a slipway, the plan metres it runs south per metre it falls: the water then climbs its ramp " +
+                 "that much further per metre of tide than up a wall, and the cut row moves with it. The lip is the " +
+                 "slope's top edge and its elevation the top's.")]
+        [Min(0f)] [SerializeField] private float _slopeRunPerMetre;
+
         [SerializeField] private Texture2D _heightTexture;
         [SerializeField] private Vector3 _heightDecode;
 
@@ -162,6 +168,18 @@ namespace HiddenHarbours.Art
         public static float WaterlineWorldY(float lipWorldY, float lipElevation, float seaLevelMetres)
             => lipWorldY + TidalRide.ScreenRise(seaLevelMetres, lipElevation);
 
+        /// <summary>The waterline row on a slope that runs <paramref name="slopeRunPerMetre"/> plan metres per metre of
+        /// fall from its top edge (<paramref name="lipWorldY"/>, at <paramref name="lipElevation"/>): the drawn rise of
+        /// the water's height, plus the plan run the water's edge moves along the ramp. 0 is a wall.</summary>
+        public static float WaterlineWorldY(float lipWorldY, float lipElevation, float seaLevelMetres, float slopeRunPerMetre)
+            => WaterlineWorldY(lipWorldY, lipElevation, seaLevelMetres) + (seaLevelMetres - lipElevation) * slopeRunPerMetre;
+
+        /// <summary>Screen units the cut row moves per metre of tide: the camera's height scale, plus a slope's run.</summary>
+        public static float RowPerMetre(float slopeRunPerMetre) => IsoGround.HeightScale + slopeRunPerMetre;
+
+        /// <summary>The plan run per metre of fall this face was told (0 for a wall).</summary>
+        public float SlopeRunPerMetre => _slopeRunPerMetre;
+
         /// <summary>
         /// The drawn sea level right now, in metres above the game's datum, as
         /// <see cref="WaterSurface"/> published it. False when nothing has published one — a scene with no
@@ -185,7 +203,7 @@ namespace HiddenHarbours.Art
         {
             if (!_configured || !_ridesTheTide) return float.NegativeInfinity;
             return TryPublishedSeaLevel(out float sea)
-                ? WaterlineWorldY(_lipWorldY, _lipElevation, sea)
+                ? WaterlineWorldY(_lipWorldY, _lipElevation, sea, _slopeRunPerMetre)
                 : float.NegativeInfinity;
         }
 
@@ -248,7 +266,7 @@ namespace HiddenHarbours.Art
             _block.SetVector(TideId, new Vector4(
                 _lipWorldY,
                 _lipElevation,
-                IsoGround.HeightScale,
+                RowPerMetre(_slopeRunPerMetre),
                 _configured && _ridesTheTide ? 1f : 0f));
             if (_heightTexture != null) _block.SetTexture(HeightId, _heightTexture);
             _block.SetVector(HeightDecodeId, new Vector4(_heightDecode.x, _heightDecode.y,

@@ -249,9 +249,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 def.Id = EastWaterPlan.RegionId;
                 def.SceneName = EastWaterPlan.SceneName;
 
-                if (Application.CanStreamedLevelBeLoaded(def.SceneName))
-                    Assert.Pass("the east water scene has landed and is in Build Settings — the door " +
-                                "now leads somewhere, so the decline path this guards is unreachable");
+                RegionBuildAvailability.Override = (_, __) => false;
 
                 GameServices.PendingArrivalKey = EastWaterPlan.FromStPetersArrivalKey;
                 LogAssert.Expect(LogType.Warning,
@@ -271,6 +269,7 @@ namespace HiddenHarbours.Tests.PlayMode
             }
             finally
             {
+                RegionBuildAvailability.Override = null;
                 Object.DestroyImmediate(go);
                 Object.DestroyImmediate(def);
             }

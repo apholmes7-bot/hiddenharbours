@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c119a45bc5a403e948dcea7a43b79b9, type: 3}
+  m_Name: StPetersWeather
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.StoryGateDef
+  Id: story_gate.st_peters_weather
+  Description: "The end of the first week on St Peters. When the dory is mended, the cod licence is held, a fish has been kept from the dory, shellfish has been sold and day seven has come, Ginny gives her word on an evening talk at her cottage. In a demo the week ends there."
+  NpcId: npc.aunt_ginny
+  Word: {fileID: 11400000, guid: d079f6c51cf9458ab38ddc3acd617421, type: 2}
+  DemoWord: {fileID: 11400000, guid: 63b699a7d33642e6a02ae14928864c28, type: 2}
+  ProgressId: island_week.st_peters
+  FromHour: 17
+  ToHour: 4.5
+  OutsideHoursLine: "Come by this evening, child. We'll talk then."
+  AllHoldNote: See Ginny at her cottage this evening.
+  LiveWhileFlag: st_peters.first_week
+  SetsFlag: st_peters.ginny_word_completed
+  EndsDemo: 1
+  DemoAfterLine: "There's plenty of fishing here yet, child. Come home for supper."
+  Notes:
+  - TextKey: tasks.st_peters.mend_dory
+    TaskNote: Mend the dory at the island slip.
+    SpokenHint: "Finish putting that dory right, child. We're in no hurry off this island."
+  - TextKey: tasks.st_peters.cod_licence
+    TaskNote: Get a cod licence on St Peters.
+    SpokenHint: "Get your cod licence sorted, child. Then you can keep a cod for your trouble."
+  - TextKey: tasks.st_peters.fish_from_dory
+    TaskNote: Catch and keep a fish from the dory.
+    SpokenHint: "Have a fish from that dory you can keep, child. You'll know her better for it."
+  - TextKey: tasks.st_peters.sell_shellfish
+    TaskNote: Carry shellfish to the island store and sell them.
+    SpokenHint: "Sell a clam at the store, child. You'll need your shellfish licence to keep one."
+  - TextKey: tasks.st_peters.first_week
+    TaskNote: Settle into island life until day seven.
+    SpokenHint: "Stay a little yet, child. There's time to learn this shore before you take on the next."

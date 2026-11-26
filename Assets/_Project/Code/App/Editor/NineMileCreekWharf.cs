@@ -487,6 +487,30 @@ namespace HiddenHarbours.App.Editor
             return true;
         }
 
+        /// <summary>
+        /// The cut for a slipway: a ramp that runs straight down into the sea from its top (north) edge. Its waterline
+        /// is not one row but moves along the ramp with the tide, <paramref name="runPerMetre"/> plan metres per metre
+        /// of fall (the module's run over its drop) on top of the drawn rise of the water's height. The lip is the
+        /// walk's top edge, whose elevation is the part's. False for anything that is not one straight north-south
+        /// ramp falling toward the south.
+        /// </summary>
+        public static bool TrySlipwayWaterline(IReadOnlyList<Vector2> walk, float deckZ, float toeZ, float run,
+            out float lipWorldY, out float runPerMetre)
+        {
+            lipWorldY = 0f; runPerMetre = 0f;
+            if (walk == null || walk.Count < 3 || run <= 0f || deckZ - toeZ <= 0f) return false;
+            float top = walk.Max(p => p.y), foot = walk.Min(p => p.y);
+            if (Mathf.Abs(top - foot - run) > WaterlineLipToleranceMetres) return false;
+            var highest = walk.OrderByDescending(p => p.y).Take(2).ToArray();
+            if (Mathf.Abs(highest[1].y - highest[0].y) > WaterlineLipToleranceMetres) return false;
+            lipWorldY = top;
+            runPerMetre = run / (deckZ - toeZ);
+            return true;
+        }
+
+        /// <summary>The H5 kit's module kind of a slipway.</summary>
+        public const string SlipwayModule = "slipway";
+
         /// <summary>The H5 kit's module kinds, as the sidecar names them (<c>module.key</c>).</summary>
         public const string LogCribModule = "logCrib", ConcreteQuayModule = "concreteQuay", BreakwaterModule = "breakwater";
 

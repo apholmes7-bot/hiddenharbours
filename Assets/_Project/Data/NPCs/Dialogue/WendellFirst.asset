@@ -21,12 +21,12 @@ MonoBehaviour:
   - 'Let''s see it, then. Fresh is fresh and I''ve not got all tide.'
   Options:
   - Id: option.sell_pail
-    Label: 'Here. What''ll you give me for this pail?'
+    Label: 'Here. What''ll you give me for this bucket?'
     ReplyLines:
-    - '₲{payout}, dockside, and you''re holding the pail again. Same box as everything else.'
+    - '₲{payout}, dockside, and you''re holding the bucket again. Same box as everything else.'
     - 'Bring it back full on the next tide. I''ll be here, and I''ll still not be pleasant.'
     CatalogSellerId:
     CatalogSection:
     SellAtSellerId: seller.nmc_wharf_market
     NothingToSellLines:
-    - 'That pail''s empty. I don''t pay for air, not even dockside.'
+    - 'That bucket''s empty. I don''t pay for air, not even dockside.'

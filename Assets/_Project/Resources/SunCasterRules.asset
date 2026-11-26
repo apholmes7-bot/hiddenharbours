@@ -60,6 +60,7 @@ MonoBehaviour:
   - 'WaterSide_fleet_conc*'
   - 'WaterSide_east_east*'
   - 'WaterSide_arm_w_*'
+  - 'WaterSide_west_ramp*'
   - float
   - 'float_*'
   - 'finger*'
