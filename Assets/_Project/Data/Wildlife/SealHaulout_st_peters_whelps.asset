@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8deec463bbf65ee4b82526e780090c03, type: 3}
+  m_Name: SealHaulout_st_peters_whelps
+  m_EditorClassIdentifier: HiddenHarbours.Environment::HiddenHarbours.Environment.SealHauloutDef
+  Id: haulout.st_peters.whelps
+  DisplayName: The Whelps
+  RegionId: region.st_peters
+  KeySceneId: keyscene.stp_whelps_lookout
+  Species: {fileID: 11400000, guid: 846d091aab4e98041872b3ceed882ac3, type: 2}
+  Spots:
+  - Id: w1_a
+    At: {x: 184, y: -45.1}
+    LieMetres: -1.11
+    Facing: 6
+    Coat: 0
+    SortBelowMetres: 1.85
+  - Id: w1_b
+    At: {x: 187.9, y: -46.9}
+    LieMetres: -1.25
+    Facing: 1
+    Coat: 1
+    SortBelowMetres: 0
+  - Id: w1_c
+    At: {x: 186.6, y: -47.95}
+    LieMetres: -1.15
+    Facing: 4
+    Coat: 2
+    SortBelowMetres: 0
+  - Id: w2_a
+    At: {x: 190.4, y: -50.7}
+    LieMetres: -1.27
+    Facing: 5
+    Coat: 0
+    SortBelowMetres: 0
+  - Id: w2_b
+    At: {x: 193.4, y: -51}
+    LieMetres: -1.2
+    Facing: 3
+    Coat: 1
+    SortBelowMetres: 0
+  - Id: w3_a
+    At: {x: 179.6, y: -51.3}
+    LieMetres: -0.72
+    Facing: 7
+    Coat: 0
+    SortBelowMetres: 0.75
+  - Id: w3_b
+    At: {x: 182.3, y: -53}
+    LieMetres: -0.9
+    Facing: 2
+    Coat: 2
+    SortBelowMetres: 0
+  - Id: w3_c
+    At: {x: 179.66, y: -53.34}
+    LieMetres: -0.36
+    Facing: 1
+    Coat: 1
+    SortBelowMetres: 0
+  - Id: w3_d
+    At: {x: 180.83, y: -53.89}
+    LieMetres: -0.56
+    Facing: 5
+    Coat: 0
+    SortBelowMetres: 0
+  SwimPoints:
+  - {x: 178.2, y: -38.6}
+  - {x: 189.4, y: -54.4}
+  - {x: 183.6, y: -49.6}

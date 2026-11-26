@@ -655,6 +655,9 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>The slip dory's prefab instance, the root mend and launch adds after the light station's.</summary>
         const long SlipDoryInstance = 1946273810L;
 
+        /// <summary>The seals' host root (<c>StPetersSeals</c>'s transform), added after the slip dory.</summary>
+        const long SealsRoot = 1449665083L;
+
         /// <summary>The step re-adds its root LAST: SceneRoots must be the committed list with only the key
         /// root moved from index 53 to the end, every other root in its committed order, nothing else changed.</summary>
         static void AssertOnlyTheKeyRootMovesToTheEnd(string committed, string rebuilt)
@@ -671,10 +674,11 @@ namespace HiddenHarbours.Tests.EditMode
             // fixtures root the interior-fixtures step adds for the camper's shore power lead (storage, owner 11-17);
             // then the north-east light station's root, then the keepers', then the Whelps' rocks, then the
             // footbridges' root (the plank bridge over the Gap brook); then the slip dory's prefab instance (mend
-            // and launch Basil's dory).
-            CollectionAssert.AreEqual(new[] { 1757780506L, 866884044L, 910510002L, 1709556905L, 1132627356L, 527077028L, 2079165773L, 1464805096L, SlipDoryInstance }, before.Skip(54).ToArray(),
+            // and launch Basil's dory); then the seals' haul-out host on the Whelps.
+            CollectionAssert.AreEqual(new[] { 1757780506L, 866884044L, 910510002L, 1709556905L, 1132627356L, 527077028L, 2079165773L, 1464805096L, SlipDoryInstance, SealsRoot }, before.Skip(54).ToArray(),
                                       "the committed roots after the key root");
             Assert.AreEqual(1464805096L, c.TransformOf(c.RootGameObject(StPetersLayerRefresh.FootbridgesRootName)));
+            Assert.AreEqual(SealsRoot, c.TransformOf(c.RootGameObject(StPetersLayerRefresh.SealsRootName)));
             Assert.AreEqual(1757780506L, c.TransformOf(c.RootGameObject(StPetersVillageDressing.CommonsRoot)));
             Assert.AreEqual(866884044L, c.TransformOf(c.RootGameObject(StPetersVillageLights.RootName)));
             Assert.AreEqual(1709556905L, c.TransformOf(c.RootGameObject(InteriorFixturePlacement.StPetersOpenAirRootName)));
