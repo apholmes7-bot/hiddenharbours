@@ -16,7 +16,7 @@ MonoBehaviour:
   DisplayName: Atlantic Tomcod
   Category: 0
   Rarity: 0
-  Flavor: 'A small brown cod of the creek and the estuary, the ''frostfish''. Runs in on the winter cold to spawn and bites a baited hook through the ice. BALANCE NOTE: placeholder value, weight and elasticity set beside its neighbours - flagged for economy-sim to tune.'
+  Flavor: 'A small brown cod of the creek and the estuary, the ''frostfish''. Runs in on the winter cold to spawn and bites a baited hook through the ice.'
   RegionIds:
   - region.nine_mile_creek
   AllowedGear: 33

@@ -16,9 +16,7 @@ MonoBehaviour:
   DisplayName: Rock Crab
   Category: 1
   Rarity: 0
-  Flavor: 'Underfoot in every tide pool, taken in the crab pot. Good bait and a modest
-    sale. The trap-arc''s common shellfish. BALANCE NOTE: greybox values (base value,
-    elasticity, weight) - flagged for economy-sim to tune.'
+  Flavor: 'Underfoot in every tide pool, taken in the crab pot. Good bait and a modest sale.'
   Sprite: {fileID: 21300000, guid: bd2c04b7649d49dd8ba7bcd7b9ea803f, type: 3}
   RegionIds:
   - region.coddle_cove

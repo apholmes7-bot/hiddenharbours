@@ -14,9 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.GearOffer
   Id: gear.rod_rack
   DisplayName: Rod Rack
-  Flavor: 'Holds four rods upright - at the helm, in a shed or by the door. A rod is
-    only ever put away in a rod rack or a locker made for rods. Capacity is on the
-    stowage.rod_rack Def (gameplay-systems).'
+  Flavor: 'Holds four rods upright - at the helm, in a shed or by the door. A rod is only ever put away in a rod rack or a locker made for rods.'
   Price: 25
   Catalog:
     Listed: 1

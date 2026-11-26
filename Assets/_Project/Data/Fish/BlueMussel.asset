@@ -16,7 +16,7 @@ MonoBehaviour:
   DisplayName: Blue Mussel
   Category: 1
   Rarity: 0
-  Flavor: "Hand-gathered off the rocks at low water. Cheap, reliable. GEAR NOTE: hand-gather only, on the ClamFork tag the clam uses; deliberately not in the rod's catch pool and in no trap."
+  Flavor: 'Hand-gathered off the rocks at low water. Cheap, reliable.'
   Sprite: {fileID: 21300000, guid: 14ed8d0305e045feaa8d2564c5250cd5, type: 3}
   RegionIds:
   - region.st_peters
