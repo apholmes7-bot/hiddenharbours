@@ -27,6 +27,7 @@ namespace HiddenHarbours.Core
         private readonly Func<ICleanlinessService> _cleanliness;
         private readonly Func<CleanlinessSettings> _cleanlinessSettings;
         private readonly Func<KitchenSettings> _kitchen;
+        private readonly Func<IClothingService> _clothing;
 
         private readonly NeedStage[] _lastStage = new NeedStage[Kinds.Length];
         private readonly bool[] _stageKnown = new bool[Kinds.Length];
@@ -36,8 +37,10 @@ namespace HiddenHarbours.Core
                             Func<double> secondsPerGameHour = null, Func<IBodyService> body = null,
                             Func<ICleanlinessService> cleanliness = null,
                             Func<CleanlinessSettings> cleanlinessSettings = null,
-                            Func<KitchenSettings> kitchen = null)
+                            Func<KitchenSettings> kitchen = null,
+                            Func<IClothingService> clothing = null)
         {
+            _clothing = clothing ?? (() => GameServices.Clothing);
             _cleanliness = cleanliness ?? (() => GameServices.Cleanliness);
             _cleanlinessSettings = cleanlinessSettings ?? (() => GameServices.CleanlinessSettings);
             _save = save ?? (() => GameServices.Save);
@@ -238,10 +241,20 @@ namespace HiddenHarbours.Core
             _stageKnown[k] = true;
         }
 
+        /// <summary>What is left of <paramref name="need"/>'s penalty: the trait reliefs times the local
+        /// player's worn garments' reliefs (store clothing, pass 1). Exactly 1 with neither, so a player with
+        /// no traits and no clothes reads bit for bit what he read before. Allocation-free.</summary>
+        private float ReliefFor(NeedKind need)
+        {
+            PlayerWardrobe worn = _clothing()?.Local;
+            float clothes = worn != null ? worn.NeedRelief(need) : TraitMath.Identity;
+            return TraitReliefFor(need) * clothes;
+        }
+
         /// <summary>The product of the player's trait reliefs on <paramref name="need"/>: 1 with none.
         /// Known, distinct traits only, at most the allowed picks (the <see cref="TraitService"/> rule).
         /// Allocation-free.</summary>
-        private float ReliefFor(NeedKind need)
+        private float TraitReliefFor(NeedKind need)
         {
             ITraitService traits = _traits();
             if (traits == null) return TraitMath.Identity;

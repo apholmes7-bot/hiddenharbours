@@ -452,6 +452,21 @@ namespace HiddenHarbours.Core
         private static ICleanlinessService _cleanliness;
 
         /// <summary>
+        /// Clothing (store clothing, pass 1): the shipped garments under <c>Resources/Clothing/</c> and one
+        /// wardrobe per player. The needs and the dirt read the local player's worn garments through it.
+        /// Never null: a default <see cref="ClothingService"/> is made on first read; a test assigns its own.
+        /// Cleared by <see cref="Reset"/>. Wearing nothing, every effect is exactly 1. Session-only.
+        /// FLAG lead-architect: new Core contract (clothing).
+        /// </summary>
+        public static IClothingService Clothing
+        {
+            get => _clothing ??= new ClothingService();
+            set => _clothing = value;
+        }
+
+        private static IClothingService _clothing;
+
+        /// <summary>
         /// The farm plots (farm slice 1): read-only questions about each plot's stage and the work due on it,
         /// recomputed from the Defs, the world seed and the day (rule 5). Never null: a default
         /// <see cref="FarmService"/> over the shipped Defs under <c>Resources/Farming/</c> is made on first
@@ -1732,7 +1747,8 @@ namespace HiddenHarbours.Core
             PlayerStrength = null;       // → the body, or the neutral reading
             CarriedLoad = null;          // → NoCarriedLoad.Instance (nothing carried)
             Cleanliness = null;          // → a fresh default on next read; drops its station catalog
-            KitchenPower = null;        // → AlwaysOnKitchenPower.Instance; this property is never null
+            Clothing = null;             // → a fresh default on next read; every wardrobe starts empty
+            KitchenPower = null;       // → AlwaysOnKitchenPower.Instance; this property is never null
             FoodPerishability = null;    // → NothingSpoilsPerishability.Instance; likewise never null
             KitchenStorageCatalog.Clear();
             Farm = null;                 // → a fresh default on next read; drops its catalog and baseline

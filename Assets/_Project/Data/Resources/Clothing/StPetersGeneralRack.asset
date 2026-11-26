@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d0fb3e7747c4942b404f593c38019eb, type: 3}
+  m_Name: StPetersGeneralRack
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.ClothingRackDef
+  Id: clothing_rack.st_peters_general
+  ShopId: shop.st_peters_general
+  DisplayName: Clothes rack
+  Lines:
+  - Clothing: {fileID: 11400000, guid: c095991f07564f66bcfb0f552e4b4640, type: 2}
+    Stock: 2
+  - Clothing: {fileID: 11400000, guid: b4321897067f4947ba8052871584226d, type: 2}
+    Stock: 2
+  - Clothing: {fileID: 11400000, guid: 2e18cf0315b54640a01324a37b172c25, type: 2}
+    Stock: 2
+  - Clothing: {fileID: 11400000, guid: dedf256d55ad4f4a883399839a07e99b, type: 2}
+    Stock: 3
+  - Clothing: {fileID: 11400000, guid: 3613d3a5538f46e5b5f0e0b7ac09a88c, type: 2}
+    Stock: 4
+  - Clothing: {fileID: 11400000, guid: 42b7620e511544f49325cadadb7b6cf1, type: 2}
+    Stock: 3
+  - Clothing: {fileID: 11400000, guid: 8fbc63951d1e4d0f9ca4914c1fa0f7cf, type: 2}
+    Stock: 2

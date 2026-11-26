@@ -32,10 +32,24 @@ namespace HiddenHarbours.Core
         private string _soapedStationId;
         private double _soapedSince = NeedStateDto.Unstamped;
 
+        // Clothing (store clothing, pass 1): the dirt scale his worn garments put on a stretch of work, taken
+        // as the stretch BEGINS and kept for that stretch, so a stretch is one line at one rate and a change of
+        // clothes takes effect from the next one. Session-only on purpose: a load ends every stretch
+        // (CleanlinessMath.Rebase), so a snapshot never outlives the stretch it was taken for.
+        private readonly Func<IClothingService> _clothing;
+        private DirtActivity _clothedKind;
+        private double _clothedSince = NeedStateDto.Unstamped;
+        private float _clothedScale = 1f;
+        private DirtSourceRate[] _scaledFrom, _scaledSources;
+        private DirtActivity _scaledKind;
+        private float _scaledBy = 1f;
+
         public CleanlinessService(Func<ISaveService> save = null, Func<IGameClock> clock = null,
                                   Func<CleanlinessSettings> settings = null, Func<WashStationDef[]> catalog = null,
-                                  Func<double> secondsPerGameHour = null)
+                                  Func<double> secondsPerGameHour = null,
+                                  Func<IClothingService> clothing = null)
         {
+            _clothing = clothing ?? (() => GameServices.Clothing);
             _save = save ?? (() => GameServices.Save);
             _clock = clock ?? (() => GameServices.Clock);
             _settings = settings ?? (() => GameServices.CleanlinessSettings);
@@ -49,7 +63,7 @@ namespace HiddenHarbours.Core
             {
                 PlayerCleanlinessDto state = State();
                 if (state == null) return 0f;
-                CleanlinessSettings s = _settings();
+                CleanlinessSettings s = Live(state);
                 return CleanlinessMath.DirtAt(state, s, PullOf(state), NowOr(state.SinceGameSeconds),
                                               _secondsPerGameHour());
             }
@@ -110,6 +124,9 @@ namespace HiddenHarbours.Core
             state.WashStationId = "";
             state.Activity = (int)kind;
             state.StretchSinceGameSeconds = now;
+            _clothedKind = kind;
+            _clothedSince = now;
+            _clothedScale = WornScale(kind);
             ForgetSoap();
             if (was != null) EventBus.Publish(new PlayerWashChanged(false, was.Kind, was.Id, wasSoaped, false));
         }
@@ -127,7 +144,7 @@ namespace HiddenHarbours.Core
         {
             PlayerCleanlinessDto state = State();
             if (state == null) return;
-            float bump = CleanlinessMath.BumpOf(kind, _settings());
+            float bump = CleanlinessMath.BumpOf(kind, _settings()) * WornScale(kind);
             if (!(bump > 0f)) return;
             SettleNow(state);
             state.Dirt = CleanlinessMath.Rise(state.Dirt, bump);
@@ -138,7 +155,7 @@ namespace HiddenHarbours.Core
             if (!(gameHours > 0d) || double.IsInfinity(gameHours)) return;
             PlayerCleanlinessDto state = State();
             if (state == null) return;
-            float rate = CleanlinessMath.RateOf(kind, _settings());
+            float rate = CleanlinessMath.RateOf(kind, _settings()) * WornScale(kind);
             if (!(rate > 0f) || float.IsInfinity(rate)) return;
             SettleNow(state);
             state.Dirt = CleanlinessMath.Rise(state.Dirt, rate * gameHours);
@@ -197,7 +214,7 @@ namespace HiddenHarbours.Core
             if (state == null || !state.IsStamped) return;
             IGameClock clock = _clock();
             if (clock == null) return;
-            CleanlinessMath.Settle(state, _settings(), PullOf(state), clock.TotalSeconds, _secondsPerGameHour());
+            CleanlinessMath.Settle(state, Live(state), PullOf(state), clock.TotalSeconds, _secondsPerGameHour());
         }
 
         public void Tick()
@@ -209,7 +226,7 @@ namespace HiddenHarbours.Core
             double now = clock.TotalSeconds;
             if (!state.IsStamped) { state.SinceGameSeconds = now; return; }
 
-            CleanlinessSettings s = _settings();
+            CleanlinessSettings s = Live(state);
             double sph = _secondsPerGameHour();
             if (!CleanlinessMath.StretchExpired(state, s, now, sph)) return;
             // Past the guard window the stretch adds nothing, so closing it changes no level.
@@ -231,10 +248,53 @@ namespace HiddenHarbours.Core
             IGameClock clock = _clock();
             double now = clock != null ? clock.TotalSeconds : (state.IsStamped ? state.SinceGameSeconds : 0d);
             if (state.IsStamped)
-                CleanlinessMath.Settle(state, _settings(), PullOf(state), now, _secondsPerGameHour());
+                CleanlinessMath.Settle(state, Live(state), PullOf(state), now, _secondsPerGameHour());
             else
                 state.SinceGameSeconds = now;
             return now;
+        }
+
+        /// <summary>What is left of the dirt <paramref name="kind"/> adds with what the local player wears now:
+        /// exactly 1 with nothing on (store clothing, pass 1).</summary>
+        private float WornScale(DirtActivity kind)
+        {
+            PlayerWardrobe worn = _clothing()?.Local;
+            return worn != null ? worn.DirtScale(kind) : 1f;
+        }
+
+        /// <summary>
+        /// The settings the saved line runs on: the config's, with the current stretch's rate scaled by the
+        /// clothes he had on when it began. The config's own settings, untouched, whenever no clothed stretch
+        /// is going on (so a player with no clothes reads bit for bit what he read before). The scaled rows
+        /// are rebuilt only when the stretch, its scale or the config's rows change, never per read.
+        /// </summary>
+        private CleanlinessSettings Live(PlayerCleanlinessDto state)
+        {
+            CleanlinessSettings s = _settings();
+            if (state == null || state.IsWashing || !(_clothedScale < 1f) || s.Sources == null) return s;
+            if (state.ActivityKind != _clothedKind || state.StretchSinceGameSeconds != _clothedSince) return s;
+            if (_scaledSources == null || _scaledKind != _clothedKind || _scaledBy != _clothedScale ||
+                !SameRows(s.Sources, _scaledFrom))
+            {
+                _scaledFrom = (DirtSourceRate[])s.Sources.Clone();
+                _scaledSources = (DirtSourceRate[])s.Sources.Clone();
+                for (int i = 0; i < _scaledSources.Length; i++)
+                    if (_scaledSources[i].Kind == _clothedKind) _scaledSources[i].RisePerGameHour *= _clothedScale;
+                _scaledKind = _clothedKind;
+                _scaledBy = _clothedScale;
+            }
+            s.Sources = _scaledSources;
+            return s;
+        }
+
+        private static bool SameRows(DirtSourceRate[] a, DirtSourceRate[] b)
+        {
+            if (ReferenceEquals(a, b)) return true;
+            if (a == null || b == null || a.Length != b.Length) return false;
+            for (int i = 0; i < a.Length; i++)
+                if (a[i].Kind != b[i].Kind || a[i].RisePerGameHour != b[i].RisePerGameHour ||
+                    a[i].PerAction != b[i].PerAction) return false;
+            return true;
         }
 
         /// <summary>The pull of the wash going on: its station, up to the ceiling its soap allows.</summary>
