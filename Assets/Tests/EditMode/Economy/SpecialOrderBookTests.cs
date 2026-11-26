@@ -1297,12 +1297,13 @@ namespace HiddenHarbours.Tests.Economy
             var source = _save.SpecialOrders.Single();
             source.OrderedAtSeconds = seconds;
             source.State = state;
-            Assert.That(SaveMigration.CurrentVersion, Is.EqualTo(26));
-            Assert.That(_save.SchemaVersion, Is.EqualTo(26));
+            // A file written by a v26 build: the orders' repair must hold through every later step too.
+            Assert.That(SaveMigration.CurrentVersion, Is.GreaterThanOrEqualTo(26));
+            _save.SchemaVersion = 26;
             string text = SaveSerialization.ToJson(_save);
             var loaded = SaveSerialization.FromJson(text);
             Assert.That(loaded, Is.Not.Null);
-            Assert.That(loaded.SchemaVersion, Is.EqualTo(26));
+            Assert.That(loaded.SchemaVersion, Is.EqualTo(SaveMigration.CurrentVersion));
             var expected = JsonUtility.FromJson<SaveData>(text);
             expected.SpecialOrders.Single().OrderedAtSeconds = repairedSeconds;
             expected.SpecialOrders.Single().State = repairedState;
