@@ -544,6 +544,19 @@ namespace HiddenHarbours.Core
         /// start with none: every rod carries its own parts.
         /// </summary>
         public List<RodFittingDto> RodFittings = new();
+
+        // ---- save v28: the photo album (owner 2026-11-26: "build the camera now with photo record added
+        // to save") -------------------------------------------------------------------------------------
+        // ONE bump carrying exactly this list. A picture is something the player did, which cannot be
+        // recomputed. Rows keyed by a player key from the start (the v27 rule). Rows in SaveRowsV28.cs.
+
+        /// <summary>
+        /// <b>The pictures each player has taken and kept</b>, one row per picture, in number order. A record
+        /// of what was in frame (subject ids, counts, poses, scores, game time, region), <b>never image
+        /// bytes</b>. Added in v28 as <b>data only</b> (<see cref="PhotoAlbumRows"/>). Older saves start with
+        /// an empty album.
+        /// </summary>
+        public List<PhotoRecordDto> Photos = new();
     }
 
     /// <summary>
