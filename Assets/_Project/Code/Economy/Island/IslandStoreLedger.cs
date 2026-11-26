@@ -166,7 +166,11 @@ namespace HiddenHarbours.Economy
             for (int i = 0; i < n; i++) _level[i] = Target(i, start);
 
             bool run = false;
-            for (int t = start; t <= day; t++) run = Step(t);
+            for (int t = start; ; t++)
+            {
+                run = Step(t);
+                if (t == day) break; // Stop before incrementing the maximum representable day.
+            }
 
             double dKg = 0.0, dL = 0.0, sKg = 0.0, sL = 0.0;
             for (int i = 0; i < n; i++)

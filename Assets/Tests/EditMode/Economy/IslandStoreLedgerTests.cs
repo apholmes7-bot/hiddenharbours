@@ -207,5 +207,28 @@ namespace HiddenHarbours.Tests.Economy
             }
             Assert.That(ledger.LevelAtDusk(1), Is.EqualTo(start + net).Within(1e-6));
         }
+
+        [Test]
+        public void TheMaximumDayFinishesWithinTheLookback_WithoutIntegerWraparound()
+        {
+            int queries = 0;
+            const int lookback = 28;
+            Func<int, bool> possible = day =>
+            {
+                if (++queries > 2 * (lookback + 1))
+                    throw new InvalidOperationException("Replay exceeded its bounded window.");
+                Assert.That(day, Is.GreaterThanOrEqualTo(int.MaxValue - lookback - 1));
+                return true;
+            };
+            var ledger = new IslandStoreLedger(new[] { Gasoline() }, Plenty, 2, 4, lookback, possible);
+            var last = ledger.Settle(int.MaxValue);
+            Assert.That(last.Day, Is.EqualTo(int.MaxValue));
+            Assert.IsFalse(last.RunToday);
+            Assert.That(queries, Is.EqualTo(44));
+            Assert.That(ledger.LevelAtDawn(0), Is.EqualTo(60));
+            Assert.That(ledger.LevelAtDusk(0), Is.EqualTo(40));
+            Assert.That(ledger.Delivered(0), Is.Zero);
+        }
+
     }
 }

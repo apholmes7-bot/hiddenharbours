@@ -164,6 +164,39 @@ namespace HiddenHarbours.Tests.EditMode
 
         private static double At(int day, double hour) => (day + hour / 24.0) * SecondsPerDay;
 
+        [Test]
+        public void HostPublishesSoldOutAndBackInStockOnceDespiteRepeatedPolling()
+        {
+            var shelves = RealShelves(_ => true);
+            var go = new GameObject("ShelfEventTest");
+            _spawned.Add(go);
+            var host = go.AddComponent<IslandShelvesHost>();
+            var storeType = typeof(IslandShelvesHost).GetNestedType("Store", BindingFlags.NonPublic);
+            Assert.That(storeType, Is.Not.Null);
+            object store = Activator.CreateInstance(storeType, true);
+            storeType.GetField("Shelves").SetValue(store, shelves);
+            storeType.GetField("Lines").SetValue(store, new[] { IceLine });
+            storeType.GetField("Last").SetValue(store, new[] { 16 });
+            storeType.GetField("RecheckSeconds").SetValue(store, 1.0);
+            var stores = (System.Collections.IList)typeof(IslandShelvesHost)
+                .GetField("_stores", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(host);
+            stores.Add(store);
+            for (int i = 0; i < 16; i++) Assert.That(shelves.TryTakeOne(IceLine, At(0, Opens)), Is.True);
+            for (int i = 0; i < 5; i++) host.Recheck(At(0, Opens));
+            Assert.That(_changes.Count, Is.EqualTo(1));
+            Assert.That(_changes[0].Count, Is.Zero);
+            Assert.That(_changes[0].LineId, Is.EqualTo(IceLine));
+            Assert.That(_changes[0].ShopId, Is.EqualTo(Shop));
+            Assert.That(shelves.TryTakeOne(IceLine, At(0, Opens)), Is.False);
+            host.Recheck(At(1, Opens));
+            Assert.That(_changes.Count, Is.EqualTo(1));
+            for (int i = 0; i < 5; i++) host.Recheck(At(2, Opens));
+            Assert.That(_changes.Count, Is.EqualTo(2));
+            Assert.That(_changes[1].Count, Is.EqualTo(16));
+            Assert.That(_changes[1].LineId, Is.EqualTo(IceLine));
+            Assert.That(_changes[1].ShopId, Is.EqualTo(Shop));
+        }
+
         private ShopShelfSlotsDef Slots()
         {
             var def = ScriptableObject.CreateInstance<ShopShelfSlotsDef>();
