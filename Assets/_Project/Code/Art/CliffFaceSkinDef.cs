@@ -53,6 +53,11 @@ namespace HiddenHarbours.Art
         [Tooltip("Accessory palettes (silt, moss, dust, peb, turf, grit) whose base this skin moves.")]
         public CliffSkinRock[] Accessories = new CliffSkinRock[0];
 
+        [Header("Its faces")]
+        [Tooltip("A face style drawn with this skin: the same rock redrawn in another texel pattern (the boards' " +
+                 "regular courses). Empty = the kit's own faces, so the skin is a palette only.")]
+        public CliffFaceStyleDef FaceStyle;
+
         [Header("Its source")]
         [Tooltip("The boards its colours were read off (paths under the art desk).")]
         public string[] SourceBoards = new string[0];

@@ -300,6 +300,10 @@ namespace HiddenHarbours.Art
         private static readonly int IdPaletteVariant = Shader.PropertyToID("_PaletteVariant");
         private static readonly int IdVariantOn = Shader.PropertyToID("_VariantOn");
         private static readonly int IdVariantBlock = Shader.PropertyToID("_VariantBlock");
+        private static readonly int IdVariantFaceOn = Shader.PropertyToID("_VariantFaceOn");
+        private static readonly int IdUnlitVariant = Shader.PropertyToID("_UnlitVariant");
+        private static readonly int IdNormalVariant = Shader.PropertyToID("_NormalVariant");
+        private static readonly int IdMaskVariant = Shader.PropertyToID("_MaskVariant");
 
         /// <summary>The region's cliff mix for this build, or null (see <see cref="CliffFaceMixDef"/>).</summary>
         private CliffFaceMixDef _mix;
@@ -1659,6 +1663,19 @@ namespace HiddenHarbours.Art
                 _mpb.SetTexture(IdPaletteVariant, _mix.VariantSkin.Palette);
                 _mpb.SetVector(IdVariantBlock, new Vector4(Mathf.Max(1f, _mix.BlendBlockTexels.x),
                                                            Mathf.Max(1f, _mix.BlendBlockTexels.y), 0f, 0f));
+            }
+            // The variant skin's own FACES (a style), where it has one for this band's kit face: the same
+            // blocks then draw a different rock pattern too, not only a different palette. A band whose face
+            // the style does not redraw (the till cap) keeps its face and takes the palette alone.
+            CliffStyleFace face = default;
+            bool styled = variant && _mix.VariantSkin.FaceStyle != null &&
+                          _mix.VariantSkin.FaceStyle.TryGetFace(unlit, out face);
+            _mpb.SetFloat(IdVariantFaceOn, styled ? 1f : 0f);
+            if (styled)
+            {
+                _mpb.SetTexture(IdUnlitVariant, face.Index);
+                _mpb.SetTexture(IdNormalVariant, face.Normal);
+                _mpb.SetTexture(IdMaskVariant, face.Mask);
             }
             _mpb.SetFloat(IdWallAzimuth, _wallAzimuth);
             _mpb.SetFloat(IdBatter, _batter);

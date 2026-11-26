@@ -70,14 +70,18 @@ namespace HiddenHarbours.Art
         public static CliffFaceMixDef ForScene(string sceneName)
         {
             if (string.IsNullOrEmpty(sceneName)) return null;
-            if (_byScene == null)
+            Dictionary<string, CliffFaceMixDef> byScene = _byScene;
+            if (byScene == null)
             {
-                _byScene = new Dictionary<string, CliffFaceMixDef>();
+                // Built in a local and published once: loading an asset runs its OnValidate in the editor, which
+                // clears the cache, so filling the static in place could null it under the loop.
+                byScene = new Dictionary<string, CliffFaceMixDef>();
                 foreach (CliffFaceMixDef d in Resources.LoadAll<CliffFaceMixDef>(ResourcesFolder))
-                    if (d != null && !string.IsNullOrEmpty(d.SceneName) && !_byScene.ContainsKey(d.SceneName))
-                        _byScene.Add(d.SceneName, d);
+                    if (d != null && !string.IsNullOrEmpty(d.SceneName) && !byScene.ContainsKey(d.SceneName))
+                        byScene.Add(d.SceneName, d);
+                _byScene = byScene;
             }
-            return _byScene.TryGetValue(sceneName, out CliffFaceMixDef mix) ? mix : null;
+            return byScene.TryGetValue(sceneName, out CliffFaceMixDef mix) ? mix : null;
         }
 
         /// <summary>Forget the cache (a test, or an edit to the assets).</summary>

@@ -1,0 +1,99 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22f6cf33433a43beb9e6718b5a900aa8, type: 3}
+  m_Name: CliffStyle_BoardCoursed
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffFaceStyleDef
+  Id: cliffstyle.board_coursed
+  Rock: sandstone
+  PainterScriptPath: docs/art/rigs/px-cliff-styles/pxCliffCoursed.js
+  OutputFolder: Assets/_Project/Art/Terrain/CliffStyles/Coursed
+  FilePrefix: SandstoneCoursed
+  CourseTexels: {x: 8, y: 13}
+  PaleShare: 0.22
+  PaleTexels: {x: 2, y: 4}
+  JointSpacingTexels: {x: 30, y: 60}
+  JointCut: 0.6
+  BedStep: 0.4
+  BedSegmentTexels: 32
+  ProudShare: 0.28
+  ProudRelief: 1.6
+  LipShare: 0.6
+  SpeckShare: 0.03
+  Faces:
+  - Base: {fileID: 2800000, guid: f410956fdd6700520cd4d72973bc43f7, type: 3}
+    Index: {fileID: 2800000, guid: a7a872c2b1e493d04ffe831129159321, type: 3}
+    Normal: {fileID: 2800000, guid: c28435534005b232986f2da96b94751d, type: 3}
+    Mask: {fileID: 2800000, guid: 930dc978dce70628e7ff36c8a85a01d7, type: 3}
+  - Base: {fileID: 2800000, guid: f61faa06aa4300c140b3aa9a1f9784ca, type: 3}
+    Index: {fileID: 2800000, guid: 8d94dbdcb3ab1e5ba2b7eef77db1ec42, type: 3}
+    Normal: {fileID: 2800000, guid: 6b147d38ed53e43fe37829b9420a0179, type: 3}
+    Mask: {fileID: 2800000, guid: 65dfc0c2eb17481a4ee4fb92e1f27bc8, type: 3}
+  - Base: {fileID: 2800000, guid: 0f93764a9cf9c6f423502eda7aaaee15, type: 3}
+    Index: {fileID: 2800000, guid: aa0da1b8f5c40fd63eecb9b4c9bde160, type: 3}
+    Normal: {fileID: 2800000, guid: 4dba06ef4f9352ec1a6eba3ab5b4b498, type: 3}
+    Mask: {fileID: 2800000, guid: 140b0bd6ff0ed18973989686660497b7, type: 3}
+  - Base: {fileID: 2800000, guid: 53eab9eeedca812ca4368a673d3a9344, type: 3}
+    Index: {fileID: 2800000, guid: 9a944ea4c483daceac3b35deca345781, type: 3}
+    Normal: {fileID: 2800000, guid: 8f4d95bac3483a7ff1242dd22839c12b, type: 3}
+    Mask: {fileID: 2800000, guid: 0ffb314c5cb61106edaad6c7f595b527, type: 3}
+  - Base: {fileID: 2800000, guid: 1e3a0620919efbeff234387c211dd6c4, type: 3}
+    Index: {fileID: 2800000, guid: 77123640ba19f96f3be8a15f8ebd0b1e, type: 3}
+    Normal: {fileID: 2800000, guid: d36c0d7982ce370184b79dd847ef1192, type: 3}
+    Mask: {fileID: 2800000, guid: b5a554f9a2c3b023746377aa7217e262, type: 3}
+  - Base: {fileID: 2800000, guid: 76dbfdf5c41abfcc01b0417bf25f33a3, type: 3}
+    Index: {fileID: 2800000, guid: 4e980246d73d7e70c38e077ad4d4c4b9, type: 3}
+    Normal: {fileID: 2800000, guid: 368c86e289086fda55b9d38a500a71c4, type: 3}
+    Mask: {fileID: 2800000, guid: fb64554aad39b9768185f3429f5e71ac, type: 3}
+  - Base: {fileID: 2800000, guid: 66c2af330ebafd7837632722fc41b4b2, type: 3}
+    Index: {fileID: 2800000, guid: 7d8fcf689c92d6e0cb60cc8051a9f618, type: 3}
+    Normal: {fileID: 2800000, guid: 427399576cb57548d701e37fe5ab4b44, type: 3}
+    Mask: {fileID: 2800000, guid: 492bd89a9f286d5c97b3d97c9457c21f, type: 3}
+  - Base: {fileID: 2800000, guid: fe2a4ee7f599f6f2104d2a8c00c8ae13, type: 3}
+    Index: {fileID: 2800000, guid: dd63a6475a51243f53367f916b50fc87, type: 3}
+    Normal: {fileID: 2800000, guid: ef59958558c22596aa210a284b6eb1c3, type: 3}
+    Mask: {fileID: 2800000, guid: 97fec16bf319c79720c76d97fec1cdef, type: 3}
+  - Base: {fileID: 2800000, guid: 82954a164537d272cd0810f0c77b478a, type: 3}
+    Index: {fileID: 2800000, guid: 4fc7f12ce5b83c194e355b15b5e4b486, type: 3}
+    Normal: {fileID: 2800000, guid: 34720cb393bb4c74ee735d5b65c3c224, type: 3}
+    Mask: {fileID: 2800000, guid: cd0b1c09dc77c73f07e2d547d4c11362, type: 3}
+  - Base: {fileID: 2800000, guid: db494ff6dd792ffc9811bf13220191d6, type: 3}
+    Index: {fileID: 2800000, guid: f5e1873e5fb752d76f399069c9c45a67, type: 3}
+    Normal: {fileID: 2800000, guid: e08da6ce2bd465be30fb09580d8daec8, type: 3}
+    Mask: {fileID: 2800000, guid: 858dccc899ff78bf9182befb47beaea4, type: 3}
+  - Base: {fileID: 2800000, guid: f1c6484d25fdb86fca84e38c2d0f1d97, type: 3}
+    Index: {fileID: 2800000, guid: 1aa8cb1b0e53f888ba944a8ca94f2b0e, type: 3}
+    Normal: {fileID: 2800000, guid: 75255407a3fd2f344333f90648d9bd6b, type: 3}
+    Mask: {fileID: 2800000, guid: 7a0d8e7949fd238290b15a7f655947b7, type: 3}
+  - Base: {fileID: 2800000, guid: 3a378887a86a68bed32bc753c536489a, type: 3}
+    Index: {fileID: 2800000, guid: 0e53bc58080b0013bd6219f4290f7c0b, type: 3}
+    Normal: {fileID: 2800000, guid: 8a698aaa24e6037a632fe247a08b610f, type: 3}
+    Mask: {fileID: 2800000, guid: f348528481301fd82e445f85e4ef6213, type: 3}
+  - Base: {fileID: 2800000, guid: f5d49fbf0e5dd4d7ed3939c5b6a14b16, type: 3}
+    Index: {fileID: 2800000, guid: 75ae58f64afb96d2fe18aeefc3d4d899, type: 3}
+    Normal: {fileID: 2800000, guid: 500242cb4767a2e8ae405003b391ed4d, type: 3}
+    Mask: {fileID: 2800000, guid: dad26e2e1304594fcf506805a90eba20, type: 3}
+  - Base: {fileID: 2800000, guid: 7f2cdb0ea88f33642c13b0577a3877e9, type: 3}
+    Index: {fileID: 2800000, guid: a113480f3b14a092f9b79e6964d71e68, type: 3}
+    Normal: {fileID: 2800000, guid: d5ba69658eaef3721fb5a1af32ff0d56, type: 3}
+    Mask: {fileID: 2800000, guid: 46f4cba55c8235ca00450abb349e6047, type: 3}
+  - Base: {fileID: 2800000, guid: b1e8c00e1aa2905f0a8c3573d8bd4795, type: 3}
+    Index: {fileID: 2800000, guid: c0ff8d6469e2e279aca2f66a58ed2d74, type: 3}
+    Normal: {fileID: 2800000, guid: 8cd2a76718bf0c008e838cbfab9c77fd, type: 3}
+    Mask: {fileID: 2800000, guid: 99d7a8d32ef0f82ec48ec319d9b8add1, type: 3}
+  Why: 'The St Peters key-scene boards'' cliff FORM (terrain pass 9 west and east
+    ledges, the south arm, the lighthouse point): regular stacked courses of near-equal
+    height with a crisp dark bed line under each and a lit lip on top, thin pale
+    grey-green interbeds every few courses, long slabs cut by staggered vertical
+    joints, and whole blocks standing proud or sitting back so the light facets the
+    wall block by block. Our shipped sandstone is warped, gated beds with plucked
+    sockets; this is the same rock, aspect and batter drawn the boards'' way, through
+    the kit''s own form, tiers and palette rows.'

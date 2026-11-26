@@ -509,6 +509,15 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "the shader's block pick is not CliffFaceMixMath.PicksVariant's");
             Assert.AreEqual(8f, CliffFaceMixMath.BlockSalt, "the block pick's salt is the shader's 8.0");
             StringAssert.Contains("mixW >= 0.999", px, "a full weight must draw the variant everywhere, as the twin does");
+            // Pass 2: the variant skin's own faces (a style) swap in on the SAME block pick, inside the one px branch,
+            // and the normal is re-read with them, or the coursed rock would be lit by the kit face's facets.
+            StringAssert.Contains("if (variant && _VariantFaceOn > 0.5)", px,
+                "the style face must follow the palette's block pick, not a pick of its own");
+            int swap = px.IndexOf("if (variant && _VariantFaceOn > 0.5)", System.StringComparison.Ordinal);
+            Assert.Greater(px.IndexOf("N     = normalize(nrm.xyz * 2.0 - 1.0);", swap, System.StringComparison.Ordinal), swap,
+                "the style face's normal is sampled but N is not re-read from it");
+            Assert.Less(swap, px.IndexOf("dot(N, L)", System.StringComparison.Ordinal),
+                "the style face must be swapped in before the live light reads N");
             StringAssert.DoesNotContain("_BakeL", px,
                 "_BakeL is the v10 kit's per-aspect key; the px mask was never baked at it.");
             StringAssert.Contains("if (_PxDecal < 0.5)", px,

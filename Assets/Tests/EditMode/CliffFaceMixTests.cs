@@ -237,5 +237,41 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.Less(flipRate, MaxNeighbourFlipRate,
                 $"{flipRate:P1} of neighbouring stations change skin: that is a checkerboard, not runs of rock");
         }
+
+        /// <summary>Pass 2 (seat, 11 25): every framed stretch must show some of each skin. So around every live toe
+        /// station, the coast within <see cref="ReachRadiusMetres"/> wears both: no long wall is all one skin.</summary>
+        const float ReachRadiusMetres = 20f;
+        const int ReachMinStations = 20;
+
+        [Test]
+        public void NoFortyMetreReachOfTheStPetersCoast_IsAllOneSkin()
+        {
+            CliffFaceMixDef mix = CliffFaceMixDef.ForScene(StPetersScene);
+            Assert.IsNotNull(mix, "St Peters has no cliff mix");
+            List<Vector2> toes = StPetersCliffWalls.LoadDefs().Where(d => d.IsLive).SelectMany(d => d.Toe).ToList();
+            bool[] v = toes.Select(p => mix.VariantWeightAt(p) > 0.5f).ToArray();
+            int judged = 0, oneSkin = 0;
+            float worst = 1f;
+            Vector2 worstAt = default;
+            for (int i = 0; i < toes.Count; i++)
+            {
+                int n = 0, var = 0;
+                for (int j = 0; j < toes.Count; j++)
+                    if ((toes[i] - toes[j]).sqrMagnitude < ReachRadiusMetres * ReachRadiusMetres)
+                    {
+                        n++;
+                        if (v[j]) var++;
+                    }
+                if (n < ReachMinStations) continue;
+                judged++;
+                float f = var / (float)n, mixed = Mathf.Min(f, 1f - f);
+                if (mixed <= 0f) oneSkin++;
+                if (mixed < worst) { worst = mixed; worstAt = toes[i]; }
+            }
+            TestContext.WriteLine($"{judged} reaches judged; the least mixed is {worst:P0} the minority skin, at {worstAt}.");
+            Assert.Greater(judged, 100, "too few reaches to judge");
+            Assert.AreEqual(0, oneSkin,
+                $"{oneSkin} reaches of {ReachRadiusMetres * 2f:0} m are all one skin (worst at {worstAt}): retune the run or the seed");
+        }
     }
 }

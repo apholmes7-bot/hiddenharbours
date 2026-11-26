@@ -108,6 +108,12 @@ Shader "HiddenHarbours/CliffFace"
         [HideInInspector][NoScaleOffset] _PaletteVariant ("Px variant palette LUT 8 by 32", 2D) = "black" {}
         [HideInInspector] _VariantOn ("Px variant palette on", Float) = 0
         [HideInInspector] _VariantBlock ("Px variant block, texels", Vector) = (6, 3, 0, 0)
+        // The variant skin's own FACES (a CliffFaceStyleDef: the boards' coursed rock), where the band's kit
+        // face has one. Same rows and bands as the kit face, so they draw through either palette.
+        [HideInInspector] _VariantFaceOn ("Px variant face on", Float) = 0
+        [HideInInspector][NoScaleOffset] _UnlitVariant ("Px variant face index", 2D) = "black" {}
+        [HideInInspector][NoScaleOffset] _NormalVariant ("Px variant face normal", 2D) = "bump" {}
+        [HideInInspector][NoScaleOffset] _MaskVariant ("Px variant face mask", 2D) = "white" {}
 
         [Header(Shade. Defaults mirror CliffLightMath and are pinned by test)]
         _SkyFloor ("Sky light at full occlusion", Range(0, 1)) = 0.34
@@ -228,6 +234,9 @@ Shader "HiddenHarbours/CliffFace"
             TEXTURE2D(_Mask);   SAMPLER(sampler_Mask);
             TEXTURE2D(_Palette); SAMPLER(sampler_Palette);   // the px look only
             TEXTURE2D(_PaletteVariant); SAMPLER(sampler_PaletteVariant);   // the px look's cliff mix only
+            TEXTURE2D(_UnlitVariant);  SAMPLER(sampler_UnlitVariant);      // the cliff mix's variant face
+            TEXTURE2D(_NormalVariant); SAMPLER(sampler_NormalVariant);
+            TEXTURE2D(_MaskVariant);   SAMPLER(sampler_MaskVariant);
 
             // GLOBALS set by DayNightController (Shader.SetGlobal*), OUTSIDE the per material CBUFFER
             // exactly like _SunDir in the water shader — so an art scene with no day/night controller
@@ -304,6 +313,7 @@ Shader "HiddenHarbours/CliffFace"
                 // The cliff mix's two (see the property note), in both variants for the same reason.
                 float4 _VariantBlock;
                 float  _VariantOn;
+                float  _VariantFaceOn;
             CBUFFER_END
 
             // The shared field's HEIGHT at a plan position, transcribed from the water shader's
@@ -517,6 +527,25 @@ Shader "HiddenHarbours/CliffFace"
                                          ? floor(IN.waterline.x * CLIFF_TEXELS_PER_METRE)
                                          : floor(IN.uv.y * _TileMetresT * CLIFF_TEXELS_PER_METRE));
             #if defined(_HH_CLIFF_PX)
+                // THE CLIFF MIX: whether this texel draws in the variant skin. Whole blocks of the rock's own
+                // texels give way where the weight is between 0 and 1, so a change of skin is a crumbling edge
+                // of pixel blocks, never a fade. Twin: CliffFaceMixMath.PicksVariant.
+                float  mixW    = IN.mix.x;
+                float2 mixBlk  = max(_VariantBlock.xy, float2(1.0, 1.0));
+                bool   variant = _VariantOn > 0.5 && IN.mix.y > 0.5
+                              && (mixW >= 0.999 || (mixW > 0.0 && mixW > CliffHash(floor(cell / mixBlk), 8.0)));
+                // The variant skin's own FACE, where it has one: the same texel of the boards' coursed rock,
+                // and its normal and mask with it (so N and the AO are re-read too). Point-sampled with no mips
+                // (the kit's import law), so LOD 0 is the texel the plain sample takes.
+                if (variant && _VariantFaceOn > 0.5)
+                {
+                    unlit = SAMPLE_TEXTURE2D_LOD(_UnlitVariant,  sampler_UnlitVariant,  IN.uv, 0);
+                    nrm   = SAMPLE_TEXTURE2D_LOD(_NormalVariant, sampler_NormalVariant, IN.uv, 0);
+                    msk   = SAMPLE_TEXTURE2D_LOD(_MaskVariant,   sampler_MaskVariant,   IN.uv, 0);
+                    N     = normalize(nrm.xyz * 2.0 - 1.0);
+                    ao    = saturate(nrm.w);
+                }
+
                 // THE PX LOOK (header). The same live sun in the same frame. With the cycle off it falls
                 // back to the px rig's own key, which draws the face the way the rig baked it; with the
                 // sun down there is no direct light, the px twin of the v10 day term below.
@@ -524,14 +553,7 @@ Shader "HiddenHarbours/CliffFace"
                 float3 L   = cycleOn ? normalize(float3(dot(S, Ts), dot(S, Up), dot(S, Nw))) : Lpx;
                 float  ndl = (cycleOn && e <= 0.0) ? 0.0 : dot(N, L);
 
-                // THE CLIFF MIX: which palette this texel draws in. Whole blocks of the rock's own texels
-                // give way where the weight is between 0 and 1, so a change of skin is a crumbling edge of
-                // pixel blocks, never a fade. Twin: CliffFaceMixMath.PicksVariant.
-                float  mixW    = IN.mix.x;
-                float2 mixBlk  = max(_VariantBlock.xy, float2(1.0, 1.0));
-                bool   variant = _VariantOn > 0.5 && IN.mix.y > 0.5
-                              && (mixW >= 0.999 || (mixW > 0.0 && mixW > CliffHash(floor(cell / mixBlk), 8.0)));
-
+                // THE CLIFF MIX: `variant` (decided above, with the face) picks the palette too.
                 float3 lit = unlit.rgb;   // a decal: the px rig's own pre lit strip, drawn as baked
                 if (_PxDecal < 0.5)
                     lit = CliffPxRelight(unlit, ndl, dot(N, Lpx), msk.r, variant);
