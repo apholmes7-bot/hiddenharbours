@@ -334,12 +334,11 @@ namespace HiddenHarbours.Economy
             {
                 foreach (LicenseDef l in Each(stock.Licenses))
                 {
-                    // ILicenseService treats a null/empty id as "ungated → true"; an offer with no id must
-                    // NOT read as already-held, so gate the lookup on a real id (the vendor refuses to sell
-                    // an id-less licence anyway).
-                    bool held = licenses != null && !string.IsNullOrEmpty(l.Id) && licenses.IsLicensed(l.Id);
-                    into.Add(new BuyRow(arms.License, l, l.Id, l.DisplayName, l.Flavor, "",
-                                        BuyLogic.License(l.Price, money, held), l.Catalog.Section));
+                    BuyQuote quote = arms.License.Quote(l, money, save, licenses);
+                    bool recovery = quote.CanBuy && quote.Price < l.Price;
+                    string note = recovery ? l.FeeRecoveryNote : "";
+                    into.Add(new BuyRow(arms.License, l, l.Id, l.DisplayName, recovery ? "" : l.Flavor, note,
+                                        quote, l.Catalog.Section));
                 }
             }
         }
@@ -395,7 +394,7 @@ namespace HiddenHarbours.Economy
                 case BuyRowKind.Gear:
                     return ((GearShop)row.Vendor).TryBuy((GearOffer)row.Offer);
                 case BuyRowKind.License:
-                    return ((LicenseVendor)row.Vendor).TryBuy((LicenseDef)row.Offer);
+                    return ((LicenseVendor)row.Vendor).TryBuy((LicenseDef)row.Offer, row.Quote.Price);
                 case BuyRowKind.Pot:
                     return ((PotShop)row.Vendor).TryBuy((PotOffer)row.Offer);
                 case BuyRowKind.Bait:

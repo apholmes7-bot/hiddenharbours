@@ -57,6 +57,22 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsFalse(BuyLogic.License(120, 119, held: false).CanBuy);
         }
 
+        [TestCase(0, false, true, 0, true)]
+        [TestCase(14, false, true, 14, true)]
+        [TestCase(15, false, true, 15, true)]
+        [TestCase(20, false, true, 15, true)]
+        [TestCase(0, false, false, 15, false)]
+        [TestCase(-1, false, true, 15, false)]
+        [TestCase(0, true, true, 15, false)]
+        public void LicenseRecovery_CoversOnlyTheShortfall(int money, bool held, bool eligible,
+                                                          int paid, bool canBuy)
+        {
+            var quote = BuyLogic.License(15, money, held, eligible);
+            Assert.AreEqual(paid, quote.Price);
+            Assert.AreEqual(canBuy, quote.CanBuy);
+            Assert.AreEqual(held, quote.Owned);
+        }
+
         // ---- boat: buy → owned-damaged → repair → owned-usable ---------------------------------
 
         [Test]

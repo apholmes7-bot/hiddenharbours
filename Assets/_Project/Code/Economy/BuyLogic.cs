@@ -75,9 +75,13 @@ namespace HiddenHarbours.Economy
         public static BuyQuote Gear(int price, int money, bool owned)
             => new BuyQuote(BuyRowKind.Gear, price, owned, money >= price);
 
-        /// <summary>Quote a licence: an already-held licence shows as owned; otherwise gate on money.</summary>
-        public static BuyQuote License(int fee, int money, bool held)
-            => new BuyQuote(BuyRowKind.License, fee, held, money >= fee);
+        /// <summary>Quote the player's contribution. An eligible first-licence recovery covers only
+        /// the shortfall at the counter, never credits the purse, and never discounts an affordable buy.</summary>
+        public static BuyQuote License(int fee, int money, bool held, bool recoverFee = false)
+        {
+            int price = !held && recoverFee && money >= 0 && money < fee ? money : fee;
+            return new BuyQuote(BuyRowKind.License, price, held, price >= 0 && money >= price);
+        }
 
         /// <summary>Quote a pot offer: pots are counted, repeatable stock — the row is NEVER "owned out"
         /// (you can always buy another), so the only gate is money.</summary>
