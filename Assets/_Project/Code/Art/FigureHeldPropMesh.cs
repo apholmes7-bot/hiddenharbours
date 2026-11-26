@@ -74,6 +74,10 @@ namespace HiddenHarbours.Art
         /// <summary>The held mesh drawn (or last resolved), or null.</summary>
         public HeldPropMeshDef Def => _def;
 
+        /// <summary>The prop's tip in world space on the frame drawn (a rod's tip, where a line leaves it), as
+        /// the player's <c>HeldRodMesh.TipWorld</c> reads it; zero when nothing is drawn.</summary>
+        public Vector2 TipWorld => Drawing && _renderer != null ? (Vector2)_renderer.TipWorld : Vector2.zero;
+
         /// <summary>
         /// True when <paramref name="def"/> can be drawn on <paramref name="skin"/> at all: it is usable,
         /// plots a tip, carries its baked aim, and the skin has <paramref name="mountBone"/>. A presenter

@@ -216,6 +216,14 @@ namespace HiddenHarbours.Art
         /// re-configured. Null for a stand aboard, with a switch off, and after a refusal.</summary>
         public IsoCharacterFigureRenderer AshoreFigure => _ashoreFigure;
 
+        /// <summary>True on a frame her work or beat tool is drawn as its mesh in her hand (read after this
+        /// component's pose, execution order 100).</summary>
+        public bool WorkPropDrawn => _heldProp != null && _heldProp.Drawing;
+
+        /// <summary>The drawn work tool's tip in world space this frame (a villager's rod: where her line
+        /// leaves it); zero when <see cref="WorkPropDrawn"/> is false.</summary>
+        public Vector2 WorkPropTipWorld => _heldProp != null ? _heldProp.TipWorld : Vector2.zero;
+
         /// <summary>True from the pose the facet-id pool refused her until a switch is turned off and on
         /// again or this component is re-enabled or re-configured. Never asked again in between.</summary>
         public bool AshoreRefused => _ashoreRefused;
@@ -520,9 +528,13 @@ namespace HiddenHarbours.Art
             bool fellBack = false;
             CharacterStance stance = character.Stance;
             CharacterGait gait = character.Gait;
-            // At work with a tool (ADR 0053 §10): the work clip, looping on game time, and the tool as its
-            // mesh in her hand. Work she cannot draw as a mesh is not refused: she stands as she would.
-            bool working = !driven && TryWork(stand, skin, config, out stateKey);
+            // In a beat (ADR 0053 §11): the beat's clip from its start or its scrub, and its tool. Then at
+            // work with a tool (§10): the work clip, looping on game time, and the tool as its mesh in her
+            // hand. Either one she cannot draw as a mesh is not refused: she falls to the next, then stands.
+            double beatStart = 0d;
+            float beatScrub = float.NaN;
+            bool inBeat = !driven && TryBeat(stand, skin, config, out stateKey, out beatStart, out beatScrub);
+            bool working = inBeat || (!driven && TryWork(stand, skin, config, out stateKey));
             if (driven)
             {
                 stateKey = CharacterClipStateMap.StateKeyFor(move);
@@ -594,10 +606,12 @@ namespace HiddenHarbours.Art
 
             // RULE 5, as aboard: a looping clip runs from absolute game time, a one-shot from its entry. Her
             // key moves the loop's phase off her neighbours' (aboard's phase is untouched).
-            double clipStart = clip.Loop ? 0d : _ashoreStateStartSeconds;
+            // A beat's one-shot plays from the beat's own start, not from when this presenter first saw it,
+            // so a villager walked into view mid-beat is drawn where the timeline says he is.
+            double clipStart = clip.Loop ? 0d : inBeat ? beatStart : _ashoreStateStartSeconds;
             int seed = GameServices.Environment != null ? GameServices.Environment.WorldSeed : 0;
-            int frame = driven
-                ? Mathf.Clamp(Mathf.FloorToInt(Mathf.Clamp01(progress) * clip.FrameCount), 0, clip.FrameCount - 1)
+            int frame = driven ? ScrubFrame(progress, clip.FrameCount)
+                : inBeat && !float.IsNaN(beatScrub) ? ScrubFrame(beatScrub, clip.FrameCount)
                 : CharacterSkinPose.FrameFor(clip, AshorePhaseSeed(seed, _keyHash), now, clipStart);
 
             // Her facing: her sprite's own compass heading, through the def's MEASURED azimuth sign. The
@@ -643,9 +657,37 @@ namespace HiddenHarbours.Art
                              out string stateKey)
         {
             stateKey = null;
-            if (!(stand is ICharacterFigureWorkStand work)
-                || !work.TryGetFigureWork(out string key, out HeldPropMeshDef prop)
-                || string.IsNullOrEmpty(key) || !skin.DrawsAsMesh(key)
+            return stand is ICharacterFigureWorkStand work
+                   && work.TryGetFigureWork(out string key, out HeldPropMeshDef prop)
+                   && AcceptToolClip(skin, config, key, prop, out stateKey);
+        }
+
+        /// <summary>
+        /// The beat her stand says she is in this frame (<see cref="ICharacterFigureBeatStand"/>), through the
+        /// same gates as work (<see cref="AcceptToolClip"/>). False, and she falls to her work or her stance,
+        /// when she is in no beat or cannot draw it.
+        /// </summary>
+        private bool TryBeat(ICharacterFigureAshoreStand stand, CharacterSkinDef skin, GameConfig config,
+                             out string stateKey, out double beatStartSeconds, out float scrub01)
+        {
+            stateKey = null;
+            beatStartSeconds = 0d;
+            scrub01 = float.NaN;
+            return stand is ICharacterFigureBeatStand beat
+                   && beat.TryGetFigureBeat(out string key, out beatStartSeconds, out scrub01, out HeldPropMeshDef prop)
+                   && AcceptToolClip(skin, config, key, prop, out stateKey);
+        }
+
+        /// <summary>
+        /// The ONE gate for a clip done with (or without) a tool: a well-formed clip in
+        /// <see cref="CharacterSkinDef.MeshStates"/>, and, for a tool, the hand-tool switch on and a prop her
+        /// figure can hold on the right hand's tool socket. Takes the prop for this frame when it passes.
+        /// </summary>
+        private bool AcceptToolClip(CharacterSkinDef skin, GameConfig config, string key, HeldPropMeshDef prop,
+                                    out string stateKey)
+        {
+            stateKey = null;
+            if (string.IsNullOrEmpty(key) || !skin.DrawsAsMesh(key)
                 || !skin.TryGetClip(key, out CharacterSkinDef.SkinClip clip) || !clip.KeysWellFormed(skin.BoneCount))
                 return false;
             if (prop != null)
@@ -657,6 +699,11 @@ namespace HiddenHarbours.Art
             stateKey = key;
             return true;
         }
+
+        /// <summary>The frame a progress shows: <c>floor(progress * count)</c>, clamped so full progress is
+        /// the last frame. The driven move's rule, shared by a scrubbed beat.</summary>
+        private static int ScrubFrame(float progress01, int frameCount) =>
+            Mathf.Clamp(Mathf.FloorToInt(Mathf.Clamp01(progress01) * frameCount), 0, frameCount - 1);
 
         /// <summary>
         /// The tool of the work drawn this frame, on her ashore figure's hand, aimed by the work clip; hidden
@@ -945,23 +992,12 @@ namespace HiddenHarbours.Art
             config != null && config.MeshCast && config.MeshCastAshore;
 
         /// <summary>
-        /// The ONE hash of a figure's key (<see cref="ICharacterFigureIdentity.FigureKey"/>): FNV-1a over its
-        /// chars, taken once in <see cref="Configure"/>. It moves a villager's idle phase ashore
-        /// (<see cref="AshorePhaseSeed"/>) and seeds every figure's blink
-        /// (<see cref="CharacterFigureBlink.SeedFor"/>). 0 for a null or empty key, which is the phase with
-        /// no offset of her own (a key that hashes to 0 is the same, one in four billion). Pure: the same key
-        /// gives the same hash in every process and on every platform.
+        /// The ONE hash of a figure's key, taken once in <see cref="Configure"/>: <see cref="FigureKeyHash.Of"/>
+        /// (Core, so a villager angler's session grid hashes the key the same way). It moves a villager's
+        /// idle phase ashore (<see cref="AshorePhaseSeed"/>) and seeds every figure's blink
+        /// (<see cref="CharacterFigureBlink.SeedFor"/>).
         /// </summary>
-        internal static uint KeyHash(string key)
-        {
-            if (string.IsNullOrEmpty(key)) return 0u;
-            unchecked
-            {
-                uint h = 2166136261u;
-                for (int i = 0; i < key.Length; i++) h = (h ^ key[i]) * 16777619u;
-                return h;
-            }
-        }
+        internal static uint KeyHash(string key) => FigureKeyHash.Of(key);
 
         /// <summary>
         /// The seed her clip's phase is drawn from: the world seed mixed with her key's hash through a
