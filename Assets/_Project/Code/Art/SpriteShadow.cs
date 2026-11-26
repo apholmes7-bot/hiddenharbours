@@ -1007,6 +1007,26 @@ namespace HiddenHarbours.Art
             // ...and a caster in the AIR is flat to the sun, not upright: no low-sun stretch (see HeightAboveGround).
             lenMul = AloftLengthMultiplier(lenMul, _tickedAloftWeight, look.AloftMaxLength);
 
+            // ...and a caster that stands over open water throws a short, faint, broken shade (ShadowOnWater:
+            // one rule for the hulls, the masts, the piles and the gangways; a caster spanning the edge is
+            // judged by the majority of its foot and its drawn bounds). Asked only when the profile has a
+            // water rule at all, so a land-only profile does not sample the terrain.
+            bool overWater = ShadowOnWater.AnyRule(look) &&
+                             (_caster != null ? ShadowOnWater.IsOverWater(transform.position, _caster.bounds)
+                                              : ShadowOnWater.IsOverWater(transform.position));
+            lenMul = ShadowOnWater.LengthMultiplier(lenMul, overWater, look.WaterMaxLength);
+            alpha *= ShadowOnWater.AlphaScale(elevation, overWater, look.HullWaterLowSunAlpha,
+                                              look.HullWaterFullSunElevation, look.WaterAlpha);
+            float waterBreak = ShadowOnWater.Breakup(overWater, look.WaterBreakup);
+            // A caster on land still rakes across the basin (a crane on the apron, a lamp at the quay edge):
+            // the shader cuts and breaks just the part of its shade that lands on open water.
+            Vector4 waterEdge = overWater
+                ? Vector4.zero
+                : ShadowOnWater.LandCasterEdge(ShadowOnWater.AnyRule(look), lenMul, look.WaterMaxLength,
+                    ShadowOnWater.AlphaScale(elevation, true, look.HullWaterLowSunAlpha,
+                                             look.HullWaterFullSunElevation, look.WaterAlpha),
+                    look.WaterBreakup);
+
             // Convert the world shear length into the shadow sprite's LOCAL-Y units (the shader shears in
             // object space, scaled by uv.y feet->head). worldHeight = caster height; localHeight = the sprite
             // quad's local height; their ratio maps world length -> local length so 1 sprite-height of shear
@@ -1035,6 +1055,9 @@ namespace HiddenHarbours.Art
             // material's default, because a MaterialPropertyBlock is STICKY: the pool below sets this on
             // ITS block, and a block that once carried pool mode would keep it forever.
             _mpb.SetFloat(IdGroundContact, 0f);
+            _mpb.SetFloat(ShadowOnWater.BreakId, waterBreak);
+            _mpb.SetVector(ShadowOnWater.GridId, ShadowOnWater.Grid(look));
+            _mpb.SetVector(ShadowOnWater.EdgeId, waterEdge);
             _shadow.SetPropertyBlock(_mpb);
 
             // THE ARM. Re-read every tick and applied by reference compare, so flipping the profile switch
@@ -1077,7 +1100,7 @@ namespace HiddenHarbours.Art
             }
             _shadow.enabled = CasterVisible && alpha > 0f && _shadow.sharedMaterial != null;
 
-            TickPool(look, color, alpha);
+            TickPool(look, color, alpha, waterBreak);
         }
 
         /// <summary>
@@ -1093,7 +1116,7 @@ namespace HiddenHarbours.Art
         /// the built-in default — the renderer is simply disabled, which is the pre-PR frame with no pool
         /// drawn and nothing else changed.</para>
         /// </summary>
-        private void TickPool(SpriteShadowProfile look, Color color, float castAlpha)
+        private void TickPool(SpriteShadowProfile look, Color color, float castAlpha, float waterBreak)
         {
             if (_pool == null) return;
 
@@ -1135,6 +1158,8 @@ namespace HiddenHarbours.Art
             // would fall back to silhouette mode and draw the caster's sprite flat on the ground.
             _mpb.SetFloat(IdGroundContact, Mathf.Max(look.GroundContactSoftness, 1e-3f));
             _mpb.SetFloat(IdShadowLen, 0f);
+            _mpb.SetFloat(ShadowOnWater.BreakId, waterBreak);
+            _mpb.SetVector(ShadowOnWater.GridId, ShadowOnWater.Grid(look));
             _pool.SetPropertyBlock(_mpb);
 
             // One order UNDER the cast shadow either way, so with a lowered GroundContactAlpha the pool is

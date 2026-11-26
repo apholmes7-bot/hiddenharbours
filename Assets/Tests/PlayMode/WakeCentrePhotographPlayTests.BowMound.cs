@@ -46,6 +46,7 @@ namespace HiddenHarbours.Tests.PlayMode
             if (scene != SceneName) _v24LoadedIntro = true;
             yield return LoadRegion(scene);
             if (scene != SceneName) GameServices.OpeningCinematicRunning = false;
+            HullWavesOffForTheOlderLift();   // the bow lift is the older lift: see the method
             yield return SetHour(ShotHour);
 
             var leg = new Leg("north-000", 0f, 0f);

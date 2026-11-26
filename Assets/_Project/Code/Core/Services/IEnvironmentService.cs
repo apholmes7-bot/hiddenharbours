@@ -21,6 +21,17 @@ namespace HiddenHarbours.Core
         /// e.g. to draw a tide table / forecast.</summary>
         float TideHeightAt(double totalSeconds);
 
+        /// <summary>Predict the tide at a place without changing the active region. Implementations
+        /// which only support their active place fail explicitly for a different profile.</summary>
+        float TideHeightAt(double totalSeconds, TideProfile place)
+        {
+            TideProfile active = ActiveTideProfile;
+            if (place.MeanLevel != active.MeanLevel || place.Amplitude != active.Amplitude ||
+                place.PhaseHours != active.PhaseHours)
+                throw new System.NotSupportedException("This tide service only predicts its active place.");
+            return TideHeightAt(totalSeconds);
+        }
+
         /// <summary>
         /// The deterministic <b>water-surface level</b> for the active region at the given time, in
         /// <b>metres above chart datum</b> — the accessor the tidal-exposure query reads

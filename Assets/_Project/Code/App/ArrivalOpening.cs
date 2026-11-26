@@ -654,7 +654,8 @@ namespace HiddenHarbours.App
             // here as "nobody is being woken".
             RestAnchor anchor = RestLocker.Anchor();
 
-            bool run = ShouldPlay(anchor.IsSet, already) || (_alwaysRunInEditor && Application.isEditor);
+            bool run = ShouldPlay(anchor.IsSet, already)
+                || (_alwaysRunInEditor && Application.isEditor && DemoBuild.DevShortcutsAllowed);
             if (!run)
             {
                 Debug.Log("[ArrivalOpening] not landing this player — " +

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: HandPail
   m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.CarrierDef
   Id: carrier.hand_pail
-  DisplayName: Pail
+  DisplayName: Bucket
   Kind: 0
   CapacityKg: 8
   RatedKg: 8

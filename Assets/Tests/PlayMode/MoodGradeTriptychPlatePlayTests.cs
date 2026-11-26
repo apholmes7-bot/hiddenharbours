@@ -142,6 +142,7 @@ namespace HiddenHarbours.Tests.PlayMode
             if (GameServices.Clock != null) GameServices.Clock.TimeScale = 1f;
             GameServices.OpeningCinematicRunning = _introOnEntry;
             if (_configOnEntry != null) GameServices.Config = _configOnEntry;
+            GameConfig configKept = _configOnEntry;
             _configOnEntry = null;
 
             MoodGradeDirector dir = MoodGradeDirector.Instance;
@@ -172,6 +173,36 @@ namespace HiddenHarbours.Tests.PlayMode
                 }
                 _sceneLoaded = null;
             }
+
+            // ⚠ #764: a Single load of a region promotes the persistent core's roots (the player, his
+            // dory, the main camera and its listener) into DontDestroyOnLoad, and unloading the region
+            // leaves them there. This fixture left three whole extra cores behind it: four players, four
+            // dories and four live cameras and listeners for every class after it. Destroy exactly the
+            // roots this case added, by identity, then clear the service slots that pointed into them.
+            if (_residentTaken)
+            {
+                foreach (GameObject go in PersistentRoots())
+                    if (go != null && !_residentBefore.Contains(go)) Object.DestroyImmediate(go);
+                _residentBefore.Clear();
+                _residentTaken = false;
+                GameServices.Reset();
+                if (configKept != null) GameServices.Config = configKept;   // the asset, not a core's
+                yield return null;
+            }
+        }
+
+        readonly HashSet<GameObject> _residentBefore = new HashSet<GameObject>();
+        bool _residentTaken;
+
+        static List<GameObject> PersistentRoots()
+        {
+            var probe = new GameObject("__ddolProbe");
+            Object.DontDestroyOnLoad(probe);
+            Scene s = probe.scene;
+            Object.DestroyImmediate(probe);
+            var roots = new List<GameObject>();
+            if (s.IsValid()) s.GetRootGameObjects(roots);
+            return roots;
         }
 
         // =============================================================================================
@@ -495,6 +526,12 @@ namespace HiddenHarbours.Tests.PlayMode
             IGameClock clockBefore = GameServices.Clock;
             IEnvironmentService envBefore = GameServices.Environment;
             IWallet walletBefore = GameServices.Wallet;
+
+            if (!_residentTaken)
+            {
+                foreach (GameObject go in PersistentRoots()) _residentBefore.Add(go);
+                _residentTaken = true;
+            }
 
             LogAssert.ignoreFailingMessages = true;      // the regions log decor complaints of their own
             yield return HiddenHarbours.Tests.Support.SceneSettle.Load(sceneName, LoadSceneMode.Single);
