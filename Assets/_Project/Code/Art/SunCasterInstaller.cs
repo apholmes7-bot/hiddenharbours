@@ -150,8 +150,10 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
-        /// The figure's silhouette-mask child copies his sprite for the leaves' see-through, so a lamp
-        /// shadow from it would be his shadow twice. Its sun casting is left as it is.
+        /// The figure's silhouette-mask child copies his sprite for the leaves' see-through, so any shadow
+        /// from it is his shadow twice: a second lamp shadow, and a second sun shadow over his own whose
+        /// edges show where the copy's pose differs. It casts none: the installer never gives it a caster,
+        /// and switches off one it finds there.
         /// </summary>
         private static bool IsSilhouetteMask(SpriteRenderer renderer) =>
             renderer.gameObject.name == SilhouetteMaskSource.MaskChildName;
@@ -168,7 +170,11 @@ namespace HiddenHarbours.Art
             {
                 var rule = _rules.ClassFor(renderer);
                 if (rule != null && rule.CastOnWalkingDeck) SpriteShadow.Attach(renderer, true);
-                if (IsSilhouetteMask(renderer)) existing.CastsLampShadow = false;
+                if (IsSilhouetteMask(renderer))
+                {
+                    existing.CastsLampShadow = false;
+                    existing.enabled = false;
+                }
                 _known[renderer] = new Candidate { Renderer = renderer, Shadow = existing };
                 return existing;
             }
@@ -176,12 +182,12 @@ namespace HiddenHarbours.Art
                 previous.Enabled == renderer.enabled && previous.Active == active) return null;
             var next = new Candidate { Renderer = renderer, Sprite = renderer.sprite, Order = renderer.sortingOrder,
                 Enabled = renderer.enabled, Active = active };
-            if (_rules.Qualifies(renderer, out var settings))
+            if (!IsSilhouetteMask(renderer) && _rules.Qualifies(renderer, out var settings))
             {
                 next.Shadow = SpriteShadow.Attach(renderer, settings != null && settings.CastOnWalkingDeck);
                 next.Shadow.CastsGroundContact = settings != null ? settings.CastsGroundContact : _rules.DefaultGroundContact;
                 next.Shadow.FootOffset = settings != null ? settings.FootOffset : _rules.DefaultFootOffset;
-                next.Shadow.CastsLampShadow = (settings == null || !settings.Floats) && !IsSilhouetteMask(renderer);
+                next.Shadow.CastsLampShadow = settings == null || !settings.Floats;
                 _installed.Add(next.Shadow);
                 // A scene load must not wake every distant caster until the next arrival scan.
                 ApplyVisibility(next.Shadow, _rules.CameraDistanceMetres > 0f ? Camera.main : null,
