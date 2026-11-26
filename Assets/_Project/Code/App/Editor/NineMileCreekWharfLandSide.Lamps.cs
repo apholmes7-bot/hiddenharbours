@@ -95,13 +95,15 @@ namespace HiddenHarbours.App.Editor
                 wanted.Add((key + "/shadow", MonoBehaviourYaml(shadow, pg, shadowScript, new[] {
                     "  _sortingOffset: -1", "  _pixelSnap: 1", "  _pixelsPerUnit: 32", "  _castsGroundContact: 0",
                     "  _footOffset: 0", "  _fallbackHour: 10", "  _refreshHz: 10", "  _profile: {fileID: 0}" })));
+                // The preset component re-stamps intensity and reach on wake from its scale and override, so the light's own
+                // fields are written to what it will stamp: the record's, never the shared preset edited.
                 wanted.Add((key + "/light", MonoBehaviourYaml(light, pg, lightScript, LightFields(lanternLook,
                     LightPresets.BloomForFitting(LampPosts.LanternPostFittingWidthMetres), drawsBloom: true, lighting.LanternsCastShadows,
-                    postHeight, LampPosts.LanternPostFittingHeightMetres, LightPresets.ReachMetres(lantern)))));
+                    postHeight, LampPosts.LanternPostFittingHeightMetres, lighting.LanternReachMetres, lighting.LanternIntensityScale))));
                 wanted.Add((key + "/preset", MonoBehaviourYaml(preset, pg, presetScript, new[] {
-                    "  _preset: " + Int((int)lantern), "  _intensityScale: 1",
+                    "  _preset: " + Int((int)lantern), "  _intensityScale: " + StPetersLayerRefresh.F(lighting.LanternIntensityScale),
                     "  _fittingWidthMetres: " + F(LampPosts.LanternPostFittingWidthMetres),
-                    "  _reachOverrideMetres: " + F(LightPresets.ReachMetres(lantern)) })));
+                    "  _reachOverrideMetres: " + StPetersLayerRefresh.F(lighting.LanternReachMetres) })));
             }
 
             // The poles already standing: a light alone at each drawn head, the fuel stop's floodlight.
@@ -116,7 +118,7 @@ namespace HiddenHarbours.App.Editor
                 wanted.Add((key + "/tr", TransformYaml(pt, pg, at, Array.Empty<long>(), tr)));
                 wanted.Add((key + "/light", MonoBehaviourYaml(light, pg, lightScript, LightFields(poleLook,
                     LightPresets.BloomForFitting(rule.FittingWidth), drawsBloom: true, lighting.PolesCastShadows,
-                    rule.Height, rule.Height * IsoGround.HeightScale, LightPresets.ReachMetres(rule.Kind)))));
+                    rule.Height, rule.Height * IsoGround.HeightScale, lighting.PoleReachMetres, lighting.PoleIntensityScale))));
             }
 
             wanted.Insert(0, (name + "/go", GameObjectYaml(go, name, new[] { tr })));
@@ -130,12 +132,12 @@ namespace HiddenHarbours.App.Editor
         static string ColorYaml(Color c) => "{r: " + F(c.r) + ", g: " + F(c.g) + ", b: " + F(c.b) + ", a: " + F(c.a) + "}";
 
         static string[] LightFields(LightPresets.Config look, float bloomRadius, bool drawsBloom, bool castsShadows, float lampHeight,
-            float bloomLift, float reach) => new[]
+            float bloomLift, float reach, float intensityScale) => new[]
         {
             "  _shape: " + Int((int)look.Shape), "  _coneHalfAngle: 30",
             "  _range: " + StPetersLayerRefresh.F(bloomRadius),
             "  _color: {r: " + StPetersLayerRefresh.F(look.Color.r) + ", g: " + StPetersLayerRefresh.F(look.Color.g) + ", b: " + StPetersLayerRefresh.F(look.Color.b) + ", a: " + StPetersLayerRefresh.F(look.Color.a) + "}",
-            "  _intensity: " + StPetersLayerRefresh.F(look.Intensity), "  _edgeSoftness: " + StPetersLayerRefresh.F(look.EdgeSoftness),
+            "  _intensity: " + StPetersLayerRefresh.F(look.Intensity * intensityScale), "  _edgeSoftness: " + StPetersLayerRefresh.F(look.EdgeSoftness),
             "  _drawsBloom: " + (drawsBloom ? "1" : "0"),
             "  _angularSoftness: 0.4", "  _coreBoost: 1", "  _gateThreshold: 0.12", "  _gateSoftness: 0.35", "  _gateFallback: 1",
             "  _flickerAmount: " + StPetersLayerRefresh.F(look.FlickerAmount), "  _flickerSpeed: 1", "  _sortingOrder: " + Int(SceneLight.MaxSortingOrder),
@@ -155,7 +157,7 @@ namespace HiddenHarbours.App.Editor
         {
             var patches = new List<LayerPatch>();
             after = sceneText;
-            foreach (Func<SceneYaml, LayerPatch> plan in new Func<SceneYaml, LayerPatch>[] { s => PlaceWaterSide(s, true), PlaceWharfLamps })
+            foreach (Func<SceneYaml, LayerPatch> plan in new Func<SceneYaml, LayerPatch>[] { s => PlaceWaterSide(s, true), PlaceWharfLamps, LiftSlipwayPlants })
             {
                 SceneYaml scene = SceneYaml.Parse(after);
                 LayerPatch patch = plan(scene);

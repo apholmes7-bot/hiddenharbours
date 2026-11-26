@@ -93,11 +93,17 @@ namespace HiddenHarbours.Tests.EditMode
                 var kinds = Scene.ComponentsOf(go).Select(c => c.ClassId == 114 ? c.Field("m_EditorClassIdentifier").Split('.').Last() : c.ClassId.ToString()).ToArray();
                 CollectionAssert.AreEqual(new[] { "4", "212", "YSortSprite", "SpriteShadow", "SceneLight", "PreconfiguredLight" }, kinds);
                 Doc light = LightOf(Scene, go);
-                foreach (string field in new[] { "_shape", "_range", "_color", "_intensity", "_edgeSoftness", "_flickerAmount",
-                             "_lampHeightMeters", "_bloomLiftMetres", "_reachMetres", "_gateThreshold" })
+                foreach (string field in new[] { "_shape", "_range", "_color", "_edgeSoftness", "_flickerAmount",
+                             "_lampHeightMeters", "_bloomLiftMetres", "_gateThreshold" })
                     Assert.AreEqual(stpLight.Field(field), light.Field(field), go.Field("m_Name") + " " + field + " is St Peters' lantern's");
                 Assert.AreEqual(Lighting.LanternsCastShadows ? "1" : "0", light.Field("_castsShadows"));
-                Assert.That(Float(light.Field("_reachMetres")), Is.GreaterThan(0f), "a lantern throws a pool");
+                // Strength and reach are this wharf's own, from the record: the shared preset is never edited.
+                Assert.AreEqual(Float(stpLight.Field("_intensity")) * Lighting.LanternIntensityScale, Float(light.Field("_intensity")), 1e-4f,
+                    go.Field("m_Name") + " is St Peters' lantern at the record's scale");
+                Assert.AreEqual(Lighting.LanternReachMetres, Float(light.Field("_reachMetres")), 1e-4f, go.Field("m_Name") + " reach");
+                Doc preset = Scene.ComponentsOf(go).Single(d => d.ClassId == 114 && d.IsScript("HiddenHarbours.Art.PreconfiguredLight"));
+                Assert.AreEqual(Lighting.LanternIntensityScale, Float(preset.Field("_intensityScale")), 1e-5f, "the preset component carries the scale it stamps on wake");
+                Assert.AreEqual(Lighting.LanternReachMetres, Float(preset.Field("_reachOverrideMetres")), 1e-5f, "and the reach");
             }
         }
 
@@ -114,8 +120,8 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.AreEqual(at, World(go), id + "'s light hangs at its drawn head");
                 Doc light = LightOf(Scene, go);
                 Assert.AreEqual(LightPresets.BloomForFitting(rule.FittingWidth), Float(light.Field("_range")), 1e-5f);
-                Assert.AreEqual(look.Intensity, Float(light.Field("_intensity")), 1e-5f);
-                Assert.AreEqual(LightPresets.ReachMetres(rule.Kind), Float(light.Field("_reachMetres")), 1e-5f);
+                Assert.AreEqual(look.Intensity * Lighting.PoleIntensityScale, Float(light.Field("_intensity")), 1e-4f);
+                Assert.AreEqual(Lighting.PoleReachMetres, Float(light.Field("_reachMetres")), 1e-5f);
                 Assert.AreEqual(rule.Height, Float(light.Field("_lampHeightMeters")), 1e-5f);
             }
         }
@@ -140,6 +146,39 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (Vector2 centre in Lighting.LanternSites)
                 Assert.That(casters.Count(p => Mathf.Abs(p.x - centre.x) <= ViewMetres.x && Mathf.Abs(p.y - centre.y) <= ViewMetres.y),
                     Is.LessThanOrEqualTo(profile.MaxShadows), "shadow-casting lamps near " + centre);
+        }
+
+        /// <summary>The brightest night the plates measure (a full moon at its peak, clear sky): the frame's tint luminance.
+        /// The darker the night the larger a pool's lift, so this is where a lantern lifts least.</summary>
+        const float BrightestNightLuma = 0.21f;
+        /// <summary>From a lantern to a hull lying alongside the wall: a metre back from the lip, the face, and her beam.</summary>
+        const float LanternToBerthMetres = 4f;
+
+        [Test]
+        public void AtNight_EachLanternAtLeastDoublesTheLight_OnAHullAlongsideTheWall()
+        {
+            var profile = Resources.Load<LampShadowProfile>("LampShadowProfile");
+            var look = LightPresets.For(LampPosts.PresetFor(LampPosts.LanternPost));
+            float height = LampPosts.HeadHeightMetres(LampPosts.DecorFamily, LampPosts.LanternPost);
+            float baseGain = LightMath.PoolBaseGain(profile.PoolStrength, look.Intensity * Lighting.LanternIntensityScale, 1f, BrightestNightLuma);
+            float lift = LightMath.PoolGain(baseGain, height, LanternToBerthMetres, Lighting.LanternReachMetres, profile.PoolEdgeSoftness);
+            Assert.That(1f + lift, Is.GreaterThanOrEqualTo(2f),
+                "a person and a boat at the wall must read at night: the lantern multiplies the light on a hull alongside by " + (1f + lift));
+            // And the shared preset alone did not: this wharf's own strength and reach are what light the berth.
+            float shared = LightMath.PoolGain(LightMath.PoolBaseGain(profile.PoolStrength, look.Intensity, 1f, BrightestNightLuma),
+                height, LanternToBerthMetres, LightPresets.ReachMetres(LampPosts.PresetFor(LampPosts.LanternPost)), profile.PoolEdgeSoftness);
+            Assert.That(shared, Is.LessThan(lift));
+        }
+
+        [Test]
+        public void NoShorePlantStandsOnTheSlipway()
+        {
+            Assert.That(NineMileCreekWharfLandSide.SlipwayFootprints().Count, Is.EqualTo(2), "the west slipway's two ramp parts");
+            Doc plants = Scene.Docs.Single(d => d.ClassId == 1 && !d.Stripped && d.Field("m_Name") == NineMileCreekWharfLandSide.ShorePlantsName);
+            var on = Children(Scene, plants).Where(p => NineMileCreekWharfLandSide.OnASlipway(World(p))).Select(p => p.Field("m_Name") + " at " + World(p)).ToList();
+            Assert.That(on, Is.Empty, "plants on the slipway float on the sea where its ramp is cut");
+            foreach (Rect r in NineMileCreekWharfLandSide.SlipwayFootprints())
+                Assert.IsFalse(NineMileCreekShore.IsPlantableShore(r.center), "the shore scatter refuses the slipway at " + r.center);
         }
 
         [Test]

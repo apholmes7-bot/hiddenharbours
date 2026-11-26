@@ -25,6 +25,12 @@ namespace HiddenHarbours.World
         public Vector2[] LanternSites = new Vector2[0];
         [Tooltip("The lanterns throw lamp shadows (the owner's 11-25 ruling: lights cast shadows).")]
         public bool LanternsCastShadows = true;
+        [Tooltip("The lanterns' strength, as a multiple of the shared hung-lantern preset (1 = exactly St Peters'). Set " +
+                 "here, never in the shared preset, so this wharf can read at night without relighting every doorstep " +
+                 "lantern on the coast.")]
+        [Min(0f)] public float LanternIntensityScale = 1f;
+        [Tooltip("How far each lantern's warm pool reaches on the ground, metres (the shared preset's is 3.6).")]
+        [Min(0f)] public float LanternReachMetres = 3.6f;
 
         [Header("Lamp poles already standing on the wharf")]
         [Tooltip("The key scene rows (prop ids) of the wharf's lamp poles that carry a light. Each is lit the way the fuel " +
@@ -32,6 +38,10 @@ namespace HiddenHarbours.World
         public string[] LitPoleIds = new string[0];
         [Tooltip("The poles throw lamp shadows.")]
         public bool PolesCastShadows = true;
+        [Tooltip("The poles' floodlight strength, as a multiple of the shared floodlight preset (1 = the fuel stop's).")]
+        [Min(0f)] public float PoleIntensityScale = 1f;
+        [Tooltip("How far each pole's pool reaches on the ground, metres (the shared floodlight preset's is 7).")]
+        [Min(0f)] public float PoleReachMetres = 7f;
 
         [Header("Harbour lights (the breakwater heads' green and red)")]
         [Tooltip("The marker glow's radius in metres, drawn on the lens. A navigation light reads as a small bright point " +

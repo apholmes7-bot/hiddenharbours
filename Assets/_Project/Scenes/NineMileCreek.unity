@@ -22678,132 +22678,6 @@ Transform:
   - {fileID: 1109596822}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &156345758
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 156345759}
-  - component: {fileID: 156345762}
-  - component: {fileID: 156345761}
-  - component: {fileID: 156345760}
-  m_Layer: 0
-  m_Name: BlackRush
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &156345759
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 156345758}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 42.724205, y: 58.345066, z: 0}
-  m_LocalScale: {x: 0.6892224, y: 0.6892224, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1147678257}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &156345760
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 156345758}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06e7444939cab3b76d2723aa8c09e04f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.ShorePlantTideView
-  _def: {fileID: 11400000, guid: 8b33c5cadb23d51e8ccb6b01a8401d8a, type: 2}
-  _groundSampleOffset: {x: 0, y: 0}
-  _previewInEditMode: 1
-  _previewWaterLevel: 2
---- !u!114 &156345761
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 156345758}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 566388fab64545bfb3c024c9d2ed3d49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SpriteLightBinder
-  _lightSheet: {fileID: 2800000, guid: d65088ded986a304b372f2132ec6cc84, type: 3}
-  _normalSheet: {fileID: 0}
-  _rimGateSheet: {fileID: 2800000, guid: 02bf6df2e6e61e530d3d6d2379902a56, type: 3}
-  _rimGateChannel: 3
---- !u!212 &156345762
-SpriteRenderer:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 156345758}
-  m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: 7a38660189f548f6a35c5497da3c1867, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 3
-  m_MaskInteraction: 0
-  m_Sprite: {fileID: -16523241, guid: bd8e5fc49ce49c57fe979bd4c9411ef2, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 1.25, y: 1.28125}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
-  m_SpriteSortPoint: 0
-  m_BlendShapeWeights: []
 --- !u!1 &156371410
 GameObject:
   m_ObjectHideFlags: 0
@@ -189280,8 +189154,6 @@ Transform:
   - {fileID: 848620758}
   - {fileID: 343088267}
   - {fileID: 860054162}
-  - {fileID: 156345759}
-  - {fileID: 1935319907}
   - {fileID: 2070650765}
   - {fileID: 1796879948}
   - {fileID: 171837935}
@@ -333958,158 +333830,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1935319906
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1935319907}
-  - component: {fileID: 1935319911}
-  - component: {fileID: 1935319910}
-  - component: {fileID: 1935319909}
-  - component: {fileID: 1935319908}
-  m_Layer: 0
-  m_Name: Bayberry
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1935319907
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1935319906}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 42.701576, y: 60.18631, z: 0}
-  m_LocalScale: {x: 0.64813435, y: 0.64813435, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1147678257}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1935319908
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1935319906}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 049bcc2b351a4705a5527003c8eeecd0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SpriteShadow
-  _maxAlpha: 0.45
-  _shadowColor: {r: 0.04, g: 0.05, b: 0.1, a: 1}
-  _lengthAtNoon: 0.35
-  _lengthAtHorizon: 5
-  _maxLength: 7
-  _edgeSoftness: 0
-  _sortingOffset: -1
-  _pixelSnap: 1
-  _pixelsPerUnit: 32
-  _footOffset: 0
-  _fallbackHour: 10
-  _refreshHz: 10
-  _profile: {fileID: 0}
---- !u!114 &1935319909
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1935319906}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06e7444939cab3b76d2723aa8c09e04f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.ShorePlantTideView
-  _def: {fileID: 11400000, guid: 6c0a39876f6a79afdc96a2e5a9e45cd6, type: 2}
-  _groundSampleOffset: {x: 0, y: 0}
-  _previewInEditMode: 1
-  _previewWaterLevel: 2
---- !u!114 &1935319910
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1935319906}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 566388fab64545bfb3c024c9d2ed3d49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SpriteLightBinder
-  _lightSheet: {fileID: 2800000, guid: 221642432a49f1629b78ff8bf802df09, type: 3}
-  _normalSheet: {fileID: 0}
-  _rimGateSheet: {fileID: 2800000, guid: 863d3474862dac6bdd591108987aae47, type: 3}
-  _rimGateChannel: 3
---- !u!212 &1935319911
-SpriteRenderer:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1935319906}
-  m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: 7a38660189f548f6a35c5497da3c1867, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 3
-  m_MaskInteraction: 0
-  m_Sprite: {fileID: -926796847, guid: d1cbcedff56a6a78d69d16e3d4399880, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 2.4375, y: 2.3125}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
-  m_SpriteSortPoint: 0
-  m_BlendShapeWeights: []
 --- !u!1 &1935358609
 GameObject:
   m_ObjectHideFlags: 0
@@ -439472,7 +439192,7 @@ MonoBehaviour:
   _coneHalfAngle: 30
   _range: 0.14
   _color: {r: 1, g: 0.49563932, b: 0, a: 1}
-  _intensity: 1.05
+  _intensity: 2.625
   _edgeSoftness: 0.9
   _drawsBloom: 1
   _angularSoftness: 0.4
@@ -439487,7 +439207,7 @@ MonoBehaviour:
   _castsShadows: 1
   _lampHeightMeters: 2.46
   _bloomLiftMetres: 2.09
-  _reachMetres: 3.6
+  _reachMetres: 7.5
   _originOffset: {x: 0, y: 0}
   _refreshHz: 20
 --- !u!114 &1086258737
@@ -439503,9 +439223,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.PreconfiguredLight
   _preset: 6
-  _intensityScale: 1
+  _intensityScale: 2.5
   _fittingWidthMetres: 0.140000001
-  _reachOverrideMetres: 3.5999999
+  _reachOverrideMetres: 7.5
 --- !u!1 &424038753
 GameObject:
   m_ObjectHideFlags: 0
@@ -439656,7 +439376,7 @@ MonoBehaviour:
   _coneHalfAngle: 30
   _range: 0.14
   _color: {r: 1, g: 0.49563932, b: 0, a: 1}
-  _intensity: 1.05
+  _intensity: 2.625
   _edgeSoftness: 0.9
   _drawsBloom: 1
   _angularSoftness: 0.4
@@ -439671,7 +439391,7 @@ MonoBehaviour:
   _castsShadows: 1
   _lampHeightMeters: 2.46
   _bloomLiftMetres: 2.09
-  _reachMetres: 3.6
+  _reachMetres: 7.5
   _originOffset: {x: 0, y: 0}
   _refreshHz: 20
 --- !u!114 &1039612014
@@ -439687,9 +439407,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.PreconfiguredLight
   _preset: 6
-  _intensityScale: 1
+  _intensityScale: 2.5
   _fittingWidthMetres: 0.140000001
-  _reachOverrideMetres: 3.5999999
+  _reachOverrideMetres: 7.5
 --- !u!1 &656513009
 GameObject:
   m_ObjectHideFlags: 0
@@ -439840,7 +439560,7 @@ MonoBehaviour:
   _coneHalfAngle: 30
   _range: 0.14
   _color: {r: 1, g: 0.49563932, b: 0, a: 1}
-  _intensity: 1.05
+  _intensity: 2.625
   _edgeSoftness: 0.9
   _drawsBloom: 1
   _angularSoftness: 0.4
@@ -439855,7 +439575,7 @@ MonoBehaviour:
   _castsShadows: 1
   _lampHeightMeters: 2.46
   _bloomLiftMetres: 2.09
-  _reachMetres: 3.6
+  _reachMetres: 7.5
   _originOffset: {x: 0, y: 0}
   _refreshHz: 20
 --- !u!114 &1710426610
@@ -439871,9 +439591,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.PreconfiguredLight
   _preset: 6
-  _intensityScale: 1
+  _intensityScale: 2.5
   _fittingWidthMetres: 0.140000001
-  _reachOverrideMetres: 3.5999999
+  _reachOverrideMetres: 7.5
 --- !u!1 &1502582278
 GameObject:
   m_ObjectHideFlags: 0
@@ -440024,7 +439744,7 @@ MonoBehaviour:
   _coneHalfAngle: 30
   _range: 0.14
   _color: {r: 1, g: 0.49563932, b: 0, a: 1}
-  _intensity: 1.05
+  _intensity: 2.625
   _edgeSoftness: 0.9
   _drawsBloom: 1
   _angularSoftness: 0.4
@@ -440039,7 +439759,7 @@ MonoBehaviour:
   _castsShadows: 1
   _lampHeightMeters: 2.46
   _bloomLiftMetres: 2.09
-  _reachMetres: 3.6
+  _reachMetres: 7.5
   _originOffset: {x: 0, y: 0}
   _refreshHz: 20
 --- !u!114 &2029609732
@@ -440055,9 +439775,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.PreconfiguredLight
   _preset: 6
-  _intensityScale: 1
+  _intensityScale: 2.5
   _fittingWidthMetres: 0.140000001
-  _reachOverrideMetres: 3.5999999
+  _reachOverrideMetres: 7.5
 --- !u!1 &1318663318
 GameObject:
   m_ObjectHideFlags: 0
@@ -440208,7 +439928,7 @@ MonoBehaviour:
   _coneHalfAngle: 30
   _range: 0.14
   _color: {r: 1, g: 0.49563932, b: 0, a: 1}
-  _intensity: 1.05
+  _intensity: 2.625
   _edgeSoftness: 0.9
   _drawsBloom: 1
   _angularSoftness: 0.4
@@ -440223,7 +439943,7 @@ MonoBehaviour:
   _castsShadows: 1
   _lampHeightMeters: 2.46
   _bloomLiftMetres: 2.09
-  _reachMetres: 3.6
+  _reachMetres: 7.5
   _originOffset: {x: 0, y: 0}
   _refreshHz: 20
 --- !u!114 &506759674
@@ -440239,9 +439959,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.PreconfiguredLight
   _preset: 6
-  _intensityScale: 1
+  _intensityScale: 2.5
   _fittingWidthMetres: 0.140000001
-  _reachOverrideMetres: 3.5999999
+  _reachOverrideMetres: 7.5
 --- !u!1 &1964250278
 GameObject:
   m_ObjectHideFlags: 0
@@ -440392,7 +440112,7 @@ MonoBehaviour:
   _coneHalfAngle: 30
   _range: 0.14
   _color: {r: 1, g: 0.49563932, b: 0, a: 1}
-  _intensity: 1.05
+  _intensity: 2.625
   _edgeSoftness: 0.9
   _drawsBloom: 1
   _angularSoftness: 0.4
@@ -440407,7 +440127,7 @@ MonoBehaviour:
   _castsShadows: 1
   _lampHeightMeters: 2.46
   _bloomLiftMetres: 2.09
-  _reachMetres: 3.6
+  _reachMetres: 7.5
   _originOffset: {x: 0, y: 0}
   _refreshHz: 20
 --- !u!114 &1300073856
@@ -440423,9 +440143,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.PreconfiguredLight
   _preset: 6
-  _intensityScale: 1
+  _intensityScale: 2.5
   _fittingWidthMetres: 0.140000001
-  _reachOverrideMetres: 3.5999999
+  _reachOverrideMetres: 7.5
 --- !u!1 &1212573729
 GameObject:
   m_ObjectHideFlags: 0
@@ -440576,7 +440296,7 @@ MonoBehaviour:
   _coneHalfAngle: 30
   _range: 0.14
   _color: {r: 1, g: 0.49563932, b: 0, a: 1}
-  _intensity: 1.05
+  _intensity: 2.625
   _edgeSoftness: 0.9
   _drawsBloom: 1
   _angularSoftness: 0.4
@@ -440591,7 +440311,7 @@ MonoBehaviour:
   _castsShadows: 1
   _lampHeightMeters: 2.46
   _bloomLiftMetres: 2.09
-  _reachMetres: 3.6
+  _reachMetres: 7.5
   _originOffset: {x: 0, y: 0}
   _refreshHz: 20
 --- !u!114 &1657466153
@@ -440607,9 +440327,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.PreconfiguredLight
   _preset: 6
-  _intensityScale: 1
+  _intensityScale: 2.5
   _fittingWidthMetres: 0.140000001
-  _reachOverrideMetres: 3.5999999
+  _reachOverrideMetres: 7.5
 --- !u!1 &1654092231
 GameObject:
   m_ObjectHideFlags: 0
@@ -440760,7 +440480,7 @@ MonoBehaviour:
   _coneHalfAngle: 30
   _range: 0.14
   _color: {r: 1, g: 0.49563932, b: 0, a: 1}
-  _intensity: 1.05
+  _intensity: 2.625
   _edgeSoftness: 0.9
   _drawsBloom: 1
   _angularSoftness: 0.4
@@ -440775,7 +440495,7 @@ MonoBehaviour:
   _castsShadows: 1
   _lampHeightMeters: 2.46
   _bloomLiftMetres: 2.09
-  _reachMetres: 3.6
+  _reachMetres: 7.5
   _originOffset: {x: 0, y: 0}
   _refreshHz: 20
 --- !u!114 &1979129757
@@ -440791,9 +440511,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.PreconfiguredLight
   _preset: 6
-  _intensityScale: 1
+  _intensityScale: 2.5
   _fittingWidthMetres: 0.140000001
-  _reachOverrideMetres: 3.5999999
+  _reachOverrideMetres: 7.5
 --- !u!1 &2021589640
 GameObject:
   m_ObjectHideFlags: 0
@@ -440944,7 +440664,7 @@ MonoBehaviour:
   _coneHalfAngle: 30
   _range: 0.14
   _color: {r: 1, g: 0.49563932, b: 0, a: 1}
-  _intensity: 1.05
+  _intensity: 2.625
   _edgeSoftness: 0.9
   _drawsBloom: 1
   _angularSoftness: 0.4
@@ -440959,7 +440679,7 @@ MonoBehaviour:
   _castsShadows: 1
   _lampHeightMeters: 2.46
   _bloomLiftMetres: 2.09
-  _reachMetres: 3.6
+  _reachMetres: 7.5
   _originOffset: {x: 0, y: 0}
   _refreshHz: 20
 --- !u!114 &129878429
@@ -440975,9 +440695,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.PreconfiguredLight
   _preset: 6
-  _intensityScale: 1
+  _intensityScale: 2.5
   _fittingWidthMetres: 0.140000001
-  _reachOverrideMetres: 3.5999999
+  _reachOverrideMetres: 7.5
 --- !u!1 &551568230
 GameObject:
   m_ObjectHideFlags: 0
@@ -441026,7 +440746,7 @@ MonoBehaviour:
   _coneHalfAngle: 30
   _range: 0.68
   _color: {r: 1, g: 0.93837404, b: 0.88348985, a: 1}
-  _intensity: 1.45
+  _intensity: 2.3200002
   _edgeSoftness: 0.72
   _drawsBloom: 1
   _angularSoftness: 0.4
@@ -441041,7 +440761,7 @@ MonoBehaviour:
   _castsShadows: 1
   _lampHeightMeters: 7.62
   _bloomLiftMetres: 5.8372583
-  _reachMetres: 7
+  _reachMetres: 9
   _originOffset: {x: 0, y: 0}
   _refreshHz: 20
 --- !u!1 &1844148238
@@ -441092,7 +440812,7 @@ MonoBehaviour:
   _coneHalfAngle: 30
   _range: 0.68
   _color: {r: 1, g: 0.93837404, b: 0.88348985, a: 1}
-  _intensity: 1.45
+  _intensity: 2.3200002
   _edgeSoftness: 0.72
   _drawsBloom: 1
   _angularSoftness: 0.4
@@ -441107,7 +440827,7 @@ MonoBehaviour:
   _castsShadows: 1
   _lampHeightMeters: 7.62
   _bloomLiftMetres: 5.8372583
-  _reachMetres: 7
+  _reachMetres: 9
   _originOffset: {x: 0, y: 0}
   _refreshHz: 20
 --- !u!1 &1855492037
@@ -441158,7 +440878,7 @@ MonoBehaviour:
   _coneHalfAngle: 30
   _range: 0.68
   _color: {r: 1, g: 0.93837404, b: 0.88348985, a: 1}
-  _intensity: 1.45
+  _intensity: 2.3200002
   _edgeSoftness: 0.72
   _drawsBloom: 1
   _angularSoftness: 0.4
@@ -441173,7 +440893,7 @@ MonoBehaviour:
   _castsShadows: 1
   _lampHeightMeters: 7.62
   _bloomLiftMetres: 5.8372583
-  _reachMetres: 7
+  _reachMetres: 9
   _originOffset: {x: 0, y: 0}
   _refreshHz: 20
 --- !u!1 &1393022042
@@ -441224,7 +440944,7 @@ MonoBehaviour:
   _coneHalfAngle: 30
   _range: 0.68
   _color: {r: 1, g: 0.93837404, b: 0.88348985, a: 1}
-  _intensity: 1.45
+  _intensity: 2.3200002
   _edgeSoftness: 0.72
   _drawsBloom: 1
   _angularSoftness: 0.4
@@ -441239,7 +440959,7 @@ MonoBehaviour:
   _castsShadows: 1
   _lampHeightMeters: 7.62
   _bloomLiftMetres: 5.8372583
-  _reachMetres: 7
+  _reachMetres: 9
   _originOffset: {x: 0, y: 0}
   _refreshHz: 20
 --- !u!1 &1268637083
@@ -441290,7 +441010,7 @@ MonoBehaviour:
   _coneHalfAngle: 30
   _range: 0.68
   _color: {r: 1, g: 0.93837404, b: 0.88348985, a: 1}
-  _intensity: 1.45
+  _intensity: 2.3200002
   _edgeSoftness: 0.72
   _drawsBloom: 1
   _angularSoftness: 0.4
@@ -441305,7 +441025,7 @@ MonoBehaviour:
   _castsShadows: 1
   _lampHeightMeters: 7.62
   _bloomLiftMetres: 5.8372583
-  _reachMetres: 7
+  _reachMetres: 9
   _originOffset: {x: 0, y: 0}
   _refreshHz: 20
 --- !u!1 &601594379
@@ -441356,7 +441076,7 @@ MonoBehaviour:
   _coneHalfAngle: 30
   _range: 0.68
   _color: {r: 1, g: 0.93837404, b: 0.88348985, a: 1}
-  _intensity: 1.45
+  _intensity: 2.3200002
   _edgeSoftness: 0.72
   _drawsBloom: 1
   _angularSoftness: 0.4
@@ -441371,7 +441091,7 @@ MonoBehaviour:
   _castsShadows: 1
   _lampHeightMeters: 7.62
   _bloomLiftMetres: 5.8372583
-  _reachMetres: 7
+  _reachMetres: 9
   _originOffset: {x: 0, y: 0}
   _refreshHz: 20
 --- !u!1660057539 &9223372036854775807

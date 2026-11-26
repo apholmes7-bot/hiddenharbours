@@ -25,6 +25,8 @@ MonoBehaviour:
   - {x: 58, y: 77}
   - {x: 74.8, y: 77}
   LanternsCastShadows: 1
+  LanternIntensityScale: 2.5
+  LanternReachMetres: 7.5
   LitPoleIds:
   - prop.nmc_light_court
   - prop.nmc_light_lot
@@ -33,6 +35,8 @@ MonoBehaviour:
   - prop.nmc_light_ramp
   - prop.nmc_light_lot_e
   PolesCastShadows: 1
+  PoleIntensityScale: 1.6
+  PoleReachMetres: 9
   MarkerBloomMetres: 1
   MarkerIntensity: 1.6
   MarkerEdgeSoftness: 0.6
@@ -42,6 +46,10 @@ MonoBehaviour:
     posts along the fleet and east walls and two on the west apron, each a metre back
     from the lip beside a ladder or a working berth and clear of the cleats, rings,
     brows and the tide staff, light it the way St Peters'' wharf is lit; the six lamp
-    poles on the land side carry the fuel stop''s floodlight. The harbour lights were
+    poles on the land side carry the fuel stop''s floodlight. St Peters'' strength
+    left this wall near black at night; night must stay readable, so the lanterns
+    burn 2.5 times the shared lantern preset with a 7.5 m pool and the poles 1.6 times
+    the floodlight with a 9 m pool, enough to make out a person and a boat at the
+    wall. The harbour lights were
     a 6 m saturated disc on the tower''s foot; they are now a small marker glow on
     the lens.'
