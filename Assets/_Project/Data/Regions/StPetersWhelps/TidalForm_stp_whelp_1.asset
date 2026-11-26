@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 139696a8d8640153336a2cae526fdd08, type: 3}
   m_Name: TidalForm_stp_whelp_1
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.TidalFormDef
-  Id: form.stp_whelp_1
+  Id: tidalform.stp_whelp_1
   DisplayName: 'The Whelps: the north ledge'
   KeySceneId: keyscene.stp_whelps_lookout
   At: {x: 186, y: -46}
