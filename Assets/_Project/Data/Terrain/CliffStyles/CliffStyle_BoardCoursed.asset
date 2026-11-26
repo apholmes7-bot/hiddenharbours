@@ -37,6 +37,14 @@ MonoBehaviour:
   SiltBeds: {x: 1, y: 2}
   SiltTexels: {x: 4, y: 5}
   SiltTone: 2
+  RecessShare: 0.35
+  SpallShare: 0.22
+  SpallCells: {x: 10, y: 8}
+  Fissures: 8
+  FissureTexels: {x: 14, y: 44}
+  BedJag: 0.3
+  MottleShare: 0.35
+  MottleCells: {x: 12, y: 9}
   Faces:
   - Base: {fileID: 2800000, guid: f410956fdd6700520cd4d72973bc43f7, type: 3}
     Index: {fileID: 2800000, guid: a7a872c2b1e493d04ffe831129159321, type: 3}

@@ -103,6 +103,24 @@ namespace HiddenHarbours.Art
         [Tooltip("Band of a silt bed in the silt row.")]
         [Range(1, 4)] public int SiltTone = 2;
 
+        [Header("Roughness (rough-edges pass: every value 0 draws the face exactly as before)")]
+        [Tooltip("Chance a course is weathered back under the one above it, its top rows in the overhang's shade.")]
+        [Range(0f, 1f)] public float RecessShare = 0f;
+        [Tooltip("Share of the face scarred where a skin of stone has flaked off (recessed, shaded top, lit lip).")]
+        [Range(0f, 0.6f)] public float SpallShare = 0f;
+        [Tooltip("Noise cells across the tile the spall scars are cut from, x and y (more cells = smaller scars).")]
+        public Vector2Int SpallCells = new Vector2Int(10, 8);
+        [Tooltip("Long wandering cracks per face that run down through many courses.")]
+        [Min(0)] public int Fissures = 0;
+        [Tooltip("A fissure's length, min and max, in texels.")]
+        public Vector2Int FissureTexels = new Vector2Int(12, 40);
+        [Tooltip("Chance a bed line's shade spills a texel up or down along a run, so no line is ruled straight.")]
+        [Range(0f, 1f)] public float BedJag = 0f;
+        [Tooltip("Share of a block's fill blotched a band up or down: the stone's own grain.")]
+        [Range(0f, 1f)] public float MottleShare = 0f;
+        [Tooltip("Noise cells across the tile the mottle blotches are cut from, x and y.")]
+        public Vector2Int MottleCells = new Vector2Int(12, 9);
+
         [Header("The baked faces (filled by CliffFaceStyleBaker)")]
         public List<CliffStyleFace> Faces = new List<CliffStyleFace>();
 
@@ -134,6 +152,14 @@ namespace HiddenHarbours.Art
             Pair("silt", SiltBeds);
             Pair("siltTh", SiltTexels);
             Num("siltTone", SiltTone);
+            Num("recess", RecessShare);
+            Num("spall", SpallShare);
+            Pair("spallCells", SpallCells);
+            Num("fissure", Fissures);
+            Pair("fissureLen", FissureTexels);
+            Num("jag", BedJag);
+            Num("mottle", MottleShare);
+            Pair("mottleCells", MottleCells);
             sb.Length--;
             return sb.Append('}').ToString();
         }
