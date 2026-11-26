@@ -17,7 +17,7 @@ namespace HiddenHarbours.Tests.EditMode
     /// Lives in the TOP-LEVEL EditMode folder (not a per-module one) because content validation loads
     /// real Data/ assets across the World module — the same placement as <see cref="ContentValidationTests"/>.
     /// </summary>
-    public class NpcContentValidationTests
+    public partial class NpcContentValidationTests
     {
         private const string DataRoot = "Assets/_Project/Data";
 
