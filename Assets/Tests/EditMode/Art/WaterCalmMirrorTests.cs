@@ -364,6 +364,48 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
+        public void HullFade_IsTheWatersAtHandoverZero_AndGoneOnceTheMirrorOwnsTheCalm()
+        {
+            const float clip = 0.6f;   // the shipped fade length, metres
+            Assert.AreEqual(clip, CalmMirrorMath.HullFadeMeters(clip, 0f), 0f, "rough water keeps the rowing clip's fade");
+            Assert.AreEqual(clip, CalmMirrorMath.HullFadeMeters(clip, -1f), 0f);
+            Assert.AreEqual(0f, CalmMirrorMath.HullFadeMeters(clip, 1f), 0f, "calm water: a true reflection, no fade");
+            Assert.AreEqual(clip * 2f, CalmMirrorMath.HullFadeMeters(clip, 0.5f), 1e-5f, "half handed over: twice as long");
+            Assert.AreEqual(0f, CalmMirrorMath.HullFadeMeters(0f, 0.5f), 0f, "no fade stays no fade");
+            float last = clip;
+            for (float h = 0.05f; h < 0.99f; h += 0.05f)
+            {
+                float m = CalmMirrorMath.HullFadeMeters(clip, h);
+                Assert.Greater(m, last, $"the fade only ever lengthens as the mirror takes over (h {h})");
+                last = m;
+            }
+            // Through the real chain: the shipped settings on a held-calm sea hand everything over.
+            WaterMirrorSettings s = WaterMirrorSettings.Default;
+            Assert.AreEqual(0f, CalmMirrorMath.HullFadeMeters(clip, CalmMirrorMath.Handover(0.6f, 0.05f, s)), 0f);
+            Assert.AreEqual(clip, CalmMirrorMath.HullFadeMeters(clip, CalmMirrorMath.Handover(0f, 0.05f, s)), 0f, "dial 0: the water's fade, untouched");
+        }
+
+        [Test]
+        public void HullReflection_StretchesItsFade_OnlyWhileTheMirrorRuns()
+        {
+            string src = File.ReadAllText("Assets/_Project/Code/Art/HullMeshReflection.cs");
+            StringAssert.Contains("CalmMirror.Active", src);
+            StringAssert.Contains("CalmMirrorMath.HullFadeMeters(GameServices.HullReflectionFadeMeters, CalmMirror.Handover)", src);
+            string mirror = File.ReadAllText("Assets/_Project/Code/Art/CalmMirror.cs");
+            StringAssert.Contains("Handover = run ? CalmMirrorMath.Handover(dial, sea, s) : 0f;", mirror);
+        }
+
+        [Test]
+        public void DeckTest_AllowsTheArtOneArtPixelPastItsOutline()
+        {
+            // The ramp's last drawn column stood just outside its outline and drew a seam down the water.
+            string src = File.ReadAllText("Assets/_Project/Art/Shaders/HiddenHarboursCalmMirror.shader");
+            StringAssert.Contains("float mn = min(a.x, b.x) - _CalmMirrorBand.w, mx = max(a.x, b.x) + _CalmMirrorBand.w;", src);
+            string cs = File.ReadAllText("Assets/_Project/Code/Art/CalmMirror.cs");
+            StringAssert.Contains("band.w = 1f / ppm;", cs);
+        }
+
+        [Test]
         public void CalmMirrorShader_CompilesWithoutError()
         {
             // No material asset uses the hidden shader, so the project's material-driven compile guards never
