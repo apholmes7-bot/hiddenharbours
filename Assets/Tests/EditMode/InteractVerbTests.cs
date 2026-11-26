@@ -26,7 +26,7 @@ namespace HiddenHarbours.Tests.EditMode
     /// and that a real key press reaches this rule through <c>ControlSwitcher</c> — is PlayMode's
     /// (<c>InteractVerbPlayTests</c>). Everything provable without a frame is proved here.</para>
     /// </summary>
-    public class InteractVerbTests
+    public partial class InteractVerbTests
     {
         /// <summary>A candidate as a plain object — the point of the seam being POCO-shaped is that this
         /// needs no GameObject.</summary>

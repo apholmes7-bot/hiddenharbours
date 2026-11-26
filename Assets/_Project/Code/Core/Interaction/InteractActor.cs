@@ -7,12 +7,22 @@ namespace HiddenHarbours.Core
     /// about the player, as a value.
     ///
     /// <para><b>Why a struct and not "the player".</b> The resolver is a pure function (rule 5) and Core
-    /// may not name a Player-lane type (rule 4). Passing the actor as three plain facts keeps the whole
-    /// selection rule EditMode-testable with no scene, no components and no input device — which is the
-    /// only way a cloud agent can prove it at all.</para>
+    /// may not name a Player-lane type (rule 4). Passing the actor as plain facts keeps the whole
+    /// selection rule EditMode-testable with no scene, no components and no input device.</para>
     /// </summary>
     public readonly struct InteractActor
     {
+        /// <summary>The compatibility key for actors made without an explicit player identity.</summary>
+        public const string LocalPlayerKey = "player.local";
+
+        private readonly string _playerKey;
+
+        /// <summary>
+        /// Stable player identity supplied by the session, independent of position, control mode and
+        /// connection. The default value names the existing solo player. This value is not saved here.
+        /// </summary>
+        public string PlayerKey => _playerKey ?? LocalPlayerKey;
+
         /// <summary>Where the actor is standing, world metres.</summary>
         public readonly Vector2 Position;
 
@@ -33,16 +43,29 @@ namespace HiddenHarbours.Core
         public readonly InteractContext Context;
 
         public InteractActor(Vector2 position, Vector2 facing, InteractContext context)
+            : this(position, facing, context, LocalPlayerKey)
         {
+        }
+
+        public InteractActor(Vector2 position, Vector2 facing, InteractContext context, string playerKey)
+        {
+            if (string.IsNullOrWhiteSpace(playerKey))
+                throw new System.ArgumentException("A player key must be supplied.", nameof(playerKey));
+
             Position = position;
             Facing = facing;
             Context = context;
+            _playerKey = playerKey == LocalPlayerKey ? null : playerKey;
         }
 
         /// <summary>The actor for a control mode — the one place the mode→context mapping is written, so
         /// the switcher and the registrants can never disagree about what "on deck" means.</summary>
         public static InteractActor For(Vector2 position, Vector2 facing, ControlMode mode)
             => new InteractActor(position, facing, ContextFor(mode));
+
+        /// <summary>The same context mapping with a session-supplied player identity.</summary>
+        public static InteractActor For(Vector2 position, Vector2 facing, ControlMode mode, string playerKey)
+            => new InteractActor(position, facing, ContextFor(mode), playerKey);
 
         /// <summary>
         /// Which context a control mode is. <see cref="ControlMode.Aboard"/> is the HELM (the enum predates
