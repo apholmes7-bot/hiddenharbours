@@ -124,6 +124,9 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var fixture = At("fixture", 0.5f, 0f);
             var alternative = At("alternative", 1f, 0f);
+            // Rows that read the same collapse into one (InteractChoiceList), so the second fixture says
+            // something different: otherwise there is no choice and the chooser never opens.
+            alternative.VerbLabel = "Do the other thing";
             Interactables.Register(fixture);
             Interactables.Register(alternative);
             var rows = new InteractChoiceList();
