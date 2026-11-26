@@ -398,7 +398,9 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator AnOlderSave_HearsOnlyHerOrdinaryTalk_AndMeetsNoWeather()
         {
-            // The same progressed save without the first-week key: the save a player had before.
+            // The same progressed save without the first-week key: the save a player had before. Older
+            // saves belong to the full game; the demo has its own save slot and holds every wall for good.
+            DemoBuild.Override = false;
             _save.Current.OnboardingFlags.RemoveAll(f => f.Key == _gate.LiveWhileFlag);
 
             _weather.Step();
@@ -416,6 +418,9 @@ namespace HiddenHarbours.Tests.PlayMode
                 StringAssert.DoesNotContain(Flat(note.SpokenHint), all);
             Assert.IsFalse(_save.Writes.ContainsKey(_gate.SetsFlag), "and nothing is written for the gate");
             Assert.AreEqual(0, _ended);
+
+            DemoBuild.Override = true;
+            AssertTheWallsStand(); // the demo keeps its exits closed whatever the save holds
         }
     }
 }

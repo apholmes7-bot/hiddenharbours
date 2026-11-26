@@ -203,11 +203,12 @@ namespace HiddenHarbours.Tests.EditMode
                 if (wall.StandsWhileFlag == OnboardingFlags.FirstWeekKey) standing++;
             Assert.AreEqual(4, standing, "the island's four weather walls stand on the key a new game is given");
 
-            // What a wall stands on is built. What lifts them is the morning after the word, which is not.
+            // What a wall stands on is set by a new game; what lifts it, by the kept morning after the word.
+            // Both are built, so no island wall is waiting on a flag nothing sets.
             CollectionAssert.DoesNotContain(CampaignBarrierContentValidationTests.NotYetSettable.Keys,
                 OnboardingFlags.FirstWeekKey, "the key a wall stands on is set by a new game");
-            CollectionAssert.AreEquivalent(new[] { "st_peters.weather_turned" },
-                CampaignBarrierContentValidationTests.NotYetSettable.Keys);
+            CollectionAssert.Contains(QuestContentValidationTests.SettableFlags(), "st_peters.weather_turned");
+            CollectionAssert.IsEmpty(CampaignBarrierContentValidationTests.NotYetSettable.Keys);
         }
     }
 }

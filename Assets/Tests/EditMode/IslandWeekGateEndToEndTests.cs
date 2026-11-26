@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using HiddenHarbours.Core;
+using HiddenHarbours.Environment;
 using HiddenHarbours.World;
 using NUnit.Framework;
 using UnityEditor;
@@ -75,6 +76,7 @@ namespace HiddenHarbours.Tests.EditMode
                     Current.DayIndex = clock.DayIndex;
                 }
                 Json = SaveSerialization.ToJson(Current);
+                LoadedExistingSave = true; // as the real service: latched by a write that landed
             }
         }
 
