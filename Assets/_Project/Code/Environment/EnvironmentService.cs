@@ -91,7 +91,7 @@ namespace HiddenHarbours.Environment
             // one overridden wind, so the forced storm is internally consistent — no forked truth.
             // Deterministic given the toggle (no hidden randomness, rule 5); never saved; compiled out
             // of release builds. Tide, current and fog stay the pure sim.
-            if (_devForceSeaState)
+            if (_devForceSeaState && DemoBuild.DevShortcutsAllowed)
             {
                 float forcedStrength = WeatherModel.WindStrengthFor(Mathf.Clamp01(_devSeaState01));
                 Vector2 dir = wind.sqrMagnitude > 1e-8f ? wind.normalized : Vector2.up;
@@ -126,7 +126,7 @@ namespace HiddenHarbours.Environment
                 ? _windProfileAsset.Profile : _activeWindProfile;
             Vector2 wind = WeatherModel.SampleWind(gameTimeSeconds, _worldSeed, secondsPerHour, profile);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            if (_devForceSeaState)
+            if (_devForceSeaState && DemoBuild.DevShortcutsAllowed)
             {
                 float strength = WeatherModel.WindStrengthFor(Mathf.Clamp01(_devSeaState01));
                 wind = (wind.sqrMagnitude > 1e-8f ? wind.normalized : Vector2.up) * strength;
@@ -178,7 +178,7 @@ namespace HiddenHarbours.Environment
         public float SeaState01At(double totalSeconds)
         {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            if (_devForceSeaState) return Mathf.Clamp01(_devSeaState01);
+            if (_devForceSeaState && DemoBuild.DevShortcutsAllowed) return Mathf.Clamp01(_devSeaState01);
 #endif
             float secondsPerHour = _config != null
                 ? _config.SecondsPerHour

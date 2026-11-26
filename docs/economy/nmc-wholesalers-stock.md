@@ -133,7 +133,7 @@ The sold-nowhere hulls break down as 12 regional lobster variants (Fundy/Newfoun
 | Item / id | Offer Def | Main price ₲ | Seller / state | Draft change; reason it stays |
 |---|---|---:|---|---|
 | Shellfish Licence · `license.clam` | [ClamLicense.asset](../../Assets/_Project/Data/Resources/Catalog/Licenses/ClamLicense.asset) | 15 | `leblancs` / shelf | licensing authority; legal permission |
-| Cod Fishing License · `license.cod` | [CodLicense.asset](../../Assets/_Project/Data/Resources/Catalog/Licenses/CodLicense.asset) | 120 | `nmc_harbourmaster` / shelf | licensing authority; legal permission |
+| Cod Fishing License · `license.cod` | [CodLicense.asset](../../Assets/_Project/Data/Resources/Catalog/Licenses/CodLicense.asset) | 60 | `nmc_harbourmaster`, `leblancs` / shelf | licensing authority; legal permission |
 | Loaf of Bread · `supply.bread` | [Bread.asset](../../Assets/_Project/Data/Resources/Catalog/Supplies/Bread.asset) | 4 | `leblancs` / shelf | island provisions; food |
 | Bag of Ice · `supply.ice` | [Ice.asset](../../Assets/_Project/Data/Resources/Catalog/Supplies/Ice.asset) | 6 | `leblancs` / shelf | island provisions; retain early freshness lesson |
 | Oatcakes · `supply.oatcakes` | [Oatcakes.asset](../../Assets/_Project/Data/Resources/Catalog/Supplies/Oatcakes.asset) | 2 | `leblancs` / shelf | island provisions; food |
@@ -339,7 +339,7 @@ These prices remain with their existing trade. For a new #1271 offer, “draft�
 | Item | Main price ₲ | Draft price ₲ (where new) | Proposed ₲ (owner proposal) | Reason against income / progression |
 |---|---:|---:|---:|---|
 | `license.clam` | 15 | — | 15 | Fronted opening fee; retaining ₲15 preserves the licence-grant guard. |
-| `license.cod` | 120 | — | 120 | Preserve the day-5 access gate and include it in any nominal cod-income comparison. |
+| `license.cod` | 60 (was 120; first-week price pass) | — | 60 | Preserve the day-5 access gate and include it in any nominal cod-income comparison. |
 | `boat.dory` | 400 + 300 repair | — | 400 + 300 repair | Preserve the ₲700 buy-and-repair saving beat around days 6–9. |
 | `boat.dory_outboard` | 900 | — | 900 | Keep the day-13–15 target below the ₲1,800 replacement punt. |
 | `boat.punt` | 1800 | — | 1800 | Retain the first engine-boat ladder above the dory; no seller-move surcharge. |

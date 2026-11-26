@@ -505,6 +505,8 @@ namespace HiddenHarbours.App.Editor
                     new Vector2(NineMileCreekMainland.BoatRampHeadPos.x, NineMileCreekMainland.BoatRampHeadPos.y),
                     new Vector2(NineMileCreekMainland.BoatRampToePos.x, NineMileCreekMainland.BoatRampToePos.y))
                 < WorkingWaterClearance) return false;
+            // The wharf's own slipway, as its water side records it: concrete, and cut at the waterline.
+            if (NineMileCreekWharfLandSide.OnASlipway(p)) return false;
 
             // Where a boat stops with fish aboard.
             if (Vector2.Distance(p, new Vector2(NineMileCreekMainland.DockZonePos.x,

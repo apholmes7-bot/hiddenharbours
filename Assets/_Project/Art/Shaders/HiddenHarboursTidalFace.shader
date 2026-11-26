@@ -71,6 +71,34 @@ Shader "HiddenHarbours/TidalFace"
         [HideInInspector] _HHFaceTide ("Face lip y and elevation and height scale and on", Vector) = (0,0,0,0)
         [HideInInspector] _HHFaceHeight ("Retained rig height", 2D) = "black" {}
         [HideInInspector] _HHFaceHeightDecode ("Rig height minimum range datum and on", Vector) = (0,0,0,0)
+        // Written per renderer by TidalFaceWaterline: x = the face's MATERIAL (0 none, 1 timber crib,
+        // 2 concrete quay, 3 rock breakwater), w = 1 when dressed. 0 draws the shipped picture.
+        [HideInInspector] _HHFaceDress ("Face dressing kind and on", Vector) = (0,0,0,0)
+
+        // THE DRESSING (owner 2026-11-25, the wharf face "very dark and plain"). Only a face whose
+        // _HHFaceDress.w is 1 reads any of these; every other face on this material draws as before.
+        // Heights are metres; elevations are metres above the game's datum, the frame the sea level is in.
+        _DressPixelsPerUnit ("Dress art pixels per unit", Float) = 32
+        _DressGain ("Dress face light gain", Float) = 1.9
+        _DressRockGain ("Dress rock light gain", Float) = 1.0
+        _DressTintAmount ("Dress tint amount", Range(0,1)) = 0.45
+        _DressTimberTint ("Dress timber tint", Color) = (0.42, 0.36, 0.29, 1)
+        _DressConcreteTint ("Dress concrete tint", Color) = (0.47, 0.47, 0.45, 1)
+        _DressRockTint ("Dress rock tint", Color) = (0.44, 0.42, 0.39, 1)
+        _DressCourse ("Dress timber course height and log length metres and shade and grain", Vector) = (0.32, 3.4, 0.22, 0.10)
+        _DressPour ("Dress concrete pour lift and panel width metres and line shade and mottle", Vector) = (0.6, 2.1, 0.16, 0.07)
+        _DressUnderLip ("Dress under cap shade depth metres and darkness and face top screen metres above the lip", Vector) = (0.4, 0.6, 2.9, 0)
+        _DressBarnacle ("Dress barnacle band low high elevation and density", Vector) = (1.0, 1.6, 0.10, 0)
+        _DressBarnacleColor ("Dress barnacle color", Color) = (0.66, 0.64, 0.58, 1)
+        _DressWeed ("Dress weed band low high elevation and cover and strand metres", Vector) = (-2.6, 0.25, 0.65, 0.6)
+        _DressWeedColor ("Dress weed color", Color) = (0.27, 0.25, 0.11, 1)
+        _DressWet ("Dress wet band metres and darkness and glint pixels", Vector) = (0.5, 0.62, 1, 0)
+        _DressGlintColor ("Dress waterline glint color", Color) = (0.62, 0.68, 0.70, 1)
+        _DressScuff ("Dress fender scuff top and bottom metres below the face top and density", Vector) = (0.8, 3.6, 0.18, 0)
+        _DressScuffColor ("Dress scuff color", Color) = (0.58, 0.52, 0.44, 1)
+        _DressRock ("Dress rock waterline relief metres and noise metres and luma mid and stone lie metres", Vector) = (0.9, 0.3, 0.32, 1.2)
+        _DressFoamColor ("Dress rock foam color", Color) = (0.92, 0.97, 1, 1)
+        _DressFoam ("Dress rock foam pixels and strength", Vector) = (2, 0.7, 0, 0)
 
         // Legacy properties, kept exactly as URP's own sprite shader keeps them, so a material using
         // this can gracefully fall back to the legacy sprite shader.
@@ -138,6 +166,11 @@ Shader "HiddenHarbours/TidalFace"
             // NOTE: Do not ifdef the properties here as SRP batcher can not handle different layouts.
             CBUFFER_START(UnityPerMaterial)
                 half4 _Color;
+                float _DressPixelsPerUnit, _DressGain, _DressRockGain, _DressTintAmount;
+                half4 _DressTimberTint, _DressConcreteTint, _DressRockTint;
+                float4 _DressCourse, _DressPour, _DressUnderLip, _DressBarnacle, _DressWeed, _DressWet;
+                float4 _DressScuff, _DressRock, _DressFoam;
+                half4 _DressBarnacleColor, _DressWeedColor, _DressGlintColor, _DressScuffColor, _DressFoamColor;
             CBUFFER_END
 
             // Per RENDERER (MaterialPropertyBlock), deliberately outside UnityPerMaterial: one wharf
@@ -147,6 +180,9 @@ Shader "HiddenHarbours/TidalFace"
             TEXTURE2D(_HHFaceHeight);
             SAMPLER(sampler_HHFaceHeight);
             float4 _HHFaceHeightDecode;
+            float4 _HHFaceDress;
+
+            #include "Assets/_Project/Art/Shaders/Include/TidalFaceDress.hlsl"
 
             Varyings UnlitVertex(Attributes input)
             {
@@ -165,11 +201,19 @@ Shader "HiddenHarbours/TidalFace"
                 // THE WATERLINE, and the only lines that are not URP's. Guarded on BOTH flags: an
                 // unconfigured face and a scene with no published sea must each draw the shipped
                 // picture rather than a wall cut at zero.
+                // THE DRESSING's two halves read the same waterline; a face that is not dressed (w 0)
+                // takes neither and draws exactly the shipped cut below.
+                bool dressed = _HHFaceDress.w > 0.5 && _HHFaceTide.w > 0.5 && _HHSeaLevelWorld.w > 0.5 &&
+                               _HHFaceHeightDecode.w < 0.5;
+                // The uv step per screen pixel, taken here in uniform flow: the dressing's rock relief
+                // samples its neighbours inside branches, where a gradient instruction may not run.
+                float2 uvStep = fwidth(input.uv);
+                float waterlineWorldY = -1e30;
+                // The water over this pixel is max(tide, still) — the level the water shader
+                // draws beneath it (ADR 0046). No still water: -1e30, and sea IS the tide.
+                float sea = max(_HHSeaLevelWorld.x, StillLevelAt(input.faceWorldXY));
                 if (_HHFaceTide.w > 0.5 && _HHSeaLevelWorld.w > 0.5)
                 {
-                    // The water over this pixel is max(tide, still) — the level the water shader
-                    // draws beneath it (ADR 0046). No still water: -1e30, and sea IS the tide.
-                    float sea = max(_HHSeaLevelWorld.x, StillLevelAt(input.faceWorldXY));
                     if (_HHFaceHeightDecode.w > 0.5)
                     {
                         float height = _HHFaceHeightDecode.x +
@@ -179,13 +223,18 @@ Shader "HiddenHarbours/TidalFace"
                     }
                     else
                     {
-                        float waterlineWorldY =
+                        waterlineWorldY =
                             _HHFaceTide.x + (sea - _HHFaceTide.y) * _HHFaceTide.z;
-                        if (input.faceWorldXY.y < waterlineWorldY) discard;
+                        // A dressed ROCK face cuts on its own silhouette (TidalFaceDress.hlsl), not this row.
+                        if (!(dressed && _HHFaceDress.x > 2.5) && input.faceWorldXY.y < waterlineWorldY) discard;
                     }
                 }
 
-                return CommonUnlitFragment(input, input.color);
+                half4 drawn = CommonUnlitFragment(input, input.color);
+                if (dressed)
+                    drawn.rgb = HHDressFace(drawn.rgb, input.uv, uvStep, input.faceWorldXY, sea, waterlineWorldY,
+                                            _HHFaceTide.x, _HHFaceTide.y, _HHFaceTide.z, _HHFaceDress.x);
+                return drawn;
             }
             ENDHLSL
         }
