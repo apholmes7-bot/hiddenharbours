@@ -258,7 +258,7 @@ namespace HiddenHarbours.Tests.EditMode
             CatalogBook b = BookOf(Row("gear.sounder", 640, CatalogSection.Gear, 100));
 
             // P5: a price you cannot meet is a plain, kind sentence, not a locked door.
-            Assert.AreEqual("You're ₲ 540 short.", b.StatusFor(b.Current));
+            Assert.AreEqual("You're ₲540 short.", b.StatusFor(b.Current));
         }
 
         [Test]
@@ -299,9 +299,9 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void Prices_AreWrittenTheOneWay()
         {
-            Assert.AreEqual("₲ 60", CatalogBook.Price(60));
-            Assert.AreEqual("₲ 1,800", CatalogBook.Price(1800), "grouped, so a four-figure hull reads");
-            Assert.AreEqual("₲ 0", CatalogBook.Price(0));
+            Assert.AreEqual("₲60", CatalogBook.Price(60));
+            Assert.AreEqual("₲1,800", CatalogBook.Price(1800), "grouped, so a four-figure hull reads");
+            Assert.AreEqual("₲0", CatalogBook.Price(0));
         }
     }
 }

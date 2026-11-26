@@ -116,7 +116,7 @@ namespace HiddenHarbours.UI
 
         private void Build()
         {
-            _host = PaperUi.MakeScreen(transform, "TitleScreen_Canvas", PaperUi.TitleSortingOrder);
+            _host = PaperUi.MakeScreen(transform, "TitleScreen_Canvas", PaperUi.TitleSortingOrder, pixelFace: true);
 
             // Not a flat dim over a paused game: a wash that is dense down the left, where the wordmark and
             // the menu live, and thin by the right-hand side, where the harbour is left to breathe — plus

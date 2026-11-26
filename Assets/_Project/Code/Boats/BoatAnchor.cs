@@ -67,7 +67,7 @@ namespace HiddenHarbours.Boats
         public const string NoticeDragging = "The anchor's dragging! The tide's over her rode";
         public const string NoticeReBite = "She's found the bottom again";
         public const string NoticeWeighed = "Anchor's aweigh";
-        public const string NoticeNoHull = "No hull wired — nothing to anchor (dev)";
+        public const string NoticeNoHull = "Nothing to anchor here";
         public const string NoticeNoTackle = "She carries no anchor";
 
         private Rigidbody2D _rb;

@@ -429,7 +429,7 @@ namespace HiddenHarbours.App.Editor
             // self-sufficient (re-runnable), but economy-sim owns the canonical assets under the same paths.
             var codLicense = LoadOrCreate<LicenseDef>(DataLicenses + "/CodLicense.asset", l =>
             {
-                l.Id = "license.cod"; l.DisplayName = "Cod Fishing License"; l.Price = 120;
+                l.Id = "license.cod"; l.DisplayName = "Cod Fishing Licence"; l.Price = 120;
                 l.PermittedSpeciesIds = new[] { "fish.atlantic_cod" };
                 l.Flavor = "Nine Mile Creek's harbourmaster signs you off to take cod on rod and line.";
             });
