@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7e85d4aeab24155a5a42791c0fcdfcf, type: 3}
+  m_Name: RodCoast
+  m_EditorClassIdentifier: HiddenHarbours.Player::HiddenHarbours.Player.ToolDef
+  Id: tool.rod_coast
+  DisplayName: Rod
+  GearId: gear.rod
+  Flavor: A cane rod. You cannot cast one you are not holding.
+  Stowage: 1
+  HandPropKey: rodTrail
+  HeldMeshes:
+  - {fileID: 11400000, guid: e9cfe427da07811429bac3875d8f46b8, type: 2}
+  - {fileID: 11400000, guid: 478a885704f088a44bdacec507f3ea5a, type: 2}
+  - {fileID: 11400000, guid: a0a1b43000d697949b8f279ab6262823, type: 2}
+  DrawHeldMeshOnFigure: 1
+  DrawCarriedMeshOnFigure: 1
+  HeldMeshVariant: cane
+  HeldMeshMountBone: tool_R
+  CarriedPitchDeg: 65
+  CarriedYawDeg: 35
+  CarryInNearerHand: 1
+  CarriedOffHandMountBone: tool_L
+  CarriedHandSwapDepthMetres: 0.05
+  CarriedSideBone: shoulder_R
+  CarriedOffSideBone: shoulder_L
+  CarriedOffHandFacingAwayMin: -0.1
+  StowOnBack: 1
+  StowWhileSwimming: 1
+  StowMountBone: back
+  StowGripAlongMetres: -0.4
+  StowStandOffMetres: 0.03
+  CarriedInHandClips:
+  - idle
+  - walk
+  - run
+  StowBlendSeconds: 0.2
+  RodTier: 2
+  RodFishing:
+    CastMetres: 16
+    LineMetres: 75
+    ReelUpMetresPerSecond: 1.8
+    MinBiteDelaySeconds: 1.5
+    MaxBiteDelaySeconds: 4
+    AutoHookSeconds: 1.2
+    TakeWindowMultiplier: 1.2
+    LineStrengthMultiplier: 1.2
+    LandingMultiplier: 1.2
+    TensionRiseEasy: 0.6
+    TensionRiseHard: 1
+    TensionFallEasy: 0.7
+    TensionFallHard: 0.5
+    LandingEasy: 0.4
+    LandingHard: 0.22
+    SurgeIntervalEasy: 3
+    SurgeIntervalHard: 1.6
+    SurgeDurationSeconds: 0.8
+    SurgePressureEasy: 0.15
+    SurgePressureHard: 0.4

@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e2021fb27b94b5980f394f767947243, type: 3}
+  m_Name: RodSkill
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.RodSkillDef
+  Id: skill.rod_fishing
+  DisplayName: Rod fishing
+  ExperiencePerFish: 3
+  ExperienceForHardestFish: 12
+  Levels:
+  - ExperienceRequired: 30
+    CastMetres: 0.4
+    LineStrength: 0.03
+    ReelUpMetresPerSecond: 0.03
+    FightHelp: 0.06
+  - ExperienceRequired: 80
+    CastMetres: 0.8
+    LineStrength: 0.06
+    ReelUpMetresPerSecond: 0.06
+    FightHelp: 0.12
+  - ExperienceRequired: 160
+    CastMetres: 1.2
+    LineStrength: 0.09
+    ReelUpMetresPerSecond: 0.09
+    FightHelp: 0.18
+  - ExperienceRequired: 280
+    CastMetres: 1.6
+    LineStrength: 0.12
+    ReelUpMetresPerSecond: 0.12
+    FightHelp: 0.24
+  - ExperienceRequired: 450
+    CastMetres: 2
+    LineStrength: 0.15
+    ReelUpMetresPerSecond: 0.15
+    FightHelp: 0.3
+  - ExperienceRequired: 680
+    CastMetres: 2.4
+    LineStrength: 0.18
+    ReelUpMetresPerSecond: 0.18
+    FightHelp: 0.36
+  - ExperienceRequired: 980
+    CastMetres: 2.8
+    LineStrength: 0.21
+    ReelUpMetresPerSecond: 0.21
+    FightHelp: 0.42
+  - ExperienceRequired: 1360
+    CastMetres: 3.2
+    LineStrength: 0.24
+    ReelUpMetresPerSecond: 0.24
+    FightHelp: 0.48
+  - ExperienceRequired: 1840
+    CastMetres: 3.6
+    LineStrength: 0.27
+    ReelUpMetresPerSecond: 0.27
+    FightHelp: 0.54
+  - ExperienceRequired: 2440
+    CastMetres: 4
+    LineStrength: 0.3
+    ReelUpMetresPerSecond: 0.3
+    FightHelp: 0.6
