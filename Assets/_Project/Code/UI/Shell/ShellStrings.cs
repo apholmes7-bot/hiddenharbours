@@ -164,5 +164,13 @@ namespace HiddenHarbours.UI
                 default: return TasksNoteShown;
             }
         }
+
+        // ── The demo's closing card ─────────────────────────────────────────────────────────────
+        // Shown once, when the island week ends in a demo. PROPOSED wording, the owner's to change.
+        public const string DemoEndTitle  = "Your first week is done.";
+        public const string DemoEndLine1  = "You mended a boat, earned your licence and found your feet on the island.";
+        public const string DemoEndLine2  = "The rest of the coast is still out there. Thank you for playing.";
+        public const string DemoEndLeave  = "Back to the title";
+        public const string DemoEndSaved  = "Your island week is saved. Come back and fish whenever you like.";
     }
 }

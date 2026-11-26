@@ -10,8 +10,7 @@ namespace HiddenHarbours.Core
     /// so eating too much at once is sick, and the food's <see cref="FoodDef.EnergyKcal"/> past what hunger
     /// was short of becomes mass. The body relieves hunger through <see cref="INeedsService.Eat"/> itself;
     /// the eater calls the needs directly only when there is no body.
-    /// Two sources: the counted supply locker (shop food, <see cref="SupplyLocker"/>) and the loose catch in
-    /// the hands (<see cref="ICatchHands"/>).
+    /// Sources: the counted supply locker, the loose catch in the hands, and food in a carried shopping bag.
     ///
     /// <para><b>Diegetic only</b> (owner ruling 2026-11-14). It publishes <see cref="AteFood"/> once on
     /// success and <see cref="EatRefused"/> once on a refusal, with a reason code and no text, so audio, the
@@ -20,10 +19,8 @@ namespace HiddenHarbours.Core
     /// <para><b>A refusal changes nothing.</b> Every check runs before anything is used up, so a raw cod
     /// stays in the hand and the locker keeps its count.</para>
     ///
-    /// <para><b>SEAM, not yet wired to a press.</b> No "use the held item" input exists (the key ledger is
-    /// spent), and adding a driver means a scene or prefab edit. A later driver calls
-    /// <see cref="TryEatFromHand"/> or <see cref="TryEatFromStock"/> through <see cref="GameServices.Food"/>.
-    /// </para>
+    /// <para>The interaction chooser offers held food through <see cref="HeldFoodInteraction"/> and the
+    /// carried bag's actions. Stock remains a service seam, not permission to eat from distant storage.</para>
     ///
     /// <para><b>Posture</b> (kitchens slice 1): a meal eaten seated, or at a table or counter, is worth more
     /// (<see cref="DiningRules"/>). The food's own relief still goes through the body exactly as standing
@@ -41,6 +38,7 @@ namespace HiddenHarbours.Core
         private readonly Func<INeedsService> _needs;
         private readonly Func<ISaveService> _save;
         private readonly Func<ICatchHands> _hands;
+        private readonly Func<IShoppingBagHands> _bagHands;
         private readonly Func<IBodyService> _body;
         private readonly Func<Vector2> _position;
         private readonly Func<string> _regionId;
@@ -57,17 +55,22 @@ namespace HiddenHarbours.Core
         public FoodEater(Func<FoodBook> book = null, Func<INeedsService> needs = null,
                          Func<ISaveService> save = null, Func<ICatchHands> hands = null,
                          Func<IBodyService> body = null, Func<Vector2> position = null,
-                         Func<string> regionId = null, Func<KitchenSettings> kitchen = null)
+                         Func<string> regionId = null, Func<KitchenSettings> kitchen = null,
+                         Func<IShoppingBagHands> bagHands = null)
         {
             _book = book ?? (() => _shipped ??= FoodBook.FromResources());
             _needs = needs ?? (() => GameServices.Needs);
             _save = save ?? (() => GameServices.Save);
             _hands = hands ?? (() => GameServices.CatchHands);
+            _bagHands = bagHands ?? (() => GameServices.BagHands);
             _body = body ?? (() => GameServices.Body);
             _position = position ?? (() => PlayerPosition());
             _regionId = regionId ?? (() => GameServices.CurrentRegionId);
             _kitchen = kitchen ?? (() => GameServices.KitchenSettings);
         }
+
+        /// <summary>The food definitions, in stable ordinal order. Loaded once by the default service.</summary>
+        public FoodBook Book => _book();
 
         private static Vector2 PlayerPosition()
         {
@@ -83,6 +86,41 @@ namespace HiddenHarbours.Core
             food = _book()?.FindByItem(itemId);
             if (food == null) return EatRefusal.NotFood;
             return food.EdibleRaw ? EatRefusal.None : EatRefusal.NotEdibleRaw;
+        }
+
+        /// <summary>Checks only the loose item in a hand. No consumption or signals.</summary>
+        public EatRefusal CheckHand(out FoodDef food)
+        {
+            food = null;
+            ICatchHands hands = _hands();
+            return hands != null && hands.TryPeekHand(out CatchItem held)
+                ? Check(held.SpeciesId, out food) : EatRefusal.NothingToEat;
+        }
+
+        /// <summary>Checks food physically carried in the shopping bag, never a bag on the ground.</summary>
+        public EatRefusal CheckBag(string itemId, out FoodDef food)
+        {
+            food = null;
+            SaveData save = _save()?.Current;
+            IShoppingBagHands hands = _bagHands();
+            if (hands == null || !hands.HoldsBag || hands.BagIsSetDown
+                || ShoppingBagContents.IsSetDown(save)) return EatRefusal.NothingToEat;
+            int bagged = ShoppingBagContents.InBag(save, itemId);
+            if (bagged <= 0 || SupplyLocker.Owned(save, itemId) < bagged) return EatRefusal.NothingToEat;
+            return Check(itemId, out food);
+        }
+
+        /// <summary>Consumes one unit from a carried bag and its existing supply count. No save schema change.</summary>
+        public EatRefusal TryEatFromBag(string itemId)
+        {
+            EatRefusal refusal = CheckBag(itemId, out FoodDef food);
+            if (refusal != EatRefusal.None) return Refuse(itemId, refusal);
+            SaveData save = _save()?.Current;
+            // Release just this unit, then spend it before any signal can expose the intermediate state.
+            // CheckBag proved the owned count covers every reserved unit; the spend therefore has stock.
+            if (!ShoppingBagContents.TryTakeOut(save, itemId)) return Refuse(itemId, EatRefusal.NothingToEat);
+            SupplyLocker.TrySpend(save, itemId);
+            return Ate(food, itemId, EatingPosture.Standing);
         }
 
         /// <summary>Eat one <paramref name="itemId"/> from the supply locker (a loaf bought at the store),

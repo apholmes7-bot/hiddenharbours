@@ -229,14 +229,21 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsNotNull(rig.Hull, "harness: the facet hull must have been installed");
             Assert.IsNotNull(rig.Hull.PosedMesh, "harness: the hull must be CONFIGURED");
 
+            // ⚠ HE IS PARENTED ABOARD, as boarding parents him in the game. Since #1328 (ADR 0059 step 3)
+            // the boat root carries a SortingGroup at the decor band's order where she lies (about 1201
+            // here), and the orders below are LOCAL to that group: only a figure inside it sorts against
+            // the hull at all. A free-standing figure at order 2 sorts under the whole boat, and the sprite
+            // arm photographed an empty deck.
             var playerGo = new GameObject("Player"); _spawned.Add(playerGo);
+            playerGo.transform.SetParent(root.transform, false);
             SpriteRenderer body = playerGo.AddComponent<SpriteRenderer>();
 
             // ⭐ SHE SORTS ABOVE THE HULL — the relationship the per-pixel deck occlusion exists to
             // QUALIFY. Whole-object sorting puts the figure in front of the whole boat (that is the
             // defect the occluder was built for: "sprites visible THROUGH closed cabins"), and the
             // hull's facet ids then take back the pixels she is genuinely behind. BoatHullSkinner
-            // sorts the hull on "Default" at the visual's own order, so the figure is one above it.
+            // sorts the hull on "Default" at the visual's own order inside the boat's group, so the
+            // figure, parented aboard above, is one above it.
             //
             // ⚠ A fixture that leaves her at the SpriteRenderer default of order 0, under a hull at
             // order 1, photographs an EMPTY DECK on the sprite arm and reports the difference as the

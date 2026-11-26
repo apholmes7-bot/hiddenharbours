@@ -136,6 +136,45 @@ namespace HiddenHarbours.Tests.PlayMode
         RenderTexture _rt;
         int _w, _h;
         BoatWakeEmitter _emitter;
+        HullWaveSettings? _hullWavesWas;   // set by HullWavesOffForTheOlderLift, put back in teardown
+
+        /// <summary>
+        /// The lift photographs measure the OLDER hull-frame lift (<c>_WakeLiftMetres</c>,
+        /// <c>_WakeBowLiftMetres</c>). Since #1302 that lift steps aside in the water shader while real hull
+        /// waves are on (<c>_HHHullWaveParams.w</c>), because the hull waves ARE the wake then, so with the
+        /// shipped settings both arms of the lift photograph render the same sea and the dial reads zero.
+        /// The older lift is still shipped and still what the sea shows whenever hull waves are off, so
+        /// the photograph turns them off for its own run to keep measuring it; teardown restores them.
+        /// </summary>
+        void HullWavesOffForTheOlderLift() => EditHullWaves((ref HullWaveSettings w) => w.Enabled = false);
+
+        /// <summary>
+        /// Families B (drawn deposits) and C (painted crests) are retired on every hull while hull waves
+        /// are on (#1302 retired the painted crests, #1336 the drawn puffs: one foam on the sea), so with
+        /// the shipped dials the photograph has nothing to measure for them, and a sprite hull, which
+        /// has no sheet, draws nothing at all. Both families still ship and still draw whenever hull
+        /// waves are off, so the photograph un-retires them for its own run and keeps measuring where
+        /// they land; teardown restores the dials.
+        /// </summary>
+        void UnretireDrawnFamilies() => EditHullWaves((ref HullWaveSettings w) => { w.RetireDrawnFoam = false; w.RetirePaintedCrests = false; });
+
+        delegate void HullWaveEdit(ref HullWaveSettings w);
+
+        void EditHullWaves(HullWaveEdit edit)
+        {
+            GameConfig config = GameServices.Config;
+            if (config == null) return;
+            if (!_hullWavesWas.HasValue) _hullWavesWas = config.HullWaves;
+            HullWaveSettings w = config.HullWaves;
+            edit(ref w);
+            config.HullWaves = w;
+        }
+
+        void RestoreHullWaves()
+        {
+            if (_hullWavesWas.HasValue && GameServices.Config != null) GameServices.Config.HullWaves = _hullWavesWas.Value;
+            _hullWavesWas = null;
+        }
 
         // ── teardown ──────────────────────────────────────────────────────────────────────────────────
 
@@ -149,6 +188,8 @@ namespace HiddenHarbours.Tests.PlayMode
         public IEnumerator TearDownRegion()
         {
             LogAssert.ignoreFailingMessages = false;
+            EndFoamVisibilityProbe();   // a red case skips its own finally: see the method
+            RestoreHullWaves();
 
             // ⚠ FLUSH WHAT WAS ALREADY MEASURED BEFORE THE THROW. A leg that reddens never reaches its
             // own WriteMeasurements, so every number it had taken up to that point died with it and the
@@ -187,6 +228,42 @@ namespace HiddenHarbours.Tests.PlayMode
                 if (s.IsValid() && s != clean && (s.name == SceneName || (_v24LoadedIntro && (s.name == "StPeters" || s.name == "RicePoint"))))
                     yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(s);
             }
+
+            // ⚠ #764: a Single load of a region promotes the persistent core's roots (the player, his
+            // dory, the main camera and its listener) into DontDestroyOnLoad, and unloading the region
+            // leaves them there. This class left two whole extra cores behind it, and the next class's
+            // boats found no wake rig. Destroy exactly the roots this case added, by identity.
+            if (_residentTaken)
+            {
+                foreach (GameObject go in PersistentRoots())
+                    if (go != null && !_residentBefore.Contains(go)) Object.DestroyImmediate(go);
+                _residentBefore.Clear();
+                _residentTaken = false;
+                GameServices.Reset();
+                yield return null;
+            }
+        }
+
+        readonly HashSet<GameObject> _residentBefore = new HashSet<GameObject>();
+        bool _residentTaken;
+
+        /// <summary>Note the persistent roots that were there before this case's first region load.</summary>
+        void TakeResidentRoots()
+        {
+            if (_residentTaken) return;
+            foreach (GameObject go in PersistentRoots()) _residentBefore.Add(go);
+            _residentTaken = true;
+        }
+
+        static List<GameObject> PersistentRoots()
+        {
+            var probe = new GameObject("__ddolProbe");
+            Object.DontDestroyOnLoad(probe);
+            Scene s = probe.scene;
+            Object.DestroyImmediate(probe);
+            var roots = new List<GameObject>();
+            if (s.IsValid()) s.GetRootGameObjects(roots);
+            return roots;
         }
 
         // ── the two subjects ──────────────────────────────────────────────────────────────────────────
@@ -228,6 +305,7 @@ namespace HiddenHarbours.Tests.PlayMode
             if (hull == null || visual == null) yield break;   // LoadAsset already ignored the case
 
             yield return LoadRegion();
+            UnretireDrawnFamilies();   // see the method: #1302 / #1336
             yield return SetHour(ShotHour);
 
             var legs = new[]
@@ -792,6 +870,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
         IEnumerator LoadRegion(string scene = SceneName)
         {
+            TakeResidentRoots();
             // The region logs decor-import complaints that have nothing to do with wake foam.
             LogAssert.ignoreFailingMessages = true;
 
@@ -1425,6 +1504,7 @@ namespace HiddenHarbours.Tests.PlayMode
             if (hull == null || visual == null) yield break;   // LoadAsset has already ignored the case
 
             yield return LoadRegion();
+            HullWavesOffForTheOlderLift();
             yield return SetHour(ShotHour);
 
             // ONE leg, due north. An elevation profile needs no heading sweep: it is taken along and across

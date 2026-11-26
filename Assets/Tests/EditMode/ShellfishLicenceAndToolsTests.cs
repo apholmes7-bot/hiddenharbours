@@ -46,6 +46,27 @@ namespace HiddenHarbours.Tests.EditMode
 
         private static readonly string[] HandGathered = { ClamId, MusselId, OysterId };
 
+        // These are unresolved content decisions, not exemptions from the every-catch rule.
+        // Resolving one requires removing its exception and updating licence-counter-rules.md.
+        private static readonly Dictionary<string, string> KnownLicenceGaps = new()
+        {
+            { "fish.lobster", "L0a: the unlisted limited-fishery class licence has not been authored" },
+            { "fish.rock_crab", "L0a: the unlisted limited-fishery class licence has not been authored" },
+            { "fish.green_crab", "the proposed cheap counter licence has no chosen class" },
+            { "fish.striped_bass", "the proposed first-week counter licence has not been authored" },
+            { "fish.mackerel", "ordinary rod-fish licence grouping is undecided" },
+            { "fish.atlantic_herring", "ordinary fish licence grouping is undecided" },
+            { "fish.rainbow_smelt", "ordinary rod-fish licence grouping is undecided" },
+            { "fish.winter_flounder", "ordinary rod-fish licence grouping is undecided" },
+            { "fish.atlantic_surf_clam", "the shore licence lists only three species; widening it is undecided" },
+            { "fish.northern_quahog", "the shore licence lists only three species; widening it is undecided" },
+            { "fish.atlantic_tomcod", "outside the island roster; ordinary licence grouping is undecided" },
+            { "fish.cunner", "outside the island roster; ordinary licence grouping is undecided" },
+            { "fish.haddock", "outside the island roster; ordinary licence grouping is undecided" },
+            { "fish.pollock", "outside the island roster; ordinary licence grouping is undecided" },
+            { ScallopId, "the existing content contract defers its licence and gear to the trawl arc" },
+        };
+
         /// <summary>Asset file name → the stable id it must carry. Ids are append-only.</summary>
         private static readonly (string File, string Id)[] ToolRows =
         {
@@ -129,6 +150,21 @@ namespace HiddenHarbours.Tests.EditMode
                 if (l.Id == id) return l;
             Assert.Fail("no shipped LicenseDef carries the id " + id);
             return null;
+        }
+
+        private static Dictionary<string, FishSpeciesDef> ShippedFish()
+        {
+            var fish = new Dictionary<string, FishSpeciesDef>();
+            foreach (string guid in AssetDatabase.FindAssets("t:" + nameof(FishSpeciesDef),
+                         new[] { "Assets/_Project/Data" }))
+            {
+                var def = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(AssetDatabase.GUIDToAssetPath(guid));
+                Assert.IsNotNull(def, guid);
+                Assert.IsFalse(fish.ContainsKey(def.Id), "duplicate species " + def.Id);
+                fish.Add(def.Id, def);
+            }
+            Assert.IsNotEmpty(fish);
+            return fish;
         }
 
         private static GearOffer Tool(string file)
@@ -248,16 +284,109 @@ namespace HiddenHarbours.Tests.EditMode
             // CatchLicensePolicy returns the first licence that lists a species. Two licences listing the
             // same one would make the gate depend on asset load order.
             var owner = new Dictionary<string, string>();
+            var ids = new HashSet<string>();
+            var fish = ShippedFish();
             foreach (LicenseDef l in ShippedLicences())
             {
-                if (l.PermittedSpeciesIds == null) continue;
+                StringAssert.IsMatch("^license\\.[a-z][a-z0-9_]*$", l.Id);
+                Assert.IsTrue(ids.Add(l.Id), "duplicate licence " + l.Id);
+                Assert.IsNotEmpty(l.PermittedSpeciesIds, l.Id + " must name what it permits");
                 foreach (string species in l.PermittedSpeciesIds)
                 {
+                    Assert.IsFalse(string.IsNullOrEmpty(species), l.Id + " has an empty permission");
+                    Assert.IsTrue(fish.ContainsKey(species), l.Id + " names a missing species: " + species);
                     Assert.IsFalse(owner.TryGetValue(species, out string first),
                         $"{species} is listed by both {first} and {l.Id}");
                     owner[species] = l.Id;
                 }
             }
+        }
+
+        [Test]
+        public void EveryAuthoredCatchMethod_HasAValidGateOrAnExplicitDesignException()
+        {
+            var licences = ShippedLicences();
+            var live = CatalogSource.Licenses();
+            CollectionAssert.AreEquivalent(licences, live,
+                "every licence gate must be reachable by the runtime catalog, including unlisted classes");
+            var missing = new HashSet<string>();
+            var gatedMethods = new HashSet<string>();
+            foreach (var fish in ShippedFish().Values)
+            {
+                Gear visited = Gear.None;
+                string required = CatchLicensePolicy.RequiredLicenseFor(fish.Id, live);
+                foreach (Gear method in System.Enum.GetValues(typeof(Gear)))
+                {
+                    if (method == Gear.None || !fish.GearAllowed(method)) continue;
+                    visited |= method;
+                    string context = fish.Id + "/" + method;
+                    if (required == null)
+                    {
+                        Assert.IsTrue(KnownLicenceGaps.TryGetValue(fish.Id, out string reason),
+                            context + " has no licence and no named design exception");
+                        Assert.IsNotEmpty(reason, context);
+                        missing.Add(fish.Id);
+                        continue;
+                    }
+
+                    Assert.IsTrue(licences.Exists(l => l.Id == required), context + " names " + required);
+                    var wallet = new FakeLicenses();
+                    Assert.IsTrue(UnlicensedCatch.MustRelease(fish.Id, null, live, wallet), context);
+                    Assert.IsTrue(UnlicensedCatch.MustRelease(fish.Id, null, live, null), context);
+                    wallet.Grant(required);
+                    Assert.IsFalse(UnlicensedCatch.MustRelease(fish.Id, null, live, wallet), context);
+                    gatedMethods.Add(context);
+                }
+                Assert.AreNotEqual(Gear.None, visited, fish.Id + " needs an authored catch method");
+                Assert.AreEqual(fish.AllowedGear, visited, fish.Id + " has an unknown method bit");
+            }
+            CollectionAssert.AreEquivalent(KnownLicenceGaps.Keys, missing,
+                "remove resolved exceptions; do not let a stale exception hide a later regression");
+            CollectionAssert.AreEquivalent(new[]
+            {
+                ClamId + "/ClamFork", MusselId + "/ClamFork", OysterId + "/ClamFork",
+                CodId + "/Handline", CodId + "/Longline",
+            }, gatedMethods, "update the documented gate inventory when permissions change");
+        }
+
+        [Test]
+        public void FirstWeekIslandLicences_ResolveOrNameTheirExactMissingContent()
+        {
+            var islandOffers = CatalogSource.For<LicenseDef>(StoreSellerId);
+            var offeredIds = new HashSet<string>();
+            foreach (var offer in islandOffers) offeredIds.Add(offer.Id);
+            // The cod licence is sold at LeBlanc's (ruling 2026-11-25) as well as by the NMC harbourmaster.
+            CollectionAssert.AreEquivalent(new[] { ShoreLicenceId, CodLicenceId }, offeredIds,
+                "the island general store is the authored island licence counter");
+            CollectionAssert.AreEquivalent(new[] { "seller.nmc_harbourmaster", StoreSellerId },
+                Licence(CodLicenceId).Catalog.Sellers,
+                "cod is sold over the island counter and at Nine Mile Creek, nowhere else");
+
+            var covered = new HashSet<string>();
+            var missing = new HashSet<string>();
+            var all = ShippedLicences();
+            foreach (var fish in ShippedFish().Values)
+            {
+                if (System.Array.IndexOf(fish.RegionIds, "region.st_peters") < 0) continue;
+                string required = CatchLicensePolicy.RequiredLicenseFor(fish.Id, all);
+                if (required != null && offeredIds.Contains(required))
+                {
+                    covered.Add(fish.Id);
+                    continue;
+                }
+                missing.Add(fish.Id);
+                Assert.IsNull(required, fish.Id + " acquired a gate but still has no island offer");
+                Assert.IsTrue(KnownLicenceGaps.TryGetValue(fish.Id, out string reason), fish.Id);
+                Assert.IsNotEmpty(reason, fish.Id);
+            }
+            CollectionAssert.AreEquivalent(new[] { ClamId, MusselId, OysterId, CodId }, covered);
+            Assert.AreEqual(CodLicenceId, CatchLicensePolicy.RequiredLicenseFor(CodId, all));
+            CollectionAssert.AreEquivalent(new[]
+            {
+                "fish.lobster", "fish.rock_crab", "fish.green_crab", "fish.striped_bass",
+                "fish.mackerel", "fish.atlantic_herring", "fish.rainbow_smelt", "fish.winter_flounder",
+                "fish.atlantic_surf_clam", "fish.northern_quahog",
+            }, missing, "update the first-week exception table with any content resolution");
         }
 
         [Test]

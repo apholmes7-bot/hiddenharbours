@@ -215,6 +215,14 @@ namespace HiddenHarbours.World
             return s?.Typewriter?.VisibleText;
         }
 
+        /// <summary>The whole line <paramref name="id"/>'s bubble is carrying (what the fill is typing
+        /// towards), or null when it is not up.</summary>
+        public string LineOf(int id)
+        {
+            Slot s = Find(id);
+            return s?.Typewriter?.Text;
+        }
+
         /// <summary>True when <paramref name="id"/>'s bubble is drawing a tail. False for an inner-voice
         /// bubble by the owner's 2026-09-06 ruling, and for any speaker who is off camera.</summary>
         public bool TailIsVisibleFor(int id)
@@ -319,10 +327,24 @@ namespace HiddenHarbours.World
             // nothing ends, and a caller that sequences on AmbientSpeechEnded is not owed one.
             if (_slots == null || string.IsNullOrWhiteSpace(request.Line)) return;
 
-            Slot slot = FreeSlot() ?? Oldest();
-            if (slot == null) return;                       // MaxConcurrent is 0 — not a shipped value
-
-            if (slot.Active) Release(slot, AmbientSpeechEndReason.Displaced);
+            // ONE BUBBLE PER SPEAKER. A speaker who already has a bubble up and says something new gets
+            // that same bubble re-filled with the new line, in place: no second bubble pops up beside
+            // the first, the root never toggles, and the read timer starts again from zero. Before this,
+            // `FreeSlot() ?? Oldest()` handed the new line a slot of its own whenever one was free, so a
+            // second thought stood next to the first. Other speakers' bubbles are not touched.
+            Slot slot = SameSpeakerSlot(request);
+            int replacedId = 0;
+            bool replacing = slot != null;
+            if (replacing)
+            {
+                replacedId = slot.Id;
+            }
+            else
+            {
+                slot = FreeSlot() ?? Oldest();
+                if (slot == null) return;                   // MaxConcurrent is 0 — not a shipped value
+                if (slot.Active) Release(slot, AmbientSpeechEndReason.Displaced);
+            }
 
             slot.Active = true;
             slot.Id = request.Id;
@@ -347,6 +369,46 @@ namespace HiddenHarbours.World
             slot.BodyText.text = string.Empty;
             slot.Root.SetActive(true);
             Track(slot);
+
+            // The line that was replaced still owes its caller exactly one end signal. Published AFTER
+            // the slot carries the new line, so a subscriber that reacts by speaking again finds the pool
+            // in its final state. Displaced is the honest reason: a newer line took its bubble.
+            if (replacing) EventBus.Publish(new AmbientSpeechEnded(replacedId, AmbientSpeechEndReason.Displaced));
+        }
+
+        /// <summary>
+        /// The bubble <paramref name="request"/>'s speaker already has up, or null.
+        ///
+        /// <para><b>Who counts as the same speaker.</b> The world anchor first: one body is one person,
+        /// and two NPCs that share a speaker id (fixtures do this, and a crowd of extras can) are still
+        /// two people. A line with no anchor matches another anchorless line by speaker id, or — for the
+        /// player's own thought, which carries no id — any other anchorless inner-voice line. A slot whose
+        /// speaker has been destroyed matches nothing (Unity's fake-null <c>==</c> makes a dead anchor
+        /// unequal to a live one) and is cleaned up by <see cref="Update"/>.</para>
+        ///
+        /// <para>A linear scan of the fixed pool: no allocation, and the pool is a handful of slots.</para>
+        /// </summary>
+        private Slot SameSpeakerSlot(in AmbientSpeechRequested request)
+        {
+            for (int i = 0; i < _slots.Length; i++)
+            {
+                Slot s = _slots[i];
+                if (s.Active && IsSameSpeaker(s, request)) return s;
+            }
+            return null;
+        }
+
+        private static bool IsSameSpeaker(Slot s, in AmbientSpeechRequested request)
+        {
+            bool requestAnchored = request.Anchor != null;
+            if (requestAnchored || s.HadAnchor)
+                return requestAnchored && s.HadAnchor && s.Anchor == request.Anchor;
+
+            if (!string.IsNullOrEmpty(request.SpeakerId))
+                return string.Equals(s.SpeakerId, request.SpeakerId, System.StringComparison.Ordinal);
+
+            return request.Kind == AmbientSpeechKind.InnerVoice && s.Kind == AmbientSpeechKind.InnerVoice &&
+                   string.IsNullOrEmpty(s.SpeakerId);
         }
 
         // ---- the fill ---------------------------------------------------------------------------

@@ -232,6 +232,21 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         [UnityTest]
+        public IEnumerator AnAbsentFishingGround_DoesNotStartASceneLoadForTheFleet()
+        {
+            RegionBuildAvailability.Override = (_, scene) => scene != GroundScene;
+            try
+            {
+                Load(HarbourScene);
+                Assert.IsTrue(_boats.TryBind(_def, _hull, null));
+                yield return At(_today.OnGroundFromSeconds + 60.0);
+                Assert.IsFalse(Shown);
+                Assert.IsFalse(SceneManager.GetSceneByName(GroundScene).IsValid());
+            }
+            finally { RegionBuildAvailability.Override = null; }
+        }
+
+        [UnityTest]
         public IEnumerator LoadedAtAnyHour_SheIsWhereTheClockSays_InWhicheverRegionIsLoaded()
         {
             Load(HarbourScene);

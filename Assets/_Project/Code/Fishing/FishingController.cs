@@ -770,6 +770,13 @@ namespace HiddenHarbours.Fishing
                                      _pendingWeight, fish.BaseValue, fish.SupplyElasticity,
                                      fish.SpoilPerDay, Freshness.Landed(landedAt));
 
+            // Capture origin before delivery or presentation subscribers can change the occupied hull
+            // or repair ledger. Only a successful keep below publishes this moment; later stows do not.
+            string landingHullId = GameServices.Helm.PlayersBoatId;
+            bool hullWasRepaired = !string.IsNullOrEmpty(landingHullId)
+                && GameServices.Save?.Current?.RepairedBoats?.Contains(landingHullId) == true;
+            var landing = new FreshCatchKept(item, landingHullId, hullWasRepaired);
+
             // ON FOOT, THE FISH COMES INTO YOUR HAND (the owner's ruling, 2026-08-13) — you are standing
             // on a dock with a rod, not loading a hold. At sea it lands in the hold exactly as it always
             // has: a boat HAS a hold, that is most of the point of a boat, and the deck ladder (tote,
@@ -787,11 +794,13 @@ namespace HiddenHarbours.Fishing
 
             if (_landInHandOnFoot && _mode == ControlMode.OnFoot && TryLandInHand(item))
             {
+                EventBus.Publish(landing);
                 Debug.Log($"[Fishing] Landed {item} — it's in your hand.");
             }
             else if (_hold != null && _hold.TryAdd(item))
             {
                 EventBus.Publish(new FishCaught(item));          // unchanged land path
+                EventBus.Publish(landing);
                 Debug.Log($"[Fishing] Landed {item}!");
             }
             else

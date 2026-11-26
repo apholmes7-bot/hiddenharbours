@@ -22,6 +22,29 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(0f, TidalExposure.WaterDepth(3.0f, 3.0f), 1e-5f, "ground exactly at surface → zero depth");
         }
 
+        [TestCase(-1.25f, -3.25f, 2f, false)]
+        [TestCase(-1.25f, -0.25f, -1f, true)]
+        [TestCase(-1.25f, -1.25f, 0f, true)]
+        [TestCase(1.25f, -0.75f, 2f, false)]
+        public void CoreDepthSignSurvivesSignedElevationsAndDatumShifts(
+            float water, float bed, float expectedDepth, bool exposed)
+        {
+            foreach (float datumShift in new[] { -100f, 0f, 100f })
+            {
+                IEnvironmentService environment = new FakeEnv { Level = water + datumShift };
+                float elevation = bed + datumShift;
+                float depth = TidalExposure.WaterDepth(environment.WaterLevelAt(123d), elevation);
+                Assert.AreEqual(expectedDepth, depth, "positive means water over the bed, regardless of datum");
+                Assert.AreEqual(exposed, TidalExposure.IsExposed(environment, 123d, elevation));
+                Assert.AreEqual(expectedDepth + 1f,
+                    TidalExposure.WaterDepth(environment.WaterLevelAt(123d) + 1f, elevation),
+                    "raising the surface increases water depth");
+                Assert.AreEqual(expectedDepth - 1f,
+                    TidalExposure.WaterDepth(environment.WaterLevelAt(123d), elevation + 1f),
+                    "raising the bed decreases water depth");
+            }
+        }
+
         // ---- IsExposed / IsSubmerged: ground at-or-above surface is exposed ---------------------
 
         [Test]

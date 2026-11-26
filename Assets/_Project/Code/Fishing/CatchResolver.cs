@@ -216,7 +216,9 @@ namespace HiddenHarbours.Fishing
             {
                 FishSpeciesDef f = pool[i];
                 if (!Matches(f, in ctx)) continue;
-                acc += EffectiveWeight(f, in ctx, in depth, in kit);
+                float weight = EffectiveWeight(f, in ctx, in depth, in kit);
+                if (weight <= 0f) continue;
+                acc += weight;
                 if (roll <= acc) return f;
             }
             return null; // floating-point edge; effectively unreachable

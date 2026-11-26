@@ -406,6 +406,11 @@ namespace HiddenHarbours.World
 
         // ---- public API (driven by WorldInteractor) -----------------------------------------
 
+        /// <summary>True when the last conversation ended by <see cref="Close"/> (he walked away) rather
+        /// than by being heard to its end. Read it in the completion callback: a beat that must be HEARD
+        /// to count asks here.</summary>
+        public bool WasCancelled { get; private set; }
+
         /// <summary>
         /// Begin showing a conversation. Empty/null lines complete immediately (no-op view).
         /// </summary>
@@ -414,6 +419,7 @@ namespace HiddenHarbours.World
             _runner = new DialogueRunner(request.Lines);
             _runner.Open();
             _onComplete = onComplete;
+            WasCancelled = false;
 
             _anchor = request.Anchor;
             _anchorOffset = request.AnchorOffset;
@@ -497,6 +503,7 @@ namespace HiddenHarbours.World
         public void Close()
         {
             if (!IsShowing) return;
+            WasCancelled = true;
             _runner.Close();
             Finish();
         }
