@@ -127,7 +127,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
             StringAssert.Contains("return steady > 0.0 ? smoothstep(0.25 * steady, steady, SeabedSlopeMag(worldXY)) : 1.0;", src);
             Assert.AreEqual(2, CountOf(src, "* _SwashAlongShoreVary * 6.2831853 * SwashDesyncKeep(worldXY);"),
                 "the swash and its rate twin must keep the same desync");
-            StringAssert.Contains("if (_ShoreThinEdge.y > 0.0) col.a *= smoothstep(0.0, _ShoreThinEdge.y, washEdgeQ);", src);
+            // The art grid (11-26) puts the film's thinning in _ShoreFoamBands solid tones; the smooth twin is the ramp they round.
+            StringAssert.Contains("float wetFilm = smoothstep(0.0, _ShoreThinEdge.y, washEdgeQ);", src);
+            StringAssert.Contains("col.a *= wetFilm;", src);
             StringAssert.Contains("#include \"Assets/_Project/Art/Shaders/Include/CausticPattern.hlsl\"", src);
             StringAssert.DoesNotContain("#include \"Include/CausticPattern.hlsl\"", src);
             string bridge = File.ReadAllText(BridgePath);

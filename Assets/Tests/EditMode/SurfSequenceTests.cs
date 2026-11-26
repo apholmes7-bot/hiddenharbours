@@ -261,6 +261,14 @@ namespace HiddenHarbours.Tests.EditMode
                 // the art's 32 px a metre. Exactly that value is authorized; it is mapped back before the hash.
                 Assert.That(Regex.Matches(yaml, @"(?m)^    - _PixelsPerUnit: 32$").Count, Is.EqualTo(1), files[i] + ": art grid");
                 yaml = yaml.Replace("    - _PixelsPerUnit: 32\n", "    - _PixelsPerUnit: 24\n");
+                // And the shore band on that grid: every sea material gains _ArtGridSnap 1 (shade at the art cell's
+                // centre), _ShoreFoamBands 4 and _ShoreFoamDitherWin 0.35 (the shore foam's solid tones). Exactly those
+                // three values are authorized; they are stripped before the hash.
+                foreach (string gridKey in new[] { "    - _ArtGridSnap: 1\n", "    - _ShoreFoamBands: 4\n", "    - _ShoreFoamDitherWin: 0.35\n" })
+                {
+                    Assert.That(Regex.Matches(yaml, Regex.Escape(gridKey)).Count, Is.EqualTo(1), files[i] + ": " + gridKey.Trim());
+                    yaml = yaml.Replace(gridKey, "");
+                }
                 Assert.That(Hash(yaml.Replace("    - " + Dial + ": 0\n", "")), Is.EqualTo(originalHashes[i]),
                     files[i] + ": only the new zero key is authorized");
             }

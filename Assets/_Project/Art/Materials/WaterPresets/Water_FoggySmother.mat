@@ -62,6 +62,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _AbsorptionBands: 6
+    - _ArtGridSnap: 1
     - _CapAgeStrength: 1
     - _MirrorForm: 1
     - _MirrorSheen: 0.3125
@@ -162,6 +163,8 @@ Material:
     - _RippleWavelength: 0.17
     - _Roughness: 0.302
     - _ShallowDepth: 0.15
+    - _ShoreFoamBands: 4
+    - _ShoreFoamDitherWin: 0.35
     - _ShoreSampleStep: 0.4
     - _ShoreSlopeFloor: 0.15
     - _ShorewardBias: 0.7
