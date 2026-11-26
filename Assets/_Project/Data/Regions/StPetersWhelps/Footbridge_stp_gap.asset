@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b1d7e0a4c3f4e2a9a6f0c8d2e71b3a4, type: 3}
+  m_Name: Footbridge_stp_gap
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.FootbridgeDef
+  Id: bridge.stp_gap_footbridge
+  DisplayName: 'The Gap brook''s plank bridge'
+  KeySceneId: keyscene.stp_gap_bridge
+  PieceId: structure.stp_gap_bridge
+  At: {x: 156.45, y: -40.95}
+  SpanMetres: 3
+  WidthMetres: 1.15
+  GroundMetres: 5.28
+  DeckRiseMetres: 0.38
+  SeawardRail: 1
+  RailThicknessMetres: 0.12

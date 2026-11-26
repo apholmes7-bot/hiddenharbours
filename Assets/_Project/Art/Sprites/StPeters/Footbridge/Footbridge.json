@@ -1,0 +1,9 @@
+{
+ "pixelsPerMetre": 32,
+ "spanMetres": 3,
+ "widthMetres": 1.15,
+ "railInsetMetres": 0.2,
+ "railHeightMetres": 0.98,
+ "deck": "GapFootbridgeDeck",
+ "rail": "GapFootbridgeRail"
+}

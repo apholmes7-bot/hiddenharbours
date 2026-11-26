@@ -134,7 +134,7 @@ namespace HiddenHarbours.Tests.PlayMode
             var fields = Object.FindObjectsByType<PlantField>(FindObjectsSortMode.None)
                 .Where(field => field.gameObject.scene.name == "StPeters").ToArray();
             Assert.That(fields, Has.Length.EqualTo(1)); _field = fields[0];
-            Assert.That(_field.AuthoredPlantCount, Is.EqualTo(9044)); // 9089 less the 45 that stood on the cottage above the Whelps
+            Assert.That(_field.AuthoredPlantCount, Is.EqualTo(9021)); // 9089 less the 45 that stood on the cottage above the Whelps and the 23 on the paths by it
             Assert.That(_field.Definition.SunShadowStrength, Is.EqualTo(1));
         }
 
