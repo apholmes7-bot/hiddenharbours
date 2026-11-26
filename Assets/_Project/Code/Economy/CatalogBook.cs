@@ -33,7 +33,7 @@ namespace HiddenHarbours.Economy
     public sealed class CatalogBook
     {
         /// <summary>The currency mark, as the note strings already spell it.</summary>
-        public const string Money = "₲";
+        public const string Money = MoneyFormat.Currency;
 
         private readonly AxisLatch _latch = new AxisLatch();
         private readonly List<BuyRow> _all = new();
@@ -251,8 +251,8 @@ namespace HiddenHarbours.Economy
         /// <summary>The buy line of a row whose shelf is empty, the same words as the card on the shelf.</summary>
         public const string SoldOutStatus = "Sold out.";
 
-        /// <summary>A price as the book writes it — the mark, a thin space, and grouped digits.</summary>
-        public static string Price(int amount)
-            => Money + " " + amount.ToString("N0", CultureInfo.InvariantCulture);
+        /// <summary>A price as the book writes it — the same as every other price in the game
+        /// (<see cref="MoneyFormat.Balance"/>: the mark, then grouped digits).</summary>
+        public static string Price(int amount) => MoneyFormat.Balance(amount);
     }
 }

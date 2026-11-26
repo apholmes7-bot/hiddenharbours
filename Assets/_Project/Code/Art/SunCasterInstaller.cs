@@ -149,6 +149,13 @@ namespace HiddenHarbours.Art
             }
         }
 
+        /// <summary>
+        /// The figure's silhouette-mask child copies his sprite for the leaves' see-through, so a lamp
+        /// shadow from it would be his shadow twice. Its sun casting is left as it is.
+        /// </summary>
+        private static bool IsSilhouetteMask(SpriteRenderer renderer) =>
+            renderer.gameObject.name == SilhouetteMaskSource.MaskChildName;
+
         /// <summary>Only new or changed candidates evaluate data; a settled pass allocates nothing.</summary>
         public SpriteShadow Consider(SpriteRenderer renderer)
         {
@@ -161,6 +168,7 @@ namespace HiddenHarbours.Art
             {
                 var rule = _rules.ClassFor(renderer);
                 if (rule != null && rule.CastOnWalkingDeck) SpriteShadow.Attach(renderer, true);
+                if (IsSilhouetteMask(renderer)) existing.CastsLampShadow = false;
                 _known[renderer] = new Candidate { Renderer = renderer, Shadow = existing };
                 return existing;
             }
@@ -173,6 +181,7 @@ namespace HiddenHarbours.Art
                 next.Shadow = SpriteShadow.Attach(renderer, settings != null && settings.CastOnWalkingDeck);
                 next.Shadow.CastsGroundContact = settings != null ? settings.CastsGroundContact : _rules.DefaultGroundContact;
                 next.Shadow.FootOffset = settings != null ? settings.FootOffset : _rules.DefaultFootOffset;
+                next.Shadow.CastsLampShadow = (settings == null || !settings.Floats) && !IsSilhouetteMask(renderer);
                 _installed.Add(next.Shadow);
                 // A scene load must not wake every distant caster until the next arrival scan.
                 ApplyVisibility(next.Shadow, _rules.CameraDistanceMetres > 0f ? Camera.main : null,

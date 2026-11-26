@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: nmc_harbourmaster
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.SellerDef
   Id: seller.nmc_harbourmaster
+  DisplayName: Harbourmaster's Office
   KeeperNpcId: npc.nmc_harbourmaster
   TradeId: trade.licensing

@@ -95,6 +95,152 @@ Shader "HiddenHarbours/IsoFacetOverlay"
                 return d > -0.5 && d < _HullIdForeSpan - 0.5;
             }
 
+            // ---- A LAMP LIGHTS THE FACES OF HER IT CAN SEE (ADR 0016, "lamps light what they can see") -----
+            // The ceiling pool (HiddenHarboursLampPool.shader) multiplies EVERY pixel as ground. A mesh pixel is
+            // not ground: it has its own height and its own face. So this overlay, which draws her at her own
+            // place in the sort, hands the frame her colour times faceTerm / groundTerm for each pool; the
+            // pool's ground multiply then leaves her lit by her face, and anything drawn over her afterwards
+            // (the dock in front of a moored dory) is lit as ground, because it never carried the ratio.
+            // Done in the pool from the hull pass's texture, a dory behind the St Peters dock showed her lit
+            // silhouette on the planks (the owner, 2026-11-25).
+            // CPU twins: LightMath.HullHeightPlane / HullPoint / HullViewDirection / HullFaceNormal /
+            // HullFaceGain. Globals from LampPoolSystem and IsoFacetHullFeature, outside the CBUFFER.
+            #define HH_LAMP_FACE_MAX 32
+            Texture2D<float>  _HHHullDepthTex;
+            float  _HHHullDepthLive;
+            float4 _HHLampHullPlane;     // h = y*P.y + z*P.z + P.w (LightMath.HullHeightPlane); all 0 = no sea frame
+            float  _HHLampFaceCount;     // pools this frame whose faces are lit here (0 = none)
+            float  _HHLampFaceScale;     // how far up the screen one metre of height draws (IsoGround.HeightScale)
+            float4 _HHLampFaceColor[HH_LAMP_FACE_MAX];   // rgb colour, a gain ceiling (the pool's _PoolColor)
+            float4 _HHLampFaceLamp[HH_LAMP_FACE_MAX];    // xy foot, z height, w reach (the pool's _PoolLamp)
+            float4 _HHLampFaceCone[HH_LAMP_FACE_MAX];    // the pool's _PoolCone
+            float4 _HHLampFaceSea[HH_LAMP_FACE_MAX];     // x the fitting's height above the still sea, y/z its throw (m)
+            float4 _HHLampFaceWall[HH_LAMP_FACE_MAX];    // the pool's _PoolWall
+
+            // The pool's own term, RESTATED LINE FOR LINE from HiddenHarboursLampPool.shader (LampPoolTests
+            // holds the two copies equal): the edge, the cone and the wall, given the incidence.
+            float HHLampPoolGain(float incidence, float2 toFrag, float d, float reach, float gainCeiling,
+                                 float4 _PoolCone, float4 _PoolWall)
+            {
+                // 2 · THE EDGE: 1 out to reach*(1-soft), smoothly to 0 at reach. LightMath.PoolFalloff.
+                float soft  = saturate(_PoolCone.x);
+                float inner = reach * (1.0 - soft);
+                float edge  = 1.0 - smoothstep(inner, reach, d);
+                // 3 · THE CONE, for a lamp that is aimed (the searchlight sweeping a dock). LightMath.PoolCone.
+                // ⚠️ A RADIAL lamp (cosHalf <= -1) is a BRANCH to 1: run through the feather below, cosHalf -1
+                // dimmed every direction within ~45 deg of straight away from the axis, and the axis is up the
+                // screen, so every radial lamp cut a dark wedge out of the ground directly SOUTH of it.
+                float cosHalf = _PoolCone.y;
+                float2 axis   = _PoolCone.zw;
+                float  aligned = d > 1e-4 ? dot(toFrag / d, axis) : 1.0;
+                float coneBand = max(1.0 - cosHalf, 1e-3) * soft;
+                float cone = cosHalf <= -0.9999 ? 1.0 : smoothstep(cosHalf, cosHalf + coneBand, aligned);
+                // 4 · THE WALL, for a lamp on one: light falls OUT and DOWN, so nothing behind the wall line is
+                // lit. LightMath.PoolWallGate.
+                float wall = 1.0;
+                if (dot(_PoolWall.xy, _PoolWall.xy) > 1e-6)
+                {
+                    float ahead = dot(toFrag, normalize(_PoolWall.xy)) + _PoolWall.z;
+                    float ws = max(_PoolWall.w, 1e-3);
+                    wall = smoothstep(-ws, ws, ahead);
+                }
+                float gain = incidence * edge * cone * wall * gainCeiling;
+                return gain <= 1e-4 ? 0.0 : gain;
+            }
+
+            // One neighbour tap: in the target, on the same mesh (its id within half a step), and its depth.
+            bool HullTap(int2 q, int2 size, float id, out float z)
+            {
+                z = 0.0;
+                if (any(q < 0) || any(q >= size)) return false;
+                if (abs(_HHHullScreenTex.Load(int3(q, 0)).a - id) * 255.0 >= 0.5) return false;
+                z = _HHHullDepthTex.Load(int3(q, 0));
+                return true;
+            }
+
+            float3 HullPoint(float2 world, float z)   // LightMath.HullPoint
+            {
+                float h = _HHLampHullPlane.y * world.y + _HHLampHullPlane.z * z + _HHLampHullPlane.w;
+                return float3(world.x, world.y - h * _HHLampFaceScale, h);
+            }
+
+            // On one axis: the step to the neighbour with the smaller depth jump, so an edge between two
+            // faces does not bend the normal. False when neither neighbour is on this mesh.
+            bool HullStep(int2 p, int2 axisPx, float2 axisWorld, int2 size, float id, float2 world, float z,
+                          out float3 step)
+            {
+                float zp, zm;
+                bool hp = HullTap(p + axisPx, size, id, zp);
+                bool hm = HullTap(p - axisPx, size, id, zm);
+                float3 c = HullPoint(world, z);
+                step = float3(0, 0, 0);
+                if (!hp && !hm) return false;
+                bool usePlus = hp && (!hm || abs(zp - z) <= abs(z - zm));
+                step = usePlus ? HullPoint(world + axisWorld, zp) - c : c - HullPoint(world - axisWorld, zm);
+                return true;
+            }
+
+            // What this pixel of her must carry so that the ceiling's GROUND multiply leaves her lit by her
+            // FACE: the product over the pools of (1 + colour·faceGain) / (1 + colour·groundGain). Exactly 1
+            // where no pool reaches her or her face cannot be read, so she is then lit as ground, as before.
+            float3 HHLampFaceRatio(float2 world, float2 stepX, float2 stepY, int2 p, float id)
+            {
+                float3 ratio = float3(1, 1, 1);
+                if (_HHLampFaceCount < 0.5 || _HHHullDepthLive < 0.5 || _HHLampHullPlane.z == 0.0) return ratio;
+                uint tw, th;
+                _HHHullDepthTex.GetDimensions(tw, th);
+                int2 size = int2(tw, th);
+                if (any(p < 0) || any(p >= size) || id < 0.5 / 255.0) return ratio;
+
+                float z = _HHHullDepthTex.Load(int3(p, 0));
+                float3 sx, sy;
+                bool okX = HullStep(p, int2(1, 0), stepX, size, id, world, z, sx);
+                bool okY = HullStep(p, int2(0, 1), stepY, size, id, world, z, sy);
+                if (!(okX && okY)) return ratio;
+                float3 view = float3(0.0, -_HHLampHullPlane.z * _HHLampFaceScale, _HHLampHullPlane.z);
+                float3 n = cross(sx, sy);
+                float nl = length(n);
+                n = nl > 1e-8 ? n / nl : float3(0, 0, 1);
+                if (dot(n, view) > 0.0) n = -n;
+                float3 pt = HullPoint(world, z);
+
+                int count = (int)min(_HHLampFaceCount, (float)HH_LAMP_FACE_MAX);
+                for (int k = 0; k < HH_LAMP_FACE_MAX; k++)
+                {
+                    if (k >= count) break;
+                    float4 L = _HHLampFaceLamp[k];
+                    float2 lamp = L.xy;
+                    float  h = L.z;
+                    float  reach = max(L.w, 1e-4);
+                    if (h <= 0.0) continue;
+                    // The pool's quad spans its foot +- reach: outside it the pool never drew, so neither term.
+                    float2 toG = world - lamp;
+                    if (max(abs(toG.x), abs(toG.y)) > reach) continue;
+                    float dG = length(toG);
+                    float g = HHLampPoolGain(h * rsqrt(h * h + dG * dG), toG, dG, reach,
+                                             _HHLampFaceColor[k].a, _HHLampFaceCone[k], _HHLampFaceWall[k]);
+                    float3 toLamp = float3(lamp - pt.xy, _HHLampFaceSea[k].x - pt.z);
+                    float dl = length(toLamp);
+                    float incF = dl > 1e-5 ? saturate(dot(n, toLamp) / dl) : 1.0;
+                    float2 toF = pt.xy - lamp;
+                    float dF = length(toF);
+                    float f = HHLampPoolGain(incF, toF, dF, reach,
+                                             _HHLampFaceColor[k].a, _HHLampFaceCone[k], _HHLampFaceWall[k]);
+                    // A tilted lamp's THROW (the worn headlamp; LightMath.ThrowGate), on both terms so the
+                    // ground the pool drew and the face lit here agree: y = lit from, z = full at, metres.
+                    float4 S = _HHLampFaceSea[k];
+                    if (S.z > S.y + 1e-4)
+                    {
+                        float2 ax = _HHLampFaceCone[k].zw;
+                        g *= smoothstep(S.y, S.z, dot(toG, ax));
+                        f *= smoothstep(S.y, S.z, dot(toF, ax));
+                    }
+                    float3 col = _HHLampFaceColor[k].rgb;
+                    ratio *= (1.0 + col * f) / (1.0 + col * g);
+                }
+                return ratio;
+            }
+
             struct Attributes
             {
                 float4 positionOS : POSITION;
@@ -103,19 +249,27 @@ Shader "HiddenHarbours/IsoFacetOverlay"
             struct Varyings
             {
                 float4 positionCS : SV_POSITION;
+                float2 worldXY    : TEXCOORD0;   // the ground point under the pixel (ortho, looking down +Z)
             };
 
             Varyings vert (Attributes v)
             {
                 Varyings o;
-                o.positionCS = TransformObjectToHClip(v.positionOS.xyz);
+                float3 wp = TransformObjectToWorld(v.positionOS.xyz);
+                o.positionCS = TransformWorldToHClip(wp);
+                o.worldXY = wp.xy;
                 return o;
             }
 
             float4 frag (Varyings i) : SV_Target
             {
+                // The world step of one pixel across and one down, before any branch (a derivative inside
+                // divergent flow is undefined). The quad is flat, so these are exact.
+                float2 stepX = ddx(i.worldXY);
+                float2 stepY = ddy(i.worldXY);
                 int2 p = int2(i.positionCS.xy);
                 float4 hull = _HHHullScreenTex.Load(int3(p, 0));
+                float hullIdAtPixel = hull.a;
                 if (_HHHullCausticSettings.z > 0.5 && HHIsThisHull(hull.a))
                 {
                     float encoded = _HHHullCausticTex.Load(int3(p, 0)).a;
@@ -126,6 +280,8 @@ Shader "HiddenHarbours/IsoFacetOverlay"
                 // Only THIS hull's pixels — either of her ids.
                 clip(HHIsThisHull(c.a) ? 1.0 : -1.0);
                 clip(c.a - 0.5 / 255.0);
+                // Her faces, lit by the lamps that reach her (see HHLampFaceRatio). 1 by day and with no pool.
+                c.rgb *= HHLampFaceRatio(i.worldXY, stepX, stepY, p, hullIdAtPixel);
                 // While the calm mirror runs, a mesh pixel carries alpha 0.875 so the mirror leaves it to the mesh mirror pass.
                 return float4(c.rgb, _HHCalmMirrorMeshTag > 0.5 ? 0.875 : 1.0);
             }

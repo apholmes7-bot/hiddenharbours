@@ -514,6 +514,14 @@ namespace HiddenHarbours.Tests.PlayMode
         /// <summary>The pier's lamps, placed by the BUILDER — same call the region's Build makes.</summary>
         GameObject PlaceLamps(IReadOnlyList<LampPosts.Site> sites)
         {
+            // The committed scene already burns its own pier lanterns at these same sites, at the wharf
+            // record's strength. Left on, they light the DARK arm too, and the placed lamp is then measured
+            // against a lit pier (6 px against a 25 px bar once the lamp pools composited by strength). Put
+            // them out first, so the placed lamps are the only lanterns the arms compare.
+            foreach (SceneLight l in Object.FindObjectsByType<SceneLight>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                for (Transform t = l.transform; t != null; t = t.parent)
+                    if (t.name.StartsWith("lanternPost_", System.StringComparison.Ordinal)) { l.enabled = false; break; }
+
             var host = new GameObject("PlateLamps");
             _spawned.Add(host);
             int placed = LampPosts.Place(host.transform, sites, null, 0f, "[lights-are-sources]");

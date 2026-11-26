@@ -63,15 +63,17 @@ namespace HiddenHarbours.UI
         private static readonly Color PanelStock = new Color(0.941f, 0.925f, 0.878f, 0.98f);
         private static readonly Color PanelEdge = new Color(0.180f, 0.176f, 0.157f, 1f);
         private static readonly Color Ink = new Color(0.145f, 0.137f, 0.125f, 1f);
-        private static readonly Color InkFaint = new Color(0.145f, 0.137f, 0.125f, 0.62f);
+        private static readonly Color InkFaint = new Color(0.145f, 0.137f, 0.125f, 0.70f); // same faint weight as the notebook's
         private static readonly Color RowSelected = new Color(0.180f, 0.176f, 0.157f, 0.14f);
         private static readonly Color RowIdle = new Color(0f, 0f, 0f, 0f);
         private static readonly Color ChipEdge = new Color(0.180f, 0.176f, 0.157f, 0.85f);
         private static readonly Color ChipUnknown = new Color(0.55f, 0.55f, 0.55f, 1f);
 
-        private const int TitleFontSize = 18;
-        private const int RowFontSize = 16;
-        private const int HintFontSize = 12;
+        // One size of the pixel face for the whole card: at 24 a face pixel is one kit pixel (3 units),
+        // which the snapped scaler keeps whole on every window.
+        private const int TitleFontSize = HarbourType.SizeStep;
+        private const int RowFontSize = HarbourType.SizeStep;
+        private const int HintFontSize = HarbourType.SizeStep;
         private const float EdgeThickness = 1f;
 
         private static WardrobePicker _instance;
@@ -611,6 +613,7 @@ namespace HiddenHarbours.UI
                          -_panelSize.y * 0.5f + WardrobePickerLayout.PadY
                              + WardrobePickerLayout.HintHeight * 0.5f,
                          WardrobePickerLayout.HintHeight);
+            _hintText.horizontalOverflow = HorizontalWrapMode.Wrap;   // two lines in the face
             _hintText.text = WardrobeStrings.Hint;
 
             _root.SetActive(false);
@@ -627,10 +630,10 @@ namespace HiddenHarbours.UI
                          WardrobePickerLayout.RowHeight);
 
             row.Cursor = MakeText(row.Rect, "Cursor", TextAnchor.MiddleLeft, RowFontSize, Ink);
-            LeftInRow(row.Cursor.rectTransform, 0f, 12f);
+            LeftInRow(row.Cursor.rectTransform, 0f, WardrobePickerLayout.CursorWidth);
 
             var chip = MakeImage(row.Rect, "ChipEdge", ChipEdge);
-            LeftInRow(chip.rectTransform, 14f, WardrobePickerLayout.ChipSize);
+            LeftInRow(chip.rectTransform, WardrobePickerLayout.ChipX, WardrobePickerLayout.ChipSize);
             chip.rectTransform.sizeDelta = new Vector2(WardrobePickerLayout.ChipSize,
                                                        WardrobePickerLayout.ChipSize);
 
@@ -644,8 +647,8 @@ namespace HiddenHarbours.UI
             row.Chip = chipFill;
 
             row.Label = MakeText(row.Rect, "Label", TextAnchor.MiddleLeft, RowFontSize, Ink);
-            LeftInRow(row.Label.rectTransform, 34f,
-                      WardrobePickerLayout.PanelWidth - WardrobePickerLayout.PadX * 2f - 34f);
+            LeftInRow(row.Label.rectTransform, WardrobePickerLayout.LabelX,
+                      WardrobePickerLayout.PanelWidth - WardrobePickerLayout.PadX * 2f - WardrobePickerLayout.LabelX);
 
             return row;
         }
@@ -675,14 +678,15 @@ namespace HiddenHarbours.UI
             }
         }
 
-        /// <summary>What the row reads. The Def's label where content gave one, and the id itself where it
-        /// did not — a row that showed nothing would be a coat you could wear but not name.</summary>
+        /// <summary>What the row reads. The Def's label where content gave one, and a plain name made from
+        /// the id where it did not — a row that showed nothing would be a coat you could wear but not name,
+        /// and one that showed the id would show the player a developer's word.</summary>
         private static string LabelOf(CharacterOutfitDef def, string id) =>
-            def != null && !string.IsNullOrEmpty(def.Label) ? def.Label : id;
+            def != null && !string.IsNullOrEmpty(def.Label) ? def.Label : PlainName.FromId(id);
 
         private void BuildCanvas()
         {
-            var canvasGo = new GameObject("Wardrobe_Canvas", typeof(Canvas), typeof(CanvasScaler));
+            var canvasGo = new GameObject("Wardrobe_Canvas", typeof(Canvas), typeof(PixelSnappedCanvasScaler));
             canvasGo.transform.SetParent(transform, false);
             _canvas = canvasGo.GetComponent<Canvas>();
             _canvas.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -742,10 +746,11 @@ namespace HiddenHarbours.UI
             return text;
         }
 
+        // The game's one pixel face; the built-in font only where the face did not load.
         private static Font DefaultFont()
         {
-            var f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            if (f == null) f = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            var f = HarbourType.Load();
+            if (f == null) f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             return f;
         }
     }

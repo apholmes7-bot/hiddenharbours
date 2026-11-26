@@ -19,6 +19,46 @@ namespace HiddenHarbours.Tests.Art.EditMode
     {
         private const float Eps = 1e-4f;
 
+        // ---- the ranking: score and the eased budget edge (option A) -----------------------------------
+
+        [Test]
+        public void APairScoresItsLampsIntensityTimesItsFalloffAtTheFeet_NotItsDistance()
+        {
+            Assert.AreEqual(1.5f * 0.4f * 1f, LampShadowMath.PairScore(1.5f, 0.4f, 1f), Eps);
+            Assert.AreEqual(0f, LampShadowMath.PairScore(-2f, 0.4f, 1f), "a negative lamp scores nothing");
+            Assert.AreEqual(0f, LampShadowMath.PairScore(1f, 0f, 1f), "outside its light, nothing");
+            Assert.AreEqual(0.5f, LampShadowMath.PairScore(1f, 1f, 0.5f), Eps, "the night gate scales it");
+            // Not clamped at 1, unlike the shadow's own share: of two full lamps the brighter ranks first.
+            Assert.Greater(LampShadowMath.PairScore(3f, 0.5f, 1f), LampShadowMath.PairScore(1f, 0.5f, 1f));
+            // A bright lamp's caster far out can outrank a dim lamp's caster close in.
+            float farBright = LampShadowMath.PairScore(2f,
+                LampShadowMath.LampShapeAtFoot(Vector2.zero, Vector2.up, 12f, 180f, 0.2f, 0.55f, new Vector2(6f, 0f)), 1f);
+            float nearDim = LampShadowMath.PairScore(0.3f,
+                LampShadowMath.LampShapeAtFoot(Vector2.zero, Vector2.up, 12f, 180f, 0.2f, 0.55f, new Vector2(2f, 0f)), 1f);
+            Assert.Greater(farBright, nearDim);
+        }
+
+        [Test]
+        public void TheBudgetEdgeFades_FromNothingAtTheCutToFullAWidthAbove()
+        {
+            Assert.AreEqual(1f, LampShadowMath.BudgetFade(0.3f, 0f, 0.5f), "nothing turned away: no fade");
+            Assert.AreEqual(0f, LampShadowMath.BudgetFade(1f, 1f, 0.5f), "at the cut: nothing");
+            Assert.AreEqual(0f, LampShadowMath.BudgetFade(0.8f, 1f, 0.5f), "under the cut: nothing");
+            Assert.AreEqual(1f, LampShadowMath.BudgetFade(1.5f, 1f, 0.5f), Eps, "a width above: full");
+            Assert.AreEqual(1f, LampShadowMath.BudgetFade(4f, 1f, 0.5f), Eps);
+            Assert.AreEqual(0.5f, LampShadowMath.BudgetFade(1.25f, 1f, 0.5f), Eps, "halfway: half (smoothstep)");
+            Assert.AreEqual(1f, LampShadowMath.BudgetFade(1.01f, 1f, 0f), "width 0 is a hard edge");
+            // Continuous and rising across the edge: no step bigger than a small slope allows.
+            float prev = 0f;
+            for (int i = 0; i <= 200; i++)
+            {
+                float f = LampShadowMath.BudgetFade(0.9f + i * 0.004f, 1f, 0.5f);
+                Assert.GreaterOrEqual(f, prev - 1e-6f, "never falls as the score rises");
+                Assert.Less(f - prev, 0.03f, "eased: no pop at any step");
+                prev = f;
+            }
+        }
+
         // ---- direction ------------------------------------------------------------------------------
 
         [Test]

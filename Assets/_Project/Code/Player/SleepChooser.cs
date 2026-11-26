@@ -112,9 +112,9 @@ namespace HiddenHarbours.Player
             {
                 case SleepPhase.Choosing:
                     return $"Sleep {HoursText(e.Hours)}, till about {ClockText(e.WakeSeconds, secondsPerDay)}?  " +
-                           "Left/right: shorter or longer.  E: sleep.  Backspace: get up.";
+                           KeyNames.LeftRight + KeyNames.Says + "shorter or longer" + KeyNames.Gap + KeyNames.Interact + KeyNames.Says + "sleep" + KeyNames.Gap + KeyNames.Backspace + KeyNames.Says + "get up";
                 case SleepPhase.Asleep:
-                    return $"Asleep till about {ClockText(e.WakeSeconds, secondsPerDay)}.  E: wake up.";
+                    return $"Asleep till about {ClockText(e.WakeSeconds, secondsPerDay)}." + KeyNames.Gap + KeyNames.Interact + KeyNames.Says + "wake up";
                 default:
                     return string.Empty;
             }

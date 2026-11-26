@@ -3,32 +3,7 @@ using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Player
 {
-    /// <summary>What the fishing fisher's body is DOING this beat — which of the baked fight sheets
-    /// owns the renderer. Derived purely from the published <see cref="FishingState"/> (see
-    /// <see cref="PlayerFishingAnimMath"/>).</summary>
-    public enum FishingPose
-    {
-        /// <summary>No pose — the normal iso walk skin owns the renderer.</summary>
-        None = 0,
-        /// <summary>A bite is on (the tell beat) — the rod-tip two-tap sheet loops.</summary>
-        Bite = 1,
-        /// <summary>The hook was just set — the strike sheet plays ONCE as the fight opens.</summary>
-        Strike = 2,
-        /// <summary>The fight proper (deep or surface, or the legacy fight) — the reel cycle loops.</summary>
-        Reel = 3,
-        /// <summary>She's aboard — the land sheet plays once and holds its last frame.</summary>
-        Land = 4,
-
-        // ---- appended by the presenter wave (the rod-out beats the kit always had sheets for) ------
-        /// <summary>Line out, rod in hand (Waiting/Sinking) — the hold cycle loops. Yields to the walk
-        /// skin while the angler MOVES (the line stays out; the body walks).</summary>
-        Hold = 5,
-        /// <summary>The wind-back — the castBack sheet SCRUBBED by the published wind-back charge
-        /// (<c>FishingState.CastCharge01</c>), so the rod draws back exactly as far as the gesture has.</summary>
-        CastBack = 6,
-        /// <summary>The release — the castRelease sheet plays once as the line flies.</summary>
-        CastRelease = 7,
-    }
+    // FishingPose moved to Core (FishingBeatMath.cs) with the same names and values (ADR 0053 §11).
 
     /// <summary>
     /// The PURE maths behind the rod-fight animation — published fishing state → pose → sheet frame →
@@ -55,62 +30,15 @@ namespace HiddenHarbours.Player
             return off < 0f ? 360f - turnDegrees : turnDegrees;
         }
 
-        /// <summary>The existing sprite pose's baked skin clip. No independent phase mapping.</summary>
-        public static string StateKeyFor(FishingPose pose) => pose switch
-        {
-            FishingPose.Hold => "hold",
-            FishingPose.CastBack => "castBack",
-            FishingPose.CastRelease => "castRelease",
-            FishingPose.Bite => "bite",
-            FishingPose.Strike => "strike",
-            FishingPose.Reel => "reel",
-            FishingPose.Land => "land",
-            _ => null,
-        };
+        /// <summary>The existing sprite pose's baked skin clip. Forwards to the one mapping in Core
+        /// (<see cref="FishingBeatMath.StateKeyFor"/>), shared with every villager angler.</summary>
+        public static string StateKeyFor(FishingPose pose) => FishingBeatMath.StateKeyFor(pose);
 
-        /// <summary>
-        /// The pose for a published phase: <see cref="FishingPhase.WindBack"/> scrubs the castBack
-        /// sheet, <see cref="FishingPhase.Cast"/> plays the release once,
-        /// <see cref="FishingPhase.Waiting"/>/<see cref="FishingPhase.Sinking"/> hold the rod while the
-        /// angler is STATIONARY (a moving angler hands the body back to the walk skin — the line stays
-        /// out, the legs must walk); <see cref="FishingPhase.Bite"/> plays the bite tell; any rod FIGHT
-        /// phase (legacy <see cref="FishingPhase.Fighting"/> or the v2
-        /// <see cref="FishingPhase.FightDeep"/>/<see cref="FishingPhase.FightSurface"/> arc) opens with
-        /// the STRIKE (its first <paramref name="strikeSeconds"/>) then settles into the REEL loop;
-        /// <see cref="FishingPhase.Landed"/> plays the land beat. <see cref="FishingPhase.Tending"/> is
-        /// deliberately None — the hand-gather has no rod to strike or reel. Everything else hands the
-        /// renderer back.
-        /// </summary>
-        /// <param name="phase">The published phase.</param>
-        /// <param name="secondsInFight">Seconds since a fight phase was entered (the caller's clock).</param>
-        /// <param name="strikeSeconds">How long the strike beat owns the opening of the fight (s).</param>
-        /// <param name="stationary">True when the angler is standing still (gates only the HOLD pose —
-        /// the cast/bite/fight beats are short and own the renderer regardless, the shipped behaviour).</param>
+        /// <summary>The pose for a published phase. Forwards to the one mapping in Core
+        /// (<see cref="FishingBeatMath.PoseFor"/>), shared with every villager angler.</summary>
         public static FishingPose PoseFor(FishingPhase phase, float secondsInFight, float strikeSeconds,
                                           bool stationary)
-        {
-            switch (phase)
-            {
-                case FishingPhase.WindBack:
-                    return FishingPose.CastBack;
-                case FishingPhase.Cast:
-                    return FishingPose.CastRelease;
-                case FishingPhase.Waiting:
-                case FishingPhase.Sinking:
-                    return stationary ? FishingPose.Hold : FishingPose.None;
-                case FishingPhase.Bite:
-                case FishingPhase.BiteNibble:   // the tease plays the same bite tell — a lighter knock
-                    return FishingPose.Bite;    // is the sheet's own business (§10.2 presentation)
-                case FishingPhase.Fighting:
-                case FishingPhase.FightDeep:
-                case FishingPhase.FightSurface:
-                    return secondsInFight < Mathf.Max(0f, strikeSeconds) ? FishingPose.Strike : FishingPose.Reel;
-                case FishingPhase.Landed:
-                    return FishingPose.Land;
-                default:
-                    return FishingPose.None;
-            }
-        }
+            => FishingBeatMath.PoseFor(phase, secondsInFight, strikeSeconds, stationary);
 
         /// <summary>The pre-presenter-wave overload (preserved for callers/tests): stationary.</summary>
         public static FishingPose PoseFor(FishingPhase phase, float secondsInFight, float strikeSeconds)

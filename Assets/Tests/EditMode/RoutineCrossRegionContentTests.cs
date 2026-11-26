@@ -52,6 +52,9 @@ namespace HiddenHarbours.Tests.EditMode
             var missing = new Dictionary<(string owner, string region, string station), int>();
             string scriptGuid = AssetDatabase.AssetPathToGUID("Assets/_Project/Code/World/Routines/RoutineStations.cs");
             Assert.That(scriptGuid, Is.Not.Empty);
+            // A keeper's round carries its own stops in its region's scene, in the same rows as the village's table.
+            string roundGuid = AssetDatabase.AssetPathToGUID("Assets/_Project/Code/World/Keepers/KeeperRound.cs");
+            Assert.That(roundGuid, Is.Not.Empty);
 
             HashSet<string> Stations(string region)
             {
@@ -61,7 +64,8 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(File.Exists(scenePath), Is.True, scenePath);
                 var scene = StPetersLayerRefresh.SceneYaml.Parse(File.ReadAllText(scenePath).Replace("\r\n", "\n"));
                 var ids = new HashSet<string>(System.StringComparer.Ordinal);
-                foreach (var doc in scene.Docs.Where(d => d.ClassId == 114 && d.Text.Contains("guid: " + scriptGuid)))
+                foreach (var doc in scene.Docs.Where(d => d.ClassId == 114 &&
+                             (d.Text.Contains("guid: " + scriptGuid) || d.Text.Contains("guid: " + roundGuid))))
                     foreach (Match row in Regex.Matches(doc.Text, @"^  - Id: ([^\n]*)$", RegexOptions.Multiline))
                     {
                         string id = row.Groups[1].Value.Trim();

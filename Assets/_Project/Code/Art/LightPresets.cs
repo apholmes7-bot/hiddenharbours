@@ -488,6 +488,9 @@ namespace HiddenHarbours.Art
             // line the split would exist in the library and never reach the runtime, and the thing that
             // draws a pool is handed a SceneLight, not a preset kind.
             if (light != null) light.ReachMetres = ReachMetres(kind);
+            // Glowing glass (GlassLook): a lamp's lens drawn as glass with its streak on the water, and
+            // a window glow that lights the ground instead of painting a disc. Off = the preset alone.
+            GlassLook.Current.ApplyShore(light, kind);
         }
 
         /// <summary>

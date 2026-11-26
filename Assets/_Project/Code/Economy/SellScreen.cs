@@ -129,7 +129,7 @@ namespace HiddenHarbours.Economy
                 int count = SellService.CountSellableOf(_hold, it.SpeciesId, _spoil);
                 if (count == 0) continue;
                 string id = it.SpeciesId;
-                string label = it.DisplayName + "   ×" + count;
+                string label = it.DisplayName + "   x" + count;
 
                 // Show the species icon at the row's left (resolved by id via the Core IconRegistry — the
                 // sell screen never references the Fishing def). When an icon resolves, indent the label
@@ -265,8 +265,7 @@ namespace HiddenHarbours.Economy
             return default;
         }
 
-        private static string Money(int amount)
-            => "₲" + amount.ToString("N0", System.Globalization.CultureInfo.InvariantCulture);
+        private static string Money(int amount) => MoneyFormat.Balance(amount);
 
         private static void EnsureEventSystem()
         {
@@ -285,7 +284,7 @@ namespace HiddenHarbours.Economy
         private void Build()
         {
             var canvasGo = new GameObject("SellScreen_Canvas",
-                typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+                typeof(Canvas), typeof(PixelSnappedCanvasScaler), typeof(GraphicRaycaster));
             canvasGo.transform.SetParent(transform, false);
 
             var canvas = canvasGo.GetComponent<Canvas>();
@@ -371,7 +370,8 @@ namespace HiddenHarbours.Economy
             rt.sizeDelta = new Vector2(w, h);
             var t = go.GetComponent<Text>();
             t.font = DefaultFont();
-            t.fontSize = fontSize;
+            t.fontSize = t.font != null && t.font.name == HarbourType.FontName ? HarbourType.SizeNearest(fontSize) : fontSize;
+            t.text = text; // the title, headings, buttons and species rows are given their words here
             t.alignment = align;
             t.color = Color.white;
             t.horizontalOverflow = HorizontalWrapMode.Overflow;
@@ -508,10 +508,12 @@ namespace HiddenHarbours.Economy
             rt.offsetMin = offsetMin; rt.offsetMax = offsetMax;
         }
 
-        // Unity 6 removed Arial.ttf from Resources; LegacyRuntime.ttf is the built-in fallback.
+        // The pixel face, one face for everything the player reads. The built-in font is only the
+        // fallback for a box where the face is not imported (Unity 6 removed Arial.ttf from Resources).
         private static Font DefaultFont()
         {
-            var f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var f = HarbourType.Load();
+            if (f == null) f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             if (f == null) f = Resources.GetBuiltinResource<Font>("Arial.ttf");
             return f;
         }

@@ -25,5 +25,19 @@ namespace HiddenHarbours.Economy
                     }
             return found != null ? found.Counterparty : new TradeCounterparty(null, sellerId, null);
         }
+
+        /// <summary>The name the player reads for a seller. An unknown or unnamed seller reads as
+        /// nothing, never as its id.</summary>
+        public static string DisplayNameFor(string sellerId)
+            => DisplayNameFor(sellerId, Resources.LoadAll<SellerDef>(ResourceFolder));
+
+        public static string DisplayNameFor(string sellerId, System.Collections.Generic.IReadOnlyList<SellerDef> sellers)
+        {
+            if (string.IsNullOrWhiteSpace(sellerId) || sellers == null) return "";
+            for (int i = 0; i < sellers.Count; i++)
+                if (sellers[i] != null && sellers[i].Id == sellerId)
+                    return sellers[i].DisplayName ?? "";
+            return "";
+        }
     }
 }

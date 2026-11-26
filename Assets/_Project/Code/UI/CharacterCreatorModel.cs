@@ -420,13 +420,13 @@ namespace HiddenHarbours.UI
         public const string Reset = "Reset to opening choices";
         public const string Cancel = "Leave my choices as they were";
         public const string Confirm = "Keep these choices";
-        public const string Hint = "Arrows / stick choose and change. Enter / A select. Esc / B back.";
-        public const string NameHint = "Type a name, or choose keys. Enter / Start finishes. Esc / B back.";
+        public const string Hint = KeyNames.ArrowsEither + KeyNames.Says + "choose and change" + KeyNames.Gap + KeyNames.ConfirmEither + KeyNames.Says + "select" + KeyNames.Gap + KeyNames.BackEither + KeyNames.Says + "back";
+        public const string NameHint = "Type a name, or choose keys" + KeyNames.Gap + KeyNames.Confirm + "/" + KeyNames.PadStart + KeyNames.Says + "finish" + KeyNames.Gap + KeyNames.BackEither + KeyNames.Says + "back";
         public const string NoBodies = "The builder has no available player body.";
         public const string UnknownColour = "That colour field is not offered by this body.";
         public const string UnknownOutfit = "That starter outfit is not in the wardrobe.";
         public const string NoSave = "No game is loaded, so there is nowhere to keep these choices.";
-        public static readonly string[] KeyActions = { "Space", "Back", "A/a", "Done" };
+        public static readonly string[] KeyActions = { "Space", "Delete", "A/a", "Done" };
         public const string Traits = "Traits: ";
         public const string NoTraits = "none yet";
         public const string UnknownTrait = "That trait is not on offer.";

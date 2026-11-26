@@ -42,8 +42,10 @@ namespace HiddenHarbours.Art
     ///
     /// <para><b>What it does.</b> Every <see cref="SceneLight"/> registers here on enable; so does
     /// every caster (each sun-shadow caster, each mesh hull). On a throttled tick the system pairs
-    /// every live, night-gated lamp with every caster inside its range, keeps the NEAREST pairs up
-    /// to the pool budget, and gives each pair one pooled quad drawn with
+    /// every live, night-gated lamp with every caster inside its range, scores each pair by the
+    /// shadow it would draw (intensity × falloff at the feet), keeps each caster's strongest K and
+    /// then the strongest pairs up to the pool budget, fading those at the edge of either cut, and
+    /// gives each pair one pooled quad drawn with
     /// <c>HiddenHarbours/LampShadow</c>: the caster's own silhouette, sheared AWAY from that lamp
     /// through the caster's feet, by a length that grows with the caster's distance from the lamp
     /// and shrinks with the lamp's height (<see cref="LampShadowMath"/>), at an alpha that is the
@@ -64,11 +66,11 @@ namespace HiddenHarbours.Art
     /// (never a second illumination model — ADR 0016's additive glow stays the glow, the water's
     /// relief stays the water's).</para>
     ///
-    /// <para><b>Budget (rule 7).</b> <see cref="LampShadowProfile.MaxShadows"/> quads (24 shipped),
+    /// <para><b>Budget (rule 7).</b> <see cref="LampShadowProfile.MaxShadows"/> quads (48 shipped),
     /// one shared mesh, two shared materials, one property block, no per-frame allocation. The
     /// pairing scan is O(lamps × casters) at <see cref="LampShadowProfile.RefreshHz"/>: St Peters
     /// today is six lamps against ~1,000 casters, six thousand squared distances ten times a
-    /// second. Past the pool the nearest lamp-to-caster pairs win.</para>
+    /// second. Past the pool the strongest lamp-to-caster pairs win.</para>
     ///
     /// <para><b>Determinism and seams (rules 4, 5).</b> Visual-only: a shadow is a pure function of
     /// the published day/night tint, the lamps' state and the casters' state; nothing is saved. It
@@ -134,18 +136,36 @@ namespace HiddenHarbours.Art
             public SceneLight Light;
             public ILampShadowCaster Caster;
             public bool HullMaterial;
+            /// <summary>The score of this caster's strongest lamp past its K (0 = none turned away).</summary>
+            public float CasterCut;
         }
 
         private struct Pair
         {
             public SceneLight Light;
             public ILampShadowCaster Caster;
-            public float DistSq;
+            public float Score;
+            public float CasterCut;
         }
 
+        /// <summary>The most lamps one caster may ever be thrown by (the profile's K is clamped to it).</summary>
+        public const int MaxShadowsPerCasterCap = 8;
+
         private Slot[] _slots = System.Array.Empty<Slot>();
+        /// <summary>The strongest pairs, best first, sized one past the pool: the extra entry is the cut.</summary>
         private Pair[] _chosen = System.Array.Empty<Pair>();
+        private float _globalCut;
         private LampShadowCasterState[] _casterScratch = System.Array.Empty<LampShadowCasterState>();
+
+        // This tick's live lamps, gathered once so the caster loop reads arrays, not lamps.
+        private SceneLight[] _liveLight = System.Array.Empty<SceneLight>();
+        private Vector2[] _liveLamp = System.Array.Empty<Vector2>();
+        private float[] _liveGate = System.Array.Empty<float>();
+        private float[] _liveReachSq = System.Array.Empty<float>();
+        private Transform[] _liveCarrier = System.Array.Empty<Transform>();
+        // One caster's strongest K + 1 lamps, best first (the extra one is its cut).
+        private readonly SceneLight[] _topLight = new SceneLight[MaxShadowsPerCasterCap + 1];
+        private readonly float[] _topScore = new float[MaxShadowsPerCasterCap + 1];
 
         /// <summary>
         /// Each scratch caster's own <see cref="Transform"/>, gathered in the same pass — the CARRIER rule
@@ -250,6 +270,10 @@ namespace HiddenHarbours.Art
         public ILampShadowCaster SlotCaster(int i) => i >= 0 && i < _active ? _slots[i].Caster : null;
         /// <summary>Is slot <paramref name="i"/> drawing with the hull-silhouette material? Tests.</summary>
         public bool SlotIsHull(int i) => i >= 0 && i < _slots.Length && _slots[i].HullMaterial;
+        /// <summary>The score slot <paramref name="i"/> was chosen at (0 when idle). Tests and the budget plate.</summary>
+        public float SlotScore(int i) => i >= 0 && i < _active ? _chosen[i].Score : 0f;
+        /// <summary>The strongest score the pool turned away at the last pairing (0 = nothing). Tests.</summary>
+        public float GlobalCut => _globalCut;
 
         // ---- lifecycle ---------------------------------------------------------------------------
 
@@ -306,6 +330,7 @@ namespace HiddenHarbours.Art
         public void DisableAll()
         {
             _active = 0;
+            _globalCut = 0f;
             for (int i = 0; i < _slots.Length; i++) SetEnabled(ref _slots[i], false);
         }
 
@@ -315,6 +340,7 @@ namespace HiddenHarbours.Art
         {
             LampShadowProfile p = _profile;
             _active = 0;
+            _globalCut = 0f;
             if (p.Strength <= 0f || Lights.Count == 0 || Casters.Count == 0) return;
 
             // Gather every caster's state ONCE per tick; each lamp then reads the scratch, not the
@@ -337,6 +363,10 @@ namespace HiddenHarbours.Art
                 if (caster == null || (caster is Object uo && uo == null) ||
                     !caster.TryGetLampShadowCaster(out LampShadowCasterState state))
                     state = default;
+                // Art lying on the ground (a track drawn down the screen from its pivot) throws nothing: its
+                // half below the feet folded back across the lamp — the trolley line's wedge in the headlamp
+                // pool, 2026-11-25. Stays in the carrier map below; it only stops being a candidate.
+                if (LampShadowMath.LiesOnTheGround(state, p.GroundArtBelowFootFraction)) state = default;
                 _casterScratch[i] = state;
                 Transform ct = caster is Component c ? c.transform : null;
                 _casterCarrier[i] = ct;
@@ -347,12 +377,22 @@ namespace HiddenHarbours.Art
             float luma = LightMath.Luminance(tint);
             bool cycleActive = luma >= CycleActiveLuminance;
 
-            int count = 0;
-            for (int li = 0; li < Lights.Count; li++)
+            // The live lamps, once: origin, gate, reach and carrier, read by every caster below.
+            int lightCount = Lights.Count;
+            if (_liveLight.Length < lightCount)
+            {
+                int n = Mathf.NextPowerOfTwo(lightCount);
+                _liveLight = new SceneLight[n];
+                _liveLamp = new Vector2[n];
+                _liveGate = new float[n];
+                _liveReachSq = new float[n];
+                _liveCarrier = new Transform[n];
+            }
+            int live = 0;
+            for (int li = 0; li < lightCount; li++)
             {
                 SceneLight light = Lights[li];
-                if (!LightIsLive(light, luma, cycleActive, out _)) continue;
-                Vector2 lamp = light.WorldOrigin;
+                if (!LightIsLive(light, luma, cycleActive, out float gate)) continue;
                 // ⭐ THE CARRIER: a lamp never throws the silhouette of a caster it is MOUNTED ON.
                 //
                 // Until the land lamp posts (LampPosts) there was no such caster — every lamp in the game
@@ -396,24 +436,95 @@ namespace HiddenHarbours.Art
                 // <see cref="LampPoolSystem"/> reads it for the same reason, which is what makes a
                 // lamp's shadow and its pool two halves of one picture rather than two pictures.
                 float r = Mathf.Max(ShadowReachOf(light), 1e-4f);
-                float r2 = r * r;
-                for (int ci = 0; ci < casterCount; ci++)
+                _liveLight[live] = light;
+                _liveLamp[live] = light.WorldOrigin;
+                _liveGate[live] = gate;
+                _liveReachSq[live] = r * r;
+                _liveCarrier[live] = carrier;
+                live++;
+            }
+            if (live == 0) return;
+
+            // ⭐ RANKED BY STRENGTH, NOT DISTANCE (the 2026-11-25 shadow design, option A). Each pair scores
+            // the lamp's intensity × its falloff at the caster's feet × the gate (LampShadowMath.PairScore):
+            // the shadow a pair would draw, before the strength dial. A caster keeps its strongest K lamps
+            // (the profile's MaxShadowsPerCaster), so a figure between two dock lamps throws two shadows and a
+            // third lamp behind them spends nothing; the pool then keeps the strongest N of those. The score
+            // just past each cut is kept, so the pose can fade a pair that sits at the edge (BudgetFade).
+            int k = Mathf.Clamp(p.MaxShadowsPerCaster, 1, MaxShadowsPerCasterCap);
+            bool snap = p.PixelSnap;
+            float ppu = p.PixelsPerUnit;
+            int count = 0;
+            for (int ci = 0; ci < casterCount; ci++)
+            {
+                ref LampShadowCasterState s = ref _casterScratch[ci];
+                if (!s.IsValid) continue;
+                Vector2 foot = snap ? LampShadowMath.SnapToPixels(s.Foot, ppu) : s.Foot;
+                Transform ct = _casterCarrier[ci];
+                int top = 0;
+                for (int li = 0; li < live; li++)
                 {
-                    ref LampShadowCasterState s = ref _casterScratch[ci];
-                    if (!s.IsValid) continue;
-                    if (carrier != null && ReferenceEquals(_casterCarrier[ci], carrier)) continue;
-                    float d2 = (s.Foot - lamp).sqrMagnitude;
-                    if (d2 >= r2) continue;
-                    count = Insert(light, Casters[ci], d2, count);
+                    // The carrier AND what hangs under it: his silhouette mask is a caster of its own on a child
+                    // of his body, and without the descendant check his headlamp threw it down its own beam (a
+                    // dark wedge beside the pool facing north, measured 2026-11-25). Only a mounted lamp pays
+                    // the walk, and only on the throttled pairing tick.
+                    Transform carrier = _liveCarrier[li];
+                    if (carrier != null && ct != null && ct.IsChildOf(carrier)) continue;
+                    Vector2 lamp = _liveLamp[li];
+                    if ((s.Foot - lamp).sqrMagnitude >= _liveReachSq[li]) continue;
+                    SceneLight light = _liveLight[li];
+                    float score = LampShadowMath.PairScore(light.Intensity, ShapeAtFoot(light, lamp, foot), _liveGate[li]);
+                    top = InsertTop(light, score, top, k + 1);
                 }
+                float casterCut = top > k ? _topScore[k] : 0f;
+                int keep = Mathf.Min(top, k);
+                for (int j = 0; j < keep; j++)
+                    count = Insert(_topLight[j], Casters[ci], _topScore[j], casterCut, count);
             }
 
-            _active = count;
-            for (int i = 0; i < count; i++)
+            int pool = _slots.Length;
+            _globalCut = count > pool ? _chosen[pool].Score : 0f;
+            _active = Mathf.Min(count, pool);
+            for (int i = 0; i < _active; i++)
             {
                 _slots[i].Light = _chosen[i].Light;
                 _slots[i].Caster = _chosen[i].Caster;
+                _slots[i].CasterCut = _chosen[i].CasterCut;
             }
+        }
+
+        /// <summary>
+        /// The lamp's falloff at a caster's feet, as both the pairing and the pose read it: the reach, the
+        /// cone and its feathering, and a tilted lamp's throw (the worn headlamp lights the ground ahead of
+        /// his feet, from the lamp on his head, so it throws no shadow across ground nearer than that).
+        /// </summary>
+        internal static float ShapeAtFoot(SceneLight light, Vector2 lamp, Vector2 foot)
+        {
+            bool radial = light.Shape == SceneLight.LightShape.Radial;
+            float shape = LampShadowMath.LampShapeAtFoot(
+                lamp, light.BeamDirection, ShadowReachOf(light), radial ? 180f : light.ConeHalfAngle,
+                light.AngularSoftness, light.EdgeSoftness, foot);
+            if (light.HasThrow && shape > 0f)
+                shape *= LightMath.ThrowGate(foot - lamp, light.BeamDirection,
+                                             light.ThrowStartMetres, light.ThrowFullMetres);
+            return shape;
+        }
+
+        /// <summary>Insertion-sort one lamp into this caster's strongest <paramref name="cap"/>, best first.
+        /// A tie keeps the lamp registered first, so the choice is deterministic.</summary>
+        private int InsertTop(SceneLight light, float score, int count, int cap)
+        {
+            int at = count;
+            while (at > 0 && _topScore[at - 1] < score) at--;
+            if (at >= cap) return count;
+            for (int j = Mathf.Min(count, cap - 1); j > at; j--)
+            {
+                _topLight[j] = _topLight[j - 1];
+                _topScore[j] = _topScore[j - 1];
+            }
+            _topLight[at] = light;
+            _topScore[at] = score;
+            return Mathf.Min(count + 1, cap);
         }
 
         /// <summary>
@@ -430,18 +541,18 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
-        /// Insertion-sort a pair into the nearest-N slots by lamp-to-feet distance and return the
-        /// new count. O(N) with N = the pool size, allocation-free — the shape <see cref="WaterLightBridge"/>
-        /// keeps its four water lights in. A pair farther than every kept one is dropped.
+        /// Insertion-sort a pair into the strongest slots by score, best first, and return the new count.
+        /// The array is one longer than the pool, so the strongest pair the pool turns away is kept as its
+        /// cut. O(N) with N = the pool size, allocation-free. A tie keeps the pair seen first.
         /// </summary>
-        private int Insert(SceneLight light, ILampShadowCaster caster, float distSq, int count)
+        private int Insert(SceneLight light, ILampShadowCaster caster, float score, float casterCut, int count)
         {
             int cap = _chosen.Length;
             int at = count;
-            while (at > 0 && _chosen[at - 1].DistSq > distSq) at--;
+            while (at > 0 && _chosen[at - 1].Score < score) at--;
             if (at >= cap) return count;
             for (int j = Mathf.Min(count, cap - 1); j > at; j--) _chosen[j] = _chosen[j - 1];
-            _chosen[at] = new Pair { Light = light, Caster = caster, DistSq = distSq };
+            _chosen[at] = new Pair { Light = light, Caster = caster, Score = score, CasterCut = casterCut };
             return Mathf.Min(count + 1, cap);
         }
 
@@ -499,11 +610,17 @@ namespace HiddenHarbours.Art
                 Vector2 lamp = light.WorldOrigin;
                 Vector2 foot = p.PixelSnap ? LampShadowMath.SnapToPixels(s.Foot, p.PixelsPerUnit) : s.Foot;
                 bool radial = light.Shape == SceneLight.LightShape.Radial;
-                float shape = LampShadowMath.LampShapeAtFoot(
-                    lamp, light.BeamDirection, ShadowReachOf(light), radial ? 180f : light.ConeHalfAngle,
-                    light.AngularSoftness, light.EdgeSoftness, foot);
+                float shape = ShapeAtFoot(light, lamp, foot);
                 float alpha = LampShadowMath.ShadowAlpha(
                     p.Strength, shape, gate, LampShadowMath.IntensityShare(light.Intensity));
+                // The eased edge: a pair near the strongest one the pool (or its caster's K) turned away
+                // fades toward nothing, read against the LIVE score so it eases between the pairing ticks.
+                if (alpha > 0f && (_globalCut > 0f || slot.CasterCut > 0f))
+                {
+                    float score = LampShadowMath.PairScore(light.Intensity, shape, gate);
+                    alpha *= LampShadowMath.BudgetFade(score, _globalCut, p.BudgetFadeWidth)
+                           * LampShadowMath.BudgetFade(score, slot.CasterCut, p.BudgetFadeWidth);
+                }
                 if (alpha <= 0f) { SetEnabled(ref slot, false); continue; }
 
                 Vector2 fallbackDir = radial ? Vector2.down : light.BeamDirection;
@@ -648,7 +765,7 @@ namespace HiddenHarbours.Art
                 slots[i] = MakeSlot(i);
             }
             _slots = slots;
-            _chosen = new Pair[wanted];
+            _chosen = new Pair[wanted + 1];   // one past the pool: the strongest pair turned away is the cut
             if (_active > wanted) _active = wanted;
         }
 
