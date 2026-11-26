@@ -48,6 +48,12 @@ Shader "Hidden/HiddenHarbours/CalmMirror"
             float4 _CalmMirrorTexel;    // xy 1/size, z art px per metre, w roughness 0..1
             float4 _CalmMirrorReach;    // x thin start px, y gone px, z min stand px, w ripple band (art px)
             float4 _DayNightTint;
+            // THE AXIS (owner ruling 2026-11-26, "no mixels"): the flip mirrors about the base pixel's lower EDGE,
+            // so screen row y below the base shows row y + 2 * basePx - 1 and both screen rows of one art pixel
+            // read one art pixel. About the base pixel's CENTRE (the old 2 * basePx) the two rows of an art pixel
+            // came from two different art pixels at every even scale: a half-art-pixel mixel under every face.
+            // A global left unset reads 0, the edge axis; 1 is the old centre axis, kept only as the A/B.
+            float _HHCalmMirrorCentreAxis;
             TEXTURE2D(_HHReflectTex);
 
             // Decks (CalmMirror.MaxTops must match).
@@ -184,13 +190,14 @@ Shader "Hidden/HiddenHarbours/CalmMirror"
                     bool tall = true;
                     [loop] for (float k = 1.0; k <= _CalmMirrorReach.z; k += 1.0)
                         if (!IsStanding(Tap(float2(uv.x, uv.y + (basePx + k * pxPerArt.y) * texY)).a)) { tall = false; break; }
+                    float axisEdge = 1.0 - saturate(_HHCalmMirrorCentreAxis);   // 1 = mirror about the base's lower edge
                     float2 s = float2(uv.x + dxArt * pxPerArt.x * _CalmMirrorTexel.x,
-                                      uv.y + (2.0 * basePx + dyArt * pxPerArt.y) * texY);
+                                      uv.y + (2.0 * basePx - axisEdge + dyArt * pxPerArt.y) * texY);
                     if (tall && !IsMesh(baseA))
                     {
                         // 3) DECKS: which deck's face is this base (the nearest front edge above it), and does the
                         //    plain flip's sample reach into or past any deck top above the base?
-                        float baseY = world.y + basePx * mPerPx;
+                        float baseY = world.y + (basePx - 0.5 * axisEdge) * mPerPx;   // the base's lower edge
                         float flipY = _CalmMirrorRect.y + s.y * _CalmMirrorRect.w;
                         float snap = _CalmMirrorTops.y;
                         int capI = -1; float capLo = 0.0, capWl = 0.0;
