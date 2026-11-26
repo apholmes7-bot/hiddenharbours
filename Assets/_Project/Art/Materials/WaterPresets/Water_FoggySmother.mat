@@ -64,6 +64,7 @@ Material:
     - _AbsorptionBands: 6
     - _ArtGridSnap: 1
     - _CapAgeStrength: 1
+    - _DepthBandDitherWin: 0.5
     - _MirrorForm: 1
     - _MirrorSheen: 0.3125
     - _MirrorTiltScale: 6
@@ -87,7 +88,7 @@ Material:
     - _CrossSwellSpeed: 0.025
     - _DeepBlueStrength: 0
     - _DeepDepth: 4
-    - _DepthBands: 0
+    - _DepthBands: 5
     - _DriftLineScale: 0.3
     - _DriftLineSeaStateHi: 0.6
     - _DriftLineSeaStateLo: 0.05

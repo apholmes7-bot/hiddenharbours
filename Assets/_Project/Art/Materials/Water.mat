@@ -67,6 +67,7 @@ Material:
     m_Floats:
     - _ArtGridSnap: 1
     - _CapAgeStrength: 1
+    - _DepthBandDitherWin: 0.5
     - _MirrorForm: 1
     - _MirrorSheen: 0.3125
     - _MirrorTiltScale: 6
@@ -98,7 +99,7 @@ Material:
     - _DeepBlueStart: 0.25
     - _DeepBlueStrength: 0.45
     - _DeepDepth: 4
-    - _DepthBands: 0
+    - _DepthBands: 5
     - _DispersionScale: 0.5
     - _BandScaleResponse: 0.25
     - _DriftLineScale: 0.3

@@ -64,6 +64,7 @@ Material:
     - _AbsorptionBands: 6
     - _ArtGridSnap: 1
     - _CapAgeStrength: 1
+    - _DepthBandDitherWin: 0.5
     - _MirrorForm: 1
     - _MirrorSheen: 0.3125
     - _MirrorTiltScale: 6
@@ -80,7 +81,7 @@ Material:
     - _Chop: 0.12
     - _DeepBlueStrength: 0.1
     - _DeepDepth: 4
-    - _DepthBands: 0
+    - _DepthBands: 5
     - _EnvelopeBandPatchMin: 0.45
     - _EnvelopeBandPatchScale: 0.025
     - _EnvelopeBandWarp: 0.24

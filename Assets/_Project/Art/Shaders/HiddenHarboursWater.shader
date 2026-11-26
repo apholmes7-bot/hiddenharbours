@@ -23,6 +23,9 @@ Shader "HiddenHarbours/Water"
         _ShallowDepth   ("Shallow depth (m)", Float)    = 0.15
         _DeepDepth      ("Deep depth (m)", Float)       = 3.0
         _DepthBands     ("Depth posterize bands (0=off)", Float) = 5
+        // The band edges are dithered on the world-locked Bayer cell (no hard contour rings). 0 = the old
+        // hard rounding, bit for bit.
+        _DepthBandDitherWin ("Depth band edge dither window (0..1 of a band)", Range(0,1)) = 0.5
 
         [Header(DEEP BLUE enrichment (bounded pull toward a rich navy in DEEP water   col.rgb only))]
         // The owner's "deep blues" ask (2026-07-08). The shipped material reads its base colour from his
@@ -1758,6 +1761,7 @@ Shader "HiddenHarbours/Water"
                 float  _ShallowDepth;
                 float  _DeepDepth;
                 float  _DepthBands;
+                float  _DepthBandDitherWin;
                 float  _ArtGridSnap;
                 float  _ShoreFoamBands;
                 float  _ShoreFoamDitherWin;
@@ -6766,8 +6770,14 @@ Shader "HiddenHarbours/Water"
 
                 float dt = saturate((depth - _ShallowDepth) / max(_DeepDepth - _ShallowDepth, 1e-3));
                 // Posterize the depth ramp into N bands for the pixel read (0 bands = smooth).
+                // THE ART GRID (owner ruling 2026-11-26): the band edges are dithered on the world-locked Bayer
+                // cell (one art pixel) inside _DepthBandDitherWin of each rounding boundary, so a depth step is a
+                // broken pixel edge, never a hard contour ring. BandValue01 over N + 1 levels is the same
+                // rounding as floor(dt * N + 0.5) / N outside the window; _DepthBandDitherWin 0 is that rounding.
                 if (_DepthBands >= 1.0)
-                    dt = floor(dt * _DepthBands + 0.5) / _DepthBands;
+                    dt = (_DepthBandDitherWin > 0.0)
+                       ? BandValue01(dt, _DepthBands + 1.0, _DepthBandDitherWin, BayerWorld(worldXY))
+                       : floor(dt * _DepthBands + 0.5) / _DepthBands;
             #if defined(_USE_DEPTHRAMP)
                 // Owner hand-paints the exact shallow->deep colours in a 1D ramp (shallow at u=0). When
                 // assigned this REPLACES the _ShallowColor/_DeepColor lerp; alpha comes from the ramp too.

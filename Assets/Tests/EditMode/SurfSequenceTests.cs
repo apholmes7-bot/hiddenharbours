@@ -269,6 +269,12 @@ namespace HiddenHarbours.Tests.EditMode
                     Assert.That(Regex.Matches(yaml, Regex.Escape(gridKey)).Count, Is.EqualTo(1), files[i] + ": " + gridKey.Trim());
                     yaml = yaml.Replace(gridKey, "");
                 }
+                // And the depth colour on that grid: _DepthBands 0 -> 5 with _DepthBandDitherWin 0.5 (the band edges
+                // world-Bayer dithered, no contour rings). Exactly those two values are authorized; the bands map
+                // back to 0 and the new window is stripped before the hash.
+                Assert.That(Regex.Matches(yaml, @"(?m)^    - _DepthBands: 5$").Count, Is.EqualTo(1), files[i] + ": depth bands");
+                Assert.That(Regex.Matches(yaml, @"(?m)^    - _DepthBandDitherWin: 0\.5$").Count, Is.EqualTo(1), files[i] + ": depth band dither");
+                yaml = yaml.Replace("    - _DepthBands: 5\n", "    - _DepthBands: 0\n").Replace("    - _DepthBandDitherWin: 0.5\n", "");
                 Assert.That(Hash(yaml.Replace("    - " + Dial + ": 0\n", "")), Is.EqualTo(originalHashes[i]),
                     files[i] + ": only the new zero key is authorized");
             }
