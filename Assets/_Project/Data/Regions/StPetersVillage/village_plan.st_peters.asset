@@ -639,16 +639,6 @@ MonoBehaviour:
     OptionsJson: "{\"kept\":0.6}"
     CasterAnchors: []
     MetadataJson: "{}"
-  - Id: "prop.stp_vl_general_store_chalk_sign"
-    Kit: "wharfDecor"
-    Piece: "chalkSign"
-    Position: {x: 0.6, y: 29.99}
-    Z: 6
-    Dir: 4
-    Pending: 0
-    OptionsJson: "{}"
-    CasterAnchors: []
-    MetadataJson: "{}"
   - Id: "prop.stp_vl_general_store_bench"
     Kit: "wharfDecor"
     Piece: "bench"

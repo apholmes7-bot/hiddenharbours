@@ -30,14 +30,14 @@ namespace HiddenHarbours.Tests.Economy
     {
         const string DataRoot = "Assets/_Project/Data";
 
-        // Known missing sellers: these unplaced repair supplies need four separate counted store
-        // slots, goods pictures and empty-stock cards. Remove each exception when its offer exists.
+        // Given, not sold: the four dory repair supplies come from people on the island (their
+        // SupplyGiftDefs under Resources/NpcSupplies), not from a shop. Each reason names the giver.
         static readonly Dictionary<string, string> KnownMendingSellerExceptions = new Dictionary<string, string>(StringComparer.Ordinal)
         {
-            ["supply.patch_plank"] = "needs shop: St Peters general store; patch-plank slot, goods picture and empty-stock card are not placed",
-            ["supply.copper_nails"] = "needs shop: St Peters general store; copper-nails slot, goods picture and empty-stock card are not placed",
-            ["supply.oakum"] = "needs shop: St Peters general store; oakum slot, goods picture and empty-stock card are not placed",
-            ["supply.linseed_paint"] = "needs shop: St Peters general store; linseed-paint slot, goods picture and empty-stock card are not placed",
+            ["supply.patch_plank"] = "given, not sold: npc.odile_marchand",
+            ["supply.copper_nails"] = "given, not sold: npc.odile_marchand",
+            ["supply.oakum"] = "given, not sold: npc.rose_macisaac",
+            ["supply.linseed_paint"] = "given, not sold: npc.alban_doucet",
         };
 
         // Disposable proof copies some fixtures leave beside real Defs (DefIdentityContractTests' rule).
@@ -161,6 +161,27 @@ namespace HiddenHarbours.Tests.Economy
             }
         }
 
+        const string GivenPrefix = "given, not sold: ";
+
+        // Who gives a supply, read from the shipped SupplyGiftDefs. Read by serialized field, because this
+        // assembly does not reference World (an Economy test never names a World type).
+        static List<string> GiversOf(string supplyId)
+        {
+            var givers = new List<string>();
+            foreach (string guid in AssetDatabase.FindAssets("t:SupplyGiftDef", new[] { DataRoot }))
+            {
+                var asset = AssetDatabase.LoadAssetAtPath<ScriptableObject>(AssetDatabase.GUIDToAssetPath(guid));
+                if (asset == null) continue;
+                var so = new SerializedObject(asset);
+                SerializedProperty items = so.FindProperty("ItemIds");
+                SerializedProperty giver = so.FindProperty("GiverNpcId");
+                if (items == null || giver == null) continue;
+                for (int i = 0; i < items.arraySize; i++)
+                    if (items.GetArrayElementAtIndex(i).stringValue == supplyId) { givers.Add(giver.stringValue); break; }
+            }
+            return givers;
+        }
+
         [Test]
         public void KnownMendingExceptionsAreExactlyTheUnstockedRecipeSupplies()
         {
@@ -178,7 +199,9 @@ namespace HiddenHarbours.Tests.Economy
                 Assert.That(offered.ContainsKey(entry.Key), Is.False, "remove the exception once a seller exists");
                 Assert.That(supplies[entry.Key].Catalog.Listed, Is.False, "unplaced supplies must stay unlisted");
                 Assert.That(supplies[entry.Key].Catalog.Sellers, Is.Empty);
-                StringAssert.Contains("slot, goods picture and empty-stock card", entry.Value);
+                StringAssert.StartsWith(GivenPrefix, entry.Value);
+                string giver = entry.Value.Substring(GivenPrefix.Length);
+                Assert.That(GiversOf(entry.Key), Does.Contain(giver), entry.Key + " is not given by " + giver);
             }
         }
 

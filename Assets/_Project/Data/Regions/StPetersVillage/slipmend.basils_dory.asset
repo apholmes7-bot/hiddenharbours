@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d27ce7d095064d28bac1de43df2925d6, type: 3}
+  m_Name: slipmend.basils_dory
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.DoryMendingStationDef
+  Id: slipmend.basils_dory
+  Mending: {fileID: 11400000, guid: b93db39c5a454a0daa5b6c0720849f5b, type: 2}
+  ReachMeters: 2.6
+  GameMinutesPerHeldSecond: 10
+  WorkTickSeconds: 0.25
+  MendLabel: '{job}'
+  LaunchLabel: Launch her
+  WorkLine: Hold at it, and I'll {job}.
+  PausedLine: I'll come back to her.
+  JobDoneLine: That's done. Next I {next}.
+  MendedLine: She's sound. Now to get her down the slip.
+  MissingLine: I haven't the makings to {job} yet.
+  UnaskedMissingLine: Basil would know what she wants.
+  UnaskedFlag: st_peters.dory_supplies.named
+  LaunchedLine: Down she goes. She's tied at the pier head, and she's mine to row.
+  VoiceId: voice.inner
+  BubbleHeightMetres: 2.1
+  LaunchRegionId: region.st_peters
+  LaunchBerth: {x: 213, y: 7.502202}
+  LaunchHeadingDegrees: -90

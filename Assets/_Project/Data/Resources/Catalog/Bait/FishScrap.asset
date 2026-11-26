@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.BaitDef
   Id: bait.fish_scrap
   DisplayName: Fish Scrap
-  Flavor: 'Gurry and cuttings off the cleaning table - free, and all a rock crab asks for.
-    PRICE NOTE: greybox placeholder - flagged for economy-sim to tune.'
+  Flavor: 'Gurry and cuttings off the cleaning table - free, and all a rock crab asks for.'
   Price: 1
   FavorsSpeciesIds:
   - fish.rock_crab

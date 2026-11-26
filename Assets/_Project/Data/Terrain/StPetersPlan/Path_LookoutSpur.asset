@@ -17,8 +17,8 @@ MonoBehaviour:
   Kind: 0
   Width: 0.8
   Points:
-  - {x: 164.6, y: -35.5}
-  - {x: 165.4, y: -37}
+  - {x: 166.4, y: -37}
+  - {x: 166.3, y: -37.8}
   - {x: 166.2, y: -38.4}
   LineSource: 
   JoinPoints: []

@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8bb80b6823f40d18af6c08d2a535c59, type: 3}
+  m_Name: SupplyRunStPetersDory
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.SupplyRunDef
+  Id: supplyrun.st_peters_dory
+  BoatId: boat.dory
+  TellerNpcId: npc.basil_samson
+  NamedFlag: st_peters.dory_supplies.named
+  NamingLines:
+  - 'So you''ve bought her. Good. Now hear what she wants.'
+  - 'A patch plank, and copper nails to hang it. A hank of oakum for the seam. A tin of linseed paint over the lot.'
+  - 'I''ve none of it left. Ask about. This island keeps what it''s got.'
+  MissingLines:
+  - 'Plank and nails, oakum, paint. Somebody''s got it put by.'
+  AllInHandLines:
+  - 'That''s the lot. Get her up on the blocks and go at it.'
+  Gifts:
+  - {fileID: 11400000, guid: b3e375a8771c48a39753cd2281e0b13c, type: 2}
+  - {fileID: 11400000, guid: 33d0ad19f52d45de8a9f77789c8e623a, type: 2}
+  - {fileID: 11400000, guid: 786fa411457e4752b352be1ba61d069f, type: 2}
+  Topic: {fileID: 11400000, guid: dc516de47dd24e2384c04a9ff519ebf3, type: 2}

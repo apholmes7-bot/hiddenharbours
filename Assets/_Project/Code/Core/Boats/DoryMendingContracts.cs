@@ -11,9 +11,10 @@ namespace HiddenHarbours.Core
         public MendingMaterial(string itemId, int count) { ItemId = itemId; Count = count; }
     }
 
-    /// <summary>Only goods physically carried to the slip. Count excludes reservations. Reserving
+    /// <summary>The goods the player has to mend with: what he carries, plus what he has put away
+    /// (a bag set down elsewhere is the adapter's call). Count excludes reservations. Reserving
     /// locks the whole request against spending, transfer and use elsewhere without debiting saved
-    /// contents. A failed reservation changes nothing. Remote storage is excluded.</summary>
+    /// contents. A failed reservation changes nothing.</summary>
     public interface IMendingCarry
     {
         int Count(string itemId);
@@ -75,32 +76,31 @@ namespace HiddenHarbours.Core
     {
         public readonly string BoatId;
         public readonly string JobId;
-        public readonly string PlayerId;
         public readonly double WorkedSeconds;
         public readonly bool MaterialsReserved;
         public readonly bool Working;
         public DoryMendingSnapshot(string boatId, string jobId, double workedSeconds,
-                                  bool materialsReserved, bool working, string playerId)
+                                  bool materialsReserved, bool working)
         {
             BoatId = boatId; JobId = jobId; WorkedSeconds = workedSeconds;
-            MaterialsReserved = materialsReserved; Working = working; PlayerId = playerId;
+            MaterialsReserved = materialsReserved; Working = working;
         }
     }
 
     public readonly struct DoryMendingJobStarted
     {
-        public readonly string BoatId, JobId, PlayerId;
+        public readonly string BoatId, JobId;
         public readonly double GameSeconds;
-        public DoryMendingJobStarted(string boatId, string jobId, double seconds, string playerId)
-        { BoatId = boatId; JobId = jobId; GameSeconds = seconds; PlayerId = playerId; }
+        public DoryMendingJobStarted(string boatId, string jobId, double seconds)
+        { BoatId = boatId; JobId = jobId; GameSeconds = seconds; }
     }
 
     public readonly struct DoryMendingJobDone
     {
-        public readonly string BoatId, JobId, PlayerId;
+        public readonly string BoatId, JobId;
         public readonly double GameSeconds;
-        public DoryMendingJobDone(string boatId, string jobId, double seconds, string playerId)
-        { BoatId = boatId; JobId = jobId; GameSeconds = seconds; PlayerId = playerId; }
+        public DoryMendingJobDone(string boatId, string jobId, double seconds)
+        { BoatId = boatId; JobId = jobId; GameSeconds = seconds; }
     }
 
     public readonly struct DoryMended

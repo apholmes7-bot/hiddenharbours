@@ -17,8 +17,6 @@ namespace HiddenHarbours.Economy
         private readonly IGameClock _clock;
         private readonly IEnvironmentService _tide;
         private readonly IMendingCarry _carry;
-        private readonly DoryMendingClaims _claims;
-        public string PlayerId { get; }
         private readonly GameConfig _config;
         private readonly TideProfile _place;
         private readonly Func<double, float> _water;
@@ -32,8 +30,7 @@ namespace HiddenHarbours.Economy
         private const int EdgeBisections = 40;
 
         public DoryMendingSession(DoryMendingDef def, ISaveService save, IGameClock clock,
-                                 IEnvironmentService tide, IMendingCarry carry, GameConfig config,
-                                 DoryMendingClaims claims, string playerId)
+                                 IEnvironmentService tide, IMendingCarry carry, GameConfig config)
         {
             _def = def != null ? def : throw new ArgumentNullException(nameof(def));
             def.Validate();
@@ -42,9 +39,6 @@ namespace HiddenHarbours.Economy
             _clock = clock ?? throw new ArgumentNullException(nameof(clock));
             _tide = tide ?? throw new ArgumentNullException(nameof(tide));
             _carry = carry ?? throw new ArgumentNullException(nameof(carry));
-            _claims = claims ?? throw new ArgumentNullException(nameof(claims));
-            if (string.IsNullOrWhiteSpace(playerId)) throw new ArgumentException("A player identity is required.");
-            PlayerId = playerId;
             _config = config != null ? config : throw new ArgumentNullException(nameof(config));
             if (!(config.SecondsPerDay > 0) || float.IsInfinity(config.SecondsPerDay) ||
                 !(config.TidalPeriodHours > 0) || float.IsInfinity(config.TidalPeriodHours))
@@ -72,7 +66,7 @@ namespace HiddenHarbours.Economy
 
         public DoryMendingSnapshot Snapshot => new DoryMendingSnapshot(
             _def.BoatId, _active != null ? _active.Id : null, _worked,
-            _reservation != null && _reservation.IsValid, _working, _active != null ? PlayerId : null);
+            _reservation != null && _reservation.IsValid, _working);
 
         public DoryMendingJobDef NextJob
         {
@@ -93,7 +87,7 @@ namespace HiddenHarbours.Economy
             if (job == null) return DoryMendReason.UnknownJob;
             if (_save.GetFlag(job.CompletedFlag)) return DoryMendReason.JobAlreadyDone;
             if (job != NextJob) return DoryMendReason.EarlierJobsIncomplete;
-            if (_working || _claims.HeldByOther(_def.BoatId, this)) return DoryMendReason.JobInProgress;
+            if (_working) return DoryMendReason.JobInProgress;
             if (_clock.IsHeld || _clock.IsPaused) return DoryMendReason.ClockUnavailable;
             if (job.NeedsLowWater && !LowWater) return DoryMendReason.LowWaterRequired;
             if (_active == null)
@@ -111,8 +105,6 @@ namespace HiddenHarbours.Economy
             reason = CheckStart(jobId, placeId);
             if (reason != DoryMendReason.None) return false;
             bool firstStart = _active == null;
-            if (!_claims.TryClaim(_def.BoatId, this))
-            { reason = DoryMendReason.JobInProgress; return false; }
             _busy = true;
             try
             {
@@ -121,20 +113,14 @@ namespace HiddenHarbours.Economy
                     var job = NextJob;
                     if (!_carry.TryReserve((MendingMaterial[])job.Materials.Clone(), out _reservation))
                     { reason = DoryMendReason.MissingMaterials; return false; }
-                    reason = CheckPlaceAndOwnership(placeId, duringWork: true);
-                    if (reason != DoryMendReason.None) { Dispose(); return false; }
                     _active = job;
                     _worked = 0;
                 }
                 _working = true;
-                if (firstStart) EventBus.Publish(new DoryMendingJobStarted(_def.BoatId, _active.Id, _clock.TotalSeconds, PlayerId));
+                if (firstStart) EventBus.Publish(new DoryMendingJobStarted(_def.BoatId, _active.Id, _clock.TotalSeconds));
                 return true;
             }
-            finally
-            {
-                if (_active == null) _claims.Release(_def.BoatId, this);
-                _busy = false;
-            }
+            finally { _busy = false; }
         }
 
         public void Pause() { if (!_busy) _working = false; }
@@ -147,7 +133,6 @@ namespace HiddenHarbours.Economy
             _active = null;
             _worked = 0;
             _working = false;
-            _claims.Release(_def.BoatId, this);
         }
 
         /// <summary>Advance the real game clock by the work actually possible. Stops at the first
@@ -209,7 +194,7 @@ namespace HiddenHarbours.Economy
                 }
                 if (done != null)
                 {
-                    EventBus.Publish(new DoryMendingJobDone(_def.BoatId, done.Id, _clock.TotalSeconds, PlayerId));
+                    EventBus.Publish(new DoryMendingJobDone(_def.BoatId, done.Id, _clock.TotalSeconds));
                     if (repaired)
                     {
                         EventBus.Publish(new BoatRepaired(_def.BoatId, 0));
@@ -330,7 +315,6 @@ namespace HiddenHarbours.Economy
             _working = false;
             _reservation.Dispose();
             _reservation = null;
-            _claims.Release(_def.BoatId, this);
             _save.Save();
             return true;
         }

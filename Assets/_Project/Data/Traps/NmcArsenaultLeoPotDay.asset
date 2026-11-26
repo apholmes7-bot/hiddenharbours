@@ -97,7 +97,7 @@ MonoBehaviour:
   FloodBearingDegrees: 270
   FullStreamRiseMetersPerHour: 1
   StreamLean01: 0.35
-  BuoyColour: {r: 0.95, g: 0.8, b: 0.15, a: 1}
+  BuoyColour: {r: 0.2, g: 0.6, b: 0.35, a: 1}
   RopeColour: {r: 0.82, g: 0.76, b: 0.6, a: 0.9}
   RopeWidthMeters: 0.06
   DepthDrawFraction: 0.35

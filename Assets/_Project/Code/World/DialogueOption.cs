@@ -71,6 +71,17 @@ namespace HiddenHarbours.World
         [TextArea] public string[] NothingToSellLines;
 
         /// <summary>
+        /// <b>A row whose answer is worked out when it is picked</b>, never authored: built in code for a
+        /// conversation (a supply handed over, a clue climbed) and never serialized, so no asset carries it.
+        /// Picking the row calls it once and speaks what it returns; null or empty ends the conversation.
+        /// Checked after the catalogue and sell kinds, before <see cref="ReplyLines"/>.
+        /// </summary>
+        [System.NonSerialized] public System.Func<string[]> ReplyAtPick;
+
+        /// <summary>True when this row's answer is worked out at the pick.</summary>
+        public bool AnswersAtPick => ReplyAtPick != null;
+
+        /// <summary>
         /// True when this row hands off to a seller's book instead of ending the conversation.
         ///
         /// <para><b>It is the ONE row kind that is deferred-terminal rather than terminal.</b> Picking it

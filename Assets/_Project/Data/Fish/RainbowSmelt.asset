@@ -16,7 +16,7 @@ MonoBehaviour:
   DisplayName: Rainbow Smelt
   Category: 2
   Rarity: 0
-  Flavor: 'A finger-long silver fish that smells of cut cucumber. Comes into the bays and creek mouths with the cold and is jigged through the ice or off the wharf. BALANCE NOTE: placeholder value, weight and elasticity set beside its neighbours - flagged for economy-sim to tune.'
+  Flavor: 'A finger-long silver fish that smells of cut cucumber. Comes into the bays and creek mouths with the cold and is jigged through the ice or off the wharf.'
   RegionIds:
   - region.st_peters
   - region.east_water

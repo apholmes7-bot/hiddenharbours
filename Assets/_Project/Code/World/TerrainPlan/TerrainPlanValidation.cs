@@ -28,7 +28,8 @@ namespace HiddenHarbours.World
 
         /// <summary>
         /// CD's five labels, and the lane's one for the bar walk (M5). Road and cart track are the path slot with ruts
-        /// (part 1 §5); worn grass is the path slot at a light weight, which the plate judges; dirt is the dirt slot.
+        /// (part 1 §5); worn grass is the path slot at a light weight, which the plate judges; dirt is the dirt slot;
+        /// kept grass is the grass slot, for a yard held against the wet ground beside it.
         /// </summary>
         public static readonly LabelSlot[] Labels =
         {
@@ -37,6 +38,7 @@ namespace HiddenHarbours.World
             new LabelSlot("path", "path", false, 1f, 1f),
             new LabelSlot("worn grass", "path", false, 0.05f, 0.95f),
             new LabelSlot("dirt", "dirt", false, 1f, 1f),
+            new LabelSlot("kept grass", "grass", false, 1f, 1f),
             new LabelSlot("crest-top walk (not painted)", "path", false, 0f, 0f),
         };
 

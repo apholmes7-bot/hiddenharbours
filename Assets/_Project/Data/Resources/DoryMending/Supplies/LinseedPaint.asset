@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: supply.linseed_paint
   DisplayName: Tin of linseed paint
   Flavor: One tin for the repaired patch. The finish is chosen separately.
-  PriceSource: {fileID: 11400000, guid: b93db39c5a454a0daa5b6c0720849f5b, type: 2}
+  Price: 16
   Catalog:
     Listed: 0
     Section: 5

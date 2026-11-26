@@ -583,6 +583,15 @@ Balance dashboards (§6.2) report these coverage percentages so no single condit
   `[Serializable]` with custom property drawers for friendly inline editing (curve fields, tide-band
   sliders, a 24h time-curve widget).
 - Localized fields (`displayName`, `flavorText`) reference the localization tables, not raw strings.
+- **Flavor is player text.** It is drawn on the catalog page and read by the player, so tuning and
+  wiring notes never go in it (`PlayerTextContentValidationTests` fails on all-caps `... NOTE`
+  markers, HOLD/TODO/FIXME/TBD/OWED, role names, ids and "placeholder"/"greybox"). Notes moved out of
+  Flavor on 2026-11-25: the base value, weight and elasticity of tomcod, cunner, green crab, rainbow
+  smelt, bar clam, quahog and rock crab, and the prices of herring, mackerel and fish scrap, are still
+  first-pass numbers set beside their neighbours for economy-sim to tune; oyster, mussel, bar clam
+  and quahog are hand-gather only (their `AllowedGear` says so) and in no rod pool or trap; sea
+  scallop is dredge-only and waits on the trawl arc; the clam bucket's 20-clam capacity lives on
+  `ClamBucket.Capacity` (Player), not on the `gear.bucket` offer.
 - Art (`spriteRef`) is an **Addressable** ref; a placeholder sprite is allowed but flagged so art can
   be authored asynchronously (see [`art-and-audio-bible.md`](art-and-audio-bible.md)).
 

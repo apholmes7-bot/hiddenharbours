@@ -95,7 +95,8 @@ namespace HiddenHarbours.Tests.RigBaking
                 }
                 skins++;
             }
-            Assert.AreEqual(10, skins); Assert.AreEqual(240, frames);
+            // The ten rig presets plus charskin.basil (an outfit over the skipper's body): 11 skins x 4 rows x 6 frames.
+            Assert.AreEqual(11, skins); Assert.AreEqual(264, frames);
         }
 
         [Test]

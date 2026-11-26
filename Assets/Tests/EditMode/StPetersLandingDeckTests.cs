@@ -200,7 +200,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(StPetersWharf.LampRowY, Is.EqualTo(5.75220215f).Within(1e-6f));
             var lamps = StPetersWharf.LampPostSites();
             Assert.That(lamps.Count, Is.EqualTo(2));
-            CollectionAssert.AreEqual(new[] { new Vector2(211f, 5.75220215f), new Vector2(184.5f, 5.75220215f) },
+            CollectionAssert.AreEqual(new[] { new Vector2(211f, 5.75220215f), new Vector2(186.6f, 5.75220215f) },
                 lamps.Select(l => l.Position).ToArray());
             foreach (var lamp in lamps)
             {
@@ -239,8 +239,10 @@ namespace HiddenHarbours.Tests.EditMode
             // Ruling 5 retires the old positional hashes. Keep all non-placement content pinned.
             var evidence = LandingDockEvidence.Load();
             int fittings = source.IndexOf("// Fittings, on their own root", StringComparison.Ordinal);
+            // Re-pinned for the full-length landing ladder: the only change to this section is the three-line
+            // ladder dressing call (was ed356dc1434f6d2ab24615975bacccd1f530e038c7d093bddeb2888d46a75aa3).
             Assert.That(Sha(source.Substring(fittings, source.IndexOf("            Debug.Log($\"[StPetersWharf] Built", fittings, StringComparison.Ordinal) - fittings).TrimEnd()),
-                Is.EqualTo("ed356dc1434f6d2ab24615975bacccd1f530e038c7d093bddeb2888d46a75aa3"));
+                Is.EqualTo("3d7db046f7989380474ec8b446f9e7b4c4a6c5931f8980cba785ca7a32e4ebfc"));
             string rows = File.ReadAllText(Path.Combine(ProjectRoot, "Assets/_Project/Data/KeyScenes/KeyScene_stp_landing.asset")).Replace("\r\n", "\n");
             string nonPlacement = Regex.Replace(rows, @"(?ms)^  - Id: (\S+)\n(.*?)(?=^  - Id:|\z)", m =>
                 evidence.placementIds.Contains(m.Groups[1].Value) ? Regex.Replace(m.Value, @"(?m)^    (At|SortY): .*\n", "") : m.Value);
@@ -274,6 +276,9 @@ namespace HiddenHarbours.Tests.EditMode
             var scene = SceneYaml.Parse(File.ReadAllText(Path.Combine(ProjectRoot, ScenePath)));
             var wharf = scene.RootNamed("StPetersWharf");
             var proof = LandingDockEvidence.Load();
+            // Re-pinned for the full-length landing ladder: 80 documents (its new waterline component), and the
+            // protected hash changes only in the ladder fitting's GameObject and SpriteRenderer and the ladder's
+            // climb (its kind and length). Every other protected document is byte-identical to base.
             Assert.That(scene.SubtreeOf(wharf.FileId).Count, Is.EqualTo(proof.expectedWharfDocuments));
             string text = string.Join("\n", proof.protectedWharfIds.OrderBy(id => id).Select(id => scene.Require(id, "protected wharf document").Text));
             Assert.That(proof.protectedWharfIds.Length, Is.EqualTo(39));

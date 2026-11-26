@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.GearOffer
   Id: gear.rod
   DisplayName: Fishing Rod
-  Flavor: 'A proper rod and reel - the step up from a hand-line. Fishes cod once you
-    hold the cod licence. gameplay-systems maps gear.rod to the Rod Gear capability.'
+  Flavor: 'A proper rod and reel - the step up from a hand-line. Fishes cod once you hold the cod licence.'
   Price: 60
   Catalog:
     Listed: 1

@@ -92,7 +92,6 @@ namespace HiddenHarbours.Tests.EditMode
             public readonly Dictionary<string, int> Stock = new Dictionary<string, int>();
             public bool Refuse;
             public bool RefuseCommit;
-            public Action BeforeReserve;
             public int Consumes;
             public int Reservations;
             private readonly Dictionary<string, int> _reserved = new Dictionary<string, int>();
@@ -101,7 +100,6 @@ namespace HiddenHarbours.Tests.EditMode
             public bool TryReserve(IReadOnlyList<MendingMaterial> materials, out IMendingReservation reservation)
             {
                 reservation = null;
-                BeforeReserve?.Invoke();
                 if (Refuse) return false;
                 foreach (var material in materials) if (Count(material.ItemId) < material.Count) return false;
                 var copy = new List<MendingMaterial>(materials);
@@ -152,7 +150,6 @@ namespace HiddenHarbours.Tests.EditMode
         private Saved _save;
         private Carry _carry;
         private DoryMendingSession _session;
-        private DoryMendingClaims _claims;
         private readonly List<string> _events = new List<string>();
         private int _ready;
         private double Hour => _config.SecondsPerDay / 24.0;
@@ -166,7 +163,6 @@ namespace HiddenHarbours.Tests.EditMode
         [SetUp]
         public void SetUp()
         {
-            _claims = new DoryMendingClaims();
             _config = Make<GameConfig>();
             _def = Make<DoryMendingDef>();
             _def.Id = "mending.st_peters_dory"; _def.BoatId = "boat.dory"; _def.PlaceId = Place;
@@ -210,7 +206,7 @@ namespace HiddenHarbours.Tests.EditMode
             _objects.Clear();
         }
 
-        private DoryMendingSession NewSession() => new DoryMendingSession(_def, _save, _clock, _tide, _carry, _config, _claims, "player.one");
+        private DoryMendingSession NewSession() => new DoryMendingSession(_def, _save, _clock, _tide, _carry, _config);
         private void Started(DoryMendingJobStarted e) => _events.Add("start:" + e.JobId);
         private void Done(DoryMendingJobDone e) => _events.Add("done:" + e.JobId);
         private void Mended(DoryMended e) => _events.Add("mended:" + e.BoatId);
@@ -248,189 +244,6 @@ namespace HiddenHarbours.Tests.EditMode
             _session = NewSession();
         }
 
-
-        private Carry FullCarry()
-        {
-            var carry = new Carry();
-            foreach (var job in _def.Jobs)
-                foreach (var material in job.Materials) carry.Stock[material.ItemId] = material.Count;
-            return carry;
-        }
-
-        private DoryMendingSession PlayerSession(string playerId, Carry carry) =>
-            new DoryMendingSession(_def, _save, _clock, _tide, carry, _config, _claims, playerId);
-
-        [TestCase(2, 0)]
-        [TestCase(2, 1)]
-        [TestCase(3, 1)]
-        [TestCase(4, 0)]
-        [TestCase(4, 3)]
-        public void CompetingPlayersHaveOneStarterOneReservationAndOneDebit(int players, int starter)
-        {
-            var sessions = new List<DoryMendingSession>();
-            var carries = new List<Carry>();
-            try
-            {
-                for (int i = 0; i < players; i++)
-                {
-                    carries.Add(FullCarry());
-                    sessions.Add(PlayerSession("player." + i, carries[i]));
-                }
-                var owner = sessions[starter];
-                Assert.That(owner.TryStart(_def.Jobs[0].Id, Place, out _), Is.True);
-                Assert.That(owner.Snapshot.PlayerId, Is.EqualTo(owner.PlayerId));
-                double before = _clock.TotalSeconds;
-                owner.Pause();
-                for (int i = 0; i < players; i++)
-                {
-                    if (i == starter) continue;
-                    Assert.That(sessions[i].TryStart(_def.Jobs[0].Id, Place, out var why), Is.False);
-                    Assert.That(why, Is.EqualTo(DoryMendReason.JobInProgress));
-                    Assert.That(sessions[i].WorkFor(30, Place, out why), Is.False);
-                    Assert.That(why, Is.EqualTo(DoryMendReason.NotStarted));
-                    Assert.That(carries[i].Reservations, Is.Zero);
-                    Assert.That(carries[i].Consumes, Is.Zero);
-                    Assert.That(sessions[i].Snapshot.PlayerId, Is.Null);
-                    sessions[i].Dispose();
-                }
-                Assert.That(_clock.TotalSeconds, Is.EqualTo(before));
-                Assert.That(owner.TryStart(_def.Jobs[0].Id, Place, out _), Is.True);
-                Assert.That(owner.WorkFor(30, Place, out _), Is.True);
-                Assert.That(carries[starter].Reservations, Is.EqualTo(1));
-                Assert.That(carries[starter].Consumes, Is.EqualTo(1));
-                Assert.That(_clock.TotalSeconds, Is.EqualTo(before + 30 * Minute));
-                CollectionAssert.AreEqual(new[] { "start:mendjob.patch_plank", "done:mendjob.patch_plank" }, _events);
-                Assert.That(owner.Snapshot.PlayerId, Is.Null);
-                Assert.That(_save.GetFlag(_def.Jobs[0].CompletedFlag), Is.True);
-            }
-            finally { foreach (var session in sessions) session.Dispose(); }
-        }
-
-        [Test]
-        public void DepartingStarterReleasesTheBoatAndHisUnconsumedGoods()
-        {
-            var secondCarry = FullCarry();
-            using (var second = PlayerSession("player.two", secondCarry))
-            {
-                Start();
-                Assert.That(_session.WorkFor(10, Place, out _), Is.True);
-                _session.Dispose();
-                Assert.That(_carry.Count("supply.patch_plank"), Is.EqualTo(1));
-                Assert.That(_carry.Consumes, Is.Zero);
-                Assert.That(second.TryStart(_def.Jobs[0].Id, Place, out _), Is.True);
-                Assert.That(second.Snapshot.PlayerId, Is.EqualTo("player.two"));
-                Assert.That(second.Snapshot.WorkedSeconds, Is.Zero);
-                Assert.That(second.WorkFor(30, Place, out _), Is.True);
-                Assert.That(secondCarry.Consumes, Is.EqualTo(1));
-                Assert.That(_carry.Consumes, Is.Zero);
-            }
-        }
-
-        [Test]
-        public void FailedReservationReleasesBoatClaimForAnotherPlayer()
-        {
-            _carry.Refuse = true;
-            Assert.That(_session.TryStart(_def.Jobs[0].Id, Place, out var why), Is.False);
-            Assert.That(why, Is.EqualTo(DoryMendReason.MissingMaterials));
-            using (var second = PlayerSession("player.two", FullCarry()))
-                Assert.That(second.TryStart(_def.Jobs[0].Id, Place, out _), Is.True);
-            Assert.That(_carry.Consumes, Is.Zero);
-        }
-
-        [Test]
-        public void ReentrantClockInputFromAnotherPlayerCannotStartTheSameJob()
-        {
-            var secondCarry = FullCarry();
-            using (var second = PlayerSession("player.two", secondCarry))
-            {
-                Start();
-                _clock.DuringAdvance = () =>
-                {
-                    Assert.That(second.TryStart(_def.Jobs[0].Id, Place, out var why), Is.False);
-                    Assert.That(why, Is.EqualTo(DoryMendReason.JobInProgress));
-                };
-                Assert.That(_session.WorkFor(30, Place, out _), Is.True);
-                Assert.That(secondCarry.Reservations, Is.Zero);
-                Assert.That(secondCarry.Consumes, Is.Zero);
-                Assert.That(_carry.Consumes, Is.EqualTo(1));
-            }
-        }
-
-
-        [Test]
-        public void ReservationCallbackCannotClaimTheSameBoatForAnotherPlayer()
-        {
-            var secondCarry = FullCarry();
-            using (var second = PlayerSession("player.two", secondCarry))
-            {
-                _carry.BeforeReserve = () =>
-                {
-                    Assert.That(second.TryStart(_def.Jobs[0].Id, Place, out var why), Is.False);
-                    Assert.That(why, Is.EqualTo(DoryMendReason.JobInProgress));
-                };
-                Start();
-                Assert.That(secondCarry.Reservations, Is.Zero);
-                Assert.That(_carry.Reservations, Is.EqualTo(1));
-            }
-        }
-
-        [Test]
-        public void ThrowingReservationDoesNotStrandTheBoatClaim()
-        {
-            _carry.BeforeReserve = () => throw new InvalidOperationException("reservation unavailable");
-            Assert.Throws<InvalidOperationException>(() => _session.TryStart(_def.Jobs[0].Id, Place, out _));
-            using (var second = PlayerSession("player.two", FullCarry()))
-                Assert.That(second.TryStart(_def.Jobs[0].Id, Place, out _), Is.True);
-        }
-
-        [Test]
-        public void CompletionEventsIdentifyTheStarterAndDoNotChargeAnObserver()
-        {
-            string startedBy = null, finishedBy = null;
-            void OnStart(DoryMendingJobStarted e) => startedBy = e.PlayerId;
-            void OnDone(DoryMendingJobDone e) => finishedBy = e.PlayerId;
-            EventBus.Subscribe<DoryMendingJobStarted>(OnStart);
-            EventBus.Subscribe<DoryMendingJobDone>(OnDone);
-            try
-            {
-                Finish();
-                Assert.That(startedBy, Is.EqualTo(_session.PlayerId));
-                Assert.That(finishedBy, Is.EqualTo(_session.PlayerId));
-                Assert.That(_carry.Consumes, Is.EqualTo(1));
-            }
-            finally
-            {
-                EventBus.Unsubscribe<DoryMendingJobStarted>(OnStart);
-                EventBus.Unsubscribe<DoryMendingJobDone>(OnDone);
-            }
-        }
-
-        [Test]
-        public void SeparateLoadedWorldsDoNotShareBoatClaims()
-        {
-            var otherSave = new Saved();
-            otherSave.Current.OwnedBoats.Add(_def.BoatId);
-            var otherCarry = FullCarry();
-            using (var other = new DoryMendingSession(_def, otherSave, _clock, _tide, otherCarry,
-                                                     _config, new DoryMendingClaims(), "player.other"))
-            {
-                Start();
-                Assert.That(other.TryStart(_def.Jobs[0].Id, Place, out _), Is.True);
-                Assert.That(otherCarry.Reservations, Is.EqualTo(1));
-                Assert.That(_carry.Reservations, Is.EqualTo(1));
-                Assert.That(_carry.Consumes, Is.Zero);
-                Assert.That(otherCarry.Consumes, Is.Zero);
-            }
-        }
-
-        [TestCase(null)]
-        [TestCase("")]
-        [TestCase(" ")]
-        public void ASessionRequiresAnExplicitPlayerIdentity(string playerId)
-        {
-            Assert.Throws<ArgumentException>(() => PlayerSession(playerId, _carry));
-        }
-
         [Test]
         public void StartReservesWithoutDebitAndAnotherSessionCannotSpendTheClaim()
         {
@@ -446,7 +259,7 @@ namespace HiddenHarbours.Tests.EditMode
             using (var other = NewSession())
             {
                 Assert.That(other.TryStart(_def.Jobs[0].Id, Place, out var why), Is.False);
-                Assert.That(why, Is.EqualTo(DoryMendReason.JobInProgress));
+                Assert.That(why, Is.EqualTo(DoryMendReason.MissingMaterials));
                 Assert.That(other.Snapshot.MaterialsReserved, Is.False);
             }
             _session.Dispose();

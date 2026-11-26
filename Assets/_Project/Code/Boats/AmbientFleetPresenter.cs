@@ -369,9 +369,28 @@ namespace HiddenHarbours.Boats
                 fisher.Heading = Vector2.up;
 
                 fisher.Buoys = new Buoy[spotsPerBoat];
-                Sprite buoySprite = BuildBuoySprite(tint);
+                // The fleet's float art (data) painted in this fisher's colour by ramp swap; without art,
+                // the code greybox in the same colour, exactly as before.
+                bool realFloat = def.BuoySprite != null;
+                Sprite buoySprite = realFloat ? def.BuoySprite : BuildBuoySprite(tint);
+                Color band = GameServices.Config != null ? GameServices.Config.PotFloatBandColour
+                                                         : (Color)PotFloatPaint.BakedBand;
                 for (int j = 0; j < spotsPerBoat; j++)
+                {
                     fisher.Buoys[j] = BuildBuoy(fleet.Root.transform, def.Id, b, j, buoySprite);
+                    BuoyWaveVisual wave = fisher.Buoys[j].WaveVisual;
+                    if (!realFloat) continue;
+                    wave.ConfigureFloatFromSprite(buoySprite);
+                    wave.ConfigureWaterlineArc(def.BuoyFloatRadiusMeters);
+                    wave.ConfigurePaint(tint, band);
+                    if (GameServices.Config != null)
+                    {
+                        wave.ConfigureRide(GameServices.Config.PotFloatSurfaceFollow,
+                                           def.BuoyDraftMeters, def.BuoyFreeboardMeters,
+                                           GameServices.Config.PotFloatFoamTexels);
+                        wave.ConfigureDrawScale(GameServices.Config.PotFloatDrawScale);
+                    }
+                }
 
                 fleet.Boats[b] = fisher;
             }
@@ -398,6 +417,8 @@ namespace HiddenHarbours.Boats
             // The proven wave-rider, reused unchanged (bob + waterline + vanish-under-a-crest).
             buoy.WaveVisual = buoy.Root.AddComponent<BuoyWaveVisual>();
             buoy.WaveVisual.Configure(buoy.Renderer, visualGo.transform);
+            // The waterline wraps the float, at the half-width its greybox is drawn with.
+            buoy.WaveVisual.ConfigureWaterlineArc(BuoyFloatRadiusPx / (float)BuoyPixelsPerUnit);
 
             buoy.State = BuoyState.Hidden;
             buoy.Root.SetActive(false);
@@ -716,9 +737,14 @@ namespace HiddenHarbours.Boats
         /// own colour — buoy colour = whose gear it is (ratified owner direction), so an NPC pot can
         /// never read as the player's yellow.
         /// </summary>
+        /// <summary>The greybox float's widest half-width (px) and its pixels per unit: the shape it is
+        /// drawn with, and so the radius its waterline arc wraps.</summary>
+        private const int BuoyFloatRadiusPx = 5;
+        private const int BuoyPixelsPerUnit = 32;
+
         private static Sprite BuildBuoySprite(Color floatTint)
         {
-            const int W = 16, H = 32, ppu = 32;
+            const int W = 16, H = 32, ppu = BuoyPixelsPerUnit;
             var tex = new Texture2D(W, H, TextureFormat.RGBA32, false, true)
             {
                 name = "AmbientBuoyGreybox",
@@ -736,8 +762,8 @@ namespace HiddenHarbours.Boats
             for (int y = 14; y <= 30; y++)
             {
                 float t = Mathf.InverseLerp(14f, 30f, y);
-                int half = Mathf.RoundToInt(Mathf.Lerp(5f, 2f, Mathf.Abs(t - 0.45f) * 1.8f));
-                half = Mathf.Clamp(half, 1, 5);
+                int half = Mathf.RoundToInt(Mathf.Lerp(BuoyFloatRadiusPx, 2f, Mathf.Abs(t - 0.45f) * 1.8f));
+                half = Mathf.Clamp(half, 1, BuoyFloatRadiusPx);
                 Color32 c = (y >= 21 && y <= 23) ? floatBand : floatTop;
                 for (int x = cx - half; x < cx + half; x++)
                     if (x >= 0 && x < W) px[y * W + x] = c;

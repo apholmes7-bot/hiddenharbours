@@ -25,6 +25,8 @@
 //   _WaterlineFoam        (0..1 brightness of the thin foam/ripple band at the waterline)
 //   _WaterlineFoamWidth   (half-height of the foam band, in uv.y)
 //   _PixelsPerUnit + _SpriteHeightPx  (pixel-snap the refraction offset to the sprite's pixel grid)
+//   _WaterlineArc         (a round body's waterline bows down across its near side; 0 = the straight row.
+//                          Only the floats set it, through BuoyWaveVisual; see WaterlineCut below)
 //
 // CRITICAL: _WaterlineFrac == 0 is a PIXEL-IDENTICAL passthrough of the normal unlit sprite (dry land looks
 // EXACTLY as today) — the whole underwater branch is gated on being below a positive waterline, so at frac 0
@@ -60,6 +62,10 @@ Shader "HiddenHarbours/PlayerSubmerge"
         _WaterlineFoamWidth ("Waterline foam half-width (uv.y)", Range(0.001,0.2)) = 0.03
         _PixelsPerUnit      ("Pixels per unit (pixel snap)", Float) = 32
         _SpriteHeightPx     ("Sprite height (px, pixel snap)", Float) = 64
+
+        // THE WATERLINE WRAPS A ROUND BODY: (drop in uv.y, centre u, 1 / half-width in u, texture width px),
+        // pushed per renderer by BuoyWaveVisual through its MaterialPropertyBlock. Zero = the straight row.
+        _WaterlineArc       ("Waterline arc (drop, centre u, 1/half-width u, tex width px)", Vector) = (0, 0, 0, 0)
 
         // THE WARDROBE (Include/CharacterPalette.hlsl). Declared here only so the shipped material
         // carries explicit defaults — 0 swaps is the pixel-identical passthrough. The pairs themselves
@@ -123,7 +129,25 @@ Shader "HiddenHarbours/PlayerSubmerge"
                 float  _WaterlineFoamWidth;
                 float  _PixelsPerUnit;
                 float  _SpriteHeightPx;
+                float4 _WaterlineArc;
             CBUFFER_END
+
+            // THE WATERLINE WRAPS A ROUND BODY (BuoyWaveMath.WaterlineCut is the C# twin, and the tests pin
+            // it). A floating round body's waterline is a horizontal circle; the 3/4 camera draws it as an
+            // ellipse whose SIDES sit on the float line and whose NEAR point sits lower by the ground squash
+            // times the radius. So the cut at column u is the float line minus the near half of that ellipse:
+            //     drop(u) = depth * sqrt(1 - t^2),   t = (u - centre) / halfWidth   (0 beyond the body)
+            // u is snapped to the texel column first, so the arc is a clean pixel staircase at any zoom. The
+            // drop never exceeds what is left above the line (1 - frac), so a buoy awash still goes fully
+            // under. _WaterlineArc == 0 returns the line unchanged: the straight row, bit for bit.
+            float WaterlineCut(float u, float frac)
+            {
+                float texW = max(_WaterlineArc.w, 1.0);
+                float uSnap = (floor(u * texW) + 0.5) / texW;
+                float t = (uSnap - _WaterlineArc.y) * _WaterlineArc.z;
+                float drop = _WaterlineArc.x * sqrt(saturate(1.0 - t * t));
+                return frac - min(drop, max(0.0, 1.0 - frac));
+            }
 
             Varyings vert(Attributes IN)
             {
@@ -141,10 +165,13 @@ Shader "HiddenHarbours/PlayerSubmerge"
                 // Feet→head fraction (pivot at the feet: uv.y 0 = feet, 1 = head). Robust to PPU/pivot.
                 float bodyFrac = saturate(uv.y);
 
+                // The line at THIS column: the float line, bowed down across a round body (zero arc = flat).
+                float cut = WaterlineCut(uv.x, _WaterlineFrac);
+
                 // How far BELOW the waterline this fragment is (0 at/above the line, up to 1 at the feet). At
                 // _WaterlineFrac == 0 this is 0 everywhere → the whole underwater branch contributes nothing,
                 // so the fragment is a PIXEL-IDENTICAL passthrough of the normal unlit sprite (dry = today).
-                float below = saturate(_WaterlineFrac - bodyFrac);   // >0 only strictly under the line
+                float below = saturate(cut - bodyFrac);   // >0 only strictly under the line
                 bool submerged = below > 0.0;
 
                 // --- REFRACTION: offset the SAMPLE horizontally by a per-row animated sine of uv.y + _Time,
@@ -195,7 +222,7 @@ Shader "HiddenHarbours/PlayerSubmerge"
 
                 // (c) A bright foam / ripple line right AT the waterline (a thin band centred on _WaterlineFrac).
                 // Distance in uv.y from the waterline; brightest at the line, feathering over the half-width.
-                float dLine = abs(bodyFrac - _WaterlineFrac);
+                float dLine = abs(bodyFrac - cut);
                 float foam = saturate(1.0 - dLine / max(_WaterlineFoamWidth, 1e-4));
                 foam = foam * foam * (3.0 - 2.0 * foam);       // smoothstep-ish soft band
                 foam *= saturate(_WaterlineFoam) * a;          // only where the sprite is opaque

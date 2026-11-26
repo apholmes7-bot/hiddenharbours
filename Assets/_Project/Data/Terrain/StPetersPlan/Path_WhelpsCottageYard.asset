@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e4b07322d732cfe9125965394268f7, type: 3}
+  m_Name: Path_WhelpsCottageYard
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.PathDef
+  Id: path.stp_whelps_cottage_yard
+  DisplayName: Whelps cottage yard
+  Kind: 0
+  Width: 2.6
+  Points:
+  - {x: 162.1, y: -23.9}
+  - {x: 157.3, y: -28.7}
+  - {x: 157, y: -29.5}
+  - {x: 157.4, y: -30.3}
+  - {x: 163.1, y: -36.1}
+  LineSource: 
+  JoinPoints: []
+  Material: grass
+  Weight: 1
+  Label: kept grass
+  Ruts: 0
+  SourceId: path.stp_whelps_cottage_yard
+  Frozen: 0
+  PaintOnly: 1
+  Why: 'Kept grass along the cottage''s two landward walls: the pond''s sedge stops short of the house.'

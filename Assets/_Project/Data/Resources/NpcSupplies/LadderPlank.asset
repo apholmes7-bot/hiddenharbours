@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc1b061b6a464caca54ea4162759046d, type: 3}
+  m_Name: LadderPlank
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.ClueLadderDef
+  Id: clueladder.st_peters_dory_plank
+  Gift: {fileID: 11400000, guid: 786fa411457e4752b352be1ba61d069f, type: 2}
+  Rungs:
+  - Flag: st_peters.dory_clue.plank.1
+    Hints:
+    - NpcId: npc.rose_macisaac
+      Line: 'Somebody out the south side keeps a boat nobody ever sees go out. All that timber, sitting.'
+    - NpcId: npc.marguerite_leblanc
+      Line: 'Now and then a quiet sort comes in for tea and pencils and says nothing. Lives out by the birds, I think.'
+  - Flag: st_peters.dory_clue.plank.2
+    Hints:
+    - NpcId: npc.aunt_ginny
+      Line: 'Out along the cliff walk past the slip, somebody keeps a house and watches birds all day.'
+    - NpcId: npc.eileen_doiron
+      Line: 'Walk the children along the cliff walk and every one of them will tell you about the bird watcher.'
+  - Flag: st_peters.dory_clue.plank.3
+    Hints:
+    - NpcId: npc.junior_poirier
+      Line: 'The cottage on the brow above the Whelps. Cliff walk, off the slip road. Early morning and afternoons they''re on the doorstep; late morning and evening they''re out at the bench.'
+    - NpcId: npc.rose_macisaac
+      Line: 'Over the Whelps, on the brow, there''s a cottage. Take the cliff walk from the slip road. Catch them at the door after one, or before ten.'

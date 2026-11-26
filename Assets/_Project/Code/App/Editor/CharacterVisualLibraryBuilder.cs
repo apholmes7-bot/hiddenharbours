@@ -217,6 +217,40 @@ namespace HiddenHarbours.App.Editor
                     Folder = preset,
                     IdleFrames = 6, WalkFrames = 8, RunFrames = 6,
                 };
+
+            foreach (var kit in OutfitKits()) yield return kit;
+        }
+
+        /// <summary>
+        /// One def per cast OUTFIT (<see cref="Tools.RigBaking.CharacterOutfits"/>): <c>BasilIso</c>.
+        /// An outfit is drawn as a mesh by its own skin, which the skin bake links onto this def. Its
+        /// sprite sheets are its BASE preset's (<c>Iso/skipper/Skipper_*</c>), because the sheets come
+        /// from rig 6 and rig 6 cannot draw the outfit; they are only the fallback for a state the
+        /// mesh does not draw, and no new sheet is baked for it.
+        /// </summary>
+        static IEnumerable<Kit> OutfitKits()
+        {
+            foreach (var outfit in Tools.RigBaking.CharacterOutfits.All)
+                yield return new Kit
+                {
+                    AssetName = CastAssetName(outfit.Stem),
+                    Id = CastVisualId(outfit.Key),
+                    Stem = outfit.BaseStem,
+                    Folder = outfit.BasePreset,
+                    IdleFrames = 6, WalkFrames = 8, RunFrames = 6,
+                };
+        }
+
+        /// <summary>Build (or refresh in place) only the outfits' defs, leaving every other def alone.
+        /// Returns how many came out with art.</summary>
+        public static int BuildOutfits()
+        {
+            EnsureFolder(VisualsFolder);
+            int ok = 0;
+            foreach (var kit in OutfitKits())
+                if (BuildOne(kit)) ok++;
+            AssetDatabase.SaveAssets();
+            return ok;
         }
 
         [MenuItem(MenuPath, priority = 231)]

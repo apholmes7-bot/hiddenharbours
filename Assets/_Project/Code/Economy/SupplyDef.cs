@@ -1,6 +1,4 @@
-using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace HiddenHarbours.Economy
 {
@@ -38,18 +36,7 @@ namespace HiddenHarbours.Economy
         [Tooltip("Price in ₲. The economy-owned tunable — what the counter charges (no magic number in " +
                  "code). Ice is a RECURRING cost, so this number sets the running cost of keeping a catch " +
                  "cold away from Ginny's freezer (m1-progression-pacing §5).")]
-        [SerializeField, FormerlySerializedAs("Price")] private int _price = 6;
-        [Tooltip("Optional shared mending prices. When set, edit the sequence price table.")]
-        public DoryMendingDef PriceSource;
-        public int Price
-        {
-            get => PriceSource != null ? PriceSource.PriceFor(Id) : _price;
-            set
-            {
-                if (PriceSource != null) throw new InvalidOperationException("Edit the shared material price table.");
-                _price = value;
-            }
-        }
+        public int Price = 6;
 
         [Header("Catalog")]
         [Tooltip("Whether a seller's wares book lists this, on which shelf, and who stocks it. Off by " +

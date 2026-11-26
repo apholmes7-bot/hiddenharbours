@@ -357,7 +357,10 @@ namespace HiddenHarbours.Tests.EditMode
             // beside the toilet and the washstand: no travel component. Ginny's kitchen run adds the prep counter,
             // the stove and the microwave: sprites and a CookingStationFixture each, no collider, no travel component;
             // its kitchen sink (a WashStationPoint) and fridge (a KitchenStoreFixture) add art and a footprint collider.
+            // Basil's dory on the St Peters slip (mend and launch) adds the slip dory: a SlipDory, a DoryMendingStation,
+            // a sprite with a YSortSprite and a collider, no nested prefab and no travel component.
             Assert.That(seen.Select(g => paths[g].Replace('\\', '/')).OrderBy(p => p, StringComparer.Ordinal), Is.EqualTo(new[] {
+                "Assets/_Project/Prefabs/Boats/SlipDory.prefab",
                 "Assets/_Project/Prefabs/Bridges/CampBrookBridge.prefab",
                 "Assets/_Project/Prefabs/Bridges/CampPondCulvert.prefab",
                 "Assets/_Project/Prefabs/Bridges/Route91RiverBridge.prefab",

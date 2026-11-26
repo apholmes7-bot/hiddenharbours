@@ -452,9 +452,20 @@ namespace HiddenHarbours.World
             string[] text = it.HasNpcData
                 ? it.DialogueLines(metBefore, _flagStore)
                 : WorldStrings.Conversation(it.ConversationId, metBefore);
+            NpcDef npc = it.Npc;
+            List<DialogueOption> rows = it.HasNpcData ? DialogueOptionPicker.RowsFor(npc.Dialogue.Options) : null;
+
+            // A supply run under way adds the teller's lines and the givers' and ask-around rows (data in
+            // Resources/NpcSupplies). Outside that window both calls hand back exactly what went in.
+            string runFlag = null;
+            if (it.HasNpcData)
+            {
+                ISaveService save = GameServices.Save;
+                text = SupplyRunTalk.WithTellerLines(npc.Id, text, save, _flagStore, out runFlag);
+                rows = SupplyRunTalk.WithRows(npc.Id, rows, save, _flagStore, () => GameServices.BagHands);
+            }
             if (text == null || text.Length == 0) return;
 
-            NpcDef npc = it.Npc;
             // A speaker who reads the weather ends on today's read of it (WeatherReadDef): worked out
             // from the sim's wind through Core, so it is always true. A new array, never the asset's own.
             if (it.HasNpcData && npc.Dialogue.WeatherRead != null)
@@ -470,10 +481,13 @@ namespace HiddenHarbours.World
             }
 
             string flag = it.CompletionFlag;
-            Speak(it, text,
-                  it.HasNpcData ? DialogueOptionPicker.RowsFor(npc.Dialogue.Options) : null,
+            Speak(it, text, rows,
                   it.HasNpcData ? npc.Dialogue.Id : it.ConversationId,
-                  () => { if (!string.IsNullOrEmpty(flag)) _flags.Set(flag, true); });
+                  () =>
+                  {
+                      if (!string.IsNullOrEmpty(flag)) _flags.Set(flag, true);
+                      if (!string.IsNullOrEmpty(runFlag)) _flagStore.Set(runFlag, true);
+                  });
         }
 
         /// <summary>

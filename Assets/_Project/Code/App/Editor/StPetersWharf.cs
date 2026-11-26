@@ -445,6 +445,9 @@ namespace HiddenHarbours.App.Editor
                     var sr = go.AddComponent<SpriteRenderer>();
                     sr.sprite = sprite;
                     sr.sortingOrder = SortingOrderMax + 1;
+                    // The kit's ladder slice is 0.63 m long on a 5.35 m deck: draw the full-length landing
+                    // ladder instead, cut at the waterline by the same rule as the pier face it hangs on.
+                    if (f.Name == "ladder") DressFullLengthLadder(go, sr, f.Position.y, deckElevation);
                     // The STANDERS cast (ADR 0016, lights PR B — the searchlight raking the wharf wants
                     // pilings to throw). Their pivot is their base, which is where a shadow anchors
                     // (ADR 0026); the hangers (ladder, tyre) pivot at the TOP and would throw from the
@@ -527,9 +530,54 @@ namespace HiddenHarbours.App.Editor
                 var go = new GameObject($"Ladder_{n}");
                 go.transform.SetParent(ladderRoot.transform, worldPositionStays: false);
                 go.transform.position = new Vector3(f.Position.x, f.Position.y, 0f);
-                go.AddComponent<HiddenHarbours.World.WharfLadder>()
-                    .Configure($"{SurfaceId}.ladder_{n++}", deckElevation, MooringFaceHeadingDegrees);
+                var climb = go.AddComponent<HiddenHarbours.World.WharfLadder>();
+                climb.Configure($"{SurfaceId}.ladder_{n++}", deckElevation, MooringFaceHeadingDegrees);
+                climb.ConfigureKind(AssetDatabase.LoadAssetAtPath<HiddenHarbours.World.WharfLadderDef>(LadderKindPath),
+                                    FullLengthLadderMetres());
             }
+        }
+
+        /// <summary>The ladder kind this pier's ladder is built to.</summary>
+        public const string LadderKindPath = "Assets/_Project/Data/Regions/Ladders/WharfLadder_Galvanised.asset";
+
+        /// <summary>The full-length landing ladder's art (deck to below spring low, wet and weeded).</summary>
+        public const string LandingLadderArtPath = "Assets/_Project/Data/SetPieces/SetPiece_landingLadder.asset";
+
+        /// <summary>The landing ladder's per-pixel rig height map and its decode contract.</summary>
+        public const string LandingLadderHeightContractPath =
+            "Assets/_Project/Art/Sprites/StPeters/LandingProps/stpLandingProps.height-contract.json";
+
+        /// <summary>The frame that looks along heading 180 (out over the south water, toward the camera).</summary>
+        public const int LandingLadderFacingFrame = 4;
+
+        [System.Serializable] sealed class LadderBake { public float height; }
+        [System.Serializable] sealed class LadderHeightMap { public string key, path; public float minimumLocalZ, maximumLocalZ; }
+        [System.Serializable] sealed class LadderHeightContract { public LadderHeightMap[] maps; }
+
+        /// <summary>The drawn length of the landing ladder, read from its own bake options.</summary>
+        public static float FullLengthLadderMetres()
+        {
+            var art = AssetDatabase.LoadAssetAtPath<SetPieceDef>(LandingLadderArtPath);
+            return art != null ? JsonUtility.FromJson<LadderBake>(art.BakedOptionsJson).height : 0f;
+        }
+
+        static void DressFullLengthLadder(GameObject go, SpriteRenderer sr, float lipWorldY, float deckElevation)
+        {
+            var art = AssetDatabase.LoadAssetAtPath<SetPieceDef>(LandingLadderArtPath);
+            Sprite frame = art != null ? art.SpriteFor(LandingLadderFacingFrame) : null;
+            if (frame == null)
+            {
+                Debug.LogWarning($"[StPetersWharf] no landing ladder art at {LandingLadderArtPath}; the kit slice stays.");
+                return;
+            }
+            sr.sprite = frame;
+            var contract = JsonUtility.FromJson<LadderHeightContract>(
+                System.IO.File.ReadAllText(LandingLadderHeightContractPath));
+            LadderHeightMap map = System.Array.Find(contract.maps, m => m.key == "landingLadder");
+            var face = go.AddComponent<TidalFaceWaterline>();
+            face.Configure(lipWorldY, deckElevation);
+            face.ConfigureHeight(AssetDatabase.LoadAssetAtPath<Texture2D>(map.path), map.minimumLocalZ,
+                                 map.maximumLocalZ - map.minimumLocalZ, -deckElevation);
         }
 
         /// <summary>A sliced sheet's sub-sprites keyed by their trailing slice INDEX (the slicer names them
