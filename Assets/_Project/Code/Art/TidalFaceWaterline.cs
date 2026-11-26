@@ -3,6 +3,16 @@ using UnityEngine;
 
 namespace HiddenHarbours.Art
 {
+    /// <summary>What a tidal face is made of, for <see cref="TidalFaceWaterline"/>'s dressing. Values are
+    /// serialized and read by the shader: append only.</summary>
+    public enum TidalFaceDressing
+    {
+        None = 0,
+        TimberCrib = 1,
+        ConcreteQuay = 2,
+        RockBreakwater = 3,
+    }
+
     /// <summary>
     /// ⭐ <b>THE SEA COVERS A DRAWN WALL, AND UNCOVERS IT AGAIN.</b> The owner, at the Nine Mile Creek
     /// north wall at 06:11 on 2026-09-06: <i>"boats arent touching but not sitting in water"</i>.
@@ -72,6 +82,9 @@ namespace HiddenHarbours.Art
         /// Read here rather than re-derived, which is the whole of the "one sea" rule.</summary>
         public const string SeaLevelProperty = "_HHSeaLevelWorld";
 
+        /// <summary>The per-renderer dressing the shader reads: (kind, 0, 0, 1 when dressed).</summary>
+        public const string DressProperty = "_HHFaceDress";
+
         [Tooltip("The WORLD Y this face's drawn deck lip lands on — the one line the placement " +
                  "guarantees, and therefore the only line a row of pixels can be measured from. Every " +
                  "other row of the sprite is this one plus a height, and heights draw at the camera's " +
@@ -93,14 +106,26 @@ namespace HiddenHarbours.Art
                  "predates this must draw.")]
         [SerializeField] private bool _configured;
 
+        [Tooltip("0 for a face that hangs straight down from its lip (every wall). For a SLOPE that runs down into the " +
+                 "sea, a slipway, the plan metres it runs south per metre it falls: the water then climbs its ramp " +
+                 "that much further per metre of tide than up a wall, and the cut row moves with it. The lip is the " +
+                 "slope's top edge and its elevation the top's.")]
+        [Min(0f)] [SerializeField] private float _slopeRunPerMetre;
+
         [SerializeField] private Texture2D _heightTexture;
         [SerializeField] private Vector3 _heightDecode;
+
+        [Tooltip("What the face above the water is MADE of, which decides what the shader draws on it: log " +
+                 "courses, pour lifts and form panels, or a waterline that follows the stone. None draws the " +
+                 "shipped picture. Set by the placement from the wharf module's own kind.")]
+        [SerializeField] private TidalFaceDressing _dressing;
 
         private static Material _sharedMaterial;
         private static readonly int TideId = Shader.PropertyToID(TideProperty);
         private static readonly int SeaLevelId = Shader.PropertyToID(SeaLevelProperty);
         private static readonly int HeightId = Shader.PropertyToID("_HHFaceHeight");
         private static readonly int HeightDecodeId = Shader.PropertyToID("_HHFaceHeightDecode");
+        private static readonly int DressId = Shader.PropertyToID(DressProperty);
 
         private SpriteRenderer _renderer;
         private MaterialPropertyBlock _block;
@@ -113,6 +138,19 @@ namespace HiddenHarbours.Art
         public bool RidesTheTide => _ridesTheTide;
         /// <inheritdoc cref="_configured"/>
         public bool IsConfigured => _configured;
+        /// <inheritdoc cref="_dressing"/>
+        public TidalFaceDressing Dressing => _dressing;
+
+        /// <summary>Dress the face as <paramref name="dressing"/> (None = the shipped picture).</summary>
+        public void SetDressing(TidalFaceDressing dressing)
+        {
+            _dressing = dressing;
+            Apply();
+        }
+
+        /// <summary>The packing the shader reads for a dressing: (kind, 0, 0, on).</summary>
+        public static Vector4 DressVector(TidalFaceDressing dressing)
+            => new Vector4((float)dressing, 0f, 0f, dressing != TidalFaceDressing.None ? 1f : 0f);
 
         /// <summary>
         /// ⭐ <b>THE ROW THE WATER'S EDGE DRAWS ON THIS FACE</b>, in world units — the lip, plus how far
@@ -129,6 +167,18 @@ namespace HiddenHarbours.Art
         /// </summary>
         public static float WaterlineWorldY(float lipWorldY, float lipElevation, float seaLevelMetres)
             => lipWorldY + TidalRide.ScreenRise(seaLevelMetres, lipElevation);
+
+        /// <summary>The waterline row on a slope that runs <paramref name="slopeRunPerMetre"/> plan metres per metre of
+        /// fall from its top edge (<paramref name="lipWorldY"/>, at <paramref name="lipElevation"/>): the drawn rise of
+        /// the water's height, plus the plan run the water's edge moves along the ramp. 0 is a wall.</summary>
+        public static float WaterlineWorldY(float lipWorldY, float lipElevation, float seaLevelMetres, float slopeRunPerMetre)
+            => WaterlineWorldY(lipWorldY, lipElevation, seaLevelMetres) + (seaLevelMetres - lipElevation) * slopeRunPerMetre;
+
+        /// <summary>Screen units the cut row moves per metre of tide: the camera's height scale, plus a slope's run.</summary>
+        public static float RowPerMetre(float slopeRunPerMetre) => IsoGround.HeightScale + slopeRunPerMetre;
+
+        /// <summary>The plan run per metre of fall this face was told (0 for a wall).</summary>
+        public float SlopeRunPerMetre => _slopeRunPerMetre;
 
         /// <summary>
         /// The drawn sea level right now, in metres above the game's datum, as
@@ -153,7 +203,7 @@ namespace HiddenHarbours.Art
         {
             if (!_configured || !_ridesTheTide) return float.NegativeInfinity;
             return TryPublishedSeaLevel(out float sea)
-                ? WaterlineWorldY(_lipWorldY, _lipElevation, sea)
+                ? WaterlineWorldY(_lipWorldY, _lipElevation, sea, _slopeRunPerMetre)
                 : float.NegativeInfinity;
         }
 
@@ -216,11 +266,12 @@ namespace HiddenHarbours.Art
             _block.SetVector(TideId, new Vector4(
                 _lipWorldY,
                 _lipElevation,
-                IsoGround.HeightScale,
+                RowPerMetre(_slopeRunPerMetre),
                 _configured && _ridesTheTide ? 1f : 0f));
             if (_heightTexture != null) _block.SetTexture(HeightId, _heightTexture);
             _block.SetVector(HeightDecodeId, new Vector4(_heightDecode.x, _heightDecode.y,
                 _heightDecode.z, _heightTexture != null ? 1f : 0f));
+            _block.SetVector(DressId, DressVector(_dressing));
             _renderer.SetPropertyBlock(_block);
         }
 

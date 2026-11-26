@@ -57,6 +57,17 @@ MonoBehaviour:
   - '*trolley_line*'
   - '*trolley_stage*'
   - '*net_shed_landing*'
+  - 'NorthWall_*'
+  - 'WaterSide_west_apron*'
+  - 'WaterSide_fleet_crib*'
+  - 'WaterSide_fleet_conc*'
+  - 'WaterSide_east_east*'
+  - 'WaterSide_arm_w_*'
+  - 'WaterSide_west_ramp*'
+  - float
+  - 'float_*'
+  - 'finger*'
+  - 'recFloat*'
   ExcludedScenes:
   - 'InitTestScene*'
   Classes:
