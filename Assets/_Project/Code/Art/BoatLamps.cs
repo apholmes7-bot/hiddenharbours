@@ -39,7 +39,7 @@ namespace HiddenHarbours.Art
     /// </summary>
     [DisallowMultipleComponent]
     [DefaultExecutionOrder(-105)]   // after the hull poses herself (-110), before SceneLight's own LateUpdate
-    public sealed class BoatLamps : MonoBehaviour, IVesselWayListener
+    public sealed class BoatLamps : MonoBehaviour, IVesselWayListener, ICabinLights
     {
         [Tooltip("How much brighter the CABIN glow burns while somebody is actually below on this " +
                  "hull, over the preset it shows when the room is merely lit (1 = no change). The " +
@@ -60,6 +60,7 @@ namespace HiddenHarbours.Art
         private BoatWindowGlow _windows;
         private bool _subscribed;
         private bool _cabinOccupied;
+        private CabinLightsSwitch _cabinSwitch = CabinLightsSwitch.Auto;
         private VesselWay _way = VesselWay.UnderWay;
 
         /// <summary>The lamps this hull is currently showing — empty until she has been skinned.</summary>
@@ -108,6 +109,31 @@ namespace HiddenHarbours.Art
         /// <summary>Is somebody below on this hull right now (what drives the cabin-glow boost)? Public
         /// so a test can read the state the bus put the lamps in without a second source of truth.</summary>
         public bool CabinOccupied => _cabinOccupied;
+
+        /// <summary>Where this boat's cabin light switch stands (<see cref="ICabinLights"/>). Auto = the
+        /// regime decides, which is what every boat did before the switch existed.</summary>
+        public CabinLightsSwitch CabinLights => _cabinSwitch;
+
+        /// <summary>Throw the cabin light switch; the windows and any legacy cabin disc follow at once.
+        /// Idempotent and allocation-free. Not saved here: the switch's owner persists it.</summary>
+        public void SetCabinLights(CabinLightsSwitch state)
+        {
+            if (_cabinSwitch == state) return;
+            _cabinSwitch = state;
+            ApplyEnabled();
+        }
+
+        /// <summary>Is the cabin lit right now: the switch folded with the regime. A derelict is dark.</summary>
+        public bool CabinLightsLit => CabinLitFor(_cabinSwitch, _way, _cabinOccupied);
+
+        /// <summary>The one rule for a cabin: Off is dark, On is lit (unless derelict), Auto is
+        /// <see cref="ShowsWhen"/>. Pure, for tests and for the window glow's late join.</summary>
+        public static bool CabinLitFor(CabinLightsSwitch state, VesselWay way, bool cabinOccupied)
+        {
+            if (way == VesselWay.Derelict || state == CabinLightsSwitch.Off) return false;
+            if (state == CabinLightsSwitch.On) return true;
+            return ShowsWhen(HullLampKind.CabinGlow, way, cabinOccupied);
+        }
 
         /// <summary>
         /// <b>How brightly this hull's cabin is burning</b> — her own per-placement trim times the
@@ -384,7 +410,9 @@ namespace HiddenHarbours.Art
             {
                 if (_lights[i] == null) continue;
                 bool allowed = _lamps != null && i < _lamps.Length
-                             && ShowsWhen(_lamps[i].Kind, _way, _cabinOccupied);
+                             && (_lamps[i].Kind == HullLampKind.CabinGlow
+                                 ? CabinLightsLit
+                                 : ShowsWhen(_lamps[i].Kind, _way, _cabinOccupied));
                 _lights[i].enabled = on && allowed;
             }
         }
@@ -399,7 +427,7 @@ namespace HiddenHarbours.Art
         {
             if (_windows == null) _windows = GetComponent<BoatWindowGlow>();
             if (_windows == null) return;
-            _windows.SetLit(lampsOn && ShowsWhen(HullLampKind.CabinGlow, _way, _cabinOccupied),
+            _windows.SetLit(lampsOn && CabinLightsLit,
                             CabinGlowScale);
         }
 

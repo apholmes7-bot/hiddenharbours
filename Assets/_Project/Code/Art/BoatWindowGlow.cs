@@ -98,6 +98,42 @@ namespace HiddenHarbours.Art
         /// </summary>
         public static bool FacesCamera(Vector3 outwardInDrawnFrame) => outwardInDrawnFrame.z < 0f;
 
+        /// <summary>
+        /// <b>The box the pane mesh really occupies</b>, from the vertices just written: the first
+        /// <paramref name="count"/> entries, with a small depth so the box is never flat in z.
+        ///
+        /// <para>⚠️ WHY THIS IS SET BY HAND. <c>Mesh.SetVertices</c> does not refresh the bounds on
+        /// this mesh: they stay where the first upload left them, and that upload was the all-zero
+        /// placeholder. A zero box at the node's origin is outside every camera that is not looking
+        /// at the world origin, so the renderer was culled and a lit cabin drew no panes at all,
+        /// while every flag said it was on. The bounds are therefore written every frame from the
+        /// same loop that writes the vertices: no allocation, no second pass over the mesh.</para>
+        ///
+        /// <para>Pure and static so a test pins it with no scene. An empty input gives a zero box,
+        /// which is honest: there is nothing to draw.</para>
+        /// </summary>
+        public static Bounds PaneBounds(Vector3[] verts, int count)
+        {
+            if (verts == null || count <= 0) return new Bounds(Vector3.zero, Vector3.zero);
+            count = Mathf.Min(count, verts.Length);
+            Vector3 min = verts[0], max = verts[0];
+            for (int i = 1; i < count; i++)
+            {
+                min = Vector3.Min(min, verts[i]);
+                max = Vector3.Max(max, verts[i]);
+            }
+            var b = new Bounds();
+            b.SetMinMax(min, max);
+            Vector3 size = b.size;
+            size.z = Mathf.Max(size.z, PaneBoundsDepth);
+            b.size = size;
+            return b;
+        }
+
+        /// <summary>The depth given to the pane box: the vertices are flat (z = 0), and a box with no
+        /// depth is one some culling paths treat as empty. Not a tunable: it changes nothing seen.</summary>
+        public const float PaneBoundsDepth = 0.01f;
+
         static readonly int IdLightColor    = Shader.PropertyToID("_LightColor");
         static readonly int IdIntensity     = Shader.PropertyToID("_Intensity");
         static readonly int IdConeHalfAngle = Shader.PropertyToID("_ConeHalfAngle");
@@ -105,6 +141,14 @@ namespace HiddenHarbours.Art
         static readonly int IdCoreBoost     = Shader.PropertyToID("_CoreBoost");
         static readonly int IdLampPos       = Shader.PropertyToID("_LampPos");
         static readonly int IdThrow         = Shader.PropertyToID("_Throw");
+        static readonly int IdGlassCore     = Shader.PropertyToID("_GlassCore");
+        static readonly int IdCoreRadius    = Shader.PropertyToID("_CoreRadius");
+        static readonly int IdPaneMode      = Shader.PropertyToID("_PaneMode");
+        static readonly int IdPaneLook      = Shader.PropertyToID("_PaneLook");
+        static readonly int IdPaneFrame     = Shader.PropertyToID("_PaneFrame");
+        static readonly int IdPaneLook2     = Shader.PropertyToID("_PaneLook2");
+        static readonly int IdPaneTint      = Shader.PropertyToID("_PaneTint");
+        static readonly int IdStreakMode    = Shader.PropertyToID("_StreakMode");
 
         private IsoFacetHullRenderer _hull;
         private Transform _posed;
@@ -116,6 +160,10 @@ namespace HiddenHarbours.Art
         private MaterialPropertyBlock _mpb;
         private Mesh _mesh;
         private Vector3[] _verts;
+        // Each pane's drawn size in art pixels (UV1), for the glass look's frame and mullions. Rewritten
+        // with the vertices: a pane seen edge-on is narrower than one seen square.
+        private Vector2[] _paneSizes;
+        private int _breathSeed;
 
         private SceneLight[] _spills;
         private HullWall[] _spillWalls;
@@ -200,7 +248,7 @@ namespace HiddenHarbours.Art
             var lamps = GetComponent<BoatLamps>();
             if (lamps != null)
             {
-                _lit = BoatLamps.ShowsWhen(HullLampKind.CabinGlow, lamps.Way, lamps.CabinOccupied);
+                _lit = lamps.CabinLightsLit;
                 _boost = lamps.CabinGlowScale;
                 return;
             }
@@ -317,6 +365,9 @@ namespace HiddenHarbours.Art
         private void BuildMesh(int n)
         {
             _verts = new Vector3[n * 4];
+            _paneSizes = new Vector2[n * 4];
+            Transform root = BoatLamps.BoatRootOf(transform);
+            _breathSeed = StableSeed(root != null ? root.name : name);
             var uvs = new Vector2[n * 4];
             var tris = new int[n * 6];
 
@@ -334,7 +385,50 @@ namespace HiddenHarbours.Art
             _mesh.Clear();
             _mesh.vertices = _verts;      // placeholder; PoseAndDraw writes the real ones this frame
             _mesh.uv = uvs;
+            _mesh.SetUVs(1, _paneSizes);
+            _mesh.SetUVs(2, WindowIds(n, _breathSeed));
             _mesh.triangles = tris;
+        }
+
+        /// <summary>
+        /// Each window's own fixed 0..1, written once into the mesh's third uv channel (all four corners
+        /// of a pane carry the same value). The shader reads it to give each window of a cabin its own
+        /// warm colour and its own grain of unevenness (<see cref="GlassLook.PaneLook.TintVariation"/>), so
+        /// two windows of one cabin are not one stamp. Pure function of the boat's stable seed and the
+        /// pane's index: the same boat looks the same every night (rule 5). Built once, at build time.
+        /// </summary>
+        public static Vector2[] WindowIds(int paneCount, int seed)
+        {
+            var ids = new Vector2[Mathf.Max(0, paneCount) * 4];
+            for (int i = 0; i < paneCount; i++)
+            {
+                var id = new Vector2(WindowId(seed, i), 0f);
+                ids[i * 4 + 0] = ids[i * 4 + 1] = ids[i * 4 + 2] = ids[i * 4 + 3] = id;
+            }
+            return ids;
+        }
+
+        /// <summary>One window's fixed 0..1 (an integer hash of seed and index; no Random).</summary>
+        public static float WindowId(int seed, int index)
+        {
+            unchecked
+            {
+                uint h = (uint)seed * 0x9E3779B1u ^ (uint)(index + 1) * 0x85EBCA77u;
+                h ^= h >> 15; h *= 0x2C1B3C6Du; h ^= h >> 12; h *= 0x297A2D39u; h ^= h >> 15;
+                return (h & 0xFFFFFF) / (float)0x1000000;
+            }
+        }
+
+        /// <summary>A name hash that is the same on every run and platform (FNV-1a), for the cabin
+        /// lamp's breath: two boats breathe out of step, one boat breathes the same way every night.</summary>
+        private static int StableSeed(string s)
+        {
+            unchecked
+            {
+                uint h = 2166136261u;
+                for (int i = 0; i < s.Length; i++) h = (h ^ s[i]) * 16777619u;
+                return (int)h;
+            }
         }
 
         /// <summary>
@@ -456,6 +550,7 @@ namespace HiddenHarbours.Art
             // How far under the glass the pool starts, in pane half-heights: one down to the sill,
             // then the look's own drop below it (data, BoatLampLook).
             float footDrop = 1f + 2f * BoatLampLook.Current.SpillFootBelowSillPaneHeights;
+            float ppm = GlassLook.Current.PixelsPerMetre;
 
             for (int i = 0; i < _panes.Length; i++)
             {
@@ -476,6 +571,8 @@ namespace HiddenHarbours.Art
                     _verts[v + 1] = new Vector3(a1.x, a1.y, 0f);
                     _verts[v + 2] = new Vector3(a2.x, a2.y, 0f);
                     _verts[v + 3] = new Vector3(a3.x, a3.y, 0f);
+                    var size = new Vector2(((Vector2)(a1 - a0)).magnitude, ((Vector2)(a3 - a0)).magnitude) * ppm;
+                    _paneSizes[v + 0] = _paneSizes[v + 1] = _paneSizes[v + 2] = _paneSizes[v + 3] = size;
 
                     int w = (int)p.Wall;
                     _wallOut[w] += new Vector2(nOut.x, nOut.y);
@@ -490,7 +587,7 @@ namespace HiddenHarbours.Art
                     // keeps a pane's slot stable across the frame she turns through edge-on.
                     //
                     // Collapsed onto its OWN projected centre rather than onto the origin, because
-                    // SetVertices recomputes the mesh bounds: a dark pane parked at (0,0) would
+                    // PaneBounds is taken over every vertex: a dark pane parked at (0,0) would
                     // stretch this hull's bounds from the world origin out to wherever she is, and a
                     // boat two kilometres offshore would carry a two-kilometre bounding box.
                     var at = new Vector3(c.x, c.y, 0f);
@@ -502,6 +599,8 @@ namespace HiddenHarbours.Art
             // SetVertices, not the `vertices` property: the property's SETTER is fine but its getter
             // allocates, and using the pair invites somebody to read it back in this same loop.
             _mesh.SetVertices(_verts);
+            _mesh.SetUVs(1, _paneSizes);
+            _mesh.bounds = PaneBounds(_verts, v);   // see PaneBounds: SetVertices leaves them at zero
 
             if (_paneRenderer != null)
             {
@@ -525,10 +624,71 @@ namespace HiddenHarbours.Art
             _mpb.SetFloat(IdCoreBoost, 0f);
             _mpb.SetVector(IdLampPos, Vector4.zero);   // the lamp is the pane's own centre
             _mpb.SetFloat(IdThrow, PaneFillThrow);
+
+            // GLOWING GLASS (GlassLook): the pane drawn as a lit window, brighter low and in the middle,
+            // with mullions, breathing like the oil lamp it is. Off = the gentle fill above, unchanged.
+            GlassLook glass = GlassLook.Current;
+            bool panes = glass.Enabled;
+            GlassLook.PaneLook p = glass.Panes;
+            _mpb.SetFloat(IdPaneMode, panes ? 1f : 0f);
+            _mpb.SetVector(IdPaneLook, new Vector4(p.HeadLevel, p.SillLevel, p.CentreLift, p.Bands));
+            _mpb.SetVector(IdPaneFrame, new Vector4(p.FramePixels, p.MullionPixels, p.MullionMinPixels, 0f));
+            _mpb.SetVector(IdPaneLook2, new Vector4(p.AcrossFalloff, p.Unevenness, p.TintVariation, 0f));
+            _mpb.SetColor(IdPaneTint, p.TintAlt);
+            _mpb.SetFloat(IdGlassCore, 0f);
+            _mpb.SetFloat(IdCoreRadius, 0f);
+            _mpb.SetFloat(IdStreakMode, 0f);
+            if (panes)
+            {
+                double seconds = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : Time.timeAsDouble;
+                int worldSeed = GameServices.Environment != null ? GameServices.Environment.WorldSeed : 0;
+                _mpb.SetFloat(IdIntensity, PaneIntensity * _boost * glass.CabinBreath(_breathSeed ^ worldSeed, seconds));
+            }
+
+            // OCCLUSION (GlassLook): the panes are her windows, so they sort one rung over HER and under
+            // whatever stands nearer the camera than she does (another hull, a pier, a figure), with the
+            // day/night tint divided back out in the shader. Off = over everything, as before.
+            // A hull carried by a sorting group (every boat): the panes sort INSIDE that group, at its top,
+            // so the whole boat sorts as one object and a hull nearer the camera covers her panes with
+            // her. One rung over her as a root element tied with a hull a quarter metre nearer, and the
+            // back boat's panes drew through the front one.
+            bool inWorld = glass.SortsInWorld;
+            int order = SceneLight.MaxSortingOrder;
+            bool nest = false;
+            if (inWorld)
+            {
+                if (!_carrierResolved) { _carrierGroup = SceneLight.OuterSortingGroup(transform); _carrierResolved = true; }
+                nest = _carrierGroup != null;
+                order = nest ? SceneLight.WorldSortCeiling
+                             : Mathf.Min(SceneLight.CarrierOrderAtFoot(transform.position.y) + SceneLight.RungsOverCarrier,
+                                         SceneLight.WorldSortCeiling);
+            }
+            _mpb.SetFloat(SceneLight.IdInWorld, inWorld ? 1f : 0f);
             _paneRenderer.SetPropertyBlock(_mpb);
-            _paneRenderer.sortingOrder = SceneLight.MaxSortingOrder;
-            if (_paneSorting != null) _paneSorting.sortingOrder = SceneLight.MaxSortingOrder;
+            _paneRenderer.sortingOrder = order;
+            if (_paneSorting != null)
+            {
+                _paneSorting.sortingOrder = order;
+                if (_paneSorting.sortAtRoot == nest) _paneSorting.sortAtRoot = !nest;
+            }
+            _panesNested = nest;
         }
+
+        [System.NonSerialized] private bool _panesNested;
+
+        /// <summary>Do the lit panes sort inside the boat's own sorting group? Tests and fixtures.</summary>
+        public bool PanesNestInCarrier => _panesNested;
+
+        /// <summary>The order the panes actually compete at among the world: the boat's group order when
+        /// they nest in it, else their own. Tests and fixtures.</summary>
+        public int PaneWorldOrder => _panesNested && _carrierGroup != null ? _carrierGroup.sortingOrder : PaneSortingOrder;
+
+        private SortingGroup _carrierGroup;
+        [System.NonSerialized] private bool _carrierResolved;
+        private void OnTransformParentChanged() => _carrierResolved = false;
+
+        /// <summary>The order the lit panes are given now. Tests and fixtures.</summary>
+        public int PaneSortingOrder => _paneRenderer != null ? _paneRenderer.sortingOrder : SceneLight.MaxSortingOrder;
 
         /// <summary>
         /// Put each wall's wash at the middle of its lit glass and point it the way that glass faces.

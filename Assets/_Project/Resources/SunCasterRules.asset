@@ -79,6 +79,12 @@ MonoBehaviour:
     CastsGroundContact: 0
     FootOffset: 0
     AllowOutsideBands: 0
+  - Id: floating_mark
+    Names: ['NavBuoy_*']
+    CastsGroundContact: 0
+    FootOffset: 0
+    AllowOutsideBands: 0
+    Floats: 1
   - Id: thin_post
     Names: ['*Lamp*', '*Lantern*', '*Post*', '*Bollard*', '*Buoy*', '*NavMark*', '*powerPole*']
     CastsGroundContact: 0

@@ -390,6 +390,13 @@ namespace HiddenHarbours.Art
     public static class IsoFacetShaderIds
     {
         public static readonly int HullScreenTex = Shader.PropertyToID("_HHHullScreenTex");
+        /// <summary>The hull pass's own depth (world z, metres, unsheared — the facet MRT's target 3), kept
+        /// per camera past the resolve so the lamp pools can rebuild each hull pixel's 3D point and face
+        /// (ADR 0016, "lamps light what they can see").</summary>
+        public static readonly int HullDepthTex = Shader.PropertyToID("_HHHullDepthTex");
+        /// <summary>1 while THIS camera's resolve has published <see cref="HullDepthTex"/> and
+        /// <see cref="HullScreenTex"/> for this frame, 0 everywhere else (lowered at the top of every camera).</summary>
+        public static readonly int HullDepthLive = Shader.PropertyToID("_HHHullDepthLive");
         /// <summary>The displaced water surface's resolved screen texture (ADR 0023 phase 2) —
         /// written by the feature's water pass, sampled by the in-scene WaterOverlay quad.</summary>
         public static readonly int WaterScreenTex = Shader.PropertyToID("_HHWaterScreenTex");

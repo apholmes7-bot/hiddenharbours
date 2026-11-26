@@ -1053,6 +1053,7 @@ namespace HiddenHarbours.Player
             // Parent FIRST, configure second: IsoCharacterFigureRenderer finds its hull by walking up
             // the parent chain, and a figure configured while unparented would carry no hull id.
             _figure = go.AddComponent<IsoCharacterFigureRenderer>();
+            _figure.Wearer = transform;   // drawn under the hull, but his: his headlamp follows this head aboard
             _figure.Configure(skin);
             Paint(_figure, skin);
             _figure.Visible = false;

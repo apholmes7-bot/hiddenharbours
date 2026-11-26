@@ -1078,3 +1078,192 @@ its bloom at its whole pool, by the owner's preference, and now casts a ground p
 | How far one lamp lights | `SceneLight.ReachMetres` (from `LightPresets.ReachMetres`) | 3.4 / 3.6 / 5.2 / 7 m by kind; 0 = no pool |
 | The gain's ceiling and the ambient floor | `LightMath.MaxPoolGain` / `MinPoolAmbientLuminance` | 8 / 0.02 |
 
+
+## Amendment — glowing glass: a lamp is a LENS, a window is a PANE, and the sea shows a streak (2026-11-24)
+
+**Context.** The owner, looking at the night frames: *"what about making the lights more realistic? like
+glowing glass? right now they look pretty bad"*, then *"yes do house windows and wharf lamps too"*. What read
+badly: a navigation lamp was a flat disc with a cross of pixels at its middle and nothing on the water under
+it; a lit window was a flat orange sheet under a 3.4 m round disc; a wharf lamp was a small orange dot. The
+2026-09-03 ruling still stands: a room's light shows only through its windows.
+
+**Decision.** One shared look, `GlassLook` (`Resources/GlassLook.asset`), drawn by the shaders that already
+exist. It changes how a lamp is DRAWN, never when it shows, how big its bloom is, or what colour it signals.
+
+- **The lens** (navigation lamps and shore lamps). Inside the existing bloom quad: a hot core
+  (`CoreFraction` of the radius, whitened by `Whiten`, or only `ColouredWhiten` for a red or green sidelight so
+  the signal keeps its colour), a one-pixel rim, and a short `1/(1+x^2)` tail that fades to nothing at the quad's
+  edge. Banded to `Bands` steps and snapped to the pixel grid, so it stays crisp pixel art.
+- **The streak.** One extra quad per navigation lamp, hung from the water under it (`HeightShare` of the lamp's own height brought down the screen, plus `DropMetres`), drawn only where the seabed map says the ground is
+  below sea level and nowhere a hull is drawn (`_HHHullScreenTex`). Broken into rows that break up and sway on
+  GAME time, never `_Time`, so a frozen clock gives a still frame. It ships STILL (`Speed` 0): a broken column
+  that does not move. Motion is one number away. **Shore lamps ship with the streak OFF**
+  (`_shoreStreak.Strength` 0): a wharf's planks stand over water on the seabed map, so the streak painted the deck
+  and the people on it. Turning it on for shore lamps needs a deck mask (a screen mask of what is drawn over the
+  water, as the hulls already publish), which this change does not add.
+- **The cabin pane** (`BoatWindowGlow`). Each pane now knows its own size in pixels (UV1). It draws a dark frame
+  and no cross bar (a cross is a house window's, not marine glass: the owner, 2026-11-25; the bar is still there
+  as `MullionPixels` and ships 0), a warm gradient brighter at the sill than the head,
+  and, when switched on, a slight breath (`Breath`) from the game clock and a seed taken from the hull's name. It ships
+  steady (`Breath` 0). A navigation lamp never breathes.
+- **The house window** (`SpriteLitDecor.hlsl`). The baked emitter sheet is unchanged; the shader measures each
+  lit texel's place in its run of glass (eight fixed taps each way) and draws the same sill-to-head gradient.
+  No art and no scene changed. There is no who-is-home rule in the emitter (the source bits are reserved), so
+  every bound window still lights by the night gate, exactly as before.
+- **The window glow** (`LightPresets.Kind.WindowGlow`) stops painting its disc (`_windowSpillIsPool`); its
+  ground pool is unchanged. This reverses the 2026-09-04 preference that kept Ginny's bloom, and it is one
+  switch back.
+- The worn headlamp is not part of this look. The channel marks (`NavLightPresets`) are not changed.
+
+**Cost (rule 7).** A navigation lamp is two draws instead of one (bloom plus streak; same mesh, same
+material, its own property block written at the light's 20 Hz tick). A shore lamp stays one draw (no streak). A window glow goes from one draw to none.
+Cabin panes and houses add no draws; a lit house texel at night takes up to 32 extra texture taps. No new
+texture, no new full-screen pass, no save change.
+
+### Tunables (rule 6)
+
+| Tunable | Where | Default |
+|---|---|---|
+| The whole look on or off | `GlassLook._enabled` | **on** (off = the frame before this amendment) |
+| Pixels per metre the glass snaps to | `_pixelsPerMetre` | 32 |
+| Navigation lens: core, rim px, whiten, coloured whiten, rim level, tail, tail scale, bands, hot fraction, body level, body whiten, rim fade | `_navLens` | 0.17, 1, 0.85, 0.3, 0.7, 0.3, 0.17, 3, 0.5, 0.92, 0.2, 0 |
+| Navigation streak: strength, length m, width m, drop m, row px, breakup, wobble, speed, height share | `_navStreak` | 0.42, 3.6, 0.34, 0.15, 2, 0.4, 0.35, 0, 0.45 |
+| Shore lens | `_shoreLens` | 0.22, 1, 0.8, 0.3, 0.65, 0.28, 0.18, 3, 0.5, 0.9, 0.2, 0 |
+| Shore streak (off: needs a deck mask) | `_shoreStreak` | 0, 3.2, 0.4, 0.6, 2, 0.42, 0.35, 0, 1 |
+| Panes: head, sill, centre lift, bands, frame px, mullion px, mullion min px, breath, breath speed, probe texels, across falloff, unevenness, tint variation, second room colour | `_panes` | 0.62, 1, 0.22, 3, 1, 0, 7, 0, 0.7, 6, 0.25, 0.06, 0.5, (1, 0.7, 0.4) |
+| A window glow lights the ground, not a disc | `_windowSpillIsPool` | on |
+| Lamps, streaks and cabin panes sort among the world | `_sortInWorld` | on |
+
+### Occlusion: a glow is hidden by what stands in front of it (2026-11-25)
+
+The owner, on the first pictures: "objects shouldnt glow through objects they normally wouldnt, reflecitons
+shouldnt show if they would be blocked by the hull at the players camera angle".
+
+**Decision.** A lamp stamped with the glass look no longer sorts at the ceiling over the whole frame. It sorts
+among the world, using the order the game already uses for whatever carries it (ADR 0032, ADR 0059):
+
+- **The bloom** of a lamp a sorting group carries (every boat) sorts INSIDE that group, at the top of it, so
+  the boat sorts as one object and the lamp can only ever be covered with her. A lamp with no group sorts one
+  rung over its post's own sprite, else over the decor band's Y-sort at its foot. A hull, shed, wall, piling
+  or figure nearer the camera draws over it, exactly as it draws over the lamp's own post or mast.
+  (Amended in pass 3: one rung over a boat's root group TIED with a hull a quarter metre nearer, since the
+  band has four orders per metre, and a tie between two groups is broken by nothing we control. The back
+  boat's panes were seen drawing through the front boat.)
+- **The streak** sorts at `SortingBands.WharfDeckMin`: over the sea, under every other deck row, every hull and
+  everything standing. The hull mask stays, so a hull that drops behind a pier still hides it. No whole order
+  lies between the sea (-5) and the north deck row (-4), so the streak draws from its own shared material one
+  render queue under the transparent queue (`SceneLight.StreakRenderQueue`, 2999): at the same layer and order
+  the 2D renderer draws the lower queue first, so the north row draws over the streak instead of tying with it.
+- **Cabin panes** sort inside their boat's own group, at its top, so another hull or a pier in front hides them.
+- Sorted under the day/night tint, the shader divides that tint back out of the light (`_InWorld`), so
+  where nothing covers it a lamp adds exactly what it added before: `(base + L / t) * t = base * t + L`.
+  `t` must be the colour the overlay actually multiplies by, which in this linear project is the published
+  tint made linear (`HHSrgbToLinear`). Measured 2026-11-25: dividing by the raw global left a night lamp at
+  about 0.12x, the sRGB-to-linear ratio of the night tint. The floor is 0.002, not the house windows' 0.02:
+  a deep-night linear channel is about 0.013, and the overlay multiplies the same `t` back, so the floor
+  only has to guard a zero. (The house windows' glow divides by the raw global with the 0.02 floor, so it
+  is under-compensated at night the same way; that is part of the accepted subtle look and is left alone.)
+
+A light nobody stamped (and the worn headlamp, the searchlight, the channel marks) keeps the ceiling, so the
+ladder in this ADR and its tests are unchanged for them. No new draw, texture, pass or save field; the order
+is read from the cached carrier at the light's 20 Hz tick.
+
+**Not covered.** A boat's own cabin cannot hide that boat's own lamps: the boat sorts as one object, and its
+per-pixel depth is private to the hull pass. The ground pools (`LampPoolSystem`) and the lamp shadows stay at
+the ceiling: they multiply whatever is in the pixel by design, and their ladder (pool, bloom, shadow by camera
+depth) is pinned by `LightsIlluminatePlatePlayTests`.
+The sun's shade (32763) now lands on a sorted lamp; its strength follows the sun, so it should be near nothing
+once the lamps are lit (not measured at dusk).
+
+### The lens and the pane, second look; the collapsed cabin panes (2026-11-25)
+
+**The collapsed panes were culled, not collapsed.** A moored boat's cabin panes were switched on, lit and
+posed at the right world points, but `Mesh.SetVertices` does not grow a mesh's bounds, so the pane mesh kept
+the zero box of its first upload at the origin and the camera culled it. `BoatWindowGlow` now sets the box
+from the posed corners every frame it draws (`PaneBounds`, a thin `PaneBoundsDepth` in z). Pinned by
+`BoatWindowPaneBoundsPlayTests` (every lit cabin at the Nine Mile Creek berths has a box around its own
+windows) and two EditMode cases on the arithmetic.
+
+**The lens** is now three parts inside the same quad: a hot centre (`HotFraction` of the core, whitened), a
+coloured body (`BodyLevel`, whitened only by `BodyWhiten`), and a softer rim (`RimLevel`, faded across its
+width by `RimFade`), with the shorter tail above. **The pane** gains a frame (`FramePixels` 1), a dimming toward
+its sides (`AcrossFalloff`), a slight per-cell unevenness (`Unevenness`), and a room colour that differs per
+window: each window gets a fixed shade from a hash of its hull's seed and index (UV2 on the cabin mesh; the
+hashed centre texel of its run on a house), blended toward `TintAlt` by `TintVariation`. Every number is in
+`GlassLook.asset`; the occlusion above is unchanged. No draw, texture, pass or save field is added.
+
+## Amendment — lamps light what they can see: a lamp is a 3D orb, not a 2D disc (2026-11-25)
+
+The owner, on the night pictures: "lights also need to correctly illuminate the surfaces of the meshes around
+them, ie on a boat the decks, or any face that is unobstructed from the light"; "lights are 3d orbs which should
+illuminate items correctly, not 2d circles with missing pie slices"; the St Peters dock lamp left "a missing part
+of the dock" south of it; the light from Ginny's windows reached the roof under the eave; LeBlanc's entry light
+glowed through the canopy instead of under it; and the headlamp "read poorly and did not glow correctly".
+
+**The model.** A lamp is a point at a height (its fitting) that sends light equally in every direction (a cone
+lamp: inside its cone). A surface it reaches is lit by `N·L`, the cosine between the surface's own normal and the
+direction to the fitting, times the falloff with ground distance from the lamp's foot (`PoolFalloff`, to
+`ReachMetres`), times the cone, times the night gate. The ground is the case `N = up`, and that is exactly the
+pool's existing `h/√(h²+d²)`; nothing about the ground changes except the fix below.
+
+**The missing slice was a bug, not a shadow.** The pool shader ran a RADIAL lamp (cos half-angle −1) through the
+cone's feather. With `PoolEdgeSoftness` 0.55 that dimmed every direction within about 50° of straight away from
+the axis, and the axis is up the screen, so every round lamp in the game cut a dark wedge out of the ground
+directly south of it. A radial lamp is now a branch to 1 (`LightMath.PoolCone`, the shader's step 3).
+
+**Mesh faces (hulls, vehicles, the camper).** The hull pass already drew each mesh pixel's world depth; it now
+keeps it for the pools as a published target, `_HHHullDepthTex` (RFloat, world z, before the ADR 0033 clip
+shear, including each hull's depth bias), with `_HHHullDepthLive` raised in its resolve pass and lowered at the
+top of every camera, so a stale target is never read. From the depth the pool rebuilds the pixel's height above
+the still sea through the displaced sea's own frame (`LightMath.HullHeightPlane`, the plane `HullCausticLighting`
+already uses, with the fleet's 40° depth shear), puts it in the pool's frame (`HullPoint`: x, the ground y under
+it, metres up), takes the face from the neighbouring pixels on the same mesh (the smaller depth step on each
+axis, so an edge between two faces does not bend it), turns it to the camera, and lights it by `N·L` toward the
+fitting (`HullFaceGain`). A deck near a lamp lifts; the far side of a cabin, a hull side turned away and a roof
+above the lamp stay dark. A shore lamp's fitting height is measured from its planks, which stand
+`ShoreLampDeckLiftMetres` (1.5 m) over the sea; a lamp a hull carries measures from the water already. Same
+pools, same slots (`MaxPools`), same throttled choice, no per-frame allocation, no new draw: one RFloat target per
+camera and three extra loads per lit mesh pixel. Off: `LampShadowProfile.PoolsLightMeshFaces`.
+
+**A lamp on a wall lights what is in front of the wall.** `LampMounts.asset` says where a lamp is fixed. Every
+window spill, and each doorstep lantern by its placement id, is on a wall facing the camera: its pool is cut at
+the wall line, `WallBackMetres` behind its foot, softened over `WallSoftMetres` (`LightMath.PoolWallGate`, the
+shader's step 4). In this view what lies behind a south wall's line is the wall above the lamp, its eave, a
+canopy and the roof, so the light falls out and down. The general store's lantern hangs under its canopy: the
+scene measured its glow 2.07 m up, which drew it on the canopy's stripes, so its mount draws the glow `BloomLiftMetres`
+(0.3 m) over its foot, just below the canopy's edge and in front of the doorway, and its pool lights the step and
+the ground in front. A lamp no entry matches stands free, as before.
+
+**The headlamp.** Its lens is its own small round lamp of glowing glass (the shore lens): the beam's quad is a
+cone with the lamp at its base, which cut a round lens in half and left one grey pixel, so the beam now paints no
+glow and the lens rides the same point. The lens has its own size, `GlassLook._headlampLensRadiusMetres`
+(0.10 m): the headlamp preset's bloom (0.18 m) drew it wider than the lamp on his brow. The lens sorts among the world one rung over the fitting drawn on his head
+(`SceneLight.SetCarrierOrder`), not at the sorting ceiling, so a wall or a stack of traps in front of him covers it
+as it covers him. From behind his head the lens is not seen and draws no glow. The beam is
+the same pool, aimed: it lights what is in front of him and nothing behind, and lights mesh faces by `N·L` like
+every other lamp.
+
+**What is approximation, honestly.**
+- Blocking is by facing only. A face turned away from the lamp is dark; a face turned toward it behind another
+  object is still lit. There is no shadow map: the existing lamp shadows (PR B) remain the only thrown shadows.
+- Mesh figures are drawn in the hull pass, so they are in the published depth and are lit by their faces like a
+  hull: a figure walking south of a lamp keeps the side the camera sees dark, because the lamp is behind him.
+  That is the model working, but it reads darker than the old ground-lit figure. Sprites have no depth and are
+  lit as the ground at their feet, as before.
+- The height plane assumes the fleet's 40° depth shear for every mesh. A vehicle or a camper drawn with another
+  shear gets a slightly wrong height, so slightly wrong face lighting near its edges.
+- The wall line is a straight line on the ground at the lamp's foot. A wall that is not straight, or a house that
+  faces sideways, needs its own entry with its own facing.
+- A sprite house has no depth, so its wall is not lit by `N·L`: it is cut out of the pool, not lit by it.
+
+### Tunables (rule 6)
+
+| What | Where | Shipped |
+|------|-------|---------|
+| Light mesh faces by `N·L` | `LampShadowProfile._poolsLightMeshFaces` | on |
+| A shore lamp's planks over the sea | `LampShadowProfile._shoreLampDeckLiftMetres` | 1.5 m |
+| Window spill on a wall, facing | `LampMounts._windowSpill` | (0, −1) |
+| Doorstep lanterns on walls, wall line | `LampMounts._byId` | 0.3 m behind the foot |
+| The store lantern's glow under its canopy | `LampMounts._byId[0].BloomLiftMetres` | 0.3 m |
+| The worn headlamp's lens glow radius | `GlassLook._headlampLensRadiusMetres` | 0.10 m |
+| The wall line's soft edge | `LampMounts._wallSoftMetres` | 0.35 m |
