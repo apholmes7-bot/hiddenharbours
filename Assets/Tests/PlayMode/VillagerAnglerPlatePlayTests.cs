@@ -252,6 +252,54 @@ namespace HiddenHarbours.Tests.PlayMode
                 if (depth(at + dir * r, t) > 0f) return $"{r:0.0} m out";
             return $"beyond {WaterProfileMetres:0} m";
         }
+
+        /// <summary>The ground along his bearing against the drawn water level, logged beside each tide plate.</summary>
+        private static string BedProfile(Vector2 at, Vector2 dir, float drawnLevel)
+        {
+            var sb = new StringBuilder();
+            foreach (float m in new[] { 0f, 2f, 4f, 7f, 9f, 12f, 16f })
+            {
+                float bed = GameServices.TidalTerrain.ElevationAt(at + dir * m);
+                sb.Append($"\n    {m,3:0} m out: bed {bed:0.00} m, drawn depth {drawnLevel - bed:0.00} m");
+            }
+            return sb.ToString();
+        }
+
+        /// <summary>How close the drawn sea level must come to the tide's before a tide plate is shot (m): the
+        /// sea's own ease trails a moving tide by under 2 cm.</summary>
+        private const float DrawnLevelToleranceMetres = 0.02f;
+        /// <summary>The most real seconds the sea is given to catch up with a seek.</summary>
+        private const float SeaCatchUpSeconds = 5f;
+
+        /// <summary>The water level the region's sea is drawing now (its renderer's own block).</summary>
+        private static float DrawnSeaLevel()
+        {
+            var sea = Object.FindFirstObjectByType<WaterSurface>();
+            Assert.IsNotNull(sea, "harness: the region has no sea");
+            var block = new MaterialPropertyBlock();
+            sea.GetComponent<Renderer>().GetPropertyBlock(block);
+            return block.GetFloat("_WaterLevel");
+        }
+
+        /// <summary>Run engine time with the clock held on <paramref name="t"/> until the drawn sea is at the tide's
+        /// level, then freeze again (the plate laws: engine time runs only between pictures).</summary>
+        private IEnumerator LetTheSeaCatchUp(double t)
+        {
+            float target = GameServices.Environment.WaterLevelAt(t);
+            float until = Time.realtimeSinceStartup + SeaCatchUpSeconds;
+            Time.timeScale = 1f;
+            int settled = 0;
+            while (Time.realtimeSinceStartup < until && settled < 3)
+            {
+                _clock.SeekTo(t);
+                yield return null;
+                settled = Mathf.Abs(DrawnSeaLevel() - target) <= DrawnLevelToleranceMetres * 0.5f ? settled + 1 : 0;
+            }
+            Time.timeScale = 0f;
+            _clock.SeekTo(t);
+            for (int i = 0; i < 2; i++) yield return null;
+        }
+
         /// <summary>Inside his wharf block (15:00 to 19:30), clear of his walk in and out.</summary>
         private const float TideBlockFromHour = 15.75f, TideBlockToHour = 19.0f;
         /// <summary>Into the wait: the bobber is down and still.</summary>
@@ -393,6 +441,21 @@ namespace HiddenHarbours.Tests.PlayMode
                 yield return _stage.FrameOn(at + dir * (script.CastReachM * 0.5f));
             }
             yield return SeekAndDraw(shot);
+            // The sea samples the tide on engine time, which the plate's freeze stops: run engine time on the held
+            // instant until the drawn level is the tide's, or the picture shows the last plate's water.
+            yield return LetTheSeaCatchUp(shot);
+            float drawn = DrawnSeaLevel();
+            log.AppendLine($"  drawn sea level {drawn:0.000} m against the tide's {level:0.000} m" +
+                           $"{BedProfile(at, dir, drawn)}");
+            Assert.AreEqual(level, drawn, DrawnLevelToleranceMetres, $"{name}: the sea is drawn at another level than the tide");
+            // He casts if and only if the bobber lands on drawn water.
+            Vector2 landsAt = at + edge(at, dir, casts ? w.ReachM : script.CastReachM);
+            float drawnDepth = drawn - GameServices.TidalTerrain.ElevationAt(landsAt);
+            if (casts) Assert.Greater(drawnDepth, 0f, $"{name}: he cast onto ground the sea is not drawn over");
+            else
+                foreach (float r in new[] { script.CastReachM, script.LongCastReachM })
+                    Assert.LessOrEqual(drawn - GameServices.TidalTerrain.ElevationAt(at + edge(at, dir, r)), 0f,
+                                       $"{name}: he stood down with drawn water at {r} m");
             Shoot(name);
             done(true);
 
