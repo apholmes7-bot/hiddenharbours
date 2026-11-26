@@ -355,8 +355,12 @@ namespace HiddenHarbours.Tests.EditMode
             var islandOffers = CatalogSource.For<LicenseDef>(StoreSellerId);
             var offeredIds = new HashSet<string>();
             foreach (var offer in islandOffers) offeredIds.Add(offer.Id);
-            CollectionAssert.AreEquivalent(new[] { ShoreLicenceId }, offeredIds,
+            // The cod licence is sold at LeBlanc's (ruling 2026-11-25) as well as by the NMC harbourmaster.
+            CollectionAssert.AreEquivalent(new[] { ShoreLicenceId, CodLicenceId }, offeredIds,
                 "the island general store is the authored island licence counter");
+            CollectionAssert.AreEquivalent(new[] { "seller.nmc_harbourmaster", StoreSellerId },
+                Licence(CodLicenceId).Catalog.Sellers,
+                "cod is sold over the island counter and at Nine Mile Creek, nowhere else");
 
             var covered = new HashSet<string>();
             var missing = new HashSet<string>();
@@ -371,22 +375,15 @@ namespace HiddenHarbours.Tests.EditMode
                     continue;
                 }
                 missing.Add(fish.Id);
-                if (fish.Id == CodId)
-                {
-                    Assert.AreEqual(CodLicenceId, required);
-                    CollectionAssert.AreEquivalent(new[] { "seller.nmc_harbourmaster" },
-                        Licence(CodLicenceId).Catalog.Sellers,
-                        "known exception: cod is sold only beyond the first-week island");
-                    continue;
-                }
                 Assert.IsNull(required, fish.Id + " acquired a gate but still has no island offer");
                 Assert.IsTrue(KnownLicenceGaps.TryGetValue(fish.Id, out string reason), fish.Id);
                 Assert.IsNotEmpty(reason, fish.Id);
             }
-            CollectionAssert.AreEquivalent(HandGathered, covered);
+            CollectionAssert.AreEquivalent(new[] { ClamId, MusselId, OysterId, CodId }, covered);
+            Assert.AreEqual(CodLicenceId, CatchLicensePolicy.RequiredLicenseFor(CodId, all));
             CollectionAssert.AreEquivalent(new[]
             {
-                CodId, "fish.lobster", "fish.rock_crab", "fish.green_crab", "fish.striped_bass",
+                "fish.lobster", "fish.rock_crab", "fish.green_crab", "fish.striped_bass",
                 "fish.mackerel", "fish.atlantic_herring", "fish.rainbow_smelt", "fish.winter_flounder",
                 "fish.atlantic_surf_clam", "fish.northern_quahog",
             }, missing, "update the first-week exception table with any content resolution");

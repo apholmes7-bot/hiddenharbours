@@ -221,5 +221,50 @@ namespace HiddenHarbours.Tests.EditMode
             sim.Tick(0.5f, strike: false);
             Assert.AreEqual(0.5f, sim.TakeWindow01, 1e-3f, "halfway through the open window");
         }
+
+        [Test]
+        public void Profile_ClampsEmptyAndReversedRangesBeforeScheduling()
+        {
+            var p = new BiteProfile(-2, -4, -1f, -2f, 0f, 0f, -1f, -3f, -4f, 0);
+            Assert.AreEqual(0, p.FalseNibblesMin);
+            Assert.AreEqual(0, p.FalseNibblesMax);
+            Assert.AreEqual(0.05f, p.NibbleGapMinSeconds);
+            Assert.AreEqual(0.05f, p.NibbleGapMaxSeconds);
+            Assert.AreEqual(0.05f, p.NibbleDipSeconds);
+            Assert.AreEqual(0.05f, p.TakeWindowSeconds);
+            Assert.AreEqual(0f, p.ReturnChance01);
+            Assert.AreEqual(0f, p.ReturnDelayMinSeconds);
+            Assert.AreEqual(0f, p.ReturnDelayMaxSeconds);
+            Assert.AreEqual(1, p.MaxPasses);
+        }
+
+        [Test]
+        public void Profile_PreservesPositiveMinimaAndCapsReturnChance()
+        {
+            var p = new BiteProfile(3, 1, 2f, 1f, 0.4f, 0.7f, 2f, 4f, 2f, 5);
+            Assert.AreEqual(3, p.FalseNibblesMax);
+            Assert.AreEqual(2f, p.NibbleGapMaxSeconds);
+            Assert.AreEqual(4f, p.ReturnDelayMaxSeconds);
+            Assert.AreEqual(1f, p.ReturnChance01);
+            Assert.AreEqual(5, p.MaxPasses);
+            var sim = Sim(p);
+            TickUntil(sim, BitePhase.TakeOpen);
+            Assert.AreEqual(3, sim.NibbleIndex);
+        }
+
+        [Test]
+        public void ZeroReturnDelay_StillRequiresTheMinimumAwayBeat()
+        {
+            var p = new BiteProfile(0, 0, 1f, 1f, 0.3f, 0.8f, 1f, 0f, 0f, 2);
+            var sim = Sim(p);
+            sim.Tick(0f, true);
+            Assert.AreEqual(BitePhase.Away, sim.Phase);
+            sim.Tick(0f, false);
+            Assert.AreEqual(BitePhase.Away, sim.Phase);
+            sim.Tick(0.01f, false);
+            Assert.AreEqual(BitePhase.Approach, sim.Phase);
+            Assert.AreEqual(1, sim.PassIndex);
+            Assert.AreEqual(0f, sim.PhaseSeconds);
+        }
     }
 }

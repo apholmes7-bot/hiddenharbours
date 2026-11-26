@@ -32,7 +32,8 @@ namespace HiddenHarbours.Core
         /// ending that means the line was delivered.</summary>
         Dwelled = 0,
 
-        /// <summary>The pool was full and this was the oldest bubble in it — a newer line took its slot.
+        /// <summary>A newer line took this bubble: either the same speaker said something new (one bubble
+        /// per speaker, re-filled in place), or the pool was full and this was the oldest bubble in it.
         /// See <c>AmbientSpeechPresenter.MaxConcurrent</c> for why a cap exists at all.</summary>
         Displaced = 1,
 
