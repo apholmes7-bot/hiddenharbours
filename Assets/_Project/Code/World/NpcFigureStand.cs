@@ -59,14 +59,14 @@ namespace HiddenHarbours.World
         private RoutinePlan _runPlan;
         private NpcActivityDef _runActivity;
         private bool _runInterrupted;
-        private bool _arrivalLatched;
-        private double _arrivalFlow;
+        private AnglerRunWindow _window;
 
         // The catch, asked once per slot.
         private bool _catchKnown;
         private long _catchSlot;
         private int _catchSeed;
         private NpcAnglingActivityDef _catchActivity;
+        private IShoreCatchFacts _catchFacts;
         private bool _catchHas;
         private ShoreCatch _catch;
         private ShoreEdge _catchEdge;
@@ -235,7 +235,7 @@ namespace HiddenHarbours.World
                 _runPlan = plan;
                 _runActivity = activity;
                 _runInterrupted = false;
-                _arrivalLatched = false;
+                _window.Unlatch();
             }
 
             RoutinePose pose = _routine.Pose;
@@ -246,23 +246,20 @@ namespace HiddenHarbours.World
             if (!free)
             {
                 _runInterrupted = true;
-                _arrivalLatched = false;
+                _window.Unlatch();
                 return AnglerStatus.None;
             }
             _angling = activity;
 
-            // Arrival on the flow clock, latched for the run so the hour clock's float steps cannot nudge it.
+            // Arrival and departure on the flow clock, latched for the run so the hour clock's float steps cannot
+            // nudge either (a slot ending within float jitter of departure would otherwise flip mid-session).
             // After a talk or a hurry he begins no slot that started before he was free again.
-            if (!_arrivalLatched)
-            {
-                _arrivalFlow = _runInterrupted ? Math.Max(arrival, flow) : arrival;
-                _arrivalLatched = true;
-            }
+            _window.Latch(arrival, departure, flow, _runInterrupted);
 
             int seed = GameServices.Environment != null ? GameServices.Environment.WorldSeed : 0;
             AnglerScript script = activity.Script;
             long slot = AnglerTimeline.SlotIndex(in script, seed, _keyHash, flow);
-            if (!AnglerTimeline.SlotMayBegin(in script, seed, _keyHash, slot, _arrivalFlow, departure))
+            if (!AnglerTimeline.SlotMayBegin(in script, seed, _keyHash, slot, _window.ArrivalFlow, _window.DepartureFlow))
                 return AnglerStatus.AtRest;
 
             // The slot's start in routine time: the weather and the catch are read there, so neither changes
@@ -272,13 +269,17 @@ namespace HiddenHarbours.World
             IEnvironmentService env = GameServices.Environment;
             if (env != null && env.SeaState01At(slotStartTotal) > activity.MaxSeaState01) return AnglerStatus.AtRest;
 
-            if (!_catchKnown || slot != _catchSlot || seed != _catchSeed || !ReferenceEquals(activity, _catchActivity))
+            // The facts are part of the key: a Fishing module published (or replaced) mid-slot is read at once.
+            IShoreCatchFacts facts = GameServices.ShoreCatch;
+            if (!_catchKnown || slot != _catchSlot || seed != _catchSeed || !ReferenceEquals(activity, _catchActivity)
+                || !ReferenceEquals(facts, _catchFacts))
             {
                 _catchKnown = true;
                 _catchSlot = slot;
                 _catchSeed = seed;
                 _catchActivity = activity;
-                _catchHas = GameServices.ShoreCatch.TryPick(activity.CatchSpotId, seed, _keyHash, slot,
+                _catchFacts = facts;
+                _catchHas = facts.TryPick(activity.CatchSpotId, seed, _keyHash, slot,
                                                             slotStartTotal, out _catch);
                 // The deck edge he fishes over, measured from his stand (the frame the offsets are in).
                 _catchEdge = activity.TryGetStand(out ShoreStand stand) ? stand.Edge.RelativeTo(stand.Position) : default;

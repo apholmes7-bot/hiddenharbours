@@ -53,8 +53,26 @@ namespace HiddenHarbours.World
         {
             stand = default;
             IShoreCatchFacts facts = GameServices.ShoreCatch;
-            return facts != null && !string.IsNullOrEmpty(CatchSpotId) && facts.TryGetStand(CatchSpotId, out stand);
+            if (facts == null || facts is EmptyShoreCatchFacts)
+            {
+                // Asked before the Fishing module published its spots: he would fish from the station node with
+                // no edge to keep his cast off the planks. Said once per Def, never per frame.
+                if (!_warnedNoFacts && !string.IsNullOrEmpty(CatchSpotId))
+                {
+                    _warnedNoFacts = true;
+                    Debug.LogWarning($"[{nameof(NpcAnglingActivityDef)}] '{Id}': no shore catch facts are published, " +
+                                     $"so '{CatchSpotId}' gives no stand; he fishes from his station with no edge clamp.");
+                }
+                return false;
+            }
+            return !string.IsNullOrEmpty(CatchSpotId) && facts.TryGetStand(CatchSpotId, out stand);
         }
+
+        [System.NonSerialized] private bool _warnedNoFacts;
+
+        /// <summary>True once this Def has warned that it was asked for a stand before any shore catch facts
+        /// were published. For tests.</summary>
+        public bool WarnedNoFacts => _warnedNoFacts;
 
         /// <summary>True when this Def can be played: a rod, a valid script and a spot.</summary>
         public bool IsPlayable(out string why)

@@ -476,6 +476,109 @@ namespace HiddenHarbours.Tests.EditMode
             finally { GameServices.ShoreCatch = was; }
         }
 
+        [Test]
+        public void AskedForAStand_BeforeTheFactsArePublished_ItWarnsOnce_NotEveryFrame()
+        {
+            NpcAnglingActivityDef rod = MakeAngling();
+            int warnings = 0;
+            void Count(string message, string stack, LogType type)
+            {
+                if (type == LogType.Warning && message.Contains(rod.Id)) warnings++;
+            }
+
+            IShoreCatchFacts was = GameServices.ShoreCatch;
+            Application.logMessageReceived += Count;
+            try
+            {
+                GameServices.ShoreCatch = EmptyShoreCatchFacts.Instance;
+                Assert.IsFalse(rod.WarnedNoFacts);
+                for (int frame = 0; frame < 5; frame++)
+                    Assert.IsFalse(rod.TryGetStand(out _), "the empty fallback gave a stand");
+                Assert.IsTrue(rod.WarnedNoFacts, "a stand asked of the empty fallback failed silently");
+                Assert.AreEqual(1, warnings, "the missing-facts warning must be said once, not per ask");
+
+                // Published: the stand resolves and nothing more is said.
+                GameServices.ShoreCatch = WharfFacts(out _, out _);
+                Assert.IsTrue(rod.TryGetStand(out ShoreStand stand), "the published facts gave no stand");
+                Assert.IsTrue(stand.Edge.IsSet);
+                Assert.AreEqual(1, warnings);
+            }
+            finally
+            {
+                Application.logMessageReceived -= Count;
+                GameServices.ShoreCatch = was;
+            }
+        }
+
+        [Test]
+        public void TheRunWindow_IsLatched_SoFloatJitterAtDepartureCannotEndASessionMidway()
+        {
+            AnglerScript script = MakeAngling().Script;
+            uint key = FigureKeyHash.Of(AnglerKey);
+            long slot = AnglerTimeline.SlotIndex(in script, Seed, key, 10000d);
+            double start = AnglerTimeline.SlotStartSeconds(in script, Seed, key, slot);
+            double arrival = start - 5d;
+            double departure = start + script.SlotSeconds;   // the slot ends exactly as he is due to leave
+            const double Jitter = 1e-3;                      // a float hour's step, in flow seconds, and then some
+
+            // Harness: re-read raw, the jitter alone flips the gate.
+            Assert.IsTrue(AnglerTimeline.SlotMayBegin(in script, Seed, key, slot, arrival, departure));
+            Assert.IsFalse(AnglerTimeline.SlotMayBegin(in script, Seed, key, slot, arrival, departure - Jitter),
+                           "harness: the jitter does not reach the gate, so the latch is untested");
+
+            var window = new AnglerRunWindow();
+            window.Latch(arrival, departure, start, interrupted: false);
+            for (int frame = 0; frame < 8; frame++)
+            {
+                double jittered = departure + (frame % 2 == 0 ? -Jitter : Jitter);
+                window.Latch(arrival + Jitter, jittered, start + frame, interrupted: false);
+                Assert.AreEqual(departure, window.DepartureFlow, "the departure moved inside a run");
+                Assert.AreEqual(arrival, window.ArrivalFlow, "the arrival moved inside a run");
+                Assert.IsTrue(AnglerTimeline.SlotMayBegin(in script, Seed, key, slot, window.ArrivalFlow,
+                                                          window.DepartureFlow), $"frame {frame}: the session vanished");
+            }
+
+            // A new run takes a fresh window; after an interruption he begins nothing from before he was free.
+            window.Unlatch();
+            Assert.IsFalse(window.IsLatched);
+            window.Latch(arrival, departure - Jitter, start + 2d, interrupted: true);
+            Assert.AreEqual(start + 2d, window.ArrivalFlow);
+            Assert.AreEqual(departure - Jitter, window.DepartureFlow);
+        }
+
+        [Test]
+        public void BasilsStPetersRoutine_FishesTheWharfHead_FromItsStand_WithNoGraphicsDevice()
+        {
+            // Headless: assets and facts only, so CI (no GPU) proves the wiring the plates show.
+            const string BasilRoutinePath = RoutinesFolder + "/BasilSamsonRoutine.asset";
+            var routine = AssetDatabase.LoadAssetAtPath<RoutineDef>(BasilRoutinePath);
+            Assert.IsNotNull(routine, $"no routine at {BasilRoutinePath}");
+            var wharfRod = AssetDatabase.LoadAssetAtPath<NpcAnglingActivityDef>(WharfRodPath);
+            Assert.IsNotNull(wharfRod, $"no angling activity at {WharfRodPath}");
+
+            int fishing = -1;
+            for (int i = 0; i < routine.Entries.Length; i++)
+                if (routine.Entries[i].Doing != null) { Assert.AreEqual(-1, fishing, "two blocks name a doing"); fishing = i; }
+            Assert.GreaterOrEqual(fishing, 0, $"{routine.Id} has no angling slot");
+            Assert.AreSame(wharfRod, routine.Entries[fishing].Doing, "his doing is not the wharf rod");
+            Assert.IsTrue(wharfRod.IsPlayable(out string why), why);
+            Assert.AreEqual(WharfSpotId, wharfRod.CatchSpotId);
+            Assert.Less(fishing, routine.Entries.Length - 1, "the angling block has no end");
+            Assert.Greater(routine.Entries[fishing + 1].StartHour, routine.Entries[fishing].StartHour);
+
+            IShoreCatchFacts was = GameServices.ShoreCatch;
+            try
+            {
+                GameServices.ShoreCatch = WharfFacts(out ShoreSpotDef spot, out _);
+                Assert.IsTrue(spot.TryGetStand(out ShoreStand want));
+                Assert.IsTrue(wharfRod.TryGetStand(out ShoreStand stand), "the wharf rod resolves no stand");
+                Assert.AreEqual(want.Position, stand.Position, "his stand is not the wharf head's");
+                Assert.AreEqual(want.HeadingDegrees, stand.HeadingDegrees);
+                Assert.IsTrue(stand.Edge.IsSet, "the wharf head stand has no edge to clamp his cast");
+            }
+            finally { GameServices.ShoreCatch = was; }
+        }
+
         // ================================================================ the rig
 
         private const int AnglingBlock = 2;
