@@ -17648,11 +17648,6 @@ MonoBehaviour:
     Species: 41
     Stage: 0
     Variant: 0
-  - Id: plant.stp_gap_bridge_296
-    At: {x: 163.74, y: -34.63}
-    Species: 34
-    Stage: 0
-    Variant: 1
   - Id: plant.stp_gap_bridge_297
     At: {x: 166.8, y: -34.86}
     Species: 45
@@ -17798,16 +17793,6 @@ MonoBehaviour:
     Species: 4
     Stage: 0
     Variant: 2
-  - Id: plant.stp_gap_bridge_326
-    At: {x: 162.31, y: -32.94}
-    Species: 2
-    Stage: 1
-    Variant: 0
-  - Id: plant.stp_gap_bridge_327
-    At: {x: 163.61, y: -32.93}
-    Species: 5
-    Stage: 0
-    Variant: 2
   - Id: plant.stp_gap_bridge_328
     At: {x: 170.76, y: -33.1}
     Species: 5
@@ -17853,21 +17838,6 @@ MonoBehaviour:
     Species: 1
     Stage: 0
     Variant: 1
-  - Id: plant.stp_gap_bridge_337
-    At: {x: 160.69, y: -32.29}
-    Species: 45
-    Stage: 1
-    Variant: 1
-  - Id: plant.stp_gap_bridge_338
-    At: {x: 161.47, y: -32.23}
-    Species: 1
-    Stage: 0
-    Variant: 1
-  - Id: plant.stp_gap_bridge_339
-    At: {x: 164.31, y: -32.32}
-    Species: 1
-    Stage: 0
-    Variant: 3
   - Id: plant.stp_gap_bridge_340
     At: {x: 170.56, y: -32.29}
     Species: 2
@@ -17923,26 +17893,6 @@ MonoBehaviour:
     Species: 45
     Stage: 0
     Variant: 3
-  - Id: plant.stp_gap_bridge_351
-    At: {x: 162.49, y: -31.72}
-    Species: 5
-    Stage: 1
-    Variant: 2
-  - Id: plant.stp_gap_bridge_352
-    At: {x: 163.48, y: -31.91}
-    Species: 1
-    Stage: 0
-    Variant: 0
-  - Id: plant.stp_gap_bridge_353
-    At: {x: 165.66, y: -31.62}
-    Species: 35
-    Stage: 0
-    Variant: 3
-  - Id: plant.stp_gap_bridge_354
-    At: {x: 166.69, y: -31.62}
-    Species: 4
-    Stage: 1
-    Variant: 2
   - Id: plant.stp_gap_bridge_355
     At: {x: 169.63, y: -31.81}
     Species: 2
@@ -17962,11 +17912,6 @@ MonoBehaviour:
     At: {x: 155.73, y: -31.04}
     Species: 31
     Stage: 0
-    Variant: 3
-  - Id: plant.stp_gap_bridge_359
-    At: {x: 159.91, y: -31.45}
-    Species: 1
-    Stage: 1
     Variant: 3
   - Id: plant.stp_gap_bridge_360
     At: {x: 170.3, y: -31.11}
@@ -18003,36 +17948,6 @@ MonoBehaviour:
     Species: 31
     Stage: 0
     Variant: 3
-  - Id: plant.stp_gap_bridge_367
-    At: {x: 158.79, y: -30.43}
-    Species: 1
-    Stage: 0
-    Variant: 0
-  - Id: plant.stp_gap_bridge_368
-    At: {x: 161.27, y: -30.5}
-    Species: 3
-    Stage: 0
-    Variant: 0
-  - Id: plant.stp_gap_bridge_369
-    At: {x: 162.01, y: -30.82}
-    Species: 42
-    Stage: 0
-    Variant: 2
-  - Id: plant.stp_gap_bridge_370
-    At: {x: 163.27, y: -30.81}
-    Species: 45
-    Stage: 1
-    Variant: 1
-  - Id: plant.stp_gap_bridge_371
-    At: {x: 164.77, y: -30.61}
-    Species: 1
-    Stage: 0
-    Variant: 1
-  - Id: plant.stp_gap_bridge_372
-    At: {x: 167.63, y: -30.89}
-    Species: 45
-    Stage: 0
-    Variant: 1
   - Id: plant.stp_gap_bridge_373
     At: {x: 171.34, y: -30.72}
     Species: 4
@@ -18073,21 +17988,6 @@ MonoBehaviour:
     Species: 48
     Stage: 0
     Variant: 2
-  - Id: plant.stp_gap_bridge_381
-    At: {x: 157.17, y: -30}
-    Species: 7
-    Stage: 1
-    Variant: 2
-  - Id: plant.stp_gap_bridge_382
-    At: {x: 162.22, y: -30.07}
-    Species: 5
-    Stage: 0
-    Variant: 0
-  - Id: plant.stp_gap_bridge_383
-    At: {x: 169.06, y: -30.28}
-    Species: 34
-    Stage: 1
-    Variant: 2
   - Id: plant.stp_gap_bridge_384
     At: {x: 140.15, y: -29.42}
     Species: 2
@@ -18123,36 +18023,6 @@ MonoBehaviour:
     Species: 31
     Stage: 0
     Variant: 0
-  - Id: plant.stp_gap_bridge_391
-    At: {x: 158.21, y: -29.35}
-    Species: 7
-    Stage: 1
-    Variant: 3
-  - Id: plant.stp_gap_bridge_392
-    At: {x: 159.77, y: -29.71}
-    Species: 45
-    Stage: 0
-    Variant: 2
-  - Id: plant.stp_gap_bridge_393
-    At: {x: 160.83, y: -29.75}
-    Species: 4
-    Stage: 0
-    Variant: 0
-  - Id: plant.stp_gap_bridge_394
-    At: {x: 163.24, y: -29.51}
-    Species: 45
-    Stage: 0
-    Variant: 3
-  - Id: plant.stp_gap_bridge_395
-    At: {x: 165.65, y: -29.5}
-    Species: 1
-    Stage: 0
-    Variant: 2
-  - Id: plant.stp_gap_bridge_396
-    At: {x: 166.5, y: -29.45}
-    Species: 42
-    Stage: 1
-    Variant: 2
   - Id: plant.stp_gap_bridge_397
     At: {x: 171.56, y: -29.69}
     Species: 3
@@ -18223,26 +18093,6 @@ MonoBehaviour:
     Species: 43
     Stage: 0
     Variant: 0
-  - Id: plant.stp_gap_bridge_411
-    At: {x: 160.15, y: -28.8}
-    Species: 1
-    Stage: 0
-    Variant: 1
-  - Id: plant.stp_gap_bridge_412
-    At: {x: 164.15, y: -28.81}
-    Species: 45
-    Stage: 0
-    Variant: 1
-  - Id: plant.stp_gap_bridge_413
-    At: {x: 164.91, y: -28.68}
-    Species: 5
-    Stage: 0
-    Variant: 3
-  - Id: plant.stp_gap_bridge_414
-    At: {x: 168.26, y: -29.12}
-    Species: 1
-    Stage: 0
-    Variant: 3
   - Id: plant.stp_gap_bridge_415
     At: {x: 147.21, y: -28.49}
     Species: 47
@@ -18263,21 +18113,6 @@ MonoBehaviour:
     Species: 48
     Stage: 0
     Variant: 0
-  - Id: plant.stp_gap_bridge_419
-    At: {x: 158.24, y: -28.57}
-    Species: 1
-    Stage: 0
-    Variant: 0
-  - Id: plant.stp_gap_bridge_420
-    At: {x: 160.94, y: -28.61}
-    Species: 41
-    Stage: 0
-    Variant: 3
-  - Id: plant.stp_gap_bridge_421
-    At: {x: 166.75, y: -28.44}
-    Species: 1
-    Stage: 0
-    Variant: 3
   - Id: plant.stp_gap_bridge_422
     At: {x: 168.96, y: -28.56}
     Species: 41
@@ -18331,31 +18166,6 @@ MonoBehaviour:
   - Id: plant.stp_gap_bridge_432
     At: {x: 155.9, y: -27.78}
     Species: 1
-    Stage: 0
-    Variant: 2
-  - Id: plant.stp_gap_bridge_433
-    At: {x: 161.88, y: -27.66}
-    Species: 45
-    Stage: 0
-    Variant: 3
-  - Id: plant.stp_gap_bridge_434
-    At: {x: 162.22, y: -27.96}
-    Species: 42
-    Stage: 0
-    Variant: 0
-  - Id: plant.stp_gap_bridge_435
-    At: {x: 163.54, y: -27.9}
-    Species: 1
-    Stage: 0
-    Variant: 3
-  - Id: plant.stp_gap_bridge_436
-    At: {x: 164.21, y: -27.82}
-    Species: 41
-    Stage: 0
-    Variant: 0
-  - Id: plant.stp_gap_bridge_437
-    At: {x: 165.72, y: -27.64}
-    Species: 2
     Stage: 0
     Variant: 2
   - Id: plant.stp_gap_bridge_438
@@ -18418,11 +18228,6 @@ MonoBehaviour:
     Species: 9
     Stage: 1
     Variant: 1
-  - Id: plant.stp_gap_bridge_450
-    At: {x: 163.8, y: -27.11}
-    Species: 1
-    Stage: 1
-    Variant: 1
   - Id: plant.stp_gap_bridge_451
     At: {x: 167.7, y: -27.15}
     Species: 1
@@ -18458,21 +18263,6 @@ MonoBehaviour:
     Species: 9
     Stage: 1
     Variant: 2
-  - Id: plant.stp_gap_bridge_458
-    At: {x: 160.91, y: -26.45}
-    Species: 1
-    Stage: 0
-    Variant: 2
-  - Id: plant.stp_gap_bridge_459
-    At: {x: 162.35, y: -26.63}
-    Species: 41
-    Stage: 1
-    Variant: 1
-  - Id: plant.stp_gap_bridge_460
-    At: {x: 164.89, y: -26.36}
-    Species: 2
-    Stage: 1
-    Variant: 3
   - Id: plant.stp_gap_bridge_461
     At: {x: 166.18, y: -26.57}
     Species: 45
@@ -18518,16 +18308,6 @@ MonoBehaviour:
     Species: 45
     Stage: 0
     Variant: 1
-  - Id: plant.stp_gap_bridge_470
-    At: {x: 162.91, y: -26.18}
-    Species: 1
-    Stage: 0
-    Variant: 1
-  - Id: plant.stp_gap_bridge_471
-    At: {x: 163.96, y: -25.93}
-    Species: 1
-    Stage: 0
-    Variant: 0
   - Id: plant.stp_gap_bridge_472
     At: {x: 166.63, y: -25.83}
     Species: 1
@@ -18573,11 +18353,6 @@ MonoBehaviour:
     Species: 45
     Stage: 0
     Variant: 3
-  - Id: plant.stp_gap_bridge_481
-    At: {x: 163.19, y: -25.66}
-    Species: 45
-    Stage: 0
-    Variant: 1
   - Id: plant.stp_gap_bridge_482
     At: {x: 167.84, y: -25.65}
     Species: 35

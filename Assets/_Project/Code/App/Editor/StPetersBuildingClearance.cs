@@ -113,6 +113,8 @@ namespace HiddenHarbours.App.Editor
                     Rise = StPetersLayerRefresh.ParseFloat(interior.Field("_upperLevelY")),
                 });
             }
+            // A building drawn whole carries no room; its plan comes from the step that stands it.
+            zones.AddRange(StPetersLayerRefresh.KeeperCottageZones(scene));
             return zones;
         }
 
@@ -171,7 +173,21 @@ namespace HiddenHarbours.App.Editor
                 EditorUtility.SetDirty(ground);
                 AssetDatabase.SaveAssetIfDirty(ground);
             }
-            log.AppendLine($"total {changed} cell(s) closed");
+            // A plant set down by hand ignores the grid, so one inside a zone is taken off the list itself.
+            var uprooted = definition.Authored.Where(a => zones.Any(z => z.Contains(a.At))).ToArray();
+            if (uprooted.Length > 0)
+            {
+                var gone = new HashSet<string>(uprooted.Select(a => a.Id));
+                definition.Authored = definition.Authored.Where(a => !gone.Contains(a.Id)).ToArray();
+                EditorUtility.SetDirty(definition);
+                AssetDatabase.SaveAssetIfDirty(definition);
+                foreach (var zone in zones)
+                {
+                    var here = uprooted.Where(a => zone.Contains(a.At)).Select(a => a.Id).ToArray();
+                    if (here.Length > 0) log.AppendLine($"{zone.Path}: {here.Length} authored plant(s) removed: {string.Join(", ", here)}");
+                }
+            }
+            log.AppendLine($"total {changed} cell(s) closed, {uprooted.Length} authored plant(s) removed, {definition.Authored.Length} kept");
             Debug.Log("[StPetersBuildingClearance]\n" + log);
         }
 
