@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f54899a1b1f36945962af0d3e6db371, type: 3}
+  m_Name: PropPiece_PicketPanel_weathered
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.PropPieceDef
+  Id: proppiece.picket_panel_weathered
+  DisplayName: Weathered picket fence
+  Layer: raised
+  Sprites:
+  - {fileID: 21300000, guid: 54971d742d339b148b2a55f6e136cf11, type: 3}
+  - {fileID: 21300000, guid: c3656701f9fbced4b8156c3ac9333ad0, type: 3}
+  - {fileID: 21300000, guid: c5a4d8b2626632f42a336c15142ef055, type: 3}
+  - {fileID: 21300000, guid: ac196afab499fb043b136d1e46437826, type: 3}
+  - {fileID: 21300000, guid: 884d59d9714ea5d4aad87fc4ed3515d1, type: 3}
+  - {fileID: 21300000, guid: 7de4c7bee8ea9984eb89d9ef964712e4, type: 3}
+  - {fileID: 21300000, guid: e14a3e23bc8548b4a8dcdf6b7ae4703b, type: 3}
+  - {fileID: 21300000, guid: 4b82f1f14177f8e4f8d193eb705785e1, type: 3}
+  - {fileID: 21300000, guid: fc4ba4ec0d1f50246a8d5a2e2a6cb29b, type: 3}
+  - {fileID: 21300000, guid: 04131c6ba9a04204aa24778217ee364e, type: 3}
+  DirectionStepDegrees: 10
+  PlanLengthMetres: 1.5
+  HeightMetres: 0.85
+  RunColliderThicknessMetres: 0.35
+  Colliders: []

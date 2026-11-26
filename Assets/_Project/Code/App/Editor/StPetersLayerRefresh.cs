@@ -1499,17 +1499,32 @@ namespace HiddenHarbours.App.Editor
                 foreach (string list in new[] { "m_RemovedComponents", "m_RemovedGameObjects", "m_AddedGameObjects", "m_AddedComponents" })
                     if (InstanceField(template.Pi, list) != "[]" || template.Attached.Count > 0)
                         throw new Refusal($"the mark a new one would copy, {template.Name}, is not a plain instance ({list}); a copy would carry its changes too.");
-                RequireDressing(name, template.Pi.Lines.ToList(), records, $"the mark it would be copied from, {template.Name},");
                 string key = $"StPetersNavMarks/{mark.Id}";
                 var map = new Dictionary<long, long>
                 {
                     [template.Pi.FileId] = ids.Next(key + "/PrefabInstance"),
                     [template.Tr.FileId] = ids.Next(key + "/Transform"),
                 };
-                patch.Add(Rerecord(Remap(template.Pi.Text, map), records, prefab, changed), $"StPetersNavMarks/{name}: PrefabInstance");
+                string copied = Remap(template.Pi.Text, map);
+                string how = $"copied from {template.Name}, which wears the same dressing";
+                if (!WearsDressing(template.Pi.Lines.ToList(), records) && assets is INavMarkDresser dresser)
+                {
+                    // A NEW mark dressed unlike any standing one: the placer's own dressing, run on a probe instance in
+                    // the editor (NavBuoyVisual.Apply and the mooring), is read back as the instance's overrides. What
+                    // the copy carried on the dressed parts is dropped first, so nothing of the other mark's dressing
+                    // stays behind.
+                    List<NavRecord> dressed = DressedRecords(dresser.Dress(mark, phases.TryGetValue(mark.Id, out float dp) ? dp : -1f),
+                                                             prefab, records);
+                    var parts = new HashSet<long>(dressed.Select(r => r.Target).Where(t => t != prefab.Visual));
+                    copied = DropMods(copied, m => parts.Contains(m.Target));
+                    records = records.Concat(dressed).ToList();
+                    how = $"copied from {template.Name} and dressed by the placer's own NavBuoyVisual.Apply ({dressed.Count} overrides)";
+                }
+                else RequireDressing(name, template.Pi.Lines.ToList(), records, $"the mark it would be copied from, {template.Name},");
+                patch.Add(Rerecord(copied, records, prefab, changed), $"StPetersNavMarks/{name}: PrefabInstance");
                 patch.Add(Remap(template.Tr.Text, map), $"StPetersNavMarks/{name}: Transform (stripped)");
                 trIds.Add(map[template.Tr.FileId]);
-                patch.Note(name, "added", $"at {At(mark.At)}, copied from {template.Name}, which wears the same dressing");
+                patch.Note(name, "added", $"at {At(mark.At)}, {how}");
             }
 
             foreach (SceneMark e in existing)
@@ -1591,6 +1606,57 @@ namespace HiddenHarbours.App.Editor
         /// run it, so the step never changes a dressing: a mark it keeps, or copies, must already wear
         /// the plan's. A plan that re-dresses a mark is refused, for the placer to do.
         /// </summary>
+        static bool WearsDressing(List<string> piLines, List<NavRecord> records) =>
+            records.All(r => !r.Dressing || Holds(piLines, r));
+
+        /// <summary>One override a dressed probe instance carries: its target in the prefab, its path, and its value
+        /// (a reference when <see cref="IsRef"/>).</summary>
+        public struct NavDressedValue
+        {
+            public long Target;
+            public string Path, Value;
+            public ObjRef Ref;
+            public bool IsRef;
+        }
+
+        /// <summary>Dresses a new mark the way the placer does, in the editor, and hands back the overrides that leaves.</summary>
+        public interface INavMarkDresser
+        {
+            IReadOnlyList<NavDressedValue> Dress(PlannedNavMark mark, float phase);
+        }
+
+        /// <summary>A probe's overrides as records, less what the plan's own records already say (the name, the
+        /// position, the visual's dressing and ids). Each is written: it was dropped from the copy first.</summary>
+        static List<NavRecord> DressedRecords(IReadOnlyList<NavDressedValue> values, NavPrefab prefab, List<NavRecord> records)
+        {
+            var dressed = new List<NavRecord>();
+            foreach (NavDressedValue v in values)
+            {
+                if (v.Target == prefab.GameObject || v.Target == prefab.Transform) continue;
+                if (records.Any(r => r.Target == v.Target && r.Path == v.Path)) continue;
+                if (dressed.Any(r => r.Target == v.Target && r.Path == v.Path))
+                    throw new Refusal($"the dressed probe overrides '{v.Path}' twice.");
+                dressed.Add(v.IsRef
+                    ? new NavRecord { Target = v.Target, Path = v.Path, Kind = 'r', Ref = v.Ref, DefaultRef = new ObjRef(-1, "\u0001", 0) }
+                    : new NavRecord { Target = v.Target, Path = v.Path, Kind = 's', Value = v.Value ?? "", Default = "\u0001" });
+            }
+            return dressed;
+        }
+
+        /// <summary>A prefab instance's text less the modifications <paramref name="drop"/> picks.</summary>
+        static string DropMods(string piText, Func<Mod, bool> drop)
+        {
+            var lines = piText.Split('\n').ToList();
+            List<Mod> mods = ReadMods(lines, out _);
+            foreach (Mod m in mods.Where(drop).OrderByDescending(m => m.Line)) lines.RemoveRange(m.Line, 4);
+            if (ReadMods(lines, out _).Count == 0)
+            {
+                int head = lines.IndexOf(ModsHead);
+                if (head >= 0) lines[head] = ModsHead + " []";
+            }
+            return string.Join("\n", lines);
+        }
+
         static void RequireDressing(string who, List<string> piLines, List<NavRecord> records, string wearer)
         {
             foreach (NavRecord r in records)
@@ -1794,12 +1860,67 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>The NavBuoy prefab and the mark defs, as the placer loads them.</summary>
-        public sealed class EditorNavMarkAssets : INavMarkAssets
+        public sealed class EditorNavMarkAssets : INavMarkAssets, INavMarkDresser
         {
             readonly Dictionary<string, NavBuoyDef> _defs = NavMarkPlacer.LoadDefsByMarkType(StPetersNavMarks.DefFolder);
             NavPrefab _prefab;
 
             public NavPrefab Prefab => _prefab ?? (_prefab = LoadPrefab());
+
+            /// <summary>
+            /// The placer's own steps (<see cref="NavMarkPlacer.Place"/>: moor, then Configure) on a probe instance in
+            /// a preview scene, read back as the instance's overrides. Nothing is left in any open scene.
+            /// </summary>
+            public IReadOnlyList<NavDressedValue> Dress(PlannedNavMark mark, float phase)
+            {
+                var source = AssetDatabase.LoadAssetAtPath<GameObject>(StPetersNavMarks.PrefabPath);
+                if (source == null) throw new Refusal($"no prefab at {StPetersNavMarks.PrefabPath}.");
+                if (!_defs.TryGetValue(mark.MarkType, out NavBuoyDef def) || def == null)
+                    throw new Refusal($"no NavBuoyDef for {mark.MarkType} under {StPetersNavMarks.DefFolder}.");
+                UnityEngine.SceneManagement.Scene preview = UnityEditor.SceneManagement.EditorSceneManager.NewPreviewScene();
+                try
+                {
+                    var go = (GameObject)PrefabUtility.InstantiatePrefab(source, preview);
+                    go.transform.position = new Vector3(mark.At.x, mark.At.y, 0f);
+                    var mooring = go.GetComponent<NavBuoyMooring>();
+                    if (mooring == null) throw new Refusal($"{StPetersNavMarks.PrefabPath} carries no NavBuoyMooring.");
+                    mooring.MoorAt(mark.At);
+                    go.GetComponent<NavBuoyVisual>().Configure(def, mark.SizeId, mark.Facing, mark.Id, phase);
+                    foreach (Component c in go.GetComponentsInChildren<Component>(true))
+                        if (c != null) PrefabUtility.RecordPrefabInstancePropertyModifications(c);
+                    foreach (Transform t in go.GetComponentsInChildren<Transform>(true))
+                        PrefabUtility.RecordPrefabInstancePropertyModifications(t.gameObject);
+
+                    var values = new List<NavDressedValue>();
+                    foreach (PropertyModification m in PrefabUtility.GetPropertyModifications(go) ?? Array.Empty<PropertyModification>())
+                    {
+                        if (m?.target == null) continue;
+                        long target = LocalId(m.target);
+                        var v = new NavDressedValue { Target = target, Path = m.propertyPath, Value = m.value };
+                        if (m.objectReference != null)
+                        {
+                            if (!AssetDatabase.TryGetGUIDAndLocalFileIdentifier(m.objectReference, out string g, out long id))
+                                throw new Refusal($"the dressed probe points '{m.propertyPath}' at an object that is not an asset.");
+                            v.IsRef = true;
+                            v.Ref = new ObjRef(id, g, AssetDatabase.IsNativeAsset(m.objectReference) ? 2 : 3);
+                        }
+                        else if (string.IsNullOrEmpty(m.value) && IsRefProperty(m.target, m.propertyPath))
+                        {
+                            v.IsRef = true;
+                            v.Ref = new ObjRef(0, null, 0);
+                        }
+                        values.Add(v);
+                    }
+                    return values;
+                }
+                finally { UnityEditor.SceneManagement.EditorSceneManager.ClosePreviewScene(preview); }
+            }
+
+            static bool IsRefProperty(UnityEngine.Object target, string path)
+            {
+                SerializedProperty p = new SerializedObject(target).FindProperty(path);
+                return p != null && p.propertyType == SerializedPropertyType.ObjectReference;
+            }
 
             public bool TryDef(string markType, out ObjRef def, out string lightText)
             {

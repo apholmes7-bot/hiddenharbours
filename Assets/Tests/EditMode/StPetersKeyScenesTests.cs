@@ -779,13 +779,16 @@ namespace HiddenHarbours.Tests.EditMode
 
             // Selected pieces use the three prop kits, the baked building kit, or a non-rendering perch.
             // Unselected rows and scenes at Placed 0 remain data; none of this step is ground paint.
-            var kits = new[] { StPetersLayerRefresh.SetPiecesKit, StPetersLayerRefresh.DecorKit, StPetersLayerRefresh.FindsKit };
+            var kits = new[] { StPetersLayerRefresh.SetPiecesKit, StPetersLayerRefresh.DecorKit, StPetersLayerRefresh.FindsKit,
+                               StPetersLayerRefresh.PropPiecesKit };
             foreach (KeyScenePiece p in scenes.SelectMany(s => s.Pieces.Where(p => StPetersLayerRefresh.Places(s, p))))
             {
                 if (p.Kind == KeySceneDef.KindBuilding) Assert.AreEqual("wharfBuilding2", p.Kit);
                 else if (p.Kind == KeySceneDef.KindGull) Assert.AreEqual("seagull", p.Kit);
                 else CollectionAssert.Contains(kits, p.Kit, $"{p.Id} comes from '{p.Kit}'");
-                Assert.IsFalse(p.Id.StartsWith("path.", StringComparison.Ordinal), $"{p.Id} is ground paint");
+                // The light's plank walk is a path by name and laid boards by kind: pictures of planks, not paint.
+                bool planks = p.Kit == StPetersLayerRefresh.PropPiecesKit && p.Id == StPetersLayerRefresh.PlankWalkId;
+                Assert.IsFalse(p.Id.StartsWith("path.", StringComparison.Ordinal) && !planks, $"{p.Id} is ground paint");
             }
 
             // The boards' words stay ids: no entry's text is written into the scene.
@@ -983,6 +986,23 @@ namespace HiddenHarbours.Tests.EditMode
                     Assert.AreEqual(0, p.Sprite.Sprite.FileId, "a perch never places a gull sprite");
                     continue;
                 }
+                if (p.Parts != null)
+                {
+                    // A run piece (a fence, a walk) is its parts' pictures, each a sprite of its kit's pieces.
+                    Assert.AreEqual(StPetersLayerRefresh.PropPiecesKit, p.Kit, $"{p.Id} has parts outside the yard kit");
+                    Assert.IsNotEmpty(p.Parts, $"{p.Id} is a run of no pictures");
+                    Assert.IsTrue(assets.TryPropKit(p.Kit, out PropPieceKitDef kit), $"no kit '{p.Kit}'");
+                    var kitSprites = new HashSet<Sprite>(kit.Pieces.SelectMany(e => new[] { e.Main, e.Alternate, e.Corner, e.End, e.Gate, e.Bend })
+                        .Concat(kit.Dressings.SelectMany(d => new[] { d.Main, d.Alternate }))
+                        .Where(d => d != null).SelectMany(d => d.Sprites));
+                    foreach (StPetersLayerRefresh.KeyScenePart part in p.Parts)
+                    {
+                        Sprite ps = SpriteAt(part.Sprite.Sprite);
+                        Assert.IsNotNull(ps, $"{part.Name}'s picture is no sprite");
+                        Assert.IsTrue(kitSprites.Contains(ps), $"{part.Name}'s picture is not one of its kit's");
+                    }
+                    continue;
+                }
                 string path = AssetDatabase.GUIDToAssetPath(p.Sprite.Sprite.Guid);
                 Assert.IsNotEmpty(path, $"{p.Id}'s cell ({p.Cell}) is no asset");
                 Sprite sprite = AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>()
@@ -994,6 +1014,14 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.AreEqual(p.Id, def.Id, $"{p.Id} is placed under another Def's id");
                 Assert.IsTrue(def.Frames.Any(f => f.Sprite == sprite), $"{p.Id}'s cell is not one of its Def's frames");
             }
+        }
+
+        static Sprite SpriteAt(ObjRef r)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(r.Guid);
+            if (string.IsNullOrEmpty(path)) return null;
+            return AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>()
+                .FirstOrDefault(s => AssetDatabase.TryGetGUIDAndLocalFileIdentifier(s, out string _, out long local) && local == r.FileId);
         }
 
         // ---- the heights ------------------------------------------------------------------------------

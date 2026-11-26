@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f54899a1b1f36945962af0d3e6db371, type: 3}
+  m_Name: PropPiece_Plank
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.PropPieceDef
+  Id: proppiece.plank
+  DisplayName: Plank walk
+  Layer: floor
+  Sprites:
+  - {fileID: 21300000, guid: 6e4ec53381388a3489e9750cef60b78a, type: 3}
+  - {fileID: 21300000, guid: b0522719572b30746b4fd9d286479d90, type: 3}
+  - {fileID: 21300000, guid: 4bae3823fd5da34419b17db9486f0e82, type: 3}
+  - {fileID: 21300000, guid: 83fa6b415f91ec44ea3acecf624ab99b, type: 3}
+  - {fileID: 21300000, guid: b0c6b38c73d32f747a1c777162c952f7, type: 3}
+  - {fileID: 21300000, guid: fbbc722c9080c3643ac3c7744a1b6c71, type: 3}
+  - {fileID: 21300000, guid: 51664a333cff9ac4cad6d694e34f7f51, type: 3}
+  - {fileID: 21300000, guid: a0fb26b0a2b82d64e952a3ddb112c04d, type: 3}
+  - {fileID: 21300000, guid: 0d24af31a745b004aaa8342c7d99526f, type: 3}
+  - {fileID: 21300000, guid: 7570ef474330fa645a83194a97f7f6d1, type: 3}
+  DirectionStepDegrees: 10
+  PlanLengthMetres: 1
+  HeightMetres: 0
+  RunColliderThicknessMetres: 0
+  Colliders: []

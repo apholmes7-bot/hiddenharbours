@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54e56c3f6b269794eaf22c63100c0be7, type: 3}
+  m_Name: PropPieceKit_stp_light_pieces
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.PropPieceKitDef
+  Id: proppiecekit.stp_light_pieces
+  Kit: stpLightPieces
+  Pieces:
+  - Piece: fogBell
+    Main: {fileID: 11400000, guid: f9eb1a9ce3b50f64aafb1b8339da9678, type: 2}
+    Alternate: {fileID: 0}
+    AlternateEvery: 0
+    Corner: {fileID: 0}
+    End: {fileID: 0}
+    Gate: {fileID: 0}
+    Bend: {fileID: 0}
+    CornerTurnDegrees: 20
+    GateGapMaxMetres: 1.6
+    GateSwingDegrees: 70
+  - Piece: clothesline
+    Main: {fileID: 11400000, guid: b92e0666530ca4c4e996ffdb0d1661ca, type: 2}
+    Alternate: {fileID: 0}
+    AlternateEvery: 0
+    Corner: {fileID: 0}
+    End: {fileID: 0}
+    Gate: {fileID: 0}
+    Bend: {fileID: 0}
+    CornerTurnDegrees: 20
+    GateGapMaxMetres: 1.6
+    GateSwingDegrees: 70
+  - Piece: picket
+    Main: {fileID: 11400000, guid: ca7d7bcfaedf1344c99f5257aae15fa9, type: 2}
+    Alternate: {fileID: 0}
+    AlternateEvery: 0
+    Corner: {fileID: 11400000, guid: e0fdf9b9f31bcf543ab83da753ca6403, type: 2}
+    End: {fileID: 11400000, guid: 107f9e03b9fbad044bc39f1c17757900, type: 2}
+    Gate: {fileID: 11400000, guid: f9eafe1a00720d94a86ffe2d15ee2179, type: 2}
+    Bend: {fileID: 0}
+    CornerTurnDegrees: 20
+    GateGapMaxMetres: 1.6
+    GateSwingDegrees: 70
+  - Piece: plank
+    Main: {fileID: 11400000, guid: d30ea35c0f922a242b8f3a20d26ee262, type: 2}
+    Alternate: {fileID: 0}
+    AlternateEvery: 0
+    Corner: {fileID: 0}
+    End: {fileID: 11400000, guid: 875090cb4fb1d4e43a9bbb3221517485, type: 2}
+    Gate: {fileID: 0}
+    Bend: {fileID: 11400000, guid: d4d6e951272100b48bae22a0342337c1, type: 2}
+    CornerTurnDegrees: 12
+    GateGapMaxMetres: 1.6
+    GateSwingDegrees: 70
+  Dressings:
+  - PieceId: structure.stp_ne_brow_fence
+    Main: {fileID: 11400000, guid: 4a152714bc703ea46bd9c85561ed397e, type: 2}
+    Alternate: {fileID: 11400000, guid: ea423bebedda58a489e612b5bea09770, type: 2}
+    AlternateEvery: 7

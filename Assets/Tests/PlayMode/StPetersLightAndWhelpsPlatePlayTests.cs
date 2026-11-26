@@ -70,7 +70,43 @@ namespace HiddenHarbours.Tests.PlayMode
             new BoardFrame("whelps_lookout.cottage.dusk", 154f, 176f, -43f, -24f, 19.5f, 0.63f),
             new BoardFrame("whelps_lookout.gap.noon", 146f, 168f, -49f, -30f, 12f, 0.63f),
             new BoardFrame("whelps_lookout.gap.dusk", 146f, 168f, -49f, -30f, 19.5f, 0.63f),
+            // The station's props (fog bell, clothesline, picket fences, the plank path) and the east cardinal off the bar.
+            new BoardFrame("ne_props.station.noon", 196f, 226f, 52f, 70f, 12f, 0.63f),
+            new BoardFrame("ne_props.yard.noon", 176f, 200f, 50f, 66f, 12f, 0.63f),
+            new BoardFrame("ne_props.planks.noon", 164f, 212f, 38f, 64f, 12f, 0.63f),
+            new BoardFrame("ne_props.east_buoy.high", 248f, 272f, 96f, 110f, 12f, 2.2f),
+            new BoardFrame("ne_props.east_buoy.low", 248f, 272f, 96f, 110f, 12f, -1.4f),
+            new BoardFrame("ne_props.east_buoy.spring_low", 248f, 272f, 96f, 110f, 12f, -2.2f),
+            new BoardFrame("ne_props.east_buoy.2230", 248f, 272f, 96f, 110f, 22.5f, 0.63f),
         };
+
+        const string EastCardinalNightFrame = "ne_props.east_buoy.2230";
+        const string EastCardinalMark = "NavMark_aid.stp_ne_bar_east_cardinal";
+
+        /// <summary>
+        /// The first hour at or after <paramref name="hour"/> that lands in the middle of one of the east cardinal's
+        /// flashes (Q(3) 10s is dark most of its period), so the night plate shows her lamp burning.
+        /// </summary>
+        static float HourTheEastCardinalBurns(float hour)
+        {
+            GameObject mark = GameObject.Find(EastCardinalMark);
+            Assert.IsNotNull(mark, EastCardinalMark + " is not in St Peters.");
+            var lamp = mark.GetComponentInChildren<HiddenHarbours.Art.NavLight>(true);
+            Assert.IsNotNull(lamp, "the east cardinal carries no lamp.");
+            Assert.IsTrue(lamp.IsLit, "the east cardinal's lamp is unlit.");
+            double spd = GameServices.Config.SecondsPerDay;
+            const double step = 0.02;
+            int first = -1;
+            for (int k = 0; k < 1000; k++)
+            {
+                float h = hour + (float)(k * step / spd * 24.0);
+                bool on = lamp.Character.IsOn((1.0 + h / 24.0) * spd, lamp.PhaseSeconds);
+                if (on && first < 0) first = k;
+                if (!on && first >= 0) return hour + (float)((first + k - 1) * 0.5 * step / spd * 24.0);
+            }
+            Assert.Fail("the east cardinal never flashed in twenty seconds of clock.");
+            return hour;
+        }
 
         /// <summary>The north-east light in the loaded region: its lantern is where the clock says, at any hour.</summary>
         [UnityTest]
@@ -138,7 +174,7 @@ namespace HiddenHarbours.Tests.PlayMode
             GameServices.Clock.TimeScale = 1f;
         }
 
-        [UnityTest]
+        [UnityTest, Timeout(900000)]
         public IEnumerator StPeters_TheLightAndTheWhelps_AtTheirBoardsFramesHoursAndTides()
         {
             RequireAGraphicsDevice();
@@ -164,7 +200,8 @@ namespace HiddenHarbours.Tests.PlayMode
                 foreach (BoardFrame frame in LightAndWhelpsFrames())
                 {
                     if (!string.IsNullOrEmpty(only) && !frame.Id.Contains(only)) continue;
-                    yield return PinTheHour(frame.Hour, ClearRunSeconds);
+                    float hour = frame.Id == EastCardinalNightFrame ? HourTheEastCardinalBurns(frame.Hour) : frame.Hour;
+                    yield return PinTheHour(hour, ClearRunSeconds);
 
                     GameServices.Environment = new LandingBoardTide(held, frame.Tide);
                     Time.timeScale = 1f;
@@ -203,7 +240,7 @@ namespace HiddenHarbours.Tests.PlayMode
                     File.WriteAllBytes(path, tex.EncodeToPNG());
                     Object.DestroyImmediate(tex);
                     Color tint = Shader.GetGlobalColor("_DayNightTint");
-                    Debug.Log($"[KeySceneBoards] plate written: {path} ({_w}x{_h}, hour {frame.Hour}, tide {frame.Tide}, day tint {tint.r:F3} {tint.g:F3} {tint.b:F3})");
+                    Debug.Log($"[KeySceneBoards] plate written: {path} ({_w}x{_h}, hour {hour}, tide {frame.Tide}, day tint {tint.r:F3} {tint.g:F3} {tint.b:F3})");
                 }
                 Debug.Log("[KeySceneBoards] PLATES_COMPLETE " + dir);
             }

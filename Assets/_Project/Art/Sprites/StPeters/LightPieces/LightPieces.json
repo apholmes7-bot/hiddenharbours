@@ -1,0 +1,214 @@
+{
+  "schema": "stp-light-pieces@1",
+  "recipe": "tools/rig-recipes/stp-light-pieces.mjs",
+  "pixelsPerMetre": 32,
+  "elevationDeg": 40,
+  "pivot": "the ground point is every picture's centre",
+  "directionsDegrees": [
+    0,
+    10,
+    20,
+    30,
+    40,
+    50,
+    60,
+    70,
+    80,
+    90
+  ],
+  "runFlipsX": "a run whose screen direction falls is the rising picture flipped in x",
+  "pieces": [
+    {
+      "name": "PicketPanel_fresh",
+      "kind": "run",
+      "directionStepDegrees": 10,
+      "sprites": [
+        "PicketPanel_fresh/PicketPanel_fresh_a00.png",
+        "PicketPanel_fresh/PicketPanel_fresh_a10.png",
+        "PicketPanel_fresh/PicketPanel_fresh_a20.png",
+        "PicketPanel_fresh/PicketPanel_fresh_a30.png",
+        "PicketPanel_fresh/PicketPanel_fresh_a40.png",
+        "PicketPanel_fresh/PicketPanel_fresh_a50.png",
+        "PicketPanel_fresh/PicketPanel_fresh_a60.png",
+        "PicketPanel_fresh/PicketPanel_fresh_a70.png",
+        "PicketPanel_fresh/PicketPanel_fresh_a80.png",
+        "PicketPanel_fresh/PicketPanel_fresh_a90.png"
+      ],
+      "planLengthMetres": 1.5,
+      "layer": "raised",
+      "heightMetres": 0.85
+    },
+    {
+      "name": "PicketPanel_weathered",
+      "kind": "run",
+      "directionStepDegrees": 10,
+      "sprites": [
+        "PicketPanel_weathered/PicketPanel_weathered_a00.png",
+        "PicketPanel_weathered/PicketPanel_weathered_a10.png",
+        "PicketPanel_weathered/PicketPanel_weathered_a20.png",
+        "PicketPanel_weathered/PicketPanel_weathered_a30.png",
+        "PicketPanel_weathered/PicketPanel_weathered_a40.png",
+        "PicketPanel_weathered/PicketPanel_weathered_a50.png",
+        "PicketPanel_weathered/PicketPanel_weathered_a60.png",
+        "PicketPanel_weathered/PicketPanel_weathered_a70.png",
+        "PicketPanel_weathered/PicketPanel_weathered_a80.png",
+        "PicketPanel_weathered/PicketPanel_weathered_a90.png"
+      ],
+      "planLengthMetres": 1.5,
+      "layer": "raised",
+      "heightMetres": 0.85
+    },
+    {
+      "name": "PicketPanel_broken",
+      "kind": "run",
+      "directionStepDegrees": 10,
+      "sprites": [
+        "PicketPanel_broken/PicketPanel_broken_a00.png",
+        "PicketPanel_broken/PicketPanel_broken_a10.png",
+        "PicketPanel_broken/PicketPanel_broken_a20.png",
+        "PicketPanel_broken/PicketPanel_broken_a30.png",
+        "PicketPanel_broken/PicketPanel_broken_a40.png",
+        "PicketPanel_broken/PicketPanel_broken_a50.png",
+        "PicketPanel_broken/PicketPanel_broken_a60.png",
+        "PicketPanel_broken/PicketPanel_broken_a70.png",
+        "PicketPanel_broken/PicketPanel_broken_a80.png",
+        "PicketPanel_broken/PicketPanel_broken_a90.png"
+      ],
+      "planLengthMetres": 1.5,
+      "layer": "raised",
+      "heightMetres": 0.85
+    },
+    {
+      "name": "PicketGate",
+      "kind": "run",
+      "directionStepDegrees": 10,
+      "sprites": [
+        "PicketGate/PicketGate_a00.png",
+        "PicketGate/PicketGate_a10.png",
+        "PicketGate/PicketGate_a20.png",
+        "PicketGate/PicketGate_a30.png",
+        "PicketGate/PicketGate_a40.png",
+        "PicketGate/PicketGate_a50.png",
+        "PicketGate/PicketGate_a60.png",
+        "PicketGate/PicketGate_a70.png",
+        "PicketGate/PicketGate_a80.png",
+        "PicketGate/PicketGate_a90.png"
+      ],
+      "planLengthMetres": 1,
+      "layer": "raised",
+      "heightMetres": 0.85
+    },
+    {
+      "name": "Plank",
+      "kind": "run",
+      "directionStepDegrees": 10,
+      "sprites": [
+        "Plank/Plank_a00.png",
+        "Plank/Plank_a10.png",
+        "Plank/Plank_a20.png",
+        "Plank/Plank_a30.png",
+        "Plank/Plank_a40.png",
+        "Plank/Plank_a50.png",
+        "Plank/Plank_a60.png",
+        "Plank/Plank_a70.png",
+        "Plank/Plank_a80.png",
+        "Plank/Plank_a90.png"
+      ],
+      "planLengthMetres": 1,
+      "layer": "floor",
+      "widthMetres": 0.7
+    },
+    {
+      "name": "PlankBend",
+      "kind": "run",
+      "directionStepDegrees": 10,
+      "sprites": [
+        "PlankBend/PlankBend_a00.png",
+        "PlankBend/PlankBend_a10.png",
+        "PlankBend/PlankBend_a20.png",
+        "PlankBend/PlankBend_a30.png",
+        "PlankBend/PlankBend_a40.png",
+        "PlankBend/PlankBend_a50.png",
+        "PlankBend/PlankBend_a60.png",
+        "PlankBend/PlankBend_a70.png",
+        "PlankBend/PlankBend_a80.png",
+        "PlankBend/PlankBend_a90.png"
+      ],
+      "planLengthMetres": 0.9,
+      "layer": "floor",
+      "widthMetres": 0.9
+    },
+    {
+      "name": "PlankEnd",
+      "kind": "run",
+      "directionStepDegrees": 10,
+      "sprites": [
+        "PlankEnd/PlankEnd_a00.png",
+        "PlankEnd/PlankEnd_a10.png",
+        "PlankEnd/PlankEnd_a20.png",
+        "PlankEnd/PlankEnd_a30.png",
+        "PlankEnd/PlankEnd_a40.png",
+        "PlankEnd/PlankEnd_a50.png",
+        "PlankEnd/PlankEnd_a60.png",
+        "PlankEnd/PlankEnd_a70.png",
+        "PlankEnd/PlankEnd_a80.png",
+        "PlankEnd/PlankEnd_a90.png"
+      ],
+      "planLengthMetres": 0.6,
+      "layer": "floor",
+      "widthMetres": 0.7
+    },
+    {
+      "name": "PicketCorner",
+      "kind": "single",
+      "layer": "raised",
+      "sprite": "PicketCorner.png",
+      "widthPx": 4,
+      "heightPx": 54,
+      "footprintHalfMetres": {
+        "x": 0.065,
+        "y": 0.0418
+      }
+    },
+    {
+      "name": "PicketEnd",
+      "kind": "single",
+      "layer": "raised",
+      "sprite": "PicketEnd.png",
+      "widthPx": 4,
+      "heightPx": 58,
+      "footprintHalfMetres": {
+        "x": 0.065,
+        "y": 0.0418
+      }
+    },
+    {
+      "name": "FogBell",
+      "kind": "single",
+      "layer": "raised",
+      "sprite": "FogBell.png",
+      "widthPx": 52,
+      "heightPx": 122,
+      "footprintHalfMetres": {
+        "x": 0.8,
+        "y": 0.2571
+      }
+    },
+    {
+      "name": "Clothesline",
+      "kind": "single",
+      "layer": "raised",
+      "sprite": "Clothesline.png",
+      "widthPx": 124,
+      "heightPx": 98,
+      "postsAtMetres": [
+        -1.8,
+        1.8
+      ],
+      "postHalfMetres": {
+        "x": 0.08,
+        "y": 0.0514
+      }
+    }
+  ]
+}
