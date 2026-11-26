@@ -123,6 +123,54 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void EveryRecipeInput_ResolvesRegardlessOfStation_AndItsStationIsSupported()
+        {
+            List<RecipeDef> recipes = LoadAll();
+            Assert.IsNotEmpty(recipes);
+            HashSet<string> fish = FishIds();
+            var categories = new HashSet<FishCategory>();
+            foreach (string guid in AssetDatabase.FindAssets("t:" + nameof(FishSpeciesDef), new[] { DataRoot }))
+            {
+                var species = AssetDatabase.LoadAssetAtPath<FishSpeciesDef>(AssetDatabase.GUIDToAssetPath(guid));
+                Assert.IsNotNull(species, guid);
+                categories.Add(species.Category);
+            }
+            var stations = new HashSet<string>();
+            foreach (string guid in AssetDatabase.FindAssets("t:" + nameof(CookingStationDef), new[] { DataRoot }))
+            {
+                var station = AssetDatabase.LoadAssetAtPath<CookingStationDef>(AssetDatabase.GUIDToAssetPath(guid));
+                Assert.IsNotNull(station, guid);
+                if (station.AcceptedStations != null)
+                    foreach (string accepted in station.AcceptedStations) stations.Add(accepted);
+            }
+            Assert.IsNotEmpty(stations);
+            foreach (RecipeDef recipe in recipes)
+            {
+                string path = AssetDatabase.GetAssetPath(recipe);
+                Assert.IsTrue(stations.Contains(recipe.Station ?? ""), path + ": no cooking station accepts " + recipe.Station);
+                switch (recipe.InputKind)
+                {
+                    case RecipeInputKind.Species:
+                        Assert.IsTrue(fish.Contains(recipe.InputId ?? ""), path + ": no fish " + recipe.InputId);
+                        break;
+                    case RecipeInputKind.Category:
+                        Assert.IsTrue(categories.Contains(recipe.InputCategory), path + ": no shipped fish in category " + recipe.InputCategory);
+                        break;
+                    case RecipeInputKind.Intermediate:
+                        Assert.IsTrue(recipes.Exists(other => other != recipe && other.OutputId == recipe.InputId),
+                            path + ": no other recipe makes " + recipe.InputId);
+                        break;
+                    case RecipeInputKind.Item:
+                        // EveryItemInput_NamesAFoodItemOrASupply already sweeps this kind at every station.
+                        break;
+                    default:
+                        Assert.Fail(path + ": unknown input kind " + recipe.InputKind);
+                        break;
+                }
+            }
+        }
+
+        [Test]
         public void EveryCooktopRecipe_IsFedByAPrepRecipe()
         {
             List<RecipeDef> all = LoadAll();

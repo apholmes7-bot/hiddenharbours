@@ -23,7 +23,7 @@ namespace HiddenHarbours.Tests.EditMode
     /// a trap baited with a bait that doesn't exist. If tools-editor later adds an in-editor content
     /// validator, it should call THESE rules rather than re-deriving its own.
     /// </summary>
-    public class ContentValidationTests
+    public partial class ContentValidationTests
     {
         private const string DataRoot = "Assets/_Project/Data";
 
@@ -244,9 +244,12 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.AreNotEqual(0, (int)f.Seasons, $"{path}: Seasons is empty — it bites in no season");
 
                 // Sane catch + price.
+                Assert.IsFalse(float.IsNaN(f.MinWeightKg) || float.IsInfinity(f.MinWeightKg), $"{path}: MinWeightKg must be finite");
+                Assert.IsFalse(float.IsNaN(f.MaxWeightKg) || float.IsInfinity(f.MaxWeightKg), $"{path}: MaxWeightKg must be finite");
+                Assert.Greater(f.MinWeightKg, 0f, $"{path}: MinWeightKg must be positive");
                 Assert.LessOrEqual(f.MinWeightKg, f.MaxWeightKg, $"{path}: MinWeightKg exceeds MaxWeightKg");
                 Assert.Greater(f.MaxWeightKg, 0f, $"{path}: MaxWeightKg must be positive");
-                Assert.GreaterOrEqual(f.BaseValue, 0, $"{path}: BaseValue must be non-negative");
+                Assert.Greater(f.BaseValue, 0, $"{path}: BaseValue must be positive");
             }
         }
 
