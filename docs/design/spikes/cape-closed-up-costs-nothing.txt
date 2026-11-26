@@ -1,5 +1,5 @@
 CLOSED UP — the full mesh against a hull with the room stripped out
-hull verts 2132, room verts 1880
+hull verts 2180, room verts 1880
   heading    90°  differing px 0
   heading   135°  differing px 0
   heading   180°  differing px 0
