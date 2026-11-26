@@ -164,15 +164,23 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void ItsLensColours_AreLessNeonThanTheCoastPreset_AndKeepTheirHue()
+        public void ItsLensColours_AreDeepTrueLensColours_AndTheCoreIsNotWhitened()
         {
+            // The core is one flat disc in the shader (CoreWhiten tints all of it, BandSteps cuts only the halo), so a
+            // lighter centre cannot be drawn from data: the core is the lens colour itself, deep, with no whitening.
             Color red = Look.LensFor(HiddenHarbours.Core.NavLightColour.Red), green = Look.LensFor(HiddenHarbours.Core.NavLightColour.Green);
-            Color neonRed = NavLightPresets.For(HiddenHarbours.Core.NavLightColour.Red).Color;
-            Color neonGreen = NavLightPresets.For(HiddenHarbours.Core.NavLightColour.Green).Color;
-            Assert.That(Saturation(red), Is.LessThan(Saturation(neonRed)), "the red lens is less neon than the signal red");
-            Assert.That(Saturation(green), Is.LessThan(Saturation(neonGreen)), "the green lens is less neon than the signal green");
-            Assert.That(red.r, Is.GreaterThan(Mathf.Max(red.g, red.b) * 2f), "the red stays a red");
-            Assert.That(green.g, Is.GreaterThan(Mathf.Max(green.r, green.b) * 1.3f), "the green stays a green");
+            Assert.That(Saturation(red), Is.GreaterThanOrEqualTo(0.8f), "a deep lens red, not a pink");
+            Assert.That(Saturation(green), Is.GreaterThanOrEqualTo(0.8f), "a deep lens green, not a mint");
+            Assert.That(red.r, Is.GreaterThan(Mathf.Max(red.g, red.b) * 4f), "the red stays a red");
+            Assert.That(green.g, Is.GreaterThan(Mathf.Max(green.r, green.b) * 1.8f), "the green stays a green, a little toward blue");
+            Assert.That(Look.CoreWhiten, Is.EqualTo(0f), "the core is not pulled toward white");
+        }
+
+        [Test]
+        public void TheLook_LaysNoStreak()
+        {
+            // A one-pixel cone read as a wire on the water; a broken, fading glint needs drawing the light cannot do.
+            Assert.That(Look.DrawsStreak, Is.False);
         }
 
         [Test]
@@ -192,12 +200,15 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var plain = new GameObject("mark (plain)");
             var dressed = new GameObject("mark (dressed)");
+            NavLightLookDef streakLook = null;
             try
             {
                 plain.AddComponent<StubNavSource>();
                 dressed.AddComponent<StubNavSource>();
                 NavLight a = plain.AddComponent<NavLight>(), b = dressed.AddComponent<NavLight>();
-                b.Look = Look;
+                streakLook = UnityEngine.Object.Instantiate(Look);
+                streakLook.StreakLengthMetres = 1.4f;   // the wiring, with a streak on (the committed look has none)
+                b.Look = streakLook;
                 a.Rebuild(); b.Rebuild();
 
                 Assert.That(a.Lamp.CoreRadiusMetres, Is.EqualTo(0f), "a mark without a look is the coast preset's smooth glow");
@@ -212,7 +223,7 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(b.Lamp.CastsShadows, Is.False, "a mark's lantern still throws no shadows");
                 Assert.That(b.Streak, Is.Not.Null, "the look lays a streak on the water");
                 Assert.That(b.Streak.Shape, Is.EqualTo(SceneLight.LightShape.Cone));
-                Assert.That(b.Streak.Range, Is.EqualTo(Look.StreakLengthMetres));
+                Assert.That(b.Streak.Range, Is.EqualTo(streakLook.StreakLengthMetres));
                 Assert.That(b.Streak.Intensity, Is.LessThan(b.Lamp.Intensity * 0.5f), "faint beside the lamp");
                 Assert.That(b.Streak.ReachMetres, Is.EqualTo(0f), "it lights no pool");
                 Assert.That(b.Streak.CastsShadows, Is.False);
@@ -223,6 +234,7 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 UnityEngine.Object.DestroyImmediate(plain);
                 UnityEngine.Object.DestroyImmediate(dressed);
+                if (streakLook != null) UnityEngine.Object.DestroyImmediate(streakLook);
             }
         }
 

@@ -18,13 +18,13 @@ MonoBehaviour:
   HaloRangeMetres: 1
   HaloStrength: 0.18
   EdgeSoftness: 1
-  CoreWhiten: 0.1
+  CoreWhiten: 0
   Intensity: 1.15
-  LensRed: {r: 0.92, g: 0.24, b: 0.16, a: 1}
-  LensGreen: {r: 0.3, g: 0.9, b: 0.58, a: 1}
+  LensRed: {r: 0.95, g: 0.1, b: 0.07, a: 1}
+  LensGreen: {r: 0.08, g: 0.9, b: 0.45, a: 1}
   LensWhite: {r: 1, g: 0.95, b: 0.86, a: 1}
   LensYellow: {r: 0.98, g: 0.8, b: 0.32, a: 1}
-  StreakLengthMetres: 1.4
+  StreakLengthMetres: 0
   StreakHalfAngleDegrees: 7
   StreakIntensity: 0.35
   StreakSoftness: 1
