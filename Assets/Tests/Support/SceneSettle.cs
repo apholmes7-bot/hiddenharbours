@@ -104,12 +104,13 @@ namespace HiddenHarbours.Tests.Support
         }
 
         /// <summary>
-        /// <see cref="Object.Destroy(Object)"/> each object, exactly as a teardown always did, then yield
+        /// Wait for tracked scene operations, <see cref="Object.Destroy(Object)"/> each object, then yield
         /// until the delayed-destroy queue has drained and every one of them reads as destroyed
-        /// (Unity-null). The destroy timing the components see is unchanged; only the wait is new.
+        /// (Unity-null). A pending operation must finish before destruction is queued.
         /// </summary>
         public static IEnumerator DestroyAndSettle(IEnumerable<Object> objects)
         {
+            yield return WaitForPendingSceneOperations("destroying objects before cleanup");
             var mine = new List<Object>();
             if (objects != null)
                 foreach (Object o in objects)

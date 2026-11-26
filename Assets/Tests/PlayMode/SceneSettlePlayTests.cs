@@ -44,17 +44,37 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(SceneSettle.MaxHoldTimeouts, Is.InRange(1, 5));
             // allowSceneActivation=false stops an async load's progress at 0.9 once its threaded read is done.
             Assert.That(SceneSettle.ReadDoneProgress, Is.EqualTo(0.9f));
+            Assert.That(SceneSettle.PendingOperationTimeoutSeconds, Is.GreaterThan(0d));
+            Assert.That(SceneSettle.PendingOperationTimeoutSeconds, Is.LessThan(TestHangWatch.DefaultLimitSeconds));
         }
 
         [UnityTest]
         public IEnumerator DestroyAndSettle_LeavesEveryObjectUnityNull()
         {
+            yield return SceneSettle.WaitForPendingSceneOperations("the destruction premise");
             var a = SpriteHierarchy("SettleA");
             var b = SpriteHierarchy("SettleB");
             var child = a.transform.GetChild(0).gameObject;
             var mesh = new Mesh();
 
-            yield return SceneSettle.DestroyAndSettle(a, b, mesh, null);
+            var scene = SceneManager.CreateScene("SettleDestroyPending");
+            var unload = SceneManager.UnloadSceneAsync(scene);
+            SceneLoadHold.Track(unload);
+            Assert.That(unload, Is.Not.Null);
+            Assert.That(unload.isDone, Is.False);
+
+            var destroy = SceneSettle.DestroyAndSettle(a, b, mesh, null);
+            Assert.That(destroy.MoveNext(), Is.True);
+            var pending = destroy.Current as IEnumerator;
+            Assert.That(pending, Is.Not.Null, "destruction first yields the pending-operation gate");
+            Assert.That(pending.MoveNext(), Is.True);
+            Assert.That(pending.Current, Is.Null, "the pending operation needs a frame");
+            yield return pending.Current;
+            Assert.That(a != null && b != null && mesh != null, Is.True,
+                "destruction is not queued while the gate owns the boundary");
+            yield return pending;
+            Assert.That(unload.isDone, Is.True);
+            yield return destroy;
 
             Assert.That(a == null, Is.True, "the root is destroyed, not queued");
             Assert.That(child == null, Is.True, "its child went with it");
@@ -131,15 +151,29 @@ namespace HiddenHarbours.Tests.PlayMode
             var scene = SceneManager.CreateScene("SettlePendingBound");
             AsyncOperation unload = SceneManager.UnloadSceneAsync(scene);
             SceneLoadHold.Track(unload);
-            Assert.That(SceneLoadHold.InFlight, Is.GreaterThan(0), "premise: the unload is tracked in flight");
+            Assert.That(unload, Is.Not.Null);
+            Assert.That(unload.isDone, Is.False, "premise: the unload needs a player-loop turn");
+            Assert.That(SceneLoadHold.InFlight, Is.EqualTo(1), "premise: exactly one unload is tracked");
 
-            var late = SceneSettle.WaitForPendingSceneOperations("loading 'Somewhere'", 0d);
-            var error = Assert.Throws<System.TimeoutException>(() => late.MoveNext());
-            StringAssert.Contains("before loading 'Somewhere'", error.Message);
+            float previousScale = Time.timeScale;
+            try
+            {
+                Time.timeScale = 0f;
+                var late = SceneSettle.WaitForPendingSceneOperations("loading 'Somewhere'", 0d);
+                var error = Assert.Throws<System.TimeoutException>(() => late.MoveNext());
+                StringAssert.Contains("before loading 'Somewhere'", error.Message);
+                StringAssert.Contains("1 tracked scene operation(s) still in flight", error.Message);
+                Assert.That(SceneLoadHold.InFlight, Is.EqualTo(1), "a timeout must not reset the tracker");
 
-            yield return SceneSettle.WaitForPendingSceneOperations("the next load");
-            Assert.That(SceneLoadHold.InFlight, Is.Zero);
-            Assert.That(unload.isDone, Is.True);
+                var wait = SceneSettle.WaitForPendingSceneOperations("the next load");
+                Assert.That(wait.MoveNext(), Is.True, "cleanup waits while the operation is pending");
+                Assert.That(wait.Current, Is.Null, "yield a frame also at zero time scale");
+                yield return wait.Current;
+                yield return wait;
+                Assert.That(SceneLoadHold.InFlight, Is.Zero);
+                Assert.That(unload.isDone, Is.True);
+            }
+            finally { Time.timeScale = previousScale; }
         }
     }
 }
