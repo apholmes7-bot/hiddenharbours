@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: nmc_industrial_yard
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.SellerDef
   Id: seller.nmc_industrial_yard
+  DisplayName: Industrial Yard
   KeeperNpcId:
   TradeId: trade.vehicles

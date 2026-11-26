@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: nmc_vehicle_dealer
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.SellerDef
   Id: seller.nmc_vehicle_dealer
+  DisplayName: Vehicle Dealer
   KeeperNpcId:
   TradeId: trade.vehicles

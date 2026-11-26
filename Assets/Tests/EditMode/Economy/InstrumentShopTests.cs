@@ -195,7 +195,9 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(BuyRowKind.Instrument, rows[0].Quote.Kind);
             Assert.IsFalse(rows[0].Quote.Owned);
             Assert.IsTrue(rows[0].Quote.CanBuy);
-            StringAssert.Contains("boat.skiff", rows[0].Note, "the row says which boat it goes on");
+            // The row says it goes on the boat you are aboard, in words: the hull id is not shown to the player.
+            StringAssert.Contains("your boat", rows[0].Note, "the row says which boat it goes on");
+            StringAssert.DoesNotContain("boat.skiff", rows[0].Note, "and never by its id");
 
             InstrumentLocker.Add(save, "boat.skiff", "instrument.depth_sounder");
             CatalogTestStall.BuildWired(stall, 500, save, null, rows);

@@ -42,8 +42,9 @@ namespace HiddenHarbours.Core
         /// <summary>Gone over twice — a title, a ticked box.</summary>
         public static readonly Color InkStrong = new Color(0.086f, 0.094f, 0.105f, 1f);
 
-        /// <summary>Faded: a step already done, a page mark.</summary>
-        public static readonly Color InkFaint = new Color(0.145f, 0.157f, 0.172f, 0.45f);
+        /// <summary>Faded: a step already done, a page mark. Faded, not gone: at 0.70 it still reads
+        /// at about 4.9:1 on the stock (0.45 was 2.5:1, too faint for small pixel text).</summary>
+        public static readonly Color InkFaint = new Color(0.145f, 0.157f, 0.172f, 0.70f);
 
         /// <summary>The one warm accent — the current-step arrow, the selected stub, the done stamp.</summary>
         public static readonly Color Gold = new Color(0.839f, 0.667f, 0.325f, 1f);

@@ -818,18 +818,19 @@ namespace HiddenHarbours.UI
     {
         public static readonly string[] Tabs={"BODY","COLOURS","OUTFIT","NAME","TRAITS","READY"};
         public static readonly string[] Animations={"Idle","Walk"};
-        public const string Hint="Arrows/stick: turn   Space/Y: pose   R/X: randomize\nUp/down: select   A/D or d-pad: change   Tab/shoulders: step   Enter/A: choose   Esc/B: leave";
-        public const string NameHint="D-pad/stick: pick a key   A: type   Start/Done: finish   B: back";
-        public const string TypedNameHint="Type a name   Enter or Done: finish   Esc/B: back";
-        public const string TypedNameInstructions="Type a name, or leave it blank.\nEnter or Done: finish.";
-        public const string PadNameInstructions="Use the letter grid below.\nStart or Done: finish.";
+        public const string Hint=KeyNames.ArrowsEither+KeyNames.Says+"turn"+KeyNames.Gap+KeyNames.Space+"/"+KeyNames.PadY+KeyNames.Says+"pose"+KeyNames.Gap+KeyNames.Randomise+"/"+KeyNames.PadX+KeyNames.Says+"randomise"
+            +"\n"+KeyNames.UpDown+KeyNames.Says+"select"+KeyNames.Gap+KeyNames.WalkLeftRight+" or "+KeyNames.PadDpad+KeyNames.Says+"change"+KeyNames.Gap+KeyNames.Tab+"/"+KeyNames.PadShoulders+KeyNames.Says+"step"+KeyNames.Gap+KeyNames.ConfirmEither+KeyNames.Says+"choose"+KeyNames.Gap+KeyNames.BackEither+KeyNames.Says+"leave";
+        public const string NameHint="D-pad/"+KeyNames.PadStick+KeyNames.Says+"pick a key"+KeyNames.Gap+KeyNames.PadConfirm+KeyNames.Says+"type"+KeyNames.Gap+KeyNames.PadStart+"/Done"+KeyNames.Says+"finish"+KeyNames.Gap+KeyNames.PadBack+KeyNames.Says+"back";
+        public const string TypedNameHint="Type a name"+KeyNames.Gap+KeyNames.Confirm+"/Done"+KeyNames.Says+"finish"+KeyNames.Gap+KeyNames.BackEither+KeyNames.Says+"back";
+        public const string TypedNameInstructions="Type a name, or leave it blank.\n"+KeyNames.Confirm+"/Done"+KeyNames.Says+"finish";
+        public const string PadNameInstructions="Use the letter grid below.\n"+KeyNames.PadStart+"/Done"+KeyNames.Says+"finish";
         public const string You="YOU", Clothes="CLOTHES", YourName="YOUR NAME (OPTIONAL)", Ready="READY";
         public const string Pose="Pose: ", Wear="Wear: ", Done="Done";
-        public const string Randomize="Randomize";
-        public const string TraitHint="Up/down: select   Enter/A or click: pick or unpick   Tab/shoulders: step   Esc/B: leave";
+        public const string Randomize="Randomise";
+        public const string TraitHint=KeyNames.UpDown+KeyNames.Says+"select"+KeyNames.Gap+KeyNames.ConfirmEither+" or click"+KeyNames.Says+"pick or unpick"+KeyNames.Gap+KeyNames.Tab+"/"+KeyNames.PadShoulders+KeyNames.Says+"step"+KeyNames.Gap+KeyNames.BackEither+KeyNames.Says+"leave";
         public static string PickTraits(int required) => required == 1 ? "PICK 1 TRAIT" : "PICK " + required + " TRAITS";
         public static string FieldName(string field) => field == "skin" ? "Skin" : field == "hair" ? "Hair"
             : field == "eyes" ? "Eyes" : field == "shirt" ? "Shirt" : field == "outfit" ? "Outfit"
-            : field == "hatCol" ? "Hat" : field == "apronCol" ? "Apron" : field;
+            : field == "hatCol" ? "Hat" : field == "apronCol" ? "Apron" : PlainName.FromId(field);
     }
 }

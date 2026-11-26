@@ -267,7 +267,7 @@ namespace HiddenHarbours.World
                 CaughtSpeciesEntry e = caught[i];
                 if (string.IsNullOrEmpty(e.SpeciesId) || e.Count <= 0) continue;
 
-                string head = string.IsNullOrEmpty(e.DisplayName) ? e.SpeciesId : e.DisplayName;
+                string head = string.IsNullOrEmpty(e.DisplayName) ? PlainName.FromId(e.SpeciesId) : e.DisplayName;
                 var body = new List<string> { string.Format(Invariant, CaughtCountFormat, e.Count) };
                 if (e.RecordWeightKg > 0f) body.Add(RecordText(e.RecordWeightKg));   // unknown: no line, never "0"
                 if (e.ReleasedCount > 0)

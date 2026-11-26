@@ -117,7 +117,7 @@ namespace HiddenHarbours.UI
         private void Build()
         {
             RectTransform host = PaperUi.MakeScreen(transform, "SettingsSheet_Canvas",
-                                                    PaperUi.SettingsSortingOrder);
+                                                    PaperUi.SettingsSortingOrder, pixelFace: true);
             PaperUi.MakeScrim(host, PaperUi.Scrim);
 
             PaperUi.MakeText(host, ShellStrings.SettingsTitle, 52, TextAnchor.UpperLeft,

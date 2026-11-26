@@ -86,5 +86,20 @@ namespace HiddenHarbours.Core
         /// <summary>How many glyph cells go across the atlas. A grid rather than one long strip so the
         /// texture stays close to square at any glyph count.</summary>
         public const int AtlasColumns = 16;
+
+        /// <summary>The face's smallest whole size on a kit-snapped canvas: one glyph height times the
+        /// kit's art scale. Every size the face is set at is a whole multiple of this.</summary>
+        public const int SizeStep = GlyphHeight * DialogueBubbleKit.ArtScale;
+
+        /// <summary>The face's own size nearest to <paramref name="asked"/> (24, 48, 72 …), never below
+        /// one step, so a letter is drawn at a whole scale and never resampled.</summary>
+        public static int SizeNearest(int asked)
+        {
+            int steps = (int)System.Math.Round(asked / (double)SizeStep, System.MidpointRounding.AwayFromZero);
+            return System.Math.Max(SizeStep, steps * SizeStep);
+        }
+
+        /// <summary>The face, from Resources; null when it is not baked (callers keep their fallback).</summary>
+        public static UnityEngine.Font Load() => UnityEngine.Resources.Load<UnityEngine.Font>(ResourceKey);
     }
 }
