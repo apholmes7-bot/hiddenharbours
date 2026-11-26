@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57ff6755346e4949b518c3c151d6ed84, type: 3}
+  m_Name: WharfLadder_Galvanised
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.WharfLadderDef
+  Id: ladder.galvanised_wharf
+  RailSpanMetres: 0.45
+  RungMetres: 0.3
+  StandoffMetres: 0.275
+  MinRungPitchMetres: 0.25
+  MaxRungPitchMetres: 0.35
+  BelowLowestWaterMetres: 0.5
+  TopToDeckToleranceMetres: 0.05
+  FaceClearanceMetres: 1
