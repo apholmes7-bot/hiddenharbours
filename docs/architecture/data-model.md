@@ -406,6 +406,25 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 > **Opening a v27 save in an older build loses the four lists** (clothes, rack sales, skill, rod fittings); everything
 > else stays.
 
+> **Save schema v28 (the photo album, owner 2026-11-26: "yes build the camera now with photo record added to
+> save"; ADR 0066)**: `SaveData` gained ONE append-only list, `Photos` (rows in Core/Save/SaveRowsV28.cs). The
+> `v27→v28` step gives it an empty list; nothing else moves.
+>
+> - `Photos` (`PhotoRecordDto`: `PlayerKey`, `Number` int, `GameTimeSeconds` double, `RegionId`, `Score` int
+>   0..100, `Subjects`; each `PhotoSubjectDto`: `SubjectId` a `wildlife.*` id, `Count` int, `Pose` int in
+>   `WildlifePose` order, `Score` int 0..100): one row per kept picture. **Data only, never image bytes**: the
+>   album is what was in frame and how good a picture it was, not a picture. `Number` is the album number,
+>   unique across the list, never reused (`PhotoAlbumRows.NextNumber` = highest + 1). The album is capped per
+>   player by the camera def (`AlbumCapacity`); a full album keeps nothing new. Helper: `PhotoAlbumRows`
+>   (`Add`, `Count`, `Find`, `HasQualifying`). Repair: null rows and subjects with no id dropped, a photo left
+>   with no subject dropped; empty key is `player.local`; a negative or non-finite time reads 0; counts under
+>   1 read 1; an unknown pose reads Diving; scores clamp to 0..100; a repeated or non-positive number is
+>   renumbered above the highest; rows are kept in number order. Never improves a picture.
+> - Photo requests (Odile's seals) save nothing of their own: asked, pictured and done are ordinary flags, and
+>   "does the album hold one that will do" is read from `Photos` (the `QuestDef` doctrine).
+>
+> **Opening a v28 save in an older build loses the album**; everything else stays.
+
 **Recomputed, never saved:** tide height, wind, weather, sea state, visibility (from
 `worldSeed + gameTime`), dormant NPC positions, authored geometry, **a boat's effective helm fit and
 its depth-sounder reading** (ADR 0030), **which end of a bed the pillow is on** (see below), and
