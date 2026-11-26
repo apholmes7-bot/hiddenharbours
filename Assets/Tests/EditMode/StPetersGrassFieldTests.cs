@@ -432,7 +432,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void AllAuthoredPlantsResolveTheirSpecies_AndKeepTheSceneRowsExactly()
         {
             var definition = Definition(); Assert.IsNotNull(definition);
-            Assert.AreEqual(9089, definition.Authored.Length);
+            Assert.AreEqual(9084, definition.Authored.Length);
             var ids = new HashSet<string>();
             foreach (var site in definition.Authored)
             {

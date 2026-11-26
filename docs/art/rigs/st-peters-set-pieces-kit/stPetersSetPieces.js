@@ -388,25 +388,31 @@
   PIECES.trolleyStage = {
     id: 'structure.stp_cannery_trolley_stage', name: 'Trolley stage', defType: 'SetPieceDef', scene: 'keyscene.stp_cannery',
     layer: 'floor', walk: 'on', footprint: null,
-    defaults: { length: 2.8, depth: 1.8, deck: 0.1, gauge: 0.6, buffer: 0.35, seed: 11 },
+    defaults: { length: 3.1, depth: 1.8, deck: 0.1, gauge: 0.6, buffer: 0.2, rim: 0.14, kerb: 0.08, seed: 11 },
     build(o) {
-      const out = [], hx = o.length / 2, hy = o.depth / 2, z = o.deck, g = o.gauge / 2, bx = o.buffer;
+      const out = [], hx = o.length / 2, hy = o.depth / 2, z = o.deck, g = o.gauge / 2, bx = o.buffer, rim = o.rim;
       // bedded: a ragged apron of worn earth where feet and barrows have scuffed the grass at the stage's edges
       const step = 0.35;
       for (let x = -hx; x < hx - 1e-6; x += step) { const x1 = Math.min(hx, x + step), i = Math.round((x + hx) / step);
         for (const sd of [-1, 1]) { if (hash(i, sd, o.seed) < 0.2) continue; const e0 = 0.08 + 0.16 * hash(i, sd + 3, o.seed), e1 = 0.08 + 0.16 * hash(i + 1, sd + 3, o.seed);
           const q = sd > 0 ? [[x, hy], [x1, hy], [x1, hy + e1], [x, hy + e0]] : [[x, -hy - e0], [x1, -hy - e1], [x1, -hy], [x, -hy]];
           flat(out, q, 0.003, 'earth', 'bed', -0.8); } }
-      // the bearers: a sill on each long edge and each end, sunk to the deck's underside
-      box(out, -hx, hx, -hy, -hy + 0.12, 0, z - 0.035, 'wood', 'sill'); box(out, -hx, hx, hy - 0.12, hy, 0, z - 0.035, 'wood', 'sill');
-      box(out, -hx, -hx + 0.12, -hy, hy, 0, z - 0.035, 'wood', 'sill'); box(out, hx - 0.12, hx, -hy, hy, 0, z - 0.035, 'wood', 'sill');
-      // the deck: boards across the rails, silvered, one split short where a barrow wheel found it
-      const n = Math.round(o.length / 0.2);
-      for (let k = 0; k < n; k++) { const x0 = -hx + k * 0.2 + 0.006, x1 = -hx + (k + 1) * 0.2 - 0.006, short = hash(k, 1, o.seed) < 0.1;
-        box(out, x0, x1, -hy, short ? hy - 0.32 : hy, z - 0.035, z, 'wood', 'deck', { tagTop: 'deck' });
-        if (hash(k, 2, o.seed) < 0.35) flat(out, [[x0, -hy + 0.2], [x1, -hy + 0.2], [x1, hy - 0.2], [x0, hy - 0.2]], z + 0.001, 'wood', 'deck.wear', -0.35);
-        // nail heads over each sill, every other board
-        for (const yy of [-hy + 0.06, hy - 0.06]) if (!(short && yy > 0) && k % 2 === 0) box(out, (x0 + x1) / 2 - 0.012, (x0 + x1) / 2 + 0.012, yy - 0.012, yy + 0.012, z, z + 0.004, 'iron', 'deck.nail'); }
+      // the frame: tarred sills round all four edges, their tops at deck level, so the stage has a dark timber edge
+      // against the grass; the deck lies inside them
+      box(out, -hx, hx, -hy, -hy + rim, 0, z, 'tar', 'sill'); box(out, -hx, hx, hy - rim, hy, 0, z, 'tar', 'sill');
+      box(out, -hx, -hx + rim, -hy + rim, hy - rim, 0, z, 'tar', 'sill'); box(out, hx - rim, hx, -hy + rim, hy - rim, 0, z, 'tar', 'sill');
+      // kerbs: a squared timber proud of the deck on each long edge (the ends stay open: the rails come on at the
+      // west end and the winch's rope works over the east), spiked down every half metre
+      for (const sd of [-1, 1]) { const y0 = sd > 0 ? hy - rim : -hy, y1 = sd > 0 ? hy : -hy + rim;
+        box(out, -hx, hx, y0, y1, z, z + o.kerb, 'wood', 'kerb');
+        for (let x = -hx + 0.25; x < hx - 0.1; x += 0.5) box(out, x - 0.015, x + 0.015, (y0 + y1) / 2 - 0.015, (y0 + y1) / 2 + 0.015, z + o.kerb, z + o.kerb + 0.004, 'iron', 'kerb.spike'); }
+      // the deck: oak boards across the rails between the sills, one split short where a barrow wheel found it
+      const dx0 = -hx + rim, dy0 = -hy + rim, dy1 = hy - rim, n = Math.round((o.length - 2 * rim) / 0.2), bw = (o.length - 2 * rim) / n;
+      for (let k = 0; k < n; k++) { const x0 = dx0 + k * bw + 0.006, x1 = dx0 + (k + 1) * bw - 0.006, short = hash(k, 1, o.seed) < 0.1;
+        box(out, x0, x1, dy0, short ? dy1 - 0.3 : dy1, z - 0.035, z, 'plank', 'deck', { tagTop: 'deck' });
+        if (hash(k, 2, o.seed) < 0.35) flat(out, [[x0, dy0 + 0.15], [x1, dy0 + 0.15], [x1, dy1 - 0.15], [x0, dy1 - 0.15]], z + 0.001, 'plank', 'deck.wear', -0.35);
+        // nail heads over the rails' sleepers, every other board
+        for (const yy of [-g - 0.12, g + 0.12]) if (!(short && yy > 0) && k % 2 === 0) box(out, (x0 + x1) / 2 - 0.012, (x0 + x1) / 2 + 0.012, yy - 0.012, yy + 0.012, z, z + 0.004, 'iron', 'deck.nail'); }
       // the rails, let into the boards with their tops just proud, from the line's end to the buffer
       for (const side of [-1, 1]) stick(out, [-hx, side * g, z - 0.012], [bx, side * g, z - 0.012], 0.05, 'rust', 'rail');
       // the buffer stop: two posts on the rails, an oxide-red beam with an iron face plate, and two short back braces
@@ -415,7 +421,7 @@
       F(out, [[bx - 0.105, -0.16, z + 0.24], [bx - 0.105, 0.16, z + 0.24], [bx - 0.105, 0.16, z + 0.38], [bx - 0.105, -0.16, z + 0.38]], 'iron', 0.1, 'buffer.plate');
       for (const yy of [-0.42, 0.42]) box(out, bx - 0.104, bx + 0.003, yy - 0.03, yy + 0.03, z + 0.2, z + 0.42, 'iron', 'buffer.strap');
       for (const side of [-1, 1]) stick(out, [bx + 0.12, side * g, z + 0.36], [bx + 0.32, side * g, z + 0.02], 0.08, 'wood', 'buffer.brace');
-      return { faces: out, mats: mats(['wood', 'rust', 'iron', 'red', 'earth']),
+      return { faces: out, mats: mats(['wood', 'tar', 'plank', 'rust', 'iron', 'red', 'earth']),
         anchors: { lineEnd: [-hx, 0, z], buffer: [bx - 0.1, 0, z + 0.31], words: [] } };
     },
     notes: 'A floor piece, walked on. Its deck is at rail height; the line\'s last run meets it at lineEnd, and a cart stops against buffer.',
@@ -424,11 +430,13 @@
   /* THE HAND WINCH (prop.stp_cannery_hand_winch) — a crab winch on a timber skid, stood on the stage beyond the buffer:
      cast-iron A-frames, a rope drum with its flanges, a big spur wheel driven by a pinion on the crank shaft, a ratchet and
      pawl, two cranks set opposite. The rope leaves the drum's underside toward local +x, the way the cart lies. Serviceable,
-     weathered, not derelict: it is the one thing on the line that still works. Its show face (+y) carries the spur wheel. */
+     weathered, not derelict: it is the one thing on the line that still works. Its show face (+y) carries the ratchet and
+     the working crank; the spur wheel and pinion are on the back, so the camera sees the rope on its drum and the handle.
+     Built a fifth over life size (scale) so the drum and the crank hold at the game's working zoom. */
   PIECES.handWinch = {
     id: 'prop.stp_cannery_hand_winch', name: 'Hand winch', defType: 'SetPieceDef', scene: 'keyscene.stp_cannery',
-    layer: 'raised', walk: 'behind', footprint: [[-0.4, -0.42], [0.4, -0.42], [0.4, 0.42], [-0.4, 0.42]],
-    defaults: { deck: 0.1, lead: 0.75 },
+    layer: 'raised', walk: 'behind', footprint: [[-0.48, -0.5], [0.48, -0.5], [0.48, 0.5], [-0.48, 0.5]],   // the skid at scale
+    defaults: { deck: 0.1, lead: 0.8, scale: 1.2, arm: 0.34 },
     build(o) {
       const out = [], z0 = o.deck, fy = 0.33, zd = z0 + 0.6, gr = 0.27, pr = 0.075, cd = gr + pr + 0.012;
       const xc = -cd * Math.cos(40 * D2R), zc = zd + cd * Math.sin(40 * D2R);
@@ -449,29 +457,33 @@
       prismY(out, ring(0, zd, 0.022, 8), -0.47, 0.47, 'iron', 'shaft');
       for (const s of [-1, 1]) prismY(out, ring(0, zd, 0.19, 16), s > 0 ? 0.255 : -0.28, s > 0 ? 0.28 : -0.255, 'iron', 'drum.flange');
       for (let k = 0; k < 9; k++) { const y0 = -0.255 + k * 0.0567; prismY(out, ring(0, zd, k % 2 ? 0.148 : 0.155, 16), y0, y0 + 0.0567, 'rope', 'drum.rope', k % 2 ? -0.1 : 0.08); }
-      // the spur wheel on the show face and the pinion that drives it, toothed
-      // the spur wheel is a toothed rim on six spokes, open between them, so the drum shows through
+      // the spur wheel on the back face and the pinion that drives it, toothed: a rim on six spokes
       const nt = 18, ri = gr - 0.055;
       for (let k = 0; k < nt; k++) { const a0 = k / nt * 2 * Math.PI, a1 = (k + 1) / nt * 2 * Math.PI, am = (a0 + a1) / 2, C = (a, r) => [Math.cos(a) * r, zd + Math.sin(a) * r];
-        prismY(out, [C(a0, ri), C(a1, ri), C(a1, gr), C(am + 0.06, gr + 0.03), C(am - 0.06, gr + 0.03), C(a0, gr)], 0.38, 0.415, 'iron', 'gear.rim', k % 2 ? 0 : 0.08); }
-      for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3 + 0.26; stick(out, [Math.cos(a) * 0.05, 0.398, zd + Math.sin(a) * 0.05], [Math.cos(a) * (ri + 0.01), 0.398, zd + Math.sin(a) * (ri + 0.01)], 0.03, 'iron', 'gear.spoke'); }
-      prismY(out, ring(0, zd, 0.06, 10), 0.37, 0.44, 'iron', 'gear.hub', 0.2);
-      prismY(out, ring(xc, zc, pr, 16, true, 0.025), 0.38, 0.415, 'iron', 'pinion');
-      // the ratchet and its pawl on the back face
-      prismY(out, ring(0, zd, 0.12, 24, true, 0.02), -0.42, -0.39, 'rust', 'ratchet');
-      stick(out, [-0.2, -0.41, zd + 0.12], [-0.06, -0.41, zd + 0.1], 0.03, 'iron', 'pawl');
-      // the crank shaft and its two cranks, set opposite: the show-face crank down and forward, the back one up
+        prismY(out, [C(a0, ri), C(a1, ri), C(a1, gr), C(am + 0.06, gr + 0.03), C(am - 0.06, gr + 0.03), C(a0, gr)], -0.415, -0.38, 'iron', 'gear.rim', k % 2 ? 0 : 0.08); }
+      for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3 + 0.26; stick(out, [Math.cos(a) * 0.05, -0.398, zd + Math.sin(a) * 0.05], [Math.cos(a) * (ri + 0.01), -0.398, zd + Math.sin(a) * (ri + 0.01)], 0.03, 'iron', 'gear.spoke'); }
+      prismY(out, ring(0, zd, 0.06, 10), -0.44, -0.37, 'iron', 'gear.hub', 0.2);
+      prismY(out, ring(xc, zc, pr, 16, true, 0.025), -0.415, -0.38, 'iron', 'pinion');
+      // the ratchet and its pawl on the show face, small enough that the drum's flange shows round it
+      prismY(out, ring(0, zd, 0.12, 24, true, 0.02), 0.39, 0.42, 'rust', 'ratchet');
+      stick(out, [-0.2, 0.41, zd + 0.12], [-0.06, 0.41, zd + 0.1], 0.03, 'iron', 'pawl');
+      // the crank shaft and its two cranks, set opposite: the show-face crank reaches out past the frame, away from the
+      // cart and a little down, with a turned wooden grip toward the camera; the back one points the other way
       prismY(out, ring(xc, zc, 0.02, 8), -0.52, 0.53, 'iron', 'crank.shaft');
-      const arm = 0.28;
-      stick(out, [xc, 0.5, zc], [xc + arm * 0.45, 0.5, zc - arm * 0.9], 0.04, 'iron', 'crank.arm');
-      stick(out, [xc + arm * 0.45, 0.5, zc - arm * 0.9], [xc + arm * 0.45, 0.66, zc - arm * 0.9], 0.045, 'wood', 'crank.grip');
-      stick(out, [xc, -0.5, zc], [xc - arm * 0.45, -0.5, zc + arm * 0.9], 0.04, 'iron', 'crank.arm');
-      stick(out, [xc - arm * 0.45, -0.5, zc + arm * 0.9], [xc - arm * 0.45, -0.66, zc + arm * 0.9], 0.045, 'wood', 'crank.grip');
+      const ca = 30 * D2R, ax = -o.arm * Math.cos(ca), az = -o.arm * Math.sin(ca), grip = [xc + ax, 0.5, zc + az];
+      prismY(out, ring(xc, zc, 0.04, 10), 0.47, 0.53, 'iron', 'crank.boss', 0.1);
+      stick(out, [xc, 0.5, zc], grip, 0.05, 'iron', 'crank.arm');
+      stick(out, grip, [grip[0], 0.76, grip[2]], 0.075, 'plank', 'crank.grip');
+      stick(out, [xc, -0.5, zc], [xc - ax, -0.5, zc - az], 0.05, 'iron', 'crank.arm');
+      stick(out, [xc - ax, -0.5, zc - az], [xc - ax, -0.76, zc - az], 0.075, 'plank', 'crank.grip');
       // the rope off the drum's underside toward +x, down to the stage and along it to the cart's drawbar
       const r0 = [0.06, 0, zd - 0.15], r1 = [0.42, 0, z0 + 0.03], r2 = [o.lead, 0, z0 + 0.02];
       stick(out, r0, r1, 0.03, 'rope', 'rope'); stick(out, r1, r2, 0.03, 'rope', 'rope');
-      return { faces: out, mats: mats(['wood', 'iron', 'rust', 'rope', 'red']),
-        anchors: { crank: [xc + arm * 0.45, 0.62, zc - arm * 0.9], ropeEnd: r2, drum: [0, 0, zd], stand: [xc + 0.1, 0.95, z0], words: [] } };
+      // the whole machine at scale, about its foot on the deck
+      const S = q => [q[0] * o.scale, q[1] * o.scale, z0 + (q[2] - z0) * o.scale];
+      for (const f of out) f.v = f.v.map(S);
+      return { faces: out, mats: mats(['wood', 'iron', 'rust', 'rope', 'red', 'plank']),
+        anchors: { crank: S([grip[0], 0.62, grip[2]]), ropeEnd: S(r2), drum: S([0, 0, zd]), stand: S([grip[0], 0.85, z0]), words: [] } };
     },
     notes: 'Raised. Stands on the trolley stage beyond the buffer, rope lead (+x) toward the cart. stand is where a cranker stands; crank is the grip.',
   };

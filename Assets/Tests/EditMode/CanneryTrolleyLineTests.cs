@@ -149,6 +149,37 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.LessOrEqual(Mathf.Abs(winch.At.y - stage.At.y), halfDepth * Depth, "the winch does not stand on the stage");
         }
 
+        [Test]
+        public void NoAuthoredPlant_GrowsOnTheStage_OrOverTheLinesLastRun()
+        {
+            StPetersTrolleyStageClearance.Clearing clearing = StPetersTrolleyStageClearance.Read();
+            Assert.IsTrue(clearing.Contains(StageAnchor("lineEnd")), "the clearing does not cover the stage");
+            Assert.IsTrue(clearing.Contains(Piece(Winch).At), "the clearing does not cover the winch");
+            var definition = AssetDatabase.LoadAssetAtPath<PlantFieldDefinition>(StPetersBuildingClearance.DefinitionPath);
+            foreach (var site in definition.Authored)
+                Assert.IsFalse(clearing.Contains(site.At), $"{site.Id} at {site.At} grows in the stage's clearing");
+        }
+
+        [Test]
+        public void TheMeadowNeverSeeds_OnTheStage_OrOverTheLinesLastRun()
+        {
+            StPetersTrolleyStageClearance.Clearing clearing = StPetersTrolleyStageClearance.Read();
+            var ground = AssetDatabase.LoadAssetAtPath<PlantFieldGroundData>(StPetersBuildingClearance.GroundPath);
+            byte[] cells = ground.Decode();
+            float halfDiagonal = ground.CellSize * 0.70710678f;
+            Rect box = clearing.Bounds(ground.CellSize);
+            int checkedCells = 0;
+            for (int y = 0; y < ground.Height; y++)
+            for (int x = 0; x < ground.Width; x++)
+            {
+                var at = ground.Origin + new Vector2(x + .5f, y + .5f) * ground.CellSize;
+                if (!box.Contains(at) || !clearing.Contains(at, halfDiagonal)) continue;
+                Assert.AreEqual(255, cells[y * ground.Width + x], $"the meadow may seed at {at}, in the stage's clearing");
+                checkedCells++;
+            }
+            Assert.Greater(checkedCells, 0, "no ground cell lies in the clearing");
+        }
+
         [TestCase(Line, false)]
         [TestCase(LineRestored, false)]
         [TestCase(Stage, false)]

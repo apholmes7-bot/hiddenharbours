@@ -139,10 +139,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 112
-        height: 73
+        width: 119
+        height: 79
       alignment: 9
-      pivot: {x: 0.4017857, y: 0.6849315}
+      pivot: {x: 0.42016807, y: 0.70886075}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -159,12 +159,12 @@ TextureImporter:
       name: SetPiece_trolleyStage_1
       rect:
         serializedVersion: 2
-        x: 112
+        x: 119
         y: 0
-        width: 112
-        height: 73
+        width: 119
+        height: 79
       alignment: 9
-      pivot: {x: 0.5, y: 0.5068493}
+      pivot: {x: 0.5042017, y: 0.49367088}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -181,12 +181,12 @@ TextureImporter:
       name: SetPiece_trolleyStage_2
       rect:
         serializedVersion: 2
-        x: 224
+        x: 238
         y: 0
-        width: 112
-        height: 73
+        width: 119
+        height: 79
       alignment: 9
-      pivot: {x: 0.32142857, y: 0.56164384}
+      pivot: {x: 0.30252102, y: 0.5443038}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -203,12 +203,12 @@ TextureImporter:
       name: SetPiece_trolleyStage_3
       rect:
         serializedVersion: 2
-        x: 336
+        x: 357
         y: 0
-        width: 112
-        height: 73
+        width: 119
+        height: 79
       alignment: 9
-      pivot: {x: 0.48214287, y: 0.49315068}
+      pivot: {x: 0.5042017, y: 0.49367088}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -225,12 +225,12 @@ TextureImporter:
       name: SetPiece_trolleyStage_4
       rect:
         serializedVersion: 2
-        x: 448
+        x: 476
         y: 0
-        width: 112
-        height: 73
+        width: 119
+        height: 79
       alignment: 9
-      pivot: {x: 0.4017857, y: 0.6849315}
+      pivot: {x: 0.42016807, y: 0.70886075}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -247,12 +247,12 @@ TextureImporter:
       name: SetPiece_trolleyStage_5
       rect:
         serializedVersion: 2
-        x: 560
+        x: 595
         y: 0
-        width: 112
-        height: 73
+        width: 119
+        height: 79
       alignment: 9
-      pivot: {x: 0.5, y: 0.5068493}
+      pivot: {x: 0.49579832, y: 0.49367088}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -269,12 +269,12 @@ TextureImporter:
       name: SetPiece_trolleyStage_6
       rect:
         serializedVersion: 2
-        x: 672
+        x: 714
         y: 0
-        width: 112
-        height: 73
+        width: 119
+        height: 79
       alignment: 9
-      pivot: {x: 0.32142857, y: 0.5753425}
+      pivot: {x: 0.30252102, y: 0.5443038}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -291,12 +291,12 @@ TextureImporter:
       name: SetPiece_trolleyStage_7
       rect:
         serializedVersion: 2
-        x: 784
+        x: 833
         y: 0
-        width: 112
-        height: 73
+        width: 119
+        height: 79
       alignment: 9
-      pivot: {x: 0.49107143, y: 0.5068493}
+      pivot: {x: 0.48739496, y: 0.49367088}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

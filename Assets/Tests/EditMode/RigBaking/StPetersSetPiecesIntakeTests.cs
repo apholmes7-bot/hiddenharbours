@@ -25,7 +25,7 @@ namespace HiddenHarbours.Tests.RigBaking
     {
         internal const string Kit = "docs/art/rigs/st-peters-set-pieces-kit/";
         internal const string TodayPath = "Assets/_Project/Art/Sprites/StPeters/SetPieces/stPetersSetPieces.today.json";
-        const string TodaySha256Lf = "ed906d44982e5c8f8d24d8621f800a5b2f4964ad43ecdbd8f8a722515f3ccc88";
+        const string TodaySha256Lf = "c38c751d6c2791f5400041f0feec5f41eff5d19c7f233647e0e3801d9aff05f6";
 
         /// <summary>The pieces, rig key to Def id, in the kit's KEYS order: the delivered eight, then the trolley
         /// line's loading stage and hand winch, added to the kit with the line's bedding (2026-11-25).</summary>
@@ -57,17 +57,17 @@ namespace HiddenHarbours.Tests.RigBaking
             ("gameplay/prop.stp_cannery_conveyor.gameplay.json", "be348bf034b13edff939001200e2b7b78f2d36150b400d13bc7ca1428d6bdd61"),
             ("gameplay/prop.stp_cannery_door_notice.gameplay.json", "cc9f0802368d1cb2767d956d371f499b870c38d02e41547514da648860d3edb0"),
             ("gameplay/prop.stp_cannery_fallen_sign.gameplay.json", "3e8f2fcb7520fa6500df59759a5948facd680da514395dbdfe0bd54c6a4f653c"),
-            ("gameplay/prop.stp_cannery_hand_winch.gameplay.json", "0bc64ca5749ddb7cc534ee5d99545e840d65a8fc48b85c2c4aff8ef92cf16d45"),
+            ("gameplay/prop.stp_cannery_hand_winch.gameplay.json", "3707901360340061cd94d7771afbdebf875727ade9752ed52bbca09dd7fdc978"),
             ("gameplay/prop.stp_cannery_trolley.gameplay.json", "04a07bdcc790aa96cf57c2964d91f128da2b69f6fae63fb09f0fcf50c939bf58"),
             ("gameplay/prop.stp_harbour_vane.gameplay.json", "fecf6a8b21c6d73e3a925bd6753cbb8b35cb9efbf455707e05cfb47d3504836a"),
             ("gameplay/prop.stp_slip_tide_board.gameplay.json", "9a5803dbb6c326dd6bb0b09de3f9aeeb1e6b09e4fd583e77d632b1f55470207b"),
             ("gameplay/structure.stp_cannery_boiler_stack.gameplay.json", "1bd56390c698049db955f20ad821effaf4add4f088d460e169d3d1d3cdd2bccb"),
             ("gameplay/structure.stp_cannery_trolley_line.gameplay.json", "8cd95b8102f8af41be63c4427726c393c9b5236460d726cbec8a2b833bbbbc0a"),
-            ("gameplay/structure.stp_cannery_trolley_stage.gameplay.json", "f301fb7a7f037713113c0dccc16971841dfb3460a361b111eb896d9831b6f683"),
+            ("gameplay/structure.stp_cannery_trolley_stage.gameplay.json", "411649daac4e87da2a1d5228841d301e7f78acadde7dbff0cd2956af05ce9e98"),
             ("harness.html", "a68769a55b2c4e6d8b372c44fc11257c391ae3184596a512ce28abcf9a240b90"),
             ("lib/coastalPass.js", "041b0bc32040c10a1bafc57da1d3f19e76047285c2b802861cff67caca5b166d"),
             ("lib/weatherSky.js", "38300697d5fe685b4800b2a5252aa3c9f0fbcb08bad40e80f6ce3aee1e9c7062"),
-            ("stPetersSetPieces.js", "8371edd555e52a1156049d7c5159482b2b076c2e45dd4d400bfd676193f5ee8b"),
+            ("stPetersSetPieces.js", "4345bdc75850be995ed02f90f99cbebf54aa1216fa054c1bb727efb42ef5b7ee"),
         };
 
         // ---- helpers the set-piece tests share ------------------------------------------------------------

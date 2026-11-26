@@ -253,7 +253,7 @@ MonoBehaviour:
     Kit: stPetersSetPieces
     Piece: trolleyStage
     State: 
-    At: {x: 184.45, y: 6.83}
+    At: {x: 184.6, y: 6.83}
     Z: 6
     StandsOn: ground
     MountHost: 
@@ -277,7 +277,7 @@ MonoBehaviour:
     Kit: stPetersSetPieces
     Piece: handWinch
     State: 
-    At: {x: 185.42, y: 6.83}
+    At: {x: 185.58, y: 6.83}
     Z: 6
     StandsOn: ground
     MountHost: 

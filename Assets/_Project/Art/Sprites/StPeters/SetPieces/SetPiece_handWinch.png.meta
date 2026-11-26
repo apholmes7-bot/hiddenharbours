@@ -139,10 +139,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 43
-        height: 54
+        width: 59
+        height: 60
       alignment: 9
-      pivot: {x: 0.3255814, y: 0.37037036}
+      pivot: {x: 0.3898305, y: 0.3}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -159,12 +159,12 @@ TextureImporter:
       name: SetPiece_handWinch_1
       rect:
         serializedVersion: 2
-        x: 43
+        x: 59
         y: 0
-        width: 43
-        height: 54
+        width: 59
+        height: 60
       alignment: 9
-      pivot: {x: 0.55813956, y: 0.35185185}
+      pivot: {x: 0.37288135, y: 0.21666667}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -181,12 +181,12 @@ TextureImporter:
       name: SetPiece_handWinch_2
       rect:
         serializedVersion: 2
-        x: 86
+        x: 118
         y: 0
-        width: 43
-        height: 54
+        width: 59
+        height: 60
       alignment: 9
-      pivot: {x: 0.4883721, y: 0.2962963}
+      pivot: {x: 0.4915254, y: 0.36666667}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -203,12 +203,12 @@ TextureImporter:
       name: SetPiece_handWinch_3
       rect:
         serializedVersion: 2
-        x: 129
+        x: 177
         y: 0
-        width: 43
-        height: 54
+        width: 59
+        height: 60
       alignment: 9
-      pivot: {x: 0.44186047, y: 0.16666667}
+      pivot: {x: 0.37288135, y: 0.23333333}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -225,12 +225,12 @@ TextureImporter:
       name: SetPiece_handWinch_4
       rect:
         serializedVersion: 2
-        x: 172
+        x: 236
         y: 0
-        width: 43
-        height: 54
+        width: 59
+        height: 60
       alignment: 9
-      pivot: {x: 0.55813956, y: 0.2037037}
+      pivot: {x: 0.5254237, y: 0.13333334}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -247,12 +247,12 @@ TextureImporter:
       name: SetPiece_handWinch_5
       rect:
         serializedVersion: 2
-        x: 215
+        x: 295
         y: 0
-        width: 43
-        height: 54
+        width: 59
+        height: 60
       alignment: 9
-      pivot: {x: 0.44186047, y: 0.37037036}
+      pivot: {x: 0.37288135, y: 0.21666667}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -269,12 +269,12 @@ TextureImporter:
       name: SetPiece_handWinch_6
       rect:
         serializedVersion: 2
-        x: 258
+        x: 354
         y: 0
-        width: 43
-        height: 54
+        width: 59
+        height: 60
       alignment: 9
-      pivot: {x: 0.4883721, y: 0.5}
+      pivot: {x: 0.4915254, y: 0.43333334}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -291,12 +291,12 @@ TextureImporter:
       name: SetPiece_handWinch_7
       rect:
         serializedVersion: 2
-        x: 301
+        x: 413
         y: 0
-        width: 43
-        height: 54
+        width: 59
+        height: 60
       alignment: 9
-      pivot: {x: 0.44186047, y: 0.4074074}
+      pivot: {x: 0.62711865, y: 0.45}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

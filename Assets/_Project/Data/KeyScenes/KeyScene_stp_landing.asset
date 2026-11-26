@@ -108,7 +108,7 @@ MonoBehaviour:
     Kit: wharfDecor
     Piece: lanternPost
     State: 
-    At: {x: 184.5, y: 5.75220215}
+    At: {x: 186.6, y: 5.75220215}
     Z: 5.35
     StandsOn: deck
     MountHost: 

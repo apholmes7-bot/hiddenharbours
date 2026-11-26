@@ -200,7 +200,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(StPetersWharf.LampRowY, Is.EqualTo(5.75220215f).Within(1e-6f));
             var lamps = StPetersWharf.LampPostSites();
             Assert.That(lamps.Count, Is.EqualTo(2));
-            CollectionAssert.AreEqual(new[] { new Vector2(211f, 5.75220215f), new Vector2(184.5f, 5.75220215f) },
+            CollectionAssert.AreEqual(new[] { new Vector2(211f, 5.75220215f), new Vector2(186.6f, 5.75220215f) },
                 lamps.Select(l => l.Position).ToArray());
             foreach (var lamp in lamps)
             {
