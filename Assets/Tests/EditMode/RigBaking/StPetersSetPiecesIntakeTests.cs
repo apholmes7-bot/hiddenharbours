@@ -25,9 +25,11 @@ namespace HiddenHarbours.Tests.RigBaking
     {
         internal const string Kit = "docs/art/rigs/st-peters-set-pieces-kit/";
         internal const string TodayPath = "Assets/_Project/Art/Sprites/StPeters/SetPieces/stPetersSetPieces.today.json";
-        const string TodaySha256Lf = "86b1557a29b3ed105fe20c5550fcdcecee76542502468982d90c7c97d8ddbe95";
+        const string TodaySha256Lf = "976ace89a8c7256e646b54feb0d5405038658867985d482a0ce965e15bd0698e";
 
-        /// <summary>The eight pieces, rig key to Def id, in the kit's KEYS order.</summary>
+        /// <summary>The pieces, rig key to Def id, in the kit's KEYS order: the delivered eight, then the trolley
+        /// line's loading stage and hand winch, added to the kit with the line's bedding (2026-11-25), then the net shed's
+        /// landing, the planked apron at the foot of its ramp.</summary>
         internal static readonly (string Key, string Id)[] Pieces =
         {
             ("slipTideBoard", "prop.stp_slip_tide_board"),
@@ -38,13 +40,18 @@ namespace HiddenHarbours.Tests.RigBaking
             ("conveyor", "prop.stp_cannery_conveyor"),
             ("fallenSign", "prop.stp_cannery_fallen_sign"),
             ("doorNotice", "prop.stp_cannery_door_notice"),
+            ("trolleyStage", "structure.stp_cannery_trolley_stage"),
+            ("handWinch", "prop.stp_cannery_hand_winch"),
+            ("shedLanding", "structure.stp_net_shed_landing"),
         };
 
         /// <summary>The kit's scripts in the order its checker loads them.</summary>
         internal static readonly string[] Scripts = { "lib/weatherSky.js", "lib/coastalPass.js", "stPetersSetPieces.js" };
 
-        /// <summary>The delivered files and the drop's SHA-256 for each: a text file's LF bytes (the kit has no
-        /// eol attribute, so a Windows checkout may hold it CRLF), the board's raw bytes.</summary>
+        /// <summary>The kit's files and the SHA-256 for each: a text file's LF bytes (the kit has no eol
+        /// attribute, so a Windows checkout may hold it CRLF), the board's raw bytes. The drop's fourteen, with
+        /// the source and the trolley line's sidecar re-pinned and two sidecars added for the stage and the
+        /// winch (2026-11-25), and a third for the net shed's landing.</summary>
         static readonly (string File, string Sha256)[] Delivered =
         {
             ("boards/set-pieces.png", "6b53b061aa70cf6a589d5021d375e938d7dee759d0bd5a49cd69ee311c26ec28"),
@@ -52,15 +59,18 @@ namespace HiddenHarbours.Tests.RigBaking
             ("gameplay/prop.stp_cannery_conveyor.gameplay.json", "be348bf034b13edff939001200e2b7b78f2d36150b400d13bc7ca1428d6bdd61"),
             ("gameplay/prop.stp_cannery_door_notice.gameplay.json", "cc9f0802368d1cb2767d956d371f499b870c38d02e41547514da648860d3edb0"),
             ("gameplay/prop.stp_cannery_fallen_sign.gameplay.json", "3e8f2fcb7520fa6500df59759a5948facd680da514395dbdfe0bd54c6a4f653c"),
+            ("gameplay/prop.stp_cannery_hand_winch.gameplay.json", "41d3da0c5347fb045472c620e8c71e7cdb3d7bf6dfdd3004ea4d947184ffbb84"),
             ("gameplay/prop.stp_cannery_trolley.gameplay.json", "04a07bdcc790aa96cf57c2964d91f128da2b69f6fae63fb09f0fcf50c939bf58"),
             ("gameplay/prop.stp_harbour_vane.gameplay.json", "fecf6a8b21c6d73e3a925bd6753cbb8b35cb9efbf455707e05cfb47d3504836a"),
             ("gameplay/prop.stp_slip_tide_board.gameplay.json", "9a5803dbb6c326dd6bb0b09de3f9aeeb1e6b09e4fd583e77d632b1f55470207b"),
             ("gameplay/structure.stp_cannery_boiler_stack.gameplay.json", "1bd56390c698049db955f20ad821effaf4add4f088d460e169d3d1d3cdd2bccb"),
-            ("gameplay/structure.stp_cannery_trolley_line.gameplay.json", "6b152760198c643791c4cd8954bf3a33bcd40cf83cbfa7177416039d6ba79316"),
+            ("gameplay/structure.stp_cannery_trolley_line.gameplay.json", "8cd95b8102f8af41be63c4427726c393c9b5236460d726cbec8a2b833bbbbc0a"),
+            ("gameplay/structure.stp_cannery_trolley_stage.gameplay.json", "411649daac4e87da2a1d5228841d301e7f78acadde7dbff0cd2956af05ce9e98"),
+            ("gameplay/structure.stp_net_shed_landing.gameplay.json", "aaf02307609b5bbcba25ddce8853b08050b51b0d7ca2b4b2e4ae9a7175d8a0cb"),
             ("harness.html", "a68769a55b2c4e6d8b372c44fc11257c391ae3184596a512ce28abcf9a240b90"),
             ("lib/coastalPass.js", "041b0bc32040c10a1bafc57da1d3f19e76047285c2b802861cff67caca5b166d"),
             ("lib/weatherSky.js", "38300697d5fe685b4800b2a5252aa3c9f0fbcb08bad40e80f6ce3aee1e9c7062"),
-            ("stPetersSetPieces.js", "4b6df7c1033703c533e3ad570b548dfdfa779a63cf46f8b59fa2db46b12b1b9f"),
+            ("stPetersSetPieces.js", "e32c70461cecd62a61ae021ae2308bdf9579730e3d1dcf6bcf9d771135400c8f"),
         };
 
         // ---- helpers the set-piece tests share ------------------------------------------------------------

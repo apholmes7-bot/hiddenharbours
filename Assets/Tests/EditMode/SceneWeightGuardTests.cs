@@ -162,7 +162,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void StPetersPlantField_RetiresTheMeasuredRootsWithoutSavingItsChunks()
         {
             var weight = MeasureFile("Assets/_Project/Scenes/StPeters.unity");
-            const long MeasuredStPetersSceneBytes = 4_972_742;
+            const long MeasuredStPetersSceneBytes = 5_072_784;
             const long SharedSceneHeadroomBytes = 64L * 1024;
             const long MinimumPopulatedSceneBytes = 4_500_000;
             // 5,259,646 after PR 5p's plant retirement; 4,792,419 after K0 retired the 186 atlas deck tiles, 467,309 bytes;
@@ -179,6 +179,11 @@ namespace HiddenHarbours.Tests.EditMode
             // the cottage above the Whelps with its door lamp, and the seven Whelps rocks, two pictures each (about 94 KB
             // of placed content in all). The plant retirement's saving is untouched: the scene is still about 288 KB
             // under the 5,259,646 it weighed before.
+            // 4,975,819 measured with Basil's slip dory placed on top of that (one prefab instance and its root,
+            // 58 lines, plus main's drift since).
+            // 5,072,784 measured with the harbour stack, the Gap footbridge and the keepers' station dressing, the
+            // store sign, the wharf ladder, the slip dory and the trolley stage, hand winch and net shed landing all
+            // in the one scene (about 97 KB of placed content over the line above).
             // Main's data/water edits move this shared file by tens of bytes per merge. Allow 64 KiB
             // above the measured retirement. The 4.5 MB floor rejects a truncated scene; names prove
             // retirement. It sits about 376 KB below the measured weight.

@@ -111,6 +111,7 @@
     "HiddenHarbours.World.TidalPoolDef",
     "HiddenHarbours.World.VillagePlanDef",
     "HiddenHarbours.World.WaterfallDef",
+    "HiddenHarbours.World.WharfLadderDef",
     "HiddenHarbours.World.WordsTableDef",
     "HiddenHarbours.World.YardDef",
     "HiddenHarbours.Core.CharacterClothingFitDef",
@@ -10051,6 +10052,11 @@
       "Type": "HiddenHarbours.Art.SetPieceDef",
       "Guid": "e7a1eae8f1882ee40819b6b5e3294317",
       "Id": "prop.nmc_bin"
+    },
+    {
+      "Type": "HiddenHarbours.World.WharfLadderDef",
+      "Guid": "f4001b876e974e7c8f6a70a9d783f657",
+      "Id": "ladder.galvanised_wharf"
     }
   ]
 }

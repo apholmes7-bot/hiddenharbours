@@ -6,7 +6,7 @@ const KIT=path.resolve(__dirname,'..'),ROOT=path.resolve(KIT,'../../../..');
 const OUT=path.join(ROOT,'Assets/_Project/Art/Sprites/NineMileCreek/WaterSide');
 const SCRIPTS=['../nmc-set-pieces-kit/lib/weatherSky.js','../nmc-set-pieces-kit/lib/coastalPass.js',
  '../nmc-shipyard-kit/wharfRig2.geo.js','../nmc-shipyard-kit/wharfRig2.fam.js','../nmc-shipyard-kit/wharfRig2.verbs.js',
- '../nmc-shipyard-kit/wharfRig2.js','../nmc-shipyard-kit/wharfRig2.kit.js','marinaRig.js','marinaBoats.js','marinaKit.js','nmcWharf.js'];
+ '../nmc-shipyard-kit/wharfRig2.js','../nmc-shipyard-kit/wharfRig2.kit.js','marinaRig.js','marinaBoats.js','marinaKit.js','nmcWharf.js','marinaGangway.js'];
 const C=vm.createContext({console});
 for(const f of SCRIPTS)vm.runInContext(fs.readFileSync(path.join(KIT,f),'utf8'),C,{filename:f});
 const N=C.NmcWharf,K=C.WharfRig2Kit,W=C.WharfRig2,G=C.WharfGeo2;
@@ -106,5 +106,26 @@ function write(planOnly,metadataOnly=false){
  console.log(planOnly?'PLAN':'DONE',pieces.length+' harbours',parts.length+' module/pose variants');
  return output;
 }
-if(require.main===module)write(process.argv.includes('--plan-only'),process.argv.includes('--metadata-only'));
-module.exports={write,parts,pieces,OUT,KIT,ROOT,SCRIPTS,C,png,sha};
+// Picture-only rebake of the gangway poses. Today's manifest carries the float motion-layer split, which a
+// whole rebake would undo, so only the gangway sheets and the source list are rewritten; every rect, pivot,
+// cell size and every other part stays exactly as committed, and a moved frame stops the bake.
+function rebakeGangways(){
+ const file=path.join(OUT,'nmcWaterSide.today.json'),today=JSON.parse(fs.readFileSync(file,'utf8'));
+ const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+ for(const p of parts.filter(p=>p.gangway)){
+  const q=today.parts.find(q=>q.key===p.key);if(!q)throw new Error(p.key+' is not in today\'s manifest');
+  bake(p);
+  if(!same(p.frames,q.frames)||!same(p.cellSize,q.cellSize)||!same(p.sheets.map(s=>[s.file,s.width,s.height]),q.sheets.map(s=>[s.file,s.width,s.height])))
+   throw new Error(p.key+' moved: a picture-only rebake keeps every rect and pivot');
+  q.sheets=p.sheets;
+ }
+ today.sources=SCRIPTS.map(f=>({file:f,sha256Lf:sha(Buffer.from(fs.readFileSync(path.join(KIT,f),'utf8').replace(/\r\n/g,'\n')))}));
+ // The committed manifest escapes non-ASCII text; keep that so only the rebaked fields move.
+ fs.writeFileSync(file,JSON.stringify(today,null,1).replace(/[\u007f-\uffff]/g,c=>'\\u'+c.charCodeAt(0).toString(16).padStart(4,'0'))+'\n');
+ console.log('DONE',parts.filter(p=>p.gangway).length+' gangway poses');
+}
+if(require.main===module){
+ if(process.argv.includes('--gangways-only'))rebakeGangways();
+ else write(process.argv.includes('--plan-only'),process.argv.includes('--metadata-only'));
+}
+module.exports={write,rebakeGangways,parts,pieces,OUT,KIT,ROOT,SCRIPTS,C,png,sha};

@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.BaitDef
   Id: bait.mackerel
   DisplayName: Mackerel
-  Flavor: 'A stronger, bloodier bait than herring - a lobster tracks it from further off.
-    PRICE NOTE: greybox placeholder - flagged for economy-sim to tune.'
+  Flavor: 'A stronger, bloodier bait than herring - a lobster tracks it from further off.'
   Price: 4
   FavorsSpeciesIds:
   - fish.lobster

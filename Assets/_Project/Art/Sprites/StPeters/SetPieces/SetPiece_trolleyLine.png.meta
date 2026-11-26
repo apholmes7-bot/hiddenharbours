@@ -138,11 +138,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 265
-        width: 395
-        height: 265
+        y: 208
+        width: 321
+        height: 208
       alignment: 9
-      pivot: {x: 0.04050633, y: 0.9622642}
+      pivot: {x: 0.046728972, y: 0.9326923}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -159,12 +159,12 @@ TextureImporter:
       name: SetPiece_trolleyLine_1
       rect:
         serializedVersion: 2
-        x: 395
-        y: 265
-        width: 395
-        height: 265
+        x: 321
+        y: 208
+        width: 321
+        height: 208
       alignment: 9
-      pivot: {x: 0.12405063, y: 0.98867923}
+      pivot: {x: 0.080996886, y: 0.9807692}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -181,12 +181,12 @@ TextureImporter:
       name: SetPiece_trolleyLine_2
       rect:
         serializedVersion: 2
-        x: 790
-        y: 265
-        width: 395
-        height: 265
+        x: 642
+        y: 208
+        width: 321
+        height: 208
       alignment: 9
-      pivot: {x: 0.7822785, y: 0.9622642}
+      pivot: {x: 0.5638629, y: 0.9519231}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -203,12 +203,12 @@ TextureImporter:
       name: SetPiece_trolleyLine_3
       rect:
         serializedVersion: 2
-        x: 1185
-        y: 265
-        width: 395
-        height: 265
+        x: 963
+        y: 208
+        width: 321
+        height: 208
       alignment: 9
-      pivot: {x: 0.99746835, y: 0.8792453}
+      pivot: {x: 0.98753893, y: 0.9182692}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -227,10 +227,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 395
-        height: 265
+        width: 321
+        height: 208
       alignment: 9
-      pivot: {x: 0.6911392, y: 0.24905661}
+      pivot: {x: 0.8598131, y: 0.44230768}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -247,12 +247,12 @@ TextureImporter:
       name: SetPiece_trolleyLine_5
       rect:
         serializedVersion: 2
-        x: 395
+        x: 321
         y: 0
-        width: 395
-        height: 265
+        width: 321
+        height: 208
       alignment: 9
-      pivot: {x: 0.05822785, y: 0.003773585}
+      pivot: {x: 0.32398754, y: 0.01923077}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -269,12 +269,12 @@ TextureImporter:
       name: SetPiece_trolleyLine_6
       rect:
         serializedVersion: 2
-        x: 790
+        x: 642
         y: 0
-        width: 395
-        height: 265
+        width: 321
+        height: 208
       alignment: 9
-      pivot: {x: 0.04050633, y: 0.31698114}
+      pivot: {x: 0.06853583, y: 0.14903846}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -291,12 +291,12 @@ TextureImporter:
       name: SetPiece_trolleyLine_7
       rect:
         serializedVersion: 2
-        x: 1185
+        x: 963
         y: 0
-        width: 395
-        height: 265
+        width: 321
+        height: 208
       alignment: 9
-      pivot: {x: 0, y: 0.9433962}
+      pivot: {x: 0.012461059, y: 0.67788464}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

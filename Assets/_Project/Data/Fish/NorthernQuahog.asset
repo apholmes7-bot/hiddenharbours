@@ -16,7 +16,7 @@ MonoBehaviour:
   DisplayName: Northern Quahog
   Category: 1
   Rarity: 0
-  Flavor: 'The hard-shell clam, lower on the flat than the soft-shell. Dug or raked at the bottom of the tide. GEAR NOTE: hand-gather only, on the ClamFork tag the clam uses. BALANCE NOTE: placeholder value, weight and elasticity set beside its neighbours - flagged for economy-sim to tune.'
+  Flavor: 'The hard-shell clam, lower on the flat than the soft-shell. Dug or raked at the bottom of the tide.'
   RegionIds:
   - region.st_peters
   - region.nine_mile_creek

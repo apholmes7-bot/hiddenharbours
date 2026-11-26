@@ -39,10 +39,13 @@ namespace HiddenHarbours.Tests.PlayMode
     {
         private const string SceneName = "StPeters";
         private const string CleanupSceneName = "CastAshoreCleanup";
-        private const string SkipperOwnerPath = "Assets/_Project/Data/Boats/Owners/ArsenaultLeo.asset";
+        private const string SkipperOwnerPath = "Assets/_Project/Data/Boats/Owners/MacdonaldRoss.asset";
 
-        /// <summary>St Peters' villager who wears the same art def as Leo Arsenault's skipper.</summary>
-        private const string SharedDefVillagerName = "BasilSamson";
+        /// <summary>St Peters' villager who wears the same art def as Ross MacDonald's skipper (HandIso).
+        /// Until 2026-11-25 this was Basil in Leo Arsenault's skipper's def; Basil now wears his own outfit
+        /// (BasilIso, charskin.basil), which no boat's skipper wears, so the pair moved to one that still
+        /// shares a def.</summary>
+        private const string SharedDefVillagerName = "JuniorPoirier";
 
         /// <summary>St Peters stands six routines today. Fewer means the scene lost villagers, and a check
         /// over the rest is no longer the island the owner asked about.</summary>
@@ -250,14 +253,14 @@ namespace HiddenHarbours.Tests.PlayMode
             AssertTheCastIsInstalled();
             UseSwitches(meshCast: true, ashore: true);
 
-            IsoCharacterSprite basil = TheSharedDefVillager(out BoatOwnerDef owner, out CharacterSkinDef skin);
-            BringHerOut(basil);
+            IsoCharacterSprite villager = TheSharedDefVillager(out BoatOwnerDef owner, out CharacterSkinDef skin);
+            BringHerOut(villager);
             MooredBoat moored = Moor(owner, OffshoreBerth);
             yield return Settle();
 
             AssertTheSkipperAboardIsTheirMesh(moored, owner, skin);
 
-            List<string> problems = MeshProblemsOf(basil).ToList();
+            List<string> problems = MeshProblemsOf(villager).ToList();
             Assert.IsEmpty(problems,
                 $"'{skin.Id}' draws as a mesh aboard, and {problems.Count} problem(s) say the same def did not draw " +
                 $"as a mesh on {SharedDefVillagerName} ashore, in the same world:\n  " + string.Join("\n  ", problems));
@@ -270,14 +273,14 @@ namespace HiddenHarbours.Tests.PlayMode
             AssertTheCastIsInstalled();
             UseSwitches(meshCast: true, ashore: false);
 
-            IsoCharacterSprite basil = TheSharedDefVillager(out BoatOwnerDef owner, out CharacterSkinDef skin);
-            BringHerOut(basil);
+            IsoCharacterSprite villager = TheSharedDefVillager(out BoatOwnerDef owner, out CharacterSkinDef skin);
+            BringHerOut(villager);
             MooredBoat moored = Moor(owner, OffshoreBerth);
             yield return Settle();
 
             AssertTheSkipperAboardIsTheirMesh(moored, owner, skin);
 
-            List<string> problems = SpriteProblemsOf(basil).ToList();
+            List<string> problems = SpriteProblemsOf(villager).ToList();
             Assert.IsEmpty(problems,
                 $"'{skin.Id}' draws as a mesh aboard, as MeshCast says, and {problems.Count} problem(s) say " +
                 $"{SharedDefVillagerName} did not keep her sprite ashore with MeshCastAshore OFF:\n  " +
@@ -528,18 +531,18 @@ namespace HiddenHarbours.Tests.PlayMode
         private static string PathOf(Transform t) =>
             t.parent == null ? t.name : $"{PathOf(t.parent)}/{t.name}";
 
-        /// <summary>Basil, who wears Leo Arsenault's skipper's own art def, and that def's skin: one skinned
+        /// <summary>Junior, who wears Ross MacDonald's skipper's own art def, and that def's skin: one skinned
         /// def in two places, from the committed data.</summary>
         private IsoCharacterSprite TheSharedDefVillager(out BoatOwnerDef owner, out CharacterSkinDef skin)
         {
-            IsoCharacterSprite basil = Villagers().SingleOrDefault(v => v.name == SharedDefVillagerName);
-            Assert.IsNotNull(basil, $"harness: St Peters has no villager named '{SharedDefVillagerName}'");
+            IsoCharacterSprite villager = Villagers().SingleOrDefault(v => v.name == SharedDefVillagerName);
+            Assert.IsNotNull(villager, $"harness: St Peters has no villager named '{SharedDefVillagerName}'");
 
             BoatOwnerDef committedOwner = Load<BoatOwnerDef>(SkipperOwnerPath);
             CharacterVisualDef committedDef = committedOwner.Skipper;
             Assert.IsNotNull(committedDef, $"harness: {SkipperOwnerPath} names no skipper");
-            Assert.AreSame(committedDef, basil.Visual,
-                $"harness: {SharedDefVillagerName} wears '{basil.Visual?.name}', not '{committedDef.name}' like " +
+            Assert.AreSame(committedDef, villager.Visual,
+                $"harness: {SharedDefVillagerName} wears '{villager.Visual?.name}', not '{committedDef.name}' like " +
                 $"'{committedOwner.Id}''s skipper, so this is no longer one def in two places");
             Assert.Greater(committedOwner.AboardCount(), 0, $"harness: '{committedOwner.Id}' has no room aboard");
 
@@ -553,7 +556,7 @@ namespace HiddenHarbours.Tests.PlayMode
             owner = Object.Instantiate(committedOwner);
             owner.name = committedOwner.name;
             _spawned.Add(owner);
-            return basil;
+            return villager;
         }
 
         /// <summary>Out on her own feet whatever the hour: her routine is switched off, and its OnDisable

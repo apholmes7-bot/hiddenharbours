@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.TestTools;
 using HiddenHarbours.Art;
 using HiddenHarbours.Core;
 using HiddenHarbours.Player;
+using HiddenHarbours.World;
 using Object = UnityEngine.Object;
 
 namespace HiddenHarbours.Tests.PlayMode
@@ -61,7 +63,8 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return LoadRegion(StPeters);
             GameObject root = GameObject.Find(WhelpsRoot);
             Assert.IsNotNull(root, "St Peters holds no " + WhelpsRoot + ".");
-            var rocks = root.GetComponentsInChildren<TidalFaceWaterline>(true).Where(f => f.transform.parent == root.transform).ToArray();
+            var rocks = root.GetComponentsInChildren<TidalFaceWaterline>(true).Where(f => f.transform.parent == root.transform &&
+                f.name.StartsWith("rock.", System.StringComparison.Ordinal)).ToArray();
             Assert.AreEqual(7, rocks.Length, "the seven rocks of the Whelps");
 
             IEnvironmentService held = GameServices.Environment;
@@ -98,6 +101,77 @@ namespace HiddenHarbours.Tests.PlayMode
             }
         }
 
+        /// <summary>
+        /// The Harbour Stack stands out of the sea at every tide, the water cutting it along its own shape, and a
+        /// hull cannot pass through its foot. The three ledges the Whelps sit on are under at the board's tide
+        /// and stand part out at low water.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator StPeters_TheHarbourStack_StandsInEveryTide_AndTheLedgesAreCoveredAndBared()
+        {
+            yield return LoadRegion(StPeters);
+            GameObject root = GameObject.Find(WhelpsRoot);
+            Assert.IsNotNull(root, "St Peters holds no " + WhelpsRoot + ".");
+            var forms = new List<Transform>();
+            foreach (Transform child in root.transform)
+                if (child.name.StartsWith("tidalform.", System.StringComparison.Ordinal)) forms.Add(child);
+            Assert.AreEqual(4, forms.Count, "the stack and the three ledges");
+            Transform stack = forms.Single(f => f.name == "tidalform.stp_harbour_stack");
+            var foot = stack.GetComponent<PolygonCollider2D>();
+            Assert.IsNotNull(foot, "the stack has no foot a hull would meet");
+            Assert.IsFalse(foot.isTrigger, "the stack's foot is solid");
+            Assert.IsTrue(foot.OverlapPoint(stack.position), "the foot lies about the stack's centre");
+            Assert.AreEqual(3, forms.Count(f => f.GetComponent<Collider2D>() == null), "a ledge carries no collider: there a hull meets the ground's depth");
+            Assert.AreEqual(2, stack.childCount, "the stack is its body and the plinth under the sea");
+
+            // One stone, one shadow: of all the forms' pictures only the stack's body is left to the sun.
+            var rules = Resources.Load<HiddenHarbours.Art.SunCasterRules>(nameof(HiddenHarbours.Art.SunCasterRules));
+            Assert.IsNotNull(rules, "the sun caster's rules");
+            var left = forms.SelectMany(f => f.GetComponentsInChildren<SpriteRenderer>(true)).Where(r => !rules.IsExcludedArt(r)).ToArray();
+            Assert.AreEqual(1, left.Length, "pictures the sun may cast from: " + string.Join(", ", left.Select(r => r.transform.parent.name + "/" + r.name)));
+            Assert.AreEqual("Body", left[0].name);
+            Assert.AreEqual(stack, left[0].transform.parent);
+
+            IEnvironmentService held = GameServices.Environment;
+            try
+            {
+                foreach (float tide in new[] { WhelpsCoveredTide, WhelpsHalfTide, WhelpsBaredTide })
+                {
+                    yield return HoldTheTide(held, tide);
+                    Assert.IsTrue(TidalFaceWaterline.TryPublishedSeaLevel(out float sea), "no sea is published");
+                    foreach (Transform form in forms)
+                    {
+                        float formHigh = float.NegativeInfinity;
+                        foreach (Transform piece in form)
+                        {
+                            string what = form.name + "/" + piece.name;
+                            var upper = piece.GetComponent<SpriteRenderer>();
+                            var under = piece.GetChild(0).GetComponent<SpriteRenderer>();
+                            var face = under.GetComponent<TidalFaceWaterline>();
+                            Assert.IsTrue(face.RidesTheTide && face.IsConfigured, what + " is not cut by the sea");
+                            Assert.IsTrue(piece.GetComponent<TidalFaceWaterline>().RidesTheTide, what);
+                            Assert.AreEqual(TidalFaceWaterline.ShaderName, under.sharedMaterial.shader.name, what);
+                            Assert.AreEqual(under.sortingOrder + 1, upper.sortingOrder, what + ": the dry picture lies over the wet one");
+                            (float low, float high) = StandsBetween(under);
+                            (float upperLow, float _) = StandsBetween(upper);
+                            Assert.Less(upperLow, low, what + ": the dry picture is cut above the water, by the wet band");
+                            formHigh = Mathf.Max(formHigh, high);
+                        }
+                        if (form == stack)
+                            Assert.Greater(formHigh, sea + 5f, "the stack does not stand high out of the water at " + tide);
+                        else if (Mathf.Approximately(tide, WhelpsCoveredTide))
+                            Assert.Less(formHigh, sea, $"{form.name} shows at {tide} m, where the board has the Whelps under");
+                        else if (Mathf.Approximately(tide, WhelpsBaredTide))
+                            Assert.Greater(formHigh, sea + 0.2f, $"{form.name} is not bared at {tide} m");
+                    }
+                }
+            }
+            finally
+            {
+                GameServices.Environment = held;
+            }
+        }
+
         /// <summary>The village end of the cliff walk (path.stp_cliff_walk's first point), where the walks start.</summary>
         static readonly Vector2 VillageEndOfTheCliffWalk = new Vector2(178f, -2.5f);
 
@@ -111,6 +185,124 @@ namespace HiddenHarbours.Tests.PlayMode
         /// tide leaves walkable, around every solid thing. Both keepers' doors are in it, at the board's tide and
         /// at low water, and at neither does it reach the edge of the sea.
         /// </summary>
+        const string GapFootbridgeId = "bridge.stp_gap_footbridge";
+        const string GapFootbridgeRoot = "StPetersFootbridges";
+        const string RailNearName = "RailNear", RailFarName = "RailFar";
+        const float BridgeApproachMetres = 1.2f;      // how far off each end the walk starts and ends, on the path
+        const float BridgeArriveMetres = 0.15f;
+        const int BridgeWalkFrames = 900;
+        const int RailPushFrames = 120;
+
+        // The footbridge over the gap stream, walked by the real player on the real ground: west to east, back
+        // again, and a push at each rail from the middle of the deck.
+        [UnityTest]
+        public IEnumerator StPeters_TheGapFootbridge_IsWalkedAcrossBothWays_BetweenItsRails()
+        {
+            yield return LoadRegion(StPeters);
+            StandablePlatform bridge = Object.FindObjectsByType<StandablePlatform>(FindObjectsInactive.Include)
+                .FirstOrDefault(p => p.Id == GapFootbridgeId);
+            Assert.That(bridge, Is.Not.Null, "the gap footbridge is in the loaded region as a deck to stand on");
+            Rect stood = bridge.Footprint;
+            Transform root = bridge.transform;
+            while (root.parent != null && root.name != GapFootbridgeRoot) root = root.parent;
+            SpriteRenderer near = root.GetComponentsInChildren<SpriteRenderer>(true).FirstOrDefault(r => r.name == RailNearName);
+            SpriteRenderer far = root.GetComponentsInChildren<SpriteRenderer>(true).FirstOrDefault(r => r.name == RailFarName);
+            Assert.That(near, Is.Not.Null, "the bridge has a rail on its near side");
+            Assert.That(far, Is.Not.Null, "the bridge has a rail on its far side");
+            Assert.That(far.sortingLayerID, Is.EqualTo(near.sortingLayerID));
+            Assert.That(far.sortingOrder, Is.LessThan(near.sortingOrder), "the far rail is drawn behind the near one");
+            // The planks lie between the two rails; the ground stood on reaches a little landward of them, because the
+            // game reads a walker's ground at his body and draws his feet below it.
+            Rect deck = Rect.MinMaxRect(stood.xMin, near.transform.position.y, stood.xMax, far.transform.position.y);
+            Assert.That(deck.height, Is.GreaterThan(0.5f)); Assert.That(stood.yMax, Is.GreaterThanOrEqualTo(deck.yMax));
+
+            var player = Object.FindAnyObjectByType<PlayerWalkController>(FindObjectsInactive.Include);
+            Assert.That(player, Is.Not.Null, "the player is in the loaded game");
+            player.gameObject.SetActive(true);
+            player.enabled = true;
+            var body = player.GetComponent<Rigidbody2D>();
+            var foot = player.GetComponent<CircleCollider2D>();
+            Assert.That(body, Is.Not.Null); Assert.That(foot, Is.Not.Null);
+            var held = new HeldWalkIntents();
+            player.ConfigureWalkInput(held);
+            Vector2 Feet() => body.position + foot.offset;
+            void Stand(Vector2 at)
+            {
+                held.Release();
+                body.position = at - foot.offset;
+                body.linearVelocity = Vector2.zero;
+                Physics2D.SyncTransforms();
+            }
+            // The figure is drawn at the order of the picture it sorts by.
+            YSortSprite sorter = player.GetComponentInChildren<YSortSprite>();
+            Assert.That(sorter, Is.Not.Null, "the walker sorts by where he stands");
+            Renderer sortedBy = sorter.GetComponent<Renderer>();
+            int FigureOrder(out int layer)
+            {
+                layer = sortedBy.sortingLayerID;
+                return sortedBy.sortingOrder;
+            }
+            string Sorting() => $"sorted by '{sorter.name}' at y {sorter.transform.position.y:0.00} pivot {sorter.SortPivotYOffset:0.00}, " +
+                                $"body y {body.position.y:0.00}, order {sortedBy.sortingOrder}, rails {far.sortingOrder} to {near.sortingOrder}";
+
+            float mid = deck.center.y;
+            Vector2 west = new Vector2(deck.xMin - BridgeApproachMetres, mid);
+            Vector2 east = new Vector2(deck.xMax + BridgeApproachMetres, mid);
+            try
+            {
+                foreach ((Vector2 from, Vector2 to, string way) in new[] { (west, east, "west to east"), (east, west, "east to west") })
+                {
+                    Stand(from);
+                    yield return new WaitForFixedUpdate();
+                    int onDeck = 0, frames = 0;
+                    float lowest = float.MaxValue, highest = float.MinValue;
+                    while ((Feet() - to).magnitude > BridgeArriveMetres && frames++ < BridgeWalkFrames)
+                    {
+                        held.Walk((to - Feet()).normalized);
+                        yield return new WaitForFixedUpdate();
+                        Vector2 at = Feet();
+                        if (at.x <= deck.xMin || at.x >= deck.xMax) continue;
+                        onDeck++;
+                        lowest = Mathf.Min(lowest, at.y); highest = Mathf.Max(highest, at.y);
+                        Assert.That(bridge.TryGetDeckElevation(body.position, out float h), Is.True,
+                            $"{way}: with his feet on the planks at {at} the game reads him as standing on the deck (body {body.position})");
+                        Assert.That(h, Is.EqualTo(bridge.DeckElevation));
+                        Assert.That(player.WaterState, Is.EqualTo(OnFootWaterState.Dry), $"{way}: he crosses dry at {at}");
+                        int order = FigureOrder(out int layer);
+                        Assert.That(layer, Is.EqualTo(near.sortingLayerID), $"{way}: he is drawn in the rails' layer");
+                        Assert.That(order, Is.GreaterThan(far.sortingOrder), $"{way}: at {at} he is in front of the far rail; {Sorting()}");
+                        Assert.That(order, Is.LessThan(near.sortingOrder), $"{way}: at {at} he is behind the near rail; {Sorting()}");
+                    }
+                    Assert.That((Feet() - to).magnitude, Is.LessThanOrEqualTo(BridgeArriveMetres),
+                        $"{way}: he reaches the far bank; he stopped at {Feet()} after {frames} steps");
+                    Assert.That(onDeck, Is.GreaterThan(0), $"{way}: the walk went over the deck");
+                    Assert.That(lowest, Is.GreaterThan(deck.yMin)); Assert.That(highest, Is.LessThan(deck.yMax));
+                }
+
+                // From the middle of the deck neither rail lets him step off into the stream.
+                foreach ((Vector2 push, string side) in new[] { (Vector2.down, "near"), (Vector2.up, "far") })
+                {
+                    Stand(deck.center);
+                    yield return new WaitForFixedUpdate();
+                    for (int i = 0; i < RailPushFrames; i++)
+                    {
+                        held.Walk(push);
+                        yield return new WaitForFixedUpdate();
+                    }
+                    Vector2 at = Feet();
+                    Assert.That(at.y, Is.InRange(deck.yMin, deck.yMax),
+                        $"the {side} rail keeps his feet on the planks; he ended at {at}, planks {deck}");
+                    Assert.That(bridge.TryGetDeckElevation(body.position, out _), Is.True,
+                        $"pushed at the {side} rail he is still read as on the deck (body {body.position}, stood {stood})");
+                }
+            }
+            finally
+            {
+                held.Release();
+                player.ConfigureWalkInput(null);
+            }
+        }
+
         [UnityTest]
         public IEnumerator StPeters_WithNoBoat_BothKeepersCanBeWalkedTo_AndTheIslandCannotBeLeft()
         {

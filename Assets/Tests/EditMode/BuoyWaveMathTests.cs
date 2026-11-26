@@ -87,6 +87,50 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(0.4f, frac, Eps, "buoyHeight 0 collapses to the clamped baseline, never NaN/Inf");
         }
 
+        // ---- RIDE: a small float follows the surface; only the rest climbs, held to its reach -----
+
+        [Test]
+        public void Ride_AtRestAndOnGlass_IsTheFloatLine()
+        {
+            Assert.AreEqual(0.4f, BuoyWaveMath.RideWaterlineFraction(0f, 0.4f, 1f, 0.75f, 0.08f, 0.17f, 1f), Eps);
+        }
+
+        [Test]
+        public void Ride_OnlyTheUnfollowedShareClimbs()
+        {
+            // follow 0.75 ⇒ a 0.2 m crest climbs 0.05 m of a 1 m sprite; the cork model would climb 0.2.
+            float ride = BuoyWaveMath.RideWaterlineFraction(0.2f, 0.4f, 1f, 0.75f, 0.08f, 0.17f, 1f);
+            Assert.AreEqual(0.45f, ride, Eps);
+            Assert.Less(ride, BuoyWaveMath.WaterlineFraction(0.2f, 0.4f, 0f, 1f), "riding climbs less than the cork");
+            Assert.AreEqual(0.4f - 0.05f, BuoyWaveMath.RideWaterlineFraction(-0.2f, 0.4f, 1f, 0.75f, 0.08f, 0.17f, 1f), Eps,
+                            "a trough lowers the line by the same share");
+        }
+
+        [Test]
+        public void Ride_HeldToTheFloatsReach_BothWays()
+        {
+            // A freak sea: the line stops at the freeboard (the band) above and the draft (the foot) below.
+            Assert.AreEqual(0.4f + 0.17f, BuoyWaveMath.RideWaterlineFraction(50f, 0.4f, 1f, 0.75f, 0.08f, 0.17f, 1f), Eps);
+            Assert.AreEqual(0.4f - 0.08f, BuoyWaveMath.RideWaterlineFraction(-50f, 0.4f, 1f, 0.75f, 0.08f, 0.17f, 1f), Eps);
+        }
+
+        [Test]
+        public void Ride_ADrawnUpFloatClimbsTheSameWaterInSmallerFractions()
+        {
+            // The drawn size scales sprite and reach together, so the same water is half the climb at 2x.
+            float x1 = BuoyWaveMath.RideWaterlineFraction(0.2f, 0.4f, 1f, 0.75f, 0.08f, 0.17f, 1f) - 0.4f;
+            float x2 = BuoyWaveMath.RideWaterlineFraction(0.2f, 0.4f, 1f, 0.75f, 0.08f, 0.17f, 2f) - 0.4f;
+            Assert.AreEqual(x1 * 0.5f, x2, Eps);
+        }
+
+        [Test]
+        public void Ride_Garbage_CollapsesToTheFloatLine()
+        {
+            Assert.AreEqual(0.4f, BuoyWaveMath.RideWaterlineFraction(float.NaN, 0.4f, 1f, 0.75f, 0.08f, 0.17f, 1f), 0f);
+            Assert.AreEqual(0.4f, BuoyWaveMath.RideWaterlineFraction(0.3f, 0.4f, 0f, 0.75f, 0.08f, 0.17f, 1f), 0f);
+            Assert.AreEqual(0.4f, BuoyWaveMath.RideWaterlineFraction(0.3f, 0.4f, 1f, 0.75f, 0.08f, 0.17f, 0f), 0f);
+        }
+
         // ---- SWAMP THRESHOLD + VANISH: the owner's ask — big crests hide the buoy ----------------
 
         [Test]

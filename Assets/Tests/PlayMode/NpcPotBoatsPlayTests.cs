@@ -172,7 +172,10 @@ namespace HiddenHarbours.Tests.PlayMode
                 Assert.IsTrue(_boats.RopeOf(_def.Id, i).enabled, $"pot {i} has a rope");
                 Assert.IsFalse(_boats.PotOf(_def.Id, i).enabled, $"pot {i} is on the bottom in {-BedElevation} m, out of sight");
             }
-            Color worn = _boats.BuoyOf(_def.Id, 0).GetComponentInChildren<SpriteRenderer>().color;
+            // Her colour is painted onto the float by ramp swap, not multiplied over it.
+            var wave = _boats.BuoyOf(_def.Id, 0).GetComponent<BuoyWaveVisual>();
+            Assert.Greater(wave.PaintSwapCount, 0, "the float carries her paint");
+            Color worn = wave.PaintBody;
             Assert.That(worn.r, Is.GreaterThan(worn.g + 0.2f), "the float wears her red, not the player's yellow");
         }
 

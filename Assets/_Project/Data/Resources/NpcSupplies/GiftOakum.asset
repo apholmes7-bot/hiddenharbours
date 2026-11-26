@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c3c8bd3b02941d99e180e39cca49d30, type: 3}
+  m_Name: GiftOakum
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.SupplyGiftDef
+  Id: supplygift.st_peters_oakum
+  GiverNpcId: npc.rose_macisaac
+  OptionId: option.ask_for_oakum
+  RowLabel: 'Would you have any oakum put by?'
+  ReplyLines:
+  - 'Oakum. Alec picked it every winter by that stove, and there''s a hank still in the press.'
+  - 'Here. Better in a seam than in a drawer.'
+  ItemIds:
+  - supply.oakum
+  ReceivedFlags:
+  - st_peters.dory_mend.caulk_seam
+  BagId: shoppingbag.paper
+  HandsFullLines:
+  - 'Your hands are full. Come back with one free and it''s yours.'
+  BagFullLines:
+  - 'That bag won''t take another thing. Empty it and come back.'
+  BagElsewhereLines:
+  - 'Where''s your bag got to? Fetch it and I''ll fill it.'

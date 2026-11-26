@@ -502,11 +502,27 @@ namespace HiddenHarbours.App
             visual.transform.SetParent(pot.BuoyRoot.transform, worldPositionStays: false);
             var buoyRenderer = visual.AddComponent<SpriteRenderer>();
             buoyRenderer.sprite = def.Trap.BuoySprite;
-            buoyRenderer.color = def.BuoyColour;          // whose gear it is; set before the wave rider caches it
             buoyRenderer.sortingOrder = EffectSorting.OrderAt(SortedEffect.Buoy, pot.BuoyRoot.transform.position.y);
             pot.BuoyRenderer = buoyRenderer;   // re-sorted where it floats each time it is shown (ShowBuoy)
             pot.Wave = pot.BuoyRoot.AddComponent<BuoyWaveVisual>();   // the proven wave rider, reused unchanged
             pot.Wave.Configure(buoyRenderer, visual.transform);
+            // The float's geometry comes off its own art (pivot = still waterline), its waterline wraps at the
+            // radius its trap kind's data carries, and whose gear it is is PAINTED onto it (ramp swap: her
+            // body colour over the shared band), never multiplied over the whole float.
+            pot.Wave.ConfigureFloatFromSprite(def.Trap.BuoySprite);
+            pot.Wave.ConfigureWaterlineArc(def.Trap.BuoyFloatRadiusMeters);
+            pot.Wave.ConfigurePaint(def.BuoyColour,
+                                    GameServices.Config != null ? GameServices.Config.PotFloatBandColour
+                                                                : (Color)PotFloatPaint.BakedBand);
+            // It rides the surface like the small float it is (its body's draft and freeboard from its trap
+            // kind, how much of the wave it follows from GameConfig), at the owner's drawn size.
+            if (GameServices.Config != null)
+            {
+                pot.Wave.ConfigureRide(GameServices.Config.PotFloatSurfaceFollow,
+                                       def.Trap.BuoyDraftMeters, def.Trap.BuoyFreeboardMeters,
+                                       GameServices.Config.PotFloatFoamTexels);
+                pot.Wave.ConfigureDrawScale(GameServices.Config.PotFloatDrawScale);
+            }
             pot.Wave.enabled = false;
             pot.BuoyRoot.SetActive(false);
 

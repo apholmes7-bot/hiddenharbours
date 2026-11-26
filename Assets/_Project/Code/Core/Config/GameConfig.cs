@@ -664,6 +664,46 @@ namespace HiddenHarbours.Core
         /// </summary>
         public float SurfSprayIntensity => Mathf.Clamp(1f + SurfSprayIntensityOffset, 0f, 2f);
 
+        [Header("Round floats (the waterline wraps the body)")]
+        [Tooltip("The player's pot float's radius at its waterline, in metres (the spindle float of the " +
+                 "pot-float rig, PotFloats_bullet). A round float meets the water in a circle the 3/4 camera " +
+                 "draws as an ellipse, so its waterline bows down across the near side and wraps up to the " +
+                 "sides; this is how wide that ellipse is. 0.084 is the rig's own barrel radius at the still " +
+                 "waterline (META.bullet.waterRadius; a test holds the two together). 0 = the old straight " +
+                 "cut. NPC pots take theirs from their TrapDef, the ambient fleet from its AmbientFleetDef, " +
+                 "the navigation marks from their own DiameterMeters.")]
+        [Min(0f)] public float LobsterFloatRadiusMeters = 0.084f;
+
+        [Tooltip("The player's pot float paint: the body coat. Buoy colour says whose gear it is, and the " +
+                 "player's is YELLOW. Swapped onto the baked float at draw time (one sheet for every owner).")]
+        public Color PlayerPotFloatColour = new Color32(0xe0, 0xb1, 0x3a, 0xff);
+        [Tooltip("The player's pot float paint: the band (shoulder stripe, stick tip, flag stripe).")]
+        public Color PlayerPotFloatBandColour = new Color32(0x9c, 0x4a, 0x3c, 0xff);
+        [Tooltip("The band every OTHER fisher's float wears when their data names only a body colour " +
+                 "(NPC pot days, the ambient fleet). Dark, so it reads on every body colour and never " +
+                 "matches the player's rust band.")]
+        public Color PotFloatBandColour = new Color32(0x2a, 0x3b, 0x52, 0xff);
+
+        [Header("Pot floats on the water (the ride and the drawn size)")]
+        [Tooltip("How far a trough may lower the player's spindle float's waterline, in metres (META.bullet.draft): " +
+                 "down toward its foot, never so far that its rope eye shows.")]
+        [Min(0f)] public float LobsterFloatDraftMeters = 0.08f;
+        [Tooltip("How far a crest may raise the player's spindle float's waterline, in metres (META.bullet.freeboard): " +
+                 "up to its shoulder band, so a crest washes over the body but never swamps the whole float.")]
+        [Min(0f)] public float LobsterFloatFreeboardMeters = 0.17f;
+        [Tooltip("How much of the wave a small foam float follows (0..1). It lifts by this share of the wave " +
+                 "height and only the rest climbs its side, held within its own reach (draft below, freeboard above). " +
+                 "Every pot and marker float rides this way; the navigation marks keep their own bob.")]
+        [Range(0.05f, 1f)] public float PotFloatSurfaceFollow = 0.75f;
+        [Tooltip("The pot and marker floats' drawn size against their true size (1 = true size: a spindle " +
+                 "float ~6 px wide at 32 px a metre). One number for every float; the waterline arc and the " +
+                 "ride scale with it. 2 = the owner's pick, 2026-11-25: true size read as a speck from the dory.")]
+        [Range(0.5f, 3f)] public float PotFloatDrawScale = 2f;
+        [Tooltip("Half-height of the pale waterline band on a pot or marker float, in the sprite's own texels. " +
+                 "The buoy default is a fraction of the sprite's height (several texels on a small float), which " +
+                 "bled down a thin stick as a pale tick in a trough. 1.5 = one bright row at the line.")]
+        [Range(0.5f, 4f)] public float PotFloatFoamTexels = 1.5f;
+
         [Header("Market (VS-16)")]
         [Tooltip("Demand D at the home cove (Coddle Cove) in priceMult = 1/(1+e·S/D). 1 = neutral baseline.")]
         [Min(0.01f)] public float MarketDemandCove = 1f;

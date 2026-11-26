@@ -948,6 +948,16 @@ namespace HiddenHarbours.World
                 return;
             }
 
+            // A row built in code whose answer depends on the moment of picking (a supply handed over or
+            // refused, a clue climbed): asked once, here, and spoken like any terminal reply.
+            if (picked.AnswersAtPick)
+            {
+                string[] atPick = picked.ReplyAtPick();
+                if (atPick != null && atPick.Length > 0) { PlayTerminalReply(atPick); return; }
+                Finish();
+                return;
+            }
+
             // A row that answers plays its answer and then the conversation ends. One round, no nesting
             // (rule 8) — a reply never leads to more options.
             if (picked.ReplyLines != null && picked.ReplyLines.Length > 0)
