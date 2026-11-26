@@ -3,6 +3,7 @@ using HiddenHarbours.Art;
 using HiddenHarbours.Core;
 using HiddenHarbours.Environment;
 using HiddenHarbours.Fishing;
+using HiddenHarbours.Tests.Support;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -12,6 +13,84 @@ namespace HiddenHarbours.Tests.EditMode
 {
     public class DayCalendarTests
     {
+        [Test]
+        public void PlateDatesFollowEverySeasonBoundary(
+            [Values(Season.EarlySpring, Season.HighSummer, Season.TheTurn, Season.HardWinter)] Season season,
+            [Values(1, 7, 28)] int daysPerSeason,
+            [Values(Season.HighSummer, Season.HardWinter)] Season startSeason,
+            [Values(false, true)] bool startOnLastDay)
+        {
+            var config = ScriptableObject.CreateInstance<GameConfig>();
+            try
+            {
+                config.DaysPerSeason = daysPerSeason;
+                config.StartSeason = startSeason;
+                config.StartDayOfSeason = startOnLastDay ? daysPerSeason : 1;
+                int elapsedDay = PlateCalendar.ElapsedDay(config, season, 1);
+                Assert.That(elapsedDay, Is.InRange(0, 4 * daysPerSeason - 1));
+                double seconds = PlateCalendar.SecondsAt(config, season, 1, 0d);
+                Assert.AreEqual(elapsedDay * (double)config.SecondsPerDay, seconds);
+                CalendarDate first = GameCalendar.AtSeconds(seconds, config);
+                Assert.AreEqual(season, first.Season);
+                Assert.AreEqual(1, first.DayOfSeason);
+
+                // Check both sides in the next cycle, so the prior hour is never before elapsed day zero.
+                double boundary = seconds + config.SecondsPerYear;
+                double hour = config.SecondsPerDay / (double)DaySchedule.HoursPerDay;
+                CalendarDate before = GameCalendar.AtSeconds(boundary - hour, config);
+                CalendarDate at = GameCalendar.AtSeconds(boundary, config);
+                CalendarDate after = GameCalendar.AtSeconds(boundary + hour, config);
+                Assert.AreEqual((Season)(((int)season + 3) % 4), before.Season);
+                Assert.AreEqual(daysPerSeason, before.DayOfSeason);
+                Assert.AreEqual(season, at.Season);
+                Assert.AreEqual(1, at.DayOfSeason);
+                Assert.AreEqual(first.Year + 1, at.Year);
+                Assert.AreEqual(season == Season.EarlySpring ? at.Year - 1 : at.Year, before.Year);
+                Assert.AreEqual(season, after.Season);
+                Assert.AreEqual(1, after.DayOfSeason);
+                Assert.AreEqual(at.Year, after.Year);
+            }
+            finally { Object.DestroyImmediate(config); }
+        }
+
+        [TestCase(13d, 1, 13d)]
+        [TestCase(17.75d, 1, 17.75d)]
+        [TestCase(26d, 2, 2d)]
+        public void TreePlateHoursStartOnHighSummerDayOne(double hours, int dayOfSeason, double hourOfDay)
+        {
+            var config = ScriptableObject.CreateInstance<GameConfig>();
+            try
+            {
+                Assert.AreEqual(0, PlateCalendar.ElapsedDay(config, Season.HighSummer, 1));
+                double seconds = PlateCalendar.SecondsAt(config, Season.HighSummer, 1, hours);
+                Assert.AreEqual(hours / 24d * config.SecondsPerDay, seconds);
+                CalendarDate date = GameCalendar.AtSeconds(seconds, config);
+                Assert.AreEqual(Season.HighSummer, date.Season);
+                Assert.AreEqual(dayOfSeason, date.DayOfSeason);
+                Assert.AreEqual(1, date.Year);
+                Assert.AreEqual(hourOfDay, seconds % config.SecondsPerDay / config.SecondsPerDay * 24d, 1e-9);
+            }
+            finally { Object.DestroyImmediate(config); }
+        }
+
+        [TestCase(Season.TheTurn, 2, 29)]
+        [TestCase(Season.TheTurn, 12, 39)]
+        [TestCase(Season.TheTurn, 25, 52)]
+        [TestCase(Season.TheTurn, 17, 44)]
+        public void PlantPlateDatesKeepTheirElapsedDays(Season season, int dayOfSeason, int elapsedDay)
+        {
+            var config = ScriptableObject.CreateInstance<GameConfig>();
+            try
+            {
+                Assert.AreEqual(elapsedDay, PlateCalendar.ElapsedDay(config, season, dayOfSeason));
+                CalendarDate date = GameCalendar.AtDay(elapsedDay, config.DaysPerSeason, config.StartDayOfYear);
+                Assert.AreEqual(season, date.Season);
+                Assert.AreEqual(dayOfSeason, date.DayOfSeason);
+                Assert.AreEqual(1, date.Year);
+            }
+            finally { Object.DestroyImmediate(config); }
+        }
+
         [TestCase(0, Season.HighSummer, 1, 1)]
         [TestCase(27, Season.HighSummer, 28, 1)]
         [TestCase(28, Season.TheTurn, 1, 1)]

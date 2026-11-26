@@ -107,7 +107,7 @@ namespace HiddenHarbours.Fishing
             float bestSqr = float.MaxValue;
             foreach (var dig in holes)
             {
-                if (dig == null || !dig.WithinReach(playerPos) || !dig.IsExposedNow()) continue;
+                if (dig == null || dig.Consumed || !dig.WithinReach(playerPos) || !dig.IsExposedNow()) continue;
                 float sqr = ((Vector2)dig.SpotPos - playerPos).sqrMagnitude;
                 if (sqr < bestSqr) { bestSqr = sqr; best = dig; }
             }

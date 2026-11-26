@@ -254,7 +254,16 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // Her pixels INSIDE the rake: a dory is far wider than the caster's 1.5 m silhouette, so a
             // whole-hull mean would measure how much of the boat is in shade rather than how shaded the
             // shaded part is.
-            bool[] hers = And(NotTheStage(off, minY: ReceiverFeetY, maxY: ReceiverFeetY + 2.5f), InTheRake());
+            //
+            // ⚠️ "Not the stage" alone also admits anything ELSE in frame that is neither ground nor caster.
+            // In a whole-suite run an earlier fixture leaves a flat grey strip at her waterline (114 grey,
+            // seen in all three shots and absent when this class runs alone); the legacy arm's shade sorts
+            // over it, and its 70 px read as "the hull darkened 0.38 %" although not one of her own pixels
+            // moved. So her pixels are also the ones that change when her OWN facet mesh is hidden: the
+            // mask is narrowed to the hull, never widened, and both bars below are unchanged.
+            Color32[] noFacet = ShootWithHerFacetHidden(hull, "hull-00b-her-facet-hidden");
+            bool[] hers = And(And(NotTheStage(off, minY: ReceiverFeetY, maxY: ReceiverFeetY + 2.5f), InTheRake()),
+                              Differs(off, noFacet));
             Assert.Greater(Count(hers), 400, "the hull must actually be in the rake to be measured");
 
             double herLegacy = MeanDarkeningPct(off, legacy, hers);
@@ -432,6 +441,30 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 mask[i] = w.x >= -half && w.x <= half && w.y >= CasterFeetY && w.y <= top;
             }
             return mask;
+        }
+
+        /// <summary>Pixels that differ at all between two shots.</summary>
+        private static bool[] Differs(Color32[] a, Color32[] b)
+        {
+            var m = new bool[a.Length];
+            for (int i = 0; i < a.Length; i++)
+                m[i] = a[i].r != b[i].r || a[i].g != b[i].g || a[i].b != b[i].b;
+            return m;
+        }
+
+        /// <summary>The no-shade frame with the hull's own facet mesh (and any door leaf) switched off and
+        /// everything else left as it is: the control that says which pixels are HERS.</summary>
+        private Color32[] ShootWithHerFacetHidden(IsoFacetHullRenderer hull, string name)
+        {
+            var own = new List<Renderer>();
+            if (hull.ReflectionHull != null) own.Add(hull.ReflectionHull);
+            if (hull.ReflectionLeaf != null) own.Add(hull.ReflectionLeaf);
+            for (int i = 0; i < hull.ReflectionDoorLeafCount; i++) own.Add(hull.ReflectionDoorLeaf(i));
+            Assert.Greater(own.Count, 0, "the hull has no facet renderer to hide");
+            var was = new bool[own.Count];
+            for (int i = 0; i < own.Count; i++) { was[i] = own[i].enabled; own[i].enabled = false; }
+            try { return Shoot(name, strength: 0f, shade: false); }
+            finally { for (int i = 0; i < own.Count; i++) own[i].enabled = was[i]; }
         }
 
         private static bool[] And(bool[] a, bool[] b)

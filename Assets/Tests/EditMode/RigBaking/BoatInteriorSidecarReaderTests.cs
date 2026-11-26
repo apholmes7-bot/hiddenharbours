@@ -23,8 +23,8 @@ namespace HiddenHarbours.Tests.RigBaking
         const string InteriorRig = "// the interior renderer\nconst CEIL = 1.95;\n";
         const string HullRig = "// the exterior loft\nconst HX = 1.32;\n";
 
-        static byte[] Lf(string s) => Encoding.UTF8.GetBytes(s);
-        static byte[] Crlf(string s) => Encoding.UTF8.GetBytes(s.Replace("\n", "\r\n"));
+        static byte[] Lf(string s) => Encoding.UTF8.GetBytes(s.Replace("\r\n", "\n"));
+        static byte[] Crlf(string s) => Encoding.UTF8.GetBytes(s.Replace("\r\n", "\n").Replace("\n", "\r\n"));
 
         static string InteriorSha => DeckSidecarReader.Sha256Hex(Lf(InteriorRig));
         static string HullSha => DeckSidecarReader.Sha256Hex(Lf(HullRig));

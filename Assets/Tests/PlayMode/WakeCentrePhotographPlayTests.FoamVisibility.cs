@@ -65,6 +65,22 @@ namespace HiddenHarbours.Tests.PlayMode
             }
         }
 
+        /// <summary>
+        /// Called from the class teardown. A failing <c>[UnityTest]</c> abandons its coroutine without
+        /// disposing it, so the <c>finally</c> blocks above do not run on a red case. Without this the
+        /// probe stayed switched on for every later case of this fixture (one instance serves them all)
+        /// and each of them failed with the probe's own assertion instead of its own.
+        /// </summary>
+        void EndFoamVisibilityProbe()
+        {
+            RenderPipelineManager.beginCameraRendering -= PromoteFoamSubject;
+            FoamInjectionRegistry.InjectionSelectionObserved -= ObserveFoamPacking;
+            RestoreFoamPackingOrder();
+            _probeFoamVisibility = false;
+            _prioritizeFoamSubject = false;
+            _foamProbeSubject = null;
+        }
+
         void RestoreFoamPackingOrder()
         {
             if (_foamOriginalIndex < 0 || _foamProbeSubject == null) return;
@@ -300,11 +316,18 @@ namespace HiddenHarbours.Tests.PlayMode
                 float extent = 4f * _cam.orthographicSize * Mathf.Max(1f, _cam.aspect);
                 Vector3 centre = _cam.transform.position;
                 var window = new Vector4(centre.x - extent / 2f, centre.y - extent / 2f, extent, 1f / extent);
+                // The known sheet is read untorn (lace 0). Since #1336 the lace is the master tear of the
+                // ONE foam sheet, so it also tears the shore line, the caps and the surf, which draw
+                // whatever the wake's strength is. The strength-zero arm it is compared against must
+                // therefore be shot at the same lace, still on the live buffer: then the only thing
+                // that differs between the two is the buffer input the strength dial must ignore.
+                foreach (FoamProbeSlot slot in slots) slot.Working.SetFloat(FoamLaceId, 0f);
+                SetFoamProbeStrength(slots, 0f);
+                byte[] offUntorn = Capture();
                 foreach (FoamProbeSlot slot in slots)
                 {
                     slot.Working.SetTexture(FoamShaderIds.BufferTex, known);
                     slot.Working.SetVector(FoamShaderIds.BufferWorld, window);
-                    slot.Working.SetFloat(FoamLaceId, 0f);
                 }
                 SetFoamProbeStrength(slots, 0f);
                 byte[] knownOff = Capture();
@@ -313,7 +336,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 byte[] knownRepeat = Capture();
                 int control = RecordFoamPair("known input off/on", knownOff, knownOn);
                 int knownFloor = RecordFoamPair("known on repeat", knownOn, knownRepeat);
-                int bypass = RecordFoamPair("off ignores known input", off, knownOff);
+                int bypass = RecordFoamPair("off ignores known input", offUntorn, knownOff);
                 SavePlate(label + "-known-on.png", knownOn);
                 SavePlate(label + "-known-off.png", knownOff);
                 RestoreFoamProbeSlots(slots);
