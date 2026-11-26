@@ -523,9 +523,50 @@ namespace HiddenHarbours.Art
                     if (mapped.magnitude > original.magnitude + 2 * def.BrowStepMetres || Vector2.Dot(mapped, original) <= 0)
                         rejected.Add(brow.Points[i]);
                 }
-                foreach (Segment segment in local) if (!rejected.Contains(segment.A)) segments.Add(segment);
+                var kept = new List<Segment>();
+                foreach (Segment segment in local) if (!rejected.Contains(segment.A)) kept.Add(segment);
+                AddRunsAtLeast(kept, source.Closed, def.BrowMinimumRunMetres, segments);
             }
             return segments.ToArray();
+        }
+
+        /// <summary>Keeps only the brow's connected runs at least <paramref name="minimumMetres"/> long. A rejected
+        /// fold leaves short islands of brow behind; a strip four metres wide on a piece shorter than that reads as a
+        /// half disc of bank face cut off by its neighbours, never as a bank.</summary>
+        static void AddRunsAtLeast(List<Segment> kept, bool closed, float minimumMetres, List<Segment> result)
+        {
+            if (kept.Count == 0) return;
+            var runs = new List<List<Segment>> { new List<Segment> { kept[0] } };
+            for (int k = 1; k < kept.Count; k++)
+            {
+                if (kept[k].A != kept[k - 1].B) runs.Add(new List<Segment>());
+                runs[runs.Count - 1].Add(kept[k]);
+            }
+            // a closed line's last run continues into its first
+            if (closed && runs.Count > 1 && kept[kept.Count - 1].B == kept[0].A)
+            {
+                runs[runs.Count - 1].AddRange(runs[0]);
+                runs.RemoveAt(0);
+            }
+            foreach (List<Segment> run in runs)
+            {
+                float length = 0;
+                foreach (Segment s in run) length += Vector2.Distance(s.A, s.B);
+                if (length >= minimumMetres) result.AddRange(run);
+            }
+        }
+
+        /// <summary>The connected brow runs in <paramref name="segments"/> (consecutive segments sharing an end) and
+        /// each run's length, in order. For tests and diagnostics.</summary>
+        public static List<float> RunLengths(Segment[] segments)
+        {
+            var lengths = new List<float>();
+            for (int k = 0; k < segments.Length; k++)
+            {
+                if (k == 0 || segments[k].A != segments[k - 1].B) lengths.Add(0);
+                lengths[lengths.Count - 1] += Vector2.Distance(segments[k].A, segments[k].B);
+            }
+            return lengths;
         }
 
         public static bool InBand(int kind, float signedDistance)

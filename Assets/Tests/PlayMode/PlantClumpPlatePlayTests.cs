@@ -112,7 +112,7 @@ namespace HiddenHarbours.Tests.PlayMode
                     field.Rebuild();
                     watch.Stop();
                     field.RefreshAppearance(); Assert.AreEqual((int)Season.HighSummer, field.CurrentSeason);
-                    Assert.AreEqual(9089, field.AuthoredPlantCount, "the law never touches an authored plant");
+                    Assert.AreEqual(9044, field.AuthoredPlantCount, "the law never touches an authored plant"); // 9089 less the 45 that stood on the cottage above the Whelps
                     foreach (var window in windows)
                     {
                         _cam.targetTexture = null;

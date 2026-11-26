@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.IO;
+using HiddenHarbours.Economy;
 using System.Linq;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
@@ -33,6 +35,86 @@ namespace HiddenHarbours.Tests.EditMode
         static IEnumerable<(RoutineDef routine, RoutineWeeklyDay day)> WeeklyDays() =>
             Load<RoutineDef>().Where(r => r.WeeklyDays != null)
                 .SelectMany(r => r.WeeklyDays.Select(d => (r, d)));
+
+        // Exact missing references only; resolving one must remove its exception too.
+        // Location evidence and the deferred authoring decisions are in docs/world/routine-station-gaps.md.
+        static readonly Dictionary<(string owner, string region, string station), int> KnownStationExceptions =
+            new Dictionary<(string, string, string), int>
+            {
+                { ("home.st_peters_red_saltbox", "region.st_peters", "station.st_peters.home_post_office"), 1 },
+            };
+
+        [Test]
+        public void EveryRoutineStopCrossingAndRehousingStationExistsInItsOwnRegion()
+        {
+            var regions = Regions();
+            var tables = new Dictionary<string, HashSet<string>>(System.StringComparer.Ordinal);
+            var missing = new Dictionary<(string owner, string region, string station), int>();
+            string scriptGuid = AssetDatabase.AssetPathToGUID("Assets/_Project/Code/World/Routines/RoutineStations.cs");
+            Assert.That(scriptGuid, Is.Not.Empty);
+            // A keeper's round carries its own stops in its region's scene, in the same rows as the village's table.
+            string roundGuid = AssetDatabase.AssetPathToGUID("Assets/_Project/Code/World/Keepers/KeeperRound.cs");
+            Assert.That(roundGuid, Is.Not.Empty);
+
+            HashSet<string> Stations(string region)
+            {
+                if (tables.TryGetValue(region, out var cached)) return cached;
+                Assert.That(regions.ContainsKey(region), Is.True, "unknown region " + region);
+                string scenePath = "Assets/_Project/Scenes/" + regions[region].SceneName + ".unity";
+                Assert.That(File.Exists(scenePath), Is.True, scenePath);
+                var scene = StPetersLayerRefresh.SceneYaml.Parse(File.ReadAllText(scenePath).Replace("\r\n", "\n"));
+                var ids = new HashSet<string>(System.StringComparer.Ordinal);
+                foreach (var doc in scene.Docs.Where(d => d.ClassId == 114 &&
+                             (d.Text.Contains("guid: " + scriptGuid) || d.Text.Contains("guid: " + roundGuid))))
+                    foreach (Match row in Regex.Matches(doc.Text, @"^  - Id: ([^\n]*)$", RegexOptions.Multiline))
+                    {
+                        string id = row.Groups[1].Value.Trim();
+                        Assert.That(id, Is.Not.Empty, scenePath);
+                        Assert.That(ids.Add(id), Is.True, scenePath + " duplicates " + id);
+                    }
+                tables.Add(region, ids);
+                return ids;
+            }
+
+            void Check(string owner, string region, string station)
+            {
+                Assert.That(region, Is.Not.Null.And.Not.Empty, owner);
+                Assert.That(station, Is.Not.Null.And.Not.Empty, owner);
+                if (Stations(region).Contains(station)) return;
+                var key = (owner, region, station);
+                missing.TryGetValue(key, out int count);
+                missing[key] = count + 1;
+            }
+
+            RoutineDef[] routines = Load<RoutineDef>();
+            Assert.That(routines, Is.Not.Empty);
+            foreach (RoutineDef routine in routines)
+            {
+                Assert.That(routine.Entries, Is.Not.Null.And.Not.Empty, routine.Id);
+                foreach (RoutineEntry stop in routine.Entries) Check(routine.Id, routine.RegionOf(stop), stop.StationId);
+                foreach (RoutineWeeklyDay day in routine.WeeklyDays ?? System.Array.Empty<RoutineWeeklyDay>())
+                {
+                    Assert.That(day.Entries, Is.Not.Null.And.Not.Empty, routine.Id + " " + day.Weekday);
+                    foreach (RoutineEntry stop in day.Entries) Check(routine.Id, routine.RegionOf(stop), stop.StationId);
+                }
+            }
+            foreach (RegionCrossingDef crossing in Load<RegionCrossingDef>())
+            {
+                Check(crossing.Id, crossing.FromRegionId, crossing.FromStationId);
+                Check(crossing.Id, crossing.ToRegionId, crossing.ToStationId);
+            }
+            foreach (HomeDef home in Load<HomeDef>().Where(h => h.ResidentMove == HomeDef.ResidentMoveMode.Rehouse))
+            {
+                Assert.That(home.ResidentMovesTo, Is.Not.Null.And.Not.Empty, home.Id);
+                if (home.ResidentMovesTo.StartsWith("station.", System.StringComparison.Ordinal))
+                    Check(home.Id, home.RegionId, home.ResidentMovesTo);
+            }
+
+            CollectionAssert.AreEquivalent(KnownStationExceptions.Keys, missing.Keys,
+                "A new missing station must be fixed; a resolved gap must leave the exceptions list.");
+            foreach (var expected in KnownStationExceptions)
+                Assert.That(missing[expected.Key], Is.EqualTo(expected.Value), expected.Key.ToString());
+        }
 
         [Test]
         public void Crossings_HaveStableIds_WalkablePaths_AndRealRegions()

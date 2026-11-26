@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.FoodDef
   Id: food.bread
   ItemId: supply.bread
+  BagEatLabel: Eat bread
   EdibleRaw: 1
   HungerRelief: 0.3
   PreppedId: 
