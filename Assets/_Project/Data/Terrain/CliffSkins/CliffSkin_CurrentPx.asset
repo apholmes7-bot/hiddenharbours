@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6f075765c0f40819a06f827dd2b3b8d, type: 3}
+  m_Name: CliffSkin_CurrentPx
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffFaceSkinDef
+  Id: cliffskin.current_px
+  Palette: {fileID: 0}
+  PalettePath:
+  Rocks: []
+  Accessories: []
+  SourceBoards: []
+  Why: 'The px cliff faces as they ship: the CliffFace material''s own palette (Art/Terrain/CliffPx/CliffPx_palette.png), the px kit''s DEF colours untouched. The base skin of every cliff mix.'
