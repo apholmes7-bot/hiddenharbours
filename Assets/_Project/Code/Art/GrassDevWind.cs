@@ -29,6 +29,7 @@ namespace HiddenHarbours.Art
 
         private void Update()
         {
+            if (!DemoBuild.DevShortcutsAllowed) return;
             // Stand down the instant a real sim exists — GrassWindBridge owns _WindWorld then.
             if (GameServices.Environment != null) return;
 

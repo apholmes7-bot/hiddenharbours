@@ -184,6 +184,7 @@ namespace HiddenHarbours.Fishing
         /// acquisition is a later economy offer. Public so a test/tool can drive it without input.</summary>
         public void GrantDevSupply()
         {
+            if (!DemoBuild.DevShortcutsAllowed) return;
             var save = GameServices.Save?.Current;
             if (save == null || _bait == null) { Debug.Log("[DevTrapInput] No save / bait to grant."); return; }
 

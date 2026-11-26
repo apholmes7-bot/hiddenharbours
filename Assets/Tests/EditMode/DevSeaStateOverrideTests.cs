@@ -51,11 +51,35 @@ namespace HiddenHarbours.Tests.EditMode
         [TearDown]
         public void Cleanup()
         {
+            DemoBuild.Override = null;
             foreach (var go in Object.FindObjectsByType<GameObject>())
                 if (go.name == "EnvServiceUnderTest") Object.DestroyImmediate(go);
         }
 
         // ===== (1) the exact inverse =====================================================
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void DemoMode_UsesNaturalWeatherDespiteThePreviewSwitch(bool demo)
+        {
+            var cfg = Config();
+            try
+            {
+                var svc = Service(cfg, 4242);
+                var natural = svc.Sample();
+                float naturalAt = svc.SeaState01At(123);
+                var naturalWind = svc.WaveWindAt(123);
+                svc.DevForceSeaState = true;
+                svc.DevSeaState01 = 1f;
+                DemoBuild.Override = demo;
+                var sample = svc.Sample();
+                Assert.AreEqual(demo ? natural.SeaState01 : 1f, sample.SeaState01, 1e-5f);
+                Assert.AreEqual(demo ? natural.SeaState : SeaState.Storm, sample.SeaState);
+                Assert.AreEqual(demo ? naturalAt : 1f, svc.SeaState01At(123), 1e-5f);
+                Assert.AreEqual(demo ? naturalWind.SeaState01 : 1f, svc.WaveWindAt(123).SeaState01, 1e-5f);
+            }
+            finally { Object.DestroyImmediate(cfg); }
+        }
 
         [Test]
         public void WindStrengthFor_RoundTripsThroughSeaState01()
