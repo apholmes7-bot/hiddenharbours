@@ -277,6 +277,34 @@ namespace HiddenHarbours.Core
         [Tooltip("How close (m) you must stand to a bunk's own reach point, which is already the spot the " +
                  "rig says you stand on to use it — so this is a forgiving step, not a precise one.")]
         [Min(0.1f)] public float BunkReachMetres = DefaultBunkReachMetres;
+
+        /// <summary>How far (m, straight line) a boat's helm may be from her main entry door before she
+        /// gets a second cabin-light switch by the door, when no config is wired. 2.5 m sits between the
+        /// small cabin boats (helm 0.3-1.4 m from the door) and the flybridge and wheelhouse-deck boats
+        /// (3.2 m and up).</summary>
+        public const float DefaultCabinLightSwitchDoorDistanceMetres = 2.5f;
+
+        /// <summary>How close (m) to a cabin-light switch the player must stand, when no config is wired.</summary>
+        public const float DefaultCabinLightSwitchReachMetres = 1f;
+
+        [Tooltip("Cabin-light switches (owner 2026-11-25): every boat with a cabin has a switch at her helm. " +
+                 "When her helm is more than this many metres (straight line) from her entry door, she also " +
+                 "gets a second switch by the door. Both throw the same lights. A boat that names her own " +
+                 "switches in her visual def ignores this.")]
+        [Min(0f)] public float CabinLightSwitchDoorDistanceMetres = DefaultCabinLightSwitchDoorDistanceMetres;
+
+        [Tooltip("How close (m) you must stand to a cabin-light switch to press it.")]
+        [Min(0.1f)] public float CabinLightSwitchReachMetres = DefaultCabinLightSwitchReachMetres;
+
+        /// <summary>How far (m, on screen) a cabin-light switch's spot must stand from the helm station, when
+        /// no config is wired. Over the switcher's helm radius (0.5 m) with a margin, so a player standing at
+        /// the switch is never also at the helm.</summary>
+        public const float DefaultCabinLightSwitchHelmClearanceMetres = 0.75f;
+
+        [Tooltip("A cabin-light switch is moved to a spot on her cabin wall where nothing else takes the " +
+                 "press: at least this far (m, on screen, at every heading) from her helm station, and out of " +
+                 "every door's reach. Keep it above the helm radius (0.5 m).")]
+        [Min(0f)] public float CabinLightSwitchHelmClearanceMetres = DefaultCabinLightSwitchHelmClearanceMetres;
         [Tooltip("Season at elapsed day zero. Its offset uses DaysPerSeason, never a separate day count.")]
         public Season StartSeason = Season.HighSummer;
         [Tooltip("One-based day within the starting season. Changes labels, never simulation seconds.")]

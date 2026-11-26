@@ -31,12 +31,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
             _owned.Clear();
         }
 
-        SpriteRenderer Sprite(string name)
+        SpriteRenderer Sprite(string name, string cell = "StandingFixture")
         {
             var texture = new Texture2D(16, 64);
             _owned.Add(texture);
             var sprite = UnityEngine.Sprite.Create(texture, new Rect(0, 0, 16, 64), Vector2.zero, 32f);
-            sprite.name = "StandingFixture";
+            sprite.name = cell;
             _owned.Add(sprite);
             var go = new GameObject(name);
             _owned.Add(go);
@@ -94,6 +94,61 @@ namespace HiddenHarbours.Tests.Art.EditMode
             var shadow = _host.Consider(Sprite("Player"));
             Assert.That(shadow.CastsGroundContact, Is.False);
             Assert.That(shadow.FootOffset, Is.EqualTo(0.25f));
+        }
+
+        /// <summary>
+        /// ⭐ A FLOATING MARK THROWS NO LAMP SHADOW. A red channel can a few metres off the St Peters pier-head
+        /// lantern laid a six-metre dark spike across open water (2026-11-25). The rule is data: the shipped
+        /// rules' <c>floating_mark</c> class, matched on the nav-mark sheet cell, carries
+        /// <see cref="SunCasterClassRule.Floats"/>. The can keeps its SUN caster; it is only never a lamp-shadow
+        /// candidate. A standing post beside it is untouched.
+        /// </summary>
+        [Test] public void FloatingMark_ThrowsNoLampShadow_StandingPostStillDoes()
+        {
+            var can = Sprite("Visual", "NavBuoy_PortCan_s18_0");   // the nav-mark prefab's child, its sheet cell
+            var rule = _rules.ClassFor(can);
+            Assert.That(rule, Is.Not.Null, "the shipped rules have no class for a nav-mark cell");
+            Assert.That(rule.Floats, Is.True, $"a nav-mark cell matched '{rule.Id}', which does not float");
+
+            var canShadow = _host.Consider(can);
+            Assert.That(canShadow, Is.Not.Null, "the can keeps its sun caster");
+            Assert.That(canShadow.CastsLampShadow, Is.False);
+            Assert.That(canShadow.TryGetLampShadowCaster(out _), Is.False,
+                "a floating mark must never be a lamp-shadow candidate: open water takes no lamp shadow");
+
+            var post = Sprite("lanternPost_0");
+            var postShadow = _host.Consider(post);
+            Assert.That(postShadow, Is.Not.Null);
+            Assert.That(_rules.ClassFor(post).Floats, Is.False);
+            Assert.That(postShadow.CastsLampShadow, Is.True);
+            Assert.That(postShadow.TryGetLampShadowCaster(out var state), Is.True, "a standing post still throws");
+            Assert.That(state.IsValid, Is.True);
+        }
+
+        /// <summary>
+        /// The figure's silhouette-mask child draws his own sprite, so a lamp shadow from it is his shadow
+        /// twice (the budget plate counted four for one figure between two lamps). It never throws a lamp
+        /// shadow, whether the installer adds its caster or finds one already there; the figure still does.
+        /// </summary>
+        [Test] public void SilhouetteMaskChild_NeverCastsALampShadow_TheFigureStillDoes()
+        {
+            var figure = Sprite("Player");
+            var mask = Sprite(SilhouetteMaskSource.MaskChildName);
+            mask.transform.SetParent(figure.transform, worldPositionStays: false);
+
+            var figureShadow = _host.Consider(figure);
+            var maskShadow = _host.Consider(mask);
+            Assert.That(figureShadow, Is.Not.Null);
+            Assert.That(maskShadow, Is.Not.Null, "the mask's sun casting is not this rule's business");
+            Assert.That(maskShadow.CastsLampShadow, Is.False);
+            Assert.That(maskShadow.TryGetLampShadowCaster(out _), Is.False, "the mask is never a lamp-shadow candidate");
+            Assert.That(figureShadow.CastsLampShadow, Is.True);
+            Assert.That(figureShadow.TryGetLampShadowCaster(out _), Is.True, "the figure himself still throws");
+
+            var premade = Sprite(SilhouetteMaskSource.MaskChildName);
+            var premadeShadow = premade.gameObject.AddComponent<SpriteShadow>();
+            Assert.That(_host.Consider(premade), Is.SameAs(premadeShadow));
+            Assert.That(premadeShadow.CastsLampShadow, Is.False, "a caster that was already on the mask is lowered too");
         }
 
         [Test] public void ShadowChildrenAndCanvas_NeverGainCasters()

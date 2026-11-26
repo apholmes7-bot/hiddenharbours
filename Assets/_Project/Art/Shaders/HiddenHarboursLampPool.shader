@@ -45,7 +45,13 @@ Shader "HiddenHarbours/LampPool"
         // x = edge softness, y = cos(cone half-angle) (<= -1 for a radial), z/w = cone axis xy.
         _PoolCone       ("x soft, y cosHalf, zw axis", Vector) = (0.35, -1, 0, 1)
         // The night gate, resolved on the CPU and handed in: x = gate 0..1. A pool is a night thing.
-        _PoolGate       ("x = night gate", Vector) = (1, 0, 0, 0)
+        // y/z = a tilted lamp's throw along the cone axis, metres (lit from y, full at z; 0/0 = none).
+        _PoolGate       ("x = night gate, y/z throw start/full m", Vector) = (1, 0, 0, 0)
+        // x = fitting height above the still sea (m), y = light mesh faces (1) or not (0), z = height scale.
+        _PoolLampSea    ("x sea height, y mesh faces on, z height scale", Vector) = (0, 0, 0.766, 0)
+        // A lamp on a wall: xy = the way the wall faces (0 = a free-standing lamp, no wall), z = how far
+        // behind the lamp's foot the wall line stands (m), w = the soft edge (m).
+        _PoolWall       ("xy wall facing, z wall back m, w soft m", Vector) = (0, 0, 0, 0.35)
     }
 
     SubShader
@@ -85,7 +91,48 @@ Shader "HiddenHarbours/LampPool"
                 float4 _PoolLamp;
                 float4 _PoolCone;
                 float4 _PoolGate;
+                // The mesh-face numbers (x = the fitting's height above the still sea, y = faces on, z = the
+                // height scale). NOT READ HERE any more: every pixel of this pass is ground, and the hull's own
+                // overlay lights her faces from the same numbers (LampPoolSystem's _HHLampFace* globals).
+                float4 _PoolLampSea;
+                // A wall-mounted lamp: xy = the way the wall faces, z = the wall line's distance behind
+                // the lamp's foot, w = soft edge, metres. xy zero = free-standing (no wall, gate 1).
+                float4 _PoolWall;
             CBUFFER_END
+
+            // ---- THE GAIN OF ONE POOL AT ONE POINT (ADR 0016) -----------------------------------------------
+            // Given how squarely the lamp's ray meets the surface (incidence) and where the point stands from
+            // the lamp's foot (toFrag, d), this is the pool's whole term: the edge, the cone and the wall.
+            // ⚠️ RESTATED, LINE FOR LINE, in HiddenHarboursIsoFacetOverlay.shader (HHLampPoolGain), which
+            // lights a hull's FACES with it; LampPoolTests holds the two copies equal.
+            float HHLampPoolGain(float incidence, float2 toFrag, float d, float reach, float gainCeiling,
+                                 float4 _PoolCone, float4 _PoolWall)
+            {
+                // 2 · THE EDGE: 1 out to reach*(1-soft), smoothly to 0 at reach. LightMath.PoolFalloff.
+                float soft  = saturate(_PoolCone.x);
+                float inner = reach * (1.0 - soft);
+                float edge  = 1.0 - smoothstep(inner, reach, d);
+                // 3 · THE CONE, for a lamp that is aimed (the searchlight sweeping a dock). LightMath.PoolCone.
+                // ⚠️ A RADIAL lamp (cosHalf <= -1) is a BRANCH to 1: run through the feather below, cosHalf -1
+                // dimmed every direction within ~45 deg of straight away from the axis, and the axis is up the
+                // screen, so every radial lamp cut a dark wedge out of the ground directly SOUTH of it.
+                float cosHalf = _PoolCone.y;
+                float2 axis   = _PoolCone.zw;
+                float  aligned = d > 1e-4 ? dot(toFrag / d, axis) : 1.0;
+                float coneBand = max(1.0 - cosHalf, 1e-3) * soft;
+                float cone = cosHalf <= -0.9999 ? 1.0 : smoothstep(cosHalf, cosHalf + coneBand, aligned);
+                // 4 · THE WALL, for a lamp on one: light falls OUT and DOWN, so nothing behind the wall line is
+                // lit. LightMath.PoolWallGate.
+                float wall = 1.0;
+                if (dot(_PoolWall.xy, _PoolWall.xy) > 1e-6)
+                {
+                    float ahead = dot(toFrag, normalize(_PoolWall.xy)) + _PoolWall.z;
+                    float ws = max(_PoolWall.w, 1e-3);
+                    wall = smoothstep(-ws, ws, ahead);
+                }
+                float gain = incidence * edge * cone * wall * gainCeiling;
+                return gain <= 1e-4 ? 0.0 : gain;
+            }
 
             Varyings vert (Attributes v)
             {
@@ -113,25 +160,21 @@ Shader "HiddenHarbours/LampPool"
                 float  d = length(toFrag);
 
                 // 1 · THE SHAPE: how squarely the lamp's ray meets the ground here. LightMath.GroundIncidence.
+                //
+                // ⚠️ EVERY PIXEL HERE IS GROUND. A mesh pixel's own face (a deck under the lamp, a cabin side
+                // turned away) is lit by the HULL'S OWN OVERLAY (HiddenHarboursIsoFacetOverlay.shader), which
+                // draws at her place in the sort and so only where she is SEEN. Done here, from the hull pass's
+                // texture, it lit her through whatever stands in front of her: a dory moored behind the St
+                // Peters dock showed her lit silhouette on the planks (the owner, 2026-11-25).
                 float incidence = h * rsqrt(h * h + d * d);
 
-                // 2 · THE EDGE: 1 out to reach*(1-soft), smoothly to 0 at reach. LightMath.PoolFalloff.
-                float soft  = saturate(_PoolCone.x);
-                float inner = reach * (1.0 - soft);
-                float edge  = 1.0 - smoothstep(inner, reach, d);
-
-                // 3 · THE CONE, for a lamp that is aimed (the searchlight sweeping a dock). A radial
-                // lamp ships cosHalf <= -1, which makes this exactly 1 for every direction — one code
-                // path, no branch, and the radial case is the cone case with the gate wide open.
-                float cosHalf = _PoolCone.y;
-                float2 axis   = _PoolCone.zw;
-                float  aligned = d > 1e-4 ? dot(toFrag / d, axis) : 1.0;
-                // Feather the angular edge over the same softness the radial edge uses, so a beam's
-                // rim on the ground is not a stamped wedge.
-                float coneBand = max(1.0 - cosHalf, 1e-3) * soft;
-                float cone = smoothstep(cosHalf, cosHalf + coneBand, aligned);
-
-                float gain = _PoolColor.a * incidence * edge * cone * saturate(_PoolGate.x);
+                // 5 · THE THROW, for a lamp held high and tilted down (the worn headlamp): its ground lights
+                // where the beam lands, ahead of the foot, not under it. LightMath.ThrowGate. Kept OUT of
+                // HHLampPoolGain so the two copies of that function stay the same text.
+                float throwGate = _PoolGate.z > _PoolGate.y + 1e-4
+                    ? smoothstep(_PoolGate.y, _PoolGate.z, dot(toFrag, _PoolCone.zw)) : 1.0;
+                float gain = HHLampPoolGain(incidence, toFrag, d, reach, _PoolColor.a, _PoolCone, _PoolWall)
+                           * saturate(_PoolGate.x) * throwGate;
                 if (gain <= 1e-4) return half4(0, 0, 0, 0);
 
                 // The colour rides the gain: a sodium lamp warms the planks it lifts, and the multiply

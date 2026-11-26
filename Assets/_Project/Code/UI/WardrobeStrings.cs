@@ -1,3 +1,4 @@
+using HiddenHarbours.Core;
 namespace HiddenHarbours.UI
 {
     /// <summary>
@@ -19,7 +20,7 @@ namespace HiddenHarbours.UI
         /// axis while it is open (<c>MoveActionClaim</c>) — so a player who expected to walk away has to
         /// be told what to press instead, and cannot discover it by trying.
         /// </summary>
-        public const string Hint = "W/S choose   ·   E wear   ·   Esc leave it";
+        public const string Hint = KeyNames.WalkUpDown + KeyNames.Says + "choose" + KeyNames.Gap + KeyNames.Interact + KeyNames.Says + "wear" + KeyNames.Gap + KeyNames.Back + KeyNames.Says + "leave it";
 
         /// <summary>Marks the row the player is already wearing, so the list says which one is yours
         /// without relying on the cursor being parked there (the cursor moves; this does not). A word-free

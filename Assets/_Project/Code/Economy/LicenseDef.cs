@@ -27,7 +27,7 @@ namespace HiddenHarbours.Economy
                  "a fish that requires a license names this id. Never reuse or rename.")]
         public string Id = "license.cod";
         [Tooltip("Player-facing name shown in the buy UI (ui-ux). Flavour only; the id is canonical.")]
-        public string DisplayName = "Cod Fishing License";
+        public string DisplayName = "Cod Fishing Licence";
         [TextArea] public string Flavor = "Nine Mile Creek's harbourmaster signs you off to take cod on rod and line.";
 
         [Header("Cost")]

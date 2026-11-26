@@ -58,7 +58,7 @@ namespace HiddenHarbours.Art
                  "independently — the same dial BoatSpotlight's searchlight carries, and for the same reason.")]
         [Range(0f, 2f)] [SerializeField] private float _waterStrength = 0.8f;
 
-        private SceneLight _light;
+        private SceneLight _light, _lens;
         private WaterLightState _waterLight;
         private bool _live = true;
         private bool _hasHeadPoint;
@@ -87,6 +87,11 @@ namespace HiddenHarbours.Art
         /// <summary>The lamp this drives.</summary>
         public SceneLight Light => _light != null ? _light : _light = GetComponent<SceneLight>();
 
+        /// <summary>The lens's own glow: a small round glass lamp at the lens point (the beam's quad is a
+        /// cone, which would cut a round lens in half), with no pool of its own. Built by
+        /// <see cref="Configure"/>; null before.</summary>
+        public SceneLight Lens => _lens;
+
         /// <summary>Set the height it is worn at before a mesh head exists. The beam's SHAPE is not a
         /// parameter: it comes from <see cref="LightPresets.ConeHalfDegrees"/>, so the angle is written in
         /// exactly one place and the preset library's own guard can assert it. Called once by the carrier.</summary>
@@ -104,7 +109,28 @@ namespace HiddenHarbours.Art
             l.BloomLiftMetres = browHeightMetres;      // the lit lens rides on his forehead (#733)
             l.LampHeightMeters = browHeightMetres;     // and its cast shadows are thrown from there
             l.CastsShadows = true;
+            // The beam draws no glow of its own: its quad is the cone. The lens is a separate round glass
+            // lamp riding the same point (ADR 0016, "lamps light what they can see").
+            l.DrawsBloom = false;
+            BuildLens(browHeightMetres);
             ApplyBeamState();
+        }
+
+        private void BuildLens(float browHeightMetres)
+        {
+            if (_lens == null)
+            {
+                var go = new GameObject("HeadlampLens");
+                go.transform.SetParent(transform, worldPositionStays: false);
+                _lens = go.AddComponent<SceneLight>();
+            }
+            LightPresets.Apply(_lens, LightPresets.Kind.Headlamp);   // the lens look, glass, from GlassLook
+            _lens.Shape = SceneLight.LightShape.Radial;
+            _lens.ReachMetres = 0f;                                  // the beam lights the ground, not the lens
+            _lens.CastsShadows = false;
+            _lens.Range = GlassLook.Current.HeadlampLensRadiusMetres;   // its own size, not the preset's bloom
+            _lens.BloomLiftMetres = browHeightMetres;
+            _lens.LampHeightMeters = browHeightMetres;
         }
 
         /// <summary>Take it out of the pocket and put it on, lit. Already worn, it just lights.</summary>
@@ -238,6 +264,11 @@ namespace HiddenHarbours.Art
             return c != null ? c.WalkerHeadlampStrapBackMetres : GameConfig.DefaultWalkerHeadlampStrapBackMetres;
         }
 
+        /// <summary>True while the beam is aimed by his drawn head (set each LateUpdate from the posed figure).
+        /// While it holds, nothing else turns the lamp: <see cref="WalkerLights"/> aims by the interact probe
+        /// only when no head is drawn, so the beam never flips between the two within a frame.</summary>
+        public bool AimsByDrawnHead { get; private set; }
+
         // A visible mesh is the source of truth. Hidden figures retain stale HeadSnapPoint data.
         private void SynchronizeMount()
         {
@@ -248,8 +279,25 @@ namespace HiddenHarbours.Art
             for (int i = 0; i < _figures.Count; i++)
             {
                 var f = _figures[i];
-                if (f.isActiveAndEnabled && f.IsConfigured && f.IsAshore && f.Visible && f.HeadSnapPoint.w > .5f)
+                // Ashore, or riding a hull: in an open boat the lamp is his too (WalkerLights.HeadlampIsHis),
+                // and his figure is drawn by the hull there, so it holds no ashore id but still a drawn head.
+                if (f.isActiveAndEnabled && f.IsConfigured && (f.IsAshore || f.Hull != null) && f.Visible &&
+                    f.HeadSnapPoint.w > .5f)
                 { liveFigure = f; break; }
+            }
+            // Aboard the hull draws him: his figure hangs under its posed mesh, not under him, and names him
+            // as its wearer. Without this the beam stood fixed aboard while his drawn head turned.
+            if (liveFigure == null)
+            {
+                IReadOnlyList<IsoCharacterFigureRenderer> worn = IsoCharacterFigureRenderer.WornFigures;
+                for (int i = 0; i < worn.Count; i++)
+                {
+                    var f = worn[i];
+                    if (f == null || f.Wearer == null || !f.Wearer.IsChildOf(_carrier) && !_carrier.IsChildOf(f.Wearer))
+                        continue;
+                    if (f.isActiveAndEnabled && f.IsConfigured && f.Hull != null && f.Visible && f.HeadSnapPoint.w > .5f)
+                    { liveFigure = f; break; }
+                }
             }
             if (liveFigure != null && liveFigure != _mountedFigure)
             {
@@ -261,6 +309,7 @@ namespace HiddenHarbours.Art
                     { _facet = _filters[i].transform; break; }
             }
             bool drawn = liveFigure != null && _facet != null;
+            if (!drawn) AimsByDrawnHead = false;
             if (drawn)
             {
                 Vector4 h = liveFigure.HeadSnapPoint;
@@ -279,7 +328,15 @@ namespace HiddenHarbours.Art
                 float height = Mathf.Max(.01f, lensRig.z);
                 _projectedLift = IsoGround.HeightScale * height;
                 Light.LampHeightMeters = height;
-                _view = ViewOf(liveFigure.HeadDirectionToFigure(Vector3.up), _facet);
+                Vector3 headForward = liveFigure.HeadDirectionToFigure(Vector3.up);
+                _view = ViewOf(headForward, _facet);
+                // THE BEAM LEAVES THE WAY HIS DRAWN HEAD FACES (the owner, 2026-11-25: "headlamp should always
+                // follow players sprite"). WalkerLights aims it by the interact probe's facing, which is not the
+                // drawn heading: the figure turns through the diagonals and eases round, the probe does not, so
+                // the cone pointed one way while his face pointed another. Here, after the figure has drawn
+                // (order 200 > 100), the drawn head is the one source for the lens, the view and the beam.
+                AimsByDrawnHead = DrawnGroundDirection(headForward, _facet, out Vector2 aim);
+                if (AimsByDrawnHead) transform.up = new Vector3(aim.x, aim.y, 0f);
                 _hasHeadPoint = true;
             }
             // ConstantLiftUntilFirstHeadPoint; after that, every sprite pose holds this root offset.
@@ -287,8 +344,21 @@ namespace HiddenHarbours.Art
             transform.position = new Vector3(point.x, point.y - _projectedLift, _carrier.position.z);
             Light.OriginOffset = Vector2.zero;
             Light.BloomLiftMetres = _projectedLift;
+            // THE LIGHT STARTS AT THE LAMP ON HIS HEAD (the owner, 2026-11-25: "the light appears to originate
+            // from the players feet and not from their headlamp"). The foot above is the ground under the
+            // lens and the height is the lens's own, so the geometry was already the head's; what read as
+            // "from his feet" was the pool, brightest straight under the lamp like a post's. A lamp on a
+            // brow tilted down lights the ground where its beam lands, ahead of him: nothing nearer than the
+            // beam's lower edge, full where its axis lands. The shadows read the same throw.
+            LightMath.HeadlampThrow(Light.LampHeightMeters, GlassLook.Current.HeadlampTiltDownDegrees,
+                                    Light.ConeHalfAngle, out float throwStart, out float throwFull);
+            Light.SetThrow(throwStart, throwFull);
             Light.RefreshMount(); // SceneLight's earlier LateUpdate must not leave a one-frame bloom lag.
             if (drawn && _hasHeadPoint && _fitting == null) BuildFitting();
+            // What his figure is drawn at: his own overlay ashore; aboard, the hull that draws him.
+            Renderer carrierOverlay = !drawn ? null
+                : liveFigure.AshoreOverlay != null ? liveFigure.AshoreOverlay
+                : liveFigure.Hull != null ? liveFigure.Hull.OverlayRenderer : null;
             if (_fitting != null)
             {
                 _fitting.enabled = FittingShows(drawn, _live, _worn);
@@ -298,12 +368,29 @@ namespace HiddenHarbours.Art
                 Vector2 at = LensShows(_view) ? point : point + _bandOffset;
                 _fitting.transform.position = new Vector3(at.x, at.y, _carrier.position.z);
                 _fitting.transform.rotation = Quaternion.identity;
-                if (drawn && liveFigure.AshoreOverlay != null)
+                if (carrierOverlay != null)
                 {
-                    _fitting.sortingLayerID = liveFigure.AshoreOverlay.sortingLayerID;
+                    _fitting.sortingLayerID = carrierOverlay.sortingLayerID;
                     _fitting.sortingOrder = Mathf.Min(SceneLight.MaxSortingOrder - 10,
-                                                     liveFigure.AshoreOverlay.sortingOrder + 1);
+                                                     carrierOverlay.sortingOrder + 1);
                 }
+            }
+            // THE LENS AMONG THE WORLD (ADR 0016, "lamps light what they can see"). The lens is its own small
+            // round glass lamp (the beam's quad is a cone and would cut a round lens in half), sorted one
+            // rung over the drawn fitting on his head, not at the ceiling over everything: a wall, a shed or a
+            // stack of traps nearer the camera covers his lamp as it covers him. From behind his head the lens
+            // is not seen, so it draws no glow there; the beam still lights what is in front of him.
+            bool overFitting = _fitting != null && carrierOverlay != null;
+            if (Light.DrawsBloom) Light.DrawsBloom = false;
+            if (_lens != null)
+            {
+                _lens.OriginOffset = Vector2.zero;
+                _lens.BloomLiftMetres = _projectedLift;
+                _lens.LampHeightMeters = Light.LampHeightMeters;
+                _lens.SetCarrierOrder(overFitting ? _fitting.sortingOrder : (int?)null);
+                bool lensSeen = !_hasHeadPoint || LensShows(_view);
+                if (_lens.DrawsBloom != lensSeen) _lens.DrawsBloom = lensSeen;
+                _lens.RefreshMount();
             }
         }
 
@@ -345,6 +432,23 @@ namespace HiddenHarbours.Art
             if (g.sqrMagnitude < 1e-9f || toward.sqrMagnitude < 1e-12f || right.sqrMagnitude < 1e-12f) return View.Front;
             float a = Mathf.Atan2(Vector2.Dot(g, right.normalized), Vector2.Dot(g, toward.normalized)) * Mathf.Rad2Deg;
             return ViewOfAngle(a);
+        }
+
+        /// <summary>
+        /// The world ground direction his head points, from the head's facing in the figure's frame read
+        /// through the facet's own projection (the same frame <see cref="ViewOf"/> reads): a ground step drawn
+        /// on screen IS the world ground step, because the camera is orthographic down +Z and the ground is
+        /// drawn at its own world (x, y). False (no aim) for a degenerate facet or a head pointing straight up.
+        /// </summary>
+        public static bool DrawnGroundDirection(Vector3 headForwardFigure, Transform facet, out Vector2 aim)
+        {
+            aim = Vector2.zero;
+            if (facet == null) return false;
+            Vector3 ex = facet.TransformVector(Vector3.right), ey = facet.TransformVector(Vector3.up);
+            Vector2 d = new Vector2(ex.x, ex.y) * headForwardFigure.x + new Vector2(ey.x, ey.y) * headForwardFigure.y;
+            if (d.sqrMagnitude < 1e-12f) return false;
+            aim = d.normalized;
+            return true;
         }
 
         /// <summary>The view for a facing angle in degrees (0 toward the viewer, positive to screen right).</summary>
@@ -495,6 +599,7 @@ namespace HiddenHarbours.Art
         private void ApplyBeamState()
         {
             if (Light != null) Light.enabled = _live && _on;
+            if (_lens != null) _lens.enabled = _live && _on;
             if (_fitting != null)
             {
                 if (!(_live && _worn)) _fitting.enabled = false;

@@ -1549,6 +1549,41 @@ route.
   and region crossings (`RegionTravelCoordinator` calls `Stop()` at every crossing), so its state
   must live outside a manned `BoatController`. Saving a route is a later save step.
 
+### 9.14 Cabin-light switches (2026-11-25)
+
+- **Where:** every boat with a cabin gets a physical switch at her helm (her deck's helm station,
+  else her interior's `enter_helm` anchor). When the helm is more than
+  `GameConfig.CabinLightSwitchDoorDistanceMetres` (2.5 m, straight line) from her main entry door, she
+  gets a second switch by the door. A boat that lists `BoatVisualDef.CabinLightSwitches` gets exactly
+  those instead. Built by `BoatInteriorInstaller` beside her bunks and doors.
+- **What:** both switches throw one state per boat (`CabinLightSwitchboard` on the root): Auto (the
+  lights' automatic rule), On, Off. A player's boat starts on Auto; the first press flips what is
+  showing, then On and Off swap. NPC boats are never offered the switch and stay on Auto. Each press
+  publishes `CabinLightSwitchThrown` once. The state reaches the lights through `ICabinLightsOutlet`,
+  which joins the lights' own Core contract when that lands.
+- **Saved:** never (no save row fits). A loaded game starts every boat on Auto.
+- **It takes no press from anything else:** the switch is on the last rung
+  (`InteractPriority.LastResort`), on deck only. The helm station is decided before any registrant,
+  so at and beside the wheel E takes or leaves the helm exactly as before. Beside a door the door
+  keeps E and no list opens. The switch answers E only where it is the one thing in reach. (A first
+  draft offered it on a chooser at the helm; that put a list in front of every helm and door press,
+  and was withdrawn.)
+- **So it stands on a clear wall spot:** a rule-placed switch is moved to the nearest point on a cabin
+  level's outline (the foot of a bulkhead), not inside furniture, that is more than
+  `GameConfig.CabinLightSwitchHelmClearanceMetres` (0.75 m, above the 0.5 m helm radius) from her helm
+  and outside every door's reach, measured on screen at every heading. The helm switch stays the one
+  nearest the helm, the door switch the one nearest the door. A switch with no such spot keeps its
+  rule point; an authored list is never moved. An EditMode test holds every shipped cabin hull to at
+  least one switch on a clear spot, except a named list: today only the Express Cruiser, whose helm
+  is 1.4 m from her door in a small cabin. No spot clears both, so her switch stays at the helm point
+  and needs the dash switch or new cabin data.
+- **Not yet reachable at the wheel itself:** at the helm E always steps him back. Throwing the
+  switch without leaving the wheel needs its own control there (a dash switch, like the anchor's),
+  which is the seat's call.
+- **Co-op:** the state is the boat's, not a player's: any player aboard may throw either switch, and
+  nothing records who did.
+- **Owed:** switch art.
+
 ## 10. Open questions
 
 1. **Direct boat control vs point-to-move (mobile).** Do we offer **full manual** throttle+helm (best for P1 skill, harder on touch) and an optional **assisted/auto-pilot-to-waypoint** for transits/accessibility — and where exactly does autopilot disengage near danger? Likely both, with autopilot for known-safe transits and manual demanded in tide/weather pinch points. Needs UX prototyping.

@@ -106,7 +106,7 @@ namespace HiddenHarbours.Fishing
         private const string NoticePotSet = "Pot set";
         private const string NoticeTooShallow = "Too shallow here";
         private const string NoticeNoBait = "No bait aboard";
-        private const string NoticeNotWired = "No trap gear wired (dev)";
+        private const string NoticeNotWired = "No trap gear aboard";
         // Pots-are-owned: a fresh set needs a SPARE owned pot — the cozy refusal names the fix.
         private const string NoticeNoPots = "No spare pots aboard — the shipwright sells them";
         // Build 7 deck-pot refusals — the pot aboard must be worked to READY before T sets her.

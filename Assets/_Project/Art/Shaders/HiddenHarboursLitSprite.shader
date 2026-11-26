@@ -207,7 +207,7 @@ Shader "HiddenHarbours/LitSprite"
                 if (_LightEmitChannels > 0.5)
                 {
                     SPRITE_LIT_DECOR_EMIT_PARAMS(emitParams)
-                    col.rgb += SpriteLitDecorEmit(IN.uv, emitParams);
+                    col.rgb += SpriteLitDecorEmit(IN.uv, emitParams) * WindowGlassShape(IN.uv, emitParams);
                 }
 
                 // ---- the fisher, read through this foliage (owner ruling 2026-08-16) ---------------

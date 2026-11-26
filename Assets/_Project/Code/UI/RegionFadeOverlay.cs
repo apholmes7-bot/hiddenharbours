@@ -149,7 +149,7 @@ namespace HiddenHarbours.UI
 
         private void Build()
         {
-            var canvasGo = new GameObject("RegionFade_Canvas", typeof(Canvas), typeof(CanvasScaler));
+            var canvasGo = new GameObject("RegionFade_Canvas", typeof(Canvas), typeof(PixelSnappedCanvasScaler));
             canvasGo.transform.SetParent(transform, false);
 
             var canvas = canvasGo.GetComponent<Canvas>();
@@ -182,7 +182,8 @@ namespace HiddenHarbours.UI
             lrt.sizeDelta = new Vector2(900f, 140f);
             _arrivalLabel = labelGo.GetComponent<Text>();
             _arrivalLabel.font = DefaultFont();
-            _arrivalLabel.fontSize = 56;
+            _arrivalLabel.fontSize = _arrivalLabel.font != null && _arrivalLabel.font.name == HarbourType.FontName
+                ? HarbourType.SizeNearest(56) : 56;
             _arrivalLabel.alignment = TextAnchor.MiddleCenter;
             _arrivalLabel.color = new Color(1f, 1f, 1f, 0f);
             _arrivalLabel.raycastTarget = false;
@@ -194,10 +195,12 @@ namespace HiddenHarbours.UI
             _arrivalLabel.enabled = false;
         }
 
-        // Unity 6 removed Arial.ttf from Resources; LegacyRuntime.ttf is the built-in fallback.
+        // The pixel face, one face for everything the player reads. The built-in font is only the
+        // fallback for a box where the face is not imported (Unity 6 removed Arial.ttf from Resources).
         private static Font DefaultFont()
         {
-            var f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var f = HarbourType.Load();
+            if (f == null) f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             if (f == null) f = Resources.GetBuiltinResource<Font>("Arial.ttf");
             return f;
         }

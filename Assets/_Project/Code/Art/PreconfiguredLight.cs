@@ -120,6 +120,10 @@ namespace HiddenHarbours.Art
             // Layer this placement's own intensity scale over the preset's base intensity (the preset set it just
             // above; multiply so the owner can trim ONE placement without editing the shared preset).
             _light.Intensity = LightPresets.For(_preset).Intensity * Mathf.Max(0f, _intensityScale);
+            // Where it is fixed (ADR 0016, "lamps light what they can see"): a window or a doorstep lantern
+            // is on a wall, so its light falls out and down and never onto the eave, a canopy or the roof.
+            // Matched by this placement's id (its object's name), from data; nothing matched = free-standing.
+            LampMounts.Current.ApplyTo(_light, gameObject.name, _preset);
         }
 
 #if UNITY_EDITOR

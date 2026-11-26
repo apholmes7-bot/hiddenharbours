@@ -1,3 +1,4 @@
+using HiddenHarbours.Core;
 using System;
 
 namespace HiddenHarbours.World
@@ -33,8 +34,8 @@ namespace HiddenHarbours.World
         /// key is still named, and it is named inside the dialogue bubble rather than floating over the
         /// world. Nothing else may spell a key at the player: the 2026-08-19 ruling retired every
         /// "E: …" surface in favour of the interaction popup, which names the ACTION.</summary>
-        public const string InteractKey  = "E";
-        public const string ContinueHint = "E ▸";   // "press E to continue", shown on the bubble
+        public const string InteractKey  = KeyNames.Interact;
+        public const string ContinueHint = KeyNames.Interact + " ▸";   // "press E to continue", shown on the bubble
 
         /// <summary>
         /// The always-last row of every option bubble — the Animal Crossing convention, made a guarantee
@@ -151,13 +152,13 @@ namespace HiddenHarbours.World
         // cod LICENCE + a ROD, sell clams, save → BUY the damaged dory + PAY to REPAIR her → sail home to
         // Coddle Cove. The dory is EARNED, never inherited. Each line points at the next beat; the director
         // (OnboardingDirector) picks which one to show from the opening flags + Core signals.
-        public const string OnboardTalkGinny = "Find Aunt Ginny on the island and press E — she'll set you straight.";
+        public const string OnboardTalkGinny = "Find Aunt Ginny on the island and press " + KeyNames.Interact + " — she'll set you straight.";
         // The tide table's key is named where the player first needs it. World may not see the UI
         // module that owns the binding (rule 4), so the letter is written here and a test holds it to
         // TidePanelInput's shipped key: rebind the table and that test says this line is stale.
         // The shore is licensed (license.clam): an unlicensed clam goes straight back, so the line sends
         // him to LeBlanc's for the Shellfish Licence first — Ginny fronted the fee — and then to the flats.
-        public const string OnboardDigClams  = "Tab shows the tide table. First buy the Shellfish Licence at LeBlanc's (Ginny fronted the fee), then dig clams on the bared flats at low water (E by a hole).";
+        public const string OnboardDigClams  = KeyNames.TideTable + " shows the tide table. First buy the Shellfish Licence at LeBlanc's (Ginny fronted the fee), then dig clams on the bared flats at low water (" + KeyNames.Interact + " by a hole).";
         public const string OnboardCrossBar  = "Walk the bared sandbar east to Nine Mile Creek before the tide floods it back.";
         public const string OnboardBuyLicence= "At Nine Mile Creek: sell your clams, then buy a COD LICENCE to fish.";
         public const string OnboardBuyRod    = "Buy a fishing ROD from the shop — then you can hand-line cod.";

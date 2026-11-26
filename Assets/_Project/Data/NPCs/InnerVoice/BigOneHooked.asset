@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BigOneHooked
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.InnerVoiceLineDef
   Id: innervoice.big_one_hooked
-  Line: 'Woah — that''s a big one!'
+  Line: 'Whoa — that''s a big one!'
   Voice: {fileID: 11400000, guid: 39c5f36a05544a3ca51529354d86a52a, type: 2}
   Trigger: 2
   SubjectId: cue.fishing.big_one_hooked

@@ -238,6 +238,19 @@ namespace HiddenHarbours.Art
             set => _castsGroundContact = value;
         }
 
+        [Tooltip("Does this caster throw LAMP shadows (LampShadowSystem)? On for anything standing on ground or " +
+                 "deck. OFF for a mark that floats: the water round a buoy takes no lamp shadow, so a can near a " +
+                 "pier-head lantern must not lay a dark spike across open water. Set from the sun-caster rules' " +
+                 "Floats flag; the sun shadow is unaffected.")]
+        [SerializeField] private bool _castsLampShadow = true;
+
+        /// <summary>Whether this caster is a lamp-shadow candidate at all. See the tooltip.</summary>
+        public bool CastsLampShadow
+        {
+            get => _castsLampShadow;
+            set => _castsLampShadow = value;
+        }
+
         [Tooltip("World-Y of the caster's FEET below its transform origin (metres). 0 = the transform sits at " +
                  "the feet. Used to anchor the shadow at the ground and to measure the caster's height.")]
         [SerializeField] private float _footOffset = 0f;
@@ -699,6 +712,7 @@ namespace HiddenHarbours.Art
         public bool TryGetLampShadowCaster(out LampShadowCasterState state)
         {
             state = default;
+            if (!_castsLampShadow) return false;   // a floating mark: open water takes no lamp shadow
             if (_caster == null) _caster = GetComponent<SpriteRenderer>();
             if (!CasterVisible) return false;
             Sprite sprite = CastSprite;

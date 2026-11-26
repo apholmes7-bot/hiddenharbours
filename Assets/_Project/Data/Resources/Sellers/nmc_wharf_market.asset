@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: nmc_wharf_market
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.SellerDef
   Id: seller.nmc_wharf_market
+  DisplayName: Wharf Market
   KeeperNpcId: npc.wendell_arsenault
   TradeId: trade.fish_buyer

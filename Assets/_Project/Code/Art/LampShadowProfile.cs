@@ -46,6 +46,17 @@ namespace HiddenHarbours.Art
                  "a lamp with no published reach (every boat lamp, by default) is not a candidate at all.")]
         [Range(0, 32)] [SerializeField] private int _maxPools = 8;
 
+        [Tooltip("Do the pools light a MESH (a hull, a vehicle, a camper) by its own faces? ON: each mesh " +
+                 "pixel is lit by how squarely its face looks at the lamp, so a deck near the lamp lifts and " +
+                 "the far side of a cabin stays dark. OFF: every pixel is lit as ground, the frame before.")]
+        [SerializeField] private bool _poolsLightMeshFaces = true;
+
+        [Tooltip("How far a SHORE lamp's ground stands above the still sea (metres), added to its own height " +
+                 "when it lights a mesh: a wharf's planks stand over water, and the lamp's height is " +
+                 "measured from them. A lamp carried by a hull measures from the water already and adds " +
+                 "nothing.")]
+        [Min(0f)] [SerializeField] private float _shoreLampDeckLiftMetres = 1.5f;
+
         [Header("Darkness")]
         [Tooltip("THE dial. The fraction of the light at a pixel a lamp's shadow removes, at the caster's " +
                  "feet, at the cone's core: 1 = a fully shadowed pixel keeps none of the lamp's light, 0 = " +
@@ -59,14 +70,30 @@ namespace HiddenHarbours.Art
 
         [Header("Budget (rule 7)")]
         [Tooltip("The POOL: how many lamp shadows may be drawn at once, across every lamp and every " +
-                 "caster in range. Past this the NEAREST lamp-to-caster pairs win. Each is one quad, one " +
-                 "shared material, no per-frame allocation.")]
-        [Range(1, 64)] [SerializeField] private int _maxShadows = 24;
+                 "caster in range. Past this the STRONGEST lamp-to-caster pairs win (the lamp's intensity × " +
+                 "its falloff at the caster's feet). Each is one quad, one shared material, no per-frame " +
+                 "allocation.")]
+        [Range(1, 64)] [SerializeField] private int _maxShadows = 48;
+
+        [Tooltip("How many lamps may throw ONE caster's shadow at once: its strongest K. A figure between " +
+                 "two dock lamps throws two shadows; a third, weaker lamp behind does not spend the pool.")]
+        [Range(1, 8)] [SerializeField] private int _maxShadowsPerCaster = 2;
+
+        [Tooltip("The eased fade at the budget's edge, as a fraction of the cut-off score: a pair at the " +
+                 "cut-off draws nothing and one this much stronger draws in full, so a pair that crosses the " +
+                 "edge (the pool or its caster's K) fades instead of popping. 0 = a hard edge.")]
+        [Range(0f, 4f)] [SerializeField] private float _budgetFadeWidth = 0.5f;
 
         [Tooltip("How often (Hz) the pairing of lamps to casters is re-decided. The pose of the chosen " +
                  "shadows follows every frame regardless (a boat sails, a beam sweeps); only the CHOICE " +
                  "of which pairs to draw is throttled.")]
         [Min(1f)] [SerializeField] private float _refreshHz = 10f;
+
+        [Tooltip("Art LYING ON THE GROUND throws no lamp shadow: a caster with more than this fraction of its " +
+                 "drawn height below its own feet is a track, a path or a mat seen from above, not something " +
+                 "standing. A lamp shadow is thrown from the feet up, so the part below them folded back over " +
+                 "the lamp (a trolley line threw a dark wedge across the headlamp's pool). 1 = never skip.")]
+        [Range(0f, 1f)] [SerializeField] private float _groundArtBelowFootFraction = 0.5f;
 
         [Header("Length (× the caster's height) — the sun's own curve, driven by the LAMP's elevation")]
         [Tooltip("Shadow length when the lamp is straight overhead the caster — a short stub under the feet.")]
@@ -106,11 +133,25 @@ namespace HiddenHarbours.Art
         public float PoolEdgeSoftness { get => _poolEdgeSoftness; set => _poolEdgeSoftness = Mathf.Clamp01(value); }
         /// <summary>How many ground pools may draw at once.</summary>
         public int MaxPools { get => _maxPools; set => _maxPools = Mathf.Clamp(value, 0, 32); }
+        /// <summary>Do the pools light a mesh pixel by its own face (true) or as ground (false)?</summary>
+        public bool PoolsLightMeshFaces { get => _poolsLightMeshFaces; set => _poolsLightMeshFaces = value; }
+        /// <summary>How far a shore lamp's ground stands above the still sea when it lights a mesh (m).</summary>
+        public float ShoreLampDeckLiftMetres { get => _shoreLampDeckLiftMetres; set => _shoreLampDeckLiftMetres = Mathf.Max(0f, value); }
 
         public float Strength { get => _strength; set => _strength = Mathf.Clamp01(value); }
         public Color ShadowColor { get => _shadowColor; set => _shadowColor = value; }
         public int MaxShadows { get => _maxShadows; set => _maxShadows = Mathf.Clamp(value, 1, 64); }
+        /// <summary>How many lamps may throw one caster's shadow at once (its strongest K).</summary>
+        public int MaxShadowsPerCaster { get => _maxShadowsPerCaster; set => _maxShadowsPerCaster = Mathf.Clamp(value, 1, 8); }
+        /// <summary>The fade at the budget's edge, as a fraction of the cut-off score (0 = hard).</summary>
+        public float BudgetFadeWidth { get => _budgetFadeWidth; set => _budgetFadeWidth = Mathf.Clamp(value, 0f, 4f); }
         public float RefreshHz { get => _refreshHz; set => _refreshHz = Mathf.Max(1f, value); }
+        /// <summary>Above this share of its height below its feet, a caster lies on the ground and throws nothing.</summary>
+        public float GroundArtBelowFootFraction
+        {
+            get => _groundArtBelowFootFraction;
+            set => _groundArtBelowFootFraction = Mathf.Clamp01(value);
+        }
         public float LengthAtNoon { get => _lengthAtNoon; set => _lengthAtNoon = Mathf.Max(0f, value); }
         public float LengthAtHorizon { get => _lengthAtHorizon; set => _lengthAtHorizon = Mathf.Max(0f, value); }
         public float MaxLength { get => _maxLength; set => _maxLength = Mathf.Max(0f, value); }
