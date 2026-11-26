@@ -95,6 +95,11 @@ namespace HiddenHarbours.Tests.PlayMode
         /// anything.</summary>
         public IEnumerator Load()
         {
+            // The persistent roots that were there BEFORE this region came in, by identity: teardown
+            // destroys every other one (see TearDown).
+            _residentBefore.Clear();
+            foreach (GameObject go in PersistentRoots()) _residentBefore.Add(go);
+            _loaded = true;
             LogAssert.ignoreFailingMessages = true;
             yield return HiddenHarbours.Tests.Support.SceneSettle.Load(_sceneName, LoadSceneMode.Single);
             for (int i = 0; i < 6; i++) yield return null;
@@ -161,7 +166,18 @@ namespace HiddenHarbours.Tests.PlayMode
         /// the world — laws 3 and 4.</summary>
         public IEnumerator FrameOn(Vector2 at)
         {
-            var follow = Object.FindFirstObjectByType<CameraFollow>();
+            // ⚠ The follow and the camera are taken from the SAME core, the one this load brought. A core an
+            // earlier class left behind (#764) also has a CameraFollow and a Main Camera: picking the follow
+            // and Camera.main separately framed the anchor through one camera and read the plate back
+            // through the other, which sat 60 m away.
+            CameraFollow follow = null;
+            foreach (CameraFollow f in Object.FindObjectsByType<CameraFollow>(FindObjectsSortMode.None))
+            {
+                if (f == null) continue;
+                bool brought = !_residentBefore.Contains(f.transform.root.gameObject);
+                if (follow == null || brought) follow = f;
+                if (brought) break;
+            }
             if (follow == null)
             {
                 Assert.Ignore("SKIPPED — the region has no CameraFollow, so the plate would be framed by the " +
@@ -175,8 +191,13 @@ namespace HiddenHarbours.Tests.PlayMode
             // ⚠ Smooth = 0 means NEVER MOVE, not move instantly: the follow lerps by 1-exp(-Smooth·dt).
             follow.Smooth = 1000f;
 
-            Camera cam = Camera.main;
+            Camera cam = follow.GetComponent<Camera>();
+            if (cam == null) cam = Camera.main;
             Assert.IsNotNull(cam, "no main camera — the overlay and every light quad are pinned to it");
+            if (Camera.main != null && Camera.main != cam)
+                Debug.LogWarning($"[{_plateDir}] Camera.main is '{Camera.main.name}' in " +
+                                 $"'{Camera.main.gameObject.scene.name}', not the camera of the region now loaded: a " +
+                                 "core an earlier class left behind. The plate is taken through this load's camera.");
 
             Vector3 lastPos = cam.transform.position;
             float lastSize = cam.orthographicSize;
@@ -274,6 +295,36 @@ namespace HiddenHarbours.Tests.PlayMode
                 if (s.IsValid() && s != clean && s.name == _sceneName)
                     yield return HiddenHarbours.Tests.Support.SceneSettle.Unload(s);
             }
+
+            // ⚠ #764: a Single load of a region promotes the persistent core's roots (the player, his
+            // dory, the main camera and its listener) into DontDestroyOnLoad, and unloading the region
+            // leaves them there. Every class that came after a stage inherited a live player with a
+            // collider, a live boat and a second listener; a raycast in the next class hit that player.
+            // Destroy exactly the roots this stage's load added, by identity, then clear the service
+            // slots that pointed into them. WharfBuildingPass2PlatePlayTests does the same.
+            if (_loaded)
+            {
+                foreach (GameObject go in PersistentRoots())
+                    if (go != null && !_residentBefore.Contains(go)) Object.DestroyImmediate(go);
+                _residentBefore.Clear();
+                GameServices.Reset();
+                _loaded = false;
+                yield return null;
+            }
+        }
+
+        private readonly HashSet<GameObject> _residentBefore = new HashSet<GameObject>();
+        private bool _loaded;
+
+        private static List<GameObject> PersistentRoots()
+        {
+            var probe = new GameObject("__ddolProbe");
+            Object.DontDestroyOnLoad(probe);
+            Scene s = probe.scene;
+            Object.DestroyImmediate(probe);
+            var roots = new List<GameObject>();
+            if (s.IsValid()) s.GetRootGameObjects(roots);
+            return roots;
         }
 
         // ---- the measurements ------------------------------------------------------------------------

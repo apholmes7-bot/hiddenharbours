@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d21e73d6377dc9e945d7782b57cd266, type: 3}
+  m_Name: LightStation_stp_ne_light
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.LightStationDef
+  Id: lightstation.stp_ne_light
+  DisplayName: North-East Light
+  KeySceneId: keyscene.stp_ne_light
+  TowerPieceId: station.stp_ne_light_tower
+  Character: Fl W 6s
+  TurnSeconds: 12
+  Beams: 2
+  PhaseSeconds: 0
+  FlashHalfAngleDegrees: 14
+  BeamReachMetres: 46
+  BeamHalfAngleDegrees: 11
+  BeamIntensity: 0.2
+  LanternGlowMetres: 1.8
+  LanternIntensity: 0.7
+  FlashGlowMetres: 7
+  FlashIntensity: 1.5
+  Colour: {r: 0.965, g: 0.839, b: 0.518, a: 1}
+  KeepersLampAt: {x: -5.7, y: -3.6, z: 2}
+  KeepersLampReachMetres: 3.4

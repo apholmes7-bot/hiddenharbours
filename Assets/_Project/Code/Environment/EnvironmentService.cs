@@ -152,6 +152,9 @@ namespace HiddenHarbours.Environment
         public float TideHeightAt(double totalSeconds) =>
             TideModel.Height(totalSeconds, _activeTideProfile, _config);
 
+        public float TideHeightAt(double totalSeconds, TideProfile place) =>
+            TideModel.Height(totalSeconds, place, _config);
+
         /// <summary>Which tide a moment belongs to (<see cref="IEnvironmentService.TideCycleIndexAt"/>):
         /// the pure <see cref="TideModel.CycleIndex"/> over the same profile and config
         /// <see cref="TideHeightAt"/> reads, so the count turns exactly where the drawn tide tops out.
