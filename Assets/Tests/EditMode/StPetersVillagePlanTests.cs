@@ -164,8 +164,10 @@ namespace HiddenHarbours.Tests.EditMode
             var ids = new[] { d.Plan.Id }.Concat(d.Lots.Select(x => x.Id)).Concat(d.Yards.Select(x => x.Id))
                 .Concat(d.Routes.Select(x => x.Id)).Concat(d.Commons.Select(x => x.Id)).Concat(d.Lights.Select(x => x.Id)).ToArray();
             Check(ids.Length == 61 && ids.Distinct().Count() == 61, 10, d.Plan.Id, "61 distinct Def ids");
-            Check(d.Plan.Pieces.Length == 121 && d.Plan.Pieces.Select(p => p.Id).Distinct().Count() == 121,
-                10, d.Plan.Id, "121 distinct package pieces");
+            // 120: the general store's yard chalk sign left the approach when the store got its own sign on the
+            // building (prop.stp_vl_general_store_chalk_sign, retired; its id is not reused).
+            Check(d.Plan.Pieces.Length == 120 && d.Plan.Pieces.Select(p => p.Id).Distinct().Count() == 120,
+                10, d.Plan.Id, "120 distinct package pieces");
             foreach (var id in ids.Concat(d.Plan.Pieces.Select(p => p.Id)))
                 Check(id != null && Regex.IsMatch(id, "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$"), 10, id, "type.snake_case, no coordinate suffix");
         }

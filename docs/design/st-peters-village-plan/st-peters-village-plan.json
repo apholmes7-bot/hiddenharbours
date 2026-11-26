@@ -1586,16 +1586,6 @@
      "why": ""
     },
     {
-     "k": "chalkSign",
-     "rig": "WharfDecor",
-     "at": [
-      0.6,
-      29.985
-     ],
-     "cell": 4,
-     "why": "today's prices, chalked"
-    },
-    {
      "k": "bench",
      "rig": "WharfDecor",
      "at": [
