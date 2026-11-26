@@ -1692,6 +1692,7 @@ namespace HiddenHarbours.Core
             GiftableFacts = null;        // nullable by contract: the giver falls back to its kind default
             RadarContacts = null;        // → EmptyRadarSea.Instance; likewise never null
             BirdPresence = null;         // → EmptyBirdPresence.Instance; likewise never null
+            WildlifePresences.Reset();   // the seal haul-outs re-register when their region loads
             Save = null;
             Appearance = null;           // → a fresh default on next read; drops any open preview
             Traits = null;               // → a fresh default on next read; drops its catalog and cache
