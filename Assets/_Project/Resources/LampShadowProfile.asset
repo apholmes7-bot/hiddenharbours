@@ -20,7 +20,9 @@ MonoBehaviour:
   _shoreLampDeckLiftMetres: 1.5
   _strength: 0.8
   _shadowColor: {r: 0.04, g: 0.05, b: 0.1, a: 1}
-  _maxShadows: 24
+  _maxShadows: 48
+  _maxShadowsPerCaster: 2
+  _budgetFadeWidth: 0.5
   _refreshHz: 10
   _groundArtBelowFootFraction: 0.5
   _lengthAtNoon: 0.35

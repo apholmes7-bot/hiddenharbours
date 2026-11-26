@@ -181,6 +181,32 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
+        /// <b>How strong a lamp-to-caster pair is</b>, the number the pool is ranked by: the lamp's
+        /// intensity × its falloff at the caster's feet × the night gate. Not distance: a bright lamp's
+        /// caster ten metres out can matter more than a dim lamp's at three, and a caster at the edge of a
+        /// beam throws less than one in its core. Unlike <see cref="IntensityShare"/> the intensity is not
+        /// clamped at 1 here, so of two full lamps the brighter one ranks first. Never negative.
+        /// </summary>
+        public static float PairScore(float intensity, float shape, float nightGate) =>
+            Mathf.Max(0f, intensity) * Mathf.Clamp01(shape) * Mathf.Clamp01(nightGate);
+
+        /// <summary>
+        /// <b>The eased fade at the budget's edge.</b> A pair at or under the cut-off score (the strongest
+        /// pair the budget turned away) draws nothing; one <paramref name="fadeWidth"/> × the cut-off
+        /// stronger draws in full, with a smoothstep between. So the pair that drops out of the pool as
+        /// another enters was already faded to nothing, and the one taking its place fades in: no pop. A cut
+        /// of 0 (nothing was turned away) fades nothing; a width of 0 is a hard edge.
+        /// </summary>
+        public static float BudgetFade(float score, float cutScore, float fadeWidth)
+        {
+            if (!(cutScore > 0f)) return 1f;
+            if (!(score > cutScore)) return 0f;
+            if (!(fadeWidth > 0f)) return 1f;
+            float t = Mathf.Clamp01((score / cutScore - 1f) / fadeWidth);
+            return t * t * (3f - 2f * t);
+        }
+
+        /// <summary>
         /// <b>Does this caster lie on the ground?</b> True when more than <paramref name="belowFootFraction"/>
         /// of its drawn height hangs below its own feet: a track, path or mat seen from above, whose pivot sits
         /// at one end with the rest of it drawn down the screen. A lamp shadow is thrown from the feet up; the

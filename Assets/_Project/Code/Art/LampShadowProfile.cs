@@ -70,9 +70,19 @@ namespace HiddenHarbours.Art
 
         [Header("Budget (rule 7)")]
         [Tooltip("The POOL: how many lamp shadows may be drawn at once, across every lamp and every " +
-                 "caster in range. Past this the NEAREST lamp-to-caster pairs win. Each is one quad, one " +
-                 "shared material, no per-frame allocation.")]
-        [Range(1, 64)] [SerializeField] private int _maxShadows = 24;
+                 "caster in range. Past this the STRONGEST lamp-to-caster pairs win (the lamp's intensity × " +
+                 "its falloff at the caster's feet). Each is one quad, one shared material, no per-frame " +
+                 "allocation.")]
+        [Range(1, 64)] [SerializeField] private int _maxShadows = 48;
+
+        [Tooltip("How many lamps may throw ONE caster's shadow at once: its strongest K. A figure between " +
+                 "two dock lamps throws two shadows; a third, weaker lamp behind does not spend the pool.")]
+        [Range(1, 8)] [SerializeField] private int _maxShadowsPerCaster = 2;
+
+        [Tooltip("The eased fade at the budget's edge, as a fraction of the cut-off score: a pair at the " +
+                 "cut-off draws nothing and one this much stronger draws in full, so a pair that crosses the " +
+                 "edge (the pool or its caster's K) fades instead of popping. 0 = a hard edge.")]
+        [Range(0f, 4f)] [SerializeField] private float _budgetFadeWidth = 0.5f;
 
         [Tooltip("How often (Hz) the pairing of lamps to casters is re-decided. The pose of the chosen " +
                  "shadows follows every frame regardless (a boat sails, a beam sweeps); only the CHOICE " +
@@ -131,6 +141,10 @@ namespace HiddenHarbours.Art
         public float Strength { get => _strength; set => _strength = Mathf.Clamp01(value); }
         public Color ShadowColor { get => _shadowColor; set => _shadowColor = value; }
         public int MaxShadows { get => _maxShadows; set => _maxShadows = Mathf.Clamp(value, 1, 64); }
+        /// <summary>How many lamps may throw one caster's shadow at once (its strongest K).</summary>
+        public int MaxShadowsPerCaster { get => _maxShadowsPerCaster; set => _maxShadowsPerCaster = Mathf.Clamp(value, 1, 8); }
+        /// <summary>The fade at the budget's edge, as a fraction of the cut-off score (0 = hard).</summary>
+        public float BudgetFadeWidth { get => _budgetFadeWidth; set => _budgetFadeWidth = Mathf.Clamp(value, 0f, 4f); }
         public float RefreshHz { get => _refreshHz; set => _refreshHz = Mathf.Max(1f, value); }
         /// <summary>Above this share of its height below its feet, a caster lies on the ground and throws nothing.</summary>
         public float GroundArtBelowFootFraction

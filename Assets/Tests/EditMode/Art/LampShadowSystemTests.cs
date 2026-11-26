@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using HiddenHarbours.Art;
 using HiddenHarbours.Core;
+using UnityEngine.TestTools.Constraints;
+using Is = UnityEngine.TestTools.Constraints.Is;
 using Object = UnityEngine.Object;
 
 namespace HiddenHarbours.Tests.Art.EditMode
@@ -272,6 +274,106 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreNotSame(c5, _system.SlotCaster(2));
         }
 
+        /// <summary>
+        /// <b>Ranked by strength, not distance.</b> A dim lamp right beside one caster and a bright lamp a
+        /// few metres from another: with a pool of one, the bright lamp's pair wins, though it is farther.
+        /// </summary>
+        [Test]
+        public void PastThePool_TheStrongestPairsWin_NotTheNearest()
+        {
+            _system.Profile.MaxShadows = 1;
+            SceneLight dim = Lamp(Vector2.zero, range: 12f);
+            dim.Intensity = 0.2f;
+            Caster(new Vector2(1.5f, 0f));
+            SceneLight bright = Lamp(new Vector2(40f, 0f), range: 12f);
+            bright.Intensity = 2f;
+            FakeCaster far = Caster(new Vector2(44f, 0f));
+
+            _system.PublishFrame(_cam);
+
+            Assert.AreEqual(1, _system.ActiveShadowCount);
+            Assert.AreSame(far, _system.SlotCaster(0), "the bright lamp's caster, four metres out, wins");
+            Assert.AreSame(bright, _system.SlotLight(0));
+            Assert.Greater(_system.GlobalCut, 0f, "and the dim pair is the cut");
+            Assert.Less(_system.GlobalCut, _system.SlotScore(0));
+        }
+
+        /// <summary>
+        /// <b>K per caster.</b> One caster among three lamps throws its strongest two shadows and the third
+        /// lamp spends nothing; a second caster still gets its own. With K raised to 3 all three throw.
+        /// </summary>
+        [Test]
+        public void ACasterThrowsItsStrongestKShadows_AndTheRestSpendNothing()
+        {
+            SceneLight a = Lamp(new Vector2(-3f, 0f), range: 12f);
+            SceneLight b = Lamp(new Vector2(3f, 0f), range: 12f);
+            SceneLight c = Lamp(new Vector2(0f, 6f), range: 12f);
+            c.Intensity = 0.5f;
+            FakeCaster figure = Caster(Vector2.zero);
+
+            _system.PublishFrame(_cam);
+
+            Assert.AreEqual(2, _system.ActiveShadowCount, "K = 2 by default");
+            var lights = new List<SceneLight> { _system.SlotLight(0), _system.SlotLight(1) };
+            CollectionAssert.AreEquivalent(new[] { a, b }, lights, "the two strong lamps throw him; the weak one does not");
+            Assert.AreSame(figure, _system.SlotCaster(0));
+            Assert.AreSame(figure, _system.SlotCaster(1));
+
+            _system.Profile.MaxShadowsPerCaster = 3;
+            _system.PublishFrame(_cam);
+            Assert.AreEqual(3, _system.ActiveShadowCount, "K = 3: every lamp throws him");
+            Assert.NotNull(c);
+        }
+
+        /// <summary>
+        /// <b>The eased edge.</b> A pair barely stronger than the pair the pool turned away draws barely at
+        /// all; a pair far above the cut draws in full. So the swap at the edge happens between two faint
+        /// shadows, not by a full one vanishing.
+        /// </summary>
+        [Test]
+        public void APairAtTheBudgetEdge_IsFaded_AndOneWellAboveIsNot()
+        {
+            _system.Profile.MaxShadows = 2;
+            Lamp(Vector2.zero, range: 20f);
+            Caster(new Vector2(0.1f, 0f));      // strong: more than a fade width above the cut
+            Caster(new Vector2(6.0f, 0f));      // just above the cut
+            Caster(new Vector2(6.1f, 0f));      // the cut
+
+            _system.PublishFrame(_cam);
+
+            Assert.AreEqual(2, _system.ActiveShadowCount);
+            Assert.Greater(_system.GlobalCut, 0f);
+            var block = new MaterialPropertyBlock();
+            _system.SlotRenderer(0).GetPropertyBlock(block);
+            float strongAlpha = block.GetColor(IdShadowColor).a;
+            Assert.Greater(strongAlpha, 0f);
+            Assert.AreEqual(_system.Profile.Strength * Mathf.Min(1f, _system.SlotScore(0) / 1.5f), strongAlpha, 1e-3f,
+                "well above the cut: exactly the unfaded alpha");
+            float edgeAlpha = 0f;
+            if (_system.SlotRenderer(1).enabled)
+            {
+                _system.SlotRenderer(1).GetPropertyBlock(block);
+                edgeAlpha = block.GetColor(IdShadowColor).a;
+            }
+            float unfaded = _system.Profile.Strength * (_system.SlotScore(1) / 1.5f);
+            Assert.Less(edgeAlpha, 0.25f * unfaded, "a hair above the cut: faded nearly to nothing");
+        }
+
+        /// <summary>Rule 7: once the pool exists, a pairing tick and a pose allocate nothing.</summary>
+        [Test]
+        public void ThePairingAndThePose_AllocateNothing_OnceWarm()
+        {
+            for (int i = 0; i < 4; i++) Lamp(new Vector2(i * 5f, 0f), range: 12f);
+            for (int i = 0; i < 200; i++) Caster(new Vector2((i % 20) * 1.1f, (i / 20) * 0.9f));
+            _system.PublishFrame(_cam);
+            _system.PublishFrame(_cam);
+
+            Assert.Greater(_system.ActiveShadowCount, 0, "precondition: the pool is in use");
+            Assert.That(() => { _system.PublishFrame(_cam, reselect: true); },
+                Is.Not.AllocatingGCMemory(),
+                "no per-frame allocation in the pairing or the pose");
+        }
+
         [Test]
         public void UnregisteringTheLamp_ReleasesItsShadows()
         {
@@ -478,6 +580,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(code.Strength, asset.Strength, 1e-6f, "Strength");
             Assert.AreEqual(code.ShadowColor, asset.ShadowColor, "ShadowColor");
             Assert.AreEqual(code.MaxShadows, asset.MaxShadows, "MaxShadows");
+            Assert.AreEqual(code.MaxShadowsPerCaster, asset.MaxShadowsPerCaster, "MaxShadowsPerCaster");
+            Assert.AreEqual(code.BudgetFadeWidth, asset.BudgetFadeWidth, 1e-6f, "BudgetFadeWidth");
             Assert.AreEqual(code.RefreshHz, asset.RefreshHz, 1e-6f, "RefreshHz");
             Assert.AreEqual(code.GroundArtBelowFootFraction, asset.GroundArtBelowFootFraction, 1e-6f, "GroundArtBelowFootFraction");
             Assert.AreEqual(code.LengthAtNoon, asset.LengthAtNoon, 1e-6f, "LengthAtNoon");
@@ -511,7 +615,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
             var p = LampShadowProfile.CreateDefault();
             _spawned.Add(p);
             Assert.AreEqual(0.8f, p.Strength, 1e-6f);
-            Assert.AreEqual(24, p.MaxShadows);
+            Assert.AreEqual(48, p.MaxShadows, "the pool, N (2026-11-25 shadow design)");
+            Assert.AreEqual(2, p.MaxShadowsPerCaster, "K per caster");
+            Assert.AreEqual(0.5f, p.BudgetFadeWidth, 1e-6f);
             Assert.AreEqual(10f, p.RefreshHz, 1e-6f);
             Assert.AreEqual(0.5f, p.GroundArtBelowFootFraction, 1e-6f);
             Assert.AreEqual(0.35f, p.LengthAtNoon, 1e-6f);
