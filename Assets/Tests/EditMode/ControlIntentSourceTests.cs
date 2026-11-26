@@ -135,10 +135,13 @@ namespace HiddenHarbours.Tests.EditMode
                 .OrderBy(s => s, StringComparer.Ordinal)
                 .ToArray();
             CollectionAssert.AreEqual(
-                new[] { "Chooser/PadNavigate=<Gamepad>/dpad", "Chooser/PadNavigate=<Gamepad>/leftStick",
+                new[] { "Camera/Aim=<Gamepad>/leftStick", "Camera/Raise=<Gamepad>/buttonNorth",
+                        "Camera/Shutter=<Gamepad>/rightTrigger",
+                        "Chooser/PadNavigate=<Gamepad>/dpad", "Chooser/PadNavigate=<Gamepad>/leftStick",
                         "Helm/Autopilot=<Gamepad>/buttonNorth", "Hud/ToggleTasks=<Gamepad>/buttonWest" }, pad,
-                "the pad's rows so far are the chooser's up/down (ADR 0043 PR 2, chooser slice), the " +
-                "autopilot's switch and the TASKS fold. Found: " + string.Join(", ", pad));
+                "the pad's rows so far are the camera's (2026-11-26: Y raises, the right trigger takes, the " +
+                "left stick aims), the chooser's up/down (ADR 0043 PR 2, chooser slice), the autopilot's " +
+                "switch and the TASKS fold. Found: " + string.Join(", ", pad));
         }
 
         /// <summary>

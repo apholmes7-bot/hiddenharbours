@@ -374,11 +374,19 @@ namespace HiddenHarbours.Tests.EditMode
                 toggle.bindings.Where(b => b.groups == InputBindings.GamepadScheme).Select(b => b.path).ToArray(),
                 "Y (north) on the pad: free at the helm, where A is the haul, B the neutral, the d-pad the detents " +
                 "and the chooser, the left stick the steer, the shoulders the zoom and Start the shell.");
+            // P and Y are bound twice in the whole asset (2026-11-26): once here, to the autopilot, and once
+            // in the Camera map, to raising the camera. The camera answers only on foot and on a deck, the
+            // autopilot only at the helm, so one press is never heard by both. Any third binding reds this.
             foreach (string path in new[] { "<Keyboard>/p", "<Gamepad>/buttonNorth" })
             {
-                int n = asset.actionMaps.SelectMany(m => m.bindings)
-                    .Count(b => string.Equals(b.path, path, StringComparison.OrdinalIgnoreCase));
-                Assert.AreEqual(1, n, $"{path} is bound once in the whole asset, to the autopilot.");
+                string[] where = asset.actionMaps
+                    .SelectMany(m => m.bindings.Select(b => (map: m.name, binding: b)))
+                    .Where(x => string.Equals(x.binding.path, path, StringComparison.OrdinalIgnoreCase))
+                    .Select(x => x.map + "/" + x.binding.action)
+                    .OrderBy(s => s, StringComparer.Ordinal)
+                    .ToArray();
+                CollectionAssert.AreEqual(new[] { "Camera/Raise", "Helm/Autopilot" }, where,
+                    $"{path} is bound to the autopilot at the helm and to the camera ashore and on deck, nothing else.");
             }
 
             Assert.IsTrue(DeviceAutopilotIntentSource.Map(true, false, false).Toggle, "an open press arrives.");
