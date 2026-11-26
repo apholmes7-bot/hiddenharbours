@@ -70,6 +70,12 @@ namespace HiddenHarbours.World
             if (!RegionTravel.ShouldLoad(SceneManager.GetActiveScene().name, to))
                 return false;
 
+            if (!RegionBuildAvailability.IsAvailable(to.Id, to.SceneName))
+            {
+                Refuse(to);
+                return false;
+            }
+
             // ⭐ PRELOAD STILL ON ITS WAY IN (PR 1223): the crossing came before the warm-up finished. Do not
             // start a second copy; the preload's completion makes it the active scene instead of parking it.
             if (_preloading != null && string.Equals(_preloading.SceneName, to.SceneName, System.StringComparison.Ordinal))
@@ -97,21 +103,12 @@ namespace HiddenHarbours.World
             // different PRs — St Peters' east door shipped one merge ahead of the east water, which
             // is the case that found this — and a seam that is merely not-built-yet must read as a
             // soft edge rather than as a fault (rule 10).
-            if (!Application.CanStreamedLevelBeLoaded(to.SceneName))
-            {
-                Debug.LogWarning($"[RegionSceneLoader] Could not load scene '{to.SceneName}' for " +
-                                 $"{to.Id} — it is not in the build profile. Is the region built and " +
-                                 "added to Build Settings?", this);
-                return false;
-            }
-
             var op = StartAdditiveLoad(to.SceneName);
             if (op == null)
             {
                 // Belt and braces — the check above should have taken this, but a null op is still a
                 // travel that did not happen, and the caller has to be told so it can take its key back.
-                Debug.LogWarning($"[RegionSceneLoader] Could not load scene '{to.SceneName}' for " +
-                                 $"{to.Id} — is it built and in Build Settings?", this);
+                Refuse(to);
                 return false;
             }
 
@@ -123,6 +120,13 @@ namespace HiddenHarbours.World
                 _currentSceneName = loaded;
             };
             return true;
+        }
+
+        void Refuse(RegionDef to)
+        {
+            EventBus.Publish(new RegionTravelRefused(to.Id, to.SceneName));
+            Debug.LogWarning($"[RegionSceneLoader] Could not load scene '{to.SceneName}' for " +
+                             $"{to.Id} — it is unavailable in this build.", this);
         }
 
         /// <summary>
@@ -158,7 +162,6 @@ namespace HiddenHarbours.World
         }
 
         PreloadingScene _preloading;
-        readonly HashSet<string> _unloadable = new HashSet<string>();
 
         /// <summary>The scene a preload is still bringing in, or null.</summary>
         public string PreloadingSceneName => _preloading?.SceneName;
@@ -184,17 +187,12 @@ namespace HiddenHarbours.World
         {
             if (to == null || string.IsNullOrEmpty(to.SceneName) || _preloading != null) return false;
             if (!RegionTravel.ShouldLoad(SceneManager.GetActiveScene().name, to)) return false;
+            if (!RegionBuildAvailability.IsAvailable(to.Id, to.SceneName)) return false;
             Scene existing = SceneManager.GetSceneByName(to.SceneName);
             if (existing.IsValid()) return false;   // loaded (a visited region) or already on its way in
-            if (_unloadable.Contains(to.SceneName)) return false;
-            if (!Application.CanStreamedLevelBeLoaded(to.SceneName))
-            {
-                _unloadable.Add(to.SceneName);      // asked once: the travel itself will say why, as before
-                return false;
-            }
 
             AsyncOperation op = StartAdditiveLoad(to.SceneName);
-            if (op == null) { _unloadable.Add(to.SceneName); return false; }
+            if (op == null) return false;
             var preloading = new PreloadingScene { SceneName = to.SceneName };
             _preloading = preloading;
             op.completed += _ => OnPreloadLanded(preloading);
