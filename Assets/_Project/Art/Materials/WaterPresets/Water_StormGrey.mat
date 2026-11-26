@@ -88,6 +88,8 @@ Material:
     - _FoamNoise: 0.09
     - _FoamSoftness: 0.16
     - _FoamTexStrength: 0.78
+    - _FoamBandMaxMetres: 2.5
+    - _FoamBandSlopeFloor: 0.02
     - _FoamWidth: 0.55
     - _HeightMax: 6
     - _HeightMin: -4

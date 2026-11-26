@@ -361,7 +361,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
             StringAssert.Contains("float washOnSand = washPresence * (1.0 - smoothstep(0.0, max(_WashSeawardDepth, 1e-3), depth));", src);
             StringAssert.Contains("if (swashEdgeReach > 0.0 && depth < shoreCosmeticReach)", src);
             StringAssert.Contains("float foamEdgeDither = (bay - 0.5) * _FoamEdgeDither;", src);
-            StringAssert.Contains("float foamEdge = 1.0 - smoothstep(0.0, max(_FoamWidth, 1e-3), foamDepth + foamEdgeDither);", src);
+            // The band's depth may only be capped BELOW _FoamWidth (the ground bound), so the envelope's
+            // max(_FoamWidth, ...) above stays a conservative reach.
+            StringAssert.Contains("float foamBandDepth = max(_FoamWidth, 1e-3);", src);
+            StringAssert.Contains("foamBandDepth = max(min(foamBandDepth, _FoamBandMaxMetres", src);
+            StringAssert.Contains("float foamEdge = 1.0 - smoothstep(0.0, foamBandDepth, foamDepth + foamEdgeDither);", src);
         }
 
         private static int CountOf(string text, string part)

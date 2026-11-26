@@ -223,6 +223,12 @@ Shader "HiddenHarbours/Water"
         [Header(Foam fringe (layer 3))]
         _FoamColor      ("Foam color", Color)           = (0.92, 0.96, 0.98, 1.0)
         _FoamWidth      ("Foam band width (m)", Float)  = 0.45
+        // _FoamWidth is metres of water DEPTH, so on a near-flat shelf the band spans metres of GROUND (depth / slope:
+        // 0.45 m over a 0.02 m/m shelf is a 22 m sheet). This caps it in PLAN metres, read through the local painted
+        // slope the shore cosmetics already sample (SeabedSlopeMag): the band's depth is never more than
+        // _FoamBandMaxMetres x slope. Steep coasts keep today's band to the bit; 0 = the old depth-only band.
+        _FoamBandMaxMetres  ("Foam band max width on the ground (m, 0 = depth only)", Float) = 0
+        _FoamBandSlopeFloor ("Foam band slope floor (m/m) - a flat texel run still keeps a thin line", Range(0,1)) = 0.03
         _FoamSoftness   ("Foam edge softness (m)", Float) = 0.18
         _FoamNoise      ("Foam churn noise scale", Float) = 1.2
         _Roughness      ("Roughness / whitecaps (0..1)", Range(0,1)) = 0.2
@@ -1800,6 +1806,8 @@ Shader "HiddenHarbours/Water"
                 float  _SwellReadSeaStateHi;
                 float4 _FoamColor;
                 float  _FoamWidth;
+                float  _FoamBandMaxMetres;
+                float  _FoamBandSlopeFloor;
                 float  _FoamSoftness;
                 float  _FoamNoise;
                 float  _Roughness;
@@ -7529,7 +7537,14 @@ Shader "HiddenHarbours/Water"
                 // `bay` read from above (no second BayerWorld tap). _FoamEdgeDither = 0 = the old contour.
                 float foamEdgeDither = (bay - 0.5) * _FoamEdgeDither;
                 // smoothstep across a thin band just inside the water: 1 at the wet edge -> 0 by foamWidth deep.
-                float foamEdge = 1.0 - smoothstep(0.0, max(_FoamWidth, 1e-3), foamDepth + foamEdgeDither);
+                // THE BAND, BOUNDED ON THE GROUND (2026-11-26, the Whelps shelf sheets): _FoamWidth is a DEPTH, so a
+                // near-flat shelf drew it metres wide. Its depth is capped at _FoamBandMaxMetres of plan times the
+                // local slope (shoreSlope, already sampled above: no extra tap). Twin: WaterSurface.FoamBandDepth.
+                float foamBandDepth = max(_FoamWidth, 1e-3);
+                if (_FoamBandMaxMetres > 0.0)
+                    foamBandDepth = max(min(foamBandDepth, _FoamBandMaxMetres
+                                                           * max(shoreSlope, saturate(_FoamBandSlopeFloor))), 1e-3);
+                float foamEdge = 1.0 - smoothstep(0.0, foamBandDepth, foamDepth + foamEdgeDither);
                 if (foamEdge > 0.001)
                 {
                     // FOAM FLOWS WITH THE BODY: the churn drifts along FoamDriftDir() — a blend of the wind and

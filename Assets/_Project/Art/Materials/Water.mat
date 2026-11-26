@@ -137,6 +137,8 @@ Material:
     - _FoamTexStrength: 0.672
     - _FoamThreshold: 0.84
     - _FoamThresholdSoft: 0.18
+    - _FoamBandMaxMetres: 2.5
+    - _FoamBandSlopeFloor: 0.02
     - _FoamWidth: 1.74
     - _HeightMax: 6
     - _HeightMin: -4
