@@ -40,9 +40,13 @@ namespace HiddenHarbours.Fishing
         /// gated).
         /// </summary>
         public static IReadOnlyList<LicenseDef> LiveCatalog()
+            => LiveCatalog(GameServices.Licenses);
+
+        /// <summary>The shared content catalog for an explicitly supplied player's wallet.</summary>
+        public static IReadOnlyList<LicenseDef> LiveCatalog(ILicenseService wallet)
         {
             if (_hasOverride) return _override;
-            if (GameServices.Licenses == null) return null;
+            if (wallet == null) return null;
             if (!_shippedLoaded)
             {
                 _shipped = CatalogSource.Licenses();
@@ -96,8 +100,13 @@ namespace HiddenHarbours.Fishing
         /// <see cref="Say"/> for that.
         /// </summary>
         public static void Release(in CatchItem item, IReadOnlyList<LicenseDef> handed = null)
+            => Release(in item, handed, LiveCatalog());
+
+        /// <summary>Release against an explicit content catalog without reading a global wallet.</summary>
+        public static void Release(in CatchItem item, IReadOnlyList<LicenseDef> handed,
+                                   IReadOnlyList<LicenseDef> catalog)
             => EventBus.Publish(new UnlicensedCatchReleased(item,
-                   RequiredLicenceFor(item.SpeciesId, handed, LiveCatalog())));
+                   RequiredLicenceFor(item.SpeciesId, handed, catalog)));
 
         /// <summary>He says it, in his own voice: "I don't have a licence for this &lt;name&gt; yet." The
         /// words live in the inner-voice line asset; this only names the species.</summary>
@@ -107,8 +116,13 @@ namespace HiddenHarbours.Fishing
 
         /// <summary>Release one catch and say the line for it (the rod and the dig: one catch, one line).</summary>
         public static void ReleaseAndSay(in CatchItem item, IReadOnlyList<LicenseDef> handed = null)
+            => ReleaseAndSay(in item, handed, LiveCatalog());
+
+        /// <summary>Release using the same explicit catalog that decided this player's attempt.</summary>
+        public static void ReleaseAndSay(in CatchItem item, IReadOnlyList<LicenseDef> handed,
+                                         IReadOnlyList<LicenseDef> catalog)
         {
-            Release(in item, handed);
+            Release(in item, handed, catalog);
             Say(item.DisplayName, item.SpeciesId);
         }
     }

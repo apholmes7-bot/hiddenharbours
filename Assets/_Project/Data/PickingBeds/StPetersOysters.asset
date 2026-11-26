@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cf8d94a12e74acfaa8f20f8c54097f8, type: 3}
+  m_Name: StPetersOysters
+  m_EditorClassIdentifier: HiddenHarbours.Fishing::HiddenHarbours.Fishing.PickingBedDef
+  Id: pickingbed.st_peters_oysters
+  RegionId: region.st_peters
+  Position: {x: -108, y: -5}
+  Species: {fileID: 11400000, guid: a35538f9782e2022a40831ca5e5f2f5f, type: 2}
+  Capacity: 12
+  RegrowDays: 4
+  UncoveredBelowMetres: -0.44
+  ReachMetres: 1.25
