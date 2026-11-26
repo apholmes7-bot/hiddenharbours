@@ -11,7 +11,7 @@ using Ledger = HiddenHarbours.Tests.EditMode.DefIdentityLedger.Ledger;
 
 namespace HiddenHarbours.Tests.EditMode
 {
-    /// <summary>Identity-only coverage for Def types with Id or Spec.Id. Existing records are permanent:
+    /// <summary>Identity-only coverage for Def types with Id or Spec.Id, plus vehicle deed offers. Existing records are permanent:
     /// append new identities, preserve old GUID/type/id bindings, and handle retirement explicitly.
     /// Structural Defs are explicitly exempt; content ids are unique per type.</summary>
     public class DefIdentityContractTests
@@ -57,7 +57,10 @@ namespace HiddenHarbours.Tests.EditMode
         private static Ledger ReadLedger() => _ledger ??= DefIdentityLedger.Load();
 
         private static IEnumerable<Type> ConcreteDefTypes() => TypeCache.GetTypesDerivedFrom<ScriptableObject>()
+            // VehicleOffer has always carried the saved deed identity, despite its non-Def name.
+            // Include that exact catalog type so every existing and future vehicle deed is frozen too.
             .Where(type => !type.IsAbstract && (type.Name.EndsWith("Def", StringComparison.Ordinal)
+                || type == typeof(HiddenHarbours.Economy.VehicleOffer)
                 || type == typeof(HiddenHarbours.Economy.InstrumentOffer))
                 && type.Namespace != null && type.Namespace.StartsWith("HiddenHarbours", StringComparison.Ordinal))
             .OrderBy(type => type.FullName, StringComparer.Ordinal);

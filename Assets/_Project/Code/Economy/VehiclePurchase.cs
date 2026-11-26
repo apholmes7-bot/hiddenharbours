@@ -7,7 +7,7 @@ namespace HiddenHarbours.Economy
     {
         /// <summary>The money moved and the record was written.</summary>
         Done = 0,
-        /// <summary>No offer, no wallet, no save, or an offer with an empty id: nothing was charged.</summary>
+        /// <summary>Invalid offer, save, or seller account: nothing was charged.</summary>
         Invalid = 1,
         /// <summary>The wallet could not cover it: nothing was charged or recorded.</summary>
         CannotAfford = 2,
@@ -20,7 +20,7 @@ namespace HiddenHarbours.Economy
     }
 
     /// <summary>
-    /// <b>SELLING A VEHICLE, as pure logic.</b> Spend through the Core wallet contract, record the deed
+    /// <b>SELLING A VEHICLE, as pure logic.</b> Transfer payment through Core contracts, record the deed
     /// (<see cref="VehicleDeeds"/>), publish <see cref="VehiclePurchased"/>. No MonoBehaviour, no UI, no
     /// scene: the dealer and industrial yard counters (slice V2/V3) call these.
     ///
@@ -36,44 +36,65 @@ namespace HiddenHarbours.Economy
     public static class VehiclePurchase
     {
         /// <summary>
-        /// Buy <paramref name="offer"/>. On success the price is spent, the deed is recorded, a sound
+        /// Buy <paramref name="offer"/>. On success the seller receives the price, the deed is recorded, a sound
         /// machine is also marked repaired (so it runs), and <see cref="VehiclePurchased"/> is published.
         /// </summary>
-        public static VehiclePurchaseResult TryBuy(VehicleOffer offer, IWallet wallet, ISaveService save)
+        public static VehiclePurchaseResult TryBuy(IVehicleSale offer, IWallet wallet, ISaveService save,
+                                                   IVehicleSeller seller)
         {
-            if (offer == null || wallet == null || save == null || string.IsNullOrEmpty(offer.Id))
+            if (!ValidParties(offer, wallet, save, seller))
                 return VehiclePurchaseResult.Invalid;
             if (VehicleDeeds.IsOwned(save, offer.Id)) return VehiclePurchaseResult.AlreadyOwned;
-            if (offer.Price < 0) return VehiclePurchaseResult.Invalid;
-            if (!wallet.TrySpend(offer.Price)) return VehiclePurchaseResult.CannotAfford;
+            if (!CanReceive(seller.Wallet, offer.Price) || (offer.StartsDamaged && offer.RepairCost < 0))
+                return VehiclePurchaseResult.Invalid;
 
             using (save.DeferWrites())
             {
+                if (!wallet.TrySpend(offer.Price)) return VehiclePurchaseResult.CannotAfford;
+                seller.Wallet.Add(offer.Price);
                 VehicleDeeds.Grant(save, offer.Id);
                 if (!offer.StartsDamaged) VehicleDeeds.MarkRepaired(save, offer.Id);
             }
 
             EventBus.Publish(new VehiclePurchased(offer.Id, offer.VehicleId, offer.SellerId,
-                                                  offer.Price, offer.StartsDamaged));
+                                                  offer.Price, offer.StartsDamaged, seller.Counterparty));
             return VehiclePurchaseResult.Done;
         }
 
         /// <summary>
-        /// Pay <see cref="VehicleOffer.RepairCost"/> to make an owned damaged machine run. On success the
+        /// Pay <see cref="IVehicleSale.RepairCost"/> to make an owned damaged machine run. On success the
         /// repair is recorded and <see cref="VehicleRepaired"/> is published.
         /// </summary>
-        public static VehiclePurchaseResult TryRepair(VehicleOffer offer, IWallet wallet, ISaveService save)
+        public static VehiclePurchaseResult TryRepair(IVehicleSale offer, IWallet wallet, ISaveService save,
+                                                      IVehicleSeller seller)
         {
-            if (offer == null || wallet == null || save == null || string.IsNullOrEmpty(offer.Id))
+            if (!ValidParties(offer, wallet, save, seller))
                 return VehiclePurchaseResult.Invalid;
             if (!VehicleDeeds.IsOwned(save, offer.Id)) return VehiclePurchaseResult.NotOwned;
             if (VehicleDeeds.IsRepaired(save, offer.Id)) return VehiclePurchaseResult.NothingToRepair;
-            if (offer.RepairCost < 0) return VehiclePurchaseResult.Invalid;
-            if (!wallet.TrySpend(offer.RepairCost)) return VehiclePurchaseResult.CannotAfford;
+            if (!CanReceive(seller.Wallet, offer.RepairCost)) return VehiclePurchaseResult.Invalid;
 
-            VehicleDeeds.MarkRepaired(save, offer.Id);
-            EventBus.Publish(new VehicleRepaired(offer.Id, offer.VehicleId, offer.SellerId, offer.RepairCost));
+            using (save.DeferWrites())
+            {
+                if (!wallet.TrySpend(offer.RepairCost)) return VehiclePurchaseResult.CannotAfford;
+                seller.Wallet.Add(offer.RepairCost);
+                VehicleDeeds.MarkRepaired(save, offer.Id);
+            }
+            EventBus.Publish(new VehicleRepaired(offer.Id, offer.VehicleId, offer.SellerId,
+                                                 offer.RepairCost, seller.Counterparty));
             return VehiclePurchaseResult.Done;
         }
+
+        private static bool ValidParties(IVehicleSale offer, IWallet buyer, ISaveService save, IVehicleSeller seller)
+            => offer != null && buyer != null && save != null && seller?.Wallet != null
+               && !ReferenceEquals(buyer, seller.Wallet)
+               && !string.IsNullOrWhiteSpace(offer.Id) && !string.IsNullOrWhiteSpace(offer.VehicleId)
+               && !string.IsNullOrWhiteSpace(offer.SellerId)
+               && seller.Counterparty.VendorId != TradeCounterparty.UnknownId
+               && seller.Counterparty.TradeId != TradeCounterparty.UnknownId
+               && seller.Counterparty.VendorId == offer.SellerId;
+
+        private static bool CanReceive(IWallet seller, int price)
+            => price >= 0 && seller.Money >= 0 && seller.Money <= int.MaxValue - price;
     }
 }
