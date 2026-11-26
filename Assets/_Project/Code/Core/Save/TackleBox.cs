@@ -21,6 +21,43 @@ namespace HiddenHarbours.Core
     /// </summary>
     public static class TackleBox
     {
+        /// <summary>
+        /// Receive a whole counter handover into the supplied bait stock. Invalid contents or an
+        /// overflowing count leave both lists untouched. The caller chooses which stock receives it.
+        /// </summary>
+        public static bool TryReceiveBait(List<BaitStock> stock, IReadOnlyList<BaitStock> delivery)
+        {
+            if (stock == null || delivery == null || delivery.Count == 0) return false;
+            var copy = new List<BaitStock>(stock);
+            var indices = new Dictionary<string, int>(System.StringComparer.Ordinal);
+            for (int i = 0; i < copy.Count; i++)
+            {
+                var row = copy[i];
+                if (string.IsNullOrEmpty(row.BaitId) || !row.BaitId.StartsWith("bait.", System.StringComparison.Ordinal)
+                    || row.Count < 0 || indices.ContainsKey(row.BaitId)) return false;
+                indices.Add(row.BaitId, i);
+            }
+            foreach (var row in delivery)
+            {
+                if (string.IsNullOrEmpty(row.BaitId) || !row.BaitId.StartsWith("bait.", System.StringComparison.Ordinal)
+                    || row.Count <= 0) return false;
+                if (indices.TryGetValue(row.BaitId, out int index))
+                {
+                    long total = (long)copy[index].Count + row.Count;
+                    if (total > int.MaxValue) return false;
+                    copy[index] = new BaitStock(row.BaitId, (int)total);
+                }
+                else
+                {
+                    indices.Add(row.BaitId, copy.Count);
+                    copy.Add(row);
+                }
+            }
+            stock.Clear();
+            stock.AddRange(copy);
+            return true;
+        }
+
         // ---- bait: counted stock ------------------------------------------------------------------
 
         /// <summary>How much of this bait the player has. 0 for an unknown id, a null save, or a null id.</summary>
