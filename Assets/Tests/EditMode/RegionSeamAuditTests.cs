@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using HiddenHarbours.Core;
 using HiddenHarbours.World;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 using static HiddenHarbours.App.Editor.StPetersLayerRefresh;
 
@@ -100,6 +101,81 @@ namespace HiddenHarbours.Tests.EditMode
             return nodes;
         }
         private static RegionSeamGraph Graph() => new(ReadNodes(), ReadEdges());
+
+        // Inventory, not permission to travel. Review the first-week design note before adding a route.
+        private static readonly string[] DocumentedStPetersWaysOut =
+        {
+            "edge|West|region.nine_mile_creek",
+            "edge|West|region.south_water",
+            "edge|East|region.east_water",
+            "passage|PassageToNineMileCreek|NineMileCreek|bar",
+            "passage|PassageToWestWater|WestWater|st_peters",
+            "passage|PassageToEastWater|EastWater|st_peters",
+            "crossing|crossing.st_peters_nine_mile_creek_bar|region.nine_mile_creek",
+            "opening|intro.arrival_sea|region.east_water",
+        };
+
+        [Test]
+        public void StPetersWaysOut_EveryAuthoredRouteHasAFirstWeekAudit()
+        {
+            const string island = "region.st_peters";
+            const string note = "docs/design/st-peters-ways-off-the-island.md";
+            var actual = new List<string>();
+            var map = WorldMap.LoadShipped();
+            Assert.That(map, Is.Not.Null, "Cannot audit exits without the shipped world map");
+            WorldFrame frame = map.BuildFrame();
+            Assert.That(frame.TryGet(island, out RegionFrame home), Is.True, "St Peters must be in the map");
+            foreach (RegionFrame other in frame.Regions)
+                if (other.RegionId != island && WorldFrame.TryGetSeam(home, other, out RegionSeam seam))
+                    actual.Add($"edge|{seam.EdgeOfA}|{other.RegionId}");
+
+            // Include dormant legacy doors: an explicit Activate call bypasses their world-frame stand-down.
+            foreach (Doc passage in Scripts("StPeters", "RegionPassage"))
+            {
+                RegionScenes.TryGetValue(GuidOf(passage.Field("_target")), out string target);
+                actual.Add($"passage|{Value(GameObject(Scene("StPeters"), passage), "m_Name")}|" +
+                           $"{target}|{Value(passage, "_arrivalKey")}");
+            }
+
+            // Crossings serve routines today, and can be traversed in either direction.
+            foreach (string guid in AssetDatabase.FindAssets("t:RegionCrossingDef", new[] { "Assets" }))
+            {
+                var crossing = AssetDatabase.LoadAssetAtPath<RegionCrossingDef>(AssetDatabase.GUIDToAssetPath(guid));
+                Assert.That(crossing, Is.Not.Null, "Unreadable crossing " + guid);
+                if (crossing.FromRegionId == island || crossing.ToRegionId == island)
+                    actual.Add($"crossing|{crossing.Id}|" +
+                               (crossing.FromRegionId == island ? crossing.ToRegionId : crossing.FromRegionId));
+            }
+
+            // The arrival is a direct scene load, outside the edge-crossing path.
+            foreach (Doc opening in Scripts("StPeters", "ArrivalOpening"))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(GuidOf(opening.Field("_seaOpening")));
+                if (string.IsNullOrEmpty(path)) continue;
+                var sea = AssetDatabase.LoadAssetAtPath<HiddenHarbours.App.ArrivalSeaDef>(path);
+                Assert.That(sea, Is.Not.Null, "Unreadable arrival sea data " + path);
+                Assert.That(sea.SeaRegion, Is.Not.Null, "Arrival sea data has no destination: " + path);
+                actual.Add($"opening|{sea.Id}|{sea.SeaRegion.Id}");
+            }
+
+            // The text parser above sees scene components. Prefab-authored doors must also trigger review.
+            foreach (string path in AssetDatabase.GetDependencies("Assets/_Project/Scenes/StPeters.unity", true)
+                                                .Where(p => p.EndsWith(".prefab", StringComparison.Ordinal)))
+            {
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                Assert.That(prefab, Is.Not.Null, "Unreadable scene prefab " + path);
+                foreach (var passage in prefab.GetComponentsInChildren<RegionPassage>(true))
+                    actual.Add($"prefab-passage|{path}|{passage.name}");
+                foreach (var opening in prefab.GetComponentsInChildren<HiddenHarbours.App.ArrivalOpening>(true))
+                    actual.Add($"prefab-opening|{path}|{opening.name}");
+            }
+
+            string[] unknown = actual.Except(DocumentedStPetersWaysOut, StringComparer.Ordinal).ToArray();
+            Assert.That(unknown, Is.Empty, "NEW way out of St Peters: " + string.Join(", ", unknown) +
+                ". Audit its first-week gate in " + note + " before updating DocumentedStPetersWaysOut.");
+            Assert.That(actual, Is.EquivalentTo(DocumentedStPetersWaysOut),
+                "A documented St Peters route disappeared or was duplicated; reconcile " + note);
+        }
 
         // Explicit expectations for the audited base; revise the design note with any accepted connection.
         private static readonly Dictionary<string, string[]> ExpectedEdges = new(StringComparer.Ordinal)
