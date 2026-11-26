@@ -129,12 +129,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Vector2 down = CliffWallGeometry.DrawnDown(s.BrowPlan, toe);
                 Assert.AreEqual(1f, down.magnitude, 1e-5f);
                 float drawn = Vector2.Distance(s.BrowPlan, toe);
-                Assert.AreEqual(drawn, CliffWallGeometry.DrawnMetres(0f, s.BrowPlan, toe), 1e-4f,
+                Assert.AreEqual(drawn, CliffWallGeometry.DrawnMetres(s.BrowPlan, toe), 1e-4f,
                     $"batter {batter}: the foot is not its drawn distance down the column");
                 // A metre along the drawn column is a metre of v: the texel is as tall as it is wide.
                 Vector2 mid = s.BrowPlan + down * 1f;
                 Assert.AreEqual(1f / CliffCatalog.FaceMetresT,
-                    CliffWallGeometry.TileV(CliffWallGeometry.DrawnMetres(0f, s.BrowPlan, mid), CliffCatalog.FaceMetresT), 1e-5f,
+                    CliffWallGeometry.TileV(CliffWallGeometry.DrawnMetres(s.BrowPlan, mid), CliffCatalog.FaceMetresT), 1e-5f,
                     $"batter {batter}: a drawn metre is not a metre of the face texture");
             }
         }

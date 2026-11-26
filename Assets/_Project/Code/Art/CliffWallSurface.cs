@@ -1452,15 +1452,13 @@ namespace HiddenHarbours.Art
                 t0 = Mathf.Min(t0, shown);
                 t1 = Mathf.Min(t1, shown);
 
-                float drawn = 0f;
-                Vector2 above = default;
+                Vector2 top = default;
 
                 for (int r = 0; r <= rows; r++)
                 {
                     float t = Mathf.Lerp(t0, t1, (float)r / rows);
                     Vector2 p = Vector2.Lerp(brow, toe, t) + outward * (displacement(uRelief, t) * relief);
-                    drawn = r == 0 ? 0f : CliffWallGeometry.DrawnMetres(drawn, above, p);
-                    above = p;
+                    if (r == 0) top = p;
 
                     int idx = c * (rows + 1) + r;
                     verts[idx] = new Vector3(p.x - origin.x, p.y - origin.y, 0f);
@@ -1468,7 +1466,7 @@ namespace HiddenHarbours.Art
                     // CliffWallGeometry.DrawnMetres). It was surface metres, the kit's rule, which draws a
                     // foreshortened face's texels shorter than the ground's.
                     uvs[idx] = new Vector2(
-                        u, CliffWallGeometry.TileV(drawn, faceMetresT));
+                        u, CliffWallGeometry.TileV(CliffWallGeometry.DrawnMetres(top, p), faceMetresT));
                     // The elevation walks the SURFACE parameter, brow → toe, which is the row parameter
                     // the geometry is laid on — so the waterline crossing lands on the rows the mesh
                     // already has instead of between them.

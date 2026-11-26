@@ -691,15 +691,15 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
-        /// ⭐ <b>What a face's v counts: DRAWN metres down its column</b>, from the band's own top vertex, vertex
-        /// to vertex. The owner's ruling of 2026-11-26 (no mixels: a face texel is square and the size of the
+        /// ⭐ <b>What a face's v counts: DRAWN metres down its column</b>, from the band's own top vertex
+        /// to this one, in a straight line. The owner's ruling of 2026-11-26 (no mixels: a face texel is square and the size of the
         /// ground's on screen) overrides the kit's "v counts SURFACE metres": a face is drawn foreshortened by the
         /// camera's tilt and pushed about by its profile, and surface metres laid on that column are texels shorter
-        /// or longer than the meadow's beside them. Counted along the laid vertices, so it only ever grows down a
-        /// column and a displaced row keeps the texels it is drawn over. Pure.
+        /// or longer than the meadow's beside them. Measured between the laid vertices, so it reads the same however
+        /// many rows a column is cut into, and a displaced row keeps the texels it is drawn over. Pure.
         /// </summary>
-        public static float DrawnMetres(float metresAbove, Vector2 vertexAbove, Vector2 vertex) =>
-            metresAbove + Vector2.Distance(vertexAbove, vertex);
+        public static float DrawnMetres(Vector2 bandTop, Vector2 vertex) =>
+            Vector2.Distance(bandTop, vertex);
 
         /// <summary>
         /// How many rows to subdivide a face into so the profile displacement has somewhere to land.
