@@ -297,6 +297,15 @@ namespace HiddenHarbours.Art
         private static readonly int IdTileMetresS = Shader.PropertyToID("_TileMetresS");
         private static readonly int IdTileMetresT = Shader.PropertyToID("_TileMetresT");
         private static readonly int IdPxDecal = Shader.PropertyToID("_PxDecal");
+        private static readonly int IdPaletteVariant = Shader.PropertyToID("_PaletteVariant");
+        private static readonly int IdVariantOn = Shader.PropertyToID("_VariantOn");
+        private static readonly int IdVariantBlock = Shader.PropertyToID("_VariantBlock");
+
+        /// <summary>The region's cliff mix for this build, or null (see <see cref="CliffFaceMixDef"/>).</summary>
+        private CliffFaceMixDef _mix;
+
+        /// <summary>The mix this wall was last built with, or null: for a test or a plate.</summary>
+        public CliffFaceMixDef FaceMix => _mix;
 
         /// <summary>The name of the generated child carrying a band's quads, so a hierarchy reads as
         /// geology and a test can find one without a magic string of its own.</summary>
@@ -499,6 +508,11 @@ namespace HiddenHarbours.Art
 
             CliffWallSample[] samples = BuildSamples(_browPlan, _toePlan, _dropMetres, _toeElevations);
             ResolveSorting(samples);
+
+            // The region's cliff mix (owner 11 25: our cliffs and the boards' for variance), found by the
+            // scene's name: presentation only, it touches nothing built above.
+            CliffFaceMixDef mix = CliffFaceMixDef.ForScene(gameObject.scene.name);
+            _mix = mix != null && mix.IsActive ? mix : null;
 
             // ⭐ THE SORTING GROUP SITS ON THE CHUNK, NOT ON A MESH.
             //
@@ -1570,6 +1584,14 @@ namespace HiddenHarbours.Art
             // would read the swell several metres from the wall it belongs to.
             if (elevationUv != null) mesh.SetUVs(1, elevationUv);
             if (seaPlanUv != null) mesh.SetUVs(2, seaPlanUv);
+            // uv3 = (the mix's variant weight at the station's toe, 1 if the mix is real). From the toe plan, so
+            // two chunks or two walls meeting at one station carry one weight and the skin never jumps at a cut.
+            if (_mix != null && !decal && seaPlanUv != null)
+            {
+                var mixUv = new Vector2[seaPlanUv.Length];
+                for (int i = 0; i < seaPlanUv.Length; i++) mixUv[i] = new Vector2(_mix.VariantWeightAt(seaPlanUv[i]), 1f);
+                mesh.SetUVs(3, mixUv);
+            }
             mesh.SetTriangles(tris, 0);
             mesh.RecalculateBounds();
             _meshes.Add(mesh);
@@ -1629,6 +1651,15 @@ namespace HiddenHarbours.Art
             if (normal != null) _mpb.SetTexture(IdNormal, normal);
             if (mask != null) _mpb.SetTexture(IdMask, mask);
             _mpb.SetFloat(IdPxDecal, decal ? 1f : 0f);
+            // The mix's second palette: only on a face band (a decal is drawn as baked), only with a mix.
+            bool variant = _mix != null && !decal;
+            _mpb.SetFloat(IdVariantOn, variant ? 1f : 0f);
+            if (variant)
+            {
+                _mpb.SetTexture(IdPaletteVariant, _mix.VariantSkin.Palette);
+                _mpb.SetVector(IdVariantBlock, new Vector4(Mathf.Max(1f, _mix.BlendBlockTexels.x),
+                                                           Mathf.Max(1f, _mix.BlendBlockTexels.y), 0f, 0f));
+            }
             _mpb.SetFloat(IdWallAzimuth, _wallAzimuth);
             _mpb.SetFloat(IdBatter, _batter);
             _mpb.SetVector(IdBakeL, new Vector4(_bakeLight.x, _bakeLight.y, _bakeLight.z, 0f));

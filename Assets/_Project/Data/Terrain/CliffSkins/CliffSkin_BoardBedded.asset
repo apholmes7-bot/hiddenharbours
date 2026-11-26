@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6f075765c0f40819a06f827dd2b3b8d, type: 3}
+  m_Name: CliffSkin_BoardBedded
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffFaceSkinDef
+  Id: cliffskin.board_bedded
+  Palette: {fileID: 2800000, guid: 9241a58b8f0946dca476a9b6e65aff96, type: 3}
+  PalettePath: Assets/_Project/Art/Terrain/CliffPx/CliffPx_palette_board_bedded.png
+  Rocks:
+  - Name: sandstone
+    BaseHex: '#b06a48'
+    Contrast: 1.05
+  - Name: till
+    BaseHex: '#6c4434'
+    Contrast: 0.9
+  Accessories:
+  - Name: silt
+    BaseHex: '#8a7a5e'
+    Contrast: 0.9
+  SourceBoards:
+  - art-desk/drops/key-scenes-r2-parts2-3-2026-09-28/merged/hh-st-peters-key-scenes/2-st-peters-today/st-peters-terrain-pass-9-part-2/preview-west-ledges.png
+  - art-desk/drops/key-scenes-r2-parts2-3-2026-09-28/merged/hh-st-peters-key-scenes/2-st-peters-today/st-peters-terrain-pass-9-part-2/preview-east-ledges.png
+  - art-desk/drops/key-scenes-r2-parts2-3-2026-09-28/merged/hh-st-peters-key-scenes/2-st-peters-today/st-peters-terrain-pass-9-part-2/preview-south-arm.png
+  - art-desk/drops/key-scenes-r2-parts2-3-2026-09-28/merged/hh-st-peters-key-scenes-return/pass3/bakes/lighthouse-point_golden.png
+  Why: 'The St Peters key-scene boards'' cliffs (terrain pass 9 west and east ledges, the south arm, the lighthouse point): the lit beds a lighter, more orange red-brown than ours (board rock modes about #b06848 to #b87050 against our #a6583b base), a darker brown cap where the till sits under the turf, and grey-green interbeds where our siltstone is. Read off the boards by eye and by their rock pixel counts (seat/v83/cliffs-mix/board-colours.txt) and cut into tiers and bands by the px kit''s own procedure, so the cold shadows and warm lights lean exactly as the shipped palette''s do.'

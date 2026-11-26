@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec898f69c2e6407c82983ae33e747847, type: 3}
+  m_Name: CliffFaceMix_StPeters
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.CliffFaceMixDef
+  Id: cliffmix.st_peters
+  SceneName: StPeters
+  BaseSkin: {fileID: 11400000, guid: 8f38a1d1045e409789c7ffefbff06940, type: 2}
+  VariantSkin: {fileID: 11400000, guid: f3028f8aa3c24d2cb2c11afe9b18a5e1, type: 2}
+  VariantShare: 0.45
+  RunMetres: 16
+  BlendMetres: 3
+  BlendBlockTexels: {x: 6, y: 3}
+  Seed: 1
+  Why: 'Owner 11 25: a mix of our current cliffs and the boards'' cliffs, for variance. About half the coast wears the boards'' colours, in stretches of a few tens of metres (on the live St Peters coast this seed gives eleven stretches, six of them the boards'' colours, 53 percent of the stations), changing over about three metres as the rock''s own blocks give way. Presentation only: no collider, brow or walk rule reads it.'

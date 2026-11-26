@@ -595,7 +595,7 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         /// <summary>Whether a PNG decodes to exactly these top-row-first RGBA pixels.</summary>
-        static bool SamePixels(byte[] png, byte[] topFirstRgba, int w, int h)
+        internal static bool SamePixels(byte[] png, byte[] topFirstRgba, int w, int h)
         {
             var tex = new Texture2D(2, 2, TextureFormat.RGBA32, mipChain: false, linear: false);
             try
@@ -824,7 +824,7 @@ namespace HiddenHarbours.Tools.RigBaking
 
         /// <summary>Top-row-first RGBA → PNG bytes, flipped once on the way in (see
         /// <see cref="FlipRows"/>).</summary>
-        static byte[] EncodePng(byte[] rgba, int w, int h)
+        internal static byte[] EncodePng(byte[] rgba, int w, int h)
         {
             var tex = new Texture2D(w, h, TextureFormat.RGBA32, mipChain: false, linear: false);
             try

@@ -501,8 +501,14 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     @"ndl\s*=\s*\(cycleOn\s*&&\s*e\s*<=\s*0\.0\)\s*\?\s*0\.0\s*:\s*dot\(N,\s*L\)"),
                 "the sun-down gate (LiveNdl): with the cycle on and the sun at or below the horizon, the " +
                 "live N dot L is 0 — one band down everywhere, and no wall lit from under the planet.");
-            StringAssert.Contains("CliffPxRelight(unlit, ndl, dot(N, Lpx), msk.r)", px,
+            StringAssert.Contains("CliffPxRelight(unlit, ndl, dot(N, Lpx), msk.r, variant)", px,
                 "the shadow comes out of the mask at the PX key, the light the mask was baked at.");
+            // The cliff mix (owner 11 25) picks the palette per block, the twin of CliffFaceMixMath.PicksVariant:
+            // the same hash, the same salt, whole at the ends.
+            StringAssert.Contains("mixW > CliffHash(floor(cell / mixBlk), 8.0)", px,
+                "the shader's block pick is not CliffFaceMixMath.PicksVariant's");
+            Assert.AreEqual(8f, CliffFaceMixMath.BlockSalt, "the block pick's salt is the shader's 8.0");
+            StringAssert.Contains("mixW >= 0.999", px, "a full weight must draw the variant everywhere, as the twin does");
             StringAssert.DoesNotContain("_BakeL", px,
                 "_BakeL is the v10 kit's per-aspect key; the px mask was never baked at it.");
             StringAssert.Contains("if (_PxDecal < 0.5)", px,
