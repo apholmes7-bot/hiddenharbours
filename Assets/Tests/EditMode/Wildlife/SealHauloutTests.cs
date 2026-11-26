@@ -339,6 +339,28 @@ namespace HiddenHarbours.Tests.EditMode.Wildlife
             Assert.IsTrue(SealHaulout.FacesEast(7, 0u));
         }
 
+        [Test]
+        public void RestPose_IsTheSpotsOwn_AndTheReefShowsMoreThanOne()
+        {
+            SealHauloutDef def = Whelps();
+            uint place = SealHash.Id(def.Id);
+            foreach (int seed in new[] { 1, 7, 12345 })
+            {
+                var poses = new System.Collections.Generic.HashSet<int>();
+                foreach (SealSpot spot in def.Spots)
+                {
+                    uint h = SealHash.Id(spot.Id);
+                    int pose = SealHaulout.RestPoseOf(seed, place, h);
+                    Assert.AreEqual(pose, SealHaulout.RestPoseOf(seed, place, h), "the same seal lies the same way");
+                    Assert.That(pose, Is.InRange(0, 2));
+                    poses.Add(pose);
+                }
+                Assert.That(poses.Count, Is.GreaterThanOrEqualTo(2), $"seed {seed}: every seal on the reef lies the same way");
+            }
+            Assert.That(def.Spots.Select(s => SealHaulout.FacesEast(s.Facing, SealHash.Id(s.Id))).Distinct().Count(), Is.EqualTo(2),
+                "the reef's seals all face one way");
+        }
+
         // ---- the scene ----------------------------------------------------------------------------------------
 
         [Test]
@@ -382,7 +404,14 @@ namespace HiddenHarbours.Tests.EditMode.Wildlife
                 Assert.AreEqual(count, frames?.Length ?? 0, name + " frames");
                 Assert.IsTrue(frames.All(f => f != null), name + " frames has a hole");
                 Assert.IsTrue(frames.All(f => Mathf.Approximately(f.pixelsPerUnit, 32f)), name + " frames are not PPU 32");
+                Assert.IsTrue(frames.All(f => Mathf.Approximately(f.rect.width, SealContentSetup.CellW)
+                                              && Mathf.Approximately(f.rect.height, SealContentSetup.CellH)), name + " frames are not one cell");
+                // the pivot is the belly's ground contact: Unity's pivot is from the cell's bottom-left
+                Vector2 pivot = new Vector2(SealContentSetup.PivotFromTopLeft.x, SealContentSetup.CellH - SealContentSetup.PivotFromTopLeft.y);
+                Assert.IsTrue(frames.All(f => (f.pivot - pivot).sqrMagnitude < 0.01f), name + " frames' pivot moved");
             }
+            // a ~2 m seal against the 5 m dory: the cell is wide enough for one
+            Assert.That(SealContentSetup.CellW / (float)SealContentSetup.PixelsPerUnit, Is.GreaterThanOrEqualTo(2f));
             Assert.That(s.Coats.Length, Is.GreaterThanOrEqualTo(SealContentSetup.CoatNames.Length));
         }
 

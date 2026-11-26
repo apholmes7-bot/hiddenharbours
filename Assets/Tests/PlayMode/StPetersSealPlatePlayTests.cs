@@ -10,35 +10,43 @@ using Object = UnityEngine.Object;
 
 namespace HiddenHarbours.Tests.PlayMode
 {
-    // The seals on the Whelps, shot over the skerries at low, mid and high water and with a hull close, 32 px a
-    // metre. Shares the GPU/title-only harness. Local evidence only: it asserts what it can (no seal drawn on a
-    // wet rock) and writes the plates for a person to look at.
+    // The seals on the Whelps, shot over the skerries at low, mid and high water and with the dory coming in at mid
+    // water (once as they react, once as they slip in), 32 px a metre. Shares the GPU/title-only harness. Local
+    // evidence only: it asserts what it can (no seal lying on a wet rock) and writes the plates for a person to judge.
     public partial class WharfBuildingPass2PlatePlayTests
     {
         const string SealPlatesVariable = "HH_SEAL_PLATES";
 
         readonly struct SealShot
         {
-            public readonly string Id; public readonly float Tide; public readonly bool HullClose;
-            public SealShot(string id, float tide, bool hullClose) { Id = id; Tide = tide; HullClose = hullClose; }
+            public readonly string Id; public readonly float Tide; public readonly bool MidWater; public readonly bool Dory;
+            public SealShot(string id, float tide, bool midWater, bool dory) { Id = id; Tide = tide; MidWater = midWater; Dory = dory; }
         }
 
         static readonly SealShot[] SealShots =
         {
-            new SealShot("seals.low", -2.0f, false),
-            new SealShot("seals.mid", -1.2f, false),
-            new SealShot("seals.high", 0.6f, false),
-            new SealShot("seals.low.hull_close", -2.0f, true),
+            new SealShot("seals.low", -2.0f, false, false),
+            new SealShot("seals.mid", -1.0f, true, false),
+            new SealShot("seals.high", 0.6f, false, false),
+            new SealShot("seals.mid.dory", -1.0f, true, true),
         };
 
         // The skerries board's frame (whelps_lookout.skerries.*).
         const float SealX0 = 172f, SealX1 = 200f, SealY0 = -57.75f, SealY1 = -42f;
 
-        /// <summary>Where the hull is put for the close shot: on the flat between the ledges, about 5 m off the
-        /// first ledge's southern seals and the third's eastern ones, inside the frame.</summary>
-        static readonly Vector2 HullCloseAt = new Vector2(186f, -52.5f);
+        /// <summary>Where the dory is held for the approach: in the water east of the south ledge, about 5 m off
+        /// its seals.</summary>
+        static readonly Vector2 DoryAt = new Vector2(186f, -53.5f);
 
         const float MidSweepFrom = -1.6f, MidSweepTo = -0.3f, MidSweepStep = 0.1f;
+
+        /// <summary>Seconds after the first head shows in the water that the "slipping in" plate is shot.</summary>
+        const float SlipPlateSeconds = 0.4f;
+
+        /// <summary>The approach: from ~25 m east of the south ledge's seals, rowed in easily (under the species'
+        /// startle speed) to ~10 m or the first alert, then hard in to <see cref="DoryAt"/>.</summary>
+        static readonly Vector2 DoryFrom = new Vector2(206f, -53.5f), DoryAlertStop = new Vector2(191f, -53.5f);
+        const float DoryEasySpeed = 1.0f, DoryHardSpeed = 3.0f;
 
         [UnityTest]
         public IEnumerator StPeters_TheSealsOnTheWhelps_AtLowMidAndHighWater_AndWithAHullClose()
@@ -65,109 +73,74 @@ namespace HiddenHarbours.Tests.PlayMode
             var pixelCameras = _cam.GetComponents<Behaviour>()
                 .Where(b => b.GetType().Name == "PixelPerfectCamera" && b.enabled).ToArray();
             Transform hull = null; Vector3 hullWas = Vector3.zero;
+            float midWater = float.NaN;
             try
             {
                 foreach (SealShot shot in SealShots)
                 {
                     yield return PinTheHour(Noon, ClearRunSeconds);
-                    GameServices.Environment = new LandingBoardTide(held, shot.Tide);
+                    float tide = shot.Tide;
+                    if (shot.MidWater)
+                    {
+                        if (float.IsNaN(midWater)) midWater = SweepMidWater(host, held);
+                        tide = midWater;
+                    }
+                    GameServices.Environment = new LandingBoardTide(held, tide);
                     Time.timeScale = 1f;
                     float until = Time.realtimeSinceStartup + 20f;
                     do { yield return null; }
                     while (Time.realtimeSinceStartup < until &&
-                           Mathf.Abs(Shader.GetGlobalVector("_HHSeaLevelWorld").x - shot.Tide) > .01f);
-
-                    float tide = shot.Tide;
-                    if (shot.Id == "seals.mid")
-                    {
-                        // The middle water where the schedule has some out and some heads up: swept, not guessed.
-                        int best = -1;
-                        for (float level = MidSweepFrom; level <= MidSweepTo + 1e-3f; level += MidSweepStep)
-                        {
-                            GameServices.Environment = new LandingBoardTide(held, level);
-                            host.Haulout = host.Haulout;
-                            host.TickNow(0.01f);
-                            int hauled = 0, wet = 0;
-                            for (int i = 0; i < host.SpotCount; i++)
-                            {
-                                if (host.PlaceOf(i) == SealPlace.Hauled) hauled++;
-                                else if (host.PlaceOf(i) == SealPlace.InWater && host.SwimWet(i)) wet++;
-                            }
-                            int score = hauled > 0 && wet > 0 ? 100 + Mathf.Min(hauled, wet) : wet;
-                            if (score > best) { best = score; tide = level; }
-                        }
-                        GameServices.Environment = new LandingBoardTide(held, tide);
-                        Debug.Log($"[SealPlates] mid water swept to {tide:0.00} (score {best})");
-                    }
+                           Mathf.Abs(Shader.GetGlobalVector("_HHSeaLevelWorld").x - tide) > .01f);
 
                     // Every seal starts again from the schedule at this tide, as on a region load.
                     host.Haulout = host.Haulout;
-                    if (shot.HullClose)
+                    if (shot.Dory)
                     {
-                        hull = NearestHull(new Vector2(186f, -50f));
+                        hull = NearestHull(DoryAt);
                         Assert.IsNotNull(hull, "no hull in St Peters to bring close.");
                         hullWas = hull.position;
                     }
-
-                    _follow.enabled = false;
-                    foreach (Behaviour ppc in pixelCameras) ppc.enabled = false;
-                    int w = Mathf.RoundToInt((SealX1 - SealX0) * BoardPixelsPerMetre);
-                    int h = Mathf.RoundToInt((SealY1 - SealY0) * BoardPixelsPerMetre);
-                    if (_rt == null || _rt.width != w || _rt.height != h)
-                    {
-                        if (_rt != null) { _cam.targetTexture = null; _rt.Release(); Object.DestroyImmediate(_rt); }
-                        _w = w; _h = h;
-                        _rt = new RenderTexture(_w, _h, 24, RenderTextureFormat.ARGBHalf);
-                        _rt.Create();
-                    }
-                    _cam.targetTexture = _rt;
-                    _cam.transform.position = new Vector3((SealX0 + SealX1) * 0.5f, (SealY0 + SealY1) * 0.5f, _cam.transform.position.z);
-                    _cam.orthographicSize = (SealY1 - SealY0) * 0.5f;
-                    _cam.aspect = (SealX1 - SealX0) / (SealY1 - SealY0);
+                    FrameTheSkerries(pixelCameras);
 
                     float run = Time.unscaledTime + 1.5f;
                     while (Time.unscaledTime < run) yield return null;
-                    if (shot.HullClose)
+                    if (!shot.Dory)
                     {
-                        // Shot while they react: the first frame any seal is alert or slipping (or 4 s).
-                        run = Time.unscaledTime + 4f;
-                        bool reacting = false;
-                        while (Time.unscaledTime < run && !reacting)
-                        {
-                            hull.position = new Vector3(HullCloseAt.x, HullCloseAt.y, hull.position.z);
-                            yield return null;
-                            for (int i = 0; i < host.SpotCount; i++)
-                                reacting |= host.PhaseOf(i) == SealPhase.Alert || host.PhaseOf(i) == SealPhase.SlidingIn;
-                        }
-                        run = Time.unscaledTime + 0.35f;
-                        while (Time.unscaledTime < run) { hull.position = new Vector3(HullCloseAt.x, HullCloseAt.y, hull.position.z); yield return null; }
-                        Debug.Log($"[SealPlates] hull '{hull.name}' held at {hull.position}; reacting={reacting}");
-                    }
-                    yield return ShadersReady();
-                    Time.timeScale = 0f;
-                    for (int i = 0; i < 2; i++) yield return null;
-
-                    // The rule a picture can break: no seal lying on a rock the water covers.
-                    for (int i = 0; i < host.SpotCount; i++)
-                    {
-                        SealPhase p = host.PhaseOf(i);
-                        if (p != SealPhase.Resting && p != SealPhase.Alert) continue;
-                        float lie = host.Haulout.Spots[i].LieMetres;
-                        Assert.IsTrue(TidalExposure.IsExposed(tide, lie),
-                            $"{shot.Id}: {host.Haulout.Spots[i].Id} lies on a rock at {lie} under water at {tide}");
+                        yield return ShootSealPlate(host, dir, shot.Id, tide);
+                        continue;
                     }
 
-                    var tex = new Texture2D(_w, _h, TextureFormat.RGBA32, false);
-                    tex.LoadRawTextureData(Capture());
-                    tex.Apply();
-                    string path = Path.Combine(dir, shot.Id + ".png");
-                    File.WriteAllBytes(path, tex.EncodeToPNG());
-                    Object.DestroyImmediate(tex);
-                    string phases = string.Join(" ", Enumerable.Range(0, host.SpotCount)
-                        .Select(i => host.Haulout.Spots[i].Id + ":" + host.PhaseOf(i)));
-                    Debug.Log($"[SealPlates] plate written: {path} (tide {tide:0.00}) {phases}");
-                    if (hull != null) { hull.position = hullWas; hull = null; }
-                    Time.timeScale = 1f;
+                    // The dory comes in from the east as a player would: from outside the alert ring at an easy row
+                    // (under the startle speed) until a seal looks up, then hard in until they slip off and heads
+                    // show in the water.
+                    Vector2 at = DoryFrom;
+                    run = Time.unscaledTime + 2f;
+                    while (Time.unscaledTime < run) { hull.position = new Vector3(at.x, at.y, hull.position.z); yield return null; }
+                    bool alert = false;
+                    while (!alert && at.x > DoryAlertStop.x)
+                    {
+                        at = Vector2.MoveTowards(at, DoryAlertStop, DoryEasySpeed * Time.deltaTime);
+                        hull.position = new Vector3(at.x, at.y, hull.position.z);
+                        yield return null;
+                        for (int i = 0; i < host.SpotCount; i++) alert |= host.PhaseOf(i) == SealPhase.Alert;
+                    }
+                    Debug.Log($"[SealPlates] dory '{hull.name}' at {hull.position}; alert={alert}");
+                    yield return ShootSealPlate(host, dir, shot.Id + "_alert", tide);
+                    bool heads = false;
+                    run = Time.unscaledTime + 8f;
+                    while (!heads && Time.unscaledTime < run)
+                    {
+                        at = Vector2.MoveTowards(at, DoryAt, DoryHardSpeed * Time.deltaTime);
+                        hull.position = new Vector3(at.x, at.y, hull.position.z);
+                        yield return null;
+                        for (int i = 0; i < host.SpotCount; i++)
+                            heads |= host.PhaseOf(i) == SealPhase.Swimming && host.SwimWet(i);
+                    }
+                    run = Time.unscaledTime + SlipPlateSeconds;
+                    while (Time.unscaledTime < run) { hull.position = new Vector3(at.x, at.y, hull.position.z); yield return null; }
+                    Debug.Log($"[SealPlates] dory at {hull.position}; heads={heads}");
+                    yield return ShootSealPlate(host, dir, shot.Id + "_slip", tide);
+                    hull.position = hullWas; hull = null;
                 }
                 Debug.Log("[SealPlates] PLATES_COMPLETE " + dir);
             }
@@ -182,6 +155,75 @@ namespace HiddenHarbours.Tests.PlayMode
                 _cam.transform.position = camAt;
                 Time.timeScale = 1f;
             }
+        }
+
+        /// <summary>The middle water where the schedule has some seals out and some heads up: swept, not guessed.</summary>
+        static float SweepMidWater(SealHaulout host, IEnvironmentService held)
+        {
+            int best = -1; float tide = MidSweepFrom;
+            for (float level = MidSweepFrom; level <= MidSweepTo + 1e-3f; level += MidSweepStep)
+            {
+                GameServices.Environment = new LandingBoardTide(held, level);
+                host.Haulout = host.Haulout;
+                host.TickNow(0.01f);
+                int hauled = 0, wet = 0;
+                for (int i = 0; i < host.SpotCount; i++)
+                {
+                    if (host.PlaceOf(i) == SealPlace.Hauled) hauled++;
+                    else if (host.PlaceOf(i) == SealPlace.InWater && host.SwimWet(i)) wet++;
+                }
+                int score = hauled > 0 && wet > 0 ? 100 + Mathf.Min(hauled, wet) : wet;
+                if (score > best) { best = score; tide = level; }
+            }
+            Debug.Log($"[SealPlates] mid water swept to {tide:0.00} (score {best})");
+            return tide;
+        }
+
+        void FrameTheSkerries(Behaviour[] pixelCameras)
+        {
+            _follow.enabled = false;
+            foreach (Behaviour ppc in pixelCameras) ppc.enabled = false;
+            int w = Mathf.RoundToInt((SealX1 - SealX0) * BoardPixelsPerMetre);
+            int h = Mathf.RoundToInt((SealY1 - SealY0) * BoardPixelsPerMetre);
+            if (_rt == null || _rt.width != w || _rt.height != h)
+            {
+                if (_rt != null) { _cam.targetTexture = null; _rt.Release(); Object.DestroyImmediate(_rt); }
+                _w = w; _h = h;
+                _rt = new RenderTexture(_w, _h, 24, RenderTextureFormat.ARGBHalf);
+                _rt.Create();
+            }
+            _cam.targetTexture = _rt;
+            _cam.transform.position = new Vector3((SealX0 + SealX1) * 0.5f, (SealY0 + SealY1) * 0.5f, _cam.transform.position.z);
+            _cam.orthographicSize = (SealY1 - SealY0) * 0.5f;
+            _cam.aspect = (SealX1 - SealX0) / (SealY1 - SealY0);
+        }
+
+        IEnumerator ShootSealPlate(SealHaulout host, string dir, string id, float tide)
+        {
+            yield return ShadersReady();
+            Time.timeScale = 0f;
+            for (int i = 0; i < 2; i++) yield return null;
+
+            // The rule a picture can break: no seal lying on a rock the water covers.
+            for (int i = 0; i < host.SpotCount; i++)
+            {
+                SealPhase p = host.PhaseOf(i);
+                if (p != SealPhase.Resting && p != SealPhase.Alert) continue;
+                float lie = host.Haulout.Spots[i].LieMetres;
+                Assert.IsTrue(TidalExposure.IsExposed(tide, lie),
+                    $"{id}: {host.Haulout.Spots[i].Id} lies on a rock at {lie} under water at {tide}");
+            }
+
+            var tex = new Texture2D(_w, _h, TextureFormat.RGBA32, false);
+            tex.LoadRawTextureData(Capture());
+            tex.Apply();
+            string path = Path.Combine(dir, id + ".png");
+            File.WriteAllBytes(path, tex.EncodeToPNG());
+            Object.DestroyImmediate(tex);
+            string phases = string.Join(" ", Enumerable.Range(0, host.SpotCount)
+                .Select(i => host.Haulout.Spots[i].Id + ":" + host.PhaseOf(i)));
+            Debug.Log($"[SealPlates] plate written: {path} (tide {tide:0.00}) {phases}");
+            Time.timeScale = 1f;
         }
 
         static Transform NearestHull(Vector2 near)

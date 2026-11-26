@@ -29,9 +29,10 @@ namespace HiddenHarbours.App.Editor
         public const string SpeciesId = "wildlife.grey_seal";
         public const string HauloutId = "haulout.st_peters.whelps";
 
-        // The sheet's grid (draw_seal: 6 x 5 cells of 64 x 32, belly / waterline at y 26 from the cell top).
-        public const int Columns = 6, Rows = 5, CellW = 64, CellH = 32, PixelsPerUnit = 32;
-        public static readonly Vector2 PivotFromTopLeft = new Vector2(32f, 26f);
+        // The sheet's grid: 6 x 5 cells of 80 x 40 px (2.5 x 1.25 m) holding a ~2 m seal nose to tail; the pivot
+        // is the belly's ground contact / the waterline, 32 px down from the cell top, centred.
+        public const int Columns = 6, Rows = 5, CellW = 80, CellH = 40, PixelsPerUnit = 32;
+        public static readonly Vector2 PivotFromTopLeft = new Vector2(40f, 32f);
 
         /// <summary>How many real frames each row holds (the rest of the row is blank).</summary>
         public static readonly int[] FramesPerRow = { 6, 4, 6, 4, 5 };

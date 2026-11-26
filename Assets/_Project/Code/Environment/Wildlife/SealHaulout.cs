@@ -25,17 +25,22 @@ namespace HiddenHarbours.Environment
     {
         // Frame choreography inside each row of the sheet (indices into the species' frame arrays). Which
         // frame follows which is the drawing's own grammar, not a balance number.
+        // The rest row holds three poses in pairs (flat, banana with head and tail up, on its side), each followed
+        // by its breath/idle frame. A spot keeps one pose (hashed); an idle entry is an offset from that pose (0 the
+        // pose, 1 its pair) or, negative, an alert-row frame -(k+1) shown in the rest facing (a head lifted, a yawn).
+        const int RestPoses = 3, RestPoseFrames = 2;
         static readonly int[] IdleBreath = { 0, 1, 1, 0 };
-        static readonly int[] IdleHeadLift = { 0, 2, 2, 2, 2, 0 };
-        static readonly int[] IdleYawn = { 2, 3, 3, 3, 2, 0 };
-        static readonly int[] IdleScratch = { 4, 5, 4, 5, 4, 0 };
-        static readonly int[][] Idles = { IdleBreath, IdleHeadLift, IdleYawn, IdleScratch };
+        static readonly int[] IdleShift = { 0, 1, 0, 1, 0 };
+        static readonly int[] IdleHeadLift = { 0, -1, -1, -1, -1, 0 };
+        static readonly int[] IdleYawn = { -1, -4, -4, -4, -1, 0 };
+        static readonly int[][] Idles = { IdleBreath, IdleShift, IdleHeadLift, IdleYawn };
         static readonly int[] SwimLook = { 0, 1, 0, 1, 2, 2, 2, 0, 1, 3, 3, 3 };
 
         /// <summary>How many points along the way to open water are tried for a wet one (a search resolution).</summary>
         const int SwimProbeSteps = 6;
 
-        const uint SaltIdleWhen = 0x71u, SaltIdleKind = 0x72u, SaltDrift = 0x73u, SaltSwimOffset = 0x74u;
+        const uint SaltIdleWhen = 0x71u, SaltIdleKind = 0x72u, SaltDrift = 0x73u, SaltSwimOffset = 0x74u,
+                   SaltRestPose = 0x75u;
 
         [SerializeField] SealHauloutDef _haulout;
 
@@ -58,6 +63,9 @@ namespace HiddenHarbours.Environment
         Vector2[] _swimAt;
         bool[] _swimWet;
         int[] _coverOrder;
+        int[] _restPose;
+        bool[] _restEast;
+        bool[] _threatEast;
         Vector2[] _drawnAt;
         float[] _sinceTick;
         float[] _nextIdle;
@@ -115,6 +123,9 @@ namespace HiddenHarbours.Environment
             _idleStart = new float[_count];
             _idleCount = new int[_count];
             _idleClock = new float[_count];
+            _restPose = new int[_count];
+            _restEast = new bool[_count];
+            _threatEast = new bool[_count];
             if (_renderers != null)
                 for (int i = 0; i < _renderers.Length; i++)
                     if (_renderers[i] != null) DestroyRenderer(_renderers[i].gameObject);
@@ -130,7 +141,8 @@ namespace HiddenHarbours.Environment
                 go.transform.SetParent(transform, false);
                 var sr = go.AddComponent<SpriteRenderer>();
                 sr.color = species.CoatFor(spot.Coat);
-                sr.flipX = FacesEast(spot.Facing, _spotHash[i]);
+                _restEast[i] = FacesEast(spot.Facing, _spotHash[i]);
+                sr.flipX = _restEast[i];
                 go.SetActive(false);
                 _renderers[i] = sr;
             }
@@ -233,21 +245,25 @@ namespace HiddenHarbours.Environment
                 if (!_begun[i])
                 {
                     _minds[i] = SealMind.Begin(_k, _places[i], _seed, _placeHash, _spotHash[i]);
+                    _restPose[i] = RestPoseOf(_seed, _placeHash, _spotHash[i]);
                     _begun[i] = true;
                 }
                 Vector2 here = _minds[i].Phase == SealPhase.Swimming || _minds[i].Phase == SealPhase.Diving
                     ? _swimAt[i] : spot.At;
-                float threat = NearestIntruder(here, player, wind);
+                float threat = NearestIntruder(here, player, wind, out float threatX);
+                if (threat < SealMind.NoIntruder) _threatEast[i] = threatX > here.x;
                 _minds[i] = SealMind.Step(_k, _minds[i], _places[i], threat, dt, _seed, _placeHash, _spotHash[i]);
                 _sinceTick[i] = 0f; // the frames run on from the phase time the tick just set
                 _swimAt[i] = SwimPoint(spot, i, tide.Level, terrain, out _swimWet[i]);
             }
         }
 
-        /// <summary>The nearest intruder's distance from <paramref name="at"/>, divided by its scare scale.</summary>
-        float NearestIntruder(Vector2 at, Transform player, Vector2 wind)
+        /// <summary>The nearest intruder's distance from <paramref name="at"/>, divided by its scare scale;
+        /// <paramref name="intruderX"/> is where it stands east-west (an alert seal looks that way).</summary>
+        float NearestIntruder(Vector2 at, Transform player, Vector2 wind, out float intruderX)
         {
             float best = SealMind.NoIntruder;
+            intruderX = at.x;
             var hulls = HullPresences.Active;
             bool playerAboard = false;
             Vector2 p = player != null ? (Vector2)player.position : Vector2.zero;
@@ -260,14 +276,14 @@ namespace HiddenHarbours.Environment
                     if (player != null && f.DistanceTo(p) <= 0f) playerAboard = true;
                     float d = f.DistanceTo(at);
                     float scaled = d / Mathf.Max(1e-3f, SealMind.WindScale(_k, at - f.Center, wind));
-                    if (scaled < best) best = scaled;
+                    if (scaled < best) { best = scaled; intruderX = f.Center.x; }
                 }
             if (player != null && !playerAboard)
             {
                 float d = Vector2.Distance(p, at);
                 float scale = SealMind.WindScale(_k, at - p, wind) * _k.OnFootDistanceScale;
                 float scaled = d / Mathf.Max(1e-3f, scale);
-                if (scaled < best) best = scaled;
+                if (scaled < best) { best = scaled; intruderX = p.x; }
             }
             return best;
         }
@@ -375,6 +391,12 @@ namespace HiddenHarbours.Environment
                     }
                 }
                 if (sr.sprite != sprite) sr.sprite = sprite;
+                // The sheet faces west. At rest a seal keeps its own facing; alert, it looks toward the intruder;
+                // leaving its rock or in the water, it faces the way to its water.
+                bool east = m.Phase == SealPhase.Resting ? _restEast[i]
+                    : m.Phase == SealPhase.Alert ? _threatEast[i]
+                    : _swimAt[i].x > spot.At.x;
+                if (sr.flipX != east) sr.flipX = east;
                 _drawnAt[i] = at;
                 sr.transform.localPosition = (Vector3)(at - (Vector2)transform.position);
                 float sortY = onLand ? at.y - spot.SortBelowMetres : at.y;
@@ -420,15 +442,22 @@ namespace HiddenHarbours.Environment
                 _idleKind[i] = Mathf.Min(Idles.Length - 1, (int)(uk * Idles.Length));
                 _idleStart[i] = t;
             }
-            if (_idleKind[i] < 0) return Pick(species.RestFrames, 0);
+            int pose = _restPose[i] * RestPoseFrames;
+            if (_idleKind[i] < 0) return Pick(species.RestFrames, pose);
             int[] run = Idles[_idleKind[i]];
             int f = (int)((t - _idleStart[i]) / frameSeconds);
-            if (f < run.Length) return Pick(species.RestFrames, run[f]);
+            if (f < run.Length)
+                return run[f] < 0 ? Pick(species.AlertFrames, -run[f] - 1) : Pick(species.RestFrames, pose + run[f]);
             _idleKind[i] = -1;
             _idleCount[i]++;
             _nextIdle[i] = t + IdleGap(species, i, _idleCount[i]);
-            return Pick(species.RestFrames, 0);
+            return Pick(species.RestFrames, pose);
         }
+
+        /// <summary>Which of the rest row's poses a spot lies in: from its hash, so the same seal lies the same way
+        /// every visit.</summary>
+        public static int RestPoseOf(int seed, uint placeHash, uint spotHash)
+            => Mathf.Min(RestPoses - 1, (int)(SealHash.Unit(seed, placeHash, spotHash, 0L, SaltRestPose) * RestPoses));
 
         static Sprite Pick(Sprite[] frames, int index)
         {

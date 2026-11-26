@@ -195,11 +195,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 128
-        width: 64
-        height: 32
+        y: 160
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -216,12 +216,12 @@ TextureImporter:
       name: Seal_r0_f1
       rect:
         serializedVersion: 2
-        x: 64
-        y: 128
-        width: 64
-        height: 32
+        x: 80
+        y: 160
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -238,12 +238,12 @@ TextureImporter:
       name: Seal_r0_f2
       rect:
         serializedVersion: 2
-        x: 128
-        y: 128
-        width: 64
-        height: 32
+        x: 160
+        y: 160
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -260,12 +260,12 @@ TextureImporter:
       name: Seal_r0_f3
       rect:
         serializedVersion: 2
-        x: 192
-        y: 128
-        width: 64
-        height: 32
+        x: 240
+        y: 160
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -282,12 +282,12 @@ TextureImporter:
       name: Seal_r0_f4
       rect:
         serializedVersion: 2
-        x: 256
-        y: 128
-        width: 64
-        height: 32
+        x: 320
+        y: 160
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -304,12 +304,12 @@ TextureImporter:
       name: Seal_r0_f5
       rect:
         serializedVersion: 2
-        x: 320
-        y: 128
-        width: 64
-        height: 32
+        x: 400
+        y: 160
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -327,11 +327,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 96
-        width: 64
-        height: 32
+        y: 120
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -348,12 +348,12 @@ TextureImporter:
       name: Seal_r1_f1
       rect:
         serializedVersion: 2
-        x: 64
-        y: 96
-        width: 64
-        height: 32
+        x: 80
+        y: 120
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -370,12 +370,12 @@ TextureImporter:
       name: Seal_r1_f2
       rect:
         serializedVersion: 2
-        x: 128
-        y: 96
-        width: 64
-        height: 32
+        x: 160
+        y: 120
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -392,12 +392,12 @@ TextureImporter:
       name: Seal_r1_f3
       rect:
         serializedVersion: 2
-        x: 192
-        y: 96
-        width: 64
-        height: 32
+        x: 240
+        y: 120
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -414,12 +414,12 @@ TextureImporter:
       name: Seal_r1_f4
       rect:
         serializedVersion: 2
-        x: 256
-        y: 96
-        width: 64
-        height: 32
+        x: 320
+        y: 120
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -436,12 +436,12 @@ TextureImporter:
       name: Seal_r1_f5
       rect:
         serializedVersion: 2
-        x: 320
-        y: 96
-        width: 64
-        height: 32
+        x: 400
+        y: 120
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -459,11 +459,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 64
-        width: 64
-        height: 32
+        y: 80
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -480,12 +480,12 @@ TextureImporter:
       name: Seal_r2_f1
       rect:
         serializedVersion: 2
-        x: 64
-        y: 64
-        width: 64
-        height: 32
+        x: 80
+        y: 80
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -502,12 +502,12 @@ TextureImporter:
       name: Seal_r2_f2
       rect:
         serializedVersion: 2
-        x: 128
-        y: 64
-        width: 64
-        height: 32
+        x: 160
+        y: 80
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -524,12 +524,12 @@ TextureImporter:
       name: Seal_r2_f3
       rect:
         serializedVersion: 2
-        x: 192
-        y: 64
-        width: 64
-        height: 32
+        x: 240
+        y: 80
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -546,12 +546,12 @@ TextureImporter:
       name: Seal_r2_f4
       rect:
         serializedVersion: 2
-        x: 256
-        y: 64
-        width: 64
-        height: 32
+        x: 320
+        y: 80
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -568,12 +568,12 @@ TextureImporter:
       name: Seal_r2_f5
       rect:
         serializedVersion: 2
-        x: 320
-        y: 64
-        width: 64
-        height: 32
+        x: 400
+        y: 80
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -591,11 +591,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 32
-        width: 64
-        height: 32
+        y: 40
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -612,12 +612,12 @@ TextureImporter:
       name: Seal_r3_f1
       rect:
         serializedVersion: 2
-        x: 64
-        y: 32
-        width: 64
-        height: 32
+        x: 80
+        y: 40
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -634,12 +634,12 @@ TextureImporter:
       name: Seal_r3_f2
       rect:
         serializedVersion: 2
-        x: 128
-        y: 32
-        width: 64
-        height: 32
+        x: 160
+        y: 40
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -656,12 +656,12 @@ TextureImporter:
       name: Seal_r3_f3
       rect:
         serializedVersion: 2
-        x: 192
-        y: 32
-        width: 64
-        height: 32
+        x: 240
+        y: 40
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -678,12 +678,12 @@ TextureImporter:
       name: Seal_r3_f4
       rect:
         serializedVersion: 2
-        x: 256
-        y: 32
-        width: 64
-        height: 32
+        x: 320
+        y: 40
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -700,12 +700,12 @@ TextureImporter:
       name: Seal_r3_f5
       rect:
         serializedVersion: 2
-        x: 320
-        y: 32
-        width: 64
-        height: 32
+        x: 400
+        y: 40
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -724,10 +724,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 64
-        height: 32
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -744,12 +744,12 @@ TextureImporter:
       name: Seal_r4_f1
       rect:
         serializedVersion: 2
-        x: 64
+        x: 80
         y: 0
-        width: 64
-        height: 32
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -766,12 +766,12 @@ TextureImporter:
       name: Seal_r4_f2
       rect:
         serializedVersion: 2
-        x: 128
+        x: 160
         y: 0
-        width: 64
-        height: 32
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -788,12 +788,12 @@ TextureImporter:
       name: Seal_r4_f3
       rect:
         serializedVersion: 2
-        x: 192
+        x: 240
         y: 0
-        width: 64
-        height: 32
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -810,12 +810,12 @@ TextureImporter:
       name: Seal_r4_f4
       rect:
         serializedVersion: 2
-        x: 256
+        x: 320
         y: 0
-        width: 64
-        height: 32
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -832,12 +832,12 @@ TextureImporter:
       name: Seal_r4_f5
       rect:
         serializedVersion: 2
-        x: 320
+        x: 400
         y: 0
-        width: 64
-        height: 32
+        width: 80
+        height: 40
       alignment: 9
-      pivot: {x: 0.5, y: 0.1875}
+      pivot: {x: 0.5, y: 0.2}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
