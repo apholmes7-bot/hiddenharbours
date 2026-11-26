@@ -3,6 +3,34 @@ using System.Collections.Generic;
 
 namespace HiddenHarbours.Core
 {
+    /// <summary>A pure decision over all participants, with stable refusal precedence regardless of roster order.</summary>
+    public sealed class RestQuorumRule : IRestQuorum
+    {
+        public const string NoPlayers = "sleep.no_players";
+        public const string RepeatedPlayer = "sleep.repeated_player";
+        public const string PlayerNotInBunk = "sleep.player_not_in_bunk";
+        public const string SharedBunk = "sleep.shared_bunk";
+
+        public RestDecision Evaluate(IReadOnlyList<RestParticipant> players)
+        {
+            if (players == null || players.Count == 0) return new RestDecision(false, NoPlayers);
+            var identities = new HashSet<int>();
+            var bunks = new HashSet<string>(StringComparer.Ordinal);
+            bool repeated = false, standing = false, shared = false;
+            for (int i = 0; i < players.Count; i++)
+            {
+                RestParticipant player = players[i];
+                if (!identities.Add(player.PlayerId)) repeated = true;
+                if (string.IsNullOrWhiteSpace(player.BunkId)) standing = true;
+                else if (!bunks.Add(player.BunkId)) shared = true;
+            }
+            if (repeated) return new RestDecision(false, RepeatedPlayer);
+            if (standing) return new RestDecision(false, PlayerNotInBunk);
+            if (shared) return new RestDecision(false, SharedBunk);
+            return new RestDecision(true, string.Empty);
+        }
+    }
+
     /// <summary>
     /// <b>Who has to be asleep before the night moves, and one sleeper per bed</b> (owner ruling
     /// 2026-11-15, "player/s able to cancel"). Multiplayer is NOT built; this is the seam in front of the
@@ -19,18 +47,52 @@ namespace HiddenHarbours.Core
         /// <summary>The local player's sleeper number. The only sleeper there is today.</summary>
         public const int LocalSleeper = 0;
 
-        /// <summary>How many players must be asleep for the night to move. One today: there is no
-        /// multiplayer. A session layer would raise this; nothing else needs to change.</summary>
+        /// <summary>The legacy local default. Supplied rosters are evaluated by IRestQuorum instead.</summary>
         public static int Players => 1;
 
-        /// <summary>Is the quorum met with <paramref name="sleepers"/> of <paramref name="players"/>
-        /// asleep? Everyone present must be asleep; a world with no players has no night to move.</summary>
+        /// <summary>Legacy count check. Counts cannot prove distinct bunks; the sleep flow uses EvaluateForRest.</summary>
         public static bool IsMet(int sleepers, int players) => players > 0 && sleepers >= players;
 
         /// <summary><see cref="IsMet(int, int)"/> against today's <see cref="Players"/>.</summary>
         public static bool IsMet(int sleepers) => IsMet(sleepers, Players);
 
         private static readonly Dictionary<string, int> Occupants = new Dictionary<string, int>(StringComparer.Ordinal);
+
+        private static readonly IRestQuorum Rule = new RestQuorumRule();
+        private const string LegacyLocalBunk = "rest.legacy_local";
+
+        /// <summary>
+        /// Optional session input: return every participating player, including anyone standing.
+        /// Called afresh at confirmation and before each clock advance. Returning null refuses sleep;
+        /// leaving this unset preserves the one-player rest adapter. Clear it when the session ends.
+        /// This supplies occupancy only; it does not create actors or write their state to the save.
+        /// </summary>
+        public static Func<IReadOnlyList<RestParticipant>> ParticipantSource { get; set; }
+
+        /// <summary>
+        /// A detached session snapshot. The unnamed single-player rest request remains a valid rest;
+        /// the compatibility id never enters a save or a supplied multi-player roster.
+        /// </summary>
+        public static RestParticipant[] SnapshotFor(string localBedId, bool requireLocalClaim = false)
+        {
+            if (ParticipantSource != null)
+            {
+                IReadOnlyList<RestParticipant> players = ParticipantSource();
+                if (players == null) return Array.Empty<RestParticipant>();
+                var snapshot = new RestParticipant[players.Count];
+                for (int i = 0; i < snapshot.Length; i++) snapshot[i] = players[i];
+                return snapshot;
+            }
+
+            string bunk = string.IsNullOrEmpty(localBedId) ? LegacyLocalBunk : localBedId;
+            if (requireLocalClaim && !string.IsNullOrEmpty(localBedId) &&
+                (!Occupants.TryGetValue(localBedId, out int occupant) || occupant != LocalSleeper))
+                bunk = null;
+            return new[] { new RestParticipant(LocalSleeper, bunk) };
+        }
+
+        public static RestDecision EvaluateForRest(string localBedId, bool requireLocalClaim = false) =>
+            Rule.Evaluate(SnapshotFor(localBedId, requireLocalClaim));
 
         /// <summary>
         /// Lie <paramref name="sleeper"/> down in <paramref name="bedId"/>. True if the bed was free or is
@@ -56,6 +118,10 @@ namespace HiddenHarbours.Core
         public static bool IsOccupied(string bedId) => !string.IsNullOrEmpty(bedId) && Occupants.ContainsKey(bedId);
 
         /// <summary>Everyone up (a teardown, a quit to the title, a test).</summary>
-        public static void Reset() => Occupants.Clear();
+        public static void Reset()
+        {
+            Occupants.Clear();
+            ParticipantSource = null;
+        }
     }
 }
