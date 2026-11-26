@@ -53,6 +53,23 @@ namespace HiddenHarbours.Art
         [Tooltip("The mix's seed. Change it to move every stretch; nothing else moves them.")]
         public int Seed = 1;
 
+        [Header("Rough edges: the brow and the foot broken into chips, notches, buttresses and bites (0 = off)")]
+        [Tooltip("How far the clifftop's line is pushed in and out, metres. Added to the kit's plan displacement, so the " +
+                 "face, its decals and its joins all follow it. 0 leaves the brow exactly as the kit draws it.")]
+        [Min(0f)] public float BrowJagMetres = 0f;
+        [Tooltip("How far the foot's line is pushed in and out, metres. The toe and face blockers stand on the same line " +
+                 "(closed over MinBiteMetres), so the drawn foot and the collision agree. 0 = off, and then the blockers " +
+                 "stand on the stations exactly as before.")]
+        [Min(0f)] public float FootJagMetres = 0f;
+        [Tooltip("The three scales the line is broken at, metres of coast per step on average: buttresses and bays, " +
+                 "notches, chips. Steps are measured along the run, never along the 12 m tile, so the tile does not repeat.")]
+        public Vector3 JagCellMetres = new Vector3(3f, 0.9f, 0.25f);
+        [Tooltip("Each scale's share of the reach above.")]
+        public Vector3 JagWeights = new Vector3(0.6f, 0.3f, 0.15f);
+        [Tooltip("The narrowest bite a walker may enter, metres: narrower bites in the foot are filled in the collision " +
+                 "(his foot is 0.7 m across), so nobody wedges in a notch.")]
+        [Min(0f)] public float MinBiteMetres = 1f;
+
         [TextArea] public string Why = "";
 
         /// <summary>True when the mix draws anything: a variant skin with a palette and a share above zero.</summary>

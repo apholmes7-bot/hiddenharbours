@@ -359,8 +359,42 @@ namespace HiddenHarbours.Art
         public IReadOnlyList<float> ToeElevations => _toeElevations;
 
         /// <summary>The chunk's DRAWN toe, one point per station, world XY: the line its blocker stands on.</summary>
-        public Vector2[] DrawnToe() =>
-            CliffWallGeometry.DrawnToe(BuildSamples(_browPlan, _toePlan, _dropMetres, _toeElevations));
+        public Vector2[] DrawnToe()
+        {
+            _jag = CliffJag.From(CliffFaceMixDef.ForScene(gameObject.scene.name));
+            return CollisionToe(BuildSamples(_browPlan, _toePlan, _dropMetres, _toeElevations));
+        }
+
+        /// <summary>The region's rough-edges jag for this build (see <see cref="CliffJagMath"/>); off by default.</summary>
+        private CliffJag _jag;
+
+        /// <summary>
+        /// The line both blockers stand on. With the jag off it is the stations' drawn toe, exactly as before. With it
+        /// on it is the foot the face is DRAWN at — the drawn toe pushed out by the same displacement the mesh reads at
+        /// t = 1 (the kit profile plus the jag) — closed over the narrowest bite a walker may enter, so the picture,
+        /// the collision and the wash (which rides the moved vertices) agree, and no notch can wedge him.
+        /// </summary>
+        private Vector2[] CollisionToe(CliffWallSample[] samples)
+        {
+            Vector2[] toe = CliffWallGeometry.DrawnToe(samples);
+            if (!_jag.On || samples.Length < 2) return toe;
+            // Along the run the way the face mesh counts it: the texture brow where one was moved out, else the brow.
+            Vector2[] alongBrow = _textureBrowPlan != null && _textureBrowPlan.Length == samples.Length
+                ? _textureBrowPlan : _browPlan;
+            var along = new float[samples.Length];
+            var outward = new float[samples.Length];
+            float arc = 0f;
+            for (int i = 0; i < samples.Length; i++)
+            {
+                if (i > 0) arc += Vector2.Distance(alongBrow[i - 1], alongBrow[i]);
+                along[i] = arc;
+                outward[i] = DisplacementAt(CliffWallGeometry.TileU(_alongOffsetMetres + arc, _faceMetresS), 1f);
+            }
+            float[] closed = CliffJagMath.Close(along, outward, _jag.MinBiteMetres);
+            for (int i = 0; i < samples.Length; i++)
+                toe[i] += CliffWallGeometry.OutwardPlan(in samples[i]) * closed[i];
+            return toe;
+        }
 
         /// <summary>Metres of shore spent before this chunk, within its run. See the class note.</summary>
         public float AlongOffsetMetres => _alongOffsetMetres;
@@ -487,7 +521,8 @@ namespace HiddenHarbours.Art
 
             // The wall the face implies, from the stations alone: before the channel and material checks, so a
             // checkout that has never baked the kit's PNGs walks the same coast as one that has.
-            Vector2[] drawnToe = CliffWallGeometry.DrawnToe(BuildSamples(_browPlan, _toePlan, _dropMetres, _toeElevations));
+            _jag = CliffJag.From(CliffFaceMixDef.ForScene(gameObject.scene.name));
+            Vector2[] drawnToe = CollisionToe(BuildSamples(_browPlan, _toePlan, _dropMetres, _toeElevations));
             BuildBlocker(drawnToe);
             BuildFaceBlocker(_browPlan, drawnToe);
 
@@ -990,9 +1025,11 @@ namespace HiddenHarbours.Art
         /// </summary>
         private float DisplacementAt(float uTiles, float t)
         {
-            if (_profile == null) return 0f;
+            // The rough-edges jag rides on top, read along the RUN (uTiles unwrapped), so it never repeats with the tile.
+            float jag = _jag.On ? CliffJagMath.At(in _jag, uTiles * _faceMetresS, t) : 0f;
+            if (_profile == null) return jag;
             float grey = _profile.GetPixelBilinear(CliffWallGeometry.WrapTile01(uTiles), 1f - t).r;
-            return CliffWallGeometry.ProfileMetresFromGrey(grey, _profileMetres);
+            return CliffWallGeometry.ProfileMetresFromGrey(grey, _profileMetres) + jag;
         }
 
         /// <summary>
