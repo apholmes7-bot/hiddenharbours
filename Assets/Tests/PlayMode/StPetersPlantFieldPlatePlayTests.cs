@@ -78,7 +78,7 @@ namespace HiddenHarbours.Tests.PlayMode
             var fields = Object.FindObjectsByType<PlantField>(FindObjectsSortMode.None);
             Assert.AreEqual(1, fields.Length, "St Peters ships one plant field");
             var field = fields[0];
-            if (after) Assert.AreEqual(9034, field.AuthoredPlantCount); // 9089 less the 45 that stood on the cottage above the Whelps and the 24 on the paths by it, plus 14 tufts at its yard's edge
+            if (after) Assert.AreEqual(9024, field.AuthoredPlantCount); // 9089 less the 45 that stood on the cottage above the Whelps and the 24 on the paths by it, plus 14 tufts at its yard's edge, less the 10 cleared from the trolley stage and the net shed's doorway
             else
             {
                 field.enabled = false;

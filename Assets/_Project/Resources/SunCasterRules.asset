@@ -54,6 +54,9 @@ MonoBehaviour:
   - '*Smoke*'
   - DeckRider
   - 'DeckGear_*'
+  - '*trolley_line*'
+  - '*trolley_stage*'
+  - '*net_shed_landing*'
   - 'NorthWall_*'
   - 'WaterSide_west_apron*'
   - 'WaterSide_fleet_crib*'

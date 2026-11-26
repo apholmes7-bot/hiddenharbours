@@ -1,0 +1,215 @@
+{
+ "schema": "hidden-harbours/st-peters-set-piece@1",
+ "generatedBy": "StPetersSetPieces 1.0.0",
+ "key": "shedLanding",
+ "id": "structure.stp_net_shed_landing",
+ "name": "Net shed landing",
+ "defType": "SetPieceDef",
+ "scene": "keyscene.stp_east_end",
+ "units": "metres, the piece's own frame: +x right, +y the show face, +z up from its ground point (the pivot)",
+ "bounds": {
+  "x": [
+   -1.753,
+   2.49
+  ],
+  "y": [
+   -1.19,
+   2.021
+  ],
+  "z": [
+   0,
+   0.21
+  ]
+ },
+ "layer": "floor",
+ "walk": "on",
+ "mount": "ground",
+ "colliders": [],
+ "facings": [
+  {
+   "dir": 0,
+   "showFaces": "N",
+   "bearingDeg": 0,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 1,
+   "showFaces": "NW",
+   "bearingDeg": 315,
+   "cameraSees": "its back"
+  },
+  {
+   "dir": 2,
+   "showFaces": "W",
+   "bearingDeg": 270,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 3,
+   "showFaces": "SW",
+   "bearingDeg": 225,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 4,
+   "showFaces": "S",
+   "bearingDeg": 180,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 5,
+   "showFaces": "SE",
+   "bearingDeg": 135,
+   "cameraSees": "the show face"
+  },
+  {
+   "dir": 6,
+   "showFaces": "E",
+   "bearingDeg": 90,
+   "cameraSees": "the show face, edge-on or at a diagonal"
+  },
+  {
+   "dir": 7,
+   "showFaces": "NE",
+   "bearingDeg": 45,
+   "cameraSees": "its back"
+  }
+ ],
+ "cells": [
+  {
+   "dir": 0,
+   "w": 143,
+   "h": 80,
+   "pivot": [
+    60,
+    48
+   ]
+  },
+  {
+   "dir": 1,
+   "w": 133,
+   "h": 112,
+   "pivot": [
+    55,
+    65
+   ]
+  },
+  {
+   "dir": 2,
+   "w": 110,
+   "h": 95,
+   "pivot": [
+    68,
+    55
+   ]
+  },
+  {
+   "dir": 3,
+   "w": 165,
+   "h": 91,
+   "pivot": [
+    96,
+    54
+   ]
+  },
+  {
+   "dir": 4,
+   "w": 143,
+   "h": 76,
+   "pivot": [
+    83,
+    31
+   ]
+  },
+  {
+   "dir": 5,
+   "w": 133,
+   "h": 111,
+   "pivot": [
+    77,
+    48
+   ]
+  },
+  {
+   "dir": 6,
+   "w": 110,
+   "h": 96,
+   "pivot": [
+    42,
+    41
+   ]
+  },
+  {
+   "dir": 7,
+   "w": 165,
+   "h": 93,
+   "pivot": [
+    69,
+    39
+   ]
+  }
+ ],
+ "anchors": {
+  "words": [],
+  "px": {}
+ },
+ "options": {
+  "deck": 0.1,
+  "board": 0.22,
+  "sill": 0.12,
+  "riser": 0.22,
+  "seed": 23,
+  "lip": 0.2,
+  "lipRag": 0.28,
+  "lipStep": 0.26,
+  "plan": [
+   [
+    -1.55,
+    0.56
+   ],
+   [
+    0.95,
+    1.88
+   ],
+   [
+    2.05,
+    1.88
+   ],
+   [
+    2.05,
+    -1.15
+   ],
+   [
+    -1.6,
+    -1.15
+   ]
+  ],
+  "foot": [
+   [
+    -0.96,
+    -0.03
+   ],
+   [
+    0.95,
+    1.88
+   ]
+  ],
+  "stones": [
+   [
+    0.13,
+    0.95,
+    0.22,
+    0.16
+   ],
+   [
+    0.21,
+    -0.42,
+    0.18,
+    0.15
+   ]
+  ]
+ },
+ "light": null,
+ "animated": null,
+ "notes": "A floor piece, walked on. Lies at the foot of the net shed's ramp and steps down on to the landing deck; its plan outline is metres from the anchor."
+}

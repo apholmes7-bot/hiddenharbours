@@ -14289,16 +14289,6 @@ MonoBehaviour:
     Species: 41
     Stage: 1
     Variant: 0
-  - Id: plant.stp_east_end_282
-    At: {x: 182.9, y: 5.9}
-    Species: 45
-    Stage: 0
-    Variant: 2
-  - Id: plant.stp_east_end_284
-    At: {x: 184.23, y: 6.34}
-    Species: 46
-    Stage: 1
-    Variant: 0
   - Id: plant.stp_east_end_289
     At: {x: 197.5, y: 6.37}
     Species: 33
@@ -14329,21 +14319,6 @@ MonoBehaviour:
     Species: 14
     Stage: 0
     Variant: 1
-  - Id: plant.stp_east_end_296
-    At: {x: 183.16, y: 6.75}
-    Species: 46
-    Stage: 0
-    Variant: 3
-  - Id: plant.stp_east_end_297
-    At: {x: 184.85, y: 6.77}
-    Species: 46
-    Stage: 0
-    Variant: 2
-  - Id: plant.stp_east_end_298
-    At: {x: 191.37, y: 6.65}
-    Species: 35
-    Stage: 0
-    Variant: 1
   - Id: plant.stp_east_end_299
     At: {x: 193.87, y: 6.8}
     Species: 37
@@ -14369,16 +14344,6 @@ MonoBehaviour:
     Species: 23
     Stage: 1
     Variant: 2
-  - Id: plant.stp_east_end_304
-    At: {x: 191.26, y: 7.45}
-    Species: 44
-    Stage: 0
-    Variant: 2
-  - Id: plant.stp_east_end_305
-    At: {x: 192.64, y: 7.17}
-    Species: 37
-    Stage: 0
-    Variant: 1
   - Id: plant.stp_east_end_306
     At: {x: 194.83, y: 7.33}
     Species: 15
@@ -14404,21 +14369,6 @@ MonoBehaviour:
     Species: 44
     Stage: 0
     Variant: 1
-  - Id: plant.stp_east_end_311
-    At: {x: 183.92, y: 8.13}
-    Species: 45
-    Stage: 0
-    Variant: 0
-  - Id: plant.stp_east_end_312
-    At: {x: 190.79, y: 7.71}
-    Species: 45
-    Stage: 0
-    Variant: 2
-  - Id: plant.stp_east_end_313
-    At: {x: 191.02, y: 8.21}
-    Species: 46
-    Stage: 0
-    Variant: 0
   - Id: plant.stp_east_end_314
     At: {x: 195.48, y: 8.15}
     Species: 37

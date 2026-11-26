@@ -108,7 +108,7 @@ MonoBehaviour:
     Kit: wharfDecor
     Piece: lanternPost
     State: 
-    At: {x: 184.5, y: 5.75220215}
+    At: {x: 186.6, y: 5.75220215}
     Z: 5.35
     StandsOn: deck
     MountHost: 
@@ -186,7 +186,7 @@ MonoBehaviour:
     Kit: wharfDecor
     Piece: toteStack
     State: 
-    At: {x: 190.1, y: 5.45220215}
+    At: {x: 199.35, y: 5.45220215}
     Z: 5.35
     StandsOn: deck
     MountHost: 
@@ -212,7 +212,7 @@ MonoBehaviour:
     Kit: wharfDecor
     Piece: dockCart
     State: 
-    At: {x: 193.2, y: 5.50220215}
+    At: {x: 197.9, y: 5.50220215}
     Z: 5.35
     StandsOn: deck
     MountHost: 
