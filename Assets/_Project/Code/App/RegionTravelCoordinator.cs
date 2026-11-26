@@ -432,6 +432,7 @@ namespace HiddenHarbours.App
         readonly List<string> _warmScenes = new List<string>();
         // The edge a seam crossing came in by, held until the mover is well inside it (PR 1223 play look).
         readonly SeamArrivalLatch _arrivalLatch = new SeamArrivalLatch();
+        string _refusedRegion;
 
         /// <summary>True while a seam arrival's edge is latched (read-only, for probes and tests).</summary>
         public bool SeamArrivalLatched => _arrivalLatch.Latched;
@@ -480,6 +481,16 @@ namespace HiddenHarbours.App
                 && d.Kind == CrossingKind.Cross
                 && _arrivalLatch.HoldsBack(arrived.LocalRect, mover.position, d.Edge))
                 d = CrossingDecision.Stay;
+            if (d.Kind == CrossingKind.Cross && _map != null
+                && _map.TryGet(d.To.RegionId, out RegionDef destination)
+                && !RegionBuildAvailability.IsAvailable(destination.Id, destination.SceneName))
+            {
+                if (_refusedRegion != destination.Id)
+                    EventBus.Publish(new RegionTravelRefused(destination.Id, destination.SceneName));
+                _refusedRegion = destination.Id;
+                d = new CrossingDecision(CrossingKind.Boundary, default, default, default, d.Edge);
+            }
+            else _refusedRegion = null;
             // Inside the region the mover may be heading for a neighbour; past an edge it is crossing or held.
             if (d.Kind == CrossingKind.Stay) WarmNeighbour(frame, here, mover.position, velocity);
             else TendWarmNeighbour(null, null);
@@ -644,7 +655,9 @@ namespace HiddenHarbours.App
                 return false;
             }
             CrossingDecision ahead = frame.Resolve(here, a.Probe, 0f);
-            if (ahead.Kind != CrossingKind.Cross)
+            if (ahead.Kind != CrossingKind.Cross || _map == null
+                || !_map.TryGet(ahead.To.RegionId, out RegionDef target)
+                || !RegionBuildAvailability.IsAvailable(target.Id, target.SceneName))
             {
                 _seamFade.NoApproach();   // a world boundary ahead: no fade, the edge holds the mover
                 return false;
@@ -720,7 +733,8 @@ namespace HiddenHarbours.App
             bool heading = _map != null && frame.TryGetApproachingNeighbour(here, moverLocal, velocity,
                     Mathf.Max(GameServices.RegionPreloadMinHeadingSpeed, MinHeadingSpeed),
                     GameServices.RegionPreloadDistanceMetres, out RegionFrame next)
-                && _map.TryGet(next.RegionId, out target) && target != null;
+                && _map.TryGet(next.RegionId, out target) && target != null
+                && RegionBuildAvailability.IsAvailable(target.Id, target.SceneName);
             TendWarmNeighbour(heading ? target.Id : null, heading ? target : null);
         }
 

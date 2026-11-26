@@ -148,6 +148,7 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public void ToggleHullVariant()
         {
+            if (!DemoBuild.DevShortcutsAllowed) return;
             var hull = _boat != null ? _boat.Hull : null;
             var visual = hull != null ? hull.Visual : null;
             if (visual == null || !visual.HasFullCompass() || !visual.HasHullMesh())
@@ -177,6 +178,7 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public void Next()
         {
+            if (!DemoBuild.DevShortcutsAllowed) return;
             if (_roster == null || _roster.Length == 0) return;
 
             // Walk at most one full lap: that terminates on an all-null roster instead of spinning, and it
@@ -198,6 +200,7 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public void Show(BoatHullDef hull)
         {
+            if (!DemoBuild.DevShortcutsAllowed) return;
             if (hull == null) return;
 
             _variantOverride = null;   // a roster hop always shows the hull as her DATA says (V re-forces)

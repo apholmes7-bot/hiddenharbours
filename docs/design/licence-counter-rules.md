@@ -1,13 +1,14 @@
 # Licence counter rules: current data and the limited-fishery proposal
 
 The island store sells one shellfish licence for 15. It covers soft-shell clams, blue mussels and
-American oysters. A cod licence costs 120 and is sold only at the mainland harbourmaster. Those are
+American oysters. A cod licence costs 60 and is sold at the island store (LeBlanc's, ruling
+2026-11-25) and at the mainland harbourmaster. Those are
 the only two licences on this baseline. The player can attempt a catch without either; at landing,
 a catch covered by a licence he does not hold goes back, with his spoken line and no catch record.
 
 The rule that **every catch needs a licence is not fully authored yet**. Fifteen of the nineteen
 species have no licence mapping and therefore currently bypass this release rule. Ten of those
-species occur in the island roster. Cod has a mapping but no island seller. The exceptions below
+species occur in the island roster. Cod has a mapping and an island seller. The exceptions below
 make these gaps visible; they do not approve them as permanent exemptions.
 
 The [limited-licences design](limited-licences-and-crewing.md), merged in PR #1493, describes a
@@ -32,7 +33,7 @@ catalog section `Gear`, sort order 50. Prices below are game-money integers, rea
 | Def / stable ID | Display name | Price | Seller / keeper | Species permitted |
 |---|---|---:|---|---|
 | [ClamLicense.asset](../../Assets/_Project/Data/Resources/Catalog/Licenses/ClamLicense.asset), `license.clam` | Shellfish Licence | 15 | `seller.leblancs` / `npc.marguerite_leblanc`, island general store | `fish.soft_shell_clam`, `fish.blue_mussel`, `fish.american_oyster` |
-| [CodLicense.asset](../../Assets/_Project/Data/Resources/Catalog/Licenses/CodLicense.asset), `license.cod` | Cod Fishing License | 120 | `seller.nmc_harbourmaster` / `npc.nmc_harbourmaster`, mainland counter | `fish.atlantic_cod` |
+| [CodLicense.asset](../../Assets/_Project/Data/Resources/Catalog/Licenses/CodLicense.asset), `license.cod` | Cod Fishing License | 60 | `seller.leblancs` / `npc.marguerite_leblanc`, island general store; `seller.nmc_harbourmaster` / `npc.nmc_harbourmaster`, mainland counter | `fish.atlantic_cod` |
 
 [SellerDefs](../../Assets/_Project/Data/Resources/Sellers/) carry stable seller, keeper and trade
 IDs. They have no region field. Island availability here means the existing island general-store
@@ -103,7 +104,7 @@ not a claim that all fourteen are obtainable in the first seven days.
 | Island species | First-week requirement from the design | Current result / known exception and reason |
 |---|---|---|
 | Soft-shell clam, blue mussel, American oyster | ordinary shellfish counter licence | **Available:** `license.clam` at the island store; the existing fronted fee covers it |
-| Atlantic cod | ordinary cod counter licence available before leaving the island | **Missing island offer:** `license.cod` exists but only names `seller.nmc_harbourmaster`; mainland access waits until about day 7 |
+| Atlantic cod | ordinary cod counter licence available before leaving the island | **Available:** `license.cod` at the island store (`seller.leblancs`) and the NMC harbourmaster |
 | Striped bass | counter licence is the §3 lean so the demo can keep its sport fish | **Missing Def/mapping:** proposal has not been authored |
 | Green crab | cheap counter licence is the §3 lean | **Missing Def/mapping:** which class covers it remains undecided |
 | Mackerel, rainbow smelt, winter flounder | ordinary rod-fish coverage under “every catch” | **Missing mappings:** class grouping, price and island listings are unspecified |
@@ -117,8 +118,8 @@ catalog gear under the existing trawl-arc contract. That is a named deferral, no
 licence exemption. Bluefin, halibut and swordfish in #1493 are later proposals, not current species
 assets. Shark is not proposed by that design.
 
-The first-week test expects exactly three covered species and eleven named gaps (cod's seller
-gap plus ten missing mappings). The full-roster test expects exactly fifteen missing mappings.
+The first-week test expects exactly four covered species (the three shellfish and cod) and ten
+named gaps (the ten missing mappings). The full-roster test expects exactly fifteen missing mappings.
 Resolving a gap must remove its exception and update this table in the same content change;
 neither an unnamed omission nor a stale exception passes silently.
 
