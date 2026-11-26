@@ -22,6 +22,14 @@ namespace HiddenHarbours.World
 
         public PropPieceDressing[] Dressings = Array.Empty<PropPieceDressing>();
 
+        [Tooltip("A floor run's planks drawn as a few long pictures instead of one object a plank: fewer objects in " +
+                 "the scene and fewer draw calls, the same pixels. Written by the bake step; the placer refuses a " +
+                 "bake that no longer matches its run.")]
+        public PropPieceBakedRun[] BakedRuns = Array.Empty<PropPieceBakedRun>();
+
+        [Tooltip("The longest a baked floor picture reaches either way, world metres.")]
+        [Min(1f)] public float BakeStripMaxMetres = 12f;
+
         public PropPieceKitEntry EntryFor(string piece)
         {
             foreach (PropPieceKitEntry e in Pieces ?? Array.Empty<PropPieceKitEntry>())
@@ -85,5 +93,41 @@ namespace HiddenHarbours.World
         public PropPieceDef Main;
         public PropPieceDef Alternate;
         [Min(0)] public int AlternateEvery;
+
+        [Tooltip("Moves a single piece off its row's point, world metres (a yard nudge the package's next issue should carry).")]
+        public Vector2 Offset;
+
+        [Tooltip("More of the kit laid with this row and drawn as its parts: beds in a garden, a walk to its gate.")]
+        public PropPieceExtra[] Extras = Array.Empty<PropPieceExtra>();
+    }
+
+    /// <summary>One baked picture of a row's floor run: the strip's picture, where its centre stands, and what it was baked from.</summary>
+    [Serializable]
+    public sealed class PropPieceBakedRun
+    {
+        [Tooltip("The key scene row's id.")]
+        public string Row = "";
+
+        [Tooltip("Which strip of the row, in the run's order.")]
+        [Min(0)] public int Index;
+
+        public Sprite Sprite;
+
+        [Tooltip("Where the strip's centre stands, world metres.")]
+        public Vector2 At;
+
+        [Tooltip("A hash of the planks it was baked from (their pictures and places); a mismatch means bake again.")]
+        public string Signature = "";
+    }
+
+    /// <summary>A piece of the kit laid with a row: one point for a single piece, a line of points for a floor run.</summary>
+    [Serializable]
+    public sealed class PropPieceExtra
+    {
+        [Tooltip("The kit's piece key (a single piece, or a floor run such as the plank walk).")]
+        public string Piece = "";
+
+        [Tooltip("World metres from the row's point: one point for a single piece, two or more for a run's line.")]
+        public Vector2[] Path = Array.Empty<Vector2>();
     }
 }

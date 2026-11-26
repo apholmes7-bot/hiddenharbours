@@ -28,6 +28,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 0acece68ab65cb34c9e79425aa64a4f6, type: 3}
   DirectionStepDegrees: 10
   PlanLengthMetres: 1.5
-  HeightMetres: 0.85
+  HeightMetres: 0.9
   RunColliderThicknessMetres: 0.35
   Colliders: []
+  CastsShadow: 0

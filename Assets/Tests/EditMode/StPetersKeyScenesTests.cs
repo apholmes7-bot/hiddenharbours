@@ -766,7 +766,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             Assert.IsFalse(patch.Deletions.Any(), "the step deleted something");
             Assert.AreEqual(1, patch.Ops.Count(o => o.Kind == OpKind.Edit), "the step edits the SceneRoots list and nothing else");
-            var scripts = new HashSet<string>(new[] { typeof(YSortSprite), typeof(TidalFaceWaterline), typeof(SetPieceWindVane), typeof(GullPerch) }
+            var scripts = new HashSet<string>(new[] { typeof(YSortSprite), typeof(TidalFaceWaterline), typeof(SetPieceWindVane), typeof(GullPerch), typeof(SpriteShadow) }
                                                   .Select(ty => ty.Assembly.GetName().Name + "::" + ty.FullName));
             foreach (Op op in patch.Ops.Where(o => o.Kind == OpKind.Add))
             {
@@ -994,7 +994,8 @@ namespace HiddenHarbours.Tests.EditMode
                     Assert.IsTrue(assets.TryPropKit(p.Kit, out PropPieceKitDef kit), $"no kit '{p.Kit}'");
                     var kitSprites = new HashSet<Sprite>(kit.Pieces.SelectMany(e => new[] { e.Main, e.Alternate, e.Corner, e.End, e.Gate, e.Bend })
                         .Concat(kit.Dressings.SelectMany(d => new[] { d.Main, d.Alternate }))
-                        .Where(d => d != null).SelectMany(d => d.Sprites));
+                        .Where(d => d != null).SelectMany(d => d.Sprites)
+                        .Concat(kit.BakedRuns.Where(b => b != null && b.Sprite != null).Select(b => b.Sprite)));
                     foreach (StPetersLayerRefresh.KeyScenePart part in p.Parts)
                     {
                         Sprite ps = SpriteAt(part.Sprite.Sprite);

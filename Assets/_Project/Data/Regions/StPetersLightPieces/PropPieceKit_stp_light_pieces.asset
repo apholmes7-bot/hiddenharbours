@@ -59,8 +59,75 @@ MonoBehaviour:
     CornerTurnDegrees: 12
     GateGapMaxMetres: 1.6
     GateSwingDegrees: 70
+  - Piece: gardenBed
+    Main: {fileID: 11400000, guid: 12a914acc7b29774b9cb919c989b8014, type: 2}
+    Alternate: {fileID: 0}
+    AlternateEvery: 0
+    Corner: {fileID: 0}
+    End: {fileID: 0}
+    Gate: {fileID: 0}
+    Bend: {fileID: 0}
+    CornerTurnDegrees: 20
+    GateGapMaxMetres: 1.6
+    GateSwingDegrees: 70
   Dressings:
   - PieceId: structure.stp_ne_brow_fence
     Main: {fileID: 11400000, guid: 4a152714bc703ea46bd9c85561ed397e, type: 2}
     Alternate: {fileID: 11400000, guid: ea423bebedda58a489e612b5bea09770, type: 2}
     AlternateEvery: 7
+    Offset: {x: 0, y: 0}
+    Extras: []
+  - PieceId: structure.stp_ne_garden_fence
+    Main: {fileID: 0}
+    Alternate: {fileID: 0}
+    AlternateEvery: 0
+    Offset: {x: 0, y: 0}
+    Extras:
+    - Piece: gardenBed
+      Path:
+      - {x: 1.05, y: 1.8}
+    - Piece: gardenBed
+      Path:
+      - {x: 3.65, y: 1.8}
+    - Piece: plank
+      Path:
+      - {x: 2.55, y: -6.9}
+      - {x: 2.55, y: 3}
+  - PieceId: prop.stp_ne_clothesline
+    Main: {fileID: 0}
+    Alternate: {fileID: 0}
+    AlternateEvery: 0
+    Offset: {x: 0.6, y: -4}
+    Extras: []
+  BakedRuns:
+  - Row: structure.stp_ne_garden_fence
+    Index: 0
+    Sprite: {fileID: 21300000, guid: 40044d66ea20a374ca37796f138f62cc, type: 3}
+    At: {x: 189.75, y: 56.0625}
+    Signature: 6f32d718831fe527
+  - Row: path.stp_ne_plank
+    Index: 0
+    Sprite: {fileID: 21300000, guid: 15d5b1ab0c7803f48b20c99f493c6c4f, type: 3}
+    At: {x: 168.6875, y: 45.0625}
+    Signature: b918c38f8864afb1
+  - Row: path.stp_ne_plank
+    Index: 1
+    Sprite: {fileID: 21300000, guid: e93d2b52cc9695e4c855fdc342b32575, type: 3}
+    At: {x: 204.3125, y: 54.75}
+    Signature: ceeda58e0708cff8
+  - Row: path.stp_ne_plank
+    Index: 2
+    Sprite: {fileID: 21300000, guid: 5e5c1900d9d9a22408985920771fdf43, type: 3}
+    At: {x: 175.375, y: 46.65625}
+    Signature: 0df0b879387a16fc
+  - Row: path.stp_ne_plank
+    Index: 3
+    Sprite: {fileID: 21300000, guid: dd0016f508321d247b9004acb6a7250f, type: 3}
+    At: {x: 187.9375, y: 50.34375}
+    Signature: e26294dfd13bc707
+  - Row: path.stp_ne_plank
+    Index: 4
+    Sprite: {fileID: 21300000, guid: 12bb4066ba628e744a7f2b4eb4df58b1, type: 3}
+    At: {x: 198.96875, y: 53.65625}
+    Signature: 01b586bda217c541
+  BakeStripMaxMetres: 12

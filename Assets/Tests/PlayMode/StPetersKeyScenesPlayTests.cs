@@ -161,7 +161,7 @@ namespace HiddenHarbours.Tests.PlayMode
                         Assert.IsTrue(pg == part.Sprite.Sprite.Guid && pl == part.Sprite.Sprite.FileId, $"{part.Name} shows another picture");
                         Assert.AreEqual(part.FlipX, psr.flipX, $"{part.Name}'s flip");
                         Assert.AreEqual(part.SortingOrder, psr.sortingOrder, $"{part.Name}'s order");
-                        Assert.AreEqual(part.Floor, child.GetComponent<YSortSprite>() == null, $"{part.Name}'s sorter");
+                        Assert.IsNull(child.GetComponent<YSortSprite>(), $"{part.Name} never moves: its order is written, it has no sorter");
                     }
                     var runWalls = piece.GetComponent<PolygonCollider2D>();
                     Assert.AreEqual(p.Walls.Count, runWalls != null ? runWalls.pathCount : 0, $"{p.Id}'s walls");

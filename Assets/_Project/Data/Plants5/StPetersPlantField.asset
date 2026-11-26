@@ -43514,11 +43514,6 @@ MonoBehaviour:
     Species: 5
     Stage: 0
     Variant: 2
-  - Id: plant.stp_ne_light_266
-    At: {x: 189.81, y: 52.44}
-    Species: 45
-    Stage: 0
-    Variant: 1
   - Id: plant.stp_ne_light_267
     At: {x: 176.27, y: 53.39}
     Species: 45
@@ -43619,16 +43614,6 @@ MonoBehaviour:
     Species: 45
     Stage: 0
     Variant: 0
-  - Id: plant.stp_ne_light_287
-    At: {x: 189.21, y: 54.63}
-    Species: 42
-    Stage: 0
-    Variant: 0
-  - Id: plant.stp_ne_light_288
-    At: {x: 190.13, y: 54.53}
-    Species: 1
-    Stage: 0
-    Variant: 1
   - Id: plant.stp_ne_light_289
     At: {x: 219.25, y: 54.68}
     Species: 25
@@ -43659,11 +43644,6 @@ MonoBehaviour:
     Species: 45
     Stage: 1
     Variant: 2
-  - Id: plant.stp_ne_light_295
-    At: {x: 189.21, y: 55.33}
-    Species: 15
-    Stage: 1
-    Variant: 3
   - Id: plant.stp_ne_light_296
     At: {x: 195.89, y: 55.04}
     Species: 42

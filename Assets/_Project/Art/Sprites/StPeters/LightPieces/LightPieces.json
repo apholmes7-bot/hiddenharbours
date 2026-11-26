@@ -36,7 +36,7 @@
       ],
       "planLengthMetres": 1.5,
       "layer": "raised",
-      "heightMetres": 0.85
+      "heightMetres": 0.9
     },
     {
       "name": "PicketPanel_weathered",
@@ -56,7 +56,7 @@
       ],
       "planLengthMetres": 1.5,
       "layer": "raised",
-      "heightMetres": 0.85
+      "heightMetres": 0.9
     },
     {
       "name": "PicketPanel_broken",
@@ -76,7 +76,7 @@
       ],
       "planLengthMetres": 1.5,
       "layer": "raised",
-      "heightMetres": 0.85
+      "heightMetres": 0.9
     },
     {
       "name": "PicketGate",
@@ -96,7 +96,7 @@
       ],
       "planLengthMetres": 1,
       "layer": "raised",
-      "heightMetres": 0.85
+      "heightMetres": 0.9
     },
     {
       "name": "Plank",
@@ -164,7 +164,7 @@
       "layer": "raised",
       "sprite": "PicketCorner.png",
       "widthPx": 4,
-      "heightPx": 54,
+      "heightPx": 56,
       "footprintHalfMetres": {
         "x": 0.065,
         "y": 0.0418
@@ -176,7 +176,7 @@
       "layer": "raised",
       "sprite": "PicketEnd.png",
       "widthPx": 4,
-      "heightPx": 58,
+      "heightPx": 60,
       "footprintHalfMetres": {
         "x": 0.065,
         "y": 0.0418
@@ -188,7 +188,8 @@
       "layer": "raised",
       "sprite": "FogBell.png",
       "widthPx": 52,
-      "heightPx": 122,
+      "heightPx": 162,
+      "heightMetres": 3.05,
       "footprintHalfMetres": {
         "x": 0.8,
         "y": 0.2571
@@ -199,15 +200,29 @@
       "kind": "single",
       "layer": "raised",
       "sprite": "Clothesline.png",
-      "widthPx": 124,
-      "heightPx": 98,
+      "widthPx": 204,
+      "heightPx": 102,
+      "heightMetres": 2,
       "postsAtMetres": [
-        -1.8,
-        1.8
+        -3,
+        3
       ],
       "postHalfMetres": {
         "x": 0.08,
         "y": 0.0514
+      }
+    },
+    {
+      "name": "GardenBed",
+      "kind": "single",
+      "layer": "raised",
+      "sprite": "GardenBed.png",
+      "widthPx": 38,
+      "heightPx": 90,
+      "heightMetres": 0.15,
+      "footprintHalfMetres": {
+        "x": 0.6,
+        "y": 1.2856
       }
     }
   ]

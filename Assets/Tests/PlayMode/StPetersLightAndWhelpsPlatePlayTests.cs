@@ -82,6 +82,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
         const string EastCardinalNightFrame = "ne_props.east_buoy.2230";
         const string EastCardinalMark = "NavMark_aid.stp_ne_bar_east_cardinal";
+        const string NineMileCreek = "NineMileCreek";
 
         /// <summary>
         /// The first hour at or after <paramref name="hour"/> that lands in the middle of one of the east cardinal's
@@ -93,19 +94,147 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsNotNull(mark, EastCardinalMark + " is not in St Peters.");
             var lamp = mark.GetComponentInChildren<HiddenHarbours.Art.NavLight>(true);
             Assert.IsNotNull(lamp, "the east cardinal carries no lamp.");
-            Assert.IsTrue(lamp.IsLit, "the east cardinal's lamp is unlit.");
+            return HourTheLampBurns(lamp, hour);
+        }
+
+        /// <summary>The first hour at or after <paramref name="hour"/> in the middle of one of a lamp's flashes.</summary>
+        static float HourTheLampBurns(HiddenHarbours.Art.NavLight lamp, float hour)
+        {
+            Assert.IsTrue(lamp.IsLit, lamp.name + " is unlit.");
             double spd = GameServices.Config.SecondsPerDay;
             const double step = 0.02;
             int first = -1;
-            for (int k = 0; k < 1000; k++)
+            for (int k = 0; k < 1500; k++)
             {
                 float h = hour + (float)(k * step / spd * 24.0);
                 bool on = lamp.Character.IsOn((1.0 + h / 24.0) * spd, lamp.PhaseSeconds);
                 if (on && first < 0) first = k;
                 if (!on && first >= 0) return hour + (float)((first + k - 1) * 0.5 * step / spd * 24.0);
             }
-            Assert.Fail("the east cardinal never flashed in twenty seconds of clock.");
+            Assert.Fail(lamp.name + " never flashed in thirty seconds of clock.");
             return hour;
+        }
+
+        /// <summary>
+        /// Every light that burns inside a frame (a scene light, a 2D light, a nav lamp), with where it hangs and how
+        /// bright: the trace of a glow on a plate that no one placed on purpose.
+        /// </summary>
+        static void TraceTheGlows(BoardFrame frame)
+        {
+            const float margin = 6f;
+            foreach (Behaviour b in Object.FindObjectsByType<Behaviour>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+            {
+                string type = b.GetType().Name;
+                if (type != "SceneLight" && type != "Light2D" && type != "NavLight") continue;
+                Vector3 p = b.transform.position;
+                if (p.x < frame.X0 - margin || p.x > frame.X1 + margin || p.y < frame.YBottom - margin || p.y > frame.YTop + margin) continue;
+                object intensity = b.GetType().GetProperty("intensity")?.GetValue(b);
+                string path = b.name;
+                for (Transform t = b.transform.parent; t != null; t = t.parent) path = t.name + "/" + path;
+                Debug.Log($"[KeySceneBoards] glow in {frame.Id}: {type} {path} at ({p.x:F2}, {p.y:F2}) enabled {b.isActiveAndEnabled}" +
+                          (intensity != null ? $" intensity {intensity}" : ""));
+            }
+        }
+
+        /// <summary>The editor's render statistics for the last frame (UnityEditor.UnityStats), read by name; n/a in a player.</summary>
+        static string EditorStat(string name)
+        {
+            var stats = System.Type.GetType("UnityEditor.UnityStats, UnityEditor");
+            object v = stats?.GetProperty(name, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)?.GetValue(null);
+            return v != null ? v.ToString() : "n/a";
+        }
+
+        /// <summary>Shoots one frame at its hour and tide into <paramref name="dir"/>, the follow and the pixel camera
+        /// off, and logs the frame's draw calls.</summary>
+        IEnumerator ShootBoard(BoardFrame frame, float hour, string dir, IEnvironmentService held, Behaviour[] pixelCameras,
+                               Unity.Profiling.ProfilerRecorder drawCalls)
+        {
+            yield return PinTheHour(hour, ClearRunSeconds);
+
+            GameServices.Environment = new LandingBoardTide(held, frame.Tide);
+            Time.timeScale = 1f;
+            float until = Time.realtimeSinceStartup + 20f;
+            do { yield return null; }
+            while (Time.realtimeSinceStartup < until &&
+                   (Shader.GetGlobalVector("_HHSeaLevelWorld").w < .5f ||
+                    Mathf.Abs(Shader.GetGlobalVector("_HHSeaLevelWorld").x - frame.Tide) > .01f));
+
+            _follow.enabled = false;
+            foreach (Behaviour ppc in pixelCameras) ppc.enabled = false;
+            int w = Mathf.RoundToInt(frame.Width * BoardPixelsPerMetre);
+            int h = Mathf.RoundToInt(frame.Height * BoardPixelsPerMetre);
+            if (_rt == null || _rt.width != w || _rt.height != h)
+            {
+                if (_rt != null) { _cam.targetTexture = null; _rt.Release(); Object.DestroyImmediate(_rt); }
+                _w = w; _h = h;
+                _rt = new RenderTexture(_w, _h, 24, RenderTextureFormat.ARGBHalf);
+                _rt.Create();
+            }
+            _cam.targetTexture = _rt;
+            _cam.transform.position = new Vector3(frame.Centre.x, frame.Centre.y, _cam.transform.position.z);
+            _cam.orthographicSize = frame.Height * 0.5f;
+            _cam.aspect = frame.Width / frame.Height;
+
+            float run = Time.unscaledTime + ClearRunSeconds * 2f;
+            while (Time.unscaledTime < run) yield return null;
+            yield return ShadersReady();
+            Time.timeScale = 0f;
+            for (int i = 0; i < 2; i++) yield return null;
+
+            var tex = new Texture2D(_w, _h, TextureFormat.RGBA32, false);
+            tex.LoadRawTextureData(Capture());
+            tex.Apply();
+            string path = Path.Combine(dir, frame.Id + ".png");
+            File.WriteAllBytes(path, tex.EncodeToPNG());
+            Object.DestroyImmediate(tex);
+            Color tint = Shader.GetGlobalColor("_DayNightTint");
+            Debug.Log($"[KeySceneBoards] plate written: {path} ({_w}x{_h}, hour {hour}, tide {frame.Tide}, day tint {tint.r:F3} {tint.g:F3} {tint.b:F3}, " +
+                      $"draw calls {(drawCalls.Valid ? drawCalls.LastValue.ToString() : EditorStat("drawCalls"))}, batches {EditorStat("batches")}, set-pass {EditorStat("setPassCalls")})");
+            if (frame.Id.Contains("2230")) TraceTheGlows(frame);
+        }
+
+        /// <summary>
+        /// A lit mark at Nine Mile Creek at the east cardinal's night hour, in the middle of one of its flashes and
+        /// framed as the east cardinal is (24 x 14 m): how bright a lit mark reads beside hers.
+        /// </summary>
+        [UnityTest, Timeout(900000)]
+        public IEnumerator NineMileCreek_ALitMark_AtTheEastCardinalsNightHour()
+        {
+            RequireAGraphicsDevice();
+            string dir = System.Environment.GetEnvironmentVariable(KeySceneBoardPlatesVariable);
+            if (string.IsNullOrEmpty(dir)) Assert.Ignore(KeySceneBoardPlatesVariable + " is unset: this comparison plate is shot on request.");
+            yield return LoadRegion(StPeters);   // the persistent core and its play camera come up with St Peters
+            yield return LoadRegion(NineMileCreek);
+            EnsureTheFollow();
+            HoldTheMood();
+            var lamp = Object.FindObjectsByType<HiddenHarbours.Art.NavLight>(FindObjectsSortMode.None)
+                .Where(l => l.IsLit).OrderBy(l => l.name, System.StringComparer.Ordinal).FirstOrDefault();
+            Assert.IsNotNull(lamp, "Nine Mile Creek holds no lit mark.");
+            Vector3 at = lamp.transform.position;
+            var frame = new BoardFrame("ne_props.nmc_lit_mark.2230", at.x - 12f, at.x + 12f, at.y - 7f, at.y + 7f, 22.5f, 0.63f);
+            Debug.Log($"[KeySceneBoards] the Nine Mile Creek mark: {lamp.name} at ({at.x:F2}, {at.y:F2})");
+
+            IEnvironmentService held = GameServices.Environment;
+            bool followEnabled = _follow.enabled;
+            float aspect = _cam.aspect, ortho = _cam.orthographicSize;
+            Vector3 camAt = _cam.transform.position;
+            var pixelCameras = _cam.GetComponents<Behaviour>().Where(b => b.GetType().Name == "PixelPerfectCamera" && b.enabled).ToArray();
+            var drawCalls = Unity.Profiling.ProfilerRecorder.StartNew(Unity.Profiling.ProfilerCategory.Render, "Draw Calls Count");
+            try
+            {
+                yield return ShootBoard(frame, HourTheLampBurns(lamp, frame.Hour), dir, held, pixelCameras, drawCalls);
+            }
+            finally
+            {
+                drawCalls.Dispose();
+                GameServices.Environment = held;
+                _follow.enabled = followEnabled;
+                foreach (Behaviour ppc in pixelCameras) if (ppc != null) ppc.enabled = true;
+                _cam.aspect = aspect;
+                _cam.orthographicSize = ortho;
+                _cam.transform.position = camAt;
+                Time.timeScale = 1f;
+            }
         }
 
         /// <summary>The north-east light in the loaded region: its lantern is where the clock says, at any hour.</summary>
@@ -194,6 +323,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Vector3 camAt = _cam.transform.position;
             var pixelCameras = _cam.GetComponents<Behaviour>()
                 .Where(b => b.GetType().Name == "PixelPerfectCamera" && b.enabled).ToArray();
+            var drawCalls = Unity.Profiling.ProfilerRecorder.StartNew(Unity.Profiling.ProfilerCategory.Render, "Draw Calls Count");
             try
             {
                 string only = System.Environment.GetEnvironmentVariable(KeySceneBoardFramesVariable);
@@ -201,51 +331,13 @@ namespace HiddenHarbours.Tests.PlayMode
                 {
                     if (!string.IsNullOrEmpty(only) && !frame.Id.Contains(only)) continue;
                     float hour = frame.Id == EastCardinalNightFrame ? HourTheEastCardinalBurns(frame.Hour) : frame.Hour;
-                    yield return PinTheHour(hour, ClearRunSeconds);
-
-                    GameServices.Environment = new LandingBoardTide(held, frame.Tide);
-                    Time.timeScale = 1f;
-                    float until = Time.realtimeSinceStartup + 20f;
-                    do { yield return null; }
-                    while (Time.realtimeSinceStartup < until &&
-                           (Shader.GetGlobalVector("_HHSeaLevelWorld").w < .5f ||
-                            Mathf.Abs(Shader.GetGlobalVector("_HHSeaLevelWorld").x - frame.Tide) > .01f));
-
-                    _follow.enabled = false;
-                    foreach (Behaviour ppc in pixelCameras) ppc.enabled = false;
-                    int w = Mathf.RoundToInt(frame.Width * BoardPixelsPerMetre);
-                    int h = Mathf.RoundToInt(frame.Height * BoardPixelsPerMetre);
-                    if (_rt == null || _rt.width != w || _rt.height != h)
-                    {
-                        if (_rt != null) { _cam.targetTexture = null; _rt.Release(); Object.DestroyImmediate(_rt); }
-                        _w = w; _h = h;
-                        _rt = new RenderTexture(_w, _h, 24, RenderTextureFormat.ARGBHalf);
-                        _rt.Create();
-                    }
-                    _cam.targetTexture = _rt;
-                    _cam.transform.position = new Vector3(frame.Centre.x, frame.Centre.y, _cam.transform.position.z);
-                    _cam.orthographicSize = frame.Height * 0.5f;
-                    _cam.aspect = frame.Width / frame.Height;
-
-                    float run = Time.unscaledTime + ClearRunSeconds * 2f;
-                    while (Time.unscaledTime < run) yield return null;
-                    yield return ShadersReady();
-                    Time.timeScale = 0f;
-                    for (int i = 0; i < 2; i++) yield return null;
-
-                    var tex = new Texture2D(_w, _h, TextureFormat.RGBA32, false);
-                    tex.LoadRawTextureData(Capture());
-                    tex.Apply();
-                    string path = Path.Combine(dir, frame.Id + ".png");
-                    File.WriteAllBytes(path, tex.EncodeToPNG());
-                    Object.DestroyImmediate(tex);
-                    Color tint = Shader.GetGlobalColor("_DayNightTint");
-                    Debug.Log($"[KeySceneBoards] plate written: {path} ({_w}x{_h}, hour {hour}, tide {frame.Tide}, day tint {tint.r:F3} {tint.g:F3} {tint.b:F3})");
+                    yield return ShootBoard(frame, hour, dir, held, pixelCameras, drawCalls);
                 }
                 Debug.Log("[KeySceneBoards] PLATES_COMPLETE " + dir);
             }
             finally
             {
+                drawCalls.Dispose();
                 GameServices.Environment = held;
                 _follow.enabled = followEnabled;
                 foreach (Behaviour ppc in pixelCameras) if (ppc != null) ppc.enabled = true;

@@ -19,16 +19,17 @@ MonoBehaviour:
   - {fileID: 21300000, guid: e4106c1befe37eb4fac8ca3b51d9f0ca, type: 3}
   DirectionStepDegrees: 0
   PlanLengthMetres: 0
-  HeightMetres: 0
+  HeightMetres: 2
   RunColliderThicknessMetres: 0
   Colliders:
   - Points:
-    - {x: -1.88, y: -0.0514}
-    - {x: -1.7199999, y: -0.0514}
-    - {x: -1.7199999, y: 0.0514}
-    - {x: -1.88, y: 0.0514}
+    - {x: -3.08, y: -0.0514}
+    - {x: -2.92, y: -0.0514}
+    - {x: -2.92, y: 0.0514}
+    - {x: -3.08, y: 0.0514}
   - Points:
-    - {x: 1.7199999, y: -0.0514}
-    - {x: 1.88, y: -0.0514}
-    - {x: 1.88, y: 0.0514}
-    - {x: 1.7199999, y: 0.0514}
+    - {x: 2.92, y: -0.0514}
+    - {x: 3.08, y: -0.0514}
+    - {x: 3.08, y: 0.0514}
+    - {x: 2.92, y: 0.0514}
+  CastsShadow: 0

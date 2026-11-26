@@ -45,6 +45,9 @@ namespace HiddenHarbours.World
         [Tooltip("A single piece's walk-blocking shapes, world metres from its ground point. None lets a walker through.")]
         public PropPieceShape[] Colliders = Array.Empty<PropPieceShape>();
 
+        [Tooltip("A single raised piece casts the sun's shadow from its ground point, as the other standing props do.")]
+        public bool CastsShadow;
+
         public bool IsRun => Sprites != null && Sprites.Length > 1;
         public bool IsFloor => Layer == FloorLayer;
 

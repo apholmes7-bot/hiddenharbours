@@ -156,6 +156,9 @@ namespace HiddenHarbours.App.Editor
             public bool IsPerch;
             public Vector2 GroundPoint;
 
+            /// <summary>A standing yard piece that casts the sun's shadow (<see cref="PropPieceDef.CastsShadow"/>).</summary>
+            public bool CastsShadow;
+
             /// <summary>A run piece's pictures (<see cref="PropPiecesKit"/>), each a child of the piece's object; null
             /// for a piece that is one picture.</summary>
             public List<KeyScenePart> Parts;
@@ -436,23 +439,13 @@ namespace HiddenHarbours.App.Editor
                             string key = "part" + j.ToString("00", System.Globalization.CultureInfo.InvariantCulture);
                             long pGo = ids.Next(KeyOf(ks.Id, p.Id, key, "GameObject")), pTr = ids.Next(KeyOf(ks.Id, p.Id, key, "Transform"));
                             long pSr = ids.Next(KeyOf(ks.Id, p.Id, key, "SpriteRenderer"));
-                            long pSort = part.Floor ? 0 : ids.Next(KeyOf(ks.Id, p.Id, key, "YSortSprite"));
+                            // A part never moves, so its order is written once, here, from its ground line and it carries
+                            // no sorter of its own (no scene shifts a region): a document a picture fewer.
                             var pComps = new List<long> { pTr, pSr };
-                            if (pSort != 0) pComps.Add(pSort);
                             partDocs.Add(Want(GameObjectYaml(pGo, part.Name, pComps), p.Id, "GameObject"));
                             partDocs.Add(Want(TransformYaml(pTr, pGo, part.At - p.At, new List<long>(), tr), p.Id, "Transform"));
                             partDocs.Add(Want(SpriteRendererYaml(pSr, pGo, p.Material, part.Sprite, part.SortingOrder, part.FlipX, part.FlipY),
                                               p.Id, "SpriteRenderer"));
-                            if (pSort != 0)
-                                partDocs.Add(Want(MonoBehaviourYaml(pSort, pGo, sorter, new[]
-                                {
-                                    "  _dynamic: 0",
-                                    "  _baseOrder: " + F(SortingBands.DecorBase),
-                                    "  _orderPerUnit: " + F(SortingBands.OrdersPerMetre),
-                                    "  _minOrder: " + Int(SortingBands.DecorFloor),
-                                    "  _maxOrder: " + Int(SortingBands.DecorCeiling),
-                                    "  _pivotYOffset: 0",
-                                }), p.Id, "YSortSprite"));
                             partTrs.Add(pTr);
                         }
                         var runComps = new List<long> { tr };
@@ -469,8 +462,9 @@ namespace HiddenHarbours.App.Editor
                     long walls = p.Walls.Count == 0 ? 0 : ids.Next(KeyOf(ks.Id, p.Id, "PolygonCollider2D"));
                     long face = p.RidesTheTide ? ids.Next(KeyOf(ks.Id, p.Id, "TidalFaceWaterline")) : 0;
                     long turn = p.TurnsWithWind ? ids.Next(KeyOf(ks.Id, p.Id, "SetPieceWindVane")) : 0;
+                    long shade = p.CastsShadow ? ids.Next(KeyOf(ks.Id, p.Id, "SpriteShadow")) : 0;
                     var comps = new List<long> { tr, sr };
-                    foreach (long c in new[] { sort, walls, face, turn }) if (c != 0) comps.Add(c);
+                    foreach (long c in new[] { sort, walls, face, turn, shade }) if (c != 0) comps.Add(c);
 
                     pieceDocs.Add(Want(GameObjectYaml(go, p.Id, comps), p.Id, "GameObject"));
                     pieceDocs.Add(Want(TransformYaml(tr, go, p.At, new List<long>(), gTr), p.Id, "Transform"));
@@ -501,6 +495,12 @@ namespace HiddenHarbours.App.Editor
                             "  _refreshHz: " + F(SetPieceWindVane.DefaultRefreshHz),
                             "  _calmMetresPerSecond: " + F(SetPieceWindVane.DefaultCalmMetresPerSecond),
                         }), p.Id, "SetPieceWindVane"));
+                    if (shade != 0)
+                        pieceDocs.Add(Want(MonoBehaviourYaml(shade, go, ((IKeyScenePropAssets)assets).Shadow, new[]
+                        {
+                            "  _sortingOffset: -1", "  _pixelSnap: 1", "  _pixelsPerUnit: 32", "  _castsGroundContact: 0",
+                            "  _footOffset: 0", "  _fallbackHour: 10", "  _refreshHz: 10", "  _profile: {fileID: 0}",
+                        }), p.Id, "SpriteShadow"));
                     pieceTrs.Add(tr);
                 }
                 want.Add(Want(GameObjectYaml(gGo, ks.Id, new List<long> { gTr }), ks.Id, "GameObject"));

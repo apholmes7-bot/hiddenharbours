@@ -43,7 +43,8 @@ namespace HiddenHarbours.Tests.EditMode
                 int authored = definition.Authored.Length;
                 int before = shippedCount - authored, after = field.PlantCount - authored;
                 TestContext.WriteLine($"St Peters scatter: {before} plants as shipped, {after} under the law; {authored} authored either way");
-                Assert.AreEqual(9024, authored);
+                // 9024 less the four the keeper's garden walk and beds took off (plant.stp_ne_light_266, _287, _288, _295).
+                Assert.AreEqual(9020, authored);
                 Assert.AreNotEqual(shipped, field.EncodeCurrentField(), "the shipped law changed nothing");
                 Assert.That(after, Is.InRange(before * 6 / 10, before * 11 / 10),
                     "the law rearranges the island's growth; it does not strip it or flood it");

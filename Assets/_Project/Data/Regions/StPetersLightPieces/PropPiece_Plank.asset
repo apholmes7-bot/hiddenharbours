@@ -31,3 +31,4 @@ MonoBehaviour:
   HeightMetres: 0
   RunColliderThicknessMetres: 0
   Colliders: []
+  CastsShadow: 0
