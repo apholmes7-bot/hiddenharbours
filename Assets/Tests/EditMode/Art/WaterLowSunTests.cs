@@ -191,6 +191,101 @@ namespace HiddenHarbours.Tests.Art.EditMode
             }
         }
 
+        // ---- the warm light above the low sun ---------------------------------------------------------
+
+        // The shipped _WarmLight saturation edges, and the 18:30 tint of day 59 at St Peters (measured).
+        const float WarmStart = 0.1f, WarmFull = 0.4f;
+        static readonly Color GoldenHour = new Color(1f, 0.75f, 0.56f);
+        static readonly Color ShippedNoon = new Color(0.897f, 0.904f, 0.904f);
+
+        [Test]
+        public void WarmLightWeight_IsExactlyZero_AtNoon_ForAGreyLight_AndWithNoCycle()
+        {
+            Assert.AreEqual(0f, WaterLowSun.WarmLightWeight(Noon, WarmStart, WarmFull));
+            Assert.AreEqual(0f, WaterLowSun.WarmLightWeight(ShippedNoon, WarmStart, WarmFull));
+            Assert.AreEqual(0f, WaterLowSun.WarmLightWeight(new Color(0.5f, 0.5f, 0.5f), WarmStart, WarmFull));
+            Assert.AreEqual(0f, WaterLowSun.WarmLightWeight(Color.clear, WarmStart, WarmFull));
+        }
+
+        [Test]
+        public void WarmLightWeight_IsFull_UnderTheGoldenHourLight_AndRisesWithoutAStep()
+        {
+            Assert.AreEqual(1f, WaterLowSun.WarmLightWeight(GoldenHour, WarmStart, WarmFull), 1e-6f);
+            Assert.AreEqual(1f, WaterLowSun.WarmLightWeight(Sunset, WarmStart, WarmFull), 1e-6f);
+            float last = 0f;
+            for (float b = 1f; b >= 0.5f; b -= 0.01f)
+            {
+                float w = WaterLowSun.WarmLightWeight(new Color(1f, 1f, b), WarmStart, WarmFull);
+                Assert.GreaterOrEqual(w, last, "the weight only rises as the light warms");
+                Assert.Less(w - last, 0.1f, "no step");
+                last = w;
+            }
+        }
+
+        [Test]
+        public void WarmLight_AddsNothingInsideTheLowSunWindow_SoTheApprovedDuskCannotMove()
+        {
+            float outside = WaterLowSun.WarmLightOutsideWindow(1f, 1f);
+            Assert.AreEqual(0f, outside);
+            Assert.AreEqual(0.85f, WaterLowSun.MirrorSkyTintShare(0.85f, 0.7f, outside));
+            Assert.AreEqual(0.4f, WaterLowSun.HueHoldShare(0.4f, 1f, 0.6f, outside));
+        }
+
+        [Test]
+        public void WarmLight_AtWeightZero_IsTheShippedMirrorAndHold_BitForBit()
+        {
+            foreach (float tintShare in new[] { 0f, 0.7f, 0.85f, 0.9f, 1f })
+                Assert.AreEqual(tintShare, WaterLowSun.MirrorSkyTintShare(tintShare, 0.7f, 0f));
+            Assert.AreEqual(0f, WaterLowSun.HueHoldShare(0.4f, 0f, 0.6f, 0f));
+        }
+
+        [Test]
+        public void WarmLight_AboveTheWindow_TheMirrorKeepsItsSky_AndTheSeaKeepsItsHue()
+        {
+            float outside = WaterLowSun.WarmLightOutsideWindow(1f, 0f);
+            Assert.AreEqual(1f, outside);
+            Assert.AreEqual(0.85f * 0.3f, WaterLowSun.MirrorSkyTintShare(0.85f, 0.7f, outside), 1e-6f);
+            Assert.AreEqual(0.6f, WaterLowSun.HueHoldShare(0.4f, 0f, 0.6f, outside), 1e-6f);
+            // Under the golden-hour light the held sea comes out bluer than the light alone would leave it.
+            Vector3 f = WaterLowSun.HueHoldFactor(GoldenHour, 0.6f);
+            Assert.Greater(f.z, 1f);
+            Assert.Less(f.x, 1f);
+        }
+
+        [Test]
+        public void ShippedMaterial_CarriesTheWarmLight_AndNoonSitsBelowIt()
+        {
+            string mat = File.ReadAllText(WaterMaterialPath);
+            Match w = Regex.Match(mat, @"(?m)^    - _WarmLight: \{r: ([-0-9.]+), g: ([-0-9.]+), b: ([-0-9.]+), a: ([-0-9.]+)\}$");
+            Assert.IsTrue(w.Success, "Water.mat carries _WarmLight");
+            float hold = float.Parse(w.Groups[1].Value, CultureInfo.InvariantCulture);
+            float keep = float.Parse(w.Groups[2].Value, CultureInfo.InvariantCulture);
+            float start = float.Parse(w.Groups[3].Value, CultureInfo.InvariantCulture);
+            float full = float.Parse(w.Groups[4].Value, CultureInfo.InvariantCulture);
+            Assert.That(hold, Is.InRange(0f, 1f));
+            Assert.That(keep, Is.InRange(0f, 1f));
+            Assert.Greater(hold + keep, 0f, "the warm light is on in the shipped sea");
+            Assert.Less(start, full);
+            Assert.AreEqual(WarmStart, start, 1e-6f);
+            Assert.AreEqual(WarmFull, full, 1e-6f);
+            Assert.AreEqual(0f, WaterLowSun.WarmLightWeight(ShippedNoon, start, full), "noon cannot move");
+        }
+
+        [Test]
+        public void Shader_WarmLight_DefaultsOff_AndIsSetBeforeTheMirror()
+        {
+            string src = File.ReadAllText(WaterShaderPath);
+            float[] d = ShaderVector(src, "_WarmLight");
+            Assert.AreEqual(0f, d[0], "the hold defaults to off");
+            Assert.AreEqual(0f, d[1], "the mirror's sky defaults to the shipped share");
+            int set = src.IndexOf("hhWarmLight = WarmLightWeight() * (1.0 - lowSun);", System.StringComparison.Ordinal);
+            int mirror = src.IndexOf("col.rgb += SkyReflection(worldXY, waveSlope, surf, swellCrest, t);", System.StringComparison.Ordinal);
+            Assert.That(set, Is.GreaterThan(0));
+            Assert.That(mirror, Is.GreaterThan(set), "the weight is set before the mirror reads it");
+            StringAssert.Contains("float skyTintShare = saturate(_ReflectionSkyTint) * (1.0 - saturate(_WarmLight.y) * hhWarmLight);", src);
+            StringAssert.Contains("return smoothstep(_WarmLight.z, max(_WarmLight.w, _WarmLight.z + 1e-4), sat);", src);
+        }
+
         // ---- the sparkles -----------------------------------------------------------------------------
 
         [Test]
@@ -260,7 +355,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             int sheen = src.IndexOf("col.rgb += lowSunSheen;", System.StringComparison.Ordinal);
             int content = src.IndexOf("---- SKY CONTENT: drifting CLOUDS", System.StringComparison.Ordinal);
             int lowLight = src.IndexOf("col.rgb *= 1.0 + hullWaveLowLight * lowSunDilute;", System.StringComparison.Ordinal);
-            int hold = src.IndexOf("col.rgb *= LowSunHueHoldFactor(_LowSunHueHold * lowSun);", System.StringComparison.Ordinal);
+            int hold = src.IndexOf("col.rgb *= LowSunHueHoldFactor(_LowSunHueHold * lowSun + saturate(_WarmLight.x) * hhWarmLight);", System.StringComparison.Ordinal);
             Assert.That(mirror, Is.GreaterThan(0));
             Assert.That(sheen, Is.GreaterThan(mirror), "the sheen is laid with the sky mirror, under the foam");
             Assert.That(content, Is.GreaterThan(sheen));
