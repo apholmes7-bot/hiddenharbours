@@ -90,7 +90,11 @@ namespace HiddenHarbours.Art
             Vector2 direction = new Vector2(-light.x, -light.y);
             if (direction.sqrMagnitude > 1e-6f) direction.Normalize(); else direction = Vector2.up;
             Vector3 localDirection = transform.worldToLocalMatrix.MultiplyVector(new Vector3(direction.x, direction.y, 0));
-            float length = DayNightMath.ShadowLength(e, look.LengthAtNoon, look.LengthAtHorizon, look.MaxLength);
+            // A hull over open water throws a short, faint, broken shade (ShadowOnWater, the rule every caster
+            // over water shares): capped length here, the fade on the colour and the breakup on the block below.
+            bool afloat = ShadowOnWater.IsOverWater(transform.position);
+            float length = ShadowOnWater.LengthMultiplier(
+                DayNightMath.ShadowLength(e, look.LengthAtNoon, look.LengthAtHorizon, look.MaxLength), afloat, look.WaterMaxLength);
             Matrix4x4 pose = HullSunShadowMath.Pose(state.Heading, state.Elevation, state.Roll, state.Pitch);
             Vector4 projection = HullSunShadowMath.Projection(new Vector2(localDirection.x, localDirection.y), length,
                 state.Elevation, state.HeavePixels, state.RidePixels, state.PixelsPerMetre);
@@ -103,10 +107,12 @@ namespace HiddenHarbours.Art
             _block.SetVector(ProjectionId, projection);
             _block.SetFloat(WaterlineId, waterline);
             Color tint = look.ShadowColor;
-            float water = HullSunShadowMath.WaterAlphaScale(e, IsAfloat(transform.position), look.HullWaterLowSunAlpha,
-                look.HullWaterFullSunElevation);
+            float water = ShadowOnWater.AlphaScale(e, afloat, look.HullWaterLowSunAlpha, look.HullWaterFullSunElevation,
+                look.WaterAlpha);
             _block.SetColor(ColorId, new Color(tint.r, tint.g, tint.b, DayNightMath.ShadowAlpha(look.MaxAlpha, strength) * water));
             _block.SetVector(IdsId, new Vector4(_hull.HullId / 255f, _hull.ForeHullId / 255f, IsoFacetHullRenderer.DeckOccupantSlots, 0));
+            _block.SetFloat(ShadowOnWater.BreakId, ShadowOnWater.Breakup(afloat, look.WaterBreakup));
+            _block.SetVector(ShadowOnWater.GridId, ShadowOnWater.Grid(look));
             _block.SetFloat(GateId, state.LevelGate ? 1 : 0);
             _block.SetFloat(DoorId, state.DoorOpen ? 1 : 0);
             _block.SetFloat(IsoFacetShaderIds.LevelShown, state.Level);
@@ -118,15 +124,6 @@ namespace HiddenHarbours.Art
             int order = look.ScreenSpaceShade ? SortingBands.SunShade : _hull.OverlayRenderer.sortingOrder - 1;
             _group.sortingOrder = order;
             _renderer.sortingOrder = order;
-        }
-
-        /// <summary>Over water at the live tide: the region's seabed lies below the water level here. No terrain
-        /// service (a bare test scene, a vehicle-only scene) reads as land, so the shadow is left as it was.</summary>
-        static bool IsAfloat(Vector2 at)
-        {
-            ITidalTerrain terrain = GameServices.TidalTerrain;
-            if (terrain == null || GameServices.Environment == null || GameServices.Clock == null) return false;
-            return GameServices.Environment.WaterLevelAt(GameServices.Clock.TotalSeconds) - terrain.ElevationAt(at) > 0f;
         }
 
         void Rebuild(HullSunShadowState state)

@@ -118,6 +118,7 @@ namespace HiddenHarbours.Tests.EditMode
         [TearDown]
         public void TearDown()
         {
+            RegionBuildAvailability.Override = null;
             EventBus.Unsubscribe(_onSaved);
             EventBus.Unsubscribe(_onChange);
             EventBus.Unsubscribe(_onDay);
@@ -347,9 +348,11 @@ namespace HiddenHarbours.Tests.EditMode
         //  waking: on its own, by the button; and the save
         // =====================================================================================
 
-        [Test]
-        public void TheSleep_WakesOnItsOwn_AtTheChosenLength_AndSaves()
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TheSleep_WakesOnItsOwn_AtTheChosenLength_AndSaves(bool neighbourIncluded)
         {
+            RegionBuildAvailability.Override = (_, __) => neighbourIncluded;
             Rig rig = World(22d);
             SleepFlow.Begin(Request());
             for (int i = 0; i < 5; i++) SleepFlow.Adjust(-1);   // 3 hours

@@ -447,6 +447,87 @@ namespace HiddenHarbours.App.Editor
         public static int FloatPilesSortingOrder => FloatSortingOrder - 1;
 
         /// <summary>
+        /// The rung the FIXED water-side pictures draw at (the cribbed wall, the concrete wharf, the
+        /// apron, the ramps, the breakwater arms): the float's rung, over the sea and under every hull.
+        ///
+        /// <para>Their faces are drawn about 9 m deep from the lip, so uncut they cover the water south
+        /// of the wall at every tide and the wall berths' boats sit on a dark face. A part whose seaward
+        /// edge is one straight lip (<see cref="TryWaterlineLip"/>) is therefore cut at the waterline by
+        /// a <c>TidalFaceWaterline</c>: the face shows above the sea and the sea shows below it. Sorting
+        /// them UNDER the sea instead was tried and drew wrong: the plane is translucent, so the drowned
+        /// face showed through it as a boxed tone, and the old quay courses (which this rung hides) drew
+        /// their own decks over the wall.</para>
+        /// </summary>
+        public static int FixedWaterSideSortingOrder => FloatSortingOrder;
+
+        /// <summary>How far apart, in metres, the two lowest corners of a walk polygon may lie and still
+        /// be one east-west lip a face can be cut along.</summary>
+        public const float WaterlineLipToleranceMetres = 0.01f;
+
+        /// <summary>How far south of a lip, in metres, a neighbouring deck is looked for: a lip with
+        /// another fixed deck right in front of it is a joint between two pieces, not a face to the sea.</summary>
+        public const float WaterlineLipProbeMetres = 0.1f;
+
+        /// <summary>
+        /// The world Y a fixed water-side part's face is cut from, when it has one: a FLAT deck (no
+        /// ramp toe) whose two lowest walk corners lie on one east-west line, which is the drawn lip
+        /// the face hangs from, with no other fixed deck (<paramref name="neighbours"/>) just in front
+        /// of it. A ramp, a diagonal arm, or a piece whose south edge is a joint has no lip to the sea
+        /// and draws uncut.
+        /// </summary>
+        public static bool TryWaterlineLip(IReadOnlyList<Vector2> walk, bool flat, IEnumerable<Rect> neighbours, out float lipWorldY)
+        {
+            lipWorldY = 0f;
+            if (!flat || walk == null || walk.Count < 3) return false;
+            var lowest = walk.OrderBy(p => p.y).Take(2).ToArray();
+            if (Mathf.Abs(lowest[1].y - lowest[0].y) > WaterlineLipToleranceMetres) return false;
+            var inFront = new Vector2((lowest[0].x + lowest[1].x) * 0.5f, lowest[0].y - WaterlineLipProbeMetres);
+            if (neighbours != null && neighbours.Any(r => r.Contains(inFront))) return false;
+            lipWorldY = lowest[0].y;
+            return true;
+        }
+
+        /// <summary>
+        /// The cut for a slipway: a ramp that runs straight down into the sea from its top (north) edge. Its waterline
+        /// is not one row but moves along the ramp with the tide, <paramref name="runPerMetre"/> plan metres per metre
+        /// of fall (the module's run over its drop) on top of the drawn rise of the water's height. The lip is the
+        /// walk's top edge, whose elevation is the part's. False for anything that is not one straight north-south
+        /// ramp falling toward the south.
+        /// </summary>
+        public static bool TrySlipwayWaterline(IReadOnlyList<Vector2> walk, float deckZ, float toeZ, float run,
+            out float lipWorldY, out float runPerMetre)
+        {
+            lipWorldY = 0f; runPerMetre = 0f;
+            if (walk == null || walk.Count < 3 || run <= 0f || deckZ - toeZ <= 0f) return false;
+            float top = walk.Max(p => p.y), foot = walk.Min(p => p.y);
+            if (Mathf.Abs(top - foot - run) > WaterlineLipToleranceMetres) return false;
+            var highest = walk.OrderByDescending(p => p.y).Take(2).ToArray();
+            if (Mathf.Abs(highest[1].y - highest[0].y) > WaterlineLipToleranceMetres) return false;
+            lipWorldY = top;
+            runPerMetre = run / (deckZ - toeZ);
+            return true;
+        }
+
+        /// <summary>The H5 kit's module kind of a slipway.</summary>
+        public const string SlipwayModule = "slipway";
+
+        /// <summary>The H5 kit's module kinds, as the sidecar names them (<c>module.key</c>).</summary>
+        public const string LogCribModule = "logCrib", ConcreteQuayModule = "concreteQuay", BreakwaterModule = "breakwater";
+
+        /// <summary>
+        /// What a cut face above the water is made of, from its wharf module's kind: a log crib shows log
+        /// courses, a concrete quay its pour lifts and form panels, a breakwater a waterline that follows
+        /// the stone. Anything else draws its shipped picture.
+        /// </summary>
+        public static TidalFaceDressing DressingFor(string moduleKey) => moduleKey switch
+        {
+            LogCribModule => TidalFaceDressing.TimberCrib,
+            ConcreteQuayModule => TidalFaceDressing.ConcreteQuay,
+            BreakwaterModule => TidalFaceDressing.RockBreakwater,
+            _ => TidalFaceDressing.None,
+        };
+
+        /// <summary>
         /// The rung the BROW draws at — the top of the wharf-deck band.
         ///
         /// <para>It has to be over BOTH things it touches, and they are on different rungs: its hinge is
