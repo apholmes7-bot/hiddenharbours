@@ -127,6 +127,50 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
+        /// Twin of <c>WarmLightWeight</c> (the material's <c>_WarmLight</c> .z/.w): how coloured the light is, 0
+        /// for a grey or white tint and while no day/night cycle runs, rising by a smoothstep of the tint's
+        /// saturation to 1 at <paramref name="fullSaturation"/>.
+        /// </summary>
+        public static float WarmLightWeight(Color tint, float startSaturation, float fullSaturation)
+        {
+            if (tint.r + tint.g + tint.b <= 1e-3f) return 0f;
+            float mx = Mathf.Max(tint.r, Mathf.Max(tint.g, tint.b));
+            float mn = Mathf.Min(tint.r, Mathf.Min(tint.g, tint.b));
+            float sat = mx <= 1e-5f ? 0f : (mx - mn) / mx;
+            return WaterSurface.Smoothstep(startSaturation, Mathf.Max(fullSaturation, startSaturation + 1e-4f), sat);
+        }
+
+        /// <summary>
+        /// Twin of the shader's <c>hhWarmLight</c>: the warm light's weight OUTSIDE the low-sun window, so inside
+        /// it (low-sun weight 1) the low-sun dials keep the last word and the warm dials add exactly nothing.
+        /// </summary>
+        public static float WarmLightOutsideWindow(float warmLightWeight, float lowSunWeight)
+        {
+            return warmLightWeight * (1f - lowSunWeight);
+        }
+
+        /// <summary>
+        /// Twin of the mirror's sky share under the warm light: the share of the reflected sky that is the
+        /// light's colour (<c>_ReflectionSkyTint</c>), less <paramref name="mirrorKeepsSky"/> of it (the
+        /// material's <c>_WarmLight.y</c>) where the warm light is on. The high sky a sea mirrors from above is
+        /// still blue while the sun is up. Exactly the shipped share at weight 0.
+        /// </summary>
+        public static float MirrorSkyTintShare(float reflectionSkyTint, float mirrorKeepsSky, float warmOutside)
+        {
+            return Mathf.Clamp01(reflectionSkyTint) * (1f - Mathf.Clamp01(mirrorKeepsSky) * warmOutside);
+        }
+
+        /// <summary>
+        /// Twin of the share handed to <c>LowSunHueHoldFactor</c>: the low-sun hold inside the window plus the
+        /// warm-light hold (<c>_WarmLight.x</c>) outside it. The two weights are complements across the window's
+        /// edge, so at low-sun weight 1 this is the low-sun hold alone and at weight 0 the warm hold alone.
+        /// </summary>
+        public static float HueHoldShare(float lowSunHueHold, float lowSunWeight, float warmHueHold, float warmOutside)
+        {
+            return lowSunHueHold * lowSunWeight + Mathf.Clamp01(warmHueHold) * warmOutside;
+        }
+
+        /// <summary>
         /// Twin of the sparkle form's lit share: the share of grid cells that hold a glint here. The lane and
         /// the sunward side raise the COUNT of glints, never their brightness.
         /// </summary>

@@ -41,7 +41,7 @@
     8914000000001003,
     8914000000001005
   ],
-  "protectedWharfSha256": "7f5fe15ac5f2aa8b44de2c1654c5f292645a694d4812f4eb8789bf9dabda9dec",
+  "protectedWharfSha256": "a9f5017865293ca022886c30c4e7d8be5a69c637b50ea0edee6a4e5f3e34fc98",
   "landingNonPlacementSha256": "79f7d88341c8eb7c1e3e2ad0b938e78ae5944f4f024bc5f1a77fe437d069df59",
   "placementIds": [
     "prop.stp_landing_bait_barrel",
@@ -54,6 +54,6 @@
     "station.st_peters.slip_lantern"
   ],
   "outsidePocketTexelsSha256": "71947433329f6f1c7b7534d31fb1fd62328780ff33a4976c846d177d30560d6f",
-  "expectedWharfDocuments": 79,
+  "expectedWharfDocuments": 80,
   "expectedOutsideTexels": 1580492
 }

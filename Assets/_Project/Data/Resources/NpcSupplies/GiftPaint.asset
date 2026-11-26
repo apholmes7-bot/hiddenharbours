@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c3c8bd3b02941d99e180e39cca49d30, type: 3}
+  m_Name: GiftPaint
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.SupplyGiftDef
+  Id: supplygift.st_peters_paint
+  GiverNpcId: npc.alban_doucet
+  OptionId: option.ask_for_paint
+  RowLabel: 'Could you spare a tin of paint for a dory?'
+  ReplyLines:
+  - 'Paint? I''ve more paint than sense. The tower takes a coat every summer whether she needs it or not.'
+  - 'There''s a tin of linseed. Stir it well, it''s been sitting.'
+  ItemIds:
+  - supply.linseed_paint
+  ReceivedFlags:
+  - st_peters.dory_mend.paint
+  BagId: shoppingbag.paper
+  HandsFullLines:
+  - 'Your hands are full. Come back with one free and it''s yours.'
+  BagFullLines:
+  - 'That bag won''t take another thing. Empty it and come back.'
+  BagElsewhereLines:
+  - 'Where''s your bag got to? Fetch it and I''ll fill it.'

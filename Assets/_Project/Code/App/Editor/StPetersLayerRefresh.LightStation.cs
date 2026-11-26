@@ -90,11 +90,12 @@ namespace HiddenHarbours.App.Editor
         // A lamp written as the scene keeps one. The lantern's lamps sit AT the lantern, so they carry no lift
         // and throw no ground pool; the keeper's lamp stands on the ground like a doorstep lantern.
         static string[] SceneLightFields(SceneLight.LightShape shape, float coneHalfAngle, float range, Color colour,
-            float intensity, float edgeSoftness, float flicker, float lampHeight, float bloomLift, float reach, float refreshHz) => new[]
+            float intensity, float edgeSoftness, float flicker, float lampHeight, float bloomLift, float reach, float refreshHz,
+            float angularSoftness = 0.4f) => new[]
         {
             "  _shape: " + Int((int)shape), "  _coneHalfAngle: " + F(coneHalfAngle), "  _range: " + F(range),
             "  _color: " + ColourYaml(colour), "  _intensity: " + F(intensity), "  _edgeSoftness: " + F(edgeSoftness),
-            "  _angularSoftness: 0.4", "  _coreBoost: 1", "  _gateThreshold: 0.12", "  _gateSoftness: 0.35", "  _gateFallback: 1",
+            "  _angularSoftness: " + F(angularSoftness), "  _coreBoost: 1", "  _gateThreshold: 0.12", "  _gateSoftness: 0.35", "  _gateFallback: 1",
             "  _flickerAmount: " + F(flicker), "  _flickerSpeed: 1", "  _sortingOrder: " + Int(SceneLight.MaxSortingOrder),
             "  _cameraDepthOffset: " + F(SceneLight.DefaultCameraDepthOffset), "  _castsShadows: 0",
             "  _lampHeightMeters: " + F(lampHeight), "  _bloomLiftMetres: " + F(bloomLift), "  _reachMetres: " + F(reach),
@@ -178,15 +179,23 @@ namespace HiddenHarbours.App.Editor
                     children.Add(lt);
                     return light;
                 }
-                Lamp("Lantern", SceneLightFields(SceneLight.LightShape.Radial, 180f, def.LanternGlowMetres, def.Colour,
-                    def.LanternIntensity, 0.8f, 0f, 0f, 0f, 0f, 20f));
+                var lanternFields = new List<string>(SceneLightFields(SceneLight.LightShape.Radial, 180f, def.LanternGlowMetres,
+                    def.Colour, def.LanternIntensity, 0.8f, 0f, 0f, 0f, 0f, 20f));
+                if (def.LanternCoreMetres > 0f)   // the lit lamp as a hot point in a faint warm halo
+                {
+                    lanternFields.Add("  _coreRadiusMetres: " + F(def.LanternCoreMetres));
+                    lanternFields.Add("  _haloStrength: " + F(def.LanternHaloStrength));
+                    lanternFields.Add("  _coreWhiten: " + F(def.LanternCoreWhiten));
+                }
+                Lamp("Lantern", lanternFields.ToArray());
                 long flash = Lamp("Flash", SceneLightFields(SceneLight.LightShape.Radial, 180f, def.FlashGlowMetres, def.Colour,
-                    def.FlashIntensity, 0.9f, 0f, 0f, 0f, 0f, TurningLampRefreshHz));
+                    def.FlashIntensity, def.FlashEdgeSoftness, 0f, 0f, 0f, 0f, TurningLampRefreshHz));
                 var beamTransforms = new List<long>();
                 for (int i = 0; i < def.Beams; i++)
                 {
                     Lamp("Beam" + Int(i), SceneLightFields(SceneLight.LightShape.Cone, def.BeamHalfAngleDegrees, def.BeamReachMetres,
-                        def.Colour, def.BeamIntensity, 0.85f, 0f, 0f, 0f, 0f, TurningLampRefreshHz));
+                        def.Colour, def.BeamIntensity, def.BeamEdgeSoftness, 0f, 0f, 0f, 0f, TurningLampRefreshHz,
+                        def.BeamAngularSoftness));
                     beamTransforms.Add(children[children.Count - 1]);
                 }
 

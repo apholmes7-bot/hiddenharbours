@@ -16,11 +16,7 @@ MonoBehaviour:
   DisplayName: Soft-shell Clam
   Category: 1
   Rarity: 0
-  Flavor: 'Dug from the flats by hand when the low tide bares them - two little squirting
-    holes give the buried clam away. The St Peters opening''s first by-hand income.
-    GEAR NOTE: hand-dig only - re-tagged off the Handline stopgap onto the dedicated
-    ClamFork (hand-dig) gear tag by gameplay-systems (fish-and-content 3.5a). The on-foot
-    ClamDig interaction yields it; it is deliberately not in the rod''s catch pool.'
+  Flavor: 'Dug from the flats by hand when the low tide bares them - two little squirting holes give the buried clam away.'
   Sprite: {fileID: 21300000, guid: 10fa059778c54b17b496859a6746bea9, type: 3}
   RegionIds:
   - region.st_peters

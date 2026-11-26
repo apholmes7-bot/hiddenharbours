@@ -49,6 +49,12 @@ namespace HiddenHarbours.Boats
     /// and the Art-side <c>WaveFieldBridge</c> use, so the buoy rides the same waves the player sees.
     /// Until GameConfig unifies them, keep the field's shape identical across all three (or tune all
     /// three together); only the RESPONSE tunables here are buoy-specific.</para>
+    ///
+    /// <para><b>The waterline wraps the body.</b> A round float meets the water in a circle, which the
+    /// 3/4 camera draws as an ellipse: the sides on the float line, the near side lower. With a radius set
+    /// (<see cref="ConfigureWaterlineArc"/>) the cut, the underwater tint and the pale line all follow that
+    /// arc (<see cref="BuoyWaveMath.WaterlineArc"/>); 0 keeps the straight row. One extra vector in the
+    /// same property block, rebuilt only when the sprite changes: no new material, texture or keyword.</para>
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class BuoyWaveVisual : MonoBehaviour
@@ -73,6 +79,20 @@ namespace HiddenHarbours.Boats
         private static readonly int IdWaterlineFoam      = Shader.PropertyToID("_WaterlineFoam");
         private static readonly int IdWaterlineFoamWidth = Shader.PropertyToID("_WaterlineFoamWidth");
         private static readonly int IdSpriteHeightPx     = Shader.PropertyToID("_SpriteHeightPx");
+        private static readonly int IdWaterlineArc       = Shader.PropertyToID("_WaterlineArc");
+        private static readonly int IdPaletteFrom        = Shader.PropertyToID("_CharPaletteFrom");
+        private static readonly int IdPaletteTo          = Shader.PropertyToID("_CharPaletteTo");
+        private static readonly int IdPaletteCount       = Shader.PropertyToID("_CharPaletteCount");
+        private static readonly int IdPaletteEpsSq       = Shader.PropertyToID("_CharPaletteEpsSq");
+
+        /// <summary>The shader's swap array length (CharacterPalette.hlsl CHARACTER_PALETTE_MAX). An
+        /// array property is sized at its first upload, so it is always uploaded at full length.</summary>
+        private const int PaletteSlots = CharacterPalette.MaxSwaps;
+
+        /// <summary>The swap's match radius, squared, in linear space: the shader's own default. The
+        /// closest any swappable float colour comes to another colour in the sheet is 0.0084 (measured,
+        /// PotFloatArtTests), so this radius of 0.00176 cannot catch a neighbour.</summary>
+        private const float PaintMatchEpsilonSquared = 3.1e-06f;
 
         [Header("Bob (the crest lifts the buoy)")]
         [Tooltip("Screen-vertical lift (world units) per metre of wave height under the buoy. The buoy floats HIGH on the water, so it reads a bigger bob than the heavy boat (BoatWaveMotion uses ~0.12) — a cork on the swell.")]
@@ -110,6 +130,10 @@ namespace HiddenHarbours.Boats
         [Tooltip("Half-height (uv.y) of the foam band around the waterline — how thick the ripple reads.")]
         [Range(0.001f, 0.2f)] [SerializeField] private float _waterlineFoamWidth = 0.05f;
 
+        [Header("The waterline wraps the body (0 = a straight cut)")]
+        [Tooltip("The float's radius at the waterline (m). A round body meets the water in a circle the 3/4 camera draws as an ellipse: the sides on the float line, the near side lower. 0 = the straight row. The placer sets it from data (the nav mark's DiameterMeters, GameConfig.LobsterFloatRadiusMeters for the painted pot float).")]
+        [Min(0f)] [SerializeField] private float _waterlineRadiusMeters;
+
         [Header("Wiring (the spawner/builder sets these)")]
         [Tooltip("The buoy's SpriteRenderer — the material instance + the vanish alpha drive this. Null → the component finds one in its children on Awake.")]
         [SerializeField] private SpriteRenderer _renderer;
@@ -128,6 +152,18 @@ namespace HiddenHarbours.Boats
         private Material _originalMaterial;     // the renderer's original sharedMaterial (restored on teardown)
         private float _spriteHeightPx = 32f;
         private Texture _lastTexture;
+        private Sprite _arcSprite;              // the sprite the cached arc was read off
+        private float _arcRadius = -1f;         // the radius the cached arc was built for
+        private Vector4 _arc;                   // the packed _WaterlineArc for the current sprite
+        private Vector4[] _paletteFrom;         // the owner's paint swap (null = the float as baked)
+        private Vector4[] _paletteTo;
+        private int _paletteCount;
+        private bool _ride;                     // a small float riding the surface (ConfigureRide)
+        private float _rideFollow;
+        private float _rideDraftMeters;
+        private float _rideFreeboardMeters;
+        private float _rideFoamTexels;          // the ride's waterline band half-height in sprite texels (0 = the material's)
+        private float _drawScale = 1f;          // the pot floats' drawn size against true size
 
         private bool _baseCached;
         private Vector3 _baseLocalPosition;
@@ -139,6 +175,137 @@ namespace HiddenHarbours.Boats
 
         /// <summary>The last-computed sprite alpha (0 vanished .. 1 visible). Exposed for tests / tooling.</summary>
         public float VanishAlpha { get; private set; } = 1f;
+
+        /// <summary>The packed <c>_WaterlineArc</c> last pushed (zero = the straight row). For tests / tooling.</summary>
+        public Vector4 WaterlineArc => _arc;
+
+        /// <summary>The float's radius at the waterline (m) the arc is built from; 0 = straight.</summary>
+        public float WaterlineRadiusMeters => _waterlineRadiusMeters;
+
+        /// <summary>
+        /// Opt this float into a waterline that wraps its body: the radius (m) of the hull where it meets
+        /// the water. 0 keeps the straight cut. The arc itself is derived from the live sprite (rect, pivot,
+        /// pixels per unit) and the camera's ground squash, and is rebuilt whenever the sprite changes.
+        /// </summary>
+        public void ConfigureWaterlineArc(float radiusMeters)
+        {
+            _waterlineRadiusMeters = float.IsNaN(radiusMeters) ? 0f : Mathf.Max(0f, radiusMeters);
+            _arcRadius = -1f;   // force a rebuild on the next push
+        }
+
+        /// <summary>How many paint swaps the float carries (0 = drawn as baked). For tests / tooling.</summary>
+        public int PaintSwapCount => _paletteCount;
+
+        /// <summary>The owner's body coat last configured (white until <see cref="ConfigurePaint"/>).</summary>
+        public Color PaintBody { get; private set; } = Color.white;
+
+        /// <summary>
+        /// Paint a pot float in its owner's colours: the baked key coats (<see cref="PotFloatPaint"/>)
+        /// become <paramref name="body"/> and <paramref name="band"/> through the shader's exact ramp
+        /// swap, so the shading, dither and wet line stay the art's own. An owner who wears the baked
+        /// colours carries no swap at all. Leave the renderer's colour white: it still multiplies.
+        /// </summary>
+        public void ConfigurePaint(Color body, Color band)
+        {
+            _paletteFrom ??= new Vector4[PaletteSlots];
+            _paletteTo ??= new Vector4[PaletteSlots];
+            _paletteCount = PotFloatPaint.BuildSwaps(body, band, _paletteFrom, _paletteTo);
+            PaintBody = body;
+            // Upload now, not only on the next LateUpdate: a presenter may show the float with this
+            // component disabled (a dip or rise beat) before it ever runs.
+            if (_renderer == null) return;
+            _mpb ??= new MaterialPropertyBlock();
+            _renderer.GetPropertyBlock(_mpb);
+            PushPaint();
+            _renderer.SetPropertyBlock(_mpb);
+        }
+
+        private void PushPaint()
+        {
+            if (_paletteFrom == null) return;
+            _mpb.SetVectorArray(IdPaletteFrom, _paletteFrom);
+            _mpb.SetVectorArray(IdPaletteTo, _paletteTo);
+            _mpb.SetFloat(IdPaletteCount, _paletteCount);
+            _mpb.SetFloat(IdPaletteEpsSq, PaintMatchEpsilonSquared);
+        }
+
+        /// <summary>
+        /// Seat the float geometry from its OWN art: the pot-float sheets pivot on the still waterline,
+        /// exactly as the nav sheets do, so the sprite's height and normalised pivot ARE the hull's
+        /// height and float line (no cork defaults). A foam float follows the slope like the cork the
+        /// bob was tuned on. No-op without a sprite.
+        /// </summary>
+        public void ConfigureFloatFromSprite(Sprite sprite)
+        {
+            if (sprite == null || sprite.rect.height <= 0f || sprite.pixelsPerUnit <= 0f) return;
+            ConfigureFloatGeometry(sprite.rect.height / sprite.pixelsPerUnit,
+                                   sprite.pivot.y / sprite.rect.height, slopeFollow: 0f);
+        }
+
+        /// <summary>True once <see cref="ConfigureRide"/> has made this a small float riding the surface.</summary>
+        public bool RidesTheSurface => _ride;
+
+        /// <summary>The drawn size against true size (1 = true size). For tests / tooling.</summary>
+        public float DrawScale => _drawScale;
+
+        /// <summary>
+        /// <b>A small float rides the surface.</b> The bob above was tuned on a 1 m cork whose waterline
+        /// climbs by the whole wave height; on a 15 cm foam float that swamps the body on every crest and
+        /// lifts it clean out, eye and all, in every trough. A float this small follows the water: it
+        /// lifts by <paramref name="follow"/> of the wave and only the rest climbs its side, and that
+        /// climb is held to its own body, from <paramref name="draftMeters"/> below the still line (a
+        /// trough shows the body's foot, never the eye) to <paramref name="freeboardMeters"/> above (only
+        /// a big crest washes over the top). All three come from data (GameConfig and the float's def,
+        /// measured off the rig). Nav marks never call this, so they ride exactly as before.
+        /// <paramref name="foamTexels"/> (GameConfig.PotFloatFoamTexels) sets the pale waterline band's
+        /// half-height in the sprite's own texels: the buoy default is a fraction of the sprite's height,
+        /// several texels on a small float, and it bled down a thin stick as a pale tick. 0 keeps the default.
+        /// </summary>
+        public void ConfigureRide(float follow, float draftMeters, float freeboardMeters, float foamTexels = 0f)
+        {
+            bool ok = follow > 0f && follow <= 1f && draftMeters > 0f && freeboardMeters > 0f;
+            _ride = ok;
+            if (!ok) return;
+            _rideFollow = follow;
+            _rideDraftMeters = draftMeters;
+            _rideFreeboardMeters = freeboardMeters;
+            _rideFoamTexels = Mathf.Max(0f, foamTexels);
+        }
+
+        /// <summary>The waterline band's half-height in uv.y this float draws with. For tests / tooling.</summary>
+        public float WaterlineFoamWidth =>
+            _ride && _rideFoamTexels > 0f ? _rideFoamTexels / Mathf.Max(1f, _spriteHeightPx) : _waterlineFoamWidth;
+
+        /// <summary>
+        /// Draw the float <paramref name="scale"/> times its true size (the owner's
+        /// <c>GameConfig.PotFloatDrawScale</c>). Scales the visual child about its pivot, which is the
+        /// still waterline, so the float stays seated; the wave's climb is measured against the drawn
+        /// body. 1 = true size.
+        /// </summary>
+        public void ConfigureDrawScale(float scale)
+        {
+            _drawScale = float.IsNaN(scale) ? 1f : Mathf.Max(0.01f, scale);
+            Transform t = _visual != null ? _visual : (_renderer != null ? _renderer.transform : null);
+            if (t != null) t.localScale = new Vector3(_drawScale, _drawScale, 1f);
+        }
+
+        /// <summary>
+        /// Drive the float from a given wave height instead of the live field (bob, waterline, vanish),
+        /// for plates and tools that must photograph a crest or a trough on demand. The live
+        /// <c>LateUpdate</c> overwrites it on the next frame unless the component is disabled.
+        /// </summary>
+        public void ApplyWaveHeight(float waveHeight, float totalAmplitude)
+        {
+            if (_renderer == null) return;
+            if (!_baseCached)
+            {
+                _baseLocalPosition = _visual != null ? _visual.localPosition : Vector3.zero;
+                _baseColor = _renderer.color;
+                _baseCached = true;
+            }
+            if (_mpb == null) _mpb = new MaterialPropertyBlock();
+            ApplyHeight(waveHeight, totalAmplitude);
+        }
 
         /// <summary>Wire the buoy from code (the spawner's path — mirrors <see cref="BoatWaveMotion.Configure"/>).</summary>
         public void Configure(SpriteRenderer renderer, Transform visual)
@@ -207,10 +374,13 @@ namespace HiddenHarbours.Boats
         private void OnDisable()
         {
             RestoreVisual();
-            // Put the original material + colour back so a disabled buoy leaves its sprite untouched.
+            // Put the original material + colour back so a disabled buoy leaves its sprite untouched. A
+            // PAINTED float keeps its instance (dry: RestoreVisual zeroed the waterline, which is the
+            // shader's passthrough) because its owner's colours live in that shader's swap; on the plain
+            // sprite material it would flash the baked key coats while a presenter animates it.
             if (_renderer != null)
             {
-                if (_originalMaterial != null) _renderer.sharedMaterial = _originalMaterial;
+                if (_originalMaterial != null && _paletteCount == 0) _renderer.sharedMaterial = _originalMaterial;
                 if (_baseCached) _renderer.color = _baseColor;
             }
         }
@@ -285,11 +455,26 @@ namespace HiddenHarbours.Boats
                 totalAmplitude = 0f;
             }
 
+            ApplyHeight(wave.Height, totalAmplitude);
+        }
+
+        private void ApplyHeight(float height, float totalAmplitude)
+        {
             // --- Turn the one Height read into bob + waterline + vanish (the pure math) ------------
-            float bob = BuoyWaveMath.BobOffset(wave.Height, _bobPerMeter, _maxBob);
-            float waterline = BuoyWaveMath.WaterlineFraction(wave.Height, _floatLineFrac, _restOffsetMeters, _buoyHeightMeters);
+            float bob, waterline;
+            if (_ride)
+            {
+                bob = BuoyWaveMath.BobOffset(height, _rideFollow, _maxBob);
+                waterline = BuoyWaveMath.RideWaterlineFraction(height, _floatLineFrac, _buoyHeightMeters, _rideFollow,
+                                                               _rideDraftMeters, _rideFreeboardMeters, _drawScale);
+            }
+            else
+            {
+                bob = BuoyWaveMath.BobOffset(height, _bobPerMeter, _maxBob);
+                waterline = BuoyWaveMath.WaterlineFraction(height, _floatLineFrac, _restOffsetMeters, _buoyHeightMeters);
+            }
             float swampThreshold = BuoyWaveMath.SwampThreshold(totalAmplitude, _swampThresholdFraction, _swampMinThresholdMeters);
-            float alpha = BuoyWaveMath.VanishAlpha(wave.Height, swampThreshold, _swampFadeBandMeters);
+            float alpha = BuoyWaveMath.VanishAlpha(height, swampThreshold, _swampFadeBandMeters);
 
             if (_swampMode == SwampMode.StayAwash)
             {
@@ -323,10 +508,33 @@ namespace HiddenHarbours.Boats
                 _lastTexture = tex;
             }
 
+            // THE ARC: rebuilt only when the sprite (facing, frame) or the radius changes — the rect,
+            // pivot and texture size are read once per sprite, never per frame (rule 7).
+            if (spr != _arcSprite || _arcRadius != _waterlineRadiusMeters)
+            {
+                _arcSprite = spr;
+                _arcRadius = _waterlineRadiusMeters;
+                // A tightly packed atlas sprite has no rect to read (Unity throws): it keeps the straight row.
+                bool readable = spr != null && tex != null && _waterlineRadiusMeters > 0f &&
+                                !(spr.packed && spr.packingMode == SpritePackingMode.Tight);
+                if (readable)
+                {
+                    Rect rect = spr.textureRect;
+                    rect.x -= spr.textureRectOffset.x;   // the pivot is measured from the untrimmed rect
+                    _arc = BuoyWaveMath.WaterlineArc(_waterlineRadiusMeters, spr.pixelsPerUnit, rect,
+                                                     spr.pivot, new Vector2(tex.width, tex.height),
+                                                     IsoGround.GroundDepthScale);
+                }
+                else _arc = Vector4.zero;
+            }
+
             _renderer.GetPropertyBlock(_mpb);
             if (tex != null) _mpb.SetTexture(IdMainTex, tex);
             _mpb.SetFloat(IdWaterlineFrac, waterline);
             _mpb.SetFloat(IdSpriteHeightPx, _spriteHeightPx);
+            if (_ride && _rideFoamTexels > 0f) _mpb.SetFloat(IdWaterlineFoamWidth, WaterlineFoamWidth);
+            _mpb.SetVector(IdWaterlineArc, _arc);
+            PushPaint();
             _renderer.SetPropertyBlock(_mpb);
 
             // VANISH: fade the sprite's own alpha (folded into the shader via IN.color) — the full

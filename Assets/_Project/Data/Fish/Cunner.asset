@@ -16,7 +16,7 @@ MonoBehaviour:
   DisplayName: Cunner
   Category: 0
   Rarity: 0
-  Flavor: 'A blunt little wrasse, brown to rust, that lives in the weed and the rubble of every ledge and wreck. A bait-stealer, and good eating when big enough. BALANCE NOTE: placeholder value, weight and elasticity set beside its neighbours - flagged for economy-sim to tune.'
+  Flavor: 'A blunt little wrasse, brown to rust, that lives in the weed and the rubble of every ledge and wreck. A bait-stealer, and good eating when big enough.'
   RegionIds:
   - region.rice_point
   - region.cumberland

@@ -30,6 +30,16 @@ namespace HiddenHarbours.Tests.Economy
     {
         const string DataRoot = "Assets/_Project/Data";
 
+        // Given, not sold: the four dory repair supplies come from people on the island (their
+        // SupplyGiftDefs under Resources/NpcSupplies), not from a shop. Each reason names the giver.
+        static readonly Dictionary<string, string> KnownMendingSellerExceptions = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["supply.patch_plank"] = "given, not sold: npc.odile_marchand",
+            ["supply.copper_nails"] = "given, not sold: npc.odile_marchand",
+            ["supply.oakum"] = "given, not sold: npc.rose_macisaac",
+            ["supply.linseed_paint"] = "given, not sold: npc.alban_doucet",
+        };
+
         // Disposable proof copies some fixtures leave beside real Defs (DefIdentityContractTests' rule).
         static readonly Regex DisposableProof = new Regex("_[0-9a-f]{32}(/|\\.|$)");
 
@@ -141,13 +151,57 @@ namespace HiddenHarbours.Tests.Economy
         public void EveryExemption_NamesARealItem()
         {
             var ids = new HashSet<string>(Items().Select(i => i.Id).Where(i => !string.IsNullOrEmpty(i)), StringComparer.Ordinal);
-            foreach (KeyValuePair<string, string> e in Exempt)
+            foreach (KeyValuePair<string, string> e in Exempt.Concat(KnownMendingSellerExceptions))
             {
                 Assert.IsNotEmpty(e.Value, e.Key + " is exempt with no reason");
                 bool hit = e.Key.EndsWith("*", StringComparison.Ordinal)
                     ? ids.Any(i => i.StartsWith(e.Key.Substring(0, e.Key.Length - 1), StringComparison.Ordinal))
                     : ids.Contains(e.Key);
                 Assert.IsTrue(hit, "the exemption " + e.Key + " names no item Def: a typo, or the item is gone");
+            }
+        }
+
+        const string GivenPrefix = "given, not sold: ";
+
+        // Who gives a supply, read from the shipped SupplyGiftDefs. Read by serialized field, because this
+        // assembly does not reference World (an Economy test never names a World type).
+        static List<string> GiversOf(string supplyId)
+        {
+            var givers = new List<string>();
+            foreach (string guid in AssetDatabase.FindAssets("t:SupplyGiftDef", new[] { DataRoot }))
+            {
+                var asset = AssetDatabase.LoadAssetAtPath<ScriptableObject>(AssetDatabase.GUIDToAssetPath(guid));
+                if (asset == null) continue;
+                var so = new SerializedObject(asset);
+                SerializedProperty items = so.FindProperty("ItemIds");
+                SerializedProperty giver = so.FindProperty("GiverNpcId");
+                if (items == null || giver == null) continue;
+                for (int i = 0; i < items.arraySize; i++)
+                    if (items.GetArrayElementAtIndex(i).stringValue == supplyId) { givers.Add(giver.stringValue); break; }
+            }
+            return givers;
+        }
+
+        [Test]
+        public void KnownMendingExceptionsAreExactlyTheUnstockedRecipeSupplies()
+        {
+            var def = AssetDatabase.LoadAssetAtPath<DoryMendingDef>(
+                DataRoot + "/Resources/DoryMending/StPetersDory.asset");
+            Assert.IsNotNull(def);
+            var materials = new HashSet<string>(def.Jobs.SelectMany(j => j.Materials).Select(m => m.ItemId));
+            Assert.That(KnownMendingSellerExceptions.Count, Is.EqualTo(4));
+            CollectionAssert.AreEquivalent(materials, KnownMendingSellerExceptions.Keys);
+            var offered = OfferedItems(SellerIds());
+            var supplies = Load<SupplyDef>().ToDictionary(s => s.Id);
+            foreach (var entry in KnownMendingSellerExceptions)
+            {
+                Assert.That(Exempt.ContainsKey(entry.Key), Is.False, "one exception list per supply");
+                Assert.That(offered.ContainsKey(entry.Key), Is.False, "remove the exception once a seller exists");
+                Assert.That(supplies[entry.Key].Catalog.Listed, Is.False, "unplaced supplies must stay unlisted");
+                Assert.That(supplies[entry.Key].Catalog.Sellers, Is.Empty);
+                StringAssert.StartsWith(GivenPrefix, entry.Value);
+                string giver = entry.Value.Substring(GivenPrefix.Length);
+                Assert.That(GiversOf(entry.Key), Does.Contain(giver), entry.Key + " is not given by " + giver);
             }
         }
 
@@ -202,6 +256,7 @@ namespace HiddenHarbours.Tests.Economy
 
         static string ExemptionFor(string id)
         {
+            if (KnownMendingSellerExceptions.TryGetValue(id, out string pending)) return pending;
             if (Exempt.TryGetValue(id, out string why)) return why;
             if (CarriedFromStart().Contains(id))
                 return "starting item: carried from the start of every game (GameConfig.CarriedFromStartGearIds), never bought";

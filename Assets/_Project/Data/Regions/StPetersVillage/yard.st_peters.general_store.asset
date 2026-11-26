@@ -35,12 +35,6 @@ MonoBehaviour:
     RouteId: ""
     Road: ""
     MetadataJson: "{\"rig\":\"YardIso\",\"cell\":4,\"why\":\"\"}"
-  - PieceId: "prop.stp_vl_general_store_chalk_sign"
-    Kind: "chalkSign"
-    Position: {x: 0.6, y: 29.985}
-    RouteId: ""
-    Road: ""
-    MetadataJson: "{\"rig\":\"WharfDecor\",\"cell\":4,\"why\":\"today's prices, chalked\"}"
   - PieceId: "prop.stp_vl_general_store_bench"
     Kind: "bench"
     Position: {x: 6.9, y: 30.285}

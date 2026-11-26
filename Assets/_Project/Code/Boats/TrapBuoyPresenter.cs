@@ -45,6 +45,11 @@ namespace HiddenHarbours.Boats
 
         private static TrapBuoyPresenter _instance;
 
+        /// <summary>The greybox float's widest half-width (px) and its pixels per unit: the shape the
+        /// fallback sprite is drawn with, and so the radius its waterline arc wraps.</summary>
+        private const int GreyboxFloatRadiusPx = 5;
+        private const int GreyboxPixelsPerUnit = 32;
+
         private readonly Dictionary<string, GameObject> _buoys = new();
         private Sprite _sprite;
 
@@ -101,6 +106,26 @@ namespace HiddenHarbours.Boats
 
             var buoy = go.AddComponent<BuoyWaveVisual>();
             buoy.Configure(sr, visualGo.transform);
+            if (art == _sprite)
+            {
+                // The greybox fallback: its waterline wraps at the half-width it is drawn with below.
+                buoy.ConfigureWaterlineArc(GreyboxFloatRadiusPx / (float)GreyboxPixelsPerUnit);
+            }
+            else
+            {
+                // The pot-float sheet: geometry off its own art (pivot = still waterline), the waterline
+                // wrapping at the radius in data, and the player's colours painted on by ramp swap.
+                GameConfig cfg = GameServices.Config;
+                buoy.ConfigureFloatFromSprite(art);
+                buoy.ConfigureWaterlineArc(cfg != null ? cfg.LobsterFloatRadiusMeters : 0f);
+                if (cfg != null)
+                {
+                    buoy.ConfigurePaint(cfg.PlayerPotFloatColour, cfg.PlayerPotFloatBandColour);
+                    buoy.ConfigureRide(cfg.PotFloatSurfaceFollow, cfg.LobsterFloatDraftMeters, cfg.LobsterFloatFreeboardMeters,
+                                       cfg.PotFloatFoamTexels);
+                    buoy.ConfigureDrawScale(cfg.PotFloatDrawScale);
+                }
+            }
 
             _buoys[e.InstanceId] = go;
         }
@@ -123,7 +148,7 @@ namespace HiddenHarbours.Boats
         /// </summary>
         private static Sprite BuildGreyboxBuoySprite()
         {
-            const int W = 16, H = 32, ppu = 32;
+            const int W = 16, H = 32, ppu = GreyboxPixelsPerUnit;
             var tex = new Texture2D(W, H, TextureFormat.RGBA32, false, true)
             {
                 name = "TrapBuoyGreybox",
@@ -146,8 +171,8 @@ namespace HiddenHarbours.Boats
             for (int y = 14; y <= 30; y++)
             {
                 float t = Mathf.InverseLerp(14f, 30f, y);
-                int half = Mathf.RoundToInt(Mathf.Lerp(5f, 2f, Mathf.Abs(t - 0.45f) * 1.8f));
-                half = Mathf.Clamp(half, 1, 5);
+                int half = Mathf.RoundToInt(Mathf.Lerp(GreyboxFloatRadiusPx, 2f, Mathf.Abs(t - 0.45f) * 1.8f));
+                half = Mathf.Clamp(half, 1, GreyboxFloatRadiusPx);
                 Color32 c = (y >= 21 && y <= 23) ? floatBand : floatTop;
                 for (int x = cx - half; x < cx + half; x++) Plot(x, y, c);
             }

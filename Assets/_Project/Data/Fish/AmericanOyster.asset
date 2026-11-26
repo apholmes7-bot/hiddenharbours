@@ -16,7 +16,7 @@ MonoBehaviour:
   DisplayName: American Oyster
   Category: 1
   Rarity: 1
-  Flavor: "Picked by hand off the reef on the big low tides, when the lowest ground bares. Slower to come by than a mussel, and worth the wait. GEAR NOTE: hand-gather only, on the ClamFork tag the clam uses; deliberately not in the rod's catch pool and in no trap."
+  Flavor: 'Picked by hand off the reef on the big low tides, when the lowest ground bares. Slower to come by than a mussel, and worth the wait.'
   Sprite: {fileID: 21300000, guid: e0b69d4f31394b01a3cd284614d92d16, type: 3}
   RegionIds:
   - region.st_peters

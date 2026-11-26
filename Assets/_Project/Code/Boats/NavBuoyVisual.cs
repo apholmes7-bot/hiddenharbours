@@ -244,6 +244,10 @@ namespace HiddenHarbours.Boats
             _bob.Configure(_renderer, _visual);
             _bob.ConfigureFloatGeometry(size.SpriteHeightMeters, size.FloatLineFraction, size.SlopeFollow);
 
+            // The waterline wraps her hull: every mark in the kit is a round hull, and her rung already
+            // says how wide (the same diameter the collider is sized from), so the arc is that, halved.
+            _bob.ConfigureWaterlineArc(size.DiameterMeters * 0.5f);
+
             // ⭐ The physics comes off the SAME rung as the art. A mark whose collider was sized
             // from one size and whose sprite from another is a buoy you can miss by looking at it.
             if (_mooring == null) _mooring = GetComponent<NavBuoyMooring>();

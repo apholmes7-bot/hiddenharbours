@@ -141,7 +141,7 @@ MonoBehaviour:
     Kit: stPetersSetPieces
     Piece: trolleyLine
     State: 
-    At: {x: 175.59, y: 9.57}
+    At: {x: 174.59, y: 9.87}
     Z: 6
     StandsOn: ground
     MountHost: 
@@ -160,16 +160,18 @@ MonoBehaviour:
     Words: []
     Options:
     - Key: path
-      Value: '[[0,0],[4.01,-4.17],[6.41,-7.17],[8.01,-9.27]]'
+      Value: '[[0,0],[3.4,-2.4],[5.6,-3.95],[6.7,-4.5],[7.6,-4.73],[8.46,-4.73]]'
     - Key: decay
       Value: derelict
+    - Key: lift
+      Value: none
   - Id: structure.stp_cannery_trolley_line_restored
     Kind: setPiece
     Owner: 
     Kit: stPetersSetPieces
     Piece: trolleyLine
     State: 
-    At: {x: 175.59, y: 9.57}
+    At: {x: 174.59, y: 9.87}
     Z: 6
     StandsOn: ground
     MountHost: 
@@ -188,23 +190,25 @@ MonoBehaviour:
     Words: []
     Options:
     - Key: path
-      Value: '[[0,0],[4.01,-4.17],[6.41,-7.17],[8.01,-9.27]]'
+      Value: '[[0,0],[3.4,-2.4],[5.6,-3.95],[6.7,-4.5],[7.6,-4.73],[8.46,-4.73]]'
     - Key: decay
       Value: restored
+    - Key: lift
+      Value: none
   - Id: prop.stp_cannery_trolley
     Kind: setPiece
     Owner: 
     Kit: stPetersSetPieces
     Piece: trolley
     State: 
-    At: {x: 178, y: 6.9}
+    At: {x: 183.93, y: 6.83}
     Z: 6
     StandsOn: ground
     MountHost: 
     MountAnchor: 
     HasFoot: 0
     Foot: {x: 0, y: 0}
-    Dir: 7
+    Dir: 4
     HasSortY: 0
     SortY: 0
     Layer: 
@@ -223,14 +227,14 @@ MonoBehaviour:
     Kit: stPetersSetPieces
     Piece: trolley
     State: 
-    At: {x: 180.9, y: 3.6}
+    At: {x: 183.93, y: 6.83}
     Z: 6
     StandsOn: ground
     MountHost: 
     MountAnchor: 
     HasFoot: 0
     Foot: {x: 0, y: 0}
-    Dir: 7
+    Dir: 4
     HasSortY: 0
     SortY: 0
     Layer: 
@@ -243,6 +247,54 @@ MonoBehaviour:
     Options:
     - Key: decay
       Value: restored
+  - Id: structure.stp_cannery_trolley_stage
+    Kind: setPiece
+    Owner: 
+    Kit: stPetersSetPieces
+    Piece: trolleyStage
+    State: 
+    At: {x: 184.6, y: 6.83}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 0
+    HasSortY: 0
+    SortY: 0
+    Layer: floor
+    Walk: on
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
+  - Id: prop.stp_cannery_hand_winch
+    Kind: setPiece
+    Owner: 
+    Kit: stPetersSetPieces
+    Piece: handWinch
+    State: 
+    At: {x: 185.58, y: 6.83}
+    Z: 6
+    StandsOn: ground
+    MountHost: 
+    MountAnchor: 
+    HasFoot: 0
+    Foot: {x: 0, y: 0}
+    Dir: 4
+    HasSortY: 0
+    SortY: 0
+    Layer: raised
+    Walk: behind
+    Collider: 
+    Variants:
+    - today
+    WhenTide: 
+    Words: []
+    Options: []
   - Id: prop.stp_cannery_conveyor
     Kind: setPiece
     Owner: 

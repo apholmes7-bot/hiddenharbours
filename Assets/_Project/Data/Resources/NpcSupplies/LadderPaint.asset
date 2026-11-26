@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc1b061b6a464caca54ea4162759046d, type: 3}
+  m_Name: LadderPaint
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.ClueLadderDef
+  Id: clueladder.st_peters_dory_paint
+  Gift: {fileID: 11400000, guid: 33d0ad19f52d45de8a9f77789c8e623a, type: 2}
+  Rungs:
+  - Flag: st_peters.dory_clue.paint.1
+    Hints:
+    - NpcId: npc.junior_poirier
+      Line: 'Somebody on this island paints the same white thing every summer and never throws a tin out.'
+    - NpcId: npc.eileen_doiron
+      Line: 'I have the children count white things on the walk home. They always forget the biggest one.'
+  - Flag: st_peters.dory_clue.paint.2
+    Hints:
+    - NpcId: npc.marguerite_leblanc
+      Line: 'Paint? The light takes a coat every summer. Whoever keeps it would have tins to spare.'
+    - NpcId: npc.rose_macisaac
+      Line: 'Look up past the cannery on a clear night. Whoever keeps that lamp keeps paint too.'
+  - Flag: st_peters.dory_clue.paint.3
+    Hints:
+    - NpcId: npc.aunt_ginny
+      Line: 'The keeper at the north-east light. Up past the cannery and onto the Head. By day the keeper''s out in the yard.'
+    - NpcId: npc.junior_poirier
+      Line: 'Past the cannery there''s a rise onto the Head. The keeper''s at the tower door from six, out in the yard over midday, and indoors after nine.'

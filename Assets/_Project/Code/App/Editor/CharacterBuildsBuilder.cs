@@ -27,8 +27,9 @@ namespace HiddenHarbours.App.Editor
     ///
     /// <para><b>Why the assignments are what they are:</b> the rig's cast is nine bodies and the
     /// island's cast is eight people, but they do not line up by sex — the rig has three grown men
-    /// (skipper · deckboss · hand) and the world has four. Basil and Hector therefore share
-    /// <c>skipper</c>; they live in different regions and are never on screen together. The two child
+    /// (skipper · deckboss · hand) and the world has four. Basil and Hector therefore share the
+    /// <c>skipper</c> body; Basil wears it in his own outfit (<c>basil</c>, owner 2026-11-25), Hector
+    /// in the skipper's oilskins. The two child
     /// builds (<c>boy</c> · <c>girl</c>) go unworn: there are no children in the M1 cast yet, and
     /// inventing one to use a preset would be content the roadmap has not asked for.</para>
     /// </summary>
@@ -48,6 +49,10 @@ namespace HiddenHarbours.App.Editor
             ("ginny", "Ginny"), ("skipper", "Skipper"), ("nan", "Nan"),
             ("deckboss", "DeckBoss"), ("packer", "Packer"), ("cutter", "Cutter"),
             ("hand", "Hand"), ("boy", "Boy"), ("girl", "Girl"),
+
+            // A cast member's own outfit over a preset's body (CharacterOutfits): its own skin, its
+            // own visual def, its own build.
+            ("basil", "Basil"),
         };
 
         /// <summary>
@@ -77,17 +82,18 @@ namespace HiddenHarbours.App.Editor
              "Junior digs clams: a young man in a work shirt and a ball cap, which is what a clam " +
              "digger coming up off the flats looks like"),
 
-            ("BasilSamson", "skipper",
-             "up the wharf watching the water in oilskins and a sou'wester — the man who has been " +
-             "going out longer than you have been alive"),
+            ("BasilSamson", "basil",
+             "up the wharf with a rod, in a cream knit jumper, charcoal trousers and a navy peaked " +
+             "cap over the skipper's body (owner, 2026-11-25: outfit A). Ashore by choice, so dressed " +
+             "for the wharf, not the wet"),
 
             ("WendellArsenault", "deckboss",
              "the fish buyer at his truck: a grown man in a quilted vest and a flat cap, the one " +
              "person on the wharf not dressed to get wet because he never leaves it"),
 
             ("HectorBernard", "skipper",
-             "the old boat-yard man among his tired outboards. SHARES the skipper body with Basil — " +
-             "different region, never on screen together (see the class note)"),
+             "the old boat-yard man among his tired outboards, in the skipper's oilskins. Basil wears " +
+             "the same body in his own clothes (the basil outfit), so the two no longer read as one man"),
 
             ("ClaudetteBoudreau", "packer",
              "the mainland storekeeper, in the same apron and kerchief as the island's. SHARES the " +

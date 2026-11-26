@@ -84,6 +84,16 @@ namespace HiddenHarbours.World
         [Min(0f)]
         [SerializeField] private float _standoffMetres = LadderBoardingMath.RigStandoffMetres;
 
+        [Header("Kind and reach")]
+        [Tooltip("The ladder kind this one is built to (rail span, rung pitch, how far below the lowest " +
+                 "water its foot must reach). Empty on ladders placed before the kinds existed.")]
+        [SerializeField] private WharfLadderDef _kind;
+
+        [Tooltip("The length of the DRAWN ladder from its top to its foot, in metres, for a ladder whose " +
+                 "picture is a fixed full-length piece. Zero for a ladder with no full-length picture.")]
+        [Min(0f)]
+        [SerializeField] private float _lengthMetres;
+
         /// <inheritdoc/>
         public string Id => _id;
 
@@ -105,6 +115,22 @@ namespace HiddenHarbours.World
 
         /// <inheritdoc/>
         public float StandoffMetres => _standoffMetres;
+
+        /// <summary>The kind this ladder is built to, or null for a ladder placed before kinds existed.</summary>
+        public WharfLadderDef Kind => _kind;
+
+        /// <summary>The drawn length from top to foot (m); zero when the ladder has no full-length picture.</summary>
+        public float LengthMetres => _lengthMetres;
+
+        /// <summary>Where the drawn foot stands, metres above datum (the top when no length is drawn).</summary>
+        public float FootElevationMeters => _topElevationMeters - _lengthMetres;
+
+        /// <summary>Set the kind and the drawn length (builders; the direct-configure convention).</summary>
+        public void ConfigureKind(WharfLadderDef kind, float lengthMetres)
+        {
+            _kind = kind;
+            _lengthMetres = Mathf.Max(0f, lengthMetres);
+        }
 
         /// <summary>Author the ladder in one call (region builders; the direct-configure convention).
         /// The kit geometry keeps its measured defaults — pass them only for a ladder the kit did not

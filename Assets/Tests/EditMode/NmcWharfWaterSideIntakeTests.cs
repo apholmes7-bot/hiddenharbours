@@ -14,6 +14,7 @@ namespace HiddenHarbours.Tests.EditMode
         [TestCase("marinaRig.js", 56016, "7c4733acd839b831d36cc18040b9f02de4b8236f2e96647e040a8133cde48602")]
         [TestCase("marinaBoats.js", 8588, "888ed44486475890354e41502a6685cbc87f193392c0554838382435beb08229")]
         [TestCase("nmcWharf.js", 60356, "2e42f3877fcc22ff1e433c409b3642a19c8d2f50db50af6302d5b336de8138cd")]
+        [TestCase("marinaGangway.js", 1645, "0b9b15b436f2be540d324798122355a5804a3cbdb3310dbfbaba92dccb74d6e1")]
         public void AuthorizedSourceBytesStayPinned(string file, int length, string expected)
         {
             byte[] bytes = File.ReadAllBytes("docs/art/rigs/nmc-marina-kit/" + file);

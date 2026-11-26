@@ -730,6 +730,17 @@ Shader "HiddenHarbours/Water"
         _LowSunSkyFar     ("Low sun sky away from the sun (dusk rose)", Color) = (0.62, 0.40, 0.50, 1.0)
         _LowSunHueHold    ("Low sun: the sea keeps its own hue (0 = off)", Range(0,1)) = 0
         _LowSunWakeHold   ("Low sun: hull waves keep their low-light shade as a share of the sheen-lit sea (0 = in levels, 1 = as a share)", Range(0,1)) = 0
+        // WARM LIGHT ABOVE THE LOW SUN (twin: WaterLowSun.WarmLight*). The tint turns gold well before the sun
+        // enters the low-sun window (the warm key starts ~2 h before sunset, at a sun elevation near 0.55), and
+        // in that gap nothing held the sea's own colour: the mirror reflected the LIGHT's colour (0.85 of the
+        // tint) as if it were the sky's, the overlay multiplied the blue out of the body, and deep water came
+        // out the flat orange-brown of the lit sand beside it. Seen from above, a sea mirrors the high sky,
+        // which is still blue while the sun is up. Weighted by how coloured the light is (smoothstep of the
+        // tint's saturation from .z to .w) and handed over to the low-sun dials inside their window, so noon,
+        // an overcast evening, the night and the approved low-sun look are all exact passthroughs.
+        //   x: the share of its own hue the sea keeps under the warm light (the hue hold, outside the window).
+        //   y: the share of the mirror's sky that is its own colour rather than the light's.
+        _WarmLight        ("Warm light above the low sun (x = the sea keeps its hue, y = the mirror keeps its sky colour, z = light saturation where it starts, w = where it is full; x = y = 0 is off)", Vector) = (0, 0, 0.1, 0.4)
 
         [Header(Depth source)]
         _WaterLevel     ("Water level (m, sim-driven)", Float) = 0.0
@@ -1937,6 +1948,7 @@ Shader "HiddenHarbours/Water"
                 float4 _LowSunSkyFar;
                 float  _LowSunHueHold;
                 float  _LowSunWakeHold;
+                float4 _WarmLight;
                 float  _WaterLevel;
                 float  _HeightMin;
                 float  _HeightMax;
@@ -4869,6 +4881,24 @@ Shader "HiddenHarbours/Water"
             //   swellCrest— the rolling-swell crest factor (0..1) so the mirror brightens on the lit swell faces.
             //   t         — _Time.y (the glitter twinkles).
             // Everything here is pixelized (pixel-art faithful, §3) and additive to col.rgb (P1, rule 5).
+            // ---- WARM LIGHT ABOVE THE LOW SUN (twin: WaterLowSun.WarmLightWeight; see the property) ----------
+            // How coloured the light is: 0 for a grey or white tint and while no cycle runs, rising to 1 between
+            // the saturations _WarmLight.z and .w. A plain smoothstep of the tint, nothing stored.
+            float WarmLightWeight()
+            {
+                float tintSum = _DayNightTint.r + _DayNightTint.g + _DayNightTint.b;
+                if (tintSum <= 1e-3)
+                    return 0.0;
+                float mx = max(_DayNightTint.r, max(_DayNightTint.g, _DayNightTint.b));
+                float mn = min(_DayNightTint.r, min(_DayNightTint.g, _DayNightTint.b));
+                float sat = mx <= 1e-5 ? 0.0 : (mx - mn) / mx;
+                return smoothstep(_WarmLight.z, max(_WarmLight.w, _WarmLight.z + 1e-4), sat);
+            }
+            // The warm light's weight OUTSIDE the low-sun window, set in frag() ahead of SkyReflection and the
+            // hue hold: WarmLightWeight() x (1 - LowSunWeight()), so inside the window the low-sun dials keep the
+            // last word. Static: per invocation, 0 until set (0 = the mirror and the hold exactly as before).
+            static float hhWarmLight = 0.0;
+
             float3 SkyReflection(float2 worldXY, float2 waveSlopeXY, float surf, float swellCrest, float t)
             {
                 float strength = ReflectionStrength();
@@ -4884,7 +4914,10 @@ Shader "HiddenHarbours/Water"
                 // (NOT a black sky). This mirrors the specular's `_SunDir == 0` fallback convention above.
                 float tintSum = _DayNightTint.r + _DayNightTint.g + _DayNightTint.b;
                 bool cycleOn = tintSum > 1e-3;                                    // controller is pushing a real tint
-                float3 sky = cycleOn ? lerp(_ReflectionColor.rgb, _DayNightTint.rgb, saturate(_ReflectionSkyTint))
+                // Under a warm light above the low sun the high sky the sea mirrors is still blue: the light's
+                // colour gives up _WarmLight.y of its share (hhWarmLight 0 = the shipped share, bit for bit).
+                float skyTintShare = saturate(_ReflectionSkyTint) * (1.0 - saturate(_WarmLight.y) * hhWarmLight);
+                float3 sky = cycleOn ? lerp(_ReflectionColor.rgb, _DayNightTint.rgb, skyTintShare)
                                      : _ReflectionColor.rgb;
 
                 // (2) the vertical-ish SMEAR: a stylized mirror stamps the sky DOWN the surface as a soft band.
@@ -7395,6 +7428,9 @@ Shader "HiddenHarbours/Water"
                 // LOW SUN: one weight for the sheen here and the hue hold after the grade. 0 at high sun and at
                 // night, so both are exact passthroughs there.
                 float lowSun = LowSunWeight();
+                // WARM LIGHT: its weight outside the low-sun window, for the mirror below and the hue hold
+                // after the grade. 0 at noon, overcast, night and with no cycle; 0 inside the window.
+                hhWarmLight = WarmLightWeight() * (1.0 - lowSun);
                 col.rgb += SkyReflection(worldXY, waveSlope, surf, swellCrest, t);
                 // LOW SUN: the glowing sky on the sea (see the LOW SUN header). Under the foam, like the mirror,
                 // so foam is laid over it and ages back to it. 0 at weight 0.
@@ -8144,7 +8180,9 @@ Shader "HiddenHarbours/Water"
                 col.rgb *= 1.0 + hullWaveLowLight * lowSunDilute;
                 // LOW SUN: the sea keeps its own hue under the coloured light (see the LOW SUN header). After
                 // the grade, so the rail's ceiling cannot clip the held channels. Exactly 1 at weight 0.
-                col.rgb *= LowSunHueHoldFactor(_LowSunHueHold * lowSun);
+                // WARM LIGHT: above the window the sea keeps _WarmLight.x of its hue the same way; the two
+                // weights are complements across the window's edge, so neither look is moved by the other.
+                col.rgb *= LowSunHueHoldFactor(_LowSunHueHold * lowSun + saturate(_WarmLight.x) * hhWarmLight);
 
                 // ---- THE BOAT SPOTLIGHT: REVEAL the water inside the cone (searchlight, not floodlamp) ----------
                 // The beam no longer PAINTS an amber slab (the old purely-additive _BoatLightColor term that

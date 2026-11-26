@@ -116,7 +116,7 @@ MonoBehaviour:
   - Id: ui.hold
     Icon: {fileID: 8828844319154872306, guid: 1c7cd2647a21e114a9b2fbe5d8bba682, type: 3}
   - Id: buoy.player
-    Icon: {fileID: -4432373148397089404, guid: a52401dfeb41d2813e5d0d41635fd612, type: 3}
+    Icon: {fileID: 5410072920437881922, guid: 44150562fa8e43d89a07e2cfde851490, type: 3}
   - Id: fish.american_oyster
     Icon: {fileID: 21300000, guid: e0b69d4f31394b01a3cd284614d92d16, type: 3}
   - Id: fish.blue_mussel

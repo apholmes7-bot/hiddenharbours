@@ -363,7 +363,8 @@ namespace HiddenHarbours.Tests.RigBaking
             }
             // The committed rig omits the -1.70 half-mark at the new foot's lower drawing boundary.
             // Every remaining mark retains its absolute tide level and is checked above against its pixels.
-            Assert.That(projected, Is.EqualTo(29));
+            // The trolley stage adds two pixel anchors (lineEnd, buffer) and the hand winch four.
+            Assert.That(projected, Is.EqualTo(35));
         }
 
         [Test]

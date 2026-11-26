@@ -78,6 +78,9 @@ namespace HiddenHarbours.App.Editor
         /// <summary>The lamp over the cottage door: how high it hangs and how far it lights the step, metres.</summary>
         public const float WhelpsDoorLampHeightMetres = 2f, WhelpsDoorLampReachMetres = 3.4f;
         public const string DoorLampName = "DoorLamp";
+        /// <summary>The cottage door's object, and the Def that says what a knock on it brings.</summary>
+        public const string KnockDoorName = "Door";
+        public const string WhelpsCottageDoorPath = KeepersFolder + "/KnockDoor_stp_whelps_cottage.asset";
 
         /// <summary>The cottage's plan on the ground as drawn, about <paramref name="centre"/>.</summary>
         public static Vector2[] WhelpsCottagePlan(Vector2 centre)
@@ -241,6 +244,7 @@ namespace HiddenHarbours.App.Editor
             foreach (KeeperPost post in posts)
             {
                 string name = post.Name;
+                long routine = Next(name, "KeeperRound");
                 // ---- the place a caller is sent to: a named point and nothing else ----
                 {
                     long ag = Next(post.AnchorId, "GameObject"), at = Next(post.AnchorId, "Transform");
@@ -262,8 +266,10 @@ namespace HiddenHarbours.App.Editor
                     var plan = new List<Vector2[]> { WhelpsCottagePlan(Vector2.zero) };
                     int order = YSortSprite.OrderFor(post.CottageAt.y, SortingBands.DecorBase, SortingBands.OrdersPerMetre,
                         SortingBands.DecorFloor, SortingBands.DecorCeiling);
+                    string doorChild = child + "/" + KnockDoorName;
+                    long dg = Next(doorChild, "GameObject"), dt = Next(doorChild, "Transform"), knock = Next(doorChild, "KnockDoor");
                     wanted.Add(Want(GameObjectYaml(cg, child, new[] { ct, sr, sort, binder, walls }), child, "GameObject"));
-                    wanted.Add(Want(TransformYaml(ct, cg, post.CottageAt, new[] { lt }, rootTr), child, "Transform"));
+                    wanted.Add(Want(TransformYaml(ct, cg, post.CottageAt, new[] { lt, dt }, rootTr), child, "Transform"));
                     wanted.Add(Want(SpriteRendererYaml(sr, cg, assets.CottageMaterial, assets.Cottage(WhelpsCottageFacing), order), child, "SpriteRenderer"));
                     wanted.Add(Want(MonoBehaviourYaml(sort, cg, assets.ScriptFor(typeof(YSortSprite)), new[]
                     {
@@ -295,6 +301,14 @@ namespace HiddenHarbours.App.Editor
                         "  _preset: " + Int((int)LightPresets.Kind.Lantern), "  _intensityScale: 1", "  _fittingWidthMetres: 0",
                         "  _reachOverrideMetres: " + F(WhelpsDoorLampReachMetres),
                     }), lampChild, "PreconfiguredLight"));
+
+                    // ---- the door, which can be knocked on: it asks the keeper who lives there whether she is in ----
+                    wanted.Add(Want(GameObjectYaml(dg, KnockDoorName, new[] { dt, knock }), doorChild, "GameObject"));
+                    wanted.Add(Want(TransformYaml(dt, dg, doorOnTheGround, none, ct), doorChild, "Transform"));
+                    wanted.Add(Want(MonoBehaviourYaml(knock, dg, assets.ScriptFor(typeof(KnockDoor)), new[]
+                    {
+                        "  _def: " + assets.Asset(WhelpsCottageDoorPath).Yaml, $"  _household: {{fileID: {Id(routine)}}}",
+                    }), doorChild, "KnockDoor"));
                     rootChildren.Add(ct);
                 }
 
@@ -305,7 +319,7 @@ namespace HiddenHarbours.App.Editor
                     KeeperStop first = post.Stops[0];
                     long kg = Next(name, "GameObject"), kt = Next(name, "Transform"), sr = Next(name, "SpriteRenderer");
                     long iso = Next(name, "IsoCharacterSprite"), sort = Next(name, "YSortSprite");
-                    long talk = Next(name, "Interactable"), routine = Next(name, "KeeperRound");
+                    long talk = Next(name, "Interactable");
                     int order = YSortSprite.OrderFor(first.At.y, SortingBands.DecorBase, SortingBands.OrdersPerMetre,
                         SortingBands.DecorFloor, SortingBands.DecorCeiling);
                     wanted.Add(Want(GameObjectYaml(kg, name, new[] { kt, sr, iso, sort, talk, routine }), name, "GameObject"));
