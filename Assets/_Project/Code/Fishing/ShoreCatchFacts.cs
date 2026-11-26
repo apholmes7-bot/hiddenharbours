@@ -47,6 +47,15 @@ namespace HiddenHarbours.Fishing
             spotId != null && _spots.TryGetValue(spotId, out ShoreSpotDef spot) ? spot : null;
 
         /// <inheritdoc/>
+        public bool TryGetStand(string spotId, out ShoreStand stand)
+        {
+            ShoreSpotDef spot = Spot(spotId);
+            if (spot != null) return spot.TryGetStand(out stand);
+            stand = default;
+            return false;
+        }
+
+        /// <inheritdoc/>
         public bool TryPick(string spotId, int worldSeed, uint anglerKeyHash, long slotIndex,
                             double slotStartTotalSeconds, out ShoreCatch shoreCatch)
         {

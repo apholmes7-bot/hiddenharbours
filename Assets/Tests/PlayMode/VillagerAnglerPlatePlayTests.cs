@@ -46,21 +46,43 @@ namespace HiddenHarbours.Tests.PlayMode
         private const string PlayerPuppetKey = "player.clip_puppet";
 
         private const float PlateHour = 15.5f;
-        private const float ClipHour = 17.25f;
         private const int SettleFrames = 90;
         private const int MaxSlotsSearched = 60;
         private const float StepSeconds = 1f / 30f;
-        private const int ClipFps = 15;
-        private const int ClipJpegQuality = 90;
         private const float ClipLeadSeconds = 1.5f;
         private const float ClipTailSeconds = 2f;
         private const float PlayerLeadSeconds = 3f;
 
+        // ---- the clip (take 3): 18:30 on the clearest evening, close, at video rate ----
+        /// <summary>The hour the region is entered at before the weather pick moves the clock.</summary>
+        private const float ClipArriveHour = 18.5f;
+        /// <summary>The hour asked for: inside the warm key (from about 18:04) and his wharf block (to 19:30).</summary>
+        private static readonly float[] ClipHours = { 18.5f };
+        private const int ClipDaysSearched = 60;
+        private const int ClipCandidatesTried = 12;
+        private const int ClipFps = 30;
+        private const int ClipJpegQuality = 92;
+        /// <summary>The clip writes ~25 s at 30 fps in full HD; the runner's 180 s default cuts it off.</summary>
+        private const int ClipTimeoutMs = 1_200_000;
+        /// <summary>The design screen: the game's closest walking stop lands on a whole pixel step here.</summary>
+        private const int ClipWidthPx = 1920, ClipHeightPx = 1080;
+        /// <summary>The player stands this far to Basil's right, on the same plank row at the edge, both facing his
+        /// water (right: the barrel on the back curb stands to his left).</summary>
+        private const float PlayerRightOfBasilMetres = 1.8f;
+        /// <summary>The frame's centre is this far out over the water from the anglers' feet: the two of them low in
+        /// frame, the water they fight their fish in above them.</summary>
+        private const float ClipWaterAheadMetres = 1.8f;
+
         /// <summary>Where the plate's camera parks: this far along his facing from his feet, so his cast lands in
         /// frame.</summary>
         private const float FrameAheadMetres = 3f;
-        /// <summary>The player stands this far to Basil's right (south of an east-facing man) in the clip.</summary>
-        private static readonly Vector2 PlayerBesideBasil = new Vector2(-0.6f, -1.6f);
+
+        /// <summary>He stands within this of the spot's authored stand (m): the hold may ease him the last step.</summary>
+        private const float StandToleranceMetres = 0.05f;
+        /// <summary>The fight is probed for "over the water" this often (s of the clock).</summary>
+        private const double FightProbeSeconds = 0.25d;
+        /// <summary>The edge profile is sampled this far north of the stand, this finely (m).</summary>
+        private const float EdgeProfileMetres = 2f, EdgeProfileStepMetres = 0.05f;
 
         /// <summary>The line leaves within this of the rod tip the figure drew (m).</summary>
         private const float TipToleranceMetres = 0.15f;
@@ -110,6 +132,7 @@ namespace HiddenHarbours.Tests.PlayMode
             _angler = null;
             _figure = null;
             _clock = null;
+            ReleaseTheClipTargets();
             if (_stage != null)
             {
                 yield return _stage.TearDown();
@@ -138,11 +161,29 @@ namespace HiddenHarbours.Tests.PlayMode
             float heading = Heading();
             yield return _stage.FrameOn(at + Compass(heading) * FrameAheadMetres);
 
+            // He fishes from the spot's own stand, on the planks, facing out over the water.
+            Assert.IsTrue(_basilAngling.TryGetStand(out ShoreStand stand), "the wharf spot publishes no stand");
+            Assert.LessOrEqual(Vector2.Distance(at, stand.Position), StandToleranceMetres,
+                               $"Basil fishes from {at}, not the spot's stand {stand.Position}");
+            Assert.AreEqual(stand.HeadingDegrees, heading, "he does not face the stand's heading");
+            Assert.IsTrue(StandableSurfaces.TryGetDeckElevationNow(at, out _), $"the stand {at} is not on the deck");
+            Assert.IsTrue(TidalWalkability.IsWalkableNow(at), $"the stand {at} is not walkable");
+            LogTheEdgeProfile(at);
+
             Session s = null;
-            yield return FindASessionWithAFish(PlateHour, found => s = found);
+            yield return FindASessionWithAFish((1.0 + PlateHour / 24.0) * GameServices.Config.SecondsPerDay,
+                                               found => s = found);
             Assert.IsNotNull(s, "harness: no slot with a fish was found inside his block");
             Debug.Log($"[{PlateDir}] seed {s.Seed}, slot {s.Slot} at {s.Start:0.00}s, catch {s.Catch.FishId} " +
                       $"{s.Catch.WeightKg:0.###} kg; phases {s.Describe()}; services healed: {_healed}");
+
+            // The whole fight, off his own state: the fish is over the water at every step, never on the deck.
+            for (double t = s.DeepStart; t < s.LandStart; t += FightProbeSeconds)
+            {
+                yield return SeekAndDraw(t);
+                Assert.IsTrue(_basil.TryGetAnglerState(out FishingState fs, out _), "harness: not in a session mid-fight");
+                AssertOverWater(at + new Vector2(fs.FishOffsetX, fs.FishOffsetY), $"fight +{t - s.Start:0.00}s");
+            }
 
             // 1. The cast: his release is scrubbed once through, the line is out.
             yield return SeekAndDraw(s.CastStart + 0.6d * s.Script.CastSeconds);
@@ -160,14 +201,22 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return SeekAndDraw(s.BiteStart + 0.5d);
             AssertInSession(FishingPhase.Bite);
             AssertTheLineLeavesTheRodTip("bite");
+            AssertOverWater(_angler.Line.GetPosition(_angler.Line.positionCount - 1), "bite (the line's end)");
             Shoot("3-bite");
 
-            // 4. The fight at the surface: she is drawn on the line.
+            // 4. The fight at the surface: she is drawn on the line, over the water.
             yield return StepThrough(s.SurfaceStart - 0.2d, s.SurfaceStart + 1.2d);
             AssertInSession(FishingPhase.FightSurface);
             Assert.IsTrue(_angler.FishRenderer.enabled, "no fish at the surface in the fight");
             AssertTheLineLeavesTheRodTip("fight");
+            AssertOverWater(_angler.FishRenderer.transform.position, "mid-fight (the drawn fish)");
             Shoot("4-fight");
+
+            // 4b. The landing splash: stepped across the edge, so it fires where she leaves the water.
+            yield return StepThrough(s.LandStart - 0.3d, s.LandStart + 0.1d);
+            AssertInSession(FishingPhase.Landed);
+            Assert.IsTrue(_angler.SplashRenderer.enabled, "no splash where she is lifted out");
+            AssertOverWater(_angler.SplashRenderer.transform.position, "the landing splash");
 
             // 5. The landing: past the lift, the fish is in his hand.
             double land = s.LandStart + s.Script.LandLiftSeconds + 0.3d;
@@ -192,7 +241,7 @@ namespace HiddenHarbours.Tests.PlayMode
         //  The clip (explicit: frames for a video, never a suite case)
         // =============================================================================================
 
-        [UnityTest, Explicit("Writes a few hundred frames for a video; run by name only.")]
+        [UnityTest, Timeout(ClipTimeoutMs), Explicit("Writes several hundred full-HD frames for a video; run by name only.")]
         public IEnumerator Clip_BasilAndThePlayerFishTheWharfHead_GoldenHour()
         {
             WharfNightStage.RequireAGraphicsDevice();
@@ -200,19 +249,80 @@ namespace HiddenHarbours.Tests.PlayMode
             string dir = !string.IsNullOrEmpty(env) ? env : Path.Combine(Application.temporaryCachePath, ClipDirName);
             Directory.CreateDirectory(dir);
 
-            yield return Arrive(ClipHour);
+            yield return Arrive(ClipArriveHour);
             yield return FindBasil();
             yield return FindThePlayer();
-            Vector2 at = _basil.transform.position;
-            float heading = Heading();
-            PutThePlayerAt(at + PlayerBesideBasil, heading);
-            yield return _stage.FrameOn(at + Compass(heading) * FrameAheadMetres + PlayerBesideBasil * 0.5f);
-            Time.timeScale = 1f;                  // the player's presenter keeps its clocks on engine time
-            Time.captureFramerate = ClipFps;      // which this makes one 1/fps step per frame
+            var log = new StringBuilder();
+
+            // The light: the clearest late afternoon in his wharf block, picked off the pure weather model.
+            var weather = GameServices.Environment as HiddenHarbours.Environment.EnvironmentService;
+            Assert.IsNotNull(weather, "harness: the region registered no environment service");
+            double spd = GameServices.Config.SecondsPerDay;
+            var candidates = new List<(int day, float hour, float vis, float sea)>();
+            for (int day = 1; day <= ClipDaysSearched; day++)
+                foreach (float hour in ClipHours)
+                {
+                    double t0 = (day + hour / 24.0) * spd;
+                    candidates.Add((day, hour, weather.VisibilityAt(t0), weather.SeaState01At(t0)));
+                }
+            candidates.Sort((a, b) =>
+            {
+                int c = (b.vis - b.sea).CompareTo(a.vis - a.sea);
+                return c != 0 ? c : b.hour.CompareTo(a.hour);
+            });
 
             Session s = null;
-            yield return FindASessionWithAFish(ClipHour, found => s = found);
-            Assert.IsNotNull(s, "harness: no slot with a fish was found inside his block");
+            (int day, float hour, float vis, float sea) pick = default;
+            for (int i = 0; i < Mathf.Min(ClipCandidatesTried, candidates.Count) && s == null; i++)
+            {
+                pick = candidates[i];
+                double now = (pick.day + pick.hour / 24.0) * spd;
+                yield return SeekAndDraw(now);
+                for (int f = 0; f < SettleFrames; f++) yield return null;   // the tint ticks on engine time
+                if (_basil.Angling == null)
+                {
+                    log.AppendLine($"candidate day {pick.day} {pick.hour:0.00} h: Basil is not fishing then");
+                    continue;
+                }
+                yield return FindASessionWithAFish(now, found => s = found);
+                if (s == null) log.AppendLine($"candidate day {pick.day} {pick.hour:0.00} h: no slot with a fish left");
+            }
+            Assert.IsNotNull(s, "harness: no clear late-afternoon slot with a fish was found");
+            log.Insert(0, $"light: day {pick.day} at {pick.hour:0.00} h, visibility {pick.vis:0.000}, sea state " +
+                          $"{pick.sea:0.000} (best of {candidates.Count} day/hour candidates by visibility less sea " +
+                          $"state); the warm key starts {WarmKeyHour():0.00} h and his wharf block now runs to 19:30\n");
+
+            Vector2 at = _basil.transform.position;
+            float heading = Heading();
+            Vector2 fwd = Compass(heading), right = Compass(heading + 90f);
+            Vector2 playerAt = at + right * PlayerRightOfBasilMetres;
+            PutThePlayerAt(playerAt, heading);
+            Vector2 landing = at + Compass(heading + s.Script.CastBearingDegrees) * s.Script.CastReachM;
+            Vector2 centre = (at + playerAt) * 0.5f + fwd * ClipWaterAheadMetres;
+            yield return _stage.FrameOn(centre);
+
+            // Close: the game's own closest walking stop, on a design-screen target so it lands on a whole step.
+            Camera cam = _stage.Camera;
+            var follow = cam.GetComponent<CameraFollow>();
+            Assert.IsNotNull(follow, "harness: the stage camera has no CameraFollow");
+            _clipRt = new RenderTexture(ClipWidthPx, ClipHeightPx, 24, RenderTextureFormat.ARGBHalf);
+            _clipRt.Create();
+            cam.targetTexture = _clipRt;
+            Time.timeScale = 1f;                  // the player's presenter keeps its clocks on engine time
+            float closest = GameServices.Config.PlayerZoom.Sanitized().ClosestWorldHeightMeters;
+            follow.SetFraming(closest, 0f);
+            for (int f = 0; f < 12; f++) yield return null;
+            Time.captureFramerate = ClipFps;      // which this makes one 1/fps step per frame
+            float upp = follow.WorldUnitsPerRenderedPixel;
+            log.AppendLine($"camera: closest walking stop {closest:0.###} m asked, ortho {cam.orthographicSize:0.###} " +
+                           $"(world height {cam.orthographicSize * 2f:0.###} m), {1f / Mathf.Max(1e-6f, upp):0.#} px/m " +
+                           $"at {ClipWidthPx}x{ClipHeightPx}, centre {centre}");
+            log.AppendLine($"staging: Basil at {at} facing {heading:0}°, player at {playerAt} " +
+                           $"({PlayerRightOfBasilMetres} m to his right, side by side), cast lands " +
+                           $"about {landing}");
+            log.AppendLine("the player is a puppet: his fishing states are published from the same angler timeline " +
+                           $"under the key {PlayerPuppetKey}, {PlayerLeadSeconds:0.#} s ahead of Basil, and the game's own " +
+                           "presenter draws them; it is not live input");
 
             // The player's puppet: the same script under his own key, starting a little before Basil.
             AnglerScript script = s.Script;
@@ -224,28 +334,33 @@ namespace HiddenHarbours.Tests.PlayMode
                         AnglerTimeline.SlotStartSeconds(in script, s.Seed, playerKey, playerSlot), out playerCatch))
                     break;
             double playerStart = AnglerTimeline.SlotStartSeconds(in script, s.Seed, playerKey, playerSlot);
+            // The puppet fishes over the same edge, measured from where he stands.
+            ShoreEdge playerEdge = _basilAngling.TryGetStand(out ShoreStand spotStand) ? spotStand.Edge.RelativeTo(playerAt) : default;
 
             double from = s.Start - ClipLeadSeconds - PlayerLeadSeconds;
             double to = s.LandStart + script.LandSeconds + ClipTailSeconds;
-            var log = new StringBuilder();
             log.AppendLine($"seed {s.Seed}; Basil slot {s.Slot} at {s.Start:0.00}s, catch {s.Catch.FishId} {s.Catch.WeightKg:0.###} kg");
             log.AppendLine($"player puppet slot {playerSlot}, catch {playerCatch.FishId} {playerCatch.WeightKg:0.###} kg, " +
                            $"{PlayerLeadSeconds:0.#}s ahead of Basil");
             log.AppendLine($"phases: {s.Describe()}");
             int frame = 0;
+            bool loggedLine = false;
             for (double t = from; t <= to; t += 1d / ClipFps, frame++)
             {
                 _clock.SeekTo(t);
                 double pt = playerStart + (t - (s.Start - PlayerLeadSeconds));
                 AnglerTimeline.Evaluate(in script, in playerCatch, playerCatch.FishId != null, s.Seed, playerKey,
-                                        heading, pt, out AnglerBeat pb);
+                                        heading, pt, in playerEdge, out AnglerBeat pb);
                 EventBus.Publish(new FishingStateChanged(pb.InSession ? pb.State : FishingState.Idle));
                 _publishedPlayerState = true;
                 yield return null;   // never WaitForEndOfFrame: it does not fire in batchmode
-                byte[] rgba = _stage.Capture();
                 string name = $"frame_{frame:0000}.jpg";
-                SaveJpeg(Path.Combine(dir, name), rgba);
+                SaveClipFrame(Path.Combine(dir, name));
                 _basil.TryGetAnglerState(out FishingState bs, out _);
+                if (!loggedLine && _angler.DrawsLine && _angler.Line != null && (loggedLine = true))
+                    log.AppendLine($"line: width {_angler.Line.widthMultiplier * _angler.Line.startWidth:0.####} m = " +
+                                   $"{_angler.Line.widthMultiplier * _angler.Line.startWidth / Mathf.Max(1e-6f, upp):0.##} px " +
+                                   "at this zoom (as the game draws it; not thickened for the clip)");
                 log.AppendLine($"{name} t={t - s.Start:+0.00;-0.00}s basil={bs.Phase} " +
                                $"key={(_figure.AshoreFigure != null ? _figure.AshoreFigure.DrawnStateKey : "-")} " +
                                $"line={_angler.DrawsLine} splash={_angler.SplashRenderer.enabled} " +
@@ -282,6 +397,16 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             if (!_loadedAny) _introOnEntry = GameServices.OpeningCinematicRunning;
             _loadedAny = true;
+            // A suite's earlier teardown resets the services; the shore spots are published once per domain, before
+            // the first scene. Republished BEFORE the region loads, because the day's plans are built at load and
+            // read the spot's stand through it.
+            if (GameServices.ShoreCatch is EmptyShoreCatchFacts)
+            {
+                var lib = Resources.Load<ShoreSpotLibrary>(ShoreCatchRegistrar.ResourcesPath);
+                Assert.IsNotNull(lib, "harness: no shore spot library in Resources");
+                GameServices.ShoreCatch = lib.BuildFacts();
+                _healed = "shore catch republished";
+            }
             _stage = new WharfNightStage(StPetersScene, PlateDir);
             yield return _stage.Load();
             if (ShellFlow.WorldInputBlocked) ShellFlow.Reset();
@@ -290,15 +415,11 @@ namespace HiddenHarbours.Tests.PlayMode
             if (GameServices.Clock == null)
             {
                 var live = Object.FindFirstObjectByType<HiddenHarbours.Environment.GameClock>();
-                if (live != null) { GameServices.Clock = live; _healed = "the region's clock republished"; }
-            }
-            // A suite's earlier teardown resets the services; the shore spots are published once per domain.
-            if (GameServices.ShoreCatch is EmptyShoreCatchFacts)
-            {
-                var lib = Resources.Load<ShoreSpotLibrary>(ShoreCatchRegistrar.ResourcesPath);
-                Assert.IsNotNull(lib, "harness: no shore spot library in Resources");
-                GameServices.ShoreCatch = lib.BuildFacts();
-                _healed = _healed == "none" ? "shore catch republished" : _healed + "; shore catch republished";
+                if (live != null)
+                {
+                    GameServices.Clock = live;
+                    _healed = _healed == "none" ? "the region's clock republished" : _healed + "; the region's clock republished";
+                }
             }
 
             _clock = GameServices.Clock;
@@ -347,12 +468,12 @@ namespace HiddenHarbours.Tests.PlayMode
 
         /// <summary>The first slot from now that he plays (the stand says so) and that lands a fish, with its phase
         /// edges read off the same pure timeline.</summary>
-        private IEnumerator FindASessionWithAFish(float hour, Action<Session> found)
+        private IEnumerator FindASessionWithAFish(double now, Action<Session> found)
         {
+            _basilAngling = _basil.Angling;
             AnglerScript script = _basilAngling.Script;
             int seed = GameServices.Environment != null ? GameServices.Environment.WorldSeed : 0;
             uint key = FigureKeyHash.Of(BasilKey);
-            double now = (1.0 + hour / 24.0) * GameServices.Config.SecondsPerDay;
             long first = AnglerTimeline.SlotIndex(in script, seed, key, now) + 1;
             for (long slot = first; slot < first + MaxSlotsSearched; slot++)
             {
@@ -403,6 +524,27 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;   // never WaitForEndOfFrame: it does not fire in batchmode
         }
 
+        /// <summary>Over the water: on no standable deck. The tide may bare the bed under the wharf's side at low
+        /// water, so the ground's walkability is logged, not asserted; the deck is what the fish must never cross.</summary>
+        private static void AssertOverWater(Vector2 p, string beat)
+        {
+            bool deck = StandableSurfaces.TryGetDeckElevationNow(p, out float elevation);
+            Debug.Log($"[{PlateDir}] {beat}: at {p}, on deck {deck}, walkable {TidalWalkability.IsWalkableNow(p)}, " +
+                      $"depth {TidalWalkability.DepthNow(p):0.00} m");
+            Assert.IsFalse(deck, $"{beat}: at {p}, which is on the deck (elevation {elevation:0.00}), not over the water");
+        }
+
+        /// <summary>Where the deck ends straight out from his stand, logged so the authored edge can be checked
+        /// against the built one.</summary>
+        private static void LogTheEdgeProfile(Vector2 at)
+        {
+            float lastOnDeck = float.NaN;
+            for (float d = 0f; d <= EdgeProfileMetres; d += EdgeProfileStepMetres)
+                if (StandableSurfaces.TryGetDeckElevationNow(at + Vector2.up * d, out _)) lastOnDeck = at.y + d;
+            Debug.Log($"[{PlateDir}] the deck north of the stand ends at y {lastOnDeck:0.00} (sampled every " +
+                      $"{EdgeProfileStepMetres} m)");
+        }
+
         private void AssertInSession(FishingPhase phase)
         {
             Assert.IsTrue(_basil.TryGetAnglerState(out FishingState s, out _), "Basil is not in a session");
@@ -446,13 +588,56 @@ namespace HiddenHarbours.Tests.PlayMode
             _stage.SavePlate($"{name}.png", rgba);
         }
 
-        private void SaveJpeg(string path, byte[] rgba)
+        private RenderTexture _clipRt;
+        private Texture2D _clipRead, _clipOut;
+        private Color32[] _clipPixels;
+
+        /// <summary>Render the game's camera into the clip's own target and write it as a JPEG, gamma-corrected
+        /// exactly as the stage's plates are (the project is linear).</summary>
+        private void SaveClipFrame(string path)
         {
-            var tex = new Texture2D(_stage.Width, _stage.Height, TextureFormat.RGBA32, false);
-            tex.LoadRawTextureData(rgba);
-            tex.Apply();
-            File.WriteAllBytes(path, tex.EncodeToJPG(ClipJpegQuality));
-            Object.DestroyImmediate(tex);
+            Camera cam = _stage.Camera;
+            cam.Render();
+            int w = _clipRt.width, h = _clipRt.height;
+            if (_clipRead == null) _clipRead = new Texture2D(w, h, TextureFormat.RGBAFloat, false, true);
+            if (_clipOut == null) _clipOut = new Texture2D(w, h, TextureFormat.RGBA32, false);
+            if (_clipPixels == null) _clipPixels = new Color32[w * h];
+            RenderTexture prev = RenderTexture.active;
+            RenderTexture.active = _clipRt;
+            _clipRead.ReadPixels(new Rect(0, 0, w, h), 0, 0);
+            _clipRead.Apply(false);
+            RenderTexture.active = prev;
+            Color[] px = _clipRead.GetPixels();
+            for (int i = 0; i < px.Length; i++)
+            {
+                Color c = px[i];
+                c.r = Mathf.Clamp01(c.r); c.g = Mathf.Clamp01(c.g); c.b = Mathf.Clamp01(c.b);
+                c = c.gamma;
+                _clipPixels[i] = new Color32((byte)Mathf.RoundToInt(c.r * 255f), (byte)Mathf.RoundToInt(c.g * 255f),
+                                             (byte)Mathf.RoundToInt(c.b * 255f), 255);
+            }
+            _clipOut.SetPixels32(_clipPixels);
+            _clipOut.Apply(false);
+            File.WriteAllBytes(path, _clipOut.EncodeToJPG(ClipJpegQuality));
+        }
+
+        private void ReleaseTheClipTargets()
+        {
+            if (_clipRead != null) Object.DestroyImmediate(_clipRead);
+            if (_clipOut != null) Object.DestroyImmediate(_clipOut);
+            _clipRead = null; _clipOut = null; _clipPixels = null;
+            if (_clipRt == null) return;
+            if (_stage?.Camera != null && _stage.Camera.targetTexture == _clipRt) _stage.Camera.targetTexture = null;
+            _clipRt.Release();
+            Object.DestroyImmediate(_clipRt);
+            _clipRt = null;
+        }
+
+        /// <summary>The hour the day/night warm key starts, read off the region's own profile.</summary>
+        private static float WarmKeyHour()
+        {
+            var profile = Resources.Load<DayNightProfile>("DayNightProfile");
+            return profile != null ? profile.SunsetHour - profile.WarmKeyBeforeSunsetHours : float.NaN;
         }
 
         private IEnumerator FindThePlayer()

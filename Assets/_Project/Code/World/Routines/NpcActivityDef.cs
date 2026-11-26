@@ -30,5 +30,15 @@ namespace HiddenHarbours.World
             why = null;
             return true;
         }
+
+        /// <summary>
+        /// Where this activity puts him instead of his routine station, when it brings its own stand (an
+        /// angler's plank at the deck edge). The base answer is "none": the station stands.
+        /// </summary>
+        public virtual bool TryGetStand(out HiddenHarbours.Core.ShoreStand stand)
+        {
+            stand = default;
+            return false;
+        }
     }
 }

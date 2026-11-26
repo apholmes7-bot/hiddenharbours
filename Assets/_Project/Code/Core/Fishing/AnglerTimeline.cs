@@ -153,6 +153,18 @@ namespace HiddenHarbours.Core
         /// </summary>
         public static void Evaluate(in AnglerScript script, in ShoreCatch shoreCatch, bool hasCatch, int worldSeed,
                                     uint keyHash, float stationHeadingDegrees, double now, out AnglerBeat beat)
+            => Evaluate(in script, in shoreCatch, hasCatch, worldSeed, keyHash, stationHeadingDegrees, now,
+                        default, out beat);
+
+        /// <summary>
+        /// As above, fishing over <paramref name="edge"/> (measured from his stand, so the same frame as the
+        /// offsets): the cast aim and the fish through the fight are kept on its water side, so a fish never
+        /// crosses the deck he stands on. The landing still lifts her to his hand. An unset edge changes
+        /// nothing.
+        /// </summary>
+        public static void Evaluate(in AnglerScript script, in ShoreCatch shoreCatch, bool hasCatch, int worldSeed,
+                                    uint keyHash, float stationHeadingDegrees, double now, in ShoreEdge shoreEdge,
+                                    out AnglerBeat beat)
         {
             beat = default;
             beat.Scrub01 = float.NaN;
@@ -168,7 +180,7 @@ namespace HiddenHarbours.Core
             float jitter = (U01(slotHash, StreamBearing) * 2f - 1f) * script.CastBearingJitterDegrees;
             float bearingRad = (stationHeadingDegrees + script.CastBearingDegrees + jitter) * Mathf.Deg2Rad;
             var dir = new Vector2(Mathf.Sin(bearingRad), Mathf.Cos(bearingRad));   // compass: 0 = +y, clockwise
-            Vector2 aim = dir * script.CastReachM;
+            Vector2 aim = shoreEdge.Clamp(dir * script.CastReachM);
 
             bool fish = hasCatch && !string.IsNullOrEmpty(shoreCatch.FishId);
             uint fightHash = fish ? Mix(slotHash ^ (uint)FishFightSeed.For(shoreCatch.FishId, shoreCatch.WeightKg)) : 0u;
@@ -252,6 +264,13 @@ namespace HiddenHarbours.Core
                 offset = aim * (1f - p) + perp * (swing * (1f - p));
                 float pRate = span > 0f ? 1f / span : 0f;
                 run = -aim * pRate + perp * (swingRate * (1f - p) - swing * pRate);
+                if (shoreEdge.IsSet && shoreEdge.OutwardDistance(offset) < shoreEdge.MarginM)
+                {
+                    // Held at the edge: she runs along it, never in over the planks.
+                    offset = shoreEdge.Clamp(offset);
+                    float inward = Vector2.Dot(run, shoreEdge.Outward);
+                    if (inward < 0f) run -= shoreEdge.Outward * inward;
+                }
                 if (run.sqrMagnitude > 0f) run.Normalize();
                 tension = Mathf.Lerp(script.TensionMin01, script.TensionMax01, 0.5f + 0.25f * (Mathf.Sin(a) - Mathf.Sin(b)));
                 landing = p;

@@ -46,6 +46,16 @@ namespace HiddenHarbours.World
             return !stationIndoors;
         }
 
+        /// <inheritdoc/>
+        /// <remarks>The spot's own stand, as the Fishing module publishes it: he fishes over the water side
+        /// of the deck edge, never along the planks.</remarks>
+        public override bool TryGetStand(out ShoreStand stand)
+        {
+            stand = default;
+            IShoreCatchFacts facts = GameServices.ShoreCatch;
+            return facts != null && !string.IsNullOrEmpty(CatchSpotId) && facts.TryGetStand(CatchSpotId, out stand);
+        }
+
         /// <summary>True when this Def can be played: a rod, a valid script and a spot.</summary>
         public bool IsPlayable(out string why)
         {

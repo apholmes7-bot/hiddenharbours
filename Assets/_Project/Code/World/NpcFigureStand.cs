@@ -69,6 +69,7 @@ namespace HiddenHarbours.World
         private NpcAnglingActivityDef _catchActivity;
         private bool _catchHas;
         private ShoreCatch _catch;
+        private ShoreEdge _catchEdge;
 
         /// <inheritdoc/>
         /// <remarks>At work while she stands at a place of today's beach outing whose activity names a work
@@ -279,10 +280,12 @@ namespace HiddenHarbours.World
                 _catchActivity = activity;
                 _catchHas = GameServices.ShoreCatch.TryPick(activity.CatchSpotId, seed, _keyHash, slot,
                                                             slotStartTotal, out _catch);
+                // The deck edge he fishes over, measured from his stand (the frame the offsets are in).
+                _catchEdge = activity.TryGetStand(out ShoreStand stand) ? stand.Edge.RelativeTo(stand.Position) : default;
             }
 
             float heading = block < plan.StandHeadingDegrees.Length ? plan.StandHeadingDegrees[block] : pose.HeadingDegrees;
-            AnglerTimeline.Evaluate(in script, in _catch, _catchHas, seed, _keyHash, heading, flow, out _beat);
+            AnglerTimeline.Evaluate(in script, in _catch, _catchHas, seed, _keyHash, heading, flow, in _catchEdge, out _beat);
             return _beat.InSession ? AnglerStatus.InSession : AnglerStatus.AtRest;
         }
     }

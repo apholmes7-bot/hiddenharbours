@@ -22,3 +22,9 @@ MonoBehaviour:
   - fish.winter_flounder
   - fish.rainbow_smelt
   BiteChance01: 0.7
+  HasStand: 1
+  StandPosition: {x: 207, y: 5.6}
+  StandHeadingDegrees: 0
+  EdgePoint: {x: 207, y: 6.25}
+  EdgeOutwardDegrees: 0
+  EdgeMarginM: 0.4

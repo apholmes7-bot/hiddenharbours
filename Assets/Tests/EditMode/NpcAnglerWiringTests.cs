@@ -345,6 +345,137 @@ namespace HiddenHarbours.Tests.EditMode
             TestContext.WriteLine($"landed in a year at {spot.Id}: {string.Join(", ", landed)}");
         }
 
+        // ================================================================ fishing over the water
+
+        private const float EdgeMarginM = 0.4f;
+        private const float EdgeAheadM = 0.65f;   // the deck lip, this far in front of his stand
+        private const float ClampTolerance = 1e-4f;
+
+        [Test]
+        public void TheEdge_KeepsTheCastAndTheWholeFight_OnTheWaterSide()
+        {
+            AnglerScript script = MakeAngling().Script;
+            var fish = new ShoreCatch("fish.mackerel", 0.6f, 0.5f);
+            uint key = FigureKeyHash.Of(AnglerKey);
+            var edge = new ShoreEdge(new Vector2(0f, EdgeAheadM), Vector2.up, EdgeMarginM);
+
+            // Facing out (0) the old fight reeled her straight in across the planks; facing the deck (180)
+            // the old cast landed on them. With the edge, neither may cross it.
+            foreach (float heading in new[] { 0f, 180f })
+            {
+                int fightBeats = 0, castBeats = 0, wouldHaveCrossed = 0;
+                for (double now = 0d; now < script.SlotSeconds * 60d; now += 0.1d)
+                {
+                    AnglerTimeline.Evaluate(in script, in fish, true, Seed, key, heading, now, in edge, out AnglerBeat beat);
+                    AnglerTimeline.Evaluate(in script, in fish, true, Seed, key, heading, now, out AnglerBeat old);
+                    FishingState s = beat.State;
+                    var aim = new Vector2(s.CastAimX, s.CastAimY);
+                    if (aim.sqrMagnitude > 0f)
+                    {
+                        castBeats++;
+                        Assert.That(edge.OutwardDistance(aim), Is.GreaterThanOrEqualTo(EdgeMarginM - ClampTolerance),
+                                    $"heading {heading}, t {now:0.0}: the cast lands short of the water");
+                    }
+                    if (beat.Phase != FishingPhase.FightDeep && beat.Phase != FishingPhase.FightSurface) continue;
+                    fightBeats++;
+                    var at = new Vector2(s.FishOffsetX, s.FishOffsetY);
+                    Assert.That(edge.OutwardDistance(at), Is.GreaterThanOrEqualTo(EdgeMarginM - ClampTolerance),
+                                $"heading {heading}, t {now:0.0}: the fish is over the planks");
+                    if (edge.OutwardDistance(at) <= EdgeMarginM + ClampTolerance)
+                        Assert.That(Vector2.Dot(new Vector2(s.FishRunDirX, s.FishRunDirY), edge.Outward),
+                                    Is.GreaterThanOrEqualTo(-ClampTolerance),
+                                    $"heading {heading}, t {now:0.0}: held at the edge she still runs in at the deck");
+                    if (edge.OutwardDistance(new Vector2(old.State.FishOffsetX, old.State.FishOffsetY)) < EdgeMarginM) wouldHaveCrossed++;
+                }
+                Assert.Greater(castBeats, 0, $"harness: heading {heading} never cast");
+                Assert.Greater(fightBeats, 0, $"harness: heading {heading} never fought a fish");
+                Assert.Greater(wouldHaveCrossed, 0, $"sabotage control: unclamped, heading {heading}'s fight never crossed the edge");
+            }
+        }
+
+        [Test]
+        public void AnUnsetEdge_ChangesNothing_BeatForBeat()
+        {
+            AnglerScript script = MakeAngling().Script;
+            var fish = new ShoreCatch("fish.cunner", 0.3f, 0.4f);
+            uint key = FigureKeyHash.Of(AnglerKey);
+            ShoreEdge none = default;
+            Assert.IsFalse(none.IsSet);
+            Assert.AreEqual(new Vector2(3f, -4f), none.Clamp(new Vector2(3f, -4f)));
+            Assert.IsFalse(none.RelativeTo(Vector2.one).IsSet);
+            foreach (bool hasCatch in new[] { true, false })
+            for (double now = 0d; now < script.SlotSeconds * 20d; now += 0.25d)
+            {
+                AnglerTimeline.Evaluate(in script, in fish, hasCatch, Seed, key, 90f, now, out AnglerBeat a);
+                AnglerTimeline.Evaluate(in script, in fish, hasCatch, Seed, key, 90f, now, in none, out AnglerBeat b);
+                Assert.IsTrue(a.Equals(b), $"t {now:0.00}, catch {hasCatch}: an unset edge moved the beat");
+            }
+        }
+
+        [Test]
+        public void TheWharfSpot_StandsHimFacingOut_BehindTheEdgeHeFishesOver()
+        {
+            WharfFacts(out ShoreSpotDef spot, out _);
+            Assert.IsTrue(spot.TryGetStand(out ShoreStand stand), $"{WharfSpotId} authors no stand");
+            Assert.IsTrue(stand.Edge.IsSet, "the stand has no edge");
+            Assert.Less(stand.Edge.OutwardDistance(stand.Position), 0f, "he stands out over the water, not on the planks");
+            float r = stand.HeadingDegrees * Mathf.Deg2Rad;
+            var facing = new Vector2(Mathf.Sin(r), Mathf.Cos(r));
+            Assert.Greater(Vector2.Dot(facing, stand.Edge.Outward), 0.95f, "he does not face straight out over the water");
+            Assert.That(stand.Edge.MarginM, Is.GreaterThan(0f), "a zero margin lets the fish sprite lap the planks");
+        }
+
+        [Test]
+        public void WithTheSpotPublished_TheFishingBlockStandsAtTheSpot_AndNoOtherBlockMoves()
+        {
+            // A spot of the rig's own, its stand a step off the rig's pier station, out over the pier's side.
+            var spot = ScriptableObject.CreateInstance<ShoreSpotDef>();
+            _spawned.Add(spot);
+            spot.Id = "spot.test.pier_side";
+            spot.HasStand = true;
+            spot.StandPosition = new Vector2(38.5f, 20.6f);
+            spot.StandHeadingDegrees = 0f;
+            spot.EdgePoint = new Vector2(38.5f, 21.25f);
+            spot.EdgeOutwardDegrees = 0f;
+            spot.EdgeMarginM = EdgeMarginM;
+            var facts = new ShoreCatchFacts(new[] { spot }, _ => null);
+            Assert.IsTrue(facts.TryGetStand(spot.Id, out ShoreStand stand));
+            Assert.IsFalse(facts.TryGetStand("spot.nowhere", out _));
+
+            IShoreCatchFacts was = GameServices.ShoreCatch;
+            try
+            {
+                GameServices.ShoreCatch = EmptyShoreCatchFacts.Instance;
+                NpcAnglingActivityDef rod = MakeAngling();
+                rod.CatchSpotId = spot.Id;
+                Assert.IsFalse(rod.TryGetStand(out _), "with no Fishing module published there is no stand");
+                Plan(Seed, rod, out RoutineDef r0);
+                RoutineStop[] before = RoutinePlanner.ResolveStops(r0, _stations, _lanes, Seed, out string p0);
+                Assert.IsNotNull(before, p0);
+
+                GameServices.ShoreCatch = facts;
+                RoutineStop[] after = RoutinePlanner.ResolveStops(r0, _stations, _lanes, Seed, out string p1);
+                Assert.IsNotNull(after, p1);
+                RoutinePlan plan = RoutinePlanner.Build(r0, _stations, _lanes, Seed, out _, out string p2);
+                Assert.IsNotNull(plan, p2);
+
+                for (int i = 0; i < after.Length; i++)
+                {
+                    if (i == AnglingBlock) continue;
+                    Assert.AreEqual(before[i].Station.Position, after[i].Station.Position, $"block {i} moved");
+                    Assert.AreEqual(before[i].Station.StandHeadingDegrees, after[i].Station.StandHeadingDegrees, $"block {i} turned");
+                }
+                Assert.AreEqual(stand.Position, after[AnglingBlock].Station.Position, "the fishing block is not at the spot's stand");
+                Assert.AreEqual(stand.HeadingDegrees, after[AnglingBlock].Station.StandHeadingDegrees);
+                Assert.AreEqual(before[AnglingBlock].Station.LaneNodeName, after[AnglingBlock].Station.LaneNodeName,
+                                "the stand changed the lane he walks in on");
+                Assert.AreEqual(stand.HeadingDegrees, plan.StandHeadingDegrees[AnglingBlock]);
+                int last = plan.RouteStart[AnglingBlock] + plan.RouteCount[AnglingBlock] - 1;
+                Assert.AreEqual(stand.Position, plan.Waypoints[last], "his walk does not end on the stand");
+            }
+            finally { GameServices.ShoreCatch = was; }
+        }
+
         // ================================================================ the rig
 
         private const int AnglingBlock = 2;

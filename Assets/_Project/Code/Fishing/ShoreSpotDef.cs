@@ -31,5 +31,36 @@ namespace HiddenHarbours.Fishing
         [Tooltip("The chance a session gets a bite at all when something is in season (0..1). The rest of the " +
                  "time he casts, waits and reels in empty.")]
         [Range(0f, 1f)] public float BiteChance01 = 0.7f;
+
+        [Header("Where he stands to fish it")]
+        [Tooltip("On: an angler fishing this spot stands at Stand Position facing Stand Heading, not at his " +
+                 "routine station, and everything he casts or draws in keeps to the water side of the edge line.")]
+        public bool HasStand;
+
+        [Tooltip("The plank he stands on (world metres, the region scene's frame). Must be walkable.")]
+        public Vector2 StandPosition;
+
+        [Tooltip("The compass heading he faces (0 = North, clockwise): straight out over open water, down a " +
+                 "lane with no moored boat or piling in it.")]
+        public float StandHeadingDegrees;
+
+        [Tooltip("A point on the deck's edge line he fishes over (world metres).")]
+        public Vector2 EdgePoint;
+
+        [Tooltip("The compass bearing pointing from the edge out over the water (0 = North, clockwise).")]
+        public float EdgeOutwardDegrees;
+
+        [Tooltip("How far beyond the edge line a cast, a fish or a splash is kept (m). Wide enough that the " +
+                 "fish's sprite never laps the planks.")]
+        [Min(0f)] public float EdgeMarginM = 0.4f;
+
+        /// <summary>The authored stand, or false when the spot has none.</summary>
+        public bool TryGetStand(out HiddenHarbours.Core.ShoreStand stand)
+        {
+            if (!HasStand) { stand = default; return false; }
+            stand = new HiddenHarbours.Core.ShoreStand(StandPosition, StandHeadingDegrees,
+                HiddenHarbours.Core.ShoreEdge.FromCompass(EdgePoint, EdgeOutwardDegrees, EdgeMarginM));
+            return true;
+        }
     }
 }
