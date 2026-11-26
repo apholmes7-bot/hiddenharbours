@@ -203,10 +203,10 @@ MonoBehaviour:
   PotFloatFoamTexels: 1.5
   MarketDemandCove: 1
   MarketDemandNineMileCreek: 1.4
-  MarketDemandStPetersStore: 0.7
+  MarketDemandStPetersStore: 1
   MarketPriceLevelCove: 1
   MarketPriceLevelNineMileCreek: 1
-  MarketPriceLevelStPetersStore: 0.6
+  MarketPriceLevelStPetersStore: 0.9
   MarketDailyRecovery: 0.5
   FrontedLicenceFee: 20
   MaxOneHandFishLengthMeters: 0.62

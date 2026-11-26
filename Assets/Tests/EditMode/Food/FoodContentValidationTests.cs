@@ -58,6 +58,19 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void EdibleSupplies_HaveDistinctNamedEatingChoices()
+        {
+            var labels = new HashSet<string>(System.StringComparer.Ordinal);
+            foreach (FoodDef food in LoadAll<FoodDef>())
+            {
+                if (!food.EdibleRaw || !(food.ItemId ?? "").StartsWith("supply.", System.StringComparison.Ordinal)) continue;
+                Assert.IsFalse(string.IsNullOrWhiteSpace(food.BagEatLabel), food.Id);
+                StringAssert.StartsWith("Eat ", food.BagEatLabel, food.Id);
+                Assert.IsTrue(labels.Add(food.BagEatLabel), food.Id + ": the player must distinguish foods in the bag");
+            }
+        }
+
+        [Test]
         public void Relief_IsInRange_EdibleRawFeeds_AndRawCatchDeclaresItsCookedForm()
         {
             foreach (FoodDef def in LoadAll<FoodDef>())

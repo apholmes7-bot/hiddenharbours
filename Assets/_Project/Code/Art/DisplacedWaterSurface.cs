@@ -319,6 +319,7 @@ namespace HiddenHarbours.Art
         /// </summary>
         public void SetDisplaced(bool displaced)
         {
+            if (!DemoBuild.DevShortcutsAllowed) return;
             _displaced = displaced;
             if (!Application.isPlaying) return;
             if (displaced) Activate();

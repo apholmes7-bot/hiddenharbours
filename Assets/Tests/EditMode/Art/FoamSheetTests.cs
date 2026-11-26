@@ -100,7 +100,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         public void TheShoreLine_DrawsThroughTheSheet_AndTheOneColourWalk()
         {
             string code = CodeOnly(Source());
-            StringAssert.Contains("float lineSheet = FoamSheetCover(FoamSheetTear(lineAmount, FoamSheetLace(worldXY),", code,
+            StringAssert.Contains("float lineSheet = FoamSheetCover(FoamSheetTear(lineAmount, FoamSheetShoreLace(worldXY),", code,
                 "the shore line's amount takes the sheet's lace, tear, threshold and bands");
             StringAssert.Contains("foamCoverage = lerp(foamCoverage, lineSheet, saturate(_FoamSheetShore.x));", code);
             StringAssert.Contains("float3 fringeFoam = FoamAgedColor(fringeAge01, _FoamColor.rgb, _FoamSheetShore.x, col.rgb);", code,
@@ -159,7 +159,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             StringAssert.Contains("if (_FoamSheetWash.x > 0.001)", code);
             StringAssert.Contains("washAge01 = saturate(surfAge01 + _FoamSheetWash.z * BeachSwashBackwash01(worldXY, depthC, t));", code,
                 "the backwash reads older, off the swash's own phase");
-            StringAssert.Contains("washTorn = FoamSheetLace(worldXY);", code, "the same lace as every foam");
+            StringAssert.Contains("washTorn = FoamSheetShoreLace(worldXY);", code, "the same lace as every foam, read as the shore's");
             StringAssert.Contains("float washSheet = FoamSheetJoin(saturate(surfCoverDrawn), surfCoverDrawn * _FoamSheetWash.y,", code);
             StringAssert.Contains("washAge01, washTorn, surfSheetBay, _FoamSheetWash.x);", code, "the wash tears at its own age");
             StringAssert.Contains("float washLip = FoamSheetJoin(saturate(surfLip), surfLip * _FoamSheetWash.y,", code);
@@ -172,6 +172,45 @@ namespace HiddenHarbours.Tests.Art.EditMode
             int cap = code.IndexOf("float washCapScale = washHeaviest > saturate(_WashMaxCover)", sheet, System.StringComparison.Ordinal);
             Assert.Greater(opacity, sheet, "the wash keeps its sheet opacity");
             Assert.Greater(cap, opacity, "and the cap: never a solid mat on the sand");
+        }
+
+        [Test]
+        public void TheShoreFoam_ReadsTheOneLaceCalmer_AndItsDefaultsAreTheOlderRead()
+        {
+            // The owner, 11-25: "the shoreline foam still exhibits marbling, can be fix this so its smoother and
+            // less distracting". The shore's own foam keeps the one lace, read broader and fainter, and the shore
+            // surf's churn is flattened before its threshold; the defaults 0, 1, 1 are the older read exactly.
+            string src = Source();
+            string code = CodeOnly(src);
+            Assert.AreEqual(1, CountOf(code, "float FoamSheetShoreLace(float2 worldXY)"));
+            string lace = Body(code, "float FoamSheetShoreLace(float2 worldXY)");
+            StringAssert.Contains("FoamSheetLace(worldXY / size)", lace, "the shore's lace is the one lace, not a copy");
+            StringAssert.Contains("if (contrast >= 0.999) return lace;", lace, "full contrast is the sheet's lace, bit-exact");
+            Assert.AreEqual(0, CountOf(lace, "EvolvingField("), "no second field of its own");
+            Assert.AreEqual(0f, FloatDefault(src, "_WashSurfEven"));
+            Assert.AreEqual(1f, FloatDefault(src, "_ShoreLaceContrast"));
+            Assert.AreEqual(1f, FloatDefault(src, "_ShoreLaceSize"));
+            // Only the shore's own foam reads it: the wash, its lip and the shore line.
+            Assert.AreEqual(3, CountOf(code, "FoamSheetShoreLace(worldXY)"));
+            StringAssert.Contains("washLipLace = FoamSheetShoreLace(worldXY);", code);
+            // The churn is flattened before the shore surf's threshold and the left foam's fade, not after.
+            int even = code.IndexOf("churnShore = lerp(churnShore, 0.5, saturate(_WashSurfEven));", System.StringComparison.Ordinal);
+            int brk = code.IndexOf("surfShoreBreak = smoothstep(thr - soft, thr + soft, churnShore);", System.StringComparison.Ordinal);
+            Assert.That(even > 0 && even < brk, "the shore surf's churn is evened before it is thresholded");
+            StringAssert.Contains("leftChurn = lerp(leftChurn, 0.5, saturate(_WashSurfEven));", code);
+            // The breaker beside a beach evens and calms by the shore share only: behind a bar and on the open sea
+            // (surfShore 0) its patches and lace are untouched.
+            StringAssert.Contains("if (surfShore > 0.0) churn = lerp(churn, 0.5, saturate(_WashSurfEven) * surfShore);", code);
+            int openEven = code.IndexOf("if (surfShore > 0.0) churn = lerp(", System.StringComparison.Ordinal);
+            int openThr = code.IndexOf("float field = saturate(churn + density * 0.75);", System.StringComparison.Ordinal);
+            Assert.That(openEven > 0 && openEven < openThr, "the breaker's churn is evened before its threshold");
+            StringAssert.Contains(
+                "if (surfShore > 0.0) surfTorn = 0.5 + (surfTorn - 0.5) * lerp(1.0, saturate(_ShoreLaceContrast), surfShore);", code);
+            // What the base sea ships: the owner tunes these on Water.mat.
+            string mat = File.ReadAllText("Assets/_Project/Art/Materials/Water.mat", Encoding.UTF8).Replace("\r\n", "\n");
+            StringAssert.Contains("\n    - _WashSurfEven: 0.7\n", mat);
+            StringAssert.Contains("\n    - _ShoreLaceContrast: 0.35\n", mat);
+            StringAssert.Contains("\n    - _ShoreLaceSize: 3\n", mat);
         }
 
         [Test]

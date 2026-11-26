@@ -92,6 +92,9 @@ namespace HiddenHarbours.Tests.EditMode
                 if (f.IsLiteral && f.FieldType == typeof(string))
                     flags.Add((string)f.GetRawConstantValue());
 
+            flags.Add(IslandWeekFactRecorder.FishFromDoryKey);
+            flags.Add(IslandWeekFactRecorder.ShellfishSoldKey);
+
             // 2. Every conversation that banks a flag when it completes.
             foreach (var npc in LoadAll<NpcDef>())
                 if (!string.IsNullOrEmpty(npc.CompletionFlag)) flags.Add(npc.CompletionFlag);
@@ -100,6 +103,10 @@ namespace HiddenHarbours.Tests.EditMode
             //    the prefix has exactly one definition.
             foreach (var home in LoadAll<HomeDef>())
                 if (!string.IsNullOrEmpty(home.Id)) flags.Add(HomeDeeds.KeyFor(home.Id));
+
+            // 4. Every story gate's word: heard to its end, it sets the gate's flag.
+            foreach (var gate in LoadAll<StoryGateDef>())
+                if (!string.IsNullOrEmpty(gate.SetsFlag)) flags.Add(gate.SetsFlag);
 
             return flags;
         }
@@ -384,6 +391,18 @@ namespace HiddenHarbours.Tests.EditMode
             // rather than just always failing.
             var fixed_ = Sabotage("quest.typo", "Typo", ("find Ginny", OnboardingFlags.MetGinnyKey));
             Assert.That(Problems(fixed_, known), Is.Empty);
+        }
+
+        [Test]
+        public void IslandWeekFactsAreKnownSettableQuestFlags()
+        {
+            var known = SettableFlags();
+            Assert.Contains(IslandWeekFactRecorder.FishFromDoryKey, known.ToList());
+            Assert.Contains(IslandWeekFactRecorder.ShellfishSoldKey, known.ToList());
+            var quest = Sabotage("quest.island_facts", "Island work",
+                ("fish from the dory", IslandWeekFactRecorder.FishFromDoryKey),
+                ("sell shellfish", IslandWeekFactRecorder.ShellfishSoldKey));
+            Assert.IsEmpty(Problems(quest, known));
         }
 
         [Test]

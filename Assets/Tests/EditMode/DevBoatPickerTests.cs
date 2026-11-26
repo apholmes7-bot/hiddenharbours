@@ -40,6 +40,7 @@ namespace HiddenHarbours.Tests.EditMode
         [TearDown]
         public void TearDown()
         {
+            DemoBuild.Override = null;
             EventBus.Unsubscribe<ActiveBoatChanged>(OnCamera);
             EventBus.Clear<ActiveBoatChanged>();
             EventBus.Clear<DevNotice>();
@@ -146,6 +147,42 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // ---- the cycle ----------------------------------------------------------------------
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void DemoMode_GatesTheHullCycleAndDirectSwap(bool demo)
+        {
+            var a = MakeHull("boat.a", null, 6, 14f, 400f);
+            var b = MakeHull("boat.b", null, 20, 18f, 1200f);
+            var (picker, boat, _, _, _) = MakeRig(new[] { a, b }, a);
+            DemoBuild.Override = demo;
+            picker.Next();
+            Assert.AreSame(demo ? a : b, picker.Current);
+            Assert.AreSame(demo ? a : b, boat.Hull);
+            picker.Show(b);
+            Assert.AreSame(demo ? a : b, boat.Hull);
+        }
+
+        [Test]
+        public void DemoMode_DeclinesThePresentationShortcutBeforeItPublishes()
+        {
+            var a = MakeHull("boat.a", null, 6, 14f, 400f);
+            var (picker, _, _, _, _) = MakeRig(new[] { a }, a);
+            int notices = 0;
+            System.Action<DevNotice> notice = _ => notices++;
+            EventBus.Subscribe(notice);
+            try
+            {
+                DemoBuild.Override = true;
+                picker.ToggleHullVariant();
+                Assert.IsNull(picker.VariantOverride);
+                Assert.AreEqual(0, notices);
+                DemoBuild.Override = false;
+                picker.ToggleHullVariant();
+                Assert.AreEqual(1, notices, "the existing unsupported-hull response is preserved");
+            }
+            finally { EventBus.Unsubscribe(notice); }
+        }
 
         [Test]
         public void Next_WalksTheRosterInOrder_AndWraps()

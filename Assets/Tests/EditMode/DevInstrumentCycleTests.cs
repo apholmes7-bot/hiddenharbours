@@ -25,10 +25,16 @@ namespace HiddenHarbours.Tests.EditMode
     public class DevInstrumentCycleTests
     {
         private readonly List<Object> _spawned = new();
+        private GameConfig _previousConfig;
+
+        [SetUp]
+        public void RememberConfig() => _previousConfig = GameServices.Config;
 
         [TearDown]
         public void TearDown()
         {
+            DemoBuild.Override = null;
+            GameServices.Config = _previousConfig;
             foreach (var o in _spawned)
                 if (o != null) Object.DestroyImmediate(o);
             _spawned.Clear();
@@ -56,6 +62,37 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         private static List<string> Owned(params string[] ids) => new List<string>(ids);
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void DemoMode_DisablesBothInstrumentCycles(bool demo)
+        {
+            GameServices.Config = null;
+            var host = new GameObject("InstrumentDemoGate");
+            host.SetActive(false);
+            _spawned.Add(host);
+            var hull = ScriptableObject.CreateInstance<BoatHullDef>();
+            _spawned.Add(hull);
+            hull.Id = "boat.demo_gate";
+            hull.Helm = Console(SounderKind.None, true, radar: true, gps: true);
+            var boat = host.AddComponent<BoatController>();
+            boat.SetHull(hull);
+            var relay = host.GetComponent<HelmControlRelay>();
+            if (relay == null) relay = host.AddComponent<HelmControlRelay>();
+            relay.Configure(boat);
+            relay.DevIgnoreEquipmentGating = true;
+            relay.DevBrowStep = SounderKind.None;
+            relay.DevPilotStep = DevInstrumentCycle.DevPilotFit.Owned;
+            var cycle = host.AddComponent<DevInstrumentCycle>();
+            cycle.Configure(boat, relay);
+            DemoBuild.Override = demo;
+            Assert.AreEqual(!demo, relay.DevAllInstrumentsEnabled);
+            cycle.Step();
+            cycle.StepPilot();
+            Assert.AreEqual(demo ? SounderKind.None : DevInstrumentCycle.NextBrow(SounderKind.None, true), relay.DevBrowStep);
+            Assert.AreEqual(demo ? DevInstrumentCycle.DevPilotFit.Owned
+                : DevInstrumentCycle.NextPilot(DevInstrumentCycle.DevPilotFit.Owned), relay.DevPilotStep);
+        }
 
         [Test]
         public void MaximumFit_UsesExactlyTheSupportedSlots_IncludingEachWindGrade()

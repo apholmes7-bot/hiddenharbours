@@ -90,7 +90,7 @@ None of these exist as tuned values yet. Each is a Def asset or a `GameConfig` f
 |---|---|---|
 | Clam base value | `FishSpeciesDef.BaseValue` | |
 | Fish base values | `FishSpeciesDef.BaseValue` | |
-| Island store **price level** | `GameConfig.MarketPriceLevelStPetersStore` | **the number that makes the crossing pay** — what the counter gives per unit before any glut (0.6 = 60 % of dockside). ⚠ Demand D *cannot* do this job: at zero supply `1/(1+e·S/D)` is 1 for every D, so the first sale of the game is identical at both outlets unless the level differs |
+| Island store **price level** | `GameConfig.MarketPriceLevelStPetersStore` | **the number that makes the crossing pay** — what the counter gives per unit before any glut (0.9 = 90 % of dockside since the first-week price pass, `first-week-purse-choices.md`). ⚠ Demand D *cannot* do this job: at zero supply `1/(1+e·S/D)` is 1 for every D, so the first sale of the game is identical at both outlets unless the level differs |
 | Island store demand D | `GameConfig.MarketDemandStPetersStore` | how badly the counter takes a glut — a second-order effect, felt only once you have sold into it |
 | Nine Mile Creek demand D + level | `GameConfig` | the reason to cross |
 | ⚠ **The ₲1 unit floor** | `SellPricing.UnitPrice` | every unit floors at ₲1, so on a **2₲ clam** the level has ~2₲ of room. The gap a player can *read* on a bucket is bounded by `BaseValue`, not by the multiplier — if the crossing must *feel* worth walking, that is a clam-base-value decision for this model |
@@ -278,7 +278,7 @@ thing. Two shipped facts compound it:
 - **Every authored rod bait favours cod.** Four of the seven baits touch the rod pool at all (capelin, sea
   worm, shucked clam, squid strip — the other three are pot bait), and **all four list
   `fish.atlantic_cod`**. So tying bait on *steers bites toward cod*.
-- **Cod is licence-gated** (`license.cod`, 120₲, bought at Nine Mile Creek around day 5). Before that
+- **Cod is licence-gated** (`license.cod`, 60₲ since the first-week price pass, bought at LeBlanc's or Nine Mile Creek). Before that
   purchase the cod land rate is exactly **zero** — `CatchLicensePolicy.MayLand` fails closed and the fish
   slips back. Under OFF every one of those bites still eats a bait.
 
