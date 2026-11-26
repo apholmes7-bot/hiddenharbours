@@ -181,7 +181,8 @@ function stackShape(f) {
     const ft = footOf(x, y);
     if (ft < T.from || ft > T.reach) return null;
     const near = 1 - (ft - T.from) / (T.reach - T.from);                         // 1 at the foot, 0 at the scree's edge
-    if (r1 > T.cover * (0.35 + 0.65 * near)) return null;
+    if (y > T.back * f.radii[1]) return null;                                    // behind the body it would hang in the air
+    if (near < 0.5 && r1 > T.cover) return null;                                  // the inner apron is whole, so every block touches it
     return { kind: 'fallen', h: T.low + (T.tall - T.low) * near * (0.4 + 0.6 * r2), dip: 0.08 * (r3 - 0.5), bright: r3 > 0.5,
       tx: T.tilt * (r3 - 0.5), ty: T.tilt * (r4 - 0.5) };
   }, f.broken && { warp: f.broken.warp, chip: T.chip }, 1 << 21);
@@ -221,7 +222,7 @@ const FORMS = [
     broken: { warp: { amp: 0.16, freq: 1.8, fine: 0.025, fineFreq: 5 }, chip: { width: 0.18, freq: 5, gate: 0.4, depth: 0.2 },
       crack: { freq: 2.6, lean: 0.35, width: 0.03, gateFreq: 1.3, gate: 0.5 }, spall: { freq: 2.4, gate: 0.66 },
       seamRun: 5, seamKeep: 0.45, bite: { run: 9, depth: 6 } },
-    talus: { block: 0.45, from: 0.92, reach: 1.32, cover: 0.7, low: 0.02, tall: 0.45, tilt: 0.35,
+    talus: { block: 0.45, from: 0.9, reach: 1.12, cover: 0.6, back: 0.15, low: 0.02, tall: 0.45, tilt: 0.35,
       chip: { width: 0.08, freq: 9, gate: 0.5, depth: 0.1 } },
     pieces: [{ name: 'Body', stem: 'HarbourStack', from: -0.1 }, { name: 'SeabedPlinth', stem: 'HarbourStackPlinth', below: -0.1 }] },
   { id: 'tidalform.stp_whelp_1', pieces: [{ name: 'SeabedLedge', stem: 'Whelp1' }], kind: 'ledge', radius: 2.8, top: -1.04, block: 0.7, seed: 1, broken: REEF_ROUGH, range: 2, reach: 4.7, footAt: -1.0,
