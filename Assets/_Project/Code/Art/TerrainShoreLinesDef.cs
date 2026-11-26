@@ -30,6 +30,8 @@ namespace HiddenHarbours.Art
         [Range(.01f, .99f)] public float BrowSlopeFallFraction = .35f;
         [Min(.001f)] public float ScarpMinimumSlope = .12f;
         [Min(.001f)] public float TurfMinimumSlope = 1f;
+        [Tooltip("A connected brow run shorter than this is dropped: a strip on a scrap of brow draws a cut-off half disc of bank face on the grass.")]
+        [Min(0f)] public float BrowMinimumRunMetres = 4f;
         [Header("Seeded strip variation, in world metres")]
         public int PatternSeed = 17041;
         public Vector2 WrackLengthMetres = new Vector2(1, 3);

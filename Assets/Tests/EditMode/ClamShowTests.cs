@@ -250,6 +250,50 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void StartleRadius_IncludesItsBoundary()
+        {
+            var dig = QuietHoleWithStartle(radius: 3f, cooldown: 5f);
+            PlayerAt(new Vector2(3.001f, 0f));
+            Reveal(dig, 0.1f);
+            Assert.IsFalse(dig.ShowingSquirt);
+            PlayerAt(new Vector2(3f, 0f));
+            Reveal(dig, 0.1f);
+            Assert.IsTrue(dig.ShowingSquirt);
+            Assert.IsTrue(dig.SquirtIsStartle);
+        }
+
+        [Test]
+        public void SpentHole_ClearsEveryLiveSignRead()
+        {
+            var dig = QuietHoleWithStartle(radius: 3f, cooldown: 5f);
+            PlayerAt(Vector2.zero);
+            Reveal(dig, 0.1f);
+            Reveal(dig, 0.2f);
+            Assert.IsTrue(dig.ShowingSquirt);
+            dig.MarkConsumed();
+            Reveal(dig, 0.1f);
+            Assert.IsFalse(dig.ShowingSquirt);
+            Assert.IsFalse(dig.SquirtIsStartle);
+            Assert.AreEqual(0f, dig.SpurtRise);
+            Assert.AreEqual(0f, dig.SpurtU);
+        }
+
+        [Test]
+        public void SubmergedHole_ClearsTheSignWithoutConsumingTheClam()
+        {
+            var dig = QuietHoleWithStartle(radius: 3f, cooldown: 5f);
+            PlayerAt(Vector2.zero);
+            Reveal(dig, 0.1f);
+            Assert.IsTrue(dig.ShowingSquirt);
+            UpdateReveal.Invoke(dig, new object[] { 0.1f, false });
+            Assert.IsFalse(dig.ShowingSquirt);
+            Assert.IsFalse(dig.SquirtIsStartle);
+            Assert.AreEqual(0f, dig.SpurtRise);
+            Assert.AreEqual(0f, dig.SpurtU);
+            Assert.IsFalse(dig.Consumed);
+        }
+
+        [Test]
         public void ARadiusOfZero_TurnsTheStartleOff()
         {
             var dig = QuietHoleWithStartle(radius: 0f, cooldown: 5f);

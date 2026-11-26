@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Core;
@@ -103,9 +104,20 @@ namespace HiddenHarbours.Tests.RigBaking
                 Assert.That(read.Ok, Is.False);
                 StringAssert.Contains("derivedFromRigSha256", read.Errors.Single());
             }
-            var crlf = System.Text.Encoding.UTF8.GetBytes(System.Text.Encoding.UTF8.GetString(HullWalkFixture.Bytes).Replace("\n", "\r\n"));
-            Assert.That(HullWalkSidecarReader.Read(HullWalkFixture.Json, HullWalkFixture.Walk, crlf).HashMatch,
-                Is.EqualTo(RigHashMatch.LineEndingNormalized));
+        }
+
+        [TestCase("LF", RigHashMatch.Exact)]
+        [TestCase("CRLF", RigHashMatch.LineEndingNormalized)]
+        [TestCase("mixed", RigHashMatch.LineEndingNormalized)]
+        public void Sha_LineEndingsDoNotChangeTheRig(string lineEndings, RigHashMatch expected)
+        {
+            string lf = Encoding.UTF8.GetString(HullWalkFixture.Bytes).Replace("\r\n", "\n");
+            string text = lineEndings == "CRLF" ? lf.Replace("\n", "\r\n")
+                : lineEndings == "mixed" ? lf.Insert(lf.IndexOf('\n'), "\r") : lf;
+            var read = HullWalkSidecarReader.Read(HullWalkFixture.Json, HullWalkFixture.Walk,
+                Encoding.UTF8.GetBytes(text));
+            Assert.That(read.Ok, Is.True, string.Join(";", read.Errors));
+            Assert.That(read.HashMatch, Is.EqualTo(expected));
         }
 
         [Test]
