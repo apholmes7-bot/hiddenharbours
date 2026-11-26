@@ -44,6 +44,7 @@ const PALE = [[58, 36, 30], [82, 50, 38], [108, 66, 46], [132, 84, 58], [156, 10
 // The beds from the floor up: how thick, and which stone. The pattern repeats.
 const BEDS = [[0.46, DEEP], [0.08, SEAM], [0.58, RUST], [0.34, DEEP], [0.07, SEAM], [0.26, PALE], [0.66, DEEP], [0.10, SEAM], [0.50, RUST]];
 const BEDS_TOTAL = BEDS.reduce((s, b) => s + b[0], 0);
+const BED_LINE = 0.39;          // the partings drawn across a face, metres apart: half a step of the stack's beds
 // The reef the sea covers: the seabed's own browns and greys.
 const REEF = [[36, 28, 28], [50, 37, 34], [66, 47, 40], [84, 58, 47], [102, 72, 56]];
 const SLATE = [[38, 35, 36], [52, 47, 46], [68, 61, 57], [84, 76, 68], [100, 91, 80]];
@@ -111,8 +112,8 @@ function stackShape(f) {
     const su = f.summit[0] * c + f.summit[1] * s, sv = -f.summit[0] * s + f.summit[1] * c;
     const peak = Math.hypot((u - su) / f.radii[0], (v - sv) / f.radii[1]) / out; // the same, measured from the summit
     const w = Math.max(0, 1 - foot), q = foot * (1 - w) + peak * w;
-    const tilt = { tx: 0.42 * (r3 - 0.5), ty: 0.30 * (r4 - 0.5) };
-    const stone = { kind: 'stone', dip: 0.5 * (r2 - 0.5), bright: r3 > 0.55, ...tilt };
+    const tilt = { tx: 0.16 * (r3 - 0.5), ty: 0.12 * (r4 - 0.5) };               // broad slabs lie near level
+    const stone = { kind: 'stone', dip: 0.08 * (r2 - 0.5), bright: r3 > 0.55, ...tilt }; // the beds run on from block to block
     if (peak <= f.crown) {                                                       // the summit: turf, and bare stone through it
       if (r1 > f.bare) return { kind: 'turf', h: f.top + 0.22 * (r2 - 0.5), dip: 0, bright: r3 > 0.5, tx: 0.2 * (r3 - 0.5), ty: 0.15 * (r4 - 0.5) };
       return { ...stone, h: Math.min(ceiling, f.top + 0.10 + 0.40 * r2) };
@@ -125,7 +126,9 @@ function stackShape(f) {
     if (h > 0.15) {
       h += f.rough * (r1 - 0.5) * Math.sin(Math.PI * Math.min(1, h / f.top));     // broken, most of all half way up
       h = Math.round(h / f.bed) * f.bed + 0.12 * (r2 - 0.5);                      // and stepped along its beds
-      if (peak < f.crown + 0.10 && r3 > 0.55) h = f.top - 0.3 + 0.6 * r2;         // a spire beside the turf
+      if (peak < f.crown + 0.08 && r3 > f.spires) h = f.top - 0.2 + 0.5 * r2;      // a few points of stone at the turf's edge
+      if (h >= f.top - f.sward && r1 > f.bare && r3 <= f.spires)                  // the turf runs over the whole upper step
+        return { kind: 'turf', h: Math.min(ceiling, h), dip: 0, bright: r3 > 0.5, tx: 0.2 * (r3 - 0.5), ty: 0.15 * (r4 - 0.5) };
       return { ...stone, h: Math.max(0.25, Math.min(ceiling, h)) };
     }
     if (foot < f.fallen.reach && r1 > f.fallen.few + (foot - 1) / (f.fallen.reach - 1) * (1 - f.fallen.few))
@@ -158,10 +161,10 @@ function ledgeShape(f) {
 }
 
 const FORMS = [
-  { id: 'form.stp_harbour_stack', kind: 'stack', radii: [3.2, 2.6], rot: 20, top: 6.2, block: 0.62, bed: 0.45,
-    summit: [-0.35, 0.25], crown: 0.24, bare: 0.3, flare: 1.2, rough: 1.5,
+  { id: 'form.stp_harbour_stack', kind: 'stack', radii: [3.2, 2.6], rot: 20, top: 6.2, block: 1.05, bed: 0.78,
+    summit: [-0.2, 0.15], crown: 0.6, bare: 0.08, flare: 3.0, rough: 0.9, spires: 0.86, sward: 1.0,
     shoulders: [{ x: 1.35, y: -0.55, r: 1.3, h: 3.7 }, { x: -1.5, y: -0.2, r: 0.9, h: 2.2 }],
-    fallen: { reach: 1.28, few: 0.55, tall: 0.9 },
+    fallen: { reach: 1.42, few: 0.2, tall: 0.55 },
     plinth: { radius: 5.5, z: -1.2, top: -0.3 }, range: 8.4, reach: 5.9, footAt: 0.0,
     pieces: [{ name: 'Body', stem: 'HarbourStack', from: -0.1 }, { name: 'SeabedPlinth', stem: 'HarbourStackPlinth', below: -0.1 }] },
   { id: 'form.stp_whelp_1', pieces: [{ name: 'SeabedLedge', stem: 'Whelp1' }], kind: 'ledge', radius: 2.8, top: -1.04, block: 0.7, seed: 1, range: 2, reach: 4.7, footAt: -1.0,
@@ -195,6 +198,17 @@ function paint(f, p, px, py) {
   // Weed lies in patches on the reef's flats, and nowhere on the stack: a band of it reads as a drawn line.
   if (reef && !p.wall && noise(p.x * 1.6, p.y * 1.6, 23) * 0.65 + noise(p.x * 4.2, p.y * 4.2, 29) * 0.35 > 0.60)
     return WEED[clampTone(tone + speck)];
+  if (!reef) {
+    // The bedding: a thin dark parting every bed across a face, level from block to block, broken here and there.
+    const inBed = ((p.z + b.dip - FLOOR) % BED_LINE + BED_LINE) % BED_LINE;
+    if (p.wall && inBed < 0.05 && noise(p.x * 2.4, p.z * 3.1, 37) > 0.22) return SEAM[clampTone(1 + (p.shaded ? -1 : 0))];
+    // Fallen blocks at the foot are washed pale by the spray and crusted white; so is the stack's own foot, in patches.
+    const washed = b.kind === 'fallen' || (p.z < 0.7 && noise(p.x * 3.3, p.y * 3.3 + p.z * 2, 43) > 0.55 - 0.3 * (0.7 - p.z));
+    if (washed) {
+      if (hash(px, py, 51) > (b.kind === 'fallen' ? 0.8 : 0.9)) return BARNACLE;
+      ramp = PALE; tone += b.kind === 'fallen' ? 1 : 0;
+    }
+  }
   if (!reef && p.z > -0.1 && p.z < 0.55 && hash(px, py, 51) > 0.93) return BARNACLE;
   return ramp[clampTone(tone + speck)];
 }
