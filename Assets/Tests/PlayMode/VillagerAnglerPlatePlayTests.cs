@@ -198,14 +198,26 @@ namespace HiddenHarbours.Tests.PlayMode
             Shoot("2-touchdown");
 
             // 2b. She comes in: over the last of his wait, one fish swims to the bait, under the water.
-            float approach = _basil.Look.ApproachSeconds;
+            // Shot on her way in, at the flank flash as she turns into the circle, mid-circle and as she hangs.
+            AnglerApproachLook a = _basil.Look.Approach;
+            float approach = a.Seconds;
             if (approach > 0f)
             {
-                yield return StepThrough(s.BiteStart - 0.4d * approach - 0.1d, s.BiteStart - 0.4d * approach);
-                AssertInSession(FishingPhase.Waiting);
-                Assert.IsTrue(_angler.ApproachRenderer.enabled, $"no fish coming in to his bait ({s.Catch.FishId})");
-                AssertOverWater(_angler.ApproachRenderer.transform.position, "the fish coming in");
-                Shoot("2b-approach");
+                float tIn = AnglerApproachMath.SwimInSeconds(in a), circleEnd = tIn + a.CircleSeconds;
+                var beats = new (string name, float tau)[]
+                {
+                    ("2b-approach-in", 0.6f * tIn), ("2b-approach-roll", tIn + 0.2f),
+                    ("2b-approach-circle", tIn + 0.6f * a.CircleSeconds), ("2b-approach-hang", circleEnd + 0.7f),
+                };
+                foreach (var (name, tau) in beats)
+                {
+                    double t = s.BiteStart - approach + tau;
+                    yield return StepThrough(t - 0.1d, t);
+                    AssertInSession(FishingPhase.Waiting);
+                    Assert.IsTrue(_angler.ApproachRenderer.enabled, $"no fish coming in to his bait ({s.Catch.FishId}, {name})");
+                    AssertOverWater(_angler.ApproachRenderer.transform.position, $"the fish coming in ({name})");
+                    Shoot(name);
+                }
             }
 
             // 3. The bite.
@@ -219,6 +231,10 @@ namespace HiddenHarbours.Tests.PlayMode
             // 3b. The deep fight: she is drawn under the water where the line ends.
             if (approach > 0f)
             {
+                yield return StepThrough(s.DeepStart, s.DeepStart + 0.15d);
+                AssertInSession(FishingPhase.FightDeep);
+                Assert.IsTrue(_angler.ApproachRenderer.enabled, "no fish under the water at the strike");
+                Shoot("3a-strike");
                 yield return StepThrough(s.DeepStart + 1.0d, s.DeepStart + 1.1d);
                 AssertInSession(FishingPhase.FightDeep);
                 Assert.IsTrue(_angler.ApproachRenderer.enabled, "no fish under the water in the deep fight");
@@ -226,13 +242,23 @@ namespace HiddenHarbours.Tests.PlayMode
                 Shoot("3b-deep");
             }
 
-            // 4. The fight at the surface: she is drawn on the line, over the water.
-            yield return StepThrough(s.SurfaceStart - 0.2d, s.SurfaceStart + 1.2d);
+            // 4. The fight at the surface: she is drawn on the line, over the water (early, mid and late).
+            yield return StepThrough(s.SurfaceStart - 0.2d, s.SurfaceStart + 0.3d);
+            AssertInSession(FishingPhase.FightSurface);
+            LogTheSurfacedFish("4a-fight-break");
+            Shoot("4a-fight-break");
+            yield return StepThrough(s.SurfaceStart + 0.3d, s.SurfaceStart + 1.2d);
             AssertInSession(FishingPhase.FightSurface);
             Assert.IsTrue(_angler.FishRenderer.enabled, "no fish at the surface in the fight");
             AssertTheLineLeavesTheRodTip("fight");
             AssertOverWater(_angler.FishRenderer.transform.position, "mid-fight (the drawn fish)");
+            LogTheSurfacedFish("4-fight");
             Shoot("4-fight");
+            double late = s.SurfaceStart + 0.8d * (s.LandStart - s.SurfaceStart);
+            yield return StepThrough(late - 0.1d, late);
+            AssertInSession(FishingPhase.FightSurface);
+            LogTheSurfacedFish("4c-fight-late");
+            Shoot("4c-fight-late");
 
             // 4b. The landing splash: stepped across the edge, so it fires where she leaves the water.
             yield return StepThrough(s.LandStart - 0.3d, s.LandStart + 0.1d);
@@ -305,6 +331,15 @@ namespace HiddenHarbours.Tests.PlayMode
 
         /// <summary>Run engine time with the clock held on <paramref name="t"/> until the drawn sea is at the tide's
         /// level, then freeze again (the plate laws: engine time runs only between pictures).</summary>
+        /// <summary>Where the surfaced fish is drawn and with what, logged beside a fight plate.</summary>
+        private void LogTheSurfacedFish(string name)
+        {
+            SpriteRenderer f = _angler.FishRenderer;
+            Vector3 line = _angler.Line.GetPosition(_angler.Line.positionCount - 1);
+            Debug.Log($"[{PlateDir}] {name}: fish drawn {f.enabled}, sprite {(f.sprite != null ? f.sprite.name : "none")}, " +
+                      $"at {f.transform.position}, scale {f.transform.lossyScale}, bounds {f.bounds.size}, order {f.sortingOrder}, " +
+                      $"colour {f.color}; line ends {line}; the fish under the water drawn {_angler.ApproachRenderer.enabled}");
+        }
         private IEnumerator LetTheSeaCatchUp(double t)
         {
             float target = GameServices.Environment.WaterLevelAt(t);

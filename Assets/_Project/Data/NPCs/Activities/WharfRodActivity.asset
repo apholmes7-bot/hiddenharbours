@@ -18,8 +18,8 @@ MonoBehaviour:
     SlotSeconds: 40
     CastBackSeconds: 1
     CastSeconds: 1.2
-    WaitMinSeconds: 4
-    WaitMaxSeconds: 9
+    WaitMinSeconds: 6
+    WaitMaxSeconds: 11
     BiteSeconds: 1
     StrikeSeconds: 0.6
     DeepMinSeconds: 3
@@ -71,12 +71,28 @@ MonoBehaviour:
     - {fileID: 8958423535173121114, guid: 14b020d426052fa8ed59edf86df76859, type: 3}
     - {fileID: -4411448151709350727, guid: 14b020d426052fa8ed59edf86df76859, type: 3}
     SplashFps: 14
-    ApproachSeconds: 3.5
-    ApproachFadeSeconds: 0.8
-    ApproachFromM: 4
-    ApproachOffLineDegrees: 35
-    ApproachSwingM: 0.8
-    ApproachSortingOrder: -3
-    ApproachAlpha01: 0.8
+    FishDrawScale: 2
+    Approach:
+      Seconds: 5
+      FadeInSeconds: 0.6
+      FromM: 4
+      OffLineDegrees: 35
+      SwingM: 0.8
+      CircleM: 0.9
+      CircleDegrees: 270
+      CircleSeconds: 1.6
+      PauseSeconds: 0.85
+      TakeSeconds: 0.35
+      PauseBeatRate: 0.5
+      TakeBeatRate: 2
+      HookBlendSeconds: 0.6
+      SortingOrder: -3
+      Alpha01: 1
+      BodyTint: {r: 0.3, g: 0.34, b: 0.38, a: 1}
+      DepthFadeM: 4
+      DeepAlpha01: 0.85
+      BedShadowColor: {r: 0.05, g: 0.08, b: 0.1, a: 0.45}
+      BedShadowOffsetPerM: {x: 0.12, y: -0.18}
+      BedShadowMaxDepthM: 2.5
   CatchSpotId: spot.st_peters.wharf_head
   MaxSeaState01: 0.6

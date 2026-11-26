@@ -38,8 +38,10 @@ namespace HiddenHarbours.Player
 
         private IAnglerStand _stand;
         private CharacterFigurePresenter _figure;
-        private SpriteRenderer _bodySr, _fishSr, _splashSr, _approachSr;
+        private SpriteRenderer _bodySr, _fishSr, _splashSr, _approachSr, _bedShadowSr;
         private float _approachHeading;
+        private bool _underDrawn;      // this frame's fish under the water is drawn, at _underWorld
+        private Vector2 _underWorld;
         private RodLineStrand _strand;
         private RodSplashFlourish _splash;
         private SurfacedFishDrawer _fish;
@@ -66,6 +68,8 @@ namespace HiddenHarbours.Player
         /// <summary>The fish swimming in to his bait, and under the water through the deep fight. For tests and
         /// plates.</summary>
         public SpriteRenderer ApproachRenderer => _approachSr;
+        /// <summary>Her shadow on the bed, in clear shallow water. For tests and plates.</summary>
+        public SpriteRenderer BedShadowRenderer => _bedShadowSr;
         public SurfacedFishDrawer Fish => _fish;
         public LandedCatchHold Land => _land;
 
@@ -86,6 +90,7 @@ namespace HiddenHarbours.Player
             _fishSr = MakeChild("NpcFishOnTheLine");
             _splashSr = MakeChild("NpcSplash");
             _approachSr = MakeChild("NpcFishComingIn");
+            _bedShadowSr = MakeChild("NpcFishBedShadow");
             _splash = new RodSplashFlourish(_splashSr);
             _fish = new SurfacedFishDrawer(_fishSr);
             _land = new LandedCatchHold(transform);
@@ -150,8 +155,8 @@ namespace HiddenHarbours.Player
                 if (s.Phase == FishingPhase.FightSurface) _fish.Prime(seconds);
             }
 
+            DrawApproach(in s, seconds, in look, angler, now);
             Draw(in s, seconds, look, angler, frame, now, consecutive);
-            DrawApproach(in s, in look, angler, now);
             RenderSplash(now, look);
 
             _last = s;
@@ -177,11 +182,21 @@ namespace HiddenHarbours.Player
                                    look.FishDartSpeedMps, look.FishSpeedSmoothing01, look.WaterElementOrder,
                                    out bool splashDue, out Vector2 splashAt);
                 if (splashDue && consecutive) SplashAt(splashAt, look, now);
+                // At his whole-number fish scale, the line still leaves her mouth.
+                int scale = Mathf.Max(1, look.FishDrawScale);
+                if (_fishSr.enabled)
+                {
+                    Vector3 parent = transform.lossyScale;
+                    _fishSr.transform.localScale = new Vector3(scale / NonZero(parent.x), scale / NonZero(parent.y), 1f);
+                    Vector2 at = _fishSr.transform.position;
+                    far = at + (far - at) * scale;
+                }
             }
             else
             {
                 _fishSr.enabled = false;
-                if ((show & RodElements.FishShadow) != 0) far = angler + new Vector2(s.FishOffsetX, s.FishOffsetY);
+                if ((show & RodElements.FishShadow) != 0)
+                    far = _underDrawn ? _underWorld : angler + new Vector2(s.FishOffsetX, s.FishOffsetY);
                 else if (castPath) far = angler + new Vector2(s.CastAimX, s.CastAimY);
             }
 
@@ -214,49 +229,111 @@ namespace HiddenHarbours.Player
         /// takes over at her break. Drawn with the schools' own swim art (<see cref="SwimFishArt"/>); nothing
         /// when the look sets no approach, the stand names no fish, or the species has no swim art.
         /// </summary>
-        private void DrawApproach(in FishingState s, in AnglerLook look, Vector2 angler, double now)
+        private void DrawApproach(in FishingState s, float seconds, in AnglerLook look, Vector2 angler, double now)
         {
+            _underDrawn = false;
             ISwimFishArt art = SwimFishArt.Service;
+            AnglerApproachLook a = look.Approach;
             var bobber = new Vector2(s.CastAimX, s.CastAimY);
             string id = null;
-            Vector2 offset = bobber;
-            float heading = _approachHeading, alpha = look.ApproachAlpha01;
+            var pose = new ApproachPose { Offset = bobber, HeadingRadians = _approachHeading, FadeIn01 = 1f };
             bool show = false;
-            if (art != null && look.ApproachSeconds > 0f)
+            if (art != null && a.Seconds > 0f)
             {
+                float roll = art.PoseSeconds(SwimFishPose.Roll);
                 if (s.Phase == FishingPhase.Waiting)
                 {
-                    if (_stand is IAnglerApproach coming
-                        && coming.TryGetApproach(out id, out float kg, out float toBite))
-                        show = AnglerApproachMath.At(in look, bobber, toBite, FishFightSeed.For(id, kg),
-                                                     out offset, out heading, out alpha);
+                    if (_stand is IAnglerApproach coming && coming.TryGetApproach(out id, out float kg, out float toBite))
+                        show = AnglerApproachMath.At(in a, bobber, toBite, FishFightSeed.For(id, kg), roll, out pose);
                 }
                 else if (!string.IsNullOrEmpty(s.FishId) && s.Phase == FishingPhase.Bite)
                 {
                     id = s.FishId;
-                    heading = AnglerApproachMath.ArrivalHeading(in look, bobber, FishFightSeed.For(id, s.WeightKg));
+                    pose = AnglerApproachMath.AtTheBait(in a, bobber, FishFightSeed.For(id, s.WeightKg), seconds);
                     show = true;
                 }
                 else if (!string.IsNullOrEmpty(s.FishId) && s.Phase == FishingPhase.FightDeep)
                 {
+                    // Hooked: she thrashes along the line, drawn out from the bait to where the fight has her so
+                    // the strike never jumps (the line follows her: see Draw).
                     id = s.FishId;
-                    offset = new Vector2(s.FishOffsetX, s.FishOffsetY);
-                    heading = AnglerApproachMath.HeadingOf(new Vector2(s.FishRunDirX, s.FishRunDirY), _approachHeading);
+                    float blend = a.HookBlendSeconds > 0f ? Mathf.SmoothStep(0f, 1f, seconds / a.HookBlendSeconds) : 1f;
+                    pose.Offset = Vector2.Lerp(bobber, new Vector2(s.FishOffsetX, s.FishOffsetY), blend);
+                    pose.HeadingRadians = AnglerApproachMath.HeadingOf(new Vector2(s.FishRunDirX, s.FishRunDirY),
+                                                                        _approachHeading);
+                    pose.Pose = SwimFishPose.Thrash;
+                    pose.PoseSeconds = seconds;
                     show = true;
                 }
             }
-            if (!show || !art.TrySwimCell(id, heading, now, out Sprite cell))
+            if (!show || !art.TrySwimCell(id, pose.Pose, pose.HeadingRadians, pose.PoseSeconds, out Sprite cell))
             {
                 _approachSr.enabled = false;
+                _bedShadowSr.enabled = false;
                 return;
             }
-            _approachHeading = heading;
+
+            Vector2 world = angler + pose.Offset;
+            float depth = WaterDepthAt(world);
+            float water = a.DepthFadeM > 0f ? Mathf.Clamp01(depth / a.DepthFadeM) : 0f;
+            float alpha = a.Alpha01 * pose.FadeIn01 * Mathf.Lerp(1f, a.DeepAlpha01, water);
+            int scale = Mathf.Max(1, look.FishDrawScale);
+
+            _approachHeading = pose.HeadingRadians;
             _approachSr.sprite = cell;
-            _approachSr.sortingOrder = look.ApproachSortingOrder;
-            _approachSr.color = new Color(1f, 1f, 1f, alpha);
-            _approachSr.transform.position = new Vector3(angler.x + offset.x, angler.y + offset.y, transform.position.z);
+            _approachSr.sortingOrder = a.SortingOrder;
+            // The body is drawn darker so her shape reads against the water; the flank flash (the roll, and the
+            // thrash, whose frames flash her pale side) is drawn as baked.
+            Color tint = pose.Pose == SwimFishPose.Roll || pose.Pose == SwimFishPose.Thrash ? Color.white : a.BodyTint;
+            _approachSr.color = new Color(tint.r, tint.g, tint.b, alpha);
+            Place(_approachSr, world, cell, scale);
             _approachSr.enabled = true;
+            _underDrawn = true;
+            _underWorld = Snap(world, cell, scale);
+
+            // Her shadow on the bed, in clear shallow water: thrown away from her by the water under her.
+            if (a.BedShadowMaxDepthM > 0f && depth < a.BedShadowMaxDepthM
+                && art.TrySwimCell(id, SwimFishPose.Shadow, pose.HeadingRadians, pose.PoseSeconds, out Sprite shade))
+            {
+                float strength = 1f - Mathf.Clamp01(Mathf.Max(0f, depth) / a.BedShadowMaxDepthM);
+                Color c = a.BedShadowColor;
+                _bedShadowSr.sprite = shade;
+                _bedShadowSr.sortingOrder = a.SortingOrder - 1;
+                _bedShadowSr.color = new Color(c.r, c.g, c.b, c.a * strength * pose.FadeIn01);
+                Place(_bedShadowSr, world + a.BedShadowOffsetPerM * Mathf.Max(0f, depth), shade, scale);
+                _bedShadowSr.enabled = true;
+            }
+            else _bedShadowSr.enabled = false;
         }
+
+        /// <summary>The water over the bed at <paramref name="world"/> now (m), the game's one depth rule; 0 with no
+        /// tide or ground service (thin water: drawn plainly).</summary>
+        private static float WaterDepthAt(Vector2 world)
+        {
+            IEnvironmentService env = GameServices.Environment;
+            ITidalTerrain ground = GameServices.TidalTerrain;
+            IGameClock clock = GameServices.Clock;
+            if (env == null || ground == null || clock == null) return 0f;
+            return TidalExposure.WaterDepth(env.WaterLevelAt(clock.TotalSeconds), ground.ElevationAt(world));
+        }
+
+        /// <summary>Put <paramref name="sr"/> at <paramref name="world"/>, on its art's pixel grid, at a whole-number
+        /// scale of its art (so every art pixel is a square block; no resampling).</summary>
+        private void Place(SpriteRenderer sr, Vector2 world, Sprite cell, int scale)
+        {
+            Vector2 at = Snap(world, cell, scale);
+            sr.transform.position = new Vector3(at.x, at.y, transform.position.z);
+            Vector3 parent = transform.lossyScale;
+            sr.transform.localScale = new Vector3(scale / NonZero(parent.x), scale / NonZero(parent.y), 1f);
+        }
+
+        private static Vector2 Snap(Vector2 world, Sprite cell, int scale)
+        {
+            float ppu = cell != null && cell.pixelsPerUnit > 0f ? cell.pixelsPerUnit / scale : 0f;
+            return ppu > 0f ? new Vector2(Mathf.Round(world.x * ppu) / ppu, Mathf.Round(world.y * ppu) / ppu) : world;
+        }
+
+        private static float NonZero(float v) => Mathf.Abs(v) > 1e-6f ? v : 1f;
 
         private void SplashAt(Vector2 pos, in AnglerLook look, double edgeSeconds)
         {
@@ -282,6 +359,8 @@ namespace HiddenHarbours.Player
             _strand?.Hide();
             if (_fishSr != null) _fishSr.enabled = false;
             if (_approachSr != null) _approachSr.enabled = false;
+            if (_bedShadowSr != null) _bedShadowSr.enabled = false;
+            _underDrawn = false;
             _land?.Hide();
         }
 

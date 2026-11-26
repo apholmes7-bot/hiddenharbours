@@ -68,11 +68,14 @@ namespace HiddenHarbours.Tests.EditMode
         private sealed class FakeSwimArt : ISwimFishArt
         {
             public Sprite Cell;
-            public bool TrySwimCell(string speciesId, float headingRadians, double seconds, out Sprite cell)
+            public SwimFishPose LastPose;
+            public bool TrySwimCell(string speciesId, SwimFishPose pose, float headingRadians, double seconds, out Sprite cell)
             {
                 cell = speciesId == "fish.atlantic_cod" ? Cell : null;
+                if (pose != SwimFishPose.Shadow) LastPose = pose;
                 return cell != null;
             }
+            public float PoseSeconds(SwimFishPose pose) => pose == SwimFishPose.Roll ? 0.52f : 0.72f;
         }
 
         private sealed class ScriptedClock : IGameClock
@@ -220,9 +223,16 @@ namespace HiddenHarbours.Tests.EditMode
             try
             {
                 AnglerLook look = Stand().LookValue;
-                look.ApproachSeconds = 3f; look.ApproachFadeSeconds = 0.5f; look.ApproachFromM = 4f;
-                look.ApproachOffLineDegrees = 30f; look.ApproachSwingM = 0.5f;
-                look.ApproachSortingOrder = -3; look.ApproachAlpha01 = 0.8f;
+                look.FishDrawScale = 2;
+                look.Approach = new AnglerApproachLook
+                {
+                    Seconds = 3f, FadeInSeconds = 0.5f, FromM = 4f, OffLineDegrees = 30f, SwingM = 0.5f,
+                    CircleM = 0.9f, CircleDegrees = 270f, CircleSeconds = 1f, PauseSeconds = 0.5f, TakeSeconds = 0.3f,
+                    PauseBeatRate = 0.5f, TakeBeatRate = 2f, HookBlendSeconds = 0.6f, SortingOrder = -3, Alpha01 = 0.8f,
+                    BodyTint = new Color(0.45f, 0.5f, 0.55f, 1f), DepthFadeM = 4f, DeepAlpha01 = 0.55f,
+                    BedShadowColor = new Color(0f, 0f, 0f, 0.45f), BedShadowOffsetPerM = new Vector2(0.1f, -0.2f),
+                    BedShadowMaxDepthM = 2.5f,
+                };
                 var stand = new FakeApproachStand { LookValue = look, State = Phase(FishingPhase.Waiting), Seconds = 1f };
                 NpcAnglerPresenter p = Presenter(stand);
 
@@ -238,6 +248,17 @@ namespace HiddenHarbours.Tests.EditMode
                 p.Present(12);
                 Assert.IsTrue(p.ApproachRenderer.enabled, "not drawn as she comes in");
                 Assert.AreEqual(-3, p.ApproachRenderer.sortingOrder);
+                Vector3 drawn = p.ApproachRenderer.transform.lossyScale;
+                Assert.AreEqual(2f, drawn.x, 1e-5f, "not drawn at the look's whole-number scale");
+                Assert.AreEqual(2f, drawn.y, 1e-5f);
+                Assert.IsTrue(p.BedShadowRenderer.enabled, "no shadow on the bed in thin water");
+                Assert.AreEqual(-4, p.BedShadowRenderer.sortingOrder, "her shadow must sit under her");
+
+                // Her flank flashes as she turns into the circle (swim-in = 3 - 1 - 0.5 - 0.3 = 1.2 s).
+                stand.SecondsToBite = 3f - 1.2f - 0.1f;
+                p.Present(121);
+                Assert.AreEqual(SwimFishPose.Roll, ((FakeSwimArt)SwimFishArt.Service).LastPose, "no flank flash at her turn");
+                Assert.AreEqual(1f, p.ApproachRenderer.color.r, 1e-5f, "the flash is drawn as baked, untinted");
 
                 stand.FishId = "fish.soft_shell_clam";
                 p.Present(13);
@@ -251,6 +272,14 @@ namespace HiddenHarbours.Tests.EditMode
                 Vector3 at = p.ApproachRenderer.transform.position - p.transform.position;
                 Assert.AreEqual(0.5f, at.x, 1e-4f);
                 Assert.AreEqual(3f, at.y, 1e-4f, "not drawn where the fight has her");
+                Assert.AreEqual(SwimFishPose.Thrash, ((FakeSwimArt)SwimFishArt.Service).LastPose, "hooked, she must thrash");
+
+                // At the strike she is still on the bait: the hook-set never jumps her out to the fight.
+                stand.Seconds = 0f;
+                p.Present(141);
+                Vector3 struck = p.ApproachRenderer.transform.position - p.transform.position;
+                Assert.AreEqual(stand.State.CastAimX, struck.x, 0.03f);
+                Assert.AreEqual(stand.State.CastAimY, struck.y, 0.03f, "she jumped off the bait at the strike");
 
                 stand.State = Phase(FishingPhase.FightSurface);
                 p.Present(15);

@@ -36,17 +36,34 @@ namespace HiddenHarbours.Core
         bool TryGetApproach(out string fishId, out float weightKg, out float secondsToBite);
     }
 
+    /// <summary>Which of the swimming fish's baked anims a cell is drawn from.</summary>
+    public enum SwimFishPose
+    {
+        /// <summary>The tail-beat swim loop.</summary>
+        Swim = 0,
+        /// <summary>The roll: she turns on her side and her pale flank flashes.</summary>
+        Roll = 1,
+        /// <summary>Her solid shape, for the shadow she throws on the bed.</summary>
+        Shadow = 2,
+        /// <summary>The thrash: hooked and fighting.</summary>
+        Thrash = 3,
+    }
+
     /// <summary>
     /// <b>A swimming fish's cell</b>: the art the schools in the water are drawn with, for a drawer outside
     /// the module that owns that table. <paramref name="headingRadians"/> is a compass heading (0 = North,
-    /// clockwise); <paramref name="seconds"/> picks the swim frame. False when the species has no swim art
-    /// (a shellfish, an unmapped id): draw nothing then.
+    /// clockwise) snapped to the art's drawn facings (no rotation, so no resampled pixels);
+    /// <paramref name="seconds"/> is the seconds into the pose, which picks its frame at the art's own rate.
+    /// False when the species has no art for that pose (a shellfish, an unmapped id): draw nothing then.
     ///
     /// FLAG lead-architect: new Core contract (the swim-art seam).
     /// </summary>
     public interface ISwimFishArt
     {
-        bool TrySwimCell(string speciesId, float headingRadians, double seconds, out Sprite cell);
+        bool TrySwimCell(string speciesId, SwimFishPose pose, float headingRadians, double seconds, out Sprite cell);
+
+        /// <summary>Seconds one play of <paramref name="pose"/> lasts (all its frames once).</summary>
+        float PoseSeconds(SwimFishPose pose);
     }
 
     /// <summary>The locator for <see cref="ISwimFishArt"/>, the <see cref="AnglerPresentation"/> pattern:
@@ -87,19 +104,61 @@ namespace HiddenHarbours.Core
         public float SplashFps;
 
         /// <summary>
-        /// The fish swimming in to his bait (the same swim art the schools are drawn with): she shows this many
-        /// seconds before the bite (0 = no approach drawn), starting this far from the bobber and off the line
-        /// by this angle (degrees, either side), easing in on a lazy swing of this width (m). She holds at the
-        /// bobber through the bite and is drawn under the water at this sorting order and opacity, through the
-        /// deep fight as well, until she breaks the surface.
+        /// The whole-number scale every fish of his is drawn at: the one coming in, the one under the water
+        /// in the deep fight and the one at the surface (1 = the art's true size; whole numbers only, so each
+        /// art pixel stays a square block of screen pixels). 0 reads as 1.
         /// </summary>
-        public float ApproachSeconds;
-        public float ApproachFadeSeconds;
-        public float ApproachFromM;
-        public float ApproachOffLineDegrees;
-        public float ApproachSwingM;
-        public int ApproachSortingOrder;
-        public float ApproachAlpha01;
+        public int FishDrawScale;
+
+        /// <summary>The fish coming to his bait: her path, timing and look (all zero = none drawn).</summary>
+        public AnglerApproachLook Approach;
+    }
+
+    /// <summary>
+    /// <b>How the fish coming to a villager's bait swims and looks</b> (<see cref="AnglerApproachMath"/>):
+    /// she shows <see cref="Seconds"/> before the bite, swims in from <see cref="FromM"/> beyond the bait
+    /// (off his line by <see cref="OffLineDegrees"/>, on a lazy swing of <see cref="SwingM"/>), circles the
+    /// bait at <see cref="CircleM"/> through <see cref="CircleDegrees"/> over <see cref="CircleSeconds"/>,
+    /// hangs facing it for <see cref="PauseSeconds"/>, then takes it in <see cref="TakeSeconds"/>. Her pale
+    /// flank flashes (the roll) as she turns into the circle and again as she turns to face the bait.
+    /// Plain authored data (rule 6); a zero <see cref="Seconds"/> draws no approach.
+    /// </summary>
+    [Serializable]
+    public struct AnglerApproachLook
+    {
+        public float Seconds;
+        public float FadeInSeconds;
+        public float FromM;
+        public float OffLineDegrees;
+        public float SwingM;
+        public float CircleM;
+        public float CircleDegrees;
+        public float CircleSeconds;
+        public float PauseSeconds;
+        public float TakeSeconds;
+        /// <summary>Her tail beat's pace while she hangs at the bait, and as she takes it (1 = her swim pace).</summary>
+        public float PauseBeatRate;
+        public float TakeBeatRate;
+        /// <summary>Seconds after the strike over which she is drawn from the bait out to where the fight has her
+        /// (the line follows her), so the hook-set never jumps.</summary>
+        public float HookBlendSeconds;
+
+        /// <summary>The sorting order she is drawn at (under the water surface, with the schools), her opacity
+        /// in thin water, the tint her body is drawn with (a darker shape reads against the water; the flank
+        /// flash is drawn untinted), and how she fades with the water under her: to <see cref="DeepAlpha01"/>
+        /// at <see cref="DepthFadeM"/> of water and deeper.</summary>
+        public int SortingOrder;
+        public float Alpha01;
+        public Color BodyTint;
+        public float DepthFadeM;
+        public float DeepAlpha01;
+
+        /// <summary>The shadow she throws on the bed in clear shallow water: its colour (alpha = its strength in
+        /// the thinnest water), how far it falls from her per metre of water (m per m), and the depth past which
+        /// it is gone.</summary>
+        public Color BedShadowColor;
+        public Vector2 BedShadowOffsetPerM;
+        public float BedShadowMaxDepthM;
     }
 
     /// <summary>A villager angler's drawing, attached to his host. Hidden, never destroyed, between
