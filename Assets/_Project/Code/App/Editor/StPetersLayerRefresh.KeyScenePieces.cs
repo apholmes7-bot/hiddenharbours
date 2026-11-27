@@ -155,6 +155,13 @@ namespace HiddenHarbours.App.Editor
             public string LeftOut = "";
             public bool IsPerch;
             public Vector2 GroundPoint;
+
+            /// <summary>A standing yard piece that casts the sun's shadow (<see cref="PropPieceDef.CastsShadow"/>).</summary>
+            public bool CastsShadow;
+
+            /// <summary>A run piece's pictures (<see cref="PropPiecesKit"/>), each a child of the piece's object; null
+            /// for a piece that is one picture.</summary>
+            public List<KeyScenePart> Parts;
         }
 
         /// <summary>The compass heading (N = 0, clockwise) a kit's dir faces: the kits' dirs turn
@@ -345,6 +352,9 @@ namespace HiddenHarbours.App.Editor
                     }
                     break;
                 }
+                case PropPiecesKit:
+                    if (PlaceProp(p, assets, at, what)) return at;
+                    break;
                 case FindsKit:
                 {
                     if (string.IsNullOrEmpty(p.State)) throw new Refusal($"{what}: a find needs its state (wet, dry, bleached).");
@@ -354,7 +364,7 @@ namespace HiddenHarbours.App.Editor
                     break;
                 }
                 default:
-                    throw new Refusal($"{what}: the step places from {SetPiecesKit}, {DecorKit} and {FindsKit} only.");
+                    throw new Refusal($"{what}: the step places from {SetPiecesKit}, {DecorKit}, {FindsKit} and {PropPiecesKit} only.");
             }
             if (at.Sprite.Sprite.FileId == 0 || string.IsNullOrEmpty(at.Sprite.Sprite.Guid))
                 throw new Refusal($"{what}: its cell is not a sprite asset.");
@@ -418,13 +428,43 @@ namespace HiddenHarbours.App.Editor
                         pieceTrs.Add(tr);
                         continue;
                     }
+                    if (p.Parts != null)
+                    {
+                        long runWalls = p.Walls.Count == 0 ? 0 : ids.Next(KeyOf(ks.Id, p.Id, "PolygonCollider2D"));
+                        var partTrs = new List<long>();
+                        var partDocs = new List<Wanted>();
+                        for (int j = 0; j < p.Parts.Count; j++)
+                        {
+                            KeyScenePart part = p.Parts[j];
+                            string key = "part" + j.ToString("00", System.Globalization.CultureInfo.InvariantCulture);
+                            long pGo = ids.Next(KeyOf(ks.Id, p.Id, key, "GameObject")), pTr = ids.Next(KeyOf(ks.Id, p.Id, key, "Transform"));
+                            long pSr = ids.Next(KeyOf(ks.Id, p.Id, key, "SpriteRenderer"));
+                            // A part never moves, so its order is written once, here, from its ground line and it carries
+                            // no sorter of its own (no scene shifts a region): a document a picture fewer.
+                            var pComps = new List<long> { pTr, pSr };
+                            partDocs.Add(Want(GameObjectYaml(pGo, part.Name, pComps), p.Id, "GameObject"));
+                            partDocs.Add(Want(TransformYaml(pTr, pGo, part.At - p.At, new List<long>(), tr), p.Id, "Transform"));
+                            partDocs.Add(Want(SpriteRendererYaml(pSr, pGo, p.Material, part.Sprite, part.SortingOrder, part.FlipX, part.FlipY),
+                                              p.Id, "SpriteRenderer"));
+                            partTrs.Add(pTr);
+                        }
+                        var runComps = new List<long> { tr };
+                        if (runWalls != 0) runComps.Add(runWalls);
+                        pieceDocs.Add(Want(GameObjectYaml(go, p.Id, runComps), p.Id, "GameObject"));
+                        pieceDocs.Add(Want(TransformYaml(tr, go, p.At, partTrs, gTr), p.Id, "Transform"));
+                        if (runWalls != 0) pieceDocs.Add(Want(PolygonColliderYaml(runWalls, go, p.Walls), p.Id, "PolygonCollider2D"));
+                        pieceDocs.AddRange(partDocs);
+                        pieceTrs.Add(tr);
+                        continue;
+                    }
                     long sr = ids.Next(KeyOf(ks.Id, p.Id, "SpriteRenderer"));
                     long sort = p.Floor ? 0 : ids.Next(KeyOf(ks.Id, p.Id, "YSortSprite"));
                     long walls = p.Walls.Count == 0 ? 0 : ids.Next(KeyOf(ks.Id, p.Id, "PolygonCollider2D"));
                     long face = p.RidesTheTide ? ids.Next(KeyOf(ks.Id, p.Id, "TidalFaceWaterline")) : 0;
                     long turn = p.TurnsWithWind ? ids.Next(KeyOf(ks.Id, p.Id, "SetPieceWindVane")) : 0;
+                    long shade = p.CastsShadow ? ids.Next(KeyOf(ks.Id, p.Id, "SpriteShadow")) : 0;
                     var comps = new List<long> { tr, sr };
-                    foreach (long c in new[] { sort, walls, face, turn }) if (c != 0) comps.Add(c);
+                    foreach (long c in new[] { sort, walls, face, turn, shade }) if (c != 0) comps.Add(c);
 
                     pieceDocs.Add(Want(GameObjectYaml(go, p.Id, comps), p.Id, "GameObject"));
                     pieceDocs.Add(Want(TransformYaml(tr, go, p.At, new List<long>(), gTr), p.Id, "Transform"));
@@ -455,6 +495,12 @@ namespace HiddenHarbours.App.Editor
                             "  _refreshHz: " + F(SetPieceWindVane.DefaultRefreshHz),
                             "  _calmMetresPerSecond: " + F(SetPieceWindVane.DefaultCalmMetresPerSecond),
                         }), p.Id, "SetPieceWindVane"));
+                    if (shade != 0)
+                        pieceDocs.Add(Want(MonoBehaviourYaml(shade, go, ((IKeyScenePropAssets)assets).Shadow, new[]
+                        {
+                            "  _sortingOffset: -1", "  _pixelSnap: 1", "  _pixelsPerUnit: 32", "  _castsGroundContact: 0",
+                            "  _footOffset: 0", "  _fallbackHour: 10", "  _refreshHz: 10", "  _profile: {fileID: 0}",
+                        }), p.Id, "SpriteShadow"));
                     pieceTrs.Add(tr);
                 }
                 want.Add(Want(GameObjectYaml(gGo, ks.Id, new List<long> { gTr }), ks.Id, "GameObject"));
@@ -504,7 +550,7 @@ namespace HiddenHarbours.App.Editor
             }
             foreach (KeyScenePlacement p in pieces)
             {
-                string how = $"{p.Kit} {p.Piece}, {p.Cell}, at {At(p.At)}, order {Int(p.SortingOrder)}" +
+                string how = $"{p.Kit} {p.Piece}, {p.Cell}, at {At(p.At)}" + (p.Parts != null ? "" : $", order {Int(p.SortingOrder)}") +
                              (p.Floor ? " (floor)" : "") + (p.Walls.Count > 0 ? $", {p.Walls.Count} wall(s)" : "") +
                              (p.RidesTheTide ? $", the sea cuts it from its foot at {F(p.LipElevation)} m (lip y {F(p.LipWorldY)})" : "") +
                              (p.TurnsWithWind ? ", turns with the wind" : "");
@@ -600,7 +646,10 @@ namespace HiddenHarbours.App.Editor
             return string.Join("\n", lines);
         }
 
-        static string SpriteRendererYaml(long id, long go, ObjRef material, SpriteRef sprite, int order) => string.Join("\n",
+        static string SpriteRendererYaml(long id, long go, ObjRef material, SpriteRef sprite, int order) =>
+            SpriteRendererYaml(id, go, material, sprite, order, false, false);
+
+        static string SpriteRendererYaml(long id, long go, ObjRef material, SpriteRef sprite, int order, bool flipX, bool flipY) => string.Join("\n",
             $"--- !u!{Int(SpriteRendererClass)} &{Id(id)}", "SpriteRenderer:", "  serializedVersion: 3", Unlinked,
             $"  m_GameObject: {{fileID: {Id(go)}}}",
             "  m_Enabled: 1", "  m_CastShadows: 0", "  m_ReceiveShadows: 0", "  m_DynamicOccludee: 1", "  m_StaticShadowCaster: 0",
@@ -614,7 +663,7 @@ namespace HiddenHarbours.App.Editor
             "  m_SelectedEditorRenderState: 0", "  m_MinimumChartSize: 4", "  m_AutoUVMaxDistance: 0.5", "  m_AutoUVMaxAngle: 89",
             "  m_LightmapParameters: {fileID: 0}", "  m_GlobalIlluminationMeshLod: 0", "  m_SortingLayerID: 0", "  m_SortingLayer: 0",
             "  m_SortingOrder: " + Int(order), "  m_MaskInteraction: 0", "  m_Sprite: " + sprite.Sprite.Yaml,
-            "  m_Color: {r: 1, g: 1, b: 1, a: 1}", "  m_FlipX: 0", "  m_FlipY: 0", "  m_DrawMode: 0", "  m_Size: " + Vec2Yaml(sprite.Size),
+            "  m_Color: {r: 1, g: 1, b: 1, a: 1}", "  m_FlipX: " + (flipX ? "1" : "0"), "  m_FlipY: " + (flipY ? "1" : "0"), "  m_DrawMode: 0", "  m_Size: " + Vec2Yaml(sprite.Size),
             "  m_AdaptiveModeThreshold: 0.5", "  m_SpriteTileMode: 0", "  m_WasSpriteAssigned: 1", "  m_SpriteSortPoint: 0",
             "  m_BlendShapeWeights: []");
 

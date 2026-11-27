@@ -192,17 +192,23 @@ namespace HiddenHarbours.Tests.PlayMode
         const float BridgeArriveMetres = 0.15f;
         const int BridgeWalkFrames = 900;
         const int RailPushFrames = 120;
+        const float HeadingToleranceDegrees = 2f;     // how far a step may stray from the bridge's axis
+        const float SlideFloor = 0.9f;                // a step on the planks keeps at least this share of a free step
 
-        // The footbridge over the gap stream, walked by the real player on the real ground: west to east, back
-        // again, and a push at each rail from the middle of the deck.
+        // The footbridge over the gap stream, walked by the real player on the real ground: along its axis both ways
+        // with the stick, both ways with the keyboard's nearest heading, and a push at each rail from the middle.
+        // The owner (11-26): it "turns to face the camera changing the players running angle". Every step from the
+        // path, over the planks and off onto the far path goes the way the bridge runs: no turn, snag or slide.
         [UnityTest]
         public IEnumerator StPeters_TheGapFootbridge_IsWalkedAcrossBothWays_BetweenItsRails()
         {
             yield return LoadRegion(StPeters);
-            StandablePlatform bridge = Object.FindObjectsByType<StandablePlatform>(FindObjectsInactive.Include)
+            FootbridgeDeck bridge = Object.FindObjectsByType<FootbridgeDeck>(FindObjectsInactive.Include)
                 .FirstOrDefault(p => p.Id == GapFootbridgeId);
             Assert.That(bridge, Is.Not.Null, "the gap footbridge is in the loaded region as a deck to stand on");
-            Rect stood = bridge.Footprint;
+            Vector2 axis = bridge.Axis, across = new Vector2(-axis.y, axis.x);
+            float halfSpan = bridge.SpanMetres * 0.5f, halfWidth = bridge.WidthMetres * 0.5f;
+            Vector2 Deck(Vector2 p) => FootbridgeDeck.ToDeck(p, bridge.At, bridge.AxisDegrees);
             Transform root = bridge.transform;
             while (root.parent != null && root.name != GapFootbridgeRoot) root = root.parent;
             SpriteRenderer near = root.GetComponentsInChildren<SpriteRenderer>(true).FirstOrDefault(r => r.name == RailNearName);
@@ -211,10 +217,8 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(far, Is.Not.Null, "the bridge has a rail on its far side");
             Assert.That(far.sortingLayerID, Is.EqualTo(near.sortingLayerID));
             Assert.That(far.sortingOrder, Is.LessThan(near.sortingOrder), "the far rail is drawn behind the near one");
-            // The planks lie between the two rails; the ground stood on reaches a little landward of them, because the
-            // game reads a walker's ground at his body and draws his feet below it.
-            Rect deck = Rect.MinMaxRect(stood.xMin, near.transform.position.y, stood.xMax, far.transform.position.y);
-            Assert.That(deck.height, Is.GreaterThan(0.5f)); Assert.That(stood.yMax, Is.GreaterThanOrEqualTo(deck.yMax));
+            Assert.That(Deck(near.transform.position).y, Is.EqualTo(-halfWidth).Within(0.01f), "the near rail stands on the planks' seaward edge");
+            Assert.That(Deck(far.transform.position).y, Is.EqualTo(halfWidth).Within(0.01f), "the far rail on the landward one");
 
             var player = Object.FindAnyObjectByType<PlayerWalkController>(FindObjectsInactive.Include);
             Assert.That(player, Is.Not.Null, "the player is in the loaded game");
@@ -237,52 +241,72 @@ namespace HiddenHarbours.Tests.PlayMode
             YSortSprite sorter = player.GetComponentInChildren<YSortSprite>();
             Assert.That(sorter, Is.Not.Null, "the walker sorts by where he stands");
             Renderer sortedBy = sorter.GetComponent<Renderer>();
-            int FigureOrder(out int layer)
-            {
-                layer = sortedBy.sortingLayerID;
-                return sortedBy.sortingOrder;
-            }
             string Sorting() => $"sorted by '{sorter.name}' at y {sorter.transform.position.y:0.00} pivot {sorter.SortPivotYOffset:0.00}, " +
                                 $"body y {body.position.y:0.00}, order {sortedBy.sortingOrder}, rails {far.sortingOrder} to {near.sortingOrder}";
 
-            float mid = deck.center.y;
-            Vector2 west = new Vector2(deck.xMin - BridgeApproachMetres, mid);
-            Vector2 east = new Vector2(deck.xMax + BridgeApproachMetres, mid);
+            Vector2 west = bridge.At - axis * (halfSpan + BridgeApproachMetres);
+            Vector2 east = bridge.At + axis * (halfSpan + BridgeApproachMetres);
+            // The keyboard's eight headings: the one nearest the axis each way.
+            Vector2 Key(Vector2 dir)
+            {
+                float deg = Mathf.Round(Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg / 45f) * 45f * Mathf.Deg2Rad;
+                return new Vector2(Mathf.Cos(deg), Mathf.Sin(deg));
+            }
             try
             {
-                foreach ((Vector2 from, Vector2 to, string way) in new[] { (west, east, "west to east"), (east, west, "east to west") })
+                foreach ((Vector2 from, Vector2 to, string way, bool keyboard) in new[]
+                {
+                    (west, east, "west to east with the stick", false), (east, west, "east to west with the stick", false),
+                    (west, east, "west to east on the keys", true), (east, west, "east to west on the keys", true),
+                })
                 {
                     Stand(from);
                     yield return new WaitForFixedUpdate();
+                    Vector2 run = (to - from).normalized;
                     int onDeck = 0, frames = 0;
-                    float lowest = float.MaxValue, highest = float.MinValue;
-                    while ((Feet() - to).magnitude > BridgeArriveMetres && frames++ < BridgeWalkFrames)
+                    float lowest = float.MaxValue, highest = float.MinValue, freeStep = 0f;
+                    Vector2 was = Feet();
+                    // The stick holds the bridge's own heading; the keys hold the nearest of their eight, all the way.
+                    Vector2 input = keyboard ? Key(run) : run;
+                    while (Vector2.Dot(Feet() - to, run) < -BridgeArriveMetres && frames++ < BridgeWalkFrames)
                     {
-                        held.Walk((to - Feet()).normalized);
+                        held.Walk(input);
                         yield return new WaitForFixedUpdate();
-                        Vector2 at = Feet();
-                        if (at.x <= deck.xMin || at.x >= deck.xMax) continue;
+                        Vector2 at = Feet(), step = at - was;
+                        // The guide holds a step that starts on the planks or on the walk's last stretch onto them.
+                        Vector2 from0 = Deck(was);
+                        bool guided = Mathf.Abs(from0.x) <= halfSpan + bridge.GuideApproachMetres && Mathf.Abs(from0.y) <= halfWidth;
+                        was = at;
+                        Vector2 d = Deck(at);
+                        if (step.sqrMagnitude > 1e-8f && (guided || !keyboard))
+                        {
+                            Assert.That(Vector2.Angle(step, run), Is.LessThan(HeadingToleranceDegrees),
+                                $"{way}: at {at} (deck {d}) his step {step} turned off the bridge's axis");
+                            freeStep = Mathf.Max(freeStep, step.magnitude);
+                        }
+                        if (Mathf.Abs(d.x) >= halfSpan) continue;
                         onDeck++;
-                        lowest = Mathf.Min(lowest, at.y); highest = Mathf.Max(highest, at.y);
+                        Assert.That(step.magnitude, Is.GreaterThanOrEqualTo(freeStep * SlideFloor), $"{way}: at {at} he was slowed on the planks (a slide or a snag)");
+                        lowest = Mathf.Min(lowest, d.y); highest = Mathf.Max(highest, d.y);
                         Assert.That(bridge.TryGetDeckElevation(body.position, out float h), Is.True,
                             $"{way}: with his feet on the planks at {at} the game reads him as standing on the deck (body {body.position})");
                         Assert.That(h, Is.EqualTo(bridge.DeckElevation));
                         Assert.That(player.WaterState, Is.EqualTo(OnFootWaterState.Dry), $"{way}: he crosses dry at {at}");
-                        int order = FigureOrder(out int layer);
-                        Assert.That(layer, Is.EqualTo(near.sortingLayerID), $"{way}: he is drawn in the rails' layer");
-                        Assert.That(order, Is.GreaterThan(far.sortingOrder), $"{way}: at {at} he is in front of the far rail; {Sorting()}");
-                        Assert.That(order, Is.LessThan(near.sortingOrder), $"{way}: at {at} he is behind the near rail; {Sorting()}");
+                        Assert.That(sortedBy.sortingLayerID, Is.EqualTo(near.sortingLayerID), $"{way}: he is drawn in the rails' layer");
+                        Assert.That(sortedBy.sortingOrder, Is.GreaterThan(far.sortingOrder), $"{way}: at {at} he is in front of the far rail; {Sorting()}");
+                        Assert.That(sortedBy.sortingOrder, Is.LessThan(near.sortingOrder), $"{way}: at {at} he is behind the near rail; {Sorting()}");
                     }
-                    Assert.That((Feet() - to).magnitude, Is.LessThanOrEqualTo(BridgeArriveMetres),
-                        $"{way}: he reaches the far bank; he stopped at {Feet()} after {frames} steps");
+                    Assert.That(Vector2.Dot(Feet() - to, run), Is.GreaterThanOrEqualTo(-BridgeArriveMetres),
+                        $"{way}: he reaches the far bank; he stopped at {Feet()} (deck {Deck(Feet())}) after {frames} steps");
                     Assert.That(onDeck, Is.GreaterThan(0), $"{way}: the walk went over the deck");
-                    Assert.That(lowest, Is.GreaterThan(deck.yMin)); Assert.That(highest, Is.LessThan(deck.yMax));
+                    Assert.That(lowest, Is.GreaterThan(-halfWidth)); Assert.That(highest, Is.LessThan(halfWidth));
+                    if (!keyboard) Assert.That(Mathf.Abs(Deck(Feet()).y), Is.LessThan(0.05f), $"{way}: he came off the planks on the line he went on by");
                 }
 
                 // From the middle of the deck neither rail lets him step off into the stream.
-                foreach ((Vector2 push, string side) in new[] { (Vector2.down, "near"), (Vector2.up, "far") })
+                foreach ((Vector2 push, string side) in new[] { (-across, "near"), (across, "far") })
                 {
-                    Stand(deck.center);
+                    Stand(bridge.At);
                     yield return new WaitForFixedUpdate();
                     for (int i = 0; i < RailPushFrames; i++)
                     {
@@ -290,10 +314,10 @@ namespace HiddenHarbours.Tests.PlayMode
                         yield return new WaitForFixedUpdate();
                     }
                     Vector2 at = Feet();
-                    Assert.That(at.y, Is.InRange(deck.yMin, deck.yMax),
-                        $"the {side} rail keeps his feet on the planks; he ended at {at}, planks {deck}");
+                    Assert.That(Deck(at).y, Is.InRange(-halfWidth, halfWidth),
+                        $"the {side} rail keeps his feet on the planks; he ended at {at} (deck {Deck(at)})");
                     Assert.That(bridge.TryGetDeckElevation(body.position, out _), Is.True,
-                        $"pushed at the {side} rail he is still read as on the deck (body {body.position}, stood {stood})");
+                        $"pushed at the {side} rail he is still read as on the deck (body {body.position})");
                 }
             }
             finally

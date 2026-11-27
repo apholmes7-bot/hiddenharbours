@@ -32,7 +32,7 @@ namespace HiddenHarbours.World
     /// the dev-key ledger is spent A–Z.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class InteriorStair : MonoBehaviour, IInteractable
+    public sealed class InteriorStair : MonoBehaviour, IInteractable, IRoomFixtureReach
     {
         [Tooltip("The building whose storeys this stair moves between. Required — a stair with no " +
                  "interior is inert rather than broken.")]
@@ -116,7 +116,9 @@ namespace HiddenHarbours.World
             _interior.Level == _fromLevel;
 
         /// <inheritdoc/>
-        public void Interact(in InteractActor actor) => Climb();
+        public bool CanReach(in InteractActor actor) => RoomFixtureReach.Allows(this, actor, WorldPosition);
+
+        public void Interact(in InteractActor actor) { if (CanReach(actor)) Climb(); }
 
         private void OnEnable() => Interactables.Register(this);
         private void OnDisable() => Interactables.Unregister(this);

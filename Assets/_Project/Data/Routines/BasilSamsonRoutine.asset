@@ -28,8 +28,10 @@ MonoBehaviour:
   - StartHour: 15
     StationId: station.st_peters.wharf_head
     Activity: 3
-    Why: back out to the pier head. He is who is there when you come home under power
-  - StartHour: 18
+    Why: back out to the pier head with a rod. He is who is there when you come home
+      under power
+    Doing: {fileID: 11400000, guid: e3d4c6af1f384439bd0b44de9256765b, type: 2}
+  - StartHour: 19.5
     StationId: station.st_peters.home_sage_b
     Activity: 0
     Why: the whole island again, in the dusk, and in

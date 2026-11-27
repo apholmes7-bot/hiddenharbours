@@ -36,8 +36,18 @@ namespace HiddenHarbours.App.Editor
         const string DataNpcs = "Assets/_Project/Data/NPCs";
 
         // Shorthand so a day reads as a table rather than as constructor noise.
-        static RoutineEntry At(float hour, string station, RoutineActivity activity, string why) =>
-            new RoutineEntry { StartHour = hour, StationId = station, Activity = activity, Why = why };
+        const string ActivitiesFolder = "Assets/_Project/Data/NPCs/Activities";
+
+        static RoutineEntry At(float hour, string station, RoutineActivity activity, string why,
+                               string doingAsset = null) =>
+            new RoutineEntry
+            {
+                StartHour = hour, StationId = station, Activity = activity, Why = why,
+                // What they do there, by the activity asset's name under Data/NPCs/Activities (or nothing).
+                Doing = string.IsNullOrEmpty(doingAsset)
+                    ? null
+                    : AssetDatabase.LoadAssetAtPath<NpcActivityDef>($"{ActivitiesFolder}/{doingAsset}.asset"),
+            };
 
         /// <summary>One villager's authored day: which NpcDef, the id, how fast they walk, and the blocks.</summary>
         public readonly struct Day
@@ -170,8 +180,9 @@ namespace HiddenHarbours.App.Editor
                         At(12.00f, StPetersRoutines.StationSlipHead, RoutineActivity.Work,
                            "down to the shoreward end of the planks — where a boat's line gets taken"),
                         At(15.00f, StPetersRoutines.StationWharfHead, RoutineActivity.Recreation,
-                           "back out to the pier head. He is who is there when you come home under power"),
-                        At(18.00f, StPetersRoutines.StationHomeSageB, RoutineActivity.Home,
+                           "back out to the pier head with a rod. He is who is there when you come home " +
+                           "under power", doingAsset: "WharfRodActivity"),
+                        At(19.50f, StPetersRoutines.StationHomeSageB, RoutineActivity.Home,
                            "the whole island again, in the dusk, and in"),
                     }),
 

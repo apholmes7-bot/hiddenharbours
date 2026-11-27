@@ -26,6 +26,7 @@ namespace HiddenHarbours.App.Editor
             yield return (PlacementStep, RetireShopSites);
             yield return (RetireBuyerStep, RetireBuyer);
             yield return (RetireOfficeStep, RetireOffice);
+            foreach (var planner in FenderPlanners()) yield return planner;
         }
 
         public static void DryRunFromCommandLine() => NineMileCreekLayerRefresh.Run(false);

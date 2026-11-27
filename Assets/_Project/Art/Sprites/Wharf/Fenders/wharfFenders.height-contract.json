@@ -1,0 +1,24 @@
+{
+    "schema": "hidden-harbours/wharf-fender-height@1",
+    "recipeSha256Lf": "a5f69dad2b53dcddfc3ec1f45db23f30b97ae038e73d9080aac82c0437e6e198",
+    "maps": [
+        {
+            "key": "wharfFenderStringStp",
+            "path": "Assets/_Project/Art/Sprites/Wharf/Fenders/SetPiece_wharfFenderStringStp_height.png",
+            "minimumLocalZ": -8.054003715515137,
+            "maximumLocalZ": 0.0
+        },
+        {
+            "key": "wharfFenderStringNmc",
+            "path": "Assets/_Project/Art/Sprites/Wharf/Fenders/SetPiece_wharfFenderStringNmc_height.png",
+            "minimumLocalZ": -6.099999904632568,
+            "maximumLocalZ": 0.0
+        },
+        {
+            "key": "wharfLadderNmc",
+            "path": "Assets/_Project/Art/Sprites/Wharf/Fenders/SetPiece_wharfLadderNmc_height.png",
+            "minimumLocalZ": -6.199999809265137,
+            "maximumLocalZ": 0.0
+        }
+    ]
+}

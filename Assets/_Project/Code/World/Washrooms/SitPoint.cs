@@ -22,7 +22,7 @@ namespace HiddenHarbours.World
     /// <para><b>No save.</b> Sitting is not stored; a reload stands the player up.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class SitPoint : MonoBehaviour, IInteractable
+    public sealed class SitPoint : MonoBehaviour, IInteractable, IRoomFixtureReach
     {
         [Tooltip("Stable id, unique among live interactables (fixture.<place>.<building>.<slot>, e.g. " +
                  "fixture.st_peters.ginny_cottage.toilet).")]
@@ -117,7 +117,9 @@ namespace HiddenHarbours.World
         public WashStationDef Def => _def != null ? _def : (_def = GameServices.Cleanliness.FindStation(_stationId));
 
         /// <inheritdoc/>
-        public void Interact(in InteractActor actor) => Toggle();
+        public bool CanReach(in InteractActor actor) => (IsSeatedHere || RoomFixtureReach.Allows(this, actor, WorldPosition));
+
+        public void Interact(in InteractActor actor) { if (CanReach(actor)) Toggle(); }
 
         /// <summary>Wire this seat from a builder or a test.</summary>
         public void Configure(string id, string stationId, float reachMeters, float walkAwaySlackMeters,

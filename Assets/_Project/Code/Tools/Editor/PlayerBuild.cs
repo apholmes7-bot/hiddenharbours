@@ -42,23 +42,40 @@ namespace HiddenHarbours.Tools.Editor
         /// <summary>Use with -executeMethod HiddenHarbours.Tools.Editor.PlayerBuild.BuildWindows.</summary>
         public static void BuildWindows()
         {
-            string[] args = System.Environment.GetCommandLineArgs();
+            var request = ParseArguments(System.Environment.GetCommandLineArgs());
+            Build(request.Output, request.Product, request.Commit, request.MainCommit,
+                request.Development, request.Lz4HC, request.Demo);
+        }
+
+        public sealed class BuildRequest
+        {
+            public string Output, Product, Commit, MainCommit;
+            public bool Development, Lz4HC, Demo;
+        }
+
+        public static BuildRequest ParseArguments(string[] args)
+        {
+            if (args == null) throw new ArgumentNullException(nameof(args));
             string compression = Argument(args, "-buildCompression", "None");
             if (compression != "None" && compression != "Lz4HC")
                 throw new ArgumentException("-buildCompression must be None or Lz4HC.");
-            Build(Argument(args, "-buildOutput"), Argument(args, "-buildProduct", DefaultProduct),
-                Argument(args, "-buildCommit"), Argument(args, "-buildMainCommit"),
-                args.Contains("-buildDevelopment"), compression == "Lz4HC", args.Contains("-buildDemo"));
+            return new BuildRequest
+            {
+                Output = Argument(args, "-buildOutput"),
+                Product = Argument(args, "-buildProduct", DefaultProduct),
+                Commit = Argument(args, "-buildCommit"),
+                MainCommit = Argument(args, "-buildMainCommit"),
+                Development = args.Contains("-buildDevelopment"),
+                Lz4HC = compression == "Lz4HC",
+                Demo = args.Contains("-buildDemo")
+            };
         }
 
-        public static string[] ScenePaths(bool demo) => demo ? Scenes.Take(1).ToArray() : (string[])Scenes.Clone();
+        public static string[] ScenePaths(bool demo) => demo ? DemoBuild.ScenePaths() : (string[])Scenes.Clone();
 
         static void Build(string output, string product, string commit, string mainCommit,
             bool development, bool lz4hc, bool demo)
         {
-            // The single-scene package cannot run the authored sea opening yet.
-            if (demo)
-                throw new BuildFailedException("Demo packaging is blocked until the island opening is implemented and verified.");
             string[] scenes = ScenePaths(demo);
             output = Path.GetFullPath(output);
             string buildRoot = Path.GetFullPath("C:/hh-builds").TrimEnd(

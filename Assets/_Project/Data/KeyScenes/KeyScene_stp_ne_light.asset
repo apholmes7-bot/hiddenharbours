@@ -1080,3 +1080,8 @@ MonoBehaviour:
   - prop.stp_ne_find_3
   - prop.stp_ne_find_4
   - prop.stp_ne_find_5
+  - structure.stp_ne_fog_bell
+  - prop.stp_ne_clothesline
+  - structure.stp_ne_brow_fence
+  - structure.stp_ne_garden_fence
+  - path.stp_ne_plank

@@ -337,6 +337,35 @@ namespace HiddenHarbours.Core
         private static ITraitService _traits;
 
         /// <summary>
+        /// Every player's rod-fishing skill (owner ruling 2026-11-25): effective rod numbers = the held
+        /// rod + the angler's own skill. Fishing reads and feeds it by player key, never a single "the
+        /// player" (co-op). Never null: a default session-only <see cref="RodSkillBook"/> is made on first
+        /// read; a test assigns its own. Cleared by <see cref="Reset"/>.
+        /// FLAG lead-architect: new Core contract (rod skill).
+        /// </summary>
+        public static IRodSkillBook RodSkills
+        {
+            get => _rodSkills ??= new RodSkillBook();
+            set => _rodSkills = value;
+        }
+
+        private static IRodSkillBook _rodSkills;
+
+        /// <summary>
+        /// <b>Each player's rod fit</b> (rods from parts): which line and reel are on which of his rods.
+        /// Never null: a session-only <see cref="RodFittingBook"/> is made on first read; a test assigns its
+        /// own. Cleared by <see cref="Reset"/>.
+        /// FLAG lead-architect: new Core contract (rod fitting).
+        /// </summary>
+        public static IRodFittingBook RodFittings
+        {
+            get => _rodFittings ??= new RodFittingBook();
+            set => _rodFittings = value;
+        }
+
+        private static IRodFittingBook _rodFittings;
+
+        /// <summary>
         /// Hunger and tiredness (needs slice 1, owner ruling 2026-11-14): the local player's needs over
         /// <see cref="Save"/> and <see cref="Clock"/>. A seam reads the combined trait x needs factor through
         /// <see cref="CharacterFactors.Player"/>, never this directly. Never null: a default
@@ -421,6 +450,21 @@ namespace HiddenHarbours.Core
         }
 
         private static ICleanlinessService _cleanliness;
+
+        /// <summary>
+        /// Clothing (store clothing, pass 1): the shipped garments under <c>Resources/Clothing/</c> and one
+        /// wardrobe per player. The needs and the dirt read the local player's worn garments through it.
+        /// Never null: a default <see cref="ClothingService"/> is made on first read; a test assigns its own.
+        /// Cleared by <see cref="Reset"/>. Wearing nothing, every effect is exactly 1. Session-only.
+        /// FLAG lead-architect: new Core contract (clothing).
+        /// </summary>
+        public static IClothingService Clothing
+        {
+            get => _clothing ??= new ClothingService();
+            set => _clothing = value;
+        }
+
+        private static IClothingService _clothing;
 
         /// <summary>
         /// The farm plots (farm slice 1): read-only questions about each plot's stage and the work due on it,
@@ -1512,7 +1556,7 @@ namespace HiddenHarbours.Core
             Config != null ? UnityEngine.Mathf.Max(0f, Config.HullReflectionEndMinRunPixels)
                 : GameConfig.DefaultHullReflectionEndMinRunPixels;
         /// <summary>The calm mirror's dial, clamped to 0..1 (<see cref="GameConfig.WaterMirrorStrength"/>);
-        /// the ship default 0 with no config.</summary>
+        /// the ship default (0.6) with no config.</summary>
         public static float WaterMirrorStrength =>
             Config != null ? UnityEngine.Mathf.Clamp01(Config.WaterMirrorStrength)
                 : GameConfig.DefaultWaterMirrorStrength;
@@ -1692,16 +1736,20 @@ namespace HiddenHarbours.Core
             GiftableFacts = null;        // nullable by contract: the giver falls back to its kind default
             RadarContacts = null;        // → EmptyRadarSea.Instance; likewise never null
             BirdPresence = null;         // → EmptyBirdPresence.Instance; likewise never null
+            WildlifePresences.Reset();   // the seal haul-outs re-register when their region loads
             Save = null;
             Appearance = null;           // → a fresh default on next read; drops any open preview
             Traits = null;               // → a fresh default on next read; drops its catalog and cache
+            RodSkills = null;            // → a fresh default on next read; every skill back to zero
+            RodFittings = null;          // → a fresh default on next read; every rod on its default parts
             Needs = null;                // → a fresh default on next read; drops its stage baseline
             Body = null;                 // → a fresh default on next read
             Messes = null;               // → a fresh default on next read
             PlayerStrength = null;       // → the body, or the neutral reading
             CarriedLoad = null;          // → NoCarriedLoad.Instance (nothing carried)
             Cleanliness = null;          // → a fresh default on next read; drops its station catalog
-            KitchenPower = null;        // → AlwaysOnKitchenPower.Instance; this property is never null
+            Clothing = null;             // → a fresh default on next read; every wardrobe starts empty
+            KitchenPower = null;       // → AlwaysOnKitchenPower.Instance; this property is never null
             FoodPerishability = null;    // → NothingSpoilsPerishability.Instance; likewise never null
             KitchenStorageCatalog.Clear();
             Farm = null;                 // → a fresh default on next read; drops its catalog and baseline

@@ -111,6 +111,7 @@
     "HiddenHarbours.World.TidalPoolDef",
     "HiddenHarbours.World.VillagePlanDef",
     "HiddenHarbours.World.WaterfallDef",
+    "HiddenHarbours.World.WharfFenderRunDef",
     "HiddenHarbours.World.WharfLadderDef",
     "HiddenHarbours.World.WordsTableDef",
     "HiddenHarbours.World.YardDef",
@@ -10057,6 +10058,36 @@
       "Type": "HiddenHarbours.World.WharfLadderDef",
       "Guid": "f4001b876e974e7c8f6a70a9d783f657",
       "Id": "ladder.galvanised_wharf"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "3bd798810349a9e49869a7827763764c",
+      "Id": "prop.wharf_fender_string_stp"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "81fd90893c584d94d9e735a241632e47",
+      "Id": "prop.wharf_fender_string_nmc"
+    },
+    {
+      "Type": "HiddenHarbours.Art.SetPieceDef",
+      "Guid": "95fac70b7fc6dd34ea6180429d70e417",
+      "Id": "prop.wharf_ladder_nmc"
+    },
+    {
+      "Type": "HiddenHarbours.World.WharfFenderRunDef",
+      "Guid": "698ffdcf284f4e25934d038f24e37d57",
+      "Id": "fender_run.st_peters_south"
+    },
+    {
+      "Type": "HiddenHarbours.World.WharfFenderRunDef",
+      "Guid": "e9ca990f7b334a35821cdecc4f74c3d7",
+      "Id": "fender_run.nmc_north_face"
+    },
+    {
+      "Type": "HiddenHarbours.World.WharfFenderRunDef",
+      "Guid": "efe6d8fa9f2e4c8c99f6cc18bbd01f3c",
+      "Id": "fender_run.nmc_unload_face"
     }
   ]
 }

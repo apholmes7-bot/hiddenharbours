@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using HiddenHarbours.Core;
 using UnityEngine;
 
 namespace HiddenHarbours.World
@@ -96,6 +97,14 @@ namespace HiddenHarbours.World
                 }
                 stops[i].Activity = routine.Entries[i].Activity;
                 stops[i].Interruptible = routine.Entries[i].Interruptible;
+                stops[i].Doing = routine.Entries[i].Doing;
+                // A doing that brings its own stand (an angler's plank at the deck edge) puts him there,
+                // facing out; the station still names the lane node he walks in from.
+                if (stops[i].Doing != null && stops[i].Doing.TryGetStand(out ShoreStand stand))
+                {
+                    stops[i].Station.Position = stand.Position;
+                    stops[i].Station.StandHeadingDegrees = stand.HeadingDegrees;
+                }
             }
 
             // ---- the day's departure hours (authored, then jittered by this person's own seed).
@@ -164,6 +173,7 @@ namespace HiddenHarbours.World
             var routeLength = new float[n];
             var activities = new RoutineActivity[n];
             var interruptible = new bool[n];
+            var doings = new NpcActivityDef[n];
             var standHeading = new float[n];
             var exitAt = new float[n];
             var enterAt = new float[n];
@@ -176,6 +186,7 @@ namespace HiddenHarbours.World
                 hidden[i] = station[i].OutOfSight;
                 activities[i] = stops[i].Activity;
                 interruptible[i] = stops[i].Interruptible;
+                doings[i] = stops[i].Doing;
                 standHeading[i] = station[i].StandHeadingDegrees;
                 interiors[i] = station[i].Interior;
 
@@ -306,7 +317,7 @@ namespace HiddenHarbours.World
             blockInteriors = interiors;
             return new RoutinePlan(departures, flat, routeStart, routeCount, routeLength, activities,
                                    standHeading, exitAt, enterAt, walkSpeedMetresPerSecond,
-                                   interruptible, catchUpSpeedMetresPerSecond, hidden);
+                                   interruptible, catchUpSpeedMetresPerSecond, hidden, doings);
         }
 
         /// <summary>

@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
+using HiddenHarbours.Core;
 using HiddenHarbours.World;
 
 namespace HiddenHarbours.Tests.EditMode
@@ -28,8 +29,6 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>Flags a barrier names that nothing sets yet, each with why. Empty is the goal.</summary>
         public static readonly IReadOnlyDictionary<string, string> NotYetSettable = new Dictionary<string, string>
         {
-            { "st_peters.weather_turned", "set the morning after her word, after a sleep, not yet built" },
-            { "st_peters.first_week", "set when a new game begins its island week, not yet built" },
         };
 
         private static List<CampaignBarrierDef> Walls() =>
@@ -68,6 +67,52 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsNotEmpty(walls, "the barrier defs were found");
             var bad = Problems(walls, QuestContentValidationTests.SettableFlags(), NotYetSettable.Keys.ToList());
             Assert.IsEmpty(bad, string.Join("\n", bad));
+        }
+
+        [Test]
+        public void TheIslandWeatherFlag_RequiresTheShippedKeptMorningProducer()
+        {
+            const string weatherFlag = "st_peters.weather_turned";
+            var gates = Resources.LoadAll<StoryGateDef>(StoryGates.ResourcesFolder);
+            StoryGateDef[] producers = gates.Where(g => g.MorningSetsFlag == weatherFlag).ToArray();
+            Assert.AreEqual(1, producers.Length, "exactly one shipped gate opens the island after sleep");
+            StoryGateDef gate = producers[0];
+            Assert.AreEqual("st_peters.ginny_word_completed", gate.SetsFlag);
+            Assert.AreEqual(weatherFlag, gate.PendingUntilFlag);
+            Assert.IsFalse(NotYetSettable.ContainsKey(weatherFlag), "the producer replaces the exception");
+            var settable = QuestContentValidationTests.SettableFlags();
+            CollectionAssert.Contains(settable, weatherFlag);
+
+            var walls = Walls().Where(w => w.LiftedByFlag == weatherFlag).ToList();
+            Assert.AreEqual(4, walls.Count);
+            Assert.IsEmpty(Problems(walls, settable, NotYetSettable.Keys.ToList()));
+            settable.Remove(weatherFlag);
+            Assert.AreEqual(4, Problems(walls, settable, NotYetSettable.Keys.ToList()).Count,
+                "removing the producer from the registry must fail every affected sea edge");
+
+            ISaveService previousSave = GameServices.Save;
+            bool? previousDemo = DemoBuild.Override;
+            System.Func<bool> previousHost = DemoWeek.IsHost;
+            var save = new StoryGateTests.FlagSave();
+            save.Current.OnboardingFlags = new List<SaveFlag> { new SaveFlag(gate.SetsFlag, true) };
+            try
+            {
+                GameServices.Save = save;
+                DemoBuild.Override = false;
+                DemoWeek.IsHost = () => true;
+                StoryGates.Load(gate);
+                StoryGates.ListenForMorning();
+                EventBus.Publish(new SleepReachedMorning(GameConfig.DefaultSecondsPerDay));
+                Assert.IsTrue(save.GetFlag(weatherFlag), "a declaration alone is not a producer");
+                Assert.AreEqual(1, save.Writes[weatherFlag]);
+            }
+            finally
+            {
+                StoryGates.Load(null);
+                GameServices.Save = previousSave;
+                DemoBuild.Override = previousDemo;
+                DemoWeek.IsHost = previousHost;
+            }
         }
 
         [Test]

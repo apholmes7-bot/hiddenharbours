@@ -46,6 +46,10 @@ namespace HiddenHarbours.Fishing
         /// weight sits in the species' size range.
         /// </summary>
         public static FishFightTuning For(FishCategory category, float weightKg, float minKg, float maxKg)
+            => For(category, weightKg, minKg, maxKg, RodFishingProfile.Default);
+
+        public static FishFightTuning For(FishCategory category, float weightKg, float minKg, float maxKg,
+                                         in RodFishingProfile rod)
         {
             if (IsHandGathered(category))
             {
@@ -55,19 +59,27 @@ namespace HiddenHarbours.Fishing
                     surgeInterval: 0f, surgeDuration: 0f, surgePressure: 0f, snapEnabled: false);
             }
 
-            float weight01 = (maxKg > minKg) ? Mathf.Clamp01((weightKg - minKg) / (maxKg - minKg)) : 0f;
-            float strength = Mathf.Clamp01(0.5f * CategoryBase(category) + 0.5f * weight01);
+            float strength = Strength01(category, weightKg, minKg, maxKg);
 
             // Bigger = tension rises faster (tighter band) and lands slower (longer fight); easing stays
             // generous so the fight reads as forgiving. Surges get more frequent with strength.
             return new FishFightTuning(
-                risePerSec:    Mathf.Lerp(0.60f, 1.00f, strength),
-                fallPerSec:    Mathf.Lerp(0.70f, 0.50f, strength),
-                landingPerSec: Mathf.Lerp(0.40f, 0.22f, strength),
-                surgeInterval: Mathf.Lerp(3.0f, 1.6f, strength),
-                surgeDuration: 0.8f,
-                surgePressure: Mathf.Lerp(0.15f, 0.40f, strength),
+                risePerSec:    Mathf.Lerp(rod.TensionRiseEasy, rod.TensionRiseHard, strength) / rod.LineStrengthMultiplier,
+                fallPerSec:    Mathf.Lerp(rod.TensionFallEasy, rod.TensionFallHard, strength),
+                landingPerSec: Mathf.Lerp(rod.LandingEasy, rod.LandingHard, strength) * rod.LandingMultiplier,
+                surgeInterval: Mathf.Lerp(rod.SurgeIntervalEasy, rod.SurgeIntervalHard, strength),
+                surgeDuration: rod.SurgeDurationSeconds,
+                surgePressure: Mathf.Lerp(rod.SurgePressureEasy, rod.SurgePressureHard, strength) / rod.LineStrengthMultiplier,
                 snapEnabled:   true);
+        }
+
+        /// <summary>How hard this fish is, 0 easy .. 1 hard: the per-category floor blended with where the
+        /// rolled weight sits in the species' size range. The legacy fight's tuning reads it, and so does
+        /// the rod skill's experience for a won fight.</summary>
+        public static float Strength01(FishCategory category, float weightKg, float minKg, float maxKg)
+        {
+            float weight01 = (maxKg > minKg) ? Mathf.Clamp01((weightKg - minKg) / (maxKg - minKg)) : 0f;
+            return Mathf.Clamp01(0.5f * CategoryBase(category) + 0.5f * weight01);
         }
 
         public static bool IsHandGathered(FishCategory category)

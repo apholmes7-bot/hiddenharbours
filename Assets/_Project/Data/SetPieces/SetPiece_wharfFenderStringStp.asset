@@ -1,0 +1,127 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b51978faec4dbb8e54e23107a97ef5, type: 3}
+  m_Name: SetPiece_wharfFenderStringStp
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SetPieceDef
+  Id: prop.wharf_fender_string_stp
+  DisplayName: wharfFenderStringStp
+  RigKey: wharfFenderStringStp
+  SceneId: keyscene.stp_landing
+  BakedOptionsJson: '{"top":5.354004,"lowWater":-2.2,"highWater":2.2,"freeboard":1,"footBelowLow":0.5,"weather":0.35}'
+  Layer: raised
+  Walk: behind
+  Mount: wall
+  BoundsMin: {x: -0.3, y: -0.004, z: -8.054004}
+  BoundsMax: {x: 0.3, y: 0.3514641, z: 0}
+  Frames:
+  - Sprite: {fileID: -4611091526953310347, guid: d4f45c71b424e7440a48b704e8125b4a, type: 3}
+    RigDir: 0
+    ShowFaces: recipe facing
+    BearingDeg: 0
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 196, y: 156}
+    Pivot: {x: 14, y: 4}
+  - Sprite: {fileID: 1388013874476633624, guid: d4f45c71b424e7440a48b704e8125b4a, type: 3}
+    RigDir: 7
+    ShowFaces: recipe facing
+    BearingDeg: 45
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 196, y: 156}
+    Pivot: {x: 14, y: 4}
+  - Sprite: {fileID: -8635262095491891222, guid: d4f45c71b424e7440a48b704e8125b4a, type: 3}
+    RigDir: 6
+    ShowFaces: recipe facing
+    BearingDeg: 90
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 196, y: 156}
+    Pivot: {x: 14, y: 4}
+  - Sprite: {fileID: -7253562722387574948, guid: d4f45c71b424e7440a48b704e8125b4a, type: 3}
+    RigDir: 5
+    ShowFaces: recipe facing
+    BearingDeg: 135
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 196, y: 156}
+    Pivot: {x: 14, y: 4}
+  - Sprite: {fileID: 7087949477577262935, guid: d4f45c71b424e7440a48b704e8125b4a, type: 3}
+    RigDir: 4
+    ShowFaces: recipe facing
+    BearingDeg: 180
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 196, y: 156}
+    Pivot: {x: 14, y: 4}
+  - Sprite: {fileID: -2983068703648675798, guid: d4f45c71b424e7440a48b704e8125b4a, type: 3}
+    RigDir: 3
+    ShowFaces: recipe facing
+    BearingDeg: 225
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 196, y: 156}
+    Pivot: {x: 14, y: 4}
+  - Sprite: {fileID: -3756642595372669468, guid: d4f45c71b424e7440a48b704e8125b4a, type: 3}
+    RigDir: 2
+    ShowFaces: recipe facing
+    BearingDeg: 270
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 196, y: 156}
+    Pivot: {x: 14, y: 4}
+  - Sprite: {fileID: -2343027630272237201, guid: d4f45c71b424e7440a48b704e8125b4a, type: 3}
+    RigDir: 1
+    ShowFaces: recipe facing
+    BearingDeg: 315
+    CameraSees: metric rig
+    NativeSize: {x: 420, y: 760}
+    NativePivot: {x: 210, y: 160}
+    Crop: {x: 196, y: 156}
+    Pivot: {x: 14, y: 4}
+  CellSize: {x: 28, y: 205}
+  PixelsPerMetre: 32
+  ElevationDeg: 40
+  BakedLit: 0
+  Colliders: []
+  Anchors:
+  - Name: hanger
+    Position: {x: 0, y: 0, z: 0}
+  Path: []
+  TideMarks: []
+  Words: []
+  HasLight: 0
+  Light:
+    Emitters: []
+    When: 
+  IsAnimated: 0
+  Animated:
+    Part: 
+    Input: 
+    Steps: 0
+    BakedAtDeg: 0
+    RigDir: 0
+    Headings: []
+  GameplayJson: '{"kind":"wharf fender string","hangerPivot":[0,0,0],"top":5.354004,"lowWater":-2.2,"highWater":2.2,"freeboard":1,"timberWidth":0.25,"timberDepth":0.15,"timberFoot":-2.7,"outsideDiameter":0.6,"sectionDepth":0.2,"tyreCentres":[-1.9000000000000001,-1.1,-0.2999999999999998,0.5000000000000002,1.3000000000000005,2.1000000000000005,2.9000000000000004],"rubBandCovered":[-2.2,3.2],"standOut":0.35146410161513775,"wetBelow":2.2,"weedBelow":-1.5000000000000002,"bounds":{"x":[-0.30000000000000004,0.30000000000000004],"y":[-0.004,0.35146410161513775],"z":[-8.054003999999999,0]},"id":"prop.wharf_fender_string_stp","fittingId":"prop.wharf_fender_string_stp"}'
+  State: 
+  Variants: []
+  HasVendor: 0
+  Vendor:
+    Seller: 
+    At: {x: 0, y: 0, z: 0}

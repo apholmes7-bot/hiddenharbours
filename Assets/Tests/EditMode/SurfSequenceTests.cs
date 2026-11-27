@@ -469,8 +469,11 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 aim = at;
                 previousConfig = GameServices.Config;
-                GameServices.Config = AssetDatabase.LoadAssetAtPath<GameConfig>("Assets/_Project/Data/Config/GameConfig.asset");
-                Assert.That(GameServices.Config, Is.Not.Null);
+                var shippedConfig = AssetDatabase.LoadAssetAtPath<GameConfig>("Assets/_Project/Data/Config/GameConfig.asset");
+                Assert.That(shippedConfig, Is.Not.Null);
+                // The shipped dials, with the calm mirror held off: these cases compare water shader arms, and the
+                // mirror's full-screen pass (and its alpha classes) is not the water under test.
+                GameServices.Config = Own(Object.Instantiate(shippedConfig)); GameServices.Config.WaterMirrorStrength = 0f;
                 fixture = new BreakerBoreLookTests(); fixture.SetUp(); Call("BuildTheShore"); Call("PublishTheSea", 0f);
                 camera = Get<Camera>("_cam"); sprite = Get<GameObject>("_seaGo").GetComponent<SpriteRenderer>();
                 original = new MaterialPropertyBlock(); sprite.GetPropertyBlock(original);

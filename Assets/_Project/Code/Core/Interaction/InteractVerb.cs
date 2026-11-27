@@ -58,8 +58,7 @@ namespace HiddenHarbours.Core
             if (InteractActionClaim.IsClaimed) return false;
             if (!InteractResolver.TryResolveNow(actor, facingArcDegrees, out IInteractable best)) return false;
 
-            Perform(best, -1, actor);
-            return true;
+            return Perform(best, -1, actor);
         }
 
         /// <summary>
@@ -88,8 +87,7 @@ namespace HiddenHarbours.Core
             if (ChooserEnabled() && PressList.IsChoice && InteractChooser.Open(PressList, actor, facingArcDegrees))
                 return true;
 
-            Perform(target, -1, actor);
-            return true;
+            return Perform(target, -1, actor);
         }
 
         /// <summary>
@@ -100,14 +98,15 @@ namespace HiddenHarbours.Core
         /// </summary>
         /// <param name="action">An <see cref="IMultiActionInteractable"/> action index, or -1 for the plain
         /// <see cref="IInteractable.Interact"/>.</param>
-        public static void Perform(IInteractable target, int action, in InteractActor actor)
+        public static bool Perform(IInteractable target, int action, in InteractActor actor)
         {
-            if (target == null) return;
-            if (target is INeedsGated gated && NeedsGate.TryRefuse(gated.NeedsRequirement)) return;
+            if (target == null || !RoomFixtureReach.Allows(target, actor)) return false;
+            if (target is INeedsGated gated && NeedsGate.TryRefuse(gated.NeedsRequirement)) return true;
 
             if (action >= 0 && target is IMultiActionInteractable multi) multi.Interact(actor, action);
             else target.Interact(actor);
             EventBus.Publish(new InteractPerformed(target.Id));
+            return true;
         }
 
         // The press's scratch list. The chooser copies what it opens on, so this is free to be rebuilt.

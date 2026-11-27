@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Text.RegularExpressions;
+using HiddenHarbours.Core;
 using NUnit.Framework;
 
 namespace HiddenHarbours.Tests.EditMode
@@ -25,6 +27,44 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (string reference in graph[Core])
                 Assert.That(reference.StartsWith(Prefix, StringComparison.Ordinal), Is.False,
                     "Core must not depend on " + reference);
+        }
+
+        [Test]
+        public void ActorServiceSeam_ExposesCoreContractsWithoutConcreteFeatureTypes()
+        {
+            Assert.That(typeof(ActorServices).GetProperty(nameof(ActorServices.Hands)).PropertyType,
+                Is.EqualTo(typeof(ICarrier)));
+            Assert.That(typeof(ActorServices).GetProperty(nameof(ActorServices.BagHands)).PropertyType,
+                Is.EqualTo(typeof(IShoppingBagHands)));
+            Assert.That(typeof(ActorServices).GetProperty(nameof(ActorServices.Purse)).PropertyType,
+                Is.EqualTo(typeof(IWallet)));
+
+            const BindingFlags surface = BindingFlags.Public | BindingFlags.Instance |
+                                         BindingFlags.Static | BindingFlags.DeclaredOnly;
+            foreach (Type type in new[] { typeof(InteractActor), typeof(IActorServices), typeof(ActorServices),
+                typeof(SinglePlayerActorServices), typeof(ActorServicesByPlayer) })
+            {
+                Assert.That(type.Assembly, Is.SameAs(typeof(IWallet).Assembly));
+                foreach (FieldInfo field in type.GetFields(surface)) AssertCoreContract(field.FieldType);
+                foreach (PropertyInfo property in type.GetProperties(surface)) AssertCoreContract(property.PropertyType);
+                foreach (ConstructorInfo constructor in type.GetConstructors(surface))
+                    foreach (ParameterInfo parameter in constructor.GetParameters()) AssertCoreContract(parameter.ParameterType);
+                foreach (MethodInfo method in type.GetMethods(surface))
+                {
+                    AssertCoreContract(method.ReturnType);
+                    foreach (ParameterInfo parameter in method.GetParameters()) AssertCoreContract(parameter.ParameterType);
+                }
+            }
+        }
+
+        private static void AssertCoreContract(Type type)
+        {
+            if (type.HasElementType) { AssertCoreContract(type.GetElementType()); return; }
+            string assembly = type.Assembly.GetName().Name;
+            if (assembly.StartsWith(Prefix, StringComparison.Ordinal))
+                Assert.That(assembly, Is.EqualTo(Core), "Actor services expose a feature type: " + type.FullName);
+            if (type.IsGenericType)
+                foreach (Type argument in type.GetGenericArguments()) AssertCoreContract(argument);
         }
 
         [Test]

@@ -16,9 +16,11 @@ namespace HiddenHarbours.App.Editor
 {
     /// <summary>
     /// <b>The footbridges.</b> Each <see cref="FootbridgeDef"/> in the Whelps' folder is stood in the scene under
-    /// <see cref="FootbridgesRootName"/>: the deck as ground that can be stood on, the planks drawn on the floor
-    /// under everything that walks, and a low rail along each long side, sorted by its foot and not walked through:
-    /// the landward one is behind a walker on the planks, the seaward one in front.
+    /// <see cref="FootbridgesRootName"/>, turned along its own axis (square to the brook): the deck as ground that
+    /// can be stood on and that guides a walker along it (<see cref="FootbridgeDeck"/>), the planks drawn on the
+    /// floor under everything that walks, and a low rail along each long side, not walked through: the landward one
+    /// sorts behind a walker anywhere on the planks (from its highest point), the seaward one in front (from its
+    /// lowest).
     ///
     /// <para>After it, <see cref="ApplyTroddenGround"/> takes the planting off the ground that is walked here: the
     /// paths by the cottage and the bridge's planks.</para>
@@ -38,7 +40,7 @@ namespace HiddenHarbours.App.Editor
         public sealed class FootbridgeContract
         {
             public int pixelsPerMetre;
-            public float spanMetres, widthMetres, railInsetMetres, railHeightMetres;
+            public float axisDegrees, spanMetres, widthMetres, railInsetMetres, railHeightMetres;
             public string deck, rail;
 
             public static FootbridgeContract Parse(string json)
@@ -55,10 +57,25 @@ namespace HiddenHarbours.App.Editor
         {
             public string Id;
             public Vector2 At;
-            public Rect Footprint, Standing;
+            public float AxisDegrees, SpanMetres, WidthMetres, StandingReachMetres, GuideConeDegrees, GuideApproachMetres;
             public float DeckMetres, RailInsetMetres, RailThicknessMetres, FarRailSortsBehindMetres;
             public bool NearRail, FarRail;
             public SpriteRef DeckPicture, RailPicture;
+
+            public Vector2 Axis => FootbridgeDef.AxisOf(AxisDegrees);
+            public Vector2 Across => new Vector2(-Axis.y, Axis.x);
+        }
+
+        /// <summary>Where a rail stands, local to the bridge: the middle of its long edge of the planks.</summary>
+        public static Vector2 FootbridgeRailAt(Footbridge b, bool near) => b.Across * ((near ? -0.5f : 0.5f) * b.WidthMetres);
+
+        /// <summary>How far above (+) or below (-) its own place a rail sorts, metres. The near rail sorts from its
+        /// lowest point, so it is in front of a walker anywhere on the planks; the far rail from its highest point
+        /// and the walker's body height behind that, so it is behind him anywhere on them.</summary>
+        public static float FootbridgeRailSortOffset(Footbridge b, bool near)
+        {
+            float rise = (b.SpanMetres * 0.5f - b.RailInsetMetres) * Mathf.Abs(b.Axis.y);
+            return near ? -rise : rise + b.FarRailSortsBehindMetres;
         }
 
         public interface IFootbridgeAssets
@@ -75,13 +92,16 @@ namespace HiddenHarbours.App.Editor
             public ScriptRef ScriptFor(Type type) => _scripts.ScriptFor(type);
         }
 
-        /// <summary>A rail's line on the ground, local to the bridge: a thin strip just outside the deck's south edge
-        /// (the near rail) or its north edge (the far one), so the whole width of the planks is walked.</summary>
+        /// <summary>A rail's line on the ground, local to the bridge: a thin strip along the axis just outside the
+        /// deck's seaward edge (the near rail) or its landward edge (the far one), so the whole width of the planks
+        /// is walked.</summary>
         public static Vector2[] FootbridgeRailLine(Footbridge b, bool near)
         {
-            float half = b.Footprint.width * 0.5f - b.RailInsetMetres, t = b.RailThicknessMetres;
-            float y0 = near ? -b.Footprint.height * 0.5f - t : b.Footprint.height * 0.5f;
-            return new[] { new Vector2(-half, y0), new Vector2(half, y0), new Vector2(half, y0 + t), new Vector2(-half, y0 + t) };
+            float half = b.SpanMetres * 0.5f - b.RailInsetMetres, t = b.RailThicknessMetres;
+            float v0 = near ? -b.WidthMetres * 0.5f - t : b.WidthMetres * 0.5f;
+            Vector2 a = b.Axis, n = b.Across;
+            Vector2 P(float u, float v) => a * u + n * v;
+            return new[] { P(-half, v0), P(half, v0), P(half, v0 + t), P(-half, v0 + t) };
         }
 
         /// <summary>The patch that stands the bridges under <see cref="FootbridgesRootName"/>.</summary>
@@ -104,7 +124,7 @@ namespace HiddenHarbours.App.Editor
             foreach (Footbridge b in bridges.OrderBy(x => x.Id, StringComparer.Ordinal))
             {
                 string name = b.Id, deck = name + "/" + FootbridgeDeckName;
-                long go = Next(name, "GameObject"), tr = Next(name, "Transform"), platform = Next(name, "StandablePlatform");
+                long go = Next(name, "GameObject"), tr = Next(name, "Transform"), platform = Next(name, "FootbridgeDeck");
                 long dg = Next(deck, "GameObject"), dt = Next(deck, "Transform"), dsr = Next(deck, "SpriteRenderer");
                 var children = new List<long> { dt };
                 var rails = new List<(string Name, bool Near, long Go, long Tr, long Sr, long Sort, long Wall)>();
@@ -119,12 +139,14 @@ namespace HiddenHarbours.App.Editor
 
                 wanted.Add(Want(GameObjectYaml(go, name, new[] { tr, platform }), name, "GameObject"));
                 wanted.Add(Want(TransformYaml(tr, go, b.At, children, rootTr), name, "Transform"));
-                wanted.Add(Want(MonoBehaviourYaml(platform, go, assets.ScriptFor(typeof(StandablePlatform)), new[]
+                wanted.Add(Want(MonoBehaviourYaml(platform, go, assets.ScriptFor(typeof(FootbridgeDeck)), new[]
                 {
-                    "  _id: " + Plain(b.Id), "  _footprint:", "    serializedVersion: 2", "    x: " + F(b.Standing.x),
-                    "    y: " + F(b.Standing.y), "    width: " + F(b.Standing.width), "    height: " + F(b.Standing.height),
-                    "  _deckElevation: " + F(b.DeckMetres), "  _drawnLiftedByDeck: 0",
-                }), name, "StandablePlatform"));
+                    "  _id: " + Plain(b.Id), "  _at: {x: " + F(b.At.x) + ", y: " + F(b.At.y) + "}",
+                    "  _axisDegrees: " + F(b.AxisDegrees), "  _spanMetres: " + F(b.SpanMetres),
+                    "  _widthMetres: " + F(b.WidthMetres), "  _standingReachMetres: " + F(b.StandingReachMetres),
+                    "  _deckElevation: " + F(b.DeckMetres), "  _guideConeDegrees: " + F(b.GuideConeDegrees),
+                    "  _guideApproachMetres: " + F(b.GuideApproachMetres),
+                }), name, "FootbridgeDeck"));
 
                 // The planks lie on the floor of the decor band: under the walker and under every plant.
                 wanted.Add(Want(GameObjectYaml(dg, FootbridgeDeckName, new[] { dt, dsr }), deck, "GameObject"));
@@ -134,15 +156,15 @@ namespace HiddenHarbours.App.Editor
                 foreach (var (rail, near, rg, rt, rsr, rsort, rwall) in rails)
                 {
                     // A rail stands on its edge of the deck and takes the order that edge earns: the far one is drawn
-                    // before a walker on the planks, the near one after.
-                    float foot = (near ? -0.5f : 0.5f) * b.Footprint.height;
+                    // before a walker anywhere on the planks, the near one after. The edge runs up the screen with the
+                    // axis, so each sorts from the end that keeps that true (FootbridgeRailSortOffset).
+                    Vector2 foot = FootbridgeRailAt(b, near);
                     string railName = near ? FootbridgeNearRailName : FootbridgeFarRailName;
-                    // A walker is sorted by his body, above his feet, so the far rail sorts that much behind its line.
-                    float behind = near ? 0f : b.FarRailSortsBehindMetres;
-                    int order = YSortSprite.OrderFor(b.At.y + foot + behind, SortingBands.DecorBase, SortingBands.OrdersPerMetre,
+                    float behind = FootbridgeRailSortOffset(b, near);
+                    int order = YSortSprite.OrderFor(b.At.y + foot.y + behind, SortingBands.DecorBase, SortingBands.OrdersPerMetre,
                         SortingBands.DecorFloor + 1, SortingBands.DecorCeiling - 1);
                     wanted.Add(Want(GameObjectYaml(rg, railName, new[] { rt, rsr, rsort, rwall }), rail, "GameObject"));
-                    wanted.Add(Want(TransformYaml(rt, rg, new Vector2(0f, foot), none, tr), rail, "Transform"));
+                    wanted.Add(Want(TransformYaml(rt, rg, foot, none, tr), rail, "Transform"));
                     wanted.Add(Want(SpriteRendererYaml(rsr, rg, assets.SpriteMaterial, b.RailPicture, order), rail, "SpriteRenderer"));
                     wanted.Add(Want(MonoBehaviourYaml(rsort, rg, assets.ScriptFor(typeof(YSortSprite)), new[]
                     {
@@ -151,7 +173,7 @@ namespace HiddenHarbours.App.Editor
                         "  _maxOrder: " + Int(SortingBands.DecorCeiling - 1), "  _pivotYOffset: " + F(behind),
                     }), rail, "YSortSprite"));
                     Vector2[] line = FootbridgeRailLine(b, near);
-                    for (int i = 0; i < line.Length; i++) line[i] -= new Vector2(0f, foot);
+                    for (int i = 0; i < line.Length; i++) line[i] -= foot;
                     wanted.Add(Want(PolygonColliderYaml(rwall, rg, new List<Vector2[]> { line }), rail, "PolygonCollider2D"));
                 }
                 rootChildren.Add(tr);
@@ -177,6 +199,10 @@ namespace HiddenHarbours.App.Editor
             return patch.Seal(scene);
         }
 
+        /// <summary>How far a Def's axis may stand from the one the planks were drawn at, degrees (the contract
+        /// rounds to five places).</summary>
+        public const float FootbridgeAxisToleranceDegrees = 0.001f;
+
         public static FootbridgeContract LoadFootbridgeContract() =>
             FootbridgeContract.Parse(File.ReadAllText(FootbridgeContractPath));
 
@@ -191,9 +217,14 @@ namespace HiddenHarbours.App.Editor
                 if (!Mathf.Approximately(def.SpanMetres, contract.spanMetres) || !Mathf.Approximately(def.WidthMetres, contract.widthMetres))
                     throw new Refusal($"{FootbridgesStep}: {def.Id} is {F(def.SpanMetres)} by {F(def.WidthMetres)} m; the planks were drawn " +
                                       $"{F(contract.spanMetres)} by {F(contract.widthMetres)} m. Draw them again (tools/rig-recipes/gap-footbridge.mjs).");
+                if (Mathf.Abs(def.AxisDegrees - contract.axisDegrees) > FootbridgeAxisToleranceDegrees)
+                    throw new Refusal($"{FootbridgesStep}: {def.Id} runs at {F(def.AxisDegrees)} degrees; the planks were drawn at " +
+                                      $"{F(contract.axisDegrees)}. Draw them again (tools/rig-recipes/gap-footbridge.mjs).");
                 bridges.Add(new Footbridge
                 {
-                    Id = def.Id, At = def.At, Footprint = def.Footprint, Standing = def.StandingFootprint, DeckMetres = def.DeckMetres, NearRail = def.SeawardRail, FarRail = def.LandwardRail,
+                    Id = def.Id, At = def.At, AxisDegrees = def.AxisDegrees, SpanMetres = def.SpanMetres, WidthMetres = def.WidthMetres,
+                    StandingReachMetres = def.StandingReachMetres, GuideConeDegrees = def.GuideConeDegrees, GuideApproachMetres = def.GuideApproachMetres,
+                    DeckMetres = def.DeckMetres, NearRail = def.SeawardRail, FarRail = def.LandwardRail,
                     FarRailSortsBehindMetres = def.LandwardRailSortsBehindMetres,
                     RailInsetMetres = contract.railInsetMetres, RailThicknessMetres = def.RailThicknessMetres,
                     DeckPicture = EditorShoreRockSprites.RefOf(Picture(contract.deck)),
@@ -290,7 +321,7 @@ namespace HiddenHarbours.App.Editor
                 }
             foreach (FootbridgeDef bridge in bridges)
             {
-                Vector2 half = new Vector2(bridge.SpanMetres * 0.5f, 0f);
+                Vector2 half = bridge.Axis * (bridge.SpanMetres * 0.5f);
                 all.Add(new Trodden { A = bridge.At - half, B = bridge.At + half, Reach = bridge.WidthMetres * 0.5f + TroddenMarginMetres, Who = bridge.Id });
             }
             return all;

@@ -23,7 +23,7 @@ namespace HiddenHarbours.World
     /// <para><b>No save.</b> Nothing here is stored; the wash state is the cleanliness save's own.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class WashStationPoint : MonoBehaviour, IInteractable
+    public sealed class WashStationPoint : MonoBehaviour, IInteractable, IRoomFixtureReach
     {
         [Tooltip("Stable id, unique among live interactables (fixture.<place>.<what>, e.g. " +
                  "fixture.st_peters.ginny_cottage.washstand).")]
@@ -96,7 +96,9 @@ namespace HiddenHarbours.World
         public WashStationDef Def => _def != null ? _def : (_def = GameServices.Cleanliness.FindStation(_stationId));
 
         /// <inheritdoc/>
-        public void Interact(in InteractActor actor) => Toggle();
+        public bool CanReach(in InteractActor actor) => (IsWashingHere || RoomFixtureReach.Allows(this, actor, WorldPosition));
+
+        public void Interact(in InteractActor actor) { if (CanReach(actor)) Toggle(); }
 
         /// <summary>Wire this station from a builder or a test.</summary>
         public void Configure(string id, string stationId, float reachMeters, float walkAwaySlackMeters,

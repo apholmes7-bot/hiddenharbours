@@ -17,6 +17,7 @@ MonoBehaviour:
   KeySceneId: keyscene.stp_gap_bridge
   PieceId: structure.stp_gap_bridge
   At: {x: 156.45, y: -40.95}
+  AxisDegrees: 26.56505
   SpanMetres: 3
   WidthMetres: 1.15
   GroundMetres: 5.28
@@ -26,3 +27,5 @@ MonoBehaviour:
   LandwardRailSortsBehindMetres: 0.8
   StandingReachMetres: 0.8
   RailThicknessMetres: 0.12
+  GuideConeDegrees: 50
+  GuideApproachMetres: 0.8

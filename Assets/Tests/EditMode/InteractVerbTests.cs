@@ -26,11 +26,11 @@ namespace HiddenHarbours.Tests.EditMode
     /// and that a real key press reaches this rule through <c>ControlSwitcher</c> — is PlayMode's
     /// (<c>InteractVerbPlayTests</c>). Everything provable without a frame is proved here.</para>
     /// </summary>
-    public class InteractVerbTests
+    public partial class InteractVerbTests
     {
         /// <summary>A candidate as a plain object — the point of the seam being POCO-shaped is that this
         /// needs no GameObject.</summary>
-        private sealed class Fake : IInteractable
+        private sealed class Fake : IInteractable, IRoomFixtureReach
         {
             public string Id { get; set; } = "fake";
             public Vector2 WorldPosition { get; set; }
@@ -40,6 +40,9 @@ namespace HiddenHarbours.Tests.EditMode
             public bool RequiresFacing { get; set; }
             public bool IsAvailable { get; set; } = true;
             public string VerbLabel { get; set; } = "Do the thing";
+
+            public bool ReachAllowed = true;
+            public bool CanReach(in InteractActor actor) => ReachAllowed;
 
             public int Calls;
             public InteractActor LastActor;
@@ -91,6 +94,56 @@ namespace HiddenHarbours.Tests.EditMode
             InteractActionClaim.Reset();
             InteractOffer.Reset();
             InteractActorProbe.Reset();
+        }
+
+        [Test]
+        public void WallBlockedFixtureCannotWinOfferListOrDirectDispatch()
+        {
+            var blocked = At("blocked", 0.1f, 0f, priority: InteractPriority.Fixture + 1);
+            blocked.ReachAllowed = false;
+            var clear = At("clear", 1f, 0f);
+            var candidates = new IInteractable[] { blocked, clear };
+            Assert.IsTrue(Resolve(candidates, Actor(), out var winner));
+            Assert.AreSame(clear, winner);
+            var rows = new InteractChoiceList();
+            rows.Build(candidates, Actor(), 360f, int.MaxValue, InteractChoiceList.HardCap);
+            Assert.AreEqual(1, rows.Count);
+            Assert.AreSame(clear, rows.Default);
+            Assert.IsFalse(InteractVerb.Perform(blocked, -1, Actor()));
+            Assert.AreEqual(0, blocked.Calls);
+            Assert.AreEqual(0, _performed.Count);
+            foreach (var order in new[] { candidates, new IInteractable[] { clear, blocked } })
+            {
+                Assert.IsTrue(Resolve(order, Actor(), out winner));
+                Assert.AreSame(clear, winner);
+            }
+        }
+
+        [Test]
+        public void WallClosingAfterChooserOpensRefusesConfirmation()
+        {
+            var fixture = At("fixture", 0.5f, 0f);
+            var alternative = At("alternative", 1f, 0f);
+            // Rows that read the same collapse into one (InteractChoiceList), so the second fixture says
+            // something different: otherwise there is no choice and the chooser never opens.
+            alternative.VerbLabel = "Do the other thing";
+            Interactables.Register(fixture);
+            Interactables.Register(alternative);
+            var rows = new InteractChoiceList();
+            rows.Build(new[] { fixture, alternative }, Actor(), 360f, int.MaxValue, InteractChoiceList.HardCap);
+            try
+            {
+                Assert.AreEqual(2, rows.Count, "the chooser requires an actual choice");
+                Assert.AreSame(fixture, rows.Default);
+                Assert.IsTrue(InteractChooser.Open(rows, Actor(), 360f));
+                fixture.ReachAllowed = false;
+                Assert.IsTrue(InteractChooser.Confirm());
+                Assert.IsFalse(InteractChooser.IsOpen);
+                Assert.AreEqual(0, fixture.Calls);
+                Assert.AreEqual(0, alternative.Calls, "confirmation must not fall through to another fixture");
+                Assert.AreEqual(0, _performed.Count);
+            }
+            finally { InteractChooser.Reset(); }
         }
 
         // =====================================================================================

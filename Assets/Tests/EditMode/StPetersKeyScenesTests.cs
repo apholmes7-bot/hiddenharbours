@@ -655,6 +655,9 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>The slip dory's prefab instance, the root mend and launch adds after the light station's.</summary>
         const long SlipDoryInstance = 1946273810L;
 
+        /// <summary>The seals' host root (<c>StPetersSeals</c>'s transform), added after the slip dory.</summary>
+        const long SealsRoot = 1449665083L;
+
         /// <summary>The step re-adds its root LAST: SceneRoots must be the committed list with only the key
         /// root moved from index 53 to the end, every other root in its committed order, nothing else changed.</summary>
         static void AssertOnlyTheKeyRootMovesToTheEnd(string committed, string rebuilt)
@@ -671,10 +674,11 @@ namespace HiddenHarbours.Tests.EditMode
             // fixtures root the interior-fixtures step adds for the camper's shore power lead (storage, owner 11-17);
             // then the north-east light station's root, then the keepers', then the Whelps' rocks, then the
             // footbridges' root (the plank bridge over the Gap brook); then the slip dory's prefab instance (mend
-            // and launch Basil's dory).
-            CollectionAssert.AreEqual(new[] { 1757780506L, 866884044L, 910510002L, 1709556905L, 1132627356L, 527077028L, 2079165773L, 1464805096L, SlipDoryInstance }, before.Skip(54).ToArray(),
+            // and launch Basil's dory); then the seals' haul-out host on the Whelps.
+            CollectionAssert.AreEqual(new[] { 1757780506L, 866884044L, 910510002L, 1709556905L, 1132627356L, 527077028L, 2079165773L, 1464805096L, SlipDoryInstance, SealsRoot }, before.Skip(54).ToArray(),
                                       "the committed roots after the key root");
             Assert.AreEqual(1464805096L, c.TransformOf(c.RootGameObject(StPetersLayerRefresh.FootbridgesRootName)));
+            Assert.AreEqual(SealsRoot, c.TransformOf(c.RootGameObject(StPetersLayerRefresh.SealsRootName)));
             Assert.AreEqual(1757780506L, c.TransformOf(c.RootGameObject(StPetersVillageDressing.CommonsRoot)));
             Assert.AreEqual(866884044L, c.TransformOf(c.RootGameObject(StPetersVillageLights.RootName)));
             Assert.AreEqual(1709556905L, c.TransformOf(c.RootGameObject(InteriorFixturePlacement.StPetersOpenAirRootName)));
@@ -766,7 +770,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             Assert.IsFalse(patch.Deletions.Any(), "the step deleted something");
             Assert.AreEqual(1, patch.Ops.Count(o => o.Kind == OpKind.Edit), "the step edits the SceneRoots list and nothing else");
-            var scripts = new HashSet<string>(new[] { typeof(YSortSprite), typeof(TidalFaceWaterline), typeof(SetPieceWindVane), typeof(GullPerch) }
+            var scripts = new HashSet<string>(new[] { typeof(YSortSprite), typeof(TidalFaceWaterline), typeof(SetPieceWindVane), typeof(GullPerch), typeof(SpriteShadow) }
                                                   .Select(ty => ty.Assembly.GetName().Name + "::" + ty.FullName));
             foreach (Op op in patch.Ops.Where(o => o.Kind == OpKind.Add))
             {
@@ -779,13 +783,16 @@ namespace HiddenHarbours.Tests.EditMode
 
             // Selected pieces use the three prop kits, the baked building kit, or a non-rendering perch.
             // Unselected rows and scenes at Placed 0 remain data; none of this step is ground paint.
-            var kits = new[] { StPetersLayerRefresh.SetPiecesKit, StPetersLayerRefresh.DecorKit, StPetersLayerRefresh.FindsKit };
+            var kits = new[] { StPetersLayerRefresh.SetPiecesKit, StPetersLayerRefresh.DecorKit, StPetersLayerRefresh.FindsKit,
+                               StPetersLayerRefresh.PropPiecesKit };
             foreach (KeyScenePiece p in scenes.SelectMany(s => s.Pieces.Where(p => StPetersLayerRefresh.Places(s, p))))
             {
                 if (p.Kind == KeySceneDef.KindBuilding) Assert.AreEqual("wharfBuilding2", p.Kit);
                 else if (p.Kind == KeySceneDef.KindGull) Assert.AreEqual("seagull", p.Kit);
                 else CollectionAssert.Contains(kits, p.Kit, $"{p.Id} comes from '{p.Kit}'");
-                Assert.IsFalse(p.Id.StartsWith("path.", StringComparison.Ordinal), $"{p.Id} is ground paint");
+                // The light's plank walk is a path by name and laid boards by kind: pictures of planks, not paint.
+                bool planks = p.Kit == StPetersLayerRefresh.PropPiecesKit && p.Id == StPetersLayerRefresh.PlankWalkId;
+                Assert.IsFalse(p.Id.StartsWith("path.", StringComparison.Ordinal) && !planks, $"{p.Id} is ground paint");
             }
 
             // The boards' words stay ids: no entry's text is written into the scene.
@@ -983,6 +990,24 @@ namespace HiddenHarbours.Tests.EditMode
                     Assert.AreEqual(0, p.Sprite.Sprite.FileId, "a perch never places a gull sprite");
                     continue;
                 }
+                if (p.Parts != null)
+                {
+                    // A run piece (a fence, a walk) is its parts' pictures, each a sprite of its kit's pieces.
+                    Assert.AreEqual(StPetersLayerRefresh.PropPiecesKit, p.Kit, $"{p.Id} has parts outside the yard kit");
+                    Assert.IsNotEmpty(p.Parts, $"{p.Id} is a run of no pictures");
+                    Assert.IsTrue(assets.TryPropKit(p.Kit, out PropPieceKitDef kit), $"no kit '{p.Kit}'");
+                    var kitSprites = new HashSet<Sprite>(kit.Pieces.SelectMany(e => new[] { e.Main, e.Alternate, e.Corner, e.End, e.Gate, e.Bend })
+                        .Concat(kit.Dressings.SelectMany(d => new[] { d.Main, d.Alternate }))
+                        .Where(d => d != null).SelectMany(d => d.Sprites)
+                        .Concat(kit.BakedRuns.Where(b => b != null && b.Sprite != null).Select(b => b.Sprite)));
+                    foreach (StPetersLayerRefresh.KeyScenePart part in p.Parts)
+                    {
+                        Sprite ps = SpriteAt(part.Sprite.Sprite);
+                        Assert.IsNotNull(ps, $"{part.Name}'s picture is no sprite");
+                        Assert.IsTrue(kitSprites.Contains(ps), $"{part.Name}'s picture is not one of its kit's");
+                    }
+                    continue;
+                }
                 string path = AssetDatabase.GUIDToAssetPath(p.Sprite.Sprite.Guid);
                 Assert.IsNotEmpty(path, $"{p.Id}'s cell ({p.Cell}) is no asset");
                 Sprite sprite = AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>()
@@ -994,6 +1019,14 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.AreEqual(p.Id, def.Id, $"{p.Id} is placed under another Def's id");
                 Assert.IsTrue(def.Frames.Any(f => f.Sprite == sprite), $"{p.Id}'s cell is not one of its Def's frames");
             }
+        }
+
+        static Sprite SpriteAt(ObjRef r)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(r.Guid);
+            if (string.IsNullOrEmpty(path)) return null;
+            return AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>()
+                .FirstOrDefault(s => AssetDatabase.TryGetGUIDAndLocalFileIdentifier(s, out string _, out long local) && local == r.FileId);
         }
 
         // ---- the heights ------------------------------------------------------------------------------

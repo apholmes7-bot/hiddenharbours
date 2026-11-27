@@ -66,7 +66,11 @@ Shader "Hidden/HiddenHarbours/CalmMirror"
                 [unroll] for (int e = 0; e < 4; e++)
                 {
                     float2 a = p[e], b = p[(e + 1) & 3];
-                    float mn = min(a.x, b.x), mx = max(a.x, b.x);
+                    // Padded by one art pixel (_CalmMirrorBand.w, world units): the drawn art snaps to the art
+                    // grid, so its last column can stand just outside the data's outline; that column then took
+                    // the plain flip and mirrored the whole structure as a 1-pixel seam down the water (the Nine
+                    // Mile Creek ramp's right edge).
+                    float mn = min(a.x, b.x) - _CalmMirrorBand.w, mx = max(a.x, b.x) + _CalmMirrorBand.w;
                     if (x < mn || x > mx) continue;
                     float ya = a.y, yb = b.y;
                     if (mx - mn > 1e-5) { ya = lerp(a.y, b.y, saturate((x - a.x) / (b.x - a.x))); yb = ya; }

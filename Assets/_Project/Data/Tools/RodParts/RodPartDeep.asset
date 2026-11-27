@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c270e3aed68341aa9760a2c4d7af0651, type: 3}
+  m_Name: RodPartDeep
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.RodBlankDef
+  Id: rod.deep
+  DisplayName: Deep rod
+  Flavor: A long, stiff rod with the backbone to lift a big fish.
+  GearId:
+  Tier: 3
+  CastMetres: 22
+  MinBiteDelaySeconds: 1.5
+  MaxBiteDelaySeconds: 4
+  AutoHookSeconds: 1.2
+  TakeWindowMultiplier: 1.5
+  LandingMultiplier: 1.5
+  TensionRiseEasy: 0.6
+  TensionRiseHard: 1
+  TensionFallEasy: 0.7
+  TensionFallHard: 0.5
+  LandingEasy: 0.4
+  LandingHard: 0.22
+  SurgeIntervalEasy: 3
+  SurgeIntervalHard: 1.6
+  SurgeDurationSeconds: 0.8
+  SurgePressureEasy: 0.15
+  SurgePressureHard: 0.4

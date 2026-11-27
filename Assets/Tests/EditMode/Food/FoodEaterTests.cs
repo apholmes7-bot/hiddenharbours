@@ -398,7 +398,7 @@ namespace HiddenHarbours.Tests.EditMode
             Bag("supply.test_bread", 2);
             Assert.AreEqual(EatRefusal.None, Eater().TryEatFromBag("supply.test_bread"));
             SaveData loaded = SaveSerialization.FromJson(SaveSerialization.ToJson(_save.Current));
-            Assert.AreEqual(26, loaded.SchemaVersion);
+            Assert.AreEqual(SaveMigration.CurrentVersion, loaded.SchemaVersion);
             Assert.AreEqual(1, SupplyLocker.Owned(loaded, "supply.test_bread"));
             Assert.AreEqual(1, ShoppingBagContents.InBag(loaded, "supply.test_bread"));
             Assert.AreEqual(_save.Current.PlayerNeeds.Hunger.Level, loaded.PlayerNeeds.Hunger.Level);

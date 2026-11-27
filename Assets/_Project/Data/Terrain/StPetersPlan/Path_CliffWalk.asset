@@ -27,10 +27,8 @@ MonoBehaviour:
   - {x: 166.4, y: -37.1}
   - {x: 163.4, y: -38.3}
   - {x: 160.4, y: -38.7}
-  - {x: 159.5, y: -40.2}
-  - {x: 158.7, y: -40.95}
-  - {x: 154.2, y: -40.95}
-  - {x: 153.4, y: -41.7}
+  - {x: 158.686, y: -39.832}
+  - {x: 154.214, y: -42.068}
   - {x: 152.8, y: -43.8}
   - {x: 146.1, y: -47.4}
   - {x: 139.2, y: -50.7}
@@ -72,4 +70,4 @@ MonoBehaviour:
   SourceId: path.stp_cliff_walk
   Frozen: 0
   PaintOnly: 1
-  Why: 'The owner''s paths carried round the island: 6 m inside the brows from the slip road to the bar-head road, over the Gap Brook and the Heath Brook on stepping stones. Round the head of the main beach by its key scene''s paint (keyscene.stp_main_beach, the package''s island.json sha256 61f8673f...: points (71.4, -64) to (12.5, -55.3)). Its first leg moved clear of the bait store (M8): (183, -6.5) and (181.7, -12.5) became (177, -7) and (177.6, -11.5), 1.71 m from the store''s footprint (drop 13''s tealShack, 4.12 x 5.5 m at (182.3, -8.8), door SE) and 10.2 m inside the brows there.'
+  Why: 'The owner''s paths carried round the island: 6 m inside the brows from the slip road to the bar-head road, over the Gap Brook and the Heath Brook on stepping stones. At the Gap brook it now crosses on the plank bridge (bridge.stp_gap_footbridge), which is set square to the brook; the walk meets each end along the bridge''s own axis (26.57 degrees, the 2:1 line), from (158.686, -39.832) and (154.214, -42.068), 2.5 m either side of the deck''s middle, so a walker comes onto the planks the way they run. Round the head of the main beach by its key scene''s paint (keyscene.stp_main_beach, the package''s island.json sha256 61f8673f...: points (71.4, -64) to (12.5, -55.3)). Its first leg moved clear of the bait store (M8): (183, -6.5) and (181.7, -12.5) became (177, -7) and (177.6, -11.5), 1.71 m from the store''s footprint (drop 13''s tealShack, 4.12 x 5.5 m at (182.3, -8.8), door SE) and 10.2 m inside the brows there.'
