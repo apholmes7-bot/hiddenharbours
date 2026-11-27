@@ -159,5 +159,43 @@ namespace HiddenHarbours.Tests.EditMode
                     CollectionAssert.DoesNotContain(trap.AllowedCatchFishIds, fish.Id,
                         $"{AssetDatabase.GetAssetPath(trap)} lists {fish.Id}");
         }
+
+        [Test]
+        public void PickingBeds_HaveValidTuningUniqueIdsAndKnownRegions()
+        {
+            var beds = LoadAll<PickingBedDef>();
+            Assert.AreEqual(2, beds.Count, "the first shore-picking content is exactly two beds");
+            var ids = new HashSet<string>(StringComparer.Ordinal);
+            var regions = LoadAll<RegionDef>();
+            foreach (PickingBedDef bed in beds)
+            {
+                Assert.IsTrue(ids.Add(bed.Id), bed.Id);
+                Assert.IsTrue(bed.HasValidTuning, bed.Id);
+                Assert.IsTrue(regions.Exists(region => region.Id == bed.RegionId), bed.Id);
+                Assert.AreEqual(StPeters, bed.RegionId);
+            }
+        }
+
+        [TestCase("StPetersMussels", "pickingbed.st_peters_mussels", "BlueMussel", 1, "BeachMusselPick")]
+        [TestCase("StPetersOysters", "pickingbed.st_peters_oysters", "AmericanOyster", 3, "BeachOysterPick")]
+        public void PickingBed_UsesAnExistingBeachPointAndItsSpeciesTideWindow(
+            string file, string id, string fishFile, int flatIndex, string activityFile)
+        {
+            var bed = AssetDatabase.LoadAssetAtPath<PickingBedDef>(
+                DataRoot + "/PickingBeds/" + file + ".asset");
+            var beach = AssetDatabase.LoadAssetAtPath<BeachDef>(DataRoot + "/Beaches/StPetersBarHead.asset");
+            var activity = AssetDatabase.LoadAssetAtPath<BeachActivityDef>(
+                DataRoot + "/Beaches/" + activityFile + ".asset");
+            Assert.IsNotNull(bed);
+            Assert.IsNotNull(beach);
+            Assert.IsNotNull(activity);
+            Assert.AreEqual(id, bed.Id);
+            Assert.AreSame(Load(fishFile), bed.Species);
+            Assert.AreEqual(beach.RegionId, bed.RegionId);
+            Assert.AreEqual(beach.Flats[flatIndex].Toe, bed.Position);
+            Assert.AreSame(beach, activity.Beach);
+            Assert.AreEqual(activity.MaxWaterLevelMetres, bed.UncoveredBelowMetres);
+            Assert.AreEqual(bed.Species.MaxTide, bed.UncoveredBelowMetres);
+        }
     }
 }

@@ -47,7 +47,8 @@ namespace HiddenHarbours.Player
     /// </summary>
     [DisallowMultipleComponent]
     [AddComponentMenu("Hidden Harbours/Carriable Tool")]
-    public sealed class CarriableTool : MonoBehaviour, IInteractable, ICarriable, ICarryAnchored
+    public sealed class CarriableTool : MonoBehaviour, IInteractable, ICarriable, ICarryAnchored, IRodFishingEquipment,
+                                        IRodPartsEquipment
     {
         [Header("What it is (content is data — rule 2)")]
         [Tooltip("The tool this object IS. Null makes the object inert rather than universally " +
@@ -79,6 +80,14 @@ namespace HiddenHarbours.Player
 
         /// <summary>The Def this tool draws its identity from.</summary>
         public ToolDef Tool => _tool;
+        public bool IsFishingRod => _tool != null && _tool.IsFishingRod;
+        public RodFishingProfile RodFishing => _tool != null ? _tool.RodFishing : RodFishingProfile.Default;
+
+        // ---- IRodPartsEquipment: the fit is keyed by the tool id (this player's deep rod) ----------
+        public string RodKey => _tool != null ? _tool.Id : null;
+        public RodBlankDef RodBlank => _tool != null ? _tool.RodBlank : null;
+        public FishingLineDef DefaultLine => _tool != null ? _tool.DefaultLine : null;
+        public FishingReelDef DefaultReel => _tool != null ? _tool.DefaultReel : null;
 
         // ---- ICarriable -----------------------------------------------------------------------------
 

@@ -729,7 +729,7 @@ namespace HiddenHarbours.Tests.EditMode
                 progress.Read(save, 0).Held, "both facts must exist before serialization");
             string json = SaveSerialization.ToJson(save);
             var restored = SaveSerialization.FromJson(json);
-            Assert.AreEqual(26, restored.SchemaVersion);
+            Assert.AreEqual(SaveMigration.CurrentVersion, restored.SchemaVersion);
             Assert.AreEqual(IslandWeekFact.FishFromDory | IslandWeekFact.ShellfishSold, progress.Read(restored, 0).Held);
             Assert.AreEqual(2, restored.OnboardingFlags.Count);
             Assert.AreEqual(1, restored.StorePurchases.Count);

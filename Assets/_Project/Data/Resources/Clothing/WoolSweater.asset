@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64c7c8ffcaa041168ba2ede7d6d41250, type: 3}
+  m_Name: WoolSweater
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.ClothingDef
+  Id: clothing.wool_sweater
+  DisplayName: Wool Sweater
+  Slot: 1
+  Does: 'Warm wool: being tired weighs on you a quarter less.'
+  Price: 16
+  Effects:
+  - Kind: 1
+    Need: 1
+    Activity: 0
+    Scale: 0.75
+  StandIn:
+  - Field: shirt
+    Value: cream
+  RigLook:
+  - Field: garment
+    Value: sweater

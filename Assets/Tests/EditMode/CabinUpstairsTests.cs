@@ -566,11 +566,22 @@ namespace HiddenHarbours.Tests.EditMode
         public void A_bed_upstairs_reports_the_storey_it_is_standing_on()
         {
             BuildingInterior interior = StandTwoStorey(out _, out _, out _, out _,
-                                                       out GameObject upperProps, out _);
+                                                       out GameObject upperProps, out GameObject upperWalls);
             Transform occupant = WalkInside(interior);
+
+            // An interactive bed needs the same architectural facts as a placed room.
+            // Keep the storey assertion behind a real, clear reach through those walls.
+            InteriorFootprint room = interior.FootprintFor(InteriorLevelLayout.UpperLevel);
+            foreach (Vector2[] quad in room.WallQuads(StPetersInteriors.WallThicknessMetres,
+                                                     StPetersInteriors.DoorwayWidthMetres))
+                upperWalls.AddComponent<PolygonCollider2D>().SetPath(0, quad);
+            upperWalls.AddComponent<PolygonCollider2D>().SetPath(0,
+                room.DoorwayPlugQuad(StPetersInteriors.WallThicknessMetres,
+                                    StPetersInteriors.DoorwayWidthMetres));
 
             var bed = Spawn<InteriorBed>("player bed");
             bed.transform.SetParent(upperProps.transform, worldPositionStays: false);
+            bed.transform.position = room.Centre + Vector2.right * 0.5f;
             bed.Configure("fixture.test.bed_player", true, "", "here", 1.4f, interior);
 
             Assert.AreEqual(0, bed.Level, "on the ground floor it is a ground-floor bed");
@@ -582,8 +593,11 @@ namespace HiddenHarbours.Tests.EditMode
 
             var requests = new List<RestSaveRequested>();
             EventBus.Subscribe<RestSaveRequested>(requests.Add);
-            bed.Interact(new InteractActor(occupant.position, Vector2.zero, InteractContext.OnFoot));
+            var actor = new InteractActor(occupant.position, Vector2.zero, InteractContext.OnFoot);
+            Assert.IsTrue(bed.CanReach(actor), "the upstairs bed is reachable from inside its own room");
+            bed.Interact(actor);
 
+            Assert.AreEqual(1, requests.Count, "one reachable bed press requests one rest");
             Assert.AreEqual(1, requests[0].WakeLevel,
                             "which is what stops the wake landing in the room BELOW the bed");
         }

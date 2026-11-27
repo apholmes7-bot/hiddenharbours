@@ -62,6 +62,7 @@ namespace HiddenHarbours.Tests.Economy
         private void OnBought(VehiclePurchased e) => _bought.Add(e);
         private void OnRepaired(VehicleRepaired e) => _repaired.Add(e);
         private DataSaveService _save;
+        private VehicleSellerAccount _seller;
 
         [SetUp]
         public void SetUp()
@@ -73,6 +74,8 @@ namespace HiddenHarbours.Tests.Economy
             EventBus.Subscribe<VehiclePurchased>(OnBought);
             EventBus.Subscribe<VehicleRepaired>(OnRepaired);
             _save = new DataSaveService(SaveMigration.NewGame());
+            _seller = new VehicleSellerAccount(new TradeCounterparty(null, DealerSeller, "trade.vehicles"),
+                                               new FakeWallet(125));
         }
 
         [TearDown]
@@ -168,6 +171,53 @@ namespace HiddenHarbours.Tests.Economy
         }
 
         [Test]
+        public void NmcStock_CoversEveryVehicleExactlyOnce_WithBothSellersResolved()
+        {
+            var offers = ShippedOffers().Select(row => row.Offer).ToArray();
+            var vehicles = AssetDatabase.FindAssets("t:" + nameof(VehicleDef), new[] { DataRoot })
+                .Select(guid => AssetDatabase.LoadAssetAtPath<VehicleDef>(AssetDatabase.GUIDToAssetPath(guid)))
+                .ToArray();
+            Assert.AreEqual(13, vehicles.Length, "a new model needs an explicitly reviewed stock entry");
+            Assert.AreEqual(13, offers.Length);
+            Assert.AreEqual(9, offers.Count(offer => offer.SellerId == DealerSeller));
+            Assert.AreEqual(4, offers.Count(offer => offer.SellerId == YardSeller));
+            CollectionAssert.AllItemsAreUnique(vehicles.Select(def => def.Id));
+            CollectionAssert.AllItemsAreUnique(offers.Select(offer => offer.Id));
+            CollectionAssert.AllItemsAreUnique(offers.Select(offer => offer.VehicleId));
+            CollectionAssert.AreEquivalent(vehicles.Select(def => def.Id), offers.Select(offer => offer.VehicleId));
+            foreach (var offer in offers)
+            {
+                TradeCounterparty seller = SellerDirectory.Resolve(offer.SellerId);
+                Assert.AreEqual(offer.SellerId, seller.VendorId);
+                Assert.AreEqual("trade.vehicles", seller.TradeId);
+                Assert.AreEqual(TradeCounterparty.UnknownId, seller.MerchantId, "no keeper has been authored");
+                Assert.IsFalse(offer.Catalog.Listed, "listing waits for the physical seller and handover");
+            }
+        }
+
+        [Test]
+        public void EveryAuthoredOffer_PaysItsSeller_AndGrantsOnlyTheBuyersDeed()
+        {
+            var offers = ShippedOffers();
+            Assert.AreEqual(13, offers.Count);
+            foreach (var (_, offer) in offers)
+            {
+                var buyer = new FakeWallet(offer.Price);
+                var till = new FakeWallet(0);
+                var seller = new VehicleSellerAccount(SellerDirectory.Resolve(offer.SellerId), till);
+                var otherBuyer = new DataSaveService(SaveMigration.NewGame());
+                Assert.AreEqual(VehiclePurchaseResult.Done, VehiclePurchase.TryBuy(offer, buyer, _save, seller));
+                Assert.AreEqual(0, buyer.Money, offer.Id);
+                Assert.AreEqual(offer.Price, till.Money, offer.Id);
+                Assert.IsTrue(VehicleDeeds.IsOwned(_save, offer.Id), offer.Id);
+                Assert.IsFalse(VehicleDeeds.IsOwned(otherBuyer, offer.Id), offer.Id);
+                Assert.AreEqual(!offer.StartsDamaged, VehicleDeeds.IsUsable(_save, offer.Id), offer.Id);
+                Assert.AreEqual(offer.SellerId, _bought[_bought.Count - 1].VendorId, offer.Id);
+            }
+            Assert.AreEqual(13, _bought.Count);
+        }
+
+        [Test]
         public void ShippedOffers_AreSoldByTheDealerOrTheYard_OnTheVehiclesShelf()
         {
             var offers = ShippedOffers();
@@ -192,8 +242,9 @@ namespace HiddenHarbours.Tests.Economy
             var offer = MakeOffer(7000);
             var wallet = new FakeWallet(10000);
 
-            Assert.AreEqual(VehiclePurchaseResult.Done, VehiclePurchase.TryBuy(offer, wallet, _save));
+            Assert.AreEqual(VehiclePurchaseResult.Done, VehiclePurchase.TryBuy(offer, wallet, _save, _seller));
             Assert.AreEqual(3000, wallet.Money);
+            Assert.AreEqual(7125, _seller.Wallet.Money);
             Assert.IsTrue(VehicleDeeds.IsOwned(_save, offer.Id));
             Assert.IsTrue(VehicleDeeds.IsUsable(_save, offer.Id), "a sound machine runs the moment it is bought");
             Assert.AreEqual(1, _bought.Count);
@@ -209,8 +260,9 @@ namespace HiddenHarbours.Tests.Economy
             var offer = MakeOffer(7000);
             var wallet = new FakeWallet(6999);
 
-            Assert.AreEqual(VehiclePurchaseResult.CannotAfford, VehiclePurchase.TryBuy(offer, wallet, _save));
+            Assert.AreEqual(VehiclePurchaseResult.CannotAfford, VehiclePurchase.TryBuy(offer, wallet, _save, _seller));
             Assert.AreEqual(6999, wallet.Money);
+            Assert.AreEqual(125, _seller.Wallet.Money);
             Assert.IsFalse(VehicleDeeds.IsOwned(_save, offer.Id));
             Assert.IsEmpty(_bought);
         }
@@ -220,10 +272,11 @@ namespace HiddenHarbours.Tests.Economy
         {
             var offer = MakeOffer(1000);
             var wallet = new FakeWallet(5000);
-            VehiclePurchase.TryBuy(offer, wallet, _save);
+            VehiclePurchase.TryBuy(offer, wallet, _save, _seller);
 
-            Assert.AreEqual(VehiclePurchaseResult.AlreadyOwned, VehiclePurchase.TryBuy(offer, wallet, _save));
+            Assert.AreEqual(VehiclePurchaseResult.AlreadyOwned, VehiclePurchase.TryBuy(offer, wallet, _save, _seller));
             Assert.AreEqual(4000, wallet.Money);
+            Assert.AreEqual(1125, _seller.Wallet.Money);
             Assert.AreEqual(1, _bought.Count);
         }
 
@@ -231,9 +284,9 @@ namespace HiddenHarbours.Tests.Economy
         public void Buying_WithNoSaveToRecordTheDeed_IsRefusedBeforeTheWalletIsTouched()
         {
             var wallet = new FakeWallet(5000);
-            Assert.AreEqual(VehiclePurchaseResult.Invalid, VehiclePurchase.TryBuy(MakeOffer(1000), wallet, null));
-            Assert.AreEqual(VehiclePurchaseResult.Invalid, VehiclePurchase.TryBuy(MakeOffer(1000, id: ""), wallet, _save));
-            Assert.AreEqual(VehiclePurchaseResult.Invalid, VehiclePurchase.TryBuy(null, wallet, _save));
+            Assert.AreEqual(VehiclePurchaseResult.Invalid, VehiclePurchase.TryBuy(MakeOffer(1000), wallet, null, _seller));
+            Assert.AreEqual(VehiclePurchaseResult.Invalid, VehiclePurchase.TryBuy(MakeOffer(1000, id: ""), wallet, _save, _seller));
+            Assert.AreEqual(VehiclePurchaseResult.Invalid, VehiclePurchase.TryBuy(null, wallet, _save, _seller));
             Assert.AreEqual(5000, wallet.Money);
             Assert.IsEmpty(_bought);
         }
@@ -244,19 +297,20 @@ namespace HiddenHarbours.Tests.Economy
             var offer = MakeOffer(5000, damaged: true, repair: 4000);
             var wallet = new FakeWallet(12000);
 
-            Assert.AreEqual(VehiclePurchaseResult.Done, VehiclePurchase.TryBuy(offer, wallet, _save));
+            Assert.AreEqual(VehiclePurchaseResult.Done, VehiclePurchase.TryBuy(offer, wallet, _save, _seller));
             Assert.IsTrue(_bought[0].StartsDamaged);
             Assert.IsTrue(VehicleDeeds.IsOwned(_save, offer.Id));
             Assert.IsFalse(VehicleDeeds.IsUsable(_save, offer.Id), "a damaged machine must not run before repair");
 
-            Assert.AreEqual(VehiclePurchaseResult.Done, VehiclePurchase.TryRepair(offer, wallet, _save));
+            Assert.AreEqual(VehiclePurchaseResult.Done, VehiclePurchase.TryRepair(offer, wallet, _save, _seller));
             Assert.AreEqual(3000, wallet.Money);
             Assert.IsTrue(VehicleDeeds.IsUsable(_save, offer.Id));
             Assert.AreEqual(1, _repaired.Count);
             Assert.AreEqual(4000, _repaired[0].PricePaid);
 
-            Assert.AreEqual(VehiclePurchaseResult.NothingToRepair, VehiclePurchase.TryRepair(offer, wallet, _save));
+            Assert.AreEqual(VehiclePurchaseResult.NothingToRepair, VehiclePurchase.TryRepair(offer, wallet, _save, _seller));
             Assert.AreEqual(3000, wallet.Money, "one paid repair, never two");
+            Assert.AreEqual(9125, _seller.Wallet.Money, "one sale and one repair credit the seller");
         }
 
         [Test]
@@ -264,11 +318,11 @@ namespace HiddenHarbours.Tests.Economy
         {
             var offer = MakeOffer(5000, damaged: true, repair: 4000);
             var wallet = new FakeWallet(8000);
-            Assert.AreEqual(VehiclePurchaseResult.NotOwned, VehiclePurchase.TryRepair(offer, wallet, _save));
+            Assert.AreEqual(VehiclePurchaseResult.NotOwned, VehiclePurchase.TryRepair(offer, wallet, _save, _seller));
             Assert.AreEqual(8000, wallet.Money);
 
-            VehiclePurchase.TryBuy(offer, wallet, _save);
-            Assert.AreEqual(VehiclePurchaseResult.CannotAfford, VehiclePurchase.TryRepair(offer, wallet, _save));
+            VehiclePurchase.TryBuy(offer, wallet, _save, _seller);
+            Assert.AreEqual(VehiclePurchaseResult.CannotAfford, VehiclePurchase.TryRepair(offer, wallet, _save, _seller));
             Assert.AreEqual(3000, wallet.Money);
             Assert.IsFalse(VehicleDeeds.IsUsable(_save, offer.Id));
             Assert.IsEmpty(_repaired);
@@ -294,8 +348,8 @@ namespace HiddenHarbours.Tests.Economy
             var sound = MakeOffer(1000, id: "vehicleoffer.test_sound");
             var broken = MakeOffer(500, damaged: true, repair: 300, id: "vehicleoffer.test_broken");
             var wallet = new FakeWallet(5000);
-            VehiclePurchase.TryBuy(sound, wallet, _save);
-            VehiclePurchase.TryBuy(broken, wallet, _save);
+            VehiclePurchase.TryBuy(sound, wallet, _save, _seller);
+            VehiclePurchase.TryBuy(broken, wallet, _save, _seller);
 
             SaveData loaded = SaveSerialization.FromJson(SaveSerialization.ToJson(_save.Current));
             Assert.IsNotNull(loaded);

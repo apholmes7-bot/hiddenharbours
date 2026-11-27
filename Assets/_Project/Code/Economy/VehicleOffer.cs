@@ -1,3 +1,4 @@
+using HiddenHarbours.Core;
 using UnityEngine;
 
 namespace HiddenHarbours.Economy
@@ -29,7 +30,7 @@ namespace HiddenHarbours.Economy
     /// Data/Resources/Catalog/Vehicles.
     /// </summary>
     [CreateAssetMenu(menuName = "Hidden Harbours/Vehicle Offer", fileName = "VehicleOffer")]
-    public class VehicleOffer : ScriptableObject, ICatalogListing
+    public class VehicleOffer : ScriptableObject, ICatalogListing, IVehicleSale
     {
         [Tooltip("Stable id of this offer (vehicleoffer.snake_case). The deed is recorded against it. " +
                  "Append-only: never rename a shipped id.")]
@@ -72,5 +73,12 @@ namespace HiddenHarbours.Economy
         string ICatalogListing.ListingName => DisplayName;
         string ICatalogListing.ListingFlavor => Flavor;
         CatalogListing ICatalogListing.Catalog => Catalog;
+
+        string IVehicleSale.Id => Id;
+        string IVehicleSale.VehicleId => VehicleId;
+        string IVehicleSale.SellerId => SellerId;
+        int IVehicleSale.Price => Price;
+        bool IVehicleSale.StartsDamaged => StartsDamaged;
+        int IVehicleSale.RepairCost => RepairCost;
     }
 }

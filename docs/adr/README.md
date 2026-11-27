@@ -66,6 +66,7 @@ When you add an ADR, add its row here in the same PR.
 | 0061 | [The player is always the mesh: no sprite-sheet fallback](0061-the-player-is-always-the-mesh.md) | **Proposed** (owner ask 2026-11-19; one GameConfig switch, shipped off) |
 | 0062 | [The first week is closed by weather: St Peters alone until the island gate](0062-the-first-week-is-closed-by-weather.md) | **Proposed** (owner rulings 2026-11-23; canon amended in the same PR; the owner accepts it by merging) |
 | 0063 | [Co-op in the demo: the host decides what is counted, the sea is recomputed, players may be apart](0063-coop-demo-authority-and-sync.md) | **Proposed** (owner rulings and answers 2026-11-13 and 2026-11-25; plan in `docs/design/coop-in-the-demo.md`; no code in its PR) |
+| 0064 | [Save v27: clothes, the clothing rack's sales, skills and fitted rod parts](0064-save-v27.md) | **Proposed** (owner 2026-11-25 "Yes, plan v27"; he sees `docs/design/save-v27-field-list.md` before it merges and accepts it by merging) |
 
 **Conventions.** `Proposed` = awaiting the named decider; `Accepted` = ratified (by the owner where
 the ADR says so, otherwise by `lead-architect` on merge); `Implemented` = accepted and the code

@@ -129,6 +129,7 @@ namespace HiddenHarbours.Core
             // 4) The forward arc, for candidates that ask for it — InteractArc.Contains, which is the
             //    same rule WorldInteractor's conversation filter runs, stated once.
             if (c.RequiresFacing && !InteractArc.Contains(delta, facing, cosHalfArc)) return false;
+            if (!RoomFixtureReach.Allows(c, actor)) return false;
             return true;
         }
 

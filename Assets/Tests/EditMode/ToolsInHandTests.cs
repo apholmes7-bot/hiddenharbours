@@ -432,5 +432,92 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(new Vector2(120f, -40f), (Vector2)go.transform.position,
                             "set down where she actually stood");
         }
+
+        [Test]
+        public void RodTiers_LoadValidateAndReuseEveryAppearanceField()
+        {
+            var names = new[] { "Rod", "RodCoast", "RodDeep" };
+            var ids = new[] { "tool.rod", "tool.rod_coast", "tool.rod_deep" };
+            var rods = names.Select(n => AssetDatabase.LoadAssetAtPath<ToolDef>(
+                $"Assets/_Project/Data/Tools/{n}.asset")).ToArray();
+            Assert.AreEqual(3, rods.Length);
+            var improvements = new HashSet<string> { "CastMetres", "LineMetres", "ReelUpMetresPerSecond",
+                "TakeWindowMultiplier", "LineStrengthMultiplier", "LandingMultiplier" };
+            for (int i = 0; i < rods.Length; i++)
+            {
+                Assert.IsNotNull(rods[i], names[i]);
+                Assert.AreEqual(ids[i], rods[i].Id);
+                Assert.IsTrue(rods[i].IsFishingRod);
+                Assert.IsTrue(rods[i].RodFishing.IsValid, names[i]);
+                if (i == 0) continue;
+                foreach (var field in typeof(RodFishingProfile).GetFields())
+                {
+                    float lower = (float)field.GetValue(rods[i - 1].RodFishing);
+                    float upper = (float)field.GetValue(rods[i].RodFishing);
+                    if (improvements.Contains(field.Name)) Assert.Greater(upper, lower, field.Name);
+                    else Assert.AreEqual(lower, upper, field.Name);
+                }
+                foreach (var field in typeof(ToolDef).GetFields(System.Reflection.BindingFlags.Public |
+                             System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.DeclaredOnly))
+                {
+                    if (field.Name == "Id" || field.Name == "RodTier" || field.Name == "RodFishing") continue;
+                    // A rod's parts differ by tier on purpose; they set its numbers, not its look.
+                    if (field.Name == "RodBlank" || field.Name == "DefaultLine" || field.Name == "DefaultReel") continue;
+                    Assert.AreEqual(field.GetValue(rods[0]), field.GetValue(rods[i]), field.Name);
+                }
+            }
+            Assert.AreEqual(RodFishingProfile.Default, rods[0].RodFishing);
+        }
+
+        [TestCase("RodCoast")]
+        [TestCase("RodDeep")]
+        public void HigherRodInHand_OpensTheExistingCastGateAndCapturesItsNumbers(string asset)
+        {
+            // The shared dig fixture is dry; a successful cast needs water along its landing arc.
+            _env.Level = 2f;
+            DevFishingInput dev = Rig();
+            var def = AssetDatabase.LoadAssetAtPath<ToolDef>($"Assets/_Project/Data/Tools/{asset}.asset");
+            var hands = ToolInHand.Holding(def.Id, _spawned);
+            var held = (CarriableTool)hands.Carried;
+            held.Tool.RodTier = def.RodTier;
+            held.Tool.RodFishing = def.RodFishing;
+            Assert.IsTrue(dev.RodIsToHand);
+            Assert.IsTrue(dev.FishingLive);
+            Assert.IsTrue(CarriedRod.TryRead(hands, out var profile));
+            Assert.AreEqual(def.RodFishing, profile);
+            var controller = dev.GetComponent<FishingController>();
+            FlickGestures.Flick(dev, controller);
+            Assert.AreEqual(FishingPhase.Cast, controller.Phase);
+            Assert.AreEqual(profile, controller.RodSnapshot);
+            held.Tool.RodFishing = RodFishingProfile.Default;
+            Assert.AreEqual(profile, controller.RodSnapshot, "changing equipment cannot alter an in-flight cast");
+            dev.ConfigureRodGate(true, "tool.some_other_rod");
+            Assert.IsFalse(dev.RodIsToHand, "an explicit gate for another kind still means that kind");
+        }
+
+        [Test]
+        public void EveryRodNumber_RejectsZeroNegativeNanAndInfinity()
+        {
+            foreach (var field in typeof(RodFishingProfile).GetFields())
+            foreach (float invalid in new[] { 0f, -1f, float.NaN, float.PositiveInfinity, float.NegativeInfinity })
+            {
+                object boxed = RodFishingProfile.Default;
+                field.SetValue(boxed, invalid);
+                // The small-fish mark is the one place 0 is a real setting: 0 kg = puts no fish off,
+                // 0 damp = the smallest fish never bite. Everything else must be above zero.
+                bool zeroIsASetting = field.Name == nameof(RodFishingProfile.SmallFishShyBelowKg)
+                                   || field.Name == nameof(RodFishingProfile.SmallFishShyDamp01);
+                if (zeroIsASetting && invalid == 0f)
+                {
+                    Assert.IsTrue(((RodFishingProfile)boxed).IsValid, field.Name + ": 0 is allowed");
+                    continue;
+                }
+                Assert.IsFalse(((RodFishingProfile)boxed).IsValid, field.Name + ": " + invalid);
+            }
+            var reversed = RodFishingProfile.Default;
+            reversed.MaxBiteDelaySeconds = reversed.MinBiteDelaySeconds / 2f;
+            Assert.IsFalse(reversed.IsValid);
+        }
+
     }
 }

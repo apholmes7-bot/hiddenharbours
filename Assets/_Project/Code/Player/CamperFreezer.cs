@@ -25,7 +25,7 @@ namespace HiddenHarbours.Player
     /// with an empty pail, what fits comes out.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class CamperFreezer : MonoBehaviour, IHold, IHoldRemove, IStorageContainer, IInteractable
+    public sealed class CamperFreezer : MonoBehaviour, IHold, IHoldRemove, IStorageContainer, IInteractable, IRoomFixtureReach
     {
         [Header("What it is (content is data — rule 2)")]
         [Tooltip("The freezer's Def: capacity and the deed that opens it. Null makes it inert.")]
@@ -153,7 +153,9 @@ namespace HiddenHarbours.Player
         public bool IsAvailable => _def != null;
         public string VerbLabel => "Use the freezer";
 
-        public void Interact(in InteractActor actor) => Exchange();
+        public bool CanReach(in InteractActor actor) => RoomFixtureReach.Allows(this, actor, WorldPosition);
+
+        public void Interact(in InteractActor actor) { if (CanReach(actor)) Exchange(); }
 
         /// <summary>The <see cref="GinnyFreezer"/> exchange: a full pail goes in, an empty pail comes away full.</summary>
         public void Exchange()

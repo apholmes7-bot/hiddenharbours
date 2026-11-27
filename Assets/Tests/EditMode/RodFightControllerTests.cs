@@ -393,5 +393,241 @@ namespace HiddenHarbours.Tests.EditMode
                 c.Tick(0.05f, false);
             Assert.AreEqual(FishingPhase.Tending, c.Phase, "hand-gathered categories always tend");
         }
+
+        private static RodFishingProfile AuthoredRod(string name)
+        {
+            var def = UnityEditor.AssetDatabase.LoadAssetAtPath<HiddenHarbours.Player.ToolDef>(
+                $"Assets/_Project/Data/Tools/{name}.asset");
+            Assert.IsNotNull(def);
+            return def.RodFishing;
+        }
+
+        private (int landed, List<FishingState> trace) SeededDay(RodFishingProfile? rod, bool v2, int seed)
+        {
+            GameServices.Reset();
+            _published.Clear();
+            var hold = new FakeHold { Capacity = 10000 };
+            var fish = MakeFish("fish.rod_day", v2 ? MakeRodFight(RodFightMovement.Darter) : null);
+            var c = MakeController(hold, new[] { fish }, seed);
+            c.ConfigureRod(rod);
+            // One thirty-minute day. The same gesture and visible-state policy for every rod.
+            const float step = 0.05f;
+            for (int tick = 0; tick < 36000; tick++)
+            {
+                if (c.Phase == FishingPhase.Idle)
+                {
+                    FlickGestures.Flick(c);
+                    tick += 3; // account for the gesture's 0.14 seconds, rounding the same way for all rods
+                    continue;
+                }
+                var state = c.State;
+                bool reel = state.Phase == FishingPhase.Fighting
+                    ? state.Tension01 < 0.5f
+                    : state.IsFightPhase && state.SlackWindowOpen && state.Tension01 < 0.6f;
+                c.Tick(step, reel);
+            }
+            var result = (hold.UsedUnits, new List<FishingState>(_published));
+            Object.DestroyImmediate(c.gameObject);
+            GameServices.Reset();
+            return result;
+        }
+
+        [TestCase(false, 8123)]
+        [TestCase(true, 8123)]
+        [TestCase(false, 4129)]
+        [TestCase(true, 4129)]
+        public void SeededDay_BetterRodsLandMoreFish_AndReplayExactly(bool v2, int seed)
+        {
+            int previous = 0;
+            foreach (string name in new[] { "Rod", "RodCoast", "RodDeep" })
+            {
+                var first = SeededDay(AuthoredRod(name), v2, seed);
+                var replay = SeededDay(AuthoredRod(name), v2, seed);
+                Assert.Greater(first.landed, previous, name + ": a whole day must yield more fish");
+                Assert.AreEqual(first.landed, replay.landed);
+                CollectionAssert.AreEqual(first.trace, replay.trace, "every published field must replay");
+                previous = first.landed;
+            }
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void StarterRod_AndPreProfileLimits_ReplayTheSameSeededDay(bool v2)
+        {
+            var original = new RodFishingProfile
+            {
+                CastMetres = 12f, LineMetres = 60f, ReelUpMetresPerSecond = 1.5f,
+                MinBiteDelaySeconds = 1.5f, MaxBiteDelaySeconds = 4f, AutoHookSeconds = 1.2f,
+                TakeWindowMultiplier = 1f, LineStrengthMultiplier = 1f, LandingMultiplier = 1f,
+                TensionRiseEasy = 0.6f, TensionRiseHard = 1f,
+                TensionFallEasy = 0.7f, TensionFallHard = 0.5f,
+                LandingEasy = 0.4f, LandingHard = 0.22f,
+                SurgeIntervalEasy = 3f, SurgeIntervalHard = 1.6f,
+                SurgeDurationSeconds = 0.8f, SurgePressureEasy = 0.15f, SurgePressureHard = 0.4f
+            };
+            var before = SeededDay(original, v2, 418);
+            var authored = SeededDay(AuthoredRod("Rod"), v2, 418);
+            var unwired = SeededDay(null, v2, 418);
+            Assert.Greater(before.landed, 0, "must exercise landings");
+            CollectionAssert.AreEqual(before.trace, authored.trace);
+            CollectionAssert.AreEqual(before.trace, unwired.trace);
+            Assert.AreEqual(before.landed, authored.landed);
+        }
+
+        [Test]
+        public void RodProfile_IsCapturedAtCastStart_AndRejectsInvalidOverrides()
+        {
+            var c = MakeController(new FakeHold(), new[] { MakeFish("fish.snapshot", null) }, 31);
+            var better = AuthoredRod("RodDeep");
+            c.ConfigureRod(better);
+            FlickGestures.Flick(c);
+            c.ConfigureRod(RodFishingProfile.Default);
+            Assert.AreEqual(better, c.RodSnapshot);
+            Assert.Throws<System.ArgumentException>(() => c.ConfigureRod(default(RodFishingProfile)));
+        }
+
+        [Test]
+        public void RodTakeWindow_WidensOnlyTheTrueTake()
+        {
+            var bite = ScriptableObject.CreateInstance<BiteDef>();
+            _spawned.Add(bite);
+            var original = bite.ToProfile();
+            var improved = bite.ToProfile(AuthoredRod("RodDeep").TakeWindowMultiplier);
+            Assert.AreEqual(original.TakeWindowSeconds * 1.5f, improved.TakeWindowSeconds);
+            Assert.AreEqual(original.NibbleDipSeconds, improved.NibbleDipSeconds);
+            Assert.AreEqual(original.FalseNibblesMin, improved.FalseNibblesMin);
+            Assert.AreEqual(original.FalseNibblesMax, improved.FalseNibblesMax);
+            Assert.AreEqual(original.NibbleGapMinSeconds, improved.NibbleGapMinSeconds);
+            Assert.AreEqual(original.NibbleGapMaxSeconds, improved.NibbleGapMaxSeconds);
+            Assert.AreEqual(original.ReturnChance01, improved.ReturnChance01);
+            Assert.AreEqual(original.ReturnDelayMinSeconds, improved.ReturnDelayMinSeconds);
+            Assert.AreEqual(original.ReturnDelayMaxSeconds, improved.ReturnDelayMaxSeconds);
+            Assert.AreEqual(original.MaxPasses, improved.MaxPasses);
+        }
+
+        // ---- the rod skill (owner ruling 2026-11-25: effective = rod + skill) ---------------------
+
+        private static RodSkillDef ShippedSkill()
+        {
+            var def = UnityEditor.AssetDatabase.LoadAssetAtPath<RodSkillDef>(
+                "Assets/_Project/Data/Resources/RodSkill/RodSkill.asset");
+            Assert.IsNotNull(def);
+            return def;
+        }
+
+        [Test]
+        public void Cast_CapturesTheRodPlusThisAnglersSkill_NotAnotherPlayers()
+        {
+            var session = new object();
+            RodSkillDef def = ShippedSkill();
+            GameServices.RodSkills = new RodSkillBook(() => session, () => def);
+            try
+            {
+                IRodSkill skill = GameServices.RodSkills.For(RodSkillBook.LocalPlayerKey);
+                while (skill.Level < skill.MaxLevel) skill.RecordLanded(1f);
+
+                var deep = AuthoredRod("RodDeep");
+                var skilled = MakeController(new FakeHold(), new[] { MakeFish("fish.skill_cast", null) }, 31);
+                skilled.ConfigureRod(deep);
+                FlickGestures.Flick(skilled);
+                Assert.AreEqual(RodSkillMath.Apply(in deep, RodSkillMath.BonusAt(def.MaxLevel, def)), skilled.RodSnapshot);
+                Assert.Greater(skilled.RodSnapshot.CastMetres, deep.CastMetres);
+
+                var peer = MakeController(new FakeHold(), new[] { MakeFish("fish.skill_peer", null) }, 31);
+                peer.AnglerKey = "player.peer_2";
+                peer.ConfigureRod(deep);
+                FlickGestures.Flick(peer);
+                Assert.AreEqual(deep, peer.RodSnapshot, "a new player on the same rod casts the rod alone");
+            }
+            finally { GameServices.RodSkills = null; }
+        }
+
+        [Test]
+        public void Cast_ReadsTheHeldRodWithThisAnglersFitAndSkill_NotAnotherPlayers()
+        {
+            var session = new object();
+            RodSkillDef def = ShippedSkill();
+            GameServices.RodSkills = new RodSkillBook(() => session, () => def);
+            GameServices.RodFittings = new RodFittingBook(() => session);
+            ICarrier handsBefore = GameServices.Hands;
+            try
+            {
+                var tool = UnityEditor.AssetDatabase.LoadAssetAtPath<HiddenHarbours.Player.ToolDef>(
+                    "Assets/_Project/Data/Tools/RodDeep.asset");
+                FishingLineDef braid = null;
+                foreach (string g in UnityEditor.AssetDatabase.FindAssets("t:FishingLineDef"))
+                {
+                    var l = UnityEditor.AssetDatabase.LoadAssetAtPath<FishingLineDef>(UnityEditor.AssetDatabase.GUIDToAssetPath(g));
+                    if (l != null && l.Id == "fishing_line.heavy_braid") braid = l;
+                }
+                Assert.NotNull(braid);
+                GameServices.Hands = new RodPartsFakeHands { Carried = RodPartsFakeRod.From(tool) };
+
+                IRodSkill skill = GameServices.RodSkills.For(RodSkillBook.LocalPlayerKey);
+                while (skill.Level < skill.MaxLevel) skill.RecordLanded(1f);
+                Assert.IsTrue(GameServices.RodFittings.For(RodSkillBook.LocalPlayerKey).Fit(tool.Id, braid, null));
+
+                var mine = MakeController(new FakeHold(), new[] { MakeFish("fish.parts_mine", null) }, 41);
+                FlickGestures.Flick(mine);
+                RodFishingProfile fitted = RodFit.Compose(tool.RodBlank, braid, tool.DefaultReel);
+                Assert.AreEqual(RodSkillMath.Apply(in fitted, RodSkillMath.BonusAt(def.MaxLevel, def)), mine.RodSnapshot,
+                    "my deep rod, my braid, my skill");
+
+                var peer = MakeController(new FakeHold(), new[] { MakeFish("fish.parts_peer", null) }, 41);
+                peer.AnglerKey = "player.peer_2";
+                FlickGestures.Flick(peer);
+                RodPartsTests.AssertBitForBit(tool.RodFishing, peer.RodSnapshot, "a peer with the same rod: its own parts, no skill");
+            }
+            finally
+            {
+                GameServices.Hands = handsBefore;
+                GameServices.RodSkills = null;
+                GameServices.RodFittings = null;
+            }
+        }
+
+        private (int landed, int experience) SkillDay(bool v2, int seed)
+        {
+            var session = new object();
+            RodSkillDef def = ShippedSkill();
+            GameServices.RodSkills = new RodSkillBook(() => session, () => def);
+            _published.Clear();
+            var hold = new FakeHold { Capacity = 10000 };
+            var fish = MakeFish("fish.skill_day", v2 ? MakeRodFight(RodFightMovement.Darter) : null);
+            var c = MakeController(hold, new[] { fish }, seed);
+            c.ConfigureRod(AuthoredRod("Rod"));
+            const float step = 0.05f;
+            for (int tick = 0; tick < 12000; tick++)
+            {
+                if (c.Phase == FishingPhase.Idle)
+                {
+                    FlickGestures.Flick(c);
+                    tick += 3;
+                    continue;
+                }
+                var state = c.State;
+                bool reel = state.Phase == FishingPhase.Fighting
+                    ? state.Tension01 < 0.5f
+                    : state.IsFightPhase && state.SlackWindowOpen && state.Tension01 < 0.6f;
+                c.Tick(step, reel);
+            }
+            int experience = GameServices.RodSkills.For(RodSkillBook.LocalPlayerKey).Experience;
+            GameServices.RodSkills = null;
+            return (hold.UsedUnits, experience);
+        }
+
+        [TestCase(false, 8123)]
+        [TestCase(true, 8123)]
+        public void WonFights_EarnRodSkill_WithinTheCurvesBounds_AndReplayExactly(bool v2, int seed)
+        {
+            RodSkillDef def = ShippedSkill();
+            var first = SkillDay(v2, seed);
+            var replay = SkillDay(v2, seed);
+            Assert.Greater(first.landed, 0, "must exercise landings");
+            Assert.AreEqual(first, replay);
+            Assert.GreaterOrEqual(first.experience, first.landed * RodSkillMath.ExperienceFor(0f, def));
+            Assert.LessOrEqual(first.experience, first.landed * RodSkillMath.ExperienceFor(1f, def));
+        }
+
     }
 }
