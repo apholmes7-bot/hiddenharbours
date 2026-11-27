@@ -70,7 +70,7 @@ namespace HiddenHarbours.Tests.EditMode
             string committed = File.ReadAllText(CopyPath);
             List<StPetersLayerRefresh.PlacedRock> rocks = LayerRefreshPatchChecks.ChangedOnPurpose(
                 LayerRefreshPatchChecks.CommittedRocks(committed));
-            var sprites = new ShoreRockSwapChecks.TestShoreRockSprites(committed);
+            var sprites = new ShoreRockSwapChecks.TestShoreRockSprites();
             LayerRefreshPatchChecks.PatchHoldsToItsRoot(CopyPath, StPetersShorePainter.RootName, positioned: true,
                 text => StPetersLayerRefresh.Shoreline(StPetersLayerRefresh.SceneYaml.Parse(text), rocks, sprites,
                                                        Array.Empty<ShoreRockDef>()));

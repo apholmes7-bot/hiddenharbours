@@ -271,16 +271,16 @@ namespace HiddenHarbours.App.Editor
             // another full block, and it cannot disturb cells the ground pass wrote.
             var contactTile = cache.Contact("n");
 
+            // The rocks the scene keeps (ShoreRockPlacementDef rockplacement.st_peters), not the scatter:
+            // St Peters cannot be rebuilt, so the scene is the truth and the scatter drifted with the ground.
+            // The shore rings are Rock_*, the interior erratics (owner's 2026-08-01 "add rocks") FieldRock_*.
             int placed = 0;
-            foreach (var site in StPetersShoreMap.ScatterRocks(terrain))
+            foreach (StPetersLayerRefresh.PlacedRock rock in StPetersLayerRefresh.PainterPlacement(terrain))
+            {
+                string prefix = rock.Name.Substring(0, rock.Name.Length - rock.SpriteKey.Length - 1);
                 placed += PlaceRock(rocksRoot.transform, contactMap, contactTile, rockSprites,
-                                    site, "Rock");
-
-            // The interior erratics (owner's 2026-08-01 "add rocks"): same sheet, same seating, their
-            // own name prefix so a scene inspector can tell field from shore at a glance.
-            foreach (var site in StPetersShoreMap.ScatterFieldRocks(terrain))
-                placed += PlaceRock(rocksRoot.transform, contactMap, contactTile, rockSprites,
-                                    site, "FieldRock");
+                                    new StPetersShoreMap.RockSite { Position = rock.Position, Sprite = rock.SpriteKey }, prefix);
+            }
 
             return placed;
         }

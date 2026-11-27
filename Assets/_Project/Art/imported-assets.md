@@ -965,8 +965,8 @@ exactly three. Pinned by a canary test asserting the current state — if a re-b
 goes red and should be deleted.
 
 **WIRE-IN (NOT done here):** no sheets baked, nothing placed, no prefab/spawner/collision reads these
-anchors yet, and the older hand-drawn `Sprites/Shore/RockCluster.png`, `RockMid.png`, `RockSmall.png`
-and `TidePoolRock.png` are untouched.
+anchors yet. (The older hand-drawn `Sprites/Shore/RockCluster.png`, `RockMid.png`, `RockSmall.png`
+and `TidePoolRock.png` were never placed and were deleted by the shaded-rocks PR.)
 
 ---
 

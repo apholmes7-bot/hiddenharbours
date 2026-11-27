@@ -217,6 +217,10 @@ namespace HiddenHarbours.App.Editor
             var contactTile = ShoreIso2TileLibrary.Load(
                 ShoreIso2TileLibrary.DefaultStyle, ShoreIso2TileLibrary.ContactName("n"));
 
+            // Each rock a Def names (its name, within a hundredth of a metre) wears the Rock Px cell the Def
+            // names; a rock no Def names keeps the sheet's sprite.
+            List<ShoreRockDef> rockDefs = LoadRockDefs();
+
             var rocksRoot = new GameObject(RocksRootName);
             rocksRoot.transform.SetParent(parent, worldPositionStays: false);
 
@@ -225,7 +229,18 @@ namespace HiddenHarbours.App.Editor
             {
                 if (!rockSprites.TryGetValue(site.Sprite, out Sprite sprite) || sprite == null) continue;
 
-                var go = new GameObject($"Rock_{site.Sprite}");
+                string rockName = $"Rock_{site.Sprite}";
+                ShoreRockDef swap = SwapFor(rockDefs, rockName, site.Position);
+                if (swap != null)
+                {
+                    Sprite px = RockPxSprite(swap);
+                    if (px != null) sprite = px;
+                    else Debug.LogError($"[NineMileCreekShorePainter] {swap.Id}: no sprite " +
+                                        $"'{StPetersLayerRefresh.RockPxSpriteName(swap)}' in " +
+                                        $"{StPetersLayerRefresh.RockPxSheetPath(swap)}; the rock keeps its painted sprite.");
+                }
+
+                var go = new GameObject(rockName);
                 go.transform.SetParent(rocksRoot.transform, worldPositionStays: false);
                 go.transform.position = new Vector3(site.Position.x, site.Position.y, 0f);
                 var sr = go.AddComponent<SpriteRenderer>();
@@ -240,6 +255,57 @@ namespace HiddenHarbours.App.Editor
                 placed++;
             }
             return placed;
+        }
+
+        /// <summary>Nine Mile Creek's <see cref="ShoreRockDef"/> ids start with this (St Peters' are
+        /// <c>rock.stp_</c>, which <see cref="StPetersLayerRefresh"/> reads).</summary>
+        public const string RockIdPrefix = "rock.nmc_";
+
+        /// <summary>How far a <see cref="ShoreRockDef.At"/> may sit from the rock it names: a hundredth
+        /// of a metre, the Def's own contract (as St Peters' swaps).</summary>
+        public const float SwapMatchMetres = StPetersLayerRefresh.SwapMatchMetres;
+
+        /// <summary>
+        /// The Def that dresses the rock the scatter lays at <paramref name="at"/> as
+        /// <paramref name="rockName"/>: the one Def of that <see cref="ShoreRockDef.Today"/> name within
+        /// <see cref="SwapMatchMetres"/> of its place. None leaves the rock as painted; two naming one rock
+        /// is an authoring error and throws rather than guess.
+        /// </summary>
+        public static ShoreRockDef SwapFor(IReadOnlyList<ShoreRockDef> defs, string rockName, Vector2 at)
+        {
+            ShoreRockDef hit = null;
+            if (defs == null) return null;
+            foreach (ShoreRockDef d in defs)
+            {
+                if (d == null || d.Today != rockName || Vector2.Distance(d.At, at) > SwapMatchMetres) continue;
+                if (hit != null)
+                    throw new System.InvalidOperationException(
+                        $"{hit.Id} and {d.Id} both name the {rockName} at ({at.x}, {at.y}); a rock takes one Def.");
+                hit = d;
+            }
+            return hit;
+        }
+
+        /// <summary>Nine Mile Creek's rock Defs (ids <see cref="RockIdPrefix"/>), by id.</summary>
+        public static List<ShoreRockDef> LoadRockDefs()
+        {
+            var defs = new List<ShoreRockDef>();
+            foreach (string g in AssetDatabase.FindAssets("t:" + nameof(ShoreRockDef)))
+            {
+                var d = AssetDatabase.LoadAssetAtPath<ShoreRockDef>(AssetDatabase.GUIDToAssetPath(g));
+                if (d != null && d.Id != null && d.Id.StartsWith(RockIdPrefix, System.StringComparison.Ordinal)) defs.Add(d);
+            }
+            defs.Sort((a, b) => string.CompareOrdinal(a.Id, b.Id));
+            return defs;
+        }
+
+        /// <summary>The Rock Px cell a Def names, through the kit's own catalog; null when the sheet lacks it.</summary>
+        static Sprite RockPxSprite(ShoreRockDef def)
+        {
+            string name = StPetersLayerRefresh.RockPxSpriteName(def);
+            foreach (UnityEngine.Object obj in AssetDatabase.LoadAllAssetsAtPath(StPetersLayerRefresh.RockPxSheetPath(def)))
+                if (obj is Sprite s && s.name == name) return s;
+            return null;
         }
 
         /// <summary>The rock sheet's named sub-sprites, keyed by the kit's own item name. They are pivoted

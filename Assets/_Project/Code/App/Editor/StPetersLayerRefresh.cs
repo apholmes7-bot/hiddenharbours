@@ -22,7 +22,8 @@ namespace HiddenHarbours.App.Editor
     /// The St Peters scene cannot be rebuilt — Build() wipes it, and it carries hand work — so the
     /// layers only Build() ever wrote are refreshed one root at a time, as text:
     /// <list type="number">
-    /// <item><b>Shoreline</b>: the shore painter's own rock placement over the whole island, then
+    /// <item><b>Shoreline</b>: the shore painter's own rock placement over the whole island (the rocks
+    /// the scene keeps, <see cref="ShoreRockPlacementDef"/> <c>rockplacement.st_peters</c>), then
     /// the <see cref="ShoreRockDef"/> swaps (part 2 §4.4) — each named rock keeps its transform and
     /// takes its Rock Px sprite.</item>
     /// <item><b>ClamHoles</b>: <see cref="StPetersBuilder.ScatterClamHoles"/> over the whole island.</item>
@@ -951,9 +952,48 @@ namespace HiddenHarbours.App.Editor
             bool TryRockPx(ShoreRockDef def, out SpriteRef sprite);
         }
 
-        /// <summary>The shore painter's own placement (<c>PlaceRocks</c>): the reef's scatter, then the
-        /// field rocks, named as it names them.</summary>
-        public static List<PlacedRock> PainterPlacement(ITidalTerrain terrain)
+        /// <summary>The St Peters rock placement's id: the rocks the scene keeps, which the painter lays.</summary>
+        public const string StPetersPlacementId = "rockplacement.st_peters";
+
+        /// <summary>The shore painter's own placement (<c>PlaceRocks</c>): the rocks the scene keeps, from
+        /// <see cref="ShoreRockPlacementDef"/> <c>rockplacement.st_peters</c>. St Peters cannot be rebuilt,
+        /// so the scene is the truth; the scatter's answer drifted when the ground under it changed (today
+        /// it would lose thirteen kept rocks and add one). The terrain is no longer read and is kept so the
+        /// callers' shape does not change; <see cref="ScatterPlacement"/> is the scatter's own answer.</summary>
+        public static List<PlacedRock> PainterPlacement(ITidalTerrain terrain) => KeptPlacement(LoadStPetersPlacement());
+
+        /// <summary>A placement Def as placed rocks, in its order; refused if it names a rock the painter
+        /// could not lay (a prefix other than Rock or FieldRock, or no sheet key).</summary>
+        public static List<PlacedRock> KeptPlacement(ShoreRockPlacementDef def)
+        {
+            if (def == null) throw new Refusal($"no ShoreRockPlacementDef '{StPetersPlacementId}': the painter has no rocks to lay.");
+            if (def.Rocks == null || def.Rocks.Count == 0) throw new Refusal($"{def.Id} lists no rocks.");
+            var rocks = new List<PlacedRock>(def.Rocks.Count);
+            foreach (ShoreRockPlacementDef.Rock r in def.Rocks)
+            {
+                int cut = r.Name == null ? -1 : r.Name.LastIndexOf('_');
+                string prefix = cut > 0 ? r.Name.Substring(0, cut) : null;
+                if (cut <= 0 || cut == r.Name.Length - 1 || (prefix != RockNamePrefix && prefix != FieldRockNamePrefix))
+                    throw new Refusal($"{def.Id}: '{r.Name}' is not {RockNamePrefix}_<key> or {FieldRockNamePrefix}_<key>.");
+                rocks.Add(new PlacedRock { Name = r.Name, Position = r.At, SpriteKey = r.Name.Substring(cut + 1) });
+            }
+            return rocks;
+        }
+
+        /// <summary>The St Peters placement Def, or null when there is none; refused if two carry its id.</summary>
+        public static ShoreRockPlacementDef LoadStPetersPlacement()
+        {
+            List<ShoreRockPlacementDef> found = AssetDatabase.FindAssets("t:" + nameof(ShoreRockPlacementDef))
+                .Select(g => AssetDatabase.LoadAssetAtPath<ShoreRockPlacementDef>(AssetDatabase.GUIDToAssetPath(g)))
+                .Where(d => d != null && d.Id == StPetersPlacementId)
+                .ToList();
+            if (found.Count > 1) throw new Refusal($"{found.Count} ShoreRockPlacementDefs carry '{StPetersPlacementId}'.");
+            return found.Count == 1 ? found[0] : null;
+        }
+
+        /// <summary>The scatter's own placement: the reef's scatter, then the field rocks, named as the
+        /// painter names them. St Peters no longer lays it (see <see cref="PainterPlacement"/>).</summary>
+        public static List<PlacedRock> ScatterPlacement(ITidalTerrain terrain)
         {
             var rocks = new List<PlacedRock>();
             foreach (StPetersShoreMap.RockSite s in StPetersShoreMap.ScatterRocks(terrain))
