@@ -237,14 +237,32 @@ namespace HiddenHarbours.Tests.EditMode
             return Hash(text);
         }
 
+        // A Linux editor with Linux player support installed adds its own host build toolchain to
+        // "dependencies" when it resolves packages, so the CI runner's manifest carries these two
+        // entries and the committed one does not. They build the editor host's players and are not
+        // a change to the project's package set; any other added, removed or re-versioned package
+        // still changes the hash.
+        public static readonly string[] HostToolchainPackages =
+        {
+            "com.unity.sdk.linux-x86_64",
+            "com.unity.toolchain.linux-x86_64-linux",
+        };
+
         // Object order and whitespace are not package changes; every key, value and array order is.
         public static string ManifestHash(string json)
         {
 #if UNITY_EDITOR
-            return Hash(CanonicalValue(MiniJson.Parse(json)));
+            object manifest = MiniJson.Parse(json);
 #else
-            return Hash(CanonicalValue(new JavaScriptSerializer().DeserializeObject(json)));
+            object manifest = new JavaScriptSerializer().DeserializeObject(json);
 #endif
+            var root = manifest as Dictionary<string, object>;
+            object dependencies;
+            var packages = root != null && root.TryGetValue("dependencies", out dependencies)
+                ? dependencies as Dictionary<string, object> : null;
+            if (packages != null)
+                foreach (string package in HostToolchainPackages) packages.Remove(package);
+            return Hash(CanonicalValue(manifest));
         }
 
         static string CanonicalValue(object value)

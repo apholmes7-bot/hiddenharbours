@@ -239,6 +239,26 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.Throws<FormatException>(() => DemoContentClosure.ManifestHash(original + " broken"));
         }
 
+        [Test]
+        public void ManifestContract_IgnoresOnlyTheHostToolchain_AndAnyOtherAddedPackageStillTrips()
+        {
+            const string original = "{\"dependencies\":{\"package.a\":\"1\",\"package.b\":\"2\"},\"testables\":[\"a\",\"b\"]}";
+            string hash = DemoContentClosure.ManifestHash(original);
+            string withToolchain = original.Replace("\"package.b\":\"2\"", "\"package.b\":\"2\"," +
+                string.Join(",", DemoContentClosure.HostToolchainPackages.Select(p => "\"" + p + "\":\"1.1.1\"")));
+            Assert.That(DemoContentClosure.HostToolchainPackages, Has.Length.EqualTo(2));
+            Assert.That(DemoContentClosure.ManifestHash(withToolchain), Is.EqualTo(hash));
+            Assert.That(DemoContentClosure.ManifestHash(original.Replace("\"package.b\":\"2\"",
+                "\"package.b\":\"2\",\"com.unity.sdk.linux-x86_64-extra\":\"1.1.1\"")), Is.Not.EqualTo(hash));
+            Assert.That(DemoContentClosure.ManifestHash(original.Replace("\"package.b\":\"2\"",
+                "\"package.b\":\"2\",\"com.unity.toolchain.win-x86_64\":\"1.1.1\"")), Is.Not.EqualTo(hash));
+            Assert.That(DemoContentClosure.ManifestHash(withToolchain.Replace("\"package.a\":\"1\"", "\"package.a\":\"3\"")),
+                Is.Not.EqualTo(hash));
+            // Only "dependencies" is filtered: the same name elsewhere is still pinned.
+            Assert.That(DemoContentClosure.ManifestHash(original.Replace("[\"a\",\"b\"]",
+                "[\"a\",\"b\",\"com.unity.sdk.linux-x86_64\"]")), Is.Not.EqualTo(hash));
+        }
+
         [TestCase(false)]
         [TestCase(true)]
         public void PackageInclude_IsExplicitWithOrWithoutResolvedBytes_AndNeverWaivesAProjectReference(bool resolved)
