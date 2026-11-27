@@ -544,6 +544,7 @@ MonoBehaviour:
     BigOneMarkFadeSeconds: 0.25
     BigOneMarkColor: {r: 1, g: 0.85, b: 0.2, a: 1}
     BigOneStrikeHoldSeconds: 0.35
+    FlankWithinLineDegrees: 30
   FishSchools:
     CellSizeMetres: 22
     SlotHours: 2.5

@@ -24,6 +24,9 @@ namespace HiddenHarbours.Player
         /// <summary>Is a splash playing (its owner's clock should run).</summary>
         public bool Active => _active;
 
+        /// <summary>Where the playing splash is (world m): its owner sorts it by which side of the fisher it is.</summary>
+        public Vector2 Position => _pos;
+
         /// <summary>
         /// Start a splash at <paramref name="pos"/>. False (and nothing starts) with no frames to play;
         /// on true the owner restarts its splash clock at 0.
@@ -51,7 +54,7 @@ namespace HiddenHarbours.Player
                 return;
             }
             _sr.transform.position = new Vector3(_pos.x, _pos.y, 0f);
-            // ADR 0059 step 2: the splash rides the fisher's own order, one rung in front, not a parked 51.
+            // The order is the owner's (EffectSorting.RodSplashOrder: by the side of the fisher it lands on).
             if (sorted && _sr.sortingOrder != sortingOrder) _sr.sortingOrder = sortingOrder;
             _sr.sprite = frames[frame];
             _sr.enabled = true;

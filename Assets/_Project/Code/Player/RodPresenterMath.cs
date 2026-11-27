@@ -194,6 +194,46 @@ namespace HiddenHarbours.Player
         public static float HeadingDegrees(float dx, float dy)
             => (dx == 0f && dy == 0f) ? 0f : Mathf.Atan2(dx, dy) * Mathf.Rad2Deg;
 
+        /// <summary>A sideways part of her travel smaller than this share of it counts as none: she is
+        /// coming straight down the line and keeps the side she last showed. A float tolerance, not a feel.</summary>
+        private const float FlankLateralTolerance01 = 1e-3f;
+
+        /// <summary>
+        /// <b>SHE SHOWS HER FLANK ON THE LINE</b> (coordinator's ask 2026-11-26: the fish read as a thin
+        /// sliver at the line end). The heading her surfaced row is picked from. A fish reeled straight in
+        /// travels along the line, which picks the end-on rows; within <paramref name="flankWithinDegrees"/>
+        /// of the line (toward the fisher or away) the row is taken ACROSS the line instead, on the side her
+        /// travel drifts toward, so she turns side-on with the line. Further off the line her own travel
+        /// picks the row, as before.
+        ///
+        /// <para><paramref name="fromFisher"/> is her offset from the fisher (the line's axis).
+        /// <paramref name="side"/> is +1 for the axis turned a quarter clockwise, −1 for the other; it is
+        /// handed in as the side she last showed (0 = none yet) and handed back as the side shown. With no
+        /// sideways drift she keeps that side; with none held she shows the side whose heading points
+        /// east (+x), or north when the line runs east-west. 0 or less turns the rule off. Pure.</para>
+        /// </summary>
+        public static Vector2 FlankRowHeading(Vector2 travel, Vector2 fromFisher, float flankWithinDegrees,
+                                              ref int side)
+        {
+            float t = travel.magnitude;
+            float a = fromFisher.magnitude;
+            if (flankWithinDegrees <= 0f || t < 1e-6f || a < 1e-6f) return travel;
+
+            Vector2 axis = fromFisher / a;
+            Vector2 across = new Vector2(axis.y, -axis.x);                      // the axis, a quarter clockwise
+            float lateral = Vector2.Dot(travel, across) / t;
+            if (Mathf.Abs(lateral) > FlankLateralTolerance01) side = lateral > 0f ? 1 : -1;
+
+            float along = Mathf.Clamp(Mathf.Abs(Vector2.Dot(travel, axis)) / t, 0f, 1f);
+            if (Mathf.Acos(along) * Mathf.Rad2Deg > flankWithinDegrees) return travel;
+
+            if (side == 0)
+                side = Mathf.Abs(across.x) > FlankLateralTolerance01
+                    ? (across.x > 0f ? 1 : -1)
+                    : (across.y >= 0f ? 1 : -1);
+            return across * (side * t);
+        }
+
         /// <summary>The flying bobber's vertical lift over the cast: a simple lob peaking mid-flight
         /// (<c>4t(1−t)</c>), zero at release and touchdown. Pure.</summary>
         public static float ArcLift(float progress01, float arcHeightM)

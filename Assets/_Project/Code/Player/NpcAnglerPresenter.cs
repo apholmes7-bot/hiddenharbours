@@ -64,6 +64,10 @@ namespace HiddenHarbours.Player
 
         /// <summary>The fish at the surface, the splash, and the fish in hand. For tests and plates.</summary>
         public SpriteRenderer FishRenderer => _fishSr;
+
+        /// <summary>Where the line's far end was put on the last drawn frame (her mouth while she is up),
+        /// whether or not a rod was there to draw the line from. For tests and plates.</summary>
+        public Vector2 LineFarEnd { get; private set; }
         public SpriteRenderer SplashRenderer => _splashSr;
         /// <summary>The fish swimming in to his bait, and under the water through the deep fight. For tests and
         /// plates.</summary>
@@ -178,18 +182,21 @@ namespace HiddenHarbours.Player
             if ((show & RodElements.FishSurface) != 0)
             {
                 float dt = consecutive ? (float)(now - _lastNow) : 0f;
+                // Behind him while she is in the water beyond his feet, in front only short of them (Core
+                // EffectSorting.FishOnLineOrder); with no body to sort by, the look's water order.
+                int fishOrder = _bodySr != null
+                    ? EffectSorting.FishOnLineOrder(_bodySr.sortingOrder, s.FishOffsetY)
+                    : look.WaterElementOrder;
+                // At his whole-number fish scale, the line still leaves the mouth of the frame drawn.
+                int scale = Mathf.Max(1, look.FishDrawScale);
                 far = _fish.Render(angler, in s, dt, seconds, seconds, look.FishSecondsPerFrame,
-                                   look.FishDartSpeedMps, look.FishSpeedSmoothing01, look.WaterElementOrder,
+                                   look.FishDartSpeedMps, look.FishSpeedSmoothing01, fishOrder, scale,
                                    out bool splashDue, out Vector2 splashAt);
                 if (splashDue && consecutive) SplashAt(splashAt, look, now);
-                // At his whole-number fish scale, the line still leaves her mouth.
-                int scale = Mathf.Max(1, look.FishDrawScale);
                 if (_fishSr.enabled)
                 {
                     Vector3 parent = transform.lossyScale;
                     _fishSr.transform.localScale = new Vector3(scale / NonZero(parent.x), scale / NonZero(parent.y), 1f);
-                    Vector2 at = _fishSr.transform.position;
-                    far = at + (far - at) * scale;
                 }
             }
             else
@@ -199,6 +206,8 @@ namespace HiddenHarbours.Player
                     far = _underDrawn ? _underWorld : angler + new Vector2(s.FishOffsetX, s.FishOffsetY);
                 else if (castPath) far = angler + new Vector2(s.CastAimX, s.CastAimY);
             }
+
+            LineFarEnd = far;
 
             if ((show & RodElements.HeldFish) != 0)
             {
@@ -349,7 +358,10 @@ namespace HiddenHarbours.Player
                 return;
             }
             bool sorted = _bodySr != null;
-            int order = sorted ? EffectSorting.OrderOver(SortedEffect.RodSplash, _bodySr.sortingOrder) : 0;
+            // On the water behind him when it lands beyond his feet, in front only short of them.
+            int order = sorted
+                ? EffectSorting.RodSplashOrder(_bodySr.sortingOrder, _splash.Position.y - transform.position.y)
+                : 0;
             _splash.Render((float)(now - _splashEdgeSeconds), look.SplashFrames, look.SplashFps, sorted, order);
         }
 

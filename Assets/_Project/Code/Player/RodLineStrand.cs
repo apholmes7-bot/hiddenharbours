@@ -80,7 +80,6 @@ namespace HiddenHarbours.Player
                 shudder01 = FishFeelMath.LineShudder01(shudder01, s.Size01, fightLoad01,
                                                        s.SlackWindowOpen, in feel);
             }
-            float shudderAmp = look.ShudderAmpM * shudder01;
 
             // THE COLOUR AXIS IS THE INSTRUCTION (owner ask 2026-07-24 — readable, but no UI): the line
             // falls dull the moment she gives (REEL) and climbs to bar-white as it loads (EASE OFF).
@@ -93,6 +92,8 @@ namespace HiddenHarbours.Player
             int n = _buffer.Length;
             Vector2 span = far - tip;
             float len = span.magnitude;
+            // Never more than a sliver of the span: a hum on a short line, not a zigzag (RodLineMath).
+            float shudderAmp = RodLineMath.ShudderAmplitude(look.ShudderAmpM * shudder01, len);
             Vector2 perp = len > 1e-4f ? new Vector2(-span.y, span.x) / len : Vector2.up;
             float phase = shudderSeconds * look.ShudderHz * (2f * Mathf.PI);
 

@@ -3808,6 +3808,12 @@ namespace HiddenHarbours.Core
                  "the reel cycle takes over. 0 = the ordinary strike.")]
         [Min(0f)] public float BigOneStrikeHoldSeconds;
 
+        [Tooltip("ON THE LINE, SIDE-ON. A surfaced fish travelling within this many degrees of the line " +
+                 "(toward the fisher or away) is drawn ACROSS the line, showing her flank, instead of " +
+                 "end-on down it. The player and every villager angler share it. 0 = off (her travel alone " +
+                 "picks the picture).")]
+        [Range(0f, 90f)] public float FlankWithinLineDegrees;
+
         /// <summary>The reference feel — a first pass for the owner's plate, not a measured tuning.</summary>
         public static FishFeelSettings Default => new FishFeelSettings
         {
@@ -3856,6 +3862,7 @@ namespace HiddenHarbours.Core
             BigOneMarkFadeSeconds = 0.25f,
             BigOneMarkColor = new Color(1f, 0.85f, 0.2f, 1f),
             BigOneStrikeHoldSeconds = 0.35f,
+            FlankWithinLineDegrees = 30f,
         };
     }
 

@@ -25,6 +25,7 @@ namespace HiddenHarbours.Player
         private FishSpeciesVisual _resolvedSpecies;
         private float _resolvedWeightKg = float.NaN;
         private FishRungVisual _rung;
+        private FishArtLibrary _mouths;   // the table whose per-frame mouths win (the shared one by default)
 
         private bool _fishJumps;          // does THIS species clear the water (the Core behaviour seam)
         private float _fightJumpPeriod;   // seconds between her attempts, from the Def or the fallback
@@ -36,6 +37,14 @@ namespace HiddenHarbours.Player
         private Vector2 _lastFishHeading;                      // her travel, so a jump goes somewhere
         private float _fishSpeed;
         private int _fishRow = Directions / 2;
+        private int _flankSide;                                // the side of the line she last showed (0 none)
+        private int _travelRow = Directions / 2;               // the row her own travel picks: a jump is drawn on it
+
+        /// <summary>The angle off the line inside which she is drawn side-on
+        /// (<see cref="RodPresenterMath.FlankRowHeading"/>). Null, the default, reads
+        /// <c>GameConfig.FishFeel.FlankWithinLineDegrees</c> live each frame; a test that pins the
+        /// travel-only rows sets 0.</summary>
+        public float? FlankWithinLineDegreesOverride { get; set; }
 
         /// <param name="renderer">The renderer she is drawn on (its owner may share it with the deep
         /// shadow; this drawer only writes it from <see cref="Render"/>).</param>
@@ -100,6 +109,7 @@ namespace HiddenHarbours.Player
                 // Picked at the weight the fish is DRAWN at (the readability floor), the same rule the
                 // hands and the tote use, so the fish he lands is the fish he then holds.
                 FishArtLibrary table = fishArt != null ? fishArt : FishArtLibrary.Shared;
+                _mouths = table;
                 _rung = FishArtLibrary.LineRungFor(_resolvedSpecies, table != null ? table.CatchArt : null,
                                                    next.FishId, next.WeightKg);
                 return true;
@@ -148,6 +158,7 @@ namespace HiddenHarbours.Player
             _lastFishPos = pos;
             _lastFishHeading = Vector2.zero;
             _fishSpeed = 0f;
+            _flankSide = 0;
         }
 
         /// <summary>
@@ -159,17 +170,25 @@ namespace HiddenHarbours.Player
         /// equal while she is drawn; a villager's presenter passes its timeline's seconds in the phase for
         /// both. <paramref name="speedSmoothing01"/> eases her drawn speed (dart or thrash) toward this
         /// frame's. A jump that has just come down hands back <paramref name="splashDue"/> at
-        /// <paramref name="splashAt"/>.
+        /// <paramref name="splashAt"/>. <paramref name="drawScale"/> is the whole-number scale the caller
+        /// draws her at (the player 1, a villager his look's FishDrawScale): the mouth is taken at that scale,
+        /// so the line leaves the drawn mouth whatever size she is shown.
+        ///
+        /// <para><b>The mouth is the drawn frame's own</b>: the fish art table's anchor for the very sprite
+        /// set this frame (<see cref="FishArtLibrary.TryMouthFor"/>, snapped onto that frame's art at import),
+        /// else the rung's own table at the same index.</para>
         /// </summary>
         public Vector2 Render(Vector2 angler, in FishingState s, float dt, float stateSeconds,
                               float surfaceSeconds, float secondsPerFrame, float dartSpeedMps,
-                              float speedSmoothing01, int sortingOrder, out bool splashDue, out Vector2 splashAt)
+                              float speedSmoothing01, int sortingOrder, float drawScale,
+                              out bool splashDue, out Vector2 splashAt)
         {
             splashDue = false;
             splashAt = default;
             Vector2 pos = angler + new Vector2(s.FishOffsetX, s.FishOffsetY);
 
-            // Her speed picks dart vs thrash; her travel picks the row (held when she pauses).
+            // Her speed picks dart vs thrash; her travel picks the row (held when she pauses), turned
+            // across the line when she is coming straight down it so she shows her flank.
             if (dt > 1e-5f)
             {
                 float instant = (pos - _lastFishPos).magnitude / dt;
@@ -178,7 +197,11 @@ namespace HiddenHarbours.Player
                 if (vel.sqrMagnitude > 1e-6f)
                 {
                     _lastFishHeading = vel;             // the way she is already going — a jump carries on it
+                    Vector2 row = RodPresenterMath.FlankRowHeading(
+                        vel, new Vector2(s.FishOffsetX, s.FishOffsetY), FlankWithinLineDegrees(), ref _flankSide);
                     _fishRow = IsoFacing.HeadingToFacingIndex(
+                        RodPresenterMath.HeadingDegrees(row.x, row.y), Directions, 0f, false);
+                    _travelRow = IsoFacing.HeadingToFacingIndex(
                         RodPresenterMath.HeadingDegrees(vel.x, vel.y), Directions, 0f, false);
                 }
             }
@@ -221,7 +244,9 @@ namespace HiddenHarbours.Player
             int frame = jumping
                 ? FishJumpArc.FrameAt(_jumpStart, surfaceSeconds)
                 : RodPresenterMath.FlipFrame(stateSeconds, secondsPerFrame, perDir);
-            int idx = RodPresenterMath.SheetIndex(_fishRow, frame, perDir, frames.Length);
+            // A jump flies along her travel, so it is drawn on her travel's row; only the fight at the
+            // surface is turned side-on to the line.
+            int idx = RodPresenterMath.SheetIndex(jumping ? _travelRow : _fishRow, frame, perDir, frames.Length);
             if (idx < 0 || frames[idx] == null) { _sr.enabled = false; return pos; }
 
             _sr.transform.position = new Vector3(pos.x, pos.y + lift, 0f);
@@ -231,7 +256,8 @@ namespace HiddenHarbours.Player
 
             // The line follows her UP — the mouth anchor rides the same lift the sprite does.
             Vector2 mouth = pos + new Vector2(0f, lift);
-            if (mouths != null && idx < mouths.Length) mouth += mouths[idx];
+            if (_mouths != null && _mouths.TryMouthFor(frames[idx], out Vector2 drawn)) mouth += drawn * drawScale;
+            else if (mouths != null && idx < mouths.Length) mouth += mouths[idx] * drawScale;
             return mouth;
         }
 
@@ -290,6 +316,14 @@ namespace HiddenHarbours.Player
         /// never drawn — so the jumps replay (rule 5).
         /// </summary>
         public static int FightSeed(string fishId, float weightKg) => FishFightSeed.For(fishId, weightKg);
+
+        private float FlankWithinLineDegrees()
+        {
+            if (FlankWithinLineDegreesOverride.HasValue) return FlankWithinLineDegreesOverride.Value;
+            GameConfig config = GameServices.Config;
+            return config != null ? config.FishFeel.FlankWithinLineDegrees
+                                  : FishFeelSettings.Default.FlankWithinLineDegrees;
+        }
 
         private static int FindSpecies(FishSpeciesVisual[] species, string fishId)
         {

@@ -58,6 +58,7 @@ namespace HiddenHarbours.Player
         {
             _species = species ?? Array.Empty<FishSpeciesVisual>();
             _catchArt = catchArt;
+            _mouthBySprite = null;
         }
 
         /// <summary>
@@ -106,6 +107,52 @@ namespace HiddenHarbours.Player
             if (species == null) return null;
             float drawnKg = catchArt != null ? catchArt.ReadableWeightKg(fishId, weightKg) : weightKg;
             return species.RungFor(drawnKg);
+        }
+
+        [NonSerialized] private System.Collections.Generic.Dictionary<Sprite, Vector2> _mouthBySprite;
+
+        /// <summary>
+        /// <b>The mouth of the very frame being drawn</b>, world m from its pivot at scale 1: the anchor this
+        /// table's import snapped onto that frame's own art (dart, thrash, roll and jump). Keyed by the
+        /// SPRITE, so a scene that carries an older inline copy of the same ladder (St Peters cannot be
+        /// rebuilt) still has its line leave the fish that is drawn. False for a frame this table does not
+        /// hold; the caller keeps its own table's anchor.
+        ///
+        /// <para>The index is built once, on the first ask, and never per frame after that.</para>
+        /// </summary>
+        public bool TryMouthFor(Sprite frame, out Vector2 mouth)
+        {
+            mouth = Vector2.zero;
+            if (frame == null) return false;
+            if (_mouthBySprite == null) _mouthBySprite = IndexMouths(_species);
+            return _mouthBySprite.TryGetValue(frame, out mouth);
+        }
+
+        /// <summary>Every rung's surfaced frames to their mouths. Pure over the table.</summary>
+        public static System.Collections.Generic.Dictionary<Sprite, Vector2> IndexMouths(FishSpeciesVisual[] species)
+        {
+            var map = new System.Collections.Generic.Dictionary<Sprite, Vector2>();
+            if (species == null) return map;
+            foreach (FishSpeciesVisual v in species)
+            {
+                if (v?.Rungs == null) continue;
+                foreach (FishRungVisual r in v.Rungs)
+                {
+                    if (r == null) continue;
+                    Add(map, r.DartFrames, r.DartMouthOffsets);
+                    Add(map, r.ThrashFrames, r.ThrashMouthOffsets);
+                    Add(map, r.RollFrames, r.RollMouthOffsets);
+                    Add(map, r.JumpFrames, r.JumpMouthOffsets);
+                }
+            }
+            return map;
+        }
+
+        static void Add(System.Collections.Generic.Dictionary<Sprite, Vector2> map, Sprite[] frames, Vector2[] mouths)
+        {
+            if (frames == null || mouths == null) return;
+            for (int i = 0; i < frames.Length && i < mouths.Length; i++)
+                if (frames[i] != null) map[frames[i]] = mouths[i];
         }
 
         static bool HasRungs(FishSpeciesVisual v)

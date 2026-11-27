@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using NUnit.Framework;
 using UnityEngine;
@@ -40,7 +41,6 @@ namespace HiddenHarbours.Tests.PlayMode
     {
         private const string PlateDir = "villager-angler-plates";
         private const string ClipDirEnv = "HH_CLIP_DIR";
-        private const string ClipDirName = "villager-angler-clip";
         private const string StPetersScene = "StPeters";
         private const string BasilKey = "npc.basil_samson";
         private const string PlayerPuppetKey = "player.clip_puppet";
@@ -329,8 +329,6 @@ namespace HiddenHarbours.Tests.PlayMode
             return block.GetFloat("_WaterLevel");
         }
 
-        /// <summary>Run engine time with the clock held on <paramref name="t"/> until the drawn sea is at the tide's
-        /// level, then freeze again (the plate laws: engine time runs only between pictures).</summary>
         /// <summary>Where the surfaced fish is drawn and with what, logged beside a fight plate.</summary>
         private void LogTheSurfacedFish(string name)
         {
@@ -340,6 +338,8 @@ namespace HiddenHarbours.Tests.PlayMode
                       $"at {f.transform.position}, scale {f.transform.lossyScale}, bounds {f.bounds.size}, order {f.sortingOrder}, " +
                       $"colour {f.color}; line ends {line}; the fish under the water drawn {_angler.ApproachRenderer.enabled}");
         }
+        /// <summary>Run engine time with the clock held on <paramref name="t"/> until the drawn sea is at the tide's
+        /// level, then freeze again (the plate laws: engine time runs only between pictures).</summary>
         private IEnumerator LetTheSeaCatchUp(double t)
         {
             float target = GameServices.Environment.WaterLevelAt(t);
@@ -522,15 +522,374 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         // =============================================================================================
-        //  The clip (explicit: frames for a video, never a suite case)
+        //  The fight in the light the media clip will use: clear, golden hour, a +2 m tide
         // =============================================================================================
 
+        /// <summary>The tide the golden plates are shot at (m) and how far from it a slot may be.</summary>
+        private const float GoldenTideMetres = 2f, GoldenTideToleranceMetres = 0.4f;
+        /// <summary>The air counts as clear at this visibility or better.</summary>
+        private const float ClearVisibility01 = 0.9f;
+        /// <summary>Golden hour is short and the tide must be high in it: a longer search than the tide plate's. Ten
+        /// 112-day years: in 360 days one warm-key mackerel slot passed every gate, on a day his routine had him
+        /// elsewhere, so the clip's fish needs the longer look.</summary>
+        private const int GoldenDaysSearched = 1120;
+        /// <summary>The golden plates' names start with this, so they never overwrite the 15:30 plate's.</summary>
+        private const string GoldenPrefix = "g-";
+        /// <summary>When the warm key's hour cannot be read, golden hour is taken to start here.</summary>
+        private const float GoldenFallbackFromHour = 18f;
+        /// <summary>The search (and its logged table) opens here, before the warm key, so an earlier, bigger fish
+        /// is seen beside the warm-light ones.</summary>
+        private const float GoldenSearchFromHour = 17f;
+        /// <summary>How many of the best slots the golden log lists.</summary>
+        private const int GoldenSlotsListed = 10;
+        /// <summary>The search closes here (19:20): the end of the warm light the clip wants, inside his
+        /// 19:30 block end and before the sunset glow.</summary>
+        private const float GoldenSearchToHour = 19f + 20f / 60f;
+        /// <summary>The fish the clip wants in the warm key (coordinator 2026-11-26): ranked first.</summary>
+        private const string GoldenTargetFishId = "fish.mackerel";
+        /// <summary>How many target-fish slots the log names as the top.</summary>
+        private const int GoldenTopListed = 3;
+
+        [UnityTest, Timeout(900000)]
+        public IEnumerator Plate_TheSurfacedFightAndTheLanding_ClearGoldenHour_HighWater()
+        {
+            WharfNightStage.RequireAGraphicsDevice();
+            yield return Arrive(ClipArriveHour);
+            yield return FindBasil();
+            Vector2 at = _basil.transform.position;
+            float heading = Heading();
+            var weather = GameServices.Environment as HiddenHarbours.Environment.EnvironmentService;
+            Assert.IsNotNull(weather, "harness: the region registered no environment service");
+            AnglerScript script = _basilAngling.Script;
+            int seed = weather.WorldSeed;
+            uint key = FigureKeyHash.Of(BasilKey);
+            double spd = GameServices.Config.SecondsPerDay;
+            float warm = WarmKeyHour();
+            float warmFrom = float.IsNaN(warm) ? GoldenFallbackFromHour : warm;
+            float fromHour = Mathf.Max(GoldenSearchFromHour, TideBlockFromHour);
+            var log = new StringBuilder();
+
+            // Why the target fish does or does not come up in the warm key: every slot of his in the warm
+            // window, put down by the FIRST gate it fails, in the order the game applies them, off the same
+            // data the roll reads (no data is changed here).
+            var spotFacts = GameServices.ShoreCatch as ShoreCatchFacts;
+            ShoreSpotDef spot = spotFacts?.Spot(_basilAngling.CatchSpotId);
+            FishSpeciesDef target = FishSpeciesRegistry.Get(GoldenTargetFishId);
+            var gates = new SortedDictionary<string, int>(StringComparer.Ordinal);
+            void Gate(string why) => gates[why] = gates.TryGetValue(why, out int g) ? g + 1 : 1;
+            var seasonsSeen = new SortedDictionary<string, int>(StringComparer.Ordinal);
+            int warmSlots = 0;
+            double targetShareSum = 0d;
+            int targetShareSlots = 0;
+
+            // The pick, off the pure models: a slot in his block from the search hour, with a fish, clear air, a
+            // sea he fishes in, and the tide within reach of +2 m through the fight. Ranked: the target fish in
+            // the warm key first, then anything in the warm key, then the biggest fish (the one the camera
+            // reads), then the tide nearest +2 m.
+            var picks = new List<(long slot, double start, float vis, float sea, float level, float kg, string id, float hour, bool warmKey)>();
+            for (int day = 1; day <= GoldenDaysSearched; day++)
+            {
+                double from = (day + fromHour / 24.0) * spd, to = (day + GoldenSearchToHour / 24.0) * spd;
+                for (long slot = AnglerTimeline.SlotIndex(in script, seed, key, from) + 1;
+                     AnglerTimeline.SlotStartSeconds(in script, seed, key, slot) + script.SlotSeconds < to; slot++)
+                {
+                    double start = AnglerTimeline.SlotStartSeconds(in script, seed, key, slot);
+                    float hour = (float)((start / spd - System.Math.Floor(start / spd)) * 24d);
+                    bool warmKey = hour >= warmFrom;
+                    bool picked = GameServices.ShoreCatch.TryPick(_basilAngling.CatchSpotId, seed, key, slot, start,
+                                                                  out ShoreCatch pickFish);
+                    float sea = weather.SeaState01At(start), vis = weather.VisibilityAt(start);
+                    float level = GameServices.Environment.WaterLevelAt(start + 0.5d * script.SlotSeconds);
+                    bool weatherOk = sea <= _basilAngling.MaxSeaState01 && vis >= ClearVisibility01;
+                    bool tideOk = Mathf.Abs(level - GoldenTideMetres) <= GoldenTideToleranceMetres;
+
+                    if (warmKey && spot != null && target != null)
+                    {
+                        warmSlots++;
+                        CatchContext ctx = ShoreCatchFacts.ContextAt(spot, start);
+                        seasonsSeen[ctx.Season.ToString()] = seasonsSeen.TryGetValue(ctx.Season.ToString(), out int ns) ? ns + 1 : 1;
+                        if (spot.SpeciesIds == null || System.Array.IndexOf(spot.SpeciesIds, GoldenTargetFishId) < 0) Gate("bite table: not in the spot's species list");
+                        else if (!target.RegionAllowed(ctx.RegionId)) Gate($"bite table: region {ctx.RegionId} not allowed");
+                        else if (!target.GearAllowed(ctx.Gear)) Gate($"bite table: gear {ctx.Gear} not allowed");
+                        else if (!target.SeasonAllowed(ctx.Season)) Gate($"season: {ctx.Season}");
+                        else if (!target.TimeAllowed(ctx.HourOfDay)) Gate("hour: outside her hours");
+                        else if (!CatchResolver.Matches(target, in ctx)) Gate($"tide or moving water: tide {ctx.TideHeight:0.00} m");
+                        else
+                        {
+                            // She can bite: her share of the roll among the species that also match here.
+                            float total = 0f;
+                            foreach (string id in spot.SpeciesIds)
+                            {
+                                FishSpeciesDef f = FishSpeciesRegistry.Get(id);
+                                if (CatchResolver.Matches(f, in ctx)) total += f.SpawnWeight;
+                            }
+                            if (total > 0f) { targetShareSum += target.SpawnWeight / total; targetShareSlots++; }
+                            if (!tideOk) Gate("tide: drawn level off +2 m");
+                            else if (!weatherOk) Gate($"weather: not clear or too rough (sea max {_basilAngling.MaxSeaState01:0.00}, clear from {ClearVisibility01:0.00})");
+                            else if (!picked) Gate($"bite chance: no bite (spot {spot.BiteChance01:0.00})");
+                            else if (pickFish.FishId != GoldenTargetFishId) Gate($"the roll: {pickFish.FishId} came up");
+                            else Gate("PASSED every gate");
+                        }
+                    }
+
+                    if (!picked || !weatherOk || !tideOk) continue;
+                    picks.Add((slot, start, vis, sea, level, pickFish.WeightKg, pickFish.FishId, hour, warmKey));
+                }
+            }
+            picks.Sort((a, b) =>
+            {
+                int c = (b.warmKey && b.id == GoldenTargetFishId).CompareTo(a.warmKey && a.id == GoldenTargetFishId);
+                if (c != 0) return c;
+                c = b.warmKey.CompareTo(a.warmKey);
+                if (c != 0) return c;
+                c = b.kg.CompareTo(a.kg);
+                return c != 0 ? c : Mathf.Abs(a.level - GoldenTideMetres).CompareTo(Mathf.Abs(b.level - GoldenTideMetres));
+            });
+            log.AppendLine($"{picks.Count} clear slots with a fish within {GoldenTideToleranceMetres} m of a {GoldenTideMetres} m " +
+                           $"tide over {GoldenDaysSearched} days, {fromHour:0.00} h to {GoldenSearchToHour:0.00} h (warm key from {warmFrom:0.00} h)");
+            var bySpecies = new Dictionary<string, int>();
+            foreach (var p in picks) bySpecies[p.id] = bySpecies.TryGetValue(p.id, out int n) ? n + 1 : 1;
+            foreach (var kv in bySpecies) log.AppendLine($"  {kv.Key}: {kv.Value} slots");
+
+            // The target fish in the warm key: the top three, or which gate kept her out.
+            log.AppendLine($"  {GoldenTargetFishId} in the warm key ({warmFrom:0.00} h to {GoldenSearchToHour:0.00} h), top {GoldenTopListed}:");
+            int listed = 0;
+            foreach (var p in picks)
+            {
+                if (!p.warmKey || p.id != GoldenTargetFishId) break;
+                if (listed++ >= GoldenTopListed) break;
+                log.AppendLine(string.Format(CultureInfo.InvariantCulture,
+                    "    TOP slot {0}: {1:0.###} kg, day {2}, hour {3:0.00}, tide {4:0.00} m, visibility {5:0.00}, sea {6:0.00}",
+                    p.slot, p.kg, (int)(p.start / spd), p.hour, p.level, p.vis, p.sea));
+            }
+            if (listed == 0) log.AppendLine("    none");
+            if (spot == null || target == null)
+                log.AppendLine($"  gates not read: spot {(spot != null)}, {GoldenTargetFishId} def {(target != null)}");
+            else
+            {
+                log.AppendLine(string.Format(CultureInfo.InvariantCulture,
+                    "  {0} warm-key slots of his over {1} days, by the first gate each failed (spot {2}, bite chance {3:0.00}; " +
+                    "{4}: seasons {5}, hours {6:0.##} to {7:0.##}, spawn weight {8:0.##}):",
+                    warmSlots, GoldenDaysSearched, spot.Id, spot.BiteChance01, target.Id,
+                    target.Seasons, target.StartHour, target.EndHour, target.SpawnWeight));
+                foreach (var kv in gates) log.AppendLine($"    {kv.Key}: {kv.Value}");
+                log.Append("    seasons of those slots:");
+                foreach (var kv in seasonsSeen) log.Append($" {kv.Key} {kv.Value}");
+                log.AppendLine();
+                if (targetShareSlots > 0)
+                    log.AppendLine(string.Format(CultureInfo.InvariantCulture,
+                        "    where she can bite, her mean share of the roll by spawn weight is {0:0.000} over {1} slots", targetShareSum / targetShareSlots, targetShareSlots));
+            }
+            var biggest = new List<(long slot, double start, float vis, float sea, float level, float kg, string id, float hour, bool warmKey)>(picks);
+            biggest.Sort((a, b) => b.kg.CompareTo(a.kg));
+            log.AppendLine("  the biggest fish, any hour in the window:");
+            for (int i = 0; i < Mathf.Min(GoldenSlotsListed, biggest.Count); i++)
+            {
+                var p = biggest[i];
+                log.AppendLine(string.Format(CultureInfo.InvariantCulture,
+                    "    slot {0}: {1} {2:0.###} kg, day {3}, hour {4:0.00}{5}, tide {6:0.00} m, visibility {7:0.00}, sea {8:0.00}",
+                    p.slot, p.id, p.kg, (int)(p.start / spd), p.hour, p.warmKey ? " (warm key)" : "", p.level, p.vis, p.sea));
+            }
+
+            Session s = null;
+            for (int i = 0; i < Mathf.Min(TideCandidatesTried, picks.Count) && s == null; i++)
+            {
+                var p = picks[i];
+                yield return SeekAndDraw(p.start + 0.5d);
+                if (_basil.Angling == null || !_basil.TryGetAnglerState(out _, out _) || _basil.Beat.Slot != p.slot)
+                {
+                    log.AppendLine($"slot {p.slot} at hour {_clock.HourOfDay:0.00}: not played by his stand (angling " +
+                                   $"{_basil.Angling != null}, beat slot {_basil.Beat.Slot}, in session {_basil.TryGetAnglerState(out _, out _)}, " +
+                                   $"water casts {_basil.Water.IsSet && _basil.Water.Casts})");
+                    continue;
+                }
+                GameServices.ShoreCatch.TryPick(_basilAngling.CatchSpotId, seed, key, p.slot, p.start, out ShoreCatch c);
+                var candidate = new Session { Seed = seed, Slot = p.slot, Script = script, Catch = c, Start = p.start };
+                ReadPhases(candidate, key);
+                if (candidate.LandStart <= candidate.Start) { log.AppendLine($"slot {p.slot}: the fish is not landed"); continue; }
+                s = candidate;
+                log.AppendLine($"picked slot {p.slot}: day {(int)(p.start / spd)}, hour {_clock.HourOfDay:0.00}, visibility " +
+                               $"{p.vis:0.000}, sea state {p.sea:0.000}, tide {p.level:0.00} m; catch {c.FishId} {c.WeightKg:0.###} kg; " +
+                               $"phases {s.Describe()}");
+            }
+            // The search and its gates go to disk now, so they survive a plate that fails further on.
+            string goldenDir = Path.Combine(Application.temporaryCachePath, PlateDir);
+            Directory.CreateDirectory(goldenDir);
+            File.WriteAllText(Path.Combine(goldenDir, "golden-search.txt"), log.ToString(), new UTF8Encoding(false));
+            Assert.IsNotNull(s, $"harness: no clear golden-hour slot at a {GoldenTideMetres} m tide was played\n{log}");
+
+            // The light settles on engine time at the fight's hour, then the game's own camera is parked.
+            yield return SeekAndDraw(s.SurfaceStart);
+            for (int f = 0; f < SettleFrames; f++) yield return null;
+            // The tide plate's camera: halfway out along his cast.
+            Vector2 castDir = AnglerTimeline.CastDirection(in script, seed, key, s.Slot, heading);
+            yield return _stage.FrameOn(at + castDir * (script.CastReachM * 0.5f));
+            LogWaterLook(log);
+            Camera cam = _stage.Camera;
+            var follow = cam.GetComponent<CameraFollow>();
+            Assert.IsNotNull(follow, "harness: the stage camera has no CameraFollow");
+            float plateHeight = cam.orthographicSize * 2f;
+            SpriteRenderer body = _basil.GetComponent<SpriteRenderer>();
+            Assert.IsNotNull(body, "harness: Basil has no body renderer to sort against");
+            FishArtLibrary art = FishArtLibrary.Shared;
+            int scale = Mathf.Max(1, _basil.Look.FishDrawScale);
+
+            // The approach, at the game's walking zoom.
+            AnglerApproachLook a = _basil.Look.Approach;
+            if (a.Seconds > 0f)
+            {
+                yield return Reframe(follow, GameServices.Config.PlayerZoom.Sanitized().DefaultWorldHeightMeters);
+                double t = s.BiteStart - a.Seconds + 0.6f * AnglerApproachMath.SwimInSeconds(in a);
+                yield return StepThrough(t - 0.1d, t);
+                AssertInSession(FishingPhase.Waiting);
+                Assert.IsTrue(_angler.ApproachRenderer.enabled, "no fish coming in to his bait");
+                yield return LetTheSeaCatchUp(t);
+                ShootGolden("2b-approach-walking", t, cam, at, log);
+                yield return Reframe(follow, plateHeight);
+            }
+
+            // The surfaced fight (early, mid, late), the lift and the landing.
+            var beats = new (string name, double from, double to)[]
+            {
+                ("4a-fight-break", s.SurfaceStart - 0.2d, s.SurfaceStart + 0.3d),
+                ("4-fight", s.SurfaceStart + 0.3d, s.SurfaceStart + 1.2d),
+                ("4c-fight-late", s.SurfaceStart + 0.8d * (s.LandStart - s.SurfaceStart) - 0.1d,
+                                  s.SurfaceStart + 0.8d * (s.LandStart - s.SurfaceStart)),
+                ("5a-land-lift", s.LandStart - 0.3d, s.LandStart + 0.5d * s.Script.LandLiftSeconds),
+                ("5-land", s.LandStart + s.Script.LandLiftSeconds, s.LandStart + s.Script.LandLiftSeconds + 0.3d),
+            };
+            foreach (var (name, from, to) in beats)
+            {
+                yield return StepThrough(from, to);
+                Assert.IsTrue(_basil.TryGetAnglerState(out FishingState fs, out _), $"{name}: not in a session");
+                SpriteRenderer fish = _angler.FishRenderer;
+                if (fish.enabled)
+                {
+                    // The line leaves the drawn frame's own mouth, at his scale.
+                    Assert.IsNotNull(art, "harness: no fish art table");
+                    Assert.IsTrue(art.TryMouthFor(fish.sprite, out Vector2 mouth), $"{name}: the frame is not the table's");
+                    Vector2 want = (Vector2)fish.transform.position + mouth * scale;
+                    Assert.LessOrEqual(Vector2.Distance(want, _angler.LineFarEnd), 1e-3f,
+                                       $"{name}: the line ends at {_angler.LineFarEnd}, not her drawn mouth {want}");
+                    if (fs.FishOffsetY >= 0f)
+                        Assert.Less(fish.sortingOrder, body.sortingOrder, $"{name}: she draws over him from the water side");
+                }
+                yield return LetTheSeaCatchUp(to);
+                ShootGolden(name, to, cam, at, log);
+            }
+
+            string dir = Path.Combine(Application.temporaryCachePath, PlateDir);
+            File.WriteAllText(Path.Combine(dir, "golden-log.txt"), log.ToString(), new UTF8Encoding(false));
+            Debug.Log($"[{PlateDir}] golden:\n{log}");
+        }
+
+        /// <summary>The water's look at this hour, for why the sea reads as it does: each water surface's own
+        /// material (the preset it was authored from), whether the weather mood blend is on and how strong, the
+        /// four mood anchors with this frame's blend weights, and the colours the blend actually pushed (the
+        /// renderer's property block, else the material's). Read by reflection: test-only, nothing is changed.</summary>
+        private static void LogWaterLook(StringBuilder log)
+        {
+            const BindingFlags Field = BindingFlags.Instance | BindingFlags.NonPublic;
+            string[] anchors = { "base", "calm", "storm", "fog" };
+            string[] colours = { "_ShallowColor", "_DeepColor", "_DeepBlueColor" };
+            var surfaces = Object.FindObjectsByType<WaterSurface>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            log.AppendLine($"water look: {surfaces.Length} water surface(s)");
+            var block = new MaterialPropertyBlock();
+            foreach (WaterSurface w in surfaces)
+            {
+                var r = w.GetComponent<Renderer>();
+                Material mat = r != null ? r.sharedMaterial : null;
+                bool on = (bool)(typeof(WaterSurface).GetField("_weatherPaletteEnabled", Field)?.GetValue(w) ?? false);
+                float strength = (float)(typeof(WaterSurface).GetField("_weatherPaletteStrength", Field)?.GetValue(w) ?? float.NaN);
+                var mats = typeof(WaterSurface).GetField("_anchorMaterials", Field)?.GetValue(w) as Material[];
+                var weights = typeof(WaterSurface).GetField("_weatherBlendWeights", Field)?.GetValue(w) as float[];
+                var sb = new StringBuilder();
+                sb.Append(string.Format(CultureInfo.InvariantCulture, "  {0}: material {1}, weather mood {2} at strength {3:0.00}",
+                                        w.gameObject.name, mat != null ? mat.name : "none", on ? "ON" : "off", strength));
+                for (int i = 0; i < anchors.Length; i++)
+                {
+                    string name = mats != null && i < mats.Length && mats[i] != null ? mats[i].name : "none";
+                    string weight = weights != null && i < weights.Length
+                        ? weights[i].ToString("0.000", CultureInfo.InvariantCulture) : "?";
+                    sb.Append($"; {anchors[i]} {name} x{weight}");
+                }
+                if (r != null)
+                {
+                    r.GetPropertyBlock(block);
+                    foreach (string c in colours)
+                    {
+                        int id = Shader.PropertyToID(c);
+                        bool pushed = !block.isEmpty && block.HasColor(id);
+                        bool authored = mat != null && mat.HasProperty(id);
+                        if (!pushed && !authored) continue;
+                        Color col = pushed ? block.GetColor(id) : mat.GetColor(id);
+                        sb.Append(string.Format(CultureInfo.InvariantCulture, "; {0} #{1} ({2})",
+                                                c, ColorUtility.ToHtmlStringRGB(col), pushed ? "blended" : "material"));
+                    }
+                }
+                log.AppendLine(sb.ToString());
+            }
+        }
+
+        /// <summary>Snap the game's camera to a world height and let it land (engine time runs only while it does).</summary>
+        private static IEnumerator Reframe(CameraFollow follow, float worldHeightMeters)
+        {
+            Time.timeScale = 1f;
+            follow.SetFraming(worldHeightMeters, 0f);
+            for (int f = 0; f < 12; f++) yield return null;
+            Time.timeScale = 0f;
+            for (int f = 0; f < 2; f++) yield return null;
+        }
+
+        /// <summary>Shoot a golden plate and log what is in it: the tide (asked and drawn), the zoom, where Basil
+        /// stands in the picture (for the 3x crop), and the fish and line as drawn.</summary>
+        private void ShootGolden(string name, double t, Camera cam, Vector2 at, StringBuilder log)
+        {
+            Vector3 vp = cam.WorldToViewportPoint(new Vector3(at.x, at.y, 0f));
+            SpriteRenderer fish = _angler.FishRenderer;
+            log.AppendLine(string.Format(CultureInfo.InvariantCulture,
+                "{0}{1}: t {2:0.00}s, hour {3:0.000}, tide {4:0.000} m (drawn {5:0.000}), world height {6:0.###} m, " +
+                "plate {7}x{8}, Basil at px ({9:0},{10:0}) from top-left; fish {11} order {12} (body {13}) at {14}; " +
+                "line ends {15}; held {16}",
+                GoldenPrefix, name, t, _clock.HourOfDay, GameServices.Environment.WaterLevelAt(t), DrawnSeaLevel(),
+                cam.orthographicSize * 2f, _stage.Width, _stage.Height, vp.x * _stage.Width, (1f - vp.y) * _stage.Height,
+                fish.enabled ? (fish.sprite != null ? fish.sprite.name : "none") : "off", fish.sortingOrder,
+                _basil.GetComponent<SpriteRenderer>().sortingOrder, (Vector2)fish.transform.position,
+                _angler.LineFarEnd, _angler.Land?.Mesh?.Drawing ?? false));
+            Shoot(GoldenPrefix + name);
+        }
+
+        /// <summary>The phase edges of <paramref name="s"/>'s slot, read off the pure timeline.</summary>
+        private static void ReadPhases(Session s, uint key)
+        {
+            AnglerScript script = s.Script;
+            FishingPhase last = FishingPhase.Idle;
+            for (double t = s.Start; t < s.Start + script.SlotSeconds; t += 0.01d)
+            {
+                AnglerTimeline.Evaluate(in script, in s.Catch, true, s.Seed, key, 90f, t, out AnglerBeat b);
+                if (b.Phase == last) continue;
+                if (b.Phase == FishingPhase.Cast) s.CastStart = b.PhaseStartSeconds;
+                else if (b.Phase == FishingPhase.Waiting) s.WaitStart = b.PhaseStartSeconds;
+                else if (b.Phase == FishingPhase.Bite) s.BiteStart = b.PhaseStartSeconds;
+                else if (b.Phase == FishingPhase.FightDeep) s.DeepStart = b.PhaseStartSeconds;
+                else if (b.Phase == FishingPhase.FightSurface) s.SurfaceStart = b.PhaseStartSeconds;
+                else if (b.Phase == FishingPhase.Landed) s.LandStart = b.PhaseStartSeconds;
+                last = b.Phase;
+            }
+        }
+
+        // =============================================================================================
+        //  The clip (explicit: frames for a video, never a suite case)
+        // =============================================================================================
         [UnityTest, Timeout(ClipTimeoutMs), Explicit("Writes several hundred full-HD frames for a video; run by name only.")]
         public IEnumerator Clip_BasilAndThePlayerFishTheWharfHead_GoldenHour()
         {
+            // Explicit is not enough: a class or namespace filter still selects it. With nowhere named to
+            // film into it films nothing, so only a run that sets HH_CLIP_DIR on purpose can write frames.
+            string dir = System.Environment.GetEnvironmentVariable(ClipDirEnv);
+            if (string.IsNullOrEmpty(dir))
+                Assert.Ignore($"films only into a folder named by {ClipDirEnv}; none is set, so no frames are written");
             WharfNightStage.RequireAGraphicsDevice();
-            string env = System.Environment.GetEnvironmentVariable(ClipDirEnv);
-            string dir = !string.IsNullOrEmpty(env) ? env : Path.Combine(Application.temporaryCachePath, ClipDirName);
             Directory.CreateDirectory(dir);
 
             yield return Arrive(ClipArriveHour);

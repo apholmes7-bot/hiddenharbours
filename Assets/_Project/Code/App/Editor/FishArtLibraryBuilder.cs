@@ -36,6 +36,15 @@ namespace HiddenHarbours.App.Editor
             else Debug.LogError($"[FishArtLibraryBuilder] {summary}");
         }
 
+        /// <summary>The build for a batchmode run (<c>-executeMethod</c>): exits 0 on a written table, 1 otherwise.</summary>
+        public static void BuildFromCommandLine()
+        {
+            bool ok = BuildLibrary(out string summary);
+            if (ok) Debug.Log($"[FishArtLibraryBuilder] {summary}");
+            else Debug.LogError($"[FishArtLibraryBuilder] {summary}");
+            AssetDatabase.SaveAssets();
+            EditorApplication.Exit(ok ? 0 : 1);
+        }
         /// <summary>
         /// Create or refresh <see cref="LibraryPath"/> in place (its guid kept). False, with nothing
         /// written, when no species ladder could be read at all: an empty table would quietly turn the

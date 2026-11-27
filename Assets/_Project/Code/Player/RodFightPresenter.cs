@@ -962,8 +962,13 @@ namespace HiddenHarbours.Player
         /// same surface break every other beat of this fight uses.</summary>
         private Vector2 RenderSurfaceFish(Vector2 angler, float dt)
         {
+            // Behind him while she is in the water beyond his feet, in front only short of them (Core
+            // EffectSorting.FishOnLineOrder); in his hands she is the held catch, in front by its own rule.
+            int fishOrder = _playerSr != null
+                ? EffectSorting.FishOnLineOrder(_playerSr.sortingOrder, _s.FishOffsetY)
+                : _waterElementOrder;
             Vector2 mouth = _fish.Render(angler, in _s, dt, _stateClock, _surfaceClock, _fishSecondsPerFrame,
-                                         _fishDartSpeedMps, FishSpeedSmoothing01, _waterElementOrder,
+                                         _fishDartSpeedMps, FishSpeedSmoothing01, fishOrder, 1f,
                                          out bool splashDue, out Vector2 splashAt);
             if (splashDue) SplashAt(splashAt);
             return mouth;
@@ -1062,9 +1067,12 @@ namespace HiddenHarbours.Player
 
         private void RenderSplash()
         {
-            // ADR 0059 step 2: the splash rides the fisher's own order, one rung in front, not a parked 51.
+            // The splash rides the fisher's own order (ADR 0059): on the water behind him when it lands beyond
+            // his feet, one rung in front only short of them (Core EffectSorting.RodSplashOrder).
             bool sorted = _playerSr != null;
-            int splashOrder = sorted ? EffectSorting.OrderOver(SortedEffect.RodSplash, _playerSr.sortingOrder) : 0;
+            int splashOrder = sorted
+                ? EffectSorting.RodSplashOrder(_playerSr.sortingOrder, _splash.Position.y - transform.position.y)
+                : 0;
             _splash.Render(_splashClock, _splashFrames, _splashFps, sorted, splashOrder);
         }
 
