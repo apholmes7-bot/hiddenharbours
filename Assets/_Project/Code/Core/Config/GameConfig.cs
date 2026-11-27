@@ -3832,6 +3832,17 @@ namespace HiddenHarbours.Core
                  "seconds she has been up (counted on the fight's own clock, never drawn at random). " +
                  "0 = off.")]
         [Min(0f)] public float ThrashChurnPeriodSeconds;
+        [Tooltip("AT THE SURFACE, CHURN. The churn plays the fisher's splash flipbook from this frame on, so it " +
+                 "is only the open rings round her (they frame her, sorted behind her), never the column and " +
+                 "crown of a break that would pile onto her. 0 = the whole splash.")]
+        [Min(0)] public int ThrashChurnFirstSplashFrame;
+        [Tooltip("AT THE SURFACE, BY THE FISHER. Half the width (m) of the fisher's drawn figure round his feet. " +
+                 "A darting fish whose drawn mouth would fall inside his figure (where the line, behind him, " +
+                 "cannot be seen) is drawn thrashing at the surface instead, mouth clear of him.")]
+        [Min(0f)] public float FisherFigureHalfWidthM;
+        [Tooltip("AT THE SURFACE, BY THE FISHER. The height (m) of the fisher's drawn figure above his feet, " +
+                 "for the rule above. 0 = off.")]
+        [Min(0f)] public float FisherFigureHeightM;
 
         /// <summary>The reference feel — a first pass for the owner's plate, not a measured tuning.</summary>
         public static FishFeelSettings Default => new FishFeelSettings
@@ -3887,6 +3898,9 @@ namespace HiddenHarbours.Core
             WaterlineRowsAbovePivot = 0,
             FishUnderwaterTint = new Color(0.45f, 0.66f, 0.72f, 0.55f),
             ThrashChurnPeriodSeconds = 0.9f,
+            ThrashChurnFirstSplashFrame = 5,
+            FisherFigureHalfWidthM = 0.35f,
+            FisherFigureHeightM = 1.7f,
         };
     }
 

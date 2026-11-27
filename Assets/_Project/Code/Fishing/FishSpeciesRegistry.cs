@@ -35,17 +35,19 @@ namespace HiddenHarbours.Fishing
             new(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>Register a species under its stable <see cref="FishSpeciesDef.Id"/>. Idempotent and
-        /// forgiving: a null def, a def with a blank id, or a re-registration of an id already present is a
-        /// no-op (first wins). Call once per species at boot (the registrar, off the authored library).</summary>
+        /// forgiving: a null def or a def with a blank id is a no-op; a re-registration of an id already
+        /// present keeps the first def (first wins) but publishes the Core seams again, so a boot after a
+        /// Reset has them. Call once per species at boot (the registrar, off the authored library).</summary>
         public static void Register(FishSpeciesDef def)
         {
             if (def == null || string.IsNullOrWhiteSpace(def.Id)) return;
-            if (_byId.ContainsKey(def.Id)) return;   // first registration wins
-            _byId[def.Id] = def;
+            if (!_byId.ContainsKey(def.Id)) _byId[def.Id] = def;   // first registration wins
 
-            // The first species registered also publishes the Core behaviour seam, so a presenter that
-            // may not reference this module (the fight drawer lives in Player) can still ask what a
-            // hooked fish does — rule 4's named contract rather than an asmdef reference.
+            // Every registration (re)publishes the Core seams, a repeat one too: the species outlive a
+            // GameServices.Reset in this static table, so a boot after a Reset that only re-registered
+            // known ids would otherwise leave the seams empty and every jumper fighting flat. The seams
+            // let a presenter that may not reference this module (the fight drawer lives in Player)
+            // still ask what a hooked fish does — rule 4's named contract rather than an asmdef reference.
             GameServices.FishBehaviour = Facts;
             GameServices.FishSizes = SizeFacts;
             GameServices.FishConservation = ConservationFacts;

@@ -192,7 +192,7 @@ namespace HiddenHarbours.Player
                 far = _fish.Render(angler, in s, dt, seconds, seconds, look.FishSecondsPerFrame,
                                    look.FishDartSpeedMps, look.FishSpeedSmoothing01, fishOrder, scale,
                                    out bool splashDue, out Vector2 splashAt);
-                if (splashDue && consecutive) SplashAt(splashAt, look, now);
+                if (splashDue && consecutive) SplashAt(splashAt, look, now, _fish.SplashFirstFrame);
                 if (_fishSr.enabled)
                 {
                     Vector3 parent = transform.lossyScale;
@@ -344,9 +344,9 @@ namespace HiddenHarbours.Player
 
         private static float NonZero(float v) => Mathf.Abs(v) > 1e-6f ? v : 1f;
 
-        private void SplashAt(Vector2 pos, in AnglerLook look, double edgeSeconds)
+        private void SplashAt(Vector2 pos, in AnglerLook look, double edgeSeconds, int firstFrame = 0)
         {
-            if (_splash.Begin(pos, look.SplashFrames)) _splashEdgeSeconds = edgeSeconds;
+            if (_splash.Begin(pos, look.SplashFrames, firstFrame)) _splashEdgeSeconds = edgeSeconds;
         }
 
         private void RenderSplash(double now, in AnglerLook look)

@@ -842,9 +842,186 @@ namespace HiddenHarbours.Tests.PlayMode
                 ShootGolden(name, to, cam, at, log);
             }
 
+            // The motion, not single frames: the contact strip from the bite to the landing.
+            yield return WriteContactStrip(s, cam, at, log);
+
             string dir = Path.Combine(Application.temporaryCachePath, PlateDir);
             File.WriteAllText(Path.Combine(dir, "golden-log.txt"), log.ToString(), new UTF8Encoding(false));
             Debug.Log($"[{PlateDir}] golden:\n{log}");
+        }
+
+        /// <summary>The contact strip: every this many frames of the clock's step.</summary>
+        private const int ContactStride = 4;
+        /// <summary>One cell of the strip on the plate, in plate pixels (2 m by 3.5 m at the plate's zoom).</summary>
+        private const int ContactCellW = 64, ContactCellH = 112;
+        /// <summary>The strip is drawn at this whole-number scale of the plate (each plate pixel a square block).</summary>
+        private const int ContactScale = 3;
+        /// <summary>The label band over each cell, in unscaled pixels: a 5-row glyph with a row either side.</summary>
+        private const int ContactLabelRows = 7;
+        /// <summary>The gap between cells, in unscaled pixels.</summary>
+        private const int ContactGap = 1;
+        /// <summary>The widest PNG a texture can write.</summary>
+        private const int ContactMaxWidthPx = 16384;
+        /// <summary>Every cell is framed on this point above his feet (m): one fixed frame, so the motion reads and
+        /// not the camera, tall enough for his figure and a fish surfaced a couple of metres off the wharf.</summary>
+        private const float ContactCentreAboveFeetM = 1.75f;
+        private const string ContactStripFile = "g-contact-strip.png";
+
+        /// <summary>
+        /// Step his fight from the bite to the landing on consecutive frames and keep every
+        /// <see cref="ContactStride"/>th: a cell of the plate framed on him (<see cref="ContactCentreAboveFeetM"/>), drawn
+        /// at <see cref="ContactScale"/>x in one row, each labelled with its phase (the lift and the landing told
+        /// apart) and banded by phase colour. One fixed frame on him for every cell. Written as <see cref="ContactStripFile"/>; the cells are logged.
+        /// </summary>
+        private IEnumerator WriteContactStrip(Session s, Camera cam, Vector2 at, StringBuilder log)
+        {
+            double from = s.BiteStart, to = s.LandStart + s.Script.LandLiftSeconds + 0.3d;
+            yield return StepThrough(from - 0.5d, from - StepSeconds);
+            var cells = new List<(Color32[] crop, string label, Color32 band)>();
+            Vector3 vp = cam.WorldToViewportPoint(new Vector3(at.x, at.y + ContactCentreAboveFeetM, 0f));
+            int step = 0;
+            for (double t = from; t <= to; t += StepSeconds, step++)
+            {
+                _clock.SeekTo(t);
+                yield return null;
+                if (step % ContactStride != 0) continue;
+                Assert.IsTrue(_basil.TryGetAnglerState(out FishingState fs, out _), $"contact strip at {t:0.00}s: not in a session");
+                string label;
+                Color32 band;
+                switch (fs.Phase)
+                {
+                    case FishingPhase.Bite: label = "BITE"; band = new Color32(200, 170, 60, 255); break;
+                    case FishingPhase.FightDeep: label = "DEEP"; band = new Color32(40, 90, 150, 255); break;
+                    case FishingPhase.FightSurface: label = "SURFACE"; band = new Color32(40, 150, 140, 255); break;
+                    case FishingPhase.Landed:
+                        bool lift = t < s.LandStart + s.Script.LandLiftSeconds;
+                        label = lift ? "LIFT" : "LANDED";
+                        band = lift ? new Color32(190, 110, 50, 255) : new Color32(110, 160, 70, 255);
+                        break;
+                    default: label = fs.Phase.ToString().ToUpperInvariant(); band = new Color32(110, 110, 110, 255); break;
+                }
+                cells.Add((CropCell(_stage.Capture(), Mathf.RoundToInt(vp.x * _stage.Width), Mathf.RoundToInt(vp.y * _stage.Height)), label, band));
+                SurfacedFishDrawer d = _angler.Fish;
+                log.AppendLine(string.Format(CultureInfo.InvariantCulture,
+                    "contact {0}: t {1:0.00}s ({2:+0.00}s from the bite), {3}, fish {4}, cut {5}, dart held at the surface {6}, splash {7}",
+                    cells.Count - 1, t, t - from, label,
+                    _angler.FishRenderer.enabled && d?.DrawnFrame != null ? d.DrawnFrame.name : "off",
+                    d?.UnderwaterRenderer != null && d.UnderwaterRenderer.enabled, d != null && d.DartHeldAtSurface,
+                    SplashSpriteName()));
+            }
+            Assert.Greater(cells.Count, 0, "harness: the contact strip has no cells");
+
+            // One row: the cell narrows only if a full row would pass the widest texture.
+            int n = cells.Count;
+            int cw = Mathf.Min(ContactCellW, ContactMaxWidthPx / ContactScale / n - ContactGap);
+            Assert.Greater(cw, 8, $"harness: {n} cells cannot fit one row");
+            int ch = ContactCellH;
+            int w = (n * (cw + ContactGap) - ContactGap) * ContactScale, h = (ContactLabelRows + ch) * ContactScale;
+            var strip = new byte[w * h * 4];
+            void Put(int x, int yTop, Color32 c)
+            {
+                if (x < 0 || x >= w || yTop < 0 || yTop >= h) return;
+                int i = ((h - 1 - yTop) * w + x) * 4;
+                strip[i] = c.r; strip[i + 1] = c.g; strip[i + 2] = c.b; strip[i + 3] = 255;
+            }
+            void Block(int ux, int uyTop, Color32 c)
+            {
+                for (int by = 0; by < ContactScale; by++)
+                    for (int bx = 0; bx < ContactScale; bx++)
+                        Put(ux * ContactScale + bx, uyTop * ContactScale + by, c);
+            }
+            var white = new Color32(250, 250, 245, 255);
+            var gap = new Color32(16, 16, 20, 255);
+            for (int ux = 0; ux < w / ContactScale; ux++)
+                for (int uy = 0; uy < h / ContactScale; uy++) Block(ux, uy, gap);
+            for (int c = 0; c < n; c++)
+            {
+                var cell = cells[c];
+                int left = c * (cw + ContactGap);
+                for (int ux = 0; ux < cw; ux++)
+                    for (int uy = 0; uy < ContactLabelRows; uy++) Block(left + ux, uy, cell.band);
+                DrawLabel(cell.label, left + 1, 1, cw - 2, (gx, gy) => Block(gx, gy, white));
+                int skip = (ContactCellW - cw) / 2;                 // a narrowed cell keeps the crop's middle
+                for (int uy = 0; uy < ch; uy++)
+                    for (int ux = 0; ux < cw; ux++)
+                        Block(left + ux, ContactLabelRows + uy, cell.crop[uy * ContactCellW + skip + ux]);
+            }
+            var tex = new Texture2D(w, h, TextureFormat.RGBA32, false);
+            tex.LoadRawTextureData(strip);
+            tex.Apply();
+            string dir = Path.Combine(Application.temporaryCachePath, PlateDir);
+            Directory.CreateDirectory(dir);
+            File.WriteAllBytes(Path.Combine(dir, ContactStripFile), tex.EncodeToPNG());
+            Object.DestroyImmediate(tex);
+            log.AppendLine($"contact strip: {n} cells, every {ContactStride} frames from the bite to the landing, " +
+                           $"{cw}x{ch} plate px each at {ContactScale}x, {w}x{h} px, written to {ContactStripFile}");
+        }
+
+        /// <summary>
+        /// The <see cref="ContactCellW"/> x <see cref="ContactCellH"/> plate cell centred on plate pixel
+        /// (<paramref name="cx"/>, <paramref name="cy"/>) of a bottom-up RGBA capture, as rows top to bottom
+        /// (off-plate pixels dark), so the strip keeps a cell and not the whole frame.
+        /// </summary>
+        private Color32[] CropCell(byte[] rgba, int cx, int cy)
+        {
+            var crop = new Color32[ContactCellW * ContactCellH];
+            for (int uy = 0; uy < ContactCellH; uy++)
+            {
+                int py = cy + ContactCellH / 2 - 1 - uy;            // plate rows count up from the bottom
+                for (int ux = 0; ux < ContactCellW; ux++)
+                {
+                    int px = cx - ContactCellW / 2 + ux;
+                    if (px < 0 || px >= _stage.Width || py < 0 || py >= _stage.Height)
+                    {
+                        crop[uy * ContactCellW + ux] = new Color32(16, 16, 20, 255);
+                        continue;
+                    }
+                    int i = (py * _stage.Width + px) * 4;
+                    crop[uy * ContactCellW + ux] = new Color32(rgba[i], rgba[i + 1], rgba[i + 2], 255);
+                }
+            }
+            return crop;
+        }
+
+        /// <summary>The sprite his splash is drawing now, or "off".</summary>
+        private string SplashSpriteName()
+        {
+            foreach (SpriteRenderer r in _angler.GetComponentsInChildren<SpriteRenderer>(false))
+                if (r.enabled && r.sprite != null && r.sprite.name.StartsWith("SplashBurst", StringComparison.Ordinal))
+                    return r.sprite.name;
+            return "off";
+        }
+
+        /// <summary>A 3x5 capital for each letter the strip's labels use (rows top to bottom).</summary>
+        private static readonly Dictionary<char, string[]> Glyphs = new Dictionary<char, string[]>
+        {
+            ['A'] = new[] { ".#.", "#.#", "###", "#.#", "#.#" }, ['B'] = new[] { "##.", "#.#", "##.", "#.#", "##." },
+            ['C'] = new[] { ".##", "#..", "#..", "#..", ".##" }, ['D'] = new[] { "##.", "#.#", "#.#", "#.#", "##." },
+            ['E'] = new[] { "###", "#..", "##.", "#..", "###" }, ['F'] = new[] { "###", "#..", "##.", "#..", "#.." },
+            ['G'] = new[] { ".##", "#..", "#.#", "#.#", ".##" }, ['H'] = new[] { "#.#", "#.#", "###", "#.#", "#.#" },
+            ['I'] = new[] { "###", ".#.", ".#.", ".#.", "###" }, ['K'] = new[] { "#.#", "#.#", "##.", "#.#", "#.#" },
+            ['L'] = new[] { "#..", "#..", "#..", "#..", "###" }, ['M'] = new[] { "#.#", "###", "###", "#.#", "#.#" },
+            ['N'] = new[] { "##.", "#.#", "#.#", "#.#", "#.#" }, ['O'] = new[] { ".#.", "#.#", "#.#", "#.#", ".#." },
+            ['P'] = new[] { "##.", "#.#", "##.", "#..", "#.." }, ['R'] = new[] { "##.", "#.#", "##.", "#.#", "#.#" },
+            ['S'] = new[] { ".##", "#..", ".#.", "..#", "##." }, ['T'] = new[] { "###", ".#.", ".#.", ".#.", ".#." },
+            ['U'] = new[] { "#.#", "#.#", "#.#", "#.#", "###" }, ['W'] = new[] { "#.#", "#.#", "###", "###", "#.#" },
+            ['Y'] = new[] { "#.#", "#.#", ".#.", ".#.", ".#." },
+        };
+
+        /// <summary>Plot <paramref name="text"/> in <see cref="Glyphs"/> from (<paramref name="x"/>,
+        /// <paramref name="yTop"/>), a column between letters, stopping at <paramref name="maxWidth"/>.</summary>
+        private static void DrawLabel(string text, int x, int yTop, int maxWidth, Action<int, int> plot)
+        {
+            int cx = 0;
+            foreach (char ch in text)
+            {
+                if (cx + 3 > maxWidth) break;
+                if (Glyphs.TryGetValue(ch, out string[] g))
+                    for (int gy = 0; gy < g.Length; gy++)
+                        for (int gx = 0; gx < g[gy].Length; gx++)
+                            if (g[gy][gx] == '#') plot(x + cx + gx, yTop + gy);
+                cx += 4;
+            }
         }
 
         /// <summary>The water's look at this hour, for why the sea reads as it does: each water surface's own
@@ -1116,6 +1293,17 @@ namespace HiddenHarbours.Tests.PlayMode
                 Assert.IsNotNull(lib, "harness: no shore spot library in Resources");
                 GameServices.ShoreCatch = lib.BuildFacts();
                 _healed = "shore catch republished";
+            }
+            // The species seams likewise: registered once per domain, emptied by the same teardown, so a later
+            // test's mackerel would fight flat (never jump) where the game's would jump. A repeat registration
+            // republishes the seams.
+            if (GameServices.FishBehaviour is EmptyFishBehaviourFacts)
+            {
+                var species = Resources.Load<FishSpeciesLibrary>(FishSpeciesRegistrar.ResourcesPath);
+                Assert.IsNotNull(species, "harness: no fish species library in Resources");
+                species.RegisterAll();
+                Assert.IsFalse(GameServices.FishBehaviour is EmptyFishBehaviourFacts, "harness: the species seam stayed empty");
+                _healed = _healed == "none" ? "fish species republished" : _healed + "; fish species republished";
             }
             _stage = new WharfNightStage(StPetersScene, PlateDir);
             yield return _stage.Load();

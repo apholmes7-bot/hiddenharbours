@@ -550,6 +550,9 @@ MonoBehaviour:
     WaterlineRowsAbovePivot: 0
     FishUnderwaterTint: {r: 0.45, g: 0.66, b: 0.72, a: 0.55}
     ThrashChurnPeriodSeconds: 0.9
+    ThrashChurnFirstSplashFrame: 5
+    FisherFigureHalfWidthM: 0.35
+    FisherFigureHeightM: 1.7
   FishSchools:
     CellSizeMetres: 22
     SlotHours: 2.5

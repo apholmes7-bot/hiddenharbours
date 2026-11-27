@@ -320,6 +320,19 @@ namespace HiddenHarbours.Player
         }
 
         /// <summary>
+        /// Is <paramref name="point"/> inside the fisher's drawn figure: within <paramref name="halfWidthM"/>
+        /// either side of his feet at <paramref name="feet"/> and from his feet up to
+        /// <paramref name="heightM"/> above them (the three-quarter view draws height as screen-up). False for
+        /// a zero or negative size (off) or a NaN point.
+        /// </summary>
+        public static bool InFisherFigure(Vector2 point, Vector2 feet, float halfWidthM, float heightM)
+        {
+            if (!(halfWidthM > 0f) || !(heightM > 0f)) return false;
+            float dx = point.x - feet.x, dy = point.y - feet.y;
+            return Mathf.Abs(dx) <= halfWidthM && dy >= 0f && dy <= heightM;
+        }
+
+        /// <summary>
         /// Where the line leaves the rod: the tip of whichever rod is DRAWN this frame. The mesh rod
         /// (ADR 0053) when it draws, else the sprite rod's tip pin. One rod is drawn at a time, so the line
         /// can never hang off the one that is hidden.

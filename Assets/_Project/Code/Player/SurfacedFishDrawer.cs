@@ -64,6 +64,19 @@ namespace HiddenHarbours.Player
         /// <summary>The renderer her rows under the waterline are drawn on, or null before the first cut.</summary>
         public SpriteRenderer UnderwaterRenderer => _underSr;
 
+        /// <summary>The splash handed back by the last <see cref="Render"/> is a churn (the caller plays it from
+        /// <c>FishFeel.ThrashChurnFirstSplashFrame</c>), not a jump's re-entry.</summary>
+        public bool LastSplashIsChurn { get; private set; }
+
+        /// <summary>Where the caller starts its splash flipbook for the splash the last <see cref="Render"/> handed
+        /// back: a churn plays only the open rings (<c>FishFeel.ThrashChurnFirstSplashFrame</c>), a jump's re-entry
+        /// the whole splash.</summary>
+        public int SplashFirstFrame => LastSplashIsChurn ? Feel().ThrashChurnFirstSplashFrame : 0;
+
+        /// <summary>The last <see cref="Render"/> was darting, but close in by the fisher, so she was drawn
+        /// thrashing at the surface with her mouth clear of his figure.</summary>
+        public bool DartHeldAtSurface { get; private set; }
+
         /// <summary>Take her out of the picture: the fish and her rows under the water.</summary>
         public void Hide()
         {
@@ -217,6 +230,8 @@ namespace HiddenHarbours.Player
         {
             splashDue = false;
             splashAt = default;
+            LastSplashIsChurn = false;
+            DartHeldAtSurface = false;
             Vector2 pos = angler + new Vector2(s.FishOffsetX, s.FishOffsetY);
 
             // Her speed picks dart vs thrash; her travel picks the row (held when she pauses), turned
@@ -281,9 +296,29 @@ namespace HiddenHarbours.Player
             int idx = RodPresenterMath.SheetIndex(jumping ? _travelRow : _fishRow, frame, perDir, frames.Length);
             if (idx < 0 || frames[idx] == null) { Hide(); return pos; }
 
+            // BY THE FISHER: the dart art bakes her under the surface, drawn low on the frame. Close in, that
+            // puts her drawn mouth inside his figure, where the line (behind him) cannot be seen. There she is
+            // drawn thrashing at the surface instead, her mouth clear of him and the line to it in sight.
+            FishFeelSettings feel = Feel();
+            if (dart && !jumping && sp.ThrashFrames != null && sp.ThrashFrames.Length > 0 && sp.ThrashFramesPerDir > 0
+                && RodPresenterMath.InFisherFigure(MouthOf(frames, mouths, idx, pos, 0f, drawScale), angler,
+                                                   feel.FisherFigureHalfWidthM, feel.FisherFigureHeightM))
+            {
+                int thrashIdx = RodPresenterMath.SheetIndex(
+                    _fishRow, RodPresenterMath.FlipFrame(stateSeconds, secondsPerFrame, sp.ThrashFramesPerDir),
+                    sp.ThrashFramesPerDir, sp.ThrashFrames.Length);
+                if (thrashIdx >= 0 && sp.ThrashFrames[thrashIdx] != null)
+                {
+                    dart = false;
+                    DartHeldAtSurface = true;
+                    frames = sp.ThrashFrames;
+                    mouths = sp.ThrashMouthOffsets;
+                    idx = thrashIdx;
+                }
+            }
+
             // IN THE WATER AT THE SURFACE: her rows under the waterline are drawn under it, tinted toward the
             // sea, on her own art grid (FishWaterlineCut). A jump is out of the water and is drawn whole.
-            FishFeelSettings feel = Feel();
             bool cuts = !jumping && (dart ? feel.DartCutsAtWaterline : feel.ThrashCutsAtWaterline);
             Sprite baked = frames[idx];
             DrawnFrame = baked;
@@ -317,10 +352,19 @@ namespace HiddenHarbours.Player
                     _churnBeat = beat;
                     splashDue = true;
                     splashAt = pos;
+                    LastSplashIsChurn = true;
                 }
             }
 
             // The line follows her UP — the mouth anchor rides the same lift the sprite does.
+            return MouthOf(frames, mouths, idx, pos, lift, drawScale);
+        }
+
+        /// <summary>The drawn mouth of <paramref name="frames"/>[<paramref name="idx"/>] drawn at
+        /// <paramref name="pos"/> raised by <paramref name="lift"/>: the art table's anchor for that very sprite,
+        /// else the rung's own table at the same index, else her position.</summary>
+        private Vector2 MouthOf(Sprite[] frames, Vector2[] mouths, int idx, Vector2 pos, float lift, float drawScale)
+        {
             Vector2 mouth = pos + new Vector2(0f, lift);
             if (_mouths != null && _mouths.TryMouthFor(frames[idx], out Vector2 drawn)) mouth += drawn * drawScale;
             else if (mouths != null && idx < mouths.Length) mouth += mouths[idx] * drawScale;

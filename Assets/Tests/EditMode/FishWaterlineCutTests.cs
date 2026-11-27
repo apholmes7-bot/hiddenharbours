@@ -204,6 +204,92 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void TheChurn_PlaysOnlyTheOpenRings_AndAJumpsSplashPlaysWhole()
+        {
+            FishFeelSettings feel = Feel();
+            Assume.That(feel.ThrashChurnFirstSplashFrame > 0, "the shipped feel starts the churn part-way");
+            var sr = Track(new GameObject("ChurningFish")).AddComponent<SpriteRenderer>();
+            var drawer = new SurfacedFishDrawer(sr) { ThrashChurnPeriodSecondsOverride = 0.5f };
+            var hold = new Vector2(0.5f, 3f);
+            FishingState s = Surface(hold.x, hold.y);
+            drawer.Resolve(in s, new[] { Species(out _) }, null, new Facts(), 0f);
+            drawer.OnSurfaced();
+            drawer.ResetMotion(hold);
+            Assert.AreEqual(0, drawer.SplashFirstFrame, "no splash yet, so the whole flipbook");
+            bool churned = false;
+            for (int f = 0; f < 40 && !churned; f++)
+            {
+                float t = f * 0.02f;
+                drawer.Render(Vector2.zero, in s, 0.02f, t, t, 0.1f, 1.2f, 1f, 30, 1f, out bool due, out _);
+                if (!due) continue;
+                churned = true;
+                Assert.IsTrue(drawer.LastSplashIsChurn);
+                Assert.AreEqual(feel.ThrashChurnFirstSplashFrame, drawer.SplashFirstFrame);
+            }
+            Assert.IsTrue(churned, "she never churned");
+
+            // The flipbook started part-way plays from that frame to its end, then stops.
+            const int count = 8, first = 5;
+            var tex = Track(new Texture2D(8, 8));
+            var frames = new Sprite[count];
+            for (int i = 0; i < count; i++) frames[i] = Track(Sprite.Create(tex, new Rect(0, 0, 8, 8), Vector2.zero, 32f));
+            var splashSr = Track(new GameObject("Splash")).AddComponent<SpriteRenderer>();
+            var splash = new RodSplashFlourish(splashSr);
+            Assert.IsTrue(splash.Begin(Vector2.zero, frames, first));
+            splash.Render(0f, frames, 10f, false, 0);
+            Assert.AreSame(frames[first], splashSr.sprite, "the churn did not open on its first ring");
+            splash.Render(0.25f, frames, 10f, false, 0);
+            Assert.AreSame(frames[first + 2], splashSr.sprite);
+            splash.Render(0.35f, frames, 10f, false, 0);
+            Assert.IsFalse(splash.Active, "the churn ran past the end of the flipbook");
+            Assert.IsTrue(splash.Begin(Vector2.zero, frames));
+            splash.Render(0f, frames, 10f, false, 0);
+            Assert.AreSame(frames[0], splashSr.sprite, "a whole splash does not open on its first frame");
+            Assert.IsTrue(splash.Begin(Vector2.zero, frames, 99));
+            splash.Render(0f, frames, 10f, false, 0);
+            Assert.AreSame(frames[count - 1], splashSr.sprite, "a first frame past the end is kept inside the flipbook");
+        }
+
+        [Test]
+        public void ADartByTheFisher_IsDrawnThrashingAtTheSurface_SoTheLineToHerMouthIsInSight()
+        {
+            FishFeelSettings feel = Feel();
+            Assume.That(feel.FisherFigureHalfWidthM > 0f && feel.FisherFigureHeightM > 0f, "the rule is on");
+            const float dt = 0.02f, speed = 3f;   // well over the 1.2 m/s dart speed
+            (bool held, Sprite frame, Sprite[] thrash, Sprite[] dart) Run(float y)
+            {
+                var sr = Track(new GameObject("DartingFish")).AddComponent<SpriteRenderer>();
+                var drawer = new SurfacedFishDrawer(sr) { ThrashChurnPeriodSecondsOverride = 0f };
+                FishSpeciesVisual sp = Species(out Sprite[] thrash);
+                var start = new Vector2(-0.3f, y);
+                FishingState s0 = Surface(start.x, start.y);
+                drawer.Resolve(in s0, new[] { sp }, null, new Facts(), 0f);
+                drawer.ResetMotion(start);
+                for (int f = 1; f <= 5; f++)
+                {
+                    FishingState s = Surface(start.x + speed * dt * f, y);
+                    drawer.Render(Vector2.zero, in s, dt, f * dt, f * dt, 0.1f, 1.2f, 1f, 30, 1f, out _, out _);
+                }
+                return (drawer.DartHeldAtSurface, drawer.DrawnFrame, thrash, sp.Rungs[0].DartFrames);
+            }
+
+            var near = Run(feel.FisherFigureHeightM * 0.5f);
+            Assert.IsTrue(near.held, "a dart inside his figure was not held at the surface");
+            CollectionAssert.Contains(near.thrash, near.frame, "inside his figure she was not drawn thrashing");
+
+            var far = Run(feel.FisherFigureHeightM + 1f);
+            Assert.IsFalse(far.held);
+            CollectionAssert.Contains(far.dart, far.frame, "clear of him she did not dart");
+
+            Assert.IsTrue(RodPresenterMath.InFisherFigure(new Vector2(0.2f, 1f), Vector2.zero, 0.35f, 1.7f));
+            Assert.IsFalse(RodPresenterMath.InFisherFigure(new Vector2(0.4f, 1f), Vector2.zero, 0.35f, 1.7f), "beside him");
+            Assert.IsFalse(RodPresenterMath.InFisherFigure(new Vector2(0f, -0.1f), Vector2.zero, 0.35f, 1.7f), "short of his feet");
+            Assert.IsFalse(RodPresenterMath.InFisherFigure(new Vector2(0f, 1.8f), Vector2.zero, 0.35f, 1.7f), "over his head");
+            Assert.IsFalse(RodPresenterMath.InFisherFigure(new Vector2(0f, 1f), Vector2.zero, 0f, 1.7f), "off at a size of 0");
+            Assert.IsFalse(RodPresenterMath.InFisherFigure(new Vector2(float.NaN, 1f), Vector2.zero, 0.35f, 1.7f));
+        }
+
+        [Test]
         public void ChurnBeat_CountsWholePeriods_AndIsZeroWhenOff()
         {
             Assert.AreEqual(0, RodPresenterMath.ChurnBeat(0.49, 0.5f));

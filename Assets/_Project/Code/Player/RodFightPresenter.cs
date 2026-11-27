@@ -971,7 +971,7 @@ namespace HiddenHarbours.Player
             Vector2 mouth = _fish.Render(angler, in _s, dt, _stateClock, _surfaceClock, _fishSecondsPerFrame,
                                          _fishDartSpeedMps, FishSpeedSmoothing01, fishOrder, 1f,
                                          out bool splashDue, out Vector2 splashAt);
-            if (splashDue) SplashAt(splashAt);
+            if (splashDue) SplashAt(splashAt, _fish.SplashFirstFrame);
             return mouth;
         }
 
@@ -1061,9 +1061,9 @@ namespace HiddenHarbours.Player
             _rippleSr.enabled = true;
         }
 
-        private void SplashAt(Vector2 pos)
+        private void SplashAt(Vector2 pos, int firstFrame = 0)
         {
-            if (_splash != null && _splash.Begin(pos, _splashFrames)) _splashClock = 0f;
+            if (_splash != null && _splash.Begin(pos, _splashFrames, firstFrame)) _splashClock = 0f;
         }
 
         private void RenderSplash()

@@ -18,6 +18,7 @@ namespace HiddenHarbours.Player
         private readonly SpriteRenderer _sr;
         private bool _active;
         private Vector2 _pos;
+        private int _first;
 
         public RodSplashFlourish(SpriteRenderer renderer) { _sr = renderer; }
 
@@ -29,13 +30,16 @@ namespace HiddenHarbours.Player
 
         /// <summary>
         /// Start a splash at <paramref name="pos"/>. False (and nothing starts) with no frames to play;
-        /// on true the owner restarts its splash clock at 0.
+        /// on true the owner restarts its splash clock at 0. <paramref name="firstFrame"/> starts the flipbook
+        /// part-way (a thrashing fish's churn plays only the open rings, never the column and crown of a break),
+        /// kept inside the flipbook.
         /// </summary>
-        public bool Begin(Vector2 pos, Sprite[] frames)
+        public bool Begin(Vector2 pos, Sprite[] frames, int firstFrame = 0)
         {
             if (frames == null || frames.Length == 0) return false;
             _active = true;
             _pos = pos;
+            _first = Mathf.Clamp(firstFrame, 0, frames.Length - 1);
             return true;
         }
 
@@ -46,7 +50,8 @@ namespace HiddenHarbours.Player
         public void Render(float splashSeconds, Sprite[] frames, float fps, bool sorted, int sortingOrder)
         {
             if (!_active) { _sr.enabled = false; return; }
-            int frame = RodPresenterMath.OnceFlipFrame(splashSeconds, 1f / Mathf.Max(0.1f, fps), frames.Length);
+            int first = Mathf.Clamp(_first, 0, frames.Length - 1);
+            int frame = first + RodPresenterMath.OnceFlipFrame(splashSeconds, 1f / Mathf.Max(0.1f, fps), frames.Length - first);
             if (frame >= frames.Length || frames[frame] == null)
             {
                 _active = false;
