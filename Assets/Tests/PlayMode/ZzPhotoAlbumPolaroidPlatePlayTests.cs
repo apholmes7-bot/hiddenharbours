@@ -180,8 +180,8 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         /// <summary>
-        /// He stands by the lookout bench with the camera up and slides the frame onto the seals: the screen as
-        /// he sees it, viewfinder and all, then the shutter keeps a real picture of them in his album.
+        /// At low water he stands on the dry rock near the Whelps with the camera up and slides the frame onto the
+        /// seals: the screen as he sees it, viewfinder and all, then the shutter keeps a real picture of them.
         /// </summary>
         [UnityTest, Timeout(240000)]
         public IEnumerator HeFramesTheSealsFromTheLookout_WithTheCameraUp()
@@ -216,12 +216,6 @@ namespace HiddenHarbours.Tests.PlayMode
             SealHaulout host = null;
             yield return HoldLowWater(h => host = h);
 
-            player.position = new Vector3(LookoutStand.x, LookoutStand.y, player.position.z);
-            var body = player.GetComponent<Rigidbody2D>();
-            if (body != null) { body.position = LookoutStand; body.linearVelocity = Vector2.zero; }
-            Physics2D.SyncTransforms();
-            yield return new WaitForSecondsRealtime(1.5f);
-
             var sightings = new WildlifeSighting[64];
             int seen = host.CopySightings(sightings);
             var lying = sightings.Take(seen).Where(s => s.Visible).Select(s => s.WorldPosition).ToList();
@@ -229,6 +223,20 @@ namespace HiddenHarbours.Tests.PlayMode
             Vector2 seals = Vector2.zero;
             foreach (Vector2 p in lying) seals += p;
             seals /= lying.Count;
+
+            // The game view at 1080p shows about 30 x 17 m around him, and the frame is 10 x 7 m: to see the
+            // whole frame on screen he stands within about 10 m across and 5 m up or down of the seals, on
+            // ground the low water leaves dry, on the land side (from the north-west round).
+            Vector2 stand = StandingSpotBy(seals, player);
+            player.position = new Vector3(stand.x, stand.y, player.position.z);
+            var body = player.GetComponent<Rigidbody2D>();
+            if (body != null) { body.position = stand; body.linearVelocity = Vector2.zero; }
+            Physics2D.SyncTransforms();
+            // A teleport is no approach: every seal starts again from the schedule with him already standing
+            // there, as on a region load, and then reacts to a man standing still at this distance.
+            host.Haulout = host.Haulout;
+            yield return new WaitForSecondsRealtime(1.5f);
+            seen = host.CopySightings(sightings);
 
             if (PlayerPhotoCamera.Instance == null) PlayerPhotoCamera.Install();
             PlayerPhotoCamera camera = PlayerPhotoCamera.Instance;
@@ -257,10 +265,10 @@ namespace HiddenHarbours.Tests.PlayMode
             Debug.Log($"[album plate] he stands at ({player.position.x:0.0}, {player.position.y:0.0}); seals' middle " +
                       $"({seals.x:0.0}, {seals.y:0.0}); frame centre ({framed.center.x:0.0}, {framed.center.y:0.0}); " +
                       $"view half-height {main.orthographicSize:0.0} m");
-            Assert.Less(Vector2.Distance(framed.center, seals), 3f, "the frame reaches the seals from the lookout");
+            Assert.Less(Vector2.Distance(framed.center, seals), 3f, "the frame reaches the seals");
 
             if (!string.IsNullOrEmpty(evidence))
-                yield return Plate(main, null, Path.Combine(evidence, "framing-the-seals"));
+                yield return Plate(main, null, Path.Combine(evidence, "framing-the-seals"), false);
 
             held.PressShutter();
             yield return null;
@@ -274,13 +282,36 @@ namespace HiddenHarbours.Tests.PlayMode
             Debug.Log($"[album plate] kept: \"{NotebookPhotoPage.Caption(def, kept)}\" score {kept.Score}");
             Assert.IsTrue(PhotoAlbumRows.HasQualifying(data, SavePlayerKeys.Local, "wildlife.grey_seal", 2,
                                                        WildlifePose.Alert, 30),
-                          "a picture of the seals from the lookout is the one Odile asks for");
+                          "his picture of the seals is the one Odile asks for");
             if (!string.IsNullOrEmpty(evidence))
                 WriteThumbnail(kept.Thumbnail, Path.Combine(evidence, "framing-the-seals-kept.png"));
             held.PressRaise();
             yield return null;
             held.Release();
             yield return null;
+        }
+
+        /// <summary>A dry, clear spot near enough the seals that the whole frame shows on his screen.</summary>
+        static Vector2 StandingSpotBy(Vector2 seals, Transform player)
+        {
+            ITidalTerrain terrain = GameServices.TidalTerrain;
+            float water = GameServices.Environment.WaterLevelAt(GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0d);
+            float wade = GameServices.Config != null ? GameServices.Config.WadeDepth : 0f;
+            var own = player.GetComponent<Rigidbody2D>();
+            Physics2D.SyncTransforms();
+            foreach (float r in new[] { 10f, 9.5f, 9f, 8.5f })
+                for (int k = 0; k < 36; k++)
+                {
+                    float a = (135f + k * 10f) * Mathf.Deg2Rad;   // from the north-west round
+                    Vector2 p = seals + new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * r;
+                    if (Mathf.Abs(p.x - seals.x) > 9.5f || Mathf.Abs(p.y - seals.y) > 4.5f) continue;
+                    if (terrain != null && !TidalExposure.IsWalkable(water, terrain.ElevationAt(p), wade)) continue;
+                    bool blocked = Physics2D.OverlapCircleAll(p, 0.3f)
+                        .Any(c => c != null && !c.isTrigger && c.enabled && c.attachedRigidbody != own);
+                    if (!blocked) return p;
+                }
+            Assert.Fail($"no dry spot near the seals at ({seals.x:0.0}, {seals.y:0.0}) at {water:F2} m water");
+            return seals;
         }
 
         /// <summary>The water held low until the drawn sea shows it, and every seal set again from the schedule at
@@ -409,7 +440,7 @@ namespace HiddenHarbours.Tests.PlayMode
         /// where the 2D renderer sorted the book's order 400 against world sprites up to 32763 on the one
         /// sorting layer, and the world drew over the paper.)
         /// </summary>
-        static IEnumerator Plate(Camera camera, RectTransform cropTo, string path)
+        static IEnumerator Plate(Camera camera, RectTransform cropTo, string path, bool aPageIsOpen = true)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(path));
             var previousTarget = camera.targetTexture;
@@ -483,7 +514,8 @@ namespace HiddenHarbours.Tests.PlayMode
                                           Lay(overBlack[i].g, overWhite[i].g, world[i].g, linear),
                                           Lay(overBlack[i].b, overWhite[i].b, world[i].b, linear), 255);
                 }
-                Assert.Greater(drawn, page.Length / 20, "the canvases drew an opaque page into the plate");
+                if (aPageIsOpen)
+                    Assert.Greater(drawn, page.Length / 20, "the canvases drew an opaque page into the plate");
 
                 var image = new Texture2D(ScreenW, ScreenH, TextureFormat.RGB24, false);
                 try
