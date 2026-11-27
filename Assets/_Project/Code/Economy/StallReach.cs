@@ -64,9 +64,13 @@ namespace HiddenHarbours.Economy
 
         /// <summary>True iff the on-foot player is within range of <paramref name="stallPosition"/> (the
         /// stall's own transform). False while aboard or if the player can't be located.</summary>
-        public bool CanInteract(Vector3 stallPosition)
+        public bool CanInteract(Vector3 stallPosition) => CanInteract(stallPosition, out _);
+
+        /// <summary>The same range check, returning the exact actor position it checked.</summary>
+        public bool CanInteract(Vector3 stallPosition, out Vector2 actorPosition)
         {
             Transform p = ResolvePlayer();
+            actorPosition = p != null ? (Vector2)p.position : default;
             return p != null && StallGate.CanInteract(_onFoot, p.position, stallPosition, _range);
         }
 

@@ -22,7 +22,7 @@ namespace HiddenHarbours.World
     /// content it cannot see, and two places to fix when it stopped being so.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class InteriorWardrobe : MonoBehaviour, IInteractable
+    public sealed class InteriorWardrobe : MonoBehaviour, IInteractable, IRoomFixtureReach
     {
         [Tooltip("Stable id — unique among live interactables, and what the picker matches on to tell " +
                  "the player's own wardrobe from one in a shop. It is also how the picker finds this " +
@@ -62,7 +62,9 @@ namespace HiddenHarbours.World
         public string VerbLabel => "Open the wardrobe";
 
         /// <inheritdoc/>
-        public void Interact(in InteractActor actor) => Open();
+        public bool CanReach(in InteractActor actor) => RoomFixtureReach.Allows(this, actor, WorldPosition);
+
+        public void Interact(in InteractActor actor) { if (CanReach(actor)) Open(); }
 
         private void OnEnable() => Interactables.Register(this);
         private void OnDisable() => Interactables.Unregister(this);
