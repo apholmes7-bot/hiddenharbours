@@ -114,6 +114,12 @@ namespace HiddenHarbours.Art
                  "nearest steps, so tone changes block by block and not on the straight line between two chunks. " +
                  "0 = every chunk lit at its own facing.")]
         [Range(0f, 90f)] public float FaultFacetDegrees = 0f;
+        [Tooltip("On the VARIANT skin's own face, how much of the block size above a block takes. 1 = the same blocks.")]
+        [Range(0.1f, 2f)] public float FaultVariantBlockScale = 1f;
+        [Tooltip("On the VARIANT skin's own face, how much of the throw above a block takes. Its courses are drawn at " +
+                 "the tile's own texel (the base skin's are finer), so they are taller than the base skin's beds and " +
+                 "a throw that breaks those leaves these as long level slabs. 1 = the same throw.")]
+        [Range(0f, 4f)] public float FaultVariantThrowScale = 1f;
 
         [TextArea] public string Why = "";
 

@@ -219,5 +219,22 @@ namespace HiddenHarbours.Tests
             Assert.Greater(f.CrackShare, 0f);
             Assert.Greater(f.FacetDegrees, 0f);
         }
+
+        [Test]
+        public void TheVariantFace_TakesItsOwnBlocks_InWholeTexels_AndOneLeavesThemAlone()
+        {
+            CliffFault f = Fault;
+            CliffFault same = f.OnVariantSkin();
+            Assert.AreEqual(f.BlockTexels, same.BlockTexels, "a scale of 1 leaves the blocks");
+            Assert.AreEqual(f.ThrowTexels, same.ThrowTexels, "a scale of 1 leaves the throw");
+
+            var scaled = new CliffFault(new Vector2(18f, 14f), 9, 160, 4, 0.35f, 30f, 0.5f, 1.5f).OnVariantSkin();
+            Assert.AreEqual(new Vector2(9f, 7f), scaled.BlockTexels);
+            Assert.AreEqual(Mathf.RoundToInt(9 * 1.5f), scaled.ThrowTexels);
+            Assert.IsTrue(scaled.On);
+
+            var tiny = new CliffFault(new Vector2(18f, 14f), 9, 160, 4, 0.35f, 30f, 0.01f, 1f).OnVariantSkin();
+            Assert.AreEqual(new Vector2(2f, 2f), tiny.BlockTexels, "never under two texels: a block has an inside");
+        }
     }
 }

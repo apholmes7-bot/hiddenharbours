@@ -304,6 +304,7 @@ namespace HiddenHarbours.Art
         private static readonly int IdBaseTexelScale = Shader.PropertyToID("_BaseTexelScale");
         private static readonly int IdFaultA = Shader.PropertyToID("_FaultA");
         private static readonly int IdFaultB = Shader.PropertyToID("_FaultB");
+        private static readonly int IdFaultC = Shader.PropertyToID("_FaultC");
         private static readonly int IdPaletteVariant =Shader.PropertyToID("_PaletteVariant");
         private static readonly int IdVariantOn = Shader.PropertyToID("_VariantOn");
         private static readonly int IdVariantBlock = Shader.PropertyToID("_VariantBlock");
@@ -2099,6 +2100,7 @@ namespace HiddenHarbours.Art
             CliffFault fault = CliffFault.From(_mix);
             _mpb.SetVector(IdFaultA, fault.ShaderA);
             _mpb.SetVector(IdFaultB, fault.ShaderB(_planarFace && !decal));
+            _mpb.SetVector(IdFaultC, fault.ShaderC);
             _mpb.SetFloat(IdWallAzimuth, _wallAzimuth);
             _mpb.SetFloat(IdBatter, _batter);
             _mpb.SetVector(IdBakeL, new Vector4(_bakeLight.x, _bakeLight.y, _bakeLight.z, 0f));

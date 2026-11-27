@@ -21,9 +21,14 @@ namespace HiddenHarbours.Art
         /// <summary>The step a block's facing snaps to for its shade, degrees. 0 leaves the chunk's own.</summary>
         public readonly float FacetDegrees;
 
+        /// <summary>On the variant skin's own face: how much of the block's size, and of its throw, a block takes.</summary>
+        public readonly float VariantBlockScale, VariantThrowScale;
+
         public CliffFault(Vector2 blockTexels, int throwTexels, int slideTexels, int crackRunTexels, float crackShare,
-                          float facetDegrees)
+                          float facetDegrees, float variantBlockScale = 1f, float variantThrowScale = 1f)
         {
+            VariantBlockScale = Mathf.Max(0f, variantBlockScale);
+            VariantThrowScale = Mathf.Max(0f, variantThrowScale);
             BlockTexels = blockTexels;
             ThrowTexels = Mathf.Max(0, throwTexels);
             SlideTexels = Mathf.Max(0, slideTexels);
@@ -37,7 +42,21 @@ namespace HiddenHarbours.Art
         public static CliffFault From(CliffFaceMixDef mix) => mix == null
             ? default
             : new CliffFault(mix.FaultBlockTexels, mix.FaultThrowTexels, mix.FaultSlideTexels, mix.FaultCrackRunTexels,
-                             mix.FaultCrackShare, mix.FaultFacetDegrees);
+                             mix.FaultCrackShare, mix.FaultFacetDegrees, mix.FaultVariantBlockScale,
+                             mix.FaultVariantThrowScale);
+
+        /// <summary>
+        /// The fault as the VARIANT skin's own face takes it. Its courses are taller than the base skin's beds, so a throw
+        /// that breaks those leaves it in long level slabs; its blocks and their throw are scaled.
+        /// Twin: the shader's fsize and fthrow.
+        /// </summary>
+        public CliffFault OnVariantSkin() => new CliffFault(
+            new Vector2(Mathf.Max(Mathf.Floor(BlockTexels.x * VariantBlockScale), 2f),
+                        Mathf.Max(Mathf.Floor(BlockTexels.y * VariantBlockScale), 2f)),
+            Mathf.RoundToInt(ThrowTexels * VariantThrowScale), SlideTexels, CrackRunTexels, CrackShare, FacetDegrees);
+
+        /// <summary>The shader's _FaultC: the variant face's block scale and throw scale.</summary>
+        public Vector4 ShaderC => new Vector4(VariantBlockScale, VariantThrowScale, 0f, 0f);
 
         /// <summary>The shader's _FaultA: block width, tier height, throw, slide.</summary>
         public Vector4 ShaderA => new Vector4(BlockTexels.x, BlockTexels.y, ThrowTexels, SlideTexels);

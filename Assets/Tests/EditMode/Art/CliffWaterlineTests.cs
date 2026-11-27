@@ -505,10 +505,17 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "the shadow comes out of the mask at the PX key, the light the mask was baked at.");
             // The cliff mix (owner 11 25) picks the palette per block, the twin of CliffFaceMixMath.PicksVariant:
             // the same hash, the same salt, whole at the ends.
-            StringAssert.Contains("mixW > CliffHash(floor(cell / mixBlk), 8.0)", px,
-                "the shader's block pick is not CliffFaceMixMath.PicksVariant's");
+            // The pick is made once, AHEAD of the px branch: the fault's blocks go by the skin, and the fault runs
+            // before the look does. So the pick is looked for before the branch, and only once in the file.
+            const string pick = "mixW > CliffHash(floor(cell / mixBlk), 8.0)";
+            int picked = Find(src, pick);
+            Assert.IsTrue(picked >= 0 && picked < branch,
+                "the shader's block pick is not CliffFaceMixMath.PicksVariant's, or it is no longer ahead of the look");
+            Assert.AreEqual(picked, src.LastIndexOf(pick, System.StringComparison.Ordinal),
+                "ONE block pick: the fault and the palette must agree which skin a texel wears");
             Assert.AreEqual(8f, CliffFaceMixMath.BlockSalt, "the block pick's salt is the shader's 8.0");
-            StringAssert.Contains("mixW >= 0.999", px, "a full weight must draw the variant everywhere, as the twin does");
+            StringAssert.Contains("mixW >= 0.999", src.Substring(0, branch),
+                "a full weight must draw the variant everywhere, as the twin does");
             // Pass 2: the variant skin's own faces (a style) swap in on the SAME block pick, inside the one px branch,
             // and the normal is re-read with them, or the coursed rock would be lit by the kit face's facets.
             StringAssert.Contains("if (variant && _VariantFaceOn > 0.5)", px,

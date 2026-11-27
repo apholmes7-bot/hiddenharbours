@@ -185,13 +185,32 @@ namespace HiddenHarbours.Tests.PlayMode
                     foreach (CliffWallSurface wall in Object.FindObjectsByType<CliffWallSurface>())
                         foreach (MeshRenderer r in wall.GetComponentsInChildren<MeshRenderer>(true))
                             if (r.name.StartsWith(CliffWallSurface.BandChildPrefix) && r.bounds.Intersects(view))
-                                log.AppendLine($"  [in-view] {wall.name} planar {wall.PlanarFace} {r.name} " +
+                                log.AppendLine($"  [in-view] {wall.name} planar {wall.PlanarFace} {r.name} {Folds(r)} " +
                                                $"centre ({r.bounds.center.x:0.#}, {r.bounds.center.y:0.#}) " +
                                                $"size ({r.bounds.size.x:0.#}, {r.bounds.size.y:0.#}) order {r.sortingOrder}");
                 }
             }
             File.WriteAllText(Path.Combine(PlateDir(), $"plates_{tag}.txt"), log.ToString(), new UTF8Encoding(false));
             Debug.Log("[cliff-rough-plates] " + log);
+        }
+
+        /// <summary>How many of a band's triangles are wound each way on screen: both counts above zero means the
+        /// face folds over itself there, and its outline is then a fold and not a band edge.</summary>
+        static string Folds(MeshRenderer r)
+        {
+            MeshFilter filter = r.GetComponent<MeshFilter>();
+            Mesh m = filter != null ? filter.sharedMesh : null;
+            if (m == null) return "no mesh";
+            Vector3[] v = m.vertices;
+            int[] t = m.triangles;
+            int one = 0, other = 0;
+            for (int i = 0; i + 2 < t.Length; i += 3)
+            {
+                Vector2 a = v[t[i]], b = v[t[i + 1]], c = v[t[i + 2]];
+                float area = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+                if (area > 1e-7f) one++; else if (area < -1e-7f) other++;
+            }
+            return $"wound {one}/{other}";
         }
 
         IEnumerator HoldTheTide(float level)

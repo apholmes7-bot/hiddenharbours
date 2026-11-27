@@ -119,6 +119,8 @@ Shader "HiddenHarbours/CliffFace"
         // A: block width, tier height, throw, slide (ground texels). B: crack run, crack share, facet degrees, on.
         [HideInInspector] _FaultA ("Fault: block, tier, throw, slide", Vector) = (0, 0, 0, 0)
         [HideInInspector] _FaultB ("Fault: crack run, crack share, facet deg, on", Vector) = (4, 0, 0, 0)
+        // C: on the BASE skin's face (broad beds, flat inside a block), the block's size and its throw are scaled.
+        [HideInInspector] _FaultC ("Fault: variant face block scale, variant face throw scale", Vector) = (1, 1, 0, 0)
         [HideInInspector][NoScaleOffset] _UnlitVariant ("Px variant face index", 2D) = "black" {}
         [HideInInspector][NoScaleOffset] _NormalVariant ("Px variant face normal", 2D) = "bump" {}
         [HideInInspector][NoScaleOffset] _MaskVariant ("Px variant face mask", 2D) = "white" {}
@@ -336,6 +338,7 @@ Shader "HiddenHarbours/CliffFace"
                 // The faulted bedding's two (see the property note), in both variants for the same reason.
                 float4 _FaultA;
                 float4 _FaultB;
+                float4 _FaultC;
             CBUFFER_END
 
             // The shared field's HEIGHT at a plan position, transcribed from the water shader's
@@ -507,10 +510,10 @@ Shader "HiddenHarbours/CliffFace"
             // is thrown and slid by WHOLE texels and its edges carry a stair-stepped crack. Nothing rotates,
             // shears or moves by part of a texel. The block a WORLD cell is in: x the column piece, y the tier.
             // Twin: CliffFaultMath.BlockOf (and Stepped, At, FacetAzimuth for the fragment lines that use it).
-            float2 CliffFaultBlock(float2 c)
+            float2 CliffFaultBlock(float2 c, float2 size)
             {
-                float bw   = max(_FaultA.x, 2.0);
-                float th   = max(_FaultA.y, 2.0);
+                float bw   = max(size.x, 2.0);
+                float th   = max(size.y, 2.0);
                 float pair = bw * 4.0;
                 float k    = floor(c.x / pair);
                 float split = floor((k + 0.25 + 0.5 * CliffHash(float2(k, 0.0), 20.0)) * pair);
@@ -592,22 +595,44 @@ Shader "HiddenHarbours/CliffFace"
                 // THE FAULTED BEDDING (see CliffFaultBlock). faceUv is the rock this cell draws: its own, moved
                 // by its block's whole texels. cellUv stays the cell's own, for the mix, the wet foot and the
                 // dissolve, which belong to the wall and not to a block of it.
+                // THE TEXEL CELL this fragment falls in: texels of the tile along the shore, and texels of
+                // ELEVATION down the face where the wall has one (texels of the tile where it does not).
+                // Twin: CliffWaterlineMath.TexelCell.
+                float2 cell = float2(floor(cellUv.x * _TileMetresS * CLIFF_TEXELS_PER_METRE),
+                                     cellWaterline.z > 0.5
+                                         ? floor(cellWaterline.x * CLIFF_TEXELS_PER_METRE)
+                                         : floor(cellUv.y * _TileMetresT * CLIFF_TEXELS_PER_METRE));
+                // THE CLIFF MIX: whether this texel draws in the variant skin. Whole blocks of the rock's own
+                // texels give way where the weight is between 0 and 1, so a change of skin is a crumbling edge
+                // of pixel blocks, never a fade. Twin: CliffFaceMixMath.PicksVariant. Found here, outside the
+                // look branch, because the fault's blocks go by the skin (_VariantOn is 0 off the px look).
+                float  mixW    = cellMix.x;
+                float2 mixBlk  = max(_VariantBlock.xy, float2(1.0, 1.0));
+                bool   variant = _VariantOn > 0.5 && cellMix.y > 0.5
+                              && (mixW >= 0.999 || (mixW > 0.0 && mixW > CliffHash(floor(cell / mixBlk), 8.0)));
+                bool   variantFace = variant && _VariantFaceOn > 0.5;
+
                 float2 faceUv     = cellUv;
                 float  faultAz    = _WallAzimuth;
                 bool   faultCrack = false;
                 if (_FaultB.w > 0.5 && _PxDecal < 0.5)
                 {
+                    // The variant skin's own face is drawn at the tile's texel, so its courses are taller than the
+                    // base skin's beds: its blocks and their throw are scaled, or a throw that breaks the base
+                    // skin leaves it in long level slabs. Twin: CliffFault.OnVariantSkin.
+                    float2 fsize  = variantFace ? max(floor(_FaultA.xy * _FaultC.x), float2(2.0, 2.0)) : _FaultA.xy;
+                    float  fthrow = variantFace ? round(_FaultA.z * _FaultC.y) : _FaultA.z;
                     float2 wc    = floor(gridW * CLIFF_TEXELS_PER_METRE);
                     float  frun  = floor(wc.y / max(_FaultB.x, 1.0));
-                    float  fzone = floor(wc.x / (max(_FaultA.x, 2.0) * 4.0));
+                    float  fzone = floor(wc.x / (max(fsize.x, 2.0) * 4.0));
                     float2 fs    = float2(wc.x + floor(CliffHash(float2(fzone, frun), 25.0) * 3.0) - 1.0, wc.y);
-                    float2 fblk  = CliffFaultBlock(fs);
-                    float2 fleft = CliffFaultBlock(fs - float2(1.0, 0.0));
+                    float2 fblk  = CliffFaultBlock(fs, fsize);
+                    float2 fleft = CliffFaultBlock(fs - float2(1.0, 0.0), fsize);
                     // A crack is carried run by run of rows, not block by block: it breaks off and picks up again.
                     faultCrack   = fleft.x != fblk.x
                                 && CliffHash(float2(fblk.x + frun, fblk.y - frun), 26.0) < _FaultB.y;
                     float2 fmove = float2(floor(CliffHash(fblk, 27.0) * (_FaultA.w + 1.0)),
-                                          round((CliffHash(fblk, 28.0) * 2.0 - 1.0) * _FaultA.z));
+                                          round((CliffHash(fblk, 28.0) * 2.0 - 1.0) * fthrow));
                     faceUv = cellUv + fmove / (float2(_TileMetresS, _TileMetresT) * CLIFF_TEXELS_PER_METRE);
                     if (_FaultB.z > 0.0)
                     {
@@ -642,21 +667,8 @@ Shader "HiddenHarbours/CliffFace"
                 bool   cycleOn = glen > 1e-4;
                 float3 S = cycleOn ? float3(gdir / glen * horiz, e) : float3(0, 0, 1);
 
-                // THE TEXEL CELL this fragment falls in: texels of the tile along the shore, and texels of
-                // ELEVATION down the face where the wall has one (texels of the tile where it does not).
-                // Twin: CliffWaterlineMath.TexelCell.
-                float2 cell = float2(floor(cellUv.x * _TileMetresS * CLIFF_TEXELS_PER_METRE),
-                                     cellWaterline.z > 0.5
-                                         ? floor(cellWaterline.x * CLIFF_TEXELS_PER_METRE)
-                                         : floor(cellUv.y * _TileMetresT * CLIFF_TEXELS_PER_METRE));
             #if defined(_HH_CLIFF_PX)
-                // THE CLIFF MIX: whether this texel draws in the variant skin. Whole blocks of the rock's own
-                // texels give way where the weight is between 0 and 1, so a change of skin is a crumbling edge
-                // of pixel blocks, never a fade. Twin: CliffFaceMixMath.PicksVariant.
-                float  mixW    = cellMix.x;
-                float2 mixBlk  = max(_VariantBlock.xy, float2(1.0, 1.0));
-                bool   variant = _VariantOn > 0.5 && cellMix.y > 0.5
-                              && (mixW >= 0.999 || (mixW > 0.0 && mixW > CliffHash(floor(cell / mixBlk), 8.0)));
+                // The cell and the mix's pick were found above, before the fault (its blocks go by the skin).
                 // The variant skin's own FACE, where it has one: the same texel of the boards' coursed rock,
                 // and its normal and mask with it (so N and the AO are re-read too). Point-sampled with no mips
                 // (the kit's import law), so LOD 0 is the texel the plain sample takes.
