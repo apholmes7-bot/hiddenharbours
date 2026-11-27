@@ -2,7 +2,7 @@
  "schema": "hidden-harbours/rig-sidecar@1",
  "rig": "Art/fishIsoRig2.js",
  "exportSymbol": "FishIso2",
- "derivedFromRigSha256": "3e162191294f07129c94e5e4ecc36db31a94564fa114b4327fd44447d267e479",
+ "derivedFromRigSha256": "810e6999e46412957cc307623e0fde94f05596dbb137c62eafcdd793201c98a8",
  "generated": {
   "date": "2026-10-28T00:00:00.000Z",
   "by": "Art/_catchSidecars.js",
