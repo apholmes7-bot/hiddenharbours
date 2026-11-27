@@ -6615,10 +6615,13 @@ One pixel size on screen for everything: the sea now changes colour only on art-
   buffer, depth ramp, curl hand-off) or explicit gradients from the UNSNAPPED position (the painted
   untile reads, the shallows floor). The object reflection reads its screen texel from the snapped cell's
   centre. 0 = the older per-screen-pixel read.
-- **The shore foam's tones.** `_ShoreFoamBands` (default 4) and `_ShoreFoamDitherWin` (0.35): the shore
-  line, the wash residue, the foam left on the sand and the wet film keep their lace shape, extent and
-  motion; only their coverage is drawn in solid tones, Bayer-dithered (world cell, one art pixel) inside
-  the edge window. Below 2 = the smooth coverage.
+- **The shore foam's tones: snapped strokes, never dither.** The shore line, the wash residue, the foam
+  left on the sand and the wet film keep their lace shape, extent and motion, read at the art cell's
+  centre, and are drawn in flat tones chosen by a HARD threshold (`ShoreToneHard`): `_ShoreFoamTones` 2
+  = a full core at or above `_ShoreFoamCut` (0.5 of its ceiling) and one softer edge tone
+  `_ShoreFoamEdgeTone` (0.5) at or above `_ShoreFoamEdgeCut` (0.2); 1 = the core only; 0 = the smooth
+  coverage. A first cut dithered these tones on the world Bayer cell and the lace broke into confetti
+  (the owner had rejected a "screen door" wash before), so dither is kept for the depth colour only.
 - **The depth colour.** `_DepthBands` **5** (was 0) with `_DepthBandDitherWin` 0.5: the depth ramp is
   read in five steps whose edges are dithered on the world Bayer cell, so there are no hard contour
   rings. The seabed composite (absorption, `_AbsorptionBands`) is untouched, so the see-through shallows

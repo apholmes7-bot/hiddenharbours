@@ -1183,11 +1183,15 @@ Shader "HiddenHarbours/Water"
         // solid tones instead of an airbrushed gradient.
         _WakeFoamBands     ("Wake foam posterize steps (below 2 = smooth)", Float) = 3
         // THE SHORE FOAM'S TONES on the art grid (owner ruling 2026-11-26, "no mixels"): the shore line, the
-        // wash's residue, the foam left on the sand and the wet film keep their soft lace SHAPE, extent and
-        // motion, but their coverage is drawn in this many solid tones, Bayer-dithered (world-locked, one art
-        // pixel a cell) only inside the edge window. Below 2 = the smooth coverage, bit for bit.
-        _ShoreFoamBands     ("Shore foam tones (below 2 = smooth)", Float) = 4
-        _ShoreFoamDitherWin ("Shore foam tone edge dither window (0..1 of a tone)", Range(0,1)) = 0.35
+        // wash's residue, the foam left on the sand and the wet film keep their lace SHAPE, extent and motion,
+        // read at the art cell's centre, and are drawn in flat tones chosen by a HARD threshold, never a dither
+        // pattern, so a lace stroke stays a continuous stroke of whole art pixels.
+        // 0 = the smooth coverage, bit for bit; 1 = one tone (full at or above the cut, else clear);
+        // 2 = a full core at or above the cut and one softer edge tone at or above the edge cut.
+        _ShoreFoamTones    ("Shore foam tones (0 smooth, 1 core, 2 core + edge)", Float) = 2
+        _ShoreFoamCut      ("Shore foam core cut (0..1 of its ceiling)", Range(0,1)) = 0.5
+        _ShoreFoamEdgeCut  ("Shore foam edge cut (0..1 of its ceiling)", Range(0,1)) = 0.2
+        _ShoreFoamEdgeTone ("Shore foam edge tone (0..1 of its ceiling)", Range(0,1)) = 0.5
         // ---- LACE: the "like real foam" half of the 2026-08-05 pass -------------------------------
         // The buffer stores COVERAGE — how much churn is on this patch of sea — which is the right
         // QUANTITY and the wrong SHAPE. Thresholding a smooth accumulation yields a rounded, solid
@@ -1763,8 +1767,10 @@ Shader "HiddenHarbours/Water"
                 float  _DepthBands;
                 float  _DepthBandDitherWin;
                 float  _ArtGridSnap;
-                float  _ShoreFoamBands;
-                float  _ShoreFoamDitherWin;
+                float  _ShoreFoamTones;
+                float  _ShoreFoamCut;
+                float  _ShoreFoamEdgeCut;
+                float  _ShoreFoamEdgeTone;
                 // Deep-blue enrichment (bounded base-colour pull toward a rich navy in deep water).
                 float  _DeepBlueStrength;
                 float4 _DeepBlueColor;
@@ -2376,6 +2382,17 @@ Shader "HiddenHarbours/Water"
                 float win = clamp(ditherWin, 1e-3, 1.0);
                 float e = saturate(((x - fb) - (0.5 - 0.5 * win)) / win);
                 return (fb + (e > bayer ? 1.0 : 0.0)) / (bands - 1.0);
+            }
+
+            // THE SHORE FOAM'S HARD TONES (owner ruling 2026-11-26, "no mixels"; the dithered tones read as
+            // confetti): a 0..1 coverage, relative to its own ceiling, to at most two flat tones by threshold.
+            // No dither of any kind: neighbouring art cells on one stroke land on the same tone, so the stroke
+            // stays continuous. _ShoreFoamTones 0 returns the coverage unchanged.
+            float ShoreToneHard(float v01)
+            {
+                if (_ShoreFoamTones < 0.5) return v01;
+                if (v01 >= _ShoreFoamCut) return 1.0;
+                return (_ShoreFoamTones >= 1.5 && v01 >= _ShoreFoamEdgeCut) ? saturate(_ShoreFoamEdgeTone) : 0.0;
             }
 
             // ---- cheap value noise (hash-lattice, smooth interpolation). Deterministic, no textures. ----
@@ -6756,12 +6773,11 @@ Shader "HiddenHarbours/Water"
                     leftFoamA = smoothstep(leftThr - leftSoft, leftThr + leftSoft, saturate(leftChurn + leftFade * 0.75))
                               * leftFade * washPresence * min(saturate(_WashLeftFoamOpacity), saturate(_WashMaxCover));
                     leftFoamA *= boreEdgeLeeFade;          // fades into a lee with the run-up that left it
-                    // THE ART GRID's tones (owner ruling 2026-11-26): the same shape, in solid tones of its own
-                    // ceiling, dithered on the world Bayer cell only at the tone edges. Below 2 = smooth.
+                    // THE ART GRID's tones (owner ruling 2026-11-26): the same shape, in flat tones of its own
+                    // ceiling chosen by a hard threshold (ShoreToneHard). 0 tones = smooth.
                     float leftCeil = min(saturate(_WashLeftFoamOpacity), saturate(_WashMaxCover));
-                    if (_ShoreFoamBands >= 2.0 && leftCeil > 1e-4)
-                        leftFoamA = BandValue01(leftFoamA / leftCeil, _ShoreFoamBands, _ShoreFoamDitherWin,
-                                                BayerWorld(worldXY)) * leftCeil;
+                    if (_ShoreFoamTones >= 0.5 && leftCeil > 1e-4)
+                        leftFoamA = ShoreToneHard(leftFoamA / leftCeil) * leftCeil;
                 }
 
                 float dt = saturate((depth - _ShallowDepth) / max(_DeepDepth - _ShallowDepth, 1e-3));
@@ -6788,9 +6804,9 @@ Shader "HiddenHarbours/Water"
                 if (_ShoreThinEdge.y > 0.0)
                 {
                     float wetFilm = smoothstep(0.0, _ShoreThinEdge.y, washEdgeQ);
-                    // THE ART GRID's tones: the film thins in solid steps, dithered only at the step edges.
-                    if (_ShoreFoamBands >= 2.0)
-                        wetFilm = BandValue01(wetFilm, _ShoreFoamBands, _ShoreFoamDitherWin, BayerWorld(worldXY));
+                    // THE ART GRID's tones: the film thins in flat steps chosen by a hard threshold.
+                    if (_ShoreFoamTones >= 0.5)
+                        wetFilm = ShoreToneHard(wetFilm);
                     col.a *= wetFilm;
                 }
 
@@ -7693,10 +7709,10 @@ Shader "HiddenHarbours/Water"
                     }
                     // B1 FRINGE COVER END
                     // THE ART GRID's tones (owner ruling 2026-11-26): the shore line keeps its lace shape, its
-                    // extent and its motion; only its coverage is drawn in solid tones, Bayer-dithered (the
-                    // world cell, one art pixel) only inside the tone edge window. Below 2 = smooth, bit for bit.
-                    if (_ShoreFoamBands >= 2.0)
-                        foamCoverage = BandValue01(foamCoverage, _ShoreFoamBands, _ShoreFoamDitherWin, bay);
+                    // extent and its motion, read at the art cell's centre; its coverage is drawn in flat tones
+                    // chosen by a hard threshold, so each lace stroke is a continuous run of whole art pixels.
+                    if (_ShoreFoamTones >= 0.5)
+                        foamCoverage = ShoreToneHard(foamCoverage);
                     // The one colour walk at the line's own age (FoamAgedColor, the wake's, caps' and surf's
                     // walk); at _FoamSheetShore.x = 0 it returns _FoamColor, the older flat white, bit-exact.
                     float3 fringeFoam = FoamAgedColor(fringeAge01, _FoamColor.rgb, _FoamSheetShore.x, col.rgb);
@@ -8185,11 +8201,11 @@ Shader "HiddenHarbours/Water"
                     wakeFoam  = lerp(wakeFoam, WashResidueCoverage(worldXY, washFresh), washZone);
                     wakeFresh = lerp(wakeFresh, washFresh, washZone);
                     // THE ART GRID's tones on the wash's residue (owner ruling 2026-11-26): the blended
-                    // coverage, relative to its own opacity ceiling, in solid tones dithered only at the tone
-                    // edges. The residue's read itself stays smooth (its tent and its shape are untouched).
+                    // coverage, relative to its own opacity ceiling, in flat tones chosen by a hard threshold.
+                    // The residue's read itself stays smooth (its tent and its shape are untouched).
                     float washCeil = saturate(_WakeFoamStrength);
-                    if (_ShoreFoamBands >= 2.0 && washCeil > 1e-4)
-                        wakeFoam = BandValue01(wakeFoam / washCeil, _ShoreFoamBands, _ShoreFoamDitherWin, bay) * washCeil;
+                    if (_ShoreFoamTones >= 0.5 && washCeil > 1e-4)
+                        wakeFoam = ShoreToneHard(wakeFoam / washCeil) * washCeil;
                 }
                 if (wakeFoam > 0.001)
                 {

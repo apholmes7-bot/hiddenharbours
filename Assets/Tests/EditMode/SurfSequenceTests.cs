@@ -26,10 +26,10 @@ namespace HiddenHarbours.Tests.EditMode
         const string WaterPath = "Assets/_Project/Art/Shaders/HiddenHarboursWater.shader";
         const string AdvectPath = "Assets/_Project/Art/Shaders/HiddenHarboursFoamBufferAdvect.shader";
         const string Dial = "_SurfFringeSequenceStrength";
-        const string BaseWaterHash = "2c47242da6c290714cea2a4368dd8f4737468e69174ea7cdb62ebb79d6875f2a";
+        const string BaseWaterHash = "3695b24ff05d8621cbe04de5451ab527e816a3cbe41a4655850132b4c2b9f468";
         // Re-approved at the sea on the art grid (fix/water-on-the-art-grid, the no-mixels ruling of 11-26): the fragment
         // shades at the art cell's centre behind _ArtGridSnap, the implicit-mip reads read level 0 or explicit gradients
-        // from the true world point, the shore foam's coverage and the wet film go to _ShoreFoamBands dithered tones,
+        // from the true world point, the shore foam's coverage and the wet film go to hard-threshold tones (ShoreToneHard, no dither),
         // and the depth ramp's bands are dithered inside _DepthBandDitherWin; the B1 blocks are byte-identical.
         // Re-approved at the foam band's ground bound (fix/stp-shoreline-repeat, the Whelps shelf sheets of 11-26): the
         // shore fringe's foamEdge reads its depth through foamBandDepth, _FoamWidth capped at _FoamBandMaxMetres x the
@@ -266,9 +266,11 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.That(Regex.Matches(yaml, @"(?m)^    - _PixelsPerUnit: 32$").Count, Is.EqualTo(1), files[i] + ": art grid");
                 yaml = yaml.Replace("    - _PixelsPerUnit: 32\n", "    - _PixelsPerUnit: 24\n");
                 // And the shore band on that grid: every sea material gains _ArtGridSnap 1 (shade at the art cell's
-                // centre), _ShoreFoamBands 4 and _ShoreFoamDitherWin 0.35 (the shore foam's solid tones). Exactly those
-                // three values are authorized; they are stripped before the hash.
-                foreach (string gridKey in new[] { "    - _ArtGridSnap: 1\n", "    - _ShoreFoamBands: 4\n", "    - _ShoreFoamDitherWin: 0.35\n" })
+                // centre) and the shore foam's hard tones: _ShoreFoamTones 2, _ShoreFoamCut 0.5, _ShoreFoamEdgeCut 0.2,
+                // _ShoreFoamEdgeTone 0.5 (a full core and one softer edge, by threshold, no dither). Exactly those
+                // five values are authorized; they are stripped before the hash.
+                foreach (string gridKey in new[] { "    - _ArtGridSnap: 1\n", "    - _ShoreFoamCut: 0.5\n", "    - _ShoreFoamEdgeCut: 0.2\n",
+                             "    - _ShoreFoamEdgeTone: 0.5\n", "    - _ShoreFoamTones: 2\n" })
                 {
                     Assert.That(Regex.Matches(yaml, Regex.Escape(gridKey)).Count, Is.EqualTo(1), files[i] + ": " + gridKey.Trim());
                     yaml = yaml.Replace(gridKey, "");

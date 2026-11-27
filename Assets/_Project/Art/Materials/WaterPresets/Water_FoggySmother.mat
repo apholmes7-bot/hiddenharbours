@@ -164,8 +164,10 @@ Material:
     - _RippleWavelength: 0.17
     - _Roughness: 0.302
     - _ShallowDepth: 0.15
-    - _ShoreFoamBands: 4
-    - _ShoreFoamDitherWin: 0.35
+    - _ShoreFoamCut: 0.5
+    - _ShoreFoamEdgeCut: 0.2
+    - _ShoreFoamEdgeTone: 0.5
+    - _ShoreFoamTones: 2
     - _ShoreSampleStep: 0.4
     - _ShoreSlopeFloor: 0.15
     - _ShorewardBias: 0.7

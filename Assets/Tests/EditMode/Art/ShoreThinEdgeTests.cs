@@ -127,8 +127,16 @@ namespace HiddenHarbours.Tests.Art.EditMode
             StringAssert.Contains("return steady > 0.0 ? smoothstep(0.25 * steady, steady, SeabedSlopeMag(worldXY)) : 1.0;", src);
             Assert.AreEqual(2, CountOf(src, "* _SwashAlongShoreVary * 6.2831853 * SwashDesyncKeep(worldXY);"),
                 "the swash and its rate twin must keep the same desync");
-            // The art grid (11-26) puts the film's thinning in _ShoreFoamBands solid tones; the smooth twin is the ramp they round.
+            // The art grid (11-26) puts the film's thinning in hard-threshold tones; the smooth twin is the ramp they cut.
             StringAssert.Contains("float wetFilm = smoothstep(0.0, _ShoreThinEdge.y, washEdgeQ);", src);
+            StringAssert.Contains("wetFilm = ShoreToneHard(wetFilm);", src);
+            // No dither on the shore foam or the film (the owner's "screen door"; the dithered tones read as confetti):
+            // the tone function is thresholds only.
+            int toneAt = src.IndexOf("float ShoreToneHard(float v01)", System.StringComparison.Ordinal);
+            Assert.Greater(toneAt, 0, "the shore's hard tone function");
+            string tone = src.Substring(toneAt, src.IndexOf("\n            }", toneAt, System.StringComparison.Ordinal) - toneAt);
+            foreach (string dither in new[] { "Bayer", "BandValue01", "Hash", "Noise" })
+                StringAssert.DoesNotContain(dither, tone, "the shore foam's tones are chosen by threshold, never a dither pattern");
             StringAssert.Contains("col.a *= wetFilm;", src);
             StringAssert.Contains("#include \"Assets/_Project/Art/Shaders/Include/CausticPattern.hlsl\"", src);
             StringAssert.DoesNotContain("#include \"Include/CausticPattern.hlsl\"", src);

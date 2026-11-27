@@ -20,8 +20,8 @@ namespace HiddenHarbours.Tests.PlayMode
     /// state is taken in ONE frozen frame (Time.timeScale 0, so the shader's _Time is the same number for every
     /// state), and the states are laid over it through the water renderers' property block:
     /// <c>s0</c> the old grid (_PixelsPerUnit 24, every new dial off), <c>s1</c> the art grid (32),
-    /// <c>s1m</c> plus the calm mirror's edge axis, <c>s2</c> plus the shore band on the art cell and the shore
-    /// foam tones, <c>s3</c> plus the depth colour bands, and <c>asset</c> the materials as shipped. A dial the
+    /// <c>s1m</c> plus the calm mirror's edge axis, <c>s1s</c> plus the shade point on the art cell, <c>s2</c> plus the
+    /// shore foam's hard-threshold tones (snapped strokes), <c>s3</c> plus the depth colour bands, and <c>asset</c> the materials as shipped. A dial the
     /// shader does not have yet (main) is simply ignored, so the same fixture shoots main and the branch.
     /// Then an 8-frame pan (one art pixel a frame) of the shore band for the crawl check.
     /// Plates go to HH_WATER_GRID_PLATES (an absolute folder) or temporaryCachePath. Needs a GPU.
@@ -65,11 +65,12 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         // NaN = take the material's own value (the "asset" state).
-        static readonly (string Name, float Ppu, float Snap, float ShoreBands, float DepthBands, float MirrorCentre)[] GridStates =
+        static readonly (string Name, float Ppu, float Snap, float ShoreTones, float DepthBands, float MirrorCentre)[] GridStates =
         {
             ("s0",    24f, 0f, 0f, 0f, 1f),
             ("s1",    32f, 0f, 0f, 0f, 1f),
             ("s1m",   32f, 0f, 0f, 0f, 0f),
+            ("s1s",   32f, 1f, 0f, 0f, 0f),
             ("s2",    32f, 1f, float.NaN, 0f, 0f),
             ("s3",    32f, 1f, float.NaN, float.NaN, 0f),
             ("asset", float.NaN, float.NaN, float.NaN, float.NaN, 0f),
@@ -85,7 +86,7 @@ namespace HiddenHarbours.Tests.PlayMode
             mpb.SetFloat(key, float.IsNaN(v) ? m.GetFloat(key) : v);
         }
 
-        void ApplyGridState(List<Renderer> water, (string Name, float Ppu, float Snap, float ShoreBands, float DepthBands, float MirrorCentre) s)
+        void ApplyGridState(List<Renderer> water, (string Name, float Ppu, float Snap, float ShoreTones, float DepthBands, float MirrorCentre) s)
         {
             var mpb = new MaterialPropertyBlock();
             foreach (var r in water)
@@ -94,7 +95,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 var m = r.sharedMaterial;
                 SetOrAsset(mpb, m, "_PixelsPerUnit", s.Ppu);
                 SetOrAsset(mpb, m, "_ArtGridSnap", s.Snap);
-                SetOrAsset(mpb, m, "_ShoreFoamBands", s.ShoreBands);
+                SetOrAsset(mpb, m, "_ShoreFoamTones", s.ShoreTones);
                 SetOrAsset(mpb, m, "_DepthBands", s.DepthBands);
                 r.SetPropertyBlock(mpb);
             }
