@@ -19,6 +19,10 @@ MonoBehaviour:
     island will weigh a bucket without it. The first licence of your life - and not the
     one you pay for yourself.'
   Price: 15
+  FeeRecoveryGrantFlag: ginny_fronted_clam_fee
+  FeeRecoveryUsedFlag: ginny_clam_fee_recovered
+  FeeRecoverySellerId: seller.leblancs
+  FeeRecoveryNote: 'Ginny: "Pay what you have, child. I''ll cover this one licence."'
   PermittedSpeciesIds:
   - fish.soft_shell_clam
   - fish.blue_mussel
