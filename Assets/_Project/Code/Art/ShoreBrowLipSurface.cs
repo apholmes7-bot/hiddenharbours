@@ -26,7 +26,8 @@ namespace HiddenHarbours.Art
         internal static GameObject Create(Transform parent, CliffFaceMixDef mix, IReadOnlyList<ShoreBrowLipMath.Column[]> runs)
         {
             if (parent == null || mix == null || runs == null || runs.Count == 0) return null;
-            CliffTurfLipDef lip = mix.TurfLip;
+            // A bank may hang its own strip (its rock riser under the soil, owner 11 27); else the wall's.
+            CliffTurfLipDef lip = mix.ShoreBrowTurfLip != null ? mix.ShoreBrowTurfLip : mix.TurfLip;
             if (lip == null || !lip.IsDrawable || mix.ShoreBrowMaterial == null) return null;
 
             var verts = new List<Vector3>();

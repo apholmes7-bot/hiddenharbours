@@ -78,5 +78,43 @@ namespace HiddenHarbours.Tests.RigBaking
                     Assert.Greater(hang, w / 20, $"{def.Id}: almost no grass hangs below the mat");
                 }
         }
+
+        /// <summary>Owner 11 27: a bank with no wall lost its height. A lip with a rock riser paints an upright face
+        /// under its soil, nearly every column of it, lit at the top and darker at the foot; a lip with none (a wall's)
+        /// paints no rock there.</summary>
+        [Test]
+        public void ARiser_PaintsAnUprightFace_LitAtTheTop_DarkAtTheFoot()
+        {
+            int risers = 0;
+            foreach (CliffTurfLipDef def in Lips())
+            {
+                if (def.RockRiser.y <= 0) continue;
+                risers++;
+                using (IRigScriptHost host = CliffTurfLipBaker.CreateHost(def))
+                {
+                    byte[] rgba = CliffTurfLipBaker.Render(host, def, out int w, out int h);
+                    // A row inside every column's riser: under the deepest apron, above the shortest riser's foot.
+                    int y = def.LineRow + def.Apron.y + 2;
+                    Assert.Less(y, def.LineRow + def.Apron.x - 5 + def.RockRiser.x - 2, $"{def.Id}: the riser is too short to test");
+                    int opaque = 0;
+                    for (int x = 0; x < w; x++) if (rgba[(y * w + x) * 4 + 3] == 255) opaque++;
+                    Assert.Greater(opaque, w * 0.9f, $"{def.Id}: the riser has holes where the ledge shows through");
+                    float Luma(int row)
+                    {
+                        double sum = 0; int n = 0;
+                        for (int x = 0; x < w; x++)
+                        {
+                            int i = (row * w + x) * 4;
+                            if (rgba[i + 3] != 255 || rgba[i + 1] > rgba[i]) continue;   // rock only, never a blade
+                            sum += 0.2126 * rgba[i] + 0.7152 * rgba[i + 1] + 0.0722 * rgba[i + 2]; n++;
+                        }
+                        return n > 0 ? (float)(sum / n) : 0f;
+                    }
+                    int top = def.LineRow + def.Apron.y - 3, foot = def.LineRow + def.Apron.x - 5 + def.RockRiser.x - 3;
+                    Assert.Greater(Luma(top), Luma(foot) + 8f, $"{def.Id}: the riser is not lit at its top and dark at its foot");
+                }
+            }
+            Assert.Greater(risers, 0, "no lip paints a riser: a bank with no wall reads flat");
+        }
     }
 }

@@ -501,7 +501,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     @"ndl\s*=\s*\(cycleOn\s*&&\s*e\s*<=\s*0\.0\)\s*\?\s*0\.0\s*:\s*dot\(N,\s*L\)"),
                 "the sun-down gate (LiveNdl): with the cycle on and the sun at or below the horizon, the " +
                 "live N dot L is 0 — one band down everywhere, and no wall lit from under the planet.");
-            StringAssert.Contains("CliffPxRelight(unlit, ndl, dot(N, Lpx), msk.r, variant)", px,
+            // (Owner 11 27: the face ramp's band step rides along; 0 where a wall has no ramp, CliffHeightMath.)
+            StringAssert.Contains("CliffPxRelightShift(unlit, ndl, dot(N, Lpx), msk.r, variant, rampShift)", px,
                 "the shadow comes out of the mask at the PX key, the light the mask was baked at.");
             // The cliff mix (owner 11 25) picks the palette per block, the twin of CliffFaceMixMath.PicksVariant:
             // the same hash, the same salt, whole at the ends.

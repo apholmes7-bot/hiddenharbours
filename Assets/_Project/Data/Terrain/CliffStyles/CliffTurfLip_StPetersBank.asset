@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c338cb510e6d4fb89919740b7b454afa, type: 3}
+  m_Name: CliffTurfLip_StPetersBank
+  m_EditorClassIdentifier: 
+  Id: clifflip.st_peters_bank
+  PainterScriptPath: docs/art/rigs/px-cliff-styles/pxCliffTurfLip.js
+  OutputPath: Assets/_Project/Art/Terrain/CliffStyles/TurfLip/TurfLip_Bank.png
+  Strip: {fileID: 2800000, guid: ac64fe83084e6642920a88c348e2cef8, type: 3}
+  StripTexels: {x: 2048, y: 96}
+  LineRow: 10
+  Seed: 9127
+  Fringe: {x: 1, y: 6}
+  FringeShare: 0.55
+  Sod: {x: 4, y: 8}
+  TornShare: 0.1
+  Shade: {x: 5, y: 11}
+  ClumpGap: {x: 8, y: 26}
+  ClumpHalf: {x: 4, y: 11}
+  Hang: {x: 12, y: 34}
+  Short: {x: 3, y: 8}
+  Apron: {x: 8, y: 18}
+  StoneShare: 0.012
+  RootShare: 0.06
+  Root: {x: 5, y: 16}
+  SlumpGap: {x: 150, y: 330}
+  SlumpDrop: {x: 16, y: 46}
+  TuftGap: 46
+  Grass:
+  - '#253832'
+  - '#334333'
+  - '#445338'
+  - '#565f40'
+  - '#707959'
+  Soil:
+  - '#2a1c16'
+  - '#3d2a20'
+  - '#573b30'
+  - '#6c4c38'
+  - '#8b6a50'
+  Straw: '#9a8d58'
+  Stone: '#8a8478'
+  ShadeColour: '#160d0a'
+  ShadeAlpha: {x: 190, y: 110}
+  RockRiser: {x: 26, y: 44}
+  RockJointGap: {x: 9, y: 22}
+  RockToeShade: 2
+  Rock:
+  - '#2d2828'
+  - '#59382d'
+  - '#7c513a'
+  - '#955a3d'
+  - '#ad7856'
+  RiserFadeMetres: 0.9
+  Why: 'Owner 11 27: the light station'

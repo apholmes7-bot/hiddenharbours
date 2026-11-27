@@ -85,6 +85,16 @@ namespace HiddenHarbours.Art
         [Tooltip("Alpha of the undercut, near the mat and far from it, 0 to 255.")]
         public Vector2Int ShadeAlpha = new Vector2Int(190, 110);
 
+        [Header("The rock riser (a bank's own lip, owner 11 27: banks with no wall read tall)")]
+        [Tooltip("Height of the upright rock face painted under the soil, min and max. 0 0 = none (a wall's lip: the wall is the face).")]
+        public Vector2Int RockRiser = Vector2Int.zero;
+        [Tooltip("Spacing of the riser's upright joints, min and max.")]
+        public Vector2Int RockJointGap = new Vector2Int(7, 15);
+        [Tooltip("Rows of shade the riser throws on the ledge at its foot.")]
+        [Min(0)] public int RockToeShade = 2;
+        [Tooltip("The riser's rock, darkest first: joint and toe line, foot, middle, top, a joint's lit edge (the cliff palette's sandstone).")]
+        public string[] Rock = { "#2d2828", "#59382d", "#7c513a", "#955a3d", "#ad7856" };
+
         [Header("On the wall")]
         [Tooltip("Where the rough edges step the brow line on a wall that faces across the screen, the step's riser is " +
                  "seen side on and the lip laid over it is a wedge of turf in the rock. A step seen this many metres " +
@@ -124,6 +134,7 @@ namespace HiddenHarbours.Art
             R("slumpGap", SlumpGap); R("slumpDrop", SlumpDrop); I("tuftGap", TuftGap);
             A("grass", Grass); A("soil", Soil); S("straw", Straw); S("stone", Stone); S("shadeColour", ShadeColour);
             sb.Append("\"shadeAlpha\":[").Append(ShadeAlpha.x).Append(',').Append(ShadeAlpha.y).Append("],");
+            R("riser", RockRiser); R("jointGap", RockJointGap); I("toeShade", RockToeShade); A("rock", Rock);
             sb.Length--;
             return sb.Append('}').ToString();
         }

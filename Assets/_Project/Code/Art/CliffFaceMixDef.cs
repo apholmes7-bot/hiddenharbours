@@ -142,6 +142,43 @@ namespace HiddenHarbours.Art
                  "a throw that breaks those leaves these as long level slabs. 1 = the same throw.")]
         [Range(0f, 4f)] public float FaultVariantThrowScale = 1f;
 
+        [Header("Height on walls laid on the screen grid (owner 11 27: walls read tall; spacing 0 and shares 0 = off)")]
+        [Tooltip("Upright joints: one per this many ground texels across the screen, at a place in the stretch fixed by " +
+                 "its hash, running down the face in runs (below). Each is a one-texel crack. 0 = no joints.")]
+        [Min(0)] public int JointSpacingTexels = 0;
+        [Tooltip("How many rows one run of a joint covers before it may break off or step a texel aside.")]
+        [Min(1)] public int JointRunTexels = 24;
+        [Tooltip("The share of runs a joint is drawn in, 0 to 1: the rest are gaps, so a joint breaks off and picks up.")]
+        [Range(0f, 1f)] public float JointRunShare = 0.8f;
+        [Tooltip("The share of runs that step one texel left or right of the joint's line, 0 to 1.")]
+        [Range(0f, 1f)] public float JointStepShare = 0.3f;
+        [Tooltip("A joint's right-hand texel catches the light one band up, so the crack reads as a cut with an edge.")]
+        public bool JointLitEdge = false;
+        [Tooltip("The share of the face under the brow drawn one band lighter (the top catches the sky), 0 to 1. " +
+                 "Judged on the whole face, brow 0 to foot 1, not band by band. 0 = none.")]
+        [Range(0f, 1f)] public float FaceRampTopShare = 0f;
+        [Tooltip("The share of the face over the foot drawn one band darker (the foot sits in its own shade), 0 to 1. " +
+                 "0 = none.")]
+        [Range(0f, 1f)] public float FaceRampFootShare = 0f;
+        [Tooltip("How far either ramp's edge wanders column by column, as a share of the face, so it is a ragged " +
+                 "texel edge and never a level line.")]
+        [Range(0f, 0.5f)] public float FaceRampJitter = 0.06f;
+
+        [Header("The bank's own lip (owner 11 27: banks with no wall read tall)")]
+        [Tooltip("The strip a bank with no cliff wall hangs, where it differs from the wall's (its own rock riser under the " +
+                 "soil). None = the bank hangs the wall's TurfLip.")]
+        public CliffTurfLipDef ShoreBrowTurfLip;
+
+        [Header("The ledge at the foot (owner 11 27: the flat ledge reads apart from the face; strength 0 = off)")]
+        [Tooltip("How much of the calm below the ground's rock (shelf, talus, ledge) takes, 0 to 1. 0 = drawn as before.")]
+        [Range(0f, 1f)] public float LedgeCalm = 0f;
+        [Tooltip("How much of its colour the calmed rock keeps, 0 (grey) to 1 (all of it).")]
+        [Range(0f, 1f)] public float LedgeSaturationKeep = 1f;
+        [Tooltip("How much of its light-to-dark spread the calmed rock keeps around the pivot, 0 (flat) to 1 (all of it).")]
+        [Range(0f, 1f)] public float LedgeContrastKeep = 1f;
+        [Tooltip("The brightness the spread is drawn in toward (linear luma, 0 to 1).")]
+        [Range(0f, 1f)] public float LedgeCalmPivot = 0.12f;
+
         [TextArea] public string Why = "";
 
         /// <summary>True when the mix draws anything: a variant skin with a palette and a share above zero.</summary>

@@ -14,6 +14,7 @@ namespace HiddenHarbours.Art
         readonly Vector2 _min, _size;
         readonly int[] _kindStarts;
         Texture2D _walls;
+        CliffFaceMixDef _mix;
         Texture2D _wallDomain;
         RenderTexture _wallFallback;
         /// <summary>The turf lip's runs on the banks that own no wall (<see cref="ShoreBrowLipMath.Runs"/>), or null.</summary>
@@ -27,6 +28,7 @@ namespace HiddenHarbours.Art
         static readonly int Step4 = Shader.PropertyToID("_ShoreStep4");
         static readonly int Blend = Shader.PropertyToID("_ShoreBlendMetres");
         static readonly int SourceBlend = Shader.PropertyToID("_ShoreSourceBlendMetres");
+        static readonly int LedgeCalm = Shader.PropertyToID("_ShoreLedgeCalm");
 
         TerrainShoreLineBinding(TerrainShoreLinesDef def, Texture2DArray fields, Texture2DArray strips, Texture2D segments,
             Vector2 min, Vector2 size, int[] kindStarts, Texture2D indices)
@@ -89,6 +91,7 @@ namespace HiddenHarbours.Art
                 indices.SetPixelData(data.IndexTexels,0);indices.Apply(false,true);
                 var binding = new TerrainShoreLineBinding(def, fields, strips, segments, worldMin, size, data.KindStarts, indices);
                 binding.BrowLipRuns = lipRuns;
+                binding._mix = mix;
                 binding._walls = new Texture2D(footprint.Width, footprint.Height, TextureFormat.R8, false, true)
                     { name = "TransientShoreWallFootprint", hideFlags = HideFlags.HideAndDontSave,
                       filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp };
@@ -119,7 +122,11 @@ namespace HiddenHarbours.Art
             catch { Destroy(fields); Destroy(segments); Destroy(indices); throw; }
         }
 
-        internal static void Disable(MaterialPropertyBlock block) => block.SetFloat(Loaded, 0);
+        internal static void Disable(MaterialPropertyBlock block)
+        {
+            block.SetFloat(Loaded, 0);
+            block.SetVector(LedgeCalm, Vector4.zero);
+        }
 
         internal void Bind(MaterialPropertyBlock block)
         {
@@ -142,6 +149,8 @@ namespace HiddenHarbours.Art
             block.SetFloat(Step4, (int)_def.Reefedge);
             block.SetFloat(Blend, _def.BlendMetres); block.SetFloat(SourceBlend, _def.UnderlyingBlendMetres);
             BindPattern(block, _def);
+            // The region's ledge calm (TerrainLedgeCalmMath), from its cliff mix; zero where it has none.
+            block.SetVector(LedgeCalm, TerrainLedgeCalmMath.Shader(_mix));
             block.SetFloat(Loaded, 1);
         }
 

@@ -235,6 +235,8 @@ namespace HiddenHarbours.Tests.EditMode
                 {
                     Assert.AreEqual(plain.Verts[i], laid.Verts[i], $"vertex {i}: an inner row moved");
                     Assert.AreEqual((float)r / rows, laid.BandUv[i].x, 1e-6f);
+                    // The whole face's depth (the ramp's): this band is the whole face, so it is the row's own.
+                    Assert.AreEqual((float)r / rows, laid.BandUv[i].w, 1e-6f, $"vertex {i}: face depth");
                     continue;
                 }
                 int inner = r == 0 ? i + 1 : i - 1;
@@ -244,6 +246,8 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.LessOrEqual(moved.magnitude, cover / CliffWallGeometry.LeastCoverSine + 1e-5f);
                 Assert.AreEqual(moved.magnitude, Vector2.Dot(moved, along), 1e-5f, $"vertex {i}: not moved along its column");
                 if (r == 0) Assert.Less(laid.BandUv[i].x, 0f); else Assert.Greater(laid.BandUv[i].x, 1f);
+                // The face depth is carried past the edge in the same straight line as the band's parameter.
+                if (r == 0) Assert.Less(laid.BandUv[i].w, 0f); else Assert.Greater(laid.BandUv[i].w, 1f);
                 // In a straight line: the parameter and the elevation step past the edge as they step up to it.
                 float k = moved.magnitude / ((Vector2)(plain.Verts[i] - plain.Verts[inner])).magnitude;
                 Assert.AreEqual(plain.ElevationUv[i].x + (plain.ElevationUv[i].x - plain.ElevationUv[inner].x) * k,

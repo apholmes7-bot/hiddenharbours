@@ -120,9 +120,9 @@ namespace HiddenHarbours.Art
         /// <summary>Vertex colours (white, alpha = the column's <see cref="CliffWallColumns.Alpha"/>), or null.</summary>
         public Color[] Colors;
         /// <summary>(The band's parameter, 0 at its top row to 1 at its foot; 1; the chunk's parameter, 0 at its first
-        /// station to 1 at its last), where the band's edges are cut on the ground's cells (a wall laid on the screen
-        /// grid), or null.</summary>
-        public Vector3[] BandUv;
+        /// station to 1 at its last; the whole face's depth, 0 at the brow to 1 at the toe), where the band's edges are
+        /// cut on the ground's cells (a wall laid on the screen grid), or null.</summary>
+        public Vector4[] BandUv;
     }
 
     /// <summary>
@@ -304,6 +304,9 @@ namespace HiddenHarbours.Art
         private static readonly int IdBaseTexelScale = Shader.PropertyToID("_BaseTexelScale");
         private static readonly int IdFaultA = Shader.PropertyToID("_FaultA");
         private static readonly int IdFaultB = Shader.PropertyToID("_FaultB");
+        private static readonly int IdJointA = Shader.PropertyToID("_JointA");
+        private static readonly int IdJointB = Shader.PropertyToID("_JointB");
+        private static readonly int IdFaceRamp = Shader.PropertyToID("_FaceRamp");
         private static readonly int IdFaultC = Shader.PropertyToID("_FaultC");
         private static readonly int IdPaletteVariant =Shader.PropertyToID("_PaletteVariant");
         private static readonly int IdVariantOn = Shader.PropertyToID("_VariantOn");
@@ -1327,11 +1330,11 @@ namespace HiddenHarbours.Art
 
             // On a wall laid on the screen grid the strip's own edges are cut on the ground's cells too (see
             // CoverTheCells): its soil skirt down a slanted column was a flat wedge with smooth diagonal sides.
-            var bandUv = new Vector3[verts.Length];
+            var bandUv = new Vector4[verts.Length];
             for (int c = 0; c < stations; c++)
             {
-                bandUv[c * 2] = new Vector3(0f, 1f, 0f);
-                bandUv[c * 2 + 1] = new Vector3(1f, 1f, 0f);
+                bandUv[c * 2] = new Vector4(0f, 1f, 0f, 0f);
+                bandUv[c * 2 + 1] = new Vector4(1f, 1f, 0f, 0f);
             }
             CoverTheCells(verts, uvs, elevationUv, bandUv, stations, 1, coverMetres, faceMetresS, 1f, origin, planar: false);
             CliffWallMeshData lip = Laid(columns, 1, verts, uvs, elevationUv, seaPlanUv, colors, bandUv);
@@ -1494,7 +1497,7 @@ namespace HiddenHarbours.Art
             var uvs = new Vector2[verts.Length];
             // The band's own parameter, 0 at its top row and 1 at its foot, with a flag: the shader cuts the band's
             // top and bottom edges on the ground's cells by it (see CoverTheCells). Only where a cover is asked for.
-            Vector3[] bandUv = coverMetres > 0f ? new Vector3[verts.Length] : null;
+            Vector4[] bandUv = coverMetres > 0f ? new Vector4[verts.Length] : null;
             var elevationUv = new Vector2[verts.Length];
             var seaPlanUv = new Vector2[verts.Length];
             Color[] colors = columns.Alpha != null || columns.Keep != null || columns.Clip != null
@@ -1569,7 +1572,8 @@ namespace HiddenHarbours.Art
                         CliffWaterlineMath.ElevationAt(s.ToeElevation + s.DropMetres, s.DropMetres, t),
                         elevationValid);
                     seaPlanUv[idx] = s.ToePlan;
-                    if (bandUv != null) bandUv[idx] = new Vector3((float)r / rows, 1f, 0f);
+                    // w is the WHOLE face's depth, brow 0 to toe 1: the ramp is judged on it (CliffHeightMath).
+                    if (bandUv != null) bandUv[idx] = new Vector4((float)r / rows, 1f, 0f, t);
                     if (colors != null)
                         colors[idx] = new Color(1f, 1f, 1f,
                             AlphaAt(columns, c) * CliffWallGeometry.RunEndAlphaAt(t, keep, surface));
@@ -1620,7 +1624,7 @@ namespace HiddenHarbours.Art
             Vector3[] vertsWas = (Vector3[])m.Verts.Clone();
             Vector2[] uvsWas = (Vector2[])m.Uvs.Clone();
             Vector2[] elevationWas = (Vector2[])m.ElevationUv.Clone();
-            Vector3[] bandWas = (Vector3[])m.BandUv.Clone();
+            Vector4[] bandWas = (Vector4[])m.BandUv.Clone();
             void Extend(int v, int inner, Vector2 edge)
             {
                 Vector2 on = vertsWas[v] - vertsWas[inner];
@@ -1675,7 +1679,7 @@ namespace HiddenHarbours.Art
         /// A cell is then wholly one band or wholly the next, and the outline steps cell by cell. A column that has
         /// collapsed (no band there) is left alone.
         /// </summary>
-        private static void CoverTheCells(Vector3[] verts, Vector2[] uvs, Vector2[] elevationUv, Vector3[] bandUv,
+        private static void CoverTheCells(Vector3[] verts, Vector2[] uvs, Vector2[] elevationUv, Vector4[] bandUv,
                                           int stations, int rows, float coverMetres, float faceMetresS,
                                           float faceMetresT, Vector3 origin, bool planar)
         {
@@ -1719,6 +1723,7 @@ namespace HiddenHarbours.Art
                         : uvs[edge] + (uvs[edge] - uvs[inner]) * k;
                     elevationUv[edge].x += (elevationUv[edge].x - elevationUv[inner].x) * k;
                     bandUv[edge].x += (bandUv[edge].x - bandUv[inner].x) * k;
+                    bandUv[edge].w += (bandUv[edge].w - bandUv[inner].w) * k;
                 }
             }
         }
@@ -1845,7 +1850,7 @@ namespace HiddenHarbours.Art
 
         private static CliffWallMeshData Laid(CliffWallColumns columns, int rows, Vector3[] verts, Vector2[] uvs,
                                               Vector2[] elevationUv, Vector2[] seaPlanUv, Color[] colors = null,
-                                              Vector3[] bandUv = null)
+                                              Vector4[] bandUv = null)
         {
             var laid = new CliffWallMeshData
             {
@@ -1883,7 +1888,7 @@ namespace HiddenHarbours.Art
             var uvs = new Vector2[count];
             var elevation = new Vector2[count];
             var sea = new Vector2[count];
-            Vector3[] band = laid.BandUv != null ? new Vector3[count] : null;
+            Vector4[] band = laid.BandUv != null ? new Vector4[count] : null;
 
             for (int j = 0; j < n; j++)
             {
@@ -1957,9 +1962,9 @@ namespace HiddenHarbours.Art
         }
 
         private static void Mix(CliffWallMeshData laid, int a, int b, float f, int o,
-                                Vector3[] verts, Vector2[] uvs, Vector2[] elevation, Vector2[] sea, Vector3[] band)
+                                Vector3[] verts, Vector2[] uvs, Vector2[] elevation, Vector2[] sea, Vector4[] band)
         {
-            if (band != null) band[o] = Vector3.LerpUnclamped(laid.BandUv[a], laid.BandUv[b], f);
+            if (band != null) band[o] = Vector4.LerpUnclamped(laid.BandUv[a], laid.BandUv[b], f);
             verts[o] = Vector3.LerpUnclamped(laid.Verts[a], laid.Verts[b], f);
             uvs[o] = Vector2.LerpUnclamped(laid.Uvs[a], laid.Uvs[b], f);
             elevation[o] = Vector2.LerpUnclamped(laid.ElevationUv[a], laid.ElevationUv[b], f);
@@ -1988,7 +1993,7 @@ namespace HiddenHarbours.Art
         private void Emit(string childName, Vector3[] verts, Vector2[] uvs, int[] tris,
                           Texture2D unlit, Texture2D normal, Texture2D mask, int localOrder,
                           Vector2[] elevationUv = null, Vector2[] seaPlanUv = null, bool decal = false,
-                          Color[] colors = null, Vector3[] bandUv = null)
+                          Color[] colors = null, Vector4[] bandUv = null)
         {
             var mesh = new Mesh { name = "HH" + childName, hideFlags = HideFlags.HideAndDontSave };
             mesh.SetVertices(verts);
@@ -2012,7 +2017,7 @@ namespace HiddenHarbours.Art
             // uv4 = (the band's parameter, 1 when the band's edges are cut on the ground's cells): CoverTheCells.
             // Always written, zero where nothing is cut: a mesh WITHOUT the channel does not read as zero in the
             // shader (every sheared wall's face was cut away whole), so the flag is never left to a default.
-            mesh.SetUVs(4, bandUv ?? new Vector3[verts.Length]);
+            mesh.SetUVs(4, bandUv ?? new Vector4[verts.Length]);
             mesh.SetTriangles(tris, 0);
             mesh.RecalculateBounds();
             _meshes.Add(mesh);
@@ -2101,6 +2106,11 @@ namespace HiddenHarbours.Art
             _mpb.SetVector(IdFaultA, fault.ShaderA);
             _mpb.SetVector(IdFaultB, fault.ShaderB(_planarFace && !decal));
             _mpb.SetVector(IdFaultC, fault.ShaderC);
+            // Height (owner 11 27): upright joints and the face ramp, on the same face bands as the fault.
+            CliffHeight height = CliffHeight.From(_mix);
+            _mpb.SetVector(IdJointA, height.ShaderJointA);
+            _mpb.SetVector(IdJointB, height.ShaderJointB(_planarFace && !decal));
+            _mpb.SetVector(IdFaceRamp, height.ShaderRamp(_planarFace && !decal));
             _mpb.SetFloat(IdWallAzimuth, _wallAzimuth);
             _mpb.SetFloat(IdBatter, _batter);
             _mpb.SetVector(IdBakeL, new Vector4(_bakeLight.x, _bakeLight.y, _bakeLight.z, 0f));

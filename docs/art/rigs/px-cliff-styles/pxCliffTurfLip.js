@@ -37,7 +37,12 @@
      grass       five colours, darkest to lightest      soil   five colours, darkest to lightest
      straw       the dead blade colour                  stone  a stone's colour
      shadeColour the undercut's colour                  shadeAlpha  [near, far] alpha of the undercut where
-                                                        there is no soil under it, 0 to 255 */
+                                                        there is no soil under it, 0 to 255
+     riser       [min, max] height of the rock riser under the soil ([0, 0] = none: a wall's lip, whose face is
+                 the wall's own); a bank with no wall hangs one so it reads tall
+     jointGap    [min, max] spacing of the riser's upright joints
+     toeShade    rows of shade the riser throws on the ledge at its foot
+     rock        the riser's five colours, darkest to lightest: joint and toe, foot, middle, top, a joint's lit edge */
 (function (root) {
   'use strict';
   const P = root.PxLang;
@@ -52,6 +57,8 @@
     grass: ['#253832', '#334333', '#445338', '#565f40', '#707959'],
     soil: ['#2a1c16', '#3d2a20', '#573b30', '#6c4c38', '#8b6a50'],
     straw: '#9a8d58', stone: '#8a8478', shadeColour: '#160d0a', shadeAlpha: [190, 110],
+    riser: [0, 0], jointGap: [7, 15], toeShade: 2,
+    rock: ['#2d2828', '#59382d', '#7c513a', '#955a3d', '#ad7856'],
   };
 
   function strip(opts) {
@@ -222,6 +229,61 @@
         else if (alphaAt(x + dx, y + 2) === 255) put(x + dx, y + 2, S[0]);
       }
       x += Math.max(8, Math.round(o.tuftGap * (.5 + rng(ti, 4, 110))));
+    }
+
+    /* the riser (a bank's own strip, owner 11 27: banks with no wall read tall): an upright face of the cliff's
+       own rock under the soil, lit at its top and in shade at its foot, cut by upright joints that run its height,
+       break off and step a texel aside, a dark toe line where it meets the ledge and the shade it throws on it.
+       Painted last and only into empty texels, so every blade, root, slump and tuft hangs over it. riser 0 0 paints
+       nothing and leaves the strip exactly as before. */
+    if (o.riser[1] > 0) {
+      const K = o.rock, rh = new Int16Array(W), top = new Int16Array(W);
+      for (let x = 0; x < W; x++) {
+        top[x] = line + (hasApron ? Math.max(0, apron[x] - 5) : sodTh[x]);
+        const swell = noise(x, 70, 120), chat = rng(x, 0, 121);
+        rh[x] = Math.max(0, Math.min(H - top[x] - 1 - o.toeShade, Math.round(o.riser[0] + (o.riser[1] - o.riser[0]) * clamp(swell * 1.4 - .2, 0, 1) + (chat - .5) * 2)));
+      }
+      /* the joints: a column every jointGap texels, whose line wanders a texel at the start of a run of rows */
+      /* each joint starts a little under the riser's top and stops somewhere down it (a few run to the toe), so
+         no two are the same length and the face never reads as a fence */
+      const crack = new Uint16Array(W * H), lit = new Uint16Array(W * H), js = [], je = [];
+      for (let jx = FL(rng(0, 2, 122) * o.jointGap[1]), ji = 0; jx < W; ji++) {
+        js.push(rng(ji, 3, 122) * .3);
+        je.push(rng(ji, 4, 122) < .3 ? 1.1 : .45 + rng(ji, 5, 122) * .45);
+        const litOn = rng(ji, 6, 122) < .6;
+        let xx = jx, gap = false;
+        for (let y = 0; y < H; y++) {
+          if (y % 5 === 0) {
+            const r = rng(ji, y, 123);
+            gap = rng(ji, y, 124) < .1;
+            if (r < .22) xx--; else if (r > .78) xx++;
+            if (Math.abs(xx - jx) > 1) xx = jx;
+          }
+          if (gap) continue;
+          crack[y * W + wx(xx)] = ji + 1;
+          if (litOn) lit[y * W + wx(xx + 1)] = ji + 1;
+        }
+        jx += pick(o.jointGap, rng(ji, 1, 122));
+      }
+      for (let x = 0; x < W; x++) {
+        const d = rh[x];
+        for (let k = 0; k < d; k++) {
+          const y = top[x] + k;
+          if (alphaAt(x, y) === 255) continue;
+          const f = d <= 1 ? 1 : k / (d - 1) + (rng(x, k, 125) - .5) * .12;
+          const jc = crack[y * W + x], jl = lit[y * W + x];
+          const inJoint = (ji) => ji > 0 && f >= js[ji - 1] && f <= je[ji - 1];
+          let c = f < .24 ? K[3] : f < .66 ? K[2] : K[1];
+          if (k === d - 1) c = K[0];                                   /* the toe line */
+          else if (inJoint(jc)) c = K[0];                              /* a joint */
+          else if (inJoint(jl) && f < .6) c = K[4];                    /* its lit edge, in the upper face */
+          put(x, y, c);
+        }
+        for (let k = 0; k < o.toeShade; k++) {
+          const y = top[x] + d + k;
+          if (d > 0 && !alphaAt(x, y) && rng(x, k, 126) < (k ? .55 : .95)) put(x, y, o.shadeColour, k ? o.shadeAlpha[1] : o.shadeAlpha[0]);
+        }
+      }
     }
     return { W, H, rgba: out, line };
   }
