@@ -157,8 +157,14 @@ namespace HiddenHarbours.Core
                  "many across as this leaves room for, all straight (never tilted).")]
         [Range(0, 64)] public int PolaroidMinGapPx = 12;
 
-        [Tooltip("Ruled lines left empty under each row of Polaroids and their captions.")]
-        [Range(0, 4)] public int AlbumAirRows = 1;
+        [Tooltip("Ruled lines left empty under each row of Polaroids and their captions. 0 fits two rows of " +
+                 "48 x 34 cards to a 12-line leaf.")]
+        [Range(0, 4)] public int AlbumAirRows = 0;
+
+        [Tooltip("Clear pixels between a Polaroid's foot and the writing under it, so the words never touch " +
+                 "the card. The first caption line is written on the card's bottom strip when the strip holds " +
+                 "a line of writing with a clear pixel above and below.")]
+        [Range(1, 4)] public int PolaroidCaptionGapPx = 1;
 
         [Tooltip("The kinds of animal the album can name.")]
         public List<PhotoSubjectEntry> Subjects = new List<PhotoSubjectEntry>();
@@ -294,6 +300,7 @@ namespace HiddenHarbours.Core
             if (PolaroidBorderPx < 0 || PolaroidBottomBorderPx < PolaroidBorderPx)
                 return "A Polaroid's bottom border is the wider one.";
             if (PolaroidMinGapPx < 0 || AlbumAirRows < 0) return "The album's spacing cannot be negative.";
+            if (PolaroidCaptionGapPx < 1) return "The writing under a Polaroid needs at least one clear pixel.";
             if (PoseQuality == null || PoseQuality.Length != PoseCount) return "PoseQuality needs one value per pose.";
             if (PoseWords == null || PoseWords.Length != PoseCount) return "PoseWords needs one word per pose.";
             for (int i = 0; i < PoseCount; i++)

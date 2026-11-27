@@ -24,7 +24,8 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4293456372
   PolaroidMinGapPx: 12
-  AlbumAirRows: 1
+  AlbumAirRows: 0
+  PolaroidCaptionGapPx: 1
   Subjects:
   - SubjectId: wildlife.grey_seal
     DisplayName: 'grey seal'

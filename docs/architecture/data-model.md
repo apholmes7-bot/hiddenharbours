@@ -419,7 +419,8 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 >   48 x 34 = 4,356 characters a picture; 60 to an album, about 255 KiB a player at the cap), empty when
 >   none was taken. The PHOTO tab lays them out as an album: straight Polaroid cards (`PolaroidBorderPx`,
 >   the wider `PolaroidBottomBorderPx`, `PolaroidFrameColour`) in rows, `PolaroidMinGapPx` of air between,
->   point filtered, each with a short caption under it wrapped at spaces only. A
+>   point filtered, what and how many written on each card's bottom strip (whole words, clipped to the
+>   card) and the day and place under it (`PolaroidCaptionGapPx` clear), wrapped at spaces only. A
 >   thumbnail that does not decode is cleared on load and the record kept. `Number` is the album number,
 >   unique across the list, never reused (`PhotoAlbumRows.NextNumber` = highest + 1). The album is capped per
 >   player by the camera def (`AlbumCapacity`); a full album keeps nothing new. Helper: `PhotoAlbumRows`

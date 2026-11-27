@@ -174,6 +174,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Debug.Log($"[album plate] screen {Screen.width}x{Screen.height} fit cols {book.Fit.Cols} lines {book.Fit.Lines} " +
                       $"scale {book.Fit.Scale} across {across} first spread {firstSpreadCards} spreads shot {spread}");
             Assert.GreaterOrEqual(firstSpreadCards, 2 * across, "two full rows on the first spread");
+            Assert.GreaterOrEqual(firstSpreadCards, 4, "two rows to a leaf, four to a spread");
             Assert.Greater(spread, 1, "ten pictures turn the page");
             book.Close();
             yield return null;
@@ -216,13 +217,26 @@ namespace HiddenHarbours.Tests.PlayMode
                     float gap = Mathf.Abs(a.anchoredPosition.x - b.anchoredPosition.x) - def.PolaroidWidthPx;
                     Assert.GreaterOrEqual(gap, def.PolaroidMinGapPx, "air between two cards in a row");
                 }
-            Text[] captions = book.GetComponentsInChildren<Text>(false)
-                                  .Where(t => t.name == NotebookPresenter.PolaroidCaptionPieceName).ToArray();
-            Assert.GreaterOrEqual(captions.Length, 2 * cards.Length, "what and how many, then the day and place");
+            // What and how many is written on each card's strip, inside the card and clear of its edges; the
+            // day and place sit under it.
+            Text[] onCard = book.GetComponentsInChildren<Text>(false)
+                                .Where(t => t.name == NotebookPresenter.PolaroidCardCaptionPieceName).ToArray();
+            Assert.AreEqual(cards.Length, onCard.Length, "every card has its line written on the strip");
+            foreach (Text t in onCard)
+            {
+                var r = t.rectTransform;
+                Assert.AreEqual(NotebookPresenter.PolaroidPieceName, r.parent.name, "written on the card itself");
+                Assert.IsFalse(t.text.Contains("\n"), "one line, never wrapped");
+                Assert.LessOrEqual(t.text.Length, NotebookPhotoPage.Style(def).OnCardCols, "clipped to the card");
+            }
+            Text[] under = book.GetComponentsInChildren<Text>(false)
+                               .Where(t => t.name == NotebookPresenter.PolaroidCaptionPieceName).ToArray();
+            Assert.GreaterOrEqual(under.Length, cards.Length, "the day and place under each card");
 
             cardsShown(cards.Length);
+            RectTransform leaf = book.GetComponentsInChildren<RectTransform>(false).First(r => r.name == "Leaf");
             if (!string.IsNullOrEmpty(evidence))
-                yield return Plate(main, card,
+                yield return Plate(main, leaf,
                                    Path.Combine(evidence, $"album-{def.ThumbnailWidthPx}x{def.ThumbnailHeightPx}-spread{spread}"));
         }
 
@@ -238,7 +252,7 @@ namespace HiddenHarbours.Tests.PlayMode
         /// where the 2D renderer sorted the book's order 400 against world sprites up to 32763 on the one
         /// sorting layer, and the world drew over the paper.)
         /// </summary>
-        static IEnumerator Plate(Camera camera, RectTransform firstCard, string path)
+        static IEnumerator Plate(Camera camera, RectTransform cropTo, string path)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(path));
             var previousTarget = camera.targetTexture;
@@ -322,12 +336,12 @@ namespace HiddenHarbours.Tests.PlayMode
                     File.WriteAllBytes(path + "-page.png", image.EncodeToPNG());
 
                     var corners = new Vector3[4];
-                    firstCard.GetWorldCorners(corners);
+                    cropTo.GetWorldCorners(corners);
                     Vector2 a = RectTransformUtility.WorldToScreenPoint(uiCamera, corners[0]);
                     Vector2 b = RectTransformUtility.WorldToScreenPoint(uiCamera, corners[2]);
                     int x0 = Mathf.Clamp(Mathf.FloorToInt(Mathf.Min(a.x, b.x)) - CropPad, 0, ScreenW - 1);
                     int y0 = Mathf.Clamp(Mathf.FloorToInt(Mathf.Min(a.y, b.y)) - CropPad, 0, ScreenH - 1);
-                    int x1 = Mathf.Clamp(Mathf.CeilToInt(Mathf.Max(a.x, b.x)) + CropPad * 30, x0 + 1, ScreenW);
+                    int x1 = Mathf.Clamp(Mathf.CeilToInt(Mathf.Max(a.x, b.x)) + CropPad, x0 + 1, ScreenW);
                     int y1 = Mathf.Clamp(Mathf.CeilToInt(Mathf.Max(a.y, b.y)) + CropPad, y0 + 1, ScreenH);
                     File.WriteAllBytes(path + "-crop3x.png", Scaled(image, x0, y0, x1 - x0, y1 - y0, CropScale));
                 }

@@ -415,8 +415,9 @@ namespace HiddenHarbours.Tests.EditMode
 
             Assert.AreEqual(2, blocks.Count, "two across: a row of two, then one");
             Assert.AreEqual(5, s.CardRows, "a 50 px card over a 10 px ruling");
-            Assert.AreEqual(s.CardRows + 3 + s.AirRows, blocks[0].Height,
-                            "card, \"4 grey seals\", \"Day 12,\" over \"St Peters\", air");
+            Assert.AreEqual(7 + s.AirRows, blocks[0].Height,
+                            "the card with \"4 grey seals\" on its strip, then \"Day 12,\" over \"St Peters\" " +
+                            "from 1 px below its foot (51 + 10 + 8 px of glyph + 1 clear = 70 px), air");
             Assert.AreEqual(NotebookContent.PhotoSourcePrefix + "3", blocks[0].SourceId);
             IReadOnlyList<NotebookRow> rows = blocks[0].Rows;
             Assert.IsFalse(rows[0].Continuation, "the cards are drawn once, from the first line");
@@ -456,6 +457,70 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void TheFirstCaptionLine_IsWrittenOnTheStrip_CutByWholeWordsToFit()
+        {
+            NotebookPolaroidStyle s = NotebookPhotoPage.Style(PhotoCameraDef.Load());
+            Assert.IsTrue(s.WritesOnTheCard, "a 12 px strip holds an 8 px line with clear pixels");
+            Assert.AreEqual(9, s.OnCardCols, "inside the 4 px side borders of a 56 px card");
+            Assert.AreEqual("10 seals", NotebookPhotoGrid.OnCardCaption(Entry(1, s, "10 grey seals")));
+            Assert.AreEqual("Grey seal", NotebookPhotoGrid.OnCardCaption(Entry(1, s, "Grey seal")));
+
+            Assert.AreEqual("10 seals", NotebookPhotoGrid.Shortened("10 grey seals", 9));
+            Assert.AreEqual("10 grey seals", NotebookPhotoGrid.Shortened("10 grey seals", 13));
+            Assert.AreEqual("10", NotebookPhotoGrid.Shortened("10 cormorants", 9), "the last word alone is too long");
+            Assert.AreEqual("", NotebookPhotoGrid.Shortened("1234567890 seals", 9), "nothing fits");
+            Assert.AreEqual("", NotebookPhotoGrid.Shortened("Cormorants", 9), "a word is never broken");
+            Assert.AreEqual("A fair", NotebookPhotoGrid.Shortened("A fair", 9));
+            Assert.AreEqual("picture", NotebookPhotoGrid.Shortened("A fair picture", 9), "no count: the last word stays");
+
+            var under = new NotebookPhotoGrid(1, 89, 18).CaptionLines(Entry(1, s, "10 grey seals"));
+            CollectionAssert.AreEqual(new[] { "Day 12, St Peters" }, under, "only the day and place under the card");
+        }
+
+        [Test]
+        public void WritingNeverTouchesACardEdge()
+        {
+            NotebookPolaroidStyle s = NotebookPhotoPage.Style(PhotoCameraDef.Load());
+            int stripTop = s.HeightPx - s.BottomBorderPx;
+            Assert.GreaterOrEqual(s.OnCardTextY, stripTop + 1, "clear of the picture above the strip");
+            Assert.LessOrEqual(s.OnCardTextY + NotebookKit.GlyphHeight, s.HeightPx - 1, "clear of the card's foot");
+            Assert.AreEqual(40, s.OnCardTextY);
+            Assert.GreaterOrEqual(s.UnderTextY, s.HeightPx + 1, "the line under starts below the foot");
+            Assert.AreEqual(51, s.UnderTextY);
+            int nextRow = s.RowLines(1) * NotebookKit.Pitch;
+            Assert.LessOrEqual(s.UnderTextY + NotebookKit.GlyphHeight, nextRow - 1, "clear of the next row's card");
+        }
+
+        [Test]
+        public void AtGameZoom_ALeafHoldsTwoRowsOfCards_FourToASpread()
+        {
+            // 1080p: the book fits at scale 6, 17 columns by 12 lines (the album plate's reading).
+            PhotoCameraDef def = PhotoCameraDef.Load();
+            NotebookPolaroidStyle s = NotebookPhotoPage.Style(def);
+            var photos = new List<NotebookPhotoEntry>();
+            for (int n = 8; n >= 1; n--)
+                photos.Add(Entry(n, s, NotebookPhotoPage.Caption(def, new PhotoRecordDto { Score = 80,
+                    Subjects = new List<PhotoSubjectDto> { new PhotoSubjectDto { SubjectId = Seal, Count = n + 2 } } }),
+                    NotebookPhotoPage.CaptionWhen(def, 3600d * n, Region, 86400f)));
+            List<NotebookBlock> blocks = NotebookContent.PhotoBlocks(photos, 17);
+            Assert.AreEqual(8, blocks.Count, "one across at 17 columns");
+            Assert.AreEqual(6, blocks[0].Height, "five lines of card, one of date");
+
+            List<NotebookSpread> spreads = NotebookLayout.Paginate(blocks, 17, 12);
+            Assert.AreEqual(2, spreads.Count);
+            Assert.AreEqual(2, spreads[0].Left.Placements.Count);
+            Assert.AreEqual(2, spreads[0].Right.Placements.Count);
+        }
+
+        [Test]
+        public void ADefWithNoClearPixelUnderTheCard_IsRefused()
+        {
+            PhotoCameraDef def = Shipped();
+            def.PolaroidCaptionGapPx = 0;
+            StringAssert.Contains("clear pixel", def.ValidationError());
+        }
+
+        [Test]
         public void AnEntryWithNoPolaroid_IsAPlainSection()
         {
             var entry = new NotebookPhotoEntry(3, "Picture 3", new[] { "A grey seal, resting" });
@@ -466,9 +531,10 @@ namespace HiddenHarbours.Tests.EditMode
 
         // ---- helpers ------------------------------------------------------------------------------------
 
-        static NotebookPhotoEntry Entry(int number, NotebookPolaroidStyle style) =>
-            new NotebookPhotoEntry(number, "Picture " + number, new[] { "Grey seal, resting" }, "4 grey seals",
-                                   "Day 12, St Peters", "", style);
+        static NotebookPhotoEntry Entry(int number, NotebookPolaroidStyle style, string caption = "4 grey seals",
+                                        string when = "Day 12, St Peters") =>
+            new NotebookPhotoEntry(number, "Picture " + number, new[] { "Grey seal, resting" }, caption, when, "",
+                                   style);
 
         PhotoCameraDef Shipped()
         {

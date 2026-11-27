@@ -941,6 +941,9 @@ namespace HiddenHarbours.World
         /// <summary>The name of a caption line under a Polaroid — what a test looks for.</summary>
         public const string PolaroidCaptionPieceName = "PhotoPolaroidCaption";
 
+        /// <summary>The name of the line written on a Polaroid's strip — what a test looks for.</summary>
+        public const string PolaroidCardCaptionPieceName = "PhotoPolaroidCardCaption";
+
         private bool TryPhoto(int number, out NotebookPhotoEntry photo) =>
             _photoBySource.TryGetValue(
                 NotebookContent.PhotoSourcePrefix + number.ToString(System.Globalization.CultureInfo.InvariantCulture),
@@ -948,8 +951,8 @@ namespace HiddenHarbours.World
 
         /// <summary>
         /// One row of the album: each card straight (never tilted: a turned card would be mixels) and centred
-        /// in its slot of <see cref="NotebookPhotoGrid"/>, its caption lettered under it on whole pixels, one
-        /// ruled line a caption line, words never broken.
+        /// in its slot of <see cref="NotebookPhotoGrid"/>, its first caption line written on its strip and the
+        /// day and place under it, all on whole pixels, clear of the card's edges, words never broken.
         /// </summary>
         private void DrawPolaroidRow(RectTransform page, string iconId, int titleX, int rowY, int cols)
         {
@@ -959,14 +962,25 @@ namespace HiddenHarbours.World
                 if (!TryPhoto(numbers[k], out NotebookPhotoEntry photo) || !photo.HasPolaroid) continue;
                 NotebookPhotoGrid grid = NotebookPhotoGrid.For(photo.Style, cols);
                 int slotX = titleX + k * grid.SlotWidthPx;
-                DrawPolaroid(page, photo, slotX + (grid.SlotWidthPx - photo.Style.WidthPx) / 2, rowY);
+                RectTransform card = DrawPolaroid(page, photo, slotX + (grid.SlotWidthPx - photo.Style.WidthPx) / 2, rowY);
 
+                // Written on the strip, as people write on a Polaroid: dark ink, centred, whole words only.
+                string onCard = NotebookPhotoGrid.OnCardCaption(photo);
+                if (onCard.Length > 0)
+                {
+                    int textW = onCard.Length * NotebookKit.CellWidth - 1;
+                    Text t = AddText(card, onCard, (photo.Style.WidthPx - textW) / 2, photo.Style.OnCardTextY,
+                                     textW, InkStrong);
+                    if (t != null) t.gameObject.name = PolaroidCardCaptionPieceName;
+                }
+
+                // Under the card, clear of its edge by the style's gap.
                 List<string> caption = grid.CaptionLines(photo);
                 for (int i = 0; i < caption.Count; i++)
                 {
                     int textW = caption[i].Length * NotebookKit.CellWidth - 1;
                     int x = slotX + System.Math.Max(0, (grid.SlotWidthPx - textW) / 2);
-                    Text t = AddText(page, caption[i], x, rowY + (photo.Style.CardRows + i) * NotebookKit.Pitch,
+                    Text t = AddText(page, caption[i], x, rowY + photo.Style.UnderTextY + i * NotebookKit.Pitch,
                                      System.Math.Max(textW, 1), Ink);
                     if (t != null) t.gameObject.name = PolaroidCaptionPieceName;
                 }
@@ -978,16 +992,17 @@ namespace HiddenHarbours.World
         /// thumbnail, one kit pixel per thumbnail pixel, point filtered (no mixels). A thumbnail that is
         /// missing draws the card alone.
         /// </summary>
-        private void DrawPolaroid(RectTransform page, in NotebookPhotoEntry photo, int x, int rowY)
+        private RectTransform DrawPolaroid(RectTransform page, in NotebookPhotoEntry photo, int x, int rowY)
         {
             NotebookPolaroidStyle s = photo.Style;
             RectTransform card = AddPiece(page, PolaroidPieceName, null, x, rowY, s.WidthPx, s.HeightPx, s.FrameColour);
             Sprite picture = PolaroidSprite(photo.Number, photo.Thumbnail, out int w, out int h);
-            if (picture == null) return;
+            if (picture == null) return card;
             int innerW = s.WidthPx - 2 * s.BorderPx;
             int innerH = s.HeightPx - s.BorderPx - s.BottomBorderPx;
             AddPiece(card, PolaroidPicturePieceName, picture, s.BorderPx, s.BorderPx,
                      Mathf.Min(w, innerW), Mathf.Min(h, innerH), Color.white);
+            return card;
         }
 
         private Sprite PolaroidSprite(int number, string thumbnail, out int width, out int height)

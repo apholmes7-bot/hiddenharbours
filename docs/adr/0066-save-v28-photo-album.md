@@ -58,7 +58,10 @@ blur), and it is carried in the header, so a later retune never breaks an old pi
 shutter: the frame rendered at the art grid (32 px a metre) and point-sampled down, never blended. The album draws
 it one kit pixel per thumbnail pixel inside a straight Polaroid card (`PolaroidBorderPx` 4, the wider
 `PolaroidBottomBorderPx` 12, `PolaroidFrameColour`), point filtered, the cards in rows with `PolaroidMinGapPx`
-of air and a two-line caption under each (what and how many; the day and place), wrapped at spaces only.
+of air. What and how many is written on the card's wide bottom strip, one line clipped to the card by whole
+words ("10 grey seals" reads "10 seals"); the day and place sit under the card `PolaroidCaptionGapPx` (1) clear
+of its edge, wrapped at spaces only. A row is then 6 ruled lines, so a 12-line leaf holds two rows
+(`AlbumAirRows` 0).
 Worst case: `AlbumCapacity` (60) x 4,356 = 261,360 characters of thumbnail per player (about 255 KiB), plus the
 record rows. Every size and colour is a camera def tunable. Names, pose words, quality words and place names come from the camera def, so a retune
 or a reword moves every save with it. Per-player rows (`PlayerKey`) so co-op adds rows, not a version.

@@ -61,7 +61,7 @@ namespace HiddenHarbours.World
                 ? default
                 : new NotebookPolaroidStyle(def.PolaroidWidthPx, def.PolaroidHeightPx, def.PolaroidBorderPx,
                                             def.PolaroidBottomBorderPx, def.PolaroidFrameColour,
-                                            def.PolaroidMinGapPx, def.AlbumAirRows);
+                                            def.PolaroidMinGapPx, def.AlbumAirRows, def.PolaroidCaptionGapPx);
 
         /// <summary>The first line under a Polaroid: the kind it holds most of, counted ("4 grey seals",
         /// "Grey seal"); the first listed wins a tie. A picture naming nothing is captioned by its quality.</summary>

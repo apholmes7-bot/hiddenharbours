@@ -27,8 +27,9 @@ namespace HiddenHarbours.World
     }
 
     /// <summary>How the album draws its little Polaroids, all from the camera's def, kit pixels: the card's
-    /// outer size and borders, its colour, the least air between two cards side by side, and the ruled
-    /// lines left empty under each row of cards. A zero width draws no Polaroid.</summary>
+    /// outer size and borders, its colour, the least air between two cards side by side, the clear pixels
+    /// between a card's edge and the writing under it, and the ruled lines left empty under each row of
+    /// cards. A zero width draws no Polaroid.</summary>
     public readonly struct NotebookPolaroidStyle
     {
         public readonly int WidthPx;
@@ -38,9 +39,10 @@ namespace HiddenHarbours.World
         public readonly Color32 FrameColour;
         public readonly int MinGapPx;
         public readonly int AirRows;
+        public readonly int CaptionGapPx;
 
         public NotebookPolaroidStyle(int widthPx, int heightPx, int borderPx, int bottomBorderPx, Color32 frameColour,
-                                     int minGapPx, int airRows)
+                                     int minGapPx, int airRows, int captionGapPx)
         {
             WidthPx = widthPx > 0 ? widthPx : 0;
             HeightPx = heightPx > 0 ? heightPx : 0;
@@ -49,12 +51,37 @@ namespace HiddenHarbours.World
             FrameColour = frameColour;
             MinGapPx = minGapPx > 0 ? minGapPx : 0;
             AirRows = airRows > 0 ? airRows : 0;
+            CaptionGapPx = captionGapPx > 0 ? captionGapPx : 0;
         }
 
         public bool IsDrawn => WidthPx > 0 && HeightPx > 0;
 
-        /// <summary>The ruled lines a card covers, so the caption starts on the line below it.</summary>
+        /// <summary>The ruled lines a card covers.</summary>
         public int CardRows => IsDrawn ? (HeightPx + NotebookKit.Pitch - 1) / NotebookKit.Pitch : 0;
+
+        /// <summary>Can a line of writing sit on the card's bottom strip with a clear pixel above and below?</summary>
+        public bool WritesOnTheCard => BottomBorderPx >= NotebookKit.GlyphHeight + 2;
+
+        /// <summary>Where the writing on the card starts, from the card's top: centred in the bottom strip.</summary>
+        public int OnCardTextY => HeightPx - BottomBorderPx + (BottomBorderPx - NotebookKit.GlyphHeight) / 2;
+
+        /// <summary>How many characters fit on the card's strip, inside its side borders.</summary>
+        public int OnCardCols => System.Math.Max(0, (WidthPx - 2 * BorderPx + 1) / NotebookKit.CellWidth);
+
+        /// <summary>Where the first line under the card starts, from the card's top: the card's foot, then
+        /// <see cref="CaptionGapPx"/> clear pixels.</summary>
+        public int UnderTextY => HeightPx + CaptionGapPx;
+
+        /// <summary>The ruled lines a row of cards takes with <paramref name="underLines"/> lines of writing
+        /// under them: down to the last glyph's foot and one clear pixel more, then the air.</summary>
+        public int RowLines(int underLines)
+        {
+            if (!IsDrawn) return 0;
+            int foot = underLines > 0
+                ? UnderTextY + (underLines - 1) * NotebookKit.Pitch + NotebookKit.GlyphHeight + 1
+                : HeightPx;
+            return (foot + NotebookKit.Pitch - 1) / NotebookKit.Pitch + AirRows;
+        }
     }
 
     /// <summary>One kept picture, as the album page sees it, already worded by <see cref="NotebookPhotoPage"/>:
@@ -100,8 +127,9 @@ namespace HiddenHarbours.World
     /// <summary>
     /// Where a row of the album's Polaroids sits on a leaf (pure; the page builder and the presenter both
     /// read it, so what is measured is what is drawn). The title lane is split into equal slots, as many as
-    /// hold a card with the least air beside it; each card is centred in its slot and its caption lettered
-    /// under it across the slot's width, word-wrapped and never broken inside a word.
+    /// hold a card with the least air beside it; each card is centred in its slot, its first caption line
+    /// written on its bottom strip (shortened by whole words to fit) and the day and place lettered under
+    /// it across the slot's width, never broken inside a word.
     /// </summary>
     public readonly struct NotebookPhotoGrid
     {
@@ -127,15 +155,49 @@ namespace HiddenHarbours.World
             return new NotebookPhotoGrid(across, slot, slotCols < 1 ? 1 : slotCols);
         }
 
-        /// <summary>The caption's lines for <paramref name="photo"/>: its first line, then its second, each
-        /// wrapped at the slot at spaces only. A word longer than the slot keeps a line of its own whole
-        /// (never hard-broken): the content test holds the shipped words inside the narrowest slot.</summary>
+        /// <summary>The lines written UNDER <paramref name="photo"/>'s card, wrapped at the slot at spaces
+        /// only: the day and place, and the first line too when the card has no strip to write it on. A word
+        /// longer than the slot keeps a line of its own whole (never hard-broken): the content test holds
+        /// the shipped words inside the narrowest slot.</summary>
         public List<string> CaptionLines(in NotebookPhotoEntry photo)
         {
             var lines = new List<string>();
-            WrapWords(photo.Caption, SlotCols, lines);
+            if (!photo.Style.WritesOnTheCard) WrapWords(photo.Caption, SlotCols, lines);
             WrapWords(photo.CaptionWhen, SlotCols, lines);
             return lines;
+        }
+
+        /// <summary>The line written ON <paramref name="photo"/>'s card, as people write on a Polaroid's
+        /// strip; empty when the card has no strip for it (it is then written under).</summary>
+        public static string OnCardCaption(in NotebookPhotoEntry photo) =>
+            photo.Style.WritesOnTheCard ? Shortened(photo.Caption, photo.Style.OnCardCols) : "";
+
+        /// <summary>
+        /// <paramref name="text"/> cut to <paramref name="cols"/> characters by whole words, never by
+        /// letters: a leading count stays and the words after it go first, so "10 grey seals" reads
+        /// "10 seals"; if the last word alone is still too long, only the count; if even that is, nothing.
+        /// </summary>
+        public static string Shortened(string text, int cols)
+        {
+            if (string.IsNullOrWhiteSpace(text) || cols <= 0) return "";
+            var words = new List<string>(text.Split(new[] { ' ' }, System.StringSplitOptions.RemoveEmptyEntries));
+            int keep = words.Count > 1 && IsCount(words[0]) ? 1 : 0;
+            while (Length(words) > cols && words.Count - keep > 1) words.RemoveAt(keep);
+            if (Length(words) > cols && keep == 1) words.RemoveRange(1, words.Count - 1);
+            return Length(words) > cols ? "" : string.Join(" ", words);
+        }
+
+        private static bool IsCount(string word)
+        {
+            foreach (char c in word) if (c < '0' || c > '9') return false;
+            return word.Length > 0;
+        }
+
+        private static int Length(List<string> words)
+        {
+            int n = words.Count > 0 ? words.Count - 1 : 0;
+            foreach (string w in words) n += w.Length;
+            return n;
         }
 
         /// <summary>
@@ -498,8 +560,9 @@ namespace HiddenHarbours.World
         }
 
         /// <summary>
-        /// One row of the album's Polaroids: as many ruled lines as the card covers, then the longest
-        /// caption's lines, then the air. Every row is blank text (the presenter letters the captions in
+        /// One row of the album's Polaroids: the card (its first caption line written on its strip), the
+        /// longest run of lines written under a card, clear of the card's edge and of the next row
+        /// (<see cref="NotebookPolaroidStyle.RowLines"/>), then the air. Every row is blank text (the presenter letters the captions in
         /// each card's own slot) and carries the grid icon id; the first is the block's start, where the
         /// cards are drawn. The block's source id is the first picture's.
         /// </summary>
@@ -515,7 +578,7 @@ namespace HiddenHarbours.World
                 if (k > 0) icon.Append(PhotoGridSeparator);
                 icon.Append(row[k].Number.ToString(Invariant));
             }
-            int height = style.CardRows + captionRows + style.AirRows;
+            int height = style.RowLines(captionRows);
             string iconId = icon.ToString();
             var rows = new List<NotebookRow>(height);
             for (int r = 0; r < height; r++)
