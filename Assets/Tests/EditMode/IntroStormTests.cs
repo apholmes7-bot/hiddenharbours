@@ -70,6 +70,70 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(OnboardingFlags.OnboardedKey, wall.LiftedByFlag);
         }
 
+        [TestCase(false, false, false)]
+        [TestCase(false, true, false)]
+        [TestCase(false, true, true)]
+        [TestCase(true, false, false)]
+        [TestCase(true, true, false)]
+        [TestCase(true, true, true)]
+        public void DemoKeepsExistingExitWallsWhileTheFullGameUsesTheirFlags(bool demo, bool started, bool lifted)
+        {
+            var before = DemoBuild.Override;
+            try
+            {
+                DemoBuild.Override = demo;
+                var save = new StoryGateTests.FlagSave();
+                GameServices.Save = save;
+                var walls = Walls();
+                CollectionAssert.AreEquivalent(new[]
+                {
+                    WallId, "campaign_barrier.st_peters_storm_east", "campaign_barrier.st_peters_storm_west",
+                    "campaign_barrier.st_peters_storm_north", "campaign_barrier.st_peters_storm_south"
+                }, walls.Select(w => w.Id));
+                foreach (var wall in walls)
+                {
+                    if (!string.IsNullOrEmpty(wall.StandsWhileFlag)) save.SetFlag(wall.StandsWhileFlag, started);
+                    if (!string.IsNullOrEmpty(wall.LiftedByFlag)) save.SetFlag(wall.LiftedByFlag, lifted);
+                }
+                var writes = save.Writes.ToArray();
+                foreach (var wall in walls)
+                    Assert.AreEqual(demo || ((string.IsNullOrEmpty(wall.StandsWhileFlag) || started) && !lifted),
+                        CampaignBarrierDirector.Stands(wall), wall.Id);
+                CollectionAssert.AreEquivalent(writes, save.Writes.ToArray());
+            }
+            finally { DemoBuild.Override = before; }
+        }
+
+        [Test]
+        public void DemoWallsStandDownOnlyWhileTheOpeningIsRunning()
+        {
+            var before = DemoBuild.Override;
+            var host = new GameObject("OpeningBarrierFixture");
+            host.SetActive(false);
+            try
+            {
+                DemoBuild.Override = true;
+                GameServices.Save = new StoryGateTests.FlagSave();
+                var wall = Wall();
+                GameServices.CurrentRegionId = wall.RegionId;
+                var director = host.AddComponent<CampaignBarrierDirector>();
+                director.LoadWalls(wall);
+                var standing = typeof(CampaignBarrierDirector).GetMethod("FindStanding",
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                Assert.IsNotNull(standing);
+                Assert.AreSame(wall, standing.Invoke(director, null));
+                GameServices.OpeningCinematicRunning = true;
+                Assert.IsNull(standing.Invoke(director, null));
+                GameServices.OpeningCinematicRunning = false;
+                Assert.AreSame(wall, standing.Invoke(director, null));
+            }
+            finally
+            {
+                Object.DestroyImmediate(host);
+                DemoBuild.Override = before;
+            }
+        }
+
         [Test]
         public void EveryWallSaysOnePlainLine()
         {

@@ -35,6 +35,20 @@ namespace HiddenHarbours.Art
             => dial > 0f ? SeaFade(seaState01, s) : 0f;
 
         /// <summary>
+        /// The hull reflection's fade length (metres above the waterline it takes to be gone) while the mirror
+        /// owns <paramref name="handover"/> of the calm water. The fade belongs to the water's own streaky
+        /// reflection (the sunset rowing clip, 11-22); the mirror reads the same picture as a TRUE reflection,
+        /// where a dory's topsides and the crew aboard must reach the water whole. So the fade stretches as
+        /// the mirror takes over: the given length at handover 0 (rough water, the water's look), no fade at
+        /// all (0) at handover 1 (calm water, the mirror's). A length of 0 or less (no fade) stays as it is.
+        /// </summary>
+        public static float HullFadeMeters(float fadeMeters, float handover)
+        {
+            if (fadeMeters <= 0f || handover <= 0f) return fadeMeters;
+            return handover >= 1f - 1e-3f ? 0f : fadeMeters / (1f - handover);
+        }
+
+        /// <summary>
         /// Pack every standable deck with a drawn outline (<see cref="IStandableOutline"/>) that touches
         /// <paramref name="view"/> into convex quads for the mirror's deck test: corners 0 and 1 in
         /// <paramref name="a"/>, 2 and 3 in <paramref name="b"/>, and in <paramref name="h"/>.x the height on
@@ -87,7 +101,7 @@ namespace HiddenHarbours.Art
     /// The calm mirror (the owner, 2026-11-23: calm water shows a TRUE reflection). Driven from
     /// <see cref="IsoFacetHullFeature.AddRenderPasses"/> once per camera per frame.
     ///
-    /// <para>Dial 0 (<see cref="GameConfig.WaterMirrorStrength"/>, the shipped default): the two globals it
+    /// <para>Dial 0 (<see cref="GameConfig.WaterMirrorStrength"/>; the ship default is 0.6): the two globals it
     /// owns stay 0, which is also their unset value, the camera is never touched and no pass is recorded,
     /// so every pixel is today's.</para>
     ///
@@ -132,6 +146,10 @@ namespace HiddenHarbours.Art
         /// take figures ashore in.</summary>
         internal static bool Active { get; private set; }
 
+        /// <summary>The handover published for the camera being set up (0 while the mirror is off). Read by
+        /// the mesh mirror pass to stretch the hull fade (<see cref="CalmMirrorMath.HullFadeMeters"/>).</summary>
+        internal static float Handover { get; private set; }
+
         /// <summary>Looks only: 1 shows the pixel classes, 2 the true layer's coverage. Never saved.</summary>
         internal static float DebugView;
         /// <summary>Looks only: a sea state to use instead of the weather's (below 0 = the weather's).</summary>
@@ -150,7 +168,8 @@ namespace HiddenHarbours.Art
                        && SystemInfo.graphicsDeviceType != GraphicsDeviceType.Null;
             WaterMirrorSettings s = GameServices.WaterMirror;
             float sea = SeaState();
-            Publish(run ? CalmMirrorMath.Handover(dial, sea, s) : 0f, run ? 1f : 0f);
+            Handover = run ? CalmMirrorMath.Handover(dial, sea, s) : 0f;
+            Publish(Handover, run ? 1f : 0f);
             Active = run;
             if (!run)
             {
@@ -171,7 +190,10 @@ namespace HiddenHarbours.Art
                 if (shader == null || !shader.isSupported) return;
                 s_Material = CoreUtils.CreateEngineMaterial(shader);
             }
-            s_Pass ??= new Pass { renderPassEvent = RenderPassEvent.AfterRenderingTransparents };
+            // The pass copies the camera colour, so it needs a texture it can describe: without an intermediate
+            // texture the active colour is the back buffer or the camera's own target, which has no descriptor,
+            // and reading one throws inside the render graph and loses the camera's whole frame.
+            s_Pass ??= new Pass { renderPassEvent = RenderPassEvent.AfterRenderingTransparents, requiresIntermediateTexture = true };
             s_Pass.Material = s_Material;
             s_Pass.Strength = CalmMirrorMath.EffectiveStrength(dial, sea, s);
             s_Pass.Roughness = CalmMirrorMath.Roughness(sea, s);
@@ -184,6 +206,7 @@ namespace HiddenHarbours.Art
         {
             Publish(0f, 0f);
             Active = false;
+            Handover = 0f;
             RestoreCamera();
             CoreUtils.Destroy(s_Material);
             s_Material = null;
@@ -232,7 +255,7 @@ namespace HiddenHarbours.Art
                 var resources = frameData.Get<UniversalResourceData>();
                 var cameraData = frameData.Get<UniversalCameraData>();
                 TextureHandle target = resources.activeColorTexture;
-                if (!target.IsValid() || Material == null) return;
+                if (!target.IsValid() || Material == null || resources.isActiveTargetBackBuffer) return;
                 TextureDesc desc = graph.GetTextureDesc(target);
                 // The classes ride the alpha channel; a target without one has nothing to read.
                 if (!GraphicsFormatUtility.HasAlphaChannel(desc.format) || desc.width <= 0 || desc.height <= 0) return;
@@ -272,7 +295,10 @@ namespace HiddenHarbours.Art
                 Material.SetVectorArray(TopHId, s_TopH);
                 Material.SetVector(TopsId, new Vector4(tops, Mathf.Max(0f, s.FaceSnapMetres) * IsoGround.HeightScale,
                     Mathf.Max(0f, s.FaceFeatherMetres) * IsoGround.HeightScale, Mathf.Clamp01(s.FaceBandShare)));
-                Material.SetVector(BandId, (Vector4)s.FaceBandColour);
+                // w: one art pixel in world units, the slack the deck test allows the drawn art past its outline.
+                Vector4 band = (Vector4)s.FaceBandColour;
+                band.w = 1f / ppm;
+                Material.SetVector(BandId, band);
 
                 desc.name = "_HHCalmMirrorCopy";
                 desc.clearBuffer = false;

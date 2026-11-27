@@ -444,6 +444,7 @@ namespace HiddenHarbours.World
                     Station = station,
                     Activity = entries[k].Activity,
                     Interruptible = entries[k].Interruptible,
+                    Doing = entries[k].Doing,
                 });
             }
 

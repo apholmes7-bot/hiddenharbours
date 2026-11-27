@@ -33,6 +33,8 @@ namespace HiddenHarbours.Tests.EditMode
         {
             public readonly Dictionary<string, int> Writes = new Dictionary<string, int>();
             public SaveData Current { get; set; } = new SaveData();
+            public int Saves;
+            public bool LoadedExistingSave { get; private set; }
 
             public bool GetFlag(string key)
             {
@@ -56,7 +58,13 @@ namespace HiddenHarbours.Tests.EditMode
                 Current.OnboardingFlags.Add(new SaveFlag(key, value));
             }
 
-            public void Save() { }
+            public void Save()
+            {
+                Saves++;
+                LoadedExistingSave = true;
+                if (GameServices.Clock != null)
+                    Current.GameTimeSeconds = GameServices.Clock.TotalSeconds;
+            }
         }
 
         /// <summary>A clock that is whatever day and hour the case says.</summary>
@@ -76,6 +84,13 @@ namespace HiddenHarbours.Tests.EditMode
             public float DayFraction => Hour / 24f;
             public bool IsPaused { get; set; }
             public float TimeScale { get; set; } = 1f;
+            public bool FastForwardTo(double target)
+            {
+                if (target <= TotalSeconds) return false;
+                Day = (int)System.Math.Floor(target / GameConfig.DefaultSecondsPerDay);
+                Hour = (float)((target / GameConfig.DefaultSecondsPerDay - Day) * 24d);
+                return true;
+            }
         }
 
         private StoryGateDef _gate;
@@ -85,11 +100,16 @@ namespace HiddenHarbours.Tests.EditMode
         private SaveFlagStore _flags;
         private FixedClock _clock;
         private int _wordsGiven;
+        private System.Func<bool> _previousHost;
 
         [SetUp]
         public void SetUp()
         {
             GameServices.Reset();
+            SleepFlow.Reset();
+            _previousHost = DemoWeek.IsHost;
+            DemoWeek.IsHost = null;
+            StoryGates.ListenForMorning();
             DemoBuild.Override = false;
             _gate = AssetDatabase.LoadAssetAtPath<StoryGateDef>(GatePath);
             _rules = AssetDatabase.LoadAssetAtPath<IslandWeekRulesDef>(RulesPath);
@@ -113,10 +133,195 @@ namespace HiddenHarbours.Tests.EditMode
             EventBus.Unsubscribe<StoryWordGiven>(CountWord);
             StoryGates.Load(null);
             DemoBuild.Override = null;
+            DemoWeek.IsHost = _previousHost;
+            SleepFlow.Reset();
             GameServices.Reset();
         }
 
         private void CountWord(StoryWordGiven e) => _wordsGiven++;
+
+        private void SleepToMorning(bool chosen)
+        {
+            _clock.Hour = 22f;
+            var request = new RestSaveRequested("fixture bed");
+            if (!chosen) Assert.IsTrue(RestSaveResponder.Fulfil(request).Ok);
+            else
+            {
+                Assert.IsTrue(SleepFlow.Begin(request));
+                SleepFlow.Confirm();
+                SleepFlow.Tick(SleepPlan.RulingMaxHours / SleepPlan.GameHoursPerRealSecond(GameServices.Config));
+                Assert.AreEqual(SleepPhase.Awake, SleepFlow.Phase);
+            }
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void WordThenKeptSleep_OpensEveryPassage_AndClearsTheReminder(bool chosen)
+        {
+            _save.Current = WeekSave(IslandWeekFact.All);
+            Assert.IsTrue(StoryGates.Give(_gate, _flags));
+            Assert.IsFalse(_flags.Get(_gate.MorningSetsFlag));
+            Assert.AreEqual(StoryGateTalkKind.Hint, StoryGates.TalkWith(_gate.NpcId, _flags).Kind);
+            StoryGates.ListenForMorning();
+            StoryGates.ListenForMorning();
+
+            SleepToMorning(chosen);
+
+            Assert.AreEqual(1, _save.Saves, "the sleep was kept");
+            Assert.IsTrue(_flags.Get(_gate.MorningSetsFlag));
+            Assert.AreEqual(1, _save.Writes[_gate.MorningSetsFlag]);
+            Assert.AreEqual(StoryGateTalkKind.Normal, StoryGates.TalkWith(_gate.NpcId, _flags).Kind);
+            foreach (CampaignBarrierDef wall in StPetersWalls())
+                Assert.IsTrue(_flags.Get(wall.LiftedByFlag), wall.Id);
+
+            string json = SaveSerialization.ToJson(_save.Current);
+            _save.Current = SaveSerialization.FromJson(json);
+            EventBus.Publish(new GameLoaded());
+            EventBus.Publish(new PlayerWokeAt(RestAnchor.None));
+            Assert.IsTrue(_flags.Get(_gate.MorningSetsFlag));
+            Assert.AreEqual(StoryGateTalkKind.Normal, StoryGates.TalkWith(_gate.NpcId, _flags).Kind);
+            SleepToMorning(chosen);
+            Assert.AreEqual(1, _save.Writes[_gate.MorningSetsFlag], "later mornings never rewrite passage");
+            Assert.AreEqual(1, _save.Writes[_gate.SetsFlag]);
+            Assert.AreEqual(1, _wordsGiven);
+            Assert.IsFalse(_flags.Get(DemoWeek.EndedKey));
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void KeptSleepWithoutTheWord_OpensNothing(bool chosen)
+        {
+            _save.Current = WeekSave(IslandWeekFact.All);
+            SleepToMorning(chosen);
+            Assert.AreEqual(1, _save.Saves);
+            Assert.IsEmpty(_save.Writes);
+            Assert.IsFalse(_flags.Get(_gate.MorningSetsFlag));
+            Assert.AreEqual(0, _wordsGiven);
+        }
+
+        [Test]
+        public void AnEveningSleepEndingBeforeMorning_LeavesTheReminderUntilTheNextKeptSleep()
+        {
+            _save.Current = WeekSave(IslandWeekFact.All);
+            Assert.IsTrue(StoryGates.Give(_gate, _flags));
+            var request = new RestSaveRequested("fixture bed");
+            Assert.IsTrue(RestSaveResponder.Fulfil(request).Ok);
+            Assert.AreEqual(1, _save.Saves);
+            Assert.IsFalse(_flags.Get(_gate.MorningSetsFlag), "the eight-hour cap woke him before morning");
+            Assert.AreEqual(StoryGateTalkKind.Hint, StoryGates.TalkWith(_gate.NpcId, _flags).Kind);
+            Assert.IsTrue(RestSaveResponder.Fulfil(request).Ok);
+            Assert.AreEqual(2, _save.Saves);
+            Assert.AreEqual(1, _save.Writes[_gate.MorningSetsFlag]);
+            Assert.AreEqual(StoryGateTalkKind.Normal, StoryGates.TalkWith(_gate.NpcId, _flags).Kind);
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void OnlyTheExistingHostAuthority_CanOpenTheSharedPassage(bool chosen)
+        {
+            _save.Current = WeekSave(IslandWeekFact.All);
+            Assert.IsTrue(StoryGates.Give(_gate, _flags));
+            string hostJson = SaveSerialization.ToJson(_save.Current);
+            DemoWeek.IsHost = () => false;
+            SleepToMorning(chosen);
+            Assert.IsFalse(_flags.Get(_gate.MorningSetsFlag));
+            Assert.IsFalse(_save.Writes.ContainsKey(_gate.MorningSetsFlag));
+            Assert.AreEqual(StoryGateTalkKind.Hint, StoryGates.TalkWith(_gate.NpcId, _flags).Kind);
+
+            _save.Current = SaveSerialization.FromJson(hostJson);
+            _clock.Day = EarliestDayIndex;
+            DemoWeek.IsHost = () => true;
+            SleepToMorning(chosen);
+            Assert.IsTrue(_flags.Get(_gate.MorningSetsFlag));
+            Assert.AreEqual(1, _save.Writes[_gate.MorningSetsFlag]);
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TheDemoEndsAtTheWord_AndSleepDoesNotOpenPassage(bool chosen)
+        {
+            DemoBuild.Override = true;
+            DemoWeek.Listen();
+            _save.Current = WeekSave(IslandWeekFact.All);
+            int endings = 0;
+            void Ended(DemoEnded e) => endings++;
+            EventBus.Subscribe<DemoEnded>(Ended);
+            try
+            {
+                Assert.IsTrue(StoryGates.Give(_gate, _flags));
+                Assert.AreEqual(1, endings);
+                Assert.IsTrue(_flags.Get(DemoWeek.EndedKey));
+                SleepToMorning(chosen);
+                Assert.AreEqual(1, endings);
+                Assert.IsFalse(_flags.Get(_gate.MorningSetsFlag));
+                Assert.IsFalse(_save.Writes.ContainsKey(_gate.MorningSetsFlag));
+                Assert.AreEqual(1, _save.Writes[DemoWeek.EndedKey]);
+                CollectionAssert.AreEqual(new[] { _gate.DemoAfterLine },
+                    StoryGates.TalkWith(_gate.NpcId, _flags).Lines);
+            }
+            finally { EventBus.Unsubscribe<DemoEnded>(Ended); }
+        }
+
+        [Test]
+        public void LoadOrdinarySaveAndAbandon_LeaveTheWordWaitingForAKeptMorning()
+        {
+            _save.Current = WeekSave(IslandWeekFact.All);
+            Assert.IsTrue(StoryGates.Give(_gate, _flags));
+            string json = SaveSerialization.ToJson(_save.Current);
+            _save.Current = SaveSerialization.FromJson(json);
+            EventBus.Publish(new GameLoaded());
+            EventBus.Publish(new PlayerWokeAt(RestAnchor.None));
+            _save.Save();
+            EventBus.Publish(new GameSaved(true, "fixture ordinary save"));
+            _clock.Hour = 22f;
+            Assert.IsTrue(SleepFlow.Begin(new RestSaveRequested("fixture bed")));
+            SleepFlow.Confirm();
+            _clock.FastForwardTo(RestMorning.WakeSeconds(_clock.TotalSeconds, GameServices.Config));
+            SleepFlow.Abandon();
+            Assert.IsFalse(_flags.Get(_gate.MorningSetsFlag));
+            Assert.AreEqual(1, _save.Writes.Count);
+            Assert.AreEqual(1, _save.Saves);
+            Assert.AreEqual(StoryGateTalkKind.Hint, StoryGates.TalkWith(_gate.NpcId, _flags).Kind);
+        }
+
+        [Test]
+        public void AGateWithoutAMorningAction_AndAnAbsentSave_ChangeNothing()
+        {
+            var gate = Object.Instantiate(_gate);
+            try
+            {
+                gate.MorningSetsFlag = "";
+                StoryGates.Load(gate);
+                _save.Current = WeekSave(IslandWeekFact.All);
+                Assert.IsTrue(StoryGates.Give(gate, _flags));
+                SleepToMorning(false);
+                Assert.AreEqual(1, _save.Writes.Count);
+                GameServices.Save = null;
+                EventBus.Publish(new SleepReachedMorning(_clock.TotalSeconds));
+                Assert.AreEqual(1, _save.Writes.Count);
+            }
+            finally { Object.DestroyImmediate(gate); }
+        }
+
+        [Test]
+        public void TheMorningAction_CannotSetTheWordOrItsActivation()
+        {
+            var gate = Object.Instantiate(_gate);
+            try
+            {
+                foreach (string flag in new[] { gate.SetsFlag, gate.LiveWhileFlag })
+                {
+                    gate.MorningSetsFlag = flag;
+                    Assert.AreEqual("The morning must set a different flag from the word or its activation.",
+                        gate.ValidationError());
+                }
+                gate.MorningSetsFlag = "";
+                Assert.IsNull(gate.ValidationError());
+                gate.MorningSetsFlag = _gate.MorningSetsFlag;
+                Assert.IsNull(gate.ValidationError());
+            }
+            finally { Object.DestroyImmediate(gate); }
+        }
 
         // ---- fixtures ---------------------------------------------------------------------------
 
@@ -300,7 +505,9 @@ namespace HiddenHarbours.Tests.EditMode
             for (int i = 0; i < 3; i++)
             {
                 _clock.Day = EarliestDayIndex + i;
-                Assert.AreEqual(StoryGateTalkKind.Normal, StoryGates.TalkWith(_gate.NpcId, _flags).Kind);
+                StoryGateTalk talk = StoryGates.TalkWith(_gate.NpcId, _flags);
+                Assert.AreEqual(StoryGateTalkKind.Hint, talk.Kind, "passage still waits for sleep");
+                CollectionAssert.AreEqual(_gate.PendingDialogue.FirstLines, talk.Lines);
                 Assert.IsFalse(StoryGates.Give(_gate, _flags));
             }
             Assert.AreEqual(1, _wordsGiven, "never twice");
@@ -314,9 +521,88 @@ namespace HiddenHarbours.Tests.EditMode
             _save.Current = back;
             Assert.IsTrue(_save.GetFlag(_gate.SetsFlag), "the flag came back from the file");
             Assert.AreEqual(save.OnboardingFlags.Count, back.OnboardingFlags.Count, "no flag gained or lost");
-            Assert.AreEqual(StoryGateTalkKind.Normal, StoryGates.TalkWith(_gate.NpcId, _flags).Kind);
+            StoryGateTalk restored = StoryGates.TalkWith(_gate.NpcId, _flags);
+            Assert.AreEqual(StoryGateTalkKind.Hint, restored.Kind, "the reminder survives through the same flags");
+            CollectionAssert.AreEqual(_gate.PendingDialogue.FirstLines, restored.Lines);
             Assert.IsFalse(StoryGates.Give(_gate, _flags));
             Assert.AreEqual(1, _wordsGiven, "loading a save that holds the word raises nothing");
+        }
+
+        [TestCase(false, false, false, StoryGateTalkKind.Word)]
+        [TestCase(false, true, false, StoryGateTalkKind.Word)]
+        [TestCase(false, false, true, StoryGateTalkKind.Word)]
+        [TestCase(false, true, true, StoryGateTalkKind.Word)]
+        [TestCase(true, false, false, StoryGateTalkKind.Hint)]
+        [TestCase(true, true, false, StoryGateTalkKind.Normal)]
+        [TestCase(true, false, true, StoryGateTalkKind.Hint)]
+        [TestCase(true, true, true, StoryGateTalkKind.Hint)]
+        public void PendingTalk_ReadsTheWordAndPassageFlags_AndKeepsTheDemoSeparate(
+            bool given, bool passageOpen, bool demo, StoryGateTalkKind expected)
+        {
+            _save.Current = WeekSave(IslandWeekFact.All);
+            _save.Current.OnboardingFlags.Add(new SaveFlag(_gate.SetsFlag, given));
+            _save.Current.OnboardingFlags.Add(new SaveFlag(_gate.PendingUntilFlag, passageOpen));
+            DemoBuild.Override = demo;
+            string before = JsonUtility.ToJson(_save.Current);
+
+            StoryGateTalk talk = StoryGates.TalkWith(_gate.NpcId, _flags);
+            Assert.AreEqual(expected, talk.Kind);
+            if (!given)
+                CollectionAssert.AreEqual(_gate.WordLines(demo), talk.Lines);
+            else if (demo)
+                CollectionAssert.AreEqual(new[] { _gate.DemoAfterLine }, talk.Lines);
+            else if (!passageOpen)
+                CollectionAssert.AreEqual(_gate.PendingDialogue.FirstLines, talk.Lines);
+            else
+                Assert.IsNull(talk.Lines, "ordinary talk once passage is open");
+
+            Assert.AreEqual(before, JsonUtility.ToJson(_save.Current), "selecting a line changes no saved fact");
+            Assert.IsEmpty(_save.Writes);
+            Assert.AreEqual(0, _wordsGiven, "a reminder never gives the word again");
+        }
+
+        [Test]
+        public void PendingTalk_WaitsThroughLaterDays_WithoutRequiringTheFactsOrEveningAgain()
+        {
+            _save.Current = WeekSave(IslandWeekFact.All);
+            Assert.IsTrue(StoryGates.Give(_gate, _flags));
+            GameServices.IslandWeek = NullIslandWeekProgress.Instance;
+            string before = JsonUtility.ToJson(_save.Current);
+
+            foreach (int daysLater in new[] { 0, 1, 10 })
+                foreach (float hour in new[] { 0f, Noon, Evening })
+                {
+                    _clock.Day = EarliestDayIndex + daysLater;
+                    _clock.Hour = hour;
+                    StoryGateTalk talk = StoryGates.TalkWith(_gate.NpcId, _flags);
+                    Assert.AreEqual(StoryGateTalkKind.Hint, talk.Kind, $"day +{daysLater}, hour {hour}");
+                    CollectionAssert.AreEqual(_gate.PendingDialogue.FirstLines, talk.Lines);
+                    Assert.IsFalse(StoryGates.Give(_gate, _flags));
+                }
+
+            Assert.AreEqual(before, JsonUtility.ToJson(_save.Current));
+            Assert.AreEqual(1, _save.Writes.Count);
+            Assert.AreEqual(1, _save.Writes[_gate.SetsFlag]);
+            Assert.AreEqual(1, _wordsGiven);
+            Assert.IsNull(StoryGates.TaskNote(_flags));
+        }
+
+        [Test]
+        public void AGateWithoutPendingDialogue_KeepsItsOrdinaryTalkAfterTheWord()
+        {
+            var gate = Object.Instantiate(_gate);
+            try
+            {
+                gate.PendingUntilFlag = "";
+                gate.PendingDialogue = null;
+                Assert.IsNull(gate.ValidationError());
+                _save.Current = WeekSave(IslandWeekFact.All);
+                _save.Current.OnboardingFlags.Add(new SaveFlag(gate.SetsFlag, true));
+                IslandWeekSnapshot facts = _progress.Read(_save.Current, EarliestDayIndex);
+                Assert.AreEqual(StoryGateTalkKind.Normal, StoryGate.Talk(gate, _flags, in facts, Evening, false).Kind);
+                Assert.IsEmpty(_save.Writes);
+            }
+            finally { Object.DestroyImmediate(gate); }
         }
 
         [Test]
@@ -482,6 +768,58 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.IsFalse(string.IsNullOrWhiteSpace(line));
             Assert.LessOrEqual(QuestPanelLayout.Rows(_gate.AllHoldNote).Count, QuestPanelLayout.MaxLines,
                 "the last note fits the Tasks note");
+        }
+
+        [Test]
+        public void ThePendingReminder_IsOneAuthoredDialogue_AndStopsAtTheSeaEdgesPassageFlag()
+        {
+            Assert.IsNotNull(_gate.PendingDialogue);
+            Assert.AreEqual("dialogue.ginny_pending_morning", _gate.PendingDialogue.Id);
+            CollectionAssert.AreEqual(new[] { "Get some sleep, child. Mind the tide when you go." },
+                _gate.PendingDialogue.FirstLines);
+            Assert.IsEmpty(_gate.PendingDialogue.RepeatLines);
+            Assert.IsEmpty(_gate.PendingDialogue.ConditionalFlag);
+            Assert.IsEmpty(_gate.PendingDialogue.ConditionalLines);
+            Assert.IsEmpty(_gate.PendingDialogue.Options);
+            Assert.AreEqual("st_peters.weather_turned", _gate.PendingUntilFlag);
+            foreach (CampaignBarrierDef wall in StPetersWalls())
+                Assert.AreEqual(wall.LiftedByFlag, _gate.PendingUntilFlag, wall.Id);
+        }
+
+        [Test]
+        public void APendingReminder_NeedsItsOwnEndFlagAndNonemptyDialogue()
+        {
+            var gate = Object.Instantiate(_gate);
+            var dialogue = Object.Instantiate(_gate.PendingDialogue);
+            try
+            {
+                gate.PendingDialogue = null;
+                const string pairError = "A pending reminder needs both a dialogue and the flag that ends it.";
+                Assert.AreEqual(pairError, gate.ValidationError());
+                gate.PendingDialogue = dialogue;
+                gate.PendingUntilFlag = " ";
+                Assert.AreEqual(pairError, gate.ValidationError());
+                foreach (string flag in new[] { gate.SetsFlag, gate.LiveWhileFlag })
+                {
+                    gate.PendingUntilFlag = flag;
+                    Assert.AreEqual("The pending reminder must end on a different flag from the word or its activation.",
+                        gate.ValidationError());
+                }
+                gate.PendingUntilFlag = _gate.PendingUntilFlag;
+                dialogue.FirstLines = null;
+                Assert.AreEqual("The pending reminder has no lines.", gate.ValidationError());
+                dialogue.FirstLines = new string[0];
+                Assert.AreEqual("The pending reminder has no lines.", gate.ValidationError());
+                dialogue.FirstLines = new[] { " " };
+                Assert.AreEqual("A line of the word is empty.", gate.ValidationError());
+                dialogue.FirstLines = new[] { "A reminder from its own data." };
+                Assert.IsNull(gate.ValidationError());
+            }
+            finally
+            {
+                Object.DestroyImmediate(dialogue);
+                Object.DestroyImmediate(gate);
+            }
         }
 
         [Test]

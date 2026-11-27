@@ -35,6 +35,8 @@ namespace HiddenHarbours.Tests.EditMode
             public int Saves;
             public double ClockAtWrite = double.NaN;
             public string Json;
+            public bool RefuseWrite;
+            public bool ThrowOnWrite;
             public SaveData Current { get; } = SaveMigration.NewGame();
             public bool LoadedExistingSave { get; private set; }
             public bool GetFlag(string key) => false;
@@ -42,6 +44,8 @@ namespace HiddenHarbours.Tests.EditMode
 
             public void Save()
             {
+                if (ThrowOnWrite) throw new InvalidOperationException("fixture write failed");
+                if (RefuseWrite) return;
                 Saves++;
                 IGameClock clock = GameServices.Clock;
                 if (clock != null)
@@ -77,9 +81,11 @@ namespace HiddenHarbours.Tests.EditMode
         readonly List<DayStarted> _days = new List<DayStarted>();
         readonly List<SeasonChanged> _seasons = new List<SeasonChanged>();
         readonly List<GameSaved> _saved = new List<GameSaved>();
+        readonly List<SleepReachedMorning> _mornings = new List<SleepReachedMorning>();
         Action<DayStarted> _onDay;
         Action<SeasonChanged> _onSeason;
         Action<GameSaved> _onSaved;
+        Action<SleepReachedMorning> _onMorning;
 
         GameConfig _config;
         GameClock _clock;
@@ -100,6 +106,7 @@ namespace HiddenHarbours.Tests.EditMode
             _previousSave = GameServices.Save;
             _previousRegion = GameServices.CurrentRegionId;
             _responderWasInstalled = RestSaveResponder.Installed;
+            SleepFlow.Reset();
 
             _config = ScriptableObject.CreateInstance<GameConfig>();
             _spawned.Add(_config);
@@ -114,6 +121,9 @@ namespace HiddenHarbours.Tests.EditMode
             _days.Clear();
             _seasons.Clear();
             _saved.Clear();
+            _mornings.Clear();
+            _onMorning = _mornings.Add;
+            EventBus.Subscribe(_onMorning);
             _onDay = _days.Add;
             _onSeason = _seasons.Add;
             _onSaved = _saved.Add;
@@ -128,6 +138,8 @@ namespace HiddenHarbours.Tests.EditMode
             EventBus.Unsubscribe(_onDay);
             EventBus.Unsubscribe(_onSeason);
             EventBus.Unsubscribe(_onSaved);
+            EventBus.Unsubscribe(_onMorning);
+            SleepFlow.Reset();
             if (_market != null) Lifecycle(_market, "OnDisable");
             _market = null;
             if (!_responderWasInstalled) RestSaveResponder.Uninstall();
@@ -204,6 +216,153 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // ---- the night ------------------------------------------------------------------------
+
+        void KeptSleep(bool chosen)
+        {
+            if (!chosen) { Rest(); return; }
+            _config.SleepGameHoursPerRealSecond = 1f;
+            Assert.IsTrue(SleepFlow.Begin(new RestSaveRequested("fixture bed")));
+            SleepFlow.Confirm();
+            SleepFlow.Tick(SleepPlan.RulingMaxHours);
+            Assert.AreEqual(SleepPhase.Awake, SleepFlow.Phase);
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void BothSleepPaths_PublishOneMorningOnlyAfterKeep(bool chosen)
+        {
+            _clock.SeekTo(At(0, 22));
+            int savesAtSignal = 0;
+            void Hear(SleepReachedMorning e) => savesAtSignal = _save.Saves;
+            EventBus.Subscribe<SleepReachedMorning>(Hear);
+            try { KeptSleep(chosen); }
+            finally { EventBus.Unsubscribe<SleepReachedMorning>(Hear); }
+
+            Assert.AreEqual(1, savesAtSignal);
+            Assert.AreEqual(1, _mornings.Count);
+            Assert.AreEqual(At(1, _config.WakeHour), _mornings[0].MorningSeconds);
+            SleepFlow.Wake();
+            SleepFlow.Tick(1f);
+            SleepFlow.Cancel();
+            Assert.AreEqual(1, _mornings.Count, "an already completed sleep cannot announce again");
+            Assert.AreEqual(1, _save.Saves);
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void ADaytimeNap_KeepsTheDayWithoutAnnouncingMorning(bool chosen)
+        {
+            _clock.SeekTo(At(0, 12));
+            KeptSleep(chosen);
+            Assert.AreEqual(1, _save.Saves);
+            Assert.AreEqual(At(0, 20), _clock.TotalSeconds);
+            Assert.IsEmpty(_mornings);
+        }
+
+        [TestCase(false, 300f, 5.5f)]
+        [TestCase(true, 300f, 5.5f)]
+        [TestCase(false, 2400f, 4f)]
+        [TestCase(true, 2400f, 4f)]
+        public void TheSignalUsesTheConfiguredMorningAndDayLength(bool chosen, float dayLength, float wakeHour)
+        {
+            _config.SecondsPerDay = dayLength;
+            _config.WakeHour = wakeHour;
+            _clock.SeekTo(At(3, 22));
+            KeptSleep(chosen);
+            Assert.AreEqual(1, _save.Saves);
+            Assert.AreEqual(1, _mornings.Count);
+            Assert.AreEqual(At(4, wakeHour), _mornings[0].MorningSeconds);
+        }
+
+        [TestCase(false, false)]
+        [TestCase(true, false)]
+        [TestCase(false, true)]
+        [TestCase(true, true)]
+        public void AFailedKeep_PublishesNoMorning(bool chosen, bool throws)
+        {
+            _clock.SeekTo(At(0, 22));
+            _save.RefuseWrite = !throws;
+            _save.ThrowOnWrite = throws;
+            if (throws) Assert.Throws<InvalidOperationException>(() => KeptSleep(chosen));
+            else KeptSleep(chosen);
+            Assert.AreEqual(At(1, _config.WakeHour), _clock.TotalSeconds);
+            Assert.AreEqual(0, _save.Saves);
+            Assert.IsEmpty(_mornings);
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void ASaveWithoutSleep_PublishesNoMorning(bool chosen)
+        {
+            _clock.SeekTo(At(0, 22));
+            _clock.IsHeld = true;
+            if (chosen) Assert.IsFalse(SleepFlow.Begin(new RestSaveRequested("fixture bed")));
+            else Rest();
+            Assert.AreEqual(1, _save.Saves);
+            Assert.AreEqual(At(0, 22), _clock.TotalSeconds);
+            Assert.IsEmpty(_mornings);
+        }
+
+        [Test]
+        public void AbandonAndLoad_PublishNoMorning_EvenAtTheMorningClockReading()
+        {
+            _clock.SeekTo(At(0, 22));
+            Assert.IsTrue(SleepFlow.Begin(new RestSaveRequested("fixture bed")));
+            SleepFlow.Confirm();
+            _clock.FastForwardTo(At(1, _config.WakeHour));
+            SleepFlow.Abandon();
+            Assert.AreEqual(0, _save.Saves);
+            Assert.IsEmpty(_mornings);
+
+            _save.Current.GameTimeSeconds = At(1, _config.WakeHour);
+            SaveRestore.ApplyToLiveServices(_save.Current, _clock, null, null);
+            EventBus.Publish(new PlayerWokeAt(RestAnchor.None));
+            _save.Save();
+            EventBus.Publish(new GameSaved(true, "fixture ordinary save"));
+            Assert.AreEqual(1, _save.Saves);
+            Assert.IsEmpty(_mornings, "restoring a morning and saving normally are not sleeps");
+        }
+
+        [TestCase(5d, false)]
+        [TestCase(6d, true)]
+        [TestCase(6.5d, true)]
+        public void CancellingSleep_AnnouncesOnlyIfTheKeptSleepReachedMorning(double wakeHour, bool reached)
+        {
+            _clock.SeekTo(At(0, 23));
+            Assert.IsTrue(SleepFlow.Begin(new RestSaveRequested("fixture bed")));
+            SleepFlow.Adjust(1);
+            SleepFlow.Confirm();
+            _clock.FastForwardTo(At(1, wakeHour));
+            SleepFlow.Cancel();
+            Assert.AreEqual(1, _save.Saves);
+            Assert.AreEqual(reached ? 1 : 0, _mornings.Count);
+            if (reached) Assert.AreEqual(At(1, _config.WakeHour), _mornings[0].MorningSeconds);
+        }
+
+        [Test]
+        public void AChosenSleepPastMorning_CarriesTheMorningReached_NotTheLaterWake()
+        {
+            _clock.SeekTo(At(0, 23));
+            _config.SleepGameHoursPerRealSecond = 1f;
+            Assert.IsTrue(SleepFlow.Begin(new RestSaveRequested("fixture bed")));
+            SleepFlow.Adjust(1);
+            SleepFlow.Confirm();
+            SleepFlow.Tick(SleepPlan.RulingMaxHours);
+            Assert.AreEqual(1, _mornings.Count);
+            Assert.AreEqual(At(1, _config.WakeHour), _mornings[0].MorningSeconds);
+            Assert.Greater(_clock.TotalSeconds, _mornings[0].MorningSeconds);
+            Assert.AreEqual(1, _save.Saves);
+        }
+
+        [Test]
+        public void TheMorningSignal_CarriesOnlyTheMorningGameTime()
+        {
+            FieldInfo[] fields = typeof(SleepReachedMorning).GetFields(BindingFlags.Public | BindingFlags.Instance);
+            Assert.AreEqual(1, fields.Length);
+            Assert.AreEqual(nameof(SleepReachedMorning.MorningSeconds), fields[0].Name);
+            Assert.AreEqual(typeof(double), fields[0].FieldType);
+            Assert.IsTrue(fields[0].IsInitOnly);
+        }
 
         [Test]
         public void Resting_at_ten_at_night_wakes_at_the_wake_hour_of_the_next_day()

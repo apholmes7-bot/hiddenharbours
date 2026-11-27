@@ -20,6 +20,16 @@ namespace HiddenHarbours.Core
         /// </summary>
         bool TryPick(string spotId, int worldSeed, uint anglerKeyHash, long slotIndex,
                      double slotStartTotalSeconds, out ShoreCatch shoreCatch);
+
+        /// <summary>
+        /// Where an angler stands to fish <paramref name="spotId"/> and the edge he fishes over, when the spot
+        /// authors one. False (the default) leaves him at his routine station, unclamped.
+        /// </summary>
+        bool TryGetStand(string spotId, out ShoreStand stand)
+        {
+            stand = default;
+            return false;
+        }
     }
 
     /// <summary>One fish a villager angler lands: presentation only, never a fish taken from a stock.</summary>

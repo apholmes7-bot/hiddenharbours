@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace HiddenHarbours.Core
 {
@@ -9,8 +8,13 @@ namespace HiddenHarbours.Core
     public static class DemoBuild
     {
         public const string ScriptingDefine = "DEMO_BUILD";
-        static string _bootScenePath;
-        static string _bootSceneName;
+        [Serializable]
+        sealed class SceneList
+        {
+            public string[] scenes;
+        }
+
+        static string[] _scenePaths;
 
 #if UNITY_EDITOR
         /// <summary>Session-only override for editor checks. Restore after use.</summary>
@@ -21,8 +25,7 @@ namespace HiddenHarbours.Core
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void Reset()
         {
-            _bootScenePath = null;
-            _bootSceneName = null;
+            _scenePaths = null;
 #if UNITY_EDITOR
             Override = null;
 #endif
@@ -45,26 +48,37 @@ namespace HiddenHarbours.Core
 
         public static bool DevShortcutsAllowed => !Enabled;
 
-        public static bool IncludesScene(string sceneName)
+        static string[] ConfiguredScenePaths
         {
-            if (!Enabled) return true;
-            if (_bootScenePath == null)
+            get
             {
-                _bootScenePath = SceneUtility.GetScenePathByBuildIndex(0);
-                _bootSceneName = Path.GetFileNameWithoutExtension(_bootScenePath);
+                if (_scenePaths != null) return _scenePaths;
+                var source = Resources.Load<TextAsset>("DemoScenes");
+                if (source == null) throw new InvalidOperationException("The demo scene list is missing.");
+                var list = JsonUtility.FromJson<SceneList>(source.text);
+                if (list?.scenes == null || list.scenes.Length == 0)
+                    throw new InvalidOperationException("The demo scene list is empty.");
+                _scenePaths = list.scenes;
+                return _scenePaths;
             }
-            return !string.IsNullOrWhiteSpace(sceneName) && !string.IsNullOrWhiteSpace(_bootScenePath)
-                && (string.Equals(sceneName, _bootScenePath, StringComparison.Ordinal)
-                    || string.Equals(sceneName, _bootSceneName, StringComparison.Ordinal));
         }
 
-        /// <summary>The first player scene is the demo region; it is selected by the build's scene list.</summary>
-        public static bool IncludesScene(bool demo, string sceneName, string bootScenePath)
+        /// <summary>The same ordered scene list supplies packaging and runtime destination checks.</summary>
+        public static string[] ScenePaths() => (string[])ConfiguredScenePaths.Clone();
+
+        public static bool IncludesScene(string sceneName)
+            => !Enabled || IncludesScene(true, sceneName, ConfiguredScenePaths);
+
+        public static bool IncludesScene(bool demo, string sceneName, string[] scenePaths)
         {
             if (!demo) return true;
-            if (string.IsNullOrWhiteSpace(sceneName) || string.IsNullOrWhiteSpace(bootScenePath)) return false;
-            return string.Equals(sceneName, bootScenePath, StringComparison.Ordinal)
-                || string.Equals(sceneName, Path.GetFileNameWithoutExtension(bootScenePath), StringComparison.Ordinal);
+            if (string.IsNullOrWhiteSpace(sceneName) || scenePaths == null) return false;
+            foreach (string path in scenePaths)
+                if (!string.IsNullOrWhiteSpace(path) &&
+                    (string.Equals(sceneName, path, StringComparison.Ordinal) ||
+                     string.Equals(sceneName, Path.GetFileNameWithoutExtension(path), StringComparison.Ordinal)))
+                    return true;
+            return false;
         }
     }
 

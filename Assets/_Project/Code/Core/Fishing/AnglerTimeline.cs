@@ -23,6 +23,12 @@ namespace HiddenHarbours.Core
         public float DeepMinSeconds, DeepMaxSeconds, SurfaceMinSeconds, SurfaceMaxSeconds;
         public float LandSeconds, EmptyRetrieveSeconds;
 
+        /// <summary>How long the landing's lift takes (s): the land clip is scrubbed once over this, then he
+        /// holds its last frame (the fish up) for the rest of <see cref="LandSeconds"/>. In (0, LandSeconds].
+        /// The release, the strike and the lift are each scrubbed once over their own beat, never looped, so a
+        /// skin whose clips loop still reads them as single moves.</summary>
+        public float LandLiftSeconds;
+
         /// <summary>How far he casts (m), at what bearing off his station's heading (deg, clockwise), and how
         /// far a slot may turn it either way (deg).</summary>
         public float CastReachM, CastBearingDegrees, CastBearingJitterDegrees;
@@ -30,6 +36,12 @@ namespace HiddenHarbours.Core
         /// <summary>The fight's shape: how far she runs across the line (m), the band the line's tension
         /// moves in (0..1), and the rate of her runs (Hz).</summary>
         public float RunSwingM, TensionMin01, TensionMax01, FightWaveHz;
+
+        /// <summary>Water awareness (<see cref="AnglerWaterMath"/>): the longest cast he will make along the same
+        /// bearing when his usual reach would land on dry ground at the tide (m; 0 = never longer than
+        /// <see cref="CastReachM"/>), the least water the bobber must land in (m), and how often through a
+        /// session the tide is re-read at the bobber, in game seconds (0 = never mid-session).</summary>
+        public float LongCastReachM, MinBobberDepthM, WaterRecheckSeconds;
 
         /// <summary>The longest a session can run, catch or none: the slot must hold it.</summary>
         public float LongestSessionSeconds => CastBackSeconds + CastSeconds + WaitMaxSeconds
@@ -44,9 +56,15 @@ namespace HiddenHarbours.Core
                 || StrikeSeconds < 0f || DeepMinSeconds < 0f || SurfaceMinSeconds < 0f || LandSeconds < 0f
                 || EmptyRetrieveSeconds < 0f || CastReachM < 0f || RunSwingM < 0f || FightWaveHz < 0f)
                 why = "a length, reach, swing or rate is negative";
+            else if (LongCastReachM < 0f || MinBobberDepthM < 0f || WaterRecheckSeconds < 0f)
+                why = "a long-cast reach, bobber depth or re-check cadence is negative";
+            else if (LongCastReachM > 0f && LongCastReachM < CastReachM)
+                why = $"the long cast ({LongCastReachM} m) is shorter than the usual one ({CastReachM} m)";
             else if (WaitMaxSeconds < WaitMinSeconds || DeepMaxSeconds < DeepMinSeconds
                      || SurfaceMaxSeconds < SurfaceMinSeconds)
                 why = "a max is below its min";
+            else if (!(LandLiftSeconds > 0f) || LandLiftSeconds > LandSeconds)
+                why = "the landing's lift is not inside (0, LandSeconds]";
             else if (TensionMin01 < 0f || TensionMax01 > 1f || TensionMax01 < TensionMin01)
                 why = "the tension band is not inside 0..1";
             else if (!(SlotSeconds > 0f) || SlotSeconds < LongestSessionSeconds)
@@ -75,6 +93,16 @@ namespace HiddenHarbours.Core
         public float Scrub01;
 
         public FishingState State;
+
+        /// <summary>
+        /// The fish that will take this slot's bait, while he waits for her: her species id and weight, and the
+        /// seconds left before she bites (NaN, with a null id, when no bite is coming in this wait: an empty
+        /// slot, or the tide leaving the bobber dry first). Presentation reads it to draw her swimming in; the
+        /// same slot's catch the bite already names, so nothing new is drawn from the sim (rule 5).
+        /// </summary>
+        public string ApproachFishId;
+        public float ApproachKg;
+        public float SecondsToBite;
 
         /// <summary>True while a session is under way (any phase but Idle).</summary>
         public bool InSession => Phase != FishingPhase.Idle;
@@ -145,22 +173,46 @@ namespace HiddenHarbours.Core
         /// </summary>
         public static void Evaluate(in AnglerScript script, in ShoreCatch shoreCatch, bool hasCatch, int worldSeed,
                                     uint keyHash, float stationHeadingDegrees, double now, out AnglerBeat beat)
+            => Evaluate(in script, in shoreCatch, hasCatch, worldSeed, keyHash, stationHeadingDegrees, now,
+                        default, out beat);
+
+        /// <summary>
+        /// As above, fishing over <paramref name="edge"/> (measured from his stand, so the same frame as the
+        /// offsets): the cast aim and the fish through the fight are kept on its water side, so a fish never
+        /// crosses the deck he stands on. The landing still lifts her to his hand. An unset edge changes
+        /// nothing.
+        /// </summary>
+        public static void Evaluate(in AnglerScript script, in ShoreCatch shoreCatch, bool hasCatch, int worldSeed,
+                                    uint keyHash, float stationHeadingDegrees, double now, in ShoreEdge shoreEdge,
+                                    out AnglerBeat beat)
+            => Evaluate(in script, in shoreCatch, hasCatch, worldSeed, keyHash, stationHeadingDegrees, now,
+                        in shoreEdge, default, out beat);
+
+        /// <summary>
+        /// As above, at the tide (<paramref name="water"/>, the slot's <see cref="AnglerWaterMath.Plan"/>): a slot
+        /// whose cast would land dry is all rest, the cast goes out to the plan's reach, the fish in the fight is
+        /// held off the bared ground too, and from the moment the tide leaves the bobber dry he reels in empty.
+        /// An unset plan changes nothing.
+        /// </summary>
+        public static void Evaluate(in AnglerScript script, in ShoreCatch shoreCatch, bool hasCatch, int worldSeed,
+                                    uint keyHash, float stationHeadingDegrees, double now, in ShoreEdge shoreEdge,
+                                    in AnglerWater water, out AnglerBeat beat)
         {
             beat = default;
             beat.Scrub01 = float.NaN;
+            beat.SecondsToBite = float.NaN;
             if (!script.IsValid(out _)) return;
 
             long slot = SlotIndex(in script, worldSeed, keyHash, now);
             double slotStart = SlotStartSeconds(in script, worldSeed, keyHash, slot);
             beat.Slot = slot;
             beat.SlotStartSeconds = slotStart;
+            if (water.IsSet && !water.Casts) return;   // no water in reach: he rests the slot out, rod up
 
             uint slotHash = SlotHash(worldSeed, keyHash, slot);
             float wait = Mathf.Lerp(script.WaitMinSeconds, script.WaitMaxSeconds, U01(slotHash, StreamWait));
-            float jitter = (U01(slotHash, StreamBearing) * 2f - 1f) * script.CastBearingJitterDegrees;
-            float bearingRad = (stationHeadingDegrees + script.CastBearingDegrees + jitter) * Mathf.Deg2Rad;
-            var dir = new Vector2(Mathf.Sin(bearingRad), Mathf.Cos(bearingRad));   // compass: 0 = +y, clockwise
-            Vector2 aim = dir * script.CastReachM;
+            Vector2 dir = CastDirection(in script, worldSeed, keyHash, slot, stationHeadingDegrees);
+            Vector2 aim = shoreEdge.Clamp(dir * (water.IsSet ? water.ReachM : script.CastReachM));
 
             bool fish = hasCatch && !string.IsNullOrEmpty(shoreCatch.FishId);
             uint fightHash = fish ? Mix(slotHash ^ (uint)FishFightSeed.For(shoreCatch.FishId, shoreCatch.WeightKg)) : 0u;
@@ -187,10 +239,31 @@ namespace HiddenHarbours.Core
             }
             else Step(ref edge, script.EmptyRetrieveSeconds, t, FishingPhase.NoBite, ref phase, ref phaseStart, ref phaseLength);
 
+            // The tide left the bobber dry before the session was over: from then he reels in, empty.
+            double dryAt = water.IsSet ? water.DryAtSeconds : double.PositiveInfinity;
+            if (t >= dryAt && dryAt < SessionSeconds(in script, wait, fish, deep, surface))
+            {
+                fish = false;
+                double end = dryAt + Mathf.Max(0f, script.EmptyRetrieveSeconds);
+                phase = t < end ? FishingPhase.NoBite : FishingPhase.Idle;
+                phaseStart = dryAt;
+                phaseLength = script.EmptyRetrieveSeconds;
+            }
+
             beat.Phase = phase;
             if (phase == FishingPhase.Idle) return;
 
             float inPhase = (float)(t - phaseStart);
+            if (fish && phase == FishingPhase.Waiting)
+            {
+                double biteAt = script.CastBackSeconds + script.CastSeconds + wait;
+                if (!(dryAt <= biteAt))
+                {
+                    beat.ApproachFishId = shoreCatch.FishId;
+                    beat.ApproachKg = shoreCatch.WeightKg;
+                    beat.SecondsToBite = (float)(biteAt - t);
+                }
+            }
             beat.PhaseStartSeconds = slotStart + phaseStart;
             beat.SecondsInPhase = inPhase;
             float progress = phaseLength > 0f ? Mathf.Clamp01(inPhase / phaseLength) : 1f;
@@ -202,7 +275,21 @@ namespace HiddenHarbours.Core
             beat.StateKey = FishingBeatMath.StateKeyFor(pose);
             beat.BeatStartSeconds = pose == FishingPose.Strike || pose == FishingPose.Reel
                 ? slotStart + fightStart : beat.PhaseStartSeconds;
-            if (pose == FishingPose.CastBack) beat.Scrub01 = progress;
+            // One pass of each single move, then its last frame: the wind-back by its charge, the release over
+            // the cast, the strike over its beat, the lift over its own length. Bite and reel loop by design.
+            switch (pose)
+            {
+                case FishingPose.CastBack:
+                case FishingPose.CastRelease:
+                    beat.Scrub01 = progress;
+                    break;
+                case FishingPose.Strike:
+                    beat.Scrub01 = script.StrikeSeconds > 0f ? Mathf.Clamp01(inFight / script.StrikeSeconds) : 1f;
+                    break;
+                case FishingPose.Land:
+                    beat.Scrub01 = Mathf.Clamp01(inPhase / script.LandLiftSeconds);
+                    break;
+            }
 
             // The line: the cast aim from the release on, the fish from the bite on.
             string fishId = null;
@@ -230,6 +317,10 @@ namespace HiddenHarbours.Core
                 offset = aim * (1f - p) + perp * (swing * (1f - p));
                 float pRate = span > 0f ? 1f / span : 0f;
                 run = -aim * pRate + perp * (swingRate * (1f - p) - swing * pRate);
+                // Held off the bared ground, then at the deck's edge: she runs along each, never in over the mud
+                // or the planks.
+                HoldOff(in water.Waterline, ref offset, ref run);
+                HoldOff(in shoreEdge, ref offset, ref run);
                 if (run.sqrMagnitude > 0f) run.Normalize();
                 tension = Mathf.Lerp(script.TensionMin01, script.TensionMax01, 0.5f + 0.25f * (Mathf.Sin(a) - Mathf.Sin(b)));
                 landing = p;
@@ -240,6 +331,35 @@ namespace HiddenHarbours.Core
             float charge = phase == FishingPhase.WindBack ? progress : 0f;
             beat.State = new FishingState(phase, tension, landing, fishId, fishId, default, kg, depth, false, tension,
                                           offset.x, offset.y, charge, aim.x, aim.y, 0f, run.x, run.y, size);
+        }
+
+        /// <summary>The compass direction (unit) slot <paramref name="slot"/>'s cast goes out along, from his
+        /// heading, the script's bearing and the slot's jitter. Pure.</summary>
+        public static Vector2 CastDirection(in AnglerScript script, int worldSeed, uint keyHash, long slot,
+                                            float stationHeadingDegrees)
+        {
+            uint slotHash = SlotHash(worldSeed, keyHash, slot);
+            float jitter = (U01(slotHash, StreamBearing) * 2f - 1f) * script.CastBearingJitterDegrees;
+            float bearingRad = (stationHeadingDegrees + script.CastBearingDegrees + jitter) * Mathf.Deg2Rad;
+            return new Vector2(Mathf.Sin(bearingRad), Mathf.Cos(bearingRad));   // compass: 0 = +y, clockwise
+        }
+
+        /// <summary>How long this slot's session runs from the slot's start (s), catch or none.</summary>
+        private static double SessionSeconds(in AnglerScript script, float wait, bool fish, float deep, float surface)
+        {
+            double s = Mathf.Max(0f, script.CastBackSeconds) + Mathf.Max(0f, script.CastSeconds) + Mathf.Max(0f, wait);
+            return fish
+                ? s + Mathf.Max(0f, script.BiteSeconds) + Mathf.Max(0f, deep) + Mathf.Max(0f, surface)
+                  + Mathf.Max(0f, script.LandSeconds)
+                : s + Mathf.Max(0f, script.EmptyRetrieveSeconds);
+        }
+
+        private static void HoldOff(in ShoreEdge edge, ref Vector2 offset, ref Vector2 run)
+        {
+            if (!edge.IsSet || edge.OutwardDistance(offset) >= edge.MarginM) return;
+            offset = edge.Clamp(offset);
+            float inward = Vector2.Dot(run, edge.Outward);
+            if (inward < 0f) run -= edge.Outward * inward;
         }
 
         private static bool Step(ref double edge, float length, double t, FishingPhase next,

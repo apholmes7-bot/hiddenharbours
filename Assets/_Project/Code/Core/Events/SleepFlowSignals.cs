@@ -1,5 +1,15 @@
 namespace HiddenHarbours.Core
 {
+    /// <summary>A kept sleep crossed the configured morning. Published once after the save succeeds,
+    /// by either sleep path; never by a load, an abandoned sleep or a save without sleep.</summary>
+    public readonly struct SleepReachedMorning
+    {
+        /// <summary>The game-clock instant of the morning crossed, even if the sleeper woke later.</summary>
+        public readonly double MorningSeconds;
+
+        public SleepReachedMorning(double morningSeconds) => MorningSeconds = morningSeconds;
+    }
+
     /// <summary>Where a sleep is (owner ruling 2026-11-15). See <see cref="SleepFlow"/>.</summary>
     public enum SleepPhase
     {
