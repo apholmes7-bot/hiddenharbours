@@ -104,6 +104,7 @@ Material:
     - _ShoreFoamEdgeCut: 0.2
     - _ShoreFoamEdgeTone: 0.5
     - _ShoreFoamTones: 2
+    - _ShoreLaceCellMax: 1
     - _ShoreSampleStep: 0.4
     - _ShoreSlopeFloor: 0.15
     - _ShorewardBias: 0.7

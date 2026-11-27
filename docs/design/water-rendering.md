@@ -6622,6 +6622,11 @@ One pixel size on screen for everything: the sea now changes colour only on art-
   `_ShoreFoamEdgeTone` (0.5) at or above `_ShoreFoamEdgeCut` (0.2); 1 = the core only; 0 = the smooth
   coverage. A first cut dithered these tones on the world Bayer cell and the lace broke into confetti
   (the owner had rejected a "screen door" wash before), so dither is kept for the depth colour only.
+- **The shore lace over the cell's corners.** `_ShoreLaceCellMax` (default 1): on the art grid the shore's
+  lace (`FoamSheetShoreLace`) is read as the max over the art cell's four corners, not its centre, so a vein
+  thinner than a cell lights every cell it crosses. It can only keep foam the centre read lost (a higher
+  lace tears less). Measured on the plates it helps a little; the breaks that remain come from the shore
+  line's own band being thinner than a cell, not from the lace.
 - **The depth colour.** `_DepthBands` **5** (was 0) with `_DepthBandDitherWin` 0.5: the depth ramp is
   read in five steps whose edges are dithered on the world Bayer cell, so there are no hard contour
   rings. The seabed composite (absorption, `_AbsorptionBands`) is untouched, so the see-through shallows

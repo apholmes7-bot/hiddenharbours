@@ -485,6 +485,9 @@ Shader "HiddenHarbours/Water"
         _WashSurfEven      ("Shore surf: churn flattened toward an even sheet (0 = broken patches)", Range(0,1)) = 0
         _ShoreLaceContrast ("Shore foam: share of the one foam lace it shows (1 = full lace)", Range(0,1)) = 1
         _ShoreLaceSize     ("Shore foam: lace size over the open water's (1 = the same)", Range(1,8)) = 1
+        // On the art grid, the shore lace is read as the max over the art cell's four corners (1) instead of its
+        // centre (0), so a vein thinner than a cell stays a continuous stroke. Off the art grid it does nothing.
+        [Toggle] _ShoreLaceCellMax ("Shore foam: lace read over the art cell's corners", Float) = 1
         // The break gate beside a beach reads the depth averaged over this many metres ALONG the shore: the 8-bit
         // painted height holds one code for ~3 texels along a shore and steps 0.047 m, so its break contour stood in
         // square steps (one texel run, ~20 px of rise at 96 px/m). Averaged over a run, the contour is smooth. 0 = off.
@@ -1894,7 +1897,7 @@ Shader "HiddenHarbours/Water"
                 float  _WashLeeShare, _WashResidueSoften, _WashAnatomyFade, _WashMaxCover;
                 float  _WashSurfReach, _WashSurfLift;
                 float  _WashSurfDetail, _WashSurfSmooth, _WashGroundScale;
-                float  _WashSurfEven, _ShoreLaceContrast, _ShoreLaceSize;
+                float  _WashSurfEven, _ShoreLaceContrast, _ShoreLaceSize, _ShoreLaceCellMax;
                 float  _WashLeftFoamSeconds, _WashLeftFoamOpacity;
                 float  _SurfSwellYield, _SwellShoalDepth;
                 // B1 FRINGE UNIFORM BEGIN
@@ -4660,6 +4663,17 @@ Shader "HiddenHarbours/Water"
                 float size = max(_ShoreLaceSize, 1.0);
                 if (contrast <= 0.001) return 0.5;
                 float lace = FoamSheetLace(worldXY / size);
+                // ON THE ART GRID (owner ruling 2026-11-26, "no mixels"): worldXY is the cell's centre, and a lace
+                // vein thinner than a cell falls between centres and breaks into lone pixels. Read the lace as the
+                // MAX over the cell's four corners instead: a corner is shared by four cells, so a thin vein lights
+                // every cell it crosses and stays a continuous stroke of whole art pixels. Higher lace tears less
+                // (FoamSheetTear), so this only keeps foam the centre read lost; it never invents a new vein.
+                if (_ArtGridSnap > 0.5 && _ShoreLaceCellMax > 0.5)
+                {
+                    float h = 0.5 / max(_PixelsPerUnit, 1.0);
+                    lace = max(max(FoamSheetLace((worldXY + float2( h,  h)) / size), FoamSheetLace((worldXY + float2(-h,  h)) / size)),
+                               max(FoamSheetLace((worldXY + float2( h, -h)) / size), FoamSheetLace((worldXY + float2(-h, -h)) / size)));
+                }
                 if (contrast >= 0.999) return lace;
                 return 0.5 + (lace - 0.5) * contrast;
             }

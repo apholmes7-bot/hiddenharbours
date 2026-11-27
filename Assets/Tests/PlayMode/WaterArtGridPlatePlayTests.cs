@@ -21,9 +21,10 @@ namespace HiddenHarbours.Tests.PlayMode
     /// state), and the states are laid over it through the water renderers' property block:
     /// <c>s0</c> the old grid (_PixelsPerUnit 24, every new dial off), <c>s1</c> the art grid (32),
     /// <c>s1m</c> plus the calm mirror's edge axis, <c>s1s</c> plus the shade point on the art cell, <c>s2</c> plus the
-    /// shore foam's hard-threshold tones (snapped strokes), <c>s3</c> plus the depth colour bands, and <c>asset</c> the materials as shipped. A dial the
+    /// shore foam's hard-threshold tones and the shore lace read over the cell's corners (snapped strokes; <c>s2n</c> the same with the lace read at the cell centre), <c>s3</c> plus the depth colour bands, and <c>asset</c> the materials as shipped. A dial the
     /// shader does not have yet (main) is simply ignored, so the same fixture shoots main and the branch.
-    /// Then an 8-frame pan (one art pixel a frame) of the shore band for the crawl check.
+    /// Then an 8-frame pan (one art pixel a frame) of the shore band for the crawl check, and 8 frames with time running and
+/// the camera still for the flicker check.
     /// Plates go to HH_WATER_GRID_PLATES (an absolute folder) or temporaryCachePath. Needs a GPU.
     /// </summary>
     public partial class WharfBuildingPass2PlatePlayTests
@@ -65,15 +66,16 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         // NaN = take the material's own value (the "asset" state).
-        static readonly (string Name, float Ppu, float Snap, float ShoreTones, float DepthBands, float MirrorCentre)[] GridStates =
+        static readonly (string Name, float Ppu, float Snap, float ShoreTones, float DepthBands, float MirrorCentre, float LaceCellMax)[] GridStates =
         {
-            ("s0",    24f, 0f, 0f, 0f, 1f),
-            ("s1",    32f, 0f, 0f, 0f, 1f),
-            ("s1m",   32f, 0f, 0f, 0f, 0f),
-            ("s1s",   32f, 1f, 0f, 0f, 0f),
-            ("s2",    32f, 1f, float.NaN, 0f, 0f),
-            ("s3",    32f, 1f, float.NaN, float.NaN, 0f),
-            ("asset", float.NaN, float.NaN, float.NaN, float.NaN, 0f),
+            ("s0",    24f, 0f, 0f, 0f, 1f, 0f),
+            ("s1",    32f, 0f, 0f, 0f, 1f, 0f),
+            ("s1m",   32f, 0f, 0f, 0f, 0f, 0f),
+            ("s1s",   32f, 1f, 0f, 0f, 0f, 0f),
+            ("s2n",   32f, 1f, float.NaN, 0f, 0f, 0f),
+            ("s2",    32f, 1f, float.NaN, 0f, 0f, float.NaN),
+            ("s3",    32f, 1f, float.NaN, float.NaN, 0f, float.NaN),
+            ("asset", float.NaN, float.NaN, float.NaN, float.NaN, 0f, float.NaN),
         };
 
         List<Renderer> WaterRenderers() => Object.FindObjectsByType<Renderer>(FindObjectsInactive.Include, FindObjectsSortMode.None)
@@ -86,7 +88,7 @@ namespace HiddenHarbours.Tests.PlayMode
             mpb.SetFloat(key, float.IsNaN(v) ? m.GetFloat(key) : v);
         }
 
-        void ApplyGridState(List<Renderer> water, (string Name, float Ppu, float Snap, float ShoreTones, float DepthBands, float MirrorCentre) s)
+        void ApplyGridState(List<Renderer> water, (string Name, float Ppu, float Snap, float ShoreTones, float DepthBands, float MirrorCentre, float LaceCellMax) s)
         {
             var mpb = new MaterialPropertyBlock();
             foreach (var r in water)
@@ -97,6 +99,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 SetOrAsset(mpb, m, "_ArtGridSnap", s.Snap);
                 SetOrAsset(mpb, m, "_ShoreFoamTones", s.ShoreTones);
                 SetOrAsset(mpb, m, "_DepthBands", s.DepthBands);
+                SetOrAsset(mpb, m, "_ShoreLaceCellMax", s.LaceCellMax);
                 r.SetPropertyBlock(mpb);
             }
             Shader.SetGlobalFloat(CalmMirrorCentreAxisGlobal, s.MirrorCentre);
@@ -219,6 +222,20 @@ namespace HiddenHarbours.Tests.PlayMode
                                 yield return GridLetTheSeaRedraw();
                                 GridSave($"pan-{s.Name}-{i}");
                             }
+                        }
+                        // The flicker check: the shore band with time running, the camera still, the same
+                        // states, so a lace stroke that breaks from one frame to the next shows between frames.
+                        foreach (var s in GridStates.Where(x => x.Name == "s1" || x.Name == "s2n" || x.Name == "s2"))
+                        {
+                            ApplyGridState(water, s);
+                            GridCamera(new Vector2(203f, 2.649f), 2);
+                            Time.timeScale = 1;
+                            for (int i = 0; i < GridPanFrames; i++)
+                            {
+                                yield return GridLetTheSeaRedraw();
+                                GridSave($"tick-{s.Name}-{i}");
+                            }
+                            Time.timeScale = 0;
                         }
                     }
                 }

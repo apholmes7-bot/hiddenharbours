@@ -26,7 +26,7 @@ namespace HiddenHarbours.Tests.EditMode
         const string WaterPath = "Assets/_Project/Art/Shaders/HiddenHarboursWater.shader";
         const string AdvectPath = "Assets/_Project/Art/Shaders/HiddenHarboursFoamBufferAdvect.shader";
         const string Dial = "_SurfFringeSequenceStrength";
-        const string BaseWaterHash = "3695b24ff05d8621cbe04de5451ab527e816a3cbe41a4655850132b4c2b9f468";
+        const string BaseWaterHash = "44e15ebe5653652651ca93a184509835342ff1fffac881d33e498f9df3e9e7b3";
         // Re-approved at the sea on the art grid (fix/water-on-the-art-grid, the no-mixels ruling of 11-26): the fragment
         // shades at the art cell's centre behind _ArtGridSnap, the implicit-mip reads read level 0 or explicit gradients
         // from the true world point, the shore foam's coverage and the wet film go to hard-threshold tones (ShoreToneHard, no dither),
@@ -267,10 +267,11 @@ namespace HiddenHarbours.Tests.EditMode
                 yaml = yaml.Replace("    - _PixelsPerUnit: 32\n", "    - _PixelsPerUnit: 24\n");
                 // And the shore band on that grid: every sea material gains _ArtGridSnap 1 (shade at the art cell's
                 // centre) and the shore foam's hard tones: _ShoreFoamTones 2, _ShoreFoamCut 0.5, _ShoreFoamEdgeCut 0.2,
-                // _ShoreFoamEdgeTone 0.5 (a full core and one softer edge, by threshold, no dither). Exactly those
-                // five values are authorized; they are stripped before the hash.
+                // _ShoreFoamEdgeTone 0.5 (a full core and one softer edge, by threshold, no dither), and the shore lace
+                // read over the art cell's corners, _ShoreLaceCellMax 1. Exactly those six values are authorized; they
+                // are stripped before the hash.
                 foreach (string gridKey in new[] { "    - _ArtGridSnap: 1\n", "    - _ShoreFoamCut: 0.5\n", "    - _ShoreFoamEdgeCut: 0.2\n",
-                             "    - _ShoreFoamEdgeTone: 0.5\n", "    - _ShoreFoamTones: 2\n" })
+                             "    - _ShoreFoamEdgeTone: 0.5\n", "    - _ShoreFoamTones: 2\n", "    - _ShoreLaceCellMax: 1\n" })
                 {
                     Assert.That(Regex.Matches(yaml, Regex.Escape(gridKey)).Count, Is.EqualTo(1), files[i] + ": " + gridKey.Trim());
                     yaml = yaml.Replace(gridKey, "");

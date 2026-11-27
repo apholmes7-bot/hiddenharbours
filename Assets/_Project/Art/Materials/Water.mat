@@ -192,6 +192,7 @@ Material:
     - _ShoreFoamEdgeCut: 0.2
     - _ShoreFoamEdgeTone: 0.5
     - _ShoreFoamTones: 2
+    - _ShoreLaceCellMax: 1
     - _ShoreLaceContrast: 0.35
     - _ShoreLaceSize: 3
     - _ShoreNoise: 0.75
