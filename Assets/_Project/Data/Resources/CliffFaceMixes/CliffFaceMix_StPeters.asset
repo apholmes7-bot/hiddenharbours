@@ -28,5 +28,5 @@ MonoBehaviour:
   JagCellMetres: {x: 2.5, y: 0.75, z: 0.25}
   JagWeights: {x: 0.55, y: 0.4, z: 0.25}
   MinBiteMetres: 1
-  RoughnessByFacing: {x: 0.35, y: 0.8}
+  RoughnessByFacing: {x: 0.7, y: 0.8}
   Why: 'Owner 11 25: a mix of our current cliffs and the boards'' cliffs, for variance. About half the coast wears the boards'' cliffs (their coursed faces and their colours), in stretches of ten to a few tens of metres, short enough that no long wall is all one skin (pass 2: run 10 m and seed 6, chosen by simulation over the live St Peters toes so each of the seven framed stretches shows at least a quarter of each skin), changing over about six metres as the rock''s own blocks give way (pass 3: doubled so no join reads as a cut). The skin choice is presentation only. Rough edges (owner 11 26, "where the jaggedness and rough edges"): the brow and the foot broken at three scales; the foot''s blockers stand on the same broken line, closed over a 1 m bite so no walker wedges in a notch.'

@@ -113,17 +113,40 @@ namespace HiddenHarbours.Art
         /// <summary>
         /// The whole plan displacement at a point of a station, metres outward: the kit profile's
         /// (<paramref name="profileMetres"/>) at the rib warp's gain, plus the jag, each held back by the station's
-        /// <paramref name="facing"/> gain (the warp's gain goes to 1, the jag to nothing), and the jag's share rounded
-        /// to the texel again so the line still moves in whole pixels. The face, its strips, the turf lip and the
-        /// blocker all read this one. Pure.
+        /// <paramref name="facing"/> gain (the warp's gain goes to 1, the profile and the jag to nothing), and the
+        /// jag's share rounded to the texel again so the line still moves in whole pixels. A wall at full facing is
+        /// not multiplied at all, so a south wall is the floats it always was. The face, its strips, the turf lip and
+        /// the blocker all read this one. Pure.
         /// </summary>
         public static float Outward(in CliffJag jag, float profileMetres, float warpGain, float facing,
                                     float alongMetres, float t)
         {
             float gain = Mathf.Lerp(1f, warpGain, facing);
             float metres = profileMetres * gain;
+            // The kit profile pushes along the same outward normal as the jag, so across the screen it folds the
+            // face into the same shards: it is held back by the same gain.
+            if (facing < 1f) metres *= facing;
             if (jag.On && facing > 0f) metres += Snap(At(in jag, alongMetres, t) * gain * facing);
             return metres;
+        }
+
+        /// <summary>
+        /// ⭐ The hard switch for one chunk's face mapping (owner 11 26: no mixels): true where the chunk faces
+        /// ACROSS the screen, under the lower of the region's two facing bounds, on the mean over its stations of
+        /// the same measure <see cref="FacingGain"/> reads. Such a chunk's face is mapped on the screen art grid
+        /// (<see cref="CliffWallSurface.FaceMesh"/>, planar) and not down its sheared columns. One answer per
+        /// chunk, never a blend; with no bounds set no chunk is planar. Pure.
+        /// </summary>
+        public static bool FacesAcrossTheScreen(in CliffJag jag, CliffWallSample[] samples)
+        {
+            float none = jag.Facing.x, full = jag.Facing.y;
+            if (full <= 0f || none <= 0f || samples == null || samples.Length == 0) return false;
+            float sum = 0f;
+            for (int i = 0; i < samples.Length; i++)
+                sum += Mathf.Abs(Vector2.Dot(
+                    CliffWallGeometry.OutwardPlan(in samples[i]),
+                    CliffWallGeometry.DrawnDown(samples[i].BrowPlan, CliffWallGeometry.ToeScreen(in samples[i]))));
+            return sum / samples.Length < none;
         }
 
         /// <summary>

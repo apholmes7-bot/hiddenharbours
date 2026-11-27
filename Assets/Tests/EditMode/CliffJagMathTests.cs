@@ -46,14 +46,152 @@ namespace HiddenHarbours.Tests.EditMode
             for (float x = 0f; x < 40f; x += 0.23f)
             {
                 const float profile = 0.31f, warp = 1.4f;
-                // None: the kit's own profile at its own depth, and no jag.
-                Assert.AreEqual(profile, CliffJagMath.Outward(in faced, profile, warp, 0f, x, 0f), 1e-6f, $"x {x}");
+                // None: a flat face. No profile relief, no jag.
+                Assert.AreEqual(0f, CliffJagMath.Outward(in faced, profile, warp, 0f, x, 0f), $"x {x}");
                 // All: the profile at the warp's gain, and the jag's share still a whole number of texels.
                 float all = CliffJagMath.Outward(in faced, profile, warp, 1f, x, 0f) - profile * warp;
                 Assert.AreEqual(0f, Mathf.Abs(all / texel - Mathf.Round(all / texel)), 1e-3f, $"x {x}");
-                // Part: never more than all of it, to the texel.
-                float part = CliffJagMath.Outward(in faced, profile, warp, 0.5f, x, 0f) - profile * Mathf.Lerp(1f, warp, 0.5f);
+                // Part: that share of the profile, and never more jag than all of it, to the texel.
+                float part = CliffJagMath.Outward(in faced, profile, warp, 0.5f, x, 0f)
+                           - profile * Mathf.Lerp(1f, warp, 0.5f) * 0.5f;
                 Assert.LessOrEqual(Mathf.Abs(part), Mathf.Abs(all) + texel, $"x {x}");
+                // A wall with no bounds, or at full facing, is not multiplied: the floats it always had.
+                Assert.AreEqual(profile * Mathf.Lerp(1f, warp, 1f) + CliffJagMath.Snap(CliffJagMath.At(in Rough, x, 0f) * Mathf.Lerp(1f, warp, 1f)),
+                                CliffJagMath.Outward(in Rough, profile, warp, 1f, x, 0f), 1e-6f, $"x {x}");
+            }
+        }
+
+        /// <summary>St Peters' real walls, sorted by the switch: some face across the screen and are laid on the screen
+        /// grid, most do not, and the log lists every chunk with its facing so a plate can be read against it.</summary>
+        [Test]
+        public void StPeters_SomeWallsFaceAcrossTheScreen_AndMostDoNot()
+        {
+            CliffJag jag = CliffJag.From(UnityEditor.AssetDatabase.LoadAssetAtPath<CliffFaceMixDef>(StPetersMix));
+            var walls = HiddenHarbours.App.Editor.StPetersCliffWalls.WallsInScene(
+                System.IO.File.ReadAllText(StPetersLayerRefreshTests.ScenePath));
+            int planar = 0;
+            var log = new System.Text.StringBuilder();
+            foreach (var w in walls)
+            {
+                CliffWallSample[] s = w.Samples.ToArray();
+                if (s.Length == 0) continue;
+                float sum = 0f;
+                Vector2 mid = Vector2.zero;
+                foreach (CliffWallSample p in s)
+                {
+                    sum += Mathf.Abs(Vector2.Dot(CliffWallGeometry.OutwardPlan(in p),
+                        CliffWallGeometry.DrawnDown(p.BrowPlan, CliffWallGeometry.ToeScreen(in p))));
+                    mid += p.BrowPlan;
+                }
+                bool across = CliffJagMath.FacesAcrossTheScreen(in jag, s);
+                if (across) planar++;
+                log.AppendLine($"{(across ? "PLANAR " : "       ")}{sum / s.Length:F2}  {mid / s.Length}  {w.Name}");
+            }
+            Debug.Log($"[cliff-facing] {planar} of {walls.Count} St Peters chunks are laid on the screen grid:\n{log}");
+            Assert.Greater(planar, 0, "no St Peters wall is under the lower facing bound: the switch does nothing");
+            Assert.Less(planar, walls.Count / 2, "most of St Peters' walls switched: the south walls have moved");
+        }
+
+        static CliffWallSample[] Wall(Vector2 from, Vector2 step, Vector2 run, float drop, int n = 9)
+        {
+            var wall = new CliffWallSample[n];
+            for (int i = 0; i < n; i++) wall[i] = new CliffWallSample(from + step * i, from + step * i + run, drop);
+            return wall;
+        }
+
+        /// <summary>The mapping switch (owner 11 26, no mixels): one answer per chunk, from the region's lower facing
+        /// bound. A steep wall facing east or west is laid on the screen grid; a south wall, a south-east one and a
+        /// gentle east bank keep the mapping they had; a region with no bounds switches nothing.</summary>
+        [Test]
+        public void OnlyAChunkFacingAcrossTheScreen_IsMappedOnTheScreenGrid()
+        {
+            var faced = new CliffJag(0.35f, 0.45f, new Vector3(3f, 0.9f, 0.25f), new Vector3(0.6f, 0.3f, 0.15f), 1f, 6,
+                                     new Vector2(0.35f, 0.8f));
+            CliffWallSample[] steepEast = Wall(new Vector2(180f, -30f), Vector2.up, new Vector2(2f, 0f), 8f);
+            CliffWallSample[] steepWest = Wall(new Vector2(180f, -30f), Vector2.down, new Vector2(-2f, 0f), 8f);
+            CliffWallSample[] south = Wall(new Vector2(60f, -70f), Vector2.right, new Vector2(0f, -2f), 8f);
+            CliffWallSample[] southEast = Wall(new Vector2(170f, -35f), new Vector2(0.7f, 0.7f), new Vector2(1.4f, -1.4f), 8f);
+            CliffWallSample[] gentleEast = Wall(new Vector2(180f, -30f), Vector2.up, new Vector2(7.2f, 0f), 8f);
+
+            Assert.IsTrue(CliffJagMath.FacesAcrossTheScreen(in faced, steepEast), "steep east");
+            Assert.IsTrue(CliffJagMath.FacesAcrossTheScreen(in faced, steepWest), "steep west");
+            Assert.IsFalse(CliffJagMath.FacesAcrossTheScreen(in faced, south), "south");
+            Assert.IsFalse(CliffJagMath.FacesAcrossTheScreen(in faced, southEast), "south-east");
+            Assert.IsFalse(CliffJagMath.FacesAcrossTheScreen(in faced, gentleEast), "gentle east");
+            Assert.IsFalse(CliffJagMath.FacesAcrossTheScreen(in Rough, steepEast), "no bounds: nothing switches");
+            Assert.IsFalse(CliffJagMath.FacesAcrossTheScreen(default, steepEast));
+            Assert.IsFalse(CliffJagMath.FacesAcrossTheScreen(in faced, new CliffWallSample[0]));
+        }
+
+        /// <summary>A planar face: every vertex's uv is its world position on the tile grid, so bedding lies level on
+        /// screen (equal world y, equal v), nothing is rotated or sheared (u reads x alone, v reads y alone), and the
+        /// vertices are the ones the other mapping lays.</summary>
+        [Test]
+        public void APlanarFace_IsMappedOnTheScreenGrid_AndItsVerticesDoNotMove()
+        {
+            var faced = new CliffJag(0.35f, 0.45f, new Vector3(3f, 0.9f, 0.25f), new Vector3(0.6f, 0.3f, 0.15f), 1f, 6,
+                                     new Vector2(0.35f, 0.8f));
+            const float metresS = 12f, metresT = 9f;
+            var origin = new Vector3(181f, -26f, 0f);
+            CliffWallColumns cols = CliffWallSurface.Unsliced(Wall(new Vector2(180f, -30f), Vector2.up, new Vector2(2f, 0f), 8f));
+            System.Func<float, float, float> profile = (u, t) => 0.4f * Mathf.Sin(u * 40f) * t;
+
+            CliffWallMeshData sheared = CliffWallSurface.FaceMesh(cols, 0f, 0f, 8, 1.5f, metresS, metresT, profile, 1f, origin,
+                                                                  default, faced);
+            CliffWallMeshData planar = CliffWallSurface.FaceMesh(cols, 0f, 0f, 8, 1.5f, metresS, metresT, profile, 1f, origin,
+                                                                 default, faced, planar: true);
+
+            CollectionAssert.AreEqual(sheared.Verts, planar.Verts);
+            CollectionAssert.AreEqual(sheared.Tris, planar.Tris);
+            CollectionAssert.AreEqual(sheared.ElevationUv, planar.ElevationUv);
+            CollectionAssert.AreEqual(sheared.SeaPlanUv, planar.SeaPlanUv);
+            for (int i = 0; i < planar.Verts.Length; i++)
+            {
+                Vector2 world = (Vector2)planar.Verts[i] + (Vector2)origin;
+                Assert.AreEqual(world.x / metresS, planar.Uvs[i].x, 1e-4f, $"vertex {i} u");
+                Assert.AreEqual(-world.y / metresT, planar.Uvs[i].y, 1e-4f, $"vertex {i} v");
+            }
+            // The other mapping is the sheared one the owner rejected: on this wall its v is not level on screen.
+            CollectionAssert.AreNotEqual(sheared.Uvs, planar.Uvs);
+        }
+
+        /// <summary>South wall bytes unchanged: with St Peters' bounds set, a south wall (and its warp, its jag and its
+        /// profile) is laid float for float as it is with no bounds, and it is not switched.</summary>
+        [Test]
+        public void ASouthWall_IsTheSameFloats_WithTheFacingBoundsSetOrNot()
+        {
+            var mix = UnityEditor.AssetDatabase.LoadAssetAtPath<CliffFaceMixDef>(StPetersMix);
+            Assert.IsNotNull(mix, StPetersMix);
+            CliffJag bounded = CliffJag.From(mix);
+            var unbounded = new CliffJag(mix.BrowJagMetres, mix.FootJagMetres, mix.JagCellMetres, mix.JagWeights,
+                                         mix.MinBiteMetres, mix.Seed);
+            Assert.Greater(bounded.Facing.y, 0f);
+
+            // A south wall that wanders: its brow rises and falls and its run and drop change, as the real ones do.
+            var south = new CliffWallSample[25];
+            for (int i = 0; i < south.Length; i++)
+            {
+                var brow = new Vector2(60f + i * 0.5f, -70f + 0.3f * Mathf.Sin(i * 0.7f));
+                var run = new Vector2(0.4f * Mathf.Sin(i * 0.9f), -1.5f - 0.5f * Mathf.Cos(i * 0.4f));
+                south[i] = new CliffWallSample(brow, brow + run, 6f + (i % 5) * 0.5f, 0.2f);
+            }
+            Assert.IsFalse(CliffJagMath.FacesAcrossTheScreen(in bounded, south));
+
+            CliffWallColumns cols = CliffWallSurface.Unsliced(south);
+            System.Func<float, float, float> profile = (u, t) => 0.4f * Mathf.Sin(u * 40f) * t;
+            var origin = new Vector3(66f, -71f, 0f);
+            foreach ((float start, float end) in new[] { (0f, 0f), (0f, 1.2f), (1.2f, 0f) })
+            {
+                CliffWallMeshData before = CliffWallSurface.FaceMesh(cols, start, end, 10, 3.25f, 12f, 9f, profile, 1f, origin,
+                                                                     default, unbounded);
+                CliffWallMeshData after = CliffWallSurface.FaceMesh(cols, start, end, 10, 3.25f, 12f, 9f, profile, 1f, origin,
+                                                                    default, bounded,
+                                                                    CliffJagMath.FacesAcrossTheScreen(in bounded, south));
+                CollectionAssert.AreEqual(before.Verts, after.Verts, $"band {start}-{end} verts");
+                CollectionAssert.AreEqual(before.Uvs, after.Uvs, $"band {start}-{end} uvs");
+                CollectionAssert.AreEqual(before.ElevationUv, after.ElevationUv);
+                CollectionAssert.AreEqual(before.SeaPlanUv, after.SeaPlanUv);
+                CollectionAssert.AreEqual(before.Tris, after.Tris);
             }
         }
 

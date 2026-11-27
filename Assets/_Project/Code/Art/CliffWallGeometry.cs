@@ -705,6 +705,14 @@ namespace HiddenHarbours.Art
             soFar + Vector2.Distance(above, vertex);
 
         /// <summary>
+        /// The uv of a face vertex mapped on the SCREEN art grid: u counts world x in tiles, v world y DOWNWARD in
+        /// tiles (a face's v grows down its column). World-anchored, so it does not depend on the station, the band
+        /// or the chunk: equal world y is equal v (bedding level on screen) and a texel is square. Pure.
+        /// </summary>
+        public static Vector2 ScreenPlanarUv(Vector2 world, float faceMetresS, float faceMetresT) =>
+            new Vector2(TileU(world.x, faceMetresS), TileV(-world.y, faceMetresT));
+
+        /// <summary>
         /// How many rows to subdivide a face into so the profile displacement has somewhere to land.
         /// The README asks for 0.25 m along the wall (<c>CliffCatalog.ProfileSubdivideMetres</c>); at
         /// 32 px/m that is 8 texels a step, which is as fine as the displacement map can express.

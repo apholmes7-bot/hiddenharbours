@@ -371,6 +371,10 @@ namespace HiddenHarbours.Art
 
         /// <summary>The region's rough-edges jag for this build (see <see cref="CliffJagMath"/>); off by default.</summary>
         private CliffJag _jag;
+        private bool _planarFace;
+
+        /// <summary>True when this chunk's face was laid on the screen art grid (it faces across the screen).</summary>
+        public bool PlanarFace => _planarFace;
 
         /// <summary>
         /// The line both blockers stand on. With the jag off it is the stations' drawn toe, exactly as before. With it
@@ -576,6 +580,8 @@ namespace HiddenHarbours.Art
 
             CliffWallSample[] samples = BuildSamples(_browPlan, _toePlan, _dropMetres, _toeElevations);
             ResolveSorting(samples);
+            // One mapping for the whole chunk, its bands and its join pieces alike (never a blend).
+            _planarFace = CliffJagMath.FacesAcrossTheScreen(in _jag, samples);
 
             // The region's cliff mix (owner 11 25: our cliffs and the boards' for variance), found by the
             // scene's name: presentation only, it touches nothing built above.
@@ -888,7 +894,7 @@ namespace HiddenHarbours.Art
             {
                 CliffWallSurface next = run[reach.JoinedAfter];
                 CliffWallSample[] ns = BuildSamples(next._browPlan, next._toePlan, next._dropMetres, next._toeElevations);
-                if (WearsOtherRock(next) && DrawsInFrontOf(ns, ahead: true))
+                if ((WearsOtherRock(next) || MapsOtherwise(ns)) && DrawsInFrontOf(ns, ahead: true))
                 {
                     CliffWallColumns feather = FeatherColumns(ns, fromFirst: true, out _);
                     if (feather != null) BuildExtension(feather, _alongOffsetMetres + alongArcLast, rows, "FeatherAfter", occluders);
@@ -898,7 +904,7 @@ namespace HiddenHarbours.Art
             {
                 CliffWallSurface prev = run[reach.JoinedBefore];
                 CliffWallSample[] ps = BuildSamples(prev._browPlan, prev._toePlan, prev._dropMetres, prev._toeElevations);
-                if (WearsOtherRock(prev) && DrawsInFrontOf(ps, ahead: false))
+                if ((WearsOtherRock(prev) || MapsOtherwise(ps)) && DrawsInFrontOf(ps, ahead: false))
                 {
                     CliffWallColumns feather = FeatherColumns(ps, fromFirst: false, out float length);
                     if (feather != null) BuildExtension(feather, _alongOffsetMetres - length, rows, "FeatherBefore", occluders);
@@ -916,6 +922,12 @@ namespace HiddenHarbours.Art
                     return true;
             return false;
         }
+
+        /// <summary>Whether a neighbour with these stations lays its face on the other mapping (screen grid against
+        /// down the column, <see cref="CliffJagMath.FacesAcrossTheScreen"/>). The rock does not line up across such a
+        /// join, so it is finished like a rock swap: the chunk in front carries its own over, dithered out.</summary>
+        private bool MapsOtherwise(CliffWallSample[] other) =>
+            CliffJagMath.FacesAcrossTheScreen(in _jag, other) != _planarFace;
 
         /// <summary>Whether this chunk sorts in front of a neighbour with these stations. On a tie the earlier chunk
         /// of the pair (the one the seam is ahead of) carries the feather, so exactly one side does.</summary>
@@ -997,7 +1009,7 @@ namespace HiddenHarbours.Art
                 string label = string.IsNullOrEmpty(_bands[b].Label) ? b.ToString() : _bands[b].Label;
                 CliffWallMeshData m = FaceMesh(ext, _bands[b].StartSurfaceMetres, _bands[b].EndSurfaceMetres, rows,
                                                alongOffsetMetres, _faceMetresS, _faceMetresT, ProfileAt,
-                                               elevationValid, transform.position, _ribWarp, _jag);
+                                               elevationValid, transform.position, _ribWarp, _jag, _planarFace);
                 Emit(JoinChildPrefix + what + "_" + label, m.Verts, m.Uvs, m.Tris, _bands[b].Unlit, _bands[b].Normal,
                      _bands[b].Mask, localOrder: 0, m.ElevationUv, m.SeaPlanUv, decal: false, m.Colors);
             }
@@ -1158,7 +1170,7 @@ namespace HiddenHarbours.Art
             float elevationValid = HasToeElevations ? 1f : 0f;
             CliffWallMeshData m = FaceMesh(columns, band.StartSurfaceMetres, band.EndSurfaceMetres, rows,
                                            _alongOffsetMetres, _faceMetresS, _faceMetresT, ProfileAt,
-                                           elevationValid, transform.position, _ribWarp, _jag);
+                                           elevationValid, transform.position, _ribWarp, _jag, _planarFace);
             Emit(childName, m.Verts, m.Uvs, m.Tris, band.Unlit, band.Normal, band.Mask, localOrder,
                  m.ElevationUv, m.SeaPlanUv, decal: false, m.Colors);
         }
@@ -1413,7 +1425,8 @@ namespace HiddenHarbours.Art
                                                  float faceMetresS, float faceMetresT,
                                                  System.Func<float, float, float> displacement,
                                                  float elevationValid, Vector3 origin,
-                                                 CliffRibWarp ribWarp = default, CliffJag jag = default)
+                                                 CliffRibWarp ribWarp = default, CliffJag jag = default,
+                                                 bool planar = false)
         {
             CliffWallSample[] samples = columns.Whole;
             int stations = samples.Length;
@@ -1482,6 +1495,10 @@ namespace HiddenHarbours.Art
                     int idx = c * (rows + 1) + r;
                     verts[idx] = new Vector3(p.x - origin.x, p.y - origin.y, 0f);
                     uvs[idx] = new Vector2(u, CliffWallGeometry.TileV(drawnMetres, faceMetresT));
+                    // A chunk that faces across the screen (CliffJagMath.FacesAcrossTheScreen) is mapped on the
+                    // screen art grid instead: u counts world x and v world y downward, so its bedding lies level,
+                    // its texels are square and unrotated, and two such chunks agree where they meet.
+                    if (planar) uvs[idx] = CliffWallGeometry.ScreenPlanarUv(p, faceMetresS, faceMetresT);
                     // The elevation walks the SURFACE parameter, brow → toe, which is the row parameter
                     // the geometry is laid on — so the waterline crossing lands on the rows the mesh
                     // already has instead of between them.
