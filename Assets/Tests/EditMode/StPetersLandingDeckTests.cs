@@ -328,8 +328,9 @@ namespace HiddenHarbours.Tests.EditMode
             var go = new GameObject("LandingDockBuilderAgreement");
             try
             {
-                var terrain = go.AddComponent<HiddenHarbours.World.TidalTerrain>();
-                StPetersBuilder.ConfigureTidalTerrain(terrain);
+                // The nav marks inside the dock plan are placed on the plan's ground (RunOnThePlanGround), so the
+                // agreement reads that ground too; the analytic terrain would drop the east cardinal.
+                var terrain = LoadPlanGround(out _);
                 var scene = SceneYaml.Parse(File.ReadAllText(Path.Combine(ProjectRoot, ScenePath)));
                 var operations = new System.Collections.Generic.List<DockOperation>();
                 PlanLandingDock(scene, terrain, new EditorNavMarkAssets(), operations);

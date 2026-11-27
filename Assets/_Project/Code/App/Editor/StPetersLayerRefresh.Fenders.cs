@@ -158,7 +158,7 @@ namespace HiddenHarbours.App.Editor
                 SceneYaml after = patch.Apply(SceneYaml.Parse(before));
                 if (!LandingFenders(after).IsEmpty) throw new Refusal("fenders: a second plan still changes documents.");
                 var dock = new List<DockOperation>();
-                PlanLandingDock(after, terrain, new EditorNavMarkAssets(), dock);
+                PlanLandingDock(after, LoadPlanGround(out _), new EditorNavMarkAssets(), dock);   // the marks' own ground
                 if (dock.Count != 0)
                     throw new Refusal("fenders: the landing dock builders disagree: " + string.Join(", ", dock.Select(o => o.kind + " " + o.name)));
                 File.WriteAllText(ScenePath, after.Render(), new System.Text.UTF8Encoding(false));

@@ -2051,17 +2051,25 @@ namespace HiddenHarbours.App.Editor
         /// until the painted terrain is adopted (the next PR), so the tests that hold these steps to the builder
         /// pass the analytic terrain in themselves.</para>
         /// </summary>
+        /// <summary>The plan's ground the nav marks are placed on: the committed seabed map, decoded fresh. Every
+        /// check that re-plans the marks (the landing dock's agreement, the fenders' agreement) reads this ground,
+        /// not the analytic terrain, or it would undo what <see cref="RunOnThePlanGround"/> placed.</summary>
+        public static PlanGround LoadPlanGround(out PaintedHeightMap seabed)
+        {
+            seabed = AssetDatabase.LoadAssetAtPath<PaintedHeightMap>(StPetersTerrainPlan.SeabedPath);
+            if (seabed == null || seabed.HeightTexture == null)
+                throw new Refusal("No seabed map at " + StPetersTerrainPlan.SeabedPath + ": write the terrain plan's maps first.");
+            seabed.Rebuild();   // decode the committed bytes now, not a field cached before the last write
+            return new PlanGround(seabed.Field);
+        }
+
         public static List<LayerPatch> RunOnThePlanGround(bool apply)
         {
             for (int i = 0; i < SceneManager.sceneCount; i++)
                 if (apply && string.Equals(SceneManager.GetSceneAt(i).path, ScenePath, StringComparison.Ordinal))
                     throw new Refusal("StPeters is open in the editor. Close it first: an open scene would overwrite the file on its next save.");
 
-            var seabed = AssetDatabase.LoadAssetAtPath<PaintedHeightMap>(StPetersTerrainPlan.SeabedPath);
-            if (seabed == null || seabed.HeightTexture == null)
-                throw new Refusal("No seabed map at " + StPetersTerrainPlan.SeabedPath + ": write the terrain plan's maps first.");
-            seabed.Rebuild();   // decode the committed bytes now, not a field cached before the last write
-            var ground = new PlanGround(seabed.Field);
+            var ground = LoadPlanGround(out PaintedHeightMap seabed);
 
             string text = File.ReadAllText(ScenePath);
             SceneYaml scene = SceneYaml.Parse(text);

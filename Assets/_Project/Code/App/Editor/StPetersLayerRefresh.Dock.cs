@@ -409,8 +409,7 @@ namespace HiddenHarbours.App.Editor
             try
             {
                 temp = new GameObject("LandingDockProfile");
-                var terrain = temp.AddComponent<TidalTerrain>();
-                StPetersBuilder.ConfigureTidalTerrain(terrain);
+                ITidalTerrain terrain = LoadPlanGround(out _);   // the nav marks are placed on the plan's ground
                 string before = File.ReadAllText(ScenePath);
                 var operations = new List<DockOperation>();
                 var nav = new EditorNavMarkAssets();

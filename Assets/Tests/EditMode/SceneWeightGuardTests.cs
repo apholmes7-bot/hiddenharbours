@@ -162,7 +162,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void StPetersPlantField_RetiresTheMeasuredRootsWithoutSavingItsChunks()
         {
             var weight = MeasureFile("Assets/_Project/Scenes/StPeters.unity");
-            const long MeasuredStPetersSceneBytes = 5_269_839;
+            const long MeasuredStPetersSceneBytes = 5_279_496;
             const long SharedSceneHeadroomBytes = 64L * 1024;
             const long MinimumPopulatedSceneBytes = 4_500_000;
             // 5,259,646 after PR 5p's plant retirement; 4,792,419 after K0 retired the 186 atlas deck tiles, 467,309 bytes;
@@ -192,9 +192,12 @@ namespace HiddenHarbours.Tests.EditMode
             // added; the yard pieces now weigh 195,067 bytes in 220 documents (181 fewer documents, 136,129 fewer bytes).
             // 5,269,839 with the Gap footbridge turned square to its brook (rails and walls on its axis) and the
             // lantern's glass panes (1,988 bytes over the line above).
+            // 5,271,236 with the seals' haul-out host on the Whelps (1,397 bytes).
+            // 5,279,496 with the pier's four fender strings hung in place of its two lip tyres (four strings of four
+            // documents in, two tyres of three out: 8,260 bytes).
             // Main's data/water edits move this shared file by tens of bytes per merge. Allow 64 KiB
             // above the measured retirement. The 4.5 MB floor rejects a truncated scene; names prove
-            // retirement. It sits about 770 KB below the measured weight.
+            // retirement. It sits about 779 KB below the measured weight.
             Assert.LessOrEqual(weight.Bytes, MeasuredStPetersSceneBytes + SharedSceneHeadroomBytes,
                 "the named plant retirement must retain its saving with shared-scene headroom");
             Assert.Greater(weight.Bytes, MinimumPopulatedSceneBytes, "the remaining scene must stay populated");
