@@ -37,9 +37,14 @@ namespace HiddenHarbours.Tools.RigBaking
         public static void EnableIdleFidgetStatesCli()
         {
             int skins = 0;
-            foreach (var entry in CastBakeOrder())
+            var presets = new List<string>();
+            foreach (var entry in CastBakeOrder()) presets.Add(entry.preset);
+            // The outfits (Basil) are baked by CharacterOutfitsBuilder, not the cast order, and draw the
+            // same idle, so they get the same switch.
+            foreach (CharacterOutfits.Outfit outfit in CharacterOutfits.All)
+                if (outfit.Kit == LiveKit) presets.Add(outfit.Key);
+            foreach (string preset in presets)
             {
-                string preset = entry.preset;
                 var def = AssetDatabase.LoadAssetAtPath<CharacterSkinDef>(AssetPathFor(preset));
                 if (def == null) throw new InvalidOperationException("Missing supported skin: " + preset);
                 var states = new List<string>(def.MeshStates ?? Array.Empty<string>());

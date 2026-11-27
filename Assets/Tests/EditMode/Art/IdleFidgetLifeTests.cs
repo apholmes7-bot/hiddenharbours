@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using NUnit.Framework;
+using UnityEngine.TestTools.Constraints;   // ConstraintExtensions: Is.Not.AllocatingGCMemory()
 using UnityEngine;
 using HiddenHarbours.Art;
 using HiddenHarbours.Core;
@@ -368,6 +369,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
             CharacterSkinDef def = MakeDef();
             IsoCharacterFigureRenderer a = MakeFigure(def), b = MakeFigure(def);
             IdleFidgetLibraryDef lib = Library(LookRight(40f));
+            // The per-figure stretch lives in the gap's spread, so this library needs one (the test
+            // library's gapless default gives every figure the same slot by design).
+            lib.MinGapSeconds = 4f;
+            lib.MaxGapSeconds = 12f;
             var la = new CharacterFigureLife { Library = lib };
             var lb = new CharacterFigureLife { Library = lib };
             la.Step(def, "npc.a", CharacterFigurePresenter.KeyHash("npc.a"), 0, a, looks: false, idle: true);
@@ -420,7 +425,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.That(() => { System.GC.KeepAlive(new byte[1024]); },
                         UnityEngine.TestTools.Constraints.Is.AllocatingGCMemory(),
                         "harness: a known allocation must be detected before zero is believed");
-            Assert.That(() =>
+            void Frames()
             {
                 for (int i = 0; i < 240; i++)
                 {
@@ -428,7 +433,13 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     life.Step(def, "npc.a", 1u, t, figure, looks: false, idle: (i % 50) != 0);
                     life.TryFidgetClip(def, out _, out _);
                 }
-            }, UnityEngine.TestTools.Constraints.Is.Not.AllocatingGCMemory());
+            }
+            // One unmeasured pass over the same path first: the first call through a path the warm-up did
+            // not take (a cancel, a fidget starting) pays the runtime's one-time cost, which is not a
+            // per-frame allocation. Measured on a clean editor: the first pass shows one block, every
+            // pass after it none.
+            Frames();
+            Assert.That(new TestDelegate(Frames), UnityEngine.TestTools.Constraints.Is.Not.AllocatingGCMemory());
         }
     }
 }

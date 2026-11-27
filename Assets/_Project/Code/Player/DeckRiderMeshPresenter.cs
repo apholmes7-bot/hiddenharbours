@@ -162,6 +162,14 @@ namespace HiddenHarbours.Player
         // has no key, hash 0) and the carry-pose table, loaded once on first ask (a missing table carries
         // nothing).
         private readonly CharacterFigureLife _life = new CharacterFigureLife();
+
+        /// <summary>The idle fidget his figure is playing as of the last pose (plates and tests).</summary>
+        public IdleFidgetMoment Fidget => _life.Fidget;
+
+        /// <summary>Whether the last pose counted him as standing idle for the fidgets, and the state key it
+        /// resolved before any fidget was swapped in (plates and tests).</summary>
+        public bool FidgetIdle { get; private set; }
+        public string FidgetBaseStateKey { get; private set; }
         private CharacterCarryPoseDef _carryPoses;
         private bool _carryPosesLoaded;
 
@@ -653,6 +661,8 @@ namespace HiddenHarbours.Player
                         : clipPose ? moveFrame : CharacterSkinPose.FrameFor(clip, seed, now, clipStart);
             // Idle fidgets only while he stands at the plain idle with no control touched this frame.
             bool idle = !clipPose && !IdleFidgetInput.ActedRecently && IdleFidgetSchedule.IsStandingIdle(stateKey);
+            FidgetIdle = idle;
+            FidgetBaseStateKey = stateKey;
             IsoCharacterFigureRenderer.Life life = _life.Step(skin, string.Empty, 0u, now, _ashoreFigure, looks: false, idle: idle);
             if (idle && _life.TryFidgetClip(skin, out string fidgetKey, out int fidgetFrame)
                 && (meshOnly || skin.DrawsAsMesh(fidgetKey)) && skin.TryGetClip(fidgetKey, out clip))
