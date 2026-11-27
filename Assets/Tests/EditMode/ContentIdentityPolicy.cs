@@ -312,6 +312,9 @@ namespace HiddenHarbours.Tests.EditMode
             "HiddenHarbours.World.YardDef|377758218aab32027da4190a1df8f056|yard.st_peters.school",
             "HiddenHarbours.World.YardDef|185b851e655d9952e365e9180387b9bb|yard.st_peters.white_farmhouse",
             "HiddenHarbours.World.YardDef|69eedcf67316a400bc63da5f0b350c9a|yard.st_peters.white_gable",
+            // Shipped ids kept for stability; new ids must not use the extra region dot.
+            "HiddenHarbours.Environment.SealHauloutDef|42b9682c7dcffc748979f4aa02b27b24|haulout.st_peters.whelps",
+            "HiddenHarbours.Fishing.ShoreSpotDef|b831599e81f14319a7324880be430b3f|spot.st_peters.wharf_head",
         };
     }
 }
