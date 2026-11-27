@@ -78,6 +78,24 @@ namespace HiddenHarbours.Tests.PlayMode
             new BoardFrame("ne_props.east_buoy.low", 248f, 272f, 96f, 110f, 12f, -1.4f),
             new BoardFrame("ne_props.east_buoy.spring_low", 248f, 272f, 96f, 110f, 12f, -2.2f),
             new BoardFrame("ne_props.east_buoy.2230", 248f, 272f, 96f, 110f, 22.5f, 0.63f),
+            // One board per piece at noon, low water, high water and night: the station, the Gap footbridge, the
+            // seals' skerries and the pier's south face with its fender strings.
+            new BoardFrame("stp_round.station.noon", 190f, 224f, 53f, 74f, 12f, 0.63f),
+            new BoardFrame("stp_round.station.low", 190f, 224f, 53f, 74f, 12f, -1.4f),
+            new BoardFrame("stp_round.station.high", 190f, 224f, 53f, 74f, 12f, 2.2f),
+            new BoardFrame("stp_round.station.2230", 190f, 224f, 53f, 74f, 22.5f, 0.63f),
+            new BoardFrame("stp_round.gap.noon", 146f, 168f, -49f, -30f, 12f, 0.63f),
+            new BoardFrame("stp_round.gap.low", 146f, 168f, -49f, -30f, 12f, -1.4f),
+            new BoardFrame("stp_round.gap.high", 146f, 168f, -49f, -30f, 12f, 2.2f),
+            new BoardFrame("stp_round.gap.2230", 146f, 168f, -49f, -30f, 22.5f, 0.63f),
+            new BoardFrame("stp_round.skerries.noon", 172f, 200f, -57.75f, -42f, 12f, 0.63f),
+            new BoardFrame("stp_round.skerries.low", 172f, 200f, -57.75f, -42f, 12f, -1.4f),
+            new BoardFrame("stp_round.skerries.high", 172f, 200f, -57.75f, -42f, 12f, 2.2f),
+            new BoardFrame("stp_round.skerries.2230", 172f, 200f, -57.75f, -42f, 22.5f, 0.63f),
+            new BoardFrame("stp_round.pier_south.noon", 196f, 220f, -4f, 8f, 12f, 0.63f),
+            new BoardFrame("stp_round.pier_south.low", 196f, 220f, -4f, 8f, 12f, -1.4f),
+            new BoardFrame("stp_round.pier_south.high", 196f, 220f, -4f, 8f, 12f, 2.2f),
+            new BoardFrame("stp_round.pier_south.2230", 196f, 220f, -4f, 8f, 22.5f, 0.63f),
         };
 
         const string EastCardinalNightFrame = "ne_props.east_buoy.2230";

@@ -76,7 +76,8 @@ namespace HiddenHarbours.Tests.PlayMode
                             // Temporary art proof only. No scene, placement or production consumer is changed.
                             originals[i].sprite=defs[i].SpriteFor(SetPieceDef.FrameForRigDir(4));
                             Assert.AreNotSame(sprites[i],originals[i].sprite,keys[i]);
-                            if(i<2)
+                            // The pier's fender strings carry their own waterline cut; a second one cannot be added.
+                            if(i<2&&originals[i].GetComponent<TidalFaceWaterline>()==null)
                             {
                                 var m=maps.maps.Single(x=>x.key==keys[i]);var options=JsonUtility.FromJson<LandingFittingOptions>(defs[i].BakedOptionsJson);
                                 waters[i]=originals[i].gameObject.AddComponent<TidalFaceWaterline>();_spawned.Add(waters[i]);
