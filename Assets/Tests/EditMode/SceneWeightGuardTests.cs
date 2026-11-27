@@ -162,7 +162,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void StPetersPlantField_RetiresTheMeasuredRootsWithoutSavingItsChunks()
         {
             var weight = MeasureFile("Assets/_Project/Scenes/StPeters.unity");
-            const long MeasuredStPetersSceneBytes = 5_279_634;
+            const long MeasuredStPetersSceneBytes = 5_279_716;
             const long SharedSceneHeadroomBytes = 64L * 1024;
             const long MinimumPopulatedSceneBytes = 4_500_000;
             // 5,259,646 after PR 5p's plant retirement; 4,792,419 after K0 retired the 186 atlas deck tiles, 467,309 bytes;
@@ -196,6 +196,7 @@ namespace HiddenHarbours.Tests.EditMode
             // 5,279,496 with the pier's four fender strings hung in place of its two lip tyres (four strings of four
             // documents in, two tyres of three out: 8,260 bytes).
             // 5,279,634 with the lantern glass's spill on the gallery deck (one span and its four settings, 138 bytes).
+            // 5,279,716 after the pier named the underside its calm-water reflection shows (one 82-byte line).
             // Main's data/water edits move this shared file by tens of bytes per merge. Allow 64 KiB
             // above the measured retirement. The 4.5 MB floor rejects a truncated scene; names prove
             // retirement. It sits about 779 KB below the measured weight.

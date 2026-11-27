@@ -387485,6 +387485,7 @@ MonoBehaviour:
     width: 2.6000061
     height: 19.1999969
   _deckElevation: 3.4000001
+  _underside: {fileID: 11400000, guid: cb324355a29849c4a9a7501fc62e9044, type: 2}
 --- !u!1 &343288945
 GameObject:
   m_ObjectHideFlags: 0
@@ -387646,6 +387647,7 @@ MonoBehaviour:
     width: 2.6000061
     height: 19.1999969
   _deckElevation: 3.4000001
+  _underside: {fileID: 11400000, guid: cb324355a29849c4a9a7501fc62e9044, type: 2}
 --- !u!1 &1435787188
 GameObject:
   m_ObjectHideFlags: 0
@@ -389659,6 +389661,7 @@ MonoBehaviour:
   _freeboardMetres: 0.449999988
   _draughtMetres: 0.850000024
   _bedElevation: -3.38187385
+  _underside: {fileID: 11400000, guid: 9b81a5873e5a4c6a8ecca5cbbebbd896, type: 2}
 --- !u!212 &979860588
 SpriteRenderer:
   serializedVersion: 3
@@ -390178,6 +390181,7 @@ MonoBehaviour:
   _halfWidthMetres: 0.620000005
   _abutmentElevation: 3.4000001
   _landing: {fileID: 482568552}
+  _underside: {fileID: 11400000, guid: c0d59b8e98ab41c9bc220f232c91bf5b, type: 2}
 --- !u!114 &1561322183
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -390447,6 +390451,7 @@ MonoBehaviour:
   _freeboardMetres: 0.449999988
   _draughtMetres: 0.850000024
   _bedElevation: -4.2612195
+  _underside: {fileID: 11400000, guid: 9b81a5873e5a4c6a8ecca5cbbebbd896, type: 2}
 --- !u!114 &833421161
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -390469,6 +390474,7 @@ MonoBehaviour:
   _freeboardMetres: 0.449999988
   _draughtMetres: 0.850000024
   _bedElevation: -4.27176285
+  _underside: {fileID: 11400000, guid: 9b81a5873e5a4c6a8ecca5cbbebbd896, type: 2}
 --- !u!212 &1900815215
 SpriteRenderer:
   serializedVersion: 3
@@ -391019,6 +391025,7 @@ MonoBehaviour:
   _halfWidthMetres: 0.620000005
   _abutmentElevation: 3.4000001
   _landing: {fileID: 963455038}
+  _underside: {fileID: 11400000, guid: c0d59b8e98ab41c9bc220f232c91bf5b, type: 2}
 --- !u!114 &963681186
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -391130,6 +391137,7 @@ MonoBehaviour:
   _halfWidthMetres: 0.620000005
   _abutmentElevation: 3.4000001
   _landing: {fileID: 833421161}
+  _underside: {fileID: 11400000, guid: c0d59b8e98ab41c9bc220f232c91bf5b, type: 2}
 --- !u!114 &2017139321
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -392207,6 +392215,7 @@ MonoBehaviour:
   _freeboardMetres: 0.479999989
   _draughtMetres: 0.850000024
   _bedElevation: -3.32517648
+  _underside: {fileID: 11400000, guid: 9b81a5873e5a4c6a8ecca5cbbebbd896, type: 2}
 --- !u!212 &754231762
 SpriteRenderer:
   serializedVersion: 3
@@ -392562,6 +392571,7 @@ MonoBehaviour:
   _halfWidthMetres: 0.620000005
   _abutmentElevation: 3.4000001
   _landing: {fileID: 1545836378}
+  _underside: {fileID: 11400000, guid: c0d59b8e98ab41c9bc220f232c91bf5b, type: 2}
 --- !u!114 &108081217
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -392827,6 +392837,7 @@ MonoBehaviour:
   _slopeTo: {x: 51, y: -2}
   _fromElevation: 3.5999999
   _toElevation: 3.5999999
+  _underside: {fileID: 11400000, guid: cb324355a29849c4a9a7501fc62e9044, type: 2}
 --- !u!212 &1658940870
 SpriteRenderer:
   serializedVersion: 3
@@ -392909,6 +392920,7 @@ MonoBehaviour:
   _slopeTo: {x: 77, y: -2}
   _fromElevation: 3.5999999
   _toElevation: 3.5999999
+  _underside: {fileID: 11400000, guid: cb324355a29849c4a9a7501fc62e9044, type: 2}
 --- !u!212 &1238421743
 SpriteRenderer:
   serializedVersion: 3
@@ -392991,6 +393003,7 @@ MonoBehaviour:
   _slopeTo: {x: 103, y: -2}
   _fromElevation: 3.5999999
   _toElevation: 3.5999999
+  _underside: {fileID: 11400000, guid: cb324355a29849c4a9a7501fc62e9044, type: 2}
 --- !u!114 &1915132211
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -393089,6 +393102,7 @@ MonoBehaviour:
   _slopeTo: {x: 212, y: 52.9841843}
   _fromElevation: 3.5999999
   _toElevation: 3.5999999
+  _underside: {fileID: 11400000, guid: cb324355a29849c4a9a7501fc62e9044, type: 2}
 --- !u!212 &1516970755
 SpriteRenderer:
   serializedVersion: 3
@@ -393171,6 +393185,7 @@ MonoBehaviour:
   _slopeTo: {x: 212, y: 19.9841862}
   _fromElevation: 3.5999999
   _toElevation: 3.5999999
+  _underside: {fileID: 11400000, guid: cb324355a29849c4a9a7501fc62e9044, type: 2}
 --- !u!212 &1312981846
 SpriteRenderer:
   serializedVersion: 3
@@ -393253,6 +393268,7 @@ MonoBehaviour:
   _slopeTo: {x: 198.5, y: 3.39029908}
   _fromElevation: 3.5999999
   _toElevation: 3.5999999
+  _underside: {fileID: 11400000, guid: cb324355a29849c4a9a7501fc62e9044, type: 2}
 --- !u!212 &275752955
 SpriteRenderer:
   serializedVersion: 3
@@ -393335,6 +393351,7 @@ MonoBehaviour:
   _slopeTo: {x: 171.5, y: -9.60970116}
   _fromElevation: 3.5999999
   _toElevation: 3.5999999
+  _underside: {fileID: 11400000, guid: cb324355a29849c4a9a7501fc62e9044, type: 2}
 --- !u!114 &1095872228
 MonoBehaviour:
   m_ObjectHideFlags: 0

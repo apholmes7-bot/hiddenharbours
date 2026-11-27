@@ -6,6 +6,8 @@ using System.Text.RegularExpressions;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.TestTools.Constraints;
+using Is = UnityEngine.TestTools.Constraints.Is;
 using HiddenHarbours.Art;
 using HiddenHarbours.Core;
 using HiddenHarbours.Tools.RigBaking;
@@ -321,7 +323,7 @@ namespace HiddenHarbours.Tests.RigBaking
             { "StPeters/bridge.stp_gap_footbridge", "pending a plate: whether it stands over tidal water" },
         };
 
-        [Test, Ignore("Lands with the builder pass that names each deck's underside (needs an editor slot).")]
+        [Test]
         public void EveryDeckOverWaterInAScene_NamesAnUnderside_OrIsExemptWithAReason()
         {
             var missing = new List<string>();
