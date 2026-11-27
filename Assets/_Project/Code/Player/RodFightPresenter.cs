@@ -245,6 +245,12 @@ namespace HiddenHarbours.Player
         /// <summary>How many jumps THIS fight has drawn. Reset when the species on the line changes, so
         /// it counts one fight and not a session.</summary>
         public int JumpsDrawn => _fish != null ? _fish.JumpsDrawn : 0;
+
+        /// <summary>She has just broken the surface and the splash's column and crown are playing: no fish is
+        /// drawn this frame (<see cref="SurfacedFishDrawer.InBreakColumn"/>). For tests and plates.</summary>
+        public bool FishInBreakColumn => _fish != null && _s.Phase == FishingPhase.FightSurface
+                                         && _fish.InBreakColumn(_surfaceClock, _splashFps, SplashFrameCount);
+        private int SplashFrameCount => _splashFrames != null ? _splashFrames.Length : 0;
         private Vector2 _lastFarEnd;      // where the line last ended (splash anchor for results)
 
         private float _splashClock;       // seconds since the live splash began (RodSplashFlourish)
@@ -417,7 +423,7 @@ namespace HiddenHarbours.Player
                     case RodSplashEdge.Breaks:
                         SplashAt(angler + new Vector2(next.FishOffsetX, next.FishOffsetY)); break;
                     case RodSplashEdge.Result:
-                        SplashAt(_lastFarEnd); break;
+                        SplashAt(RodPresenterMath.ResultSplashAt(in prev, angler, _lastFarEnd)); break;
                 }
             }
 
@@ -537,7 +543,7 @@ namespace HiddenHarbours.Player
             }
             else
             {
-                _fishSr.enabled = false;   // the on-the-line fish never lingers into land/result beats
+                _fish.Hide();   // the on-the-line fish never lingers into land/result beats
             }
 
             if (!ripplesShown) _rippleSr.enabled = false;
@@ -928,6 +934,7 @@ namespace HiddenHarbours.Player
 
         private void RenderShadow(Vector2 entry)
         {
+            _fish.HideUnderwater();   // the deep shadow is drawn whole on her renderer
             FishRungVisual sp = _fish.Rung;
             if (sp == null || sp.ShadowFrames == null || sp.ShadowFrames.Length == 0)
             {
@@ -962,10 +969,21 @@ namespace HiddenHarbours.Player
         /// same surface break every other beat of this fight uses.</summary>
         private Vector2 RenderSurfaceFish(Vector2 angler, float dt)
         {
+            // Behind him while she is in the water beyond his feet, in front only short of them (Core
+            // EffectSorting.FishOnLineOrder); in his hands she is the held catch, in front by its own rule.
+            int fishOrder = _playerSr != null
+                ? EffectSorting.FishOnLineOrder(_playerSr.sortingOrder, _s.FishOffsetY)
+                : _waterElementOrder;
             Vector2 mouth = _fish.Render(angler, in _s, dt, _stateClock, _surfaceClock, _fishSecondsPerFrame,
-                                         _fishDartSpeedMps, FishSpeedSmoothing01, _waterElementOrder,
+                                         _fishDartSpeedMps, FishSpeedSmoothing01, fishOrder, 1f,
                                          out bool splashDue, out Vector2 splashAt);
-            if (splashDue) SplashAt(splashAt);
+            if (splashDue) SplashAt(splashAt, _fish.SplashFirstFrame);
+            // The break's column and crown carry no fish; the line ends at the water point under them.
+            if (_fish.InBreakColumn(_surfaceClock, _splashFps, SplashFrameCount))
+            {
+                _fish.Hide();
+                return angler + new Vector2(_s.FishOffsetX, _s.FishOffsetY);
+            }
             return mouth;
         }
 
@@ -1055,16 +1073,19 @@ namespace HiddenHarbours.Player
             _rippleSr.enabled = true;
         }
 
-        private void SplashAt(Vector2 pos)
+        private void SplashAt(Vector2 pos, int firstFrame = 0)
         {
-            if (_splash != null && _splash.Begin(pos, _splashFrames)) _splashClock = 0f;
+            if (_splash != null && _splash.Begin(pos, _splashFrames, firstFrame)) _splashClock = 0f;
         }
 
         private void RenderSplash()
         {
-            // ADR 0059 step 2: the splash rides the fisher's own order, one rung in front, not a parked 51.
+            // The splash rides the fisher's own order (ADR 0059): on the water behind him when it lands beyond
+            // his feet, one rung in front only short of them (Core EffectSorting.RodSplashOrder).
             bool sorted = _playerSr != null;
-            int splashOrder = sorted ? EffectSorting.OrderOver(SortedEffect.RodSplash, _playerSr.sortingOrder) : 0;
+            int splashOrder = sorted
+                ? EffectSorting.RodSplashOrder(_playerSr.sortingOrder, _splash.Position.y - transform.position.y)
+                : 0;
             _splash.Render(_splashClock, _splashFrames, _splashFps, sorted, splashOrder);
         }
 
@@ -1083,6 +1104,7 @@ namespace HiddenHarbours.Player
             }
             if (_bobberSr != null) _bobberSr.enabled = false;
             if (_fishSr != null) _fishSr.enabled = false;
+            _fish?.HideUnderwater();
             if (_heldSr != null) _heldSr.enabled = false;
             HideLandMesh();
             if (_rippleSr != null) _rippleSr.enabled = false;

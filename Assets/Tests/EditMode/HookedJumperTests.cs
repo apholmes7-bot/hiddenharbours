@@ -193,6 +193,27 @@ namespace HiddenHarbours.Tests.EditMode
                 "unstated is 0 — the presenter's own fallback, not a period of zero");
         }
 
+        /// <summary>
+        /// The species outlive a <see cref="GameServices.Reset"/> in the registry's static table, so the
+        /// boot after one re-registers ids it already holds. That repeat must publish the seam again, or
+        /// every jumper after the Reset fights flat (a villager's mackerel drew no jump for exactly this
+        /// reason in a run of several tests).
+        /// </summary>
+        [Test]
+        public void ARepeatRegistration_AfterAServicesReset_PublishesTheSeamAgain()
+        {
+            FishSpeciesDef bass = Species("fish.striped_bass", FishFlags.Jumps, 3.5f);
+            FishSpeciesRegistry.Register(bass);
+            GameServices.Reset();
+            Assert.IsFalse(GameServices.FishBehaviour.Jumps("fish.striped_bass"), "the Reset empties the seam");
+
+            FishSpeciesRegistry.Register(Species("fish.striped_bass", FishFlags.None, 9f));
+            Assert.IsTrue(GameServices.FishBehaviour.Jumps("fish.striped_bass"),
+                "the repeat registration publishes the seam again, and the first def still wins");
+            Assert.AreEqual(3.5f, GameServices.FishBehaviour.FightJumpPeriodSeconds("fish.striped_bass"), 1e-6f);
+            Assert.IsNotNull(GameServices.FishSizes, "the size seam comes back with it");
+        }
+
         /// <summary>The empty implementation is what a bare scene gets, and it must be safe rather than
         /// absent — a fight in a scene with no species library draws a fish that does not jump.</summary>
         [Test]

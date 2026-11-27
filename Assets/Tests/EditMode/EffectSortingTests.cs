@@ -60,6 +60,7 @@ namespace HiddenHarbours.Tests.EditMode
                 { SortedEffect.RodSplash, EffectSorting.RodOverFisherRungs },
                 { SortedEffect.NpcGearAtRail, EffectSorting.NpcGearOverHullRungs },
                 { SortedEffect.DigDirt, EffectSorting.DigDirtRungs },
+                { SortedEffect.FishOnLine, EffectSorting.FishBeyondFisherRungs },
             };
             CollectionAssert.AreEquivalent(AllEffects().ToArray(), expected.Keys.ToArray(),
                 "a new SortedEffect needs its row here and in EffectSorting.RungsFor");
@@ -70,8 +71,57 @@ namespace HiddenHarbours.Tests.EditMode
         [Test] public void OnlyTheRodAndTheNpcRailGear_RideTheirCarrier()
         {
             foreach (SortedEffect e in AllEffects())
-                Assert.AreEqual(e == SortedEffect.RodLine || e == SortedEffect.RodSplash || e == SortedEffect.NpcGearAtRail,
+                Assert.AreEqual(e == SortedEffect.RodLine || e == SortedEffect.RodSplash || e == SortedEffect.NpcGearAtRail
+                                || e == SortedEffect.FishOnLine,
                                 EffectSorting.IsCarried(e), e.ToString());
+        }
+
+        [Test] public void TheHookedFish_SortsBehindTheFisherBeyondHisFeet_AndInFrontShortOfThem()
+        {
+            foreach (int fisher in new[] { SortingBands.DecorFloor, 1003, SortingBands.DecorBase, SortingBands.DecorCeiling })
+            {
+                foreach (float beyond in new[] { 0f, 0.01f, 1.5f, 6f })
+                {
+                    int order = EffectSorting.FishOnLineOrder(fisher, beyond);
+                    Assert.Less(order, fisher, $"beyond his feet by {beyond} m she must draw behind him");
+                    Assert.Greater(order, EffectSorting.OrderOver(SortedEffect.RodLine, fisher),
+                                   "her line must go into her mouth, under her, not across her");
+                }
+                foreach (float shortOf in new[] { -0.01f, -1.2f })
+                    Assert.Greater(EffectSorting.FishOnLineOrder(fisher, shortOf), fisher,
+                                   $"short of his feet by {-shortOf} m she stands in front of him");
+                Assert.AreEqual(EffectSorting.OrderOver(SortedEffect.FishOnLine, fisher),
+                                EffectSorting.FishOnLineOrder(fisher, 1f), "the table row is the far side");
+            }
+        }
+
+        [Test] public void BothFishersSortTheHookedFish_ByTheOneRule()
+        {
+            foreach (string path in new[] { "Assets/_Project/Code/Player/NpcAnglerPresenter.cs",
+                                            "Assets/_Project/Code/Player/RodFightPresenter.cs" })
+            {
+                string src = System.IO.File.ReadAllText(path);
+                StringAssert.Contains("EffectSorting.FishOnLineOrder(", src, $"{path} sorts the hooked fish by its own number");
+                StringAssert.Contains("EffectSorting.RodSplashOrder(", src, $"{path} sorts its splash by the side it lands on");
+            }
+        }
+
+        [Test] public void ARodSplash_BeyondHisFeet_IsOnTheWaterBehindHim_UnderTheFishAndTheLine()
+        {
+            foreach (int fisher in new[] { SortingBands.DecorFloor, 1180, SortingBands.DecorBase, SortingBands.DecorCeiling })
+            {
+                foreach (float beyond in new[] { 0f, 0.01f, 1.09f, 6f })
+                {
+                    int order = EffectSorting.RodSplashOrder(fisher, beyond);
+                    Assert.Less(order, fisher, $"a splash {beyond} m beyond his feet drew over him (the landing ring across his chest)");
+                    Assert.Less(order, EffectSorting.FishOnLineOrder(fisher, beyond), "the ring must be under the fish breaking through it");
+                    Assert.Less(order, EffectSorting.OrderOver(SortedEffect.RodLine, fisher), "the line must draw over the water's ring");
+                }
+                foreach (float shortOf in new[] { -0.01f, -1.2f })
+                    Assert.AreEqual(EffectSorting.OrderOver(SortedEffect.RodSplash, fisher), EffectSorting.RodSplashOrder(fisher, shortOf),
+                                    $"short of his feet by {-shortOf} m the splash keeps its one rung in front");
+                Assert.Less(EffectSorting.RodSplashOrder(fisher, float.NaN), fisher, "an unplaced splash counts as the water side");
+            }
         }
 
         // ---- the rule -------------------------------------------------------------------------------
@@ -232,7 +282,9 @@ namespace HiddenHarbours.Tests.EditMode
             ("Assets/_Project/Code/Art/ShorePlantTideView.cs", "EffectSorting.OrderAt(SortedEffect.EmergentShorePlant,transform.position.y)"),
             ("Assets/_Project/Code/App/NpcPotDeck.cs", "EffectSorting.OrderAt(SortedEffect.NpcCatch,hull.transform.position.y)"),
             ("Assets/_Project/Code/Player/RodFightPresenter.cs", "EffectSorting.OrderOver(SortedEffect.RodLine,_playerSr.sortingOrder)"),
-            ("Assets/_Project/Code/Player/RodFightPresenter.cs", "EffectSorting.OrderOver(SortedEffect.RodSplash,_playerSr.sortingOrder)"),
+            // The rod splash asks the table through RodSplashOrder (short of his feet: OrderOver(RodSplash)).
+            ("Assets/_Project/Code/Player/RodFightPresenter.cs", "EffectSorting.RodSplashOrder(_playerSr.sortingOrder,"),
+            ("Assets/_Project/Code/Core/Art/EffectSorting.cs", "OrderOver(SortedEffect.RodSplash,fisherOrder)"),
         };
 
         [Test] public void EachReAnchoredEffect_AsksTheTable()

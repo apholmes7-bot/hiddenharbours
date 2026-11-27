@@ -544,6 +544,20 @@ MonoBehaviour:
     BigOneMarkFadeSeconds: 0.25
     BigOneMarkColor: {r: 1, g: 0.85, b: 0.2, a: 1}
     BigOneStrikeHoldSeconds: 0.35
+    FlankWithinLineDegrees: 30
+    ThrashCutsAtWaterline: 1
+    DartCutsAtWaterline: 0
+    WaterlineRowsAbovePivot: 0
+    FishUnderwaterTint: {r: 0.45, g: 0.66, b: 0.72, a: 0.55}
+    ThrashChurnPeriodSeconds: 0.9
+    ThrashChurnFirstSplashFrame: 5
+    FisherFigureHalfWidthM: 0.35
+    FisherFigureHeightM: 1.7
+    LandLiftTravelSeconds: 1
+    LandHangSeconds: 1.2
+    HangGripRowsAbovePivot: 1
+    LandHangSideM: 1
+    LandHangHeightM: 1.5
   FishSchools:
     CellSizeMetres: 22
     SlotHours: 2.5

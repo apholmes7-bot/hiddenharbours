@@ -18,21 +18,28 @@ namespace HiddenHarbours.Player
         private readonly SpriteRenderer _sr;
         private bool _active;
         private Vector2 _pos;
+        private int _first;
 
         public RodSplashFlourish(SpriteRenderer renderer) { _sr = renderer; }
 
         /// <summary>Is a splash playing (its owner's clock should run).</summary>
         public bool Active => _active;
 
+        /// <summary>Where the playing splash is (world m): its owner sorts it by which side of the fisher it is.</summary>
+        public Vector2 Position => _pos;
+
         /// <summary>
         /// Start a splash at <paramref name="pos"/>. False (and nothing starts) with no frames to play;
-        /// on true the owner restarts its splash clock at 0.
+        /// on true the owner restarts its splash clock at 0. <paramref name="firstFrame"/> starts the flipbook
+        /// part-way (a thrashing fish's churn plays only the open rings, never the column and crown of a break),
+        /// kept inside the flipbook.
         /// </summary>
-        public bool Begin(Vector2 pos, Sprite[] frames)
+        public bool Begin(Vector2 pos, Sprite[] frames, int firstFrame = 0)
         {
             if (frames == null || frames.Length == 0) return false;
             _active = true;
             _pos = pos;
+            _first = Mathf.Clamp(firstFrame, 0, frames.Length - 1);
             return true;
         }
 
@@ -43,7 +50,8 @@ namespace HiddenHarbours.Player
         public void Render(float splashSeconds, Sprite[] frames, float fps, bool sorted, int sortingOrder)
         {
             if (!_active) { _sr.enabled = false; return; }
-            int frame = RodPresenterMath.OnceFlipFrame(splashSeconds, 1f / Mathf.Max(0.1f, fps), frames.Length);
+            int first = Mathf.Clamp(_first, 0, frames.Length - 1);
+            int frame = first + RodPresenterMath.OnceFlipFrame(splashSeconds, 1f / Mathf.Max(0.1f, fps), frames.Length - first);
             if (frame >= frames.Length || frames[frame] == null)
             {
                 _active = false;
@@ -51,7 +59,7 @@ namespace HiddenHarbours.Player
                 return;
             }
             _sr.transform.position = new Vector3(_pos.x, _pos.y, 0f);
-            // ADR 0059 step 2: the splash rides the fisher's own order, one rung in front, not a parked 51.
+            // The order is the owner's (EffectSorting.RodSplashOrder: by the side of the fisher it lands on).
             if (sorted && _sr.sortingOrder != sortingOrder) _sr.sortingOrder = sortingOrder;
             _sr.sprite = frames[frame];
             _sr.enabled = true;

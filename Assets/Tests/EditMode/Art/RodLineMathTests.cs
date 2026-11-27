@@ -280,6 +280,28 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
+        public void ShudderAmplitude_IsAHumOnAShortLine_AndTheLooksThrowOnALongOne()
+        {
+            const float lookThrow = 0.09f, artPixel = 1f / 32f;
+            // The late fight: a fish at the deck lip on about a metre of line. Under one art pixel of throw.
+            float late = RodLineMath.ShudderAmplitude(lookThrow, 1.1f);
+            Assert.Less(late, artPixel, "a short strained line zigzags instead of humming");
+            Assert.AreEqual(1.1f * RodLineMath.ShudderMaxSpanFraction, late, Eps);
+            // A long line keeps the look's whole throw.
+            Assert.AreEqual(lookThrow, RodLineMath.ShudderAmplitude(lookThrow, 12f), Eps);
+            // Monotonic in the span, and never negative.
+            float last = 0f;
+            for (int i = 0; i <= 40; i++)
+            {
+                float a = RodLineMath.ShudderAmplitude(lookThrow, i * 0.25f);
+                Assert.GreaterOrEqual(a, last - Eps);
+                last = a;
+            }
+            Assert.AreEqual(0f, RodLineMath.ShudderAmplitude(lookThrow, -1f), Eps);
+            Assert.AreEqual(0f, RodLineMath.ShudderAmplitude(-0.1f, 5f), Eps);
+        }
+
+        [Test]
         public void Whiten_ArrivesLate_WithBias_AndLinearAtBiasOne()
         {
             Assert.AreEqual(0f, RodLineMath.Whiten01(0f, 3f), Eps);
