@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: underside.nmc_pier
   Atlas: {fileID: 2800000, guid: e3aa560a5a774649830778635884014d, type: 3}
   CellX: 0
-  CellY: 43
+  CellY: 0
   CellWidth: 80
   CellHeight: 21
   FasciaRows: 5

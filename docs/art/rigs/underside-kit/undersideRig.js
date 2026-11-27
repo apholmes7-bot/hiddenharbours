@@ -1,7 +1,8 @@
-/* UNDERSIDE RIG. What the calm water shows of a deck that stands over it: the timber and floats seen
-   from BELOW, laid by the calm mirror where the reflected face of a deck draws no art (the gaps
-   between a pier's piles, a float drawn as a top only). 32 px = 1 m, flat pixel tiles, no AA,
-   binary alpha, one texel per art pixel on screen (no mixels).
+/* UNDERSIDE RIG. What the calm water shows of a deck that stands over it: the timber seen from BELOW,
+   laid by the calm mirror where the reflected face of a deck draws no art (the gaps between a pier's
+   piles). Floats and their gangways have none: a float's low freeboard leaves a band of about 11 px,
+   which its own drawn side fills, and a gangway's band sits on the float it lands on.
+   32 px = 1 m, flat pixel tiles, no AA, binary alpha, one texel per art pixel on screen (no mixels).
 
    ONE SHEET, ONE TEXTURE. Every piece is a cell in this one sheet, so the mirror binds a single
    texture whatever is in view. Cells are stacked top-down in PIECES order; the baker flips rows into
@@ -35,8 +36,6 @@
   const PIECES = [
     { id: 'underside.stp_pier', w: 96, h: 26, fascia: 6 },
     { id: 'underside.nmc_pier', w: 80, h: 21, fascia: 5 },
-    { id: 'underside.nmc_float', w: 40, h: 24, fascia: 4 },
-    { id: 'underside.nmc_gangway', w: 16, h: 19, fascia: 3 },
   ];
   const W = 96;
   let H = 0;
@@ -51,13 +50,11 @@
   const rgb = (hex) => [parseInt(hex.slice(1, 3), 16), parseInt(hex.slice(3, 5), 16), parseInt(hex.slice(5, 7), 16)];
 
   // Each painter answers a ramp index (0 darkest) for cell column x and cell row r (0 = the bottom).
-  // Ramps are five steps of the piece's timber or float in shadow: 0 and 1 the beams and gaps, 2 the
-  // plank (or billet) field, 3 and 4 the lip and the slivers of daylight.
+  // Ramps are five steps of the piece's timber in shadow: 0 and 1 the beams and gaps, 2 the
+  // plank field, 3 and 4 the lip and the slivers of daylight.
   const RAMPS = {
     stp: ['#0b0907', '#2a231c', '#64543f', '#75634d', '#86735b'],
     nmc: ['#0a0908', '#28241f', '#5f564b', '#6f6559', '#7f7468'],
-    float: ['#0a0b0a', '#262b25', '#59614f', '#6b7461', '#7c8572'],
-    gang: ['#0b0c0c', '#272a2a', '#5a5e5d', '#6b706e', '#7c8180'],
   };
 
   // A timber pier seen from below: plank seams every 6 px across, a stringer band every period rows,
@@ -85,40 +82,9 @@
     };
   }
 
-  // A float seen from below: the frame's edge timber as the fascia, then foam billets 38 x 18 px with a
-  // 2 px dark gap round each, weed darker toward the bottom rows of each billet.
-  function float(fascia, bw, bh) {
-    return (x, r) => {
-      if (r < fascia) {
-        if (r === 0) return 3;
-        return r === fascia - 1 ? 1 : 2;
-      }
-      const bx = x % (bw + 2), by = (r - fascia) % (bh + 2);
-      if (bx >= bw || by >= bh) return 0;
-      if (bx === 0 || by === bh - 1) return 1;
-      if (by < 3 && hash(x, r, 5) < 0.45) return 1;   // weed along the billet's waterline
-      if (by === bh - 2 && bx > 1 && bx < bw - 2) return 3;
-      return 2;
-    };
-  }
-
-  // A gangway seen from below: its side angle as the fascia, then cross members every period rows over
-  // the dark of the grating between them.
-  function gangway(fascia, period) {
-    return (x, r) => {
-      if (r < fascia) return r === 0 ? 3 : 2;
-      const b = (r - fascia) % period;
-      if (b < 2) return b === 0 ? 3 : 2;
-      if (x % 4 === 0) return 1;
-      return hash(x, r, 6) < 0.3 ? 1 : 0;
-    };
-  }
-
   const PAINT = {
     'underside.stp_pier': { ramp: RAMPS.stp, fn: pier(96, 6, 20) },
     'underside.nmc_pier': { ramp: RAMPS.nmc, fn: pier(80, 5, 16) },
-    'underside.nmc_float': { ramp: RAMPS.float, fn: float(4, 38, 18) },
-    'underside.nmc_gangway': { ramp: RAMPS.gang, fn: gangway(3, 16) },
   };
 
   function sheet() {

@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: underside.stp_pier
   Atlas: {fileID: 2800000, guid: e3aa560a5a774649830778635884014d, type: 3}
   CellX: 0
-  CellY: 64
+  CellY: 21
   CellWidth: 96
   CellHeight: 26
   FasciaRows: 6

@@ -55,9 +55,33 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void TheTable_NamesEachDeckOnce()
         {
-            var keys = UndersideAssignment.Table().Select(e => e.Scene + "/" + e.Deck).ToArray();
+            var table = UndersideAssignment.Table().ToArray();
+            var keys = table.Select(e => e.Scene + "/" + e.Deck).ToArray();
             Assert.AreEqual(keys.Length, keys.Distinct().Count());
-            Assert.AreEqual(18, keys.Length, "1 St Peters pier + 9 NMC pier walks + 4 floats + 4 gangways");
+            Assert.AreEqual(18, keys.Length, "1 St Peters pier + 9 NMC pier walks named; 4 floats + 4 gangways exempt");
+            Assert.AreEqual(10, table.Count(e => e.Asset != null), "ten decks reflect an underside");
+            Assert.AreEqual(8, table.Count(e => e.Asset == null), "the floats and gangways reflect none");
+            CollectionAssert.AreEquivalent(new[] { "pierW/walk0", "pierE/walk0" },
+                table.Where(e => e.DrawnLifted).Select(e => e.Deck).ToArray(), "only the yard's kit piers are drawn lifted");
+        }
+
+        [Test]
+        public void AnExemptDeck_LosesItsReference_AndALiftedDeckSaysSo_OnceOnly()
+        {
+            string named = UndersideAssignment.Patch(Scene(), One, G, out _);
+            var clear = new[] { new UndersideAssignment.Entry("s", "Pier", null) };
+            Assert.AreEqual(Scene(), UndersideAssignment.Patch(named, clear, G, out int removed), "the reference line goes, nothing else");
+            Assert.AreEqual(1, removed);
+            UndersideAssignment.Patch(Scene(), clear, G, out int none);
+            Assert.AreEqual(0, none, "an exempt deck without a reference is left alone");
+
+            var lifted = new[] { new UndersideAssignment.Entry("s", "Pier", "a.asset", drawnLifted: true) };
+            string once = UndersideAssignment.Patch(Scene(), lifted, G, out _);
+            StringAssert.Contains("  _deckElevation: 3.4\n  _drawnLiftedByDeck: 1\n  _underside: ", once, "written after the deck height");
+            Assert.AreEqual(once, UndersideAssignment.Patch(once, lifted, G, out int again));
+            Assert.AreEqual(0, again);
+            Assert.AreEqual(once, UndersideAssignment.Patch(once.Replace("_drawnLiftedByDeck: 1", "_drawnLiftedByDeck: 0"), lifted, G, out _),
+                "a cleared flag is set again");
         }
     }
 }

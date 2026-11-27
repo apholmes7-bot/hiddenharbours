@@ -34,25 +34,38 @@ namespace HiddenHarbours.App.Editor
 
         public readonly struct Entry
         {
+            /// <summary><see cref="Asset"/> null: the deck reflects no underside, and any reference it carries is
+            /// removed. <see cref="DrawnLifted"/>: the deck's art is drawn its deck height up the screen of its
+            /// footprint (a kit-built pier), so its StandablePlatform says so for the mirror.</summary>
             public readonly string Scene, Deck, Asset;
-            public Entry(string scene, string deck, string asset) { Scene = scene; Deck = deck; Asset = asset; }
+            public readonly bool DrawnLifted;
+            public Entry(string scene, string deck, string asset, bool drawnLifted = false)
+            { Scene = scene; Deck = deck; Asset = asset; DrawnLifted = drawnLifted; }
         }
 
-        /// <summary>Which deck (scene, GameObject name) reflects which underside asset.</summary>
+        /// <summary>Why the floats and their gangways reflect no underside.</summary>
+        public const string FloatExemption =
+            "low freeboard: the band (about 11 px) is covered by the float's own drawn side; the brow's band sits on the float";
+
+        /// <summary>Which deck (scene, GameObject name) reflects which underside asset, or none (with its reason).</summary>
         public static IEnumerable<Entry> Table()
         {
-            const string stp = "UndersideStPetersPier.asset", pier = "UndersideNmcPier.asset",
-                         fl = "UndersideNmcFloat.asset", gw = "UndersideNmcGangway.asset";
+            const string stp = "UndersideStPetersPier.asset", pier = "UndersideNmcPier.asset";
             yield return new Entry(StPetersScene, "StPetersWharf", stp);
-            foreach (string d in new[] { "pierW/walk0", "pierE/walk0", "w0.walk", "w1.walk", "w2.walk",
-                                         "e0.walk", "e1.walk", "e2.walk", "e3.walk" })
+            // The yard's two piers are kit art: drawn their 3.4 m deck height up the screen of the walk.
+            foreach (string d in new[] { "pierW/walk0", "pierE/walk0" })
+                yield return new Entry(NineMileCreekScene, d, pier, drawnLifted: true);
+            foreach (string d in new[] { "w0.walk", "w1.walk", "w2.walk", "e0.walk", "e1.walk", "e2.walk", "e3.walk" })
                 yield return new Entry(NineMileCreekScene, d, pier);
-            foreach (string d in new[] { "float.nmc_working", "float.nmc_finger_a", "float.nmc_finger_b", "float.nmc_recreation" })
-                yield return new Entry(NineMileCreekScene, d, fl);
-            foreach (string d in new[] { "gangway.nmc_west_gangway", "gangway.nmc_fleet_gangway0",
-                                         "gangway.nmc_fleet_gangway1", "gangway.nmc_east_gangway" })
-                yield return new Entry(NineMileCreekScene, d, gw);
+            foreach (string d in Exempt()) yield return new Entry(NineMileCreekScene, d, null);
         }
+
+        /// <summary>The decks that reflect no underside, for <see cref="FloatExemption"/>.</summary>
+        public static IEnumerable<string> Exempt() => new[]
+        {
+            "float.nmc_working", "float.nmc_finger_a", "float.nmc_finger_b", "float.nmc_recreation",
+            "gangway.nmc_west_gangway", "gangway.nmc_fleet_gangway0", "gangway.nmc_fleet_gangway1", "gangway.nmc_east_gangway",
+        };
 
         static readonly Regex DocHead = new Regex(@"^--- !u!(\d+) &(-?\d+)[^\n]*$", RegexOptions.Multiline);
 
@@ -84,15 +97,34 @@ namespace HiddenHarbours.App.Editor
                 if (hits.Length != 1) throw new InvalidOperationException($"underside: '{e.Deck}' has {hits.Length} deck component(s) in {e.Scene}, needs exactly one.");
                 var (start, end, _) = hits[0];
                 string body = text.Substring(start, end - start);
-                string line = $"  _underside: {{fileID: 11400000, guid: {guidOf(e.Asset)}, type: 2}}";
-                string next;
-                Match old = Regex.Match(body, @"\n  _underside: [^\n]*");
-                if (old.Success) next = body.Substring(0, old.Index + 1) + line + body.Substring(old.Index + old.Length);
+                string next = body;
+                Match old = Regex.Match(next, @"\n  _underside: [^\n]*");
+                if (e.Asset == null)
+                {
+                    if (old.Success) next = next.Remove(old.Index, old.Length);
+                }
                 else
                 {
-                    // The field is the last one each deck class declares, so Unity writes it last in the document.
-                    string trimmed = body.TrimEnd('\n');
-                    next = trimmed + "\n" + line + body.Substring(trimmed.Length);
+                    string line = $"  _underside: {{fileID: 11400000, guid: {guidOf(e.Asset)}, type: 2}}";
+                    if (old.Success) next = next.Substring(0, old.Index + 1) + line + next.Substring(old.Index + old.Length);
+                    else
+                    {
+                        // The field is the last one each deck class declares, so Unity writes it last in the document.
+                        string trimmed = next.TrimEnd('\n');
+                        next = trimmed + "\n" + line + next.Substring(trimmed.Length);
+                    }
+                }
+                if (e.DrawnLifted)
+                {
+                    // Declared after _deckElevation, so Unity writes it there.
+                    Match lifted = Regex.Match(next, @"\n  _drawnLiftedByDeck: [^\n]*");
+                    if (lifted.Success) next = next.Substring(0, lifted.Index) + "\n  _drawnLiftedByDeck: 1" + next.Substring(lifted.Index + lifted.Length);
+                    else
+                    {
+                        Match deck = Regex.Match(next, @"\n  _deckElevation: [^\n]*");
+                        if (!deck.Success) throw new InvalidOperationException($"underside: '{e.Deck}' has no _deckElevation to lift.");
+                        next = next.Insert(deck.Index + deck.Length, "\n  _drawnLiftedByDeck: 1");
+                    }
                 }
                 if (next != body) { edits.Add((start, end, next)); changed++; }
             }
@@ -111,7 +143,7 @@ namespace HiddenHarbours.App.Editor
         public static IEnumerable<string> LinesFor(string scene, string deck)
         {
             foreach (Entry e in Table())
-                if (e.Scene == scene && e.Deck == deck)
+                if (e.Scene == scene && e.Deck == deck && e.Asset != null)
                 {
                     yield return $"  _underside: {{fileID: 11400000, guid: {GuidOf(e.Asset)}, type: 2}}";
                     yield break;

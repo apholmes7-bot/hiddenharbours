@@ -327,7 +327,15 @@ namespace HiddenHarbours.Tests.RigBaking
             { "NineMileCreek/slab/walk0", "pending a plate: solid or on piles" },
             { "NineMileCreek/shed/walk0", "pending a plate: solid or on piles" },
             { "StPeters/bridge.stp_gap_footbridge", "pending a plate: whether it stands over tidal water" },
+            { "NineMileCreek/float.nmc_working", Low }, { "NineMileCreek/float.nmc_finger_a", Low },
+            { "NineMileCreek/float.nmc_finger_b", Low }, { "NineMileCreek/float.nmc_recreation", Low },
+            { "NineMileCreek/gangway.nmc_west_gangway", Low }, { "NineMileCreek/gangway.nmc_fleet_gangway0", Low },
+            { "NineMileCreek/gangway.nmc_fleet_gangway1", Low }, { "NineMileCreek/gangway.nmc_east_gangway", Low },
         };
+
+        /// <summary>Plated at view 3: a float's band is its freeboard 0.45 m x 0.766, about 11 px, and its own drawn
+        /// side fills it; a gangway's band is set by its lowest end, which rests on the float.</summary>
+        const string Low = "low freeboard: the band (about 11 px) is covered by the float's own drawn side; the brow's band sits on the float";
 
         [Test]
         public void EveryDeckOverWaterInAScene_NamesAnUnderside_OrIsExemptWithAReason()
