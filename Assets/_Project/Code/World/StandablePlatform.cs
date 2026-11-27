@@ -30,7 +30,7 @@ namespace HiddenHarbours.World
     /// implementation, not a change to the contract — see <see cref="IStandableSurface"/>.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class StandablePlatform : MonoBehaviour, IStandableSurface, IStandableOutline
+    public sealed class StandablePlatform : MonoBehaviour, IStandableSurface, IStandableOutline, IReflectedUnderside
     {
         [Header("Identity")]
         [Tooltip("Stable id of the structure (e.g. 'wharf.st_peters') — diagnostics only; never a lookup key.")]
@@ -54,6 +54,16 @@ namespace HiddenHarbours.World
                  "deck is drawn (a cell-built pier such as St Peters). On: the art draws the deck HeightScale x " +
                  "its elevation up the screen of the footprint (the kit-built wharves). Never read by walking.")]
         [SerializeField] private bool _drawnLiftedByDeck = false;
+
+        [Tooltip("What the calm water shows of this deck's underside where its reflected face draws no art (a pier " +
+                 "on piles). None: the gaps stay open water. A solid wharf face needs none.")]
+        [SerializeField] private UndersideDef _underside;
+
+        /// <inheritdoc/>
+        public UndersideDef Underside => _underside;
+
+        /// <summary>Name the underside piece (region builders; presentation only).</summary>
+        public void SetUnderside(UndersideDef underside) => _underside = underside;
 
         /// <inheritdoc/>
         public string Id => _id;
