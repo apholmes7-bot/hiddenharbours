@@ -132,6 +132,7 @@ namespace HiddenHarbours.World
         private Func<IReadOnlyList<KnowledgePageDef>> _knowledge;
         private Func<IReadOnlyList<NotebookNote>> _notes;
         private Func<IReadOnlyList<CaughtSpeciesEntry>> _caught;
+        private Func<IReadOnlyList<NotebookPhotoEntry>> _photos;
         private IFlagStore _flags;
 
         // The Gear page: what he holds (asked fresh on every open) and the page's authored shape.
@@ -208,6 +209,7 @@ namespace HiddenHarbours.World
         private void OnDestroy()
         {
             if (_instance == this) _instance = null;
+            ReleasePolaroids();
         }
 
         /// <summary>
@@ -309,6 +311,14 @@ namespace HiddenHarbours.World
             _gearPage = page;
         }
 
+        /// <summary>
+        /// Tell the book where the album's pictures come from (save v28). Null puts the running game's
+        /// back (the save, worded by <see cref="NotebookPhotoPage"/>). <see cref="WireContent"/> alone
+        /// leaves the album off, so a book wired for an exact tab set keeps exactly that set.
+        /// </summary>
+        public void WirePhotos(Func<IReadOnlyList<NotebookPhotoEntry>> photos)
+            => _photos = photos ?? NotebookContentSource.Photos;
+
         /// <summary>The index of the stub with this key in <see cref="Tabs"/>, or -1.</summary>
         public int TabIndexOf(string key)
         {
@@ -385,6 +395,7 @@ namespace HiddenHarbours.World
             _caught = NotebookContentSource.Caught;
             _flags = NotebookContentSource.Flags();
             if (_gearSource == null) WireGear(null);
+            if (_photos == null) WirePhotos(null);
         }
 
         // ---- open / close ----------------------------------------------------------------------------
@@ -507,9 +518,12 @@ namespace HiddenHarbours.World
                 _gearSource.Collect(_gearHeld);
                 gear = _gearHeld;
             }
+            IReadOnlyList<NotebookPhotoEntry> photos = _photos?.Invoke();
+            NotePhotos(photos);
             var built = NotebookContent.Build(
                 _quests?.Invoke(), _knowledge?.Invoke(), _notes?.Invoke(), _flags, Fit.Cols,
-                droppedTabs: null, caught: _caught?.Invoke(), gear: gear, gearPage: _gearPage);
+                droppedTabs: null, caught: _caught?.Invoke(), gear: gear, gearPage: _gearPage,
+                photos: photos);
             _tabs.AddRange(built);
 
             if (_tabs.Count == 0)
@@ -523,12 +537,17 @@ namespace HiddenHarbours.World
             SpreadIndex = Mathf.Clamp(SpreadIndex, 0, Mathf.Max(0, _spreads.Count - 1));
         }
 
+        /// <summary>A plate's screen size in pixels, read in place of <c>Screen</c> (a batch run's screen is
+        /// 640 x 480), as <c>CameraFollow.ScreenPixelsOverride</c> does for the camera. Null in the game.</summary>
+        public Vector2Int? ScreenPixelsOverride { get; set; }
+
         /// <summary>The size the current screen affords. Split out so a test can drive it with an
         /// explicit room instead of a screen.</summary>
         public NotebookFit FitForScreen()
         {
-            int w = Screen.width > 0 ? Screen.width : 1280;
-            int h = Screen.height > 0 ? Screen.height : 720;
+            Vector2Int? over = ScreenPixelsOverride;
+            int w = over.HasValue && over.Value.x > 0 ? over.Value.x : Screen.width > 0 ? Screen.width : 1280;
+            int h = over.HasValue && over.Value.y > 0 ? over.Value.y : Screen.height > 0 ? Screen.height : 720;
             return NotebookLayout.Fit(Mathf.RoundToInt(w * RoomFraction), Mathf.RoundToInt(h * RoomFraction));
         }
 
@@ -817,6 +836,15 @@ namespace HiddenHarbours.World
 
                     bool faint = row.State == NotebookStepState.Done;
 
+                    if (row.HasIcon &&
+                        row.IconId.StartsWith(NotebookContent.PhotoGridPrefix, StringComparison.Ordinal))
+                    {
+                        // A row of the album's Polaroids: every card and its caption once, from the block's
+                        // first line; the block's other lines are the room they stand in.
+                        if (!row.Continuation) DrawPolaroidRow(page, row.IconId, titleX, rowY, cols);
+                        continue;
+                    }
+
                     if (row.HasIcon)
                     {
                         // A pictured block (the Gear page): the picture once, beside its first line, and
@@ -880,6 +908,149 @@ namespace HiddenHarbours.World
         }
 
         private static readonly Color FaintPicture = new Color(1f, 1f, 1f, 0.4f);
+
+        // ---- the album's little Polaroids (owner 2026-11-26) --------------------------------------------
+
+        /// <summary>The names of a Polaroid's card and of the picture inside it — what a test looks for.</summary>
+        public const string PolaroidPieceName = "PhotoPolaroid";
+        public const string PolaroidPicturePieceName = "PhotoPolaroidPicture";
+
+        private readonly Dictionary<string, NotebookPhotoEntry> _photoBySource =
+            new Dictionary<string, NotebookPhotoEntry>();
+
+        // One texture per picture, made the first time its page is drawn and kept while the thumbnail is
+        // the same string: a page turn never re-decodes.
+        private readonly Dictionary<int, PolaroidPicture> _polaroids = new Dictionary<int, PolaroidPicture>();
+
+        private sealed class PolaroidPicture
+        {
+            public string Thumbnail;
+            public Texture2D Texture;
+            public Sprite Sprite;
+        }
+
+        private void NotePhotos(IReadOnlyList<NotebookPhotoEntry> photos)
+        {
+            _photoBySource.Clear();
+            if (photos == null) return;
+            for (int i = 0; i < photos.Count; i++)
+                _photoBySource[NotebookContent.PhotoSourcePrefix +
+                               photos[i].Number.ToString(System.Globalization.CultureInfo.InvariantCulture)] = photos[i];
+        }
+
+        /// <summary>The name of a caption line under a Polaroid — what a test looks for.</summary>
+        public const string PolaroidCaptionPieceName = "PhotoPolaroidCaption";
+
+        /// <summary>The name of the line written on a Polaroid's strip — what a test looks for.</summary>
+        public const string PolaroidCardCaptionPieceName = "PhotoPolaroidCardCaption";
+
+        private bool TryPhoto(int number, out NotebookPhotoEntry photo) =>
+            _photoBySource.TryGetValue(
+                NotebookContent.PhotoSourcePrefix + number.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                out photo);
+
+        /// <summary>
+        /// One row of the album: each card straight (never tilted: a turned card would be mixels) and centred
+        /// in its slot of <see cref="NotebookPhotoGrid"/>, its first caption line written on its strip and the
+        /// day and place under it, all on whole pixels, clear of the card's edges, words never broken.
+        /// </summary>
+        private void DrawPolaroidRow(RectTransform page, string iconId, int titleX, int rowY, int cols)
+        {
+            List<int> numbers = NotebookContent.PhotoGridNumbers(iconId);
+            for (int k = 0; k < numbers.Count; k++)
+            {
+                if (!TryPhoto(numbers[k], out NotebookPhotoEntry photo) || !photo.HasPolaroid) continue;
+                NotebookPhotoGrid grid = NotebookPhotoGrid.For(photo.Style, cols);
+                int slotX = titleX + k * grid.SlotWidthPx;
+                RectTransform card = DrawPolaroid(page, photo, slotX + (grid.SlotWidthPx - photo.Style.WidthPx) / 2, rowY);
+
+                // Written on the strip, as people write on a Polaroid: dark ink, centred, whole words only.
+                string onCard = NotebookPhotoGrid.OnCardCaption(photo);
+                if (onCard.Length > 0)
+                {
+                    int textW = onCard.Length * NotebookKit.CellWidth - 1;
+                    Text t = AddText(card, onCard, (photo.Style.WidthPx - textW) / 2, photo.Style.OnCardTextY,
+                                     textW, InkStrong);
+                    if (t != null) t.gameObject.name = PolaroidCardCaptionPieceName;
+                }
+
+                // Under the card, clear of its edge by the style's gap.
+                List<string> caption = grid.CaptionLines(photo);
+                for (int i = 0; i < caption.Count; i++)
+                {
+                    int textW = caption[i].Length * NotebookKit.CellWidth - 1;
+                    int x = slotX + System.Math.Max(0, (grid.SlotWidthPx - textW) / 2);
+                    Text t = AddText(page, caption[i], x, rowY + photo.Style.UnderTextY + i * NotebookKit.Pitch,
+                                     System.Math.Max(textW, 1), Ink);
+                    if (t != null) t.gameObject.name = PolaroidCaptionPieceName;
+                }
+            }
+        }
+
+        /// <summary>
+        /// One little Polaroid: the white card at the def's size, and inside it at (border, border) the stored
+        /// thumbnail, one kit pixel per thumbnail pixel, point filtered (no mixels). A thumbnail that is
+        /// missing draws the card alone.
+        /// </summary>
+        private RectTransform DrawPolaroid(RectTransform page, in NotebookPhotoEntry photo, int x, int rowY)
+        {
+            NotebookPolaroidStyle s = photo.Style;
+            RectTransform card = AddPiece(page, PolaroidPieceName, null, x, rowY, s.WidthPx, s.HeightPx, s.FrameColour);
+            Sprite picture = PolaroidSprite(photo.Number, photo.Thumbnail, out int w, out int h);
+            if (picture == null) return card;
+            int innerW = s.WidthPx - 2 * s.BorderPx;
+            int innerH = s.HeightPx - s.BorderPx - s.BottomBorderPx;
+            AddPiece(card, PolaroidPicturePieceName, picture, s.BorderPx, s.BorderPx,
+                     Mathf.Min(w, innerW), Mathf.Min(h, innerH), Color.white);
+            return card;
+        }
+
+        private Sprite PolaroidSprite(int number, string thumbnail, out int width, out int height)
+        {
+            width = height = 0;
+            if (string.IsNullOrEmpty(thumbnail)) return null;
+            if (_polaroids.TryGetValue(number, out PolaroidPicture held) && held.Thumbnail == thumbnail &&
+                held.Sprite != null)
+            {
+                width = held.Texture.width;
+                height = held.Texture.height;
+                return held.Sprite;
+            }
+            Color32[] pixels = PhotoThumbnail.Decode(thumbnail, out width, out height);
+            if (pixels == null) return null;
+            if (held != null) Release(held);
+
+            var texture = new Texture2D(width, height, TextureFormat.RGBA32, false)
+            {
+                filterMode = FilterMode.Point,
+                wrapMode = TextureWrapMode.Clamp,
+                hideFlags = HideFlags.DontSave,
+            };
+            texture.SetPixels32(pixels);
+            texture.Apply(false, true);
+            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, width, height), new Vector2(0f, 1f), 1f);
+            sprite.hideFlags = HideFlags.DontSave;
+            _polaroids[number] = new PolaroidPicture { Thumbnail = thumbnail, Texture = texture, Sprite = sprite };
+            return sprite;
+        }
+
+        private void ReleasePolaroids()
+        {
+            foreach (PolaroidPicture p in _polaroids.Values) Release(p);
+            _polaroids.Clear();
+        }
+
+        private static void Release(PolaroidPicture p)
+        {
+            if (p == null) return;
+            if (p.Sprite != null) DestroyAsset(p.Sprite);
+            if (p.Texture != null) DestroyAsset(p.Texture);
+        }
+
+        private static void DestroyAsset(UnityEngine.Object o)
+        {
+            if (Application.isPlaying) Destroy(o); else DestroyImmediate(o);
+        }
 
         private void DrawTabs(int x, int y)
         {

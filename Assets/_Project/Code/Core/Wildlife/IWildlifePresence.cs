@@ -148,6 +148,46 @@ namespace HiddenHarbours.Core
             return found;
         }
 
+        /// <summary>
+        /// Every visible animal of ANY kind standing inside <paramref name="frame"/>, copied into
+        /// <paramref name="into"/> (up to its length): what a camera's shutter takes in. The camera does
+        /// not know in advance which kinds it will meet, so it cannot ask CountInFrame kind by kind.
+        /// <paramref name="scratch"/> is the caller's reusable read buffer, as there. Pure over what the
+        /// producers report; allocates nothing. Returns how many were written. (Added with the camera,
+        /// 2026-11-26: additive.)
+        /// </summary>
+        public static int CopyInFrame(Rect frame, WildlifeSighting[] scratch, WildlifeSighting[] into)
+        {
+            if (scratch == null || into == null) return 0;
+            int written = 0;
+            for (int p = 0; p < _count && written < into.Length; p++)
+            {
+                IWildlifePresence producer = Producers[p];
+                if (producer == null || (producer is Object unity && unity == null)) continue;
+                int n = producer.CopySightings(scratch);
+                written += CopyInFrame(scratch, n, frame, into, written);
+            }
+            return written;
+        }
+
+        /// <summary>The same copy over a list the caller already holds, writing from
+        /// <paramref name="startAt"/> in <paramref name="into"/>. Returns how many it added.</summary>
+        public static int CopyInFrame(WildlifeSighting[] sightings, int count, Rect frame,
+                                      WildlifeSighting[] into, int startAt = 0)
+        {
+            if (sightings == null || into == null || startAt < 0) return 0;
+            int added = 0;
+            int n = Mathf.Min(count, sightings.Length);
+            for (int i = 0; i < n && startAt + added < into.Length; i++)
+            {
+                WildlifeSighting s = sightings[i];
+                if (!s.Visible || !frame.Contains(s.WorldPosition)) continue;
+                into[startAt + added] = s;
+                added++;
+            }
+            return added;
+        }
+
         /// <summary>The same count over a list the caller already holds (what a test drives).</summary>
         public static int CountInFrame(WildlifeSighting[] sightings, int count, Rect frame, string subjectId,
                                        bool onLandOnly)

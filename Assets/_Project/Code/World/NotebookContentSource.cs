@@ -103,6 +103,12 @@ namespace HiddenHarbours.World
         /// </summary>
         public static IReadOnlyList<CaughtSpeciesEntry> Caught() => CatchRecords.Current();
 
+        /// <summary>The local player's kept pictures (save v28), newest first, worded by the shipped
+        /// camera. No save or no camera is an empty album, and the page then has no stub.</summary>
+        public static IReadOnlyList<NotebookPhotoEntry> Photos() =>
+            NotebookPhotoPage.Entries(GameServices.Save?.Current, SavePlayerKeys.Local, PhotoCameraDef.Load(),
+                                      GameServices.SecondsPerDay);
+
         /// <summary>The Resources folder the Gear page's Def is loaded from (under <see cref="ResourcesRoot"/>).</summary>
         public const string NotebookPagesFolder = "NotebookPages";
 

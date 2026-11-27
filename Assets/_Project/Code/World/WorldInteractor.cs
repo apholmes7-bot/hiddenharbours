@@ -464,6 +464,12 @@ namespace HiddenHarbours.World
                 text = SupplyRunTalk.WithTellerLines(npc.Id, text, save, _flagStore, out runFlag);
                 rows = SupplyRunTalk.WithRows(npc.Id, rows, save, _flagStore, () => GameServices.BagHands);
             }
+
+            // A photo request she carries (data in Resources/PhotoRequests) adds her asking, a reminder
+            // or her thanks; asked and done are set only when the talk is heard to its end.
+            System.Action photoHeard = null;
+            if (it.HasNpcData)
+                text = PhotoRequestTalk.WithLines(npc.Id, text, GameServices.Save, _flagStore, out photoHeard);
             if (text == null || text.Length == 0) return;
 
             // A speaker who reads the weather ends on today's read of it (WeatherReadDef): worked out
@@ -487,6 +493,7 @@ namespace HiddenHarbours.World
                   {
                       if (!string.IsNullOrEmpty(flag)) _flags.Set(flag, true);
                       if (!string.IsNullOrEmpty(runFlag)) _flagStore.Set(runFlag, true);
+                      if (photoHeard != null && !_presenter.WasCancelled) photoHeard();
                   });
         }
 

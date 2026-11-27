@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c190eb3a22e04dbf95a374cfc24897d0, type: 3}
+  m_Name: OdileGreySeals
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.PhotoRequestDef
+  Id: photo_request.odile_grey_seals
+  GiverNpcId: npc.odile_marchand
+  RequiresFlag:
+  SubjectId: wildlife.grey_seal
+  MinCount: 2
+  WorstPose: 1
+  MinScore: 30
+  AskedFlag: st_peters.odile_seals.asked
+  PicturedFlag: st_peters.odile_seals.pictured
+  DoneFlag: st_peters.odile_seals.done
+  RewardMoney: 15
+  AskLines:
+  - 'The seals are back on the Whelps. You can hear them from my window when the wind drops.'
+  - 'I have never had a picture of them. My eyes are not what they were for the long look.'
+  - 'You carry a camera, do you not? Go quiet at low water, when they lie out on the rocks, and bring me a few of them together.'
+  ReminderLines:
+  - 'No seals in it yet? They lie out when the tide is down. Go soft, or they slip into the water.'
+  ThanksLines:
+  - 'Oh, look at them. Fat as butter, the lot of them.'
+  - 'That one is going up by the window. Here, for your trouble.'
+  AfterLines:
+  - 'The seals are still up by my window. I say good morning to them.'

@@ -36,6 +36,9 @@ namespace HiddenHarbours.Player
         /// <summary>The interaction chooser's own presses: the number keys (2026-11-15), and the pad's
         /// up/down on the list (ADR 0043 PR 2, chooser slice).</summary>
         public const string ChooserMap = "Chooser";
+        /// <summary>The player's camera (2026-11-26): raise, shutter and aim. Read only on foot and on a
+        /// deck; at the helm P is the autopilot's.</summary>
+        public const string CameraMap = "Camera";
 
         /// <summary>The control scheme names, as the asset spells them.</summary>
         public const string KeyboardMouseScheme = "KeyboardMouse";

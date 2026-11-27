@@ -123,6 +123,15 @@ namespace HiddenHarbours.Tests.EditMode
             if (value is PlayerClothingDto clothes)
                 foreach (string worn in clothes.WornClothing)
                     if (!clothes.OwnedClothing.Contains(worn)) clothes.OwnedClothing.Add(worn);
+            // A picture's thumbnail is an image, not free text (the load repair clears one that does not
+            // decode). The generic fill's string is no image; store a real one, each variant its own colour.
+            if (value is PhotoRecordDto photo)
+            {
+                byte shade = (byte)(variant == 0 ? 0 : 255);
+                var pixels = new UnityEngine.Color32[4];
+                for (int i = 0; i < pixels.Length; i++) pixels[i] = new UnityEngine.Color32(shade, shade, shade, 255);
+                photo.Thumbnail = PhotoThumbnail.Encode(pixels, 2, 2);
+            }
             if (value is SaveData whole)
                 foreach (ShoppingBagDto bag in whole.ShoppingBags)
                     foreach (BagItemDto item in bag.Items)

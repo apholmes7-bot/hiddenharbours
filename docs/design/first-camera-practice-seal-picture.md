@@ -1,6 +1,18 @@
 # First camera practice: Odile's seal picture
 
-Status: design note (not built). Pillars: P1 Sea Has Moods, P3 Living Working Coast, P5 Cozy but with Teeth.
+Status: first slice BUILT on `feat/player-camera` (2026-11-26; save v28, ADR 0066). Pillars: P1 Sea Has
+Moods, P3 Living Working Coast, P5 Cozy but with Teeth.
+
+> **What the first slice built.** P (gamepad north) raises the camera on foot or on deck, hands empty; the
+> move keys (left stick) slide a frame ahead of him; Space (right trigger) takes the picture, scored by
+> `PhotoScoring` from what `WildlifePresences.CopyInFrame` reports (subject, count, best pose, distance,
+> centring). A kept picture is a v28 album row (`SaveData.Photos`, data only). Odile's request is data
+> (`Resources/PhotoRequests/OdileGreySeals.asset`, `photo_request.odile_grey_seals`): she asks on a talk
+> (flag `st_peters.odile_seals.asked`), the album answering it sets `.pictured`, and her thanks heard to its
+> end sets `.done` and pays a small reward. The quest `quest.a_picture_of_the_seals` opens with the asked
+> flag. The notebook gains a PHOTO tab once a picture is kept. A picture "will do" when it holds at least 2
+> grey seals, the best of them Resting or Alert, scoring 30 or more: all tunable on her def. The sections
+> below are the plan as written before the build.
 Owner direction (relayed by the coordinator, 2026-11-26): the seals are the player's first practice
 with the camera. Odile Marchand, who lives in the Whelps cottage, asks the player to bring her a
 picture of the seals.
