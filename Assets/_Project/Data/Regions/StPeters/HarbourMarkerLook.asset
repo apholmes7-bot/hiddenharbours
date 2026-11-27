@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d01344401ac643bab4ae8d1789f7c1c9, type: 3}
+  m_Name: HarbourMarkerLook
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.NavLightLookDef
+  Id: navlight_look.harbour_marker
+  DisplayName: Harbour marker
+  CoreRadiusMetres: 0.28
+  HaloRangeMetres: 1
+  HaloStrength: 0.18
+  EdgeSoftness: 1
+  CoreWhiten: 0
+  Intensity: 1.15
+  LensRed: {r: 0.95, g: 0.1, b: 0.07, a: 1}
+  LensGreen: {r: 0.08, g: 0.9, b: 0.45, a: 1}
+  LensWhite: {r: 1, g: 0.95, b: 0.86, a: 1}
+  LensYellow: {r: 0.98, g: 0.8, b: 0.32, a: 1}
+  StreakLengthMetres: 0
+  StreakHalfAngleDegrees: 7
+  StreakIntensity: 0.35
+  StreakSoftness: 1

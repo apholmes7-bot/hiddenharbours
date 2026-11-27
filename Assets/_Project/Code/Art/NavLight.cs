@@ -40,8 +40,13 @@ namespace HiddenHarbours.Art
         [Tooltip("Master switch for this mark's lamp. Off = an unlit mark, whatever her def says.")]
         [SerializeField] private bool _lampOn = true;
 
+        [Tooltip("This site's own lantern look (core, halo, lens colour, streak on the water). Empty = the coast-wide " +
+                 "nav-light preset, exactly as every mark has always burned. Set per site by a region's builder step.")]
+        [SerializeField] private NavLightLookDef _look;
+
         private INavLightSource _source;
         private SceneLight _light;
+        private SceneLight _streak;
         private NavLightCharacter _character;
         private float _phaseSeconds;
         private IGameClock _clock;
@@ -51,6 +56,13 @@ namespace HiddenHarbours.Art
 
         /// <summary>The pooled lamp, or null for an unlit mark. Fixtures read it.</summary>
         public SceneLight Lamp => _light;
+
+        /// <summary>The faint streak on the water under the mark, or null when her look draws none.</summary>
+        public SceneLight Streak => _streak;
+
+        /// <summary>This site's lantern look, or null for the coast-wide preset. Setting it does not rebuild; call
+        /// <see cref="Rebuild"/>.</summary>
+        public NavLightLookDef Look { get => _look; set => _look = value; }
 
         /// <summary>The character this mark is showing. Default when she is unlit.</summary>
         public NavLightCharacter Character => _character;
@@ -71,6 +83,7 @@ namespace HiddenHarbours.Art
             // Pooled, not destroyed — SceneLight keeps its quad across an off/on, which is the whole
             // point of switching rather than rebuilding on every flash.
             if (_light != null) _light.enabled = false;
+            if (_streak != null) _streak.enabled = false;
             _burning = false;
         }
 
@@ -104,6 +117,13 @@ namespace HiddenHarbours.Art
             Transform mount = _source.LanternMount != null ? _source.LanternMount : transform;
             EnsureLamp(mount);
             NavLightPresets.Apply(_light, character.Colour, _source.LanternHeightMetres);
+            if (_look != null) _look.ApplyTo(_light, character.Colour);
+            if (_look != null && _look.DrawsStreak)
+            {
+                EnsureStreak(mount);
+                _look.ApplyStreakTo(_streak, character.Colour);
+            }
+            else DestroyStreak();
 
             // Start DARK and let Update decide on its own terms. Lighting her here would put every
             // mark in a region on at the instant the scene loads, which is one frame of the exact
@@ -133,8 +153,32 @@ namespace HiddenHarbours.Art
             _light.enabled = false;
         }
 
+        // The streak hangs at the mark's own waterline pivot on the bobbed visual and is thrown DOWN-screen (a cone
+        // runs along its transform's up, so it is turned half a turn): the glint a lamp lays on the water under it.
+        private void EnsureStreak(Transform mount)
+        {
+            if (_streak == null)
+            {
+                var go = new GameObject("NavLanternStreak") { hideFlags = HideFlags.DontSave };
+                _streak = go.AddComponent<SceneLight>();
+            }
+            if (_streak.transform.parent != mount) _streak.transform.SetParent(mount, worldPositionStays: false);
+            _streak.transform.localPosition = Vector3.zero;
+            _streak.transform.localRotation = Quaternion.Euler(0f, 0f, 180f);
+            _streak.enabled = false;
+        }
+
+        private void DestroyStreak()
+        {
+            if (_streak == null) return;
+            if (Application.isPlaying) Destroy(_streak.gameObject);
+            else DestroyImmediate(_streak.gameObject);
+            _streak = null;
+        }
+
         private void DestroyLamp()
         {
+            DestroyStreak();
             if (_light == null) return;
             if (Application.isPlaying) Destroy(_light.gameObject);
             else DestroyImmediate(_light.gameObject);
@@ -151,6 +195,7 @@ namespace HiddenHarbours.Art
 
             _burning = on;
             _light.enabled = on;
+            if (_streak != null) _streak.enabled = on;
         }
 
         /// <summary>

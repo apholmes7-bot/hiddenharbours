@@ -138,6 +138,10 @@ namespace HiddenHarbours.App.Editor
             }
             var kind = LampPosts.PresetFor(LampPosts.LanternPost);
             var look = LightPresets.For(kind);
+            // The pier lanterns' strength and pool are the wharf lighting record's, never the shared preset's: every
+            // doorstep and lane lantern in the village burns that preset too.
+            WharfLightingDef lighting = WharfLighting();
+            float intensityScale = lighting.LanternIntensityScale, reach = lighting.LanternReachMetres;
             for (int i = 0; i < sites.Count; i++)
             {
                 string name = "lanternPost_" + i;
@@ -159,15 +163,15 @@ namespace HiddenHarbours.App.Editor
                     "  _shape: " + Int((int)look.Shape), "  _coneHalfAngle: 30",
                     "  _range: " + F(LightPresets.BloomForFitting(LampPosts.LanternPostFittingWidthMetres)),
                     "  _color: {r: " + F(look.Color.r) + ", g: " + F(look.Color.g) + ", b: " + F(look.Color.b) + ", a: " + F(look.Color.a) + "}",
-                    "  _intensity: " + F(look.Intensity), "  _edgeSoftness: " + F(look.EdgeSoftness),
+                    "  _intensity: " + F(look.Intensity * intensityScale), "  _edgeSoftness: " + F(look.EdgeSoftness),
                     "  _angularSoftness: 0.4", "  _coreBoost: 1", "  _gateThreshold: 0.12", "  _gateSoftness: 0.35", "  _gateFallback: 1",
                     "  _flickerAmount: " + F(look.FlickerAmount), "  _flickerSpeed: 1", "  _sortingOrder: " + Int(SceneLight.MaxSortingOrder),
-                    "  _cameraDepthOffset: " + F(SceneLight.DefaultCameraDepthOffset), "  _castsShadows: 1",
+                    "  _cameraDepthOffset: " + F(SceneLight.DefaultCameraDepthOffset), "  _castsShadows: " + (lighting.LanternCastsShadows(name) ? "1" : "0"),
                     "  _lampHeightMeters: " + F(MiniJson.Float(cell, "heightM")), "  _bloomLiftMetres: " + F(LampPosts.LanternPostFittingHeightMetres),
-                    "  _reachMetres: " + F(LightPresets.ReachMetres(kind)), "  _originOffset: " + Vec2Yaml(look.OriginOffset), "  _refreshHz: 20" }), name + ": SceneLight");
+                    "  _reachMetres: " + F(reach), "  _originOffset: " + Vec2Yaml(look.OriginOffset), "  _refreshHz: 20" }), name + ": SceneLight");
                 DockPut(scene, patch, MonoBehaviourYaml(preset, go, DockScript("PreconfiguredLight"), new[] {
-                    "  _preset: " + Int((int)kind), "  _intensityScale: 1", "  _fittingWidthMetres: " + F(LampPosts.LanternPostFittingWidthMetres),
-                    "  _reachOverrideMetres: " + F(LightPresets.ReachMetres(kind)) }), name + ": PreconfiguredLight");
+                    "  _preset: " + Int((int)kind), "  _intensityScale: " + F(intensityScale), "  _fittingWidthMetres: " + F(LampPosts.LanternPostFittingWidthMetres),
+                    "  _reachOverrideMetres: " + F(reach) }), name + ": PreconfiguredLight");
             }
             DockPut(scene, patch, GameObjectYaml(lampsGo, "Lamps", new[] { lampsTr }), "StPetersWharf/Lamps");
             DockPut(scene, patch, TransformYaml(lampsTr, lampsGo, Vector2.zero, children, rootTr.FileId), "Lamps: Transform");

@@ -97,9 +97,10 @@ namespace HiddenHarbours.Tests.EditMode
                              "_lampHeightMeters", "_bloomLiftMetres", "_gateThreshold" })
                     Assert.AreEqual(stpLight.Field(field), light.Field(field), go.Field("m_Name") + " " + field + " is St Peters' lantern's");
                 Assert.AreEqual(Lighting.LanternsCastShadows ? "1" : "0", light.Field("_castsShadows"));
-                // Strength and reach are this wharf's own, from the record: the shared preset is never edited.
-                Assert.AreEqual(Float(stpLight.Field("_intensity")) * Lighting.LanternIntensityScale, Float(light.Field("_intensity")), 1e-4f,
-                    go.Field("m_Name") + " is St Peters' lantern at the record's scale");
+                // Strength and reach are this wharf's own, from the record: the shared preset is never edited (and St
+                // Peters' own lanterns carry their wharf's record, so the preset is the common ground, not its scene).
+                Assert.AreEqual(LightPresets.For(LampPosts.PresetFor(LampPosts.LanternPost)).Intensity * Lighting.LanternIntensityScale,
+                    Float(light.Field("_intensity")), 1e-4f, go.Field("m_Name") + " is the shared lantern at the record's scale");
                 Assert.AreEqual(Lighting.LanternReachMetres, Float(light.Field("_reachMetres")), 1e-4f, go.Field("m_Name") + " reach");
                 Doc preset = Scene.ComponentsOf(go).Single(d => d.ClassId == 114 && d.IsScript("HiddenHarbours.Art.PreconfiguredLight"));
                 Assert.AreEqual(Lighting.LanternIntensityScale, Float(preset.Field("_intensityScale")), 1e-5f, "the preset component carries the scale it stamps on wake");
