@@ -23,10 +23,13 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsNotNull(skin, preset);
             Assert.AreEqual("10.3", skin.SourceRigRevision, preset);
             Assert.IsTrue(skin.IsUsable(), preset);
-            Assert.AreEqual(41, skin.MeshStates.Length,
-                "31 adopted states plus the nine fishing/dig states plus the one-stroke rowing clip row_oars");
-            Assert.AreEqual(41, skin.MeshStates.Distinct(StringComparer.Ordinal).Count());
+            Assert.AreEqual(44, skin.MeshStates.Length,
+                "31 adopted states plus the nine fishing/dig states plus the one-stroke rowing clip row_oars " +
+                "plus the three idle fidget one-shots");
+            Assert.AreEqual(44, skin.MeshStates.Distinct(StringComparer.Ordinal).Count());
             Assert.Contains("row_oars", skin.MeshStates, preset + ": row_oars");
+            foreach (string fidget in new[] { "idleShift", "idleScratch", "idleHips" })
+                Assert.Contains(fidget, skin.MeshStates, preset + ": " + fidget);
             foreach (string key in Required)
             {
                 Assert.IsTrue(skin.DrawsAsMesh(key), preset + ": " + key);
