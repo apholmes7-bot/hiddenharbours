@@ -606,10 +606,16 @@ namespace HiddenHarbours.Tests.EditMode
                                                Mathf.Abs(WorldPosition(l.go).x - WorldPosition(boat).x) <= 0.01f),
                     Is.EqualTo(1), $"{Name(boat)} has one ladder at her berth's centre");
 
-            // The berth ladder is drawn where it stands.
-            Doc picture = Children(At(Wharf("Fittings"))).Single(f => Name(f) == NineMileCreekGroundSteps.BerthLadderFittingName);
+            // The berth ladder is drawn where it stands. The owner's new ladder art (11-26) retired the old kit picture
+            // under Fittings (Fitting_ladder_berth0): every Nine Mile Creek ladder now carries the baked full-length
+            // picture under the wharf's Fenders node, hung where its climb starts on the face. WharfFenderRunTests pins
+            // that picture's sprite, height and hang point for all nine; this checks the berth ladder has its own.
+            Assert.That(Children(At(Wharf("Fittings"))).Select(Name), Has.No.Member(NineMileCreekGroundSteps.BerthLadderFittingName),
+                "the old kit picture is retired");
+            Doc picture = Children(At(Wharf(NineMileCreekWharfLandSide.FendersNodeName)))
+                .Single(f => Name(f) == "Ladder_" + RegisteredBerthLadderId);
             Assert.That(Live(picture), Is.True);
-            Near(WorldPosition(picture), G.BerthLadderPos, "the berth ladder's picture");
+            Assert.That(WorldPosition(picture).x, Is.EqualTo(G.BerthLadderPos.x).Within(1e-3f), "the berth ladder's picture stands at its climb");
             StringAssert.Contains("guid:", Components(picture, SpriteRendererClass).Single().Field("m_Sprite"), "the berth ladder has its sprite");
 
             // The player steps off 1.35 m from it, on dry deck.
