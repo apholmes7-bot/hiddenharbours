@@ -53,7 +53,7 @@ namespace HiddenHarbours.Fishing
         public static float U01(uint hash) => (hash >> 8) * (1f / 16777216f);
 
         /// <summary>The animal's deterministic size (mm) from its size-channel hash, uniform across the
-        /// rule's window. A degenerate window (max ≤ min) collapses to min.</summary>
+        /// rule's sorted window. Equal endpoints collapse to their shared value.</summary>
         public static float SizeMm(uint sizeHash, float sizeMinMm, float sizeMaxMm)
         {
             float lo = Mathf.Min(sizeMinMm, sizeMaxMm);

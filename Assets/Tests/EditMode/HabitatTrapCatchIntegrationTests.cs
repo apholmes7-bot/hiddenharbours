@@ -87,6 +87,28 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void MigrationAfterPlacement_DoesNotEmptyAnAlreadyFullPot()
+        {
+            _habitat.MigrationVector = new Vector2(20f, 0f);
+            _habitat.RadiusMetres = 1f;
+            _habitat.OffCentreDensity01 = 0f;
+            Vector2 setAt = TrapHabitat.CentreAt(in _habitat, 42, 0d);
+            Assert.AreEqual(1f, TrapHabitat.DensityAt(_rock, setAt, in _habitat, 42, 0d));
+            double movedAt = _habitat.PeriodGameSeconds / 4d;
+            if (TrapHabitat.DensityAt(_rock, setAt, in _habitat, 42, movedAt) > 0f)
+                movedAt = _habitat.PeriodGameSeconds * 3d / 4d;
+            Assert.AreEqual(0f, TrapHabitat.DensityAt(_rock, setAt, in _habitat, 42, movedAt));
+            int ResolveAt(double time) => HabitatTrapCatch.Resolve(_trap, new[] { _species },
+                in _context, null, 1, _rock, setAt, in _habitat, 42, "pot.test", 0d, time, _items);
+            double fullAt = TrapSoak.SoakSeconds(2f);
+            Assert.Greater(movedAt, fullAt);
+            Assert.AreEqual(4, ResolveAt(fullAt));
+            var before = _items.ToArray();
+            Assert.AreEqual(4, ResolveAt(movedAt));
+            CollectionAssert.AreEqual(before, _items);
+        }
+
+        [Test]
         public void ActualTrapPath_ExistingRegionAndGearGatesStillApply()
         {
             _context = new CatchContext("region.other", 0f, 12f, Season.HighSummer, Gear.Trap);

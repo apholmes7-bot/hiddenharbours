@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
 using HiddenHarbours.Core;
@@ -318,6 +319,72 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // ---- the rope's player-side hand anchor (visual only — reach still measures from the rail) -----
+
+        [TestCase(4f, true)]
+        [TestCase(4.001f, false)]
+        public void GaffReach_IncludesExactlyTheDefaultDistance(float distance, bool allowed)
+        {
+            var svc = MakeService();
+            PlaceAt(svc, new Vector2(distance, 0f));
+            var ctrl = MakeController(svc, new FakeHold(), Vector2.zero);
+            Assert.AreEqual(allowed, ctrl.TryStartHaul());
+            Assert.AreEqual(allowed, ctrl.IsHauling);
+            Assert.AreEqual(1, svc.Live.Count);
+            Assert.AreEqual(1, _save.PlacedTraps.Count);
+        }
+
+        [Test]
+        public void DriftingOutOfReach_CancelsWithoutLandingOrRemovingTheTrap()
+        {
+            var svc = MakeService();
+            var trap = PlaceAt(svc, Vector2.zero);
+            var hold = new FakeHold();
+            var ctrl = MakeController(svc, hold, Vector2.zero);
+            Assert.IsTrue(ctrl.TryStartHaul());
+            Assert.IsTrue(ctrl.TickHaul(0.5f, true));
+            Assert.AreEqual(0.3f, ctrl.Line01, 1e-6f);
+            trap.transform.position = new Vector2(4.001f, 0f);
+            Assert.IsFalse(ctrl.TickHaul(0.5f, true));
+            Assert.IsFalse(ctrl.IsHauling);
+            Assert.AreEqual(0f, ctrl.Line01);
+            Assert.AreEqual(0, hold.UsedUnits);
+            Assert.AreEqual(1, svc.Live.Count);
+            Assert.AreEqual(1, _save.PlacedTraps.Count);
+        }
+
+        [Test]
+        public void DisableCallback_ClearsLineButPreservesTheWetPot()
+        {
+            var svc = MakeService();
+            PlaceAt(svc, Vector2.zero);
+            var ctrl = MakeController(svc, new FakeHold(), Vector2.zero);
+            Assert.IsTrue(ctrl.TryStartHaul());
+            Assert.IsTrue(ctrl.TickHaul(0.5f, true));
+            Assert.AreEqual(0.3f, ctrl.Line01, 1e-6f);
+            // Invoke the lifecycle method directly, as in the other EditMode controller fixtures.
+            MethodInfo onDisable = typeof(TrapHaulController).GetMethod(
+                "OnDisable", BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.IsNotNull(onDisable);
+            onDisable.Invoke(ctrl, null);
+            Assert.IsFalse(ctrl.IsHauling);
+            Assert.AreEqual(0f, ctrl.Line01);
+            Assert.AreEqual(0f, ctrl.Strain01);
+            Assert.AreEqual(1, svc.Live.Count);
+            Assert.AreEqual(1, _save.PlacedTraps.Count);
+        }
+
+        [TestCase(0f)]
+        [TestCase(-1f)]
+        public void NonpositiveTick_DoesNotWindInTheLine(float dt)
+        {
+            var svc = MakeService();
+            PlaceAt(svc, Vector2.zero);
+            var ctrl = MakeController(svc, new FakeHold(), Vector2.zero);
+            Assert.IsTrue(ctrl.TryStartHaul());
+            Assert.IsFalse(ctrl.TickHaul(dt, true));
+            Assert.AreEqual(0f, ctrl.Line01);
+            Assert.IsTrue(ctrl.IsHauling);
+        }
 
         [Test]
         public void RopeStartPoint_OffsetsTheHands_TowardTheBuoy()

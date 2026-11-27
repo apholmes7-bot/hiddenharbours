@@ -152,6 +152,8 @@ namespace HiddenHarbours.Fishing
             /// you own is already in the water or aboard (available = owned − deployed − aboard ≤ 0,
             /// <see cref="PotLocker"/>). The shipwright sells more. Nothing placed, nothing spent.</summary>
             NoPotStock = 5,
+            /// <summary>The depth exceeds this trap's authored fishing band.</summary>
+            TooDeep = 6,
         }
 
         /// <summary>
@@ -190,12 +192,14 @@ namespace HiddenHarbours.Fishing
             if (!TrapPlacement.CanPlaceAt(trapDef, GameServices.Environment, GameServices.TidalTerrain, now, position))
             {
                 float depth = TrapPlacement.DepthAt(GameServices.Environment, GameServices.TidalTerrain, now, position);
+                if (depth > trapDef.MaxSoakDepthMeters) return PlaceResult.TooDeep;
                 Debug.Log($"[PlacedTrapService] Too shoal to set a {trapDef.DisplayName} here " +
                           $"({depth:0.0} m; needs ≥ {trapDef.MinSoakDepthMeters:0.0} m). Try deeper water.");
                 return PlaceResult.TooShallow;
             }
 
             // The real flow requires the bait in the locker (unlike the Build-3 dev drop, which let it stand).
+            if (!HasRequiredBait(trapDef, bait)) return PlaceResult.NoBait;
             if (bait != null && !HasBaitInStock(GameServices.Save?.Current, bait.Id))
             {
                 Debug.Log($"[PlacedTrapService] No {bait.DisplayName} in the locker to bait the {trapDef.DisplayName}.");
@@ -222,11 +226,13 @@ namespace HiddenHarbours.Fishing
             if (!TrapPlacement.CanPlaceAt(trapDef, GameServices.Environment, GameServices.TidalTerrain, now, position))
             {
                 float depth = TrapPlacement.DepthAt(GameServices.Environment, GameServices.TidalTerrain, now, position);
+                if (depth > trapDef.MaxSoakDepthMeters) return PlaceResult.TooDeep;
                 Debug.Log($"[PlacedTrapService] Too shoal to set a {trapDef.DisplayName} here " +
                           $"({depth:0.0} m; needs ≥ {trapDef.MinSoakDepthMeters:0.0} m). Try deeper water.");
                 return PlaceResult.TooShallow;
             }
 
+            if (!HasRequiredBait(trapDef, bait)) return PlaceResult.NoBait;
             placedTrap = PlaceTrap(trapDef, bait, position, regionId, consumeBait: false);
             return placedTrap != null ? PlaceResult.Placed : PlaceResult.NoTrap;
         }
@@ -376,9 +382,29 @@ namespace HiddenHarbours.Fishing
         private string MintInstanceId(string trapDefId)
         {
             double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
-            _instanceCounter++;
-            return $"{trapDefId}#{(long)now}.{_instanceCounter}";
+            string id;
+            do
+            {
+                _instanceCounter++;
+                id = $"{trapDefId}#{(long)now}.{_instanceCounter}";
+            } while (InstanceIdInUse(id));
+            return id;
         }
+
+        private bool InstanceIdInUse(string id)
+        {
+            for (int i = 0; i < _live.Count; i++)
+                if (_live[i] != null && _live[i].InstanceId == id) return true;
+            var saved = GameServices.Save?.Current?.PlacedTraps;
+            if (saved != null)
+                for (int i = 0; i < saved.Count; i++)
+                    if (saved[i].InstanceId == id) return true;
+            return false;
+        }
+
+        private static bool HasRequiredBait(TrapDef trapDef, BaitDef bait)
+            => string.IsNullOrEmpty(trapDef.RequiredBaitId)
+               || (bait != null && bait.Id == trapDef.RequiredBaitId);
 
         /// <summary>Does the save hold at least one of <paramref name="baitId"/>? The stock check the gated
         /// placement applies before it arms a pot. A null save / empty id reads as "no stock" (can't place).</summary>
