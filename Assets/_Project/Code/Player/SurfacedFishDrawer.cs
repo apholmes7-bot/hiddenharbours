@@ -77,6 +77,49 @@ namespace HiddenHarbours.Player
         /// thrashing at the surface with her mouth clear of his figure.</summary>
         public bool DartHeldAtSurface { get; private set; }
 
+        /// <summary>
+        /// THE BREAK: while the surfacing splash plays its column and crown (the frames before
+        /// <see cref="FishFeelSettings.ThrashChurnFirstSplashFrame"/>, at <paramref name="splashFps"/>) the column
+        /// is the break-surface beat and no fish is drawn under it; she is first drawn at the first open ring.
+        /// Read from the time she has been up, so a seek and a stepped frame draw the same picture. With no
+        /// splash sheet that reaches an open ring (<paramref name="splashFrameCount"/>) there is no column to
+        /// hide her under, and she is drawn at once.
+        /// </summary>
+        public bool InBreakColumn(float surfaceSeconds, float splashFps, int splashFrameCount)
+        {
+            int ring = Feel().ThrashChurnFirstSplashFrame;
+            return splashFps > 0f && splashFrameCount > ring && surfaceSeconds >= 0f && surfaceSeconds < ring / splashFps;
+        }
+
+        /// <summary>
+        /// LANDED, ON THE LINE: draw her hanging head-up from the line, her grip (the held sheet's baked grip,
+        /// <see cref="FishFeelSettings.HangGripRowsAbovePivot"/> rows over its pivot) at <paramref name="grip"/>,
+        /// on her last fighting row, the held sheet's frames flipping at <paramref name="secondsPerFrame"/>.
+        /// Whole, out of the water: no waterline cut. False (and nothing drawn) when her rung has no held sheet.
+        /// </summary>
+        public bool RenderHanging(Vector2 grip, float seconds, float secondsPerFrame, int sortingOrder, float drawScale)
+        {
+            FishRungVisual sp = _rung;
+            if (sp == null || sp.HeldFrames == null || sp.HeldFrames.Length == 0 || sp.HeldFramesPerDir <= 0)
+            {
+                Hide();
+                return false;
+            }
+            int frame = RodPresenterMath.FlipFrame(seconds, secondsPerFrame, sp.HeldFramesPerDir);
+            int idx = RodPresenterMath.SheetIndex(_fishRow, frame, sp.HeldFramesPerDir, sp.HeldFrames.Length);
+            if (idx < 0 || sp.HeldFrames[idx] == null) { Hide(); return false; }
+            Sprite held = sp.HeldFrames[idx];
+            float gripM = Feel().HangGripRowsAbovePivot / Mathf.Max(1f, held.pixelsPerUnit) * drawScale;
+            DrawnFrame = held;
+            FishAirborne = false;
+            _sr.sprite = held;
+            _sr.transform.position = new Vector3(grip.x, grip.y - gripM, 0f);
+            _sr.sortingOrder = sortingOrder;
+            _sr.enabled = true;
+            HideUnderwater();
+            return true;
+        }
+
         /// <summary>Take her out of the picture: the fish and her rows under the water.</summary>
         public void Hide()
         {

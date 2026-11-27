@@ -40,6 +40,8 @@ namespace HiddenHarbours.Player
         private CharacterFigurePresenter _figure;
         private SpriteRenderer _bodySr, _fishSr, _splashSr, _approachSr, _bedShadowSr;
         private float _approachHeading;
+        private Vector2 _landFrom;      // the water point she was last drawn at in the surface fight
+        private bool _landFromSet;
         private bool _underDrawn;      // this frame's fish under the water is drawn, at _underWorld
         private Vector2 _underWorld;
         private RodLineStrand _strand;
@@ -150,7 +152,7 @@ namespace HiddenHarbours.Player
                     case RodSplashEdge.Touchdown: SplashAt(angler + new Vector2(s.CastAimX, s.CastAimY), look, now - seconds); break;
                     case RodSplashEdge.PulledUnder: SplashAt(angler + new Vector2(_last.CastAimX, _last.CastAimY), look, now - seconds); break;
                     case RodSplashEdge.Breaks: SplashAt(fishPos, look, now - seconds); break;
-                    case RodSplashEdge.Result: SplashAt(_lastFar, look, now - seconds); break;
+                    case RodSplashEdge.Result: SplashAt(RodPresenterMath.ResultSplashAt(in _last, angler, _lastFar), look, now - seconds); break;
                 }
             }
             else if (!consecutive)
@@ -170,6 +172,32 @@ namespace HiddenHarbours.Player
             _drawnLast = true;
         }
 
+        /// <summary>
+        /// LANDED, ON THE LINE: over <see cref="FishFeelSettings.LandLiftTravelSeconds"/> she travels hanging
+        /// head-up from the water point where she left it to the rod tip, then hangs there for
+        /// <see cref="FishFeelSettings.LandHangSeconds"/>, in front of him (the rod's over-fisher rung), before
+        /// she goes to his hand. A landing not seen from the surface (a seek) starts her at the tip.
+        /// </summary>
+        private bool TryHang(float seconds, in AnglerLook look, Vector2 tip, out Vector2 grip)
+        {
+            FishFeelSettings feel = GameServices.Config != null ? GameServices.Config.FishFeel : FishFeelSettings.Default;
+            grip = tip;
+            if (!(seconds < feel.LandLiftTravelSeconds + feel.LandHangSeconds)) return false;
+            grip = RodPresenterMath.LiftGrip(_landFromSet ? _landFrom : tip, tip, seconds, feel.LandLiftTravelSeconds);
+            int order = _bodySr != null ? _bodySr.sortingOrder + EffectSorting.RodOverFisherRungs : look.WaterElementOrder;
+            int scale = Mathf.Max(1, look.FishDrawScale);
+            if (!_fish.RenderHanging(grip, seconds, look.FishSecondsPerFrame, order, scale)) return false;
+            ScaleFish(scale);
+            return true;
+        }
+
+        /// <summary>Her renderer at the look's whole-number fish scale, whatever the parent's scale.</summary>
+        private void ScaleFish(int scale)
+        {
+            Vector3 parent = transform.lossyScale;
+            _fishSr.transform.localScale = new Vector3(scale / NonZero(parent.x), scale / NonZero(parent.y), 1f);
+        }
+
         private void Draw(in FishingState s, float seconds, in AnglerLook look, Vector2 angler, int frame,
                           double now, bool consecutive)
         {
@@ -179,6 +207,13 @@ namespace HiddenHarbours.Player
             Vector2 tip = rod ? _figure.WorkPropTipWorld : angler;
 
             Vector2 far = tip;
+            bool hanging = false;
+            if (s.Phase == FishingPhase.FightSurface)
+            {
+                _landFrom = angler + new Vector2(s.FishOffsetX, s.FishOffsetY);   // where she will leave the water
+                _landFromSet = true;
+            }
+            else if (s.Phase != FishingPhase.Landed) _landFromSet = false;
             if ((show & RodElements.FishSurface) != 0)
             {
                 float dt = consecutive ? (float)(now - _lastNow) : 0f;
@@ -193,11 +228,19 @@ namespace HiddenHarbours.Player
                                    look.FishDartSpeedMps, look.FishSpeedSmoothing01, fishOrder, scale,
                                    out bool splashDue, out Vector2 splashAt);
                 if (splashDue && consecutive) SplashAt(splashAt, look, now, _fish.SplashFirstFrame);
-                if (_fishSr.enabled)
+                // The break's column and crown carry no fish; the line ends at the water point under them.
+                if (s.Phase == FishingPhase.FightSurface && _fish.InBreakColumn(seconds, look.SplashFps,
+                                                                                  look.SplashFrames != null ? look.SplashFrames.Length : 0))
                 {
-                    Vector3 parent = transform.lossyScale;
-                    _fishSr.transform.localScale = new Vector3(scale / NonZero(parent.x), scale / NonZero(parent.y), 1f);
+                    _fish.Hide();
+                    far = angler + new Vector2(s.FishOffsetX, s.FishOffsetY);
                 }
+                if (_fishSr.enabled) ScaleFish(scale);
+            }
+            else if (s.Phase == FishingPhase.Landed && TryHang(seconds, in look, tip, out Vector2 grip))
+            {
+                hanging = true;
+                far = grip;
             }
             else
             {
@@ -209,7 +252,7 @@ namespace HiddenHarbours.Player
 
             LineFarEnd = far;
 
-            if ((show & RodElements.HeldFish) != 0)
+            if ((show & RodElements.HeldFish) != 0 && !hanging)
             {
                 GameConfig config = GameServices.Config;
                 if (!_land.Wants(config) || !_land.TryDraw(config, _figure != null ? _figure.AshoreFigure : null))
@@ -217,7 +260,7 @@ namespace HiddenHarbours.Player
             }
             else _land.Hide();
 
-            DrawsLine = rod && (show & RodElements.Line) != 0;
+            DrawsLine = rod && ((show & RodElements.Line) != 0 || hanging);
             if (DrawsLine)
             {
                 RodLineLook line = look.Line;
@@ -374,6 +417,7 @@ namespace HiddenHarbours.Player
             if (_approachSr != null) _approachSr.enabled = false;
             if (_bedShadowSr != null) _bedShadowSr.enabled = false;
             _underDrawn = false;
+            _landFromSet = false;
             _land?.Hide();
         }
 

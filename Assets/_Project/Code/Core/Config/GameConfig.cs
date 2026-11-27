@@ -3844,6 +3844,16 @@ namespace HiddenHarbours.Core
                  "for the rule above. 0 = off.")]
         [Min(0f)] public float FisherFigureHeightM;
 
+        [Tooltip("THE LIFT. How long (s) a villager's landed fish takes to travel, hanging head-up on the line, " +
+                 "from the water point where she left it up to the rod tip. Match the angler activity's " +
+                 "LandLiftSeconds, which scrubs his land clip over the same beat. 0 = she is at the tip at once.")]
+        [Min(0f)] public float LandLiftTravelSeconds;
+        [Tooltip("THE CATCH SEEN. After the lift, how long (s) she hangs from the rod tip on the line, in front " +
+                 "of him, before she goes to his hand. 0 = straight to his hand.")]
+        [Min(0f)] public float LandHangSeconds;
+        [Tooltip("HANGING. Art rows the held (gill) sheet's grip sits above its pivot: where the line meets her " +
+                 "head when she hangs from it.")]
+        public int HangGripRowsAbovePivot;
         /// <summary>The reference feel — a first pass for the owner's plate, not a measured tuning.</summary>
         public static FishFeelSettings Default => new FishFeelSettings
         {
@@ -3901,6 +3911,9 @@ namespace HiddenHarbours.Core
             ThrashChurnFirstSplashFrame = 5,
             FisherFigureHalfWidthM = 0.35f,
             FisherFigureHeightM = 1.7f,
+            LandLiftTravelSeconds = 1f,
+            LandHangSeconds = 1.2f,
+            HangGripRowsAbovePivot = 2,
         };
     }
 

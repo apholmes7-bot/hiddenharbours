@@ -245,6 +245,12 @@ namespace HiddenHarbours.Player
         /// <summary>How many jumps THIS fight has drawn. Reset when the species on the line changes, so
         /// it counts one fight and not a session.</summary>
         public int JumpsDrawn => _fish != null ? _fish.JumpsDrawn : 0;
+
+        /// <summary>She has just broken the surface and the splash's column and crown are playing: no fish is
+        /// drawn this frame (<see cref="SurfacedFishDrawer.InBreakColumn"/>). For tests and plates.</summary>
+        public bool FishInBreakColumn => _fish != null && _s.Phase == FishingPhase.FightSurface
+                                         && _fish.InBreakColumn(_surfaceClock, _splashFps, SplashFrameCount);
+        private int SplashFrameCount => _splashFrames != null ? _splashFrames.Length : 0;
         private Vector2 _lastFarEnd;      // where the line last ended (splash anchor for results)
 
         private float _splashClock;       // seconds since the live splash began (RodSplashFlourish)
@@ -417,7 +423,7 @@ namespace HiddenHarbours.Player
                     case RodSplashEdge.Breaks:
                         SplashAt(angler + new Vector2(next.FishOffsetX, next.FishOffsetY)); break;
                     case RodSplashEdge.Result:
-                        SplashAt(_lastFarEnd); break;
+                        SplashAt(RodPresenterMath.ResultSplashAt(in prev, angler, _lastFarEnd)); break;
                 }
             }
 
@@ -972,6 +978,12 @@ namespace HiddenHarbours.Player
                                          _fishDartSpeedMps, FishSpeedSmoothing01, fishOrder, 1f,
                                          out bool splashDue, out Vector2 splashAt);
             if (splashDue) SplashAt(splashAt, _fish.SplashFirstFrame);
+            // The break's column and crown carry no fish; the line ends at the water point under them.
+            if (_fish.InBreakColumn(_surfaceClock, _splashFps, SplashFrameCount))
+            {
+                _fish.Hide();
+                return angler + new Vector2(_s.FishOffsetX, _s.FishOffsetY);
+            }
             return mouth;
         }
 

@@ -553,6 +553,9 @@ MonoBehaviour:
     ThrashChurnFirstSplashFrame: 5
     FisherFigureHalfWidthM: 0.35
     FisherFigureHeightM: 1.7
+    LandLiftTravelSeconds: 1
+    LandHangSeconds: 1.2
+    HangGripRowsAbovePivot: 2
   FishSchools:
     CellSizeMetres: 22
     SlotHours: 2.5

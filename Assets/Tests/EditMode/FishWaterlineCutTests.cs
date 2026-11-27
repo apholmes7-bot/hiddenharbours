@@ -204,6 +204,78 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void TheBreak_DrawsNoFishUnderTheColumn_AndSheIsFirstDrawnAtTheFirstOpenRing()
+        {
+            FishFeelSettings feel = Feel();
+            Assume.That(feel.ThrashChurnFirstSplashFrame > 0, "the shipped feel names a first open ring");
+            var drawer = new SurfacedFishDrawer(Track(new GameObject("Breaking")).AddComponent<SpriteRenderer>());
+            const float fps = 14f;
+            float ring = feel.ThrashChurnFirstSplashFrame / fps;
+            const int frames = 8;
+            Assert.IsTrue(drawer.InBreakColumn(0f, fps, frames), "the column at the break carries no fish");
+            Assert.IsTrue(drawer.InBreakColumn(ring - 0.01f, fps, frames), "nor does the crown");
+            Assert.IsFalse(drawer.InBreakColumn(ring, fps, frames), "she is drawn from the first open ring");
+            Assert.IsFalse(drawer.InBreakColumn(-0.1f, fps, frames), "no surface time, no break");
+            Assert.IsFalse(drawer.InBreakColumn(0f, fps, 0), "no splash sheet: no column to hide her under");
+            Assert.IsFalse(drawer.InBreakColumn(0f, 0f, frames), "a splash that does not play hides nothing");
+        }
+
+        [Test]
+        public void TheResultSplash_GoesWhereSheLeftTheWater_NeverOnTheLinesLastEnd()
+        {
+            var feet = new Vector2(10f, 5f);
+            var mouthOnHim = new Vector2(10.1f, 6.4f);
+            FishingState surfaced = Surface(0.4f, 0.8f);
+            Assert.AreEqual(feet + new Vector2(0.4f, 0.8f), RodPresenterMath.ResultSplashAt(in surfaced, feet, mouthOnHim),
+                            "out of the surface fight the splash is at her water point");
+            var deep = new FishingState(FishingPhase.FightDeep, 0.3f, 0.3f, Fish, Fish, FishCategory.Pelagic,
+                                        1f, 0.4f, false, 0.2f, 0.4f, 0.8f, 0f, 0f, 0f, 0f, 0f, 0f, 0f);
+            Assert.AreEqual(mouthOnHim, RodPresenterMath.ResultSplashAt(in deep, feet, mouthOnHim),
+                            "from any other beat the line's last end, as before");
+        }
+
+        [Test]
+        public void TheLift_CarriesHerFromTheWaterToTheTip_ThenHoldsHerThere()
+        {
+            var water = new Vector2(0f, 2f);
+            var tip = new Vector2(0.5f, 3f);
+            Assert.AreEqual(water, RodPresenterMath.LiftGrip(water, tip, 0f, 1f));
+            Assert.AreEqual(tip, RodPresenterMath.LiftGrip(water, tip, 1f, 1f));
+            Assert.AreEqual(tip, RodPresenterMath.LiftGrip(water, tip, 2.5f, 1f), "held at the tip after the lift");
+            Vector2 half = RodPresenterMath.LiftGrip(water, tip, 0.5f, 1f);
+            Assert.Greater(half.y, Vector2.Lerp(water, tip, 0.5f).y, "eased: quick off the water");
+            Assert.Less(half.y, tip.y);
+            Assert.AreEqual(tip, RodPresenterMath.LiftGrip(water, tip, 0f, 0f), "no lift time: at the tip at once");
+        }
+
+        [Test]
+        public void SheHangsFromTheLine_WholeOnTheHeldSheet_HerGripOnTheLinesEnd()
+        {
+            FishSpeciesVisual species = Species(out Sprite[] thrash);
+            var sr = Track(new GameObject("Hanging")).AddComponent<SpriteRenderer>();
+            var drawer = new SurfacedFishDrawer(sr);
+            FishingState s = Surface(0.5f, 2f);
+            drawer.Resolve(in s, new[] { species }, null, new Facts(), 0f);
+            Assert.IsFalse(drawer.RenderHanging(Vector2.one, 0f, 0.1f, 7, 2f), "no held sheet: nothing hangs");
+            Assert.IsFalse(sr.enabled);
+
+            species.Rungs[0].HeldFrames = thrash;
+            species.Rungs[0].HeldFramesPerDir = species.Rungs[0].ThrashFramesPerDir;
+            drawer.Resolve(in s, new[] { species }, null, new Facts(), 0f);
+            var grip = new Vector2(1f, 4f);
+            Assert.IsTrue(drawer.RenderHanging(grip, 0f, 0.1f, 7, 2f));
+            Assert.IsTrue(sr.enabled);
+            CollectionAssert.Contains(thrash, sr.sprite, "she is drawn from the held sheet");
+            Assert.AreSame(sr.sprite, drawer.DrawnFrame);
+            Assert.AreEqual(7, sr.sortingOrder);
+            float gripM = Feel().HangGripRowsAbovePivot / sr.sprite.pixelsPerUnit * 2f;
+            Assert.AreEqual(grip.x, sr.transform.position.x, 1e-5f);
+            Assert.AreEqual(grip.y - gripM, sr.transform.position.y, 1e-5f, "her grip, not her pivot, is on the line");
+            Assert.IsTrue(drawer.UnderwaterRenderer == null || !drawer.UnderwaterRenderer.enabled,
+                          "out of the water she is drawn whole");
+        }
+
+        [Test]
         public void TheChurn_PlaysOnlyTheOpenRings_AndAJumpsSplashPlaysWhole()
         {
             FishFeelSettings feel = Feel();

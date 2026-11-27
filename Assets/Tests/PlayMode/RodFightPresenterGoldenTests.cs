@@ -229,7 +229,8 @@ namespace HiddenHarbours.Tests.PlayMode
                 else Assert.IsFalse(splash.enabled, $"{e.name}: splashed");
             }
 
-            // The result: at the line's last far end, for a landing and for a snap alike.
+            // The result out of the surface fight: where she leaves the water, never the line's last far end
+            // (her mouth is drawn over his body as she is lifted), for a landing and for a snap alike.
             foreach (FishingPhase result in new[] { FishingPhase.Landed, FishingPhase.Snapped })
             {
                 Publish(rod, FishingState.Idle);
@@ -238,12 +239,12 @@ namespace HiddenHarbours.Tests.PlayMode
                 yield return Frames(30);
                 LineRenderer line = Child<LineRenderer>(rod, "FishingLine");
                 Assert.IsTrue(line.enabled && line.positionCount > 1, $"harness ({result}): the line is out");
-                Vector3 far = line.GetPosition(line.positionCount - 1);
+                Vector2 water = angler + new Vector2(1.2f, 0.4f);
                 Publish(rod, State(result, Cod, kg: 5.59f));
                 yield return Frames(1);
                 Assert.IsTrue(splash.enabled, $"{result}: no result splash");
-                Assert.Less(((Vector2)splash.transform.position - (Vector2)far).magnitude, 1e-5f,
-                    $"{result}: the result splash is not at the line's last far end");
+                Assert.Less(((Vector2)splash.transform.position - water).magnitude, 1e-5f,
+                    $"{result}: the result splash is not where she left the water");
             }
         }
 
@@ -273,6 +274,12 @@ namespace HiddenHarbours.Tests.PlayMode
                 Publish(rod, State(FishingPhase.FightSurface, Bass, tension: 0.3f,
                                    offX: 1.4f + 0.7f * Mathf.Cos(a), offY: offY, kg: 3.1f));
                 yield return null;
+                if (rod.FishInBreakColumn)
+                {
+                    // The break: the splash's column carries no fish yet.
+                    Assert.IsFalse(fish.enabled, $"step {i}: a fish was drawn under the break's column");
+                    continue;
+                }
                 Assert.IsTrue(fish.enabled && line.enabled, $"step {i}: harness: fish and line are up");
                 Assert.IsTrue(library.TryMouthFor(fish.sprite, out Vector2 mouth), $"step {i}: the frame is not the table's");
                 Vector3 end = line.GetPosition(line.positionCount - 1);
@@ -297,6 +304,8 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return Frames(3);
             Publish(rod, State(FishingPhase.FightSurface, Bass, tension: 0.3f, offX: 1.5f, offY: 0.5f));
             yield return Frames(1);
+            // Past the break's column (no fish under it), while the splash's open rings still play.
+            for (int i = 0; i < 600 && rod.FishInBreakColumn; i++) yield return null;
             LineRenderer line = Child<LineRenderer>(rod, "FishingLine");
             SpriteRenderer splash = Child<SpriteRenderer>(rod, "Splash");
             SpriteRenderer fish = Child<SpriteRenderer>(rod, "FishOnTheLine");

@@ -320,6 +320,28 @@ namespace HiddenHarbours.Player
         }
 
         /// <summary>
+        /// Where the result's splash goes: out of the surface fight, the water point where she was (his feet plus
+        /// her last published offset), never the line's last end, which is her drawn mouth and can sit up on his
+        /// figure; from any other beat, the line's last end as before.
+        /// </summary>
+        public static Vector2 ResultSplashAt(in FishingState prev, Vector2 angler, Vector2 lastFarEnd)
+            => prev.Phase == FishingPhase.FightSurface
+                ? angler + new Vector2(prev.FishOffsetX, prev.FishOffsetY)
+                : lastFarEnd;
+
+        /// <summary>
+        /// Where a landed fish's grip (her head, on the line) is <paramref name="secondsLanded"/> into the
+        /// landing: from <paramref name="waterPoint"/> up to <paramref name="tip"/> over
+        /// <paramref name="liftSeconds"/>, eased out, then held at the tip. Pure.
+        /// </summary>
+        public static Vector2 LiftGrip(Vector2 waterPoint, Vector2 tip, float secondsLanded, float liftSeconds)
+        {
+            float t = liftSeconds > 0f ? Mathf.Clamp01(secondsLanded / liftSeconds) : 1f;
+            t = 1f - (1f - t) * (1f - t);   // eased out: quick off the water, settling at the tip
+            return Vector2.Lerp(waterPoint, tip, t);
+        }
+
+        /// <summary>
         /// Is <paramref name="point"/> inside the fisher's drawn figure: within <paramref name="halfWidthM"/>
         /// either side of his feet at <paramref name="feet"/> and from his feet up to
         /// <paramref name="heightM"/> above them (the three-quarter view draws height as screen-up). False for

@@ -266,8 +266,17 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsTrue(_angler.SplashRenderer.enabled, "no splash where she is lifted out");
             AssertOverWater(_angler.SplashRenderer.transform.position, "the landing splash");
 
-            // 5. The landing: past the lift, the fish is in his hand.
-            double land = s.LandStart + s.Script.LandLiftSeconds + 0.3d;
+            // 4c. Out of the water she hangs on the line, whole and in front of him, before his hand takes her.
+            yield return StepThrough(s.LandStart + 0.1d, s.LandStart + 0.5d * LandFeel().LandLiftTravelSeconds);
+            AssertInSession(FishingPhase.Landed);
+            Assert.IsTrue(_angler.FishRenderer.enabled, "she is not seen on the line as she is lifted");
+            Assert.Greater(_angler.FishRenderer.sortingOrder, _basil.GetComponent<SpriteRenderer>().sortingOrder,
+                           "lifted, she hangs in front of him");
+            Assert.IsFalse(_angler.Land?.Mesh != null && _angler.Land.Mesh.Drawing,
+                           "she is in his hand while she still hangs on the line");
+
+            // 5. The landing: past the lift and the hang, the fish is in his hand.
+            double land = s.LandStart + LandedSeen(s) + 0.3d;
             yield return SeekAndDraw(land);
             AssertInSession(FishingPhase.Landed);
             Assert.IsNotNull(_angler.Land?.Mesh, "the landed fish's mesh was never made");
@@ -816,8 +825,10 @@ namespace HiddenHarbours.Tests.PlayMode
                 ("4-fight", s.SurfaceStart + 0.3d, s.SurfaceStart + 1.2d),
                 ("4c-fight-late", s.SurfaceStart + 0.8d * (s.LandStart - s.SurfaceStart) - 0.1d,
                                   s.SurfaceStart + 0.8d * (s.LandStart - s.SurfaceStart)),
-                ("5a-land-lift", s.LandStart - 0.3d, s.LandStart + 0.5d * s.Script.LandLiftSeconds),
-                ("5-land", s.LandStart + s.Script.LandLiftSeconds, s.LandStart + s.Script.LandLiftSeconds + 0.3d),
+                ("5a-land-lift", s.LandStart - 0.3d, s.LandStart + 0.5d * LandFeel().LandLiftTravelSeconds),
+                ("5b-land-hang", s.LandStart + LandFeel().LandLiftTravelSeconds,
+                                 s.LandStart + LandFeel().LandLiftTravelSeconds + 0.5d * LandFeel().LandHangSeconds),
+                ("5-land", s.LandStart + LandedSeen(s), s.LandStart + LandedSeen(s) + 0.3d),
             };
             if (!double.IsNaN(cutAt)) beatList.Add(("4d-thrash-cut", cutAt - 0.3d, cutAt));
             if (!double.IsNaN(dartAt)) beatList.Add(("4e-dart", dartAt - 0.3d, dartAt));
@@ -827,7 +838,16 @@ namespace HiddenHarbours.Tests.PlayMode
                 yield return StepThrough(from, to);
                 Assert.IsTrue(_basil.TryGetAnglerState(out FishingState fs, out _), $"{name}: not in a session");
                 SpriteRenderer fish = _angler.FishRenderer;
-                if (fish.enabled)
+                if (fish.enabled && fs.Phase == FishingPhase.Landed)
+                {
+                    // Out of the water she hangs whole from the line's end by her grip, in front of him.
+                    float gripM = LandFeel().HangGripRowsAbovePivot / fish.sprite.pixelsPerUnit * scale;
+                    Assert.LessOrEqual(Vector2.Distance((Vector2)fish.transform.position + new Vector2(0f, gripM),
+                                                        _angler.LineFarEnd), 1e-3f,
+                                       $"{name}: she does not hang from the line's end {_angler.LineFarEnd}");
+                    Assert.Greater(fish.sortingOrder, body.sortingOrder, $"{name}: lifted, she hangs behind him");
+                }
+                else if (fish.enabled)
                 {
                     // The line leaves the drawn frame's own mouth, at his scale.
                     Assert.IsNotNull(art, "harness: no fish art table");
@@ -850,6 +870,14 @@ namespace HiddenHarbours.Tests.PlayMode
             Debug.Log($"[{PlateDir}] golden:\n{log}");
         }
 
+        private static FishFeelSettings LandFeel() =>
+            GameServices.Config != null ? GameServices.Config.FishFeel : FishFeelSettings.Default;
+
+        /// <summary>How long into the landing she is on the line (the lift, then the hang) or being lifted by
+        /// the activity, whichever is longer: past it she is in his hand.</summary>
+        private static double LandedSeen(Session s) =>
+            Mathf.Max(s.Script.LandLiftSeconds, LandFeel().LandLiftTravelSeconds + LandFeel().LandHangSeconds);
+
         /// <summary>The contact strip: every this many frames of the clock's step.</summary>
         private const int ContactStride = 4;
         /// <summary>One cell of the strip on the plate, in plate pixels (2 m by 3.5 m at the plate's zoom).</summary>
@@ -866,6 +894,9 @@ namespace HiddenHarbours.Tests.PlayMode
         /// not the camera, tall enough for his figure and a fish surfaced a couple of metres off the wharf.</summary>
         private const float ContactCentreAboveFeetM = 1.75f;
         private const string ContactStripFile = "g-contact-strip.png";
+        /// <summary>The lift and the landing on their own, at this whole-number scale of the plate.</summary>
+        private const int ContactLandingScale = 4;
+        private const string ContactLandingFile = "g-contact-landing-4x.png";
 
         /// <summary>
         /// Step his fight from the bite to the landing on consecutive frames and keep every
@@ -875,7 +906,7 @@ namespace HiddenHarbours.Tests.PlayMode
         /// </summary>
         private IEnumerator WriteContactStrip(Session s, Camera cam, Vector2 at, StringBuilder log)
         {
-            double from = s.BiteStart, to = s.LandStart + s.Script.LandLiftSeconds + 0.3d;
+            double from = s.BiteStart, to = s.LandStart + LandedSeen(s) + 0.3d;
             yield return StepThrough(from - 0.5d, from - StepSeconds);
             var cells = new List<(Color32[] crop, string label, Color32 band)>();
             Vector3 vp = cam.WorldToViewportPoint(new Vector3(at.x, at.y + ContactCentreAboveFeetM, 0f));
@@ -911,12 +942,24 @@ namespace HiddenHarbours.Tests.PlayMode
             }
             Assert.Greater(cells.Count, 0, "harness: the contact strip has no cells");
 
-            // One row: the cell narrows only if a full row would pass the widest texture.
+            log.AppendLine("contact strip: every " + ContactStride + " frames from the bite to the landing, " +
+                           ComposeStrip(cells, ContactScale, ContactStripFile));
+            var landing = cells.FindAll(c => c.label == "LIFT" || c.label == "LANDED");
+            if (landing.Count > 0)
+                log.AppendLine("contact landing: the lift and the landing alone, " +
+                               ComposeStrip(landing, ContactLandingScale, ContactLandingFile));
+        }
+
+        /// <summary>Lay <paramref name="cells"/> out in one row at the whole-number <paramref name="scale"/>, each
+        /// under its phase band and label, and write it to the plate folder as <paramref name="file"/>; a cell
+        /// narrows around its middle only if the row would pass the widest texture.</summary>
+        private static string ComposeStrip(List<(Color32[] crop, string label, Color32 band)> cells, int scale, string file)
+        {
             int n = cells.Count;
-            int cw = Mathf.Min(ContactCellW, ContactMaxWidthPx / ContactScale / n - ContactGap);
-            Assert.Greater(cw, 8, $"harness: {n} cells cannot fit one row");
+            int cw = Mathf.Min(ContactCellW, ContactMaxWidthPx / scale / n - ContactGap);
+            Assert.Greater(cw, 8, $"harness: {n} cells cannot fit one row at {scale}x");
             int ch = ContactCellH;
-            int w = (n * (cw + ContactGap) - ContactGap) * ContactScale, h = (ContactLabelRows + ch) * ContactScale;
+            int w = (n * (cw + ContactGap) - ContactGap) * scale, h = (ContactLabelRows + ch) * scale;
             var strip = new byte[w * h * 4];
             void Put(int x, int yTop, Color32 c)
             {
@@ -926,14 +969,14 @@ namespace HiddenHarbours.Tests.PlayMode
             }
             void Block(int ux, int uyTop, Color32 c)
             {
-                for (int by = 0; by < ContactScale; by++)
-                    for (int bx = 0; bx < ContactScale; bx++)
-                        Put(ux * ContactScale + bx, uyTop * ContactScale + by, c);
+                for (int by = 0; by < scale; by++)
+                    for (int bx = 0; bx < scale; bx++)
+                        Put(ux * scale + bx, uyTop * scale + by, c);
             }
             var white = new Color32(250, 250, 245, 255);
             var gap = new Color32(16, 16, 20, 255);
-            for (int ux = 0; ux < w / ContactScale; ux++)
-                for (int uy = 0; uy < h / ContactScale; uy++) Block(ux, uy, gap);
+            for (int ux = 0; ux < w / scale; ux++)
+                for (int uy = 0; uy < h / scale; uy++) Block(ux, uy, gap);
             for (int c = 0; c < n; c++)
             {
                 var cell = cells[c];
@@ -951,10 +994,9 @@ namespace HiddenHarbours.Tests.PlayMode
             tex.Apply();
             string dir = Path.Combine(Application.temporaryCachePath, PlateDir);
             Directory.CreateDirectory(dir);
-            File.WriteAllBytes(Path.Combine(dir, ContactStripFile), tex.EncodeToPNG());
+            File.WriteAllBytes(Path.Combine(dir, file), tex.EncodeToPNG());
             Object.DestroyImmediate(tex);
-            log.AppendLine($"contact strip: {n} cells, every {ContactStride} frames from the bite to the landing, " +
-                           $"{cw}x{ch} plate px each at {ContactScale}x, {w}x{h} px, written to {ContactStripFile}");
+            return $"{n} cells, {cw}x{ch} plate px each at {scale}x, {w}x{h} px, written to {file}";
         }
 
         /// <summary>
