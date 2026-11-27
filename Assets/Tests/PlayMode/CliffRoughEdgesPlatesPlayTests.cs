@@ -59,6 +59,10 @@ namespace HiddenHarbours.Tests.PlayMode
             ("3-harbour-stack", new Vector2(192f, -37f), 1f, MidTide),
             ("3-harbour-stack-close", new Vector2(192f, -36f), 0.55f, MidTide),
             ("3-whelps-low-water", new Vector2(187f, -47f), 1f, LowTide),
+            ("4-light-station-run", new Vector2(206.5f, 56f), 2f, MidTide),
+            ("4-light-station", new Vector2(206.5f, 55f), 1f, MidTide),
+            ("4-light-station-brow", new Vector2(206.5f, 52f), 0.55f, MidTide),
+            ("0-wide-st-peters", new Vector2(85f, -5f), 4.5f, MidTide),
         };
 
         readonly HashSet<GameObject> _residentBefore = new HashSet<GameObject>();

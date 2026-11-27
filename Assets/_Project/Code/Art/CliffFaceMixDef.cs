@@ -62,6 +62,27 @@ namespace HiddenHarbours.Art
                  "brow strip. None leaves the brow strip.")]
         public CliffTurfLipDef TurfLip;
 
+        [Header("The turf lip on a bank with no cliff wall (owner 11 26: the brow needs a real turf lip)")]
+        [Tooltip("The material the bank's lip is drawn with (the cliff face's own, so it takes the same light). " +
+                 "None = banks hang no lip.")]
+        public Material ShoreBrowMaterial;
+        [Tooltip("How far from the brow the shore lines traced the turf's own edge is looked for, metres. " +
+                 "0 = banks hang no lip.")]
+        [Min(0f)] public float ShoreBrowReachMetres = 0f;
+        [Tooltip("How squarely down the screen a bank must face to hang a lip, 0 to 1 (1 = straight down). The lip " +
+                 "is laid in upright columns of whole texels, so a bank facing across the screen cannot carry one.")]
+        [Range(0f, 1f)] public float ShoreBrowMinFacing = 0.5f;
+        [Tooltip("A run of lip shorter than this is dropped, metres.")]
+        [Min(0f)] public float ShoreBrowMinRunMetres = 2f;
+        [Tooltip("How far inside the turf the lip's line is laid, metres, so no grass shows above its sod.")]
+        public float ShoreBrowInsetMetres = 0.15f;
+        [Tooltip("How far the jag bites the line further into the turf, metres (the scales and seed are the jag's).")]
+        [Min(0f)] public float ShoreBrowJagMetres = 0.4f;
+        [Tooltip("A run's two ends crumble away in whole columns over this many metres.")]
+        [Min(0f)] public float ShoreBrowEndCrumbleMetres = 0.75f;
+        [Tooltip("Two stations a quarter metre apart whose turf edges differ by more than this are not one run, metres.")]
+        [Min(0f)] public float ShoreBrowJumpMetres = 0.75f;
+
         [Header("Rough edges: the brow and the foot broken into chips, notches, buttresses and bites (0 = off)")]
         [Tooltip("How far the clifftop's line is pushed in and out, metres. Added to the kit's plan displacement, so the " +
                  "face, its decals and its joins all follow it. 0 leaves the brow exactly as the kit draws it.")]

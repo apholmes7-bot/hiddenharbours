@@ -17,7 +17,7 @@ MonoBehaviour:
   SpringHigh: 2.2
   MeanHigh: 1.595
   MeanLow: -1.595
-  Turf: 1
+  Turf: -1
   Scarp: 1
   Wrack: 1
   Weedline: 1

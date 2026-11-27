@@ -412,7 +412,7 @@ namespace HiddenHarbours.Art
             return result;
         }
 
-        static float Hash01(int i, int seed, int salt)
+        internal static float Hash01(int i, int seed, int salt)
         {
             unchecked
             {
