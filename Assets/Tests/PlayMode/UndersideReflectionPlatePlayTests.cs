@@ -169,6 +169,9 @@ namespace HiddenHarbours.Tests.PlayMode
             File.WriteAllText(Path.Combine(dir, "numbers.txt"), "");
             var missing = new List<string>();
             string only = System.Environment.GetEnvironmentVariable(UndersidePlatesVariable + "_ONLY");
+            // HH_UNDERSIDE_PLATES_HOUR: the hour the plates are shot at (default noon), e.g. the golden hour 19.5.
+            float hour = float.TryParse(System.Environment.GetEnvironmentVariable(UndersidePlatesVariable + "_HOUR"),
+                System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float parsedHour) ? parsedHour : Noon;
             foreach (var scene in UndersideSubjects().Where(s => string.IsNullOrEmpty(only) || only.Split(',').Any(o => s.Id.Contains(o)))
                          .GroupBy(s => s.Scene))
             {
@@ -177,7 +180,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 HoldTheMood();
                 _look = "undersides";
                 _lookEvidence = "held calm (sea 0, no wind), tide pinned, 32 px a metre, follow and pixel camera off";
-                yield return PinTheHour(Noon, ClearRunSeconds);
+                yield return PinTheHour(hour, ClearRunSeconds);
 
                 IEnvironmentService held = GameServices.Environment;
                 GameConfig config = GameServices.Config;
