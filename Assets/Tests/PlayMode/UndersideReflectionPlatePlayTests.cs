@@ -64,14 +64,25 @@ namespace HiddenHarbours.Tests.PlayMode
             public float WaterLevelAt(double seconds) => _level;
         }
 
-        /// <summary>0 off, 1 on, then the mirror's own debug views (HH_UNDERSIDE_PLATES_DEBUG, e.g. "1,3": classes, deck tops).</summary>
+        /// <summary>The view that draws with the calm mirror's dial at 0: what the water shows with no mirror at all.</summary>
+        const int NoMirrorView = -1;
+
+        /// <summary>0 off, 1 on, then the mirror's own debug views (HH_UNDERSIDE_PLATES_DEBUG, e.g. "1,3": classes,
+        /// deck tops; "m" adds the plate with the mirror's dial at 0).</summary>
         static IEnumerable<int> Views()
         {
             yield return 0; yield return 1;
             string d = System.Environment.GetEnvironmentVariable(UndersidePlatesVariable + "_DEBUG");
             if (string.IsNullOrEmpty(d)) yield break;
-            foreach (string v in d.Split(',')) if (int.TryParse(v, out int n) && n > 0) yield return n + 1;
+            foreach (string v in d.Split(','))
+            {
+                if (v.Trim() == "m") yield return NoMirrorView;
+                else if (int.TryParse(v, out int n) && n > 0) yield return n + 1;
+            }
         }
+
+        static string ViewName(int view) =>
+            view == NoMirrorView ? "nomirror" : view == 0 ? "off" : view == 1 ? "on" : "debug" + (view - 1);
 
         /// <summary>Looks only: the calm mirror's debug view (an internal static of the Art assembly).</summary>
         static void SetMirrorDebugView(float view)
@@ -147,6 +158,8 @@ namespace HiddenHarbours.Tests.PlayMode
                 GameConfig config = GameServices.Config;
                 GameConfig off = Object.Instantiate(config);
                 off.WaterMirror.UndersideShare = 0f;
+                GameConfig noMirror = Object.Instantiate(config);
+                noMirror.WaterMirrorStrength = 0f;
                 bool followEnabled = _follow.enabled;
                 float aspect = _cam.aspect, ortho = _cam.orthographicSize;
                 Vector3 camAt = _cam.transform.position;
@@ -171,9 +184,8 @@ namespace HiddenHarbours.Tests.PlayMode
                         foreach (float tide in s.Tides)
                             foreach (int view in Views())
                             {
-                                bool on = view != 0;
                                 SetMirrorDebugView(view > 1 ? view - 1 : 0);
-                                GameServices.Config = on ? config : off;
+                                GameServices.Config = view == NoMirrorView ? noMirror : view == 0 ? off : config;
                                 GameServices.Environment = new CalmPinnedTide(held, tide);
                                 Time.timeScale = 1f;
                                 float until = Time.realtimeSinceStartup + 20f;
@@ -206,7 +218,7 @@ namespace HiddenHarbours.Tests.PlayMode
                                 var tex = new Texture2D(_w, _h, TextureFormat.RGBA32, false);
                                 tex.LoadRawTextureData(Capture());
                                 tex.Apply();
-                                string file = $"{s.Scene}.{s.Id}.tide{tide:+0.0;-0.0;0.0}.{(view == 0 ? "off" : view == 1 ? "on" : "debug" + (view - 1))}.png";
+                                string file = $"{s.Scene}.{s.Id}.tide{tide:+0.0;-0.0;0.0}.{ViewName(view)}.png";
                                 SetMirrorDebugView(0);
                                 File.WriteAllBytes(Path.Combine(dir, file), tex.EncodeToPNG());
                                 Object.DestroyImmediate(tex);
@@ -222,6 +234,7 @@ namespace HiddenHarbours.Tests.PlayMode
                     GameServices.Config = config;
                     GameServices.Environment = held;
                     Object.DestroyImmediate(off);
+                    Object.DestroyImmediate(noMirror);
                     _follow.enabled = followEnabled;
                     foreach (Behaviour ppc in pixelCameras) if (ppc != null) ppc.enabled = true;
                     _cam.aspect = aspect; _cam.orthographicSize = ortho; _cam.transform.position = camAt;
