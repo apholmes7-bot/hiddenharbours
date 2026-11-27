@@ -52,6 +52,14 @@ namespace HiddenHarbours.Player
                  "record at all, which is legal: a thing you found is still a thing you can hold.")]
         public string GearId;
 
+        [Tooltip("Rod progression tier; zero for other equipment. The original rod remains tier one.")]
+        public int RodTier;
+
+        [Tooltip("Numeric fishing capability. Copied at cast start, never saved on a live fight.")]
+        public RodFishingProfile RodFishing = RodFishingProfile.Default;
+
+        public bool IsFishingRod => RodTier > 0 || Id == RodId;
+
         [Tooltip("One line for the pick-up message and later the tool rack's label. Greybox copy.")]
         [TextArea(2, 4)]
         public string Flavor;

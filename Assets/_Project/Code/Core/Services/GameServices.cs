@@ -337,6 +337,21 @@ namespace HiddenHarbours.Core
         private static ITraitService _traits;
 
         /// <summary>
+        /// Every player's rod-fishing skill (owner ruling 2026-11-25): effective rod numbers = the held
+        /// rod + the angler's own skill. Fishing reads and feeds it by player key, never a single "the
+        /// player" (co-op). Never null: a default session-only <see cref="RodSkillBook"/> is made on first
+        /// read; a test assigns its own. Cleared by <see cref="Reset"/>.
+        /// FLAG lead-architect: new Core contract (rod skill).
+        /// </summary>
+        public static IRodSkillBook RodSkills
+        {
+            get => _rodSkills ??= new RodSkillBook();
+            set => _rodSkills = value;
+        }
+
+        private static IRodSkillBook _rodSkills;
+
+        /// <summary>
         /// Hunger and tiredness (needs slice 1, owner ruling 2026-11-14): the local player's needs over
         /// <see cref="Save"/> and <see cref="Clock"/>. A seam reads the combined trait x needs factor through
         /// <see cref="CharacterFactors.Player"/>, never this directly. Never null: a default
@@ -1695,6 +1710,7 @@ namespace HiddenHarbours.Core
             Save = null;
             Appearance = null;           // → a fresh default on next read; drops any open preview
             Traits = null;               // → a fresh default on next read; drops its catalog and cache
+            RodSkills = null;            // → a fresh default on next read; every skill back to zero
             Needs = null;                // → a fresh default on next read; drops its stage baseline
             Body = null;                 // → a fresh default on next read
             Messes = null;               // → a fresh default on next read

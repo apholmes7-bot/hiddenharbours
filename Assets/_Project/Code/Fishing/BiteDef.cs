@@ -117,9 +117,11 @@ namespace HiddenHarbours.Fishing
         public int MaxPasses = 3;
 
         /// <summary>This Def's values as the plain profile the pure sim consumes (validated/clamped).</summary>
-        public BiteProfile ToProfile()
+        public BiteProfile ToProfile() => ToProfile(1f);
+
+        public BiteProfile ToProfile(float takeWindowMultiplier)
             => new BiteProfile(FalseNibblesMin, FalseNibblesMax, NibbleGapMinSeconds, NibbleGapMaxSeconds,
-                               NibbleDipSeconds, TakeWindowSeconds, ReturnChance01,
+                               NibbleDipSeconds, TakeWindowSeconds * takeWindowMultiplier, ReturnChance01,
                                ReturnDelayMinSeconds, ReturnDelayMaxSeconds, MaxPasses);
     }
 }
