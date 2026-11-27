@@ -68,6 +68,10 @@ namespace HiddenHarbours.Core
         public Color FaceBandColour;
         [Tooltip("How strongly that face band is laid, as a share of the mirror's strength.")]
         [Range(0f, 1f)] public float FaceBandShare;
+        [Tooltip("How strongly a deck's underside (UndersideDef, the timber or floats seen from below) is laid where " +
+                 "its reflected face draws no art, as a share of the mirror's strength. Replaces the face band and " +
+                 "the open-water gaps for a deck that names an underside; 0 lays none (the face band and gaps as before).")]
+        [Range(0f, 1f)] public float UndersideShare;
 
         public static WaterMirrorSettings Default => new WaterMirrorSettings
         {
@@ -76,6 +80,7 @@ namespace HiddenHarbours.Core
             FaceFeatherMetres = 0.12f,
             FaceBandColour = new Color(0.16f, 0.14f, 0.12f, 1f),
             FaceBandShare = 0.85f,
+            UndersideShare = 0.85f,
             SeaFadeStart = 0.15f,
             SeaFadeEnd = 0.75f,
             MaxMetres = 12f,
