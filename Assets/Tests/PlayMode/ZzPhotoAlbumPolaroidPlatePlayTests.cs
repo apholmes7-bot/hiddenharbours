@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using HiddenHarbours.App;
 using HiddenHarbours.Core;
+using HiddenHarbours.Environment;
 using HiddenHarbours.Player;
 using HiddenHarbours.World;
 using NUnit.Framework;
@@ -20,11 +21,13 @@ namespace HiddenHarbours.Tests.PlayMode
 {
     /// <summary>
     /// <b>The album's little Polaroids, seen</b> (owner 2026-11-26: "yes photoalbum should save small pictures
-    /// as little poloraids"). In St Peters, the shutter's capture takes real thumbnails of the shore at two
-    /// sizes, the PHOTO tab is opened on them, and the page is shot at 1920 x 1080 with a 3x crop of the
-    /// first Polaroid. Asserts the capture gives a whole thumbnail of the def's size and that the page draws
-    /// one card per picture with a point-filtered picture in it. Writes plates only when
-    /// <c>PHOTO_ALBUM_EVIDENCE</c> names a folder; ignored with no graphics device.
+    /// as little poloraids"). In St Peters at low water, the shutter's capture takes ten real pictures of the
+    /// seals on the Whelps, judged by the camera's own scoring, the PHOTO tab is opened on them, and the page
+    /// is shot at 1920 x 1080 with a 3x crop of one leaf; and he stands at the lookout with the camera up,
+    /// frames the seals and keeps one. Asserts the capture gives a whole thumbnail of the def's size, that the
+    /// page draws one card per picture with its line on the strip, and that the lookout picture is the one
+    /// Odile asks for. Writes plates only when <c>PHOTO_ALBUM_EVIDENCE</c> names a folder; ignored with no
+    /// graphics device.
     /// </summary>
     public class ZzPhotoAlbumPolaroidPlatePlayTests
     {
@@ -42,13 +45,39 @@ namespace HiddenHarbours.Tests.PlayMode
             public void Save() { }
         }
 
-        // Shore frames around the landing, metres from it: the wharf, the water off it, the beach.
-        static readonly Vector2[] Offsets =
+        /// <summary>The water the seals lie out at (the seal plates' "low").</summary>
+        const float LowWater = -2.0f;
+
+        /// <summary>Where he stands to look at the Whelps: beside the lookout bench above the cottage, outside the
+        /// seals' alert ring.</summary>
+        static readonly Vector2 LookoutStand = new Vector2(165.8f, -39.2f);
+
+        /// <summary>How each picture's frame sits on the seal it is aimed at, metres: a few frames square on, the
+        /// rest a little off, so the counts differ the way a player's would.</summary>
+        static readonly Vector2[] Nudges =
         {
-            new Vector2(0f, 0f), new Vector2(4f, -6f), new Vector2(-7f, -3f), new Vector2(8f, 3f),
-            new Vector2(-3f, 5f), new Vector2(10f, -2f), new Vector2(-10f, 2f), new Vector2(2f, -10f),
-            new Vector2(6f, 8f), new Vector2(-5f, -8f),
+            new Vector2(0f, 0f), new Vector2(2f, 1f), new Vector2(-2f, -1f), new Vector2(3f, -2f),
+            new Vector2(-3f, 2f), new Vector2(1f, -3f), new Vector2(-1f, 3f), new Vector2(4f, 0f),
+            new Vector2(-4f, 0f), new Vector2(0f, 2.5f),
         };
+
+        /// <summary>The scene's environment with the water held at one level (the key-scene plates' pattern).</summary>
+        sealed class HeldWater : IEnvironmentService
+        {
+            readonly IEnvironmentService _inner;
+            readonly float _level;
+            public HeldWater(IEnvironmentService inner, float level) { _inner = inner; _level = level; }
+            public int WorldSeed => _inner.WorldSeed;
+            public TideProfile ActiveTideProfile { get => _inner.ActiveTideProfile; set => _inner.ActiveTideProfile = value; }
+            public EnvironmentSample Sample()
+            {
+                var sample = _inner.Sample();
+                return new EnvironmentSample(sample.WindVector, sample.CurrentVector, _level,
+                    sample.SeaState, sample.Visibility, sample.SeaState01);
+            }
+            public float TideHeightAt(double seconds) => _level;
+            public float WaterLevelAt(double seconds) => _level;
+        }
 
         readonly List<Object> _made = new List<Object>();
 
@@ -61,6 +90,13 @@ namespace HiddenHarbours.Tests.PlayMode
                 book.Close();
                 book.WirePhotos(null);
                 book.ScreenPixelsOverride = null;
+            }
+            PlayerPhotoCamera camera = PlayerPhotoCamera.Instance;
+            if (camera != null)
+            {
+                camera.enabled = false;   // lowers it and gives the move keys back
+                camera.enabled = true;
+                camera.Configure(PhotoCameraDef.Load(), null);
             }
             foreach (Object o in _made) if (o != null) Object.Destroy(o);
             _made.Clear();
@@ -99,48 +135,169 @@ namespace HiddenHarbours.Tests.PlayMode
                 follow.OnControlModeChanged(new ControlModeChanged(ControlMode.OnFoot));
                 follow.TickZoom(100d);
             }
-            var anchor = Object.FindObjectsByType<RegionAnchor>(FindObjectsSortMode.None)
-                .Single(a => a.gameObject.scene.name == "StPeters");
-            Vector2 landing = anchor.DisembarkPoint != null ? (Vector2)anchor.DisembarkPoint.position : Vector2.zero;
             yield return new WaitForSecondsRealtime(0.5f);
+            SealHaulout host = null;
+            yield return HoldLowWater(h => host = h);
 
-            PhotoCameraDef shipped = PhotoCameraDef.Load();
-            Assert.IsNotNull(shipped, "the camera ships");
+            PhotoCameraDef def = PhotoCameraDef.Load();
+            Assert.IsNotNull(def, "the camera ships");
+            Assert.IsNull(def.ValidationError());
 
-            // The shipped size: ten pictures, enough for full rows of cards and a page turn.
-            foreach (int factor in new[] { 1 })
+            // Ten real pictures of the Whelps at low water, each aimed at one of the seals lying out, judged by
+            // the camera's own scoring from what the haul-out reports, so every caption names what is in it.
+            var sightings = new WildlifeSighting[64];
+            int seen = host.CopySightings(sightings);
+            var lying = sightings.Take(seen).Where(s => s.Visible).Select(s => s.WorldPosition).ToList();
+            Assert.GreaterOrEqual(lying.Count, 2, "seals lie out on the Whelps at low water");
+            Debug.Log($"[album plate] {lying.Count} seals in sight at water {LowWater}");
+
+            SaveData album = SaveMigration.NewGame();
+            var results = new PhotoSubjectResult[def.MaxSubjectsPerPhoto];
+            for (int i = 0; i < Nudges.Length; i++)
             {
-                PhotoCameraDef def = Object.Instantiate(shipped);
-                _made.Add(def);
-                def.ThumbnailWidthPx = shipped.ThumbnailWidthPx * factor;
-                def.ThumbnailHeightPx = shipped.ThumbnailHeightPx * factor;
-                def.PolaroidBorderPx = shipped.PolaroidBorderPx * factor;
-                def.PolaroidBottomBorderPx = shipped.PolaroidBottomBorderPx * factor;
-                Assert.IsNull(def.ValidationError());
-
-                SaveData album = SaveMigration.NewGame();
-                for (int i = 0; i < Offsets.Length; i++)
-                {
-                    Rect frame = PhotoScoring.FrameAt(def, landing + Offsets[i]);
-                    string thumbnail = PhotoThumbnailCapture.Take(def, frame);
-                    Assert.IsTrue(PhotoThumbnail.TryReadSize(thumbnail, out int w, out int h), "picture " + i);
-                    Assert.AreEqual(def.ThumbnailWidthPx, w);
-                    Assert.AreEqual(def.ThumbnailHeightPx, h);
-                    Assert.AreEqual(def.ThumbnailEncodedLength, thumbnail.Length);
-                    var subjects = new[]
-                    {
-                        new PhotoSubjectResult { SubjectId = "wildlife.grey_seal", Count = 1 + i, Pose = WildlifePose.Resting,
-                                                 Score = 40 + 15 * i },
-                    };
-                    Assert.IsNotNull(PhotoAlbumRows.Add(album, SavePlayerKeys.Local, 3600d * (8 + i), "region.st_peters",
-                                                        subjects, 1, def.AlbumCapacity, thumbnail));
-                    if (!string.IsNullOrEmpty(evidence))
-                        WriteThumbnail(thumbnail, Path.Combine(evidence, $"thumb-{def.ThumbnailWidthPx}x{def.ThumbnailHeightPx}-{i + 1}.png"));
-                }
-
-                List<NotebookPhotoEntry> entries = NotebookPhotoPage.Entries(album, SavePlayerKeys.Local, def, 86400f);
-                yield return ShootTheAlbum(main, entries, def, evidence);
+                Rect frame = PhotoScoring.FrameAt(def, lying[i % lying.Count] + Nudges[i]);
+                int kinds = PhotoScoring.Evaluate(def, LookoutStand, frame, sightings, seen, results);
+                Assert.Greater(kinds, 0, $"picture {i + 1} is aimed at a seal and holds none");
+                string thumbnail = PhotoThumbnailCapture.Take(def, frame);
+                Assert.IsTrue(PhotoThumbnail.TryReadSize(thumbnail, out int w, out int h), "picture " + i);
+                Assert.AreEqual(def.ThumbnailWidthPx, w);
+                Assert.AreEqual(def.ThumbnailHeightPx, h);
+                Assert.AreEqual(def.ThumbnailEncodedLength, thumbnail.Length);
+                PhotoRecordDto row = PhotoAlbumRows.Add(album, SavePlayerKeys.Local, 3600d * (8 + i), "region.st_peters",
+                                                        results, kinds, def.AlbumCapacity, thumbnail);
+                Assert.IsNotNull(row);
+                Debug.Log($"[album plate] picture {row.Number}: \"{NotebookPhotoPage.Caption(def, row)}\" score {row.Score} " +
+                          $"pose {results[0].Pose} frame centre ({frame.center.x:0.0}, {frame.center.y:0.0})");
+                if (!string.IsNullOrEmpty(evidence))
+                    WriteThumbnail(thumbnail, Path.Combine(evidence, $"thumb-{def.ThumbnailWidthPx}x{def.ThumbnailHeightPx}-{i + 1}.png"));
             }
+            Assert.IsTrue(PhotoAlbumRows.HasQualifying(album, SavePlayerKeys.Local, "wildlife.grey_seal", 2,
+                                                       WildlifePose.Alert, 30),
+                          "at least one of them is the picture Odile asks for");
+
+            List<NotebookPhotoEntry> entries = NotebookPhotoPage.Entries(album, SavePlayerKeys.Local, def, 86400f);
+            yield return ShootTheAlbum(main, entries, def, evidence);
+        }
+
+        /// <summary>
+        /// He stands by the lookout bench with the camera up and slides the frame onto the seals: the screen as
+        /// he sees it, viewfinder and all, then the shutter keeps a real picture of them in his album.
+        /// </summary>
+        [UnityTest, Timeout(240000)]
+        public IEnumerator HeFramesTheSealsFromTheLookout_WithTheCameraUp()
+        {
+            if (SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
+                Assert.Ignore("The capture and the screen need a graphics device.");
+            string evidence = System.Environment.GetEnvironmentVariable("PHOTO_ALBUM_EVIDENCE");
+
+            ShellRestart.DestroyPersistentCore();
+            GameServices.Reset();
+            ShellFlow.Reset();
+            var save = new MemorySave();
+            save.SetFlag(ArrivalOpening.ArrivedFlagKey, true);
+            GameServices.Save = save;
+            yield return HiddenHarbours.Tests.Support.SceneSettle.Load("StPeters", LoadSceneMode.Single);
+            yield return null;
+            yield return null;
+            ShellFlow.ContinueGame();
+            yield return null;
+
+            Camera main = Camera.main;
+            Assert.IsNotNull(main);
+            var follow = main.GetComponent<CameraFollow>();
+            if (follow != null)
+            {
+                follow.ScreenPixelsOverride = new Vector2Int(ScreenW, ScreenH);
+                follow.OnControlModeChanged(new ControlModeChanged(ControlMode.OnFoot));
+                follow.TickZoom(100d);
+            }
+            Transform player = GameServices.PlayerTransform;
+            Assert.IsNotNull(player, "the player is in St Peters");
+            SealHaulout host = null;
+            yield return HoldLowWater(h => host = h);
+
+            player.position = new Vector3(LookoutStand.x, LookoutStand.y, player.position.z);
+            var body = player.GetComponent<Rigidbody2D>();
+            if (body != null) { body.position = LookoutStand; body.linearVelocity = Vector2.zero; }
+            Physics2D.SyncTransforms();
+            yield return new WaitForSecondsRealtime(1.5f);
+
+            var sightings = new WildlifeSighting[64];
+            int seen = host.CopySightings(sightings);
+            var lying = sightings.Take(seen).Where(s => s.Visible).Select(s => s.WorldPosition).ToList();
+            Assert.GreaterOrEqual(lying.Count, 2, "seals lie out on the Whelps at low water");
+            Vector2 seals = Vector2.zero;
+            foreach (Vector2 p in lying) seals += p;
+            seals /= lying.Count;
+
+            if (PlayerPhotoCamera.Instance == null) PlayerPhotoCamera.Install();
+            PlayerPhotoCamera camera = PlayerPhotoCamera.Instance;
+            Assert.IsNotNull(camera, "the camera installs itself");
+            PhotoCameraDef def = PhotoCameraDef.Load();
+            var held = new HeldCameraIntents();
+            camera.Configure(def, held);
+            held.PressRaise();
+            yield return null;
+            held.Release();
+            yield return null;
+            Assert.IsTrue(camera.Model.IsUp, "P lifts the camera on foot with empty hands");
+
+            // Slide the frame onto the seals the way he would: hold the move keys toward them, let go there.
+            double steerUntil = Time.realtimeSinceStartupAsDouble + 8d;
+            while (Time.realtimeSinceStartupAsDouble < steerUntil)
+            {
+                Vector2 off = seals - camera.Model.FrameFor(player.position).center;
+                if (off.magnitude < 0.75f) break;
+                held.HoldAim(off.normalized);
+                yield return null;
+            }
+            held.Release();
+            yield return new WaitForSecondsRealtime(0.5f);
+            Rect framed = camera.Model.FrameFor(player.position);
+            Debug.Log($"[album plate] he stands at ({player.position.x:0.0}, {player.position.y:0.0}); seals' middle " +
+                      $"({seals.x:0.0}, {seals.y:0.0}); frame centre ({framed.center.x:0.0}, {framed.center.y:0.0}); " +
+                      $"view half-height {main.orthographicSize:0.0} m");
+            Assert.Less(Vector2.Distance(framed.center, seals), 3f, "the frame reaches the seals from the lookout");
+
+            if (!string.IsNullOrEmpty(evidence))
+                yield return Plate(main, null, Path.Combine(evidence, "framing-the-seals"));
+
+            held.PressShutter();
+            yield return null;
+            held.Release();
+            yield return null;
+            SaveData data = save.Current;
+            Assert.IsNotNull(data.Photos);
+            Assert.AreEqual(1, data.Photos.Count, "the shutter keeps one picture");
+            PhotoRecordDto kept = data.Photos[0];
+            Assert.IsTrue(PhotoThumbnail.IsValid(kept.Thumbnail), "with its little Polaroid");
+            Debug.Log($"[album plate] kept: \"{NotebookPhotoPage.Caption(def, kept)}\" score {kept.Score}");
+            Assert.IsTrue(PhotoAlbumRows.HasQualifying(data, SavePlayerKeys.Local, "wildlife.grey_seal", 2,
+                                                       WildlifePose.Alert, 30),
+                          "a picture of the seals from the lookout is the one Odile asks for");
+            if (!string.IsNullOrEmpty(evidence))
+                WriteThumbnail(kept.Thumbnail, Path.Combine(evidence, "framing-the-seals-kept.png"));
+            held.PressRaise();
+            yield return null;
+            held.Release();
+            yield return null;
+        }
+
+        /// <summary>The water held low until the drawn sea shows it, and every seal set again from the schedule at
+        /// that water, as on a region load.</summary>
+        static IEnumerator HoldLowWater(Action<SealHaulout> found)
+        {
+            var host = Object.FindAnyObjectByType<SealHaulout>();
+            Assert.IsNotNull(host, "St Peters holds the Whelps' seals");
+            Assert.IsNotNull(host.Haulout);
+            GameServices.Environment = new HeldWater(GameServices.Environment, LowWater);
+            double until = Time.realtimeSinceStartupAsDouble + 20d;
+            do { yield return null; }
+            while (Time.realtimeSinceStartupAsDouble < until &&
+                   Mathf.Abs(Shader.GetGlobalVector("_HHSeaLevelWorld").x - LowWater) > .01f);
+            host.Haulout = host.Haulout;
+            yield return new WaitForSecondsRealtime(1.5f);
+            found(host);
         }
 
         static IEnumerator ShootTheAlbum(Camera main, List<NotebookPhotoEntry> entries, PhotoCameraDef def, string evidence)
@@ -335,6 +492,7 @@ namespace HiddenHarbours.Tests.PlayMode
                     image.Apply();
                     File.WriteAllBytes(path + "-page.png", image.EncodeToPNG());
 
+                    if (cropTo == null) yield break;
                     var corners = new Vector3[4];
                     cropTo.GetWorldCorners(corners);
                     Vector2 a = RectTransformUtility.WorldToScreenPoint(uiCamera, corners[0]);
