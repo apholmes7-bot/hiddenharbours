@@ -212,7 +212,7 @@ namespace HiddenHarbours.App.Editor
                         var n=writer.Node(row.Id+"/"+anchor.Name,anchor.Name,row.At+(Vector2)anchor.Position,root);
                         writer.Mono(n,"climb","Assets/_Project/Code/World/WharfLadder.cs","HiddenHarbours.World","HiddenHarbours.World.WharfLadder",
                             new[]{"  _id: "+anchor.Name,"  _topElevationMeters: "+F(anchor.Position.z),"  _climbTopScreenOffset: "+F(NineMileCreekGroundPlan.LadderClimbTopScreenOffset),
-                                "  _spanWidthMetres: 0.45","  _spanSlowTickSeconds: 0.5","  _faceHeadingDegrees: 180","  _rungMetres: "+F(LadderBoardingMath.RigRungMetres),"  _standoffMetres: "+F(LadderBoardingMath.RigStandoffMetres)});
+                                "  _spanWidthMetres: 0.45","  _spanSlowTickSeconds: 0.5","  _faceHeadingDegrees: 180","  _rungMetres: "+F(LadderBoardingMath.RigRungMetres),"  _standoffMetres: "+F(LadderBoardingMath.RigStandoffMetres)}.Concat(NineMileCreekWharfLandSide.LadderKindFields()));
                     }
                 }
                 else if(row.Kind=="boat")

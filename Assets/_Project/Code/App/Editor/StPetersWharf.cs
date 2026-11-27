@@ -273,8 +273,9 @@ namespace HiddenHarbours.App.Editor
             for (float x = deck.xMax - 1.5f; x > deck.xMin + 1f; x -= BollardSpacing)
                 list.Add(new Fitting { Name = "bollard", Position = new Vector2(x, southEdge + inset) });
 
-            // Tyre fenders, offset from the bollards so they read as a separate run of gear.
-            for (float x = deck.xMax - 5.5f; x > deck.xMin + 2f; x -= BollardSpacing * 2)
+            // Fender strings down the mooring face, one per hanger in the face's fender run (data): each is
+            // a timber bolted to a pile from the lip to below spring low, tyres across the rub band.
+            foreach (float x in FenderRun().HangerXs)
                 list.Add(new Fitting { Name = "tyre", Position = new Vector2(x, southEdge) });
 
             // A ladder at the head — how you get aboard a shallow boat at low water, and the one fitting
@@ -448,6 +449,8 @@ namespace HiddenHarbours.App.Editor
                     // The kit's ladder slice is 0.63 m long on a 5.35 m deck: draw the full-length landing
                     // ladder instead, cut at the waterline by the same rule as the pier face it hangs on.
                     if (f.Name == "ladder") DressFullLengthLadder(go, sr, f.Position.y, deckElevation);
+                    // The kit's tyre slice hangs at the lip, where no hull reaches: draw the fender string.
+                    if (f.Name == "tyre") DressFenderString(go, sr, f.Position.y, deckElevation);
                     // The STANDERS cast (ADR 0016, lights PR B — the searchlight raking the wharf wants
                     // pilings to throw). Their pivot is their base, which is where a shadow anchors
                     // (ADR 0026); the hangers (ladder, tyre) pivot at the TOP and would throw from the
@@ -578,6 +581,22 @@ namespace HiddenHarbours.App.Editor
             face.Configure(lipWorldY, deckElevation);
             face.ConfigureHeight(AssetDatabase.LoadAssetAtPath<Texture2D>(map.path), map.minimumLocalZ,
                                  map.maximumLocalZ - map.minimumLocalZ, -deckElevation);
+        }
+
+        /// <summary>The pier's south (mooring) face fender run: where its strings hang.</summary>
+        public const string FenderRunPath = "Assets/_Project/Data/Regions/Fenders/FenderRun_StPetersSouth.asset";
+
+        public static HiddenHarbours.World.WharfFenderRunDef FenderRun() =>
+            AssetDatabase.LoadAssetAtPath<HiddenHarbours.World.WharfFenderRunDef>(FenderRunPath)
+            ?? throw new System.InvalidOperationException("[StPetersWharf] no fender run at " + FenderRunPath);
+
+        static void DressFenderString(GameObject go, SpriteRenderer sr, float lipWorldY, float deckElevation)
+        {
+            var art = HiddenHarbours.Tools.RigBaking.WharfFenderBaker.FaceArtFor(FenderRun().ArtKey);
+            sr.sprite = art.Sprite;
+            var face = go.AddComponent<TidalFaceWaterline>();
+            face.Configure(lipWorldY, deckElevation);
+            face.ConfigureHeight(art.Height, art.MinimumLocalZ, art.HeightRange, -deckElevation);
         }
 
         /// <summary>A sliced sheet's sub-sprites keyed by their trailing slice INDEX (the slicer names them

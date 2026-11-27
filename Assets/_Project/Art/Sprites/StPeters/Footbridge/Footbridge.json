@@ -1,5 +1,6 @@
 {
  "pixelsPerMetre": 32,
+ "axisDegrees": 26.56505,
  "spanMetres": 3,
  "widthMetres": 1.15,
  "railInsetMetres": 0.1,

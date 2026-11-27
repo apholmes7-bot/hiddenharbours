@@ -44,7 +44,18 @@ namespace HiddenHarbours.Tests.EditMode
             _sp = _spGo.AddComponent<TidalTerrain>();
             StPetersBuilder.ConfigureTidalTerrain(_sp);
             _spPlan = StPetersNavMarks.Plan(_sp);
+
+            // St Peters' marks are placed on the terrain plan's ground (the scene step's own path, since terrain
+            // PR 5 B); the analytic island the builder reads has no north-east bar, so the east cardinal off its tip
+            // is held to the ground it is placed on.
+            var seabed = UnityEditor.AssetDatabase.LoadAssetAtPath<PaintedHeightMap>(StPetersTerrainPlan.SeabedPath);
+            Assert.IsNotNull(seabed != null ? seabed.Field : null, StPetersTerrainPlan.SeabedPath + " did not load");
+            _spGround = new StPetersLayerRefresh.PlanGround(seabed.Field);
+            _spGroundPlan = StPetersNavMarks.Plan(_spGround);
         }
+
+        private ITidalTerrain _spGround;
+        private NavMarkPlanResult _spGroundPlan;
 
         [TearDown]
         public void TearDown()
@@ -330,7 +341,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void EveryCardinalsQuadrantPointsAwayFromItsDanger()
         {
             AssertCardinals("Nine Mile Creek", NineMileCreekNavMarks.Cardinals, _nmcPlan, _nmc.ElevationAt);
-            AssertCardinals("St Peters", StPetersNavMarks.Cardinals, _spPlan, _sp.ElevationAt);
+            AssertCardinals("St Peters", StPetersNavMarks.Cardinals, _spGroundPlan, _spGround.ElevationAt);
         }
 
         private static void AssertCardinals(string region, IReadOnlyList<NavCardinal> cardinals,
@@ -374,7 +385,7 @@ namespace HiddenHarbours.Tests.EditMode
         public void EveryAuthoredCardinalIsActuallyPlaced()
         {
             AssertNoCardinalRefused("Nine Mile Creek", NineMileCreekNavMarks.Cardinals, _nmcPlan);
-            AssertNoCardinalRefused("St Peters", StPetersNavMarks.Cardinals, _spPlan);
+            AssertNoCardinalRefused("St Peters", StPetersNavMarks.Cardinals, _spGroundPlan);
         }
 
         private static void AssertNoCardinalRefused(string region, IReadOnlyList<NavCardinal> cardinals,

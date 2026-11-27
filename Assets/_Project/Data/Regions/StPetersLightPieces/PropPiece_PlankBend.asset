@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f54899a1b1f36945962af0d3e6db371, type: 3}
+  m_Name: PropPiece_PlankBend
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.PropPieceDef
+  Id: proppiece.plank_bend
+  DisplayName: Plank walk bend
+  Layer: floor
+  Sprites:
+  - {fileID: 21300000, guid: a653ffcba1f82f9418c6dbfd309d714a, type: 3}
+  - {fileID: 21300000, guid: b01ddd1b98515734db6593a52f779571, type: 3}
+  - {fileID: 21300000, guid: 15cf9afc53eca36499e0c8be2e8ef95a, type: 3}
+  - {fileID: 21300000, guid: 8a42071c2e9528041bab49e19cc949c3, type: 3}
+  - {fileID: 21300000, guid: 0d584422a2333f54399b7060f119ee9f, type: 3}
+  - {fileID: 21300000, guid: 884d125025fb48f4883612d785e1eea4, type: 3}
+  - {fileID: 21300000, guid: efd2e3acc9ddef741a286ba25f2c39f3, type: 3}
+  - {fileID: 21300000, guid: 9e59e5a19439f73419204a06ed7952a9, type: 3}
+  - {fileID: 21300000, guid: 5bb620a91b3be7f4aacbf430383a772c, type: 3}
+  - {fileID: 21300000, guid: 6b3ee9632b8c0ba489199c494dfcb0d2, type: 3}
+  DirectionStepDegrees: 10
+  PlanLengthMetres: 0.9
+  HeightMetres: 0
+  RunColliderThicknessMetres: 0
+  Colliders: []
+  CastsShadow: 0

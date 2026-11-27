@@ -129,6 +129,10 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(scene.Docs.Count(d => owned.Contains(d.FileId) && d.IsScript(typeof(SceneLight).FullName)),
                 Is.EqualTo(3 + placements[0].Def.Beams), "the lantern, the flash, the keeper's lamp and the beams");
             Assert.That(scene.Docs.Count(d => owned.Contains(d.FileId) && d.IsScript(typeof(PreconfiguredLight).FullName)), Is.EqualTo(1));
+            var glass = scene.Docs.Where(d => owned.Contains(d.FileId) && d.IsScript(typeof(LanternGlassGlow).FullName)).ToList();
+            Assert.That(glass.Count, Is.EqualTo(1), "the lantern's glass, lit: one mesh, not one more lamp");
+            Assert.That(glass[0].Text.Split('\n').Count(l => l.TrimStart().StartsWith("- serializedVersion: 2")),
+                Is.EqualTo(placements[0].Def.GlassPanes.Length), "every pane the light list names");
             var lamp = scene.Docs.Single(d => owned.Contains(d.FileId) && d.IsScript(typeof(LightStationLamp).FullName));
             Assert.That(lamp.FieldRefs("_beams").Count(), Is.EqualTo(placements[0].Def.Beams));
             foreach (long beam in lamp.FieldRefs("_beams")) Assert.That(owned.Contains(beam), Is.True);

@@ -1,0 +1,74 @@
+{
+  "schema": "hidden-harbours/wharf-fender-recipes@1",
+  "ppu": 32,
+  "elevation": 40,
+  "facings": [
+    0,
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1
+  ],
+  "pieces": [
+    {
+      "id": "prop.wharf_fender_string_stp",
+      "defKey": "wharfFenderStringStp",
+      "key": "fenderString",
+      "scene": "keyscene.stp_landing",
+      "source": "docs/art/rigs/wharf-fender-kit/wharfFenders.js",
+      "global": "WharfFenders",
+      "options": {
+        "top": 5.354004,
+        "lowWater": -2.2,
+        "highWater": 2.2,
+        "freeboard": 1.0,
+        "footBelowLow": 0.5,
+        "weather": 0.35
+      },
+      "defType": "SetPieceDef",
+      "sourceSha256": "14146c8e206d3636ee1e1a004c0522770b0cec42dd959731b4a154b0f3cf0696",
+      "rigDir": 4
+    },
+    {
+      "id": "prop.wharf_fender_string_nmc",
+      "defKey": "wharfFenderStringNmc",
+      "key": "fenderString",
+      "scene": "keyscene.nmc_wharf",
+      "source": "docs/art/rigs/wharf-fender-kit/wharfFenders.js",
+      "global": "WharfFenders",
+      "options": {
+        "top": 3.4,
+        "lowWater": -2.2,
+        "highWater": 2.2,
+        "freeboard": 1.0,
+        "footBelowLow": 0.5,
+        "weather": 0.35
+      },
+      "defType": "SetPieceDef",
+      "sourceSha256": "14146c8e206d3636ee1e1a004c0522770b0cec42dd959731b4a154b0f3cf0696",
+      "rigDir": 4
+    },
+    {
+      "id": "prop.wharf_ladder_nmc",
+      "defKey": "wharfLadderNmc",
+      "key": "ladder",
+      "scene": "keyscene.nmc_wharf",
+      "source": "docs/art/rigs/st-peters-dock-props-kit/stPetersDockProps.js",
+      "global": "StPetersDockProps",
+      "options": {
+        "height": 6.2,
+        "top": 3.4,
+        "lowWater": -2.2,
+        "highWater": 2.2,
+        "rung": 0.3,
+        "standoff": 0.275
+      },
+      "defType": "SetPieceDef",
+      "sourceSha256": "ec4bd182a8dcf6e17310e1d1716d9e007ab499a3e7ec76864203d8534519b342",
+      "rigDir": 4
+    }
+  ]
+}

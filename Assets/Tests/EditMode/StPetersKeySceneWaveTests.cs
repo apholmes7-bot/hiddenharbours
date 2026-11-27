@@ -43,7 +43,8 @@ namespace HiddenHarbours.Tests.EditMode
             CollectionAssert.AreEquivalent(scenes.SelectMany(s => s.Pieces.Where(p => StPetersLayerRefresh.Places(s, p))).Select(p => p.Id),
                 placed.Select(p => p.Id));
             foreach (var piece in placed.Where(p => !p.IsPerch))
-                Assert.AreNotEqual(0, piece.Sprite.Sprite.FileId, piece.Id);
+                if (piece.Parts != null) Assert.IsTrue(piece.Parts.Count > 0 && piece.Parts.All(x => x.Sprite.Sprite.FileId != 0), piece.Id);
+                else Assert.AreNotEqual(0, piece.Sprite.Sprite.FileId, piece.Id);
         }
 
         [Test]

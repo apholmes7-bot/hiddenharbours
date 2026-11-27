@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f54899a1b1f36945962af0d3e6db371, type: 3}
+  m_Name: PropPiece_PicketPanel_fresh
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.PropPieceDef
+  Id: proppiece.picket_panel
+  DisplayName: Picket fence
+  Layer: raised
+  Sprites:
+  - {fileID: 21300000, guid: bcb33cbbbee652549a68ab636591e71a, type: 3}
+  - {fileID: 21300000, guid: 61c2aeb0de527aa4b99f30b1c8840ff2, type: 3}
+  - {fileID: 21300000, guid: 8ecf57c83fd1fb24d9aa54c0dca9a9d2, type: 3}
+  - {fileID: 21300000, guid: 2c1c837c6a124b541885ae088b5acc29, type: 3}
+  - {fileID: 21300000, guid: fd119b92bce9efb4f8048fa2eff806eb, type: 3}
+  - {fileID: 21300000, guid: b5f17d267f8af5844b4978ea9909d406, type: 3}
+  - {fileID: 21300000, guid: 98b5663df9980d3468742135845e9cec, type: 3}
+  - {fileID: 21300000, guid: 1580713d4e808664caffe7650ce6da30, type: 3}
+  - {fileID: 21300000, guid: 532a1e2bc18578c4b8dc33fb74d30b18, type: 3}
+  - {fileID: 21300000, guid: 583b59960b402ff4689f7137147925cb, type: 3}
+  DirectionStepDegrees: 10
+  PlanLengthMetres: 1.5
+  HeightMetres: 0.9
+  RunColliderThicknessMetres: 0.35
+  Colliders: []
+  CastsShadow: 0

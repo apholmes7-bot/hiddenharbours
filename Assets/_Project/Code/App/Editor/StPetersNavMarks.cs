@@ -184,8 +184,9 @@ namespace HiddenHarbours.App.Editor
         // =================================================================================================
 
         /// <summary>
-        /// <b>ONE cardinal, on the island's north shoulder — and the reason there is only one is the
-        /// nicest thing this region's coast plan says.</b>
+        /// <b>TWO cardinals: one on the island's north shoulder, and the east mark off the north-east bar
+        /// the light station watches. Why the south has none is the nicest thing this region's coast plan
+        /// says.</b>
         ///
         /// <para>The danger worth marking here is the reef apron, and the apron only exists where the
         /// coast is soft. Read <see cref="StPetersBuilder.CoastSectors"/>: bearings 0–76° are
@@ -216,7 +217,37 @@ namespace HiddenHarbours.App.Editor
                 SizeId = "s12",
                 ProbeMetres = 24f,
             },
+            // The north-east bar runs out from under the lantern stack and dries at its root; its tip still
+            // has under a metre and a half over it at a spring low. The light station's key scene stands an
+            // east cardinal off the tip, in the deep water a boat rounding the Head keeps to (the terrain plan
+            // holds that spot deep: TerrainPlanGuards.EastCardinalDeep), and the plan probes that the bed does
+            // fall away to its east.
+            //
+            // ⚠ It stands EastCardinalSouthOfTheRowMetres south of the key scene's row (259.8, 105.2), and that
+            // is the probe's finding, not a nudge. On the painted seabed the tip's shoal reaches about y 104
+            // (253.8, 103.2 reads -2.65 m) and the row's own line, y 105.2, is the -4 m floor all the way west:
+            // probed there the mark guards nothing and the plan refuses it (24 m: -4.00 either side). Two metres
+            // south the bar's tip lies due west of her (-2.65 m six metres west, -4.00 m six metres east, -4.00 m
+            // under her), which is what an east cardinal says. The probe is six metres: the tip's own width.
+            new NavCardinal
+            {
+                Id = EastCardinalId,
+                DisplayName = "St Peters north-east bar, east side",
+                Quadrant = NavCardinalQuadrant.East,
+                At = new Vector2((float)TerrainPlanGuards.EastCardinal.X,
+                                 (float)TerrainPlanGuards.EastCardinal.Y - EastCardinalSouthOfTheRowMetres),
+                SizeId = "s12",
+                ProbeMetres = 6f,
+            },
         };
+
+        /// <summary>The east cardinal's id: the light station key scene's own row (aid.stp_ne_bar_east_cardinal,
+        /// which names this list as the code that places it).</summary>
+        public const string EastCardinalId = "aid.stp_ne_bar_east_cardinal";
+
+        /// <summary>How far south of its key-scene row the east cardinal stands, so the bar's tip is due west of her
+        /// (measured on the painted seabed: see the note on <see cref="Cardinals"/>).</summary>
+        public const float EastCardinalSouthOfTheRowMetres = 2f;
 
         /// <summary>
         /// How far north/south of the island's centre a cardinal has to stand to be clear of the reef

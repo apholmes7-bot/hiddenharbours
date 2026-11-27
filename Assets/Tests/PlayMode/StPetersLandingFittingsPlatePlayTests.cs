@@ -30,8 +30,8 @@ namespace HiddenHarbours.Tests.PlayMode
             var held=GameServices.Environment;
             var tyres=Object.FindObjectsByType<SpriteRenderer>(FindObjectsSortMode.None)
                 .Where(x=>x.name=="Fitting_tyre"&&x.gameObject.scene.name==StPeters).OrderBy(x=>x.transform.position.x).ToArray();
-            Assert.AreEqual(2,tyres.Length);
-            var originals=new[]{tyres[0],tyres[1],GameObject.Find("prop.stp_landing_rope").GetComponent<SpriteRenderer>()};
+            Assert.GreaterOrEqual(tyres.Length,2,"the pier carries fender strings at both ends of its face");
+            var originals=new[]{tyres[0],tyres[tyres.Length-1],GameObject.Find("prop.stp_landing_rope").GetComponent<SpriteRenderer>()};
             var keys=new[]{"landingTyreWest","landingTyreEast","landingRope"};
             var ids=new[]{"prop.stp_landing_tyre_west","prop.stp_landing_tyre_east","prop.stp_landing_rope"};
             var positions=originals.Select(x=>x.transform.position).ToArray();
@@ -76,7 +76,8 @@ namespace HiddenHarbours.Tests.PlayMode
                             // Temporary art proof only. No scene, placement or production consumer is changed.
                             originals[i].sprite=defs[i].SpriteFor(SetPieceDef.FrameForRigDir(4));
                             Assert.AreNotSame(sprites[i],originals[i].sprite,keys[i]);
-                            if(i<2)
+                            // The pier's fender strings carry their own waterline cut; a second one cannot be added.
+                            if(i<2&&originals[i].GetComponent<TidalFaceWaterline>()==null)
                             {
                                 var m=maps.maps.Single(x=>x.key==keys[i]);var options=JsonUtility.FromJson<LandingFittingOptions>(defs[i].BakedOptionsJson);
                                 waters[i]=originals[i].gameObject.AddComponent<TidalFaceWaterline>();_spawned.Add(waters[i]);

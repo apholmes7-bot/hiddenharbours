@@ -17,7 +17,7 @@ MonoBehaviour:
   Kind: 0
   Width: 0.9
   Points:
-  - {x: 159.7, y: -39.85}
+  - {x: 159.7, y: -39.162}
   - {x: 160.6, y: -43.2}
   - {x: 162.4, y: -46.6}
   - {x: 165.5, y: -49.5}
@@ -30,4 +30,4 @@ MonoBehaviour:
   SourceId: path.stp_east_gap_path
   Frozen: 0
   PaintOnly: 1
-  Why: 'Down the East Gap ramp beside the brook (2.3 m north-east of it) to the pocket beach and the spit. The package''s line (island.json).'
+  Why: 'Down the East Gap ramp beside the brook (2.3 m north-east of it) to the pocket beach and the spit. The package''s line (island.json), its first point moved onto the cliff walk where that now runs square into the plank bridge.'

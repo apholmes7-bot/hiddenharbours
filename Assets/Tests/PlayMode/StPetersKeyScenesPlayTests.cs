@@ -145,6 +145,29 @@ namespace HiddenHarbours.Tests.PlayMode
                 Assert.AreEqual(p.At.y, at.y, Tolerance, $"{p.Id} stands at {at}");
                 Assert.AreEqual(0f, at.z, Tolerance, $"{p.Id} stands off the ground plane");
 
+                if (p.Parts != null)
+                {
+                    // A run piece (a fence, a walk): its object holds the walls, each child one picture.
+                    Assert.IsNull(piece.GetComponent<SpriteRenderer>(), $"{p.Id} draws on its run's object");
+                    CollectionAssert.AreEqual(p.Parts.Select(x => x.Name).ToList(), piece.Cast<Transform>().Select(t => t.name).ToList(),
+                                              $"{p.Id}'s pictures");
+                    foreach (var part in p.Parts)
+                    {
+                        Transform child = piece.Find(part.Name);
+                        Assert.That(Vector2.Distance(part.At, child.position), Is.LessThan(Tolerance), $"{part.Name} stands at {child.position}");
+                        var psr = child.GetComponent<SpriteRenderer>();
+                        Assert.IsNotNull(psr != null ? psr.sprite : null, $"{part.Name} draws nothing");
+                        (string pg, long pl) = AssetIdOf(psr.sprite);
+                        Assert.IsTrue(pg == part.Sprite.Sprite.Guid && pl == part.Sprite.Sprite.FileId, $"{part.Name} shows another picture");
+                        Assert.AreEqual(part.FlipX, psr.flipX, $"{part.Name}'s flip");
+                        Assert.AreEqual(part.SortingOrder, psr.sortingOrder, $"{part.Name}'s order");
+                        Assert.IsNull(child.GetComponent<YSortSprite>(), $"{part.Name} never moves: its order is written, it has no sorter");
+                    }
+                    var runWalls = piece.GetComponent<PolygonCollider2D>();
+                    Assert.AreEqual(p.Walls.Count, runWalls != null ? runWalls.pathCount : 0, $"{p.Id}'s walls");
+                    continue;
+                }
+
                 // Its facing is its cell: the frame or iso cell the step chose for CD's dir. The vane may
                 // already show the heading of the wind; any of its own headings is its own.
                 var sr = piece.GetComponent<SpriteRenderer>();
