@@ -77,12 +77,37 @@ namespace HiddenHarbours.Tests.PlayMode
             foreach (string v in d.Split(','))
             {
                 if (v.Trim() == "m") yield return NoMirrorView;
+                else if (v.Trim() == "h") for (int g = 0; g < HideGroups().Length; g++) yield return HiddenView - g;
                 else if (int.TryParse(v, out int n) && n > 0) yield return n + 1;
             }
         }
 
+        /// <summary>Views HiddenView, HiddenView-1, ... draw with the mirror on and one group of objects' renderers
+        /// switched off (HH_UNDERSIDE_PLATES_HIDE: groups split by ';', exact object names by ','; "h" in the debug
+        /// list adds them): what each group adds to the picture.</summary>
+        const int HiddenView = -2;
+
+        static string[] HideGroups()
+        {
+            string hide = System.Environment.GetEnvironmentVariable(UndersidePlatesVariable + "_HIDE");
+            return string.IsNullOrEmpty(hide) ? new string[0] : hide.Split(';').Where(g => g.Trim().Length > 0).ToArray();
+        }
+
+        static List<Renderer> HiddenRenderers(int view)
+        {
+            var found = new List<Renderer>();
+            string[] groups = HideGroups();
+            int g = HiddenView - view;
+            if (view > HiddenView || g >= groups.Length) return found;
+            var names = new HashSet<string>(groups[g].Split(',').Select(n => n.Trim()).Where(n => n.Length > 0));
+            foreach (Transform t in Object.FindObjectsByType<Transform>(FindObjectsInactive.Exclude))
+                if (names.Contains(t.name))
+                    found.AddRange(t.GetComponentsInChildren<Renderer>().Where(r => r.enabled));
+            return found;
+        }
+
         static string ViewName(int view) =>
-            view == NoMirrorView ? "nomirror" : view == 0 ? "off" : view == 1 ? "on" : "debug" + (view - 1);
+            view <= HiddenView ? "hidden" + (HiddenView - view) : view == NoMirrorView ? "nomirror" : view == 0 ? "off" : view == 1 ? "on" : "debug" + (view - 1);
 
         /// <summary>Looks only: the calm mirror's debug view (an internal static of the Art assembly).</summary>
         static void SetMirrorDebugView(float view)
@@ -186,6 +211,8 @@ namespace HiddenHarbours.Tests.PlayMode
                             {
                                 SetMirrorDebugView(view > 1 ? view - 1 : 0);
                                 GameServices.Config = view == NoMirrorView ? noMirror : view == 0 ? off : config;
+                                List<Renderer> hidden = HiddenRenderers(view);
+                                foreach (Renderer r in hidden) r.enabled = false;
                                 GameServices.Environment = new CalmPinnedTide(held, tide);
                                 Time.timeScale = 1f;
                                 float until = Time.realtimeSinceStartup + 20f;
@@ -220,6 +247,7 @@ namespace HiddenHarbours.Tests.PlayMode
                                 tex.Apply();
                                 string file = $"{s.Scene}.{s.Id}.tide{tide:+0.0;-0.0;0.0}.{ViewName(view)}.png";
                                 SetMirrorDebugView(0);
+                                foreach (Renderer r in hidden) if (r != null) r.enabled = true;
                                 File.WriteAllBytes(Path.Combine(dir, file), tex.EncodeToPNG());
                                 Object.DestroyImmediate(tex);
                                 numbers.Clear().AppendLine($"{file}\t{_w}x{_h}\tface {faceX},{faceY}\tframe ({x0:0.###},{y0:0.###})-({x1:0.###},{y1:0.###})\t" +
