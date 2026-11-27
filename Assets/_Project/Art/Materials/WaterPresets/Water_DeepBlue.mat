@@ -110,6 +110,8 @@ Material:
     - _ShoreSlopeFloor: 0.15
     - _ShorewardBias: 0.7
     - _ShorewardFalloff: 2.5
+    - _ShoreWetFilmCut: 0.2
+    - _ShoreWetFilmTone: 0.5
     - _SpecAmount: 0.28
     - _SpecSharpness: 18
     - _SparkleTexScale: 0.5

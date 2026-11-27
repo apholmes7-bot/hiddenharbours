@@ -6615,13 +6615,18 @@ One pixel size on screen for everything: the sea now changes colour only on art-
   buffer, depth ramp, curl hand-off) or explicit gradients from the UNSNAPPED position (the painted
   untile reads, the shallows floor). The object reflection reads its screen texel from the snapped cell's
   centre. 0 = the older per-screen-pixel read.
-- **The shore foam's tones: snapped strokes, never dither.** The shore line, the wash residue, the foam
-  left on the sand and the wet film keep their lace shape, extent and motion, read at the art cell's
+- **The shore foam's tones: snapped strokes, never dither.** The shore line and the wash residue keep
+  their lace shape, extent and motion, read at the art cell's
   centre, and are drawn in flat tones chosen by a HARD threshold (`ShoreToneHard`): `_ShoreFoamTones` 2
   = a full core at or above `_ShoreFoamCut` (0.5 of its ceiling) and one softer edge tone
   `_ShoreFoamEdgeTone` (0.5) at or above `_ShoreFoamEdgeCut` (0.2); 1 = the core only; 0 = the smooth
   coverage. A first cut dithered these tones on the world Bayer cell and the lace broke into confetti
   (the owner had rejected a "screen door" wash before), so dither is kept for the depth colour only.
+- **The see-through sheets.** The wet film and the foam left on the sand never take the full-white core: the
+  core cut drew the calm high-water shore's left foam as a solid pale strip that hid the pebbles (rejected).
+  Each is ONE flat translucent tone, `_ShoreWetFilmTone` (0.5, about the smooth film's mean opacity), inside
+  a hard cut at `_ShoreWetFilmCut` (0.2) on the art cell (`ShoreSheetFlat`); past the film the water stays
+  whole. No dither, no gradient.
 - **The shore lace over the cell's corners.** `_ShoreLaceCellMax` (default 1): on the art grid the shore's
   lace (`FoamSheetShoreLace`) is read as the max over the art cell's four corners, not its centre, so a vein
   thinner than a cell lights every cell it crosses. It can only keep foam the centre read lost (a higher

@@ -1195,6 +1195,10 @@ Shader "HiddenHarbours/Water"
         _ShoreFoamCut      ("Shore foam core cut (0..1 of its ceiling)", Range(0,1)) = 0.5
         _ShoreFoamEdgeCut  ("Shore foam edge cut (0..1 of its ceiling)", Range(0,1)) = 0.2
         _ShoreFoamEdgeTone ("Shore foam edge tone (0..1 of its ceiling)", Range(0,1)) = 0.5
+        // The wet film on the art grid is never the foam's full core: one flat translucent tone (about the smooth
+        // film's mean opacity) inside its outer cut, so the ground shows through it.
+        _ShoreWetFilmCut   ("Shore wet film: outer cut (0..1 of its thinning)", Range(0,1)) = 0.2
+        _ShoreWetFilmTone  ("Shore wet film: its one flat opacity", Range(0,1)) = 0.5
         // ---- LACE: the "like real foam" half of the 2026-08-05 pass -------------------------------
         // The buffer stores COVERAGE — how much churn is on this patch of sea — which is the right
         // QUANTITY and the wrong SHAPE. Thresholding a smooth accumulation yields a rounded, solid
@@ -1774,6 +1778,8 @@ Shader "HiddenHarbours/Water"
                 float  _ShoreFoamCut;
                 float  _ShoreFoamEdgeCut;
                 float  _ShoreFoamEdgeTone;
+                float  _ShoreWetFilmCut;
+                float  _ShoreWetFilmTone;
                 // Deep-blue enrichment (bounded base-colour pull toward a rich navy in deep water).
                 float  _DeepBlueStrength;
                 float4 _DeepBlueColor;
@@ -2396,6 +2402,20 @@ Shader "HiddenHarbours/Water"
                 if (_ShoreFoamTones < 0.5) return v01;
                 if (v01 >= _ShoreFoamCut) return 1.0;
                 return (_ShoreFoamTones >= 1.5 && v01 >= _ShoreFoamEdgeCut) ? saturate(_ShoreFoamEdgeTone) : 0.0;
+            }
+
+            // THE SEE-THROUGH SHEETS ON THE ART GRID (the wet film and the foam left on the sand): a 0..1 cover
+            // to ONE flat translucent tone by a hard threshold, so the ground still shows through. No dither.
+            float ShoreSheetFlat(float v01)
+            {
+                return (v01 >= _ShoreWetFilmCut) ? saturate(_ShoreWetFilmTone) : 0.0;
+            }
+
+            // The wet film's thinning (1 = the whole water past the film): the water past the film stays whole.
+            float ShoreWetFilmFlat(float film01)
+            {
+                if (film01 >= 0.999) return 1.0;
+                return ShoreSheetFlat(film01);
             }
 
             // ---- cheap value noise (hash-lattice, smooth interpolation). Deterministic, no textures. ----
@@ -6787,11 +6807,13 @@ Shader "HiddenHarbours/Water"
                     leftFoamA = smoothstep(leftThr - leftSoft, leftThr + leftSoft, saturate(leftChurn + leftFade * 0.75))
                               * leftFade * washPresence * min(saturate(_WashLeftFoamOpacity), saturate(_WashMaxCover));
                     leftFoamA *= boreEdgeLeeFade;          // fades into a lee with the run-up that left it
-                    // THE ART GRID's tones (owner ruling 2026-11-26): the same shape, in flat tones of its own
-                    // ceiling chosen by a hard threshold (ShoreToneHard). 0 tones = smooth.
+                    // THE ART GRID's left foam (owner, 2026-11-26: a calm high-water shore drew it as a solid pale
+                    // band, rejected; the ground must show through): never the full-white core. The same shape, cut
+                    // at the art cell by a hard threshold into ONE flat translucent tone of its own ceiling, the wet
+                    // film's (ShoreSheetFlat). No dither, no gradient. 0 tones = smooth.
                     float leftCeil = min(saturate(_WashLeftFoamOpacity), saturate(_WashMaxCover));
                     if (_ShoreFoamTones >= 0.5 && leftCeil > 1e-4)
-                        leftFoamA = ShoreToneHard(leftFoamA / leftCeil) * leftCeil;
+                        leftFoamA = ShoreSheetFlat(leftFoamA / leftCeil) * leftCeil;
                 }
 
                 float dt = saturate((depth - _ShallowDepth) / max(_DeepDepth - _ShallowDepth, 1e-3));
@@ -6818,9 +6840,12 @@ Shader "HiddenHarbours/Water"
                 if (_ShoreThinEdge.y > 0.0)
                 {
                     float wetFilm = smoothstep(0.0, _ShoreThinEdge.y, washEdgeQ);
-                    // THE ART GRID's tones: the film thins in flat steps chosen by a hard threshold.
+                    // THE ART GRID's film (owner, 2026-11-26: the film must stay see-through): never the foam's
+                    // full-white core. Inside the film it is ONE flat translucent tone, _ShoreWetFilmTone, cut at its
+                    // outer edge by a hard threshold (_ShoreWetFilmCut) on the art cell; past the film the water is
+                    // whole as before. No dither, no gradient. _ShoreFoamTones 0 = the smooth film.
                     if (_ShoreFoamTones >= 0.5)
-                        wetFilm = ShoreToneHard(wetFilm);
+                        wetFilm = ShoreWetFilmFlat(wetFilm);
                     col.a *= wetFilm;
                 }
 
