@@ -39,6 +39,45 @@ namespace HiddenHarbours.Tests.EditMode
             public AnglerLook Look => LookValue;
         }
 
+        private sealed class FakeApproachStand : IAnglerStand, IAnglerApproach
+        {
+            public FishingState State;
+            public float Seconds;
+            public AnglerLook LookValue;
+            public string FishId;
+            public float SecondsToBite = float.NaN;
+
+            public bool TryGetAnglerState(out FishingState state, out float secondsInPhase)
+            {
+                state = State;
+                secondsInPhase = Seconds;
+                return true;
+            }
+
+            public AnglerLook Look => LookValue;
+
+            public bool TryGetApproach(out string fishId, out float weightKg, out float secondsToBite)
+            {
+                fishId = FishId;
+                weightKg = 2f;
+                secondsToBite = SecondsToBite;
+                return FishId != null;
+            }
+        }
+
+        private sealed class FakeSwimArt : ISwimFishArt
+        {
+            public Sprite Cell;
+            public SwimFishPose LastPose;
+            public bool TrySwimCell(string speciesId, SwimFishPose pose, float headingRadians, double seconds, out Sprite cell)
+            {
+                cell = speciesId == "fish.atlantic_cod" ? Cell : null;
+                if (pose != SwimFishPose.Shadow) LastPose = pose;
+                return cell != null;
+            }
+            public float PoseSeconds(SwimFishPose pose) => pose == SwimFishPose.Roll ? 0.52f : 0.72f;
+        }
+
         private sealed class ScriptedClock : IGameClock
         {
             public double TotalSeconds { get; private set; }
@@ -175,6 +214,80 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsNull(service.Attach(host, null));
         }
 
+        [Test]
+        public void TheFishComingIn_IsDrawnOnlyOverTheLastOfHisWait_AndStaysWithHerThroughTheDeepFight()
+        {
+            ISwimFishArt previousArt = SwimFishArt.Service;
+            var tex = Track(new Texture2D(2, 2));
+            SwimFishArt.Service = new FakeSwimArt { Cell = Track(Sprite.Create(tex, new Rect(0, 0, 2, 2), Vector2.zero)) };
+            try
+            {
+                AnglerLook look = Stand().LookValue;
+                look.FishDrawScale = 2;
+                look.Approach = new AnglerApproachLook
+                {
+                    Seconds = 3f, FadeInSeconds = 0.5f, FromM = 4f, OffLineDegrees = 30f, SwingM = 0.5f,
+                    CircleM = 0.9f, CircleDegrees = 270f, CircleSeconds = 1f, PauseSeconds = 0.5f, TakeSeconds = 0.3f,
+                    PauseBeatRate = 0.5f, TakeBeatRate = 2f, HookBlendSeconds = 0.6f, SortingOrder = -3, Alpha01 = 0.8f,
+                    BodyTint = new Color(0.45f, 0.5f, 0.55f, 1f), DepthFadeM = 4f, DeepAlpha01 = 0.55f,
+                    BedShadowColor = new Color(0f, 0f, 0f, 0.45f), BedShadowOffsetPerM = new Vector2(0.1f, -0.2f),
+                    BedShadowMaxDepthM = 2.5f,
+                };
+                var stand = new FakeApproachStand { LookValue = look, State = Phase(FishingPhase.Waiting), Seconds = 1f };
+                NpcAnglerPresenter p = Presenter(stand);
+
+                p.Present(10);
+                Assert.IsFalse(p.ApproachRenderer.enabled, "drawn with no fish coming");
+
+                stand.FishId = "fish.atlantic_cod";
+                stand.SecondsToBite = 5f;
+                p.Present(11);
+                Assert.IsFalse(p.ApproachRenderer.enabled, "drawn before her approach began");
+
+                stand.SecondsToBite = 1f;
+                p.Present(12);
+                Assert.IsTrue(p.ApproachRenderer.enabled, "not drawn as she comes in");
+                Assert.AreEqual(-3, p.ApproachRenderer.sortingOrder);
+                Vector3 drawn = p.ApproachRenderer.transform.lossyScale;
+                Assert.AreEqual(2f, drawn.x, 1e-5f, "not drawn at the look's whole-number scale");
+                Assert.AreEqual(2f, drawn.y, 1e-5f);
+                Assert.IsTrue(p.BedShadowRenderer.enabled, "no shadow on the bed in thin water");
+                Assert.AreEqual(-4, p.BedShadowRenderer.sortingOrder, "her shadow must sit under her");
+
+                // Her flank flashes as she turns into the circle (swim-in = 3 - 1 - 0.5 - 0.3 = 1.2 s).
+                stand.SecondsToBite = 3f - 1.2f - 0.1f;
+                p.Present(121);
+                Assert.AreEqual(SwimFishPose.Roll, ((FakeSwimArt)SwimFishArt.Service).LastPose, "no flank flash at her turn");
+                Assert.AreEqual(1f, p.ApproachRenderer.color.r, 1e-5f, "the flash is drawn as baked, untinted");
+
+                stand.FishId = "fish.soft_shell_clam";
+                p.Present(13);
+                Assert.IsFalse(p.ApproachRenderer.enabled, "a species with no swim art was drawn");
+
+                stand.FishId = null;
+                stand.State = new FishingState(FishingPhase.FightDeep, 0.5f, 0.2f, "fish.atlantic_cod", "fish.atlantic_cod",
+                                               default, 2f, 0.6f, false, 0.5f, 0.5f, 3f, 0f, 0f, 6f, 0f, 1f, 0f, 0.5f);
+                p.Present(14);
+                Assert.IsTrue(p.ApproachRenderer.enabled, "not drawn under the water in the deep fight");
+                Vector3 at = p.ApproachRenderer.transform.position - p.transform.position;
+                Assert.AreEqual(0.5f, at.x, 1e-4f);
+                Assert.AreEqual(3f, at.y, 1e-4f, "not drawn where the fight has her");
+                Assert.AreEqual(SwimFishPose.Thrash, ((FakeSwimArt)SwimFishArt.Service).LastPose, "hooked, she must thrash");
+
+                // At the strike she is still on the bait: the hook-set never jumps her out to the fight.
+                stand.Seconds = 0f;
+                p.Present(141);
+                Vector3 struck = p.ApproachRenderer.transform.position - p.transform.position;
+                Assert.AreEqual(stand.State.CastAimX, struck.x, 0.03f);
+                Assert.AreEqual(stand.State.CastAimY, struck.y, 0.03f, "she jumped off the bait at the strike");
+
+                stand.State = Phase(FishingPhase.FightSurface);
+                p.Present(15);
+                Assert.IsFalse(p.ApproachRenderer.enabled, "still drawn after she surfaced");
+            }
+            finally { SwimFishArt.Service = previousArt; }
+        }
+
         // ================================================================ harness
 
         private FakeAnglerStand Stand()
@@ -195,7 +308,7 @@ namespace HiddenHarbours.Tests.EditMode
             };
         }
 
-        private NpcAnglerPresenter Presenter(FakeAnglerStand stand)
+        private NpcAnglerPresenter Presenter(IAnglerStand stand)
         {
             GameObject host = Track(new GameObject("NpcAngler"));
             host.AddComponent<SpriteRenderer>();

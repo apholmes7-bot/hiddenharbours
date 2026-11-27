@@ -28,7 +28,7 @@ namespace HiddenHarbours.Tests.EditMode
             CastBackSeconds = 1f, CastSeconds = 1.5f, WaitMinSeconds = 3f, WaitMaxSeconds = 8f,
             BiteSeconds = 1.2f, StrikeSeconds = 0.6f,
             DeepMinSeconds = 4f, DeepMaxSeconds = 8f, SurfaceMinSeconds = 3f, SurfaceMaxSeconds = 6f,
-            LandSeconds = 2.5f, EmptyRetrieveSeconds = 3f,
+            LandSeconds = 2.5f, EmptyRetrieveSeconds = 3f, LandLiftSeconds = 1f,
             CastReachM = 6f, CastBearingDegrees = 0f, CastBearingJitterDegrees = 20f,
             RunSwingM = 1.5f, TensionMin01 = 0.3f, TensionMax01 = 0.8f, FightWaveHz = 0.4f,
         };
@@ -201,6 +201,52 @@ namespace HiddenHarbours.Tests.EditMode
             min.WaitMaxSeconds = 1f;
             Assert.IsFalse(min.IsValid(out _));
             Assert.IsTrue(Script().IsValid(out string none), none);
+
+            AnglerScript noLift = Script();
+            noLift.LandLiftSeconds = 0f;
+            Assert.IsFalse(noLift.IsValid(out string whyLift));
+            StringAssert.Contains("lift", whyLift);
+            AnglerScript longLift = Script();
+            longLift.LandLiftSeconds = longLift.LandSeconds + 0.5f;
+            Assert.IsFalse(longLift.IsValid(out _));
+        }
+
+        [Test]
+        public void TheOneShotBeats_ScrubOncePass_ThenHoldTheirLastFrame_AndTheLoopsStayLoops()
+        {
+            // castRelease, strike and land are one gesture each: scrubbed 0..1 once and held at 1, so a
+            // skin whose clip loops still reads as one throw, one strike and one lift. bite and reel loop.
+            AnglerScript script = Script();
+            var oneShot = new[] { "castBack", "castRelease", "strike", "land" };
+            var looping = new[] { "hold", "bite", "reel" };
+            for (long slot = 0; slot < 6; slot++)
+            {
+                double start = AnglerTimeline.SlotStartSeconds(in script, Seed, KeyHash, slot);
+                var last = new Dictionary<string, float>();
+                var reachedOne = new HashSet<string>();
+                for (double t = start; t < start + script.SlotSeconds; t += Step)
+                {
+                    AnglerBeat b = At(in script, t);
+                    if (b.StateKey == null) continue;
+                    if (Array.IndexOf(looping, b.StateKey) >= 0)
+                    {
+                        Assert.IsTrue(float.IsNaN(b.Scrub01), $"{b.StateKey} is a loop but was scrubbed");
+                        continue;
+                    }
+                    Assert.Contains(b.StateKey, oneShot, $"an unexpected state key {b.StateKey}");
+                    Assert.That(b.Scrub01, Is.InRange(0f, 1f), $"{b.StateKey} scrub out of range");
+                    if (last.TryGetValue(b.StateKey, out float prev))
+                        Assert.GreaterOrEqual(b.Scrub01, prev, $"{b.StateKey} played back on itself (slot {slot})");
+                    last[b.StateKey] = b.Scrub01;
+                    if (b.Scrub01 >= 1f) reachedOne.Add(b.StateKey);
+                    if (b.StateKey == "land" && b.SecondsInPhase >= script.LandLiftSeconds)
+                        Assert.AreEqual(1f, b.Scrub01, "the lift is over but the landing still moves");
+                }
+                // The strike hands over to the reel at its own end, so a sampled strike stops one step short of 1.
+                Assert.Greater(last["strike"], 1f - 2f * (float)Step / script.StrikeSeconds,
+                               $"the strike never played through (slot {slot})");
+                Assert.IsTrue(reachedOne.Contains("land"), $"the lift never finished (slot {slot})");
+            }
         }
 
         [Test]

@@ -138,6 +138,35 @@ namespace HiddenHarbours.World
         /// <summary>Each destination's optional hidden mark. Empty keeps the existing day.</summary>
         public readonly bool[] OutOfSight;
 
+        /// <summary>What each block's villager DOES at its station (<see cref="RoutineEntry.Doing"/>), or
+        /// null. Empty for a day planned before activities existed: every block then does nothing more.</summary>
+        public readonly NpcActivityDef[] Doings;
+
+        /// <summary>The activity block <paramref name="block"/> names, or null (out of range included).</summary>
+        public NpcActivityDef DoingAt(int block) =>
+            block >= 0 && block < Doings.Length ? Doings[block] : null;
+
+        /// <summary>
+        /// The game hours, at <paramref name="hourOfDay"/>, since this block's villager ARRIVED at its station
+        /// (negative while still walking) and until the next block sets off (both on the hour clock, so
+        /// midnight wraps as the day does). Pure. A caller turns them into seconds of its own clock.
+        /// </summary>
+        public void StationWindowAt(float hourOfDay, float secondsPerGameHour, out int block,
+                                    out float hoursSinceArrival, out float hoursUntilDeparture)
+        {
+            block = -1;
+            hoursSinceArrival = 0f;
+            hoursUntilDeparture = 0f;
+            if (BlockCount == 0) return;
+            block = RoutineSchedule.BlockIndexAt(hourOfDay, DepartureHours);
+            float elapsed = RoutineSchedule.ElapsedHours(hourOfDay, DepartureHours[block]);
+            float length = RoutineSchedule.ElapsedHours(DepartureHours[(block + 1) % BlockCount],
+                                                        DepartureHours[block]);
+            if (BlockCount == 1 || length <= 0f) length = RoutineSchedule.HoursPerDay;
+            hoursSinceArrival = elapsed - TravelHours(block, secondsPerGameHour);
+            hoursUntilDeparture = length - elapsed;
+        }
+
         public static bool IsVisible(RoutineShelter shelter, bool sharesInterior) =>
             shelter != RoutineShelter.OutOfSight &&
             (shelter == RoutineShelter.Outdoors || sharesInterior);
@@ -156,8 +185,10 @@ namespace HiddenHarbours.World
                            float[] routeLengthMetres, RoutineActivity[] activities,
                            float[] standHeadingDegrees, float[] exitAtMetres, float[] enterAtMetres,
                            float walkSpeedMetresPerSecond, bool[] interruptible = null,
-                           float catchUpSpeedMetresPerSecond = 0f, bool[] outOfSight = null)
+                           float catchUpSpeedMetresPerSecond = 0f, bool[] outOfSight = null,
+                           NpcActivityDef[] doings = null)
         {
+            Doings = doings ?? System.Array.Empty<NpcActivityDef>();
             DepartureHours = departureHours ?? System.Array.Empty<float>();
             Waypoints = waypoints ?? System.Array.Empty<Vector2>();
             RouteStart = routeStart ?? System.Array.Empty<int>();
