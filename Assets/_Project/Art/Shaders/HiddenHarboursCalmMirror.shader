@@ -54,9 +54,22 @@ Shader "Hidden/HiddenHarbours/CalmMirror"
             #define HH_MAX_TOPS 24
             float4 _CalmMirrorTopA[HH_MAX_TOPS];   // corners 0, 1 of a deck top as drawn (world xy)
             float4 _CalmMirrorTopB[HH_MAX_TOPS];   // corners 2, 3
-            float4 _CalmMirrorTopH[HH_MAX_TOPS];   // x: the face under the front edge, height on screen (world units)
+            float4 _CalmMirrorTopH[HH_MAX_TOPS];   // x: the face under the front edge, height on screen (world units); y fascia rows, z 1 = has an underside
             float4 _CalmMirrorTops;                // x count, y snap (world), z feather (world), w face band share
             float4 _CalmMirrorBand;                // rgb: the face band colour, before the day/night tint
+            // Undersides (UndersideDef): one sheet, each quad's cell in texels (x, y, w, h); _CalmMirrorUnder.x the share laid.
+            float4 _CalmMirrorTopU[HH_MAX_TOPS];
+            float4 _CalmMirrorUnder;
+            TEXTURE2D(_CalmMirrorUnderTex);
+            // UndersideMath.Texel: columns wrap across the cell, the fascia rows are laid once, the rows above repeat.
+            int2 UnderTexel(int i, float artX, float rowFromFar)
+            {
+                float4 cell = _CalmMirrorTopU[i];
+                float f = _CalmMirrorTopH[i].y, x = artX - floor(artX / max(cell.z, 1.0)) * max(cell.z, 1.0);
+                float r = max(rowFromFar, 0.0), p = max(cell.w - f, 1.0);
+                if (r >= f) r = f + (r - f) - floor((r - f) / p) * p;
+                return int2((int)(cell.x + x), (int)(cell.y + r));
+            }
 
             // The span [lo, hi] of deck quad i down the column at world x; false where the column misses it.
             bool TopColumn(int i, float x, out float lo, out float hi)
@@ -200,7 +213,10 @@ Shader "Hidden/HiddenHarbours/CalmMirror"
                             float lo, hi;
                             if (!TopColumn(ti, world.x, lo, hi)) continue;
                             float wl = lo - _CalmMirrorTopH[ti].x;
-                            if (baseY >= wl - snap && baseY <= hi && (capI < 0 || lo < capLo)) { capI = ti; capLo = lo; capWl = wl; }
+                            // A base below the waterline inside the face's own band is a hanger cut by the water (a
+                            // tyre string, a ladder): mirror the face about the real waterline, never about its tip.
+                            bool hung = world.y < wl - snap && baseY >= wl - _CalmMirrorTopH[ti].x;
+                            if ((baseY >= wl - snap || hung) && baseY <= hi && (capI < 0 || lo < capLo)) { capI = ti; capLo = lo; capWl = wl; }
                             if (lo <= flipY && hi >= baseY) pastTop = true;
                         }
                         float reachD = basePx;
@@ -221,6 +237,13 @@ Shader "Hidden/HiddenHarbours/CalmMirror"
                                 bool topOnly = baseY >= capLo - snap;
                                 float3 col = art ? m.rgb : _CalmMirrorBand.rgb * tint;
                                 float share = art ? StandShare(m.a) : (topOnly ? _CalmMirrorTops.w : 0.0);
+                                if (!art && _CalmMirrorTopH[capI].z > 0.5 && _CalmMirrorUnder.x > 0.0)
+                                {
+                                    // The underside seen from below, on the world's art grid: its far rows the edge beam.
+                                    int2 ut = UnderTexel(capI, floor((_CalmMirrorRect.x + fs.x * _CalmMirrorRect.z) * ppm), floor((faceTop - below) * ppm));
+                                    col = LOAD_TEXTURE2D(_CalmMirrorUnderTex, ut).rgb * tint;
+                                    share = _CalmMirrorUnder.x;
+                                }
                                 float feather = saturate((faceTop - below) / max(_CalmMirrorTops.z, 1e-4));
                                 float reach = 1.0 - smoothstep(_CalmMirrorReach.x, max(_CalmMirrorReach.y, _CalmMirrorReach.x + 1.0), below / mPerPx);
                                 float w = saturate(strength * water * share * (1.0 - brk) * reach * feather);
