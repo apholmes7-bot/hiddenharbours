@@ -197,16 +197,18 @@
     sleep:{frames:6,ms:640}, drive:{frames:6,ms:170}, reach:{frames:6,ms:100,oneShot:true,settle:true},
     astride:{frames:6,ms:170}, astrideStand:{frames:8,ms:120}, mountUp:{frames:16,ms:80,oneShot:true,settle:true},
     mountDown:{frames:14,ms:85,oneShot:true,settle:true}, mountCab:{frames:18,ms:80,oneShot:true,settle:true},
-    mountCabDown:{frames:16,ms:85,oneShot:true,settle:true} };
+    mountCabDown:{frames:16,ms:85,oneShot:true,settle:true},
+    idleShift:{frames:12,ms:200,oneShot:true}, idleScratch:{frames:13,ms:200,oneShot:true}, idleHips:{frames:16,ms:250,oneShot:true} };
   /* the shipped table as a string, so the timing gate compares against something that is not this object */
-  const ANIMS_SHIPPED = 'idle 6/170 walk 8/110 run 6/80 hold 6/170 cast 10/70 dig 10/90 balance 8/150 stagger 10/90 bite 6/150 strike 6/80 reel 12/90 land 12/100 castBack 6/90 castRelease 8/70 board 10/90! boardDown 6/95! haul 8/120 ladderDown 10/110 hauler 8/115 bench 10/130 chop 8/105 lift 8/105! place 8/110! toss 8/95! swim 8/130 tread 6/170 sleep 6/640 drive 6/170 reach 6/100!s astride 6/170 astrideStand 8/120 mountUp 16/80!s mountDown 14/85!s mountCab 18/80!s mountCabDown 16/85!s';
-  const GROUPS = { base:['idle','walk','run'], balance:['balance','stagger'], fishing:['hold','cast','castBack','castRelease','bite','strike','reel','land'],
+  const ANIMS_SHIPPED = 'idle 6/170 walk 8/110 run 6/80 hold 6/170 cast 10/70 dig 10/90 balance 8/150 stagger 10/90 bite 6/150 strike 6/80 reel 12/90 land 12/100 castBack 6/90 castRelease 8/70 board 10/90! boardDown 6/95! haul 8/120 ladderDown 10/110 hauler 8/115 bench 10/130 chop 8/105 lift 8/105! place 8/110! toss 8/95! swim 8/130 tread 6/170 sleep 6/640 drive 6/170 reach 6/100!s astride 6/170 astrideStand 8/120 mountUp 16/80!s mountDown 14/85!s mountCab 18/80!s mountCabDown 16/85!s idleShift 12/200! idleScratch 13/200! idleHips 16/250!';
+  const GROUPS = { base:['idle','walk','run','idleShift','idleScratch','idleHips'], balance:['balance','stagger'], fishing:['hold','cast','castBack','castRelease','bite','strike','reel','land'],
     boarding:['board','boardDown','ladderDown'], work:['dig','haul'], deck:['hauler','lift','place','bench','chop','toss'], water:['swim','tread'],
     rest:['sleep'], cab:['drive'], handover:['reach'], saddle:['astride','astrideStand','mountUp','mountDown','mountCab','mountCabDown'] };
   const ANIM_MOUNT = { idle:'free', walk:'free', run:'free', balance:'free', stagger:'free', hold:'rod', cast:'rod', castBack:'rod', castRelease:'rod',
     bite:'rod', strike:'rod', reel:'rod', land:'rod', dig:'shovel', board:'free', boardDown:'free', haul:'free', ladderDown:'ladder',
     hauler:'warp', bench:'bench', chop:'knife', lift:'load', place:'load', toss:'load', swim:'water', tread:'water', sleep:'bed', drive:'wheel',
-    reach:'rest', astride:'saddle', astrideStand:'saddle', mountUp:'saddle', mountDown:'saddle', mountCab:'saddle', mountCabDown:'saddle' };
+    reach:'rest', astride:'saddle', astrideStand:'saddle', mountUp:'saddle', mountDown:'saddle', mountCab:'saddle', mountCabDown:'saddle',
+    idleShift:'free', idleScratch:'free', idleHips:'free' };
   const CARRIES = {
     buckets:{ label:'PAILS', pin:'carry_L + carry_R', anims:['idle','walk','run','board','boardDown'] },
     tray:   { label:'TRAY',  pin:'carry_mid',         anims:['idle','walk','run','board','boardDown'] },
