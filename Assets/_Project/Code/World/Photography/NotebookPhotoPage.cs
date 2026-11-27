@@ -6,7 +6,7 @@ namespace HiddenHarbours.World
 {
     /// <summary>
     /// <b>The album page's words</b> (save v28): each kept picture as a heading and a few lines, newest
-    /// first. Every word and format is the camera's def (<see cref="PhotoCameraDef"/>); this only puts them
+    /// first, beside its little Polaroid. Every word and format is the camera's def (<see cref="PhotoCameraDef"/>); this only puts them
     /// together. Pure, so the page is proven headless.
     /// </summary>
     public static class NotebookPhotoPage
@@ -40,10 +40,15 @@ namespace HiddenHarbours.World
                 lines.Add(Capitalised(def.QualityWord(p.Score)));
                 lines.Add(WhenLine(def, p.GameTimeSeconds, p.RegionId, secondsPerDay));
 
+                // The little Polaroid (owner 2026-11-26): the frame's size is the def's now; the picture inside
+                // is drawn at its own stored size, so a retune never stretches an old picture.
                 entries.Add(new NotebookPhotoEntry(
                     p.Number,
                     string.Format(CultureInfo.InvariantCulture, def.AlbumHeadFormat, p.Number),
-                    lines));
+                    lines,
+                    PhotoThumbnail.IsValid(p.Thumbnail) ? p.Thumbnail : "",
+                    def.PolaroidWidthPx, def.PolaroidHeightPx, def.PolaroidBorderPx, def.PolaroidBottomBorderPx,
+                    def.PolaroidFrameColour));
             }
             return entries;
         }

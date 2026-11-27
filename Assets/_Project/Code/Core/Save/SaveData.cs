@@ -552,9 +552,10 @@ namespace HiddenHarbours.Core
 
         /// <summary>
         /// <b>The pictures each player has taken and kept</b>, one row per picture, in number order. A record
-        /// of what was in frame (subject ids, counts, poses, scores, game time, region), <b>never image
-        /// bytes</b>. Added in v28 as <b>data only</b> (<see cref="PhotoAlbumRows"/>). Older saves start with
-        /// an empty album.
+        /// of what was in frame (subject ids, counts, poses, scores, game time, region) and one small
+        /// thumbnail per picture (owner 2026-11-26: "yes photoalbum should save small pictures as little
+        /// poloraids"; <see cref="PhotoThumbnail"/>, sized by the camera def). Added in v28
+        /// (<see cref="PhotoAlbumRows"/>). Older saves start with an empty album.
         /// </summary>
         public List<PhotoRecordDto> Photos = new();
     }

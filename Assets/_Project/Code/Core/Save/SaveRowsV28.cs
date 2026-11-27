@@ -7,9 +7,10 @@ namespace HiddenHarbours.Core
     /// <b>One picture in a player's album, as saved</b> (save v28; owner 2026-11-26: "build the camera now
     /// with photo record added to save"). One row per picture kept.
     ///
-    /// <para><b>A record, never an image.</b> The row says what the picture was of and how good it was: which
-    /// kinds of animal stood in the frame, how many, what they were doing, the score, when and where. No pixel
-    /// is saved; the album draws each picture from these words. A thumbnail is an owner question, not built.</para>
+    /// <para><b>A record and one little picture.</b> The row says what the picture was of and how good it was:
+    /// which kinds of animal stood in the frame, how many, what they were doing, the score, when and where.
+    /// The only image is <see cref="Thumbnail"/>, a few art pixels across (owner 2026-11-26: "yes photoalbum
+    /// should save small pictures as little poloraids"); the album draws it as a Polaroid.</para>
     ///
     /// <para>The score is SAVED, not recomputed: a picture is what it was when the shutter went, and a later
     /// retune of the camera's numbers must not turn a picture an islander already thanked him for into a poor
@@ -38,6 +39,12 @@ namespace HiddenHarbours.Core
 
         /// <summary>The kinds of animal in the picture, best first. A kept picture has at least one.</summary>
         public List<PhotoSubjectDto> Subjects = new List<PhotoSubjectDto>();
+
+        /// <summary>The picture's small image (<see cref="PhotoThumbnail"/>: Base64 of a two-byte size header
+        /// and RGB565 pixels), or empty when none was taken (a headless shutter) or a stored one did not
+        /// decode. Its size is the camera def's at the time the shutter went, carried in the header, so a
+        /// later retune of the size never breaks an old picture.</summary>
+        public string Thumbnail = "";
     }
 
     /// <summary>

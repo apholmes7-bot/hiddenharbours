@@ -22,6 +22,7 @@ namespace HiddenHarbours.Tests.EditMode
         const string Gull = "wildlife.herring_gull";
         const string Region = "region.st_peters";
         const string Local = SavePlayerKeys.Local;
+        const string SpeciesDefTypeName = "WildlifeSpeciesDef";
 
         PhotoCameraDef _def;
         readonly List<Object> _made = new List<Object>();
@@ -643,7 +644,17 @@ namespace HiddenHarbours.Tests.EditMode
             PhotoCameraDef cam = PhotoCameraDef.Load();
             Assert.That(cam, Is.Not.Null, "Resources/" + PhotoCameraDef.ResourcesPath + " is missing");
             Assert.That(cam.ValidationError(), Is.Null);
-            var species = new HashSet<string>(LoadAll<WildlifeSpeciesDef>("Assets/_Project/Data").Select(s => s.Id));
+            // The species defs arrive with the seal haul-outs, on their own branch. Read them by type name
+            // and serialized id so the camera depends on the seals only through data ids.
+            var species = new HashSet<string>(
+                AssetDatabase.FindAssets("t:" + SpeciesDefTypeName, new[] { "Assets/_Project/Data" })
+                    .Select(g => AssetDatabase.LoadAssetAtPath<ScriptableObject>(AssetDatabase.GUIDToAssetPath(g)))
+                    .Where(a => a != null)
+                    .Select(a => new SerializedObject(a).FindProperty("Id"))
+                    .Where(p => p != null)
+                    .Select(p => p.stringValue));
+            if (species.Count == 0)
+                Assert.Ignore("No " + SpeciesDefTypeName + " assets yet: they come with the seal haul-outs.");
             foreach (PhotoSubjectEntry s in cam.Subjects)
                 Assert.That(species, Does.Contain(s.SubjectId), $"the camera names {s.SubjectId}, which no species def has");
             Assert.That(cam.Knows(Seal), Is.True);

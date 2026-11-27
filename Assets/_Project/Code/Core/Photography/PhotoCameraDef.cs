@@ -134,6 +134,24 @@ namespace HiddenHarbours.Core
         [Tooltip("The most pictures a player keeps. A full album takes no more.")]
         [Min(1)] public int AlbumCapacity = 120;
 
+        [Header("The album's little Polaroids (owner 2026-11-26)")]
+        [Tooltip("Width of the small picture saved with each photo, in art pixels. Drawn one kit pixel per " +
+                 "pixel, point filtered. Each saved picture costs 2 + 2 x width x height bytes before Base64.")]
+        [Range(4, 64)] public int ThumbnailWidthPx = 24;
+
+        [Tooltip("Height of the small picture saved with each photo, in art pixels. Keep the frame's shape " +
+                 "(FrameWidthMetres : FrameHeightMetres) so nothing is squashed.")]
+        [Range(4, 64)] public int ThumbnailHeightPx = 17;
+
+        [Tooltip("The Polaroid's white border on the left, right and top, in pixels.")]
+        [Range(0, 8)] public int PolaroidBorderPx = 2;
+
+        [Tooltip("The Polaroid's wider bottom border, in pixels.")]
+        [Range(0, 16)] public int PolaroidBottomBorderPx = 6;
+
+        [Tooltip("The Polaroid's frame colour.")]
+        public Color32 PolaroidFrameColour = new Color32(244, 241, 232, 255);
+
         [Tooltip("The kinds of animal the album can name.")]
         public List<PhotoSubjectEntry> Subjects = new List<PhotoSubjectEntry>();
 
@@ -236,6 +254,15 @@ namespace HiddenHarbours.Core
         public string QualityWord(int score)
             => score >= GoodScore ? GoodWord : score >= FairScore ? FairWord : PoorWord;
 
+        /// <summary>The whole Polaroid's width in pixels: the picture and its side borders.</summary>
+        public int PolaroidWidthPx => ThumbnailWidthPx + 2 * PolaroidBorderPx;
+
+        /// <summary>The whole Polaroid's height in pixels: the top border, the picture and the wider bottom.</summary>
+        public int PolaroidHeightPx => PolaroidBorderPx + ThumbnailHeightPx + PolaroidBottomBorderPx;
+
+        /// <summary>What one saved picture's thumbnail adds to the save, in Base64 characters.</summary>
+        public int ThumbnailEncodedLength => PhotoThumbnail.EncodedLength(ThumbnailWidthPx, ThumbnailHeightPx);
+
         /// <summary>The shipped camera, or null when the build carries none.</summary>
         public static PhotoCameraDef Load() => Resources.Load<PhotoCameraDef>(ResourcesPath);
 
@@ -249,6 +276,11 @@ namespace HiddenHarbours.Core
             if (MaxReachMetres < StartReachMetres) return "The frame starts farther out than it can reach.";
             if (FarDistanceMetres <= FullQualityDistanceMetres) return "FarDistance must be past FullQualityDistance.";
             if (FairScore > GoodScore) return "A fair picture cannot need more than a fine one.";
+            if (ThumbnailWidthPx < 1 || ThumbnailHeightPx < 1 ||
+                ThumbnailWidthPx > PhotoThumbnail.MaxSide || ThumbnailHeightPx > PhotoThumbnail.MaxSide)
+                return "The album's thumbnail size is out of range.";
+            if (PolaroidBorderPx < 0 || PolaroidBottomBorderPx < PolaroidBorderPx)
+                return "A Polaroid's bottom border is the wider one.";
             if (PoseQuality == null || PoseQuality.Length != PoseCount) return "PoseQuality needs one value per pose.";
             if (PoseWords == null || PoseWords.Length != PoseCount) return "PoseWords needs one word per pose.";
             for (int i = 0; i < PoseCount; i++)

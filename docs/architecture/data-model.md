@@ -412,8 +412,13 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 >
 > - `Photos` (`PhotoRecordDto`: `PlayerKey`, `Number` int, `GameTimeSeconds` double, `RegionId`, `Score` int
 >   0..100, `Subjects`; each `PhotoSubjectDto`: `SubjectId` a `wildlife.*` id, `Count` int, `Pose` int in
->   `WildlifePose` order, `Score` int 0..100): one row per kept picture. **Data only, never image bytes**: the
->   album is what was in frame and how good a picture it was, not a picture. `Number` is the album number,
+>   `WildlifePose` order, `Score` int 0..100; `Thumbnail` string): one row per kept picture. The record is
+>   what was in frame and how good a picture it was; the ONE image is `Thumbnail` (owner 2026-11-26: "yes
+>   photoalbum should save small pictures as little poloraids"): Base64 of a two-byte size header and RGB565
+>   pixels (`PhotoThumbnail`), its size the camera def's `ThumbnailWidthPx` x `ThumbnailHeightPx` (shipped
+>   24 x 17 = 1,092 characters a picture), empty when none was taken. The PHOTO tab draws it as a Polaroid
+>   (`PolaroidBorderPx`, the wider `PolaroidBottomBorderPx`, `PolaroidFrameColour`), point filtered. A
+>   thumbnail that does not decode is cleared on load and the record kept. `Number` is the album number,
 >   unique across the list, never reused (`PhotoAlbumRows.NextNumber` = highest + 1). The album is capped per
 >   player by the camera def (`AlbumCapacity`); a full album keeps nothing new. Helper: `PhotoAlbumRows`
 >   (`Add`, `Count`, `Find`, `HasQualifying`). Repair: null rows and subjects with no id dropped, a photo left

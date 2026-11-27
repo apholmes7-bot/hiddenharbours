@@ -134,6 +134,12 @@ namespace HiddenHarbours.Player
                                                     GameServices.CurrentRegionId, now);
             if (outcome == PhotoShotOutcome.Cooling) return;
 
+            if (outcome == PhotoShotOutcome.Kept && _model.LastKept != null)
+            {
+                // The album's little Polaroid: rendered before the viewfinder flash is drawn, once per shutter.
+                string thumbnail = PhotoThumbnailCapture.Take(def, _model.FrameFor(actor.Position));
+                PhotoAlbumRows.SetThumbnail(save, _model.LastKept.Number, thumbnail);
+            }
             PhotoViewfinder.Shot(_model.LineFor(outcome), now + def.FlashSeconds, now + def.ResultShowSeconds);
             if (outcome == PhotoShotOutcome.Kept && _model.LastKept != null)
                 EventBus.Publish(new PhotoTaken(_model.LastKept.PlayerKey, _model.LastKept.Number));

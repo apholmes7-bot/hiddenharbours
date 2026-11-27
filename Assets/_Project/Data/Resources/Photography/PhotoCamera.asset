@@ -14,7 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.PhotoCameraDef
   Id: photo_camera.box_camera
   DisplayName: 'box camera'
-  OwnedWhileFlag: 
+  OwnedWhileFlag:
+  AlbumCapacity: 120
+  ThumbnailWidthPx: 24
+  ThumbnailHeightPx: 17
+  PolaroidBorderPx: 2
+  PolaroidBottomBorderPx: 6
+  PolaroidFrameColour:
+    serializedVersion: 2
+    rgba: 4293456372
   Subjects:
   - SubjectId: wildlife.grey_seal
     DisplayName: 'grey seal'

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using HiddenHarbours.Core;
+using Color32 = UnityEngine.Color32;
 
 namespace HiddenHarbours.World
 {
@@ -26,19 +27,57 @@ namespace HiddenHarbours.World
     }
 
     /// <summary>One kept picture, as the album page sees it: a head and its lines, already worded by
-    /// <see cref="NotebookPhotoPage"/>. World's view shape, apart from Core's save row.</summary>
+    /// <see cref="NotebookPhotoPage"/>, and its little Polaroid (owner 2026-11-26: "yes photoalbum should
+    /// save small pictures as little poloraids"): the stored thumbnail and the frame it is drawn in, all
+    /// sizes in kit pixels from the camera's def. World's view shape, apart from Core's save row.</summary>
     public readonly struct NotebookPhotoEntry
     {
         public readonly int Number;
         public readonly string Head;
         public readonly IReadOnlyList<string> Lines;
 
+        /// <summary>The stored thumbnail (<see cref="PhotoThumbnail"/>), or empty: the frame is then drawn
+        /// with no picture in it.</summary>
+        public readonly string Thumbnail;
+
+        /// <summary>The Polaroid's outer size and its side and bottom borders, kit pixels. A zero width
+        /// draws no Polaroid (a plain section, as before the ruling).</summary>
+        public readonly int PolaroidWidthPx;
+        public readonly int PolaroidHeightPx;
+        public readonly int PolaroidBorderPx;
+        public readonly int PolaroidBottomBorderPx;
+
+        /// <summary>The Polaroid's white card.</summary>
+        public readonly Color32 PolaroidFrameColour;
+
         public NotebookPhotoEntry(int number, string head, IReadOnlyList<string> lines)
+            : this(number, head, lines, "", 0, 0, 0, 0, default) { }
+
+        public NotebookPhotoEntry(int number, string head, IReadOnlyList<string> lines, string thumbnail,
+                                  int polaroidWidthPx, int polaroidHeightPx, int polaroidBorderPx,
+                                  int polaroidBottomBorderPx, Color32 polaroidFrameColour)
         {
             Number = number;
             Head = head ?? "";
             Lines = lines;
+            Thumbnail = thumbnail ?? "";
+            PolaroidWidthPx = polaroidWidthPx > 0 ? polaroidWidthPx : 0;
+            PolaroidHeightPx = polaroidHeightPx > 0 ? polaroidHeightPx : 0;
+            PolaroidBorderPx = polaroidBorderPx > 0 ? polaroidBorderPx : 0;
+            PolaroidBottomBorderPx = polaroidBottomBorderPx > 0 ? polaroidBottomBorderPx : 0;
+            PolaroidFrameColour = polaroidFrameColour;
         }
+
+        /// <summary>Is there a Polaroid to draw beside the words?</summary>
+        public bool HasPolaroid => PolaroidWidthPx > 0 && PolaroidHeightPx > 0;
+
+        /// <summary>The Polaroid's lane beside the words, in cells: its width, then one cell of air.</summary>
+        public int PolaroidLaneCells =>
+            HasPolaroid ? (PolaroidWidthPx + NotebookKit.CellWidth - 1) / NotebookKit.CellWidth + 1 : 0;
+
+        /// <summary>The fewest ruled lines the block takes, so the Polaroid never overhangs the next one.</summary>
+        public int PolaroidRows =>
+            HasPolaroid ? (PolaroidHeightPx + NotebookKit.Pitch - 1) / NotebookKit.Pitch : 0;
     }
 
     /// <summary>One stub off the fore-edge.</summary>
@@ -325,10 +364,36 @@ namespace HiddenHarbours.World
                 if (p.Lines != null)
                     for (int l = 0; l < p.Lines.Count; l++)
                         if (!string.IsNullOrEmpty(p.Lines[l])) body.Add(p.Lines[l]);
-                blocks.Add(NotebookLayout.Section(p.Head, body, cols,
-                                                  PhotoSourcePrefix + p.Number.ToString(Invariant)));
+                string source = PhotoSourcePrefix + p.Number.ToString(Invariant);
+                blocks.Add(p.HasPolaroid ? PolaroidBlock(p, body, cols, source)
+                                         : NotebookLayout.Section(p.Head, body, cols, source));
             }
             return blocks;
+        }
+
+        /// <summary>
+        /// A picture's block with its Polaroid: the head and lines wrap in the lane past the Polaroid
+        /// (<see cref="NotebookPhotoEntry.PolaroidLaneCells"/>), every row carries the picture's source id
+        /// as its icon id (the presenter draws the Polaroid once, beside the first), and the block is padded
+        /// to <see cref="NotebookPhotoEntry.PolaroidRows"/> lines.
+        /// </summary>
+        public static NotebookBlock PolaroidBlock(in NotebookPhotoEntry p, IReadOnlyList<string> body, int cols,
+                                                  string source)
+        {
+            var rows = new List<NotebookRow>();
+            int textCols = System.Math.Max(1, NotebookKit.TitleColsFor(cols) - p.PolaroidLaneCells - 1);
+            foreach (string line in NotebookLayout.Wrap(p.Head, textCols))
+                rows.Add(new NotebookRow(line, wide: true, hasBox: false, NotebookStepState.Todo, rows.Count > 0,
+                                         source));
+            if (body != null)
+                for (int b = 0; b < body.Count; b++)
+                    foreach (string line in NotebookLayout.Wrap(body[b], textCols))
+                        rows.Add(new NotebookRow(line, wide: true, hasBox: false, NotebookStepState.Todo,
+                                                 continuation: true, source));
+            while (rows.Count < p.PolaroidRows)
+                rows.Add(new NotebookRow("", wide: true, hasBox: false, NotebookStepState.Todo, continuation: true,
+                                         source));
+            return new NotebookBlock(NotebookBlockKind.Section, rows, source);
         }
 
         /// <summary>

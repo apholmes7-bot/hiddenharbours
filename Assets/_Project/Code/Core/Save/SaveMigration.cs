@@ -440,7 +440,8 @@ namespace HiddenHarbours.Core
             }
 
             // v27 -> v28: THE PHOTO ALBUM (owner 2026-11-26: "build the camera now with photo record added to
-            // save"; ADR 0066). An older game took no picture, so the album starts empty. Nothing is
+            // save"; ADR 0066; each row carries one small thumbnail, owner 2026-11-26: "yes photoalbum should
+            // save small pictures as little poloraids"). An older game took no picture, so the album starts empty. Nothing is
             // transformed and nothing else in the save moves. Once this step has shipped, anything new is v29.
             if (data.SchemaVersion < 28)
             {
@@ -939,7 +940,8 @@ namespace HiddenHarbours.Core
         /// dropped, and so is a picture left with no subject (a picture of nothing is never kept). An empty
         /// player key means the local player; a null region reads empty; a negative or non-finite time reads
         /// 0; a count under 1 reads 1; a pose out of range reads the least picture (Diving) rather than a
-        /// better one; scores are held to 0..100 (a saved score is otherwise kept as written).
+        /// better one; scores are held to 0..100 (a saved score is otherwise kept as written); a thumbnail
+        /// that does not decode reads empty (the picture is kept, its Polaroid drawn blank).
         /// A number under 1, or one already used by an earlier row, is given the next free number, and the
         /// album is kept in number order. Ids are never rewritten, known or not.
         /// </summary>
@@ -965,6 +967,9 @@ namespace HiddenHarbours.Core
                 }
                 if (p.Subjects.Count == 0) { rows.RemoveAt(i); continue; }
                 p.Score = System.Math.Clamp(p.Score, 0, 100);
+                // The little picture: one that does not decode is cleared, never the record it belongs to.
+                if (p.Thumbnail == null || (p.Thumbnail.Length > 0 && !PhotoThumbnail.IsValid(p.Thumbnail)))
+                    p.Thumbnail = "";
             }
 
             // Numbers: the first row to hold a number keeps it; a repeat or a non-positive one is renumbered

@@ -36,10 +36,13 @@ namespace HiddenHarbours.Core
         /// Keep a picture in <paramref name="playerKey"/>'s album: <paramref name="count"/> subjects from
         /// <paramref name="subjects"/> (best first). Returns the row, or null, changing nothing, for a null
         /// save, a picture of nothing, or an album already holding <paramref name="capacity"/> pictures.
-        /// Allocates the row it keeps (once per shutter press, never per frame).
+        /// Allocates the row it keeps (once per shutter press, never per frame). <paramref name="thumbnail"/>
+        /// is the picture's stored small image (<see cref="PhotoThumbnail.Encode"/>); one that does not decode
+        /// is not kept, and the row keeps an empty thumbnail.
         /// </summary>
         public static PhotoRecordDto Add(SaveData save, string playerKey, double gameTimeSeconds, string regionId,
-                                         PhotoSubjectResult[] subjects, int count, int capacity)
+                                         PhotoSubjectResult[] subjects, int count, int capacity,
+                                         string thumbnail = null)
         {
             if (save == null || subjects == null || count <= 0) return null;
             if (Count(save, playerKey) >= capacity) return null;
@@ -51,6 +54,7 @@ namespace HiddenHarbours.Core
                 Number = NextNumber(save),
                 GameTimeSeconds = gameTimeSeconds > 0d ? gameTimeSeconds : 0d,
                 RegionId = regionId ?? "",
+                Thumbnail = PhotoThumbnail.IsValid(thumbnail) ? thumbnail : "",
             };
             int n = Math.Min(count, subjects.Length);
             for (int i = 0; i < n; i++)
@@ -68,6 +72,17 @@ namespace HiddenHarbours.Core
             if (row.Subjects.Count == 0) return null;
             save.Photos.Add(row);
             return row;
+        }
+
+        /// <summary>Give picture <paramref name="number"/> its small image after the shutter (the capture
+        /// runs once the row exists). False, changing nothing, for no such picture or a string that does not
+        /// decode.</summary>
+        public static bool SetThumbnail(SaveData save, int number, string thumbnail)
+        {
+            PhotoRecordDto row = Find(save, number);
+            if (row == null || !PhotoThumbnail.IsValid(thumbnail)) return false;
+            row.Thumbnail = thumbnail;
+            return true;
         }
 
         /// <summary>The picture numbered <paramref name="number"/>, or null.</summary>

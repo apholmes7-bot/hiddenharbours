@@ -209,6 +209,7 @@ namespace HiddenHarbours.World
         private void OnDestroy()
         {
             if (_instance == this) _instance = null;
+            ReleasePolaroids();
         }
 
         /// <summary>
@@ -517,10 +518,12 @@ namespace HiddenHarbours.World
                 _gearSource.Collect(_gearHeld);
                 gear = _gearHeld;
             }
+            IReadOnlyList<NotebookPhotoEntry> photos = _photos?.Invoke();
+            NotePhotos(photos);
             var built = NotebookContent.Build(
                 _quests?.Invoke(), _knowledge?.Invoke(), _notes?.Invoke(), _flags, Fit.Cols,
                 droppedTabs: null, caught: _caught?.Invoke(), gear: gear, gearPage: _gearPage,
-                photos: _photos?.Invoke());
+                photos: photos);
             _tabs.AddRange(built);
 
             if (_tabs.Count == 0)
@@ -828,6 +831,16 @@ namespace HiddenHarbours.World
 
                     bool faint = row.State == NotebookStepState.Done;
 
+                    if (row.HasIcon && TryPhoto(row.IconId, out NotebookPhotoEntry photo) && photo.HasPolaroid)
+                    {
+                        // A picture in the album: its little Polaroid once, beside its first line, and every
+                        // line of the block in the lane past it.
+                        if (!row.Continuation) DrawPolaroid(page, photo, titleX, rowY);
+                        int lane = photo.PolaroidLaneCells * NotebookKit.CellWidth;
+                        AddText(page, row.Text, titleX + lane, rowY, titleW - lane, Ink);
+                        continue;
+                    }
+
                     if (row.HasIcon)
                     {
                         // A pictured block (the Gear page): the picture once, beside its first line, and
@@ -891,6 +904,107 @@ namespace HiddenHarbours.World
         }
 
         private static readonly Color FaintPicture = new Color(1f, 1f, 1f, 0.4f);
+
+        // ---- the album's little Polaroids (owner 2026-11-26) --------------------------------------------
+
+        /// <summary>The names of a Polaroid's card and of the picture inside it — what a test looks for.</summary>
+        public const string PolaroidPieceName = "PhotoPolaroid";
+        public const string PolaroidPicturePieceName = "PhotoPolaroidPicture";
+
+        private readonly Dictionary<string, NotebookPhotoEntry> _photoBySource =
+            new Dictionary<string, NotebookPhotoEntry>();
+
+        // One texture per picture, made the first time its page is drawn and kept while the thumbnail is
+        // the same string: a page turn never re-decodes.
+        private readonly Dictionary<int, PolaroidPicture> _polaroids = new Dictionary<int, PolaroidPicture>();
+
+        private sealed class PolaroidPicture
+        {
+            public string Thumbnail;
+            public Texture2D Texture;
+            public Sprite Sprite;
+        }
+
+        private void NotePhotos(IReadOnlyList<NotebookPhotoEntry> photos)
+        {
+            _photoBySource.Clear();
+            if (photos == null) return;
+            for (int i = 0; i < photos.Count; i++)
+                _photoBySource[NotebookContent.PhotoSourcePrefix +
+                               photos[i].Number.ToString(System.Globalization.CultureInfo.InvariantCulture)] = photos[i];
+        }
+
+        private bool TryPhoto(string iconId, out NotebookPhotoEntry photo)
+        {
+            photo = default;
+            return !string.IsNullOrEmpty(iconId) &&
+                   iconId.StartsWith(NotebookContent.PhotoSourcePrefix, StringComparison.Ordinal) &&
+                   _photoBySource.TryGetValue(iconId, out photo);
+        }
+
+        /// <summary>
+        /// One little Polaroid: the white card at the def's size, and inside it at (border, border) the stored
+        /// thumbnail, one kit pixel per thumbnail pixel, point filtered (no mixels). A thumbnail that is
+        /// missing draws the card alone.
+        /// </summary>
+        private void DrawPolaroid(RectTransform page, in NotebookPhotoEntry photo, int x, int rowY)
+        {
+            RectTransform card = AddPiece(page, PolaroidPieceName, null, x, rowY,
+                                          photo.PolaroidWidthPx, photo.PolaroidHeightPx, photo.PolaroidFrameColour);
+            Sprite picture = PolaroidSprite(photo.Number, photo.Thumbnail, out int w, out int h);
+            if (picture == null) return;
+            int innerW = photo.PolaroidWidthPx - 2 * photo.PolaroidBorderPx;
+            int innerH = photo.PolaroidHeightPx - photo.PolaroidBorderPx - photo.PolaroidBottomBorderPx;
+            AddPiece(card, PolaroidPicturePieceName, picture, photo.PolaroidBorderPx, photo.PolaroidBorderPx,
+                     Mathf.Min(w, innerW), Mathf.Min(h, innerH), Color.white);
+        }
+
+        private Sprite PolaroidSprite(int number, string thumbnail, out int width, out int height)
+        {
+            width = height = 0;
+            if (string.IsNullOrEmpty(thumbnail)) return null;
+            if (_polaroids.TryGetValue(number, out PolaroidPicture held) && held.Thumbnail == thumbnail &&
+                held.Sprite != null)
+            {
+                width = held.Texture.width;
+                height = held.Texture.height;
+                return held.Sprite;
+            }
+            Color32[] pixels = PhotoThumbnail.Decode(thumbnail, out width, out height);
+            if (pixels == null) return null;
+            if (held != null) Release(held);
+
+            var texture = new Texture2D(width, height, TextureFormat.RGBA32, false)
+            {
+                filterMode = FilterMode.Point,
+                wrapMode = TextureWrapMode.Clamp,
+                hideFlags = HideFlags.DontSave,
+            };
+            texture.SetPixels32(pixels);
+            texture.Apply(false, true);
+            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, width, height), new Vector2(0f, 1f), 1f);
+            sprite.hideFlags = HideFlags.DontSave;
+            _polaroids[number] = new PolaroidPicture { Thumbnail = thumbnail, Texture = texture, Sprite = sprite };
+            return sprite;
+        }
+
+        private void ReleasePolaroids()
+        {
+            foreach (PolaroidPicture p in _polaroids.Values) Release(p);
+            _polaroids.Clear();
+        }
+
+        private static void Release(PolaroidPicture p)
+        {
+            if (p == null) return;
+            if (p.Sprite != null) DestroyAsset(p.Sprite);
+            if (p.Texture != null) DestroyAsset(p.Texture);
+        }
+
+        private static void DestroyAsset(UnityEngine.Object o)
+        {
+            if (Application.isPlaying) Destroy(o); else DestroyImmediate(o);
+        }
 
         private void DrawTabs(int x, int y)
         {
