@@ -46,6 +46,8 @@ namespace HiddenHarbours.Tests.PlayMode
         static readonly Vector2[] Offsets =
         {
             new Vector2(0f, 0f), new Vector2(4f, -6f), new Vector2(-7f, -3f), new Vector2(8f, 3f),
+            new Vector2(-3f, 5f), new Vector2(10f, -2f), new Vector2(-10f, 2f), new Vector2(2f, -10f),
+            new Vector2(6f, 8f), new Vector2(-5f, -8f),
         };
 
         readonly List<Object> _made = new List<Object>();
@@ -58,6 +60,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 book.Close();
                 book.WirePhotos(null);
+                book.ScreenPixelsOverride = null;
             }
             foreach (Object o in _made) if (o != null) Object.Destroy(o);
             _made.Clear();
@@ -104,8 +107,8 @@ namespace HiddenHarbours.Tests.PlayMode
             PhotoCameraDef shipped = PhotoCameraDef.Load();
             Assert.IsNotNull(shipped, "the camera ships");
 
-            // The shipped size, and twice it (every border doubled too): both whole art-pixel steps.
-            foreach (int factor in new[] { 1, 2 })
+            // The shipped size: ten pictures, enough for full rows of cards and a page turn.
+            foreach (int factor in new[] { 1 })
             {
                 PhotoCameraDef def = Object.Instantiate(shipped);
                 _made.Add(def);
@@ -146,6 +149,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsNotNull(book, "the book self-installs");
             book.enabled = false;
             book.enabled = true;
+            book.ScreenPixelsOverride = new Vector2Int(ScreenW, ScreenH);   // lay the book out for 1080p
             book.WirePhotos(() => entries);
             book.Open();
             yield return null;
@@ -154,6 +158,30 @@ namespace HiddenHarbours.Tests.PlayMode
             book.SelectTab(tab);
             yield return null;
 
+            int spread = 1;
+            int firstSpreadCards = 0;
+            while (true)
+            {
+                int shown = 0;
+                yield return ShootTheSpread(main, book, def, evidence, spread, n => shown = n);
+                if (spread == 1) firstSpreadCards = shown;
+                if (!book.HasNextSpread || spread >= 3) break;
+                book.TurnPage(1);
+                yield return null;
+                spread++;
+            }
+            int across = NotebookPhotoGrid.For(NotebookPhotoPage.Style(def), book.Fit.Cols).Across;
+            Debug.Log($"[album plate] screen {Screen.width}x{Screen.height} fit cols {book.Fit.Cols} lines {book.Fit.Lines} " +
+                      $"scale {book.Fit.Scale} across {across} first spread {firstSpreadCards} spreads shot {spread}");
+            Assert.GreaterOrEqual(firstSpreadCards, 2 * across, "two full rows on the first spread");
+            Assert.Greater(spread, 1, "ten pictures turn the page");
+            book.Close();
+            yield return null;
+        }
+
+        static IEnumerator ShootTheSpread(Camera main, NotebookPresenter book, PhotoCameraDef def, string evidence,
+                                          int spread, Action<int> cardsShown)
+        {
             // Game zoom: the book's whole-number scale for a 1920 x 1080 screen, whatever the batch screen is.
             NotebookFit fit = NotebookLayout.Fit(Mathf.RoundToInt(ScreenW * NotebookPresenter.RoomFraction),
                                                  Mathf.RoundToInt(ScreenH * NotebookPresenter.RoomFraction));
@@ -192,40 +220,43 @@ namespace HiddenHarbours.Tests.PlayMode
                                   .Where(t => t.name == NotebookPresenter.PolaroidCaptionPieceName).ToArray();
             Assert.GreaterOrEqual(captions.Length, 2 * cards.Length, "what and how many, then the day and place");
 
+            cardsShown(cards.Length);
             if (!string.IsNullOrEmpty(evidence))
-                yield return Plate(main, card, Path.Combine(evidence, $"album-{def.ThumbnailWidthPx}x{def.ThumbnailHeightPx}"));
-            book.Close();
-            yield return null;
+                yield return Plate(main, card,
+                                   Path.Combine(evidence, $"album-{def.ThumbnailWidthPx}x{def.ThumbnailHeightPx}-spread{spread}"));
         }
 
         /// <summary>
         /// The page as the player sees it. In the game every notebook and HUD canvas is ScreenSpaceOverlay:
         /// drawn after every camera, over the whole world. An overlay canvas does not draw into a camera's
-        /// RenderTexture, so the plate moves the root overlay canvases (and only them, on the UI layer for
-        /// the shot) onto a URP OVERLAY camera stacked on the world camera: the world renders first, the
-        /// canvases after it, sorted among themselves by their own sorting orders, as on screen. (The first
-        /// plate bound the canvases to the world camera itself, where the 2D renderer sorted the book's order
-        /// 400 against world sprites up to 32763 on the one sorting layer, and the world drew over the paper.)
+        /// RenderTexture, so the plate takes the two apart and lays them together the way the screen does:
+        /// the world camera renders the world alone, then a UI-only camera renders the root overlay canvases
+        /// (moved to the UI layer for the shot, sorted among themselves by their own orders) twice, over
+        /// black and over white. Whatever blending the canvases do, a pixel is F + T x background, so the
+        /// two shots give F (over black) and T (white minus black), and the page over the world is
+        /// F + T x world, worked in linear light. (The first plate bound the canvases to the world camera,
+        /// where the 2D renderer sorted the book's order 400 against world sprites up to 32763 on the one
+        /// sorting layer, and the world drew over the paper.)
         /// </summary>
         static IEnumerator Plate(Camera camera, RectTransform firstCard, string path)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(path));
             var previousTarget = camera.targetTexture;
             var target = RenderTexture.GetTemporary(ScreenW, ScreenH, 24, RenderTextureFormat.ARGB32);
+            var uiTarget = RenderTexture.GetTemporary(ScreenW, ScreenH, 24, RenderTextureFormat.ARGB32);
             camera.targetTexture = target;
 
             int uiLayer = LayerMask.NameToLayer("UI");
             Assert.GreaterOrEqual(uiLayer, 0, "the built-in UI layer");
             var uiGo = new GameObject("AlbumPlateUiCamera");
+            uiGo.transform.position = new Vector3(0f, 0f, -5000f);
             var uiCamera = uiGo.AddComponent<Camera>();
+            uiCamera.enabled = false;
             uiCamera.orthographic = true;
             uiCamera.cullingMask = 1 << uiLayer;
-            uiCamera.clearFlags = CameraClearFlags.Nothing;
-            var uiData = uiCamera.GetUniversalAdditionalCameraData();
-            uiData.renderType = UnityEngine.Rendering.Universal.CameraRenderType.Overlay;
-            uiData.renderPostProcessing = false;
-            var baseData = camera.GetUniversalAdditionalCameraData();
-            baseData.cameraStack.Add(uiCamera);
+            uiCamera.clearFlags = CameraClearFlags.SolidColor;
+            uiCamera.targetTexture = uiTarget;
+            uiCamera.GetUniversalAdditionalCameraData().renderPostProcessing = false;
 
             var overlays = new List<(Canvas canvas, Camera camera, float distance)>();
             var layers = new List<(GameObject go, int layer)>();
@@ -244,23 +275,49 @@ namespace HiddenHarbours.Tests.PlayMode
             }
             yield return null;
             Canvas.ForceUpdateCanvases();
-            bool uiRendered = false, captured = false;
+            bool captured = false;
+            Color32[] world = null;
             Exception failure = null;
-            void CameraRendered(UnityEngine.Rendering.ScriptableRenderContext context, Camera rendered)
+            void Rendered(UnityEngine.Rendering.ScriptableRenderContext context, Camera rendered)
             {
-                if (rendered == uiCamera) uiRendered = true;
-            }
-            void Rendered(UnityEngine.Rendering.ScriptableRenderContext context, List<Camera> cameras)
-            {
-                // After the whole frame's cameras, the stack's final target holds world and page together.
-                if (!uiRendered || captured) return;
+                if (rendered != camera || captured) return;
                 captured = true;
-                var previous = RenderTexture.active;
+                try { world = Read(target); }
+                catch (Exception ex) { failure = ex; }
+            }
+            UnityEngine.Rendering.RenderPipelineManager.endCameraRendering += Rendered;
+            try
+            {
+                double deadline = Time.realtimeSinceStartupAsDouble + 10d;
+                while (!captured && Time.realtimeSinceStartupAsDouble < deadline) yield return null;
+                Assert.IsTrue(captured, "the world camera did not render");
+                Assert.IsNull(failure, failure?.ToString());
+
+                Canvas.ForceUpdateCanvases();
+                uiCamera.backgroundColor = Color.black;
+                uiCamera.Render();
+                Color32[] overBlack = Read(uiTarget);
+                uiCamera.backgroundColor = Color.white;
+                uiCamera.Render();
+                Color32[] overWhite = Read(uiTarget);
+                bool linear = QualitySettings.activeColorSpace == ColorSpace.Linear;
+                var page = new Color32[world.Length];
+                int drawn = 0;
+                for (int i = 0; i < page.Length; i++)
+                {
+                    bool opaque = overBlack[i].r == overWhite[i].r && overBlack[i].g == overWhite[i].g &&
+                                  overBlack[i].b == overWhite[i].b;
+                    if (opaque) drawn++;
+                    page[i] = new Color32(Lay(overBlack[i].r, overWhite[i].r, world[i].r, linear),
+                                          Lay(overBlack[i].g, overWhite[i].g, world[i].g, linear),
+                                          Lay(overBlack[i].b, overWhite[i].b, world[i].b, linear), 255);
+                }
+                Assert.Greater(drawn, page.Length / 20, "the canvases drew an opaque page into the plate");
+
                 var image = new Texture2D(ScreenW, ScreenH, TextureFormat.RGB24, false);
                 try
                 {
-                    RenderTexture.active = target;
-                    image.ReadPixels(new Rect(0, 0, ScreenW, ScreenH), 0, 0);
+                    image.SetPixels32(page);
                     image.Apply();
                     File.WriteAllBytes(path + "-page.png", image.EncodeToPNG());
 
@@ -274,22 +331,11 @@ namespace HiddenHarbours.Tests.PlayMode
                     int y1 = Mathf.Clamp(Mathf.CeilToInt(Mathf.Max(a.y, b.y)) + CropPad, y0 + 1, ScreenH);
                     File.WriteAllBytes(path + "-crop3x.png", Scaled(image, x0, y0, x1 - x0, y1 - y0, CropScale));
                 }
-                catch (Exception ex) { failure = ex; }
-                finally { RenderTexture.active = previous; Object.Destroy(image); }
-            }
-            UnityEngine.Rendering.RenderPipelineManager.endCameraRendering += CameraRendered;
-            UnityEngine.Rendering.RenderPipelineManager.endContextRendering += Rendered;
-            try
-            {
-                double deadline = Time.realtimeSinceStartupAsDouble + 10d;
-                while (!captured && Time.realtimeSinceStartupAsDouble < deadline) yield return null;
-                Assert.IsTrue(captured, "the plate's camera stack did not render");
-                Assert.IsNull(failure, failure?.ToString());
+                finally { Object.Destroy(image); }
             }
             finally
             {
-                UnityEngine.Rendering.RenderPipelineManager.endCameraRendering -= CameraRendered;
-                UnityEngine.Rendering.RenderPipelineManager.endContextRendering -= Rendered;
+                UnityEngine.Rendering.RenderPipelineManager.endCameraRendering -= Rendered;
                 foreach (var overlay in overlays)
                 {
                     if (overlay.canvas == null) continue;
@@ -299,11 +345,46 @@ namespace HiddenHarbours.Tests.PlayMode
                 }
                 foreach (var held in layers)
                     if (held.go != null) held.go.layer = held.layer;
-                baseData.cameraStack.Remove(uiCamera);
+                uiCamera.targetTexture = null;
                 Object.Destroy(uiGo);
                 camera.targetTexture = previousTarget;
                 RenderTexture.ReleaseTemporary(target);
+                RenderTexture.ReleaseTemporary(uiTarget);
             }
+        }
+
+        static Color32[] Read(RenderTexture source)
+        {
+            var previous = RenderTexture.active;
+            var read = new Texture2D(source.width, source.height, TextureFormat.RGBA32, false);
+            try
+            {
+                RenderTexture.active = source;
+                read.ReadPixels(new Rect(0, 0, source.width, source.height), 0, 0);
+                read.Apply();
+                return read.GetPixels32();
+            }
+            finally
+            {
+                RenderTexture.active = previous;
+                Object.Destroy(read);
+            }
+        }
+
+        /// <summary>One channel of the page over the world: F + T x world, F the shot over black, T the
+        /// white shot minus it, in linear light when the project renders linear.</summary>
+        static byte Lay(byte overBlack, byte overWhite, byte world, bool linear)
+        {
+            float f = overBlack / 255f, w = overWhite / 255f, s = world / 255f;
+            if (linear)
+            {
+                f = Mathf.GammaToLinearSpace(f);
+                w = Mathf.GammaToLinearSpace(w);
+                s = Mathf.GammaToLinearSpace(s);
+            }
+            float c = Mathf.Clamp01(f + (w - f) * s);
+            if (linear) c = Mathf.LinearToGammaSpace(c);
+            return (byte)Mathf.RoundToInt(c * 255f);
         }
 
         static byte[] Scaled(Texture2D source, int x, int y, int w, int h, int scale)

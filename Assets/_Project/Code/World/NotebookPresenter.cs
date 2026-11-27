@@ -537,12 +537,17 @@ namespace HiddenHarbours.World
             SpreadIndex = Mathf.Clamp(SpreadIndex, 0, Mathf.Max(0, _spreads.Count - 1));
         }
 
+        /// <summary>A plate's screen size in pixels, read in place of <c>Screen</c> (a batch run's screen is
+        /// 640 x 480), as <c>CameraFollow.ScreenPixelsOverride</c> does for the camera. Null in the game.</summary>
+        public Vector2Int? ScreenPixelsOverride { get; set; }
+
         /// <summary>The size the current screen affords. Split out so a test can drive it with an
         /// explicit room instead of a screen.</summary>
         public NotebookFit FitForScreen()
         {
-            int w = Screen.width > 0 ? Screen.width : 1280;
-            int h = Screen.height > 0 ? Screen.height : 720;
+            Vector2Int? over = ScreenPixelsOverride;
+            int w = over.HasValue && over.Value.x > 0 ? over.Value.x : Screen.width > 0 ? Screen.width : 1280;
+            int h = over.HasValue && over.Value.y > 0 ? over.Value.y : Screen.height > 0 ? Screen.height : 720;
             return NotebookLayout.Fit(Mathf.RoundToInt(w * RoomFraction), Mathf.RoundToInt(h * RoomFraction));
         }
 
