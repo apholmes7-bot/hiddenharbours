@@ -32,6 +32,8 @@ namespace HiddenHarbours.Tests.PlayMode
             new UndersideSubject("StPeters", "stp_pier", "StPetersWharf", -2.0f, 0f, 2.0f),
             new UndersideSubject("StPeters", "stp_ladder", "~#WharfLadder", -2.0f, 0f, 2.0f),
             new UndersideSubject("StPeters", "check_stp_gap_footbridge", "bridge.stp_gap_footbridge", -2.0f, 2.0f),
+            // Not a deck: a Whelps rock standing through the tide, to see its sun shadow at low water and mid tide.
+            new UndersideSubject("StPeters", "whelps_rock1", "~rock.stp_whelp_1", -2.0f, 0f),
             new UndersideSubject("NineMileCreek", "nmc_pierW", "pierW/walk0", -1.5f, 1.5f),
             new UndersideSubject("NineMileCreek", "nmc_w1", "w1.walk", -1.5f, 1.5f),
             new UndersideSubject("NineMileCreek", "nmc_float_working", "float.nmc_working", -1.5f, 1.5f),
