@@ -273,6 +273,32 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(grip.y - gripM, sr.transform.position.y, 1e-5f, "her grip, not her pivot, is on the line");
             Assert.IsTrue(drawer.UnderwaterRenderer == null || !drawer.UnderwaterRenderer.enabled,
                           "out of the water she is drawn whole");
+
+            // With a gill hang on the rung she hangs on that, never on the held (tail) sheet.
+            Sprite[] gill = Species(out _).Rungs[0].DartFrames;
+            species.Rungs[0].LineHangFrames = gill;
+            drawer.Resolve(in s, new[] { species }, null, new Facts(), 0f);
+            Assert.IsTrue(drawer.RenderHanging(grip, 0f, 0.1f, 7, 2f));
+            CollectionAssert.Contains(gill, sr.sprite, "she hangs on the head-up gill sheet when the rung has one");
+
+            species.Rungs[0].LineHangFrames = new Sprite[3];   // not eight rows: not a whole sheet
+            Assert.IsTrue(SurfacedFishDrawer.TryHangSheet(species.Rungs[0], out Sprite[] used, out _));
+            Assert.AreSame(thrash, used, "a broken hang sheet falls back to the held sheet");
+        }
+
+        [Test]
+        public void TheHangPoint_IsBesideHim_OnHisRodsSide_AtTheTunedHeight()
+        {
+            var feet = new Vector2(10f, 5f);
+            Assert.AreEqual(new Vector2(11f, 6.5f), RodPresenterMath.HangPoint(feet, new Vector2(10.4f, 8f), 1f, 1.5f));
+            Assert.AreEqual(new Vector2(9f, 6.5f), RodPresenterMath.HangPoint(feet, new Vector2(9.6f, 8f), 1f, 1.5f),
+                            "his rod tip to his left: she hangs on his left");
+            Assert.AreEqual(new Vector2(11f, 6.5f), RodPresenterMath.HangPoint(feet, new Vector2(10f, 8f), 1f, 1.5f),
+                            "a rod straight over him: the right");
+            FishFeelSettings feel = Feel();
+            Vector2 hang = RodPresenterMath.HangPoint(feet, new Vector2(10.4f, 8f), feel.LandHangSideM, feel.LandHangHeightM);
+            Assert.IsFalse(RodPresenterMath.InFisherFigure(hang, feet, feel.FisherFigureHalfWidthM, feel.FisherFigureHeightM),
+                           "the shipped hang point is on his figure");
         }
 
         [Test]

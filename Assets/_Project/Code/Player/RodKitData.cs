@@ -116,6 +116,11 @@ namespace HiddenHarbours.Player
         public Sprite[] HeldFrames;     // 8 dirs × n — gill or tail grip; hand count comes from weight
         public int HeldFramesPerDir;
 
+        [Tooltip("8 dirs × n, n = length / 8 — the fish hanging head-up by the gill, as she hangs from " +
+                 "the line once she is out of the water. Every rung bakes the gill rest whatever its hand " +
+                 "count, so a one-hand rung (held by the tail) still hangs head-up. Empty = HeldFrames.")]
+        public Sprite[] LineHangFrames;
+
         // ---- catch pass 2's two new water anims -------------------------------------------------
         //
         // Both are SURFACE beats and both were missing from pass 1 entirely, which is why the fight

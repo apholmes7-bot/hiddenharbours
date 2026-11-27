@@ -418,6 +418,7 @@ namespace HiddenHarbours.App.Editor
                 ThrashMouthOffsets = ReadMouths(statesNode, "thrash", thrash, ppu, $"{stem}_thrash.png"),
                 HeldFrames = held,
                 HeldFramesPerDir = held.Length / Directions,
+                LineHangFrames = PersistentCoreBuilder.LoadIsoDirFrames($"{stem}_gill.png"),
                 RollFrames = roll,
                 RollFramesPerDir = roll.Length / Directions,
                 RollMouthOffsets = ReadMouths(statesNode, "roll", roll, ppu, $"{stem}_roll.png"),

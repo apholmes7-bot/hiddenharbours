@@ -342,6 +342,17 @@ namespace HiddenHarbours.Player
         }
 
         /// <summary>
+        /// Where the line holds a landed fish up to be seen: <paramref name="sideM"/> to the side of his
+        /// <paramref name="feet"/> that his rod <paramref name="tip"/> is on (the right when it is straight over
+        /// him) and <paramref name="heightM"/> above them, so she hangs beside his figure, not over it. Pure.
+        /// </summary>
+        public static Vector2 HangPoint(Vector2 feet, Vector2 tip, float sideM, float heightM)
+        {
+            float side = tip.x < feet.x ? -1f : 1f;
+            return feet + new Vector2(side * Mathf.Max(0f, sideM), Mathf.Max(0f, heightM));
+        }
+
+        /// <summary>
         /// Is <paramref name="point"/> inside the fisher's drawn figure: within <paramref name="halfWidthM"/>
         /// either side of his feet at <paramref name="feet"/> and from his feet up to
         /// <paramref name="heightM"/> above them (the three-quarter view draws height as screen-up). False for

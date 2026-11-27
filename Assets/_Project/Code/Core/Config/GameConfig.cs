@@ -3845,15 +3845,23 @@ namespace HiddenHarbours.Core
         [Min(0f)] public float FisherFigureHeightM;
 
         [Tooltip("THE LIFT. How long (s) a villager's landed fish takes to travel, hanging head-up on the line, " +
-                 "from the water point where she left it up to the rod tip. Match the angler activity's " +
-                 "LandLiftSeconds, which scrubs his land clip over the same beat. 0 = she is at the tip at once.")]
+                 "from the water point where she left it up to the hang point beside him. Match the angler " +
+                 "activity's LandLiftSeconds, which scrubs his land clip over the same beat. 0 = she is at the " +
+                 "hang point at once.")]
         [Min(0f)] public float LandLiftTravelSeconds;
-        [Tooltip("THE CATCH SEEN. After the lift, how long (s) she hangs from the rod tip on the line, in front " +
-                 "of him, before she goes to his hand. 0 = straight to his hand.")]
+        [Tooltip("THE CATCH SEEN. After the lift, how long (s) she hangs on the line at the hang point beside " +
+                 "him before she goes to his hand. 0 = straight to his hand.")]
         [Min(0f)] public float LandHangSeconds;
-        [Tooltip("HANGING. Art rows the held (gill) sheet's grip sits above its pivot: where the line meets her " +
-                 "head when she hangs from it.")]
+        [Tooltip("HANGING. Art rows the gill sheet's grip sits above its pivot: where the line meets her head " +
+                 "when she hangs from it (measured on the shipped gill sheets: the mackerel's small rung is 1, " +
+                 "her medium and large 2, so 1 sits on all three; the range over every species is 1 to 6).")]
         public int HangGripRowsAbovePivot;
+        [Tooltip("THE HANG POINT, ACROSS. How far (m) to the side of his feet the line holds her up, on the side " +
+                 "his rod tip is: past FisherFigureHalfWidthM by more than the widest hanging fish at the " +
+                 "villager's draw scale, so the whole fish is drawn against the water or the wharf, never on him.")]
+        [Min(0f)] public float LandHangSideM;
+        [Tooltip("THE HANG POINT, UP. How high (m) above his feet the line holds her up (her grip).")]
+        [Min(0f)] public float LandHangHeightM;
         /// <summary>The reference feel — a first pass for the owner's plate, not a measured tuning.</summary>
         public static FishFeelSettings Default => new FishFeelSettings
         {
@@ -3913,7 +3921,9 @@ namespace HiddenHarbours.Core
             FisherFigureHeightM = 1.7f,
             LandLiftTravelSeconds = 1f,
             LandHangSeconds = 1.2f,
-            HangGripRowsAbovePivot = 2,
+            HangGripRowsAbovePivot = 1,
+            LandHangSideM = 1f,
+            LandHangHeightM = 1.5f,
         };
     }
 

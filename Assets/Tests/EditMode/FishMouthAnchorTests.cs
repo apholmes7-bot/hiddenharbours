@@ -138,6 +138,89 @@ namespace HiddenHarbours.Tests.EditMode
                                    string.Join("\n", misses.GetRange(0, Mathf.Min(20, misses.Count))));
         }
 
+        // ---- hanging from the line ---------------------------------------------------------------------
+
+        [Test]
+        public void EveryRung_HangsFromTheLineHeadUpByTheGill_AndTheMackerelsGripIsOnHerArt()
+        {
+            FishArtLibrary library = Library();
+            int rungs = 0;
+            foreach (FishSpeciesVisual species in library.Species)
+            {
+                if (species?.Rungs == null) continue;
+                foreach (FishRungVisual r in species.Rungs)
+                {
+                    if (r == null) continue;
+                    rungs++;
+                    string label = species.FishId + r.Suffix;
+                    Assert.IsTrue(SurfacedFishDrawer.TryHangSheet(r, out Sprite[] frames, out int perDir), $"{label}: nothing to hang");
+                    Assert.AreSame(r.LineHangFrames, frames, $"{label}: she hangs from the line on the held sheet, not the gill hang");
+                    Assert.Greater(perDir, 0);
+                    foreach (Sprite f in frames)
+                        StringAssert.EndsWith("_gill", AssetDatabase.GetAssetPath(f.texture).Replace(".png", ""),
+                                              $"{label}: the hang is not the head-up gill sheet");
+                }
+            }
+            Assert.Greater(rungs, 0, "harness: no rungs in the table");
+
+            // The tuned grip sits on the mackerel's own art at every rung and frame (the wharf's fish).
+            FishSpeciesVisual mackerel = library.Find("fish.mackerel");
+            Assume.That(mackerel != null, "no mackerel ladder in the fish art table at this build");
+            FishFeelSettings feel = ShippedFeel();
+            foreach (FishRungVisual r in mackerel.Rungs)
+                foreach (Sprite f in r.LineHangFrames)
+                    AssertOnTheArt(f, new Vector2(0f, feel.HangGripRowsAbovePivot / f.pixelsPerUnit), $"{f.name} grip");
+        }
+
+        [Test]
+        public void TheHangPoint_HoldsTheWidestHangingFish_ClearOfHisFigure_AtTheVillagersScale()
+        {
+            const int villagerScale = 2;   // WharfRodActivity's FishDrawScale
+            FishFeelSettings feel = ShippedFeel();
+            float widest = 0f;
+            string who = null;
+            foreach (FishSpeciesVisual species in Library().Species)
+            {
+                if (species?.Rungs == null) continue;
+                foreach (FishRungVisual r in species.Rungs)
+                    foreach (Sprite f in r?.LineHangFrames ?? new Sprite[0])
+                    {
+                        float half = OpaqueHalfWidthM(f);
+                        if (half > widest) { widest = half; who = f.name; }
+                    }
+            }
+            Assert.Greater(widest, 0f, "harness: no hanging fish measured");
+            float clearM = feel.LandHangSideM - widest * villagerScale;
+            Assert.Greater(clearM, feel.FisherFigureHalfWidthM,
+                           $"the widest hanging fish ({who}, {widest * villagerScale:0.00} m either side at scale " +
+                           $"{villagerScale}) reaches into his figure from the hang point {feel.LandHangSideM} m out");
+        }
+
+        /// <summary>The feel as shipped: the committed GameConfig asset's, else the code defaults.</summary>
+        private static FishFeelSettings ShippedFeel()
+        {
+            var config = AssetDatabase.LoadAssetAtPath<GameConfig>("Assets/_Project/Data/Config/GameConfig.asset");
+            return config != null ? config.FishFeel : FishFeelSettings.Default;
+        }
+
+        /// <summary>The widest drawn texel either side of <paramref name="cell"/>'s pivot, m at scale 1.</summary>
+        private float OpaqueHalfWidthM(Sprite cell)
+        {
+            Texture2D png = Sheet(cell);
+            float k = png.width / (float)cell.texture.width;
+            Rect r = cell.rect;
+            int x0 = Mathf.RoundToInt(r.x * k), y0 = Mathf.RoundToInt(r.y * k);
+            int w = Mathf.RoundToInt(r.width * k), h = Mathf.RoundToInt(r.height * k);
+            float pivotX = cell.pivot.x * k, half = 0f;
+            for (int y = 0; y < h; y++)
+            for (int x = 0; x < w; x++)
+            {
+                if (png.GetPixel(x0 + x, y0 + y).a < RodKitImporter.DrawnAlpha01) continue;
+                half = Mathf.Max(half, Mathf.Max(pivotX - x, x + 1 - pivotX));
+            }
+            return half / k / cell.pixelsPerUnit;
+        }
+
         // ---- the villager's presenter, end to end ----------------------------------------------------
 
         [Test]

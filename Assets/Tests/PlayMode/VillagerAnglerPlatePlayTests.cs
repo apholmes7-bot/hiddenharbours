@@ -261,17 +261,35 @@ namespace HiddenHarbours.Tests.PlayMode
             Shoot("4c-fight-late");
 
             // 4b. The landing splash: stepped across the edge, so it fires where she leaves the water.
-            yield return StepThrough(s.LandStart - 0.3d, s.LandStart + 0.1d);
+            //     Unless that point is drawn inside his figure: then no rings at all (never round his waist).
+            yield return StepThrough(s.LandStart - 0.3d, s.LandStart - StepSeconds);
+            AssertInSession(FishingPhase.FightSurface);
+            Assert.IsTrue(_basil.TryGetAnglerState(out FishingState lastUp, out _), "harness: not in a session");
+            Vector2 feet = _angler.transform.position;
+            Vector2 waterPoint = feet + new Vector2(lastUp.FishOffsetX, lastUp.FishOffsetY);
+            bool onHim = RodPresenterMath.InFisherFigure(waterPoint, feet, LandFeel().FisherFigureHalfWidthM,
+                                                         LandFeel().FisherFigureHeightM);
+            yield return StepThrough(s.LandStart - StepSeconds, s.LandStart + 0.1d);
             AssertInSession(FishingPhase.Landed);
-            Assert.IsTrue(_angler.SplashRenderer.enabled, "no splash where she is lifted out");
-            AssertOverWater(_angler.SplashRenderer.transform.position, "the landing splash");
+            if (onHim) Assert.IsFalse(_angler.SplashRenderer.enabled, "landing rings drawn round his figure");
+            else
+            {
+                Assert.IsTrue(_angler.SplashRenderer.enabled, "no splash where she is lifted out");
+                AssertOverWater(_angler.SplashRenderer.transform.position, "the landing splash");
+            }
+            Debug.Log($"[{PlateDir}] landing water point {waterPoint} (feet {feet}): " +
+                      (onHim ? "inside his figure, no rings" : "clear of him, rings"));
 
-            // 4c. Out of the water she hangs on the line, whole and in front of him, before his hand takes her.
-            yield return StepThrough(s.LandStart + 0.1d, s.LandStart + 0.5d * LandFeel().LandLiftTravelSeconds);
+            // 4c. Out of the water she hangs on the line, whole and in front of him, before his hand takes her,
+            //     beside his figure, never over it.
+            yield return StepThrough(s.LandStart + 0.1d, s.LandStart + LandFeel().LandLiftTravelSeconds + 0.1d);
             AssertInSession(FishingPhase.Landed);
-            Assert.IsTrue(_angler.FishRenderer.enabled, "she is not seen on the line as she is lifted");
+            Assert.IsTrue(_angler.FishRenderer.enabled, "she is not seen on the line as she hangs");
             Assert.Greater(_angler.FishRenderer.sortingOrder, _basil.GetComponent<SpriteRenderer>().sortingOrder,
                            "lifted, she hangs in front of him");
+            Assert.Greater(Mathf.Abs(_angler.FishRenderer.transform.position.x - feet.x), LandFeel().FisherFigureHalfWidthM,
+                           "she hangs over his figure");
+            StringAssert.Contains("_gill", _angler.FishRenderer.sprite.name, "she does not hang head-up by the gill");
             Assert.IsFalse(_angler.Land?.Mesh != null && _angler.Land.Mesh.Drawing,
                            "she is in his hand while she still hangs on the line");
 
@@ -846,6 +864,7 @@ namespace HiddenHarbours.Tests.PlayMode
                                                         _angler.LineFarEnd), 1e-3f,
                                        $"{name}: she does not hang from the line's end {_angler.LineFarEnd}");
                     Assert.Greater(fish.sortingOrder, body.sortingOrder, $"{name}: lifted, she hangs behind him");
+                    StringAssert.Contains("_gill", fish.sprite.name, $"{name}: she does not hang head-up by the gill");
                 }
                 else if (fish.enabled)
                 {

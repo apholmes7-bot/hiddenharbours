@@ -152,7 +152,17 @@ namespace HiddenHarbours.Player
                     case RodSplashEdge.Touchdown: SplashAt(angler + new Vector2(s.CastAimX, s.CastAimY), look, now - seconds); break;
                     case RodSplashEdge.PulledUnder: SplashAt(angler + new Vector2(_last.CastAimX, _last.CastAimY), look, now - seconds); break;
                     case RodSplashEdge.Breaks: SplashAt(fishPos, look, now - seconds); break;
-                    case RodSplashEdge.Result: SplashAt(RodPresenterMath.ResultSplashAt(in _last, angler, _lastFar), look, now - seconds); break;
+                    case RodSplashEdge.Result:
+                    {
+                        // Out of the surface fight the rings go where she left the water, unless that point is
+                        // drawn inside his figure, where they read as rings round his waist: then none.
+                        Vector2 at = RodPresenterMath.ResultSplashAt(in _last, angler, _lastFar);
+                        FishFeelSettings feel = GameServices.Config != null ? GameServices.Config.FishFeel : FishFeelSettings.Default;
+                        if (_last.Phase != FishingPhase.FightSurface
+                            || !RodPresenterMath.InFisherFigure(at, angler, feel.FisherFigureHalfWidthM, feel.FisherFigureHeightM))
+                            SplashAt(at, look, now - seconds);
+                        break;
+                    }
                 }
             }
             else if (!consecutive)
@@ -174,16 +184,18 @@ namespace HiddenHarbours.Player
 
         /// <summary>
         /// LANDED, ON THE LINE: over <see cref="FishFeelSettings.LandLiftTravelSeconds"/> she travels hanging
-        /// head-up from the water point where she left it to the rod tip, then hangs there for
-        /// <see cref="FishFeelSettings.LandHangSeconds"/>, in front of him (the rod's over-fisher rung), before
-        /// she goes to his hand. A landing not seen from the surface (a seek) starts her at the tip.
+        /// head-up from the water point where she left it to the hang point beside him
+        /// (<see cref="RodPresenterMath.HangPoint"/>: off his figure, on his rod's side), then hangs there for
+        /// <see cref="FishFeelSettings.LandHangSeconds"/>, in front (the rod's over-fisher rung), before she goes
+        /// to his hand. A landing not seen from the surface (a seek) starts her at the hang point.
         /// </summary>
-        private bool TryHang(float seconds, in AnglerLook look, Vector2 tip, out Vector2 grip)
+        private bool TryHang(float seconds, in AnglerLook look, Vector2 angler, Vector2 tip, out Vector2 grip)
         {
             FishFeelSettings feel = GameServices.Config != null ? GameServices.Config.FishFeel : FishFeelSettings.Default;
             grip = tip;
             if (!(seconds < feel.LandLiftTravelSeconds + feel.LandHangSeconds)) return false;
-            grip = RodPresenterMath.LiftGrip(_landFromSet ? _landFrom : tip, tip, seconds, feel.LandLiftTravelSeconds);
+            Vector2 hang = RodPresenterMath.HangPoint(angler, tip, feel.LandHangSideM, feel.LandHangHeightM);
+            grip = RodPresenterMath.LiftGrip(_landFromSet ? _landFrom : hang, hang, seconds, feel.LandLiftTravelSeconds);
             int order = _bodySr != null ? _bodySr.sortingOrder + EffectSorting.RodOverFisherRungs : look.WaterElementOrder;
             int scale = Mathf.Max(1, look.FishDrawScale);
             if (!_fish.RenderHanging(grip, seconds, look.FishSecondsPerFrame, order, scale)) return false;
@@ -237,7 +249,7 @@ namespace HiddenHarbours.Player
                 }
                 if (_fishSr.enabled) ScaleFish(scale);
             }
-            else if (s.Phase == FishingPhase.Landed && TryHang(seconds, in look, tip, out Vector2 grip))
+            else if (s.Phase == FishingPhase.Landed && TryHang(seconds, in look, angler, tip, out Vector2 grip))
             {
                 hanging = true;
                 far = grip;

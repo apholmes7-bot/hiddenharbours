@@ -92,23 +92,24 @@ namespace HiddenHarbours.Player
         }
 
         /// <summary>
-        /// LANDED, ON THE LINE: draw her hanging head-up from the line, her grip (the held sheet's baked grip,
+        /// LANDED, ON THE LINE: draw her hanging head-up from the line, her grip (the gill sheet's baked grip,
         /// <see cref="FishFeelSettings.HangGripRowsAbovePivot"/> rows over its pivot) at <paramref name="grip"/>,
-        /// on her last fighting row, the held sheet's frames flipping at <paramref name="secondsPerFrame"/>.
-        /// Whole, out of the water: no waterline cut. False (and nothing drawn) when her rung has no held sheet.
+        /// on her last fighting row, the frames flipping at <paramref name="secondsPerFrame"/>. The sheet is the
+        /// rung's <see cref="FishRungVisual.LineHangFrames"/> (head-up by the gill, whatever her hand count),
+        /// else its held sheet. Whole, out of the water: no waterline cut. False (and nothing drawn) when her
+        /// rung has neither.
         /// </summary>
         public bool RenderHanging(Vector2 grip, float seconds, float secondsPerFrame, int sortingOrder, float drawScale)
         {
-            FishRungVisual sp = _rung;
-            if (sp == null || sp.HeldFrames == null || sp.HeldFrames.Length == 0 || sp.HeldFramesPerDir <= 0)
+            if (!TryHangSheet(_rung, out Sprite[] frames, out int perDir))
             {
                 Hide();
                 return false;
             }
-            int frame = RodPresenterMath.FlipFrame(seconds, secondsPerFrame, sp.HeldFramesPerDir);
-            int idx = RodPresenterMath.SheetIndex(_fishRow, frame, sp.HeldFramesPerDir, sp.HeldFrames.Length);
-            if (idx < 0 || sp.HeldFrames[idx] == null) { Hide(); return false; }
-            Sprite held = sp.HeldFrames[idx];
+            int frame = RodPresenterMath.FlipFrame(seconds, secondsPerFrame, perDir);
+            int idx = RodPresenterMath.SheetIndex(_fishRow, frame, perDir, frames.Length);
+            if (idx < 0 || frames[idx] == null) { Hide(); return false; }
+            Sprite held = frames[idx];
             float gripM = Feel().HangGripRowsAbovePivot / Mathf.Max(1f, held.pixelsPerUnit) * drawScale;
             DrawnFrame = held;
             FishAirborne = false;
@@ -117,6 +118,26 @@ namespace HiddenHarbours.Player
             _sr.sortingOrder = sortingOrder;
             _sr.enabled = true;
             HideUnderwater();
+            return true;
+        }
+
+        /// <summary>The sheet she hangs from the line on: the gill hang when the rung carries a whole one
+        /// (eight rows), else the held sheet; false when neither is there.</summary>
+        public static bool TryHangSheet(FishRungVisual rung, out Sprite[] frames, out int perDir)
+        {
+            frames = null;
+            perDir = 0;
+            if (rung == null) return false;
+            Sprite[] hang = rung.LineHangFrames;
+            if (hang != null && hang.Length >= Directions && hang.Length % Directions == 0)
+            {
+                frames = hang;
+                perDir = hang.Length / Directions;
+                return true;
+            }
+            if (rung.HeldFrames == null || rung.HeldFrames.Length == 0 || rung.HeldFramesPerDir <= 0) return false;
+            frames = rung.HeldFrames;
+            perDir = rung.HeldFramesPerDir;
             return true;
         }
 
