@@ -17,4 +17,4 @@ MonoBehaviour:
   DurationSeconds: 2.6
   Kind: 1
   Gaze: []
-  ClipKey: idle_scratch
+  ClipKey: idleScratch

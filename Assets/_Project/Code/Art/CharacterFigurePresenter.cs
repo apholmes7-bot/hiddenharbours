@@ -452,8 +452,10 @@ namespace HiddenHarbours.Art
 
             // Stood BEFORE it is posed: the look reads where the figure stands this frame.
             Place(stand, skin);
-            // Idle fidgets only while she stands at the plain idle: never at the oars, resting or stroking.
-            bool idle = !Rowing && stance != CharacterStance.Oars && IdleFidgetSchedule.IsStandingIdle(stateKey);
+            // Idle fidgets only while she stands at the plain idle: never at the oars, resting or stroking, and
+            // never at the helm, where she is steering even when the helm clip falls back to the idle.
+            bool idle = !Rowing && stance != CharacterStance.Oars && stance != CharacterStance.Helm
+                        && IdleFidgetSchedule.IsStandingIdle(stateKey);
             IsoCharacterFigureRenderer.Life life = _life.Step(skin, _key, _keyHash, now, _figure, looks: true, idle: idle);
             if (idle && _life.TryFidgetClip(skin, out string fidgetKey, out int fidgetFrame) && skin.DrawsAsMesh(fidgetKey))
             {

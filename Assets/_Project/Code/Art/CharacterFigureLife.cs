@@ -68,8 +68,9 @@ namespace HiddenHarbours.Art
         /// figure's idle fidgets (<see cref="IdleFidgetSchedule"/>). <paramref name="idle"/> is the presenter's
         /// word that the figure is standing idle this frame: the plain <c>idle</c> clip, not rowing, not at
         /// work or in a beat, no performance clip, and for the player no input this frame. False cancels a
-        /// fidget at once. While a Look fidget plays it takes the look (the external target, when there is
-        /// one, comes back the beat it ends); a Clip fidget is handed over by <see cref="TryFidgetClip"/>.
+        /// fidget at once, and so does someone to look at: a figure that <paramref name="looks"/> and has the
+        /// player inside its radius attends to him and does not fidget. While a Look fidget plays it takes
+        /// the look; a Clip fidget is handed over by <see cref="TryFidgetClip"/>.
         /// The fidget's look plays whether or not the figure <paramref name="looks"/> at others, so the
         /// player, who looks at nobody, still looks about. Behind the library's own switch and
         /// <see cref="GameConfig.CharacterHeadLook"/>.
@@ -93,22 +94,32 @@ namespace HiddenHarbours.Art
 
             if (GameServices.CharacterBlink && def.HasBlink) life.BlinkEyes = _blink.EyesAt(now);
 
-            if (StepFidget(def, keyHash, now, idle) && TryFidgetLook(def, figure, ref life)) return life;
+            // Someone to look at comes first: a figure attending to the player nearby does not look about,
+            // so the look at the player is never broken by a fidget and a fidget ends the moment he comes near.
+            bool attending = looks && TryExternalLook(def, figure, ref life);
+            if (StepFidget(def, keyHash, now, idle && !attending) && !attending) TryFidgetLook(def, figure, ref life);
+            return life;
+        }
 
-            if (!looks || figure == null || !def.HasLook) return life;
+        // The look at whoever the seam names (the player), inside the radius. False, and the life untouched,
+        // when there is nobody, the def has no look, or both halves of the look are switched off.
+        private bool TryExternalLook(CharacterSkinDef def, IsoCharacterFigureRenderer figure,
+                                     ref IsoCharacterFigureRenderer.Life life)
+        {
+            if (figure == null || !def.HasLook) return false;
             bool head = GameServices.CharacterHeadLook, eyes = GameServices.CharacterEyeLook;
-            if (!head && !eyes) return life;
-            if (!CharacterLookTargets.TryGet(_key, figure.transform.position, out Vector3 world)) return life;
-            if (!figure.TryFigureGround(world, out Vector3 ground)) return life;
+            if (!head && !eyes) return false;
+            if (!CharacterLookTargets.TryGet(_key, figure.transform.position, out Vector3 world)) return false;
+            if (!figure.TryFigureGround(world, out Vector3 ground)) return false;
 
             float radius = GameServices.CharacterLookRadiusMetres;
-            if (!(ground.x * ground.x + ground.y * ground.y <= radius * radius)) return life;
+            if (!(ground.x * ground.x + ground.y * ground.y <= radius * radius)) return false;
 
             life.HasTarget = true;
             life.Target = new Vector3(ground.x, ground.y, GameServices.CharacterLookTargetHeightMetres);
             life.HeadLook = head;
             life.EyeLook = eyes;
-            return life;
+            return true;
         }
 
         // ---------------------------------------------------------------- idle fidgets

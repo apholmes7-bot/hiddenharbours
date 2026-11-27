@@ -17,4 +17,4 @@ MonoBehaviour:
   DurationSeconds: 4.0
   Kind: 1
   Gaze: []
-  ClipKey: idle_hips
+  ClipKey: idleHips

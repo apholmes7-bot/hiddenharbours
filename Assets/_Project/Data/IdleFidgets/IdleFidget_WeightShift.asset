@@ -17,4 +17,4 @@ MonoBehaviour:
   DurationSeconds: 2.4
   Kind: 1
   Gaze: []
-  ClipKey: idle_shift
+  ClipKey: idleShift

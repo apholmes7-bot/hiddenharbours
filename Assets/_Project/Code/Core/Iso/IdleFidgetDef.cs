@@ -71,7 +71,7 @@ namespace HiddenHarbours.Core
                  "(0, 0) so the fidget starts and ends on the figure's own look.")]
         public GazeKey[] Gaze = Array.Empty<GazeKey>();
 
-        [Tooltip("Clip only: the skin clip's state key (e.g. 'idle_scratch'), as the rig export names it.")]
+        [Tooltip("Clip only: the skin clip's state key (e.g. 'idleScratch'), as the rig export names it.")]
         public string ClipKey = "";
 
         /// <summary>

@@ -486,9 +486,10 @@ namespace HiddenHarbours.Player
             // At the oars, rowing or resting on them: sat on the thwart (resting, his hands let go).
             bool atOars = Rowing || (!clipPose && string.IsNullOrEmpty(seatedKey) && character.Stance == CharacterStance.Oars);
             // Idle fidgets only while he stands at the plain idle with no control touched this frame: never in
-            // a performance clip, at a helm seat or at the oars.
+            // a performance clip, at a helm (seated or standing: he is steering even when the helm clip falls
+            // back to the idle) or at the oars.
             bool idle = !clipPose && !atOars && string.IsNullOrEmpty(seatedKey) && !IdleFidgetInput.ActedRecently
-                        && IdleFidgetSchedule.IsStandingIdle(stateKey);
+                        && character.Stance != CharacterStance.Helm && IdleFidgetSchedule.IsStandingIdle(stateKey);
             IsoCharacterFigureRenderer.Life life = _life.Step(skin, string.Empty, 0u, now, _figure, looks: false, idle: idle);
             if (idle && _life.TryFidgetClip(skin, out string fidgetKey, out int fidgetFrame)
                 && (meshOnly || skin.DrawsAsMesh(fidgetKey)))

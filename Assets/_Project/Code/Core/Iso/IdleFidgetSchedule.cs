@@ -24,13 +24,16 @@ namespace HiddenHarbours.Core
     /// <summary>
     /// <b>Which idle fidget plays, and when: a pure function of (world seed, game time, who).</b>
     ///
-    /// <para><b>The grid.</b> Time is cut into equal slots of
-    /// <c>P = MinGap + (MaxGap − MinGap)/2 + longest fidget</c>. Slot <c>n</c> holds one fidget, chosen by
-    /// weight, starting <c>n·P + phase + jitter(n)</c> with the jitter uniform in
-    /// <c>[0, (MaxGap − MinGap)/2]</c>. So the gap between one fidget's end and the next one's start is
-    /// never under <see cref="IdleFidgetLibraryDef.MinGapSeconds"/> and never over
-    /// <see cref="IdleFidgetLibraryDef.MaxGapSeconds"/> plus the spread of the fidgets' lengths, and only
-    /// slot <c>floor((t − phase)/P)</c> can be playing at <c>t</c>: O(1), no loop over the hours.</para>
+    /// <para><b>The grid.</b> With <c>J = (MaxGap − MinGap)/2</c>, each figure's time is cut into equal
+    /// slots of <c>P = MinGap + J + longest fidget + stretch</c>, the stretch the figure's own in
+    /// <c>[0, J/2]</c>. Slot <c>n</c> holds one fidget, chosen by weight, starting
+    /// <c>n·P + phase + jitter(n)</c> with the jitter uniform in <c>[0, J/2]</c>. So the gap between one
+    /// fidget's end and the next one's start is never under <see cref="IdleFidgetLibraryDef.MinGapSeconds"/>
+    /// and never over <see cref="IdleFidgetLibraryDef.MaxGapSeconds"/> plus the spread of the fidgets'
+    /// lengths, and only slot <c>floor((t − phase)/P)</c> can be playing at <c>t</c>: O(1), no loop over
+    /// the hours. The per-figure stretch is what keeps two neighbours apart: with one shared P two figures
+    /// whose phases happened to land close would stay close all day; with different Ps they drift through
+    /// each other and part again.</para>
     ///
     /// <para><b>Who.</b> The phase, the jitter and the choice are hashed from <see cref="KeyFor"/>: the
     /// world seed, the skin's id and the figure's own key hash (the one its presenter took of its
@@ -54,6 +57,7 @@ namespace HiddenHarbours.Core
         const uint SaltPick = 0x9E3779B9u;
         const uint SaltRepick = 0x85EBCA6Bu;
         const uint SaltWorld = 0x7F4A7C15u;
+        const uint SaltStretch = 0x632BE5ABu;
 
         /// <summary>
         /// The schedule key for one figure: the blink's seed of (skin id, figure key hash)
@@ -69,12 +73,12 @@ namespace HiddenHarbours.Core
             }
         }
 
-        /// <summary>The slot length P, seconds, over the fidgets <paramref name="skin"/> can draw; 0 when
-        /// none can (or the library is off).</summary>
-        public static double SlotSeconds(IdleFidgetLibraryDef library, CharacterSkinDef skin)
+        /// <summary>The slot length P, seconds, for the figure keyed <paramref name="key"/> over the fidgets
+        /// <paramref name="skin"/> can draw; 0 when none can (or the library is off).</summary>
+        public static double SlotSeconds(IdleFidgetLibraryDef library, CharacterSkinDef skin, uint key)
         {
             if (!Scan(library, skin, out _, out double longest, out _)) return 0d;
-            return Slot(library, longest);
+            return Slot(library, longest, key);
         }
 
         /// <summary>
@@ -116,7 +120,7 @@ namespace HiddenHarbours.Core
             def = null;
             startSeconds = 0d;
             if (!Scan(library, skin, out double totalWeight, out double longest, out int available)) return false;
-            double p = Slot(library, longest);
+            double p = Slot(library, longest, key);
             if (!(p > 0d)) return false;
             startSeconds = StartOf(library, key, slot, p);
             def = Pick(library, skin, key, slot, totalWeight, available);
@@ -130,7 +134,7 @@ namespace HiddenHarbours.Core
         {
             slot = 0;
             if (!Scan(library, skin, out _, out double longest, out _)) return false;
-            double p = Slot(library, longest);
+            double p = Slot(library, longest, key);
             if (!(p > 0d)) return false;
             slot = (long)Math.Floor((nowSeconds - Phase(key, p)) / p);
             return true;
@@ -150,23 +154,25 @@ namespace HiddenHarbours.Core
             slot = 0;
             start = 0d;
             if (!Scan(library, skin, out totalWeight, out double longest, out available)) return false;
-            double p = Slot(library, longest);
+            double p = Slot(library, longest, key);
             if (!(p > 0d)) return false;
             slot = (long)Math.Floor((now - Phase(key, p)) / p);
             start = StartOf(library, key, slot, p);
             return true;
         }
 
-        static double Slot(IdleFidgetLibraryDef library, double longest) =>
-            library.MinGapSeconds + Jitter(library) + longest;
+        // P = MinGap + J + longest + stretch(key), stretch in [0, J/2]; the per-slot jitter is in [0, J/2].
+        static double Slot(IdleFidgetLibraryDef library, double longest, uint key) =>
+            library.MinGapSeconds + Spread(library) + longest + U01(key, 0L, SaltStretch) * Spread(library) * 0.5;
 
-        static double Jitter(IdleFidgetLibraryDef library) =>
+        // J: half the span between the least and the most gap.
+        static double Spread(IdleFidgetLibraryDef library) =>
             Math.Max(0d, (double)library.MaxGapSeconds - library.MinGapSeconds) * 0.5;
 
         static double Phase(uint key, double p) => U01(key, 0L, SaltPhase) * p;
 
         static double StartOf(IdleFidgetLibraryDef library, uint key, long slot, double p) =>
-            slot * p + Phase(key, p) + U01(key, slot, SaltJitter) * Jitter(library);
+            slot * p + Phase(key, p) + U01(key, slot, SaltJitter) * Spread(library) * 0.5;
 
         // The library walked once: the summed weight, the longest fidget and how many this skin can draw.
         static bool Scan(IdleFidgetLibraryDef library, CharacterSkinDef skin, out double totalWeight,
@@ -190,14 +196,27 @@ namespace HiddenHarbours.Core
 
         // ------------------------------------------------------------------ the choice
 
+        /// <summary>How many slots back the no-repeat rule looks. Not a tunable: the depth of a bounded
+        /// recursion. Comparing against the previous slot's RAW draw (depth 1) repeats about one slot in six
+        /// with three fidgets, because a re-drawn slot is then never seen as re-drawn; four slots back
+        /// brings that to about one in twenty with three fidgets (weights 3:2:2) and under one in a hundred
+        /// with six. With exactly two drawable fidgets no bounded look-back helps (the re-draw alternates),
+        /// and repeats stay common; the shipped library never has fewer than three.</summary>
+        const int RepeatLookBack = 4;
+
         // The slot's fidget: a weighted draw, re-drawn among the others when it repeats the previous slot's
-        // own first draw, so the same fidget seldom plays twice running. Both draws are pure in (key, slot).
+        // own pick (that one found the same way, RepeatLookBack deep), so the same fidget seldom plays twice
+        // running. Every draw is pure in (key, slot); no allocation.
         static IdleFidgetDef Pick(IdleFidgetLibraryDef library, CharacterSkinDef skin, uint key, long slot,
-                                  double totalWeight, int available)
+                                  double totalWeight, int available) =>
+            PickAt(library, skin, key, slot, totalWeight, available, RepeatLookBack);
+
+        static IdleFidgetDef PickAt(IdleFidgetLibraryDef library, CharacterSkinDef skin, uint key, long slot,
+                                    double totalWeight, int available, int depth)
         {
             IdleFidgetDef raw = Draw(library, skin, U01(key, slot, SaltPick) * totalWeight, null);
-            if (available < 2 || raw == null) return raw;
-            IdleFidgetDef before = Draw(library, skin, U01(key, slot - 1, SaltPick) * totalWeight, null);
+            if (depth <= 0 || available < 2 || raw == null) return raw;
+            IdleFidgetDef before = PickAt(library, skin, key, slot - 1, totalWeight, available, depth - 1);
             if (!ReferenceEquals(raw, before)) return raw;
             double rest = totalWeight - raw.Weight;
             if (!(rest > 0d)) return raw;
