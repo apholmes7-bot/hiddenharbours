@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using HiddenHarbours.Art;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Core;
 using HiddenHarbours.Environment;
+using HiddenHarbours.World;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace HiddenHarbours.Tests.EditMode
@@ -62,10 +65,23 @@ namespace HiddenHarbours.Tests.EditMode
         [TestCase(true, "Neighbour", false)]
         [TestCase(true, "Island", true)]
         [TestCase(true, "Assets/Scenes/Island.unity", true)]
+        [TestCase(true, "Arrival", true)]
+        [TestCase(true, "Assets/Scenes/Arrival.unity", true)]
         [TestCase(true, "island", false)]
+        [TestCase(true, "Other/Arrival.unity", false)]
+        [TestCase(true, null, false)]
         [TestCase(true, "", false)]
-        public void OnlyTheBootRegionIsIncludedInTheDemo(bool demo, string scene, bool expected)
-            => Assert.AreEqual(expected, DemoBuild.IncludesScene(demo, scene, "Assets/Scenes/Island.unity"));
+        public void OnlyListedRegionsAreIncludedInTheDemo(bool demo, string scene, bool expected)
+            => Assert.AreEqual(expected, DemoBuild.IncludesScene(demo, scene,
+                new[] { "Assets/Scenes/Island.unity", "Assets/Scenes/Arrival.unity" }));
+
+        [Test]
+        public void MissingOrEmptyDemoSceneListsNeverIncludeADestination()
+        {
+            Assert.IsFalse(DemoBuild.IncludesScene(true, "Island", null));
+            Assert.IsFalse(DemoBuild.IncludesScene(true, "Island", Array.Empty<string>()));
+            Assert.IsFalse(DemoBuild.IncludesScene(true, "Island", new[] { "", null, " " }));
+        }
 
         [TestCase(false)]
         [TestCase(true)]
@@ -73,37 +89,128 @@ namespace HiddenHarbours.Tests.EditMode
         {
             DemoBuild.Override = demo;
             RegionBuildAvailability.Override = (_, __) => true;
-            string boot = SceneUtility.GetScenePathByBuildIndex(0);
-            Assert.IsNotEmpty(boot);
-            Assert.IsTrue(RegionBuildAvailability.IsAvailable("region.boot", boot));
+            foreach (string path in DemoBuild.ScenePaths())
+            {
+                Assert.IsTrue(RegionBuildAvailability.IsAvailable("", path), path);
+                Assert.IsTrue(RegionBuildAvailability.IsAvailable("", Path.GetFileNameWithoutExtension(path)), path);
+            }
             Assert.AreEqual(!demo, RegionBuildAvailability.IsAvailable("region.neighbour", "Neighbour"));
         }
 
         [Test]
-        public void PlayerBuildSelectsOneSceneOnlyWhenRequested()
+        public void PlayerBuildSelectsTheIslandAndItsOpeningOnlyWhenRequested()
         {
             Type builder = Type.GetType("HiddenHarbours.Tools.Editor.PlayerBuild, HiddenHarbours.Tools.Editor", true);
             MethodInfo select = builder.GetMethod("ScenePaths", BindingFlags.Public | BindingFlags.Static);
             var full = (string[])select.Invoke(null, new object[] { false });
             var demo = (string[])select.Invoke(null, new object[] { true });
             Assert.AreEqual(6, full.Length);
-            CollectionAssert.AreEqual(new[] { "Assets/_Project/Scenes/StPeters.unity" }, demo);
+            CollectionAssert.AreEqual(new[] { "Assets/_Project/Scenes/StPeters.unity",
+                "Assets/_Project/Scenes/EastWater.unity" }, demo);
+            CollectionAssert.AreEqual(DemoBuild.ScenePaths(), demo);
             Assert.AreEqual(full[0], demo[0]);
+            foreach (string path in demo)
+            {
+                CollectionAssert.Contains(full, path);
+                Assert.IsNotNull(AssetDatabase.LoadAssetAtPath<SceneAsset>(path), path);
+            }
             demo[0] = "changed";
+            CollectionAssert.AreEqual(DemoBuild.ScenePaths(), (string[])select.Invoke(null, new object[] { true }));
+            Assert.AreEqual(full[0], DemoBuild.ScenePaths()[0]);
             CollectionAssert.AreEqual(full, (string[])select.Invoke(null, new object[] { false }));
         }
 
-        [TestCase(false)]
-        [TestCase(true)]
-        public void DemoPackagingStopsBeforeReadingInputsOrWritingOutput(bool development)
+        [Test]
+        public void EveryDemoRegionRefusesEveryDestinationOutsideTheSceneList()
+        {
+            DemoBuild.Override = true;
+            RegionBuildAvailability.Override = (_, __) => true;
+            var map = WorldMap.LoadShipped();
+            Assert.IsNotNull(map);
+            var sources = map.Regions.Where(r => DemoBuild.IncludesScene(r.SceneName)).ToArray();
+            Assert.AreEqual(DemoBuild.ScenePaths().Length, sources.Length);
+            var destinations = AssetDatabase.FindAssets("t:RegionDef", new[] { "Assets/_Project/Data/Regions" })
+                .Select(AssetDatabase.GUIDToAssetPath).Select(AssetDatabase.LoadAssetAtPath<RegionDef>).ToArray();
+            CollectionAssert.IsSubsetOf(map.Regions, destinations);
+            var names = DemoBuild.ScenePaths().Select(Path.GetFileNameWithoutExtension).ToArray();
+            foreach (var source in sources)
+            {
+                GameServices.CurrentRegionId = source.Id;
+                var loader = Host().AddComponent<RegionSceneLoader>();
+                foreach (var target in destinations)
+                {
+                    Assert.IsNotNull(target);
+                    bool included = names.Contains(target.SceneName);
+                    Assert.AreEqual(included, RegionBuildAvailability.IsAvailable(target.Id, target.SceneName),
+                        source.SceneName + " -> " + target.SceneName);
+                    if (!included)
+                    {
+                        Assert.IsFalse(loader.Preload(target), target.SceneName);
+                        Assert.IsNull(loader.PreloadingSceneName);
+                    }
+                }
+            }
+        }
+
+        static MethodInfo ArgumentParser()
         {
             Type builder = Type.GetType("HiddenHarbours.Tools.Editor.PlayerBuild, HiddenHarbours.Tools.Editor", true);
-            MethodInfo build = builder.GetMethod("Build", BindingFlags.NonPublic | BindingFlags.Static);
-            var error = Assert.Throws<TargetInvocationException>(() => build.Invoke(null,
-                new object[] { null, null, null, null, development, false, true }));
-            Assert.That(error.InnerException, Is.TypeOf<UnityEditor.Build.BuildFailedException>());
-            Assert.That(error.InnerException.Message, Is.EqualTo(
-                "Demo packaging is blocked until the island opening is implemented and verified."));
+            var parse = builder.GetMethod("ParseArguments", BindingFlags.Public | BindingFlags.Static);
+            Assert.IsNotNull(parse);
+            return parse;
+        }
+
+        static List<string> BuildArguments() => new List<string>
+        {
+            "-buildOutput", "unused-output", "-buildProduct", "Test player",
+            "-buildCommit", new string('a', 40), "-buildMainCommit", new string('b', 40)
+        };
+
+        [TestCase(false, false, "None")]
+        [TestCase(true, false, "None")]
+        [TestCase(false, true, "Lz4HC")]
+        [TestCase(true, true, "Lz4HC")]
+        public void BuildArgumentsAcceptDemoWithoutStartingABuild(bool demo, bool development, string compression)
+        {
+            var args = BuildArguments();
+            args.AddRange(new[] { "-buildCompression", compression });
+            if (development) args.Add("-buildDevelopment");
+            if (demo) args.Add("-buildDemo");
+            object request = ArgumentParser().Invoke(null, new object[] { args.ToArray() });
+            object Value(string name) => request.GetType().GetField(name).GetValue(request);
+            Assert.AreEqual(demo, Value("Demo"));
+            Assert.AreEqual(development, Value("Development"));
+            Assert.AreEqual(compression == "Lz4HC", Value("Lz4HC"));
+            Assert.AreEqual("unused-output", Value("Output"));
+            Assert.AreEqual("Test player", Value("Product"));
+            Assert.AreEqual(new string('a', 40), Value("Commit"));
+            Assert.AreEqual(new string('b', 40), Value("MainCommit"));
+        }
+
+        [TestCase("-buildOutput")]
+        [TestCase("-buildProduct")]
+        [TestCase("-buildCommit")]
+        [TestCase("-buildMainCommit")]
+        public void DemoArgumentsStillRequireEverySuppliedValue(string option)
+        {
+            var args = BuildArguments();
+            args.RemoveAt(args.IndexOf(option) + 1);
+            args.Add("-buildDemo");
+            var error = Assert.Throws<TargetInvocationException>(() =>
+                ArgumentParser().Invoke(null, new object[] { args.ToArray() }));
+            Assert.That(error.InnerException, Is.TypeOf<ArgumentException>());
+            StringAssert.Contains(option, error.InnerException.Message);
+        }
+
+        [Test]
+        public void DemoArgumentsStillRejectUnknownCompression()
+        {
+            var args = BuildArguments();
+            args.AddRange(new[] { "-buildDemo", "-buildCompression", "Unknown" });
+            var error = Assert.Throws<TargetInvocationException>(() =>
+                ArgumentParser().Invoke(null, new object[] { args.ToArray() }));
+            Assert.That(error.InnerException, Is.TypeOf<ArgumentException>());
+            StringAssert.Contains("-buildCompression", error.InnerException.Message);
         }
 
         [Test]

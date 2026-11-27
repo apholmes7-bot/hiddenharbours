@@ -27,9 +27,6 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
-if ($Demo) {
-    throw 'Demo packaging is blocked until the island opening is implemented and verified.'
-}
 $env:GIT_NO_LAZY_FETCH = '1'
 $env:GIT_OPTIONAL_LOCKS = '0'
 $box = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))

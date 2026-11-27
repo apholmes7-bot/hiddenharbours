@@ -4,8 +4,20 @@ The demo is the first week on St Peters. The player arrives, stays on the island
 digs clams, fishes from shore, buys and repairs the broken dory by hand, launches
 her and fishes from her. Around day seven, an islander's word will open the way
 to Nine Mile Creek in the full game. In the demo, weather must keep every route
-off the island closed. This page specifies a one-scene Windows package and the
-checks needed before anyone distributes it.
+off the island closed. This page specifies a two-scene Windows package (St Peters
+and the East Water sea the opening crosses) and the checks needed before anyone
+distributes it.
+
+**2026-11-26 update.** The owner ruled that the demo opens with the sea crossing
+through East Water, as the arrival already works. The demo scene list now lives in
+data (`Assets/_Project/Data/Resources/DemoScenes.json`): StPeters, then EastWater.
+Packaging and the runtime destination check read that one list, the unconditional
+demo-packaging refusal is gone, and a demo build keeps every campaign weather wall
+standing (they stand down only while the opening runs). A new full game now begins
+its island week (`st_peters.first_week`), and the kept morning after the islander's
+word sets `st_peters.weather_turned`, which lifts the four island walls. Rows below
+that still say one scene, or that nothing sets those flags, are superseded by this
+paragraph.
 
 **Status: release plan, not a verified demo.** Source audit: main
 `d46bde303e6aa256d23d47a05ede5d7d6f38e51e`, 2026-11-25. The missing-scene safety
@@ -32,6 +44,7 @@ must independently show this exact enabled scene list:
 | Build index | Scene asset | Purpose |
 | --- | --- | --- |
 | 0 | `Assets/_Project/Scenes/StPeters.unity` | Boot, title, persistent services and the playable island |
+| 1 | `Assets/_Project/Scenes/EastWater.unity` | The opening's sea crossing; the campaign walls keep it closed after the arrival |
 
 There is no additional bootstrap, persistent-core, UI or shared scene to include.
 [StPetersBuilder](../../Assets/_Project/Code/App/Editor/StPetersBuilder.cs) embeds
@@ -263,7 +276,7 @@ not by itself mean that its input should be disabled.
 
 | Decision | Lean and reason |
 | --- | --- |
-| How does the arrival fit entirely inside St Peters? | Keep the skipper, cabin, creator and step ashore, but author the complete approach inside the included scene. The existing sea hop cannot satisfy the one-scene requirement. Do not silently skip the introduction or add EastWater. |
+| How does the arrival fit entirely inside St Peters? | Decided 2026-11-26: it does not. The demo opens with the existing sea crossing through East Water, and EastWater ships as the second demo scene. |
 | How is the canonical ending presented and remembered? | ADR 0062 places completion at the islander's word and allows continued island fishing. Keep every external scene unavailable. The saved-sleep timing in #1535 is a separate proposal; presentation and persistence still need a decision. |
 | How does weather close the exposed bar and remain closed after repair? | Give the foot route a clear weather reason as well as the four sea edges; keep the demo closure independent of a full-game unlock flag. A generic unavailable-region message alone does not explain an exposed walkable bar. |
 | Should the saved demo week be copied into the full game? | #1510 already separates the demo subfolder from the full-game slot. Prefer an explicit import that preserves both playthroughs; no import is implemented and no version-26 field change is proposed here. |

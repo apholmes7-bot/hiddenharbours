@@ -58,13 +58,14 @@ namespace HiddenHarbours.Tests.PlayMode
             }
 
             public int Saves;
+            public bool LoadedExistingSave => Saves > 0;
             public void Save() => Saves++;
         }
 
         sealed class DayClock : IGameClock
         {
             public int Day;
-            public double TotalSeconds => Day * (double)GameConfig.DefaultSecondsPerDay + GameConfig.DefaultSecondsPerDay * 0.5;
+            public double TotalSeconds => (Day + Hour / 24d) * GameConfig.DefaultSecondsPerDay;
             public GameTime Now => new GameTime(TotalSeconds);
             public Season Season => Season.EarlySpring;
             public int Year => 1;
@@ -74,9 +75,16 @@ namespace HiddenHarbours.Tests.PlayMode
             public bool IsMarketDay => false;
             public float Hour = 19f;
             public float HourOfDay => Hour;
-            public float DayFraction => 0.5f;
+            public float DayFraction => Hour / 24f;
             public bool IsPaused { get; set; }
             public float TimeScale { get; set; } = 1f;
+            public bool FastForwardTo(double target)
+            {
+                if (target <= TotalSeconds) return false;
+                Day = (int)System.Math.Floor(target / GameConfig.DefaultSecondsPerDay);
+                Hour = (float)((target / GameConfig.DefaultSecondsPerDay - Day) * 24d);
+                return true;
+            }
         }
 
         readonly List<Object> _spawned = new List<Object>();
@@ -108,6 +116,7 @@ namespace HiddenHarbours.Tests.PlayMode
             DemoBuild.Override = true;      // the demo, unless a case says otherwise
             DemoWeek.IsHost = null;
             DemoWeek.Listen();
+            StoryGates.ListenForMorning();
             DemoClosingCard.Listen();
             _ended = 0;
             _toTitle = 0;
@@ -293,6 +302,37 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsFalse(ShellPause.IsPaused, "the world runs on");
             Assert.IsFalse(_save.Writes.ContainsKey(DemoWeek.EndedKey));
             Assert.AreEqual(0, _toTitle);
+
+            Assert.IsTrue(_interactor.BeginInteract(), "asking again while passage is pending");
+            yield return null;
+            Assert.IsTrue(_presenter.IsShowing);
+            Assert.IsTrue(_presenter.BubbleIsVisible, "the reminder uses the ordinary bubble");
+            Assert.IsNotNull(_presenter.SpeakerAnchor, "anchored to the islander");
+            heard.Clear();
+            yield return HearItOut(heard);
+            all = string.Join(" ", heard);
+            StringAssert.Contains(Flat(_islander.Dialogue.Lines(true)[0]), all, "her ordinary talk comes first");
+            string reminder = Flat(_gate.PendingDialogue.FirstLines.Single());
+            Assert.AreEqual(1, heard.Count(line => line == reminder), "one added line");
+            Assert.AreEqual(1, _save.Writes[_gate.SetsFlag], "no second word");
+            Assert.IsFalse(_save.GetFlag(_gate.PendingUntilFlag), "talk never opens passage");
+
+            _clock.Hour = 22f;
+            Assert.IsTrue(RestSaveResponder.Fulfil(new RestSaveRequested("fixture bed")).Ok);
+            Assert.AreEqual(1, _save.Saves, "the sleep was kept before passage opened");
+            foreach (CampaignBarrierDef wall in Walls().Where(w => w.RegionId == Region))
+                Assert.IsFalse(CampaignBarrierDirector.Stands(wall), wall.Id);
+            Assert.IsTrue(_interactor.BeginInteract());
+            yield return null;
+            heard.Clear();
+            yield return HearItOut(heard);
+            all = string.Join(" ", heard);
+            StringAssert.DoesNotContain(reminder, all);
+            StringAssert.Contains(Flat(_islander.Dialogue.Lines(true)[0]), all);
+            Assert.AreEqual(1, _save.Writes[_gate.SetsFlag]);
+            Assert.AreEqual(1, _save.Writes[_gate.PendingUntilFlag]);
+            Assert.AreEqual(0, _ended);
+            Assert.IsFalse(DemoClosingCard.IsOpen);
         }
 
         [UnityTest]
@@ -358,7 +398,9 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator AnOlderSave_HearsOnlyHerOrdinaryTalk_AndMeetsNoWeather()
         {
-            // The same progressed save without the first-week key: the save a player had before.
+            // The same progressed save without the first-week key: the save a player had before. Older
+            // saves belong to the full game; the demo has its own save slot and holds every wall for good.
+            DemoBuild.Override = false;
             _save.Current.OnboardingFlags.RemoveAll(f => f.Key == _gate.LiveWhileFlag);
 
             _weather.Step();
@@ -376,6 +418,9 @@ namespace HiddenHarbours.Tests.PlayMode
                 StringAssert.DoesNotContain(Flat(note.SpokenHint), all);
             Assert.IsFalse(_save.Writes.ContainsKey(_gate.SetsFlag), "and nothing is written for the gate");
             Assert.AreEqual(0, _ended);
+
+            DemoBuild.Override = true;
+            AssertTheWallsStand(); // the demo keeps its exits closed whatever the save holds
         }
     }
 }

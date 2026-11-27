@@ -144,9 +144,12 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (var home in LoadAll<HomeDef>())
                 if (!string.IsNullOrEmpty(home.Id)) flags.Add(HomeDeeds.KeyFor(home.Id));
 
-            // 4. Every story gate's word: heard to its end, it sets the gate's flag.
+            // 4. Every story gate's word and its optional kept-morning action.
             foreach (var gate in LoadAll<StoryGateDef>())
+            {
                 if (!string.IsNullOrEmpty(gate.SetsFlag)) flags.Add(gate.SetsFlag);
+                if (!string.IsNullOrWhiteSpace(gate.MorningSetsFlag)) flags.Add(gate.MorningSetsFlag);
+            }
 
             return flags;
         }

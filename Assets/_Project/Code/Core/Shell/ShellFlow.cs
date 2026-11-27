@@ -96,6 +96,10 @@ namespace HiddenHarbours.Core
             // the explicit New Game only, so a Continue and an old save keep the boat they had.
             SlipDoryStory.BeginForNewGame(save);
             EnterWorld();
+
+            // The island week begins here, on the explicit New Game only: a Continue and an older save
+            // never get it. After the world is entered, so the write is allowed and lands in the file.
+            IslandWeekStart.BeginForNewGame(save);
         }
 
         /// <summary>

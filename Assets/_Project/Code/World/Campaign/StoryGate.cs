@@ -10,7 +10,7 @@ namespace HiddenHarbours.World
         /// <summary>Their ordinary talk; the gate has nothing to add.</summary>
         Normal,
         /// <summary>Their ordinary talk, and one line more: the first thing still to do, a word to come
-        /// back at the right hour, or (in a demo, after the word) that there is fishing here yet.</summary>
+        /// back at the right hour, or a reminder after the word.</summary>
         Hint,
         /// <summary>The word: every fact holds and the hour is right. Heard to its end, it is given.</summary>
         Word,
@@ -60,14 +60,23 @@ namespace HiddenHarbours.World
         /// What a Talk with the gate's islander is. The word only when every fact holds AND the hour is
         /// inside the gate's window; with the facts but not the hour, a line to come back; before that,
         /// one line about the FIRST missing fact (the reading's own order), so asking twice gives the
-        /// same answer while nothing has changed. After the word she talks as ever, except in a demo,
-        /// where she has one line more.
+        /// same answer while nothing has changed. After the word the full game adds the authored
+        /// reminder until passage opens; the demo uses its own line instead.
         /// </summary>
         public static StoryGateTalk Talk(StoryGateDef gate, IFlagStore flags, in IslandWeekSnapshot facts,
                                          float hourOfDay, bool demo)
         {
             if (IsGiven(gate, flags))
-                return demo ? Added(gate, gate.DemoAfterLine) : StoryGateTalk.Normal;
+            {
+                if (demo) return Added(gate, gate.DemoAfterLine);
+                if (!string.IsNullOrWhiteSpace(gate.PendingUntilFlag) && !flags.Get(gate.PendingUntilFlag))
+                {
+                    string[] lines = gate.PendingDialogue != null ? gate.PendingDialogue.FirstLines : null;
+                    if (lines != null && lines.Length > 0)
+                        return new StoryGateTalk(StoryGateTalkKind.Hint, lines, gate);
+                }
+                return StoryGateTalk.Normal;
+            }
             if (!IsLive(gate, flags)) return StoryGateTalk.Normal;
 
             if (facts.AllHold)
@@ -127,7 +136,35 @@ namespace HiddenHarbours.World
         private static StoryGateDef[] _gates;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetStatics() => _gates = null;
+        private static void ResetStatics()
+        {
+            _gates = null;
+            ListenForMorning();
+        }
+
+        /// <summary>Listen once, including after a bus reset. No player state is kept here.</summary>
+        public static void ListenForMorning()
+        {
+            EventBus.Unsubscribe<SleepReachedMorning>(OnMorning);
+            EventBus.Subscribe<SleepReachedMorning>(OnMorning);
+        }
+
+        /// <summary>Only the host changes shared passage flags. The demo still ends at the word.</summary>
+        private static void OnMorning(SleepReachedMorning morning)
+        {
+            if (DemoBuild.Enabled || (DemoWeek.IsHost != null && !DemoWeek.IsHost())) return;
+            ISaveService save = GameServices.Save;
+            if (save == null || save.Current == null) return;
+            IReadOnlyList<StoryGateDef> all = All;
+            for (int i = 0; i < all.Count; i++)
+            {
+                StoryGateDef gate = all[i];
+                if (gate == null || string.IsNullOrWhiteSpace(gate.MorningSetsFlag) ||
+                    string.IsNullOrWhiteSpace(gate.SetsFlag) || !save.GetFlag(gate.SetsFlag) ||
+                    save.GetFlag(gate.MorningSetsFlag)) continue;
+                save.SetFlag(gate.MorningSetsFlag, true);
+            }
+        }
 
         /// <summary>Every gate, in id order.</summary>
         public static IReadOnlyList<StoryGateDef> All

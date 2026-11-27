@@ -74,6 +74,19 @@ namespace HiddenHarbours.World
                  "Empty = they say nothing more.")]
         [TextArea] public string DemoAfterLine = "";
 
+        [Header("The morning after the word")]
+        [Tooltip("The flag set by the next kept sleep that reaches morning after the word, in the full " +
+                 "game only. Empty = no morning action.")]
+        public string MorningSetsFlag = "";
+
+        [Header("After the word, while passage is pending")]
+        [Tooltip("The saved flag that ends the full game's reminder. Empty with no pending dialogue = " +
+                 "ordinary talk after the word.")]
+        public string PendingUntilFlag = "";
+        [Tooltip("First lines added to the ordinary bubble after the word, until PendingUntilFlag is " +
+                 "set. The demo always uses DemoAfterLine instead.")]
+        public DialogueDef PendingDialogue;
+
         [Header("Before the facts hold")]
         [Tooltip("One row per fact of the progress rules, by its text key.")]
         public StoryGateNote[] Notes = new StoryGateNote[0];
@@ -113,10 +126,21 @@ namespace HiddenHarbours.World
             if (!HasPrefix(ProgressId, "island_week.")) return "Expected an island_week.* progress id.";
             if (string.IsNullOrWhiteSpace(SetsFlag)) return "A gate must set a flag.";
             if (SetsFlag == LiveWhileFlag) return "The flag the gate sets cannot be the flag it waits on.";
+            if (!string.IsNullOrWhiteSpace(MorningSetsFlag) &&
+                (MorningSetsFlag == SetsFlag || MorningSetsFlag == LiveWhileFlag))
+                return "The morning must set a different flag from the word or its activation.";
             if (FromHour < 0f || FromHour > 24f || ToHour < 0f || ToHour > 24f) return "An hour is 0..24.";
             if (!HasLines(Word)) return "A gate needs a word to say.";
             if (DemoWord != null && !HasLines(DemoWord)) return "The demo word has no lines.";
+            bool hasPendingFlag = !string.IsNullOrWhiteSpace(PendingUntilFlag);
+            if (hasPendingFlag != (PendingDialogue != null))
+                return "A pending reminder needs both a dialogue and the flag that ends it.";
+            if (hasPendingFlag && (PendingUntilFlag == SetsFlag || PendingUntilFlag == LiveWhileFlag))
+                return "The pending reminder must end on a different flag from the word or its activation.";
+            if (PendingDialogue != null && !HasLines(PendingDialogue))
+                return "The pending reminder has no lines.";
             string bad = EmptyLine(Word) ?? (DemoWord != null ? EmptyLine(DemoWord) : null);
+            bad ??= PendingDialogue != null ? EmptyLine(PendingDialogue) : null;
             if (bad != null) return bad;
             if (Notes != null)
                 for (int i = 0; i < Notes.Length; i++)

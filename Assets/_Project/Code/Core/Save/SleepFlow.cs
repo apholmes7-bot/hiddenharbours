@@ -220,6 +220,7 @@ namespace HiddenHarbours.Core
 
             string text = now >= WakeSeconds ? RestedText : WokeEarlyText;
             GameSaved outcome = RestSaveResponder.Keep(_request, slept, text);
+            if (slept) RestSaveResponder.AnnounceMorning(outcome, StartSeconds, now, GameServices.Config);
 
             RestQuorum.Release(_request.BedId, RestQuorum.LocalSleeper);
             Announce(clock);
