@@ -107,6 +107,10 @@ namespace HiddenHarbours.Art
             if (full <= 0f) return 1f;
             float alignment = Mathf.Abs(Vector2.Dot(outwardPlan, drawnDown));
             if (full <= none) return alignment >= full ? 1f : 0f;
+            // Under the lower bound the face is laid on the screen grid (FacesAcrossTheScreen): a push there moves
+            // the outline only, never a texel, so the roughness comes back over the same width. The gain is a notch
+            // with its floor on the bound, which is where the two mappings meet: the seam sits on a flat of wall.
+            if (alignment < none) return Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(none, none - (full - none), alignment));
             return Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(none, full, alignment));
         }
 

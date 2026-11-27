@@ -37,9 +37,18 @@ namespace HiddenHarbours.Tests.EditMode
             Vector2 easyEastColumn = new Vector2(7.2f, -6.1f).normalized;     // the same bank at 48 degrees
 
             Assert.AreEqual(1f, CliffJagMath.FacingGain(in faced, south, southColumn), 1e-6f);
-            Assert.AreEqual(0f, CliffJagMath.FacingGain(in faced, east, steepEastColumn), 1e-6f);
             float between = CliffJagMath.FacingGain(in faced, east, easyEastColumn);
             Assert.That(between, Is.GreaterThan(0.5f).And.LessThan(1f), "a gentle east bank keeps most of it");
+            // The floor of the notch is the lower bound, where the two mappings meet; under it the face is on the
+            // screen grid, where a push cannot shear a texel, and the roughness is back within the same width.
+            float cos(float a) => CliffJagMath.FacingGain(in faced, east, new Vector2(a, -Mathf.Sqrt(1f - a * a)));
+            Assert.AreEqual(0f, cos(0.35f), 1e-4f, "on the bound");
+            Assert.That(cos(0.31f), Is.LessThan(0.05f), "the steep east bank, just under it");
+            Assert.That(cos(0.1f), Is.GreaterThan(0.2f).And.LessThan(cos(0.75f)));
+            var stPeters = new CliffJag(0.35f, 0.45f, Vector3.one, Vector3.one, 1f, 6, new Vector2(0.7f, 0.8f));
+            Assert.AreEqual(1f, CliffJagMath.FacingGain(in stPeters,
+                                                        east, new Vector2(0.58f, -Mathf.Sqrt(1f - 0.58f * 0.58f))), 1e-6f,
+                            "St Peters' steep east wall (0.56 to 0.6) is rough again");
             Assert.AreEqual(1f, CliffJagMath.FacingGain(in Rough, east, steepEastColumn), "no bounds: every wall takes all of it");
             Assert.AreEqual(1f, CliffJagMath.FacingGain(default, east, steepEastColumn));
 
