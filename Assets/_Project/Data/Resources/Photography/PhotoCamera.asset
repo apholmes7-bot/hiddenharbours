@@ -15,14 +15,16 @@ MonoBehaviour:
   Id: photo_camera.box_camera
   DisplayName: 'box camera'
   OwnedWhileFlag:
-  AlbumCapacity: 120
-  ThumbnailWidthPx: 24
-  ThumbnailHeightPx: 17
-  PolaroidBorderPx: 2
-  PolaroidBottomBorderPx: 6
+  AlbumCapacity: 60
+  ThumbnailWidthPx: 48
+  ThumbnailHeightPx: 34
+  PolaroidBorderPx: 4
+  PolaroidBottomBorderPx: 12
   PolaroidFrameColour:
     serializedVersion: 2
     rgba: 4293456372
+  PolaroidMinGapPx: 12
+  AlbumAirRows: 1
   Subjects:
   - SubjectId: wildlife.grey_seal
     DisplayName: 'grey seal'

@@ -15,8 +15,8 @@
 its number in the album, when and where it was taken, how good a picture it is, and what was in it (which
 animals, how many, what the best of them was doing), and one very small picture of it, a few dozen pixels
 across, which the notebook's album page shows as a little Polaroid (owner 2026-11-26: "yes photoalbum should
-save small pictures as little poloraids"). Each picture adds about 1.1 KB to the save; the album holds at most
-120 pictures per player, so the most it can ever add is about 131 KB per player.
+save small pictures as little poloraids"). Each picture adds about 4.4 KB to the save; the album holds at most
+60 pictures per player, so the most it can ever add is about 255 KiB per player (about 1 MiB for four players).
 
 **What happens to your existing save.** It loads as before, with an empty album. Nothing else changes. Tide,
 wind and weather are still never stored.
@@ -53,11 +53,13 @@ repair, `SaveMigrationV28Tests`, and the reflection round trip.
 | `PhotoRecordDto.Thumbnail` | `string` (Base64: width byte, height byte, RGB565 little-endian, rows bottom to top) | `""` |
 
 Ids and numbers, and one thumbnail. The thumbnail's size is the camera def's (`ThumbnailWidthPx`,
-`ThumbnailHeightPx`, shipped 24 x 17: 818 bytes, 1,092 Base64 characters), and it is carried in the header, so
-a later retune never breaks an old picture. It is taken once per kept shutter: the frame rendered at the art
-grid (32 px a metre) and point-sampled down, never blended. The album draws it one kit pixel per thumbnail
-pixel inside a Polaroid card (`PolaroidBorderPx`, the wider `PolaroidBottomBorderPx`, `PolaroidFrameColour`),
-point filtered. Worst case: `AlbumCapacity` (120) x 1,092 = 131,040 characters of thumbnail per player, plus the
+`ThumbnailHeightPx`, shipped 48 x 34: 3,266 bytes, 4,356 Base64 characters; 24 x 17 was tried and read as a
+blur), and it is carried in the header, so a later retune never breaks an old picture. It is taken once per kept
+shutter: the frame rendered at the art grid (32 px a metre) and point-sampled down, never blended. The album draws
+it one kit pixel per thumbnail pixel inside a straight Polaroid card (`PolaroidBorderPx` 4, the wider
+`PolaroidBottomBorderPx` 12, `PolaroidFrameColour`), point filtered, the cards in rows with `PolaroidMinGapPx`
+of air and a two-line caption under each (what and how many; the day and place), wrapped at spaces only.
+Worst case: `AlbumCapacity` (60) x 4,356 = 261,360 characters of thumbnail per player (about 255 KiB), plus the
 record rows. Every size and colour is a camera def tunable. Names, pose words, quality words and place names come from the camera def, so a retune
 or a reword moves every save with it. Per-player rows (`PlayerKey`) so co-op adds rows, not a version.
 
@@ -92,7 +94,7 @@ asked, pictured and done are flags; "will a picture do" is read from the album.
 
 ## Consequences
 
-- One bump, one list; save files grow by about 1.1 KB a picture (the thumbnail and its record), capped by
-  `AlbumCapacity`.
+- One bump, one list; save files grow by about 4.5 KB a picture (the thumbnail and its record), capped by
+  `AlbumCapacity` (60, about 255 KiB of thumbnails a player at the cap).
 - The thumbnail is the only image the save carries (owner 2026-11-26); a larger print would be a new ruling.
 - Opening a v28 save in an older build loses the album.

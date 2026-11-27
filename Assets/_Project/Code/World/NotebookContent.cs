@@ -26,58 +26,157 @@ namespace HiddenHarbours.World
         Photos,
     }
 
-    /// <summary>One kept picture, as the album page sees it: a head and its lines, already worded by
-    /// <see cref="NotebookPhotoPage"/>, and its little Polaroid (owner 2026-11-26: "yes photoalbum should
-    /// save small pictures as little poloraids"): the stored thumbnail and the frame it is drawn in, all
-    /// sizes in kit pixels from the camera's def. World's view shape, apart from Core's save row.</summary>
+    /// <summary>How the album draws its little Polaroids, all from the camera's def, kit pixels: the card's
+    /// outer size and borders, its colour, the least air between two cards side by side, and the ruled
+    /// lines left empty under each row of cards. A zero width draws no Polaroid.</summary>
+    public readonly struct NotebookPolaroidStyle
+    {
+        public readonly int WidthPx;
+        public readonly int HeightPx;
+        public readonly int BorderPx;
+        public readonly int BottomBorderPx;
+        public readonly Color32 FrameColour;
+        public readonly int MinGapPx;
+        public readonly int AirRows;
+
+        public NotebookPolaroidStyle(int widthPx, int heightPx, int borderPx, int bottomBorderPx, Color32 frameColour,
+                                     int minGapPx, int airRows)
+        {
+            WidthPx = widthPx > 0 ? widthPx : 0;
+            HeightPx = heightPx > 0 ? heightPx : 0;
+            BorderPx = borderPx > 0 ? borderPx : 0;
+            BottomBorderPx = bottomBorderPx > 0 ? bottomBorderPx : 0;
+            FrameColour = frameColour;
+            MinGapPx = minGapPx > 0 ? minGapPx : 0;
+            AirRows = airRows > 0 ? airRows : 0;
+        }
+
+        public bool IsDrawn => WidthPx > 0 && HeightPx > 0;
+
+        /// <summary>The ruled lines a card covers, so the caption starts on the line below it.</summary>
+        public int CardRows => IsDrawn ? (HeightPx + NotebookKit.Pitch - 1) / NotebookKit.Pitch : 0;
+    }
+
+    /// <summary>One kept picture, as the album page sees it, already worded by <see cref="NotebookPhotoPage"/>:
+    /// its little Polaroid (owner 2026-11-26: "yes photoalbum should save small pictures as little
+    /// poloraids") with a short caption under it (what and how many, then the day and place), plus the
+    /// longer head and lines a page without Polaroids letters instead. World's view shape, apart from
+    /// Core's save row.</summary>
     public readonly struct NotebookPhotoEntry
     {
         public readonly int Number;
         public readonly string Head;
         public readonly IReadOnlyList<string> Lines;
 
-        /// <summary>The stored thumbnail (<see cref="PhotoThumbnail"/>), or empty: the frame is then drawn
+        /// <summary>The caption's first line ("4 grey seals") and its second ("Day 1, St Peters").</summary>
+        public readonly string Caption;
+        public readonly string CaptionWhen;
+
+        /// <summary>The stored thumbnail (<see cref="PhotoThumbnail"/>), or empty: the card is then drawn
         /// with no picture in it.</summary>
         public readonly string Thumbnail;
 
-        /// <summary>The Polaroid's outer size and its side and bottom borders, kit pixels. A zero width
-        /// draws no Polaroid (a plain section, as before the ruling).</summary>
-        public readonly int PolaroidWidthPx;
-        public readonly int PolaroidHeightPx;
-        public readonly int PolaroidBorderPx;
-        public readonly int PolaroidBottomBorderPx;
-
-        /// <summary>The Polaroid's white card.</summary>
-        public readonly Color32 PolaroidFrameColour;
+        public readonly NotebookPolaroidStyle Style;
 
         public NotebookPhotoEntry(int number, string head, IReadOnlyList<string> lines)
-            : this(number, head, lines, "", 0, 0, 0, 0, default) { }
+            : this(number, head, lines, "", "", "", default) { }
 
-        public NotebookPhotoEntry(int number, string head, IReadOnlyList<string> lines, string thumbnail,
-                                  int polaroidWidthPx, int polaroidHeightPx, int polaroidBorderPx,
-                                  int polaroidBottomBorderPx, Color32 polaroidFrameColour)
+        public NotebookPhotoEntry(int number, string head, IReadOnlyList<string> lines, string caption,
+                                  string captionWhen, string thumbnail, NotebookPolaroidStyle style)
         {
             Number = number;
             Head = head ?? "";
             Lines = lines;
+            Caption = caption ?? "";
+            CaptionWhen = captionWhen ?? "";
             Thumbnail = thumbnail ?? "";
-            PolaroidWidthPx = polaroidWidthPx > 0 ? polaroidWidthPx : 0;
-            PolaroidHeightPx = polaroidHeightPx > 0 ? polaroidHeightPx : 0;
-            PolaroidBorderPx = polaroidBorderPx > 0 ? polaroidBorderPx : 0;
-            PolaroidBottomBorderPx = polaroidBottomBorderPx > 0 ? polaroidBottomBorderPx : 0;
-            PolaroidFrameColour = polaroidFrameColour;
+            Style = style;
         }
 
-        /// <summary>Is there a Polaroid to draw beside the words?</summary>
-        public bool HasPolaroid => PolaroidWidthPx > 0 && PolaroidHeightPx > 0;
+        /// <summary>Is there a Polaroid to draw?</summary>
+        public bool HasPolaroid => Style.IsDrawn;
+    }
 
-        /// <summary>The Polaroid's lane beside the words, in cells: its width, then one cell of air.</summary>
-        public int PolaroidLaneCells =>
-            HasPolaroid ? (PolaroidWidthPx + NotebookKit.CellWidth - 1) / NotebookKit.CellWidth + 1 : 0;
+    /// <summary>
+    /// Where a row of the album's Polaroids sits on a leaf (pure; the page builder and the presenter both
+    /// read it, so what is measured is what is drawn). The title lane is split into equal slots, as many as
+    /// hold a card with the least air beside it; each card is centred in its slot and its caption lettered
+    /// under it across the slot's width, word-wrapped and never broken inside a word.
+    /// </summary>
+    public readonly struct NotebookPhotoGrid
+    {
+        public readonly int Across;
+        public readonly int SlotWidthPx;
+        public readonly int SlotCols;
 
-        /// <summary>The fewest ruled lines the block takes, so the Polaroid never overhangs the next one.</summary>
-        public int PolaroidRows =>
-            HasPolaroid ? (PolaroidHeightPx + NotebookKit.Pitch - 1) / NotebookKit.Pitch : 0;
+        public NotebookPhotoGrid(int across, int slotWidthPx, int slotCols)
+        {
+            Across = across;
+            SlotWidthPx = slotWidthPx;
+            SlotCols = slotCols;
+        }
+
+        /// <summary>The grid for <paramref name="style"/> on a book <paramref name="cols"/> wide.</summary>
+        public static NotebookPhotoGrid For(in NotebookPolaroidStyle style, int cols)
+        {
+            int laneW = NotebookKit.CellWidth * NotebookKit.TitleColsFor(cols) - 1;
+            int across = style.WidthPx + style.MinGapPx > 0 ? laneW / (style.WidthPx + style.MinGapPx) : 1;
+            if (across < 1) across = 1;
+            int slot = laneW / across;
+            int slotCols = (slot + 1) / NotebookKit.CellWidth;   // a run of n cells is 5n - 1 px wide
+            return new NotebookPhotoGrid(across, slot, slotCols < 1 ? 1 : slotCols);
+        }
+
+        /// <summary>The caption's lines for <paramref name="photo"/>: its first line, then its second, each
+        /// wrapped at the slot at spaces only. A word longer than the slot keeps a line of its own whole
+        /// (never hard-broken): the content test holds the shipped words inside the narrowest slot.</summary>
+        public List<string> CaptionLines(in NotebookPhotoEntry photo)
+        {
+            var lines = new List<string>();
+            WrapWords(photo.Caption, SlotCols, lines);
+            WrapWords(photo.CaptionWhen, SlotCols, lines);
+            return lines;
+        }
+
+        /// <summary>
+        /// Wrap at spaces only, appending to <paramref name="into"/>; nothing for an empty text. A line
+        /// breaks after a comma first, so "Day 12, St Peters" in a narrow slot reads "Day 12," over
+        /// "St Peters", never "Day 12, St" over "Peters"; a part longer than the line wraps word by word.
+        /// </summary>
+        public static void WrapWords(string text, int cols, List<string> into)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return;
+            var line = new System.Text.StringBuilder();
+            string[] parts = text.Split(new[] { ", " }, System.StringSplitOptions.None);
+            for (int p = 0; p < parts.Length; p++)
+            {
+                string group = parts[p].Trim();
+                if (group.Length == 0) continue;
+                if (p < parts.Length - 1) group += ",";   // every part but the last keeps its comma
+
+                if (line.Length > 0 && line.Length + 1 + group.Length <= cols)
+                {
+                    line.Append(' ').Append(group);
+                    continue;
+                }
+                if (line.Length > 0)
+                {
+                    into.Add(line.ToString());
+                    line.Clear();
+                }
+                foreach (string word in group.Split(new[] { ' ' }, System.StringSplitOptions.RemoveEmptyEntries))
+                {
+                    if (line.Length > 0 && line.Length + 1 + word.Length > cols)
+                    {
+                        into.Add(line.ToString());
+                        line.Clear();
+                    }
+                    if (line.Length > 0) line.Append(' ');
+                    line.Append(word);
+                }
+            }
+            if (line.Length > 0) into.Add(line.ToString());
+        }
     }
 
     /// <summary>One stub off the fore-edge.</summary>
@@ -350,51 +449,94 @@ namespace HiddenHarbours.World
             return blocks;
         }
 
-        /// <summary>The album page: one section per picture, in the order given (the page builder hands
-        /// them newest first). Null or empty in, nothing out.</summary>
+        /// <summary>The icon id every row of an album grid row carries: this, then the pictures' numbers
+        /// joined by <see cref="PhotoGridSeparator"/> ("photo_grid.12_11"). The presenter reads the numbers
+        /// back on the first row and draws each card and its caption once.</summary>
+        public const string PhotoGridPrefix = "photo_grid.";
+        public const char PhotoGridSeparator = '_';
+
+        /// <summary>
+        /// The album page, in the order given (the page builder hands them newest first). Pictures with a
+        /// Polaroid are laid out as an album: straight cards in rows, as many across as
+        /// <see cref="NotebookPhotoGrid.For"/> fits, each with its caption under it. One row of cards is one
+        /// block, so a page turn moves whole rows of cards, the same flow as every other tab. A picture with
+        /// no Polaroid to draw is a plain section. Null or empty in, nothing out.
+        /// </summary>
         public static List<NotebookBlock> PhotoBlocks(IReadOnlyList<NotebookPhotoEntry> photos, int cols)
         {
             var blocks = new List<NotebookBlock>();
             if (photos == null) return blocks;
+            var run = new List<NotebookPhotoEntry>();
             for (int i = 0; i < photos.Count; i++)
             {
                 NotebookPhotoEntry p = photos[i];
                 if (string.IsNullOrEmpty(p.Head)) continue;
+                if (p.HasPolaroid)
+                {
+                    NotebookPhotoGrid grid = NotebookPhotoGrid.For(p.Style, cols);
+                    if (run.Count > 0 && (run.Count >= grid.Across || !SameStyle(run[0].Style, p.Style)))
+                    {
+                        blocks.Add(PolaroidRowBlock(run, cols));
+                        run.Clear();
+                    }
+                    run.Add(p);
+                    continue;
+                }
+                if (run.Count > 0)
+                {
+                    blocks.Add(PolaroidRowBlock(run, cols));
+                    run.Clear();
+                }
                 var body = new List<string>();
                 if (p.Lines != null)
                     for (int l = 0; l < p.Lines.Count; l++)
                         if (!string.IsNullOrEmpty(p.Lines[l])) body.Add(p.Lines[l]);
-                string source = PhotoSourcePrefix + p.Number.ToString(Invariant);
-                blocks.Add(p.HasPolaroid ? PolaroidBlock(p, body, cols, source)
-                                         : NotebookLayout.Section(p.Head, body, cols, source));
+                blocks.Add(NotebookLayout.Section(p.Head, body, cols, PhotoSourcePrefix + p.Number.ToString(Invariant)));
             }
+            if (run.Count > 0) blocks.Add(PolaroidRowBlock(run, cols));
             return blocks;
         }
 
         /// <summary>
-        /// A picture's block with its Polaroid: the head and lines wrap in the lane past the Polaroid
-        /// (<see cref="NotebookPhotoEntry.PolaroidLaneCells"/>), every row carries the picture's source id
-        /// as its icon id (the presenter draws the Polaroid once, beside the first), and the block is padded
-        /// to <see cref="NotebookPhotoEntry.PolaroidRows"/> lines.
+        /// One row of the album's Polaroids: as many ruled lines as the card covers, then the longest
+        /// caption's lines, then the air. Every row is blank text (the presenter letters the captions in
+        /// each card's own slot) and carries the grid icon id; the first is the block's start, where the
+        /// cards are drawn. The block's source id is the first picture's.
         /// </summary>
-        public static NotebookBlock PolaroidBlock(in NotebookPhotoEntry p, IReadOnlyList<string> body, int cols,
-                                                  string source)
+        public static NotebookBlock PolaroidRowBlock(IReadOnlyList<NotebookPhotoEntry> row, int cols)
         {
-            var rows = new List<NotebookRow>();
-            int textCols = System.Math.Max(1, NotebookKit.TitleColsFor(cols) - p.PolaroidLaneCells - 1);
-            foreach (string line in NotebookLayout.Wrap(p.Head, textCols))
-                rows.Add(new NotebookRow(line, wide: true, hasBox: false, NotebookStepState.Todo, rows.Count > 0,
-                                         source));
-            if (body != null)
-                for (int b = 0; b < body.Count; b++)
-                    foreach (string line in NotebookLayout.Wrap(body[b], textCols))
-                        rows.Add(new NotebookRow(line, wide: true, hasBox: false, NotebookStepState.Todo,
-                                                 continuation: true, source));
-            while (rows.Count < p.PolaroidRows)
-                rows.Add(new NotebookRow("", wide: true, hasBox: false, NotebookStepState.Todo, continuation: true,
-                                         source));
-            return new NotebookBlock(NotebookBlockKind.Section, rows, source);
+            NotebookPolaroidStyle style = row[0].Style;
+            NotebookPhotoGrid grid = NotebookPhotoGrid.For(style, cols);
+            int captionRows = 0;
+            var icon = new System.Text.StringBuilder(PhotoGridPrefix);
+            for (int k = 0; k < row.Count; k++)
+            {
+                captionRows = System.Math.Max(captionRows, grid.CaptionLines(row[k]).Count);
+                if (k > 0) icon.Append(PhotoGridSeparator);
+                icon.Append(row[k].Number.ToString(Invariant));
+            }
+            int height = style.CardRows + captionRows + style.AirRows;
+            string iconId = icon.ToString();
+            var rows = new List<NotebookRow>(height);
+            for (int r = 0; r < height; r++)
+                rows.Add(new NotebookRow("", wide: true, hasBox: false, NotebookStepState.Todo, continuation: r > 0,
+                                         iconId));
+            return new NotebookBlock(NotebookBlockKind.Section, rows, PhotoSourcePrefix + row[0].Number.ToString(Invariant));
         }
+
+        /// <summary>The picture numbers a grid icon id names, in order; empty for any other id.</summary>
+        public static List<int> PhotoGridNumbers(string iconId)
+        {
+            var numbers = new List<int>();
+            if (string.IsNullOrEmpty(iconId) || !iconId.StartsWith(PhotoGridPrefix, System.StringComparison.Ordinal))
+                return numbers;
+            foreach (string part in iconId.Substring(PhotoGridPrefix.Length).Split(PhotoGridSeparator))
+                if (int.TryParse(part, System.Globalization.NumberStyles.Integer, Invariant, out int n)) numbers.Add(n);
+            return numbers;
+        }
+
+        private static bool SameStyle(in NotebookPolaroidStyle a, in NotebookPolaroidStyle b) =>
+            a.WidthPx == b.WidthPx && a.HeightPx == b.HeightPx && a.MinGapPx == b.MinGapPx && a.AirRows == b.AirRows;
 
         /// <summary>
         /// The record line for a positive weight, in the one weight reading every surface shares

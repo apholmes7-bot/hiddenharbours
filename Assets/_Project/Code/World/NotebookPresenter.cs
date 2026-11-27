@@ -831,13 +831,12 @@ namespace HiddenHarbours.World
 
                     bool faint = row.State == NotebookStepState.Done;
 
-                    if (row.HasIcon && TryPhoto(row.IconId, out NotebookPhotoEntry photo) && photo.HasPolaroid)
+                    if (row.HasIcon &&
+                        row.IconId.StartsWith(NotebookContent.PhotoGridPrefix, StringComparison.Ordinal))
                     {
-                        // A picture in the album: its little Polaroid once, beside its first line, and every
-                        // line of the block in the lane past it.
-                        if (!row.Continuation) DrawPolaroid(page, photo, titleX, rowY);
-                        int lane = photo.PolaroidLaneCells * NotebookKit.CellWidth;
-                        AddText(page, row.Text, titleX + lane, rowY, titleW - lane, Ink);
+                        // A row of the album's Polaroids: every card and its caption once, from the block's
+                        // first line; the block's other lines are the room they stand in.
+                        if (!row.Continuation) DrawPolaroidRow(page, row.IconId, titleX, rowY, cols);
                         continue;
                     }
 
@@ -934,12 +933,39 @@ namespace HiddenHarbours.World
                                photos[i].Number.ToString(System.Globalization.CultureInfo.InvariantCulture)] = photos[i];
         }
 
-        private bool TryPhoto(string iconId, out NotebookPhotoEntry photo)
+        /// <summary>The name of a caption line under a Polaroid — what a test looks for.</summary>
+        public const string PolaroidCaptionPieceName = "PhotoPolaroidCaption";
+
+        private bool TryPhoto(int number, out NotebookPhotoEntry photo) =>
+            _photoBySource.TryGetValue(
+                NotebookContent.PhotoSourcePrefix + number.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                out photo);
+
+        /// <summary>
+        /// One row of the album: each card straight (never tilted: a turned card would be mixels) and centred
+        /// in its slot of <see cref="NotebookPhotoGrid"/>, its caption lettered under it on whole pixels, one
+        /// ruled line a caption line, words never broken.
+        /// </summary>
+        private void DrawPolaroidRow(RectTransform page, string iconId, int titleX, int rowY, int cols)
         {
-            photo = default;
-            return !string.IsNullOrEmpty(iconId) &&
-                   iconId.StartsWith(NotebookContent.PhotoSourcePrefix, StringComparison.Ordinal) &&
-                   _photoBySource.TryGetValue(iconId, out photo);
+            List<int> numbers = NotebookContent.PhotoGridNumbers(iconId);
+            for (int k = 0; k < numbers.Count; k++)
+            {
+                if (!TryPhoto(numbers[k], out NotebookPhotoEntry photo) || !photo.HasPolaroid) continue;
+                NotebookPhotoGrid grid = NotebookPhotoGrid.For(photo.Style, cols);
+                int slotX = titleX + k * grid.SlotWidthPx;
+                DrawPolaroid(page, photo, slotX + (grid.SlotWidthPx - photo.Style.WidthPx) / 2, rowY);
+
+                List<string> caption = grid.CaptionLines(photo);
+                for (int i = 0; i < caption.Count; i++)
+                {
+                    int textW = caption[i].Length * NotebookKit.CellWidth - 1;
+                    int x = slotX + System.Math.Max(0, (grid.SlotWidthPx - textW) / 2);
+                    Text t = AddText(page, caption[i], x, rowY + (photo.Style.CardRows + i) * NotebookKit.Pitch,
+                                     System.Math.Max(textW, 1), Ink);
+                    if (t != null) t.gameObject.name = PolaroidCaptionPieceName;
+                }
+            }
         }
 
         /// <summary>
@@ -949,13 +975,13 @@ namespace HiddenHarbours.World
         /// </summary>
         private void DrawPolaroid(RectTransform page, in NotebookPhotoEntry photo, int x, int rowY)
         {
-            RectTransform card = AddPiece(page, PolaroidPieceName, null, x, rowY,
-                                          photo.PolaroidWidthPx, photo.PolaroidHeightPx, photo.PolaroidFrameColour);
+            NotebookPolaroidStyle s = photo.Style;
+            RectTransform card = AddPiece(page, PolaroidPieceName, null, x, rowY, s.WidthPx, s.HeightPx, s.FrameColour);
             Sprite picture = PolaroidSprite(photo.Number, photo.Thumbnail, out int w, out int h);
             if (picture == null) return;
-            int innerW = photo.PolaroidWidthPx - 2 * photo.PolaroidBorderPx;
-            int innerH = photo.PolaroidHeightPx - photo.PolaroidBorderPx - photo.PolaroidBottomBorderPx;
-            AddPiece(card, PolaroidPicturePieceName, picture, photo.PolaroidBorderPx, photo.PolaroidBorderPx,
+            int innerW = s.WidthPx - 2 * s.BorderPx;
+            int innerH = s.HeightPx - s.BorderPx - s.BottomBorderPx;
+            AddPiece(card, PolaroidPicturePieceName, picture, s.BorderPx, s.BorderPx,
                      Mathf.Min(w, innerW), Mathf.Min(h, innerH), Color.white);
         }
 

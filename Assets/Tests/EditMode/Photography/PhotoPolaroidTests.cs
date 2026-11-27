@@ -261,7 +261,35 @@ namespace HiddenHarbours.Tests.EditMode
         // ---- the album page -----------------------------------------------------------------------------
 
         [Test]
-        public void TheAlbumPage_HandsEachPictureItsThumbnailAndTheDefsPolaroid()
+        public void TheShippedCamera_Keeps48x34Pictures_InFourAndTwelveBorders_SixtyToAnAlbum()
+        {
+            PhotoCameraDef def = PhotoCameraDef.Load();
+            Assert.AreEqual(48, def.ThumbnailWidthPx);
+            Assert.AreEqual(34, def.ThumbnailHeightPx);
+            Assert.AreEqual(4, def.PolaroidBorderPx);
+            Assert.AreEqual(12, def.PolaroidBottomBorderPx);
+            Assert.AreEqual(60, def.AlbumCapacity);
+            Assert.AreEqual(3266, PhotoThumbnail.ByteLength(48, 34));
+            Assert.AreEqual(4356, def.ThumbnailEncodedLength);
+            Assert.AreEqual(261360, def.AlbumCapacity * def.ThumbnailEncodedLength, "about 255 KiB a player");
+        }
+
+        [Test]
+        public void ADefWithNegativeAlbumSpacing_IsRefused()
+        {
+            PhotoCameraDef def = Shipped();
+            def.PolaroidMinGapPx = -1;
+            StringAssert.Contains("spacing", def.ValidationError());
+            def = Shipped();
+            def.AlbumAirRows = -1;
+            StringAssert.Contains("spacing", def.ValidationError());
+            def = Shipped();
+            def.AlbumCaptionWhenFormat = " ";
+            StringAssert.Contains("empty", def.ValidationError());
+        }
+
+        [Test]
+        public void TheAlbumPage_HandsEachPictureItsThumbnail_TheDefsPolaroid_AndAShortCaption()
         {
             PhotoCameraDef def = PhotoCameraDef.Load();
             SaveData save = SaveMigration.NewGame();
@@ -274,30 +302,156 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(2, entries.Count);
             Assert.AreEqual("", entries[0].Thumbnail, "newest first: the one with no picture");
             Assert.AreEqual(stored, entries[1].Thumbnail);
-            Assert.AreEqual(def.PolaroidWidthPx, entries[1].PolaroidWidthPx);
-            Assert.AreEqual(def.PolaroidHeightPx, entries[1].PolaroidHeightPx);
-            Assert.AreEqual(def.PolaroidBorderPx, entries[1].PolaroidBorderPx);
-            Assert.AreEqual(def.PolaroidBottomBorderPx, entries[1].PolaroidBottomBorderPx);
+            NotebookPolaroidStyle s = entries[1].Style;
+            Assert.AreEqual(def.PolaroidWidthPx, s.WidthPx);
+            Assert.AreEqual(def.PolaroidHeightPx, s.HeightPx);
+            Assert.AreEqual(def.PolaroidBorderPx, s.BorderPx);
+            Assert.AreEqual(def.PolaroidBottomBorderPx, s.BottomBorderPx);
+            Assert.AreEqual(def.PolaroidMinGapPx, s.MinGapPx);
+            Assert.AreEqual(def.AlbumAirRows, s.AirRows);
             Assert.IsTrue(entries[0].HasPolaroid, "an empty card is still drawn");
+            Assert.AreEqual("Grey seal", entries[1].Caption);
+            Assert.AreEqual("Day 6, St Peters", entries[1].CaptionWhen, "6000 s at 1200 s a day is day 6");
         }
 
         [Test]
-        public void APolaroidBlock_IsPicturedOnEveryRow_AndTallEnoughForTheCard()
+        public void TheCaption_NamesTheKindItHoldsMostOf_CountedWithTheFirstWinningATie()
         {
-            var entry = new NotebookPhotoEntry(7, "Picture 7", new[] { "Three grey seals, resting", "A fine picture" },
-                                               "", 28, 25, 2, 6, new Color32(244, 241, 232, 255));
-            List<NotebookBlock> blocks = NotebookContent.PhotoBlocks(new[] { entry }, 30);
+            PhotoCameraDef def = PhotoCameraDef.Load();
+            var p = new PhotoRecordDto
+            {
+                Score = 80,
+                Subjects = new List<PhotoSubjectDto>
+                {
+                    new PhotoSubjectDto { SubjectId = "wildlife.other", Count = 1 },
+                    new PhotoSubjectDto { SubjectId = Seal, Count = 4 },
+                },
+            };
+            Assert.AreEqual("4 grey seals", NotebookPhotoPage.Caption(def, p));
 
-            Assert.AreEqual(1, blocks.Count);
+            p.Subjects[1].Count = 1;
+            Assert.AreEqual("Wildlife.other", NotebookPhotoPage.Caption(def, p), "a tie: the first listed");
+
+            p.Subjects.Clear();
+            Assert.AreEqual("A fine picture", NotebookPhotoPage.Caption(def, p), "naming nothing: its quality");
+        }
+
+        [Test]
+        public void TheGrid_FitsAsManyStraightCardsAsTheLaneHoldsWithAir_AtEveryBookWidth()
+        {
+            NotebookPolaroidStyle s = NotebookPhotoPage.Style(PhotoCameraDef.Load());
+            for (int cols = NotebookKit.MinCols; cols <= NotebookKit.MaxCols; cols++)
+            {
+                NotebookPhotoGrid g = NotebookPhotoGrid.For(s, cols);
+                int lane = NotebookKit.CellWidth * NotebookKit.TitleColsFor(cols) - 1;
+                Assert.GreaterOrEqual(g.Across, 1, "cols " + cols);
+                Assert.LessOrEqual(g.Across * g.SlotWidthPx, lane, "the slots stay in the lane, cols " + cols);
+                Assert.GreaterOrEqual(g.SlotWidthPx, s.WidthPx, "a card fits its slot, cols " + cols);
+                if (lane >= s.WidthPx + s.MinGapPx)
+                    Assert.LessOrEqual(g.Across * (s.WidthPx + s.MinGapPx), lane, "air beside each card, cols " + cols);
+                Assert.Greater((g.Across + 1) * (s.WidthPx + s.MinGapPx), lane, "no room left for one more, cols " + cols);
+                Assert.LessOrEqual(g.SlotCols * NotebookKit.CellWidth - 1, g.SlotWidthPx, "cols " + cols);
+            }
+
+            NotebookPhotoGrid at31 = NotebookPhotoGrid.For(s, 31);
+            Assert.AreEqual(2, at31.Across, "56 px cards with 12 px air: two across a 164 px lane");
+            Assert.AreEqual(82, at31.SlotWidthPx);
+            Assert.AreEqual(16, at31.SlotCols);
+        }
+
+        [Test]
+        public void WrapWords_NeverBreaksAWord_AndKeepsEveryWordInOrder()
+        {
+            var lines = new List<string>();
+            NotebookPhotoGrid.WrapWords("Picture 4  4 grey seals unbelievablylongword x", 8, lines);
+            CollectionAssert.AreEqual(new[] { "Picture", "4 4 grey", "seals", "unbelievablylongword", "x" }, lines);
+            var words = new List<string>();
+            foreach (string l in lines) words.AddRange(l.Split(' '));
+            CollectionAssert.AreEqual("Picture 4 4 grey seals unbelievablylongword x".Split(' '), words);
+
+            lines.Clear();
+            NotebookPhotoGrid.WrapWords("Day 12, St Peters", 16, lines);
+            CollectionAssert.AreEqual(new[] { "Day 12,", "St Peters" }, lines, "a line breaks after the comma first");
+            lines.Clear();
+            NotebookPhotoGrid.WrapWords("Day 1, St Peters", 16, lines);
+            CollectionAssert.AreEqual(new[] { "Day 1, St Peters" }, lines);
+            lines.Clear();
+            NotebookPhotoGrid.WrapWords("Day 12, St Peters", 17, lines);
+            CollectionAssert.AreEqual(new[] { "Day 12, St Peters" }, lines);
+
+            lines.Clear();
+            NotebookPhotoGrid.WrapWords("   ", 8, lines);
+            NotebookPhotoGrid.WrapWords(null, 8, lines);
+            Assert.AreEqual(0, lines.Count);
+        }
+
+        [Test]
+        public void TheShippedWords_FitTheNarrowestSlot_WordByWord()
+        {
+            PhotoCameraDef def = PhotoCameraDef.Load();
+            NotebookPhotoGrid g = NotebookPhotoGrid.For(NotebookPhotoPage.Style(def), NotebookKit.MinCols);
+            var texts = new List<string>();
+            foreach (PhotoSubjectEntry s in def.Subjects)
+            {
+                texts.Add(def.CountedName(s.SubjectId, 1));
+                texts.Add(def.CountedName(s.SubjectId, 99));
+            }
+            foreach (PhotoPlaceEntry place in def.Places)
+                texts.Add(NotebookPhotoPage.CaptionWhen(def, 998d * 1200d, place.RegionId, 1200f));
+            foreach (string word in new[] { def.GoodWord, def.FairWord, def.PoorWord }) texts.Add(word);
+
+            foreach (string text in texts)
+                foreach (string word in text.Split(' '))
+                    Assert.LessOrEqual(word.Length, g.SlotCols, "\"" + word + "\" of \"" + text + "\"");
+        }
+
+        [Test]
+        public void AlbumBlocks_AreRowsOfCards_EachTallEnoughForTheCardsAndTheirCaptions()
+        {
+            PhotoCameraDef def = PhotoCameraDef.Load();
+            NotebookPolaroidStyle s = NotebookPhotoPage.Style(def);
+            var photos = new[] { Entry(3, s), Entry(2, s), Entry(1, s) };
+            List<NotebookBlock> blocks = NotebookContent.PhotoBlocks(photos, 31);
+
+            Assert.AreEqual(2, blocks.Count, "two across: a row of two, then one");
+            Assert.AreEqual(5, s.CardRows, "a 50 px card over a 10 px ruling");
+            Assert.AreEqual(s.CardRows + 3 + s.AirRows, blocks[0].Height,
+                            "card, \"4 grey seals\", \"Day 12,\" over \"St Peters\", air");
+            Assert.AreEqual(NotebookContent.PhotoSourcePrefix + "3", blocks[0].SourceId);
             IReadOnlyList<NotebookRow> rows = blocks[0].Rows;
-            Assert.GreaterOrEqual(rows.Count, entry.PolaroidRows);
-            Assert.AreEqual(3, entry.PolaroidRows, "25 px over a 10 px ruling");
-            Assert.AreEqual(7, entry.PolaroidLaneCells, "28 px is six 5 px cells, then one of air");
-            Assert.IsFalse(rows[0].Continuation, "the card is drawn once, beside the first line");
+            Assert.IsFalse(rows[0].Continuation, "the cards are drawn once, from the first line");
             for (int i = 0; i < rows.Count; i++)
             {
-                Assert.AreEqual(NotebookContent.PhotoSourcePrefix + "7", rows[i].IconId, "row " + i);
+                Assert.AreEqual("photo_grid.3_2", rows[i].IconId, "row " + i);
+                Assert.AreEqual("", rows[i].Text, "the captions are lettered in their slots, row " + i);
                 if (i > 0) Assert.IsTrue(rows[i].Continuation, "row " + i);
+            }
+            CollectionAssert.AreEqual(new[] { 3, 2 }, NotebookContent.PhotoGridNumbers(rows[0].IconId));
+            CollectionAssert.AreEqual(new[] { 1 }, NotebookContent.PhotoGridNumbers(blocks[1].Rows[0].IconId));
+            Assert.AreEqual(0, NotebookContent.PhotoGridNumbers("photo.3").Count);
+        }
+
+        [Test]
+        public void APageTurn_MovesWholeRowsOfCards()
+        {
+            NotebookPolaroidStyle s = NotebookPhotoPage.Style(PhotoCameraDef.Load());
+            var photos = new List<NotebookPhotoEntry>();
+            for (int n = 9; n >= 1; n--) photos.Add(Entry(n, s));
+            List<NotebookBlock> blocks = NotebookContent.PhotoBlocks(photos, 31);
+            Assert.AreEqual(5, blocks.Count, "nine pictures, two across");
+
+            foreach (int lines in new[] { 12, 18, 22 })
+            {
+                int placed = 0;
+                foreach (NotebookSpread spread in NotebookLayout.Paginate(blocks, 31, lines))
+                    foreach (NotebookLeaf leaf in new[] { spread.Left, spread.Right })
+                        foreach (NotebookPlacement p in leaf.Placements)
+                        {
+                            Assert.AreEqual(0, p.FromRow, "a row of cards starts on its leaf, lines " + lines);
+                            Assert.AreEqual(p.Block.Height, p.RowCount, "and ends on it, lines " + lines);
+                            placed++;
+                        }
+                Assert.AreEqual(blocks.Count, placed, "every row of cards is drawn, lines " + lines);
             }
         }
 
@@ -311,6 +465,10 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // ---- helpers ------------------------------------------------------------------------------------
+
+        static NotebookPhotoEntry Entry(int number, NotebookPolaroidStyle style) =>
+            new NotebookPhotoEntry(number, "Picture " + number, new[] { "Grey seal, resting" }, "4 grey seals",
+                                   "Day 12, St Peters", "", style);
 
         PhotoCameraDef Shipped()
         {

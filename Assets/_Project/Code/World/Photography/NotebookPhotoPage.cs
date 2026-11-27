@@ -5,9 +5,10 @@ using HiddenHarbours.Core;
 namespace HiddenHarbours.World
 {
     /// <summary>
-    /// <b>The album page's words</b> (save v28): each kept picture as a heading and a few lines, newest
-    /// first, beside its little Polaroid. Every word and format is the camera's def (<see cref="PhotoCameraDef"/>); this only puts them
-    /// together. Pure, so the page is proven headless.
+    /// <b>The album page's words</b> (save v28): each kept picture, newest first, as its little Polaroid with
+    /// a two-line caption under it (what and how many; the day and place), and as a heading and a few lines
+    /// for a page drawn without Polaroids. Every word and format is the camera's def
+    /// (<see cref="PhotoCameraDef"/>); this only puts them together. Pure, so the page is proven headless.
     /// </summary>
     public static class NotebookPhotoPage
     {
@@ -46,11 +47,47 @@ namespace HiddenHarbours.World
                     p.Number,
                     string.Format(CultureInfo.InvariantCulture, def.AlbumHeadFormat, p.Number),
                     lines,
+                    Caption(def, p),
+                    CaptionWhen(def, p.GameTimeSeconds, p.RegionId, secondsPerDay),
                     PhotoThumbnail.IsValid(p.Thumbnail) ? p.Thumbnail : "",
-                    def.PolaroidWidthPx, def.PolaroidHeightPx, def.PolaroidBorderPx, def.PolaroidBottomBorderPx,
-                    def.PolaroidFrameColour));
+                    Style(def)));
             }
             return entries;
+        }
+
+        /// <summary>How the album draws its Polaroids, from <paramref name="def"/>.</summary>
+        public static NotebookPolaroidStyle Style(PhotoCameraDef def) =>
+            def == null
+                ? default
+                : new NotebookPolaroidStyle(def.PolaroidWidthPx, def.PolaroidHeightPx, def.PolaroidBorderPx,
+                                            def.PolaroidBottomBorderPx, def.PolaroidFrameColour,
+                                            def.PolaroidMinGapPx, def.AlbumAirRows);
+
+        /// <summary>The first line under a Polaroid: the kind it holds most of, counted ("4 grey seals",
+        /// "Grey seal"); the first listed wins a tie. A picture naming nothing is captioned by its quality.</summary>
+        public static string Caption(PhotoCameraDef def, PhotoRecordDto p)
+        {
+            if (def == null || p == null) return "";
+            PhotoSubjectDto best = null;
+            if (p.Subjects != null)
+                for (int s = 0; s < p.Subjects.Count; s++)
+                {
+                    PhotoSubjectDto sub = p.Subjects[s];
+                    if (sub != null && !string.IsNullOrEmpty(sub.SubjectId) && (best == null || sub.Count > best.Count))
+                        best = sub;
+                }
+            return Capitalised(best != null ? def.CountedName(best.SubjectId, best.Count) : def.QualityWord(p.Score));
+        }
+
+        /// <summary>The second line under a Polaroid: "Day 1, St Peters", the day counted from 1.</summary>
+        public static string CaptionWhen(PhotoCameraDef def, double gameSeconds, string regionId, float secondsPerDay)
+        {
+            if (def == null) return "";
+            double spd = secondsPerDay > 0f ? secondsPerDay : 1d;
+            double t = gameSeconds > 0d ? gameSeconds : 0d;
+            long day = (long)System.Math.Floor(t / spd);
+            return string.Format(CultureInfo.InvariantCulture, def.AlbumCaptionWhenFormat, day + 1,
+                                 def.PlaceName(regionId));
         }
 
         /// <summary>"Day 3, 14:20, St Peters": the day counted from 1, the hour on a 24-hour clock.</summary>

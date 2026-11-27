@@ -132,25 +132,33 @@ namespace HiddenHarbours.Core
 
         [Header("The album")]
         [Tooltip("The most pictures a player keeps. A full album takes no more.")]
-        [Min(1)] public int AlbumCapacity = 120;
+        [Min(1)] public int AlbumCapacity = 60;
 
         [Header("The album's little Polaroids (owner 2026-11-26)")]
         [Tooltip("Width of the small picture saved with each photo, in art pixels. Drawn one kit pixel per " +
-                 "pixel, point filtered. Each saved picture costs 2 + 2 x width x height bytes before Base64.")]
-        [Range(4, 64)] public int ThumbnailWidthPx = 24;
+                 "pixel, point filtered. Each saved picture costs 2 + 2 x width x height bytes before Base64 " +
+                 "(48 x 34: 3,266 bytes, 4,356 characters; about 255 KiB at a 60-picture album).")]
+        [Range(4, 64)] public int ThumbnailWidthPx = 48;
 
         [Tooltip("Height of the small picture saved with each photo, in art pixels. Keep the frame's shape " +
                  "(FrameWidthMetres : FrameHeightMetres) so nothing is squashed.")]
-        [Range(4, 64)] public int ThumbnailHeightPx = 17;
+        [Range(4, 64)] public int ThumbnailHeightPx = 34;
 
         [Tooltip("The Polaroid's white border on the left, right and top, in pixels.")]
-        [Range(0, 8)] public int PolaroidBorderPx = 2;
+        [Range(0, 8)] public int PolaroidBorderPx = 4;
 
         [Tooltip("The Polaroid's wider bottom border, in pixels.")]
-        [Range(0, 16)] public int PolaroidBottomBorderPx = 6;
+        [Range(0, 16)] public int PolaroidBottomBorderPx = 12;
 
         [Tooltip("The Polaroid's frame colour.")]
         public Color32 PolaroidFrameColour = new Color32(244, 241, 232, 255);
+
+        [Tooltip("The least air between two Polaroids side by side on a page, in pixels. The page fits as " +
+                 "many across as this leaves room for, all straight (never tilted).")]
+        [Range(0, 64)] public int PolaroidMinGapPx = 12;
+
+        [Tooltip("Ruled lines left empty under each row of Polaroids and their captions.")]
+        [Range(0, 4)] public int AlbumAirRows = 1;
 
         [Tooltip("The kinds of animal the album can name.")]
         public List<PhotoSubjectEntry> Subjects = new List<PhotoSubjectEntry>();
@@ -195,6 +203,10 @@ namespace HiddenHarbours.Core
 
         [Tooltip("One kind of animal in a picture, in the album. {0} how many and what, {1} the pose word.")]
         public string AlbumSubjectFormat = "{0}, {1}";
+
+        [Tooltip("The second, small line under a Polaroid. {0} day number, {1} the place. Keep it short: it " +
+                 "wraps at spaces only, never inside a word.")]
+        public string AlbumCaptionWhenFormat = "Day {0}, {1}";
 
         [Tooltip("What the album calls each region a picture was taken in. A region not listed is named " +
                  "from its id.")]
@@ -281,6 +293,7 @@ namespace HiddenHarbours.Core
                 return "The album's thumbnail size is out of range.";
             if (PolaroidBorderPx < 0 || PolaroidBottomBorderPx < PolaroidBorderPx)
                 return "A Polaroid's bottom border is the wider one.";
+            if (PolaroidMinGapPx < 0 || AlbumAirRows < 0) return "The album's spacing cannot be negative.";
             if (PoseQuality == null || PoseQuality.Length != PoseCount) return "PoseQuality needs one value per pose.";
             if (PoseWords == null || PoseWords.Length != PoseCount) return "PoseWords needs one word per pose.";
             for (int i = 0; i < PoseCount; i++)
@@ -298,7 +311,7 @@ namespace HiddenHarbours.Core
             foreach (string line in new[] { GoodWord, FairWord, PoorWord, KeyboardHint, GamepadHint,
                                              NothingInFrameLine, AlbumFullLine, HandsFullLine, TakenFormat, AlbumTitle,
                                              AlbumEmptyLine, AlbumWhenFormat, AlbumHeadFormat,
-                                             AlbumSubjectFormat })
+                                             AlbumSubjectFormat, AlbumCaptionWhenFormat })
                 if (string.IsNullOrWhiteSpace(line)) return "A word of the camera is empty.";
             return null;
         }

@@ -10,6 +10,7 @@ using HiddenHarbours.Player;
 using HiddenHarbours.World;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
@@ -175,34 +176,84 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual(def.PolaroidWidthPx, Mathf.RoundToInt(card.rect.width));
             Assert.AreEqual(def.PolaroidHeightPx, Mathf.RoundToInt(card.rect.height));
 
+            // An album: straight cards (a tilt would be mixels), side by side with air, a caption under each.
+            foreach (Image c in cards)
+                Assert.AreEqual(Quaternion.identity, c.rectTransform.localRotation, "a straight card");
+            for (int i = 0; i < cards.Length; i++)
+                for (int j = i + 1; j < cards.Length; j++)
+                {
+                    RectTransform a = cards[i].rectTransform, b = cards[j].rectTransform;
+                    if (a.parent != b.parent ||
+                        !Mathf.Approximately(a.anchoredPosition.y, b.anchoredPosition.y)) continue;
+                    float gap = Mathf.Abs(a.anchoredPosition.x - b.anchoredPosition.x) - def.PolaroidWidthPx;
+                    Assert.GreaterOrEqual(gap, def.PolaroidMinGapPx, "air between two cards in a row");
+                }
+            Text[] captions = book.GetComponentsInChildren<Text>(false)
+                                  .Where(t => t.name == NotebookPresenter.PolaroidCaptionPieceName).ToArray();
+            Assert.GreaterOrEqual(captions.Length, 2 * cards.Length, "what and how many, then the day and place");
+
             if (!string.IsNullOrEmpty(evidence))
                 yield return Plate(main, card, Path.Combine(evidence, $"album-{def.ThumbnailWidthPx}x{def.ThumbnailHeightPx}"));
             book.Close();
             yield return null;
         }
 
+        /// <summary>
+        /// The page as the player sees it. In the game every notebook and HUD canvas is ScreenSpaceOverlay:
+        /// drawn after every camera, over the whole world. An overlay canvas does not draw into a camera's
+        /// RenderTexture, so the plate moves the root overlay canvases (and only them, on the UI layer for
+        /// the shot) onto a URP OVERLAY camera stacked on the world camera: the world renders first, the
+        /// canvases after it, sorted among themselves by their own sorting orders, as on screen. (The first
+        /// plate bound the canvases to the world camera itself, where the 2D renderer sorted the book's order
+        /// 400 against world sprites up to 32763 on the one sorting layer, and the world drew over the paper.)
+        /// </summary>
         static IEnumerator Plate(Camera camera, RectTransform firstCard, string path)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(path));
             var previousTarget = camera.targetTexture;
             var target = RenderTexture.GetTemporary(ScreenW, ScreenH, 24, RenderTextureFormat.ARGB32);
             camera.targetTexture = target;
+
+            int uiLayer = LayerMask.NameToLayer("UI");
+            Assert.GreaterOrEqual(uiLayer, 0, "the built-in UI layer");
+            var uiGo = new GameObject("AlbumPlateUiCamera");
+            var uiCamera = uiGo.AddComponent<Camera>();
+            uiCamera.orthographic = true;
+            uiCamera.cullingMask = 1 << uiLayer;
+            uiCamera.clearFlags = CameraClearFlags.Nothing;
+            var uiData = uiCamera.GetUniversalAdditionalCameraData();
+            uiData.renderType = UnityEngine.Rendering.Universal.CameraRenderType.Overlay;
+            uiData.renderPostProcessing = false;
+            var baseData = camera.GetUniversalAdditionalCameraData();
+            baseData.cameraStack.Add(uiCamera);
+
             var overlays = new List<(Canvas canvas, Camera camera, float distance)>();
+            var layers = new List<(GameObject go, int layer)>();
             foreach (var canvas in Object.FindObjectsByType<Canvas>(FindObjectsSortMode.None))
             {
                 if (!canvas.isActiveAndEnabled || !canvas.isRootCanvas || canvas.renderMode != RenderMode.ScreenSpaceOverlay) continue;
                 overlays.Add((canvas, canvas.worldCamera, canvas.planeDistance));
+                foreach (Transform t in canvas.GetComponentsInChildren<Transform>(true))
+                {
+                    layers.Add((t.gameObject, t.gameObject.layer));
+                    t.gameObject.layer = uiLayer;
+                }
                 canvas.renderMode = RenderMode.ScreenSpaceCamera;
-                canvas.worldCamera = camera;
+                canvas.worldCamera = uiCamera;
                 canvas.planeDistance = 1f;
             }
             yield return null;
             Canvas.ForceUpdateCanvases();
-            bool captured = false;
+            bool uiRendered = false, captured = false;
             Exception failure = null;
-            void Rendered(UnityEngine.Rendering.ScriptableRenderContext context, Camera rendered)
+            void CameraRendered(UnityEngine.Rendering.ScriptableRenderContext context, Camera rendered)
             {
-                if (rendered != camera || captured) return;
+                if (rendered == uiCamera) uiRendered = true;
+            }
+            void Rendered(UnityEngine.Rendering.ScriptableRenderContext context, List<Camera> cameras)
+            {
+                // After the whole frame's cameras, the stack's final target holds world and page together.
+                if (!uiRendered || captured) return;
                 captured = true;
                 var previous = RenderTexture.active;
                 var image = new Texture2D(ScreenW, ScreenH, TextureFormat.RGB24, false);
@@ -215,8 +266,8 @@ namespace HiddenHarbours.Tests.PlayMode
 
                     var corners = new Vector3[4];
                     firstCard.GetWorldCorners(corners);
-                    Vector2 a = RectTransformUtility.WorldToScreenPoint(camera, corners[0]);
-                    Vector2 b = RectTransformUtility.WorldToScreenPoint(camera, corners[2]);
+                    Vector2 a = RectTransformUtility.WorldToScreenPoint(uiCamera, corners[0]);
+                    Vector2 b = RectTransformUtility.WorldToScreenPoint(uiCamera, corners[2]);
                     int x0 = Mathf.Clamp(Mathf.FloorToInt(Mathf.Min(a.x, b.x)) - CropPad, 0, ScreenW - 1);
                     int y0 = Mathf.Clamp(Mathf.FloorToInt(Mathf.Min(a.y, b.y)) - CropPad, 0, ScreenH - 1);
                     int x1 = Mathf.Clamp(Mathf.CeilToInt(Mathf.Max(a.x, b.x)) + CropPad * 30, x0 + 1, ScreenW);
@@ -226,17 +277,19 @@ namespace HiddenHarbours.Tests.PlayMode
                 catch (Exception ex) { failure = ex; }
                 finally { RenderTexture.active = previous; Object.Destroy(image); }
             }
-            UnityEngine.Rendering.RenderPipelineManager.endCameraRendering += Rendered;
+            UnityEngine.Rendering.RenderPipelineManager.endCameraRendering += CameraRendered;
+            UnityEngine.Rendering.RenderPipelineManager.endContextRendering += Rendered;
             try
             {
                 double deadline = Time.realtimeSinceStartupAsDouble + 10d;
                 while (!captured && Time.realtimeSinceStartupAsDouble < deadline) yield return null;
-                Assert.IsTrue(captured, "the plate camera did not render");
+                Assert.IsTrue(captured, "the plate's camera stack did not render");
                 Assert.IsNull(failure, failure?.ToString());
             }
             finally
             {
-                UnityEngine.Rendering.RenderPipelineManager.endCameraRendering -= Rendered;
+                UnityEngine.Rendering.RenderPipelineManager.endCameraRendering -= CameraRendered;
+                UnityEngine.Rendering.RenderPipelineManager.endContextRendering -= Rendered;
                 foreach (var overlay in overlays)
                 {
                     if (overlay.canvas == null) continue;
@@ -244,6 +297,10 @@ namespace HiddenHarbours.Tests.PlayMode
                     overlay.canvas.worldCamera = overlay.camera;
                     overlay.canvas.planeDistance = overlay.distance;
                 }
+                foreach (var held in layers)
+                    if (held.go != null) held.go.layer = held.layer;
+                baseData.cameraStack.Remove(uiCamera);
+                Object.Destroy(uiGo);
                 camera.targetTexture = previousTarget;
                 RenderTexture.ReleaseTemporary(target);
             }

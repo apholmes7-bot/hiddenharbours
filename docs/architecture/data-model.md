@@ -416,8 +416,10 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 >   what was in frame and how good a picture it was; the ONE image is `Thumbnail` (owner 2026-11-26: "yes
 >   photoalbum should save small pictures as little poloraids"): Base64 of a two-byte size header and RGB565
 >   pixels (`PhotoThumbnail`), its size the camera def's `ThumbnailWidthPx` x `ThumbnailHeightPx` (shipped
->   24 x 17 = 1,092 characters a picture), empty when none was taken. The PHOTO tab draws it as a Polaroid
->   (`PolaroidBorderPx`, the wider `PolaroidBottomBorderPx`, `PolaroidFrameColour`), point filtered. A
+>   48 x 34 = 4,356 characters a picture; 60 to an album, about 255 KiB a player at the cap), empty when
+>   none was taken. The PHOTO tab lays them out as an album: straight Polaroid cards (`PolaroidBorderPx`,
+>   the wider `PolaroidBottomBorderPx`, `PolaroidFrameColour`) in rows, `PolaroidMinGapPx` of air between,
+>   point filtered, each with a short caption under it wrapped at spaces only. A
 >   thumbnail that does not decode is cleared on load and the record kept. `Number` is the album number,
 >   unique across the list, never reused (`PhotoAlbumRows.NextNumber` = highest + 1). The album is capped per
 >   player by the camera def (`AlbumCapacity`); a full album keeps nothing new. Helper: `PhotoAlbumRows`
