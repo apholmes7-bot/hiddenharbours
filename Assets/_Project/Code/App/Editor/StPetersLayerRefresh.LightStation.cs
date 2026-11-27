@@ -221,6 +221,23 @@ namespace HiddenHarbours.App.Editor
                     fields.Add("  _centreLift: " + F(def.GlassCentreLift));
                     fields.Add("  _acrossFalloff: " + F(def.GlassAcrossFalloff));
                     fields.Add("  _bands: " + Int(def.GlassBands));
+                    // The glass's spill on the deck, rail and tower top (Vector4 spans: no serializedVersion line).
+                    Vector4[] spill = def.GlassSpill ?? new Vector4[0];
+                    if (spill.Length == 0) fields.Add("  _spill: []");
+                    else
+                    {
+                        fields.Add("  _spill:");
+                        foreach (Vector4 s in spill)
+                        {
+                            if (!(s.y > s.x) || !(s.w > 0f) || !(s.z - s.w > 0f))
+                                throw new Refusal($"{LightStationStep}: {name} has a glass spill span with no width or reach, or reaching below the tower's foot ({s}).");
+                            fields.Add("  - {x: " + F(s.x) + ", y: " + F(s.y) + ", z: " + F(s.z) + ", w: " + F(s.w) + "}");
+                        }
+                    }
+                    fields.Add("  _spillStrength: " + F(def.GlassSpillStrength));
+                    fields.Add("  _spillPeakDepth: " + F(def.GlassSpillPeakDepth));
+                    fields.Add("  _spillDither: " + (def.GlassSpillDitherLastBand ? "1" : "0"));
+                    fields.Add("  _spillBands: " + Int(def.GlassSpillBands));
                     wanted.Add(Want(GameObjectYaml(gg, LanternGlassName, new[] { gt, glow }), child, "GameObject"));
                     wanted.Add(Want(TransformYaml(gt, gg, Vector2.zero, none, tr), child, "Transform"));
                     wanted.Add(Want(MonoBehaviourYaml(glow, gg, assets.ScriptFor(typeof(LanternGlassGlow)), fields.ToArray()), child, "LanternGlassGlow"));

@@ -64,7 +64,7 @@ Shader "HiddenHarbours/AdditiveLight"
         _PaneMode           ("Window pane mode (0 off, 1 on)", Float) = 0
         _PaneLook           ("Pane x head level, y sill level, z centre lift, w bands", Vector) = (0.62, 1, 0.22, 3)
         _PaneFrame          ("Pane x frame px, y mullion px, z mullion min px", Vector) = (0, 1, 7, 0)
-        _PaneLook2          ("Pane x across falloff, y unevenness, z tint variation", Vector) = (0, 0, 0, 0)
+        _PaneLook2          ("Pane x across falloff, y unevenness, z tint variation, w spill shape (0 off, 1 half-ellipse, 2 dithered)", Vector) = (0, 0, 0, 0)
         _PaneTint           ("Pane second warm interior colour", Color) = (1, 0.72, 0.42, 1)
 
         [Header(Reflection streak. Mode zero is off)]
@@ -269,6 +269,23 @@ Shader "HiddenHarbours/AdditiveLight"
                     float2 hi = lo + mw - 1.0;
                     if (sz.x >= _PaneFrame.z) mull *= 1.0 - step(lo.x, cell.x) * step(cell.x, hi.x);
                     if (sz.y >= _PaneFrame.z) mull *= 1.0 - step(lo.y, cell.y) * step(cell.y, hi.y);
+                }
+                // THE SPILL (LanternGlassGlow, _PaneLook2.w 1 or 2): the light a lit lantern throws on its gallery.
+                // An ellipse filling the span, its peak in the middle a share _PaneLook.y of the span's height down
+                // from its top edge (right under the glass): 1 minus the squared distance, banded with ceil, so it
+                // fades every way at once and ends on a stepped curve, never at the span's straight sides, top or
+                // foot. Mode 2 thins the lowest band to every other art pixel. Mirrored by LanternGlassGlow.SpillLevel.
+                if (_PaneLook2.w > 0.5)
+                {
+                    float su = (p.x / sz.x - 0.5) * 2.0;
+                    float sd = 1.0 - p.y / sz.y;                       // 0 at the top edge, 1 at the foot
+                    float spk = saturate(_PaneLook.y);
+                    float st = sd < spk ? (spk - sd) / max(spk, 1e-3) : (sd - spk) / max(1.0 - spk, 1e-3);
+                    float sl = saturate(1.0 - (su * su + st * st));
+                    float sb = max(floor(_PaneLook.w), 1.0);
+                    float band = ceil(sl * sb);
+                    if (_PaneLook2.w > 1.5 && band == 1.0 && fmod(cell.x + cell.y, 2.0) > 0.5) band = 0.0;
+                    return band / sb;
                 }
                 float v = saturate(p.y / sz.y);
                 float level = lerp(_PaneLook.y, _PaneLook.x, v);

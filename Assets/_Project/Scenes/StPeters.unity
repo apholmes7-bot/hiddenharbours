@@ -177952,6 +177952,12 @@ MonoBehaviour:
   _centreLift: 0.6
   _acrossFalloff: 0.35
   _bands: 3
+  _spill:
+  - {x: -1.625, y: 1.625, z: 7.375, w: 0.5625}
+  _spillStrength: 0.06
+  _spillPeakDepth: 0.3
+  _spillDither: 1
+  _spillBands: 3
 --- !u!114 &1950674028
 MonoBehaviour:
   m_ObjectHideFlags: 0

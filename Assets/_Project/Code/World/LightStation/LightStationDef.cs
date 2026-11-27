@@ -113,5 +113,27 @@ namespace HiddenHarbours.World
 
         [Tooltip("Steps of brightness across a pane, for the pixel look: 0 smooth.")]
         [Range(0, 8)] public int GlassBands = 3;
+
+        [Header("The glass's spill on the deck, rail and tower top")]
+        [Tooltip("Where the lit glass throws its light round the lantern, metres from the tower's foot as the tower " +
+                 "picture draws it: x left edge, y right edge, z the top edge (by the glass, where it is strongest), " +
+                 "w the reach: how far down it falls off to nothing. The light is an ellipse filling the span, so it " +
+                 "fades out before the sides, top and foot: size a span to the gallery's deck and rail. None: the " +
+                 "deck stays dark.")]
+        public Vector4[] GlassSpill = new Vector4[0];
+
+        [Tooltip("How bright the spill is at its strongest: light added over the night, so small numbers (0.05 to " +
+                 "0.15) read as a soft glow on a dark deck.")]
+        [Min(0f)] public float GlassSpillStrength = 0.06f;
+
+        [Tooltip("Where the spill peaks, as a share of a span's height down from its top edge: 0 at the top edge (it " +
+                 "fades only sideways and down); above 0 it fades upward too, so the top edge curves like the foot.")]
+        [Range(0f, 0.9f)] public float GlassSpillPeakDepth = 0.3f;
+
+        [Tooltip("Thin the spill's last (dimmest) band to every other art pixel, so its outer edge breaks up.")]
+        public bool GlassSpillDitherLastBand = true;
+
+        [Tooltip("Steps the spill falls off in, for the pixel look.")]
+        [Range(1, 8)] public int GlassSpillBands = 3;
     }
 }
