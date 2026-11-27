@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using HiddenHarbours.Core;
 using HiddenHarbours.Economy;
@@ -179,6 +180,63 @@ namespace HiddenHarbours.Tests.EditMode
 
         private void OnChanged(IslandShelvesChanged c) => _changes.Add(c);
         private void OnCue(InnerVoiceCue c) => _cues.Add(c.CueId);
+
+        [Test]
+        public void ShippedRodAndCapelin_ChargeTheirPricesAndDrawOnlyTheirOwnCountedLine()
+        {
+            IslandStoreShelvesDef def = IslandSupplyTestData.LoadAll<IslandStoreShelvesDef>()
+                .Single(d => d.Id == "islandshelves.st_peters_general");
+            GameConfig cfg = IslandSupplyTestData.Config();
+            IslandStoreShelves shelves = IslandStoreShelves.FromDef(def, IslandSupplyTestData.Route(),
+                IslandSupplyTestData.CarriersById(), _ => true, cfg.SecondsPerDay);
+            IslandCounterShelves.Bind(def, shelves);
+            var save = SaveMigration.NewGame();
+            var wallet = new FakeWallet(85);
+            GameServices.Save = new FakeSave(save);
+            var go = new GameObject("TestFishingCounter");
+            _spawned.Add(go);
+            var gear = go.AddComponent<GearShop>();
+            var bait = go.AddComponent<BaitShop>();
+            foreach (Component vendor in new Component[] { gear, bait })
+            {
+                vendor.GetType().GetField("_wallet", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(vendor, wallet);
+                vendor.GetType().GetField("_sellerId", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(vendor, def.SellerId);
+            }
+            var arms = new BuyCatalog.SellerArms(null, gear, null, bait, null, null, null);
+            var rows = new List<BuyRow>();
+            double now = cfg.SecondsPerDay * def.OpensHour / 24.0;
+            BuyRow Row(string id)
+            {
+                BuyCatalog.BuildCounted(def.SellerId, arms, wallet.Money, save, null, now, rows);
+                return rows.Single(r => r.Id == id);
+            }
+
+            BuyRow rod = Row("gear.rod");
+            Assert.That(rod.ShelfLine, Is.EqualTo("line.fishing_rod"));
+            Assert.That(rod.Quote.Price, Is.EqualTo(60));
+            Assert.That(shelves.CountAt(rod.ShelfLine, now), Is.EqualTo(4));
+            Assert.IsTrue(BuyCatalog.Confirm(rod, now));
+            Assert.That(wallet.Money, Is.EqualTo(25));
+            Assert.That(save.OwnedGear, Is.EqualTo(new[] { "gear.rod" }));
+            Assert.That(shelves.CountAt(rod.ShelfLine, now), Is.EqualTo(3));
+            Assert.That(shelves.CountAt("line.bait_box", now), Is.EqualTo(20));
+            Assert.IsFalse(BuyCatalog.Confirm(Row("gear.rod"), now));
+            Assert.That(wallet.Money, Is.EqualTo(25));
+            Assert.That(shelves.CountAt(rod.ShelfLine, now), Is.EqualTo(3));
+
+            BuyRow capelin = Row("bait.capelin");
+            Assert.That(capelin.ShelfLine, Is.EqualTo("line.bait_box"));
+            Assert.That(capelin.Quote.Price, Is.EqualTo(20));
+            Assert.IsTrue(BuyCatalog.Confirm(capelin, now));
+            Assert.That(wallet.Money, Is.EqualTo(5));
+            Assert.That(TackleBox.BaitCount(save, capelin.Id), Is.EqualTo(10));
+            Assert.That(save.BaitStock.Count, Is.EqualTo(1));
+            Assert.That(shelves.CountAt(capelin.ShelfLine, now), Is.EqualTo(19));
+            Assert.That(shelves.CountAt(rod.ShelfLine, now), Is.EqualTo(3));
+            Assert.That(save.ShoppingBags, Is.Empty, "physical delivery is still pending");
+            Assert.IsFalse(IslandCounterShelves.IsSoldAtShelf(def.SellerId, rod.Id));
+            Assert.IsTrue(IslandCounterShelves.IsSoldAtShelf(def.SellerId, capelin.Id));
+        }
 
         // ---- builders ----------------------------------------------------------------------------------------
 

@@ -19,7 +19,9 @@ namespace HiddenHarbours.Economy
     /// recomputed: it is handed out as save rows (<see cref="ExportPurchases"/>) and taken back in on a load
     /// (<see cref="ImportPurchases"/>), so a loaded game's shelves are exactly the shelves that were left.
     /// A run that tops the room up clears a purchase's effect, and purchases older than the ledger's
-    /// lookback are dropped (<see cref="DropOldPurchases"/>): no replay can reach them.</para>
+    /// lookback are dropped (<see cref="DropOldPurchases"/>): no replay can reach them. Booked reserves
+    /// instead retain their purchase history: only explicit sales and actual deliveries change them,
+    /// including when a blocked crossing lasts longer than that lookback.</para>
     ///
     /// <para>Reads allocate nothing. Plain C#, no Unity lifecycle: warm it from the day tick with
     /// <see cref="SlowTick"/> or read it lazily.</para>
@@ -45,6 +47,11 @@ namespace HiddenHarbours.Economy
         private readonly double[] _unitsPerItem;
         private readonly int[] _maxOnShelf;
         private readonly double[] _shareOfGood;
+        private readonly bool[] _reservedForSales;
+        private readonly double[] _reservedMorning;
+        private readonly Action<int> _replayReservedDay;
+        private int _reserveReadDay;
+        private int _reserveStartDay;
         private readonly List<Draw> _draws = new List<Draw>();
 
         // The settled day, per ledger good: the level after the morning run, and the islanders' use that day.
@@ -78,6 +85,7 @@ namespace HiddenHarbours.Economy
             var units = new List<double>();
             var max = new List<int>();
             var shares = new List<double>();
+            var reserved = new List<bool>();
             foreach (IslandShelfLine line in lines)
             {
                 if (line == null || string.IsNullOrEmpty(line.Id)) throw new ArgumentException("A shelf line needs an id.");
@@ -100,6 +108,7 @@ namespace HiddenHarbours.Economy
                 units.Add(line.UnitsPerItem);
                 max.Add(line.MaxOnShelf);
                 shares.Add(share);
+                reserved.Add(line.ReservedForSales);
             }
             _lineIds = new string[goods.Count];
             foreach (KeyValuePair<string, int> line in _lineById) _lineIds[line.Value] = line.Key;
@@ -107,6 +116,9 @@ namespace HiddenHarbours.Economy
             _unitsPerItem = units.ToArray();
             _maxOnShelf = max.ToArray();
             _shareOfGood = shares.ToArray();
+            _reservedForSales = reserved.ToArray();
+            _reservedMorning = new double[goods.Count];
+            _replayReservedDay = ReplayReservedDay;
             _morning = new double[ledger.GoodCount];
             _use = new double[ledger.GoodCount];
             _ledger.ExtraDraw = DrawnOn;
@@ -165,7 +177,8 @@ namespace HiddenHarbours.Economy
 
         /// <summary>
         /// Drops the purchases no replay can reach from <paramref name="totalSeconds"/> on: those made
-        /// before the ledger's lookback. True when any went (the save's rows are then out of date).
+        /// before the ledger's lookback, except booked reserves whose sales must survive a longer gap.
+        /// True when any went (the save's rows are then out of date).
         /// </summary>
         public bool DropOldPurchases(double totalSeconds)
             => DropBefore(DayOf(Math.Max(0.0, totalSeconds)) - _ledger.LookbackDays);
@@ -176,7 +189,7 @@ namespace HiddenHarbours.Economy
             bool any = false;
             for (int i = _draws.Count - 1; i >= 0; i--)
             {
-                if (_draws[i].Day >= oldestDay) continue;
+                if (_draws[i].Day >= oldestDay || _reservedForSales[_draws[i].Line]) continue;
                 _draws.RemoveAt(i);
                 any = true;
             }
@@ -237,7 +250,7 @@ namespace HiddenHarbours.Economy
         /// of the day costs nothing. Repeated calls on one day are inert.</summary>
         public void SlowTick(double totalSeconds) => Settle(DayOf(Math.Max(0.0, totalSeconds)));
 
-        /// <summary>The purchases held (bounded by the ledger's lookback).</summary>
+        /// <summary>The purchases held (booked reserves retain their history beyond the lookback).</summary>
         public int HeldDrawCount => _draws.Count;
 
         private int DayOf(double totalSeconds) => (int)Math.Floor(totalSeconds / _secondsPerDay);
@@ -245,6 +258,20 @@ namespace HiddenHarbours.Economy
         private void Settle(int day)
         {
             if (day == _settledDay && _version == _settledVersion) return;
+            _reserveReadDay = day;
+            _reserveStartDay = day;
+            bool hasReservedDraw = false;
+            for (int i = 0; i < _reservedMorning.Length; i++)
+                _reservedMorning[i] = ReservedTarget(i, 0);
+            for (int i = 0; i < _draws.Count; i++)
+            {
+                Draw draw = _draws[i];
+                if (!_reservedForSales[draw.Line] || draw.Day > day) continue;
+                hasReservedDraw = true;
+                _reserveStartDay = Math.Min(_reserveStartDay, draw.Day);
+            }
+            if (hasReservedDraw)
+                _ledger.Replay(day, Math.Max(0, _reserveStartDay - _ledger.LookbackDays), _replayReservedDay);
             _ledger.Settle(day);
             for (int i = 0; i < _morning.Length; i++)
             {
@@ -253,6 +280,35 @@ namespace HiddenHarbours.Economy
             }
             _settledDay = day;
             _settledVersion = _version;
+        }
+
+        private double ReservedTarget(int line, int day)
+            => Math.Min(_maxOnShelf[line] * _unitsPerItem[line],
+                        _ledger.Target(_goodOfLine[line], day) * _shareOfGood[line]);
+
+        private void ReplayReservedDay(int day)
+        {
+            if (day < _reserveStartDay) return;
+            for (int line = 0; line < _reservedMorning.Length; line++)
+            {
+                if (!_reservedForSales[line]) continue;
+                int good = _goodOfLine[line];
+                double delivered = _ledger.Delivered(good);
+                if (delivered <= 0.0) continue;
+                double wanted = _ledger.Target(good, day) - _ledger.LevelAtDawn(good);
+                double fraction = wanted > 0.0 ? Math.Min(1.0, delivered / wanted) : 0.0;
+                double target = ReservedTarget(line, day);
+                _reservedMorning[line] = Math.Min(target,
+                    _reservedMorning[line] + Math.Max(0.0, target - _reservedMorning[line]) * fraction);
+            }
+            // Today's timed purchases are applied by StockAt, so a read before a sale stays historical.
+            if (day == _reserveReadDay) return;
+            for (int i = 0; i < _draws.Count; i++)
+            {
+                Draw draw = _draws[i];
+                if (_reservedForSales[draw.Line] && draw.Day == day)
+                    _reservedMorning[draw.Line] = Math.Max(0.0, _reservedMorning[draw.Line] - draw.Units);
+            }
         }
 
         /// <summary>The line's stock at a moment of the settled day: its share of the good's morning level less
@@ -268,6 +324,7 @@ namespace HiddenHarbours.Economy
             double stock = _morning[good] - _use[good] * share;
             if (stock < 0.0) stock = 0.0;
             stock *= _shareOfGood[line];
+            if (_reservedForSales[line]) stock = _reservedMorning[line];
             for (int i = 0; i < _draws.Count; i++)
             {
                 Draw d = _draws[i];

@@ -74,6 +74,107 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void BuyingEveryRodOrBaitItem_EmptiesOnlyThatLine()
+        {
+            foreach (string bought in new[] { "line.fishing_rod", "line.bait_box" })
+            {
+                IslandStoreShelves shelves = IslandStoreShelves.FromDef(
+                    _def, _route, _carriers, _ => true, _cfg.SecondsPerDay);
+                double now = At(0, _def.OpensHour);
+                var before = _def.Lines.ToDictionary(l => l.Id, l => shelves.CountAt(l.Id, now));
+                int count = _def.Lines.Single(l => l.Id == bought).MaxOnShelf;
+                Assert.That(before[bought], Is.EqualTo(count), bought + " starts full after a run");
+                for (int i = 0; i < count; i++)
+                {
+                    Assert.IsTrue(shelves.TryTakeOne(bought, now));
+                    Assert.That(shelves.CountAt(bought, now), Is.EqualTo(count - i - 1));
+                    foreach (IslandShelfLine other in _def.Lines.Where(l => l.Id != bought))
+                        Assert.That(shelves.CountAt(other.Id, now), Is.EqualTo(before[other.Id]), other.Id);
+                }
+                Assert.IsFalse(shelves.TryTakeOne(bought, now));
+                var rows = new List<StorePurchaseRowDto>();
+                shelves.ExportPurchases(rows);
+                Assert.That(rows.Count, Is.EqualTo(count), "refusing an empty line records no purchase");
+                Assert.That(rows.All(r => r.ShelfLineId == bought), Is.True);
+                Assert.That(rows.Sum(r => r.Units), Is.EqualTo(count * (double)_def.Lines.Single(l => l.Id == bought).UnitsPerItem));
+            }
+        }
+
+        [Test]
+        public void RodAndBaitPurchases_ReplayExactlyWithoutChangingAnOlderGamesGear()
+        {
+            IslandStoreShelves Make() => IslandStoreShelves.FromDef(
+                _def, _route, _carriers, day => day % 3 != 1, _cfg.SecondsPerDay);
+            IslandStoreShelves original = Make();
+            double now = At(0, _def.OpensHour);
+            Assert.IsTrue(original.TryTakeOne("line.fishing_rod", now));
+            Assert.IsTrue(original.TryTakeOne("line.bait_box", now));
+            var old = new SaveData { SchemaVersion = 25, Money = 85, WorldSeed = 73 };
+            old.OwnedGear.Add("gear.rod");
+            old.OwnedGear.Add("gear.shovel");
+            old.BaitStock.Add(new BaitStock("bait.herring", 6));
+            SaveData loaded = SaveSerialization.FromJson(SaveSerialization.ToJson(old));
+            IslandShelvesHost.WritePurchases(loaded, original);
+            loaded = SaveSerialization.FromJson(SaveSerialization.ToJson(loaded));
+            IslandStoreShelves replayed = Make();
+            Assert.That(IslandShelvesHost.ReadPurchases(loaded, replayed), Is.EqualTo(2));
+            Assert.That(loaded.OwnedGear, Is.EqualTo(old.OwnedGear));
+            Assert.That(loaded.BaitStock.Count, Is.EqualTo(1));
+            Assert.That(loaded.BaitStock[0].BaitId, Is.EqualTo("bait.herring"));
+            Assert.That(loaded.BaitStock[0].Count, Is.EqualTo(6));
+            Assert.That(loaded.Money, Is.EqualTo(85));
+            Assert.That(loaded.WorldSeed, Is.EqualTo(73));
+            Assert.That(loaded.ShoppingBags, Is.Empty);
+            Assert.That(loaded.SchemaVersion, Is.EqualTo(26));
+
+            var watched = new Dictionary<(string, int), int>();
+            for (int day = 0; day <= _def.Ledger.LookbackDays; day++)
+                foreach (IslandShelfLine line in _def.Lines)
+                    watched[(line.Id, day)] = original.CountAt(line.Id, At(day, _def.OpensHour));
+            for (int day = _def.Ledger.LookbackDays; day >= 0; day--)
+                foreach (IslandShelfLine line in _def.Lines)
+                    Assert.That(replayed.CountAt(line.Id, At(day, _def.OpensHour)),
+                                Is.EqualTo(watched[(line.Id, day)]), line.Id + " day " + day);
+        }
+
+        [TestCase(1, 3, false, 4)]
+        [TestCase(4, 0, false, 4)]
+        [TestCase(1, 3, true, 3)]
+        [TestCase(4, 0, true, 2)]
+        public void RodSalesRemainGoneAcrossBlockedNights_AndOnlyADeliveryRefillsThem(
+            int bought, int left, bool extendedGap, int restored)
+        {
+            int deliveryDay = extendedGap ? 2 * (_def.Ledger.LookbackDays + 1) : 2;
+            IslandStoreShelves Make() => IslandStoreShelves.FromDef(
+                _def, _route, _carriers, day => day == deliveryDay, _cfg.SecondsPerDay);
+            var original = Make();
+            const string rod = "line.fishing_rod";
+            double now = At(0, _def.OpensHour);
+            Assert.That(original.CountAt(rod, now), Is.EqualTo(4));
+            for (int i = 0; i < bought; i++) Assert.IsTrue(original.TryTakeOne(rod, now));
+            Assert.That(original.CountAt(rod, At(0, _def.ClosesHour)), Is.EqualTo(left));
+            Assert.IsFalse(original.RunCameOn(1));
+            Assert.That(original.CountAt(rod, At(1, _def.OpensHour)), Is.EqualTo(left));
+            Assert.IsFalse(original.DropOldPurchases(At(deliveryDay - 1, _def.OpensHour)),
+                "the lookback must not erase a reserved sale during a blocked crossing");
+            var save = new SaveData();
+            IslandShelvesHost.WritePurchases(save, original);
+            SaveData loaded = SaveSerialization.FromJson(SaveSerialization.ToJson(save));
+            var replayed = Make();
+            Assert.That(IslandShelvesHost.ReadPurchases(loaded, replayed), Is.EqualTo(bought));
+            foreach (var shelves in new[] { original, replayed })
+            {
+                Assert.That(shelves.CountAt(rod, At(deliveryDay - 1, _def.ClosesHour)), Is.EqualTo(left));
+                Assert.IsTrue(shelves.RunCameOn(deliveryDay));
+                Assert.That(shelves.CountAt(rod, At(deliveryDay, _def.OpensHour)), Is.EqualTo(restored));
+                Assert.That(shelves.CountAt(rod, At(deliveryDay, _def.ClosesHour)), Is.EqualTo(restored));
+                Assert.That(shelves.CountAt(rod, At(deliveryDay + 1, _def.OpensHour)), Is.EqualTo(restored));
+                Assert.That(shelves.CountAt(rod, At(1, _def.OpensHour)), Is.EqualTo(left),
+                    "reading the delivery must not rewrite the preceding nights");
+            }
+        }
+
+        [Test]
         public void EachShelfHoldsTheWholeBufferTarget_ToWithinOneItem()
         {
             foreach (IslandShelfLine line in _def.Lines)
@@ -109,7 +210,11 @@ namespace HiddenHarbours.Tests.EditMode
                         emptyDays.Add(line.Id + "@" + day + " (" + shelves.DaysSinceRun(day) + " days since the run)");
                     }
                 }
-                Assert.That(seen.Count, Is.GreaterThan(1), line.Id + " never changes over two lunar months");
+                if (line.ReservedForSales)
+                    Assert.That(seen, Is.EquivalentTo(new[] { line.MaxOnShelf }),
+                        line.Id + " stays booked until an explicit sale");
+                else
+                    Assert.That(seen.Count, Is.GreaterThan(1), line.Id + " never changes over two lunar months");
             }
             TestContext.WriteLine("Empty at opening on the real tide, days " + first + ".." + last + ": " +
                                   (emptyDays.Count == 0 ? "none" : string.Join(", ", emptyDays)));
