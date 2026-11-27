@@ -428,7 +428,12 @@ namespace HiddenHarbours.Art
             // of the normal camera's near/far planes. Ordering is common to every packet.
             float span = Mathf.Max(high - low, Mathf.Epsilon);
             output.DepthRange = new Vector4(low, 1 / span, 0, 0);
-            Vector4 fade = PackFade(GameServices.HullReflectionFadeStartMeters, GameServices.HullReflectionFadeMeters,
+            // While the calm mirror runs it reads this picture as a true reflection: the fade stretches by its
+            // handover, so on calm water a hull's topsides and her crew reach the water whole.
+            float fadeMeters = CalmMirror.Active
+                ? CalmMirrorMath.HullFadeMeters(GameServices.HullReflectionFadeMeters, CalmMirror.Handover)
+                : GameServices.HullReflectionFadeMeters;
+            Vector4 fade = PackFade(GameServices.HullReflectionFadeStartMeters, fadeMeters,
                                     GameServices.HullReflectionStreakPixels);
             output.Ends = PackEnds(GameServices.HullReflectionEndCutPixels, GameServices.HullReflectionEndThinPixels,
                                    GameServices.HullReflectionEndMinRunPixels, keylineFlood);
