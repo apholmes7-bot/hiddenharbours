@@ -98,7 +98,7 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         [Test]
-        public void EveryCellIsShadowedTimber_DarkAndLowContrast()
+        public void EveryCellIsShadowedTimber_DarkWithContrastTheMirrorCarries()
         {
             Color32[] png = CommittedSheet(out int w, out _);
             foreach (UndersideDef d in Defs())
@@ -113,8 +113,14 @@ namespace HiddenHarbours.Tests.RigBaking
                         float g = ((Color)p).grayscale;
                         lo = Mathf.Min(lo, g); hi = Mathf.Max(hi, g);
                     }
-                Assert.Less(hi, 0.3f, $"{d.Id}: an underside is in its own shade");
-                Assert.Less(hi - lo, 0.2f, $"{d.Id}: low contrast, so it reads as timber under a deck, not a pattern");
+                // The mirror lays a cell at about half weight (dial 0.6 x share 0.85), darkened 0.82, in
+                // linear light, over noon water of grey about 0.58. The first sheet (range 0.12) landed
+                // within 1 to 3 steps of 255 on screen: one flat slab. A range of 0.35 or more puts the
+                // joists about 12 steps below the plank field; a top under 0.55 keeps the band below the
+                // open water beside it, so it still reads as shade.
+                Assert.Less(lo, 0.06f, $"{d.Id}: the beams and gaps are near black");
+                Assert.Less(hi, 0.55f, $"{d.Id}: an underside is in its own shade, under the open water's grey");
+                Assert.Greater(hi - lo, 0.35f, $"{d.Id}: enough contrast that the joists read after the mirror's share");
             }
         }
 

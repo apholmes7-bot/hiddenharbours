@@ -17,9 +17,14 @@
    PLAN SCALE. Up the screen the plan's depth is 1:1 (the camera's lift only moves the deck), so a
    stringer every 0.6 m under the deck is a dark band every 19 or 20 rows.
 
-   KEPT DARK AND LOW CONTRAST. This is timber in its own shadow, seen through water; the mirror adds
-   its darken and the day/night tint on top. Nothing here is lighter than the face band it replaces
-   by more than a few steps.
+   DARK, BUT WITH CONTRAST THE MIRROR CAN CARRY. This is timber in its own shadow, seen through
+   water; the mirror lays it at about half weight (the 0.6 dial times the 0.85 underside share), then
+   its 0.82 darken and the day/night tint, all in linear light. That squeezes a sheet step into very
+   little on screen: the first ramps (a grey range of 0.12) landed within 1 to 3 steps of 255 of each
+   other over noon water, one flat slab. So the joists, caps and stringers stay near black and the
+   plank field between them is lifted to a grey of about 0.35, which lands about 12 steps of 255 above
+   a joist on screen at noon and still well under the open water beside it (grey about 0.58), so the
+   whole band still reads as shade.
 
    Exposes globalThis.Underside = { PX_PER_M, W, H, PIECES, sheet() }. sheet() returns RGBA, W x H,
    rows top-down. */
@@ -46,12 +51,13 @@
   const rgb = (hex) => [parseInt(hex.slice(1, 3), 16), parseInt(hex.slice(3, 5), 16), parseInt(hex.slice(5, 7), 16)];
 
   // Each painter answers a ramp index (0 darkest) for cell column x and cell row r (0 = the bottom).
-  // Ramps are five steps of the piece's timber or float in shadow.
+  // Ramps are five steps of the piece's timber or float in shadow: 0 and 1 the beams and gaps, 2 the
+  // plank (or billet) field, 3 and 4 the lip and the slivers of daylight.
   const RAMPS = {
-    stp: ['#17130f', '#1f1a15', '#28211b', '#312921', '#3b3128'],
-    nmc: ['#141210', '#1b1815', '#231f1b', '#2b2621', '#342e28'],
-    float: ['#141614', '#1b1e1b', '#232724', '#2c302c', '#363a33'],
-    gang: ['#151616', '#1c1e1e', '#252727', '#2e3030', '#383a39'],
+    stp: ['#0b0907', '#2a231c', '#64543f', '#75634d', '#86735b'],
+    nmc: ['#0a0908', '#28241f', '#5f564b', '#6f6559', '#7f7468'],
+    float: ['#0a0b0a', '#262b25', '#59614f', '#6b7461', '#7c8572'],
+    gang: ['#0b0c0c', '#272a2a', '#5a5e5d', '#6b706e', '#7c8180'],
   };
 
   // A timber pier seen from below: plank seams every 6 px across, a stringer band every period rows,
@@ -75,7 +81,7 @@
       if (b < 3) return b === 1 ? 0 : 1;            // a stringer, its shadowed belly in the middle
       if (x % 6 === 0) return 0;                    // the seam between two planks
       if (x % 6 === 1 && hash(x, r, 3) < 0.08) return 3;   // a sliver of daylight through a seam
-      return hash(x, r, 4) < 0.15 ? 1 : 2;
+      return hash(x, r, 4) < 0.05 ? 1 : 2;           // sparse grain: the field step is wide now
     };
   }
 
