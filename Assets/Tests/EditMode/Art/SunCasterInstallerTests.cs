@@ -159,13 +159,23 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// A face HUNG at the live waterline (a ladder from a deck down to low water) must not throw its whole
         /// uncut sprite from a foot under the water: the St Peters ladder laid a slanting ladder across open
         /// water at every tide. The installer gives it no caster, on a first scan or a later one. A tidal face
-        /// standing up from the bed (a Whelps rock, lip at zero) still casts: its shadow on dry rock is true.
+        /// standing up from the bed still casts: a Whelps rock (lip at zero) and a quay crib (lip at its deck, but
+        /// no heights hanging from it), since their shadows on dry rock and on the water beside them are true.
         /// The same art without the waterline cut still casts, and the by-name exclusions are unchanged.
         /// </summary>
         [Test] public void HungTidalFace_NeverGainsASunCaster_ARockFaceAndTheDryArtStillDo()
         {
+            var heights = new Texture2D(1, 1);
+            try { HungFaceCases(heights); }
+            finally { Object.DestroyImmediate(heights); }
+        }
+
+        void HungFaceCases(Texture2D heights)
+        {
             var ladder = Sprite("Fitting_ladder");
-            ladder.gameObject.AddComponent<TidalFaceWaterline>().Configure(ladder.transform.position.y, 5.354f);
+            var hung = ladder.gameObject.AddComponent<TidalFaceWaterline>();
+            hung.Configure(ladder.transform.position.y, 5.354f);
+            hung.ConfigureHeight(heights, -8.12f, 8.12f, -5.354f);   // the St Peters ladder: measured down from its lip
             Assert.That(_host.Consider(ladder), Is.Null, "a face hung from a deck into the tide is given no caster");
             Assert.That(ladder.GetComponent<SpriteShadow>(), Is.Null, "no sun caster was added to it");
             ladder.sortingOrder += 1;   // a changed candidate is evaluated again
@@ -176,8 +186,14 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.That(_host.Consider(dryLadder), Is.Not.Null, "the same art standing on land still casts");
 
             var rockFace = Sprite("Fitting_ladder");
-            rockFace.gameObject.AddComponent<TidalFaceWaterline>().Configure(rockFace.transform.position.y, 0f);
+            var rock = rockFace.gameObject.AddComponent<TidalFaceWaterline>();
+            rock.Configure(rockFace.transform.position.y, 0f);
+            rock.ConfigureHeight(heights, -1.19f, 2.16f, 0f);
             Assert.That(_host.Consider(rockFace), Is.Not.Null, "a tidal face standing up from the bed keeps its caster");
+
+            var crib = Sprite("Fitting_ladder");
+            crib.gameObject.AddComponent<TidalFaceWaterline>().Configure(crib.transform.position.y, 3.4f);
+            Assert.That(_host.Consider(crib), Is.Not.Null, "a quay crib cut at its deck lip, with no hanging heights, keeps its caster");
 
             Assert.That(_rules.ExcludedNames, Does.Contain("WharfPass2Deck"), "the by-name exclusions stand as they were");
         }

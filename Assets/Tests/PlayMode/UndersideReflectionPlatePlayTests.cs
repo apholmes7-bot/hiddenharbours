@@ -34,11 +34,14 @@ namespace HiddenHarbours.Tests.PlayMode
             new UndersideSubject("StPeters", "check_stp_gap_footbridge", "bridge.stp_gap_footbridge", -2.0f, 2.0f),
             // Not a deck: a Whelps rock standing through the tide, to see its sun shadow at low water and mid tide.
             new UndersideSubject("StPeters", "whelps_rock1", "~rock.stp_whelp_1", -2.0f, 0f),
+            // Not decks: hung fender strings, to see that no uncut sun shadow lies across the water from them.
+            new UndersideSubject("StPeters", "stp_fender", "~Fitting_tyre", 2.0f),
+            new UndersideSubject("NineMileCreek", "nmc_fender", "~Fender_nmc_north_face_0", 2.0f),
             new UndersideSubject("NineMileCreek", "nmc_pierW", "pierW/walk0", -1.5f, 1.5f),
             new UndersideSubject("NineMileCreek", "nmc_w1", "w1.walk", -1.5f, 1.5f),
             new UndersideSubject("NineMileCreek", "nmc_float_working", "float.nmc_working", -1.5f, 1.5f),
             new UndersideSubject("NineMileCreek", "nmc_gangway_west", "gangway.nmc_west_gangway", -1.5f, 1.5f),
-            new UndersideSubject("NineMileCreek", "nmc_ladder", "~#WharfLadder", -1.5f, 1.5f),
+            new UndersideSubject("NineMileCreek", "nmc_ladder", "~#WharfLadder", -1.5f, 1.5f, 2.0f),
             new UndersideSubject("NineMileCreek", "check_slab", "slab/walk0", -1.5f, 1.5f),
             new UndersideSubject("NineMileCreek", "check_shed", "shed/walk0", -1.5f, 1.5f),
             new UndersideSubject("NineMileCreek", "check_route91_bridge", "~Route91RiverBridge", -1.5f, 1.5f),

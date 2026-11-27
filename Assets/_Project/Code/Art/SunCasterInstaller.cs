@@ -163,12 +163,14 @@ namespace HiddenHarbours.Art
         /// low water) draws only what stands above the tide, but a sun caster throws its WHOLE sprite from its
         /// foot, which is under water most of the day: the St Peters ladder laid a slanting ladder across open
         /// water, uncut, at every tide. Only a HUNG face loses its caster: one whose lip is set at a deck above
-        /// the water (lip elevation above zero: the ladder, a fender string), so most of its sprite hangs below
-        /// the tide. A face standing up from the bed (a Whelps rock, lip at zero) keeps its caster, because its
-        /// shadow on dry rock and on the water beside it is true. One already on a face is left alone.
+        /// the water (lip elevation above zero) and whose picture is measured down from that lip (the ladders,
+        /// the tyres and fender strings), so most of its sprite hangs below the tide. A face standing up from
+        /// the bed keeps its caster: a Whelps rock (lip at zero), a quay or breakwater crib (no hanging heights),
+        /// because its shadow on dry rock and on the water beside it is true. One already on a face is left alone.
         /// </summary>
         public static bool HangsInTheTide(SpriteRenderer renderer) =>
-            renderer.TryGetComponent<TidalFaceWaterline>(out var face) && face.IsConfigured && face.LipElevation > 0f;
+            renderer.TryGetComponent<TidalFaceWaterline>(out var face) && face.IsConfigured && face.LipElevation > 0f &&
+            face.HangsFromItsLip;
 
         /// <summary>Only new or changed candidates evaluate data; a settled pass allocates nothing.</summary>
         public SpriteShadow Consider(SpriteRenderer renderer)
