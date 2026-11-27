@@ -229,7 +229,10 @@ namespace HiddenHarbours.Tests.PlayMode
                 var shadow = renderer.GetComponent<SpriteShadow>();
                 if (shadow == null)
                 {
-                    if (renderer.enabled && renderer.gameObject.activeInHierarchy && rules.Qualifies(renderer, out _))
+                    // A face hung into the tide (the ladder) is given no caster on purpose: its whole sprite would
+                    // be thrown from a foot under the water.
+                    if (renderer.enabled && renderer.gameObject.activeInHierarchy && !SunCasterInstaller.HangsInTheTide(renderer) &&
+                        rules.Qualifies(renderer, out _))
                         Assert.Fail(scene + ": eligible sprite was missed: " + renderer.name);
                     continue;
                 }

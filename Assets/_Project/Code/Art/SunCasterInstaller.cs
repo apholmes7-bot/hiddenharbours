@@ -167,7 +167,7 @@ namespace HiddenHarbours.Art
         /// the tide. A face standing up from the bed (a Whelps rock, lip at zero) keeps its caster, because its
         /// shadow on dry rock and on the water beside it is true. One already on a face is left alone.
         /// </summary>
-        private static bool HangsInTheTide(SpriteRenderer renderer) =>
+        public static bool HangsInTheTide(SpriteRenderer renderer) =>
             renderer.TryGetComponent<TidalFaceWaterline>(out var face) && face.IsConfigured && face.LipElevation > 0f;
 
         /// <summary>Only new or changed candidates evaluate data; a settled pass allocates nothing.</summary>
