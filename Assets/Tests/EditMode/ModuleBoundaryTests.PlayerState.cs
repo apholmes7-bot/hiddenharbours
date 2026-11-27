@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
 using UnityEngine;
@@ -54,6 +55,7 @@ namespace HiddenHarbours.Tests.EditMode
                 if (!IsOwnershipRuntimePath(relative)) continue;
                 foreach (OwnershipHit hit in ScanOwnership(relative, File.ReadAllText(path)))
                 {
+                    if (hit.Rule == "SP004" && IsPlayerKeyedSaveRows(hit.Token)) continue;
                     actual.TryGetValue(hit.Key, out int count);
                     actual[hit.Key] = ++count;
                     if (!expected.TryGetValue(hit.Key, out OwnershipDebt debt) || count > debt.Count)
@@ -115,6 +117,30 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(IsOwnershipRuntimePath("Tools/Editor/Builder.cs"), Is.False);
             Assert.That(ScanOwnership("World/Example.cs", "public string PlayerName;"), Is.Empty,
                 "The flat save-field rule applies only to the save DTO.");
+        }
+
+        [Test]
+        public void PlayerStateScan_ExemptsOnlySaveRowsThatCarryAPlayerKey()
+        {
+            Assert.That(IsPlayerKeyedSaveRows("public List<PlayerClothingDto> PlayerClothing"), Is.True);
+            Assert.That(IsPlayerKeyedSaveRows("public List<PlayerSkillDto> PlayerSkills"), Is.True);
+            Assert.That(IsPlayerKeyedSaveRows("public List<PlayerNoteDto> PlayerNotes"), Is.False);
+            Assert.That(IsPlayerKeyedSaveRows("public PlayerNeedsDto PlayerNeeds"), Is.False);
+            Assert.That(IsPlayerKeyedSaveRows("public List<string> PlayerTraits"), Is.False);
+            Assert.That(IsPlayerKeyedSaveRows("public List<PlayerSkillDto> NoSuchField"), Is.False);
+        }
+
+        // A save list whose every row names its player (a public string PlayerKey) is already keyed per
+        // player, which is the migration the SP004 debts ask for; the field-name tripwire cannot see that.
+        private static bool IsPlayerKeyedSaveRows(string token)
+        {
+            string name = Regex.Match(token, @"(\w+)\s*$").Groups[1].Value;
+            FieldInfo field = typeof(HiddenHarbours.Core.SaveData).GetField(name, BindingFlags.Public | BindingFlags.Instance);
+            if (field == null || !field.FieldType.IsGenericType ||
+                field.FieldType.GetGenericTypeDefinition() != typeof(List<>)) return false;
+            FieldInfo key = field.FieldType.GetGenericArguments()[0]
+                .GetField("PlayerKey", BindingFlags.Public | BindingFlags.Instance);
+            return key != null && key.FieldType == typeof(string);
         }
 
         private static bool IsOwnershipRuntimePath(string relative) =>

@@ -95,13 +95,15 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void IdentifiedDefFiles_ContainExactlyOneDefAndItIsTheMainAsset()
         {
+            var identified = new HashSet<Type>(DefIdentityContractTests.IdentifiedDefTypes());
             foreach (var asset in IdentityAssets())
             {
                 string path = AssetDatabase.GetAssetPath(asset);
                 Assert.That(AssetDatabase.IsMainAsset(asset), Is.True, path);
+                // Identified types without the Def suffix (InstrumentOffer, VehicleOffer) count as Defs too.
                 var defs = AssetDatabase.LoadAllAssetsAtPath(path).OfType<ScriptableObject>()
                     .Where(value => value.GetType().Name.EndsWith("Def", StringComparison.Ordinal)
-                        || value.GetType() == typeof(HiddenHarbours.Economy.InstrumentOffer)).ToArray();
+                        || identified.Contains(value.GetType())).ToArray();
                 Assert.That(defs.Length, Is.EqualTo(1), path + ": extra Def subassets bypass the identity inventory");
             }
         }
