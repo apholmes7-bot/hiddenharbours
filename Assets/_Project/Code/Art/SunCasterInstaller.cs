@@ -158,6 +158,16 @@ namespace HiddenHarbours.Art
         private static bool IsSilhouetteMask(SpriteRenderer renderer) =>
             renderer.gameObject.name == SilhouetteMaskSource.MaskChildName;
 
+        /// <summary>
+        /// A face cut at the live waterline (<see cref="TidalFaceWaterline"/>: a quay course, a ladder down to
+        /// low water) draws only what stands above the tide, but a sun caster throws its WHOLE sprite from its
+        /// foot, which is under water most of the day: the St Peters ladder laid a slanting ladder across open
+        /// water, uncut, at every tide. The installer gives such a face no caster; one already on it (a builder's
+        /// choice) is left alone, like any existing caster.
+        /// </summary>
+        private static bool StandsInTheTide(SpriteRenderer renderer) =>
+            renderer.TryGetComponent<TidalFaceWaterline>(out _);
+
         /// <summary>Only new or changed candidates evaluate data; a settled pass allocates nothing.</summary>
         public SpriteShadow Consider(SpriteRenderer renderer)
         {
@@ -182,7 +192,7 @@ namespace HiddenHarbours.Art
                 previous.Enabled == renderer.enabled && previous.Active == active) return null;
             var next = new Candidate { Renderer = renderer, Sprite = renderer.sprite, Order = renderer.sortingOrder,
                 Enabled = renderer.enabled, Active = active };
-            if (!IsSilhouetteMask(renderer) && _rules.Qualifies(renderer, out var settings))
+            if (!IsSilhouetteMask(renderer) && !StandsInTheTide(renderer) && _rules.Qualifies(renderer, out var settings))
             {
                 next.Shadow = SpriteShadow.Attach(renderer, settings != null && settings.CastOnWalkingDeck);
                 next.Shadow.CastsGroundContact = settings != null ? settings.CastsGroundContact : _rules.DefaultGroundContact;

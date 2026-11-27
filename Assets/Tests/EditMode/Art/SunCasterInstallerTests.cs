@@ -155,6 +155,28 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.That(premadeShadow.TryGetLampShadowCaster(out _), Is.False, "and is never a lamp-shadow candidate");
         }
 
+        /// <summary>
+        /// A face cut at the live waterline (a ladder down to low water) must not throw its whole uncut sprite
+        /// from a foot under the water: the St Peters ladder laid a slanting ladder across open water at every
+        /// tide. The installer gives it no caster, on a first scan or a later one; the same art without the
+        /// waterline cut still casts, and the by-name exclusions are unchanged.
+        /// </summary>
+        [Test] public void TidalFace_NeverGainsASunCaster_TheSameArtWithoutTheCutStillDoes()
+        {
+            var ladder = Sprite("Fitting_ladder");
+            ladder.gameObject.AddComponent<TidalFaceWaterline>();
+            Assert.That(_host.Consider(ladder), Is.Null, "a face cut by the tide is given no caster");
+            Assert.That(ladder.GetComponent<SpriteShadow>(), Is.Null, "no sun caster was added to it");
+            ladder.sortingOrder += 1;   // a changed candidate is evaluated again
+            Assert.That(_host.Consider(ladder), Is.Null, "nor when it is looked at again");
+            Assert.That(ladder.GetComponent<SpriteShadow>(), Is.Null);
+
+            var dryLadder = Sprite("Fitting_ladder");
+            Assert.That(_host.Consider(dryLadder), Is.Not.Null, "the same art standing on land still casts");
+
+            Assert.That(_rules.ExcludedNames, Does.Contain("WharfPass2Deck"), "the by-name exclusions stand as they were");
+        }
+
         [Test] public void ShadowChildrenAndCanvas_NeverGainCasters()
         {
             var renderer = Sprite("Crate");
