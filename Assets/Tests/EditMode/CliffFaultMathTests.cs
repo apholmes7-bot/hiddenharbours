@@ -135,6 +135,36 @@ namespace HiddenHarbours.Tests
             }
         }
 
+        /// <summary>A crack breaks off and picks up again down one block edge: it never rules a block's whole height,
+        /// which reads as a joint between planks.</summary>
+        [Test]
+        public void ACrackBreaksAlongItsEdge_RunByRun()
+        {
+            CliffFault f = Fault;
+            int brokenEdges = 0, edges = 0;
+            for (int x = -600; x < 600; x++)
+            {
+                int on = 0, off = 0;
+                Vector2 first = default;
+                for (int y = 0; y < 400; y++)
+                {
+                    var cell = new Vector2(x, y);
+                    Vector2 stepped = CliffFaultMath.Stepped(in f, cell);
+                    Vector2 block = CliffFaultMath.BlockOf(in f, stepped);
+                    if (CliffFaultMath.BlockOf(in f, stepped - Vector2.right).x == block.x) continue;   // not an edge
+                    if (on + off == 0) first = block;
+                    if (block != first) break;                                                           // one block's edge
+                    CliffFaultMath.At(in f, cell, out _, out _, out bool crack);
+                    if (crack) on++; else off++;
+                }
+                if (on + off < f.CrackRunTexels * 3) continue;
+                edges++;
+                if (on > 0 && off > 0) brokenEdges++;
+            }
+            Assert.Greater(edges, 10, "no block edge long enough to judge");
+            Assert.Greater(brokenEdges, edges / 3, "cracks rule whole block edges: that is a plank joint");
+        }
+
         [Test]
         public void TheSameCell_IsTheSameAnswer()
         {

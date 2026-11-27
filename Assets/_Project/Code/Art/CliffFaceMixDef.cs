@@ -84,6 +84,17 @@ namespace HiddenHarbours.Art
                  "a sliver on screen and breaks it into shards. x = at or under this, none; y = at or over this, all of " +
                  "it; a smooth step between. (0, 0) = every wall takes all of it.")]
         public Vector2 RoughnessByFacing = Vector2.zero;
+        [Tooltip("A wall whose facing (averaged along its run) is under this is laid on the screen grid: level bedding, " +
+                 "square texels, no shear (owner 11 26: one pixel size on screen). 0 = the lower bound above.")]
+        [Range(0f, 1f)] public float ScreenGridUnderFacing = 0f;
+        [Tooltip("How far either side of a chunk its facing is averaged over, metres of brow, so one continuous wall " +
+                 "takes one mapping and does not flicker chunk to chunk. 0 = each chunk by itself.")]
+        [Min(0f)] public float FacingRunWindowMetres = 0f;
+        [Tooltip("How far a change of mapping may be moved along the run to land on a corner of the outline, metres. " +
+                 "0 = it stays where the average crosses.")]
+        [Min(0f)] public float FacingCornerReachMetres = 0f;
+        [Tooltip("The least turn between two joined chunks that counts as a corner, degrees.")]
+        [Range(0f, 180f)] public float FacingCornerDegrees = 20f;
 
         [Header("Faulted bedding, on walls laid on the screen grid (rough, never plank siding; block 0 = off)")]
         [Tooltip("The blocks the bedding is faulted in, ground texels (32 a metre): x the mean width of a block, y the " +

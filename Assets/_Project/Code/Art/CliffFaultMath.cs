@@ -107,7 +107,10 @@ namespace HiddenHarbours.Art
             Vector2 stepped = Stepped(in f, cell);
             block = BlockOf(in f, stepped);
             Vector2 left = BlockOf(in f, stepped - Vector2.right);
-            crack = left.x != block.x && CliffWaterlineMath.Hash01(block, 26f) < f.CrackShare;
+            // A crack is carried run by run of rows, not block by block: it breaks off and picks up again.
+            float run = Mathf.Floor(cell.y / Mathf.Max(f.CrackRunTexels, 1));
+            crack = left.x != block.x
+                 && CliffWaterlineMath.Hash01(new Vector2(block.x + run, block.y - run), 26f) < f.CrackShare;
             move = new Vector2(
                 Mathf.Floor(CliffWaterlineMath.Hash01(block, 27f) * (f.SlideTexels + 1f)),
                 Mathf.Round((CliffWaterlineMath.Hash01(block, 28f) * 2f - 1f) * f.ThrowTexels));

@@ -314,7 +314,7 @@ namespace HiddenHarbours.Art
             return drops[chunk][Mathf.Clamp(station, 0, drops[chunk].Length - 1)];
         }
 
-        static int JoinedBefore(IReadOnlyList<Vector2[]> brows, int i)
+        public static int JoinedBefore(IReadOnlyList<Vector2[]> brows, int i)
         {
             Vector2 first = brows[i][0];
             for (int k = 0; k < brows.Count; k++)
@@ -323,7 +323,7 @@ namespace HiddenHarbours.Art
             return -1;
         }
 
-        static int JoinedAfter(IReadOnlyList<Vector2[]> brows, int i)
+        public static int JoinedAfter(IReadOnlyList<Vector2[]> brows, int i)
         {
             Vector2 last = brows[i][brows[i].Length - 1];
             for (int k = 0; k < brows.Count; k++)
@@ -711,6 +711,33 @@ namespace HiddenHarbours.Art
         /// </summary>
         public static Vector2 ScreenPlanarUv(Vector2 world, float faceMetresS, float faceMetresT) =>
             new Vector2(TileU(world.x, faceMetresS), TileV(-world.y, faceMetresT));
+
+        /// <summary>How far past a band's true edge its mesh is laid, square to the edge, so every ground cell the edge
+        /// touches is covered: a cell and a half (a cell's centre is under 0.71 of a cell from any point in it).</summary>
+        public const float CellCoverMetres = 1.5f / CliffWaterlineMath.TexelsPerMetre;
+
+        /// <summary>The least sine of the angle between a column and its band's edge the cover is scaled by: a column
+        /// that runs nearly along its edge is moved four covers at most, never a wall's length.</summary>
+        public const float LeastCoverSine = 0.25f;
+
+        /// <summary>A column whose band is shorter than this has no band there, and its edge is not moved.</summary>
+        public const float CollapsedColumnMetres = 1e-4f;
+
+        /// <summary>The share of a cell either side of a band's edge that still counts as inside it, so two bands
+        /// that meet on one line can never both give a cell up to float error. Twin: the shader's band cut.</summary>
+        public const float BandEdgeCellShare = 0.05f;
+
+        /// <summary>
+        /// Whether a ground cell is drawn by a band whose mesh was laid past its edges
+        /// (<see cref="CellCoverMetres"/>): the band's parameter at the cell's CENTRE (0 at the band's top, 1 at its
+        /// foot) is inside the band. <paramref name="bandPerCell"/> is how far the parameter moves across one cell.
+        /// So a cell is wholly drawn or wholly not, and a band's edge steps cell by cell. Pure. Twin: the shader.
+        /// </summary>
+        public static bool CellIsInBand(float bandAtCellCentre, float bandPerCell)
+        {
+            float slack = BandEdgeCellShare * Mathf.Abs(bandPerCell);
+            return bandAtCellCentre >= -slack && bandAtCellCentre < 1f + slack;
+        }
 
         /// <summary>
         /// How many rows to subdivide a face into so the profile displacement has somewhere to land.

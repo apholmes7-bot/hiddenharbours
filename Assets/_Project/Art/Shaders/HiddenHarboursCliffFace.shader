@@ -218,6 +218,11 @@ Shader "HiddenHarbours/CliffFace"
                 // x is the cliff mix's weight at the station's toe (0 the base palette, 1 the variant),
                 // y is 1 when the wall was built with a mix. Absent (zero) on a wall with none.
                 float2 uv3        : TEXCOORD3;
+                // x is the band's own parameter (0 at its top row, 1 at its foot; the mesh is laid a little
+                // past both), y is 1 when the band's edges are cut on the ground's cells. Absent (zero) on a
+                // wall that is not laid on the screen grid, and then nothing is cut.
+                // z is the chunk's own parameter, 0 at its first station and 1 at its last.
+                float3 uv4        : TEXCOORD4;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
@@ -236,6 +241,8 @@ Shader "HiddenHarbours/CliffFace"
                 float2 mix        : TEXCOORD2;
                 // The fragment's place in the world, metres: the ground's texel grid is cut on it.
                 float2 world      : TEXCOORD3;
+                // The band's parameter and its flag, straight from uv4.
+                float3 band       : TEXCOORD4;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
@@ -531,6 +538,7 @@ Shader "HiddenHarbours/CliffFace"
                 OUT.color = IN.color * _Color;
                 OUT.uv = IN.uv;
                 OUT.mix = IN.uv3;
+                OUT.band = IN.uv4;
                 OUT.world = TransformObjectToWorld(IN.positionOS).xy;
 
                 // Resolve the sea ONCE per vertex. It varies along the shore and not down the face, so
@@ -562,6 +570,25 @@ Shader "HiddenHarbours/CliffFace"
                 float2 cellMix       = IN.mix + ddx(IN.mix) * gridS.x + ddy(IN.mix) * gridS.y;
                 float  cellAlpha     = saturate(IN.color.a + ddx(IN.color.a) * gridS.x + ddy(IN.color.a) * gridS.y);
 
+                // A BAND'S EDGES, CUT ON THE CELLS. A wall on the screen grid lays each band a little past its
+                // top and foot; a cell is drawn only when the band's parameter at the cell's CENTRE is inside
+                // the band, so a cell is wholly one band or wholly the next and no edge is a smooth diagonal.
+                // Twin: CliffWallGeometry.CellIsInBand (0.05 is its BandEdgeCellShare).
+                // The chunk's two END edges are cut the same way, by its own parameter (z: 0 at its first
+                // station, 1 at its last), so two chunks that wear different rock meet on cells too.
+                if (IN.band.y > 0.5)
+                {
+                    float2 bandDx   = float2(ddx(IN.band.x), ddy(IN.band.x));
+                    float2 endDx    = float2(ddx(IN.band.z), ddy(IN.band.z));
+                    float  cellBand = IN.band.x + bandDx.x * gridS.x + bandDx.y * gridS.y;
+                    float  cellEnd  = IN.band.z + endDx.x * gridS.x + endDx.y * gridS.y;
+                    float  perPixel = max(length(gridWx) * CLIFF_TEXELS_PER_METRE, 1e-6);
+                    float  slack    = 0.05 * length(bandDx) / perPixel;
+                    float  endSlack = 0.05 * length(endDx) / perPixel;
+                    if (cellBand < -slack || cellBand >= 1.0 + slack) discard;
+                    if (cellEnd < -endSlack || cellEnd >= 1.0 + endSlack) discard;
+                }
+
                 // THE FAULTED BEDDING (see CliffFaultBlock). faceUv is the rock this cell draws: its own, moved
                 // by its block's whole texels. cellUv stays the cell's own, for the mix, the wet foot and the
                 // dissolve, which belong to the wall and not to a block of it.
@@ -576,7 +603,9 @@ Shader "HiddenHarbours/CliffFace"
                     float2 fs    = float2(wc.x + floor(CliffHash(float2(fzone, frun), 25.0) * 3.0) - 1.0, wc.y);
                     float2 fblk  = CliffFaultBlock(fs);
                     float2 fleft = CliffFaultBlock(fs - float2(1.0, 0.0));
-                    faultCrack   = fleft.x != fblk.x && CliffHash(fblk, 26.0) < _FaultB.y;
+                    // A crack is carried run by run of rows, not block by block: it breaks off and picks up again.
+                    faultCrack   = fleft.x != fblk.x
+                                && CliffHash(float2(fblk.x + frun, fblk.y - frun), 26.0) < _FaultB.y;
                     float2 fmove = float2(floor(CliffHash(fblk, 27.0) * (_FaultA.w + 1.0)),
                                           round((CliffHash(fblk, 28.0) * 2.0 - 1.0) * _FaultA.z));
                     faceUv = cellUv + fmove / (float2(_TileMetresS, _TileMetresT) * CLIFF_TEXELS_PER_METRE);

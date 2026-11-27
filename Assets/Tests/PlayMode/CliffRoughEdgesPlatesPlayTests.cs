@@ -160,6 +160,14 @@ namespace HiddenHarbours.Tests.PlayMode
             var log = new StringBuilder();
             log.AppendLine($"St Peters rough-cliff plates '{tag}'. Unity {Application.unityVersion}, {SystemInfo.graphicsDeviceName}.");
             yield return PinTheHour(Noon);
+            // To find which piece of a wall draws a thing: HH_CLIFF_ROUGH_HIDE names child prefixes to leave out.
+            string hide = System.Environment.GetEnvironmentVariable("HH_CLIFF_ROUGH_HIDE");
+            if (!string.IsNullOrEmpty(hide))
+                foreach (CliffWallSurface wall in Object.FindObjectsByType<CliffWallSurface>())
+                    foreach (MeshRenderer r in wall.GetComponentsInChildren<MeshRenderer>())
+                        if (hide.Split(',').Any(h => r.name.StartsWith(h) ||
+                                                      (h == "sheared" && !wall.PlanarFace) ||
+                                                      (h == "planar" && wall.PlanarFace))) r.enabled = false;
             float tideNow = float.NaN;
             foreach (var fr in Frames)
             {
@@ -168,6 +176,19 @@ namespace HiddenHarbours.Tests.PlayMode
                 SavePlate($"{fr.shot}_{tag}.png", Capture());
                 log.AppendLine($"{fr.shot}: camera ({_cam.transform.position.x:0.##}, {_cam.transform.position.y:0.##}), " +
                                $"{_cam.orthographicSize * 2f:0.##} m tall, tide {fr.tide:0.##} m");
+                if (TimedShots.Contains(fr.shot)) log.AppendLine(TimeTheFault(fr.shot));
+                if (!string.IsNullOrEmpty(hide))
+                {
+                    float halfH = _cam.orthographicSize * 0.35f, halfW = halfH * _cam.aspect;
+                    var view = new Bounds(new Vector3(_cam.transform.position.x, _cam.transform.position.y, 0f),
+                                          new Vector3(halfW * 2f, halfH * 2f, 1000f));
+                    foreach (CliffWallSurface wall in Object.FindObjectsByType<CliffWallSurface>())
+                        foreach (MeshRenderer r in wall.GetComponentsInChildren<MeshRenderer>(true))
+                            if (r.name.StartsWith(CliffWallSurface.BandChildPrefix) && r.bounds.Intersects(view))
+                                log.AppendLine($"  [in-view] {wall.name} planar {wall.PlanarFace} {r.name} " +
+                                               $"centre ({r.bounds.center.x:0.#}, {r.bounds.center.y:0.#}) " +
+                                               $"size ({r.bounds.size.x:0.#}, {r.bounds.size.y:0.#}) order {r.sortingOrder}");
+                }
             }
             File.WriteAllText(Path.Combine(PlateDir(), $"plates_{tag}.txt"), log.ToString(), new UTF8Encoding(false));
             Debug.Log("[cliff-rough-plates] " + log);
@@ -237,6 +258,61 @@ namespace HiddenHarbours.Tests.PlayMode
             foreach (CameraFollow f in Object.FindObjectsByType<CameraFollow>())
                 if (f != null && MoodGradeDirector.IsPersistentCamera(f.GetComponent<Camera>())) return f;
             return null;
+        }
+
+        // The frames the faulted bedding's cost is measured on: a wall on the screen grid filling the frame.
+        static readonly string[] TimedShots = { "2-close-steep-east", "1-game-east-wall" };
+        const int TimedRenders = 60;
+        static readonly int FaultBId = Shader.PropertyToID("_FaultB");
+
+        /// <summary>A rough frame time for this frame with the faulted bedding as built and with it switched off on
+        /// every cliff renderer (its property block's flag), whole camera renders, the queue flushed by a read.</summary>
+        string TimeTheFault(string shot)
+        {
+            var faulted = new List<(MeshRenderer r, Vector4 b)>();
+            var block = new MaterialPropertyBlock();
+            foreach (CliffWallSurface wall in Object.FindObjectsByType<CliffWallSurface>())
+                foreach (MeshRenderer r in wall.GetComponentsInChildren<MeshRenderer>())
+                {
+                    r.GetPropertyBlock(block);
+                    Vector4 b = block.GetVector(FaultBId);
+                    if (b.w > 0.5f) faulted.Add((r, b));
+                }
+            void Set(bool on)
+            {
+                foreach ((MeshRenderer r, Vector4 b) in faulted)
+                {
+                    r.GetPropertyBlock(block);
+                    block.SetVector(FaultBId, on ? b : new Vector4(b.x, b.y, b.z, 0f));
+                    r.SetPropertyBlock(block);
+                }
+            }
+            float Ms()
+            {
+                Flush();
+                var watch = System.Diagnostics.Stopwatch.StartNew();
+                for (int i = 0; i < TimedRenders; i++) _cam.Render();
+                Flush();
+                return (float)watch.Elapsed.TotalMilliseconds / TimedRenders;
+            }
+            Ms();                                   // warm
+            float on1 = Ms();
+            Set(false); float off1 = Ms();
+            Set(true); float on2 = Ms();
+            Set(false); float off2 = Ms();
+            Set(true);
+            return $"[cliff-time] {shot}: {faulted.Count} faulted renderers; ms a render at {PlateWidthPx}x{PlateHeightPx}: " +
+                   $"fault on {on1:0.000} and {on2:0.000}, fault off {off1:0.000} and {off2:0.000}";
+        }
+
+        void Flush()
+        {
+            RenderTexture prev = RenderTexture.active;
+            RenderTexture.active = _rt;
+            var one = new Texture2D(1, 1, TextureFormat.RGBAFloat, false, true);
+            one.ReadPixels(new Rect(0, 0, 1, 1), 0, 0);
+            RenderTexture.active = prev;
+            Object.DestroyImmediate(one);
         }
 
         byte[] Capture()
