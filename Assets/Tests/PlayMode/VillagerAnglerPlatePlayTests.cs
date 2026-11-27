@@ -549,6 +549,20 @@ namespace HiddenHarbours.Tests.PlayMode
         private const string GoldenTargetFishId = "fish.mackerel";
         /// <summary>How many target-fish slots the log names as the top.</summary>
         private const int GoldenTopListed = 3;
+        /// <summary>The clip's sea: at or under this the water keeps its own colour (at 0.55 a third of the
+        /// storm-grey preset is blended in, too dim for the clip). The pick takes a played target slot in the
+        /// warm key at this sea first, then a played target slot from <see cref="GoldenClipFallbackFromHour"/>.</summary>
+        private const float GoldenClipMaxSeaState01 = 0.45f;
+        /// <summary>The clip's earliest hour when no warm-key slot at the clip's sea is played (17:20).</summary>
+        private const float GoldenClipFallbackFromHour = 17f + 20f / 60f;
+        /// <summary>How many target-fish slots in the warm key are each tried on his real stand and logged.</summary>
+        private const int GoldenVerdictsListed = 24;
+        /// <summary>An hour of his day outside his angling block (12:00 to 15:00 he is at the slip head with no
+        /// rod). The search seeks here first on each slot's day, so his stand drops the last run's window as it
+        /// does when he walks off the wharf at dusk: a seek from one day's angling block straight into another's
+        /// keeps the old day's window, and no slot of the new day may begin in it.</summary>
+        private const float GoldenOffBlockHour = 13f;
+        private const string GoldenPlayed = "played";
 
         [UnityTest, Timeout(900000)]
         public IEnumerator Plate_TheSurfacedFightAndTheLanding_ClearGoldenHour_HighWater()
@@ -636,9 +650,18 @@ namespace HiddenHarbours.Tests.PlayMode
                     picks.Add((slot, start, vis, sea, level, pickFish.WeightKg, pickFish.FishId, hour, warmKey));
                 }
             }
+            // The clip's tiers: 0 the target in the warm key at the clip's sea; 1 the target from the fallback hour
+            // at the clip's sea; 2 the target anywhere else in the warm key; 3 the rest.
+            int Tier(bool warmKey, string id, float sea, float hour)
+            {
+                bool fish = id == GoldenTargetFishId, calm = sea <= GoldenClipMaxSeaState01;
+                if (fish && warmKey && calm) return 0;
+                if (fish && calm && hour >= GoldenClipFallbackFromHour) return 1;
+                return fish && warmKey ? 2 : 3;
+            }
             picks.Sort((a, b) =>
             {
-                int c = (b.warmKey && b.id == GoldenTargetFishId).CompareTo(a.warmKey && a.id == GoldenTargetFishId);
+                int c = Tier(a.warmKey, a.id, a.sea, a.hour).CompareTo(Tier(b.warmKey, b.id, b.sea, b.hour));
                 if (c != 0) return c;
                 c = b.warmKey.CompareTo(a.warmKey);
                 if (c != 0) return c;
@@ -656,7 +679,7 @@ namespace HiddenHarbours.Tests.PlayMode
             int listed = 0;
             foreach (var p in picks)
             {
-                if (!p.warmKey || p.id != GoldenTargetFishId) break;
+                if (!p.warmKey || p.id != GoldenTargetFishId) continue;
                 if (listed++ >= GoldenTopListed) break;
                 log.AppendLine(string.Format(CultureInfo.InvariantCulture,
                     "    TOP slot {0}: {1:0.###} kg, day {2}, hour {3:0.00}, tide {4:0.00} m, visibility {5:0.00}, sea {6:0.00}",
@@ -691,16 +714,34 @@ namespace HiddenHarbours.Tests.PlayMode
                     p.slot, p.id, p.kg, (int)(p.start / spd), p.hour, p.warmKey ? " (warm key)" : "", p.level, p.vis, p.sea));
             }
 
+            // Every target slot in the warm key, each tried on his real stand (the clip must be a slot the game
+            // plays): the clip's sea first, then the biggest.
+            log.AppendLine(string.Format(CultureInfo.InvariantCulture,
+                "  every {0} slot in the warm key that passed the gates, as his stand plays it (sea at or under {1:0.00} first, up to {2}):",
+                GoldenTargetFishId, GoldenClipMaxSeaState01, GoldenVerdictsListed));
+            int verdicts = 0;
+            foreach (var p in picks)
+            {
+                if (!p.warmKey || p.id != GoldenTargetFishId) continue;
+                if (verdicts++ >= GoldenVerdictsListed) break;
+                string verdict = null;
+                yield return SeekAsHisStandPlays(p.start, p.slot, v => verdict = v);
+                log.AppendLine(string.Format(CultureInfo.InvariantCulture,
+                    "    slot {0}: {1:0.###} kg, day {2}, hour {3:0.00}, tide {4:0.00} m, visibility {5:0.00}, sea {6:0.00}{7}: {8}",
+                    p.slot, p.kg, (int)(p.start / spd), p.hour, p.level, p.vis, p.sea,
+                    p.sea <= GoldenClipMaxSeaState01 ? " (clip sea)" : "", verdict));
+            }
+            if (verdicts == 0) log.AppendLine("    none");
+
             Session s = null;
             for (int i = 0; i < Mathf.Min(TideCandidatesTried, picks.Count) && s == null; i++)
             {
                 var p = picks[i];
-                yield return SeekAndDraw(p.start + 0.5d);
-                if (_basil.Angling == null || !_basil.TryGetAnglerState(out _, out _) || _basil.Beat.Slot != p.slot)
+                string verdict = null;
+                yield return SeekAsHisStandPlays(p.start, p.slot, v => verdict = v);
+                if (verdict != GoldenPlayed)
                 {
-                    log.AppendLine($"slot {p.slot} at hour {_clock.HourOfDay:0.00}: not played by his stand (angling " +
-                                   $"{_basil.Angling != null}, beat slot {_basil.Beat.Slot}, in session {_basil.TryGetAnglerState(out _, out _)}, " +
-                                   $"water casts {_basil.Water.IsSet && _basil.Water.Casts})");
+                    log.AppendLine($"slot {p.slot} at hour {_clock.HourOfDay:0.00}: {verdict}");
                     continue;
                 }
                 GameServices.ShoreCatch.TryPick(_basilAngling.CatchSpotId, seed, key, p.slot, p.start, out ShoreCatch c);
@@ -748,8 +789,28 @@ namespace HiddenHarbours.Tests.PlayMode
                 yield return Reframe(follow, plateHeight);
             }
 
+            // The surfaced fight read frame by frame on the game's own drawer: the first thrash drawn cut at her
+            // waterline, the first dart, the first jump (a fish that does not jump is logged, not failed).
+            double cutAt = double.NaN, dartAt = double.NaN, jumpAt = double.NaN;
+            SurfacedFishDrawer drawer = _angler.Fish;
+            Assert.IsNotNull(drawer, "harness: his presenter has no surfaced-fish drawer");
+            for (double t = s.SurfaceStart; t < s.LandStart; t += StepSeconds)
+            {
+                _clock.SeekTo(t);
+                yield return null;
+                if (!_angler.FishRenderer.enabled || drawer.DrawnFrame == null) continue;
+                bool dart = drawer.Rung?.DartFrames != null && System.Array.IndexOf(drawer.Rung.DartFrames, drawer.DrawnFrame) >= 0;
+                bool cut = drawer.UnderwaterRenderer != null && drawer.UnderwaterRenderer.enabled;
+                if (cut && !dart && !drawer.FishAirborne && double.IsNaN(cutAt) && t >= s.SurfaceStart + 0.3d) cutAt = t;
+                if (dart && double.IsNaN(dartAt)) dartAt = t;
+                if (drawer.FishAirborne && double.IsNaN(jumpAt)) jumpAt = t;
+            }
+            log.AppendLine(string.Format(CultureInfo.InvariantCulture,
+                "surfaced fight {0:0.00}s to {1:0.00}s read on his drawer: first cut thrash {2:0.00}, first dart {3:0.00}, " +
+                "first jump {4:0.00} (jumps drawn {5})", s.SurfaceStart, s.LandStart, cutAt, dartAt, jumpAt, drawer.JumpsDrawn));
+
             // The surfaced fight (early, mid, late), the lift and the landing.
-            var beats = new (string name, double from, double to)[]
+            var beatList = new List<(string name, double from, double to)>
             {
                 ("4a-fight-break", s.SurfaceStart - 0.2d, s.SurfaceStart + 0.3d),
                 ("4-fight", s.SurfaceStart + 0.3d, s.SurfaceStart + 1.2d),
@@ -758,7 +819,10 @@ namespace HiddenHarbours.Tests.PlayMode
                 ("5a-land-lift", s.LandStart - 0.3d, s.LandStart + 0.5d * s.Script.LandLiftSeconds),
                 ("5-land", s.LandStart + s.Script.LandLiftSeconds, s.LandStart + s.Script.LandLiftSeconds + 0.3d),
             };
-            foreach (var (name, from, to) in beats)
+            if (!double.IsNaN(cutAt)) beatList.Add(("4d-thrash-cut", cutAt - 0.3d, cutAt));
+            if (!double.IsNaN(dartAt)) beatList.Add(("4e-dart", dartAt - 0.3d, dartAt));
+            if (!double.IsNaN(jumpAt)) beatList.Add(("4f-jump", jumpAt - 0.3d, jumpAt + 0.06d));
+            foreach (var (name, from, to) in beatList)
             {
                 yield return StepThrough(from, to);
                 Assert.IsTrue(_basil.TryGetAnglerState(out FishingState fs, out _), $"{name}: not in a session");
@@ -850,12 +914,15 @@ namespace HiddenHarbours.Tests.PlayMode
             log.AppendLine(string.Format(CultureInfo.InvariantCulture,
                 "{0}{1}: t {2:0.00}s, hour {3:0.000}, tide {4:0.000} m (drawn {5:0.000}), world height {6:0.###} m, " +
                 "plate {7}x{8}, Basil at px ({9:0},{10:0}) from top-left; fish {11} order {12} (body {13}) at {14}; " +
-                "line ends {15}; held {16}",
+                "line ends {15}; held {16}; frame {17}, cut at her waterline {18}, airborne {19}",
                 GoldenPrefix, name, t, _clock.HourOfDay, GameServices.Environment.WaterLevelAt(t), DrawnSeaLevel(),
                 cam.orthographicSize * 2f, _stage.Width, _stage.Height, vp.x * _stage.Width, (1f - vp.y) * _stage.Height,
                 fish.enabled ? (fish.sprite != null ? fish.sprite.name : "none") : "off", fish.sortingOrder,
                 _basil.GetComponent<SpriteRenderer>().sortingOrder, (Vector2)fish.transform.position,
-                _angler.LineFarEnd, _angler.Land?.Mesh?.Drawing ?? false));
+                _angler.LineFarEnd, _angler.Land?.Mesh?.Drawing ?? false,
+                _angler.Fish?.DrawnFrame != null ? _angler.Fish.DrawnFrame.name : "none",
+                _angler.Fish?.UnderwaterRenderer != null && _angler.Fish.UnderwaterRenderer.enabled,
+                _angler.Fish != null && _angler.Fish.FishAirborne));
             Shoot(GoldenPrefix + name);
         }
 
@@ -1146,6 +1213,29 @@ namespace HiddenHarbours.Tests.PlayMode
                 yield break;
             }
             found(null);
+        }
+
+        /// <summary>
+        /// Seek to <paramref name="slotStart"/> the way the game reaches it: first to an hour of that day outside
+        /// his angling block (<see cref="GoldenOffBlockHour"/>), so his stand drops the last run's window as it
+        /// does when he walks off at dusk, then half a second into the slot. Hands back
+        /// <see cref="GoldenPlayed"/> when his stand is fishing that very slot, else why not.
+        /// </summary>
+        private IEnumerator SeekAsHisStandPlays(double slotStart, long slot, System.Action<string> verdict)
+        {
+            double spd = GameServices.Config.SecondsPerDay;
+            double day = System.Math.Floor(slotStart / spd);
+            yield return SeekAndDraw((day + GoldenOffBlockHour / 24.0) * spd);
+            yield return SeekAndDraw(slotStart + 0.5d);
+            var routine = _basil.GetComponent<VillagerRoutine>();
+            bool inSession = _basil.TryGetAnglerState(out _, out _);
+            if (_basil.Angling == null)
+                verdict($"not angling: block {routine.Pose.BlockIndex}, walking {routine.Pose.Walking}, " +
+                        $"a varied day (beach outing) {routine.IsVariedToday}");
+            else if (!inSession || _basil.Beat.Slot != slot)
+                verdict($"angling, not this slot: beat slot {_basil.Beat.Slot}, in session {inSession}, " +
+                        $"walking {routine.Pose.Walking}, water casts {_basil.Water.IsSet && _basil.Water.Casts}");
+            else verdict(GoldenPlayed);
         }
 
         private IEnumerator SeekAndDraw(double t)

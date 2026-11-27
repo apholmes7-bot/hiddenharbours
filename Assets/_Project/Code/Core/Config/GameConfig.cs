@@ -3814,6 +3814,25 @@ namespace HiddenHarbours.Core
                  "picks the picture).")]
         [Range(0f, 90f)] public float FlankWithinLineDegrees;
 
+        [Tooltip("AT THE SURFACE, IN THE WATER. Cut the thrashing fish at her waterline: the art rows below " +
+                 "it are drawn under the water (tinted by Fish Underwater Tint), the rows above as baked. " +
+                 "The player and every villager angler share it. Off = the frame as baked.")]
+        public bool ThrashCutsAtWaterline;
+        [Tooltip("AT THE SURFACE, IN THE WATER. The same cut for the darting fish. The dart art already " +
+                 "bakes her under the surface, so the ship value is off.")]
+        public bool DartCutsAtWaterline;
+        [Tooltip("AT THE SURFACE, IN THE WATER. Where the waterline sits on her art, in whole art pixels " +
+                 "above the frame's pivot (the pivot is the water-surface point under her body's centre). " +
+                 "Negative lowers it.")]
+        [Range(-16, 16)] public int WaterlineRowsAbovePivot;
+        [Tooltip("AT THE SURFACE, IN THE WATER. The colour the rows under the waterline are multiplied by; " +
+                 "its alpha lets the sea show through them. White at full alpha = no change.")]
+        public Color FishUnderwaterTint;
+        [Tooltip("AT THE SURFACE, CHURN. While she thrashes, a small splash is thrown at her every this many " +
+                 "seconds she has been up (counted on the fight's own clock, never drawn at random). " +
+                 "0 = off.")]
+        [Min(0f)] public float ThrashChurnPeriodSeconds;
+
         /// <summary>The reference feel — a first pass for the owner's plate, not a measured tuning.</summary>
         public static FishFeelSettings Default => new FishFeelSettings
         {
@@ -3863,6 +3882,11 @@ namespace HiddenHarbours.Core
             BigOneMarkColor = new Color(1f, 0.85f, 0.2f, 1f),
             BigOneStrikeHoldSeconds = 0.35f,
             FlankWithinLineDegrees = 30f,
+            ThrashCutsAtWaterline = true,
+            DartCutsAtWaterline = false,
+            WaterlineRowsAbovePivot = 0,
+            FishUnderwaterTint = new Color(0.45f, 0.66f, 0.72f, 0.55f),
+            ThrashChurnPeriodSeconds = 0.9f,
         };
     }
 

@@ -170,7 +170,8 @@ namespace HiddenHarbours.Tests.EditMode
                 Vector2 want = (Vector2)fish.transform.position + mouth * 2f;
                 Assert.AreEqual(want.x, p.LineFarEnd.x, 1e-4f, $"step {i}: line end x is not the drawn mouth at scale 2");
                 Assert.AreEqual(want.y, p.LineFarEnd.y, 1e-4f, $"step {i}: line end y is not the drawn mouth at scale 2");
-                AssertOnTheArt(fish.sprite, (p.LineFarEnd - (Vector2)fish.transform.position) / 2f, $"step {i}");
+                // Drawn cut at her waterline, the mouth is still on the whole frame's art.
+                AssertOnTheArt(FishWaterlineCut.SourceOf(fish.sprite), (p.LineFarEnd - (Vector2)fish.transform.position) / 2f, $"step {i}");
                 Assert.Less(fish.sortingOrder, body.sortingOrder, $"step {i}: she drew over him from beyond his feet");
                 seen.Add(fish.sprite);
             }
@@ -278,10 +279,13 @@ namespace HiddenHarbours.Tests.EditMode
                                                 DartSpeedMps, 1f, 0, scale, out _, out _);
                     Assert.IsTrue(sr.enabled, $"{label} row {row} frame {f}: not drawn");
                     Sprite want = sheet[row * perDir + f];
-                    Assert.AreSame(want, sr.sprite, $"{label} row {row} frame {f}: the drawer drew another frame");
+                    // A thrash is drawn cut at her waterline: the frame it was cut from is the one checked.
+                    Sprite drawn = FishWaterlineCut.SourceOf(sr.sprite);
+                    Assert.AreSame(want, drawn, $"{label} row {row} frame {f}: the drawer drew another frame");
+                    Assert.AreSame(want, drawer.DrawnFrame, $"{label} row {row} frame {f}: the drawer reports another frame");
                     Vector2 local = (end - (Vector2)sr.transform.position) / scale;
-                    AssertOnTheArt(sr.sprite, local, $"{label} row {row} frame {f}");
-                    drawnFrames.Add(sr.sprite);
+                    AssertOnTheArt(drawn, local, $"{label} row {row} frame {f}");
+                    drawnFrames.Add(drawn);
                 }
             }
             Assert.AreEqual(sheet.Length, drawnFrames.Count, $"{label}: the walk missed frames");

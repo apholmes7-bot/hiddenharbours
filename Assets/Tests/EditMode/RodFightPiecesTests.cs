@@ -278,7 +278,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             const float dt = 0.02f, dartMps = 1.2f;
             var sr = Track(new GameObject("SurfacedFish")).AddComponent<SpriteRenderer>();
-            var drawer = new SurfacedFishDrawer(sr);
+            var drawer = new SurfacedFishDrawer(sr) { ThrashChurnPeriodSecondsOverride = 0f };   // jumps only
             var species = new[] { Species(Sitter) };
             FishingState s = Surface(Sitter, 3f, 1f, -1f);
             Assert.IsTrue(drawer.Resolve(in s, species, null, new Facts(), 4.5f));
@@ -354,7 +354,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             const float kg = 3.1f, period = 0.9f, dt = 0.02f;
             var sr = Track(new GameObject("PrimedJumper")).AddComponent<SpriteRenderer>();
-            var drawer = new SurfacedFishDrawer(sr);
+            var drawer = new SurfacedFishDrawer(sr) { ThrashChurnPeriodSecondsOverride = 0f };   // jumps only
             FishingState s = Surface(Jumper, kg, 1f, 0.5f);
             Assert.IsTrue(drawer.Resolve(in s, new[] { Species(Jumper) }, null, new Facts(), 4.5f));
             int seed = SurfacedFishDrawer.FightSeed(Jumper, kg);

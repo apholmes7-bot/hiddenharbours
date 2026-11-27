@@ -308,6 +308,18 @@ namespace HiddenHarbours.Player
         }
 
         /// <summary>
+        /// Which churn period of a thrashing fish <paramref name="surfaceSeconds"/> falls in: 0 for the
+        /// first period after she comes up, then 1, 2, ... A splash is thrown each time it steps up, so
+        /// the first comes one whole period after she surfaces. 0 always (no churn) for a period of 0 or
+        /// less, a NaN clock or a negative one. Pure: the same seconds give the same beat (rule 5).
+        /// </summary>
+        public static long ChurnBeat(double surfaceSeconds, float periodSeconds)
+        {
+            if (!(periodSeconds > 0f) || !(surfaceSeconds > 0d)) return 0;
+            return (long)System.Math.Floor(surfaceSeconds / periodSeconds);
+        }
+
+        /// <summary>
         /// Where the line leaves the rod: the tip of whichever rod is DRAWN this frame. The mesh rod
         /// (ADR 0053) when it draws, else the sprite rod's tip pin. One rod is drawn at a time, so the line
         /// can never hang off the one that is hidden.

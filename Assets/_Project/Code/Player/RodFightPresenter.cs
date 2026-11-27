@@ -537,7 +537,7 @@ namespace HiddenHarbours.Player
             }
             else
             {
-                _fishSr.enabled = false;   // the on-the-line fish never lingers into land/result beats
+                _fish.Hide();   // the on-the-line fish never lingers into land/result beats
             }
 
             if (!ripplesShown) _rippleSr.enabled = false;
@@ -928,6 +928,7 @@ namespace HiddenHarbours.Player
 
         private void RenderShadow(Vector2 entry)
         {
+            _fish.HideUnderwater();   // the deep shadow is drawn whole on her renderer
             FishRungVisual sp = _fish.Rung;
             if (sp == null || sp.ShadowFrames == null || sp.ShadowFrames.Length == 0)
             {
@@ -1091,6 +1092,7 @@ namespace HiddenHarbours.Player
             }
             if (_bobberSr != null) _bobberSr.enabled = false;
             if (_fishSr != null) _fishSr.enabled = false;
+            _fish?.HideUnderwater();
             if (_heldSr != null) _heldSr.enabled = false;
             HideLandMesh();
             if (_rippleSr != null) _rippleSr.enabled = false;

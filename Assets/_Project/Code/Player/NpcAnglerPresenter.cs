@@ -201,7 +201,7 @@ namespace HiddenHarbours.Player
             }
             else
             {
-                _fishSr.enabled = false;
+                _fish.Hide();
                 if ((show & RodElements.FishShadow) != 0)
                     far = _underDrawn ? _underWorld : angler + new Vector2(s.FishOffsetX, s.FishOffsetY);
                 else if (castPath) far = angler + new Vector2(s.CastAimX, s.CastAimY);
@@ -370,6 +370,7 @@ namespace HiddenHarbours.Player
             DrawsLine = false;
             _strand?.Hide();
             if (_fishSr != null) _fishSr.enabled = false;
+            _fish?.HideUnderwater();
             if (_approachSr != null) _approachSr.enabled = false;
             if (_bedShadowSr != null) _bedShadowSr.enabled = false;
             _underDrawn = false;

@@ -124,6 +124,7 @@ namespace HiddenHarbours.Player
         {
             mouth = Vector2.zero;
             if (frame == null) return false;
+            frame = FishWaterlineCut.SourceOf(frame);   // a half cut at her waterline answers as its frame
             if (_mouthBySprite == null) _mouthBySprite = IndexMouths(_species);
             return _mouthBySprite.TryGetValue(frame, out mouth);
         }

@@ -46,9 +46,37 @@ namespace HiddenHarbours.Player
         /// travel-only rows sets 0.</summary>
         public float? FlankWithinLineDegreesOverride { get; set; }
 
+        /// <summary>The seconds between churn splashes while she thrashes. Null, the default, reads
+        /// <c>GameConfig.FishFeel.ThrashChurnPeriodSeconds</c> live; a test that counts only a jump's
+        /// re-entry splashes sets 0.</summary>
+        public float? ThrashChurnPeriodSecondsOverride { get; set; }
+
+        private SpriteRenderer _underSr;   // her rows under the waterline, tinted (made on the first cut)
+        private long _churnBeat;           // the last churn period a splash was thrown for
+
         /// <param name="renderer">The renderer she is drawn on (its owner may share it with the deep
         /// shadow; this drawer only writes it from <see cref="Render"/>).</param>
         public SurfacedFishDrawer(SpriteRenderer renderer) { _sr = renderer; }
+
+        /// <summary>The baked frame drawn last (whole, even when it is drawn cut at her waterline), or null.</summary>
+        public Sprite DrawnFrame { get; private set; }
+
+        /// <summary>The renderer her rows under the waterline are drawn on, or null before the first cut.</summary>
+        public SpriteRenderer UnderwaterRenderer => _underSr;
+
+        /// <summary>Take her out of the picture: the fish and her rows under the water.</summary>
+        public void Hide()
+        {
+            if (_sr != null) _sr.enabled = false;
+            HideUnderwater();
+        }
+
+        /// <summary>Take only her rows under the water away (the owner is about to draw something else on
+        /// her renderer, the deep shadow).</summary>
+        public void HideUnderwater()
+        {
+            if (_underSr != null) _underSr.enabled = false;
+        }
 
         /// <summary>The species entry drawn for the current hook in the owner's table, or −1.</summary>
         public int SpeciesIndex => _speciesIndex;
@@ -98,6 +126,7 @@ namespace HiddenHarbours.Player
                 _fightJumpSeed = FightSeed(next.FishId, next.WeightKg);
                 _jumpStart = double.NegativeInfinity;
                 _jumpSplashed = true;
+                _churnBeat = 0;
                 JumpsDrawn = 0;
                 FishAirborne = false;
             }
@@ -123,6 +152,7 @@ namespace HiddenHarbours.Player
         {
             _jumpStart = double.NegativeInfinity;
             _jumpSplashed = true;
+            _churnBeat = 0;
         }
 
         /// <summary>
@@ -138,6 +168,8 @@ namespace HiddenHarbours.Player
             _jumpStart = double.NegativeInfinity;
             _jumpSplashed = true;
             FishAirborne = false;
+            // The churn due now is taken as already thrown, as the jump's splash is.
+            _churnBeat = RodPresenterMath.ChurnBeat(surfaceSeconds, ChurnPeriod(Feel()));
             if (!_fishJumps || _fightJumpPeriod <= 0f) return;
             if (!FishJumpArc.TryNextJump(_fightJumpSeed, surfaceSeconds, _fightJumpPeriod, out double start)) return;
             _jumpStart = start;
@@ -208,7 +240,7 @@ namespace HiddenHarbours.Player
             _lastFishPos = pos;
 
             FishRungVisual sp = _rung;
-            if (sp == null) { _sr.enabled = false; return pos; }
+            if (sp == null) { Hide(); return pos; }
 
             // SHE CLEARS THE WATER (owner's ruling 2026-09-06), on the same half-sine arc a free fish
             // leaves the water on (FishJumpArc). A cod cannot get here: _fishJumps is her own flag.
@@ -230,7 +262,7 @@ namespace HiddenHarbours.Player
                 perDir = dart ? sp.DartFramesPerDir : sp.ThrashFramesPerDir;
                 mouths = dart ? sp.DartMouthOffsets : sp.ThrashMouthOffsets;
             }
-            if (frames == null || frames.Length == 0) { _sr.enabled = false; return pos; }
+            if (frames == null || frames.Length == 0) { Hide(); return pos; }
 
             // ⚠ The jump strip is played ACROSS its own travel, never on the spot (the rig's
             // MOTION.jump.travel). She carries on the way she was already going.
@@ -247,12 +279,46 @@ namespace HiddenHarbours.Player
             // A jump flies along her travel, so it is drawn on her travel's row; only the fight at the
             // surface is turned side-on to the line.
             int idx = RodPresenterMath.SheetIndex(jumping ? _travelRow : _fishRow, frame, perDir, frames.Length);
-            if (idx < 0 || frames[idx] == null) { _sr.enabled = false; return pos; }
+            if (idx < 0 || frames[idx] == null) { Hide(); return pos; }
 
+            // IN THE WATER AT THE SURFACE: her rows under the waterline are drawn under it, tinted toward the
+            // sea, on her own art grid (FishWaterlineCut). A jump is out of the water and is drawn whole.
+            FishFeelSettings feel = Feel();
+            bool cuts = !jumping && (dart ? feel.DartCutsAtWaterline : feel.ThrashCutsAtWaterline);
+            Sprite baked = frames[idx];
+            DrawnFrame = baked;
             _sr.transform.position = new Vector3(pos.x, pos.y + lift, 0f);
-            _sr.sprite = frames[idx];
+            if (cuts && FishWaterlineCut.TrySplit(baked, feel.WaterlineRowsAbovePivot, out Sprite above, out Sprite below))
+            {
+                _sr.sprite = above;
+                SpriteRenderer under = EnsureUnderwater();
+                under.sprite = below;
+                under.color = feel.FishUnderwaterTint;
+                under.sortingLayerID = _sr.sortingLayerID;
+                under.sortingOrder = sortingOrder;   // her two halves share no pixel, so one order serves both
+                under.enabled = true;
+            }
+            else
+            {
+                _sr.sprite = baked;
+                HideUnderwater();
+            }
             _sr.sortingOrder = sortingOrder;
             _sr.enabled = true;
+
+            // THE CHURN: while she thrashes, a small splash at her on the fight's own clock. A jump's re-entry
+            // splash, due this frame, wins.
+            if (!splashDue && !jumping && !dart)
+            {
+                long beat = RodPresenterMath.ChurnBeat(surfaceSeconds, ChurnPeriod(feel));
+                if (beat < _churnBeat) _churnBeat = beat;   // a fresh fight's clock started again
+                else if (beat > _churnBeat)
+                {
+                    _churnBeat = beat;
+                    splashDue = true;
+                    splashAt = pos;
+                }
+            }
 
             // The line follows her UP — the mouth anchor rides the same lift the sprite does.
             Vector2 mouth = pos + new Vector2(0f, lift);
@@ -316,6 +382,28 @@ namespace HiddenHarbours.Player
         /// never drawn — so the jumps replay (rule 5).
         /// </summary>
         public static int FightSeed(string fishId, float weightKg) => FishFightSeed.For(fishId, weightKg);
+
+        private float ChurnPeriod(in FishFeelSettings feel) =>
+            ThrashChurnPeriodSecondsOverride ?? feel.ThrashChurnPeriodSeconds;
+
+        private static FishFeelSettings Feel()
+        {
+            GameConfig config = GameServices.Config;
+            return config != null ? config.FishFeel : FishFeelSettings.Default;
+        }
+
+        /// <summary>The renderer for her rows under the waterline: a child of hers, so it rides her position
+        /// and her owner's draw scale, on her material.</summary>
+        private SpriteRenderer EnsureUnderwater()
+        {
+            if (_underSr != null) return _underSr;
+            var go = new GameObject("UnderTheWaterline");
+            go.transform.SetParent(_sr.transform, false);
+            _underSr = go.AddComponent<SpriteRenderer>();
+            _underSr.sharedMaterial = _sr.sharedMaterial;
+            _underSr.enabled = false;
+            return _underSr;
+        }
 
         private float FlankWithinLineDegrees()
         {
