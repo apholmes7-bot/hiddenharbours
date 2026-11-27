@@ -2196,9 +2196,8 @@ Shader "HiddenHarbours/Water"
             // THE ART GRID's screen gradients: d(world)/d(screen px) of the UNSNAPPED fragment, set once at the
             // top of frag. Once worldXY is snapped to the art cell its own ddx/ddy are 0 inside a cell and a whole
             // cell at its edges, so a texture read that picked its mip from them would jump a level at every art
-            // pixel edge. The painted reads take these as explicit gradients instead.
-            static float2 hhWorldDx = float2(0.0, 0.0);
-            static float2 hhWorldDy = float2(0.0, 0.0);
+            // pixel edge. The painted reads take these as explicit gradients instead. hhWorldDx and hhWorldDy are
+            // declared once in the caustic include above, so its vein reads and the sea's share one pair.
 
             // sigma (1/m, per channel) = ONE mood-eased turbidity scalar x the fixed per-channel ratio.
             // Factoring it this way is what lets ADR 0017 ease turbidity per weather through a FLOAT in

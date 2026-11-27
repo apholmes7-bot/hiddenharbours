@@ -6613,7 +6613,9 @@ One pixel size on screen for everything: the sea now changes colour only on art-
   (`(floor(worldXY * ppu) + 0.5) / ppu`), so the drawn shore edge, the wet film, the foam and the swell
   step on art-pixel edges. Texture reads that took an implicit mip read level 0 (height, seabed, foam
   buffer, depth ramp, curl hand-off) or explicit gradients from the UNSNAPPED position (the painted
-  untile reads, the shallows floor). The object reflection reads its screen texel from the snapped cell's
+  untile reads, the shallows floor). The gradient pair lives in `Include/CausticPattern.hlsl`, so the
+  caustic veins' painted reads, the sea's and the hull's alike, take the same gradients and keep the sea's
+  arithmetic (`HullCausticLightingTests`); the hull sets them from its unsnapped caustic point. The object reflection reads its screen texel from the snapped cell's
   centre. 0 = the older per-screen-pixel read.
 - **The shore foam's tones: snapped strokes, never dither.** The shore line and the wash residue keep
   their lace shape, extent and motion, read at the art cell's

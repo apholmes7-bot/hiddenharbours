@@ -26,7 +26,9 @@ namespace HiddenHarbours.Tests.EditMode
         const string WaterPath = "Assets/_Project/Art/Shaders/HiddenHarboursWater.shader";
         const string AdvectPath = "Assets/_Project/Art/Shaders/HiddenHarboursFoamBufferAdvect.shader";
         const string Dial = "_SurfFringeSequenceStrength";
-        const string BaseWaterHash = "a86f28a4558ec4383e463b9eb362f13e254f1d126312f99a4c45aa925f9ed5e9";
+        const string BaseWaterHash = "27c5a9d2bedf6ea5dc6db9dbcf4e7937638d062f6d282cfc2822a096c2f070cb";
+        // Re-approved at the shared art-grid gradients (fix/water-on-the-art-grid): hhWorldDx and hhWorldDy move into the
+        // caustic include so its vein reads take the same explicit gradients as the sea's; only that declaration moved.
         // Re-approved at the sea on the art grid (fix/water-on-the-art-grid, the no-mixels ruling of 11-26): the fragment
         // shades at the art cell's centre behind _ArtGridSnap, the implicit-mip reads read level 0 or explicit gradients
         // from the true world point, the shore foam's coverage and the wet film go to hard-threshold tones (ShoreToneHard, no dither),

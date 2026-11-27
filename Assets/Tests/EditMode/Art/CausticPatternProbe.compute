@@ -4,6 +4,7 @@
 #define TEXTURE2D_PARAM(tex, smp) Texture2D tex, SamplerState smp
 #define TEXTURE2D_ARGS(tex, smp) tex, smp
 #define SAMPLE_TEXTURE2D(tex, smp, uv) tex.SampleLevel(smp, uv, 0)
+#define SAMPLE_TEXTURE2D_GRAD(tex, smp, uv, dx, dy) tex.SampleLevel(smp, uv, 0)
 float _PixelsPerUnit, _NoiseScale, _BandScaleResponse, _Chop, _Flow;
 float _CausticScale, _PaintScale, _UntileStrength, _CausticTexStrength;
 float4 _HHHullCausticOptics;
