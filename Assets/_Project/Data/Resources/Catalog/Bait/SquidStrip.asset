@@ -19,6 +19,7 @@ MonoBehaviour:
   FavorsSpeciesIds:
   - fish.atlantic_cod
   - fish.pollock
+  - fish.striped_bass
   Catalog:
     Listed: 0
     Section: 5

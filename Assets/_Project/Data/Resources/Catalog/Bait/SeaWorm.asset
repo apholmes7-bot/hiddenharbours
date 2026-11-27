@@ -19,6 +19,8 @@ MonoBehaviour:
   FavorsSpeciesIds:
   - fish.haddock
   - fish.atlantic_cod
+  - fish.rainbow_smelt
+  - fish.winter_flounder
   Catalog:
     Listed: 0
     Section: 5
