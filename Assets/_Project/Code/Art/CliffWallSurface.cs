@@ -298,7 +298,9 @@ namespace HiddenHarbours.Art
         private static readonly int IdTileMetresT = Shader.PropertyToID("_TileMetresT");
         private static readonly int IdPxDecal = Shader.PropertyToID("_PxDecal");
         private static readonly int IdBaseTexelScale = Shader.PropertyToID("_BaseTexelScale");
-        private static readonly int IdPaletteVariant = Shader.PropertyToID("_PaletteVariant");
+        private static readonly int IdFaultA = Shader.PropertyToID("_FaultA");
+        private static readonly int IdFaultB = Shader.PropertyToID("_FaultB");
+        private static readonly int IdPaletteVariant =Shader.PropertyToID("_PaletteVariant");
         private static readonly int IdVariantOn = Shader.PropertyToID("_VariantOn");
         private static readonly int IdVariantBlock = Shader.PropertyToID("_VariantBlock");
         private static readonly int IdVariantFaceOn = Shader.PropertyToID("_VariantFaceOn");
@@ -1204,7 +1206,7 @@ namespace HiddenHarbours.Art
             float elevationValid = HasToeElevations ? 1f : 0f;
             CliffWallMeshData m = TurfLipMesh(columns, lip.StripMetresS, lip.InlandMetres, lip.FaceMetres,
                                               _alongOffsetMetres, _faceMetresS, ProfileAt, elevationValid,
-                                              transform.position, _ribWarp, _jag);
+                                              transform.position, _ribWarp, _jag, lip.RiserFadeMetres);
             Emit(TurfLipChildName, m.Verts, m.Uvs, m.Tris, lip.Strip, null, null, localOrder: 1,
                  m.ElevationUv, m.SeaPlanUv, decal: true, m.Colors);
         }
@@ -1222,7 +1224,8 @@ namespace HiddenHarbours.Art
                                                     float faceMetres, float alongOffsetMetres, float faceMetresS,
                                                     System.Func<float, float, float> displacement,
                                                     float elevationValid, Vector3 origin,
-                                                    CliffRibWarp ribWarp = default, CliffJag jag = default)
+                                                    CliffRibWarp ribWarp = default, CliffJag jag = default,
+                                                    float riserFadeMetres = 0f)
         {
             CliffWallSample[] samples = columns.Whole;
             int stations = samples.Length;
@@ -1233,6 +1236,9 @@ namespace HiddenHarbours.Art
             var colors = new Color[verts.Length];
             float stripMetresT = inlandMetres + faceMetres;
             float along = 0f;
+            // For the riser fade below: each station's pushed distance, and how far across the screen a push shows.
+            float[] pushed = riserFadeMetres > 0f ? new float[stations] : null;
+            float[] across = riserFadeMetres > 0f ? new float[stations] : null;
 
             for (int c = 0; c < stations; c++)
             {
@@ -1247,9 +1253,15 @@ namespace HiddenHarbours.Art
                 Vector2 at = columns.AlongBrow[c];
                 float uRelief = CliffWallGeometry.TileU(ribWarp.IsOff ? metres : metres + CliffRibWarpMath.ShiftMetres(in ribWarp, at), faceMetresS);
                 Vector2 outward = CliffWallGeometry.OutwardPlan(in s);
-                Vector2 line = s.BrowPlan + outward * CliffJagMath.Outward(
+                float push = CliffJagMath.Outward(
                     in jag, displacement(uRelief, 0f), CliffRibWarpMath.DepthGain(in ribWarp, at),
                     CliffJagMath.FacingGain(in jag, outward, down), uRelief * faceMetresS, 0f);
+                Vector2 line = s.BrowPlan + outward * push;
+                if (pushed != null)
+                {
+                    pushed[c] = push;
+                    across[c] = CliffJagMath.AcrossTheColumn(in jag, outward, down);
+                }
                 float keep = KeepAt(columns, c);
                 float clip = ClipAt(columns, c);
                 float shown = Mathf.Min(faceMetres, drawn * Mathf.Min(keep, clip));
@@ -1275,6 +1287,22 @@ namespace HiddenHarbours.Art
                     colors[idx] = new Color(1f, 1f, 1f, a);
                 }
             }
+
+            // ⭐ THE RISER FADE. Where the jag steps the brow line and the wall faces across the screen, the step's
+            // riser is seen side on and the rigid strip laid over it is a wedge of turf hanging into the rock. The
+            // lip dissolves out at the two stations of such a step (alpha, so the shader crumbles it in pixels) and
+            // the wall's own top edge is the brow there. A wall at full facing has no riser to see and is untouched.
+            if (pushed != null)
+                for (int c = 0; c < stations; c++)
+                {
+                    float step = Mathf.Max(c > 0 ? Mathf.Abs(pushed[c] - pushed[c - 1]) : 0f,
+                                           c + 1 < stations ? Mathf.Abs(pushed[c + 1] - pushed[c]) : 0f);
+                    float seen = step * across[c];
+                    if (seen <= 0f) continue;
+                    float kept = 1f - Mathf.SmoothStep(0f, 1f, seen / riserFadeMetres);
+                    colors[c * 2].a *= kept;
+                    colors[c * 2 + 1].a *= kept;
+                }
 
             return Laid(columns, 1, verts, uvs, elevationUv, seaPlanUv, colors);
         }
@@ -1878,6 +1906,10 @@ namespace HiddenHarbours.Art
                 _mpb.SetTexture(IdNormalVariant, face.Normal);
                 _mpb.SetTexture(IdMaskVariant, face.Mask);
             }
+            // The faulted bedding: only on a face band laid on the screen grid, only with the mix's numbers.
+            CliffFault fault = CliffFault.From(_mix);
+            _mpb.SetVector(IdFaultA, fault.ShaderA);
+            _mpb.SetVector(IdFaultB, fault.ShaderB(_planarFace && !decal));
             _mpb.SetFloat(IdWallAzimuth, _wallAzimuth);
             _mpb.SetFloat(IdBatter, _batter);
             _mpb.SetVector(IdBakeL, new Vector4(_bakeLight.x, _bakeLight.y, _bakeLight.z, 0f));

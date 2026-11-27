@@ -85,6 +85,13 @@ namespace HiddenHarbours.Art
         [Tooltip("Alpha of the undercut, near the mat and far from it, 0 to 255.")]
         public Vector2Int ShadeAlpha = new Vector2Int(190, 110);
 
+        [Header("On the wall")]
+        [Tooltip("Where the rough edges step the brow line on a wall that faces across the screen, the step's riser is " +
+                 "seen side on and the lip laid over it is a wedge of turf in the rock. A step seen this many metres " +
+                 "across dissolves the lip out there altogether; smaller steps keep part of it. 0 = never (the lip " +
+                 "follows every step). A wall that faces down the screen has no riser to see and is untouched.")]
+        [Min(0f)] public float RiserFadeMetres = 0f;
+
         [TextArea] public string Why = "";
 
         /// <summary>Metres of shore one strip covers before it repeats.</summary>

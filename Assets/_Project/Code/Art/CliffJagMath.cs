@@ -115,6 +115,19 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
+        /// How much of an outward push is seen ACROSS a station's drawn column, 0 to 1: the sine of the angle whose
+        /// cosine <see cref="FacingGain"/> measures. 0 on a wall at or over the region's upper facing bound (a push
+        /// there slides along the column and a step in the brow has no riser to see), and 0 with no bounds set. Pure.
+        /// </summary>
+        public static float AcrossTheColumn(in CliffJag jag, Vector2 outwardPlan, Vector2 drawnDown)
+        {
+            float full = jag.Facing.y;
+            if (full <= 0f) return 0f;
+            float alignment = Mathf.Abs(Vector2.Dot(outwardPlan, drawnDown));
+            return alignment >= full ? 0f : Mathf.Sqrt(Mathf.Max(0f, 1f - alignment * alignment));
+        }
+
+        /// <summary>
         /// The whole plan displacement at a point of a station, metres outward: the kit profile's
         /// (<paramref name="profileMetres"/>) at the rib warp's gain, plus the jag, each held back by the station's
         /// <paramref name="facing"/> gain (the warp's gain goes to 1, the profile and the jag to nothing), and the

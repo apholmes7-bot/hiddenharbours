@@ -48,6 +48,55 @@ namespace HiddenHarbours.Tests
             Assert.IsTrue(moved, "the lip did not follow the jag at all");
         }
 
+        // A wall whose brows run up the screen and whose toes lie east of them: it faces across the screen.
+        static CliffWallSample[] EastWall(int n, float drop)
+        {
+            var s = new CliffWallSample[n];
+            for (int i = 0; i < n; i++)
+            {
+                var brow = new Vector2(0f, i * 0.5f);
+                s[i] = new CliffWallSample(brow, brow + new Vector2(1.5f, 0f), drop);
+            }
+            return s;
+        }
+
+        // One step in the brow line, half a metre out, a quarter of the way down the tile.
+        static float OneStep(float u, float t) => u > 0.25f ? 0.5f : 0f;
+
+        [Test]
+        public void OnAWallAcrossTheScreen_TheLipDissolvesAtAStepInTheBrow_AndNowhereElse()
+        {
+            var jag = new CliffJag(0f, 0f, Vector3.zero, Vector3.zero, 0f, 1, new Vector2(0.9f, 0.95f));
+            CliffWallColumns columns = CliffWallSurface.Unsliced(EastWall(24, 6f));
+            CliffWallMeshData plain = CliffWallSurface.TurfLipMesh(columns, StripS, Inland, Face, 0f, 12f, OneStep, 1f,
+                                                                   Vector3.zero, default, jag, 0f);
+            CliffWallMeshData faded = CliffWallSurface.TurfLipMesh(columns, StripS, Inland, Face, 0f, 12f, OneStep, 1f,
+                                                                   Vector3.zero, default, jag, 0.25f);
+            CollectionAssert.AreEqual(plain.Verts, faded.Verts, "the fade moves no vertex");
+            int dropped = 0;
+            for (int c = 0; c < 24; c++)
+            {
+                float was = plain.Colors[c * 2].a, now = faded.Colors[c * 2].a;
+                Assert.AreEqual(now, faded.Colors[c * 2 + 1].a, "a station's two vertices fade together");
+                if (now < was - 0.5f) dropped++;
+                else Assert.AreEqual(was, now, $"station {c}: the lip faded away from any step");
+            }
+            Assert.AreEqual(2, dropped, "the lip must dissolve at the two stations of the step, and only there");
+        }
+
+        [Test]
+        public void OnAWallDownTheScreen_TheRiserFadeChangesNothing()
+        {
+            var jag = new CliffJag(0f, 0f, Vector3.zero, Vector3.zero, 0f, 1, new Vector2(0.9f, 0.95f));
+            CliffWallColumns columns = CliffWallSurface.Unsliced(Wall(24, 6f));
+            CliffWallMeshData plain = CliffWallSurface.TurfLipMesh(columns, StripS, Inland, Face, 0f, 12f, OneStep, 1f,
+                                                                   Vector3.zero, default, jag, 0f);
+            CliffWallMeshData faded = CliffWallSurface.TurfLipMesh(columns, StripS, Inland, Face, 0f, 12f, OneStep, 1f,
+                                                                   Vector3.zero, default, jag, 0.25f);
+            CollectionAssert.AreEqual(plain.Verts, faded.Verts);
+            CollectionAssert.AreEqual(plain.Colors, faded.Colors, "a south wall has no riser to see: its lip is untouched");
+        }
+
         [Test]
         public void AShortFaceCutsTheStrip_ItDoesNotSqueezeIt()
         {

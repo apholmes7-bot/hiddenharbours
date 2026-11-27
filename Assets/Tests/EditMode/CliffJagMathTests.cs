@@ -45,7 +45,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(0f, cos(0.35f), 1e-4f, "on the bound");
             Assert.That(cos(0.31f), Is.LessThan(0.05f), "the steep east bank, just under it");
             Assert.That(cos(0.1f), Is.GreaterThan(0.2f).And.LessThan(cos(0.75f)));
-            var stPeters = new CliffJag(0.35f, 0.45f, Vector3.one, Vector3.one, 1f, 6, new Vector2(0.7f, 0.8f));
+            var stPeters = new CliffJag(0.35f, 0.45f, Vector3.one, Vector3.one, 1f, 6, new Vector2(0.86f, 0.93f));
             Assert.AreEqual(1f, CliffJagMath.FacingGain(in stPeters,
                                                         east, new Vector2(0.58f, -Mathf.Sqrt(1f - 0.58f * 0.58f))), 1e-6f,
                             "St Peters' steep east wall (0.56 to 0.6) is rough again");

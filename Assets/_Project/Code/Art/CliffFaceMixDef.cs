@@ -85,6 +85,25 @@ namespace HiddenHarbours.Art
                  "it; a smooth step between. (0, 0) = every wall takes all of it.")]
         public Vector2 RoughnessByFacing = Vector2.zero;
 
+        [Header("Faulted bedding, on walls laid on the screen grid (rough, never plank siding; block 0 = off)")]
+        [Tooltip("The blocks the bedding is faulted in, ground texels (32 a metre): x the mean width of a block, y the " +
+                 "mean height of a tier of them. Widths and heights vary from the cell (CliffFaultMath). (0, 0) = off: " +
+                 "the bedding runs the wall in level courses.")]
+        public Vector2 FaultBlockTexels = Vector2.zero;
+        [Tooltip("The most a block's bedding is thrown up or down against its neighbours, whole texels.")]
+        [Min(0)] public int FaultThrowTexels = 0;
+        [Tooltip("The most a block's rock is slid along its bedding, whole texels: each block shows a different stretch " +
+                 "of the painted rock, so course heights differ from block to block.")]
+        [Min(0)] public int FaultSlideTexels = 0;
+        [Tooltip("How many rows a crack at a block edge runs before it may step a texel left or right.")]
+        [Min(1)] public int FaultCrackRunTexels = 4;
+        [Tooltip("The share of block edges that carry a one-texel crack, 0 to 1.")]
+        [Range(0f, 1f)] public float FaultCrackShare = 0f;
+        [Tooltip("The step a block's facing snaps to for its shade, degrees: each block is lit as one of the two " +
+                 "nearest steps, so tone changes block by block and not on the straight line between two chunks. " +
+                 "0 = every chunk lit at its own facing.")]
+        [Range(0f, 90f)] public float FaultFacetDegrees = 0f;
+
         [TextArea] public string Why = "";
 
         /// <summary>True when the mix draws anything: a variant skin with a palette and a share above zero.</summary>

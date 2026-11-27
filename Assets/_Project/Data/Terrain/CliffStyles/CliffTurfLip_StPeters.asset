@@ -51,6 +51,7 @@ MonoBehaviour:
   Stone: '#8a8478'
   ShadeColour: '#160d0a'
   ShadeAlpha: {x: 190, y: 110}
+  RiserFadeMetres: 0.9
   Why: 'Owner 11 26: the clifftop was the weakest part of the shore: the brow strip
     stretched its grass, mixed texel sizes with the ground, and did not read as turf
     growing over and hanging off a ledge. This strip is generated at the ground''s
