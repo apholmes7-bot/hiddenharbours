@@ -379,11 +379,12 @@ namespace HiddenHarbours.Tests.EditMode
                     Assert.Fail($"{what}: a triangle at uv ({cu:F5}, {cv:F5}) lies in none {old.Name} drew");
 
                 int oa = before.Tris[3 * best], ob = before.Tris[3 * best + 1], oc = before.Tris[3 * best + 2];
+                double outside = OutsideWithin(before.Uvs[oa], before.Uvs[ob], before.Uvs[oc]);
                 foreach (int k in new[] { i0, i1, i2 })
                 {
                     Vector2 uv = now.Uvs[k];
                     Bary(uv.x, uv.y, before.Uvs[oa], before.Uvs[ob], before.Uvs[oc], out double la, out double lb, out double lc);
-                    if (Math.Min(la, Math.Min(lb, lc)) < -BaryWithin)
+                    if (Math.Min(la, Math.Min(lb, lc)) < -outside)
                         Assert.Fail($"{what}: a corner at uv {uv} falls outside the triangle of {old.Name} its triangle lies in");
                     double x = la * before.Verts[oa].x + lb * before.Verts[ob].x + lc * before.Verts[oc].x + old.Origin.x;
                     double y = la * before.Verts[oa].y + lb * before.Verts[ob].y + lc * before.Verts[oc].y + old.Origin.y;
@@ -413,6 +414,23 @@ namespace HiddenHarbours.Tests.EditMode
             return judged;
         }
 
+        /// <summary>
+        /// How far outside the old triangle (a, b, c) a piece's corner may fall, as a share of that triangle:
+        /// <see cref="BaryWithin"/>, or the share that <see cref="TilesWithin"/> (the bar a texture may slide by) is of
+        /// the triangle's shortest height, whichever is more. v counts drawn metres added up row by row, so a piece's v
+        /// carries the float rounding of every row above it (a piece counts its u from its own start, and reads the
+        /// profile a few millionths of a tile from where the whole wall read it). Measured at SE_steep_220: 2.4
+        /// millionths of a tile, 0.03 mm of rock, which is 0.00105 of an old triangle 29 mm tall. A share alone would
+        /// fail that; a slide of a tenth of the bar is not a slide.
+        /// </summary>
+        static double OutsideWithin(Vector2 a, Vector2 b, Vector2 c)
+        {
+            double longest = Math.Sqrt(Math.Max(Sq((double)b.x - a.x) + Sq((double)b.y - a.y),
+                             Math.Max(Sq((double)c.x - b.x) + Sq((double)c.y - b.y), Sq((double)a.x - c.x) + Sq((double)a.y - c.y))));
+            double shortestHeight = longest > 0.0 ? 2.0 * Area(a, b, c) / longest : 0.0;
+            return shortestHeight > 0.0 ? Math.Max(BaryWithin, TilesWithin / shortestHeight) : BaryWithin;
+        }
+
         /// <summary>Each of <paramref name="before"/>'s triangles (but those beside a moved top, and those that draw
         /// nothing) covered once by the pieces' triangles that lie in it.</summary>
         static void AssertCovered(Wall old, CliffWallMeshData before, bool[] moved, double[] covered, string what)
@@ -422,9 +440,12 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 int gap = t / (rows * 2);
                 if (moved[gap]) continue;
-                double area = Area(before.Uvs[before.Tris[3 * t]], before.Uvs[before.Tris[3 * t + 1]], before.Uvs[before.Tris[3 * t + 2]]);
+                Vector2 a = before.Uvs[before.Tris[3 * t]], b = before.Uvs[before.Tris[3 * t + 1]], c = before.Uvs[before.Tris[3 * t + 2]];
+                double area = Area(a, b, c);
                 if (area < DegenerateTiles2) continue;
-                if (!(Math.Abs(covered[t] - area) <= 1e-3 * area + DegenerateTiles2))
+                // The same bar as a corner's (OutsideWithin): a share of the triangle, or the area a slide of
+                // TilesWithin sweeps across it, whichever is more.
+                if (!(Math.Abs(covered[t] - area) <= OutsideWithin(a, b, c) * area + DegenerateTiles2))
                     Assert.Fail($"{old.Name}'s {what}: the triangle between {old.At(gap)} and {old.At(gap + 1)}, row " +
                                 $"{t / 2 % rows}, is covered {covered[t] / area:P3} by the pieces cut from it: a hole or an overlap");
             }
@@ -693,7 +714,8 @@ namespace HiddenHarbours.Tests.EditMode
                          : 1f;
                 if (t1 < t0) t1 = t0;
 
-                Vector2 top = default;
+                Vector2 above = default;
+                float drawnMetres = 0f;
                 for (int r = 0; r <= rows; r++)
                 {
                     float t = Mathf.Lerp(t0, t1, (float)r / rows);
@@ -701,10 +723,11 @@ namespace HiddenHarbours.Tests.EditMode
 
                     int idx = c * (rows + 1) + r;
                     verts[idx] = new Vector3(p.x - origin.x, p.y - origin.y, 0f);
-                    // v counts DRAWN metres down the column from the band's top (owner 11 26, no mixels: a face
-                    // texel is square on screen and the ground's size), no longer surface metres.
-                    if (r == 0) top = p;
-                    uvs[idx] = new Vector2(u, CliffWallGeometry.TileV(CliffWallGeometry.DrawnMetres(top, p), faceMetresT));
+                    // v counts DRAWN metres down the column from the band's top, row by row (owner 11 26, no mixels:
+                    // a face texel is square on screen and the ground's size), no longer surface metres.
+                    drawnMetres = r == 0 ? 0f : CliffWallGeometry.DrawnMetres(drawnMetres, above, p);
+                    above = p;
+                    uvs[idx] = new Vector2(u, CliffWallGeometry.TileV(drawnMetres, faceMetresT));
                     elevationUv[idx] = new Vector2(
                         CliffWaterlineMath.ElevationAt(s.ToeElevation + s.DropMetres, s.DropMetres, t),
                         elevationValid);

@@ -692,14 +692,17 @@ namespace HiddenHarbours.Art
 
         /// <summary>
         /// ⭐ <b>What a face's v counts: DRAWN metres down its column</b>, from the band's own top vertex
-        /// to this one, in a straight line. The owner's ruling of 2026-11-26 (no mixels: a face texel is square and the size of the
-        /// ground's on screen) overrides the kit's "v counts SURFACE metres": a face is drawn foreshortened by the
-        /// camera's tilt and pushed about by its profile, and surface metres laid on that column are texels shorter
-        /// or longer than the meadow's beside them. Measured between the laid vertices, so it reads the same however
-        /// many rows a column is cut into, and a displaced row keeps the texels it is drawn over. Pure.
+        /// to this one, added up row by row along the laid vertices. The owner's ruling of 2026-11-26 (no mixels: a
+        /// face texel is square and the size of the ground's on screen) overrides the kit's "v counts SURFACE
+        /// metres": a face is drawn foreshortened by the camera's tilt and pushed about by its profile, and surface
+        /// metres laid on that column are texels shorter or longer than the meadow's beside them. Added up along the
+        /// column and not taken straight from the top, so v never runs backward: where the relief folds a short
+        /// column back toward its top a straight distance would shrink again and the rock would be drawn mirrored.
+        /// <paramref name="soFar"/> is the row above's count (0 at the band's top), <paramref name="above"/> its
+        /// vertex. Pure.
         /// </summary>
-        public static float DrawnMetres(Vector2 bandTop, Vector2 vertex) =>
-            Vector2.Distance(bandTop, vertex);
+        public static float DrawnMetres(float soFar, Vector2 above, Vector2 vertex) =>
+            soFar + Vector2.Distance(above, vertex);
 
         /// <summary>
         /// How many rows to subdivide a face into so the profile displacement has somewhere to land.

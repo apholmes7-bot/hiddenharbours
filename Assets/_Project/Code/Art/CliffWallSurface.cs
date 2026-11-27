@@ -406,8 +406,14 @@ namespace HiddenHarbours.Art
                 // blocker stands on the foot that is drawn.
                 float metres = _alongOffsetMetres + arc;
                 if (!warp.IsOff) metres += CliffRibWarpMath.ShiftMetres(in warp, alongBrow[i]);
-                outward[i] = DisplacementAt(CliffWallGeometry.TileU(metres, _faceMetresS), 1f) *
-                             CliffRibWarpMath.DepthGain(in warp, alongBrow[i]);
+                Vector2 push = CliffWallGeometry.OutwardPlan(in samples[i]);
+                float facing = CliffJagMath.FacingGain(in _jag, push, CliffWallGeometry.DrawnDown(
+                    samples[i].BrowPlan, CliffWallGeometry.ToeScreen(in samples[i])));
+                // (The jag is read at the tile coordinate turned back into metres, the very number the mesh reads.)
+                float uRelief = CliffWallGeometry.TileU(metres, _faceMetresS);
+                outward[i] = CliffJagMath.Outward(in _jag, ProfileAt(uRelief, 1f),
+                                                  CliffRibWarpMath.DepthGain(in warp, alongBrow[i]), facing,
+                                                  uRelief * _faceMetresS, 1f);
             }
             float[] closed = CliffJagMath.Close(along, outward, _jag.MinBiteMetres);
             for (int i = 0; i < samples.Length; i++)
@@ -990,8 +996,8 @@ namespace HiddenHarbours.Art
                 if (!_bands[b].HasChannels) continue;
                 string label = string.IsNullOrEmpty(_bands[b].Label) ? b.ToString() : _bands[b].Label;
                 CliffWallMeshData m = FaceMesh(ext, _bands[b].StartSurfaceMetres, _bands[b].EndSurfaceMetres, rows,
-                                               alongOffsetMetres, _faceMetresS, _faceMetresT, DisplacementAt,
-                                               elevationValid, transform.position, _ribWarp);
+                                               alongOffsetMetres, _faceMetresS, _faceMetresT, ProfileAt,
+                                               elevationValid, transform.position, _ribWarp, _jag);
                 Emit(JoinChildPrefix + what + "_" + label, m.Verts, m.Uvs, m.Tris, _bands[b].Unlit, _bands[b].Normal,
                      _bands[b].Mask, localOrder: 0, m.ElevationUv, m.SeaPlanUv, decal: false, m.Colors);
             }
@@ -1000,8 +1006,8 @@ namespace HiddenHarbours.Art
                 Texture2D strip = d == 0 ? _browDecal : _toeDecal;
                 if (strip == null) continue;
                 CliffWallMeshData m = DecalMesh(ext, d == 0, _stripMetresT, _browLineAt, _subdivideMetres,
-                                                alongOffsetMetres, _faceMetresS, DisplacementAt, elevationValid,
-                                                transform.position, _ribWarp);
+                                                alongOffsetMetres, _faceMetresS, ProfileAt, elevationValid,
+                                                transform.position, _ribWarp, _jag);
                 Emit(JoinChildPrefix + what + (d == 0 ? "_Brow" : "_Toe"), m.Verts, m.Uvs, m.Tris, strip, null, null,
                      localOrder: 1, m.ElevationUv, m.SeaPlanUv, decal: true, m.Colors);
             }
@@ -1052,14 +1058,16 @@ namespace HiddenHarbours.Art
         /// <para><b>⚠ <paramref name="uTiles"/> is wrapped HERE and nowhere else.</b> The mesh's UVs stay
         /// unwrapped so the GPU interpolates across a period boundary correctly; only this CPU read needs
         /// a number inside the texture.</para>
+        ///
+        /// <para>The rough-edges jag is NOT in here: the mesh builders and the blocker add it themselves
+        /// (<see cref="CliffJagMath.Outward"/>), read along the RUN so it never repeats with the tile, and held back
+        /// on a wall that faces across the screen.</para>
         /// </summary>
-        private float DisplacementAt(float uTiles, float t)
+        private float ProfileAt(float uTiles, float t)
         {
-            // The rough-edges jag rides on top, read along the RUN (uTiles unwrapped), so it never repeats with the tile.
-            float jag = _jag.On ? CliffJagMath.At(in _jag, uTiles * _faceMetresS, t) : 0f;
-            if (_profile == null) return jag;
+            if (_profile == null) return 0f;
             float grey = _profile.GetPixelBilinear(CliffWallGeometry.WrapTile01(uTiles), 1f - t).r;
-            return CliffWallGeometry.ProfileMetresFromGrey(grey, _profileMetres) + jag;
+            return CliffWallGeometry.ProfileMetresFromGrey(grey, _profileMetres);
         }
 
         /// <summary>
@@ -1149,8 +1157,8 @@ namespace HiddenHarbours.Art
         {
             float elevationValid = HasToeElevations ? 1f : 0f;
             CliffWallMeshData m = FaceMesh(columns, band.StartSurfaceMetres, band.EndSurfaceMetres, rows,
-                                           _alongOffsetMetres, _faceMetresS, _faceMetresT, DisplacementAt,
-                                           elevationValid, transform.position, _ribWarp);
+                                           _alongOffsetMetres, _faceMetresS, _faceMetresT, ProfileAt,
+                                           elevationValid, transform.position, _ribWarp, _jag);
             Emit(childName, m.Verts, m.Uvs, m.Tris, band.Unlit, band.Normal, band.Mask, localOrder,
                  m.ElevationUv, m.SeaPlanUv, decal: false, m.Colors);
         }
@@ -1171,8 +1179,8 @@ namespace HiddenHarbours.Art
         {
             float elevationValid = HasToeElevations ? 1f : 0f;
             CliffWallMeshData m = DecalMesh(columns, brow, _stripMetresT, _browLineAt, _subdivideMetres,
-                                            _alongOffsetMetres, _faceMetresS, DisplacementAt, elevationValid,
-                                            transform.position, _ribWarp);
+                                            _alongOffsetMetres, _faceMetresS, ProfileAt, elevationValid,
+                                            transform.position, _ribWarp, _jag);
             // ⭐ localOrder 1: INSIDE the sorting group, so a decal composites over the rock it finishes
             // without spending an order of the region's decor band.
             Emit(childName, m.Verts, m.Uvs, m.Tris, strip, null, null, localOrder: 1,
@@ -1183,8 +1191,8 @@ namespace HiddenHarbours.Art
         {
             float elevationValid = HasToeElevations ? 1f : 0f;
             CliffWallMeshData m = TurfLipMesh(columns, lip.StripMetresS, lip.InlandMetres, lip.FaceMetres,
-                                              _alongOffsetMetres, _faceMetresS, DisplacementAt, elevationValid,
-                                              transform.position, _ribWarp);
+                                              _alongOffsetMetres, _faceMetresS, ProfileAt, elevationValid,
+                                              transform.position, _ribWarp, _jag);
             Emit(TurfLipChildName, m.Verts, m.Uvs, m.Tris, lip.Strip, null, null, localOrder: 1,
                  m.ElevationUv, m.SeaPlanUv, decal: true, m.Colors);
         }
@@ -1202,7 +1210,7 @@ namespace HiddenHarbours.Art
                                                     float faceMetres, float alongOffsetMetres, float faceMetresS,
                                                     System.Func<float, float, float> displacement,
                                                     float elevationValid, Vector3 origin,
-                                                    CliffRibWarp ribWarp = default)
+                                                    CliffRibWarp ribWarp = default, CliffJag jag = default)
         {
             CliffWallSample[] samples = columns.Whole;
             int stations = samples.Length;
@@ -1226,8 +1234,10 @@ namespace HiddenHarbours.Art
                 // The same slide and gain as the face at this station (see FaceMesh), so the lip stays on its brow.
                 Vector2 at = columns.AlongBrow[c];
                 float uRelief = CliffWallGeometry.TileU(ribWarp.IsOff ? metres : metres + CliffRibWarpMath.ShiftMetres(in ribWarp, at), faceMetresS);
-                Vector2 line = s.BrowPlan + CliffWallGeometry.OutwardPlan(in s) *
-                               (displacement(uRelief, 0f) * CliffRibWarpMath.DepthGain(in ribWarp, at));
+                Vector2 outward = CliffWallGeometry.OutwardPlan(in s);
+                Vector2 line = s.BrowPlan + outward * CliffJagMath.Outward(
+                    in jag, displacement(uRelief, 0f), CliffRibWarpMath.DepthGain(in ribWarp, at),
+                    CliffJagMath.FacingGain(in jag, outward, down), uRelief * faceMetresS, 0f);
                 float keep = KeepAt(columns, c);
                 float clip = ClipAt(columns, c);
                 float shown = Mathf.Min(faceMetres, drawn * Mathf.Min(keep, clip));
@@ -1403,7 +1413,7 @@ namespace HiddenHarbours.Art
                                                  float faceMetresS, float faceMetresT,
                                                  System.Func<float, float, float> displacement,
                                                  float elevationValid, Vector3 origin,
-                                                 CliffRibWarp ribWarp = default)
+                                                 CliffRibWarp ribWarp = default, CliffJag jag = default)
         {
             CliffWallSample[] samples = columns.Whole;
             int stations = samples.Length;
@@ -1434,6 +1444,9 @@ namespace HiddenHarbours.Art
                 float uRelief = ribWarp.IsOff ? u : CliffWallGeometry.TileU(
                     alongOffsetMetres + along + CliffRibWarpMath.ShiftMetres(in ribWarp, at), faceMetresS);
                 float relief = CliffRibWarpMath.DepthGain(in ribWarp, at);
+                // A wall that faces across the screen takes less of the roughness, or none (CliffJagMath.FacingGain).
+                float facing = CliffJagMath.FacingGain(in jag, outward, CliffWallGeometry.DrawnDown(brow, toe));
+                float alongRelief = uRelief * faceMetresS;
 
                 // A band is bounded in DEPTH below the brow, so each station converts it to its own t —
                 // which is what lets two bands meet exactly at every station of a face whose height is
@@ -1452,21 +1465,23 @@ namespace HiddenHarbours.Art
                 t0 = Mathf.Min(t0, shown);
                 t1 = Mathf.Min(t1, shown);
 
-                Vector2 top = default;
+                Vector2 above = default;
+                float drawnMetres = 0f;
 
                 for (int r = 0; r <= rows; r++)
                 {
                     float t = Mathf.Lerp(t0, t1, (float)r / rows);
-                    Vector2 p = Vector2.Lerp(brow, toe, t) + outward * (displacement(uRelief, t) * relief);
-                    if (r == 0) top = p;
+                    Vector2 p = Vector2.Lerp(brow, toe, t) + outward * CliffJagMath.Outward(
+                        in jag, displacement(uRelief, t), relief, facing, alongRelief, t);
+                    // v counts DRAWN metres down the column from the BAND's own top, row by row (owner 11-26: no
+                    // mixels; CliffWallGeometry.DrawnMetres). It was surface metres, the kit's rule, which draws a
+                    // foreshortened face's texels shorter than the ground's.
+                    drawnMetres = r == 0 ? 0f : CliffWallGeometry.DrawnMetres(drawnMetres, above, p);
+                    above = p;
 
                     int idx = c * (rows + 1) + r;
                     verts[idx] = new Vector3(p.x - origin.x, p.y - origin.y, 0f);
-                    // v counts DRAWN metres down the column from the BAND's own top (owner 11-26: no mixels;
-                    // CliffWallGeometry.DrawnMetres). It was surface metres, the kit's rule, which draws a
-                    // foreshortened face's texels shorter than the ground's.
-                    uvs[idx] = new Vector2(
-                        u, CliffWallGeometry.TileV(CliffWallGeometry.DrawnMetres(top, p), faceMetresT));
+                    uvs[idx] = new Vector2(u, CliffWallGeometry.TileV(drawnMetres, faceMetresT));
                     // The elevation walks the SURFACE parameter, brow → toe, which is the row parameter
                     // the geometry is laid on — so the waterline crossing lands on the rows the mesh
                     // already has instead of between them.
@@ -1500,7 +1515,7 @@ namespace HiddenHarbours.Art
                                                   float browLineAt, float subdivideMetres, float alongOffsetMetres,
                                                   float faceMetresS, System.Func<float, float, float> displacement,
                                                   float elevationValid, Vector3 origin,
-                                                  CliffRibWarp ribWarp = default)
+                                                  CliffRibWarp ribWarp = default, CliffJag jag = default)
         {
             CliffWallSample[] samples = columns.Whole;
             int stations = samples.Length;
@@ -1535,7 +1550,9 @@ namespace HiddenHarbours.Art
                 float uRelief = ribWarp.IsOff ? u : CliffWallGeometry.TileU(
                     alongOffsetMetres + along + CliffRibWarpMath.ShiftMetres(in ribWarp, at), faceMetresS);
                 float relief = CliffRibWarpMath.DepthGain(in ribWarp, at);
-                float atBrow = displacement(uRelief, 0f) * relief;
+                float facing = CliffJagMath.FacingGain(in jag, outward, CliffWallGeometry.DrawnDown(browP, toeP));
+                float alongRelief = uRelief * faceMetresS;
+                float atBrow = CliffJagMath.Outward(in jag, displacement(uRelief, 0f), relief, facing, alongRelief, 0f);
                 // Where the face tapers into the ground the toe strip seats on the face's shortened foot. Where a
                 // clifftop in front hides the lower face, both strips are cut there like the rock.
                 float keep = KeepAt(columns, c);
@@ -1560,7 +1577,8 @@ namespace HiddenHarbours.Art
                             ? (v - line) / (1f - line) * browFace          // metres below the brow
                             : keep * surface - (1f - v) * toeFace;         // ...up from the (kept) toe
                         faceT = Mathf.Min(Mathf.Clamp01(depth / surface), Mathf.Min(keep, clip));
-                        p = Vector2.Lerp(browP, toeP, faceT) + outward * (displacement(uRelief, faceT) * relief);
+                        p = Vector2.Lerp(browP, toeP, faceT) + outward * CliffJagMath.Outward(
+                            in jag, displacement(uRelief, faceT), relief, facing, alongRelief, faceT);
                     }
 
                     int idx = c * (rows + 1) + r;

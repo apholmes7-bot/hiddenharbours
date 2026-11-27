@@ -11,9 +11,14 @@ namespace HiddenHarbours.Art
         public readonly float BrowMetres, FootMetres, MinBiteMetres;
         public readonly Vector3 CellMetres, Weights;
         public readonly int Seed;
+        /// <summary>The facing the roughness fades over (<see cref="CliffJagMath.FacingGain"/>): none at or under x,
+        /// all of it at or over y. (0, 0) = every wall takes all of it.</summary>
+        public readonly Vector2 Facing;
 
-        public CliffJag(float browMetres, float footMetres, Vector3 cellMetres, Vector3 weights, float minBiteMetres, int seed)
+        public CliffJag(float browMetres, float footMetres, Vector3 cellMetres, Vector3 weights, float minBiteMetres, int seed,
+                        Vector2 facing = default)
         {
+            Facing = facing;
             BrowMetres = Mathf.Max(0f, browMetres);
             FootMetres = Mathf.Max(0f, footMetres);
             CellMetres = cellMetres;
@@ -26,7 +31,8 @@ namespace HiddenHarbours.Art
 
         public static CliffJag From(CliffFaceMixDef mix) => mix == null
             ? default
-            : new CliffJag(mix.BrowJagMetres, mix.FootJagMetres, mix.JagCellMetres, mix.JagWeights, mix.MinBiteMetres, mix.Seed);
+            : new CliffJag(mix.BrowJagMetres, mix.FootJagMetres, mix.JagCellMetres, mix.JagWeights, mix.MinBiteMetres, mix.Seed,
+                           mix.RoughnessByFacing);
     }
 
     /// <summary>
@@ -81,6 +87,44 @@ namespace HiddenHarbours.Art
         }
 
         public static float Snap(float metres) => Mathf.Round(metres / Texel) * Texel;
+
+        /// <summary>
+        /// ⭐ How much of the roughness (the jag, and the rib warp's change of depth) a wall takes, 0 to 1, by how it
+        /// faces the camera (owner 11 26: no mixels, which outranks roughness).
+        ///
+        /// <para>The roughness pushes a station along its OUTWARD plan normal. A column is drawn from its brow to its
+        /// drawn toe (<see cref="CliffWallGeometry.DrawnDown"/>). Where the two run the same way (a south wall: both
+        /// straight down the screen) a push slides the column along itself: the rows move in whole texels and the
+        /// rock keeps its texel. Where they do not (a steep east or west wall: outward is across the screen and the
+        /// column runs nearly down it) the same push drags a station sideways across a face that is only a sliver
+        /// wide on screen, and the quads between stations stretch and fold into shards. The measure is the cosine
+        /// between the two, 1 on a south wall and near 0 on a steep east one; the gain is a smooth step of it between
+        /// the region's two bounds. With no bounds set every wall takes all of it. Pure.</para>
+        /// </summary>
+        public static float FacingGain(in CliffJag jag, Vector2 outwardPlan, Vector2 drawnDown)
+        {
+            float none = jag.Facing.x, full = jag.Facing.y;
+            if (full <= 0f) return 1f;
+            float alignment = Mathf.Abs(Vector2.Dot(outwardPlan, drawnDown));
+            if (full <= none) return alignment >= full ? 1f : 0f;
+            return Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(none, full, alignment));
+        }
+
+        /// <summary>
+        /// The whole plan displacement at a point of a station, metres outward: the kit profile's
+        /// (<paramref name="profileMetres"/>) at the rib warp's gain, plus the jag, each held back by the station's
+        /// <paramref name="facing"/> gain (the warp's gain goes to 1, the jag to nothing), and the jag's share rounded
+        /// to the texel again so the line still moves in whole pixels. The face, its strips, the turf lip and the
+        /// blocker all read this one. Pure.
+        /// </summary>
+        public static float Outward(in CliffJag jag, float profileMetres, float warpGain, float facing,
+                                    float alongMetres, float t)
+        {
+            float gain = Mathf.Lerp(1f, warpGain, facing);
+            float metres = profileMetres * gain;
+            if (jag.On && facing > 0f) metres += Snap(At(in jag, alongMetres, t) * gain * facing);
+            return metres;
+        }
 
         /// <summary>
         /// The line the blockers stand on: <paramref name="outward"/> (metres, one per station at

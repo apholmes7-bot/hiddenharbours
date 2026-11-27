@@ -21,6 +21,53 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsFalse(CliffJag.From(null).On);
         }
 
+        /// <summary>Owner 11 26, no mixels: a wall that faces across the screen takes less of the roughness, or none.
+        /// A south wall's push runs down its own drawn column and it keeps all of it; a steep east wall's push runs
+        /// across a face that is a sliver on screen, and it takes none; with no bounds set nothing changes.</summary>
+        [Test]
+        public void ASteepWallAcrossTheScreen_TakesNoRoughness_AndASouthWallAllOfIt()
+        {
+            var bounds = new Vector2(0.35f, 0.8f);
+            var faced = new CliffJag(0.35f, 0.45f, new Vector3(3f, 0.9f, 0.25f), new Vector3(0.6f, 0.3f, 0.15f), 1f, 6, bounds);
+            float texel = 1f / CliffWaterlineMath.TexelsPerMetre;
+
+            Vector2 south = Vector2.down, east = Vector2.right;
+            Vector2 southColumn = Vector2.down;                               // brow to drawn toe, straight down the screen
+            Vector2 steepEastColumn = new Vector2(2f, -6.1f).normalized;      // an 8 m bank at 76 degrees, facing east
+            Vector2 easyEastColumn = new Vector2(7.2f, -6.1f).normalized;     // the same bank at 48 degrees
+
+            Assert.AreEqual(1f, CliffJagMath.FacingGain(in faced, south, southColumn), 1e-6f);
+            Assert.AreEqual(0f, CliffJagMath.FacingGain(in faced, east, steepEastColumn), 1e-6f);
+            float between = CliffJagMath.FacingGain(in faced, east, easyEastColumn);
+            Assert.That(between, Is.GreaterThan(0.5f).And.LessThan(1f), "a gentle east bank keeps most of it");
+            Assert.AreEqual(1f, CliffJagMath.FacingGain(in Rough, east, steepEastColumn), "no bounds: every wall takes all of it");
+            Assert.AreEqual(1f, CliffJagMath.FacingGain(default, east, steepEastColumn));
+
+            for (float x = 0f; x < 40f; x += 0.23f)
+            {
+                const float profile = 0.31f, warp = 1.4f;
+                // None: the kit's own profile at its own depth, and no jag.
+                Assert.AreEqual(profile, CliffJagMath.Outward(in faced, profile, warp, 0f, x, 0f), 1e-6f, $"x {x}");
+                // All: the profile at the warp's gain, and the jag's share still a whole number of texels.
+                float all = CliffJagMath.Outward(in faced, profile, warp, 1f, x, 0f) - profile * warp;
+                Assert.AreEqual(0f, Mathf.Abs(all / texel - Mathf.Round(all / texel)), 1e-3f, $"x {x}");
+                // Part: never more than all of it, to the texel.
+                float part = CliffJagMath.Outward(in faced, profile, warp, 0.5f, x, 0f) - profile * Mathf.Lerp(1f, warp, 0.5f);
+                Assert.LessOrEqual(Mathf.Abs(part), Mathf.Abs(all) + texel, $"x {x}");
+            }
+        }
+
+        /// <summary>St Peters sets the bounds, and in order: without them its steep east wall breaks into shards.</summary>
+        [Test]
+        public void StPeters_HoldsTheRoughnessBackOnWallsAcrossTheScreen()
+        {
+            var mix = UnityEditor.AssetDatabase.LoadAssetAtPath<CliffFaceMixDef>(StPetersMix);
+            Assert.IsNotNull(mix, StPetersMix);
+            Assert.Greater(mix.RoughnessByFacing.y, mix.RoughnessByFacing.x, "the bounds are not in order");
+            Assert.Greater(mix.RoughnessByFacing.x, 0f, "St Peters' steep east wall takes the whole jag again");
+            Assert.LessOrEqual(mix.RoughnessByFacing.y, 1f);
+        }
+
         [Test]
         public void TheLine_MovesInWholeTexels_AndRepeatsItself()
         {

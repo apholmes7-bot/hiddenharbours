@@ -129,14 +129,40 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Vector2 down = CliffWallGeometry.DrawnDown(s.BrowPlan, toe);
                 Assert.AreEqual(1f, down.magnitude, 1e-5f);
                 float drawn = Vector2.Distance(s.BrowPlan, toe);
-                Assert.AreEqual(drawn, CliffWallGeometry.DrawnMetres(s.BrowPlan, toe), 1e-4f,
+                Assert.AreEqual(drawn, CliffWallGeometry.DrawnMetres(0f, s.BrowPlan, toe), 1e-4f,
                     $"batter {batter}: the foot is not its drawn distance down the column");
                 // A metre along the drawn column is a metre of v: the texel is as tall as it is wide.
                 Vector2 mid = s.BrowPlan + down * 1f;
-                Assert.AreEqual(1f / CliffCatalog.FaceMetresT,
-                    CliffWallGeometry.TileV(CliffWallGeometry.DrawnMetres(s.BrowPlan, mid), CliffCatalog.FaceMetresT), 1e-5f,
+                float toMid = CliffWallGeometry.DrawnMetres(0f, s.BrowPlan, mid);
+                Assert.AreEqual(1f / CliffCatalog.FaceMetresT, CliffWallGeometry.TileV(toMid, CliffCatalog.FaceMetresT), 1e-5f,
                     $"batter {batter}: a drawn metre is not a metre of the face texture");
+                // Row by row it adds up to the same on a straight column, however the column is cut into rows.
+                Assert.AreEqual(drawn, CliffWallGeometry.DrawnMetres(toMid, mid, toe), 1e-4f,
+                    $"batter {batter}: two rows down a straight column do not add up to its drawn length");
             }
+        }
+
+        /// <summary>
+        /// v never runs backward. Where the relief pushes a row back toward the band's top (a short column on a ramp,
+        /// a deep chip) a straight distance from the top would shrink again and the rock would be drawn mirrored
+        /// there; added up row by row, every row is further down the texture than the one above it.
+        /// </summary>
+        [Test]
+        public void DrawnMetresOnlyEverGrowDownAColumn_EvenWhereTheReliefFoldsItBack()
+        {
+            var column = new[]
+            {
+                new Vector2(0f, 0f), new Vector2(0f, -0.4f), new Vector2(0.3f, -0.1f), new Vector2(0f, -0.5f),
+            };
+            float v = 0f;
+            for (int r = 1; r < column.Length; r++)
+            {
+                float next = CliffWallGeometry.DrawnMetres(v, column[r - 1], column[r]);
+                Assert.Greater(next, v, $"row {r} is not further down the texture than row {r - 1}");
+                v = next;
+            }
+            // The straight distance to row 2 is SHORTER than to row 1: the fold the sum does not take.
+            Assert.Less(Vector2.Distance(column[0], column[2]), Vector2.Distance(column[0], column[1]));
         }
 
         /// <summary>The surface length is the hypotenuse, so it is never shorter than either leg. A cheap

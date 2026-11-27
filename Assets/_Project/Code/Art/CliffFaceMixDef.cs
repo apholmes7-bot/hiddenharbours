@@ -78,6 +78,12 @@ namespace HiddenHarbours.Art
         [Tooltip("The narrowest bite a walker may enter, metres: narrower bites in the foot are filled in the collision " +
                  "(his foot is 0.7 m across), so nobody wedges in a notch.")]
         [Min(0f)] public float MinBiteMetres = 1f;
+        [Tooltip("How much of the roughness (the jag, and the rib warp's change of depth) a wall takes by how it faces " +
+                 "the camera. The measure is how far a station's outward push runs along its drawn column: 1 on a south " +
+                 "wall, near 0 on a steep east or west wall, where a push drags the rock sideways across a face that is " +
+                 "a sliver on screen and breaks it into shards. x = at or under this, none; y = at or over this, all of " +
+                 "it; a smooth step between. (0, 0) = every wall takes all of it.")]
+        public Vector2 RoughnessByFacing = Vector2.zero;
 
         [TextArea] public string Why = "";
 
