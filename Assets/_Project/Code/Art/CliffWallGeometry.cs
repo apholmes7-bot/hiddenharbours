@@ -712,6 +712,16 @@ namespace HiddenHarbours.Art
         public static Vector2 ScreenPlanarUv(Vector2 world, float faceMetresS, float faceMetresT) =>
             new Vector2(TileU(world.x, faceMetresS), TileV(-world.y, faceMetresT));
 
+        /// <summary>
+        /// The uv of a face vertex on a STEPPED wall: u counts world x in tiles, as on the screen grid, and v counts
+        /// world y DOWN from its column's brow (<paramref name="browWorldY"/>), so the bedding runs parallel to the brow.
+        /// A cell takes the texel at its centre, so down a column v moves one texel per cell and across the columns
+        /// the bedding jumps by whole texels where the brow climbs or falls: stair-stepped strata, every texel square
+        /// and unrotated (owner 11 27: the bends of the curved walls did not read as pixel art). Pure.
+        /// </summary>
+        public static Vector2 SteppedUv(Vector2 world, float browWorldY, float faceMetresS, float faceMetresT) =>
+            new Vector2(TileU(world.x, faceMetresS), TileV(browWorldY - world.y, faceMetresT));
+
         /// <summary>How far past a band's true edge its mesh is laid, square to the edge, so every ground cell the edge
         /// touches is covered: a cell and a half (a cell's centre is under 0.71 of a cell from any point in it).</summary>
         public const float CellCoverMetres = 1.5f / CliffWaterlineMath.TexelsPerMetre;

@@ -93,28 +93,77 @@ namespace HiddenHarbours.Tests.RigBaking
                 using (IRigScriptHost host = CliffTurfLipBaker.CreateHost(def))
                 {
                     byte[] rgba = CliffTurfLipBaker.Render(host, def, out int w, out int h);
-                    // A row inside every column's riser: under the deepest apron, above the shortest riser's foot.
-                    int y = def.LineRow + def.Apron.y + 2;
-                    Assert.Less(y, def.LineRow + def.Apron.x - 5 + def.RockRiser.x - 2, $"{def.Id}: the riser is too short to test");
-                    int opaque = 0;
-                    for (int x = 0; x < w; x++) if (rgba[(y * w + x) * 4 + 3] == 255) opaque++;
-                    Assert.Greater(opaque, w * 0.9f, $"{def.Id}: the riser has holes where the ledge shows through");
-                    float Luma(int row)
-                    {
-                        double sum = 0; int n = 0;
-                        for (int x = 0; x < w; x++)
+                    // Column by column: the riser is the run of the def's own rock colours (the soil and the grass
+                    // never use them). Nearly every column has one nearly as tall as the shortest riser, lit in its
+                    // upper third and darker in its lower third.
+                    var rock = new System.Collections.Generic.HashSet<int>();
+                    foreach (string hex in def.Rock)
+                        if (ColorUtility.TryParseHtmlString(hex, out Color c))
                         {
-                            int i = (row * w + x) * 4;
-                            if (rgba[i + 3] != 255 || rgba[i + 1] > rgba[i]) continue;   // rock only, never a blade
-                            sum += 0.2126 * rgba[i] + 0.7152 * rgba[i + 1] + 0.0722 * rgba[i + 2]; n++;
+                            Color32 c32 = c;
+                            rock.Add(c32.r << 16 | c32.g << 8 | c32.b);
                         }
-                        return n > 0 ? (float)(sum / n) : 0f;
+                    int tall = 0, litOverDark = 0;
+                    for (int x = 0; x < w; x++)
+                    {
+                        int top = -1, foot = -1;
+                        for (int y = 0; y < h; y++)
+                        {
+                            int i = (y * w + x) * 4;
+                            if (rgba[i + 3] != 255 || !rock.Contains(rgba[i] << 16 | rgba[i + 1] << 8 | rgba[i + 2])) continue;
+                            if (top < 0) top = y;
+                            foot = y;
+                        }
+                        if (top < 0 || foot - top + 1 < def.RockRiser.x - 8) continue;
+                        tall++;
+                        double Luma(int y0, int y1)
+                        {
+                            double sum = 0; int n = 0;
+                            for (int y = y0; y <= y1; y++)
+                            {
+                                int i = (y * w + x) * 4;
+                                if (rgba[i + 3] != 255 || !rock.Contains(rgba[i] << 16 | rgba[i + 1] << 8 | rgba[i + 2])) continue;
+                                sum += 0.2126 * rgba[i] + 0.7152 * rgba[i + 1] + 0.0722 * rgba[i + 2]; n++;
+                            }
+                            return n > 0 ? sum / n : 0;
+                        }
+                        int third = (foot - top + 1) / 3;
+                        if (Luma(top, top + third - 1) > Luma(foot - third + 1, foot) + 8) litOverDark++;
                     }
-                    int top = def.LineRow + def.Apron.y - 3, foot = def.LineRow + def.Apron.x - 5 + def.RockRiser.x - 3;
-                    Assert.Greater(Luma(top), Luma(foot) + 8f, $"{def.Id}: the riser is not lit at its top and dark at its foot");
+                    Assert.Greater(tall, w * 0.9f, $"{def.Id}: the riser has holes or is short where the ledge shows through");
+                    Assert.Greater(litOverDark, tall * 0.9f, $"{def.Id}: the riser is not lit at its top and dark at its foot");
                 }
             }
             Assert.Greater(risers, 0, "no lip paints a riser: a bank with no wall reads flat");
+        }
+
+        /// <summary>Owner 11 27: the stepped walls lost the flat grass ledge between their tiers. A lip with a terrace
+        /// paints a band of turf under its riser, whole across the strip.</summary>
+        [Test]
+        public void ATerrace_PaintsAWholeBandOfTurf_UnderTheRiser()
+        {
+            int terraces = 0;
+            foreach (CliffTurfLipDef def in Lips())
+            {
+                if (def.TerraceRows.y <= 0) continue;
+                terraces++;
+                using (IRigScriptHost host = CliffTurfLipBaker.CreateHost(def))
+                {
+                    byte[] rgba = CliffTurfLipBaker.Render(host, def, out int w, out int h);
+                    // Under every column's riser foot, above every column's terrace edge.
+                    int y = def.LineRow + def.Apron.y - 5 + def.RockRiser.y + 5;
+                    Assert.Less(y, def.LineRow + def.Apron.x - 5 + def.RockRiser.x - 1 + def.TerraceRows.x - 2,
+                                $"{def.Id}: the terrace is too short to test");
+                    int green = 0;
+                    for (int x = 0; x < w; x++)
+                    {
+                        int i = (y * w + x) * 4;
+                        if (rgba[i + 3] == 255 && rgba[i + 1] > rgba[i]) green++;
+                    }
+                    Assert.Greater(green, w * 0.85f, $"{def.Id}: the terrace has holes where the face shows through");
+                }
+            }
+            Assert.Greater(terraces, 0, "no lip paints a terrace: the stepped walls read as one ragged mass");
         }
     }
 }

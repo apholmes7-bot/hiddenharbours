@@ -49,17 +49,25 @@ MonoBehaviour:
   FaultFacetDegrees: 30
   FaultVariantBlockScale: 1
   FaultVariantThrowScale: 3
-  JointSpacingTexels: 16
-  JointRunTexels: 28
-  JointRunShare: 0.75
-  JointStepShare: 0.3
-  JointLitEdge: 1
+  JointSpacingTexels: 0
+  JointRunTexels: 14
+  JointRunShare: 0.45
+  JointStepShare: 0.6
+  JointLitEdge: 0
   FaceRampTopShare: 0.2
-  FaceRampFootShare: 0.28
+  FaceRampFootShare: 0.35
   FaceRampJitter: 0.06
+  FaceRampDeepShare: 0.15
+  ButtressPitchTexels: 112
+  ButtressShadeShare: {x: 0.3, y: 0.55}
+  ButtressBedTexels: 18
+  ButtressJogTexels: 3
+  HeightOnShearedWalls: 1
+  StepShearedWalls: 1
   ShoreBrowTurfLip: {fileID: 11400000, guid: 9ef327013cc946668fd59e961c5346c5, type: 2}
+  ShearedTurfLip: {fileID: 11400000, guid: c9d7280d5d0f4af39bfd45a6a166c458, type: 2}
   LedgeCalm: 1
-  LedgeSaturationKeep: 0.6
-  LedgeContrastKeep: 0.65
+  LedgeSaturationKeep: 0.8
+  LedgeContrastKeep: 0.85
   LedgeCalmPivot: 0.08
   Why: 'Owner 11 25: a mix of our current cliffs and the boards'' cliffs, for variance. About half the coast wears the boards'' cliffs (their coursed faces and their colours), in stretches of ten to a few tens of metres, short enough that no long wall is all one skin (pass 2: run 10 m and seed 6, chosen by simulation over the live St Peters toes so each of the seven framed stretches shows at least a quarter of each skin), changing over about six metres as the rock''s own blocks give way (pass 3: doubled so no join reads as a cut). The skin choice is presentation only. Rough edges (owner 11 26, "where the jaggedness and rough edges"): the brow and the foot broken at three scales; the foot''s blockers stand on the same broken line, closed over a 1 m bite so no walker wedges in a notch.'

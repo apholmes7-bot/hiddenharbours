@@ -19,9 +19,35 @@ namespace HiddenHarbours.Art
         /// <summary>How far a ramp's edge wanders column by column, as a share of the face.</summary>
         public readonly float RampJitter;
 
+        /// <summary>The share of the face over the foot also drawn one shade tier down.</summary>
+        public readonly float RampDeepShare;
+        /// <summary>Ground texels per buttress across the screen; 0 = none.</summary>
+        public readonly int ButtressPitchTexels;
+        /// <summary>The shaded side's share of its buttress, min and max.</summary>
+        public readonly float ButtressShadeMin, ButtressShadeMax;
+        /// <summary>Rows per bed of a buttress edge, and how far the edge jogs at each bed.</summary>
+        public readonly int ButtressBedTexels, ButtressJogTexels;
+        /// <summary>Whether walls not laid on the screen grid take the ramp and the buttresses too.</summary>
+        public readonly bool OnShearedWalls;
+
         public CliffHeight(int jointSpacingTexels, int jointRunTexels, float jointRunShare, float jointStepShare,
                            bool jointLitEdge, float rampTopShare, float rampFootShare, float rampJitter)
+            : this(jointSpacingTexels, jointRunTexels, jointRunShare, jointStepShare, jointLitEdge,
+                   rampTopShare, rampFootShare, rampJitter, 0f, 0, Vector2.zero, 1, 0, false) { }
+
+        public CliffHeight(int jointSpacingTexels, int jointRunTexels, float jointRunShare, float jointStepShare,
+                           bool jointLitEdge, float rampTopShare, float rampFootShare, float rampJitter,
+                           float rampDeepShare, int buttressPitchTexels, Vector2 buttressShadeShare,
+                           int buttressBedTexels, int buttressJogTexels, bool onShearedWalls)
         {
+            RampDeepShare = Mathf.Clamp01(rampDeepShare);
+            ButtressJogTexels = Mathf.Max(0, buttressJogTexels);
+            // A buttress needs room for its shade and a jog's margin either side of it.
+            ButtressPitchTexels = buttressPitchTexels <= 0 ? 0 : Mathf.Max(4 * ButtressJogTexels + 6, buttressPitchTexels);
+            ButtressShadeMin = Mathf.Clamp01(Mathf.Min(buttressShadeShare.x, buttressShadeShare.y));
+            ButtressShadeMax = Mathf.Clamp01(Mathf.Max(buttressShadeShare.x, buttressShadeShare.y));
+            ButtressBedTexels = Mathf.Max(1, buttressBedTexels);
+            OnShearedWalls = onShearedWalls;
             // A joint needs a texel either side of it inside its stretch, so a stretch is at least three wide.
             JointSpacingTexels = jointSpacingTexels <= 0 ? 0 : Mathf.Max(3, jointSpacingTexels);
             JointRunTexels = Mathf.Max(1, jointRunTexels);
@@ -34,12 +60,19 @@ namespace HiddenHarbours.Art
         }
 
         public bool JointsOn => JointSpacingTexels > 0 && JointRunShare > 0f;
-        public bool RampOn => RampTopShare > 0f || RampFootShare > 0f;
+        public bool RampOn => RampTopShare > 0f || RampFootShare > 0f || RampDeepShare > 0f;
+        public bool ButtressOn => ButtressPitchTexels > 0 && ButtressShadeMax > 0f;
 
         public static CliffHeight From(CliffFaceMixDef mix) => mix == null
             ? default
             : new CliffHeight(mix.JointSpacingTexels, mix.JointRunTexels, mix.JointRunShare, mix.JointStepShare,
-                              mix.JointLitEdge, mix.FaceRampTopShare, mix.FaceRampFootShare, mix.FaceRampJitter);
+                              mix.JointLitEdge, mix.FaceRampTopShare, mix.FaceRampFootShare, mix.FaceRampJitter,
+                              mix.FaceRampDeepShare, mix.ButtressPitchTexels, mix.ButtressShadeShare,
+                              mix.ButtressBedTexels, mix.ButtressJogTexels, mix.HeightOnShearedWalls);
+
+        /// <summary>Whether a wall's face takes the ramp and the buttresses: a face band (never a decal), laid on the
+        /// screen grid, or not laid on it where the mix says <see cref="OnShearedWalls"/>. Joints stay screen grid only.</summary>
+        public bool MassOn(bool planar, bool decal) => !decal && (planar || OnShearedWalls);
 
         /// <summary>The shader's _JointA: spacing, run, run share, step share.</summary>
         public Vector4 ShaderJointA => new Vector4(JointSpacingTexels, JointRunTexels, JointRunShare, JointStepShare);
@@ -47,6 +80,11 @@ namespace HiddenHarbours.Art
         public Vector4 ShaderJointB(bool on) => new Vector4(JointLitEdge ? 1f : 0f, on && JointsOn ? 1f : 0f, 0f, 0f);
         /// <summary>The shader's _FaceRamp: top share, foot share, jitter, on.</summary>
         public Vector4 ShaderRamp(bool on) => new Vector4(RampTopShare, RampFootShare, RampJitter, on && RampOn ? 1f : 0f);
+        /// <summary>The shader's _Buttress: pitch, shade min, shade max, on.</summary>
+        public Vector4 ShaderButtress(bool on) =>
+            new Vector4(ButtressPitchTexels, ButtressShadeMin, ButtressShadeMax, on && ButtressOn ? 1f : 0f);
+        /// <summary>The shader's _ButtressB: bed rows, jog, the ramp's deep share, 0.</summary>
+        public Vector4 ShaderButtressB => new Vector4(ButtressBedTexels, ButtressJogTexels, RampDeepShare, 0f);
     }
 
     /// <summary>
@@ -64,7 +102,8 @@ namespace HiddenHarbours.Art
     public static class CliffHeightMath
     {
         public const int None = 0, Crack = 1, LitEdge = 2;
-        const float SaltRun = 41f, SaltStep = 42f, SaltSide = 43f, SaltPlace = 44f, SaltPhase = 45f, SaltRamp = 46f;
+        const float SaltRun = 41f, SaltStep = 42f, SaltSide = 43f, SaltPlace = 44f, SaltPhase = 45f, SaltRamp = 46f,
+                    SaltButtress = 47f, SaltJogLeft = 48f, SaltJogRight = 49f;
 
         static float Hash(float x, float y, float salt) => CliffWaterlineMath.Hash01(new Vector2(x, y), salt);
 
@@ -107,6 +146,40 @@ namespace HiddenHarbours.Art
             if (h.RampTopShare > 0f && faceT < h.RampTopShare + wander) return 1;
             if (h.RampFootShare > 0f && faceT > 1f - h.RampFootShare + wander) return -1;
             return 0;
+        }
+
+        /// <summary>Shade tiers down the ramp's deep foot gives a texel: 1 in the bottom <see cref="CliffHeight.RampDeepShare"/>
+        /// of the face (its edge wandering as the ramp's does), else 0.</summary>
+        public static int RampDeep(in CliffHeight h, float faceT, int column)
+        {
+            if (h.RampDeepShare <= 0f) return 0;
+            float wander = (Hash(column, 3f, SaltRamp) - 0.5f) * 2f * h.RampJitter;
+            return faceT > 1f - h.RampDeepShare + wander ? 1 : 0;
+        }
+
+        static int Round(float v) => Mathf.FloorToInt(v + 0.5f);
+
+        /// <summary>
+        /// Whether ground texel (x, y) lies in the shaded side of its buttress (1) or not (0). The face is cut into
+        /// buttresses <see cref="CliffHeight.ButtressPitchTexels"/> wide across the screen; each has a shaded strip of
+        /// its own width (a hashed share between min and max) at its own place inside it, kept a jog's margin clear of
+        /// the buttress's edges so no line ever runs at a fixed column. Both edges of the strip jog sideways by up to
+        /// <see cref="CliffHeight.ButtressJogTexels"/> at every bed, each bed starting at the buttress's own phase.
+        /// </summary>
+        public static int ButtressShade(in CliffHeight h, int x, int y)
+        {
+            if (!h.ButtressOn) return 0;
+            int p = h.ButtressPitchTexels, jog = h.ButtressJogTexels, margin = jog + 1;
+            int cell = Mathf.FloorToInt(x / (float)p);
+            float share = Mathf.Lerp(h.ButtressShadeMin, h.ButtressShadeMax, Hash(cell, 4f, SaltButtress));
+            int w = Mathf.Clamp(Round(share * p), 1, p - 2 * margin);
+            int slack = p - w - 2 * margin;
+            int a = cell * p + margin + Mathf.FloorToInt(Hash(cell, 5f, SaltButtress) * (slack + 1));
+            int bedT = h.ButtressBedTexels;
+            int bed = Mathf.FloorToInt((y + Mathf.Floor(Hash(cell, 6f, SaltButtress) * bedT)) / bedT);
+            int jl = Round((Hash(cell, bed, SaltJogLeft) - 0.5f) * 2f * jog);
+            int jr = Round((Hash(cell, bed, SaltJogRight) - 0.5f) * 2f * jog);
+            return x >= a + jl && x < a + w + jr ? 1 : 0;
         }
     }
 }

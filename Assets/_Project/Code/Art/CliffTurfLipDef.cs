@@ -95,6 +95,13 @@ namespace HiddenHarbours.Art
         [Tooltip("The riser's rock, darkest first: joint and toe line, foot, middle, top, a joint's lit edge (the cliff palette's sandstone).")]
         public string[] Rock = { "#2d2828", "#59382d", "#7c513a", "#955a3d", "#ad7856" };
 
+        [Header("The terrace (a ledge wall's lip, owner 11 27: stepped cliffs keep their flat grass ledge)")]
+        [Tooltip("Rows of flat turf painted under the riser (or under the soil where there is none), min and max: the " +
+                 "grass step between two tiers, lit along its outer edge. 0 0 = none.")]
+        public Vector2Int TerraceRows = Vector2Int.zero;
+        [Tooltip("Rows of shade the terrace's outer edge throws on the face below it.")]
+        [Min(0)] public int TerraceShade = 3;
+
         [Header("On the wall")]
         [Tooltip("Where the rough edges step the brow line on a wall that faces across the screen, the step's riser is " +
                  "seen side on and the lip laid over it is a wedge of turf in the rock. A step seen this many metres " +
@@ -135,6 +142,7 @@ namespace HiddenHarbours.Art
             A("grass", Grass); A("soil", Soil); S("straw", Straw); S("stone", Stone); S("shadeColour", ShadeColour);
             sb.Append("\"shadeAlpha\":[").Append(ShadeAlpha.x).Append(',').Append(ShadeAlpha.y).Append("],");
             R("riser", RockRiser); R("jointGap", RockJointGap); I("toeShade", RockToeShade); A("rock", Rock);
+            R("terrace", TerraceRows); I("terraceShade", TerraceShade);
             sb.Length--;
             return sb.Append('}').ToString();
         }

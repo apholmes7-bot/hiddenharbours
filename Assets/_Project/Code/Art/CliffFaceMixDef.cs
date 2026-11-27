@@ -163,11 +163,33 @@ namespace HiddenHarbours.Art
         [Tooltip("How far either ramp's edge wanders column by column, as a share of the face, so it is a ragged " +
                  "texel edge and never a level line.")]
         [Range(0f, 0.5f)] public float FaceRampJitter = 0.06f;
+        [Tooltip("The share of the face over the foot that is also drawn one shade tier down (deeper than a band), 0 to " +
+                 "1, so the foot reads clearly darker than the brow. 0 = none.")]
+        [Range(0f, 1f)] public float FaceRampDeepShare = 0f;
+        [Tooltip("Buttresses: the face is grouped into broad upright masses, one per this many ground texels across the " +
+                 "screen, each with a shaded side drawn one shade tier down. 0 = none.")]
+        [Min(0)] public int ButtressPitchTexels = 0;
+        [Tooltip("The shaded side's share of its buttress, min and max (each buttress picks its own by hash).")]
+        public Vector2 ButtressShadeShare = new Vector2(0.3f, 0.55f);
+        [Tooltip("Rows of one bed of a buttress's edge: at each bed the edge jogs sideways (below), so it is never one line.")]
+        [Min(1)] public int ButtressBedTexels = 18;
+        [Tooltip("How far a buttress's edge jogs left or right at a bed, in ground texels.")]
+        [Min(0)] public int ButtressJogTexels = 3;
+        [Tooltip("Whether the ramp and the buttresses are drawn on walls NOT laid on the screen grid too (the sheared, " +
+                 "stepped walls). Off = only walls laid on the screen grid take them.")]
+        public bool HeightOnShearedWalls = false;
+        [Tooltip("Walls that face down the screen (not across it) are laid on the screen grid too, their bedding counted " +
+                 "down from their own brow so it follows the curve in whole-texel steps, every texel square and " +
+                 "unrotated (owner 11 27: the bends did not read as pixel art). Off = they are laid down the column.")]
+        public bool StepShearedWalls = false;
 
         [Header("The bank's own lip (owner 11 27: banks with no wall read tall)")]
         [Tooltip("The strip a bank with no cliff wall hangs, where it differs from the wall's (its own rock riser under the " +
                  "soil). None = the bank hangs the wall's TurfLip.")]
         public CliffTurfLipDef ShoreBrowTurfLip;
+        [Tooltip("The strip a wall NOT laid on the screen grid hangs (the stepped walls: a rock riser and a grass terrace " +
+                 "between tiers). None = it hangs TurfLip like every wall.")]
+        public CliffTurfLipDef ShearedTurfLip;
 
         [Header("The ledge at the foot (owner 11 27: the flat ledge reads apart from the face; strength 0 = off)")]
         [Tooltip("How much of the calm below the ground's rock (shelf, talus, ledge) takes, 0 to 1. 0 = drawn as before.")]

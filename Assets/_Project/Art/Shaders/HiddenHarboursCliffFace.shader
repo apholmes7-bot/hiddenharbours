@@ -124,6 +124,8 @@ Shader "HiddenHarbours/CliffFace"
         [HideInInspector] _JointA ("Joints: spacing, run, run share, step share", Vector) = (0, 24, 0, 0)
         [HideInInspector] _JointB ("Joints: lit edge, on", Vector) = (0, 0, 0, 0)
         [HideInInspector] _FaceRamp ("Face ramp: top share, foot share, jitter, on", Vector) = (0, 0, 0, 0)
+        [HideInInspector] _Buttress ("Buttresses: pitch, shade min, shade max, on", Vector) = (0, 0, 0, 0)
+        [HideInInspector] _ButtressB ("Buttresses: bed rows, jog, ramp deep share", Vector) = (18, 0, 0, 0)
         [HideInInspector] _FaultC ("Fault: variant face block scale, variant face throw scale", Vector) = (1, 1, 0, 0)
         [HideInInspector][NoScaleOffset] _UnlitVariant ("Px variant face index", 2D) = "black" {}
         [HideInInspector][NoScaleOffset] _NormalVariant ("Px variant face normal", 2D) = "bump" {}
@@ -347,6 +349,8 @@ Shader "HiddenHarbours/CliffFace"
                 float4 _JointA;
                 float4 _JointB;
                 float4 _FaceRamp;
+                float4 _Buttress;
+                float4 _ButtressB;
             CBUFFER_END
 
             // The shared field's HEIGHT at a plan position, transcribed from the water shader's
@@ -432,7 +436,7 @@ Shader "HiddenHarbours/CliffFace"
             // replaced by the RECOVERED shadow. idx is the _index texel, ndl the live N dot L, bakeNdl the
             // same normal against CliffPxBakeKey, maskR the baked key light with its cast shadow.
             // Twin: CliffPxRelightMath.RecoverShadow, then CliffPxRelightMath.Relight, then LutUv.
-            float3 CliffPxRelightShift(float4 idx, float ndl, float bakeNdl, float maskR, bool variant, float shift)
+            float3 CliffPxRelightShift(float4 idx, float ndl, float bakeNdl, float maskR, bool variant, float2 shift)
             {
                 float row  = floor(idx.r * 255.0 + 0.5);   // 0 to 24: the rock and its tier
                 float band = floor(idx.g * 255.0 + 0.5);   // 0 to 4
@@ -442,7 +446,7 @@ Shader "HiddenHarbours/CliffFace"
                 if (ndl > CLIFF_PX_BAND_UP) band += 1.0;
                 else if (ndl < CLIFF_PX_BAND_DOWN) band -= 1.0;
                 // The face ramp's step (CliffHeightMath.RampShift), 0 where the wall has none.
-                band += shift;
+                band += shift.x;
 
                 // Cast shadow moves the TIER, and only on the rock rows: lichen does not go the colour
                 // of shadowed rock. The divide is guarded where the bake's own N dot L is near zero,
@@ -455,6 +459,8 @@ Shader "HiddenHarbours/CliffFace"
                     float tier = fmod(row, CLIFF_PX_TIERS);
                     float rockRow = row - tier;            // 0 sandstone, 6 till, 12 basalt
                     tier -= shadow > CLIFF_PX_SHADOW_TWO ? 2.0 : (shadow > CLIFF_PX_SHADOW_ONE ? 1.0 : 0.0);
+                    // The height's shade (a buttress's shaded side, the ramp's deep foot): whole tiers, rock only.
+                    tier -= shift.y;
                     row = rockRow + clamp(tier, 0.0, CLIFF_PX_TIERS - 1.0);
                 }
 
@@ -470,7 +476,7 @@ Shader "HiddenHarbours/CliffFace"
 
             float3 CliffPxRelight(float4 idx, float ndl, float bakeNdl, float maskR, bool variant)
             {
-                return CliffPxRelightShift(idx, ndl, bakeNdl, maskR, variant, 0.0);
+                return CliffPxRelightShift(idx, ndl, bakeNdl, maskR, variant, float2(0.0, 0.0));
             }
 
             // ---- THE TEXEL GRID (owner 11 23: organic, natural, no hard cuts) ---------------------------
@@ -536,6 +542,32 @@ Shader "HiddenHarbours/CliffFace"
                 if (_FaceRamp.x > 0.0 && t < _FaceRamp.x + wander) return 1.0;
                 if (_FaceRamp.y > 0.0 && t > 1.0 - _FaceRamp.y + wander) return -1.0;
                 return 0.0;
+            }
+
+            // Shade tiers of the ramp's deep foot. Twin: CliffHeightMath.RampDeep.
+            float CliffRampDeep(float t, float x)
+            {
+                if (_ButtressB.z <= 0.0) return 0.0;
+                float wander = (CliffHash(float2(x, 3.0), 46.0) - 0.5) * 2.0 * _FaceRamp.z;
+                return t > 1.0 - _ButtressB.z + wander ? 1.0 : 0.0;
+            }
+
+            // 1 in the shaded side of a buttress, else 0. Twin: CliffHeightMath.ButtressShade.
+            float CliffButtressShade(float2 wc)
+            {
+                float p      = _Buttress.x;
+                float jog    = _ButtressB.y;
+                float margin = jog + 1.0;
+                float cell   = floor(wc.x / p);
+                float share  = lerp(_Buttress.y, _Buttress.z, CliffHash(float2(cell, 4.0), 47.0));
+                float w      = clamp(floor(share * p + 0.5), 1.0, p - 2.0 * margin);
+                float slack  = p - w - 2.0 * margin;
+                float a      = cell * p + margin + floor(CliffHash(float2(cell, 5.0), 47.0) * (slack + 1.0));
+                float bedT   = max(_ButtressB.x, 1.0);
+                float bed    = floor((wc.y + floor(CliffHash(float2(cell, 6.0), 47.0) * bedT)) / bedT);
+                float jl     = floor((CliffHash(float2(cell, bed), 48.0) - 0.5) * 2.0 * jog + 0.5);
+                float jr     = floor((CliffHash(float2(cell, bed), 49.0) - 0.5) * 2.0 * jog + 0.5);
+                return (wc.x >= a + jl && wc.x < a + w + jr) ? 1.0 : 0.0;
             }
 
             // The 4 by 4 ordered dither threshold of a cell.
@@ -701,8 +733,11 @@ Shader "HiddenHarbours/CliffFace"
                 // HEIGHT (see CliffJoint, CliffRampShift): only on a face band laid on the screen grid.
                 float2 heightCell = floor(gridW * CLIFF_TEXELS_PER_METRE);
                 float  joint      = (_JointB.y > 0.5 && _PxDecal < 0.5) ? CliffJoint(heightCell) : 0.0;
-                float  rampShift  = (_FaceRamp.w > 0.5 && _PxDecal < 0.5 && IN.band.y > 0.5)
-                                  ? CliffRampShift(cellFaceT, heightCell.x) : 0.0;
+                bool   faceMass   = _PxDecal < 0.5 && IN.band.y > 0.5;
+                bool   rampOn     = _FaceRamp.w > 0.5 && faceMass;
+                float2 rampShift  = float2(rampOn ? CliffRampShift(cellFaceT, heightCell.x) : 0.0,
+                                           (rampOn ? CliffRampDeep(cellFaceT, heightCell.x) : 0.0)
+                                         + ((_Buttress.w > 0.5 && faceMass) ? CliffButtressShade(heightCell) : 0.0));
 
                 half4 unlit = SAMPLE_TEXTURE2D_LOD(_Unlit,  sampler_Unlit,  baseUv, 0);
                 half4 nrm   = SAMPLE_TEXTURE2D_LOD(_Normal, sampler_Normal, baseUv, 0);

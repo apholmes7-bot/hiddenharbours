@@ -16,7 +16,7 @@ MonoBehaviour:
   PainterScriptPath: docs/art/rigs/px-cliff-styles/pxCliffTurfLip.js
   OutputPath: Assets/_Project/Art/Terrain/CliffStyles/TurfLip/TurfLip_Bank.png
   Strip: {fileID: 2800000, guid: ac64fe83084e6642920a88c348e2cef8, type: 3}
-  StripTexels: {x: 2048, y: 96}
+  StripTexels: {x: 2048, y: 128}
   LineRow: 10
   Seed: 9127
   Fringe: {x: 1, y: 6}
@@ -28,7 +28,7 @@ MonoBehaviour:
   ClumpHalf: {x: 4, y: 11}
   Hang: {x: 12, y: 34}
   Short: {x: 3, y: 8}
-  Apron: {x: 8, y: 18}
+  Apron: {x: 30, y: 54}
   StoneShare: 0.012
   RootShare: 0.06
   Root: {x: 5, y: 16}
@@ -51,8 +51,8 @@ MonoBehaviour:
   Stone: '#8a8478'
   ShadeColour: '#160d0a'
   ShadeAlpha: {x: 190, y: 110}
-  RockRiser: {x: 26, y: 44}
-  RockJointGap: {x: 9, y: 22}
+  RockRiser: {x: 36, y: 44}
+  RockJointGap: {x: 24, y: 56}
   RockToeShade: 2
   Rock:
   - '#2d2828'

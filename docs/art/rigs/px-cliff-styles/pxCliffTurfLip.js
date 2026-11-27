@@ -42,7 +42,9 @@
                  the wall's own); a bank with no wall hangs one so it reads tall
      jointGap    [min, max] spacing of the riser's upright joints
      toeShade    rows of shade the riser throws on the ledge at its foot
-     rock        the riser's five colours, darkest to lightest: joint and toe, foot, middle, top, a joint's lit edge */
+     rock        the riser's five colours, darkest to lightest: joint and toe, foot, middle, top, a joint's lit edge
+    terrace     [min, max] rows of flat turf under the riser (or the soil): a ledge wall's grass step ([0, 0] = none)
+    terraceShade rows of shade the terrace's outer edge throws on the face below */
 (function (root) {
   'use strict';
   const P = root.PxLang;
@@ -57,7 +59,7 @@
     grass: ['#253832', '#334333', '#445338', '#565f40', '#707959'],
     soil: ['#2a1c16', '#3d2a20', '#573b30', '#6c4c38', '#8b6a50'],
     straw: '#9a8d58', stone: '#8a8478', shadeColour: '#160d0a', shadeAlpha: [190, 110],
-    riser: [0, 0], jointGap: [7, 15], toeShade: 2,
+    riser: [0, 0], jointGap: [7, 15], toeShade: 2, terrace: [0, 0], terraceShade: 3,
     rock: ['#2d2828', '#59382d', '#7c513a', '#955a3d', '#ad7856'],
   };
 
@@ -232,8 +234,8 @@
     }
 
     /* the riser (a bank's own strip, owner 11 27: banks with no wall read tall): an upright face of the cliff's
-       own rock under the soil, lit at its top and in shade at its foot, cut by upright joints that run its height,
-       break off and step a texel aside, a dark toe line where it meets the ledge and the shade it throws on it.
+       own rock under the soil, lit at its top and in shade at its foot, cut by a few short joints that break off and
+       step a texel aside, a dark toe line where it meets the ledge and the shade it throws on it.
        Painted last and only into empty texels, so every blade, root, slump and tuft hangs over it. riser 0 0 paints
        nothing and leaves the strip exactly as before. */
     if (o.riser[1] > 0) {
@@ -244,13 +246,16 @@
         rh[x] = Math.max(0, Math.min(H - top[x] - 1 - o.toeShade, Math.round(o.riser[0] + (o.riser[1] - o.riser[0]) * clamp(swell * 1.4 - .2, 0, 1) + (chat - .5) * 2)));
       }
       /* the joints: a column every jointGap texels, whose line wanders a texel at the start of a run of rows */
-      /* each joint starts a little under the riser's top and stops somewhere down it (a few run to the toe), so
-         no two are the same length and the face never reads as a fence */
+      /* each joint is a short broken crack somewhere in the upper riser, so no two are the same length and the face
+         never reads as a fence */
       const crack = new Uint16Array(W * H), lit = new Uint16Array(W * H), js = [], je = [];
       for (let jx = FL(rng(0, 2, 122) * o.jointGap[1]), ji = 0; jx < W; ji++) {
-        js.push(rng(ji, 3, 122) * .3);
-        je.push(rng(ji, 4, 122) < .3 ? 1.1 : .45 + rng(ji, 5, 122) * .45);
-        const litOn = rng(ji, 6, 122) < .6;
+        /* short and broken (owner 11 27: no upright rules near the floor): a joint covers a fifth to a half of the
+           riser, starts anywhere in its upper part and never reaches the toe; one in four has a lit edge */
+        const j0 = rng(ji, 3, 122) * .45;
+        js.push(j0);
+        je.push(Math.min(.85, j0 + .2 + rng(ji, 5, 122) * .3));
+        const litOn = rng(ji, 6, 122) < .25;
         let xx = jx, gap = false;
         for (let y = 0; y < H; y++) {
           if (y % 5 === 0) {
@@ -282,6 +287,41 @@
         for (let k = 0; k < o.toeShade; k++) {
           const y = top[x] + d + k;
           if (d > 0 && !alphaAt(x, y) && rng(x, k, 126) < (k ? .55 : .95)) put(x, y, o.shadeColour, k ? o.shadeAlpha[1] : o.shadeAlpha[0]);
+        }
+      }
+    }
+
+    /* the terrace (a ledge wall's strip, owner 11 27: the stepped cliffs lost their flat grass ledge): a calm band of
+       turf under the riser (or under the soil where there is none), its own shade under the step above, a texel of
+       light along its outer edge where it breaks over the face below, a few blades hanging off that edge, and the
+       shade the terrace throws on the face. Painted into every texel not already solid, so the riser's toe shade
+       becomes the terrace's own dark first row. terrace 0 0 paints nothing and leaves the strip exactly as before. */
+    if (o.terrace[1] > 0) {
+      for (let x = 0; x < W; x++) {
+        let t0 = line + (hasApron ? Math.max(0, apron[x] - 3) : sodTh[x]);
+        if (o.riser[1] > 0) {
+          /* under the riser: its last opaque row in this column */
+          let y = t0; while (y < H && alphaAt(x, y) === 255) y++;
+          t0 = y;
+        }
+        const swell = noise(x, 110, 130), chat = rng(x, 0, 131);
+        const th = Math.max(2, Math.min(H - t0 - 1 - o.terraceShade, Math.round(o.terrace[0] + (o.terrace[1] - o.terrace[0]) * clamp(swell * 1.4 - .2, 0, 1) + (chat - .5) * 2)));
+        for (let k = 0; k < th; k++) {
+          const y = t0 + k;
+          if (alphaAt(x, y) === 255) continue;
+          const r = rng(x, k, 132);
+          let c = r < .1 ? G[1] : r > .93 ? G[3] : G[2];
+          if (k === 0) c = r < .85 ? G[0] : G[1];                      /* the shade under the step above */
+          else if (k === 1) c = r < .5 ? G[1] : G[2];
+          else if (k === th - 2) c = r < .7 ? G[3] : G[2];             /* the outer edge catches the light */
+          else if (k === th - 1) { if (r < .22) continue; c = r < .6 ? G[1] : G[0]; }   /* and breaks off */
+          put(x, y, c);
+        }
+        const foot = t0 + th;
+        if (rng(x, 2, 133) < .14) blade(x, foot - 1, 2 + FL(rng(x, 3, 133) * 4), rng(x, 4, 133) < .5 ? -1 : 1, 134);
+        for (let k = 0; k < o.terraceShade; k++) {
+          const y = foot + k;
+          if (!alphaAt(x, y) && rng(x, k, 135) < (k ? .6 : .95)) put(x, y, o.shadeColour, k ? o.shadeAlpha[1] : o.shadeAlpha[0]);
         }
       }
     }

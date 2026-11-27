@@ -110,6 +110,73 @@ namespace HiddenHarbours.Tests.EditMode
                     Assert.That(CliffHeightMath.RampShift(in Height, i / 100f, x), Is.InRange(-1, 1));
         }
 
+        static readonly CliffHeight Mass = new CliffHeight(0, 14, 0f, 0f, false, 0.2f, 0.35f, 0.06f,
+                                                           0.15f, 112, new Vector2(0.3f, 0.55f), 18, 3, true);
+
+        /// <summary>Coordinator 11 27: height from MASS, not ruled lines. A buttress's shade is a broad upright mass,
+        /// metres wide, whose edges jog at every bed, so no column of the face is one straight line brow to toe.</summary>
+        [Test]
+        public void Buttresses_AreBroadMasses_WhoseEdgesNeverRunStraight()
+        {
+            const int width = 112 * 30, height = 360;
+            int shaded = 0;
+            var straight = new bool[width];
+            for (int x = 0; x < width; x++) straight[x] = true;
+            for (int x = 0; x < width; x++)
+            {
+                int first = CliffHeightMath.ButtressShade(in Mass, x, 0), firstLeft = CliffHeightMath.ButtressShade(in Mass, x - 1, 0);
+                for (int y = 0; y < height; y++)
+                {
+                    int s = CliffHeightMath.ButtressShade(in Mass, x, y);
+                    Assert.That(s, Is.InRange(0, 1));
+                    shaded += s;
+                    if (s != first || CliffHeightMath.ButtressShade(in Mass, x - 1, y) != firstLeft) straight[x] = false;
+                }
+            }
+            float share = shaded / (float)(width * height);
+            Assert.That(share, Is.InRange(0.3f, 0.55f), "the shaded share is outside its range");
+            // An edge column: where shade meets light on row 0. None of them may stay an edge all the way down.
+            for (int x = 1; x < width; x++)
+            {
+                bool edge = CliffHeightMath.ButtressShade(in Mass, x, 0) != CliffHeightMath.ButtressShade(in Mass, x - 1, 0);
+                if (edge) Assert.IsFalse(straight[x], $"the buttress edge at column {x} runs straight down the face");
+            }
+            // The shade comes in runs metres wide, never thin lines.
+            int runs = 0, inRun = 0, shortest = int.MaxValue;
+            for (int x = 0; x < width; x++)
+            {
+                if (CliffHeightMath.ButtressShade(in Mass, x, 100) == 1) { inRun++; continue; }
+                if (inRun > 0) { runs++; shortest = Mathf.Min(shortest, inRun); inRun = 0; }
+            }
+            Assert.Greater(runs, 20);
+            Assert.GreaterOrEqual(shortest, 24, "a buttress's shade is a thin line, not a mass");
+        }
+
+        [Test]
+        public void TheDeepFoot_IsOneTier_OnlyAtTheFoot()
+        {
+            for (int x = 0; x < 256; x++)
+            {
+                Assert.AreEqual(0, CliffHeightMath.RampDeep(in Mass, 0.1f, x));
+                Assert.AreEqual(0, CliffHeightMath.RampDeep(in Mass, 0.6f, x));
+                Assert.AreEqual(1, CliffHeightMath.RampDeep(in Mass, 0.97f, x));
+            }
+            Assert.AreEqual(0, CliffHeightMath.RampDeep(in Height, 0.99f, 4), "a mix with no deep share has none");
+            Assert.AreEqual(0, CliffHeightMath.ButtressShade(in Height, 40, 40), "a mix with no buttresses has none");
+        }
+
+        [Test]
+        public void TheMass_IsPerMapping_AndNeverOnADecal()
+        {
+            Assert.IsTrue(Mass.MassOn(true, false));
+            Assert.IsTrue(Mass.MassOn(false, false), "a mix that asks for sheared walls gets them");
+            Assert.IsFalse(Mass.MassOn(true, true), "a decal takes no height");
+            Assert.IsFalse(Height.MassOn(false, false), "a mix that does not ask leaves sheared walls alone");
+            Assert.AreEqual(0f, Mass.ShaderButtress(false).w);
+            Assert.AreEqual(1f, Mass.ShaderButtress(true).w);
+            Assert.AreEqual(0f, Height.ShaderButtress(true).w, "a mix with no buttresses switches the shader's off");
+        }
+
         /// <summary>The St Peters mix gives its screen-grid walls height, hangs a bank's own strip, calms the ledge,
         /// and no longer chops its bedding into short slid tiers (slide 160 on 14-texel tiers read as brickwork).</summary>
         [Test]
@@ -119,9 +186,17 @@ namespace HiddenHarbours.Tests.EditMode
             CliffFaceMixDef mix = CliffFaceMixDef.ForScene("StPeters");
             Assert.IsNotNull(mix);
             CliffHeight h = CliffHeight.From(mix);
-            Assert.IsTrue(h.JointsOn, "St Peters' screen-grid walls carry no upright joints");
-            Assert.IsTrue(h.RampOn, "St Peters' screen-grid walls carry no ramp");
+            Assert.IsTrue(h.RampOn, "St Peters' walls carry no ramp");
             Assert.Greater(h.RampFootShare, 0f);
+            Assert.Greater(h.RampDeepShare, 0f, "the foot is only a band darker: it barely shows");
+            Assert.IsTrue(h.ButtressOn, "St Peters' walls are not grouped into upright masses");
+            Assert.IsFalse(h.JointLitEdge, "lit-edge pairs read as scaffolding (coordinator 11 27)");
+            Assert.IsFalse(h.JointsOn, "ruled upright joints on the big walls were rejected (owner 11 27)");
+            Assert.IsTrue(mix.StepShearedWalls, "the curved walls are still laid down the column: their bends are not pixel art");
+            Assert.IsTrue(h.MassOn(false, false), "the sheared, stepped walls get no height pass");
+            Assert.IsNotNull(mix.ShearedTurfLip, "the stepped walls hang no terrace");
+            Assert.Greater(mix.ShearedTurfLip.TerraceRows.y, 0, "the stepped walls' lip paints no grass terrace");
+            Assert.AreEqual(Vector2Int.zero, mix.TurfLip.TerraceRows, "the screen-grid walls' lip grew a terrace");
             Assert.Greater(mix.FaultBlockTexels.y, mix.FaultBlockTexels.x, "the fault's blocks are wider than tall: they read as courses, not height");
             Assert.LessOrEqual(mix.FaultSlideTexels, mix.FaultBlockTexels.y, "a slide longer than a block chops every upright feature");
             Assert.IsNotNull(mix.ShoreBrowTurfLip, "the banks hang the wall's lip, with no riser");
@@ -138,13 +213,61 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheShaders_DeclareWhatIsPushed()
         {
             string face = File.ReadAllText(Path.Combine(Application.dataPath, "_Project/Art/Shaders/HiddenHarboursCliffFace.shader"));
-            foreach (string name in new[] { "_JointA", "_JointB", "_FaceRamp", "float4 uv4", "float4 band" })
+            foreach (string name in new[] { "_JointA", "_JointB", "_FaceRamp", "_Buttress", "_ButtressB", "float4 uv4", "float4 band",
+                                            "tier -= shift.y", "band += shift.x" })
                 StringAssert.Contains(name, face);
-            foreach (string salt in new[] { "41.0", "42.0", "43.0", "44.0", "45.0", "46.0" })
+            foreach (string salt in new[] { "41.0", "42.0", "43.0", "44.0", "45.0", "46.0", "47.0", "48.0", "49.0" })
                 StringAssert.Contains(salt, face, "a hash salt the twin uses is missing from the shader");
             string ground = File.ReadAllText(Path.Combine(Application.dataPath, "_Project/Art/Shaders/HiddenHarboursTerrainSplat.shader"));
             StringAssert.Contains("float4 _ShoreLedgeCalm", ground);
             StringAssert.Contains("TerrainLedgeCalm(col, w[5] + w[11] + w[12], _ShoreLedgeCalm)", ground);
+        }
+    }
+
+    /// <summary>Owner 11 27: the bends of the curved walls did not read as pixel art. A stepped wall is laid on the
+    /// screen grid with its bedding counted down from its own brow (<see cref="CliffWallGeometry.SteppedUv"/>).</summary>
+    public sealed class CliffSteppedStrataTests
+    {
+        const float S = 4f, T = 4f, Cell = 1f / CliffWaterlineMath.TexelsPerMetre;
+
+        [Test]
+        public void ACell_IsOneTexel_SquareAndUnrotated()
+        {
+            var p = new Vector2(12.3f, -40.7f);
+            Vector2 a = CliffWallGeometry.SteppedUv(p, -38f, S, T);
+            Vector2 right = CliffWallGeometry.SteppedUv(p + new Vector2(Cell, 0f), -38f, S, T);
+            Vector2 down = CliffWallGeometry.SteppedUv(p + new Vector2(0f, -Cell), -38f, S, T);
+            Assert.AreEqual(Cell / S, right.x - a.x, 1e-6f, "a cell across is not one texel along u");
+            Assert.AreEqual(0f, right.y - a.y, 1e-6f, "a cell across moves v: the texel is sheared");
+            Assert.AreEqual(Cell / T, down.y - a.y, 1e-6f, "a cell down is not one texel down v");
+            Assert.AreEqual(0f, down.x - a.x, 1e-6f, "a cell down moves u: the texel is rotated");
+            Assert.AreEqual(CliffWallGeometry.ScreenPlanarUv(p, S, T).x, a.x, 1e-6f, "u is not the screen grid's");
+        }
+
+        [Test]
+        public void TheBedding_FollowsTheBrow_InWholeTexelSteps()
+        {
+            // Down from the brow is the same v wherever the brow stands: bedding parallel to the brow.
+            Vector2 high = CliffWallGeometry.SteppedUv(new Vector2(0f, -10f), -8f, S, T);
+            Vector2 low = CliffWallGeometry.SteppedUv(new Vector2(0f, -13f), -11f, S, T);
+            Assert.AreEqual(high.y, low.y, 1e-5f);
+            // The texel row a cell centre draws, across a brow that falls a third of a texel per column: the rows
+            // step by whole texels, never a fraction (point sampled at the cell's centre).
+            int texelsPerTile = Mathf.RoundToInt(T * CliffWaterlineMath.TexelsPerMetre);
+            int steps = 0, last = int.MinValue;
+            for (int col = 0; col < 30; col++)
+            {
+                float brow = -8f - col * Cell / 3f;
+                float y = (Mathf.Floor(-12f / Cell) + 0.5f) * Cell;           // one row of cells
+                int row = Mathf.FloorToInt(CliffWallGeometry.SteppedUv(new Vector2(col * Cell, y), brow, S, T).y * texelsPerTile);
+                if (last != int.MinValue)
+                {
+                    Assert.That(last - row, Is.InRange(0, 1), "the bedding jumped more than a texel between two columns");
+                    steps += last - row;
+                }
+                last = row;
+            }
+            Assert.That(steps, Is.InRange(8, 11), "the bedding does not follow the brow's fall");
         }
     }
 
