@@ -64,10 +64,11 @@ namespace HiddenHarbours.Art
             renderer.receiveShadows = false;
             renderer.lightProbeUsage = LightProbeUsage.Off;
             renderer.allowOcclusionWhenDynamic = false;
-            // It lies on the ground: over the ground and the sea's edge, under everything that stands on the land.
+            // It lies on the ground: over the ground, under the sea where the tide reaches it, under a wharf's
+            // deck and under everything that stands on the land.
             var group = go.AddComponent<SortingGroup>();
-            group.sortingOrder = SortingBands.DecorFloor;
-            renderer.sortingOrder = SortingBands.DecorFloor;
+            group.sortingOrder = SortingBands.UnderHulls;
+            renderer.sortingOrder = SortingBands.UnderHulls;
 
             var block = new MaterialPropertyBlock();
             block.SetTexture(IdUnlit, lip.Strip);

@@ -62,7 +62,16 @@ namespace HiddenHarbours.Tests.PlayMode
             ("4-light-station-run", new Vector2(206.5f, 56f), 2f, MidTide),
             ("4-light-station", new Vector2(206.5f, 55f), 1f, MidTide),
             ("4-light-station-brow", new Vector2(206.5f, 52f), 0.55f, MidTide),
+            ("4-light-station-walker", new Vector2(206.5f, 52f), 0.55f, MidTide),
             ("0-wide-st-peters", new Vector2(85f, -5f), 4.5f, MidTide),
+            // Every stretch of bank with no wall where the soft turf strip used to draw.
+            ("5-west-bank-south", new Vector2(-48f, -5f), 2f, MidTide),
+            ("5-west-bank-north", new Vector2(-40f, 35f), 2f, MidTide),
+            ("5-north-shore-west", new Vector2(-5f, 52f), 2f, MidTide),
+            ("5-north-shore-mid", new Vector2(30f, 68f), 2f, MidTide),
+            ("5-north-shore-east", new Vector2(80f, 58f), 2f, MidTide),
+            ("5-light-station-north", new Vector2(190f, 68f), 2f, MidTide),
+            ("5-east-bank", new Vector2(190f, 15f), 2.5f, MidTide),
         };
 
         readonly HashSet<GameObject> _residentBefore = new HashSet<GameObject>();
@@ -75,6 +84,11 @@ namespace HiddenHarbours.Tests.PlayMode
         GameObject _anchor;
         RenderTexture _rt;
         IEnvironmentService _envHeld;
+        TerrainShoreLinesDef _lines;
+        TerrainShoreLinesDef.Step _turfOnEntry;
+        const string StripEnv = "HH_CLIFF_ROUGH_STRIP";
+        const string WalkerShot = "4-light-station-walker";
+        static readonly Vector2 WalkerFeet = new Vector2(208.7f, 50f);
 
         sealed class HeldTide : IEnvironmentService
         {
@@ -106,6 +120,7 @@ namespace HiddenHarbours.Tests.PlayMode
             LogAssert.ignoreFailingMessages = false;
             Time.timeScale = 1f;
             if (_envHeld != null) { GameServices.Environment = _envHeld; _envHeld = null; }
+            if (_lines != null) { _lines.Turf = _turfOnEntry; _lines = null; }
             if (_follow != null && _followCaptured) { _follow.Target = _followTargetOnEntry; _follow.Smooth = _followSmoothOnEntry; }
             if (_cam != null) _cam.targetTexture = null;
             if (_rt != null) { _rt.Release(); Object.DestroyImmediate(_rt); _rt = null; }
@@ -149,8 +164,33 @@ namespace HiddenHarbours.Tests.PlayMode
             IEnvironmentService envBefore = GameServices.Environment;
             LogAssert.ignoreFailingMessages = true;
             _loadedAny = true;
+            // HH_CLIFF_ROUGH_STRIP=old shoots the banks as they were: the soft turf strip on, the bank lip hidden.
+            bool oldStrip = System.Environment.GetEnvironmentVariable(StripEnv) == "old";
+            if (oldStrip)
+            {
+                _lines = Resources.Load<TerrainShoreLinesDef>("TerrainShoreLines/StPetersShoreLines");
+                Assert.IsNotNull(_lines);
+                _turfOnEntry = _lines.Turf;
+                _lines.Turf = TerrainShoreLinesDef.Step.Normal;
+            }
             yield return HiddenHarbours.Tests.Support.SceneSettle.Load(StPeters, LoadSceneMode.Single);
             for (int i = 0; i < 8; i++) yield return null;
+            var lipLog = new StringBuilder();
+            foreach (MeshFilter lip in Resources.FindObjectsOfTypeAll<MeshFilter>())
+            {
+                if (lip.name != ShoreBrowLipSurface.ChildName || lip.sharedMesh == null) continue;
+                if (oldStrip) { lip.gameObject.SetActive(false); continue; }
+                // Where the bank lip hangs, in 20 m cells, so every stretch of it can be framed.
+                var cells = new SortedDictionary<(int, int), int>();
+                foreach (Vector3 v in lip.sharedMesh.vertices)
+                {
+                    Vector3 w = lip.transform.TransformPoint(v);
+                    var k = (Mathf.FloorToInt(w.y / 20f), Mathf.FloorToInt(w.x / 20f));
+                    cells.TryGetValue(k, out int n); cells[k] = n + 1;
+                }
+                foreach (var kv in cells)
+                    lipLog.AppendLine($"  [bank-lip] x {kv.Key.Item2 * 20}..{kv.Key.Item2 * 20 + 20} y {kv.Key.Item1 * 20}..{kv.Key.Item1 * 20 + 20}: {kv.Value / 4} quads");
+            }
             if (GameServices.Config == null && configBefore != null) GameServices.Config = configBefore;
             if (GameServices.Clock == null && clockBefore != null) GameServices.Clock = clockBefore;
             if (GameServices.Environment == null && envBefore != null) GameServices.Environment = envBefore;
@@ -163,6 +203,8 @@ namespace HiddenHarbours.Tests.PlayMode
             if (string.IsNullOrEmpty(tag)) tag = "shot";
             var log = new StringBuilder();
             log.AppendLine($"St Peters rough-cliff plates '{tag}'. Unity {Application.unityVersion}, {SystemInfo.graphicsDeviceName}.");
+            log.AppendLine(oldStrip ? "the soft turf strip ON, the bank lip hidden" : "the bank lip:");
+            log.Append(lipLog);
             yield return PinTheHour(Noon);
             // To find which piece of a wall draws a thing: HH_CLIFF_ROUGH_HIDE names child prefixes to leave out.
             string hide = System.Environment.GetEnvironmentVariable("HH_CLIFF_ROUGH_HIDE");
@@ -177,6 +219,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 if (!Mathf.Approximately(fr.tide, tideNow)) { yield return HoldTheTide(fr.tide); tideNow = fr.tide; }
                 yield return FrameOn(fr.at, fr.zoom);
+                if (fr.shot == WalkerShot) yield return StandTheWalker(WalkerFeet, log);
                 SavePlate($"{fr.shot}_{tag}.png", Capture());
                 log.AppendLine($"{fr.shot}: camera ({_cam.transform.position.x:0.##}, {_cam.transform.position.y:0.##}), " +
                                $"{_cam.orthographicSize * 2f:0.##} m tall, tide {fr.tide:0.##} m");
@@ -215,6 +258,26 @@ namespace HiddenHarbours.Tests.PlayMode
                 if (area > 1e-7f) one++; else if (area < -1e-7f) other++;
             }
             return $"wound {one}/{other}";
+        }
+
+        /// <summary>Stands the player with his feet at a point, for a plate of what draws over what there.</summary>
+        IEnumerator StandTheWalker(Vector2 feet, StringBuilder log)
+        {
+            var player = Object.FindAnyObjectByType<HiddenHarbours.Player.PlayerWalkController>(FindObjectsInactive.Include);
+            if (player == null) { log.AppendLine("  [walker] no player in the loaded game"); yield break; }
+            player.gameObject.SetActive(true);
+            var body = player.GetComponent<Rigidbody2D>();
+            var foot = player.GetComponent<CircleCollider2D>();
+            Vector2 at = feet - (foot != null ? foot.offset : Vector2.zero);
+            if (body != null) { body.position = at; body.linearVelocity = Vector2.zero; }
+            player.transform.position = new Vector3(at.x, at.y, player.transform.position.z);
+            Physics2D.SyncTransforms();
+            Time.timeScale = 1f;
+            float start = Time.time;
+            while (Time.time - start < 0.5f) yield return null;
+            Time.timeScale = 0f;
+            for (int i = 0; i < 2; i++) yield return null;
+            log.AppendLine($"  [walker] feet asked ({feet.x:0.##}, {feet.y:0.##}), stands at ({player.transform.position.x:0.##}, {player.transform.position.y:0.##})");
         }
 
         IEnumerator HoldTheTide(float level)
