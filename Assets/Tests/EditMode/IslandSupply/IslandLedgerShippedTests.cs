@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using HiddenHarbours.App;
 using HiddenHarbours.Core;
 using HiddenHarbours.Economy;
+using HiddenHarbours.Environment;
 using NUnit.Framework;
+using UnityEditor;
+using UnityEditor.SceneManagement;
 
 namespace HiddenHarbours.Tests.EditMode
 {
@@ -96,6 +100,78 @@ namespace HiddenHarbours.Tests.EditMode
                 for (int i = 0; i < shipped.GoodCount; i++)
                     Assert.That(shipped.LevelAtDusk(i), Is.EqualTo(doubled.LevelAtDusk(i)).Within(1e-9),
                                 "day " + day + " " + shipped.Good(i).Id);
+            }
+        }
+
+        [Test]
+        public void ShippedSeaAndLedger_HaveIdenticalCrossingWindowsAcrossALunarMonth()
+        {
+            var region = IslandSupplyTestData.Region(_route.IslandRegionId);
+            string scenePath = "Assets/_Project/Scenes/" + region.SceneName + ".unity";
+            // Read the service actually referenced by the shipped core, independently of the RegionDef
+            // used by Water(). A preview neither replaces the editor's scenes nor runs the game clock.
+            var scene = EditorSceneManager.OpenPreviewScene(scenePath);
+            try
+            {
+                var roots = scene.GetRootGameObjects()
+                    .SelectMany(root => root.GetComponentsInChildren<GameRoot>(true)).ToArray();
+                Assert.That(roots.Length, Is.EqualTo(1), scenePath + ": one shared environment publisher");
+                var core = new SerializedObject(roots[0]);
+                var service = core.FindProperty("_environment").objectReferenceValue as EnvironmentService;
+                Assert.That(service, Is.Not.Null, scenePath + ": GameRoot must publish the sea service");
+                var serialized = new SerializedObject(service);
+                Assert.That(serialized.FindProperty("_config").objectReferenceValue, Is.SameAs(_cfg),
+                    "The sea and ledger must read the same shipped clock and tide configuration.");
+
+                IEnvironmentService sea = service; // Exercise WaterLevelAt, including its default interface path.
+                Func<double, float> seaWater = sea.WaterLevelAt;
+                Func<double, float> ledgerWater = IslandSupplyTestData.Water(_route, _cfg);
+                double monthSeconds = _cfg.LunarMonthDays * (double)_cfg.SecondsPerDay;
+                int days = (int)Math.Ceiling(_cfg.LunarMonthDays);
+                Assert.That(monthSeconds, Is.GreaterThan(0.0));
+                TideProfile profile = sea.ActiveTideProfile;
+                string source = $"Seed {sea.WorldSeed}, t=[0,{monthSeconds:R}) clock seconds; " +
+                    $"shared sea mean/amplitude/phase={profile.MeanLevel:R}/{profile.Amplitude:R}/{profile.PhaseHours:R}; " +
+                    $"ledger RegionDef={region.TideMeanLevel:R}/{region.TideAmplitude:R}/{region.TidePhaseHours:R}. " +
+                    "The ledger helper has no seed input: TideModel.Height is seed-independent. ";
+
+                // A lunar month contains two complete spring-neap envelopes. Both paths sample the same
+                // times at the shipped search step and bisect threshold edges with the same algorithm.
+                var seaBar = CrossingMath.BarWindows(seaWater, _route, _cfg, 0.0, monthSeconds);
+                var ledgerBar = CrossingMath.BarWindows(ledgerWater, _route, _cfg, 0.0, monthSeconds);
+                Assert.That(seaBar, Is.Not.Empty, source + "No bar windows sampled.");
+                AssertSameWindows(seaBar, ledgerBar, source + "Bar crest: ");
+                var seaGut = CrossingMath.GutWindows(seaWater, _route, _def.Runner.MaxWadeDepthMetres,
+                    _cfg, 0.0, monthSeconds);
+                var ledgerGut = CrossingMath.GutWindows(ledgerWater, _route, _def.Runner.MaxWadeDepthMetres,
+                    _cfg, 0.0, monthSeconds);
+                Assert.That(seaGut, Is.Not.Empty, source + "No runner gut windows sampled.");
+                AssertSameWindows(seaGut, ledgerGut, source + "Runner gut: ");
+
+                var seaDays = IslandRunCalendar.DaylightRunDays(seaWater, _def.Runner, _route, _cfg, 0, days - 1);
+                var ledgerDays = IslandRunCalendar.DaylightRunDays(ledgerWater, _def.Runner, _route, _cfg, 0, days - 1);
+                var seaLedger = IslandStoreLedger.FromDef(_def, _route, _carriers, seaDays);
+                var ledger = IslandStoreLedger.FromDef(_def, _route, _carriers, ledgerDays);
+                for (int day = 0; day < days; day++)
+                {
+                    Assert.That(ledgerDays(day), Is.EqualTo(seaDays(day)), source + $"Day {day}: daylight feasibility differs.");
+                    Assert.That(ledger.RunsOn(day), Is.EqualTo(seaLedger.RunsOn(day)), source + $"Day {day}: delivery differs.");
+                }
+                TestContext.WriteLine(source + $"Matched {seaBar.Count} bar windows, {seaGut.Count} gut windows and {days} days.");
+            }
+            finally { EditorSceneManager.ClosePreviewScene(scene); }
+        }
+
+        private static void AssertSameWindows(IList<TideWindow> sea, IList<TideWindow> ledger, string context)
+        {
+            Assert.That(ledger.Count, Is.EqualTo(sea.Count), context + "Window count differs (ledger vs shared sea).");
+            for (int i = 0; i < sea.Count; i++)
+            {
+                string difference = context + $"Window {i}: ledger [{ledger[i].StartSeconds:R}, {ledger[i].EndSeconds:R}), " +
+                    $"shared sea [{sea[i].StartSeconds:R}, {sea[i].EndSeconds:R}) clock seconds. " +
+                    "Keep this equality guard; resolve the tide source before changing supply rules.";
+                Assert.That(ledger[i].StartSeconds, Is.EqualTo(sea[i].StartSeconds), difference);
+                Assert.That(ledger[i].EndSeconds, Is.EqualTo(sea[i].EndSeconds), difference);
             }
         }
     }
