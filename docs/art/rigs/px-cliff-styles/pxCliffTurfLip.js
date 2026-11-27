@@ -112,13 +112,17 @@
       for (let dx = 0; dx < sw; dx++) put(x + dx, y + sh, S[0]);
     }
 
-    /* the undercut: against soil it is the soil's two darkest tones, against bare rock a flat alpha shade */
+    /* the undercut: against soil it is the soil's two darkest tones, against bare rock a flat alpha shade.
+       Soil in shade is still soil: the flat shade colour is near black and is never laid opaque on the apron
+       (a chip in the brow showed it as a black wedge above the lip). Where the mat is torn away nothing
+       overhangs, so there is no undercut there at all and the cut soil shows in its own tones. */
     for (let x = 0; x < W; x++) {
+      if (torn[x]) continue;
       const y0 = line + sodTh[x], d = shadeTh[x], near = Math.max(1, Math.round(d * .5));
       for (let k = 0; k < d; k++) {
         const far = k >= near;
         if (far && rng(x, k, 20) < .25 + .55 * (k - near) / Math.max(1, d - near)) continue;
-        if (apron[x] > sodTh[x] + k) put(x, y0 + k, far ? S[0] : o.shadeColour);
+        if (apron[x] > sodTh[x] + k) put(x, y0 + k, far ? S[1] : S[0]);
         else put(x, y0 + k, o.shadeColour, far ? o.shadeAlpha[1] : o.shadeAlpha[0]);
       }
     }
