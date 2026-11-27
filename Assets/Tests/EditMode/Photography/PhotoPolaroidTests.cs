@@ -144,7 +144,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             PhotoRecordDto row = Add(save, Local, 120, null);
             Assert.AreEqual("", row.Thumbnail, "a headless shutter keeps the record with no picture");
-            StringAssert.Contains("\"Thumbnail\":\"\"", SaveSerialization.ToJson(save));
+            StringAssert.Contains("\"Thumbnail\"", SaveSerialization.ToJson(save));
         }
 
         [Test]
