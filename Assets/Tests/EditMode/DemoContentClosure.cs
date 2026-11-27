@@ -173,8 +173,15 @@ namespace HiddenHarbours.Tests.EditMode
             root = Path.GetFullPath(root).TrimEnd('/', '\\');
             var report = new Report();
             foreach (SourceContract contract in budget.sourceContracts ?? new SourceContract[0])
-                if (!File.Exists(Path.Combine(root, contract.path)) || TextHash(Path.Combine(root, contract.path)) != contract.sha256)
-                    report.Problems.Add("DemoContent.ImportContractChanged: re-audit string dependencies in " + contract.path);
+            {
+                string file = Path.Combine(root, contract.path);
+                string observed = File.Exists(file) ? TextHash(file) : "missing";
+                if (observed != contract.sha256)
+                    report.Problems.Add("DemoContent.ImportContractChanged: re-audit string dependencies in " + contract.path +
+                        " (observed " + observed + ", recorded " + contract.sha256 + ")" +
+                        (observed != "missing" && contract.path == "Packages/manifest.json"
+                            ? " content: " + Regex.Replace(File.ReadAllText(file), @"\s+", " ") : ""));
+            }
             foreach (string folder in new[] { "Assets", "Packages" })
             {
                 string absolute = Path.Combine(root, folder);
