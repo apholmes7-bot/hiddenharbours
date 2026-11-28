@@ -155,7 +155,7 @@ namespace HiddenHarbours.Tests.EditMode
             // The append-only promise, asserted rather than assumed: a def with no Build must remain a
             // valid NPC. Ned's Letter is not a person and must never grow a body.
             var letter = Npc("NedLetter");
-            if (letter == null) Assert.Ignore("NedLetter.asset is not in this branch.");
+            Assert.IsNotNull(letter, "The committed letter definition is required.");
 
             Assert.IsNull(letter.Build,
                 "Ned's Letter is a thing you READ, not someone who stands there. Giving it a " +
@@ -169,9 +169,8 @@ namespace HiddenHarbours.Tests.EditMode
         public void Dressing_AnNpcWithABuild_ProducesAnAnimatedBody_NotAGreybox()
         {
             var npc = Npc("BasilSamson");
-            if (npc == null || !npc.HasBakedBody)
-                Assert.Ignore("BasilSamson has no baked build in this branch — the data tests above " +
-                              "own that failure.");
+            Assert.IsNotNull(npc, "The committed NPC definition is required.");
+            Assert.IsTrue(npc.HasBakedBody, "The committed NPC build must retain its baked body.");
 
             var go = new GameObject("dress-test");
             try

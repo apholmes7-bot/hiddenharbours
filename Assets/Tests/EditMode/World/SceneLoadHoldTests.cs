@@ -70,6 +70,80 @@ namespace HiddenHarbours.Tests.World.EditMode
         }
 
         [Test]
+        public void AReadReachingTheThresholdAtTheCapWinsOverTimeout()
+        {
+            double elapsed = 0d;
+            float progress = 0f;
+            int pauses = 0;
+            var outcome = SceneLoadHold.WaitForRead(() => progress, () => elapsed, () =>
+            {
+                pauses++;
+                elapsed = SceneLoadHold.CapSeconds;
+                progress = SceneLoadHold.ReadDoneProgress;
+            }, SceneLoadHold.CapSeconds);
+            Assert.That(outcome, Is.EqualTo(SceneLoadHold.Outcome.ReadDone));
+            Assert.That(pauses, Is.EqualTo(1));
+            Assert.That(elapsed, Is.EqualTo((double)SceneLoadHold.CapSeconds));
+        }
+
+        [Test]
+        public void ASlowPauseCanOvershootTheCapButCannotStartAnotherPause()
+        {
+            double elapsed = 0d;
+            int pauses = 0;
+            var outcome = SceneLoadHold.WaitForRead(() => 0.5f, () => elapsed,
+                () => { pauses++; elapsed += SceneLoadHold.CapSeconds * 0.75d; }, SceneLoadHold.CapSeconds);
+            Assert.That(outcome, Is.EqualTo(SceneLoadHold.Outcome.TimedOut));
+            Assert.That(pauses, Is.EqualTo(2));
+            Assert.That(elapsed, Is.EqualTo(SceneLoadHold.CapSeconds * 1.5d),
+                "the cap bounds the next observation, not how long the scheduler can delay a pause");
+        }
+
+        [TestCase(0f, SceneLoadHold.Outcome.TimedOut)]
+        [TestCase(0.899f, SceneLoadHold.Outcome.TimedOut)]
+        [TestCase(SceneLoadHold.ReadDoneProgress, SceneLoadHold.Outcome.ReadDone)]
+        [TestCase(1f, SceneLoadHold.Outcome.ReadDone)]
+        public void ZeroCapChecksProgressButDoesNotPause(float progress, SceneLoadHold.Outcome expected)
+        {
+            int pauses = 0;
+            Assert.That(SceneLoadHold.WaitForRead(() => progress, () => 0d, () => pauses++, 0f),
+                        Is.EqualTo(expected));
+            Assert.That(pauses, Is.Zero);
+        }
+
+        [Test]
+        public void CompletedReadDoesNotNeedAClockOrPause()
+        {
+            Assert.That(SceneLoadHold.WaitForRead(() => SceneLoadHold.ReadDoneProgress,
+                () => throw new System.InvalidOperationException("clock must not be read"),
+                () => throw new System.InvalidOperationException("must not pause"), SceneLoadHold.CapSeconds),
+                Is.EqualTo(SceneLoadHold.Outcome.ReadDone));
+        }
+
+        [Test]
+        public void DrainingTheQueueDoesNotRestoreASpentSessionBudget()
+        {
+            Assert.That(SceneLoadHold.ShouldHold(1, SceneLoadHold.MaxTimeouts - 1, SceneLoadHold.MaxTimeouts), Is.False);
+            Assert.That(SceneLoadHold.ShouldHold(0, SceneLoadHold.MaxTimeouts - 1, SceneLoadHold.MaxTimeouts), Is.True,
+                        "draining allows the last remaining hold");
+            Assert.That(SceneLoadHold.ShouldHold(1, SceneLoadHold.MaxTimeouts, SceneLoadHold.MaxTimeouts), Is.False);
+            Assert.That(SceneLoadHold.ShouldHold(0, SceneLoadHold.MaxTimeouts, SceneLoadHold.MaxTimeouts), Is.False,
+                        "draining cannot refund a timeout");
+            Assert.That(SceneLoadHold.ShouldHold(0, 0, 0), Is.False, "zero budget disables holding");
+        }
+
+        [Test]
+        public void NullOperationIsNotHeldTrackedOrCharged()
+        {
+            int pending = SceneLoadHold.InFlight, held = SceneLoadHold.HeldLoads, timeouts = SceneLoadHold.Timeouts;
+            Assert.That(SceneLoadHold.HoldUntilRead(null, out var outcome), Is.Null);
+            Assert.That(outcome, Is.EqualTo(SceneLoadHold.Outcome.NotHeld));
+            Assert.That(SceneLoadHold.InFlight, Is.EqualTo(pending));
+            Assert.That(SceneLoadHold.HeldLoads, Is.EqualTo(held));
+            Assert.That(SceneLoadHold.Timeouts, Is.EqualTo(timeouts));
+        }
+
+        [Test]
         public void TheWorstCaseStallStaysInsideTheHangWatchdog()
         {
             Assert.That(SceneLoadHold.CapSeconds, Is.GreaterThan(0f));

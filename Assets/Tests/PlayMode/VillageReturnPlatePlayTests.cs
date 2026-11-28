@@ -56,6 +56,7 @@ namespace HiddenHarbours.Tests.PlayMode
         const string CleanupSceneName = "VillageReturnPlateCleanup";
         const string StPeters = "StPeters";
         const string BuildingsContractPath = "_Project/Art/Sprites/Buildings/Village/Buildings.json";
+        const string OwnShellContractsDir = "_Project/Art/Sprites/Buildings";
         const string VillageSheetPrefix = "Village_";
         const string RoomSheetPrefix = "Interior_";
         const string HouseRig = "house";
@@ -130,6 +131,7 @@ namespace HiddenHarbours.Tests.PlayMode
         [Serializable] public sealed class Buildings { public Building[] buildings; }
 
         [Serializable] public sealed class Building { public string key; public string rig; }
+        [Serializable] public sealed class OwnShell { public string build; public string rig; }
 
         sealed class Station
         {
@@ -430,6 +432,16 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             Dictionary<string, string> rigOf = ReadContract<Buildings>(BuildingsContractPath).buildings
                 .ToDictionary(b => b.key, b => b.rig);
+            // As in the return-scenes census, a bespoke shell declares its own build and rig.
+            // The cottage acquired its own contract in #1392 and left the village kit's census.
+            foreach (string own in Directory.GetFiles(Path.Combine(Application.dataPath, OwnShellContractsDir),
+                                                      "Village_*.json", SearchOption.AllDirectories))
+            {
+                if (Path.GetFileName(Path.GetDirectoryName(own)) == "Village") continue;
+                var shell = JsonUtility.FromJson<OwnShell>(File.ReadAllText(own));
+                if (shell != null && !string.IsNullOrEmpty(shell.build) && !rigOf.ContainsKey(shell.build))
+                    rigOf.Add(shell.build, shell.rig);
+            }
             var found = new List<(SpriteRenderer, string, string)>();
             foreach (SpriteRenderer sr in Object.FindObjectsByType<SpriteRenderer>())
             {
@@ -475,7 +487,8 @@ namespace HiddenHarbours.Tests.PlayMode
                     OnTheHalfMetre(h.sr.bounds.center), new Renderer[] { h.sr }, new Renderer[0]));
             }
 
-            var yard = village.Where(v => v.key.StartsWith(YardSheetPrefix, StringComparison.Ordinal)).ToList();
+            var yard = village.Where(v => v.rig != HouseRig &&
+                                          v.key.StartsWith(YardSheetPrefix, StringComparison.Ordinal)).ToList();
             if (yard.Count > 0)
             {
                 Bounds b = yard[0].sr.bounds;
