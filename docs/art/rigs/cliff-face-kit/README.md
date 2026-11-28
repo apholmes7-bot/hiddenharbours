@@ -155,6 +155,14 @@ about its own shape:
 **`t` is still 32 px/m along the surface, not along the height.** A battered face at
 384×288 covers 12 × 9 m *of surface*, so an 8 m bank needs 8/sin(48°) = 10.8 m of `t`,
 i.e. 1.2 tiles. Size the quad by surface length, not by height.
+> **Overridden in the game, 2026-11-26 (owner: no mixels, one pixel size on screen for everything).**
+> The game no longer lays `t` in surface metres. A face is drawn foreshortened by the camera and pushed
+> about by its profile, so surface metres put texels on screen that are shorter or longer than the
+> ground's beside them. `CliffWallSurface.FaceMesh` now lays `t` in **drawn** metres down each column
+> (`CliffWallGeometry.DrawnMetres`), and the cliff shader takes one answer per 1/32 m world cell, so a
+> face texel is square and the size of a meadow texel. The surface length still says how much rock a
+> bank has and still bounds the bands; it no longer sizes the texture. A 48° bank therefore shows fewer
+> courses than its surface holds: that is the price of one texel size, and it is the owner's call.
 
 ---
 

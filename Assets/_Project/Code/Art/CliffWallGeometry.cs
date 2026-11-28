@@ -314,7 +314,7 @@ namespace HiddenHarbours.Art
             return drops[chunk][Mathf.Clamp(station, 0, drops[chunk].Length - 1)];
         }
 
-        static int JoinedBefore(IReadOnlyList<Vector2[]> brows, int i)
+        public static int JoinedBefore(IReadOnlyList<Vector2[]> brows, int i)
         {
             Vector2 first = brows[i][0];
             for (int k = 0; k < brows.Count; k++)
@@ -323,7 +323,7 @@ namespace HiddenHarbours.Art
             return -1;
         }
 
-        static int JoinedAfter(IReadOnlyList<Vector2[]> brows, int i)
+        public static int JoinedAfter(IReadOnlyList<Vector2[]> brows, int i)
         {
             Vector2 last = brows[i][brows[i].Length - 1];
             for (int k = 0; k < brows.Count; k++)
@@ -678,6 +678,112 @@ namespace HiddenHarbours.Art
         /// </summary>
         public static float TileV(float surfaceMetres, float faceMetresT) =>
             faceMetresT <= 0f ? 0f : surfaceMetres / faceMetresT;
+
+        /// <summary>
+        /// The unit direction a column is DRAWN down, brow to drawn toe, in world XY (straight down the screen for
+        /// a column with no length). Pure.
+        /// </summary>
+        public static Vector2 DrawnDown(Vector2 browPlan, Vector2 toeScreen)
+        {
+            Vector2 d = toeScreen - browPlan;
+            float len = d.magnitude;
+            return len > 1e-5f ? d / len : Vector2.down;
+        }
+
+        /// <summary>
+        /// ⭐ <b>What a face's v counts: DRAWN metres down its column</b>, from the band's own top vertex
+        /// to this one, added up row by row along the laid vertices. The owner's ruling of 2026-11-26 (no mixels: a
+        /// face texel is square and the size of the ground's on screen) overrides the kit's "v counts SURFACE
+        /// metres": a face is drawn foreshortened by the camera's tilt and pushed about by its profile, and surface
+        /// metres laid on that column are texels shorter or longer than the meadow's beside them. Added up along the
+        /// column and not taken straight from the top, so v never runs backward: where the relief folds a short
+        /// column back toward its top a straight distance would shrink again and the rock would be drawn mirrored.
+        /// <paramref name="soFar"/> is the row above's count (0 at the band's top), <paramref name="above"/> its
+        /// vertex. Pure.
+        /// </summary>
+        public static float DrawnMetres(float soFar, Vector2 above, Vector2 vertex) =>
+            soFar + Vector2.Distance(above, vertex);
+
+        /// <summary>
+        /// The uv of a face vertex mapped on the SCREEN art grid: u counts world x in tiles, v world y DOWNWARD in
+        /// tiles (a face's v grows down its column). World-anchored, so it does not depend on the station, the band
+        /// or the chunk: equal world y is equal v (bedding level on screen) and a texel is square. Pure.
+        /// </summary>
+        public static Vector2 ScreenPlanarUv(Vector2 world, float faceMetresS, float faceMetresT) =>
+            new Vector2(TileU(world.x, faceMetresS), TileV(-world.y, faceMetresT));
+
+        /// <summary>
+        /// The uv of a face vertex on a STEPPED wall: u counts world x in tiles, as on the screen grid, and v counts
+        /// world y DOWN from its column's brow (<paramref name="browWorldY"/>), so the bedding runs parallel to the brow.
+        /// A cell takes the texel at its centre, so down a column v moves one texel per cell and across the columns
+        /// the bedding jumps by whole texels where the brow climbs or falls: stair-stepped strata, every texel square
+        /// and unrotated (owner 11 27: the bends of the curved walls did not read as pixel art). Pure.
+        /// </summary>
+        public static Vector2 SteppedUv(Vector2 world, float browWorldY, float faceMetresS, float faceMetresT) =>
+            new Vector2(TileU(world.x, faceMetresS), TileV(browWorldY - world.y, faceMetresT));
+
+        /// <summary>
+        /// The level a stepped wall counts its beds from, station by station (owner 11 27, round three: the beds must
+        /// read as long hand-pixelled stair steps you can follow round a bend, not a texel of stair per column). The
+        /// level is the brow's, snapped to a whole texel, held for a run along the brow; a run ends once it is at
+        /// least <paramref name="minRunTexels"/> long and the brow has drifted <paramref name="jogTexels"/> from it,
+        /// or at <paramref name="maxRunTexels"/>, and the next run takes the brow's level there. So every bed keeps
+        /// its row along a run and jogs by whole texels between runs. minRun 0 or less = no runs: the brow itself.
+        /// Pure.
+        /// </summary>
+        public static float[] SteppedBrowY(float[] browY, float[] alongMetres, int minRunTexels, int maxRunTexels, int jogTexels)
+        {
+            int n = browY.Length;
+            var level = new float[n];
+            if (n == 0) return level;
+            if (minRunTexels <= 0)
+            {
+                System.Array.Copy(browY, level, n);
+                return level;
+            }
+            const float T = CliffWaterlineMath.TexelsPerMetre;
+            int maxRun = Mathf.Max(minRunTexels, maxRunTexels);
+            float hold = Mathf.Round(browY[0] * T) / T, start = alongMetres[0];
+            for (int c = 0; c < n; c++)
+            {
+                float run = (alongMetres[c] - start) * T;
+                float drift = Mathf.Abs(browY[c] - hold) * T;
+                if (run >= maxRun || (run >= minRunTexels && drift >= jogTexels))
+                {
+                    hold = Mathf.Round(browY[c] * T) / T;
+                    start = alongMetres[c];
+                }
+                level[c] = hold;
+            }
+            return level;
+        }
+
+        /// <summary>How far past a band's true edge its mesh is laid, square to the edge, so every ground cell the edge
+        /// touches is covered: a cell and a half (a cell's centre is under 0.71 of a cell from any point in it).</summary>
+        public const float CellCoverMetres = 1.5f / CliffWaterlineMath.TexelsPerMetre;
+
+        /// <summary>The least sine of the angle between a column and its band's edge the cover is scaled by: a column
+        /// that runs nearly along its edge is moved four covers at most, never a wall's length.</summary>
+        public const float LeastCoverSine = 0.25f;
+
+        /// <summary>A column whose band is shorter than this has no band there, and its edge is not moved.</summary>
+        public const float CollapsedColumnMetres = 1e-4f;
+
+        /// <summary>The share of a cell either side of a band's edge that still counts as inside it, so two bands
+        /// that meet on one line can never both give a cell up to float error. Twin: the shader's band cut.</summary>
+        public const float BandEdgeCellShare = 0.05f;
+
+        /// <summary>
+        /// Whether a ground cell is drawn by a band whose mesh was laid past its edges
+        /// (<see cref="CellCoverMetres"/>): the band's parameter at the cell's CENTRE (0 at the band's top, 1 at its
+        /// foot) is inside the band. <paramref name="bandPerCell"/> is how far the parameter moves across one cell.
+        /// So a cell is wholly drawn or wholly not, and a band's edge steps cell by cell. Pure. Twin: the shader.
+        /// </summary>
+        public static bool CellIsInBand(float bandAtCellCentre, float bandPerCell)
+        {
+            float slack = BandEdgeCellShare * Mathf.Abs(bandPerCell);
+            return bandAtCellCentre >= -slack && bandAtCellCentre < 1f + slack;
+        }
 
         /// <summary>
         /// How many rows to subdivide a face into so the profile displacement has somewhere to land.

@@ -111,6 +111,24 @@ Shader "HiddenHarbours/CliffFace"
         // The variant skin's own FACES (a CliffFaceStyleDef: the boards' coursed rock), where the band's kit
         // face has one. Same rows and bands as the kit face, so they draw through either palette.
         [HideInInspector] _VariantFaceOn ("Px variant face on", Float) = 0
+        // Ground texels one BASE face texel covers a side: 2 for a face painted in 2 px texels that a mix
+        // wants drawn on the ground's grid, 1 as mapped. Pushed per renderer by CliffWallSurface.
+        [HideInInspector] _BaseTexelScale ("Base face texel scale", Float) = 1
+        // THE FAULTED BEDDING (owner 11 26: rough and jagged, no mixels), on a face laid on the screen grid.
+        // The region's CliffFaceMixDef numbers, pushed per renderer by CliffWallSurface; _FaultB.w 0 = off.
+        // A: block width, tier height, throw, slide (ground texels). B: crack run, crack share, facet degrees, on.
+        [HideInInspector] _FaultA ("Fault: block, tier, throw, slide", Vector) = (0, 0, 0, 0)
+        [HideInInspector] _FaultB ("Fault: crack run, crack share, facet deg, on", Vector) = (4, 0, 0, 0)
+        // C: on the BASE skin's face (broad beds, flat inside a block), the block's size and its throw are scaled.
+        // Height on a wall laid on the screen grid (CliffHeight); _JointB.y and _FaceRamp.w 0 = off.
+        [HideInInspector] _JointA ("Joints: spacing, run, run share, step share", Vector) = (0, 24, 0, 0)
+        [HideInInspector] _JointB ("Joints: lit edge, on", Vector) = (0, 0, 0, 0)
+        [HideInInspector] _FaceRamp ("Face ramp: top share, foot share, jitter, on", Vector) = (0, 0, 0, 0)
+        [HideInInspector] _Buttress ("Buttresses: pitch, shade min, shade max, on", Vector) = (0, 0, 0, 0)
+        [HideInInspector] _ButtressB ("Buttresses: bed rows, jog, ramp deep share", Vector) = (18, 0, 0, 0)
+        // A: tide zone share of the face, mark pitch, mark rows, on.
+        [HideInInspector] _Tide ("Tide marks: zone share, pitch, rows, on", Vector) = (0, 0, 0, 0)
+        [HideInInspector] _FaultC ("Fault: variant face block scale, variant face throw scale", Vector) = (1, 1, 0, 0)
         [HideInInspector][NoScaleOffset] _UnlitVariant ("Px variant face index", 2D) = "black" {}
         [HideInInspector][NoScaleOffset] _NormalVariant ("Px variant face normal", 2D) = "bump" {}
         [HideInInspector][NoScaleOffset] _MaskVariant ("Px variant face mask", 2D) = "white" {}
@@ -210,6 +228,12 @@ Shader "HiddenHarbours/CliffFace"
                 // x is the cliff mix's weight at the station's toe (0 the base palette, 1 the variant),
                 // y is 1 when the wall was built with a mix. Absent (zero) on a wall with none.
                 float2 uv3        : TEXCOORD3;
+                // x is the band's own parameter (0 at its top row, 1 at its foot; the mesh is laid a little
+                // past both), y is 1 when the band's edges are cut on the ground's cells. Absent (zero) on a
+                // wall that is not laid on the screen grid, and then nothing is cut.
+                // z is the chunk's own parameter, 0 at its first station and 1 at its last.
+                // w is the WHOLE face's depth, 0 at the brow and 1 at the foot (the ramp, CliffHeightMath).
+                float4 uv4        : TEXCOORD4;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
@@ -226,6 +250,10 @@ Shader "HiddenHarbours/CliffFace"
                 float3 waterline  : TEXCOORD1;
                 // The cliff mix's weight and flag, straight from uv3.
                 float2 mix        : TEXCOORD2;
+                // The fragment's place in the world, metres: the ground's texel grid is cut on it.
+                float2 world      : TEXCOORD3;
+                // The band's parameter and its flag, straight from uv4.
+                float4 band       : TEXCOORD4;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
@@ -314,6 +342,18 @@ Shader "HiddenHarbours/CliffFace"
                 float4 _VariantBlock;
                 float  _VariantOn;
                 float  _VariantFaceOn;
+                // How many of the ground's texels one texel of the BASE face covers a side (see the grid note).
+                float  _BaseTexelScale;
+                // The faulted bedding's two (see the property note), in both variants for the same reason.
+                float4 _FaultA;
+                float4 _FaultB;
+                float4 _FaultC;
+                float4 _JointA;
+                float4 _JointB;
+                float4 _FaceRamp;
+                float4 _Buttress;
+                float4 _ButtressB;
+                float4 _Tide;
             CBUFFER_END
 
             // The shared field's HEIGHT at a plan position, transcribed from the water shader's
@@ -351,9 +391,9 @@ Shader "HiddenHarbours/CliffFace"
 
             // The wall's tangent basis from its plan azimuth and batter. World Z is up.
             // Mirrors CliffLightMath.WallBasis.
-            void WallBasis(out float3 tangent, out float3 up, out float3 normalW)
+            void WallBasis(float azimuthDegrees, out float3 tangent, out float3 up, out float3 normalW)
             {
-                float az = radians(_WallAzimuth);
+                float az = radians(azimuthDegrees);
                 float b  = radians(_Batter);
                 // Compass bearing to a ground vector: N (0 deg) is plus Y, E (90 deg) is plus X.
                 float2 planN = float2(sin(az), cos(az));
@@ -378,6 +418,7 @@ Shader "HiddenHarbours/CliffFace"
             #define CLIFF_PX_SHADOW_DEPTH 0.78
             #define CLIFF_PX_SHADOW_GUARD 0.02
             #define CLIFF_PX_TIERS        6.0
+            #define CLIFF_PX_TIDE_ROW     18.0
             #define CLIFF_PX_BANDS        5.0
             #define CLIFF_PX_LUT_W        8.0
             #define CLIFF_PX_LUT_H        32.0
@@ -399,7 +440,7 @@ Shader "HiddenHarbours/CliffFace"
             // replaced by the RECOVERED shadow. idx is the _index texel, ndl the live N dot L, bakeNdl the
             // same normal against CliffPxBakeKey, maskR the baked key light with its cast shadow.
             // Twin: CliffPxRelightMath.RecoverShadow, then CliffPxRelightMath.Relight, then LutUv.
-            float3 CliffPxRelight(float4 idx, float ndl, float bakeNdl, float maskR, bool variant)
+            float3 CliffPxRelightShift(float4 idx, float ndl, float bakeNdl, float maskR, bool variant, float4 shift)
             {
                 float row  = floor(idx.r * 255.0 + 0.5);   // 0 to 24: the rock and its tier
                 float band = floor(idx.g * 255.0 + 0.5);   // 0 to 4
@@ -408,6 +449,13 @@ Shader "HiddenHarbours/CliffFace"
                 // The detail light: ONE band step, never more. The law that keeps it pixel art.
                 if (ndl > CLIFF_PX_BAND_UP) band += 1.0;
                 else if (ndl < CLIFF_PX_BAND_DOWN) band -= 1.0;
+                // The face ramp's step (CliffHeightMath.RampShift), 0 where the wall has none.
+                band += shift.x;
+                // THE TIDE MARKS (CliffTide.Mark): the bluish accessory row the owner read as water and tide marks
+                // (owner 11 27). A mark row draws in it a band darker, like wet rock; above the tide zone that row
+                // draws as the grey beside it, so no blue block sits high on the face.
+                if (shift.z > 0.5) { row = CLIFF_PX_TIDE_ROW; band -= 1.0; rock = false; }
+                else if (shift.z < -0.5 && abs(row - CLIFF_PX_TIDE_ROW) < 0.5) row = CLIFF_PX_TIDE_ROW - 1.0;
 
                 // Cast shadow moves the TIER, and only on the rock rows: lichen does not go the colour
                 // of shadowed rock. The divide is guarded where the bake's own N dot L is near zero,
@@ -419,7 +467,11 @@ Shader "HiddenHarbours/CliffFace"
                                  : 0.0;
                     float tier = fmod(row, CLIFF_PX_TIERS);
                     float rockRow = row - tier;            // 0 sandstone, 6 till, 12 basalt
+                    // Above the tide zone (CliffTide.Mark -1) the blue-grey basalt gives way to sandstone.
+                    if (shift.z < -0.5 && rockRow > CLIFF_PX_TIERS * 2.0 - 0.5) rockRow = 0.0;
                     tier -= shadow > CLIFF_PX_SHADOW_TWO ? 2.0 : (shadow > CLIFF_PX_SHADOW_ONE ? 1.0 : 0.0);
+                    // The height's shade (a buttress's shaded side, the ramp's deep foot): whole tiers, rock only.
+                    tier -= shift.y;
                     row = rockRow + clamp(tier, 0.0, CLIFF_PX_TIERS - 1.0);
                 }
 
@@ -433,12 +485,26 @@ Shader "HiddenHarbours/CliffFace"
                                : SAMPLE_TEXTURE2D_LOD(_Palette, sampler_Palette, lutUv, 0).rgb;
             }
 
+            float3 CliffPxRelight(float4 idx, float ndl, float bakeNdl, float maskR, bool variant)
+            {
+                return CliffPxRelightShift(idx, ndl, bakeNdl, maskR, variant, float4(0.0, 0.0, 0.0, 0.0));
+            }
+
             // ---- THE TEXEL GRID (owner 11 23: organic, natural, no hard cuts) ---------------------------
-            // The wet foot and the pixel dissolve are cut on the kit's own texel grid, 32 px a metre in
-            // 2 px texels, so every edge they add is a pixel step and never a gradient.
+            // The wet foot and the pixel dissolve are cut on the GROUND's texel grid, 32 texels a metre, so
+            // every edge they add is a pixel step the size of the ground's and never a gradient.
+            //
+            // THE GROUND'S GRID (owner 11 26: no mixels). A face is a sheared, foreshortened sheet, so its own
+            // texels land on screen as slanted cells of every size. The fragment stage therefore shades the
+            // GROUND's cell it falls in, once: every input (uv, elevation, mix weight, vertex alpha) is carried
+            // along the triangle's own plane to the centre of the 1/32 m world cell, and the whole cell takes
+            // that one answer. A texel on the face is then a square the size of the meadow's, a shear moves
+            // whole cells, and nothing is stretched. _BaseTexelScale 2 draws a face painted in 2 px texels one
+            // of ITS texels to a ground texel (the art keeps its pixel count and halves in metres); 1, the
+            // default, draws a face as it is mapped.
             // Twin: CliffWaterlineMath.TexelsPerMetre, TexelCell, Hash01, Bayer4.
-            #define CLIFF_TEXELS_PER_METRE 16.0
-            #define CLIFF_WET_TOP_GROUP    3.0
+            #define CLIFF_TEXELS_PER_METRE 32.0
+            #define CLIFF_WET_TOP_GROUP    6.0
 
             // A stable 0 to 1 hash of a cell, with no sine (a sine hash drifts between GPUs).
             float CliffHash(float2 cell, float salt)
@@ -449,6 +515,82 @@ Shader "HiddenHarbours/CliffFace"
                 float d = x * (y + 33.33) + y * (z + 33.33) + z * (x + 33.33);
                 x += d; y += d; z += d;
                 return frac((x + y) * z);
+            }
+
+            // ---- HEIGHT (owner 11 27: the walls lost their height; keep the new look) -------------------
+            // Upright joints and a top light, foot dark ramp on a wall laid on the screen grid, both on the
+            // ground's cells. wc is the world cell (texels of world x and y). Twin: CliffHeightMath.
+            float CliffJointColumn(float zone, float run)
+            {
+                if (CliffHash(float2(zone, run), 41.0) >= _JointA.z) return -1e9;
+                float place = 1.0 + floor(CliffHash(float2(zone, 0.0), 44.0) * (_JointA.x - 2.0));
+                float step  = CliffHash(float2(zone, run), 42.0) < _JointA.w
+                            ? (CliffHash(float2(zone, run), 43.0) < 0.5 ? -1.0 : 1.0) : 0.0;
+                return zone * _JointA.x + place + step;
+            }
+
+            // 0 none, 1 a crack, 2 the lit edge right of one. Twin: CliffHeightMath.JointAt.
+            float CliffJoint(float2 wc)
+            {
+                float s    = max(_JointA.x, 3.0);
+                float runT = max(_JointA.y, 1.0);
+                float zone = floor(wc.x / s);
+                for (int dz = 0; dz >= -1; dz--)
+                {
+                    float z   = zone + dz;
+                    float run = floor((wc.y + floor(CliffHash(float2(z, 1.0), 45.0) * runT)) / runT);
+                    float jx  = CliffJointColumn(z, run);
+                    if (wc.x == jx) return 1.0;
+                    if (_JointB.x > 0.5 && wc.x == jx + 1.0) return 2.0;
+                }
+                return 0.0;
+            }
+
+            // The band step at whole face depth t (0 brow, 1 foot) in cell column x. Twin: CliffHeightMath.RampShift.
+            float CliffRampShift(float t, float x)
+            {
+                float wander = (CliffHash(float2(x, 2.0), 46.0) - 0.5) * 2.0 * _FaceRamp.z;
+                if (_FaceRamp.x > 0.0 && t < _FaceRamp.x + wander) return 1.0;
+                if (_FaceRamp.y > 0.0 && t > 1.0 - _FaceRamp.y + wander) return -1.0;
+                return 0.0;
+            }
+
+            // Shade tiers of the ramp's deep foot. Twin: CliffHeightMath.RampDeep.
+            float CliffRampDeep(float t, float x)
+            {
+                if (_ButtressB.z <= 0.0) return 0.0;
+                float wander = (CliffHash(float2(x, 3.0), 46.0) - 0.5) * 2.0 * _FaceRamp.z;
+                return t > 1.0 - _ButtressB.z + wander ? 1.0 : 0.0;
+            }
+
+            // The tide marks (owner 11 27: the bluish bands low on the face read as tide marks and stay): in the
+            // lowest _Tide.x of the face, level rows of wet dark rock every _Tide.y texels of world y, _Tide.z rows
+            // tall, return 1; above that zone return -1 (the blue basalt gives way to sandstone); else 0.
+            // Twin: CliffTideMath.Mark.
+            float CliffTideMark(float t, float y)
+            {
+                if (t <= 1.0 - _Tide.x) return -1.0;
+                float pitch = max(_Tide.y, 1.0);
+                float m = y - pitch * floor(y / pitch);
+                return m < _Tide.z ? 1.0 : 0.0;
+            }
+
+            // 1 in the shaded side of a buttress, else 0. Twin: CliffHeightMath.ButtressShade.
+            float CliffButtressShade(float2 wc)
+            {
+                float p      = _Buttress.x;
+                float jog    = _ButtressB.y;
+                float margin = jog + 1.0;
+                float cell   = floor(wc.x / p);
+                float share  = lerp(_Buttress.y, _Buttress.z, CliffHash(float2(cell, 4.0), 47.0));
+                float w      = clamp(floor(share * p + 0.5), 1.0, p - 2.0 * margin);
+                float slack  = p - w - 2.0 * margin;
+                float a      = cell * p + margin + floor(CliffHash(float2(cell, 5.0), 47.0) * (slack + 1.0));
+                float bedT   = max(_ButtressB.x, 1.0);
+                float bed    = floor((wc.y + floor(CliffHash(float2(cell, 6.0), 47.0) * bedT)) / bedT);
+                float jl     = floor((CliffHash(float2(cell, bed), 48.0) - 0.5) * 2.0 * jog + 0.5);
+                float jr     = floor((CliffHash(float2(cell, bed), 49.0) - 0.5) * 2.0 * jog + 0.5);
+                return (wc.x >= a + jl && wc.x < a + w + jr) ? 1.0 : 0.0;
             }
 
             // The 4 by 4 ordered dither threshold of a cell.
@@ -471,6 +613,33 @@ Shader "HiddenHarbours/CliffFace"
                 return alpha > th ? 1.0 : 0.0;
             }
 
+            // ---- THE FAULTED BEDDING (owner 11 26: rough and jagged, no mixels) -------------------------
+            // A face laid on the screen grid is cut into blocks on the ground's texel grid; each block's rock
+            // is thrown and slid by WHOLE texels and its edges carry a stair-stepped crack. Nothing rotates,
+            // shears or moves by part of a texel. The block a WORLD cell is in: x the column piece, y the tier.
+            // Twin: CliffFaultMath.BlockOf (and Stepped, At, FacetAzimuth for the fragment lines that use it).
+            float2 CliffFaultBlock(float2 c, float2 size)
+            {
+                float bw   = max(size.x, 2.0);
+                float th   = max(size.y, 2.0);
+                float pair = bw * 4.0;
+                float k    = floor(c.x / pair);
+                float split = floor((k + 0.25 + 0.5 * CliffHash(float2(k, 0.0), 20.0)) * pair);
+                bool  right = c.x >= split;
+                float m  = 2.0 * k + (right ? 1.0 : 0.0);
+                float lo = right ? split : k * pair;
+                float hi = right ? (k + 1.0) * pair : split;
+
+                float tpair  = th * 2.0;
+                float yk     = c.y + floor(CliffHash(float2(m, 0.0), 21.0) * tpair);
+                float tk     = floor(yk / tpair);
+                float tsplit = floor((tk + 0.25 + 0.5 * CliffHash(float2(tk, m), 22.0)) * tpair);
+                float tier   = 2.0 * tk + (yk >= tsplit ? 1.0 : 0.0);
+
+                float cut = floor(lo + (0.3 + 0.4 * CliffHash(float2(m, tier), 23.0)) * (hi - lo));
+                return float2(m * 2.0 + (c.x >= cut ? 1.0 : 0.0), tier);
+            }
+
             Varyings vert(Attributes IN)
             {
                 Varyings OUT;
@@ -480,6 +649,8 @@ Shader "HiddenHarbours/CliffFace"
                 OUT.color = IN.color * _Color;
                 OUT.uv = IN.uv;
                 OUT.mix = IN.uv3;
+                OUT.band = IN.uv4;
+                OUT.world = TransformObjectToWorld(IN.positionOS).xy;
 
                 // Resolve the sea ONCE per vertex. It varies along the shore and not down the face, so
                 // interpolating a per column value down the column is exact rather than approximate, and
@@ -495,15 +666,113 @@ Shader "HiddenHarbours/CliffFace"
             {
                 UNITY_SETUP_INSTANCE_ID(IN);
 
-                half4 unlit = SAMPLE_TEXTURE2D(_Unlit,  sampler_Unlit,  IN.uv);
-                half4 nrm   = SAMPLE_TEXTURE2D(_Normal, sampler_Normal, IN.uv);
-                half4 msk   = SAMPLE_TEXTURE2D(_Mask,   sampler_Mask,   IN.uv);
+                // THE GROUND'S GRID (see the note above). s is the screen step from this fragment to the centre
+                // of its world cell; the ortho camera makes world a plane of the screen, so the solve is exact.
+                float2 gridW  = IN.world;
+                float2 gridD  = (floor(gridW * CLIFF_TEXELS_PER_METRE) + 0.5) / CLIFF_TEXELS_PER_METRE - gridW;
+                float2 gridWx = ddx(gridW);
+                float2 gridWy = ddy(gridW);
+                float  gridDet = gridWx.x * gridWy.y - gridWx.y * gridWy.x;
+                float2 gridS  = abs(gridDet) > 1e-12
+                              ? float2(gridD.x * gridWy.y - gridD.y * gridWy.x, gridWx.x * gridD.y - gridWx.y * gridD.x) / gridDet
+                              : float2(0.0, 0.0);
+                float2 cellUv        = IN.uv + ddx(IN.uv) * gridS.x + ddy(IN.uv) * gridS.y;
+                float3 cellWaterline = IN.waterline + ddx(IN.waterline) * gridS.x + ddy(IN.waterline) * gridS.y;
+                float2 cellMix       = IN.mix + ddx(IN.mix) * gridS.x + ddy(IN.mix) * gridS.y;
+                float  cellAlpha     = saturate(IN.color.a + ddx(IN.color.a) * gridS.x + ddy(IN.color.a) * gridS.y);
+                // The whole face's depth at the cell's centre, for the ramp (0 where the mesh carries none).
+                float  cellFaceT     = IN.band.w + ddx(IN.band.w) * gridS.x + ddy(IN.band.w) * gridS.y;
+
+                // A BAND'S EDGES, CUT ON THE CELLS. A wall on the screen grid lays each band a little past its
+                // top and foot; a cell is drawn only when the band's parameter at the cell's CENTRE is inside
+                // the band, so a cell is wholly one band or wholly the next and no edge is a smooth diagonal.
+                // Twin: CliffWallGeometry.CellIsInBand (0.05 is its BandEdgeCellShare).
+                // The chunk's two END edges are cut the same way, by its own parameter (z: 0 at its first
+                // station, 1 at its last), so two chunks that wear different rock meet on cells too.
+                if (IN.band.y > 0.5)
+                {
+                    float2 bandDx   = float2(ddx(IN.band.x), ddy(IN.band.x));
+                    float2 endDx    = float2(ddx(IN.band.z), ddy(IN.band.z));
+                    float  cellBand = IN.band.x + bandDx.x * gridS.x + bandDx.y * gridS.y;
+                    float  cellEnd  = IN.band.z + endDx.x * gridS.x + endDx.y * gridS.y;
+                    float  perPixel = max(length(gridWx) * CLIFF_TEXELS_PER_METRE, 1e-6);
+                    float  slack    = 0.05 * length(bandDx) / perPixel;
+                    float  endSlack = 0.05 * length(endDx) / perPixel;
+                    if (cellBand < -slack || cellBand >= 1.0 + slack) discard;
+                    if (cellEnd < -endSlack || cellEnd >= 1.0 + endSlack) discard;
+                }
+
+                // THE FAULTED BEDDING (see CliffFaultBlock). faceUv is the rock this cell draws: its own, moved
+                // by its block's whole texels. cellUv stays the cell's own, for the mix, the wet foot and the
+                // dissolve, which belong to the wall and not to a block of it.
+                // THE TEXEL CELL this fragment falls in: texels of the tile along the shore, and texels of
+                // ELEVATION down the face where the wall has one (texels of the tile where it does not).
+                // Twin: CliffWaterlineMath.TexelCell.
+                float2 cell = float2(floor(cellUv.x * _TileMetresS * CLIFF_TEXELS_PER_METRE),
+                                     cellWaterline.z > 0.5
+                                         ? floor(cellWaterline.x * CLIFF_TEXELS_PER_METRE)
+                                         : floor(cellUv.y * _TileMetresT * CLIFF_TEXELS_PER_METRE));
+                // THE CLIFF MIX: whether this texel draws in the variant skin. Whole blocks of the rock's own
+                // texels give way where the weight is between 0 and 1, so a change of skin is a crumbling edge
+                // of pixel blocks, never a fade. Twin: CliffFaceMixMath.PicksVariant. Found here, outside the
+                // look branch, because the fault's blocks go by the skin (_VariantOn is 0 off the px look).
+                float  mixW    = cellMix.x;
+                float2 mixBlk  = max(_VariantBlock.xy, float2(1.0, 1.0));
+                bool   variant = _VariantOn > 0.5 && cellMix.y > 0.5
+                              && (mixW >= 0.999 || (mixW > 0.0 && mixW > CliffHash(floor(cell / mixBlk), 8.0)));
+                bool   variantFace = variant && _VariantFaceOn > 0.5;
+
+                float2 faceUv     = cellUv;
+                float  faultAz    = _WallAzimuth;
+                bool   faultCrack = false;
+                if (_FaultB.w > 0.5 && _PxDecal < 0.5)
+                {
+                    // The variant skin's own face is drawn at the tile's texel, so its courses are taller than the
+                    // base skin's beds: its blocks and their throw are scaled, or a throw that breaks the base
+                    // skin leaves it in long level slabs. Twin: CliffFault.OnVariantSkin.
+                    float2 fsize  = variantFace ? max(floor(_FaultA.xy * _FaultC.x), float2(2.0, 2.0)) : _FaultA.xy;
+                    float  fthrow = variantFace ? round(_FaultA.z * _FaultC.y) : _FaultA.z;
+                    float2 wc    = floor(gridW * CLIFF_TEXELS_PER_METRE);
+                    float  frun  = floor(wc.y / max(_FaultB.x, 1.0));
+                    float  fzone = floor(wc.x / (max(fsize.x, 2.0) * 4.0));
+                    float2 fs    = float2(wc.x + floor(CliffHash(float2(fzone, frun), 25.0) * 3.0) - 1.0, wc.y);
+                    float2 fblk  = CliffFaultBlock(fs, fsize);
+                    float2 fleft = CliffFaultBlock(fs - float2(1.0, 0.0), fsize);
+                    // A crack is carried run by run of rows, not block by block: it breaks off and picks up again.
+                    faultCrack   = fleft.x != fblk.x
+                                && CliffHash(float2(fblk.x + frun, fblk.y - frun), 26.0) < _FaultB.y;
+                    float2 fmove = float2(floor(CliffHash(fblk, 27.0) * (_FaultA.w + 1.0)),
+                                          round((CliffHash(fblk, 28.0) * 2.0 - 1.0) * fthrow));
+                    faceUv = cellUv + fmove / (float2(_TileMetresS, _TileMetresT) * CLIFF_TEXELS_PER_METRE);
+                    if (_FaultB.z > 0.0)
+                    {
+                        float fa = _WallAzimuth / _FaultB.z;
+                        float fw = floor(fa);
+                        faultAz  = _FaultB.z * (fw + (CliffHash(fblk, 29.0) < fa - fw ? 1.0 : 0.0));
+                    }
+                }
+                float2 baseUv        = _PxDecal > 0.5 ? cellUv : faceUv * max(_BaseTexelScale, 1.0);
+
+                // HEIGHT (see CliffJoint, CliffRampShift): only on a face band laid on the screen grid.
+                float2 heightCell = floor(gridW * CLIFF_TEXELS_PER_METRE);
+                float  joint      = (_JointB.y > 0.5 && _PxDecal < 0.5) ? CliffJoint(heightCell) : 0.0;
+                bool   faceMass   = _PxDecal < 0.5 && IN.band.y > 0.5;
+                bool   rampOn     = _FaceRamp.w > 0.5 && faceMass;
+                float4 rampShift  = float4(rampOn ? CliffRampShift(cellFaceT, heightCell.x) : 0.0,
+                                           (rampOn ? CliffRampDeep(cellFaceT, heightCell.x) : 0.0)
+                                         + ((_Buttress.w > 0.5 && faceMass) ? CliffButtressShade(heightCell) : 0.0),
+                                           (_Tide.w > 0.5 && faceMass) ? CliffTideMark(cellFaceT, heightCell.y) : 0.0,
+                                           0.0);
+
+                half4 unlit = SAMPLE_TEXTURE2D_LOD(_Unlit,  sampler_Unlit,  baseUv, 0);
+                half4 nrm   = SAMPLE_TEXTURE2D_LOD(_Normal, sampler_Normal, baseUv, 0);
+                half4 msk   = SAMPLE_TEXTURE2D_LOD(_Mask,   sampler_Mask,   baseUv, 0);
 
                 float3 N  = normalize(nrm.xyz * 2.0 - 1.0);
                 float  ao = saturate(nrm.w);
 
                 float3 Ts, Up, Nw;
-                WallBasis(Ts, Up, Nw);
+                WallBasis(faultAz, Ts, Up, Nw);
 
                 // The sun as a world vector. _SunElevation is SIN of the elevation angle, so its
                 // horizontal companion is sqrt(1 minus e squared) — no trig, and exactly consistent
@@ -519,29 +788,16 @@ Shader "HiddenHarbours/CliffFace"
                 bool   cycleOn = glen > 1e-4;
                 float3 S = cycleOn ? float3(gdir / glen * horiz, e) : float3(0, 0, 1);
 
-                // THE TEXEL CELL this fragment falls in: texels of the tile along the shore, and texels of
-                // ELEVATION down the face where the wall has one (texels of the tile where it does not).
-                // Twin: CliffWaterlineMath.TexelCell.
-                float2 cell = float2(floor(IN.uv.x * _TileMetresS * CLIFF_TEXELS_PER_METRE),
-                                     IN.waterline.z > 0.5
-                                         ? floor(IN.waterline.x * CLIFF_TEXELS_PER_METRE)
-                                         : floor(IN.uv.y * _TileMetresT * CLIFF_TEXELS_PER_METRE));
             #if defined(_HH_CLIFF_PX)
-                // THE CLIFF MIX: whether this texel draws in the variant skin. Whole blocks of the rock's own
-                // texels give way where the weight is between 0 and 1, so a change of skin is a crumbling edge
-                // of pixel blocks, never a fade. Twin: CliffFaceMixMath.PicksVariant.
-                float  mixW    = IN.mix.x;
-                float2 mixBlk  = max(_VariantBlock.xy, float2(1.0, 1.0));
-                bool   variant = _VariantOn > 0.5 && IN.mix.y > 0.5
-                              && (mixW >= 0.999 || (mixW > 0.0 && mixW > CliffHash(floor(cell / mixBlk), 8.0)));
+                // The cell and the mix's pick were found above, before the fault (its blocks go by the skin).
                 // The variant skin's own FACE, where it has one: the same texel of the boards' coursed rock,
                 // and its normal and mask with it (so N and the AO are re-read too). Point-sampled with no mips
                 // (the kit's import law), so LOD 0 is the texel the plain sample takes.
                 if (variant && _VariantFaceOn > 0.5)
                 {
-                    unlit = SAMPLE_TEXTURE2D_LOD(_UnlitVariant,  sampler_UnlitVariant,  IN.uv, 0);
-                    nrm   = SAMPLE_TEXTURE2D_LOD(_NormalVariant, sampler_NormalVariant, IN.uv, 0);
-                    msk   = SAMPLE_TEXTURE2D_LOD(_MaskVariant,   sampler_MaskVariant,   IN.uv, 0);
+                    unlit = SAMPLE_TEXTURE2D_LOD(_UnlitVariant,  sampler_UnlitVariant,  faceUv, 0);
+                    nrm   = SAMPLE_TEXTURE2D_LOD(_NormalVariant, sampler_NormalVariant, faceUv, 0);
+                    msk   = SAMPLE_TEXTURE2D_LOD(_MaskVariant,   sampler_MaskVariant,   faceUv, 0);
                     N     = normalize(nrm.xyz * 2.0 - 1.0);
                     ao    = saturate(nrm.w);
                 }
@@ -555,8 +811,15 @@ Shader "HiddenHarbours/CliffFace"
 
                 // THE CLIFF MIX: `variant` (decided above, with the face) picks the palette too.
                 float3 lit = unlit.rgb;   // a decal: the px rig's own pre lit strip, drawn as baked
+                // A fault crack is the same texel in full cast shadow and turned from the light: two tiers and
+                // one band down, colours the palette already holds.
                 if (_PxDecal < 0.5)
-                    lit = CliffPxRelight(unlit, ndl, dot(N, Lpx), msk.r, variant);
+                    lit = CliffPxRelightShift(unlit, ndl, dot(N, Lpx), msk.r, variant, rampShift);
+                // An upright joint is drawn as a crack is; its lit edge is the same texel turned to the light.
+                if (faultCrack || joint > 0.5 && joint < 1.5)
+                    lit = CliffPxRelight(unlit, -1.0, 1.0, 0.0, variant);
+                else if (joint > 1.5)
+                    lit = CliffPxRelightShift(unlit, 1.0, 1.0, 1.0, variant, rampShift);
             #else
                 float3 L = cycleOn
                          ? float3(dot(S, Ts), dot(S, Up), dot(S, Nw))
@@ -581,7 +844,7 @@ Shader "HiddenHarbours/CliffFace"
                 // and stops looking at the foreshore.
                 float bnc = saturate(-N.y * 0.85 + 0.15) * (0.35 + ao * 0.5) * _Bounce;
 
-                float sun = ndl * cast * day * _SunStrength;
+                float sun = faultCrack ? 0.0 : ndl * cast * day * _SunStrength;   // a fault crack takes no sun
 
                 float3 lit = unlit.rgb * (sky * _SkyColour.rgb
                                         + bnc * _BounceColour.rgb
@@ -600,11 +863,11 @@ Shader "HiddenHarbours/CliffFace"
                 // The texel cell was found above, before the px relight (the cliff mix picks by it too).
                 float keep = 1.0;   // 0 where the foot has dissolved into the sea
 
-                if (_WaterlineStrength > 0.001 && _HHSeaLevelWorld.w > 0.5 && IN.waterline.z > 0.5)
+                if (_WaterlineStrength > 0.001 && _HHSeaLevelWorld.w > 0.5 && cellWaterline.z > 0.5)
                 {
                     // Judged at the cell's centre row, so every band edge lands on a texel row.
                     // Twin: CliffWaterlineMath.CellElevation, SubmergenceMetres.
-                    float submergence = IN.waterline.y - (cell.y + 0.5) / CLIFF_TEXELS_PER_METRE;
+                    float submergence = cellWaterline.y - (cell.y + 0.5) / CLIFF_TEXELS_PER_METRE;
                     float strength = saturate(_WaterlineStrength);
                     float above = -submergence;   // metres above the line
 
@@ -679,7 +942,7 @@ Shader "HiddenHarbours/CliffFace"
                 // Coverage rides in mask.A — full on a face, meaningful on the brow and toe decals. The
                 // wall's soft edges (seam feathers, tapered run ends, the brow's fade) arrive in vertex
                 // alpha and are drawn as a PIXEL DISSOLVE, never as glass.
-                half4 col = half4(lit * IN.color.rgb, unlit.a * msk.a * CliffDissolve(IN.color.a, cell) * keep);
+                half4 col = half4(lit * IN.color.rgb, unlit.a * msk.a * CliffDissolve(cellAlpha, cell) * keep);
                 clip(col.a - _AlphaClip);
                 return col;
             }

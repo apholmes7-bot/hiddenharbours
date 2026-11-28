@@ -212,6 +212,34 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.IsFalse(ShoreLineDerivation.InBand(kind, data.Sample(kind, new Vector2(0, y))), "No strip belongs inside wall faces.");
         }
 
+        [Test] public void AWallThatDrawsItsOwnLip_GetsNoBrowStripOnTheMeadowAboveIt()
+        {
+            // The strip's dark underside lies landward of the brow: over a wall that is open meadow, where it
+            // reads as a smudge. The same coast as above, with the region's walls drawing their own turf lip.
+            var walls = new ShoreLineDerivation.WallFootprint(new Vector2(-16, -16), new Vector2(32, 32), .25f, .25f);
+            walls.AddTriangle(new Vector2(-16, -9), new Vector2(16, -9), new Vector2(16, 3.25f));
+            walls.AddTriangle(new Vector2(-16, -9), new Vector2(16, 3.25f), new Vector2(-16, 3.25f));
+            float Height(Vector2 p) => p.y > 3 ? 6 : p.y >= -9 ? 6 + (p.y - 3) * .5f : (p.y + 9) * .5f;
+            var baseGrid = Fixture(Height);
+            var grid = new ShoreLineDerivation.Grid(baseGrid.Elevations, baseGrid.Width, baseGrid.Height,
+                baseGrid.Min, baseGrid.Size, p => p.y > 3.75f ? new ShoreLineDerivation.Substrate(1)
+                    : new ShoreLineDerivation.Substrate(0, talus: .75f), walls);
+            Assert.IsTrue(_def.TurfOnWallBrows, "the default keeps every other coast as it was");
+            _def.TurfOnWallBrows = false;
+            var data = ShoreLineDerivation.Build(grid, _def);
+            foreach (int kind in new[] { 0, 1 })
+                Assert.AreEqual(0, data.Lines[kind].Length, "no brow strip on a wall-owned brow");
+            Assert.IsTrue(Enumerable.Range(0, 80).Select(y => new Vector2(0, -16 + y * .1f))
+                .Any(p => ShoreLineDerivation.InBand(3, data.Sample(3, p))), "the wall's foot keeps its weed");
+        }
+
+        [Test] public void StPetersWallsDrawTheirOwnLip()
+        {
+            var def = Resources.Load<TerrainShoreLinesDef>("TerrainShoreLines/StPetersShoreLines");
+            Assert.IsNotNull(def);
+            Assert.IsFalse(def.TurfOnWallBrows);
+        }
+
         [Test] public void WeedAtTheWallFootCannotLeakIntoTheAdjacentSoftShore()
         {
             var walls = new ShoreLineDerivation.WallFootprint(new Vector2(-16, -16), new Vector2(32, 32), .25f, .25f);

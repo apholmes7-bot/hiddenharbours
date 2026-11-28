@@ -23,6 +23,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { encodePng } from './lib/png.mjs';
+import { withoutTemplateSprites } from './lib/unity-meta.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const OUT = 'Assets/_Project/Art/Sprites/StPeters/Whelps';
@@ -72,10 +73,17 @@ const clampTone = (t) => Math.max(0, Math.min(4, Math.round(t)));
 // ---- the blocks ----
 // The ground is cut into cells, one seed in each square of a grid and pushed about inside it. A point
 // belongs to the nearest seed's block. `build` says what stands on a seed (or nothing); it is asked once.
-function blocks(size, seed, build) {
+//
+// Broken stone, not cut stone (owner 11 26: "far too smooth ... where the jaggedness and rough edges"). With
+// `rough` the edge between two blocks is not a straight bisector: the point is pushed about by two octaves of
+// noise before its block is found, so every joint wanders and kinks. And a block's top is chipped along its
+// edges: within `chip.width` of a joint, where noise picks it, the top drops by `chip.depth`, so a top edge
+// reads as broken lips and notches and the face under it as a ragged silhouette. `keyBase` keeps a second
+// field's cells (the rubble) apart from the first's.
+function blocks(size, seed, build, rough, keyBase = 0) {
   const made = new Map();
   const cellAt = (i, j) => {
-    const key = (i + 512) * 1024 + (j + 512);
+    const key = keyBase + (i + 512) * 1024 + (j + 512);
     let c = made.get(key);
     if (c === undefined) {
       const cx = (i + 0.5 + 0.82 * (hash(i, j, seed) - 0.5)) * size, cy = (j + 0.5 + 0.82 * (hash(i, j, seed + 1) - 0.5)) * size;
@@ -85,16 +93,34 @@ function blocks(size, seed, build) {
     return c;
   };
   return (x, y) => {
-    const gi = Math.floor(x / size), gj = Math.floor(y / size);
-    let best = null, bd = Infinity;
+    let qx = x, qy = y;
+    if (rough) {
+      const w = rough.warp;
+      qx += w.amp * 2 * (noise(x * w.freq, y * w.freq, seed + 501) - 0.5) + w.fine * 2 * (noise(x * w.fineFreq, y * w.fineFreq, seed + 503) - 0.5);
+      qy += w.amp * 2 * (noise(x * w.freq, y * w.freq, seed + 502) - 0.5) + w.fine * 2 * (noise(x * w.fineFreq, y * w.fineFreq, seed + 504) - 0.5);
+    }
+    const gi = Math.floor(qx / size), gj = Math.floor(qy / size);
+    let best = null, bd = Infinity, second = null, sd = Infinity;
     for (let j = gj - 1; j <= gj + 1; j++) for (let i = gi - 1; i <= gi + 1; i++) {
-      const c = cellAt(i, j), d = (x - c.cx) * (x - c.cx) + (y - c.cy) * (y - c.cy);
-      if (d < bd) { bd = d; best = c; }
+      const c = cellAt(i, j), d = (qx - c.cx) * (qx - c.cx) + (qy - c.cy) * (qy - c.cy);
+      if (d < bd) { second = best; sd = bd; bd = d; best = c; } else if (d < sd) { sd = d; second = c; }
     }
     const b = best.built;
     if (!b) return null;
-    const z = b.h + b.tx * (x - best.cx) + b.ty * (y - best.cy);                  // a block's top is one plane, a little off level
-    return z >= FLOOR ? { z, cell: best, b } : null;
+    let z = b.h + b.tx * (x - best.cx) + b.ty * (y - best.cy);                    // a block's top is one plane, a little off level
+    let chipped = false;
+    if (rough && rough.chip && b.kind !== 'turf' && second) {
+      // How far in from the joint: (d2 - d1) / (2 |c2 - c1|) is the distance to the bisector, exactly.
+      const gap = Math.hypot(second.cx - best.cx, second.cy - best.cy);
+      const edge = gap > 1e-6 ? (sd - bd) / (2 * gap) : Infinity;
+      const ch = rough.chip;
+      const reach = ch.width * (0.35 + 0.65 * noise(x * ch.freq, y * ch.freq, seed + 511));
+      if (edge < reach && noise(x * ch.freq * 0.5, y * ch.freq * 0.5, seed + 513) > ch.gate) {
+        z -= ch.depth * (edge < reach * 0.5 ? 2 : 1);
+        chipped = true;
+      }
+    }
+    return z >= FLOOR ? { z, cell: best, b, chipped } : null;
   };
 }
 
@@ -103,7 +129,13 @@ function blocks(size, seed, build) {
 function stackShape(f) {
   const rot = f.rot * Math.PI / 180, c = Math.cos(rot), s = Math.sin(rot);
   const ceiling = FLOOR + f.range - 0.1;
-  return blocks(f.block, 83, (x, y, i, j) => {
+  const footOf = (x, y) => {                                                     // 1 where the stack meets the sea
+    const u = x * c + y * s, v = -x * s + y * c;
+    const a = Math.atan2(v / f.radii[1], u / f.radii[0]);
+    const out = 1 + 0.15 * Math.sin(2 * a + 0.6) + 0.11 * Math.sin(3 * a + 1.9) + 0.22 * (noise(a * 2.2 + 5, 0.5, 83) - 0.5);
+    return Math.hypot(u / f.radii[0], v / f.radii[1]) / out;
+  };
+  const main = blocks(f.block, 83, (x, y, i, j) => {
     const r1 = hash(i, j, 97), r2 = hash(i, j, 101), r3 = hash(i, j, 113), r4 = hash(i, j, 127);
     const u = x * c + y * s, v = -x * s + y * c;
     const a = Math.atan2(v / f.radii[1], u / f.radii[0]);
@@ -140,7 +172,25 @@ function stackShape(f) {
     const t = Math.round(smooth(1 - (rd - inner) / Math.max(0.5, rim - inner)) * 4) / 4;
     return { kind: 'slab', grey: r3 > 0.62, shade: r4, dip: 0, bright: false, tx: 0, ty: 0,
       h: f.plinth.z + (f.plinth.top - f.plinth.z) * t + 0.10 * (r2 - 0.5) };
-  });
+  }, f.broken);
+  if (!f.talus) return main;
+  // The talus: a scree of small broken blocks fallen against the foot, thickest at the foot and thinning out to
+  // sea. A field of its own, finer than the stack's, standing only where it rises above what is already there.
+  const T = f.talus;
+  const rubble = blocks(T.block, 89, (x, y, i, j) => {
+    const r1 = hash(i, j, 131), r2 = hash(i, j, 137), r3 = hash(i, j, 139), r4 = hash(i, j, 149);
+    const ft = footOf(x, y);
+    if (ft < T.from || ft > T.reach) return null;
+    const near = 1 - (ft - T.from) / (T.reach - T.from);                         // 1 at the foot, 0 at the scree's edge
+    if (y > T.back * f.radii[1]) return null;                                    // behind the body it would hang in the air
+    if (near < 0.5 && r1 > T.cover) return null;                                  // the inner apron is whole, so every block touches it
+    return { kind: 'fallen', h: T.low + (T.tall - T.low) * near * (0.4 + 0.6 * r2), dip: 0.08 * (r3 - 0.5), bright: r3 > 0.5,
+      tx: T.tilt * (r3 - 0.5), ty: T.tilt * (r4 - 0.5) };
+  }, f.broken && { warp: f.broken.warp, chip: T.chip }, 1 << 21);
+  return (x, y) => {
+    const m = main(x, y), r = rubble(x, y);
+    return r && (!m || r.z > m.z) ? r : m;
+  };
 }
 function ledgeShape(f) {
   const rise = f.top - FLOOR;
@@ -157,8 +207,12 @@ function ledgeShape(f) {
       if (q < 1) { h = Math.max(h, f.top + Math.round(k.h * (1 - q * q) / 0.22) * 0.22 + 0.05 * (r2 - 0.5)); kind = 'crag'; }
     }
     return { kind, grey: r3 > 0.62, shade: r4, dip: 0, bright: r3 > 0.5, tx: 0, ty: 0, h };
-  });
+  }, f.broken);
 }
+
+// How a reef ledge is broken: its joints wander, its slab edges are chipped, its flats are crossed by fissures.
+const REEF_ROUGH = { warp: { amp: 0.12, freq: 2.6, fine: 0.04, fineFreq: 8 }, chip: { width: 0.12, freq: 6, gate: 0.45, depth: 0.12 },
+  crack: { freq: 2.2, lean: 0.35, width: 0.026, gateFreq: 1.1, gate: 0.52 }, spall: null, seamRun: 5, seamKeep: 0.45, bite: { run: 5, depth: 2 } };
 
 const FORMS = [
   { id: 'tidalform.stp_harbour_stack', kind: 'stack', radii: [3.2, 2.6], rot: 20, top: 6.2, block: 1.05, bed: 0.78,
@@ -166,12 +220,17 @@ const FORMS = [
     shoulders: [{ x: 1.35, y: -0.55, r: 1.3, h: 3.7 }, { x: -1.5, y: -0.2, r: 0.9, h: 2.2 }],
     fallen: { reach: 1.42, few: 0.2, tall: 0.55 },
     plinth: { radius: 5.5, z: -1.2, top: -0.3 }, range: 8.4, reach: 5.9, footAt: 0.0,
+    broken: { warp: { amp: 0.16, freq: 1.8, fine: 0.025, fineFreq: 5 }, chip: { width: 0.18, freq: 5, gate: 0.4, depth: 0.2 },
+      crack: { freq: 2.6, lean: 0.35, width: 0.03, gateFreq: 1.3, gate: 0.5 }, spall: { freq: 2.4, gate: 0.66 },
+      seamRun: 5, seamKeep: 0.45, bite: { run: 9, depth: 6 } },
+    talus: { block: 0.45, from: 0.9, reach: 1.12, cover: 0.6, back: 0.15, low: 0.02, tall: 0.45, tilt: 0.35,
+      chip: { width: 0.08, freq: 9, gate: 0.5, depth: 0.1 } },
     pieces: [{ name: 'Body', stem: 'HarbourStack', from: -0.1 }, { name: 'SeabedPlinth', stem: 'HarbourStackPlinth', below: -0.1 }] },
-  { id: 'tidalform.stp_whelp_1', pieces: [{ name: 'SeabedLedge', stem: 'Whelp1' }], kind: 'ledge', radius: 2.8, top: -1.04, block: 0.7, seed: 1, range: 2, reach: 4.7, footAt: -1.0,
+  { id: 'tidalform.stp_whelp_1', pieces: [{ name: 'SeabedLedge', stem: 'Whelp1' }], kind: 'ledge', radius: 2.8, top: -1.04, block: 0.7, seed: 1, broken: REEF_ROUGH, range: 2, reach: 4.7, footAt: -1.0,
     crags: [{ x: -0.6, y: 0.9, r: 0.9, h: 0.75 }, { x: 1.5, y: 0.2, r: 0.7, h: 0.55 }, { x: -1.8, y: -0.2, r: 0.6, h: 0.4 }] },
-  { id: 'tidalform.stp_whelp_2', pieces: [{ name: 'SeabedLedge', stem: 'Whelp2' }], kind: 'ledge', radius: 2.2, top: -1.10, block: 0.7, seed: 2, range: 2, reach: 3.8, footAt: -1.0,
+  { id: 'tidalform.stp_whelp_2', pieces: [{ name: 'SeabedLedge', stem: 'Whelp2' }], kind: 'ledge', radius: 2.2, top: -1.10, block: 0.7, seed: 2, broken: REEF_ROUGH, range: 2, reach: 3.8, footAt: -1.0,
     crags: [{ x: 0.2, y: 0.5, r: 0.85, h: 0.7 }, { x: -1.2, y: 0.1, r: 0.55, h: 0.45 }] },
-  { id: 'tidalform.stp_whelp_3', pieces: [{ name: 'SeabedLedge', stem: 'Whelp3' }], kind: 'ledge', radius: 2.0, top: -0.35, block: 0.7, seed: 3, range: 2, reach: 3.5, footAt: -1.0,
+  { id: 'tidalform.stp_whelp_3', pieces: [{ name: 'SeabedLedge', stem: 'Whelp3' }], kind: 'ledge', radius: 2.0, top: -0.35, block: 0.7, seed: 3, broken: REEF_ROUGH, range: 2, reach: 3.5, footAt: -1.0,
     crags: [{ x: 0.5, y: 0.6, r: 0.7, h: 0.5 }, { x: -0.9, y: 0.7, r: 0.5, h: 0.35 }] },
 ];
 
@@ -198,6 +257,27 @@ function paint(f, p, px, py) {
   // Weed lies in patches on the reef's flats, and nowhere on the stack: a band of it reads as a drawn line.
   if (reef && !p.wall && noise(p.x * 1.6, p.y * 1.6, 23) * 0.65 + noise(p.x * 4.2, p.y * 4.2, 29) * 0.35 > 0.60)
     return WEED[clampTone(tone + speck)];
+  const R = f.broken;
+  if (R && b.kind !== 'turf') {
+    // Cracks: one-pixel dark fissures where a noise field crosses its middle, gated so each runs part way and
+    // stops. Up a face they wander about the upright; across a top they run every way.
+    const k = R.crack, cell = ((p.cellKey || 0) % 97) * 0.37;                   // each block's cracks are its own
+    const ridge = p.wall ? Math.abs(noise(p.x * k.freq, p.z * k.freq * k.lean + cell, 211) - 0.5)
+                         : Math.abs(noise(p.x * k.freq, p.y * k.freq, 223) - 0.5);
+    const gate = p.wall ? noise(p.x * k.gateFreq, p.z * k.gateFreq, 227) : noise(p.x * k.gateFreq, p.y * k.gateFreq, 229);
+    if (ridge < k.width && gate > k.gate) return (reef ? (b.grey ? SLATE : REEF) : SEAM)[p.shaded || !p.wall ? 0 : 1];
+    // Spalls: patches where a skin of stone has flaked off, a band darker than the face about them, their upper
+    // edge a shadowed lip.
+    const sp = R.spall;
+    if (p.wall && sp) {
+      const n = noise(p.x * sp.freq, p.z * sp.freq * 1.4, 233) * 0.7 + noise(p.x * sp.freq * 3, p.z * sp.freq * 3, 239) * 0.3;
+      if (n > sp.gate) {
+        const lip = noise(p.x * sp.freq, (p.z + 1 / PPM / LIFT * 1.5) * sp.freq * 1.4, 233) * 0.7 +
+                    noise(p.x * sp.freq * 3, (p.z + 1 / PPM / LIFT * 1.5) * sp.freq * 3, 239) * 0.3 <= sp.gate;
+        tone += lip ? -2 : -1;
+      }
+    }
+  }
   if (!reef) {
     // The bedding: a thin dark parting every bed across a face, level from block to block, broken here and there.
     const inBed = ((p.z + b.dip - FLOOR) % BED_LINE + BED_LINE) % BED_LINE;
@@ -225,6 +305,7 @@ function draw(f) {
   const zs = new Float32Array(W * H).fill(-99);
   const face = new Int32Array(W * H);          // which plane a pixel belongs to: a block's top, or one of its faces
   const part = new Uint8Array(W * H);          // 0 nothing, 1 a top, 2 a face, 3 turf
+  const own = new Int32Array(W * H);           // the block a pixel is part of
   let tallest = FLOOR;
   const shadedAt = (x, y, z) => {
     for (let k = 1; k <= 3; k++) { const m = shape(x + SUN[0] * k, y + SUN[1] * k); if (m && m.z - z > 0.42 * k) return true; }
@@ -246,9 +327,13 @@ function draw(f) {
       before = m;
       if (s <= horizon) continue;
       const from = Math.ceil(horizon - 0.5), to = Math.floor(s - 0.5);
-      const risen = (!last || last.cell !== m.cell) && to - from >= 1;            // a face: the block stands above what is before it
-      let wnx = 0, plane = m.cell.key * 2;
-      if (risen) {
+      // A face: the block stands above what is before it (another block, or its own chipped lip).
+      const risen = (!last || last.cell !== m.cell || last.chipped !== m.chipped) && to - from >= 1;
+      const topPlane = m.chipped ? -(m.cell.key * 2) - 1 : m.cell.key * 2;
+      let wnx = 0, plane = topPlane;
+      if (risen && last && last.cell === m.cell) {                                 // the chip's own back wall faces the viewer
+        plane = ((Math.imul(m.cell.key, 40503) ^ 0x5bd1) << 1) | 1;
+      } else if (risen) {
         const dx = last ? last.cell.cx - m.cell.cx : x - m.cell.cx, dy = last ? last.cell.cy - m.cell.cy : y - m.cell.cy;
         wnx = dx / (Math.hypot(dx, dy) || 1);
         plane = ((Math.imul(m.cell.key, 40503) ^ (last ? last.cell.key : 7)) << 1) | 1;
@@ -259,17 +344,40 @@ function draw(f) {
         const wall = risen && r < to;                                            // the last row is the top's own edge
         const t = s - horizon > 1e-6 ? (r + 0.5 - horizon) / (s - horizon) : 1;
         const z = wall ? zAtHorizon + (m.z - zAtHorizon) * Math.max(0, Math.min(1, t)) : m.z;
-        const rgb = paint(f, { x, y, z, b: m.b, wall, wnx, shaded: shadedAt(x, y, z) }, px, r);
+        const rgb = paint(f, { x, y, z, b: m.b, wall, wnx, shaded: shadedAt(x, y, z), cellKey: m.cell.key }, px, r);
         const i = (py * W + px) * 4;
         dry[i] = rgb[0]; dry[i + 1] = rgb[1]; dry[i + 2] = rgb[2]; dry[i + 3] = 255;
         const code = Math.max(0, Math.min(255, Math.round((z - FLOOR) / f.range * 255)));
         hgt[i] = code; hgt[i + 1] = code; hgt[i + 2] = code; hgt[i + 3] = 255;
         zs[py * W + px] = z;
-        face[py * W + px] = wall ? plane : m.cell.key * 2;
+        face[py * W + px] = wall ? plane : topPlane;
         part[py * W + px] = m.b.kind === 'turf' && rgb[1] > rgb[0] ? 3 : wall ? 2 : 1;
+        own[py * W + px] = m.cell.key;
         if (z > tallest) tallest = z;
       }
       horizon = s; zAtHorizon = m.z;
+    }
+  }
+  // A broken outline: where a face stands against open sky at the form's left or right edge, the edge is bitten
+  // back a few pixels in runs a bed or so tall, so a tall wall's silhouette steps in and out along its beds
+  // instead of running down one ruled line. in = +1 bites the left edge rightward, -1 the right edge leftward.
+  const bite = f.broken && f.broken.bite;
+  if (bite) for (const inward of [1, -1]) {
+    for (let py = 0; py < H; py++) {
+      const band = Math.floor((py + Math.floor(hash(inward, 0, 301) * bite.run)) / bite.run);
+      for (let n = 0; n < W; n++) {
+        const px = inward > 0 ? n : W - 1 - n, k = py * W + px, out = px - inward;
+        if (!part[k]) continue;
+        if (part[k] === 2 && !(out >= 0 && out < W && part[py * W + out])) {
+          const depth = Math.floor(hash(band, px >> 3, 307 + inward) * (bite.depth + 1));
+          for (let d = 0; d < depth; d++) {
+            const q = px + inward * d, j = py * W + q;
+            if (q < 0 || q >= W || part[j] !== 2) break;
+            part[j] = 0; zs[j] = -99; dry.fill(0, j * 4, j * 4 + 4); hgt.fill(0, j * 4, j * 4 + 4);
+          }
+        }
+        break;                                                                     // the outermost pixel of the row only
+      }
     }
   }
   // The joints: a dark line where one plane of stone meets another, and under a block where it sits on the
@@ -279,6 +387,8 @@ function draw(f) {
     const k = py * W + px, l = k - 1;
     if (!part[k] || !part[l] || part[k] === 3 || part[l] === 3 || face[k] === face[l]) continue;
     const faces = part[k] === 2 || part[l] === 2;
+    // Two faces of ONE block whose joint wanders (a broken edge) meet in a broken crack, not a ruled line.
+    if (faces && f.broken && own[k] === own[l] && hash(px, Math.floor(py / f.broken.seamRun), 73) > f.broken.seamKeep) continue;
     if (faces || (Math.abs(zs[k] - zs[l]) < 0.5 && hash(px, py, 71) > 0.25)) joint[k] = faces ? 2 : 1;
   }
   for (let py = 0; py < H - 1; py++) for (let px = 0; px < W; px++) {
@@ -334,7 +444,7 @@ function draw(f) {
 
 function metaFor(file, template, pivot) {
   const guid = crypto.createHash('md5').update('whelp-forms/' + file).digest('hex');
-  let t = fs.readFileSync(path.join(REPO, template), 'utf8').replace(/\r\n/g, '\n').replace(/^guid: .*$/m, 'guid: ' + guid);
+  let t = withoutTemplateSprites(fs.readFileSync(path.join(REPO, template), 'utf8').replace(/\r\n/g, '\n')).replace(/^guid: .*$/m, 'guid: ' + guid);
   if (pivot) t = t.replace(/spritePivot: \{[^}]*\}/, `spritePivot: {x: ${pivot[0]}, y: ${pivot[1]}}`);
   return t;
 }
@@ -353,6 +463,16 @@ for (const f of FORMS) {
 }
 const contract = JSON.stringify({ pixelsPerMetre: PPM, liftPerMetre: LIFT, forms: entries }, null, 1) + '\n';
 let drift = 0;
+// --out <dir>: a preview. The pictures and the contract go to that folder and nothing in the project is touched.
+const outAt = process.argv.indexOf('--out');
+if (outAt > 0 && process.argv[outAt + 1]) {
+  const dir = path.resolve(process.argv[outAt + 1]);
+  fs.mkdirSync(dir, { recursive: true });
+  for (const [name, png] of files) fs.writeFileSync(path.join(dir, name), png);
+  fs.writeFileSync(path.join(dir, 'Forms.json'), contract);
+  for (const e of entries) console.log(`${e.id}: ${e.pixels.join('x')} px, tallest ${e.tallestMetres} m (preview in ${dir})`);
+  process.exit(0);
+}
 for (const [name, png, template, pivot] of files) {
   const p = path.join(REPO, OUT, name);
   if (check) { if (!fs.existsSync(p) || !fs.readFileSync(p).equals(png)) { console.error('drifted: ' + name); drift++; } continue; }

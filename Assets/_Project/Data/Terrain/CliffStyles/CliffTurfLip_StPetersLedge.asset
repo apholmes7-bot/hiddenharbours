@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c338cb510e6d4fb89919740b7b454afa, type: 3}
+  m_Name: CliffTurfLip_StPetersLedge
+  m_EditorClassIdentifier: 
+  Id: clifflip.st_peters_ledge
+  PainterScriptPath: docs/art/rigs/px-cliff-styles/pxCliffTurfLip.js
+  OutputPath: Assets/_Project/Art/Terrain/CliffStyles/TurfLip/TurfLip_Ledge.png
+  Strip: {fileID: 2800000, guid: 57e9af672ffb3f5e0f7c52e5ef32eb0b, type: 3}
+  StripTexels: {x: 2048, y: 96}
+  LineRow: 10
+  Seed: 9127
+  Fringe: {x: 1, y: 6}
+  FringeShare: 0.55
+  Sod: {x: 4, y: 8}
+  TornShare: 0.1
+  Shade: {x: 5, y: 11}
+  ClumpGap: {x: 8, y: 26}
+  ClumpHalf: {x: 4, y: 11}
+  Hang: {x: 6, y: 14}
+  Short: {x: 2, y: 5}
+  Apron: {x: 2, y: 4}
+  StoneShare: 0.012
+  RootShare: 0.06
+  Root: {x: 5, y: 16}
+  SlumpGap: {x: 150, y: 330}
+  SlumpDrop: {x: 16, y: 46}
+  TuftGap: 46
+  Grass:
+  - '#253832'
+  - '#334333'
+  - '#445338'
+  - '#565f40'
+  - '#707959'
+  Soil:
+  - '#2a1c16'
+  - '#3d2a20'
+  - '#573b30'
+  - '#6c4c38'
+  - '#8b6a50'
+  Straw: '#9a8d58'
+  Stone: '#8a8478'
+  ShadeColour: '#160d0a'
+  ShadeAlpha: {x: 190, y: 110}
+  RockRiser: {x: 0, y: 0}
+  RockJointGap: {x: 12, y: 30}
+  RockToeShade: 2
+  Rock:
+  - '#2d2828'
+  - '#59382d'
+  - '#7c513a'
+  - '#955a3d'
+  - '#ad7856'
+  TerraceRows: {x: 40, y: 52}
+  TerraceShade: 3
+  RiserFadeMetres: 0.9
+  Why: 'Owner 11 27: the stepped walls of the east ledges lost their flat grass ledge
+    between tiers when the brow strip went (it stretched its grass). This strip puts
+    it back on the ground''s texel: a thin dark soil cut and no riser (round three: a riser
+    read as a brown outline on the meadow), a calm grass terrace lit along its outer edge, and the shade it throws
+    on the face below. Hung by the walls that are not laid on the screen grid (CliffFaceMixDef.ShearedTurfLip).'

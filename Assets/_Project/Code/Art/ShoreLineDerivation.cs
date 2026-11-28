@@ -508,7 +508,8 @@ namespace HiddenHarbours.Art
                     bool cliff = grid.CliffCoast(q, def);
                     valid[i] = broke && peak >= def.ScarpMinimumSlope
                         && grid.CoverAt(cliff ? found + inland * def.BrowStepMetres : found).QualifyingBrow
-                        && (turf || peak < def.TurfMinimumSlope);
+                        && (turf || peak < def.TurfMinimumSlope)
+                        && (def.TurfOnWallBrows || !cliff);   // the wall's own lip is the brow there
                 }
                 // Neighbouring rays can reach different banks or fold across a concavity. Neither
                 // a long connector nor a reversed connector is part of the shore's brow curve.

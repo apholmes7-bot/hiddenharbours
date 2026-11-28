@@ -230,6 +230,18 @@ shipped albedo exactly, which is the test to run first.
 
 **`t` is 32 px/m along the surface, not along the height.** An 8 m bank at 48° needs
 8/sin(48°) = 10.8 m of `t`. Size the quad by surface length.
+> **Overridden in the game, 2026-11-26 (owner: no mixels, one pixel size on screen for everything).**
+> The game no longer lays `t` in surface metres. A face is drawn foreshortened by the camera and pushed
+> about by its profile, so surface metres put texels on screen that are shorter or longer than the
+> ground's beside them. `CliffWallSurface.FaceMesh` now lays `t` in **drawn** metres down each column
+> (`CliffWallGeometry.DrawnMetres`), and the cliff shader takes one answer per 1/32 m world cell, so a
+> face texel is square and the size of a meadow texel. The surface length still says how much rock a
+> bank has and still bounds the bands; it no longer sizes the texture. A 48° bank therefore shows fewer
+> courses than its surface holds: that is the price of one texel size, and it is the owner's call.> The same ruling moved the game's grid from this kit's 16 texels a metre (two pixels a texel) to the
+> ground's 32: a kit face is drawn one kit texel per ground texel where a region's mix asks
+> (`CliffFaceMixDef.BaseFaceTexelScale`), a style may bake one pixel a texel
+> (`CliffFaceStyleDef.TexelPixels`), and the brow strip gives way to a generated turf lip at the ground's
+> texel (`CliffTurfLipDef`, `px-cliff-styles/pxCliffTurfLip.js`). The kit files here are unchanged.
 
 ---
 

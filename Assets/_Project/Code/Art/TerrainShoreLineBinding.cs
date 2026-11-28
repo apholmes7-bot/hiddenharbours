@@ -14,8 +14,11 @@ namespace HiddenHarbours.Art
         readonly Vector2 _min, _size;
         readonly int[] _kindStarts;
         Texture2D _walls;
+        CliffFaceMixDef _mix;
         Texture2D _wallDomain;
         RenderTexture _wallFallback;
+        /// <summary>The turf lip's runs on the banks that own no wall (<see cref="ShoreBrowLipMath.Runs"/>), or null.</summary>
+        internal System.Collections.Generic.List<ShoreBrowLipMath.Column[]> BrowLipRuns { get; private set; }
         static readonly int Loaded = Shader.PropertyToID("_ShoreLoaded");
         static readonly int Fields = Shader.PropertyToID("_ShoreFields");
         static readonly int Grid = Shader.PropertyToID("_ShoreGrid");
@@ -25,6 +28,7 @@ namespace HiddenHarbours.Art
         static readonly int Step4 = Shader.PropertyToID("_ShoreStep4");
         static readonly int Blend = Shader.PropertyToID("_ShoreBlendMetres");
         static readonly int SourceBlend = Shader.PropertyToID("_ShoreSourceBlendMetres");
+        static readonly int LedgeCalm = Shader.PropertyToID("_ShoreLedgeCalm");
 
         TerrainShoreLineBinding(TerrainShoreLinesDef def, Texture2DArray fields, Texture2DArray strips, Texture2D segments,
             Vector2 min, Vector2 size, int[] kindStarts, Texture2D indices)
@@ -60,6 +64,12 @@ namespace HiddenHarbours.Art
             var grid = new ShoreLineDerivation.Grid(elevations, height.width, height.height, worldMin, size,
                 p => reader.At(new Vector2((p.x-worldMin.x)/size.x, (p.y-worldMin.y)/size.y)), footprint);
             ShoreLineDerivation.Result data = ShoreLineDerivation.Build(grid, def);
+            // The turf lip of the banks that own no wall is found here, while the splats are still in hand (the
+            // reader's copies are let go with this call): the runs are all the ground keeps of them.
+            CliffFaceMixDef mix = CliffFaceMixDef.ForScene(scene.name);
+            System.Collections.Generic.List<ShoreBrowLipMath.Column[]> lipRuns = mix != null && mix.IsActive
+                ? ShoreBrowLipMath.Runs(data.Lines[0], p => grid.CoverAt(p).Turf, ShoreBrowLip.From(mix), CliffJag.From(mix))
+                : null;
             if (data.Segments.Length > SystemInfo.maxTextureSize) throw new InvalidOperationException("Shore segment table exceeds texture limit.");
             var segments = new Texture2D(data.Segments.Length, 2, TextureFormat.RGBAFloat, false, true)
                 { name = "TransientShoreSegments", hideFlags = HideFlags.HideAndDontSave, filterMode = FilterMode.Point };
@@ -80,6 +90,8 @@ namespace HiddenHarbours.Art
                 segments.SetPixels(data.SegmentTexels); segments.Apply(false, true);
                 indices.SetPixelData(data.IndexTexels,0);indices.Apply(false,true);
                 var binding = new TerrainShoreLineBinding(def, fields, strips, segments, worldMin, size, data.KindStarts, indices);
+                binding.BrowLipRuns = lipRuns;
+                binding._mix = mix;
                 binding._walls = new Texture2D(footprint.Width, footprint.Height, TextureFormat.R8, false, true)
                     { name = "TransientShoreWallFootprint", hideFlags = HideFlags.HideAndDontSave,
                       filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp };
@@ -110,7 +122,11 @@ namespace HiddenHarbours.Art
             catch { Destroy(fields); Destroy(segments); Destroy(indices); throw; }
         }
 
-        internal static void Disable(MaterialPropertyBlock block) => block.SetFloat(Loaded, 0);
+        internal static void Disable(MaterialPropertyBlock block)
+        {
+            block.SetFloat(Loaded, 0);
+            block.SetVector(LedgeCalm, Vector4.zero);
+        }
 
         internal void Bind(MaterialPropertyBlock block)
         {
@@ -133,6 +149,8 @@ namespace HiddenHarbours.Art
             block.SetFloat(Step4, (int)_def.Reefedge);
             block.SetFloat(Blend, _def.BlendMetres); block.SetFloat(SourceBlend, _def.UnderlyingBlendMetres);
             BindPattern(block, _def);
+            // The region's ledge calm (TerrainLedgeCalmMath), from its cliff mix; zero where it has none.
+            block.SetVector(LedgeCalm, TerrainLedgeCalmMath.Shader(_mix));
             block.SetFloat(Loaded, 1);
         }
 
@@ -160,6 +178,8 @@ namespace HiddenHarbours.Art
                 {
                     var renderer = filter.GetComponent<MeshRenderer>();
                     if (renderer == null || !renderer.enabled || filter.sharedMesh == null) continue;
+                    // The turf lip overhangs the meadow by its fringe; the face under it is already counted.
+                    if (filter.name == CliffWallSurface.TurfLipChildName) continue;
                     var vertices = FaceVertices(filter, wall);
                     for (int i = 0; i < vertices.Length; i += 3)
                         footprint.AddTriangle(vertices[i], vertices[i + 1], vertices[i + 2]);

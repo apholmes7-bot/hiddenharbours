@@ -43,7 +43,16 @@
      paleTone band of a pale sandstone interbed (rock row; 4 = the lightest)
      silt     [min, max] cool silt beds per face, drawn in the silt accessory row
      siltTh   [min, max] silt bed height in texels
-     siltTone band of a silt bed */
+     siltTone band of a silt bed
+   ROUGH (owner 11 26), each 0 = off, so an older style draws exactly as before:
+     recess   chance a course is weathered back under the one above (shade under the overhang)
+     spall    share of the face scarred where a skin of stone has flaked off (recessed, shaded top, lit lip)
+     spallCells [x, y] noise cells across the tile the scars are cut from (bigger = smaller scars)
+     fissure  how many long wandering cracks run down through the courses
+     fissureLen [min, max] a fissure's length in texels
+     jag      chance a bed-line texel's shade spills a texel up or down (ragged lines)
+     mottle   share of a block's fill blotched a band up or down (the stone's grain)
+     mottleCells [x, y] noise cells across the tile the blotches are cut from */
 (function (root) {
   'use strict';
   const P = root.PxLang, PF = root.PxCliffFace;
@@ -53,7 +62,8 @@
   const fb = (u, v, cx, cy, s) => fbmP(u, v, Math.max(1, Math.round(cx)), Math.max(1, Math.round(cy)), s, 3);
   const DEFAULTS = { course: [3, 6], pale: .18, paleTh: [1, 2], jsp: [18, 44], step: .12, seg: 48,
                      proud: .10, sunk: .05, relief: .8, speck: .06, stain: .30, tick: .05, part: .35,
-                     chip: 9, jgate: .55, lip: .35, paleTone: 3, silt: [0, 0], siltTh: [1, 2], siltTone: 2 };
+                     chip: 9, jgate: .55, lip: .35, paleTone: 3, silt: [0, 0], siltTh: [1, 2], siltTone: 2,
+                     recess: 0, spall: 0, spallCells: [10, 8], fissure: 0, fissureLen: [12, 40], jag: 0, mottle: 0, mottleCells: [12, 9] };
 
   function painter(opts) {
     const o = Object.assign({}, DEFAULTS, opts || {});
@@ -183,6 +193,74 @@
         }
         if (!proud) { const yw = (s.y + hh) % m, i = yw * n + s.x; if (courseAt[i] === ci) t.set(s.x, yw, pal.rock, clamp(t.band[i] + 1, 1, 4), t.h[i], 1); }
       }
+      /* ---- ROUGH (owner 11 26: "far too smooth ... where the jaggedness and rough edges"). Every pass below is
+         off at its default of 0, so a style without these options draws exactly the face it drew before. ---- */
+      const W = (x) => ((x % n) + n) % n, Hm = (y) => ((y % m) + m) % m;
+      const darken = (x, y, by, dh) => { const i = Hm(y) * n + W(x); if (t.pal[i] !== pal.rock && t.pal[i] !== pal.silt) return;
+        t.set(W(x), Hm(y), t.pal[i], clamp(t.band[i] - by, 0, 4), t.h[i] + dh, 1); };
+      const lighten = (x, y, dh) => { const i = Hm(y) * n + W(x); if (t.pal[i] !== pal.rock) return;
+        t.set(W(x), Hm(y), pal.rock, clamp(t.band[i] + 1, 1, 4), t.h[i] + dh, 1); };
+      /* sat-back courses: a whole bed weathered back under the one above it, its top rows in shade, so the
+         wall reads as strata standing out and cut in, not one flat plane of bricks */
+      if (o.recess > 0) for (let ci = 1; ci < courses.length; ci++) {
+        const cs = courses[ci];
+        if (cs.pale || hash2(ci, 11, R + 790) >= o.recess) continue;
+        for (let x = 0; x < n; x++) {
+          const under = 1 + FL(hash2(x >> 2, ci, R + 791) * 2);              /* the overhang's shadow, ragged */
+          for (let yy = cs.y0; yy < cs.y0 + cs.th; yy++) {
+            const yw = Hm(yy); if (courseAt[yw * n + x] !== ci) continue;
+            const i = yw * n + x;
+            t.set(x, yw, t.pal[i], clamp(t.band[i] - (yy - cs.y0 < under ? 2 : 1), 0, 4), t.h[i] - .6, 1);
+          }
+        }
+      }
+      /* spalls: irregular scars where a skin of stone has flaked off across a joint or two. Recessed, a shaded
+         upper edge under the face still standing, a lit lower lip where the scar floor catches the sky */
+      if (o.spall > 0) {
+        const inScar = (x, yy) => fb(W(x) / n, Hm(yy) / m, o.spallCells[0], o.spallCells[1], R + 800) > 1 - o.spall;
+        for (let yy = 0; yy < m; yy++) for (let x = 0; x < n; x++) {
+          if (!inScar(x, yy)) continue;
+          const i = yy * n + x; if (t.pal[i] !== pal.rock) continue;
+          if (!inScar(x, yy - 1)) { darken(x, yy, 2, -1.0); if (!inScar(x, yy - 2)) darken(x, yy + 1, 1, -.8); }
+          else if (!inScar(x, yy + 1)) lighten(x, yy, -.3);
+          else t.set(x, yy, pal.rock, clamp(t.band[i] - (hash2(x, yy, R + 801) < .25 ? 2 : 1), 1, 4), t.h[i] - .7, 1);
+        }
+      }
+      /* fissures: long cracks that run down through many courses, wandering a texel at a time and forking,
+         dark with a lit wall on the side the light reads. They wrap the tile like everything else */
+      for (let fi = 0; fi < o.fissure; fi++) {
+        let x = FL(hash2(fi, 1, R + 810) * n), y = FL(hash2(fi, 2, R + 810) * m);
+        const len = o.fissureLen[0] + FL(hash2(fi, 3, R + 810) * (o.fissureLen[1] - o.fissureLen[0] + 1));
+        let fork = -1;
+        for (let d = 0; d < len; d++) {
+          darken(x, y, 4, -1.2); darken(x - 1, y, 3, -1.0);
+          if (hash2(fi, d, R + 811) < .5) { if (rd) lighten(x + 1, y, .2); else darken(x + 1, y, 1, -.3); }
+          if (d > 2 && hash2(fi, d, R + 812) < .14) darken(x - 1, y, 3, -.9);   /* the crack opens a texel wide */
+          const r = hash2(fi, d, R + 813);
+          x += r < .28 ? -1 : r > .72 ? 1 : 0;
+          y += 1;
+          if (fork < 0 && d > 4 && hash2(fi, d, R + 814) < .05) fork = d;
+          if (fork >= 0 && d - fork < len / 3) darken(x + (d - fork) * (hash2(fi, 9, R + 815) < .5 ? -1 : 1), y - 1, 3, -.9);
+        }
+      }
+      /* ragged bed lines: a share of bed-line texels drop or rise a texel, and some runs break off so the
+         course above and below join in a smear of shade, so no line is ruled straight across the face */
+      if (o.jag > 0) for (let yy = 0; yy < m; yy++) for (let x = 0; x < n; x++) {
+        const i = yy * n + x, dn = courseAt[Hm(yy + 1) * n + x];
+        if (dn === courseAt[i] || t.band[i] > 1) continue;                    /* a bed line texel */
+        const r = hash2(x >> 3, yy, R + 820);                               /* runs of 8, not salt */
+        if (r < o.jag * .5) darken(x, yy - 1, 2, -.6);
+        else if (r < o.jag) darken(x, yy + 1, 2, -.6);
+      }
+      /* mottle: the stone's own grain, blotches of a band up or down a few texels across, so inside a block
+         the fill is never one flat colour */
+      if (o.mottle > 0) for (let yy = 0; yy < m; yy++) for (let x = 0; x < n; x++) {
+        const i = yy * n + x; if (t.pal[i] !== pal.rock || t.band[i] === 0) continue;
+        const g = fb(x / n, yy / m, o.mottleCells[0], o.mottleCells[1], R + 830);
+        if (g > 1 - o.mottle * .5) t.set(x, yy, pal.rock, clamp(t.band[i] + 1, 1, 4), t.h[i] + .1, 1);
+        else if (g < o.mottle * .5) t.set(x, yy, pal.rock, clamp(t.band[i] - 1, 1, 4), t.h[i] - .1, 1);
+      }
+
       /* weathering, as the shipped painter: dust on the windward lips, seep and moss under the lee */
       for (let yy = 0; yy < m; yy++) for (let x = 0; x < n; x++) {
         const i = yy * n + x;

@@ -111,6 +111,60 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "sizing by height under-counts the tiling — that is the 'tilted vertical texture' read");
         }
 
+        /// <summary>
+        /// ⭐ Owner 2026-11-26, NO MIXELS: one pixel size on screen for everything. The kit's rule above (v counts
+        /// surface metres) made a face texel shorter on screen than it is wide wherever the wall leans, so the rock's
+        /// texels were not the ground's. The face is now LAID in drawn metres: a metre down the drawn column is a
+        /// metre of v, whatever the batter, and the surface length only says how much rock there is.
+        /// </summary>
+        [Test]
+        public void TheFaceIsLaidInDrawnMetres_SoATexelIsSquareOnScreen()
+        {
+            foreach (float batter in new[] { 48f, 62f, 76f, 90f })
+            {
+                const float drop = 8f;
+                float run = batter >= 90f ? 0f : drop / Mathf.Tan(batter * Mathf.Deg2Rad);
+                var s = Sample(0f, -run, drop);
+                Vector2 toe = CliffWallGeometry.ToeScreen(in s);
+                Vector2 down = CliffWallGeometry.DrawnDown(s.BrowPlan, toe);
+                Assert.AreEqual(1f, down.magnitude, 1e-5f);
+                float drawn = Vector2.Distance(s.BrowPlan, toe);
+                Assert.AreEqual(drawn, CliffWallGeometry.DrawnMetres(0f, s.BrowPlan, toe), 1e-4f,
+                    $"batter {batter}: the foot is not its drawn distance down the column");
+                // A metre along the drawn column is a metre of v: the texel is as tall as it is wide.
+                Vector2 mid = s.BrowPlan + down * 1f;
+                float toMid = CliffWallGeometry.DrawnMetres(0f, s.BrowPlan, mid);
+                Assert.AreEqual(1f / CliffCatalog.FaceMetresT, CliffWallGeometry.TileV(toMid, CliffCatalog.FaceMetresT), 1e-5f,
+                    $"batter {batter}: a drawn metre is not a metre of the face texture");
+                // Row by row it adds up to the same on a straight column, however the column is cut into rows.
+                Assert.AreEqual(drawn, CliffWallGeometry.DrawnMetres(toMid, mid, toe), 1e-4f,
+                    $"batter {batter}: two rows down a straight column do not add up to its drawn length");
+            }
+        }
+
+        /// <summary>
+        /// v never runs backward. Where the relief pushes a row back toward the band's top (a short column on a ramp,
+        /// a deep chip) a straight distance from the top would shrink again and the rock would be drawn mirrored
+        /// there; added up row by row, every row is further down the texture than the one above it.
+        /// </summary>
+        [Test]
+        public void DrawnMetresOnlyEverGrowDownAColumn_EvenWhereTheReliefFoldsItBack()
+        {
+            var column = new[]
+            {
+                new Vector2(0f, 0f), new Vector2(0f, -0.4f), new Vector2(0.3f, -0.1f), new Vector2(0f, -0.5f),
+            };
+            float v = 0f;
+            for (int r = 1; r < column.Length; r++)
+            {
+                float next = CliffWallGeometry.DrawnMetres(v, column[r - 1], column[r]);
+                Assert.Greater(next, v, $"row {r} is not further down the texture than row {r - 1}");
+                v = next;
+            }
+            // The straight distance to row 2 is SHORTER than to row 1: the fold the sum does not take.
+            Assert.Less(Vector2.Distance(column[0], column[2]), Vector2.Distance(column[0], column[1]));
+        }
+
         /// <summary>The surface length is the hypotenuse, so it is never shorter than either leg. A cheap
         /// property, but it is the one that fails first if the run and the drop are ever added in the
         /// wrong space.</summary>

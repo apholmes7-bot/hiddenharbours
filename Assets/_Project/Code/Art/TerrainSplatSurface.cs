@@ -108,6 +108,7 @@ namespace HiddenHarbours.Art
         private float _timer;
         private bool _relightMisfitWarned;
         private TerrainShoreLineBinding _shoreLines;
+        private GameObject _shoreBrowLip;
 
         private static readonly int IdHeightTex = Shader.PropertyToID("_HeightTex");
         private static readonly int IdHeightMin = Shader.PropertyToID("_HeightMin");
@@ -381,6 +382,10 @@ namespace HiddenHarbours.Art
             if (_shoreLines == null)
                 _shoreLines = TerrainShoreLineBinding.Create(_heightTexture, _heightMin, _heightMax, _worldCenter, _worldSize,
                     gameObject.scene, _splatA, _splatB, _splatC, _splatD, _splatE, _splatF);
+            // The banks that own no cliff wall hang their turf lip from the ground itself (ShoreBrowLipMath).
+            if (_shoreBrowLip == null && _shoreLines != null)
+                _shoreBrowLip = ShoreBrowLipSurface.Create(transform, CliffFaceMixDef.ForScene(gameObject.scene.name),
+                                                           _shoreLines.BrowLipRuns);
             PushAll();
         }
 
@@ -389,6 +394,8 @@ namespace HiddenHarbours.Art
             if (_meshGo != null) _meshGo.SetActive(false);
             _shoreLines?.Dispose();
             _shoreLines = null;
+            ShoreBrowLipSurface.Destroy(_shoreBrowLip);
+            _shoreBrowLip = null;
             s_Live.Remove(this);
             LiveVersion++;
         }

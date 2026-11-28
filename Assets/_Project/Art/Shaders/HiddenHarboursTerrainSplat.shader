@@ -247,6 +247,8 @@ Shader "HiddenHarbours/TerrainSplat"
                 float _ShoreWallsLoaded;
                 float4 _ShoreWallGrid;
                 float _ShoreProofKind;
+                // The region's ledge calm (TerrainLedgeCalm): strength, saturation kept, contrast kept, pivot.
+                float4 _ShoreLedgeCalm;
 
                 float  _RelightLoaded;
                 float4 _TLSunF;
@@ -279,6 +281,17 @@ Shader "HiddenHarbours/TerrainSplat"
             CBUFFER_END
 
             #include "Include/TerrainShoreLines.hlsl"
+
+            // The ledge calm on one texel's colour. Twin: TerrainLedgeCalmMath.Calm.
+            float3 TerrainLedgeCalm(float3 col, float rock, float4 calm)
+            {
+                float k = saturate(calm.x) * saturate(rock);
+                float l = dot(col, float3(0.2126, 0.7152, 0.0722));
+                float3 muted = lerp(float3(l, l, l), col, calm.y);
+                float target = lerp(calm.w, l, calm.z);
+                float3 drawn = l > 1e-4 ? muted * (target / l) : float3(target, target, target);
+                return lerp(col, drawn, k);
+            }
 
             // The day/night cycle's sun, DayNightController's globals (set per frame, never material
             // properties, so they live outside UnityPerMaterial, as in CliffFace and SpriteLitDecor):
@@ -595,6 +608,14 @@ Shader "HiddenHarbours/TerrainSplat"
                 [branch]
                 if (_RoadLoaded > 0.5)
                     col = RF4Over(col, wp, TerrainSky());
+
+                // THE LEDGE CALM (owner 11 27): the shelf, talus and ledge rock at a cliff's foot lose some of
+                // their colour and spread, so the face over them reads as the wall and they as the floor. A
+                // function of the texel's colour alone, so it keeps the texel grid. Strength 0 = as before.
+                // It runs after the road floor, which follows the macro directly; a road texel over ledge rock is
+                // calmed with it.
+                [branch] if (_ShoreLedgeCalm.x > 0.0)
+                    col = TerrainLedgeCalm(col, w[5] + w[11] + w[12], _ShoreLedgeCalm);
 
                 col = SL_Over(col, shoreAddresses);
 

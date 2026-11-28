@@ -305,7 +305,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             StringAssert.Contains("_WeedMetres * (0.4 + 1.2 * CliffHash(float2(floor(cell.x / 2.0), 0.0), 3.0))", src,
                 "WeedFringe01's torn top.");
             StringAssert.Contains("ceil(saturate(submergence / _WetFadeMetres) * 4.0) / 4.0", src, "SubmergedKeep01.");
-            StringAssert.Contains("CliffDissolve(IN.color.a, cell)", src,
+            StringAssert.Contains("CliffDissolve(cellAlpha, cell)", src,
                 "the wall's soft edges are drawn as a pixel dissolve (Dissolve01).");
             Assert.AreEqual(1, Regex.Matches(src, @"_WaterlineStrength > 0\.001").Count,
                 "the wet foot lives inside the ONE waterline.");
@@ -360,7 +360,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "the shader MUST refuse to draw a waterline off an unset global.");
             StringAssert.Contains("_WaterlineStrength > 0.001", src,
                 "and strength 0 must be an exact passthrough.");
-            StringAssert.Contains("IN.waterline.z > 0.5", src,
+            StringAssert.Contains("cellWaterline.z > 0.5", src,
                 "and a wall with no authored elevation must be skipped, not treated as chart datum.");
             StringAssert.Contains("CliffWaveHeight(IN.uv2, _HHSeaLevelWorld.y)", src,
                 "the surge is sampled at the TOE PLAN (uv2) through the DRAWN sea's frequency scale — " +
@@ -384,8 +384,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "a difference and cannot say where the crossing falls.");
             // BOTH the rock bands and the decals carry the channels: the TOE strip is the piece the sea
             // actually reaches, and a decal drawn dry across a wet foot is the seam this item closes.
-            Assert.AreEqual(2, System.Text.RegularExpressions.Regex.Matches(src, @"seaPlanUv\[idx\] = ").Count,
-                "the face bands AND the decals must both carry the waterline channels.");
+            Assert.AreEqual(3, System.Text.RegularExpressions.Regex.Matches(src, @"seaPlanUv\[idx\] = ").Count,
+                "the face bands, the decals AND the turf lip must all carry the waterline channels.");
         }
 
         [Test]
@@ -501,14 +501,22 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     @"ndl\s*=\s*\(cycleOn\s*&&\s*e\s*<=\s*0\.0\)\s*\?\s*0\.0\s*:\s*dot\(N,\s*L\)"),
                 "the sun-down gate (LiveNdl): with the cycle on and the sun at or below the horizon, the " +
                 "live N dot L is 0 — one band down everywhere, and no wall lit from under the planet.");
-            StringAssert.Contains("CliffPxRelight(unlit, ndl, dot(N, Lpx), msk.r, variant)", px,
+            // (Owner 11 27: the face ramp's band step rides along; 0 where a wall has no ramp, CliffHeightMath.)
+            StringAssert.Contains("CliffPxRelightShift(unlit, ndl, dot(N, Lpx), msk.r, variant, rampShift)", px,
                 "the shadow comes out of the mask at the PX key, the light the mask was baked at.");
             // The cliff mix (owner 11 25) picks the palette per block, the twin of CliffFaceMixMath.PicksVariant:
             // the same hash, the same salt, whole at the ends.
-            StringAssert.Contains("mixW > CliffHash(floor(cell / mixBlk), 8.0)", px,
-                "the shader's block pick is not CliffFaceMixMath.PicksVariant's");
+            // The pick is made once, AHEAD of the px branch: the fault's blocks go by the skin, and the fault runs
+            // before the look does. So the pick is looked for before the branch, and only once in the file.
+            const string pick = "mixW > CliffHash(floor(cell / mixBlk), 8.0)";
+            int picked = Find(src, pick);
+            Assert.IsTrue(picked >= 0 && picked < branch,
+                "the shader's block pick is not CliffFaceMixMath.PicksVariant's, or it is no longer ahead of the look");
+            Assert.AreEqual(picked, src.LastIndexOf(pick, System.StringComparison.Ordinal),
+                "ONE block pick: the fault and the palette must agree which skin a texel wears");
             Assert.AreEqual(8f, CliffFaceMixMath.BlockSalt, "the block pick's salt is the shader's 8.0");
-            StringAssert.Contains("mixW >= 0.999", px, "a full weight must draw the variant everywhere, as the twin does");
+            StringAssert.Contains("mixW >= 0.999", src.Substring(0, branch),
+                "a full weight must draw the variant everywhere, as the twin does");
             // Pass 2: the variant skin's own faces (a style) swap in on the SAME block pick, inside the one px branch,
             // and the normal is re-read with them, or the coursed rock would be lit by the kit face's facets.
             StringAssert.Contains("if (variant && _VariantFaceOn > 0.5)", px,

@@ -89,7 +89,7 @@ namespace HiddenHarbours.Tools.RigBaking
             host.Execute(
                 $"(function(){{ var d = {PG}.DEF['{rock}'], keep = d.paint; " +
                 $"d.paint = PxCliffCoursed.painter({style.OptionsJson()}); " +
-                $"try {{ var b = {PG}.face('{rock}', '{aspect}', {CliffCatalog.BaseStep}, {{slope: '{slope}'}}); " +
+                $"try {{ var b = {PG}.face('{rock}', '{aspect}', {CliffCatalog.BaseStep}, {{slope: '{slope}', z: {Mathf.Clamp(style.TexelPixels, 1, 2)}}}); " +
                 $"b.__ch = {PG}.channels(b, {{index: true}}); globalThis.{ResultGlobal} = b; }} " +
                 $"finally {{ d.paint = keep; }} }})();");
             w = (int)host.EvaluateNumber($"{ResultGlobal}.W");

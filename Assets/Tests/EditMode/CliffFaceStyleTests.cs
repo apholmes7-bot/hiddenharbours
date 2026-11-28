@@ -96,7 +96,7 @@ namespace HiddenHarbours.Tests.EditMode
             CliffFaceStyleDef style = Board();
             Assert.IsNotNull(style);
             string json = style.OptionsJson();
-            foreach (string key in new[] { "course", "pale", "paleTh", "jsp", "jgate", "step", "seg", "proud", "relief", "lip", "speck", "sunk", "stain", "tick", "part", "chip", "paleTone", "silt", "siltTh", "siltTone" })
+            foreach (string key in new[] { "course", "pale", "paleTh", "jsp", "jgate", "step", "seg", "proud", "relief", "lip", "speck", "sunk", "stain", "tick", "part", "chip", "paleTone", "silt", "siltTh", "siltTone", "recess", "spall", "spallCells", "fissure", "fissureLen", "jag", "mottle", "mottleCells" })
                 StringAssert.Contains($"\"{key}\":", json, $"the painter's '{key}' is not passed from the Def");
             StringAssert.StartsWith("{", json);
             StringAssert.EndsWith("}", json);

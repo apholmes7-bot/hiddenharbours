@@ -29,6 +29,8 @@ namespace HiddenHarbours.Tests.EditMode
             { "HiddenHarbours.Art.CliffFaceMixDef", new[] { "cliffmix" } },
             { "HiddenHarbours.Art.CliffFaceSkinDef", new[] { "cliffskin" } },
             { "HiddenHarbours.Art.CliffFaceStyleDef", new[] { "cliffstyle" } },
+            { "HiddenHarbours.Art.CliffRibWarpDef", new[] { "cliff_rib_warp" } },
+            { "HiddenHarbours.Art.CliffTurfLipDef", new[] { "clifflip" } },
             { "HiddenHarbours.Art.CloudShadowDef", new[] { "cloud_shadows" } },
             { "HiddenHarbours.Art.CrestGlowDef", new[] { "crest_glow" } },
             { "HiddenHarbours.Art.FoamTransportContactDef", new[] { "foam_contact" } },
