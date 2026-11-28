@@ -183,6 +183,27 @@ namespace HiddenHarbours.Art
                  "unrotated (owner 11 27: the bends did not read as pixel art). Off = they are laid down the column.")]
         public bool StepShearedWalls = false;
 
+        [Tooltip("A stepped wall's bed runs, in ground texels: a run holds its level at least x long, ends once the brow " +
+                 "has drifted StepJogTexels from it, and never runs past y. x 0 = no runs: the bedding steps a texel " +
+                 "wherever the brow does (owner 11 27, round three: long hand-pixelled steps, not a mosaic).")]
+        public Vector2Int StepRunTexels = Vector2Int.zero;
+
+        [Tooltip("How far the brow drifts from a run's level before the run ends and the bedding jogs, in ground texels.")]
+        [Min(1)] public int StepJogTexels = 3;
+
+        [Tooltip("Stepped walls take no fault (no thrown or slid blocks), so a bed runs unbroken along the wall " +
+                 "(owner 11 27, round three: the fault chopped the stepped beds into a mosaic).")]
+        public bool NoFaultOnSteppedWalls = false;
+
+        [Header("Tide marks (owner 11 27: the bluish bands low on the face read as tide marks)")]
+        [Tooltip("Share of the face's depth, from the foot up, that carries tide marks and keeps the texture's blue " +
+                 "basalt. Above it the basalt draws as sandstone. 0 = off (the face as painted).")]
+        [Range(0f, 1f)] public float TideZoneShare = 0f;
+        [Tooltip("Rows of world y between two tide marks, in ground texels.")]
+        [Min(1)] public int TideMarkPitchTexels = 9;
+        [Tooltip("Rows a tide mark is tall, in ground texels: wet dark basalt, level along the wall.")]
+        [Min(0)] public int TideMarkTexels = 2;
+
         [Header("The bank's own lip (owner 11 27: banks with no wall read tall)")]
         [Tooltip("The strip a bank with no cliff wall hangs, where it differs from the wall's (its own rock riser under the " +
                  "soil). None = the bank hangs the wall's TurfLip.")]

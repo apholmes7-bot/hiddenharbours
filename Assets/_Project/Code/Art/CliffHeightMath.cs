@@ -182,4 +182,43 @@ namespace HiddenHarbours.Art
             return x >= a + jl && x < a + w + jr ? 1 : 0;
         }
     }
+
+    /// <summary>
+    /// The tide marks (owner 11 27: the bluish bands low on the face read as water and tide marks, and he likes
+    /// them; blue blocks high on the face are wrong). In the lowest <see cref="ZoneShare"/> of a face, level rows of
+    /// wet dark rock every <see cref="PitchTexels"/> texels of world y, <see cref="MarkTexels"/> rows tall; above the
+    /// zone the blue basalt of the texture gives way to sandstone. Pure; the shader twin is CliffTideMark.
+    /// </summary>
+    public readonly struct CliffTide
+    {
+        public readonly float ZoneShare;
+        public readonly int PitchTexels;
+        public readonly int MarkTexels;
+        public readonly bool On;
+
+        public CliffTide(float zoneShare, int pitchTexels, int markTexels)
+        {
+            ZoneShare = Mathf.Clamp01(zoneShare);
+            PitchTexels = Mathf.Max(1, pitchTexels);
+            MarkTexels = Mathf.Clamp(markTexels, 0, PitchTexels);
+            On = ZoneShare > 0f;
+        }
+
+        public static CliffTide From(CliffFaceMixDef mix) => mix == null
+            ? default
+            : new CliffTide(mix.TideZoneShare, mix.TideMarkPitchTexels, mix.TideMarkTexels);
+
+        /// <summary>The shader's _Tide: zone share, pitch, mark rows, on (only where <paramref name="on"/>).</summary>
+        public Vector4 Shader(bool on) => new Vector4(ZoneShare, PitchTexels, MarkTexels, on && On ? 1f : 0f);
+
+        /// <summary>1 on a mark row in the tide zone, 0 elsewhere in it, -1 above it (basalt to sandstone).
+        /// <paramref name="faceT"/> is the face's depth, brow 0 to foot 1; <paramref name="y"/> the world texel row.</summary>
+        public static int Mark(in CliffTide t, float faceT, int y)
+        {
+            if (!t.On) return 0;
+            if (faceT <= 1f - t.ZoneShare) return -1;
+            int m = y - t.PitchTexels * Mathf.FloorToInt((float)y / t.PitchTexels);
+            return m < t.MarkTexels ? 1 : 0;
+        }
+    }
 }

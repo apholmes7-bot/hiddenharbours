@@ -109,16 +109,25 @@ namespace HiddenHarbours.Art
                  "follows every step). A wall that faces down the screen has no riser to see and is untouched.")]
         [Min(0f)] public float RiserFadeMetres = 0f;
 
+        [Header("Placing")]
+        [Tooltip("Rows the painted lip is laid INLAND of the ground's brow line: a tall bank stacks its height up over " +
+                 "the grass edge instead of out over the ledge in front of it (owner 11 27, round three: keep the light " +
+                 "station's floor its old width). 0 = the painted line sits on the brow line.")]
+        [Min(0)] public int InlandShiftRows = 0;
+
         [TextArea] public string Why = "";
 
+        /// <summary>The strip row laid on the ground's brow line: the painted line, moved down the strip by the
+        /// inland shift so the painting lands that many rows inland.</summary>
+        public int MeshLineRow => Mathf.Clamp(LineRow + InlandShiftRows, 0, StripTexels.y);
         /// <summary>Metres of shore one strip covers before it repeats.</summary>
         public float StripMetresS => StripTexels.x / CliffWaterlineMath.TexelsPerMetre;
         /// <summary>Metres of the strip above the brow line (on the meadow's side).</summary>
-        public float InlandMetres => Mathf.Clamp(LineRow, 0, StripTexels.y) / CliffWaterlineMath.TexelsPerMetre;
+        public float InlandMetres => MeshLineRow / CliffWaterlineMath.TexelsPerMetre;
         /// <summary>Metres of the strip below the brow line (down the face).</summary>
-        public float FaceMetres => Mathf.Max(0, StripTexels.y - LineRow) / CliffWaterlineMath.TexelsPerMetre;
+        public float FaceMetres => Mathf.Max(0, StripTexels.y - MeshLineRow) / CliffWaterlineMath.TexelsPerMetre;
         /// <summary>Whether a wall can draw this lip.</summary>
-        public bool IsDrawable => Strip != null && StripTexels.x > 0 && StripTexels.y > LineRow;
+        public bool IsDrawable => Strip != null && StripTexels.x > 0 && StripTexels.y > MeshLineRow;
 
         /// <summary>The painter's options, as the JSON object the baker hands it.</summary>
         public string OptionsJson()

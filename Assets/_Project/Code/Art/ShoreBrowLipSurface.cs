@@ -34,7 +34,7 @@ namespace HiddenHarbours.Art
             var uvs = new List<Vector2>();
             var tris = new List<int>();
             Vector3 origin = parent.position;
-            ShoreBrowLipMath.Mesh(runs, lip.StripTexels, lip.LineRow, origin, verts, uvs, tris);
+            ShoreBrowLipMath.Mesh(runs, lip.StripTexels, lip.MeshLineRow, origin, verts, uvs, tris);
             if (verts.Count == 0) return null;
 
             var mesh = new Mesh { name = "HH" + ChildName, hideFlags = HideFlags.HideAndDontSave };

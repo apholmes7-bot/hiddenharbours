@@ -55,10 +55,11 @@ MonoBehaviour:
   RockJointGap: {x: 24, y: 56}
   RockToeShade: 2
   Rock:
-  - '#2d2828'
-  - '#59382d'
-  - '#7c513a'
-  - '#955a3d'
-  - '#ad7856'
+  - '#2a2525'
+  - '#45322b'
+  - '#584033'
+  - '#6a4d3c'
+  - '#7d5f4a'
   RiserFadeMetres: 0.9
+  InlandShiftRows: 40
   Why: 'Owner 11 27: the light station'

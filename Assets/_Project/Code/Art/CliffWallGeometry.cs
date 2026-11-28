@@ -722,6 +722,42 @@ namespace HiddenHarbours.Art
         public static Vector2 SteppedUv(Vector2 world, float browWorldY, float faceMetresS, float faceMetresT) =>
             new Vector2(TileU(world.x, faceMetresS), TileV(browWorldY - world.y, faceMetresT));
 
+        /// <summary>
+        /// The level a stepped wall counts its beds from, station by station (owner 11 27, round three: the beds must
+        /// read as long hand-pixelled stair steps you can follow round a bend, not a texel of stair per column). The
+        /// level is the brow's, snapped to a whole texel, held for a run along the brow; a run ends once it is at
+        /// least <paramref name="minRunTexels"/> long and the brow has drifted <paramref name="jogTexels"/> from it,
+        /// or at <paramref name="maxRunTexels"/>, and the next run takes the brow's level there. So every bed keeps
+        /// its row along a run and jogs by whole texels between runs. minRun 0 or less = no runs: the brow itself.
+        /// Pure.
+        /// </summary>
+        public static float[] SteppedBrowY(float[] browY, float[] alongMetres, int minRunTexels, int maxRunTexels, int jogTexels)
+        {
+            int n = browY.Length;
+            var level = new float[n];
+            if (n == 0) return level;
+            if (minRunTexels <= 0)
+            {
+                System.Array.Copy(browY, level, n);
+                return level;
+            }
+            const float T = CliffWaterlineMath.TexelsPerMetre;
+            int maxRun = Mathf.Max(minRunTexels, maxRunTexels);
+            float hold = Mathf.Round(browY[0] * T) / T, start = alongMetres[0];
+            for (int c = 0; c < n; c++)
+            {
+                float run = (alongMetres[c] - start) * T;
+                float drift = Mathf.Abs(browY[c] - hold) * T;
+                if (run >= maxRun || (run >= minRunTexels && drift >= jogTexels))
+                {
+                    hold = Mathf.Round(browY[c] * T) / T;
+                    start = alongMetres[c];
+                }
+                level[c] = hold;
+            }
+            return level;
+        }
+
         /// <summary>How far past a band's true edge its mesh is laid, square to the edge, so every ground cell the edge
         /// touches is covered: a cell and a half (a cell's centre is under 0.71 of a cell from any point in it).</summary>
         public const float CellCoverMetres = 1.5f / CliffWaterlineMath.TexelsPerMetre;

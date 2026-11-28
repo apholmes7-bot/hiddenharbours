@@ -24,11 +24,11 @@ MonoBehaviour:
   Sod: {x: 4, y: 8}
   TornShare: 0.1
   Shade: {x: 5, y: 11}
-  ClumpGap: {x: 14, y: 34}
-  ClumpHalf: {x: 3, y: 7}
-  Hang: {x: 8, y: 14}
-  Short: {x: 1, y: 3}
-  Apron: {x: 4, y: 6}
+  ClumpGap: {x: 8, y: 26}
+  ClumpHalf: {x: 4, y: 11}
+  Hang: {x: 6, y: 14}
+  Short: {x: 2, y: 5}
+  Apron: {x: 2, y: 4}
   StoneShare: 0.012
   RootShare: 0.06
   Root: {x: 5, y: 16}
@@ -51,7 +51,7 @@ MonoBehaviour:
   Stone: '#8a8478'
   ShadeColour: '#160d0a'
   ShadeAlpha: {x: 190, y: 110}
-  RockRiser: {x: 24, y: 40}
+  RockRiser: {x: 0, y: 0}
   RockJointGap: {x: 12, y: 30}
   RockToeShade: 2
   Rock:
@@ -65,6 +65,6 @@ MonoBehaviour:
   RiserFadeMetres: 0.9
   Why: 'Owner 11 27: the stepped walls of the east ledges lost their flat grass ledge
     between tiers when the brow strip went (it stretched its grass). This strip puts
-    it back on the ground''s texel: a short soil cut, a low rock riser (the upper
-    tier), a calm grass terrace lit along its outer edge, and the shade it throws
+    it back on the ground''s texel: a thin dark soil cut and no riser (round three: a riser
+    read as a brown outline on the meadow), a calm grass terrace lit along its outer edge, and the shade it throws
     on the face below. Hung by the walls that are not laid on the screen grid (CliffFaceMixDef.ShearedTurfLip).'

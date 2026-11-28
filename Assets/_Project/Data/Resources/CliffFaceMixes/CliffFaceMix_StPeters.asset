@@ -42,13 +42,13 @@ MonoBehaviour:
   FacingCornerReachMetres: 16
   FacingCornerDegrees: 20
   FaultBlockTexels: {x: 12, y: 30}
-  FaultThrowTexels: 4
-  FaultSlideTexels: 8
+  FaultThrowTexels: 1
+  FaultSlideTexels: 2
   FaultCrackRunTexels: 6
   FaultCrackShare: 0.35
   FaultFacetDegrees: 30
   FaultVariantBlockScale: 1
-  FaultVariantThrowScale: 3
+  FaultVariantThrowScale: 1
   JointSpacingTexels: 0
   JointRunTexels: 14
   JointRunShare: 0.45
@@ -57,15 +57,21 @@ MonoBehaviour:
   FaceRampTopShare: 0.2
   FaceRampFootShare: 0.35
   FaceRampJitter: 0.06
-  FaceRampDeepShare: 0.15
+  FaceRampDeepShare: 0.25
   ButtressPitchTexels: 112
   ButtressShadeShare: {x: 0.3, y: 0.55}
   ButtressBedTexels: 18
   ButtressJogTexels: 3
   HeightOnShearedWalls: 1
   StepShearedWalls: 1
+  StepRunTexels: {x: 12, y: 40}
+  StepJogTexels: 3
+  NoFaultOnSteppedWalls: 1
+  TideZoneShare: 0.35
+  TideMarkPitchTexels: 9
+  TideMarkTexels: 2
   ShoreBrowTurfLip: {fileID: 11400000, guid: 9ef327013cc946668fd59e961c5346c5, type: 2}
-  ShearedTurfLip: {fileID: 11400000, guid: c9d7280d5d0f4af39bfd45a6a166c458, type: 2}
+  ShearedTurfLip: {fileID: 0}
   LedgeCalm: 1
   LedgeSaturationKeep: 0.8
   LedgeContrastKeep: 0.85

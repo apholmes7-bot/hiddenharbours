@@ -309,6 +309,7 @@ namespace HiddenHarbours.Art
         private static readonly int IdFaceRamp = Shader.PropertyToID("_FaceRamp");
         private static readonly int IdButtress = Shader.PropertyToID("_Buttress");
         private static readonly int IdButtressB = Shader.PropertyToID("_ButtressB");
+        private static readonly int IdTide = Shader.PropertyToID("_Tide");
         private static readonly int IdFaultC = Shader.PropertyToID("_FaultC");
         private static readonly int IdPaletteVariant =Shader.PropertyToID("_PaletteVariant");
         private static readonly int IdVariantOn = Shader.PropertyToID("_VariantOn");
@@ -1033,7 +1034,7 @@ namespace HiddenHarbours.Art
                 CliffWallMeshData m = FaceMesh(ext, _bands[b].StartSurfaceMetres, _bands[b].EndSurfaceMetres, rows,
                                                alongOffsetMetres, _faceMetresS, _faceMetresT, ProfileAt,
                                                elevationValid, transform.position, _ribWarp, _jag, ScreenGrid,
-                                               CellCoverMetres, Stepped);
+                                               CellCoverMetres, Stepped, StepRun);
                 Emit(JoinChildPrefix + what + "_" + label, m.Verts, m.Uvs, m.Tris, _bands[b].Unlit, _bands[b].Normal,
                      _bands[b].Mask, localOrder: 0, m.ElevationUv, m.SeaPlanUv, decal: false, m.Colors, m.BandUv);
             }
@@ -1195,7 +1196,7 @@ namespace HiddenHarbours.Art
             CliffWallMeshData m = FaceMesh(columns, band.StartSurfaceMetres, band.EndSurfaceMetres, rows,
                                            _alongOffsetMetres, _faceMetresS, _faceMetresT, ProfileAt,
                                            elevationValid, transform.position, _ribWarp, _jag, ScreenGrid,
-                                           CellCoverMetres, Stepped);
+                                           CellCoverMetres, Stepped, StepRun);
             Emit(childName, m.Verts, m.Uvs, m.Tris, band.Unlit, band.Normal, band.Mask, localOrder,
                  m.ElevationUv, m.SeaPlanUv, decal: false, m.Colors, m.BandUv);
         }
@@ -1209,6 +1210,10 @@ namespace HiddenHarbours.Art
 
         /// <summary>Whether this wall's face is laid on the screen grid: facing across the screen, or stepped.</summary>
         private bool ScreenGrid => _planarFace || Stepped;
+
+        /// <summary>A stepped wall's bed runs: shortest and longest run, and the jog that ends one, in ground texels.</summary>
+        private Vector3Int StepRun => _mix != null
+            ? new Vector3Int(_mix.StepRunTexels.x, _mix.StepRunTexels.y, _mix.StepJogTexels) : default;
 
         /// <summary>
         /// A brow or toe strip, laid on the SAME stations as the face so it curves with the coast and
@@ -1501,10 +1506,25 @@ namespace HiddenHarbours.Art
                                                  System.Func<float, float, float> displacement,
                                                  float elevationValid, Vector3 origin,
                                                  CliffRibWarp ribWarp = default, CliffJag jag = default,
-                                                 bool planar = false, float coverMetres = 0f, bool stepped = false)
+                                                 bool planar = false, float coverMetres = 0f, bool stepped = false,
+                                                 Vector3Int stepRun = default)
         {
             CliffWallSample[] samples = columns.Whole;
             int stations = samples.Length;
+            // A stepped wall's beds hold one level for a run of the brow, then jog a whole number of texels
+            // (CliffWallGeometry.SteppedBrowY): long hand-pixelled steps, not a texel of stair per column.
+            float[] stepBrow = null;
+            if (planar && stepped)
+            {
+                var browY = new float[stations];
+                var alongAt = new float[stations];
+                for (int c = 0; c < stations; c++)
+                {
+                    browY[c] = samples[c].BrowPlan.y;
+                    alongAt[c] = c == 0 ? 0f : alongAt[c - 1] + Vector2.Distance(columns.AlongBrow[c - 1], columns.AlongBrow[c]);
+                }
+                stepBrow = CliffWallGeometry.SteppedBrowY(browY, alongAt, stepRun.x, stepRun.y, stepRun.z);
+            }
             var verts = new Vector3[stations * (rows + 1)];
             var uvs = new Vector2[verts.Length];
             // The band's own parameter, 0 at its top row and 1 at its foot, with a flag: the shader cuts the band's
@@ -1580,7 +1600,7 @@ namespace HiddenHarbours.Art
                     // its column's brow in world y: its bedding follows the brow, and on the cells it steps a whole
                     // texel at a time (CliffWallGeometry.SteppedUv).
                     if (planar) uvs[idx] = stepped
-                        ? CliffWallGeometry.SteppedUv(p, brow.y, faceMetresS, faceMetresT)
+                        ? CliffWallGeometry.SteppedUv(p, stepBrow[c], faceMetresS, faceMetresT)
                         : CliffWallGeometry.ScreenPlanarUv(p, faceMetresS, faceMetresT);
                     // The elevation walks the SURFACE parameter, brow → toe, which is the row parameter
                     // the geometry is laid on — so the waterline crossing lands on the rows the mesh
@@ -2121,7 +2141,9 @@ namespace HiddenHarbours.Art
             // The faulted bedding: only on a face band laid on the screen grid, only with the mix's numbers.
             CliffFault fault = CliffFault.From(_mix);
             _mpb.SetVector(IdFaultA, fault.ShaderA);
-            _mpb.SetVector(IdFaultB, fault.ShaderB(ScreenGrid && !decal));
+            // A stepped wall may go unfaulted (CliffFaceMixDef.NoFaultOnSteppedWalls) so its beds run unbroken.
+            bool faultOn = ScreenGrid && !decal && !(Stepped && _mix != null && _mix.NoFaultOnSteppedWalls);
+            _mpb.SetVector(IdFaultB, fault.ShaderB(faultOn));
             _mpb.SetVector(IdFaultC, fault.ShaderC);
             // Height (owner 11 27): upright joints on the faces laid on the screen grid; the face ramp and the
             // buttresses there and, where the mix says so, on the sheared walls too.
@@ -2132,6 +2154,8 @@ namespace HiddenHarbours.Art
             _mpb.SetVector(IdFaceRamp, height.ShaderRamp(mass));
             _mpb.SetVector(IdButtress, height.ShaderButtress(mass));
             _mpb.SetVector(IdButtressB, height.ShaderButtressB);
+            // Tide marks low on the face, and no blue basalt above them (CliffTide), on the same faces as the mass.
+            _mpb.SetVector(IdTide, CliffTide.From(_mix).Shader(mass));
             _mpb.SetFloat(IdWallAzimuth, _wallAzimuth);
             _mpb.SetFloat(IdBatter, _batter);
             _mpb.SetVector(IdBakeL, new Vector4(_bakeLight.x, _bakeLight.y, _bakeLight.z, 0f));

@@ -194,8 +194,9 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsFalse(h.JointsOn, "ruled upright joints on the big walls were rejected (owner 11 27)");
             Assert.IsTrue(mix.StepShearedWalls, "the curved walls are still laid down the column: their bends are not pixel art");
             Assert.IsTrue(h.MassOn(false, false), "the sheared, stepped walls get no height pass");
-            Assert.IsNotNull(mix.ShearedTurfLip, "the stepped walls hang no terrace");
-            Assert.Greater(mix.ShearedTurfLip.TerraceRows.y, 0, "the stepped walls' lip paints no grass terrace");
+            // Owner 11 27: the terrace's "big green chunk" did not look right; the stepped walls keep the wall's own
+            // overgrown lip and topsoil, as the draft had them.
+            Assert.IsNull(mix.ShearedTurfLip, "the stepped walls hang their own lip: the draft's grass and topsoil");
             Assert.AreEqual(Vector2Int.zero, mix.TurfLip.TerraceRows, "the screen-grid walls' lip grew a terrace");
             Assert.Greater(mix.FaultBlockTexels.y, mix.FaultBlockTexels.x, "the fault's blocks are wider than tall: they read as courses, not height");
             Assert.LessOrEqual(mix.FaultSlideTexels, mix.FaultBlockTexels.y, "a slide longer than a block chops every upright feature");
@@ -214,7 +215,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             string face = File.ReadAllText(Path.Combine(Application.dataPath, "_Project/Art/Shaders/HiddenHarboursCliffFace.shader"));
             foreach (string name in new[] { "_JointA", "_JointB", "_FaceRamp", "_Buttress", "_ButtressB", "float4 uv4", "float4 band",
-                                            "tier -= shift.y", "band += shift.x" })
+                                            "tier -= shift.y", "band += shift.x", "_Tide", "CliffTideMark", "shift.z > 0.5" })
                 StringAssert.Contains(name, face);
             foreach (string salt in new[] { "41.0", "42.0", "43.0", "44.0", "45.0", "46.0", "47.0", "48.0", "49.0" })
                 StringAssert.Contains(salt, face, "a hash salt the twin uses is missing from the shader");
@@ -268,6 +269,82 @@ namespace HiddenHarbours.Tests.EditMode
                 last = row;
             }
             Assert.That(steps, Is.InRange(8, 11), "the bedding does not follow the brow's fall");
+        }
+
+        /// <summary>Owner 11 27, round three: the stepped beds were a mosaic. They hold one whole-texel level for a
+        /// run of at least the shortest run, never past the longest, and jog only between runs.</summary>
+        [Test]
+        public void TheBeds_HoldALevel_ForLongRuns_AndJogBetweenThem()
+        {
+            const int n = 400, minRun = 12, maxRun = 40, jog = 3;
+            var brow = new float[n];
+            var along = new float[n];
+            for (int c = 0; c < n; c++)
+            {
+                along[c] = c * Cell * 0.5f;                                    // two stations a texel
+                brow[c] = -8f - 0.9f * Mathf.Sin(c * 0.02f) - c * Cell * 0.05f; // a curving, falling brow
+            }
+            float[] level = CliffWallGeometry.SteppedBrowY(brow, along, minRun, maxRun, jog);
+            int runStart = 0, runs = 0;
+            for (int c = 0; c < n; c++)
+            {
+                float texels = level[c] * CliffWaterlineMath.TexelsPerMetre;
+                Assert.AreEqual(Mathf.Round(texels), texels, 1e-3f, "a level is not a whole texel");
+                if (c == 0 || level[c] == level[c - 1]) continue;
+                float run = (along[c] - along[runStart]) * CliffWaterlineMath.TexelsPerMetre;
+                Assert.That(run, Is.InRange(minRun - 0.01f, maxRun + 0.6f), "a run is shorter than the shortest or past the longest");
+                runStart = c;
+                runs++;
+            }
+            Assert.Greater(runs, 3, "the level never jogs: the beds do not follow the brow");
+            for (int c = 0; c < n; c++)
+                Assert.Less(Mathf.Abs(level[c] - brow[c]) * CliffWaterlineMath.TexelsPerMetre, maxRun,
+                            "a level wandered off its brow");
+            float[] none = CliffWallGeometry.SteppedBrowY(brow, along, 0, 0, jog);
+            Assert.AreEqual(brow[123], none[123], "runs off must leave the brow as it was");
+        }
+
+        [Test]
+        public void StPeters_StepsItsShearedWalls_InLongUnfaultedRuns()
+        {
+            CliffFaceMixDef.ClearCache();
+            CliffFaceMixDef mix = CliffFaceMixDef.ForScene("StPeters");
+            Assert.IsNotNull(mix);
+            Assert.IsTrue(mix.StepShearedWalls);
+            Assert.GreaterOrEqual(mix.StepRunTexels.x, 12, "short runs read as noise, not hand-pixelled steps");
+            Assert.GreaterOrEqual(mix.StepRunTexels.y, mix.StepRunTexels.x);
+            Assert.IsTrue(mix.NoFaultOnSteppedWalls, "the fault chops the stepped beds into a mosaic");
+            Assert.LessOrEqual(mix.FaultThrowTexels * Mathf.Max(1f, mix.FaultVariantThrowScale), 2f,
+                               "a fault throw over two texels breaks the beds on the screen-grid walls");
+            Assert.IsNotNull(mix.ShoreBrowTurfLip);
+            Assert.Greater(mix.ShoreBrowTurfLip.InlandShiftRows, 0,
+                           "the light station's stacked bank must climb inland, not cover the ledge floor");
+            Assert.AreEqual(mix.ShoreBrowTurfLip.LineRow + mix.ShoreBrowTurfLip.InlandShiftRows,
+                            mix.ShoreBrowTurfLip.MeshLineRow);
+            CliffTide tide = CliffTide.From(mix);
+            Assert.IsTrue(tide.On, "the tide marks low on the face are off");
+            Assert.That(tide.ZoneShare, Is.InRange(0.15f, 0.5f), "tide marks belong to the foot, not the whole face");
+        }
+
+        /// <summary>Owner 11 27: the bluish bands low on the face read as tide marks and stay; blue blocks high up
+        /// are wrong. Marks are level rows in the foot zone; above it the basalt gives way.</summary>
+        [Test]
+        public void TideMarks_AreLevelRows_InTheFootZoneOnly()
+        {
+            var t = new CliffTide(0.3f, 9, 2);
+            Assert.AreEqual(-1, CliffTide.Mark(in t, 0.5f, 0), "above the zone the basalt must give way");
+            int marks = 0;
+            for (int y = -45; y < 45; y++)
+            {
+                int m = CliffTide.Mark(in t, 0.9f, y);
+                Assert.That(m, Is.InRange(0, 1));
+                marks += m;
+                Assert.AreEqual(m, CliffTide.Mark(in t, 0.8f, y), "a mark is not level: it moved with the face depth");
+            }
+            Assert.AreEqual(20, marks, "two rows in nine, over ninety rows");
+            CliffTide off = default;
+            Assert.AreEqual(0, CliffTide.Mark(in off, 0.9f, 0), "off must leave the face as painted");
+            Assert.AreEqual(Vector4.zero.w, new CliffTide(0.3f, 9, 2).Shader(false).w, "off on a decal");
         }
     }
 
