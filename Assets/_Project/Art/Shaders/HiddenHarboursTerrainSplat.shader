@@ -604,16 +604,18 @@ Shader "HiddenHarbours/TerrainSplat"
                 // layer is the shader's half of that bargain.
                 col = TSA_Macro(col, wp);
 
-                // THE LEDGE CALM (owner 11 27): the shelf, talus and ledge rock at a cliff's foot lose some of
-                // their colour and spread, so the face over them reads as the wall and they as the floor. A
-                // function of the texel's colour alone, so it keeps the texel grid. Strength 0 = as before.
-                [branch] if (_ShoreLedgeCalm.x > 0.0)
-                    col = TerrainLedgeCalm(col, w[5] + w[11] + w[12], _ShoreLedgeCalm);
-
                 // NMC H4: the road floor over the ground, where its chunks are resident (see the header).
                 [branch]
                 if (_RoadLoaded > 0.5)
                     col = RF4Over(col, wp, TerrainSky());
+
+                // THE LEDGE CALM (owner 11 27): the shelf, talus and ledge rock at a cliff's foot lose some of
+                // their colour and spread, so the face over them reads as the wall and they as the floor. A
+                // function of the texel's colour alone, so it keeps the texel grid. Strength 0 = as before.
+                // It runs after the road floor, which follows the macro directly; a road texel over ledge rock is
+                // calmed with it.
+                [branch] if (_ShoreLedgeCalm.x > 0.0)
+                    col = TerrainLedgeCalm(col, w[5] + w[11] + w[12], _ShoreLedgeCalm);
 
                 col = SL_Over(col, shoreAddresses);
 
