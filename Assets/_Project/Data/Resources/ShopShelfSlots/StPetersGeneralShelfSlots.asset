@@ -60,7 +60,7 @@ MonoBehaviour:
     IntoBag: 0
   - Id: slot.bread
     LineId: line.bread
-    Offset: {x: -1.0625, y: -0.3125}
+    Offset: {x: -1.25, y: -0.3125}
     ListingId: supply.bread
     Cover: {fileID: 0}
     Goods: {fileID: 21300000, guid: 8c8a8608f8e9458085040b49c292cff5, type: 3}
@@ -69,7 +69,7 @@ MonoBehaviour:
     IntoBag: 1
   - Id: slot.oatcakes
     LineId: line.oatcakes
-    Offset: {x: -0.75, y: -0.75}
+    Offset: {x: -0.25, y: -0.34375}
     ListingId: supply.oatcakes
     Cover: {fileID: 0}
     Goods: {fileID: 21300000, guid: 99504d3f39e3431abba5fe438578a1e9, type: 3}
@@ -78,10 +78,18 @@ MonoBehaviour:
     IntoBag: 1
   - Id: slot.beans
     LineId: line.tinned_beans
-    Offset: {x: -0.4375, y: -1.1875}
+    Offset: {x: -0.75, y: -0.75}
     ListingId: supply.tinned_beans
     Cover: {fileID: 0}
     Goods: {fileID: 21300000, guid: 996f199deac341308710705e807f0ba3, type: 3}
     HideSoldOutCard: 0
     NeedsFreeHand: 0
     IntoBag: 1
+  Sections:
+  - Id: section.food
+    VerbLabel: Look at the groceries
+    Offset: {x: -0.75, y: -0.5}
+    SlotIds:
+    - slot.bread
+    - slot.oatcakes
+    - slot.beans

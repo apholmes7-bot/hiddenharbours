@@ -34,6 +34,16 @@ namespace HiddenHarbours.World
         /// <summary>The label on an empty shelf: name, then why. Loc seam.</summary>
         public const string SoldOutLabelFormat = "{0} — sold out";
 
+        /// <summary>A chooser row in a shelf section while there is stock: name, price, then how many are
+        /// left on the shelf. Only glyphs the chooser's pixel face draws (no dash, no dot: a missing glyph
+        /// draws nothing). Loc seam.</summary>
+        public const string ChoiceLabelFormat = "{0}: {1}, {2} left";
+
+        /// <summary>A chooser row in a shelf section with nothing left. The chooser adds its own reason to a
+        /// row that cannot be picked ("(not now)"), so the row says only "out": the longer "sold out" ran past
+        /// the chooser's widest line and was cut (store sections look, 2026-11-25). Loc seam.</summary>
+        public const string ChoiceSoldOutFormat = "{0}: out";
+
         private string _id = "";
         private string _shopId = "";
         private string _listingId = "";
@@ -46,13 +56,39 @@ namespace HiddenHarbours.World
         private string _name = "";
         private int _price = -1;
         private bool _soldOut;
+        private int _onShelf = -1;
         private string _label = "";
+        private string _choiceLabel = "";
+        private bool _inSection;
 
         /// <summary>The listing this good sells (<c>supply.bread</c>).</summary>
         public string ListingId => _listingId;
 
         /// <summary>The last quote's shelf count was zero.</summary>
         public bool SoldOut => _soldOut;
+
+        /// <summary>Items on the shelf at the last quote (-1 before the first).</summary>
+        public int OnShelf => _onShelf;
+
+        /// <summary>The last quote's price (-1 before the first).</summary>
+        public int Price => _price;
+
+        /// <summary>This good's row in its section's chooser: name, price and how many are left, or the
+        /// sold-out words. Cached; rebuilt only when the quote moves.</summary>
+        public string ChoiceLabel => _choiceLabel;
+
+        /// <summary>True when a <see cref="ShelfSection"/> sells this good: it is then not offered on its
+        /// own (it is not registered as a thing to press), only as a row of its section.</summary>
+        public bool InSection => _inSection;
+
+        /// <summary>Hands this good to a section: it leaves the interact registry and is bought only
+        /// through the section's chooser row (<see cref="Press"/> is unchanged).</summary>
+        public void PutInSection()
+        {
+            _inSection = true;
+            Interactables.Unregister(this);
+            if (_quoted) _choiceLabel = ChoiceLabelFor(new ShelfQuote(_listingId, _name, _price, _onShelf));
+        }
 
         /// <summary>Wires the good. <paramref name="inside"/> answers whether the player is in the store,
         /// downstairs (the good is not offered from outside or upstairs).</summary>
@@ -68,7 +104,9 @@ namespace HiddenHarbours.World
             _inside = inside;
             _quoted = false;
             _price = -1;
+            _onShelf = -1;
             _label = "";
+            _choiceLabel = "";
         }
 
         // ---- the interact seam ---------------------------------------------------------------
@@ -101,7 +139,10 @@ namespace HiddenHarbours.World
         /// <inheritdoc/>
         public void Interact(in InteractActor actor) => Press(GameServices.Clock?.TotalSeconds ?? 0.0);
 
-        private void OnEnable() => Interactables.Register(this);
+        private void OnEnable()
+        {
+            if (!_inSection) Interactables.Register(this);
+        }
         private void OnDisable() => Interactables.Unregister(this);
 
         /// <summary>Re-reads the till's quote at <paramref name="now"/> and rebuilds the label if the name,
@@ -112,22 +153,33 @@ namespace HiddenHarbours.World
             {
                 _quoted = false;
                 _label = "";
+                _choiceLabel = "";
                 return;
             }
             bool changed = !_quoted || q.Price != _price || q.SoldOut != _soldOut
                            || !string.Equals(q.DisplayName, _name, System.StringComparison.Ordinal);
+            // The count moves only the section's row (the single good's label never shows it).
+            bool countMoved = q.OnShelf != _onShelf;
             _quoted = true;
-            if (!changed) return;
+            if (!changed && !countMoved) return;
             _name = q.DisplayName ?? "";
             _price = q.Price;
             _soldOut = q.SoldOut;
-            _label = LabelFor(q);
+            _onShelf = q.OnShelf;
+            if (changed) _label = LabelFor(q);
+            if (_inSection) _choiceLabel = ChoiceLabelFor(q);
         }
 
         /// <summary>The words in the bubble for a quote.</summary>
         public static string LabelFor(in ShelfQuote q)
             => q.SoldOut ? string.Format(SoldOutLabelFormat, q.DisplayName)
                          : string.Format(BuyLabelFormat, q.DisplayName, MoneyFormat.Balance(q.Price));
+
+        /// <summary>The words on a section's chooser row for a quote: name, price and how many are left, or
+        /// the sold-out words.</summary>
+        public static string ChoiceLabelFor(in ShelfQuote q)
+            => q.SoldOut ? string.Format(ChoiceSoldOutFormat, q.DisplayName)
+                         : string.Format(ChoiceLabelFormat, q.DisplayName, MoneyFormat.Balance(q.Price), q.OnShelf);
 
         /// <summary>
         /// Buys one at <paramref name="now"/>, says the outcome in the player's bubble, and returns it. A good

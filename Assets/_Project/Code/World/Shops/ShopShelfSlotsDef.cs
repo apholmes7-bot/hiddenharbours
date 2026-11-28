@@ -45,6 +45,32 @@ namespace HiddenHarbours.World
     }
 
     /// <summary>
+    /// <b>One section of a store's shelves holding several goods</b> (store sections; owner ask 2026-11-25:
+    /// several foods on one shelf, the player picks which with the chooser). The goods are ordinary slots
+    /// of the same Def, each with its own line, picture and sold-out card, so each still runs out on its
+    /// own; the section only gathers their purchases into ONE place to reach, whose press opens the chooser
+    /// with one row per good (name, price, how many are left). A slot named here sells only through its
+    /// section, never on its own.
+    /// </summary>
+    [Serializable]
+    public sealed class ShopShelfSection
+    {
+        /// <summary>Stable section id, <c>section.snake_case</c>, unique in its store. Append-only.</summary>
+        public string Id;
+
+        /// <summary>The words in the interaction bubble before the press (<c>Look at the groceries</c>).</summary>
+        public string VerbLabel;
+
+        /// <summary>Where the player reaches the section, in world metres from the building's ground point,
+        /// measured like a slot's <see cref="ShopShelfSlot.Offset"/>.</summary>
+        public Vector2 Offset;
+
+        /// <summary>The slots whose goods this section sells, in the order the chooser lists them. Each must
+        /// be a slot of this Def with a <see cref="ShopShelfSlot.ListingId"/>, and in no other section.</summary>
+        public List<string> SlotIds = new List<string>();
+    }
+
+    /// <summary>
     /// <b>Where a store's products sit on its shelves</b> (store sold-out slice; the owner's ruling: a shelf
     /// shows a sold-out sign where the product normally sits). One asset per store, under
     /// <c>Resources/ShopShelfSlots</c>, read by <see cref="SoldOutSignsDirector"/>. Nothing here is state.
@@ -87,5 +113,21 @@ namespace HiddenHarbours.World
 
         /// <summary>The slots.</summary>
         public List<ShopShelfSlot> Slots = new List<ShopShelfSlot>();
+
+        /// <summary>The sections: several slots' goods bought at one place through the chooser. Optional; a
+        /// slot in no section sells on its own, as before.</summary>
+        public List<ShopShelfSection> Sections = new List<ShopShelfSection>();
+
+        /// <summary>The section that sells <paramref name="slotId"/>'s good, or null.</summary>
+        public ShopShelfSection SectionOf(string slotId)
+        {
+            if (string.IsNullOrEmpty(slotId) || Sections == null) return null;
+            for (int i = 0; i < Sections.Count; i++)
+            {
+                ShopShelfSection s = Sections[i];
+                if (s?.SlotIds != null && s.SlotIds.Contains(slotId)) return s;
+            }
+            return null;
+        }
     }
 }

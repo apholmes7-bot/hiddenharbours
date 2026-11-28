@@ -151,11 +151,13 @@ PIVOT = {
     "ShelfIceChestEmpty": (13, 11),
     "ShelfIceBags": (13, 11),
     "ShelfBaitBox": (6, 0),
-    # The three goods bands, each on the gondola's canvas, pivoted at its own slot (each good is counted
-    # on its own line, slice 2): the gondola pivot moved by the slot's offset from the gondola's.
-    "ShelfGondolaBread": (21, 34),
-    "ShelfGondolaOatcakes": (31, 20),
-    "ShelfGondolaBeans": (41, 6),
+    # The three foods, each on the gondola's canvas, pivoted at its own slot (each good is counted on its
+    # own line, slice 2). Store sections (2026-11-25): all three share the FOOD section in the top two
+    # bands (bread left and oatcakes right on the top shelf, beans on the second), so the lower two bands
+    # are free for the fishing section. Each pivot is the middle of its own goods, where its card stands.
+    "ShelfGondolaBread": (15, 34),
+    "ShelfGondolaOatcakes": (47, 33),
+    "ShelfGondolaBeans": (31, 20),
     # Held: the bottom centre; the carry pose hangs it its own height below the hand.
     "ShoppingBagPaper": (5, 0),
 }
@@ -211,10 +213,10 @@ def gondola_empty():
 def gondola_bread(im=None):
     im = im or blank(GONDOLA_W, GONDOLA_H)
     oy = -GONDOLA_Y0
-    # Top shelf: two rows of loaves, the front row set half a loaf over.
-    for i in range(6):
+    # Top shelf, left half: two rows of loaves, the front row set half a loaf over.
+    for i in range(3):
         stamp(im, LOAF, 1 + i * 10, 217 + oy)
-    for i in range(5):
+    for i in range(2):
         stamp(im, LOAF, 6 + i * 10, 224 + oy)
     return im
 
@@ -222,20 +224,19 @@ def gondola_bread(im=None):
 def gondola_oatcakes(im=None):
     im = im or blank(GONDOLA_W, GONDOLA_H)
     oy = -GONDOLA_Y0
-    # Second shelf: oatcake packets.
-    for i in range(8):
-        stamp(im, OATCAKES, 2 + i * 7, 235 + oy)
+    # Top shelf, right half: oatcake packets stacked two high.
+    for i in range(4):
+        stamp(im, OATCAKES, 33 + i * 7, 219 + oy)
+        stamp(im, OATCAKES, 33 + i * 7, 226 + oy)
     return im
 
 
 def gondola_beans(im=None):
     im = im or blank(GONDOLA_W, GONDOLA_H)
     oy = -GONDOLA_Y0
-    # Third and bottom shelves: tins of beans.
+    # Second shelf: a row of tins of beans.
     for i in range(10):
-        stamp(im, TIN_TALL, 1 + i * 6, 245 + oy)
-    for i in range(10):
-        stamp(im, TIN_SHORT, 3 + i * 6, 253 + oy)
+        stamp(im, TIN_TALL, 1 + i * 6, 236 + oy)
     return im
 
 
