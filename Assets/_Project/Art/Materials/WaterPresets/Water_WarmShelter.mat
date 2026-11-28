@@ -62,7 +62,9 @@ Material:
     m_Ints: []
     m_Floats:
     - _AbsorptionBands: 6
+    - _ArtGridSnap: 1
     - _CapAgeStrength: 1
+    - _DepthBandDitherWin: 0.5
     - _MirrorForm: 1
     - _MirrorSheen: 0.3125
     - _MirrorTiltScale: 6
@@ -78,7 +80,7 @@ Material:
     - _CausticTexStrength: 0.82
     - _Chop: 0.12
     - _DeepDepth: 4
-    - _DepthBands: 0
+    - _DepthBands: 5
     - _EnvelopeBandPatchMin: 0.5
     - _EnvelopeBandPatchScale: 0.025
     - _EnvelopeBandWarp: 0.18
@@ -87,19 +89,28 @@ Material:
     - _FoamNoise: 0.09
     - _FoamSoftness: 0.2
     - _FoamTexStrength: 0.6
+    - _FoamBandMaxMetres: 2.5
+    - _FoamBandSlopeFloor: 0.02
     - _FoamWidth: 0.42
     - _HeightMax: 6
     - _HeightMin: -4
     - _NoiseScale: 0.35
     - _PaintScale: 0.25
-    - _PixelsPerUnit: 24
+    - _PixelsPerUnit: 32
     - _RippleWavelength: 0.17
     - _Roughness: 0.302
     - _ShallowDepth: 0.15
+    - _ShoreFoamCut: 0.5
+    - _ShoreFoamEdgeCut: 0.2
+    - _ShoreFoamEdgeTone: 0.5
+    - _ShoreFoamTones: 2
+    - _ShoreLaceCellMax: 1
     - _ShoreSampleStep: 0.4
     - _ShoreSlopeFloor: 0.15
     - _ShorewardBias: 0.7
     - _ShorewardFalloff: 2.5
+    - _ShoreWetFilmCut: 0.2
+    - _ShoreWetFilmTone: 0.5
     - _SpecAmount: 0.24
     - _SpecSharpness: 18
     - _SparkleTexScale: 0.5

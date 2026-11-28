@@ -43,7 +43,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         // The sea's seabed column, squashed, as b8710c59's water frag holds it: the bake's sample :5044, the
         // per-channel transmission at the fringe depth :5046 and its bands :5047, the composite :5048. The
         // floor's gate and call (W4-4b), then the props' (W4-4c), sit between the bands and the composite.
-        private const string BedSample = "half4bed=SAMPLE_TEXTURE2D(_SeabedTex,sampler_SeabedTex,bedUV);";
+        private const string BedSample = "half4bed=SAMPLE_TEXTURE2D_LOD(_SeabedTex,sampler_SeabedTex,bedUV,0);";
         private const string BedColumn = "float3bedT=AbsorptionTransmission(absSigma,max(depthC,0.0));";
         internal const string BedBand = "bedT=AbsorptionBand(bedT,_AbsorptionBands);";
         internal const string BedLerp = "col.rgb=lerp(col.rgb,bed.rgb,saturate(bedT)*saturate(bed.a)*bedIn);";

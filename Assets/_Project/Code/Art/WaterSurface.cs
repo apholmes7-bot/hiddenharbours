@@ -2834,6 +2834,23 @@ namespace HiddenHarbours.Art
             return (bayer01 - 0.5f) * ditherMeters;
         }
 
+        /// <summary>
+        /// (2026-11-26, the Whelps shelf sheets) The DEPTH the shore foam band spans, the shader's
+        /// <c>foamBandDepth</c>. <c>_FoamWidth</c> is metres of water depth, so the band's width on the ground is
+        /// depth / slope: on a near-flat shelf a 0.45 m band became a sheet tens of metres across. With
+        /// <paramref name="maxGroundMetres"/> &gt; 0 the depth is capped at that many plan metres times the local
+        /// painted slope (<paramref name="shoreSlope01"/>, the shader's saturated <c>SeabedSlopeMag</c>), floored at
+        /// <paramref name="slopeFloor"/> so a flat texel run keeps a thin line. A coast steep enough that
+        /// width / slope is already inside the cap keeps its band exactly; 0 = the old depth-only band.
+        /// </summary>
+        public static float FoamBandDepth(float foamWidth, float maxGroundMetres, float shoreSlope01, float slopeFloor)
+        {
+            float depth = Mathf.Max(foamWidth, 1e-3f);
+            if (maxGroundMetres > 0f)
+                depth = Mathf.Max(Mathf.Min(depth, maxGroundMetres * Mathf.Max(shoreSlope01, Mathf.Clamp01(slopeFloor))), 1e-3f);
+            return depth;
+        }
+
         // ==== Living foam: the SOFT-THRESHOLD (merge/separate) twin — pure mirror of the shader ==============
         // The shader's whitecaps + foam-fringe used to mask the foam with a HARD step() on a single ValueNoise
         // that only TRANSLATED — a fixed-shape sliding stamp, the "repeating pattern, shapes never change" the

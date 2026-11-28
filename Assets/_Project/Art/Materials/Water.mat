@@ -65,7 +65,9 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _ArtGridSnap: 1
     - _CapAgeStrength: 1
+    - _DepthBandDitherWin: 0.5
     - _MirrorForm: 1
     - _MirrorSheen: 0.3125
     - _MirrorTiltScale: 6
@@ -97,7 +99,7 @@ Material:
     - _DeepBlueStart: 0.25
     - _DeepBlueStrength: 0.45
     - _DeepDepth: 4
-    - _DepthBands: 0
+    - _DepthBands: 5
     - _DispersionScale: 0.5
     - _BandScaleResponse: 0.25
     - _DriftLineScale: 0.3
@@ -137,6 +139,8 @@ Material:
     - _FoamTexStrength: 0.672
     - _FoamThreshold: 0.84
     - _FoamThresholdSoft: 0.18
+    - _FoamBandMaxMetres: 2.5
+    - _FoamBandSlopeFloor: 0.02
     - _FoamWidth: 1.74
     - _HeightMax: 6
     - _HeightMin: -4
@@ -165,7 +169,7 @@ Material:
     - _PaletteSatCap: 0.78
     - _PaletteValueCeil: 0.9
     - _PaletteValueFloor: 0.08
-    - _PixelsPerUnit: 24
+    - _PixelsPerUnit: 32
     - _RainIntensity: 0
     - _RainRingDensity: 0.35
     - _RainRingScale: 6
@@ -184,6 +188,11 @@ Material:
     - _RippleWavelength: 0.17
     - _Roughness: 0.14
     - _ShallowDepth: 0.15
+    - _ShoreFoamCut: 0.5
+    - _ShoreFoamEdgeCut: 0.2
+    - _ShoreFoamEdgeTone: 0.5
+    - _ShoreFoamTones: 2
+    - _ShoreLaceCellMax: 1
     - _ShoreLaceContrast: 0.35
     - _ShoreLaceSize: 3
     - _ShoreNoise: 0.75
@@ -193,6 +202,8 @@ Material:
     - _ShoreSlopeFloor: 0.15
     - _ShorewardBias: 0.7
     - _ShorewardFalloff: 2.5
+    - _ShoreWetFilmCut: 0.2
+    - _ShoreWetFilmTone: 0.5
     - _SkyReflectionStrength: 0.7
     - _SparkleTexScale: 0.5
     - _SparkleTexStrength: 0.932
