@@ -705,6 +705,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // reaches this zone (measured 0.0 % both): the metric would go blind. Read the geometry
             // through the older full-width fringe (the sheet's shore join at 0, bit-exact).
             mat.SetVector("_FoamSheetShore", new Vector4(0f, 2.5f, 0.5f, 0.6f));
+            // For the same reason, the foam band's ground bound (2026-11-26) is lifted: it caps this 1.74 m band at
+            // 2.5 m of ground (0.45 m of depth on this 0.18 m/m beach), short of the zone. 0 = the older depth-only
+            // band, bit-exact, so the geometry is read exactly as before.
+            mat.SetFloat("_FoamBandMaxMetres", 0f);
 
             Color[] s1 = scene.Render();
             Color[] s2 = scene.Render();

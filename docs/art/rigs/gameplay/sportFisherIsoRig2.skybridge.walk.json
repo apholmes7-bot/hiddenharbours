@@ -4016,7 +4016,7 @@
    "rig": "characterIsoRig10.js",
    "exportSymbol": "CharacterIso10",
    "revision": "10.3",
-   "derivedFromRigSha256": "ad563075475740cea1258de68d05c184f2fc136491357bc22988a10d810413f3",
+   "derivedFromRigSha256": "35f9151cd2e2f6a89442e78a2d58813698610a6e8763c1cc12eef8caff2792c8",
    "posesDerivedFromRigSha256": "a28e5d92638d3cf1b26bbc49f887b23221acd3a9590bc36fd8b842ac6127c92d",
    "builds": 30,
    "crown_m": [

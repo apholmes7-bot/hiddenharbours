@@ -162,6 +162,14 @@ namespace HiddenHarbours.Player
         // has no key, hash 0) and the carry-pose table, loaded once on first ask (a missing table carries
         // nothing).
         private readonly CharacterFigureLife _life = new CharacterFigureLife();
+
+        /// <summary>The idle fidget his figure is playing as of the last pose (plates and tests).</summary>
+        public IdleFidgetMoment Fidget => _life.Fidget;
+
+        /// <summary>Whether the last pose counted him as standing idle for the fidgets, and the state key it
+        /// resolved before any fidget was swapped in (plates and tests).</summary>
+        public bool FidgetIdle { get; private set; }
+        public string FidgetBaseStateKey { get; private set; }
         private CharacterCarryPoseDef _carryPoses;
         private bool _carryPosesLoaded;
 
@@ -483,9 +491,20 @@ namespace HiddenHarbours.Player
             // the figure's frame.
             Place(stand, skin, clipPose, moveHeading);
 
-            IsoCharacterFigureRenderer.Life life = _life.Step(skin, string.Empty, 0u, now, _figure, looks: false);
             // At the oars, rowing or resting on them: sat on the thwart (resting, his hands let go).
             bool atOars = Rowing || (!clipPose && string.IsNullOrEmpty(seatedKey) && character.Stance == CharacterStance.Oars);
+            // Idle fidgets only while he stands at the plain idle with no control touched this frame: never in
+            // a performance clip, at a helm (seated or standing: he is steering even when the helm clip falls
+            // back to the idle) or at the oars.
+            bool idle = !clipPose && !atOars && string.IsNullOrEmpty(seatedKey) && !IdleFidgetInput.ActedRecently
+                        && character.Stance != CharacterStance.Helm && IdleFidgetSchedule.IsStandingIdle(stateKey);
+            IsoCharacterFigureRenderer.Life life = _life.Step(skin, string.Empty, 0u, now, _figure, looks: false, idle: idle);
+            if (idle && _life.TryFidgetClip(skin, out string fidgetKey, out int fidgetFrame)
+                && (meshOnly || skin.DrawsAsMesh(fidgetKey)))
+            {
+                stateKey = fidgetKey;
+                frame = fidgetFrame;
+            }
             if (atOars && _rowing.TryTargets(stand, FigureLocalMetres, FigureYawDegrees, out RowingPoseSolver.Targets row, now))
             {
                 life.Rowing = true;
@@ -640,7 +659,17 @@ namespace HiddenHarbours.Player
             int frame = SabotageHoldFrameZero
                         ? 0
                         : clipPose ? moveFrame : CharacterSkinPose.FrameFor(clip, seed, now, clipStart);
-            IsoCharacterFigureRenderer.Life life = _life.Step(skin, string.Empty, 0u, now, _ashoreFigure, looks: false);
+            // Idle fidgets only while he stands at the plain idle with no control touched this frame.
+            bool idle = !clipPose && !IdleFidgetInput.ActedRecently && IdleFidgetSchedule.IsStandingIdle(stateKey);
+            FidgetIdle = idle;
+            FidgetBaseStateKey = stateKey;
+            IsoCharacterFigureRenderer.Life life = _life.Step(skin, string.Empty, 0u, now, _ashoreFigure, looks: false, idle: idle);
+            if (idle && _life.TryFidgetClip(skin, out string fidgetKey, out int fidgetFrame)
+                && (meshOnly || skin.DrawsAsMesh(fidgetKey)) && skin.TryGetClip(fidgetKey, out clip))
+            {
+                stateKey = fidgetKey;
+                frame = fidgetFrame;
+            }
             if (!_ashoreFigure.SetPose(stateKey, frame, life)) { HoldSprite($"could not pose '{stateKey}' frame {frame}"); return; }
             ApplyAshoreWaterline(skin, clip, stateKey, water, config, body);
 

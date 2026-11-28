@@ -3808,6 +3808,60 @@ namespace HiddenHarbours.Core
                  "the reel cycle takes over. 0 = the ordinary strike.")]
         [Min(0f)] public float BigOneStrikeHoldSeconds;
 
+        [Tooltip("ON THE LINE, SIDE-ON. A surfaced fish travelling within this many degrees of the line " +
+                 "(toward the fisher or away) is drawn ACROSS the line, showing her flank, instead of " +
+                 "end-on down it. The player and every villager angler share it. 0 = off (her travel alone " +
+                 "picks the picture).")]
+        [Range(0f, 90f)] public float FlankWithinLineDegrees;
+
+        [Tooltip("AT THE SURFACE, IN THE WATER. Cut the thrashing fish at her waterline: the art rows below " +
+                 "it are drawn under the water (tinted by Fish Underwater Tint), the rows above as baked. " +
+                 "The player and every villager angler share it. Off = the frame as baked.")]
+        public bool ThrashCutsAtWaterline;
+        [Tooltip("AT THE SURFACE, IN THE WATER. The same cut for the darting fish. The dart art already " +
+                 "bakes her under the surface, so the ship value is off.")]
+        public bool DartCutsAtWaterline;
+        [Tooltip("AT THE SURFACE, IN THE WATER. Where the waterline sits on her art, in whole art pixels " +
+                 "above the frame's pivot (the pivot is the water-surface point under her body's centre). " +
+                 "Negative lowers it.")]
+        [Range(-16, 16)] public int WaterlineRowsAbovePivot;
+        [Tooltip("AT THE SURFACE, IN THE WATER. The colour the rows under the waterline are multiplied by; " +
+                 "its alpha lets the sea show through them. White at full alpha = no change.")]
+        public Color FishUnderwaterTint;
+        [Tooltip("AT THE SURFACE, CHURN. While she thrashes, a small splash is thrown at her every this many " +
+                 "seconds she has been up (counted on the fight's own clock, never drawn at random). " +
+                 "0 = off.")]
+        [Min(0f)] public float ThrashChurnPeriodSeconds;
+        [Tooltip("AT THE SURFACE, CHURN. The churn plays the fisher's splash flipbook from this frame on, so it " +
+                 "is only the open rings round her (they frame her, sorted behind her), never the column and " +
+                 "crown of a break that would pile onto her. 0 = the whole splash.")]
+        [Min(0)] public int ThrashChurnFirstSplashFrame;
+        [Tooltip("AT THE SURFACE, BY THE FISHER. Half the width (m) of the fisher's drawn figure round his feet. " +
+                 "A darting fish whose drawn mouth would fall inside his figure (where the line, behind him, " +
+                 "cannot be seen) is drawn thrashing at the surface instead, mouth clear of him.")]
+        [Min(0f)] public float FisherFigureHalfWidthM;
+        [Tooltip("AT THE SURFACE, BY THE FISHER. The height (m) of the fisher's drawn figure above his feet, " +
+                 "for the rule above. 0 = off.")]
+        [Min(0f)] public float FisherFigureHeightM;
+
+        [Tooltip("THE LIFT. How long (s) a villager's landed fish takes to travel, hanging head-up on the line, " +
+                 "from the water point where she left it up to the hang point beside him. Match the angler " +
+                 "activity's LandLiftSeconds, which scrubs his land clip over the same beat. 0 = she is at the " +
+                 "hang point at once.")]
+        [Min(0f)] public float LandLiftTravelSeconds;
+        [Tooltip("THE CATCH SEEN. After the lift, how long (s) she hangs on the line at the hang point beside " +
+                 "him before she goes to his hand. 0 = straight to his hand.")]
+        [Min(0f)] public float LandHangSeconds;
+        [Tooltip("HANGING. Art rows the gill sheet's grip sits above its pivot: where the line meets her head " +
+                 "when she hangs from it (measured on the shipped gill sheets: the mackerel's small rung is 1, " +
+                 "her medium and large 2, so 1 sits on all three; the range over every species is 1 to 6).")]
+        public int HangGripRowsAbovePivot;
+        [Tooltip("THE HANG POINT, ACROSS. How far (m) to the side of his feet the line holds her up, on the side " +
+                 "his rod tip is: past FisherFigureHalfWidthM by more than the widest hanging fish at the " +
+                 "villager's draw scale, so the whole fish is drawn against the water or the wharf, never on him.")]
+        [Min(0f)] public float LandHangSideM;
+        [Tooltip("THE HANG POINT, UP. How high (m) above his feet the line holds her up (her grip).")]
+        [Min(0f)] public float LandHangHeightM;
         /// <summary>The reference feel — a first pass for the owner's plate, not a measured tuning.</summary>
         public static FishFeelSettings Default => new FishFeelSettings
         {
@@ -3856,6 +3910,20 @@ namespace HiddenHarbours.Core
             BigOneMarkFadeSeconds = 0.25f,
             BigOneMarkColor = new Color(1f, 0.85f, 0.2f, 1f),
             BigOneStrikeHoldSeconds = 0.35f,
+            FlankWithinLineDegrees = 30f,
+            ThrashCutsAtWaterline = true,
+            DartCutsAtWaterline = false,
+            WaterlineRowsAbovePivot = 0,
+            FishUnderwaterTint = new Color(0.45f, 0.66f, 0.72f, 0.55f),
+            ThrashChurnPeriodSeconds = 0.9f,
+            ThrashChurnFirstSplashFrame = 5,
+            FisherFigureHalfWidthM = 0.35f,
+            FisherFigureHeightM = 1.7f,
+            LandLiftTravelSeconds = 1f,
+            LandHangSeconds = 1.2f,
+            HangGripRowsAbovePivot = 1,
+            LandHangSideM = 1f,
+            LandHangHeightM = 1.5f,
         };
     }
 

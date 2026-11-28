@@ -656,7 +656,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // Open water keeps the lattice: the wake's own read is still the buffer's point sampler.
             int wakeAt = IndexOf(src, "float WakeFoamCoverage(");
             string wake = src.Substring(wakeAt, src.IndexOf("\n            }", wakeAt, System.StringComparison.Ordinal) - wakeAt);
-            StringAssert.Contains("SAMPLE_TEXTURE2D(_HHFoamBufferTex, sampler_HHFoamBufferTex, uv)", wake);
+            // The art grid (11-26) reads it at level 0: the snapped world point has no implicit mip.
+            StringAssert.Contains("SAMPLE_TEXTURE2D_LOD(_HHFoamBufferTex, sampler_HHFoamBufferTex, uv, 0)", wake);
 
             // v9: and on the shore surf's zone, where the bore's deposited cells drew the band's seaward stair.
             int zone = IndexOf(src, "float washZone = max(saturate(washOnSand), surfShore * saturate(washPresence));");

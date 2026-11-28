@@ -83,5 +83,17 @@ namespace HiddenHarbours.Core
 
         public static AutopilotIntents Apply(in AutopilotIntents raw)
             => Apply(raw, WorldStopped, HelmKeyCapture.IsCapturing);
+
+        /// <summary>
+        /// The camera's gates (the HUD's two). A stopped world takes everything (no picture of the pause
+        /// menu), and so does a text field that owns the keys: a "P" typed in a name is a letter. The move
+        /// claim does not apply: the camera is the claimant while it is up, and aiming on the axis is what
+        /// it raised the claim for.
+        /// </summary>
+        public static CameraIntents Apply(in CameraIntents raw, bool worldStopped, bool keysCaptured)
+            => worldStopped || keysCaptured ? CameraIntents.None : raw;
+
+        public static CameraIntents Apply(in CameraIntents raw)
+            => Apply(raw, WorldStopped, HelmKeyCapture.IsCapturing);
     }
 }

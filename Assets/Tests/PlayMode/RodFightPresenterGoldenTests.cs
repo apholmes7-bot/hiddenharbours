@@ -229,7 +229,8 @@ namespace HiddenHarbours.Tests.PlayMode
                 else Assert.IsFalse(splash.enabled, $"{e.name}: splashed");
             }
 
-            // The result: at the line's last far end, for a landing and for a snap alike.
+            // The result out of the surface fight: where she leaves the water, never the line's last far end
+            // (her mouth is drawn over his body as she is lifted), for a landing and for a snap alike.
             foreach (FishingPhase result in new[] { FishingPhase.Landed, FishingPhase.Snapped })
             {
                 Publish(rod, FishingState.Idle);
@@ -238,13 +239,59 @@ namespace HiddenHarbours.Tests.PlayMode
                 yield return Frames(30);
                 LineRenderer line = Child<LineRenderer>(rod, "FishingLine");
                 Assert.IsTrue(line.enabled && line.positionCount > 1, $"harness ({result}): the line is out");
-                Vector3 far = line.GetPosition(line.positionCount - 1);
+                Vector2 water = angler + new Vector2(1.2f, 0.4f);
                 Publish(rod, State(result, Cod, kg: 5.59f));
                 yield return Frames(1);
                 Assert.IsTrue(splash.enabled, $"{result}: no result splash");
-                Assert.Less(((Vector2)splash.transform.position - (Vector2)far).magnitude, 1e-5f,
-                    $"{result}: the result splash is not at the line's last far end");
+                Assert.Less(((Vector2)splash.transform.position - water).magnitude, 1e-5f,
+                    $"{result}: the result splash is not where she left the water");
             }
+        }
+
+        // ---- the line leaves the drawn mouth ---------------------------------------------------------
+
+        /// <summary>
+        /// With the shipped fish art (the shared table's bass ladder), every surfaced frame's line ends on
+        /// the mouth of the very frame drawn, at the player's scale 1 (the anchors themselves are checked
+        /// against the sheets' pixels in EditMode: <c>FishMouthAnchorTests</c>). And she sorts by her side
+        /// of him: behind him beyond his feet, in front short of them.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator TheLine_LeavesTheDrawnMouth_OnEverySurfacedFrame()
+        {
+            FishArtLibrary library = FishArtLibrary.Shared;
+            FishSpeciesVisual bass = library != null ? library.Find(Bass) : null;
+            Assume.That(bass != null, "no bass ladder in the shared fish art table at this build");
+            Fisher(out RodFightPresenter rod, out SpriteRenderer body, new[] { bass });
+            LineRenderer line = Child<LineRenderer>(rod, "FishingLine");
+            SpriteRenderer fish = Child<SpriteRenderer>(rod, "FishOnTheLine");
+
+            var seen = new HashSet<Sprite>();
+            for (int i = 0; i < 60; i++)
+            {
+                float a = i * 0.37f;
+                float offY = (i / 15) % 2 == 0 ? 1.2f + 0.6f * Mathf.Sin(a) : -0.9f + 0.4f * Mathf.Sin(a);
+                Publish(rod, State(FishingPhase.FightSurface, Bass, tension: 0.3f,
+                                   offX: 1.4f + 0.7f * Mathf.Cos(a), offY: offY, kg: 3.1f));
+                yield return null;
+                if (rod.FishInBreakColumn)
+                {
+                    // The break: the splash's column carries no fish yet.
+                    Assert.IsFalse(fish.enabled, $"step {i}: a fish was drawn under the break's column");
+                    continue;
+                }
+                Assert.IsTrue(fish.enabled && line.enabled, $"step {i}: harness: fish and line are up");
+                Assert.IsTrue(library.TryMouthFor(fish.sprite, out Vector2 mouth), $"step {i}: the frame is not the table's");
+                Vector3 end = line.GetPosition(line.positionCount - 1);
+                Vector2 want = (Vector2)fish.transform.position + mouth;
+                Assert.AreEqual(want.x, end.x, 1e-4f, $"step {i}: the line's end x is not the drawn mouth");
+                Assert.AreEqual(want.y, end.y, 1e-4f, $"step {i}: the line's end y is not the drawn mouth");
+                if (offY >= 0f) Assert.Less(fish.sortingOrder, body.sortingOrder, $"step {i}: she drew over him from beyond");
+                else Assert.Greater(fish.sortingOrder, body.sortingOrder, $"step {i}: short of his feet she hid behind him");
+                Assert.Greater(fish.sortingOrder, line.sortingOrder, $"step {i}: the line drew across her");
+                seen.Add(fish.sprite);
+            }
+            Assert.Greater(seen.Count, 4, "harness: too few frames drawn to mean anything");
         }
 
         // ---- cleanup on disable ---------------------------------------------------------------------
@@ -257,6 +304,8 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return Frames(3);
             Publish(rod, State(FishingPhase.FightSurface, Bass, tension: 0.3f, offX: 1.5f, offY: 0.5f));
             yield return Frames(1);
+            // Past the break's column (no fish under it), while the splash's open rings still play.
+            for (int i = 0; i < 600 && rod.FishInBreakColumn; i++) yield return null;
             LineRenderer line = Child<LineRenderer>(rod, "FishingLine");
             SpriteRenderer splash = Child<SpriteRenderer>(rod, "Splash");
             SpriteRenderer fish = Child<SpriteRenderer>(rod, "FishOnTheLine");
@@ -367,7 +416,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
         // ---- harness --------------------------------------------------------------------------------
 
-        void Fisher(out RodFightPresenter rod, out SpriteRenderer body)
+        void Fisher(out RodFightPresenter rod, out SpriteRenderer body, FishSpeciesVisual[] species = null)
         {
             var go = Track(new GameObject("GoldenFisher"));
             go.transform.position = new Vector3(3.25f, -1.75f, 0f);
@@ -400,7 +449,7 @@ namespace HiddenHarbours.Tests.PlayMode
             var landRight = new Vector2[Dirs * 4];
             for (int i = 0; i < landMid.Length; i++) { landMid[i] = new Vector2(0.05f * i, 0.3f); landRight[i] = new Vector2(0.2f, 0.03f * i); }
             rod.Configure(rodStates, new[] { 0, 1, 7 }, null,
-                          new[] { Species(Bass, 3.1f), Species(Cod, 5.59f) },
+                          species ?? new[] { Species(Bass, 3.1f), Species(Cod, 5.59f) },
                           landMid, landRight, 4, Sheet("splash", 1, 7), Cell("ripple"));
         }
 

@@ -23,6 +23,9 @@ Shader "HiddenHarbours/Water"
         _ShallowDepth   ("Shallow depth (m)", Float)    = 0.15
         _DeepDepth      ("Deep depth (m)", Float)       = 3.0
         _DepthBands     ("Depth posterize bands (0=off)", Float) = 5
+        // The band edges are dithered on the world-locked Bayer cell (no hard contour rings). 0 = the old
+        // hard rounding, bit for bit.
+        _DepthBandDitherWin ("Depth band edge dither window (0..1 of a band)", Range(0,1)) = 0.5
 
         [Header(DEEP BLUE enrichment (bounded pull toward a rich navy in DEEP water   col.rgb only))]
         // The owner's "deep blues" ask (2026-07-08). The shipped material reads its base colour from his
@@ -40,6 +43,10 @@ Shader "HiddenHarbours/Water"
 
         [Header(Pixelization (all layers))]
         _PixelsPerUnit  ("Pixels per unit", Float)      = 32
+        // THE ART GRID (owner ruling 2026-11-26, "no mixels"): every fragment is shaded at the centre of the
+        // art cell it lies in, so the whole sea (the shore band, the foam, the swell) changes colour only on
+        // art-pixel edges. 0 = each screen pixel shaded where it is (the old read).
+        [Toggle] _ArtGridSnap ("Shade on the art pixel grid", Float) = 1
 
         [Header(Surface distortion (layer 2))]
         _NoiseScale     ("Surface noise scale", Float)  = 0.35
@@ -223,6 +230,12 @@ Shader "HiddenHarbours/Water"
         [Header(Foam fringe (layer 3))]
         _FoamColor      ("Foam color", Color)           = (0.92, 0.96, 0.98, 1.0)
         _FoamWidth      ("Foam band width (m)", Float)  = 0.45
+        // _FoamWidth is metres of water DEPTH, so on a near-flat shelf the band spans metres of GROUND (depth / slope:
+        // 0.45 m over a 0.02 m/m shelf is a 22 m sheet). This caps it in PLAN metres, read through the local painted
+        // slope the shore cosmetics already sample (SeabedSlopeMag): the band's depth is never more than
+        // _FoamBandMaxMetres x slope. Steep coasts keep today's band to the bit; 0 = the old depth-only band.
+        _FoamBandMaxMetres  ("Foam band max width on the ground (m, 0 = depth only)", Float) = 0
+        _FoamBandSlopeFloor ("Foam band slope floor (m/m) - a flat texel run still keeps a thin line", Range(0,1)) = 0.03
         _FoamSoftness   ("Foam edge softness (m)", Float) = 0.18
         _FoamNoise      ("Foam churn noise scale", Float) = 1.2
         _Roughness      ("Roughness / whitecaps (0..1)", Range(0,1)) = 0.2
@@ -472,6 +485,9 @@ Shader "HiddenHarbours/Water"
         _WashSurfEven      ("Shore surf: churn flattened toward an even sheet (0 = broken patches)", Range(0,1)) = 0
         _ShoreLaceContrast ("Shore foam: share of the one foam lace it shows (1 = full lace)", Range(0,1)) = 1
         _ShoreLaceSize     ("Shore foam: lace size over the open water's (1 = the same)", Range(1,8)) = 1
+        // On the art grid, the shore lace is read as the max over the art cell's four corners (1) instead of its
+        // centre (0), so a vein thinner than a cell stays a continuous stroke. Off the art grid it does nothing.
+        [Toggle] _ShoreLaceCellMax ("Shore foam: lace read over the art cell's corners", Float) = 1
         // The break gate beside a beach reads the depth averaged over this many metres ALONG the shore: the 8-bit
         // painted height holds one code for ~3 texels along a shore and steps 0.047 m, so its break contour stood in
         // square steps (one texel run, ~20 px of rise at 96 px/m). Averaged over a run, the contour is smooth. 0 = off.
@@ -1169,6 +1185,20 @@ Shader "HiddenHarbours/Water"
         // already 4 screen px, so this posterizes VALUE rather than position: churn reads as a few
         // solid tones instead of an airbrushed gradient.
         _WakeFoamBands     ("Wake foam posterize steps (below 2 = smooth)", Float) = 3
+        // THE SHORE FOAM'S TONES on the art grid (owner ruling 2026-11-26, "no mixels"): the shore line, the
+        // wash's residue, the foam left on the sand and the wet film keep their lace SHAPE, extent and motion,
+        // read at the art cell's centre, and are drawn in flat tones chosen by a HARD threshold, never a dither
+        // pattern, so a lace stroke stays a continuous stroke of whole art pixels.
+        // 0 = the smooth coverage, bit for bit; 1 = one tone (full at or above the cut, else clear);
+        // 2 = a full core at or above the cut and one softer edge tone at or above the edge cut.
+        _ShoreFoamTones    ("Shore foam tones (0 smooth, 1 core, 2 core + edge)", Float) = 2
+        _ShoreFoamCut      ("Shore foam core cut (0..1 of its ceiling)", Range(0,1)) = 0.5
+        _ShoreFoamEdgeCut  ("Shore foam edge cut (0..1 of its ceiling)", Range(0,1)) = 0.2
+        _ShoreFoamEdgeTone ("Shore foam edge tone (0..1 of its ceiling)", Range(0,1)) = 0.5
+        // The wet film on the art grid is never the foam's full core: one flat translucent tone (about the smooth
+        // film's mean opacity) inside its outer cut, so the ground shows through it.
+        _ShoreWetFilmCut   ("Shore wet film: outer cut (0..1 of its thinning)", Range(0,1)) = 0.2
+        _ShoreWetFilmTone  ("Shore wet film: its one flat opacity", Range(0,1)) = 0.5
         // ---- LACE: the "like real foam" half of the 2026-08-05 pass -------------------------------
         // The buffer stores COVERAGE — how much churn is on this patch of sea — which is the right
         // QUANTITY and the wrong SHAPE. Thresholding a smooth accumulation yields a rounded, solid
@@ -1742,6 +1772,14 @@ Shader "HiddenHarbours/Water"
                 float  _ShallowDepth;
                 float  _DeepDepth;
                 float  _DepthBands;
+                float  _DepthBandDitherWin;
+                float  _ArtGridSnap;
+                float  _ShoreFoamTones;
+                float  _ShoreFoamCut;
+                float  _ShoreFoamEdgeCut;
+                float  _ShoreFoamEdgeTone;
+                float  _ShoreWetFilmCut;
+                float  _ShoreWetFilmTone;
                 // Deep-blue enrichment (bounded base-colour pull toward a rich navy in deep water).
                 float  _DeepBlueStrength;
                 float4 _DeepBlueColor;
@@ -1800,6 +1838,8 @@ Shader "HiddenHarbours/Water"
                 float  _SwellReadSeaStateHi;
                 float4 _FoamColor;
                 float  _FoamWidth;
+                float  _FoamBandMaxMetres;
+                float  _FoamBandSlopeFloor;
                 float  _FoamSoftness;
                 float  _FoamNoise;
                 float  _Roughness;
@@ -1863,7 +1903,7 @@ Shader "HiddenHarbours/Water"
                 float  _WashLeeShare, _WashResidueSoften, _WashAnatomyFade, _WashMaxCover;
                 float  _WashSurfReach, _WashSurfLift;
                 float  _WashSurfDetail, _WashSurfSmooth, _WashGroundScale;
-                float  _WashSurfEven, _ShoreLaceContrast, _ShoreLaceSize;
+                float  _WashSurfEven, _ShoreLaceContrast, _ShoreLaceSize, _ShoreLaceCellMax;
                 float  _WashLeftFoamSeconds, _WashLeftFoamOpacity;
                 float  _SurfSwellYield, _SwellShoalDepth;
                 // B1 FRINGE UNIFORM BEGIN
@@ -2153,6 +2193,12 @@ Shader "HiddenHarbours/Water"
             // seabed, the crest glow and the caustic), so they see one water. Static: per invocation, 0 until set.
             static float3 hhWaterTypeSigma = float3(0.0, 0.0, 0.0);
 
+            // THE ART GRID's screen gradients: d(world)/d(screen px) of the UNSNAPPED fragment, set once at the
+            // top of frag. Once worldXY is snapped to the art cell its own ddx/ddy are 0 inside a cell and a whole
+            // cell at its edges, so a texture read that picked its mip from them would jump a level at every art
+            // pixel edge. The painted reads take these as explicit gradients instead. hhWorldDx and hhWorldDy are
+            // declared once in the caustic include above, so its vein reads and the sea's share one pair.
+
             // sigma (1/m, per channel) = ONE mood-eased turbidity scalar x the fixed per-channel ratio.
             // Factoring it this way is what lets ADR 0017 ease turbidity per weather through a FLOAT in
             // WaterSurface.MoodFloatNames while the per-channel character stays authored art (rule 6).
@@ -2344,6 +2390,31 @@ Shader "HiddenHarbours/Water"
                 float win = clamp(ditherWin, 1e-3, 1.0);
                 float e = saturate(((x - fb) - (0.5 - 0.5 * win)) / win);
                 return (fb + (e > bayer ? 1.0 : 0.0)) / (bands - 1.0);
+            }
+
+            // THE SHORE FOAM'S HARD TONES (owner ruling 2026-11-26, "no mixels"; the dithered tones read as
+            // confetti): a 0..1 coverage, relative to its own ceiling, to at most two flat tones by threshold.
+            // No dither of any kind: neighbouring art cells on one stroke land on the same tone, so the stroke
+            // stays continuous. _ShoreFoamTones 0 returns the coverage unchanged.
+            float ShoreToneHard(float v01)
+            {
+                if (_ShoreFoamTones < 0.5) return v01;
+                if (v01 >= _ShoreFoamCut) return 1.0;
+                return (_ShoreFoamTones >= 1.5 && v01 >= _ShoreFoamEdgeCut) ? saturate(_ShoreFoamEdgeTone) : 0.0;
+            }
+
+            // THE SEE-THROUGH SHEETS ON THE ART GRID (the wet film and the foam left on the sand): a 0..1 cover
+            // to ONE flat translucent tone by a hard threshold, so the ground still shows through. No dither.
+            float ShoreSheetFlat(float v01)
+            {
+                return (v01 >= _ShoreWetFilmCut) ? saturate(_ShoreWetFilmTone) : 0.0;
+            }
+
+            // The wet film's thinning (1 = the whole water past the film): the water past the film stays whole.
+            float ShoreWetFilmFlat(float film01)
+            {
+                if (film01 >= 0.999) return 1.0;
+                return ShoreSheetFlat(film01);
             }
 
             // ---- cheap value noise (hash-lattice, smooth interpolation). Deterministic, no textures. ----
@@ -2650,7 +2721,7 @@ Shader "HiddenHarbours/Water"
             {
             #if defined(_USE_HEIGHTTEX)
                 float2 uv = (worldXY - _HeightWorldMin.xy) / max(_HeightWorldSize.xy, float2(1e-3, 1e-3));
-                float r = SAMPLE_TEXTURE2D(_HeightTex, sampler_HeightTex, uv).r;
+                float r = SAMPLE_TEXTURE2D_LOD(_HeightTex, sampler_HeightTex, uv, 0).r;   // level 0: no implicit mip off a snapped grid
                 return lerp(_HeightMin, _HeightMax, r);
             #else
                 return _HeightMin;   // no height map => everywhere deep (uniform tint, no false shoreline)
@@ -4255,7 +4326,11 @@ Shader "HiddenHarbours/Water"
                 float2 warpN = warpLo + warpHi * 0.4;
                 float2 warped = worldXY + warpN * (s * 1.5);
 
-                half4 raw = SAMPLE_TEXTURE2D(tex, smp, PaintUV(warped, scale, scroll));
+                // Explicit gradients, the art grid's (hhWorldDx/Dy x the tile scale): the PaintUV lookups are
+                // stepped on the pixel grid, so an implicit mip read off them would jump at every cell edge.
+                float2 gdx = hhWorldDx * max(scale, 1e-4);
+                float2 gdy = hhWorldDy * max(scale, 1e-4);
+                half4 raw = SAMPLE_TEXTURE2D_GRAD(tex, smp, PaintUV(warped, scale, scroll), gdx, gdy);
                 if (s <= 0.001) return raw;
 
                 // (2) hash-untile in TILE space (uv = warped*scale; one repeat-cell == 1 unit of uv).
@@ -4269,10 +4344,10 @@ Shader "HiddenHarbours/Water"
                 float2 off10 = Hash22(iuv + float2(1.0, 0.0)) * 64.0;
                 float2 off01 = Hash22(iuv + float2(0.0, 1.0)) * 64.0;
                 float2 off11 = Hash22(iuv + float2(1.0, 1.0)) * 64.0;
-                half4 v00 = SAMPLE_TEXTURE2D(tex, smp, PaintUV(warped + off00, scale, scroll));
-                half4 v10 = SAMPLE_TEXTURE2D(tex, smp, PaintUV(warped + off10, scale, scroll));
-                half4 v01 = SAMPLE_TEXTURE2D(tex, smp, PaintUV(warped + off01, scale, scroll));
-                half4 v11 = SAMPLE_TEXTURE2D(tex, smp, PaintUV(warped + off11, scale, scroll));
+                half4 v00 = SAMPLE_TEXTURE2D_GRAD(tex, smp, PaintUV(warped + off00, scale, scroll), gdx, gdy);
+                half4 v10 = SAMPLE_TEXTURE2D_GRAD(tex, smp, PaintUV(warped + off10, scale, scroll), gdx, gdy);
+                half4 v01 = SAMPLE_TEXTURE2D_GRAD(tex, smp, PaintUV(warped + off01, scale, scroll), gdx, gdy);
+                half4 v11 = SAMPLE_TEXTURE2D_GRAD(tex, smp, PaintUV(warped + off11, scale, scroll), gdx, gdy);
                 // Bilinear corner weights on a smoothstep ramp: a partition of unity (so the blend can
                 // never brighten or darken the slot) whose members are each 0 on the two edges they do not
                 // touch. Twin: WaterUntile.CornerWeights.
@@ -4472,7 +4547,7 @@ Shader "HiddenHarbours/Water"
             // The split needs no flag channel: an ordinary reflection's premultiplied rgb can never exceed
             // its coverage, and a compensated one exceeds it by precisely its light content (see
             // HHReflectPremultiply; twin: WaterReflectionWarp.SplitLitShare).
-            void ObjectReflection(float2 worldXY, float2 waveSlope, float2 screenPx, float depth,
+            void ObjectReflection(float2 worldXY, float2 rawWorldXY, float2 waveSlope, float2 screenPx, float depth,
                                   out float4 pre, out float3 post)
             {
                 pre = 0.0;
@@ -4506,7 +4581,12 @@ Shader "HiddenHarbours/Water"
                 // same way on every graphics API.
                 float2 pxPerMetre = float2(UNITY_MATRIX_P[0][0] * _ScreenParams.x,
                                            UNITY_MATRIX_P[1][1] * _ScreenParams.y) * 0.5;
-                float2 dPix = (sampleWorld - worldXY) * pxPerMetre;
+                // THE ART GRID: screenPx is where the UNSNAPPED fragment sits, so the delta is taken from
+                // rawWorldXY (== worldXY when _ArtGridSnap is off, the old read bit for bit). Snapped, the read
+                // lands on the CENTRE of the sample's art cell, so every screen pixel of one art pixel reads the
+                // same reflected art pixel and the reflection steps on art-pixel edges.
+                if (_ArtGridSnap > 0.5) sampleWorld += 0.5 / max(_PixelsPerUnit, 1.0);
+                float2 dPix = (sampleWorld - rawWorldXY) * pxPerMetre;
                 dPix.y *= _ProjectionParams.x;
 
                 int2 px = int2(screenPx + dPix);
@@ -4602,6 +4682,17 @@ Shader "HiddenHarbours/Water"
                 float size = max(_ShoreLaceSize, 1.0);
                 if (contrast <= 0.001) return 0.5;
                 float lace = FoamSheetLace(worldXY / size);
+                // ON THE ART GRID (owner ruling 2026-11-26, "no mixels"): worldXY is the cell's centre, and a lace
+                // vein thinner than a cell falls between centres and breaks into lone pixels. Read the lace as the
+                // MAX over the cell's four corners instead: a corner is shared by four cells, so a thin vein lights
+                // every cell it crosses and stays a continuous stroke of whole art pixels. Higher lace tears less
+                // (FoamSheetTear), so this only keeps foam the centre read lost; it never invents a new vein.
+                if (_ArtGridSnap > 0.5 && _ShoreLaceCellMax > 0.5)
+                {
+                    float h = 0.5 / max(_PixelsPerUnit, 1.0);
+                    lace = max(max(FoamSheetLace((worldXY + float2( h,  h)) / size), FoamSheetLace((worldXY + float2(-h,  h)) / size)),
+                               max(FoamSheetLace((worldXY + float2( h, -h)) / size), FoamSheetLace((worldXY + float2(-h, -h)) / size)));
+                }
                 if (contrast >= 0.999) return lace;
                 return 0.5 + (lace - 0.5) * contrast;
             }
@@ -4701,7 +4792,7 @@ Shader "HiddenHarbours/Water"
                 // the same lace, not as the buffer's 1/8 m cells. Both dials 0 = this point read, bit-exact.
                 float2 buffered = (_FoamSheetEdge.x > 0.0 || _FoamSheetEdge.y > 0.0)
                     ? FoamSheetEdgeRead(worldXY)
-                    : SAMPLE_TEXTURE2D(_HHFoamBufferTex, sampler_HHFoamBufferTex, uv).rg;
+                    : SAMPLE_TEXTURE2D_LOD(_HHFoamBufferTex, sampler_HHFoamBufferTex, uv, 0).rg;
                 float stored = max(buffered.x, crestStored);
                 // A breaking crest's foam is churned right now: as fresh as its own strength.
                 freshness = max(buffered.y, crestStored);
@@ -5994,7 +6085,14 @@ Shader "HiddenHarbours/Water"
             {
                 UNITY_SETUP_INSTANCE_ID(IN);
                 float t = _Time.y;
-                float2 worldXY = IN.worldXY;
+                // THE ART GRID (owner ruling 2026-11-26): shade this fragment at the centre of its art cell, so
+                // every screen pixel of one art pixel gets one colour and every edge in the sea (the shore band,
+                // the foam, the swell, the depth tones) falls on an art-pixel edge. The gradients are taken from
+                // the unsnapped position first (see hhWorldDx). worldXY is still set exactly once.
+                hhWorldDx = ddx(IN.worldXY);
+                hhWorldDy = ddy(IN.worldXY);
+                float artPpu = max(_PixelsPerUnit, 1.0);
+                float2 worldXY = (_ArtGridSnap > 0.5) ? (floor(IN.worldXY * artPpu) + 0.5) / artPpu : IN.worldXY;
 
                 // The WIND-FETCH envelope (ADR 0027 #1) — marched ONCE for this pixel and handed to every
                 // WaveFieldSample below, including the finite-difference taps a few centimetres away (see the
@@ -6708,24 +6806,47 @@ Shader "HiddenHarbours/Water"
                     leftFoamA = smoothstep(leftThr - leftSoft, leftThr + leftSoft, saturate(leftChurn + leftFade * 0.75))
                               * leftFade * washPresence * min(saturate(_WashLeftFoamOpacity), saturate(_WashMaxCover));
                     leftFoamA *= boreEdgeLeeFade;          // fades into a lee with the run-up that left it
+                    // THE ART GRID's left foam (owner, 2026-11-26: a calm high-water shore drew it as a solid pale
+                    // band, rejected; the ground must show through): never the full-white core. The same shape, cut
+                    // at the art cell by a hard threshold into ONE flat translucent tone of its own ceiling, the wet
+                    // film's (ShoreSheetFlat). No dither, no gradient. 0 tones = smooth.
+                    float leftCeil = min(saturate(_WashLeftFoamOpacity), saturate(_WashMaxCover));
+                    if (_ShoreFoamTones >= 0.5 && leftCeil > 1e-4)
+                        leftFoamA = ShoreSheetFlat(leftFoamA / leftCeil) * leftCeil;
                 }
 
                 float dt = saturate((depth - _ShallowDepth) / max(_DeepDepth - _ShallowDepth, 1e-3));
                 // Posterize the depth ramp into N bands for the pixel read (0 bands = smooth).
+                // THE ART GRID (owner ruling 2026-11-26): the band edges are dithered on the world-locked Bayer
+                // cell (one art pixel) inside _DepthBandDitherWin of each rounding boundary, so a depth step is a
+                // broken pixel edge, never a hard contour ring. BandValue01 over N + 1 levels is the same
+                // rounding as floor(dt * N + 0.5) / N outside the window; _DepthBandDitherWin 0 is that rounding.
                 if (_DepthBands >= 1.0)
-                    dt = floor(dt * _DepthBands + 0.5) / _DepthBands;
+                    dt = (_DepthBandDitherWin > 0.0)
+                       ? BandValue01(dt, _DepthBands + 1.0, _DepthBandDitherWin, BayerWorld(worldXY))
+                       : floor(dt * _DepthBands + 0.5) / _DepthBands;
             #if defined(_USE_DEPTHRAMP)
                 // Owner hand-paints the exact shallow->deep colours in a 1D ramp (shallow at u=0). When
                 // assigned this REPLACES the _ShallowColor/_DeepColor lerp; alpha comes from the ramp too.
                 // v=0.5 stays mid-texel on a 1px-tall ramp (Repeat wrap; clamp-equivalent for the single row).
-                half4 col = SAMPLE_TEXTURE2D(_DepthRamp, sampler_DepthRamp, float2(dt, 0.5));
+                half4 col = SAMPLE_TEXTURE2D_LOD(_DepthRamp, sampler_DepthRamp, float2(dt, 0.5), 0);
             #else
                 half4 col = lerp(_ShallowColor, _DeepColor, dt);
             #endif
                 // THE WET FILM: the water thins from full to clear over the last _ShoreThinEdge.y metres of level
                 // inside the drawn edge, so it ends on the sand as a film, not a hard cut. Foam keeps its own
                 // cover. 0 (unpublished) = the hard cut. Twin: BreakerMath.EdgeWetFilm01.
-                if (_ShoreThinEdge.y > 0.0) col.a *= smoothstep(0.0, _ShoreThinEdge.y, washEdgeQ);
+                if (_ShoreThinEdge.y > 0.0)
+                {
+                    float wetFilm = smoothstep(0.0, _ShoreThinEdge.y, washEdgeQ);
+                    // THE ART GRID's film (owner, 2026-11-26: the film must stay see-through): never the foam's
+                    // full-white core. Inside the film it is ONE flat translucent tone, _ShoreWetFilmTone, cut at its
+                    // outer edge by a hard threshold (_ShoreWetFilmCut) on the art cell; past the film the water is
+                    // whole as before. No dither, no gradient. _ShoreFoamTones 0 = the smooth film.
+                    if (_ShoreFoamTones >= 0.5)
+                        wetFilm = ShoreWetFilmFlat(wetFilm);
+                    col.a *= wetFilm;
+                }
 
                 // ---- DEEP BLUE enrichment (owner mandate: "deep blues"; col.rgb ONLY) -------------------------
                 // Pull the settled BASE colour toward a rich navy as the water deepens. The shipped material
@@ -6815,8 +6936,10 @@ Shader "HiddenHarbours/Water"
             #if defined(HH_SHALLOWS_FLOOR)
                 // The floor's screen gradients (W4-4b), the terrain's own dwx/dwy: taken HERE, outside every
                 // branch, because the floor reads the ground's kit inside its own with explicit gradients.
-                float2 floorDx = ddx(worldXY);
-                float2 floorDy = ddy(worldXY);
+                // The art grid: the UNSNAPPED fragment's gradients (taken once at the top of frag), never the
+                // snapped worldXY's, which are 0 inside an art cell and a whole cell across its edge.
+                float2 floorDx = hhWorldDx;
+                float2 floorDy = hhWorldDy;
             #endif
                 if (dot(absSigma, float3(1.0, 1.0, 1.0)) > ABSORPTION_EPS)
                 {
@@ -6829,7 +6952,7 @@ Shader "HiddenHarbours/Water"
                     // instead, so a region larger than its bake simply has no bottom outside it.
                     float bedIn = (bedUV.x >= 0.0 && bedUV.x <= 1.0 &&
                                    bedUV.y >= 0.0 && bedUV.y <= 1.0) ? 1.0 : 0.0;
-                    half4 bed = SAMPLE_TEXTURE2D(_SeabedTex, sampler_SeabedTex, bedUV);
+                    half4 bed = SAMPLE_TEXTURE2D_LOD(_SeabedTex, sampler_SeabedTex, bedUV, 0);
 
                     float3 bedT = AbsorptionTransmission(absSigma, max(depthC, 0.0));
                     bedT = AbsorptionBand(bedT, _AbsorptionBands);
@@ -7475,7 +7598,7 @@ Shader "HiddenHarbours/Water"
                 // cost even when dialled in until something in the scene carries a ReflectiveObject.
                 float4 objReflPre;
                 float3 objReflPost;
-                ObjectReflection(worldXY, waveSlope, IN.positionCS.xy, depth, objReflPre, objReflPost);
+                ObjectReflection(worldXY, IN.worldXY, waveSlope, IN.positionCS.xy, depth, objReflPre, objReflPost);
                 col.rgb = col.rgb * (1.0 - objReflPre.a) + objReflPre.rgb;
 
                 // ---- BREAKING WAVES (ADR 0040): evaluated EARLIER now (before the drawn edge's clip), so the
@@ -7529,7 +7652,14 @@ Shader "HiddenHarbours/Water"
                 // `bay` read from above (no second BayerWorld tap). _FoamEdgeDither = 0 = the old contour.
                 float foamEdgeDither = (bay - 0.5) * _FoamEdgeDither;
                 // smoothstep across a thin band just inside the water: 1 at the wet edge -> 0 by foamWidth deep.
-                float foamEdge = 1.0 - smoothstep(0.0, max(_FoamWidth, 1e-3), foamDepth + foamEdgeDither);
+                // THE BAND, BOUNDED ON THE GROUND (2026-11-26, the Whelps shelf sheets): _FoamWidth is a DEPTH, so a
+                // near-flat shelf drew it metres wide. Its depth is capped at _FoamBandMaxMetres of plan times the
+                // local slope (shoreSlope, already sampled above: no extra tap). Twin: WaterSurface.FoamBandDepth.
+                float foamBandDepth = max(_FoamWidth, 1e-3);
+                if (_FoamBandMaxMetres > 0.0)
+                    foamBandDepth = max(min(foamBandDepth, _FoamBandMaxMetres
+                                                           * max(shoreSlope, saturate(_FoamBandSlopeFloor))), 1e-3);
+                float foamEdge = 1.0 - smoothstep(0.0, foamBandDepth, foamDepth + foamEdgeDither);
                 if (foamEdge > 0.001)
                 {
                     // FOAM FLOWS WITH THE BODY: the churn drifts along FoamDriftDir() — a blend of the wind and
@@ -7616,6 +7746,11 @@ Shader "HiddenHarbours/Water"
                         foamCoverage *= lerp(1.0, frontPresence, fringeHandoff);
                     }
                     // B1 FRINGE COVER END
+                    // THE ART GRID's tones (owner ruling 2026-11-26): the shore line keeps its lace shape, its
+                    // extent and its motion, read at the art cell's centre; its coverage is drawn in flat tones
+                    // chosen by a hard threshold, so each lace stroke is a continuous run of whole art pixels.
+                    if (_ShoreFoamTones >= 0.5)
+                        foamCoverage = ShoreToneHard(foamCoverage);
                     // The one colour walk at the line's own age (FoamAgedColor, the wake's, caps' and surf's
                     // walk); at _FoamSheetShore.x = 0 it returns _FoamColor, the older flat white, bit-exact.
                     float3 fringeFoam = FoamAgedColor(fringeAge01, _FoamColor.rgb, _FoamSheetShore.x, col.rgb);
@@ -7627,8 +7762,8 @@ Shader "HiddenHarbours/Water"
                 {
                     // ADR 0040 B2: a live curl (CurlingBreakerPasses) carries the lip and barrel under its mask.
                     float2 curlUV = IN.positionCS.xy * _HHCurlHandoffScaleBias.xy + _HHCurlHandoffScaleBias.zw;
-                    float curlCover = saturate(SAMPLE_TEXTURE2D(_HHCurlHandoffTex,
-                        sampler_HHCurlHandoffTex, curlUV).r);
+                    float curlCover = saturate(SAMPLE_TEXTURE2D_LOD(_HHCurlHandoffTex,
+                        sampler_HHCurlHandoffTex, curlUV, 0).r);
                     surfLip *= 1.0 - curlCover;
                     surfBarrel *= 1.0 - curlCover;
                 }
@@ -8103,6 +8238,12 @@ Shader "HiddenHarbours/Water"
                     float washFresh;
                     wakeFoam  = lerp(wakeFoam, WashResidueCoverage(worldXY, washFresh), washZone);
                     wakeFresh = lerp(wakeFresh, washFresh, washZone);
+                    // THE ART GRID's tones on the wash's residue (owner ruling 2026-11-26): the blended
+                    // coverage, relative to its own opacity ceiling, in flat tones chosen by a hard threshold.
+                    // The residue's read itself stays smooth (its tent and its shape are untouched).
+                    float washCeil = saturate(_WakeFoamStrength);
+                    if (_ShoreFoamTones >= 0.5 && washCeil > 1e-4)
+                        wakeFoam = ShoreToneHard(wakeFoam / washCeil) * washCeil;
                 }
                 if (wakeFoam > 0.001)
                 {

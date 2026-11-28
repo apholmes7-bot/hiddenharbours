@@ -60,8 +60,25 @@ namespace HiddenHarbours.Art
         public static int PackTops(IReadOnlyList<IStandableSurface> surfaces, Rect view, float waterLevel,
                                    Vector2[] outline, float[] elevation, Vector4[] a, Vector4[] b, Vector4[] h)
         {
+            Texture2D atlas = null;
+            return PackTops(surfaces, view, waterLevel, outline, elevation, a, b, h, null, ref atlas);
+        }
+
+        /// <summary>
+        /// The same packing, and each quad's UNDERSIDE (<see cref="IReflectedUnderside"/>): <paramref name="h"/>.y
+        /// its fascia rows, <paramref name="h"/>.z 1 when it has one (0 = none: the face band and open gaps,
+        /// exactly as before), and in <paramref name="u"/> its cell (texels: x, y, width, height).
+        /// <paramref name="atlas"/> is the one sheet every laid underside shares: the one passed in, or else the
+        /// first usable piece's; a piece on any other sheet is not laid. <paramref name="u"/> may be null (no
+        /// undersides at all). No allocation.
+        /// </summary>
+        public static int PackTops(IReadOnlyList<IStandableSurface> surfaces, Rect view, float waterLevel,
+                                   Vector2[] outline, float[] elevation, Vector4[] a, Vector4[] b, Vector4[] h,
+                                   Vector4[] u, ref Texture2D atlas)
+        {
             if (surfaces == null || outline == null || elevation == null || a == null || b == null || h == null) return 0;
             int max = Mathf.Min(a.Length, Mathf.Min(b.Length, h.Length));
+            if (u != null) max = Mathf.Min(max, u.Length);
             int n = 0;
             for (int s = 0; s < surfaces.Count && n < max; s++)
             {
@@ -78,12 +95,26 @@ namespace HiddenHarbours.Art
                 }
                 if (xMax < view.xMin || xMin > view.xMax || yMax < view.yMin || yMin > view.yMax) continue;
                 float face = Mathf.Max(0f, elevation[low] - waterLevel) * IsoGround.HeightScale;
+                Vector4 cell = Vector4.zero;
+                float fascia = 0f, laid = 0f;
+                if (u != null && surfaces[s] is IReflectedUnderside reflected)
+                {
+                    UndersideDef under = reflected.Underside;
+                    if (under != null && under.IsUsable && (atlas == null || atlas == under.Atlas))
+                    {
+                        atlas = under.Atlas;
+                        cell = new Vector4(under.Cell.x, under.Cell.y, under.Cell.width, under.Cell.height);
+                        fascia = under.FasciaRows;
+                        laid = 1f;
+                    }
+                }
                 for (int i = 1; i + 1 < k && n < max; i += 2)
                 {
                     int j = Mathf.Min(i + 2, k - 1);
                     a[n] = new Vector4(outline[0].x, outline[0].y, outline[i].x, outline[i].y);
                     b[n] = new Vector4(outline[i + 1].x, outline[i + 1].y, outline[j].x, outline[j].y);
-                    h[n] = new Vector4(face, 0f, 0f, 0f);
+                    h[n] = new Vector4(face, fascia, laid, 0f);
+                    if (u != null) u[n] = cell;
                     n++;
                 }
             }
@@ -124,6 +155,9 @@ namespace HiddenHarbours.Art
         static readonly int TopHId = Shader.PropertyToID("_CalmMirrorTopH");
         static readonly int TopsId = Shader.PropertyToID("_CalmMirrorTops");
         static readonly int BandId = Shader.PropertyToID("_CalmMirrorBand");
+        static readonly int TopUId = Shader.PropertyToID("_CalmMirrorTopU");
+        static readonly int UnderTexId = Shader.PropertyToID("_CalmMirrorUnderTex");
+        static readonly int UnderId = Shader.PropertyToID("_CalmMirrorUnder");
         internal const string ShaderName = "Hidden/HiddenHarbours/CalmMirror";
 
         /// <summary>The most deck quads the mirror tests per frame: the length of the shader's arrays
@@ -133,6 +167,8 @@ namespace HiddenHarbours.Art
         // The largest outline one surface hands over (a polygon past it is cut to its first corners).
         const int MaxOutlineCorners = 16;
         static readonly Vector4[] s_TopA = new Vector4[MaxTops], s_TopB = new Vector4[MaxTops], s_TopH = new Vector4[MaxTops];
+        // Each quad's underside cell in the one underside sheet (texels: x, y, width, height).
+        static readonly Vector4[] s_TopU = new Vector4[MaxTops];
         static readonly Vector2[] s_Outline = new Vector2[MaxOutlineCorners];
         static readonly float[] s_OutlineElevation = new float[MaxOutlineCorners];
 
@@ -281,18 +317,23 @@ namespace HiddenHarbours.Art
 
                 // Decks: tops are never mirrored, faces mirror about the real waterline (DeckAware).
                 int tops = 0;
+                Texture2D underAtlas = null;
                 if (s.DeckAware && StandableSurfaces.Count > 0)
                 {
                     IEnvironmentService env = GameServices.Environment;
                     float level = env != null ? env.WaterLevelAt(GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0) : 0f;
                     var view = new Rect(c.x - w * 0.5f - 1f, c.y - h * 0.5f - 1f, w + 2f, h + 2f);
                     tops = CalmMirrorMath.PackTops(StandableSurfaces.Active, view, level, s_Outline, s_OutlineElevation,
-                                                   s_TopA, s_TopB, s_TopH);
+                                                   s_TopA, s_TopB, s_TopH, s_TopU, ref underAtlas);
                 }
                 LastTopCount = tops;
                 Material.SetVectorArray(TopAId, s_TopA);
                 Material.SetVectorArray(TopBId, s_TopB);
                 Material.SetVectorArray(TopHId, s_TopH);
+                // Undersides: one sheet for every deck in view (UndersideDef); x the share laid, 0 = none at all.
+                Material.SetVectorArray(TopUId, s_TopU);
+                Material.SetTexture(UnderTexId, underAtlas != null ? underAtlas : Texture2D.blackTexture);
+                Material.SetVector(UnderId, new Vector4(underAtlas != null ? Mathf.Clamp01(s.UndersideShare) : 0f, 0f, 0f, 0f));
                 Material.SetVector(TopsId, new Vector4(tops, Mathf.Max(0f, s.FaceSnapMetres) * IsoGround.HeightScale,
                     Mathf.Max(0f, s.FaceFeatherMetres) * IsoGround.HeightScale, Mathf.Clamp01(s.FaceBandShare)));
                 // w: one art pixel in world units, the slack the deck test allows the drawn art past its outline.

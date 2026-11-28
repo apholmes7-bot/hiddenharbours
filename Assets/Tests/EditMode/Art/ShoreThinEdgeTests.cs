@@ -127,7 +127,31 @@ namespace HiddenHarbours.Tests.Art.EditMode
             StringAssert.Contains("return steady > 0.0 ? smoothstep(0.25 * steady, steady, SeabedSlopeMag(worldXY)) : 1.0;", src);
             Assert.AreEqual(2, CountOf(src, "* _SwashAlongShoreVary * 6.2831853 * SwashDesyncKeep(worldXY);"),
                 "the swash and its rate twin must keep the same desync");
-            StringAssert.Contains("if (_ShoreThinEdge.y > 0.0) col.a *= smoothstep(0.0, _ShoreThinEdge.y, washEdgeQ);", src);
+            // The art grid (11-26) cuts the film's thinning by hard threshold into ONE flat translucent tone, never
+            // the foam's full-white core (the owner: the film must stay see-through); the smooth twin is the ramp it cuts.
+            StringAssert.Contains("float wetFilm = smoothstep(0.0, _ShoreThinEdge.y, washEdgeQ);", src);
+            StringAssert.Contains("wetFilm = ShoreWetFilmFlat(wetFilm);", src);
+            StringAssert.DoesNotContain("wetFilm = ShoreToneHard(wetFilm);", src);
+            // The foam left on the sand takes the same one see-through tone (the calm high-water strip, rejected solid).
+            StringAssert.Contains("leftFoamA = ShoreSheetFlat(leftFoamA / leftCeil) * leftCeil;", src);
+            int wetAt = src.IndexOf("float ShoreWetFilmFlat(float film01)", System.StringComparison.Ordinal);
+            Assert.Greater(wetAt, 0, "the wet film's flat tone function");
+            StringAssert.Contains("return ShoreSheetFlat(film01);",
+                src.Substring(wetAt, src.IndexOf("\n            }", wetAt, System.StringComparison.Ordinal) - wetAt));
+            int filmAt = src.IndexOf("float ShoreSheetFlat(float v01)", System.StringComparison.Ordinal);
+            Assert.Greater(filmAt, 0, "the see-through sheets' flat tone function");
+            string film = src.Substring(filmAt, src.IndexOf("\n            }", filmAt, System.StringComparison.Ordinal) - filmAt);
+            StringAssert.Contains("saturate(_ShoreWetFilmTone)", film, "the sheet's one tone is the tunable, never full white");
+            foreach (string dither in new[] { "Bayer", "BandValue01", "Hash", "Noise", "smoothstep", "lerp" })
+                StringAssert.DoesNotContain(dither, film, "the film is one flat tone by threshold: no dither, no gradient");
+            // No dither on the shore foam or the film (the owner's "screen door"; the dithered tones read as confetti):
+            // the tone function is thresholds only.
+            int toneAt = src.IndexOf("float ShoreToneHard(float v01)", System.StringComparison.Ordinal);
+            Assert.Greater(toneAt, 0, "the shore's hard tone function");
+            string tone = src.Substring(toneAt, src.IndexOf("\n            }", toneAt, System.StringComparison.Ordinal) - toneAt);
+            foreach (string dither in new[] { "Bayer", "BandValue01", "Hash", "Noise" })
+                StringAssert.DoesNotContain(dither, tone, "the shore foam's tones are chosen by threshold, never a dither pattern");
+            StringAssert.Contains("col.a *= wetFilm;", src);
             StringAssert.Contains("#include \"Assets/_Project/Art/Shaders/Include/CausticPattern.hlsl\"", src);
             StringAssert.DoesNotContain("#include \"Include/CausticPattern.hlsl\"", src);
             string bridge = File.ReadAllText(BridgePath);
@@ -361,7 +385,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
             StringAssert.Contains("float washOnSand = washPresence * (1.0 - smoothstep(0.0, max(_WashSeawardDepth, 1e-3), depth));", src);
             StringAssert.Contains("if (swashEdgeReach > 0.0 && depth < shoreCosmeticReach)", src);
             StringAssert.Contains("float foamEdgeDither = (bay - 0.5) * _FoamEdgeDither;", src);
-            StringAssert.Contains("float foamEdge = 1.0 - smoothstep(0.0, max(_FoamWidth, 1e-3), foamDepth + foamEdgeDither);", src);
+            // The band's depth may only be capped BELOW _FoamWidth (the ground bound), so the envelope's
+            // max(_FoamWidth, ...) above stays a conservative reach.
+            StringAssert.Contains("float foamBandDepth = max(_FoamWidth, 1e-3);", src);
+            StringAssert.Contains("foamBandDepth = max(min(foamBandDepth, _FoamBandMaxMetres", src);
+            StringAssert.Contains("float foamEdge = 1.0 - smoothstep(0.0, foamBandDepth, foamDepth + foamEdgeDither);", src);
         }
 
         private static int CountOf(string text, string part)

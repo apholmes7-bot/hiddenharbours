@@ -406,6 +406,33 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 > **Opening a v27 save in an older build loses the four lists** (clothes, rack sales, skill, rod fittings); everything
 > else stays.
 
+> **Save schema v28 (the photo album, owner 2026-11-26: "yes build the camera now with photo record added to
+> save"; ADR 0066)**: `SaveData` gained ONE append-only list, `Photos` (rows in Core/Save/SaveRowsV28.cs). The
+> `v27→v28` step gives it an empty list; nothing else moves.
+>
+> - `Photos` (`PhotoRecordDto`: `PlayerKey`, `Number` int, `GameTimeSeconds` double, `RegionId`, `Score` int
+>   0..100, `Subjects`; each `PhotoSubjectDto`: `SubjectId` a `wildlife.*` id, `Count` int, `Pose` int in
+>   `WildlifePose` order, `Score` int 0..100; `Thumbnail` string): one row per kept picture. The record is
+>   what was in frame and how good a picture it was; the ONE image is `Thumbnail` (owner 2026-11-26: "yes
+>   photoalbum should save small pictures as little poloraids"): Base64 of a two-byte size header and RGB565
+>   pixels (`PhotoThumbnail`), its size the camera def's `ThumbnailWidthPx` x `ThumbnailHeightPx` (shipped
+>   48 x 34 = 4,356 characters a picture; 60 to an album, about 255 KiB a player at the cap), empty when
+>   none was taken. The PHOTO tab lays them out as an album: straight Polaroid cards (`PolaroidBorderPx`,
+>   the wider `PolaroidBottomBorderPx`, `PolaroidFrameColour`) in rows, `PolaroidMinGapPx` of air between,
+>   point filtered, what and how many written on each card's bottom strip (whole words, clipped to the
+>   card) and the day and place under it (`PolaroidCaptionGapPx` clear), wrapped at spaces only. A
+>   thumbnail that does not decode is cleared on load and the record kept. `Number` is the album number,
+>   unique across the list, never reused (`PhotoAlbumRows.NextNumber` = highest + 1). The album is capped per
+>   player by the camera def (`AlbumCapacity`); a full album keeps nothing new. Helper: `PhotoAlbumRows`
+>   (`Add`, `Count`, `Find`, `HasQualifying`). Repair: null rows and subjects with no id dropped, a photo left
+>   with no subject dropped; empty key is `player.local`; a negative or non-finite time reads 0; counts under
+>   1 read 1; an unknown pose reads Diving; scores clamp to 0..100; a repeated or non-positive number is
+>   renumbered above the highest; rows are kept in number order. Never improves a picture.
+> - Photo requests (Odile's seals) save nothing of their own: asked, pictured and done are ordinary flags, and
+>   "does the album hold one that will do" is read from `Photos` (the `QuestDef` doctrine).
+>
+> **Opening a v28 save in an older build loses the album**; everything else stays.
+
 **Recomputed, never saved:** tide height, wind, weather, sea state, visibility (from
 `worldSeed + gameTime`), dormant NPC positions, authored geometry, **a boat's effective helm fit and
 its depth-sounder reading** (ADR 0030), **which end of a bed the pillow is on** (see below), and

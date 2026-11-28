@@ -452,7 +452,16 @@ namespace HiddenHarbours.Art
 
             // Stood BEFORE it is posed: the look reads where the figure stands this frame.
             Place(stand, skin);
-            IsoCharacterFigureRenderer.Life life = _life.Step(skin, _key, _keyHash, now, _figure, looks: true);
+            // Idle fidgets only while she stands at the plain idle: never at the oars, resting or stroking, and
+            // never at the helm, where she is steering even when the helm clip falls back to the idle.
+            bool idle = !Rowing && stance != CharacterStance.Oars && stance != CharacterStance.Helm
+                        && IdleFidgetSchedule.IsStandingIdle(stateKey);
+            IsoCharacterFigureRenderer.Life life = _life.Step(skin, _key, _keyHash, now, _figure, looks: true, idle: idle);
+            if (idle && _life.TryFidgetClip(skin, out string fidgetKey, out int fidgetFrame) && skin.DrawsAsMesh(fidgetKey))
+            {
+                stateKey = fidgetKey;
+                frame = fidgetFrame;
+            }
             // At the oars, rowing or resting on them: solved onto the boat's own station, exactly as the
             // player's figure is, so his hands hold the handles (or rest on his thighs with them let go).
             if ((Rowing || stance == CharacterStance.Oars)
@@ -624,7 +633,14 @@ namespace HiddenHarbours.Art
             _ashoreFigure.SetAshoreYaw(yaw);
 
             // Her life, by the aboard rules: the blink her one key seeds, and a look at the player nearby.
-            IsoCharacterFigureRenderer.Life life = _life.Step(skin, _key, _keyHash, now, _ashoreFigure, looks: true);
+            // Idle fidgets only while she stands at the plain idle: never on a driven move, at work or in a beat.
+            bool idle = !driven && !working && IdleFidgetSchedule.IsStandingIdle(stateKey);
+            IsoCharacterFigureRenderer.Life life = _life.Step(skin, _key, _keyHash, now, _ashoreFigure, looks: true, idle: idle);
+            if (idle && _life.TryFidgetClip(skin, out string fidgetKey, out int fidgetFrame) && skin.DrawsAsMesh(fidgetKey))
+            {
+                stateKey = fidgetKey;
+                frame = fidgetFrame;
+            }
             if (!_ashoreFigure.SetPose(stateKey, frame, life))
             {
                 _refusalKey = stateKey;

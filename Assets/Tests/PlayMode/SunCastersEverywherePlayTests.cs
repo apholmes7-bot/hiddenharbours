@@ -223,13 +223,18 @@ namespace HiddenHarbours.Tests.PlayMode
             int total = 0, villagers = 0, houses = 0, piers = 0, excluded = 0;
             var rows = new List<string>();
             List<string> forbiddenCasters = null;
+            var hung = new List<string>();
             foreach (var renderer in population)
             {
                 if (renderer == null) continue;
                 var shadow = renderer.GetComponent<SpriteShadow>();
+                if (SunCasterInstaller.HangsInTheTide(renderer)) hung.Add(renderer.name + (shadow != null ? "\tCASTS" : "\tnone"));
                 if (shadow == null)
                 {
-                    if (renderer.enabled && renderer.gameObject.activeInHierarchy && rules.Qualifies(renderer, out _))
+                    // A face hung into the tide (the ladder) is given no caster on purpose: its whole sprite would
+                    // be thrown from a foot under the water.
+                    if (renderer.enabled && renderer.gameObject.activeInHierarchy && !SunCasterInstaller.HangsInTheTide(renderer) &&
+                        rules.Qualifies(renderer, out _))
                         Assert.Fail(scene + ": eligible sprite was missed: " + renderer.name);
                     continue;
                 }
@@ -252,7 +257,9 @@ namespace HiddenHarbours.Tests.PlayMode
             }
             Directory.CreateDirectory(Output);
             File.WriteAllLines(Path.Combine(Output, "census-" + scene + ".tsv"),
-                new[] { $"before\t{before}\nafter\t{total}\nvillagers\t{villagers}\nhouses\t{houses}\npier\t{piers}", "name\tclass\torder\tposition" }.Concat(rows));
+                new[] { $"before\t{before}\nafter\t{total}\nvillagers\t{villagers}\nhouses\t{houses}\npier\t{piers}\nhung\t{hung.Count}", "name\tclass\torder\tposition" }.Concat(rows));
+            File.WriteAllLines(Path.Combine(Output, "hung-" + scene + ".tsv"), hung);
+            Assert.That(hung.Where(h => h.EndsWith("CASTS")), Is.Empty, scene + ": a face hung into the tide holds a sun caster");
             Assert.That(total, Is.GreaterThanOrEqualTo(totalFloor), scene + ": total standing-caster floor");
             Assert.That(villagers, Is.GreaterThanOrEqualTo(villagerFloor), scene + ": villager floor");
             Assert.That(houses, Is.GreaterThanOrEqualTo(houseFloor), scene + ": house floor");

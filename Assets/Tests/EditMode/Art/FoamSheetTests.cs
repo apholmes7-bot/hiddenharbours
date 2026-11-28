@@ -360,7 +360,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             string cover = Body(src, "float WakeFoamCoverage(");
             StringAssert.Contains("(_FoamSheetEdge.x > 0.0 || _FoamSheetEdge.y > 0.0)", cover);
             StringAssert.Contains("? FoamSheetEdgeRead(worldXY)", cover);
-            StringAssert.Contains(": SAMPLE_TEXTURE2D(_HHFoamBufferTex, sampler_HHFoamBufferTex, uv).rg;", cover,
+            StringAssert.Contains(": SAMPLE_TEXTURE2D_LOD(_HHFoamBufferTex, sampler_HHFoamBufferTex, uv, 0).rg;", cover,
                 "both edge dials 0 keep the older point read for an A/B");
             FoamSheetSettings d = FoamSheetSettings.Default;
             Assert.Greater(d.EdgeSoftenMetres, 0.125f, "the shipped soften spans more than one buffer cell");

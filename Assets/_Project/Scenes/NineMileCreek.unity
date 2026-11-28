@@ -387485,6 +387485,8 @@ MonoBehaviour:
     width: 2.6000061
     height: 19.1999969
   _deckElevation: 3.4000001
+  _drawnLiftedByDeck: 1
+  _underside: {fileID: 11400000, guid: cb324355a29849c4a9a7501fc62e9044, type: 2}
 --- !u!1 &343288945
 GameObject:
   m_ObjectHideFlags: 0
@@ -387646,6 +387648,8 @@ MonoBehaviour:
     width: 2.6000061
     height: 19.1999969
   _deckElevation: 3.4000001
+  _drawnLiftedByDeck: 1
+  _underside: {fileID: 11400000, guid: cb324355a29849c4a9a7501fc62e9044, type: 2}
 --- !u!1 &1435787188
 GameObject:
   m_ObjectHideFlags: 0
@@ -392827,6 +392831,7 @@ MonoBehaviour:
   _slopeTo: {x: 51, y: -2}
   _fromElevation: 3.5999999
   _toElevation: 3.5999999
+  _underside: {fileID: 11400000, guid: cb324355a29849c4a9a7501fc62e9044, type: 2}
 --- !u!212 &1658940870
 SpriteRenderer:
   serializedVersion: 3
@@ -392909,6 +392914,7 @@ MonoBehaviour:
   _slopeTo: {x: 77, y: -2}
   _fromElevation: 3.5999999
   _toElevation: 3.5999999
+  _underside: {fileID: 11400000, guid: cb324355a29849c4a9a7501fc62e9044, type: 2}
 --- !u!212 &1238421743
 SpriteRenderer:
   serializedVersion: 3
@@ -392991,6 +392997,7 @@ MonoBehaviour:
   _slopeTo: {x: 103, y: -2}
   _fromElevation: 3.5999999
   _toElevation: 3.5999999
+  _underside: {fileID: 11400000, guid: cb324355a29849c4a9a7501fc62e9044, type: 2}
 --- !u!114 &1915132211
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -393089,6 +393096,7 @@ MonoBehaviour:
   _slopeTo: {x: 212, y: 52.9841843}
   _fromElevation: 3.5999999
   _toElevation: 3.5999999
+  _underside: {fileID: 11400000, guid: cb324355a29849c4a9a7501fc62e9044, type: 2}
 --- !u!212 &1516970755
 SpriteRenderer:
   serializedVersion: 3
@@ -393171,6 +393179,7 @@ MonoBehaviour:
   _slopeTo: {x: 212, y: 19.9841862}
   _fromElevation: 3.5999999
   _toElevation: 3.5999999
+  _underside: {fileID: 11400000, guid: cb324355a29849c4a9a7501fc62e9044, type: 2}
 --- !u!212 &1312981846
 SpriteRenderer:
   serializedVersion: 3
@@ -393253,6 +393262,7 @@ MonoBehaviour:
   _slopeTo: {x: 198.5, y: 3.39029908}
   _fromElevation: 3.5999999
   _toElevation: 3.5999999
+  _underside: {fileID: 11400000, guid: cb324355a29849c4a9a7501fc62e9044, type: 2}
 --- !u!212 &275752955
 SpriteRenderer:
   serializedVersion: 3
@@ -393335,6 +393345,7 @@ MonoBehaviour:
   _slopeTo: {x: 171.5, y: -9.60970116}
   _fromElevation: 3.5999999
   _toElevation: 3.5999999
+  _underside: {fileID: 11400000, guid: cb324355a29849c4a9a7501fc62e9044, type: 2}
 --- !u!114 &1095872228
 MonoBehaviour:
   m_ObjectHideFlags: 0

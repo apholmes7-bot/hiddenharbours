@@ -39,6 +39,11 @@ namespace HiddenHarbours.Core
         /// <summary>The dirt a shovel throws out of a clam hole (Art <c>MomentBurstEmitter</c>, the dig impact and
         /// its toss). Anchored at the hole, which the digger stands beside, never on.</summary>
         DigDirt = 11,
+        /// <summary>The hooked fish at the surface, through the lift to the deck lip (Player
+        /// <c>SurfacedFishDrawer</c>, for the player and for a villager angler). Carried: the fisher's own
+        /// order, on the side of him she is on (<see cref="EffectSorting.FishOnLineOrder"/>). In his hands she
+        /// is the held catch, which is drawn in front of him by its own rule.</summary>
+        FishOnLine = 12,
     }
 
     /// <summary>
@@ -116,6 +121,27 @@ namespace HiddenHarbours.Core
         /// </summary>
         public const int DigDirtRungs = 0;
 
+        /// <summary>
+        /// The hooked fish on the FAR side of the fisher (in the water beyond his feet) sorts one rung
+        /// <b>behind</b> him: under his body and his rod, over his line (which sorts at
+        /// <see cref="RodLineRungs"/>, so the line goes into her mouth rather than across her). She used to sit
+        /// at a parked water order and drew over his body at the deck lip and all through the lift.
+        /// </summary>
+        public const int FishBeyondFisherRungs = -1;
+
+        /// <summary>The hooked fish on the NEAR side of him (south of his feet, nearer the camera in the
+        /// three-quarter view) sorts one rung in front, as anything standing there would.</summary>
+        public const int FishNearFisherRungs = 1;
+
+        /// <summary>
+        /// A rod splash on the FAR side of the fisher (on the water beyond his feet: the fish breaking, a
+        /// jumper going back in, the fish leaving the water at the landing) sorts three rungs <b>behind</b>
+        /// him: on the water surface, under the hooked fish (<see cref="FishBeyondFisherRungs"/>) and under
+        /// the line (<see cref="RodLineRungs"/>). At one rung in front it drew across a villager's chest when
+        /// he lifted a fish over a wharf rail. Short of his feet the splash keeps <see cref="RodOverFisherRungs"/>.
+        /// </summary>
+        public const int SplashBeyondFisherRungs = -3;
+
         // --- THE RULE ---------------------------------------------------------------------------------
 
         /// <summary>The rungs <paramref name="effect"/> sorts at from its anchor (or its carrier).</summary>
@@ -135,6 +161,7 @@ namespace HiddenHarbours.Core
                 case SortedEffect.RodSplash: return RodOverFisherRungs;
                 case SortedEffect.NpcGearAtRail: return NpcGearOverHullRungs;
                 case SortedEffect.DigDirt: return DigDirtRungs;
+                case SortedEffect.FishOnLine: return FishBeyondFisherRungs;
                 default: return 0;
             }
         }
@@ -144,7 +171,8 @@ namespace HiddenHarbours.Core
         /// anchored at a world Y (<see cref="OrderAt"/>).
         /// </summary>
         public static bool IsCarried(SortedEffect effect) =>
-            effect == SortedEffect.RodLine || effect == SortedEffect.RodSplash || effect == SortedEffect.NpcGearAtRail;
+            effect == SortedEffect.RodLine || effect == SortedEffect.RodSplash || effect == SortedEffect.NpcGearAtRail
+            || effect == SortedEffect.FishOnLine;
 
         /// <summary>
         /// The decor band's Y-sort at world <paramref name="worldY"/>: <c>round(DecorBase - y * OrdersPerMetre)</c>
@@ -172,5 +200,26 @@ namespace HiddenHarbours.Core
         /// boat's group).
         /// </summary>
         public static int OrderOver(SortedEffect effect, int carrierOrder) => carrierOrder + RungsFor(effect);
+
+        /// <summary>
+        /// The order the hooked fish sorts at over a fisher sorting at <paramref name="fisherOrder"/>, with
+        /// her water point <paramref name="fishOffsetY"/> metres north of his feet (the published fight
+        /// offset, never her jump lift: a leap does not carry her round him): behind him when she is beyond
+        /// his feet (<see cref="FishBeyondFisherRungs"/>), in front when she is short of them
+        /// (<see cref="FishNearFisherRungs"/>). Level with his feet counts as beyond, the water side.
+        /// </summary>
+        public static int FishOnLineOrder(int fisherOrder, float fishOffsetY)
+            => fisherOrder + (fishOffsetY >= 0f || float.IsNaN(fishOffsetY) ? FishBeyondFisherRungs : FishNearFisherRungs);
+
+        /// <summary>
+        /// The order a rod splash sorts at over a fisher sorting at <paramref name="fisherOrder"/>, landing
+        /// <paramref name="splashOffsetY"/> metres north of his feet: on the water behind him when it is beyond
+        /// his feet (<see cref="SplashBeyondFisherRungs"/>), in front when it is short of them
+        /// (<see cref="RodOverFisherRungs"/>). Level with his feet counts as beyond, as for the fish.
+        /// </summary>
+        public static int RodSplashOrder(int fisherOrder, float splashOffsetY)
+            => splashOffsetY >= 0f || float.IsNaN(splashOffsetY)
+                ? fisherOrder + SplashBeyondFisherRungs
+                : OrderOver(SortedEffect.RodSplash, fisherOrder);
     }
 }

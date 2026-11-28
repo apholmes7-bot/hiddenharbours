@@ -2287,9 +2287,9 @@ swell draws and the hulls ride), `depth` the fringe depth the bands use, `k` = `
 `_PixelsPerMetre` = 32.
 
 - **The grid is the ground's own.** The floor is pixelized as the terrain is: the kit point-sampled at
-  world-anchored coordinates, 32 texels a metre, and the splats read as the terrain reads them. It is not on the
-  sea's 24 px/m `Pixelize` cell, which the bake keeps: at the waterline the floor and the dry ground beside it are
-  the same pixels.
+  world-anchored coordinates, 32 texels a metre, and the splats read as the terrain reads them. Since the art-grid
+  fix of 2026-11-26 (§ "The sea on the art grid" below) the sea's own `Pixelize` cell is 32 px/m too, so the two
+  grids are one: at the waterline the floor and the dry ground beside it are the same pixels.
 - **It never crawls or swims.** The offset is a whole number of ground pixels, so the floor steps by whole texels as
   the swell passes and the tide turns, and a point read never lands between two. Its grid and its offset are both
   functions of world position and time, so a camera pan moves the view over the floor and never the floor.
@@ -4168,7 +4168,8 @@ world-anchored addressing slides **0.000**.
 > ⚠️ **The buffer owns its grid constant, and this is not a style preference.** `FOAM_CELLS_PER_UNIT`
 > is **8 cells/m** (0.125 m = **4 screen px** at PPU 32), mirrored by `FoamBuffer.CellsPerUnit` and
 > pinned by a tripwire that reads the shader source. It is deliberately **not** the material's
-> `_PixelsPerUnit`: that is an art knob the owner drags — **`Water.mat` ships it at 24, not 32** — and
+> `_PixelsPerUnit`: that is an art knob the owner drags (it shipped at 24 until the art-grid fix of
+> 2026-11-26 set it to 32 on all nine materials) — and
 > the C# side cannot read a material, so quantizing through it would let the two halves of the seam
 > disagree silently. Same ruling, same reason, as `FETCH_MARCH_PPU`. It is also deliberately *coarser*
 > than the pixel grid, which is the ADR's own "foam coarser than caustics" scale hierarchy.
@@ -6598,3 +6599,45 @@ sea at the bottom of that fade. Named, not fixed.
 
 **Q8, in the same change:** each sprite reads its depth once, for its ride and its body
 (`BoatWakeEmitter.DepthUnder`). 3A read it twice, at about 0.65 µs a read over some 160 live sprites.
+
+## 48. The sea on the art grid (owner ruling 2026-11-26, "no mixels")
+
+One pixel size on screen for everything: the sea now changes colour only on art-pixel edges, the same
+32 px a metre every sprite, tile and the shallows floor are drawn at.
+
+- **The grid.** `_PixelsPerUnit` is **32** on `Water.mat` and all eight presets (it was 24, so every
+  water cell was 1.33 art pixels and its edges fell mid art pixel). It is still THE quantization grid for
+  every band (`Pixelize`, `BayerWorld`), and the presets still must agree with the live material
+  (`WaterBandRegularityTests`). The fetch march and the foam buffer keep their own fixed grids, as before.
+- **The shade point.** `_ArtGridSnap` (default 1) shades every fragment at the centre of its art cell
+  (`(floor(worldXY * ppu) + 0.5) / ppu`), so the drawn shore edge, the wet film, the foam and the swell
+  step on art-pixel edges. Texture reads that took an implicit mip read level 0 (height, seabed, foam
+  buffer, depth ramp, curl hand-off) or explicit gradients from the UNSNAPPED position (the painted
+  untile reads, the shallows floor). The gradient pair lives in `Include/CausticPattern.hlsl`, so the
+  caustic veins' painted reads, the sea's and the hull's alike, take the same gradients and keep the sea's
+  arithmetic (`HullCausticLightingTests`); the hull sets them from its unsnapped caustic point. The object reflection reads its screen texel from the snapped cell's
+  centre. 0 = the older per-screen-pixel read.
+- **The shore foam's tones: snapped strokes, never dither.** The shore line and the wash residue keep
+  their lace shape, extent and motion, read at the art cell's
+  centre, and are drawn in flat tones chosen by a HARD threshold (`ShoreToneHard`): `_ShoreFoamTones` 2
+  = a full core at or above `_ShoreFoamCut` (0.5 of its ceiling) and one softer edge tone
+  `_ShoreFoamEdgeTone` (0.5) at or above `_ShoreFoamEdgeCut` (0.2); 1 = the core only; 0 = the smooth
+  coverage. A first cut dithered these tones on the world Bayer cell and the lace broke into confetti
+  (the owner had rejected a "screen door" wash before), so dither is kept for the depth colour only.
+- **The see-through sheets.** The wet film and the foam left on the sand never take the full-white core: the
+  core cut drew the calm high-water shore's left foam as a solid pale strip that hid the pebbles (rejected).
+  Each is ONE flat translucent tone, `_ShoreWetFilmTone` (0.5, about the smooth film's mean opacity), inside
+  a hard cut at `_ShoreWetFilmCut` (0.2) on the art cell (`ShoreSheetFlat`); past the film the water stays
+  whole. No dither, no gradient.
+- **The shore lace over the cell's corners.** `_ShoreLaceCellMax` (default 1): on the art grid the shore's
+  lace (`FoamSheetShoreLace`) is read as the max over the art cell's four corners, not its centre, so a vein
+  thinner than a cell lights every cell it crosses. It can only keep foam the centre read lost (a higher
+  lace tears less). Measured on the plates it helps a little; the breaks that remain come from the shore
+  line's own band being thinner than a cell, not from the lace.
+- **The depth colour.** `_DepthBands` **5** (was 0) with `_DepthBandDitherWin` 0.5: the depth ramp is
+  read in five steps whose edges are dithered on the world Bayer cell, so there are no hard contour
+  rings. The seabed composite (absorption, `_AbsorptionBands`) is untouched, so the see-through shallows
+  stay as clear as they were.
+- **The calm mirror's axis.** The flip mirrors about the base pixel's lower edge (`2 * basePx - 1`), not
+  its centre; about the centre, the two screen rows of one art pixel came from two different art pixels at
+  every even camera scale.

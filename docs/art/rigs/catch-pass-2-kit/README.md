@@ -351,7 +351,7 @@ Found in passes B to E:
 
 ## Verify before trusting any of this
 ```
-sha256 Art/fishIsoRig2.js     -> 3e162191…   must equal derivedFromRigSha256 in sidecars/fishIsoRig2.rig.json
+sha256 Art/fishIsoRig2.js     -> 810e6999…   must equal derivedFromRigSha256 in sidecars/fishIsoRig2.rig.json
 sha256 Art/crustaceanRig2.js  -> e1eda988…   … in sidecars/crustaceanRig2.rig.json
 sha256 Art/shellfishRig2.js   -> 9f219283…   … in sidecars/shellfishRig2.rig.json
 sha256 Art/clamHodRig.js      -> 142c63db…   … in sidecars/clamHodRig.rig.json (main's)

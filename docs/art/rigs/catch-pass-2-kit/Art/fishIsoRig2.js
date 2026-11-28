@@ -131,6 +131,14 @@
   // the flash: on these frames of each water anim, a flash species' brightest flank pixels catch the light
   const FLASH = '#eef4f4', FLASH_N = 2, FLASH_MIX = 1/3, FLASH_A = 230;
   const FLASH_FRAMES = { swim:[1,4], dart:[0,2], thrash:[0,2], roll:[1,3], jump:[2,3] };
+  // the pale side (fish art pass, 2026-11-27): on these frames (resolve() sets r.pale) the belly's ramp
+  // climbs the flank to the back's crown (a ring facet whose height is PALE_BACK or more stays back) and
+  // the mackerel's bars start at PALE_BARS_V up the side rather than at the lateral line, so a thrash
+  // rolled back-up still flashes pale every other frame and a leap seen from behind reads as a fish.
+  // Colour only: the pose, the outline and the mouth are the same pixels; no new colour, the species'
+  // own belly and stripe ramps. A flatfish (sp.bottom) keeps its own look: its 'belly' ramp is the blind
+  // side, and painting it up the eyed side would turn the whole fish white.
+  const PALE_FRAMES = { thrash:[1,3], jump:[0,1,2,3,4,5] }, PALE_BACK = 0.9, PALE_BARS_V = 0.55;
 
   const GAIN = 3.0, BIAS = 2.7, EDGE = 0.12;
   const LN = (()=>{ const v=[-0.42,0.72,0.52]; const m=Math.hypot(...v); return v.map(c=>c/m); })();
@@ -191,7 +199,7 @@
     }
     const anim = POSE[opts.anim] ? opts.anim : 'swim', poses = POSE[anim], frame = mod(opts.frame||0, poses.length), p = poses[frame];
     const wave = (sp.undulate && p.wph!=null) ? 1 : 0;
-    return { spKey, sp, anim, frame,
+    return { spKey, sp, anim, frame, pale:!sp.bottom && (PALE_FRAMES[anim]||[]).indexOf(frame)>=0,
       sweep: opts.sweep!=null?opts.sweep:((p.sweep||0)*(wave?0.35:1)),
       curve: opts.curve!=null?opts.curve:(p.curve||0),
       roll:  opts.roll !=null?opts.roll :(p.roll ||0),
@@ -223,6 +231,7 @@
     let T=T0;
     if (r.gripU!=null){ const gp=T0([lat(r.gripU), yOf(r.gripU), vert(r.gripU)]);
       T=(p)=>{ const q=T0(p); return [q[0]-gp[0], q[1]-gp[1], q[2]-gp[2]]; }; }
+    const matOf=(ms)=>r.pale ? (ms>=PALE_BACK ? 'back' : 'belly') : ms>0.35 ? 'back' : ms<-0.35 ? 'belly' : 'flank';
     const F=[], NSEG=r.loft?r.loft.nseg:9, NR=r.loft?r.loft.nr:8, rings=[];
     for (let i=0;i<=NSEG;i++){
       const u=i/NSEG, rr=g(u), y=yOf(u), x0=lat(u), z0=vert(u), ring=[];
@@ -233,7 +242,7 @@
       const r0=rings[i], r1=rings[i+1];
       for (let k=0;k<NR;k++){
         const k2=(k+1)%NR, ms=(Math.sin(k/NR*2*Math.PI)+Math.sin(k2/NR*2*Math.PI))/2;
-        let mat = ms>0.35 ? 'back' : ms<-0.35 ? 'belly' : 'flank';
+        let mat = matOf(ms);
         if (mat==='back' && sp.stripes==='bars' && i%2===1 && !r.loft) mat='stripe';   // a plate draws its own (plateMarks)
         if (mat==='flank' && sp.stripes==='lines' && ms>0 && !r.loft) mat='stripe';
         if (mat==='flank' && i===1 && !r.loft) mat='gill';
@@ -246,7 +255,7 @@
       const a=j/4*Math.PI/2, rr=g(0)*Math.cos(a), y=yOf(0)+g(0)*0.9*Math.sin(a), ring=[];
       for (let k=0;k<NR;k++){ const ph=k/NR*2*Math.PI; ring.push(T([lat(0)+Math.cos(ph)*rr*flat, y, vert(0)+Math.sin(ph)*rr*zf])); }
       for (let k=0;k<NR;k++){ const k2=(k+1)%NR, ms=(Math.sin(k/NR*2*Math.PI)+Math.sin(k2/NR*2*Math.PI))/2;
-        F.push({v:[ring[k],ring[k2],rN[k2],rN[k]], mat: ms>0.35 ? 'back' : ms<-0.35 ? 'belly' : 'flank', b:0, db:0}); }
+        F.push({v:[ring[k],ring[k2],rN[k2],rN[k]], mat: matOf(ms), b:0, db:0}); }
       rN=ring; }
     for (let k=0;k<NR;k++){ const k2=(k+1)%NR; F.push({v:[nose,rN[k2],rN[k],rN[k]], mat:'flank', b:0, db:0}); }
     // tail fan — forked, swung with the sweep; flatfish tails spread in the body plane
@@ -577,7 +586,8 @@
         if (i>=0 && !done.has(i)){ done.add(i); out[i]=as(i,MATS.fin.ramp,-1); } } }
     if (key==='mackerel'){ const k=Math.min(24,Math.floor(at.bodyLen*S/2.5));                     // bars 2.5 px apart or more
       for (let n=0;n<k;n++) for (const sd of sides){ const done=new Set();
-        for (let s=0;s<=32;s++){ const v=0.06+0.94*s/32, u=(n+0.2-v*0.6)/k; if (u<0.22 || u>0.99 || half(u)<LOOK_MIN) continue;
+        const v0=r.pale?PALE_BARS_V:0.06;
+        for (let s=0;s<=32;s++){ const v=v0+(1-v0)*s/32, u=(n+0.2-v*0.6)/k; if (u<0.22 || u>0.99 || half(u)<LOOK_MIN) continue;
           const i=see(surf(u,v,sd),u); if (i>=0 && !done.has(i)){ done.add(i); out[i]=as(i,MATS.stripe.ramp,-1); } } } }
     if (key==='bass'){ const step=Math.max(1,Math.ceil(2/(0.185*half(0.5))));                    // of the seven, those 2 px apart or more
       for (let k=0;k<7;k+=step){ const vk=0.80-0.185*k; line(0.23,0.99,()=>vk,(i)=>{ out[i]=as(i,MATS.stripe.ramp,-1); }); } }

@@ -136,7 +136,8 @@ namespace HiddenHarbours.App.Editor
                         for(float x=rect.xMin;x<=rect.xMax+.001f;x+=.2f)for(float y=rect.yMin;y<=rect.yMax+.001f;y+=.2f)bed=Mathf.Max(bed,ground.ElevationAt(new Vector2(x,y)));
                         var surface=writer.Node(row.Id+"/surface/"+name,id,Vector2.zero,root);
                         floats[name]=writer.Mono(surface,"surface","Assets/_Project/Code/World/FloatingPlatform.cs","HiddenHarbours.World","HiddenHarbours.World.FloatingPlatform",
-                            new[]{"  _id: "+id,"  _footprint:",RectFields(rect),"  _freeboardMetres: "+F(WN(WM(p,"freeboard"))),"  _draughtMetres: "+F(WN(WM(p,"draught"))),"  _bedElevation: "+F(bed)});
+                            new[]{"  _id: "+id,"  _footprint:",RectFields(rect),"  _freeboardMetres: "+F(WN(WM(p,"freeboard"))),"  _draughtMetres: "+F(WN(WM(p,"draught"))),"  _bedElevation: "+F(bed)}
+                            .Concat(UndersideAssignment.LinesFor(UndersideAssignment.NineMileCreekScene,id)).ToArray());
                     }
                     foreach(string partKey in keys.OrderBy(k=>k=="fleet_crib"))
                     {
@@ -177,7 +178,8 @@ namespace HiddenHarbours.App.Editor
                             var surface=writer.Node(row.Id+"/surface/"+id,id,Vector2.zero,root);
                             long brow=writer.Mono(surface,"brow","Assets/_Project/Code/World/GangwayPlatform.cs","HiddenHarbours.World","HiddenHarbours.World.GangwayPlatform",
                                 new[]{"  _id: "+id,"  _shoreEnd: "+Vec2Yaml(WP(WM(gang,"hinge"))),"  _floatEnd: "+Vec2Yaml(WP(WM(gang,"landing"))),
-                                    "  _halfWidthMetres: "+F(WN(WM(gang,"width"))*.5f),"  _abutmentElevation: "+F(elevation),"  _landing: {fileID: "+floats[WS(WM(gang,"floatModule"))]+"}"});
+                                    "  _halfWidthMetres: "+F(WN(WM(gang,"width"))*.5f),"  _abutmentElevation: "+F(elevation),"  _landing: {fileID: "+floats[WS(WM(gang,"floatModule"))]+"}"}
+                                    .Concat(UndersideAssignment.LinesFor(UndersideAssignment.NineMileCreekScene,id)).ToArray());
                             var poses=parts.Where(q=>WS(WM(q,"harbour"))==key&&WM(q,"gangway")!=null&&WS(WM(WM(q,"gangway"),"id"))==WS(WM(gang,"id"))).OrderBy(q=>WN(WM(WM(q,"gangway"),"step"))).ToArray();
                             long visual=writer.Mono(node,"slope","Assets/_Project/Code/World/GangwayVisual.cs","HiddenHarbours.World","HiddenHarbours.World.GangwayVisual",
                                 new[]{"  _brow: {fileID: "+brow+"}","  _rungs:"}.Concat(poses.Select(q=>"  - "+SpriteAsset(WaterSprite(def,WS(WM(q,"name")),0)).Sprite.Yaml))
@@ -193,7 +195,8 @@ namespace HiddenHarbours.App.Editor
                             if(toeRaw!=null)toe=WN(toeRaw)-2.2f;
                             Vector2 from=new Vector2(at.x,poly.Max(q=>q.y)),to=new Vector2(at.x,poly.Min(q=>q.y));
                             writer.Mono(surface,"walk","Assets/_Project/Code/App/NmcWharfWalkSurface.cs","HiddenHarbours.App","HiddenHarbours.App.NmcWharfWalkSurface",
-                                new[]{"  _id: "+row.Id+"."+name,"  _polygon:"}.Concat(poly.Select(q=>"  - "+Vec2Yaml(q))).Concat(new[]{"  _slopeFrom: "+Vec2Yaml(from),"  _slopeTo: "+Vec2Yaml(to),"  _fromElevation: "+F(elevation),"  _toElevation: "+F(toe)}));
+                                new[]{"  _id: "+row.Id+"."+name,"  _polygon:"}.Concat(poly.Select(q=>"  - "+Vec2Yaml(q))).Concat(new[]{"  _slopeFrom: "+Vec2Yaml(from),"  _slopeTo: "+Vec2Yaml(to),"  _fromElevation: "+F(elevation),"  _toElevation: "+F(toe)})
+                                    .Concat(UndersideAssignment.LinesFor(UndersideAssignment.NineMileCreekScene,name+".walk")));
                         }
                     }
                     foreach(var anchor in def.Anchors.Where(a=>a.Name.StartsWith("cleat.")||a.Name.Contains(".cleat.")))

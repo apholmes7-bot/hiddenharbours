@@ -1,0 +1,401 @@
+using System.Collections.Generic;
+using NUnit.Framework;
+using UnityEngine;
+using HiddenHarbours.Core;
+using HiddenHarbours.Player;
+using Object = UnityEngine.Object;
+
+namespace HiddenHarbours.Tests.EditMode
+{
+    /// <summary>
+    /// The surfaced fish in the water: her frame cut at her waterline on her own art grid
+    /// (<see cref="FishWaterlineCut"/>), the rows under it drawn tinted on a second renderer by the one drawer
+    /// both fishers use (<see cref="SurfacedFishDrawer"/>), a jump drawn whole, and the churn thrown while she
+    /// thrashes on the fight's own clock (<see cref="RodPresenterMath.ChurnBeat"/>), the same twice running.
+    /// </summary>
+    public class FishWaterlineCutTests
+    {
+        // The catch pass 2 cell: 64x80 at 32 px a metre, pivot (32,38) from the top = (32,42) from the bottom.
+        const int CellW = 64, CellH = 80, PivotFromBottom = 42;
+        const float Ppu = 32f;
+        const string Fish = "fish.test_thrasher";
+
+        readonly List<Object> _made = new List<Object>();
+
+        T Track<T>(T o) where T : Object { _made.Add(o); return o; }
+
+        [TearDown]
+        public void TearDown()
+        {
+            foreach (Object o in _made) if (o != null) Object.DestroyImmediate(o);
+            _made.Clear();
+        }
+
+        sealed class Facts : IFishBehaviourFacts
+        {
+            public bool Jumps(string fishId) => false;
+            public float FightJumpPeriodSeconds(string fishId) => 0f;
+            public bool TryWeightRangeKg(string fishId, out float minKg, out float maxKg)
+            { minKg = 0f; maxKg = 0f; return false; }
+        }
+
+        Sprite Cell(Texture2D tex, int column, string name)
+        {
+            Sprite s = Track(Sprite.Create(tex, new Rect(column * CellW, 0, CellW, CellH),
+                                           new Vector2(0.5f, PivotFromBottom / (float)CellH), Ppu, 0,
+                                           SpriteMeshType.FullRect));
+            s.name = name;
+            return s;
+        }
+
+        FishSpeciesVisual Species(out Sprite[] thrash)
+        {
+            const int per = 2, dirs = 8;
+            var tex = Track(new Texture2D(CellW * dirs * per, CellH));
+            thrash = new Sprite[dirs * per];
+            var dart = new Sprite[dirs * per];
+            for (int i = 0; i < thrash.Length; i++)
+            {
+                thrash[i] = Cell(tex, i, $"thrash#{i}");
+                dart[i] = Cell(tex, i, $"dart#{i}");
+            }
+            var rung = new FishRungVisual
+            {
+                Kg = 1f, ThrashFrames = thrash, ThrashFramesPerDir = per, DartFrames = dart, DartFramesPerDir = per,
+            };
+            return new FishSpeciesVisual { FishId = Fish, Rungs = new[] { rung } };
+        }
+
+        static FishingState Surface(float offX, float offY)
+            => new FishingState(FishingPhase.FightSurface, 0.3f, 0.3f, Fish, Fish, FishCategory.Pelagic,
+                                1f, 0.4f, false, 0.2f, offX, offY, 0f, 0f, 0f, 0f, 0f, 0f, 0f);
+
+        static FishFeelSettings Feel() =>
+            GameServices.Config != null ? GameServices.Config.FishFeel : FishFeelSettings.Default;
+
+        // ---- the cut itself ---------------------------------------------------------------------------
+
+        [Test]
+        public void TheCutRow_IsThePivotRowPlusTheTunedRows_InWholePixels_AndStaysInTheFrame()
+        {
+            Assert.AreEqual(42, FishWaterlineCut.CutRow(42f, 0, CellH));
+            Assert.AreEqual(45, FishWaterlineCut.CutRow(42f, 3, CellH));
+            Assert.AreEqual(40, FishWaterlineCut.CutRow(42f, -2, CellH));
+            Assert.AreEqual(42, FishWaterlineCut.CutRow(41.6f, 0, CellH), "a pivot off the grid rounds onto it");
+            Assert.AreEqual(CellH, FishWaterlineCut.CutRow(42f, 100, CellH));
+            Assert.AreEqual(0, FishWaterlineCut.CutRow(42f, -100, CellH));
+            Assert.AreEqual(0, FishWaterlineCut.CutRow(float.NaN, 0, CellH));
+            Assert.AreEqual(0, FishWaterlineCut.CutRow(42f, 0, 0));
+        }
+
+        [Test]
+        public void TheTwoHalves_PutEveryArtPixelBack_MeetOnAWholePixelRow_AndAreMadeOnce()
+        {
+            var tex = Track(new Texture2D(CellW * 2, CellH));
+            Sprite frame = Cell(tex, 1, "mackerel_thrash#3");
+
+            Assert.IsTrue(FishWaterlineCut.TrySplit(frame, 0, out Sprite above, out Sprite below));
+            Track(above);
+            Track(below);
+            Assert.AreSame(tex, above.texture, "the halves are the frame's own texture, nothing copied");
+            Assert.AreEqual(new Rect(CellW, PivotFromBottom, CellW, CellH - PivotFromBottom), above.rect);
+            Assert.AreEqual(new Rect(CellW, 0, CellW, PivotFromBottom), below.rect);
+            Assert.AreEqual(frame.pivot.x, above.pivot.x, 1e-4f);
+            Assert.AreEqual(frame.pivot.y - PivotFromBottom, above.pivot.y, 1e-4f, "the upper half keeps the frame's pivot");
+            Assert.AreEqual(frame.pivot.x, below.pivot.x, 1e-4f);
+            Assert.AreEqual(frame.pivot.y, below.pivot.y, 1e-4f, "the lower half keeps the frame's pivot");
+
+            // Drawn at one transform the halves cover the frame exactly, joined at the waterline.
+            Assert.AreEqual(frame.bounds.max.y, above.bounds.max.y, 1e-5f);
+            Assert.AreEqual(frame.bounds.min.y, below.bounds.min.y, 1e-5f);
+            Assert.AreEqual(above.bounds.min.y, below.bounds.max.y, 1e-5f);
+            Assert.AreEqual(0f, above.bounds.min.y, 1e-5f, "at a cut of 0 rows the line is her water-surface point");
+
+            Assert.AreEqual(frame.name, above.name, "the upper half answers to the frame's name");
+            Assert.AreEqual(frame.name + FishWaterlineCut.UnderSuffix, below.name);
+            Assert.AreSame(frame, FishWaterlineCut.SourceOf(above));
+            Assert.AreSame(frame, FishWaterlineCut.SourceOf(below));
+            Assert.AreSame(frame, FishWaterlineCut.SourceOf(frame), "a frame that is no half is its own source");
+
+            Assert.IsTrue(FishWaterlineCut.TrySplit(frame, 0, out Sprite again, out _));
+            Assert.AreSame(above, again, "the halves were made twice");
+
+            Assert.IsTrue(FishWaterlineCut.TrySplit(frame, 2, out Sprite higher, out Sprite higherBelow));
+            Track(higher);
+            Track(higherBelow);
+            Assert.AreEqual(2f / Ppu, higher.bounds.min.y, 1e-5f, "two rows up is two art pixels up");
+
+            Assert.IsFalse(FishWaterlineCut.TrySplit(frame, -PivotFromBottom, out _, out _), "nothing under the line");
+            Assert.IsFalse(FishWaterlineCut.TrySplit(frame, CellH, out _, out _), "nothing over the line");
+            Assert.IsFalse(FishWaterlineCut.TrySplit(null, 0, out _, out _));
+        }
+
+        // ---- the drawer both fishers use ---------------------------------------------------------------
+
+        [Test]
+        public void SheThrashesCutAtHerWaterline_TheRowsUnderItTinted_AndAHideTakesBothAway()
+        {
+            var sr = Track(new GameObject("ThrashingFish")).AddComponent<SpriteRenderer>();
+            var drawer = new SurfacedFishDrawer(sr) { ThrashChurnPeriodSecondsOverride = 0f };
+            FishingState s = Surface(1f, 2f);
+            Assert.IsTrue(drawer.Resolve(in s, new[] { Species(out Sprite[] thrash) }, null, new Facts(), 0f));
+            drawer.ResetMotion(new Vector2(1f, 2f));
+            drawer.Render(Vector2.zero, in s, 0.02f, 0f, 0f, 0.1f, 1.2f, 1f, 41, 1f, out _, out _);
+
+            FishFeelSettings feel = Feel();
+            Assume.That(feel.ThrashCutsAtWaterline, "the shipped feel cuts the thrash");
+            Assert.IsTrue(sr.enabled);
+            Sprite frame = drawer.DrawnFrame;
+            Assert.IsNotNull(frame);
+            CollectionAssert.Contains(thrash, frame, "held still she thrashes");
+            Assert.AreNotSame(frame, sr.sprite, "she was drawn whole, not cut at her waterline");
+            Assert.AreSame(frame, FishWaterlineCut.SourceOf(sr.sprite));
+
+            SpriteRenderer under = drawer.UnderwaterRenderer;
+            Assert.IsNotNull(under, "no renderer for her rows under the water");
+            Assert.IsTrue(under.enabled);
+            Assert.AreSame(frame, FishWaterlineCut.SourceOf(under.sprite));
+            Assert.AreEqual(frame.name + FishWaterlineCut.UnderSuffix, under.sprite.name);
+            Assert.AreEqual(feel.FishUnderwaterTint, under.color, "the rows under the water are not the tuned tint");
+            Assert.AreEqual(41, under.sortingOrder, "her two halves sort as one");
+            Assert.AreEqual(sr.sortingLayerID, under.sortingLayerID);
+            Assert.AreEqual(sr.transform.position, under.transform.position, "the halves are not drawn at one place");
+
+            drawer.Hide();
+            Assert.IsFalse(sr.enabled);
+            Assert.IsFalse(under.enabled, "a hide left her rows under the water on screen");
+        }
+
+        [Test]
+        public void TheChurn_ComesOncePerPeriodWhileSheThrashes_AtHer_TheSameTwiceRunning_AndNeverWhileSheDarts()
+        {
+            const float period = 0.5f, dt = 0.02f;
+            List<(float t, Vector2 at)> Run(Vector2 hold, bool darting)
+            {
+                var sr = Track(new GameObject("ChurningFish")).AddComponent<SpriteRenderer>();
+                var drawer = new SurfacedFishDrawer(sr) { ThrashChurnPeriodSecondsOverride = period };
+                FishingState s = Surface(hold.x, hold.y);
+                drawer.Resolve(in s, new[] { Species(out _) }, null, new Facts(), 0f);
+                drawer.OnSurfaced();
+                drawer.ResetMotion(hold);
+                var thrown = new List<(float, Vector2)>();
+                Vector2 at = hold;
+                for (int f = 0; f * dt < 2.99f; f++)
+                {
+                    float t = f * dt;
+                    if (darting) at = hold + new Vector2(t * 3f, 0f);   // 3 m/s: well over the dart speed
+                    FishingState now = Surface(at.x, at.y);
+                    drawer.Render(Vector2.zero, in now, dt, t, t, 0.1f, 1.2f, 1f, 30, 1f, out bool due, out Vector2 where);
+                    if (due) thrown.Add((t, where));
+                }
+                return thrown;
+            }
+
+            var hold = new Vector2(0.5f, 1.5f);
+            List<(float t, Vector2 at)> first = Run(hold, false);
+            Assert.AreEqual(5, first.Count, "one churn per whole period up to 2.99 s (0.5, 1.0, 1.5, 2.0, 2.5)");
+            for (int i = 0; i < first.Count; i++)
+            {
+                Assert.AreEqual((i + 1) * period, first[i].t, dt, $"churn {i} off its period");
+                Assert.AreEqual(hold, first[i].at, $"churn {i} was not at her");
+            }
+            CollectionAssert.AreEqual(first, Run(hold, false), "the churn is not the same twice running");
+            Assert.IsEmpty(Run(hold, true), "a darting fish churned");
+        }
+
+        [Test]
+        public void TheBreak_DrawsNoFishUnderTheColumn_AndSheIsFirstDrawnAtTheFirstOpenRing()
+        {
+            FishFeelSettings feel = Feel();
+            Assume.That(feel.ThrashChurnFirstSplashFrame > 0, "the shipped feel names a first open ring");
+            var drawer = new SurfacedFishDrawer(Track(new GameObject("Breaking")).AddComponent<SpriteRenderer>());
+            const float fps = 14f;
+            float ring = feel.ThrashChurnFirstSplashFrame / fps;
+            const int frames = 8;
+            Assert.IsTrue(drawer.InBreakColumn(0f, fps, frames), "the column at the break carries no fish");
+            Assert.IsTrue(drawer.InBreakColumn(ring - 0.01f, fps, frames), "nor does the crown");
+            Assert.IsFalse(drawer.InBreakColumn(ring, fps, frames), "she is drawn from the first open ring");
+            Assert.IsFalse(drawer.InBreakColumn(-0.1f, fps, frames), "no surface time, no break");
+            Assert.IsFalse(drawer.InBreakColumn(0f, fps, 0), "no splash sheet: no column to hide her under");
+            Assert.IsFalse(drawer.InBreakColumn(0f, 0f, frames), "a splash that does not play hides nothing");
+        }
+
+        [Test]
+        public void TheResultSplash_GoesWhereSheLeftTheWater_NeverOnTheLinesLastEnd()
+        {
+            var feet = new Vector2(10f, 5f);
+            var mouthOnHim = new Vector2(10.1f, 6.4f);
+            FishingState surfaced = Surface(0.4f, 0.8f);
+            Assert.AreEqual(feet + new Vector2(0.4f, 0.8f), RodPresenterMath.ResultSplashAt(in surfaced, feet, mouthOnHim),
+                            "out of the surface fight the splash is at her water point");
+            var deep = new FishingState(FishingPhase.FightDeep, 0.3f, 0.3f, Fish, Fish, FishCategory.Pelagic,
+                                        1f, 0.4f, false, 0.2f, 0.4f, 0.8f, 0f, 0f, 0f, 0f, 0f, 0f, 0f);
+            Assert.AreEqual(mouthOnHim, RodPresenterMath.ResultSplashAt(in deep, feet, mouthOnHim),
+                            "from any other beat the line's last end, as before");
+        }
+
+        [Test]
+        public void TheLift_CarriesHerFromTheWaterToTheTip_ThenHoldsHerThere()
+        {
+            var water = new Vector2(0f, 2f);
+            var tip = new Vector2(0.5f, 3f);
+            Assert.AreEqual(water, RodPresenterMath.LiftGrip(water, tip, 0f, 1f));
+            Assert.AreEqual(tip, RodPresenterMath.LiftGrip(water, tip, 1f, 1f));
+            Assert.AreEqual(tip, RodPresenterMath.LiftGrip(water, tip, 2.5f, 1f), "held at the tip after the lift");
+            Vector2 half = RodPresenterMath.LiftGrip(water, tip, 0.5f, 1f);
+            Assert.Greater(half.y, Vector2.Lerp(water, tip, 0.5f).y, "eased: quick off the water");
+            Assert.Less(half.y, tip.y);
+            Assert.AreEqual(tip, RodPresenterMath.LiftGrip(water, tip, 0f, 0f), "no lift time: at the tip at once");
+        }
+
+        [Test]
+        public void SheHangsFromTheLine_WholeOnTheHeldSheet_HerGripOnTheLinesEnd()
+        {
+            FishSpeciesVisual species = Species(out Sprite[] thrash);
+            var sr = Track(new GameObject("Hanging")).AddComponent<SpriteRenderer>();
+            var drawer = new SurfacedFishDrawer(sr);
+            FishingState s = Surface(0.5f, 2f);
+            drawer.Resolve(in s, new[] { species }, null, new Facts(), 0f);
+            Assert.IsFalse(drawer.RenderHanging(Vector2.one, 0f, 0.1f, 7, 2f), "no held sheet: nothing hangs");
+            Assert.IsFalse(sr.enabled);
+
+            species.Rungs[0].HeldFrames = thrash;
+            species.Rungs[0].HeldFramesPerDir = species.Rungs[0].ThrashFramesPerDir;
+            drawer.Resolve(in s, new[] { species }, null, new Facts(), 0f);
+            var grip = new Vector2(1f, 4f);
+            Assert.IsTrue(drawer.RenderHanging(grip, 0f, 0.1f, 7, 2f));
+            Assert.IsTrue(sr.enabled);
+            CollectionAssert.Contains(thrash, sr.sprite, "she is drawn from the held sheet");
+            Assert.AreSame(sr.sprite, drawer.DrawnFrame);
+            Assert.AreEqual(7, sr.sortingOrder);
+            float gripM = Feel().HangGripRowsAbovePivot / sr.sprite.pixelsPerUnit * 2f;
+            Assert.AreEqual(grip.x, sr.transform.position.x, 1e-5f);
+            Assert.AreEqual(grip.y - gripM, sr.transform.position.y, 1e-5f, "her grip, not her pivot, is on the line");
+            Assert.IsTrue(drawer.UnderwaterRenderer == null || !drawer.UnderwaterRenderer.enabled,
+                          "out of the water she is drawn whole");
+
+            // With a gill hang on the rung she hangs on that, never on the held (tail) sheet.
+            Sprite[] gill = Species(out _).Rungs[0].DartFrames;
+            species.Rungs[0].LineHangFrames = gill;
+            drawer.Resolve(in s, new[] { species }, null, new Facts(), 0f);
+            Assert.IsTrue(drawer.RenderHanging(grip, 0f, 0.1f, 7, 2f));
+            CollectionAssert.Contains(gill, sr.sprite, "she hangs on the head-up gill sheet when the rung has one");
+
+            species.Rungs[0].LineHangFrames = new Sprite[3];   // not eight rows: not a whole sheet
+            Assert.IsTrue(SurfacedFishDrawer.TryHangSheet(species.Rungs[0], out Sprite[] used, out _));
+            Assert.AreSame(thrash, used, "a broken hang sheet falls back to the held sheet");
+        }
+
+        [Test]
+        public void TheHangPoint_IsBesideHim_OnHisRodsSide_AtTheTunedHeight()
+        {
+            var feet = new Vector2(10f, 5f);
+            Assert.AreEqual(new Vector2(11f, 6.5f), RodPresenterMath.HangPoint(feet, new Vector2(10.4f, 8f), 1f, 1.5f));
+            Assert.AreEqual(new Vector2(9f, 6.5f), RodPresenterMath.HangPoint(feet, new Vector2(9.6f, 8f), 1f, 1.5f),
+                            "his rod tip to his left: she hangs on his left");
+            Assert.AreEqual(new Vector2(11f, 6.5f), RodPresenterMath.HangPoint(feet, new Vector2(10f, 8f), 1f, 1.5f),
+                            "a rod straight over him: the right");
+            FishFeelSettings feel = Feel();
+            Vector2 hang = RodPresenterMath.HangPoint(feet, new Vector2(10.4f, 8f), feel.LandHangSideM, feel.LandHangHeightM);
+            Assert.IsFalse(RodPresenterMath.InFisherFigure(hang, feet, feel.FisherFigureHalfWidthM, feel.FisherFigureHeightM),
+                           "the shipped hang point is on his figure");
+        }
+
+        [Test]
+        public void TheChurn_PlaysOnlyTheOpenRings_AndAJumpsSplashPlaysWhole()
+        {
+            FishFeelSettings feel = Feel();
+            Assume.That(feel.ThrashChurnFirstSplashFrame > 0, "the shipped feel starts the churn part-way");
+            var sr = Track(new GameObject("ChurningFish")).AddComponent<SpriteRenderer>();
+            var drawer = new SurfacedFishDrawer(sr) { ThrashChurnPeriodSecondsOverride = 0.5f };
+            var hold = new Vector2(0.5f, 3f);
+            FishingState s = Surface(hold.x, hold.y);
+            drawer.Resolve(in s, new[] { Species(out _) }, null, new Facts(), 0f);
+            drawer.OnSurfaced();
+            drawer.ResetMotion(hold);
+            Assert.AreEqual(0, drawer.SplashFirstFrame, "no splash yet, so the whole flipbook");
+            bool churned = false;
+            for (int f = 0; f < 40 && !churned; f++)
+            {
+                float t = f * 0.02f;
+                drawer.Render(Vector2.zero, in s, 0.02f, t, t, 0.1f, 1.2f, 1f, 30, 1f, out bool due, out _);
+                if (!due) continue;
+                churned = true;
+                Assert.IsTrue(drawer.LastSplashIsChurn);
+                Assert.AreEqual(feel.ThrashChurnFirstSplashFrame, drawer.SplashFirstFrame);
+            }
+            Assert.IsTrue(churned, "she never churned");
+
+            // The flipbook started part-way plays from that frame to its end, then stops.
+            const int count = 8, first = 5;
+            var tex = Track(new Texture2D(8, 8));
+            var frames = new Sprite[count];
+            for (int i = 0; i < count; i++) frames[i] = Track(Sprite.Create(tex, new Rect(0, 0, 8, 8), Vector2.zero, 32f));
+            var splashSr = Track(new GameObject("Splash")).AddComponent<SpriteRenderer>();
+            var splash = new RodSplashFlourish(splashSr);
+            Assert.IsTrue(splash.Begin(Vector2.zero, frames, first));
+            splash.Render(0f, frames, 10f, false, 0);
+            Assert.AreSame(frames[first], splashSr.sprite, "the churn did not open on its first ring");
+            splash.Render(0.25f, frames, 10f, false, 0);
+            Assert.AreSame(frames[first + 2], splashSr.sprite);
+            splash.Render(0.35f, frames, 10f, false, 0);
+            Assert.IsFalse(splash.Active, "the churn ran past the end of the flipbook");
+            Assert.IsTrue(splash.Begin(Vector2.zero, frames));
+            splash.Render(0f, frames, 10f, false, 0);
+            Assert.AreSame(frames[0], splashSr.sprite, "a whole splash does not open on its first frame");
+            Assert.IsTrue(splash.Begin(Vector2.zero, frames, 99));
+            splash.Render(0f, frames, 10f, false, 0);
+            Assert.AreSame(frames[count - 1], splashSr.sprite, "a first frame past the end is kept inside the flipbook");
+        }
+
+        [Test]
+        public void ADartByTheFisher_IsDrawnThrashingAtTheSurface_SoTheLineToHerMouthIsInSight()
+        {
+            FishFeelSettings feel = Feel();
+            Assume.That(feel.FisherFigureHalfWidthM > 0f && feel.FisherFigureHeightM > 0f, "the rule is on");
+            const float dt = 0.02f, speed = 3f;   // well over the 1.2 m/s dart speed
+            (bool held, Sprite frame, Sprite[] thrash, Sprite[] dart) Run(float y)
+            {
+                var sr = Track(new GameObject("DartingFish")).AddComponent<SpriteRenderer>();
+                var drawer = new SurfacedFishDrawer(sr) { ThrashChurnPeriodSecondsOverride = 0f };
+                FishSpeciesVisual sp = Species(out Sprite[] thrash);
+                var start = new Vector2(-0.3f, y);
+                FishingState s0 = Surface(start.x, start.y);
+                drawer.Resolve(in s0, new[] { sp }, null, new Facts(), 0f);
+                drawer.ResetMotion(start);
+                for (int f = 1; f <= 5; f++)
+                {
+                    FishingState s = Surface(start.x + speed * dt * f, y);
+                    drawer.Render(Vector2.zero, in s, dt, f * dt, f * dt, 0.1f, 1.2f, 1f, 30, 1f, out _, out _);
+                }
+                return (drawer.DartHeldAtSurface, drawer.DrawnFrame, thrash, sp.Rungs[0].DartFrames);
+            }
+
+            var near = Run(feel.FisherFigureHeightM * 0.5f);
+            Assert.IsTrue(near.held, "a dart inside his figure was not held at the surface");
+            CollectionAssert.Contains(near.thrash, near.frame, "inside his figure she was not drawn thrashing");
+
+            var far = Run(feel.FisherFigureHeightM + 1f);
+            Assert.IsFalse(far.held);
+            CollectionAssert.Contains(far.dart, far.frame, "clear of him she did not dart");
+
+            Assert.IsTrue(RodPresenterMath.InFisherFigure(new Vector2(0.2f, 1f), Vector2.zero, 0.35f, 1.7f));
+            Assert.IsFalse(RodPresenterMath.InFisherFigure(new Vector2(0.4f, 1f), Vector2.zero, 0.35f, 1.7f), "beside him");
+            Assert.IsFalse(RodPresenterMath.InFisherFigure(new Vector2(0f, -0.1f), Vector2.zero, 0.35f, 1.7f), "short of his feet");
+            Assert.IsFalse(RodPresenterMath.InFisherFigure(new Vector2(0f, 1.8f), Vector2.zero, 0.35f, 1.7f), "over his head");
+            Assert.IsFalse(RodPresenterMath.InFisherFigure(new Vector2(0f, 1f), Vector2.zero, 0f, 1.7f), "off at a size of 0");
+            Assert.IsFalse(RodPresenterMath.InFisherFigure(new Vector2(float.NaN, 1f), Vector2.zero, 0.35f, 1.7f));
+        }
+
+        [Test]
+        public void ChurnBeat_CountsWholePeriods_AndIsZeroWhenOff()
+        {
+            Assert.AreEqual(0, RodPresenterMath.ChurnBeat(0.49, 0.5f));
+            Assert.AreEqual(1, RodPresenterMath.ChurnBeat(0.5, 0.5f));
+            Assert.AreEqual(5, RodPresenterMath.ChurnBeat(2.7, 0.5f));
+            Assert.AreEqual(0, RodPresenterMath.ChurnBeat(10.0, 0f), "a period of 0 is off");
+            Assert.AreEqual(0, RodPresenterMath.ChurnBeat(-1.0, 0.5f));
+            Assert.AreEqual(0, RodPresenterMath.ChurnBeat(double.NaN, 0.5f));
+        }
+    }
+}

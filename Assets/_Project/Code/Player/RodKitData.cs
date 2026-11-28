@@ -116,6 +116,11 @@ namespace HiddenHarbours.Player
         public Sprite[] HeldFrames;     // 8 dirs × n — gill or tail grip; hand count comes from weight
         public int HeldFramesPerDir;
 
+        [Tooltip("8 dirs × n, n = length / 8 — the fish hanging head-up by the gill, as she hangs from " +
+                 "the line once she is out of the water. Every rung bakes the gill rest whatever its hand " +
+                 "count, so a one-hand rung (held by the tail) still hangs head-up. Empty = HeldFrames.")]
+        public Sprite[] LineHangFrames;
+
         // ---- catch pass 2's two new water anims -------------------------------------------------
         //
         // Both are SURFACE beats and both were missing from pass 1 entirely, which is why the fight
@@ -232,5 +237,50 @@ namespace HiddenHarbours.Player
             float u = Mathf.Max(1e-3f, ppu);
             return new Vector2(dx / u, -dy / u);
         }
+
+        /// <summary>
+        /// <b>The drawn texel a published anchor belongs to.</b> The texel at cell pixel
+        /// (<paramref name="x"/>, <paramref name="y"/>) when it is drawn, else the nearest drawn texel within
+        /// <paramref name="radius"/> (Euclidean; a tie goes to the one farther from the pivot, the lip rather
+        /// than the cheek). Cell coords are top-left origin, y down. False when nothing within the radius is
+        /// drawn (the caller keeps the published point and says so).
+        ///
+        /// <para>Why it exists: the rig publishes its mouth anchors from the skeleton, before the outline and
+        /// the pixel pass, so on most frames they land 1 to 6 px off the fish that was actually drawn, and a
+        /// line pinned there ends in open water. The importer snaps every frame's anchor onto that frame's
+        /// own art. Pure, so the rule is pinned without a texture.</para>
+        /// </summary>
+        public static bool TrySnapToDrawn(Func<int, int, bool> drawn, int cellW, int cellH, int x, int y,
+                                          float pivotX, float pivotY, int radius, out int snappedX, out int snappedY)
+        {
+            snappedX = x;
+            snappedY = y;
+            if (drawn == null || cellW <= 0 || cellH <= 0) return false;
+            int best = int.MaxValue;
+            float bestFar = float.MinValue;
+            bool found = false;
+            for (int yy = Mathf.Max(0, y - radius); yy <= Mathf.Min(cellH - 1, y + radius); yy++)
+            for (int xx = Mathf.Max(0, x - radius); xx <= Mathf.Min(cellW - 1, x + radius); xx++)
+            {
+                int d2 = (xx - x) * (xx - x) + (yy - y) * (yy - y);
+                if (d2 > radius * radius || d2 > best || !drawn(xx, yy)) continue;
+                float fx = xx + 0.5f - pivotX, fy = yy + 0.5f - pivotY;
+                float far = fx * fx + fy * fy;
+                if (d2 < best || far > bestFar)
+                {
+                    best = d2;
+                    bestFar = far;
+                    snappedX = xx;
+                    snappedY = yy;
+                    found = true;
+                }
+            }
+            return found;
+        }
+
+        /// <summary>The CENTRE of cell texel (<paramref name="x"/>, <paramref name="y"/>) as a world-metre offset
+        /// from a pivot at cell pixel (<paramref name="pivotX"/>, <paramref name="pivotY"/>), y up.</summary>
+        public static Vector2 TexelCentreToPivotWorld(int x, int y, float pivotX, float pivotY, float ppu)
+            => CellPxToPivotWorld(x + 0.5f, y + 0.5f, pivotX, pivotY, ppu);
     }
 }

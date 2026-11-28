@@ -48,15 +48,34 @@ Shader "Hidden/HiddenHarbours/CalmMirror"
             float4 _CalmMirrorTexel;    // xy 1/size, z art px per metre, w roughness 0..1
             float4 _CalmMirrorReach;    // x thin start px, y gone px, z min stand px, w ripple band (art px)
             float4 _DayNightTint;
+            // THE AXIS (owner ruling 2026-11-26, "no mixels"): the flip mirrors about the base pixel's lower EDGE,
+            // so screen row y below the base shows row y + 2 * basePx - 1 and both screen rows of one art pixel
+            // read one art pixel. About the base pixel's CENTRE (the old 2 * basePx) the two rows of an art pixel
+            // came from two different art pixels at every even scale: a half-art-pixel mixel under every face.
+            // A global left unset reads 0, the edge axis; 1 is the old centre axis, kept only as the A/B.
+            float _HHCalmMirrorCentreAxis;
             TEXTURE2D(_HHReflectTex);
 
             // Decks (CalmMirror.MaxTops must match).
             #define HH_MAX_TOPS 24
             float4 _CalmMirrorTopA[HH_MAX_TOPS];   // corners 0, 1 of a deck top as drawn (world xy)
             float4 _CalmMirrorTopB[HH_MAX_TOPS];   // corners 2, 3
-            float4 _CalmMirrorTopH[HH_MAX_TOPS];   // x: the face under the front edge, height on screen (world units)
+            float4 _CalmMirrorTopH[HH_MAX_TOPS];   // x: the face under the front edge, height on screen (world units); y fascia rows, z 1 = has an underside
             float4 _CalmMirrorTops;                // x count, y snap (world), z feather (world), w face band share
             float4 _CalmMirrorBand;                // rgb: the face band colour, before the day/night tint
+            // Undersides (UndersideDef): one sheet, each quad's cell in texels (x, y, w, h); _CalmMirrorUnder.x the share laid.
+            float4 _CalmMirrorTopU[HH_MAX_TOPS];
+            float4 _CalmMirrorUnder;
+            TEXTURE2D(_CalmMirrorUnderTex);
+            // UndersideMath.Texel: columns wrap across the cell, the fascia rows are laid once, the rows above repeat.
+            int2 UnderTexel(int i, float artX, float rowFromFar)
+            {
+                float4 cell = _CalmMirrorTopU[i];
+                float f = _CalmMirrorTopH[i].y, x = artX - floor(artX / max(cell.z, 1.0)) * max(cell.z, 1.0);
+                float r = max(rowFromFar, 0.0), p = max(cell.w - f, 1.0);
+                if (r >= f) r = f + (r - f) - floor((r - f) / p) * p;
+                return int2((int)(cell.x + x), (int)(cell.y + r));
+            }
 
             // The span [lo, hi] of deck quad i down the column at world x; false where the column misses it.
             bool TopColumn(int i, float x, out float lo, out float hi)
@@ -184,13 +203,14 @@ Shader "Hidden/HiddenHarbours/CalmMirror"
                     bool tall = true;
                     [loop] for (float k = 1.0; k <= _CalmMirrorReach.z; k += 1.0)
                         if (!IsStanding(Tap(float2(uv.x, uv.y + (basePx + k * pxPerArt.y) * texY)).a)) { tall = false; break; }
+                    float axisEdge = 1.0 - saturate(_HHCalmMirrorCentreAxis);   // 1 = mirror about the base's lower edge
                     float2 s = float2(uv.x + dxArt * pxPerArt.x * _CalmMirrorTexel.x,
-                                      uv.y + (2.0 * basePx + dyArt * pxPerArt.y) * texY);
+                                      uv.y + (2.0 * basePx - axisEdge + dyArt * pxPerArt.y) * texY);
                     if (tall && !IsMesh(baseA))
                     {
                         // 3) DECKS: which deck's face is this base (the nearest front edge above it), and does the
                         //    plain flip's sample reach into or past any deck top above the base?
-                        float baseY = world.y + basePx * mPerPx;
+                        float baseY = world.y + (basePx - 0.5 * axisEdge) * mPerPx;   // the base's lower edge
                         float flipY = _CalmMirrorRect.y + s.y * _CalmMirrorRect.w;
                         float snap = _CalmMirrorTops.y;
                         int capI = -1; float capLo = 0.0, capWl = 0.0;
@@ -200,7 +220,10 @@ Shader "Hidden/HiddenHarbours/CalmMirror"
                             float lo, hi;
                             if (!TopColumn(ti, world.x, lo, hi)) continue;
                             float wl = lo - _CalmMirrorTopH[ti].x;
-                            if (baseY >= wl - snap && baseY <= hi && (capI < 0 || lo < capLo)) { capI = ti; capLo = lo; capWl = wl; }
+                            // A base below the waterline inside the face's own band is a hanger cut by the water (a
+                            // tyre string, a ladder): mirror the face about the real waterline, never about its tip.
+                            bool hung = world.y < wl - snap && baseY >= wl - _CalmMirrorTopH[ti].x;
+                            if ((baseY >= wl - snap || hung) && baseY <= hi && (capI < 0 || lo < capLo)) { capI = ti; capLo = lo; capWl = wl; }
                             if (lo <= flipY && hi >= baseY) pastTop = true;
                         }
                         float reachD = basePx;
@@ -221,6 +244,13 @@ Shader "Hidden/HiddenHarbours/CalmMirror"
                                 bool topOnly = baseY >= capLo - snap;
                                 float3 col = art ? m.rgb : _CalmMirrorBand.rgb * tint;
                                 float share = art ? StandShare(m.a) : (topOnly ? _CalmMirrorTops.w : 0.0);
+                                if (!art && _CalmMirrorTopH[capI].z > 0.5 && _CalmMirrorUnder.x > 0.0)
+                                {
+                                    // The underside seen from below, on the world's art grid: its far rows the edge beam.
+                                    int2 ut = UnderTexel(capI, floor((_CalmMirrorRect.x + fs.x * _CalmMirrorRect.z) * ppm), floor((faceTop - below) * ppm));
+                                    col = LOAD_TEXTURE2D(_CalmMirrorUnderTex, ut).rgb * tint;
+                                    share = _CalmMirrorUnder.x;
+                                }
                                 float feather = saturate((faceTop - below) / max(_CalmMirrorTops.z, 1e-4));
                                 float reach = 1.0 - smoothstep(_CalmMirrorReach.x, max(_CalmMirrorReach.y, _CalmMirrorReach.x + 1.0), below / mPerPx);
                                 float w = saturate(strength * water * share * (1.0 - brk) * reach * feather);

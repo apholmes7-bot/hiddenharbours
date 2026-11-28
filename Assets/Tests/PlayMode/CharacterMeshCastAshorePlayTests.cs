@@ -193,17 +193,25 @@ namespace HiddenHarbours.Tests.PlayMode
                         if (mine.Count > 0) continue;
 
                         CharacterSkinDef skin = villager.Visual.Skin;
-                        IsoCharacterFigureRenderer figure = villager.GetComponent<CharacterFigurePresenter>().AshoreFigure;
+                        CharacterFigurePresenter presenter = villager.GetComponent<CharacterFigurePresenter>();
+                        IsoCharacterFigureRenderer figure = presenter.AshoreFigure;
                         bool resolves = CharacterSkinStateMap.Resolve(skin, villager.Stance, villager.Gait,
                                                                       out string wanted, out bool fellBack);
+                        // Standing at the plain idle she may be part way through an idle fidget one-shot: her
+                        // mesh then shows that fidget's clip in place of the idle, by design.
+                        IdleFidgetMoment fidget = presenter.FigureLife.Fidget;
+                        bool fidgeting = resolves && IdleFidgetSchedule.IsStandingIdle(wanted) && fidget.Active
+                                         && fidget.Def.Kind == IdleFidgetDef.Channel.Clip
+                                         && figure.DrawnStateKey == fidget.Def.ClipKey;
                         if (!resolves)
                             problems.Add($"{Who(villager)} held at a {gait} speed: her sprite draws {villager.Gait}, " +
                                          $"'{skin.Id}' resolves no state for it, and she still drew as her mesh");
-                        else if (figure.DrawnStateKey != wanted)
+                        else if (figure.DrawnStateKey != wanted && !fidgeting)
                             problems.Add($"{Who(villager)} held at a {gait} speed: her sprite draws {villager.Gait}, " +
                                          $"'{skin.Id}' maps it to '{wanted}', and her mesh shows '{figure.DrawnStateKey}'");
                         drawn.Add($"{villager.name} at a {gait} speed: sprite {villager.Gait}, mesh " +
-                                  $"'{figure.DrawnStateKey}'{(fellBack ? " (the map's fallback: the skin has no clip for it)" : "")}");
+                                  $"'{figure.DrawnStateKey}'{(fellBack ? " (the map's fallback: the skin has no clip for it)" : "")}" +
+                                  $"{(fidgeting ? " (an idle fidget over '" + wanted + "')" : "")}");
                     }
                 }
             }

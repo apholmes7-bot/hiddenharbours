@@ -2,9 +2,9 @@
  "schema": "hidden-harbours/character-golden@3",
  "rig": "characterIsoRig10.js",
  "revision": "10.3",
- "derivedFromRigSha256": "ad563075475740cea1258de68d05c184f2fc136491357bc22988a10d810413f3",
- "posesDerivedFromRigSha256": "f30abc9af074356041dfe43f9c8cb50b032faafb357dd31d15836a862ee1ab98",
- "checksSha256": "9649a0f01b96f400b7c7265d3d90e4cc4a260aded69cbbcc2591f964959bf5fe",
+ "derivedFromRigSha256": "35f9151cd2e2f6a89442e78a2d58813698610a6e8763c1cc12eef8caff2792c8",
+ "posesDerivedFromRigSha256": "6a8499d7ff9457762dd54e74792508cf2887af16ad2b297c2ff15094fd052269",
+ "checksSha256": "49bd0b635c783e5f3678cd765ce3650682e1fba97b0ddb2cc025371c8c63f3e1",
  "authoring": "CharacterIso10.CHECKS run to the end on every CAST build (tools/check.cjs; the review page steps the same generators). Residuals print with toFixed(7).",
  "summary": {
   "builds": 30,
@@ -24,8 +24,8 @@
     "faces": 565,
     "tris": 1165,
     "verts": 2295,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 155304
    },
    "checks": [
@@ -34,7 +34,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -43,7 +43,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (mountDown f4 foot_L). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (mountDown f4 foot_L). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -59,7 +59,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board f7; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board f7; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -75,7 +75,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -91,7 +91,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -115,7 +115,7 @@
      "gate": true,
      "pass": true,
      "value": "3 px spare",
-     "detail": "2992 renders. Tightest: 3 px (swim f0 E). Swim, sleep and tread, gated with the rest on every build: 3 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 3 px (swim f0 E). Swim, sleep and tread, gated with the rest on every build: 3 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -171,14 +171,14 @@
      "gate": false,
      "pass": false,
      "value": "1165 tris",
-     "detail": "1165 tris (565 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1176 KB of clip JSON against 2,155 KB for 35 · bind mesh 152 KB against 235 KB."
+     "detail": "1165 tris (565 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1283 KB of clip JSON against 2,155 KB for 35 · bind mesh 152 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 1.195 m/s, run 3.287 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.644; ladder 0.545). No section missing."
     },
     {
@@ -201,8 +201,8 @@
     "faces": 547,
     "tris": 1154,
     "verts": 2248,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 161954
    },
    "checks": [
@@ -211,7 +211,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -220,7 +220,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (stagger f7 foot_R). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (stagger f7 foot_R). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -236,7 +236,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board f7; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board f7; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -252,7 +252,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -268,7 +268,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -292,7 +292,7 @@
      "gate": true,
      "pass": true,
      "value": "4 px spare",
-     "detail": "2992 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 5 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 5 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -348,14 +348,14 @@
      "gate": false,
      "pass": false,
      "value": "1154 tris",
-     "detail": "1154 tris (547 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1199 KB of clip JSON against 2,155 KB for 35 · bind mesh 158 KB against 235 KB."
+     "detail": "1154 tris (547 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1308 KB of clip JSON against 2,155 KB for 35 · bind mesh 158 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 1.123 m/s, run 3.09 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.545; ladder 0.545). No section missing."
     },
     {
@@ -378,8 +378,8 @@
     "faces": 713,
     "tris": 1426,
     "verts": 2852,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 208377
    },
    "checks": [
@@ -388,7 +388,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -397,7 +397,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (walk f3 foot_R). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (walk f3 foot_R). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -413,7 +413,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at boardDown f1; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at boardDown f1; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -429,7 +429,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -445,7 +445,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -460,8 +460,8 @@
      "title": "No limb teleports: every vertex moves ≤ 0.35 m between frames (scaled by limb length)",
      "gate": true,
      "pass": true,
-     "value": "0.409 m",
-     "detail": "Largest single-frame vertex move 0.409 m (swim f4→5), gate 0.512 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). The mounts at the fitted saddle: 0.257 m (mountDown f3→4). Reported: the mounts at the default saddle, 0.696 m (mountDown f7→8). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.565 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.404 m (a 0.55 m drop in six frames, 570 ms)."
+     "value": "0.475 m",
+     "detail": "Largest single-frame vertex move 0.475 m (idleScratch f4→5), gate 0.512 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). The mounts at the fitted saddle: 0.257 m (mountDown f3→4). Reported: the mounts at the default saddle, 0.696 m (mountDown f7→8). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.565 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.404 m (a 0.55 m drop in six frames, 570 ms)."
     },
     {
      "id": "cell",
@@ -469,7 +469,7 @@
      "gate": true,
      "pass": true,
      "value": "4 px spare",
-     "detail": "2992 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 4 px (sleep f2 S). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 4 px (sleep f2 S). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -525,14 +525,14 @@
      "gate": false,
      "pass": false,
      "value": "1426 tris",
-     "detail": "1426 tris (713 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1210 KB of clip JSON against 2,155 KB for 35 · bind mesh 203 KB against 235 KB."
+     "detail": "1426 tris (713 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1321 KB of clip JSON against 2,155 KB for 35 · bind mesh 203 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 1.064 m/s, run 2.928 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.464; ladder 0.545). No section missing."
     },
     {
@@ -555,8 +555,8 @@
     "faces": 624,
     "tris": 1248,
     "verts": 2496,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 181694
    },
    "checks": [
@@ -565,7 +565,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -574,7 +574,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (board f5 foot_R). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (board f5 foot_R). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -590,7 +590,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board+pot f7; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board+pot f7; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -606,7 +606,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -622,7 +622,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -637,8 +637,8 @@
      "title": "No limb teleports: every vertex moves ≤ 0.35 m between frames (scaled by limb length)",
      "gate": true,
      "pass": true,
-     "value": "0.375 m",
-     "detail": "Largest single-frame vertex move 0.375 m (board f1→2), gate 0.491 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). Cloth (skirt, apron) reported: 0.293 m (reach f4→5). The mounts at the fitted saddle: 0.260 m (mountDown f11→12). Reported: the mounts at the default saddle, 0.700 m (mountDown f7→8). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.521 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.400 m (a 0.55 m drop in six frames, 570 ms)."
+     "value": "0.399 m",
+     "detail": "Largest single-frame vertex move 0.399 m (idleScratch f4→5), gate 0.491 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). Cloth (skirt, apron) reported: 0.293 m (reach f4→5). The mounts at the fitted saddle: 0.260 m (mountDown f11→12). Reported: the mounts at the default saddle, 0.700 m (mountDown f7→8). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.521 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.400 m (a 0.55 m drop in six frames, 570 ms)."
     },
     {
      "id": "cell",
@@ -646,7 +646,7 @@
      "gate": true,
      "pass": true,
      "value": "5 px spare",
-     "detail": "2992 renders. Tightest: 5 px (dig f0 SW). Swim, sleep and tread, gated with the rest on every build: 5 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 5 px (dig f0 SW). Swim, sleep and tread, gated with the rest on every build: 5 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -702,14 +702,14 @@
      "gate": false,
      "pass": false,
      "value": "1248 tris",
-     "detail": "1248 tris (624 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1209 KB of clip JSON against 2,155 KB for 35 · bind mesh 177 KB against 235 KB."
+     "detail": "1248 tris (624 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1319 KB of clip JSON against 2,155 KB for 35 · bind mesh 177 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 1.019 m/s, run 2.803 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.402; ladder 0.545). No section missing."
     },
     {
@@ -732,8 +732,8 @@
     "faces": 519,
     "tris": 1081,
     "verts": 2119,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 153768
    },
    "checks": [
@@ -742,7 +742,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -751,7 +751,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (mountCabDown f2 foot_R). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (mountCabDown f2 foot_R). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -767,7 +767,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at mountCabDown f6; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at mountCabDown f6; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -783,7 +783,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -799,7 +799,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -814,8 +814,8 @@
      "title": "No limb teleports: every vertex moves ≤ 0.35 m between frames (scaled by limb length)",
      "gate": true,
      "pass": true,
-     "value": "0.508 m",
-     "detail": "Largest single-frame vertex move 0.508 m (swim f4→5), gate 0.613 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). The mounts at the fitted saddle: 0.293 m (mountDown f3→4). Reported: the mounts at the default saddle, 0.680 m (mountDown f7→8). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.639 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.404 m (a 0.55 m drop in six frames, 570 ms)."
+     "value": "0.537 m",
+     "detail": "Largest single-frame vertex move 0.537 m (idleScratch f4→5), gate 0.613 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). The mounts at the fitted saddle: 0.293 m (mountDown f3→4). Reported: the mounts at the default saddle, 0.680 m (mountDown f7→8). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.639 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.404 m (a 0.55 m drop in six frames, 570 ms)."
     },
     {
      "id": "cell",
@@ -823,7 +823,7 @@
      "gate": true,
      "pass": true,
      "value": "2 px spare",
-     "detail": "2992 renders. Tightest: 2 px (swim f0 E). Swim, sleep and tread, gated with the rest on every build: 2 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 2 px (swim f0 E). Swim, sleep and tread, gated with the rest on every build: 2 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -879,14 +879,14 @@
      "gate": false,
      "pass": false,
      "value": "1081 tris",
-     "detail": "1081 tris (519 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1205 KB of clip JSON against 2,155 KB for 35 · bind mesh 150 KB against 235 KB."
+     "detail": "1081 tris (519 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1315 KB of clip JSON against 2,155 KB for 35 · bind mesh 150 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 1.274 m/s, run 3.504 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.752; ladder 0.545). No section missing."
     },
     {
@@ -909,8 +909,8 @@
     "faces": 562,
     "tris": 1145,
     "verts": 2269,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 164465
    },
    "checks": [
@@ -919,7 +919,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -928,7 +928,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (dig f5 foot_R). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (dig f5 foot_R). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -944,7 +944,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board+buckets f6; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board+buckets f6; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -960,7 +960,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -976,7 +976,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -1000,7 +1000,7 @@
      "gate": true,
      "pass": true,
      "value": "4 px spare",
-     "detail": "2992 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 5 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 5 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -1056,14 +1056,14 @@
      "gate": false,
      "pass": false,
      "value": "1145 tris",
-     "detail": "1145 tris (562 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1207 KB of clip JSON against 2,155 KB for 35 · bind mesh 161 KB against 235 KB."
+     "detail": "1145 tris (562 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1317 KB of clip JSON against 2,155 KB for 35 · bind mesh 161 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 1.106 m/s, run 3.042 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.521; ladder 0.545). No section missing."
     },
     {
@@ -1086,8 +1086,8 @@
     "faces": 546,
     "tris": 1145,
     "verts": 2237,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 161190
    },
    "checks": [
@@ -1096,7 +1096,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -1105,7 +1105,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (helm_idle f1 foot_R). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (helm_idle f1 foot_R). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -1121,7 +1121,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at boardDown+pot f1; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at boardDown+pot f1; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -1137,7 +1137,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -1153,7 +1153,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -1177,7 +1177,7 @@
      "gate": true,
      "pass": true,
      "value": "5 px spare",
-     "detail": "2992 renders. Tightest: 5 px (run f0 S). Swim, sleep and tread, gated with the rest on every build: 6 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 5 px (run f0 S). Swim, sleep and tread, gated with the rest on every build: 6 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -1233,14 +1233,14 @@
      "gate": false,
      "pass": false,
      "value": "1145 tris",
-     "detail": "1145 tris (546 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1205 KB of clip JSON against 2,155 KB for 35 · bind mesh 157 KB against 235 KB."
+     "detail": "1145 tris (546 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1315 KB of clip JSON against 2,155 KB for 35 · bind mesh 157 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 1.017 m/s, run 2.798 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.399; ladder 0.545). No section missing."
     },
     {
@@ -1263,8 +1263,8 @@
     "faces": 534,
     "tris": 1107,
     "verts": 2175,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 156969
    },
    "checks": [
@@ -1273,7 +1273,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -1282,7 +1282,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (mountDown f6 foot_R). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (mountDown f6 foot_R). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -1298,7 +1298,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at land f9; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at land f9; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -1314,7 +1314,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -1330,7 +1330,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -1354,7 +1354,7 @@
      "gate": true,
      "pass": true,
      "value": "4 px spare",
-     "detail": "2992 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 4 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 4 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -1410,14 +1410,14 @@
      "gate": false,
      "pass": false,
      "value": "1107 tris",
-     "detail": "1107 tris (534 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1205 KB of clip JSON against 2,155 KB for 35 · bind mesh 153 KB against 235 KB."
+     "detail": "1107 tris (534 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1316 KB of clip JSON against 2,155 KB for 35 · bind mesh 153 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 1.138 m/s, run 3.131 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.565; ladder 0.545). No section missing."
     },
     {
@@ -1440,8 +1440,8 @@
     "faces": 571,
     "tris": 1148,
     "verts": 2290,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 167144
    },
    "checks": [
@@ -1450,7 +1450,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -1459,7 +1459,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (walk f0 hand_R). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (walk f0 hand_R). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -1475,7 +1475,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at astrideStand f1; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at astrideStand f1; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -1491,7 +1491,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -1507,7 +1507,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -1522,8 +1522,8 @@
      "title": "No limb teleports: every vertex moves ≤ 0.35 m between frames (scaled by limb length)",
      "gate": true,
      "pass": true,
-     "value": "0.322 m",
-     "detail": "Largest single-frame vertex move 0.322 m (swim f2→3), gate 0.358 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). The mounts at the fitted saddle: 0.270 m (mountDown f5→6), reported on a build smaller than the Fisher. Reported: the mounts at the default saddle and the world-contract clips (rail, bench, cab) on this build smaller than the Fisher, 0.564 m (mountCab f6→7). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.426 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.399 m (a 0.55 m drop in six frames, 570 ms)."
+     "value": "0.355 m",
+     "detail": "Largest single-frame vertex move 0.355 m (idleScratch f4→5), gate 0.358 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). The mounts at the fitted saddle: 0.270 m (mountDown f5→6), reported on a build smaller than the Fisher. Reported: the mounts at the default saddle and the world-contract clips (rail, bench, cab) on this build smaller than the Fisher, 0.564 m (mountCab f6→7). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.426 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.399 m (a 0.55 m drop in six frames, 570 ms)."
     },
     {
      "id": "cell",
@@ -1531,7 +1531,7 @@
      "gate": true,
      "pass": true,
      "value": "5 px spare",
-     "detail": "2992 renders. Tightest: 5 px (drive f0 S). Swim, sleep and tread, gated with the rest on every build: 6 px (tread f4 SE). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 5 px (drive f0 S). Swim, sleep and tread, gated with the rest on every build: 6 px (tread f4 SE). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -1587,14 +1587,14 @@
      "gate": false,
      "pass": false,
      "value": "1148 tris",
-     "detail": "1148 tris (571 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1202 KB of clip JSON against 2,155 KB for 35 · bind mesh 163 KB against 235 KB."
+     "detail": "1148 tris (571 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1312 KB of clip JSON against 2,155 KB for 35 · bind mesh 163 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 0.743 m/s, run 2.043 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.022; ladder 0.545). No section missing."
     },
     {
@@ -1617,8 +1617,8 @@
     "faces": 554,
     "tris": 1146,
     "verts": 2254,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 163365
    },
    "checks": [
@@ -1627,7 +1627,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -1636,7 +1636,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (board f6 foot_R). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (board f6 foot_R). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -1652,7 +1652,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at astride f2; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at astride f2; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -1668,7 +1668,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -1684,7 +1684,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -1699,8 +1699,8 @@
      "title": "No limb teleports: every vertex moves ≤ 0.35 m between frames (scaled by limb length)",
      "gate": true,
      "pass": true,
-     "value": "0.320 m",
-     "detail": "Largest single-frame vertex move 0.320 m (swim f2→3), gate 0.359 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). The mounts at the fitted saddle: 0.264 m (mountDown f5→6), reported on a build smaller than the Fisher. Reported: the mounts at the default saddle and the world-contract clips (rail, bench, cab) on this build smaller than the Fisher, 0.562 m (mountCab f6→7). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.426 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.398 m (a 0.55 m drop in six frames, 570 ms)."
+     "value": "0.349 m",
+     "detail": "Largest single-frame vertex move 0.349 m (idleScratch f4→5), gate 0.359 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). The mounts at the fitted saddle: 0.264 m (mountDown f5→6), reported on a build smaller than the Fisher. Reported: the mounts at the default saddle and the world-contract clips (rail, bench, cab) on this build smaller than the Fisher, 0.562 m (mountCab f6→7). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.426 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.398 m (a 0.55 m drop in six frames, 570 ms)."
     },
     {
      "id": "cell",
@@ -1708,7 +1708,7 @@
      "gate": true,
      "pass": true,
      "value": "5 px spare",
-     "detail": "2992 renders. Tightest: 5 px (drive f0 S). Swim, sleep and tread, gated with the rest on every build: 6 px (tread f4 SE). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 5 px (drive f0 S). Swim, sleep and tread, gated with the rest on every build: 6 px (tread f4 SE). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -1764,14 +1764,14 @@
      "gate": false,
      "pass": false,
      "value": "1146 tris",
-     "detail": "1146 tris (554 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1206 KB of clip JSON against 2,155 KB for 35 · bind mesh 160 KB against 235 KB."
+     "detail": "1146 tris (554 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1317 KB of clip JSON against 2,155 KB for 35 · bind mesh 160 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 0.745 m/s, run 2.05 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.025; ladder 0.545). No section missing."
     },
     {
@@ -1794,8 +1794,8 @@
     "faces": 624,
     "tris": 1294,
     "verts": 2542,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 183963
    },
    "checks": [
@@ -1804,7 +1804,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -1813,7 +1813,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (run f2 foot_R). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (run f2 foot_R). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -1829,7 +1829,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at boardDown+pot f1; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at boardDown+pot f1; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -1845,7 +1845,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -1861,7 +1861,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -1876,8 +1876,8 @@
      "title": "No limb teleports: every vertex moves ≤ 0.35 m between frames (scaled by limb length)",
      "gate": true,
      "pass": true,
-     "value": "0.426 m",
-     "detail": "Largest single-frame vertex move 0.426 m (swim f4→5), gate 0.554 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). The mounts at the fitted saddle: 0.274 m (mountDown f3→4). Reported: the mounts at the default saddle, 0.693 m (mountDown f7→8). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.605 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.400 m (a 0.55 m drop in six frames, 570 ms)."
+     "value": "0.486 m",
+     "detail": "Largest single-frame vertex move 0.486 m (idleScratch f4→5), gate 0.554 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). The mounts at the fitted saddle: 0.274 m (mountDown f3→4). Reported: the mounts at the default saddle, 0.693 m (mountDown f7→8). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.605 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.400 m (a 0.55 m drop in six frames, 570 ms)."
     },
     {
      "id": "cell",
@@ -1885,7 +1885,7 @@
      "gate": true,
      "pass": true,
      "value": "4 px spare",
-     "detail": "2992 renders. Tightest: 4 px (run f0 S). Swim, sleep and tread, gated with the rest on every build: 4 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 4 px (run f0 S). Swim, sleep and tread, gated with the rest on every build: 4 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -1941,14 +1941,14 @@
      "gate": false,
      "pass": false,
      "value": "1294 tris",
-     "detail": "1294 tris (624 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1210 KB of clip JSON against 2,155 KB for 35 · bind mesh 180 KB against 235 KB."
+     "detail": "1294 tris (624 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1321 KB of clip JSON against 2,155 KB for 35 · bind mesh 180 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 1.151 m/s, run 3.166 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.583; ladder 0.545). No section missing."
     },
     {
@@ -1971,8 +1971,8 @@
     "faces": 597,
     "tris": 1200,
     "verts": 2394,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 174117
    },
    "checks": [
@@ -1981,7 +1981,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -1990,7 +1990,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (mountDown f3 foot_R). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (mountDown f3 foot_R). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -2006,7 +2006,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board+tray f7; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board+tray f7; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -2022,7 +2022,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -2038,7 +2038,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -2062,7 +2062,7 @@
      "gate": true,
      "pass": true,
      "value": "5 px spare",
-     "detail": "2992 renders. Tightest: 5 px (run f0 S). Swim, sleep and tread, gated with the rest on every build: 5 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 5 px (run f0 S). Swim, sleep and tread, gated with the rest on every build: 5 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -2118,14 +2118,14 @@
      "gate": false,
      "pass": false,
      "value": "1200 tris",
-     "detail": "1200 tris (597 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1211 KB of clip JSON against 2,155 KB for 35 · bind mesh 170 KB against 235 KB."
+     "detail": "1200 tris (597 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1322 KB of clip JSON against 2,155 KB for 35 · bind mesh 170 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 1.105 m/s, run 3.039 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.520; ladder 0.545). No section missing."
     },
     {
@@ -2148,8 +2148,8 @@
     "faces": 542,
     "tris": 1124,
     "verts": 2208,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 159561
    },
    "checks": [
@@ -2158,7 +2158,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -2167,7 +2167,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (stagger f8 foot_L). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (stagger f8 foot_L). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -2183,7 +2183,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board f7; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board f7; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -2199,7 +2199,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -2215,7 +2215,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -2230,8 +2230,8 @@
      "title": "No limb teleports: every vertex moves ≤ 0.35 m between frames (scaled by limb length)",
      "gate": true,
      "pass": true,
-     "value": "0.391 m",
-     "detail": "Largest single-frame vertex move 0.391 m (cast f4→5), gate 0.541 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). The mounts at the fitted saddle: 0.257 m (mountDown f11→12). Reported: the mounts at the default saddle, 0.687 m (mountDown f7→8). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.576 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.398 m (a 0.55 m drop in six frames, 570 ms)."
+     "value": "0.397 m",
+     "detail": "Largest single-frame vertex move 0.397 m (idleScratch f2→3), gate 0.541 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). The mounts at the fitted saddle: 0.257 m (mountDown f11→12). Reported: the mounts at the default saddle, 0.687 m (mountDown f7→8). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.576 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.398 m (a 0.55 m drop in six frames, 570 ms)."
     },
     {
      "id": "cell",
@@ -2239,7 +2239,7 @@
      "gate": true,
      "pass": true,
      "value": "4 px spare",
-     "detail": "2992 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 4 px (sleep f2 S). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 4 px (sleep f2 S). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -2295,14 +2295,14 @@
      "gate": false,
      "pass": false,
      "value": "1124 tris",
-     "detail": "1124 tris (542 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1199 KB of clip JSON against 2,155 KB for 35 · bind mesh 156 KB against 235 KB."
+     "detail": "1124 tris (542 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1308 KB of clip JSON against 2,155 KB for 35 · bind mesh 156 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 1.123 m/s, run 3.09 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.545; ladder 0.545). No section missing."
     },
     {
@@ -2325,8 +2325,8 @@
     "faces": 597,
     "tris": 1254,
     "verts": 2448,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 172703
    },
    "checks": [
@@ -2335,7 +2335,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -2344,7 +2344,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (mountUp f11 foot_R). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (mountUp f11 foot_R). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -2360,7 +2360,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board f7; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board f7; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -2376,7 +2376,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -2392,7 +2392,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -2407,8 +2407,8 @@
      "title": "No limb teleports: every vertex moves ≤ 0.35 m between frames (scaled by limb length)",
      "gate": true,
      "pass": true,
-     "value": "0.448 m",
-     "detail": "Largest single-frame vertex move 0.448 m (swim f4→5), gate 0.575 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). Cloth (skirt, apron) reported: 0.475 m (reach f3→4). The mounts at the fitted saddle: 0.278 m (mountDown f3→4). Reported: the mounts at the default saddle, 0.718 m (mountDown f7→8). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.607 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.406 m (a 0.55 m drop in six frames, 570 ms)."
+     "value": "0.480 m",
+     "detail": "Largest single-frame vertex move 0.480 m (idleScratch f4→5), gate 0.575 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). Cloth (skirt, apron) reported: 0.475 m (reach f3→4). The mounts at the fitted saddle: 0.278 m (mountDown f3→4). Reported: the mounts at the default saddle, 0.718 m (mountDown f7→8). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.607 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.406 m (a 0.55 m drop in six frames, 570 ms)."
     },
     {
      "id": "cell",
@@ -2416,7 +2416,7 @@
      "gate": true,
      "pass": true,
      "value": "3 px spare",
-     "detail": "2992 renders. Tightest: 3 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 3 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 3 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 3 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -2472,14 +2472,14 @@
      "gate": false,
      "pass": false,
      "value": "1254 tris",
-     "detail": "1254 tris (597 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1181 KB of clip JSON against 2,155 KB for 35 · bind mesh 169 KB against 235 KB."
+     "detail": "1254 tris (597 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1289 KB of clip JSON against 2,155 KB for 35 · bind mesh 169 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 1.195 m/s, run 3.287 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.644; ladder 0.545). No section missing."
     },
     {
@@ -2502,8 +2502,8 @@
     "faces": 618,
     "tris": 1236,
     "verts": 2472,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 179886
    },
    "checks": [
@@ -2512,7 +2512,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -2521,7 +2521,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (board f5 foot_R). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (board f5 foot_R). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -2537,7 +2537,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board+pot f7; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board+pot f7; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -2553,7 +2553,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -2569,7 +2569,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -2584,8 +2584,8 @@
      "title": "No limb teleports: every vertex moves ≤ 0.35 m between frames (scaled by limb length)",
      "gate": true,
      "pass": true,
-     "value": "0.375 m",
-     "detail": "Largest single-frame vertex move 0.375 m (board f1→2), gate 0.491 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). Cloth (skirt, apron) reported: 0.299 m (reach f4→5). The mounts at the fitted saddle: 0.260 m (mountDown f11→12). Reported: the mounts at the default saddle, 0.700 m (mountDown f7→8). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.521 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.400 m (a 0.55 m drop in six frames, 570 ms)."
+     "value": "0.399 m",
+     "detail": "Largest single-frame vertex move 0.399 m (idleScratch f4→5), gate 0.491 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). Cloth (skirt, apron) reported: 0.299 m (reach f4→5). The mounts at the fitted saddle: 0.260 m (mountDown f11→12). Reported: the mounts at the default saddle, 0.700 m (mountDown f7→8). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.521 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.400 m (a 0.55 m drop in six frames, 570 ms)."
     },
     {
      "id": "cell",
@@ -2593,7 +2593,7 @@
      "gate": true,
      "pass": true,
      "value": "5 px spare",
-     "detail": "2992 renders. Tightest: 5 px (dig f0 SW). Swim, sleep and tread, gated with the rest on every build: 5 px (swim f0 E). Reported, not gated: cloth (skirt, apron) reaches the cell edge in reach f3 N; it folds in the engine. The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 5 px (dig f0 SW). Swim, sleep and tread, gated with the rest on every build: 5 px (swim f0 E). Reported, not gated: cloth (skirt, apron) reaches the cell edge in reach f3 N; it folds in the engine. The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -2649,14 +2649,14 @@
      "gate": false,
      "pass": false,
      "value": "1236 tris",
-     "detail": "1236 tris (618 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1209 KB of clip JSON against 2,155 KB for 35 · bind mesh 176 KB against 235 KB."
+     "detail": "1236 tris (618 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1320 KB of clip JSON against 2,155 KB for 35 · bind mesh 176 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 1.019 m/s, run 2.803 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.402; ladder 0.545). No section missing."
     },
     {
@@ -2679,8 +2679,8 @@
     "faces": 556,
     "tris": 1143,
     "verts": 2255,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 162156
    },
    "checks": [
@@ -2689,7 +2689,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -2698,7 +2698,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (dig f5 foot_R). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (dig f5 foot_R). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -2714,7 +2714,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at boardDown f1; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at boardDown f1; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -2730,7 +2730,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -2746,7 +2746,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -2761,8 +2761,8 @@
      "title": "No limb teleports: every vertex moves ≤ 0.35 m between frames (scaled by limb length)",
      "gate": true,
      "pass": true,
-     "value": "0.409 m",
-     "detail": "Largest single-frame vertex move 0.409 m (cast f4→5), gate 0.525 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). The mounts at the fitted saddle: 0.258 m (mountDown f11→12). Reported: the mounts at the default saddle, 0.704 m (mountDown f7→8). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.574 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.405 m (a 0.55 m drop in six frames, 570 ms)."
+     "value": "0.450 m",
+     "detail": "Largest single-frame vertex move 0.450 m (idleScratch f4→5), gate 0.525 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). The mounts at the fitted saddle: 0.258 m (mountDown f11→12). Reported: the mounts at the default saddle, 0.704 m (mountDown f7→8). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.574 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.405 m (a 0.55 m drop in six frames, 570 ms)."
     },
     {
      "id": "cell",
@@ -2770,7 +2770,7 @@
      "gate": true,
      "pass": true,
      "value": "4 px spare",
-     "detail": "2992 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 4 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 4 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -2826,14 +2826,14 @@
      "gate": false,
      "pass": false,
      "value": "1143 tris",
-     "detail": "1143 tris (556 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1202 KB of clip JSON against 2,155 KB for 35 · bind mesh 158 KB against 235 KB."
+     "detail": "1143 tris (556 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1312 KB of clip JSON against 2,155 KB for 35 · bind mesh 158 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 1.089 m/s, run 2.997 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.499; ladder 0.545). No section missing."
     },
     {
@@ -2856,8 +2856,8 @@
     "faces": 553,
     "tris": 1142,
     "verts": 2248,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 162743
    },
    "checks": [
@@ -2866,7 +2866,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -2875,7 +2875,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (stagger f8 foot_L). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (stagger f8 foot_L). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -2891,7 +2891,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board f7; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board f7; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -2907,7 +2907,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -2923,7 +2923,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -2938,8 +2938,8 @@
      "title": "No limb teleports: every vertex moves ≤ 0.35 m between frames (scaled by limb length)",
      "gate": true,
      "pass": true,
-     "value": "0.391 m",
-     "detail": "Largest single-frame vertex move 0.391 m (cast f4→5), gate 0.541 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). Cloth (skirt, apron) reported: 0.317 m (reach f4→5). The mounts at the fitted saddle: 0.257 m (mountDown f11→12). Reported: the mounts at the default saddle, 0.694 m (mountDown f7→8). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.567 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.398 m (a 0.55 m drop in six frames, 570 ms)."
+     "value": "0.396 m",
+     "detail": "Largest single-frame vertex move 0.396 m (idleScratch f2→3), gate 0.541 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). Cloth (skirt, apron) reported: 0.317 m (reach f4→5). The mounts at the fitted saddle: 0.257 m (mountDown f11→12). Reported: the mounts at the default saddle, 0.694 m (mountDown f7→8). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.567 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.398 m (a 0.55 m drop in six frames, 570 ms)."
     },
     {
      "id": "cell",
@@ -2947,7 +2947,7 @@
      "gate": true,
      "pass": true,
      "value": "4 px spare",
-     "detail": "2992 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 4 px (sleep f2 S). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 4 px (sleep f2 S). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -3003,14 +3003,14 @@
      "gate": false,
      "pass": false,
      "value": "1142 tris",
-     "detail": "1142 tris (553 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1199 KB of clip JSON against 2,155 KB for 35 · bind mesh 159 KB against 235 KB."
+     "detail": "1142 tris (553 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1308 KB of clip JSON against 2,155 KB for 35 · bind mesh 159 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 1.123 m/s, run 3.09 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.545; ladder 0.545). No section missing."
     },
     {
@@ -3033,8 +3033,8 @@
     "faces": 538,
     "tris": 1115,
     "verts": 2191,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 159311
    },
    "checks": [
@@ -3043,7 +3043,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -3052,7 +3052,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (walk f3 foot_L). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (walk f3 foot_L). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -3068,7 +3068,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at boardDown f1; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at boardDown f1; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -3084,7 +3084,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -3100,7 +3100,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -3115,8 +3115,8 @@
      "title": "No limb teleports: every vertex moves ≤ 0.35 m between frames (scaled by limb length)",
      "gate": true,
      "pass": true,
-     "value": "0.397 m",
-     "detail": "Largest single-frame vertex move 0.397 m (cast f4→5), gate 0.523 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). The mounts at the fitted saddle: 0.262 m (mountDown f3→4). Reported: the mounts at the default saddle, 0.700 m (mountDown f7→8). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.554 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.402 m (a 0.55 m drop in six frames, 570 ms)."
+     "value": "0.461 m",
+     "detail": "Largest single-frame vertex move 0.461 m (idleScratch f4→5), gate 0.523 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). The mounts at the fitted saddle: 0.262 m (mountDown f3→4). Reported: the mounts at the default saddle, 0.700 m (mountDown f7→8). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.554 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.402 m (a 0.55 m drop in six frames, 570 ms)."
     },
     {
      "id": "cell",
@@ -3124,7 +3124,7 @@
      "gate": true,
      "pass": true,
      "value": "4 px spare",
-     "detail": "2992 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 4 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 4 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -3180,14 +3180,14 @@
      "gate": false,
      "pass": false,
      "value": "1115 tris",
-     "detail": "1115 tris (538 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1210 KB of clip JSON against 2,155 KB for 35 · bind mesh 156 KB against 235 KB."
+     "detail": "1115 tris (538 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1321 KB of clip JSON against 2,155 KB for 35 · bind mesh 156 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 1.086 m/s, run 2.988 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.494; ladder 0.545). No section missing."
     },
     {
@@ -3210,8 +3210,8 @@
     "faces": 467,
     "tris": 974,
     "verts": 1908,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 138560
    },
    "checks": [
@@ -3220,7 +3220,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -3229,7 +3229,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (board f7 foot_R). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (board f7 foot_R). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -3245,7 +3245,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at mountCabDown f6; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at mountCabDown f6; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -3261,7 +3261,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -3277,7 +3277,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -3301,7 +3301,7 @@
      "gate": true,
      "pass": true,
      "value": "5 px spare",
-     "detail": "2992 renders. Tightest: 5 px (run f0 S). Swim, sleep and tread, gated with the rest on every build: 5 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 5 px (run f0 S). Swim, sleep and tread, gated with the rest on every build: 5 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -3357,14 +3357,14 @@
      "gate": false,
      "pass": true,
      "value": "974 tris",
-     "detail": "974 tris (467 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1206 KB of clip JSON against 2,155 KB for 35 · bind mesh 135 KB against 235 KB."
+     "detail": "974 tris (467 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1316 KB of clip JSON against 2,155 KB for 35 · bind mesh 135 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 1.064 m/s, run 2.928 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.464; ladder 0.545). No section missing."
     },
     {
@@ -3387,8 +3387,8 @@
     "faces": 545,
     "tris": 1126,
     "verts": 2216,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 159277
    },
    "checks": [
@@ -3397,7 +3397,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -3406,7 +3406,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (board f4 foot_R). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (board f4 foot_R). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -3422,7 +3422,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board+pot f7; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board+pot f7; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -3438,7 +3438,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -3454,7 +3454,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -3478,7 +3478,7 @@
      "gate": true,
      "pass": true,
      "value": "3 px spare",
-     "detail": "2992 renders. Tightest: 3 px (swim f0 E). Swim, sleep and tread, gated with the rest on every build: 3 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 3 px (swim f0 E). Swim, sleep and tread, gated with the rest on every build: 3 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -3534,14 +3534,14 @@
      "gate": false,
      "pass": false,
      "value": "1126 tris",
-     "detail": "1126 tris (545 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1206 KB of clip JSON against 2,155 KB for 35 · bind mesh 156 KB against 235 KB."
+     "detail": "1126 tris (545 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1316 KB of clip JSON against 2,155 KB for 35 · bind mesh 156 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 1.251 m/s, run 3.442 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.721; ladder 0.545). No section missing."
     },
     {
@@ -3564,8 +3564,8 @@
     "faces": 626,
     "tris": 1279,
     "verts": 2531,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 183131
    },
    "checks": [
@@ -3574,7 +3574,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -3583,7 +3583,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (drive f0 foot_L). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (drive f0 foot_L). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -3599,7 +3599,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at astrideStand f0; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at astrideStand f0; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -3615,7 +3615,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -3631,7 +3631,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -3646,8 +3646,8 @@
      "title": "No limb teleports: every vertex moves ≤ 0.35 m between frames (scaled by limb length)",
      "gate": true,
      "pass": true,
-     "value": "0.381 m",
-     "detail": "Largest single-frame vertex move 0.381 m (cast f4→5), gate 0.525 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). Cloth (skirt, apron) reported: 0.311 m (reach f4→5). The mounts at the fitted saddle: 0.263 m (mountDown f11→12). Reported: the mounts at the default saddle, 0.728 m (mountDown f7→8). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.542 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.400 m (a 0.55 m drop in six frames, 570 ms)."
+     "value": "0.390 m",
+     "detail": "Largest single-frame vertex move 0.390 m (idleScratch f4→5), gate 0.525 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). Cloth (skirt, apron) reported: 0.311 m (reach f4→5). The mounts at the fitted saddle: 0.263 m (mountDown f11→12). Reported: the mounts at the default saddle, 0.728 m (mountDown f7→8). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.542 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.400 m (a 0.55 m drop in six frames, 570 ms)."
     },
     {
      "id": "cell",
@@ -3655,7 +3655,7 @@
      "gate": true,
      "pass": true,
      "value": "4 px spare",
-     "detail": "2992 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 5 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 5 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -3711,14 +3711,14 @@
      "gate": false,
      "pass": false,
      "value": "1279 tris",
-     "detail": "1279 tris (626 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1207 KB of clip JSON against 2,155 KB for 35 · bind mesh 179 KB against 235 KB."
+     "detail": "1279 tris (626 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1317 KB of clip JSON against 2,155 KB for 35 · bind mesh 179 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 1.091 m/s, run 3.001 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.501; ladder 0.545). No section missing."
     },
     {
@@ -3741,8 +3741,8 @@
     "faces": 500,
     "tris": 1048,
     "verts": 2048,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 147563
    },
    "checks": [
@@ -3751,7 +3751,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -3760,7 +3760,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (dig f6 foot_R). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (dig f6 foot_R). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -3776,7 +3776,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at boardDown+buckets f1; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at boardDown+buckets f1; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -3792,7 +3792,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -3808,7 +3808,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -3832,7 +3832,7 @@
      "gate": true,
      "pass": true,
      "value": "4 px spare",
-     "detail": "2992 renders. Tightest: 4 px (stagger f3 SE). Swim, sleep and tread, gated with the rest on every build: 4 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 4 px (stagger f3 SE). Swim, sleep and tread, gated with the rest on every build: 4 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -3888,14 +3888,14 @@
      "gate": false,
      "pass": false,
      "value": "1048 tris",
-     "detail": "1048 tris (500 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1206 KB of clip JSON against 2,155 KB for 35 · bind mesh 144 KB against 235 KB."
+     "detail": "1048 tris (500 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1316 KB of clip JSON against 2,155 KB for 35 · bind mesh 144 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 1.12 m/s, run 3.08 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.540; ladder 0.545). No section missing."
     },
     {
@@ -3918,8 +3918,8 @@
     "faces": 659,
     "tris": 1332,
     "verts": 2650,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 193410
    },
    "checks": [
@@ -3928,7 +3928,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -3937,7 +3937,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (ladderDown f2 foot_L). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (ladderDown f2 foot_L). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -3953,7 +3953,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board+buckets f7; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board+buckets f7; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -3969,7 +3969,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -3985,7 +3985,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -4000,8 +4000,8 @@
      "title": "No limb teleports: every vertex moves ≤ 0.35 m between frames (scaled by limb length)",
      "gate": true,
      "pass": true,
-     "value": "0.413 m",
-     "detail": "Largest single-frame vertex move 0.413 m (cast f4→5), gate 0.545 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). The mounts at the fitted saddle: 0.263 m (mountDown f3→4). Reported: the mounts at the default saddle, 0.672 m (mountDown f7→8). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.582 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.398 m (a 0.55 m drop in six frames, 570 ms)."
+     "value": "0.448 m",
+     "detail": "Largest single-frame vertex move 0.448 m (idleScratch f7→8), gate 0.545 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). The mounts at the fitted saddle: 0.263 m (mountDown f3→4). Reported: the mounts at the default saddle, 0.672 m (mountDown f7→8). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.582 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.398 m (a 0.55 m drop in six frames, 570 ms)."
     },
     {
      "id": "cell",
@@ -4009,7 +4009,7 @@
      "gate": true,
      "pass": true,
      "value": "4 px spare",
-     "detail": "2992 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 4 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 4 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -4065,14 +4065,14 @@
      "gate": false,
      "pass": false,
      "value": "1332 tris",
-     "detail": "1332 tris (659 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1209 KB of clip JSON against 2,155 KB for 35 · bind mesh 189 KB against 235 KB."
+     "detail": "1332 tris (659 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1320 KB of clip JSON against 2,155 KB for 35 · bind mesh 189 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 1.132 m/s, run 3.114 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.557; ladder 0.545). No section missing."
     },
     {
@@ -4095,8 +4095,8 @@
     "faces": 525,
     "tris": 1095,
     "verts": 2145,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 154505
    },
    "checks": [
@@ -4105,7 +4105,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -4114,7 +4114,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (mountCab f3 foot_R). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (mountCab f3 foot_R). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -4130,7 +4130,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board+pot f7; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board+pot f7; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -4146,7 +4146,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -4162,7 +4162,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -4186,7 +4186,7 @@
      "gate": true,
      "pass": true,
      "value": "4 px spare",
-     "detail": "2992 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 4 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 4 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -4242,14 +4242,14 @@
      "gate": false,
      "pass": false,
      "value": "1095 tris",
-     "detail": "1095 tris (525 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1207 KB of clip JSON against 2,155 KB for 35 · bind mesh 151 KB against 235 KB."
+     "detail": "1095 tris (525 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1318 KB of clip JSON against 2,155 KB for 35 · bind mesh 151 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 1.178 m/s, run 3.241 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.620; ladder 0.545). No section missing."
     },
     {
@@ -4272,8 +4272,8 @@
     "faces": 660,
     "tris": 1362,
     "verts": 2682,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 192046
    },
    "checks": [
@@ -4282,7 +4282,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -4291,7 +4291,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (lift f2 foot_R). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (lift f2 foot_R). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -4307,7 +4307,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board f7; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board f7; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -4323,7 +4323,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -4339,7 +4339,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -4363,7 +4363,7 @@
      "gate": true,
      "pass": true,
      "value": "3 px spare",
-     "detail": "2992 renders. Tightest: 3 px (swim f0 E). Swim, sleep and tread, gated with the rest on every build: 3 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 3 px (swim f0 E). Swim, sleep and tread, gated with the rest on every build: 3 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -4419,14 +4419,14 @@
      "gate": false,
      "pass": false,
      "value": "1362 tris",
-     "detail": "1362 tris (660 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1193 KB of clip JSON against 2,155 KB for 35 · bind mesh 188 KB against 235 KB."
+     "detail": "1362 tris (660 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1302 KB of clip JSON against 2,155 KB for 35 · bind mesh 188 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 1.219 m/s, run 3.353 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.676; ladder 0.545). No section missing."
     },
     {
@@ -4449,8 +4449,8 @@
     "faces": 599,
     "tris": 1251,
     "verts": 2449,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 176537
    },
    "checks": [
@@ -4459,7 +4459,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -4468,7 +4468,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (stagger f8 foot_L). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (stagger f8 foot_L). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -4484,7 +4484,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board f7; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board f7; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -4500,7 +4500,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -4516,7 +4516,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -4540,7 +4540,7 @@
      "gate": true,
      "pass": true,
      "value": "4 px spare",
-     "detail": "2992 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 4 px (sleep f2 S). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 4 px (sleep f2 S). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -4596,14 +4596,14 @@
      "gate": false,
      "pass": false,
      "value": "1251 tris",
-     "detail": "1251 tris (599 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1199 KB of clip JSON against 2,155 KB for 35 · bind mesh 172 KB against 235 KB."
+     "detail": "1251 tris (599 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1308 KB of clip JSON against 2,155 KB for 35 · bind mesh 172 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 1.123 m/s, run 3.09 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.545; ladder 0.545). No section missing."
     },
     {
@@ -4626,8 +4626,8 @@
     "faces": 483,
     "tris": 1005,
     "verts": 1971,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 142635
    },
    "checks": [
@@ -4636,7 +4636,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -4645,7 +4645,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (ladderDown f4 foot_R). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (ladderDown f4 foot_R). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -4661,7 +4661,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at haul f1; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at haul f1; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -4677,7 +4677,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -4693,7 +4693,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -4708,8 +4708,8 @@
      "title": "No limb teleports: every vertex moves ≤ 0.35 m between frames (scaled by limb length)",
      "gate": true,
      "pass": true,
-     "value": "0.402 m",
-     "detail": "Largest single-frame vertex move 0.402 m (swim f4→5), gate 0.509 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). The mounts at the fitted saddle: 0.258 m (mountDown f11→12). Reported: the mounts at the default saddle, 0.701 m (mountDown f7→8). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.540 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.405 m (a 0.55 m drop in six frames, 570 ms)."
+     "value": "0.456 m",
+     "detail": "Largest single-frame vertex move 0.456 m (idleScratch f4→5), gate 0.509 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). The mounts at the fitted saddle: 0.258 m (mountDown f11→12). Reported: the mounts at the default saddle, 0.701 m (mountDown f7→8). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.540 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.405 m (a 0.55 m drop in six frames, 570 ms)."
     },
     {
      "id": "cell",
@@ -4717,7 +4717,7 @@
      "gate": true,
      "pass": true,
      "value": "4 px spare",
-     "detail": "2992 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 5 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 5 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -4773,14 +4773,14 @@
      "gate": false,
      "pass": false,
      "value": "1005 tris",
-     "detail": "1005 tris (483 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1207 KB of clip JSON against 2,155 KB for 35 · bind mesh 139 KB against 235 KB."
+     "detail": "1005 tris (483 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1318 KB of clip JSON against 2,155 KB for 35 · bind mesh 139 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 1.057 m/s, run 2.908 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.454; ladder 0.545). No section missing."
     },
     {
@@ -4803,8 +4803,8 @@
     "faces": 566,
     "tris": 1145,
     "verts": 2277,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 164677
    },
    "checks": [
@@ -4813,7 +4813,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -4822,7 +4822,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (dig f1 foot_R). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (dig f1 foot_R). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -4838,7 +4838,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board+pot f7; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board+pot f7; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -4854,7 +4854,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -4870,7 +4870,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -4885,8 +4885,8 @@
      "title": "No limb teleports: every vertex moves ≤ 0.35 m between frames (scaled by limb length)",
      "gate": true,
      "pass": true,
-     "value": "0.392 m",
-     "detail": "Largest single-frame vertex move 0.392 m (cast f4→5), gate 0.541 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). Cloth (skirt, apron) reported: 0.440 m (reach f3→4). The mounts at the fitted saddle: 0.260 m (mountDown f11→12). Reported: the mounts at the default saddle, 0.718 m (mountDown f7→8). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.554 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.401 m (a 0.55 m drop in six frames, 570 ms)."
+     "value": "0.397 m",
+     "detail": "Largest single-frame vertex move 0.397 m (idleScratch f4→5), gate 0.541 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). Cloth (skirt, apron) reported: 0.440 m (reach f3→4). The mounts at the fitted saddle: 0.260 m (mountDown f11→12). Reported: the mounts at the default saddle, 0.718 m (mountDown f7→8). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.554 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.401 m (a 0.55 m drop in six frames, 570 ms)."
     },
     {
      "id": "cell",
@@ -4894,7 +4894,7 @@
      "gate": true,
      "pass": true,
      "value": "4 px spare",
-     "detail": "2992 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 4 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 4 px (swim f0 E). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -4950,14 +4950,14 @@
      "gate": false,
      "pass": false,
      "value": "1145 tris",
-     "detail": "1145 tris (566 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1198 KB of clip JSON against 2,155 KB for 35 · bind mesh 161 KB against 235 KB."
+     "detail": "1145 tris (566 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1307 KB of clip JSON against 2,155 KB for 35 · bind mesh 161 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 1.123 m/s, run 3.09 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.545; ladder 0.545). No section missing."
     },
     {
@@ -4980,8 +4980,8 @@
     "faces": 521,
     "tris": 1082,
     "verts": 2124,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 153530
    },
    "checks": [
@@ -4990,7 +4990,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -4999,7 +4999,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (stagger f8 foot_L). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (stagger f8 foot_L). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -5015,7 +5015,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board f7; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at board f7; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -5031,7 +5031,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -5047,7 +5047,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -5071,7 +5071,7 @@
      "gate": true,
      "pass": true,
      "value": "4 px spare",
-     "detail": "2992 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 4 px (sleep f2 S). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 4 px (stagger f3 E). Swim, sleep and tread, gated with the rest on every build: 4 px (sleep f2 S). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -5127,14 +5127,14 @@
      "gate": false,
      "pass": false,
      "value": "1082 tris",
-     "detail": "1082 tris (521 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1199 KB of clip JSON against 2,155 KB for 35 · bind mesh 150 KB against 235 KB."
+     "detail": "1082 tris (521 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1308 KB of clip JSON against 2,155 KB for 35 · bind mesh 150 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 1.123 m/s, run 3.09 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.545; ladder 0.545). No section missing."
     },
     {
@@ -5157,8 +5157,8 @@
     "faces": 573,
     "tris": 1156,
     "verts": 2302,
-    "clipCount": 53,
-    "frames": 438,
+    "clipCount": 56,
+    "frames": 479,
     "bindBytes": 167564
    },
    "checks": [
@@ -5167,7 +5167,7 @@
      "title": "Clip table equals the shipped sheets — frames, ms, one-shot, settle",
      "gate": true,
      "pass": true,
-     "value": "35 / 35",
+     "value": "38 / 38",
      "detail": "rig 6 not loaded — compared against the shipped string. helm_idle rides idle (6f/170ms) · helm_walk rides walk (8f/110ms) · oars_idle rides idle (6f/170ms) · oars_row rides walk (8f/110ms)"
     },
     {
@@ -5176,7 +5176,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 438 frames: 0.0000000 m (walk f0 hand_R). No tip, cuff, hem or inseam bones."
+     "detail": "28 bones (17 deform + root + 10 sockets). Largest change in any joint-to-joint length over 479 frames: 0.0000000 m (walk f0 hand_R). No tip, cuff, hem or inseam bones."
     },
     {
      "id": "skin",
@@ -5192,7 +5192,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "438 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at astrideStand f1; gate 0.000001 m."
+     "detail": "479 frames through clip() → quaternion → matrix → FK → linear-blend skin, against the solver's own worlds. Worst 0.0000000 m at astrideStand f1; gate 0.000001 m."
     },
     {
      "id": "continuity",
@@ -5208,7 +5208,7 @@
      "gate": true,
      "pass": true,
      "value": "3 of 28 bones",
-     "detail": "1752 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
+     "detail": "1916 rocked frames (every clip, every frame, four sea states). Bones touched: spine, chest, head. Every other bone unchanged to 0.0000000. Deltas equal the table (keyed on the rock alone) to 0.0000000; clip + table through quaternions skins to the rocked solve within 0.0000000 m. Table: 147 rows. Rig 7 part 2 measured 21 of 45 bones and 176° of arm spread for one rock."
     },
     {
      "id": "loops",
@@ -5224,7 +5224,7 @@
      "gate": true,
      "pass": true,
      "value": "0.0000000 m",
-     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000"
+     "detail": "board last = idle on the deck 0.0000000 · boardDown f0 = idle on the deck 0.0000000 · boardDown last = idle on the dock 0.0000000 · mountUp f0 = idle beside the machine 0.0000000 · mountUp last = astride f0 0.0000000 · mountDown f0 = astride f0 0.0000000 · mountDown last = idle beside 0.0000000 · mountCab last = astride(bench) f0 0.0000000 · mountCabDown f0 = astride(bench) f0 0.0000000 · reach last = idle 0.0000000 · idleShift f0 = idle f0 0.0000000 · idleShift last = idle f0 0.0000000 · idleScratch f0 = idle f0 0.0000000 · idleScratch last = idle f0 0.0000000 · idleHips f0 = idle f0 0.0000000 · idleHips last = idle f0 0.0000000"
     },
     {
      "id": "contacts",
@@ -5239,8 +5239,8 @@
      "title": "No limb teleports: every vertex moves ≤ 0.35 m between frames (scaled by limb length)",
      "gate": true,
      "pass": true,
-     "value": "0.322 m",
-     "detail": "Largest single-frame vertex move 0.322 m (swim f2→3), gate 0.358 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). The mounts at the fitted saddle: 0.270 m (mountDown f5→6), reported on a build smaller than the Fisher. Reported: the mounts at the default saddle and the world-contract clips (rail, bench, cab) on this build smaller than the Fisher, 0.564 m (mountCab f6→7). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.428 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.399 m (a 0.55 m drop in six frames, 570 ms)."
+     "value": "0.355 m",
+     "detail": "Largest single-frame vertex move 0.355 m (idleScratch f4→5), gate 0.358 m (0.35 m on the Fisher, scaled by this build's limb length and shoulder width). The mounts at the fitted saddle: 0.270 m (mountDown f5→6), reported on a build smaller than the Fisher. Reported: the mounts at the default saddle and the world-contract clips (rail, bench, cab) on this build smaller than the Fisher, 0.564 m (mountCab f6→7). Every loop wrap is checked except the four segments the table lists as loops but the game chains in order (castBack, castRelease, strike, land). Reported, not gated, because the shipped frame count sets the pace: reach 0.428 m (280 ms from the hand opening at the ground to the idle it hands to), boardDown 0.399 m (a 0.55 m drop in six frames, 570 ms)."
     },
     {
      "id": "cell",
@@ -5248,7 +5248,7 @@
      "gate": true,
      "pass": true,
      "value": "5 px spare",
-     "detail": "2992 renders. Tightest: 5 px (drive f0 S). Swim, sleep and tread, gated with the rest on every build: 6 px (tread f4 SE). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
+     "detail": "3320 renders. Tightest: 5 px (drive f0 S). Swim, sleep and tread, gated with the rest on every build: 6 px (tread f4 SE). The four mount clips start a reachX beside the machine and are stamped into its cell (saddle.at), so they are not held to this one."
     },
     {
      "id": "face",
@@ -5304,14 +5304,14 @@
      "gate": false,
      "pass": false,
      "value": "1156 tris",
-     "detail": "1156 tris (573 faces) against rig 7's 1,570 · 28 bones against 45 · 53 clips, 438 frames, 1202 KB of clip JSON against 2,155 KB for 35 · bind mesh 164 KB against 235 KB."
+     "detail": "1156 tris (573 faces) against rig 7's 1,570 · 28 bones against 45 · 56 clips, 479 frames, 1312 KB of clip JSON against 2,155 KB for 35 · bind mesh 164 KB against 235 KB."
     },
     {
      "id": "sidecar",
      "title": "Gameplay sidecar: every clip, every frame, the sections its mount needs",
      "gate": true,
      "pass": true,
-     "value": "53 clips · 438 frames",
+     "value": "56 clips · 479 frames",
      "detail": "Schema hidden-harbours/character-gameplay@1. Walk 0.743 m/s, run 2.043 m/s, ladder 0.545 m/s (the Fisher 0.727 and 2.0, scaled by this build's leg length 1.022; ladder 0.545). No section missing."
     },
     {

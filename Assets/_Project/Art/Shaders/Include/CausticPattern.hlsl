@@ -27,6 +27,13 @@ float HHCausticPattern(float independentPattern, float centre, float positiveX, 
 // No seabed, wave, fetch, shelter or wake sampler is included here.
 #if defined(HH_CAUSTIC_VEINS) && !defined(HH_CAUSTIC_VEINS_INCLUDED)
 #define HH_CAUSTIC_VEINS_INCLUDED
+// THE ART GRID's screen gradients: d(world)/d(screen px) of the UNSNAPPED fragment. Shared with the sea,
+// which includes this file: every caller sets both once at the top of its fragment, before any branch,
+// from the unsnapped world point it shades. The painted reads below take them as explicit gradients, so
+// they pick no mip off the pixel-snapped lookups. Static: per invocation, 0 (level 0) until set.
+static float2 hhWorldDx = float2(0.0, 0.0);
+static float2 hhWorldDy = float2(0.0, 0.0);
+
 float2 HHCausticPixelize(float2 p)
 {
     float ppu = max(_PixelsPerUnit, 1.0);
@@ -84,7 +91,11 @@ half4 HHCausticUntileSampleW(TEXTURE2D_PARAM(tex, smp), float2 worldXY, float sc
     float2 warpN = warpLo + warpHi * 0.4;
     float2 warped = worldXY + warpN * (s * 1.5);
 
-    half4 raw = SAMPLE_TEXTURE2D(tex, smp, HHCausticPaintUV(warped, scale, scroll));
+    // Explicit gradients, the art grid's (hhWorldDx/Dy x the tile scale): the HHCausticPaintUV lookups are
+    // stepped on the pixel grid, so an implicit mip read off them would jump at every cell edge.
+    float2 gdx = hhWorldDx * max(scale, 1e-4);
+    float2 gdy = hhWorldDy * max(scale, 1e-4);
+    half4 raw = SAMPLE_TEXTURE2D_GRAD(tex, smp, HHCausticPaintUV(warped, scale, scroll), gdx, gdy);
     if (s <= 0.001) return raw;
 
     // (2) hash-untile in TILE space (uv = warped*scale; one repeat-cell == 1 unit of uv).
@@ -98,10 +109,10 @@ half4 HHCausticUntileSampleW(TEXTURE2D_PARAM(tex, smp), float2 worldXY, float sc
     float2 off10 = HHCausticHash22(iuv + float2(1.0, 0.0)) * 64.0;
     float2 off01 = HHCausticHash22(iuv + float2(0.0, 1.0)) * 64.0;
     float2 off11 = HHCausticHash22(iuv + float2(1.0, 1.0)) * 64.0;
-    half4 v00 = SAMPLE_TEXTURE2D(tex, smp, HHCausticPaintUV(warped + off00, scale, scroll));
-    half4 v10 = SAMPLE_TEXTURE2D(tex, smp, HHCausticPaintUV(warped + off10, scale, scroll));
-    half4 v01 = SAMPLE_TEXTURE2D(tex, smp, HHCausticPaintUV(warped + off01, scale, scroll));
-    half4 v11 = SAMPLE_TEXTURE2D(tex, smp, HHCausticPaintUV(warped + off11, scale, scroll));
+    half4 v00 = SAMPLE_TEXTURE2D_GRAD(tex, smp, HHCausticPaintUV(warped + off00, scale, scroll), gdx, gdy);
+    half4 v10 = SAMPLE_TEXTURE2D_GRAD(tex, smp, HHCausticPaintUV(warped + off10, scale, scroll), gdx, gdy);
+    half4 v01 = SAMPLE_TEXTURE2D_GRAD(tex, smp, HHCausticPaintUV(warped + off01, scale, scroll), gdx, gdy);
+    half4 v11 = SAMPLE_TEXTURE2D_GRAD(tex, smp, HHCausticPaintUV(warped + off11, scale, scroll), gdx, gdy);
     // Bilinear corner weights on a smoothstep ramp: a partition of unity (so the blend can
     // never brighten or darken the slot) whose members are each 0 on the two edges they do not
     // touch. Twin: WaterUntile.CornerWeights.
