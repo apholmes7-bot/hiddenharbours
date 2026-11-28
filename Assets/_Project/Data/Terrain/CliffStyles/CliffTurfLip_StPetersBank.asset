@@ -51,15 +51,15 @@ MonoBehaviour:
   Stone: '#8a8478'
   ShadeColour: '#160d0a'
   ShadeAlpha: {x: 190, y: 110}
-  RockRiser: {x: 36, y: 44}
+  RockRiser: {x: 10, y: 14}
   RockJointGap: {x: 24, y: 56}
-  RockToeShade: 2
+  RockToeShade: 1
   Rock:
-  - '#2a2525'
-  - '#45322b'
-  - '#584033'
-  - '#6a4d3c'
-  - '#7d5f4a'
+  - '#3a2e29'
+  - '#6b5547'
+  - '#85695a'
+  - '#9e8069'
+  - '#b99a7e'
   RiserFadeMetres: 0.9
-  InlandShiftRows: 40
+  InlandShiftRows: 22
   Why: 'Owner 11 27: the light station'
