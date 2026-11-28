@@ -69,6 +69,7 @@ namespace HiddenHarbours.Tests.RigBaking
             "astride_helm_jet_ski",
             "hold", "cast", "bite", "strike", "reel", "land", "castBack", "castRelease", "dig",
             "row_oars",
+            "idleShift", "idleScratch", "idleHips",
         };
 
         IRigScriptHost _host, _host9;
@@ -306,7 +307,7 @@ namespace HiddenHarbours.Tests.RigBaking
                                     "astride_helm_jet_ski", "row_oars" };
             string[] missing = CharacterSkinAssetBaker.CastMeshStates
                 .Where(s => Array.IndexOf(calibrated, s) < 0 && !states.Contains(s)).ToArray();
-            Assert.AreEqual(36, CharacterSkinAssetBaker.CastMeshStates.Count(s => Array.IndexOf(calibrated, s) < 0));
+            Assert.AreEqual(39, CharacterSkinAssetBaker.CastMeshStates.Count(s => Array.IndexOf(calibrated, s) < 0));
             Assert.IsEmpty(missing,
                 $"the rig bakes no clip for [{string.Join(", ", missing)}], so every fresh cast def would " +
                 "refuse its switch and the cast bake would stop on the first NPC.");

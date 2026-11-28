@@ -30,7 +30,7 @@ out on frames 2 and 3 at 0.001 m above the ground, inside `GameConfig.HeldShovel
 `HeldShovelMeshTests.TheDig_TheBladeMeetsTheGround_AtTheDigsLowPoint` now runs.
 
 The pose library's LF sha256 is now
-`f30abc9af074356041dfe43f9c8cb50b032faafb357dd31d15836a862ee1ab98`. `tools/check.cjs --write`
+`6a8499d7ff9457762dd54e74792508cf2887af16ad2b297c2ff15094fd052269`. `tools/check.cjs --write`
 regenerated the builds, sidecars, options, golden report, manifest and sums. The pin moved in the
 row-stroke and seated-helm contracts, in the nine hull walks `hull-walk.mjs` writes, and in the
 ten re-baked skins. The dory's walk (`doryIsoRig.dory_iso.walk.json`) was re-pinned after main's
@@ -90,9 +90,9 @@ Phase A ported the game's bake to 10.3 and re-baked nothing. Phase B (below) re-
 | Drop | `C:/hh-drops/character-rig-kit-v10.3.zip`, 10,584,809 bytes, sha256 `85c3f19df1c4c0ac8ebcefab6b8bc3edc4549e96bdb3b6a3ae694eff62cb356d` |
 | Kit folder in the zip | `export/HH-character-kit-10-3-2026-10-03/`, 320 files |
 | On arrival | `SHA256SUMS.txt` lists 319 files: 319 ok, 0 differ, 0 missing, nothing unlisted but itself |
-| Rig | `Art/characterIsoRig10.js`, rev 10.3, pass 10, global `CharacterIso10`, sha256 (LF) `ad563075475740cea1258de68d05c184f2fc136491357bc22988a10d810413f3` |
+| Rig | `Art/characterIsoRig10.js`, rev 10.3, pass 10, global `CharacterIso10`, sha256 (LF) `35f9151cd2e2f6a89442e78a2d58813698610a6e8763c1cc12eef8caff2792c8` |
 | Pose library | `Art/characterIsoRig10.poses.js`, sha256 (LF) `a28e5d92638d3cf1b26bbc49f887b23221acd3a9590bc36fd8b842ac6127c92d` |
-| Checks | `Art/characterIsoRig10.checks.js`, sha256 (LF) `9649a0f01b96f400b7c7265d3d90e4cc4a260aded69cbbcc2591f964959bf5fe` |
+| Checks | `Art/characterIsoRig10.checks.js`, sha256 (LF) `49bd0b635c783e5f3678cd765ce3650682e1fba97b0ddb2cc025371c8c63f3e1` |
 | Frozen 10.2 | `Art/characterIsoRig10_2.js` (sha256 `fdc4bd9e20147bd59b4ccf649fcb32b755dd4964c7a451b204e7e5fc5c900d52`) and `Art/characterIsoRig10_2.poses.js` (`456f8afa09b31e7369586d86576caaa1d00b0bb3382ee91258fb09d73e560ec9`) define `CharacterIso10_2`, for the review pages only. Each is 10.2's file as #918 landed it, with one comment line added and its global renamed. The game loads neither |
 | Frozen 10.1 | `Art/characterIsoRig10_1.js` and `_1.poses.js`, unchanged |
 | Added by the intake | `INTAKE.md` (this file), `INTAKE.SHA256SUMS.txt`, and from `C:/hh-drops/character-rig-kit-v10.3-desk/`, as there: the Art desk's harness `node_check_char10_3.cjs` (sha256 `1512b513130312ea4f8d2157de8a7bb11440bced99335e60a40cad6c7bf58d8e`) and its probes `node_probe_char10_3.cjs` (sha256 `32799340ff2a90ea1454cb4a18e173dd8c1b3ca899cae227d45ad4da6980d4be`). They replace 10.2's `node_check_char10_2.cjs` |

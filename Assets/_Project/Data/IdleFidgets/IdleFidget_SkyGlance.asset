@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6229437eb1694c0a82f84b685f4b9b57, type: 3}
+  m_Name: IdleFidget_SkyGlance
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.IdleFidgetDef
+  Id: idle.sky_glance
+  Weight: 2
+  DurationSeconds: 3.4
+  Kind: 0
+  Gaze:
+  - AtSeconds: 0
+    YawDegrees: 0
+    UpDegrees: 0
+  - AtSeconds: 0.6
+    YawDegrees: -15
+    UpDegrees: 30
+  - AtSeconds: 1.5
+    YawDegrees: -15
+    UpDegrees: 32
+  - AtSeconds: 2.1
+    YawDegrees: 12
+    UpDegrees: 30
+  - AtSeconds: 2.8
+    YawDegrees: 0
+    UpDegrees: 0
+  ClipKey: 

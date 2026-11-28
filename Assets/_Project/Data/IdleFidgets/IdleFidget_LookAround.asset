@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6229437eb1694c0a82f84b685f4b9b57, type: 3}
+  m_Name: IdleFidget_LookAround
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.IdleFidgetDef
+  Id: idle.look_around
+  Weight: 3
+  DurationSeconds: 4.2
+  Kind: 0
+  Gaze:
+  - AtSeconds: 0
+    YawDegrees: 0
+    UpDegrees: 0
+  - AtSeconds: 0.5
+    YawDegrees: -80
+    UpDegrees: 0
+  - AtSeconds: 1.7
+    YawDegrees: -80
+    UpDegrees: 0
+  - AtSeconds: 2.4
+    YawDegrees: 75
+    UpDegrees: 2
+  - AtSeconds: 3.5
+    YawDegrees: 75
+    UpDegrees: 2
+  - AtSeconds: 4.2
+    YawDegrees: 0
+    UpDegrees: 0
+  ClipKey: 

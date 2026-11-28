@@ -2,7 +2,7 @@
  "schema": "hidden-harbours/character-shading@3",
  "rig": "characterIsoRig10.js",
  "revision": "10.3",
- "derivedFromRigSha256": "ad563075475740cea1258de68d05c184f2fc136491357bc22988a10d810413f3",
+ "derivedFromRigSha256": "35f9151cd2e2f6a89442e78a2d58813698610a6e8763c1cc12eef8caff2792c8",
  "build": "fisher",
  "key": [
   0,
