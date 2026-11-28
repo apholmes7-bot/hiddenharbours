@@ -359,7 +359,7 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return Stage();
             BoatHullDef novi = LoadHull("LobsterBoat");
             Assert.AreEqual(CompassMount.None, novi.Helm.DefaultCompass,
-                            "premise: the Novi as shipped has no compass, so the HUD's nav cluster stands");
+                            "premise: the Novi as shipped has no compass, the fit this plate is shot at");
             yield return Board(novi);   // as shipped: nothing bought
             DevToast toast = Spawn("DevToast(band plate)").AddComponent<DevToast>();
             QuestPanelPresenter note = Spawn("QuestNote(band plate)").AddComponent<QuestPanelPresenter>();
@@ -375,7 +375,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 yield return Settle(0.25f);
                 yield return Shoot("P3", $"novi_{s.x}x{s.y}_overlays", BandRect(),
                                    "the overlays clear of the band: the dev toast, the interact popup, the quest " +
-                                   "note and the nav cluster (the Novi as shipped has no compass of her own)");
+                                   "note (the floating nav cluster ships off: GameConfig.HelmOverlay.ShowFloatingNavReads)");
             }
         }
 
@@ -397,7 +397,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 Rect card = HelmOverlayLayout.CardRect(TillerRigRender.W, TillerRigRender.H,
                                                        GameServices.HelmOverlay, s.x, s.y);
                 yield return Shoot("P4", $"dory_{s.x}x{s.y}_tiller", card,
-                                   "the tiller's card where it always was, the camera still, the nav cluster clear of it",
+                                   "the tiller's card where it always was, the camera still (the floating nav cluster ships off)",
                                    atLeast: TillerCardCover);
             }
         }
