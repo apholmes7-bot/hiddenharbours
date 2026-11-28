@@ -13,7 +13,7 @@ namespace HiddenHarbours.Core
     public static class SaveMigration
     {
         /// <summary>The schema version this build writes. Bump when you add a field + a migration step.</summary>
-        public const int CurrentVersion = 27;
+        public const int CurrentVersion = 28;
 
         /// <summary>
         /// The region id Port Greywick was saved under before it was renamed Nine Mile Creek, and the id
@@ -439,6 +439,16 @@ namespace HiddenHarbours.Core
                 data.SchemaVersion = 27;
             }
 
+            // v27 -> v28: THE PHOTO ALBUM (owner 2026-11-26: "build the camera now with photo record added to
+            // save"; ADR 0066; each row carries one small thumbnail, owner 2026-11-26: "yes photoalbum should
+            // save small pictures as little poloraids"). An older game took no picture, so the album starts empty. Nothing is
+            // transformed and nothing else in the save moves. Once this step has shipped, anything new is v29.
+            if (data.SchemaVersion < 28)
+            {
+                data.Photos = new System.Collections.Generic.List<PhotoRecordDto>();
+                data.SchemaVersion = 28;
+            }
+
             // ---- future steps go here, each guarded by `if (data.SchemaVersion < N)` and bumping to N.
 
             // Defensive null-repair (a hand-edited or partial JSON can omit reference-typed fields).
@@ -497,6 +507,8 @@ namespace HiddenHarbours.Core
             data.PlayerSkills ??= new System.Collections.Generic.List<PlayerSkillDto>();
             data.RodFittings ??= new System.Collections.Generic.List<RodFittingDto>();
             HealV27Rows(data);
+            data.Photos ??= new System.Collections.Generic.List<PhotoRecordDto>();
+            HealPhotos(data.Photos);
             // Same defensive spirit as the null-repair above, for the one field where a zero is not a
             // value but a crash: a hand-edited JSON, or a row written by a build between the field landing
             // and this heal, would otherwise divide by it. Idempotent — after the v9 step there is nothing
@@ -921,6 +933,63 @@ namespace HiddenHarbours.Core
             HealClothingRackSales(data.ClothingRackSales);
             HealPlayerSkills(data.PlayerSkills);
             HealRodFittings(data.RodFittings);
+        }
+
+        /// <summary>
+        /// The v28 album's load repair: asset-free and idempotent. A null picture, or a subject with no id, is
+        /// dropped, and so is a picture left with no subject (a picture of nothing is never kept). An empty
+        /// player key means the local player; a null region reads empty; a negative or non-finite time reads
+        /// 0; a count under 1 reads 1; a pose out of range reads the least picture (Diving) rather than a
+        /// better one; scores are held to 0..100 (a saved score is otherwise kept as written); a thumbnail
+        /// that does not decode reads empty (the picture is kept, its Polaroid drawn blank).
+        /// A number under 1, or one already used by an earlier row, is given the next free number, and the
+        /// album is kept in number order. Ids are never rewritten, known or not.
+        /// </summary>
+        private static void HealPhotos(System.Collections.Generic.List<PhotoRecordDto> rows)
+        {
+            for (int i = rows.Count - 1; i >= 0; i--)
+            {
+                PhotoRecordDto p = rows[i];
+                if (p == null) { rows.RemoveAt(i); continue; }
+                p.PlayerKey = SavePlayerKeys.Normalise(p.PlayerKey);
+                p.RegionId ??= "";
+                if (double.IsNaN(p.GameTimeSeconds) || double.IsInfinity(p.GameTimeSeconds) || p.GameTimeSeconds < 0d)
+                    p.GameTimeSeconds = 0d;
+                p.Subjects ??= new System.Collections.Generic.List<PhotoSubjectDto>();
+                for (int s = p.Subjects.Count - 1; s >= 0; s--)
+                {
+                    PhotoSubjectDto sub = p.Subjects[s];
+                    if (sub == null || string.IsNullOrEmpty(sub.SubjectId)) { p.Subjects.RemoveAt(s); continue; }
+                    if (sub.Count < 1) sub.Count = 1;
+                    if (sub.Pose < (int)WildlifePose.Resting || sub.Pose > (int)WildlifePose.Diving)
+                        sub.Pose = (int)WildlifePose.Diving;
+                    sub.Score = System.Math.Clamp(sub.Score, 0, 100);
+                }
+                if (p.Subjects.Count == 0) { rows.RemoveAt(i); continue; }
+                p.Score = System.Math.Clamp(p.Score, 0, 100);
+                // The little picture: one that does not decode is cleared, never the record it belongs to.
+                if (p.Thumbnail == null || (p.Thumbnail.Length > 0 && !PhotoThumbnail.IsValid(p.Thumbnail)))
+                    p.Thumbnail = "";
+            }
+
+            // Numbers: the first row to hold a number keeps it; a repeat or a non-positive one is renumbered
+            // past every number in the album, in row order.
+            int max = 0;
+            for (int i = 0; i < rows.Count; i++) if (rows[i].Number > max) max = rows[i].Number;
+            for (int i = 0; i < rows.Count; i++)
+            {
+                bool taken = rows[i].Number < 1;
+                for (int j = 0; j < i && !taken; j++) taken = rows[j].Number == rows[i].Number;
+                if (taken) rows[i].Number = ++max;
+            }
+            // Stable insertion sort by number (a list already in order is untouched).
+            for (int a = 1; a < rows.Count; a++)
+            {
+                PhotoRecordDto x = rows[a];
+                int b = a - 1;
+                while (b >= 0 && rows[b].Number > x.Number) { rows[b + 1] = rows[b]; b--; }
+                rows[b + 1] = x;
+            }
         }
 
         /// <summary>

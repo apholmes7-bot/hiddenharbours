@@ -610,6 +610,12 @@ Shader "HiddenHarbours/IsoFacet"
                 bool hhUnder = _HHFigureWater.x > 0.5 && i.figureUp < _HHFigureWater.y;
                 if (hhUnder && (reflection || _HHFigureWaterLook.y < 0.5)) discard;
 #endif
+#ifndef HH_FIGURE
+                // The caustic veins' painted reads take the sea's explicit gradients (CausticPattern.hlsl),
+                // taken here, ahead of every branch, from the unsnapped caustic point.
+                hhWorldDx = ddx(i.causticPoint.xy);
+                hhWorldDy = ddy(i.causticPoint.xy);
+#endif
                 // The hull-cell pixel this fragment lands on, derived from WORLD position: the
                 // rig's screen grid is just world metres times PPU with y down and the pivot as
                 // origin. Locked to the hull, immune to render-target conventions.

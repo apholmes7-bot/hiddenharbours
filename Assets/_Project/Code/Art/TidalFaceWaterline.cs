@@ -138,6 +138,9 @@ namespace HiddenHarbours.Art
         public bool RidesTheTide => _ridesTheTide;
         /// <inheritdoc cref="_configured"/>
         public bool IsConfigured => _configured;
+        /// <summary>True when the picture's retained heights are measured DOWN from its lip (a negative datum
+        /// shift): a ladder or fender string hung from a deck, not a face standing up from the bed.</summary>
+        public bool HangsFromItsLip => _heightTexture != null && _heightDecode.z < 0f;
         /// <inheritdoc cref="_dressing"/>
         public TidalFaceDressing Dressing => _dressing;
 

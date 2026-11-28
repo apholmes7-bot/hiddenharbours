@@ -1,4 +1,4 @@
-f80f9dda0243ad41afbca954f742fe0796514e90afb901baf460db15ce8eac87  sidecars/fishIsoRig2.rig.json
+a2ab137c5c686fc26b2c711ea5bea77e4e999c46e35eb8a80d5d770428db2d30  sidecars/fishIsoRig2.rig.json
 780c9839a86fa88c806a09f4bcd1c7540515f8951f32f6280a363bf29ccb97cb  sidecars/crustaceanRig2.rig.json
 1cd725ee05378785a4a758d5d4d28d973b361c575b84066dd90c07d3573ab716  sidecars/shellfishRig2.rig.json
 1a49be410f747a9acab3ff140c93cb76021c98a7ad558d779869377c4be79dcc  sidecars/clamHodRig.rig.json
@@ -6,7 +6,7 @@ f80f9dda0243ad41afbca954f742fe0796514e90afb901baf460db15ce8eac87  sidecars/fishI
 
 # rigs these were derived from (derivedFromRigSha256 in each file) — identical bytes in Art/ of this kit and the project
 f7fc9db510b0346dea568c43dc7378f1a12fd71ee8f5a7653e78377812b792bd  Art/isoSolid.js  (217 lines)
-3e162191294f07129c94e5e4ecc36db31a94564fa114b4327fd44447d267e479  Art/fishIsoRig2.js  (652 lines)
+810e6999e46412957cc307623e0fde94f05596dbb137c62eafcdd793201c98a8  Art/fishIsoRig2.js  (661 lines)
 e1eda988ec2cdc48cf716097a3abd9e612f91aab9761e2e5b794a5368c05c2de  Art/crustaceanRig2.js  (487 lines)
 9f219283d0d04b6ef1b286b2c77b5ce5bb99dbcad6cfed4225ad0255aad5d4d8  Art/shellfishRig2.js  (206 lines)
 142c63db93af6f45749106a68523f1cacee5cceb260b3dc216d48c81fc926d36  Art/clamHodRig.js  (53 lines)
@@ -15,6 +15,6 @@ d01c40cb5a508401ea17db92df1ccd4c26e22c0f717fdf7a4eb8f7c52b2166c9  Art/catchKit2.
 # the kit’s other files, summed by the catch review’s tools/kit.js: the plate rig and its sidecar, the READMEs, the harness
 78890fea47f0d717805c800247a185666c8a48531dbad5b700a81304a5f945ff  Art/fieldGuidePlateRig.js  (328 lines)
 2a33cc95969ebc503f01a332abbfe9100198c31cac2ed97dcb30ecf46df6ef6f  Art/gameplay/fieldGuidePlateRig.gameplay.json
-0a415f4d15ff462c03465a09adf0c9b043b2e597b64846732c517ac5422d9f4a  README.md
+da1da8a0b82344af10a61dba25d406e2cb548185a836a2f0104564d80b5f13d7  README.md
 2db93221c8ad12ef60332ca12a5eb692eae2d2f1b5fbb69246a569d6feb3e543  _catchSidecars.js
 13011512dd261993b05872bfc460ed5bfe650f156243fc44cfade9060c2b32e5  sidecars/README.md

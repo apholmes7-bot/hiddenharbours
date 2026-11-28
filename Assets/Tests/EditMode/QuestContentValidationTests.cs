@@ -151,6 +151,15 @@ namespace HiddenHarbours.Tests.EditMode
                 if (!string.IsNullOrWhiteSpace(gate.MorningSetsFlag)) flags.Add(gate.MorningSetsFlag);
             }
 
+            // 5. Every photo request's three flags: asked and done when her talk is heard to its end,
+            //    pictured when his album holds what she asked for (PhotoRequestTalk).
+            foreach (var req in LoadAll<PhotoRequestDef>())
+            {
+                if (!string.IsNullOrEmpty(req.AskedFlag)) flags.Add(req.AskedFlag);
+                if (!string.IsNullOrEmpty(req.PicturedFlag)) flags.Add(req.PicturedFlag);
+                if (!string.IsNullOrEmpty(req.DoneFlag)) flags.Add(req.DoneFlag);
+            }
+
             return flags;
         }
 
@@ -176,6 +185,10 @@ namespace HiddenHarbours.Tests.EditMode
 
             if (q.Context != null && q.Context.Length > TitleCols)
                 bad.Add($"Context is {q.Context.Length} chars, over the {TitleCols} a title line holds");
+
+            // A quest that opens on a flag nothing sets would never show at all.
+            if (!string.IsNullOrEmpty(q.OpensWithFlag) && knownFlags != null && !knownFlags.Contains(q.OpensWithFlag))
+                bad.Add($"OpensWithFlag '{q.OpensWithFlag}' is a flag nothing in the shipped content sets");
 
             if (q.Steps == null || q.Steps.Count == 0)
             {

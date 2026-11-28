@@ -36,7 +36,7 @@ namespace HiddenHarbours.World
     /// abutment height: that would draw a walkable bridge over open water out of a missing reference.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class GangwayPlatform : MonoBehaviour, IStandableSurface, IStandableOutline
+    public sealed class GangwayPlatform : MonoBehaviour, IStandableSurface, IStandableOutline, IReflectedUnderside
     {
         [Header("Identity")]
         [Tooltip("Stable id of the brow (e.g. 'wharf.nine_mile_creek.gangway') — diagnostics only.")]
@@ -62,6 +62,16 @@ namespace HiddenHarbours.World
         [Tooltip("The float this brow lands on. Its deck is read LIVE, so the landing end rides the tide " +
                  "with it and the two can never disagree about where the step down is.")]
         [SerializeField] private FloatingPlatform _landing;
+
+        [Header("Picture (presentation only)")]
+        [Tooltip("What the calm water shows of the brow's underside. None: the face band and gaps, as before.")]
+        [SerializeField] private UndersideDef _underside;
+
+        /// <inheritdoc/>
+        public UndersideDef Underside => _underside;
+
+        /// <summary>Name the underside piece (region builders; presentation only).</summary>
+        public void SetUnderside(UndersideDef underside) => _underside = underside;
 
         /// <inheritdoc/>
         public string Id => _id;

@@ -1,0 +1,5 @@
+{
+  "Comment": "Test-only boundary copied from the demo rule in drafts 1510 and 1572: only the first build scene is included. The base has no DemoBuild setting. Resolve the region and all outside names from RegionDefs; review this fixture when the build's first scene changes. The prospective cod listing is included now because draft 1590 sells it on the island; it is not yet offered there on this base.",
+  "BootScenePath": "Assets/_Project/Scenes/StPeters.unity",
+  "ProspectiveAssets": ["Assets/_Project/Data/Resources/Catalog/Licenses/CodLicense.asset"]
+}

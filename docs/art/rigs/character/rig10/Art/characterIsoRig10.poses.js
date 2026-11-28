@@ -68,6 +68,12 @@
     }
     const idleAt=(K,dz,dx)=>{ const J=baseIntent(K.D); idle(0,J,K); const d=[dx||0,0,dz||0];
       J.pelvis.p=vadd(J.pelvis.p,d); for(const s of ['L','R']) J.legs[s].p=vadd(J.legs[s].p,d); return J; };
+    /* the idle fidgets' clock: 0 on frame 0, 1 on the last frame (a one-shot's last frame is u = (n-1)/n) */
+    const fidgetT=(u,K)=>{ const n=C8.ANIMS[K.anim].frames; return clamp01(u*n/Math.max(1,n-1)); };
+    /* the idle fidgets' sizes, metres and degrees: a pixel or two at 32 px/m */
+    const IDLE_FX={ shiftX:0.030, shiftDrop:0.006, hipRoll:2.5, stepOut:0.035, stepFwd:0.020, stepLift:0.030,
+      scratchX:-0.040, scratchBack:0.260, scratchUp:-0.020, rub:0.018, scratchElLow:[0.05,-0.8,-0.6], scratchElEar:[0.3,0.45,-1], scratchEl:[0.4,0.2,1], scratchChest:[-0.06,0.12,0.30], scratchEar:[0.12,-0.05,-0.08], scratchNod:6, scratchTilt:5,
+      hipsOut:0.060, hipsBack:0.020, hipsUp:0.060, hipsEl:[1,-0.5,0.1], leanBack:5, hipsFwd:0.012 };
     const WALK={ T:0.88, v:0.727, beta:0.55, lift:0.075, strike:12, toeOff:22, width:0.092, toeOut:5, bob:0.012, sway:0.016, hipYaw:5, hipRoll:2.2, lean:3, arm:0.13, armLen:0.455, armBend:0.05, drop:0.024 };
     const RUN ={ T:0.48, v:2.0, beta:0.36, lift:0.15, kick:0.10, strike:6, toeOff:28, width:0.078, toeOut:3, bob:0.020, sway:0.008, hipYaw:7, hipRoll:1.6, lean:10, run:true, drop:0.045 };
     /* stance: the foot runs back at the walk speed exactly — heel strike, flat, toe-off pivoting on the toe */
@@ -271,6 +277,30 @@
         I.plant={ R:I.legs.R.p[2]<a+0.002, L:I.legs.L.p[2]<a+0.002 };
         for(const s of ['L','R']){ const g=G(s); I.arms[s]={ c:[g*(D.shX+0.22*K.k.a), 0.08*K.k.a, (D.shZ-D.chestZ)+(-0.22-0.16*lurch*g)*K.k.a], el:[g*0.3,-0.6,-1] }; }
         face(I,'wide','up','open'); },
+
+      /* ---- idle fidgets: one-shots built on idle f0, so their first and last frames are idle f0 bone for bone ---- */
+      idleShift(u,I,K){ const D=K.D, a=D.ankle, t=fidgetT(u,K), I0=idleAt(K,0,0); copyIntent(I,I0);
+        const w=seg(t,0,0.28)*(1-seg(t,0.74,1)), out=seg(t,0.30,0.44)*(1-seg(t,0.58,0.72)), hop=Math.sin(Math.PI*seg(t,0.30,0.44))+Math.sin(Math.PI*seg(t,0.58,0.72));
+        const P0=I0.pelvis.p; I.pelvis.p=[P0[0]+IDLE_FX.shiftX*K.k.x*w, P0[1], P0[2]-IDLE_FX.shiftDrop*w];
+        I.pelvis.roll+=IDLE_FX.hipRoll*w; I.spine.roll-=IDLE_FX.hipRoll*0.7*w; I.chest.roll-=IDLE_FX.hipRoll*0.3*w; I.head.roll+=IDLE_FX.hipRoll*0.25*w;
+        const L0=I0.legs.L.p; I.legs.L={ p:[L0[0]-IDLE_FX.stepOut*K.k.l*out, L0[1]+IDLE_FX.stepFwd*K.k.l*out, L0[2]+IDLE_FX.stepLift*K.k.l*hop], yaw:I0.legs.L.yaw-6*out };
+        I.plant.L=hop<1e-6; },
+      idleScratch(u,I,K){ const D=K.D, t=fidgetT(u,K), I0=idleAt(K,0,0); copyIntent(I,I0);
+        const up=Math.min(clamp01(t/0.46), clamp01((1-t)/0.46)), rub=(t>0.40 && t<0.60) ? (fr(u,C8.ANIMS[K.anim].frames)%2 ? 1 : -1) : 0, sk=K.B.sk, ix=sk.ix;
+        const headC=vadd(vadd(sk.rest[ix.neck], sk.rest[ix.head]), D.headMid), back=vadd(headC, [IDLE_FX.scratchX+0.5*IDLE_FX.rub*rub, -IDLE_FX.scratchBack, IDLE_FX.scratchUp+IDLE_FX.rub*rub]);
+        /* the elbow leads: the hand rides up close to the chest, past the ear, to behind the crown, the arm bent the whole way */
+        const chestFront=vadd(I0.arms.R.c, vmul(IDLE_FX.scratchChest, K.k.a)), ear=vadd(headC, vmul(IDLE_FX.scratchEar, K.k.a));
+        I.arms.R={ c:keys(up, [[0,I0.arms.R.c],[0.30,chestFront],[0.62,ear],[1,back]]), el:keys(up, [[0,[0.12,-1,-0.1]],[0.30,IDLE_FX.scratchElLow],[0.62,IDLE_FX.scratchElEar],[1,IDLE_FX.scratchEl]]) };
+        I.head.pitch+=IDLE_FX.scratchNod*up; I.head.roll+=IDLE_FX.scratchTilt*up; I.neck.pitch+=IDLE_FX.scratchNod*0.5*up; I.chest.roll-=1.5*up;
+        if(up>0.5) face(I,'open','knit','flat'); },
+      idleHips(u,I,K){ const D=K.D, t=fidgetT(u,K), I0=idleAt(K,0,0); copyIntent(I,I0);
+        const on=seg(t,0.06,0.30)*(1-seg(t,0.72,0.96)), lean=on*(0.75+0.25*seg(t,0.30,0.48)*(1-seg(t,0.56,0.72))), sk=K.B.sk, ix=sk.ix;
+        const P0=I0.pelvis.p; I.pelvis.p=[P0[0], P0[1]+IDLE_FX.hipsFwd*lean, P0[2]];
+        I.spine.pitch-=IDLE_FX.leanBack*0.6*lean; I.chest.pitch-=IDLE_FX.leanBack*0.4*lean; I.head.pitch+=IDLE_FX.leanBack*0.5*lean;
+        const Wp=bodyOf(stooped(I,K),K.B).Wp;
+        for(const s of ['L','R']){ const g=G(s), hip=fkp(Wp, sk.rest[ix['hip_'+s]]), w=vadd(hip, [g*IDLE_FX.hipsOut*K.k.x, -IDLE_FX.hipsBack, IDLE_FX.hipsUp]);
+          blendArm(I,K,s,I0.arms[s].c,w,on,vlerp([g*0.12,-1,-0.1],[g*IDLE_FX.hipsEl[0],IDLE_FX.hipsEl[1],IDLE_FX.hipsEl[2]],on)); }
+        if(lean>0.8) face(I,'open','up','flat'); },
 
       /* ---- boarding: built from idle at the dock and idle on the deck ---- */
       board(u,I,K){ const D=K.D, Rz=K.railZ, a=D.ankle, carried=!!K.carry, t=clamp01(u/0.9), I0=idleAt(K,0,0), I1=idleAt(K,Rz,0); copyIntent(I,I0);

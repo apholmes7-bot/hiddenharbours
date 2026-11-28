@@ -5,13 +5,19 @@ namespace HiddenHarbours.App
 {
     /// <summary>The delivered wharf's convex fixed decks and sloping slipway panels.</summary>
     [DisallowMultipleComponent]
-    public sealed class NmcWharfWalkSurface : MonoBehaviour, IStandableSurface, IStandableOutline
+    public sealed class NmcWharfWalkSurface : MonoBehaviour, IStandableSurface, IStandableOutline, IReflectedUnderside
     {
         [SerializeField] string _id = "";
         [SerializeField] Vector2[] _polygon = System.Array.Empty<Vector2>();
         [SerializeField] Vector2 _slopeFrom, _slopeTo;
         [SerializeField] float _fromElevation, _toElevation;
+        [Tooltip("What the calm water shows of this deck's underside where its reflected face draws no art (a pier " +
+                 "on piles). None: the gaps stay open water. A solid wall needs none. Presentation only.")]
+        [SerializeField] UndersideDef _underside;
         public string Id => _id;
+        public UndersideDef Underside => _underside;
+        /// <summary>Name the underside piece (the wharf builder; presentation only).</summary>
+        public void SetUnderside(UndersideDef underside) => _underside = underside;
         void OnEnable() => StandableSurfaces.Register(this);
         void OnDisable() => StandableSurfaces.Unregister(this);
 

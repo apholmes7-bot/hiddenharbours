@@ -50,9 +50,20 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.AreEqual("row_oars", RowingFigure.RowStrokeKey);
                 Assert.IsTrue(skin.TryGetClip(RowingFigure.RowStrokeKey, out _), file + ": row_oars");
                 Assert.IsTrue(skin.DrawsAsMesh(RowingFigure.RowStrokeKey), file + ": row_oars switch");
-                Assert.AreEqual(37, Array.FindAll(skin.MeshStates, s => Array.IndexOf(seated, s) < 0).Length,
-                    file + ": the 27 existing states plus eight rod clips, dig and row_oars");
-                Assert.AreEqual(41, skin.MeshStates.Length, file);
+                // The idle fidget one-shots are not CharacterClips either: CharacterFigureLife swaps them in for
+                // the plain idle by the shipped library's Clip fidgets, so each is held here by its clip key.
+                int fidgetClips = 0;
+                foreach (IdleFidgetDef fidget in IdleFidgetLibraryDef.Shipped.Fidgets)
+                {
+                    if (fidget == null || fidget.Kind != IdleFidgetDef.Channel.Clip) continue;
+                    fidgetClips++;
+                    Assert.IsTrue(skin.TryGetClip(fidget.ClipKey, out _), file + ": " + fidget.ClipKey);
+                    Assert.IsTrue(skin.DrawsAsMesh(fidget.ClipKey), file + ": " + fidget.ClipKey + " switch");
+                }
+                Assert.AreEqual(3, fidgetClips, "the shipped library's clip fidgets: idleShift, idleScratch, idleHips");
+                Assert.AreEqual(40, Array.FindAll(skin.MeshStates, s => Array.IndexOf(seated, s) < 0).Length,
+                    file + ": the 27 existing states plus eight rod clips, dig, row_oars and the three idle fidgets");
+                Assert.AreEqual(44, skin.MeshStates.Length, file);
             }
         }
     }

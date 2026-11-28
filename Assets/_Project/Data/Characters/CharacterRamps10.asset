@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.CharacterRampsDef
   Id: ramps.character_iso10
   SourceRig: docs/art/rigs/character/rig10/Art/characterIsoRig10.js
-  SourceOptions: characterIsoRig10 10.3's own palettes, read in V8 (sha256 ad563075475740cea1258de68d05c184f2fc136491357bc22988a10d810413f3)
+  SourceOptions: characterIsoRig10 10.3's own palettes, read in V8 (sha256 35f9151cd2e2f6a89442e78a2d58813698610a6e8763c1cc12eef8caff2792c8)
   Axes:
   - Axis: skin
     DefaultKey: fair

@@ -194,6 +194,46 @@ namespace HiddenHarbours.Player
         public static float HeadingDegrees(float dx, float dy)
             => (dx == 0f && dy == 0f) ? 0f : Mathf.Atan2(dx, dy) * Mathf.Rad2Deg;
 
+        /// <summary>A sideways part of her travel smaller than this share of it counts as none: she is
+        /// coming straight down the line and keeps the side she last showed. A float tolerance, not a feel.</summary>
+        private const float FlankLateralTolerance01 = 1e-3f;
+
+        /// <summary>
+        /// <b>SHE SHOWS HER FLANK ON THE LINE</b> (coordinator's ask 2026-11-26: the fish read as a thin
+        /// sliver at the line end). The heading her surfaced row is picked from. A fish reeled straight in
+        /// travels along the line, which picks the end-on rows; within <paramref name="flankWithinDegrees"/>
+        /// of the line (toward the fisher or away) the row is taken ACROSS the line instead, on the side her
+        /// travel drifts toward, so she turns side-on with the line. Further off the line her own travel
+        /// picks the row, as before.
+        ///
+        /// <para><paramref name="fromFisher"/> is her offset from the fisher (the line's axis).
+        /// <paramref name="side"/> is +1 for the axis turned a quarter clockwise, −1 for the other; it is
+        /// handed in as the side she last showed (0 = none yet) and handed back as the side shown. With no
+        /// sideways drift she keeps that side; with none held she shows the side whose heading points
+        /// east (+x), or north when the line runs east-west. 0 or less turns the rule off. Pure.</para>
+        /// </summary>
+        public static Vector2 FlankRowHeading(Vector2 travel, Vector2 fromFisher, float flankWithinDegrees,
+                                              ref int side)
+        {
+            float t = travel.magnitude;
+            float a = fromFisher.magnitude;
+            if (flankWithinDegrees <= 0f || t < 1e-6f || a < 1e-6f) return travel;
+
+            Vector2 axis = fromFisher / a;
+            Vector2 across = new Vector2(axis.y, -axis.x);                      // the axis, a quarter clockwise
+            float lateral = Vector2.Dot(travel, across) / t;
+            if (Mathf.Abs(lateral) > FlankLateralTolerance01) side = lateral > 0f ? 1 : -1;
+
+            float along = Mathf.Clamp(Mathf.Abs(Vector2.Dot(travel, axis)) / t, 0f, 1f);
+            if (Mathf.Acos(along) * Mathf.Rad2Deg > flankWithinDegrees) return travel;
+
+            if (side == 0)
+                side = Mathf.Abs(across.x) > FlankLateralTolerance01
+                    ? (across.x > 0f ? 1 : -1)
+                    : (across.y >= 0f ? 1 : -1);
+            return across * (side * t);
+        }
+
         /// <summary>The flying bobber's vertical lift over the cast: a simple lob peaking mid-flight
         /// (<c>4t(1−t)</c>), zero at release and touchdown. Pure.</summary>
         public static float ArcLift(float progress01, float arcHeightM)
@@ -265,6 +305,64 @@ namespace HiddenHarbours.Player
             if (frameCount <= 0) return 0;
             float spf = Mathf.Max(1e-3f, secondsPerFrame);
             return Mathf.Min(Mathf.FloorToInt(Mathf.Max(0f, clockSeconds) / spf), frameCount);
+        }
+
+        /// <summary>
+        /// Which churn period of a thrashing fish <paramref name="surfaceSeconds"/> falls in: 0 for the
+        /// first period after she comes up, then 1, 2, ... A splash is thrown each time it steps up, so
+        /// the first comes one whole period after she surfaces. 0 always (no churn) for a period of 0 or
+        /// less, a NaN clock or a negative one. Pure: the same seconds give the same beat (rule 5).
+        /// </summary>
+        public static long ChurnBeat(double surfaceSeconds, float periodSeconds)
+        {
+            if (!(periodSeconds > 0f) || !(surfaceSeconds > 0d)) return 0;
+            return (long)System.Math.Floor(surfaceSeconds / periodSeconds);
+        }
+
+        /// <summary>
+        /// Where the result's splash goes: out of the surface fight, the water point where she was (his feet plus
+        /// her last published offset), never the line's last end, which is her drawn mouth and can sit up on his
+        /// figure; from any other beat, the line's last end as before.
+        /// </summary>
+        public static Vector2 ResultSplashAt(in FishingState prev, Vector2 angler, Vector2 lastFarEnd)
+            => prev.Phase == FishingPhase.FightSurface
+                ? angler + new Vector2(prev.FishOffsetX, prev.FishOffsetY)
+                : lastFarEnd;
+
+        /// <summary>
+        /// Where a landed fish's grip (her head, on the line) is <paramref name="secondsLanded"/> into the
+        /// landing: from <paramref name="waterPoint"/> up to <paramref name="tip"/> over
+        /// <paramref name="liftSeconds"/>, eased out, then held at the tip. Pure.
+        /// </summary>
+        public static Vector2 LiftGrip(Vector2 waterPoint, Vector2 tip, float secondsLanded, float liftSeconds)
+        {
+            float t = liftSeconds > 0f ? Mathf.Clamp01(secondsLanded / liftSeconds) : 1f;
+            t = 1f - (1f - t) * (1f - t);   // eased out: quick off the water, settling at the tip
+            return Vector2.Lerp(waterPoint, tip, t);
+        }
+
+        /// <summary>
+        /// Where the line holds a landed fish up to be seen: <paramref name="sideM"/> to the side of his
+        /// <paramref name="feet"/> that his rod <paramref name="tip"/> is on (the right when it is straight over
+        /// him) and <paramref name="heightM"/> above them, so she hangs beside his figure, not over it. Pure.
+        /// </summary>
+        public static Vector2 HangPoint(Vector2 feet, Vector2 tip, float sideM, float heightM)
+        {
+            float side = tip.x < feet.x ? -1f : 1f;
+            return feet + new Vector2(side * Mathf.Max(0f, sideM), Mathf.Max(0f, heightM));
+        }
+
+        /// <summary>
+        /// Is <paramref name="point"/> inside the fisher's drawn figure: within <paramref name="halfWidthM"/>
+        /// either side of his feet at <paramref name="feet"/> and from his feet up to
+        /// <paramref name="heightM"/> above them (the three-quarter view draws height as screen-up). False for
+        /// a zero or negative size (off) or a NaN point.
+        /// </summary>
+        public static bool InFisherFigure(Vector2 point, Vector2 feet, float halfWidthM, float heightM)
+        {
+            if (!(halfWidthM > 0f) || !(heightM > 0f)) return false;
+            float dx = point.x - feet.x, dy = point.y - feet.y;
+            return Mathf.Abs(dx) <= halfWidthM && dy >= 0f && dy <= heightM;
         }
 
         /// <summary>

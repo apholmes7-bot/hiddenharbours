@@ -130,5 +130,75 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsTrue(RodPresenterMath.IsDarting(2f, 1.2f));
             Assert.IsFalse(RodPresenterMath.IsDarting(0.5f, 1.2f), "a station-holder thrashes");
         }
+
+        private static float Heading(Vector2 v) => RodPresenterMath.HeadingDegrees(v.x, v.y);
+
+        [Test]
+        public void FlankRowHeading_ReeledStraightIn_SheIsDrawnAcrossTheLine_OnTheSideSheDrifts()
+        {
+            Vector2 south = new Vector2(0f, -4f);   // she is south of him; the line runs north-south
+
+            // Straight in, no drift, no side held: across the line, the side whose heading points east.
+            int side = 0;
+            Vector2 h = RodPresenterMath.FlankRowHeading(new Vector2(0f, 0.5f), south, 30f, ref side);
+            Assert.AreEqual(90f, Heading(h), 1e-3f, "reeled straight in she shows her flank, heading east");
+            Assert.AreEqual(0.5f, h.magnitude, 1e-5f, "the turned heading keeps her speed");
+            Assert.AreEqual(-1, side);
+
+            // A little drift west (inside the angle): she turns to face west, and that side is now held.
+            h = RodPresenterMath.FlankRowHeading(new Vector2(-0.05f, 0.5f), south, 30f, ref side);
+            Assert.AreEqual(-90f, Heading(h), 1e-3f, "drifting west she faces west");
+            Assert.AreEqual(1, side);
+            h = RodPresenterMath.FlankRowHeading(new Vector2(0f, 0.5f), south, 30f, ref side);
+            Assert.AreEqual(-90f, Heading(h), 1e-3f, "straight in again she keeps the side she showed");
+
+            // Running away from him down the line is the same end-on picture, so it is turned too.
+            h = RodPresenterMath.FlankRowHeading(new Vector2(0f, -0.5f), south, 30f, ref side);
+            Assert.AreEqual(-90f, Heading(h), 1e-3f, "running out along the line she is still side-on");
+        }
+
+        [Test]
+        public void FlankRowHeading_OffTheLine_OrTurnedOff_HerTravelPicksTheRow()
+        {
+            Vector2 south = new Vector2(0f, -4f);
+            int side = 0;
+            Vector2 diag = new Vector2(0.5f, 0.5f);   // 45 degrees off the line
+            Assert.AreEqual(diag, RodPresenterMath.FlankRowHeading(diag, south, 30f, ref side),
+                "outside the angle her own travel picks the row");
+            Assert.AreEqual(-1, side, "her drift east is remembered as the side she shows next");
+
+            Vector2 inside = new Vector2(0.2f, 0.5f);  // about 22 degrees off the line
+            side = 0;
+            Assert.AreEqual(inside, RodPresenterMath.FlankRowHeading(inside, south, 0f, ref side),
+                "0 turns the rule off");
+            Assert.AreEqual(inside, RodPresenterMath.FlankRowHeading(inside, Vector2.zero, 30f, ref side),
+                "no line axis (she is at his feet): her travel");
+            Assert.AreEqual(Vector2.zero, RodPresenterMath.FlankRowHeading(Vector2.zero, south, 30f, ref side),
+                "no travel: nothing to turn");
+
+            // The edge: exactly at the angle is still turned; just past it is not.
+            float rad = 29.9f * Mathf.Deg2Rad;
+            Vector2 at = new Vector2(Mathf.Sin(rad), Mathf.Cos(rad));
+            side = 0;
+            Assert.AreNotEqual(at, RodPresenterMath.FlankRowHeading(at, south, 30f, ref side), "29.9 degrees is inside 30");
+            rad = 30.1f * Mathf.Deg2Rad;
+            Vector2 past = new Vector2(Mathf.Sin(rad), Mathf.Cos(rad));
+            Assert.AreEqual(past, RodPresenterMath.FlankRowHeading(past, south, 30f, ref side), "30.1 degrees is outside 30");
+        }
+
+        [Test]
+        public void FlankRowHeading_ALineRunningEastWest_DefaultsToTheNorthSide()
+        {
+            int side = 0;
+            Vector2 h = RodPresenterMath.FlankRowHeading(new Vector2(-0.5f, 0f), new Vector2(4f, 0f), 30f, ref side);
+            Assert.AreEqual(0f, Heading(h), 1e-3f, "east of him, reeled straight in, she shows the side heading north");
+        }
+
+        [Test]
+        public void FlankWithinLineDegrees_ShipsAt30()
+        {
+            Assert.AreEqual(30f, FishFeelSettings.Default.FlankWithinLineDegrees,
+                "the side-on angle's reference value moved");
+        }
     }
 }

@@ -171,6 +171,23 @@ namespace HiddenHarbours.Art
         public const float ShudderWaveNumber = 1.7f;
 
         /// <summary>
+        /// The most the strain shudder may throw the line sideways, as a fraction of the line's own span
+        /// (tip to far end). The shudder is the near-snap hum (by design); its amplitude is the look's
+        /// metres, which reads as a hum on a long line and as a zigzag on a short one (a fish at the deck
+        /// lip: 9 cm of throw on a metre of line, three kinks in it). Capped at this fraction of the span
+        /// the late fight keeps a hum under one art pixel, and a long line keeps the look's full throw. A
+        /// geometric rule, like <see cref="ShudderWaveNumber"/>, so the player's line and every villager's
+        /// obey it alike.
+        /// </summary>
+        public const float ShudderMaxSpanFraction = 0.015f;
+
+        /// <summary>The shudder's throw (m) for a look's <paramref name="amplitude"/> on a line spanning
+        /// <paramref name="spanMetres"/>: the smaller of the two and <see cref="ShudderMaxSpanFraction"/> of
+        /// the span. Pure, never negative.</summary>
+        public static float ShudderAmplitude(float amplitude, float spanMetres)
+            => Mathf.Max(0f, Mathf.Min(amplitude, Mathf.Max(0f, spanMetres) * ShudderMaxSpanFraction));
+
+        /// <summary>
         /// How much of the strain range shows as SHUDDER, 0..1: zero until <paramref name="strain01"/>
         /// passes <paramref name="shudderStart01"/>, then a smoothstep to 1 at full strain. The start
         /// threshold keeps the everyday fight calm (cozy, §7) and reserves the vibration for the

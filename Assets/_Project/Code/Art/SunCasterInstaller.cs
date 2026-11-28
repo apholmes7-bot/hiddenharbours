@@ -158,6 +158,20 @@ namespace HiddenHarbours.Art
         private static bool IsSilhouetteMask(SpriteRenderer renderer) =>
             renderer.gameObject.name == SilhouetteMaskSource.MaskChildName;
 
+        /// <summary>
+        /// A face cut at the live waterline (<see cref="TidalFaceWaterline"/>: a quay course, a ladder down to
+        /// low water) draws only what stands above the tide, but a sun caster throws its WHOLE sprite from its
+        /// foot, which is under water most of the day: the St Peters ladder laid a slanting ladder across open
+        /// water, uncut, at every tide. Only a HUNG face loses its caster: one whose lip is set at a deck above
+        /// the water (lip elevation above zero) and whose picture is measured down from that lip (the ladders,
+        /// the tyres and fender strings), so most of its sprite hangs below the tide. A face standing up from
+        /// the bed keeps its caster: a Whelps rock (lip at zero), a quay or breakwater crib (no hanging heights),
+        /// because its shadow on dry rock and on the water beside it is true. One already on a face is left alone.
+        /// </summary>
+        public static bool HangsInTheTide(SpriteRenderer renderer) =>
+            renderer.TryGetComponent<TidalFaceWaterline>(out var face) && face.IsConfigured && face.LipElevation > 0f &&
+            face.HangsFromItsLip;
+
         /// <summary>Only new or changed candidates evaluate data; a settled pass allocates nothing.</summary>
         public SpriteShadow Consider(SpriteRenderer renderer)
         {
@@ -182,7 +196,7 @@ namespace HiddenHarbours.Art
                 previous.Enabled == renderer.enabled && previous.Active == active) return null;
             var next = new Candidate { Renderer = renderer, Sprite = renderer.sprite, Order = renderer.sortingOrder,
                 Enabled = renderer.enabled, Active = active };
-            if (!IsSilhouetteMask(renderer) && _rules.Qualifies(renderer, out var settings))
+            if (!IsSilhouetteMask(renderer) && !HangsInTheTide(renderer) && _rules.Qualifies(renderer, out var settings))
             {
                 next.Shadow = SpriteShadow.Attach(renderer, settings != null && settings.CastOnWalkingDeck);
                 next.Shadow.CastsGroundContact = settings != null ? settings.CastsGroundContact : _rules.DefaultGroundContact;

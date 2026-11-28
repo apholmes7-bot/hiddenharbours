@@ -42,7 +42,7 @@ namespace HiddenHarbours.World
     /// case.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class FloatingPlatform : MonoBehaviour, IStandableSurface, IStandableOutline
+    public sealed class FloatingPlatform : MonoBehaviour, IStandableSurface, IStandableOutline, IReflectedUnderside
     {
         [Header("Identity")]
         [Tooltip("Stable id of the float (e.g. 'wharf.nine_mile_creek.float') — diagnostics only; never " +
@@ -72,6 +72,17 @@ namespace HiddenHarbours.World
                  "unauthored (−∞) she cannot take the ground at all, which is the gate-off reading: no " +
                  "bed known, so no grounding claimed.")]
         [SerializeField] private float _bedElevation = float.NegativeInfinity;
+
+        [Header("Picture (presentation only)")]
+        [Tooltip("What the calm water shows of the float's underside (its billets seen from below). None: the " +
+                 "plain face band, as before.")]
+        [SerializeField] private UndersideDef _underside;
+
+        /// <inheritdoc/>
+        public UndersideDef Underside => _underside;
+
+        /// <summary>Name the underside piece (region builders; presentation only).</summary>
+        public void SetUnderside(UndersideDef underside) => _underside = underside;
 
         /// <inheritdoc/>
         public string Id => _id;

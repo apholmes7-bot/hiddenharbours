@@ -57948,6 +57948,7 @@ MonoBehaviour:
     width: 30.5
     height: 3.71875
   _deckElevation: 5.354004
+  _underside: {fileID: 11400000, guid: 215d3cd7c8194e598e5901f2df2d8581, type: 2}
 --- !u!4 &1101900998
 Transform:
   m_ObjectHideFlags: 0

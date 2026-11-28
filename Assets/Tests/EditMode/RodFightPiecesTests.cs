@@ -238,6 +238,35 @@ namespace HiddenHarbours.Tests.EditMode
                                 kg, 0.4f, false, 0.2f, offX, offY, 0f, 0f, 0f, 0f, 0f, 0f, 0f);
 
         [Test]
+        public void ReeledStraightIn_TheDrawerShowsHerFlank_ForEveryFisher_AndOffDrawsHerEndOn()
+        {
+            // The one drawer both fishers use: she is south of him, reeled straight north up the line.
+            // Rows run clockwise from north (row 0 N, 2 E, 4 S, 6 W) at 2 frames a row; frame 0 is drawn.
+            string Drawn(float? flank, Vector2 from, Vector2 to)
+            {
+                var sr = Track(new GameObject("FlankFish")).AddComponent<SpriteRenderer>();
+                var drawer = new SurfacedFishDrawer(sr) { FlankWithinLineDegreesOverride = flank };
+                FishingState a = Surface(Sitter, 3f, from.x, from.y);
+                Assert.IsTrue(drawer.Resolve(in a, new[] { Species(Sitter) }, null, new Facts(), 4.5f));
+                drawer.ResetMotion(from);
+                FishingState b = Surface(Sitter, 3f, to.x, to.y);
+                drawer.Render(Vector2.zero, in b, 0.1f, 0f, 0f, 0.1f, 1.2f, 1f, 30, 1f, out _, out _);
+                Assert.IsTrue(sr.enabled, "harness: she was not drawn");
+                return sr.sprite.name;
+            }
+
+            Vector2 start = new Vector2(0f, -4f), straightIn = new Vector2(0f, -3.5f);
+            Assert.AreEqual(Sitter + "_dart#0", Drawn(0f, start, straightIn),
+                "harness: off, reeled straight north she is drawn on the end-on north row");
+            Assert.AreEqual(Sitter + "_dart#4", Drawn(30f, start, straightIn),
+                "on, she is drawn across the line on the east row");
+            Assert.AreEqual(Sitter + "_dart#12", Drawn(30f, start, new Vector2(-0.05f, -3.5f)),
+                "drifting west as she comes in, she faces west");
+            Assert.AreEqual(Sitter + "_dart#2", Drawn(30f, start, new Vector2(0.5f, -3.5f)),
+                "45 degrees off the line her own travel (north-east) picks the row");
+        }
+
+        [Test]
         public void HeldStill_SheTurnsFromDartToThrash_OnTheFrameTheSmoothingSays()
         {
             // The player's own smoothing, read off the presenter, so a changed constant fails here.
@@ -249,7 +278,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             const float dt = 0.02f, dartMps = 1.2f;
             var sr = Track(new GameObject("SurfacedFish")).AddComponent<SpriteRenderer>();
-            var drawer = new SurfacedFishDrawer(sr);
+            var drawer = new SurfacedFishDrawer(sr) { ThrashChurnPeriodSecondsOverride = 0f };   // jumps only
             var species = new[] { Species(Sitter) };
             FishingState s = Surface(Sitter, 3f, 1f, -1f);
             Assert.IsTrue(drawer.Resolve(in s, species, null, new Facts(), 4.5f));
@@ -270,7 +299,7 @@ namespace HiddenHarbours.Tests.EditMode
             int switched = -1;
             for (int f = 0; f < 60; f++)
             {
-                drawer.Render(Vector2.zero, in s, dt, f * dt, f * dt, 0.1f, dartMps, smoothing, 30,
+                drawer.Render(Vector2.zero, in s, dt, f * dt, f * dt, 0.1f, dartMps, smoothing, 30, 1f,
                               out bool splashDue, out _);
                 Assert.IsFalse(splashDue, "a fish that does not jump threw a splash");
                 Assert.IsTrue(sr.enabled, $"frame {f}: she was not drawn");
@@ -303,7 +332,7 @@ namespace HiddenHarbours.Tests.EditMode
             // Let her jump at least once.
             drawer.OnSurfaced();
             for (int f = 0; f < 200 && drawer.JumpsDrawn == 0; f++)
-                drawer.Render(Vector2.zero, in first, 0.02f, f * 0.02f, f * 0.02f, 0.1f, 1.2f, 0.35f, 30, out _, out _);
+                drawer.Render(Vector2.zero, in first, 0.02f, f * 0.02f, f * 0.02f, 0.1f, 1.2f, 0.35f, 30, 1f, out _, out _);
             Assert.Greater(drawer.JumpsDrawn, 0, "harness: the jumper never jumped");
             int jumps = drawer.JumpsDrawn;
 
@@ -325,7 +354,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             const float kg = 3.1f, period = 0.9f, dt = 0.02f;
             var sr = Track(new GameObject("PrimedJumper")).AddComponent<SpriteRenderer>();
-            var drawer = new SurfacedFishDrawer(sr);
+            var drawer = new SurfacedFishDrawer(sr) { ThrashChurnPeriodSecondsOverride = 0f };   // jumps only
             FishingState s = Surface(Jumper, kg, 1f, 0.5f);
             Assert.IsTrue(drawer.Resolve(in s, new[] { Species(Jumper) }, null, new Facts(), 4.5f));
             int seed = SurfacedFishDrawer.FightSeed(Jumper, kg);
@@ -347,7 +376,7 @@ namespace HiddenHarbours.Tests.EditMode
             float now = t0;
             for (int f = 0; f < 5000 && !splashedNext; f++, now += dt)
             {
-                drawer.Render(Vector2.zero, in s, dt, now, now, 0.1f, 1.2f, 0.35f, 30, out bool due, out _);
+                drawer.Render(Vector2.zero, in s, dt, now, now, 0.1f, 1.2f, 0.35f, 30, 1f, out bool due, out _);
                 if (drawer.JumpsDrawn == 0)
                     Assert.IsFalse(due, $"the primed jump (from {primed:F3}s) threw a re-entry splash at {now:F3}s");
                 if (drawer.JumpsDrawn == 1 && drawer.FishAirborne) sawNext = true;
@@ -374,14 +403,14 @@ namespace HiddenHarbours.Tests.EditMode
 
             var unprimed = new SurfacedFishDrawer(Track(new GameObject("Unprimed")).AddComponent<SpriteRenderer>());
             Assert.IsTrue(unprimed.Resolve(in s, new[] { Species(Jumper) }, null, new Facts(), 4.5f));
-            unprimed.Render(Vector2.zero, in s, 0.02f, t1, t1, 0.1f, 1.2f, 0.35f, 30, out bool staleSplash, out _);
+            unprimed.Render(Vector2.zero, in s, 0.02f, t1, t1, 0.1f, 1.2f, 0.35f, 30, 1f, out bool staleSplash, out _);
             Assert.IsTrue(staleSplash, "harness: an unprimed drawer throws the stale splash, so this test bites");
 
             var primed = new SurfacedFishDrawer(Track(new GameObject("Primed")).AddComponent<SpriteRenderer>());
             Assert.IsTrue(primed.Resolve(in s, new[] { Species(Jumper) }, null, new Facts(), 4.5f));
             primed.Prime(t1);
             Assert.IsFalse(primed.FishAirborne);
-            primed.Render(Vector2.zero, in s, 0.02f, t1, t1, 0.1f, 1.2f, 0.35f, 30, out bool due, out _);
+            primed.Render(Vector2.zero, in s, 0.02f, t1, t1, 0.1f, 1.2f, 0.35f, 30, 1f, out bool due, out _);
             Assert.IsFalse(due, "a primed drawer threw the splash of a jump nobody saw");
             Assert.AreEqual(0, primed.JumpsDrawn);
         }
@@ -397,7 +426,7 @@ namespace HiddenHarbours.Tests.EditMode
             var plainSr = Track(new GameObject("NotReset")).AddComponent<SpriteRenderer>();
             var plain = new SurfacedFishDrawer(plainSr);
             Assert.IsTrue(plain.Resolve(in s, species, null, new Facts(), 4.5f));
-            plain.Render(Vector2.zero, in s, dt, 0f, 0f, 0.1f, dartMps, 0.35f, 30, out _, out _);
+            plain.Render(Vector2.zero, in s, dt, 0f, 0f, 0.1f, dartMps, 0.35f, 30, 1f, out _, out _);
             StringAssert.StartsWith(Sitter + "_dart", plainSr.sprite.name, "harness: the first frame should read a dash");
 
             // Reset where she is: no dash, she thrashes in place.
@@ -405,7 +434,7 @@ namespace HiddenHarbours.Tests.EditMode
             var reset = new SurfacedFishDrawer(resetSr);
             Assert.IsTrue(reset.Resolve(in s, species, null, new Facts(), 4.5f));
             reset.ResetMotion(new Vector2(s.FishOffsetX, s.FishOffsetY));
-            reset.Render(Vector2.zero, in s, dt, 0f, 0f, 0.1f, dartMps, 0.35f, 30, out _, out _);
+            reset.Render(Vector2.zero, in s, dt, 0f, 0f, 0.1f, dartMps, 0.35f, 30, 1f, out _, out _);
             StringAssert.StartsWith(Sitter + "_thrash", resetSr.sprite.name, "after a reset her first frame read a speed");
         }
 

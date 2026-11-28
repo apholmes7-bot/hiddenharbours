@@ -131,7 +131,9 @@
       t('mountUp f0 = idle beside the machine', S('mountUp',0), idle, [rx,0,0]); t('mountUp last = astride f0', S('mountUp',1), astr);
       t('mountDown f0 = astride f0', S('mountDown',0), astr); t('mountDown last = idle beside', S('mountDown',1), idle, [rx,0,0]);
       t('mountCab last = astride(bench) f0', S('mountCab',1), bench); t('mountCabDown f0 = astride(bench) f0', S('mountCabDown',0), bench);
-      t('reach last = idle', S('reach',1), idle); yield 1;
+      t('reach last = idle', S('reach',1), idle);
+      for(const n of ['idleShift','idleScratch','idleHips']){ t(n+' f0 = idle f0', S(n,0), idle); t(n+' last = idle f0', S(n,last(n)), idle); }
+      yield 1;
       const worst=rows.reduce((m,r)=>Math.max(m,r.d),0);
       return { pass:worst<GATE, value:e(worst)+' m', detail:rows.map(r=>r.label+' '+e(r.d)).join(' · ') }; } },
     { id:'contacts', title:'Contacts: no skate at the engine speed, no sole below the ground, limbs make their targets', *run(B){

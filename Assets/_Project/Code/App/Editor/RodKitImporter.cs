@@ -412,18 +412,19 @@ namespace HiddenHarbours.App.Editor
                 ShadowFramesPerDir = shadow.Length / Directions,
                 DartFrames = dart,
                 DartFramesPerDir = dart.Length / Directions,
-                DartMouthOffsets = ReadMouths(statesNode, "dart", dart.Length / Directions, ppu),
+                DartMouthOffsets = ReadMouths(statesNode, "dart", dart, ppu, $"{stem}_dart.png"),
                 ThrashFrames = thrash,
                 ThrashFramesPerDir = thrash.Length / Directions,
-                ThrashMouthOffsets = ReadMouths(statesNode, "thrash", thrash.Length / Directions, ppu),
+                ThrashMouthOffsets = ReadMouths(statesNode, "thrash", thrash, ppu, $"{stem}_thrash.png"),
                 HeldFrames = held,
                 HeldFramesPerDir = held.Length / Directions,
+                LineHangFrames = PersistentCoreBuilder.LoadIsoDirFrames($"{stem}_gill.png"),
                 RollFrames = roll,
                 RollFramesPerDir = roll.Length / Directions,
-                RollMouthOffsets = ReadMouths(statesNode, "roll", roll.Length / Directions, ppu),
+                RollMouthOffsets = ReadMouths(statesNode, "roll", roll, ppu, $"{stem}_roll.png"),
                 JumpFrames = jump,
                 JumpFramesPerDir = jump.Length / Directions,
-                JumpMouthOffsets = ReadMouths(statesNode, "jump", jump.Length / Directions, ppu),
+                JumpMouthOffsets = ReadMouths(statesNode, "jump", jump, ppu, $"{stem}_jump.png"),
             };
         }
 
@@ -531,25 +532,85 @@ namespace HiddenHarbours.App.Editor
             return result;
         }
 
-        /// <summary>A species state's mouth table ([8][frames]{dx,dy} offsets from the fish pivot) as
-        /// flattened world metres; null-safe (missing table → null → the line pins to the fish pivot).</summary>
-        private static Vector2[] ReadMouths(object statesNode, string state, int framesPerDir, float ppu)
+        /// <summary>How far (art px) a published mouth may sit from its frame's drawn fish and still be
+        /// snapped onto it. The worst the catch pass 2 bake publishes is 6 px; past this the anchor is
+        /// kept as published and the import says so.</summary>
+        public const int MouthSnapRadiusPx = 8;
+
+        /// <summary>An art texel counts as drawn at this alpha or more (the sheets are hard-edged pixel
+        /// art; the soft shadow sheets are never read here).</summary>
+        public const float DrawnAlpha01 = 0.5f;
+
+        /// <summary>
+        /// A species state's mouth table ([8][frames]{dx,dy} offsets from the fish pivot) as flattened
+        /// world metres, each frame's anchor SNAPPED onto the texel of that frame's own art it belongs to
+        /// (<see cref="RodKitAnchorMath.TrySnapToDrawn"/>, at the texel's centre): the rig publishes the
+        /// anchor off the skeleton, and the line must leave the fish that was drawn. Null-safe (missing
+        /// table → null → the line pins to the fish pivot); an unreadable sheet keeps the published table.
+        /// </summary>
+        private static Vector2[] ReadMouths(object statesNode, string state, Sprite[] frames, float ppu,
+                                            string sheetPath)
         {
+            int framesPerDir = frames != null ? frames.Length / Directions : 0;
             var mouths = MiniJson.List(MiniJson.Dict(statesNode, state), "mouth");
             if (mouths == null || mouths.Count != Directions || framesPerDir <= 0) return null;
+            Texture2D art = ReadSheetPixels(sheetPath);
+            int snapped = 0, kept = 0;
             var result = new Vector2[Directions * framesPerDir];
             for (int d = 0; d < Directions; d++)
             {
-                if (!(mouths[d] is List<object> row) || row.Count != framesPerDir) return null;
+                if (!(mouths[d] is List<object> row) || row.Count != framesPerDir) { Object.DestroyImmediate(art); return null; }
                 for (int f = 0; f < framesPerDir; f++)
                 {
                     var p = row[f] as Dictionary<string, object>;
-                    result[d * framesPerDir + f] = p != null
-                        ? RodKitAnchorMath.OffsetPxToWorld(MiniJson.Float(p, "dx"), MiniJson.Float(p, "dy"), ppu)
-                        : Vector2.zero;
+                    if (p == null) { result[d * framesPerDir + f] = Vector2.zero; continue; }
+                    float dx = MiniJson.Float(p, "dx"), dy = MiniJson.Float(p, "dy");
+                    Sprite cell = frames[d * framesPerDir + f];
+                    if (TryDrawnMouth(art, cell, dx, dy, out Vector2 drawn)) { result[d * framesPerDir + f] = drawn; snapped++; }
+                    else { result[d * framesPerDir + f] = RodKitAnchorMath.OffsetPxToWorld(dx, dy, ppu); kept++; }
                 }
             }
+            if (art != null) Object.DestroyImmediate(art);
+            if (kept > 0)
+                Debug.LogWarning($"[RodKitImporter] '{sheetPath}' {state}: {kept} mouth anchor(s) are more than " +
+                                 $"{MouthSnapRadiusPx} px from any drawn texel (or the sheet is unreadable) and are " +
+                                 $"kept as published; {snapped} snapped onto the art.");
             return result;
+        }
+
+        /// <summary>The sheet's own pixels, read off the PNG on disk (the imported texture need not be
+        /// readable), or null when it cannot be read. The caller destroys it.</summary>
+        private static Texture2D ReadSheetPixels(string sheetPath)
+        {
+            if (string.IsNullOrEmpty(sheetPath) || !System.IO.File.Exists(sheetPath)) return null;
+            var tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+            if (tex.LoadImage(System.IO.File.ReadAllBytes(sheetPath))) return tex;
+            Object.DestroyImmediate(tex);
+            return null;
+        }
+
+        /// <summary>
+        /// The published mouth (<paramref name="dx"/>, <paramref name="dy"/>; px from the pivot, y down)
+        /// snapped onto <paramref name="cell"/>'s drawn art in <paramref name="sheet"/>, as a world-metre
+        /// offset from the sprite's pivot. Uses the sprite's own rect and pivot, scaled from the imported
+        /// texture to the PNG when an import max size shrank it. False when nothing is drawn nearby.
+        /// </summary>
+        public static bool TryDrawnMouth(Texture2D sheet, Sprite cell, float dx, float dy, out Vector2 world)
+        {
+            world = Vector2.zero;
+            if (sheet == null || cell == null || cell.texture == null) return false;
+            float k = cell.texture.width > 0 ? sheet.width / (float)cell.texture.width : 1f;
+            Rect r = cell.rect;
+            int x0 = Mathf.RoundToInt(r.x * k), y0 = Mathf.RoundToInt(r.y * k);
+            int w = Mathf.RoundToInt(r.width * k), h = Mathf.RoundToInt(r.height * k);
+            float pivotX = cell.pivot.x * k, pivotY = h - cell.pivot.y * k;   // top-left, y down
+            bool Drawn(int x, int y) => sheet.GetPixel(x0 + x, y0 + (h - 1 - y)).a >= DrawnAlpha01;
+            int px = Mathf.FloorToInt(pivotX + dx * k), py = Mathf.FloorToInt(pivotY + dy * k);
+            if (!RodKitAnchorMath.TrySnapToDrawn(Drawn, w, h, px, py, pivotX, pivotY,
+                                                Mathf.RoundToInt(MouthSnapRadiusPx * k), out int sx, out int sy))
+                return false;
+            world = RodKitAnchorMath.TexelCentreToPivotWorld(sx, sy, pivotX, pivotY, cell.pixelsPerUnit * k);
+            return true;
         }
 
         /// <summary>The character sheets' import PPU, read off a real Fisher sprite (falling back to
